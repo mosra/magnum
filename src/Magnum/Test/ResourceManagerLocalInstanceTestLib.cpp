@@ -1,9 +1,7 @@
-#ifndef Magnum_TextureTools_magnumTextureToolsResourceImport_hpp
-#define Magnum_TextureTools_magnumTextureToolsResourceImport_hpp
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -25,16 +23,21 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Magnum/magnumConfigure.h"
+#include "ResourceManagerLocalInstanceTestLib.h"
 
-#ifdef MAGNUM_BUILD_STATIC
-#include <Corrade/Utility/Resource.h>
-#include <Corrade/Utility/Macros.h>
+#include "Magnum/ResourceManager.hpp"
 
-static int magnumTextureToolsResourceImport() {
-    CORRADE_RESOURCE_INITIALIZE(MagnumTextureTools_RCS)
-    return 0;
-} CORRADE_AUTOMATIC_INITIALIZER(magnumTextureToolsResourceImport)
-#endif
+namespace Magnum {
 
-#endif
+namespace Implementation {
+    template struct CORRADE_VISIBILITY_EXPORT ResourceManagerLocalInstanceImplementation<ResourceManagerLocalInstance, Int>;
+}
+
+namespace Test {
+
+ResourceManagerWithLocalInstance::ResourceManagerWithLocalInstance(): staticInstance(static_cast<ResourceManagerWithLocalInstance&>(instance())) {
+    /* Add some stuff */
+    set("integer", 42);
+}
+
+}}

@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -56,31 +56,30 @@ template<> struct RectangularMatrixConverter<3, 3, float, Mat3> {
 
 namespace Test {
 
-class MatrixTest: public Corrade::TestSuite::Tester {
-    public:
-        MatrixTest();
+struct MatrixTest: Corrade::TestSuite::Tester {
+    explicit MatrixTest();
 
-        void construct();
-        void constructIdentity();
-        void constructZero();
-        void constructConversion();
-        void constructCopy();
+    void construct();
+    void constructIdentity();
+    void constructZero();
+    void constructConversion();
+    void constructCopy();
 
-        void convert();
+    void convert();
 
-        void isOrthogonal();
+    void isOrthogonal();
 
-        void trace();
-        void ij();
-        void determinant();
-        void inverted();
-        void invertedOrthogonal();
+    void trace();
+    void ij();
+    void determinant();
+    void inverted();
+    void invertedOrthogonal();
 
-        void subclassTypes();
-        void subclass();
+    void subclassTypes();
+    void subclass();
 
-        void debug();
-        void configuration();
+    void debug();
+    void configuration();
 };
 
 typedef Matrix<4, Float> Matrix4x4;

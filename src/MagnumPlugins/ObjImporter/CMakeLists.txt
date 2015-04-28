@@ -1,7 +1,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,32 +23,35 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-add_library(ObjImporterObjects OBJECT ObjImporter.cpp)
-if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
-    set_target_properties(ObjImporterObjects PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+set(ObjImporter_SRCS
+    ObjImporter.cpp)
+
+set(ObjImporter_HEADERS
+    ObjImporter.h)
+
+# Objects shared between plugin and test library
+add_library(ObjImporterObjects OBJECT
+    ${ObjImporter_SRCS}
+    ${ObjImporter_HEADERS})
+if(NOT BUILD_PLUGINS_STATIC OR BUILD_STATIC_PIC)
+    set_target_properties(ObjImporterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 
+# ObjImporter plugin
 add_plugin(ObjImporter ${MAGNUM_PLUGINS_IMPORTER_DEBUG_INSTALL_DIR} ${MAGNUM_PLUGINS_IMPORTER_RELEASE_INSTALL_DIR}
     ObjImporter.conf
     $<TARGET_OBJECTS:ObjImporterObjects>
     pluginRegistration.cpp)
+if(BUILD_STATIC_PIC)
+    set_target_properties(ObjImporter PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
+
 target_link_libraries(ObjImporter Magnum MagnumMeshTools)
 
-install(FILES ObjImporter.h DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/ObjImporter)
+install(FILES ${ObjImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/ObjImporter)
 
 if(BUILD_TESTS)
     add_library(MagnumObjImporterTestLib STATIC $<TARGET_OBJECTS:ObjImporterObjects>)
-    set_target_properties(MagnumObjImporterTestLib PROPERTIES DEBUG_POSTFIX "-d")
     target_link_libraries(MagnumObjImporterTestLib Magnum MagnumMeshTools)
-
-    # On Windows we need to install first and then run the tests to avoid "DLL
-    # not found" hell, thus we need to install this too
-    if(CORRADE_TARGET_WINDOWS AND NOT CMAKE_CROSSCOMPILING)
-        install(TARGETS MagnumObjImporterTestLib
-            RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
-            LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
-            ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
-    endif()
-
     add_subdirectory(Test)
 endif()

@@ -1,9 +1,7 @@
-#ifndef Magnum_Shaders_magnumShadersResourceImport_hpp
-#define Magnum_Shaders_magnumShadersResourceImport_hpp
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -25,16 +23,24 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Magnum/configure.h"
+#include "ResourceManager.h"
 
-#ifdef MAGNUM_BUILD_STATIC
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include "Magnum/Shaders/resourceImport.hpp"
-#else
-#error use Magnum/Shaders/resourceImport.hpp instead
-#endif
-#else
-#error this header is available only in static build
-#endif
+/*
+    File-local definition of ResourceManager instance holder for use in cases
+    where the class is used across library boundaries, in which case additional
+    care must be done to ensure a single static instance.
 
-#endif
+    Usage: typedef the resource manager with Implementation::ResourceManagerLocalInstance
+    as a first type and then include this file in a _single_ *.cpp file.
+
+    This symbol is always exported.
+*/
+
+namespace Magnum { namespace Implementation {
+
+template<class ...Types> CORRADE_VISIBILITY_EXPORT ResourceManager<Types...>*& ResourceManagerLocalInstanceImplementation<Types...>::internalInstance() {
+    static ResourceManager<Types...>* _instance(nullptr);
+    return _instance;
+}
+
+}}

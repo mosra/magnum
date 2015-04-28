@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -48,6 +48,14 @@ template<UnsignedInt dimensions, class T> struct DimensionTraits {
     typedef U VectorType;
 
     /**
+     * @brief Range type
+     *
+     * @ref Math::Range1D, @ref Math::Range2D or @ref Math::Range3D based on
+     * dimension count.
+     */
+    typedef U RangeType;
+
+    /**
      * @brief Matrix type
      *
      * Floating-point @ref Math::Matrix3 or @ref Math::Matrix4 for 2D or 3D. No
@@ -57,11 +65,37 @@ template<UnsignedInt dimensions, class T> struct DimensionTraits {
     #endif
 };
 
+#ifndef CORRADE_GCC46_COMPATIBILITY
 /**
-@todo `using VectorTypeForDimension<dimensions, T> = typename DimensionTraits<dimensions, T>::VectorType`
-    etc. shortcuts when support for GCC 4.6 is dropped (similarly to what C++14
-    does with type traits)
- */
+@brief Vector type for given dimension count and type
+
+Convenience alternative to `typename DimensionTraits<dimensions, T>::VectorType`.
+See @ref DimensionTraits::VectorType for more information.
+@note Not available on GCC < 4.7. Use `typename DimensionTraits<dimensions, T>::VectorType`
+    instead.
+*/
+template<UnsignedInt dimensions, class T> using VectorTypeFor = typename DimensionTraits<dimensions, T>::VectorType;
+
+/**
+@brief Range type for given dimension count and type
+
+Convenience alternative to `typename DimensionTraits<dimensions, T>::RangeType`.
+See @ref DimensionTraits::RangeType for more information.
+@note Not available on GCC < 4.7. Use `typename DimensionTraits<dimensions, T>::RangeType`
+    instead.
+*/
+template<UnsignedInt dimensions, class T> using RangeTypeFor = typename DimensionTraits<dimensions, T>::RangeType;
+
+/**
+@brief Matrix type for given dimension count and type
+
+Convenience alternative to `typename DimensionTraits<dimensions, T>::MatrixType`.
+See @ref DimensionTraits::MatrixType for more information.
+@note Not available on GCC < 4.7. Use `typename DimensionTraits<dimensions, T>::MatrixType`
+    instead.
+*/
+template<UnsignedInt dimensions, class T> using MatrixTypeFor = typename DimensionTraits<dimensions, T>::MatrixType;
+#endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 /* One dimension */
@@ -69,6 +103,7 @@ template<class T> struct DimensionTraits<1, T> {
     DimensionTraits() = delete;
 
     typedef Math::Vector<1, T> VectorType;
+    typedef Math::Range1D<T> RangeType;
 };
 
 /* Two dimensions - integral */
@@ -76,6 +111,7 @@ template<class T> struct DimensionTraits<2, T> {
     DimensionTraits() = delete;
 
     typedef Math::Vector2<T> VectorType;
+    typedef Math::Range2D<T> RangeType;
 };
 
 /* Two dimensions - floating-point */
@@ -83,6 +119,7 @@ template<> struct DimensionTraits<2, Float> {
     DimensionTraits() = delete;
 
     typedef Math::Vector2<Float> VectorType;
+    typedef Math::Range2D<Float> RangeType;
     typedef Math::Matrix3<Float> MatrixType;
 };
 #ifndef MAGNUM_TARGET_GLES
@@ -90,6 +127,7 @@ template<> struct DimensionTraits<2, Double> {
     DimensionTraits() = delete;
 
     typedef Math::Vector2<Double> VectorType;
+    typedef Math::Range2D<Double> RangeType;
     typedef Math::Matrix3<Double> MatrixType;
 };
 #endif
@@ -99,6 +137,7 @@ template<class T> struct DimensionTraits<3, T> {
     DimensionTraits() = delete;
 
     typedef Math::Vector3<T> VectorType;
+    typedef Math::Range3D<T> RangeType;
 };
 
 /* Three dimensions - floating-point */
@@ -106,6 +145,7 @@ template<> struct DimensionTraits<3, Float> {
     DimensionTraits() = delete;
 
     typedef Math::Vector3<Float> VectorType;
+    typedef Math::Range3D<Float> RangeType;
     typedef Math::Matrix4<Float> MatrixType;
 };
 #ifndef MAGNUM_TARGET_GLES
@@ -113,6 +153,7 @@ template<> struct DimensionTraits<3, Double> {
     DimensionTraits() = delete;
 
     typedef Math::Vector3<Double> VectorType;
+    typedef Math::Range3D<Double> RangeType;
     typedef Math::Matrix4<Double> MatrixType;
 };
 #endif

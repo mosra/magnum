@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -32,18 +32,17 @@
 
 namespace Magnum { namespace MeshTools { namespace Test {
 
-class InterleaveTest: public Corrade::TestSuite::Tester {
-    public:
-        InterleaveTest();
+struct InterleaveTest: Corrade::TestSuite::Tester {
+    explicit InterleaveTest();
 
-        void attributeCount();
-        void attributeCountGaps();
-        void stride();
-        void strideGaps();
-        void write();
-        void writeGaps();
+    void attributeCount();
+    void attributeCountGaps();
+    void stride();
+    void strideGaps();
+    void write();
+    void writeGaps();
 
-        void interleaveInto();
+    void interleaveInto();
 };
 
 InterleaveTest::InterleaveTest() {

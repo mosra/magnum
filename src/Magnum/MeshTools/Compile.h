@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -58,6 +58,8 @@ The second returned buffer may be `nullptr` if the mesh is not indexed.
 This is just a convenience function for creating generic meshes, you might want
 to use @ref interleave() and @ref compressIndices() functions instead for
 greater flexibility.
+
+@see @ref shaders-generic
 */
 MAGNUM_MESHTOOLS_EXPORT std::tuple<Mesh, std::unique_ptr<Buffer>, std::unique_ptr<Buffer>> compile(const Trade::MeshData2D& meshData, BufferUsage usage);
 
@@ -77,6 +79,8 @@ The second returned buffer may be `nullptr` if the mesh is not indexed.
 This is just a convenience function for creating generic meshes, you might want
 to use @ref interleave() and @ref compressIndices() functions instead for
 greater flexibility.
+
+@see @ref shaders-generic
 */
 MAGNUM_MESHTOOLS_EXPORT std::tuple<Mesh, std::unique_ptr<Buffer>, std::unique_ptr<Buffer>> compile(const Trade::MeshData3D& meshData, BufferUsage usage);
 

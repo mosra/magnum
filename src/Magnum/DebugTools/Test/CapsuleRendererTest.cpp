@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -29,17 +29,16 @@
 
 namespace Magnum { namespace DebugTools { namespace Test {
 
-class CapsuleRendererTest: public TestSuite::Tester {
-    public:
-        explicit CapsuleRendererTest();
+struct CapsuleRendererTest: TestSuite::Tester {
+    explicit CapsuleRendererTest();
 
-        void zeroLength2D();
-        void common2D();
+    void zeroLength2D();
+    void common2D();
 
-        void zeroLength3D();
-        void parallel3D();
-        void antiParallel3D();
-        void common3D();
+    void zeroLength3D();
+    void parallel3D();
+    void antiParallel3D();
+    void common3D();
 };
 
 CapsuleRendererTest::CapsuleRendererTest() {
@@ -83,7 +82,7 @@ void CapsuleRendererTest::common2D() {
     CORRADE_COMPARE(transformation[2].right(), right);
 
     /* Orthogonality */
-    CORRADE_COMPARE(Vector2::dot(transformation[0].up(), transformation[0].right()), 0.0f);
+    CORRADE_COMPARE(Math::dot(transformation[0].up(), transformation[0].right()), 0.0f);
 
     const Vector2 capDistance = up.resized(3.5f);
     CORRADE_COMPARE(transformation[0].translation(), a+capDistance);
@@ -163,9 +162,9 @@ void CapsuleRendererTest::common3D() {
     CORRADE_COMPARE(transformation[2].backward(), backward);
 
     /* Orthogonality */
-    CORRADE_COMPARE(Vector3::dot(transformation[0].up(), transformation[0].right()), 0.0f);
-    CORRADE_COMPARE(Vector3::dot(transformation[0].up(), transformation[0].backward()), 0.0f);
-    CORRADE_COMPARE(Vector3::dot(transformation[0].right(), transformation[0].backward()), 0.0f);
+    CORRADE_COMPARE(Math::dot(transformation[0].up(), transformation[0].right()), 0.0f);
+    CORRADE_COMPARE(Math::dot(transformation[0].up(), transformation[0].backward()), 0.0f);
+    CORRADE_COMPARE(Math::dot(transformation[0].right(), transformation[0].backward()), 0.0f);
 
     const Vector3 capDistance = up.resized(3.5f);
     CORRADE_COMPARE(transformation[0].translation(), a+capDistance);

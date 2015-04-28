@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -32,8 +32,9 @@ namespace Magnum { namespace MeshTools {
 void flipFaceWinding(std::vector<UnsignedInt>& indices) {
     CORRADE_ASSERT(!(indices.size()%3), "MeshTools::flipNormals(): index count is not divisible by 3!", );
 
+    using std::swap;
     for(std::size_t i = 0; i != indices.size(); i += 3)
-        std::swap(indices[i+1], indices[i+2]);
+        swap(indices[i+1], indices[i+2]);
 }
 
 void flipNormals(std::vector<Vector3>& normals) {

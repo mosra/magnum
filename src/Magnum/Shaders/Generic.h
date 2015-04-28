@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -34,30 +34,13 @@
 namespace Magnum { namespace Shaders {
 
 /**
-@brief %Generic shader definition
+@brief Generic shader definition
 
 Definitions common for majority of shaders in @ref Shaders namespace, allowing
-mesh configured for the generic shader to be used with any of them.
+mesh configured for the generic shader to be used with any of them. See
+@ref shaders-generic for more information.
 
-Example usage (configuring the mesh for generic shader, then using it with
-@ref Shaders::Phong):
-@code
-Mesh mesh;
-Buffer vertexBuffer;
-
-// ...
-
-mesh.addVertexBuffer(vertexBuffer, 0,
-    Shaders::Generic3D::Position(),
-    Shaders::Generic3D::Normal(),
-    Shaders::Generic3D::TextureCoordinates());
-
-Shaders::Phong phong;
-// ...
-mesh.draw(phong);
-@endcode
-
-@see @ref Generic2D, @ref Generic3D
+@see @ref shaders, @ref Generic2D, @ref Generic3D
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<UnsignedInt> struct Generic;
@@ -66,40 +49,44 @@ template<UnsignedInt dimensions> struct Generic {
     /**
      * @brief Vertex position
      *
-     * Defined as @ref Vector2 in 2D and @ref Vector3 in 3D.
+     * @ref Vector2 in 2D and @ref Vector3 in 3D.
      */
-    typedef AbstractShaderProgram::Attribute<0, T> Position;
+    typedef Attribute<0, T> Position;
 
-    /** @brief 2D texture coordinates */
-    typedef AbstractShaderProgram::Attribute<1, Vector2> TextureCoordinates;
+    /**
+     * @brief 2D texture coordinates
+     *
+     * @ref Vector2.
+     */
+    typedef Attribute<1, Vector2> TextureCoordinates;
 
     /**
      * @brief Vertex normal
      *
-     * Defined only in 3D.
+     * @ref Vector3, defined only in 3D.
      */
-    typedef AbstractShaderProgram::Attribute<2, Vector3> Normal;
+    typedef Attribute<2, Vector3> Normal;
 };
 #endif
 
-/** @brief %Generic 2D shader definition */
+/** @brief Generic 2D shader definition */
 typedef Generic<2> Generic2D;
 
-/** @brief %Generic 3D shader definition */
+/** @brief Generic 3D shader definition */
 typedef Generic<3> Generic3D;
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 struct BaseGeneric {
-    typedef AbstractShaderProgram::Attribute<1, Vector2> TextureCoordinates;
+    typedef Attribute<1, Vector2> TextureCoordinates;
 };
 
 template<> struct Generic<2>: BaseGeneric {
-    typedef AbstractShaderProgram::Attribute<0, Vector2> Position;
+    typedef Attribute<0, Vector2> Position;
 };
 
 template<> struct Generic<3>: BaseGeneric {
-    typedef AbstractShaderProgram::Attribute<0, Vector3> Position;
-    typedef AbstractShaderProgram::Attribute<2, Vector3> Normal;
+    typedef Attribute<0, Vector3> Position;
+    typedef Attribute<2, Vector3> Normal;
 };
 #endif
 

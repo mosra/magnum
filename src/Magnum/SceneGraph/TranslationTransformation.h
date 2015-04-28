@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -44,13 +44,9 @@ the translation is stored with the same underlying type as resulting
 transformation matrix, but it's possible to store translation in e.g. integral
 coordinates while having floating-point transformation matrix.
 
-Note that translation is commutative, so all @ref TransformationType parameters
-have no effect and are included only for compatibility with other
-transformation implementations.
-
-@see @ref BasicTranslationTransformation2D, @ref BasicTranslationTransformation3D,
-    @ref TranslationTransformation2D, @ref TranslationTransformation3D,
-    @ref scenegraph
+@see @ref scenegraph, @ref BasicTranslationTransformation2D,
+    @ref BasicTranslationTransformation3D, @ref TranslationTransformation2D,
+    @ref TranslationTransformation3D
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<UnsignedInt dimensions, class T, class TranslationType = T>
@@ -62,7 +58,7 @@ class TranslationTransformation: public AbstractTranslation<dimensions, T, Trans
         /** @brief Underlying transformation type */
         typedef typename DimensionTraits<dimensions, TranslationType>::VectorType DataType;
 
-        /** @brief %Object transformation */
+        /** @brief Object transformation */
         typename DimensionTraits<dimensions, TranslationType>::VectorType transformation() const { return _transformation; }
 
         /**
@@ -87,30 +83,52 @@ class TranslationTransformation: public AbstractTranslation<dimensions, T, Trans
         }
 
         /**
-         * @brief Add transformation
-         * @param transformation    Transformation
+         * @brief Transform object
          * @return Reference to self (for method chaining)
          *
          * Equivalent to @ref translate(), provided only for compatibility with
-         * other implementations.
+         * other implementations. There is no difference between global and
+         * local transformation.
          */
-        Object<TranslationTransformation<dimensions, T, TranslationType>>& transform(const typename DimensionTraits<dimensions, TranslationType>::VectorType& transformation, TransformationType = TransformationType::Global) {
+        Object<TranslationTransformation<dimensions, T, TranslationType>>& transform(const typename DimensionTraits<dimensions, TranslationType>::VectorType& transformation) {
             return translate(transformation);
         }
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief transform()
+         * @deprecated Use @ref Magnum::SceneGraph::TranslationTransformation::transform() "transform()"
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use transform() instead") Object<TranslationTransformation<dimensions, T, TranslationType>>& transform(const typename DimensionTraits<dimensions, TranslationType>::VectorType& transformation, TransformationType) {
+            return transform(transformation);
+        }
+        #endif
+
         /**
          * @brief Translate object
-         * @param vector    Translation vector
          * @return Reference to self (for method chaining)
          *
+         * There is no difference between global and local translation.
          * @see @ref Math::Vector2::xAxis(), @ref Math::Vector2::yAxis(),
          *      @ref Math::Vector3::xAxis(), @ref Math::Vector3::yAxis(),
          *      @ref Math::Vector3::zAxis()
          */
-        Object<TranslationTransformation<dimensions, T, TranslationType>>& translate(const typename DimensionTraits<dimensions, TranslationType>::VectorType& vector, TransformationType = TransformationType::Global) {
+        Object<TranslationTransformation<dimensions, T, TranslationType>>& translate(const typename DimensionTraits<dimensions, TranslationType>::VectorType& vector) {
             _transformation += vector;
             return static_cast<Object<TranslationTransformation<dimensions, T, TranslationType>>&>(*this);
         }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief translate()
+         * @deprecated Use @ref Magnum::SceneGraph::TranslationTransformation::translate() "translate()"
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use translate() instead") Object<TranslationTransformation<dimensions, T, TranslationType>>& translate(const typename DimensionTraits<dimensions, TranslationType>::VectorType& vector, TransformationType) {
+            return translate(vector);
+        }
+        #endif
 
     protected:
         /* Allow construction only from Object */
@@ -119,7 +137,10 @@ class TranslationTransformation: public AbstractTranslation<dimensions, T, Trans
     private:
         void doResetTransformation() override final { resetTransformation(); }
 
-        void doTranslate(const typename DimensionTraits<dimensions, TranslationType>::VectorType& vector, TransformationType) override final {
+        void doTranslate(const typename DimensionTraits<dimensions, TranslationType>::VectorType& vector) override final {
+            translate(vector);
+        }
+        void doTranslateLocal(const typename DimensionTraits<dimensions, TranslationType>::VectorType& vector) override final {
             translate(vector);
         }
 
@@ -132,7 +153,7 @@ template<UnsignedInt dimensions, class T, class TranslationType> inline Translat
 /**
 @brief Base transformation for two-dimensional scenes supporting translation
 
-Convenience alternative to <tt>%TranslationTransformation<2, T, TranslationType></tt>.
+Convenience alternative to `TranslationTransformation<2, T, TranslationType>`.
 See @ref TranslationTransformation for more information.
 @note Not available on GCC < 4.7. Use <tt>%TranslationTransformation<2, T, TranslationType></tt>
     instead.
@@ -163,7 +184,7 @@ typedef TranslationTransformation<2, Float> TranslationTransformation2D;
 /**
 @brief Base transformation for three-dimensional scenes supporting translation
 
-Convenience alternative to <tt>%TranslationTransformation<3, T, TranslationType></tt>.
+Convenience alternative to `TranslationTransformation<3, T, TranslationType>`.
 See @ref TranslationTransformation for more information.
 @note Not available on GCC < 4.7. Use <tt>%TranslationTransformation<3, T, TranslationType></tt>
     instead.

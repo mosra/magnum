@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -31,13 +31,12 @@
 
 namespace Magnum { namespace MeshTools { namespace Test {
 
-class CompressIndicesTest: public TestSuite::Tester {
-    public:
-        CompressIndicesTest();
+struct CompressIndicesTest: TestSuite::Tester {
+    explicit CompressIndicesTest();
 
-        void compressChar();
-        void compressShort();
-        void compressInt();
+    void compressChar();
+    void compressShort();
+    void compressInt();
 };
 
 CompressIndicesTest::CompressIndicesTest() {

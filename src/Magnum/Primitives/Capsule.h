@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -37,7 +37,7 @@ namespace Magnum { namespace Primitives {
 /**
 @brief 2D capsule primitive
 
-%Cylinder of radius `1` along Y axis with hemispheres instead of caps.
+Cylinder of radius `1` along Y axis with hemispheres instead of caps.
 */
 class MAGNUM_PRIMITIVES_EXPORT Capsule2D {
     public:
@@ -57,7 +57,7 @@ class MAGNUM_PRIMITIVES_EXPORT Capsule2D {
 /**
 @brief 3D capsule primitive
 
-%Cylinder of radius `1` along Y axis with hemispheres instead of caps.
+Cylinder of radius `1` along Y axis with hemispheres instead of caps.
 */
 class MAGNUM_PRIMITIVES_EXPORT Capsule3D {
     public:

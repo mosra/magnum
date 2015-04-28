@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -90,10 +90,10 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Cylinder {
         /** @brief Set radius */
         void setRadius(Float radius) { _radius = radius; }
 
-        /** @brief %Collision occurence with point */
+        /** @brief Collision occurence with point */
         bool operator%(const Point<dimensions>& other) const;
 
-        /** @brief %Collision occurence with sphere */
+        /** @brief Collision occurence with sphere */
         bool operator%(const Sphere<dimensions>& other) const;
 
     private:

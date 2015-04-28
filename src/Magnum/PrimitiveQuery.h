@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -33,6 +33,10 @@
 
 #include "Magnum/AbstractQuery.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#endif
+
 #ifndef MAGNUM_TARGET_GLES2
 namespace Magnum {
 
@@ -55,11 +59,12 @@ if(!q.resultAvailable()) {
 // ...or block until the result is available
 UnsignedInt primitiveCount = q.result<UnsignedInt>();
 @endcode
-@requires_gl30 %Extension @extension{EXT,transform_feedback}
+@requires_gl30 Extension @extension{EXT,transform_feedback}
 @requires_gles30 Only sample queries are available on OpenGL ES 2.0.
 
-@see @ref SampleQuery, @ref TimeQuery
+@see @ref SampleQuery, @ref TimeQuery, @ref TransformFeedback
 @todo glBeginQueryIndexed
+@todo @extension{ARB,transform_feedback_overflow_query}
 */
 class PrimitiveQuery: public AbstractQuery {
     public:

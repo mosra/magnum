@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -260,5 +260,8 @@ void AndroidApplication::exec(android_app* state, std::unique_ptr<AndroidApplica
 
     state->userData = nullptr;
 }
+
+template class BasicScreen<AndroidApplication>;
+template class BasicScreenedApplication<AndroidApplication>;
 
 }}

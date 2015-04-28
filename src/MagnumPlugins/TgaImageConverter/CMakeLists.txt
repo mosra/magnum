@@ -1,7 +1,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,36 +23,46 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+if(BUILD_PLUGINS_STATIC)
+    set(MAGNUM_TGAIMAGECONVERTER_BUILD_STATIC 1)
+endif()
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+
 set(TgaImageConverter_SRCS
     TgaImageConverter.cpp)
 
 set(TgaImageConverter_HEADERS
     TgaImageConverter.h)
 
-add_library(TgaImageConverterObjects OBJECT ${TgaImageConverter_SRCS})
-set_target_properties(TgaImageConverterObjects PROPERTIES COMPILE_FLAGS "-DTgaImageConverterObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+# Objects shared between plugin and test library
+add_library(TgaImageConverterObjects OBJECT
+    ${TgaImageConverter_SRCS}
+    ${TgaImageConverter_HEADERS})
+if(NOT BUILD_PLUGINS_STATIC)
+    set_target_properties(TgaImageConverterObjects PROPERTIES COMPILE_FLAGS "-DTgaImageConverterObjects_EXPORTS")
+endif()
+if(NOT BUILD_PLUGINS_STATIC OR BUILD_STATIC_PIC)
+    set_target_properties(TgaImageConverterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
 
+# TgaImageConverter plugin
 add_plugin(TgaImageConverter ${MAGNUM_PLUGINS_IMAGECONVERTER_DEBUG_INSTALL_DIR} ${MAGNUM_PLUGINS_IMAGECONVERTER_RELEASE_INSTALL_DIR}
     TgaImageConverter.conf
     $<TARGET_OBJECTS:TgaImageConverterObjects>
     pluginRegistration.cpp)
+if(BUILD_STATIC_PIC)
+    set_target_properties(TgaImageConverter PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
+
 target_link_libraries(TgaImageConverter Magnum)
 
 install(FILES ${TgaImageConverter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/TgaImageConverter)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configure.h DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/TgaImageConverter/configure.h)
 
 if(BUILD_TESTS)
-    add_library(MagnumTgaImageConverterTestLib ${SHARED_OR_STATIC} $<TARGET_OBJECTS:TgaImageConverterObjects>)
-    set_target_properties(MagnumTgaImageConverterTestLib PROPERTIES DEBUG_POSTFIX "-d")
+    add_library(MagnumTgaImageConverterTestLib STATIC $<TARGET_OBJECTS:TgaImageConverterObjects>)
     target_link_libraries(MagnumTgaImageConverterTestLib Magnum)
-
-    # On Windows we need to install first and then run the tests to avoid "DLL
-    # not found" hell, thus we need to install this too
-    if(CORRADE_TARGET_WINDOWS AND NOT CMAKE_CROSSCOMPILING)
-        install(TARGETS MagnumTgaImageConverterTestLib
-            RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
-            LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
-            ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
-    endif()
-
     add_subdirectory(Test)
 endif()

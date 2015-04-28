@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -35,6 +35,7 @@
 
 namespace Magnum { namespace SceneGraph {
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef CORRADE_GCC45_COMPATIBILITY
 enum class AspectRatioPolicy: UnsignedByte;
 #endif
@@ -82,10 +83,6 @@ typedef AbstractBasicObject3D<Float> AbstractObject3D;
 #else
 typedef AbstractObject<2, Float> AbstractObject2D;
 typedef AbstractObject<3, Float> AbstractObject3D;
-#endif
-
-#ifndef CORRADE_GCC45_COMPATIBILITY
-enum class TransformationType: UnsignedByte;
 #endif
 
 template<UnsignedInt, class> class AbstractTransformation;
@@ -215,6 +212,7 @@ typedef TranslationTransformation<3, Float> TranslationTransformation3D;
 namespace Implementation {
     template<class> struct Transformation;
 }
+#endif
 
 }}
 

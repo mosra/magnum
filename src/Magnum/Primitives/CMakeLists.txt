@@ -1,7 +1,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -57,15 +57,16 @@ set(MagnumPrimitives_PRIVATE_HEADERS
     Implementation/Spheroid.h
     Implementation/WireframeSpheroid.h)
 
+# Primitives library
 add_library(MagnumPrimitives ${SHARED_OR_STATIC}
     ${MagnumPrimitives_SRCS}
     ${MagnumPrimitives_HEADERS}
     ${MagnumPrimitives_PRIVATE_HEADERS})
 set_target_properties(MagnumPrimitives PROPERTIES DEBUG_POSTFIX "-d")
 if(BUILD_STATIC_PIC)
-    # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
-    set_target_properties(MagnumPrimitives PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+    set_target_properties(MagnumPrimitives PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
+
 target_link_libraries(MagnumPrimitives Magnum)
 
 install(TARGETS MagnumPrimitives

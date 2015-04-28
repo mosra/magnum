@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -60,7 +60,7 @@ See also @ref Extensions namespace, which contain compile-time information
 about OpenGL extensions.
 */
 class MAGNUM_EXPORT Extension {
-    friend class Context;
+    friend Context;
 
     public:
         /** @brief All extensions for given OpenGL version */
@@ -72,7 +72,7 @@ class MAGNUM_EXPORT Extension {
         /** @brief Version in which this extension was adopted to core */
         constexpr Version coreVersion() const { return _coreVersion; }
 
-        /** @brief %Extension string */
+        /** @brief Extension string */
         constexpr const char* string() const { return _string; }
 
     private:
@@ -87,7 +87,7 @@ class MAGNUM_EXPORT Extension {
 };
 
 /**
-@brief %Magnum context
+@brief Magnum context
 
 Provides access to version and extension information. Instance available
 through @ref Context::current() is automatically created during construction of
@@ -98,19 +98,19 @@ using @ref Platform::Context subclass, see @ref platform documentation for more
 information.
 */
 class MAGNUM_EXPORT Context {
-    friend class Platform::Context;
+    friend Platform::Context;
 
     public:
         /**
-         * @brief %Context flag
+         * @brief Context flag
          *
          * @see @ref Flags, @ref flags(), @ref Platform::Sdl2Application::Configuration::setFlags() "Platform::*Application::Configuration::setFlags()"
          */
         enum class Flag: GLint {
             /**
              * Debug context
-             * @requires_gl43 %Extension @es_extension{KHR,debug}
-             * @requires_es_extension %Extension @es_extension{KHR,debug}
+             * @requires_gl43 Extension @es_extension{KHR,debug}
+             * @requires_es_extension Extension @es_extension{KHR,debug}
              */
             #ifndef MAGNUM_TARGET_GLES
             Debug = GL_CONTEXT_FLAG_DEBUG_BIT,
@@ -121,8 +121,8 @@ class MAGNUM_EXPORT Context {
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Context with robust access
-             * @requires_extension %Extension @extension{ARB,robustness}
-             * @requires_es_extension %Extension @es_extension{EXT,robustness}
+             * @requires_extension Extension @extension{ARB,robustness}
+             * @requires_es_extension Extension @es_extension{EXT,robustness}
              * @todo In ES available under glGetIntegerv(CONTEXT_ROBUST_ACCESS_EXT),
              *      how to make it compatible?
              */
@@ -139,7 +139,7 @@ class MAGNUM_EXPORT Context {
         };
 
         /**
-         * @brief %Context flags
+         * @brief Context flags
          *
          * @see @ref flags()
          */
@@ -167,7 +167,12 @@ class MAGNUM_EXPORT Context {
             Shaders = 1 << 4,
 
             /** Reset tracked texture-related bindings and state */
-            Textures = 1 << 5
+            Textures = 1 << 5,
+
+            #ifndef MAGNUM_TARGET_GLES2
+            /** Reset tracked transform feedback-related bindings */
+            TransformFeedback = 1 << 6
+            #endif
         };
 
         /**
@@ -186,6 +191,9 @@ class MAGNUM_EXPORT Context {
             #ifndef MAGNUM_TARGET_GLES
             /** Binary AMD desktop drivers on Windows and Linux */
             AMD = 1 << 0,
+
+            /** Intel desktop drivers on Windows */
+            IntelWindows = 1 << 1,
             #endif
 
             #ifdef MAGNUM_TARGET_GLES2
@@ -195,7 +203,7 @@ class MAGNUM_EXPORT Context {
              * specification explicitly disallows exposing driver information
              * to the application, this check cannot be done reliably.
              */
-            ProbablyAngle = 1 << 1
+            ProbablyAngle = 1 << 2
             #endif
         };
 
@@ -259,7 +267,7 @@ class MAGNUM_EXPORT Context {
         }
 
         /**
-         * @brief %Renderer string
+         * @brief Renderer string
          *
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls.
@@ -305,11 +313,11 @@ class MAGNUM_EXPORT Context {
         std::vector<std::string> shadingLanguageVersionStrings() const;
 
         /**
-         * @brief %Extension strings
+         * @brief Extension strings
          *
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls. Note that this function returns list of all extensions
-         * reported by the driver (even those not supported by %Magnum), see
+         * reported by the driver (even those not supported by Magnum), see
          * @ref supportedExtensions(), @ref Extension::extensions() or
          * @ref isExtensionSupported() for alternatives.
          * @see @fn_gl{Get} with @def_gl{NUM_EXTENSIONS}, @fn_gl{GetString}
@@ -317,7 +325,7 @@ class MAGNUM_EXPORT Context {
          */
         std::vector<std::string> extensionStrings() const;
 
-        /** @brief %Context flags */
+        /** @brief Context flags */
         Flags flags() const { return _flags; }
 
         /**
@@ -353,15 +361,14 @@ class MAGNUM_EXPORT Context {
          * If no version from the list is supported, returns lowest available
          * OpenGL version (@ref Version::GL210 for desktop OpenGL,
          * @ref Version::GLES200 for OpenGL ES).
-         * @see isExtensionSupported(Version) const
-         * @todoc Explicit reference when Doxygen can handle const
+         * @see @ref isExtensionSupported(Version) const
          */
         Version supportedVersion(std::initializer_list<Version> versions) const;
 
         /**
          * @brief Whether given extension is supported
          *
-         * %Extensions usable with this function are listed in @ref Extensions
+         * Extensions usable with this function are listed in @ref Extensions
          * namespace in header @ref Extensions.h. Example usage:
          * @code
          * if(Context::current()->isExtensionSupported<Extensions::GL::ARB::tessellation_shader>()) {
@@ -371,10 +378,9 @@ class MAGNUM_EXPORT Context {
          * }
          * @endcode
          *
-         * @see isExtensionSupported(const Extension&) const,
+         * @see @ref isExtensionSupported(const Extension&) const,
          *      @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED(),
          *      @ref isExtensionDisabled()
-         * @todoc Explicit reference when Doxygen can handle const
          */
         template<class T> bool isExtensionSupported() const {
             return isExtensionSupported<T>(version());
@@ -403,18 +409,17 @@ class MAGNUM_EXPORT Context {
          * @brief Whether given extension is supported
          *
          * Can be used e.g. for listing extensions available on current
-         * hardware, but for general usage prefer isExtensionSupported() const,
+         * hardware, but for general usage prefer @ref isExtensionSupported() const,
          * as it does most operations in compile time.
          * @see @ref supportedExtensions(), @ref Extension::extensions(),
          *      @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED()
-         * @todoc Explicit reference when Doxygen can handle const
          */
         bool isExtensionSupported(const Extension& extension) const {
             return isVersionSupported(_extensionRequiredVersion[extension._index]) && extensionStatus[extension._index];
         }
 
         /**
-         * @brief Whether given extension is supported by the driver but disabled
+         * @brief Whether given extension is disabled
          *
          * Can be used for detecting driver bug workarounds. Disabled
          * extensions return `false` in @ref isExtensionSupported() even if
@@ -425,26 +430,25 @@ class MAGNUM_EXPORT Context {
         }
 
         /**
-         * @brief Whether given extension is supported by the driver but disabled for given version
+         * @brief Whether given extension is disabled for given version
          *
          * Similar to above, but can also check for extensions which are
          * disabled only for particular versions.
          */
         template<class T> bool isExtensionDisabled(Version version) const {
             /* The extension is advertised, but the minimal version has been increased */
-            return T::requiredVersion() <= version && extensionStatus[T::Index] && _extensionRequiredVersion[T::Index] > version;
+            return T::requiredVersion() <= version && _extensionRequiredVersion[T::Index] > version;
         }
 
         /**
-         * @brief Whether given extension is supported by the driver but disabled
+         * @brief Whether given extension is disabled
          *
          * Can be used e.g. for listing extensions available on current
-         * hardware, but for general usage prefer isExtensionDisabled() const,
+         * hardware, but for general usage prefer @ref isExtensionDisabled() const,
          * as it does most operations in compile time.
-         * @todoc Explicit reference when Doxygen can handle const
          */
         bool isExtensionDisabled(const Extension& extension) const {
-            return isVersionSupported(extension._requiredVersion) && extensionStatus[extension._index] && !isVersionSupported(_extensionRequiredVersion[extension._index]);
+            return isVersionSupported(extension._requiredVersion) && !isVersionSupported(_extensionRequiredVersion[extension._index]);
         }
 
         /**

@@ -88,7 +88,7 @@ else
 fi
 
 if [ ${libraries} = "static" ] ; then
-    static_build_flag="-DBUILD_STATIC=ON -DBUILD_STATIC_PIC=ON"
+    static_build_flag="-DBUILD_STATIC=ON -DBUILD_PLUGINS_STATIC=ON -DBUILD_STATIC_PIC=ON"
 fi
 
 if [ "${compatibility}" = "deprecated" ] ; then
@@ -142,7 +142,7 @@ cmake .. \
     -DWITH_GLUTAPPLICATION=ON \
     -DWITH_GLXAPPLICATION=ON \
     -DWITH_SDL2APPLICATION=ON \
-    -DWITH_XEGLAPPLICATION=${es_flag} \
+    -DWITH_XEGLAPPLICATION=ON \
     -DWITH_EGLCONTEXT=ON \
     -DWITH_GLXCONTEXT=ON \
     -DWITH_MAGNUMFONT=ON \

@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -26,8 +26,10 @@
 #include "RectangleTexture.h"
 
 #ifndef MAGNUM_TARGET_GLES
+#include "Magnum/BufferImage.h"
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
+#include "Magnum/Image.h"
 
 #include "Implementation/State.h"
 #include "Implementation/TextureState.h"
@@ -44,6 +46,26 @@ Vector2i RectangleTexture::maxSize() {
         glGetIntegerv(GL_MAX_RECTANGLE_TEXTURE_SIZE, &value);
 
     return Vector2i{value};
+}
+
+Image2D RectangleTexture::image(Image2D&& image) {
+    this->image(image);
+    return std::move(image);
+}
+
+BufferImage2D RectangleTexture::image(BufferImage2D&& image, const BufferUsage usage) {
+    this->image(image, usage);
+    return std::move(image);
+}
+
+Image2D RectangleTexture::subImage(const Range2Di& range, Image2D&& image) {
+    this->subImage(range, image);
+    return std::move(image);
+}
+
+BufferImage2D RectangleTexture::subImage(const Range2Di& range, BufferImage2D&& image, const BufferUsage usage) {
+    this->subImage(range, image, usage);
+    return std::move(image);
 }
 
 }

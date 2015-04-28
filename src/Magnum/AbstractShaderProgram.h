@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -32,17 +32,13 @@
 #include <functional>
 #include <string>
 #include <Corrade/Containers/Array.h>
-#include <Corrade/Containers/EnumSet.h>
 
 #include "Magnum/AbstractObject.h"
-#include "Magnum/Magnum.h"
+#include "Magnum/Attribute.h"
 
 namespace Magnum {
 
-namespace Implementation {
-    template<class> struct Attribute;
-    struct ShaderProgramState;
-}
+namespace Implementation { struct ShaderProgramState; }
 
 /**
 @brief Base for shader program implementations
@@ -52,7 +48,7 @@ namespace Implementation {
 
 This class is designed to be used via subclassing. Subclasses define these
 functions and properties:
--   <strong>%Attribute definitions</strong> with location and type for
+-   **Attribute definitions** with location and type for
     configuring meshes, for example:
 @code
 typedef Attribute<0, Vector3> Position;
@@ -103,7 +99,7 @@ MyShader& setNormalMatrix(const Matrix3x3& matrix) {
     return *this;
 }
 @endcode
--   <strong>%Texture setting functions</strong> in which you bind the textures
+-   **Texture setting functions** in which you bind the textures
     to particular texture units using @ref Texture::bind() "*Texture::bind()"
     and equivalents, for example:
 @code
@@ -113,6 +109,22 @@ MyShader& setDiffuseTexture(Texture2D& texture) {
 }
 MyShader& setSpecularTexture(Texture2D& texture) {
     texture.bind(1);
+    return *this;
+}
+@endcode
+-   **Transform feedback setup function**, if needed, in which you bind buffers
+    to particular indices using @ref TransformFeedback::attachBuffer() and
+    similar, possibly with overloads based on desired use cases, e.g.:
+@code
+MyShader& setTransformFeedback(TransformFeedback& feedback, Buffer& positions, Buffer& data) {
+    feedback.attachBuffers(0, {positions, data});
+    return *this;
+}
+MyShader& setTransformFeedback(TransformFeedback& feedback, Int totalCount, Buffer& positions, GLintptr positionsOffset, Buffer& data, GLintptr dataOffset) {
+    feedback.attachBuffers(0, {
+        std::make_tuple(positions, positionsOffset, totalCount*sizeof(Vector3)),
+        std::make_tuple(data, dataOffset, totalCount*sizeof(Vector2ui))
+    });
     return *this;
 }
 @endcode
@@ -167,11 +179,11 @@ bindFragmentDataLocationIndexed(NormalOutput, 1, "normal");
 @endcode
 
 @see @ref Mesh::maxVertexAttributes(), @ref AbstractFramebuffer::maxDrawBuffers()
-@requires_gl30 %Extension @extension{EXT,gpu_shader4} for using
+@requires_gl30 Extension @extension{EXT,gpu_shader4} for using
     @ref Magnum::AbstractShaderProgram::bindFragmentDataLocation() "bindFragmentDataLocation()".
-@requires_gl33 %Extension @extension{ARB,blend_func_extended} for using
+@requires_gl33 Extension @extension{ARB,blend_func_extended} for using
     @ref Magnum::AbstractShaderProgram::bindFragmentDataLocationIndexed() "bindFragmentDataLocationIndexed()".
-@requires_gl33 %Extension @extension{ARB,explicit_attrib_location} for
+@requires_gl33 Extension @extension{ARB,explicit_attrib_location} for
     explicit attribute location instead of using
     @ref Magnum::AbstractShaderProgram::bindAttributeLocation() "bindAttributeLocation()",
     @ref Magnum::AbstractShaderProgram::bindFragmentDataLocation() "bindFragmentDataLocation()"
@@ -215,7 +227,7 @@ Int normalMatrixUniform = uniformLocation("normalMatrix");
 @endcode
 
 @see @ref maxUniformLocations()
-@requires_gl43 %Extension @extension{ARB,explicit_uniform_location} for
+@requires_gl43 Extension @extension{ARB,explicit_uniform_location} for
     explicit uniform location instead of using
     @ref Magnum::AbstractShaderProgram::uniformLocation() "uniformLocation()".
 @requires_gles31 Explicit uniform location is not supported in OpenGL ES 3.0
@@ -248,17 +260,64 @@ setUniform(uniformLocation("specularTexture"), 1);
 @endcode
 
 @see @ref Shader::maxTextureImageUnits()
-@requires_gl42 %Extension @extension{ARB,shading_language_420pack} for explicit
+@requires_gl42 Extension @extension{ARB,shading_language_420pack} for explicit
     texture binding unit instead of using
     @ref Magnum::AbstractShaderProgram::setUniform(Int, const T&) "setUniform(Int, Int)".
 @requires_gles31 Explicit texture binding unit is not supported in OpenGL ES
     3.0 and older. Use @ref Magnum::AbstractShaderProgram::setUniform(Int, const T&) "setUniform(Int, Int)"
     instead.
 
+@anchor AbstractShaderProgram-transform-feedback
+### Specifying transform feedback binding points
+
+The preferred workflow is to specify output binding points directly in the
+shader code, e.g.:
+@code
+// GLSL 4.40, or
+#extension GL_ARB_enhanced_layouts: enable
+layout(xfb_buffer = 0, xfb_stride = 32) out block {
+    layout(xfb_offset = 0) vec3 position;
+    layout(xfb_offset = 16) vec3 normal;
+};
+layout(xfb_buffer = 1) out vec3 velocity;
+@endcode
+
+If you don't have the required extension, declare the uniforms without the
+`xfb_*` qualifier and set the binding points using @ref setTransformFeedbackOutputs().
+Equivalent setup for the previous code would be the following:
+@code
+out block {
+    vec3 position;
+    vec3 normal;
+};
+out vec3 velocity;
+@endcode
+@code
+setTransformFeedbackOutputs({
+        // Buffer 0
+        "position", "gl_SkipComponents1", "normal", "gl_SkipComponents1",
+        // Buffer 1
+        "gl_NextBuffer", "velocity"
+    }, TransformFeedbackBufferMode::InterleavedAttributes);
+@endcode
+
+@see @ref TransformFeedback::maxInterleavedComponents(),
+    @ref TransformFeedback::maxSeparateAttributes(),
+    @ref TransformFeedback::maxSeparateComponents()
+@requires_gl40 Extension @extension{ARB,transform_feedback3} for using
+    `gl_NextBuffer` or `gl_SkipComponents#` names in
+    @ref Magnum::AbstractShaderProgram::setTransformFeedbackOutputs() "setTransformFeedbackOutputs()"
+    function
+@requires_gl44 Extension @extension{ARB,enhanced_layouts} for explicit
+    transform feedback output specification instead of using
+    @ref Magnum::AbstractShaderProgram::setTransformFeedbackOutputs() "setTransformFeedbackOutputs()"
+@requires_gl Explicit transform feedback output specification is not available
+    in OpenGL ES.
+
 @anchor AbstractShaderProgram-rendering-workflow
 ## Rendering workflow
 
-Basic workflow with %AbstractShaderProgram subclasses is: instance shader
+Basic workflow with AbstractShaderProgram subclasses is: instance shader
 class, configure attribute binding in meshes (see @ref Mesh-configuration "Mesh documentation"
 for more information) and map shader outputs to framebuffer attachments if
 needed (see @ref Framebuffer-usage "Framebuffer documentation" for more
@@ -274,13 +333,13 @@ mesh.draw(shader);
 @endcode
 
 @anchor AbstractShaderProgram-types
-## Mapping between GLSL and %Magnum types
+## Mapping between GLSL and Magnum types
 
 See @ref types for more information, only types with GLSL equivalent can be used
 (and their super- or subclasses with the same size and underlying type). See
 also @ref Attribute::DataType enum for additional type options.
 
-@requires_gl30 %Extension @extension{EXT,gpu_shader4} is required when using
+@requires_gl30 Extension @extension{EXT,gpu_shader4} is required when using
     integer attributes (i.e. @ref Magnum::UnsignedInt "UnsignedInt",
     @ref Magnum::Int "Int", @ref Magnum::Vector2ui "Vector2ui",
     @ref Magnum::Vector2i "Vector2i", @ref Magnum::Vector3ui "Vector3ui",
@@ -288,7 +347,7 @@ also @ref Attribute::DataType enum for additional type options.
     @ref Magnum::Vector4i "Vector4i") or unsigned integer uniforms (i.e.
     @ref Magnum::UnsignedInt "UnsignedInt", @ref Magnum::Vector2ui "Vector2ui",
     @ref Magnum::Vector3ui "Vector3ui" and @ref Magnum::Vector4ui "Vector4ui").
-@requires_gl40 %Extension @extension{ARB,gpu_shader_fp64} is required when
+@requires_gl40 Extension @extension{ARB,gpu_shader_fp64} is required when
     using double uniforms (i.e. @ref Magnum::Double "Double",
     @ref Magnum::Vector2d "Vector2d", @ref Magnum::Vector3d "Vector3d",
     @ref Magnum::Vector4d "Vector4d", @ref Magnum::Matrix2x2d "Matrix2x2d",
@@ -296,7 +355,7 @@ also @ref Attribute::DataType enum for additional type options.
     @ref Magnum::Matrix2x3d "Matrix2x3d", @ref Magnum::Matrix3x2d "Matrix3x2d",
     @ref Magnum::Matrix2x4d "Matrix2x4d", @ref Magnum::Matrix4x2d "Matrix4x2d",
     @ref Magnum::Matrix3x4d "Matrix3x4d" and @ref Magnum::Matrix4x3d "Matrix4x3d").
-@requires_gl41 %Extension @extension{ARB,vertex_attrib_64bit} is required when
+@requires_gl41 Extension @extension{ARB,vertex_attrib_64bit} is required when
     using double attributes (i.e. @ref Magnum::Double "Double",
     @ref Magnum::Vector2d "Vector2d", @ref Magnum::Vector3d "Vector3d",
     @ref Magnum::Vector4d "Vector4d", @ref Magnum::Matrix2x2d "Matrix2x2d",
@@ -315,7 +374,7 @@ also @ref Attribute::DataType enum for additional type options.
 @anchor AbstractShaderProgram-performance-optimization
 ## Performance optimizations
 
-%Shader limits (such as @ref maxVertexAttributes()) are cached, so repeated
+Shader limits (such as @ref maxVertexAttributes()) are cached, so repeated
 queries don't result in repeated @fn_gl{Get} calls.
 
 If extension @extension{ARB,separate_shader_objects} (part of OpenGL 4.1),
@@ -333,12 +392,29 @@ comes in handy.
 @todo `GL_NUM_{PROGRAM,SHADER}_BINARY_FORMATS` + `GL_{PROGRAM,SHADER}_BINARY_FORMATS` (vector), (@extension{ARB,ES2_compatibility})
  */
 class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
-    friend class Mesh;
-    friend class MeshView;
-    friend struct Implementation::ShaderProgramState;
+    friend Mesh;
+    friend MeshView;
+    friend TransformFeedback;
+    friend Implementation::ShaderProgramState;
 
     public:
-        template<UnsignedInt, class> class Attribute;
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Buffer mode for transform feedback
+         *
+         * @see @ref setTransformFeedbackOutputs()
+         * @requires_gl30 Extension @extension{EXT,transform_feedback}
+         * @requires_gles30 Transform feedback is not available in OpenGL ES
+         *      2.0
+         */
+        enum class TransformFeedbackBufferMode: GLenum {
+            /** Attributes will be interleaved at one buffer binding point */
+            InterleavedAttributes = GL_INTERLEAVED_ATTRIBS,
+
+            /** Each attribute will be put into separate buffer binding point */
+            SeparateAttributes = GL_SEPARATE_ATTRIBS
+        };
+        #endif
 
         /**
          * @brief Max supported vertex attribute count
@@ -346,8 +422,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls.
          * @see @ref Mesh::maxVertexAttributes(),
-         *      @ref AbstractShaderProgram::Attribute, @fn_gl{Get} with
-         *      @def_gl{MAX_VERTEX_ATTRIBS}
+         *      @ref Attribute, @fn_gl{Get} with @def_gl{MAX_VERTEX_ATTRIBS}
          */
         static Int maxVertexAttributes();
 
@@ -466,7 +541,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * OpenGL calls. If extension @extension{EXT,gpu_shader4} (part of
          * OpenGL 3.0) is not available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MIN_PROGRAM_TEXEL_OFFSET}
-         * @requires_gles30 %Texture lookup with offset is not available in
+         * @requires_gles30 Texture lookup with offset is not available in
          *      OpenGL ES 2.0
          */
         static Int minTexelOffset();
@@ -478,7 +553,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * OpenGL calls. If extension @extension{EXT,gpu_shader4} (part of
          * OpenGL 3.0) is not available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_PROGRAM_TEXEL_OFFSET}
-         * @requires_gles30 %Texture lookup with offset is not available in
+         * @requires_gles30 Texture lookup with offset is not available in
          *      OpenGL ES 2.0
          */
         static Int maxTexelOffset();
@@ -516,7 +591,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         GLuint id() const { return _id; }
 
         /**
-         * @brief %Shader program label
+         * @brief Shader program label
          *
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls. If OpenGL 4.3 is not supported and neither
@@ -545,7 +620,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
 
         /** @overload */
         template<std::size_t size> AbstractShaderProgram& setLabel(const char (&label)[size]) {
-            return setLabelInternal(label);
+            return setLabelInternal({label, size - 1});
         }
 
         /**
@@ -588,7 +663,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          *
          * Initially disabled.
          * @see @fn_gl{ProgramParameter} with @def_gl{PROGRAM_BINARY_RETRIEVABLE_HINT}
-         * @requires_gl41 %Extension @extension{ARB,get_program_binary}
+         * @requires_gl41 Extension @extension{ARB,get_program_binary}
          * @requires_gles30 Always allowed in OpenGL ES 2.0.
          */
         void setRetrievableBinary(bool enabled) {
@@ -601,8 +676,8 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          *
          * Initially disabled.
          * @see @fn_gl{ProgramParameter} with @def_gl{PROGRAM_SEPARABLE}
-         * @requires_gl41 %Extension @extension{ARB,separate_shader_objects}
-         * @requires_es_extension %Extension @es_extension{EXT,separate_shader_objects}
+         * @requires_gl41 Extension @extension{ARB,separate_shader_objects}
+         * @requires_es_extension Extension @es_extension{EXT,separate_shader_objects}
          */
         void setSeparable(bool enabled) {
             /** @todo Remove when extension wrangler is available for ES */
@@ -632,7 +707,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         /**
          * @brief Bind attribute to given location
          * @param location      Location
-         * @param name          %Attribute name
+         * @param name          Attribute name
          *
          * Binds attribute to location which is used later for binding vertex
          * buffers.
@@ -648,7 +723,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
 
         /** @overload */
         template<std::size_t size> void bindAttributeLocation(UnsignedInt location, const char(&name)[size]) {
-            bindAttributeLocationInternal(location, name);
+            bindAttributeLocationInternal(location, {name, size - 1});
         }
 
         #ifndef MAGNUM_TARGET_GLES
@@ -666,7 +741,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          *      explicitly in the shader instead of using this function. See
          *      @ref AbstractShaderProgram-attribute-location "class documentation"
          *      for more information.
-         * @requires_gl33 %Extension @extension{ARB,blend_func_extended}
+         * @requires_gl33 Extension @extension{ARB,blend_func_extended}
          * @requires_gl Multiple blend function inputs are not available in
          *      OpenGL ES.
          */
@@ -676,7 +751,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
 
         /** @overload */
         template<std::size_t size> void bindFragmentDataLocationIndexed(UnsignedInt location, UnsignedInt index, const char(&name)[size]) {
-            bindFragmentDataLocationIndexedInternal(location, index, name);
+            bindFragmentDataLocationIndexedInternal(location, index, {name, size - 1});
         }
 
         /**
@@ -691,7 +766,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          *      explicitly in the shader instead of using this function. See
          *      @ref AbstractShaderProgram-attribute-location "class documentation"
          *      for more information.
-         * @requires_gl30 %Extension @extension{EXT,gpu_shader4}
+         * @requires_gl30 Extension @extension{EXT,gpu_shader4}
          * @requires_gl Use explicit location specification in OpenGL ES 3.0
          *      and `gl_FragData[n]` provided by @es_extension2{NV,draw_buffers,GL_NV_draw_buffers}
          *      in OpenGL ES 2.0.
@@ -703,8 +778,41 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         /** @overload */
         template<std::size_t size> void bindFragmentDataLocation(UnsignedInt location, const char(&name)[size]) {
             /* Not using const char* parameter, because this way it avoids most accidents with non-zero-terminated strings */
-            bindFragmentDataLocationInternal(location, name);
+            bindFragmentDataLocationInternal(location, {name, size - 1});
         }
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Specify shader outputs to be recorded in transform feedback
+         * @param outputs       Names of output variables
+         * @param bufferMode    Buffer mode
+         *
+         * Binds given output variables from vertex, geometry or tessellation
+         * shader to transform feedback buffer binding points. If
+         * @ref TransformFeedbackBufferMode::SeparateAttributes is used, each
+         * output is bound to separate binding point. If
+         * @ref TransformFeedbackBufferMode::InterleavedAttributes is used, the
+         * outputs are interleaved into single buffer binding point. In this
+         * case, special output name `gl_NextBuffer` causes the following
+         * output to be recorded into next buffer binding point and
+         * `gl_SkipComponents#` causes the transform feedback to offset the
+         * following output variable by `#` components.
+         * @see @fn_gl{TransformFeedbackVaryings}
+         * @deprecated_gl Preferred usage is to specify transform feedback
+         *      outputs explicitly in the shader instead of using this
+         *      function. See @ref AbstractShaderProgram-transform-feedback "class documentation"
+         *      for more information.
+         * @requires_gl30 Extension @extension{EXT,transform_feedback}
+         * @requires_gl40 Extension @extension{ARB,transform_feedback3} for
+         *      using `gl_NextBuffer` or `gl_SkipComponents#` names in
+         *      @p outputs array
+         * @requires_gles30 Transform feedback is not available in OpenGL ES
+         *      2.0
+         * @requires_gl Special output names `gl_NextBuffer` and
+         *      `gl_SkipComponents#` are not available in OpenGL ES
+         */
+        void setTransformFeedbackOutputs(std::initializer_list<std::string> outputs, TransformFeedbackBufferMode bufferMode);
         #endif
 
         /**
@@ -736,7 +844,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
 
         /** @overload */
         template<std::size_t size> Int uniformLocation(const char(&name)[size]) {
-            return uniformLocationInternal(name);
+            return uniformLocationInternal({name, size - 1});
         }
 
         /**
@@ -803,7 +911,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         #ifndef MAGNUM_TARGET_GLES2
         /**
          * @copydoc setUniform(Int, UnsignedInt, const Float*)
-         * @requires_gl30 %Extension @extension{EXT,gpu_shader4}
+         * @requires_gl30 Extension @extension{EXT,gpu_shader4}
          * @requires_gles30 Only signed integers are available in OpenGL ES 2.0.
          */
         void setUniform(Int location, UnsignedInt count, const UnsignedInt* values);
@@ -815,7 +923,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         #ifndef MAGNUM_TARGET_GLES
         /**
          * @copydoc setUniform(Int, UnsignedInt, const Float*)
-         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
+         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
         void setUniform(Int location, UnsignedInt count, const Double* values);
@@ -845,7 +953,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         #ifndef MAGNUM_TARGET_GLES
         /**
          * @copydoc setUniform(Int, UnsignedInt, const Float*)
-         * @requires_gl40 %Extension @extension{ARB,gpu_shader_fp64}
+         * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES.
          */
         void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<2, 2, Double>* values);
@@ -1021,612 +1129,6 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
 
         GLuint _id;
 };
-
-/**
-@brief Base struct for attribute location and type
-
-Template parameter @p location is vertex attribute location, number between `0`
-and @ref maxVertexAttributes(). To ensure compatibility, you should always have
-vertex attribute with location `0`.
-
-Template parameter @p T is the type which is used for shader attribute, e.g.
-@ref Vector4i for `ivec4`. DataType is type of passed data when adding vertex
-buffers to mesh. By default it is the same as type used in shader (e.g.
-@ref DataType::Int for @ref Vector4i). It's also possible to pass integer data
-to floating-point shader inputs. In this case you may want to normalize the
-values (e.g. color components from 0-255 to 0.0f - 1.0f) -- see @ref DataOption::Normalized.
-
-Only some types are allowed as attribute types, see @ref AbstractShaderProgram-types
-for more information.
-
-See @ref AbstractShaderProgram-subclassing for example usage in shaders and
-@ref Mesh-configuration for example usage when adding vertex buffers to mesh.
-*/
-template<UnsignedInt location, class T> class AbstractShaderProgram::Attribute {
-    public:
-        enum: UnsignedInt {
-            Location = location, /**< Location to which the attribute is bound */
-
-            /**
-             * Count of vectors in this type
-             *
-             * @see @ref vectorSize()
-             */
-            VectorCount = Implementation::Attribute<T>::VectorCount
-        };
-
-        /**
-         * @brief Type
-         *
-         * Type used in shader code.
-         * @see @ref ScalarType, @ref DataType
-         */
-        typedef T Type;
-
-        /**
-         * @brief Scalar type
-         *
-         * The underlying scalar type of the attribute.
-         * @see @ref Type, @ref DataType
-         */
-        typedef typename Implementation::Attribute<T>::ScalarType ScalarType;
-
-        /**
-         * @brief Component count
-         *
-         * Count of components passed to the shader. If passing smaller count
-         * of components than corresponding type has, unspecified components
-         * are set to default values (second and third to `0`, fourth to `1`).
-         */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        enum class Components: GLint {
-            /**
-             * Only first component is specified. Second, third and fourth
-             * component are set to `0`, `0`, `1`, respectively. Only for
-             * scalar and vector types, not matrices.
-             */
-            One = 1,
-
-            /**
-             * First two components are specified. Third and fourth component
-             * are set to `0`, `1`, respectively. Only for two, three and
-             * four-component vector types and 2x2, 3x2 and 4x2 matrix types.
-             */
-            Two = 2,
-
-            /**
-             * First three components are specified. Fourth component is set to
-             * `1`. Only for three and four-component vector types, 2x3, 3x3
-             * and 4x3 matrix types.
-             */
-            Three = 3,
-
-            /**
-             * All four components are specified. Only for four-component
-             * vector types and 2x4, 3x4 and 4x4 matrix types.
-             */
-            Four = 4,
-
-            #ifndef MAGNUM_TARGET_GLES
-            /**
-             * Four components with BGRA ordering. Only for four-component
-             * float vector type. Must be used along with @ref DataType::UnsignedByte
-             * and @ref DataOption::Normalized.
-             * @requires_gl32 %Extension @extension{ARB,vertex_array_bgra}
-             * @requires_gl Only RGBA component ordering is supported in OpenGL
-             *      ES.
-             */
-            BGRA = GL_BGRA
-            #endif
-        };
-        #else
-        typedef typename Implementation::Attribute<T>::Components Components;
-        #endif
-
-        /**
-         * @brief Data type
-         *
-         * Type of data passed to shader.
-         * @see @ref Type, @ref DataOptions, @ref Attribute()
-         */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        enum class DataType: GLenum {
-            UnsignedByte = GL_UNSIGNED_BYTE,    /**< Unsigned byte */
-            Byte = GL_BYTE,                     /**< Byte */
-            UnsignedShort = GL_UNSIGNED_SHORT,  /**< Unsigned short */
-            Short = GL_SHORT,                   /**< Short */
-            UnsignedInt = GL_UNSIGNED_INT,      /**< Unsigned int */
-            Int = GL_INT,                       /**< Int */
-
-            /**
-             * Half float. Only for float attribute types.
-             * @requires_gl30 %Extension @extension{ARB,half_float_vertex}
-             * @requires_gles30 %Extension @es_extension{OES,vertex_half_float}
-             *      in OpenGL ES 2.0
-             */
-            HalfFloat = GL_HALF_FLOAT,
-
-            /** Float. Only for float attribute types. */
-            Float = GL_FLOAT,
-
-            #ifndef MAGNUM_TARGET_GLES
-            /**
-             * Double. Only for float and double attribute types.
-             * @requires_gl Only floats are available in OpenGL ES.
-             */
-            Double = GL_DOUBLE,
-
-            /**
-             * Unsigned 10.11.11 packed float. Only for three-component float
-             * vector attribute type.
-             * @requires_gl44 %Extension @extension{ARB,vertex_type_10f_11f_11f_rev}
-             * @requires_gl Packed float attributes are not available in OpenGL
-             *      ES.
-             */
-            UnsignedInt10f11f11fRev = GL_UNSIGNED_INT_10F_11F_11F_REV,
-            #endif
-
-            /* GL_FIXED not supported */
-
-            #ifndef MAGNUM_TARGET_GLES2
-            /**
-             * Unsigned 2.10.10.10 packed integer. Only for four-component
-             * float vector attribute type.
-             * @todo How about (incompatible) @es_extension{OES,vertex_type_10_10_10_2}?
-             * @requires_gl33 %Extension @extension{ARB,vertex_type_2_10_10_10_rev}
-             * @requires_gles30 Packed attributes are not available in OpenGL
-             *      ES 2.0
-             */
-            UnsignedInt2101010Rev = GL_UNSIGNED_INT_2_10_10_10_REV,
-
-            /**
-             * Signed 2.10.10.10 packed integer. Only for four-component float
-             * vector attribute type.
-             * @requires_gl33 %Extension @extension{ARB,vertex_type_2_10_10_10_rev}
-             * @requires_gles30 Packed attributes are not available in OpenGL
-             *      ES 2.0
-             */
-            Int2101010Rev = GL_INT_2_10_10_10_REV
-            #endif
-        };
-        #else
-        typedef typename Implementation::Attribute<T>::DataType DataType;
-        #endif
-
-        /**
-         * @brief Data option
-         * @see @ref DataOptions, @ref Attribute()
-         */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        enum class DataOption: UnsignedByte {
-            /**
-             * Normalize integer components. Only for float attribute types.
-             * Default is to not normalize.
-             */
-            Normalized = 1 << 0
-        };
-        #else
-        typedef typename Implementation::Attribute<T>::DataOption DataOption;
-        #endif
-
-        /**
-         * @brief Data options
-         * @see @ref Attribute()
-         */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        typedef typename Containers::EnumSet<DataOption, UnsignedByte> DataOptions;
-        #else
-        typedef typename Implementation::Attribute<T>::DataOptions DataOptions;
-        #endif
-
-        /**
-         * @brief Constructor
-         * @param components    Component count
-         * @param dataType      Type of passed data. Default is the same as
-         *      type used in shader (e.g. @ref DataType::Int for @ref Vector4i).
-         * @param dataOptions   Data options. Default is no options.
-         */
-        constexpr Attribute(Components components, DataType dataType = Implementation::Attribute<T>::DefaultDataType, DataOptions dataOptions = DataOptions()): _components(components), _dataType(dataType), _dataOptions(dataOptions) {}
-
-        /**
-         * @brief Constructor
-         * @param dataType      Type of passed data. Default is the same as
-         *      type used in shader (e.g. @ref DataType::Int for @ref Vector4i).
-         * @param dataOptions   Data options. Default is no options.
-         *
-         * Component count is set to the same value as in type used in shader
-         * (e.g. @ref Components::Three for @ref Vector3).
-         */
-        constexpr Attribute(DataType dataType = Implementation::Attribute<T>::DefaultDataType, DataOptions dataOptions = DataOptions()): _components(Implementation::Attribute<T>::DefaultComponents), _dataType(dataType), _dataOptions(dataOptions) {}
-
-        /** @brief Component count of passed data */
-        constexpr Components components() const { return _components; }
-
-        /** @brief Type of passed data */
-        constexpr DataType dataType() const { return _dataType; }
-
-        /**
-         * @brief Size of each vector in passed data
-         *
-         * @see @ref VectorCount
-         */
-        UnsignedInt vectorSize() const {
-            return Implementation::Attribute<T>::size(GLint(_components), _dataType);
-        }
-
-        /** @brief Data options */
-        constexpr DataOptions dataOptions() const { return _dataOptions; }
-
-    private:
-        Components _components;
-        DataType _dataType;
-        DataOptions _dataOptions;
-};
-
-#ifdef DOXYGEN_GENERATING_OUTPUT
-/** @debugoperatorclassenum{Magnum::AbstractShaderProgram::Attribute,Magnum::AbstractShaderProgram::Attribute::Components} */
-template<class T> Debug operator<<(Debug debug, AbstractShaderProgram::Attribute<T>::Components);
-
-/** @debugoperatorclassenum{Magnum::AbstractShaderProgram::Attribute,Magnum::AbstractShaderProgram::Attribute::DataType} */
-template<class T> Debug operator<<(Debug debug, AbstractShaderProgram::Attribute<T>::DataType);
-#endif
-
-namespace Implementation {
-
-/* Base for sized attributes */
-template<std::size_t cols, std::size_t rows> struct SizedAttribute;
-
-/* Vector attribute sizes */
-template<std::size_t cols> struct SizedVectorAttribute {
-    enum: UnsignedInt { VectorCount = UnsignedInt(cols) };
-};
-template<> struct SizedAttribute<1, 1>: SizedVectorAttribute<1> {
-    enum class Components: GLint { One = 1 };
-    #if !defined(CORRADE_GCC45_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
-    constexpr static
-    #else
-    static const
-    #endif
-    Components DefaultComponents = Components::One;
-};
-template<> struct SizedAttribute<1, 2>: SizedVectorAttribute<1> {
-    enum class Components: GLint { One = 1, Two = 2 };
-    #if !defined(CORRADE_GCC45_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
-    constexpr static
-    #else
-    static const
-    #endif
-    Components DefaultComponents = Components::Two;
-};
-template<> struct SizedAttribute<1, 3>: SizedVectorAttribute<1> {
-    enum class Components: GLint { One = 1, Two = 2, Three = 3 };
-    #if !defined(CORRADE_GCC45_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
-    constexpr static
-    #else
-    static const
-    #endif
-    Components DefaultComponents = Components::Three;
-};
-template<> struct SizedAttribute<1, 4>: SizedVectorAttribute<1> {
-    enum class Components: GLint { One = 1, Two = 2, Three = 3, Four = 4 };
-    #if !defined(CORRADE_GCC45_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
-    constexpr static
-    #else
-    static const
-    #endif
-    Components DefaultComponents = Components::Four;
-};
-Debug MAGNUM_EXPORT operator<<(Debug debug, SizedAttribute<1, 1>::Components value);
-Debug MAGNUM_EXPORT operator<<(Debug debug, SizedAttribute<1, 2>::Components value);
-Debug MAGNUM_EXPORT operator<<(Debug debug, SizedAttribute<1, 3>::Components value);
-Debug MAGNUM_EXPORT operator<<(Debug debug, SizedAttribute<1, 4>::Components value);
-
-/* Matrix attribute sizes */
-template<std::size_t rows> struct SizedMatrixAttribute;
-template<> struct SizedMatrixAttribute<2> {
-    enum class Components: GLint { Two   = 2 };
-    #if !defined(CORRADE_GCC45_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
-    constexpr static
-    #else
-    static const
-    #endif
-    Components DefaultComponents = Components::Two;
-};
-template<> struct SizedMatrixAttribute<3> {
-    enum class Components: GLint { Three = 3 };
-    #if !defined(CORRADE_GCC45_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
-    constexpr static
-    #else
-    static const
-    #endif
-    Components DefaultComponents = Components::Three;
-};
-template<> struct SizedMatrixAttribute<4> {
-    enum class Components: GLint { Four  = 4 };
-    #if !defined(CORRADE_GCC45_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
-    constexpr static
-    #else
-    static const
-    #endif
-    Components DefaultComponents = Components::Four;
-};
-Debug MAGNUM_EXPORT operator<<(Debug debug, SizedMatrixAttribute<2>::Components value);
-Debug MAGNUM_EXPORT operator<<(Debug debug, SizedMatrixAttribute<3>::Components value);
-Debug MAGNUM_EXPORT operator<<(Debug debug, SizedMatrixAttribute<4>::Components value);
-template<> struct SizedAttribute<2, 2>: SizedVectorAttribute<2>, SizedMatrixAttribute<2> {};
-template<> struct SizedAttribute<3, 3>: SizedVectorAttribute<3>, SizedMatrixAttribute<3> {};
-template<> struct SizedAttribute<4, 4>: SizedVectorAttribute<4>, SizedMatrixAttribute<4> {};
-#ifndef MAGNUM_TARGET_GLES2
-template<> struct SizedAttribute<2, 3>: SizedVectorAttribute<2>, SizedMatrixAttribute<3> {};
-template<> struct SizedAttribute<3, 2>: SizedVectorAttribute<3>, SizedMatrixAttribute<2> {};
-template<> struct SizedAttribute<2, 4>: SizedVectorAttribute<2>, SizedMatrixAttribute<4> {};
-template<> struct SizedAttribute<4, 2>: SizedVectorAttribute<4>, SizedMatrixAttribute<2> {};
-template<> struct SizedAttribute<3, 4>: SizedVectorAttribute<3>, SizedMatrixAttribute<4> {};
-template<> struct SizedAttribute<4, 3>: SizedVectorAttribute<4>, SizedMatrixAttribute<3> {};
-#endif
-
-/* Base for attributes */
-template<class> struct Attribute;
-
-/* Base for float attributes */
-struct FloatAttribute {
-    typedef Float ScalarType;
-
-    enum class DataType: GLenum {
-        UnsignedByte = GL_UNSIGNED_BYTE,
-        Byte = GL_BYTE,
-        UnsignedShort = GL_UNSIGNED_SHORT,
-        Short = GL_SHORT,
-        UnsignedInt = GL_UNSIGNED_INT,
-        Int = GL_INT,
-        #ifndef MAGNUM_TARGET_GLES2
-        HalfFloat = GL_HALF_FLOAT,
-        #else
-        HalfFloat = GL_HALF_FLOAT_OES,
-        #endif
-        Float = GL_FLOAT
-
-        #ifndef MAGNUM_TARGET_GLES
-        ,
-        Double = GL_DOUBLE
-        #endif
-    };
-    #if !defined(CORRADE_GCC45_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
-    constexpr static
-    #else
-    static const
-    #endif
-    DataType DefaultDataType = DataType::Float;
-
-    enum class DataOption: UnsignedByte {
-        Normalized = 1 << 0
-    };
-    typedef Containers::EnumSet<DataOption, UnsignedByte> DataOptions;
-
-    static UnsignedInt MAGNUM_EXPORT size(GLint components, DataType dataType);
-};
-
-CORRADE_ENUMSET_OPERATORS(FloatAttribute::DataOptions)
-
-Debug MAGNUM_EXPORT operator<<(Debug debug, FloatAttribute::DataType value);
-
-#ifndef MAGNUM_TARGET_GLES2
-/* Base for int attributes */
-struct IntAttribute {
-    typedef Int ScalarType;
-
-    enum class DataType: GLenum {
-        UnsignedByte = GL_UNSIGNED_BYTE,
-        Byte = GL_BYTE,
-        UnsignedShort = GL_UNSIGNED_SHORT,
-        Short = GL_SHORT,
-        UnsignedInt = GL_UNSIGNED_INT,
-        Int = GL_INT
-    };
-    #if !defined(CORRADE_GCC45_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
-    constexpr static
-    #else
-    static const
-    #endif
-    DataType DefaultDataType = DataType::Int;
-
-    enum class DataOption: UnsignedByte {};
-    typedef Containers::EnumSet<DataOption, UnsignedByte> DataOptions;
-
-    static UnsignedInt MAGNUM_EXPORT size(GLint components, DataType dataType);
-};
-
-CORRADE_ENUMSET_OPERATORS(IntAttribute::DataOptions)
-
-Debug MAGNUM_EXPORT operator<<(Debug debug, IntAttribute::DataType value);
-
-/* Base for unsigned int attributes */
-struct UnsignedIntAttribute {
-    typedef UnsignedInt ScalarType;
-
-    typedef IntAttribute::DataType DataType;
-    #if !defined(CORRADE_GCC45_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
-    constexpr static
-    #else
-    static const
-    #endif
-    DataType DefaultDataType = DataType::UnsignedInt;
-
-    typedef IntAttribute::DataOption DataOption;
-    typedef IntAttribute::DataOptions DataOptions;
-
-    static UnsignedInt size(GLint components, DataType dataType) {
-        return IntAttribute::size(components, dataType);
-    }
-};
-#endif
-
-#ifndef MAGNUM_TARGET_GLES
-/* Base for double attributes */
-struct DoubleAttribute {
-    typedef Double ScalarType;
-
-    enum class DataType: GLenum {
-        Double = GL_DOUBLE
-    };
-    #if !defined(CORRADE_GCC45_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
-    constexpr static
-    #else
-    static const
-    #endif
-    DataType DefaultDataType = DataType::Double;
-
-    typedef IntAttribute::DataOption DataOption;
-    typedef IntAttribute::DataOptions DataOptions;
-
-    static UnsignedInt MAGNUM_EXPORT size(GLint components, DataType dataType);
-};
-
-Debug MAGNUM_EXPORT operator<<(Debug debug, DoubleAttribute::DataType value);
-#endif
-
-/* Floating-point three-component vector has additional data type compared to
-   classic floats */
-template<> struct Attribute<Math::Vector<3, Float>>: SizedAttribute<1, 3> {
-    typedef Float ScalarType;
-
-    enum class DataType: GLenum {
-        UnsignedByte = GL_UNSIGNED_BYTE,
-        Byte = GL_BYTE,
-        UnsignedShort = GL_UNSIGNED_SHORT,
-        Short = GL_SHORT,
-        UnsignedInt = GL_UNSIGNED_INT,
-        Int = GL_INT,
-        #ifndef MAGNUM_TARGET_GLES2
-        HalfFloat = GL_HALF_FLOAT,
-        #else
-        HalfFloat = GL_HALF_FLOAT_OES,
-        #endif
-        Float = GL_FLOAT
-
-        #ifndef MAGNUM_TARGET_GLES
-        ,
-        Double = GL_DOUBLE,
-        UnsignedInt10f11f11fRev = GL_UNSIGNED_INT_10F_11F_11F_REV
-        #endif
-    };
-    #if !defined(CORRADE_GCC45_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
-    constexpr static
-    #else
-    static const
-    #endif
-    DataType DefaultDataType = DataType::Float;
-
-    typedef FloatAttribute::DataOption DataOption;
-    typedef FloatAttribute::DataOptions DataOptions;
-
-    static UnsignedInt MAGNUM_EXPORT size(GLint components, DataType dataType);
-};
-
-Debug MAGNUM_EXPORT operator<<(Debug debug, Attribute<Math::Vector<3, Float>>::DataType value);
-
-/* Floating-point four-component vector is absolutely special case */
-template<> struct Attribute<Math::Vector<4, Float>> {
-    typedef Float ScalarType;
-
-    enum class Components: GLint {
-        One = 1,
-        Two = 2,
-        Three = 3,
-        Four = 4
-        #ifndef MAGNUM_TARGET_GLES
-        ,
-        BGRA = GL_BGRA
-        #endif
-    };
-    #if !defined(CORRADE_GCC45_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
-    constexpr static
-    #else
-    static const
-    #endif
-    Components DefaultComponents = Components::Four;
-
-    enum class DataType: GLenum {
-        UnsignedByte = GL_UNSIGNED_BYTE,
-        Byte = GL_BYTE,
-        UnsignedShort = GL_UNSIGNED_SHORT,
-        Short = GL_SHORT,
-        UnsignedInt = GL_UNSIGNED_INT,
-        Int = GL_INT,
-        #ifndef MAGNUM_TARGET_GLES2
-        HalfFloat = GL_HALF_FLOAT,
-        #else
-        HalfFloat = GL_HALF_FLOAT_OES,
-        #endif
-        Float = GL_FLOAT
-        #ifndef MAGNUM_TARGET_GLES
-        ,
-        Double = GL_DOUBLE
-        #endif
-        #ifndef MAGNUM_TARGET_GLES2
-        ,
-        UnsignedInt2101010Rev = GL_UNSIGNED_INT_2_10_10_10_REV,
-        Int2101010Rev = GL_INT_2_10_10_10_REV
-        #endif
-    };
-    #if !defined(CORRADE_GCC45_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
-    constexpr static
-    #else
-    static const
-    #endif
-    DataType DefaultDataType = DataType::Float;
-
-    typedef FloatAttribute::DataOption DataOption;
-    typedef FloatAttribute::DataOptions DataOptions;
-
-    enum: UnsignedInt { VectorCount = 1 };
-
-    static UnsignedInt MAGNUM_EXPORT size(GLint components, DataType dataType);
-};
-
-Debug MAGNUM_EXPORT operator<<(Debug debug, Attribute<Math::Vector<4, Float>>::Components value);
-Debug MAGNUM_EXPORT operator<<(Debug debug, Attribute<Math::Vector<4, Float>>::DataType value);
-
-/* Common float, int, unsigned int and double scalar attributes */
-template<> struct Attribute<Float>: FloatAttribute, SizedAttribute<1, 1> {};
-#ifndef MAGNUM_TARGET_GLES2
-template<> struct Attribute<Int>: IntAttribute, SizedAttribute<1, 1> {};
-template<> struct Attribute<UnsignedInt>: UnsignedIntAttribute, SizedAttribute<1, 1> {};
-#ifndef MAGNUM_TARGET_GLES
-template<> struct Attribute<Double>: DoubleAttribute, SizedAttribute<1, 1> {};
-#endif
-#endif
-
-/* Common float, int, unsigned int and double vector attributes */
-template<std::size_t size_> struct Attribute<Math::Vector<size_, Float>>: FloatAttribute, SizedAttribute<1, size_> {};
-#ifndef MAGNUM_TARGET_GLES2
-template<std::size_t size_> struct Attribute<Math::Vector<size_, Int>>: IntAttribute, SizedAttribute<1, size_> {};
-template<std::size_t size_> struct Attribute<Math::Vector<size_, UnsignedInt>>: UnsignedIntAttribute, SizedAttribute<1, size_> {};
-#ifndef MAGNUM_TARGET_GLES
-template<std::size_t size_> struct Attribute<Math::Vector<size_, Double>>: DoubleAttribute, SizedAttribute<1, size_> {};
-#endif
-#endif
-template<class T> struct Attribute<Math::Vector2<T>>: Attribute<Math::Vector<2, T>> {};
-template<class T> struct Attribute<Math::Vector3<T>>: Attribute<Math::Vector<3, T>> {};
-template<class T> struct Attribute<Math::Vector4<T>>: Attribute<Math::Vector<4, T>> {};
-template<class T> struct Attribute<BasicColor3<T>>: Attribute<Math::Vector3<T>> {};
-template<class T> struct Attribute<BasicColor4<T>>: Attribute<Math::Vector4<T>> {};
-
-/* Common float and double rectangular matrix attributes */
-template<std::size_t cols, std::size_t rows> struct Attribute<Math::RectangularMatrix<cols, rows, Float>>: FloatAttribute, SizedAttribute<cols, rows> {};
-#ifndef MAGNUM_TARGET_GLES
-template<std::size_t cols, std::size_t rows> struct Attribute<Math::RectangularMatrix<cols, rows, Double>>: DoubleAttribute, SizedAttribute<cols, rows> {};
-#endif
-
-/* Common float and double square matrix attributes */
-template<std::size_t size_> struct Attribute<Math::Matrix<size_, Float>>: Attribute<Math::RectangularMatrix<size_, size_, Float>> {};
-#ifndef MAGNUM_TARGET_GLES
-template<std::size_t size_> struct Attribute<Math::Matrix<size_, Double>>: Attribute<Math::RectangularMatrix<size_, size_, Double>> {};
-#endif
-template<class T> struct Attribute<Math::Matrix3<T>>: Attribute<Math::Matrix<3, T>> {};
-template<class T> struct Attribute<Math::Matrix4<T>>: Attribute<Math::Matrix<4, T>> {};
-
-}
 
 }
 

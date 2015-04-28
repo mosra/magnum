@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -71,7 +71,7 @@ class MAGNUM_AUDIO_EXPORT Context {
         std::string vendorString() const { return alGetString(AL_VENDOR); }
 
         /**
-         * @brief %Renderer string
+         * @brief Renderer string
          *
          * @see @ref vendorString(), @fn_al{GetString} with @def_al{RENDERER}
          */

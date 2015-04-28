@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include "Magnum/AbstractShaderProgram.h"
 #include "Magnum/Buffer.h"
 #include "Magnum/Color.h"
 #include "Magnum/ColorFormat.h"
@@ -41,98 +42,97 @@ namespace Magnum { namespace Test {
 
 /* Tests also MeshView class. */
 
-class MeshGLTest: public AbstractOpenGLTester {
-    public:
-        explicit MeshGLTest();
+struct MeshGLTest: AbstractOpenGLTester {
+    explicit MeshGLTest();
 
-        void construct();
-        void constructCopy();
-        void constructMove();
+    void construct();
+    void constructCopy();
+    void constructMove();
 
-        void label();
+    void label();
 
-        #ifndef MAGNUM_TARGET_GLES2
-        void addVertexBufferUnsignedInt();
-        void addVertexBufferInt();
-        #endif
-        void addVertexBufferFloat();
-        #ifndef MAGNUM_TARGET_GLES
-        void addVertexBufferDouble();
-        #endif
-        #ifndef MAGNUM_TARGET_GLES2
-        void addVertexBufferVectorNui();
-        void addVertexBufferVectorNi();
-        #endif
-        void addVertexBufferVectorN();
-        #ifndef MAGNUM_TARGET_GLES
-        void addVertexBufferVectorNd();
-        #endif
-        void addVertexBufferMatrixNxN();
-        #ifndef MAGNUM_TARGET_GLES
-        void addVertexBufferMatrixNxNd();
-        #endif
-        #ifndef MAGNUM_TARGET_GLES2
-        void addVertexBufferMatrixMxN();
-        #endif
-        #ifndef MAGNUM_TARGET_GLES
-        void addVertexBufferMatrixMxNd();
-        #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    void addVertexBufferUnsignedInt();
+    void addVertexBufferInt();
+    #endif
+    void addVertexBufferFloat();
+    #ifndef MAGNUM_TARGET_GLES
+    void addVertexBufferDouble();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    void addVertexBufferVectorNui();
+    void addVertexBufferVectorNi();
+    #endif
+    void addVertexBufferVectorN();
+    #ifndef MAGNUM_TARGET_GLES
+    void addVertexBufferVectorNd();
+    #endif
+    void addVertexBufferMatrixNxN();
+    #ifndef MAGNUM_TARGET_GLES
+    void addVertexBufferMatrixNxNd();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    void addVertexBufferMatrixMxN();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES
+    void addVertexBufferMatrixMxNd();
+    #endif
 
-        #ifndef MAGNUM_TARGET_GLES2
-        void addVertexBufferUnsignedIntWithUnsignedShort();
-        void addVertexBufferUnsignedIntWithShort();
-        void addVertexBufferIntWithUnsignedShort();
-        void addVertexBufferIntWithShort();
-        #endif
-        /* Other Float types omitted (covered by addVertexBufferNormalized()) */
-        void addVertexBufferFloatWithHalfFloat();
-        #ifndef MAGNUM_TARGET_GLES
-        void addVertexBufferFloatWithDouble();
-        void addVertexBufferVector3WithUnsignedInt10f11f11fRev();
-        #endif
-        #ifndef MAGNUM_TARGET_GLES2
-        void addVertexBufferVector4WithUnsignedInt2101010Rev();
-        void addVertexBufferVector4WithInt2101010Rev();
-        #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    void addVertexBufferUnsignedIntWithUnsignedShort();
+    void addVertexBufferUnsignedIntWithShort();
+    void addVertexBufferIntWithUnsignedShort();
+    void addVertexBufferIntWithShort();
+    #endif
+    /* Other Float types omitted (covered by addVertexBufferNormalized()) */
+    void addVertexBufferFloatWithHalfFloat();
+    #ifndef MAGNUM_TARGET_GLES
+    void addVertexBufferFloatWithDouble();
+    void addVertexBufferVector3WithUnsignedInt10f11f11fRev();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    void addVertexBufferVector4WithUnsignedInt2101010Rev();
+    void addVertexBufferVector4WithInt2101010Rev();
+    #endif
 
-        void addVertexBufferLessVectorComponents();
-        void addVertexBufferNormalized();
-        #ifndef MAGNUM_TARGET_GLES
-        void addVertexBufferBGRA();
-        #endif
+    void addVertexBufferLessVectorComponents();
+    void addVertexBufferNormalized();
+    #ifndef MAGNUM_TARGET_GLES
+    void addVertexBufferBGRA();
+    #endif
 
-        void addVertexBufferMultiple();
-        void addVertexBufferMultipleGaps();
+    void addVertexBufferMultiple();
+    void addVertexBufferMultipleGaps();
 
-        void setIndexBuffer();
-        void setIndexBufferRange();
-        void setIndexBufferUnsignedInt();
+    void setIndexBuffer();
+    void setIndexBufferRange();
+    void setIndexBufferUnsignedInt();
 
-        #ifndef MAGNUM_TARGET_GLES
-        void setBaseVertex();
-        #endif
-        void setInstanceCount();
-        void setInstanceCountIndexed();
-        #ifndef MAGNUM_TARGET_GLES
-        void setInstanceCountBaseInstance();
-        void setInstanceCountBaseInstanceIndexed();
-        void setInstanceCountBaseVertex();
-        void setInstanceCountBaseVertexBaseInstance();
-        #endif
+    #ifndef MAGNUM_TARGET_GLES
+    void setBaseVertex();
+    #endif
+    void setInstanceCount();
+    void setInstanceCountIndexed();
+    #ifndef MAGNUM_TARGET_GLES
+    void setInstanceCountBaseInstance();
+    void setInstanceCountBaseInstanceIndexed();
+    void setInstanceCountBaseVertex();
+    void setInstanceCountBaseVertexBaseInstance();
+    #endif
 
-        void addVertexBufferInstancedFloat();
-        #ifndef MAGNUM_TARGET_GLES2
-        void addVertexBufferInstancedInteger();
-        #endif
-        #ifndef MAGNUM_TARGET_GLES
-        void addVertexBufferInstancedDouble();
-        #endif
+    void addVertexBufferInstancedFloat();
+    #ifndef MAGNUM_TARGET_GLES2
+    void addVertexBufferInstancedInteger();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES
+    void addVertexBufferInstancedDouble();
+    #endif
 
-        void multiDraw();
-        void multiDrawIndexed();
-        #ifndef MAGNUM_TARGET_GLES
-        void multiDrawBaseVertex();
-        #endif
+    void multiDraw();
+    void multiDrawIndexed();
+    #ifndef MAGNUM_TARGET_GLES
+    void multiDrawBaseVertex();
+    #endif
 };
 
 MeshGLTest::MeshGLTest() {
@@ -448,7 +448,7 @@ Checker::Checker(AbstractShaderProgram&& shader, RenderbufferFormat format, Mesh
     renderbuffer.setStorage(format, Vector2i(1));
     framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment(0), renderbuffer);
 
-    framebuffer.bind(FramebufferTarget::ReadDraw);
+    framebuffer.bind();
     mesh.setPrimitive(MeshPrimitive::Points)
         .setCount(2);
 
@@ -465,9 +465,7 @@ Checker::Checker(AbstractShaderProgram&& shader, RenderbufferFormat format, Mesh
 }
 
 template<class T> T Checker::get(ColorFormat format, ColorType type) {
-    Image2D image(format, type);
-    framebuffer.read(Vector2i{}, Vector2i(1), image);
-    return image.data<T>()[0];
+    return framebuffer.read({{}, Vector2i{1}}, {format, type}).data<T>()[0];
 }
 #endif
 
@@ -478,7 +476,7 @@ void MeshGLTest::addVertexBufferUnsignedInt() {
         CORRADE_SKIP(Extensions::GL::EXT::gpu_shader4::string() + std::string(" is not available."));
     #endif
 
-    typedef AbstractShaderProgram::Attribute<0, UnsignedInt> Attribute;
+    typedef Attribute<0, UnsignedInt> Attribute;
 
     constexpr UnsignedInt data[] = { 0, 157, 35681 };
     Buffer buffer;
@@ -503,7 +501,7 @@ void MeshGLTest::addVertexBufferInt() {
         CORRADE_SKIP(Extensions::GL::EXT::gpu_shader4::string() + std::string(" is not available."));
     #endif
 
-    typedef AbstractShaderProgram::Attribute<0, Int> Attribute;
+    typedef Attribute<0, Int> Attribute;
 
     constexpr Int data[] = { 0, 457931, 27530 };
     Buffer buffer;
@@ -524,7 +522,7 @@ void MeshGLTest::addVertexBufferInt() {
 #endif
 
 void MeshGLTest::addVertexBufferFloat() {
-    typedef AbstractShaderProgram::Attribute<0, Float> Attribute;
+    typedef Attribute<0, Float> Attribute;
 
     const Float data[] = { 0.0f, -0.7f, Math::normalize<Float, UnsignedByte>(96) };
     Buffer buffer;
@@ -553,7 +551,7 @@ void MeshGLTest::addVertexBufferDouble() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::vertex_attrib_64bit>())
         CORRADE_SKIP(Extensions::GL::ARB::vertex_attrib_64bit::string() + std::string(" is not available."));
 
-    typedef AbstractShaderProgram::Attribute<0, Double> Attribute;
+    typedef Attribute<0, Double> Attribute;
 
     const Double data[] = { 0.0, -0.7, Math::normalize<Double, UnsignedShort>(45828) };
     Buffer buffer;
@@ -580,7 +578,7 @@ void MeshGLTest::addVertexBufferVectorNui() {
         CORRADE_SKIP(Extensions::GL::EXT::gpu_shader4::string() + std::string(" is not available."));
     #endif
 
-    typedef AbstractShaderProgram::Attribute<0, Vector3ui> Attribute;
+    typedef Attribute<0, Vector3ui> Attribute;
 
     constexpr Vector3ui data[] = { {}, {37448, 547686, 156}, {27592, 157, 25} };
     Buffer buffer;
@@ -605,7 +603,7 @@ void MeshGLTest::addVertexBufferVectorNi() {
         CORRADE_SKIP(Extensions::GL::EXT::gpu_shader4::string() + std::string(" is not available."));
     #endif
 
-    typedef AbstractShaderProgram::Attribute<0, Vector2i> Attribute;
+    typedef Attribute<0, Vector2i> Attribute;
 
     constexpr Vector2i data[] = { {}, {-37448, 547686}, {27592, -157} };
     Buffer buffer;
@@ -626,7 +624,7 @@ void MeshGLTest::addVertexBufferVectorNi() {
 #endif
 
 void MeshGLTest::addVertexBufferVectorN() {
-    typedef AbstractShaderProgram::Attribute<0, Vector3> Attribute;
+    typedef Attribute<0, Vector3> Attribute;
 
     const Vector3 data[] = { {}, {0.0f, -0.9f, 1.0f}, Math::normalize<Vector3>(Color3ub(96, 24, 156)) };
     Buffer buffer;
@@ -655,7 +653,7 @@ void MeshGLTest::addVertexBufferVectorNd() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::vertex_attrib_64bit>())
         CORRADE_SKIP(Extensions::GL::ARB::vertex_attrib_64bit::string() + std::string(" is not available."));
 
-    typedef AbstractShaderProgram::Attribute<0, Vector4d> Attribute;
+    typedef Attribute<0, Vector4d> Attribute;
 
     const Vector4d data[] = {
         {}, {0.0, -0.9, 1.0, 1.25},
@@ -679,7 +677,7 @@ void MeshGLTest::addVertexBufferVectorNd() {
 #endif
 
 void MeshGLTest::addVertexBufferMatrixNxN() {
-    typedef AbstractShaderProgram::Attribute<0, Matrix3x3> Attribute;
+    typedef Attribute<0, Matrix3x3> Attribute;
 
     const Matrix3x3 data[] = {
         {},
@@ -708,7 +706,7 @@ void MeshGLTest::addVertexBufferMatrixNxNd() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::vertex_attrib_64bit>())
         CORRADE_SKIP(Extensions::GL::ARB::vertex_attrib_64bit::string() + std::string(" is not available."));
 
-    typedef AbstractShaderProgram::Attribute<0, Matrix3x3d> Attribute;
+    typedef Attribute<0, Matrix3x3d> Attribute;
 
     const Matrix3x3d data[] = {
         {},
@@ -741,7 +739,7 @@ void MeshGLTest::addVertexBufferMatrixNxNd() {
 
 #ifndef MAGNUM_TARGET_GLES2
 void MeshGLTest::addVertexBufferMatrixMxN() {
-    typedef AbstractShaderProgram::Attribute<0, Matrix3x4> Attribute;
+    typedef Attribute<0, Matrix3x4> Attribute;
 
     const Matrix3x4 data[] = {
         {},
@@ -771,7 +769,7 @@ void MeshGLTest::addVertexBufferMatrixMxNd() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::vertex_attrib_64bit>())
         CORRADE_SKIP(Extensions::GL::ARB::vertex_attrib_64bit::string() + std::string(" is not available."));
 
-    typedef AbstractShaderProgram::Attribute<0, Matrix3x4d> Attribute;
+    typedef Attribute<0, Matrix3x4d> Attribute;
 
     const Matrix3x4d data[] = {
         {},
@@ -809,7 +807,7 @@ void MeshGLTest::addVertexBufferUnsignedIntWithUnsignedShort() {
         CORRADE_SKIP(Extensions::GL::EXT::gpu_shader4::string() + std::string(" is not available."));
     #endif
 
-    typedef AbstractShaderProgram::Attribute<0, UnsignedInt> Attribute;
+    typedef Attribute<0, UnsignedInt> Attribute;
 
     constexpr UnsignedShort data[] = { 0, 49563, 16583 };
     Buffer buffer;
@@ -834,7 +832,7 @@ void MeshGLTest::addVertexBufferUnsignedIntWithShort() {
         CORRADE_SKIP(Extensions::GL::EXT::gpu_shader4::string() + std::string(" is not available."));
     #endif
 
-    typedef AbstractShaderProgram::Attribute<0, UnsignedInt> Attribute;
+    typedef Attribute<0, UnsignedInt> Attribute;
 
     constexpr Short data[] = { 0, 24563, 16583 };
     Buffer buffer;
@@ -859,7 +857,7 @@ void MeshGLTest::addVertexBufferIntWithUnsignedShort() {
         CORRADE_SKIP(Extensions::GL::EXT::gpu_shader4::string() + std::string(" is not available."));
     #endif
 
-    typedef AbstractShaderProgram::Attribute<0, Int> Attribute;
+    typedef Attribute<0, Int> Attribute;
 
     constexpr UnsignedShort data[] = { 0, 49563, 16583 };
     Buffer buffer;
@@ -884,7 +882,7 @@ void MeshGLTest::addVertexBufferIntWithShort() {
         CORRADE_SKIP(Extensions::GL::EXT::gpu_shader4::string() + std::string(" is not available."));
     #endif
 
-    typedef AbstractShaderProgram::Attribute<0, Int> Attribute;
+    typedef Attribute<0, Int> Attribute;
 
     constexpr Short data[] = { 0, 24563, -16583 };
     Buffer buffer;
@@ -913,7 +911,7 @@ void MeshGLTest::addVertexBufferFloatWithHalfFloat() {
         CORRADE_SKIP(Extensions::GL::OES::vertex_half_float::string() + std::string(" is not supported."));
     #endif
 
-    typedef AbstractShaderProgram::Attribute<0, Float> Attribute;
+    typedef Attribute<0, Float> Attribute;
 
     Buffer buffer;
     buffer.setData({nullptr, 6}, BufferUsage::StaticDraw);
@@ -928,7 +926,7 @@ void MeshGLTest::addVertexBufferFloatWithHalfFloat() {
 
 #ifndef MAGNUM_TARGET_GLES
 void MeshGLTest::addVertexBufferFloatWithDouble() {
-    typedef AbstractShaderProgram::Attribute<0, Float> Attribute;
+    typedef Attribute<0, Float> Attribute;
 
     const Double data[] = { 0.0, -0.7, Math::normalize<Double, UnsignedByte>(186) };
     Buffer buffer;
@@ -953,7 +951,7 @@ void MeshGLTest::addVertexBufferVector3WithUnsignedInt10f11f11fRev() {
         CORRADE_SKIP(Extensions::GL::ARB::vertex_type_10f_11f_11f_rev::string() + std::string(" is not available."));
     #endif
 
-    typedef AbstractShaderProgram::Attribute<0, Vector3> Attribute;
+    typedef Attribute<0, Vector3> Attribute;
 
     Buffer buffer;
     buffer.setData({nullptr, 12}, BufferUsage::StaticDraw);
@@ -974,7 +972,7 @@ void MeshGLTest::addVertexBufferVector4WithUnsignedInt2101010Rev() {
         CORRADE_SKIP(Extensions::GL::ARB::vertex_type_2_10_10_10_rev::string() + std::string(" is not available."));
     #endif
 
-    typedef AbstractShaderProgram::Attribute<0, Vector4> Attribute;
+    typedef Attribute<0, Vector4> Attribute;
 
     Buffer buffer;
     buffer.setData({nullptr, 12}, BufferUsage::StaticDraw);
@@ -993,7 +991,7 @@ void MeshGLTest::addVertexBufferVector4WithInt2101010Rev() {
         CORRADE_SKIP(Extensions::GL::ARB::vertex_type_2_10_10_10_rev::string() + std::string(" is not available."));
     #endif
 
-    typedef AbstractShaderProgram::Attribute<0, Vector4> Attribute;
+    typedef Attribute<0, Vector4> Attribute;
 
     Buffer buffer;
     buffer.setData({nullptr, 12}, BufferUsage::StaticDraw);
@@ -1008,7 +1006,7 @@ void MeshGLTest::addVertexBufferVector4WithInt2101010Rev() {
 #endif
 
 void MeshGLTest::addVertexBufferLessVectorComponents() {
-    typedef AbstractShaderProgram::Attribute<0, Vector4> Attribute;
+    typedef Attribute<0, Vector4> Attribute;
 
     const Vector3 data[] = {
         {}, {0.0f, -0.9f, 1.0f},
@@ -1036,7 +1034,7 @@ void MeshGLTest::addVertexBufferLessVectorComponents() {
 }
 
 void MeshGLTest::addVertexBufferNormalized() {
-    typedef AbstractShaderProgram::Attribute<0, Vector3> Attribute;
+    typedef Attribute<0, Vector3> Attribute;
 
     constexpr Color3ub data[] = { {}, {0, 128, 64}, {32, 156, 228} };
     Buffer buffer;
@@ -1067,7 +1065,7 @@ void MeshGLTest::addVertexBufferBGRA() {
         CORRADE_SKIP(Extensions::GL::ARB::vertex_array_bgra::string() + std::string(" is not available."));
     #endif
 
-    typedef AbstractShaderProgram::Attribute<0, Vector4> Attribute;
+    typedef Attribute<0, Vector4> Attribute;
 
     constexpr Color4ub data[] = { {}, {0, 128, 64, 161}, {96, 24, 156, 225} };
     Buffer buffer;
@@ -1396,7 +1394,7 @@ void MeshGLTest::setInstanceCount() {
         CORRADE_SKIP("Required extension is not available.");
     #endif
 
-    typedef AbstractShaderProgram::Attribute<0, Float> Attribute;
+    typedef Attribute<0, Float> Attribute;
 
     const Float data[] = { 0.0f, -0.7f, Math::normalize<Float, UnsignedByte>(96) };
     Buffer buffer;
@@ -1474,7 +1472,7 @@ void MeshGLTest::setInstanceCountBaseInstance() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::base_instance>())
         CORRADE_SKIP(Extensions::GL::ARB::base_instance::string() + std::string(" is not available."));
 
-    typedef AbstractShaderProgram::Attribute<0, Float> Attribute;
+    typedef Attribute<0, Float> Attribute;
 
     const Float data[] = { 0.0f, -0.7f, Math::normalize<Float, UnsignedByte>(96) };
     Buffer buffer;
@@ -1615,7 +1613,7 @@ void MeshGLTest::addVertexBufferInstancedFloat() {
         CORRADE_SKIP("Required drawing extension is not available.");
     #endif
 
-    typedef AbstractShaderProgram::Attribute<0, Float> Attribute;
+    typedef Attribute<0, Float> Attribute;
 
     const Float data[] = {
         0.0f,   /* Offset */
@@ -1656,7 +1654,7 @@ void MeshGLTest::addVertexBufferInstancedInteger() {
         CORRADE_SKIP(Extensions::GL::EXT::gpu_shader4::string() + std::string(" is not available."));
     #endif
 
-    typedef AbstractShaderProgram::Attribute<0, UnsignedInt> Attribute;
+    typedef Attribute<0, UnsignedInt> Attribute;
 
     constexpr UnsignedInt data[] = {
         0,      /* Offset */
@@ -1691,7 +1689,7 @@ void MeshGLTest::addVertexBufferInstancedDouble() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::vertex_attrib_64bit>())
         CORRADE_SKIP(Extensions::GL::ARB::vertex_attrib_64bit::string() + std::string(" is not available."));
 
-    typedef AbstractShaderProgram::Attribute<0, Double> Attribute;
+    typedef Attribute<0, Double> Attribute;
 
     const Double data[] = {
         0.0,    /* Offset */
@@ -1739,7 +1737,7 @@ MultiChecker::MultiChecker(AbstractShaderProgram&& shader, Mesh& mesh): framebuf
         Vector2i(1));
     framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment(0), renderbuffer);
 
-    framebuffer.bind(FramebufferTarget::ReadDraw);
+    framebuffer.bind();
     mesh.setPrimitive(MeshPrimitive::Points)
         .setCount(2);
 
@@ -1760,10 +1758,7 @@ MultiChecker::MultiChecker(AbstractShaderProgram&& shader, Mesh& mesh): framebuf
 }
 
 template<class T> T MultiChecker::get(ColorFormat format, ColorType type) {
-    Image2D image(format, type);
-    /* GCC 4.5 needs explicit type here */
-    framebuffer.read(Vector2i{}, Vector2i(1), image);
-    return image.data<T>()[0];
+    return framebuffer.read({{}, Vector2i{1}}, {format, type}).data<T>()[0];
 }
 #endif
 
@@ -1773,7 +1768,7 @@ void MeshGLTest::multiDraw() {
         Debug() << Extensions::GL::EXT::multi_draw_arrays::string() << "not supported, using fallback implementation";
     #endif
 
-    typedef AbstractShaderProgram::Attribute<0, Float> Attribute;
+    typedef Attribute<0, Float> Attribute;
 
     const Float data[] = { 0.0f, -0.7f, Math::normalize<Float, UnsignedByte>(96) };
     Buffer buffer;

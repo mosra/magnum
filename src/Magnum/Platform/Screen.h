@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -67,9 +67,9 @@ The following specialization are explicitly compiled into each particular
 -   @ref XEglApplication "BasicScreen<XEglApplication>"
 */
 template<class Application> class BasicScreen: private Containers::LinkedListItem<BasicScreen<Application>, BasicScreenedApplication<Application>> {
-    friend class Containers::LinkedListItem<BasicScreen<Application>, BasicScreenedApplication<Application>>;
-    friend class Containers::LinkedList<BasicScreen<Application>>;
-    friend class BasicScreenedApplication<Application>;
+    friend Containers::LinkedListItem<BasicScreen<Application>, BasicScreenedApplication<Application>>;
+    friend Containers::LinkedList<BasicScreen<Application>>;
+    friend BasicScreenedApplication<Application>;
 
     public:
         #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -134,7 +134,7 @@ template<class Application> class BasicScreen: private Containers::LinkedListIte
          */
         void setPropagatedEvents(PropagatedEvents events) { _propagatedEvents = events; }
 
-        /** @brief %Application holding this screen */
+        /** @brief Application holding this screen */
         template<class T = BasicScreenedApplication<Application>> T* application() {
             return static_cast<T*>(Containers::LinkedListItem<BasicScreen<Application>, BasicScreenedApplication<Application>>::list());
         }

@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -32,32 +32,34 @@
 #include "Magnum/Image.h"
 #include "Magnum/RectangleTexture.h"
 #include "Magnum/TextureFormat.h"
+#include "Magnum/Math/Range.h"
 #include "Magnum/Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Test {
 
-class RectangleTextureGLTest: public AbstractOpenGLTester {
-    public:
-        explicit RectangleTextureGLTest();
+struct RectangleTextureGLTest: AbstractOpenGLTester {
+    explicit RectangleTextureGLTest();
 
-        void construct();
-        void bind();
+    void construct();
+    void bind();
 
-        void sampling();
-        void samplingSRGBDecode();
-        void samplingBorderInteger();
-        void samplingSwizzle();
-        void samplingDepthStencilMode();
+    void sampling();
+    void samplingSRGBDecode();
+    void samplingBorderInteger();
+    void samplingSwizzle();
+    void samplingDepthStencilMode();
 
-        void storage();
+    void storage();
 
-        void image();
-        void imageBuffer();
-        void subImage();
-        void subImageBuffer();
+    void image();
+    void imageBuffer();
+    void subImage();
+    void subImageBuffer();
+    void subImageQuery();
+    void subImageQueryBuffer();
 
-        void invalidateImage();
-        void invalidateSubImage();
+    void invalidateImage();
+    void invalidateSubImage();
 };
 
 RectangleTextureGLTest::RectangleTextureGLTest() {
@@ -77,6 +79,8 @@ RectangleTextureGLTest::RectangleTextureGLTest() {
 
               &RectangleTextureGLTest::subImage,
               &RectangleTextureGLTest::subImageBuffer,
+              &RectangleTextureGLTest::subImageQuery,
+              &RectangleTextureGLTest::subImageQueryBuffer,
 
               &RectangleTextureGLTest::invalidateImage,
               &RectangleTextureGLTest::invalidateSubImage});
@@ -200,116 +204,147 @@ void RectangleTextureGLTest::storage() {
     MAGNUM_VERIFY_NO_ERROR();
 }
 
+namespace {
+    constexpr UnsignedByte Data[] = { 0x00, 0x01, 0x02, 0x03,
+                                      0x04, 0x05, 0x06, 0x07,
+                                      0x08, 0x09, 0x0a, 0x0b,
+                                      0x0c, 0x0d, 0x0e, 0x0f };
+}
+
 void RectangleTextureGLTest::image() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
 
-    constexpr UnsignedByte data[] = { 0x00, 0x01, 0x02, 0x03,
-                                      0x04, 0x05, 0x06, 0x07,
-                                      0x08, 0x09, 0x0a, 0x0b,
-                                      0x0c, 0x0d, 0x0e, 0x0f };
     RectangleTexture texture;
     texture.setImage(TextureFormat::RGBA8,
-        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), data));
+        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), Data));
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    Image2D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    texture.image(image);
+    Image2D image = texture.image({ColorFormat::RGBA, ColorType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(2));
-    CORRADE_COMPARE_AS(std::vector<UnsignedByte>(image.data(), image.data()+image.pixelSize()*image.size().product()),
-       std::vector<UnsignedByte>(data, data + 16), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(
+        Containers::ArrayReference<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()),
+        Containers::ArrayReference<const UnsignedByte>{Data}, TestSuite::Compare::Container);
 }
 
 void RectangleTextureGLTest::imageBuffer() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
 
-    constexpr UnsignedByte data[] = { 0x00, 0x01, 0x02, 0x03,
-                                      0x04, 0x05, 0x06, 0x07,
-                                      0x08, 0x09, 0x0a, 0x0b,
-                                      0x0c, 0x0d, 0x0e, 0x0f };
     RectangleTexture texture;
     texture.setImage(TextureFormat::RGBA8,
-        BufferImage2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), data, BufferUsage::StaticDraw));
+        BufferImage2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), Data, BufferUsage::StaticDraw));
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    BufferImage2D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    texture.image(image, BufferUsage::StaticRead);
+    BufferImage2D image = texture.image({ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(2));
-    CORRADE_COMPARE_AS(std::vector<UnsignedByte>(imageData.begin(), imageData.end()),
-        std::vector<UnsignedByte>(data, data+16), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(imageData, Containers::ArrayReference<const UnsignedByte>{Data}, TestSuite::Compare::Container);
+}
+
+namespace {
+    constexpr UnsignedByte Zero[4*4*4] = {};
+
+    constexpr UnsignedByte SubDataComplete[] = {
+        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0, 0, 0, 0,
+        0, 0, 0, 0, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0, 0, 0, 0,
+        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0
+    };
 }
 
 void RectangleTextureGLTest::subImage() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
 
-    constexpr UnsignedByte zero[4*4*4] = {};
-    constexpr UnsignedByte subData[] = { 0x00, 0x01, 0x02, 0x03,
-                                         0x04, 0x05, 0x06, 0x07,
-                                         0x08, 0x09, 0x0a, 0x0b,
-                                         0x0c, 0x0d, 0x0e, 0x0f };
     RectangleTexture texture;
     texture.setImage(TextureFormat::RGBA8,
-        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(4), zero));
+        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(4), Zero));
     texture.setSubImage(Vector2i(1),
-        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), subData));
+        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), Data));
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    Image2D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    texture.image(image);
+    Image2D image = texture.image({ColorFormat::RGBA, ColorType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(4));
-    CORRADE_COMPARE_AS(std::vector<UnsignedByte>(image.data(), image.data()+image.pixelSize()*image.size().product()), (std::vector<UnsignedByte>{
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0, 0, 0, 0,
-        0, 0, 0, 0, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0, 0, 0, 0,
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0
-    }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(
+        Containers::ArrayReference<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()),
+        Containers::ArrayReference<const UnsignedByte>{SubDataComplete}, TestSuite::Compare::Container);
 }
 
 void RectangleTextureGLTest::subImageBuffer() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
 
-    constexpr UnsignedByte zero[4*4*4] = {};
-    constexpr UnsignedByte subData[] = { 0x00, 0x01, 0x02, 0x03,
-                                         0x04, 0x05, 0x06, 0x07,
-                                         0x08, 0x09, 0x0a, 0x0b,
-                                         0x0c, 0x0d, 0x0e, 0x0f };
     RectangleTexture texture;
     texture.setImage(TextureFormat::RGBA8,
-        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(4), zero));
+        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(4), Zero));
     texture.setSubImage(Vector2i(1),
-        BufferImage2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), subData, BufferUsage::StaticDraw));
+        BufferImage2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), Data, BufferUsage::StaticDraw));
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    BufferImage2D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    texture.image(image, BufferUsage::StaticRead);
+    BufferImage2D image = texture.image({ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(4));
-    CORRADE_COMPARE_AS(std::vector<UnsignedByte>(imageData.begin(), imageData.end()), (std::vector<UnsignedByte>{
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0, 0, 0, 0,
-        0, 0, 0, 0, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0, 0, 0, 0,
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0
-    }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(imageData, Containers::ArrayReference<const UnsignedByte>{SubDataComplete}, TestSuite::Compare::Container);
+}
+
+void RectangleTextureGLTest::subImageQuery() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>())
+        CORRADE_SKIP(Extensions::GL::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
+
+    RectangleTexture texture;
+    texture.setStorage(TextureFormat::RGBA8, Vector2i{4})
+           .setSubImage({}, ImageReference2D{ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i{4}, SubDataComplete});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    Image2D image = texture.subImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}), {ColorFormat::RGBA, ColorType::UnsignedByte});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(image.size(), Vector2i{2});
+    CORRADE_COMPARE_AS(
+        Containers::ArrayReference<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()),
+        Containers::ArrayReference<const UnsignedByte>{Data}, TestSuite::Compare::Container);
+}
+
+void RectangleTextureGLTest::subImageQueryBuffer() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>())
+        CORRADE_SKIP(Extensions::GL::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
+
+    RectangleTexture texture;
+    texture.setStorage(TextureFormat::RGBA8, Vector2i{4})
+           .setSubImage({}, ImageReference2D{ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i{4}, SubDataComplete});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    BufferImage2D image = texture.subImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}), {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+    const auto imageData = image.buffer().data<UnsignedByte>();
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(image.size(), Vector2i{2});
+    CORRADE_COMPARE_AS(imageData, Containers::ArrayReference<const UnsignedByte>{Data}, TestSuite::Compare::Container);
 }
 
 void RectangleTextureGLTest::invalidateImage() {

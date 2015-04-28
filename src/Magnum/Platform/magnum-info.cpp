@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -36,7 +36,10 @@
 #include "Magnum/BufferTexture.h"
 #endif
 #include "Magnum/Context.h"
-#include "Magnum/DebugMessage.h"
+#ifndef MAGNUM_TARGET_GLES
+#include "Magnum/CubeMapTextureArray.h"
+#endif
+#include "Magnum/DebugOutput.h"
 #include "Magnum/Extensions.h"
 #include "Magnum/Framebuffer.h"
 #include "Magnum/Mesh.h"
@@ -51,6 +54,7 @@
 #include "Magnum/Texture.h"
 #ifndef MAGNUM_TARGET_GLES2
 #include "Magnum/TextureArray.h"
+#include "Magnum/TransformFeedback.h"
 #endif
 
 #ifdef CORRADE_TARGET_NACL
@@ -68,7 +72,7 @@
 namespace Magnum {
 
 /** @page magnum-info Magnum Info
-@brief Displays information about %Magnum engine and OpenGL capabilities
+@brief Displays information about Magnum engine and OpenGL capabilities
 
 @section magnum-info-usage Usage
 
@@ -188,6 +192,15 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #ifdef CORRADE_BUILD_STATIC
     Debug() << "    CORRADE_BUILD_STATIC";
     #endif
+    #ifdef CORRADE_TARGET_UNIX
+    Debug() << "    CORRADE_TARGET_UNIX";
+    #endif
+    #ifdef CORRADE_TARGET_APPLE
+    Debug() << "    CORRADE_TARGET_APPLE";
+    #endif
+    #ifdef CORRADE_TARGET_WINDOWS
+    Debug() << "    CORRADE_TARGET_WINDOWS";
+    #endif
     #ifdef CORRADE_TARGET_NACL
     Debug() << "    CORRADE_TARGET_NACL";
     #endif
@@ -199,6 +212,9 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #endif
     #ifdef CORRADE_TARGET_EMSCRIPTEN
     Debug() << "    CORRADE_TARGET_EMSCRIPTEN";
+    #endif
+    #ifdef CORRADE_TARGET_ANDROID
+    Debug() << "    CORRADE_TARGET_ANDROID";
     #endif
     #ifdef MAGNUM_BUILD_DEPRECATED
     Debug() << "    MAGNUM_BUILD_DEPRECATED";
@@ -344,6 +360,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #ifndef MAGNUM_TARGET_GLES2
     _lvec(Texture3D::maxSize()) /* Checked ES2 version below */
     #endif
+    _lvec(CubeMapTexture::maxSize())
 
     #ifndef MAGNUM_TARGET_GLES
     if(c->isExtensionSupported<Extensions::GL::ARB::blend_func_extended>()) {
@@ -489,6 +506,12 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
 
         _l(BufferTexture::offsetAlignment())
     }
+
+    if(c->isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>()) {
+        _h(ARB::texture_cube_map_array)
+
+        _l(CubeMapTextureArray::maxSize())
+    }
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
@@ -582,12 +605,36 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         _l(Sampler::maxMaxAnisotropy())
     }
 
+    #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_GLES
+    if(c->isExtensionSupported<Extensions::GL::EXT::transform_feedback>())
+    #endif
+    {
+        #ifndef MAGNUM_TARGET_GLES
+        _h(EXT::transform_feedback)
+        #endif
+
+        _l(TransformFeedback::maxInterleavedComponents())
+        _l(TransformFeedback::maxSeparateAttributes())
+        _l(TransformFeedback::maxSeparateComponents())
+    }
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(c->isExtensionSupported<Extensions::GL::ARB::transform_feedback3>()) {
+        _h(ARB::transform_feedback3)
+
+        _l(TransformFeedback::maxBuffers())
+    }
+    #endif
+
     if(c->isExtensionSupported<Extensions::GL::KHR::debug>()) {
         _h(KHR::debug)
 
         _l(AbstractObject::maxLabelLength())
-        _l(DebugMessage::maxLoggedMessages())
-        _l(DebugMessage::maxMessageLength())
+        _l(DebugOutput::maxLoggedMessages())
+        _l(DebugOutput::maxMessageLength())
+        _l(DebugGroup::maxStackDepth())
     }
 
     #ifdef MAGNUM_TARGET_GLES2

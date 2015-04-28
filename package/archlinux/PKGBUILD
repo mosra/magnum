@@ -2,18 +2,20 @@
 pkgname=magnum
 pkgver=dev
 pkgrel=1
-pkgdesc="C++11 and OpenGL 2D/3D graphics engine"
+pkgdesc="C++11/C++14 and OpenGL 2D/3D graphics engine"
 arch=('i686' 'x86_64')
 url="http://mosra.cz/blog/magnum.php"
 license=('MIT')
 depends=('corrade' 'openal' 'freeglut' 'sdl2')
 makedepends=('cmake' 'ninja')
-options=('!strip' 'staticlibs')
+options=('!strip')
 provides=('magnum-git')
 
+_rootdir=$startdir/../../
+
 build() {
-    mkdir -p "$startdir/build"
-    cd "$startdir/build"
+    mkdir -p "$_rootdir/build"
+    cd "$_rootdir/build"
 
     # Disable optimization (saves A LOT of compilation time)
     newcxxflags=$(echo $CXXFLAGS | sed s/-O.//g | sed s/-D_FORTIFY_SOURCE=.//g)
@@ -26,6 +28,7 @@ build() {
         -DWITH_GLUTAPPLICATION=ON \
         -DWITH_GLXAPPLICATION=ON \
         -DWITH_SDL2APPLICATION=ON \
+        -DWITH_XEGLAPPLICATION=ON \
         -DWITH_WINDOWLESSGLXAPPLICATION=ON \
         -DWITH_EGLCONTEXT=ON \
         -DWITH_GLXCONTEXT=ON \
@@ -45,11 +48,11 @@ build() {
 }
 
 check() {
-    cd "$startdir/build"
+    cd "$_rootdir/build"
     ctest --output-on-failure -j5
 }
 
 package() {
-    cd "$startdir/build"
+    cd "$_rootdir/build"
     DESTDIR="$pkgdir/" ninja install
 }

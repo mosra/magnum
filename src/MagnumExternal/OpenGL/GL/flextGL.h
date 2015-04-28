@@ -1,6 +1,10 @@
 #ifndef _flextgl_h_
 #define _flextgl_h_
 
+#include <Corrade/Utility/VisibilityMacros.h>
+
+#include "Magnum/configure.h"
+
 /* Defensive include guards */
 
 #if defined(__glew_h__) || defined(__GLEW_H__)
@@ -36,14 +40,14 @@ void flextGLInit();
 
 /* Function declaration macros */
 
-#ifdef _WIN32
+#ifndef MAGNUM_BUILD_STATIC
     #ifdef FlextGL_EXPORTS
-        #define FLEXTGL_EXPORT __declspec(dllexport)
+        #define FLEXTGL_EXPORT CORRADE_VISIBILITY_EXPORT
     #else
-        #define FLEXTGL_EXPORT __declspec(dllimport)
+        #define FLEXTGL_EXPORT CORRADE_VISIBILITY_IMPORT
     #endif
 #else
-    #define FLEXTGL_EXPORT __attribute__ ((visibility ("default")))
+    #define FLEXTGL_EXPORT CORRADE_VISIBILITY_STATIC
 #endif
 
 #if defined(_WIN32) && !defined(APIENTRY) && !defined(__CYGWIN__) && !defined(__SCITECH_SNAP__)
@@ -1082,6 +1086,10 @@ typedef void (APIENTRY *GLDEBUGPROC)(GLenum source,GLenum type,GLuint id,GLenum 
 
 /* GL_VERSION_4_2 */
 
+#define GL_COPY_READ_BUFFER_BINDING 0x8F36
+#define GL_COPY_WRITE_BUFFER_BINDING 0x8F37
+#define GL_TRANSFORM_FEEDBACK_ACTIVE 0x8E24
+#define GL_TRANSFORM_FEEDBACK_PAUSED 0x8E23
 #define GL_UNPACK_COMPRESSED_BLOCK_WIDTH 0x9127
 #define GL_UNPACK_COMPRESSED_BLOCK_HEIGHT 0x9128
 #define GL_UNPACK_COMPRESSED_BLOCK_DEPTH 0x9129
@@ -1512,6 +1520,7 @@ typedef void (APIENTRY *GLDEBUGPROC)(GLenum source,GLenum type,GLuint id,GLenum 
 #define GL_TEXTURE_BINDING_CUBE_MAP_ARRAY 0x900A
 #define GL_TEXTURE_BINDING_RECTANGLE 0x84F6
 #define GL_TEXTURE_BINDING 0x82EB
+#define GL_BACK 0x0405
 #define GL_NO_ERROR 0
 #define GL_GUILTY_CONTEXT_RESET 0x8253
 #define GL_INNOCENT_CONTEXT_RESET 0x8254
@@ -2843,6 +2852,14 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglCreateProgramPipelines)(GLsizei, GLui
 #define glCreateProgramPipelines flextglCreateProgramPipelines
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglCreateQueries)(GLenum, GLsizei, GLuint *);
 #define glCreateQueries flextglCreateQueries
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetQueryBufferObjecti64v)(GLuint, GLuint, GLenum, GLintptr);
+#define glGetQueryBufferObjecti64v flextglGetQueryBufferObjecti64v
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetQueryBufferObjectiv)(GLuint, GLuint, GLenum, GLintptr);
+#define glGetQueryBufferObjectiv flextglGetQueryBufferObjectiv
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetQueryBufferObjectui64v)(GLuint, GLuint, GLenum, GLintptr);
+#define glGetQueryBufferObjectui64v flextglGetQueryBufferObjectui64v
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetQueryBufferObjectuiv)(GLuint, GLuint, GLenum, GLintptr);
+#define glGetQueryBufferObjectuiv flextglGetQueryBufferObjectuiv
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglMemoryBarrierByRegion)(GLbitfield);
 #define glMemoryBarrierByRegion flextglMemoryBarrierByRegion
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetTextureSubImage)(GLuint, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void *);

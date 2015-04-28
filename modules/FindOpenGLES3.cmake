@@ -10,7 +10,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -42,12 +42,9 @@ find_library(OPENGLES3_LIBRARY NAMES
 
 # Include dir
 find_path(OPENGLES3_INCLUDE_DIR
-    NAMES gl3.h
-    PATH_SUFFIXES GLES3
-)
+    NAMES GLES3/gl3.h)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args("OpenGLES3" DEFAULT_MSG
     OPENGLES3_LIBRARY
-    OPENGLES3_INCLUDE_DIR
-)
+    OPENGLES3_INCLUDE_DIR)

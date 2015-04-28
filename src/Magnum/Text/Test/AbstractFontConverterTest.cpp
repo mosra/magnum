@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -26,6 +26,7 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/FileToString.h>
+#include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/Directory.h>
 
 #include "Magnum/Text/AbstractFontConverter.h"
@@ -35,20 +36,19 @@
 
 namespace Magnum { namespace Text { namespace Test {
 
-class AbstractFontConverterTest: public TestSuite::Tester {
-    public:
-        explicit AbstractFontConverterTest();
+struct AbstractFontConverterTest: TestSuite::Tester {
+    explicit AbstractFontConverterTest();
 
-        void convertGlyphs();
+    void convertGlyphs();
 
-        void exportFontToSingleData();
-        void exportFontToFile();
+    void exportFontToSingleData();
+    void exportFontToFile();
 
-        void exportGlyphCacheToSingleData();
-        void exportGlyphCacheToFile();
+    void exportGlyphCacheToSingleData();
+    void exportGlyphCacheToFile();
 
-        void importGlyphCacheFromSingleData();
-        void importGlyphCacheFromFile();
+    void importGlyphCacheFromSingleData();
+    void importGlyphCacheFromFile();
 };
 
 AbstractFontConverterTest::AbstractFontConverterTest() {
@@ -64,6 +64,13 @@ AbstractFontConverterTest::AbstractFontConverterTest() {
               &AbstractFontConverterTest::importGlyphCacheFromFile});
 }
 
+namespace {
+    /* *static_cast<GlyphCache*>(nullptr) makes Clang Analyzer grumpy */
+    char nullData;
+    AbstractFont& nullFont = *reinterpret_cast<AbstractFont*>(nullData);
+    GlyphCache& nullGlyphCache = *reinterpret_cast<GlyphCache*>(nullData);
+}
+
 void AbstractFontConverterTest::convertGlyphs() {
     class GlyphExporter: public AbstractFontConverter {
         public:
@@ -77,9 +84,9 @@ void AbstractFontConverterTest::convertGlyphs() {
             Features doFeatures() const override { return Feature::ConvertData|Feature::ExportFont; }
 
             #ifndef __MINGW32__
-            Containers::Array<unsigned char> doExportFontToSingleData(AbstractFont&, GlyphCache&, const std::u32string& characters) const override
+            Containers::Array<char> doExportFontToSingleData(AbstractFont&, GlyphCache&, const std::u32string& characters) const override
             #else
-            Containers::Array<unsigned char> doExportFontToSingleData(AbstractFont&, GlyphCache&, const std::vector<char32_t>& characters) const override
+            Containers::Array<char> doExportFontToSingleData(AbstractFont&, GlyphCache&, const std::vector<char32_t>& characters) const override
             #endif
             {
                 this->characters = characters;
@@ -103,7 +110,7 @@ void AbstractFontConverterTest::convertGlyphs() {
     std::vector<char32_t> characters;
     #endif
     GlyphExporter exporter(characters);
-    exporter.exportFontToSingleData(*static_cast<AbstractFont*>(nullptr), *static_cast<GlyphCache*>(nullptr), "abC01a0 ");
+    exporter.exportFontToSingleData(nullFont, nullGlyphCache, "abC01a0 ");
     #if !defined(__MINGW32__) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
     CORRADE_COMPARE(characters, U" 01Cab");
     #elif defined(CORRADE_MSVC2013_COMPATIBILITY)
@@ -121,24 +128,24 @@ void AbstractFontConverterTest::exportFontToSingleData() {
             Features doFeatures() const override { return Feature::ConvertData|Feature::ExportFont; }
 
             #ifndef __MINGW32__
-            Containers::Array<unsigned char> doExportFontToSingleData(AbstractFont&, GlyphCache&, const std::u32string&) const override
+            Containers::Array<char> doExportFontToSingleData(AbstractFont&, GlyphCache&, const std::u32string&) const override
             #else
-            Containers::Array<unsigned char> doExportFontToSingleData(AbstractFont&, GlyphCache&, const std::vector<char32_t>&) const override
+            Containers::Array<char> doExportFontToSingleData(AbstractFont&, GlyphCache&, const std::vector<char32_t>&) const override
             #endif
             {
-                Containers::Array<unsigned char> data(1);
-                data[0] = 0xee;
-                return std::move(data);
+                Containers::Array<char> data(1);
+                data[0] = '\xee';
+                return data;
             }
     };
 
     /* doExportFontToData() should call doExportFontToSingleData() */
     SingleDataExporter exporter;
-    auto ret = exporter.exportFontToData(*static_cast<AbstractFont*>(nullptr), *static_cast<GlyphCache*>(nullptr), "font.out", {});
+    auto ret = exporter.exportFontToData(nullFont, nullGlyphCache, "font.out", {});
     CORRADE_COMPARE(ret.size(), 1);
     CORRADE_COMPARE(ret[0].first, "font.out");
     CORRADE_COMPARE(ret[0].second.size(), 1);
-    CORRADE_COMPARE(ret[0].second[0], 0xee);
+    CORRADE_COMPARE(ret[0].second[0], '\xee');
 }
 
 void AbstractFontConverterTest::exportFontToFile() {
@@ -147,22 +154,17 @@ void AbstractFontConverterTest::exportFontToFile() {
             Features doFeatures() const override { return Feature::ConvertData|Feature::ExportFont|Feature::MultiFile; }
 
             #ifndef __MINGW32__
-            std::vector<std::pair<std::string, Containers::Array<unsigned char>>> doExportFontToData(AbstractFont&, GlyphCache&, const std::string& filename, const std::u32string&) const override
+            std::vector<std::pair<std::string, Containers::Array<char>>> doExportFontToData(AbstractFont&, GlyphCache&, const std::string& filename, const std::u32string&) const override
             #else
-            std::vector<std::pair<std::string, Containers::Array<unsigned char>>> doExportFontToData(AbstractFont&, GlyphCache&, const std::string& filename, const std::vector<char32_t>&) const override
+            std::vector<std::pair<std::string, Containers::Array<char>>> doExportFontToData(AbstractFont&, GlyphCache&, const std::string& filename, const std::vector<char32_t>&) const override
             #endif
             {
-                Containers::Array<unsigned char> file(1);
-                file[0] = 0xf0;
-
-                Containers::Array<unsigned char> data(2);
-                data[0] = 0xfe;
-                data[1] = 0xed;
-
-                std::vector<std::pair<std::string, Containers::Array<unsigned char>>> out;
-                out.emplace_back(filename, std::move(file));
-                out.emplace_back(filename + ".data", std::move(data));
-                return std::move(out);
+                /* Why the hell GCC 4.9 fails to do proper move so I need to
+                   work around that this ugly way?! */
+                std::vector<std::pair<std::string, Containers::Array<char>>> ret;
+                ret.emplace_back(filename, Containers::Array<char>::from('\xf0'));
+                ret.emplace_back(filename + ".data", Containers::Array<char>::from('\xfe', '\xed'));
+                return ret;
             }
     };
 
@@ -173,7 +175,7 @@ void AbstractFontConverterTest::exportFontToFile() {
     /* doExportToFile() should call doExportToData() */
     DataExporter exporter;
     /* MSVC 2013 can't handle {} here */
-    bool exported = exporter.exportFontToFile(*static_cast<AbstractFont*>(nullptr), *static_cast<GlyphCache*>(nullptr), Utility::Directory::join(TEXT_TEST_OUTPUT_DIR, "font.out"), std::string());
+    bool exported = exporter.exportFontToFile(nullFont, nullGlyphCache, Utility::Directory::join(TEXT_TEST_OUTPUT_DIR, "font.out"), std::string());
     CORRADE_VERIFY(exported);
     CORRADE_COMPARE_AS(Utility::Directory::join(TEXT_TEST_OUTPUT_DIR, "font.out"),
                        "\xf0", TestSuite::Compare::FileToString);
@@ -186,20 +188,17 @@ void AbstractFontConverterTest::exportGlyphCacheToSingleData() {
         private:
             Features doFeatures() const override { return Feature::ConvertData|Feature::ExportGlyphCache; }
 
-            Containers::Array<unsigned char> doExportGlyphCacheToSingleData(GlyphCache&) const override {
-                Containers::Array<unsigned char> data(1);
-                data[0] = 0xee;
-                return std::move(data);
+            Containers::Array<char> doExportGlyphCacheToSingleData(GlyphCache&) const override {
+                return Containers::Array<char>::from('\xee');
             }
     };
 
     /* doExportGlyphCacheToData() should call doExportGlyphCacheToSingleData() */
     SingleDataExporter exporter;
-    auto ret = exporter.exportGlyphCacheToData(*static_cast<GlyphCache*>(nullptr), "font.out");
+    auto ret = exporter.exportGlyphCacheToData(nullGlyphCache, "font.out");
     CORRADE_COMPARE(ret.size(), 1);
     CORRADE_COMPARE(ret[0].first, "font.out");
-    CORRADE_COMPARE(ret[0].second.size(), 1);
-    CORRADE_COMPARE(ret[0].second[0], 0xee);
+    CORRADE_COMPARE_AS(ret[0].second, Containers::Array<char>::from('\xee'), TestSuite::Compare::Container);
 }
 
 void AbstractFontConverterTest::exportGlyphCacheToFile() {
@@ -207,18 +206,13 @@ void AbstractFontConverterTest::exportGlyphCacheToFile() {
         private:
             Features doFeatures() const override { return Feature::ConvertData|Feature::ExportGlyphCache|Feature::MultiFile; }
 
-            std::vector<std::pair<std::string, Containers::Array<unsigned char>>> doExportGlyphCacheToData(GlyphCache&, const std::string& filename) const override {
-                Containers::Array<unsigned char> file(1);
-                file[0] = 0xf0;
-
-                Containers::Array<unsigned char> data(2);
-                data[0] = 0xfe;
-                data[1] = 0xed;
-
-                std::vector<std::pair<std::string, Containers::Array<unsigned char>>> out;
-                out.emplace_back(filename, std::move(file));
-                out.emplace_back(filename + ".data", std::move(data));
-                return std::move(out);
+            std::vector<std::pair<std::string, Containers::Array<char>>> doExportGlyphCacheToData(GlyphCache&, const std::string& filename) const override {
+                /* Why the hell GCC 4.9 fails to do proper move so I need to
+                   work around that this ugly way?! */
+                std::vector<std::pair<std::string, Containers::Array<char>>> ret;
+                ret.emplace_back(filename, Containers::Array<char>::from('\xf0'));
+                ret.emplace_back(filename + ".data", Containers::Array<char>::from('\xfe', '\xed'));
+                return ret;
             }
     };
 
@@ -228,7 +222,7 @@ void AbstractFontConverterTest::exportGlyphCacheToFile() {
 
     /* doExportGlyphCacheToFile() should call doExportGlyphCacheToData() */
     DataExporter exporter;
-    bool exported = exporter.exportGlyphCacheToFile(*static_cast<GlyphCache*>(nullptr), Utility::Directory::join(TEXT_TEST_OUTPUT_DIR, "glyphcache.out"));
+    bool exported = exporter.exportGlyphCacheToFile(nullGlyphCache, Utility::Directory::join(TEXT_TEST_OUTPUT_DIR, "glyphcache.out"));
     CORRADE_VERIFY(exported);
     CORRADE_COMPARE_AS(Utility::Directory::join(TEXT_TEST_OUTPUT_DIR, "glyphcache.out"),
                        "\xf0", TestSuite::Compare::FileToString);
@@ -242,8 +236,8 @@ class SingleGlyphCacheDataImporter: public Text::AbstractFontConverter {
     private:
         Features doFeatures() const override { return Feature::ConvertData|Feature::ImportGlyphCache; }
 
-        std::unique_ptr<GlyphCache> doImportGlyphCacheFromSingleData(const Containers::ArrayReference<const unsigned char> data) const override {
-            if(data.size() == 1 && data[0] == 0xa5)
+        std::unique_ptr<GlyphCache> doImportGlyphCacheFromSingleData(const Containers::ArrayReference<const char> data) const override {
+            if(data.size() == 1 && data[0] == '\xa5')
                 return std::unique_ptr<GlyphCache>(reinterpret_cast<GlyphCache*>(0xdeadbeef));
             return {};
         }
@@ -254,8 +248,8 @@ class SingleGlyphCacheDataImporter: public Text::AbstractFontConverter {
 void AbstractFontConverterTest::importGlyphCacheFromSingleData() {
     /* doImportFromData() should call doImportFromSingleData() */
     SingleGlyphCacheDataImporter importer;
-    const unsigned char data[] = {0xa5};
-    std::unique_ptr<GlyphCache> cache = importer.importGlyphCacheFromData(std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>{{{}, data}});
+    const char data[] = {'\xa5'};
+    std::unique_ptr<GlyphCache> cache = importer.importGlyphCacheFromData(std::vector<std::pair<std::string, Containers::ArrayReference<const char>>>{{{}, data}});
     CORRADE_COMPARE(cache.get(), reinterpret_cast<GlyphCache*>(0xdeadbeef));
 
     /* The pointer is invalid, avoid deletion */

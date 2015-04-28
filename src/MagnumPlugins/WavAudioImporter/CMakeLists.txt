@@ -1,7 +1,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -34,32 +34,29 @@ set(WavAudioImporter_HEADERS
     WavHeader.h
     WavImporter.h)
 
-add_library(WavAudioImporterObjects OBJECT ${WavAudioImporter_SRCS})
-if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
-    set_target_properties(WavAudioImporterObjects PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+# Objects shared between plugin and test library
+add_library(WavAudioImporterObjects OBJECT
+    ${WavAudioImporter_SRCS}
+    ${WavAudioImporter_HEADERS})
+if(NOT BUILD_PLUGINS_STATIC OR BUILD_STATIC_PIC)
+    set_target_properties(WavAudioImporterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 
+# WavAudioImporter plugin
 add_plugin(WavAudioImporter ${MAGNUM_PLUGINS_AUDIOIMPORTER_DEBUG_INSTALL_DIR} ${MAGNUM_PLUGINS_AUDIOIMPORTER_RELEASE_INSTALL_DIR}
     WavAudioImporter.conf
     $<TARGET_OBJECTS:WavAudioImporterObjects>
     pluginRegistration.cpp)
+if(BUILD_STATIC_PIC)
+    set_target_properties(WavAudioImporter PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
+
 target_link_libraries(WavAudioImporter Magnum MagnumAudio)
 
 install(FILES ${WavAudioImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/WavAudioImporter)
 
 if(BUILD_TESTS)
     add_library(MagnumWavAudioImporterTestLib STATIC $<TARGET_OBJECTS:WavAudioImporterObjects>)
-    set_target_properties(MagnumWavAudioImporterTestLib PROPERTIES DEBUG_POSTFIX "-d")
     target_link_libraries(MagnumWavAudioImporterTestLib Magnum MagnumAudio)
-
-    # On Windows we need to install first and then run the tests to avoid "DLL
-    # not found" hell, thus we need to install this too
-    if(CORRADE_TARGET_WINDOWS AND NOT CMAKE_CROSSCOMPILING)
-        install(TARGETS MagnumWavAudioImporterTestLib
-            RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
-            LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
-            ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
-    endif()
-
     add_subdirectory(Test)
 endif()

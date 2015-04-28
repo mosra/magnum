@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -34,10 +34,6 @@
 #include "Magnum/Types.h"
 #include "Magnum/Math/Math.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Utility/Macros.h>
-#endif
-
 #ifndef DOXYGEN_GENERATING_OUTPUT
 typedef unsigned int GLenum; /* Needed for *Format and *Type enums */
 #endif
@@ -45,10 +41,9 @@ typedef unsigned int GLenum; /* Needed for *Format and *Type enums */
 namespace Magnum {
 
 namespace Math {
-    template<class T> struct Constants;
-
-    /** @todoc Remove `ifndef` when Doxygen is able to handle operator"" */
     #ifndef DOXYGEN_GENERATING_OUTPUT
+    template<class> struct Constants;
+
     #if !defined(CORRADE_GCC46_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
     #ifndef MAGNUM_TARGET_GLES
     constexpr Rad<Double> operator "" _rad(long double);
@@ -73,7 +68,7 @@ using Corrade::Utility::Error;
 @brief Build with deprecated API included
 
 Defined if the library contains deprecated API (which will be removed in the
-future). To preserve backward compatibility, %Magnum is by default built with
+future). To preserve backward compatibility, Magnum is by default built with
 deprecated API included.
 @see @ref building, @ref cmake
 */
@@ -350,20 +345,6 @@ typedef Math::Range2D<Int> Range2Di;
 /** @brief Signed integer 3D range */
 typedef Math::Range3D<Int> Range3Di;
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-/**
-@copybrief Range2D
-@deprecated Use @ref Magnum::Range2D "Range2D" instead.
-*/
-typedef CORRADE_DEPRECATED("use Range2D instead") Math::Geometry::Rectangle<Float> Rectangle;
-
-/**
-@copybrief Range2Di
-@deprecated Use @ref Magnum::Range2Di "Range2Di" instead.
-*/
-typedef CORRADE_DEPRECATED("use Range2Di instead") Math::Geometry::Rectangle<Int> Rectanglei;
-#endif
-
 /*@}*/
 
 #ifndef MAGNUM_TARGET_GLES
@@ -506,14 +487,6 @@ typedef Math::Range2D<Double> Range2Dd;
 /** @brief Double 3D range */
 typedef Math::Range3D<Double> Range3Dd;
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-/**
-@copybrief Range2Dd
-@deprecated Use @ref Magnum::Range2Dd instead.
-*/
-typedef CORRADE_DEPRECATED("use Range2Dd instead") Math::Geometry::Rectangle<Double> Rectangled;
-#endif
-
 /*@}*/
 #endif
 
@@ -529,6 +502,7 @@ using Math::operator "" _radf;
 
 /* Forward declarations for all types in root namespace */
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 /* FramebufferClear[Mask], FramebufferBlit[Mask], FramebufferBlitFilter,
    FramebufferTarget enums used only directly with framebuffer instance */
 class AbstractFramebuffer;
@@ -541,6 +515,8 @@ template<UnsignedInt, class T> class Array;
 template<class T> class Array1D;
 template<class T> class Array2D;
 template<class T> class Array3D;
+
+template<UnsignedInt, class> class Attribute;
 
 #ifndef CORRADE_GCC45_COMPATIBILITY
 enum class BufferUsage: GLenum;
@@ -655,10 +631,12 @@ typedef TextureArray<2> Texture2DArray;
 enum class TextureFormat: GLenum;
 #endif
 
+class TransformFeedback;
 class Timeline;
 
 #ifndef CORRADE_GCC45_COMPATIBILITY
 enum class Version: Int;
+#endif
 #endif
 
 }

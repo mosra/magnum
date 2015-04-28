@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -31,31 +31,30 @@
 
 namespace Magnum { namespace Test {
 
-class BufferImageTest: public AbstractOpenGLTester {
-    public:
-        explicit BufferImageTest();
+struct BufferImageGLTest: AbstractOpenGLTester {
+    explicit BufferImageGLTest();
 
-        void construct();
-        void constructCopy();
-        void constructMove();
+    void construct();
+    void constructCopy();
+    void constructMove();
 
-        void setData();
+    void setData();
 };
 
-BufferImageTest::BufferImageTest() {
-    addTests({&BufferImageTest::construct,
-              &BufferImageTest::constructCopy,
-              &BufferImageTest::constructMove,
+BufferImageGLTest::BufferImageGLTest() {
+    addTests({&BufferImageGLTest::construct,
+              &BufferImageGLTest::constructCopy,
+              &BufferImageGLTest::constructMove,
 
-              &BufferImageTest::setData});
+              &BufferImageGLTest::setData});
 }
 
-void BufferImageTest::construct() {
-    const unsigned char data[] = { 'a', 0, 0, 0, 'b', 0, 0, 0, 'c', 0, 0, 0 };
+void BufferImageGLTest::construct() {
+    const char data[] = { 'a', 0, 0, 0, 'b', 0, 0, 0, 'c', 0, 0, 0 };
     BufferImage2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data, BufferUsage::StaticDraw);
 
     #ifndef MAGNUM_TARGET_GLES
-    const auto imageData = a.buffer().data<UnsignedByte>();
+    const auto imageData = a.buffer().data();
     #endif
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -66,13 +65,13 @@ void BufferImageTest::construct() {
 
     /** @todo How to verify the contents in ES? */
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE_AS(std::vector<UnsignedByte>(imageData.begin(), imageData.end()),
-                       std::vector<UnsignedByte>(data, data + 12),
+    CORRADE_COMPARE_AS(std::vector<char>(imageData.begin(), imageData.end()),
+                       std::vector<char>(data, data + 12),
                        TestSuite::Compare::Container);
     #endif
 }
 
-void BufferImageTest::constructCopy() {
+void BufferImageGLTest::constructCopy() {
     #ifndef CORRADE_GCC44_COMPATIBILITY
     CORRADE_VERIFY(!(std::is_constructible<BufferImage2D, const BufferImage2D&>::value));
     /* GCC 4.6 doesn't have std::is_assignable */
@@ -84,9 +83,9 @@ void BufferImageTest::constructCopy() {
     #endif
 }
 
-void BufferImageTest::constructMove() {
-    const unsigned char data[3] = { 'a', 'b', 'c' };
-    BufferImage2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data, BufferUsage::StaticDraw);
+void BufferImageGLTest::constructMove() {
+    const char data[4] = { 'a', 'b', 'c', 'd' };
+    BufferImage2D a(ColorFormat::Red, ColorType::UnsignedByte, {4, 1}, data, BufferUsage::StaticDraw);
     const Int id = a.buffer().id();
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -99,11 +98,11 @@ void BufferImageTest::constructMove() {
 
     CORRADE_COMPARE(b.format(), ColorFormat::Red);
     CORRADE_COMPARE(b.type(), ColorType::UnsignedByte);
-    CORRADE_COMPARE(b.size(), Vector2i(1, 3));
+    CORRADE_COMPARE(b.size(), Vector2i(4, 1));
     CORRADE_COMPARE(b.buffer().id(), id);
 
     const unsigned short data2[2*4] = { 1, 2, 3, 4, 5, 6, 7, 8 };
-    BufferImage2D c(ColorFormat::RGBA, ColorType::UnsignedShort, {2, 1}, data2, BufferUsage::StaticDraw);
+    BufferImage2D c(ColorFormat::RGBA, ColorType::UnsignedShort, {1, 2}, data2, BufferUsage::StaticDraw);
     const Int cId = c.buffer().id();
     c = std::move(b);
 
@@ -111,20 +110,20 @@ void BufferImageTest::constructMove() {
 
     CORRADE_VERIFY(cId > 0);
     CORRADE_COMPARE(b.buffer().id(), cId);
-    CORRADE_COMPARE(b.size(), Vector2i(2, 1));
+    CORRADE_COMPARE(b.size(), Vector2i(1, 2));
 
     CORRADE_COMPARE(c.format(), ColorFormat::Red);
     CORRADE_COMPARE(c.type(), ColorType::UnsignedByte);
-    CORRADE_COMPARE(c.size(), Vector2i(1, 3));
+    CORRADE_COMPARE(c.size(), Vector2i(4, 1));
     CORRADE_COMPARE(c.buffer().id(), id);
 }
 
-void BufferImageTest::setData() {
-    const unsigned char data[3] = { 'a', 'b', 'c' };
-    BufferImage2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data, BufferUsage::StaticDraw);
+void BufferImageGLTest::setData() {
+    const char data[4] = { 'a', 'b', 'c', 'd' };
+    BufferImage2D a(ColorFormat::Red, ColorType::UnsignedByte, {4, 1}, data, BufferUsage::StaticDraw);
 
-    const unsigned short data2[2*4] = { 1, 2, 3, 4, 5, 6, 7, 8 };
-    a.setData(ColorFormat::RGBA, ColorType::UnsignedShort, {2, 1}, data2, BufferUsage::StaticDraw);
+    const UnsignedShort data2[2*4] = { 1, 2, 3, 4, 5, 6, 7, 8 };
+    a.setData(ColorFormat::RGBA, ColorType::UnsignedShort, {1, 2}, data2, BufferUsage::StaticDraw);
 
     #ifndef MAGNUM_TARGET_GLES
     const auto imageData = a.buffer().data<UnsignedShort>();
@@ -134,7 +133,7 @@ void BufferImageTest::setData() {
 
     CORRADE_COMPARE(a.format(), ColorFormat::RGBA);
     CORRADE_COMPARE(a.type(), ColorType::UnsignedShort);
-    CORRADE_COMPARE(a.size(), Vector2i(2, 1));
+    CORRADE_COMPARE(a.size(), Vector2i(1, 2));
 
     /** @todo How to verify the contents in ES? */
     #ifndef MAGNUM_TARGET_GLES
@@ -146,4 +145,4 @@ void BufferImageTest::setData() {
 
 }}
 
-CORRADE_TEST_MAIN(Magnum::Test::BufferImageTest)
+CORRADE_TEST_MAIN(Magnum::Test::BufferImageGLTest)

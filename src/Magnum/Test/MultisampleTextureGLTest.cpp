@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -32,34 +32,33 @@
 
 namespace Magnum { namespace Test {
 
-class MultisampleTextureGLTest: public AbstractOpenGLTester {
-    public:
-        explicit MultisampleTextureGLTest();
+struct MultisampleTextureGLTest: AbstractOpenGLTester {
+    explicit MultisampleTextureGLTest();
 
-        void construct2D();
-        #ifndef MAGNUM_TARGET_GLES
-        void construct2DArray();
-        #endif
+    void construct2D();
+    #ifndef MAGNUM_TARGET_GLES
+    void construct2DArray();
+    #endif
 
-        void bind2D();
-        #ifndef MAGNUM_TARGET_GLES
-        void bind2DArray();
-        #endif
+    void bind2D();
+    #ifndef MAGNUM_TARGET_GLES
+    void bind2DArray();
+    #endif
 
-        void storage2D();
-        #ifndef MAGNUM_TARGET_GLES
-        void storage2DArray();
-        #endif
+    void storage2D();
+    #ifndef MAGNUM_TARGET_GLES
+    void storage2DArray();
+    #endif
 
-        void invalidateImage2D();
-        #ifndef MAGNUM_TARGET_GLES
-        void invalidateImage2DArray();
-        #endif
+    void invalidateImage2D();
+    #ifndef MAGNUM_TARGET_GLES
+    void invalidateImage2DArray();
+    #endif
 
-        void invalidateSubImage2D();
-        #ifndef MAGNUM_TARGET_GLES
-        void invalidateSubImage2DArray();
-        #endif
+    void invalidateSubImage2D();
+    #ifndef MAGNUM_TARGET_GLES
+    void invalidateSubImage2DArray();
+    #endif
 };
 
 MultisampleTextureGLTest::MultisampleTextureGLTest() {

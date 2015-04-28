@@ -1,9 +1,15 @@
 Third-party components
 ----------------------
 
-*   **flextGL** extension loader generator -- https://github.com/ginkgo/flextGL,
-    Copyright © 2011 Thomas Weber, licensed under
-    [MIT license](https://raw.githubusercontent.com/ginkgo/flextGL/master/COPYING)
+Not mentioning OpenGL API and platform-specific toolkits.
+
+*   Magnum internally uses code generated using **flextGL** extension loader
+    generator -- https://github.com/ginkgo/flextGL. Copyright © 2011 Thomas
+    Weber, licensed under [MIT license](https://raw.githubusercontent.com/ginkgo/flextGL/master/COPYING)
+*   The `Platform::GlutApplication` class uses **freeGLUT** library --
+    http://freeglut.sourceforge.net/, licensed under MIT license.
+*   The `Platform::Sdl2Application` class uses **SDL2** library --
+    https://www.libsdl.org/, licensed under [ZLIB license](http://www.gzip.org/zlib/zlib_license.html)
 
 Contributors to Magnum library
 ------------------------------
@@ -21,5 +27,9 @@ Contributors to Magnum library
     Debian package
 *   Olga Turanksaya ([@olga-python](https://github.com/olga-python)) -- Gentoo
     ebuild
+*   [@wivlaro](https://github.com/wivlaro) -- numerous bug reports, Mac OS X
+    fixes, feature improvements
+*   Squareys ([@Squareys](https://github.com/Squareys)) -- bug reports,
+    documentation improvements
 
 Big thanks to everyone involved!

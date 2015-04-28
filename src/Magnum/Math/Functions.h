@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -80,6 +80,26 @@ UnsignedInt MAGNUM_EXPORT log2(UnsignedInt number);
  */
 UnsignedInt MAGNUM_EXPORT log(UnsignedInt base, UnsignedInt number);
 
+/**
+@brief Integer division with remainder
+
+Example usage:
+@code
+Int quotient, remainder;
+std::tie(quotient, remainder) = Math::div(57, 6); // {9, 3}
+@endcode
+Equivalent to the following, but possibly done in a single CPU instruction:
+@code
+Int quotient = 57/6;
+Int remainder = 57%6;
+@endcode
+*/
+template<class Integral> std::pair<Integral, Integral> div(Integral x, Integral y) {
+    static_assert(std::is_integral<Integral>{}, "Math::div(): not an integral type");
+    const auto result = std::div(x, y);
+    return {result.quot, result.rem};
+}
+
 /** @todo Can't trigonometric functions be done with only one overload? */
 
 /** @brief Sine */
@@ -126,18 +146,19 @@ perform the operations component-wise.
 /**
 @brief Minimum
 
+<em>NaN</em>s passed in @p value parameter are propagated.
 @see @ref max(), @ref minmax(), @ref clamp(), @ref Vector::min()
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T> inline T min(T a, T b);
+template<class T> inline T min(T value, T min);
 #else
-template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type min(T a, T b) {
-    return std::min(a, b);
+template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type min(T value, T min) {
+    return std::min(value, min);
 }
-template<std::size_t size, class T> inline Vector<size, T> min(const Vector<size, T>& a, const Vector<size, T>& b) {
+template<std::size_t size, class T> inline Vector<size, T> min(const Vector<size, T>& value, const Vector<size, T>& min) {
     Vector<size, T> out;
     for(std::size_t i = 0; i != size; ++i)
-        out[i] = std::min(a[i], b[i]);
+        out[i] = std::min(value[i], min[i]);
     return out;
 }
 #endif
@@ -153,18 +174,19 @@ template<class T> inline T min(std::initializer_list<T> list) {
 /**
 @brief Maximum
 
+<em>NaN</em>s passed in @p value parameter are propagated.
 @see @ref min(), @ref minmax(), @ref clamp(), @ref Vector::max()
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T> inline T max(const T& a, const T& b);
+template<class T> inline T max(T value, T max);
 #else
-template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type max(T a, T b) {
-    return std::max(a, b);
+template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type max(T value, T max) {
+    return std::max(value, max);
 }
-template<std::size_t size, class T> Vector<size, T> max(const Vector<size, T>& a, const Vector<size, T>& b) {
+template<std::size_t size, class T> Vector<size, T> max(const Vector<size, T>& value, const Vector<size, T>& max) {
     Vector<size, T> out;
     for(std::size_t i = 0; i != size; ++i)
-        out[i] = std::max(a[i], b[i]);
+        out[i] = std::max(value[i], max[i]);
     return out;
 }
 #endif
@@ -189,9 +211,35 @@ template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, s
     return a < b ? std::make_pair(a, b) : std::make_pair(b, a);
 }
 template<std::size_t size, class T> std::pair<Vector<size, T>, Vector<size, T>> minmax(const Vector<size, T>& a, const Vector<size, T>& b) {
+    using std::swap;
     std::pair<Vector<size, T>, Vector<size, T>> out{a, b};
     for(std::size_t i = 0; i != size; ++i)
-        if(out.first[i] > out.second[i]) std::swap(out.first[i], out.second[i]);
+        if(out.first[i] > out.second[i]) swap(out.first[i], out.second[i]);
+    return out;
+}
+#endif
+
+/**
+@brief Clamp value
+
+Values smaller than @p min are set to @p min, values larger than @p max are
+set to @p max. Equivalent to:
+@code
+Math::min(Math::max(value, min), max)
+@endcode
+<em>NaN</em>s passed in @p value parameter are propagated.
+@see @ref min(), @ref max()
+*/
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T, class U> inline T clamp(const T& value, U min, U max);
+#else
+template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type clamp(T value, T min, T max) {
+    return std::min(std::max(value, min), max);
+}
+template<std::size_t size, class T> Vector<size, T> clamp(const Vector<size, T>& value, T min, T max) {
+    Vector<size, T> out;
+    for(std::size_t i = 0; i != size; ++i)
+        out[i] = clamp(value[i], min, max);
     return out;
 }
 #endif
@@ -323,27 +371,6 @@ template<std::size_t size, class T> Vector<size, T> sqrtInverted(const Vector<si
 #endif
 
 /**
-@brief Clamp value
-
-Values smaller than @p min are set to @p min, values larger than @p max are
-set to @p max.
-@see @ref min(), @ref max()
-*/
-#ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T, class U> inline T clamp(const T& value, U min, U max);
-#else
-template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type clamp(T value, T min, T max) {
-    return std::min(std::max(value, min), max);
-}
-template<std::size_t size, class T> Vector<size, T> clamp(const Vector<size, T>& value, T min, T max) {
-    Vector<size, T> out;
-    for(std::size_t i = 0; i != size; ++i)
-        out[i] = clamp(value[i], min, max);
-    return out;
-}
-#endif
-
-/**
 @brief Linear interpolation of two values
 @param a     First value
 @param b     Second value
@@ -352,9 +379,7 @@ template<std::size_t size, class T> Vector<size, T> clamp(const Vector<size, T>&
 The interpolation for vectors is done as in following, similarly for scalars: @f[
     \boldsymbol v_{LERP} = (1 - t) \boldsymbol v_A + t \boldsymbol v_B
 @f]
-@see @ref lerpInverted(), @ref Quaternion::lerp()
-@todo http://fgiesen.wordpress.com/2012/08/15/linear-interpolation-past-present-and-future/
-    (when SIMD is in place)
+@see @ref lerpInverted(), @ref lerp(const Quaternion<T>&, const Quaternion<T>&, T)
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T, class U> inline T lerp(const T& a, const T& b, U t);
@@ -426,10 +451,10 @@ value in range @f$ [0, 1] @f$ or from *signed* integral to range @f$ [-1, 1] @f$
     explicit, e.g.:
 @code
 // Literal type is (signed) char, but we assumed unsigned char, a != 1.0f
-Float a = normalize<Float>('\xFF');
+Float a = Math::normalize<Float>('\xFF');
 
 // b = 1.0f
-Float b = normalize<Float, UnsignedByte>('\xFF');
+Float b = Math::normalize<Float, UnsignedByte>('\xFF');
 @endcode
 
 @see @ref denormalize()

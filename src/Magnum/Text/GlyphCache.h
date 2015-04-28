@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -45,7 +45,7 @@ Contains font glyphs prerendered into texture atlas.
 
 ## Usage
 
-Create %GlyphCache object with sufficient size and then call
+Create GlyphCache object with sufficient size and then call
 @ref AbstractFont::createGlyphCache() to fill it with glyphs.
 @code
 Text::AbstractFont* font;

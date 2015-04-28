@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -36,7 +36,7 @@
 namespace Magnum { namespace Math {
 
 /**
-@brief %Dual quaternion
+@brief Dual quaternion
 @tparam T   Underlying data type
 
 Represents 3D rotation and translation. See @ref transformations for brief
@@ -56,11 +56,10 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * Expects that the rotation axis is normalized. @f[
          *      \hat q = [\boldsymbol a \cdot sin \frac \theta 2, cos \frac \theta 2] + \epsilon [\boldsymbol 0, 0]
          * @f]
-         * @see rotation() const, @ref Quaternion::rotation(),
+         * @see @ref rotation() const, @ref Quaternion::rotation(),
          *      @ref Matrix4::rotation(), @ref DualComplex::rotation(),
          *      @ref Vector3::xAxis(), @ref Vector3::yAxis(),
          *      @ref Vector3::zAxis(), @ref Vector::isNormalized()
-         * @todoc Explicit reference when Doxygen can handle const
          */
         static DualQuaternion<T> rotation(Rad<T> angle, const Vector3<T>& normalizedAxis) {
             return {Quaternion<T>::rotation(angle, normalizedAxis), {{}, T(0)}};
@@ -75,11 +74,10 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @f[
          *      \hat q = [\boldsymbol 0, 1] + \epsilon [\frac{\boldsymbol v}{2}, 0]
          * @f]
-         * @see translation() const,
+         * @see @ref translation() const,
          *      @ref Matrix4::translation(const Vector3<T>&),
          *      @ref DualComplex::translation(), @ref Vector3::xAxis(),
          *      @ref Vector3::yAxis(), @ref Vector3::zAxis()
-         * @todoc Explicit reference when Doxygen can handle const
          */
         static DualQuaternion<T> translation(const Vector3<T>& vector) {
             return {{}, {vector/T(2), T(0)}};
@@ -226,7 +224,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         }
 
         /**
-         * @brief %Dual quaternion length squared
+         * @brief Dual quaternion length squared
          *
          * Should be used instead of @ref length() for comparing dual
          * quaternion length with other values, because it doesn't compute the
@@ -235,11 +233,11 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @f]
          */
         Dual<T> lengthSquared() const {
-            return {Dual<Quaternion<T>>::real().dot(), T(2)*Quaternion<T>::dot(Dual<Quaternion<T>>::real(), Dual<Quaternion<T>>::dual())};
+            return {Dual<Quaternion<T>>::real().dot(), T(2)*dot(Dual<Quaternion<T>>::real(), Dual<Quaternion<T>>::dual())};
         }
 
         /**
-         * @brief %Dual quaternion length
+         * @brief Dual quaternion length
          *
          * See @ref lengthSquared() which is faster for comparing length with other
          * values. @f[
@@ -316,8 +314,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          */
         Vector3<T> transformPointNormalized(const Vector3<T>& vector) const {
             CORRADE_ASSERT(isNormalized(),
-                           "Math::DualQuaternion::transformPointNormalized(): dual quaternion must be normalized",
-                           Vector3<T>(std::numeric_limits<T>::quiet_NaN()));
+                           "Math::DualQuaternion::transformPointNormalized(): dual quaternion must be normalized", {});
             return ((*this)*DualQuaternion<T>(vector)*conjugated()).dual().vector();
         }
 

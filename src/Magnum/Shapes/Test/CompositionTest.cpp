@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -34,20 +34,19 @@
 
 namespace Magnum { namespace Shapes { namespace Test {
 
-class CompositionTest: public TestSuite::Tester {
-    public:
-        CompositionTest();
+struct CompositionTest: TestSuite::Tester {
+    explicit CompositionTest();
 
-        void negated();
-        void anded();
-        void ored();
-        void multipleUnary();
-        void hierarchy();
-        void empty();
+    void negated();
+    void anded();
+    void ored();
+    void multipleUnary();
+    void hierarchy();
+    void empty();
 
-        void copy();
-        void move();
-        void transformed();
+    void copy();
+    void move();
+    void transformed();
 };
 
 CompositionTest::CompositionTest() {

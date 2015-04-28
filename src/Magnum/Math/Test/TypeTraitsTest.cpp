@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,23 +23,22 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <limits>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Math/TypeTraits.h"
+#include "Magnum/Math/Constants.h"
 
 namespace Magnum { namespace Math { namespace Test {
 
-class TypeTraitsTest: public Corrade::TestSuite::Tester {
-    public:
-        TypeTraitsTest();
+struct TypeTraitsTest: Corrade::TestSuite::Tester {
+    explicit TypeTraitsTest();
 
-        void equalsIntegral();
-        void equalsFloatingPoint0();
-        void equalsFloatingPoint1();
-        void equalsFloatingPointLarge();
-        void equalsFloatingPointInfinity();
-        void equalsFloatingPointNaN();
+    void equalsIntegral();
+    void equalsFloatingPoint0();
+    void equalsFloatingPoint1();
+    void equalsFloatingPointLarge();
+    void equalsFloatingPointInfinity();
+    void equalsFloatingPointNaN();
 
     private:
         template<class> void _equalsIntegral();
@@ -118,8 +117,8 @@ void TypeTraitsTest::equalsFloatingPointInfinity() {
 }
 
 template<class T> void TypeTraitsTest::_equalsFloatingPointInfinity() {
-    CORRADE_VERIFY(TypeTraits<T>::equals(std::numeric_limits<T>::infinity(),
-                                         std::numeric_limits<T>::infinity()));
+    CORRADE_VERIFY(TypeTraits<T>::equals(Constants<T>::inf(),
+                                         Constants<T>::inf()));
 }
 
 void TypeTraitsTest::equalsFloatingPointNaN() {
@@ -130,8 +129,8 @@ void TypeTraitsTest::equalsFloatingPointNaN() {
 }
 
 template<class T> void TypeTraitsTest::_equalsFloatingPointNaN() {
-    CORRADE_VERIFY(!TypeTraits<T>::equals(std::numeric_limits<T>::quiet_NaN(),
-                                          std::numeric_limits<T>::quiet_NaN()));
+    CORRADE_VERIFY(!TypeTraits<T>::equals(Constants<T>::nan(),
+                                          Constants<T>::nan()));
 }
 
 }}}

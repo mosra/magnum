@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -56,7 +56,7 @@ namespace Implementation {
 }
 
 /**
-@brief %Remove duplicate floating-point vector data from given array
+@brief Remove duplicate floating-point vector data from given array
 @param[in,out] data Input data array
 @param[out] epsilon Epsilon value, vertices nearer than this distance will be
     melt together

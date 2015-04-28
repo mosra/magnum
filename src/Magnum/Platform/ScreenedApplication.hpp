@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -55,7 +55,7 @@ template<class Application> BasicScreenedApplication<Application>::~BasicScreene
 
 template<class Application> BasicScreenedApplication<Application>& BasicScreenedApplication<Application>::addScreen(BasicScreen<Application>& screen) {
     Containers::LinkedList<BasicScreen<Application>>::insert(&screen);
-    if(frontScreen() == &screen) screen.focusEvent();
+    if(screens().first() == &screen) screen.focusEvent();
     Application::redraw();
     return *this;
 }
@@ -69,10 +69,10 @@ template<class Application> BasicScreenedApplication<Application>& BasicScreened
 
 template<class Application> BasicScreenedApplication<Application>& BasicScreenedApplication<Application>::focusScreen(BasicScreen<Application>& screen) {
     /* Already focused, nothing to do */
-    if(frontScreen() == &screen) return *this;
+    if(screens().first() == &screen) return *this;
 
-    frontScreen()->blurEvent();
-    Containers::LinkedList<BasicScreen<Application>>::move(&screen, frontScreen());
+    screens().first()->blurEvent();
+    Containers::LinkedList<BasicScreen<Application>>::move(&screen, screens().first());
     screen.focusEvent();
     Application::redraw();
     return *this;
@@ -81,25 +81,24 @@ template<class Application> BasicScreenedApplication<Application>& BasicScreened
 template<class Application> void BasicScreenedApplication<Application>::globalViewportEvent(const Vector2i&) {}
 
 template<class Application> void BasicScreenedApplication<Application>::viewportEvent(const Vector2i& size) {
-    /* Call viewport event after all other (because of framebuffer resizing) */
+    /* Call global event before all other (to resize framebuffer first) */
     globalViewportEvent(size);
 
-    for(BasicScreen<Application>* s = Containers::LinkedList<BasicScreen<Application>>::first(); s; s = s->next())
-        s->viewportEvent(size);
+    for(BasicScreen<Application>& s: *this) s.viewportEvent(size);
 }
 
 template<class Application> void BasicScreenedApplication<Application>::drawEvent() {
     /* Back-to-front rendering */
-    for(BasicScreen<Application>* s = backScreen(); s; s = s->nextNearerScreen())
+    for(BasicScreen<Application>* s = screens().last(); s; s = s->nextNearerScreen())
         if(s->propagatedEvents() & Implementation::PropagatedScreenEvent::Draw) s->drawEvent();
 
-    /* Call global event after all other (because of buffer swapping) */
+    /* Call global event after all other (to swap buffers last) */
     globalDrawEvent();
 }
 
 template<class Application> void BasicScreenedApplication<Application>::keyPressEvent(typename Application::KeyEvent& event) {
     /* Front-to-back event propagation, stop when the event gets accepted */
-    for(BasicScreen<Application>* s = frontScreen(); s; s = s->nextFartherScreen()) {
+    for(BasicScreen<Application>* s = screens().first(); s; s = s->nextFartherScreen()) {
         if(s->propagatedEvents() & Implementation::PropagatedScreenEvent::Input) {
             s->keyPressEvent(event);
             if(event.isAccepted()) break;
@@ -109,7 +108,7 @@ template<class Application> void BasicScreenedApplication<Application>::keyPress
 
 template<class Application> void BasicScreenedApplication<Application>::keyReleaseEvent(typename Application::KeyEvent& event) {
     /* Front-to-back event propagation, stop when the event gets accepted */
-    for(BasicScreen<Application>* s = frontScreen(); s; s = s->nextFartherScreen()) {
+    for(BasicScreen<Application>* s = screens().first(); s; s = s->nextFartherScreen()) {
         if(s->propagatedEvents() & Implementation::PropagatedScreenEvent::Input) {
             s->keyReleaseEvent(event);
             if(event.isAccepted()) break;
@@ -119,7 +118,7 @@ template<class Application> void BasicScreenedApplication<Application>::keyRelea
 
 template<class Application> void BasicScreenedApplication<Application>::mousePressEvent(typename Application::MouseEvent& event) {
     /* Front-to-back event propagation, stop when the event gets accepted */
-    for(BasicScreen<Application>* s = frontScreen(); s; s = s->nextFartherScreen()) {
+    for(BasicScreen<Application>* s = screens().first(); s; s = s->nextFartherScreen()) {
         if(s->propagatedEvents() & Implementation::PropagatedScreenEvent::Input) {
             s->mousePressEvent(event);
             if(event.isAccepted()) break;
@@ -129,7 +128,7 @@ template<class Application> void BasicScreenedApplication<Application>::mousePre
 
 template<class Application> void BasicScreenedApplication<Application>::mouseReleaseEvent(typename Application::MouseEvent& event) {
     /* Front-to-back event propagation, stop when the event gets accepted */
-    for(BasicScreen<Application>* s = frontScreen(); s; s = s->nextFartherScreen()) {
+    for(BasicScreen<Application>* s = screens().first(); s; s = s->nextFartherScreen()) {
         if(s->propagatedEvents() & Implementation::PropagatedScreenEvent::Input) {
             s->mouseReleaseEvent(event);
             if(event.isAccepted()) break;
@@ -139,7 +138,7 @@ template<class Application> void BasicScreenedApplication<Application>::mouseRel
 
 template<class Application> void BasicScreenedApplication<Application>::mouseMoveEvent(typename Application::MouseMoveEvent& event) {
     /* Front-to-back event propagation, stop when the event gets accepted */
-    for(BasicScreen<Application>* s = frontScreen(); s; s = s->nextFartherScreen()) {
+    for(BasicScreen<Application>* s = screens().first(); s; s = s->nextFartherScreen()) {
         if(s->propagatedEvents() & Implementation::PropagatedScreenEvent::Input) {
             s->mouseMoveEvent(event);
             if(event.isAccepted()) break;

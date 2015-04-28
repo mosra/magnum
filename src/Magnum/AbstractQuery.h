@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -47,7 +47,7 @@ more information.
 @todo `QUERY_COUNTER_BITS` (not sure since when this is supported)
 */
 class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
-    friend class Implementation::QueryState;
+    friend Implementation::QueryState;
 
     public:
         /** @brief Copying is not allowed */
@@ -66,7 +66,7 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
         GLuint id() const { return _id; }
 
         /**
-         * @brief %Query label
+         * @brief Query label
          *
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls. If OpenGL 4.3 is not supported and neither
@@ -95,7 +95,7 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
 
         /** @overload */
         template<std::size_t size> AbstractQuery& setLabel(const char(&label)[size]) {
-            return setLabelInternal(label);
+            return setLabelInternal({label, size - 1});
         }
 
         /**
@@ -115,10 +115,10 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
          * @attention @ref Magnum::UnsignedLong "UnsignedLong" and @ref Magnum::Long "Long"
          *      result type is not available in @ref MAGNUM_TARGET_WEBGL "WebGL".
          * @see @fn_gl{GetQueryObject} with @def_gl{QUERY_RESULT}
-         * @requires_gl33 %Extension @extension{ARB,timer_query} for result
+         * @requires_gl33 Extension @extension{ARB,timer_query} for result
          *      type @ref Magnum::UnsignedInt "UnsignedInt" and @ref Magnum::Long
          *      "Long"
-         * @requires_es_extension %Extension @es_extension{EXT,disjoint_timer_query}
+         * @requires_es_extension Extension @es_extension{EXT,disjoint_timer_query}
          *      for result types @ref Magnum::Int "Int", @ref Magnum::UnsignedLong "UnsignedLong"
          *      @ref Magnum::Long "Long".
          */
@@ -186,8 +186,9 @@ inline AbstractQuery::AbstractQuery(AbstractQuery&& other) noexcept: _id(other._
 }
 
 inline AbstractQuery& AbstractQuery::operator=(AbstractQuery&& other) noexcept {
-    std::swap(_id, other._id);
-    std::swap(_target, other._target);
+    using std::swap;
+    swap(_id, other._id);
+    swap(_target, other._target);
     return *this;
 }
 

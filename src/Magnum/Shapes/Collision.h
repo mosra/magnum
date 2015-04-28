@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -36,7 +36,7 @@
 namespace Magnum { namespace Shapes {
 
 /**
-@brief %Collision data
+@brief Collision data
 
 Contains information about collision between objects A and B, described by
 contact position, separation normal and separation distance.
@@ -80,7 +80,7 @@ template<UnsignedInt dimensions> class Collision {
          */
         operator bool() const { return _separationDistance > 0.0f; }
 
-        /** @brief %Collision position */
+        /** @brief Collision position */
         typename DimensionTraits<dimensions, Float>::VectorType position() const {
             return _position;
         }
@@ -97,8 +97,7 @@ template<UnsignedInt dimensions> class Collision {
         /**
          * @brief Separation distance
          *
-         * @see @ref separationNormal(), operator bool()
-         * @todoc Explicit reference when Doxygen can handle conversion operators
+         * @see @ref separationNormal(), @ref operator bool()
          */
         Float separationDistance() const {
             return _separationDistance;

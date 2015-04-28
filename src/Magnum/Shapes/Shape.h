@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -42,7 +42,7 @@ namespace Implementation {
 /**
 @brief Object shape
 
-Adds shape for collision detection to object. Each %Shape is part of
+Adds shape for collision detection to object. Each Shape is part of
 some @ref ShapeGroup, which essentially maintains a set of objects which can
 collide with each other. See @ref shapes for brief introduction.
 
@@ -67,13 +67,13 @@ Shapes::AbstractShape3D* firstCollision = shapes.firstCollision(shape);
     @ref DebugTools::ShapeRenderer
 */
 template<class T> class Shape: public AbstractShape<T::Dimensions> {
-    friend struct Implementation::ShapeHelper<T>;
+    friend Implementation::ShapeHelper<T>;
 
     public:
         /**
          * @brief Constructor
          * @param object    Object holding this feature
-         * @param shape     %Shape
+         * @param shape     Shape
          * @param group     Group this shape belongs to
          */
         explicit Shape(SceneGraph::AbstractObject<T::Dimensions, Float>& object, const T& shape, ShapeGroup<T::Dimensions>* group = nullptr): AbstractShape<T::Dimensions>(object, group) {

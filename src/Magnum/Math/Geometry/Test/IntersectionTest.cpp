@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,23 +23,22 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <limits>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Math/Geometry/Intersection.h"
 
 namespace Magnum { namespace Math { namespace Geometry { namespace Test {
 
-class IntersectionTest: public Corrade::TestSuite::Tester {
-    public:
-        IntersectionTest();
+struct IntersectionTest: Corrade::TestSuite::Tester {
+    explicit IntersectionTest();
 
-        void planeLine();
-        void lineLine();
+    void planeLine();
+    void lineLine();
 };
 
 typedef Math::Vector2<Float> Vector2;
 typedef Math::Vector3<Float> Vector3;
+typedef Math::Constants<Float> Constants;
 
 IntersectionTest::IntersectionTest() {
     addTests<IntersectionTest>({&IntersectionTest::planeLine,
@@ -60,11 +59,11 @@ void IntersectionTest::planeLine() {
 
     /* Line lies on the plane */
     CORRADE_COMPARE(Intersection::planeLine(planePosition, planeNormal,
-        Vector3{1.0f, 0.5f, 0.5f}, Vector3{-1.0f, 0.5f, 0.0f}), std::numeric_limits<Float>::quiet_NaN());
+        Vector3{1.0f, 0.5f, 0.5f}, Vector3{-1.0f, 0.5f, 0.0f}), Constants::nan());
 
     /* Line is parallel to the plane */
     CORRADE_COMPARE(Intersection::planeLine(planePosition, planeNormal,
-        Vector3{1.0f, 0.0f, 1.0f}, Vector3{-1.0f, 0.0f, 0.0f}), -std::numeric_limits<Float>::infinity());
+        Vector3{1.0f, 0.0f, 1.0f}, Vector3{-1.0f, 0.0f, 0.0f}), -Constants::inf());
 }
 
 void IntersectionTest::lineLine() {
@@ -86,17 +85,16 @@ void IntersectionTest::lineLine() {
     /* Collinear lines */
     const auto tu = Intersection::lineSegmentLineSegment(p, r,
         Vector2{0.0f, 1.0f}, Vector2{-1.0f, -2.0f});
-    CORRADE_COMPARE(tu.first, -std::numeric_limits<Float>::quiet_NaN());
-    CORRADE_COMPARE(tu.second, -std::numeric_limits<Float>::quiet_NaN());
+    CORRADE_COMPARE(tu.first, -Constants::nan());
+    CORRADE_COMPARE(tu.second, -Constants::nan());
     CORRADE_COMPARE(Intersection::lineSegmentLine(p, r,
-        Vector2{0.0f, 1.0f}, Vector2{-1.0f, -2.0f}), -std::numeric_limits<Float>::quiet_NaN());
+        Vector2{0.0f, 1.0f}, Vector2{-1.0f, -2.0f}), -Constants::nan());
 
     /* Parallel lines */
     CORRADE_COMPARE(Intersection::lineSegmentLineSegment(p, r,
-        Vector2{0.0f, 0.0f}, Vector2{1.0f, 2.0f}), std::make_pair(std::numeric_limits<Float>::infinity(),
-                                                                  std::numeric_limits<Float>::infinity()));
+        Vector2{0.0f, 0.0f}, Vector2{1.0f, 2.0f}), std::make_pair(Constants::inf(), Constants::inf()));
     CORRADE_COMPARE(Intersection::lineSegmentLine(p, r,
-        Vector2{0.0f, 0.0f}, Vector2{1.0f, 2.0f}), std::numeric_limits<Float>::infinity());
+        Vector2{0.0f, 0.0f}, Vector2{1.0f, 2.0f}), Constants::inf());
 }
 
 }}}}

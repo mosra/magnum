@@ -1,9 +1,9 @@
-#ifndef Magnum_Text_TextRenderer_h
-#define Magnum_Text_TextRenderer_h
+#ifndef Magnum_TextureTools_visibility_h
+#define Magnum_TextureTools_visibility_h
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -25,31 +25,18 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Typedef @ref Magnum::Text::TextRenderer2D, @ref Magnum::Text::TextRenderer3D
- * @deprecated Use @ref Renderer.h instead.
- */
+#include <Corrade/Utility/VisibilityMacros.h>
 
-#include "Magnum/Text/Renderer.h"
+#include "Magnum/configure.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-namespace Magnum { namespace Text {
-
-/**
-@copybrief Renderer2D
-@deprecated Use @ref Magnum::Text::Renderer2D "Renderer2D" instead.
-*/
-typedef CORRADE_DEPRECATED("use Renderer2D instead") Renderer<2> TextRenderer2D;
-
-/**
-@copybrief Renderer3D
-@deprecated Use @ref Magnum::Text::Renderer3D "Renderer3D" instead.
-*/
-typedef CORRADE_DEPRECATED("use Renderer2D instead") Renderer<3> TextRenderer3D;
-
-}}
+#ifndef MAGNUM_BUILD_STATIC
+    #ifdef MagnumTextureTools_EXPORTS
+        #define MAGNUM_TEXTURETOOLS_EXPORT CORRADE_VISIBILITY_EXPORT
+    #else
+        #define MAGNUM_TEXTURETOOLS_EXPORT CORRADE_VISIBILITY_IMPORT
+    #endif
 #else
-#error
+    #define MAGNUM_TEXTURETOOLS_EXPORT CORRADE_VISIBILITY_STATIC
 #endif
 
 #endif

@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -100,6 +100,48 @@ Trade::MeshData3D Cube::solid() {
         {-1.0f,  0.0f,  0.0f}, /* -X */
         {-1.0f,  0.0f,  0.0f}
     }}, {});
+}
+
+Trade::MeshData3D Cube::solidStrip() {
+    /* Sources:
+        https://twitter.com/Donzanoid/status/436843034966507520
+        http://www.asmcommunity.net/forums/topic/?id=6284#post-45209
+        https://gist.github.com/cdwfs/2cab675b333632d940cf
+
+        0---2---3---1
+        |E /|\ A|H /|
+        | / | \ | / |
+        |/ D|B \|/ I|
+        4---7---6---5
+            |C /|
+            | / |
+            |/ J|
+            4---5
+            |\ K|
+            | \ |
+            |L \|
+            0---1
+            |\ G|
+            | \ |
+            |F \|
+            2---3
+    */
+    return Trade::MeshData3D(MeshPrimitive::TriangleStrip, {}, {{
+        { 1.0f,  1.0f,  1.0f}, /* 3 */
+        {-1.0f,  1.0f,  1.0f}, /* 2 */
+        { 1.0f, -1.0f,  1.0f}, /* 6 */
+        {-1.0f, -1.0f,  1.0f}, /* 7 */
+        {-1.0f, -1.0f, -1.0f}, /* 4 */
+        {-1.0f,  1.0f,  1.0f}, /* 2 */
+        {-1.0f,  1.0f, -1.0f}, /* 0 */
+        { 1.0f,  1.0f,  1.0f}, /* 3 */
+        { 1.0f,  1.0f, -1.0f}, /* 1 */
+        { 1.0f, -1.0f,  1.0f}, /* 6 */
+        { 1.0f, -1.0f, -1.0f}, /* 5 */
+        {-1.0f, -1.0f, -1.0f}, /* 4 */
+        { 1.0f,  1.0f, -1.0f}, /* 1 */
+        {-1.0f,  1.0f, -1.0f}  /* 0 */
+    }}, {}, {});
 }
 
 Trade::MeshData3D Cube::wireframe() {

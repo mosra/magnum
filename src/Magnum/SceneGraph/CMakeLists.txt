@@ -1,7 +1,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -69,23 +69,26 @@ set(MagnumSceneGraph_HEADERS
 
     visibility.h)
 
-# Set shared library flags for the objects, as they will be part of shared lib
-# TODO: fix when CMake sets target_EXPORTS for OBJECT targets as well
+# Objects shared between main and test library
 add_library(MagnumSceneGraphObjects OBJECT
     ${MagnumSceneGraph_SRCS}
     ${MagnumSceneGraph_HEADERS})
-if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
-    # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
-    set_target_properties(MagnumSceneGraphObjects PROPERTIES COMPILE_FLAGS "-DMagnumSceneGraphObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
-else()
+if(NOT BUILD_STATIC)
     set_target_properties(MagnumSceneGraphObjects PROPERTIES COMPILE_FLAGS "-DMagnumSceneGraphObjects_EXPORTS")
 endif()
+if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+    set_target_properties(MagnumSceneGraphObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
 
-# SceneGraph library
+# Main SceneGraph library
 add_library(MagnumSceneGraph ${SHARED_OR_STATIC}
     $<TARGET_OBJECTS:MagnumSceneGraphObjects>
     ${MagnumSceneGraph_GracefulAssert_SRCS})
 set_target_properties(MagnumSceneGraph PROPERTIES DEBUG_POSTFIX "-d")
+if(BUILD_STATIC_PIC)
+    set_target_properties(MagnumSceneGraph PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
+
 target_link_libraries(MagnumSceneGraph Magnum)
 
 install(TARGETS MagnumSceneGraph
@@ -106,7 +109,7 @@ if(BUILD_TESTS)
 
     # On Windows we need to install first and then run the tests to avoid "DLL
     # not found" hell, thus we need to install this too
-    if(CORRADE_TARGET_WINDOWS AND NOT CMAKE_CROSSCOMPILING)
+    if(CORRADE_TARGET_WINDOWS AND NOT CMAKE_CROSSCOMPILING AND NOT BUILD_STATIC)
         install(TARGETS MagnumSceneGraphTestLib
             RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
             LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}

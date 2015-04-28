@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -38,13 +38,15 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief Base transformation for two-dimensional scenes supporting translation
 
+See @ref scenegraph-features-transformation for more information.
+
 By default the translation is stored with the same underlying type as resulting
 transformation matrix, but it's possible to store translation in e.g. integral
 coordinates while having floating-point transformation matrix.
 
-@see @ref AbstractBasicTranslation2D, @ref AbstractBasicTranslation3D,
-    @ref AbstractTranslation2D, @ref AbstractTranslation3D, @ref scenegraph,
-    @ref TranslationTransformation
+@see @ref scenegraph, @ref AbstractBasicTranslation2D,
+    @ref AbstractBasicTranslation3D, @ref AbstractTranslation2D,
+    @ref AbstractTranslation3D, @ref TranslationTransformation
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<UnsignedInt dimensions, class T, class TranslationType = T>
@@ -57,18 +59,47 @@ class AbstractTranslation: public AbstractTransformation<dimensions, T> {
 
         /**
          * @brief Translate object
-         * @param vector    Translation vector
-         * @param type      Transformation type
          * @return Reference to self (for method chaining)
          *
-         * @see @ref Math::Vector2::xAxis(), @ref Math::Vector2::yAxis(),
-         *      @ref Math::Vector3::xAxis(), @ref Math::Vector3::yAxis(),
-         *      @ref Math::Vector3::zAxis()
+         * @see @ref translateLocal(), @ref Math::Vector2::xAxis(),
+         *      @ref Math::Vector2::yAxis(), @ref Math::Vector3::xAxis(),
+         *      @ref Math::Vector3::yAxis(), @ref Math::Vector3::zAxis()
          */
-        AbstractTranslation<dimensions, T, TranslationType>& translate(const typename DimensionTraits<dimensions, TranslationType>::VectorType& vector, TransformationType type = TransformationType::Global) {
-            doTranslate(vector, type);
+        AbstractTranslation<dimensions, T, TranslationType>& translate(const typename DimensionTraits<dimensions, TranslationType>::VectorType& vector) {
+            doTranslate(vector);
             return *this;
         }
+
+        /**
+         * @brief Translate object as a local transformation
+         *
+         * Similar to the above, except that the transformation is applied
+         * before all others.
+         */
+        AbstractTranslation<dimensions, T, TranslationType>& translateLocal(const typename DimensionTraits<dimensions, TranslationType>::VectorType& vector) {
+            doTranslateLocal(vector);
+            return *this;
+        }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief translate()
+         * @deprecated Use @ref Magnum::SceneGraph::AbstractTranslation::translate() "translate()"
+         *      or @ref Magnum::SceneGraph::AbstractTranslation::translateLocal() "translateLocal()"
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use translate() or translateLocal() instead") AbstractTranslation<dimensions, T, TranslationType>& translate(const VectorTypeFor<dimensions, TranslationType>& vector, TransformationType type) {
+            return type == TransformationType::Global ? translate(vector) : translateLocal(vector);
+        }
+        #endif
+
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        AbstractTranslation<dimensions, T, TranslationType>& resetTransformation() {
+            AbstractTransformation<dimensions, T>::resetTransformation();
+            return *this;
+        }
+        #endif
 
     protected:
         ~AbstractTranslation();
@@ -79,7 +110,10 @@ class AbstractTranslation: public AbstractTransformation<dimensions, T> {
     private:
     #endif
         /** @brief Polymorphic implementation for @ref translate() */
-        virtual void doTranslate(const typename DimensionTraits<dimensions, TranslationType>::VectorType& vector, TransformationType type) = 0;
+        virtual void doTranslate(const typename DimensionTraits<dimensions, TranslationType>::VectorType& vector) = 0;
+
+        /** @brief Polymorphic implementation for @ref translateLocal() */
+        virtual void doTranslateLocal(const typename DimensionTraits<dimensions, TranslationType>::VectorType& vector) = 0;
 };
 
 template<UnsignedInt dimensions, class T, class TranslationType> inline AbstractTranslation<dimensions, T, TranslationType>::AbstractTranslation() = default;
@@ -90,7 +124,7 @@ template<UnsignedInt dimensions, class T, class TranslationType> inline Abstract
 /**
 @brief Base transformation for two-dimensional scenes supporting translation
 
-Convenience alternative to <tt>%AbstractTranslation<2, T, TranslationType></tt>.
+Convenience alternative to `AbstractTranslation<2, T, TranslationType>`.
 See @ref AbstractTranslation for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractTranslation<2, T, TranslationType></tt>
     instead.
@@ -121,7 +155,7 @@ typedef AbstractTranslation<2, Float> AbstractTranslation2D;
 /**
 @brief Base transformation for three-dimensional scenes supporting translation
 
-Convenience alternative to <tt>%AbstractTranslation<3, T, TranslationType></tt>.
+Convenience alternative to `AbstractTranslation<3, T, TranslationType>`.
 See @ref AbstractTranslation for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractTranslation<3, T, TranslationType></tt>
     instead.

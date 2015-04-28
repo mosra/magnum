@@ -2,17 +2,19 @@
 pkgname=mingw-w64-magnum
 pkgver=dev
 pkgrel=1
-pkgdesc="C++11 and OpenGL 2D/3D graphics engine (mingw-w64)"
+pkgdesc="C++11/C++14 and OpenGL 2D/3D graphics engine (mingw-w64)"
 arch=('any')
 url="http://mosra.cz/blog/magnum.php"
 license=('MIT')
 depends=('mingw-w64-crt' 'mingw-w64-corrade' 'mingw-w64-freeglut' 'mingw-w64-sdl2' 'mingw-w64-openal')
 makedepends=('mingw-w64-gcc' 'cmake' 'ninja' 'corrade')
-options=('!buildflags' '!strip' 'staticlibs')
+options=('!buildflags' '!strip')
+
+_rootdir=$startdir/../../
 
 build() {
-    mkdir -p "$startdir/build-mingw-w64-32"
-    cd "$startdir/build-mingw-w64-32"
+    mkdir -p "$_rootdir/build-mingw-w64-32"
+    cd "$_rootdir/build-mingw-w64-32"
 
     cmake .. \
         -DCMAKE_TOOLCHAIN_FILE=../toolchains/archlinux/basic-mingw-w64-32.cmake \
@@ -36,8 +38,8 @@ build() {
         -G Ninja
     ninja
 
-    mkdir -p "$startdir/build-mingw-w64-64"
-    cd "$startdir/build-mingw-w64-64"
+    mkdir -p "$_rootdir/build-mingw-w64-64"
+    cd "$_rootdir/build-mingw-w64-64"
 
     cmake .. \
         -DCMAKE_TOOLCHAIN_FILE=../toolchains/archlinux/basic-mingw-w64-64.cmake \
@@ -62,9 +64,9 @@ build() {
 }
 
 package() {
-  cd "$startdir/build-mingw-w64-32"
+  cd "$_rootdir/build-mingw-w64-32"
   DESTDIR="$pkgdir/" ninja install/strip
 
-  cd "$startdir/build-mingw-w64-64"
+  cd "$_rootdir/build-mingw-w64-64"
   DESTDIR="$pkgdir/" ninja install/strip
 }

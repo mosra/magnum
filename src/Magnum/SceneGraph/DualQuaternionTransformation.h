@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -40,7 +40,7 @@ namespace Magnum { namespace SceneGraph {
 
 This class allows only rigid transformation (i.e. only rotation and
 translation). Uses @ref Math::DualQuaternion as underlying transformation type.
-@see @ref DualQuaternionTransformation @ref scenegraph,
+@see @ref scenegraph, @ref DualQuaternionTransformation,
     @ref BasicDualComplexTransformation
 */
 template<class T> class BasicDualQuaternionTransformation: public AbstractBasicTranslationRotation3D<T> {
@@ -48,7 +48,7 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
         /** @brief Underlying transformation type */
         typedef Math::DualQuaternion<T> DataType;
 
-        /** @brief %Object transformation */
+        /** @brief Object transformation */
         Math::DualQuaternion<T> transformation() const { return _transformation; }
 
         /**
@@ -83,55 +83,150 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
         }
 
         /**
-         * @brief Multiply transformation
-         * @param transformation    Transformation
-         * @param type              Transformation type
+         * @brief Transform object
          * @return Reference to self (for method chaining)
          *
          * Expects that the dual quaternion is normalized.
-         * @see @ref Math::DualQuaternion::isNormalized()
+         * @see @ref transformLocal(), @ref Math::DualQuaternion::isNormalized()
          */
-        Object<BasicDualQuaternionTransformation<T>>& transform(const Math::DualQuaternion<T>& transformation, TransformationType type = TransformationType::Global) {
+        Object<BasicDualQuaternionTransformation<T>>& transform(const Math::DualQuaternion<T>& transformation) {
             CORRADE_ASSERT(transformation.isNormalized(),
                 "SceneGraph::DualQuaternionTransformation::transform(): the dual quaternion is not normalized",
                 static_cast<Object<BasicDualQuaternionTransformation<T>>&>(*this));
-            return transformInternal(transformation, type);
+            return transformInternal(transformation);
         }
 
         /**
-         * @copydoc AbstractTranslationRotationScaling3D::translate()
-         * Same as calling @ref transform() with @ref Math::DualQuaternion::translation().
+         * @brief Transform object as a local transformation
+         *
+         * Similar to the above, except that the transformation is applied
+         * before all others.
          */
-        Object<BasicDualQuaternionTransformation<T>>& translate(const Math::Vector3<T>& vector, TransformationType type = TransformationType::Global) {
-            return transformInternal(Math::DualQuaternion<T>::translation(vector), type);
+        Object<BasicDualQuaternionTransformation<T>>& transformLocal(const Math::DualQuaternion<T>& transformation) {
+            CORRADE_ASSERT(transformation.isNormalized(),
+                "SceneGraph::DualQuaternionTransformation::transformLocal(): the dual quaternion is not normalized",
+                static_cast<Object<BasicDualQuaternionTransformation<T>>&>(*this));
+            return transformLocalInternal(transformation);
         }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief transform()
+         * @deprecated Use @ref Magnum::SceneGraph::DualQuaternionTransformation::transform() "transform()"
+         *      or @ref Magnum::SceneGraph::DualQuaternionTransformation::transformLocal() "transformLocal()"
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use transform() or transformLocal() instead") Object<BasicDualQuaternionTransformation<T>>& transform(const Math::DualQuaternion<T>& transformation, TransformationType type) {
+            return type == TransformationType::Global ? transform(transformation) : transformLocal(transformation);
+        }
+        #endif
+
+        /**
+         * @brief Translate object
+         * @return Reference to self (for method chaining)
+         *
+         * Same as calling @ref transform() with @ref Math::DualQuaternion::translation().
+         * @see @ref translateLocal(), @ref Math::Vector3::xAxis(),
+         *      @ref Math::Vector3::yAxis(), @ref Math::Vector3::zAxis()
+         */
+        Object<BasicDualQuaternionTransformation<T>>& translate(const Math::Vector3<T>& vector) {
+            return transformInternal(Math::DualQuaternion<T>::translation(vector));
+        }
+
+        /**
+         * @brief Translate object as a local transformation
+         *
+         * Similar to the above, except that the transformation is applied
+         * before all others.
+         */
+        Object<BasicDualQuaternionTransformation<T>>& translateLocal(const Math::Vector3<T>& vector) {
+            return transformLocalInternal(Math::DualQuaternion<T>::translation(vector));
+        }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief translate()
+         * @deprecated Use @ref Magnum::SceneGraph::DualQuaternionTransformation::translate() "translate()"
+         *      or @ref Magnum::SceneGraph::DualQuaternionTransformation::translateLocal() "translateLocal()"
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use translate() or translateLocal() instead") Object<BasicDualQuaternionTransformation<T>>& translate(const Math::Vector3<T>& vector, TransformationType type) {
+            return type == TransformationType::Global ? translate(vector) : translateLocal(vector);
+        }
+        #endif
 
         /**
          * @brief Rotate object
          * @param angle             Angle (counterclockwise)
          * @param normalizedAxis    Normalized rotation axis
-         * @param type              Transformation type
          * @return Reference to self (for method chaining)
          *
          * Same as calling @ref transform() with @ref Math::DualQuaternion::rotation().
-         * @see @ref Math::Vector3::xAxis(), @ref Math::Vector3::yAxis(),
-         *      @ref Math::Vector3::zAxis(), @ref normalizeRotation()
+         * @see @ref rotateLocal(), @ref Math::Vector3::xAxis(),
+         *      @ref Math::Vector3::yAxis(), @ref Math::Vector3::zAxis(),
+         *      @ref normalizeRotation()
          */
-        Object<BasicDualQuaternionTransformation<T>>& rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type = TransformationType::Global) {
-            return transformInternal(Math::DualQuaternion<T>::rotation(angle, normalizedAxis), type);
+        Object<BasicDualQuaternionTransformation<T>>& rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis) {
+            return transformInternal(Math::DualQuaternion<T>::rotation(angle, normalizedAxis));
         }
+
+        /**
+         * @brief Rotate object as a local transformation
+         *
+         * Similar to the above, except that the transformation is applied
+         * before all others.
+         */
+        Object<BasicDualQuaternionTransformation<T>>& rotateLocal(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis) {
+            return transformLocalInternal(Math::DualQuaternion<T>::rotation(angle, normalizedAxis));
+        }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief rotate()
+         * @deprecated Use @ref Magnum::SceneGraph::DualQuaternionTransformation::rotate() "rotate()"
+         *      or @ref Magnum::SceneGraph::DualQuaternionTransformation::rotateLocal() "rotateLocal()"
+         *      instead.
+         */
+        CORRADE_DEPRECATED("usr rotate() or rotateLocal() instead") Object<BasicDualQuaternionTransformation<T>>& rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type) {
+            return type == TransformationType::Global ? rotate(angle, normalizedAxis) : rotateLocal(angle, normalizedAxis);
+        }
+        #endif
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        Object<BasicDualQuaternionTransformation<T>>& rotateX(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+        Object<BasicDualQuaternionTransformation<T>>& rotateX(Math::Rad<T> angle) {
+            return rotate(angle, Math::Vector3<T>::xAxis());
+        }
+        Object<BasicDualQuaternionTransformation<T>>& rotateXLocal(Math::Rad<T> angle) {
+            return rotateLocal(angle, Math::Vector3<T>::xAxis());
+        }
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        CORRADE_DEPRECATED("use rotateX() or rotateXLocal() instead") Object<BasicDualQuaternionTransformation<T>>& rotateX(Math::Rad<T> angle, TransformationType type) {
             return rotate(angle, Math::Vector3<T>::xAxis(), type);
         }
-        Object<BasicDualQuaternionTransformation<T>>& rotateY(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+        #endif
+        Object<BasicDualQuaternionTransformation<T>>& rotateY(Math::Rad<T> angle) {
+            return rotate(angle, Math::Vector3<T>::yAxis());
+        }
+        Object<BasicDualQuaternionTransformation<T>>& rotateYLocal(Math::Rad<T> angle) {
+            return rotateLocal(angle, Math::Vector3<T>::yAxis());
+        }
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        CORRADE_DEPRECATED("use rotateY() or rotateYLocal() instead") Object<BasicDualQuaternionTransformation<T>>& rotateY(Math::Rad<T> angle, TransformationType type) {
             return rotate(angle, Math::Vector3<T>::yAxis(), type);
         }
-        Object<BasicDualQuaternionTransformation<T>>& rotateZ(Math::Rad<T> angle, TransformationType type = TransformationType::Global) {
+        #endif
+        Object<BasicDualQuaternionTransformation<T>>& rotateZ(Math::Rad<T> angle) {
+            return rotate(angle, Math::Vector3<T>::zAxis());
+        }
+        Object<BasicDualQuaternionTransformation<T>>& rotateZLocal(Math::Rad<T> angle) {
+            return rotateLocal(angle, Math::Vector3<T>::zAxis());
+        }
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        CORRADE_DEPRECATED("use rotateZ() or rotateZLocal() instead") Object<BasicDualQuaternionTransformation<T>>& rotateZ(Math::Rad<T> angle, TransformationType type) {
             return rotate(angle, Math::Vector3<T>::zAxis(), type);
         }
+        #endif
         #endif
 
     protected:
@@ -141,12 +236,18 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
     private:
         void doResetTransformation() override final { resetTransformation(); }
 
-        void doTranslate(const Math::Vector3<T>& vector, TransformationType type) override final {
-            translate(vector, type);
+        void doTranslate(const Math::Vector3<T>& vector) override final {
+            translate(vector);
+        }
+        void doTranslateLocal(const Math::Vector3<T>& vector) override final {
+            translateLocal(vector);
         }
 
-        void doRotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type) override final {
-            rotate(angle, normalizedAxis, type);
+        void doRotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis) override final {
+            rotate(angle, normalizedAxis);
+        }
+        void doRotateLocal(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis) override final {
+            rotateLocal(angle, normalizedAxis);
         }
 
         /* No assertions fired, for internal use */
@@ -163,9 +264,11 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
         }
 
         /* No assertions fired, for internal use */
-        Object<BasicDualQuaternionTransformation<T>>& transformInternal(const Math::DualQuaternion<T>& transformation, TransformationType type) {
-            return setTransformationInternal(type == TransformationType::Global ?
-                transformation*_transformation : _transformation*transformation);
+        Object<BasicDualQuaternionTransformation<T>>& transformInternal(const Math::DualQuaternion<T>& transformation) {
+            return setTransformationInternal(transformation*_transformation);
+        }
+        Object<BasicDualQuaternionTransformation<T>>& transformLocalInternal(const Math::DualQuaternion<T>& transformation) {
+            return setTransformationInternal(_transformation*transformation);
         }
 
         Math::DualQuaternion<T> _transformation;

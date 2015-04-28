@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -122,8 +122,8 @@ You can then open `MyApplication` through your webserver in Chrome (e.g.
 ## General usage
 
 For CMake you need to copy `FindOpenGLES2.cmake` from `modules/` directory in
-%Magnum source to `modules/` dir in your project (so it is able to find OpenGL
-ES). Request `%NaClApplication` component, add
+Magnum source to `modules/` dir in your project (so it is able to find OpenGL
+ES). Request `NaClApplication` component, add
 `${MAGNUM_NACLAPPLICATION_INCLUDE_DIRS}` to include path and link to
 `${MAGNUM_NACLAPPLICATION_LIBRARIES}`. If no other application is requested,
 you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}` and
@@ -275,7 +275,11 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
         bool setFullscreen(bool enabled);
 
     protected:
-        /** @copydoc Sdl2Application::swapBuffers() */
+        /**
+         * @brief Swap buffers
+         *
+         * Paints currently rendered framebuffer on screen.
+         */
         void swapBuffers();
 
         /** @copydoc Sdl2Application::redraw() */
@@ -404,7 +408,7 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
 };
 
 /**
-@brief %Configuration
+@brief Configuration
 
 Double-buffered RGBA canvas with depth and stencil buffers.
 @see @ref NaClApplication(), @ref createContext(), @ref tryCreateContext()
@@ -478,7 +482,7 @@ propagated to the browser.
 class NaClApplication::InputEvent {
     public:
         /**
-         * @brief %Modifier
+         * @brief Modifier
          *
          * @see @ref Modifiers, @ref modifiers()
          * @todo AltGr + PP_INPUTEVENT_MODIFIER_ISKEYPAD, PP_INPUTEVENT_MODIFIER_ISAUTOREPEAT
@@ -574,7 +578,7 @@ See also @ref InputEvent for more information.
 @see @ref keyPressEvent(), @ref keyReleaseEvent()
 */
 class NaClApplication::KeyEvent: public NaClApplication::InputEvent {
-    friend class NaClApplication;
+    friend NaClApplication;
 
     public:
         /**
@@ -669,7 +673,7 @@ See also @ref InputEvent for more information.
 @see @ref MouseMoveEvent, @ref mousePressEvent(), @ref mouseReleaseEvent()
 */
 class NaClApplication::MouseEvent: public NaClApplication::InputEvent {
-    friend class NaClApplication;
+    friend NaClApplication;
 
     public:
         /**
@@ -711,7 +715,7 @@ See also @ref InputEvent for more information.
 @see @ref MouseEvent, @ref mouseMoveEvent()
 */
 class NaClApplication::MouseMoveEvent: public NaClApplication::InputEvent {
-    friend class NaClApplication;
+    friend NaClApplication;
 
     public:
         /** @brief Position */

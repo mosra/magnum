@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -65,7 +65,7 @@ documentation for more information about usage in shaders.
 
 @see @ref Texture, @ref TextureArray, @ref CubeMapTexture,
     @ref CubeMapTextureArray, @ref BufferTexture, @ref MultisampleTexture
-@requires_gl31 %Extension @extension{ARB,texture_rectangle}
+@requires_gl31 Extension @extension{ARB,texture_rectangle}
 @requires_gl Rectangle textures are not available in OpenGL ES.
  */
 class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
@@ -92,59 +92,38 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
         explicit RectangleTexture(): AbstractTexture(GL_TEXTURE_RECTANGLE) {}
 
         /**
-         * @brief Set minification filter
-         * @param filter        Filter
+         * @copybrief Texture::setMinificationFilter()
          * @return Reference to self (for method chaining)
          *
-         * Sets filter used when the object pixel size is smaller than the
-         * texture size. If @extension{EXT,direct_state_access} is not
-         * available, the texture is bound to some texture unit before the
-         * operation. Initial value is @ref Sampler::Filter::Linear.
-         * @see @ref setMagnificationFilter(), @fn_gl{ActiveTexture},
-         *      @fn_gl{BindTexture} and @fn_gl{TexParameter} or
-         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access}
-         *      with @def_gl{TEXTURE_MIN_FILTER}
+         * See @ref Texture::setMinificationFilter() for more information.
+         * Initial value is @ref Sampler::Filter::Linear.
          */
         RectangleTexture& setMinificationFilter(Sampler::Filter filter) {
             AbstractTexture::setMinificationFilter(filter, Sampler::Mipmap::Base);
             return *this;
         }
 
-        /** @copydoc Texture::setMagnificationFilter() */
+        /**
+         * @copybrief Texture::setMagnificationFilter()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setMagnificationFilter() for more information.
+         */
         RectangleTexture& setMagnificationFilter(Sampler::Filter filter) {
             AbstractTexture::setMagnificationFilter(filter);
             return *this;
         }
 
         /**
-         * @brief %Image size
-         *
-         * The result is not cached in any way. If
-         * @extension{EXT,direct_state_access} is not available, the texture
-         * is bound to some texture unit before the operation.
-         * @see @ref image(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{GetTexLevelParameter} or @fn_gl_extension{GetTextureLevelParameter,EXT,direct_state_access}
-         *      with @def_gl{TEXTURE_WIDTH} and @def_gl{TEXTURE_HEIGHT}
-         */
-        Vector2i imageSize() { return DataHelper<2>::imageSize(*this, _target, 0); }
-
-        /**
-         * @brief Set wrapping
-         * @param wrapping          Wrapping type for all texture dimensions
+         * @copybrief Texture::setWrapping()
          * @return Reference to self (for method chaining)
          *
          * Sets wrapping type for coordinates out of @f$ [ 0, size - 1 ] @f$
-         * range. If @extension{EXT,direct_state_access} is not available, the
-         * texture is bound to some texture unit before the operation. Initial
+         * range. See @ref Texture::setWrapping() for more information. Initial
          * value is @ref Sampler::Wrapping::ClampToEdge.
          * @attention Only @ref Sampler::Wrapping::ClampToEdge and
          *      @ref Sampler::Wrapping::ClampToBorder is supported on this
          *      texture type.
-         * @see @ref setBorderColor(), @fn_gl{ActiveTexture},
-         *      @fn_gl{BindTexture} and @fn_gl{TexParameter} or
-         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
-         *      @def_gl{TEXTURE_WRAP_S}, @def_gl{TEXTURE_WRAP_T},
-         *      @def_gl{TEXTURE_WRAP_R}
          */
         RectangleTexture& setWrapping(const Array2D<Sampler::Wrapping>& wrapping) {
             DataHelper<2>::setWrapping(*this, wrapping);
@@ -169,41 +148,38 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
          *
          * See @ref Texture::setBorderColor(const Vector4ui&) for more
          * information.
+         * @requires_gl30 Extension @extension{EXT,texture_integer}
          */
         RectangleTexture& setBorderColor(const Vector4ui& color) {
             AbstractTexture::setBorderColor(color);
             return *this;
         }
 
-        /**
-         * @copybrief Texture::setBorderColor(const Vector4ui&)
-         * @return Reference to self (for method chaining)
-         *
-         * See @ref Texture::setBorderColor(const Vector4i&) for more
-         * information.
+        /** @overload
+         * @requires_gl30 Extension @extension{EXT,texture_integer}
          */
         RectangleTexture& setBorderColor(const Vector4i& color) {
             AbstractTexture::setBorderColor(color);
             return *this;
         }
 
-        /** @copydoc Texture::setMaxAnisotropy() */
+        /**
+         * @copybrief Texture::setMaxAnisotropy()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setMaxAnisotropy() for more information.
+         */
         RectangleTexture& setMaxAnisotropy(Float anisotropy) {
             AbstractTexture::setMaxAnisotropy(anisotropy);
             return *this;
         }
 
         /**
-         * @brief Set sRGB decoding
+         * @copybrief Texture::setSRGBDecode()
          * @return Reference to self (for method chaining)
          *
-         * Disables or reenables decoding of sRGB values. Initial value is
-         * `true`.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{TexParameter} or
-         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access} with
-         *      @def_gl{TEXTURE_SRGB_DECODE_EXT}
-         * @requires_extension %Extension @extension{EXT,texture_sRGB_decode}
+         * See @ref Texture::setSRGBDecode() for more information.
+         * @requires_extension Extension @extension{EXT,texture_sRGB_decode}
          */
         RectangleTexture& setSRGBDecode(bool decode) {
             AbstractTexture::setSRGBDecode(decode);
@@ -215,6 +191,7 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setSwizzle() for more information.
+         * @requires_gl33 Extension @extension{ARB,texture_swizzle}
          */
         template<char r, char g, char b, char a> RectangleTexture& setSwizzle() {
             AbstractTexture::setSwizzle<r, g, b, a>();
@@ -248,6 +225,7 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setDepthStencilMode() for more information.
+         * @requires_gl43 Extension @extension{ARB,stencil_texturing}
          */
         RectangleTexture& setDepthStencilMode(Sampler::DepthStencilMode mode) {
             AbstractTexture::setDepthStencilMode(mode);
@@ -255,122 +233,149 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
         }
 
         /**
-         * @brief Set storage
-         * @param internalFormat    Internal format
-         * @param size              %Texture size
+         * @copybrief Texture::setStorage()
          * @return Reference to self (for method chaining)
          *
-         * Specifies entire structure of a texture at once, removing the need
-         * for additional consistency checks and memory reallocations when
-         * updating the data later. After calling this function the texture
-         * is immutable and calling @ref setStorage() or @ref setImage() is not
-         * allowed.
-         *
-         * If @extension{EXT,direct_state_access} is not available, the texture
-         * is bound to some texture unit before the operation. If
-         * @extension{ARB,texture_storage} (part of OpenGL 4.2), OpenGL ES 3.0
-         * or @es_extension{EXT,texture_storage} in OpenGL ES 2.0 is not
-         * available, the feature is emulated with @ref setImage() call.
-         * @see @ref maxSize(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{TexStorage2D} or
-         *      @fn_gl_extension{TextureStorage2D,EXT,direct_state_access},
-         *      eventually @fn_gl{TexImage2D} or
-         *      @fn_gl_extension{TextureImage2D,EXT,direct_state_access}.
+         * See @ref Texture::setStorage() for more information.
+         * @see @ref maxSize()
          */
         RectangleTexture& setStorage(TextureFormat internalFormat, const Vector2i& size) {
-            DataHelper<2>::setStorage(*this, _target, 1, internalFormat, size);
+            DataHelper<2>::setStorage(*this, 1, internalFormat, size);
             return *this;
         }
+
+        /**
+         * @brief Texture image size
+         *
+         * See @ref Texture::imageSize() for more information.
+         */
+        Vector2i imageSize() { return DataHelper<2>::imageSize(*this, 0); }
 
         /**
          * @brief Read texture to image
-         * @param image             %Image where to put the data
          *
-         * %Image parameters like format and type of pixel data are taken from
-         * given image, image size is taken from the texture using
-         * @ref imageSize().
-         *
-         * If @extension{EXT,direct_state_access} is not available, the
-         * texture is bound to some texture unit before the operation. If
-         * @extension{ARB,robustness} is available, the operation is protected
-         * from buffer overflow. However, if both @extension{EXT,direct_state_access}
-         * and @extension{ARB,robustness} are available, the DSA version is
-         * used, because it is better for performance and there isn't any
-         * function combining both features.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{GetTexLevelParameter} or @fn_gl_extension{GetTextureLevelParameter,EXT,direct_state_access}
-         *      with @def_gl{TEXTURE_WIDTH} and @def_gl{TEXTURE_HEIGHT}, then
-         *      @fn_gl{GetTexImage}, @fn_gl_extension{GetTextureImage,EXT,direct_state_access}
-         *      or @fn_gl_extension{GetnTexImage,ARB,robustness}
+         * See @ref Texture::image(Int, Image&) for more information.
          */
         void image(Image2D& image) {
-            AbstractTexture::image<2>(_target, 0, image);
+            AbstractTexture::image<2>(0, image);
         }
 
-        /**
-         * @brief Read given mip level of texture to buffer image
-         * @param image             %Buffer image where to put the data
-         * @param usage             %Buffer usage
+        /** @overload
          *
-         * See @ref image(Image2D&) for more information.
+         * Convenience alternative to the above, example usage:
+         * @code
+         * Image2D image = texture.image({ColorFormat::RGBA, ColorType::UnsignedByte});
+         * @endcode
+         */
+        Image2D image(Image2D&& image);
+
+        /**
+         * @brief Read texture to buffer image
+         *
+         * See @ref Texture::image(Int, BufferImage&, BufferUsage) for more
+         * information.
          */
         void image(BufferImage2D& image, BufferUsage usage) {
-            AbstractTexture::image<2>(_target, 0, image, usage);
+            AbstractTexture::image<2>(0, image, usage);
         }
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * BufferImage2D image = texture.image({ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+         * @endcode
+         */
+        BufferImage2D image(BufferImage2D&& image, BufferUsage usage);
 
         /**
-         * @brief Set image data
-         * @param internalFormat    Internal format
-         * @param image             @ref Image2D, @ref ImageReference2D or
-         *      @ref Trade::ImageData2D
+         * @copybrief Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, Image&)
+         *
+         * See @ref Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, Image&)
+         * for more information.
+         * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         */
+        void subImage(const Range2Di& range, Image2D& image) {
+            AbstractTexture::subImage<2>(0, range, image);
+        }
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * Image2D image = texture.subImage(range, {ColorFormat::RGBA, ColorType::UnsignedByte});
+         * @endcode
+         */
+        Image2D subImage(const Range2Di& range, Image2D&& image);
+
+        /**
+         * @copybrief Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, BufferImage&, BufferUsage)
+         *
+         * See @ref Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, BufferImage&, BufferUsage)
+         * for more information.
+         * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         */
+        void subImage(const Range2Di& range, BufferImage2D& image, BufferUsage usage) {
+            AbstractTexture::subImage<2>(0, range, image, usage);
+        }
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * BufferImage2D image = texture.subImage(range, {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+         * @endcode
+         */
+        BufferImage2D subImage(const Range2Di& range, BufferImage2D&& image, BufferUsage usage);
+
+        /**
+         * @copybrief Texture::setImage()
          * @return Reference to self (for method chaining)
          *
-         * For better performance when calling @ref setImage() more than once
-         * use @ref setStorage() and @ref setSubImage() instead.
-         *
-         * If @extension{EXT,direct_state_access} is not available, the
-         * texture is bound to some texture unit before the operation.
-         * @see @ref maxSize(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{TexImage2D} or
-         *      @fn_gl_extension{TextureImage2D,EXT,direct_state_access}
+         * See @ref Texture::setImage() for more information.
+         * @see @ref maxSize()
+         * @deprecated_gl Prefer to use @ref Magnum::RectangleTexture::setStorage() "setStorage()"
+         *      and @ref Magnum::RectangleTexture::setSubImage() "setSubImage()"
+         *      instead.
          */
         RectangleTexture& setImage(TextureFormat internalFormat, const ImageReference2D& image) {
-            DataHelper<2>::setImage(*this, _target, 0, internalFormat, image);
+            DataHelper<2>::setImage(*this, 0, internalFormat, image);
             return *this;
         }
 
-        /** @overload */
+        /** @overload
+         * @deprecated_gl Prefer to use @ref Magnum::RectangleTexture::setStorage() "setStorage()"
+         *      and @ref Magnum::RectangleTexture::setSubImage() "setSubImage()"
+         *      instead.
+         */
         RectangleTexture& setImage(TextureFormat internalFormat, BufferImage2D& image) {
-            DataHelper<2>::setImage(*this, _target, 0, internalFormat, image);
+            DataHelper<2>::setImage(*this, 0, internalFormat, image);
             return *this;
         }
 
-        /** @overload */
+        /** @overload
+         * @deprecated_gl Prefer to use @ref Magnum::RectangleTexture::setStorage() "setStorage()"
+         *      and @ref Magnum::RectangleTexture::setSubImage() "setSubImage()"
+         *      instead.
+         */
         RectangleTexture& setImage(TextureFormat internalFormat, BufferImage2D&& image) {
             return setImage(internalFormat, image);
         }
 
         /**
-         * @brief Set image subdata
-         * @param offset            Offset where to put data in the texture
-         * @param image             @ref Image2D, @ref ImageReference2D or
-         *      @ref Trade::ImageData2D
+         * @copybrief Texture::setSubImage()
          * @return Reference to self (for method chaining)
          *
-         * If @extension{EXT,direct_state_access} is not available, the
-         * texture is bound to some texture unit before the operation.
-         * @see @ref setStorage(), @ref setImage(), @fn_gl{ActiveTexture},
-         *      @fn_gl{BindTexture} and @fn_gl{TexSubImage2D} or
-         *      @fn_gl_extension{TextureSubImage2D,EXT,direct_state_access}
+         * See @ref Texture::setSubImage() for more information.
          */
         RectangleTexture& setSubImage(const Vector2i& offset, const ImageReference2D& image) {
-            DataHelper<2>::setSubImage(*this, _target, 0, offset, image);
+            DataHelper<2>::setSubImage(*this, 0, offset, image);
             return *this;
         }
 
         /** @overload */
         RectangleTexture& setSubImage(const Vector2i& offset, BufferImage2D& image) {
-            DataHelper<2>::setSubImage(*this, _target, 0, offset, image);
+            DataHelper<2>::setSubImage(*this, 0, offset, image);
             return *this;
         }
 
@@ -380,22 +385,18 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
         }
 
         /**
-         * @brief Invalidate texture image
+         * @brief Invalidate texture
          *
-         * If extension @extension{ARB,invalidate_subdata} (part of OpenGL 4.3)
-         * is not available, this function does nothing.
-         * @see @ref invalidateSubImage(), @fn_gl{InvalidateTexImage}
+         * See @ref Texture::invalidateImage() for more information.
          */
         void invalidateImage() { AbstractTexture::invalidateImage(0); }
 
         /**
-         * @brief Invalidate texture subimage
+         * @brief Invalidate subtexture
          * @param offset            Offset into the texture
          * @param size              Size of invalidated data
          *
-         * If extension @extension{ARB,invalidate_subdata} (part of OpenGL 4.3)
-         * is not available, this function does nothing.
-         * @see @ref invalidateImage(), @fn_gl{InvalidateTexSubImage}
+         * See @ref Texture::invalidateSubImage() for more information.
          */
         void invalidateSubImage(const Vector2i& offset, const Vector2i& size) {
             DataHelper<2>::invalidateSubImage(*this, 0, offset, size);

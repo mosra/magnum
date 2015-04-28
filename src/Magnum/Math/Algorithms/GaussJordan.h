@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -62,8 +62,9 @@ template<std::size_t size, std::size_t rows, class T> bool gaussJordanInPlaceTra
                 rowMax = row2;
 
         /* Swap the rows */
-        std::swap(a[row], a[rowMax]);
-        std::swap(t[row], t[rowMax]);
+        using std::swap;
+        swap(a[row], a[rowMax]);
+        swap(t[row], t[rowMax]);
 
         /* Singular */
         if(TypeTraits<T>::equals(a[row][row], T(0)))

@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -77,10 +77,10 @@ class MAGNUM_SHAPES_EXPORT Plane {
             _normal = normal;
         }
 
-        /** @brief %Collision occurence with line */
+        /** @brief Collision occurence with line */
         bool operator%(const Line3D& other) const;
 
-        /** @brief %Collision occurence with line segment */
+        /** @brief Collision occurence with line segment */
         bool operator%(const LineSegment3D& other) const;
 
     private:

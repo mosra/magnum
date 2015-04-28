@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -40,7 +40,7 @@ namespace Magnum {
 
 #ifndef MAGNUM_TARGET_GLES2
 /**
-@brief %Buffer image
+@brief Buffer image
 
 Stores image data in GPU memory. Interchangeable with @ref Image,
 @ref ImageReference or @ref Trade::ImageData.
@@ -49,15 +49,15 @@ Stores image data in GPU memory. Interchangeable with @ref Image,
 */
 template<UnsignedInt dimensions> class BufferImage: public AbstractImage {
     public:
-        const static UnsignedInt Dimensions = dimensions; /**< @brief %Image dimension count */
+        const static UnsignedInt Dimensions = dimensions; /**< @brief Image dimension count */
 
         /**
          * @brief Constructor
          * @param format            Format of pixel data
          * @param type              Data type of pixel data
-         * @param size              %Image size
-         * @param data              %Image data
-         * @param usage             %Image buffer usage
+         * @param size              Image size
+         * @param data              Image data
+         * @param usage             Image buffer usage
          *
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
@@ -74,7 +74,7 @@ template<UnsignedInt dimensions> class BufferImage: public AbstractImage {
          * Size is zero and buffer are empty, call @ref setData() to fill the
          * image with data.
          */
-        explicit BufferImage(ColorFormat format, ColorType type);
+        /*implicit*/ BufferImage(ColorFormat format, ColorType type);
 
         /** @brief Copying is not allowed */
         BufferImage(const BufferImage<dimensions>&) = delete;
@@ -88,7 +88,7 @@ template<UnsignedInt dimensions> class BufferImage: public AbstractImage {
         /** @brief Move assignment */
         BufferImage<dimensions>& operator=(BufferImage<dimensions>&& other) noexcept;
 
-        /** @brief %Image size */
+        /** @brief Image size */
         typename DimensionTraits<Dimensions, Int>::VectorType size() const { return _size; }
 
         /** @copydoc Image::dataSize() */
@@ -96,16 +96,16 @@ template<UnsignedInt dimensions> class BufferImage: public AbstractImage {
             return AbstractImage::dataSize<dimensions>(size);
         }
 
-        /** @brief %Image buffer */
+        /** @brief Image buffer */
         Buffer& buffer() { return _buffer; }
 
         /**
          * @brief Set image data
          * @param format            Format of pixel data
          * @param type              Data type of pixel data
-         * @param size              %Image size
-         * @param data              %Image data
-         * @param usage             %Image buffer usage
+         * @param size              Image size
+         * @param data              Image data
+         * @param usage             Image buffer usage
          *
          * Updates the image buffer with given data. The data are not deleted
          * after filling the buffer.
@@ -114,16 +114,6 @@ template<UnsignedInt dimensions> class BufferImage: public AbstractImage {
          *      @extension{ARB,buffer_storage}, avoiding relocations...)
          */
         void setData(ColorFormat format, ColorType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size, const void* data, BufferUsage usage);
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @copybrief setData(ColorFormat, ColorType, const typename DimensionTraits<Dimensions, Int>::VectorType&, const void*, BufferUsage)
-         * @deprecated Use @ref Magnum::BufferImage::setData(ColorFormat, ColorType, const typename DimensionTraits<Dimensions, Int>::VectorType&, const void*, BufferUsage) "setData(ColorFormat, ColorType, const typename DimensionTraits<Dimensions, Int>::VectorType&, const void*, BufferUsage)" instead.
-         */
-        CORRADE_DEPRECATED("use setData(ColorFormat, ColorType, VectorNi, const void*, BufferUsage) instead") void setData(const typename DimensionTraits<Dimensions, Int>::VectorType& size, ColorFormat format, ColorType type, const void* data, BufferUsage usage) {
-            setData(format, type, size, data, usage);
-        }
-        #endif
 
     private:
         Math::Vector<Dimensions, Int> _size;
@@ -145,8 +135,9 @@ template<UnsignedInt dimensions> inline BufferImage<dimensions>::BufferImage(Buf
 
 template<UnsignedInt dimensions> inline BufferImage<dimensions>& BufferImage<dimensions>::operator=(BufferImage<dimensions>&& other) noexcept {
     AbstractImage::operator=(std::move(other));
-    std::swap(_size, other._size);
-    std::swap(_buffer, other._buffer);
+    using std::swap;
+    swap(_size, other._size);
+    swap(_buffer, other._buffer);
     return *this;
 }
 #else

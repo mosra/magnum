@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -31,36 +31,35 @@
 
 namespace Magnum { namespace Math { namespace Test {
 
-class DualComplexTest: public Corrade::TestSuite::Tester {
-    public:
-        explicit DualComplexTest();
+struct DualComplexTest: Corrade::TestSuite::Tester {
+    explicit DualComplexTest();
 
-        void construct();
-        void constructDefault();
-        void constructFromVector();
-        void constructCopy();
+    void construct();
+    void constructDefault();
+    void constructFromVector();
+    void constructCopy();
 
-        void isNormalized();
+    void isNormalized();
 
-        void multiply();
+    void multiply();
 
-        void lengthSquared();
-        void length();
-        void normalized();
+    void lengthSquared();
+    void length();
+    void normalized();
 
-        void complexConjugated();
-        void dualConjugated();
-        void conjugated();
-        void inverted();
-        void invertedNormalized();
+    void complexConjugated();
+    void dualConjugated();
+    void conjugated();
+    void inverted();
+    void invertedNormalized();
 
-        void rotation();
-        void translation();
-        void combinedTransformParts();
-        void matrix();
-        void transformPoint();
+    void rotation();
+    void translation();
+    void combinedTransformParts();
+    void matrix();
+    void transformPoint();
 
-        void debug();
+    void debug();
 };
 
 typedef Math::Deg<Float> Deg;
@@ -192,8 +191,7 @@ void DualComplexTest::invertedNormalized() {
 
     std::ostringstream o;
     Error::setOutput(&o);
-    DualComplex notInverted = DualComplex({-1.0f, -2.5f}, {}).invertedNormalized();
-    CORRADE_VERIFY(notInverted != notInverted);
+    DualComplex({-1.0f, -2.5f}, {}).invertedNormalized();
     CORRADE_COMPARE(o.str(), "Math::Complex::invertedNormalized(): complex number must be normalized\n");
 
     DualComplex inverted = a.invertedNormalized();

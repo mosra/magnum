@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -51,26 +51,26 @@ template<> struct VectorConverter<4, float, Vec4> {
 
 namespace Test {
 
-class Vector4Test: public Corrade::TestSuite::Tester {
-    public:
-        Vector4Test();
+struct Vector4Test: Corrade::TestSuite::Tester {
+    explicit Vector4Test();
 
-        void construct();
-        void constructDefault();
-        void constructOneValue();
-        void constructParts();
-        void constructConversion();
-        void constructCopy();
+    void construct();
+    void constructPad();
+    void constructDefault();
+    void constructOneValue();
+    void constructParts();
+    void constructConversion();
+    void constructCopy();
 
-        void convert();
+    void convert();
 
-        void access();
-        void threeComponent();
-        void twoComponent();
+    void access();
+    void threeComponent();
+    void twoComponent();
 
-        void swizzleType();
-        void debug();
-        void configuration();
+    void swizzleType();
+    void debug();
+    void configuration();
 };
 
 typedef Math::Vector4<Float> Vector4;
@@ -80,6 +80,7 @@ typedef Math::Vector2<Float> Vector2;
 
 Vector4Test::Vector4Test() {
     addTests<Vector4Test>({&Vector4Test::construct,
+              &Vector4Test::constructPad,
               &Vector4Test::constructDefault,
               &Vector4Test::constructOneValue,
               &Vector4Test::constructParts,
@@ -104,6 +105,16 @@ void Vector4Test::construct() {
     constexpr Vector4 a(1.0f, -2.5f, 3.0f, 4.1f); /* Ambiguity with default copy constructor */
     #endif
     CORRADE_COMPARE(a, (Vector<4, Float>(1.0f, -2.5f, 3.0f, 4.1f)));
+}
+
+void Vector4Test::constructPad() {
+    constexpr Vector<2, Float> a{3.0f, -1.0f};
+    constexpr Vector4 b = Vector4::pad(a);
+    constexpr Vector4 c = Vector4::pad(a, 5.0f);
+    constexpr Vector4 d = Vector4::pad(a, 5.0f, 1.0f);
+    CORRADE_COMPARE(b, Vector4(3.0f, -1.0f, 0.0f, 0.0f));
+    CORRADE_COMPARE(c, Vector4(3.0f, -1.0f, 5.0f, 5.0f));
+    CORRADE_COMPARE(d, Vector4(3.0f, -1.0f, 5.0f, 1.0f));
 }
 
 void Vector4Test::constructDefault() {

@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -30,12 +30,13 @@
  */
 
 #include "Magnum/Timeline.h"
+#include "Magnum/Math/Constants.h"
 #include "Magnum/SceneGraph/AnimableGroup.h"
 #include "Magnum/SceneGraph/Animable.h"
 
 namespace Magnum { namespace SceneGraph {
 
-template<UnsignedInt dimensions, class T> Animable<dimensions, T>::Animable(AbstractObject<dimensions, T>& object, AnimableGroup<dimensions, T>* group): AbstractGroupedFeature<dimensions, Animable<dimensions, T>, T>(object, group), _duration(0.0f), startTime(std::numeric_limits<Float>::infinity()), pauseTime(-std::numeric_limits<Float>::infinity()), previousState(AnimationState::Stopped), currentState(AnimationState::Stopped), _repeated(false), _repeatCount(0), repeats(0) {}
+template<UnsignedInt dimensions, class T> Animable<dimensions, T>::Animable(AbstractObject<dimensions, T>& object, AnimableGroup<dimensions, T>* group): AbstractGroupedFeature<dimensions, Animable<dimensions, T>, T>(object, group), _duration(0.0f), startTime(Constants::inf()), pauseTime(-Constants::inf()), previousState(AnimationState::Stopped), currentState(AnimationState::Stopped), _repeated(false), _repeatCount(0), repeats(0) {}
 
 template<UnsignedInt dimensions, class T> Animable<dimensions, T>::~Animable() {}
 

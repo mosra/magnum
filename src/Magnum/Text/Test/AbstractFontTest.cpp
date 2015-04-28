@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -34,12 +34,11 @@
 
 namespace Magnum { namespace Text { namespace Test {
 
-class AbstractFontTest: public TestSuite::Tester {
-    public:
-        explicit AbstractFontTest();
+struct AbstractFontTest: TestSuite::Tester {
+    explicit AbstractFontTest();
 
-        void openSingleData();
-        void openFile();
+    void openSingleData();
+    void openFile();
 };
 
 AbstractFontTest::AbstractFontTest() {
@@ -57,8 +56,8 @@ class SingleDataFont: public Text::AbstractFont {
         bool doIsOpened() const override { return opened; }
         void doClose() override {}
 
-        std::pair<Float, Float> doOpenSingleData(const Containers::ArrayReference<const unsigned char> data, Float) override {
-            opened = (data.size() == 1 && data[0] == 0xa5);
+        std::pair<Float, Float> doOpenSingleData(const Containers::ArrayReference<const char> data, Float) override {
+            opened = (data.size() == 1 && data[0] == '\xa5');
             return {};
         }
 
@@ -78,9 +77,9 @@ class SingleDataFont: public Text::AbstractFont {
 void AbstractFontTest::openSingleData() {
     /* doOpenData() should call doOpenSingleData() */
     SingleDataFont font;
-    const unsigned char data[] = {0xa5};
+    const char data[] = {'\xa5'};
     CORRADE_VERIFY(!font.isOpened());
-    font.openData(std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>{{{}, data}}, 3.0f);
+    font.openData(std::vector<std::pair<std::string, Containers::ArrayReference<const char>>>{{{}, data}}, 3.0f);
     CORRADE_VERIFY(font.isOpened());
 }
 

@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -60,7 +60,7 @@ TgaImageConverter::TgaImageConverter(PluginManager::AbstractManager& manager, st
 
 auto TgaImageConverter::doFeatures() const -> Features { return Feature::ConvertData; }
 
-Containers::Array<unsigned char> TgaImageConverter::doExportToData(const ImageReference2D& image) const {
+Containers::Array<char> TgaImageConverter::doExportToData(const ImageReference2D& image) const {
     #ifndef MAGNUM_TARGET_GLES
     if(image.format() != ColorFormat::BGR &&
        image.format() != ColorFormat::BGRA &&
@@ -71,7 +71,7 @@ Containers::Array<unsigned char> TgaImageConverter::doExportToData(const ImageRe
        image.format() != ColorFormat::Red)
     #endif
     {
-        Error() << "Trade::TgaImageConverter::convertToData(): unsupported image format" << image.format();
+        Error() << "Trade::TgaImageConverter::exportToData(): unsupported color format" << image.format();
         #ifndef CORRADE_GCC45_COMPATIBILITY
         return nullptr;
         #else
@@ -80,7 +80,7 @@ Containers::Array<unsigned char> TgaImageConverter::doExportToData(const ImageRe
     }
 
     if(image.type() != ColorType::UnsignedByte) {
-        Error() << "Trade::TgaImageConverter::convertToData(): unsupported image type" << image.type();
+        Error() << "Trade::TgaImageConverter::exportToData(): unsupported color type" << image.type();
         #ifndef CORRADE_GCC45_COMPATIBILITY
         return nullptr;
         #else
@@ -90,7 +90,7 @@ Containers::Array<unsigned char> TgaImageConverter::doExportToData(const ImageRe
 
     /* Initialize data buffer */
     const auto pixelSize = UnsignedByte(image.pixelSize());
-    auto data = Containers::Array<unsigned char>::zeroInitialized(sizeof(TgaHeader) + pixelSize*image.size().product());
+    auto data = Containers::Array<char>::zeroInitialized(sizeof(TgaHeader) + pixelSize*image.size().product());
 
     /* Fill header */
     auto header = reinterpret_cast<TgaHeader*>(data.begin());
@@ -112,7 +112,7 @@ Containers::Array<unsigned char> TgaImageConverter::doExportToData(const ImageRe
     }
     #endif
 
-    return std::move(data);
+    return data;
 }
 
 }}

@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -75,6 +75,10 @@ void BufferTexture::setBufferImplementationDefault(BufferTextureFormat internalF
     glTexBuffer(GL_TEXTURE_BUFFER, GLenum(internalFormat), buffer.id());
 }
 
+void BufferTexture::setBufferImplementationDSA(const BufferTextureFormat internalFormat, Buffer& buffer) {
+    glTextureBuffer(id(), GLenum(internalFormat), buffer.id());
+}
+
 void BufferTexture::setBufferImplementationDSAEXT(BufferTextureFormat internalFormat, Buffer& buffer) {
     glTextureBufferEXT(id(), GL_TEXTURE_BUFFER, GLenum(internalFormat), buffer.id());
 }
@@ -82,6 +86,10 @@ void BufferTexture::setBufferImplementationDSAEXT(BufferTextureFormat internalFo
 void BufferTexture::setBufferRangeImplementationDefault(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size) {
     bindInternal();
     glTexBufferRange(GL_TEXTURE_BUFFER, GLenum(internalFormat), buffer.id(), offset, size);
+}
+
+void BufferTexture::setBufferRangeImplementationDSA(const BufferTextureFormat internalFormat, Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
+    glTextureBufferRange(id(), GLenum(internalFormat), buffer.id(), offset, size);
 }
 
 void BufferTexture::setBufferRangeImplementationDSAEXT(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size) {

@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -46,7 +46,7 @@ Image2D* AbstractImageConverter::doExportToImage(const ImageReference2D&) const 
     CORRADE_ASSERT(false, "Trade::AbstractImageConverter::exportToImage(): feature advertised but not implemented", nullptr);
 }
 
-Containers::Array<unsigned char> AbstractImageConverter::exportToData(const ImageReference2D& image) const {
+Containers::Array<char> AbstractImageConverter::exportToData(const ImageReference2D& image) const {
     #ifndef CORRADE_GCC45_COMPATIBILITY
     CORRADE_ASSERT(features() & Feature::ConvertData,
         "Trade::AbstractImageConverter::exportToData(): feature not supported", nullptr);
@@ -58,7 +58,7 @@ Containers::Array<unsigned char> AbstractImageConverter::exportToData(const Imag
     return doExportToData(image);
 }
 
-Containers::Array<unsigned char> AbstractImageConverter::doExportToData(const ImageReference2D&) const {
+Containers::Array<char> AbstractImageConverter::doExportToData(const ImageReference2D&) const {
     #ifndef CORRADE_GCC45_COMPATIBILITY
     CORRADE_ASSERT(false, "Trade::AbstractImageConverter::exportToData(): feature advertised but not implemented", nullptr);
     #else

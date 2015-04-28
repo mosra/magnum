@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -58,41 +58,46 @@ template<> struct RectangularMatrixConverter<4, 4, float, Mat4> {
 
 namespace Test {
 
-class Matrix4Test: public Corrade::TestSuite::Tester {
-    public:
-        Matrix4Test();
+struct Matrix4Test: Corrade::TestSuite::Tester {
+    explicit Matrix4Test();
 
-        void construct();
-        void constructIdentity();
-        void constructZero();
-        void constructConversion();
-        void constructCopy();
+    void construct();
+    void constructIdentity();
+    void constructZero();
+    void constructConversion();
+    void constructCopy();
 
-        void convert();
+    void convert();
 
-        void isRigidTransformation();
+    void isRigidTransformation();
 
-        void translation();
-        void scaling();
-        void rotation();
-        void rotationX();
-        void rotationY();
-        void rotationZ();
-        void reflection();
-        void orthographicProjection();
-        void perspectiveProjection();
-        void perspectiveProjectionFov();
-        void fromParts();
-        void rotationScalingPart();
-        void rotationNormalizedPart();
-        void rotationPart();
-        void uniformScalingPart();
-        void vectorParts();
-        void invertedRigid();
-        void transform();
+    void translation();
+    void scaling();
+    void rotation();
+    void rotationX();
+    void rotationY();
+    void rotationZ();
+    void reflection();
+    void reflectionIsScaling();
+    void shearingXY();
+    void shearingXZ();
+    void shearingYZ();
+    void orthographicProjection();
+    void perspectiveProjection();
+    void perspectiveProjectionFov();
+    void lookAt();
 
-        void debug();
-        void configuration();
+    void fromParts();
+    void rotationScalingPart();
+    void rotationNormalizedPart();
+    void rotationPart();
+    void uniformScalingPart();
+    void vectorParts();
+    void invertedRigid();
+    void transform();
+
+    void debug();
+    void configuration();
 };
 
 typedef Math::Deg<Float> Deg;
@@ -101,6 +106,7 @@ typedef Math::Matrix4<Float> Matrix4;
 typedef Math::Matrix4<Int> Matrix4i;
 typedef Math::Matrix<3, Float> Matrix3x3;
 typedef Math::Vector3<Float> Vector3;
+typedef Math::Constants<Float> Constants;
 
 Matrix4Test::Matrix4Test() {
     addTests<Matrix4Test>({&Matrix4Test::construct,
@@ -120,9 +126,15 @@ Matrix4Test::Matrix4Test() {
               &Matrix4Test::rotationY,
               &Matrix4Test::rotationZ,
               &Matrix4Test::reflection,
+              &Matrix4Test::reflectionIsScaling,
+              &Matrix4Test::shearingXY,
+              &Matrix4Test::shearingXZ,
+              &Matrix4Test::shearingYZ,
               &Matrix4Test::orthographicProjection,
               &Matrix4Test::perspectiveProjection,
               &Matrix4Test::perspectiveProjectionFov,
+              &Matrix4Test::lookAt,
+
               &Matrix4Test::fromParts,
               &Matrix4Test::rotationScalingPart,
               &Matrix4Test::rotationNormalizedPart,
@@ -286,8 +298,8 @@ void Matrix4Test::rotationX() {
                    {0.0f,  0.90096887f, 0.43388374f, 0.0f},
                    {0.0f, -0.43388374f, 0.90096887f, 0.0f},
                    {0.0f,         0.0f,        0.0f, 1.0f});
-    CORRADE_COMPARE(Matrix4::rotation(Rad(Math::Constants<Float>::pi()/7), Vector3::xAxis()), matrix);
-    CORRADE_COMPARE(Matrix4::rotationX(Rad(Math::Constants<Float>::pi()/7)), matrix);
+    CORRADE_COMPARE(Matrix4::rotation(Rad(Constants::pi()/7), Vector3::xAxis()), matrix);
+    CORRADE_COMPARE(Matrix4::rotationX(Rad(Constants::pi()/7)), matrix);
 }
 
 void Matrix4Test::rotationY() {
@@ -295,8 +307,8 @@ void Matrix4Test::rotationY() {
                    {       0.0f, 1.0f,         0.0f, 0.0f},
                    {0.43388374f, 0.0f,  0.90096887f, 0.0f},
                    {       0.0f, 0.0f,         0.0f, 1.0f});
-    CORRADE_COMPARE(Matrix4::rotation(Rad(Math::Constants<Float>::pi()/7), Vector3::yAxis()), matrix);
-    CORRADE_COMPARE(Matrix4::rotationY(Rad(Math::Constants<Float>::pi()/7)), matrix);
+    CORRADE_COMPARE(Matrix4::rotation(Rad(Constants::pi()/7), Vector3::yAxis()), matrix);
+    CORRADE_COMPARE(Matrix4::rotationY(Rad(Constants::pi()/7)), matrix);
 }
 
 void Matrix4Test::rotationZ() {
@@ -304,8 +316,8 @@ void Matrix4Test::rotationZ() {
                    {-0.43388374f, 0.90096887f, 0.0f, 0.0f},
                    {        0.0f,        0.0f, 1.0f, 0.0f},
                    {        0.0f,        0.0f, 0.0f, 1.0f});
-    CORRADE_COMPARE(Matrix4::rotation(Rad(Math::Constants<Float>::pi()/7), Vector3::zAxis()), matrix);
-    CORRADE_COMPARE(Matrix4::rotationZ(Rad(Math::Constants<Float>::pi()/7)), matrix);
+    CORRADE_COMPARE(Matrix4::rotation(Rad(Constants::pi()/7), Vector3::zAxis()), matrix);
+    CORRADE_COMPARE(Matrix4::rotationZ(Rad(Constants::pi()/7)), matrix);
 }
 
 void Matrix4Test::reflection() {
@@ -326,6 +338,37 @@ void Matrix4Test::reflection() {
     CORRADE_COMPARE(actual*actual, Matrix4());
     CORRADE_COMPARE(actual.transformVector(normal), -normal);
     CORRADE_COMPARE(actual, expected);
+}
+
+void Matrix4Test::reflectionIsScaling() {
+    CORRADE_COMPARE(Matrix4::reflection(Vector3::yAxis()), Matrix4::scaling(Vector3::yScale(-1.0f)));
+}
+
+void Matrix4Test::shearingXY() {
+    constexpr Matrix4 a = Matrix4::shearingXY(3.0f, -5.0f);
+    CORRADE_COMPARE(a, Matrix4({1.0f,  0.0f, 0.0f, 0.0f},
+                               {0.0f,  1.0f, 0.0f, 0.0f},
+                               {3.0f, -5.0f, 1.0f, 0.0f},
+                               {0.0f,  0.0f, 0.0f, 1.0f}));
+    CORRADE_COMPARE(a.transformPoint(Vector3(1.0f)), Vector3(4.0f, -4.0f, 1.0f));
+}
+
+void Matrix4Test::shearingXZ() {
+    constexpr Matrix4 a = Matrix4::shearingXZ(3.0f, -5.0f);
+    CORRADE_COMPARE(a, Matrix4({1.0f, 0.0f,  0.0f, 0.0f},
+                               {3.0f, 1.0f, -5.0f, 0.0f},
+                               {0.0f, 0.0f,  1.0f, 0.0f},
+                               {0.0f, 0.0f,  0.0f, 1.0f}));
+    CORRADE_COMPARE(a.transformPoint(Vector3(1.0f)), Vector3(4.0f, 1.0f, -4.0f));
+}
+
+void Matrix4Test::shearingYZ() {
+    constexpr Matrix4 a = Matrix4::shearingYZ(3.0f, -5.0f);
+    CORRADE_COMPARE(a, Matrix4({1.0f, 3.0f, -5.0f, 0.0f},
+                               {0.0f, 1.0f,  0.0f, 0.0f},
+                               {0.0f, 0.0f,  1.0f, 0.0f},
+                               {0.0f, 0.0f,  0.0f, 1.0f}));
+    CORRADE_COMPARE(a.transformPoint(Vector3(1.0f)), Vector3(1.0f, 4.0f, -4.0f));
 }
 
 void Matrix4Test::orthographicProjection() {
@@ -477,6 +520,44 @@ void Matrix4Test::transform() {
 
     CORRADE_COMPARE(a.transformVector(v), Vector3(2.0f, 1.0f, 5.5f));
     CORRADE_COMPARE(a.transformPoint(v), Vector3(3.0f, -4.0f, 9.0f));
+}
+
+void Matrix4Test::lookAt() {
+    Matrix4 a = Matrix4::lookAt({0.0f, 0.0f, 0.0f},
+                                {0.0f, 1.0f, 0.0f},
+                                {0.0f, 0.0f, 1.0f});
+    CORRADE_VERIFY(a.isRigidTransformation());
+    CORRADE_COMPARE(a, Matrix4({1.0f,  0.0f, 0.0f, 0.0f},
+                               {0.0f,  0.0f, 1.0f, 0.0f},
+                               {0.0f, -1.0f, 0.0f, 0.0f},
+                               {0.0f,  0.0f, 0.0f, 1.0f}));
+
+    Matrix4 b = Matrix4::lookAt({100.0f, 200.0f, 300.0f},
+                                {  0.0f,   0.0f,   0.0f},
+                                {  0.0f,   1.0f,   0.0f});
+    CORRADE_VERIFY(b.isRigidTransformation());
+    CORRADE_COMPARE(b, Matrix4({ 0.948683f,      0.0f, -0.316228f, 0.0f},
+                               {-0.169031f, 0.845154f, -0.507093f, 0.0f},
+                               { 0.267261f, 0.534522f,  0.801784f, 0.0f},
+                               {    100.0f,    200.0f,     300.0f, 1.0f}));
+
+    Matrix4 c = Matrix4::lookAt({3.0f, 0.0f, 0.0f},
+                                {0.0f, 4.0f, 5.0f},
+                                {0.0f, 0.0f, 1.0f});
+    CORRADE_VERIFY(c.isRigidTransformation());
+    CORRADE_COMPARE(c, Matrix4({     0.8f,       0.6f,       0.0f, 0.0f},
+                               {0.424264f, -0.565685f,  0.707107f, 0.0f},
+                               {0.424264f, -0.565685f, -0.707107f, 0.0f},
+                               {     3.0f,       0.0f,       0.0f, 1.0f}));
+
+    Matrix4 d = Matrix4::lookAt({ 0.0f, 3.0f,  0.0f},
+                                {-5.0f, 0.0f, -4.0f},
+                                { 0.0f, 1.0f,  0.0f});
+    CORRADE_VERIFY(d.isRigidTransformation());
+    CORRADE_COMPARE(d, Matrix4({ 0.624695f,      0.0f, -0.780869f, 0.0f},
+                               {-0.331295f, 0.905539f, -0.265036f, 0.0f},
+                               { 0.707107f, 0.424264f,  0.565685f, 0.0f},
+                               {      0.0f,      3.0f,       0.0f, 1.0f}));
 }
 
 void Matrix4Test::debug() {

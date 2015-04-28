@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -26,15 +26,17 @@
 */
 
 /** @file
- * @brief Class Magnum::Trade::TgaImporter
+ * @brief Class @ref Magnum::Trade::TgaImporter
  */
 
 #include <Corrade/Utility/VisibilityMacros.h>
 
 #include "Magnum/Trade/AbstractImporter.h"
 
+#include "MagnumPlugins/TgaImporter/configure.h"
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef MAGNUM_BUILD_STATIC
+#ifndef MAGNUM_TGAIMPORTER_BUILD_STATIC
     #if defined(TgaImporter_EXPORTS) || defined(TgaImporterObjects_EXPORTS)
         #define MAGNUM_TRADE_TGAIMPORTER_EXPORT CORRADE_VISIBILITY_EXPORT
     #else
@@ -53,10 +55,10 @@ namespace Magnum { namespace Trade {
 
 Supports uncompressed BGR, BGRA or grayscale images with 8 bits per channel.
 
-This plugin is built if `WITH_TGAIMPORTER` is enabled when building %Magnum. To
-use dynamic plugin, you need to load `%TgaImporter` plugin from
+This plugin is built if `WITH_TGAIMPORTER` is enabled when building Magnum. To
+use dynamic plugin, you need to load `TgaImporter` plugin from
 `MAGNUM_PLUGINS_IMPORTER_DIR`. To use static plugin or use this as a dependency
-of another plugin, you need to request `%TgaImporter` component of `%Magnum`
+of another plugin, you need to request `TgaImporter` component of `Magnum`
 package in CMake and link to `${MAGNUM_TGAIMPORTER_LIBRARIES}`. See
 @ref building, @ref cmake and @ref plugins for more information.
 
@@ -82,7 +84,7 @@ class MAGNUM_TRADE_TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
     private:
         Features MAGNUM_TRADE_TGAIMPORTER_LOCAL doFeatures() const override;
         bool MAGNUM_TRADE_TGAIMPORTER_LOCAL doIsOpened() const override;
-        void MAGNUM_TRADE_TGAIMPORTER_LOCAL doOpenData(Containers::ArrayReference<const unsigned char> data) override;
+        void MAGNUM_TRADE_TGAIMPORTER_LOCAL doOpenData(Containers::ArrayReference<const char> data) override;
         void MAGNUM_TRADE_TGAIMPORTER_LOCAL doOpenFile(const std::string& filename) override;
         void MAGNUM_TRADE_TGAIMPORTER_LOCAL doClose() override;
         UnsignedInt MAGNUM_TRADE_TGAIMPORTER_LOCAL doImage2DCount() const override;

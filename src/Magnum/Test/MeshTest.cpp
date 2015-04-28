@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -31,16 +31,15 @@
 
 namespace Magnum { namespace Test {
 
-class MeshTest: public TestSuite::Tester {
-    public:
-        MeshTest();
+struct MeshTest: TestSuite::Tester {
+    explicit MeshTest();
 
-        void indexSize();
+    void indexSize();
 
-        void debugPrimitive();
-        void debugIndexType();
-        void configurationPrimitive();
-        void configurationIndexType();
+    void debugPrimitive();
+    void debugIndexType();
+    void configurationPrimitive();
+    void configurationIndexType();
 };
 
 MeshTest::MeshTest() {

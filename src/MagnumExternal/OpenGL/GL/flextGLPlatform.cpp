@@ -615,6 +615,10 @@ void flextGLInit() {
     flextglCreateSamplers = reinterpret_cast<void(APIENTRY*)(GLsizei, GLuint *)>(loader.load("glCreateSamplers"));
     flextglCreateProgramPipelines = reinterpret_cast<void(APIENTRY*)(GLsizei, GLuint *)>(loader.load("glCreateProgramPipelines"));
     flextglCreateQueries = reinterpret_cast<void(APIENTRY*)(GLenum, GLsizei, GLuint *)>(loader.load("glCreateQueries"));
+    flextglGetQueryBufferObjecti64v = reinterpret_cast<void(APIENTRY*)(GLuint, GLuint, GLenum, GLintptr)>(loader.load("glGetQueryBufferObjecti64v"));
+    flextglGetQueryBufferObjectiv = reinterpret_cast<void(APIENTRY*)(GLuint, GLuint, GLenum, GLintptr)>(loader.load("glGetQueryBufferObjectiv"));
+    flextglGetQueryBufferObjectui64v = reinterpret_cast<void(APIENTRY*)(GLuint, GLuint, GLenum, GLintptr)>(loader.load("glGetQueryBufferObjectui64v"));
+    flextglGetQueryBufferObjectuiv = reinterpret_cast<void(APIENTRY*)(GLuint, GLuint, GLenum, GLintptr)>(loader.load("glGetQueryBufferObjectuiv"));
     flextglMemoryBarrierByRegion = reinterpret_cast<void(APIENTRY*)(GLbitfield)>(loader.load("glMemoryBarrierByRegion"));
     flextglGetTextureSubImage = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void *)>(loader.load("glGetTextureSubImage"));
     flextglGetCompressedTextureSubImage = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLsizei, void *)>(loader.load("glGetCompressedTextureSubImage"));

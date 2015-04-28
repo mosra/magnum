@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -30,6 +30,10 @@
  */
 
 #include "Magnum/AbstractQuery.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#endif
 
 namespace Magnum {
 
@@ -69,7 +73,7 @@ q.endConditionalRender();
 @endcode
 
 @see @ref PrimitiveQuery, @ref TimeQuery
-@requires_gles30 %Extension @es_extension{EXT,occlusion_query_boolean} in
+@requires_gles30 Extension @es_extension{EXT,occlusion_query_boolean} in
     OpenGL ES 2.0
 */
 class SampleQuery: public AbstractQuery {
@@ -86,7 +90,7 @@ class SampleQuery: public AbstractQuery {
 
             /**
              * Whether any samples passed from fragment shader
-             * @requires_gl33 %Extension @extension{ARB,occlusion_query2}
+             * @requires_gl33 Extension @extension{ARB,occlusion_query2}
              */
             #ifndef MAGNUM_TARGET_GLES2
             AnySamplesPassed = GL_ANY_SAMPLES_PASSED,
@@ -99,7 +103,7 @@ class SampleQuery: public AbstractQuery {
              *
              * An implementation may choose a less precise version of the
              * test at the expense of some false positives.
-             * @requires_gl43 %Extension @extension{ARB,ES3_compatibility}
+             * @requires_gl43 Extension @extension{ARB,ES3_compatibility}
              */
             #ifndef MAGNUM_TARGET_GLES2
             AnySamplesPassedConservative = GL_ANY_SAMPLES_PASSED_CONSERVATIVE
@@ -112,7 +116,7 @@ class SampleQuery: public AbstractQuery {
         /**
          * @brief Conditional render mode
          *
-         * @requires_gl30 %Extension @extension{NV,conditional_render}
+         * @requires_gl30 Extension @extension{NV,conditional_render}
          * @requires_gl Conditional rendering is not available in OpenGL ES.
          */
         enum class ConditionalRenderMode: GLenum {
@@ -125,7 +129,7 @@ class SampleQuery: public AbstractQuery {
             /**
              * If query result is not yet available, waits for it and then
              * begins rendering only if result is zero.
-             * @requires_gl45 %Extension @extension{ARB,conditional_render_inverted}
+             * @requires_gl45 Extension @extension{ARB,conditional_render_inverted}
              */
             WaitInverted = GL_QUERY_WAIT_INVERTED,
 
@@ -138,7 +142,7 @@ class SampleQuery: public AbstractQuery {
             /**
              * If query result is not yet available, begins rendering like if
              * the result was zero.
-             * @requires_gl45 %Extension @extension{ARB,conditional_render_inverted}
+             * @requires_gl45 Extension @extension{ARB,conditional_render_inverted}
              */
             NoWaitInverted = GL_QUERY_NO_WAIT_INVERTED,
 
@@ -152,7 +156,7 @@ class SampleQuery: public AbstractQuery {
              * The same as @ref ConditionalRenderMode::WaitInverted, but
              * regions untouched by the sample query may not be rendered at
              * all.
-             * @requires_gl45 %Extension @extension{ARB,conditional_render_inverted}
+             * @requires_gl45 Extension @extension{ARB,conditional_render_inverted}
              */
             ByRegionWaitInverted = GL_QUERY_BY_REGION_WAIT_INVERTED,
 
@@ -166,7 +170,7 @@ class SampleQuery: public AbstractQuery {
              * The same as @ref ConditionalRenderMode::NoWaitInverted, but
              * regions untouched by the sample query may not be rendered at
              * all.
-             * @requires_gl45 %Extension @extension{ARB,conditional_render_inverted}
+             * @requires_gl45 Extension @extension{ARB,conditional_render_inverted}
              */
             ByRegionNoWaitInverted = GL_QUERY_BY_REGION_NO_WAIT_INVERTED
         };
@@ -221,7 +225,7 @@ class SampleQuery: public AbstractQuery {
          * @brief Begin conditional rendering based on result value
          *
          * @see @fn_gl{BeginConditionalRender}
-         * @requires_gl30 %Extension @extension{NV,conditional_render}
+         * @requires_gl30 Extension @extension{NV,conditional_render}
          * @requires_gl Conditional rendering is not available in OpenGL ES.
          */
         void beginConditionalRender(ConditionalRenderMode mode) {
@@ -232,7 +236,7 @@ class SampleQuery: public AbstractQuery {
          * @brief End conditional render
          *
          * @see @fn_gl{EndConditionalRender}
-         * @requires_gl30 %Extension @extension{NV,conditional_render}
+         * @requires_gl30 Extension @extension{NV,conditional_render}
          * @requires_gl Conditional rendering is not available in OpenGL ES.
          */
         void endConditionalRender() {

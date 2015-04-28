@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -90,11 +90,10 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * Expects that the rotation axis is normalized. If possible, use
          * faster alternatives like @ref rotationX(), @ref rotationY() and
          * @ref rotationZ().
-         * @see rotation() const, @ref Quaternion::rotation(),
+         * @see @ref rotation() const, @ref Quaternion::rotation(),
          *      @ref DualQuaternion::rotation(), @ref Matrix3::rotation(Rad),
          *      @ref Vector3::xAxis(), @ref Vector3::yAxis(),
          *      @ref Vector3::zAxis(), @ref Vector::isNormalized()
-         * @todoc Explicit reference when Doxygen can handle const
          */
         static Matrix4<T> rotation(Rad<T> angle, const Vector3<T>& normalizedAxis);
 
@@ -102,11 +101,10 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @brief 3D rotation around X axis
          * @param angle Rotation angle (counterclockwise)
          *
-         * Faster than calling `%Matrix4::rotation(angle, %Vector3::xAxis())`.
+         * Faster than calling `Matrix4::rotation(angle, Vector3::xAxis())`.
          * @see @ref rotation(Rad, const Vector3<T>&), @ref rotationY(),
-         *      @ref rotationZ(), rotation() const,
+         *      @ref rotationZ(), @ref rotation() const,
          *      @ref Quaternion::rotation(), @ref Matrix3::rotation(Rad)
-         * @todoc Explicit reference when Doxygen can handle const
          */
         static Matrix4<T> rotationX(Rad<T> angle);
 
@@ -114,11 +112,10 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @brief 3D rotation around Y axis
          * @param angle Rotation angle (counterclockwise)
          *
-         * Faster than calling `%Matrix4::rotation(angle, %Vector3::yAxis())`.
+         * Faster than calling `Matrix4::rotation(angle, Vector3::yAxis())`.
          * @see @ref rotation(Rad, const Vector3<T>&), @ref rotationX(),
-         *      @ref rotationZ(), rotation() const,
+         *      @ref rotationZ(), @ref rotation() const,
          *      @ref Quaternion::rotation(), @ref Matrix3::rotation(Rad)
-         * @todoc Explicit reference when Doxygen can handle const
          */
         static Matrix4<T> rotationY(Rad<T> angle);
 
@@ -126,11 +123,10 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @brief 3D rotation matrix around Z axis
          * @param angle Rotation angle (counterclockwise)
          *
-         * Faster than calling `%Matrix4::rotation(angle, %Vector3::zAxis())`.
+         * Faster than calling `Matrix4::rotation(angle, Vector3::zAxis())`.
          * @see @ref rotation(Rad, const Vector3<T>&), @ref rotationX(),
-         *      @ref rotationY(), rotation() const,
+         *      @ref rotationY(), @ref rotation() const,
          *      @ref Quaternion::rotation(), @ref Matrix3::rotation(Rad)
-         * @todoc Explicit reference when Doxygen can handle const
          */
         static Matrix4<T> rotationZ(Rad<T> angle);
 
@@ -138,10 +134,61 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @brief 3D reflection matrix
          * @param normal    Normal of the plane through which to reflect
          *
-         * Expects that the normal is normalized.
+         * Expects that the normal is normalized. Reflection along axes can be
+         * done in a slightly simpler way also using @ref scaling(), e.g.
+         * `Matrix4::reflection(Vector3::yAxis())` is equivalent to
+         * `Matrix4::scaling(Vector3::yScale(-1.0f))`.
          * @see @ref Matrix3::reflection(), @ref Vector::isNormalized()
          */
         static Matrix4<T> reflection(const Vector3<T>& normal);
+
+        /**
+         * @brief 3D shearing along XY plane
+         * @param amountX   Amount of shearing along X axis
+         * @param amountY   Amount of shearing along Y axis
+         *
+         * Z axis remains unchanged.
+         * @see @ref shearingXZ(), @ref shearingYZ(), @ref Matrix3::shearingX(),
+         *      @ref Matrix3::shearingY()
+         */
+        constexpr static Matrix4<T> shearingXY(T amountX, T amountY) {
+            return {{    (1),    T(0), T(0), T(0)},
+                    {    (0),    T(1), T(0), T(0)},
+                    {amountX, amountY, T(1), T(0)},
+                    {    (0),    T(0), T(0), T(1)}};
+        }
+
+        /**
+         * @brief 3D shearing along XZ plane
+         * @param amountX   Amount of shearing along X axis
+         * @param amountZ   Amount of shearing along Z axis
+         *
+         * Y axis remains unchanged.
+         * @see @ref shearingXY(), @ref shearingYZ(), @ref Matrix3::shearingX(),
+         *      @ref Matrix3::shearingY()
+         */
+        constexpr static Matrix4<T> shearingXZ(T amountX, T amountZ) {
+            return {{   T(1), T(0),    T(0), T(0)},
+                    {amountX, T(1), amountZ, T(0)},
+                    {   T(0), T(0),    T(1), T(0)},
+                    {   T(0), T(0),    T(0), T(1)}};
+        }
+
+        /**
+         * @brief 3D shearing along YZ plane
+         * @param amountY   Amount of shearing along Y axis
+         * @param amountZ   Amount of shearing along Z axis
+         *
+         * X axis remains unchanged.
+         * @see @ref shearingXY(), @ref shearingXZ(), @ref Matrix3::shearingX(),
+         *      @ref Matrix3::shearingY()
+         */
+        constexpr static Matrix4<T> shearingYZ(T amountY, T amountZ) {
+            return {{T(1), amountY, amountZ, T(0)},
+                    {T(0),    T(1),    T(0), T(0)},
+                    {T(0),    T(0),    T(1), T(0)},
+                    {T(0),    T(0),    T(0), T(1)}};
+        }
 
         /**
          * @brief 3D orthographic projection matrix
@@ -178,14 +225,22 @@ template<class T> class Matrix4: public Matrix<4, T> {
         }
 
         /**
+         * @brief Matrix oriented towards a specific point
+         * @param eye       Location to place the matrix
+         * @param target    Location towards which the matrix is oriented
+         * @param up        Vector as a guide of which way is up (should not be
+         *      the same direction as `target - eye`)
+         */
+        static Matrix4<T> lookAt(const Vector3<T>& eye, const Vector3<T>& target, const Vector3<T>& up);
+
+        /**
          * @brief Create matrix from rotation/scaling part and translation part
          * @param rotationScaling   Rotation/scaling part (upper-left 3x3
          *      matrix)
          * @param translation       Translation part (first three elements of
          *      fourth column)
          *
-         * @see @ref rotationScaling(), translation() const
-         * @todoc Explicit reference when Doxygen can handle const
+         * @see @ref rotationScaling(), @ref translation() const
          */
         constexpr static Matrix4<T> from(const Matrix<3, T>& rotationScaling, const Vector3<T>& translation) {
             return {{rotationScaling[0], T(0)},
@@ -201,12 +256,12 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @brief Default constructor
          *
          * Creates identity matrix. You can also explicitly call this
-         * constructor with `%Matrix4 m(Matrix4::Identity);`. Optional
+         * constructor with `Matrix4 m(Matrix4::Identity);`. Optional
          * parameter @p value allows you to specify value on diagonal.
          */
         constexpr /*implicit*/ Matrix4(typename Matrix<4, T>::IdentityType = (Matrix<4, T>::Identity), T value = T(1)): Matrix<4, T>(Matrix<4, T>::Identity, value) {}
 
-        /** @brief %Matrix from column vectors */
+        /** @brief Matrix from column vectors */
         constexpr /*implicit*/ Matrix4(const Vector4<T>& first, const Vector4<T>& second, const Vector4<T>& third, const Vector4<T>& fourth): Matrix<4, T>(first, second, third, fourth) {}
 
         /** @copydoc Matrix::Matrix(const RectangularMatrix<size, size, U>&) */
@@ -238,10 +293,9 @@ template<class T> class Matrix4: public Matrix<4, T> {
          *
          * Upper-left 3x3 part of the matrix.
          * @see @ref from(const Matrix<3, T>&, const Vector3<T>&),
-         *      rotation() const, @ref rotationNormalized(),
+         *      @ref rotation() const, @ref rotationNormalized(),
          *      @ref uniformScaling(), @ref rotation(Rad, const Vector3<T>&),
-         *      Matrix3::rotationScaling() const
-         * @todoc Explicit reference when Doxygen can handle const
+         *      @ref Matrix3::rotationScaling() const
          */
         /* Not Matrix3, because it is for affine 2D transformations */
         constexpr Matrix<3, T> rotationScaling() const {
@@ -255,10 +309,9 @@ template<class T> class Matrix4: public Matrix<4, T> {
          *
          * Similar to @ref rotationScaling(), but additionally checks that the
          * base vectors are normalized.
-         * @see rotation() const, @ref uniformScaling(),
+         * @see @ref rotation() const, @ref uniformScaling(),
          *      @ref Matrix3::rotationNormalized()
          * @todo assert also orthogonality or this is good enough?
-         * @todoc Explicit reference when Doxygen can handle const
          */
         /* Not Matrix3, because it is for affine 2D transformations */
         Matrix<3, T> rotationNormalized() const {
@@ -276,8 +329,7 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * scaling.
          * @see @ref rotationNormalized(), @ref rotationScaling(),
          *      @ref uniformScaling(), @ref rotation(Rad, const Vector3<T>&),
-         *      Matrix3::rotation() const
-         * @todoc Explicit reference when Doxygen can handle const
+         *      @ref Matrix3::rotation() const
          */
         /* Not Matrix3, because it is for affine 2D transformations */
         Matrix<3, T> rotation() const;
@@ -289,10 +341,9 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * Expects that the scaling is the same in all axes. Faster alternative
          * to @ref uniformScaling(), because it doesn't compute the square
          * root.
-         * @see @ref rotationScaling(), rotation() const,
+         * @see @ref rotationScaling(), @ref rotation() const,
          *      @ref rotationNormalized(), @ref scaling(const Vector3<T>&),
          *      @ref Matrix3::uniformScaling()
-         * @todoc Explicit reference when Doxygen can handle const
          */
         T uniformScalingSquared() const;
 
@@ -302,10 +353,9 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * Length of vectors in upper-left 3x3 part of the matrix. Expects that
          * the scaling is the same in all axes. Use faster alternative
          * @ref uniformScalingSquared() where possible.
-         * @see @ref rotationScaling(), rotation() const,
+         * @see @ref rotationScaling(), @ref rotation() const,
          *      @ref rotationNormalized(), @ref scaling(const Vector3<T>&),
          *      @ref Matrix3::uniformScaling()
-         * @todoc Explicit reference when Doxygen can handle const
          */
         T uniformScaling() const { return std::sqrt(uniformScalingSquared()); }
 
@@ -359,9 +409,8 @@ template<class T> class Matrix4: public Matrix<4, T> {
          * @f$ A^{i, j} @f$ is matrix without i-th row and j-th column, see
          * @ref ij()
          * @see @ref isRigidTransformation(), @ref invertedOrthogonal(),
-         *      @ref rotationScaling(), translation() const,
+         *      @ref rotationScaling(), @ref translation() const,
          *      @ref Matrix3::invertedRigid()
-         * @todoc Explicit reference when Doxygen can handle const
          */
         Matrix4<T> invertedRigid() const;
 
@@ -410,7 +459,9 @@ template<class T> class Matrix4: public Matrix<4, T> {
         MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(4, Matrix4, Vector4)
 };
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 MAGNUM_MATRIXn_OPERATOR_IMPLEMENTATION(4, Matrix4)
+#endif
 
 /** @debugoperator{Magnum::Math::Matrix4} */
 template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Matrix4<T>& value) {
@@ -503,6 +554,17 @@ template<class T> Matrix4<T> Matrix4<T>::perspectiveProjection(const Vector2<T>&
             {       T(0), xyScale.y(),                 T(0),  T(0)},
             {       T(0),        T(0),    (far+near)*zScale, T(-1)},
             {       T(0),        T(0), T(2)*far*near*zScale,  T(0)}};
+}
+
+template<class T> Matrix4<T> Matrix4<T>::lookAt(const Vector3<T>& eye, const Vector3<T>& target, const Vector3<T>& up) {
+    const Vector3<T> backward = (eye - target).normalized();
+    const Vector3<T> right = cross(up, backward).normalized();
+    const Vector3<T> realUp = cross(backward, right);
+
+    return {{   right, T(0)},
+            {  realUp, T(0)},
+            {backward, T(0)},
+            {     eye, T(1)}};
 }
 
 template<class T> inline Matrix<3, T> Matrix4<T>::rotation() const {

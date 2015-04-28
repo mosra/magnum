@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -27,7 +27,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/Configuration.h>
 
-#include "Magnum/Math/Vector3.h" /* Vector3 used in Vector2::cross() */
+#include "Magnum/Math/Vector3.h" /* Vector3 used in Vector2Test::cross() */
 
 struct Vec2 {
     float x, y;
@@ -51,29 +51,28 @@ template<> struct VectorConverter<2, float, Vec2> {
 
 namespace Test {
 
-class Vector2Test: public Corrade::TestSuite::Tester {
-    public:
-        Vector2Test();
+struct Vector2Test: Corrade::TestSuite::Tester {
+    explicit Vector2Test();
 
-        void construct();
-        void constructDefault();
-        void constructOneValue();
-        void constructConversion();
-        void constructCopy();
+    void construct();
+    void constructDefault();
+    void constructOneValue();
+    void constructConversion();
+    void constructCopy();
 
-        void convert();
+    void convert();
 
-        void access();
-        void cross();
-        void axes();
-        void scales();
-        void perpendicular();
-        void aspectRatio();
-        void minmax();
+    void access();
+    void cross();
+    void axes();
+    void scales();
+    void perpendicular();
+    void aspectRatio();
+    void minmax();
 
-        void swizzleType();
-        void debug();
-        void configuration();
+    void swizzleType();
+    void debug();
+    void configuration();
 };
 
 typedef Math::Vector3<Int> Vector3i;
@@ -185,8 +184,8 @@ void Vector2Test::cross() {
     Vector2i a(1, -1);
     Vector2i b(4, 3);
 
-    CORRADE_COMPARE(Vector2i::cross(a, b), 7);
-    CORRADE_COMPARE(Vector3i::cross({a, 0}, {b, 0}), Vector3i(0, 0, Vector2i::cross(a, b)));
+    CORRADE_COMPARE(Math::cross(a, b), 7);
+    CORRADE_COMPARE(Math::cross<Int>({a, 0}, {b, 0}), Vector3i(0, 0, Math::cross(a, b)));
 }
 
 void Vector2Test::axes() {
@@ -206,7 +205,7 @@ void Vector2Test::scales() {
 void Vector2Test::perpendicular() {
     const Vector2 a(0.5f, -15.0f);
     CORRADE_COMPARE(a.perpendicular(), Vector2(15.0f, 0.5f));
-    CORRADE_COMPARE(Vector2::dot(a.perpendicular(), a), 0.0f);
+    CORRADE_COMPARE(dot(a.perpendicular(), a), 0.0f);
     CORRADE_COMPARE(Vector2::xAxis().perpendicular(), Vector2::yAxis());
 }
 

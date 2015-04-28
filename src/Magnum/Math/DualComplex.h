@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -36,7 +36,7 @@
 namespace Magnum { namespace Math {
 
 /**
-@brief %Dual complex number
+@brief Dual complex number
 @tparam T   Underlying data type
 
 Represents 2D rotation and translation. See @ref transformations for brief
@@ -71,11 +71,9 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @f[
          *      \hat c = (0 + i1) + \epsilon (v_x + iv_y)
          * @f]
-         * @see translation() const,
-         *      @ref Matrix3::translation(const Vector2<T>&),
+         * @see @ref translation() const, @ref Matrix3::translation(const Vector2<T>&),
          *      @ref DualQuaternion::translation(), @ref Vector2::xAxis(),
          *      @ref Vector2::yAxis()
-         * @todoc Explicit reference when Doxygen can handle const
          */
         static DualComplex<T> translation(const Vector2<T>& vector) {
             return {{}, {vector.x(), vector.y()}};
@@ -227,7 +225,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
         }
 
         /**
-         * @brief %Complex number length squared
+         * @brief Complex number length squared
          *
          * Should be used instead of length() for comparing complex number
          * length with other values, because it doesn't compute the square root. @f[
@@ -240,7 +238,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
         }
 
         /**
-         * @brief %Dual quaternion length
+         * @brief Dual quaternion length
          *
          * See lengthSquared() which is faster for comparing length with other
          * values. @f[

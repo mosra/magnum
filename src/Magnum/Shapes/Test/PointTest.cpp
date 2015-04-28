@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -31,11 +31,10 @@
 
 namespace Magnum { namespace Shapes { namespace Test {
 
-class PointTest: public TestSuite::Tester {
-    public:
-        PointTest();
+struct PointTest: TestSuite::Tester {
+    explicit PointTest();
 
-        void transformed();
+    void transformed();
 };
 
 PointTest::PointTest() {

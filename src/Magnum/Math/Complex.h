@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -29,7 +29,6 @@
  * @brief Class @ref Magnum::Math::Complex
  */
 
-#include <limits>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
 
@@ -46,8 +45,36 @@ namespace Implementation {
     }
 }
 
+/** @relatesalso Complex
+@brief Dot product of two complex numbers
+
+@f[
+    c_0 \cdot c_1 = a_0 a_1 + b_0 b_1
+@f]
+@see @ref Complex::dot() const
+*/
+template<class T> inline T dot(const Complex<T>& a, const Complex<T>& b) {
+    return a.real()*b.real() + a.imaginary()*b.imaginary();
+}
+
+/** @relatesalso Complex
+@brief Angle between normalized complex numbers
+
+Expects that both complex numbers are normalized. @f[
+    \theta = acos \left( \frac{Re(c_0 \cdot c_1))}{|c_0| |c_1|} \right) = acos (a_0 a_1 + b_0 b_1)
+@f]
+@see @ref Complex::isNormalized(),
+    @ref angle(const Quaternion<T>&, const Quaternion<T>&),
+    @ref angle(const Vector<size, T>&, const Vector<size, T>&)
+*/
+template<class T> inline Rad<T> angle(const Complex<T>& normalizedA, const Complex<T>& normalizedB) {
+    CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
+                   "Math::angle(): complex numbers must be normalized", {});
+    return Rad<T>(std::acos(normalizedA.real()*normalizedB.real() + normalizedA.imaginary()*normalizedB.imaginary()));
+}
+
 /**
-@brief %Complex number
+@brief Complex number
 @tparam T   Data type
 
 Represents 2D rotation. See @ref transformations for brief introduction.
@@ -57,33 +84,25 @@ template<class T> class Complex {
     public:
         typedef T Type; /**< @brief Underlying data type */
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @brief Dot product
-         *
-         * @f[
-         *      c_0 \cdot c_1 = a_0 a_1 + b_0 b_1
-         * @f]
-         * @see dot() const
-         * @todoc Explicit reference when Doxygen can handle const
+         * @copybrief Math::dot(const Complex<T>&, const Complex<T>&)
+         * @deprecated Use @ref Math::dot(const Complex<T>&, const Complex<T>&)
+         *      instead.
          */
-        static T dot(const Complex<T>& a, const Complex<T>& b) {
-            return a._real*b._real + a._imaginary*b._imaginary;
+        CORRADE_DEPRECATED("use Math::dot() instead") static T dot(const Complex<T>& a, const Complex<T>& b) {
+            return Math::dot(a, b);
         }
 
         /**
-         * @brief Angle between normalized complex numbers
-         *
-         * Expects that both complex numbers are normalized. @f[
-         *      \theta = acos \left( \frac{Re(c_0 \cdot c_1))}{|c_0| |c_1|} \right) = acos (a_0 a_1 + b_0 b_1)
-         * @f]
-         * @see @ref isNormalized(), @ref Quaternion::angle(),
-         *      @ref Vector::angle()
+         * @copybrief Math::angle(const Complex<T>&, const Complex<T>&)
+         * @deprecated Use @ref Math::angle(const Complex<T>&, const Complex<T>&)
+         *      instead.
          */
-        static Rad<T> angle(const Complex<T>& normalizedA, const Complex<T>& normalizedB) {
-            CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
-                           "Math::Complex::angle(): complex numbers must be normalized", Rad<T>(std::numeric_limits<T>::quiet_NaN()));
-            return Rad<T>(std::acos(normalizedA._real*normalizedB._real + normalizedA._imaginary*normalizedB._imaginary));
+        CORRADE_DEPRECATED("use Math::angle() instead") static Rad<T> angle(const Complex<T>& normalizedA, const Complex<T>& normalizedB) {
+            return Math::angle(normalizedA, normalizedB);
         }
+        #endif
 
         /**
          * @brief Rotation complex number
@@ -136,8 +155,7 @@ template<class T> class Complex {
          * To be used in transformations later. @f[
          *      c = v_x + iv_y
          * @f]
-         * @see operator Vector2(), @ref transformVector()
-         * @todoc Explicit reference when Doxygen can handle conversion operators
+         * @see @ref operator Vector2<T>(), @ref transformVector()
          */
         constexpr explicit Complex(const Vector2<T>& vector): _real(vector.x()), _imaginary(vector.y()) {}
 
@@ -335,12 +353,10 @@ template<class T> class Complex {
          * @f]
          * @see @ref dot(const Complex&, const Complex&), @ref isNormalized()
          */
-        T dot() const {
-            return dot(*this, *this);
-        }
+        T dot() const { return Math::dot(*this, *this); }
 
         /**
-         * @brief %Complex number length
+         * @brief Complex number length
          *
          * See also @ref dot() const which is faster for comparing length with
          * other values. @f[
@@ -400,8 +416,7 @@ template<class T> class Complex {
          */
         Complex<T> invertedNormalized() const {
             CORRADE_ASSERT(isNormalized(),
-                           "Math::Complex::invertedNormalized(): complex number must be normalized",
-                           Complex<T>(std::numeric_limits<T>::quiet_NaN(), {}));
+                           "Math::Complex::invertedNormalized(): complex number must be normalized", {});
             return conjugated();
         }
 
@@ -411,9 +426,8 @@ template<class T> class Complex {
          * @f[
          *      v' = c v = c (v_x + iv_y)
          * @f]
-         * @see @ref Complex(const Vector2<T>&), operator Vector2(),
+         * @see @ref Complex(const Vector2<T>&), @ref operator Vector2<T>(),
          *      @ref Matrix3::transformVector()
-         * @todoc Explicit reference when Doxygen can handle conversion operators
          */
         Vector2<T> transformVector(const Vector2<T>& vector) const {
             return Vector2<T>((*this)*Complex<T>(vector));

@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -30,7 +30,7 @@ namespace Magnum {
 @section compilation-forward-declarations Forward declarations instead of includes
 
 Essential thing when speeding up compilation is reducing number of `#``include`
-directives in both headers and source files. %Magnum is strictly applying this
+directives in both headers and source files. Magnum is strictly applying this
 policy in all header files, so all types which are not directly used in the
 header have only forward declarations.
 
@@ -55,19 +55,19 @@ available, each namespace has its own:
 
 @section compilation-speedup-templates Templates
 
-Many things in %Magnum are templated to allow handling of various types and
+Many things in Magnum are templated to allow handling of various types and
 sizes of data, for example whole scene graph can operate either with @ref Float
 or @ref Double data type. However, having templated classes and function
 usually means that the compiler compiles the whole templated code again in each
 compilation unit (i.e. source file). In linking stage of the application or
 library the duplicates are just thrown out, which is a waste of compilation
-time. A few techniques are employed in %Magnum to avoid this.
+time. A few techniques are employed in Magnum to avoid this.
 
 @subsection compilation-speedup-hpp Template headers and implementation files
 
 When templated code is too large, it is not stored in header file, but in
 so-called *template implementation file*. Generally, all header files in
-%Magnum have `*.h` extension and all source files have `*.cpp` extension.
+Magnum have `*.h` extension and all source files have `*.cpp` extension.
 Template implementation files have `*.hpp` extension, hinting that they are
 something between `*.h` and `*.cpp` files.
 
@@ -111,7 +111,7 @@ precious compilation time.
 
 Keyword `extern template` is a new thing in C++11, attempting to solve
 compilation time problems related to templated code. However, on some compilers
-it causes conflicting symbol errors when used on whole classes, thus in %Magnum
+it causes conflicting symbol errors when used on whole classes, thus in Magnum
 it's used only for specific functions.
 
 This is completely transparent to end user, so no special care is needed.

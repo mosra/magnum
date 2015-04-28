@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -29,17 +29,16 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation { namespace Test {
 
-class ForceRendererTest: public TestSuite::Tester {
-    public:
-        explicit ForceRendererTest();
+struct ForceRendererTest: TestSuite::Tester {
+    explicit ForceRendererTest();
 
-        void zero2D();
-        void common2D();
+    void zero2D();
+    void common2D();
 
-        void zero3D();
-        void parallel3D();
-        void antiParallel3D();
-        void arbitrary3D();
+    void zero3D();
+    void parallel3D();
+    void antiParallel3D();
+    void arbitrary3D();
 };
 
 ForceRendererTest::ForceRendererTest() {
@@ -69,7 +68,7 @@ void ForceRendererTest::common2D() {
     CORRADE_COMPARE(m.up().length(), force.length());
 
     /* All vectors are orthogonal */
-    CORRADE_COMPARE(Vector2::dot(m.right(), m.up()), 0.0f);
+    CORRADE_COMPARE(Math::dot(m.right(), m.up()), 0.0f);
 }
 
 void ForceRendererTest::zero3D() {
@@ -100,10 +99,10 @@ void ForceRendererTest::arbitrary3D() {
     CORRADE_COMPARE(m.backward().length(), force.length());
 
     /* All vectors are orthogonal */
-    CORRADE_COMPARE(Vector3::dot(m.right(), m.up()),       0.0f);
-    CORRADE_COMPARE(Vector3::dot(m.right(), m.backward()), 0.0f);
+    CORRADE_COMPARE(Math::dot(m.right(), m.up()),       0.0f);
+    CORRADE_COMPARE(Math::dot(m.right(), m.backward()), 0.0f);
     /** @todo This shouldn't be too different */
-    CORRADE_VERIFY(Math::abs(Vector3::dot(m.up(), m.backward())) < Math::TypeTraits<Float>::epsilon());
+    CORRADE_VERIFY(Math::abs(Math::dot(m.up(), m.backward())) < Math::TypeTraits<Float>::epsilon());
 }
 
 }}}}

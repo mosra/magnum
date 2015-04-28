@@ -2,22 +2,24 @@
 pkgname=nacl-magnum
 pkgver=dev.newlib
 pkgrel=1
-pkgdesc="C++11 and OpenGL 2D/3D graphics engine (NaCl newlib version)"
+pkgdesc="C++11/C++14 and OpenGL 2D/3D graphics engine (NaCl newlib version)"
 arch=('any')
 url="http://mosra.cz/blog/magnum.php"
 license=('MIT')
 depends=('nacl-corrade')
 makedepends=('nacl-sdk' 'cmake' 'corrade' 'ninja')
-options=('!buildflags' '!strip' 'staticlibs')
+options=('!strip' '!buildflags')
+
+_rootdir=$startdir/../../
 
 build() {
     # Build 32bit
-    mkdir -p "$startdir/build-nacl-newlib-x86-32"
-    cd "$startdir/build-nacl-newlib-x86-32"
+    mkdir -p "$_rootdir/build-nacl-newlib-x86-32"
+    cd "$_rootdir/build-nacl-newlib-x86-32"
 
     cmake .. \
-        -DCMAKE_MODULE_PATH="$startdir/toolchains/modules" \
-        -DCMAKE_TOOLCHAIN_FILE="$startdir/toolchains/generic/NaCl-newlib-x86-32.cmake" \
+        -DCMAKE_MODULE_PATH="$_rootdir/toolchains/modules" \
+        -DCMAKE_TOOLCHAIN_FILE="$_rootdir/toolchains/generic/NaCl-newlib-x86-32.cmake" \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr/nacl \
         -DWITH_MAGNUMINFO=ON \
@@ -34,12 +36,12 @@ build() {
     ninja
 
     # Build 64bit
-    mkdir -p "$startdir/build-nacl-newlib-x86-64"
-    cd "$startdir/build-nacl-newlib-x86-64"
+    mkdir -p "$_rootdir/build-nacl-newlib-x86-64"
+    cd "$_rootdir/build-nacl-newlib-x86-64"
 
     cmake .. \
-        -DCMAKE_MODULE_PATH="$startdir/toolchains/modules" \
-        -DCMAKE_TOOLCHAIN_FILE="$startdir/toolchains/generic/NaCl-newlib-x86-64.cmake" \
+        -DCMAKE_MODULE_PATH="$_rootdir/toolchains/modules" \
+        -DCMAKE_TOOLCHAIN_FILE="$_rootdir/toolchains/generic/NaCl-newlib-x86-64.cmake" \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr/nacl \
         -DWITH_MAGNUMINFO=ON \
@@ -57,11 +59,11 @@ build() {
 
 package() {
     # Install 32bit
-    cd "$startdir/build-nacl-newlib-x86-32"
+    cd "$_rootdir/build-nacl-newlib-x86-32"
     DESTDIR="$pkgdir/" ninja install/strip
 
     # Install 64bit (the headers will be overwritten, but they are (and should
     # be) the same for both versions
-    cd "$startdir/build-nacl-newlib-x86-64"
+    cd "$_rootdir/build-nacl-newlib-x86-64"
     DESTDIR="$pkgdir/" ninja install/strip
 }

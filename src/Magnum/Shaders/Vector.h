@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -39,12 +39,51 @@
 namespace Magnum { namespace Shaders {
 
 /**
-@brief %Vector shader
+@brief Vector shader
 
 Renders vector art in plain grayscale form. See also @ref DistanceFieldVector
 for more advanced effects. For rendering unchanged texture you can use the
-@ref Flat shader.
-@see @ref Vector2D, @ref Vector3D
+@ref Flat shader. You need to provide @ref Position and @ref TextureCoordinates
+attributes in your triangle mesh and call at least
+@ref setTransformationProjectionMatrix(), @ref setColor() and
+@ref setVectorTexture().
+
+@image html shaders-vector.png
+@image latex shaders-vector.png
+
+## Example usage
+
+Common mesh setup:
+@code
+struct Vertex {
+    Vector2 position;
+    Vector2 textureCoordinates;
+};
+Vertex data[] = { ... };
+
+Buffer vertices;
+vertices.setData(data, BufferUsage::StaticDraw);
+
+Mesh mesh;
+mesh.addVertexBuffer(vertices, 0,
+    Shaders::Vector2D::Position{},
+    Shaders::Vector2D::TextureCoordinates{});
+@endcode
+
+Common rendering setup:
+@code
+Matrix3 transformationMatrix, projectionMatrix;
+Texture2D texture;
+
+Shaders::Vector2D shader;
+shader.setColor(Color3::fromHSV(216.0_degf, 0.85f, 1.0f))
+    .setVectorTexture(texture)
+    .setTransformationProjectionMatrix(projectionMatrix*transformationMatrix);
+
+mesh.draw(shader);
+@endcode
+
+@see @ref shaders, @ref Vector2D, @ref Vector3D
 */
 template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Vector: public AbstractVector<dimensions> {
     public:

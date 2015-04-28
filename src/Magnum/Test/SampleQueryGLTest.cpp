@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -38,14 +38,13 @@
 
 namespace Magnum { namespace Test {
 
-class SampleQueryGLTest: public AbstractOpenGLTester {
-    public:
-        explicit SampleQueryGLTest();
+struct SampleQueryGLTest: AbstractOpenGLTester {
+    explicit SampleQueryGLTest();
 
-        void querySamplesPassed();
-        #ifndef MAGNUM_TARGET_GLES
-        void conditionalRender();
-        #endif
+    void querySamplesPassed();
+    #ifndef MAGNUM_TARGET_GLES
+    void conditionalRender();
+    #endif
 };
 
 SampleQueryGLTest::SampleQueryGLTest() {
@@ -67,8 +66,6 @@ namespace {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 MyShader::MyShader() {
-    Utility::Resource rs("QueryGLTest");
-
     #ifndef MAGNUM_TARGET_GLES
     Shader vert(Version::GL210, Shader::Type::Vertex);
     Shader frag(Version::GL210, Shader::Type::Fragment);
@@ -77,8 +74,15 @@ MyShader::MyShader() {
     Shader frag(Version::GLES200, Shader::Type::Fragment);
     #endif
 
-    vert.addSource(rs.get("MyShader.vert"));
-    frag.addSource(rs.get("MyShader.frag"));
+    vert.addSource(
+        "attribute lowp vec4 position;\n"
+        "void main() {\n"
+        "    gl_Position = position;\n"
+        "}\n");
+    frag.addSource(
+        "void main() {\n"
+        "    gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n"
+        "}\n");
 
     /* GCC 4.4 has explicit std::reference_wrapper constructor */
     CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({std::ref(vert), std::ref(frag)}));
@@ -112,7 +116,7 @@ void SampleQueryGLTest::querySamplesPassed() {
     Mesh mesh;
     mesh.setPrimitive(MeshPrimitive::Triangles)
         .setCount(3)
-        .addVertexBuffer(buffer, 0, AbstractShaderProgram::Attribute<0, Vector2>());
+        .addVertexBuffer(buffer, 0, Attribute<0, Vector2>{});
 
     MyShader shader;
 
@@ -125,7 +129,7 @@ void SampleQueryGLTest::querySamplesPassed() {
     #endif
     q.begin();
 
-    framebuffer.bind(FramebufferTarget::ReadDraw);
+    framebuffer.bind();
     mesh.draw(shader);
 
     q.end();
@@ -161,10 +165,10 @@ void SampleQueryGLTest::conditionalRender() {
     Mesh mesh;
     mesh.setPrimitive(MeshPrimitive::Triangles)
         .setCount(3)
-        .addVertexBuffer(buffer, 0, AbstractShaderProgram::Attribute<0, Vector2>());
+        .addVertexBuffer(buffer, 0, Attribute<0, Vector2>{});
 
     MyShader shader;
-    framebuffer.bind(FramebufferTarget::ReadDraw);
+    framebuffer.bind();
 
     MAGNUM_VERIFY_NO_ERROR();
 

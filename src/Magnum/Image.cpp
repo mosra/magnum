@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -32,7 +32,7 @@ template<UnsignedInt dimensions> void Image<dimensions>::setData(ColorFormat for
     _format = format;
     _type = type;
     _size = size;
-    _data = reinterpret_cast<unsigned char*>(data);
+    _data = reinterpret_cast<char*>(data);
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -41,7 +41,7 @@
 namespace Magnum {
 
 /**
-@brief %Array
+@brief Array
 @tparam dimensions  Dimension count
 @tparam T           Data type
 
@@ -169,7 +169,7 @@ template<class T> class Array2D: public Array<2, T> {
          */
         constexpr /*implicit*/ Array2D(T x, T y): Array<2, T>(x, y) {}
 
-        /** @copydoc Array::Array(U) */
+        /** @brief Initializer-list constructor */
         constexpr /*implicit*/ Array2D(T value): Array<2, T>(value, value) {}
 
         /** @brief Copy constructor */
@@ -198,7 +198,7 @@ template<class T> class Array3D: public Array<3, T> {
          */
         constexpr /*implicit*/ Array3D(T x, T y, T z): Array<3, T>(x, y, z) {}
 
-        /** @copydoc Array::Array(U) */
+        /** @brief Initializer-list constructor */
         constexpr /*implicit*/ Array3D(T value): Array<3, T>(value, value, value) {}
 
         /** @brief Copy constructor */

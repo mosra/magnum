@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -38,8 +38,7 @@ namespace Magnum {
 
 Default framebuffer, i.e. the actual screen surface. It is automatically
 created when @ref Context is created and it is available through global
-variable @ref defaultFramebuffer. It is by default mapped to whole screen
-surface.
+variable @ref defaultFramebuffer.
 
 @anchor DefaultFramebuffer-usage
 ## Usage
@@ -49,8 +48,8 @@ must ensure that it is properly resized when application surface is resized,
 i.e. you must pass the new size in your @ref Platform::Sdl2Application::viewportEvent() "viewportEvent()"
 implementation, for example:
 @code
-void viewportEvent(const Vector2i& size) {
-    defaultFramebuffer.setViewport({}, size);
+void viewportEvent(const Vector2i& size) override {
+    defaultFramebuffer.setViewport({{}, size});
 
     // ...
 }
@@ -60,34 +59,35 @@ Next thing you probably want is to clear all used buffers before performing
 any drawing in your @ref Platform::Sdl2Application::drawEvent() "drawEvent()"
 implementation, for example:
 @code
-void drawEvent() {
+void drawEvent() override {
     defaultFramebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth);
 
     // ...
 }
 @endcode
 
-See Framebuffer documentation for more involved usage, usage of non-default or
-multiple framebuffers.
+See documentation of particular functions and @ref Framebuffer documentation for
+more involved usage, usage of non-default or multiple framebuffers.
 
 ## Performance optimizations
 
 See also @ref AbstractFramebuffer-performance-optimization "relevant section in AbstractFramebuffer".
 
-If extension @extension{EXT,direct_state_access} is available, functions
-@ref mapForDraw() and @ref mapForRead() use DSA to avoid unnecessary calls to
-@fn_gl{BindFramebuffer}. See their respective documentation for more
-information.
+If on desktop GL and either @extension{ARB,direct_state_access} (part of OpenGL
+4.5) or @extension{EXT,direct_state_access} is available, functions
+@ref checkStatus(), @ref mapForDraw(), @ref mapForRead() and @ref invalidate()
+use DSA to avoid unnecessary calls to @fn_gl{BindFramebuffer}. See their
+respective documentation for more information.
 */
 class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
-    friend class Context;
+    friend Context;
 
     public:
         /**
          * @brief Status
          *
          * @see @ref checkStatus()
-         * @requires_gl30 %Extension @extension{ARB,framebuffer_object}
+         * @requires_gl30 Extension @extension{ARB,framebuffer_object}
          */
         enum class Status: GLenum {
             /** The framebuffer is complete */
@@ -95,7 +95,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
 
             /**
              * The default framebuffer does not exist.
-             * @requires_gles30 %Extension @es_extension{OES,surfaceless_context}
+             * @requires_gles30 Extension @es_extension{OES,surfaceless_context}
              *      in OpenGL ES 2.0
              */
             #ifndef MAGNUM_TARGET_GLES2
@@ -173,7 +173,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @brief Read attachment
          *
          * @see @ref mapForRead()
-         * @requires_gles30 %Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
+         * @requires_gles30 Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
          *      in OpenGL ES 2.0
          */
         enum class ReadAttachment: GLenum {
@@ -223,7 +223,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
 
             /**
              * Read from front buffer.
-             * @requires_es_extension %Extension @es_extension2{NV,read_buffer_front,GL_NV_read_buffer}
+             * @requires_es_extension Extension @es_extension2{NV,read_buffer_front,GL_NV_read_buffer}
              */
             Front = GL_FRONT
 
@@ -244,8 +244,8 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @brief Invalidation attachment
          *
          * @see @ref invalidate()
-         * @requires_gl43 %Extension @extension{ARB,invalidate_subdata}
-         * @requires_gles30 %Extension @es_extension{EXT,discard_framebuffer}
+         * @requires_gl43 Extension @extension{ARB,invalidate_subdata}
+         * @requires_gles30 Extension @es_extension{EXT,discard_framebuffer}
          *      in OpenGL ES 2.0
          */
         enum class InvalidationAttachment: GLenum {
@@ -315,12 +315,17 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @brief Check framebuffer status
          * @param target    Target for which to check the status
          *
-         * If @extension{EXT,direct_state_access} is not available and the
-         * framebuffer is not currently bound, it is bound before the
-         * operation.
-         * @see @fn_gl{BindFramebuffer}, @fn_gl{CheckFramebufferStatus} or
-         *      @fn_gl_extension{CheckNamedFramebufferStatus,EXT,direct_state_access}
-         * @requires_gl30 %Extension @extension{ARB,framebuffer_object}
+         * If on OpenGL ES or neither @extension{ARB,direct_state_access} (part
+         * of OpenGL 4.5) nor @extension{EXT,direct_state_access} is available,
+         * the framebuffer is bound before the operation (if not already).
+         *
+         * On OpenGL ES 2.0, if none of @es_extension{APPLE,framebuffer_multisample},
+         * @es_extension{ANGLE,framebuffer_blit} or @es_extension{NV,framebuffer_blit}
+         * is available, the @p target parameter is ignored.
+         * @see @fn_gl2{CheckNamedFramebufferStatus,CheckFramebufferStatus},
+         *      @fn_gl_extension{CheckNamedFramebufferStatus,EXT,direct_state_access},
+         *      eventually @fn_gl{BindFramebuffer} and @fn_gl{CheckFramebufferStatus}
+         * @requires_gl30 Extension @extension{ARB,framebuffer_object}
          */
         Status checkStatus(FramebufferTarget target);
 
@@ -330,20 +335,21 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @return Reference to self (for method chaining)
          *
          * @p attachments is list of shader outputs mapped to buffer
-         * attachments. %Shader outputs which are not listed are not used, you
+         * attachments. Shader outputs which are not listed are not used, you
          * can achieve the same by passing @ref DrawAttachment::None as
          * attachment. Example usage:
          * @code
-         * framebuffer.mapForDraw({{MyShader::ColorOutput, DefaultFramebuffer::DrawAttachment::BackLeft},
-         *                         {MyShader::NormalOutput, DefaultFramebuffer::DrawAttachment::None}});
+         * defaultFramebuffer.mapForDraw({{MyShader::ColorOutput, DefaultFramebuffer::DrawAttachment::BackLeft},
+         *                                {MyShader::NormalOutput, DefaultFramebuffer::DrawAttachment::None}});
          * @endcode
          *
-         * If @extension{EXT,direct_state_access} is not available and the
-         * framebuffer is not currently bound, it is bound before the
-         * operation.
+         * If on OpenGL ES or neither @extension{ARB,direct_state_access} (part
+         * of OpenGL 4.5) nor @extension{EXT,direct_state_access} is available,
+         * the framebuffer is bound before the operation (if not already).
          * @see @ref maxDrawBuffers(), @ref maxDualSourceDrawBuffers(),
-         *      @ref mapForRead(), @fn_gl{BindFramebuffer}, @fn_gl{DrawBuffers}
-         *      or @fn_gl_extension{FramebufferDrawBuffers,EXT,direct_state_access}
+         *      @ref mapForRead(), @fn_gl2{NamedFramebufferDrawBuffers,DrawBuffers},
+         *      @fn_gl_extension{FramebufferDrawBuffers,EXT,direct_state_access},
+         *      eventually @fn_gl{BindFramebuffer} and @fn_gl{DrawBuffers}
          * @requires_gles30 Draw attachments for default framebuffer are
          *      available only in OpenGL ES 3.0.
          */
@@ -351,17 +357,18 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
 
         /**
          * @brief Map shader output to buffer attachment
-         * @param attachment        %Buffer attachment
+         * @param attachment        Buffer attachment
          * @return Reference to self (for method chaining)
          *
          * Similar to above function, can be used in cases when shader has
          * only one (unnamed) output.
          *
-         * If @extension{EXT,direct_state_access} is not available and the
-         * framebuffer is not currently bound, it is bound before the
-         * operation.
-         * @see @ref mapForRead(), @fn_gl{BindFramebuffer}, @fn_gl{DrawBuffer}
-         *      or @fn_gl_extension{FramebufferDrawBuffer,EXT,direct_state_access},
+         * If on OpenGL ES or neither @extension{ARB,direct_state_access} (part
+         * of OpenGL 4.5) nor @extension{EXT,direct_state_access} is available,
+         * the framebuffer is bound before the operation (if not already).
+         * @see @ref mapForRead(), @fn_gl2{NamedFramebufferDrawBuffer,DrawBuffer},
+         *      @fn_gl_extension{FramebufferDrawBuffer,EXT,direct_state_access},
+         *      eventually @fn_gl{BindFramebuffer} and @fn_gl{DrawBuffer} or
          *      @fn_gl{DrawBuffers} in OpenGL ES 3.0
          * @requires_gles30 Draw attachments for default framebuffer are
          *      available only in OpenGL ES 3.0.
@@ -371,15 +378,16 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
 
         /**
          * @brief Map given attachment for reading
-         * @param attachment        %Buffer attachment
+         * @param attachment        Buffer attachment
          * @return Reference to self (for method chaining)
          *
-         * If @extension{EXT,direct_state_access} is not available and the
-         * framebuffer is not currently bound, it is bound before the
-         * operation.
-         * @see mapForDraw(), @fn_gl{BindFramebuffer}, @fn_gl{ReadBuffer} or
-         *      @fn_gl_extension{FramebufferReadBuffer,EXT,direct_state_access}
-         * @requires_gles30 %Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
+         * If on OpenGL ES or neither @extension{ARB,direct_state_access} (part
+         * of OpenGL 4.5) nor @extension{EXT,direct_state_access} is available,
+         * the framebuffer is bound before the operation (if not already).
+         * @see @ref mapForDraw(), @fn_gl2{NamedFramebufferReadBuffer,ReadBuffer},
+         *      @fn_gl_extension{FramebufferReadBuffer,EXT,direct_state_access},
+         *      eventually @fn_gl{BindFramebuffer} and @fn_gl{ReadBuffer}
+         * @requires_gles30 Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
          *      in OpenGL ES 2.0
          */
         DefaultFramebuffer& mapForRead(ReadAttachment attachment);
@@ -391,31 +399,44 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * If extension @extension{ARB,invalidate_subdata} (part of OpenGL
          * 4.3), extension @es_extension{EXT,discard_framebuffer} in OpenGL ES
          * 2.0 or OpenGL ES 3.0 is not available, this function does nothing.
-         * The framebuffer is bound to some target before the operation, if not
-         * already.
-         * @see @fn_gl{InvalidateFramebuffer} or @fn_gles_extension{DiscardFramebuffer,EXT,discard_framebuffer}
+         * If @extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
+         * available, the framebuffer is bound before the operation (if not
+         * already).
+         * @see @fn_gl2{InvalidateNamedFramebufferData,InvalidateFramebuffer},
+         *      eventually @fn_gl{InvalidateFramebuffer} or
+         *      @fn_gles_extension{DiscardFramebuffer,EXT,discard_framebuffer}
          *      on OpenGL ES 2.0
          */
         void invalidate(std::initializer_list<InvalidationAttachment> attachments);
 
+        #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Invalidate framebuffer rectangle
          * @param attachments       Attachments to invalidate
-         * @param rectangle         %Rectangle to invalidate
+         * @param rectangle         Rectangle to invalidate
          *
          * If extension @extension{ARB,invalidate_subdata} (part of OpenGL
-         * 4.3) or OpenGL ES 3.0 is not available, this function does nothing.
-         * The framebuffer is bound to some target before the operation, if not
-         * already.
+         * 4.3) is not available, this function does nothing. If
+         * @extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
+         * available, the framebuffer is bound before the operation (if not
+         * already).
          * @see @ref invalidate(std::initializer_list<InvalidationAttachment>),
-         *      @fn_gl{InvalidateSubFramebuffer}
+         *      @fn_gl2{InvalidateNamedFramebufferSubData,InvalidateSubFramebuffer},
+         *      eventually @fn_gl{InvalidateSubFramebuffer}
+         * @requires_gles30 Use @ref Magnum::DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment>) "invalidate(std::initializer_list<InvalidationAttachment>)"
+         *      in OpenGL ES 2.0 instead.
          */
         void invalidate(std::initializer_list<InvalidationAttachment> attachments, const Range2Di& rectangle);
+        #endif
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         DefaultFramebuffer& setViewport(const Range2Di& rectangle) {
             AbstractFramebuffer::setViewport(rectangle);
+            return *this;
+        }
+        DefaultFramebuffer& clear(FramebufferClearMask mask) {
+            AbstractFramebuffer::clear(mask);
             return *this;
         }
         #endif
@@ -429,11 +450,6 @@ extern DefaultFramebuffer MAGNUM_EXPORT defaultFramebuffer;
 
 /** @debugoperatorclassenum{Magnum::DefaultFramebuffer,Magnum::DefaultFramebuffer::Status} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, DefaultFramebuffer::Status value);
-
-#ifdef MAGNUM_TARGET_GLES2
-/* No-op implementation on ES2 */
-inline void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment>, const Range2Di&) {}
-#endif
 
 }
 

@@ -1,7 +1,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -34,11 +34,12 @@ set(Magnum_SRCS
     AbstractQuery.cpp
     AbstractTexture.cpp
     AbstractShaderProgram.cpp
+    Attribute.cpp
     Buffer.cpp
     ColorFormat.cpp
     CubeMapTexture.cpp
     Context.cpp
-    DebugMessage.cpp
+    DebugOutput.cpp
     DefaultFramebuffer.cpp
     Framebuffer.cpp
     Image.cpp
@@ -89,12 +90,13 @@ set(Magnum_HEADERS
     AbstractShaderProgram.h
     AbstractTexture.h
     Array.h
+    Attribute.h
     Buffer.h
     Color.h
     ColorFormat.h
     Context.h
     CubeMapTexture.h
-    DebugMessage.h
+    DebugOutput.h
     DefaultFramebuffer.h
     DimensionTraits.h
     Extensions.h
@@ -110,6 +112,7 @@ set(Magnum_HEADERS
     Renderer.h
     Resource.h
     ResourceManager.h
+    ResourceManager.hpp
     SampleQuery.h
     Sampler.h
     Shader.h
@@ -140,6 +143,7 @@ set(Magnum_PRIVATE_HEADERS
 if(BUILD_DEPRECATED)
     set(Magnum_HEADERS ${Magnum_HEADERS}
         DebugMarker.h
+        DebugMessage.h
         Query.h)
 endif()
 
@@ -161,11 +165,19 @@ if(NOT TARGET_GLES2)
         BufferImage.h
         MultisampleTexture.h
         PrimitiveQuery.h
-        TextureArray.h)
+        TextureArray.h
+        TransformFeedback.h)
+
+    list(APPEND Magnum_PRIVATE_HEADES
+        Implementation/TransformFeedbackState.h)
+
     set(Magnum_SRCS ${Magnum_SRCS}
         BufferImage.cpp
         MultisampleTexture.cpp
-        TextureArray.cpp)
+        TextureArray.cpp
+        TransformFeedback.cpp
+
+        Implementation/TransformFeedbackState.cpp)
 endif()
 
 # Link in GL function pointer variables on platforms that support it
@@ -178,24 +190,26 @@ set(MagnumMath_SRCS
     Math/Functions.cpp
     Math/instantiation.cpp)
 
-# Main library
+# Objects shared between main and test library
 add_library(MagnumMathObjects OBJECT ${MagnumMath_SRCS})
+if(NOT BUILD_STATIC)
+    set_target_properties(MagnumMathObjects PROPERTIES COMPILE_FLAGS "-DMagnumMathObjects_EXPORTS")
+endif()
+if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+    set_target_properties(MagnumMathObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
+
+# Main library
 add_library(Magnum ${SHARED_OR_STATIC}
     ${Magnum_SRCS}
     ${Magnum_HEADERS}
     ${Magnum_PRIVATE_HEADERS}
     $<TARGET_OBJECTS:MagnumMathObjects>)
 set_target_properties(Magnum PROPERTIES DEBUG_POSTFIX "-d")
-
-# TODO: fix when CMake sets target_EXPORTS for OBJECT targets as well
-if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
-    # Set shared library flags for the objects, as they will be part of shared lib
-    # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
-    set_target_properties(MagnumMathObjects PROPERTIES COMPILE_FLAGS "-DMagnumMathObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
-    set_target_properties(Magnum PROPERTIES COMPILE_FLAGS "-DFlextGL_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
-else()
-    set_target_properties(MagnumMathObjects PROPERTIES COMPILE_FLAGS "-DMagnumMathObjects_EXPORTS")
+if(NOT BUILD_STATIC)
     set_target_properties(Magnum PROPERTIES COMPILE_FLAGS "-DFlextGL_EXPORTS")
+elseif(BUILD_STATIC_PIC)
+    set_target_properties(Magnum PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 
 set(Magnum_LIBS
@@ -258,7 +272,7 @@ if(WITH_TEXTURETOOLS)
 endif()
 
 if(BUILD_TESTS)
-    # Libraries with graceful assert for testing
+    # Library with graceful assert for testing
     add_library(MagnumMathTestLib ${SHARED_OR_STATIC}
         $<TARGET_OBJECTS:MagnumMathObjects>)
     set_target_properties(MagnumMathTestLib PROPERTIES
@@ -268,7 +282,7 @@ if(BUILD_TESTS)
 
     # On Windows we need to install first and then run the tests to avoid "DLL
     # not found" hell, thus we need to install this too
-    if(CORRADE_TARGET_WINDOWS AND NOT CMAKE_CROSSCOMPILING)
+    if(CORRADE_TARGET_WINDOWS AND NOT CMAKE_CROSSCOMPILING AND NOT BUILD_STATIC)
         install(TARGETS MagnumMathTestLib
             RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
             LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}

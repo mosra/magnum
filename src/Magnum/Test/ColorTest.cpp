@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -31,35 +31,34 @@
 
 namespace Magnum { namespace Test {
 
-class ColorTest: public TestSuite::Tester {
-    public:
-        ColorTest();
+struct ColorTest: TestSuite::Tester {
+    explicit ColorTest();
 
-        void construct();
-        void constructDefault();
-        void constructOneValue();
-        void constructParts();
-        void constructConversion();
-        void constructNormalization();
-        void constructCopy();
+    void construct();
+    void constructDefault();
+    void constructOneValue();
+    void constructParts();
+    void constructConversion();
+    void constructNormalization();
+    void constructCopy();
 
-        void colors();
+    void colors();
 
-        void fromHue();
-        void fromSaturation();
-        void fromValue();
+    void fromHue();
+    void fromSaturation();
+    void fromValue();
 
-        void hue();
-        void saturation();
-        void value();
+    void hue();
+    void saturation();
+    void value();
 
-        void hsv();
-        void hsvOverflow();
-        void hsvAlpha();
+    void hsv();
+    void hsvOverflow();
+    void hsvAlpha();
 
-        void swizzleType();
-        void debug();
-        void configuration();
+    void swizzleType();
+    void debug();
+    void configuration();
 };
 
 ColorTest::ColorTest() {

@@ -10,7 +10,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -37,12 +37,9 @@ find_library(EGL_LIBRARY EGL)
 
 # Include dir
 find_path(EGL_INCLUDE_DIR
-    NAMES egl.h
-    PATH_SUFFIXES EGL
-)
+    NAMES EGL/egl.h)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args("EGL" DEFAULT_MSG
     EGL_LIBRARY
-    EGL_INCLUDE_DIR
-)
+    EGL_INCLUDE_DIR)

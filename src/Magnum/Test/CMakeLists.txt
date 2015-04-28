@@ -1,7 +1,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -28,7 +28,7 @@ corrade_add_test(AbstractShaderProgramTest AbstractShaderProgramTest.cpp LIBRARI
 corrade_add_test(ArrayTest ArrayTest.cpp)
 corrade_add_test(ColorTest ColorTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(ContextTest ContextTest.cpp LIBRARIES Magnum)
-corrade_add_test(DebugMessageTest DebugMessageTest.cpp LIBRARIES Magnum)
+corrade_add_test(DebugOutputTest DebugOutputTest.cpp LIBRARIES Magnum)
 corrade_add_test(DefaultFramebufferTest DefaultFramebufferTest.cpp LIBRARIES Magnum)
 corrade_add_test(FramebufferTest FramebufferTest.cpp LIBRARIES Magnum)
 corrade_add_test(ImageTest ImageTest.cpp LIBRARIES Magnum)
@@ -40,6 +40,13 @@ corrade_add_test(SamplerTest SamplerTest.cpp LIBRARIES Magnum)
 corrade_add_test(ShaderTest ShaderTest.cpp LIBRARIES Magnum)
 corrade_add_test(VersionTest VersionTest.cpp LIBRARIES Magnum)
 
+add_library(ResourceManagerLocalInstanceTestLib ${SHARED_OR_STATIC} ResourceManagerLocalInstanceTestLib.cpp)
+target_link_libraries(ResourceManagerLocalInstanceTestLib Magnum)
+if(NOT BUILD_STATIC)
+    set_target_properties(ResourceManagerLocalInstanceTestLib PROPERTIES COMPILE_FLAGS "-DResourceManagerLocalInstanceTestLib_EXPORTS")
+endif()
+corrade_add_test(ResourceManagerLocalInstanceTest ResourceManagerLocalInstanceTest.cpp LIBRARIES Magnum ResourceManagerLocalInstanceTestLib)
+
 if(BUILD_GL_TESTS)
     corrade_add_test(AbstractObjectGLTest AbstractObjectGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
     corrade_add_test(AbstractQueryGLTest AbstractQueryGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
@@ -47,10 +54,11 @@ if(BUILD_GL_TESTS)
     corrade_add_test(BufferGLTest BufferGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
     corrade_add_test(ContextGLTest ContextGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
     corrade_add_test(CubeMapTextureGLTest CubeMapTextureGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
-    corrade_add_test(DebugGLTest DebugGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
+    corrade_add_test(DebugOutputGLTest DebugOutputGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
     corrade_add_test(FramebufferGLTest FramebufferGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
     corrade_add_test(MeshGLTest MeshGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
     corrade_add_test(RenderbufferGLTest RenderbufferGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
+    corrade_add_test(SampleQueryGLTest SampleQueryGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
     corrade_add_test(TextureGLTest TextureGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
     corrade_add_test(TimeQueryGLTest TimeQueryGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
 
@@ -60,18 +68,6 @@ if(BUILD_GL_TESTS)
         ${AbstractShaderProgramGLTest_RES}
         LIBRARIES ${GL_TEST_LIBRARIES})
 
-    corrade_add_resource(QueryGLTest_RES QueryGLTestFiles/resources.conf)
-    if(NOT MAGNUM_TARGET_GLES2)
-        corrade_add_test(PrimitiveQueryGLTest
-            PrimitiveQueryGLTest.cpp
-            ${QueryGLTest_RES}
-            LIBRARIES ${GL_TEST_LIBRARIES})
-    endif()
-    corrade_add_test(SampleQueryGLTest
-        SampleQueryGLTest.cpp
-        ${QueryGLTest_RES}
-        LIBRARIES ${GL_TEST_LIBRARIES})
-
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                    ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
     include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
@@ -79,8 +75,10 @@ if(BUILD_GL_TESTS)
 
     if(NOT MAGNUM_TARGET_GLES2)
         corrade_add_test(BufferImageGLTest BufferImageGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
-        corrade_add_test(TextureArrayGLTest TextureArrayGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
         corrade_add_test(MultisampleTextureGLTest MultisampleTextureGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
+        corrade_add_test(PrimitiveQueryGLTest PrimitiveQueryGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
+        corrade_add_test(TextureArrayGLTest TextureArrayGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
+        corrade_add_test(TransformFeedbackGLTest TransformFeedbackGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
     endif()
 
     if(NOT MAGNUM_TARGET_GLES)

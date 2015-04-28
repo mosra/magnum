@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -35,18 +35,18 @@
 
 namespace Magnum { namespace SceneGraph { namespace Test {
 
-class CameraTest: public TestSuite::Tester {
-    public:
-        CameraTest();
+struct CameraTest: TestSuite::Tester {
+    explicit CameraTest();
 
-        void fixAspectRatio();
-        void defaultProjection2D();
-        void defaultProjection3D();
-        void projectionSize2D();
-        void projectionSizeOrthographic();
-        void projectionSizePerspective();
-        void projectionSizeViewport();
-        void draw();
+    void fixAspectRatio();
+    void defaultProjection2D();
+    void defaultProjection3D();
+    void projectionCorrectedInvertedY();
+    void projectionSize2D();
+    void projectionSizeOrthographic();
+    void projectionSizePerspective();
+    void projectionSizeViewport();
+    void draw();
 };
 
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation2D> Object2D;
@@ -57,6 +57,7 @@ CameraTest::CameraTest() {
     addTests<CameraTest>({&CameraTest::fixAspectRatio,
               &CameraTest::defaultProjection2D,
               &CameraTest::defaultProjection3D,
+              &CameraTest::projectionCorrectedInvertedY,
               &CameraTest::projectionSize2D,
               &CameraTest::projectionSizeOrthographic,
               &CameraTest::projectionSizePerspective,
@@ -118,6 +119,20 @@ void CameraTest::defaultProjection3D() {
     Camera3D camera(o);
     CORRADE_COMPARE(camera.projectionMatrix(), Matrix4());
     CORRADE_COMPARE(camera.projectionSize(), Vector2(2.0f));
+}
+
+void CameraTest::projectionCorrectedInvertedY() {
+    Object2D o;
+    Camera2D camera(o);
+    camera.setProjection({4.0f, -2.0f})
+        .setAspectRatioPolicy(AspectRatioPolicy::Extend)
+        .setViewport({4, 4});
+
+    /* Resulting matrix should have Y coordinate inverted */
+    Matrix3 expected{{0.5f,  0.0f, 0.0f},
+                     {0.0f, -0.5f, 0.0f},
+                     {0.0f,  0.0f, 1.0f}};
+    CORRADE_COMPARE(camera.projectionMatrix(), expected);
 }
 
 void CameraTest::projectionSize2D() {

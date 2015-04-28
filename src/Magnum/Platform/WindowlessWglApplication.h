@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -29,6 +29,7 @@
  * @brief Class @ref Magnum::Platform::WindowlessWglApplication, macro @ref MAGNUM_WINDOWLESSWGLAPPLICATION_MAIN()
  */
 
+#include <memory>
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #define WIN32_LEAN_AND_MEAN 1
 #define VC_EXTRALEAN
@@ -68,7 +69,7 @@ See @ref cmake for more information.
 
 ## General usage
 
-In CMake you need to request `%WindowlessWglApplication` component, add
+In CMake you need to request `WindowlessWglApplication` component, add
 `${MAGNUM_WINDOWLESSWGLAPPLICATION_INCLUDE_DIRS}` to include path and link to
 `${MAGNUM_WINDOWLESSWGLAPPLICATION_LIBRARIES}`. If no other windowless
 application is requested, you can also use generic
@@ -162,11 +163,11 @@ class WindowlessWglApplication {
         HDC _deviceContext;
         HGLRC _renderingContext;
 
-        Platform::Context* _c;
+        std::unique_ptr<Platform::Context> _context;
 };
 
 /**
-@brief %Configuration
+@brief Configuration
 
 @see @ref WindowlessWglApplication(), @ref createContext(),
     @ref tryCreateContext()

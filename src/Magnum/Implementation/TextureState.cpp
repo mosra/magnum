@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -69,33 +69,69 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         createImplementation = &AbstractTexture::createImplementationDefault;
     }
 
-    /* Bind implementation */
+    /* Single bind implementation */
     #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::GL::ARB::multi_bind>()) {
-        extensions.push_back(Extensions::GL::ARB::multi_bind::string());
+    if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
+        /* Extension name added below */
+
+        unbindImplementation = &AbstractTexture::unbindImplementationDSA;
+        bindImplementation = &AbstractTexture::bindImplementationDSA;
+    } else if(context.isExtensionSupported<Extensions::GL::ARB::multi_bind>()) {
+        /* Extension name added below */
 
         unbindImplementation = &AbstractTexture::unbindImplementationMulti;
-        bindMultiImplementation = &AbstractTexture::bindImplementationMulti;
         bindImplementation = &AbstractTexture::bindImplementationMulti;
 
     } else if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
         /* Extension name added below */
 
         unbindImplementation = &AbstractTexture::unbindImplementationDSAEXT;
-        bindMultiImplementation = &AbstractTexture::bindImplementationFallback;
         bindImplementation = &AbstractTexture::bindImplementationDSAEXT;
 
     } else
     #endif
     {
         unbindImplementation = &AbstractTexture::unbindImplementationDefault;
-        bindMultiImplementation = &AbstractTexture::bindImplementationFallback;
         bindImplementation = &AbstractTexture::bindImplementationDefault;
+    }
+
+    /* Multi bind implementation */
+    #ifndef MAGNUM_TARGET_GLES
+    if(context.isExtensionSupported<Extensions::GL::ARB::multi_bind>()) {
+        extensions.push_back(Extensions::GL::ARB::multi_bind::string());
+
+        bindMultiImplementation = &AbstractTexture::bindImplementationMulti;
+
+    } else
+    #endif
+    {
+        bindMultiImplementation = &AbstractTexture::bindImplementationFallback;
     }
 
     /* DSA/non-DSA implementation */
     #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
+    if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
+        extensions.push_back(Extensions::GL::ARB::direct_state_access::string());
+
+        parameteriImplementation = &AbstractTexture::parameterImplementationDSA;
+        parameterfImplementation = &AbstractTexture::parameterImplementationDSA;
+        parameterivImplementation = &AbstractTexture::parameterImplementationDSA;
+        parameterfvImplementation = &AbstractTexture::parameterImplementationDSA;
+        parameterIuivImplementation = &AbstractTexture::parameterIImplementationDSA;
+        parameterIivImplementation = &AbstractTexture::parameterIImplementationDSA;
+        getLevelParameterivImplementation = &AbstractTexture::getLevelParameterImplementationDSA;
+        mipmapImplementation = &AbstractTexture::mipmapImplementationDSA;
+        subImage1DImplementation = &AbstractTexture::subImageImplementationDSA;
+        subImage2DImplementation = &AbstractTexture::subImageImplementationDSA;
+        subImage3DImplementation = &AbstractTexture::subImageImplementationDSA;
+
+        setBufferImplementation = &BufferTexture::setBufferImplementationDSA;
+        setBufferRangeImplementation = &BufferTexture::setBufferRangeImplementationDSA;
+
+        getCubeImageSizeImplementation = &CubeMapTexture::getImageSizeImplementationDSA;
+        cubeSubImageImplementation = &CubeMapTexture::subImageImplementationDSA;
+
+    } else if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
         extensions.push_back(Extensions::GL::EXT::direct_state_access::string());
 
         parameteriImplementation = &AbstractTexture::parameterImplementationDSAEXT;
@@ -106,16 +142,16 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         parameterIivImplementation = &AbstractTexture::parameterIImplementationDSAEXT;
         getLevelParameterivImplementation = &AbstractTexture::getLevelParameterImplementationDSAEXT;
         mipmapImplementation = &AbstractTexture::mipmapImplementationDSAEXT;
-        getImageImplementation = &AbstractTexture::getImageImplementationDSAEXT;
-        image1DImplementation = &AbstractTexture::imageImplementationDSAEXT;
-        image2DImplementation = &AbstractTexture::imageImplementationDSAEXT;
-        image3DImplementation = &AbstractTexture::imageImplementationDSAEXT;
         subImage1DImplementation = &AbstractTexture::subImageImplementationDSAEXT;
         subImage2DImplementation = &AbstractTexture::subImageImplementationDSAEXT;
         subImage3DImplementation = &AbstractTexture::subImageImplementationDSAEXT;
 
         setBufferImplementation = &BufferTexture::setBufferImplementationDSAEXT;
         setBufferRangeImplementation = &BufferTexture::setBufferRangeImplementationDSAEXT;
+
+        getCubeImageSizeImplementation = &CubeMapTexture::getImageSizeImplementationDSAEXT;
+        cubeSubImageImplementation = &CubeMapTexture::subImageImplementationDSAEXT;
+
     } else
     #endif
     {
@@ -134,12 +170,6 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         #endif
         mipmapImplementation = &AbstractTexture::mipmapImplementationDefault;
         #ifndef MAGNUM_TARGET_GLES
-        getImageImplementation = &AbstractTexture::getImageImplementationDefault;
-        image1DImplementation = &AbstractTexture::imageImplementationDefault;
-        #endif
-        image2DImplementation = &AbstractTexture::imageImplementationDefault;
-        image3DImplementation = &AbstractTexture::imageImplementationDefault;
-        #ifndef MAGNUM_TARGET_GLES
         subImage1DImplementation = &AbstractTexture::subImageImplementationDefault;
         #endif
         subImage2DImplementation = &AbstractTexture::subImageImplementationDefault;
@@ -149,6 +179,11 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         setBufferImplementation = &BufferTexture::setBufferImplementationDefault;
         setBufferRangeImplementation = &BufferTexture::setBufferRangeImplementationDefault;
         #endif
+
+        #ifndef MAGNUM_TARGET_GLES2
+        getCubeImageSizeImplementation = &CubeMapTexture::getImageSizeImplementationDefault;
+        #endif
+        cubeSubImageImplementation = &CubeMapTexture::subImageImplementationDefault;
     }
 
     /* Data invalidation implementation */
@@ -165,14 +200,36 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         invalidateSubImageImplementation = &AbstractTexture::invalidateSubImageImplementationNoOp;
     }
 
-    /* Image retrieval implementation */
     #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::GL::ARB::robustness>() &&
-       !context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
-        extensions.push_back(Extensions::GL::ARB::robustness::string());
+    /* Image retrieval implementation */
+    if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
+        /* Extension name added above */
+        getImageImplementation = &AbstractTexture::getImageImplementationDSA;
 
+    } else if(context.isExtensionSupported<Extensions::GL::ARB::robustness>()) {
+        extensions.push_back(Extensions::GL::ARB::robustness::string());
         getImageImplementation = &AbstractTexture::getImageImplementationRobustness;
+
+    } else if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
+        /* Extension name added above */
+        getImageImplementation = &AbstractTexture::getImageImplementationDSAEXT;
+
     } else getImageImplementation = &AbstractTexture::getImageImplementationDefault;
+
+    /* Image retrieval implementation for cube map */
+    if(context.isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>()) {
+        extensions.push_back(Extensions::GL::ARB::get_texture_sub_image::string());
+        getCubeImageImplementation = &CubeMapTexture::getImageImplementationDSA;
+
+    } else if(context.isExtensionSupported<Extensions::GL::ARB::robustness>()) {
+        /* Extension name added above */
+        getCubeImageImplementation = &CubeMapTexture::getImageImplementationRobustness;
+
+    } else if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
+        /* Extension name added above */
+        getCubeImageImplementation = &CubeMapTexture::getImageImplementationDSAEXT;
+
+    } else getCubeImageImplementation = &CubeMapTexture::getImageImplementationDefault;
     #endif
 
     /* Texture storage implementation */
@@ -189,7 +246,12 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
-        if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
+        if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
+            storage1DImplementation = &AbstractTexture::storageImplementationDSA;
+            storage2DImplementation = &AbstractTexture::storageImplementationDSA;
+            storage3DImplementation = &AbstractTexture::storageImplementationDSA;
+
+        } else if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
             storage1DImplementation = &AbstractTexture::storageImplementationDSAEXT;
             storage2DImplementation = &AbstractTexture::storageImplementationDSAEXT;
             storage3DImplementation = &AbstractTexture::storageImplementationDSAEXT;
@@ -219,7 +281,10 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     if(context.isExtensionSupported<Extensions::GL::ARB::texture_storage_multisample>()) {
         extensions.push_back(Extensions::GL::ARB::texture_storage_multisample::string());
 
-        if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
+        if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
+            storage2DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationDSA;
+            storage3DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationDSA;
+        } else if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
             storage2DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationDSAEXT;
             storage3DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationDSAEXT;
         } else {

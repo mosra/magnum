@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -58,7 +58,7 @@ namespace Implementation {
 }
 
 /**
-@brief %Vector storing boolean values
+@brief Vector storing boolean values
 @tparam size    Bit count
 
 Result of component-wise comparison from Vector. The boolean values are stored
@@ -70,8 +70,8 @@ template<std::size_t size> class BoolVector {
     static_assert(size != 0, "BoolVector cannot have zero elements");
 
     public:
-        static const std::size_t Size = size;               /**< @brief %Vector size */
-        static const std::size_t DataSize = (size-1)/8+1;   /**< @brief %Vector storage size */
+        static const std::size_t Size = size;               /**< @brief Vector size */
+        static const std::size_t DataSize = (size-1)/8+1;   /**< @brief Vector storage size */
 
         /** @brief Construct zero-filled boolean vector */
         constexpr BoolVector(): _data() {}
@@ -113,7 +113,7 @@ template<std::size_t size> class BoolVector {
 
         /**
          * @brief Raw data
-         * @return %Array of DataSize length
+         * @return Array of DataSize length
          *
          * @see @ref operator[](), @ref set()
          */

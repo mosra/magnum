@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -96,8 +96,9 @@ template<UnsignedInt dimensions> Composition<dimensions>& Composition<dimensions
 }
 
 template<UnsignedInt dimensions> Composition<dimensions>& Composition<dimensions>::operator=(Composition<dimensions>&& other) {
-    std::swap(other._shapes, _shapes);
-    std::swap(other._nodes, _nodes);
+    using std::swap;
+    swap(other._shapes, _shapes);
+    swap(other._nodes, _nodes);
     return *this;
 }
 

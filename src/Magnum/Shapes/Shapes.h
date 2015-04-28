@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -33,6 +33,7 @@
 
 namespace Magnum { namespace Shapes {
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 template<UnsignedInt> class AbstractShape;
 typedef AbstractShape<2> AbstractShape2D;
 typedef AbstractShape<3> AbstractShape3D;
@@ -88,6 +89,7 @@ class Plane;
 template<UnsignedInt> class Point;
 typedef Point<2> Point2D;
 typedef Point<3> Point3D;
+#endif
 
 }}
 

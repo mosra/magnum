@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -26,8 +26,10 @@
 #include "CubeMapTextureArray.h"
 
 #ifndef MAGNUM_TARGET_GLES
+#include "Magnum/BufferImage.h"
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
+#include "Magnum/Image.h"
 
 #include "Implementation/maxTextureSize.h"
 
@@ -39,6 +41,26 @@ Vector3i CubeMapTextureArray::maxSize() {
 
     return Vector3i{Vector2i{Implementation::maxCubeMapTextureSideSize()},
                              Implementation::maxTextureArrayLayers()};
+}
+
+Image3D CubeMapTextureArray::image(const Int level, Image3D&& image) {
+    this->image(level, image);
+    return std::move(image);
+}
+
+BufferImage3D CubeMapTextureArray::image(const Int level, BufferImage3D&& image, const BufferUsage usage) {
+    this->image(level, image, usage);
+    return std::move(image);
+}
+
+Image3D CubeMapTextureArray::subImage(const Int level, const Range3Di& range, Image3D&& image) {
+    this->subImage(level, range, image);
+    return std::move(image);
+}
+
+BufferImage3D CubeMapTextureArray::subImage(const Int level, const Range3Di& range, BufferImage3D&& image, const BufferUsage usage) {
+    this->subImage(level, range, image, usage);
+    return std::move(image);
 }
 
 }

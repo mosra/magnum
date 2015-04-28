@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -29,6 +29,7 @@
  * @brief Class @ref Magnum::Platform::GlutApplication, macro @ref MAGNUM_GLUTAPPLICATION_MAIN()
  */
 
+#include <memory>
 #include <string>
 
 #include "Magnum/Magnum.h"
@@ -43,11 +44,7 @@
 #include "Magnum/Version.h"
 #endif
 
-namespace Magnum {
-
-class Context;
-
-namespace Platform {
+namespace Magnum { namespace Platform {
 
 /** @nosubgrouping
 @brief GLUT application
@@ -78,7 +75,7 @@ See @ref cmake for more information.
 
 ## General usage
 
-In CMake you need to request `%GlutApplication` component, add
+In CMake you need to request `GlutApplication` component, add
 `${MAGNUM_GLUTAPPLICATION_INCLUDE_DIRS}` to include path and link to
 `${MAGNUM_GLUTAPPLICATION_LIBRARIES}`. If no other application is requested,
 you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}` and
@@ -172,7 +169,11 @@ class GlutApplication {
 
         /** @{ @name Screen handling */
 
-        /** @copydoc Sdl2Application::swapBuffers() */
+        /**
+         * @brief Swap buffers
+         *
+         * Paints currently rendered framebuffer on screen.
+         */
         void swapBuffers() { glutSwapBuffers(); }
 
         /** @copydoc Sdl2Application::redraw() */
@@ -260,7 +261,7 @@ class GlutApplication {
         void initialize(int& argc, char** argv);
 
         static void staticViewportEvent(int x, int y) {
-            instance->viewportEvent({x, y});
+            _instance->viewportEvent({x, y});
         }
 
         static void staticKeyPressEvent(unsigned char key, int x, int y);
@@ -274,16 +275,16 @@ class GlutApplication {
         static void staticMouseMoveEvent(int x, int y);
 
         static void staticDrawEvent() {
-            instance->drawEvent();
+            _instance->drawEvent();
         }
 
-        static GlutApplication* instance;
+        static GlutApplication* _instance;
 
-        Platform::Context* c;
+        std::unique_ptr<Platform::Context> _context;
 };
 
 /**
-@brief %Configuration
+@brief Configuration
 
 Double-buffered RGBA window with depth and stencil buffers.
 @see @ref GlutApplication(), @ref createContext(), @ref tryCreateContext()
@@ -291,7 +292,7 @@ Double-buffered RGBA window with depth and stencil buffers.
 class GlutApplication::Configuration {
     public:
         /**
-         * @brief %Context flag
+         * @brief Context flag
          *
          * @see @ref Flags, @ref setFlags()
          */
@@ -300,7 +301,7 @@ class GlutApplication::Configuration {
         };
 
         /**
-         * @brief %Context flags
+         * @brief Context flags
          *
          * @see @ref setFlags()
          */
@@ -341,7 +342,7 @@ class GlutApplication::Configuration {
             return *this;
         }
 
-        /** @brief %Context flags */
+        /** @brief Context flags */
         Flags flags() const { return _flags; }
 
         /**
@@ -355,7 +356,7 @@ class GlutApplication::Configuration {
             return *this;
         }
 
-        /** @brief %Context version */
+        /** @brief Context version */
         Version version() const { return _version; }
 
         /**
@@ -446,7 +447,7 @@ inline GlutApplication::InputEvent::~InputEvent() = default;
 @see @ref keyPressEvent()
 */
 class GlutApplication::KeyEvent: public GlutApplication::InputEvent {
-    friend class GlutApplication;
+    friend GlutApplication;
 
     public:
         /**
@@ -545,7 +546,7 @@ class GlutApplication::KeyEvent: public GlutApplication::InputEvent {
 @see @ref MouseMoveEvent, @ref mousePressEvent(), @ref mouseReleaseEvent()
 */
 class GlutApplication::MouseEvent: public GlutApplication::InputEvent {
-    friend class GlutApplication;
+    friend GlutApplication;
 
     public:
         /**
@@ -580,7 +581,7 @@ class GlutApplication::MouseEvent: public GlutApplication::InputEvent {
 @see @ref MouseEvent, @ref mouseMoveEvent()
 */
 class GlutApplication::MouseMoveEvent: public GlutApplication::InputEvent {
-    friend class GlutApplication;
+    friend GlutApplication;
 
     public:
         /**

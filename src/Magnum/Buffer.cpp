@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -144,7 +144,7 @@ void Buffer::unbind(const Target target, const UnsignedInt firstIndex, const std
 /** @todoc const std::initializer_list makes Doxygen grumpy */
 void Buffer::bind(const Target target, const UnsignedInt firstIndex, std::initializer_list<std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
     #ifdef MAGNUM_BUILD_DEPRECATED
-    CORRADE_INTERNAL_ASSERT(target == Target::AtomicCounter || target == Target::ShaderStorage || target == Target::Uniform);
+    CORRADE_INTERNAL_ASSERT(target == Target::AtomicCounter || target == Target::ShaderStorage || target == Target::Uniform || GLenum(target) == GL_TRANSFORM_FEEDBACK_BUFFER);
     #endif
     Context::current()->state().buffer->bindRangesImplementation(target, firstIndex, {buffers.begin(), buffers.size()});
 }
@@ -152,7 +152,7 @@ void Buffer::bind(const Target target, const UnsignedInt firstIndex, std::initia
 /** @todoc const std::initializer_list makes Doxygen grumpy */
 void Buffer::bind(const Target target, const UnsignedInt firstIndex, std::initializer_list<Buffer*> buffers) {
     #ifdef MAGNUM_BUILD_DEPRECATED
-    CORRADE_INTERNAL_ASSERT(target == Target::AtomicCounter || target == Target::ShaderStorage || target == Target::Uniform);
+    CORRADE_INTERNAL_ASSERT(target == Target::AtomicCounter || target == Target::ShaderStorage || target == Target::Uniform || GLenum(target) == GL_TRANSFORM_FEEDBACK_BUFFER);
     #endif
     Context::current()->state().buffer->bindBasesImplementation(target, firstIndex, {buffers.begin(), buffers.size()});
 }
@@ -247,7 +247,7 @@ void Buffer::bindInternal(const TargetHint target, Buffer* const buffer) {
 
     /* Bind the buffer otherwise, which will also finally create it */
     bound = id;
-    buffer->_created = true;
+    if(buffer) buffer->_created = true;
     glBindBuffer(GLenum(target), id);
 }
 
@@ -273,7 +273,7 @@ auto Buffer::bindSomewhereInternal(const TargetHint hint) -> TargetHint {
 #ifndef MAGNUM_TARGET_GLES2
 Buffer& Buffer::bind(const Target target, const UnsignedInt index, const GLintptr offset, const GLsizeiptr size) {
     #ifdef MAGNUM_BUILD_DEPRECATED
-    CORRADE_INTERNAL_ASSERT(target == Target::AtomicCounter || target == Target::ShaderStorage || target == Target::Uniform);
+    CORRADE_INTERNAL_ASSERT(target == Target::AtomicCounter || target == Target::ShaderStorage || target == Target::Uniform || GLenum(target) == GL_TRANSFORM_FEEDBACK_BUFFER);
     #endif
     glBindBufferRange(GLenum(target), index, _id, offset, size);
     return *this;
@@ -281,7 +281,7 @@ Buffer& Buffer::bind(const Target target, const UnsignedInt index, const GLintpt
 
 Buffer& Buffer::bind(const Target target, const UnsignedInt index) {
     #ifdef MAGNUM_BUILD_DEPRECATED
-    CORRADE_INTERNAL_ASSERT(target == Target::AtomicCounter || target == Target::ShaderStorage || target == Target::Uniform);
+    CORRADE_INTERNAL_ASSERT(target == Target::AtomicCounter || target == Target::ShaderStorage || target == Target::Uniform || GLenum(target) == GL_TRANSFORM_FEEDBACK_BUFFER);
     #endif
     glBindBufferBase(GLenum(target), index, _id);
     return *this;
@@ -389,7 +389,8 @@ void Buffer::bindImplementationMulti(const Target target, const GLuint firstInde
 }
 #endif
 
-void Buffer::bindImplementationFallback(const Target target, const GLuint firstIndex, const Containers::ArrayReference<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
+/** @todoc const Containers::ArrayReference makes Doxygen grumpy */
+void Buffer::bindImplementationFallback(const Target target, const GLuint firstIndex, Containers::ArrayReference<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
     for(std::size_t i = 0; i != buffers.size(); ++i) {
         if(buffers && std::get<0>(buffers[i]))
             std::get<0>(buffers[i])->bind(target, firstIndex + i, std::get<1>(buffers[i]), std::get<2>(buffers[i]));
@@ -398,7 +399,8 @@ void Buffer::bindImplementationFallback(const Target target, const GLuint firstI
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Buffer::bindImplementationMulti(const Target target, const GLuint firstIndex, const Containers::ArrayReference<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
+/** @todoc const Containers::ArrayReference makes Doxygen grumpy */
+void Buffer::bindImplementationMulti(const Target target, const GLuint firstIndex, Containers::ArrayReference<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
     /** @todo use ArrayTuple */
     Containers::Array<GLuint> ids{buffers ? buffers.size() : 0};
     Containers::Array<GLintptr> offsetsSizes{buffers ? buffers.size()*2 : 0};
@@ -425,6 +427,10 @@ void Buffer::copyImplementationDefault(Buffer& read, Buffer& write, GLintptr rea
 }
 
 #ifndef MAGNUM_TARGET_GLES
+void Buffer::copyImplementationDSA(Buffer& read, Buffer& write, const GLintptr readOffset, const GLintptr writeOffset, const GLsizeiptr size) {
+    glCopyNamedBufferSubData(read._id, write._id, readOffset, writeOffset, size);
+}
+
 void Buffer::copyImplementationDSAEXT(Buffer& read, Buffer& write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size) {
     read._created = write._created = true;
     glNamedCopyBufferSubDataEXT(read._id, write._id, readOffset, writeOffset, size);
@@ -437,6 +443,10 @@ void Buffer::getParameterImplementationDefault(const GLenum value, GLint* const 
 }
 
 #ifndef MAGNUM_TARGET_GLES
+void Buffer::getParameterImplementationDSA(const GLenum value, GLint* const data) {
+    glGetNamedBufferParameteriv(_id, value, data);
+}
+
 void Buffer::getParameterImplementationDSAEXT(const GLenum value, GLint* const data) {
     _created = true;
     glGetNamedBufferParameterivEXT(_id, value, data);
@@ -446,6 +456,10 @@ void Buffer::getParameterImplementationDSAEXT(const GLenum value, GLint* const d
 #ifndef MAGNUM_TARGET_GLES
 void Buffer::getSubDataImplementationDefault(const GLintptr offset, const GLsizeiptr size, GLvoid* const data) {
     glGetBufferSubData(GLenum(bindSomewhereInternal(_targetHint)), offset, size, data);
+}
+
+void Buffer::getSubDataImplementationDSA(const GLintptr offset, const GLsizeiptr size, GLvoid* const data) {
+    glGetNamedBufferSubData(_id, offset, size, data);
 }
 
 void Buffer::getSubDataImplementationDSAEXT(const GLintptr offset, const GLsizeiptr size, GLvoid* const data) {
@@ -459,6 +473,10 @@ void Buffer::dataImplementationDefault(GLsizeiptr size, const GLvoid* data, Buff
 }
 
 #ifndef MAGNUM_TARGET_GLES
+void Buffer::dataImplementationDSA(const GLsizeiptr size, const GLvoid* const data, const BufferUsage usage) {
+    glNamedBufferData(_id, size, data, GLenum(usage));
+}
+
 void Buffer::dataImplementationDSAEXT(GLsizeiptr size, const GLvoid* data, BufferUsage usage) {
     _created = true;
     glNamedBufferDataEXT(_id, size, data, GLenum(usage));
@@ -470,6 +488,10 @@ void Buffer::subDataImplementationDefault(GLintptr offset, GLsizeiptr size, cons
 }
 
 #ifndef MAGNUM_TARGET_GLES
+void Buffer::subDataImplementationDSA(const GLintptr offset, const GLsizeiptr size, const GLvoid* const data) {
+    glNamedBufferSubData(_id, offset, size, data);
+}
+
 void Buffer::subDataImplementationDSAEXT(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
     _created = true;
     glNamedBufferSubDataEXT(_id, offset, size, data);
@@ -506,6 +528,10 @@ void* Buffer::mapImplementationDefault(MapAccess access) {
 }
 
 #ifndef MAGNUM_TARGET_GLES
+void* Buffer::mapImplementationDSA(const MapAccess access) {
+    return glMapNamedBuffer(_id, GLenum(access));
+}
+
 void* Buffer::mapImplementationDSAEXT(MapAccess access) {
     _created = true;
     return glMapNamedBufferEXT(_id, GLenum(access));
@@ -526,6 +552,10 @@ void* Buffer::mapRangeImplementationDefault(GLintptr offset, GLsizeiptr length, 
 }
 
 #ifndef MAGNUM_TARGET_GLES
+void* Buffer::mapRangeImplementationDSA(const GLintptr offset, const GLsizeiptr length, const MapFlags access) {
+    return glMapNamedBufferRange(_id, offset, length, GLenum(access));
+}
+
 void* Buffer::mapRangeImplementationDSAEXT(GLintptr offset, GLsizeiptr length, MapFlags access) {
     _created = true;
     return glMapNamedBufferRangeEXT(_id, offset, length, GLenum(access));
@@ -545,6 +575,10 @@ void Buffer::flushMappedRangeImplementationDefault(GLintptr offset, GLsizeiptr l
 }
 
 #ifndef MAGNUM_TARGET_GLES
+void Buffer::flushMappedRangeImplementationDSA(const GLintptr offset, const GLsizeiptr length) {
+    glFlushMappedNamedBufferRange(_id, offset, length);
+}
+
 void Buffer::flushMappedRangeImplementationDSAEXT(GLintptr offset, GLsizeiptr length) {
     _created = true;
     glFlushMappedNamedBufferRangeEXT(_id, offset, length);
@@ -562,6 +596,10 @@ bool Buffer::unmapImplementationDefault() {
 }
 
 #ifndef MAGNUM_TARGET_GLES
+bool Buffer::unmapImplementationDSA() {
+    return glUnmapNamedBuffer(_id);
+}
+
 bool Buffer::unmapImplementationDSAEXT() {
     _created = true;
     return glUnmapNamedBufferEXT(_id);

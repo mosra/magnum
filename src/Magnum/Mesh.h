@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -30,14 +30,20 @@
  */
 
 #include <vector>
+#include <Corrade/Containers/Array.h>
 #include <Corrade/Utility/ConfigurationValue.h>
 
-#include "Magnum/AbstractShaderProgram.h"
+#include "Magnum/AbstractObject.h"
+#include "Magnum/Attribute.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#endif
 
 namespace Magnum {
 
 /**
- * @brief %Mesh primitive type
+ * @brief Mesh primitive type
  *
  * @see @ref Mesh::primitive(), @ref Mesh::setPrimitive()
  */
@@ -63,14 +69,14 @@ enum class MeshPrimitive: GLenum {
     #ifndef MAGNUM_TARGET_GLES
     /**
      * Line strip with adjacency information.
-     * @requires_gl32 %Extension @extension{ARB,geometry_shader4}
+     * @requires_gl32 Extension @extension{ARB,geometry_shader4}
      * @requires_gl Geometry shaders are not available in OpenGL ES.
      */
     LineStripAdjacency = GL_LINE_STRIP_ADJACENCY,
 
     /**
      * Lines with adjacency information.
-     * @requires_gl32 %Extension @extension{ARB,geometry_shader4}
+     * @requires_gl32 Extension @extension{ARB,geometry_shader4}
      * @requires_gl Geometry shaders are not available in OpenGL ES.
      */
     LinesAdjacency = GL_LINES_ADJACENCY,
@@ -94,21 +100,21 @@ enum class MeshPrimitive: GLenum {
     #ifndef MAGNUM_TARGET_GLES
     /**
      * Triangle strip with adjacency information.
-     * @requires_gl32 %Extension @extension{ARB,geometry_shader4}
+     * @requires_gl32 Extension @extension{ARB,geometry_shader4}
      * @requires_gl Geometry shaders are not available in OpenGL ES.
      */
     TriangleStripAdjacency = GL_TRIANGLE_STRIP_ADJACENCY,
 
     /**
      * Triangles with adjacency information.
-     * @requires_gl32 %Extension @extension{ARB,geometry_shader4}
+     * @requires_gl32 Extension @extension{ARB,geometry_shader4}
      * @requires_gl Geometry shaders are not available in OpenGL ES.
      */
     TrianglesAdjacency = GL_TRIANGLES_ADJACENCY,
 
     /**
      * Patches.
-     * @requires_gl40 %Extension @extension{ARB,tessellation_shader}
+     * @requires_gl40 Extension @extension{ARB,tessellation_shader}
      * @requires_gl Tessellation shaders are not available in OpenGL ES.
      */
     Patches = GL_PATCHES
@@ -118,16 +124,15 @@ enum class MeshPrimitive: GLenum {
 namespace Implementation { struct MeshState; }
 
 /**
-@brief %Mesh
+@brief Mesh
 
 @anchor Mesh-configuration
-## %Mesh configuration
+## Mesh configuration
 
 You have to specify at least primitive and vertex/index count using
 @ref setPrimitive() and @ref setCount(). Then fill your vertex buffers with
-data, add them to the mesh and specify
-@ref AbstractShaderProgram::Attribute "shader attribute" layout inside the
-buffers using @ref addVertexBuffer(). You can also use
+data, add them to the mesh and specify @ref Attribute "shader attribute" layout
+inside the buffers using @ref addVertexBuffer(). You can also use
 @ref MeshTools::interleave() to conveniently interleave vertex data.
 
 If you want indexed mesh, fill your index buffer with data and specify its
@@ -321,8 +326,8 @@ If @extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL ES 3.0 or
 used instead of binding the buffers and specifying vertex attribute pointers
 in each @ref draw() call. The engine tracks currently bound VAO and currently
 active shader program to avoid unnecessary calls to @fn_gl{BindVertexArray} and
-@fn_gl{UseProgram}. %Mesh limits and implementation-defined values (such as
-@ref maxVertexAttributes()) are cached, so repeated queries don't result in
+@fn_gl{UseProgram}. Mesh limits and implementation-defined values (such as
+@ref maxElementIndex()) are cached, so repeated queries don't result in
 repeated @fn_gl{Get} calls.
 
 If extension @extension{EXT,direct_state_access} and VAOs are available,
@@ -335,18 +340,10 @@ drawing commands are used on desktop OpenGL and OpenGL ES 3.0. See also
 @ref draw() for more information.
  */
 class MAGNUM_EXPORT Mesh: public AbstractObject {
-    friend class MeshView;
-    friend struct Implementation::MeshState;
+    friend MeshView;
+    friend Implementation::MeshState;
 
     public:
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @copybrief MeshPrimitive
-         * @deprecated Use @ref Magnum::MeshPrimitive "MeshPrimitive" instead.
-         */
-        typedef CORRADE_DEPRECATED("use MeshPrimitive instead") MeshPrimitive Primitive;
-        #endif
-
         /**
          * @brief Index type
          *
@@ -358,21 +355,19 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
 
             /**
              * Unsigned int
-             * @requires_gles30 %Extension @es_extension{OES,element_index_uint}
+             * @requires_gles30 Extension @es_extension{OES,element_index_uint}
              *      in OpenGL ES 2.0
              */
             UnsignedInt = GL_UNSIGNED_INT
         };
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @brief Max supported vertex attribute count
-         *
-         * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. This function is in fact alias to
-         * @ref AbstractShaderProgram::maxVertexAttributes().
-         * @see @ref addVertexBuffer()
+         * @copybrief AbstractShaderProgram::maxVertexAttributes()
+         * @deprecated Use @ref AbstractShaderProgram::maxVertexAttributes() instead.
          */
-        static Int maxVertexAttributes();
+        CORRADE_DEPRECATED("use AbstractShaderProgram::maxVertexAttributes() instead") static Int maxVertexAttributes();
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
@@ -464,7 +459,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         GLuint id() const { return _id; }
 
         /**
-         * @brief %Mesh label
+         * @brief Mesh label
          *
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls. If OpenGL 4.3 is not supported and neither
@@ -493,7 +488,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
 
         /** @overload */
         template<std::size_t size> Mesh& setLabelInternal(const char(&label)[size]) {
-            return setLabelInternal(label);
+            return setLabelInternal({label, size - 1});
         }
 
         /**
@@ -551,7 +546,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * Sets number of vertices of which the vertex buffer will be offset
          * when drawing. Default is `0`.
          * @see @ref setCount(), @ref setBaseInstance()
-         * @requires_gl32 %Extension @extension{ARB,draw_elements_base_vertex}
+         * @requires_gl32 Extension @extension{ARB,draw_elements_base_vertex}
          *      for indexed meshes
          * @requires_gl Base vertex cannot be specified for indexed meshes in
          *      OpenGL ES.
@@ -606,8 +601,8 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * Default is `1`.
          * @see @ref setBaseInstance(), @ref setCount(),
          *      @ref addVertexBufferInstanced()
-         * @requires_gl31 %Extension @extension{ARB,draw_instanced}
-         * @requires_gles30 %Extension @es_extension{ANGLE,instanced_arrays},
+         * @requires_gl31 Extension @extension{ARB,draw_instanced}
+         * @requires_gles30 Extension @es_extension{ANGLE,instanced_arrays},
          *      @es_extension2{EXT,draw_instanced,draw_instanced} or
          *      @es_extension{NV,draw_instanced} in OpenGL ES 2.0.
          */
@@ -626,7 +621,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *
          * Default is `0`.
          * @see @ref setInstanceCount(), @ref setBaseVertex()
-         * @requires_gl42 %Extension @extension{ARB,base_instance}
+         * @requires_gl42 Extension @extension{ARB,base_instance}
          * @requires_gl Base instance cannot be specified in OpenGL ES.
          */
         Mesh& setBaseInstance(UnsignedInt baseInstance) {
@@ -640,7 +635,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @return Reference to self (for method chaining)
          *
          * Parameter @p offset is offset of the array from the beginning,
-         * attribute list is combination of @ref AbstractShaderProgram::Attribute "attribute definitions"
+         * attribute list is combination of @ref Attribute "attribute definitions"
          * (specified in implementation of given shader) and offsets between
          * interleaved attributes.
          *
@@ -696,8 +691,8 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *      must be at most 255 bytes. This is not required anywhere else,
          *      but doing so may have performance benefits.
          *
-         * @see @ref addVertexBufferInstanced(), @ref maxVertexAttributes(),
-         *      @ref setPrimitive(), @ref setCount(), @fn_gl{BindVertexArray},
+         * @see @ref addVertexBufferInstanced(), @ref setPrimitive(),
+         *      @ref setCount(), @fn_gl{BindVertexArray},
          *      @fn_gl{EnableVertexAttribArray}, @fn_gl{BindBuffer},
          *      @fn_gl{VertexAttribPointer} or
          *      @fn_gl_extension{EnableVertexArrayAttrib,EXT,direct_state_access},
@@ -721,16 +716,16 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * ES 3.0 or @es_extension{OES,vertex_array_object} in OpenGL ES 2.0 is
          * available, the vertex array object is used to hold the parameters.
          *
-         * @see @ref maxVertexAttributes(), @ref setPrimitive(),
-         *      @ref setCount(), @ref setInstanceCount(), @ref setBaseInstance(),
+         * @see @ref setPrimitive(), @ref setCount(), @ref setInstanceCount(),
+         *      @ref setBaseInstance(),
          *      @fn_gl{BindVertexArray}, @fn_gl{EnableVertexAttribArray},
          *      @fn_gl{BindBuffer}, @fn_gl{VertexAttribPointer},
          *      @fn_gl{VertexAttribDivisor} or
          *      @fn_gl_extension{EnableVertexArrayAttrib,EXT,direct_state_access},
          *      @fn_gl_extension{VertexArrayVertexAttribOffset,EXT,direct_state_access},
          *      @fn_gl_extension{VertexArrayVertexAttribDivisor,EXT,direct_state_access}
-         * @requires_gl33 %Extension @extension{ARB,instanced_arrays}
-         * @requires_gles30 %Extension @es_extension{ANGLE,instanced_arrays},
+         * @requires_gl33 Extension @extension{ARB,instanced_arrays}
+         * @requires_gles30 Extension @es_extension{ANGLE,instanced_arrays},
          *      @es_extension{EXT,instanced_arrays} or
          *      @es_extension{NV,instanced_arrays} in OpenGL ES 2.0.
          */
@@ -783,7 +778,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
 
         /**
          * @brief Draw the mesh
-         * @param shader    %Shader to use for drawing
+         * @param shader    Shader to use for drawing
          *
          * Expects that the shader is compatible with this mesh and is fully
          * set up. If vertex/index count or instance count is `0`, no draw
@@ -807,17 +802,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *      @fn_gl{DrawElementsInstancedBaseVertex}/
          *      @fn_gl{DrawElementsInstancedBaseVertexBaseInstance}
          */
-        void draw(AbstractShaderProgram& shader) {
-            shader.use();
-
-            #ifndef MAGNUM_TARGET_GLES
-            drawInternal(_count, _baseVertex, _instanceCount, _baseInstance, _indexOffset, _indexStart, _indexEnd);
-            #elif !defined(MAGNUM_TARGET_GLES2)
-            drawInternal(_count, _baseVertex, _instanceCount, _indexOffset, _indexStart, _indexEnd);
-            #else
-            drawInternal(_count, _baseVertex, _instanceCount, _indexOffset);
-            #endif
-        }
+        void draw(AbstractShaderProgram& shader);
 
         void draw(AbstractShaderProgram&& shader) { draw(shader); } /**< @overload */
 
@@ -840,7 +825,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
 
     private:
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        struct MAGNUM_LOCAL Attribute {
+        struct MAGNUM_LOCAL GenericAttribute {
             Buffer* buffer;
             GLuint location;
             GLint size;
@@ -881,8 +866,8 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         Mesh& setLabelInternal(Containers::ArrayReference<const char> label);
 
         /* Computing stride of interleaved vertex attributes */
-        template<UnsignedInt location, class T, class ...U> static GLsizei strideOfInterleaved(const AbstractShaderProgram::Attribute<location, T>& attribute, const U&... attributes) {
-            return attribute.vectorSize()*AbstractShaderProgram::Attribute<location, T>::VectorCount + strideOfInterleaved(attributes...);
+        template<UnsignedInt location, class T, class ...U> static GLsizei strideOfInterleaved(const Attribute<location, T>& attribute, const U&... attributes) {
+            return attribute.vectorSize()*Attribute<location, T>::VectorCount + strideOfInterleaved(attributes...);
         }
         template<class ...T> static GLsizei strideOfInterleaved(GLintptr gap, const T&... attributes) {
             return gap + strideOfInterleaved(attributes...);
@@ -890,11 +875,11 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         static GLsizei strideOfInterleaved() { return 0; }
 
         /* Adding interleaved vertex attributes */
-        template<UnsignedInt location, class T, class ...U> void addVertexBufferInternal(Buffer& buffer, GLintptr offset, GLsizei stride, GLuint divisor, const AbstractShaderProgram::Attribute<location, T>& attribute, const U&... attributes) {
+        template<UnsignedInt location, class T, class ...U> void addVertexBufferInternal(Buffer& buffer, GLintptr offset, GLsizei stride, GLuint divisor, const Attribute<location, T>& attribute, const U&... attributes) {
             addVertexAttribute(buffer, attribute, offset, stride, divisor);
 
             /* Add size of this attribute to offset for next attribute */
-            addVertexBufferInternal(buffer, offset+attribute.vectorSize()*AbstractShaderProgram::Attribute<location, T>::VectorCount, stride, divisor, attributes...);
+            addVertexBufferInternal(buffer, offset+attribute.vectorSize()*Attribute<location, T>::VectorCount, stride, divisor, attributes...);
         }
         template<class ...T> void addVertexBufferInternal(Buffer& buffer, GLintptr offset, GLsizei stride, GLuint divisor, GLintptr gap, const T&... attributes) {
             /* Add the gap to offset for next attribute */
@@ -902,14 +887,14 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         }
         void addVertexBufferInternal(Buffer&, GLsizei, GLuint, GLintptr) {}
 
-        template<UnsignedInt location, class T> void addVertexAttribute(typename std::enable_if<std::is_same<typename Implementation::Attribute<T>::ScalarType, Float>::value, Buffer&>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride, GLuint divisor) {
-            for(UnsignedInt i = 0; i != AbstractShaderProgram::Attribute<location, T>::VectorCount; ++i)
-                attributePointerInternal(Attribute{
+        template<UnsignedInt location, class T> void addVertexAttribute(typename std::enable_if<std::is_same<typename Implementation::Attribute<T>::ScalarType, Float>::value, Buffer&>::type buffer, const Attribute<location, T>& attribute, GLintptr offset, GLsizei stride, GLuint divisor) {
+            for(UnsignedInt i = 0; i != Attribute<location, T>::VectorCount; ++i)
+                attributePointerInternal(GenericAttribute{
                     &buffer,
                     location+i,
                     GLint(attribute.components()),
                     GLenum(attribute.dataType()),
-                    bool(attribute.dataOptions() & AbstractShaderProgram::Attribute<location, T>::DataOption::Normalized),
+                    bool(attribute.dataOptions() & Attribute<location, T>::DataOption::Normalized),
                     GLintptr(offset+i*attribute.vectorSize()),
                     stride,
                     divisor
@@ -917,7 +902,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         }
 
         #ifndef MAGNUM_TARGET_GLES2
-        template<UnsignedInt location, class T> void addVertexAttribute(typename std::enable_if<std::is_integral<typename Implementation::Attribute<T>::ScalarType>::value, Buffer&>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride, GLuint divisor) {
+        template<UnsignedInt location, class T> void addVertexAttribute(typename std::enable_if<std::is_integral<typename Implementation::Attribute<T>::ScalarType>::value, Buffer&>::type buffer, const Attribute<location, T>& attribute, GLintptr offset, GLsizei stride, GLuint divisor) {
             attributePointerInternal(IntegerAttribute{
                 &buffer,
                 location,
@@ -930,8 +915,8 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         }
 
         #ifndef MAGNUM_TARGET_GLES
-        template<UnsignedInt location, class T> void addVertexAttribute(typename std::enable_if<std::is_same<typename Implementation::Attribute<T>::ScalarType, Double>::value, Buffer&>::type buffer, const AbstractShaderProgram::Attribute<location, T>& attribute, GLintptr offset, GLsizei stride, GLuint divisor) {
-            for(UnsignedInt i = 0; i != AbstractShaderProgram::Attribute<location, T>::VectorCount; ++i)
+        template<UnsignedInt location, class T> void addVertexAttribute(typename std::enable_if<std::is_same<typename Implementation::Attribute<T>::ScalarType, Double>::value, Buffer&>::type buffer, const Attribute<location, T>& attribute, GLintptr offset, GLsizei stride, GLuint divisor) {
+            for(UnsignedInt i = 0; i != Attribute<location, T>::VectorCount; ++i)
                 attributePointerInternal(LongAttribute{
                     &buffer,
                     location+i,
@@ -964,13 +949,13 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         void MAGNUM_LOCAL destroyImplementationDefault();
         void MAGNUM_LOCAL destroyImplementationVAO();
 
-        void attributePointerInternal(const Attribute& attribute);
-        void MAGNUM_LOCAL attributePointerImplementationDefault(const Attribute& attribute);
-        void MAGNUM_LOCAL attributePointerImplementationVAO(const Attribute& attribute);
+        void attributePointerInternal(const GenericAttribute& attribute);
+        void MAGNUM_LOCAL attributePointerImplementationDefault(const GenericAttribute& attribute);
+        void MAGNUM_LOCAL attributePointerImplementationVAO(const GenericAttribute& attribute);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL attributePointerImplementationDSAEXT(const Attribute& attribute);
+        void MAGNUM_LOCAL attributePointerImplementationDSAEXT(const GenericAttribute& attribute);
         #endif
-        void MAGNUM_LOCAL vertexAttribPointer(const Attribute& attribute);
+        void MAGNUM_LOCAL vertexAttribPointer(const GenericAttribute& attribute);
 
         #ifndef MAGNUM_TARGET_GLES2
         void attributePointerInternal(const IntegerAttribute& attribute);
@@ -990,7 +975,10 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         void MAGNUM_LOCAL vertexAttribPointer(const LongAttribute& attribute);
         #endif
 
-        #ifdef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL vertexAttribDivisorImplementationVAO(GLuint index, GLuint divisor);
+        void MAGNUM_LOCAL vertexAttribDivisorImplementationDSAEXT(GLuint index, GLuint divisor);
+        #elif defined(MAGNUM_TARGET_GLES2)
         void MAGNUM_LOCAL vertexAttribDivisorImplementationANGLE(GLuint index, GLuint divisor);
         void MAGNUM_LOCAL vertexAttribDivisorImplementationEXT(GLuint index, GLuint divisor);
         void MAGNUM_LOCAL vertexAttribDivisorImplementationNV(GLuint index, GLuint divisor);
@@ -1029,7 +1017,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         IndexType _indexType;
         Buffer* _indexBuffer;
 
-        std::vector<Attribute> _attributes;
+        std::vector<GenericAttribute> _attributes;
         #ifndef MAGNUM_TARGET_GLES2
         std::vector<IntegerAttribute> _integerAttributes;
         #ifndef MAGNUM_TARGET_GLES

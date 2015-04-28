@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -37,7 +37,7 @@
 namespace Magnum { namespace Shaders {
 
 /**
-@brief %Phong shader
+@brief Phong shader
 
 Uses ambient, diffuse and specular color or texture. For colored mesh you need
 to provide @ref Position and @ref Normal attributes in your triangle mesh and
@@ -48,17 +48,108 @@ If you want to use texture instead of color, you need to provide also
 @ref TextureCoordinates attribute. Pass appropriate flags to constructor and
 then at render time don't forget to also call appropriate subset of
 @ref setAmbientTexture(), @ref setDiffuseTexture() and @ref setSpecularTexture().
+
+@image html shaders-phong.png
+@image latex shaders-phong.png
+
+## Example usage
+
+### Colored mesh
+
+Common mesh setup:
+@code
+struct Vertex {
+    Vector3 position;
+    Vector3 normal;
+};
+Vertex data[] = { ... };
+
+Buffer vertices;
+vertices.setData(data, BufferUsage::StaticDraw);
+
+Mesh mesh;
+mesh.addVertexBuffer(vertices, 0,
+    Shaders::Phong::Position{},
+    Shaders::Phong::Normal{});
+@endcode
+
+Common rendering setup:
+@code
+Matrix4 transformationMatrix = Matrix4::translation(Vector3::zAxis(-5.0f));
+Matrix4 projectionMatrix = Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.001f, 100.0f);
+
+Shaders::Phong shader;
+shader.setDiffuseColor(Color3::fromHSV(216.0_degf, 0.85f, 1.0f))
+    .setShininess(200.0f)
+    .setLightPosition({5.0f, 5.0f, 7.0f})
+    .setTransformationMatrix(transformationMatrix)
+    .setNormalMatrix(transformationMatrix.rotation())
+    .setProjectionMatrix(projectionMatrix);
+
+mesh.draw(shader);
+@endcode
+
+### Diffuse and specular texture
+
+Common mesh setup:
+@code
+struct Vertex {
+    Vector3 position;
+    Vector3 normal;
+    Vector2 textureCoordinates;
+};
+Vertex data[] = { ... };
+
+Buffer vertices;
+vertices.setData(data, BufferUsage::StaticDraw);
+
+Mesh mesh;
+mesh.addVertexBuffer(vertices, 0,
+    Shaders::Phong::Position{},
+    Shaders::Phong::Normal{},
+    Shaders::Phong::TextureCoordinates{});
+@endcode
+
+Common rendering setup:
+@code
+Matrix4 transformationMatrix, projectionMatrix;
+Texture2D diffuseTexture, specularTexture;
+
+Shaders::Phong shader{Shaders::Phong::DiffuseTexture|
+                      Shaders::Phong::SpecularTexture};
+shader.setTextures(nullptr, &diffuseTexture, &specularTexture)
+    .setLightPosition({5.0f, 5.0f, 7.0f})
+    .setTransformationMatrix(transformationMatrix)
+    .setNormalMatrix(transformationMatrix.rotation())
+    .setProjectionMatrix(projectionMatrix);
+
+mesh.draw(shader);
+@endcode
+
+@see @ref shaders
 */
 class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
     public:
-        typedef Generic3D::Position Position;   /**< @brief Vertex position */
-        typedef Generic3D::Normal Normal;       /**< @brief Normal direction */
+        /**
+         * @brief Vertex position
+         *
+         * @ref shaders-generic "Generic attribute", @ref Vector3.
+         */
+        typedef Generic3D::Position Position;
 
         /**
-         * @brief %Texture coordinates
+         * @brief Normal direction
          *
-         * Used only if one of @ref Flag::AmbientTexture, @ref Flag::DiffuseTexture
-         * or @ref Flag::SpecularTexture is set.
+         * @ref shaders-generic "Generic attribute", @ref Vector3.
+         */
+        typedef Generic3D::Normal Normal;
+
+        /**
+         * @brief 2D texture coordinates
+         *
+         * @ref shaders-generic "Generic attribute", @ref Vector2, used only if
+         * at least one of @ref Flag::AmbientTexture, @ref Flag::DiffuseTexture
+         * and @ref Flag::SpecularTexture is set.
          */
         typedef Generic3D::TextureCoordinates TextureCoordinates;
 
@@ -91,7 +182,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
         #endif
 
         /**
-         * @brief %Flag
+         * @brief Flag
          *
          * @see @ref Flags, @ref flags()
          */
@@ -102,7 +193,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
         };
 
         /**
-         * @brief %Flags
+         * @brief Flags
          *
          * @see @ref flags()
          */
@@ -110,18 +201,18 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
 
         /**
          * @brief Constructor
-         * @param flags     %Flags
+         * @param flags     Flags
          */
         explicit Phong(Flags flags = Flags());
 
-        /** @brief %Flags */
+        /** @brief Flags */
         Flags flags() const { return _flags; }
 
         /**
          * @brief Set ambient color
          * @return Reference to self (for method chaining)
          *
-         * If not set, default value is `(0.0f, 0.0f, 0.0f)`. Has no effect if
+         * If not set, default value is `{0.0f, 0.0f, 0.0f}`. Has no effect if
          * @ref Flag::AmbientTexture is set.
          * @see @ref setAmbientTexture()
          */
@@ -158,7 +249,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * @brief Set specular color
          * @return Reference to self (for method chaining)
          *
-         * If not set, default value is `(1.0f, 1.0f, 1.0f)`. Has no effect if
+         * If not set, default value is `{1.0f, 1.0f, 1.0f}`. Has no effect if
          * @ref Flag::SpecularTexture is set.
          * @see @ref setSpecularTexture()
          */
@@ -240,7 +331,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * @brief Set light color
          * @return Reference to self (for method chaining)
          *
-         * If not set, default value is `(1.0f, 1.0f, 1.0f)`.
+         * If not set, default value is `{1.0f, 1.0f, 1.0f}`.
          */
         Phong& setLightColor(const Color3& color) {
             setUniform(lightColorUniform, color);

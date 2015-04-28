@@ -1,7 +1,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,21 +23,28 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-set(MagnumFontConverter_SOURCES
+set(MagnumFontConverter_SRCS
     MagnumFontConverter.cpp)
 
 set(MagnumFontConverter_HEADERS
     MagnumFontConverter.h)
 
-add_library(MagnumFontConverterObjects OBJECT ${MagnumFontConverter_SOURCES})
-set_target_properties(MagnumFontConverterObjects PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+# Objects shared between plugin and test library
+add_library(MagnumFontConverterObjects OBJECT ${MagnumFontConverter_SRCS})
+if(NOT BUILD_PLUGINS_STATIC OR BUILD_STATIC_PIC)
+    set_target_properties(MagnumFontConverterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
 
+# MagnumFontConverter plugin
 add_plugin(MagnumFontConverter ${MAGNUM_PLUGINS_FONTCONVERTER_DEBUG_INSTALL_DIR} ${MAGNUM_PLUGINS_FONTCONVERTER_RELEASE_INSTALL_DIR}
     MagnumFontConverter.conf
     $<TARGET_OBJECTS:MagnumFontConverterObjects>
     pluginRegistration.cpp)
-target_link_libraries(MagnumFontConverter Magnum MagnumText)
+if(BUILD_STATIC_PIC)
+    set_target_properties(MagnumFontConverter PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
 
+target_link_libraries(MagnumFontConverter Magnum MagnumText)
 if(CORRADE_TARGET_WINDOWS)
     target_link_libraries(MagnumFontConverter TgaImageConverter)
 endif()
@@ -46,17 +53,6 @@ install(FILES ${MagnumFontConverter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUD
 
 if(BUILD_GL_TESTS)
     add_library(MagnumMagnumFontConverterTestLib STATIC $<TARGET_OBJECTS:MagnumFontConverterObjects>)
-    set_target_properties(MagnumMagnumFontConverterTestLib PROPERTIES DEBUG_POSTFIX "-d")
     target_link_libraries(MagnumMagnumFontConverterTestLib Magnum MagnumText MagnumTgaImageConverterTestLib)
-
-    # On Windows we need to install first and then run the tests to avoid "DLL
-    # not found" hell, thus we need to install this too
-    if(CORRADE_TARGET_WINDOWS AND NOT CMAKE_CROSSCOMPILING)
-        install(TARGETS MagnumMagnumFontConverterTestLib
-            RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
-            LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
-            ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
-    endif()
-
     add_subdirectory(Test)
 endif()

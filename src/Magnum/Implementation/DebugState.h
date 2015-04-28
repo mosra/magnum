@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -28,7 +28,7 @@
 #include <string>
 #include <vector>
 
-#include "Magnum/DebugMessage.h"
+#include "Magnum/DebugOutput.h"
 
 namespace Magnum { namespace Implementation {
 
@@ -38,12 +38,14 @@ struct DebugState {
     std::string(*getLabelImplementation)(GLenum, GLuint);
     void(*labelImplementation)(GLenum, GLuint, Containers::ArrayReference<const char>);
 
-    void(*messageInsertImplementation)(DebugMessage::Source, DebugMessage::Type, UnsignedInt, DebugMessage::Severity, Containers::ArrayReference<const char>);
-    void(*messageControlImplementation)(GLenum, GLenum, GLenum, std::initializer_list<UnsignedInt>, bool);
-    void(*messageCallbackImplementation)(DebugMessage::Callback, const void*);
+    void(*messageInsertImplementation)(DebugMessage::Source, DebugMessage::Type, UnsignedInt, DebugOutput::Severity, Containers::ArrayReference<const char>);
+    void(*controlImplementation)(GLenum, GLenum, GLenum, std::initializer_list<UnsignedInt>, bool);
+    void(*callbackImplementation)(DebugOutput::Callback, const void*);
+    void(*pushGroupImplementation)(DebugGroup::Source, UnsignedInt, Containers::ArrayReference<const char>);
+    void(*popGroupImplementation)();
 
-    GLint maxLabelLength, maxLoggedMessages, maxMessageLength;
-    DebugMessage::Callback messageCallback;
+    GLint maxLabelLength, maxLoggedMessages, maxMessageLength, maxStackDepth;
+    DebugOutput::Callback messageCallback;
 };
 
 }}

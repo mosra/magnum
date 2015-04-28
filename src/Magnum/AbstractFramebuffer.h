@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -30,6 +30,7 @@
  */
 
 #include <Corrade/Containers/EnumSet.h>
+#include <Corrade/Utility/Macros.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/OpenGL.h"
@@ -58,15 +59,19 @@ enum class FramebufferClear: GLbitfield {
 
 @see @ref AbstractFramebuffer::clear()
 */
+#ifndef DOXYGEN_GENERATING_OUTPUT
 typedef Containers::EnumSet<FramebufferClear, GLbitfield,
     GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT> FramebufferClearMask;
+#else
+typedef Containers::EnumSet<FramebufferClear, GLbitfield> FramebufferClearMask;
+#endif
 
 /**
 @brief Mask for framebuffer blitting
 
 @see @ref AbstractFramebuffer, @ref FramebufferBlitMask
-@requires_gl30 %Extension @extension{ARB,framebuffer_object}
-@requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
+@requires_gl30 Extension @extension{ARB,framebuffer_object}
+@requires_gles30 Extension @es_extension{ANGLE,framebuffer_blit} or
     @es_extension{NV,framebuffer_blit} in OpenGL ES 2.0
 */
 enum class FramebufferBlit: GLbitfield {
@@ -96,19 +101,23 @@ enum class FramebufferBlit: GLbitfield {
 @brief Mask for framebuffer blitting
 
 @see @ref AbstractFramebuffer::blit()
-@requires_gl30 %Extension @extension{ARB,framebuffer_object}
-@requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
+@requires_gl30 Extension @extension{ARB,framebuffer_object}
+@requires_gles30 Extension @es_extension{ANGLE,framebuffer_blit} or
     @es_extension{NV,framebuffer_blit} in OpenGL ES 2.0
 */
+#ifndef DOXYGEN_GENERATING_OUTPUT
 typedef Containers::EnumSet<FramebufferBlit, GLbitfield,
     GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT> FramebufferBlitMask;
+#else
+typedef Containers::EnumSet<FramebufferBlit, GLbitfield> FramebufferBlitMask;
+#endif
 
 /**
-@brief %Framebuffer blit filtering
+@brief Framebuffer blit filtering
 
 @see @ref AbstractFramebuffer::blit()
-@requires_gl30 %Extension @extension{ARB,framebuffer_object}
-@requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
+@requires_gl30 Extension @extension{ARB,framebuffer_object}
+@requires_gles30 Extension @es_extension{ANGLE,framebuffer_blit} or
     @es_extension{NV,framebuffer_blit} in OpenGL ES 2.0
 */
 enum class FramebufferBlitFilter: GLenum {
@@ -117,37 +126,38 @@ enum class FramebufferBlitFilter: GLenum {
 };
 
 /**
-@brief Target for binding framebuffer
+@brief Framebuffer target
 
-@see @ref DefaultFramebuffer::bind(), @ref Framebuffer::bind()
-@requires_gl30 %Extension @extension{ARB,framebuffer_object}
+@see @ref DefaultFramebuffer::checkStatus(), @ref Framebuffer::checkStatus()
+@requires_gl30 Extension @extension{ARB,framebuffer_object}
 */
 enum class FramebufferTarget: GLenum {
-    /**
-     * For reading only.
-     * @requires_gles30 %Extension @es_extension{APPLE,framebuffer_multisample},
-     *      @es_extension{ANGLE,framebuffer_blit} or @es_extension{NV,framebuffer_blit}
-     *      in OpenGL ES 2.0
-     */
+    /** Frambebuffer reading target */
     #ifndef MAGNUM_TARGET_GLES2
     Read = GL_READ_FRAMEBUFFER,
     #else
     Read = GL_READ_FRAMEBUFFER_APPLE,
     #endif
 
-    /**
-     * For drawing only.
-     * @requires_gles30 %Extension @es_extension{APPLE,framebuffer_multisample},
-     *      @es_extension{ANGLE,framebuffer_blit} or @es_extension{NV,framebuffer_blit}
-     *      in OpenGL ES 2.0
-     */
+    /** Framebuffer drawing target */
     #ifndef MAGNUM_TARGET_GLES2
     Draw = GL_DRAW_FRAMEBUFFER,
     #else
     Draw = GL_DRAW_FRAMEBUFFER_APPLE,
     #endif
 
-    ReadDraw = GL_FRAMEBUFFER       /**< For both reading and drawing. */
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /**
+     * Framebuffer drawing target
+     * @deprecated Use @ref FramebufferTarget::Draw instead.
+     */
+    ReadDraw CORRADE_DEPRECATED_ENUM("use FramebufferTarget::Draw instead") =
+        #ifndef MAGNUM_TARGET_GLES2
+        GL_DRAW_FRAMEBUFFER
+        #else
+        GL_DRAW_FRAMEBUFFER_APPLE
+        #endif
+    #endif
 };
 
 namespace Implementation { struct FramebufferState; }
@@ -162,15 +172,19 @@ See @ref DefaultFramebuffer and @ref Framebuffer for more information.
 
 The engine tracks currently bound framebuffer and current viewport to avoid
 unnecessary calls to @fn_gl{BindFramebuffer} and @fn_gl{Viewport} when
-switching framebuffers. %Framebuffer limits and implementation-defined values
+switching framebuffers. Framebuffer limits and implementation-defined values
 (such as @ref maxViewportSize()) are cached, so repeated queries don't result
 in repeated @fn_gl{Get} calls.
+
+If extension @extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+available, @ref blit() function uses DSA to avoid unnecessary call to
+@fn_gl{BindFramebuffer}. See its documentation for more information.
 
 If @extension{ARB,robustness} is available, @ref read() operations are
 protected from buffer overflow.
 */
 class MAGNUM_EXPORT AbstractFramebuffer {
-    friend struct Implementation::FramebufferState;
+    friend Implementation::FramebufferState;
 
     public:
         /** @todo `GL_IMPLEMENTATION_COLOR_READ_FORMAT`, `GL_IMPLEMENTATION_COLOR_READ_TYPE`, seems to be depending on currently bound FB (aargh) (@extension{ARB,ES2_compatibility}). */
@@ -219,14 +233,16 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @param mask              Which buffers to perform blit operation on
          * @param filter            Interpolation filter
          *
-         * Binds @p source framebuffer to @ref FramebufferTarget::Read and
-         * @p destination framebuffer to @ref FramebufferTarget::Draw and
-         * performs blitting operation. See @ref DefaultFramebuffer::mapForRead(),
-         * @ref Framebuffer::mapForRead(), @ref DefaultFramebuffer::mapForDraw()
-         * and @ref Framebuffer::mapForDraw() for specifying particular buffers
-         * for blitting operation.
-         * @see @fn_gl{BlitFramebuffer}
-         * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
+         * See @ref DefaultFramebuffer::mapForRead(), @ref Framebuffer::mapForRead(),
+         * @ref DefaultFramebuffer::mapForDraw() and @ref Framebuffer::mapForDraw()
+         * for specifying particular buffers for blitting operation. If
+         * @extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
+         * available, @p source framebuffer is bound to @ref FramebufferTarget::Read
+         * and @p destination framebuffer to @ref FramebufferTarget::Draw
+         * before the operation (if not already).
+         * @see @fn_gl2{BlitNamedFramebuffer,BlitFramebuffer}, eventually
+         *      @fn_gl{BlitFramebuffer}
+         * @requires_gles30 Extension @es_extension{ANGLE,framebuffer_blit} or
          *      @es_extension{NV,framebuffer_blit} in OpenGL ES 2.0
          * @todo NaCl exports `BlitFramebufferEXT` (although no such extension
          *      exists for ES)
@@ -235,35 +251,37 @@ class MAGNUM_EXPORT AbstractFramebuffer {
 
         /**
          * @brief Copy block of pixels
-         * @param source            Source framebuffer
-         * @param destination       Destination framebuffer
-         * @param rectangle         Source and destination rectangle
-         * @param mask              Which buffers to perform blit operation on
          *
-         * Convenience alternative to above function when source rectangle is
-         * the same as destination rectangle. As the image is copied
+         * Convenience alternative to the above function when source rectangle
+         * is the same as destination rectangle. As the image is copied
          * pixel-by-pixel, no interpolation is needed and thus
          * @ref FramebufferBlitFilter::Nearest filtering is used by default.
-         * @see @fn_gl{BlitFramebuffer}
-         * @requires_gles30 %Extension @es_extension{ANGLE,framebuffer_blit} or
-         *      @es_extension{NV,framebuffer_blit} in OpenGL ES 2.0
          */
         static void blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& rectangle, FramebufferBlitMask mask) {
             blit(source, destination, rectangle, rectangle, mask, FramebufferBlitFilter::Nearest);
         }
 
         /**
-         * @brief Bind framebuffer for rendering
+         * @brief Bind framebuffer for drawing
          *
-         * Binds the framebuffer and updates viewport to saved dimensions.
+         * Binds the framebuffer for drawing and updates viewport to saved
+         * dimensions.
          * @see @ref setViewport(), @ref DefaultFramebuffer::mapForRead(),
          *      @ref Framebuffer::mapForRead(), @ref DefaultFramebuffer::mapForDraw(),
          *      @ref Framebuffer::mapForDraw(), @fn_gl{BindFramebuffer},
          *      @fn_gl{Viewport}
-         * @todo Bind internally to ReadDraw if separate binding points are not
-         *      supported
          */
-        void bind(FramebufferTarget target);
+        void bind();
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief bind()
+         * @deprecated Use parameter-less @ref bind() instead.
+         */
+        CORRADE_DEPRECATED("use parameter-less bind() instead") void bind(FramebufferTarget) {
+            bind();
+        }
+        #endif
 
         /** @brief Viewport rectangle */
         Range2Di viewport() const { return _viewport; }
@@ -274,7 +292,9 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          *
          * Saves the viewport to be used at later time in @ref bind(). If the
          * framebuffer is currently bound, updates the viewport to given
-         * rectangle.
+         * rectangle. Initial value in @ref DefaultFramebuffer is set to cover
+         * whole window, in @ref Framebuffer the initial value is specified in
+         * constructor.
          * @see @ref maxViewportSize(), @fn_gl{Viewport}
          */
         AbstractFramebuffer& setViewport(const Range2Di& rectangle);
@@ -282,6 +302,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         /**
          * @brief Clear specified buffers in framebuffer
          * @param mask              Which buffers to clear
+         * @return Reference to self (for method chaining)
          *
          * To improve performance you can also use
          * @ref DefaultFramebuffer::invalidate() / @ref Framebuffer::invalidate()
@@ -291,15 +312,14 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          *      @ref Renderer::setClearStencil(), @fn_gl{BindFramebuffer},
          *      @fn_gl{Clear}
          */
-        void clear(FramebufferClearMask mask);
+        AbstractFramebuffer& clear(FramebufferClearMask mask);
 
         /**
          * @brief Read block of pixels from framebuffer to image
-         * @param offset            Offset in the framebuffer
-         * @param size              %Image size
-         * @param image             %Image where to put the data
+         * @param rectangle         Framebuffer rectangle to read
+         * @param image             Image where to put the data
          *
-         * %Image parameters like format and type of pixel data are taken from
+         * Image parameters like format and type of pixel data are taken from
          * given image.
          *
          * If @extension{ARB,robustness} is available, the operation is
@@ -307,15 +327,33 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @see @fn_gl{BindFramebuffer}, @fn_gl{ReadPixels} or
          *      @fn_gl_extension{ReadnPixels,ARB,robustness}
          */
-        void read(const Vector2i& offset, const Vector2i& size, Image2D& image);
+        void read(const Range2Di& rectangle, Image2D& image);
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * Image2D image = framebuffer.read(framebuffer.viewport(), {ColorFormat::RGBA, ColorType::UnsignedByte});
+         * @endcode
+         */
+        Image2D read(const Range2Di& rectangle, Image2D&& image);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief read(const Range2Di&, Image2D&)
+         * @deprecated Use @ref read(const Range2Di&, Image2D&) instead.
+         */
+        CORRADE_DEPRECATED("use read(const Range2Di&, Image2D& instead) instead") void read(const Vector2i& offset, const Vector2i& size, Image2D& image) {
+            read({offset, size}, image);
+        }
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Read block of pixels from framebuffer to buffer image
-         * @param offset            Offset in the framebuffer
-         * @param size              %Image size
-         * @param image             %Buffer image where to put the data
-         * @param usage             %Buffer usage
+         * @param rectangle         Framebuffer rectangle to read
+         * @param image             Buffer image where to put the data
+         * @param usage             Buffer usage
          *
          * See @ref read(const Vector2i&, const Vector2i&, Image2D&) for more
          * information.
@@ -323,7 +361,27 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @todo Make it more flexible (usable with
          *      @extension{ARB,buffer_storage}, avoiding relocations...)
          */
-        void read(const Vector2i& offset, const Vector2i& size, BufferImage2D& image, BufferUsage usage);
+        void read(const Range2Di& rectangle, BufferImage2D& image, BufferUsage usage);
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * BufferImage2D image = framebuffer.read(framebuffer.viewport(), {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+         * @endcode
+         */
+        BufferImage2D read(const Range2Di& rectangle, BufferImage2D&& image, BufferUsage usage);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief read(const Range2Di&, BufferImage2D&, BufferUsage)
+         * @deprecated Use @ref read(const Range2Di&, BufferImage2D&, BufferUsage)
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use read(const Range2Di&, BufferImage2D&, BufferUsage) instead") void read(const Vector2i& offset, const Vector2i& size, BufferImage2D& image, BufferUsage usage) {
+            read({offset, size}, image, usage);
+        }
+        #endif
         #endif
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -345,40 +403,65 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         Range2Di _viewport;
 
     private:
+        #ifndef MAGNUM_TARGET_GLES2
+        static void MAGNUM_LOCAL blitImplementationDefault(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter);
+        #ifndef MAGNUM_TARGET_GLES
+        static void MAGNUM_LOCAL blitImplementationDSA(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter);
+        #endif
+        #else
+        static void MAGNUM_LOCAL blitImplementationANGLE(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter);
+        static void MAGNUM_LOCAL blitImplementationNV(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter);
+        #endif
+
+        void MAGNUM_LOCAL bindImplementationDefault(FramebufferTarget target);
+        FramebufferTarget MAGNUM_LOCAL bindImplementationDefault();
         #ifdef MAGNUM_TARGET_GLES2
-        static void MAGNUM_LOCAL blitImplementationANGLE(const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter);
-        static void MAGNUM_LOCAL blitImplementationNV(const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter);
+        void MAGNUM_LOCAL bindImplementationSingle(FramebufferTarget);
+        FramebufferTarget MAGNUM_LOCAL bindImplementationSingle();
         #endif
 
         GLenum MAGNUM_LOCAL checkStatusImplementationDefault(FramebufferTarget target);
+        #ifdef MAGNUM_TARGET_GLES2
+        GLenum MAGNUM_LOCAL checkStatusImplementationSingle(FramebufferTarget);
+        #endif
         #ifndef MAGNUM_TARGET_GLES
+        GLenum MAGNUM_LOCAL checkStatusImplementationDSA(FramebufferTarget target);
         GLenum MAGNUM_LOCAL checkStatusImplementationDSAEXT(FramebufferTarget target);
         #endif
 
         void MAGNUM_LOCAL drawBuffersImplementationDefault(GLsizei count, const GLenum* buffers);
         #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL drawBuffersImplementationDSA(GLsizei count, const GLenum* buffers);
         void MAGNUM_LOCAL drawBuffersImplementationDSAEXT(GLsizei count, const GLenum* buffers);
         #endif
 
         void MAGNUM_LOCAL drawBufferImplementationDefault(GLenum buffer);
         #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL drawBufferImplementationDSA(GLenum buffer);
         void MAGNUM_LOCAL drawBufferImplementationDSAEXT(GLenum buffer);
         #endif
 
         void MAGNUM_LOCAL readBufferImplementationDefault(GLenum buffer);
         #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL readBufferImplementationDSA(GLenum buffer);
         void MAGNUM_LOCAL readBufferImplementationDSAEXT(GLenum buffer);
         #endif
 
-        static void MAGNUM_LOCAL readImplementationDefault(const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
-        static void MAGNUM_LOCAL readImplementationRobustness(const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
+        static void MAGNUM_LOCAL readImplementationDefault(const Range2Di& rectangle, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
+        static void MAGNUM_LOCAL readImplementationRobustness(const Range2Di& rectangle, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
 
         void MAGNUM_LOCAL invalidateImplementationNoOp(GLsizei, const GLenum*);
         void MAGNUM_LOCAL invalidateImplementationDefault(GLsizei count, const GLenum* attachments);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL invalidateImplementationDSA(GLsizei count, const GLenum* attachments);
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES2
         void MAGNUM_LOCAL invalidateImplementationNoOp(GLsizei, const GLenum*, const Range2Di&);
         void MAGNUM_LOCAL invalidateImplementationDefault(GLsizei count, const GLenum* attachments, const Range2Di& rectangle);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL invalidateImplementationDSA(GLsizei count, const GLenum* attachments, const Range2Di& rectangle);
+        #endif
         #endif
 };
 

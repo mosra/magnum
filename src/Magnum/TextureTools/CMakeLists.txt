@@ -1,7 +1,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -34,20 +34,21 @@ set(MagnumTextureTools_HEADERS
     Atlas.h
     DistanceField.h
 
-    magnumTextureToolsVisibility.h)
+    visibility.h)
 
 if(BUILD_STATIC)
-    set(MagnumTextureTools_HEADERS ${MagnumTextureTools_HEADERS} magnumTextureToolsResourceImport.hpp)
+    list(APPEND MagnumTextureTools_HEADERS resourceImport.hpp)
 endif()
 
+# TextureTools library
 add_library(MagnumTextureTools ${SHARED_OR_STATIC}
     ${MagnumTextureTools_SRCS}
     ${MagnumTextureTools_HEADERS})
 set_target_properties(MagnumTextureTools PROPERTIES DEBUG_POSTFIX "-d")
 if(BUILD_STATIC_PIC)
-    # TODO: CMake 2.8.9 has this as POSITION_INDEPENDENT_CODE property
-    set_target_properties(MagnumTextureTools PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+    set_target_properties(MagnumTextureTools PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
+
 target_link_libraries(MagnumTextureTools Magnum)
 
 if(WITH_DISTANCEFIELDCONVERTER)

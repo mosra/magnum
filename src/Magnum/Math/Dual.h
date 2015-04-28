@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -37,7 +37,7 @@
 namespace Magnum { namespace Math {
 
 /**
-@brief %Dual number
+@brief Dual number
 @tparam T   Underlying data type
 */
 template<class T> class Dual {
@@ -76,7 +76,7 @@ template<class T> class Dual {
         /** @brief Real part */
         constexpr T real() const { return _real; }
 
-        /** @brief %Dual part */
+        /** @brief Dual part */
         constexpr T dual() const { return _dual; }
 
         /**

@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -54,11 +54,11 @@ have `*.hpp` extension (hinting that they are something between `*.h` and
 
 @subsubsection coding-style-cpp-types Builtin types
 
-Use %Magnum's own type aliases for public API (e.g. @ref UnsignedInt, see
+Use Magnum's own type aliases for public API (e.g. @ref UnsignedInt, see
 @ref types for more information), but use specific types when interacting with
 third party libraries and OpenGL (e.g. `GLuint`) and rely only on implicit
 conversions when converting between them. This helps avoiding sign, truncation
-and other issues, e.g. `%Math::%Vector2<GLsizei>` will implicitly convert to
+and other issues, e.g. `Math::Vector2<GLsizei>` will implicitly convert to
 @ref Vector2i if and only if @ref Int is the same type as `GLsizei`.
 
 @subsubsection coding-style-cpp-naming Naming
@@ -100,7 +100,7 @@ void setPolygonMode(PolygonMode mode);
 
 Additionally to @c \@todoc, @c \@debugoperator, @c \@debugoperatorenum,
 @c \@debugoperatorclassenum, @c \@configurationvalue and
-@c \@configurationvalueref (same as in %Corrade), these are defined:
+@c \@configurationvalueref (same as in Corrade), these are defined:
 
 @subsubsection coding-style-documentation-commands-collisionoperator Shape collision operators
 
@@ -196,7 +196,7 @@ All classes and functions using those commands are cross-referenced in page
 In detailed documentation the text should be always first, the blocks are then
 ordered by their importance. Various @c \@note, @c \@attention and @c \@warning
 blocks to highlight some information are always first, then @c \@see block with
-links to related stuff, where related %Magnum functions are first and links to
+links to related stuff, where related Magnum functions are first and links to
 related GL API last, then various support information such as
 @c \@requires_glXX, @c \@requires_es_extension etc. (first desktop GL, then ES,
 then WebGL), after that @c \@deprecated_gl and @c \@deprecated information and

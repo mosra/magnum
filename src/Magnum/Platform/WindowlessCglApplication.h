@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
     Copyright © 2013 <https://github.com/ArEnSc>
     Copyright © 2014 Travis Watkins <https://github.com/amaranth>
@@ -31,12 +31,15 @@
  * @brief Class @ref Magnum::Platform::WindowlessCglApplication, macro @ref MAGNUM_WINDOWLESSCGLAPPLICATION_MAIN()
  */
 
+#include <memory>
+
 #include "Magnum/OpenGL.h"
 #include <OpenGL/OpenGL.h>
 #include <OpenGL/CGLTypes.h>
 #include <OpenGL/CGLCurrent.h>
 
 #include "Magnum/Magnum.h"
+#include "Magnum/Platform/Platform.h"
 
 namespace Magnum { namespace Platform {
 
@@ -67,7 +70,7 @@ See @ref cmake for more information.
 
 ## General usage
 
-In CMake you need to request `%WindowlessCglApplication` component, add
+In CMake you need to request `WindowlessCglApplication` component, add
 `${MAGNUM_WINDOWLESSCGLAPPLICATION_INCLUDE_DIRS}` to include path and link to
 `${MAGNUM_WINDOWLESSCGLAPPLICATION_LIBRARIES}`. If no other windowless
 application is requested, you can also use generic
@@ -150,14 +153,14 @@ class WindowlessCglApplication {
         bool tryCreateContext(const Configuration& configuration);
 
     private:
-        CGLContextObj context;
-        CGLPixelFormatObj pixelFormat;
+        CGLContextObj _glContext;
+        CGLPixelFormatObj _pixelFormat;
 
-        Platform::Context* c;
+        std::unique_ptr<Platform::Context> _context;
 };
 
 /**
-@brief %Configuration
+@brief Configuration
 
 @see @ref WindowlessCglApplication(), @ref createContext(),
     @ref tryCreateContext()

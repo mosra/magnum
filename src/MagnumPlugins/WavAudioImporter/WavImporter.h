@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Audio::WavImporter
+ * @brief Class @ref Magnum::Audio::WavImporter
  */
 
 #include <Corrade/Containers/Array.h>
@@ -43,10 +43,10 @@ imported with @ref Buffer::Format::Mono8, @ref Buffer::Format::Mono16,
 @ref Buffer::Format::Stereo8 or @ref Buffer::Format::Stereo16, respectively.
 
 This plugin is built if `WITH_WAVAUDIOIMPORTER` is enabled when building
-%Magnum. To use dynamic plugin, you need to load `%WavAudioImporter` plugin
+Magnum. To use dynamic plugin, you need to load `WavAudioImporter` plugin
 from `MAGNUM_PLUGINS_AUDIOIMPORTER_DIR`. To use static plugin or use this as a
-dependency of another plugin, you need to request `%WavAudioImporter` component
-of `%Magnum` package in CMake and link to `${MAGNUM_WAVAUDIOIMPORTER_LIBRARIES}`.
+dependency of another plugin, you need to request `WavAudioImporter` component
+of `Magnum` package in CMake and link to `${MAGNUM_WAVAUDIOIMPORTER_LIBRARIES}`.
 See @ref building, @ref cmake and @ref plugins for more information.
 */
 class WavImporter: public AbstractImporter {
@@ -62,14 +62,14 @@ class WavImporter: public AbstractImporter {
     private:
         Features doFeatures() const override;
         bool doIsOpened() const override;
-        void doOpenData(Containers::ArrayReference<const unsigned char> data) override;
+        void doOpenData(Containers::ArrayReference<const char> data) override;
         void doClose() override;
 
         Buffer::Format doFormat() const override;
         UnsignedInt doFrequency() const override;
-        Containers::Array<unsigned char> doData() override;
+        Containers::Array<char> doData() override;
 
-        Containers::Array<unsigned char> _data;
+        Containers::Array<char> _data;
         Buffer::Format _format;
         UnsignedInt _frequency;
 };

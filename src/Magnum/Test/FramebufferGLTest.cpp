@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -49,50 +49,51 @@
 
 namespace Magnum { namespace Test {
 
-class FramebufferGLTest: public AbstractOpenGLTester {
-    public:
-        explicit FramebufferGLTest();
+struct FramebufferGLTest: AbstractOpenGLTester {
+    explicit FramebufferGLTest();
 
-        void construct();
-        void constructCopy();
-        void constructMove();
+    void construct();
+    void constructCopy();
+    void constructMove();
 
-        void label();
+    void label();
 
-        void attachRenderbuffer();
-        void attachRenderbufferMultisample();
+    void attachRenderbuffer();
+    void attachRenderbufferMultisample();
 
-        #ifndef MAGNUM_TARGET_GLES
-        void attachTexture1D();
-        #endif
-        void attachTexture2D();
-        void attachTexture3D();
-        #ifndef MAGNUM_TARGET_GLES
-        void attachTexture1DArray();
-        #endif
-        #ifndef MAGNUM_TARGET_GLES2
-        void attachTexture2DArray();
-        void attachTexture2DMultisample();
-        #endif
-        #ifndef MAGNUM_TARGET_GLES
-        void attachTexture2DMultisampleArray();
-        void attachRectangleTexture();
-        #endif
-        void attachCubeMapTexture();
-        #ifndef MAGNUM_TARGET_GLES
-        void attachCubeMapTextureArray();
-        #endif
+    #ifndef MAGNUM_TARGET_GLES
+    void attachTexture1D();
+    #endif
+    void attachTexture2D();
+    void attachTexture3D();
+    #ifndef MAGNUM_TARGET_GLES
+    void attachTexture1DArray();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    void attachTexture2DArray();
+    void attachTexture2DMultisample();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES
+    void attachTexture2DMultisampleArray();
+    void attachRectangleTexture();
+    #endif
+    void attachCubeMapTexture();
+    #ifndef MAGNUM_TARGET_GLES
+    void attachCubeMapTextureArray();
+    #endif
 
-        void multipleColorOutputs();
+    void multipleColorOutputs();
 
-        void clear();
-        void invalidate();
-        void invalidateSub();
-        void read();
-        #ifndef MAGNUM_TARGET_GLES2
-        void readBuffer();
-        #endif
-        void blit();
+    void clear();
+    void invalidate();
+    #ifndef MAGNUM_TARGET_GLES2
+    void invalidateSub();
+    #endif
+    void read();
+    #ifndef MAGNUM_TARGET_GLES2
+    void readBuffer();
+    #endif
+    void blit();
 
     #ifdef MAGNUM_TARGET_GLES2
     private:
@@ -135,7 +136,9 @@ FramebufferGLTest::FramebufferGLTest() {
 
               &FramebufferGLTest::clear,
               &FramebufferGLTest::invalidate,
+              #ifndef MAGNUM_TARGET_GLES2
               &FramebufferGLTest::invalidateSub,
+              #endif
               &FramebufferGLTest::read,
               #ifndef MAGNUM_TARGET_GLES2
               &FramebufferGLTest::readBuffer,
@@ -274,7 +277,8 @@ void FramebufferGLTest::attachRenderbuffer() {
     }
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
 
 void FramebufferGLTest::attachRenderbufferMultisample() {
@@ -311,7 +315,8 @@ void FramebufferGLTest::attachRenderbufferMultisample() {
                #endif
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
 
 #ifndef MAGNUM_TARGET_GLES
@@ -330,7 +335,8 @@ void FramebufferGLTest::attachTexture1D() {
                .attachTexture(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 0);
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
 #endif
 
@@ -390,7 +396,8 @@ void FramebufferGLTest::attachTexture2D() {
     #endif
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
 
 void FramebufferGLTest::attachTexture3D() {
@@ -413,7 +420,8 @@ void FramebufferGLTest::attachTexture3D() {
     framebuffer.attachTextureLayer(Framebuffer::ColorAttachment(0), color, 0, 0);
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
 
 #ifndef MAGNUM_TARGET_GLES
@@ -432,7 +440,8 @@ void FramebufferGLTest::attachTexture1DArray() {
                .attachTextureLayer(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 0, 3);
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
 #endif
 
@@ -456,7 +465,8 @@ void FramebufferGLTest::attachTexture2DArray() {
                .attachTextureLayer(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 0, 3);
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
 #endif
 
@@ -483,7 +493,8 @@ void FramebufferGLTest::attachTexture2DMultisample() {
                .attachTexture(Framebuffer::BufferAttachment::DepthStencil, depthStencil);
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
 #endif
 
@@ -505,7 +516,8 @@ void FramebufferGLTest::attachTexture2DMultisampleArray() {
                .attachTextureLayer(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 3);
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
 
 void FramebufferGLTest::attachRectangleTexture() {
@@ -525,7 +537,8 @@ void FramebufferGLTest::attachRectangleTexture() {
                .attachTexture(Framebuffer::BufferAttachment::DepthStencil, depthStencil);
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
 #endif
 
@@ -575,7 +588,8 @@ void FramebufferGLTest::attachCubeMapTexture() {
     #endif
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
 
 #ifndef MAGNUM_TARGET_GLES
@@ -596,7 +610,8 @@ void FramebufferGLTest::attachCubeMapTextureArray() {
                .attachTextureLayer(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 0, 3);
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
 #endif
 
@@ -644,7 +659,8 @@ void FramebufferGLTest::multipleColorOutputs() {
     }
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
 
 void FramebufferGLTest::clear() {
@@ -717,6 +733,7 @@ void FramebufferGLTest::invalidate() {
     MAGNUM_VERIFY_NO_ERROR();
 }
 
+#ifndef MAGNUM_TARGET_GLES2
 void FramebufferGLTest::invalidateSub() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
@@ -724,11 +741,7 @@ void FramebufferGLTest::invalidateSub() {
     #endif
 
     Renderbuffer color;
-    #ifndef MAGNUM_TARGET_GLES2
     color.setStorage(RenderbufferFormat::RGBA8, Vector2i(128));
-    #else
-    color.setStorage(RenderbufferFormat::RGBA4, Vector2i(128));
-    #endif
 
     Renderbuffer depth;
     depth.setStorage(RenderbufferFormat::DepthComponent16, Vector2i(128));
@@ -738,13 +751,15 @@ void FramebufferGLTest::invalidateSub() {
                .attachRenderbuffer(Framebuffer::BufferAttachment::Depth, depth);
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 
     framebuffer.invalidate({Framebuffer::InvalidationAttachment::Depth, Framebuffer::ColorAttachment(0)},
                            {{32, 16}, {79, 64}});
 
     MAGNUM_VERIFY_NO_ERROR();
 }
+#endif
 
 void FramebufferGLTest::read() {
     #ifndef MAGNUM_TARGET_GLES
@@ -787,18 +802,18 @@ void FramebufferGLTest::read() {
     }
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 
     Renderer::setClearColor(Math::normalize<Color4>(Color4ub(128, 64, 32, 17)));
     Renderer::setClearDepth(Math::normalize<Float, UnsignedShort>(48352));
     Renderer::setClearStencil(67);
     framebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth|FramebufferClear::Stencil);
 
-    Image2D colorImage(ColorFormat::RGBA, ColorType::UnsignedByte);
-    framebuffer.read({16, 8}, {8, 16}, colorImage);
-    CORRADE_COMPARE(colorImage.size(), Vector2i(8, 16));
+    Image2D colorImage = framebuffer.read(Range2Di::fromSize({16, 8}, {8, 16}), {ColorFormat::RGBA, ColorType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(colorImage.size(), Vector2i(8, 16));
     CORRADE_COMPARE(colorImage.data<Color4ub>()[0], Color4ub(128, 64, 32, 17));
 
     #ifdef MAGNUM_TARGET_GLES
@@ -809,8 +824,7 @@ void FramebufferGLTest::read() {
         Debug() << "Using" << Extensions::GL::NV::read_depth::string();
         #endif
 
-        Image2D depthImage(ColorFormat::DepthComponent, ColorType::UnsignedShort);
-        framebuffer.read({}, Vector2i(1), depthImage);
+        Image2D depthImage = framebuffer.read({{}, Vector2i{1}}, {ColorFormat::DepthComponent, ColorType::UnsignedShort});
 
         MAGNUM_VERIFY_NO_ERROR();
         CORRADE_COMPARE(depthImage.data<UnsignedShort>()[0], 48352);
@@ -824,8 +838,7 @@ void FramebufferGLTest::read() {
         Debug() << "Using" << Extensions::GL::NV::read_stencil::string();
         #endif
 
-        Image2D stencilImage(ColorFormat::StencilIndex, ColorType::UnsignedByte);
-        framebuffer.read({}, Vector2i(1), stencilImage);
+        Image2D stencilImage = framebuffer.read({{}, Vector2i{1}}, {ColorFormat::StencilIndex, ColorType::UnsignedByte});
 
         MAGNUM_VERIFY_NO_ERROR();
         CORRADE_COMPARE(stencilImage.data<UnsignedByte>()[0], 67);
@@ -839,8 +852,7 @@ void FramebufferGLTest::read() {
         Debug() << "Using" << Extensions::GL::NV::read_depth_stencil::string();
         #endif
 
-        Image2D depthStencilImage(ColorFormat::DepthStencil, ColorType::UnsignedInt248);
-        framebuffer.read({}, Vector2i(1), depthStencilImage);
+        Image2D depthStencilImage = framebuffer.read({{}, Vector2i{1}}, {ColorFormat::DepthStencil, ColorType::UnsignedInt248});
 
         MAGNUM_VERIFY_NO_ERROR();
         /** @todo This will probably fail on different systems */
@@ -867,15 +879,15 @@ void FramebufferGLTest::readBuffer() {
                .attachRenderbuffer(Framebuffer::BufferAttachment::DepthStencil, depthStencil);
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 
     Renderer::setClearColor(Math::normalize<Color4>(Color4ub(128, 64, 32, 17)));
     Renderer::setClearDepth(Math::normalize<Float, UnsignedShort>(48352));
     Renderer::setClearStencil(67);
     framebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth|FramebufferClear::Stencil);
 
-    BufferImage2D colorImage(ColorFormat::RGBA, ColorType::UnsignedByte);
-    framebuffer.read({16, 8}, {8, 16}, colorImage, BufferUsage::StaticRead);
+    BufferImage2D colorImage = framebuffer.read(Range2Di::fromSize({16, 8}, {8, 16}), {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
     CORRADE_COMPARE(colorImage.size(), Vector2i(8, 16));
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -912,8 +924,10 @@ void FramebufferGLTest::blit() {
     b.attachRenderbuffer(Framebuffer::ColorAttachment(0), colorB);
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(a.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
-    CORRADE_COMPARE(b.checkStatus(FramebufferTarget::ReadDraw), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(a.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(a.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(b.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(b.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 
     /* Clear first with some color and second with another */
     Renderer::setClearColor(Math::normalize<Color4>(Color4ub(128, 64, 32, 17)));
@@ -922,18 +936,17 @@ void FramebufferGLTest::blit() {
     b.clear(FramebufferClear::Color);
 
     /* The framebuffer should be black before */
-    Image2D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    b.read({}, Vector2i(1), image);
+    Image2D imageBefore = b.read({{}, Vector2i{1}}, {ColorFormat::RGBA, ColorType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(image.data<Color4ub>()[0], Color4ub());
+    CORRADE_COMPARE(imageBefore.data<Color4ub>()[0], Color4ub());
 
     /* And have given color after */
     Framebuffer::blit(a, b, a.viewport(), FramebufferBlit::Color);
-    b.read({}, Vector2i(1), image);
+    Image2D imageAfter = b.read({{}, Vector2i{1}}, {ColorFormat::RGBA, ColorType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(image.data<Color4ub>()[0], Color4ub(128, 64, 32, 17));
+    CORRADE_COMPARE(imageAfter.data<Color4ub>()[0], Color4ub(128, 64, 32, 17));
 }
 
 }}

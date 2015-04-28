@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <cmath>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Math/Constants.h"
@@ -30,35 +31,63 @@
 
 namespace Magnum { namespace Math { namespace Test {
 
-class ConstantsTest: public Corrade::TestSuite::Tester {
-    public:
-        ConstantsTest();
+struct ConstantsTest: Corrade::TestSuite::Tester {
+    explicit ConstantsTest();
 
-        void constantsFloat();
-        void constantsDouble();
+    void constants();
+    void specials();
+
+    private:
+        template<class> void _constants();
+        template<class> void _specials();
 };
 
 ConstantsTest::ConstantsTest() {
-    addTests<ConstantsTest>({&ConstantsTest::constantsFloat,
-              &ConstantsTest::constantsDouble});
+    addTests<ConstantsTest>({&ConstantsTest::constants,
+              &ConstantsTest::specials});
 }
 
-void ConstantsTest::constantsFloat() {
-    constexpr Float a = Constants<Float>::sqrt2();
-    constexpr Float b = Constants<Float>::sqrt3();
-    CORRADE_COMPARE(Math::pow<2>(a), 2.0f);
-    CORRADE_COMPARE(Math::pow<2>(b), 3.0f);
-}
-
-void ConstantsTest::constantsDouble() {
+void ConstantsTest::constants() {
+    _constants<Float>();
     #ifndef MAGNUM_TARGET_GLES
-    constexpr Double c = Constants<Double>::sqrt2();
-    constexpr Double d = Constants<Double>::sqrt3();
-    CORRADE_COMPARE(Math::pow<2>(c), 2.0);
-    CORRADE_COMPARE(Math::pow<2>(d), 3.0);
-    #else
-    CORRADE_SKIP("Double precision is not supported when targeting OpenGL ES.");
+    _constants<Double>();
     #endif
+}
+
+void ConstantsTest::specials() {
+    _specials<Float>();
+    #ifndef MAGNUM_TARGET_GLES
+    _specials<Double>();
+    #endif
+}
+
+template<class T> void ConstantsTest::_constants() {
+    constexpr T a = Constants<T>::sqrt2();
+    constexpr T b = Constants<T>::sqrt3();
+    CORRADE_COMPARE(Math::pow<2>(a), T(2));
+    CORRADE_COMPARE(Math::pow<2>(b), T(3));
+
+    constexpr T c = Constants<T>::pi();
+    constexpr T d = Constants<T>::piHalf();
+    constexpr T e = Constants<T>::tau();
+    CORRADE_COMPARE(T(0.5)*c, d);
+    CORRADE_COMPARE(T(2.0)*c, e);
+
+    constexpr T f = Constants<T>::e();
+    CORRADE_COMPARE(std::log(f), T(1));
+}
+
+template<class T> void ConstantsTest::_specials() {
+    constexpr T a = Constants<T>::nan();
+    CORRADE_VERIFY(std::isnan(a));
+    CORRADE_VERIFY(a != a);
+
+    constexpr T b = Constants<T>::inf();
+    CORRADE_VERIFY(std::isinf(b));
+
+    /* Clang complains that producing NaN is not constexpr */
+    T h = Constants<T>::inf() - Constants<T>::inf();
+    CORRADE_VERIFY(h != h);
 }
 
 }}}

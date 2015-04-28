@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -25,6 +25,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <memory>
+
 #include "Magnum/Magnum.h"
 #include "Magnum/OpenGL.h"
 
@@ -39,24 +41,30 @@ struct RendererState;
 struct ShaderState;
 struct ShaderProgramState;
 struct TextureState;
+#ifndef MAGNUM_TARGET_GLES2
+struct TransformFeedbackState;
+#endif
 
 struct State {
     /* Initializes context-based functionality */
-    State(Context& context);
+    explicit State(Context& context);
 
     ~State();
 
     enum: GLuint { DisengagedBinding = ~0u };
 
-    BufferState* buffer;
-    DebugState* debug;
-    FramebufferState* framebuffer;
-    MeshState* mesh;
-    QueryState* query;
-    RendererState* renderer;
-    ShaderState* shader;
-    ShaderProgramState* shaderProgram;
-    TextureState* texture;
+    std::unique_ptr<BufferState> buffer;
+    std::unique_ptr<DebugState> debug;
+    std::unique_ptr<FramebufferState> framebuffer;
+    std::unique_ptr<MeshState> mesh;
+    std::unique_ptr<QueryState> query;
+    std::unique_ptr<RendererState> renderer;
+    std::unique_ptr<ShaderState> shader;
+    std::unique_ptr<ShaderProgramState> shaderProgram;
+    std::unique_ptr<TextureState> texture;
+    #ifndef MAGNUM_TARGET_GLES2
+    std::unique_ptr<TransformFeedbackState> transformFeedback;
+    #endif
 };
 
 }}

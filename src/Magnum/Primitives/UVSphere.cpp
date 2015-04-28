@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -48,7 +48,7 @@ Trade::MeshData3D UVSphere::solid(UnsignedInt rings, UnsignedInt segments, Textu
     sphere.capVertex(-1.0f, -1.0f, 0.0f);
 
     /* Vertex rings */
-    sphere.hemisphereVertexRings(rings-1, 0.0f, -Rad(Constants::pi())/2+ringAngleIncrement, ringAngleIncrement, textureCoordsVIncrement, textureCoordsVIncrement);
+    sphere.hemisphereVertexRings(rings-1, 0.0f, -Rad(Constants::piHalf())+ringAngleIncrement, ringAngleIncrement, textureCoordsVIncrement, textureCoordsVIncrement);
 
     /* Top cap vertex */
     sphere.capVertex(1.0f, 1.0f, 1.0f);

@@ -1,6 +1,7 @@
-Magnum is 2D/3D graphics engine written in C++11 and modern OpenGL. Its goal is
-to simplify low-level graphics development and interaction with OpenGL using
-recent C++11 features and to abstract away platform-specific issues.
+Magnum is 2D/3D graphics engine written in C++11/C++14 and modern OpenGL. Its
+goal is to simplify low-level graphics development and interaction with OpenGL
+using recent C++11/C++14 features and to abstract away platform-specific
+issues.
 
 DESIGN GOALS
 ============
@@ -89,7 +90,7 @@ Minimal dependencies
     >= 3.1. On Windows you can use **MinGW**. GCC 4.5, 4.4 and **MSVC** 2013
     support involves some ugly workarounds and thus is available only in
     `compatibility` branch.
-*   **CMake** >= 2.8.8
+*   **CMake** >= 2.8.9
 *   **Corrade** - Plugin management and utility library. You can get it at
     https://github.com/mosra/corrade.
 
@@ -161,6 +162,8 @@ separate repositories.
 *   **libRocket integration** -- integrates Magnum as rendering backend into
     [libRocket](https://github.com/libRocket/libRocket) GUI library:
     https://github.com/miguelmartin75/Magnum-libRocket
+*   **Magnum Inspector** -- Gtk-based inspector window running alongside Magnum
+    https://github.com/wivlaro/magnum-inspector
 
 CONTACT
 =======
@@ -170,6 +173,7 @@ idea? Feel free to visit my website or contact me at:
 
 *   Website -- http://mosra.cz/blog/magnum.php
 *   GitHub -- https://github.com/mosra/magnum
+*   IRC -- join `#magnum-engine` channel on freenode
 *   Google Groups -- https://groups.google.com/forum/#!forum/magnum-engine
 *   Twitter -- https://twitter.com/czmosra
 *   E-mail -- mosra@centrum.cz

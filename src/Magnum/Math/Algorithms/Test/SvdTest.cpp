@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -29,12 +29,11 @@
 
 namespace Magnum { namespace Math { namespace Algorithms { namespace Test {
 
-class SvdTest: public Corrade::TestSuite::Tester {
-    public:
-        explicit SvdTest();
+struct SvdTest: Corrade::TestSuite::Tester {
+    explicit SvdTest();
 
-        void testDouble();
-        void testFloat();
+    void testDouble();
+    void testFloat();
 };
 
 #ifndef MAGNUM_TARGET_GLES

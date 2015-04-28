@@ -1,7 +1,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -26,12 +26,6 @@
 set(MagnumMathGeometry_HEADERS
     Distance.h
     Intersection.h)
-
-# Deprecated headers
-if(BUILD_DEPRECATED)
-    set(MagnumMathGeometry_HEADERS ${MagnumMathGeometry_HEADERS}
-        Rectangle.h)
-endif()
 
 # Force IDEs to display all header files in project view
 add_custom_target(MagnumMathGeometry SOURCES ${MagnumMathGeometry_HEADERS})

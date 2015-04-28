@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -44,7 +44,7 @@ Trade::MeshData2D Circle::solid(UnsignedInt segments) {
     positions.emplace_back();
 
     /* Points on circle */
-    const Rad angleIncrement(2*Constants::pi()/segments);
+    const Rad angleIncrement(Constants::tau()/segments);
     for(UnsignedInt i = 0; i != segments; ++i) {
         const Rad angle(Float(i)*angleIncrement);
         positions.emplace_back(Math::cos(angle), Math::sin(angle));
@@ -62,7 +62,7 @@ Trade::MeshData2D Circle::wireframe(UnsignedInt segments) {
     positions.reserve(segments);
 
     /* Points on circle */
-    const Rad angleIncrement(2*Constants::pi()/segments);
+    const Rad angleIncrement(Constants::tau()/segments);
     for(UnsignedInt i = 0; i != segments; ++i) {
         const Rad angle(Float(i)*angleIncrement);
         positions.emplace_back(Math::cos(angle), Math::sin(angle));

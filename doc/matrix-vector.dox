@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -31,7 +31,7 @@ namespace Magnum {
 -   Next page: @ref transformations
 
 Matrices and vectors are the most important part of graphics programming and
-one of goals of %Magnum is to make their usage as intuitive as possible. They
+one of goals of Magnum is to make their usage as intuitive as possible. They
 are contained in @ref Math namespace and common variants also have aliases in
 root @ref Magnum namespace. See documentation of these namespaces for more
 information about usage with CMake.
@@ -40,10 +40,10 @@ information about usage with CMake.
 
 @section matrix-vector-hierarchy Matrix and vector classes
 
-%Magnum has three main matrix and vector classes: @ref Math::RectangularMatrix,
+Magnum has three main matrix and vector classes: @ref Math::RectangularMatrix,
 (square) @ref Math::Matrix and @ref Math::Vector. To achieve greatest code
-reuse, %Matrix is internally square %RectangularMatrix and %RectangularMatrix
-is internally array of one or more %Vector instances. Both vectors and matrices
+reuse, Matrix is internally square RectangularMatrix and RectangularMatrix
+is internally array of one or more Vector instances. Both vectors and matrices
 can have arbitrary size (known at compile time) and can store any arithmetic
 type.
 
@@ -53,14 +53,14 @@ vector and matrix sizes there are specialized classes @ref Math::Matrix3 and
 @ref Math::Vector2, @ref Math::Vector3 and @ref Math::Vector4, implementing
 direct access to named components. Functions of each class try to return the
 most specialized type known to make subsequent operations more convenient --
-columns of %RectangularMatrix are returned as %Vector, but when accessing
-columns of e.g. %Matrix3, they are returned as %Vector3.
+columns of RectangularMatrix are returned as Vector, but when accessing
+columns of e.g. Matrix3, they are returned as Vector3.
 
 There are also even more specialized subclasses, e.g. @ref Color3 and
 @ref Color4 for color handling and conversion.
 
 Commonly used types have convenience aliases in @ref Magnum namespace, so you
-can write e.g. `%Vector3i` instead of `%Math::Vector3<Int>`. See @ref types and
+can write e.g. `Vector3i` instead of `Math::Vector3<Int>`. See @ref types and
 namespace documentation for more information.
 
 @section matrix-vector-construction Constructing matrices and vectors
@@ -198,7 +198,7 @@ available component-wise operations.
 @section matrix-vector-operations Operations with matrices and vectors
 
 Vectors can be added, subtracted, negated and multiplied or divided with
-scalars, as is common in mathematics, %Magnum also adds the ability to divide
+scalars, as is common in mathematics, Magnum also adds the ability to divide
 scalar with vector:
 @code
 Vector3 a(1.0f, 2.0f, 3.0f);
@@ -214,7 +214,7 @@ Vector3 b = a*Vector3(-0.5f, 2.0f, -7.0f); // b == {-0.5f, 4.0f, -21.0f}
 
 When working with integral vectors (i.e. 24bit RGB values), it is often
 desirable to multiply them with floating-point values but with integral result.
-In %Magnum all mulitplication/division operations involving integral vectors
+In Magnum all mulitplication/division operations involving integral vectors
 will have integral result, you need to convert both arguments to the same
 floating-point type to have floating-point result.
 @code
@@ -315,7 +315,7 @@ auto b = Math::denormalize<UnsignedByte>(0.89f);    // 226
 @section matrix-vector-column-major Matrices are column-major and vectors are columns
 
 OpenGL matrices are column-major, thus it is reasonable to have matrices in
-%Magnum also column major (and vectors as columns). This has naturally some
+Magnum also column major (and vectors as columns). This has naturally some
 implications and it may differ from what is common in mathematics:
 
 - Order of template arguments in specification of @ref Math::RectangularMatrix

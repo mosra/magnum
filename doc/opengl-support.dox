@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -50,7 +50,7 @@ following:
 @todo @extension{EXT,texture_array} overlaps with @extension{ARB,framebuffer_object}
 @todo Add @extension{ARB,depth_buffer_float} and implement the missing @fn_gl{DepthRange} function, but keep (and implement) @extension{NV,depth_buffer_float} for non-linear depth buffer
 
-%Extension                                  | Status
+Extension                                   | Status
 ------------------------------------------- | ------
 GLSL 1.30                                   | done
 @extension{ARB,map_buffer_range}            | done
@@ -70,13 +70,13 @@ GLSL 1.30                                   | done
 @extension{EXT,texture_shared_exponent}     | done
 @extension{EXT,draw_buffers2}               | |
 @extension{EXT,texture_integer}             | done (GL 3.0 subset)
-@extension{EXT,transform_feedback}          | |
+@extension{EXT,transform_feedback}          | done
 @extension{NV,depth_buffer_float}           | |
 @extension{NV,conditional_render}           | done
 
 @subsection opengl-support-31 OpenGL 3.1
 
-%Extension                                  | Status
+Extension                                   | Status
 ------------------------------------------- | ------
 GLSL 1.40                                   | done
 @extension{ARB,texture_rectangle}           | done
@@ -89,7 +89,7 @@ GLSL 1.40                                   | done
 
 @subsection opengl-support-32 OpenGL 3.2
 
-%Extension                                  | Status
+Extension                                   | Status
 ------------------------------------------- | ------
 GLSL 1.50                                   | done
 @extension{ARB,geometry_shader4}            | missing layered attachments
@@ -104,7 +104,7 @@ GLSL 1.50                                   | done
 
 @subsection opengl-support-33 OpenGL 3.3
 
-%Extension                                  | Status
+Extension                                   | Status
 ------------------------------------------- | ------
 GLSL 3.30                                   | done
 @extension{ARB,instanced_arrays}            | done
@@ -120,7 +120,7 @@ GLSL 3.30                                   | done
 
 @subsection opengl-support-40 OpenGL 4.0
 
-%Extension                                  | Status
+Extension                                   | Status
 ------------------------------------------- | ------
 GLSL 4.00                                   | done
 @extension{ARB,draw_buffers_blend}          | |
@@ -134,12 +134,12 @@ GLSL 4.00                                   | done
 @extension{ARB,shader_subroutine}           | |
 @extension{ARB,tessellation_shader}         | missing some limit queries and patch parameter specification function
 @extension{ARB,texture_buffer_object_rgb32} | done
-@extension{ARB,transform_feedback2}         | |
-@extension{ARB,transform_feedback3}         | |
+@extension{ARB,transform_feedback2}         | missing transform feedback draw
+@extension{ARB,transform_feedback3}         | only advanced interleaving
 
 @subsection opengl-support-41 OpenGL 4.1
 
-%Extension                                  | Status
+Extension                                   | Status
 ------------------------------------------- | ------
 GLSL 4.10                                   | done
 @extension{ARB,ES2_compatibility}           | only float depth clear
@@ -151,7 +151,7 @@ GLSL 4.10                                   | done
 
 @subsection opengl-support-42 OpenGL 4.2
 
-%Extension                                  | Status
+Extension                                   | Status
 ------------------------------------------- | ------
 GLSL 4.20                                   | done
 @extension{ARB,texture_compression_bptc}    | done
@@ -169,7 +169,7 @@ GLSL 4.20                                   | done
 
 @subsection opengl-support-43 OpenGL 4.3
 
-%Extension                                  | Status
+Extension                                   | Status
 ------------------------------------------- | ------
 GLSL 4.30                                   | done
 @extension{ARB,arrays_of_arrays}            | done (shading language only)
@@ -177,7 +177,7 @@ GLSL 4.30                                   | done
 @extension{ARB,clear_buffer_object}         | |
 @extension{ARB,compute_shader}              | |
 @extension{ARB,copy_image}                  | |
-@extension{KHR,debug} (also in ES)          | missing log retrieval, sync, pipeline, transform feedback and sampler label and debug groups
+@extension{KHR,debug} (also in ES)          | missing log retrieval, sync, pipeline and sampler label
 @extension{ARB,explicit_uniform_location}   | done
 @extension{ARB,fragment_layer_viewport}     | done (shading language only)
 @extension{ARB,framebuffer_no_attachments}  | |
@@ -200,7 +200,7 @@ GLSL 4.30                                   | done
 @todo Also fallback to @extension{AMD,query_buffer_object}
 @todo @extension{AMD,pinned_memory} "fallback" for @extension{ARB,buffer_storage}
 
-%Extension                                  | Status
+Extension                                   | Status
 ------------------------------------------- | ------
 GLSL 4.40                                   | done
 @def_gl{MAX_VERTEX_ATTRIB_STRIDE}           | |
@@ -215,7 +215,7 @@ GLSL 4.40                                   | done
 
 @subsection opengl-support-45 OpenGL 4.5
 
-%Extension                                  | Status
+Extension                                   | Status
 ------------------------------------------- | ------
 GLSL 4.50                                   | done
 @extension{ARB,ES3_1_compatibility}         | |
@@ -223,8 +223,8 @@ GLSL 4.50                                   | done
 @extension{ARB,conditional_render_inverted} | done
 @extension{ARB,cull_distance}               | |
 @extension{ARB,derivative_control}          | done (shading language only)
-@extension{ARB,direct_state_access}         | object creation subset only
-@extension{ARB,get_texture_sub_image}       | |
+@extension{ARB,direct_state_access}         | done for implemented functionality (except VAOs)
+@extension{ARB,get_texture_sub_image}       | missing compressed texture queries
 @extension{ARB,shader_texture_image_samples} | done (shading language only)
 @extension{ARB,texture_barrier}             | |
 @extension{KHR,context_flush_control} (also in ES) | |
@@ -232,7 +232,7 @@ GLSL 4.50                                   | done
 
 @subsection opengl-support-extensions ARB / Khronos OpenGL extensions
 
-%Extension                                  | Status
+Extension                                   | Status
 ------------------------------------------- | ------
 @extension{ARB,robustness}                  | done
 @extension3{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr} (also in ES) | |
@@ -255,7 +255,7 @@ GLSL 4.50                                   | done
 @todo @extension{ATI,meminfo}, @extension{NVX,gpu_memory_info}, GPU temperature
 @todo @extension{AMD,performance_monitor}, @extension{INTEL,performance_query}
 
-%Extension                                  | Status
+Extension                                   | Status
 ------------------------------------------- | ------
 @extension{AMD,vertex_shader_layer}         | done (shading language only)
 @extension{AMD,shader_trinary_minmax}       | done (shading language only)
@@ -265,8 +265,8 @@ GLSL 4.50                                   | done
 @extension{EXT,direct_state_access}         | done for implemented functionality
 @extension{EXT,texture_sRGB_decode} (also in ES) | done
 @extension{EXT,shader_integer_mix} (also in ES) | done (shading language only)
-@extension2{EXT,debug_label} (also in ES)   | missing pipeline, transform feedback and sampler label
-@extension2{EXT,debug_marker} (also in ES)  | missing marker groups
+@extension2{EXT,debug_label} (also in ES)   | missing pipeline and sampler label
+@extension2{EXT,debug_marker} (also in ES)  | done
 @extension{GREMEDY,string_marker}           | done
 
 @subsection opengl-support-es20 OpenGL ES 2.0
@@ -286,7 +286,7 @@ supported. ESSL 3.10 is supported.
 
 @subsection opengl-support-es30-extensions OpenGL ES 2.0 extensions to match ES 3.0 functionality
 
-%Extension                                  | Status
+Extension                                   | Status
 ------------------------------------------- | ------
 @es_extension{ANGLE,framebuffer_blit}       | done
 @es_extension{ANGLE,framebuffer_multisample} | done
@@ -323,6 +323,7 @@ supported. ESSL 3.10 is supported.
 @es_extension{OES,texture_float_linear}     | done
 @es_extension2{OES,texture_half_float,OES_texture_float} | done
 @es_extension{OES,texture_float}            | done
+@es_extension{OES,texture_npot}             | done (nothing to do)
 @es_extension{OES,vertex_half_float}        | done
 @es_extension{OES,packed_depth_stencil}     | done
 @es_extension{OES,depth_texture}            | done
@@ -339,7 +340,7 @@ Only extensions not already listed in above tables are included here.
 @todo Support also IMG_multisampled_render_to_texture? It has different enum
     values (!)
 
-%Extension                                  | Status
+Extension                                   | Status
 ------------------------------------------- | ------
 @es_extension{APPLE,texture_format_BGRA8888} | done
 @es_extension{CHROMIUM,map_sub}             | only buffer mapping
@@ -365,7 +366,7 @@ Only extensions not already listed in above tables are included here.
 @section opengl-unsupported Unsupported OpenGL features
 
 Some functionality, which is either soon-to-be deprecated or isn't proven to
-add any performance gains, is not supported in %Magnum. See also
+add any performance gains, is not supported in Magnum. See also
 @ref opengl-deprecated.
 
 @subsection opengl-unsupported-features Unsupported features
@@ -375,7 +376,7 @@ add any performance gains, is not supported in %Magnum. See also
     not supported. The only exception are features that are needed for some
     OpenGL ES 2.0 implementations (such as luminance texture formats).
 -   State queries (various `glIs*()`, `glGet*()` functions) are not supported.
-    %Magnum API is designed to prevent the need for majority of them, many of
+    Magnum API is designed to prevent the need for majority of them, many of
     them are tracked internally to avoid redundant state changes and in many
     cases it is easier to set the state to some value rather than query it and
     then decide on the result. For detailed state introspection please use

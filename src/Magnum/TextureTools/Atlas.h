@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -33,7 +33,7 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Vector2.h"
-#include "Magnum/TextureTools/magnumTextureToolsVisibility.h"
+#include "Magnum/TextureTools/visibility.h"
 
 namespace Magnum { namespace TextureTools {
 

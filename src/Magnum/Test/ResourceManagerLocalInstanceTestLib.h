@@ -1,7 +1,9 @@
+#ifndef Magnum_Test_ResourceManagerLocalInstanceTestLib_h
+#define Magnum_Test_ResourceManagerLocalInstanceTestLib_h
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,46 +25,26 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
-#include <Corrade/TestSuite/Tester.h>
+#include "Magnum/ResourceManager.h"
 
-#include "Magnum/DebugMessage.h"
+#ifndef MAGNUM_BUILD_STATIC
+    #if defined(ResourceManagerLocalInstanceTestLib_EXPORTS)
+        #define MAGNUM_RESOURCEMANAGERLOCALINSTANCETESTLIB_EXPORT CORRADE_VISIBILITY_EXPORT
+    #else
+        #define MAGNUM_RESOURCEMANAGERLOCALINSTANCETESTLIB_EXPORT CORRADE_VISIBILITY_IMPORT
+    #endif
+#else
+    #define MAGNUM_RESOURCEMANAGERLOCALINSTANCETESTLIB_EXPORT CORRADE_VISIBILITY_STATIC
+#endif
 
 namespace Magnum { namespace Test {
 
-class DebugMessageTest: public TestSuite::Tester {
-    public:
-        explicit DebugMessageTest();
+struct MAGNUM_RESOURCEMANAGERLOCALINSTANCETESTLIB_EXPORT ResourceManagerWithLocalInstance: ResourceManager<Implementation::ResourceManagerLocalInstance, Int> {
+    explicit ResourceManagerWithLocalInstance();
 
-        void debugSource();
-        void debugType();
-        void debugSeverity();
+    ResourceManagerWithLocalInstance& staticInstance;
 };
-
-DebugMessageTest::DebugMessageTest() {
-    addTests<DebugMessageTest>({&DebugMessageTest::debugSource,
-              &DebugMessageTest::debugType,
-              &DebugMessageTest::debugSeverity});
-}
-
-void DebugMessageTest::debugSource() {
-    std::ostringstream o;
-    Debug(&o) << DebugMessage::Source::ShaderCompiler;
-    CORRADE_COMPARE(o.str(), "DebugMessage::Source::ShaderCompiler\n");
-}
-
-void DebugMessageTest::debugType() {
-    std::ostringstream o;
-    Debug(&o) << DebugMessage::Type::DeprecatedBehavior;
-    CORRADE_COMPARE(o.str(), "DebugMessage::Type::DeprecatedBehavior\n");
-}
-
-void DebugMessageTest::debugSeverity() {
-    std::ostringstream o;
-    Debug(&o) << DebugMessage::Severity::Notification;
-    CORRADE_COMPARE(o.str(), "DebugMessage::Severity::Notification\n");
-}
 
 }}
 
-CORRADE_TEST_MAIN(Magnum::Test::DebugMessageTest)
+#endif

@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -29,18 +29,17 @@
 
 namespace Magnum { namespace Math { namespace Test {
 
-class UnitTest: public Corrade::TestSuite::Tester {
-    public:
-        explicit UnitTest();
+struct UnitTest: Corrade::TestSuite::Tester {
+    explicit UnitTest();
 
-        void construct();
-        void constructDefault();
-        void constructConversion();
-        void compare();
+    void construct();
+    void constructDefault();
+    void constructConversion();
+    void compare();
 
-        void negated();
-        void addSubtract();
-        void multiplyDivide();
+    void negated();
+    void addSubtract();
+    void multiplyDivide();
 };
 
 UnitTest::UnitTest() {

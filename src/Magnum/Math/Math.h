@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -38,6 +38,7 @@ namespace Magnum { namespace Math {
 
 /** @todo Denormals to zero */
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 /* Class Constants used only statically */
 
 template<class> class Complex;
@@ -82,11 +83,6 @@ template<class T> using Range1D = Range<1, T>;
 #endif
 template<class> class Range2D;
 template<class> class Range3D;
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-namespace Geometry {
-    template<class> class Rectangle;
-}
 #endif
 
 }}

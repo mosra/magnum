@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,9 +23,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/* Less precision */
-#define FLOAT_EQUALITY_PRECISION 1.0e-5
-
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 
@@ -36,15 +33,14 @@
 
 namespace Magnum { namespace Primitives { namespace Test {
 
-class CapsuleTest: public TestSuite::Tester {
-    public:
-        CapsuleTest();
+struct CapsuleTest: TestSuite::Tester {
+    explicit CapsuleTest();
 
-        void wireframe2D();
+    void wireframe2D();
 
-        void solid3DWithoutTextureCoords();
-        void solid3DWithTextureCoords();
-        void wireframe3D();
+    void solid3DWithoutTextureCoords();
+    void solid3DWithTextureCoords();
+    void wireframe3D();
 };
 
 CapsuleTest::CapsuleTest() {

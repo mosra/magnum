@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -35,6 +35,27 @@
 namespace Magnum { namespace Math {
 
 /**
+@brief Cross product
+
+Result has length of `0` either when one of them is zero or they are parallel
+or antiparallel and length of `1` when two *normalized* vectors are
+perpendicular. Done using the following equation: @f[
+     \boldsymbol a \times \boldsymbol b = \begin{pmatrix} c_y \\ c_z \\ c_x \end{pmatrix} ~~~~~
+     \boldsymbol c = \boldsymbol a \begin{pmatrix} b_y \\ b_z \\ b_x \end{pmatrix} -
+                     \boldsymbol b \begin{pmatrix} a_y \\ a_z \\ a_x \end{pmatrix}
+@f]
+Which is equivalent to the common one (source:
+https://twitter.com/sjb3d/status/563640846671953920): @f[
+     \boldsymbol a \times \boldsymbol b = \begin{pmatrix}a_yb_z - a_zb_y \\ a_zb_x - a_xb_z \\ a_xb_y - a_yb_x \end{pmatrix}
+@f]
+@see @ref cross(const Vector2<T>&, const Vector2<T>&)
+*/
+template<class T> inline Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b) {
+    return swizzle<'y', 'z', 'x'>(a*swizzle<'y', 'z', 'x'>(b) -
+                                  b*swizzle<'y', 'z', 'x'>(a));
+}
+
+/**
 @brief Three-component vector
 @tparam T   Data type
 
@@ -46,7 +67,7 @@ See @ref matrix-vector for brief introduction.
 template<class T> class Vector3: public Vector<3, T> {
     public:
         /**
-         * @brief %Vector in direction of X axis (right)
+         * @brief Vector in direction of X axis (right)
          *
          * Usable for translation or rotation along given axis, for example:
          * @code
@@ -59,7 +80,7 @@ template<class T> class Vector3: public Vector<3, T> {
         constexpr static Vector3<T> xAxis(T length = T(1)) { return {length, T(0), T(0)}; }
 
         /**
-         * @brief %Vector in direction of Y axis (up)
+         * @brief Vector in direction of Y axis (up)
          *
          * See @ref xAxis() for more information.
          * @see @ref yScale(), @ref Color3::green(), @ref Matrix4::up()
@@ -67,7 +88,7 @@ template<class T> class Vector3: public Vector<3, T> {
         constexpr static Vector3<T> yAxis(T length = T(1)) { return {T(0), length, T(0)}; }
 
         /**
-         * @brief %Vector in direction of Z axis (backward)
+         * @brief Vector in direction of Z axis (backward)
          *
          * See @ref xAxis() for more information.
          * @see @ref zScale(), @ref Color3::blue(), @ref Matrix4::backward()
@@ -101,19 +122,16 @@ template<class T> class Vector3: public Vector<3, T> {
          */
         constexpr static Vector3<T> zScale(T scale) { return {T(1), T(1), scale}; }
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @brief Cross product
-         *
-         * @f[
-         *      \boldsymbol a \times \boldsymbol b =
-         *      \begin{pmatrix}a_yb_z - a_zb_y \\ a_zb_y - a_xb_z \\ a_xb_y - a_yb_x \end{pmatrix}
-         * @f]
-         * @see @ref Vector2::cross()
+         * @copybrief Math::cross(const Vector3<T>&, const Vector3<T>&)
+         * @deprecated Use @ref Math::cross(const Vector3<T>&, const Vector3<T>&)
+         *      instead.
          */
-        static Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b) {
-            return swizzle<'y', 'z', 'x'>(a)*swizzle<'z', 'x', 'y'>(b) -
-                   swizzle<'z', 'x', 'y'>(a)*swizzle<'y', 'z', 'x'>(b);
+        CORRADE_DEPRECATED("use Math::cross() instead") static Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b) {
+            return Math::cross(a, b);
         }
+        #endif
 
         /** @copydoc Vector::Vector() */
         constexpr /*implicit*/ Vector3() {}
@@ -212,7 +230,9 @@ template<class T> class Vector3: public Vector<3, T> {
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(3, Vector3)
 };
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(3, Vector3)
+#endif
 
 /** @debugoperator{Magnum::Math::Vector3} */
 template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Vector3<T>& value) {

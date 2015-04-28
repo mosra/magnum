@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -85,7 +85,7 @@ template<class T> typename std::enable_if<!std::is_convertible<T, std::size_t>::
 }
 
 /* Skip gap */
-inline constexpr std::size_t writeOneInterleaved(std::size_t, char*, std::size_t gap) { return gap; }
+constexpr std::size_t writeOneInterleaved(std::size_t, char*, std::size_t gap) { return gap; }
 
 /* Write interleaved data */
 inline void writeInterleaved(std::size_t, char*) {}
@@ -96,7 +96,7 @@ template<class T, class ...U> void writeInterleaved(std::size_t stride, char* st
 }
 
 /**
-@brief %Interleave vertex attributes
+@brief Interleave vertex attributes
 
 This function takes list of attribute arrays and returns them interleaved, so
 data for each attribute are in continuous place in memory.
@@ -164,7 +164,7 @@ template<class T, class ...U> typename std::enable_if<!std::is_same<T, Mesh>::va
 }
 
 /**
-@brief %Interleave vertex attributes into existing buffer
+@brief Interleave vertex attributes into existing buffer
 
 Unlike @ref interleave() this function interleaves the data into existing
 buffer and leaves gaps untouched instead of zero-initializing them. This
@@ -187,7 +187,7 @@ template<class T, class ...U> void interleaveInto(Containers::ArrayReference<cha
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**
-@brief %Interleave vertex attributes, write them to array buffer and configure the mesh
+@brief Interleave vertex attributes, write them to array buffer and configure the mesh
 @param mesh         Output mesh
 @param buffer       Output vertex buffer
 @param usage        Vertex buffer usage

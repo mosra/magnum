@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -30,16 +30,15 @@
 
 namespace Magnum { namespace Math { namespace Test {
 
-class AngleTest: public Corrade::TestSuite::Tester {
-    public:
-        explicit AngleTest();
+struct AngleTest: Corrade::TestSuite::Tester {
+    explicit AngleTest();
 
-        void construct();
-        void literals();
-        void conversion();
+    void construct();
+    void literals();
+    void conversion();
 
-        void debugDeg();
-        void debugRad();
+    void debugDeg();
+    void debugRad();
 };
 
 typedef Math::Deg<Float> Deg;

@@ -2,18 +2,20 @@
 pkgname=magnum
 pkgver=dev.es3
 pkgrel=1
-pkgdesc="C++11 and OpenGL 2D/3D graphics engine (OpenGL ES 3.0 version)"
+pkgdesc="C++11/C++14 and OpenGL 2D/3D graphics engine (OpenGL ES 3.0 version)"
 arch=('i686' 'x86_64')
 url="http://mosra.cz/blog/magnum.php"
 license=('MIT')
 depends=('corrade' 'openal')
 makedepends=('cmake' 'ninja')
-options=('!strip' 'staticlibs')
+options=('!strip')
 provides=('magnum-git')
 
+_rootdir=$startdir/../../
+
 build() {
-    mkdir -p "$startdir/build-es3"
-    cd "$startdir/build-es3"
+    mkdir -p "$_rootdir/build-es3"
+    cd "$_rootdir/build-es3"
 
     cmake .. \
         -DCMAKE_BUILD_TYPE=Debug \
@@ -34,11 +36,11 @@ build() {
 }
 
 check() {
-    cd "$startdir/build-es3"
+    cd "$_rootdir/build-es3"
     ctest --output-on-failure -j5
 }
 
 package() {
-    cd "$startdir/build-es3"
+    cd "$_rootdir/build-es3"
     DESTDIR="$pkgdir/" ninja install
 }

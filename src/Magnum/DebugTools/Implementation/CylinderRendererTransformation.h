@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -63,7 +63,7 @@ template<> Matrix4 cylinderRendererTransformation<3>(const Vector3& a, const Vec
     Matrix4 rotation;
     if(length >= Math::TypeTraits<Float>::epsilon()) {
         const Vector3 directionNormalized = direction/length;
-        const Float dot = Vector3::dot(directionNormalized, Vector3::zAxis());
+        const Float dot = Math::dot(directionNormalized, Vector3::zAxis());
 
         /* Direction is parallel to Z axis, special rotation case */
         if(Math::abs(dot) > 1.0f - Math::TypeTraits<Float>::epsilon()) {
@@ -74,8 +74,8 @@ template<> Matrix4 cylinderRendererTransformation<3>(const Vector3& a, const Vec
         /* Common case */
         } else {
             rotation.up() = directionNormalized;
-            rotation.right() = Vector3::cross(rotation.up(), Vector3::zAxis()).normalized();
-            rotation.backward() = Vector3::cross(rotation.right(), rotation.up());
+            rotation.right() = Math::cross(rotation.up(), Vector3::zAxis()).normalized();
+            rotation.backward() = Math::cross(rotation.right(), rotation.up());
             CORRADE_INTERNAL_ASSERT(rotation.up().isNormalized() && rotation.backward().isNormalized());
         }
     }

@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -34,7 +34,7 @@
 namespace Magnum { namespace Trade {
 
 /**
-@brief %Image data
+@brief Image data
 
 Access to image data provided by @ref AbstractImporter subclasses.
 Interchangeable with @ref Image, @ref ImageReference or @ref BufferImage.
@@ -42,19 +42,19 @@ Interchangeable with @ref Image, @ref ImageReference or @ref BufferImage.
 */
 template<UnsignedInt dimensions> class ImageData: public AbstractImage {
     public:
-        const static UnsignedInt Dimensions = dimensions; /**< @brief %Image dimension count */
+        const static UnsignedInt Dimensions = dimensions; /**< @brief Image dimension count */
 
         /**
          * @brief Constructor
          * @param format            Format of pixel data
          * @param type              Data type of pixel data
-         * @param size              %Image size
-         * @param data              %Image data
+         * @param size              Image size
+         * @param data              Image data
          *
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        explicit ImageData(ColorFormat format, ColorType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size, void* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<unsigned char*>(data)) {}
+        explicit ImageData(ColorFormat format, ColorType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size, void* data): AbstractImage{format, type}, _size{size}, _data{reinterpret_cast<char*>(data)} {}
 
         /** @brief Copying is not allowed */
         ImageData(const ImageData<dimensions>&) = delete;
@@ -84,7 +84,7 @@ template<UnsignedInt dimensions> class ImageData: public AbstractImage {
         /*implicit*/ operator ImageReference<dimensions>() const && = delete;
         #endif
 
-        /** @brief %Image size */
+        /** @brief Image size */
         typename DimensionTraits<Dimensions, Int>::VectorType size() const { return _size; }
 
         /** @copydoc Image::dataSize() */
@@ -97,12 +97,12 @@ template<UnsignedInt dimensions> class ImageData: public AbstractImage {
          *
          * @see @ref release()
          */
-        template<class T = unsigned char> T* data() {
+        template<class T = char> T* data() {
             return reinterpret_cast<T*>(_data);
         }
 
         /** @overload */
-        template<class T = unsigned char> const T* data() const {
+        template<class T = char> const T* data() const {
             return reinterpret_cast<const T*>(_data);
         }
 
@@ -113,11 +113,11 @@ template<UnsignedInt dimensions> class ImageData: public AbstractImage {
          * to default. Deleting the returned array is then user responsibility.
          * @see @ref data()
          */
-        unsigned char* release();
+        char* release();
 
     private:
         Math::Vector<Dimensions, Int> _size;
-        unsigned char* _data;
+        char* _data;
 };
 
 /** @brief One-dimensional image */
@@ -136,8 +136,9 @@ template<UnsignedInt dimensions> inline ImageData<dimensions>::ImageData(ImageDa
 
 template<UnsignedInt dimensions> inline ImageData<dimensions>& ImageData<dimensions>::operator=(ImageData<dimensions>&& other) noexcept {
     AbstractImage::operator=(std::move(other));
-    std::swap(_size, other._size);
-    std::swap(_data, other._data);
+    using std::swap;
+    swap(_size, other._size);
+    swap(_data, other._data);
     return *this;
 }
 
@@ -151,9 +152,9 @@ const
     return ImageReference<dimensions>(AbstractImage::format(), AbstractImage::type(), _size, _data);
 }
 
-template<UnsignedInt dimensions> inline unsigned char* ImageData<dimensions>::release() {
+template<UnsignedInt dimensions> inline char* ImageData<dimensions>::release() {
     /** @todo I need `std::exchange` NOW. */
-    unsigned char* const data = _data;
+    char* const data = _data;
     _size = {};
     _data = nullptr;
     return data;

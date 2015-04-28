@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -170,15 +170,13 @@ template<class Transformation> void Object<Transformation>::setDirty() {
        nothing to do */
     if(flags & Flag::Dirty) return;
 
-    Object<Transformation>* self = static_cast<Object<Transformation>*>(this);
-
     /* Make all features dirty */
-    for(AbstractFeature<Transformation::Dimensions, typename Transformation::Type>* i = self->firstFeature(); i; i = i->nextFeature())
-        i->markDirty();
+    for(AbstractFeature<Transformation::Dimensions, typename Transformation::Type>& feature: this->features())
+        feature.markDirty();
 
     /* Make all children dirty */
-    for(Object<Transformation>* i = self->firstChild(); i; i = i->nextSibling())
-        i->setDirty();
+    for(Object<Transformation>& child: children())
+        child.setDirty();
 
     /* Mark object as dirty */
     flags |= Flag::Dirty;
@@ -549,28 +547,28 @@ template<class Transformation> void Object<Transformation>::setCleanInternal(con
     MatrixType matrix, invertedMatrix;
 
     /* Clean all features */
-    for(AbstractFeature<Transformation::Dimensions, typename Transformation::Type>* i = this->firstFeature(); i; i = i->nextFeature()) {
+    for(AbstractFeature<Transformation::Dimensions, typename Transformation::Type>& feature: this->features()) {
         /* Cached absolute transformation, compute it if it wasn't
             computed already */
-        if(i->cachedTransformations() & CachedTransformation::Absolute) {
+        if(feature.cachedTransformations() & CachedTransformation::Absolute) {
             if(!(cached & CachedTransformation::Absolute)) {
                 cached |= CachedTransformation::Absolute;
                 matrix = Implementation::Transformation<Transformation>::toMatrix(absoluteTransformation);
             }
 
-            i->clean(matrix);
+            feature.clean(matrix);
         }
 
         /* Cached inverse absolute transformation, compute it if it wasn't
             computed already */
-        if(i->cachedTransformations() & CachedTransformation::InvertedAbsolute) {
+        if(feature.cachedTransformations() & CachedTransformation::InvertedAbsolute) {
             if(!(cached & CachedTransformation::InvertedAbsolute)) {
                 cached |= CachedTransformation::InvertedAbsolute;
                 invertedMatrix = Implementation::Transformation<Transformation>::toMatrix(
                     Implementation::Transformation<Transformation>::inverted(absoluteTransformation));
             }
 
-            i->cleanInverted(invertedMatrix);
+            feature.cleanInverted(invertedMatrix);
         }
     }
 

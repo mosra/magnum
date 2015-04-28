@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -37,6 +37,10 @@
 #include "Magnum/SceneGraph/SceneGraph.h"
 #include "Magnum/SceneGraph/visibility.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#endif
+
 namespace Magnum { namespace SceneGraph {
 
 /**
@@ -46,11 +50,20 @@ Provides minimal interface for features, not depending on object transformation
 implementation. This class is not directly instantiatable, use @ref Object
 subclass instead. See also @ref scenegraph for more information.
 
-Uses @ref Corrade::Containers::LinkedList for storing features. Traversing
-through the list is done like in the following code. It is also possible to go
-in reverse order using @ref lastFeature() and @ref AbstractFeature::previousFeature().
+Uses @ref Corrade::Containers::LinkedList for efficient feature management.
+Traversing through the feature list can be done using range-based for:
 @code
-for(AbstractFeature* feature = o->firstFeature(); feature; feature = feature->nextFeature()) {
+AbstractObject3D object;
+for(AbstractFeature3D& feature: object.features()) {
+    // ...
+}
+@endcode
+
+Or, if you need more flexibility, like in the following code. It is also
+possible to go in reverse order using @ref Corrade::Containers::LinkedList::last()
+and @ref AbstractFeature::previousFeature().
+@code
+for(AbstractFeature3D* feature = object.features().first(); feature; feature = feature->nextFeature()) {
     // ...
 }
 @endcode
@@ -59,10 +72,10 @@ for(AbstractFeature* feature = o->firstFeature(); feature; feature = feature->ne
 ## Explicit template specializations
 
 The following specializations are explicitly compiled into @ref SceneGraph
-library. For other specializations (e.g. using @ref Double type) you have to
-use @ref Object.hpp implementation file to avoid linker errors. See also
-relevant sections in @ref SceneGraph-Object-explicit-specializations "Object" and
-@ref SceneGraph-AbstractTransformation-explicit-specializations "AbstractTransformation"
+library. For other specializations (e.g. using @ref Magnum::Double "Double"
+type) you have to use @ref Object.hpp implementation file to avoid linker
+errors. See also relevant sections in @ref SceneGraph-Object-explicit-specializations "Object"
+and @ref SceneGraph-AbstractTransformation-explicit-specializations "AbstractTransformation"
 class documentation or @ref compilation-speedup-hpp for more information.
 
 -   @ref AbstractObject2D
@@ -76,9 +89,9 @@ template<UnsignedInt dimensions, class T> class AbstractObject
     : private Containers::LinkedList<AbstractFeature<dimensions, T>>
     #endif
 {
-    friend class Containers::LinkedList<AbstractFeature<dimensions, T>>;
-    friend class Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>;
-    friend class AbstractFeature<dimensions, T>;
+    friend Containers::LinkedList<AbstractFeature<dimensions, T>>;
+    friend Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>;
+    friend AbstractFeature<dimensions, T>;
 
     public:
         /** @brief Matrix type */
@@ -92,34 +105,65 @@ template<UnsignedInt dimensions, class T> class AbstractObject
         explicit AbstractObject();
         virtual ~AbstractObject();
 
-        /** @brief Whether this object has features */
-        bool hasFeatures() const {
-            return !Containers::LinkedList<AbstractFeature<dimensions, T>>::isEmpty();
-        }
-
-        /** @brief First object feature or `nullptr`, if this object has no features */
-        FeatureType* firstFeature() {
-            return Containers::LinkedList<AbstractFeature<dimensions, T>>::first();
-        }
-
-        /** @overload */
-        const FeatureType* firstFeature() const {
-            return Containers::LinkedList<AbstractFeature<dimensions, T>>::first();
-        }
-
-        /** @brief Last object feature or `nullptr`, if this object has no features */
-        FeatureType* lastFeature() {
-            return Containers::LinkedList<AbstractFeature<dimensions, T>>::last();
+        /**
+         * @brief Object features
+         *
+         * @see @ref AbstractFeature::object(),
+         *      @ref AbstractFeature::previousFeature(),
+         *      @ref AbstractFeature::nextFeature()
+         */
+        Containers::LinkedList<AbstractFeature<dimensions, T>>& features() {
+            return static_cast<Containers::LinkedList<AbstractFeature<dimensions, T>>&>(*this);
         }
 
         /** @overload */
-        const FeatureType* lastFeature() const {
-            return Containers::LinkedList<AbstractFeature<dimensions, T>>::last();
+        const Containers::LinkedList<AbstractFeature<dimensions, T>>& features() const {
+            return static_cast<const Containers::LinkedList<AbstractFeature<dimensions, T>>&>(*this);
+        }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Whether this object has features
+         * @deprecated Use `features().isEmpty()` instead.
+         */
+        CORRADE_DEPRECATED("use features().isEmpty() instead") bool hasFeatures() const { return !features().isEmpty(); }
+
+        /**
+         * @brief First object feature or `nullptr`, if this object has no features
+         * @deprecated Use `features().first()` instead.
+         */
+        CORRADE_DEPRECATED("use features().first() instead") FeatureType* firstFeature() { return features().first(); }
+
+        /** @overload
+         * @deprecated Use `features().first()` instead.
+         */
+        CORRADE_DEPRECATED("use features().first() instead") const FeatureType* firstFeature() const { return features().first(); }
+
+        /**
+         * @brief Last object feature or `nullptr`, if this object has no features
+         * @deprecated Use `features().last()` instead.`
+         */
+        CORRADE_DEPRECATED("use features().last() instead") FeatureType* lastFeature() { return features().last(); }
+
+        /** @overload
+         * @deprecated Use `features().last()` instead.
+         */
+        CORRADE_DEPRECATED("use features().last() instead") const FeatureType* lastFeature() const { return features().last(); }
+        #endif
+
+        /**
+         * @brief Add a feature
+         *
+         * Calling `object.addFeature<MyFeature>(args...)` is equivalent to
+         * `new MyFeature{object, args...}`.
+         */
+        template<class U, class ...Args> U& addFeature(Args... args) {
+            return *(new U{*this, std::forward<Args>(args)...});
         }
 
         /**
-         * @brief %Scene
-         * @return %Scene or `nullptr`, if the object is not part of any scene.
+         * @brief Scene
+         * @return Scene or `nullptr`, if the object is not part of any scene.
          */
         AbstractObject<dimensions, T>* scene() { return doScene(); }
 
@@ -183,7 +227,7 @@ template<UnsignedInt dimensions, class T> class AbstractObject
         /**
          * @{ @name Transformation caching
          *
-         * See @ref scenegraph-caching for more information.
+         * See @ref scenegraph-features-caching for more information.
          */
 
         /**
@@ -223,7 +267,7 @@ template<UnsignedInt dimensions, class T> class AbstractObject
          * Returns `true` if transformation of the object or any parent has
          * changed since last call to @ref setClean(), `false` otherwise. All
          * objects are dirty by default.
-         * @see @ref scenegraph-caching
+         * @see @ref scenegraph-features-caching
          */
         bool isDirty() const { return doIsDirty(); }
 
@@ -234,7 +278,8 @@ template<UnsignedInt dimensions, class T> class AbstractObject
          * recursively calls @ref setDirty() on every child object which is not
          * already dirty. If the object is already marked as dirty, the
          * function does nothing.
-         * @see @ref scenegraph-caching, @ref setClean(), @ref isDirty()
+         * @see @ref scenegraph-features-caching, @ref setClean(),
+         *      @ref isDirty()
          */
         void setDirty() { doSetDirty(); }
 
@@ -249,7 +294,8 @@ template<UnsignedInt dimensions, class T> class AbstractObject
          * See also @ref setClean(const std::vector<AbstractObject<dimensions, T>*>&),
          * which cleans given set of objects more efficiently than when calling
          * @ref setClean() on each object individually.
-         * @see @ref scenegraph-caching, @ref setDirty(), @ref isDirty()
+         * @see @ref scenegraph-features-caching, @ref setDirty(),
+         *      @ref isDirty()
          */
         void setClean() { doSetClean(); }
 
@@ -273,7 +319,7 @@ template<UnsignedInt dimensions, class T> class AbstractObject
 /**
 @brief Base object for two-dimensional scenes
 
-Convenience alternative to <tt>%AbstractObject<2, T></tt>. See
+Convenience alternative to `AbstractObject<2, T>`. See
 @ref AbstractObject for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractObject<2, T></tt> instead.
 @see @ref AbstractObject2D, @ref AbstractBasicObject3D
@@ -300,7 +346,7 @@ typedef AbstractObject<2, Float> AbstractObject2D;
 /**
 @brief Base object for three-dimensional scenes
 
-Convenience alternative to <tt>%AbstractObject<3, T></tt>. See
+Convenience alternative to `AbstractObject<3, T>`. See
 @ref AbstractObject for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractObject<3, T></tt> instead.
 @see @ref AbstractObject3D, @ref AbstractBasicObject2D

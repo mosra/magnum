@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -80,6 +80,7 @@ Int Framebuffer::maxColorAttachments() {
 }
 
 Framebuffer::Framebuffer(const Range2Di& viewport) {
+    CORRADE_INTERNAL_ASSERT(viewport != Implementation::FramebufferState::DisengagedViewport);
     _viewport = viewport;
     (this->*Context::current()->state().framebuffer->createImplementation)();
     CORRADE_INTERNAL_ASSERT(_id != Implementation::State::DisengagedBinding);
@@ -102,18 +103,18 @@ Framebuffer::~Framebuffer() {
     if(!_id) return;
 
     /* If bound, remove itself from state */
-    Implementation::FramebufferState* state = Context::current()->state().framebuffer;
-    if(state->readBinding == _id) state->readBinding = 0;
+    Implementation::FramebufferState& state = *Context::current()->state().framebuffer;
+    if(state.readBinding == _id) state.readBinding = 0;
 
     /* For draw binding reset also viewport */
-    if(state->drawBinding == _id) {
-        state->drawBinding = 0;
+    if(state.drawBinding == _id) {
+        state.drawBinding = 0;
 
         /**
          * @todo Less ugly solution (need to call setViewportInternal() to
          * reset the viewport to size of default framebuffer)
          */
-        defaultFramebuffer.bind(FramebufferTarget::Draw);
+        defaultFramebuffer.bind();
     }
 
     glDeleteFramebuffers(1, &_id);
@@ -267,6 +268,10 @@ void Framebuffer::renderbufferImplementationDefault(BufferAttachment attachment,
 }
 
 #ifndef MAGNUM_TARGET_GLES
+void Framebuffer::renderbufferImplementationDSA(const BufferAttachment attachment, Renderbuffer& renderbuffer) {
+    glNamedFramebufferRenderbuffer(_id, GLenum(attachment), GL_RENDERBUFFER, renderbuffer.id());
+}
+
 void Framebuffer::renderbufferImplementationDSAEXT(BufferAttachment attachment, Renderbuffer& renderbuffer) {
     _created = true;
     glNamedFramebufferRenderbufferEXT(_id, GLenum(attachment), GL_RENDERBUFFER, renderbuffer.id());
@@ -274,6 +279,10 @@ void Framebuffer::renderbufferImplementationDSAEXT(BufferAttachment attachment, 
 
 void Framebuffer::texture1DImplementationDefault(BufferAttachment attachment, GLuint textureId, GLint mipLevel) {
     glFramebufferTexture1D(GLenum(bindInternal()), GLenum(attachment), GL_TEXTURE_1D, textureId, mipLevel);
+}
+
+void Framebuffer::texture1DImplementationDSA(const BufferAttachment attachment, const GLuint textureId, const GLint mipLevel) {
+    glNamedFramebufferTexture(_id, GLenum(attachment), textureId, mipLevel);
 }
 
 void Framebuffer::texture1DImplementationDSAEXT(BufferAttachment attachment, GLuint textureId, GLint mipLevel) {
@@ -287,6 +296,10 @@ void Framebuffer::texture2DImplementationDefault(BufferAttachment attachment, GL
 }
 
 #ifndef MAGNUM_TARGET_GLES
+void Framebuffer::texture2DImplementationDSA(const BufferAttachment attachment, GLenum, const GLuint textureId, const GLint mipLevel) {
+    glNamedFramebufferTexture(_id, GLenum(attachment), textureId, mipLevel);
+}
+
 void Framebuffer::texture2DImplementationDSAEXT(BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint mipLevel) {
     _created = true;
     glNamedFramebufferTexture2DEXT(_id, GLenum(attachment), textureTarget, textureId, mipLevel);
@@ -308,6 +321,10 @@ void Framebuffer::textureLayerImplementationDefault(BufferAttachment attachment,
 }
 
 #ifndef MAGNUM_TARGET_GLES
+void Framebuffer::textureLayerImplementationDSA(const BufferAttachment attachment, const GLuint textureId, const GLint mipLevel, const GLint layer) {
+    glNamedFramebufferTextureLayer(_id, GLenum(attachment), textureId, mipLevel, layer);
+}
+
 void Framebuffer::textureLayerImplementationDSAEXT(BufferAttachment attachment, GLuint textureId, GLint mipLevel, GLint layer) {
     _created = true;
     glNamedFramebufferTextureLayerEXT(_id, GLenum(attachment), textureId, mipLevel, layer);

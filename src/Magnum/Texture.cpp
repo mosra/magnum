@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -28,11 +28,18 @@
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
 
+#ifndef MAGNUM_TARGET_GLES
+#include "Magnum/BufferImage.h"
+#include "Magnum/Image.h"
+#endif
+
 #include "Implementation/maxTextureSize.h"
 #include "Implementation/State.h"
 #include "Implementation/TextureState.h"
 
-namespace Magnum { namespace Implementation {
+namespace Magnum {
+
+namespace Implementation {
 
 template<UnsignedInt dimensions> typename DimensionTraits<dimensions, Int>::VectorType maxTextureSize() {
     return typename DimensionTraits<dimensions, Int>::VectorType{Implementation::maxTextureSideSize()};
@@ -51,4 +58,52 @@ template<> MAGNUM_EXPORT Vector3i maxTextureSize<3>() {
     return {Vector2i(Implementation::maxTextureSideSize()), Implementation::max3DTextureDepth()};
 }
 
-}}
+}
+
+#ifndef MAGNUM_TARGET_GLES
+template<UnsignedInt dimensions> Image<dimensions> Texture<dimensions>::image(const Int level, Image<dimensions>&& image) {
+    this->image(level, image);
+    return std::move(image);
+}
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template MAGNUM_EXPORT Image<1> Texture<1>::image(Int, Image<1>&&);
+template MAGNUM_EXPORT Image<2> Texture<2>::image(Int, Image<2>&&);
+template MAGNUM_EXPORT Image<3> Texture<3>::image(Int, Image<3>&&);
+#endif
+
+template<UnsignedInt dimensions> BufferImage<dimensions> Texture<dimensions>::image(const Int level, BufferImage<dimensions>&& image, const BufferUsage usage) {
+    this->image(level, image, usage);
+    return std::move(image);
+}
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template MAGNUM_EXPORT BufferImage<1> Texture<1>::image(Int, BufferImage<1>&&, BufferUsage);
+template MAGNUM_EXPORT BufferImage<2> Texture<2>::image(Int, BufferImage<2>&&, BufferUsage);
+template MAGNUM_EXPORT BufferImage<3> Texture<3>::image(Int, BufferImage<3>&&, BufferUsage);
+#endif
+
+template<UnsignedInt dimensions> Image<dimensions> Texture<dimensions>::subImage(const Int level, const RangeTypeFor<dimensions, Int>& range, Image<dimensions>&& image) {
+    this->subImage(level, range, image);
+    return std::move(image);
+}
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template MAGNUM_EXPORT Image<1> Texture<1>::subImage(Int, const Range1Di&, Image<1>&&);
+template MAGNUM_EXPORT Image<2> Texture<2>::subImage(Int, const Range2Di&, Image<2>&&);
+template MAGNUM_EXPORT Image<3> Texture<3>::subImage(Int, const Range3Di&, Image<3>&&);
+#endif
+
+template<UnsignedInt dimensions> BufferImage<dimensions> Texture<dimensions>::subImage(const Int level, const RangeTypeFor<dimensions, Int>& range, BufferImage<dimensions>&& image, const BufferUsage usage) {
+    this->subImage(level, range, image, usage);
+    return std::move(image);
+}
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template MAGNUM_EXPORT BufferImage<1> Texture<1>::subImage(Int, const Range1Di&, BufferImage<1>&&, BufferUsage);
+template MAGNUM_EXPORT BufferImage<2> Texture<2>::subImage(Int, const Range2Di&, BufferImage<2>&&, BufferUsage);
+template MAGNUM_EXPORT BufferImage<3> Texture<3>::subImage(Int, const Range3Di&, BufferImage<3>&&, BufferUsage);
+#endif
+#endif
+
+}

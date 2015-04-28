@@ -2,18 +2,20 @@
 pkgname=magnum
 pkgver=dev.release
 pkgrel=1
-pkgdesc="C++11 and OpenGL 2D/3D graphics engine (debug+release libs)"
+pkgdesc="C++11/C++14 and OpenGL 2D/3D graphics engine (debug+release libs)"
 arch=('i686' 'x86_64')
 url="http://mosra.cz/blog/magnum.php"
 license=('MIT')
 depends=('corrade' 'openal' 'sdl2' 'freeglut')
 makedepends=('cmake' 'ninja')
-options=('!strip' 'staticlibs')
+options=('!strip')
 provides=('magnum-git')
 
+_rootdir=$startdir/../../
+
 build() {
-    mkdir -p "$startdir/build"
-    cd "$startdir/build"
+    mkdir -p "$_rootdir/build"
+    cd "$_rootdir/build"
 
     cmake .. \
         -DCMAKE_BUILD_TYPE=Debug \
@@ -22,6 +24,7 @@ build() {
         -DWITH_GLUTAPPLICATION=ON \
         -DWITH_GLXAPPLICATION=ON \
         -DWITH_SDL2APPLICATION=ON \
+        -DWITH_XEGLAPPLICATION=ON \
         -DWITH_WINDOWLESSGLXAPPLICATION=ON \
         -DWITH_EGLCONTEXT=ON \
         -DWITH_GLXCONTEXT=ON \
@@ -39,8 +42,8 @@ build() {
         -G Ninja
     ninja
 
-    mkdir -p "$startdir/build-release"
-    cd "$startdir/build-release"
+    mkdir -p "$_rootdir/build-release"
+    cd "$_rootdir/build-release"
 
     cmake .. \
         -DCMAKE_BUILD_TYPE=Release \
@@ -49,6 +52,7 @@ build() {
         -DWITH_GLUTAPPLICATION=ON \
         -DWITH_GLXAPPLICATION=ON \
         -DWITH_SDL2APPLICATION=ON \
+        -DWITH_XEGLAPPLICATION=ON \
         -DWITH_WINDOWLESSGLXAPPLICATION=ON \
         -DWITH_MAGNUMFONT=ON \
         -DWITH_MAGNUMFONTCONVERTER=ON \
@@ -66,17 +70,17 @@ build() {
 }
 
 check() {
-    cd "$startdir/build"
+    cd "$_rootdir/build"
     ctest --output-on-failure -j5
 
-    cd "$startdir/build-release"
+    cd "$_rootdir/build-release"
     ctest --output-on-failure -j5
 }
 
 package() {
-    cd "$startdir/build"
+    cd "$_rootdir/build"
     DESTDIR="$pkgdir/" ninja install
 
-    cd "$startdir/build-release"
+    cd "$_rootdir/build-release"
     DESTDIR="$pkgdir/" ninja install/strip
 }

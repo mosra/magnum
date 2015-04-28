@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -34,21 +34,20 @@ namespace Magnum { namespace SceneGraph { namespace Test {
 typedef Object<DualComplexTransformation> Object2D;
 typedef Scene<DualComplexTransformation> Scene2D;
 
-class DualComplexTransformationTest: public TestSuite::Tester {
-    public:
-        explicit DualComplexTransformationTest();
+struct DualComplexTransformationTest: TestSuite::Tester {
+    explicit DualComplexTransformationTest();
 
-        void fromMatrix();
-        void toMatrix();
-        void compose();
-        void inverted();
+    void fromMatrix();
+    void toMatrix();
+    void compose();
+    void inverted();
 
-        void setTransformation();
-        void resetTransformation();
-        void transform();
-        void translate();
-        void rotate();
-        void normalizeRotation();
+    void setTransformation();
+    void resetTransformation();
+    void transform();
+    void translate();
+    void rotate();
+    void normalizeRotation();
 };
 
 DualComplexTransformationTest::DualComplexTransformationTest() {
@@ -136,7 +135,7 @@ void DualComplexTransformationTest::transform() {
     } {
         Object2D o;
         o.setTransformation(DualComplex::rotation(Deg(17.0f)));
-        o.transform(DualComplex::translation({1.0f, -0.3f}), TransformationType::Local);
+        o.transformLocal(DualComplex::translation({1.0f, -0.3f}));
         CORRADE_COMPARE(o.transformationMatrix(), Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f}));
     }
 }
@@ -150,7 +149,7 @@ void DualComplexTransformationTest::translate() {
     } {
         Object2D o;
         o.setTransformation(DualComplex::rotation(Deg(17.0f)));
-        o.translate({1.0f, -0.3f}, TransformationType::Local);
+        o.translateLocal({1.0f, -0.3f});
         CORRADE_COMPARE(o.transformationMatrix(), Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f}));
     }
 }
@@ -164,7 +163,7 @@ void DualComplexTransformationTest::rotate() {
     } {
         Object2D o;
         o.setTransformation(DualComplex::translation({1.0f, -0.3f}));
-        o.rotate(Deg(17.0f), TransformationType::Local);
+        o.rotateLocal(Deg(17.0f));
         CORRADE_COMPARE(o.transformationMatrix(), Matrix3::translation({1.0f, -0.3f})*Matrix3::rotation(Deg(17.0f)));
     }
 }

@@ -1,7 +1,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -25,7 +25,7 @@
 
 # Wrapper for creating given plugin type
 macro(add_plugin plugin_name debug_install_dir release_install_dir metadata_file)
-    if(NOT BUILD_STATIC)
+    if(NOT BUILD_PLUGINS_STATIC)
         corrade_add_plugin(${plugin_name} ${debug_install_dir} ${release_install_dir} ${metadata_file} ${ARGN})
     else()
         corrade_add_static_plugin(${plugin_name} ${release_install_dir} ${metadata_file} ${ARGN})

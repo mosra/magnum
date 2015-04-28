@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -26,7 +26,7 @@
 /** @page opengl OpenGL
 @brief State of OpenGL support, version and extension requirements.
 
-The following table maps OpenGL function names to %Magnum API, useful for
+The following table maps OpenGL function names to Magnum API, useful for
 developers with existing OpenGL background. Note that, as reverse mapping, each
 function documentation also contains list of OpenGL functions used.
 
@@ -43,25 +43,25 @@ The engine requires at least OpenGL 2.1 or OpenGL ES 2.0, but some specific
 functionality has greater requirements. Following are lists of features
 requiring specific OpenGL version. In most cases it is also specified which
 extension is required, so if given hardware supports required extension, it
-doesn't need to have required OpenGL version too (e.g. `ARB_vertex_array_object`
+doesn't need to have required OpenGL version too (e.g. @extension{ARB,vertex_array_object}
 is supported on older Intel GPUs even if they are capable of OpenGL 2.1 only).
 
-- @subpage requires-gl30
-- @subpage requires-gl31
-- @subpage requires-gl32
-- @subpage requires-gl33
-- @subpage requires-gl40
-- @subpage requires-gl41
-- @subpage requires-gl42
-- @subpage requires-gl43
-- @subpage requires-gl44
-- @subpage requires-gl45
-- @subpage requires-extension
-- @subpage requires-gl
-- @subpage requires-gles20
-- @subpage requires-gles30
-- @subpage requires-gles31
-- @subpage requires-es-extension
+-   @subpage requires-gl30
+-   @subpage requires-gl31
+-   @subpage requires-gl32
+-   @subpage requires-gl33
+-   @subpage requires-gl40
+-   @subpage requires-gl41
+-   @subpage requires-gl42
+-   @subpage requires-gl43
+-   @subpage requires-gl44
+-   @subpage requires-gl45
+-   @subpage requires-extension
+-   @subpage requires-gl
+-   @subpage requires-gles20
+-   @subpage requires-gles30
+-   @subpage requires-gles31
+-   @subpage requires-es-extension
 
 @see @ref building, @ref cmake, @ref MAGNUM_TARGET_GLES,
     @ref MAGNUM_TARGET_GLES2

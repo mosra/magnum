@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -36,7 +36,7 @@
 namespace Magnum {
 
 /**
-@brief %Image reference
+@brief Image reference
 
 Adds information about dimensions, color components and component type to some
 data in memory.
@@ -52,29 +52,29 @@ Interchangeable with @ref Image, @ref BufferImage or @ref Trade::ImageData.
 */
 template<UnsignedInt dimensions> class ImageReference: public AbstractImage {
     public:
-        const static UnsignedInt Dimensions = dimensions; /**< @brief %Image dimension count */
+        const static UnsignedInt Dimensions = dimensions; /**< @brief Image dimension count */
 
         /**
          * @brief Constructor
          * @param format            Format of pixel data
          * @param type              Data type of pixel data
-         * @param size              %Image size
-         * @param data              %Image data
+         * @param size              Image size
+         * @param data              Image data
          */
-        constexpr explicit ImageReference(ColorFormat format, ColorType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size, const void* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<const unsigned char*>(data)) {}
+        constexpr explicit ImageReference(ColorFormat format, ColorType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size, const void* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<const char*>(data)) {}
 
         /**
          * @brief Constructor
          * @param format            Format of pixel data
          * @param type              Data type of pixel data
-         * @param size              %Image size
+         * @param size              Image size
          *
          * Data pointer is set to `nullptr`, call @ref setData() to fill the
          * image with data.
          */
         constexpr explicit ImageReference(ColorFormat format, ColorType type, const typename DimensionTraits<Dimensions, Int>::VectorType& size): AbstractImage(format, type), _size(size), _data(nullptr) {}
 
-        /** @brief %Image size */
+        /** @brief Image size */
         constexpr typename DimensionTraits<Dimensions, Int>::VectorType size() const { return _size; }
 
         /** @copydoc Image::dataSize() */
@@ -83,28 +83,28 @@ template<UnsignedInt dimensions> class ImageReference: public AbstractImage {
         }
 
         /** @brief Pointer to raw data */
-        constexpr const unsigned char* data() const { return _data; }
+        constexpr const char* data() const { return _data; }
 
         /** @overload */
-        template<class T = unsigned char> const T* data() const {
+        template<class T = char> const T* data() const {
             return reinterpret_cast<const T*>(_data);
         }
 
         /**
          * @brief Set image data
-         * @param data              %Image data
+         * @param data              Image data
          *
          * Dimensions, color compnents and data type remains the same as
          * passed in constructor. The data are not copied nor deleted on
          * destruction.
          */
         void setData(const void* data) {
-            _data = reinterpret_cast<const unsigned char*>(data);
+            _data = reinterpret_cast<const char*>(data);
         }
 
     private:
         Math::Vector<Dimensions, Int> _size;
-        const unsigned char* _data;
+        const char* _data;
 };
 
 /** @brief One-dimensional image wrapper */

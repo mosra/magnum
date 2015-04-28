@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -62,9 +62,9 @@ instead.
 ## Explicit template specializations
 
 The following specializations are explicitly compiled into @ref SceneGraph
-library. For other specializations (e.g. using @ref Double type) you have to
-use @ref AbstractCamera.hpp implementation file to avoid linker errors. See
-also relevant sections in @ref SceneGraph-Camera2D-explicit-specializations "Camera2D"
+library. For other specializations (e.g. using @ref Magnum::Double "Double"
+type) you have to use @ref AbstractCamera.hpp implementation file to avoid
+linker errors. See also relevant sections in @ref SceneGraph-Camera2D-explicit-specializations "Camera2D"
 and @ref SceneGraph-Camera3D-explicit-specializations "Camera3D" class documentation or
 @ref compilation-speedup-hpp for more information.
 
@@ -89,7 +89,8 @@ template<UnsignedInt dimensions, class T> class AbstractCamera: public AbstractF
          * @brief Camera matrix
          *
          * Camera matrix describes world position relative to the camera and is
-         * applied as first.
+         * applied after object transformation matrix and before projection
+         * matrix.
          */
         typename DimensionTraits<dimensions, T>::MatrixType cameraMatrix() {
             AbstractFeature<dimensions, T>::object().setClean();
@@ -100,7 +101,7 @@ template<UnsignedInt dimensions, class T> class AbstractCamera: public AbstractF
          * @brief Projection matrix
          *
          * Projection matrix handles e.g. perspective distortion and is applied
-         * as last.
+         * as last, after @ref cameraMatrix() and object transformation matrix.
          * @see @ref projectionSize()
          */
         typename DimensionTraits<dimensions, T>::MatrixType projectionMatrix() const { return _projectionMatrix; }
@@ -137,7 +138,7 @@ template<UnsignedInt dimensions, class T> class AbstractCamera: public AbstractF
     protected:
         /**
          * @brief Constructor
-         * @param object        %Object holding the camera
+         * @param object        Object holding the camera
          */
         explicit AbstractCamera(AbstractObject<dimensions, T>& object);
 
@@ -149,9 +150,7 @@ template<UnsignedInt dimensions, class T> class AbstractCamera: public AbstractF
         }
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        void fixAspectRatio() {
-            _projectionMatrix = Implementation::aspectRatioFix<dimensions, T>(_aspectRatioPolicy, {rawProjectionMatrix[0].x(), rawProjectionMatrix[1].y()}, _viewport)*rawProjectionMatrix;
-        }
+        void fixAspectRatio();
 
         typename DimensionTraits<dimensions, T>::MatrixType rawProjectionMatrix;
         AspectRatioPolicy _aspectRatioPolicy;
@@ -168,7 +167,7 @@ template<UnsignedInt dimensions, class T> class AbstractCamera: public AbstractF
 /**
 @brief Base camera for two-dimensional scenes
 
-Convenience alternative to <tt>%AbstractCamera<2, T></tt>. See
+Convenience alternative to `AbstractCamera<2, T>`. See
 @ref AbstractCamera for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractCamera<2, T></tt> instead.
 @see @ref AbstractCamera2D, @ref AbstractBasicCamera3D
@@ -195,7 +194,7 @@ typedef AbstractCamera<2, Float> AbstractCamera2D;
 /**
 @brief Base camera for three-dimensional scenes
 
-Convenience alternative to <tt>%AbstractCamera<3, T></tt>. See
+Convenience alternative to `AbstractCamera<3, T>`. See
 @ref AbstractCamera for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractCamera<3, T></tt> instead.
 @see @ref AbstractCamera3D, @ref AbstractBasicCamera2D

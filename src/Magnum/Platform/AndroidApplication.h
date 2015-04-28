@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -110,9 +110,9 @@ can be then installed directly on the device or emulator using `adb install`.
 ## General usage
 
 For CMake you need to copy `FindEGL.cmake` and `FindOpenGLES2.cmake` (or
-`FindOpenGLES3.cmake`) from `modules/` directory in %Magnum source to `modules/`
+`FindOpenGLES3.cmake`) from `modules/` directory in Magnum source to `modules/`
 dir in your project (so it is able to find EGL and OpenGL ES libraries).
-Request `%AndroidApplication` component, add
+Request `AndroidApplication` component, add
 `${MAGNUM_ANDROIDAPPLICATION_INCLUDE_DIRS}` to include path and link to
 `${MAGNUM_ANDROIDAPPLICATION_LIBRARIES}`. If no other application is requested,
 you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}` and
@@ -239,7 +239,11 @@ class AndroidApplication {
 
         /** @{ @name Screen handling */
 
-        /** @copydoc Sdl2Application::swapBuffers() */
+        /**
+         * @brief Swap buffers
+         *
+         * Paints currently rendered framebuffer on screen.
+         */
         void swapBuffers();
 
         /** @copydoc Sdl2Application::redraw() */
@@ -319,7 +323,7 @@ class AndroidApplication {
 CORRADE_ENUMSET_OPERATORS(AndroidApplication::Flags)
 
 /**
-@brief %Configuration
+@brief Configuration
 
 Double-buffered RGBA canvas with depth and stencil buffers.
 @see @ref AndroidApplication(), @ref createContext(), @ref tryCreateContext()
@@ -420,7 +424,7 @@ class AndroidApplication::InputEvent {
 @see @ref MouseMoveEvent, @ref mousePressEvent(), @ref mouseReleaseEvent()
 */
 class AndroidApplication::MouseEvent: public InputEvent {
-    friend class AndroidApplication;
+    friend AndroidApplication;
 
     public:
         /**
@@ -492,7 +496,7 @@ class AndroidApplication::MouseEvent: public InputEvent {
 @see @ref MouseEvent, @ref mouseMoveEvent()
 */
 class AndroidApplication::MouseMoveEvent: public InputEvent {
-    friend class AndroidApplication;
+    friend AndroidApplication;
 
     public:
         /**

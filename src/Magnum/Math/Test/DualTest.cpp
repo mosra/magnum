@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -30,24 +30,23 @@
 
 namespace Magnum { namespace Math { namespace Test {
 
-class DualTest: public Corrade::TestSuite::Tester {
-    public:
-        explicit DualTest();
+struct DualTest: Corrade::TestSuite::Tester {
+    explicit DualTest();
 
-        void construct();
-        void constructDefault();
-        void constructCopy();
+    void construct();
+    void constructDefault();
+    void constructCopy();
 
-        void compare();
+    void compare();
 
-        void addSubtract();
-        void negated();
-        void multiplyDivide();
+    void addSubtract();
+    void negated();
+    void multiplyDivide();
 
-        void conjugated();
-        void sqrt();
+    void conjugated();
+    void sqrt();
 
-        void debug();
+    void debug();
 };
 
 typedef Math::Dual<Float> Dual;

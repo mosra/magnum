@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -34,17 +34,16 @@
 
 namespace Magnum { namespace Shapes { namespace Test {
 
-class SphereTest: public TestSuite::Tester {
-    public:
-        SphereTest();
+struct SphereTest: TestSuite::Tester {
+    explicit SphereTest();
 
-        void transformed();
-        void collisionPoint();
-        void collisionPointInverted();
-        void collisionLine();
-        void collisionLineSegment();
-        void collisionSphere();
-        void collisionSphereInverted();
+    void transformed();
+    void collisionPoint();
+    void collisionPointInverted();
+    void collisionLine();
+    void collisionLineSegment();
+    void collisionSphere();
+    void collisionSphereInverted();
 };
 
 SphereTest::SphereTest() {

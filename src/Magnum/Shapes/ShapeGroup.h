@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -44,7 +44,7 @@ See @ref Shape for more information. See @ref shapes for brief introduction.
 @see @ref scenegraph, @ref ShapeGroup2D, @ref ShapeGroup3D
 */
 template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT ShapeGroup: public SceneGraph::FeatureGroup<dimensions, AbstractShape<dimensions>, Float> {
-    friend class AbstractShape<dimensions>;
+    friend AbstractShape<dimensions>;
 
     public:
         /**

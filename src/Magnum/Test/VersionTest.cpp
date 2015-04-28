@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -29,17 +29,18 @@
 
 namespace Magnum { namespace Test {
 
-class VersionTest: public TestSuite::Tester {
-    public:
-        explicit VersionTest();
+struct VersionTest: TestSuite::Tester {
+    explicit VersionTest();
 
-        void fromNumber();
-        void toNumber();
+    void fromNumber();
+    void toNumber();
+    void compare();
 };
 
 VersionTest::VersionTest() {
     addTests<VersionTest>({&VersionTest::fromNumber,
-              &VersionTest::toNumber});
+              &VersionTest::toNumber,
+              &VersionTest::compare});
 }
 
 void VersionTest::fromNumber() {
@@ -55,6 +56,14 @@ void VersionTest::toNumber() {
     CORRADE_COMPARE(version(Version::GL430), std::make_pair(4, 3));
     #else
     CORRADE_COMPARE(version(Version::GLES300), std::make_pair(3, 0));
+    #endif
+}
+
+void VersionTest::compare() {
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_VERIFY(version(1, 1) < Version::GL210);
+    #else
+    CORRADE_VERIFY(version(1, 1) < Version::GLES200);
     #endif
 }
 

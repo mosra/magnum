@@ -1,8 +1,8 @@
 # Author: mosra <mosra@centrum.cz>
 pkgname=magnum-git
-pkgver=20140427
+pkgver=snapshot.2014.06.r380.gd0a85ee
 pkgrel=1
-pkgdesc="C++11 and OpenGL 2D/3D graphics engine (Git version)"
+pkgdesc="C++11/C++14 and OpenGL 2D/3D graphics engine (Git version)"
 arch=('i686' 'x86_64')
 url="http://mosra.cz/blog/magnum.php"
 license=('MIT')
@@ -10,33 +10,19 @@ depends=('corrade-git' 'openal' 'sdl2')
 makedepends=('cmake' 'git')
 provides=('magnum')
 conflicts=('magnum')
-options=('staticlibs')
-
-_gitroot="git://github.com/mosra/magnum.git"
-_gitname="magnum"
+source=("git+git://github.com/mosra/magnum.git")
+sha1sums=('SKIP')
 
 pkgver() {
-    date +%Y%m%d
+    cd "$srcdir/${pkgname%-git}"
+    git describe --long | sed -r 's/([^-]*-g)/r\1/;s/-/./g'
 }
 
 build() {
-    cd "$srcdir"
-    msg "Connecting to Git server..."
-
-    if [ -d $_gitname ] ; then
-        cd $_gitname && git pull origin
-        msg "The local files are updated."
-    else
-        git clone $_gitroot $_gitname
-    fi
-
-    msg "Git checkout done."
-    msg "Starting make..."
-
     mkdir -p "$srcdir/build"
     cd "$srcdir/build"
 
-    cmake ../$_gitname \
+    cmake "$srcdir/${pkgname%-git}" \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DWITH_AUDIO=ON \

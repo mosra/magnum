@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -152,7 +152,7 @@ void distanceField(Texture2D& input, Texture2D& output, const Range2Di& rectangl
 
     Framebuffer framebuffer(rectangle);
     framebuffer.attachTexture(Framebuffer::ColorAttachment(0), output, 0);
-    framebuffer.bind(FramebufferTarget::Draw);
+    framebuffer.bind();
     framebuffer.clear(FramebufferClear::Color);
 
     const Framebuffer::Status status = framebuffer.checkStatus(FramebufferTarget::Draw);

@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -32,91 +32,97 @@
 #include "Magnum/Image.h"
 #include "Magnum/TextureArray.h"
 #include "Magnum/TextureFormat.h"
+#include "Magnum/Math/Range.h"
 #include "Magnum/Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Test {
 
-class TextureArrayGLTest: public AbstractOpenGLTester {
-    public:
-        explicit TextureArrayGLTest();
+struct TextureArrayGLTest: AbstractOpenGLTester {
+    explicit TextureArrayGLTest();
 
-        #ifndef MAGNUM_TARGET_GLES
-        void construct1D();
-        #endif
-        void construct2D();
+    #ifndef MAGNUM_TARGET_GLES
+    void construct1D();
+    #endif
+    void construct2D();
 
-        #ifndef MAGNUM_TARGET_GLES
-        void bind1D();
-        #endif
-        void bind2D();
+    #ifndef MAGNUM_TARGET_GLES
+    void bind1D();
+    #endif
+    void bind2D();
 
-        #ifndef MAGNUM_TARGET_GLES
-        void sampling1D();
-        #endif
-        void sampling2D();
+    #ifndef MAGNUM_TARGET_GLES
+    void sampling1D();
+    #endif
+    void sampling2D();
 
-        #ifndef MAGNUM_TARGET_GLES
-        void samplingSRGBDecode1D();
-        #endif
-        void samplingSRGBDecode2D();
+    #ifndef MAGNUM_TARGET_GLES
+    void samplingSRGBDecode1D();
+    #endif
+    void samplingSRGBDecode2D();
 
-        #ifndef MAGNUM_TARGET_GLES2
-        #ifndef MAGNUM_TARGET_GLES
-        void samplingSwizzle1D();
-        #endif
-        void samplingSwizzle2D();
-        #else
-        void samplingMaxLevel2D();
-        void samplingCompare2D();
-        #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_GLES
+    void samplingSwizzle1D();
+    #endif
+    void samplingSwizzle2D();
+    #else
+    void samplingMaxLevel2D();
+    void samplingCompare2D();
+    #endif
 
-        #ifndef MAGNUM_TARGET_GLES
-        void samplingBorderInteger1D();
-        void samplingBorderInteger2D();
-        void samplingDepthStencilMode1D();
-        #endif
-        #ifndef MAGNUM_TARGET_GLES2
-        void samplingDepthStencilMode2D();
-        #endif
-        #ifdef MAGNUM_TARGET_GLES
-        void samplingBorder2D();
-        #endif
+    #ifndef MAGNUM_TARGET_GLES
+    void samplingBorderInteger1D();
+    void samplingBorderInteger2D();
+    void samplingDepthStencilMode1D();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    void samplingDepthStencilMode2D();
+    #endif
+    #ifdef MAGNUM_TARGET_GLES
+    void samplingBorder2D();
+    #endif
 
-        #ifndef MAGNUM_TARGET_GLES
-        void storage1D();
-        #endif
-        void storage2D();
+    #ifndef MAGNUM_TARGET_GLES
+    void storage1D();
+    #endif
+    void storage2D();
 
-        #ifndef MAGNUM_TARGET_GLES
-        void image1D();
-        void image1DBuffer();
-        #endif
-        #ifndef MAGNUM_TARGET_GLES2
-        void image2D();
-        void image2DBuffer();
-        #endif
+    #ifndef MAGNUM_TARGET_GLES
+    void image1D();
+    void image1DBuffer();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    void image2D();
+    void image2DBuffer();
+    #endif
 
-        #ifndef MAGNUM_TARGET_GLES
-        void subImage1D();
-        void subImage1DBuffer();
-        #endif
-        void subImage2D();
-        void subImage2DBuffer();
+    #ifndef MAGNUM_TARGET_GLES
+    void subImage1D();
+    void subImage1DBuffer();
+    void subImage1DQuery();
+    void subImage1DQueryBuffer();
+    #endif
+    void subImage2D();
+    void subImage2DBuffer();
+    #ifndef MAGNUM_TARGET_GLES
+    void subImage2DQuery();
+    void subImage2DQueryBuffer();
+    #endif
 
-        #ifndef MAGNUM_TARGET_GLES
-        void generateMipmap1D();
-        #endif
-        void generateMipmap2D();
+    #ifndef MAGNUM_TARGET_GLES
+    void generateMipmap1D();
+    #endif
+    void generateMipmap2D();
 
-        #ifndef MAGNUM_TARGET_GLES
-        void invalidateImage1D();
-        #endif
-        void invalidateImage2D();
+    #ifndef MAGNUM_TARGET_GLES
+    void invalidateImage1D();
+    #endif
+    void invalidateImage2D();
 
-        #ifndef MAGNUM_TARGET_GLES
-        void invalidateSubImage1D();
-        #endif
-        void invalidateSubImage2D();
+    #ifndef MAGNUM_TARGET_GLES
+    void invalidateSubImage1D();
+    #endif
+    void invalidateSubImage2D();
 };
 
 TextureArrayGLTest::TextureArrayGLTest() {
@@ -174,9 +180,15 @@ TextureArrayGLTest::TextureArrayGLTest() {
         #ifndef MAGNUM_TARGET_GLES
         &TextureArrayGLTest::subImage1D,
         &TextureArrayGLTest::subImage1DBuffer,
+        &TextureArrayGLTest::subImage1DQuery,
+        &TextureArrayGLTest::subImage1DQueryBuffer,
         #endif
         &TextureArrayGLTest::subImage2D,
         &TextureArrayGLTest::subImage2DBuffer,
+        #ifndef MAGNUM_TARGET_GLES
+        &TextureArrayGLTest::subImage2DQuery,
+        &TextureArrayGLTest::subImage2DQueryBuffer,
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES
         &TextureArrayGLTest::generateMipmap1D,
@@ -535,56 +547,64 @@ void TextureArrayGLTest::storage2D() {
     #endif
 }
 
+namespace {
+    constexpr UnsignedByte Data1D[] = { 0x00, 0x01, 0x02, 0x03,
+                                        0x04, 0x05, 0x06, 0x07,
+                                        0x08, 0x09, 0x0a, 0x0b,
+                                        0x0c, 0x0d, 0x0e, 0x0f };
+}
+
 #ifndef MAGNUM_TARGET_GLES
 void TextureArrayGLTest::image1D() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_array>())
         CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
 
-    constexpr UnsignedByte data[] = { 0x00, 0x01, 0x02, 0x03,
-                                      0x04, 0x05, 0x06, 0x07,
-                                      0x08, 0x09, 0x0a, 0x0b,
-                                      0x0c, 0x0d, 0x0e, 0x0f };
     Texture1DArray texture;
     texture.setImage(0, TextureFormat::RGBA8,
-        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), data));
+        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), Data1D));
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    Image2D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    texture.image(0, image);
+    Image2D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(2));
-    CORRADE_COMPARE_AS(std::vector<UnsignedByte>(image.data(), image.data()+image.pixelSize()*image.size().product()),
-       std::vector<UnsignedByte>(data, data + 16), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(
+        Containers::ArrayReference<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()),
+        Containers::ArrayReference<const UnsignedByte>{Data1D}, TestSuite::Compare::Container);
 }
 
 void TextureArrayGLTest::image1DBuffer() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_array>())
         CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
 
-    constexpr UnsignedByte data[] = { 0x00, 0x01, 0x02, 0x03,
-                                      0x04, 0x05, 0x06, 0x07,
-                                      0x08, 0x09, 0x0a, 0x0b,
-                                      0x0c, 0x0d, 0x0e, 0x0f };
     Texture1DArray texture;
     texture.setImage(0, TextureFormat::RGBA8,
-        BufferImage2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), data, BufferUsage::StaticDraw));
+        BufferImage2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), Data1D, BufferUsage::StaticDraw));
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    BufferImage2D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    texture.image(0, image, BufferUsage::StaticRead);
+    BufferImage2D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(2));
-    CORRADE_COMPARE_AS(std::vector<UnsignedByte>(imageData.begin(), imageData.end()),
-        std::vector<UnsignedByte>(data, data + 16), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(imageData, Containers::ArrayReference<const UnsignedByte>{Data1D}, TestSuite::Compare::Container);
 }
 #endif
+
+namespace {
+    constexpr UnsignedByte Data2D[] = { 0x00, 0x01, 0x02, 0x03,
+                                        0x04, 0x05, 0x06, 0x07,
+                                        0x08, 0x09, 0x0a, 0x0b,
+                                        0x0c, 0x0d, 0x0e, 0x0f,
+                                        0x10, 0x11, 0x12, 0x13,
+                                        0x14, 0x15, 0x16, 0x17,
+                                        0x18, 0x19, 0x1a, 0x1b,
+                                        0x1c, 0x1d, 0x1e, 0x1f };
+}
 
 void TextureArrayGLTest::image2D() {
     #ifndef MAGNUM_TARGET_GLES
@@ -592,30 +612,22 @@ void TextureArrayGLTest::image2D() {
         CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
     #endif
 
-    constexpr UnsignedByte data[] = { 0x00, 0x01, 0x02, 0x03,
-                                      0x04, 0x05, 0x06, 0x07,
-                                      0x08, 0x09, 0x0a, 0x0b,
-                                      0x0c, 0x0d, 0x0e, 0x0f,
-                                      0x10, 0x11, 0x12, 0x13,
-                                      0x14, 0x15, 0x16, 0x17,
-                                      0x18, 0x19, 0x1a, 0x1b,
-                                      0x1c, 0x1d, 0x1e, 0x1f };
     Texture2DArray texture;
     texture.setImage(0, TextureFormat::RGBA8,
-        ImageReference3D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i(2), data));
+        ImageReference3D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i(2), Data2D));
 
     MAGNUM_VERIFY_NO_ERROR();
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
-    Image3D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    texture.image(0, image);
+    Image3D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i(2));
-    CORRADE_COMPARE_AS(std::vector<UnsignedByte>(image.data(), image.data()+image.pixelSize()*image.size().product()),
-       std::vector<UnsignedByte>(data, data + 32), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(
+        Containers::ArrayReference<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()),
+        Containers::ArrayReference<const UnsignedByte>{Data2D}, TestSuite::Compare::Container);
     #endif
 }
 
@@ -625,32 +637,36 @@ void TextureArrayGLTest::image2DBuffer() {
         CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
     #endif
 
-    constexpr UnsignedByte data[] = { 0x00, 0x01, 0x02, 0x03,
-                                      0x04, 0x05, 0x06, 0x07,
-                                      0x08, 0x09, 0x0a, 0x0b,
-                                      0x0c, 0x0d, 0x0e, 0x0f,
-                                      0x10, 0x11, 0x12, 0x13,
-                                      0x14, 0x15, 0x16, 0x17,
-                                      0x18, 0x19, 0x1a, 0x1b,
-                                      0x1c, 0x1d, 0x1e, 0x1f };
     Texture2DArray texture;
     texture.setImage(0, TextureFormat::RGBA8,
-        BufferImage3D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i(2), data, BufferUsage::StaticDraw));
+        BufferImage3D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i(2), Data2D, BufferUsage::StaticDraw));
 
     MAGNUM_VERIFY_NO_ERROR();
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
-    BufferImage3D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    texture.image(0, image, BufferUsage::StaticRead);
+    BufferImage3D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i(2));
-    CORRADE_COMPARE_AS(std::vector<UnsignedByte>(imageData.begin(), imageData.end()),
-        std::vector<UnsignedByte>(data, data + 32), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(imageData, Containers::ArrayReference<const UnsignedByte>{Data2D}, TestSuite::Compare::Container);
     #endif
+}
+
+namespace {
+    constexpr UnsignedByte Zero1D[4*4*4] = {};
+    constexpr UnsignedByte SubData1D[] = { 0x00, 0x01, 0x02, 0x03,
+                                           0x04, 0x05, 0x06, 0x07,
+                                           0x08, 0x09, 0x0a, 0x0b,
+                                           0x0c, 0x0d, 0x0e, 0x0f };
+    constexpr UnsignedByte SubData1DComplete[] = {
+        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0, 0, 0, 0,
+        0, 0, 0, 0, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0, 0, 0, 0,
+        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0
+    };
 }
 
 #ifndef MAGNUM_TARGET_GLES
@@ -658,98 +674,99 @@ void TextureArrayGLTest::subImage1D() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_array>())
         CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
 
-    constexpr UnsignedByte zero[4*4*4] = {};
-    constexpr UnsignedByte subData[] = { 0x00, 0x01, 0x02, 0x03,
-                                         0x04, 0x05, 0x06, 0x07,
-                                         0x08, 0x09, 0x0a, 0x0b,
-                                         0x0c, 0x0d, 0x0e, 0x0f };
     Texture1DArray texture;
     texture.setImage(0, TextureFormat::RGBA8,
-        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(4), zero));
+        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(4), Zero1D));
     texture.setSubImage(0, Vector2i(1),
-        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), subData));
+        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), SubData1D));
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    Image2D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    texture.image(0, image);
+    Image2D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(4));
-    CORRADE_COMPARE_AS(std::vector<UnsignedByte>(image.data(), image.data()+image.pixelSize()*image.size().product()), (std::vector<UnsignedByte>{
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0, 0, 0, 0,
-        0, 0, 0, 0, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0, 0, 0, 0,
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0
-    }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(
+        Containers::ArrayReference<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()),
+        Containers::ArrayReference<const UnsignedByte>{SubData1DComplete}, TestSuite::Compare::Container);
 }
 
 void TextureArrayGLTest::subImage1DBuffer() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_array>())
         CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
 
-    constexpr UnsignedByte zero[4*4*4] = {};
-    constexpr UnsignedByte subData[] = { 0x00, 0x01, 0x02, 0x03,
-                                         0x04, 0x05, 0x06, 0x07,
-                                         0x08, 0x09, 0x0a, 0x0b,
-                                         0x0c, 0x0d, 0x0e, 0x0f };
     Texture1DArray texture;
     texture.setImage(0, TextureFormat::RGBA8,
-        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(4), zero));
+        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(4), Zero1D));
     texture.setSubImage(0, Vector2i(1),
-        BufferImage2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), subData, BufferUsage::StaticDraw));
+        BufferImage2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), SubData1D, BufferUsage::StaticDraw));
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    BufferImage2D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    texture.image(0, image, BufferUsage::StaticRead);
+    BufferImage2D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(4));
-    CORRADE_COMPARE_AS(std::vector<UnsignedByte>(imageData.begin(), imageData.end()), (std::vector<UnsignedByte>{
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0, 0, 0, 0,
-        0, 0, 0, 0, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0, 0, 0, 0,
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0
-    }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(imageData, Containers::ArrayReference<const UnsignedByte>{SubData1DComplete}, TestSuite::Compare::Container);
+}
+
+void TextureArrayGLTest::subImage1DQuery() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>())
+        CORRADE_SKIP(Extensions::GL::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
+
+    Texture1DArray texture;
+    texture.setStorage(1, TextureFormat::RGBA8, Vector2i{4})
+           .setSubImage(0, {}, ImageReference2D{ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i{4}, SubData1DComplete});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    Image2D image = texture.subImage(0, Range2Di::fromSize(Vector2i{1}, Vector2i{2}), {ColorFormat::RGBA, ColorType::UnsignedByte});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(image.size(), Vector2i{2});
+    CORRADE_COMPARE_AS(
+        Containers::ArrayReference<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()), Containers::ArrayReference<const UnsignedByte>{Data1D}, TestSuite::Compare::Container);
+}
+
+void TextureArrayGLTest::subImage1DQueryBuffer() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>())
+        CORRADE_SKIP(Extensions::GL::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
+
+    Texture1DArray texture;
+    texture.setStorage(1, TextureFormat::RGBA8, Vector2i{4})
+           .setSubImage(0, {}, ImageReference2D{ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i{4}, SubData1DComplete});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    BufferImage2D image = texture.subImage(0, Range2Di::fromSize(Vector2i{1}, Vector2i{2}), {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+    const auto imageData = image.buffer().data<UnsignedByte>();
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(image.size(), Vector2i{2});
+    CORRADE_COMPARE_AS(imageData, Containers::ArrayReference<const UnsignedByte>{Data1D}, TestSuite::Compare::Container);
 }
 #endif
 
-void TextureArrayGLTest::subImage2D() {
-    #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
-    #endif
-
-    constexpr UnsignedByte zero[4*4*4*4] = {};
-    constexpr UnsignedByte subData[] = { 0x00, 0x01, 0x02, 0x03,
-                                         0x04, 0x05, 0x06, 0x07,
-                                         0x08, 0x09, 0x0a, 0x0b,
-                                         0x0c, 0x0d, 0x0e, 0x0f,
-                                         0x10, 0x11, 0x12, 0x13,
-                                         0x14, 0x15, 0x16, 0x17,
-                                         0x18, 0x19, 0x1a, 0x1b,
-                                         0x1c, 0x1d, 0x1e, 0x1f };
-    Texture2DArray texture;
-    texture.setImage(0, TextureFormat::RGBA8,
-        ImageReference3D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i(4), zero));
-    texture.setSubImage(0, Vector3i(1),
-        ImageReference3D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i(2), subData));
-
-    MAGNUM_VERIFY_NO_ERROR();
-
-    /** @todo How to test this on ES? */
-    #ifndef MAGNUM_TARGET_GLES
-    Image3D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    texture.image(0, image);
-
-    MAGNUM_VERIFY_NO_ERROR();
-
-    CORRADE_COMPARE(image.size(), Vector3i(4));
-    CORRADE_COMPARE_AS(std::vector<UnsignedByte>(image.data(), image.data()+image.pixelSize()*image.size().product()), (std::vector<UnsignedByte>{
+namespace {
+    constexpr UnsignedByte Zero2D[4*4*4*4] = {};
+    constexpr UnsignedByte SubData2D[] = { 0x00, 0x01, 0x02, 0x03,
+                                           0x04, 0x05, 0x06, 0x07,
+                                           0x08, 0x09, 0x0a, 0x0b,
+                                           0x0c, 0x0d, 0x0e, 0x0f,
+                                           0x10, 0x11, 0x12, 0x13,
+                                           0x14, 0x15, 0x16, 0x17,
+                                           0x18, 0x19, 0x1a, 0x1b,
+                                           0x1c, 0x1d, 0x1e, 0x1f };
+    constexpr UnsignedByte SubData2DComplete[] = {
         0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
         0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
         0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
@@ -769,7 +786,32 @@ void TextureArrayGLTest::subImage2D() {
         0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
         0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
         0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0
-    }), TestSuite::Compare::Container);
+    };
+}
+
+void TextureArrayGLTest::subImage2D() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    #endif
+
+    Texture2DArray texture;
+    texture.setImage(0, TextureFormat::RGBA8,
+        ImageReference3D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i(4), Zero2D));
+    texture.setSubImage(0, Vector3i(1),
+        ImageReference3D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i(2), SubData2D));
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    /** @todo How to test this on ES? */
+    #ifndef MAGNUM_TARGET_GLES
+    Image3D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(image.size(), Vector3i(4));
+    CORRADE_COMPARE_AS(
+        Containers::ArrayReference<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()), Containers::ArrayReference<const UnsignedByte>{SubData2DComplete}, TestSuite::Compare::Container);
     #endif
 }
 
@@ -779,57 +821,69 @@ void TextureArrayGLTest::subImage2DBuffer() {
         CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
     #endif
 
-    constexpr UnsignedByte zero[4*4*4*4] = {};
-    constexpr UnsignedByte subData[] = { 0x00, 0x01, 0x02, 0x03,
-                                         0x04, 0x05, 0x06, 0x07,
-                                         0x08, 0x09, 0x0a, 0x0b,
-                                         0x0c, 0x0d, 0x0e, 0x0f,
-                                         0x10, 0x11, 0x12, 0x13,
-                                         0x14, 0x15, 0x16, 0x17,
-                                         0x18, 0x19, 0x1a, 0x1b,
-                                         0x1c, 0x1d, 0x1e, 0x1f };
     Texture2DArray texture;
     texture.setImage(0, TextureFormat::RGBA8,
-        ImageReference3D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i(4), zero));
+        ImageReference3D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i(4), Zero2D));
     texture.setSubImage(0, Vector3i(1),
-        BufferImage3D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i(2), subData, BufferUsage::StaticDraw));
+        BufferImage3D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i(2), SubData2D, BufferUsage::StaticDraw));
 
     MAGNUM_VERIFY_NO_ERROR();
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
-    BufferImage3D image(ColorFormat::RGBA, ColorType::UnsignedByte);
-    texture.image(0, image, BufferUsage::StaticRead);
+    BufferImage3D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i(4));
-    CORRADE_COMPARE_AS(std::vector<UnsignedByte>(imageData.begin(), imageData.end()), (std::vector<UnsignedByte>{
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
-
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0, 0, 0, 0,
-        0, 0, 0, 0, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0, 0, 0, 0,
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
-
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0, 0, 0, 0,
-        0, 0, 0, 0, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0, 0, 0, 0,
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
-
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0
-    }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(imageData, Containers::ArrayReference<const UnsignedByte>{SubData2DComplete}, TestSuite::Compare::Container);
     #endif
 }
 
 #ifndef MAGNUM_TARGET_GLES
+void TextureArrayGLTest::subImage2DQuery() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>())
+        CORRADE_SKIP(Extensions::GL::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
+
+    Texture2DArray texture;
+    texture.setStorage(1, TextureFormat::RGBA8, Vector3i{4})
+           .setSubImage(0, {}, ImageReference3D{ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i{4}, SubData2DComplete});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    Image3D image = texture.subImage(0, Range3Di::fromSize(Vector3i{1}, Vector3i{2}), {ColorFormat::RGBA, ColorType::UnsignedByte});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(image.size(), Vector3i{2});
+    CORRADE_COMPARE_AS(
+        Containers::ArrayReference<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()), Containers::ArrayReference<const UnsignedByte>{Data2D}, TestSuite::Compare::Container);
+}
+
+void TextureArrayGLTest::subImage2DQueryBuffer() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>())
+        CORRADE_SKIP(Extensions::GL::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
+
+    Texture2DArray texture;
+    texture.setStorage(1, TextureFormat::RGBA8, Vector3i{4})
+           .setSubImage(0, {}, ImageReference3D{ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i{4}, SubData2DComplete});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    BufferImage3D image = texture.subImage(0, Range3Di::fromSize(Vector3i{1}, Vector3i{2}), {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+    const auto imageData = image.buffer().data<UnsignedByte>();
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(image.size(), Vector3i{2});
+    CORRADE_COMPARE_AS(imageData, Containers::ArrayReference<const UnsignedByte>{Data2D}, TestSuite::Compare::Container);
+}
+
 void TextureArrayGLTest::generateMipmap1D() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
         CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not supported."));

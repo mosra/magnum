@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,13 +23,13 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-namespace Magnum { namespace Platform {
+namespace Magnum {
 /** @page platform Platform support
 @brief Integration into windowing toolkits and creation of windowless contexts.
 
 -   Next page: @ref types
 
-@ref Platform namespace contains classes integrating %Magnum engine into
+@ref Platform namespace contains classes integrating Magnum engine into
 various toolkits, both windowed and windowless. Each class has slightly
 different dependencies and platform requirements, see documentation of
 @ref Platform namespace and particular `*Application` classes for more
@@ -48,14 +48,14 @@ Windowed applications provide a window and keyboard and mouse handling. The
 de-facto standard and most widely used toolkit is SDL2, which is implemented in
 @ref Platform::Sdl2Application. As said above, the usage is similar for all
 toolkits, you must provide one-argument constructor and implement at least
-@ref Sdl2Application::drawEvent() "drawEvent()" function. The class can be then
-used directly in `main()`, but for convenience and portability it's better to
-use @ref MAGNUM_SDL2APPLICATION_MAIN() macro.
+@ref Platform::Sdl2Application::drawEvent() "drawEvent()" function. The class
+can be then used directly in `main()`, but for convenience and portability it's
+better to use @ref MAGNUM_SDL2APPLICATION_MAIN() macro.
 
 To simplify the porting, the library provides `Platform::Application` typedef
 and `MAGNUM_APPLICATION_MAIN()` macro (but only if only one application header
 is included, to avoid ambiguity). Changing the code to use different toolkit is
-then matter of replacing only the <tt>#</tt>`include` statement (and changing
+then matter of replacing only the `#``include` statement (and changing
 one line in CMake build script, as you see later).
 
 Barebone application implementation which will just clear the window to dark
@@ -103,8 +103,8 @@ MAGNUM_APPLICATION_MAIN(MyApplication)
 By default the application doesn't respond to window size changes in any way,
 as the window has fixed size in most cases. To respond to size change for
 example by resizing the default framebuffer, you need to reimplement
-@ref Sdl2Application::viewportEvent() "viewportEvent()" function and pass the
-new size to the framebuffer:
+@ref Platform::Sdl2Application::viewportEvent() "viewportEvent()" function and
+pass the new size to the framebuffer:
 @code
 class MyApplication: public Platform::Application {
     // ...
@@ -125,12 +125,12 @@ void MyApplication::viewportEvent(const Vector2i& size) {
 Windowless applications provide just a context for ofscreen rendering or
 performing tasks on GPU. There is not yet any platform-independent toolkit
 which could handle this in portable way, thus you have to use platform-specific
-ones. %Magnum provides windowless applications for X11-based Unix, OS X and
+ones. Magnum provides windowless applications for X11-based Unix, OS X and
 Windows. To make things simple, as an example we will use only
 @ref Platform::WindowlessGlxApplication, see link for bootstrap application
 below for fully portable example.
 
-You need to implement just @ref WindowlessGlxApplication::exec() "exec()"
+You need to implement just @ref Platform::WindowlessGlxApplication::exec() "exec()"
 function. The class can be then used directly in `main()`, but again, for
 convenience and portability it's better to use
 @ref MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN() macro.
@@ -139,7 +139,7 @@ Similarly as with windowed applications, to simplify the porting, the library
 provides `Platform::WindowlessApplication` typedef and `MAGNUM_WINDOWLESSAPPLICATION_MAIN()`
 macro, but only if just one windowless application header is included. Changing
 the code to use different toolkit is then matter of replacing only the
-<tt>#</tt>`include` statement. Aliases for windowless applications are
+`#``include` statement. Aliases for windowless applications are
 separated from aliases for windowed applications, because projects commonly
 contain both graphics application and command-line tools (for data preparation
 etc.).
@@ -182,8 +182,8 @@ MAGNUM_WINDOWLESSAPPLICATION_MAIN(MyApplication)
 
 @section platform-compilation Compilation with CMake
 
-Barebone compilation consists just of finding %Magnum library with required
-`*Application` component, adding %Magnum's `${MAGNUM_INCLUDE_DIRS}` and
+Barebone compilation consists just of finding Magnum library with required
+`*Application` component, adding Magnum's `${MAGNUM_INCLUDE_DIRS}` and
 application-specific `${MAGNUM_SDL2APPLICATION_INCLUDE_DIRS}` to include path,
 compilation of the executable and linking `${MAGNUM_LIBRARIES}` and
 `${MAGNUM_SDL2APPLICATION_LIBRARIES}` to it.
@@ -194,7 +194,7 @@ and `${MAGNUM_APPLICATION_LIBRARIES}` aliases (or `${MAGNUM_WINDOWLESSAPPLICATIO
 only if only one application (windowless application) component is requested to
 avoid ambiguity. Changing the build script to use different toolkit is then
 matter of replacing only the requested `*Application` component (and one
-<tt>#</tt>`include` line in the actual code, as said above).
+`#``include` line in the actual code, as said above).
 
 @code
 find_package(Magnum REQUIRED Sdl2Application)
@@ -211,8 +211,9 @@ target_link_libraries(myapplication
 
 By default the application is created with some reasonable defaults (e.g.
 window size 800x600 pixels). If you want something else, you can pass
-@ref Sdl2Application::Configuration "Configuration" instance to application
-constructor. Using method chaining it can be done conveniently like this:
+@ref Platform::Sdl2Application::Configuration "Configuration" instance to
+application constructor. Using method chaining it can be done conveniently like
+this:
 @code
 MyApplication::MyApplication(int& argc, char** argv):
     Platform::Application(argc, argv, Configuration()
@@ -225,8 +226,8 @@ MyApplication::MyApplication(int& argc, char** argv):
 
 However, sometimes you would need to configure the application based on some
 configuration file or system introspection. In that case you can pass `nullptr`
-instead of @ref Sdl2Application::Configuration "Configuration" instance and
-then specify it later with @ref Sdl2Application::createContext() "createContext()":
+instead of @ref Platform::Sdl2Application::Configuration "Configuration"
+instance and then specify it later with @ref Platform::Sdl2Application::createContext() "createContext()":
 @code
 MyApplication::MyApplication(int& argc, char** argv): Platform::Application(argc, argv, nullptr) {
     // ...
@@ -239,9 +240,9 @@ MyApplication::MyApplication(int& argc, char** argv): Platform::Application(argc
 }
 @endcode
 
-If the context creation in constructor or @ref Sdl2Application::createContext() "createContext()"
+If the context creation in constructor or @ref Platform::Sdl2Application::createContext() "createContext()"
 fails, the application exits. However, it is also possible to negotiate the
-context using @ref Sdl2Application::tryCreateContext() "tryCreateContext()".
+context using @ref Platform::Sdl2Application::tryCreateContext() "tryCreateContext()".
 The only difference is that this function returns `false` instead of exiting.
 You can for example try enabling MSAA and if the context creation fails, fall
 back to no-AA rendering:
@@ -263,7 +264,7 @@ MyApplication::MyApplication(int& argc, char** argv): Platform::Application(argc
 @section platform-custom Using custom platform toolkits
 
 In case you want to use some not-yet-supported toolkit or you don't want to use
-the application wrappers in @ref Platform namespace, you can initialize %Magnum
+the application wrappers in @ref Platform namespace, you can initialize Magnum
 manually. First create OpenGL context and then create instance of
 @ref Platform::Context class, which will take care of proper initialization and
 feature detection. The instance must be alive for whole application lifetime.
@@ -286,6 +287,9 @@ int main(int argc, char** argv) {
     return 0;
 }
 @endcode
+
+@attention Currently Magnum is limited to single OpenGL context, which must be
+    always set as current.
 
 On majority of platforms the @ref Platform::Context class does GL function
 pointer loading using platform-specific APIs. In that case you also need to
@@ -319,4 +323,4 @@ target_link_libraries(myapplication
 
 -   Next page: @ref types
 */
-}}
+}

@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -59,8 +59,8 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
 
     public:
         typedef T Type;                         /**< @brief Underlying data type */
-        const static std::size_t Cols = cols;   /**< @brief %Matrix column count */
-        const static std::size_t Rows = rows;   /**< @brief %Matrix row count */
+        const static std::size_t Cols = cols;   /**< @brief Matrix column count */
+        const static std::size_t Rows = rows;   /**< @brief Matrix row count */
 
         /**
          * @brief Size of matrix diagonal
@@ -70,7 +70,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         const static std::size_t DiagonalSize = (cols < rows ? cols : rows);
 
         /**
-         * @brief %Matrix from array
+         * @brief Matrix from array
          * @return Reference to the data as if it was matrix, thus doesn't
          *      perform any copying.
          *
@@ -191,7 +191,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         constexpr const T* data() const { return _data[0].data(); } /**< @overload */
 
         /**
-         * @brief %Matrix column
+         * @brief Matrix column
          *
          * Particular elements can be accessed using @ref Vector::operator[](),
          * e.g.:
@@ -206,7 +206,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         constexpr const Vector<rows, T>& operator[](std::size_t col) const { return _data[col]; } /**< @overload */
 
         /**
-         * @brief %Matrix row
+         * @brief Matrix row
          *
          * Consider using @ref transposed() when accessing rows frequently, as
          * this is slower than accessing columns due to the way the matrix is
@@ -425,9 +425,9 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
 
 #ifndef CORRADE_GCC46_COMPATIBILITY
 /**
-@brief %Matrix with 2 columns and 3 rows
+@brief Matrix with 2 columns and 3 rows
 
-Convenience alternative to <tt>%RectangularMatrix<2, 3, T></tt>. See
+Convenience alternative to `RectangularMatrix<2, 3, T>`. See
 @ref RectangularMatrix for more information.
 @note Not available on GCC < 4.7. Use <tt>%RectangularMatrix<2, 3, T></tt>
     instead.
@@ -438,9 +438,9 @@ template<class T> using Matrix2x3 = RectangularMatrix<2, 3, T>;
 #endif
 
 /**
-@brief %Matrix with 3 columns and 2 rows
+@brief Matrix with 3 columns and 2 rows
 
-Convenience alternative to <tt>%RectangularMatrix<3, 2, T></tt>. See
+Convenience alternative to `RectangularMatrix<3, 2, T>`. See
 @ref RectangularMatrix for more information.
 @note Not available on GCC < 4.7. Use <tt>%RectangularMatrix<3, 2, T></tt>
     instead.
@@ -451,9 +451,9 @@ template<class T> using Matrix3x2 = RectangularMatrix<3, 2, T>;
 #endif
 
 /**
-@brief %Matrix with 2 columns and 4 rows
+@brief Matrix with 2 columns and 4 rows
 
-Convenience alternative to <tt>%RectangularMatrix<2, 4, T></tt>. See
+Convenience alternative to `RectangularMatrix<2, 4, T>`. See
 @ref RectangularMatrix for more information.
 @note Not available on GCC < 4.7. Use <tt>%RectangularMatrix<2, 4, T></tt>
     instead.
@@ -464,9 +464,9 @@ template<class T> using Matrix2x4 = RectangularMatrix<2, 4, T>;
 #endif
 
 /**
-@brief %Matrix with 4 columns and 2 rows
+@brief Matrix with 4 columns and 2 rows
 
-Convenience alternative to <tt>%RectangularMatrix<4, 2, T></tt>. See
+Convenience alternative to `RectangularMatrix<4, 2, T>`. See
 @ref RectangularMatrix for more information.
 @note Not available on GCC < 4.7. Use <tt>%RectangularMatrix<4, 2, T></tt>
     instead.
@@ -477,9 +477,9 @@ template<class T> using Matrix4x2 = RectangularMatrix<4, 2, T>;
 #endif
 
 /**
-@brief %Matrix with 3 columns and 4 rows
+@brief Matrix with 3 columns and 4 rows
 
-Convenience alternative to <tt>%RectangularMatrix<3, 4, T></tt>. See
+Convenience alternative to `RectangularMatrix<3, 4, T>`. See
 @ref RectangularMatrix for more information.
 @note Not available on GCC < 4.7. Use <tt>%RectangularMatrix<3, 4, T></tt>
     instead.
@@ -490,9 +490,9 @@ template<class T> using Matrix3x4 = RectangularMatrix<3, 4, T>;
 #endif
 
 /**
-@brief %Matrix with 4 columns and 3 rows
+@brief Matrix with 4 columns and 3 rows
 
-Convenience alternative to <tt>%RectangularMatrix<4, 3, T></tt>. See
+Convenience alternative to `RectangularMatrix<4, 3, T>`. See
 @ref RectangularMatrix for more information.
 @note Not available on GCC < 4.7. Use <tt>%RectangularMatrix<4, 3, T></tt>
     instead.
@@ -666,16 +666,16 @@ extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utilit
 #endif
 
 namespace Implementation {
-    template<std::size_t rows, std::size_t i, class T, std::size_t ...sequence> inline constexpr Vector<rows, T> diagonalMatrixColumn2(Implementation::Sequence<sequence...>, const T& number) {
+    template<std::size_t rows, std::size_t i, class T, std::size_t ...sequence> constexpr Vector<rows, T> diagonalMatrixColumn2(Implementation::Sequence<sequence...>, const T& number) {
         return {(sequence == i ? number : T(0))...};
     }
-    template<std::size_t rows, std::size_t i, class T> inline constexpr Vector<rows, T> diagonalMatrixColumn(const T& number) {
+    template<std::size_t rows, std::size_t i, class T> constexpr Vector<rows, T> diagonalMatrixColumn(const T& number) {
         return diagonalMatrixColumn2<rows, i, T>(typename Implementation::GenerateSequence<rows>::Type(), number);
     }
 }
 
 #ifndef CORRADE_GCC45_COMPATIBILITY
-template<std::size_t cols, std::size_t rows, class T> template<std::size_t ...sequence> inline constexpr RectangularMatrix<cols, rows, T>::RectangularMatrix(Implementation::Sequence<sequence...>, const Vector<DiagonalSize, T>& diagonal): 
+template<std::size_t cols, std::size_t rows, class T> template<std::size_t ...sequence> constexpr RectangularMatrix<cols, rows, T>::RectangularMatrix(Implementation::Sequence<sequence...>, const Vector<DiagonalSize, T>& diagonal):
     #ifndef CORRADE_MSVC2013_COMPATIBILITY
     _data{Implementation::diagonalMatrixColumn<rows, sequence>(sequence < DiagonalSize ? diagonal[sequence] : T{})...} {}
     #else
@@ -726,10 +726,10 @@ template<std::size_t cols, std::size_t rows, class T> inline RectangularMatrix<r
     return out;
 }
 
-template<std::size_t cols, std::size_t rows, class T> inline constexpr auto RectangularMatrix<cols, rows, T>::diagonal() const -> Vector<DiagonalSize, T> { return diagonalInternal(typename Implementation::GenerateSequence<DiagonalSize>::Type()); }
+template<std::size_t cols, std::size_t rows, class T> constexpr auto RectangularMatrix<cols, rows, T>::diagonal() const -> Vector<DiagonalSize, T> { return diagonalInternal(typename Implementation::GenerateSequence<DiagonalSize>::Type()); }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<std::size_t cols, std::size_t rows, class T> template<std::size_t ...sequence> inline constexpr auto RectangularMatrix<cols, rows, T>::diagonalInternal(Implementation::Sequence<sequence...>) const -> Vector<DiagonalSize, T> {
+template<std::size_t cols, std::size_t rows, class T> template<std::size_t ...sequence> constexpr auto RectangularMatrix<cols, rows, T>::diagonalInternal(Implementation::Sequence<sequence...>) const -> Vector<DiagonalSize, T> {
     return {(*this)[sequence][sequence]...};
 }
 #endif

@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -30,16 +30,11 @@
 
 namespace Magnum { namespace MeshTools { namespace Test {
 
-class TipsifyTest: public TestSuite::Tester {
-    public:
-        TipsifyTest();
+struct TipsifyTest: TestSuite::Tester {
+    explicit TipsifyTest();
 
-        void buildAdjacency();
-        void tipsify();
-
-    private:
-        std::vector<UnsignedInt> indices;
-        std::size_t vertexCount;
+    void buildAdjacency();
+    void tipsify();
 };
 
 /*
@@ -57,38 +52,44 @@ class TipsifyTest: public TestSuite::Tester {
 
 */
 
-/* MSVC 2013 can't cope with only {} here */
-TipsifyTest::TipsifyTest(): indices({
-    4, 1, 0,
-    10, 9, 13,
-    6, 3, 2,
-    9, 5, 4,
-    12, 9, 8,
-    11, 7, 6,
+namespace {
+    const std::vector<UnsignedInt> Indices{
+        4, 1, 0,
+        10, 9, 13,
+        6, 3, 2,
+        9, 5, 4,
+        12, 9, 8,
+        11, 7, 6,
 
-    14, 15, 11,
-    2, 1, 5,
-    10, 6, 5,
-    10, 5, 9,
-    13, 14, 10,
-    1, 4, 5,
+        14, 15, 11,
+        2, 1, 5,
+        10, 6, 5,
+        10, 5, 9,
+        13, 14, 10,
+        1, 4, 5,
 
-    7, 3, 6,
-    6, 2, 5,
-    9, 4, 8,
-    6, 10, 11,
-    13, 9, 12,
-    14, 11, 10,
+        7, 3, 6,
+        6, 2, 5,
+        9, 4, 8,
+        6, 10, 11,
+        13, 9, 12,
+        14, 11, 10,
 
-    16, 17, 18
-}), vertexCount(19) {
+        16, 17, 18
+    };
+
+    constexpr std::size_t VertexCount = 19;
+}
+
+TipsifyTest::TipsifyTest() {
     addTests<TipsifyTest>({&TipsifyTest::buildAdjacency,
               &TipsifyTest::tipsify});
 }
 
 void TipsifyTest::buildAdjacency() {
+    std::vector<UnsignedInt> indices = Indices;
     std::vector<UnsignedInt> liveTriangleCount, neighborOffset, neighbors;
-    Implementation::Tipsify(indices, vertexCount).buildAdjacency(liveTriangleCount, neighborOffset, neighbors);
+    Implementation::Tipsify(indices, VertexCount).buildAdjacency(liveTriangleCount, neighborOffset, neighbors);
 
     CORRADE_COMPARE(liveTriangleCount, (std::vector<UnsignedInt>{
         1, 3, 3, 2,
@@ -132,7 +133,8 @@ void TipsifyTest::buildAdjacency() {
 }
 
 void TipsifyTest::tipsify() {
-    MeshTools::tipsify(indices, vertexCount, 3);
+    std::vector<UnsignedInt> indices = Indices;
+    MeshTools::tipsify(indices, VertexCount, 3);
 
     CORRADE_COMPARE(indices, (std::vector<UnsignedInt>{
         4, 1, 0,

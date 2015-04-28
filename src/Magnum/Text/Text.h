@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -36,6 +36,7 @@
 
 namespace Magnum { namespace Text {
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 class AbstractFont;
 class AbstractFontConverter;
 class AbstractLayouter;
@@ -50,10 +51,6 @@ class AbstractRenderer;
 template<UnsignedInt> class Renderer;
 typedef Renderer<2> Renderer2D;
 typedef Renderer<3> Renderer3D;
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-typedef Renderer<2> TextRenderer2D;
-typedef Renderer<3> TextRenderer3D;
 #endif
 
 }}

@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -30,11 +30,10 @@
 
 namespace Magnum { namespace Test {
 
-class DefaultFramebufferTest: public TestSuite::Tester {
-    public:
-        explicit DefaultFramebufferTest();
+struct DefaultFramebufferTest: TestSuite::Tester {
+    explicit DefaultFramebufferTest();
 
-        void debugStatus();
+    void debugStatus();
 };
 
 DefaultFramebufferTest::DefaultFramebufferTest() {

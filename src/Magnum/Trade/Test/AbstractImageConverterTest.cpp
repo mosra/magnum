@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -52,11 +52,8 @@ void AbstractImageConverterTest::exportToFile() {
         private:
             Features doFeatures() const override { return Feature::ConvertData; }
 
-            Containers::Array<unsigned char> doExportToData(const ImageReference2D& image) const override {
-                Containers::Array<unsigned char> out(2);
-                out[0] = static_cast<unsigned char>(image.size().x());
-                out[1] = static_cast<unsigned char>(image.size().y());
-                return out;
+            Containers::Array<char> doExportToData(const ImageReference2D& image) const override {
+                return Containers::Array<char>::from(char(image.size().x()), char(image.size().y()));
             };
     };
 

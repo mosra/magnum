@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -103,7 +103,7 @@ class MAGNUM_AUDIO_EXPORT AbstractImporter: public PluginManager::AbstractPlugin
          * `true` on success, `false` otherwise.
          * @see @ref features(), @ref openFile()
          */
-        bool openData(Containers::ArrayReference<const unsigned char> data);
+        bool openData(Containers::ArrayReference<const char> data);
 
         /**
          * @brief Open file
@@ -126,7 +126,7 @@ class MAGNUM_AUDIO_EXPORT AbstractImporter: public PluginManager::AbstractPlugin
         UnsignedInt frequency() const;
 
         /** @brief Sample data */
-        Containers::Array<unsigned char> data();
+        Containers::Array<char> data();
 
         /*@}*/
 
@@ -142,7 +142,7 @@ class MAGNUM_AUDIO_EXPORT AbstractImporter: public PluginManager::AbstractPlugin
         virtual bool doIsOpened() const = 0;
 
         /** @brief Implementation for @ref openData() */
-        virtual void doOpenData(Containers::ArrayReference<const unsigned char> data);
+        virtual void doOpenData(Containers::ArrayReference<const char> data);
 
         /**
          * @brief Implementation for @ref openFile()
@@ -162,7 +162,7 @@ class MAGNUM_AUDIO_EXPORT AbstractImporter: public PluginManager::AbstractPlugin
         virtual UnsignedInt doFrequency() const = 0;
 
         /** @brief Implementation for @ref data() */
-        virtual Containers::Array<unsigned char> doData() = 0;
+        virtual Containers::Array<char> doData() = 0;
 };
 
 }}

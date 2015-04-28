@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -32,13 +32,12 @@
 
 namespace Magnum { namespace Shapes { namespace Test {
 
-class PlaneTest: public TestSuite::Tester {
-    public:
-        PlaneTest();
+struct PlaneTest: TestSuite::Tester {
+    explicit PlaneTest();
 
-        void transformed();
-        void collisionLine();
-        void collisionLineSegment();
+    void transformed();
+    void collisionLine();
+    void collisionLineSegment();
 };
 
 PlaneTest::PlaneTest() {

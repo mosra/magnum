@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -25,7 +25,7 @@
 
 namespace Magnum {
 /** @page getting-started Getting started
-@brief Get started with %Magnum in matter of minutes.
+@brief Get started with Magnum in matter of minutes.
 
 @tableofcontents
 
@@ -42,7 +42,7 @@ parameter.
 @section getting-started-bootstrap Download bootstrap project
 
 Setting up a new project can be pretty gruesome and nobody likes repeating the
-same process every time. %Magnum provides "bootstrap" project structures for
+same process every time. Magnum provides "bootstrap" project structures for
 many use cases, helping you get up and running in no time.
 
 The [bootstrap repository](https://github.com/mosra/magnum-bootstrap) is
@@ -67,7 +67,7 @@ so the compatibility mode gets properly detected and used.
 
 @section getting-started-review Review project structure
 
-The base project consists of just six files in two subfolders. %Magnum uses
+The base project consists of just six files in two subfolders. Magnum uses
 CMake build system, see @ref cmake for more information.
 
     modules/FindCorrade.cmake
@@ -83,7 +83,7 @@ project-wide `CMakeLists.txt`. It just sets up project name, specifies module
 directory and delegates everything important to `CMakeLists.txt` in `src/`
 subdirectory.
 @code
-cmake_minimum_required(VERSION 2.8.8)
+cmake_minimum_required(VERSION 2.8.9)
 project(MyApplication)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/modules/")
@@ -94,7 +94,7 @@ add_subdirectory(src)
 Directory `modules/` contains CMake modules for finding the needed
 dependencies. Unlike modules for finding e.g. OpenGL, which are part of
 standard CMake installation, these aren't part of it and thus must be
-distributed with the project. These files are just verbatim copied from %Magnum
+distributed with the project. These files are just verbatim copied from Magnum
 repository.
 
 Directory `src/` contains the actual project. To keep things simple, the
@@ -130,7 +130,7 @@ MAGNUM_APPLICATION_MAIN(MyApplication)
 
 The application essentially does nothing, just clears screen framebuffer to
 default (dark gray) color and then does buffer swap to actually display it on
-the screen. `CMakeLists.txt` finds %Magnum, sets up compiler flags, creates the
+the screen. `CMakeLists.txt` finds Magnum, sets up compiler flags, creates the
 executable and links it to all needed libraries:
 @code
 find_package(Magnum REQUIRED Sdl2Application)
@@ -176,7 +176,7 @@ everything is ready to be built.
 
 If CMake isn't able to find the dependencies on Windows, you might want to look
 at @ref building-windows. If CMake complains about `Sdl2Application` missing,
-you forgot to enable `WITH_SDL2APPLICATION` when building %Magnum,
+you forgot to enable `WITH_SDL2APPLICATION` when building Magnum,
 @ref getting-started-download "go back and fix it".
 
 @image html getting-started.png
@@ -196,7 +196,7 @@ First include the needed headers:
 And in the constructor (which is currently empty) change the clear color and
 print something to debug output:
 @code
-Renderer::setClearColor({0.07f, 0.44f, 0.73f});
+Renderer::setClearColor(Color3::fromHSV(216.0_degf, 0.85f, 1.0f));
 
 Debug() << "Hello! This application is running on" << Context::current()->version()
         << "using" << Context::current()->rendererString();
@@ -205,7 +205,7 @@ Debug() << "Hello! This application is running on" << Context::current()->versio
 After rebuilding and starting the application, the clear color changes to
 blueish one and something like this would be printed to the console:
 
-> Hello! This application is running on OpenGL 3.3 using Geforce GT 330M
+> Hello! This application is running on OpenGL 4.5 using GeForce GT 740M
 
 @image html getting-started-blue.png
 @image latex getting-started-blue.png
@@ -220,12 +220,13 @@ experimenting on your own!
 
 @section getting-started-more Additional information
 
-- @subpage building
-- @subpage building-plugins
-- @subpage building-integration
-- @subpage cmake
-- @subpage cmake-plugins
-- @subpage cmake-integration
+-   @subpage building
+-   @subpage building-plugins
+-   @subpage building-integration
+-   @subpage building-examples
+-   @subpage cmake
+-   @subpage cmake-plugins
+-   @subpage cmake-integration
 
 */
 }

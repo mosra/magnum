@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -29,12 +29,11 @@
 
 namespace Magnum { namespace Math { namespace Algorithms { namespace Test {
 
-class GramSchmidtTest: public Corrade::TestSuite::Tester {
-    public:
-        GramSchmidtTest();
+struct GramSchmidtTest: Corrade::TestSuite::Tester {
+    explicit GramSchmidtTest();
 
-        void orthogonalize();
-        void orthonormalize();
+    void orthogonalize();
+    void orthonormalize();
 };
 
 typedef RectangularMatrix<3, 3, Float> Matrix3x3;
@@ -58,9 +57,9 @@ void GramSchmidtTest::orthogonalize() {
     /* (The vectors don't need to unit length) */
 
     /* Verify the vectors are orthogonal */
-    CORRADE_COMPARE(Vector3::dot(orthogonalized[0], orthogonalized[1]), 0.0f);
-    CORRADE_COMPARE(Vector3::dot(orthogonalized[0], orthogonalized[2]), 0.0f);
-    CORRADE_COMPARE(Vector3::dot(orthogonalized[1], orthogonalized[2]), 0.0f);
+    CORRADE_COMPARE(dot(orthogonalized[0], orthogonalized[1]), 0.0f);
+    CORRADE_COMPARE(dot(orthogonalized[0], orthogonalized[2]), 0.0f);
+    CORRADE_COMPARE(dot(orthogonalized[1], orthogonalized[2]), 0.0f);
 
     /* Just to be sure */
     Matrix3x3 expected(Vector3(     3.0f,       5.0f,       1.0f),
@@ -85,9 +84,9 @@ void GramSchmidtTest::orthonormalize() {
     CORRADE_COMPARE(orthonormalized[2].length(), 1.0f);
 
     /* Verify the vectors are orthogonal */
-    CORRADE_COMPARE(Vector3::dot(orthonormalized[0], orthonormalized[1]), 0.0f);
-    CORRADE_COMPARE(Vector3::dot(orthonormalized[0], orthonormalized[2]), 0.0f);
-    CORRADE_COMPARE(Vector3::dot(orthonormalized[1], orthonormalized[2]), 0.0f);
+    CORRADE_COMPARE(dot(orthonormalized[0], orthonormalized[1]), 0.0f);
+    CORRADE_COMPARE(dot(orthonormalized[0], orthonormalized[2]), 0.0f);
+    CORRADE_COMPARE(dot(orthonormalized[1], orthonormalized[2]), 0.0f);
 
     /* Just to be sure */
     Matrix3x3 expected(Vector3( 0.3030458f,  0.5050763f,  0.8081220f),

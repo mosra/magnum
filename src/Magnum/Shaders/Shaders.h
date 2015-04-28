@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -33,6 +33,7 @@
 
 namespace Magnum { namespace Shaders {
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 template<UnsignedInt> class DistanceFieldVector;
 typedef DistanceFieldVector<2> DistanceFieldVector2D;
 typedef DistanceFieldVector<3> DistanceFieldVector3D;
@@ -57,6 +58,7 @@ typedef Vector<3> Vector3D;
 template<UnsignedInt> class VertexColor;
 typedef VertexColor<2> VertexColor2D;
 typedef VertexColor<3> VertexColor3D;
+#endif
 
 }}
 

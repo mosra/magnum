@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -38,7 +38,7 @@
 namespace Magnum {
 
 /**
-@brief %Timeline
+@brief Timeline
 
 Keeps track of time delta between frames and allows FPS limiting. Can be used
 as source for animation speed computations.
@@ -100,8 +100,12 @@ class MAGNUM_EXPORT Timeline {
          * @brief Set minimal frame time
          * @return Reference to self (for method chaining)
          *
-         * Default value is 0.
-         * @see @ref nextFrame()
+         * Default value is `0.0f`. Cannot be used on some platforms where
+         * blocking the main loop is not allowed (such as
+         * @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"). Prefer to use VSync
+         * where possible.
+         * @see @ref nextFrame(),
+         *      @ref Platform::Sdl2Application::setSwapInterval() "Platform::*Application::setSwapInterval()"
          */
         Timeline& setMinimalFrameTime(Float seconds) {
             _minimalFrameTime = seconds;

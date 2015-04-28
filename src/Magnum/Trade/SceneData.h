@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -38,7 +38,7 @@
 namespace Magnum { namespace Trade {
 
 /**
-@brief %Scene data
+@brief Scene data
 */
 class MAGNUM_EXPORT SceneData {
     public:

@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -56,36 +56,38 @@ template<> struct RectangularMatrixConverter<3, 3, float, Mat3> {
 
 namespace Test {
 
-class Matrix3Test: public Corrade::TestSuite::Tester {
-    public:
-        Matrix3Test();
+struct Matrix3Test: Corrade::TestSuite::Tester {
+    explicit Matrix3Test();
 
-        void construct();
-        void constructIdentity();
-        void constructZero();
-        void constructConversion();
-        void constructCopy();
+    void construct();
+    void constructIdentity();
+    void constructZero();
+    void constructConversion();
+    void constructCopy();
 
-        void convert();
+    void convert();
 
-        void isRigidTransformation();
+    void isRigidTransformation();
 
-        void translation();
-        void scaling();
-        void rotation();
-        void reflection();
-        void projection();
-        void fromParts();
-        void rotationScalingPart();
-        void rotationNormalizedPart();
-        void rotationPart();
-        void uniformScalingPart();
-        void vectorParts();
-        void invertedRigid();
-        void transform();
+    void translation();
+    void scaling();
+    void rotation();
+    void reflection();
+    void reflectionIsScaling();
+    void shearingX();
+    void shearingY();
+    void projection();
+    void fromParts();
+    void rotationScalingPart();
+    void rotationNormalizedPart();
+    void rotationPart();
+    void uniformScalingPart();
+    void vectorParts();
+    void invertedRigid();
+    void transform();
 
-        void debug();
-        void configuration();
+    void debug();
+    void configuration();
 };
 
 typedef Math::Deg<Float> Deg;
@@ -110,6 +112,9 @@ Matrix3Test::Matrix3Test() {
               &Matrix3Test::scaling,
               &Matrix3Test::rotation,
               &Matrix3Test::reflection,
+              &Matrix3Test::reflectionIsScaling,
+              &Matrix3Test::shearingX,
+              &Matrix3Test::shearingY,
               &Matrix3Test::projection,
               &Matrix3Test::fromParts,
               &Matrix3Test::rotationScalingPart,
@@ -263,6 +268,26 @@ void Matrix3Test::reflection() {
     CORRADE_COMPARE(actual*actual, Matrix3());
     CORRADE_COMPARE(actual.transformVector(normal), -normal);
     CORRADE_COMPARE(actual, expected);
+}
+
+void Matrix3Test::reflectionIsScaling() {
+    CORRADE_COMPARE(Matrix3::reflection(Vector2::yAxis()), Matrix3::scaling(Vector2::yScale(-1.0f)));
+}
+
+void Matrix3Test::shearingX() {
+    constexpr Matrix3 a = Matrix3::shearingX(3.0f);
+    CORRADE_COMPARE(a, Matrix3({1.0f, 0.0f, 0.0f},
+                               {3.0f, 1.0f, 0.0f},
+                               {0.0f, 0.0f, 1.0f}));
+    CORRADE_COMPARE(a.transformPoint(Vector2(1.0f)), Vector2(4.0f, 1.0f));
+}
+
+void Matrix3Test::shearingY() {
+    constexpr Matrix3 a = Matrix3::shearingY(3.0f);
+    CORRADE_COMPARE(a, Matrix3({1.0f, 3.0f, 0.0f},
+                               {0.0f, 1.0f, 0.0f},
+                               {0.0f, 0.0f, 1.0f}));
+    CORRADE_COMPARE(a.transformPoint(Vector2(1.0f)), Vector2(1.0f, 4.0f));
 }
 
 void Matrix3Test::projection() {

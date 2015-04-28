@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -42,7 +42,7 @@ See @ref Animable for more information.
     @ref AnimableGroup2D, @ref AnimableGroup3D
 */
 template<UnsignedInt dimensions, class T> class AnimableGroup: public FeatureGroup<dimensions, Animable<dimensions, T>, T> {
-    friend class Animable<dimensions, T>;
+    friend Animable<dimensions, T>;
 
     public:
         /**
@@ -74,9 +74,9 @@ template<UnsignedInt dimensions, class T> class AnimableGroup: public FeatureGro
 
 #ifndef CORRADE_GCC46_COMPATIBILITY
 /**
-@brief %Animable group for two-dimensional scenes
+@brief Animable group for two-dimensional scenes
 
-Convenience alternative to <tt>%AnimableGroup<2, T></tt>. See Animable for
+Convenience alternative to `AnimableGroup<2, T>`. See Animable for
 more information.
 @note Not available on GCC < 4.7. Use <tt>%AnimableGroup<2, T></tt> instead.
 @see @ref AnimableGroup2D, @ref BasicAnimableGroup3D
@@ -87,7 +87,7 @@ template<class T> using BasicAnimableGroup2D = AnimableGroup<2, T>;
 #endif
 
 /**
-@brief %Animable group for two-dimensional float scenes
+@brief Animable group for two-dimensional float scenes
 
 @see @ref AnimableGroup3D
 */
@@ -101,9 +101,9 @@ typedef AnimableGroup<2, Float> AnimableGroup2D;
 
 #ifndef CORRADE_GCC46_COMPATIBILITY
 /**
-@brief %Animable group for three-dimensional scenes
+@brief Animable group for three-dimensional scenes
 
-Convenience alternative to <tt>%AnimableGroup<3, T></tt>. See Animable for
+Convenience alternative to `AnimableGroup<3, T>`. See Animable for
 more information.
 @note Not available on GCC < 4.7. Use <tt>%AnimableGroup<3, T></tt> instead.
 @see @ref AnimableGroup3D, @ref BasicAnimableGroup2D
@@ -114,7 +114,7 @@ template<class T> using BasicAnimableGroup3D = AnimableGroup<3, T>;
 #endif
 
 /**
-@brief %Animable group for three-dimensional float scenes
+@brief Animable group for three-dimensional float scenes
 
 @see @ref AnimableGroup2D
 */

@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Struct Magnum::Trade::TgaHeader
+ * @brief Struct @ref Magnum::Trade::TgaHeader
  */
 
 #include "Magnum/Types.h"
@@ -43,12 +43,12 @@ struct TgaHeader {
     UnsignedShort   colorMapStart;  /**< @brief First color map entry */
     UnsignedShort   colorMapLength; /**< @brief Number of colors */
     UnsignedByte    colorMapBpp;    /**< @brief Bits per palette entry */
-    UnsignedShort   beginX;         /**< @brief %Image x origin */
-    UnsignedShort   beginY;         /**< @brief %Image y origin */
-    UnsignedShort   width;          /**< @brief %Image width */
-    UnsignedShort   height;         /**< @brief %Image height */
+    UnsignedShort   beginX;         /**< @brief Image x origin */
+    UnsignedShort   beginY;         /**< @brief Image y origin */
+    UnsignedShort   width;          /**< @brief Image width */
+    UnsignedShort   height;         /**< @brief Image height */
     UnsignedByte    bpp;            /**< @brief Bits per pixel (8, 16, 24, 32) */
-    UnsignedByte    descriptor;     /**< @brief %Image descriptor */
+    UnsignedByte    descriptor;     /**< @brief Image descriptor */
 };
 #pragma pack()
 

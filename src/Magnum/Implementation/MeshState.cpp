@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -137,7 +137,16 @@ MeshState::MeshState(Context& context, std::vector<std::string>& extensions): cu
         drawArraysInstancedImplementation = nullptr;
         drawElementsInstancedImplementation = nullptr;
     }
+    #endif
 
+    #ifndef MAGNUM_TARGET_GLES
+    /* Partial EXT_DSA implementation of vertex attrib divisor */
+    if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
+        if(glVertexArrayVertexAttribDivisorEXT)
+            vertexAttribDivisorImplementation = &Mesh::vertexAttribDivisorImplementationDSAEXT;
+        else vertexAttribDivisorImplementation = &Mesh::vertexAttribDivisorImplementationVAO;
+    } else vertexAttribDivisorImplementation = nullptr;
+    #elif defined(MAGNUM_TARGET_GLES2)
     /* Instanced arrays implementation on ES2 */
     if(context.isExtensionSupported<Extensions::GL::ANGLE::instanced_arrays>()) {
         /* Extension added above */

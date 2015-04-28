@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -60,9 +60,9 @@ enum class AnimationState: UnsignedByte {
 Debug MAGNUM_SCENEGRAPH_EXPORT operator<<(Debug debug, AnimationState value);
 
 /**
-@brief %Animable
+@brief Animable
 
-Adds animation feature to object. Each %Animable is part of some
+Adds animation feature to object. Each Animable is part of some
 @ref AnimableGroup, which takes care of running the animations.
 
 ## Usage
@@ -78,22 +78,25 @@ typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 
 class AnimableObject: public Object3D, SceneGraph::Animable3D {
     public:
-        AnimableObject(Object* parent = nullptr, SceneGraph::DrawableGroup3D* group = nullptr): Object3D(parent), SceneGraph::Animable3D(*this, group) {
+        AnimableObject(Object3D* parent = nullptr, SceneGraph::DrawableGroup3D* group = nullptr): Object3D{parent}, SceneGraph::Animable3D{*this, group} {
             setDuration(10.0f);
             // ...
         }
 
+    private:
         void animationStep(Float time, Float delta) override {
             rotateX(15.0_degf*delta); // rotate at 15 degrees per second
         }
 }
 @endcode
 
-Then add the object to your scene and some animation group. You can also use
-@ref AnimableGroup::add() and @ref AnimableGroup::remove() instead of passing
-the group in the constructor. The animation is initially in stopped state and
-without repeat, see @ref setState(), @ref setRepeated() and
-@ref setRepeatCount() for more information.
+Similarly to @ref Drawable feature, there is no way to just animate all the
+objects in the scene. You need to create animable group and use it to control
+given set of animations. You can also use @ref AnimableGroup::add() and
+@ref AnimableGroup::remove() instead of passing the group in the constructor.
+The animation is initially in stopped state and without repeat, see
+@ref setState(), @ref setRepeated() and @ref setRepeatCount() for more
+information.
 @code
 Scene3D scene;
 SceneGraph::AnimableGroup3D animables;
@@ -120,20 +123,20 @@ void MyApplication::drawEvent() {
 }
 @endcode
 
-## Using animable groups to improve performance
+## Using multiple animable groups to improve performance
 
 @ref AnimableGroup is optimized for case when no animation is running -- it
 just puts itself to rest and waits until some animation changes its state to
 @ref AnimationState::Running again. If you put animations which are not
-pernamently running to separate group, they will not be always traversed when
-calling @ref AnimableGroup::step(), saving precious frame time.
+pernamently running into separate group, they will not be traversed every time
+the @ref AnimableGroup::step() gets called, saving precious frame time.
 
 ## Explicit template specializations
 
 The following specializations are explicitly compiled into @ref SceneGraph
-library. For other specializations (e.g. using @ref Double type) you have to
-use @ref Animable.hpp implementation file to avoid linker errors. See also
-@ref compilation-speedup-hpp for more information.
+library. For other specializations (e.g. using @ref Magnum::Double "Double"
+type) you have to use @ref Animable.hpp implementation file to avoid linker
+errors. See also @ref compilation-speedup-hpp for more information.
 
 -   @ref Animable2D, @ref AnimableGroup2D
 -   @ref Animable3D, @ref AnimableGroup3D
@@ -142,12 +145,12 @@ use @ref Animable.hpp implementation file to avoid linker errors. See also
     @ref Animable2D, @ref Animable3D, @ref AnimableGroup
 */
 template<UnsignedInt dimensions, class T> class Animable: public AbstractGroupedFeature<dimensions, Animable<dimensions, T>, T> {
-    friend class AnimableGroup<dimensions, T>;
+    friend AnimableGroup<dimensions, T>;
 
     public:
         /**
          * @brief Constructor
-         * @param object    %Object this animable belongs to
+         * @param object    Object this animable belongs to
          * @param group     Group this animable belongs to
          *
          * Creates stopped non-repeating animation with infinite duration,
@@ -224,22 +227,6 @@ template<UnsignedInt dimensions, class T> class Animable: public AbstractGrouped
          */
         AnimableGroup<dimensions, T>* animables();
         const AnimableGroup<dimensions, T>* animables() const; /**< @overload */
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @copydoc animables()
-         * @deprecated Use @ref Magnum::SceneGraph::Animable::animables() "animables()"
-         *      instead.
-         */
-        CORRADE_DEPRECATED("use animables() instead") AnimableGroup<dimensions, T>* group() { return animables(); }
-
-        /**
-         * @copydoc animables()
-         * @deprecated Use @ref Magnum::SceneGraph::Animable::animables() "animables()"
-         *      instead.
-         */
-        CORRADE_DEPRECATED("use animables() instead") const AnimableGroup<dimensions, T>* group() const { return animables(); }
-        #endif
 
     protected:
         /**
@@ -338,9 +325,9 @@ template<UnsignedInt dimensions, class T> class Animable: public AbstractGrouped
 
 #ifndef CORRADE_GCC46_COMPATIBILITY
 /**
-@brief %Animable for two-dimensional scenes
+@brief Animable for two-dimensional scenes
 
-Convenience alternative to <tt>%Animable<2, T></tt>. See @ref Animable for more
+Convenience alternative to `Animable<2, T>`. See @ref Animable for more
 information.
 @note Not available on GCC < 4.7. Use <tt>%Animable<2, T></tt> instead.
 @see @ref Animable2D, @ref BasicAnimable3D
@@ -351,7 +338,7 @@ template<class T> using BasicAnimable2D = Animable<2, T>;
 #endif
 
 /**
-@brief %Animable for two-dimensional float scenes
+@brief Animable for two-dimensional float scenes
 
 @see @ref Animable3D
 */
@@ -365,9 +352,9 @@ typedef Animable<2, Float> Animable2D;
 
 #ifndef CORRADE_GCC46_COMPATIBILITY
 /**
-@brief %Animable for three-dimensional scenes
+@brief Animable for three-dimensional scenes
 
-Convenience alternative to <tt>%Animable<3, T></tt>. See @ref Animable for more
+Convenience alternative to `Animable<3, T>`. See @ref Animable for more
 information.
 @note Not available on GCC < 4.7. Use <tt>%Animable<3, T></tt> instead.
 @see @ref Animable3D, @ref BasicAnimable2D
@@ -378,7 +365,7 @@ template<class T> using BasicAnimable3D = Animable<3, T>;
 #endif
 
 /**
-@brief %Animable for three-dimensional float scenes
+@brief Animable for three-dimensional float scenes
 
 @see @ref Animable2D
 */

@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -38,7 +38,7 @@
 namespace Magnum { namespace Shapes {
 
 /**
-@brief %Sphere defined by position and radius
+@brief Sphere defined by position and radius
 
 Unlike other elements the sphere expects uniform scaling. See @ref shapes for
 brief introduction.
@@ -81,22 +81,22 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Sphere {
         /** @brief Set radius */
         void setRadius(Float radius) { _radius = radius; }
 
-        /** @brief %Collision occurence with point */
+        /** @brief Collision occurence with point */
         bool operator%(const Point<dimensions>& other) const;
 
-        /** @brief %Collision with point */
+        /** @brief Collision with point */
         Collision<dimensions> operator/(const Point<dimensions>& other) const;
 
-        /** @brief %Collision occurence with line */
+        /** @brief Collision occurence with line */
         bool operator%(const Line<dimensions>& other) const;
 
-        /** @brief %Collision occurence with line segment */
+        /** @brief Collision occurence with line segment */
         bool operator%(const LineSegment<dimensions>& other) const;
 
-        /** @brief %Collision occurence with sphere */
+        /** @brief Collision occurence with sphere */
         bool operator%(const Sphere<dimensions>& other) const;
 
-        /** @brief %Collision with sphere */
+        /** @brief Collision with sphere */
         Collision<dimensions> operator/(const Sphere<dimensions>& other) const;
 
     private:
@@ -147,16 +147,16 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT InvertedSphere:
         using Sphere<dimensions>::radius;
         using Sphere<dimensions>::setRadius;
 
-        /** @brief %Collision occurence with point */
+        /** @brief Collision occurence with point */
         bool operator%(const Point<dimensions>& other) const;
 
-        /** @brief %Collision with point */
+        /** @brief Collision with point */
         Collision<dimensions> operator/(const Point<dimensions>& other) const;
 
-        /** @brief %Collision occurence with sphere */
+        /** @brief Collision occurence with sphere */
         bool operator%(const Sphere<dimensions>& other) const;
 
-        /** @brief %Collision with sphere */
+        /** @brief Collision with sphere */
         Collision<dimensions> operator/(const Sphere<dimensions>& other) const;
 
     private:

@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -25,15 +25,12 @@
 
 #include "WindowlessWglApplication.h"
 
-#include <windows.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
 
 #include "Magnum/Platform/Context.h"
 
 namespace Magnum { namespace Platform {
-
-/** @todo Delegating constructor when support for GCC 4.6 is dropped */
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 int WindowlessWglApplication::create(LRESULT(CALLBACK windowProcedure)(HWND, UINT, WPARAM, LPARAM)) {
@@ -58,17 +55,17 @@ int WindowlessWglApplication::create(LRESULT(CALLBACK windowProcedure)(HWND, UIN
 }
 #endif
 
-WindowlessWglApplication::WindowlessWglApplication(const Arguments& arguments, const Configuration& configuration): _window(arguments.window), _c(nullptr) {
+WindowlessWglApplication::WindowlessWglApplication(const Arguments& arguments, const Configuration& configuration): _window(arguments.window) {
     createContext(configuration);
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-WindowlessWglApplication::WindowlessWglApplication(const Arguments& arguments): _window(arguments.window), _c(nullptr) {
+WindowlessWglApplication::WindowlessWglApplication(const Arguments& arguments): _window(arguments.window) {
     createContext();
 }
 #endif
 
-WindowlessWglApplication::WindowlessWglApplication(const Arguments& arguments, std::nullptr_t): _window(arguments.window), _c(nullptr) {}
+WindowlessWglApplication::WindowlessWglApplication(const Arguments& arguments, std::nullptr_t): _window(arguments.window) {}
 
 void WindowlessWglApplication::createContext() { createContext({}); }
 
@@ -77,7 +74,7 @@ void WindowlessWglApplication::createContext(const Configuration& configuration)
 }
 
 bool WindowlessWglApplication::tryCreateContext(const Configuration&) {
-    CORRADE_ASSERT(!_c, "Platform::WindowlessWglApplication::tryCreateContext(): context already created", false);
+    CORRADE_ASSERT(!_context, "Platform::WindowlessWglApplication::tryCreateContext(): context already created", false);
 
     /* Get device context */
     _deviceContext = GetDC(_window);
@@ -118,12 +115,12 @@ bool WindowlessWglApplication::tryCreateContext(const Configuration&) {
         return false;
     }
 
-    _c = new Platform::Context;
+    _context.reset(new Platform::Context);
     return true;
 }
 
 WindowlessWglApplication::~WindowlessWglApplication() {
-    delete _c;
+    _context.reset();
 
     wglMakeCurrent(_deviceContext, nullptr);
     wglDeleteContext(_renderingContext);

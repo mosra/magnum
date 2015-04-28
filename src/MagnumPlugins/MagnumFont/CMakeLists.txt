@@ -1,7 +1,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,21 +23,28 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-set(MagnumFont_SOURCES
+set(MagnumFont_SRCS
     MagnumFont.cpp)
 
 set(MagnumFont_HEADERS
     MagnumFont.h)
 
-add_library(MagnumFontObjects OBJECT ${MagnumFont_SOURCES})
-set_target_properties(MagnumFontObjects PROPERTIES COMPILE_FLAGS "${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+# Objects shared between plugin and test library
+add_library(MagnumFontObjects OBJECT ${MagnumFont_SRCS})
+if(NOT BUILD_PLUGINS_STATIC OR BUILD_STATIC_PIC)
+    set_target_properties(MagnumFontObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
 
+# MagnumFont plugin
 add_plugin(MagnumFont ${MAGNUM_PLUGINS_FONT_DEBUG_INSTALL_DIR} ${MAGNUM_PLUGINS_FONT_RELEASE_INSTALL_DIR}
     MagnumFont.conf
     $<TARGET_OBJECTS:MagnumFontObjects>
     pluginRegistration.cpp)
-target_link_libraries(MagnumFont Magnum MagnumText)
+if(BUILD_STATIC_PIC)
+    set_target_properties(MagnumFont PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
 
+target_link_libraries(MagnumFont Magnum MagnumText)
 if(CORRADE_TARGET_WINDOWS)
     target_link_libraries(MagnumFont TgaImporter)
 endif()
@@ -46,17 +53,6 @@ install(FILES ${MagnumFont_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL
 
 if(BUILD_GL_TESTS)
     add_library(MagnumMagnumFontTestLib STATIC $<TARGET_OBJECTS:MagnumFontObjects>)
-    set_target_properties(MagnumMagnumFontTestLib PROPERTIES DEBUG_POSTFIX "-d")
     target_link_libraries(MagnumMagnumFontTestLib Magnum MagnumText MagnumTgaImporterTestLib)
-
-    # On Windows we need to install first and then run the tests to avoid "DLL
-    # not found" hell, thus we need to install this too
-    if(CORRADE_TARGET_WINDOWS AND NOT CMAKE_CROSSCOMPILING)
-        install(TARGETS MagnumMagnumFontTestLib
-            RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
-            LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
-            ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
-    endif()
-
     add_subdirectory(Test)
 endif()

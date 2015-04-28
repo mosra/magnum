@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -27,6 +27,7 @@
 
 #include <Corrade/Utility/Debug.h>
 
+#include "Magnum/AbstractShaderProgram.h"
 #include "Magnum/Buffer.h"
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
@@ -38,7 +39,9 @@
 
 namespace Magnum {
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 Int Mesh::maxVertexAttributes() { return AbstractShaderProgram::maxVertexAttributes(); }
+#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 Long Mesh::maxElementIndex() {
@@ -129,27 +132,28 @@ Mesh::Mesh(Mesh&& other) noexcept: _id(other._id), _created{other._created}, _pr
 }
 
 Mesh& Mesh::operator=(Mesh&& other) noexcept {
-    std::swap(_id, other._id);
-    std::swap(_created, other._created);
-    std::swap(_primitive, other._primitive);
-    std::swap(_count, other._count);
-    std::swap(_baseVertex, other._baseVertex);
-    std::swap(_instanceCount, other._instanceCount);
+    using std::swap;
+    swap(_id, other._id);
+    swap(_created, other._created);
+    swap(_primitive, other._primitive);
+    swap(_count, other._count);
+    swap(_baseVertex, other._baseVertex);
+    swap(_instanceCount, other._instanceCount);
     #ifndef MAGNUM_TARGET_GLES
-    std::swap(_baseInstance, other._baseInstance);
+    swap(_baseInstance, other._baseInstance);
     #endif
     #ifndef MAGNUM_TARGET_GLES2
-    std::swap(_indexStart, other._indexStart);
-    std::swap(_indexEnd, other._indexEnd);
+    swap(_indexStart, other._indexStart);
+    swap(_indexEnd, other._indexEnd);
     #endif
-    std::swap(_indexOffset, other._indexOffset);
-    std::swap(_indexType, other._indexType);
-    std::swap(_indexBuffer, other._indexBuffer);
-    std::swap(_attributes, other._attributes);
+    swap(_indexOffset, other._indexOffset);
+    swap(_indexType, other._indexType);
+    swap(_indexBuffer, other._indexBuffer);
+    swap(_attributes, other._attributes);
     #ifndef MAGNUM_TARGET_GLES2
-    std::swap(_integerAttributes, other._integerAttributes);
+    swap(_integerAttributes, other._integerAttributes);
     #ifndef MAGNUM_TARGET_GLES
-    std::swap(_longAttributes, other._longAttributes);
+    swap(_longAttributes, other._longAttributes);
     #endif
     #endif
 
@@ -205,6 +209,18 @@ Mesh& Mesh::setIndexBuffer(Buffer& buffer, GLintptr offset, IndexType type, Unsi
     #endif
     (this->*Context::current()->state().mesh->bindIndexBufferImplementation)(buffer);
     return *this;
+}
+
+void Mesh::draw(AbstractShaderProgram& shader) {
+    shader.use();
+
+    #ifndef MAGNUM_TARGET_GLES
+    drawInternal(_count, _baseVertex, _instanceCount, _baseInstance, _indexOffset, _indexStart, _indexEnd);
+    #elif !defined(MAGNUM_TARGET_GLES2)
+    drawInternal(_count, _baseVertex, _instanceCount, _indexOffset, _indexStart, _indexEnd);
+    #else
+    drawInternal(_count, _baseVertex, _instanceCount, _indexOffset);
+    #endif
 }
 
 #ifndef MAGNUM_TARGET_GLES
@@ -365,11 +381,11 @@ void Mesh::destroyImplementationVAO() {
     #endif
 }
 
-void Mesh::attributePointerInternal(const Attribute& attribute) {
+void Mesh::attributePointerInternal(const GenericAttribute& attribute) {
     (this->*Context::current()->state().mesh->attributePointerImplementation)(attribute);
 }
 
-void Mesh::attributePointerImplementationDefault(const Attribute& attribute) {
+void Mesh::attributePointerImplementationDefault(const GenericAttribute& attribute) {
     #if defined(CORRADE_TARGET_NACL) || defined(MAGNUM_TARGET_WEBGL)
     CORRADE_ASSERT(attribute.buffer->targetHint() == Buffer::TargetHint::Array,
         "Mesh::addVertexBuffer(): the buffer has unexpected target hint, expected" << Buffer::TargetHint::Array << "but got" << attribute.buffer->targetHint(), );
@@ -378,7 +394,7 @@ void Mesh::attributePointerImplementationDefault(const Attribute& attribute) {
     _attributes.push_back(attribute);
 }
 
-void Mesh::attributePointerImplementationVAO(const Attribute& attribute) {
+void Mesh::attributePointerImplementationVAO(const GenericAttribute& attribute) {
     #if defined(CORRADE_TARGET_NACL) || defined(MAGNUM_TARGET_WEBGL)
     CORRADE_ASSERT(attribute.buffer->targetHint() == Buffer::TargetHint::Array,
         "Mesh::addVertexBuffer(): the buffer has unexpected target hint, expected" << Buffer::TargetHint::Array << "but got" << attribute.buffer->targetHint(), );
@@ -389,15 +405,16 @@ void Mesh::attributePointerImplementationVAO(const Attribute& attribute) {
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Mesh::attributePointerImplementationDSAEXT(const Attribute& attribute) {
+void Mesh::attributePointerImplementationDSAEXT(const GenericAttribute& attribute) {
     _created = true;
     glEnableVertexArrayAttribEXT(_id, attribute.location);
     glVertexArrayVertexAttribOffsetEXT(_id, attribute.buffer->id(), attribute.location, attribute.size, attribute.type, attribute.normalized, attribute.stride, attribute.offset);
-    if(attribute.divisor) glVertexArrayVertexAttribDivisorEXT(_id, attribute.location, attribute.divisor);
+    if(attribute.divisor)
+        (this->*Context::current()->state().mesh->vertexAttribDivisorImplementation)(attribute.location, attribute.divisor);
 }
 #endif
 
-void Mesh::vertexAttribPointer(const Attribute& attribute) {
+void Mesh::vertexAttribPointer(const GenericAttribute& attribute) {
     glEnableVertexAttribArray(attribute.location);
     attribute.buffer->bindInternal(Buffer::TargetHint::Array);
     glVertexAttribPointer(attribute.location, attribute.size, attribute.type, attribute.normalized, attribute.stride, reinterpret_cast<const GLvoid*>(attribute.offset));
@@ -429,7 +446,8 @@ void Mesh::attributePointerImplementationDSAEXT(const IntegerAttribute& attribut
     _created = true;
     glEnableVertexArrayAttribEXT(_id, attribute.location);
     glVertexArrayVertexAttribIOffsetEXT(_id, attribute.buffer->id(), attribute.location, attribute.size, attribute.type, attribute.stride, attribute.offset);
-    if(attribute.divisor) glVertexArrayVertexAttribDivisorEXT(_id, attribute.location, attribute.divisor);
+    if(attribute.divisor)
+        (this->*Context::current()->state().mesh->vertexAttribDivisorImplementation)(attribute.location, attribute.divisor);
 }
 #endif
 
@@ -459,7 +477,8 @@ void Mesh::attributePointerImplementationDSAEXT(const LongAttribute& attribute) 
     _created = true;
     glEnableVertexArrayAttribEXT(_id, attribute.location);
     glVertexArrayVertexAttribLOffsetEXT(_id, attribute.buffer->id(), attribute.location, attribute.size, attribute.type, attribute.stride, attribute.offset);
-    if(attribute.divisor) glVertexArrayVertexAttribDivisorEXT(_id, attribute.location, attribute.divisor);
+    if(attribute.divisor)
+        (this->*Context::current()->state().mesh->vertexAttribDivisorImplementation)(attribute.location, attribute.divisor);
 }
 
 void Mesh::vertexAttribPointer(const LongAttribute& attribute) {
@@ -470,7 +489,15 @@ void Mesh::vertexAttribPointer(const LongAttribute& attribute) {
 }
 #endif
 
-#ifdef MAGNUM_TARGET_GLES2
+#ifndef MAGNUM_TARGET_GLES
+void Mesh::vertexAttribDivisorImplementationVAO(const GLuint index, const GLuint divisor) {
+    bindVAO();
+    glVertexAttribDivisor(index, divisor);
+}
+void Mesh::vertexAttribDivisorImplementationDSAEXT(const GLuint index, const GLuint divisor) {
+    glVertexArrayVertexAttribDivisorEXT(_id, index, divisor);
+}
+#elif defined(MAGNUM_TARGET_GLES2)
 void Mesh::vertexAttribDivisorImplementationANGLE(const GLuint index, const GLuint divisor) {
     #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
     glVertexAttribDivisorANGLE(index, divisor);
@@ -480,7 +507,6 @@ void Mesh::vertexAttribDivisorImplementationANGLE(const GLuint index, const GLui
     CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
-
 void Mesh::vertexAttribDivisorImplementationEXT(const GLuint index, const GLuint divisor) {
     #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
     glVertexAttribDivisorEXT(index, divisor);
@@ -490,7 +516,6 @@ void Mesh::vertexAttribDivisorImplementationEXT(const GLuint index, const GLuint
     CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
-
 void Mesh::vertexAttribDivisorImplementationNV(const GLuint index, const GLuint divisor) {
     #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
     glVertexAttribDivisorNV(index, divisor);

@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -125,10 +125,10 @@ template<class T> inline typename BasicColor3<T>::HSV toHSV(typename std::enable
 }
 
 /* Value for full channel (1.0f for floats, 255 for unsigned byte) */
-template<class T> inline constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type fullChannel() {
+template<class T> constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type fullChannel() {
     return T(1);
 }
-template<class T> inline constexpr typename std::enable_if<std::is_integral<T>::value, T>::type fullChannel() {
+template<class T> constexpr typename std::enable_if<std::is_integral<T>::value, T>::type fullChannel() {
     return std::numeric_limits<T>::max();
 }
 
@@ -161,7 +161,7 @@ template<class T> class BasicColor3: public Math::Vector3<T> {
         /**
          * @brief Red color
          *
-         * Convenience alternative to e.g. `%Color3(red, 0.0f, 0.0f)`. With
+         * Convenience alternative to e.g. `Color3(red, 0.0f, 0.0f)`. With
          * floating-point underlying type equivalent to @ref Vector3::xAxis().
          * @see @ref green(), @ref blue(), @ref cyan()
          */
@@ -177,7 +177,7 @@ template<class T> class BasicColor3: public Math::Vector3<T> {
         /**
          * @brief Green color
          *
-         * Convenience alternative to e.g. `%Color3(0.0f, green, 0.0f)`. With
+         * Convenience alternative to e.g. `Color3(0.0f, green, 0.0f)`. With
          * floating-point underlying type equivalent to @ref Vector3::yAxis().
          * @see @ref red(), @ref blue(), @ref magenta()
          */
@@ -193,7 +193,7 @@ template<class T> class BasicColor3: public Math::Vector3<T> {
         /**
          * @brief Blue color
          *
-         * Convenience alternative to e.g. `%Color3(0.0f, 0.0f, blue)`. With
+         * Convenience alternative to e.g. `Color3(0.0f, 0.0f, blue)`. With
          * floating-point underlying type equivalent to @ref Vector3::zAxis().
          * @see @ref red(), @ref green(), @ref yellow()
          */
@@ -209,7 +209,7 @@ template<class T> class BasicColor3: public Math::Vector3<T> {
         /**
          * @brief Cyan color
          *
-         * Convenience alternative to e.g. `%Color3(red, 1.0f, 1.0f)`. With
+         * Convenience alternative to e.g. `Color3(red, 1.0f, 1.0f)`. With
          * floating-point underlying type equivalent to @ref Vector3::xScale().
          * @see @ref magenta(), @ref yellow(), @ref red()
          */
@@ -220,7 +220,7 @@ template<class T> class BasicColor3: public Math::Vector3<T> {
         /**
          * @brief Magenta color
          *
-         * Convenience alternative to e.g. `%Color3(0.0f, green, 0.0f)`. With
+         * Convenience alternative to e.g. `Color3(0.0f, green, 0.0f)`. With
          * floating-point underlying type equivalent to @ref Vector3::yScale().
          * @see @ref cyan(), @ref yellow(), @ref green()
          */
@@ -231,7 +231,7 @@ template<class T> class BasicColor3: public Math::Vector3<T> {
         /**
          * @brief Yellow color
          *
-         * Convenience alternative to `%Color3(0.0f, 0.0f, yellow)`. With
+         * Convenience alternative to `Color3(0.0f, 0.0f, yellow)`. With
          * floating-point underlying type equivalent to @ref Vector3::zScale().
          * @see @ref cyan(), @ref magenta(), @ref red()
          */
@@ -385,7 +385,7 @@ class BasicColor4: public Math::Vector4<T> {
         /**
          * @brief Red color
          *
-         * Convenience alternative to e.g. `%Color4(red, 0.0f, 0.0f, alpha)`.
+         * Convenience alternative to e.g. `Color4(red, 0.0f, 0.0f, alpha)`.
          * @see @ref green(), @ref blue(), @ref cyan()
          */
         #ifndef CORRADE_MSVC2013_COMPATIBILITY
@@ -400,7 +400,7 @@ class BasicColor4: public Math::Vector4<T> {
         /**
          * @brief Green color
          *
-         * Convenience alternative to e.g. `%Color4(0.0f, green, 0.0f, alpha)`.
+         * Convenience alternative to e.g. `Color4(0.0f, green, 0.0f, alpha)`.
          * @see @ref red(), @ref blue(), @ref magenta()
          */
         #ifndef CORRADE_MSVC2013_COMPATIBILITY
@@ -415,7 +415,7 @@ class BasicColor4: public Math::Vector4<T> {
         /**
          * @brief Blue color
          *
-         * Convenience alternative to e.g. `%Color4(0.0f, 0.0f, blue, alpha)`.
+         * Convenience alternative to e.g. `Color4(0.0f, 0.0f, blue, alpha)`.
          * @see @ref red(), @ref green(), @ref yellow()
          */
         #ifndef CORRADE_MSVC2013_COMPATIBILITY
@@ -430,7 +430,7 @@ class BasicColor4: public Math::Vector4<T> {
         /**
          * @brief Cyan color
          *
-         * Convenience alternative to e.g. `%Color4(red, 1.0f, 1.0f, alpha)`.
+         * Convenience alternative to e.g. `Color4(red, 1.0f, 1.0f, alpha)`.
          * @see @ref magenta(), @ref yellow(), @ref red()
          */
         #ifndef CORRADE_MSVC2013_COMPATIBILITY
@@ -445,7 +445,7 @@ class BasicColor4: public Math::Vector4<T> {
         /**
          * @brief Magenta color
          *
-         * Convenience alternative to e.g. `%Color4(1.0f, green, 1.0f, alpha)`.
+         * Convenience alternative to e.g. `Color4(1.0f, green, 1.0f, alpha)`.
          * @see @ref cyan(), @ref yellow(), @ref green()
          */
         #ifndef CORRADE_MSVC2013_COMPATIBILITY
@@ -460,7 +460,7 @@ class BasicColor4: public Math::Vector4<T> {
         /**
          * @brief Yellow color
          *
-         * Convenience alternative to e.g. `%Color4(1.0f, 1.0f, blue, alpha)`.
+         * Convenience alternative to e.g. `Color4(1.0f, 1.0f, blue, alpha)`.
          * @see @ref cyan(), @ref magenta(), @ref red()
          */
         #ifndef CORRADE_MSVC2013_COMPATIBILITY

@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -107,7 +107,7 @@ class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractPlugin
          * data on success, zero-sized array otherwise.
          * @see @ref features(), @ref exportToImage(), @ref exportToFile()
          */
-        Containers::Array<unsigned char> exportToData(const ImageReference2D& image) const;
+        Containers::Array<char> exportToData(const ImageReference2D& image) const;
 
         /**
          * @brief Export image to file
@@ -129,7 +129,7 @@ class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractPlugin
         virtual Image2D* doExportToImage(const ImageReference2D& image) const;
 
         /** @brief Implementation of @ref exportToData() */
-        virtual Containers::Array<unsigned char> doExportToData(const ImageReference2D& image) const;
+        virtual Containers::Array<char> doExportToData(const ImageReference2D& image) const;
 
         /**
          * @brief Implementation of @ref exportToFile()

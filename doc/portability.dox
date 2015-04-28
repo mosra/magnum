@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -31,7 +31,7 @@ namespace Magnum {
 
 @section portability-target Target-specific code
 
-If %Magnum is compiled with e.g. OpenGL ES 2.0 support, some features present
+If Magnum is compiled with e.g. OpenGL ES 2.0 support, some features present
 in desktop version are not available. It means that some classes, functions
 and enum values are simply not included in headers. It is designed this way to
 make porting easier -- it is better to fail at compile time on e.g. undefined
@@ -60,10 +60,10 @@ also @ref requires-gl, @ref requires-gles20 and @ref requires-gles30.
 
 @section portability-compiler Compiler- and platform-specific code
 
-%Magnum is attempting to be future-proof and as intuitive for users as
+Magnum is attempting to be future-proof and as intuitive for users as
 possible. Many features from C++11 are used to simplify things and make them
 faster and more secure, but on the other hand it requires fairly recent
-compiler with good enough support of the new standard. Currently %Magnum is
+compiler with good enough support of the new standard. Currently Magnum is
 written with GCC 4.8 and Clang 3.1 in mind, but support for some other
 compilers is also available and handled by Corrade library. See @ref Corrade.h
 for more information.
@@ -108,7 +108,7 @@ MAGNUM_ASSERT_EXTENSION_SUPPORTED(GL::ARB::geometry_shader4);
 @endcode
 
 Each class, function or enum value is marked accordingly if it needs specific
-extension or specific OpenGL version. Various classes in %Magnum are taking
+extension or specific OpenGL version. Various classes in Magnum are taking
 advantage of some extensions and enable faster code paths if given extension is
 available, but also have proper fallback when it's not, see for example
 @ref AbstractShaderProgram-performance-optimization "AbstractShaderProgram",
@@ -117,7 +117,7 @@ available, but also have proper fallback when it's not, see for example
 
 @section portability-shaders Writing portable shaders
 
-%Shaders are probably the most painful thing to port. There are many issues to
+Shaders are probably the most painful thing to port. There are many issues to
 address - different shader syntax (`in`/`out` vs. `attribute` and `varying`
 etc.), explicit vs. implicit methods to specify vertex attribute, uniform and
 texture uniform locations, required precision qualifiers in OpenGL ES etc.

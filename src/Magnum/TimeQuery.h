@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -30,6 +30,10 @@
  */
 
 #include "Magnum/AbstractQuery.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#endif
 
 namespace Magnum {
 
@@ -62,8 +66,8 @@ UnsignedInt timeElapsed1 = tmp-q1.result<UnsignedInt>();
 UnsignedInt timeElapsed2 = q3.result<UnsignedInt>()-tmp;
 @endcode
 Using the latter results in fewer OpenGL calls when doing more measures.
-@requires_gl33 %Extension @extension{ARB,timer_query}
-@requires_es_extension %Extension @es_extension{EXT,disjoint_timer_query}
+@requires_gl33 Extension @extension{ARB,timer_query}
+@requires_es_extension Extension @es_extension{EXT,disjoint_timer_query}
 
 @see @ref PrimitiveQuery, @ref SampleQuery
 @todo timestamp with glGet + example usage

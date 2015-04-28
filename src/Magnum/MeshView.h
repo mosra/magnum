@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -36,6 +36,9 @@
 #include "Magnum/OpenGL.h"
 #include "Magnum/visibility.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#endif
 #ifdef CORRADE_MSVC2013_COMPATIBILITY
 #include "Magnum/Mesh.h"
 #endif
@@ -45,11 +48,11 @@ namespace Magnum {
 namespace Implementation { struct MeshState; }
 
 /**
-@brief %Mesh view
+@brief Mesh view
 
 Allows different interpretation of given @ref Mesh data via different vertex or
 index count and offset. It is then possible to reuse one mesh buffer
-configuration for different views. %Mesh primitive, index type, attribute
+configuration for different views. Mesh primitive, index type, attribute
 bindings and attached buffers are reused from original mesh.
 
 The same rules as in @ref Mesh apply, i.e. if the view has non-zero index
@@ -61,7 +64,7 @@ You must ensure that the original mesh remains available for whole view
 lifetime.
 */
 class MAGNUM_EXPORT MeshView {
-    friend struct Implementation::MeshState;
+    friend Implementation::MeshState;
 
     public:
         /**
@@ -125,7 +128,7 @@ class MAGNUM_EXPORT MeshView {
          *
          * Sets number of vertices of which the vertex buffer will be offset
          * when drawing. Default is `0`.
-         * @requires_gl32 %Extension @extension{ARB,draw_elements_base_vertex}
+         * @requires_gl32 Extension @extension{ARB,draw_elements_base_vertex}
          *      for indexed meshes
          * @requires_gl Base vertex cannot be specified for indexed meshes in
          *      OpenGL ES.
@@ -217,8 +220,8 @@ class MAGNUM_EXPORT MeshView {
          * @return Reference to self (for method chaining)
          *
          * Default is `1`.
-         * @requires_gl31 %Extension @extension{ARB,draw_instanced}
-         * @requires_gles30 %Extension @es_extension{ANGLE,instanced_arrays},
+         * @requires_gl31 Extension @extension{ARB,draw_instanced}
+         * @requires_gles30 Extension @es_extension{ANGLE,instanced_arrays},
          *      @es_extension2{EXT,draw_instanced,draw_instanced} or
          *      @es_extension{NV,draw_instanced} in OpenGL ES 2.0.
          */
@@ -236,7 +239,7 @@ class MAGNUM_EXPORT MeshView {
          * @return Reference to self (for method chaining)
          *
          * Default is `0`.
-         * @requires_gl42 %Extension @extension{ARB,base_instance}
+         * @requires_gl42 Extension @extension{ARB,base_instance}
          * @requires_gl Base instance cannot be specified in OpenGL ES.
          */
         MeshView& setBaseInstance(UnsignedInt baseInstance) {

@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -99,7 +99,19 @@ BufferState::BufferState(Context& context, std::vector<std::string>& extensions)
     }
 
     #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
+    if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
+        extensions.push_back(Extensions::GL::ARB::direct_state_access::string());
+
+        copyImplementation = &Buffer::copyImplementationDSA;
+        getParameterImplementation = &Buffer::getParameterImplementationDSA;
+        getSubDataImplementation = &Buffer::getSubDataImplementationDSA;
+        dataImplementation = &Buffer::dataImplementationDSA;
+        subDataImplementation = &Buffer::subDataImplementationDSA;
+        mapImplementation = &Buffer::mapImplementationDSA;
+        mapRangeImplementation = &Buffer::mapRangeImplementationDSA;
+        flushMappedRangeImplementation = &Buffer::flushMappedRangeImplementationDSA;
+        unmapImplementation = &Buffer::unmapImplementationDSA;
+    } else if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
         extensions.push_back(Extensions::GL::EXT::direct_state_access::string());
 
         copyImplementation = &Buffer::copyImplementationDSAEXT;

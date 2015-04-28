@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -38,11 +38,14 @@
 namespace Magnum { namespace Shaders {
 
 /**
-@brief %Mesh visualization shader
+@brief Mesh visualization shader
 
-Uses geometry shader to visualize wireframe. You need to provide @ref Position
-attribute in your triangle mesh and call at least @ref setTransformationProjectionMatrix()
-to be able to render.
+Uses geometry shader to visualize wireframe of 3D meshes. You need to provide
+@ref Position attribute in your triangle mesh and call at least
+@ref setTransformationProjectionMatrix() to be able to render.
+
+@image html shaders-meshvisualizer.png
+@image latex shaders-meshvisualizer.png
 
 ## Wireframe visualization
 
@@ -51,7 +54,7 @@ either using geometry shaders or with help of additional vertex information.
 
 If you have geometry shaders available, you don't need to do anything else.
 
-@requires_gl32 %Extension @extension{ARB,geometry_shader4} for wireframe
+@requires_gl32 Extension @extension{ARB,geometry_shader4} for wireframe
     rendering using geometry shaders.
 
 If you don't have geometry shaders, you need to set @ref Flag::NoGeometryShader
@@ -60,28 +63,112 @@ meshes (see @ref MeshTools::duplicate() for possible solution). Additionaly, if
 you have OpenGL < 3.1 or OpenGL ES 2.0, you need to provide also
 @ref VertexIndex attribute.
 
-@requires_es_extension %Extension @extension{OES,standard_derivatives} for
+@requires_es_extension Extension @extension{OES,standard_derivatives} for
     wireframe rendering.
 
+## Example usage
+
+### Wireframe visualization with geometry shader (desktop GL)
+
+Common mesh setup:
+@code
+struct Vertex {
+    Vector3 position;
+};
+Vertex data[] = { ... };
+
+Buffer vertices;
+vertices.setData(data, BufferUsage::StaticDraw);
+
+Mesh mesh;
+mesh.addVertexBuffer(vertices, 0, Shaders::MeshVisualizer::Position{});
+@endcode
+
+Common rendering setup:
+@code
+Matrix4 transformationMatrix = Matrix4::translation(Vector3::zAxis(-5.0f));
+Matrix4 projectionMatrix = Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.001f, 100.0f);
+
+Shaders::MeshVisualizer shader{Shaders::MeshVisualizer::Wireframe};
+shader.setColor(Color3::fromHSV(216.0_degf, 0.85f, 1.0f))
+    .setWireframeColor(Color3{0.95f})
+    .setViewportSize(defaultFramebuffer.viewport().size())
+    .setTransformationProjectionMatrix(projectionMatrix*transformationMatrix);
+
+mesh.draw(shader);
+@endcode
+
+### Wireframe visualization without geometry shader on older hardware
+
+You need to provide also the @ref VertexIndex attribute. Mesh setup *in
+addition to the above*:
+@code
+constexpr std::size_t vertexCount = std::extent<decltype(data)>::value;
+Float vertexIndex[vertexCount];
+std::iota(vertexIndex, vertexIndex + vertexCount, 0.0f);
+
+Buffer vertexIndices;
+vertexIndices.setData(vertexIndex, BufferUsage::StaticDraw);
+
+mesh.addVertexBuffer(vertexIndices, 0, Shaders::MeshVisualizer::VertexIndex{});
+@endcode
+
+Rendering setup:
+@code
+Matrix4 transformationMatrix, projectionMatrix;
+
+Shaders::MeshVisualizer shader{Shaders::MeshVisualizer::Wireframe|
+                               Shaders::MeshVisualizer::NoGeometryShader};
+shader.setColor(Color3::fromHSV(216.0_degf, 0.85f, 1.0f))
+    .setWireframeColor(Color3{0.95f})
+    .setTransformationProjectionMatrix(projectionMatrix*transformationMatrix);
+
+mesh.draw(shader);
+@endcode
+
+### Wireframe visualization of indexed meshes without geometry shader
+
+The vertices must be converted to non-indexed array. Mesh setup:
+@code
+std::vector<UnsignedInt> indices{ ... };
+std::vector<Vector3> indexedPositions{ ... };
+
+// De-indexing the position array
+Buffer vertices;
+vertices.setData(MeshTools::duplicate(indices, indexedPositions), BufferUsage::StaticDraw);
+
+Mesh mesh;
+mesh.addVertexBuffer(vertices, 0, Shaders::MeshVisualizer::Position{});
+@endcode
+
+Rendering setup the same as above.
+
+@see @ref shaders
 @todo Understand and add support wireframe width/smoothness without GS
 */
 class MAGNUM_SHADERS_EXPORT MeshVisualizer: public AbstractShaderProgram {
     public:
-        typedef Attribute<0, Vector3> Position; /**< @brief Vertex position */
+        /**
+         * @brief Vertex position
+         *
+         * @ref shaders-generic "Generic attribute", @ref Vector3.
+         */
+        typedef Attribute<0, Vector3> Position;
 
         /**
          * @brief Vertex index
          *
-         * Used only in OpenGL < 3.1 and OpenGL ES 2.0 if @ref Flag::Wireframe
-         * is enabled. This attribute specifies index of given vertex in
-         * triangle, i.e. `0` for first, `1` for second, `2` for third. In
-         * OpenGL 3.1, OpenGL ES 3.0 and newer this value is provided by the
-         * shader itself, so the attribute is not needed.
+         * @ref Magnum::Float "Float", used only in OpenGL < 3.1 and OpenGL ES
+         * 2.0 if @ref Flag::Wireframe is enabled. This attribute (modulo 3)
+         * specifies index of given vertex in triangle, i.e. `0` for first, `1`
+         * for second, `2` for third. In OpenGL 3.1, OpenGL ES 3.0 and newer
+         * this value is provided by the shader itself, so the attribute is not
+         * needed.
          */
         typedef Attribute<3, Float> VertexIndex;
 
         /**
-         * @brief %Flag
+         * @brief Flag
          *
          * @see @ref Flags, @ref MeshVisualizer()
          */
@@ -105,12 +192,12 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public AbstractShaderProgram {
             NoGeometryShader = 1 << 1
         };
 
-        /** @brief %Flags */
+        /** @brief Flags */
         typedef Containers::EnumSet<Flag, UnsignedByte> Flags;
 
         /**
          * @brief Constructor
-         * @param flags     %Flags
+         * @param flags     Flags
          */
         explicit MeshVisualizer(Flags flags = Flags());
 

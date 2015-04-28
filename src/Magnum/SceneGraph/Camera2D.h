@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -36,11 +36,11 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief Camera for two-dimensional scenes
 
-See Drawable documentation for introduction. The camera by default displays
-OpenGL unit cube `[(-1, -1, -1); (1, 1, 1)]` and doesn't do any aspect ratio
-correction. Common setup example:
+See @ref Drawable documentation for complete introduction. The camera by
+default displays OpenGL unit cube `[(-1, -1, -1); (1, 1, 1)]` and doesn't do
+any aspect ratio correction. Common setup example:
 @code
-SceneGraph::Camera2D camera(&cameraObject);
+SceneGraph::Camera2D camera{&cameraObject};
 camera.setProjection({4.0f/3.0f, 1.0f})
       .setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend);
 @endcode
@@ -49,9 +49,9 @@ camera.setProjection({4.0f/3.0f, 1.0f})
 ## Explicit template specializations
 
 The following specialization is explicitly compiled into @ref SceneGraph
-library. For other specializations (e.g. using @ref Double type) you have to
-use @ref Camera2D.hpp implementation file to avoid linker errors. See also
-relevant section in @ref SceneGraph-AbstractCamera-explicit-specializations "AbstractCamera"
+library. For other specializations (e.g. using @ref Magnum::Double "Double"
+type) you have to use @ref Camera2D.hpp implementation file to avoid linker
+errors. See also relevant section in @ref SceneGraph-AbstractCamera-explicit-specializations "AbstractCamera"
 class documentation or @ref compilation-speedup-hpp for more information.
 
 -   @ref Camera2D
@@ -63,7 +63,7 @@ template<class T> class BasicCamera2D: public AbstractCamera<2, T> {
     public:
         /**
          * @brief Constructor
-         * @param object    %Object holding this feature
+         * @param object    Object holding this feature
          *
          * Sets orthographic projection to the default OpenGL cube (range @f$ [-1; 1] @f$ in all directions).
          * @see @ref setProjection()

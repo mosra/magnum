@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -29,6 +29,8 @@
  * @brief Class @ref Magnum::SceneGraph::AbstractTransformation, alias @ref Magnum::SceneGraph::AbstractBasicTransformation2D, @ref Magnum::SceneGraph::AbstractBasicTransformation3D, typedef @ref Magnum::SceneGraph::AbstractTransformation2D, @ref Magnum::SceneGraph::AbstractTransformation3D, enum @ref Magnum::SceneGraph::TransformationType
  */
 
+#include <Corrade/Utility/Macros.h>
+
 #include "Magnum/SceneGraph/SceneGraph.h"
 #include "Magnum/SceneGraph/visibility.h"
 
@@ -37,15 +39,16 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief Base for transformations
 
-Provides transformation implementation for @ref Object instances.
+Provides transformation implementation for @ref Object instances. See
+@ref scenegraph-features-transformation for more information.
 
 @anchor SceneGraph-AbstractTransformation-explicit-specializations
 ## Explicit template specializations
 
 The following specializations are explicitly compiled into @ref SceneGraph
-library. For other specializations (e.g. using @ref Double type) you have to
-use @ref Object.hpp implementation file to avoid linker errors. See
-@ref compilation-speedup-hpp for more information.
+library. For other specializations (e.g. using @ref Magnum::Double "Double"
+type) you have to use @ref Object.hpp implementation file to avoid linker
+errors. See @ref compilation-speedup-hpp for more information.
 
 -   @ref AbstractTransformation2D
 -   @ref AbstractTransformation3D
@@ -87,24 +90,26 @@ template<UnsignedInt dimensions, class T> class AbstractTransformation {
 
 template<UnsignedInt dimensions, class T> inline AbstractTransformation<dimensions, T>::~AbstractTransformation() = default;
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 /**
 @brief Transformation type
-
-@todo Get rid of this in favor of separate function for each type (less branching)
+@deprecated Use `*Transformation*::*()` and `*Transformation::*Local*()`
+    overloads instead.
 */
-enum class TransformationType: UnsignedByte {
+enum class CORRADE_DEPRECATED_ENUM("use *() and *Local() overloads instead") TransformationType: UnsignedByte {
     /** Global transformation, applied after all other transformations. */
     Global = 0x00,
 
     /** Local transformation, applied before all other transformations. */
     Local = 0x01
 };
+#endif
 
 #ifndef CORRADE_GCC46_COMPATIBILITY
 /**
 @brief Base transformation for two-dimensional scenes
 
-Convenience alternative to <tt>%AbstractTransformation<2, T></tt>. See
+Convenience alternative to `AbstractTransformation<2, T>`. See
 @ref AbstractTransformation for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractTransformation<2, T></tt>
     instead.
@@ -130,7 +135,7 @@ typedef AbstractTransformation<2, Float> AbstractTransformation2D;
 /**
 @brief Base transformation for three-dimensional scenes
 
-Convenience alternative to <tt>%AbstractTransformation<3, T></tt>. See
+Convenience alternative to `AbstractTransformation<3, T>`. See
 @ref AbstractTransformation for more information.
 @note Not available on GCC < 4.7. Use <tt>%AbstractTransformation<3, T></tt>
     instead.

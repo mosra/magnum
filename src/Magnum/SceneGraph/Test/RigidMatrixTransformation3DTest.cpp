@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -34,22 +34,21 @@ namespace Magnum { namespace SceneGraph { namespace Test {
 typedef Object<RigidMatrixTransformation3D> Object3D;
 typedef Scene<RigidMatrixTransformation3D> Scene3D;
 
-class RigidMatrixTransformation3DTest: public TestSuite::Tester {
-    public:
-        explicit RigidMatrixTransformation3DTest();
+struct RigidMatrixTransformation3DTest: TestSuite::Tester {
+    explicit RigidMatrixTransformation3DTest();
 
-        void fromMatrix();
-        void toMatrix();
-        void compose();
-        void inverted();
+    void fromMatrix();
+    void toMatrix();
+    void compose();
+    void inverted();
 
-        void setTransformation();
-        void resetTransformation();
-        void transform();
-        void translate();
-        void rotate();
-        void reflect();
-        void normalizeRotation();
+    void setTransformation();
+    void resetTransformation();
+    void transform();
+    void translate();
+    void rotate();
+    void reflect();
+    void normalizeRotation();
 };
 
 RigidMatrixTransformation3DTest::RigidMatrixTransformation3DTest() {
@@ -142,7 +141,7 @@ void RigidMatrixTransformation3DTest::transform() {
     } {
         Object3D o;
         o.setTransformation(Matrix4::rotationX(Deg(17.0f)));
-        o.transform(Matrix4::translation({1.0f, -0.3f, 2.3f}), TransformationType::Local);
+        o.transformLocal(Matrix4::translation({1.0f, -0.3f, 2.3f}));
         CORRADE_COMPARE(o.transformationMatrix(), Matrix4::rotationX(Deg(17.0f))*Matrix4::translation({1.0f, -0.3f, 2.3f}));
     }
 }
@@ -156,7 +155,7 @@ void RigidMatrixTransformation3DTest::translate() {
     } {
         Object3D o;
         o.setTransformation(Matrix4::rotationX(Deg(17.0f)));
-        o.translate({1.0f, -0.3f, 2.3f}, TransformationType::Local);
+        o.translateLocal({1.0f, -0.3f, 2.3f});
         CORRADE_COMPARE(o.transformationMatrix(), Matrix4::rotationX(Deg(17.0f))*Matrix4::translation({1.0f, -0.3f, 2.3f}));
     }
 }
@@ -178,10 +177,10 @@ void RigidMatrixTransformation3DTest::rotate() {
     } {
         Object3D o;
         o.setTransformation(Matrix4::translation({1.0f, -0.3f, 2.3f}));
-        o.rotateX(Deg(17.0f), TransformationType::Local)
-            .rotateY(Deg(25.0f), TransformationType::Local)
-            .rotateZ(Deg(-23.0f), TransformationType::Local)
-            .rotate(Deg(96.0f), Vector3(1.0f/Constants::sqrt3()), TransformationType::Local);
+        o.rotateXLocal(Deg(17.0f))
+            .rotateYLocal(Deg(25.0f))
+            .rotateZLocal(Deg(-23.0f))
+            .rotateLocal(Deg(96.0f), Vector3(1.0f/Constants::sqrt3()));
         CORRADE_COMPARE(o.transformationMatrix(),
             Matrix4::translation({1.0f, -0.3f, 2.3f})*
             Matrix4::rotationX(Deg(17.0f))*
@@ -200,7 +199,7 @@ void RigidMatrixTransformation3DTest::reflect() {
     } {
         Object3D o;
         o.setTransformation(Matrix4::rotationX(Deg(17.0f)));
-        o.reflect(Vector3(-1.0f/Constants::sqrt3()), TransformationType::Local);
+        o.reflectLocal(Vector3(-1.0f/Constants::sqrt3()));
         CORRADE_COMPARE(o.transformationMatrix(), Matrix4::rotationX(Deg(17.0f))*Matrix4::reflection(Vector3(-1.0f/Constants::sqrt3())));
     }
 }

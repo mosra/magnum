@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -148,7 +148,7 @@ template<class T> class Deg: public Unit<Deg, T> {
 
 #if !defined(CORRADE_GCC46_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
 #ifndef MAGNUM_TARGET_GLES
-/** @relates Deg
+/** @relatesalso Deg
 @brief Double-precision degree value literal
 
 Example usage:
@@ -156,15 +156,14 @@ Example usage:
 Double cosine = Math::cos(60.0_deg);  // cosine = 0.5
 Double cosine = Math::cos(1.047_rad); // cosine = 0.5
 @endcode
-@see Magnum::operator""_deg(), operator""_degf(), operator""_rad()
+@see @link operator""_degf() @endlink, @link operator""_rad() @endlink
 @note Not available on GCC < 4.7 and MSVC 2013. Use @ref Deg::Deg(T) instead.
 @requires_gl Only single-precision types are available in OpenGL ES.
-@todoc Make references explicit when Doxygen can link to operator""
 */
 constexpr Deg<Double> operator "" _deg(long double value) { return Deg<Double>(value); }
 #endif
 
-/** @relates Deg
+/** @relatesalso Deg
 @brief Single-precision degree value literal
 
 Example usage:
@@ -172,9 +171,8 @@ Example usage:
 Float tangent = Math::tan(60.0_degf);  // tangent = 1.732f
 Float tangent = Math::tan(1.047_radf); // tangent = 1.732f
 @endcode
-@see Magnum::operator""_degf(), operator""_deg(), operator""_radf()
+@see @link operator""_deg() @endlink, @link operator""_radf() @endlink
 @note Not available on GCC < 4.7 and MSVC 2013. Use @ref Deg::Deg(T) instead.
-@todoc Make references explicit when Doxygen can link to operator""
 */
 constexpr Deg<Float> operator "" _degf(long double value) { return Deg<Float>(value); }
 #endif
@@ -212,23 +210,22 @@ template<class T> class Rad: public Unit<Rad, T> {
 
 #if !defined(CORRADE_GCC46_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
 #ifndef MAGNUM_TARGET_GLES
-/** @relates Rad
+/** @relatesalso Rad
 @brief Double-precision radian value literal
 
-See operator""_rad() for more information.
-@see Magnum::operator""_rad(), operator""_radf(), operator""_deg()
+See @link operator""_rad() @endlink for more information.
+@see @link operator""_radf() @endlink, @link operator""_deg() @endlink
 @note Not available on GCC < 4.7 and MSVC 2013. Use @ref Rad::Rad(T) instead.
 @requires_gl Only single-precision types are available in OpenGL ES.
-@todoc Make references explicit when Doxygen can link to operator""
 */
 constexpr Rad<Double> operator "" _rad(long double value) { return Rad<Double>(value); }
 #endif
 
-/** @relates Rad
+/** @relatesalso Rad
 @brief Single-precision radian value literal
 
-See operator""_degf() for more information.
-@see Magnum::operator""_radf(), operator""_rad(), operator""_degf()
+See @link operator""_degf() @endlink for more information.
+@see @link operator""_rad() @endlink, @link operator""_degf() @endlink
 @note Not available on GCC < 4.7 and MSVC 2013. Use @ref Rad::Rad(T) instead.
 @todoc Make references explicit when Doxygen can link to operator""
 */

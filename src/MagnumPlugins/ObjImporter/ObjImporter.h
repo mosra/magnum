@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -44,10 +44,10 @@ Supported features:
 Polygons (quads etc.), automatic normal generation and material properties are
 currently not supported.
 
-This plugin is built if `WITH_OBJIMPORTER` is enabled when building %Magnum. To
-use dynamic plugin, you need to load `%ObjImporter` plugin from
+This plugin is built if `WITH_OBJIMPORTER` is enabled when building Magnum. To
+use dynamic plugin, you need to load `ObjImporter` plugin from
 `MAGNUM_PLUGINS_IMPORTER_DIR`. To use static plugin or use this as a dependency
-of another plugin, you need to request `%ObjImporter` component of `%Magnum`
+of another plugin, you need to request `ObjImporter` component of `Magnum`
 package in CMake and link to `${MAGNUM_OBJIMPORTER_LIBRARIES}`. See
 @ref building, @ref cmake and @ref plugins for more information.
 */
@@ -67,7 +67,7 @@ class ObjImporter: public AbstractImporter {
         Features doFeatures() const override;
 
         bool doIsOpened() const override;
-        void doOpenData(Containers::ArrayReference<const unsigned char> data) override;
+        void doOpenData(Containers::ArrayReference<const char> data) override;
         void doOpenFile(const std::string& filename) override;
         void doClose() override;
 

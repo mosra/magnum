@@ -1,7 +1,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,7 +23,7 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-cmake_minimum_required(VERSION 2.8.8)
+cmake_minimum_required(VERSION 2.8.9)
 project(Magnum)
 
 # Find Corrade first so we can check on the target
@@ -35,8 +35,6 @@ include(CMakeDependentOption)
 option(TARGET_GLES "Build for OpenGL ES instead of desktop OpenGL" OFF)
 cmake_dependent_option(TARGET_GLES2 "Build for OpenGL ES 2" ON "TARGET_GLES" OFF)
 cmake_dependent_option(TARGET_DESKTOP_GLES "Build for OpenGL ES on desktop" OFF "TARGET_GLES" OFF)
-
-option(WITH_FIND_MODULE "Install FindMagnum.cmake module into CMake's module dir (might require admin privileges)" OFF)
 
 # Parts of the library
 option(WITH_AUDIO "Build Audio library" OFF)
@@ -72,7 +70,7 @@ elseif(CORRADE_TARGET_APPLE)
 elseif(CORRADE_TARGET_UNIX)
     option(WITH_GLXAPPLICATION "Build GlxApplication library" OFF)
     cmake_dependent_option(WITH_WINDOWLESSGLXAPPLICATION "Build WindowlessGlxApplication library" OFF "NOT WITH_MAGNUMINFO;NOT WITH_FONTCONVERTER;NOT WITH_DISTANCEFIELDCONVERTER" ON)
-    cmake_dependent_option(WITH_XEGLAPPLICATION "Build XEglApplication library" OFF "TARGET_GLES" OFF)
+    option(WITH_XEGLAPPLICATION "Build XEglApplication library" OFF)
     option(WITH_GLXCONTEXT "Build GlxContext library" OFF)
 
 # Windows-specific application libraries
@@ -112,7 +110,8 @@ if(BUILD_DEPRECATED)
 endif()
 
 option(BUILD_STATIC "Build static libraries (default are shared)" OFF)
-cmake_dependent_option(BUILD_STATIC_PIC "Build static libraries with position-independent code" OFF "BUILD_STATIC" OFF)
+option(BUILD_STATIC_PIC "Build static libraries and plugins with position-independent code" OFF)
+option(BUILD_PLUGINS_STATIC "Build static plugins (default are dynamic)" OFF)
 option(BUILD_TESTS "Build unit tests." OFF)
 cmake_dependent_option(BUILD_GL_TESTS "Build unit tests for OpenGL code." OFF "BUILD_TESTS" OFF)
 if(BUILD_TESTS)
@@ -135,6 +134,7 @@ endif()
 # meaningless on Emscripten and too inconvenient on Android
 if(CORRADE_TARGET_NACL_NEWLIB OR CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
     set(BUILD_STATIC ON)
+    set(BUILD_PLUGINS_STATIC ON)
 endif()
 
 if(BUILD_STATIC)
@@ -182,11 +182,11 @@ else()
 endif()
 
 # Installation paths
-include(CorradeLibSuffix)
+include(${CORRADE_LIB_SUFFIX_MODULE})
 set(MAGNUM_BINARY_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/bin)
 set(MAGNUM_LIBRARY_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX})
 set(MAGNUM_DATA_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/share/magnum)
-set(MAGNUM_CMAKE_FIND_MODULE_INSTALL_DIR ${CMAKE_ROOT}/Modules)
+set(MAGNUM_CMAKE_MODULE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/share/cmake/Magnum)
 set(MAGNUM_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/Magnum)
 set(MAGNUM_EXTERNAL_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/MagnumExternal)
 set(MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/MagnumPlugins)

@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -41,10 +41,52 @@ namespace Magnum { namespace Shaders {
 /**
 @brief Distance field vector shader
 
-Renders vector art in form of signed distance field. See @ref TextureTools::distanceField()
-for more information. Note that the final rendered outlook will greatly depend
-on radius of input distance field and value passed to @ref setSmoothness().
-@see @ref DistanceFieldVector2D, @ref DistanceFieldVector3D
+Renders vector graphics in form of signed distance field. See
+@ref TextureTools::distanceField() for more information. Note that the final
+rendered outlook will greatly depend on radius of input distance field and
+value passed to @ref setSmoothness(). You need to provide @ref Position and
+@ref TextureCoordinates attributes in your triangle mesh and call at least
+@ref setTransformationProjectionMatrix(), @ref setColor() and
+@ref setVectorTexture().
+
+@image html shaders-distancefieldvector.png
+@image latex shaders-distancefieldvector.png
+
+## Example usage
+
+Common mesh setup:
+@code
+struct Vertex {
+    Vector2 position;
+    Vector2 textureCoordinates;
+};
+Vertex data[] = { ... };
+
+Buffer vertices;
+vertices.setData(data, BufferUsage::StaticDraw);
+
+Mesh mesh;
+mesh.addVertexBuffer(vertices, 0,
+    Shaders::DistanceFieldVector2D::Position{},
+    Shaders::DistanceFieldVector2D::TextureCoordinates{});
+@endcode
+
+Common rendering setup:
+@code
+Matrix3 transformationMatrix, projectionMatrix;
+Texture2D texture;
+
+Shaders::DistanceFieldVector2D shader;
+shader.setColor(Color3::fromHSV(216.0_degf, 0.85f, 1.0f))
+    .setOutlineColor(Color3{0.95f})
+    .setOutlineRange(0.6f, 0.4f)
+    .setVectorTexture(texture)
+    .setTransformationProjectionMatrix(projectionMatrix*transformationMatrix);
+
+mesh.draw(shader);
+@endcode
+
+@see @ref shaders, @ref DistanceFieldVector2D, @ref DistanceFieldVector3D
 @todo Use fragment shader derivations to have proper smoothness in perspective/
     large zoom levels, make it optional as it might have negative performance
     impact

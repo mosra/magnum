@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/Utility/Resource.h>
 
 #include "Magnum/AbstractShaderProgram.h"
@@ -35,26 +36,26 @@
 
 namespace Magnum { namespace Test {
 
-class AbstractShaderProgramGLTest: public AbstractOpenGLTester {
-    public:
-        explicit AbstractShaderProgramGLTest();
+struct AbstractShaderProgramGLTest: AbstractOpenGLTester {
+    explicit AbstractShaderProgramGLTest();
 
-        void construct();
-        void constructCopy();
-        void constructMove();
+    void construct();
+    void constructCopy();
+    void constructMove();
 
-        void label();
+    void label();
 
-        void create();
-        void createMultipleOutputs();
-        #ifndef MAGNUM_TARGET_GLES
-        void createMultipleOutputsIndexed();
-        #endif
+    void create();
+    void createMultipleOutputs();
+    #ifndef MAGNUM_TARGET_GLES
+    void createMultipleOutputsIndexed();
+    #endif
 
-        void uniform();
-        void uniformVector();
-        void uniformMatrix();
-        void uniformArray();
+    void uniformLocationOptimizedOut();
+    void uniform();
+    void uniformVector();
+    void uniformMatrix();
+    void uniformArray();
 };
 
 AbstractShaderProgramGLTest::AbstractShaderProgramGLTest() {
@@ -70,6 +71,7 @@ AbstractShaderProgramGLTest::AbstractShaderProgramGLTest() {
               &AbstractShaderProgramGLTest::createMultipleOutputsIndexed,
               #endif
 
+              &AbstractShaderProgramGLTest::uniformLocationOptimizedOut,
               &AbstractShaderProgramGLTest::uniform,
               &AbstractShaderProgramGLTest::uniformVector,
               &AbstractShaderProgramGLTest::uniformMatrix,
@@ -286,6 +288,32 @@ void AbstractShaderProgramGLTest::createMultipleOutputsIndexed() {
     CORRADE_VERIFY(valid);
 }
 #endif
+
+void AbstractShaderProgramGLTest::uniformLocationOptimizedOut() {
+    MyPublicShader program;
+
+    #ifndef MAGNUM_TARGET_GLES
+    Shader vert(Version::GL210, Shader::Type::Vertex);
+    Shader frag(Version::GL210, Shader::Type::Fragment);
+    #else
+    Shader vert(Version::GLES200, Shader::Type::Vertex);
+    Shader frag(Version::GLES200, Shader::Type::Fragment);
+    #endif
+    vert.addSource("void main() { gl_Position = vec4(0.0); }");
+    frag.addSource("void main() { gl_FragColor = vec4(1.0); }");
+
+    CORRADE_VERIFY(Shader::compile({vert, frag}));
+    program.attachShaders({vert, frag});
+    CORRADE_VERIFY(program.link());
+
+    std::ostringstream out;
+    Warning::setOutput(&out);
+    program.uniformLocation("nonexistent");
+    program.uniformLocation(std::string{"another"});
+    CORRADE_COMPARE(out.str(),
+        "AbstractShaderProgram: location of uniform 'nonexistent' cannot be retrieved!\n"
+        "AbstractShaderProgram: location of uniform 'another' cannot be retrieved!\n");
+}
 
 namespace {
     struct MyShader: AbstractShaderProgram {

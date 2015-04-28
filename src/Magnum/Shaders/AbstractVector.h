@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -36,23 +36,33 @@ namespace Magnum { namespace Shaders {
 /**
 @brief Base for vector shaders
 
-@see @ref AbstractVector2D, @ref AbstractVector3D
+See @ref DistanceFieldVector and @ref Vector for more information.
+@see @ref shaders, @ref AbstractVector2D, @ref AbstractVector3D
 */
 template<UnsignedInt dimensions> class AbstractVector: public AbstractShaderProgram {
     public:
-        /** @brief Vertex position */
+        /**
+         * @brief Vertex position
+         *
+         * @ref shaders-generic "Generic attribute", @ref Vector2 in 2D,
+         * @ref Vector3 in 3D.
+         */
         typedef typename Generic<dimensions>::Position Position;
 
-        /** @brief %Texture coordinates */
+        /**
+         * @brief 2D texture coordinates
+         *
+         * @ref shaders-generic "Generic attribute", @ref Vector2.
+         */
         typedef typename Generic<dimensions>::TextureCoordinates TextureCoordinates;
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         enum: Int {
             /**
-             * %Vector texture binding unit
+             * Vector texture binding unit
              * @deprecated Use @ref Magnum::Shaders::AbstractVector::setVectorTexture() "setVectorTexture()" instead.
              */
-            VectorTextureLayer = 16
+            VectorTextureLayer = 15
         };
         #endif
 
@@ -67,7 +77,7 @@ template<UnsignedInt dimensions> class AbstractVector: public AbstractShaderProg
         ~AbstractVector();
 
         #ifndef MAGNUM_BUILD_DEPRECATED
-        enum: Int { VectorTextureLayer = 16 };
+        enum: Int { VectorTextureLayer = 15 };
         #endif
 };
 

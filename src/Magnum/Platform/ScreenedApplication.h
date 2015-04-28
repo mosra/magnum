@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -62,15 +62,21 @@ application gets an event, they are propagated to the screens:
     @ref BasicScreen::PropagatedEvent::Input enabled. If any screen sets the
     event as accepted, it is not propagated further.
 
-Traversing through the list of screens is done like following:
+Uses @ref Corrade::Containers::LinkedList for efficient screen management.
+Traversing front-to-back through the list of screens can be done using
+range-based for:
 @code
-// front-to-back
-for(Screen* s = app.frontScreen(); s; s = s->nextFartherScreen()) {
+MyApplication app;
+for(Screen& screen: app.screens()) {
     // ...
 }
+@endcode
 
-// back-to-front
-for(Screen* s = app.backScreen(); s; s = s->nextNearerScreen()) {
+Or, if you need more flexibility, like in the following code. Traversing
+back-to-front can be done using @ref Corrade::Containers::LinkedList::last()
+and @ref BasicScreen::nextNearerScreen().
+@code
+for(Screen* s = app.screens().first(); s; s = s->nextFartherScreen()) {
     // ...
 }
 @endcode
@@ -89,15 +95,15 @@ The following specialization are explicitly compiled into each particular
 -   @ref XEglApplication "BasicScreenedApplication<XEglApplication>"
 */
 template<class Application> class BasicScreenedApplication: public Application, private Containers::LinkedList<BasicScreen<Application>> {
-    friend class Containers::LinkedList<BasicScreen<Application>>;
-    friend class Containers::LinkedListItem<BasicScreen<Application>, BasicScreenedApplication<Application>>;
-    friend class BasicScreen<Application>;
+    friend Containers::LinkedList<BasicScreen<Application>>;
+    friend Containers::LinkedListItem<BasicScreen<Application>, BasicScreenedApplication<Application>>;
+    friend BasicScreen<Application>;
 
     public:
         /**
          * @brief Default constructor
          * @param arguments     Application arguments
-         * @param configuration %Configuration
+         * @param configuration Configuration
          *
          * Creates application with default or user-specified configuration.
          * See @ref Sdl2Application::Configuration "Configuration" for more
@@ -152,30 +158,46 @@ template<class Application> class BasicScreenedApplication: public Application, 
         BasicScreenedApplication<Application>& focusScreen(BasicScreen<Application>& screen);
 
         /**
-         * @brief Front screen
+         * @brief Application screens
          *
-         * @see @ref BasicScreen::nextFartherScreen(), @ref BasicScreen::nextNearerScreen()
+         * The screens are sorted front-to-back.
+         * @see @ref BasicScreen::application(),
+         *      @ref BasicScreen::nextFartherScreen(),
+         *      @ref BasicScreen::nextNearerScreen()
          */
-        BasicScreen<Application>* frontScreen() {
-            return Containers::LinkedList<BasicScreen<Application>>::first();
+        Containers::LinkedList<BasicScreen<Application>>& screens() {
+            return static_cast<Containers::LinkedList<BasicScreen<Application>>&>(*this);
         }
+
         /** @overload */
-        const BasicScreen<Application>* frontScreen() const {
-            return Containers::LinkedList<BasicScreen<Application>>::first();
+        const Containers::LinkedList<BasicScreen<Application>>& screens() const {
+            return static_cast<const Containers::LinkedList<BasicScreen<Application>>&>(*this);
         }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Front screen
+         * @deprecated Use `screens().first()` instead.
+         */
+        CORRADE_DEPRECATED("use screens().first() instead") BasicScreen<Application>* frontScreen() { return screens().first(); }
+
+        /** @overload
+         * @deprecated Use `screens().first()` instead.
+         */
+        CORRADE_DEPRECATED("use screens().first() instead") const BasicScreen<Application>* frontScreen() const { return screens().first(); }
 
         /**
          * @brief Back screen
-         *
-         * @see @ref BasicScreen::nextFartherScreen(), @ref BasicScreen::nextNearerScreen()
+         * @deprecated Use `screens().last()` instead.
          */
-        BasicScreen<Application>* backScreen() {
-            return Containers::LinkedList<BasicScreen<Application>>::last();
-        }
-        /** @overload */
-        const BasicScreen<Application>* backScreen() const {
-            return Containers::LinkedList<BasicScreen<Application>>::last();
-        }
+        CORRADE_DEPRECATED("use screens().back() instead") BasicScreen<Application>* backScreen() { return screens().last(); }
+
+        /**
+         * @overload
+         * @deprecated Use `screens().last()` instead.
+         */
+        CORRADE_DEPRECATED("use screens().back() instead") const BasicScreen<Application>* backScreen() const { return screens().last(); }
+        #endif
 
     protected:
         /* Nobody will need to have (and delete) ScreenedApplication*, thus

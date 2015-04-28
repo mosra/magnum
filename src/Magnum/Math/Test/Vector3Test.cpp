@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -51,28 +51,27 @@ template<> struct VectorConverter<3, float, Vec3> {
 
 namespace Test {
 
-class Vector3Test: public Corrade::TestSuite::Tester {
-    public:
-        Vector3Test();
+struct Vector3Test: Corrade::TestSuite::Tester {
+    explicit Vector3Test();
 
-        void construct();
-        void constructDefault();
-        void constructOneValue();
-        void constructParts();
-        void constructConversion();
-        void constructCopy();
+    void construct();
+    void constructDefault();
+    void constructOneValue();
+    void constructParts();
+    void constructConversion();
+    void constructCopy();
 
-        void convert();
+    void convert();
 
-        void access();
-        void cross();
-        void axes();
-        void scales();
-        void twoComponent();
+    void access();
+    void cross();
+    void axes();
+    void scales();
+    void twoComponent();
 
-        void swizzleType();
-        void debug();
-        void configuration();
+    void swizzleType();
+    void debug();
+    void configuration();
 };
 
 typedef Math::Vector3<Float> Vector3;
@@ -202,7 +201,7 @@ void Vector3Test::cross() {
     Vector3i a(1, -1, 1);
     Vector3i b(4, 3, 7);
 
-    CORRADE_COMPARE(Vector3i::cross(a, b), Vector3i(-10, -3, 7));
+    CORRADE_COMPARE(Math::cross(a, b), Vector3i(-10, -3, 7));
 }
 
 void Vector3Test::axes() {

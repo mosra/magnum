@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -26,11 +26,11 @@
 */
 
 /** @file
- * @brief Typedef @ref Magnum::DebugMarker
- * @deprecated Use @ref DebugMessage.h instead.
+ * @brief Class @ref Magnum::DebugMarker
+ * @deprecated Use @ref DebugOutput.h instead.
  */
 
-#include "Magnum/DebugMessage.h"
+#include "Magnum/DebugOutput.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 namespace Magnum {
@@ -46,7 +46,7 @@ class CORRADE_DEPRECATED("use DebugMessage instead") MAGNUM_EXPORT DebugMarker: 
          * @deprecated Use @ref Magnum::DebugMessage::insert() "insert()" instead.
          */
         static CORRADE_DEPRECATED("use DebugMessage::insert() instead") void mark(const std::string& string) {
-            insert(Source::Application, Type::Marker, 0, Severity::Notification, string);
+            insert(Source::Application, Type::Marker, 0, DebugOutput::Severity::Notification, string);
         }
 };
 

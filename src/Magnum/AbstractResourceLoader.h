@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -101,7 +101,7 @@ Resource<Mesh> myMesh = manager->get<Mesh>("my-mesh");
     buffers), should that be allowed?
 */
 template<class T> class AbstractResourceLoader {
-    friend class Implementation::ResourceManagerData<T>;
+    friend Implementation::ResourceManagerData<T>;
 
     public:
         explicit AbstractResourceLoader(): manager(nullptr), _requestedCount(0), _loadedCount(0), _notFoundCount(0) {}
@@ -132,7 +132,7 @@ template<class T> class AbstractResourceLoader {
         std::size_t loadedCount() const { return _loadedCount; }
 
         /**
-         * @brief %Resource name corresponding to given key
+         * @brief Resource name corresponding to given key
          *
          * If no such resource exists or the resource name is not available,
          * returns empty string.

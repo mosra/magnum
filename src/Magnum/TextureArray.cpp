@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -29,6 +29,11 @@
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
 
+#ifndef MAGNUM_TARGET_GLES
+#include "Magnum/BufferImage.h"
+#include "Magnum/Image.h"
+#endif
+
 #include "Implementation/maxTextureSize.h"
 
 namespace Magnum {
@@ -48,6 +53,28 @@ template<UnsignedInt dimensions> typename DimensionTraits<dimensions+1, Int>::Ve
     return {typename VectorOrScalar<dimensions>::Type{Implementation::maxTextureSideSize()},
             Implementation::maxTextureArrayLayers()};
 }
+
+#ifndef MAGNUM_TARGET_GLES
+template<UnsignedInt dimensions> Image<dimensions+1> TextureArray<dimensions>::image(const Int level, Image<dimensions+1>&& image) {
+    this->image(level, image);
+    return std::move(image);
+}
+
+template<UnsignedInt dimensions> BufferImage<dimensions+1> TextureArray<dimensions>::image(const Int level, BufferImage<dimensions+1>&& image, const BufferUsage usage) {
+    this->image(level, image, usage);
+    return std::move(image);
+}
+
+template<UnsignedInt dimensions> Image<dimensions+1> TextureArray<dimensions>::subImage(const Int level, const RangeTypeFor<dimensions+1, Int>& range, Image<dimensions+1>&& image) {
+    this->subImage(level, range, image);
+    return std::move(image);
+}
+
+template<UnsignedInt dimensions> BufferImage<dimensions+1> TextureArray<dimensions>::subImage(const Int level, const RangeTypeFor<dimensions+1, Int>& range, BufferImage<dimensions+1>&& image, const BufferUsage usage) {
+    this->subImage(level, range, image, usage);
+    return std::move(image);
+}
+#endif
 
 #ifndef MAGNUM_TARGET_GLES
 template class MAGNUM_EXPORT TextureArray<1>;

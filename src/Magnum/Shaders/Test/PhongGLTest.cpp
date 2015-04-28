@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -32,18 +32,17 @@
 
 namespace Magnum { namespace Shaders { namespace Test {
 
-class PhongGLTest: public Magnum::Test::AbstractOpenGLTester {
-    public:
-        explicit PhongGLTest();
+struct PhongGLTest: Magnum::Test::AbstractOpenGLTester {
+    explicit PhongGLTest();
 
-        void compile();
-        void compileAmbientTexture();
-        void compileDiffuseTexture();
-        void compileSpecularTexture();
-        void compileAmbientDiffuseTexture();
-        void compileAmbientSpecularTexture();
-        void compileDiffuseSpecularTexture();
-        void compileAmbientDiffuseSpecularTexture();
+    void compile();
+    void compileAmbientTexture();
+    void compileDiffuseTexture();
+    void compileSpecularTexture();
+    void compileAmbientDiffuseTexture();
+    void compileAmbientSpecularTexture();
+    void compileDiffuseSpecularTexture();
+    void compileAmbientDiffuseSpecularTexture();
 };
 
 PhongGLTest::PhongGLTest() {

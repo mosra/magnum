@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -41,7 +41,7 @@
 namespace Magnum { namespace DebugTools {
 
 /**
-@brief %Profiler
+@brief Profiler
 
 Measures time passed during specified sections of each frame. It's meant to be
 used in rendering and event loops (e.g. @ref Platform::Sdl2Application::drawEvent()),

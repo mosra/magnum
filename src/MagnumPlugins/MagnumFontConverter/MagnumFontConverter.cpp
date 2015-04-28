@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -46,9 +46,9 @@ auto MagnumFontConverter::doFeatures() const -> Features {
 }
 
 #ifndef __MINGW32__
-std::vector<std::pair<std::string, Containers::Array<unsigned char>>> MagnumFontConverter::doExportFontToData(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::u32string& characters) const
+std::vector<std::pair<std::string, Containers::Array<char>>> MagnumFontConverter::doExportFontToData(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::u32string& characters) const
 #else
-std::vector<std::pair<std::string, Containers::Array<unsigned char>>> MagnumFontConverter::doExportFontToData(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::vector<char32_t>& characters) const
+std::vector<std::pair<std::string, Containers::Array<char>>> MagnumFontConverter::doExportFontToData(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::vector<char32_t>& characters) const
 #endif
 {
     Utility::Configuration configuration;
@@ -114,7 +114,7 @@ std::vector<std::pair<std::string, Containers::Array<unsigned char>>> MagnumFont
     std::ostringstream confOut;
     configuration.save(confOut);
     std::string confStr = confOut.str();
-    Containers::Array<unsigned char> confData{confStr.size()};
+    Containers::Array<char> confData{confStr.size()};
     std::copy(confStr.begin(), confStr.end(), confData.begin());
 
     /* Save cache image */
@@ -122,10 +122,10 @@ std::vector<std::pair<std::string, Containers::Array<unsigned char>>> MagnumFont
     cache.texture().image(0, image);
     auto tgaData = Trade::TgaImageConverter().exportToData(image);
 
-    std::vector<std::pair<std::string, Containers::Array<unsigned char>>> out;
+    std::vector<std::pair<std::string, Containers::Array<char>>> out;
     out.emplace_back(filename + ".conf", std::move(confData));
     out.emplace_back(filename + ".tga", std::move(tgaData));
-    return std::move(out);
+    return out;
 }
 
 }}

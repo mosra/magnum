@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Text::MagnumFont
+ * @brief Class @ref Magnum::Text::MagnumFont
  */
 
 #include "Magnum/Text/AbstractFont.h"
@@ -38,10 +38,10 @@ namespace Magnum { namespace Text {
 @brief Simple bitmap font plugin
 
 This plugin depends on @ref Trade::TgaImporter "TgaImporter" plugin and is
-built if `WITH_MAGNUMFONT` is enabled when building %Magnum. To use dynamic
-plugin, you need to load `%MagnumFont` plugin from `MAGNUM_PLUGINS_FONT_DIR`.
+built if `WITH_MAGNUMFONT` is enabled when building Magnum. To use dynamic
+plugin, you need to load `MagnumFont` plugin from `MAGNUM_PLUGINS_FONT_DIR`.
 To use static plugin or use this as a dependency of another plugin, you need to
-request `%MagnumFont` component of `%Magnum` package in CMake and link to
+request `MagnumFont` component of `Magnum` package in CMake and link to
 `${MAGNUM_MAGNUMFONT_LIBRARIES}`. See @ref building, @ref cmake and
 @ref plugins for more information.
 
@@ -120,7 +120,7 @@ class MagnumFont: public AbstractFont {
 
         bool doIsOpened() const override;
 
-        std::pair<Float, Float> doOpenData(const std::vector<std::pair<std::string, Containers::ArrayReference<const unsigned char>>>& data, Float) override;
+        std::pair<Float, Float> doOpenData(const std::vector<std::pair<std::string, Containers::ArrayReference<const char>>>& data, Float) override;
 
         std::pair<Float, Float> doOpenFile(const std::string& filename, Float) override;
 

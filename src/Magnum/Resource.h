@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -37,10 +37,14 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/visibility.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#endif
+
 namespace Magnum {
 
 /**
-@brief %Resource state
+@brief Resource state
 
 @see @ref Resource::state(), @ref ResourceManager::state()
 */
@@ -108,7 +112,7 @@ namespace Implementation {
 }
 
 /**
-@brief %Resource reference
+@brief Resource reference
 
 See @ref ResourceManager for more information.
 */
@@ -118,7 +122,7 @@ template<class T, class U = T>
 template<class T, class U>
 #endif
 class Resource {
-    friend class Implementation::ResourceManagerData<T>;
+    friend Implementation::ResourceManagerData<T>;
 
     public:
         /**
@@ -151,14 +155,13 @@ class Resource {
         /** @brief Move assignment */
         Resource<T, U>& operator=(Resource<T, U>&& other);
 
-        /** @brief %Resource key */
+        /** @brief Resource key */
         ResourceKey key() const { return _key; }
 
         /**
-         * @brief %Resource state
+         * @brief Resource state
          *
-         * @see operator bool(), @ref ResourceManager::state()
-         * @todoc Explicit reference when Doxygen can handle conversion operators
+         * @see @ref operator bool(), @ref ResourceManager::state()
          */
         ResourceState state() {
             acquire();
@@ -204,10 +207,10 @@ class Resource {
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @overload
-         * @deprecated Use the explicit @ref operator*() or operator->()
-         *      instead. Implicit conversion is no longer allowed if it might
-         *      throw an assertion.
-         * @todoc Explicit reference when Doxygen can handle operator->()
+         * @deprecated Use the explicit @ref Magnum::Resource::operator*() "operator*()"
+         *      or @ref Magnum::Resource::operator->() "operator->()" instead.
+         *      Implicit conversion is no longer allowed if it might throw an
+         *      assertion.
          */
         CORRADE_DEPRECATED("use operator*() or operator->() instead") operator U&() { return **this; }
         #endif

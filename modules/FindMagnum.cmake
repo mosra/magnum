@@ -34,23 +34,20 @@
 # OpenGL ES libraries). Additional dependencies are specified by the
 # components. The optional components are:
 #  Audio            - Audio library
-#  DebugTools       - DebugTools library (depends on MeshTools, Primitives,
-#                     SceneGraph, Shaders and Shapes components)
+#  DebugTools       - DebugTools library
 #  MeshTools        - MeshTools library
 #  Primitives       - Primitives library
 #  SceneGraph       - SceneGraph library
 #  Shaders          - Shaders library
-#  Shapes           - Shapes library (depends on SceneGraph component)
-#  Text             - Text library (depends on TextureTools component)
+#  Shapes           - Shapes library
+#  Text             - Text library
 #  TextureTools     - TextureTools library
-#  MagnumFont       - Magnum bitmap font plugin (depends on Text component
-#                     and TgaImporter plugin)
-#  MagnumFontConverter - Magnum bitmap font converter plugin (depends on Text
-#                     component and TgaImageConverter plugin)
+#  MagnumFont       - Magnum bitmap font plugin
+#  MagnumFontConverter - Magnum bitmap font converter plugin
 #  ObjImporter      - OBJ importer plugin
 #  TgaImageConverter - TGA image converter plugin
 #  TgaImporter      - TGA importer plugin
-#  WavAudioImporter - WAV audio importer plugin (depends on Audio component)
+#  WavAudioImporter - WAV audio importer plugin
 #  GlutApplication  - GLUT application
 #  GlxApplication   - GLX application
 #  NaClApplication  - NaCl application
@@ -101,11 +98,6 @@
 #   emulation on desktop OpenGL
 #  MAGNUM_TARGET_WEBGL          - Defined if compiled for WebGL
 #
-# If MAGNUM_BUILD_DEPRECATED is defined, the MAGNUM_INCLUDE_DIR variable also
-# contains path directly to Magnum directory (i.e. for includes without
-# Magnum/ prefix) and MAGNUM_PLUGINS_INCLUDE_DIR contains include dir for
-# plugins (i.e. for includes without MagnumPlugins/ prefix).
-#
 # Additionally these variables are defined for internal usage:
 #  MAGNUM_INCLUDE_DIR           - Root include dir (w/o dependencies)
 #  MAGNUM_LIBRARY               - Magnum library (w/o dependencies)
@@ -116,6 +108,7 @@
 #  MAGNUM_*_LIBRARY_RELEASE     - Release version of given library, if found
 #  MAGNUM_BINARY_INSTALL_DIR    - Binary installation directory
 #  MAGNUM_LIBRARY_INSTALL_DIR   - Library installation directory
+#  MAGNUM_DATA_INSTALL_DIR      - Data installation directory
 #  MAGNUM_PLUGINS_[DEBUG|RELEASE]_INSTALL_DIR - Plugin installation directory
 #  MAGNUM_PLUGINS_FONT_[DEBUG|RELEASE]_INSTALL_DIR - Font plugin installation
 #   directory
@@ -127,8 +120,6 @@
 #   installation directory
 #  MAGNUM_PLUGINS_AUDIOIMPORTER_[DEBUG|RELEASE]_INSTALL_DIR - Audio importer
 #   plugin installation directory
-#  MAGNUM_CMAKE_FIND_MODULE_INSTALL_DIR - Installation dir for CMake Find*
-#   modules
 #  MAGNUM_INCLUDE_INSTALL_DIR   - Header installation directory
 #  MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR - Plugin header installation directory
 #
@@ -136,7 +127,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -199,35 +190,20 @@ endif()
 
 # Configuration
 file(READ ${MAGNUM_INCLUDE_DIR}/Magnum/configure.h _magnumConfigure)
-
-string(FIND "${_magnumConfigure}" "#define MAGNUM_BUILD_DEPRECATED" _BUILD_DEPRECATED)
-if(NOT _BUILD_DEPRECATED EQUAL -1)
-    set(MAGNUM_BUILD_DEPRECATED 1)
-endif()
-string(FIND "${_magnumConfigure}" "#define MAGNUM_BUILD_STATIC" _BUILD_STATIC)
-if(NOT _BUILD_STATIC EQUAL -1)
-    set(MAGNUM_BUILD_STATIC 1)
-endif()
-string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_GLES" _TARGET_GLES)
-if(NOT _TARGET_GLES EQUAL -1)
-    set(MAGNUM_TARGET_GLES 1)
-endif()
-string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_GLES2" _TARGET_GLES2)
-if(NOT _TARGET_GLES2 EQUAL -1)
-    set(MAGNUM_TARGET_GLES2 1)
-endif()
-string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_GLES3" _TARGET_GLES3)
-if(NOT _TARGET_GLES3 EQUAL -1)
-    set(MAGNUM_TARGET_GLES3 1)
-endif()
-string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_DESKTOP_GLES" _TARGET_DESKTOP_GLES)
-if(NOT _TARGET_DESKTOP_GLES EQUAL -1)
-    set(MAGNUM_TARGET_DESKTOP_GLES 1)
-endif()
-string(FIND "${_magnumConfigure}" "#define MAGNUM_TARGET_WEBGL" _TARGET_WEBGL)
-if(NOT _TARGET_WEBGL EQUAL -1)
-    set(MAGNUM_TARGET_WEBGL 1)
-endif()
+set(_magnumFlags
+    BUILD_DEPRECATED
+    BUILD_STATIC
+    TARGET_GLES
+    TARGET_GLES2
+    TARGET_GLES3
+    TARGET_DESKTOP_GLES
+    TARGET_WEBGL)
+foreach(_magnumFlag ${_magnumFlags})
+    string(FIND "${_magnumConfigure}" "#define MAGNUM_${_magnumFlag}" _magnum_${_magnumFlag})
+    if(NOT _magnum_${_magnumFlag} EQUAL -1)
+        set(MAGNUM_${_magnumFlag} 1)
+    endif()
+endforeach()
 
 # Dependent libraries and includes
 set(MAGNUM_INCLUDE_DIRS ${MAGNUM_INCLUDE_DIR}
@@ -247,15 +223,44 @@ elseif(MAGNUM_TARGET_GLES3)
     set(MAGNUM_LIBRARIES ${MAGNUM_LIBRARIES} ${OPENGLES3_LIBRARY})
 endif()
 
-# On Windows and in static builds, *Application libraries need to have
-# ${MAGNUM_LIBRARIES} listed in dependencies also after all other library names
-# to avoid linker errors. Applicaiton libraries are often last thus it is
-# +- sufficient to add it there only.
-if(CORRADE_TARGET_WINDOWS OR MAGNUM_BUILD_STATIC)
-    set(_WINDOWCONTEXT_MAGNUM_LIBRARIES_DEPENDENCY ${MAGNUM_LIBRARIES})
+# Ensure that all inter-component dependencies are specified as well
+set(_MAGNUM_ADDITIONAL_COMPONENTS )
+foreach(component ${Magnum_FIND_COMPONENTS})
+    string(TOUPPER ${component} _COMPONENT)
+
+    # The dependencies need to be sorted by their dependency order as well
+    if(component STREQUAL Shapes)
+        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES SceneGraph)
+    elseif(component STREQUAL Text)
+        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES TextureTools)
+    elseif(component STREQUAL DebugTools)
+        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES MeshTools Primitives SceneGraph Shaders Shapes)
+    elseif(component STREQUAL MagnumFont)
+        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES TgaImporter) # and below
+    elseif(component STREQUAL MagnumFontConverter)
+        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES TgaImageConverter) # and below
+    elseif(component STREQUAL ObjImporter)
+        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES MeshTools)
+    endif()
+
+    if(component MATCHES ".+AudioImporter")
+        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES Audio)
+    elseif(component MATCHES ".+(Font|FontConverter)")
+        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES TextureTools Text)
+    endif()
+
+    list(APPEND _MAGNUM_ADDITIONAL_COMPONENTS ${_MAGNUM_${_COMPONENT}_DEPENDENCIES})
+endforeach()
+
+# Join the lists, remove duplicate components
+if(_MAGNUM_ADDITIONAL_COMPONENTS)
+    list(INSERT Magnum_FIND_COMPONENTS 0 ${_MAGNUM_ADDITIONAL_COMPONENTS})
+endif()
+if(Magnum_FIND_COMPONENTS)
+    list(REMOVE_DUPLICATES Magnum_FIND_COMPONENTS)
 endif()
 
-# Additional components
+# Find all components
 foreach(component ${Magnum_FIND_COMPONENTS})
     string(TOUPPER ${component} _COMPONENT)
 
@@ -352,7 +357,7 @@ foreach(component ${Magnum_FIND_COMPONENTS})
     endif()
 
     # Applications
-    if(${component} MATCHES .+Application)
+    if(${component} MATCHES ".+Application")
         set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX Magnum/Platform)
 
         # Android application dependencies
@@ -411,13 +416,8 @@ foreach(component ${Magnum_FIND_COMPONENTS})
             endif()
         endif()
 
-        # Common application dependencies
-        set(_MAGNUM_${_COMPONENT}_LIBRARIES
-            ${_MAGNUM_${_COMPONENT}_LIBRARIES}
-            ${_WINDOWCONTEXT_MAGNUM_LIBRARIES_DEPENDENCY})
-
     # Context libraries
-    elseif(${component} MATCHES .+Context)
+    elseif(${component} MATCHES ".+Context")
         set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX Magnum/Platform)
         set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Context.h)
 
@@ -454,6 +454,8 @@ foreach(component ${Magnum_FIND_COMPONENTS})
             unset(MAGNUM_${_COMPONENT}_LIBRARY)
         endif()
 
+    # No special setup for DebugTools library
+
     # Mesh tools library
     elseif(${component} STREQUAL MeshTools)
         set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES CompressIndices.h)
@@ -462,13 +464,17 @@ foreach(component ${Magnum_FIND_COMPONENTS})
     elseif(${component} STREQUAL Primitives)
         set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Cube.h)
 
+    # No special setup for SceneGraph library
+    # No special setup for Shaders library
+    # No special setup for Shapes library
+    # No special setup for Text library
+
     # TextureTools library
     elseif(${component} STREQUAL TextureTools)
         set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Atlas.h)
     endif()
 
-    # The plugins don't have any dependencies, nothing additional to do for
-    # them
+    # No special setup for plugins
 
     # Try to find the includes
     if(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES)
@@ -477,10 +483,30 @@ foreach(component ${Magnum_FIND_COMPONENTS})
             PATHS ${MAGNUM_INCLUDE_DIR}/${_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX})
     endif()
 
+    # Add inter-project dependencies, mark the component as not found if
+    # any dependency is not found
+    set(_MAGNUM_${_COMPONENT}_DEPENDENCY_LIBRARIES )
+    set(_MAGNUM_${_COMPONENT}_DEPENDENCY_INCLUDE_DIRS )
+    foreach(dependency ${_MAGNUM_${_COMPONENT}_DEPENDENCIES})
+        string(TOUPPER ${dependency} _DEPENDENCY)
+        if(MAGNUM_${_DEPENDENCY}_LIBRARY)
+            list(APPEND _MAGNUM_${_COMPONENT}_DEPENDENCY_LIBRARIES ${MAGNUM_${_DEPENDENCY}_LIBRARY} ${_MAGNUM_${_DEPENDENCY}_LIBRARIES})
+            list(APPEND _MAGNUM_${_COMPONENT}_DEPENDENCY_INCLUDE_DIRS ${MAGNUM_${_DEPENDENCY}_INCLUDE_DIRS})
+        else()
+            unset(MAGNUM_${_DEPENDENCY}_LIBRARY)
+        endif()
+    endforeach()
+
     # Decide if the library was found
     if(MAGNUM_${_COMPONENT}_LIBRARY AND _MAGNUM_${_COMPONENT}_INCLUDE_DIR)
-        set(MAGNUM_${_COMPONENT}_LIBRARIES ${MAGNUM_${_COMPONENT}_LIBRARY} ${_MAGNUM_${_COMPONENT}_LIBRARIES})
-        set(MAGNUM_${_COMPONENT}_INCLUDE_DIRS ${_MAGNUM_${_COMPONENT}_INCLUDE_DIRS})
+        set(MAGNUM_${_COMPONENT}_LIBRARIES
+            ${MAGNUM_${_COMPONENT}_LIBRARY}
+            ${_MAGNUM_${_COMPONENT}_LIBRARIES}
+            ${_MAGNUM_${_COMPONENT}_DEPENDENCY_LIBRARIES}
+            ${MAGNUM_LIBRARIES})
+        set(MAGNUM_${_COMPONENT}_INCLUDE_DIRS
+            ${_MAGNUM_${_COMPONENT}_INCLUDE_DIRS}
+            ${_MAGNUM_${_COMPONENT}_DEPENDENCY_INCLUDE_DIRS})
 
         set(Magnum_${component}_FOUND TRUE)
 
@@ -493,7 +519,7 @@ foreach(component ${Magnum_FIND_COMPONENTS})
 
         # Global aliases for Windowless*Application and *Application
         # components. If already set, unset them to avoid ambiguity.
-        if(${component} MATCHES Windowless.+Application)
+        if(${component} MATCHES "Windowless.+Application")
             if(NOT DEFINED MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES AND NOT DEFINED MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS)
                 set(MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES ${MAGNUM_${_COMPONENT}_LIBRARIES})
                 set(MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS ${MAGNUM_${_COMPONENT}_INCLUDE_DIRS})
@@ -501,7 +527,7 @@ foreach(component ${Magnum_FIND_COMPONENTS})
                 unset(MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES)
                 unset(MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS)
             endif()
-        elseif(${component} MATCHES .+Application)
+        elseif(${component} MATCHES ".+Application")
             if(NOT DEFINED MAGNUM_APPLICATION_LIBRARIES AND NOT DEFINED MAGNUM_APPLICATION_INCLUDE_DIRS)
                 set(MAGNUM_APPLICATION_LIBRARIES ${MAGNUM_${_COMPONENT}_LIBRARIES})
                 set(MAGNUM_APPLICATION_INCLUDE_DIRS ${MAGNUM_${_COMPONENT}_INCLUDE_DIRS})
@@ -513,7 +539,7 @@ foreach(component ${Magnum_FIND_COMPONENTS})
 
         # Global aliases for *Context components. If already set, unset them to
         # avoid ambiguity.
-        if(${component} MATCHES .+Context)
+        if(${component} MATCHES ".+Context")
             if(NOT DEFINED MAGNUM_CONTEXT_LIBRARIES AND NOT DEFINED MAGNUM_CONTEXT_INCLUDE_DIRS)
                 set(MAGNUM_CONTEXT_LIBRARIES ${MAGNUM_${_COMPONENT}_LIBRARIES})
                 set(MAGNUM_CONTEXT_INCLUDE_DIRS ${MAGNUM_${_COMPONENT}_INCLUDE_DIRS})
@@ -533,9 +559,10 @@ find_package_handle_standard_args(Magnum
     HANDLE_COMPONENTS)
 
 # Installation dirs
-include(CorradeLibSuffix)
+include(${CORRADE_LIB_SUFFIX_MODULE})
 set(MAGNUM_BINARY_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/bin)
 set(MAGNUM_LIBRARY_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib${LIB_SUFFIX})
+set(MAGNUM_DATA_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/share/magnum)
 set(MAGNUM_PLUGINS_DEBUG_INSTALL_DIR ${MAGNUM_LIBRARY_INSTALL_DIR}/magnum-d)
 set(MAGNUM_PLUGINS_RELEASE_INSTALL_DIR ${MAGNUM_LIBRARY_INSTALL_DIR}/magnum)
 set(MAGNUM_PLUGINS_FONT_DEBUG_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_INSTALL_DIR}/fonts)
@@ -548,7 +575,6 @@ set(MAGNUM_PLUGINS_IMPORTER_DEBUG_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_INSTALL_DIR
 set(MAGNUM_PLUGINS_IMPORTER_RELEASE_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_INSTALL_DIR}/importers)
 set(MAGNUM_PLUGINS_AUDIOIMPORTER_DEBUG_INSTALL_DIR ${MAGNUM_PLUGINS_DEBUG_INSTALL_DIR}/audioimporters)
 set(MAGNUM_PLUGINS_AUDIOIMPORTER_RELEASE_INSTALL_DIR ${MAGNUM_PLUGINS_RELEASE_INSTALL_DIR}/audioimporters)
-set(MAGNUM_CMAKE_FIND_MODULE_INSTALL_DIR ${CMAKE_ROOT}/Modules)
 set(MAGNUM_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/Magnum)
 set(MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/MagnumPlugins)
 mark_as_advanced(FORCE
@@ -573,15 +599,6 @@ mark_as_advanced(FORCE
     MAGNUM_CMAKE_MODULE_INSTALL_DIR
     MAGNUM_INCLUDE_INSTALL_DIR
     MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR)
-
-# Add Magnum dir to include path and create MAGNUM_PLUGINS_INCLUDE_DIR if this
-# is deprecated build
-if(MAGNUM_BUILD_DEPRECATED)
-    set(MAGNUM_INCLUDE_DIRS ${MAGNUM_INCLUDE_DIRS}
-        ${MAGNUM_INCLUDE_DIR}/Magnum
-        ${MAGNUM_INCLUDE_DIR}/MagnumExternal)
-    set(MAGNUM_PLUGINS_INCLUDE_DIR ${MAGNUM_INCLUDE_DIR}/MagnumPlugins)
-endif()
 
 # Get base plugin directory from main library location
 set(MAGNUM_PLUGINS_DEBUG_DIR ${_MAGNUM_LIBRARY_PATH}/magnum-d

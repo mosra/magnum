@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -38,7 +38,7 @@ uniform lowp vec4 color;
 #endif
 
 #ifdef EXPLICIT_TEXTURE_LAYER
-layout(binding = 16) uniform sampler2D vectorTexture;
+layout(binding = 15) uniform sampler2D vectorTexture;
 #else
 uniform lowp sampler2D vectorTexture;
 #endif

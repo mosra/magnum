@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,24 +23,22 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#define MAGNUM_RESOURCEMANAGER_DEFINE_INTERNALINSTANCE
-
 #include "ResourceManager.h"
 
+#include "Magnum/AbstractShaderProgram.h"
 #include "Magnum/Buffer.h"
 #include "Magnum/Mesh.h"
 #include "Magnum/MeshView.h"
+#include "Magnum/ResourceManager.hpp"
 #include "Magnum/DebugTools/ForceRenderer.h"
 #include "Magnum/DebugTools/ObjectRenderer.h"
 #include "Magnum/DebugTools/ShapeRenderer.h"
 
 namespace Magnum {
 
-template class
-#if defined(CORRADE_TARGET_WINDOWS) && _MSC_VER
-MAGNUM_DEBUGTOOLS_EXPORT
-#endif
-ResourceManager<AbstractShaderProgram, Buffer, Mesh, MeshView, DebugTools::ForceRendererOptions, DebugTools::ObjectRendererOptions, DebugTools::ShapeRendererOptions>;
+namespace Implementation {
+    template struct MAGNUM_DEBUGTOOLS_EXPORT ResourceManagerLocalInstanceImplementation<ResourceManagerLocalInstance, AbstractShaderProgram, Buffer, Mesh, MeshView, DebugTools::ForceRendererOptions, DebugTools::ObjectRendererOptions, DebugTools::ShapeRendererOptions>;
+}
 
 namespace DebugTools {
 

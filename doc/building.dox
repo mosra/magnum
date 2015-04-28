@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -26,7 +26,7 @@
 namespace Magnum {
 
 /** @page building Downloading and building
-@brief Guide how to download and build %Magnum on different platforms.
+@brief Guide how to download and build Magnum on different platforms.
 
 @tableofcontents
 
@@ -37,7 +37,7 @@ Minimal set of tools and libraries required for building is:
     >= 3.1. On Windows you can use **MinGW**. GCC 4.5, 4.4 and **MSVC** 2013
     support involves some ugly workarounds and thus is available only in
     `compatibility` branch.
--   **CMake** >= 2.8.8
+-   **CMake** >= 2.8.9
 -   **Corrade** - Plugin management and utility library. See
     @ref building-corrade "Corrade download and installation guide" for more
     information.
@@ -137,26 +137,24 @@ Installation to given prefix can be done from within QtCreator by adding new
 
 The libraries are build as shared by default. If you are developing for
 platform which doesn't support shared libraries or if you just want to link
-them statically, enable `BUILD_STATIC` to build the libraries as static. If you
-plan to use them with shared libraries later, enable also position-independent
-code with `BUILD_STATIC_PIC`. If you want to build with another compiler (e.g.
-Clang), pass `-DCMAKE_CXX_COMPILER=clang++` to CMake.
+them statically, enable `BUILD_STATIC` to build the libraries as static.
+Building of static plugins is controlled with separate `BUILD_PLUGINS_STATIC`
+variable. If you plan to use the static libraries and plugins with shared
+libraries later, enable also position-independent code with `BUILD_STATIC_PIC`.
+If you want to build with another compiler (e.g. Clang), pass
+`-DCMAKE_CXX_COMPILER=clang++` to CMake.
 
 Libraries and static plugins built in `Debug` configuration (e.g. with
 `CMAKE_BUILD_TYPE` set to `Debug`) have `-d` suffix to make it possible to have
 both debug and release libraries installed alongside each other. *Dynamic*
 plugins in `Debug` configuration are installed to `magnum-d` subdirectory
 instead of `magnum`. Headers and other files are the same for both. The library
-and plugin distinction is handled semi-automatically when using %Magnum in
+and plugin distinction is handled semi-automatically when using Magnum in
 depending projects, see @ref cmake for more information.
-
-%Magnum by default does not install `FindMagnum.cmake`, as you should bundle
-the module with your code instead of depending on it being in system location.
-You can install it by enabling `WITH_FIND_MODULE`.
 
 The library is constantly evolving and thus some APIs are deprecated and then
 later removed in favor of better ones. To preserve backwards compatibility,
-%Magnum is by default built with all deprecated APIs. However, to make your
+Magnum is by default built with all deprecated APIs. However, to make your
 code more robust and future-proof, it's recommended to build the library with
 `BUILD_DEPRECATED` disabled.
 
@@ -182,7 +180,7 @@ parameters you can specify which parts will be built and which not:
 -   `WITH_AUDIO` - @ref Audio library. Depends on **OpenAL** library, not built
     by default.
 -   `WITH_DEBUGTOOLS` - @ref DebugTools library. Enables also building of
-    %MeshTools, %Primitives, %SceneGraph, %Shaders and %Shapes libraries.
+    MeshTools, Primitives, SceneGraph, Shaders and Shapes libraries.
 -   `WITH_MESHTOOLS` - @ref MeshTools library. Enabled automatically if
     `WITH_DEBUGTOOLS` is enabled.
 -   `WITH_PRIMITIVES` - @ref Primitives library. Enabled automatically if
@@ -191,9 +189,9 @@ parameters you can specify which parts will be built and which not:
     `WITH_DEBUGTOOLS` or `WITH_SHAPES` is enabled.
 -   `WITH_SHADERS` - @ref Shaders library. Enabled automatically if
     `WITH_DEBUGTOOLS` is enabled.
--   `WITH_SHAPES` - @ref Shapes library. Enables also building of %SceneGraph
+-   `WITH_SHAPES` - @ref Shapes library. Enables also building of SceneGraph
     library. Enabled automatically if `WITH_DEBUGTOOLS` is enabled.
--   `WITH_TEXT` - @ref Text library. Enables also building of %TextureTools
+-   `WITH_TEXT` - @ref Text library. Enables also building of TextureTools
     library.
 -   `WITH_TEXTURETOOLS` - @ref TextureTools library. Enabled automatically if
     `WITH_TEXT` or `WITH_DISTANCEFIELDCONVERTER` is enabled.
@@ -229,12 +227,12 @@ on Linux, Mac OS X and Windows, also disabled by default:
     information about the engine and OpenGL capabilities.
 -   `WITH_DISTANCEFIELDCONVERTER` - @ref magnum-distancefieldconverter "magnum-distancefieldconverter"
     executable for converting black&white images to distance field textures.
-    Enables also building of %TextureTools library.
+    Enables also building of TextureTools library.
 -   `WITH_FONTCONVERTER` - @ref magnum-fontconverter "magnum-fontconverter"
     executable for converting fonts to raster ones. Enables also building of
-    %Text library.
+    Text library.
 
-%Magnum also contains a set of dependency-less plugins for importing essential
+Magnum also contains a set of dependency-less plugins for importing essential
 file formats. Additional plugins are provided in separate plugin repository,
 see @ref building-plugins for more information. None of the plugins is built by
 default.
@@ -285,9 +283,9 @@ be build by running
 
 in root directory (i.e. where `Doxyfile` is). Resulting HTML documentation
 will be in `build/doc/` directory. You might need to create `build/` directory
-if it doesn't exist yet. If %Corrade with generated documentation is placed in
+if it doesn't exist yet. If Corrade with generated documentation is placed in
 `corrade` directory next to `magnum`, the documentation will be crosslinked
-with %Corrade's one. If related projects (`magnum-plugins`, `magnum-integration`
+with Corrade's one. If related projects (`magnum-plugins`, `magnum-integration`
 and `magnum-examples`, see below) are places along these, their documentation
 will be also included in generated output.
 
@@ -310,10 +308,7 @@ build. The package is also in AUR under the same name.
 There are also a few development PKGBUILDs in `package/archlinux`, which allow
 you to build and install the package directly from source tree without
 downloading anything. The native PKGBUILDs also contain `check()` function
-which will run all unit tests before packaging. You need to build them from
-project root:
-
-    makepkg -p package/archlinux/<file>
+which will run all unit tests before packaging.
 
 @subsection building-packages-gentoo Gentoo ebuilds
 
@@ -336,7 +331,7 @@ features, for example), modify the last entry in `debian/rules`.
 @section building-crosscompiling Crosscompiling
 
 For crosscompiling you need to have *both* target and native version of
-%Corrade installed, because %Corrade needs to run `corrade-rc` utility on the
+Corrade installed, because Corrade needs to run `corrade-rc` utility on the
 host system as part of the build process. If native version of `corrade-rc` is
 not found on the system, crosscompilation will fail.
 
@@ -364,11 +359,13 @@ You will need MinGW32 versions of the compiler and all dependent libraries
 
 Then create build directory and run cmake and build command in it. You may need
 to modify the `basic-mingw32.cmake` file and `CMAKE_INSTALL_PREFIX` to suit
-your distribution filesystem hierarchy.
+your distribution filesystem hierarchy and specify path where Corrade is
+installed in `CMAKE_PREFIX_PATH`.
 
     mkdir build-win && cd build-win
     cmake .. \
         -DCMAKE_TOOLCHAIN_FILE=../toolchains/archlinux/basic-mingw32.cmake \
+        -DCMAKE_PREFIX_PATH=/usr/i486-mingw32 \
         -DCMAKE_INSTALL_PREFIX=/usr/i486-mingw32
     cmake --build .
 
@@ -392,13 +389,15 @@ Then create build directories for x86-32 and x86-64 and run cmake and build
 command in them. The toolchains need access to the platform file, so be sure to
 properly set **absolute** path to `modules/` directory containing
 `Platform/NaCl.cmake`. Also adapt `CMAKE_INSTALL_PREFIX` to the same value as
-in `NACL_PREFIX` in toolchain file.
+in `NACL_PREFIX` in toolchain file and specify path where Corrade is installed
+in `CMAKE_PREFIX_PATH`.
 
     mkdir build-nacl-x86-32 && cd build-nacl-x86-32
     cmake .. \
         -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
         -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/NaCl-newlib-x86-32.cmake" \
         -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_PREFIX_PATH=/usr/nacl \
         -DCMAKE_INSTALL_PREFIX=/usr/nacl \
         -DWITH_NACLAPPLICATION=ON \
         -DLIB_SUFFIX=/32
@@ -409,6 +408,7 @@ in `NACL_PREFIX` in toolchain file.
         -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
         -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/NaCl-newlib-x86-64.cmake" \
         -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_PREFIX_PATH=/usr/nacl \
         -DCMAKE_INSTALL_PREFIX=/usr/nacl \
         -DWITH_NACLAPPLICATION=ON
     cmake --build .
@@ -427,9 +427,9 @@ You will need [Emscripten](https://github.com/kripken/emscripten/wiki/Tutorial)
 installed and configured.
 
 Don't forget to adapt `EMSCRIPTEN_PREFIX` variable in `generic/Emscripten.cmake`
-to path where Emscripten is installed. Default is `/usr/emscripten`. Emscripten
-supports dynamic libraries only to simplify porting and they are generally
-slower, thus `BUILD_STATIC` is implicitly enabled.
+to path where Emscripten is installed. Default is `/usr/lib/emscripten`.
+Emscripten supports dynamic libraries only to simplify porting and they are
+generally slower, thus `BUILD_STATIC` is implicitly enabled.
 
 Then create build directory and run cmake and build command in it. The
 toolchain needs access to its platform file, so be sure to properly set
@@ -441,7 +441,8 @@ Also set `CMAKE_INSTALL_PREFIX` to path contained in `EMSCRIPTEN_TOOLCHAIN_PATH`
         -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
         -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Emscripten.cmake" \
         -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_INSTALL_PREFIX=/usr/emscripten/system \
+        -DCMAKE_PREFIX_PATH=/usr/lib/emscripten/system \
+        -DCMAKE_INSTALL_PREFIX=/usr/lib/emscripten/system \
         -DWITH_SDL2APPLICATION=ON
     cmake --build .
 
@@ -468,7 +469,8 @@ where NDK is installed. Default is `/opt/android-ndk`. Adapt also
 Then create build directory and run cmake and build command in it. The
 toolchain needs access to its platform file, so be sure to properly set **absolute**
 path to `modules/` directory containing `Platform/Android.cmake`. Also set
-`CMAKE_INSTALL_PREFIX` to `/usr` subdirectory of `ANDROID_SYSROOT`.
+`CMAKE_INSTALL_PREFIX` to `/usr` subdirectory of `ANDROID_SYSROOT` and specify
+path where Corrade is installed in `CMAKE_PREFIX_PATH`.
 
 Note that `BUILD_STATIC` is implicitly enabled, because manually loading all
 depending shared libraries using JNI would be too inconvenient. Decision
@@ -480,6 +482,7 @@ between OpenGL ES 2.0 and ES 3.0 is left up to the user (i.e. you need to set
         -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
         -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Android-ARM.cmake" \
         -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_PREFIX_PATH=/opt/android-ndk/platforms/android-19/arch-arm/usr \
         -DCMAKE_INSTALL_PREFIX=/opt/android-ndk/platforms/android-19/arch-arm/usr \
         -DTARGET_GLES=ON -DTARGET_GLES2=ON
     cmake --build .
@@ -489,6 +492,7 @@ between OpenGL ES 2.0 and ES 3.0 is left up to the user (i.e. you need to set
         -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
         -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Android-x86.cmake" \
         -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_PREFIX_PATH=/opt/android-ndk/platforms/android-19/arch-x86/usr \
         -DCMAKE_INSTALL_PREFIX=/opt/android-ndk/platforms/android-19/arch-x86/usr \
         -DTARGET_GLES=ON -DTARGET_GLES2=ON
     cmake --build .
@@ -504,16 +508,18 @@ named `PKGBUILD-android-arm` and `PKGBUILD-android-x86`, see
 
 In `package/ci/` there are `jenkins.xml` and `jenkins-gltests.xml` files
 containing job configuration, one for build and non-GL tests and the other for
-GL tests only. Setup your Jenkins server, enable the **Git** and **Text-finder**
-plugin and download the CLI application from here:
+GL tests only. Setup your Jenkins server, enable the **Git** and
+**Text-finder** plugin and download the CLI application from here (replace
+`localhost:8080` with your server name):
 
-    http://your-jenkins-server/cli
+    http://localhost:8080/cli
 
-Then add new jobs or update existing ones (replace `<command>` with `create-job`
-or `update-job`).
+Then add new jobs or update existing ones (update path to the `*.jar` file,
+replace `localhost:8080` with your server name, replace `update-job` with
+`create-job` if the job doesn't exist yet).
 
-    java -jar jenkins-cli.jar -s http://your-jenkins-server <command> Magnum-Compatibility < jenkins.xml
-    java -jar jenkins-cli.jar -s http://your-jenkins-server <command> Magnum-Compatibility-GLTests < jenkins-gltests.xml
+    java -jar ~/jenkins-cli.jar -s http://localhost:8080 update-job Magnum-Compatibility < package/ci/jenkins.xml
+    java -jar ~/jenkins-cli.jar -s http://localhost:8080 update-job Magnum-Compatibility-GLTests < package/ci/jenkins-gltests.xml
 
 Build is done using **Ninja** build system and everything possible is enabled,
 thus you need also **SDL2**, **GLUT** and **OpenAL** libraries. It expects that
@@ -525,15 +531,22 @@ in `axes/hudson.matrix.TextAxis` or via the web interface later.
 Magnum-Compatibility-GLTests depend on active X11 session, thus they should be
 run from Jenkins instance running on graphical user session.
 
+Clang Analyzer and *Sanitizer checks are also available. They both require **Clang**,
+Analyzer job additionally requires **clang-analyzer** tool.
+
+    java -jar ~/jenkins-cli.jar -s http://localhost:8080 update-job Magnum-ClangAnalyzer < package/ci/jenkins-clang-analyzer.xml
+    java -jar ~/jenkins-cli.jar -s http://localhost:8080 update-job Magnum-ClangSanitizer < package/ci/jenkins-clang-sanitizer.xml
+    java -jar ~/jenkins-cli.jar -s http://localhost:8080 update-job Magnum-ClangSanitizer-GLTests < package/ci/jenkins-clang-sanitizer-gltests.xml
+
 There is also MinGW-w64, Emscripten, NaCl and Android configuration, add or
 update them with the commands below. See @ref building-crosscompiling for more
 information about setting up the crosscompilers and `toolchains/` submodule.
 For Emscripten you need also **Node.js** installed to run the tests.
 
-    java -jar jenkins-cli.jar -s http://your-jenkins-server <command> Magnum-MinGW-w64 < jenkins-mingw-w64.xml
-    java -jar jenkins-cli.jar -s http://your-jenkins-server <command> Magnum-Emscripten < jenkins-emscripten.xml
-    java -jar jenkins-cli.jar -s http://your-jenkins-server <command> Magnum-NaCl < jenkins-nacl.xml
-    java -jar jenkins-cli.jar -s http://your-jenkins-server <command> Magnum-Android < jenkins-android.xml
+    java -jar ~/jenkins-cli.jar -s http://localhost:8080 update-job Magnum-MinGW-w64 < package/ci/jenkins-mingw-w64.xml
+    java -jar ~/jenkins-cli.jar -s http://localhost:8080 update-job Magnum-Emscripten < package/ci/jenkins-emscripten.xml
+    java -jar ~/jenkins-cli.jar -s http://localhost:8080 update-job Magnum-NaCl < package/ci/jenkins-nacl.xml
+    java -jar ~/jenkins-cli.jar -s http://localhost:8080 update-job Magnum-Android < package/ci/jenkins-android.xml
 */
 
 }

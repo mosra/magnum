@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -176,23 +176,23 @@ std::tuple<std::vector<Vertex>, Range2D> renderVerticesInternal(AbstractFont& fo
     return std::make_tuple(std::move(vertices), rectangle);
 }
 
-std::pair<Containers::Array<unsigned char>, Mesh::IndexType> renderIndicesInternal(const UnsignedInt glyphCount) {
+std::pair<Containers::Array<char>, Mesh::IndexType> renderIndicesInternal(const UnsignedInt glyphCount) {
     const UnsignedInt vertexCount = glyphCount*4;
     const UnsignedInt indexCount = glyphCount*6;
 
-    Containers::Array<unsigned char> indices;
+    Containers::Array<char> indices;
     Mesh::IndexType indexType;
     if(vertexCount <= 256) {
         indexType = Mesh::IndexType::UnsignedByte;
-        indices = Containers::Array<unsigned char>(indexCount*sizeof(UnsignedByte));
+        indices = Containers::Array<char>(indexCount*sizeof(UnsignedByte));
         createIndices<UnsignedByte>(indices, glyphCount);
     } else if(vertexCount <= 65536) {
         indexType = Mesh::IndexType::UnsignedShort;
-        indices = Containers::Array<unsigned char>(indexCount*sizeof(UnsignedShort));
+        indices = Containers::Array<char>(indexCount*sizeof(UnsignedShort));
         createIndices<UnsignedShort>(indices, glyphCount);
     } else {
         indexType = Mesh::IndexType::UnsignedInt;
-        indices = Containers::Array<unsigned char>(indexCount*sizeof(UnsignedInt));
+        indices = Containers::Array<char>(indexCount*sizeof(UnsignedInt));
         createIndices<UnsignedInt>(indices, glyphCount);
     }
 
@@ -210,7 +210,7 @@ std::tuple<Mesh, Range2D> renderInternal(AbstractFont& font, const GlyphCache& c
     const UnsignedInt indexCount = glyphCount*6;
 
     /* Render indices and upload them */
-    Containers::Array<unsigned char> indices;
+    Containers::Array<char> indices;
     Mesh::IndexType indexType;
     std::tie(indices, indexType) = renderIndicesInternal(glyphCount);
     indexBuffer.setData(indices, usage);
@@ -259,7 +259,7 @@ template<UnsignedInt dimensions> std::tuple<Mesh, Range2D> Renderer<dimensions>:
             typename Shaders::AbstractVector<dimensions>::Position(
                 Shaders::AbstractVector<dimensions>::Position::Components::Two),
             typename Shaders::AbstractVector<dimensions>::TextureCoordinates());
-    return std::move(r);
+    return r;
 }
 
 #if defined(MAGNUM_TARGET_GLES2) && !defined(CORRADE_TARGET_EMSCRIPTEN)
@@ -350,7 +350,7 @@ void AbstractRenderer::reserve(const uint32_t glyphCount, const BufferUsage vert
     _mesh.setCount(0);
 
     /* Render indices */
-    Containers::Array<unsigned char> indexData;
+    Containers::Array<char> indexData;
     Mesh::IndexType indexType;
     std::tie(indexData, indexType) = renderIndicesInternal(glyphCount);
 
@@ -363,7 +363,7 @@ void AbstractRenderer::reserve(const uint32_t glyphCount, const BufferUsage vert
         .setIndexBuffer(_indexBuffer, 0, indexType, 0, vertexCount);
 
     /* Prefill index buffer */
-    unsigned char* const indices = static_cast<unsigned char*>(bufferMapImplementation(_indexBuffer, indexData.size()));
+    char* const indices = static_cast<char*>(bufferMapImplementation(_indexBuffer, indexData.size()));
     CORRADE_INTERNAL_ASSERT(indices);
     /** @todo Emscripten: it can be done without this copying altogether */
     std::copy(indexData.begin(), indexData.end(), indices);

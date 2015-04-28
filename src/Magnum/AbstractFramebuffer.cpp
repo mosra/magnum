@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -93,24 +93,45 @@ void AbstractFramebuffer::createIfNotAlready() {
     CORRADE_INTERNAL_ASSERT(_created);
 }
 
-void AbstractFramebuffer::bind(FramebufferTarget target) {
-    bindInternal(target);
+void AbstractFramebuffer::bind() {
+    bindInternal(FramebufferTarget::Draw);
     setViewportInternal();
 }
 
 void AbstractFramebuffer::bindInternal(FramebufferTarget target) {
-    Implementation::FramebufferState* state = Context::current()->state().framebuffer;
+    #ifndef MAGNUM_TARGET_GLES2
+    bindImplementationDefault(target);
+    #else
+    (this->*Context::current()->state().framebuffer->bindImplementation)(target);
+    #endif
+}
 
-    /* If already bound, done, otherwise update tracked state */
+#ifdef MAGNUM_TARGET_GLES2
+void AbstractFramebuffer::bindImplementationSingle(FramebufferTarget) {
+    Implementation::FramebufferState& state = *Context::current()->state().framebuffer;
+    CORRADE_INTERNAL_ASSERT(state.readBinding == state.drawBinding);
+    if(state.readBinding == _id) return;
+
+    state.readBinding = state.drawBinding = _id;
+
+    /* Binding the framebuffer finally creates it */
+    _created = true;
+    glBindFramebuffer(GL_FRAMEBUFFER, _id);
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+inline
+#endif
+void AbstractFramebuffer::bindImplementationDefault(FramebufferTarget target) {
+    Implementation::FramebufferState& state = *Context::current()->state().framebuffer;
+
     if(target == FramebufferTarget::Read) {
-        if(state->readBinding == _id) return;
-        state->readBinding = _id;
+        if(state.readBinding == _id) return;
+        state.readBinding = _id;
     } else if(target == FramebufferTarget::Draw) {
-        if(state->drawBinding == _id) return;
-        state->drawBinding = _id;
-    } else if(target == FramebufferTarget::ReadDraw) {
-        if(state->readBinding == _id && state->drawBinding == _id) return;
-        state->readBinding = state->drawBinding = _id;
+        if(state.drawBinding == _id) return;
+        state.drawBinding = _id;
     } else CORRADE_ASSERT_UNREACHABLE();
 
     /* Binding the framebuffer finally creates it */
@@ -119,46 +140,78 @@ void AbstractFramebuffer::bindInternal(FramebufferTarget target) {
 }
 
 FramebufferTarget AbstractFramebuffer::bindInternal() {
-    Implementation::FramebufferState* state = Context::current()->state().framebuffer;
-
-    /* Return target to which the framebuffer is already bound */
-    if(state->readBinding == _id && state->drawBinding == _id)
-        return FramebufferTarget::ReadDraw;
-    if(state->readBinding == _id)
-        return FramebufferTarget::Read;
-    if(state->drawBinding == _id)
-        return FramebufferTarget::Draw;
-
-    /* Or bind it, if not already */
-    state->readBinding = _id;
-
-    /* Binding the framebuffer finally creates it */
-    _created = true;
     #ifndef MAGNUM_TARGET_GLES2
-    glBindFramebuffer(GLenum(FramebufferTarget::Read), _id);
-    return FramebufferTarget::Read;
+    return bindImplementationDefault();
     #else
-    if(state->readTarget == FramebufferTarget::ReadDraw) state->drawBinding = _id;
-    glBindFramebuffer(GLenum(state->readTarget), _id);
-    return state->readTarget;
-    #endif
-}
-
-void AbstractFramebuffer::blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter) {
-    source.bindInternal(FramebufferTarget::Read);
-    destination.bindInternal(FramebufferTarget::Draw);
-    #ifndef MAGNUM_TARGET_GLES2
-    glBlitFramebuffer(sourceRectangle.left(), sourceRectangle.bottom(), sourceRectangle.right(), sourceRectangle.top(), destinationRectangle.left(), destinationRectangle.bottom(), destinationRectangle.right(), destinationRectangle.top(), GLbitfield(mask), GLenum(filter));
-    #else
-    Context::current()->state().framebuffer->blitImplementation(sourceRectangle, destinationRectangle, mask, filter);
+    return (this->*Context::current()->state().framebuffer->bindInternalImplementation)();
     #endif
 }
 
 #ifdef MAGNUM_TARGET_GLES2
-void AbstractFramebuffer::blitImplementationANGLE(const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, const FramebufferBlitMask mask, const FramebufferBlitFilter filter) {
+FramebufferTarget AbstractFramebuffer::bindImplementationSingle() {
+    Implementation::FramebufferState& state = *Context::current()->state().framebuffer;
+    CORRADE_INTERNAL_ASSERT(state.readBinding == state.drawBinding);
+
+    /* Bind the framebuffer, if not already */
+    if(state.readBinding != _id) {
+        state.readBinding = state.drawBinding = _id;
+
+        /* Binding the framebuffer finally creates it */
+        _created = true;
+        glBindFramebuffer(GL_FRAMEBUFFER, _id);
+    }
+
+    return FramebufferTarget{};
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+inline
+#endif
+FramebufferTarget AbstractFramebuffer::bindImplementationDefault() {
+    Implementation::FramebufferState& state = *Context::current()->state().framebuffer;
+
+    /* Return target to which the framebuffer is already bound */
+    if(state.readBinding == _id)
+        return FramebufferTarget::Read;
+    if(state.drawBinding == _id)
+        return FramebufferTarget::Draw;
+
+    /* Or bind it, if not already */
+    state.readBinding = _id;
+
+    /* Binding the framebuffer finally creates it */
+    _created = true;
+    glBindFramebuffer(GLenum(FramebufferTarget::Read), _id);
+    return FramebufferTarget::Read;
+}
+
+void AbstractFramebuffer::blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, const FramebufferBlitMask mask, const FramebufferBlitFilter filter) {
+    Context::current()->state().framebuffer->blitImplementation(source, destination, sourceRectangle, destinationRectangle, mask, filter);
+}
+
+#ifndef MAGNUM_TARGET_GLES2
+void AbstractFramebuffer::blitImplementationDefault(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, const FramebufferBlitMask mask, const FramebufferBlitFilter filter) {
+    source.bindInternal(FramebufferTarget::Read);
+    destination.bindInternal(FramebufferTarget::Draw);
+    glBlitFramebuffer(sourceRectangle.left(), sourceRectangle.bottom(), sourceRectangle.right(), sourceRectangle.top(), destinationRectangle.left(), destinationRectangle.bottom(), destinationRectangle.right(), destinationRectangle.top(), GLbitfield(mask), GLenum(filter));
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractFramebuffer::blitImplementationDSA(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, const FramebufferBlitMask mask, const FramebufferBlitFilter filter) {
+    glBlitNamedFramebuffer(source._id, destination._id, sourceRectangle.left(), sourceRectangle.bottom(), sourceRectangle.right(), sourceRectangle.top(), destinationRectangle.left(), destinationRectangle.bottom(), destinationRectangle.right(), destinationRectangle.top(), GLbitfield(mask), GLenum(filter));
+}
+#endif
+
+#else
+void AbstractFramebuffer::blitImplementationANGLE(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, const FramebufferBlitMask mask, const FramebufferBlitFilter filter) {
     #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    source.bindInternal(FramebufferTarget::Read);
+    destination.bindInternal(FramebufferTarget::Draw);
     glBlitFramebufferANGLE(sourceRectangle.left(), sourceRectangle.bottom(), sourceRectangle.right(), sourceRectangle.top(), destinationRectangle.left(), destinationRectangle.bottom(), destinationRectangle.right(), destinationRectangle.top(), GLbitfield(mask), GLenum(filter));
     #else
+    static_cast<void>(source);
+    static_cast<void>(destination);
     static_cast<void>(sourceRectangle);
     static_cast<void>(destinationRectangle);
     static_cast<void>(mask);
@@ -167,10 +220,14 @@ void AbstractFramebuffer::blitImplementationANGLE(const Range2Di& sourceRectangl
     #endif
 }
 
-void AbstractFramebuffer::blitImplementationNV(const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, const FramebufferBlitMask mask, const FramebufferBlitFilter filter) {
+void AbstractFramebuffer::blitImplementationNV(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, const FramebufferBlitMask mask, const FramebufferBlitFilter filter) {
     #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    source.bindInternal(FramebufferTarget::Read);
+    destination.bindInternal(FramebufferTarget::Draw);
     glBlitFramebufferNV(sourceRectangle.left(), sourceRectangle.bottom(), sourceRectangle.right(), sourceRectangle.top(), destinationRectangle.left(), destinationRectangle.bottom(), destinationRectangle.right(), destinationRectangle.top(), GLbitfield(mask), GLenum(filter));
     #else
+    static_cast<void>(source);
+    static_cast<void>(destination);
     static_cast<void>(sourceRectangle);
     static_cast<void>(destinationRectangle);
     static_cast<void>(mask);
@@ -181,6 +238,7 @@ void AbstractFramebuffer::blitImplementationNV(const Range2Di& sourceRectangle, 
 #endif
 
 AbstractFramebuffer& AbstractFramebuffer::setViewport(const Range2Di& rectangle) {
+    CORRADE_INTERNAL_ASSERT(rectangle != Implementation::FramebufferState::DisengagedViewport);
     _viewport = rectangle;
 
     /* Update the viewport if the framebuffer is currently bound */
@@ -191,54 +249,55 @@ AbstractFramebuffer& AbstractFramebuffer::setViewport(const Range2Di& rectangle)
 }
 
 void AbstractFramebuffer::setViewportInternal() {
-    Implementation::FramebufferState* state = Context::current()->state().framebuffer;
+    Implementation::FramebufferState& state = *Context::current()->state().framebuffer;
 
-    /* We are using empty viewport to indicate disengaged state */
-    CORRADE_INTERNAL_ASSERT(_viewport != Range2Di{});
-    CORRADE_INTERNAL_ASSERT(state->drawBinding == _id);
+    CORRADE_INTERNAL_ASSERT(_viewport != Implementation::FramebufferState::DisengagedViewport);
+    CORRADE_INTERNAL_ASSERT(state.drawBinding == _id);
 
     /* Already up-to-date, nothing to do */
-    if(state->viewport == _viewport)
+    if(state.viewport == _viewport)
         return;
 
     /* Update the state and viewport */
-    state->viewport = _viewport;
+    state.viewport = _viewport;
     glViewport(_viewport.left(), _viewport.bottom(), _viewport.sizeX(), _viewport.sizeY());
 }
 
-void AbstractFramebuffer::clear(FramebufferClearMask mask) {
-    #ifndef MAGNUM_TARGET_GLES2
+AbstractFramebuffer& AbstractFramebuffer::clear(const FramebufferClearMask mask) {
     bindInternal(FramebufferTarget::Draw);
-    #else
-    bindInternal(Context::current()->state().framebuffer->drawTarget);
-    #endif
     glClear(GLbitfield(mask));
+
+    return *this;
 }
 
-void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, Image2D& image) {
-    const Implementation::FramebufferState& state = *Context::current()->state().framebuffer;
-
-    #ifndef MAGNUM_TARGET_GLES2
+void AbstractFramebuffer::read(const Range2Di& rectangle, Image2D& image) {
     bindInternal(FramebufferTarget::Read);
-    #else
-    bindInternal(state.readTarget);
-    #endif
-    const std::size_t dataSize = image.dataSize(size);
+    const std::size_t dataSize = image.dataSize(rectangle.size());
     char* const data = new char[dataSize];
-    (state.readImplementation)(offset, size, image.format(), image.type(), dataSize, data);
-    image.setData(image.format(), image.type(), size, data);
+    (Context::current()->state().framebuffer->readImplementation)(rectangle, image.format(), image.type(), dataSize, data);
+    image.setData(image.format(), image.type(), rectangle.size(), data);
+}
+
+Image2D AbstractFramebuffer::read(const Range2Di& rectangle, Image2D&& image) {
+    read(rectangle, image);
+    return std::move(image);
 }
 
 #ifndef MAGNUM_TARGET_GLES2
-void AbstractFramebuffer::read(const Vector2i& offset, const Vector2i& size, BufferImage2D& image, BufferUsage usage) {
+void AbstractFramebuffer::read(const Range2Di& rectangle, BufferImage2D& image, BufferUsage usage) {
     bindInternal(FramebufferTarget::Read);
     /* If the buffer doesn't have sufficient size, resize it */
     /** @todo Explicitly reset also when buffer usage changes */
-    if(image.size() != size)
-        image.setData(image.format(), image.type(), size, nullptr, usage);
+    if(image.size() != rectangle.size())
+        image.setData(image.format(), image.type(), rectangle.size(), nullptr, usage);
 
     image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
-    (Context::current()->state().framebuffer->readImplementation)(offset, size, image.format(), image.type(), image.dataSize(size), nullptr);
+    (Context::current()->state().framebuffer->readImplementation)(rectangle, image.format(), image.type(), image.dataSize(rectangle.size()), nullptr);
+}
+
+BufferImage2D AbstractFramebuffer::read(const Range2Di& rectangle, BufferImage2D&& image, BufferUsage usage) {
+    read(rectangle, image, usage);
+    return std::move(image);
 }
 #endif
 
@@ -256,12 +315,24 @@ void AbstractFramebuffer::invalidateImplementationDefault(const GLsizei count, c
     #endif
 }
 
+#ifndef MAGNUM_TARGET_GLES
+void AbstractFramebuffer::invalidateImplementationDSA(const GLsizei count, const GLenum* const attachments) {
+    glInvalidateNamedFramebufferData(_id, count, attachments);
+}
+#endif
+
 #ifndef MAGNUM_TARGET_GLES2
 void AbstractFramebuffer::invalidateImplementationNoOp(GLsizei, const GLenum*, const Range2Di&) {}
 
 void AbstractFramebuffer::invalidateImplementationDefault(const GLsizei count, const GLenum* const attachments, const Range2Di& rectangle) {
     glInvalidateSubFramebuffer(GLenum(bindInternal()), count, attachments, rectangle.left(), rectangle.bottom(), rectangle.sizeX(), rectangle.sizeY());
 }
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractFramebuffer::invalidateImplementationDSA(const GLsizei count, const GLenum* const attachments, const Range2Di& rectangle) {
+    glInvalidateNamedFramebufferSubData(_id, count, attachments, rectangle.left(), rectangle.bottom(), rectangle.sizeX(), rectangle.sizeY());
+}
+#endif
 #endif
 
 GLenum AbstractFramebuffer::checkStatusImplementationDefault(const FramebufferTarget target) {
@@ -269,7 +340,18 @@ GLenum AbstractFramebuffer::checkStatusImplementationDefault(const FramebufferTa
     return glCheckFramebufferStatus(GLenum(target));
 }
 
+#ifdef MAGNUM_TARGET_GLES2
+GLenum AbstractFramebuffer::checkStatusImplementationSingle(FramebufferTarget) {
+    bindInternal(FramebufferTarget{});
+    return glCheckFramebufferStatus(GL_FRAMEBUFFER);
+}
+#endif
+
 #ifndef MAGNUM_TARGET_GLES
+GLenum AbstractFramebuffer::checkStatusImplementationDSA(const FramebufferTarget target) {
+    return glCheckNamedFramebufferStatus(_id, GLenum(target));
+}
+
 GLenum AbstractFramebuffer::checkStatusImplementationDSAEXT(const FramebufferTarget target) {
     _created = true;
     return glCheckNamedFramebufferStatusEXT(_id, GLenum(target));
@@ -277,11 +359,7 @@ GLenum AbstractFramebuffer::checkStatusImplementationDSAEXT(const FramebufferTar
 #endif
 
 void AbstractFramebuffer::drawBuffersImplementationDefault(GLsizei count, const GLenum* buffers) {
-    #ifndef MAGNUM_TARGET_GLES2
     bindInternal(FramebufferTarget::Draw);
-    #else
-    bindInternal(Context::current()->state().framebuffer->drawTarget);
-    #endif
 
     #ifndef MAGNUM_TARGET_GLES2
     glDrawBuffers(count, buffers);
@@ -295,6 +373,10 @@ void AbstractFramebuffer::drawBuffersImplementationDefault(GLsizei count, const 
 }
 
 #ifndef MAGNUM_TARGET_GLES
+void AbstractFramebuffer::drawBuffersImplementationDSA(const GLsizei count, const GLenum* const buffers) {
+    glNamedFramebufferDrawBuffers(_id, count, buffers);
+}
+
 void AbstractFramebuffer::drawBuffersImplementationDSAEXT(GLsizei count, const GLenum* buffers) {
     _created = true;
     glFramebufferDrawBuffersEXT(_id, count, buffers);
@@ -302,11 +384,7 @@ void AbstractFramebuffer::drawBuffersImplementationDSAEXT(GLsizei count, const G
 #endif
 
 void AbstractFramebuffer::drawBufferImplementationDefault(GLenum buffer) {
-    #ifndef MAGNUM_TARGET_GLES2
     bindInternal(FramebufferTarget::Draw);
-    #else
-    bindInternal(Context::current()->state().framebuffer->drawTarget);
-    #endif
 
     #ifndef MAGNUM_TARGET_GLES
     glDrawBuffer(buffer);
@@ -321,6 +399,10 @@ void AbstractFramebuffer::drawBufferImplementationDefault(GLenum buffer) {
 }
 
 #ifndef MAGNUM_TARGET_GLES
+void AbstractFramebuffer::drawBufferImplementationDSA(const GLenum buffer) {
+    glNamedFramebufferDrawBuffer(_id, buffer);
+}
+
 void AbstractFramebuffer::drawBufferImplementationDSAEXT(GLenum buffer) {
     _created = true;
     glFramebufferDrawBufferEXT(_id, buffer);
@@ -328,11 +410,7 @@ void AbstractFramebuffer::drawBufferImplementationDSAEXT(GLenum buffer) {
 #endif
 
 void AbstractFramebuffer::readBufferImplementationDefault(GLenum buffer) {
-    #ifndef MAGNUM_TARGET_GLES2
     bindInternal(FramebufferTarget::Read);
-    #else
-    bindInternal(Context::current()->state().framebuffer->readTarget);
-    #endif
 
     #ifndef MAGNUM_TARGET_GLES2
     glReadBuffer(buffer);
@@ -345,24 +423,27 @@ void AbstractFramebuffer::readBufferImplementationDefault(GLenum buffer) {
 }
 
 #ifndef MAGNUM_TARGET_GLES
+void AbstractFramebuffer::readBufferImplementationDSA(const GLenum buffer) {
+    glFramebufferReadBufferEXT(_id, buffer);
+}
+
 void AbstractFramebuffer::readBufferImplementationDSAEXT(GLenum buffer) {
     _created = true;
     glFramebufferReadBufferEXT(_id, buffer);
 }
 #endif
 
-void AbstractFramebuffer::readImplementationDefault(const Vector2i& offset, const Vector2i& size, const ColorFormat format, const ColorType type, const std::size_t, GLvoid* const data) {
-    glReadPixels(offset.x(), offset.y(), size.x(), size.y(), GLenum(format), GLenum(type), data);
+void AbstractFramebuffer::readImplementationDefault(const Range2Di& rectangle, const ColorFormat format, const ColorType type, const std::size_t, GLvoid* const data) {
+    glReadPixels(rectangle.min().x(), rectangle.min().y(), rectangle.sizeX(), rectangle.sizeY(), GLenum(format), GLenum(type), data);
 }
 
-void AbstractFramebuffer::readImplementationRobustness(const Vector2i& offset, const Vector2i& size, const ColorFormat format, const ColorType type, const std::size_t dataSize, GLvoid* const data) {
+void AbstractFramebuffer::readImplementationRobustness(const Range2Di& rectangle, const ColorFormat format, const ColorType type, const std::size_t dataSize, GLvoid* const data) {
     #ifndef MAGNUM_TARGET_GLES
-    glReadnPixelsARB(offset.x(), offset.y(), size.x(), size.y(), GLenum(format), GLenum(type), dataSize, data);
+    glReadnPixelsARB(rectangle.min().x(), rectangle.min().y(), rectangle.sizeX(), rectangle.sizeY(), GLenum(format), GLenum(type), dataSize, data);
     #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
-    glReadnPixelsEXT(offset.x(), offset.y(), size.x(), size.y(), GLenum(format), GLenum(type), dataSize, data);
+    glReadnPixelsEXT(rectangle.min().x(), rectangle.min().y(), rectangle.sizeX(), rectangle.sizeY(), GLenum(format), GLenum(type), dataSize, data);
     #else
-    static_cast<void>(offset);
-    static_cast<void>(size);
+    static_cast<void>(rectangle);
     static_cast<void>(format);
     static_cast<void>(type);
     static_cast<void>(dataSize);

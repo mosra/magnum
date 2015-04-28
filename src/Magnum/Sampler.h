@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -36,7 +36,7 @@
 namespace Magnum {
 
 /**
-@brief %Texture sampler
+@brief Texture sampler
 
 @see @ref Texture, @ref TextureArray, @ref CubeMapTexture,
     @ref CubeMapTextureArray, @ref RectangleTexture
@@ -44,7 +44,7 @@ namespace Magnum {
 class MAGNUM_EXPORT Sampler {
     public:
         /**
-         * @brief %Texture filtering
+         * @brief Texture filtering
          *
          * @see @ref Texture::setMinificationFilter() "*Texture::setMinificationFilter()",
          *      @ref Texture::setMagnificationFilter() "*Texture::setMagnificationFilter()"
@@ -54,7 +54,7 @@ class MAGNUM_EXPORT Sampler {
 
             /**
              * Linear interpolation filtering.
-             * @requires_gles30 %Extension @es_extension{OES,texture_float_linear} /
+             * @requires_gles30 Extension @es_extension{OES,texture_float_linear} /
              *      @es_extension2{OES,texture_half_float_linear,OES_texture_float_linear}
              *      for linear interpolation of textures with
              *      @ref Magnum::TextureFormat "TextureFormat::HalfFloat" /
@@ -80,7 +80,7 @@ class MAGNUM_EXPORT Sampler {
             /**
              * Linear interpolation of nearest mip levels. **Unavailable on
              * rectangle textures.**
-             * @requires_gles30 %Extension @es_extension{OES,texture_float_linear} /
+             * @requires_gles30 Extension @es_extension{OES,texture_float_linear} /
              *      @es_extension2{OES,texture_half_float_linear,OES_texture_float_linear}
              *      for linear interpolation of textures with
              *      @ref Magnum::TextureFormat "TextureFormat::HalfFloat" /
@@ -91,7 +91,7 @@ class MAGNUM_EXPORT Sampler {
         };
 
         /**
-         * @brief %Texture wrapping
+         * @brief Texture wrapping
          *
          * @see @ref Texture::setWrapping() "*Texture::setWrapping()"
          */
@@ -114,7 +114,7 @@ class MAGNUM_EXPORT Sampler {
              * Clamp to border color. Coordinates out of range will be clamped
              * to border color (set with
              * @ref Texture::setBorderColor() "*Texture::setBorderColor()").
-             * @requires_es_extension %Extension @es_extension{NV,texture_border_clamp}
+             * @requires_es_extension Extension @es_extension{NV,texture_border_clamp}
              */
             #ifndef MAGNUM_TARGET_GLES
             ClampToBorder = GL_CLAMP_TO_BORDER,
@@ -126,7 +126,7 @@ class MAGNUM_EXPORT Sampler {
             /**
              * Mirror the texture once in negative coordinates and clamp to
              * edge after that. **Unavailable on rectangle textures.**
-             * @requires_gl44 %Extension @extension{ARB,texture_mirror_clamp_to_edge},
+             * @requires_gl44 Extension @extension{ARB,texture_mirror_clamp_to_edge},
              *      @extension{ATI,texture_mirror_once} or @extension{EXT,texture_mirror_clamp}
              * @requires_gl Only separate @ref Magnum::Sampler::Wrapping "Wrapping::MirroredRepeat"
              *      or @ref Magnum::Sampler::Wrapping "Wrapping::ClampToEdge"
@@ -141,7 +141,7 @@ class MAGNUM_EXPORT Sampler {
          *
          * @see @ref CompareFunction,
          *      @ref Texture::setCompareMode() "*Texture::setCompareMode()"
-         * @requires_gles30 %Extension @es_extension{EXT,shadow_samplers}
+         * @requires_gles30 Extension @es_extension{EXT,shadow_samplers}
          */
         enum class CompareMode: GLenum {
             /** Directly output the depth value */
@@ -163,7 +163,7 @@ class MAGNUM_EXPORT Sampler {
          * @ref CompareMode::CompareRefToTexture.
          * @see @ref Texture::setCompareFunction() "*Texture::setCompareFunction()",
          *      @ref Texture::setCompareMode() "*Texture::setCompareMode()"
-         * @requires_gles30 %Extension @es_extension{EXT,shadow_samplers}
+         * @requires_gles30 Extension @es_extension{EXT,shadow_samplers}
          */
         enum class CompareFunction: GLenum {
             Never = GL_NEVER,           /**< Always `0.0` */
@@ -211,7 +211,7 @@ class MAGNUM_EXPORT Sampler {
          * @brief Depth/stencil texture mode
          *
          * @see @ref Texture::setDepthStencilMode() "*Texture::setDepthStencilMode()"
-         * @requires_gl43 %Extension @extension{ARB,stencil_texturing}
+         * @requires_gl43 Extension @extension{ARB,stencil_texturing}
          * @requires_gles31 Stencil texturing is not available in OpenGL ES 3.0
          *      and older
          */
@@ -233,15 +233,6 @@ class MAGNUM_EXPORT Sampler {
          * @see @fn_gl{Get} with @def_gl{MAX_TEXTURE_MAX_ANISOTROPY_EXT}
          */
         static Float maxMaxAnisotropy();
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @copybrief maxMaxAnisotropy()
-         * @deprecated Use @ref Magnum::Sampler::maxMaxAnisotropy() "maxMaxAnisotropy()"
-         *      instead.
-         */
-        static CORRADE_DEPRECATED("use maxMaxAnisotropy() instead") Float maxAnisotropy() { return maxMaxAnisotropy(); }
-        #endif
 };
 
 /** @debugoperatorclassenum{Magnum::Sampler,Magnum::Sampler::Filter} */

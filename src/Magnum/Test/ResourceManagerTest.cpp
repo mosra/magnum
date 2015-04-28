@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -32,29 +32,27 @@
 
 namespace Magnum { namespace Test {
 
-class ResourceManagerTest: public TestSuite::Tester {
-    public:
-        ResourceManagerTest();
+struct ResourceManagerTest: TestSuite::Tester {
+    explicit ResourceManagerTest();
 
-        void state();
-        void stateFallback();
-        void stateDisallowed();
-        void basic();
-        void residentPolicy();
-        void referenceCountedPolicy();
-        void manualPolicy();
-        void defaults();
-        void clear();
-        void clearWhileReferenced();
-        void loader();
+    void state();
+    void stateFallback();
+    void stateDisallowed();
+    void basic();
+    void residentPolicy();
+    void referenceCountedPolicy();
+    void manualPolicy();
+    void defaults();
+    void clear();
+    void clearWhileReferenced();
+    void loader();
 };
 
-class Data {
-    public:
-        static std::size_t count;
+struct Data {
+    static std::size_t count;
 
-        Data() { ++count; }
-        ~Data() { --count; }
+    explicit Data() { ++count; }
+    ~Data() { --count; }
 };
 
 typedef Magnum::ResourceManager<Int, Data> ResourceManager;
@@ -188,24 +186,29 @@ void ResourceManagerTest::referenceCountedPolicy() {
 
     ResourceKey dataRefCountKey("dataRefCount");
 
-    /* Reference counted resources must be requested first */
+    /* Resource is deleted after all references are removed */
+    rm.set(dataRefCountKey, new Data, ResourceDataState::Final, ResourcePolicy::ReferenceCounted);
+    CORRADE_COMPARE(rm.count<Data>(), 1);
     {
-        rm.set(dataRefCountKey, new Data, ResourceDataState::Final, ResourcePolicy::ReferenceCounted);
-        CORRADE_COMPARE(rm.count<Data>(), 0);
         Resource<Data> data = rm.get<Data>(dataRefCountKey);
-        CORRADE_COMPARE(data.state(), ResourceState::NotLoaded);
-        CORRADE_COMPARE(Data::count, 0);
-    } {
-        Resource<Data> data = rm.get<Data>(dataRefCountKey);
-        CORRADE_COMPARE(rm.count<Data>(), 1);
-        CORRADE_COMPARE(data.state(), ResourceState::NotLoaded);
-        rm.set(dataRefCountKey, new Data, ResourceDataState::Final, ResourcePolicy::ReferenceCounted);
         CORRADE_COMPARE(data.state(), ResourceState::Final);
         CORRADE_COMPARE(Data::count, 1);
     }
 
     CORRADE_COMPARE(rm.count<Data>(), 0);
     CORRADE_COMPARE(Data::count, 0);
+
+    /* Reference counted resources which were not used once will stay loaded
+       until free() is called */
+    rm.set(dataRefCountKey, new Data, ResourceDataState::Final, ResourcePolicy::ReferenceCounted);
+    CORRADE_COMPARE(rm.count<Data>(), 1);
+    CORRADE_COMPARE(rm.state<Data>(dataRefCountKey), ResourceState::Final);
+    CORRADE_COMPARE(rm.referenceCount<Data>(dataRefCountKey), 0);
+
+    rm.free<Data>();
+    CORRADE_COMPARE(rm.count<Data>(), 0);
+    CORRADE_COMPARE(rm.state<Data>(dataRefCountKey), ResourceState::NotLoaded);
+    CORRADE_COMPARE(rm.referenceCount<Data>(dataRefCountKey), 0);
 }
 
 void ResourceManagerTest::manualPolicy() {

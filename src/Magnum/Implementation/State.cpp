@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -39,6 +39,9 @@
 #include "ShaderState.h"
 #include "ShaderProgramState.h"
 #include "TextureState.h"
+#ifndef MAGNUM_TARGET_GLES2
+#include "TransformFeedbackState.h"
+#endif
 
 namespace Magnum { namespace Implementation {
 
@@ -52,15 +55,18 @@ State::State(Context& context) {
     extensions.reserve(8);
     #endif
 
-    buffer = new BufferState(context, extensions);
-    debug = new DebugState(context, extensions);
-    framebuffer = new FramebufferState(context, extensions);
-    mesh = new MeshState(context, extensions);
-    query = new QueryState(context, extensions);
-    renderer = new RendererState(context, extensions);
-    shader = new ShaderState;
-    shaderProgram = new ShaderProgramState(context, extensions);
-    texture = new TextureState(context, extensions);
+    buffer.reset(new BufferState{context, extensions});
+    debug.reset(new DebugState{context, extensions});
+    framebuffer.reset(new FramebufferState{context, extensions});
+    mesh.reset(new MeshState{context, extensions});
+    query.reset(new QueryState{context, extensions});
+    renderer.reset(new RendererState{context, extensions});
+    shader.reset(new ShaderState);
+    shaderProgram.reset(new ShaderProgramState{context, extensions});
+    texture.reset(new TextureState{context, extensions});
+    #ifndef MAGNUM_TARGET_GLES2
+    transformFeedback.reset(new TransformFeedbackState{context, extensions});
+    #endif
 
     /* Sort the features and remove duplicates */
     std::sort(extensions.begin(), extensions.end());
@@ -71,15 +77,6 @@ State::State(Context& context) {
         Debug() << "   " << *it;
 }
 
-State::~State() {
-    delete texture;
-    delete shaderProgram;
-    delete shader;
-    delete renderer;
-    delete mesh;
-    delete framebuffer;
-    delete debug;
-    delete buffer;
-}
+State::~State() = default;
 
 }}

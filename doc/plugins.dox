@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -25,12 +25,12 @@
 
 namespace Magnum {
 /** @page plugins Loading and using plugins
-@brief Extending %Magnum with additional functionality
+@brief Extending Magnum with additional functionality
 
 -   Previous page: @ref transformations
--   Next page: @ref scenegraph
+-   Next page: @ref shaders
 
-The base %Magnum library contains math support, scene graph implementation and
+The base Magnum library contains math support, scene graph implementation and
 is able to interact with graphics and audio hardware. However, the base library
 doesn't provide any functions for dealing with specific file formats, as there
 are simply too many formats to have them included directly in the library.
@@ -52,7 +52,7 @@ might not be available on all platforms.
 
 @section plugins-types Plugin interfaces
 
-%Magnum contains these plugin interfaces:
+Magnum contains these plugin interfaces:
 
 -   @ref Trade::AbstractImporter -- importers for general 2D and 3D scene,
     mesh, material, texture and image data. See `*Importer` classes in
@@ -81,7 +81,7 @@ for given plugin interface, for example @ref Trade::AbstractImporter. You must
 set particular plugin directory, from which the manager will load and
 instantiate the plugins. To save you from hardcoding the value into your
 application source, the plugin directory is provided as `MAGNUM_PLUGINS_DIR`
-CMake variable. The default is set to %Magnum install location, but you can
+CMake variable. The default is set to Magnum install location, but you can
 change it through CMake to anything else. The `MAGNUM_PLUGINS_IMPORTER_DIR`,
 `MAGNUM_PLUGINS_IMAGECONVERTER_DIR`, `MAGNUM_PLUGINS_FONT_DIR`,
 `MAGNUM_PLUGINS_FONTCONVERTER_DIR`, `MAGNUM_PLUGINS_AUDIOIMPORTER_DIR`
@@ -98,10 +98,11 @@ to these:
 
 In case you are using multi-configuration build system (such as Visual Studio
 or XCode), CMake cannot provide separate plugin directory for debug and release
-build and you have to do it on your own in preprocessing step using
-@ref corrade-cmake "CORRADE_IS_DEBUG_BUILD" variable. This will ensure that you
-use debug plugin directory for debug build on multi-configuration build sytems
-and fall back to autodetection for the rest:
+build and you have to select between `MAGNUM_PLUGINS_*_DIR` and
+`MAGNUM_PLUGINS_*_DEBUG_DIR` based on @ref corrade-cmake "CORRADE_IS_DEBUG_BUILD"
+preprocessor variable. This will ensure that you use debug plugin directory for
+debug build on multi-configuration build sytems and fall back to autodetection
+for the rest:
 @code
 #ifdef CORRADE_IS_DEBUG_BUILD
 #define MAGNUM_PLUGINS_IMPORTER_DIR "${MAGNUM_PLUGINS_IMPORTER_DEBUG_DIR}"
@@ -109,6 +110,11 @@ and fall back to autodetection for the rest:
 #define MAGNUM_PLUGINS_IMPORTER_DIR "${MAGNUM_PLUGINS_IMPORTER_DIR}"
 #endif
 @endcode
+
+However, if you want to use only one (debug/release) plugin version for both
+debug and release configurations of the application, you need to edit
+`MAGNUM_PLUGINS_DIR` or `MAGNUM_PLUGINS_DEBUG_DIR` using CMake and point them
+to directory containing desired plugin version.
 
 Then process the file in your `CMakeLists.txt`. The result
 (`${MAGNUM_PLUGINS_IMPORTER_DIR}` / `${MAGNUM_PLUGINS_IMPORTER_DEBUG_DIR}` gets
@@ -129,12 +135,12 @@ lifetime of all plugin instances created from it.
 // ...
 
 {
-    PluginManager::Manager<Trade::AbstractImporter> manager(MAGNUM_PLUGINS_IMPORTER_DIR);
-    if(!(manager.load("TgaImporter") & PluginManager::LoadState::Loaded)) {
-        Error() << "Cannot load TgaImporter plugin from" << manager.pluginDirectory();
+    PluginManager::Manager<Trade::AbstractImporter> manager{MAGNUM_PLUGINS_IMPORTER_DIR};
+    std::unique_ptr<Trade::AbstractImporter> tgaImporter = manager.loadAndInstantiate("TgaImporter");
+    if(!tgaImporter) {
+        Error() << "Cannot load importer plugin from" << manager.pluginDirectory();
         std::exit(1);
     }
-    std::unique_ptr<Trade::AbstractImporter> tgaImporter = manager.instance("TgaImporter");
 
     // Use the plugin...
 
@@ -202,7 +208,7 @@ int main(int argc, char** argv) {
 @section plugins-develop Developing your own plugins
 
 See class documentation of particular plugin interfaces for more information
-about subclassing. The %Corrade's @ref plugin-management "plugin management tutorial"
+about subclassing. The Corrade's @ref plugin-management "plugin management tutorial"
 contains more information about plugin compilation and registering.
 
 If you want to develop a plugin which depends on another, you need to find the
@@ -211,7 +217,7 @@ to how static plugins are found above. See @ref cmake and @ref cmake-plugins
 for more information.
 
 -   Previous page: @ref transformations
--   Next page: @ref scenegraph
+-   Next page: @ref shaders
 
 */
 }

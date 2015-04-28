@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -30,7 +30,7 @@
 
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
-#include "Magnum/DebugMessage.h"
+#include "Magnum/DebugOutput.h"
 #include "Magnum/Renderer.h"
 
 #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_DESKTOP_GLES)
@@ -49,21 +49,21 @@ class AbstractOpenGLTester: public TestSuite::Tester, public Platform::Windowles
         int exec() override final { return TestSuite::Tester::exec(); }
 
     private:
-        static int zero;
+        static int _zero;
 };
 
-AbstractOpenGLTester::AbstractOpenGLTester(): Platform::WindowlessApplication({zero, nullptr}) {
+AbstractOpenGLTester::AbstractOpenGLTester(): Platform::WindowlessApplication({_zero, nullptr}) {
     if(Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>()) {
         Renderer::enable(Renderer::Feature::DebugOutput);
         Renderer::enable(Renderer::Feature::DebugOutputSynchronous);
-        DebugMessage::setDefaultCallback();
+        DebugOutput::setDefaultCallback();
 
         /* Disable "Buffer detailed info" message on NV (too spammy) */
-        DebugMessage::setEnabled(DebugMessage::Source::Api, DebugMessage::Type::Other, {131185}, false);
+        DebugOutput::setEnabled(DebugOutput::Source::Api, DebugOutput::Type::Other, {131185}, false);
     }
 }
 
-int AbstractOpenGLTester::zero = 0;
+int AbstractOpenGLTester::_zero = 0;
 
 #define MAGNUM_VERIFY_NO_ERROR() CORRADE_COMPARE(Magnum::Renderer::error(), Magnum::Renderer::Error::NoError)
 

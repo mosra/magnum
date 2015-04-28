@@ -2,18 +2,20 @@
 pkgname=magnum
 pkgver=dev.es2desktop
 pkgrel=1
-pkgdesc="C++11 and OpenGL 2D/3D graphics engine (desktop OpenGL ES 2.0 version)"
+pkgdesc="C++11/C++14 and OpenGL 2D/3D graphics engine (desktop OpenGL ES 2.0 version)"
 arch=('i686' 'x86_64')
 url="http://mosra.cz/blog/magnum.php"
 license=('MIT')
 depends=('corrade' 'openal')
 makedepends=('cmake' 'ninja')
-options=('!strip' 'staticlibs')
+options=('!strip')
 provides=('magnum-git')
 
+_rootdir=$startdir/../../
+
 build() {
-    mkdir -p "$startdir/build-es2desktop"
-    cd "$startdir/build-es2desktop"
+    mkdir -p "$_rootdir/build-es2desktop"
+    cd "$_rootdir/build-es2desktop"
 
     cmake .. \
         -DCMAKE_BUILD_TYPE=Debug \
@@ -22,8 +24,9 @@ build() {
         -DTARGET_GLES2=ON \
         -DTARGET_DESKTOP_GLES=ON \
         -DWITH_AUDIO=ON \
-        -DWITH_SDL2APPLICATION=ON \
         -DWITH_GLXAPPLICATION=ON \
+        -DWITH_SDL2APPLICATION=ON \
+        -DWITH_XEGLAPPLICATION=ON \
         -DWITH_WINDOWLESSGLXAPPLICATION=ON \
         -DWITH_EGLCONTEXT=ON \
         -DWITH_GLXCONTEXT=ON \
@@ -40,11 +43,11 @@ build() {
 }
 
 check() {
-    cd "$startdir/build-es2desktop"
+    cd "$_rootdir/build-es2desktop"
     ctest --output-on-failure -j5
 }
 
 package() {
-    cd "$startdir/build-es2desktop"
+    cd "$_rootdir/build-es2desktop"
     DESTDIR="$pkgdir/" ninja install
 }

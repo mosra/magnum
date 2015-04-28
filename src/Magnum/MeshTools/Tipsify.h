@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -61,7 +61,7 @@ class MAGNUM_MESHTOOLS_EXPORT Tipsify {
 }
 
 /**
-@brief %Tipsify the mesh
+@brief Tipsify the mesh
 @param[in,out] indices  Indices array to operate on
 @param[in] vertexCount  Vertex count
 @param[in] cacheSize    Post-transform vertex cache size

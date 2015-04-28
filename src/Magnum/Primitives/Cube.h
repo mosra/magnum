@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -47,6 +47,14 @@ class MAGNUM_PRIMITIVES_EXPORT Cube {
          * Indexed @ref MeshPrimitive::Triangles with flat normals.
          */
         static Trade::MeshData3D solid();
+
+        /**
+         * @brief Solid cube as a single strip
+         *
+         * Non-indexed @ref MeshPrimitive::TriangleStrip. Just positions, no
+         * normals or anything else.
+         */
+        static Trade::MeshData3D solidStrip();
 
         /**
          * @brief Wireframe cube

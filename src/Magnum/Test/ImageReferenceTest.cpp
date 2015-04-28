@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -30,12 +30,11 @@
 
 namespace Magnum { namespace Test {
 
-class ImageReferenceTest: public TestSuite::Tester {
-    public:
-        explicit ImageReferenceTest();
+struct ImageReferenceTest: TestSuite::Tester {
+    explicit ImageReferenceTest();
 
-        void construct();
-        void setData();
+    void construct();
+    void setData();
 };
 
 ImageReferenceTest::ImageReferenceTest() {
@@ -44,7 +43,7 @@ ImageReferenceTest::ImageReferenceTest() {
 }
 
 void ImageReferenceTest::construct() {
-    const unsigned char data[3] = {};
+    const char data[3] = {};
     ImageReference2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
 
     CORRADE_COMPARE(a.format(), ColorFormat::Red);
@@ -54,15 +53,15 @@ void ImageReferenceTest::construct() {
 }
 
 void ImageReferenceTest::setData() {
-    const unsigned char data[3] = {};
+    const char data[3] = {};
     ImageReference2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
-    const unsigned char data2[8] = {};
+    const char data2[8] = {};
     a.setData(data2);
 
     CORRADE_COMPARE(a.format(), ColorFormat::Red);
     CORRADE_COMPARE(a.type(), ColorType::UnsignedByte);
     CORRADE_COMPARE(a.size(), Vector2i(1, 3));
-    CORRADE_COMPARE(a.data(), reinterpret_cast<const unsigned char*>(data2));
+    CORRADE_COMPARE(a.data(), data2);
 }
 
 }}

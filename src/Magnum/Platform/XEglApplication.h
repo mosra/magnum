@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -51,9 +51,9 @@ more information.
 
 ## General usage
 
-For CMake you need to copy `FindEGL.cmake` from `modules/` directory in %Magnum
+For CMake you need to copy `FindEGL.cmake` from `modules/` directory in Magnum
 source to `modules/` dir in your project (so it is able to find EGL), request
-`%XEglApplication` component, add `${MAGNUM_XEGLAPPLICATION_INCLUDE_DIRS}` to
+`XEglApplication` component, add `${MAGNUM_XEGLAPPLICATION_INCLUDE_DIRS}` to
 include path and link to `${MAGNUM_XEGLAPPLICATION_LIBRARIES}`.  If no other
 application is requested, you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}`
 and `${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting. See
@@ -79,7 +79,7 @@ class XEglApplication: public AbstractXApplication {
         /**
          * @brief Default constructor
          * @param arguments     Application arguments
-         * @param configuration %Configuration
+         * @param configuration Configuration
          *
          * Creates application with default or user-specified configuration.
          * See @ref AbstractXApplication::Configuration "Configuration" for

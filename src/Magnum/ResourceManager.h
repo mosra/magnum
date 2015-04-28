@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -36,7 +36,7 @@
 namespace Magnum {
 
 /**
-@brief %Resource data state
+@brief Resource data state
 
 @see @ref ResourceManager::set(), @ref ResourceState
 */
@@ -70,7 +70,7 @@ enum class ResourceDataState: UnsignedByte {
 };
 
 /**
-@brief %Resource policy
+@brief Resource policy
 
 @see @ref ResourceManager::set(), @ref ResourceManager::free()
  */
@@ -96,7 +96,7 @@ namespace Implementation {
 
 template<class T> class ResourceManagerData {
     template<class, class> friend class Magnum::Resource;
-    friend class AbstractResourceLoader<T>;
+    friend AbstractResourceLoader<T>;
 
     public:
         ResourceManagerData(const ResourceManagerData<T>&) = delete;
@@ -155,10 +155,33 @@ template<class T> class ResourceManagerData {
         std::size_t _lastChange;
 };
 
+/* Helper class for defining which real types are in the type pack */
+template<class...> struct ResourceTypePack {};
+
+/* Common resource manager implementation with inline internal instance (for
+   use in user code), definition of internalInstance() is in this header */
+template<class... Types> struct ResourceManagerInlineInstanceImplementation {
+    static ResourceManager<Types...>*& internalInstance();
+};
+template<class ...Types> struct ResourceManagerImplementation: ResourceManagerInlineInstanceImplementation<Types...>, ResourceManagerData<Types>... {
+    typedef ResourceTypePack<Types...> TypePack;
+};
+
+/* Resource manager implementation with file-local internal instance (for use
+   in code where the manager is used across library boundaries), definition
+   of internalInstance() is in ResourceManager.hpp, see it for usage details */
+template<class... Types> struct ResourceManagerLocalInstanceImplementation {
+    static ResourceManager<Types...>*& internalInstance();
+};
+struct ResourceManagerLocalInstance;
+template<class ...Types> struct ResourceManagerImplementation<ResourceManagerLocalInstance, Types...>: ResourceManagerLocalInstanceImplementation<ResourceManagerLocalInstance, Types...>, ResourceManagerData<Types>... {
+    typedef ResourceTypePack<Types...> TypePack;
+};
+
 }
 
 /**
-@brief %Resource manager
+@brief Resource manager
 
 Provides storage for arbitrary set of types, accessible globally using
 @ref instance().
@@ -184,7 +207,7 @@ can be deleted by calling @ref free() if nothing references them anymore, and
 reference counted resources, which are deleted as soon as the last reference
 to them is removed.
 
-%Resource state and policy is configured when setting the resource data in
+Resource state and policy is configured when setting the resource data in
 @ref set() and can be changed each time the data are updated, although already
 final resources cannot obviously be set as mutable again.
 
@@ -224,7 +247,7 @@ cube->draw(*shader);
 /* Due to too much work involved with explicit template instantiation (all
    Resource combinations, all ResourceManagerData...), this class doesn't have
    template implementation file. */
-template<class... Types> class ResourceManager: private Implementation::ResourceManagerData<Types>... {
+template<class... Types> class ResourceManager: private Implementation::ResourceManagerImplementation<Types>... {
     public:
         /**
          * @brief Global instance
@@ -282,7 +305,7 @@ template<class... Types> class ResourceManager: private Implementation::Resource
         }
 
         /**
-         * @brief %Resource state
+         * @brief Resource state
          *
          * @see @ref set(), @ref Resource::state()
          */
@@ -294,17 +317,10 @@ template<class... Types> class ResourceManager: private Implementation::Resource
          * @brief Set resource data
          * @return Reference to self (for method chaining)
          *
-         * If @p policy is set to @ref ResourcePolicy::ReferenceCounted, there
-         * must be already at least one reference to given resource, otherwise
-         * the data will be deleted immediately and no resource will be added.
-         * To avoid spending unnecessary loading time, add reference-counted
-         * resources only if they are already referenced:
-         * @code
-         * if(manager.referenceCount<T>("myresource")) {
-         *     // load data...
-         *     manager.set("myresource", data, state, ResourcePolicy::ReferenceCounted);
-         * }
-         * @endcode
+         * Resources with @ref ResourcePolicy::ReferenceCounted are added with
+         * zero reference count. It means that all reference counted resources
+         * which were only loaded but not used will stay loaded and you need to
+         * explicitly call @ref free() to delete them.
          * @attention Subsequent updates are not possible if resource state is
          *      already @ref ResourceState::Final.
          * @see @ref referenceCount(), @ref state()
@@ -373,7 +389,7 @@ template<class... Types> class ResourceManager: private Implementation::Resource
          * @return Reference to self (for method chaining)
          */
         ResourceManager<Types...>& free() {
-            freeInternal<Types...>();
+            freeInternal(typename Implementation::ResourceManagerImplementation<Types...>::TypePack{});
             return *this;
         }
 
@@ -397,7 +413,7 @@ template<class... Types> class ResourceManager: private Implementation::Resource
          * referenced.
          */
         ResourceManager<Types...>& clear() {
-            clearInternal<Types...>();
+            clearInternal(typename Implementation::ResourceManagerImplementation<Types...>::TypePack{});
             return *this;
         }
 
@@ -426,35 +442,31 @@ template<class... Types> class ResourceManager: private Implementation::Resource
         }
 
     private:
-        template<class FirstType, class ...NextTypes> void freeInternal() {
+        template<class FirstType, class ...NextTypes> void freeInternal(Implementation::ResourceTypePack<FirstType, NextTypes...>) {
             free<FirstType>();
-            freeInternal<NextTypes...>();
+            freeInternal(Implementation::ResourceTypePack<NextTypes...>{});
         }
-        template<class...> void freeInternal() const {}
+        void freeInternal(Implementation::ResourceTypePack<>) const {}
 
-        template<class FirstType, class ...NextTypes> void clearInternal() {
+        template<class FirstType, class ...NextTypes> void clearInternal(Implementation::ResourceTypePack<FirstType, NextTypes...>) {
             clear<FirstType>();
-            clearInternal<NextTypes...>();
+            clearInternal(Implementation::ResourceTypePack<NextTypes...>{});
         }
-        template<class...> void clearInternal() const {}
+        void clearInternal(Implementation::ResourceTypePack<>) const {}
 
-        template<class FirstType, class ...NextTypes> void freeLoaders() {
+        template<class FirstType, class ...NextTypes> void freeLoaders(Implementation::ResourceTypePack<FirstType, NextTypes...>) {
             Implementation::ResourceManagerData<FirstType>::freeLoader();
-            freeLoaders<NextTypes...>();
+            freeLoaders(Implementation::ResourceTypePack<NextTypes...>{});
         }
-        template<class...> void freeLoaders() const {}
-
-        static ResourceManager<Types...>*& internalInstance();
+        void freeLoaders(Implementation::ResourceTypePack<>) const {}
 };
 
-#ifndef MAGNUM_RESOURCEMANAGER_DONT_DEFINE_INTERNALINSTANCE
-template<class ...Types> ResourceManager<Types...>*& ResourceManager<Types...>::internalInstance() {
+namespace Implementation {
+
+template<class ...Types> ResourceManager<Types...>*& ResourceManagerInlineInstanceImplementation<Types...>::internalInstance() {
     static ResourceManager<Types...>* _instance(nullptr);
     return _instance;
 }
-#endif
-
-namespace Implementation {
 
 template<class T> void safeDelete(T* data) {
     static_assert(sizeof(T) > 0, "Cannot delete pointer to incomplete type");
@@ -514,28 +526,17 @@ template<class T> void ResourceManagerData<T>::set(const ResourceKey key, T* con
     CORRADE_ASSERT(it == _data.end() || it->second.state != ResourceDataState::Final,
         "ResourceManager::set(): cannot change already final resource" << key, );
 
-    /* If nothing is referencing reference-counted resource, we're done */
-    if(policy == ResourcePolicy::ReferenceCounted && (it == _data.end() || it->second.referenceCount == 0)) {
-        Warning() << "ResourceManager: Reference-counted resource with key" << key << "isn't referenced from anywhere, deleting it immediately";
-        safeDelete(data);
-
-        /* Delete also already present resource (it could be here
-            because previous policy could be other than
-            ReferenceCounted) */
-        if(it != _data.end()) _data.erase(it);
-
-        return;
-
-    /* Insert it, if not already here */
-    } else if(it == _data.end())
+    /* Insert the resource, if not already there */
+    if(it == _data.end())
         #ifndef CORRADE_GCC46_COMPATIBILITY
         it = _data.emplace(key, Data()).first;
         #else
         it = _data.insert({key, Data()}).first;
         #endif
 
-    /* Replace previous data */
-    safeDelete(it->second.data);
+    /* Otherwise delete previous data */
+    else safeDelete(it->second.data);
+
     it->second.data = data;
     it->second.state = state;
     it->second.policy = policy;
@@ -618,19 +619,22 @@ template<class T> inline ResourceManagerData<T>::Data::~Data() {
 }
 
 template<class ...Types> ResourceManager<Types...>& ResourceManager<Types...>::instance() {
-    CORRADE_ASSERT(internalInstance(), "ResourceManager::instance(): no instance exists", *internalInstance());
-    return *internalInstance();
+    CORRADE_ASSERT(Implementation::ResourceManagerImplementation<Types...>::internalInstance(),
+        "ResourceManager::instance(): no instance exists",
+        static_cast<ResourceManager<Types...>&>(*Implementation::ResourceManagerImplementation<Types...>::internalInstance()));
+    return static_cast<ResourceManager<Types...>&>(*Implementation::ResourceManagerImplementation<Types...>::internalInstance());
 }
 
 template<class ...Types> ResourceManager<Types...>::ResourceManager() {
-    CORRADE_ASSERT(!internalInstance(), "ResourceManager::ResourceManager(): another instance is already created", );
-    internalInstance() = this;
+    CORRADE_ASSERT(!Implementation::ResourceManagerImplementation<Types...>::internalInstance(),
+        "ResourceManager::ResourceManager(): another instance is already created", );
+    Implementation::ResourceManagerImplementation<Types...>::internalInstance() = this;
 }
 
 template<class ...Types> ResourceManager<Types...>::~ResourceManager() {
-    freeLoaders<Types...>();
-    CORRADE_INTERNAL_ASSERT(internalInstance() == this);
-    internalInstance() = nullptr;
+    freeLoaders(typename Implementation::ResourceManagerImplementation<Types...>::TypePack{});
+    CORRADE_INTERNAL_ASSERT(Implementation::ResourceManagerImplementation<Types...>::internalInstance() == this);
+    Implementation::ResourceManagerImplementation<Types...>::internalInstance() = nullptr;
 }
 
 }

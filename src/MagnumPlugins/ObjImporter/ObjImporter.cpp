@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -80,6 +80,10 @@ template<std::size_t size> Math::Vector<size, Float> extractFloatData(std::strin
     }
 
     if(data.size() == size+1) {
+        /* This should be obvious from the first if, but add this just to make
+           Clang Analyzer happy */
+        CORRADE_INTERNAL_ASSERT(extra);
+
         #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID)
         *extra = std::stof(data.back());
         #else
@@ -128,11 +132,11 @@ void ObjImporter::doOpenFile(const std::string& filename) {
     parseMeshNames();
 }
 
-void ObjImporter::doOpenData(Containers::ArrayReference<const unsigned char> data) {
+void ObjImporter::doOpenData(Containers::ArrayReference<const char> data) {
     /* Open file in *text* mode (to avoid \r handling) */
     _file.reset(new File);
     /* GCC 4.5 needs explicit type to avoid ambiguous call */
-    _file->in.reset(new std::istringstream{std::string(reinterpret_cast<const char*>(data.begin()), data.size())});
+    _file->in.reset(new std::istringstream{std::string(data.begin(), data.size())});
 
     parseMeshNames();
 }

@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -33,22 +33,21 @@ namespace Magnum { namespace SceneGraph { namespace Test {
 typedef Object<MatrixTransformation2D> Object2D;
 typedef Scene<MatrixTransformation2D> Scene2D;
 
-class MatrixTransformation2DTest: public TestSuite::Tester {
-    public:
-        explicit MatrixTransformation2DTest();
+struct MatrixTransformation2DTest: TestSuite::Tester {
+    explicit MatrixTransformation2DTest();
 
-        void fromMatrix();
-        void toMatrix();
-        void compose();
-        void inverted();
+    void fromMatrix();
+    void toMatrix();
+    void compose();
+    void inverted();
 
-        void setTransformation();
-        void resetTransformation();
-        void transform();
-        void translate();
-        void rotate();
-        void scale();
-        void reflect();
+    void setTransformation();
+    void resetTransformation();
+    void transform();
+    void translate();
+    void rotate();
+    void scale();
+    void reflect();
 };
 
 MatrixTransformation2DTest::MatrixTransformation2DTest() {
@@ -122,7 +121,7 @@ void MatrixTransformation2DTest::transform() {
     } {
         Object2D o;
         o.setTransformation(Matrix3::rotation(Deg(17.0f)));
-        o.transform(Matrix3::translation({1.0f, -0.3f}), TransformationType::Local);
+        o.transformLocal(Matrix3::translation({1.0f, -0.3f}));
         CORRADE_COMPARE(o.transformationMatrix(), Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f}));
     }
 }
@@ -136,7 +135,7 @@ void MatrixTransformation2DTest::translate() {
     } {
         Object2D o;
         o.setTransformation(Matrix3::rotation(Deg(17.0f)));
-        o.translate({1.0f, -0.3f}, TransformationType::Local);
+        o.translateLocal({1.0f, -0.3f});
         CORRADE_COMPARE(o.transformationMatrix(), Matrix3::rotation(Deg(17.0f))*Matrix3::translation({1.0f, -0.3f}));
     }
 }
@@ -150,7 +149,7 @@ void MatrixTransformation2DTest::rotate() {
     } {
         Object2D o;
         o.setTransformation(Matrix3::translation({1.0f, -0.3f}));
-        o.rotate(Deg(17.0f), TransformationType::Local);
+        o.rotateLocal(Deg(17.0f));
         CORRADE_COMPARE(o.transformationMatrix(), Matrix3::translation({1.0f, -0.3f})*Matrix3::rotation(Deg(17.0f)));
     }
 }
@@ -164,7 +163,7 @@ void MatrixTransformation2DTest::scale() {
     } {
         Object2D o;
         o.setTransformation(Matrix3::rotation(Deg(17.0f)));
-        o.scale({1.0f, -0.3f}, TransformationType::Local);
+        o.scaleLocal({1.0f, -0.3f});
         CORRADE_COMPARE(o.transformationMatrix(), Matrix3::rotation(Deg(17.0f))*Matrix3::scaling({1.0f, -0.3f}));
     }
 }
@@ -178,7 +177,7 @@ void MatrixTransformation2DTest::reflect() {
     } {
         Object2D o;
         o.setTransformation(Matrix3::rotation(Deg(17.0f)));
-        o.reflect(Vector2(-1.0f/Constants::sqrt2()), TransformationType::Local);
+        o.reflectLocal(Vector2(-1.0f/Constants::sqrt2()));
         CORRADE_COMPARE(o.transformationMatrix(), Matrix3::rotation(Deg(17.0f))*Matrix3::reflection(Vector2(-1.0f/Constants::sqrt2())));
     }
 }

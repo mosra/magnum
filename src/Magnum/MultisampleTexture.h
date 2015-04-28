@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -40,9 +40,9 @@ namespace Magnum {
 
 namespace Implementation {
     template<UnsignedInt> constexpr GLenum multisampleTextureTarget();
-    template<> inline constexpr GLenum multisampleTextureTarget<2>() { return GL_TEXTURE_2D_MULTISAMPLE; }
+    template<> constexpr GLenum multisampleTextureTarget<2>() { return GL_TEXTURE_2D_MULTISAMPLE; }
     #ifndef MAGNUM_TARGET_GLES
-    template<> inline constexpr GLenum multisampleTextureTarget<3>() { return GL_TEXTURE_2D_MULTISAMPLE_ARRAY; }
+    template<> constexpr GLenum multisampleTextureTarget<3>() { return GL_TEXTURE_2D_MULTISAMPLE_ARRAY; }
     #endif
 
     template<UnsignedInt dimensions> typename DimensionTraits<dimensions, Int>::VectorType maxMultisampleTextureSize();
@@ -86,7 +86,7 @@ shaders.
 @see @ref MultisampleTexture2D, @ref MultisampleTexture2DArray, @ref Texture,
     @ref TextureArray, @ref CubeMapTexture, @ref CubeMapTextureArray,
     @ref RectangleTexture, @ref BufferTexture
-@requires_gl32 %Extension @extension{ARB,texture_multisample}
+@requires_gl32 Extension @extension{ARB,texture_multisample}
 @requires_gles31 Multisample textures are not available in OpenGL ES 3.0 and
     older.
 @requires_gl 2D array multisample textures are not available in OpenGL ES, only
@@ -94,7 +94,7 @@ shaders.
  */
 template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTexture {
     public:
-        static const UnsignedInt Dimensions = dimensions; /**< @brief %Texture dimension count */
+        static const UnsignedInt Dimensions = dimensions; /**< @brief Texture dimension count */
 
         /**
          * @brief Max supported multisample texture size
@@ -123,44 +123,30 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
         explicit MultisampleTexture(): AbstractTexture(Implementation::multisampleTextureTarget<dimensions>()) {}
 
         /**
-         * @brief %Image size
-         *
-         * The result is not cached in any way. If
-         * @extension{EXT,direct_state_access} is not available, the texture
-         * is bound to some texture unit before the operation.
-         * @see @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{GetTexLevelParameter} or @fn_gl_extension{GetTextureLevelParameter,EXT,direct_state_access}
-         *      with @def_gl{TEXTURE_WIDTH}, @def_gl{TEXTURE_HEIGHT} or
-         *      @def_gl{TEXTURE_DEPTH}
-         */
-        typename DimensionTraits<dimensions, Int>::VectorType imageSize() {
-            return DataHelper<dimensions>::imageSize(*this, _target, 0);
-        }
-
-        /**
          * @brief Set storage
          * @param samples           Sample count
          * @param internalFormat    Internal format
-         * @param size              %Texture size
+         * @param size              Texture size
          * @param sampleLocations   Whether to use fixed sample locations
          * @return Reference to self (for method chaining)
          *
          * After calling this function the texture is immutable and calling
          * @ref setStorage() again is not allowed.
          *
-         * If @extension{EXT,direct_state_access} is not available, the texture
-         * is bound to some texture unit before the operation. If
+         * If on OpenGL ES or neither @extension{ARB,direct_state_access} (part
+         * of OpenGL 4.5) nor @extension{EXT,direct_state_access} is available,
+         * the texture is bound before the operation (if not already). If
          * @extension{ARB,texture_storage_multisample} (part of OpenGL 4.3) is
-         * not available, the feature is emulated using plain
-         * @extension{ARB,texture_storage} functionality (which unfortunately
-         * doesn't have any DSA alternative, so the texture must be bound
-         * to some texture unit before).
+         * not available, the texture is bound and the feature is emulated
+         * using plain @extension{ARB,texture_multisample} functionality.
          * @see @ref maxSize(), @ref maxColorSamples(), @ref maxDepthSamples(),
-         *      @ref maxIntegerSamples(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture}
-         *      and @fn_gl{TexStorage2DMultisample}/@fn_gl{TexStorage3DMultisample}
-         *      or @fn_gl_extension{TextureStorage2DMultisample,EXT,direct_state_access}/
-         *      @fn_gl_extension{TextureStorage3DMultisample,EXT,direct_state_access}
-         *      eventually @fn_gl{TexImage2DMultisample}/@fn_gl{TexImage3DMultisample}
+         *      @ref maxIntegerSamples(), @fn_gl2{TextureStorage2DMultisample,TexStorage2DMultisample} /
+         *      @fn_gl2{TextureStorage3DMultisample,TexStorage3DMultisample},
+         *      @fn_gl_extension{TextureStorage2DMultisample,EXT,direct_state_access} /
+         *      @fn_gl_extension{TextureStorage3DMultisample,EXT,direct_state_access},
+         *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture}
+         *      and @fn_gl{TexStorage2DMultisample} / @fn_gl{TexStorage3DMultisample}
+         *      or @fn_gl{TexImage2DMultisample} / @fn_gl{TexImage3DMultisample}
          * @todoc Remove the workaround when it stops breaking Doxygen layout so badly
          */
         /* The default parameter value was chosen based on discussion in
@@ -173,14 +159,35 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
             NotFixed
             #endif
         ) {
-            DataHelper<dimensions>::setStorageMultisample(*this, _target, samples, internalFormat, size, GLboolean(sampleLocations));
+            DataHelper<dimensions>::setStorageMultisample(*this, samples, internalFormat, size, GLboolean(sampleLocations));
             return *this;
         }
 
-        /** @copydoc RectangleTexture::invalidateImage() */
+        /**
+         * @brief Texture image size
+         *
+         * See @ref Texture::imageSize() for more information.
+         * @requires_gles31 Texture image size queries are not available in
+         *      OpenGL ES 3.0 and older.
+         */
+        typename DimensionTraits<dimensions, Int>::VectorType imageSize() {
+            return DataHelper<dimensions>::imageSize(*this, 0);
+        }
+
+        /**
+         * @copybrief Texture::invalidateImage()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::invalidateImage() for more information.
+         */
         void invalidateImage() { AbstractTexture::invalidateImage(0); }
 
-        /** @copydoc RectangleTexture::invalidateSubImage() */
+        /**
+         * @copybrief Texture::invalidateSubImage()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::invalidateSubImage() for more information.
+         */
         void invalidateSubImage(const typename DimensionTraits<dimensions, Int>::VectorType& offset, const typename DimensionTraits<dimensions, Int>::VectorType& size) {
             DataHelper<dimensions>::invalidateSubImage(*this, 0, offset, size);
         }
@@ -201,7 +208,7 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
 /**
 @brief Two-dimensional multisample texture
 
-@requires_gl32 %Extension @extension{ARB,texture_multisample}
+@requires_gl32 Extension @extension{ARB,texture_multisample}
 @requires_gles31 Multisample textures are not available in OpenGL ES 3.0 and
     older.
 */
@@ -211,7 +218,7 @@ typedef MultisampleTexture<2> MultisampleTexture2D;
 /**
 @brief Two-dimensional multisample texture array
 
-@requires_gl32 %Extension @extension{ARB,texture_multisample}
+@requires_gl32 Extension @extension{ARB,texture_multisample}
 @requires_gl Only @ref Magnum::MultisampleTexture2D "MultisampleTexture2D" is
     available in OpenGL ES.
 */

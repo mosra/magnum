@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -29,12 +29,11 @@
 
 namespace Magnum { namespace Math { namespace Algorithms { namespace Test {
 
-class GaussJordanTest: public Corrade::TestSuite::Tester {
-    public:
-        explicit GaussJordanTest();
+struct GaussJordanTest: Corrade::TestSuite::Tester {
+    explicit GaussJordanTest();
 
-        void singular();
-        void invert();
+    void singular();
+    void invert();
 };
 
 typedef RectangularMatrix<4, 4, Float> Matrix4x4;

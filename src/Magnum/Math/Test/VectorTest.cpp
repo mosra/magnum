@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -51,57 +51,57 @@ template<> struct VectorConverter<3, float, Vec3> {
 
 namespace Test {
 
-class VectorTest: public Corrade::TestSuite::Tester {
-    public:
-        VectorTest();
+struct VectorTest: Corrade::TestSuite::Tester {
+    explicit VectorTest();
 
-        void construct();
-        void constructFromData();
-        void constructDefault();
-        void constructOneValue();
-        void constructOneComponent();
-        void constructConversion();
-        void constructCopy();
+    void construct();
+    void constructFromData();
+    void constructPad();
+    void constructDefault();
+    void constructOneValue();
+    void constructOneComponent();
+    void constructConversion();
+    void constructCopy();
 
-        void isZero();
-        void isNormalized();
+    void isZero();
+    void isNormalized();
 
-        void convert();
-        void data();
+    void convert();
+    void data();
 
-        void negative();
-        void addSubtract();
-        void multiplyDivide();
-        void multiplyDivideIntegral();
-        void multiplyDivideComponentWise();
-        void multiplyDivideComponentWiseIntegral();
-        void modulo();
-        void bitwise();
+    void negative();
+    void addSubtract();
+    void multiplyDivide();
+    void multiplyDivideIntegral();
+    void multiplyDivideComponentWise();
+    void multiplyDivideComponentWiseIntegral();
+    void modulo();
+    void bitwise();
 
-        void compare();
-        void compareComponentWise();
+    void compare();
+    void compareComponentWise();
 
-        void dot();
-        void dotSelf();
-        void length();
-        void lengthInverted();
-        void normalized();
-        void resized();
+    void dot();
+    void dotSelf();
+    void length();
+    void lengthInverted();
+    void normalized();
+    void resized();
 
-        void sum();
-        void product();
-        void min();
-        void max();
+    void sum();
+    void product();
+    void min();
+    void max();
 
-        void projected();
-        void projectedOntoNormalized();
-        void angle();
+    void projected();
+    void projectedOntoNormalized();
+    void angle();
 
-        void subclassTypes();
-        void subclass();
+    void subclassTypes();
+    void subclass();
 
-        void debug();
-        void configuration();
+    void debug();
+    void configuration();
 };
 
 typedef Math::Rad<Float> Rad;
@@ -112,6 +112,7 @@ typedef Vector<4, Int> Vector4i;
 VectorTest::VectorTest() {
     addTests<VectorTest>({&VectorTest::construct,
               &VectorTest::constructFromData,
+              &VectorTest::constructPad,
               &VectorTest::constructDefault,
               &VectorTest::constructOneValue,
               &VectorTest::constructOneComponent,
@@ -167,6 +168,18 @@ void VectorTest::construct() {
 void VectorTest::constructFromData() {
     Float data[] = { 1.0f, 2.0f, 3.0f, 4.0f };
     CORRADE_COMPARE(Vector4::from(data), Vector4(1.0f, 2.0f, 3.0f, 4.0f));
+}
+
+void VectorTest::constructPad() {
+    constexpr Vector<2, Float> a{1.0f, -1.0f};
+    constexpr Vector4 b = Vector4::pad(a);
+    constexpr Vector4 c = Vector4::pad(a, 5.0f);
+    CORRADE_COMPARE(b, Vector4(1.0f, -1.0f, 0.0f, 0.0f));
+    CORRADE_COMPARE(c, Vector4(1.0f, -1.0f, 5.0f, 5.0f));
+
+    constexpr Vector<5, Float> d{1.0f, -1.0f, 8.0f, 2.3f, -1.1f};
+    constexpr Vector4 e = Vector4::pad(d);
+    CORRADE_COMPARE(e, Vector4(1.0f, -1.0f, 8.0f, 2.3f));
 }
 
 void VectorTest::constructDefault() {
@@ -368,7 +381,7 @@ void VectorTest::bitwise() {
 }
 
 void VectorTest::dot() {
-    CORRADE_COMPARE(Vector4::dot({1.0f, 0.5f, 0.75f, 1.5f}, {2.0f, 4.0f, 1.0f, 7.0f}), 15.25f);
+    CORRADE_COMPARE(Math::dot(Vector4{1.0f, 0.5f, 0.75f, 1.5f}, {2.0f, 4.0f, 1.0f, 7.0f}), 15.25f);
 }
 
 void VectorTest::dotSelf() {
@@ -427,11 +440,10 @@ void VectorTest::projectedOntoNormalized() {
 
     Vector3 vector(1.0f, 2.0f, 3.0f);
     Vector3 line(1.0f, -1.0f, 0.5f);
-    Vector3 projected = vector.projectedOntoNormalized(line);
-    CORRADE_VERIFY(projected != projected);
+    vector.projectedOntoNormalized(line);
     CORRADE_COMPARE(o.str(), "Math::Vector::projectedOntoNormalized(): line must be normalized\n");
 
-    projected = vector.projectedOntoNormalized(line.normalized());
+    Vector3 projected = vector.projectedOntoNormalized(line.normalized());
     CORRADE_COMPARE(projected, Vector3(0.222222f, -0.222222f, 0.111111f));
     CORRADE_COMPARE(projected.normalized(), line.normalized());
     CORRADE_COMPARE(projected, vector.projected(line));
@@ -440,24 +452,22 @@ void VectorTest::projectedOntoNormalized() {
 void VectorTest::angle() {
     std::ostringstream o;
     Error::setOutput(&o);
-    auto angle = Vector3::angle(Vector3(2.0f, 3.0f, 4.0f).normalized(), {1.0f, -2.0f, 3.0f});
-    CORRADE_VERIFY(angle != angle);
-    CORRADE_COMPARE(o.str(), "Math::Vector::angle(): vectors must be normalized\n");
+    Math::angle(Vector3(2.0f, 3.0f, 4.0f).normalized(), {1.0f, -2.0f, 3.0f});
+    CORRADE_COMPARE(o.str(), "Math::angle(): vectors must be normalized\n");
 
     o.str({});
-    angle = Vector3::angle({2.0f, 3.0f, 4.0f}, Vector3(1.0f, -2.0f, 3.0f).normalized());
-    CORRADE_VERIFY(angle != angle);
-    CORRADE_COMPARE(o.str(), "Math::Vector::angle(): vectors must be normalized\n");
+    Math::angle({2.0f, 3.0f, 4.0f}, Vector3(1.0f, -2.0f, 3.0f).normalized());
+    CORRADE_COMPARE(o.str(), "Math::angle(): vectors must be normalized\n");
 
-    CORRADE_COMPARE(Vector3::angle(Vector3(2.0f,  3.0f, 4.0f).normalized(),
-                                   Vector3(1.0f, -2.0f, 3.0f).normalized()),
+    CORRADE_COMPARE(Math::angle(Vector3(2.0f,  3.0f, 4.0f).normalized(),
+                                Vector3(1.0f, -2.0f, 3.0f).normalized()),
                     Rad(1.162514f));
 }
 
 template<class T> class BasicVec2: public Math::Vector<2, T> {
     public:
         /* MSVC 2013 can't cope with {} here */
-        template<class ...U> constexpr BasicVec2(U&&... args): Math::Vector<2, T>(std::forward<U>(args)...) {}
+        template<class ...U> constexpr BasicVec2(U&&... args): Math::Vector<2, T>(args...) {}
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(2, BasicVec2)
 };
@@ -472,6 +482,9 @@ void VectorTest::subclassTypes() {
     const Float* const cdata = nullptr;
     CORRADE_VERIFY((std::is_same<decltype(Vec2::from(data)), Vec2&>::value));
     CORRADE_VERIFY((std::is_same<decltype(Vec2::from(cdata)), const Vec2&>::value));
+
+    Vector<1, Float> one;
+    CORRADE_VERIFY((std::is_same<decltype(Vec2::pad(one)), Vec2>::value));
 
     /* Const operators */
     const Vec2 c;
@@ -539,6 +552,14 @@ void VectorTest::subclass() {
 
     const Float cdata[] = {1.0f, -2.0f};
     CORRADE_COMPARE(Vec2::from(cdata), Vec2(1.0f, -2.0f));
+
+    {
+        constexpr Vector<1, Float> a = 5.0f;
+        constexpr Vec2 b = Vec2::pad(a);
+        constexpr Vec2 c = Vec2::pad(a, -1.0f);
+        CORRADE_COMPARE(b, Vec2(5.0f, 0.0f));
+        CORRADE_COMPARE(c, Vec2(5.0f, -1.0f));
+    }
 
     CORRADE_COMPARE(Vec2(-2.0f, 5.0f) + Vec2(1.0f, -3.0f), Vec2(-1.0f, 2.0f));
     CORRADE_COMPARE(Vec2(-2.0f, 5.0f) - Vec2(1.0f, -3.0f), Vec2(-3.0f, 8.0f));

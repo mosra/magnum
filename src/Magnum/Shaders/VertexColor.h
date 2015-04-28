@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -41,15 +41,60 @@ namespace Magnum { namespace Shaders {
 /**
 @brief Vertex color shader
 
-Draws vertex-colored mesh.
-@see @ref VertexColor2D, @ref VertexColor3D
+Draws vertex-colored mesh. You need to provide @ref Position and @ref Color
+attributes in your triangle mesh and call at least
+@ref setTransformationProjectionMatrix().
+
+@image html shaders-vertexcolor.png
+@image latex shaders-vertexcolor.png
+
+## Example usage
+
+Common mesh setup:
+@code
+struct Vertex {
+    Vector3 position;
+    Color3 color;
+};
+Vertex data[] = { ... };
+
+Buffer vertices;
+vertices.setData(data, BufferUsage::StaticDraw);
+
+Mesh mesh;
+mesh.addVertexBuffer(vertices, 0,
+    Shaders::VertexColor3D::Position{},
+    Shaders::VertexColor3D::Color{});
+@endcode
+
+Common rendering setup:
+@code
+Matrix4 transformationMatrix = Matrix4::translation(Vector3::zAxis(-5.0f));
+Matrix4 projectionMatrix = Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.001f, 100.0f);
+
+Shaders::VertexColor3D shader;
+shader.setTransformationProjectionMatrix(projectionMatrix*transformationMatrix);
+
+mesh.draw(shader);
+@endcode
+
+@see @ref shaders, @ref VertexColor2D, @ref VertexColor3D
 */
 template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColor: public AbstractShaderProgram {
     public:
-        /** @brief Vertex position */
+        /**
+         * @brief Vertex position
+         *
+         * @ref shaders-generic "Generic attribute", @ref Vector2 in 2D,
+         * @ref Vector3 in 3D.
+         */
         typedef typename Generic<dimensions>::Position Position;
 
-        /** @brief Vertex color */
+        /**
+         * @brief Vertex color
+         *
+         * @ref shaders-generic "Generic attribute", @ref Vector3.
+         */
         typedef Attribute<3, Color3> Color;
 
         explicit VertexColor();

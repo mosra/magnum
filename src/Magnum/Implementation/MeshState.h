@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -39,14 +39,14 @@ struct MeshState {
 
     void(Mesh::*createImplementation)();
     void(Mesh::*destroyImplementation)();
-    void(Mesh::*attributePointerImplementation)(const Mesh::Attribute&);
+    void(Mesh::*attributePointerImplementation)(const Mesh::GenericAttribute&);
     #ifndef MAGNUM_TARGET_GLES2
     void(Mesh::*attributeIPointerImplementation)(const Mesh::IntegerAttribute&);
     #ifndef MAGNUM_TARGET_GLES
     void(Mesh::*attributeLPointerImplementation)(const Mesh::LongAttribute&);
     #endif
     #endif
-    #ifdef MAGNUM_TARGET_GLES2
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
     void(Mesh::*vertexAttribDivisorImplementation)(GLuint, GLuint);
     #endif
     void(Mesh::*bindIndexBufferImplementation)(Buffer&);

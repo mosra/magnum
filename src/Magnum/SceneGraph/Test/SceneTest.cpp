@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -30,12 +30,11 @@
 
 namespace Magnum { namespace SceneGraph { namespace Test {
 
-class SceneTest: public TestSuite::Tester {
-    public:
-        SceneTest();
+struct SceneTest: TestSuite::Tester {
+    explicit SceneTest();
 
-        void transformation();
-        void parent();
+    void transformation();
+    void parent();
 };
 
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
@@ -62,8 +61,8 @@ void SceneTest::parent() {
     Object3D object;
     scenePointer->setParent(&object);
     CORRADE_VERIFY(scene.parent() == nullptr);
-    CORRADE_VERIFY(!scene.hasChildren());
-    CORRADE_VERIFY(!object.hasChildren());
+    CORRADE_VERIFY(scene.children().isEmpty());
+    CORRADE_VERIFY(object.children().isEmpty());
 }
 
 }}}

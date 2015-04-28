@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -29,8 +29,9 @@
  * @brief Class @ref Magnum::Platform::Sdl2Application, macro @ref MAGNUM_SDL2APPLICATION_MAIN()
  */
 
-#include <Corrade/Containers/EnumSet.h>
+#include <memory>
 #include <Corrade/Corrade.h>
+#include <Corrade/Containers/EnumSet.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Vector2.h"
@@ -46,11 +47,7 @@
 #include "Magnum/Version.h"
 #endif
 
-namespace Magnum {
-
-class Context;
-
-namespace Platform {
+namespace Magnum { namespace Platform {
 
 /** @nosubgrouping
 @brief SDL2 application
@@ -116,9 +113,9 @@ e.g. `http://localhost/emscripten/MyApplication.html`).
 ## General usage
 
 For CMake you need to copy `FindSDL2.cmake` from `modules/` directory in
-%Magnum source to `modules/` dir in your project (so it is able to find SDL2).
+Magnum source to `modules/` dir in your project (so it is able to find SDL2).
 In case of Emscripten you need also `FindOpenGLES2.cmake`. Request
-`%Sdl2Application` component, add `${MAGNUM_SDL2APPLICATION_INCLUDE_DIRS}`
+`Sdl2Application` component, add `${MAGNUM_SDL2APPLICATION_INCLUDE_DIRS}`
 to include path and link to `${MAGNUM_SDL2APPLICATION_LIBRARIES}`. If no other
 application is requested, you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}`
 and `${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting. Again, see
@@ -198,7 +195,7 @@ class Sdl2Application {
         /**
          * @brief Default constructor
          * @param arguments     Application arguments
-         * @param configuration %Configuration
+         * @param configuration Configuration
          *
          * Creates application with default or user-specified configuration.
          * See @ref Configuration for more information. The program exits if
@@ -257,8 +254,14 @@ class Sdl2Application {
          * @brief Create context with given configuration
          *
          * Must be called if and only if the context wasn't created by the
-         * constructor itself. The program exits if the context cannot be
-         * created, see @ref tryCreateContext() for an alternative.
+         * constructor itself. Error message is printed and the program exits
+         * if the context cannot be created, see @ref tryCreateContext() for an
+         * alternative.
+         *
+         * On desktop GL, if version is not specified in @p configuration, the
+         * application first tries to create core context (OpenGL 3.2+ on OS X,
+         * OpenGL 3.0+ elsewhere) and if that fails, falls back to
+         * compatibility OpenGL 2.1 context.
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         void createContext(const Configuration& configuration = Configuration());
@@ -282,8 +285,22 @@ class Sdl2Application {
          * @brief Swap buffers
          *
          * Paints currently rendered framebuffer on screen.
+         * @see @ref setSwapInterval()
          */
         void swapBuffers();
+
+        /** @brief Swap interval */
+        Int swapInterval() const;
+
+        /**
+         * @brief Set swap interval
+         *
+         * Set `0` for no VSync, `1` for enabled VSync. Some platforms support
+         * `-1` for late swap tearing. Prints error message and returns `false`
+         * if swap interval cannot be set, `true` otherwise. Default is
+         * driver-dependent, you can query the value with @ref swapInterval().
+         */
+        bool setSwapInterval(Int interval);
 
         /**
          * @brief Redraw immediately
@@ -292,7 +309,7 @@ class Sdl2Application {
          * in the next iteration. You can call it from @ref drawEvent() itself
          * to redraw immediately without waiting for user input.
          */
-        void redraw() { flags |= Flag::Redraw; }
+        void redraw() { _flags |= Flag::Redraw; }
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     protected:
@@ -403,7 +420,7 @@ class Sdl2Application {
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
 
         #ifdef CORRADE_TARGET_EMSCRIPTEN
-        static Sdl2Application* instance;
+        static Sdl2Application* _instance;
         static void staticMainLoop();
         #endif
 
@@ -411,21 +428,21 @@ class Sdl2Application {
         void mainLoop();
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN
-        SDL_Window* window;
-        SDL_GLContext context;
+        SDL_Window* _window;
+        SDL_GLContext _glContext;
         #else
-        SDL_Surface* context;
+        SDL_Surface* _glContext;
         #endif
 
-        Platform::Context* c;
+        std::unique_ptr<Platform::Context> _context;
 
-        Flags flags;
+        Flags _flags;
 };
 
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::Flags)
 
 /**
-@brief %Configuration
+@brief Configuration
 
 Centered non-resizable window with double-buffered OpenGL context and 24bit
 depth buffer.
@@ -435,7 +452,7 @@ class Sdl2Application::Configuration {
     public:
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         /**
-         * @brief %Context flag
+         * @brief Context flag
          *
          * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          * @see @ref Flags, @ref setFlags()
@@ -452,7 +469,7 @@ class Sdl2Application::Configuration {
         };
 
         /**
-         * @brief %Context flags
+         * @brief Context flags
          *
          * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          * @see @ref setFlags()
@@ -552,7 +569,7 @@ class Sdl2Application::Configuration {
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         /**
-         * @brief %Context flags
+         * @brief Context flags
          *
          * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          */
@@ -571,7 +588,7 @@ class Sdl2Application::Configuration {
         }
 
         /**
-         * @brief %Context version
+         * @brief Context version
          *
          * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          */
@@ -640,7 +657,7 @@ CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::WindowFlags)
 class Sdl2Application::InputEvent {
     public:
         /**
-         * @brief %Modifier
+         * @brief Modifier
          *
          * @see @ref Modifiers, @ref KeyEvent::modifiers(),
          *      @ref MouseEvent::modifiers(), @ref MouseMoveEvent::modifiers()
@@ -713,7 +730,7 @@ inline Sdl2Application::InputEvent::~InputEvent() = default;
 @see @ref keyPressEvent(), @ref keyReleaseEvent()
 */
 class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
-    friend class Sdl2Application;
+    friend Sdl2Application;
 
     public:
         /**
@@ -813,7 +830,7 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
 @see @ref MouseMoveEvent, @ref mousePressEvent(), @ref mouseReleaseEvent()
 */
 class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
-    friend class Sdl2Application;
+    friend Sdl2Application;
 
     public:
         /**
@@ -857,7 +874,7 @@ class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
 @see @ref MouseEvent, @ref mouseMoveEvent()
 */
 class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
-    friend class Sdl2Application;
+    friend Sdl2Application;
 
     public:
         /**

@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -30,18 +30,17 @@
 
 namespace Magnum { namespace Test {
 
-class SamplerTest: public TestSuite::Tester {
-    public:
-        explicit SamplerTest();
+struct SamplerTest: TestSuite::Tester {
+    explicit SamplerTest();
 
-        void debugFilter();
-        void debugMipmap();
-        void debugWrapping();
-        void debugCompareMode();
-        void debugCompareFunction();
-        #ifndef MAGNUM_TARGET_GLES
-        void debugDepthStencilMode();
-        #endif
+    void debugFilter();
+    void debugMipmap();
+    void debugWrapping();
+    void debugCompareMode();
+    void debugCompareFunction();
+    #ifndef MAGNUM_TARGET_GLES
+    void debugDepthStencilMode();
+    #endif
 };
 
 SamplerTest::SamplerTest() {

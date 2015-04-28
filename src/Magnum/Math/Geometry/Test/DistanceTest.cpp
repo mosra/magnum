@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,7 +23,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <limits>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Math/Constants.h"
@@ -31,14 +30,13 @@
 
 namespace Magnum { namespace Math { namespace Geometry { namespace Test {
 
-class DistanceTest: public Corrade::TestSuite::Tester {
-    public:
-        DistanceTest();
+struct DistanceTest: Corrade::TestSuite::Tester {
+    explicit DistanceTest();
 
-        void linePoint2D();
-        void linePoint3D();
-        void lineSegmentPoint2D();
-        void lineSegmentPoint3D();
+    void linePoint2D();
+    void linePoint3D();
+    void lineSegmentPoint2D();
+    void lineSegmentPoint3D();
 };
 
 typedef Math::Vector2<Float> Vector2;

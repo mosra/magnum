@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -33,11 +33,10 @@
 
 namespace Magnum { namespace Audio { namespace Test {
 
-class AbstractImporterTest: public TestSuite::Tester {
-    public:
-        explicit AbstractImporterTest();
+struct AbstractImporterTest: TestSuite::Tester {
+    explicit AbstractImporterTest();
 
-        void openFile();
+    void openFile();
 };
 
 AbstractImporterTest::AbstractImporterTest() {
@@ -54,13 +53,13 @@ void AbstractImporterTest::openFile() {
             bool doIsOpened() const override { return opened; }
             void doClose() override {}
 
-            void doOpenData(Containers::ArrayReference<const unsigned char> data) override {
-                opened = (data.size() == 1 && data[0] == 0xa5);
+            void doOpenData(Containers::ArrayReference<const char> data) override {
+                opened = (data.size() == 1 && data[0] == '\xa5');
             }
 
             Buffer::Format doFormat() const override { return Buffer::Format(); }
             UnsignedInt doFrequency() const override { return {}; }
-            Corrade::Containers::Array<unsigned char> doData() override {
+            Corrade::Containers::Array<char> doData() override {
                 #ifndef CORRADE_GCC45_COMPATIBILITY
                 return nullptr;
                 #else

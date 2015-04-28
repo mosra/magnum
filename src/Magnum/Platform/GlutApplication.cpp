@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -33,17 +33,15 @@
 
 namespace Magnum { namespace Platform {
 
-GlutApplication* GlutApplication::instance = nullptr;
+GlutApplication* GlutApplication::_instance = nullptr;
 
-/** @todo Delegating constructor when support for GCC 4.6 is dropped */
-
-GlutApplication::GlutApplication(const Arguments& arguments, const Configuration& configuration): c(nullptr) {
+GlutApplication::GlutApplication(const Arguments& arguments, const Configuration& configuration) {
     initialize(arguments.argc, arguments.argv);
     createContext(configuration);
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-GlutApplication::GlutApplication(const Arguments& arguments): c(nullptr) {
+GlutApplication::GlutApplication(const Arguments& arguments) {
     initialize(arguments.argc, arguments.argv);
     createContext();
 }
@@ -54,14 +52,13 @@ GlutApplication::GlutApplication(const Arguments& arguments, std::nullptr_t)
 #else
 GlutApplication::GlutApplication(const Arguments& arguments, void*)
 #endif
-    : c(nullptr)
 {
     initialize(arguments.argc, arguments.argv);
 }
 
 void GlutApplication::initialize(int& argc, char** argv) {
     /* Save global instance */
-    instance = this;
+    _instance = this;
 
     /* Init GLUT */
     glutInit(&argc, argv);
@@ -75,7 +72,7 @@ void GlutApplication::createContext(const Configuration& configuration) {
 }
 
 bool GlutApplication::tryCreateContext(const Configuration& configuration) {
-    CORRADE_ASSERT(!c, "Platform::GlutApplication::tryCreateContext(): context already created", false);
+    CORRADE_ASSERT(!_context, "Platform::GlutApplication::tryCreateContext(): context already created", false);
 
     unsigned int flags = GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL;
 
@@ -112,45 +109,43 @@ bool GlutApplication::tryCreateContext(const Configuration& configuration) {
     glutMotionFunc(staticMouseMoveEvent);
     glutDisplayFunc(staticDrawEvent);
 
-    c = new Platform::Context;
+    _context.reset(new Platform::Context);
     return true;
 }
 
-GlutApplication::~GlutApplication() {
-    delete c;
-}
+GlutApplication::~GlutApplication() = default;
 
 void GlutApplication::staticKeyPressEvent(unsigned char key, int x, int y) {
     KeyEvent e(static_cast<KeyEvent::Key>(key), {x, y});
-    instance->keyPressEvent(e);
+    _instance->keyPressEvent(e);
 }
 
 void GlutApplication::staticKeyReleaseEvent(unsigned char key, int x, int y) {
     KeyEvent e(static_cast<KeyEvent::Key>(key), {x, y});
-    instance->keyReleaseEvent(e);
+    _instance->keyReleaseEvent(e);
 }
 
 void GlutApplication::staticSpecialKeyPressEvent(int key, int x, int y){
     KeyEvent e(static_cast<KeyEvent::Key>(key << 16), {x, y});
-    instance->keyPressEvent(e);
+    _instance->keyPressEvent(e);
 }
 
 void GlutApplication::staticSpecialKeyReleaseEvent(int key, int x, int y){
     KeyEvent e(static_cast<KeyEvent::Key>(key << 16), {x, y});
-    instance->keyReleaseEvent(e);
+    _instance->keyReleaseEvent(e);
 }
 
 void GlutApplication::staticMouseEvent(int button, int state, int x, int y) {
     MouseEvent e(static_cast<MouseEvent::Button>(button), {x, y});
     if(state == GLUT_DOWN)
-        instance->mousePressEvent(e);
+        _instance->mousePressEvent(e);
     else
-        instance->mouseReleaseEvent(e);
+        _instance->mouseReleaseEvent(e);
 }
 
 void GlutApplication::staticMouseMoveEvent(int x, int y) {
     MouseMoveEvent e({x, y}, MouseMoveEvent::Button::Left);
-    instance->mouseMoveEvent(e);
+    _instance->mouseMoveEvent(e);
 }
 
 void GlutApplication::viewportEvent(const Vector2i&) {}

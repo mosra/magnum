@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -78,7 +78,7 @@ void TgaImageConverterTest::wrongFormat() {
 
     const auto data = TgaImageConverter().exportToData(image);
     CORRADE_VERIFY(!data);
-    CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::convertToData(): unsupported image format ColorFormat::RG\n");
+    CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::exportToData(): unsupported color format ColorFormat::RG\n");
 }
 
 void TgaImageConverterTest::wrongType() {
@@ -89,7 +89,7 @@ void TgaImageConverterTest::wrongType() {
 
     const auto data = TgaImageConverter().exportToData(image);
     CORRADE_VERIFY(!data);
-    CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::convertToData(): unsupported image type ColorType::Float\n");
+    CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::exportToData(): unsupported color type ColorType::Float\n");
 }
 
 void TgaImageConverterTest::data() {
@@ -107,8 +107,8 @@ void TgaImageConverterTest::data() {
     CORRADE_COMPARE(converted->format(), ColorFormat::RGB);
     #endif
     CORRADE_COMPARE(converted->type(), ColorType::UnsignedByte);
-    CORRADE_COMPARE(std::string(reinterpret_cast<const char*>(converted->data()), 2*3*3),
-                    std::string(reinterpret_cast<const char*>(original.data()), 2*3*3));
+    CORRADE_COMPARE((std::string{converted->data(), 2*3*3}),
+                    (std::string{original.data(), 2*3*3}));
 }
 
 }}}

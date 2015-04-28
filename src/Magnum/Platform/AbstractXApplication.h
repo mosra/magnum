@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -29,6 +29,7 @@
  * @brief Class @ref Magnum::Platform::AbstractXApplication
  */
 
+#include <memory>
 #include <Corrade/Containers/EnumSet.h>
 
 #include <X11/Xlib.h>
@@ -47,11 +48,7 @@
 #include "Magnum/Version.h"
 #endif
 
-namespace Magnum {
-
-class Context;
-
-namespace Platform {
+namespace Magnum { namespace Platform {
 
 namespace Implementation {
     template<class, class, class, class> class AbstractContextHandler;
@@ -101,7 +98,7 @@ class AbstractXApplication {
         int exec();
 
         /** @brief Exit application main loop */
-        void exit() { flags |= Flag::Exit; }
+        void exit() { _flags |= Flag::Exit; }
 
     protected:
         /* Nobody will need to have (and delete) AbstractXApplication*, thus
@@ -122,11 +119,15 @@ class AbstractXApplication {
 
         /** @{ @name Screen handling */
 
-        /** @copydoc Sdl2Application::swapBuffers() */
+        /**
+         * @brief Swap buffers
+         *
+         * Paints currently rendered framebuffer on screen.
+         */
         void swapBuffers();
 
         /** @copydoc Sdl2Application::redraw() */
-        void redraw() { flags |= Flag::Redraw; }
+        void redraw() { _flags |= Flag::Redraw; }
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     protected:
@@ -186,24 +187,23 @@ class AbstractXApplication {
         typedef Containers::EnumSet<Flag, unsigned int> Flags;
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
 
-        Display* display;
-        Window window;
-        Atom deleteWindow;
+        Display* _display;
+        Window _window;
+        Atom _deleteWindow;
 
-        Implementation::AbstractContextHandler<Configuration, Display*, VisualID, Window>* contextHandler;
-
-        Platform::Context* c;
+        std::unique_ptr<Implementation::AbstractContextHandler<Configuration, Display*, VisualID, Window>> _contextHandler;
+        std::unique_ptr<Platform::Context> _context;
 
         /** @todo Get this from the created window */
-        Vector2i viewportSize;
+        Vector2i _viewportSize;
 
-        Flags flags;
+        Flags _flags;
 };
 
 CORRADE_ENUMSET_OPERATORS(AbstractXApplication::Flags)
 
 /**
-@brief %Configuration
+@brief Configuration
 
 Double-buffered OpenGL context.
 @see @ref GlxApplication::GlxApplication(), @ref XEglApplication::XEglApplication(),
@@ -263,7 +263,7 @@ class AbstractXApplication::Configuration {
 class AbstractXApplication::InputEvent {
     public:
         /**
-         * @brief %Modifier
+         * @brief Modifier
          *
          * @see @ref Modifiers, @ref modifiers()
          */
@@ -354,7 +354,7 @@ CORRADE_ENUMSET_OPERATORS(AbstractXApplication::InputEvent::Buttons)
 @see @ref keyPressEvent(), @ref keyReleaseEvent()
 */
 class AbstractXApplication::KeyEvent: public AbstractXApplication::InputEvent {
-    friend class AbstractXApplication;
+    friend AbstractXApplication;
 
     public:
         /**
@@ -454,7 +454,7 @@ class AbstractXApplication::KeyEvent: public AbstractXApplication::InputEvent {
 @see @ref MouseMoveEvent, @ref mousePressEvent(), @ref mouseReleaseEvent()
 */
 class AbstractXApplication::MouseEvent: public AbstractXApplication::InputEvent {
-    friend class AbstractXApplication;
+    friend AbstractXApplication;
 
     public:
         /**
@@ -489,7 +489,7 @@ class AbstractXApplication::MouseEvent: public AbstractXApplication::InputEvent 
 @see @ref MouseEvent, @ref mouseMoveEvent()
 */
 class AbstractXApplication::MouseMoveEvent: public AbstractXApplication::InputEvent {
-    friend class AbstractXApplication;
+    friend AbstractXApplication;
 
     public:
         /** @brief Position */

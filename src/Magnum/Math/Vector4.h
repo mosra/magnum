@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -44,6 +44,21 @@ See @ref matrix-vector for brief introduction.
 */
 template<class T> class Vector4: public Vector<4, T> {
     public:
+        /**
+         * @brief Pad vector to four-component one
+         *
+         * If size of @p a is smaller than 4, it is padded from right with
+         * @p xyz for first three component and @p w for fourth component,
+         * otherwise it's cut.
+         * @see @ref pad(const Vector<otherSize, T>&, T)
+         */
+        template<std::size_t otherSize> constexpr static Vector4<T> pad(const Vector<otherSize, T>& a, T xyz, T w) {
+            return {0 < otherSize ? a[0] : xyz,
+                    1 < otherSize ? a[1] : xyz,
+                    2 < otherSize ? a[2] : xyz,
+                    3 < otherSize ? a[3] : w};
+        }
+
         /** @copydoc Vector::Vector() */
         constexpr /*implicit*/ Vector4() {}
 
@@ -176,7 +191,9 @@ template<class T> class Vector4: public Vector<4, T> {
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(4, Vector4)
 };
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(4, Vector4)
+#endif
 
 /** @debugoperator{Magnum::Math::Vector4} */
 template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Vector4<T>& value) {

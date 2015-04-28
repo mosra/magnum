@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -37,9 +37,7 @@
 
 namespace Magnum { namespace Platform {
 
-/** @todo Delegating constructor when support for GCC 4.6 is dropped */
-
-AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandler<Configuration, Display*, VisualID, Window>* contextHandler, const Arguments&, const Configuration& configuration): contextHandler(contextHandler), c(nullptr), flags(Flag::Redraw) {
+AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandler<Configuration, Display*, VisualID, Window>* contextHandler, const Arguments&, const Configuration& configuration): _contextHandler(contextHandler), _flags(Flag::Redraw) {
     createContext(configuration);
 }
 
@@ -48,7 +46,7 @@ AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandle
 #else
 AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandler<Configuration, Display*, VisualID, Window>* contextHandler, const Arguments&, void*)
 #endif
-    : contextHandler(contextHandler), c(nullptr), flags(Flag::Redraw) {}
+    : _contextHandler(contextHandler), _flags(Flag::Redraw) {}
 
 void AbstractXApplication::createContext() { createContext({}); }
 
@@ -57,92 +55,92 @@ void AbstractXApplication::createContext(const Configuration& configuration) {
 }
 
 bool AbstractXApplication::tryCreateContext(const Configuration& configuration) {
-    CORRADE_ASSERT(!c, "AbstractXApplication::tryCreateContext(): context already created", false);
+    CORRADE_ASSERT(!_context, "AbstractXApplication::tryCreateContext(): context already created", false);
 
-    viewportSize = configuration.size();
+    _viewportSize = configuration.size();
 
     /* Get default X display */
-    display = XOpenDisplay(nullptr);
+    _display = XOpenDisplay(nullptr);
 
     /* Get visual ID */
-    VisualID visualId = contextHandler->getVisualId(display);
+    VisualID visualId = _contextHandler->getVisualId(_display);
 
     /* Get visual info */
     XVisualInfo *visInfo, visTemplate;
     int visualCount;
     visTemplate.visualid = visualId;
-    visInfo = XGetVisualInfo(display, VisualIDMask, &visTemplate, &visualCount);
+    visInfo = XGetVisualInfo(_display, VisualIDMask, &visTemplate, &visualCount);
     if(!visInfo) {
         Error() << "Platform::WindowlessGlxApplication::tryCreateContext(): cannot get X visual";
         return false;
     }
 
     /* Create X Window */
-    Window root = RootWindow(display, DefaultScreen(display));
+    Window root = RootWindow(_display, DefaultScreen(_display));
     XSetWindowAttributes attr;
     attr.background_pixel = 0;
     attr.border_pixel = 0;
-    attr.colormap = XCreateColormap(display, root, visInfo->visual, AllocNone);
+    attr.colormap = XCreateColormap(_display, root, visInfo->visual, AllocNone);
     attr.event_mask = 0;
     unsigned long mask = CWBackPixel|CWBorderPixel|CWColormap|CWEventMask;
-    window = XCreateWindow(display, root, 20, 20, configuration.size().x(), configuration.size().y(), 0, visInfo->depth, InputOutput, visInfo->visual, mask, &attr);
-    XSetStandardProperties(display, window, configuration.title().data(), nullptr, 0, nullptr, 0, nullptr);
+    _window = XCreateWindow(_display, root, 20, 20, configuration.size().x(), configuration.size().y(), 0, visInfo->depth, InputOutput, visInfo->visual, mask, &attr);
+    XSetStandardProperties(_display, _window, configuration.title().data(), nullptr, 0, nullptr, 0, nullptr);
     XFree(visInfo);
 
     /* Be notified about closing the window */
-    deleteWindow = XInternAtom(display, "WM_DELETE_WINDOW", True);
-    XSetWMProtocols(display, window, &deleteWindow, 1);
+    _deleteWindow = XInternAtom(_display, "WM_DELETE_WINDOW", True);
+    XSetWMProtocols(_display, _window, &_deleteWindow, 1);
 
     /* Create context */
-    contextHandler->createContext(configuration, window);
+    _contextHandler->createContext(configuration, _window);
 
     /* Capture exposure, keyboard and mouse button events */
-    XSelectInput(display, window, INPUT_MASK);
+    XSelectInput(_display, _window, INPUT_MASK);
 
     /* Set OpenGL context as current */
-    contextHandler->makeCurrent();
+    _contextHandler->makeCurrent();
 
-    c = new Platform::Context;
+    _context.reset(new Platform::Context);
     return true;
 }
 
 AbstractXApplication::~AbstractXApplication() {
-    delete c;
+    _context.reset();
 
     /* Shut down context handler */
-    delete contextHandler;
+    _contextHandler.reset();
 
     /* Shut down X */
-    XDestroyWindow(display, window);
-    XCloseDisplay(display);
+    XDestroyWindow(_display, _window);
+    XCloseDisplay(_display);
 }
 
 void AbstractXApplication::swapBuffers() {
-    contextHandler->swapBuffers();
+    _contextHandler->swapBuffers();
 }
 
 int AbstractXApplication::exec() {
     /* Show window */
-    XMapWindow(display, window);
+    XMapWindow(_display, _window);
 
-    while(!(flags & Flag::Exit)) {
+    while(!(_flags & Flag::Exit)) {
         XEvent event;
 
         /* Closed window */
-        if(XCheckTypedWindowEvent(display, window, ClientMessage, &event) &&
-           Atom(event.xclient.data.l[0]) == deleteWindow) {
+        if(XCheckTypedWindowEvent(_display, _window, ClientMessage, &event) &&
+           Atom(event.xclient.data.l[0]) == _deleteWindow) {
             return 0;
         }
 
-        while(XCheckWindowEvent(display, window, INPUT_MASK, &event)) {
+        while(XCheckWindowEvent(_display, _window, INPUT_MASK, &event)) {
             switch(event.type) {
                 /* Window resizing */
                 case ConfigureNotify: {
                     Vector2i size(event.xconfigure.width, event.xconfigure.height);
-                    if(size != viewportSize) {
-                        viewportSize = size;
+                    if(size != _viewportSize) {
+                        _viewportSize = size;
                         viewportEvent(size);
-                        flags |= Flag::Redraw;
+                        _flags |= Flag::Redraw;
                     }
                 } break;
 
@@ -166,8 +164,8 @@ int AbstractXApplication::exec() {
             }
         }
 
-        if(flags & Flag::Redraw) {
-            flags &= ~Flag::Redraw;
+        if(_flags & Flag::Redraw) {
+            _flags &= ~Flag::Redraw;
             drawEvent();
         } else Utility::sleep(5);
     }

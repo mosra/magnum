@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -32,12 +32,11 @@
 
 namespace Magnum { namespace Shaders { namespace Test {
 
-class VectorGLTest: public Magnum::Test::AbstractOpenGLTester {
-    public:
-        explicit VectorGLTest();
+struct VectorGLTest: Magnum::Test::AbstractOpenGLTester {
+    explicit VectorGLTest();
 
-        void compile2D();
-        void compile3D();
+    void compile2D();
+    void compile3D();
 };
 
 VectorGLTest::VectorGLTest() {

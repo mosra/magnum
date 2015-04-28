@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -56,21 +56,19 @@ Sdl2Application::InputEvent::Modifiers fixedModifiers(Uint16 mod) {
 }
 
 #ifdef CORRADE_TARGET_EMSCRIPTEN
-Sdl2Application* Sdl2Application::instance = nullptr;
+Sdl2Application* Sdl2Application::_instance = nullptr;
 void Sdl2Application::staticMainLoop() {
-    instance->mainLoop();
+    _instance->mainLoop();
 }
 #endif
 
-/** @todo Delegating constructor when support for GCC 4.6 is dropped */
-
-Sdl2Application::Sdl2Application(const Arguments&, const Configuration& configuration): context(nullptr), flags(Flag::Redraw) {
+Sdl2Application::Sdl2Application(const Arguments&, const Configuration& configuration): _glContext(nullptr), _flags(Flag::Redraw) {
     initialize();
     createContext(configuration);
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-Sdl2Application::Sdl2Application(const Arguments&): context(nullptr), flags(Flag::Redraw) {
+Sdl2Application::Sdl2Application(const Arguments&): _glContext(nullptr), _flags(Flag::Redraw) {
     initialize();
     createContext();
 }
@@ -81,15 +79,15 @@ Sdl2Application::Sdl2Application(const Arguments&, std::nullptr_t)
 #else
 Sdl2Application::Sdl2Application(const Arguments&, void*)
 #endif
-    : context(nullptr), flags(Flag::Redraw)
+    : _glContext(nullptr), _flags(Flag::Redraw)
 {
     initialize();
 }
 
 void Sdl2Application::initialize() {
     #ifdef CORRADE_TARGET_EMSCRIPTEN
-    CORRADE_ASSERT(!instance, "Platform::Sdl2Application::Sdl2Application(): the instance is already created", );
-    instance = this;
+    CORRADE_ASSERT(!_instance, "Platform::Sdl2Application::Sdl2Application(): the instance is already created", );
+    _instance = this;
     #endif
 
     if(SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -105,7 +103,7 @@ void Sdl2Application::createContext(const Configuration& configuration) {
 }
 
 bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
-    CORRADE_ASSERT(!context, "Platform::Sdl2Application::tryCreateContext(): context already created", false);
+    CORRADE_ASSERT(!_glContext, "Platform::Sdl2Application::tryCreateContext(): context already created", false);
 
     /* Enable double buffering and 24bt depth buffer */
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
@@ -122,11 +120,12 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
 
     /* Flags: if not hidden, set as shown */
     Uint32 windowFlags(configuration.windowFlags());
-    if(!(configuration.windowFlags() & Configuration::WindowFlag::Hidden)) windowFlags |= SDL_WINDOW_SHOWN;
+    if(!(configuration.windowFlags() & Configuration::WindowFlag::Hidden))
+        windowFlags |= SDL_WINDOW_SHOWN;
 
     /** @todo Remove when Emscripten has proper SDL2 support */
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    /* Set context version, if requested */
+    /* Set context version, if user-specified */
     if(configuration.version() != Version::None) {
         Int major, minor;
         std::tie(major, minor) = version(configuration.version());
@@ -139,10 +138,25 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
         #else
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
         #endif
-    }
 
-    #ifdef MAGNUM_TARGET_GLES
-    else {
+    /* Request usable version otherwise */
+    } else {
+        #ifndef MAGNUM_TARGET_GLES
+        /* First try to create core context. This is needed mainly on OS X and
+           Mesa, as support for recent OpenGL versions isn't implemented in
+           compatibility contexts (which are the default). At least GL 3.2 is
+           needed on OSX, at least GL 3.0 is needed on Mesa. Bite the bullet
+           and try 3.0 also elsewhere. */
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+        #ifdef CORRADE_TARGET_APPLE
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+        #else
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+        #endif
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+
+        #else
+        /* For ES the major context version is compile-time constant */
         #ifdef MAGNUM_TARGET_GLES3
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
         #elif defined(MAGNUM_TARGET_GLES2)
@@ -152,22 +166,11 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
         #endif
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+        #endif
     }
 
-    /* On OS X we need to create 3.2 context, as the default (2.1) contains
-       compatibility features which are not implemented for newer GL versions
-       in Apple's GL drivers, thus we would be forever stuck on 2.1 without the
-       new features. In practice SDL fails to create 2.1 context on recent OS X
-       versions. */
-    #elif defined(CORRADE_TARGET_APPLE)
-    else {
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-    }
-    #endif
-
-    if(!(window = SDL_CreateWindow(configuration.title().data(),
+    /* Create window */
+    if(!(_window = SDL_CreateWindow(configuration.title().data(),
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
         configuration.size().x(), configuration.size().y(),
         SDL_WINDOW_OPENGL|windowFlags)))
@@ -176,17 +179,21 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
         return false;
     }
 
-    /* Fall back to GL 2.1, if 3.2 context creation fails on OS X */
-    #ifdef CORRADE_TARGET_APPLE
-    if(!(context = SDL_GL_CreateContext(window))){
+    /* Create context */
+    _glContext = SDL_GL_CreateContext(_window);
+
+    #ifndef MAGNUM_TARGET_GLES
+    /* Fall back to (forward compatible) GL 2.1, if core context creation fails
+       and if version is not user-specified */
+    if(configuration.version() == Version::None && !_glContext) {
         Warning() << "Platform::Sdl2Application::tryCreateContext(): cannot create core context:" << SDL_GetError() << "(falling back to compatibility context)";
-        SDL_DestroyWindow(window);
+        SDL_DestroyWindow(_window);
 
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
 
-        if(!(window = SDL_CreateWindow(configuration.title().data(),
+        if(!(_window = SDL_CreateWindow(configuration.title().data(),
             SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
             configuration.size().x(), configuration.size().y(),
             SDL_WINDOW_OPENGL|windowFlags)))
@@ -194,55 +201,69 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
             Error() << "Platform::Sdl2Application::tryCreateContext(): cannot create window:" << SDL_GetError();
             return false;
         }
-
-        if(!(context = SDL_GL_CreateContext(window))){
-            Error() << "Platform::Sdl2Application::tryCreateContext(): cannot create compatibility context:" << SDL_GetError();
-            SDL_DestroyWindow(window);
-            window = nullptr;
-            return false;
-        }
     }
-    #else
-    if(!(context = SDL_GL_CreateContext(window))) {
+    #endif
+
+    /* Cannot create context (or fallback compatibility context on desktop) */
+    if(!_glContext) {
         Error() << "Platform::Sdl2Application::tryCreateContext(): cannot create context:" << SDL_GetError();
-        SDL_DestroyWindow(window);
-        window = nullptr;
+        SDL_DestroyWindow(_window);
+        _window = nullptr;
         return false;
     }
-    #endif
+
     #else
-    context = SDL_SetVideoMode(configuration.size().x(), configuration.size().y(), 24, SDL_OPENGL|SDL_HWSURFACE|SDL_DOUBLEBUF);
+    /* Emscripten-specific initialization */
+    _glContext = SDL_SetVideoMode(configuration.size().x(), configuration.size().y(), 24, SDL_OPENGL|SDL_HWSURFACE|SDL_DOUBLEBUF);
     #endif
 
-    c = new Platform::Context;
+    _context.reset(new Platform::Context);
     return true;
 }
 
 void Sdl2Application::swapBuffers() {
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    SDL_GL_SwapWindow(window);
+    SDL_GL_SwapWindow(_window);
     #else
-    SDL_Flip(context);
+    SDL_Flip(_glContext);
     #endif
 }
 
+Int Sdl2Application::swapInterval() const {
+    return SDL_GL_GetSwapInterval();
+}
+
+bool Sdl2Application::setSwapInterval(const Int interval) {
+    if(SDL_GL_SetSwapInterval(interval) == -1) {
+        Error() << "Platform::Sdl2Application::setSwapInterval(): cannot set swap interval:" << SDL_GetError();
+        return false;
+    }
+
+    if(SDL_GL_GetSwapInterval() != interval) {
+        Error() << "Platform::Sdl2Application::setSwapInterval(): swap interval setting ignored by the driver";
+        return false;
+    }
+
+    return true;
+}
+
 Sdl2Application::~Sdl2Application() {
-    delete c;
+    _context.reset();
 
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    SDL_GL_DeleteContext(context);
-    SDL_DestroyWindow(window);
+    SDL_GL_DeleteContext(_glContext);
+    SDL_DestroyWindow(_window);
     #else
-    SDL_FreeSurface(context);
-    CORRADE_INTERNAL_ASSERT(instance == this);
-    instance = nullptr;
+    SDL_FreeSurface(_glContext);
+    CORRADE_INTERNAL_ASSERT(_instance == this);
+    _instance = nullptr;
     #endif
     SDL_Quit();
 }
 
 int Sdl2Application::exec() {
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    while(!(flags & Flag::Exit)) mainLoop();
+    while(!(_flags & Flag::Exit)) mainLoop();
     #else
     emscripten_set_main_loop(staticMainLoop, 0, true);
     #endif
@@ -251,7 +272,7 @@ int Sdl2Application::exec() {
 
 void Sdl2Application::exit() {
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    flags |= Flag::Exit;
+    _flags |= Flag::Exit;
     #else
     emscripten_cancel_main_loop();
     #endif
@@ -266,10 +287,10 @@ void Sdl2Application::mainLoop() {
                 switch(event.window.event) {
                     case SDL_WINDOWEVENT_RESIZED:
                         viewportEvent({event.window.data1, event.window.data2});
-                        flags |= Flag::Redraw;
+                        _flags |= Flag::Redraw;
                         break;
                     case SDL_WINDOWEVENT_EXPOSED:
-                        flags |= Flag::Redraw;
+                        _flags |= Flag::Redraw;
                         break;
                 } break;
 
@@ -299,7 +320,7 @@ void Sdl2Application::mainLoop() {
 
             case SDL_QUIT:
                 #ifndef CORRADE_TARGET_EMSCRIPTEN
-                flags |= Flag::Exit;
+                _flags |= Flag::Exit;
                 #else
                 emscripten_cancel_main_loop();
                 #endif
@@ -307,8 +328,8 @@ void Sdl2Application::mainLoop() {
         }
     }
 
-    if(flags & Flag::Redraw) {
-        flags &= ~Flag::Redraw;
+    if(_flags & Flag::Redraw) {
+        _flags &= ~Flag::Redraw;
         drawEvent();
         return;
     }
@@ -321,7 +342,7 @@ void Sdl2Application::mainLoop() {
 void Sdl2Application::setMouseLocked(bool enabled) {
     /** @todo Implement this in Emscripten */
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    SDL_SetWindowGrab(window, enabled ? SDL_TRUE : SDL_FALSE);
+    SDL_SetWindowGrab(_window, enabled ? SDL_TRUE : SDL_FALSE);
     SDL_SetRelativeMouseMode(enabled ? SDL_TRUE : SDL_FALSE);
     #else
     CORRADE_ASSERT(false, "Sdl2Application::setMouseLocked(): not implemented", );

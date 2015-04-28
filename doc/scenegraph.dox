@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,14 +23,14 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-namespace Magnum { namespace SceneGraph {
+namespace Magnum {
 /** @page scenegraph Using scene graph
 @brief Overview of scene management capabilities.
 
--   Previous page: @ref plugins
+-   Previous page: @ref shaders
 -   Next page: @ref shapes
 
-%Scene graph provides way to hiearchically manage your objects, their
+Scene graph provides way to hiearchically manage your objects, their
 transformation, physics interaction, animation and rendering. The library is
 contained in @ref SceneGraph namespace, see its documentation for more
 information about building and usage with CMake.
@@ -41,7 +41,7 @@ There are naturally many possible feature combinations (2D vs. 3D, different
 transformation representations, animated vs. static, object can have collision
 shape, participate in physics events, have forward vs. deferred rendering...)
 and to make everything possible without combinatiorial explosion and allow the
-users to provide their own features, scene graph in %Magnum is composed of
+users to provide their own features, scene graph in Magnum is composed of
 three main components:
 
  - objects, providing parent/children hierarchy
@@ -56,114 +56,154 @@ three main components:
 @section scenegraph-transformation Transformations
 
 Transformation handles object position, rotation etc. and its basic property
-is dimension count (2D or 3D) and underlying floating-point type.
+is dimension count (2D or 3D) and underlying floating-point type. All classes
+in @ref SceneGraph are templated on underlying type. However, in most cases
+@ref Float "Float" is used and thus nearly all classes have convenience aliases
+so you don't have to explicitly specify it.
 
-@note All classes in @ref SceneGraph are templated on underlying type. However,
-    in most cases @ref Magnum::Float "Float" is used and thus nearly all
-    classes have convenience aliases so you don't have to explicitly specify
-    it.
-
-%Scene graph has implementation of transformations in both 2D and 3D, using
-either matrices or combination of position and rotation. Each implementation
-has its own advantages and disadvantages -- for example when using matrices
-you can have nearly arbitrary transformations, but composing transformations
-and computing their inverse is costly operation. On the other hand quaternions
-won't allow you to scale or shear objects, but are more memory efficient than
-matrices.
+Scene graph has various transformation implementations for both 2D and 3D. Each
+implementation has its own advantages and disadvantages -- for example when
+using matrices you can have nearly arbitrary transformations, but composing
+transformations, computing their inverse and accounting for floating-point
+drift is rather costly operation. On the other hand quaternions won't allow you
+to scale or shear objects, but have far better performance characteristics.
 
 It's also possible to implement your own transformation class for specific
-needs, see source of other transformation classes for more information.
+needs, see source of builtin transformation classes for more information.
 
-@section scenegraph-hierarchy Scene hierarchy
+Magnum provides the following transformation classes. See documentation of each
+class for more detailed information:
 
-%Scene hierarchy is skeleton part of scene graph. In the root there is
-@ref Scene and its children are @ref Object instances. The hierarchy has some
-transformation type, identical for all objects (because for example having part
-of the tree in 2D and part in 3D just wouldn't make sense). Common usage is to
-typedef %Scene and %Object with desired transformation type to save unnecessary
-typing later:
+-   @ref SceneGraph::BasicMatrixTransformation2D "SceneGraph::MatrixTransformation2D" --
+    arbitrary 2D transformations but with slow inverse transformations and no
+    floating-point drift reduction
+-   @ref SceneGraph::BasicMatrixTransformation3D "SceneGraph::MatrixTransformation3D" --
+    arbitrary 3D transformations but with slow inverse transformations and no
+    floating-point drift reduction
+-   @ref SceneGraph::BasicRigidMatrixTransformation2D "SceneGraph::RigidMatrixTransformation2D" --
+    2D translation, rotation and reflection (no scaling), with relatively fast
+    inverse transformations and floating-point drift reduction
+-   @ref SceneGraph::BasicRigidMatrixTransformation3D "SceneGraph::RigidMatrixTransformation3D" --
+    3D translation, rotation and reflection (no scaling), with relatively fast
+    inverse transformations and floating-point drift reduction
+-   @ref SceneGraph::BasicDualComplexTransformation "SceneGraph::DualComplexTransformation" --
+    2D translation and rotation with fast inverse transformations and
+    floating-point drift reduction
+-   @ref SceneGraph::BasicDualQuaternionTransformation "SceneGraph::DualQuaternionTransformation" --
+    3D translation and rotation with fast inverse transformation and
+    floating-point drift reduction
+-   @ref SceneGraph::TranslationTransformation "SceneGraph::TranslationTransformation*D" --
+    Just 2D/3D translation (no rotation, scaling or anything else)
+
+Common usage of transformation classes is to typedef Scene and Object with
+desired transformation type to save unnecessary typing later:
 @code
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 @endcode
 
-Then you can start building the hierarchy by *parenting* one object to another.
-Parent object can be either passed in constructor or using @ref Object::setParent().
-%Scene is always root object, so it naturally cannot have parent object.
+@attention Note that you have to include both @ref Magnum/SceneGraph/Object.h
+    and desired transformation class (e.g. @ref Magnum/SceneGraph/MatrixTransformation3D.h)
+    to be able to use the resulting type.
+
+The object type is subclassed from the transformation type and so the
+`Object3D` type will then contain all members from both @ref SceneGraph::Object
+and @ref SceneGraph::MatrixTransformation3D. For convenience you can use method
+chaining:
 @code
 Scene3D scene;
 
-auto first = new Object3D(&scene);
-auto second = new Object3D(first);
+Object3D object;
+object.setParent(&scene)
+    .rotateY(15.0_degf)
+    .translate(Vector3::xAxis(5.0f));
 @endcode
 
-%Object children can be accessed using @ref Object::firstChild() and
-@ref Object::lastChild(), then you can traverse siblings (objects with the same
-parent) with @ref Object::previousSibling() and @ref Object::nextSibling(). For
-example all children of an object can be traversed the following way:
+@section scenegraph-hierarchy Scene hierarchy
+
+Scene hierarchy is skeleton part of scene graph. In the root there is
+@ref SceneGraph::Scene and its children are @ref SceneGraph::Object instances.
+Whole hierarchy has one transformation type, identical for all objects (because
+for example having part of the tree in 2D and part in 3D just wouldn't make
+sense).
+
+Then you can start building the hierarchy by *parenting* one object to another.
+Parent object can be either passed in constructor or set using
+@ref SceneGraph::Object::setParent(). Scene is always root object, so it
+naturally cannot have parent object. Parent and children relationships can be
+observed through @ref SceneGraph::Object::parent() and
+@ref SceneGraph::Object::children().
 @code
-Object3D* o;
-for(Object3D* child = o->firstChild(); child; child = child->nextSibling()) {
-    // ...
-}
+Scene3D scene;
+
+Object3D* first = new Object3D{&scene};
+Object3D* second = new Object3D{first};
 @endcode
 
-The hierarchy takes care of memory management - when an object is destroyed,
+The hierarchy takes care of memory management -- when an object is destroyed,
 all its children are destroyed too. See detailed explanation of
 @ref scenegraph-object-construction-order "construction and destruction order"
-for information about possible issues.
-
-The object is derived from the transformation you specified earlier in the
-`typedef`, so you can directly transform the objects using methods of given
-transformation implementation. %Scene, as a root object, cannot have any
-transformation. For convenience you can use method chaining:
+below for information about possible issues. To reflect the implicit memory
+management in the code better, you can use @ref SceneGraph::Object::addChild()
+instead of the naked `new` call in the code above:
 @code
-auto next = new Object3D;
-next->setParent(another)
-    .translate(Vector3::yAxis(3.0f))
-    .rotateY(35.0_degf);
+Scene3D scene;
+
+Object3D& first = scene.addChild<Object3D>();
+Object3D& second = first.addChild<Object3D>();
 @endcode
 
 @section scenegraph-features Object features
 
 The object itself handles only parent/child relationship and transformation.
-To make the object renderable, animatable, add collision shape to it etc., you
+To make the object renderable, animable, add collision shape to it etc., you
 have to add a *feature* to it.
 
-Each feature takes reference to holder object in constructor, so adding a
-feature to an object might look just like this, as in some cases you don't even
-need to keep the pointer to it:
-@code
-Object3D* o;
-new MyFeature(o);
-@endcode
+Magnum provides the following builtin features. See documentation of each class
+for more detailed information and usage examples:
 
-Features of an object can be accessed using @ref Object::firstFeature() and
-@ref Object::lastFeature(), then you can traverse the features using
-@ref AbstractFeature::previousFeature() and @ref AbstractFeature::nextFeature(),
-similarly to traversing object children:
+-   @ref SceneGraph::AbstractCamera "SceneGraph::Camera*D" -- Handles
+    projection matrix, aspect ratio correction etc.. Used for rendering parts
+    of the scene.
+-   @ref SceneGraph::Drawable "SceneGraph::Drawable*D" -- Adds drawing
+    functionality to given object. Group of drawables can be then rendered
+    using the camera feature.
+-   @ref SceneGraph::Animable "SceneGraph::Animable*D" -- Adds animation
+    functionality to given object. Group of animables can be then controlled
+    using @ref SceneGraph::AnimableGroup "SceneGraph::AnimableGroup*D".
+-   @ref Shapes::Shape -- Adds collision shape to given object. Group of shapes
+    can be then controlled using @ref Shapes::ShapeGroup "Shapes::ShapeGroup*D".
+    See @ref shapes for more information.
+-   @ref DebugTools::ObjectRenderer "DebugTools::ObjectRenderer*D",
+    @ref DebugTools::ShapeRenderer "DebugTools::ShapeRenderer*D",
+    @ref DebugTools::ForceRenderer "DebugTools::ForceRenderer*D" -- Visualize
+    object properties, object shape or force vector for debugging purposes. See
+    @ref debug-tools for more information.
+
+Each feature takes reference to *holder object* in constructor, so adding a
+feature to an object might look just like the following, as in some cases you
+don't even need to keep the pointer to it. List of object features is
+accessible through @ref SceneGraph::Object::features().
 @code
-Object3D* o;
-for(Object3D::FeatureType feature = o->firstFeature(); feature; feature = feature->nextFeature()) {
-    // ...
-}
+Object3D& o;
+new MyFeature{o, ...};
 @endcode
 
 Some features are passive, some active. Passive features can be just added to
-an object like above, without any additional work (for example collision shape).
-Active features require the user to implement some virtual function (for
-example to draw the object on screen or perform animation step). To make things
-convenient, features can be added directly to object itself using multiple
-inheritance, so you can conveniently add all the active features you want and
-implement needed functions in your own @ref Object subclass without having to
-subclass each feature individually (and making the code overly verbose).
-Simplified example:
+an object, with no additional work except for possible configuration (for
+example collision shape). Active features require the user to implement some
+virtual function (for example to draw the object on screen or perform animation
+step). To make things convenient, features can be added directly to object
+itself using multiple inheritance, so you can conveniently add all the active
+features you want and implement needed functions in your own @ref SceneGraph::Object
+subclass without having to subclass each feature individually (and making the
+code overly verbose). Simplified example:
 @code
-class Bomb: public Object3D, SceneGraph::Drawable3D, SceneGraph::Animable3D {
+class BouncingBall: public Object3D, SceneGraph::Drawable3D, SceneGraph::Animable3D {
     public:
-        Bomb(Object3D* parent): Object3D(parent), SceneGraph::Drawable3D(*this), SceneGraph::Animable3D(*this) {}
+        explicit BouncingBall(Object3D* parent): Object3D{parent}, SceneGraph::Drawable3D{*this}, SceneGraph::Animable3D{*this} {}
 
-    protected:
+    private:
         // drawing implementation for Drawable feature
         void draw(...) override;
 
@@ -179,55 +219,111 @@ feature list.
 Similarly to object hierarchy, when destroying object, all its features (both
 member and inherited) are destroyed. See detailed explanation of
 @ref scenegraph-feature-construction-order "construction and destruction order"
-for information about possible issues.
+for information about possible issues. Also, there is a
+@ref SceneGraph::AbstractObject::addFeature() counterpart to
+@ref SceneGraph::Object::addChild():
+@code
+Object3D& o;
+o.addFeature<MyFeature>(...);
+@endcode
 
-@section scenegraph-caching Transformation caching
+@subsection scenegraph-features-caching Transformation caching in features
 
 Some features need to operate with absolute transformations and their
-inversions - for example camera needs its inverse transformation to render the
+inversions -- for example camera needs its inverse transformation to render the
 scene, collision detection needs to know about positions of surrounding
 objects etc. To avoid computing the transformations from scratch every time,
 the feature can cache them.
 
-The cached data stay until the object is marked as dirty - that is by changing
-transformation, changing parent or explicitly calling @ref Object::setDirty().
+The cached data stay until the object is marked as dirty -- that is by changing
+transformation, changing parent or explicitly calling @ref SceneGraph::Object::setDirty().
 If the object is marked as dirty, all its children are marked as dirty too and
-@ref AbstractFeature::markDirty() is called on every feature. Calling
-@ref Object::setClean() cleans the dirty object and all its dirty parents.
-The function goes through all object features and calls @ref AbstractFeature::clean()
-or @ref AbstractFeature::cleanInverted() depending on which caching is enabled
-on given feature. If the object is already clean, @ref Object::setClean() does
-nothing.
+@ref SceneGraph::AbstractFeature::markDirty() is called on every feature.
+Calling @ref SceneGraph::Object::setClean() cleans the dirty object and all its
+dirty parents. The function goes through all object features and calls
+@ref SceneGraph::AbstractFeature::clean() or
+@ref SceneGraph::AbstractFeature::cleanInverted() depending on which caching is
+enabled on given feature. If the object is already clean,
+@ref SceneGraph::Object::setClean() does nothing.
 
-Most probably you will need caching in @ref Object itself -- which doesn't
-support it on its own -- however you can take advantage of multiple inheritance
-and implement it using @ref AbstractFeature. In order to have caching, you must
-enable it first, because by default the caching is disabled. You can enable it
-using @ref AbstractFeature::setCachedTransformations() and then implement
-corresponding cleaning function(s):
+Most probably you will need caching in @ref SceneGraph::Object itself -- which
+doesn't support it on its own -- however you can take advantage of multiple
+inheritance and implement it using @ref SceneGraph::AbstractFeature. In order
+to have caching, you must enable it first, because by default the caching is
+disabled. You can enable it using @ref SceneGraph::AbstractFeature::setCachedTransformations()
+and then implement corresponding cleaning function(s):
 @code
 class CachingObject: public Object3D, SceneGraph::AbstractFeature3D {
     public:
-        CachingObject(Object3D* parent): SceneGraph::AbstractFeature3D(*this) {
+        explicit CachingObject(Object3D* parent): Object3D{parent}, SceneGraph::AbstractFeature3D{*this} {
             setCachedTransformations(SceneGraph::CachedTransformation::Absolute);
         }
 
     protected:
         void clean(const Matrix4& absoluteTransformation) override {
-            absolutePosition = absoluteTransformation.translation();
+            _absolutePosition = absoluteTransformation.translation();
         }
 
     private:
-        Vector3 absolutePosition;
+        Vector3 _absolutePosition;
 };
 @endcode
 
 When you need to use the cached value, you can explicitly request the cleanup
-by calling @ref Object::setClean(). @ref Camera3D "Camera", for example, calls
-it automatically before it starts rendering, as it needs its own inverse
-transformation to properly draw the objects.
+by calling @ref SceneGraph::Object::setClean(). @ref SceneGraph::Camera3D "Camera",
+for example, calls it automatically before it starts rendering, as it needs its
+own inverse transformation to properly draw the objects.
 
-See @ref SceneGraph-AbstractFeature-subclassing-caching for more information.
+@subsection scenegraph-features-transformation Polymorphic access to object transformation
+
+Features by default have access only to @ref SceneGraph::AbstractObject, which
+doesn't know about any particular transformation implementation. This has the
+advantage that features don't have to be implemented for all possible
+transformation implementations. But, as a consequence, it is impossible to
+transform the object using only pointer to @ref SceneGraph::AbstractObject.
+
+To solve this, the transformation classes are subclassed from interfaces
+sharing common functionality, so the feature can use that interface instead of
+being specialized for all relevant transformation implementations. The
+following interfaces are available, each having its own set of virtual
+functions to control the transformation:
+
+-   @ref SceneGraph::AbstractTransformation "SceneGraph::AbstractTransformation*D" --
+    base for all transformations
+-   @ref SceneGraph::AbstractTranslation "SceneGraph::AbstractTranslation*D" --
+    base for all transformations providing translation
+-   @ref SceneGraph::AbstractBasicTranslationRotation2D "SceneGraph::AbstractTranslationRotation2D",
+    @ref SceneGraph::AbstractBasicTranslationRotation3D "SceneGraph::AbstractTranslationRotation3D" --
+    base for all transformations providing translation and rotation
+-   @ref SceneGraph::AbstractBasicTranslationRotationScaling2D "SceneGraph::AbstractBasicTranslationRotationScaling2D",
+    @ref SceneGraph::AbstractBasicTranslationRotationScaling3D "SceneGraph::AbstractBasicTranslationRotationScaling3D" --
+    base for all transformations providing translation, rotation and scaling
+
+These interfaces provide virtual functions which can be used to modify object
+transformations. The virtual calls are used only when calling through the
+interface and not when using the concrete implementation directly to avoid
+negative performance effects. There are no functions to retrieve object
+transformation, you need to use the above transformation caching mechanism for
+that.
+
+In the following example we are able to get pointer to both
+@ref SceneGraph::AbstractObject and needed transformation from one
+constructor parameter using small trick:
+@code
+class TransformingFeature: public SceneGraph::AbstractFeature3D {
+    public:
+        template<class T> TransformingFeature(SceneGraph::Object<T>& object):
+            SceneGraph::AbstractFeature3D(object), transformation(object) {}
+
+    private:
+        SceneGraph::AbstractTranslationRotation3D& transformation;
+};
+@endcode
+If we take for example @ref SceneGraph::Object "SceneGraph::Object<MatrixTransformation3D>",
+it is derived from @ref SceneGraph::AbstractObject "SceneGraph::AbstractObject3D"
+and @ref SceneGraph::BasicMatrixTransformation3D "SceneGraph::MatrixTransformation3D",
+thus the reference to @ref SceneGraph::AbstractBasicTranslationRotation3D "SceneGraph::AbstractTranslationRotation3D",
+is automatically extracted from the reference in our constructor.
 
 @section scenegraph-construction-order Construction and destruction order
 
@@ -267,7 +363,7 @@ because `object` is created on stack. If this doesn't already crash, the
 
 When destroying the object, all its features are destroyed. For features added
 as member it's no issue, features added using multiple inheritance must be
-inherited after the %Object class:
+inherited after the Object class:
 @code
 class MyObject: public Object3D, MyFeature {
     public:
@@ -305,7 +401,7 @@ On destruction, Object3D destructor is called first, deleting MyFeature,
 which is wrong, because MyFeature is in the same object. After that (if the
 program didn't already crash) destructor of MyFeature is called (again).
 
--   Previous page: @ref plugins
+-   Previous page: @ref shaders
 -   Next page: @ref shapes
 */
-}}
+}

@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -36,15 +36,14 @@
 
 namespace Magnum { namespace Shapes { namespace Test {
 
-class ShapeTest: public TestSuite::Tester {
-    public:
-        ShapeTest();
+struct ShapeTest: TestSuite::Tester {
+    explicit ShapeTest();
 
-        void clean();
-        void collides();
-        void collision();
-        void firstCollision();
-        void shapeGroup();
+    void clean();
+    void collides();
+    void collision();
+    void firstCollision();
+    void shapeGroup();
 };
 
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation2D> Scene2D;

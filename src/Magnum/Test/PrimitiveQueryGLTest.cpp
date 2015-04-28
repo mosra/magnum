@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -28,64 +28,57 @@
 
 #include "Magnum/AbstractShaderProgram.h"
 #include "Magnum/Buffer.h"
-#include "Magnum/Framebuffer.h"
 #include "Magnum/Mesh.h"
 #include "Magnum/PrimitiveQuery.h"
-#include "Magnum/Renderbuffer.h"
-#include "Magnum/RenderbufferFormat.h"
 #include "Magnum/Shader.h"
+#include "Magnum/TransformFeedback.h"
+#include "Magnum/Math/Vector2.h"
 #include "Magnum/Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Test {
 
-class PrimitiveQueryGLTest: public AbstractOpenGLTester {
-    public:
-        explicit PrimitiveQueryGLTest();
+struct PrimitiveQueryGLTest: AbstractOpenGLTester {
+    explicit PrimitiveQueryGLTest();
 
-        void query();
+    #ifndef MAGNUM_TARGET_GLES
+    void primitivesGenerated();
+    #endif
+    void transformFeedbackPrimitivesWritten();
 };
 
 PrimitiveQueryGLTest::PrimitiveQueryGLTest() {
-    addTests({&PrimitiveQueryGLTest::query});
+    addTests({
+              #ifndef MAGNUM_TARGET_GLES
+              &PrimitiveQueryGLTest::primitivesGenerated,
+              #endif
+              &PrimitiveQueryGLTest::transformFeedbackPrimitivesWritten});
 }
 
-void PrimitiveQueryGLTest::query() {
-    #ifndef MAGNUM_TARGET_GLES
+#ifndef MAGNUM_TARGET_GLES
+void PrimitiveQueryGLTest::primitivesGenerated() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::transform_feedback>())
         CORRADE_SKIP(Extensions::GL::EXT::transform_feedback::string() + std::string(" is not available."));
-    #endif
 
-    #ifndef MAGNUM_TARGET_GLES
-    class MyShader: public AbstractShaderProgram {
-        public:
-            typedef Attribute<0, Vector2> Position;
+    struct MyShader: AbstractShaderProgram {
+        typedef Attribute<0, Vector2> Position;
 
-            explicit MyShader() {
-                Utility::Resource rs("QueryGLTest");
+        explicit MyShader() {
+            Shader vert(Version::GL210, Shader::Type::Vertex);
 
-                Shader vert(Version::GL210, Shader::Type::Vertex);
-                Shader frag(Version::GL210, Shader::Type::Fragment);
+            CORRADE_INTERNAL_ASSERT_OUTPUT(vert.addSource(
+                "attribute lowp vec4 position;\n"
+                "void main() {\n"
+                "    gl_Position = position;\n"
+                "}\n").compile());
 
-                vert.addSource(rs.get("MyShader.vert"));
-                frag.addSource(rs.get("MyShader.frag"));
-
-                CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({std::ref(vert), std::ref(frag)}));
-
-                attachShaders({std::ref(vert), std::ref(frag)});
-
-                CORRADE_INTERNAL_ASSERT_OUTPUT(link());
-            }
+            attachShader(vert);
+            bindAttributeLocation(Position::Location, "position");
+            CORRADE_INTERNAL_ASSERT_OUTPUT(link());
+        }
     } shader;
 
-    Renderbuffer renderbuffer;
-    renderbuffer.setStorage(RenderbufferFormat::RGBA8, Vector2i(32));
-
-    Framebuffer framebuffer({{}, Vector2i(32)});
-    framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment(0), renderbuffer);
-
-    constexpr Vector2 data[9];
     Buffer vertices;
-    vertices.setData(data, BufferUsage::StaticDraw);
+    vertices.setData({nullptr, 9*sizeof(Vector2)}, BufferUsage::StaticDraw);
 
     Mesh mesh;
     mesh.setPrimitive(MeshPrimitive::Triangles)
@@ -97,7 +90,7 @@ void PrimitiveQueryGLTest::query() {
     PrimitiveQuery q{PrimitiveQuery::Target::PrimitivesGenerated};
     q.begin();
 
-    framebuffer.bind(FramebufferTarget::ReadDraw);
+    Renderer::enable(Renderer::Feature::RasterizerDiscard);
     mesh.draw(shader);
 
     q.end();
@@ -109,9 +102,69 @@ void PrimitiveQueryGLTest::query() {
     CORRADE_VERIFY(!availableBefore);
     CORRADE_VERIFY(availableAfter);
     CORRADE_COMPARE(count, 3);
-    #else
-    CORRADE_SKIP("Not implemented in OpenGL ES 3.0 yet.");
+}
+#endif
+
+void PrimitiveQueryGLTest::transformFeedbackPrimitivesWritten() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
+        CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not available."));
     #endif
+
+    struct MyShader: AbstractShaderProgram {
+        explicit MyShader() {
+            #ifndef MAGNUM_TARGET_GLES
+            Shader vert(Version::GL300, Shader::Type::Vertex);
+            #else
+            Shader vert(Version::GLES300, Shader::Type::Vertex);
+            Shader frag(Version::GLES300, Shader::Type::Fragment);
+            #endif
+
+            CORRADE_INTERNAL_ASSERT_OUTPUT(vert.addSource(
+                "out mediump vec2 outputData;\n"
+                "void main() {\n"
+                "    outputData = vec2(1.0, -1.0);\n"
+                "}\n").compile());
+            #ifndef MAGNUM_TARGET_GLES
+            attachShader(vert);
+            #else
+            /* ES for some reason needs both vertex and fragment shader */
+            CORRADE_INTERNAL_ASSERT_OUTPUT(frag.addSource("void main() {}\n").compile());
+            attachShaders({vert, frag});
+            #endif
+
+            setTransformFeedbackOutputs({"outputData"}, TransformFeedbackBufferMode::SeparateAttributes);
+            CORRADE_INTERNAL_ASSERT_OUTPUT(link());
+        }
+    } shader;
+
+    Buffer output;
+    output.setData({nullptr, 18*sizeof(Vector2)}, BufferUsage::StaticDraw);
+
+    Mesh mesh;
+    mesh.setPrimitive(MeshPrimitive::Triangles)
+        .setCount(9);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    TransformFeedback feedback;
+    feedback.attachBuffer(0, output);
+
+    PrimitiveQuery q{PrimitiveQuery::Target::TransformFeedbackPrimitivesWritten};
+    q.begin();
+
+    Renderer::enable(Renderer::Feature::RasterizerDiscard);
+
+    mesh.draw(shader); /* Draw once without XFB (shouldn't be counted) */
+    feedback.begin(shader, TransformFeedback::PrimitiveMode::Triangles);
+    mesh.draw(shader);
+    feedback.end();
+
+    q.end();
+    const UnsignedInt count = q.result<UnsignedInt>();
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(count, 3); /* Three triangles (9 vertices) */
 }
 
 }}

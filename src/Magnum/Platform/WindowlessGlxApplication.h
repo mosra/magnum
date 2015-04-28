@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -28,6 +28,8 @@
 /** @file
  * @brief Class @ref Magnum::Platform::WindowlessGlxApplication, macro @ref MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN()
  */
+
+#include <memory>
 
 #include "Magnum/OpenGL.h"
 #include <GL/glx.h>
@@ -73,7 +75,7 @@ See @ref cmake for more information.
 
 ## General usage
 
-In CMake you need to request `%WindowlessGlxApplication` component, add
+In CMake you need to request `WindowlessGlxApplication` component, add
 `${MAGNUM_WINDOWLESSGLXAPPLICATION_INCLUDE_DIRS}` to include path and link to
 `${MAGNUM_WINDOWLESSGLXAPPLICATION_LIBRARIES}`. If no other windowless
 application is requested, you can also use generic
@@ -160,15 +162,15 @@ class WindowlessGlxApplication {
         bool tryCreateContext(const Configuration& configuration);
 
     private:
-        Display* display;
-        GLXContext context;
-        GLXPbuffer pbuffer;
+        Display* _display;
+        GLXContext _glContext;
+        GLXPbuffer _pbuffer;
 
-        Platform::Context* c;
+        std::unique_ptr<Platform::Context> _context;
 };
 
 /**
-@brief %Configuration
+@brief Configuration
 
 @see @ref WindowlessGlxApplication(), @ref createContext(),
     @ref tryCreateContext()

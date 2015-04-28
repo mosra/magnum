@@ -1,7 +1,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,6 +23,13 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+if(BUILD_PLUGINS_STATIC)
+    set(MAGNUM_TGAIMPORTER_BUILD_STATIC 1)
+endif()
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+
 set(TgaImporter_SRCS
     TgaImporter.cpp)
 
@@ -30,30 +37,33 @@ set(TgaImporter_HEADERS
     TgaHeader.h
     TgaImporter.h)
 
-add_library(TgaImporterObjects OBJECT ${TgaImporter_SRCS})
-set_target_properties(TgaImporterObjects PROPERTIES COMPILE_FLAGS "-DTgaImporterObjects_EXPORTS ${CMAKE_SHARED_LIBRARY_CXX_FLAGS}")
+# Objects shared between plugin and test library
+add_library(TgaImporterObjects OBJECT
+    ${TgaImporter_SRCS}
+    ${TgaImporter_HEADERS})
+if(NOT BUILD_PLUGINS_STATIC)
+    set_target_properties(TgaImporterObjects PROPERTIES COMPILE_FLAGS "-DTgaImporterObjects_EXPORTS")
+endif()
+if(NOT BUILD_PLUGINS_STATIC OR BUILD_STATIC_PIC)
+    set_target_properties(TgaImporterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
 
+# TgaImporter plugin
 add_plugin(TgaImporter ${MAGNUM_PLUGINS_IMPORTER_DEBUG_INSTALL_DIR} ${MAGNUM_PLUGINS_IMPORTER_RELEASE_INSTALL_DIR}
     TgaImporter.conf
     $<TARGET_OBJECTS:TgaImporterObjects>
     pluginRegistration.cpp)
+if(BUILD_STATIC_PIC)
+    set_target_properties(TgaImporter PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
+
 target_link_libraries(TgaImporter Magnum)
 
 install(FILES ${TgaImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/TgaImporter)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configure.h DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/TgaImporter/configure.h)
 
 if(BUILD_TESTS)
-    add_library(MagnumTgaImporterTestLib ${SHARED_OR_STATIC} $<TARGET_OBJECTS:TgaImporterObjects>)
-    set_target_properties(MagnumTgaImporterTestLib PROPERTIES DEBUG_POSTFIX "-d")
+    add_library(MagnumTgaImporterTestLib STATIC $<TARGET_OBJECTS:TgaImporterObjects>)
     target_link_libraries(MagnumTgaImporterTestLib Magnum)
-
-    # On Windows we need to install first and then run the tests to avoid "DLL
-    # not found" hell, thus we need to install this too
-    if(CORRADE_TARGET_WINDOWS AND NOT CMAKE_CROSSCOMPILING)
-        install(TARGETS MagnumTgaImporterTestLib
-            RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
-            LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
-            ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
-    endif()
-
     add_subdirectory(Test)
 endif()

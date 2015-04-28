@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -70,7 +70,7 @@ more information.
 
 ## General Usage
 
-In CMake you need to request `%WindowlessNaClApplication` component, add
+In CMake you need to request `WindowlessNaClApplication` component, add
 `${MAGNUM_WINDOWLESSNACLAPPLICATION_INCLUDE_DIRS}` to include path and link to
 `${MAGNUM_WINDOWLESSNACLAPPLICATION_LIBRARIES}`. If no other windowless
 application is requested, you can also use generic
@@ -186,7 +186,7 @@ class WindowlessNaClApplication: public pp::Instance, public pp::Graphics3DClien
 };
 
 /**
-@brief %Configuration
+@brief Configuration
 
 @see @ref WindowlessNaClApplication(), @ref createContext(),
     @ref tryCreateContext()

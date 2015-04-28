@@ -1,9 +1,9 @@
-#ifndef Magnum_TextureTools_magnumTextureToolsVisibility_h
-#define Magnum_TextureTools_magnumTextureToolsVisibility_h
+#ifndef Magnum_TextureTools_resourceImport_hpp
+#define Magnum_TextureTools_resourceImport_hpp
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -25,18 +25,18 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Corrade/Utility/VisibilityMacros.h>
-
 #include "Magnum/configure.h"
 
-#ifndef MAGNUM_BUILD_STATIC
-    #ifdef MagnumTextureTools_EXPORTS
-        #define MAGNUM_TEXTURETOOLS_EXPORT CORRADE_VISIBILITY_EXPORT
-    #else
-        #define MAGNUM_TEXTURETOOLS_EXPORT CORRADE_VISIBILITY_IMPORT
-    #endif
+#ifdef MAGNUM_BUILD_STATIC
+#include <Corrade/Utility/Resource.h>
+#include <Corrade/Utility/Macros.h>
+
+static int magnumTextureToolsResourceImport() {
+    CORRADE_RESOURCE_INITIALIZE(MagnumTextureTools_RCS)
+    return 0;
+} CORRADE_AUTOMATIC_INITIALIZER(magnumTextureToolsResourceImport)
 #else
-    #define MAGNUM_TEXTURETOOLS_EXPORT CORRADE_VISIBILITY_STATIC
+#error this header is available only in static build
 #endif
 
 #endif

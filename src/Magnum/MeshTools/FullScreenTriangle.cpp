@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -25,7 +25,7 @@
 
 #include "FullScreenTriangle.h"
 
-#include "Magnum/AbstractShaderProgram.h"
+#include "Magnum/Attribute.h"
 #include "Magnum/Buffer.h"
 #include "Magnum/Context.h"
 #include "Magnum/Mesh.h"
@@ -55,7 +55,7 @@ std::pair<std::unique_ptr<Buffer>, Mesh> fullScreenTriangle(Version version) {
         buffer->setData(triangle, BufferUsage::StaticDraw);
         /** @todo Is it possible to attach moveable buffer here to avoid heap
            allocation? OTOH this is more effective in most (modern) cases */
-        mesh.addVertexBuffer(*buffer, 0, AbstractShaderProgram::Attribute<0, Vector2>());
+        mesh.addVertexBuffer(*buffer, 0, Attribute<0, Vector2>{});
     }
 
     return {std::move(buffer), std::move(mesh)};

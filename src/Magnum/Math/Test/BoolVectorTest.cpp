@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -30,27 +30,26 @@
 
 namespace Magnum { namespace Math { namespace Test {
 
-class BoolVectorTest: public Corrade::TestSuite::Tester {
-    public:
-        explicit BoolVectorTest();
+struct BoolVectorTest: Corrade::TestSuite::Tester {
+    explicit BoolVectorTest();
 
-        void construct();
-        void constructDefault();
-        void constructOneValue();
-        void constructOneElement();
-        void constructCopy();
-        void data();
+    void construct();
+    void constructDefault();
+    void constructOneValue();
+    void constructOneElement();
+    void constructCopy();
+    void data();
 
-        void compare();
-        void compareUndefined();
-        void all();
-        void none();
-        void any();
+    void compare();
+    void compareUndefined();
+    void all();
+    void none();
+    void any();
 
-        void bitInverse();
-        void bitAndOrXor();
+    void bitInverse();
+    void bitAndOrXor();
 
-        void debug();
+    void debug();
 };
 
 static_assert(BoolVector<15>::DataSize == 2, "Improper DataSize");

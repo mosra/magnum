@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -29,6 +29,7 @@
  * @brief @ref compilation-speedup-hpp "Template implementation" for @ref AbstractCamera.h
  */
 
+#include "Magnum/Math/Functions.h"
 #include "Magnum/SceneGraph/AbstractCamera.h"
 #include "Magnum/SceneGraph/Drawable.h"
 
@@ -36,34 +37,20 @@ namespace Magnum { namespace SceneGraph {
 
 namespace Implementation {
 
-template<UnsignedInt dimensions, class T> class Camera {};
-
-template<class T> class Camera<2, T> {
-    public:
-        constexpr static Math::Matrix3<T> aspectRatioScale(const Math::Vector2<T>& scale) {
-            return Math::Matrix3<T>::scaling({scale.x(), scale.y()});
-        }
-};
-template<class T> class Camera<3, T> {
-    public:
-        constexpr static Math::Matrix4<T> aspectRatioScale(const Math::Vector2<T>& scale) {
-            return Math::Matrix4<T>::scaling({scale.x(), scale.y(), 1.0f});
-        }
-};
-
 template<UnsignedInt dimensions, class T> typename DimensionTraits<dimensions, T>::MatrixType aspectRatioFix(AspectRatioPolicy aspectRatioPolicy, const Math::Vector2<T>& projectionScale, const Vector2i& viewport) {
     /* Don't divide by zero / don't preserve anything */
     if(projectionScale.x() == 0 || projectionScale.y() == 0 || viewport.x() == 0 || viewport.y() == 0 || aspectRatioPolicy == AspectRatioPolicy::NotPreserved)
         return {};
 
+    CORRADE_INTERNAL_ASSERT((projectionScale > Math::Vector2<T>(0)).all() && (viewport > Vector2i(0)).all());
     Math::Vector2<T> relativeAspectRatio = Math::Vector2<T>(viewport)*projectionScale;
 
     /* Extend on larger side = scale larger side down
        Clip on smaller side = scale smaller side up */
-    return Camera<dimensions, T>::aspectRatioScale(
+    return MatrixTypeFor<dimensions, T>::scaling(Math::Vector<dimensions, T>::pad(
         (relativeAspectRatio.x() > relativeAspectRatio.y()) == (aspectRatioPolicy == AspectRatioPolicy::Extend) ?
-        Vector2(relativeAspectRatio.y()/relativeAspectRatio.x(), T(1.0)) :
-        Vector2(T(1.0), relativeAspectRatio.x()/relativeAspectRatio.y()));
+        Vector2(relativeAspectRatio.y()/relativeAspectRatio.x(), T(1)) :
+        Vector2(T(1), relativeAspectRatio.x()/relativeAspectRatio.y()), T(1)));
 }
 
 }
@@ -74,6 +61,10 @@ template<UnsignedInt dimensions, class T> AbstractCamera<dimensions, T>::Abstrac
 
 /* `= default` causes linker errors in GCC 4.4 */
 template<UnsignedInt dimensions, class T> AbstractCamera<dimensions, T>::~AbstractCamera() {}
+
+template<UnsignedInt dimensions, class T> void AbstractCamera<dimensions, T>::fixAspectRatio() {
+    _projectionMatrix = Implementation::aspectRatioFix<dimensions, T>(_aspectRatioPolicy, {Math::abs(rawProjectionMatrix[0].x()), Math::abs(rawProjectionMatrix[1].y())}, _viewport)*rawProjectionMatrix;
+}
 
 template<UnsignedInt dimensions, class T> AbstractCamera<dimensions, T>& AbstractCamera<dimensions, T>::setAspectRatioPolicy(AspectRatioPolicy policy) {
     _aspectRatioPolicy = policy;

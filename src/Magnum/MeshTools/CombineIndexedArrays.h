@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -131,7 +131,8 @@ template<class T> void writeCombinedArray(const UnsignedInt stride, const Unsign
         CORRADE_ASSERT(index < array.size(), "MeshTools::combineIndexedArrays(): index out of range", );
         output.push_back(array[index]);
     }
-    std::swap(output, array);
+    using std::swap;
+    swap(output, array);
 }
 
 /* Terminator for recursive calls */
@@ -147,7 +148,7 @@ template<class T, class ...U> inline void writeCombinedArrays(UnsignedInt stride
 /**
 @brief Combine indexed arrays
 @param[in,out] indexedArrays Index and attribute arrays
-@return %Array with resulting indices
+@return Array with resulting indices
 
 Creates new combined index array and reorders original attribute arrays so they
 can be indexed with the new single index array.

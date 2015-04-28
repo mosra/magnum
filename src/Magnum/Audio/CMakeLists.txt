@@ -1,7 +1,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -45,10 +45,15 @@ set(MagnumAudio_HEADERS
 
     visibility.h)
 
+# Audio library
 add_library(MagnumAudio ${SHARED_OR_STATIC}
     ${MagnumAudio_SRCS}
     ${MagnumAudio_HEADERS})
 set_target_properties(MagnumAudio PROPERTIES DEBUG_POSTFIX "-d")
+if(BUILD_STATIC_PIC)
+    set_target_properties(MagnumAudio PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
+
 target_link_libraries(MagnumAudio ${CORRADE_PLUGINMANAGER_LIBRARIES} ${OPENAL_LIBRARY})
 
 install(TARGETS MagnumAudio

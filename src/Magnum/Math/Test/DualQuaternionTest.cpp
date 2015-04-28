@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -30,35 +30,34 @@
 
 namespace Magnum { namespace Math { namespace Test {
 
-class DualQuaternionTest: public Corrade::TestSuite::Tester {
-    public:
-        explicit DualQuaternionTest();
+struct DualQuaternionTest: Corrade::TestSuite::Tester {
+    explicit DualQuaternionTest();
 
-        void construct();
-        void constructDefault();
-        void constructFromVector();
-        void constructCopy();
+    void construct();
+    void constructDefault();
+    void constructFromVector();
+    void constructCopy();
 
-        void isNormalized();
+    void isNormalized();
 
-        void lengthSquared();
-        void length();
-        void normalized();
+    void lengthSquared();
+    void length();
+    void normalized();
 
-        void quaternionConjugated();
-        void dualConjugated();
-        void conjugated();
-        void inverted();
-        void invertedNormalized();
+    void quaternionConjugated();
+    void dualConjugated();
+    void conjugated();
+    void inverted();
+    void invertedNormalized();
 
-        void rotation();
-        void translation();
-        void combinedTransformParts();
-        void matrix();
-        void transformPoint();
-        void transformPointNormalized();
+    void rotation();
+    void translation();
+    void combinedTransformParts();
+    void matrix();
+    void transformPoint();
+    void transformPointNormalized();
 
-        void debug();
+    void debug();
 };
 
 typedef Math::Deg<Float> Deg;
@@ -283,8 +282,7 @@ void DualQuaternionTest::transformPointNormalized() {
 
     std::ostringstream o;
     Corrade::Utility::Error::setOutput(&o);
-    Vector3 notTransformed = (a*Dual(2)).transformPointNormalized(v);
-    CORRADE_VERIFY(notTransformed != notTransformed);
+    (a*Dual(2)).transformPointNormalized(v);
     CORRADE_COMPARE(o.str(), "Math::DualQuaternion::transformPointNormalized(): dual quaternion must be normalized\n");
 
     Vector3 transformedA = a.transformPointNormalized(v);

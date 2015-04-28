@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -30,10 +30,10 @@
  */
 
 #include <cmath>
-#include <limits>
 #include <Corrade/Utility/Assert.h>
-#include <Corrade/Utility/Debug.h>
 #include <Corrade/Utility/ConfigurationValue.h>
+#include <Corrade/Utility/Debug.h>
+#include <Corrade/Utility/Macros.h>
 
 #include "Magnum/visibility.h"
 #include "Magnum/Math/Angle.h"
@@ -46,9 +46,38 @@ namespace Implementation {
     template<std::size_t, class, class> struct VectorConverter;
 }
 
+/** @relatesalso Vector
+@brief Dot product of two vectors
+
+Returns `0` when two vectors are perpendicular, `1` when two *normalized*
+vectors are parallel and `-1` when two *normalized* vectors are antiparallel. @f[
+    \boldsymbol a \cdot \boldsymbol b = \sum_{i=0}^{n-1} \boldsymbol a_i \boldsymbol b_i
+@f]
+@see @ref Vector::dot() const, @ref Vector::operator-(), @ref Vector2::perpendicular()
+*/
+template<std::size_t size, class T> inline T dot(const Vector<size, T>& a, const Vector<size, T>& b) {
+    return (a*b).sum();
+}
+
+/** @relatesalso Vector
+@brief Angle between normalized vectors
+
+Expects that both vectors are normalized. @f[
+    \theta = acos \left( \frac{\boldsymbol a \cdot \boldsymbol b}{|\boldsymbol a| |\boldsymbol b|} \right) = acos (\boldsymbol a \cdot \boldsymbol b)
+@f]
+@see @ref Vector::isNormalized(),
+    @ref angle(const Complex<T>&, const Complex<T>&),
+    @ref angle(const Quaternion<T>&, const Quaternion<T>&)
+*/
+template<std::size_t size, class T> inline Rad<T> angle(const Vector<size, T>& normalizedA, const Vector<size, T>& normalizedB) {
+    CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
+        "Math::angle(): vectors must be normalized", {});
+    return Rad<T>(std::acos(dot(normalizedA, normalizedB)));
+}
+
 /**
-@brief %Vector
-@tparam size    %Vector size
+@brief Vector
+@tparam size    Vector size
 @tparam T       Underlying data type
 
 See @ref matrix-vector for brief introduction.
@@ -66,10 +95,10 @@ template<std::size_t size, class T> class Vector {
 
     public:
         typedef T Type;                         /**< @brief Underlying data type */
-        const static std::size_t Size = size;   /**< @brief %Vector size */
+        const static std::size_t Size = size;   /**< @brief Vector size */
 
         /**
-         * @brief %Vector from array
+         * @brief Vector from array
          * @return Reference to the data as if it was Vector, thus doesn't
          *      perform any copying.
          *
@@ -85,31 +114,35 @@ template<std::size_t size, class T> class Vector {
         }
 
         /**
-         * @brief Dot product
+         * @brief Pad vector
          *
-         * Returns `0` if two vectors are orthogonal, `1` if two *normalized*
-         * vectors are parallel and `-1` if two *normalized* vectors are
-         * antiparallel. @f[
-         *      \boldsymbol a \cdot \boldsymbol b = \sum_{i=0}^{n-1} \boldsymbol a_i \boldsymbol b_i
-         * @f]
-         * @see dot() const, @ref operator-(),
-         *      @ref Vector2::perpendicular()
-         * @todoc Explicit reference when Doxygen can handle const
+         * If size of @p a is smaller than @ref Size, it is padded from right
+         * with @p value, otherwise it's cut.
+         * @see @ref Vector4::pad(const Vector<otherSize, T>&, T, T)
          */
-        static T dot(const Vector<size, T>& a, const Vector<size, T>& b) {
-            return (a*b).sum();
+        template<std::size_t otherSize> constexpr static Vector<size, T> pad(const Vector<otherSize, T>& a, T value = T(0)) {
+            return padInternal<otherSize>(typename Implementation::GenerateSequence<size>::Type(), a, value);
+        }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief Math::dot(const Vector<size, T>&, const Vector<size, T>&)
+         * @deprecated Use @ref Math::dot(const Vector<size, T>&, const Vector<size, T>&)
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use Math::dot() instead") static T dot(const Vector<size, T>& a, const Vector<size, T>& b) {
+            return Math::dot(a, b);
         }
 
         /**
-         * @brief Angle between normalized vectors
-         *
-         * Expects that both vectors are normalized. @f[
-         *      \theta = acos \left( \frac{\boldsymbol a \cdot \boldsymbol b}{|\boldsymbol a| |\boldsymbol b|} \right) = acos (\boldsymbol a \cdot \boldsymbol b)
-         * @f]
-         * @see @ref isNormalized(), @ref Quaternion::angle(),
-         *      @ref Complex::angle()
+         * @copybrief Math::angle(const Vector<size, T>&, const Vector<size, T>&)
+         * @deprecated Use @ref Math::angle(const Vector<size, T>&, const Vector<size, T>&)
+         *      instead.
          */
-        static Rad<T> angle(const Vector<size, T>& normalizedA, const Vector<size, T>& normalizedB);
+        CORRADE_DEPRECATED("use Math::angle() instead") static Rad<T> angle(const Vector<size, T>& normalizedA, const Vector<size, T>& normalizedB) {
+            return Math::angle(normalizedA, normalizedB);
+        }
+        #endif
 
         /**
          * @brief Default constructor
@@ -454,10 +487,10 @@ template<std::size_t size, class T> class Vector {
          * @see @ref dot(const Vector<size, T>&, const Vector<size, T>&),
          *      @ref isNormalized()
          */
-        T dot() const { return dot(*this, *this); }
+        T dot() const { return Math::dot(*this, *this); }
 
         /**
-         * @brief %Vector length
+         * @brief Vector length
          *
          * See also @ref dot() const which is faster for comparing length with
          * other values. @f[
@@ -503,7 +536,7 @@ template<std::size_t size, class T> class Vector {
         }
 
         /**
-         * @brief %Vector projected onto line
+         * @brief Vector projected onto line
          *
          * Returns vector projected onto @p line. @f[
          *      \boldsymbol a_1 = \frac{\boldsymbol a \cdot \boldsymbol b}{\boldsymbol b \cdot \boldsymbol b} \boldsymbol b
@@ -511,19 +544,18 @@ template<std::size_t size, class T> class Vector {
          * @see @ref dot(), @ref projectedOntoNormalized()
          */
         Vector<size, T> projected(const Vector<size, T>& line) const {
-            return line*dot(*this, line)/line.dot();
+            return line*Math::dot(*this, line)/line.dot();
         }
 
         /**
-         * @brief %Vector projected onto normalized line
+         * @brief Vector projected onto normalized line
          *
          * Slightly faster alternative to @ref projected(), expects @p line to
          * be normalized. @f[
          *      \boldsymbol a_1 = \frac{\boldsymbol a \cdot \boldsymbol b}{\boldsymbol b \cdot \boldsymbol b} \boldsymbol b =
          *          (\boldsymbol a \cdot \boldsymbol b) \boldsymbol b
          * @f]
-         * @see dot() const
-         * @todoc Explicit reference when Doxygen can handle const
+         * @see @ref dot() const
          */
         Vector<size, T> projectedOntoNormalized(const Vector<size, T>& line) const;
 
@@ -571,6 +603,10 @@ template<std::size_t size, class T> class Vector {
             #else
             _data({Implementation::repeat(value, sequence)...}) {}
             #endif
+
+        template<std::size_t otherSize, std::size_t ...sequence> constexpr static Vector<size, T> padInternal(Implementation::Sequence<sequence...>, const Vector<otherSize, T>& a, T value) {
+            return {sequence < otherSize ? a[sequence] : value...};
+        }
 
         #ifndef CORRADE_MSVC2013_COMPATIBILITY
         T _data[size];
@@ -1104,6 +1140,9 @@ extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utilit
     static const Type<T>& from(const T* data) {                             \
         return *reinterpret_cast<const Type<T>*>(data);                     \
     }                                                                       \
+    template<std::size_t otherSize> constexpr static Type<T> pad(const Math::Vector<otherSize, T>& a, T value = T(0)) { \
+        return Math::Vector<size, T>::pad(a, value);                        \
+    }                                                                       \
                                                                             \
     Type<T>& operator=(const Type<T>& other) {                              \
         Math::Vector<size, T>::operator=(other);                            \
@@ -1267,12 +1306,6 @@ extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utilit
     }
 #endif
 
-template<std::size_t size, class T> inline Rad<T> Vector<size, T>::angle(const Vector<size, T>& normalizedA, const Vector<size, T>& normalizedB) {
-    CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
-        "Math::Vector::angle(): vectors must be normalized", Rad<T>(std::numeric_limits<T>::quiet_NaN()));
-    return Rad<T>(std::acos(dot(normalizedA, normalizedB)));
-}
-
 template<std::size_t size, class T> inline BoolVector<size> Vector<size, T>::operator<(const Vector<size, T>& other) const {
     BoolVector<size> out;
 
@@ -1319,9 +1352,8 @@ template<std::size_t size, class T> inline Vector<size, T> Vector<size, T>::oper
 }
 
 template<std::size_t size, class T> inline Vector<size, T> Vector<size, T>::projectedOntoNormalized(const Vector<size, T>& line) const {
-    CORRADE_ASSERT(line.isNormalized(), "Math::Vector::projectedOntoNormalized(): line must be normalized",
-        (Vector<size, T>(std::numeric_limits<T>::quiet_NaN())));
-    return line*dot(*this, line);
+    CORRADE_ASSERT(line.isNormalized(), "Math::Vector::projectedOntoNormalized(): line must be normalized", {});
+    return line*Math::dot(*this, line);
 }
 
 template<std::size_t size, class T> inline T Vector<size, T>::sum() const {

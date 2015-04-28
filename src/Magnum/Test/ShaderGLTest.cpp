@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -34,20 +34,19 @@
 
 namespace Magnum { namespace Test {
 
-class ShaderGLTest: public AbstractOpenGLTester {
-    public:
-        explicit ShaderGLTest();
+struct ShaderGLTest: AbstractOpenGLTester {
+    explicit ShaderGLTest();
 
-        void construct();
-        void constructNoVersion();
-        void constructCopy();
-        void constructMove();
+    void construct();
+    void constructNoVersion();
+    void constructCopy();
+    void constructMove();
 
-        void label();
+    void label();
 
-        void addSource();
-        void addFile();
-        void compile();
+    void addSource();
+    void addFile();
+    void compile();
 };
 
 ShaderGLTest::ShaderGLTest() {

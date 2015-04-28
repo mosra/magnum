@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -35,21 +35,20 @@ namespace Magnum { namespace SceneGraph { namespace Test {
 typedef Object<TranslationTransformation2D> Object2D;
 typedef Scene<TranslationTransformation2D> Scene2D;
 
-class TranslationTransformationTest: public TestSuite::Tester {
-    public:
-        explicit TranslationTransformationTest();
+struct TranslationTransformationTest: TestSuite::Tester {
+    explicit TranslationTransformationTest();
 
-        void fromMatrix();
-        void toMatrix();
-        void compose();
-        void inverted();
+    void fromMatrix();
+    void toMatrix();
+    void compose();
+    void inverted();
 
-        void setTransformation();
-        void resetTransformation();
-        void transform();
-        void translate();
+    void setTransformation();
+    void resetTransformation();
+    void transform();
+    void translate();
 
-        void integral();
+    void integral();
 };
 
 TranslationTransformationTest::TranslationTransformationTest() {

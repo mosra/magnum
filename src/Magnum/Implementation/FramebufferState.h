@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -43,13 +43,13 @@
 namespace Magnum { namespace Implementation {
 
 struct FramebufferState {
+    constexpr static const Range2Di DisengagedViewport{{}, {-1, -1}};
+
     explicit FramebufferState(Context& context, std::vector<std::string>& extensions);
 
     void reset();
 
-    #ifdef MAGNUM_TARGET_GLES2
-    void(*blitImplementation)(const Range2Di&, const Range2Di&, FramebufferBlitMask, FramebufferBlitFilter);
-    #endif
+    void(*blitImplementation)(AbstractFramebuffer&, AbstractFramebuffer&, const Range2Di&, const Range2Di&, FramebufferBlitMask, FramebufferBlitFilter);
     GLenum(AbstractFramebuffer::*checkStatusImplementation)(FramebufferTarget);
     void(AbstractFramebuffer::*drawBuffersImplementation)(GLsizei, const GLenum*);
     void(AbstractFramebuffer::*drawBufferImplementation)(GLenum);
@@ -57,6 +57,10 @@ struct FramebufferState {
     void(AbstractFramebuffer::*invalidateImplementation)(GLsizei, const GLenum*);
     #ifndef MAGNUM_TARGET_GLES2
     void(AbstractFramebuffer::*invalidateSubImplementation)(GLsizei, const GLenum*, const Range2Di&);
+    #endif
+    #ifdef MAGNUM_TARGET_GLES2
+    void(AbstractFramebuffer::*bindImplementation)(FramebufferTarget);
+    FramebufferTarget(AbstractFramebuffer::*bindInternalImplementation)();
     #endif
 
     void(Framebuffer::*createImplementation)();
@@ -71,9 +75,7 @@ struct FramebufferState {
     void(Renderbuffer::*renderbufferStorageImplementation)(RenderbufferFormat, const Vector2i&);
     void(Renderbuffer::*renderbufferStorageMultisampleImplementation)(GLsizei, RenderbufferFormat, const Vector2i&);
 
-    void(*readImplementation)(const Vector2i&, const Vector2i&, ColorFormat, ColorType, std::size_t, GLvoid*);
-
-    FramebufferTarget readTarget, drawTarget;
+    void(*readImplementation)(const Range2Di&, ColorFormat, ColorType, std::size_t, GLvoid*);
 
     GLuint readBinding, drawBinding, renderbufferBinding;
     GLint maxDrawBuffers, maxColorAttachments, maxRenderbufferSize, maxSamples;

@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -39,16 +39,16 @@ information about building and usage with CMake.
 
 @section debug-tools-renderers Debug renderers
 
-%Debug renderers provide a way to visualize objects and object features in
+Debug renderers provide a way to visualize objects and object features in
 @ref scenegraph "scene graph" without the need to mess around with meshes and
 shaders. They are implemented as object features, so you can attach any number
 of them to any object.
 
-Basic usage involves instancing DebugTools::ResourceManager and keeping it for
-for the whole lifetime of debug renderers. Next you need some SceneGraph::DrawableGroup
-instance. You can use the same group as for the rest of your scene, but
-preferrably use dedicated one for debug renderers, so you can easily enable or
-disable debug rendering.
+Basic usage involves instancing @ref DebugTools::ResourceManager and keeping it
+for the whole lifetime of debug renderers. Next you need some
+@ref SceneGraph::DrawableGroup instance. You can use the same group as for the
+rest of your scene, but preferrably use dedicated one for debug renderers, so
+you can easily enable or disable debug rendering.
 
 Next step is to create configuration for your debug renderers and create
 particular debug renderer. The configuration is managed using the resource
@@ -58,7 +58,7 @@ same options with more renderers. If no options are specified or resource with
 given key doesn't exist, default fallback is used.
 
 Example usage: visualizing object position, rotation and scaling using
-DebugTools::ObjectRenderer:
+@link DebugTools::ObjectRenderer @endlink:
 @code
 // Global instance of debug resource manager, drawable group for the renderers
 DebugTools::ResourceManager manager;
@@ -75,7 +75,7 @@ Object3D* object;
 new DebugTools::ObjectRenderer2D(*object, "my", debugDrawables);
 @endcode
 
-See DebugTools::ObjectRenderer and DebugTools::ShapeRenderer for more
+See @ref DebugTools::ObjectRenderer and @ref DebugTools::ShapeRenderer for more
 information.
 
 -   Previous page: @ref shapes

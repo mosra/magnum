@@ -2,26 +2,28 @@
 pkgname=emscripten-magnum
 pkgver=dev
 pkgrel=1
-pkgdesc="C++11 and OpenGL 2D/3D graphics engine (Emscripten)"
+pkgdesc="C++11/C++14 and OpenGL 2D/3D graphics engine (Emscripten)"
 arch=('any')
 url="http://mosra.cz/blog/magnum.php"
 license=('MIT')
 depends=('emscripten-corrade')
-makedepends=('cmake' 'ninja' 'emscripten-git')
-options=('!strip' '!buildflags' 'staticlibs')
+makedepends=('cmake' 'ninja' 'emscripten' 'corrade')
+options=('!strip' '!buildflags')
+
+_rootdir=$startdir/../../
 
 build() {
-    if [ ! -d "$startdir/build-emscripten" ] ; then
-        mkdir "$startdir/build-emscripten"
-        cd "$startdir/build-emscripten"
+    if [ ! -d "$_rootdir/build-emscripten" ] ; then
+        mkdir "$_rootdir/build-emscripten"
+        cd "$_rootdir/build-emscripten"
 
         cmake .. \
-            -DCMAKE_MODULE_PATH="$startdir/toolchains/modules" \
-            -DCMAKE_TOOLCHAIN_FILE="$startdir/toolchains/generic/Emscripten.cmake" \
+            -DCMAKE_MODULE_PATH="$_rootdir/toolchains/modules" \
+            -DCMAKE_TOOLCHAIN_FILE="$_rootdir/toolchains/generic/Emscripten.cmake" \
             -G Ninja
     fi
 
-    cd "$startdir/build-emscripten"
+    cd "$_rootdir/build-emscripten"
 
     cmake .. \
         -DCMAKE_BUILD_TYPE=Release \
@@ -36,6 +38,6 @@ build() {
 }
 
 package() {
-    cd "$startdir/build-emscripten"
+    cd "$_rootdir/build-emscripten"
     DESTDIR="$pkgdir/" ninja install
 }

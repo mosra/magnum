@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -31,21 +31,26 @@
 
 namespace Magnum { namespace SceneGraph { namespace Test {
 
-class ObjectTest: public TestSuite::Tester {
-    public:
-        ObjectTest();
+struct ObjectTest: TestSuite::Tester {
+    explicit ObjectTest();
 
-        void parenting();
-        void scene();
-        void setParentKeepTransformation();
-        void absoluteTransformation();
-        void transformations();
-        void transformationsRelative();
-        void transformationsOrphan();
-        void transformationsDuplicate();
-        void setClean();
-        void setCleanListHierarchy();
-        void setCleanListBulk();
+    void addFeature();
+
+    void parenting();
+    void addChild();
+    void scene();
+    void setParentKeepTransformation();
+    void absoluteTransformation();
+    void transformations();
+    void transformationsRelative();
+    void transformationsOrphan();
+    void transformationsDuplicate();
+    void setClean();
+    void setCleanListHierarchy();
+    void setCleanListBulk();
+
+    void rangeBasedForChildren();
+    void rangeBasedForFeatures();
 };
 
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
@@ -66,7 +71,10 @@ class CachingObject: public Object3D, AbstractFeature3D {
 };
 
 ObjectTest::ObjectTest() {
-    addTests<ObjectTest>({&ObjectTest::parenting,
+    addTests<ObjectTest>({&ObjectTest::addFeature,
+
+              &ObjectTest::parenting,
+              &ObjectTest::addChild,
               &ObjectTest::scene,
               &ObjectTest::setParentKeepTransformation,
               &ObjectTest::absoluteTransformation,
@@ -76,7 +84,23 @@ ObjectTest::ObjectTest() {
               &ObjectTest::transformationsDuplicate,
               &ObjectTest::setClean,
               &ObjectTest::setCleanListHierarchy,
-              &ObjectTest::setCleanListBulk});
+              &ObjectTest::setCleanListBulk,
+
+              &ObjectTest::rangeBasedForChildren,
+              &ObjectTest::rangeBasedForFeatures});
+}
+
+void ObjectTest::addFeature() {
+    class MyFeature: public AbstractFeature3D {
+        public:
+            explicit MyFeature(AbstractObject3D& object, Int, std::string&&): AbstractFeature3D{object} {}
+    };
+
+    Object3D o;
+    CORRADE_VERIFY(o.features().isEmpty());
+    MyFeature& f = o.addFeature<MyFeature>(0, "hello");
+    CORRADE_VERIFY(!o.features().isEmpty());
+    CORRADE_COMPARE(&f.object(), &o);
 }
 
 void ObjectTest::parenting() {
@@ -87,9 +111,9 @@ void ObjectTest::parenting() {
 
     CORRADE_VERIFY(childOne->parent() == &root);
     CORRADE_VERIFY(childTwo->parent() == &root);
-    CORRADE_VERIFY(root.firstChild() == childOne);
-    CORRADE_VERIFY(root.lastChild() == childTwo);
-    CORRADE_VERIFY(root.firstChild()->nextSibling() == root.lastChild());
+    CORRADE_VERIFY(root.children().first() == childOne);
+    CORRADE_VERIFY(root.children().last() == childTwo);
+    CORRADE_VERIFY(root.children().first()->nextSibling() == root.children().last());
 
     /* A object cannot be parent of itself */
     childOne->setParent(childOne);
@@ -101,12 +125,25 @@ void ObjectTest::parenting() {
 
     /* Reparent to another */
     childTwo->setParent(childOne);
-    CORRADE_VERIFY(root.firstChild() == childOne && root.firstChild()->nextSibling() == nullptr);
-    CORRADE_VERIFY(childOne->firstChild() == childTwo && childOne->firstChild()->nextSibling() == nullptr);
+    CORRADE_VERIFY(root.children().first() == childOne && root.children().first()->nextSibling() == nullptr);
+    CORRADE_VERIFY(childOne->children().first() == childTwo && childOne->children().first()->nextSibling() == nullptr);
 
     /* Delete child */
     delete childTwo;
-    CORRADE_VERIFY(!childOne->hasChildren());
+    CORRADE_VERIFY(childOne->children().isEmpty());
+}
+
+void ObjectTest::addChild() {
+    class MyObject: public Object3D {
+        public:
+            explicit MyObject(Int, std::string&&, Object3D* parent = nullptr): Object3D{parent} {}
+    };
+
+    Object3D o;
+    CORRADE_VERIFY(o.children().isEmpty());
+    MyObject& p = o.addChild<MyObject>(0, "hello");
+    CORRADE_VERIFY(!o.children().isEmpty());
+    CORRADE_COMPARE(p.parent(), &o);
 }
 
 void ObjectTest::scene() {
@@ -285,7 +322,7 @@ void ObjectTest::setClean() {
 
     class CachingFeature: public AbstractFeature3D {
         public:
-            CachingFeature(AbstractObject3D& object): AbstractFeature3D(object) {
+            explicit CachingFeature(AbstractObject3D& object): AbstractFeature3D{object} {
                 setCachedTransformations(CachedTransformation::Absolute);
             }
 
@@ -298,7 +335,7 @@ void ObjectTest::setClean() {
 
     class CachingInvertedFeature: public AbstractFeature3D {
         public:
-            CachingInvertedFeature(AbstractObject3D& object): AbstractFeature3D(object) {
+            explicit CachingInvertedFeature(AbstractObject3D& object): AbstractFeature3D{object} {
                 setCachedTransformations(CachedTransformation::InvertedAbsolute);
             }
 
@@ -383,7 +420,7 @@ void ObjectTest::setCleanListHierarchy() {
 
     class CachingFeature: public AbstractFeature3D {
         public:
-            CachingFeature(AbstractObject3D& object): AbstractFeature3D(object) {
+            explicit CachingFeature(AbstractObject3D& object): AbstractFeature3D{object} {
                 setCachedTransformations(CachedTransformation::Absolute);
             }
 
@@ -466,6 +503,32 @@ void ObjectTest::setCleanListBulk() {
 
     /* Verify that right transformation was passed */
     CORRADE_COMPARE(d.cleanedAbsoluteTransformation, Matrix4::translation(Vector3::zAxis(3.0f))*Matrix4::scaling(Vector3(-2.0f)));
+}
+
+void ObjectTest::rangeBasedForChildren() {
+    Scene3D scene;
+    Object3D a(&scene);
+    Object3D b(&scene);
+    Object3D c(&scene);
+
+    std::vector<Object3D*> objects;
+    for(auto&& i: scene.children()) objects.push_back(&i);
+    CORRADE_COMPARE(objects, (std::vector<Object3D*>{&a, &b, &c}));
+}
+
+void ObjectTest::rangeBasedForFeatures() {
+    struct Feature: AbstractFeature3D {
+        explicit Feature(AbstractObject3D& object): AbstractFeature3D{object} {}
+    };
+
+    Object3D object;
+    Feature a(object);
+    Feature b(object);
+    Feature c(object);
+
+    std::vector<AbstractFeature3D*> features;
+    for(auto&& i: object.features()) features.push_back(&i);
+    CORRADE_COMPARE(features, (std::vector<AbstractFeature3D*>{&a, &b, &c}));
 }
 
 }}}

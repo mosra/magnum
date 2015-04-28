@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -31,38 +31,37 @@
 
 namespace Magnum { namespace Math { namespace Test {
 
-class ComplexTest: public Corrade::TestSuite::Tester {
-    public:
-        explicit ComplexTest();
+struct ComplexTest: Corrade::TestSuite::Tester {
+    explicit ComplexTest();
 
-        void construct();
-        void constructDefault();
-        void constructFromVector();
-        void constructCopy();
+    void construct();
+    void constructDefault();
+    void constructFromVector();
+    void constructCopy();
 
-        void compare();
-        void isNormalized();
+    void compare();
+    void isNormalized();
 
-        void addSubtract();
-        void negated();
-        void multiplyDivideScalar();
-        void multiply();
+    void addSubtract();
+    void negated();
+    void multiplyDivideScalar();
+    void multiply();
 
-        void dot();
-        void dotSelf();
-        void length();
-        void normalized();
+    void dot();
+    void dotSelf();
+    void length();
+    void normalized();
 
-        void conjugated();
-        void inverted();
-        void invertedNormalized();
+    void conjugated();
+    void inverted();
+    void invertedNormalized();
 
-        void angle();
-        void rotation();
-        void matrix();
-        void transformVector();
+    void angle();
+    void rotation();
+    void matrix();
+    void transformVector();
 
-        void debug();
+    void debug();
 };
 
 ComplexTest::ComplexTest() {
@@ -194,7 +193,7 @@ void ComplexTest::dot() {
     Complex a(5.0f,  3.0f);
     Complex b(6.0f, -7.0f);
 
-    CORRADE_COMPARE(Complex::dot(a, b), 9.0f);
+    CORRADE_COMPARE(Math::dot(a, b), 9.0f);
 }
 
 void ComplexTest::dotSelf() {
@@ -234,8 +233,7 @@ void ComplexTest::invertedNormalized() {
     Complex a(-0.6f, 0.8f);
     Complex b(-0.6f, -0.8f);
 
-    Complex notInverted = (a*2).invertedNormalized();
-    CORRADE_VERIFY(notInverted != notInverted);
+    (a*2).invertedNormalized();
     CORRADE_COMPARE(o.str(), "Math::Complex::invertedNormalized(): complex number must be normalized\n");
 
     Complex inverted = a.invertedNormalized();
@@ -247,20 +245,18 @@ void ComplexTest::invertedNormalized() {
 void ComplexTest::angle() {
     std::ostringstream o;
     Error::setOutput(&o);
-    auto angle = Complex::angle(Complex(1.5f, -2.0f).normalized(), {-4.0f, 3.5f});
-    CORRADE_VERIFY(angle != angle);
-    CORRADE_COMPARE(o.str(), "Math::Complex::angle(): complex numbers must be normalized\n");
+    Math::angle(Complex(1.5f, -2.0f).normalized(), {-4.0f, 3.5f});
+    CORRADE_COMPARE(o.str(), "Math::angle(): complex numbers must be normalized\n");
 
     o.str({});
-    angle = Complex::angle({1.5f, -2.0f}, Complex(-4.0f, 3.5f).normalized());
-    CORRADE_VERIFY(angle != angle);
-    CORRADE_COMPARE(o.str(), "Math::Complex::angle(): complex numbers must be normalized\n");
+    Math::angle({1.5f, -2.0f}, Complex(-4.0f, 3.5f).normalized());
+    CORRADE_COMPARE(o.str(), "Math::angle(): complex numbers must be normalized\n");
 
     /* Verify also that the angle is the same as angle between 2D vectors */
-    angle = Complex::angle(Complex( 1.5f, -2.0f).normalized(),
-                           Complex(-4.0f,  3.5f).normalized());
-    CORRADE_COMPARE(angle, Vector2::angle(Vector2( 1.5f, -2.0f).normalized(),
-                                          Vector2(-4.0f,  3.5f).normalized()));
+    Rad angle = Math::angle(Complex( 1.5f, -2.0f).normalized(),
+                            Complex(-4.0f,  3.5f).normalized());
+    CORRADE_COMPARE(angle, Math::angle(Vector2( 1.5f, -2.0f).normalized(),
+                                       Vector2(-4.0f,  3.5f).normalized()));
     CORRADE_COMPARE(angle, Rad(2.933128f));
 }
 

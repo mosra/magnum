@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <tuple>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Math/Functions.h"
@@ -30,47 +31,50 @@
 
 namespace Magnum { namespace Math { namespace Test {
 
-class FunctionsTest: public Corrade::TestSuite::Tester {
-    public:
-        FunctionsTest();
+struct FunctionsTest: Corrade::TestSuite::Tester {
+    explicit FunctionsTest();
 
-        void min();
-        void minList();
-        void max();
-        void maxList();
-        void minmax();
-        void sign();
-        void abs();
+    void min();
+    void minList();
+    void max();
+    void maxList();
+    void minmax();
+    void clamp();
+    void nanPropagation();
 
-        void floor();
-        void round();
-        void ceil();
+    void sign();
+    void abs();
 
-        void sqrt();
-        void sqrtInverted();
-        void clamp();
-        void lerp();
-        void lerpInverted();
-        void fma();
-        void normalizeUnsigned();
-        void normalizeSigned();
-        void denormalizeUnsigned();
-        void denormalizeSigned();
-        void renormalizeUnsinged();
-        void renormalizeSinged();
+    void floor();
+    void round();
+    void ceil();
 
-        void normalizeTypeDeduction();
+    void sqrt();
+    void sqrtInverted();
+    void lerp();
+    void lerpInverted();
+    void fma();
+    void normalizeUnsigned();
+    void normalizeSigned();
+    void denormalizeUnsigned();
+    void denormalizeSigned();
+    void renormalizeUnsinged();
+    void renormalizeSinged();
 
-        void pow();
-        void log();
-        void log2();
-        void trigonometric();
-        void trigonometricWithBase();
+    void normalizeTypeDeduction();
+
+    void pow();
+    void log();
+    void log2();
+    void div();
+    void trigonometric();
+    void trigonometricWithBase();
 };
 
 typedef Math::Constants<Float> Constants;
 typedef Math::Deg<Float> Deg;
 typedef Math::Rad<Float> Rad;
+typedef Math::Vector2<Float> Vector2;
 typedef Math::Vector3<Float> Vector3;
 typedef Math::Vector3<UnsignedByte> Vector3ub;
 typedef Math::Vector3<Byte> Vector3b;
@@ -82,6 +86,9 @@ FunctionsTest::FunctionsTest() {
               &FunctionsTest::max,
               &FunctionsTest::maxList,
               &FunctionsTest::minmax,
+              &FunctionsTest::clamp,
+              &FunctionsTest::nanPropagation,
+
               &FunctionsTest::sign,
               &FunctionsTest::abs,
 
@@ -91,7 +98,6 @@ FunctionsTest::FunctionsTest() {
 
               &FunctionsTest::sqrt,
               &FunctionsTest::sqrtInverted,
-              &FunctionsTest::clamp,
               &FunctionsTest::lerp,
               &FunctionsTest::lerpInverted,
               &FunctionsTest::fma,
@@ -107,6 +113,7 @@ FunctionsTest::FunctionsTest() {
               &FunctionsTest::pow,
               &FunctionsTest::log,
               &FunctionsTest::log2,
+              &FunctionsTest::div,
               &FunctionsTest::trigonometric,
               &FunctionsTest::trigonometricWithBase});
 }
@@ -145,6 +152,28 @@ void FunctionsTest::minmax() {
     const std::pair<Vector3, Vector3> expectedVector{Vector3(5.0f, -4.0f, 1.0f), Vector3(7.0f, -3.0f, 1.0f)};
     CORRADE_COMPARE_AS(Math::minmax(a, b), expectedVector, std::pair<Vector3, Vector3>);
     CORRADE_COMPARE_AS(Math::minmax(b, a), expectedVector, std::pair<Vector3, Vector3>);
+}
+
+void FunctionsTest::clamp() {
+    CORRADE_COMPARE(Math::clamp(0.5f, -1.0f, 5.0f), 0.5f);
+    CORRADE_COMPARE(Math::clamp(-1.6f, -1.0f, 5.0f), -1.0f);
+    CORRADE_COMPARE(Math::clamp(9.5f, -1.0f, 5.0f), 5.0f);
+
+    CORRADE_COMPARE(Math::clamp(Vector3(0.5f, -1.6f, 9.5f), -1.0f, 5.0f), Vector3(0.5f, -1.0f, 5.0f));
+}
+
+void FunctionsTest::nanPropagation() {
+    CORRADE_COMPARE(Math::min(Constants::nan(), 5.0f), Constants::nan());
+    CORRADE_COMPARE(Math::min(Vector2{Constants::nan(), 6.0f}, Vector2{5.0f})[0], Constants::nan());
+    CORRADE_COMPARE(Math::min(Vector2{Constants::nan(), 6.0f}, Vector2{5.0f})[1], 5.0f);
+
+    CORRADE_COMPARE(Math::max(Constants::nan(), 5.0f), Constants::nan());
+    CORRADE_COMPARE(Math::max(Vector2{Constants::nan(), 4.0f}, Vector2{5.0f})[0], Constants::nan());
+    CORRADE_COMPARE(Math::max(Vector2{Constants::nan(), 4.0f}, Vector2{5.0f})[1], 5.0f);
+
+    CORRADE_COMPARE(Math::clamp(Constants::nan(), 2.0f, 6.0f), Constants::nan());
+    CORRADE_COMPARE(Math::clamp(Vector2{Constants::nan(), 1.0f}, 2.0f, 6.0f)[0], Constants::nan());
+    CORRADE_COMPARE(Math::clamp(Vector2{Constants::nan(), 1.0f}, 2.0f, 6.0f)[1], 2.0f);
 }
 
 void FunctionsTest::sign() {
@@ -192,14 +221,6 @@ void FunctionsTest::sqrt() {
 void FunctionsTest::sqrtInverted() {
     CORRADE_COMPARE(Math::sqrtInverted(16.0f), 0.25f);
     CORRADE_COMPARE(Math::sqrtInverted(Vector3(1.0f, 4.0f, 16.0f)), Vector3(1.0f, 0.5f, 0.25f));
-}
-
-void FunctionsTest::clamp() {
-    CORRADE_COMPARE(Math::clamp(0.5f, -1.0f, 5.0f), 0.5f);
-    CORRADE_COMPARE(Math::clamp(-1.6f, -1.0f, 5.0f), -1.0f);
-    CORRADE_COMPARE(Math::clamp(9.5f, -1.0f, 5.0f), 5.0f);
-
-    CORRADE_COMPARE(Math::clamp(Vector3(0.5f, -1.6f, 9.5f), -1.0f, 5.0f), Vector3(0.5f, -1.0f, 5.0f));
 }
 
 void FunctionsTest::lerp() {
@@ -390,6 +411,13 @@ void FunctionsTest::log() {
 
 void FunctionsTest::log2() {
     CORRADE_COMPARE(Math::log2(2153), 11);
+}
+
+void FunctionsTest::div() {
+    Int quotient, remainder;
+    std::tie(quotient, remainder) = Math::div(57, 6);
+    CORRADE_COMPARE(quotient, 9);
+    CORRADE_COMPARE(remainder, 3);
 }
 
 void FunctionsTest::trigonometric() {
