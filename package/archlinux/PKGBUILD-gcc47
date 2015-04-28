@@ -14,6 +14,10 @@ provides=('magnum-git')
 _rootdir=$startdir/../../
 
 build() {
+    # Disable flags unknown to GCC 4.7
+    newcxxflags=$(echo $CXXFLAGS | sed s/-fstack-protector-strong.//g)
+    export CXXFLAGS="$newcxxflags"
+
     if [ ! -d "$_rootdir/build-gcc47" ] ; then
         mkdir "$_rootdir/build-gcc47"
         cd "$_rootdir/build-gcc47"
