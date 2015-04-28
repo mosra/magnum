@@ -840,9 +840,15 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         }
 
         /** @overload */
+        #ifdef CORRADE_GCC46_COMPATIBILITY
+        #define size size_ /* With GCC 4.6 it conflicts with size(). WTF. */
+        #endif
         template<std::size_t size> Buffer& setLabel(const char(&label)[size]) {
             return setLabelInternal({label, size - 1});
         }
+        #ifdef CORRADE_GCC46_COMPATIBILITY
+        #undef size
+        #endif
 
         /** @brief Target hint */
         TargetHint targetHint() const { return _targetHint; }
