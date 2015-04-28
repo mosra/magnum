@@ -319,7 +319,8 @@ void AbstractShaderProgram::setTransformFeedbackOutputs(const std::initializer_l
     Containers::Array<const char*> names{outputs.size()};
 
     Int i = 0;
-    for(const std::string& output: outputs) names[i++] = output.data();
+    for(auto it = outputs.begin(); it != outputs.end(); ++it)
+        names[i++] = it->data();
 
     glTransformFeedbackVaryings(_id, outputs.size(), names, GLenum(bufferMode));
 }

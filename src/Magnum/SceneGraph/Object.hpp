@@ -171,12 +171,12 @@ template<class Transformation> void Object<Transformation>::setDirty() {
     if(flags & Flag::Dirty) return;
 
     /* Make all features dirty */
-    for(AbstractFeature<Transformation::Dimensions, typename Transformation::Type>& feature: this->features())
-        feature.markDirty();
+    for(auto it = begin(this->features()); it != end(this->features()); ++it)
+        (*it).markDirty();
 
     /* Make all children dirty */
-    for(Object<Transformation>& child: children())
-        child.setDirty();
+    for(auto it = begin(children()); it != end(children()); ++it)
+        (*it).setDirty();
 
     /* Mark object as dirty */
     flags |= Flag::Dirty;
@@ -547,7 +547,8 @@ template<class Transformation> void Object<Transformation>::setCleanInternal(con
     MatrixType matrix, invertedMatrix;
 
     /* Clean all features */
-    for(AbstractFeature<Transformation::Dimensions, typename Transformation::Type>& feature: this->features()) {
+    for(auto it = begin(this->features()); it != end(this->features()); ++it) {
+        AbstractFeature<Transformation::Dimensions, typename Transformation::Type>& feature = *it;
         /* Cached absolute transformation, compute it if it wasn't
             computed already */
         if(feature.cachedTransformations() & CachedTransformation::Absolute) {

@@ -512,7 +512,11 @@ void ObjectTest::rangeBasedForChildren() {
     Object3D c(&scene);
 
     std::vector<Object3D*> objects;
+    #ifndef CORRADE_GCC45_COMPATIBILITY
     for(auto&& i: scene.children()) objects.push_back(&i);
+    #else
+    for(auto it = begin(scene.children()); it != end(scene.children()); ++it) objects.push_back(&*it);
+    #endif
     CORRADE_COMPARE(objects, (std::vector<Object3D*>{&a, &b, &c}));
 }
 
@@ -527,7 +531,11 @@ void ObjectTest::rangeBasedForFeatures() {
     Feature c(object);
 
     std::vector<AbstractFeature3D*> features;
+    #ifndef CORRADE_GCC45_COMPATIBILITY
     for(auto&& i: object.features()) features.push_back(&i);
+    #else
+    for(auto it = begin(object.features()); it != end(object.features()); ++it) features.push_back(&*it);
+    #endif
     CORRADE_COMPARE(features, (std::vector<AbstractFeature3D*>{&a, &b, &c}));
 }
 
