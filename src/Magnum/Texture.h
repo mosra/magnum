@@ -40,11 +40,12 @@ namespace Magnum {
 
 namespace Implementation {
     template<UnsignedInt> constexpr GLenum textureTarget();
+    /* GCC 4.5 doesn't have constexpr, so it needs inline */
     #ifndef MAGNUM_TARGET_GLES
-    template<> constexpr GLenum textureTarget<1>() { return GL_TEXTURE_1D; }
+    template<> constexpr inline GLenum textureTarget<1>() { return GL_TEXTURE_1D; }
     #endif
-    template<> constexpr GLenum textureTarget<2>() { return GL_TEXTURE_2D; }
-    template<> constexpr GLenum textureTarget<3>() {
+    template<> constexpr inline GLenum textureTarget<2>() { return GL_TEXTURE_2D; }
+    template<> constexpr inline GLenum textureTarget<3>() {
         #ifndef MAGNUM_TARGET_GLES2
         return GL_TEXTURE_3D;
         #else
