@@ -122,7 +122,10 @@ void TransformFeedbackGLTest::label() {
 
 namespace {
 
-constexpr const Vector2 inputData[] = {
+#ifndef CORRADE_GCC46_COMPATIBILITY
+constexpr
+#endif
+const Vector2 inputData[] = {
     {0.0f, 0.0f},
     {-1.0f, 1.0f}
 };
