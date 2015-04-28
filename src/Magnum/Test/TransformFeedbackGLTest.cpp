@@ -77,8 +77,8 @@ void TransformFeedbackGLTest::construct() {
 }
 
 void TransformFeedbackGLTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<TransformFeedback, const TransformFeedback&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<TransformFeedback, const TransformFeedback&>{}));
+    CORRADE_VERIFY(!(std::is_constructible<TransformFeedback, const TransformFeedback&>::value));
+    CORRADE_VERIFY(!(std::is_assignable<TransformFeedback, const TransformFeedback&>::value));
 }
 
 void TransformFeedbackGLTest::constructMove() {
