@@ -38,7 +38,7 @@ struct ResourceManagerLocalInstanceTest: TestSuite::Tester {
 };
 
 ResourceManagerLocalInstanceTest::ResourceManagerLocalInstanceTest() {
-    addTests({&ResourceManagerLocalInstanceTest::instance});
+    addTests<ResourceManagerLocalInstanceTest>({&ResourceManagerLocalInstanceTest::instance});
 }
 
 void ResourceManagerLocalInstanceTest::instance() {
