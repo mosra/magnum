@@ -27,6 +27,12 @@
 
 #include "Magnum/Context.h"
 
+/* If not included, the following members have bad offsets, causing weird
+   runtime behavior */
+#ifdef CORRADE_MSVC2013_COMPATIBILITY
+#include "Magnum/TransformFeedback.h"
+#endif
+
 namespace Magnum { namespace Implementation {
 
 struct TransformFeedbackState {
