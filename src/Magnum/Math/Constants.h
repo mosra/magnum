@@ -109,7 +109,16 @@ template<> struct Constants<Float> {
     static constexpr Float sqrt3()      { return 1.732050808f; }
 
     static constexpr Float nan()    { return NAN; }
+
+    /* MSVC emits overflow warning _by design_. Uhh. */
+    #ifdef CORRADE_MSVC2013_COMPATIBILITY
+    #pragma warning(push)
+    #pragma warning(disable: 4756)
+    #endif
     static constexpr Float inf()    { return INFINITY; }
+    #ifdef CORRADE_MSVC2013_COMPATIBILITY
+    #pragma warning(pop)
+    #endif
 };
 #endif
 
