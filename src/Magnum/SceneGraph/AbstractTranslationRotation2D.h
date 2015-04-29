@@ -78,7 +78,7 @@ template<class T> class AbstractBasicTranslationRotation2D: public AbstractTrans
          *      instead.
          */
         CORRADE_DEPRECATED("use rotate() or rotateLocal() instead") AbstractBasicTranslationRotation2D<T>& rotate(Math::Rad<T> angle, TransformationType type) {
-            return type == TransformationType::Global ? rotate(angle, type) : rotateLocal(angle, type);
+            return type == TransformationType::Global ? rotate(angle) : rotateLocal(angle);
         }
         #endif
 

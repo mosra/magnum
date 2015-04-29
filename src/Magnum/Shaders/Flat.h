@@ -200,7 +200,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public Abstra
          * multiplied with texture if @ref Flag::Textured is set.
          * @see @ref setTexture()
          */
-        Flat<dimensions>& setColor(const Color4& color);
+        /* MSVC needs inline also here to avoid linkage conflicts */
+        inline Flat<dimensions>& setColor(const Color4& color);
 
         /**
          * @brief Set texture

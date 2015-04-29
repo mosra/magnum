@@ -39,7 +39,7 @@ endif()
 #
 # Disable it also for GCC 4.4, as it breaks non-const Matrix[34]::up()
 # etc. accessors (and I have no better solution for that yet)
-if(("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND NOT "${CMAKE_CXX_COMPILER_VERSION}" VERSION_LESS "4.8.0") OR CORRADE_GCC44_COMPATIBILITY)
+if((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.8.0") OR CORRADE_GCC44_COMPATIBILITY)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-strict-aliasing")
 
 # For GCC 4.5 disable just the strict-aliasing warnings. They are mostly

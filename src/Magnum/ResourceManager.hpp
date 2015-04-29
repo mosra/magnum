@@ -38,7 +38,11 @@
 
 namespace Magnum { namespace Implementation {
 
-template<class ...Types> CORRADE_VISIBILITY_EXPORT ResourceManager<Types...>*& ResourceManagerLocalInstanceImplementation<Types...>::internalInstance() {
+template<class ...Types>
+#ifndef _MSC_VER
+CORRADE_VISIBILITY_EXPORT
+#endif
+ResourceManager<Types...>*& ResourceManagerLocalInstanceImplementation<Types...>::internalInstance() {
     static ResourceManager<Types...>* _instance(nullptr);
     return _instance;
 }

@@ -202,7 +202,7 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractTrans
          *      instead.
          */
         CORRADE_DEPRECATED("use rotateZ() or rotateZLocal() instead") AbstractBasicTranslationRotation3D<T>& rotateZ(Math::Rad<T> angle, TransformationType type) {
-            return type == TransformationType::Global ? rotateZ(angle) : rotateZLocal();
+            return type == TransformationType::Global ? rotateZ(angle) : rotateZLocal(angle);
         }
         #endif
 
@@ -221,7 +221,7 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractTrans
             return *this;
         }
         #ifdef MAGNUM_BUILD_DEPRECATED
-        CORRADE_DEPRECATED("use translate() or translateLocal() instead") AbstractBasicTranslationRotation3D<T>& translate(const Math::Vector2<T>& vector, TransformationType type) {
+        CORRADE_DEPRECATED("use translate() or translateLocal() instead") AbstractBasicTranslationRotation3D<T>& translate(const Math::Vector3<T>& vector, TransformationType type) {
             AbstractTranslation<3, T>::translate(vector, type);
             return *this;
         }

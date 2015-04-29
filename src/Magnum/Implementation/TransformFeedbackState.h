@@ -47,7 +47,7 @@ struct TransformFeedbackState {
     GLint maxBuffers;
     #endif
 
-        GLuint binding;
+    GLuint binding;
 
     void(TransformFeedback::*createImplementation)();
     void(TransformFeedback::*attachRangeImplementation)(GLuint, Buffer&, GLintptr, GLsizeiptr);
