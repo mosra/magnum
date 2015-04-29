@@ -34,9 +34,10 @@
 namespace Magnum { namespace Implementation {
 
 #ifndef CORRADE_GCC46_COMPATIBILITY
-constexpr
-#endif
+constexpr const Range2Di FramebufferState::DisengagedViewport;
+#else
 const Range2Di FramebufferState::DisengagedViewport{{}, {-1, -1}};
+#endif
 
 FramebufferState::FramebufferState(Context& context, std::vector<std::string>& extensions): readBinding{0}, drawBinding{0}, renderbufferBinding{0}, maxDrawBuffers{0}, maxColorAttachments{0}, maxRenderbufferSize{0}, maxSamples{0},
     #ifndef MAGNUM_TARGET_GLES
