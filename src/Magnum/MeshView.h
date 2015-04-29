@@ -164,7 +164,8 @@ class MAGNUM_EXPORT MeshView {
          * available there.
          * @see @ref setCount()
          */
-        MeshView& setIndexRange(Int first, UnsignedInt start, UnsignedInt end);
+        /* MinGW/MSVC needs inline also here to avoid linkage conflicts */
+        inline MeshView& setIndexRange(Int first, UnsignedInt start, UnsignedInt end);
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
