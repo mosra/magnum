@@ -186,6 +186,9 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #ifdef CORRADE_GCC47_COMPATIBILITY
     Debug() << "    CORRADE_GCC47_COMPATIBILITY";
     #endif
+    #ifdef CORRADE_MSVC2013_COMPATIBILITY
+    Debug() << "    CORRADE_MSVC2013_COMPATIBILITY";
+    #endif
     #ifdef CORRADE_BUILD_DEPRECATED
     Debug() << "    CORRADE_BUILD_DEPRECATED";
     #endif
