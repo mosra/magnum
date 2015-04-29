@@ -245,11 +245,13 @@ void ComplexTest::invertedNormalized() {
 void ComplexTest::angle() {
     std::ostringstream o;
     Error::setOutput(&o);
-    Math::angle(Complex(1.5f, -2.0f).normalized(), {-4.0f, 3.5f});
+    /* MSVC 2013 needs explicit type for both */
+    Math::angle(Complex(1.5f, -2.0f).normalized(), Complex{-4.0f, 3.5f});
     CORRADE_COMPARE(o.str(), "Math::angle(): complex numbers must be normalized\n");
 
     o.str({});
-    Math::angle({1.5f, -2.0f}, Complex(-4.0f, 3.5f).normalized());
+    /* MSVC 2013 needs explicit type for both */
+    Math::angle(Complex{1.5f, -2.0f}, Complex(-4.0f, 3.5f).normalized());
     CORRADE_COMPARE(o.str(), "Math::angle(): complex numbers must be normalized\n");
 
     /* Verify also that the angle is the same as angle between 2D vectors */

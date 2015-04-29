@@ -260,11 +260,13 @@ void QuaternionTest::rotation() {
 void QuaternionTest::angle() {
     std::ostringstream o;
     Error::setOutput(&o);
-    Math::angle(Quaternion({1.0f, 2.0f, -3.0f}, -4.0f).normalized(), {{4.0f, -3.0f, 2.0f}, -1.0f});
+    /* MSVC 2013 needs explicit type for both */
+    Math::angle(Quaternion({1.0f, 2.0f, -3.0f}, -4.0f).normalized(), Quaternion{{4.0f, -3.0f, 2.0f}, -1.0f});
     CORRADE_COMPARE(o.str(), "Math::angle(): quaternions must be normalized\n");
 
     o.str({});
-    Math::angle({{1.0f, 2.0f, -3.0f}, -4.0f}, Quaternion({4.0f, -3.0f, 2.0f}, -1.0f).normalized());
+    /* MSVC 2013 needs explicit type for both */
+    Math::angle(Quaternion{{1.0f, 2.0f, -3.0f}, -4.0f}, Quaternion({4.0f, -3.0f, 2.0f}, -1.0f).normalized());
     CORRADE_COMPARE(o.str(), "Math::angle(): quaternions must be normalized\n");
 
     /* Verify also that the angle is the same as angle between 4D vectors */
