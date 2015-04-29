@@ -250,6 +250,10 @@ Framebuffer& Framebuffer::attachTextureLayer(Framebuffer::BufferAttachment attac
 #endif
 
 #ifdef MAGNUM_BUILD_DEPRECATED
+#ifdef _MSC_VER
+#pragma warning(push)
+#pragma warning(disable: 4996) /* deprecated warning */
+#endif
 Framebuffer& Framebuffer::attachTexture2D(BufferAttachment attachment, Texture2D& texture, Int mipLevel) {
     #ifdef __GNUC__
     #pragma GCC diagnostic push
@@ -261,6 +265,9 @@ Framebuffer& Framebuffer::attachTexture2D(BufferAttachment attachment, Texture2D
     #endif
     return *this;
 }
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
 #endif
 
 void Framebuffer::renderbufferImplementationDefault(BufferAttachment attachment, Renderbuffer& renderbuffer) {
