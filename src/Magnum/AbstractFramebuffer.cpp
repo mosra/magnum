@@ -161,7 +161,8 @@ FramebufferTarget AbstractFramebuffer::bindImplementationSingle() {
         glBindFramebuffer(GL_FRAMEBUFFER, _id);
     }
 
-    return FramebufferTarget{};
+    /* GCC 4.5 doesn't like {} here */
+    return FramebufferTarget();
 }
 #endif
 
