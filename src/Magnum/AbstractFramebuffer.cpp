@@ -343,7 +343,8 @@ GLenum AbstractFramebuffer::checkStatusImplementationDefault(const FramebufferTa
 
 #ifdef MAGNUM_TARGET_GLES2
 GLenum AbstractFramebuffer::checkStatusImplementationSingle(FramebufferTarget) {
-    bindInternal(FramebufferTarget{});
+    /* GCC 4.5 doesn't like {} here */
+    bindInternal(FramebufferTarget());
     return glCheckFramebufferStatus(GL_FRAMEBUFFER);
 }
 #endif
