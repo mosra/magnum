@@ -208,8 +208,8 @@ template<class T> class Rad: public Unit<Rad, T> {
 /** @relatesalso Rad
 @brief Double-precision radian value literal
 
-See @link operator""_rad() @endlink for more information.
-@see @link operator""_radf() @endlink, @link operator""_deg() @endlink
+See @link operator""_deg() @endlink for more information.
+@see @link operator""_radf() @endlink
 @requires_gl Only single-precision types are available in OpenGL ES.
 */
 constexpr Rad<Double> operator "" _rad(long double value) { return Rad<Double>(value); }
@@ -219,7 +219,7 @@ constexpr Rad<Double> operator "" _rad(long double value) { return Rad<Double>(v
 @brief Single-precision radian value literal
 
 See @link operator""_degf() @endlink for more information.
-@see @link operator""_rad() @endlink, @link operator""_degf() @endlink
+@see @link operator""_rad() @endlink
 */
 constexpr Rad<Float> operator "" _radf(long double value) { return Rad<Float>(value); }
 
