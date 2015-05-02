@@ -100,7 +100,13 @@ void defaultCallback(const DebugOutput::Source source, const DebugOutput::Type t
         case DebugOutput::Type::Other: ;
     }
 
-    output << '(' + std::to_string(id) + "):" << string;
+    output << '(' +
+        #ifndef CORRADE_GCC44_COMPATIBILITY
+        std::to_string(id) +
+        #else
+        std::to_string(static_cast<unsigned long long>(id)) +
+        #endif
+        "):" << string;
 }
 
 }
