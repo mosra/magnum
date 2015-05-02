@@ -121,7 +121,7 @@ template<> Int AbstractQuery::result<Int>() {
     Int result;
     #ifndef MAGNUM_TARGET_GLES
     glGetQueryObjectiv(_id, GL_QUERY_RESULT, &result);
-    #elif !defined(CORRADE_TARGET_EMSCRIPTEN)
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
     glGetQueryObjectivEXT(_id, GL_QUERY_RESULT_EXT, &result);
     #else
     CORRADE_ASSERT_UNREACHABLE();
