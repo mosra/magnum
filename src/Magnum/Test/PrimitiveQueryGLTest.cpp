@@ -130,7 +130,8 @@ void PrimitiveQueryGLTest::transformFeedbackPrimitivesWritten() {
             #else
             /* ES for some reason needs both vertex and fragment shader */
             CORRADE_INTERNAL_ASSERT_OUTPUT(frag.addSource("void main() {}\n").compile());
-            attachShaders({vert, frag});
+            /* GCC 4.4 has explicit std::reference_wrapper constructor */
+            attachShaders({std::ref(vert), std::ref(frag)});
             #endif
 
             setTransformFeedbackOutputs({"outputData"}, TransformFeedbackBufferMode::SeparateAttributes);
