@@ -326,7 +326,7 @@ void* Buffer::map(const MapAccess access) {
 void* Buffer::mapSub(const GLintptr offset, const GLsizeiptr length, const MapAccess access) {
     #ifdef CORRADE_TARGET_NACL
     CORRADE_ASSERT(!_mappedBuffer, "Buffer::mapSub(): the buffer is already mapped", nullptr);
-    return _mappedBuffer = glMapBufferSubDataCHROMIUM(GLenum(bindInternal(_targetHint)), offset, length, GLenum(access));
+    return _mappedBuffer = glMapBufferSubDataCHROMIUM(GLenum(bindSomewhereInternal(_targetHint)), offset, length, GLenum(access));
     #else
     static_cast<void>(offset);
     static_cast<void>(length);

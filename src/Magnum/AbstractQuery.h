@@ -112,7 +112,7 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
          *      @ref Int, @ref UnsignedLong or @ref Long.
          *
          * Note that this function is blocking until the result is available.
-         * See resultAvailable().
+         * See @ref resultAvailable().
          * @attention @ref Magnum::UnsignedLong "UnsignedLong" and @ref Magnum::Long "Long"
          *      result type is not available in @ref MAGNUM_TARGET_WEBGL "WebGL".
          * @see @fn_gl{GetQueryObject} with @def_gl{QUERY_RESULT}
