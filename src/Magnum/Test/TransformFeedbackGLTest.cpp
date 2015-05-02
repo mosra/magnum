@@ -318,8 +318,13 @@ void TransformFeedbackGLTest::attachRanges() {
 
     TransformFeedback feedback;
     feedback.attachBuffers(0, {
+        #ifndef CORRADE_GCC44_COMPATIBILITY
         std::make_tuple(&output1, 256, 2*sizeof(Vector2)),
         std::make_tuple(&output2, 512, 2*sizeof(Float))
+        #else
+        std::tuple<Buffer*, GLintptr, GLsizeiptr>(&output1, 256, 2*sizeof(Vector2)),
+        std::tuple<Buffer*, GLintptr, GLsizeiptr>(&output2, 512, 2*sizeof(Float))
+        #endif
     });
 
     MAGNUM_VERIFY_NO_ERROR();

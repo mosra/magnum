@@ -39,6 +39,7 @@ Trade::MeshData3D Cube::solid() {
         12, 13, 14, 12, 14, 15, /* -Z */
         16, 17, 18, 16, 18, 19, /* -Y */
         20, 21, 22, 20, 22, 23  /* -X */
+    /* GCC 4.4 needs explicit typing */
     }, {std::vector<Vector3>{
         {-1.0f, -1.0f,  1.0f},
         { 1.0f, -1.0f,  1.0f},
@@ -69,6 +70,7 @@ Trade::MeshData3D Cube::solid() {
         {-1.0f, -1.0f,  1.0f},
         {-1.0f,  1.0f,  1.0f}, /* -X */
         {-1.0f,  1.0f, -1.0f}
+    /* GCC 4.4 needs explicit typing */
     }}, {std::vector<Vector3>{
         { 0.0f,  0.0f,  1.0f},
         { 0.0f,  0.0f,  1.0f},
@@ -126,7 +128,8 @@ Trade::MeshData3D Cube::solidStrip() {
             |F \|
             2---3
     */
-    return Trade::MeshData3D(MeshPrimitive::TriangleStrip, {}, {{
+    /* GCC 4.4 needs explicit typing */
+    return Trade::MeshData3D(MeshPrimitive::TriangleStrip, {}, {std::vector<Vector3>{
         { 1.0f,  1.0f,  1.0f}, /* 3 */
         {-1.0f,  1.0f,  1.0f}, /* 2 */
         { 1.0f, -1.0f,  1.0f}, /* 6 */
@@ -150,6 +153,7 @@ Trade::MeshData3D Cube::wireframe() {
         4, 5, 5, 6, 6, 7, 7, 4, /* -Z */
         1, 5, 2, 6,             /* +X */
         0, 4, 3, 7              /* -X */
+    /* GCC 4.4 needs explicit typing */
     }, {std::vector<Vector3>{
         {-1.0f, -1.0f,  1.0f},
         { 1.0f, -1.0f,  1.0f},
