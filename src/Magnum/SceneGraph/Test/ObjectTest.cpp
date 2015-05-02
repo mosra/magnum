@@ -90,12 +90,15 @@ ObjectTest::ObjectTest() {
               &ObjectTest::rangeBasedForFeatures});
 }
 
-void ObjectTest::addFeature() {
+/* GCC 4.4 doesn't implement function-local types as template parameters */
+namespace {
     class MyFeature: public AbstractFeature3D {
         public:
             explicit MyFeature(AbstractObject3D& object, Int, std::string&&): AbstractFeature3D{object} {}
     };
+}
 
+void ObjectTest::addFeature() {
     Object3D o;
     CORRADE_VERIFY(o.features().isEmpty());
     MyFeature& f = o.addFeature<MyFeature>(0, "hello");
@@ -133,12 +136,15 @@ void ObjectTest::parenting() {
     CORRADE_VERIFY(childOne->children().isEmpty());
 }
 
-void ObjectTest::addChild() {
+/* GCC 4.4 doesn't implement function-local types as template parameters */
+namespace {
     class MyObject: public Object3D {
         public:
             explicit MyObject(Int, std::string&&, Object3D* parent = nullptr): Object3D{parent} {}
     };
+}
 
+void ObjectTest::addChild() {
     Object3D o;
     CORRADE_VERIFY(o.children().isEmpty());
     MyObject& p = o.addChild<MyObject>(0, "hello");
@@ -536,7 +542,15 @@ void ObjectTest::rangeBasedForFeatures() {
     #else
     for(auto it = begin(object.features()); it != end(object.features()); ++it) features.push_back(&*it);
     #endif
+    /* GCC 4.4 doesn't implement function-local types as template parameters */
+    #ifndef CORRADE_GCC44_COMPATIBILITY
     CORRADE_COMPARE(features, (std::vector<AbstractFeature3D*>{&a, &b, &c}));
+    #else
+    CORRADE_COMPARE(features, (std::vector<AbstractFeature3D*>{
+        static_cast<AbstractFeature3D*>(&a),
+        static_cast<AbstractFeature3D*>(&b),
+        static_cast<AbstractFeature3D*>(&c)}));
+    #endif
 }
 
 }}}
