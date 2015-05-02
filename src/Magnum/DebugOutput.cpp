@@ -32,6 +32,10 @@
 #include "Magnum/Implementation/State.h"
 #include "Magnum/Implementation/DebugState.h"
 
+#if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(CORRADE_TARGET_ANDROID) || defined(__MINGW32__)
+#include <sstream>
+#endif
+
 namespace Magnum {
 
 namespace {
@@ -99,7 +103,19 @@ void defaultCallback(const DebugOutput::Source source, const DebugOutput::Type t
         case DebugOutput::Type::Other: ;
     }
 
-    output << '(' + std::to_string(id) + "):" << string;
+    /** @todo Remove when this is fixed everywhere (also the include above) */
+    #if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(CORRADE_TARGET_ANDROID) || defined(__MINGW32__)
+    std::ostringstream converter;
+    converter << id;
+    #endif
+
+    output << '(' +
+        #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID) && !defined(__MINGW32__)
+        std::to_string(id) +
+        #else
+        converter.str() +
+        #endif
+        "):" << string;
 }
 
 }
