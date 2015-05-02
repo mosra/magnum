@@ -578,7 +578,8 @@ See also @ref InputEvent for more information.
 @see @ref keyPressEvent(), @ref keyReleaseEvent()
 */
 class NaClApplication::KeyEvent: public NaClApplication::InputEvent {
-    friend NaClApplication;
+    /* GCC 4.6 needs the class keyword */
+    friend class NaClApplication;
 
     public:
         /**
@@ -673,7 +674,8 @@ See also @ref InputEvent for more information.
 @see @ref MouseMoveEvent, @ref mousePressEvent(), @ref mouseReleaseEvent()
 */
 class NaClApplication::MouseEvent: public NaClApplication::InputEvent {
-    friend NaClApplication;
+    /* GCC 4.6 needs the class keyword */
+    friend class NaClApplication;
 
     public:
         /**
@@ -715,7 +717,8 @@ See also @ref InputEvent for more information.
 @see @ref MouseEvent, @ref mouseMoveEvent()
 */
 class NaClApplication::MouseMoveEvent: public NaClApplication::InputEvent {
-    friend NaClApplication;
+    /* GCC 4.6 needs the class keyword */
+    friend class NaClApplication;
 
     public:
         /** @brief Position */
