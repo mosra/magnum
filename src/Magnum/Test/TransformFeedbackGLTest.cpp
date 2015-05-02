@@ -161,7 +161,8 @@ XfbShader::XfbShader() {
     #else
     /* ES for some reason needs both vertex and fragment shader */
     CORRADE_INTERNAL_ASSERT_OUTPUT(frag.addSource("void main() {}\n").compile());
-    attachShaders({vert, frag});
+    /* GCC 4.4 has explicit std::reference_wrapper constructor */
+    attachShaders({std::ref(vert), std::ref(frag)});
     #endif
     bindAttributeLocation(Input::Location, "inputData");
     setTransformFeedbackOutputs({"outputData"}, TransformFeedbackBufferMode::SeparateAttributes);
@@ -260,7 +261,8 @@ XfbMultiShader::XfbMultiShader() {
     #else
     /* ES for some reason needs both vertex and fragment shader */
     CORRADE_INTERNAL_ASSERT_OUTPUT(frag.addSource("void main() {}\n").compile());
-    attachShaders({vert, frag});
+    /* GCC 4.4 has explicit std::reference_wrapper constructor */
+    attachShaders({std::ref(vert), std::ref(frag)});
     #endif
     bindAttributeLocation(Input::Location, "inputData");
     setTransformFeedbackOutputs({"output1", "output2"}, TransformFeedbackBufferMode::SeparateAttributes);
@@ -375,7 +377,8 @@ void TransformFeedbackGLTest::interleaved() {
             #else
             /* ES for some reason needs both vertex and fragment shader */
             CORRADE_INTERNAL_ASSERT_OUTPUT(frag.addSource("void main() {}\n").compile());
-            attachShaders({vert, frag});
+            /* GCC 4.4 has explicit std::reference_wrapper constructor */
+            attachShaders({std::ref(vert), std::ref(frag)});
             #endif
             bindAttributeLocation(Input::Location, "inputData");
             setTransformFeedbackOutputs({"output1", "gl_SkipComponents1", "output2"}, TransformFeedbackBufferMode::InterleavedAttributes);
