@@ -90,7 +90,10 @@ class ResourceKey: public Utility::MurmurHash2::Digest {
          * Creates zero key. Note that it is not the same as calling other
          * constructors with empty string.
          */
-        constexpr ResourceKey() {}
+        constexpr /*implicit*/ ResourceKey() {}
+
+        /** @brief Construct resource key directly from hashed value */
+        explicit ResourceKey(std::size_t key): Utility::MurmurHash2::Digest{Utility::MurmurHash2::Digest::fromByteArray(reinterpret_cast<const char*>(&key))} {}
 
         /** @brief Constructor */
         ResourceKey(const std::string& key): Utility::MurmurHash2::Digest(Utility::MurmurHash2()(key)) {}
