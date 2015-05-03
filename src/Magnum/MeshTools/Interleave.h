@@ -85,7 +85,8 @@ template<class T> typename std::enable_if<!std::is_convertible<T, std::size_t>::
 }
 
 /* Skip gap */
-constexpr std::size_t writeOneInterleaved(std::size_t, char*, std::size_t gap) { return gap; }
+/* GCC 4.5 doesn't have constexpr so it needs inline */
+constexpr inline std::size_t writeOneInterleaved(std::size_t, char*, std::size_t gap) { return gap; }
 
 /* Write interleaved data */
 inline void writeInterleaved(std::size_t, char*) {}
