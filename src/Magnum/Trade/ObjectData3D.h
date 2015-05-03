@@ -96,6 +96,7 @@ class MAGNUM_EXPORT ObjectData3D {
 
         /** @brief Child objects */
         std::vector<UnsignedInt>& children() { return _children; }
+        const std::vector<UnsignedInt>& children() const { return _children; } /**< @overload */
 
         /** @brief Transformation (relative to parent) */
         Matrix4 transformation() const { return _transformation; }
