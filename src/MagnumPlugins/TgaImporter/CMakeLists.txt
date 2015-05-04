@@ -60,7 +60,7 @@ endif()
 target_link_libraries(TgaImporter Magnum)
 
 install(FILES ${TgaImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/TgaImporter)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configure.h DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/TgaImporter/configure.h)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configure.h DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/TgaImporter)
 
 if(BUILD_TESTS)
     add_library(MagnumTgaImporterTestLib STATIC $<TARGET_OBJECTS:TgaImporterObjects>)
