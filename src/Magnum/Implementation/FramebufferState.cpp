@@ -33,7 +33,7 @@
 
 namespace Magnum { namespace Implementation {
 
-#ifndef CORRADE_GCC46_COMPATIBILITY
+#if !defined(CORRADE_GCC46_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
 constexpr const Range2Di FramebufferState::DisengagedViewport;
 #else
 const Range2Di FramebufferState::DisengagedViewport{{}, {-1, -1}};

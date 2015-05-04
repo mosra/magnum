@@ -43,7 +43,7 @@
 namespace Magnum { namespace Implementation {
 
 struct FramebufferState {
-    #ifndef CORRADE_GCC46_COMPATIBILITY
+    #if !defined(CORRADE_GCC46_COMPATIBILITY) && !defined(CORRADE_MSVC2013_COMPATIBILITY)
     constexpr static const Range2Di DisengagedViewport{{}, {-1, -1}};
     #else
     static const Range2Di DisengagedViewport;
