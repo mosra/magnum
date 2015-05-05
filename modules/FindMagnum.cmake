@@ -246,7 +246,7 @@ foreach(component ${Magnum_FIND_COMPONENTS})
     if(component MATCHES ".+AudioImporter")
         set(_MAGNUM_${_COMPONENT}_DEPENDENCIES Audio)
     elseif(component MATCHES ".+(Font|FontConverter)")
-        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES TextureTools Text)
+        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES Text TextureTools)
     endif()
 
     list(APPEND _MAGNUM_ADDITIONAL_COMPONENTS ${_MAGNUM_${_COMPONENT}_DEPENDENCIES})
