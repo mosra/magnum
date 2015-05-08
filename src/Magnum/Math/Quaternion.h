@@ -543,7 +543,10 @@ template<class T> Quaternion<T> quaternionFromMatrix(const Matrix3x3<T>& m) {
     }
 
     /* Diagonal is negative */
-    const std::size_t i = diagonal.max();
+    std::size_t i = 0;
+    if(diagonal[1] > diagonal[0]) i = 1;
+    if(diagonal[2] > diagonal[i]) i = 2;
+
     const std::size_t j = (i + 1) % 3;
     const std::size_t k = (i + 2) % 3;
 
