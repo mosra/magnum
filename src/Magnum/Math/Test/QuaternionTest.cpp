@@ -278,7 +278,7 @@ void QuaternionTest::angle() {
 }
 
 void QuaternionTest::matrix() {
-    Vector3 axis = Vector3(1.0f, -3.0f, 5.0f).normalized();
+    Vector3 axis = Vector3(-3.0f, 1.0f, 5.0f).normalized();
 
     Quaternion q = Quaternion::rotation(Deg(37.0f), axis);
     Matrix3x3 m = Matrix4::rotation(Deg(37.0f), axis).rotationScaling();
@@ -296,11 +296,28 @@ void QuaternionTest::matrix() {
     CORRADE_VERIFY(m.trace() > 0.0f);
     CORRADE_COMPARE(Quaternion::fromMatrix(m), q);
 
-    /* Trace < 0 */
+    /* Trace < 0, max is diagonal[2] */
     Matrix3x3 m2 = Matrix4::rotation(Deg(130.0f), axis).rotationScaling();
     Quaternion q2 = Quaternion::rotation(Deg(130.0f), axis);
     CORRADE_VERIFY(m2.trace() < 0.0f);
+    CORRADE_VERIFY(m2.diagonal()[2] > std::max(m2.diagonal()[0], m2.diagonal()[1]));
     CORRADE_COMPARE(Quaternion::fromMatrix(m2), q2);
+
+    /* Trace < 0, max is diagonal[1] */
+    Vector3 axis2 = Vector3(-3.0f, 5.0f, 1.0f).normalized();
+    Matrix3x3 m3 = Matrix4::rotation(Deg(130.0f), axis2).rotationScaling();
+    Quaternion q3 = Quaternion::rotation(Deg(130.0f), axis2);
+    CORRADE_VERIFY(m3.trace() < 0.0f);
+    CORRADE_VERIFY(m3.diagonal()[1] > std::max(m3.diagonal()[0], m3.diagonal()[2]));
+    CORRADE_COMPARE(Quaternion::fromMatrix(m3), q3);
+
+    /* Trace < 0, max is diagonal[0] */
+    Vector3 axis3 = Vector3(5.0f, -3.0f, 1.0f).normalized();
+    Matrix3x3 m4 = Matrix4::rotation(Deg(130.0f), axis3).rotationScaling();
+    Quaternion q4 = Quaternion::rotation(Deg(130.0f), axis3);
+    CORRADE_VERIFY(m4.trace() < 0.0f);
+    CORRADE_VERIFY(m4.diagonal()[0] > std::max(m4.diagonal()[1], m4.diagonal()[2]));
+    CORRADE_COMPARE(Quaternion::fromMatrix(m4), q4);
 }
 
 void QuaternionTest::lerp() {
