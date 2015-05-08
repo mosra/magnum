@@ -67,8 +67,8 @@ else
     deprecated_build_flag=OFF
 fi
 
-mkdir -p build-nacl-${toolchain}-${compatibility}
-cd build-nacl-${toolchain}-${compatibility}
+mkdir -p build-android-${toolchain}-${compatibility}
+cd build-android-${toolchain}-${compatibility}
 
 cmake .. \
     -DCMAKE_BUILD_TYPE=Release \
