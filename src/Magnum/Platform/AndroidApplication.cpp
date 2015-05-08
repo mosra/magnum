@@ -253,7 +253,4 @@ void AndroidApplication::exec(android_app* state, std::unique_ptr<AndroidApplica
     state->userData = nullptr;
 }
 
-template class BasicScreen<AndroidApplication>;
-template class BasicScreenedApplication<AndroidApplication>;
-
 }}
