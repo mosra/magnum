@@ -49,6 +49,11 @@ elseif(CORRADE_GCC45_COMPATIBILITY AND NOT CORRADE_GCC44_COMPATIBILITY)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-strict-aliasing")
 endif()
 
+# On MSVC remove /W3, as we are replacing it with /W4
+if(MSVC)
+    string(REPLACE "/W3" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
+endif()
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CORRADE_INCLUDE_DIR})
