@@ -67,7 +67,7 @@ AndroidApplication::AndroidApplication(const Arguments& arguments, std::nullptr_
 
 AndroidApplication::~AndroidApplication() {
     eglMakeCurrent(_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
-    eglDestroyContext(_display, _context);
+    eglDestroyContext(_display, _glContext);
     eglDestroySurface(_display, _surface);
     eglTerminate(_display);
 }
@@ -127,16 +127,16 @@ bool AndroidApplication::tryCreateContext(const Configuration& configuration) {
         #endif
         EGL_NONE
     };
-    if(!(_context = eglCreateContext(_display, config, EGL_NO_CONTEXT, contextAttributes))) {
+    if(!(_glContext = eglCreateContext(_display, config, EGL_NO_CONTEXT, contextAttributes))) {
         Error() << "Platform::AndroidApplication::tryCreateContext(): cannot create EGL context:"
                 << Implementation::eglErrorString(eglGetError());
         return false;
     }
 
     /* Make the context current */
-    CORRADE_INTERNAL_ASSERT_OUTPUT(eglMakeCurrent(_display, _surface, _surface, _context));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(eglMakeCurrent(_display, _surface, _surface, _glContext));
 
-    _c.reset(new Platform::Context);
+    _context.reset(new Platform::Context);
     return true;
 }
 

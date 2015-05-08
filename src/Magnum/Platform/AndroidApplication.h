@@ -310,9 +310,9 @@ class AndroidApplication {
 
         EGLDisplay _display;
         EGLSurface _surface;
-        EGLContext _context;
+        EGLContext _glContext;
 
-        std::unique_ptr<Platform::Context> _c;
+        std::unique_ptr<Platform::Context> _context;
         std::unique_ptr<LogOutput> _logOutput;
 
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
@@ -485,7 +485,7 @@ class AndroidApplication::MouseEvent: public InputEvent {
         }
 
     private:
-        MouseEvent(AInputEvent* event): InputEvent(event) {}
+        explicit MouseEvent(AInputEvent* event): InputEvent(event) {}
 };
 
 /**
@@ -561,7 +561,7 @@ class AndroidApplication::MouseMoveEvent: public InputEvent {
         }
 
     private:
-        MouseMoveEvent(AInputEvent* event): InputEvent(event) {}
+        explicit MouseMoveEvent(AInputEvent* event): InputEvent(event) {}
 };
 
 CORRADE_ENUMSET_OPERATORS(AndroidApplication::MouseMoveEvent::Buttons)
