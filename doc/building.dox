@@ -432,9 +432,9 @@ Emscripten supports dynamic libraries only to simplify porting and they are
 generally slower, thus `BUILD_STATIC` is implicitly enabled.
 
 Then create build directory and run cmake and build command in it. The
-toolchain needs access to its platform file, so be sure to properly set
-**absolute** path to `modules/` directory containing `Platform/Emscripten.cmake`.
-Also set `CMAKE_INSTALL_PREFIX` to path contained in `EMSCRIPTEN_TOOLCHAIN_PATH`.
+toolchain needs access to its platform file, so be sure to properly set **absolute**
+path to `modules/` directory containing `Platform/Emscripten.cmake`. Also set
+`CMAKE_INSTALL_PREFIX` to path contained in `EMSCRIPTEN_TOOLCHAIN_PATH`.
 
     mkdir build-emscripten && cd build-emscripten
     cmake .. \
@@ -508,9 +508,9 @@ named `PKGBUILD-android-arm` and `PKGBUILD-android-x86`, see
 
 In `package/ci/` there are `jenkins.xml` and `jenkins-gltests.xml` files
 containing job configuration, one for build and non-GL tests and the other for
-GL tests only. Setup your Jenkins server, enable the **Git** and
-**Text-finder** plugin and download the CLI application from here (replace
-`localhost:8080` with your server name):
+GL tests only. Setup your Jenkins server, enable the **Git** and **Text-finder**
+plugin and download the CLI application from here (replace `localhost:8080`
+with your server name):
 
     http://localhost:8080/cli
 
@@ -522,11 +522,11 @@ replace `localhost:8080` with your server name, replace `update-job` with
     java -jar ~/jenkins-cli.jar -s http://localhost:8080 update-job Magnum-GLTests < package/ci/jenkins-gltests.xml
 
 Build is done using **Ninja** build system and everything possible is enabled,
-thus you need also **SDL2**, **GLUT** and **OpenAL** libraries. It expects that
-**GCC** >= 4.8.1, 4.7 and **Clang** are installed and there are **OpenGL**,
-**OpenGL ES 2.0** and **OpenGL ES 3.0** librares as it tries to compile the
-library with every combination of them. You can add/remove the axes in
-`axes/hudson.matrix.TextAxis` or via the web interface later.
+thus you need also **SDL2**, **GLUT** and **OpenAL** libraries. It expects
+that **GCC** >= 4.8.1, 4.7 and **Clang** are installed and there
+are **OpenGL**, **OpenGL ES 2.0** and **OpenGL ES 3.0** librares as it tries to
+compile the library with every combination of them. You can add/remove the axes
+in `axes/hudson.matrix.TextAxis` or via the web interface later.
 
 Magnum-GLTests depend on active X11 session, thus they should be run from
 Jenkins instance running on graphical user session.
