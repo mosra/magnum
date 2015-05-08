@@ -66,8 +66,8 @@ NaClApplication::NaClApplication(const Arguments& arguments, const Configuration
     createContext(configuration);
 }
 
-NaClApplication::NaClApplication(const Arguments& arguments, std::nullptr_t): Instance(arguments), Graphics3DClient(this), MouseLock(this), graphics(nullptr), fullscreen(nullptr), c(nullptr) {
-    debugOutput = new ConsoleDebugOutput(this);
+NaClApplication::NaClApplication(const Arguments& arguments, std::nullptr_t): Instance(arguments), Graphics3DClient(this), MouseLock(this) {
+    _debugOutput.reset(new ConsoleDebugOutput{this});
 }
 
 void NaClApplication::createContext() { createContext({}); }
@@ -77,9 +77,9 @@ void NaClApplication::createContext(const Configuration& configuration) {
 }
 
 bool NaClApplication::tryCreateContext(const Configuration& configuration) {
-    CORRADE_ASSERT(!c, "Platform::NaClApplication::tryCreateContext(): context already created", false);
+    CORRADE_ASSERT(!_context, "Platform::NaClApplication::tryCreateContext(): context already created", false);
 
-    viewportSize = configuration.size();
+    _viewportSize = configuration.size();
 
     const std::int32_t attributes[] = {
         PP_GRAPHICS3DATTRIB_ALPHA_SIZE, 8,
@@ -92,69 +92,62 @@ bool NaClApplication::tryCreateContext(const Configuration& configuration) {
         PP_GRAPHICS3DATTRIB_NONE
     };
 
-    graphics = new pp::Graphics3D(this, attributes);
-    if(graphics->is_null()) {
+    _graphics.reset(new pp::Graphics3D(this, attributes));
+    if(_graphics->is_null()) {
         Error() << "Platform::NaClApplication::tryCreateContext(): cannot create context";
-        delete graphics;
-        graphics = nullptr;
+        _graphics.reset();
         return false;
     }
-    if(!BindGraphics(*graphics)) {
+    if(!BindGraphics(*_graphics)) {
         Error() << "Platform::NaClApplication::tryCreateContext(): cannot bind graphics";
-        delete graphics;
-        graphics = nullptr;
+        _graphics.reset();
         return false;
     }
 
-    fullscreen = new pp::Fullscreen(this);
+    _fullscreen.reset(new pp::Fullscreen(this));
 
-    glSetCurrentContextPPAPI(graphics->pp_resource());
+    glSetCurrentContextPPAPI(_graphics->pp_resource());
 
     /* Enable input handling for mouse and keyboard */
     RequestInputEvents(PP_INPUTEVENT_CLASS_MOUSE|PP_INPUTEVENT_CLASS_WHEEL);
     RequestFilteringInputEvents(PP_INPUTEVENT_CLASS_KEYBOARD);
 
-    c = new Platform::Context;
+    _context.reset(new Platform::Context);
     return true;
 }
 
-NaClApplication::~NaClApplication() {
-    delete c;
-    delete fullscreen;
-    delete graphics;
-    delete debugOutput;
-}
+NaClApplication::~NaClApplication() = default;
 
 bool NaClApplication::isFullscreen() {
-    return fullscreen->IsFullscreen();
+    return _fullscreen->IsFullscreen();
 }
 
 bool NaClApplication::setFullscreen(bool enabled) {
     /* Given fullscreen mode already set or switching to it is in progress, done */
-    if(isFullscreen() == enabled || ((flags & Flag::FullscreenSwitchInProgress) && (flags & Flag::WillBeFullscreen) == enabled))
+    if(isFullscreen() == enabled || ((_flags & Flag::FullscreenSwitchInProgress) && (_flags & Flag::WillBeFullscreen) == enabled))
         return true;
 
     /* Switch to opposite fullscreen mode is in progress, can't revert it back */
-    if((flags & Flag::FullscreenSwitchInProgress) && (flags & Flag::WillBeFullscreen) != enabled)
+    if((_flags & Flag::FullscreenSwitchInProgress) && (_flags & Flag::WillBeFullscreen) != enabled)
         return false;
 
     /* Set fullscreen */
-    if(!fullscreen->SetFullscreen(enabled))
+    if(!_fullscreen->SetFullscreen(enabled))
         return false;
 
     /* Set flags */
-    flags |= Flag::FullscreenSwitchInProgress;
-    enabled ? flags |= Flag::WillBeFullscreen : flags &= ~Flag::WillBeFullscreen;
+    _flags |= Flag::FullscreenSwitchInProgress;
+    enabled ? _flags |= Flag::WillBeFullscreen : _flags &= ~Flag::WillBeFullscreen;
     return true;
 }
 
 void NaClApplication::DidChangeView(const pp::View& view) {
     /* Fullscreen switch in progress */
-    if(flags & Flag::FullscreenSwitchInProgress) {
+    if(_flags & Flag::FullscreenSwitchInProgress) {
         /* Done, remove the progress flag */
-        if(isFullscreen() == bool(flags & Flag::WillBeFullscreen)) {
-            flags &= ~Flag::FullscreenSwitchInProgress;
-            flags |= Flag::Redraw;
+        if(isFullscreen() == bool(_flags & Flag::WillBeFullscreen)) {
+            _flags &= ~Flag::FullscreenSwitchInProgress;
+            _flags |= Flag::Redraw;
         }
 
         /* Don't process anything during the switch */
@@ -164,9 +157,9 @@ void NaClApplication::DidChangeView(const pp::View& view) {
     Vector2i size(view.GetRect().width(), view.GetRect().height());
 
     /* Canvas resized */
-    if(viewportSize != size) {
-        graphics->ResizeBuffers(size.x(), size.y());
-        viewportEvent(viewportSize = size);
+    if(_viewportSize != size) {
+        _graphics->ResizeBuffers(size.x(), size.y());
+        viewportEvent(_viewportSize = size);
     }
 
     drawEvent();
@@ -174,9 +167,9 @@ void NaClApplication::DidChangeView(const pp::View& view) {
 
 bool NaClApplication::HandleInputEvent(const pp::InputEvent& event) {
     /* Don't handle anything during switch from/to fullscreen */
-    if(flags & Flag::FullscreenSwitchInProgress) return false;
+    if(_flags & Flag::FullscreenSwitchInProgress) return false;
 
-    Flags tmpFlags = flags;
+    Flags tmpFlags = _flags;
 
     switch(event.GetType()) {
         case PP_INPUTEVENT_TYPE_KEYDOWN:
@@ -218,11 +211,11 @@ bool NaClApplication::HandleInputEvent(const pp::InputEvent& event) {
     }
 
     /* Assume everything is properly sequential here */
-    CORRADE_INTERNAL_ASSERT((tmpFlags & Flag::SwapInProgress) == (flags & Flag::SwapInProgress));
+    CORRADE_INTERNAL_ASSERT((tmpFlags & Flag::SwapInProgress) == (_flags & Flag::SwapInProgress));
 
     /* Redraw, if it won't be handled after swap automatically */
-    if((flags & Flag::Redraw) && !(flags & Flag::SwapInProgress)) {
-        flags &= ~Flag::Redraw;
+    if((_flags & Flag::Redraw) && !(_flags & Flag::SwapInProgress)) {
+        _flags &= ~Flag::Redraw;
         drawEvent();
     }
 
@@ -231,20 +224,20 @@ bool NaClApplication::HandleInputEvent(const pp::InputEvent& event) {
 
 void NaClApplication::swapBuffers() {
     /* Swap already in progress, do nothing */
-    if(flags & Flag::SwapInProgress) return;
+    if(_flags & Flag::SwapInProgress) return;
 
     /* Swap buffers and call swapCallback() when done */
-    flags |= Flag::SwapInProgress;
-    graphics->SwapBuffers(pp::CompletionCallback(&swapCallback, this));
+    _flags |= Flag::SwapInProgress;
+    _graphics->SwapBuffers(pp::CompletionCallback(&swapCallback, this));
 }
 
 void NaClApplication::swapCallback(void* applicationInstance, std::int32_t) {
     NaClApplication* instance = static_cast<NaClApplication*>(applicationInstance);
-    instance->flags &= ~Flag::SwapInProgress;
+    instance->_flags &= ~Flag::SwapInProgress;
 
     /* Redraw, if requested */
-    if(instance->flags & Flag::Redraw) {
-        instance->flags &= ~Flag::Redraw;
+    if(instance->_flags & Flag::Redraw) {
+        instance->_flags &= ~Flag::Redraw;
         instance->drawEvent();
     }
 }
@@ -259,7 +252,7 @@ void NaClApplication::setMouseLocked(bool enabled) {
 
 void NaClApplication::mouseLockCallback(void* applicationInstance, std::int32_t) {
     NaClApplication* instance = static_cast<NaClApplication*>(applicationInstance);
-    instance->flags |= Flag::MouseLocked;
+    instance->_flags |= Flag::MouseLocked;
 }
 
 void NaClApplication::viewportEvent(const Vector2i&) {}

@@ -29,6 +29,7 @@
  * @brief Class @ref Magnum::Platform::NaClApplication, macro @ref MAGNUM_NACLAPPLICATION_MAIN()
  */
 
+#include <memory>
 #include <string>
 #include <Corrade/Containers/EnumSet.h>
 
@@ -274,7 +275,7 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
         void swapBuffers();
 
         /** @copydoc Sdl2Application::redraw() */
-        void redraw() { flags |= Flag::Redraw; }
+        void redraw() { _flags |= Flag::Redraw; }
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     protected:
@@ -315,7 +316,7 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
 
     public:
         /** @brief Whether mouse is locked */
-        bool isMouseLocked() const { return flags & Flag::MouseLocked; }
+        bool isMouseLocked() const { return _flags & Flag::MouseLocked; }
 
         /**
          * @brief Enable or disable mouse locking
@@ -377,7 +378,7 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
         }
 
         void MouseLockLost() override {
-            flags &= ~Flag::MouseLocked;
+            _flags &= ~Flag::MouseLocked;
         }
 
         void DidChangeView(const pp::View& view) override;
@@ -387,13 +388,13 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
         static void swapCallback(void* applicationInstance, std::int32_t);
         static void mouseLockCallback(void* applicationInstance, std::int32_t);
 
-        pp::Graphics3D* graphics;
-        pp::Fullscreen* fullscreen;
-        Platform::Context* c;
-        Vector2i viewportSize;
-        Flags flags;
+        std::unique_ptr<pp::Graphics3D> _graphics;
+        std::unique_ptr<pp::Fullscreen> _fullscreen;
+        Vector2i _viewportSize;
+        Flags _flags;
 
-        ConsoleDebugOutput* debugOutput;
+        std::unique_ptr<ConsoleDebugOutput> _debugOutput;
+        std::unique_ptr<Platform::Context> _context;
 
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
 };
