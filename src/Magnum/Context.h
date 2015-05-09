@@ -41,7 +41,7 @@
 #include "MagnumExternal/Optional/optional.hpp"
 
 #ifdef CORRADE_GCC45_COMPATIBILITY
-#include "Version.h"
+#include "Magnum/Version.h"
 #endif
 
 namespace Magnum {
