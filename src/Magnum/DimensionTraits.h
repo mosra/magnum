@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::DimensionTraits, alias @ref Magnum::VectorTypeFor, @ref Magnum::MatrixTypeFor
+ * @brief Class @ref Magnum::DimensionTraits, alias @ref Magnum::VectorTypeFor, @ref Magnum::RangeTypeFor, @ref Magnum::MatrixTypeFor
  */
 
 #include "Magnum/Math/Math.h"
@@ -37,7 +37,7 @@ namespace Magnum {
 /**
 @brief Matrix and vector specializations for given dimension count
 
-@see @ref VectorTypeFor, @ref MatrixTypeFor
+@see @ref VectorTypeFor, @ref RangeTypeFor, @ref MatrixTypeFor
 */
 template<UnsignedInt dimensions, class T> struct DimensionTraits {
     DimensionTraits() = delete;
