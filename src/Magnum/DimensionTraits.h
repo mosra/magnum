@@ -25,16 +25,20 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+/** @file
+ * @brief Class @ref Magnum::DimensionTraits, alias @ref Magnum::VectorTypeFor, @ref Magnum::RangeTypeFor, @ref Magnum::MatrixTypeFor
+ */
+
 #include "Magnum/Math/Math.h"
 #include "Magnum/Types.h"
 
-/** @file
- * @brief Class @ref Magnum::DimensionTraits
- */
-
 namespace Magnum {
 
-/** @brief Matrix and vector specializations for given dimension count */
+/**
+@brief Matrix and vector specializations for given dimension count
+
+@see @ref VectorTypeFor, @ref RangeTypeFor, @ref MatrixTypeFor
+*/
 template<UnsignedInt dimensions, class T> struct DimensionTraits {
     DimensionTraits() = delete;
 
