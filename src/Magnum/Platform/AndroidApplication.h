@@ -312,9 +312,9 @@ class AndroidApplication {
 
         EGLDisplay _display;
         EGLSurface _surface;
-        EGLContext _context;
+        EGLContext _glContext;
 
-        std::unique_ptr<Platform::Context> _c;
+        std::unique_ptr<Platform::Context> _context;
         std::unique_ptr<LogOutput> _logOutput;
 
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
@@ -487,7 +487,7 @@ class AndroidApplication::MouseEvent: public InputEvent {
         }
 
     private:
-        MouseEvent(AInputEvent* event): InputEvent(event) {}
+        explicit MouseEvent(AInputEvent* event): InputEvent(event) {}
 };
 
 /**
@@ -563,7 +563,7 @@ class AndroidApplication::MouseMoveEvent: public InputEvent {
         }
 
     private:
-        MouseMoveEvent(AInputEvent* event): InputEvent(event) {}
+        explicit MouseMoveEvent(AInputEvent* event): InputEvent(event) {}
 };
 
 CORRADE_ENUMSET_OPERATORS(AndroidApplication::MouseMoveEvent::Buttons)
@@ -587,8 +587,6 @@ header is included this macro is also aliased to `MAGNUM_APPLICATION_MAIN()`.
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_APPLICATION_MAIN
 typedef AndroidApplication Application;
-typedef BasicScreen<AndroidApplication> Screen;
-typedef BasicScreenedApplication<AndroidApplication> ScreenedApplication;
 #define MAGNUM_APPLICATION_MAIN(className) MAGNUM_ANDROIDAPPLICATION_MAIN(className)
 #else
 #undef MAGNUM_APPLICATION_MAIN
