@@ -36,14 +36,14 @@
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_TGAIMAGECONVERTER_BUILD_STATIC
     #if defined(TgaImageConverter_EXPORTS) || defined(TgaImageConverterObjects_EXPORTS)
-        #define MAGNUM_TRADE_TGAIMAGECONVERTER_EXPORT CORRADE_VISIBILITY_EXPORT
+        #define MAGNUM_TGAIMAGECONVERTER_EXPORT CORRADE_VISIBILITY_EXPORT
     #else
-        #define MAGNUM_TRADE_TGAIMAGECONVERTER_EXPORT CORRADE_VISIBILITY_IMPORT
+        #define MAGNUM_TGAIMAGECONVERTER_EXPORT CORRADE_VISIBILITY_IMPORT
     #endif
 #else
-    #define MAGNUM_TRADE_TGAIMAGECONVERTER_EXPORT CORRADE_VISIBILITY_STATIC
+    #define MAGNUM_TGAIMAGECONVERTER_EXPORT CORRADE_VISIBILITY_STATIC
 #endif
-#define MAGNUM_TRADE_TGAIMAGECONVERTER_LOCAL CORRADE_VISIBILITY_LOCAL
+#define MAGNUM_TGAIMAGECONVERTER_LOCAL CORRADE_VISIBILITY_LOCAL
 #endif
 
 namespace Magnum { namespace Trade {
@@ -63,7 +63,7 @@ component of `Magnum` package in CMake and link to
 `${MAGNUM_TGAIMAGECONVERTER_LIBRARIES}`. See @ref building, @ref cmake and
 @ref plugins for more information.
 */
-class MAGNUM_TRADE_TGAIMAGECONVERTER_EXPORT TgaImageConverter: public AbstractImageConverter {
+class MAGNUM_TGAIMAGECONVERTER_EXPORT TgaImageConverter: public AbstractImageConverter {
     public:
         /** @brief Default constructor */
         explicit TgaImageConverter();
@@ -72,8 +72,8 @@ class MAGNUM_TRADE_TGAIMAGECONVERTER_EXPORT TgaImageConverter: public AbstractIm
         explicit TgaImageConverter(PluginManager::AbstractManager& manager, std::string plugin);
 
     private:
-        Features MAGNUM_TRADE_TGAIMAGECONVERTER_LOCAL doFeatures() const override;
-        Containers::Array<char> MAGNUM_TRADE_TGAIMAGECONVERTER_LOCAL doExportToData(const ImageReference2D& image) const override;
+        Features MAGNUM_TGAIMAGECONVERTER_LOCAL doFeatures() const override;
+        Containers::Array<char> MAGNUM_TGAIMAGECONVERTER_LOCAL doExportToData(const ImageReference2D& image) const override;
 };
 
 }}

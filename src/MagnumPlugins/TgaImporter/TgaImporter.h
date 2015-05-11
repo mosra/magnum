@@ -38,14 +38,14 @@
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_TGAIMPORTER_BUILD_STATIC
     #if defined(TgaImporter_EXPORTS) || defined(TgaImporterObjects_EXPORTS)
-        #define MAGNUM_TRADE_TGAIMPORTER_EXPORT CORRADE_VISIBILITY_EXPORT
+        #define MAGNUM_TGAIMPORTER_EXPORT CORRADE_VISIBILITY_EXPORT
     #else
-        #define MAGNUM_TRADE_TGAIMPORTER_EXPORT CORRADE_VISIBILITY_IMPORT
+        #define MAGNUM_TGAIMPORTER_EXPORT CORRADE_VISIBILITY_IMPORT
     #endif
 #else
-    #define MAGNUM_TRADE_TGAIMPORTER_EXPORT CORRADE_VISIBILITY_STATIC
+    #define MAGNUM_TGAIMPORTER_EXPORT CORRADE_VISIBILITY_STATIC
 #endif
-#define MAGNUM_TRADE_TGAIMPORTER_LOCAL CORRADE_VISIBILITY_LOCAL
+#define MAGNUM_TGAIMPORTER_LOCAL CORRADE_VISIBILITY_LOCAL
 #endif
 
 namespace Magnum { namespace Trade {
@@ -71,7 +71,7 @@ and @ref ColorFormat::RGBA. In OpenGL ES 2.0, if @es_extension{EXT,texture_rg}
 is not supported, grayscale images use @ref ColorFormat::Luminance instead of
 @ref ColorFormat::Red.
 */
-class MAGNUM_TRADE_TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
+class MAGNUM_TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
     public:
         /** @brief Default constructor */
         explicit TgaImporter();
@@ -82,13 +82,13 @@ class MAGNUM_TRADE_TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
         ~TgaImporter();
 
     private:
-        Features MAGNUM_TRADE_TGAIMPORTER_LOCAL doFeatures() const override;
-        bool MAGNUM_TRADE_TGAIMPORTER_LOCAL doIsOpened() const override;
-        void MAGNUM_TRADE_TGAIMPORTER_LOCAL doOpenData(Containers::ArrayReference<const char> data) override;
-        void MAGNUM_TRADE_TGAIMPORTER_LOCAL doOpenFile(const std::string& filename) override;
-        void MAGNUM_TRADE_TGAIMPORTER_LOCAL doClose() override;
-        UnsignedInt MAGNUM_TRADE_TGAIMPORTER_LOCAL doImage2DCount() const override;
-        std::optional<ImageData2D> MAGNUM_TRADE_TGAIMPORTER_LOCAL doImage2D(UnsignedInt id) override;
+        Features MAGNUM_TGAIMPORTER_LOCAL doFeatures() const override;
+        bool MAGNUM_TGAIMPORTER_LOCAL doIsOpened() const override;
+        void MAGNUM_TGAIMPORTER_LOCAL doOpenData(Containers::ArrayReference<const char> data) override;
+        void MAGNUM_TGAIMPORTER_LOCAL doOpenFile(const std::string& filename) override;
+        void MAGNUM_TGAIMPORTER_LOCAL doClose() override;
+        UnsignedInt MAGNUM_TGAIMPORTER_LOCAL doImage2DCount() const override;
+        std::optional<ImageData2D> MAGNUM_TGAIMPORTER_LOCAL doImage2D(UnsignedInt id) override;
 
         std::istream* in;
 };
