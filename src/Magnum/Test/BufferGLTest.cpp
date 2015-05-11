@@ -298,7 +298,7 @@ void BufferGLTest::mapSub() {
     constexpr char data[] = {2, 7, 5, 13, 25};
     buffer.setData(data, BufferUsage::StaticDraw);
 
-    char* contents = reinterpret_cast<char*>(buffer.mapSub(1, 4, Buffer::MapAccess::WriteOnly));
+    char* contents = buffer.mapSub<char>(1, 4, Buffer::MapAccess::WriteOnly);
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_VERIFY(contents);
