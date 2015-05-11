@@ -154,7 +154,7 @@ Then you can map the buffer to client memory and operate with the memory
 directly. After you are done with the operation, call @ref unmap() to unmap the
 buffer again.
 @code
-Vector3* data = static_cast<Vector3*>(buffer.map(0, 200*sizeof(Vector3), Buffer::MapFlag::Write|Buffer::MapFlag::InvalidateBuffer));
+Vector3* data = buffer.map<Vector3>(0, 200*sizeof(Vector3), Buffer::MapFlag::Write|Buffer::MapFlag::InvalidateBuffer);
 for(std::size_t i = 0; i != 200; ++i)
     data[i] = ...;
 CORRADE_INTERNAL_ASSERT_OUTPUT(buffer.unmap());
@@ -163,7 +163,7 @@ If you are updating only a few discrete portions of the buffer, you can use
 @ref MapFlag::FlushExplicit and @ref flushMappedRange() to reduce number of
 memory operations performed by OpenGL on unmapping. Example:
 @code
-Vector3* data = static_cast<Vector3*>(buffer.map(0, 200*sizeof(Vector3), Buffer::MapFlag::Write|Buffer::MapFlag::FlushExplicit));
+Vector3* data = buffer.map<Vector3>(0, 200*sizeof(Vector3), Buffer::MapFlag::Write|Buffer::MapFlag::FlushExplicit);
 for(std::size_t i: {7, 27, 56, 128}) {
     data[i] = ...;
     buffer.flushMappedRange(i*sizeof(Vector3), sizeof(Vector3));
@@ -1075,6 +1075,11 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          */
         void* map(MapAccess access);
 
+        /** @overload */
+        template<class T> T* map(MapAccess access) {
+            return static_cast<T*>(map(access));
+        }
+
         #if defined(MAGNUM_TARGET_GLES2) || defined(DOXYGEN_GENERATING_OUTPUT)
         /**
          * @brief Map portion of buffer to client memory
@@ -1095,6 +1100,11 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      instead, as it has more complete set of features.
          */
         void* mapSub(GLintptr offset, GLsizeiptr length, MapAccess access);
+
+        /** @overload */
+        template<class T> T* mapSub(GLintptr offset, GLsizeiptr length, MapAccess access) {
+            return static_cast<T*>(mapSub(offset, length, access));
+        }
         #endif
 
         /**
@@ -1119,6 +1129,11 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      OpenGL ES 2.0
          */
         void* map(GLintptr offset, GLsizeiptr length, MapFlags flags);
+
+        /** @overload */
+        template<class T> T* map(GLintptr offset, GLsizeiptr length, MapFlags flags) {
+            return static_cast<T*>(map(offset, length, flags));
+        }
 
         /**
          * @brief Flush mapped range

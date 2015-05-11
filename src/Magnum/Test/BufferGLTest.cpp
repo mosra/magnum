@@ -265,9 +265,9 @@ void BufferGLTest::map() {
     buffer.setData(data, BufferUsage::StaticDraw);
 
     #ifndef MAGNUM_TARGET_GLES
-    char* contents = reinterpret_cast<char*>(buffer.map(Buffer::MapAccess::ReadWrite));
+    char* contents = buffer.map<char>(Buffer::MapAccess::ReadWrite);
     #else
-    char* contents = reinterpret_cast<char*>(buffer.map(Buffer::MapAccess::WriteOnly));
+    char* contents = buffer.map<char>(Buffer::MapAccess::WriteOnly);
     #endif
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -324,7 +324,7 @@ void BufferGLTest::mapRange() {
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
-    char* contents = reinterpret_cast<char*>(buffer.map(1, 4, Buffer::MapFlag::Read|Buffer::MapFlag::Write));
+    char* contents = buffer.map<char>(1, 4, Buffer::MapFlag::Read|Buffer::MapFlag::Write);
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_VERIFY(contents);
@@ -356,7 +356,7 @@ void BufferGLTest::mapRangeExplicitFlush() {
     buffer.setData(data, BufferUsage::StaticDraw);
 
     /* Map, set byte, don't flush and unmap */
-    char* contents = reinterpret_cast<char*>(buffer.map(1, 4, Buffer::MapFlag::Write|Buffer::MapFlag::FlushExplicit));
+    char* contents = buffer.map<char>(1, 4, Buffer::MapFlag::Write|Buffer::MapFlag::FlushExplicit);
     CORRADE_VERIFY(contents);
     contents[2] = 99;
     CORRADE_VERIFY(buffer.unmap());
@@ -365,7 +365,7 @@ void BufferGLTest::mapRangeExplicitFlush() {
     /* Unflushed range _might_ not be changed, thus nothing to test */
 
     /* Map, set byte, flush and unmap */
-    contents = reinterpret_cast<char*>(buffer.map(1, 4, Buffer::MapFlag::Write|Buffer::MapFlag::FlushExplicit));
+    contents = buffer.map<char>(1, 4, Buffer::MapFlag::Write|Buffer::MapFlag::FlushExplicit);
     CORRADE_VERIFY(contents);
     contents[3] = 107;
     buffer.flushMappedRange(3, 1);
