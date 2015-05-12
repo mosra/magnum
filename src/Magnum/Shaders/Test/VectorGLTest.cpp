@@ -26,10 +26,6 @@
 #include "Magnum/Shaders/Vector.h"
 #include "Magnum/Test/AbstractOpenGLTester.h"
 
-#ifdef MAGNUM_BUILD_STATIC
-#include "Magnum/Shaders/resourceImport.hpp"
-#endif
-
 namespace Magnum { namespace Shaders { namespace Test {
 
 struct VectorGLTest: Magnum::Test::AbstractOpenGLTester {

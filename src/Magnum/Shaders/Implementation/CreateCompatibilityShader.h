@@ -31,6 +31,12 @@
 #include "Magnum/Extensions.h"
 #include "Magnum/Shader.h"
 
+#ifdef MAGNUM_BUILD_STATIC
+static void importShaderResources() {
+    CORRADE_RESOURCE_INITIALIZE(MagnumShaders_RCS)
+}
+#endif
+
 namespace Magnum { namespace Shaders { namespace Implementation {
 
 inline Shader createCompatibilityShader(const Utility::Resource& rs, Version version, Shader::Type type) {

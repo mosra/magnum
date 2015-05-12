@@ -45,6 +45,11 @@ namespace {
 }
 
 Phong::Phong(const Flags flags): transformationMatrixUniform(0), projectionMatrixUniform(1), normalMatrixUniform(2), lightUniform(3), diffuseColorUniform(4), ambientColorUniform(5), specularColorUniform(6), lightColorUniform(7), shininessUniform(8), _flags(flags) {
+    #ifdef MAGNUM_BUILD_STATIC
+    /* Import resources on static build, if not already */
+    if(!Utility::Resource::hasGroup("MagnumShaders"))
+        importShaderResources();
+    #endif
     Utility::Resource rs("MagnumShaders");
 
     #ifndef MAGNUM_TARGET_GLES

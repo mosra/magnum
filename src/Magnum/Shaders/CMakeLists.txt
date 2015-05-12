@@ -52,10 +52,6 @@ set(MagnumShaders_HEADERS
 # Header files to display in project view of IDEs only
 set(MagnumShaders_PRIVATE_HEADERS Implementation/CreateCompatibilityShader.h)
 
-if(BUILD_STATIC)
-    set(MagnumShaders_HEADERS ${MagnumShaders_HEADERS} resourceImport.hpp)
-endif()
-
 # Shaders library
 add_library(MagnumShaders ${SHARED_OR_STATIC}
     ${MagnumShaders_SRCS}

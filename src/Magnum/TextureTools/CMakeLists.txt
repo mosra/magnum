@@ -36,10 +36,6 @@ set(MagnumTextureTools_HEADERS
 
     visibility.h)
 
-if(BUILD_STATIC)
-    list(APPEND MagnumTextureTools_HEADERS resourceImport.hpp)
-endif()
-
 # TextureTools library
 add_library(MagnumTextureTools ${SHARED_OR_STATIC}
     ${MagnumTextureTools_SRCS}

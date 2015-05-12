@@ -45,6 +45,11 @@ namespace {
 }
 
 template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): transformationProjectionMatrixUniform(0), colorUniform(1), _flags(flags) {
+    #ifdef MAGNUM_BUILD_STATIC
+    /* Import resources on static build, if not already */
+    if(!Utility::Resource::hasGroup("MagnumShaders"))
+        importShaderResources();
+    #endif
     Utility::Resource rs("MagnumShaders");
 
     #ifndef MAGNUM_TARGET_GLES

@@ -42,6 +42,11 @@ namespace {
 }
 
 template<UnsignedInt dimensions> VertexColor<dimensions>::VertexColor(): transformationProjectionMatrixUniform(0) {
+    #ifdef MAGNUM_BUILD_STATIC
+    /* Import resources on static build, if not already */
+    if(!Utility::Resource::hasGroup("MagnumShaders"))
+        importShaderResources();
+    #endif
     Utility::Resource rs("MagnumShaders");
 
     #ifndef MAGNUM_TARGET_GLES

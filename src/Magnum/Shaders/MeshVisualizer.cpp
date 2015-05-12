@@ -47,6 +47,11 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
         MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::OES::standard_derivatives);
     #endif
 
+    #ifdef MAGNUM_BUILD_STATIC
+    /* Import resources on static build, if not already */
+    if(!Utility::Resource::hasGroup("MagnumShaders"))
+        importShaderResources();
+    #endif
     Utility::Resource rs("MagnumShaders");
 
     #ifndef MAGNUM_TARGET_GLES

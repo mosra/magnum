@@ -42,6 +42,11 @@ namespace {
 }
 
 template<UnsignedInt dimensions> Vector<dimensions>::Vector(): transformationProjectionMatrixUniform(0), backgroundColorUniform(1), colorUniform(2) {
+    #ifdef MAGNUM_BUILD_STATIC
+    /* Import resources on static build, if not already */
+    if(!Utility::Resource::hasGroup("MagnumShaders"))
+        importShaderResources();
+    #endif
     Utility::Resource rs("MagnumShaders");
 
     #ifndef MAGNUM_TARGET_GLES

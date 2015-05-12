@@ -26,10 +26,6 @@
 #include "Magnum/Shaders/Flat.h"
 #include "Magnum/Test/AbstractOpenGLTester.h"
 
-#ifdef MAGNUM_BUILD_STATIC
-#include "Magnum/Shaders/resourceImport.hpp"
-#endif
-
 namespace Magnum { namespace Shaders { namespace Test {
 
 struct FlatGLTest: Magnum::Test::AbstractOpenGLTester {

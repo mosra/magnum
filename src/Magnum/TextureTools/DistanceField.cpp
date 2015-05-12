@@ -38,6 +38,10 @@
 #include "Magnum/Texture.h"
 #include "Magnum/Shaders/Implementation/CreateCompatibilityShader.h"
 
+static void importTextureToolResources() {
+    CORRADE_RESOURCE_INITIALIZE(MagnumTextureTools_RCS)
+}
+
 namespace Magnum { namespace TextureTools {
 
 namespace {
@@ -77,6 +81,11 @@ class DistanceFieldShader: public AbstractShaderProgram {
 };
 
 DistanceFieldShader::DistanceFieldShader(): radiusUniform(0), scalingUniform(1) {
+    #ifdef MAGNUM_BUILD_STATIC
+    /* Import resources on static build, if not already */
+    if(!Utility::Resource::hasGroup("MagnumTextureTools"))
+        importTextureToolResources();
+    #endif
     Utility::Resource rs("MagnumTextureTools");
 
     #ifndef MAGNUM_TARGET_GLES

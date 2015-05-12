@@ -42,6 +42,11 @@ namespace {
 }
 
 template<UnsignedInt dimensions> DistanceFieldVector<dimensions>::DistanceFieldVector(): transformationProjectionMatrixUniform(0), colorUniform(1), outlineColorUniform(2), outlineRangeUniform(3), smoothnessUniform(4) {
+    #ifdef MAGNUM_BUILD_STATIC
+    /* Import resources on static build, if not already */
+    if(!Utility::Resource::hasGroup("MagnumShaders"))
+        importShaderResources();
+    #endif
     Utility::Resource rs("MagnumShaders");
 
     #ifndef MAGNUM_TARGET_GLES
