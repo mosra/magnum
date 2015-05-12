@@ -389,6 +389,16 @@ foreach(component ${Magnum_FIND_COMPONENTS})
                 unset(MAGNUM_${_COMPONENT}_LIBRARY)
             endif()
 
+            # Find also EGL library, if on ES
+            if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_DESKTOP_GLES)
+                find_package(EGL)
+                if(EGL_FOUND)
+                    list(APPEND _MAGNUM_${_COMPONENT}_LIBRARIES ${EGL_LIBRARY})
+                else()
+                    unset(MAGNUM_${_COMPONENT}_LIBRARY)
+                endif()
+            endif()
+
         # (Windowless) NaCl application dependencies
         elseif(${component} STREQUAL NaClApplication OR ${component} STREQUAL WindowlessNaClApplication)
             set(_MAGNUM_${_COMPONENT}_LIBRARIES ppapi_cpp ppapi)
