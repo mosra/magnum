@@ -38,9 +38,11 @@
 #include "Magnum/Texture.h"
 #include "Magnum/Shaders/Implementation/CreateCompatibilityShader.h"
 
+#ifdef MAGNUM_BUILD_STATIC
 static void importTextureToolResources() {
     CORRADE_RESOURCE_INITIALIZE(MagnumTextureTools_RCS)
 }
+#endif
 
 namespace Magnum { namespace TextureTools {
 
