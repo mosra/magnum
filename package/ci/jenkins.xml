@@ -53,6 +53,7 @@
       <name>compiler</name>
       <values>
         <string>g++</string>
+        <string>g++-4.8</string>
         <string>g++-4.7</string>
         <string>clang++</string>
         <string>clang++-libc++</string>
