@@ -72,17 +72,17 @@ typedef Containers::EnumSet<FramebufferClear> FramebufferClearMask;
 enum class FramebufferBlit: GLbitfield {
     #ifdef MAGNUM_BUILD_DEPRECATED
     /** @copydoc FramebufferBlit::Color
-     * @deprecated Use @ref Magnum::FramebufferBlit::Color "FramebufferBlit::Color" instead.
+     * @deprecated Use @ref FramebufferBlit::Color instead.
      */
     ColorBuffer = GL_COLOR_BUFFER_BIT,
 
     /** @copydoc FramebufferBlit::Depth
-     * @deprecated Use @ref Magnum::FramebufferBlit::Depth "FramebufferBlit::Depth" instead.
+     * @deprecated Use @ref FramebufferBlit::Depth instead.
      */
     DepthBuffer = GL_DEPTH_BUFFER_BIT,
 
     /** @copydoc FramebufferBlit::Stencil
-     * @deprecated Use @ref Magnum::FramebufferBlit::Stencil "FramebufferBlit::Stencil" instead.
+     * @deprecated Use @ref FramebufferBlit::Stencil instead.
      */
     StencilBuffer = GL_STENCIL_BUFFER_BIT,
     #endif

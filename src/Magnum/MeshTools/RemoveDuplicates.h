@@ -166,7 +166,8 @@ template<class Vector> std::vector<UnsignedInt> removeDuplicates(std::vector<Vec
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**
 @copybrief removeDuplicates(std::vector<Vector>&, typename Vector::Type)
-@deprecated Use @ref Magnum::MeshTools::removeDuplicates(std::vector<Vector>&, typename Vector::Type) "removeDuplicates(std::vector<Vector>&, typename Vector::Type)" instead.
+@deprecated Use @ref removeDuplicates(std::vector<Vector>&, typename Vector::Type)
+    instead.
 */
 template<class Vector> void removeDuplicates(std::vector<UnsignedInt>& indices, std::vector<Vector>& data, typename Vector::Type epsilon = Math::TypeTraits<typename Vector::Type>::epsilon()) {
     std::vector<UnsignedInt> uniqueIndices;

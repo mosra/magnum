@@ -233,8 +233,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
             /**
              * Read from front and back buffer.
              * @requires_gl In OpenGL ES you must specify either
-             *      @ref Magnum::DefaultFramebuffer::ReadAttachment "ReadAttachment::Front"
-             *      or @ref Magnum::DefaultFramebuffer::ReadAttachment "ReadAttachment::Back".
+             *      @ref ReadAttachment::Front or @ref ReadAttachment::Back.
              */
             FrontAndBack = GL_FRONT_AND_BACK
             #endif
@@ -423,7 +422,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @see @ref invalidate(std::initializer_list<InvalidationAttachment>),
          *      @fn_gl2{InvalidateNamedFramebufferSubData,InvalidateSubFramebuffer},
          *      eventually @fn_gl{InvalidateSubFramebuffer}
-         * @requires_gles30 Use @ref Magnum::DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment>) "invalidate(std::initializer_list<InvalidationAttachment>)"
+         * @requires_gles30 Use @ref invalidate(std::initializer_list<InvalidationAttachment>)
          *      in OpenGL ES 2.0 instead.
          */
         void invalidate(std::initializer_list<InvalidationAttachment> attachments, const Range2Di& rectangle);

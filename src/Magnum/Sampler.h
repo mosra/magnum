@@ -57,9 +57,8 @@ class MAGNUM_EXPORT Sampler {
              * @requires_gles30 Extension @es_extension{OES,texture_float_linear} /
              *      @es_extension2{OES,texture_half_float_linear,OES_texture_float_linear}
              *      for linear interpolation of textures with
-             *      @ref Magnum::TextureFormat "TextureFormat::HalfFloat" /
-             *      @ref Magnum::TextureFormat "TextureFormat::Float" in OpenGL
-             *      ES 2.0
+             *      @ref TextureFormat::HalfFloat / @ref TextureFormat::Float
+             *      in OpenGL ES 2.0
              */
             Linear = GL_LINEAR
         };
@@ -83,9 +82,8 @@ class MAGNUM_EXPORT Sampler {
              * @requires_gles30 Extension @es_extension{OES,texture_float_linear} /
              *      @es_extension2{OES,texture_half_float_linear,OES_texture_float_linear}
              *      for linear interpolation of textures with
-             *      @ref Magnum::TextureFormat "TextureFormat::HalfFloat" /
-             *      @ref Magnum::TextureFormat "TextureFormat::Float" in OpenGL
-             *      ES 2.0
+             *      @ref TextureFormat::HalfFloat / @ref TextureFormat::Float
+             *      in OpenGL ES 2.0.
              */
             Linear = GL_NEAREST_MIPMAP_LINEAR & ~GL_NEAREST
         };
@@ -128,9 +126,8 @@ class MAGNUM_EXPORT Sampler {
              * edge after that. **Unavailable on rectangle textures.**
              * @requires_gl44 Extension @extension{ARB,texture_mirror_clamp_to_edge},
              *      @extension{ATI,texture_mirror_once} or @extension{EXT,texture_mirror_clamp}
-             * @requires_gl Only separate @ref Magnum::Sampler::Wrapping "Wrapping::MirroredRepeat"
-             *      or @ref Magnum::Sampler::Wrapping "Wrapping::ClampToEdge"
-             *      is available in OpenGL ES.
+             * @requires_gl Only separate @ref Wrapping::MirroredRepeat or
+             *      @ref Wrapping::ClampToEdge is available in OpenGL ES.
              */
             MirrorClampToEdge = GL_MIRROR_CLAMP_TO_EDGE
             #endif

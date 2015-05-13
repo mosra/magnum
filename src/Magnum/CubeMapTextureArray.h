@@ -407,8 +407,7 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          *
          * See @ref Texture::setImage() for more information.
          * @see @ref maxSize()
-         * @deprecated_gl Prefer to use @ref Magnum::CubeMapTextureArray::setStorage() "setStorage()"
-         *      and @ref Magnum::CubeMapTextureArray::setSubImage() "setSubImage()"
+         * @deprecated_gl Prefer to use @ref setStorage() and @ref setSubImage()
          *      instead.
          */
         CubeMapTextureArray& setImage(Int level, TextureFormat internalFormat, const ImageReference3D& image) {
@@ -417,8 +416,7 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
         }
 
         /** @overload
-         * @deprecated_gl Prefer to use @ref Magnum::CubeMapTextureArray::setStorage() "setStorage()"
-         *      and @ref Magnum::CubeMapTextureArray::setSubImage() "setSubImage()"
+         * @deprecated_gl Prefer to use @ref setStorage() and @ref setSubImage()
          *      instead.
          */
         CubeMapTextureArray& setImage(Int level, TextureFormat internalFormat, BufferImage3D& image) {
@@ -427,8 +425,7 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
         }
 
         /** @overload
-         * @deprecated_gl Prefer to use @ref Magnum::CubeMapTextureArray::setStorage() "setStorage()"
-         *      and @ref Magnum::CubeMapTextureArray::setSubImage() "setSubImage()"
+         * @deprecated_gl Prefer to use @ref setStorage() and @ref setSubImage()
          *      instead.
          */
         CubeMapTextureArray& setImage(Int level, TextureFormat internalFormat, BufferImage3D&& image) {

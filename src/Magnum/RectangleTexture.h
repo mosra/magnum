@@ -334,8 +334,7 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
          *
          * See @ref Texture::setImage() for more information.
          * @see @ref maxSize()
-         * @deprecated_gl Prefer to use @ref Magnum::RectangleTexture::setStorage() "setStorage()"
-         *      and @ref Magnum::RectangleTexture::setSubImage() "setSubImage()"
+         * @deprecated_gl Prefer to use @ref setStorage() and @ref setSubImage()
          *      instead.
          */
         RectangleTexture& setImage(TextureFormat internalFormat, const ImageReference2D& image) {
@@ -344,8 +343,7 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
         }
 
         /** @overload
-         * @deprecated_gl Prefer to use @ref Magnum::RectangleTexture::setStorage() "setStorage()"
-         *      and @ref Magnum::RectangleTexture::setSubImage() "setSubImage()"
+         * @deprecated_gl Prefer to use @ref setStorage() and @ref setSubImage()
          *      instead.
          */
         RectangleTexture& setImage(TextureFormat internalFormat, BufferImage2D& image) {
@@ -354,8 +352,7 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
         }
 
         /** @overload
-         * @deprecated_gl Prefer to use @ref Magnum::RectangleTexture::setStorage() "setStorage()"
-         *      and @ref Magnum::RectangleTexture::setSubImage() "setSubImage()"
+         * @deprecated_gl Prefer to use @ref setStorage() and @ref setSubImage()
          *      instead.
          */
         RectangleTexture& setImage(TextureFormat internalFormat, BufferImage2D&& image) {

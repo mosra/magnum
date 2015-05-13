@@ -196,7 +196,7 @@ template<class ...T> std::vector<UnsignedInt> combineIndexedArrays(const std::pa
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**
  * @copybrief combineIndexedArrays()
- * @deprecated Use @ref Magnum::MeshTools::combineIndexedArrays() "combineIndexedArrays(const std::pair<const std::vector<UnsignedInt>&, std::vector<T>&>&...)" instead.
+ * @deprecated Use @ref combineIndexedArrays() "combineIndexedArrays(const std::pair<const std::vector<UnsignedInt>&, std::vector<T>&>&...)" instead.
  */
 template<class ...T> inline CORRADE_DEPRECATED("use combineIndexedArrays(const std::pair<const std::vector<UnsignedInt>&, std::vector<T>&>&...) instead") std::vector<UnsignedInt> combineIndexedArrays(const std::tuple<const std::vector<UnsignedInt>&, std::vector<T>&>&... indexedArrays) {
     return combineIndexedArrays(std::make_pair(std::cref(std::get<0>(indexedArrays)), std::ref(std::get<1>(indexedArrays)))...);

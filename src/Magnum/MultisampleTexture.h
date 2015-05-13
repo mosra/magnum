@@ -219,8 +219,7 @@ typedef MultisampleTexture<2> MultisampleTexture2D;
 @brief Two-dimensional multisample texture array
 
 @requires_gl32 Extension @extension{ARB,texture_multisample}
-@requires_gl Only @ref Magnum::MultisampleTexture2D "MultisampleTexture2D" is
-    available in OpenGL ES.
+@requires_gl Only @ref MultisampleTexture2D is available in OpenGL ES.
 */
 typedef MultisampleTexture<3> MultisampleTexture2DArray;
 #endif

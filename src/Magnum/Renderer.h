@@ -165,8 +165,7 @@ class MAGNUM_EXPORT Renderer {
 
             /**
              * Offset filled polygons
-             * @see @ref Magnum::Renderer::Feature "Feature::PolygonOffsetLine",
-             *      @ref Magnum::Renderer::Feature "Feature::PolygonOffsetPoint",
+             * @see @ref Feature::PolygonOffsetLine, @ref Feature::PolygonOffsetPoint,
              *      @ref setPolygonOffset()
              */
             PolygonOffsetFill = GL_POLYGON_OFFSET_FILL,
@@ -174,21 +173,19 @@ class MAGNUM_EXPORT Renderer {
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Offset lines
-             * @see @ref Magnum::Renderer::Feature "Feature::PolygonOffsetFill",
-             *      @ref Magnum::Renderer::Feature "Feature::PolygonOffsetPoint",
+             * @see @ref Feature::PolygonOffsetFill, @ref Feature::PolygonOffsetPoint,
              *      @ref setPolygonOffset()
-             * @requires_gl Only @ref Magnum::Renderer::Feature "Feature::PolygonOffsetFill"
-             *      is available in OpenGL ES.
+             * @requires_gl Only @ref Feature::PolygonOffsetFill is available
+             *      in OpenGL ES.
              */
             PolygonOffsetLine = GL_POLYGON_OFFSET_LINE,
 
             /**
              * Offset points
-             * @see @ref Magnum::Renderer::Feature "Feature::PolygonOffsetFill",
-             *      @ref Magnum::Renderer::Feature "Feature::PolygonOffsetLine",
+             * @see @ref Feature::PolygonOffsetFill, @ref Feature::PolygonOffsetLine,
              *      @ref setPolygonOffset()
-             * @requires_gl Only @ref Magnum::Renderer::Feature "Feature::PolygonOffsetFill"
-             *      is available in OpenGL ES.
+             * @requires_gl Only @ref Feature::PolygonOffsetFill is available
+             *      in OpenGL ES.
              */
             PolygonOffsetPoint = GL_POLYGON_OFFSET_POINT,
             #endif
@@ -320,8 +317,8 @@ class MAGNUM_EXPORT Renderer {
          *
          * Initial value is `1.0`.
          * @see @ref Feature::DepthTest, @fn_gl{ClearDepth}
-         * @requires_gl See @ref Magnum::Renderer::setClearDepth(Float) "setClearDepth(Float)",
-         *      which is available in OpenGL ES.
+         * @requires_gl See @ref setClearDepth(Float), which is available in
+         *      OpenGL ES.
          */
         static void setClearDepth(Double depth);
         #endif
@@ -385,10 +382,9 @@ class MAGNUM_EXPORT Renderer {
          *
          * @see @ref setProvokingVertex()
          * @requires_gl32 Extension @extension{ARB,provoking_vertex}. Older
-         *      versions behave always like
-         *      @ref Magnum::Renderer::ProvokingVertex "ProvokingVertex::LastVertexConvention".
+         *      versions behave always like @ref ProvokingVertex::LastVertexConvention.
          * @requires_gl OpenGL ES behaves always like
-         *      @ref Magnum::Renderer::ProvokingVertex "ProvokingVertex::LastVertexConvention".
+         *      @ref ProvokingVertex::LastVertexConvention.
          */
         enum class ProvokingVertex: GLenum {
             /** @brief Use first vertex of each polygon. */
@@ -413,9 +409,8 @@ class MAGNUM_EXPORT Renderer {
          * @brief Polygon mode
          *
          * @see @ref setPolygonMode()
-         * @requires_gl OpenGL ES behaves always like @ref Magnum::Renderer::PolygonMode "PolygonMode::Fill".
-         *      See @ref Magnum::Mesh::setPrimitive() "Mesh::setPrimitive()"
-         *      for possible workaround.
+         * @requires_gl OpenGL ES behaves always like @ref PolygonMode::Fill.
+         *      See @ref Mesh::setPrimitive() for possible workaround.
          */
         enum class PolygonMode: GLenum {
             /**
@@ -441,8 +436,7 @@ class MAGNUM_EXPORT Renderer {
          * Initial value is @ref PolygonMode::Fill.
          * @see @fn_gl{PolygonMode}
          * @requires_gl OpenGL ES behaves always like the default. See
-         *      @ref Magnum::Mesh::setPrimitive() "Mesh::setPrimitive()" for
-         *      possible workaround.
+         *      @ref Mesh::setPrimitive() for possible workaround.
          */
         static void setPolygonMode(PolygonMode mode);
         #endif

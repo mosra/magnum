@@ -207,7 +207,7 @@ template<UnsignedInt dimensions, class T> class AbstractObject
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief transformationMatrices()
-         * @deprecated Use @ref Magnum::SceneGraph::AbstractObject::transformationMatrices() "transformationMatrices(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&, const MatrixType&)" instead.
+         * @deprecated Use @ref transformationMatrices() "transformationMatrices(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&, const MatrixType&)" instead.
          */
         CORRADE_DEPRECATED("use transformationMatrices(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&, const MatrixType&) instead") std::vector<MatrixType> transformationMatrices(const std::vector<AbstractObject<dimensions, T>*>& objects, const MatrixType& initialTransformationMatrix = MatrixType()) const;
 
@@ -245,7 +245,7 @@ template<UnsignedInt dimensions, class T> class AbstractObject
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief setClean(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&)
-         * @deprecated Use @ref Magnum::SceneGraph::AbstractObject::setClean(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&) "setClean(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&)" instead.
+         * @deprecated Use @ref setClean(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&) instead.
          */
         static CORRADE_DEPRECATED("use setClean(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&) instead") void setClean(const std::vector<AbstractObject<dimensions, T>*>& objects);
 

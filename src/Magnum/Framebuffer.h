@@ -180,9 +180,8 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
                  *
                  * @requires_gles30 Combined depth and stencil attachment is
                  *      not available in OpenGL ES 2.0. Attach the same object
-                 *      to both @ref Magnum::Framebuffer::BufferAttachment::Depth
-                 *      "BufferAttachment::Depth" and @ref Magnum::Framebuffer::BufferAttachment::Stencil
-                 *      "BufferAttachment::Stencil" instead.
+                 *      to both @ref BufferAttachment::Depth and
+                 *      @ref BufferAttachment::Stencil instead.
                  * @todo Support this in ES2 (bind to both depth and stencil internally)
                  */
                 static const BufferAttachment DepthStencil;
@@ -479,7 +478,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @see @ref invalidate(std::initializer_list<InvalidationAttachment>),
          *      @fn_gl2{InvalidateNamedFramebufferSubData,InvalidateSubFramebuffer},
          *      eventually @fn_gl{InvalidateSubFramebuffer}
-         * @requires_gles30 Use @ref Magnum::DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment>) "invalidate(std::initializer_list<InvalidationAttachment>)"
+         * @requires_gles30 Use @ref invalidate(std::initializer_list<InvalidationAttachment>)
          *      in OpenGL ES 2.0 instead.
          */
         void invalidate(std::initializer_list<InvalidationAttachment> attachments, const Range2Di& rectangle);
@@ -626,7 +625,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         #ifndef MAGNUM_TARGET_GLES
         /**
          * @copybrief attachTexture()
-         * @deprecated Use one of @ref Magnum::Framebuffer::attachTexture() "attachTexture()" overloads instead.
+         * @deprecated Use one of @ref attachTexture() overloads instead.
          */
         Framebuffer& attachTexture1D(BufferAttachment attachment, Texture1D& texture, Int level) {
             return attachTexture(attachment, texture, level);
@@ -635,13 +634,13 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
 
         /**
          * @copybrief attachTexture()
-         * @deprecated Use one of @ref Magnum::Framebuffer::attachTexture() "attachTexture()" overloads instead.
+         * @deprecated Use one of @ref attachTexture() overloads instead.
          */
         Framebuffer& attachTexture2D(BufferAttachment attachment, Texture2D& texture, Int level);
 
         /**
          * @copybrief attachTextureLayer()
-         * @deprecated Use one of @ref Magnum::Framebuffer::attachTextureLayer() "attachTextureLayer()" overloads instead.
+         * @deprecated Use one of @ref attachTextureLayer() overloads instead.
          */
         Framebuffer& attachTexture3D(BufferAttachment attachment, Texture3D& texture, Int level, Int layer) {
             return attachTextureLayer(attachment, texture, level, layer);

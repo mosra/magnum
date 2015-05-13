@@ -72,9 +72,7 @@ template<class T> class AbstractBasicTranslationRotation2D: public AbstractBasic
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief rotate()
-         * @deprecated Use @ref Magnum::SceneGraph::AbstractTranslationRotation2D::rotate() "rotate()"
-         *      or @ref Magnum::SceneGraph::AbstractTranslationRotation2D::rotateLocal() "rotateLocal()"
-         *      instead.
+         * @deprecated Use @ref rotate() or @ref rotateLocal() instead.
          */
         CORRADE_DEPRECATED("use rotate() or rotateLocal() instead") AbstractBasicTranslationRotation2D<T>& rotate(Math::Rad<T> angle, TransformationType type) {
             return type == TransformationType::Global ? rotate(angle) : rotateLocal(angle);

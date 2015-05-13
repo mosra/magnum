@@ -196,9 +196,7 @@ updates vertex count in the mesh accordingly, so you don't have to call
 
 @see @ref compressIndices(), @ref compile()
 
-@deprecated Use general-purpose
-    @ref Magnum::MeshTools::interleave(const T&...) "interleave(const T&...)"
-    instead.
+@deprecated Use general-purpose @ref interleave(const T&...) instead.
 */
 template<class ...T> CORRADE_DEPRECATED("Use interleave(const T&...) instead") void interleave(Mesh& mesh, Buffer& buffer, BufferUsage usage, const T&... attributes) {
     if(!mesh.isIndexed()) mesh.setCount(Implementation::AttributeCount{}(attributes...));
@@ -215,9 +213,7 @@ if(!mesh.isIndexed()) mesh.setCount(attribute.size());
 buffer.setData(attribute, usage);
 @endcode
 
-@deprecated Use general-purpose
-    @ref Magnum::MeshTools::interleave(const T&...) "interleave(const T&...)"
-    instead.
+@deprecated Use general-purpose @ref interleave(const T&...) instead.
 */
 template<class T> CORRADE_DEPRECATED("Use interleave(const T&...) instead") typename std::enable_if<!std::is_convertible<T, std::size_t>::value, void>::type interleave(Mesh& mesh, Buffer& buffer, BufferUsage usage, const T& attribute) {
     if(!mesh.isIndexed()) mesh.setCount(attribute.size());

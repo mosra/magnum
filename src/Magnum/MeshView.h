@@ -141,9 +141,7 @@ class MAGNUM_EXPORT MeshView {
          * @param first     First vertex
          * @param count     Vertex count
          *
-         * @deprecated Use @ref Magnum::MeshView::setCount() "setCount()" and
-         *      @ref Magnum::MeshView::setBaseVertex() "setBaseVertex()"
-         *      instead.
+         * @deprecated Use @ref setCount() and @ref setBaseVertex() instead.
          */
         CORRADE_DEPRECATED("use setCount() and setBaseVertex() instead") MeshView& setVertexRange(Int first, Int count) {
             return setCount(count), setBaseVertex(first);
@@ -175,9 +173,8 @@ class MAGNUM_EXPORT MeshView {
          * @param start     Minimum array index contained in the buffer
          * @param end       Maximum array index contained in the buffer
          *
-         * @deprecated Use @ref Magnum::MeshView::setCount() "setCount()" and
-         *      @ref Magnum::MeshView::setIndexRange(Int, UnsignedInt, UnsignedInt) "setIndexRange(Int, UnsignedInt, UnsignedInt)"
-         *      instead.
+         * @deprecated Use @ref setCount() and
+         *      @ref setIndexRange(Int, UnsignedInt, UnsignedInt) instead.
          */
         CORRADE_DEPRECATED("use setCount() and setIndexRange(Int, UnsignedInt, UnsignedInt) instead") MeshView& setIndexRange(Int first, Int count, UnsignedInt start, UnsignedInt end) {
             return setCount(count), setIndexRange(first, start, end);
@@ -201,9 +198,7 @@ class MAGNUM_EXPORT MeshView {
          * @param first     First index
          * @param count     Index count
          *
-         * @deprecated Use @ref Magnum::MeshView::setCount() "setCount()" and
-         *      @ref Magnum::MeshView::setIndexRange(Int) "setIndexRange(Int)"
-         *      instead.
+         * @deprecated Use @ref setCount() and @ref setIndexRange(Int) instead.
          */
         CORRADE_DEPRECATED("use setCount() and setIndexRange(Int) instead") MeshView& setIndexRange(Int first, Int count) {
             return setCount(count), setIndexRange(first);
@@ -258,8 +253,7 @@ class MAGNUM_EXPORT MeshView {
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief draw(AbstractShaderProgram&)
-         * @deprecated Use @ref Magnum::MeshView::draw(AbstractShaderProgram&) "draw(AbstractShaderProgram&)"
-         *      instead.
+         * @deprecated Use @ref draw(AbstractShaderProgram&) instead.
          */
         CORRADE_DEPRECATED("use draw(AbstractShaderProgram&) instead") void draw();
         #endif

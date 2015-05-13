@@ -94,9 +94,7 @@ template<class T> class BasicMatrixTransformation3D: public AbstractBasicTransla
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief transform()
-         * @deprecated Use @ref Magnum::SceneGraph::MatrixTransformation3D::transform() "transform()"
-         *      or @ref Magnum::SceneGraph::MatrixTransformation3D::transformLocal() "transformLocal()"
-         *      instead.
+         * @deprecated Use @ref transform() or @ref transformLocal() instead.
          */
         CORRADE_DEPRECATED("use transform() or transformLocal() instead") Object<BasicMatrixTransformation3D<T>>& transform(const Math::Matrix4<T>& transformation, TransformationType type) {
             return type == TransformationType::Global ? transform(transformation) : transformLocal(transformation);
@@ -129,9 +127,7 @@ template<class T> class BasicMatrixTransformation3D: public AbstractBasicTransla
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief translate()
-         * @deprecated Use @ref Magnum::SceneGraph::MatrixTransformation3D::translate() "translate()"
-         *      or @ref Magnum::SceneGraph::MatrixTransformation3D::translateLocal() "translateLocal()"
-         *      instead.
+         * @deprecated Use @ref translate() or @ref translateLocal() instead.
          */
         CORRADE_DEPRECATED("use translate() or translateLocal() instead") Object<BasicMatrixTransformation3D<T>>& translate(const Math::Vector3<T>& vector, TransformationType type) {
             return type == TransformationType::Global ? translate(vector) : translateLocal(vector);
@@ -167,9 +163,7 @@ template<class T> class BasicMatrixTransformation3D: public AbstractBasicTransla
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief rotate()
-         * @deprecated Use @ref Magnum::SceneGraph::MatrixTransformation3D::rotate() "rotate()"
-         *      or @ref Magnum::SceneGraph::MatrixTransformation3D::rotateLocal() "rotateLocal()"
-         *      instead.
+         * @deprecated Use @ref rotate() or @ref rotateLocal() instead.
          */
         CORRADE_DEPRECATED("use rotate() or rotateLocal() instead") Object<BasicMatrixTransformation3D<T>>& rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type) {
             return type == TransformationType::Global ? rotate(angle, normalizedAxis) : rotateLocal(angle, normalizedAxis);
@@ -202,9 +196,7 @@ template<class T> class BasicMatrixTransformation3D: public AbstractBasicTransla
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief rotateX()
-         * @deprecated Use @ref Magnum::SceneGraph::MatrixTransformation3D::rotateX() "rotateX()"
-         *      or @ref Magnum::SceneGraph::MatrixTransformation3D::rotateXLocal() "rotateXLocal()"
-         *      instead.
+         * @deprecated Use @ref rotateX() or @ref rotateXLocal() instead.
          */
         CORRADE_DEPRECATED("use rotateX() or rotateXLocal() instead") Object<BasicMatrixTransformation3D<T>>& rotateX(Math::Rad<T> angle, TransformationType type) {
             return type == TransformationType::Global ? rotateX(angle) : rotateXLocal(angle);
@@ -237,9 +229,7 @@ template<class T> class BasicMatrixTransformation3D: public AbstractBasicTransla
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief rotateY()
-         * @deprecated Use @ref Magnum::SceneGraph::MatrixTransformation3D::rotateY() "rotateY()"
-         *      or @ref Magnum::SceneGraph::MatrixTransformation3D::rotateYLocal() "rotateYLocal()"
-         *      instead.
+         * @deprecated Use @ref rotateY() or @ref rotateYLocal() instead.
          */
         CORRADE_DEPRECATED("use rotateY() or rotateYLocal() instead") Object<BasicMatrixTransformation3D<T>>& rotateY(Math::Rad<T> angle, TransformationType type) {
             return type == TransformationType::Global ? rotateY(angle) : rotateYLocal(angle);
@@ -272,9 +262,7 @@ template<class T> class BasicMatrixTransformation3D: public AbstractBasicTransla
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief rotateZ()
-         * @deprecated Use @ref Magnum::SceneGraph::MatrixTransformation3D::rotateZ() "rotateZ()"
-         *      or @ref Magnum::SceneGraph::MatrixTransformation3D::rotateZLocal() "rotateZLocal()"
-         *      instead.
+         * @deprecated Use @ref rotateZ() or @ref rotateZLocal() instead.
          */
         CORRADE_DEPRECATED("use rotateZ() or rotateZLocal() instead") Object<BasicMatrixTransformation3D<T>>& rotateZ(Math::Rad<T> angle, TransformationType type) {
             return type == TransformationType::Global ? rotateZ(angle) : rotateZLocal(angle);
@@ -307,9 +295,7 @@ template<class T> class BasicMatrixTransformation3D: public AbstractBasicTransla
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief scale()
-         * @deprecated Use @ref Magnum::SceneGraph::MatrixTransformation3D::scale() "scale()"
-         *      or @ref Magnum::SceneGraph::MatrixTransformation3D::scaleLocal() "scaleLocal()"
-         *      instead.
+         * @deprecated Use @ref scale() or @ref scaleLocal() instead.
          */
         CORRADE_DEPRECATED("use scale() or scaleLocal() instead") Object<BasicMatrixTransformation3D<T>>& scale(const Math::Vector3<T>& vector, TransformationType type) {
             return type == TransformationType::Global ? scale(vector) : scaleLocal(vector);
@@ -343,9 +329,7 @@ template<class T> class BasicMatrixTransformation3D: public AbstractBasicTransla
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief reflect()
-         * @deprecated Use @ref Magnum::SceneGraph::MatrixTransformation3D::reflect() "reflect()"
-         *      or @ref Magnum::SceneGraph::MatrixTransformation3D::reflectLocal() "reflectLocal()"
-         *      instead.
+         * @deprecated Use @ref reflect() or @ref reflectLocal() instead.
          */
         CORRADE_DEPRECATED("use reflect() or reflectLocal() instead") Object<BasicMatrixTransformation3D<T>>& reflect(const Math::Vector3<T>& normal, TransformationType type) {
             return type == TransformationType::Global ? reflect(normal) : reflectLocal(normal);

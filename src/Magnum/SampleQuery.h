@@ -180,8 +180,7 @@ class SampleQuery: public AbstractQuery {
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief SampleQuery(Target)
-         * @deprecated Use @ref Magnum::SampleQuery::SampleQuery(Target) "SampleQuery(Target)"
-         *      instead.
+         * @deprecated Use @ref SampleQuery(Target) instead.
          */
         CORRADE_DEPRECATED("use SampleQuery(Target) instead") explicit SampleQuery() {}
         #endif
@@ -199,8 +198,7 @@ class SampleQuery: public AbstractQuery {
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief AbstractQuery::begin()
-         * @deprecated Use @ref Magnum::AbstractQuery::begin() "begin()"
-         *      instead.
+         * @deprecated Use @ref begin() instead.
          */
         CORRADE_DEPRECATED("use begin() instead") void begin(Target target) {
             AbstractQuery::begin(GLenum(target));

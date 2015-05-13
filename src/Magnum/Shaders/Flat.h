@@ -147,7 +147,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public Abstra
             /**
              * Color texture binding unit. Used only if @ref Flag::Textured is
              * set.
-             * @deprecated use @ref Magnum::Shaders::Flat::setTexture() "setTexture()" instead.
+             * @deprecated use @ref setTexture() instead.
              */
             TextureLayer = 0
         };

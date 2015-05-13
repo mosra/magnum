@@ -47,7 +47,7 @@ enum class RenderbufferFormat: GLenum {
      * @requires_gl30 Extension @extension{ARB,texture_rg}
      * @requires_gl Use exactly specified format in OpenGL ES instead.
      * @deprecated_gl Prefer to use the exactly specified version of this
-     *      format, e.g. @ref Magnum::RenderbufferFormat "RenderbufferFormat::R8".
+     *      format, e.g. @ref RenderbufferFormat::R8.
      */
     Red = GL_RED,
     #endif
@@ -71,7 +71,7 @@ enum class RenderbufferFormat: GLenum {
      * @requires_gl30 Extension @extension{ARB,texture_rg}
      * @requires_gl Use exactly specified format in OpenGL ES instead.
      * @deprecated_gl Prefer to use the exactly specified version of this
-     *      format, e.g. @ref Magnum::RenderbufferFormat "RenderbufferFormat::RG8".
+     *      format, e.g. @ref RenderbufferFormat::RG8.
      */
     RG = GL_RG,
     #endif
@@ -93,7 +93,7 @@ enum class RenderbufferFormat: GLenum {
      * RGBA, normalized unsigned, size implementation-dependent.
      * @requires_gl Use exactly specified format in OpenGL ES 2.0 instead.
      * @deprecated_gl Prefer to use the exactly specified version of this
-     *      format, e.g. @ref Magnum::RenderbufferFormat "RenderbufferFormat::RGBA8".
+     *      format, e.g. @ref RenderbufferFormat::RGBA8.
      */
     RGBA = GL_RGBA,
     #endif
@@ -341,7 +341,7 @@ enum class RenderbufferFormat: GLenum {
     /**
      * RGBA, normalized unsigned, each RGB component 10bit, alpha 2bit.
      * @requires_gles30 Usable only as internal texture format in OpenGL ES
-     *      2.0, see @ref Magnum::TextureFormat "TextureFormat::RGB10A2".
+     *      2.0, see @ref TextureFormat::RGB10A2.
      */
     RGB10A2 = GL_RGB10_A2,
 
@@ -365,7 +365,7 @@ enum class RenderbufferFormat: GLenum {
      * RGB, float, red and green 11bit, blue 10bit.
      * @requires_gl30 Extension @extension{EXT,packed_float}
      * @requires_gl Usable only as internal texture format in OpenGL ES, see
-     *      @ref Magnum::TextureFormat "TextureFormat::R11FG11FB10F".
+     *      @ref TextureFormat::R11FG11FB10F.
      */
     R11FG11FB10F = GL_R11F_G11F_B10F,
     #endif
@@ -389,7 +389,7 @@ enum class RenderbufferFormat: GLenum {
      * @todo is this allowed in core?
      * @requires_gl Use exactly specified format in OpenGL ES instead.
      * @deprecated_gl Prefer to use the exactly specified version of this
-     *      format, e.g. @ref Magnum::RenderbufferFormat "RenderbufferFormat::DepthComponent16".
+     *      format, e.g. @ref RenderbufferFormat::DepthComponent16.
      */
     DepthComponent = GL_DEPTH_COMPONENT,
     #endif
@@ -432,7 +432,7 @@ enum class RenderbufferFormat: GLenum {
      * Stencil index, size implementation-dependent.
      * @requires_gl Use exactly specified format in OpenGL ES instead.
      * @deprecated_gl Prefer to use the exactly specified version of this
-     *      format, e.g. @ref Magnum::RenderbufferFormat "RenderbufferFormat::StencilIndex8".
+     *      format, e.g. @ref RenderbufferFormat::StencilIndex8.
      */
     StencilIndex = GL_STENCIL_INDEX,
     #endif
@@ -471,7 +471,7 @@ enum class RenderbufferFormat: GLenum {
      * Depth and stencil component, size implementation-dependent.
      * @requires_gl Use exactly specified format in OpenGL ES instead.
      * @deprecated_gl Prefer to use the exactly specified version of this
-     *      format, e.g. @ref Magnum::RenderbufferFormat "RenderbufferFormat::Depth24Stencil8".
+     *      format, e.g. @ref RenderbufferFormat::Depth24Stencil8.
      */
     DepthStencil = GL_DEPTH_STENCIL,
     #endif

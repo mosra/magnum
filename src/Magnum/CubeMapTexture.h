@@ -368,8 +368,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief imageSize()
-         * @deprecated Use @ref Magnum::CubeMapTexture::imageSize(Int) "imageSize(Int)"
-         *      instead.
+         * @deprecated Use @ref imageSize(Int) instead.
          */
         CORRADE_DEPRECATED("use imageSize(Int) instead") Vector2i imageSize(Coordinate, Int level) {
             return imageSize(level);
@@ -528,8 +527,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * See @ref Texture::setImage() for more information.
          * @see @ref maxSize()
-         * @deprecated_gl Prefer to use @ref Magnum::CubeMapTexture::setStorage() "setStorage()"
-         *      and @ref Magnum::CubeMapTexture::setSubImage() "setSubImage()"
+         * @deprecated_gl Prefer to use @ref setStorage() and @ref setSubImage()
          *      instead.
          */
         CubeMapTexture& setImage(Coordinate coordinate, Int level, TextureFormat internalFormat, const ImageReference2D& image) {
@@ -541,8 +539,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         /** @overload
          * @requires_gles30 Pixel buffer objects are not available in OpenGL ES
          *      2.0.
-         * @deprecated_gl Prefer to use @ref Magnum::CubeMapTexture::setStorage() "setStorage()"
-         *      and @ref Magnum::CubeMapTexture::setSubImage() "setSubImage()"
+         * @deprecated_gl Prefer to use @ref setStorage() and @ref setSubImage()
          *      instead.
          */
         CubeMapTexture& setImage(Coordinate coordinate, Int level, TextureFormat internalFormat, BufferImage2D& image) {
@@ -553,8 +550,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         /** @overload
          * @requires_gles30 Pixel buffer objects are not available in OpenGL ES
          *      2.0.
-         * @deprecated_gl Prefer to use @ref Magnum::CubeMapTexture::setStorage() "setStorage()"
-         *      and @ref Magnum::CubeMapTexture::setSubImage() "setSubImage()"
+         * @deprecated_gl Prefer to use @ref setStorage() and @ref setSubImage()
          *      instead.
          */
         CubeMapTexture& setImage(Coordinate coordinate, Int level, TextureFormat internalFormat, BufferImage2D&& image) {

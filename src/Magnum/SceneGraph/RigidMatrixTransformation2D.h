@@ -117,9 +117,7 @@ template<class T> class BasicRigidMatrixTransformation2D: public AbstractBasicTr
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief transform()
-         * @deprecated Use @ref Magnum::SceneGraph::RigidMatrixTransformation2D::transform() "transform()"
-         *      or @ref Magnum::SceneGraph::RigidMatrixTransformation2D::transformLocal() "transformLocal()"
-         *      instead.
+         * @deprecated Use @ref transform() or @ref transformLocal() instead.
          */
         CORRADE_DEPRECATED("use transform() or transformLocal() instead") Object<BasicRigidMatrixTransformation2D<T>>& transform(const Math::Matrix3<T>& transformation, TransformationType type) {
             return type == TransformationType::Global ? transform(transformation) : transformLocal(transformation);
@@ -152,9 +150,7 @@ template<class T> class BasicRigidMatrixTransformation2D: public AbstractBasicTr
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief translate()
-         * @deprecated Use @ref Magnum::SceneGraph::RigidMatrixTransformation2D::translate() "translate()"
-         *      or @ref Magnum::SceneGraph::RigidMatrixTransformation2D::translateLocal() "translateLocal()"
-         *      instead.
+         * @deprecated Use @ref translate() or @ref translateLocal() instead.
          */
         CORRADE_DEPRECATED("use translate() or translateLocal() instead") Object<BasicRigidMatrixTransformation2D<T>>& translate(const Math::Vector2<T>& vector, TransformationType type) {
             return type == TransformationType::Global ? translate(vector) : translateLocal(vector);
@@ -188,9 +184,7 @@ template<class T> class BasicRigidMatrixTransformation2D: public AbstractBasicTr
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief rotate()
-         * @deprecated Use @ref Magnum::SceneGraph::RigidMatrixTransformation2D::rotate() "rotate()"
-         *      or @ref Magnum::SceneGraph::RigidMatrixTransformation2D::rotateLocal() "rotateLocal()"
-         *      instead.
+         * @deprecated Use @ref rotate() or @ref rotateLocal() instead.
          */
         CORRADE_DEPRECATED("use rotate() or rotateLocal() instead") Object<BasicRigidMatrixTransformation2D<T>>& rotate(Math::Rad<T> angle, TransformationType type) {
             return type == TransformationType::Global ? rotate(angle) : rotateLocal(angle);
@@ -224,9 +218,7 @@ template<class T> class BasicRigidMatrixTransformation2D: public AbstractBasicTr
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief reflect()
-         * @deprecated Use @ref Magnum::SceneGraph::RigidMatrixTransformation2D::reflect() "reflect()"
-         *      or @ref Magnum::SceneGraph::RigidMatrixTransformation2D::reflectLocal() "reflectLocal()"
-         *      instead.
+         * @deprecated Use @ref reflect() or @ref reflectLocal() instead.
          */
         CORRADE_DEPRECATED("use reflect() or reflectInternal() instead") Object<BasicRigidMatrixTransformation2D<T>>& reflect(const Math::Vector2<T>& normal, TransformationType type) {
             return type == TransformationType::Global ? reflect(normal) : reflectLocal(normal);

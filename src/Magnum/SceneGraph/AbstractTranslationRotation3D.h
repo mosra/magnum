@@ -76,9 +76,7 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief rotate()
-         * @deprecated Use @ref Magnum::SceneGraph::AbstractTranslationRotation3D::rotate() "rotate()"
-         *      or @ref Magnum::SceneGraph::AbstractTranslationRotation3D::rotateLocal() "rotateLocal()"
-         *      instead.
+         * @deprecated Use @ref rotate() or @ref rotateLocal() instead.
          */
         CORRADE_DEPRECATED("use rotate() or rotateLocal() instead") AbstractBasicTranslationRotation3D<T>& rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type) {
             return type == TransformationType::Global ? rotate(angle, normalizedAxis) : rotateLocal(angle, normalizedAxis);
@@ -116,9 +114,7 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief rotateX()
-         * @deprecated Use @ref Magnum::SceneGraph::AbstractTranslationRotation3D::rotateX() "rotateX()"
-         *      or @ref Magnum::SceneGraph::AbstractTranslationRotation3D::rotateXLocal() "rotateXLocal()"
-         *      instead.
+         * @deprecated Use @ref rotateX() or @ref rotateXLocal() instead.
          */
         CORRADE_DEPRECATED("use rotateX() or rotateXLocal() instead") AbstractBasicTranslationRotation3D<T>& rotateX(Math::Rad<T> angle, TransformationType type) {
             return type == TransformationType::Global ? rotateX(angle) : rotateXLocal(angle);
@@ -156,9 +152,7 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief rotateY()
-         * @deprecated Use @ref Magnum::SceneGraph::AbstractTranslationRotation3D::rotateY() "rotateY()"
-         *      or @ref Magnum::SceneGraph::AbstractTranslationRotation3D::rotateYLocal() "rotateYLocal()"
-         *      instead.
+         * @deprecated Use @ref rotateY() or @ref rotateYLocal() instead.
          */
         CORRADE_DEPRECATED("use rotateY() or rotateYLocal() instead") AbstractBasicTranslationRotation3D<T>& rotateY(Math::Rad<T> angle, TransformationType type) {
             return type == TransformationType::Global ? rotateY(angle) : rotateYLocal(angle);
@@ -196,9 +190,7 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief rotateZ()
-         * @deprecated Use @ref Magnum::SceneGraph::AbstractTranslationRotation3D::rotateZ() "rotateZ()"
-         *      or @ref Magnum::SceneGraph::AbstractTranslationRotation3D::rotateZLocal() "rotateZLocal()"
-         *      instead.
+         * @deprecated Use @ref rotateZ() or @ref rotateZLocal() instead.
          */
         CORRADE_DEPRECATED("use rotateZ() or rotateZLocal() instead") AbstractBasicTranslationRotation3D<T>& rotateZ(Math::Rad<T> angle, TransformationType type) {
             return type == TransformationType::Global ? rotateZ(angle) : rotateZLocal(angle);

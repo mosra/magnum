@@ -87,8 +87,7 @@ class PrimitiveQuery: public AbstractQuery {
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief PrimitiveQuery(Target)
-         * @deprecated Use @ref Magnum::PrimitiveQuery::PrimitiveQuery(Target) "PrimitiveQuery(Target)"
-         *      instead.
+         * @deprecated Use @ref PrimitiveQuery(Target) instead.
          */
         CORRADE_DEPRECATED("use PrimitiveQuery(Target) instead") explicit PrimitiveQuery() {}
         #endif
@@ -106,8 +105,7 @@ class PrimitiveQuery: public AbstractQuery {
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief AbstractQuery::begin()
-         * @deprecated Use @ref Magnum::AbstractQuery::begin() "begin()"
-         *      instead.
+         * @deprecated Use @ref begin() instead.
          */
         CORRADE_DEPRECATED("use begin() instead") void begin(Target target) {
             AbstractQuery::begin(GLenum(target));

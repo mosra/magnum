@@ -440,8 +440,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *
          * See @ref Texture::setImage() for more information.
          * @see @ref maxSize()
-         * @deprecated_gl Prefer to use @ref Magnum::TextureArray::setStorage() "setStorage()"
-         *      and @ref Magnum::TextureArray::setSubImage() "setSubImage()"
+         * @deprecated_gl Prefer to use @ref setStorage() and @ref setSubImage()
          *      instead.
          */
         TextureArray<dimensions>& setImage(Int level, TextureFormat internalFormat, const ImageReference<dimensions+1>& image) {
@@ -450,8 +449,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         }
 
         /** @overload
-         * @deprecated_gl Prefer to use @ref Magnum::TextureArray::setStorage() "setStorage()"
-         *      and @ref Magnum::TextureArray::setSubImage() "setSubImage()"
+         * @deprecated_gl Prefer to use @ref setStorage() and @ref setSubImage()
          *      instead.
          */
         TextureArray<dimensions>& setImage(Int level, TextureFormat internalFormat, BufferImage<dimensions+1>& image) {
@@ -460,8 +458,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         }
 
         /** @overload
-         * @deprecated_gl Prefer to use @ref Magnum::TextureArray::setStorage() "setStorage()"
-         *      and @ref Magnum::TextureArray::setSubImage() "setSubImage()"
+         * @deprecated_gl Prefer to use @ref setStorage() and @ref setSubImage()
          *      instead.
          */
         TextureArray<dimensions>& setImage(Int level, TextureFormat internalFormat, BufferImage<dimensions+1>&& image) {
@@ -550,8 +547,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
 @brief One-dimensional texture array
 
 @requires_gl30 Extension @extension{EXT,texture_array}
-@requires_gl Only @ref Magnum::Texture2DArray "Texture2DArray" is available in
-    OpenGL ES.
+@requires_gl Only @ref Texture2DArray is available in OpenGL ES.
 */
 typedef TextureArray<1> Texture1DArray;
 #endif

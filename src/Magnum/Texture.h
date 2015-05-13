@@ -113,28 +113,28 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         enum class Target: GLenum {
-            /** @deprecated Used implicitly in @ref Magnum::Texture1D "Texture1D" class. */
+            /** @deprecated Used implicitly in @ref Texture1D class. */
             Texture1D = GL_TEXTURE_1D,
 
-            /** @deprecated Used implicitly in @ref Magnum::Texture2D "Texture2D" class. */
+            /** @deprecated Used implicitly in @ref Texture2D class. */
             Texture2D = GL_TEXTURE_2D,
 
-            /** @deprecated Used implicitly in @ref Magnum::Texture3D "Texture3D" class. */
+            /** @deprecated Used implicitly in @ref Texture3D class. */
             Texture3D = GL_TEXTURE_3D,
 
-            /** @deprecated Use @ref Magnum::Texture1DArray "Texture1DArray" class instead. */
+            /** @deprecated Use @ref Texture1DArray class instead. */
             Texture1DArray = GL_TEXTURE_1D_ARRAY,
 
-            /** @deprecated Use @ref Magnum::Texture2DArray "Texture2DArray" class instead. */
+            /** @deprecated Use @ref Texture2DArray class instead. */
             Texture2DArray = GL_TEXTURE_2D_ARRAY,
 
-            /** @deprecated Use @ref Magnum::MultisampleTexture2D "MultisampleTexture2D" class instead. */
+            /** @deprecated Use @ref MultisampleTexture2D class instead. */
             Texture2DMultisample = GL_TEXTURE_2D_MULTISAMPLE,
 
-            /** @deprecated Use @ref Magnum::MultisampleTexture2DArray "MultisampleTexture2DArray" class instead. */
+            /** @deprecated Use @ref MultisampleTexture2DArray class instead. */
             Texture2DMultisampleArray = GL_TEXTURE_2D_MULTISAMPLE_ARRAY,
 
-            /** @deprecated Use @ref Magnum::RectangleTexture "RectangleTexture" class instead. */
+            /** @deprecated Use @ref RectangleTexture class instead. */
             Rectangle = GL_TEXTURE_RECTANGLE
         };
         #else
@@ -170,20 +170,15 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /** @copybrief Texture()
-         * @deprecated Use the parameterless @ref Magnum::Texture::Texture() "Texture()"
-         *      constructor or dedicated @ref Magnum::TextureArray "TextureArray",
-         *      @ref Magnum::MultisampleTexture "MultisampleTexture",
-         *      @ref Magnum::RectangleTexture "RectangleTexture" classes
-         *      instead.
+         * @deprecated Use the parameterless @ref Texture() "Texture()"
+         *      constructor or dedicated @ref TextureArray,
+         *      @ref MultisampleTexture, @ref RectangleTexture classes instead.
          */
         explicit CORRADE_DEPRECATED("use the parameterless constructor or dedicated TextureArray, MultisampleTexture, RectangleTexture classes instead") Texture(Target target): AbstractTexture(GLenum(target)) {}
 
         /** @brief Texture target
-         * @deprecated Use dedicated @ref Magnum::Texture "Texture",
-         *      @ref Magnum::TextureArray "TextureArray",
-         *      @ref Magnum::MultisampleTexture "MultisampleTexture",
-         *      @ref Magnum::RectangleTexture "RectangleTexture" classes
-         *      instead.
+         * @deprecated Use dedicated @ref Texture, @ref TextureArray,
+         *      @ref MultisampleTexture, @ref RectangleTexture classes instead.
          */
         constexpr CORRADE_DEPRECATED("use dedicated Texture, TextureArray, MultisampleTexture, RectangleTexture classes instead") Target target() const { return static_cast<Target>(_target); }
         #endif
@@ -757,8 +752,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * needs to be bound to some texture unit before the operation.
          * @see @ref maxSize(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{TexImage1D} / @fn_gl{TexImage2D} / @fn_gl{TexImage3D}
-         * @deprecated_gl Prefer to use @ref Magnum::Texture::setStorage() "setStorage()"
-         *      and @ref Magnum::Texture::setSubImage() "setSubImage()"
+         * @deprecated_gl Prefer to use @ref setStorage() and @ref setSubImage()
          *      instead.
          */
         Texture<dimensions>& setImage(Int level, TextureFormat internalFormat, const ImageReference<dimensions>& image) {
@@ -770,8 +764,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         /** @overload
          * @requires_gles30 Pixel buffer objects are not available in OpenGL ES
          *      2.0.
-         * @deprecated_gl Prefer to use @ref Magnum::Texture::setStorage() "setStorage()"
-         *      and @ref Magnum::Texture::setSubImage() "setSubImage()"
+         * @deprecated_gl Prefer to use @ref setStorage() and @ref setSubImage()
          *      instead.
          */
         Texture<dimensions>& setImage(Int level, TextureFormat internalFormat, BufferImage<dimensions>& image) {
@@ -782,8 +775,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         /** @overload
          * @requires_gles30 Pixel buffer objects are not available in OpenGL ES
          *      2.0.
-         * @deprecated_gl Prefer to use @ref Magnum::Texture::setStorage() "setStorage()"
-         *      and @ref Magnum::Texture::setSubImage() "setSubImage()"
+         * @deprecated_gl Prefer to use @ref setStorage() and @ref setSubImage()
          *      instead.
          */
         Texture<dimensions>& setImage(Int level, TextureFormat internalFormat, BufferImage<dimensions>&& image) {

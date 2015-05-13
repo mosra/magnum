@@ -60,7 +60,7 @@ template<UnsignedInt dimensions> class AbstractVector: public AbstractShaderProg
         enum: Int {
             /**
              * Vector texture binding unit
-             * @deprecated Use @ref Magnum::Shaders::AbstractVector::setVectorTexture() "setVectorTexture()" instead.
+             * @deprecated Use @ref setVectorTexture() instead.
              */
             VectorTextureLayer = 15
         };

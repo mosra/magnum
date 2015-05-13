@@ -559,7 +559,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief count()
-         * @deprecated Use @ref Magnum::Mesh::count() "count()" instead.
+         * @deprecated Use @ref count() instead.
          */
         CORRADE_DEPRECATED("use count() instead") Int vertexCount() const {
             return isIndexed() ? 0 : count();
@@ -567,7 +567,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
 
         /**
          * @copybrief setCount()
-         * @deprecated Use @ref Magnum::Mesh::setCount() "setCount()" instead.
+         * @deprecated Use @ref setCount() instead.
          */
         CORRADE_DEPRECATED("use setCount() instead") Mesh& setVertexCount(Int count) {
             if(!isIndexed()) setCount(count);
@@ -576,7 +576,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
 
         /**
          * @copybrief count()
-         * @deprecated Use @ref Magnum::Mesh::count() "count()" instead.
+         * @deprecated Use @ref count() instead.
          */
         CORRADE_DEPRECATED("use count() instead") Int indexCount() const {
             return count();
@@ -584,7 +584,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
 
         /**
          * @copybrief setCount()
-         * @deprecated Use @ref Magnum::Mesh::setCount() "setCount()" instead.
+         * @deprecated Use @ref setCount() instead.
          */
         CORRADE_DEPRECATED("use setCount() instead") Mesh& setIndexCount(Int count) { return setCount(count); }
         #endif
@@ -809,8 +809,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief draw(AbstractShaderProgram&)
-         * @deprecated Use @ref Magnum::Mesh::draw(AbstractShaderProgram&) "draw(AbstractShaderProgram&)"
-         *      instead.
+         * @deprecated Use @ref draw(AbstractShaderProgram&) instead.
          */
         CORRADE_DEPRECATED("use draw(AbstractShaderProgram&) instead") void draw() {
             #ifndef MAGNUM_TARGET_GLES

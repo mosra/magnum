@@ -72,9 +72,7 @@ template<class T> class AbstractBasicTranslationRotationScaling3D: public Abstra
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief scale()
-         * @deprecated Use @ref Magnum::SceneGraph::AbstractTranslationRotationScaling3D::scale() "scale()"
-         *      or @ref Magnum::SceneGraph::AbstractTranslationRotationScaling3D::scaleLocal() "scaleLocal()"
-         *      instead.
+         * @deprecated Use @ref scale() or @ref scaleLocal() instead.
          */
         CORRADE_DEPRECATED("use scale() or scaleLocal() instead") AbstractBasicTranslationRotationScaling3D<T>& scale(const Math::Vector3<T>& vector, TransformationType type) {
             return type == TransformationType::Global ? scale(vector) : scaleLocal(vector);

@@ -37,13 +37,13 @@ namespace Magnum {
 
 /**
 @copybrief DebugMessage
-@deprecated Use @ref Magnum::DebugMessage "DebugMessage" instead.
+@deprecated Use @ref DebugMessage instead.
 */
 class CORRADE_DEPRECATED("use DebugMessage instead") MAGNUM_EXPORT DebugMarker: public DebugMessage {
     public:
         /**
          * @copybrief DebugMessage::insert()
-         * @deprecated Use @ref Magnum::DebugMessage::insert() "insert()" instead.
+         * @deprecated Use @ref DebugMessage::insert() instead.
          */
         static CORRADE_DEPRECATED("use DebugMessage::insert() instead") void mark(const std::string& string) {
             insert(Source::Application, Type::Marker, 0, DebugOutput::Severity::Notification, string);

@@ -58,16 +58,16 @@ enum class BufferUsage: GLenum {
     /**
      * Set once as output from an OpenGL command and used infequently for
      * drawing.
-     * @requires_gles30 Only @ref Magnum::BufferUsage::StreamDraw "BufferUsage::StreamDraw"
-     *      is available in OpenGL ES 2.0.
+     * @requires_gles30 Only @ref BufferUsage::StreamDraw is available in
+     *      OpenGL ES 2.0.
      */
     StreamRead = GL_STREAM_READ,
 
     /**
      * Set once as output from an OpenGL command and used infrequently for
      * drawing or copying to other buffers.
-     * @requires_gles30 Only @ref Magnum::BufferUsage::StreamDraw "BufferUsage::StreamDraw"
-     *      is available in OpenGL ES 2.0.
+     * @requires_gles30 Only @ref BufferUsage::StreamDraw is available in
+     *      OpenGL ES 2.0.
      */
     StreamCopy = GL_STREAM_COPY,
     #endif
@@ -79,16 +79,16 @@ enum class BufferUsage: GLenum {
     /**
      * Set once as output from an OpenGL command and queried many times by the
      * application.
-     * @requires_gles30 Only @ref Magnum::BufferUsage::StaticDraw "BufferUsage::StaticDraw"
-     *      is available in OpenGL ES 2.0.
+     * @requires_gles30 Only @ref BufferUsage::StaticDraw is available in
+     *      OpenGL ES 2.0.
      */
     StaticRead = GL_STATIC_READ,
 
     /**
      * Set once as output from an OpenGL command and used frequently for
      * drawing or copying to other buffers.
-     * @requires_gles30 Only @ref Magnum::BufferUsage::StaticDraw "BufferUsage::StaticDraw"
-     *      is available in OpenGL ES 2.0.
+     * @requires_gles30 Only @ref BufferUsage::StaticDraw is available in
+     *      OpenGL ES 2.0.
      */
     StaticCopy = GL_STATIC_COPY,
     #endif
@@ -103,16 +103,16 @@ enum class BufferUsage: GLenum {
     /**
      * Updated frequently as output from OpenGL command and queried many times
      * from the application.
-     * @requires_gles30 Only @ref Magnum::BufferUsage::DynamicDraw "BufferUsage::DynamicDraw"
-     *      is available in OpenGL ES 2.0.
+     * @requires_gles30 Only @ref BufferUsage::DynamicDraw is available in
+     *      OpenGL ES 2.0.
      */
     DynamicRead = GL_DYNAMIC_READ,
 
     /**
      * Updated frequently as output from OpenGL command and used frequently for
      * drawing or copying to other images.
-     * @requires_gles30 Only @ref Magnum::BufferUsage::DynamicDraw "BufferUsage::DynamicDraw"
-     *      is available in OpenGL ES 2.0.
+     * @requires_gles30 Only @ref BufferUsage::DynamicDraw is available in
+     *      OpenGL ES 2.0.
      */
     DynamicCopy = GL_DYNAMIC_COPY
     #endif
@@ -332,9 +332,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
             #ifdef MAGNUM_BUILD_DEPRECATED
             /**
              * @copydoc TargetHint::Array
-             * @deprecated For @ref Magnum::Buffer::setTargetHint() "setTargetHint()"
-             *      only, use @ref Magnum::Buffer::TargetHint::Array "TargetHint::Array"
-             *      instead.
+             * @deprecated For @ref setTargetHint() only, use
+             *      @ref TargetHint::Array instead.
              */
             Array = GL_ARRAY_BUFFER,
             #endif
@@ -353,17 +352,15 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
             #ifndef MAGNUM_TARGET_GLES2
             /**
              * @copydoc TargetHint::CopyRead
-             * @deprecated For @ref Magnum::Buffer::setTargetHint() "setTargetHint()"
-             *      only, use @ref Magnum::Buffer::TargetHint::CopyRead "TargetHint::CopyRead"
-             *      instead.
+             * @deprecated For @ref setTargetHint() only, use
+             *      @ref TargetHint::CopyRead instead.
              */
             CopyRead = GL_COPY_READ_BUFFER,
 
             /**
              * @copydoc TargetHint::CopyWrite
-             * @deprecated For @ref Magnum::Buffer::setTargetHint() "setTargetHint()"
-             *      only, use @ref Magnum::Buffer::TargetHint::CopyWrite "TargetHint::CopyWrite"
-             *      instead.
+             * @deprecated For @ref setTargetHint() only, use
+             *      @ref TargetHint::CopyWrite instead.
              */
             CopyWrite = GL_COPY_WRITE_BUFFER,
             #endif
@@ -371,43 +368,38 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
             #ifndef MAGNUM_TARGET_GLES2
             /**
              * @copydoc TargetHint::DispatchIndirect
-             * @deprecated For @ref Magnum::Buffer::setTargetHint() "setTargetHint()"
-             *      only, use @ref Magnum::Buffer::TargetHint::DispatchIndirect "TargetHint::DispatchIndirect"
-             *      instead.
+             * @deprecated For @ref setTargetHint() only, use
+             *      @ref TargetHint::DispatchIndirect instead.
              */
             DispatchIndirect = GL_DISPATCH_INDIRECT_BUFFER,
 
             /**
              * @copydoc TargetHint::DrawIndirect
-             * @deprecated For @ref Magnum::Buffer::setTargetHint() "setTargetHint()"
-             *      only, use @ref Magnum::Buffer::TargetHint::DrawIndirect "TargetHint::DrawIndirect"
-             *      instead.
+             * @deprecated For @ref setTargetHint() only, use
+             *      @ref TargetHint::DrawIndirect instead.
              */
             DrawIndirect = GL_DRAW_INDIRECT_BUFFER,
             #endif
 
             /**
              * @copydoc TargetHint::ElementArray
-             * @deprecated For @ref Magnum::Buffer::setTargetHint() "setTargetHint()"
-             *      only, use @ref Magnum::Buffer::TargetHint::ElementArray "TargetHint::ElementArray"
-             *      instead.
+             * @deprecated For @ref setTargetHint() only, use
+             *      @ref TargetHint::ElementArray instead.
              */
             ElementArray = GL_ELEMENT_ARRAY_BUFFER,
 
             #ifndef MAGNUM_TARGET_GLES2
             /**
              * @copydoc TargetHint::PixelPack
-             * @deprecated For @ref Magnum::Buffer::setTargetHint() "setTargetHint()"
-             *      only, use @ref Magnum::Buffer::TargetHint::PixelPack "TargetHint::PixelPack"
-             *      instead.
+             * @deprecated For @ref setTargetHint() only, use
+             *      @ref TargetHint::PixelPack instead.
              */
             PixelPack = GL_PIXEL_PACK_BUFFER,
 
             /**
              * @copydoc TargetHint::PixelUnpack
-             * @deprecated For @ref Magnum::Buffer::setTargetHint() "setTargetHint()"
-             *      only, use @ref Magnum::Buffer::TargetHint::PixelUnpack "TargetHint::PixelUnpack"
-             *      instead.
+             * @deprecated For @ref setTargetHint() only, use
+             *      @ref TargetHint::PixelUnpack instead.
              */
             PixelUnpack = GL_PIXEL_UNPACK_BUFFER,
             #endif
@@ -426,9 +418,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
             #if defined(MAGNUM_BUILD_DEPRECATED) && !defined(MAGNUM_TARGET_GLES)
             /**
              * @copydoc TargetHint::Texture
-             * @deprecated For @ref Magnum::Buffer::setTargetHint() "setTargetHint()"
-             *      only, use @ref Magnum::Buffer::TargetHint::Texture "TargetHint::Texture"
-             *      instead.
+             * @deprecated For @ref setTargetHint() only, use
+             *      @ref TargetHint::Texture instead.
              */
             Texture = GL_TEXTURE_BUFFER,
             #endif
@@ -436,9 +427,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
             #if defined(MAGNUM_BUILD_DEPRECATED) && !defined(MAGNUM_TARGET_GLES2)
             /**
              * @copydoc TargetHint::TransformFeedback
-             * @deprecated For @ref Magnum::Buffer::setTargetHint() "setTargetHint()"
-             *      only, use @ref Magnum::Buffer::TargetHint::TransformFeedback "TargetHint::TransformFeedback"
-             *      instead.
+             * @deprecated For @ref setTargetHint() only, use
+             *      @ref TargetHint::TransformFeedback instead.
              */
             TransformFeedback = GL_TRANSFORM_FEEDBACK_BUFFER,
             #endif
@@ -458,7 +448,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief BufferUsage
-         * @deprecated Use @ref Magnum::BufferUsage "BufferUsage" instead.
+         * @deprecated Use @ref BufferUsage instead.
          */
         typedef CORRADE_DEPRECATED("use BufferUsage instead") BufferUsage Usage;
         #endif
@@ -469,15 +459,15 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @see @ref map(MapAccess), @ref mapSub()
          * @requires_es_extension Extension @es_extension{OES,mapbuffer} or
          *      @es_extension{CHROMIUM,map_sub}
-         * @deprecated_gl Prefer to use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
+         * @deprecated_gl Prefer to use @ref map(GLintptr, GLsizeiptr, MapFlags)
          *      instead, as it has more complete set of features.
          */
         enum class MapAccess: GLenum {
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Map buffer for reading only.
-             * @requires_gl Only @ref Magnum::Buffer::MapAccess "MapAccess::WriteOnly"
-             *      is available in OpenGL ES.
+             * @requires_gl Only @ref MapAccess::WriteOnly is available in
+             *      OpenGL ES.
              */
             ReadOnly = GL_READ_ONLY,
             #endif
@@ -490,8 +480,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
 
             /**
              * Map buffer for both reading and writing.
-             * @requires_gl Only @ref Magnum::Buffer::MapAccess "MapAccess::WriteOnly"
-             *      is available in OpenGL ES.
+             * @requires_gl Only @ref MapAccess::WriteOnly is available in
+             *      OpenGL ES.
              */
             ReadWrite = GL_READ_WRITE
             #endif
@@ -657,11 +647,11 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      @ref maxShaderStorageBindings(), @ref maxUniformBindings(),
          *      @fn_gl{BindBufferBase}
          * @requires_gl30 No form of indexed buffer binding is available in
-         *      OpenGL 2.1, see particular @ref Magnum::Buffer::Target "Target"
-         *      values for version/extension requirements.
+         *      OpenGL 2.1, see particular @ref Target values for
+         *      version/extension requirements.
          * @requires_gles30 No form of indexed buffer binding is available in
-         *      OpenGL ES 2.0, see particular @ref Magnum::Buffer::Target "Target"
-         *      values for version requirements.
+         *      OpenGL ES 2.0, see particular @ref Target values for version
+         *      requirements.
          */
         static void unbind(Target target, UnsignedInt index);
 
@@ -680,11 +670,11 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      @ref maxShaderStorageBindings(), @ref maxUniformBindings(),
          *      @fn_gl{BindBuffersBase} or @fn_gl{BindBufferBase}
          * @requires_gl30 No form of indexed buffer binding is available in
-         *      OpenGL 2.1, see particular @ref Magnum::Buffer::Target "Target"
-         *      values for version/extension requirements.
+         *      OpenGL 2.1, see particular @ref Target values for
+         *      version/extension requirements.
          * @requires_gles30 No form of indexed buffer binding is available in
-         *      OpenGL ES 2.0, see particular @ref Magnum::Buffer::Target "Target"
-         *      values for version requirements.
+         *      OpenGL ES 2.0, see particular @ref Target values for version
+         *      requirements.
          */
         static void unbind(Target target, UnsignedInt firstIndex, std::size_t count);
 
@@ -710,11 +700,11 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      @ref uniformOffsetAlignment(), @ref TransformFeedback::attachBuffers(),
          *      @fn_gl{BindBuffersRange} or @fn_gl{BindBufferRange}
          * @requires_gl30 No form of indexed buffer binding is available in
-         *      OpenGL 2.1, see particular @ref Magnum::Buffer::Target "Target"
-         *      values for version/extension requirements.
+         *      OpenGL 2.1, see particular @ref Target values for
+         *      version/extension requirements.
          * @requires_gles30 No form of indexed buffer binding is available in
-         *      OpenGL ES 2.0, see particular @ref Magnum::Buffer::Target "Target"
-         *      values for version requirements.
+         *      OpenGL ES 2.0, see particular @ref Target values for version
+         *      requirements.
          */
         static void bind(Target target, UnsignedInt firstIndex, std::initializer_list<std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers);
 
@@ -736,11 +726,11 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      @ref TransformFeedback::attachBuffers(), @fn_gl{BindBuffersBase}
          *      or @fn_gl{BindBufferBase}
          * @requires_gl30 No form of indexed buffer binding is available in
-         *      OpenGL 2.1, see particular @ref Magnum::Buffer::Target "Target"
-         *      values for version/extension requirements.
+         *      OpenGL 2.1, see particular @ref Target values for
+         *      version/extension requirements.
          * @requires_gles30 No form of indexed buffer binding is available in
-         *      OpenGL ES 2.0, see particular @ref Magnum::Buffer::Target "Target"
-         *      values for version requirements.
+         *      OpenGL ES 2.0, see particular @ref Target values for version
+         *      requirements.
          */
         static void bind(Target target, UnsignedInt firstIndex, std::initializer_list<Buffer*> buffers);
 
@@ -780,8 +770,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief Buffer(TargetHint)
-         * @deprecated Use @ref Magnum::Buffer::Buffer(Magnum::Buffer::TargetHint) "Buffer(TargetHint)"
-         *      instead.
+         * @deprecated Use @ref Buffer(TargetHint) instead.
          */
         CORRADE_DEPRECATED("use Buffer(TargetHint) instead") explicit Buffer(Target targetHint): Buffer{static_cast<TargetHint>(targetHint)} {}
         #endif
@@ -868,8 +857,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief setTargetHint(TargetHint)
-         * @deprecated Use @ref Magnum::Buffer::setTargetHint(Magnum::Buffer::TargetHint) "setTargetHint(TargetHint)"
-         *      instead.
+         * @deprecated Use @ref setTargetHint(TargetHint) instead.
          */
         CORRADE_DEPRECATED("use setTargetHint(TargetHint) instead") Buffer& setTargetHint(Target hint) {
             return setTargetHint(static_cast<TargetHint>(hint));
@@ -893,11 +881,11 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      @ref uniformOffsetAlignment(), @ref TransformFeedback::attachBuffer(),
          *      @fn_gl{BindBufferRange}
          * @requires_gl30 No form of indexed buffer binding is available in
-         *      OpenGL 2.1, see particular @ref Magnum::Buffer::Target "Target"
-         *      values for version/extension requirements.
+         *      OpenGL 2.1, see particular @ref Target values for
+         *      version/extension requirements.
          * @requires_gles30 No form of indexed buffer binding is available in
-         *      OpenGL ES 2.0, see particular @ref Magnum::Buffer::Target "Target"
-         *      values for version requirements.
+         *      OpenGL ES 2.0, see particular @ref Target values for version
+         *      requirements.
          * @todo State tracking for indexed binding
          */
         Buffer& bind(Target target, UnsignedInt index, GLintptr offset, GLsizeiptr size);
@@ -915,11 +903,11 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      @ref maxUniformBindings(), @ref TransformFeedback::attachBuffer(),
          *      @fn_gl{BindBufferBase}
          * @requires_gl30 No form of indexed buffer binding is available in
-         *      OpenGL 2.1, see particular @ref Magnum::Buffer::Target "Target"
-         *      values for version/extension requirements.
+         *      OpenGL 2.1, see particular @ref Target values for
+         *      version/extension requirements.
          * @requires_gles30 No form of indexed buffer binding is available in
-         *      OpenGL ES 2.0, see particular @ref Magnum::Buffer::Target "Target"
-         *      values for version requirements.
+         *      OpenGL ES 2.0, see particular @ref Target values for version
+         *      requirements.
          */
         Buffer& bind(Target target, UnsignedInt index);
         #endif
@@ -952,8 +940,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      with @def_gl{BUFFER_SIZE}, then @fn_gl2{GetNamedBufferSubData,GetBufferSubData},
          *      @fn_gl_extension{GetNamedBufferSubData,EXT,direct_state_access},
          *      eventually @fn_gl{GetBufferSubData}
-         * @requires_gl Buffer data queries are not available in OpenGL ES.
-         *      Use @ref Magnum::Buffer::map() "map()" instead.
+         * @requires_gl Buffer data queries are not available in OpenGL ES. Use
+         *      @ref map() instead.
          */
         template<class T = char> Containers::Array<T> data();
 
@@ -970,8 +958,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      @fn_gl2{GetNamedBufferSubData,GetBufferSubData},
          *      @fn_gl_extension{GetNamedBufferSubData,EXT,direct_state_access},
          *      eventually @fn_gl{BindBuffer} and @fn_gl{GetBufferSubData}
-         * @requires_gl Buffer data queries are not available in OpenGL ES.
-         *      Use @ref Magnum::Buffer::map() "map()" instead.
+         * @requires_gl Buffer data queries are not available in OpenGL ES. Use
+         *      @ref map() instead.
          */
         template<class T = char> Containers::Array<T> subData(GLintptr offset, GLsizeiptr size);
         #endif
@@ -1068,9 +1056,9 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      @fn_gl_extension{MapNamedBuffer,EXT,direct_state_access},
          *      eventually @fn_gl{BindBuffer} and @fn_gl{MapBuffer}
          * @requires_es_extension Extension @es_extension{OES,mapbuffer} in
-         *      OpenGL ES 2.0, use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
-         *      in OpenGL ES 3.0 instead.
-         * @deprecated_gl Prefer to use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
+         *      OpenGL ES 2.0, use @ref map(GLintptr, GLsizeiptr, MapFlags) in
+         *      OpenGL ES 3.0 instead.
+         * @deprecated_gl Prefer to use @ref map(GLintptr, GLsizeiptr, MapFlags)
          *      instead, as it has more complete set of features.
          */
         void* map(MapAccess access);
@@ -1093,10 +1081,9 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @see @ref unmapSub(), @ref setTargetHint(),
          *      @fn_gl_extension{MapBufferSubData,CHROMIUM,map_sub}
          * @requires_gles20 Not available in ES 3.0 or desktop OpenGL. Use
-         *      @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
-         *      instead.
+         *      @ref map(GLintptr, GLsizeiptr, MapFlags) instead.
          * @requires_es_extension Extension @es_extension{CHROMIUM,map_sub}
-         * @deprecated_gl Prefer to use @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
+         * @deprecated_gl Prefer to use @ref map(GLintptr, GLsizeiptr, MapFlags)
          *      instead, as it has more complete set of features.
          */
         void* mapSub(GLintptr offset, GLsizeiptr length, MapAccess access);
@@ -1185,8 +1172,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * invalidating the pointer returned by the function.
          * @see @fn_gl_extension{UnmapBufferSubData,CHROMIUM,map_sub}
          * @requires_gles20 Not available in ES 3.0 or desktop OpenGL. Use
-         *      @ref Magnum::Buffer::map(GLintptr, GLsizeiptr, MapFlags) "map(GLintptr, GLsizeiptr, MapFlags)"
-         *      instead.
+         *      @ref map(GLintptr, GLsizeiptr, MapFlags) instead.
          * @requires_es_extension Extension @es_extension{CHROMIUM,map_sub}
          */
         void unmapSub();

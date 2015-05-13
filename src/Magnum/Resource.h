@@ -208,10 +208,9 @@ class Resource {
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @overload
-         * @deprecated Use the explicit @ref Magnum::Resource::operator*() "operator*()"
-         *      or @ref Magnum::Resource::operator->() "operator->()" instead.
-         *      Implicit conversion is no longer allowed if it might throw an
-         *      assertion.
+         * @deprecated Use the explicit @ref operator*() or @ref operator->()
+         *      instead. Implicit conversion is no longer allowed if it might
+         *      throw an assertion.
          */
         CORRADE_DEPRECATED("use operator*() or operator->() instead") operator U&() { return **this; }
         #endif

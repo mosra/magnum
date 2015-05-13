@@ -180,17 +180,15 @@ bindFragmentDataLocationIndexed(NormalOutput, 1, "normal");
 
 @see @ref Mesh::maxVertexAttributes(), @ref AbstractFramebuffer::maxDrawBuffers()
 @requires_gl30 Extension @extension{EXT,gpu_shader4} for using
-    @ref Magnum::AbstractShaderProgram::bindFragmentDataLocation() "bindFragmentDataLocation()".
+    @ref bindFragmentDataLocation().
 @requires_gl33 Extension @extension{ARB,blend_func_extended} for using
-    @ref Magnum::AbstractShaderProgram::bindFragmentDataLocationIndexed() "bindFragmentDataLocationIndexed()".
+    @ref bindFragmentDataLocationIndexed().
 @requires_gl33 Extension @extension{ARB,explicit_attrib_location} for
     explicit attribute location instead of using
-    @ref Magnum::AbstractShaderProgram::bindAttributeLocation() "bindAttributeLocation()",
-    @ref Magnum::AbstractShaderProgram::bindFragmentDataLocation() "bindFragmentDataLocation()"
-    or @ref Magnum::AbstractShaderProgram::bindFragmentDataLocationIndexed() "bindFragmentDataLocationIndexed()".
+    @ref bindAttributeLocation(), @ref bindFragmentDataLocation() or
+    @ref bindFragmentDataLocationIndexed().
 @requires_gles30 Explicit location specification of input attributes is not
-    supported in OpenGL ES 2.0, use @ref Magnum::AbstractShaderProgram::bindAttributeLocation() "bindAttributeLocation()"
-    instead.
+    supported in OpenGL ES 2.0, use @ref bindAttributeLocation() instead.
 @requires_gles30 Multiple fragment shader outputs are not available in OpenGL
     ES 2.0, similar functionality is available in extension
     @es_extension{NV,draw_buffers}.
@@ -228,11 +226,9 @@ Int normalMatrixUniform = uniformLocation("normalMatrix");
 
 @see @ref maxUniformLocations()
 @requires_gl43 Extension @extension{ARB,explicit_uniform_location} for
-    explicit uniform location instead of using
-    @ref Magnum::AbstractShaderProgram::uniformLocation() "uniformLocation()".
+    explicit uniform location instead of using @ref uniformLocation().
 @requires_gles31 Explicit uniform location is not supported in OpenGL ES 3.0
-    and older. Use @ref Magnum::AbstractShaderProgram::uniformLocation() "uniformLocation()"
-    instead.
+    and older. Use @ref uniformLocation() instead.
 
 @anchor AbstractShaderProgram-texture-units
 ### Specifying texture binding units
@@ -262,9 +258,9 @@ setUniform(uniformLocation("specularTexture"), 1);
 @see @ref Shader::maxTextureImageUnits()
 @requires_gl42 Extension @extension{ARB,shading_language_420pack} for explicit
     texture binding unit instead of using
-    @ref Magnum::AbstractShaderProgram::setUniform(Int, const T&) "setUniform(Int, Int)".
+    @ref setUniform(Int, const T&) "setUniform(Int, Int)".
 @requires_gles31 Explicit texture binding unit is not supported in OpenGL ES
-    3.0 and older. Use @ref Magnum::AbstractShaderProgram::setUniform(Int, const T&) "setUniform(Int, Int)"
+    3.0 and older. Use @ref setUniform(Int, const T&) "setUniform(Int, Int)"
     instead.
 
 @anchor AbstractShaderProgram-transform-feedback
@@ -306,11 +302,10 @@ setTransformFeedbackOutputs({
     @ref TransformFeedback::maxSeparateComponents()
 @requires_gl40 Extension @extension{ARB,transform_feedback3} for using
     `gl_NextBuffer` or `gl_SkipComponents#` names in
-    @ref Magnum::AbstractShaderProgram::setTransformFeedbackOutputs() "setTransformFeedbackOutputs()"
-    function
+    @ref setTransformFeedbackOutputs() function.
 @requires_gl44 Extension @extension{ARB,enhanced_layouts} for explicit
     transform feedback output specification instead of using
-    @ref Magnum::AbstractShaderProgram::setTransformFeedbackOutputs() "setTransformFeedbackOutputs()"
+    @ref setTransformFeedbackOutputs().
 @requires_gl Explicit transform feedback output specification is not available
     in OpenGL ES.
 
@@ -340,35 +335,24 @@ See @ref types for more information, only types with GLSL equivalent can be used
 also @ref Attribute::DataType enum for additional type options.
 
 @requires_gl30 Extension @extension{EXT,gpu_shader4} is required when using
-    integer attributes (i.e. @ref Magnum::UnsignedInt "UnsignedInt",
-    @ref Magnum::Int "Int", @ref Magnum::Vector2ui "Vector2ui",
-    @ref Magnum::Vector2i "Vector2i", @ref Magnum::Vector3ui "Vector3ui",
-    @ref Magnum::Vector3i "Vector3i", @ref Magnum::Vector4ui "Vector4ui" and
-    @ref Magnum::Vector4i "Vector4i") or unsigned integer uniforms (i.e.
-    @ref Magnum::UnsignedInt "UnsignedInt", @ref Magnum::Vector2ui "Vector2ui",
-    @ref Magnum::Vector3ui "Vector3ui" and @ref Magnum::Vector4ui "Vector4ui").
+    integer attributes (i.e. @ref UnsignedInt, @ref Int, @ref Vector2ui,
+    @ref Vector2i, @ref Vector3ui, @ref Vector3i, @ref Vector4ui and
+    @ref Vector4i) or unsigned integer uniforms (i.e. @ref UnsignedInt,
+    @ref Vector2ui, @ref Vector3ui and @ref Vector4ui).
 @requires_gl40 Extension @extension{ARB,gpu_shader_fp64} is required when
-    using double uniforms (i.e. @ref Magnum::Double "Double",
-    @ref Magnum::Vector2d "Vector2d", @ref Magnum::Vector3d "Vector3d",
-    @ref Magnum::Vector4d "Vector4d", @ref Magnum::Matrix2x2d "Matrix2x2d",
-    @ref Magnum::Matrix3x3d "Matrix3x3d", @ref Magnum::Matrix4x4d "Matrix4x4d",
-    @ref Magnum::Matrix2x3d "Matrix2x3d", @ref Magnum::Matrix3x2d "Matrix3x2d",
-    @ref Magnum::Matrix2x4d "Matrix2x4d", @ref Magnum::Matrix4x2d "Matrix4x2d",
-    @ref Magnum::Matrix3x4d "Matrix3x4d" and @ref Magnum::Matrix4x3d "Matrix4x3d").
+    using double uniforms (i.e. @ref Double, @ref Vector2d, @ref Vector3d,
+    @ref Vector4d, @ref Matrix2x2d, @ref Matrix3x3d, @ref Matrix4x4d,
+    @ref Matrix2x3d, @ref Matrix3x2d, @ref Matrix2x4d, @ref Matrix4x2d,
+    @ref Matrix3x4d and @ref Matrix4x3d).
 @requires_gl41 Extension @extension{ARB,vertex_attrib_64bit} is required when
-    using double attributes (i.e. @ref Magnum::Double "Double",
-    @ref Magnum::Vector2d "Vector2d", @ref Magnum::Vector3d "Vector3d",
-    @ref Magnum::Vector4d "Vector4d", @ref Magnum::Matrix2x2d "Matrix2x2d",
-    @ref Magnum::Matrix3x3d "Matrix3x3d", @ref Magnum::Matrix4x4d "Matrix4x4d",
-    @ref Magnum::Matrix2x3d "Matrix2x3d", @ref Magnum::Matrix3x2d "Matrix3x2d",
-    @ref Magnum::Matrix2x4d "Matrix2x4d", @ref Magnum::Matrix4x2d "Matrix4x2d",
-    @ref Magnum::Matrix3x4d "Matrix3x4d" and @ref Magnum::Matrix4x3d "Matrix4x3d").
-
+    using double attributes (i.e. @ref Double, @ref Vector2d, @ref Vector3d,
+    @ref Vector4d, @ref Matrix2x2d, @ref Matrix3x3d, @ref Matrix4x4d,
+    @ref Matrix2x3d, @ref Matrix3x2d, @ref Matrix2x4d, @ref Matrix4x2d,
+    @ref Matrix3x4d and @ref Matrix4x3d).
 @requires_gles30 Integer attributes, unsigned integer uniforms and non-square
-    matrix attributes and uniforms (i.e. @ref Magnum::Matrix2x3 "Matrix2x3",
-    @ref Magnum::Matrix3x2 "Matrix3x2", @ref Magnum::Matrix2x4 "Matrix2x4",
-    @ref Magnum::Matrix4x2d "Matrix4x2", @ref Magnum::Matrix3x4 "Matrix3x4" and
-    @ref Magnum::Matrix4x3 "Matrix4x3") are not available in OpenGL ES 2.0.
+    matrix attributes and uniforms (i.e. @ref Matrix2x3, @ref Matrix3x2,
+    @ref Matrix2x4, @ref Matrix4x2, @ref Matrix3x4 and @ref Matrix4x3) are not
+    available in OpenGL ES 2.0.
 @requires_gl Double attributes and uniforms are not available in OpenGL ES.
 
 @anchor AbstractShaderProgram-performance-optimization
@@ -636,7 +620,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Use shader for rendering
-         * @deprecated Use @ref Magnum::Mesh::draw(AbstractShaderProgram&) "Mesh::draw(AbstractShaderProgram&)" instead.
+         * @deprecated Use @ref Mesh::draw(AbstractShaderProgram&) instead.
          */
         void use();
         #endif

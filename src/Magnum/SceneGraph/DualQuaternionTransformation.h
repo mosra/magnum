@@ -112,9 +112,7 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief transform()
-         * @deprecated Use @ref Magnum::SceneGraph::DualQuaternionTransformation::transform() "transform()"
-         *      or @ref Magnum::SceneGraph::DualQuaternionTransformation::transformLocal() "transformLocal()"
-         *      instead.
+         * @deprecated Use @ref transform() or @ref transformLocal() instead.
          */
         CORRADE_DEPRECATED("use transform() or transformLocal() instead") Object<BasicDualQuaternionTransformation<T>>& transform(const Math::DualQuaternion<T>& transformation, TransformationType type) {
             return type == TransformationType::Global ? transform(transformation) : transformLocal(transformation);
@@ -146,9 +144,7 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief translate()
-         * @deprecated Use @ref Magnum::SceneGraph::DualQuaternionTransformation::translate() "translate()"
-         *      or @ref Magnum::SceneGraph::DualQuaternionTransformation::translateLocal() "translateLocal()"
-         *      instead.
+         * @deprecated Use @ref translate() or @ref translateLocal() instead.
          */
         CORRADE_DEPRECATED("use translate() or translateLocal() instead") Object<BasicDualQuaternionTransformation<T>>& translate(const Math::Vector3<T>& vector, TransformationType type) {
             return type == TransformationType::Global ? translate(vector) : translateLocal(vector);
@@ -183,9 +179,7 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief rotate()
-         * @deprecated Use @ref Magnum::SceneGraph::DualQuaternionTransformation::rotate() "rotate()"
-         *      or @ref Magnum::SceneGraph::DualQuaternionTransformation::rotateLocal() "rotateLocal()"
-         *      instead.
+         * @deprecated Use @ref rotate() or @ref rotateLocal() instead.
          */
         CORRADE_DEPRECATED("usr rotate() or rotateLocal() instead") Object<BasicDualQuaternionTransformation<T>>& rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type) {
             return type == TransformationType::Global ? rotate(angle, normalizedAxis) : rotateLocal(angle, normalizedAxis);

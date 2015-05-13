@@ -95,8 +95,7 @@ class TimeQuery: public AbstractQuery {
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief TimeQuery(Target)
-         * @deprecated Use @ref Magnum::TimeQuery::TimeQuery(Target) "TimeQuery(Target)"
-         *      instead.
+         * @deprecated Use @ref TimeQuery(Target) instead.
          */
         CORRADE_DEPRECATED("use TimeQuery(Target) instead") explicit TimeQuery() {}
         #endif
@@ -129,8 +128,7 @@ class TimeQuery: public AbstractQuery {
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief AbstractQuery::begin()
-         * @deprecated Use @ref Magnum::AbstractQuery::begin() "begin()"
-         *      instead.
+         * @deprecated Use @ref AbstractQuery::begin() instead.
          */
         CORRADE_DEPRECATED("use begin() instead") void begin(Target target) {
             AbstractQuery::begin(GLenum(target));

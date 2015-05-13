@@ -145,8 +145,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief Shader::maxCombinedTextureImageUnits()
-         * @deprecated Use @ref Magnum::Shader::maxCombinedTextureImageUnits() "Shader::maxCombinedTextureImageUnits()"
-         *      instead.
+         * @deprecated Use @ref Shader::maxCombinedTextureImageUnits() instead.
          */
         static CORRADE_DEPRECATED("use Shader::maxCombinedTextureImageUnits() instead") Int maxLayers();
         #endif

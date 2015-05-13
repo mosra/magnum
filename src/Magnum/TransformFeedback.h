@@ -140,8 +140,7 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
          * (part of OpenGL 4.0) is not available, returns the same value as
          * @ref maxSeparateAttributes().
          * @see @fn_gl{Get} with @def_gl{MAX_TRANSFORM_FEEDBACK_BUFFERS}
-         * @requires_gl Use @ref Magnum::TransformFeedback::maxSeparateAttributes() "maxSeparateAttributes()"
-         *      in OpenGL ES.
+         * @requires_gl Use @ref maxSeparateAttributes() in OpenGL ES.
          */
         static Int maxBuffers();
         #endif

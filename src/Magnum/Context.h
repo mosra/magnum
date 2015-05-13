@@ -126,8 +126,8 @@ class MAGNUM_EXPORT Context {
 
             #ifdef MAGNUM_BUILD_DEPRECATED
             /**
-             * @copybrief Context::Flag::RobustAccess
-             * @deprecated Use @ref Magnum::Context::Flag::RobustAccess "Context::Flag::RobustAccess" instead.
+             * @copybrief Flag::RobustAccess
+             * @deprecated Use @ref Flag::RobustAccess instead.
              */
             Robustness = GL_CONTEXT_FLAG_ROBUST_ACCESS_BIT_ARB
             #endif
