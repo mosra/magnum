@@ -56,11 +56,7 @@ namespace {
         5, 6, 7, 6, 7, 8
     };
 
-    #ifndef MAGNUM_TARGET_GLES
-    const ImageReference2D original(ColorFormat::BGR, ColorType::UnsignedByte, {2, 3}, originalData);
-    #else
     const ImageReference2D original(ColorFormat::RGB, ColorType::UnsignedByte, {2, 3}, originalData);
-    #endif
 }
 
 TgaImageConverterTest::TgaImageConverterTest() {
@@ -101,11 +97,7 @@ void TgaImageConverterTest::data() {
     CORRADE_VERIFY(converted);
 
     CORRADE_COMPARE(converted->size(), Vector2i(2, 3));
-    #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE(converted->format(), ColorFormat::BGR);
-    #else
     CORRADE_COMPARE(converted->format(), ColorFormat::RGB);
-    #endif
     CORRADE_COMPARE(converted->type(), ColorType::UnsignedByte);
     CORRADE_COMPARE((std::string{converted->data(), 2*3*3}),
                     (std::string{original.data(), 2*3*3}));

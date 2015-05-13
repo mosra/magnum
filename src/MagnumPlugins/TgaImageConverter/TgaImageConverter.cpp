@@ -25,6 +25,7 @@
 
 #include "TgaImageConverter.h"
 
+#include <algorithm>
 #include <fstream>
 #include <tuple>
 #include <Corrade/Containers/Array.h>
@@ -32,13 +33,9 @@
 
 #include "Magnum/ColorFormat.h"
 #include "Magnum/Image.h"
-#include "MagnumPlugins/TgaImporter/TgaHeader.h"
-
-#ifdef MAGNUM_TARGET_GLES
-#include <algorithm>
 #include "Magnum/Math/Swizzle.h"
 #include "Magnum/Math/Vector4.h"
-#endif
+#include "MagnumPlugins/TgaImporter/TgaHeader.h"
 
 namespace Magnum { namespace Trade {
 
@@ -49,15 +46,9 @@ TgaImageConverter::TgaImageConverter(PluginManager::AbstractManager& manager, st
 auto TgaImageConverter::doFeatures() const -> Features { return Feature::ConvertData; }
 
 Containers::Array<char> TgaImageConverter::doExportToData(const ImageReference2D& image) const {
-    #ifndef MAGNUM_TARGET_GLES
-    if(image.format() != ColorFormat::BGR &&
-       image.format() != ColorFormat::BGRA &&
-       image.format() != ColorFormat::Red)
-    #else
     if(image.format() != ColorFormat::RGB &&
        image.format() != ColorFormat::RGBA &&
        image.format() != ColorFormat::Red)
-    #endif
     {
         Error() << "Trade::TgaImageConverter::exportToData(): unsupported color format" << image.format();
         return nullptr;
@@ -82,7 +73,6 @@ Containers::Array<char> TgaImageConverter::doExportToData(const ImageReference2D
     /* Fill data */
     std::copy(image.data(), image.data()+pixelSize*image.size().product(), data.begin()+sizeof(TgaHeader));
 
-    #ifdef MAGNUM_TARGET_GLES
     if(image.format() == ColorFormat::RGB) {
         auto pixels = reinterpret_cast<Math::Vector3<UnsignedByte>*>(data.begin()+sizeof(TgaHeader));
         std::transform(pixels, pixels + image.size().product(), pixels,
@@ -92,7 +82,6 @@ Containers::Array<char> TgaImageConverter::doExportToData(const ImageReference2D
         std::transform(pixels, pixels + image.size().product(), pixels,
             [](Math::Vector4<UnsignedByte> pixel) { return Math::swizzle<'b', 'g', 'r', 'a'>(pixel); });
     }
-    #endif
 
     return data;
 }

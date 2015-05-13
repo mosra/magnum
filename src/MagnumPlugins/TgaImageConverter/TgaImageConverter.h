@@ -51,8 +51,7 @@ namespace Magnum { namespace Trade {
 /**
 @brief TGA image converter plugin
 
-Supports images with format @ref ColorFormat::BGR, @ref ColorFormat::BGRA
-(@ref ColorFormat::RGB/@ref ColorFormat::RGBA on OpenGL ES) or
+Supports images with format @ref ColorFormat::RGB, @ref ColorFormat::RGBA or
 @ref ColorFormat::Red and type @ref ColorType::UnsignedByte.
 
 This plugin is built if `WITH_TGAIMAGECONVERTER` is enabled when building

@@ -25,20 +25,17 @@
 
 #include "TgaImporter.h"
 
+#include <algorithm>
 #include <fstream>
 #include <sstream>
 #include <Corrade/Utility/Endianness.h>
 #include <Corrade/Containers/Array.h>
 
 #include "Magnum/ColorFormat.h"
-#include "Magnum/Trade/ImageData.h"
-#include "MagnumPlugins/TgaImporter/TgaHeader.h"
-
-#ifdef MAGNUM_TARGET_GLES
-#include <algorithm>
 #include "Magnum/Math/Swizzle.h"
 #include "Magnum/Math/Vector4.h"
-#endif
+#include "Magnum/Trade/ImageData.h"
+#include "MagnumPlugins/TgaImporter/TgaHeader.h"
 
 #ifdef MAGNUM_TARGET_GLES2
 #include "Magnum/Context.h"
@@ -104,18 +101,10 @@ std::optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt) {
     if(header.imageType == 2) {
         switch(header.bpp) {
             case 24:
-                #ifndef MAGNUM_TARGET_GLES
-                format = ColorFormat::BGR;
-                #else
                 format = ColorFormat::RGB;
-                #endif
                 break;
             case 32:
-                #ifndef MAGNUM_TARGET_GLES
-                format = ColorFormat::BGRA;
-                #else
                 format = ColorFormat::RGBA;
-                #endif
                 break;
             default:
                 Error() << "Trade::TgaImporter::image2D(): unsupported color bits-per-pixel:" << header.bpp;
@@ -147,7 +136,6 @@ std::optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt) {
 
     Vector2i size(header.width, header.height);
 
-    #ifdef MAGNUM_TARGET_GLES
     if(format == ColorFormat::RGB) {
         auto pixels = reinterpret_cast<Math::Vector3<UnsignedByte>*>(data);
         std::transform(pixels, pixels + size.product(), pixels,
@@ -157,7 +145,6 @@ std::optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt) {
         std::transform(pixels, pixels + size.product(), pixels,
             [](Math::Vector4<UnsignedByte> pixel) { return Math::swizzle<'b', 'g', 'r', 'a'>(pixel); });
     }
-    #endif
 
     return ImageData2D(format, ColorType::UnsignedByte, size, data);
 }

@@ -132,24 +132,16 @@ void TgaImporterTest::colorBits24() {
         3, 4, 5, 4, 5, 6,
         5, 6, 7, 6, 7, 8
     };
-    #ifndef MAGNUM_TARGET_GLES
-    const char* pixels = data + 18;
-    #else
     const char pixels[] = {
         3, 2, 1, 4, 3, 2,
         5, 4, 3, 6, 5, 4,
         7, 6, 5, 8, 7, 6
     };
-    #endif
     CORRADE_VERIFY(importer.openData(data));
 
     std::optional<Trade::ImageData2D> image = importer.image2D(0);
     CORRADE_VERIFY(image);
-    #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE(image->format(), ColorFormat::BGR);
-    #else
     CORRADE_COMPARE(image->format(), ColorFormat::RGB);
-    #endif
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
     CORRADE_COMPARE(image->type(), ColorType::UnsignedByte);
     CORRADE_COMPARE((std::string{image->data(), 2*3*3}),
@@ -164,24 +156,16 @@ void TgaImporterTest::colorBits32() {
         3, 4, 5, 1, 4, 5, 6, 1,
         5, 6, 7, 1, 6, 7, 8, 1
     };
-    #ifndef MAGNUM_TARGET_GLES
-    const char* pixels = data + 18;
-    #else
     const char pixels[] = {
         3, 2, 1, 1, 4, 3, 2, 1,
         5, 4, 3, 1, 6, 5, 4, 1,
         7, 6, 5, 1, 8, 7, 6, 1
     };
-    #endif
     CORRADE_VERIFY(importer.openData(data));
 
     std::optional<Trade::ImageData2D> image = importer.image2D(0);
     CORRADE_VERIFY(image);
-    #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE(image->format(), ColorFormat::BGRA);
-    #else
     CORRADE_COMPARE(image->format(), ColorFormat::RGBA);
-    #endif
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
     CORRADE_COMPARE(image->type(), ColorType::UnsignedByte);
     CORRADE_COMPARE((std::string{image->data(), 2*3*3}),
