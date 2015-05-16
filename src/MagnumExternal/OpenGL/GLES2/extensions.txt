@@ -18,6 +18,7 @@ extension EXT_shadow_samplers                   optional
 extension EXT_texture_rg                        optional
 extension EXT_texture_storage                   optional
 extension EXT_map_buffer_range                  optional
+extension EXT_draw_buffers                      optional
 extension EXT_instanced_arrays                  optional
 extension EXT_draw_instanced                    optional
 extension NV_draw_buffers                       optional

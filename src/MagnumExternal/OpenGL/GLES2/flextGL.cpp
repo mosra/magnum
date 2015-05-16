@@ -46,6 +46,9 @@ FLEXTGL_EXPORT void(APIENTRY *flextglTextureStorage3DEXT)(GLuint, GLenum, GLsize
 FLEXTGL_EXPORT void *(APIENTRY *flextglMapBufferRangeEXT)(GLenum, GLintptr, GLsizeiptr, GLbitfield) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglFlushMappedBufferRangeEXT)(GLenum, GLintptr, GLsizeiptr) = nullptr;
 
+/* GL_EXT_draw_buffers */
+FLEXTGL_EXPORT void(APIENTRY *flextglDrawBuffersEXT)(GLsizei, const GLenum *) = nullptr;
+
 /* GL_EXT_instanced_arrays */
 FLEXTGL_EXPORT void(APIENTRY *flextglDrawArraysInstancedEXT)(GLenum, GLint, GLsizei, GLsizei) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglDrawElementsInstancedEXT)(GLenum, GLsizei, GLenum, const void *, GLsizei) = nullptr;

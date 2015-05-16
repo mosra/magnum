@@ -102,7 +102,6 @@ and @ref attachTextureLayer() use DSA to avoid unnecessary calls to
 information.
 
 @requires_gl30 Extension @extension{ARB,framebuffer_object}
-@todo `MAX_COLOR_ATTACHMENTS`
 */
 class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObject {
     friend Implementation::FramebufferState;
@@ -114,6 +113,10 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @see @ref mapForDraw(), @ref attachRenderbuffer(),
          *      @ref attachTexture(), @ref attachCubeMapTexture(),
          *      @ref attachTextureLayer()
+         * @requires_gles30 Extension @es_extension{EXT,draw_buffers} or
+         *      @es_extension{NV,draw_buffers} for @ref mapForDraw() and
+         *      extension @es_extension{NV,fbo_color_attachments} for `attach*()`
+         *      in OpenGL ES 2.0.
          */
         class ColorAttachment {
             friend Framebuffer;
@@ -122,9 +125,6 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
                 /**
                  * @brief Constructor
                  * @param id        Color attachment ID
-                 *
-                 * @requires_gles30 Extension @es_extension{NV,fbo_color_attachments}
-                 *      is required for @p id greater than 0 in OpenGL ES 2.0
                  */
                 constexpr explicit ColorAttachment(UnsignedInt id): attachment(GL_COLOR_ATTACHMENT0 + id) {}
 
@@ -140,6 +140,8 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @brief Draw attachment
          *
          * @see @ref mapForDraw()
+         * @requires_gles30 Extension @es_extension{EXT,draw_buffers} or
+         *      @es_extension{NV,draw_buffers} in OpenGL ES 2.0.
          */
         class DrawAttachment {
             public:
@@ -164,6 +166,8 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          *
          * @see @ref attachRenderbuffer(), @ref attachTexture(),
          *      @ref attachCubeMapTexture(), @ref attachTextureLayer()
+         * @requires_gles30 Extension @es_extension{EXT,draw_buffers} or
+         *      @es_extension{NV,fbo_color_attachments} in OpenGL ES 2.0.
          */
         class MAGNUM_EXPORT BufferAttachment {
             public:
@@ -293,8 +297,9 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @brief Max supported color attachment count
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If neither OpenGL ES 3.0 nor ES extension
-         * @extension{NV,fbo_color_attachments} is available, returns `0`.
+         * OpenGL calls. In OpenGL ES 2.0, if neither @es_extension{EXT,draw_buffers}
+         * nor @es_extension{NV,fbo_color_attachments} extension is available,
+         * returns `0`.
          * @see @ref mapForDraw(), @fn_gl{Get} with @def_gl{MAX_COLOR_ATTACHMENTS}
          */
         static Int maxColorAttachments();
@@ -404,8 +409,8 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          *      @fn_gl2{NamedFramebufferDrawBuffers,DrawBuffers},
          *      @fn_gl_extension{FramebufferDrawBuffers,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and @fn_gl{DrawBuffers}
-         * @requires_gles30 Extension @es_extension2{NV,draw_buffers,GL_NV_draw_buffers}
-         *      in OpenGL ES 2.0
+         * @requires_gles30 Extension @es_extension{EXT,draw_buffers} or
+         *      @es_extension{NV,draw_buffers} in OpenGL ES 2.0.
          */
         Framebuffer& mapForDraw(std::initializer_list<std::pair<UnsignedInt, DrawAttachment>> attachments);
 
@@ -425,6 +430,8 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          *      @fn_gl_extension{FramebufferDrawBuffer,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and @fn_gl{DrawBuffer} (or
          *      @fn_gl{DrawBuffers} in OpenGL ES)
+         * @requires_gles30 Extension @es_extension{EXT,draw_buffers} or
+         *      @es_extension{NV,draw_buffers} in OpenGL ES 2.0.
          */
         Framebuffer& mapForDraw(DrawAttachment attachment);
 

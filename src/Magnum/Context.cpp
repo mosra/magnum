@@ -266,6 +266,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,EXT,texture_rg),
         _extension(GL,EXT,texture_storage),
         _extension(GL,EXT,map_buffer_range),
+        _extension(GL,EXT,draw_buffers),
         _extension(GL,EXT,instanced_arrays),
         _extension(GL,EXT,draw_instanced),
         _extension(GL,NV,draw_buffers),

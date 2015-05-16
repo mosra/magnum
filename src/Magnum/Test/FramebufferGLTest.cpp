@@ -613,8 +613,9 @@ void FramebufferGLTest::multipleColorOutputs() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
         CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
     #elif defined(MAGNUM_TARGET_GLES2)
-    if(!Context::current()->isExtensionSupported<Extensions::GL::NV::draw_buffers>())
-        CORRADE_SKIP(Extensions::GL::NV::draw_buffers::string() + std::string(" is not available."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::draw_buffers>() &&
+       !Context::current()->isExtensionSupported<Extensions::GL::NV::draw_buffers>())
+        CORRADE_SKIP("No required extension available.");
     #endif
 
     Texture2D color1;

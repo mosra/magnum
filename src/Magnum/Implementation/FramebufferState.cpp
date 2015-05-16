@@ -90,8 +90,12 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
     #endif
     {
         checkStatusImplementation = &AbstractFramebuffer::checkStatusImplementationDefault;
+        #ifndef MAGNUM_TARGET_GLES2
         drawBuffersImplementation = &AbstractFramebuffer::drawBuffersImplementationDefault;
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
         drawBufferImplementation = &AbstractFramebuffer::drawBufferImplementationDefault;
+        #endif
         readBufferImplementation = &AbstractFramebuffer::readBufferImplementationDefault;
 
         renderbufferImplementation = &Framebuffer::renderbufferImplementationDefault;
@@ -134,6 +138,17 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
         bindInternalImplementation = &Framebuffer::bindImplementationSingle;
         checkStatusImplementation = &Framebuffer::checkStatusImplementationSingle;
     }
+
+    /* Framebuffer draw mapping on ES2 */
+    if(context.isExtensionSupported<Extensions::GL::EXT::draw_buffers>()) {
+        extensions.push_back(Extensions::GL::EXT::draw_buffers::string());
+
+        drawBuffersImplementation = &AbstractFramebuffer::drawBuffersImplementationEXT;
+    } else if(context.isExtensionSupported<Extensions::GL::NV::draw_buffers>()) {
+        extensions.push_back(Extensions::GL::NV::draw_buffers::string());
+
+        drawBuffersImplementation = &AbstractFramebuffer::drawBuffersImplementationNV;
+    } else drawBuffersImplementation = nullptr;
     #endif
 
     /* Framebuffer reading implementation */

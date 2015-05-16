@@ -49,7 +49,8 @@ Vector2i AbstractFramebuffer::maxViewportSize() {
 
 Int AbstractFramebuffer::maxDrawBuffers() {
     #ifdef MAGNUM_TARGET_GLES2
-    if(!Context::current()->isExtensionSupported<Extensions::GL::NV::draw_buffers>())
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::draw_buffers>() &&
+       !Context::current()->isExtensionSupported<Extensions::GL::NV::draw_buffers>())
         return 0;
     #endif
 
@@ -60,7 +61,7 @@ Int AbstractFramebuffer::maxDrawBuffers() {
         #ifndef MAGNUM_TARGET_GLES2
         glGetIntegerv(GL_MAX_DRAW_BUFFERS, &value);
         #else
-        glGetIntegerv(GL_MAX_DRAW_BUFFERS_NV, &value);
+        glGetIntegerv(GL_MAX_DRAW_BUFFERS_EXT, &value);
         #endif
     }
 
@@ -358,18 +359,11 @@ GLenum AbstractFramebuffer::checkStatusImplementationDSAEXT(const FramebufferTar
 }
 #endif
 
+#ifndef MAGNUM_TARGET_GLES2
 void AbstractFramebuffer::drawBuffersImplementationDefault(GLsizei count, const GLenum* buffers) {
     bindInternal(FramebufferTarget::Draw);
 
-    #ifndef MAGNUM_TARGET_GLES2
     glDrawBuffers(count, buffers);
-    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
-    glDrawBuffersNV(count, buffers);
-    #else
-    static_cast<void>(count);
-    static_cast<void>(buffers);
-    CORRADE_ASSERT_UNREACHABLE();
-    #endif
 }
 
 #ifndef MAGNUM_TARGET_GLES
@@ -382,23 +376,39 @@ void AbstractFramebuffer::drawBuffersImplementationDSAEXT(GLsizei count, const G
     glFramebufferDrawBuffersEXT(_id, count, buffers);
 }
 #endif
-
-void AbstractFramebuffer::drawBufferImplementationDefault(GLenum buffer) {
+#else
+void AbstractFramebuffer::drawBuffersImplementationEXT(GLsizei count, const GLenum* buffers) {
     bindInternal(FramebufferTarget::Draw);
 
-    #ifndef MAGNUM_TARGET_GLES
-    glDrawBuffer(buffer);
-    #elif !defined(MAGNUM_TARGET_GLES2)
-    glDrawBuffers(1, &buffer);
-    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
-    glDrawBuffersNV(1, &buffer);
+    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glDrawBuffersEXT(count, buffers);
     #else
-    static_cast<void>(buffer);
+    static_cast<void>(count);
+    static_cast<void>(buffers);
     CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
 
+void AbstractFramebuffer::drawBuffersImplementationNV(GLsizei count, const GLenum* buffers) {
+    bindInternal(FramebufferTarget::Draw);
+
+    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    glDrawBuffersNV(count, buffers);
+    #else
+    static_cast<void>(count);
+    static_cast<void>(buffers);
+    CORRADE_ASSERT_UNREACHABLE();
+    #endif
+}
+#endif
+
 #ifndef MAGNUM_TARGET_GLES
+void AbstractFramebuffer::drawBufferImplementationDefault(GLenum buffer) {
+    bindInternal(FramebufferTarget::Draw);
+
+    glDrawBuffer(buffer);
+}
+
 void AbstractFramebuffer::drawBufferImplementationDSA(const GLenum buffer) {
     glNamedFramebufferDrawBuffer(_id, buffer);
 }

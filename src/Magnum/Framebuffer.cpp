@@ -62,7 +62,8 @@ const Framebuffer::InvalidationAttachment Framebuffer::InvalidationAttachment::S
 
 Int Framebuffer::maxColorAttachments() {
     #ifdef MAGNUM_TARGET_GLES2
-    if(!Context::current()->isExtensionSupported<Extensions::GL::NV::fbo_color_attachments>())
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::draw_buffers>() &&
+       !Context::current()->isExtensionSupported<Extensions::GL::NV::fbo_color_attachments>())
         return 0;
     #endif
 
@@ -72,7 +73,7 @@ Int Framebuffer::maxColorAttachments() {
         #ifndef MAGNUM_TARGET_GLES2
         glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS, &value);
         #else
-        glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS_NV, &value);
+        glGetIntegerv(GL_MAX_COLOR_ATTACHMENTS_EXT, &value);
         #endif
     }
 
@@ -153,7 +154,11 @@ Framebuffer& Framebuffer::mapForDraw(std::initializer_list<std::pair<UnsignedInt
 }
 
 Framebuffer& Framebuffer::mapForDraw(const DrawAttachment attachment) {
+    #ifndef MAGNUM_TARGET_GLES
     (this->*Context::current()->state().framebuffer->drawBufferImplementation)(GLenum(attachment));
+    #else
+    (this->*Context::current()->state().framebuffer->drawBuffersImplementation)(1, reinterpret_cast<const GLenum*>(&attachment));
+    #endif
     return *this;
 }
 

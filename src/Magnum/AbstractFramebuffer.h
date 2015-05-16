@@ -197,8 +197,8 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @brief Max supported draw buffer count
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If ES extension @extension{NV,draw_buffers} is not
-         * available, returns `0`.
+         * OpenGL calls. In OpenGL ES 2.0, if neither @es_extension{EXT,draw_buffers}
+         * nor @es_extension{NV,draw_buffers} is available, returns `0`.
          * @see @ref DefaultFramebuffer::mapForDraw(), @ref Framebuffer::mapForDraw(),
          *      @fn_gl{Get} with @def_gl{MAX_DRAW_BUFFERS}
          */
@@ -424,14 +424,19 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         GLenum MAGNUM_LOCAL checkStatusImplementationDSAEXT(FramebufferTarget target);
         #endif
 
+        #ifndef MAGNUM_TARGET_GLES2
         void MAGNUM_LOCAL drawBuffersImplementationDefault(GLsizei count, const GLenum* buffers);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL drawBuffersImplementationDSA(GLsizei count, const GLenum* buffers);
         void MAGNUM_LOCAL drawBuffersImplementationDSAEXT(GLsizei count, const GLenum* buffers);
         #endif
+        #else
+        void MAGNUM_LOCAL drawBuffersImplementationEXT(GLsizei count, const GLenum* buffers);
+        void MAGNUM_LOCAL drawBuffersImplementationNV(GLsizei count, const GLenum* buffers);
+        #endif
 
-        void MAGNUM_LOCAL drawBufferImplementationDefault(GLenum buffer);
         #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL drawBufferImplementationDefault(GLenum buffer);
         void MAGNUM_LOCAL drawBufferImplementationDSA(GLenum buffer);
         void MAGNUM_LOCAL drawBufferImplementationDSAEXT(GLenum buffer);
         #endif

@@ -304,6 +304,7 @@ Extension                                   | Status
 @es_extension{EXT,texture_rg}               | done
 @es_extension{EXT,texture_storage}          | done
 @es_extension{EXT,map_buffer_range}         | done
+@es_extension{EXT,draw_buffers}             | done
 @es_extension{EXT,instanced_arrays}         | done
 @es_extension2{EXT,draw_instanced,draw_instanced} | done
 @es_extension{NV,draw_buffers}              | done

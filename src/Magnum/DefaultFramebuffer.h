@@ -105,13 +105,12 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
             #endif
         };
 
-        #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Draw attachment
          *
          * @see @ref mapForDraw()
-         * @requires_gles30 Draw attachments for default framebuffer are
-         *      available only in OpenGL ES 3.0.
+         * @requires_gles30 Extension @es_extension{EXT,draw_buffers} in OpenGL
+         *      ES 2.0.
          */
         enum class DrawAttachment: GLenum {
             /** Don't use the output. */
@@ -150,24 +149,11 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
              * @ref DrawAttachment::BackLeft.
              */
             #ifdef MAGNUM_TARGET_GLES
-            Back = GL_BACK,
+            Back = GL_BACK
             #else
-            Back = GL_BACK_LEFT,
-            #endif
-
-            /**
-             * Write output to front buffer.
-             *
-             * On desktop OpenGL, this is equal to
-             * @ref DrawAttachment::FrontLeft.
-             */
-            #ifdef MAGNUM_TARGET_GLES
-            Front = GL_FRONT
-            #else
-            Front = GL_FRONT_LEFT
+            Back = GL_BACK_LEFT
             #endif
         };
-        #endif
 
         /**
          * @brief Read attachment
@@ -328,7 +314,6 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          */
         Status checkStatus(FramebufferTarget target);
 
-        #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Map shader outputs to buffer attachment
          * @return Reference to self (for method chaining)
@@ -338,7 +323,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * can achieve the same by passing @ref DrawAttachment::None as
          * attachment. Example usage:
          * @code
-         * defaultFramebuffer.mapForDraw({{MyShader::ColorOutput, DefaultFramebuffer::DrawAttachment::BackLeft},
+         * defaultFramebuffer.mapForDraw({{MyShader::ColorOutput, DefaultFramebuffer::DrawAttachment::Back},
          *                                {MyShader::NormalOutput, DefaultFramebuffer::DrawAttachment::None}});
          * @endcode
          *
@@ -349,8 +334,8 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          *      @ref mapForRead(), @fn_gl2{NamedFramebufferDrawBuffers,DrawBuffers},
          *      @fn_gl_extension{FramebufferDrawBuffers,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and @fn_gl{DrawBuffers}
-         * @requires_gles30 Draw attachments for default framebuffer are
-         *      available only in OpenGL ES 3.0.
+         * @requires_gles30 Extension @es_extension{EXT,draw_buffers} in OpenGL
+         *      ES 2.0.
          */
         DefaultFramebuffer& mapForDraw(std::initializer_list<std::pair<UnsignedInt, DrawAttachment>> attachments);
 
@@ -369,11 +354,10 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          *      @fn_gl_extension{FramebufferDrawBuffer,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and @fn_gl{DrawBuffer} or
          *      @fn_gl{DrawBuffers} in OpenGL ES 3.0
-         * @requires_gles30 Draw attachments for default framebuffer are
-         *      available only in OpenGL ES 3.0.
+         * @requires_gles30 Extension @es_extension{EXT,draw_buffers} in OpenGL
+         *      ES 2.0.
          */
         DefaultFramebuffer& mapForDraw(DrawAttachment attachment);
-        #endif
 
         /**
          * @brief Map given attachment for reading

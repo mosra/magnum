@@ -45,7 +45,6 @@ DefaultFramebuffer::Status DefaultFramebuffer::checkStatus(const FramebufferTarg
     return Status((this->*Context::current()->state().framebuffer->checkStatusImplementation)(target));
 }
 
-#ifndef MAGNUM_TARGET_GLES2
 DefaultFramebuffer& DefaultFramebuffer::mapForDraw(std::initializer_list<std::pair<UnsignedInt, DrawAttachment>> attachments) {
     /* Max attachment location */
     std::size_t max = 0;
@@ -64,10 +63,13 @@ DefaultFramebuffer& DefaultFramebuffer::mapForDraw(std::initializer_list<std::pa
 }
 
 DefaultFramebuffer& DefaultFramebuffer::mapForDraw(const DrawAttachment attachment) {
+    #ifndef MAGNUM_TARGET_GLES
     (this->*Context::current()->state().framebuffer->drawBufferImplementation)(GLenum(attachment));
+    #else
+    (this->*Context::current()->state().framebuffer->drawBuffersImplementation)(1, reinterpret_cast<const GLenum*>(&attachment));
+    #endif
     return *this;
 }
-#endif
 
 DefaultFramebuffer& DefaultFramebuffer::mapForRead(const ReadAttachment attachment) {
     (this->*Context::current()->state().framebuffer->readBufferImplementation)(GLenum(attachment));
