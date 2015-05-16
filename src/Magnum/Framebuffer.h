@@ -111,9 +111,9 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         /**
          * @brief Color attachment
          *
-         * @see @ref BufferAttachment, @ref attachRenderbuffer(),
-         *      @ref attachTexture1D(), @ref attachTexture2D(),
-         *      @ref attachCubeMapTexture(), @ref attachTexture3D()
+         * @see @ref mapForDraw(), @ref attachRenderbuffer(),
+         *      @ref attachTexture(), @ref attachCubeMapTexture(),
+         *      @ref attachTextureLayer()
          */
         class ColorAttachment {
             friend Framebuffer;
@@ -162,9 +162,8 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         /**
          * @brief Buffer attachment
          *
-         * @see @ref attachRenderbuffer(), @ref attachTexture1D(),
-         *      @ref attachTexture2D(), @ref attachCubeMapTexture(),
-         *      @ref attachTexture3D()
+         * @see @ref attachRenderbuffer(), @ref attachTexture(),
+         *      @ref attachCubeMapTexture(), @ref attachTextureLayer()
          */
         class MAGNUM_EXPORT BufferAttachment {
             public:
@@ -424,10 +423,8 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @see @ref maxColorAttachments(), @ref mapForRead(),
          *      @fn_gl2{NamedFramebufferDrawBuffer,DrawBuffer},
          *      @fn_gl_extension{FramebufferDrawBuffer,EXT,direct_state_access},
-         *      eventually @fn_gl{BindFramebuffer} and @fn_gl{DrawBuffer} or
-         *      @fn_gl{DrawBuffers} in OpenGL ES 3.0
-         * @requires_gles30 Extension @es_extension2{NV,draw_buffers,GL_NV_draw_buffers}
-         *      in OpenGL ES 2.0
+         *      eventually @fn_gl{BindFramebuffer} and @fn_gl{DrawBuffer} (or
+         *      @fn_gl{DrawBuffers} in OpenGL ES)
          */
         Framebuffer& mapForDraw(DrawAttachment attachment);
 
