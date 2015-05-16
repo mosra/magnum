@@ -624,7 +624,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @copybrief attachTexture()
          * @deprecated Use one of @ref attachTexture() overloads instead.
          */
-        Framebuffer& attachTexture1D(BufferAttachment attachment, Texture1D& texture, Int level) {
+        CORRADE_DEPRECATED("use one of attachTexture() overloads instead") Framebuffer& attachTexture1D(BufferAttachment attachment, Texture1D& texture, Int level) {
             return attachTexture(attachment, texture, level);
         }
         #endif
@@ -633,13 +633,13 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @copybrief attachTexture()
          * @deprecated Use one of @ref attachTexture() overloads instead.
          */
-        Framebuffer& attachTexture2D(BufferAttachment attachment, Texture2D& texture, Int level);
+        CORRADE_DEPRECATED("use one of attachTexture() overloads instead") Framebuffer& attachTexture2D(BufferAttachment attachment, Texture2D& texture, Int level);
 
         /**
          * @copybrief attachTextureLayer()
          * @deprecated Use one of @ref attachTextureLayer() overloads instead.
          */
-        Framebuffer& attachTexture3D(BufferAttachment attachment, Texture3D& texture, Int level, Int layer) {
+        CORRADE_DEPRECATED("use one of attachTexture() overloads instead") Framebuffer& attachTexture3D(BufferAttachment attachment, Texture3D& texture, Int level, Int layer) {
             return attachTextureLayer(attachment, texture, level, layer);
         }
         #endif
