@@ -315,12 +315,12 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         #else
         case Version::GLES200: return empty;
         case Version::GLES300:
-        case Version::GLES310:
             #ifdef MAGNUM_TARGET_GLES2
             return extensionsES300;
             #else
             return empty;
             #endif
+        case Version::GLES310: return empty;
         #endif
     }
 
