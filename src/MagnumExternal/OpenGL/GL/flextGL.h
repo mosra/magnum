@@ -759,6 +759,22 @@ typedef void (APIENTRY *GLDEBUGPROC)(GLenum source,GLenum type,GLuint id,GLenum 
 #define GL_COLOR_ATTACHMENT13 0x8CED
 #define GL_COLOR_ATTACHMENT14 0x8CEE
 #define GL_COLOR_ATTACHMENT15 0x8CEF
+#define GL_COLOR_ATTACHMENT16 0x8CF0
+#define GL_COLOR_ATTACHMENT17 0x8CF1
+#define GL_COLOR_ATTACHMENT18 0x8CF2
+#define GL_COLOR_ATTACHMENT19 0x8CF3
+#define GL_COLOR_ATTACHMENT20 0x8CF4
+#define GL_COLOR_ATTACHMENT21 0x8CF5
+#define GL_COLOR_ATTACHMENT22 0x8CF6
+#define GL_COLOR_ATTACHMENT23 0x8CF7
+#define GL_COLOR_ATTACHMENT24 0x8CF8
+#define GL_COLOR_ATTACHMENT25 0x8CF9
+#define GL_COLOR_ATTACHMENT26 0x8CFA
+#define GL_COLOR_ATTACHMENT27 0x8CFB
+#define GL_COLOR_ATTACHMENT28 0x8CFC
+#define GL_COLOR_ATTACHMENT29 0x8CFD
+#define GL_COLOR_ATTACHMENT30 0x8CFE
+#define GL_COLOR_ATTACHMENT31 0x8CFF
 #define GL_DEPTH_ATTACHMENT 0x8D00
 #define GL_STENCIL_ATTACHMENT 0x8D20
 #define GL_FRAMEBUFFER 0x8D40
@@ -1519,7 +1535,6 @@ typedef void (APIENTRY *GLDEBUGPROC)(GLenum source,GLenum type,GLuint id,GLenum 
 #define GL_TEXTURE_BINDING_CUBE_MAP 0x8514
 #define GL_TEXTURE_BINDING_CUBE_MAP_ARRAY 0x900A
 #define GL_TEXTURE_BINDING_RECTANGLE 0x84F6
-#define GL_TEXTURE_BINDING 0x82EB
 #define GL_BACK 0x0405
 #define GL_NO_ERROR 0
 #define GL_GUILTY_CONTEXT_RESET 0x8253
@@ -2670,7 +2685,7 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglCreateTransformFeedbacks)(GLsizei, GL
 #define glCreateTransformFeedbacks flextglCreateTransformFeedbacks
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglTransformFeedbackBufferBase)(GLuint, GLuint, GLuint);
 #define glTransformFeedbackBufferBase flextglTransformFeedbackBufferBase
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglTransformFeedbackBufferRange)(GLuint, GLuint, GLuint, GLintptr, GLsizei);
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglTransformFeedbackBufferRange)(GLuint, GLuint, GLuint, GLintptr, GLsizeiptr);
 #define glTransformFeedbackBufferRange flextglTransformFeedbackBufferRange
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetTransformFeedbackiv)(GLuint, GLenum, GLint *);
 #define glGetTransformFeedbackiv flextglGetTransformFeedbackiv
@@ -2680,25 +2695,25 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetTransformFeedbacki64_v)(GLuint, GL
 #define glGetTransformFeedbacki64_v flextglGetTransformFeedbacki64_v
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglCreateBuffers)(GLsizei, GLuint *);
 #define glCreateBuffers flextglCreateBuffers
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglNamedBufferStorage)(GLuint, GLsizei, const void *, GLbitfield);
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglNamedBufferStorage)(GLuint, GLsizeiptr, const void *, GLbitfield);
 #define glNamedBufferStorage flextglNamedBufferStorage
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglNamedBufferData)(GLuint, GLsizei, const void *, GLenum);
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglNamedBufferData)(GLuint, GLsizeiptr, const void *, GLenum);
 #define glNamedBufferData flextglNamedBufferData
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglNamedBufferSubData)(GLuint, GLintptr, GLsizei, const void *);
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglNamedBufferSubData)(GLuint, GLintptr, GLsizeiptr, const void *);
 #define glNamedBufferSubData flextglNamedBufferSubData
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglCopyNamedBufferSubData)(GLuint, GLuint, GLintptr, GLintptr, GLsizei);
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglCopyNamedBufferSubData)(GLuint, GLuint, GLintptr, GLintptr, GLsizeiptr);
 #define glCopyNamedBufferSubData flextglCopyNamedBufferSubData
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglClearNamedBufferData)(GLuint, GLenum, GLenum, GLenum, const void *);
 #define glClearNamedBufferData flextglClearNamedBufferData
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglClearNamedBufferSubData)(GLuint, GLenum, GLintptr, GLsizei, GLenum, GLenum, const void *);
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglClearNamedBufferSubData)(GLuint, GLenum, GLintptr, GLsizeiptr, GLenum, GLenum, const void *);
 #define glClearNamedBufferSubData flextglClearNamedBufferSubData
 GLAPI FLEXTGL_EXPORT void *(APIENTRY *flextglMapNamedBuffer)(GLuint, GLenum);
 #define glMapNamedBuffer flextglMapNamedBuffer
-GLAPI FLEXTGL_EXPORT void *(APIENTRY *flextglMapNamedBufferRange)(GLuint, GLintptr, GLsizei, GLbitfield);
+GLAPI FLEXTGL_EXPORT void *(APIENTRY *flextglMapNamedBufferRange)(GLuint, GLintptr, GLsizeiptr, GLbitfield);
 #define glMapNamedBufferRange flextglMapNamedBufferRange
 GLAPI FLEXTGL_EXPORT GLboolean(APIENTRY *flextglUnmapNamedBuffer)(GLuint);
 #define glUnmapNamedBuffer flextglUnmapNamedBuffer
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglFlushMappedNamedBufferRange)(GLuint, GLintptr, GLsizei);
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglFlushMappedNamedBufferRange)(GLuint, GLintptr, GLsizeiptr);
 #define glFlushMappedNamedBufferRange flextglFlushMappedNamedBufferRange
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetNamedBufferParameteriv)(GLuint, GLenum, GLint *);
 #define glGetNamedBufferParameteriv flextglGetNamedBufferParameteriv
@@ -2706,7 +2721,7 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetNamedBufferParameteri64v)(GLuint, 
 #define glGetNamedBufferParameteri64v flextglGetNamedBufferParameteri64v
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetNamedBufferPointerv)(GLuint, GLenum, void **);
 #define glGetNamedBufferPointerv flextglGetNamedBufferPointerv
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetNamedBufferSubData)(GLuint, GLintptr, GLsizei, void *);
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetNamedBufferSubData)(GLuint, GLintptr, GLsizeiptr, void *);
 #define glGetNamedBufferSubData flextglGetNamedBufferSubData
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglCreateFramebuffers)(GLsizei, GLuint *);
 #define glCreateFramebuffers flextglCreateFramebuffers
@@ -2756,7 +2771,7 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglCreateTextures)(GLenum, GLsizei, GLui
 #define glCreateTextures flextglCreateTextures
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglTextureBuffer)(GLuint, GLenum, GLuint);
 #define glTextureBuffer flextglTextureBuffer
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglTextureBufferRange)(GLuint, GLenum, GLuint, GLintptr, GLsizei);
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglTextureBufferRange)(GLuint, GLenum, GLuint, GLintptr, GLsizeiptr);
 #define glTextureBufferRange flextglTextureBufferRange
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglTextureStorage1D)(GLuint, GLsizei, GLenum, GLsizei);
 #define glTextureStorage1D flextglTextureStorage1D
