@@ -779,6 +779,7 @@ typedef khronos_ssize_t GLsizeiptr;
 #define GL_PROGRAM 0x82E2
 #define GL_VERTEX_ARRAY 0x8074
 #define GL_QUERY 0x82E3
+#define GL_PROGRAM_PIPELINE 0x82E4
 #define GL_SAMPLER 0x82E6
 #define GL_MAX_LABEL_LENGTH 0x82E8
 #define GL_MAX_DEBUG_MESSAGE_LENGTH 0x9143
@@ -818,6 +819,7 @@ typedef khronos_ssize_t GLsizeiptr;
 #define GL_PROGRAM_KHR 0x82E2
 #define GL_VERTEX_ARRAY_KHR 0x8074
 #define GL_QUERY_KHR 0x82E3
+#define GL_PROGRAM_PIPELINE_KHR 0x82E4
 #define GL_SAMPLER_KHR 0x82E6
 #define GL_MAX_LABEL_LENGTH_KHR 0x82E8
 #define GL_MAX_DEBUG_MESSAGE_LENGTH_KHR 0x9143
@@ -830,7 +832,6 @@ typedef khronos_ssize_t GLsizeiptr;
 #define GL_CONTEXT_FLAG_DEBUG_BIT_KHR 0x00000002
 #define GL_STACK_OVERFLOW_KHR 0x0503
 #define GL_STACK_UNDERFLOW_KHR 0x0504
-#define GL_PROGRAM_PIPELINE 0x82E4
 #define GL_DISPLAY_LIST 0x82E7
 
 /* GL_NV_texture_border_clamp */
