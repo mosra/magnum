@@ -265,7 +265,7 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
             storage3DImplementation = &AbstractTexture::storageImplementationDefault;
         }
     }
-    #ifndef MAGNUM_TARGET_GLES3
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
     else {
         #ifndef MAGNUM_TARGET_GLES
         storage1DImplementation = &AbstractTexture::storageImplementationFallback;
