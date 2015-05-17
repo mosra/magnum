@@ -462,7 +462,7 @@ class CubeMapTexture;
 class CubeMapTextureArray;
 #endif
 
-/* DebugMessage used only statically */
+/* DebugOutput, DebugMessage, DebugGroup used only statically */
 /* DefaultFramebuffer is available only through global instance */
 /* DimensionTraits forward declaration is not needed */
 
