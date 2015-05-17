@@ -216,7 +216,6 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,ARB,texture_barrier),
         _extension(GL,KHR,context_flush_control),
         _extension(GL,KHR,robustness)};
-    #undef _extension
     #else
     static const std::vector<Extension> extensions{
         _extension(GL,APPLE,texture_format_BGRA8888),
@@ -296,6 +295,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,OES,surfaceless_context)};
     #endif
     #endif
+    #undef _extension
 
     switch(version) {
         case Version::None:  return extensions;
