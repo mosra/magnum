@@ -50,7 +50,9 @@
 #include "Implementation/MeshState.h"
 #include "Implementation/ShaderProgramState.h"
 #include "Implementation/TextureState.h"
+#ifndef MAGNUM_TARGET_GLES2
 #include "Implementation/TransformFeedbackState.h"
+#endif
 
 namespace Magnum {
 
