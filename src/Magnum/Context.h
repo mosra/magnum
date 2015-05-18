@@ -97,11 +97,13 @@ class MAGNUM_EXPORT Context {
     friend Platform::Context;
 
     public:
+        #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @brief Context flag
          *
          * @see @ref Flags, @ref flags(),
          *      @ref Platform::Sdl2Application::Configuration::setFlags() "Platform::*Application::Configuration::setFlags()"
+         * @requires_gles Context flags are not available in WebGL.
          */
         enum class Flag: GLint {
             /**
@@ -139,8 +141,10 @@ class MAGNUM_EXPORT Context {
          * @brief Context flags
          *
          * @see @ref flags()
+         * @requires_gles Context flags are not available in WebGL.
          */
         typedef Containers::EnumSet<Flag> Flags;
+        #endif
 
         /**
          * @brief State to reset
@@ -322,8 +326,14 @@ class MAGNUM_EXPORT Context {
          */
         std::vector<std::string> extensionStrings() const;
 
-        /** @brief Context flags */
+        #ifndef MAGNUM_TARGET_WEBGL
+        /**
+         * @brief Context flags
+         *
+         * @requires_gles Context flags are not available in WebGL.
+         */
         Flags flags() const { return _flags; }
+        #endif
 
         /**
          * @brief Supported extensions
@@ -482,7 +492,9 @@ class MAGNUM_EXPORT Context {
         Version _version;
         Int _majorVersion;
         Int _minorVersion;
+        #ifndef MAGNUM_TARGET_WEBGL
         Flags _flags;
+        #endif
 
         std::array<Version, 160> _extensionRequiredVersion;
         std::bitset<160> extensionStatus;
@@ -493,8 +505,10 @@ class MAGNUM_EXPORT Context {
         std::optional<DetectedDrivers> _detectedDrivers;
 };
 
+#ifndef MAGNUM_TARGET_WEBGL
 /** @debugoperatorclassenum{Magnum::Context,Magnum::Context::Flag} */
 MAGNUM_EXPORT Debug operator<<(Debug debug, Context::Flag value);
+#endif
 
 /** @hideinitializer
 @brief Assert that given OpenGL version is supported

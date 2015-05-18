@@ -588,6 +588,7 @@ void Context::resetState(const States states) {
     #endif
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug operator<<(Debug debug, const Context::Flag value) {
     switch(value) {
@@ -601,6 +602,7 @@ Debug operator<<(Debug debug, const Context::Flag value) {
 
     return debug << "Context::Flag::(invalid)";
 }
+#endif
 #endif
 
 }
