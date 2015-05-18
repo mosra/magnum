@@ -383,7 +383,7 @@ inline TransformFeedback& TransformFeedback::operator=(TransformFeedback&& other
 
 }
 #else
-#error This header is not available in OpenGL ES 2.0 build.
+#error this header is not available in OpenGL ES 2.0 build
 #endif
 
 #endif

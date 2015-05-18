@@ -503,7 +503,7 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
 
 }
 #else
-#error this header is available only on desktop OpenGL build
+#error this header is not available in OpenGL ES build
 #endif
 
 #endif

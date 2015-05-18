@@ -28,7 +28,7 @@
 #include "Magnum/Context.h"
 
 #ifdef MAGNUM_TARGET_GLES2
-#error This header is not available in OpenGL ES 2.0 build.
+#error this header is not available in OpenGL ES 2.0 build
 #endif
 
 namespace Magnum { namespace Implementation {

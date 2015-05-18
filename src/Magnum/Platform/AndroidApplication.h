@@ -38,7 +38,7 @@
 #include "Magnum/Platform/Platform.h"
 
 #ifndef CORRADE_TARGET_ANDROID
-#error This file is available only on Android
+#error this file is available only on Android build
 #endif
 
 /* Undef Xlib nonsense which might get pulled in by EGL */

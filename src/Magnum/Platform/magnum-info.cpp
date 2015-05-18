@@ -65,7 +65,7 @@
 #elif defined(CORRADE_TARGET_WINDOWS)
 #include "Magnum/Platform/WindowlessWglApplication.h"
 #else
-#error No windowless application available on this platform
+#error no windowless application available on this platform
 #endif
 
 namespace Magnum {
@@ -170,7 +170,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #elif defined(CORRADE_TARGET_WINDOWS)
     Debug() << "Used application: Platform::WindowlessWglApplication";
     #else
-    #error No windowless application available on this platform
+    #error no windowless application available on this platform
     #endif
     Debug() << "Compilation flags:";
     #ifdef CORRADE_GCC47_COMPATIBILITY

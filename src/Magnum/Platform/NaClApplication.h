@@ -53,7 +53,7 @@ namespace pp {
 }
 
 #ifndef CORRADE_TARGET_NACL
-#error This header is available only on Google Chrome Native Client
+#error this header is available only on Google Chrome Native Client build
 #endif
 
 namespace Magnum { namespace Platform {

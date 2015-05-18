@@ -79,7 +79,7 @@ bool WindowlessGlxApplication::tryCreateContext(const Configuration&) {
         #elif defined(MAGNUM_TARGET_GLES2)
         GLX_CONTEXT_MAJOR_VERSION_ARB, 2,
         #else
-        #error Unsupported OpenGL ES version
+        #error unsupported OpenGL ES version
         #endif
         GLX_CONTEXT_MINOR_VERSION_ARB, 0,
         GLX_CONTEXT_PROFILE_MASK_ARB, GLX_CONTEXT_ES2_PROFILE_BIT_EXT,

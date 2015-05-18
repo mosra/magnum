@@ -35,7 +35,7 @@
 #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_DESKTOP_GLES)
 #include "Magnum/Platform/WindowlessGlxApplication.h"
 #else
-#error Cannot run OpenGL tests on this platform
+#error cannot run OpenGL tests on this platform
 #endif
 
 namespace Magnum { namespace Test {

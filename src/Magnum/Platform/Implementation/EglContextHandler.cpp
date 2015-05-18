@@ -73,7 +73,7 @@ VisualId EglContextHandler::getVisualId(EGLNativeDisplayType nativeDisplay) {
         #elif defined(MAGNUM_TARGET_GLES2)
         EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
         #else
-        #error Unsupported OpenGL edition
+        #error unsupported OpenGL edition
         #endif
         EGL_NONE
     };
@@ -137,7 +137,7 @@ void EglContextHandler::createContext(const AbstractXApplication::Configuration&
         #elif defined(MAGNUM_TARGET_GLES2)
         attributes[1] = 2;
         #else
-        #error Unsupported OpenGL ES version
+        #error unsupported OpenGL ES version
         #endif
     }
     #endif

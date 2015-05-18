@@ -48,7 +48,7 @@
 
 /* Otherwise unsupported */
 #else
-#error Unsupported platform
+#error unsupported platform
 #endif
 
 namespace Magnum { namespace Platform { namespace Implementation {
@@ -108,7 +108,7 @@ auto OpenGLFunctionLoader::load(const char* const name) -> FunctionPointer {
 
 /* Otherwise unsupported */
 #else
-#error Unsupported platform
+#error unsupported platform
 #endif
 
 }}}

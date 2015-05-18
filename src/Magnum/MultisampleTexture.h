@@ -226,7 +226,7 @@ typedef MultisampleTexture<3> MultisampleTexture2DArray;
 
 }
 #else
-#error this header is available only on desktop OpenGL build
+#error this header is not available in OpenGL ES 2.0 build
 #endif
 
 #endif

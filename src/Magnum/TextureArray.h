@@ -562,7 +562,7 @@ typedef TextureArray<2> Texture2DArray;
 
 }
 #else
-#error this header is not available on OpenGL ES 2.0 build
+#error this header is not available in OpenGL ES 2.0 build
 #endif
 
 #endif

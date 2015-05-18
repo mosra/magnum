@@ -148,7 +148,7 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
         #elif defined(MAGNUM_TARGET_GLES2)
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
         #else
-        #error Unsupported OpenGL ES version
+        #error unsupported OpenGL ES version
         #endif
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);

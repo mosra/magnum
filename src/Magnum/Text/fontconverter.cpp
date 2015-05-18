@@ -39,7 +39,7 @@
 #elif defined(CORRADE_TARGET_WINDOWS)
 #include "Magnum/Platform/WindowlessWglApplication.h"
 #else
-#error No windowless application available on this platform
+#error no windowless application available on this platform
 #endif
 
 #include "fontconverterConfigure.h"
