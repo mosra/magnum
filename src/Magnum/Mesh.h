@@ -458,6 +458,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          */
         GLuint id() const { return _id; }
 
+        #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @brief Mesh label
          *
@@ -468,6 +469,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @see @fn_gl{GetObjectLabel} with @def_gl{VERTEX_ARRAY} or
          *      @fn_gl_extension2{GetObjectLabel,EXT,debug_label} with
          *      @def_gl{VERTEX_ARRAY_OBJECT_EXT}
+         * @requires_gles Debug output is not available in WebGL.
          */
         std::string label();
 
@@ -481,6 +483,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} with
          *      @def_gl{VERTEX_ARRAY} or @fn_gl_extension2{LabelObject,EXT,debug_label}
          *      with @def_gl{VERTEX_ARRAY_OBJECT_EXT}
+         * @requires_gles Debug output is not available in WebGL.
          */
         Mesh& setLabel(const std::string& label) {
             return setLabelInternal({label.data(), label.size()});
@@ -490,6 +493,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         template<std::size_t size> Mesh& setLabel(const char(&label)[size]) {
             return setLabelInternal({label, size - 1});
         }
+        #endif
 
         /**
          * @brief Whether the mesh is indexed
@@ -862,7 +866,9 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
 
         void MAGNUM_LOCAL createIfNotAlready();
 
+        #ifndef MAGNUM_TARGET_WEBGL
         Mesh& setLabelInternal(Containers::ArrayReference<const char> label);
+        #endif
 
         /* Computing stride of interleaved vertex attributes */
         template<UnsignedInt location, class T, class ...U> static GLsizei strideOfInterleaved(const Attribute<location, T>& attribute, const U&... attributes) {

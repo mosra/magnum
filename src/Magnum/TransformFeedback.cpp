@@ -32,7 +32,9 @@
 #include "Magnum/Buffer.h"
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
+#ifndef MAGNUM_TARGET_WEBGL
 #include "Magnum/Implementation/DebugState.h"
+#endif
 #include "Magnum/Implementation/State.h"
 #include "Magnum/Implementation/TransformFeedbackState.h"
 
@@ -144,6 +146,7 @@ inline void TransformFeedback::createIfNotAlready() {
     CORRADE_INTERNAL_ASSERT(_created);
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
 std::string TransformFeedback::label() {
     createIfNotAlready();
     return Context::current()->state().debug->getLabelImplementation(GL_TRANSFORM_FEEDBACK, _id);
@@ -154,6 +157,7 @@ TransformFeedback& TransformFeedback::setLabelInternal(const Containers::ArrayRe
     Context::current()->state().debug->labelImplementation(GL_TRANSFORM_FEEDBACK, _id, label);
     return *this;
 }
+#endif
 
 TransformFeedback& TransformFeedback::attachBuffer(const UnsignedInt index, Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
     (this->*Context::current()->state().transformFeedback->attachRangeImplementation)(index, buffer, offset, size);

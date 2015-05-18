@@ -798,6 +798,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         /** @brief OpenGL buffer ID */
         GLuint id() const { return _id; }
 
+        #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @brief Buffer label
          *
@@ -808,6 +809,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @see @fn_gl{GetObjectLabel} with @def_gl{BUFFER} or
          *      @fn_gl_extension2{GetObjectLabel,EXT,debug_label} with
          *      @def_gl{BUFFER_OBJECT_EXT}
+         * @requires_gles Debug output is not available in WebGL.
          */
         std::string label();
 
@@ -821,6 +823,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} with @def_gl{BUFFER}
          *      or @fn_gl_extension2{LabelObject,EXT,debug_label} with
          *      @def_gl{BUFFER_OBJECT_EXT}
+         * @requires_gles Debug output is not available in WebGL.
          */
         Buffer& setLabel(const std::string& label) {
             return setLabelInternal({label.data(), label.size()});
@@ -830,6 +833,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         template<std::size_t size> Buffer& setLabel(const char(&label)[size]) {
             return setLabelInternal({label, size - 1});
         }
+        #endif
 
         /** @brief Target hint */
         TargetHint targetHint() const { return _targetHint; }
@@ -1217,7 +1221,9 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
 
         void MAGNUM_LOCAL createIfNotAlready();
 
+        #ifndef MAGNUM_TARGET_WEBGL
         Buffer& setLabelInternal(Containers::ArrayReference<const char> label);
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES
         void subDataInternal(GLintptr offset, GLsizeiptr size, GLvoid* data);

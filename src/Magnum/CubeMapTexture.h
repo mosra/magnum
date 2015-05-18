@@ -648,7 +648,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         }
 
         /* Overloads to remove WTF-factor from method chaining order */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
+        #if !defined(DOXYGEN_GENERATING_OUTPUT) && !defined(MAGNUM_TARGET_WEBGL)
         CubeMapTexture& setLabel(const std::string& label) {
             AbstractTexture::setLabel(label);
             return *this;

@@ -138,7 +138,7 @@ class TimeQuery: public AbstractQuery {
         #endif
 
         /* Overloads to remove WTF-factor from method chaining order */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
+        #if !defined(DOXYGEN_GENERATING_OUTPUT) && !defined(MAGNUM_TARGET_WEBGL)
         TimeQuery& setLabel(const std::string& label) {
             AbstractQuery::setLabel(label);
             return *this;

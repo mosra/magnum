@@ -30,6 +30,10 @@
 
 #include "Magnum/DebugOutput.h"
 
+#ifdef MAGNUM_TARGET_WEBGL
+#error this header is not available in WebGL build
+#endif
+
 namespace Magnum { namespace Implementation {
 
 struct DebugState {

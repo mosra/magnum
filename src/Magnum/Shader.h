@@ -488,6 +488,7 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
         /** @brief OpenGL shader ID */
         GLuint id() const { return _id; }
 
+        #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @brief Shader label
          *
@@ -498,6 +499,7 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * @see @fn_gl{GetObjectLabel} with @def_gl{SHADER} or
          *      @fn_gl_extension2{GetObjectLabel,EXT,debug_label} with
          *      @def_gl{SHADER_OBJECT_EXT}
+         * @requires_gles Debug output is not available in WebGL.
          */
         std::string label() const;
 
@@ -511,6 +513,7 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} with
          *      @def_gl{SHADER} or @fn_gl_extension2{LabelObject,EXT,debug_label}
          *      with @def_gl{SHADER_OBJECT_EXT}
+         * @requires_gles Debug output is not available in WebGL.
          */
         Shader& setLabel(const std::string& label) {
             return setLabelInternal({label.data(), label.size()});
@@ -520,6 +523,7 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
         template<std::size_t size> Shader& setLabel(const char(&label)[size]) {
             return setLabelInternal({label, size - 1});
         }
+        #endif
 
         /** @brief Shader type */
         Type type() const { return _type; }

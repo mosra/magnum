@@ -263,6 +263,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         /** @brief Move assignment */
         AbstractTexture& operator=(AbstractTexture&& other) noexcept;
 
+        #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @brief Texture label
          *
@@ -273,6 +274,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          * @see @fn_gl{GetObjectLabel} or
          *      @fn_gl_extension2{GetObjectLabel,EXT,debug_label} with
          *      @def_gl{TEXTURE}
+         * @requires_gles Debug output is not available in WebGL.
          */
         std::string label();
 
@@ -286,6 +288,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} or
          *      @fn_gl_extension2{LabelObject,EXT,debug_label} with
          *      @def_gl{TEXTURE}
+         * @requires_gles Debug output is not available in WebGL.
          */
         AbstractTexture& setLabel(const std::string& label) {
             return setLabelInternal({label.data(), label.size()});
@@ -295,6 +298,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         template<std::size_t size> AbstractTexture& setLabel(const char(&label)[size]) {
             return setLabelInternal({label, size - 1});
         }
+        #endif
 
         /** @brief OpenGL texture ID */
         GLuint id() const { return _id; }
@@ -326,7 +330,9 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
 
         explicit AbstractTexture(GLenum target);
 
+        #ifndef MAGNUM_TARGET_WEBGL
         AbstractTexture& setLabelInternal(Containers::ArrayReference<const char> label);
+        #endif
 
         /* Unlike bind() this also sets the texture binding unit as active */
         void MAGNUM_LOCAL bindInternal();

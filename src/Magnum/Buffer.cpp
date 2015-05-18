@@ -32,7 +32,9 @@
 
 #include "Implementation/State.h"
 #include "Implementation/BufferState.h"
+#ifndef MAGNUM_TARGET_WEBGL
 #include "Implementation/DebugState.h"
+#endif
 
 namespace Magnum {
 
@@ -208,6 +210,7 @@ inline void Buffer::createIfNotAlready() {
     CORRADE_INTERNAL_ASSERT(_created);
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
 std::string Buffer::label() {
     createIfNotAlready();
     #ifndef MAGNUM_TARGET_GLES
@@ -226,6 +229,7 @@ Buffer& Buffer::setLabelInternal(const Containers::ArrayReference<const char> la
     #endif
     return *this;
 }
+#endif
 
 void Buffer::bindInternal(const TargetHint target, Buffer* const buffer) {
     const GLuint id = buffer ? buffer->_id : 0;

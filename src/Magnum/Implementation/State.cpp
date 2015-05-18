@@ -31,7 +31,9 @@
 #include "Magnum/Extensions.h"
 
 #include "BufferState.h"
+#ifndef MAGNUM_TARGET_WEBGL
 #include "DebugState.h"
+#endif
 #include "FramebufferState.h"
 #include "MeshState.h"
 #include "QueryState.h"
@@ -56,7 +58,9 @@ State::State(Context& context) {
     #endif
 
     buffer.reset(new BufferState{context, extensions});
+    #ifndef MAGNUM_TARGET_WEBGL
     debug.reset(new DebugState{context, extensions});
+    #endif
     framebuffer.reset(new FramebufferState{context, extensions});
     mesh.reset(new MeshState{context, extensions});
     query.reset(new QueryState{context, extensions});

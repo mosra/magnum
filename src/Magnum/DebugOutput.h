@@ -25,21 +25,24 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifndef MAGNUM_TARGET_WEBGL
 /** @file
  * @brief Class @ref Magnum::DebugOutput, @ref Magnum::DebugMessage, @ref Magnum::DebugGroup
  */
+#endif
 
 #include <string>
 #include <Corrade/Containers/Array.h>
 
-#include "Magnum/Magnum.h"
 #include "Magnum/OpenGL.h"
+#include "Magnum/Magnum.h"
 #include "Magnum/visibility.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include <Corrade/Utility/Macros.h>
 #endif
 
+#ifndef MAGNUM_TARGET_WEBGL
 namespace Magnum {
 
 namespace Implementation { struct DebugState; }
@@ -118,6 +121,8 @@ objects with labels. See @ref AbstractQuery::setLabel(),
 @ref Buffer::setLabel(), @ref Framebuffer::setLabel(), @ref Mesh::setLabel(),
 @ref Renderbuffer::setLabel(), @ref Shader::setLabel() and
 @ref TransformFeedback::setLabel() for more information.
+
+@requires_gles Debug output is not available in WebGL.
 */
 class MAGNUM_EXPORT DebugOutput {
     friend Implementation::DebugState;
@@ -453,6 +458,8 @@ and the debug output is either not supported or turned off, the calls will not
 result in any allocations and thus won't have any negative performance effects.
 
 @see @ref DebugGroup
+
+@requires_gles Debug output is not available in WebGL.
 */
 class MAGNUM_EXPORT DebugMessage {
     friend Implementation::DebugState;
@@ -760,6 +767,8 @@ and the debug output is either not supported or turned off, the calls will not
 result in any allocations and thus won't have any negative performance effects.
 
 @see @ref DebugMessage
+
+@requires_gles Debug output is not available in WebGL.
 */
 class MAGNUM_EXPORT DebugGroup {
     friend Implementation::DebugState;
@@ -888,5 +897,8 @@ class MAGNUM_EXPORT DebugGroup {
 Debug MAGNUM_EXPORT operator<<(Debug debug, DebugGroup::Source value);
 
 }
+#else
+#error this header is not available in WebGL build
+#endif
 
 #endif

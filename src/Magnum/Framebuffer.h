@@ -338,6 +338,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         /** @brief OpenGL framebuffer ID */
         GLuint id() const { return _id; }
 
+        #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @brief Framebuffer label
          *
@@ -348,6 +349,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @see @fn_gl{GetObjectLabel} or
          *      @fn_gl_extension2{GetObjectLabel,EXT,debug_label} with
          *      @def_gl{FRAMEBUFFER}
+         * @requires_gles Debug output is not available in WebGL.
          */
         std::string label();
 
@@ -361,6 +363,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} or
          *      @fn_gl_extension2{LabelObject,EXT,debug_label} with
          *      @def_gl{FRAMEBUFFER}
+         * @requires_gles Debug output is not available in WebGL.
          */
         Framebuffer& setLabel(const std::string& label) {
             return setLabelInternal({label.data(), label.size()});
@@ -370,6 +373,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         template<std::size_t size> Framebuffer& setLabel(const char(&label)[size]) {
             return setLabelInternal({label, size - 1});
         }
+        #endif
 
         /**
          * @brief Check framebuffer status
@@ -669,7 +673,9 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         void MAGNUM_LOCAL createImplementationDSA();
         #endif
 
+        #ifndef MAGNUM_TARGET_WEBGL
         Framebuffer& setLabelInternal(Containers::ArrayReference<const char> label);
+        #endif
 
         void MAGNUM_LOCAL renderbufferImplementationDefault(BufferAttachment attachment, Renderbuffer& renderbuffer);
         #ifndef MAGNUM_TARGET_GLES

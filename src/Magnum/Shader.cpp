@@ -32,7 +32,9 @@
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
 
+#ifndef MAGNUM_TARGET_WEBGL
 #include "Implementation/DebugState.h"
+#endif
 #include "Implementation/State.h"
 #include "Implementation/ShaderState.h"
 
@@ -646,6 +648,7 @@ Shader::~Shader() {
     glDeleteShader(_id);
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
 std::string Shader::label() const {
     #ifndef MAGNUM_TARGET_GLES
     return Context::current()->state().debug->getLabelImplementation(GL_SHADER, _id);
@@ -662,6 +665,7 @@ Shader& Shader::setLabelInternal(const Containers::ArrayReference<const char> la
     #endif
     return *this;
 }
+#endif
 
 std::vector<std::string> Shader::sources() const { return _sources; }
 

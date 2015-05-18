@@ -30,7 +30,9 @@
 #include "Magnum/Shader.h"
 #include "Magnum/Math/RectangularMatrix.h"
 
+#ifndef MAGNUM_TARGET_WEBGL
 #include "Implementation/DebugState.h"
+#endif
 #include "Implementation/ShaderProgramState.h"
 #include "Implementation/State.h"
 
@@ -250,6 +252,7 @@ AbstractShaderProgram& AbstractShaderProgram::operator=(AbstractShaderProgram&& 
     return *this;
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
 std::string AbstractShaderProgram::label() const {
     #ifndef MAGNUM_TARGET_GLES
     return Context::current()->state().debug->getLabelImplementation(GL_PROGRAM, _id);
@@ -266,6 +269,7 @@ AbstractShaderProgram& AbstractShaderProgram::setLabelInternal(const Containers:
     #endif
     return *this;
 }
+#endif
 
 std::pair<bool, std::string> AbstractShaderProgram::validate() {
     glValidateProgram(_id);

@@ -84,13 +84,15 @@ class MAGNUM_EXPORT Renderer {
              */
             Blending = GL_BLEND,
 
+            #ifndef MAGNUM_TARGET_WEBGL
             /**
              * Debug output. Disabled by default unless the GL context was
              * created with debug output enabled.
              * @see @ref DebugOutput, @ref Feature::DebugOutputSynchronous,
              *      @ref Platform::Sdl2Application::Configuration::Flag::Debug "Platform::*Application::Configuration::Flag::Debug"
              * @requires_gl43 Extension @extension{KHR,debug}
-             * @requires_es_extension Extension @es_extension{KHR,debug}
+             * @requires_es_extension Extension @es_extension2{KHR,debug,debug}
+             * @requires_gles Debug output is not available in WebGL.
              */
             #ifndef MAGNUM_TARGET_GLES
             DebugOutput = GL_DEBUG_OUTPUT,
@@ -103,12 +105,14 @@ class MAGNUM_EXPORT Renderer {
              * @ref Feature::DebugOutput is enabled.
              * @see @ref DebugMessage
              * @requires_gl43 Extension @extension{KHR,debug}
-             * @requires_es_extension Extension @es_extension{KHR,debug}
+             * @requires_es_extension Extension @es_extension2{KHR,debug,debug}
+             * @requires_gles Debug output is not available in WebGL.
              */
             #ifndef MAGNUM_TARGET_GLES
             DebugOutputSynchronous = GL_DEBUG_OUTPUT_SYNCHRONOUS,
             #else
             DebugOutputSynchronous = GL_DEBUG_OUTPUT_SYNCHRONOUS_KHR,
+            #endif
             #endif
 
             #ifndef MAGNUM_TARGET_GLES
@@ -974,11 +978,13 @@ class MAGNUM_EXPORT Renderer {
             /** There is not enough memory left to execute the command. */
             OutOfMemory = GL_OUT_OF_MEMORY,
 
+            #ifndef MAGNUM_TARGET_WEBGL
             /**
              * Given operation would cause an internal stack to underflow.
              * @see @ref DebugGroup
              * @requires_gl43 Extension @extension{KHR,debug}
              * @requires_es_extension Extension @es_extension2{KHR,debug,debug}
+             * @requires_gles Debug output is not available in WebGL.
              */
             #ifndef MAGNUM_TARGET_GLES
             StackUnderflow = GL_STACK_UNDERFLOW,
@@ -991,11 +997,13 @@ class MAGNUM_EXPORT Renderer {
              * @see @ref DebugGroup
              * @requires_gl43 Extension @extension{KHR,debug}
              * @requires_es_extension Extension @es_extension2{KHR,debug,debug}
+             * @requires_gles Debug output is not available in WebGL.
              */
             #ifndef MAGNUM_TARGET_GLES
             StackOverflow = GL_STACK_OVERFLOW
             #else
             StackOverflow = GL_STACK_OVERFLOW_KHR
+            #endif
             #endif
         };
 

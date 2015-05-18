@@ -117,6 +117,7 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
         /** @brief OpenGL internal renderbuffer ID */
         GLuint id() const { return _id; }
 
+        #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @brief Renderbuffer label
          *
@@ -127,6 +128,7 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
          * @see @fn_gl{GetObjectLabel} or
          *      @fn_gl_extension2{GetObjectLabel,EXT,debug_label} with
          *      @def_gl{RENDERBUFFER}
+         * @requires_gles Debug output is not available in WebGL.
          */
         std::string label();
 
@@ -140,6 +142,7 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
          * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} or
          *      @fn_gl_extension2{LabelObject,EXT,debug_label} with
          *      @def_gl{RENDERBUFFER}
+         * @requires_gles Debug output is not available in WebGL.
          */
         Renderbuffer& setLabel(const std::string& label) {
             return setLabelInternal({label.data(), label.size()});
@@ -149,6 +152,7 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
         template<std::size_t size> Renderbuffer& setLabel(const char(&label)[size]) {
             return setLabelInternal({label, size - 1});
         }
+        #endif
 
         /**
          * @brief Set renderbuffer storage
@@ -192,7 +196,9 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
 
         void MAGNUM_LOCAL createIfNotAlready();
 
+        #ifndef MAGNUM_TARGET_WEBGL
         Renderbuffer& setLabelInternal(Containers::ArrayReference<const char> label);
+        #endif
 
         void MAGNUM_LOCAL storageImplementationDefault(RenderbufferFormat internalFormat, const Vector2i& size);
         #ifndef MAGNUM_TARGET_GLES

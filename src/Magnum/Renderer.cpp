@@ -231,8 +231,10 @@ Debug operator<<(Debug debug, const Renderer::Error value) {
         _c(InvalidOperation)
         _c(InvalidFramebufferOperation)
         _c(OutOfMemory)
+        #ifndef MAGNUM_TARGET_WEBGL
         _c(StackUnderflow)
         _c(StackOverflow)
+        #endif
         #undef _c
     }
 

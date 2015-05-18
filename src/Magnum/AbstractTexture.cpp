@@ -41,7 +41,9 @@
 #include "Magnum/Shader.h"
 #endif
 
+#ifndef MAGNUM_TARGET_WEBGL
 #include "Implementation/DebugState.h"
+#endif
 #include "Implementation/State.h"
 #include "Implementation/TextureState.h"
 
@@ -242,6 +244,7 @@ inline void AbstractTexture::createIfNotAlready() {
     CORRADE_INTERNAL_ASSERT(_created);
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
 std::string AbstractTexture::label() {
     createIfNotAlready();
     return Context::current()->state().debug->getLabelImplementation(GL_TEXTURE, _id);
@@ -252,6 +255,7 @@ AbstractTexture& AbstractTexture::setLabelInternal(const Containers::ArrayRefere
     Context::current()->state().debug->labelImplementation(GL_TEXTURE, _id, label);
     return *this;
 }
+#endif
 
 void AbstractTexture::bind(Int textureUnit) {
     Implementation::TextureState& textureState = *Context::current()->state().texture;

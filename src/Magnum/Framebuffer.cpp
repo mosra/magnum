@@ -45,7 +45,9 @@
 #include "Magnum/RectangleTexture.h"
 #endif
 
+#ifndef MAGNUM_TARGET_WEBGL
 #include "Implementation/DebugState.h"
+#endif
 #include "Implementation/State.h"
 #include "Implementation/FramebufferState.h"
 
@@ -121,6 +123,7 @@ Framebuffer::~Framebuffer() {
     glDeleteFramebuffers(1, &_id);
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
 std::string Framebuffer::label() {
     createIfNotAlready();
     return Context::current()->state().debug->getLabelImplementation(GL_FRAMEBUFFER, _id);
@@ -131,6 +134,7 @@ Framebuffer& Framebuffer::setLabelInternal(const Containers::ArrayReference<cons
     Context::current()->state().debug->labelImplementation(GL_FRAMEBUFFER, _id, label);
     return *this;
 }
+#endif
 
 Framebuffer::Status Framebuffer::checkStatus(const FramebufferTarget target) {
     return Status((this->*Context::current()->state().framebuffer->checkStatusImplementation)(target));

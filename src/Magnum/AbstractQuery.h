@@ -65,6 +65,7 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
         /** @brief OpenGL query ID */
         GLuint id() const { return _id; }
 
+        #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @brief Query label
          *
@@ -75,6 +76,7 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
          * @see @fn_gl{GetObjectLabel} with @def_gl{QUERY} or
          *      @fn_gl_extension2{GetObjectLabel,EXT,debug_label} with
          *      @def_gl{QUERY_OBJECT_EXT}
+         * @requires_gles Debug output is not available in WebGL.
          */
         std::string label() const;
 
@@ -88,6 +90,7 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
          * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} with
          *      @def_gl{QUERY} or @fn_gl_extension2{LabelObject,EXT,debug_label}
          *      with @def_gl{QUERY_OBJECT_EXT}
+         * @requires_gles Debug output is not available in WebGL.
          */
         AbstractQuery& setLabel(const std::string& label) {
             return setLabelInternal({label.data(), label.size()});
@@ -97,6 +100,7 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
         template<std::size_t size> AbstractQuery& setLabel(const char(&label)[size]) {
             return setLabelInternal({label, size - 1});
         }
+        #endif
 
         /**
          * @brief Whether the result is available
@@ -160,7 +164,9 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
         #endif
 
     private:
+        #ifndef MAGNUM_TARGET_WEBGL
         AbstractQuery& setLabelInternal(Containers::ArrayReference<const char> label);
+        #endif
 
         void MAGNUM_LOCAL createImplementationDefault();
         #ifndef MAGNUM_TARGET_GLES

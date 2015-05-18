@@ -33,7 +33,9 @@
 namespace Magnum { namespace Implementation {
 
 struct BufferState;
+#ifndef MAGNUM_TARGET_WEBGL
 struct DebugState;
+#endif
 struct FramebufferState;
 struct MeshState;
 struct QueryState;
@@ -54,7 +56,9 @@ struct State {
     enum: GLuint { DisengagedBinding = ~0u };
 
     std::unique_ptr<BufferState> buffer;
+    #ifndef MAGNUM_TARGET_WEBGL
     std::unique_ptr<DebugState> debug;
+    #endif
     std::unique_ptr<FramebufferState> framebuffer;
     std::unique_ptr<MeshState> mesh;
     std::unique_ptr<QueryState> query;

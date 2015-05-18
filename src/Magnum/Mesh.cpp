@@ -32,7 +32,9 @@
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
 
+#ifndef MAGNUM_TARGET_WEBGL
 #include "Implementation/DebugState.h"
+#endif
 #include "Implementation/BufferState.h"
 #include "Implementation/MeshState.h"
 #include "Implementation/State.h"
@@ -172,6 +174,7 @@ inline void Mesh::createIfNotAlready() {
     CORRADE_INTERNAL_ASSERT(_created);
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
 std::string Mesh::label() {
     createIfNotAlready();
     #ifndef MAGNUM_TARGET_GLES
@@ -190,6 +193,7 @@ Mesh& Mesh::setLabelInternal(const Containers::ArrayReference<const char> label)
     #endif
     return *this;
 }
+#endif
 
 Mesh& Mesh::setIndexBuffer(Buffer& buffer, GLintptr offset, IndexType type, UnsignedInt start, UnsignedInt end) {
     #if defined(CORRADE_TARGET_NACL) || defined(MAGNUM_TARGET_WEBGL)

@@ -39,7 +39,6 @@ set(Magnum_SRCS
     ColorFormat.cpp
     CubeMapTexture.cpp
     Context.cpp
-    DebugOutput.cpp
     DefaultFramebuffer.cpp
     Framebuffer.cpp
     Image.cpp
@@ -56,7 +55,6 @@ set(Magnum_SRCS
     Version.cpp
 
     Implementation/BufferState.cpp
-    Implementation/DebugState.cpp
     Implementation/FramebufferState.cpp
     Implementation/MeshState.cpp
     Implementation/QueryState.cpp
@@ -96,7 +94,6 @@ set(Magnum_HEADERS
     ColorFormat.h
     Context.h
     CubeMapTexture.h
-    DebugOutput.h
     DefaultFramebuffer.h
     DimensionTraits.h
     Extensions.h
@@ -128,7 +125,6 @@ set(Magnum_HEADERS
 # Header files to display in project view of IDEs only
 set(Magnum_PRIVATE_HEADERS
     Implementation/BufferState.h
-    Implementation/DebugState.h
     Implementation/FramebufferState.h
     Implementation/maxTextureSize.h
     Implementation/MeshState.h
@@ -142,8 +138,6 @@ set(Magnum_PRIVATE_HEADERS
 # Deprecated headers
 if(BUILD_DEPRECATED)
     set(Magnum_HEADERS ${Magnum_HEADERS}
-        DebugMarker.h
-        DebugMessage.h
         Query.h)
 endif()
 
@@ -180,6 +174,26 @@ if(NOT TARGET_GLES2)
     list(APPEND Magnum_PRIVATE_HEADES
         Implementation/TransformFeedbackState.h)
 
+endif()
+
+# Non-WebGL stuff
+if(NOT TARGET_WEBGL)
+    list(APPEND Magnum_SRCS
+        DebugOutput.cpp
+
+        Implementation/DebugState.cpp)
+
+    list(APPEND Magnum_HEADERS
+        DebugOutput.h)
+
+    list(APPEND Magnum_PRIVATE_HEADERS
+        Implementation/DebugState.h)
+
+    if(BUILD_DEPRECATED)
+        list(APPEND Magnum_HEADERS
+            DebugMarker.h
+            DebugMessage.h)
+    endif()
 endif()
 
 # Link in GL function pointer variables on platforms that support it

@@ -179,6 +179,7 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
         /** @brief OpenGL transform feedback ID */
         GLuint id() const { return _id; }
 
+        #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @brief Buffer label
          *
@@ -188,6 +189,7 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
          * extension is available, this function returns empty string.
          * @see @fn_gl{GetObjectLabel} or @fn_gl_extension2{GetObjectLabel,EXT,debug_label}
          *      with @def_gl{TRANSFORM_FEEDBACK}
+         * @requires_gles Debug output is not available in WebGL.
          */
         std::string label();
 
@@ -201,10 +203,12 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
          * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} or
          *      @fn_gl_extension2{LabelObject,EXT,debug_label} with
          *      @def_gl{TRANSFORM_FEEDBACK}
+         * @requires_gles Debug output is not available in WebGL.
          */
         TransformFeedback& setLabel(const std::string& label) {
             return setLabelInternal({label.data(), label.size()});
         }
+        #endif
 
         /** @overload */
         template<std::size_t size> TransformFeedback& setLabel(const char(&label)[size]) {
@@ -364,7 +368,9 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
         void MAGNUM_LOCAL attachImplementationDSA(GLuint firstIndex, std::initializer_list<Buffer*> buffers);
         #endif
 
+        #ifndef MAGNUM_TARGET_WEBGL
         TransformFeedback& setLabelInternal(Containers::ArrayReference<const char> label);
+        #endif
 
         GLuint _id;
         bool _created; /* see createIfNotAlready() for details */

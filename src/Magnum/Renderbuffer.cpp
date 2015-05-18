@@ -28,7 +28,9 @@
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
 
+#ifndef MAGNUM_TARGET_WEBGL
 #include "Implementation/DebugState.h"
+#endif
 #include "Implementation/FramebufferState.h"
 #include "Implementation/State.h"
 
@@ -102,6 +104,7 @@ inline void Renderbuffer::createIfNotAlready() {
     CORRADE_INTERNAL_ASSERT(_created);
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
 std::string Renderbuffer::label() {
     createIfNotAlready();
     return Context::current()->state().debug->getLabelImplementation(GL_RENDERBUFFER, _id);
@@ -112,6 +115,7 @@ Renderbuffer& Renderbuffer::setLabelInternal(const Containers::ArrayReference<co
     Context::current()->state().debug->labelImplementation(GL_RENDERBUFFER, _id, label);
     return *this;
 }
+#endif
 
 void Renderbuffer::setStorage(const RenderbufferFormat internalFormat, const Vector2i& size) {
     (this->*Context::current()->state().framebuffer->renderbufferStorageImplementation)(internalFormat, size);

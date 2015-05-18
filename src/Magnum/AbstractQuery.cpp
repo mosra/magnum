@@ -28,7 +28,9 @@
 #include <Corrade/Utility/Assert.h>
 
 #include "Magnum/Context.h"
+#ifndef MAGNUM_TARGET_WEBGL
 #include "Magnum/Implementation/DebugState.h"
+#endif
 #include "Magnum/Implementation/QueryState.h"
 #include "Magnum/Implementation/State.h"
 
@@ -73,6 +75,7 @@ void AbstractQuery::createImplementationDSA() {
 }
 #endif
 
+#ifndef MAGNUM_TARGET_WEBGL
 std::string AbstractQuery::label() const {
     #ifndef MAGNUM_TARGET_GLES
     return Context::current()->state().debug->getLabelImplementation(GL_QUERY, _id);
@@ -89,6 +92,7 @@ AbstractQuery& AbstractQuery::setLabelInternal(const Containers::ArrayReference<
     #endif
     return *this;
 }
+#endif
 
 bool AbstractQuery::resultAvailable() {
     GLuint result;

@@ -32,11 +32,14 @@
 #include "Magnum/Extensions.h"
 
 #include "Implementation/State.h"
+#ifndef MAGNUM_TARGET_WEBGL
 #include "Implementation/DebugState.h"
+#endif
 
 namespace Magnum {
 
-#if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+#ifndef MAGNUM_TARGET_WEBGL
+#ifndef CORRADE_TARGET_NACL
 namespace {
     inline GLenum extTypeFromKhrIdentifier(GLenum khrIdentifier) {
         switch(khrIdentifier) {
@@ -131,7 +134,7 @@ void AbstractObject::labelImplementationNoOp(GLenum, GLuint, Containers::ArrayRe
 void AbstractObject::labelImplementationKhr(const GLenum identifier, const GLuint name, const Containers::ArrayReference<const char> label) {
     #ifndef MAGNUM_TARGET_GLES
     glObjectLabel(identifier, name, label.size(), label);
-    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    #elif !defined(CORRADE_TARGET_NACL)
     glObjectLabelKHR(identifier, name, label.size(), label);
     #else
     static_cast<void>(identifier);
@@ -142,7 +145,7 @@ void AbstractObject::labelImplementationKhr(const GLenum identifier, const GLuin
 }
 
 void AbstractObject::labelImplementationExt(const GLenum identifier, const GLuint name, const Containers::ArrayReference<const char> label) {
-    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    #ifndef CORRADE_TARGET_NACL
     const GLenum type = extTypeFromKhrIdentifier(identifier);
     glLabelObjectEXT(type, name, label.size(), label);
     #else
@@ -160,7 +163,7 @@ std::string AbstractObject::getLabelImplementationKhr(const GLenum identifier, c
     GLsizei size;
     #ifndef MAGNUM_TARGET_GLES
     glGetObjectLabel(identifier, name, 0, &size, nullptr);
-    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    #elif !defined(CORRADE_TARGET_NACL)
     glGetObjectLabelKHR(identifier, name, 0, &size, nullptr);
     #else
     static_cast<void>(identifier);
@@ -173,7 +176,7 @@ std::string AbstractObject::getLabelImplementationKhr(const GLenum identifier, c
     label.resize(size+1);
     #ifndef MAGNUM_TARGET_GLES
     glGetObjectLabel(identifier, name, size+1, nullptr, &label[0]);
-    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    #elif !defined(CORRADE_TARGET_NACL)
     glGetObjectLabelKHR(identifier, name, size+1, nullptr, &label[0]);
     #else
     CORRADE_ASSERT_UNREACHABLE();
@@ -188,7 +191,7 @@ std::string AbstractObject::getLabelImplementationExt(const GLenum identifier, c
     GLsizei size;
 
     /* Get label size (w/o null terminator) */
-    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    #ifndef CORRADE_TARGET_NACL
     const GLenum type = extTypeFromKhrIdentifier(identifier);
     glGetObjectLabelEXT(type, name, 0, &size, nullptr);
     #else
@@ -200,7 +203,7 @@ std::string AbstractObject::getLabelImplementationExt(const GLenum identifier, c
     /* Make place also for the null terminator */
     std::string label;
     label.resize(size+1);
-    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    #ifndef CORRADE_TARGET_NACL
     glGetObjectLabelEXT(identifier, name, size+1, nullptr, &label[0]);
     #else
     CORRADE_ASSERT_UNREACHABLE();
@@ -210,5 +213,6 @@ std::string AbstractObject::getLabelImplementationExt(const GLenum identifier, c
     label.resize(size);
     return label;
 }
+#endif
 
 }
