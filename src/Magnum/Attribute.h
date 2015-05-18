@@ -138,7 +138,7 @@ template<UnsignedInt location, class T> class Attribute {
              * and @ref DataOption::Normalized.
              * @requires_gl32 Extension @extension{ARB,vertex_array_bgra}
              * @requires_gl Only RGBA component ordering is supported in OpenGL
-             *      ES.
+             *      ES and WebGL.
              */
             BGRA = GL_BGRA
             #endif
@@ -162,13 +162,17 @@ template<UnsignedInt location, class T> class Attribute {
             UnsignedInt = GL_UNSIGNED_INT,      /**< Unsigned int */
             Int = GL_INT,                       /**< Int */
 
+            #ifndef MAGNUM_TARGET_WEBGL
             /**
              * Half float. Only for float attribute types.
              * @requires_gl30 Extension @extension{ARB,half_float_vertex}
              * @requires_gles30 Extension @es_extension{OES,vertex_half_float}
              *      in OpenGL ES 2.0
+             * @requires_webgl20 Half float vertex attributes are not available
+             *      in WebGL 1.0.
              */
             HalfFloat = GL_HALF_FLOAT,
+            #endif
 
             /** Float. Only for float attribute types. */
             Float = GL_FLOAT,
@@ -176,7 +180,7 @@ template<UnsignedInt location, class T> class Attribute {
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Double. Only for float and double attribute types.
-             * @requires_gl Only floats are available in OpenGL ES.
+             * @requires_gl Only floats are available in OpenGL ES or WebGL.
              */
             Double = GL_DOUBLE,
 
@@ -185,7 +189,7 @@ template<UnsignedInt location, class T> class Attribute {
              * vector attribute type.
              * @requires_gl44 Extension @extension{ARB,vertex_type_10f_11f_11f_rev}
              * @requires_gl Packed float attributes are not available in OpenGL
-             *      ES.
+             *      ES or WebGL.
              */
             UnsignedInt10f11f11fRev = GL_UNSIGNED_INT_10F_11F_11F_REV,
             #endif
@@ -199,7 +203,9 @@ template<UnsignedInt location, class T> class Attribute {
              * @todo How about (incompatible) @es_extension{OES,vertex_type_10_10_10_2}?
              * @requires_gl33 Extension @extension{ARB,vertex_type_2_10_10_10_rev}
              * @requires_gles30 Packed attributes are not available in OpenGL
-             *      ES 2.0
+             *      ES 2.0.
+             * @requires_webgl20 Packed attributes are not available in WebGL
+             *      1.0.
              */
             UnsignedInt2101010Rev = GL_UNSIGNED_INT_2_10_10_10_REV,
 
@@ -208,7 +214,9 @@ template<UnsignedInt location, class T> class Attribute {
              * vector attribute type.
              * @requires_gl33 Extension @extension{ARB,vertex_type_2_10_10_10_rev}
              * @requires_gles30 Packed attributes are not available in OpenGL
-             *      ES 2.0
+             *      ES 2.0.
+             * @requires_webgl20 Packed attributes are not available in WebGL
+             *      1.0.
              */
             Int2101010Rev = GL_INT_2_10_10_10_REV
             #endif

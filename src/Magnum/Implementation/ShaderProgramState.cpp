@@ -35,13 +35,19 @@ namespace Magnum { namespace Implementation {
 
 ShaderProgramState::ShaderProgramState(Context& context, std::vector<std::string>& extensions): current(0), maxVertexAttributes(0)
         #ifndef MAGNUM_TARGET_GLES2
-        , maxAtomicCounterBufferSize(0), maxComputeSharedMemorySize(0), maxComputeWorkGroupInvocations(0), maxImageUnits(0), maxCombinedShaderOutputResources(0), maxUniformLocations(0), minTexelOffset(0), maxTexelOffset(0), maxUniformBlockSize(0), maxShaderStorageBlockSize(0)
+        #ifndef MAGNUM_TARGET_WEBGL
+        , maxAtomicCounterBufferSize(0), maxComputeSharedMemorySize(0), maxComputeWorkGroupInvocations(0), maxImageUnits(0), maxCombinedShaderOutputResources(0), maxUniformLocations(0)
+        #endif
+        , minTexelOffset(0), maxTexelOffset(0), maxUniformBlockSize(0)
+        #ifndef MAGNUM_TARGET_WEBGL
+        , maxShaderStorageBlockSize(0)
+        #endif
         #endif
         #ifndef MAGNUM_TARGET_GLES
         , maxImageSamples(0)
         #endif
 {
-    #ifndef MAGNUM_TARGET_GLES2
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::GL::ARB::separate_shader_objects>())
     #else
@@ -94,6 +100,7 @@ ShaderProgramState::ShaderProgramState(Context& context, std::vector<std::string
     } else
     #endif
 
+    #ifndef MAGNUM_TARGET_WEBGL
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>())
     #else
@@ -149,7 +156,9 @@ ShaderProgramState::ShaderProgramState(Context& context, std::vector<std::string
         uniformMatrix3x4dvImplementation = &AbstractShaderProgram::uniformImplementationDSAEXT;
         uniformMatrix4x3dvImplementation = &AbstractShaderProgram::uniformImplementationDSAEXT;
         #endif
-    } else {
+    } else
+    #endif
+    {
         uniform1fvImplementation = &AbstractShaderProgram::uniformImplementationDefault;
         uniform2fvImplementation = &AbstractShaderProgram::uniformImplementationDefault;
         uniform3fvImplementation = &AbstractShaderProgram::uniformImplementationDefault;
@@ -194,6 +203,11 @@ ShaderProgramState::ShaderProgramState(Context& context, std::vector<std::string
         uniformMatrix4x3dvImplementation = &AbstractShaderProgram::uniformImplementationDefault;
         #endif
     }
+
+    #ifdef MAGNUM_TARGET_WEBGL
+    static_cast<void>(context);
+    static_cast<void>(extensions);
+    #endif
 }
 
 void ShaderProgramState::reset() {

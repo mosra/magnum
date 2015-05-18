@@ -87,16 +87,20 @@ struct ShaderProgramState {
 
     GLint maxVertexAttributes;
     #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
     GLint maxAtomicCounterBufferSize,
         maxComputeSharedMemorySize,
         maxComputeWorkGroupInvocations,
         maxImageUnits,
         maxCombinedShaderOutputResources,
-        maxUniformLocations,
-        minTexelOffset,
+        maxUniformLocations;
+    #endif
+    GLint minTexelOffset,
         maxTexelOffset,
         maxUniformBlockSize;
+    #ifndef MAGNUM_TARGET_WEBGL
     GLint64 maxShaderStorageBlockSize;
+    #endif
     #endif
 
     #ifndef MAGNUM_TARGET_GLES

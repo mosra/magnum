@@ -188,10 +188,16 @@ bindFragmentDataLocationIndexed(NormalOutput, 1, "normal");
     @ref bindAttributeLocation(), @ref bindFragmentDataLocation() or
     @ref bindFragmentDataLocationIndexed().
 @requires_gles30 Explicit location specification of input attributes is not
-    supported in OpenGL ES 2.0, use @ref bindAttributeLocation() instead.
+    supported in OpenGL ES 2.0, use @ref bindAttributeLocation()
+    instead.
 @requires_gles30 Multiple fragment shader outputs are not available in OpenGL
     ES 2.0, similar functionality is available in extension
-    @es_extension{NV,draw_buffers}.
+    @es_extension{EXT,draw_buffers} or @es_extension{NV,draw_buffers}.
+@requires_webgl20 Explicit location specification of input attributes is not
+    supported in WebGL 1.0, use @ref bindAttributeLocation() instead.
+@requires_webgl20 Multiple fragment shader outputs are not available in WebGL
+    1.0, similar functionality is available in extension
+    @webgl_extension{WEBGL,draw_buffers}.
 
 @todo @es_extension{EXT,separate_shader_objects} supports explicit attrib
     location
@@ -229,6 +235,8 @@ Int normalMatrixUniform = uniformLocation("normalMatrix");
     explicit uniform location instead of using @ref uniformLocation().
 @requires_gles31 Explicit uniform location is not supported in OpenGL ES 3.0
     and older. Use @ref uniformLocation() instead.
+@requires_gles Explicit uniform location is not supported in WebGL. Use
+    @ref uniformLocation() instead.
 
 @anchor AbstractShaderProgram-texture-units
 ### Specifying texture binding units
@@ -262,6 +270,8 @@ setUniform(uniformLocation("specularTexture"), 1);
 @requires_gles31 Explicit texture binding unit is not supported in OpenGL ES
     3.0 and older. Use @ref setUniform(Int, const T&) "setUniform(Int, Int)"
     instead.
+@requires_gles Explicit texture binding unit is not supported in WebGL. Use
+    @ref setUniform(Int, const T&) "setUniform(Int, Int)" instead.
 
 @anchor AbstractShaderProgram-transform-feedback
 ### Specifying transform feedback binding points
@@ -307,7 +317,7 @@ setTransformFeedbackOutputs({
     transform feedback output specification instead of using
     @ref setTransformFeedbackOutputs().
 @requires_gl Explicit transform feedback output specification is not available
-    in OpenGL ES.
+    in OpenGL ES or WebGL.
 
 @anchor AbstractShaderProgram-rendering-workflow
 ## Rendering workflow
@@ -353,7 +363,12 @@ also @ref Attribute::DataType enum for additional type options.
     matrix attributes and uniforms (i.e. @ref Matrix2x3, @ref Matrix3x2,
     @ref Matrix2x4, @ref Matrix4x2, @ref Matrix3x4 and @ref Matrix4x3) are not
     available in OpenGL ES 2.0.
-@requires_gl Double attributes and uniforms are not available in OpenGL ES.
+@requires_gl Double attributes and uniforms are not available in OpenGL ES or
+    WebGL.
+@requires_webgl20 Integer attributes, unsigned integer uniforms and non-square
+    matrix attributes and uniforms (i.e. @ref Matrix2x3, @ref Matrix3x2,
+    @ref Matrix2x4, @ref Matrix4x2, @ref Matrix3x4 and @ref Matrix4x3) are not
+    available in WebGL 1.0.
 
 @anchor AbstractShaderProgram-performance-optimization
 ## Performance optimizations
@@ -389,7 +404,8 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * @see @ref setTransformFeedbackOutputs()
          * @requires_gl30 Extension @extension{EXT,transform_feedback}
          * @requires_gles30 Transform feedback is not available in OpenGL ES
-         *      2.0
+         *      2.0.
+         * @requires_webgl20 Transform feedback is not available in WebGL 1.0.
          */
         enum class TransformFeedbackBufferMode: GLenum {
             /** Attributes will be interleaved at one buffer binding point */
@@ -418,7 +434,8 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * OpenGL calls. If neither extension @extension{ARB,shader_atomic_counters}
          * (part of OpenGL 4.2) nor OpenGL ES 3.1 is available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_ATOMIC_COUNTER_BUFFER_SIZE}
-         * @requires_gles30 Not defined in OpenGL ES 2.0
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_gles Atomic counters are not available in WebGL.
          */
         static Int maxAtomicCounterBufferSize();
 
@@ -429,7 +446,8 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * OpenGL calls. If neither extension @extension{ARB,compute_shader}
          * (part of OpenGL 4.3) nor OpenGL ES 3.1 is available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_COMPUTE_SHARED_MEMORY_SIZE}
-         * @requires_gles30 Not defined in OpenGL ES 2.0
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_gles Compute shaders are not available in WebGL.
          */
         static Int maxComputeSharedMemorySize();
 
@@ -440,7 +458,8 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * OpenGL calls. If neither extension @extension{ARB,compute_shader}
          * (part of OpenGL 4.3) nor OpenGL ES 3.1 is available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_COMPUTE_WORK_GROUP_INVOCATIONS}
-         * @requires_gles30 Not defined in OpenGL ES 2.0
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_gles Compute shaders are not available in WebGL.
          */
         static Int maxComputeWorkGroupInvocations();
 
@@ -453,7 +472,8 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * OpenGL calls. If extension @extension{ARB,shader_image_load_store}
          * (part of OpenGL 4.2) or OpenGL ES 3.1 is not available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_IMAGE_UNITS}
-         * @requires_gles30 Not defined in OpenGL ES 2.0
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_gles Shader image load/store is not available in WebGL.
          */
         static Int maxImageUnits();
         #endif
@@ -467,12 +487,13 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * (part of OpenGL 4.2) is not available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_IMAGE_SAMPLES}
          * @requires_gl Multisample image load/store is not available in OpenGL
-         *      ES.
+         *      ES or WebGL.
          */
         static Int maxImageSamples();
         #endif
 
         #ifndef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @brief Max supported combined shader output resource count
          *
@@ -481,7 +502,8 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * (part of OpenGL 4.2) nor extension @extension{ARB,shader_storage_buffer_object}
          * (part of OpenGL 4.3) nor OpenGL ES 3.1 is available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_COMBINED_SHADER_OUTPUT_RESOURCES}
-         * @requires_gles30 Not defined in OpenGL ES 2.0
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_gles Shader image load/store is not available in WebGL.
          */
         static Int maxCombinedShaderOutputResources();
 
@@ -492,9 +514,11 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * OpenGL calls. If neither extension @extension{ARB,shader_storage_buffer_object}
          * (part of OpenGL 4.3) nor OpenGL ES 3.1 is available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_SHADER_STORAGE_BLOCK_SIZE}
-         * @requires_gles30 Not defined in OpenGL ES 2.0
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_gles Shader storage is not available in WebGL.
          */
         static Long maxShaderStorageBlockSize();
+        #endif
 
         /**
          * @brief Max supported uniform block size
@@ -503,10 +527,12 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * OpenGL calls. If extension @extension{ARB,uniform_buffer_object}
          * (part of OpenGL 3.1) is not available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_UNIFORM_BLOCK_SIZE}
-         * @requires_gles30 Uniform blocks are not available in OpenGL ES 2.0
+         * @requires_gles30 Uniform blocks are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Uniform blocks are not available in WebGL 1.0.
          */
         static Int maxUniformBlockSize();
 
+        #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @brief Max supported explicit uniform location count
          *
@@ -514,9 +540,11 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * OpenGL calls. If neither extension @extension{ARB,explicit_uniform_location}
          * (part of OpenGL 4.3) nor OpenGL ES 3.1 is available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_UNIFORM_LOCATIONS}
-         * @requires_gles30 Not defined in OpenGL ES 2.0
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_gles Explicit uniform location is not available in WebGL.
          */
         static Int maxUniformLocations();
+        #endif
 
         /**
          * @brief Min supported program texel offset
@@ -526,7 +554,9 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * OpenGL 3.0) is not available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MIN_PROGRAM_TEXEL_OFFSET}
          * @requires_gles30 Texture lookup with offset is not available in
-         *      OpenGL ES 2.0
+         *      OpenGL ES 2.0.
+         * @requires_webgl20 Texture lookup with offset is not available in
+         *      WebGL 1.0.
          */
         static Int minTexelOffset();
 
@@ -538,7 +568,9 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * OpenGL 3.0) is not available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_PROGRAM_TEXEL_OFFSET}
          * @requires_gles30 Texture lookup with offset is not available in
-         *      OpenGL ES 2.0
+         *      OpenGL ES 2.0.
+         * @requires_webgl20 Texture lookup with offset is not available in
+         *      WebGL 1.0.
          */
         static Int maxTexelOffset();
         #endif
@@ -645,7 +677,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          */
         static bool link(std::initializer_list<std::reference_wrapper<AbstractShaderProgram>> shaders);
 
-        #ifndef MAGNUM_TARGET_GLES2
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         /**
          * @brief Allow retrieving program binary
          *
@@ -653,12 +685,15 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * @see @fn_gl{ProgramParameter} with @def_gl{PROGRAM_BINARY_RETRIEVABLE_HINT}
          * @requires_gl41 Extension @extension{ARB,get_program_binary}
          * @requires_gles30 Always allowed in OpenGL ES 2.0.
+         * @requires_gles Binary program representations are not supported in
+         *      WebGL.
          */
         void setRetrievableBinary(bool enabled) {
             glProgramParameteri(_id, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, enabled ? GL_TRUE : GL_FALSE);
         }
         #endif
 
+        #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @brief Allow the program to be bound to individual pipeline stages
          *
@@ -666,15 +701,16 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * @see @fn_gl{ProgramParameter} with @def_gl{PROGRAM_SEPARABLE}
          * @requires_gl41 Extension @extension{ARB,separate_shader_objects}
          * @requires_es_extension Extension @es_extension{EXT,separate_shader_objects}
+         * @requires_gles Separate shader objects are not supported in WebGL.
          */
         void setSeparable(bool enabled) {
-            /** @todo Remove when extension wrangler is available for ES */
             #ifndef MAGNUM_TARGET_GLES
             glProgramParameteri(_id, GL_PROGRAM_SEPARABLE, enabled ? GL_TRUE : GL_FALSE);
             #else
-            static_cast<void>(enabled);
+            glProgramParameteriEXT(_id, GL_PROGRAM_SEPARABLE_EXT, enabled ? GL_TRUE : GL_FALSE);
             #endif
         }
+        #endif
 
         /**
          * @brief Attach shader
@@ -731,7 +767,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          *      for more information.
          * @requires_gl33 Extension @extension{ARB,blend_func_extended}
          * @requires_gl Multiple blend function inputs are not available in
-         *      OpenGL ES.
+         *      OpenGL ES or WebGL.
          */
         void bindFragmentDataLocationIndexed(UnsignedInt location, UnsignedInt index, const std::string& name) {
             bindFragmentDataLocationIndexedInternal(location, index, {name.data(), name.size()});
@@ -755,9 +791,10 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          *      @ref AbstractShaderProgram-attribute-location "class documentation"
          *      for more information.
          * @requires_gl30 Extension @extension{EXT,gpu_shader4}
-         * @requires_gl Use explicit location specification in OpenGL ES 3.0
-         *      and `gl_FragData[n]` provided by @es_extension2{NV,draw_buffers,GL_NV_draw_buffers}
-         *      in OpenGL ES 2.0.
+         * @requires_gl Use explicit location specification in OpenGL ES 3.0 or
+         *      WebGL 2.0 and `gl_FragData[n]` provided by @es_extension{NV,draw_buffers}
+         *      in OpenGL ES 2.0 and @webgl_extension{WEBGL,draw_buffers} in
+         *      WebGL 1.0.
          */
         void bindFragmentDataLocation(UnsignedInt location, const std::string& name) {
             bindFragmentDataLocationInternal(location, {name.data(), name.size()});
@@ -796,9 +833,10 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          *      using `gl_NextBuffer` or `gl_SkipComponents#` names in
          *      @p outputs array
          * @requires_gles30 Transform feedback is not available in OpenGL ES
-         *      2.0
+         *      2.0.
+         * @requires_webgl20 Transform feedback is not available in WebGL 1.0.
          * @requires_gl Special output names `gl_NextBuffer` and
-         *      `gl_SkipComponents#` are not available in OpenGL ES
+         *      `gl_SkipComponents#` are not available in OpenGL ES or WebGL.
          */
         void setTransformFeedbackOutputs(std::initializer_list<std::string> outputs, TransformFeedbackBufferMode bufferMode);
         #endif
@@ -898,6 +936,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * @copydoc setUniform(Int, UnsignedInt, const Float*)
          * @requires_gl30 Extension @extension{EXT,gpu_shader4}
          * @requires_gles30 Only signed integers are available in OpenGL ES 2.0.
+         * @requires_webgl20 Only signed integers are available in WebGL 1.0.
          */
         void setUniform(Int location, UnsignedInt count, const UnsignedInt* values);
         void setUniform(Int location, UnsignedInt count, const Math::Vector<2, UnsignedInt>* values); /**< @overload */
@@ -909,7 +948,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         /**
          * @copydoc setUniform(Int, UnsignedInt, const Float*)
          * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
-         * @requires_gl Only floats are available in OpenGL ES.
+         * @requires_gl Only floats are available in OpenGL ES or WebGL.
          */
         void setUniform(Int location, UnsignedInt count, const Double* values);
         void setUniform(Int location, UnsignedInt count, const Math::Vector<2, Double>* values); /**< @overload */
@@ -926,6 +965,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         /**
          * @copydoc setUniform(Int, UnsignedInt, const Float*)
          * @requires_gles30 Only square matrices are available in OpenGL ES 2.0.
+         * @requires_webgl20 Only square matrices are available in WebGL 1.0.
          */
         void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<2, 3, Float>* values);
         void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<3, 2, Float>* values); /**< @overload */
@@ -939,7 +979,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         /**
          * @copydoc setUniform(Int, UnsignedInt, const Float*)
          * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
-         * @requires_gl Only floats are available in OpenGL ES.
+         * @requires_gl Only floats are available in OpenGL ES or WebGL.
          */
         void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<2, 2, Double>* values);
         void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<3, 3, Double>* values); /**< @overload */
@@ -1007,7 +1047,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::Vector<3, GLdouble>* values);
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::Vector<4, GLdouble>* values);
         #endif
-        #ifndef MAGNUM_TARGET_GLES2
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const GLfloat* values);
         void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::Vector<2, GLfloat>* values);
         void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::Vector<3, GLfloat>* values);
@@ -1027,6 +1067,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::Vector<3, GLdouble>* values);
         void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::Vector<4, GLdouble>* values);
         #endif
+        #ifndef MAGNUM_TARGET_WEBGL
         void MAGNUM_LOCAL uniformImplementationDSAEXT_SSOEXT(GLint location, GLsizei count, const GLfloat* values);
         void MAGNUM_LOCAL uniformImplementationDSAEXT_SSOEXT(GLint location, GLsizei count, const Math::Vector<2, GLfloat>* values);
         void MAGNUM_LOCAL uniformImplementationDSAEXT_SSOEXT(GLint location, GLsizei count, const Math::Vector<3, GLfloat>* values);
@@ -1040,6 +1081,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         void MAGNUM_LOCAL uniformImplementationDSAEXT_SSOEXT(GLint location, GLsizei count, const Math::Vector<2, GLuint>* values);
         void MAGNUM_LOCAL uniformImplementationDSAEXT_SSOEXT(GLint location, GLsizei count, const Math::Vector<3, GLuint>* values);
         void MAGNUM_LOCAL uniformImplementationDSAEXT_SSOEXT(GLint location, GLsizei count, const Math::Vector<4, GLuint>* values);
+        #endif
         #endif
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL uniformImplementationDSAEXT(GLint location, GLsizei count, const GLdouble* values);
@@ -1070,7 +1112,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::RectangularMatrix<3, 4, GLdouble>* values);
         void MAGNUM_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::RectangularMatrix<4, 3, GLdouble>* values);
         #endif
-        #ifndef MAGNUM_TARGET_GLES2
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<2, 2, GLfloat>* values);
         void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<3, 3, GLfloat>* values);
         void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<4, 4, GLfloat>* values);
@@ -1092,6 +1134,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<3, 4, GLdouble>* values);
         void MAGNUM_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<4, 3, GLdouble>* values);
         #endif
+        #ifndef MAGNUM_TARGET_WEBGL
         void MAGNUM_LOCAL uniformImplementationDSAEXT_SSOEXT(GLint location, GLsizei count, const Math::RectangularMatrix<2, 2, GLfloat>* values);
         void MAGNUM_LOCAL uniformImplementationDSAEXT_SSOEXT(GLint location, GLsizei count, const Math::RectangularMatrix<3, 3, GLfloat>* values);
         void MAGNUM_LOCAL uniformImplementationDSAEXT_SSOEXT(GLint location, GLsizei count, const Math::RectangularMatrix<4, 4, GLfloat>* values);
@@ -1102,6 +1145,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         void MAGNUM_LOCAL uniformImplementationDSAEXT_SSOEXT(GLint location, GLsizei count, const Math::RectangularMatrix<4, 2, GLfloat>* values);
         void MAGNUM_LOCAL uniformImplementationDSAEXT_SSOEXT(GLint location, GLsizei count, const Math::RectangularMatrix<3, 4, GLfloat>* values);
         void MAGNUM_LOCAL uniformImplementationDSAEXT_SSOEXT(GLint location, GLsizei count, const Math::RectangularMatrix<4, 3, GLfloat>* values);
+        #endif
         #endif
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL uniformImplementationDSAEXT(GLint location, GLsizei count, const Math::RectangularMatrix<2, 2, GLdouble>* values);
