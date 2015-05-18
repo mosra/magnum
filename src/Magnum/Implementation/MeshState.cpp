@@ -105,12 +105,16 @@ MeshState::MeshState(Context& context, std::vector<std::string>& extensions): cu
     #endif
 
     #ifdef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_WEBGL
     /* Multi draw implementation on ES */
     if(context.isExtensionSupported<Extensions::GL::EXT::multi_draw_arrays>()) {
         extensions.push_back(Extensions::GL::EXT::multi_draw_arrays::string());
 
         multiDrawImplementation = &MeshView::multiDrawImplementationDefault;
     } else multiDrawImplementation = &MeshView::multiDrawImplementationFallback;
+    #else
+    multiDrawImplementation = &MeshView::multiDrawImplementationFallback;
+    #endif
     #endif
 
     #ifdef MAGNUM_TARGET_GLES2
@@ -120,8 +124,9 @@ MeshState::MeshState(Context& context, std::vector<std::string>& extensions): cu
 
         drawArraysInstancedImplementation = &Mesh::drawArraysInstancedImplementationANGLE;
         drawElementsInstancedImplementation = &Mesh::drawElementsInstancedImplementationANGLE;
-
-    } else if(context.isExtensionSupported<Extensions::GL::EXT::draw_instanced>()) {
+    }
+    #ifndef MAGNUM_TARGET_WEBGL
+    else if(context.isExtensionSupported<Extensions::GL::EXT::draw_instanced>()) {
         extensions.push_back(Extensions::GL::EXT::draw_instanced::string());
 
         drawArraysInstancedImplementation = &Mesh::drawArraysInstancedImplementationEXT;
@@ -132,8 +137,9 @@ MeshState::MeshState(Context& context, std::vector<std::string>& extensions): cu
 
         drawArraysInstancedImplementation = &Mesh::drawArraysInstancedImplementationNV;
         drawElementsInstancedImplementation = &Mesh::drawElementsInstancedImplementationNV;
-
-    } else {
+    }
+    #endif
+    else {
         drawArraysInstancedImplementation = nullptr;
         drawElementsInstancedImplementation = nullptr;
     }
@@ -152,8 +158,9 @@ MeshState::MeshState(Context& context, std::vector<std::string>& extensions): cu
         /* Extension added above */
 
         vertexAttribDivisorImplementation = &Mesh::vertexAttribDivisorImplementationANGLE;
-
-    } else if(context.isExtensionSupported<Extensions::GL::EXT::instanced_arrays>()) {
+    }
+    #ifndef MAGNUM_TARGET_WEBGL
+    else if(context.isExtensionSupported<Extensions::GL::EXT::instanced_arrays>()) {
         extensions.push_back(Extensions::GL::EXT::instanced_arrays::string());
 
         vertexAttribDivisorImplementation = &Mesh::vertexAttribDivisorImplementationEXT;
@@ -162,8 +169,9 @@ MeshState::MeshState(Context& context, std::vector<std::string>& extensions): cu
         extensions.push_back(Extensions::GL::NV::instanced_arrays::string());
 
         vertexAttribDivisorImplementation = &Mesh::vertexAttribDivisorImplementationNV;
-
-    } else vertexAttribDivisorImplementation = nullptr;
+    }
+    #endif
+    else vertexAttribDivisorImplementation = nullptr;
     #endif
 }
 

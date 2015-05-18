@@ -46,17 +46,32 @@ Int Mesh::maxVertexAttributes() { return AbstractShaderProgram::maxVertexAttribu
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
-Long Mesh::maxElementIndex() {
+#ifndef MAGNUM_TARGET_WEBGL
+Long Mesh::maxElementIndex()
+#else
+Int Mesh::maxElementIndex()
+#endif
+{
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::ES3_compatibility>())
         return 0xFFFFFFFFl;
     #endif
 
-    GLint64& value = Context::current()->state().mesh->maxElementIndex;
+    #ifndef MAGNUM_TARGET_WEBGL
+    GLint64& value =
+    #else
+    GLint& value =
+    #endif
+        Context::current()->state().mesh->maxElementIndex;
 
     /* Get the value, if not already cached */
-    if(value == 0)
+    if(value == 0) {
+        #ifndef MAGNUM_TARGET_WEBGL
         glGetInteger64v(GL_MAX_ELEMENT_INDEX, &value);
+        #else
+        glGetIntegerv(GL_MAX_ELEMENT_INDEX, &value);
+        #endif
+    }
 
     return value;
 }
@@ -341,7 +356,7 @@ void Mesh::bindVAO() {
         _created = true;
         #ifndef MAGNUM_TARGET_GLES2
         glBindVertexArray(current = _id);
-        #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+        #elif !defined(CORRADE_TARGET_NACL)
         glBindVertexArrayOES(current = _id);
         #else
         CORRADE_ASSERT_UNREACHABLE();
@@ -357,7 +372,7 @@ void Mesh::createImplementationDefault() {
 void Mesh::createImplementationVAO() {
     #ifndef MAGNUM_TARGET_GLES2
     glGenVertexArrays(1, &_id);
-    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    #elif !defined(CORRADE_TARGET_NACL)
     glGenVertexArraysOES(1, &_id);
     #else
     CORRADE_ASSERT_UNREACHABLE();
@@ -378,7 +393,7 @@ void Mesh::destroyImplementationDefault() {}
 void Mesh::destroyImplementationVAO() {
     #ifndef MAGNUM_TARGET_GLES2
     glDeleteVertexArrays(1, &_id);
-    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    #elif !defined(CORRADE_TARGET_NACL)
     glDeleteVertexArraysOES(1, &_id);
     #else
     CORRADE_ASSERT_UNREACHABLE();
@@ -503,7 +518,7 @@ void Mesh::vertexAttribDivisorImplementationDSAEXT(const GLuint index, const GLu
 }
 #elif defined(MAGNUM_TARGET_GLES2)
 void Mesh::vertexAttribDivisorImplementationANGLE(const GLuint index, const GLuint divisor) {
-    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    #ifndef CORRADE_TARGET_NACL
     glVertexAttribDivisorANGLE(index, divisor);
     #else
     static_cast<void>(index);
@@ -511,8 +526,9 @@ void Mesh::vertexAttribDivisorImplementationANGLE(const GLuint index, const GLui
     CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
+#ifndef MAGNUM_TARGET_WEBGL
 void Mesh::vertexAttribDivisorImplementationEXT(const GLuint index, const GLuint divisor) {
-    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    #ifndef CORRADE_TARGET_NACL
     glVertexAttribDivisorEXT(index, divisor);
     #else
     static_cast<void>(index);
@@ -521,7 +537,7 @@ void Mesh::vertexAttribDivisorImplementationEXT(const GLuint index, const GLuint
     #endif
 }
 void Mesh::vertexAttribDivisorImplementationNV(const GLuint index, const GLuint divisor) {
-    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    #ifndef CORRADE_TARGET_NACL
     glVertexAttribDivisorNV(index, divisor);
     #else
     static_cast<void>(index);
@@ -529,6 +545,7 @@ void Mesh::vertexAttribDivisorImplementationNV(const GLuint index, const GLuint 
     CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
+#endif
 #endif
 
 void Mesh::bindIndexBufferImplementationDefault(Buffer&) {}
@@ -585,7 +602,7 @@ void Mesh::unbindImplementationVAO() {}
 
 #ifdef MAGNUM_TARGET_GLES2
 void Mesh::drawArraysInstancedImplementationANGLE(const GLint baseVertex, const GLsizei count, const GLsizei instanceCount) {
-    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    #ifndef CORRADE_TARGET_NACL
     glDrawArraysInstancedANGLE(GLenum(_primitive), baseVertex, count, instanceCount);
     #else
     static_cast<void>(baseVertex);
@@ -595,8 +612,9 @@ void Mesh::drawArraysInstancedImplementationANGLE(const GLint baseVertex, const 
     #endif
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
 void Mesh::drawArraysInstancedImplementationEXT(const GLint baseVertex, const GLsizei count, const GLsizei instanceCount) {
-    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    #ifndef CORRADE_TARGET_NACL
     glDrawArraysInstancedEXT(GLenum(_primitive), baseVertex, count, instanceCount);
     #else
     static_cast<void>(baseVertex);
@@ -607,7 +625,7 @@ void Mesh::drawArraysInstancedImplementationEXT(const GLint baseVertex, const GL
 }
 
 void Mesh::drawArraysInstancedImplementationNV(const GLint baseVertex, const GLsizei count, const GLsizei instanceCount) {
-    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    #ifndef CORRADE_TARGET_NACL
     glDrawArraysInstancedNV(GLenum(_primitive), baseVertex, count, instanceCount);
     #else
     static_cast<void>(baseVertex);
@@ -616,9 +634,10 @@ void Mesh::drawArraysInstancedImplementationNV(const GLint baseVertex, const GLs
     CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
+#endif
 
 void Mesh::drawElementsInstancedImplementationANGLE(const GLsizei count, const GLintptr indexOffset, const GLsizei instanceCount) {
-    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    #ifndef CORRADE_TARGET_NACL
     glDrawElementsInstancedANGLE(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), instanceCount);
     #else
     static_cast<void>(count);
@@ -628,8 +647,9 @@ void Mesh::drawElementsInstancedImplementationANGLE(const GLsizei count, const G
     #endif
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
 void Mesh::drawElementsInstancedImplementationEXT(const GLsizei count, const GLintptr indexOffset, const GLsizei instanceCount) {
-    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    #ifndef CORRADE_TARGET_NACL
     glDrawElementsInstancedEXT(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), instanceCount);
     #else
     static_cast<void>(count);
@@ -640,7 +660,7 @@ void Mesh::drawElementsInstancedImplementationEXT(const GLsizei count, const GLi
 }
 
 void Mesh::drawElementsInstancedImplementationNV(const GLsizei count, const GLintptr indexOffset, const GLsizei instanceCount) {
-    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    #ifndef CORRADE_TARGET_NACL
     glDrawElementsInstancedNV(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), instanceCount);
     #else
     static_cast<void>(count);
@@ -649,6 +669,7 @@ void Mesh::drawElementsInstancedImplementationNV(const GLsizei count, const GLin
     CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
+#endif
 #endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

@@ -70,14 +70,14 @@ enum class MeshPrimitive: GLenum {
     /**
      * Line strip with adjacency information.
      * @requires_gl32 Extension @extension{ARB,geometry_shader4}
-     * @requires_gl Geometry shaders are not available in OpenGL ES.
+     * @requires_gl Geometry shaders are not available in OpenGL ES or WebGL.
      */
     LineStripAdjacency = GL_LINE_STRIP_ADJACENCY,
 
     /**
      * Lines with adjacency information.
      * @requires_gl32 Extension @extension{ARB,geometry_shader4}
-     * @requires_gl Geometry shaders are not available in OpenGL ES.
+     * @requires_gl Geometry shaders are not available in OpenGL ES or WebGL.
      */
     LinesAdjacency = GL_LINES_ADJACENCY,
     #endif
@@ -101,21 +101,22 @@ enum class MeshPrimitive: GLenum {
     /**
      * Triangle strip with adjacency information.
      * @requires_gl32 Extension @extension{ARB,geometry_shader4}
-     * @requires_gl Geometry shaders are not available in OpenGL ES.
+     * @requires_gl Geometry shaders are not available in OpenGL ES or WebGL.
      */
     TriangleStripAdjacency = GL_TRIANGLE_STRIP_ADJACENCY,
 
     /**
      * Triangles with adjacency information.
      * @requires_gl32 Extension @extension{ARB,geometry_shader4}
-     * @requires_gl Geometry shaders are not available in OpenGL ES.
+     * @requires_gl Geometry shaders are not available in OpenGL ES or WebGL.
      */
     TrianglesAdjacency = GL_TRIANGLES_ADJACENCY,
 
     /**
      * Patches.
      * @requires_gl40 Extension @extension{ARB,tessellation_shader}
-     * @requires_gl Tessellation shaders are not available in OpenGL ES.
+     * @requires_gl Tessellation shaders are not available in OpenGL ES or
+     *      WebGL.
      */
     Patches = GL_PATCHES
     #endif
@@ -321,8 +322,9 @@ layout, see @ref addVertexBuffer() documentation for details.
 @anchor Mesh-performance-optimization
 ## Performance optimizations
 
-If @extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL ES 3.0 or
-@es_extension{OES,vertex_array_object} on OpenGL ES 2.0 is supported, VAOs are
+If @extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL ES 3.0,
+WebGL 2.0, @es_extension{OES,vertex_array_object} in OpenGL ES 2.0 or
+@webgl_extension{OES,vertex_array_object} in WebGL 1.0 is supported, VAOs are
 used instead of binding the buffers and specifying vertex attribute pointers
 in each @ref draw() call. The engine tracks currently bound VAO and currently
 active shader program to avoid unnecessary calls to @fn_gl{BindVertexArray} and
@@ -330,10 +332,10 @@ active shader program to avoid unnecessary calls to @fn_gl{BindVertexArray} and
 @ref maxElementIndex()) are cached, so repeated queries don't result in
 repeated @fn_gl{Get} calls.
 
-If extension @extension{EXT,direct_state_access} and VAOs are available,
-DSA functions are used for specifying attribute locations to avoid unnecessary
-calls to @fn_gl{BindBuffer} and @fn_gl{BindVertexArray}. See documentation of
-@ref addVertexBuffer() for more information.
+If @extension{EXT,direct_state_access} desktop extension and VAOs are
+available, DSA functions are used for specifying attribute locations to avoid
+unnecessary calls to @fn_gl{BindBuffer} and @fn_gl{BindVertexArray}. See
+documentation of @ref addVertexBuffer() for more information.
 
 If index range is specified in @ref setIndexBuffer(), range-based version of
 drawing commands are used on desktop OpenGL and OpenGL ES 3.0. See also
@@ -356,7 +358,9 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
             /**
              * Unsigned int
              * @requires_gles30 Extension @es_extension{OES,element_index_uint}
-             *      in OpenGL ES 2.0
+             *       in OpenGL ES 2.0.
+             * @requires_webgl20 Extension @webgl_extension{OES,element_index_uint}
+             *      in WebGL 1.0.
              */
             UnsignedInt = GL_UNSIGNED_INT
         };
@@ -379,9 +383,15 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * value (@f$ 2^32 - 1 @f$).
          * @see @ref setIndexBuffer(), @fn_gl{Get} with @def_gl{MAX_ELEMENT_INDEX}
          * @requires_gles30 No upper limit is specified for index values in
-         *      OpenGL ES 2.0
+         *      OpenGL ES 2.0.
+         * @requires_webgl20 No upper limit is specified for index values in
+         *      WebGL 1.0.
          */
+        #ifndef MAGNUM_TARGET_WEBGL
         static Long maxElementIndex();
+        #else
+        static Int maxElementIndex();
+        #endif
 
         /**
          * @brief Max recommended index count
@@ -391,6 +401,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @see @ref setIndexBuffer(), @fn_gl{Get} with @def_gl{MAX_ELEMENTS_INDICES}
          * @requires_gles30 Ranged element draw is not supported in OpenGL ES
          *      2.0.
+         * @requires_webgl20 Ranged element draw is not supported in WebGL 1.0.
          */
         static Int maxElementsIndices();
 
@@ -402,6 +413,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @see @ref setIndexBuffer(), @fn_gl{Get} with @def_gl{MAX_ELEMENTS_VERTICES}
          * @requires_gles30 Ranged element draw is not supported in OpenGL ES
          *      2.0.
+         * @requires_webgl20 Ranged element draw is not supported in WebGL 1.0.
          */
         static Int maxElementsVertices();
         #endif
@@ -418,9 +430,10 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @param primitive     Primitive type
          *
          * If @extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL
-         * ES 3.0 or @es_extension{OES,vertex_array_object} in OpenGL ES 2.0 is
+         * ES 3.0, WebGL 2.0, @es_extension{OES,vertex_array_object} in OpenGL
+         * ES 2.0 or @webgl_extension{OES,vertex_array_object} in WebGL 1.0 is
          * available, vertex array object is created. If @extension{ARB,direct_state_access}
-         * (part of OpenGL 4.5) is not supported, the vertex array object is
+         * (part of OpenGL 4.5) is not available, the vertex array object is
          * created on first use.
          * @see @ref setPrimitive(), @ref setCount(), @fn_gl{CreateVertexArrays},
          *      eventually @fn_gl{GenVertexArrays}
@@ -437,7 +450,8 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @brief Destructor
          *
          * If @extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL
-         * ES 3.0 or @es_extension{OES,vertex_array_object} in OpenGL ES 2.0 is
+         * ES 3.0, WebGL 2.0, @es_extension{OES,vertex_array_object} in OpenGL
+         * ES 2.0 or @webgl_extension{OES,vertex_array_object} in WebGL 1.0 is
          * available, associated vertex array object is deleted.
          * @see @fn_gl{DeleteVertexArrays}
          */
@@ -453,8 +467,9 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @brief OpenGL mesh ID
          *
          * If neither @extension{ARB,vertex_array_object} (part of OpenGL 3.0)
-         * nor OpenGL ES 3.0 nor @es_extension{OES,vertex_array_object} in
-         * OpenGL ES 2.0 is available, returns `0`.
+         * nor OpenGL ES 3.0 / WebGL 2.0 nor @es_extension{OES,vertex_array_object}
+         * in OpenGL ES 2.0 / @webgl_extension{OES,vertex_array_object} in
+         * WebGL 1.0 is available, returns `0`.
          */
         GLuint id() const { return _id; }
 
@@ -553,7 +568,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @requires_gl32 Extension @extension{ARB,draw_elements_base_vertex}
          *      for indexed meshes
          * @requires_gl Base vertex cannot be specified for indexed meshes in
-         *      OpenGL ES.
+         *      OpenGL ES or WebGL.
          */
         Mesh& setBaseVertex(Int baseVertex) {
             _baseVertex = baseVertex;
@@ -609,6 +624,8 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @requires_gles30 Extension @es_extension{ANGLE,instanced_arrays},
          *      @es_extension2{EXT,draw_instanced,draw_instanced} or
          *      @es_extension{NV,draw_instanced} in OpenGL ES 2.0.
+         * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
+         *      in WebGL 1.0.
          */
         Mesh& setInstanceCount(Int count) {
             _instanceCount = count;
@@ -626,7 +643,8 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * Default is `0`.
          * @see @ref setInstanceCount(), @ref setBaseVertex()
          * @requires_gl42 Extension @extension{ARB,base_instance}
-         * @requires_gl Base instance cannot be specified in OpenGL ES.
+         * @requires_gl Base instance cannot be specified in OpenGL ES or
+         *      WebGL.
          */
         Mesh& setBaseInstance(UnsignedInt baseInstance) {
             _baseInstance = baseInstance;
@@ -682,18 +700,13 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @endcode
          *
          * If @extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL
-         * ES 3.0 or @es_extension{OES,vertex_array_object} in OpenGL ES 2.0 is
+         * ES 3.0, WebGL 2.0, @es_extension{OES,vertex_array_object} in OpenGL
+         * ES 2.0 or @webgl_extension{OES,vertex_array_object} in WebGL 1.0 is
          * available, the vertex array object is used to hold the parameters.
          *
          * @attention The buffer passed as parameter is not managed by the
          *      mesh, you must ensure it will exist for whole lifetime of the
          *      mesh and delete it afterwards.
-         *
-         * @attention In @ref MAGNUM_TARGET_WEBGL "WebGL" the data must be
-         *      properly aligned (e.g. all float data must start at addresses
-         *      divisible by four). Also the maximum stride of attribute data
-         *      must be at most 255 bytes. This is not required anywhere else,
-         *      but doing so may have performance benefits.
          *
          * @see @ref addVertexBufferInstanced(), @ref setPrimitive(),
          *      @ref setCount(), @fn_gl{BindVertexArray},
@@ -701,6 +714,11 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *      @fn_gl{VertexAttribPointer} or
          *      @fn_gl_extension{EnableVertexArrayAttrib,EXT,direct_state_access},
          *      @fn_gl_extension{VertexArrayVertexAttribOffset,EXT,direct_state_access}
+         * @requires_gles In WebGL the data must be properly aligned (e.g. all
+         *      float data must start at addresses divisible by four). Also the
+         *      maximum stride of attribute data must be at most 255 bytes.
+         *      This is not required anywhere else, but doing so may have
+         *      performance benefits.
          */
         template<class ...T> inline Mesh& addVertexBuffer(Buffer& buffer, GLintptr offset, const T&... attributes) {
             addVertexBufferInternal(buffer, offset, strideOfInterleaved(attributes...), 0, attributes...);
@@ -717,7 +735,8 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @ref addVertexBuffer().
          *
          * If @extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL
-         * ES 3.0 or @es_extension{OES,vertex_array_object} in OpenGL ES 2.0 is
+         * ES 3.0, WebGL 2.0, @es_extension{OES,vertex_array_object} in OpenGL
+         * ES 2.0 or @webgl_extension{OES,vertex_array_object} in WebGL 1.0 is
          * available, the vertex array object is used to hold the parameters.
          *
          * @see @ref setPrimitive(), @ref setCount(), @ref setInstanceCount(),
@@ -732,6 +751,8 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @requires_gles30 Extension @es_extension{ANGLE,instanced_arrays},
          *      @es_extension{EXT,instanced_arrays} or
          *      @es_extension{NV,instanced_arrays} in OpenGL ES 2.0.
+         * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
+         *      in WebGL 1.0.
          */
         template<class ...T> inline Mesh& addVertexBufferInstanced(Buffer& buffer, UnsignedInt divisor, GLintptr offset, const T&... attributes) {
             addVertexBufferInternal(buffer, offset, strideOfInterleaved(attributes...), divisor, attributes...);
@@ -756,7 +777,8 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * functionality is not available there.
          *
          * If @extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL
-         * ES 3.0 or @es_extension{OES,vertex_array_object} in OpenGL ES 2.0 is
+         * ES 3.0, WebGL 2.0, @es_extension{OES,vertex_array_object} in OpenGL
+         * ES 2.0 or @webgl_extension{OES,vertex_array_object} in WebGL 1.0 is
          * available, the vertex array object is used to hold the parameters.
          *
          * @see @ref maxElementIndex(), @ref maxElementsIndices(),
@@ -789,9 +811,10 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * commands are issued. See also
          * @ref AbstractShaderProgram-rendering-workflow "AbstractShaderProgram documentation"
          * for more information. If @extension{ARB,vertex_array_object} (part
-         * of OpenGL 3.0), OpenGL ES 3.0 or @es_extension{OES,vertex_array_object}
-         * in OpenGL ES 2.0 is available, the associated vertex array object is
-         * bound instead of setting up the mesh from scratch.
+         * of OpenGL 3.0), OpenGL ES 3.0, WebGL 2.0, @es_extension{OES,vertex_array_object}
+         * in OpenGL ES 2.0 or @webgl_extension{OES,vertex_array_object} in
+         * WebGL 1.0 is available, the associated vertex array object is bound
+         * instead of setting up the mesh from scratch.
          * @see @ref setCount(), @ref setInstanceCount(),
          *      @ref MeshView::draw(AbstractShaderProgram&),
          *      @ref MeshView::draw(AbstractShaderProgram&, std::initializer_list<std::reference_wrapper<MeshView>>),
@@ -985,8 +1008,10 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         void MAGNUM_LOCAL vertexAttribDivisorImplementationDSAEXT(GLuint index, GLuint divisor);
         #elif defined(MAGNUM_TARGET_GLES2)
         void MAGNUM_LOCAL vertexAttribDivisorImplementationANGLE(GLuint index, GLuint divisor);
+        #ifndef MAGNUM_TARGET_WEBGL
         void MAGNUM_LOCAL vertexAttribDivisorImplementationEXT(GLuint index, GLuint divisor);
         void MAGNUM_LOCAL vertexAttribDivisorImplementationNV(GLuint index, GLuint divisor);
+        #endif
         #endif
 
         void MAGNUM_LOCAL bindIndexBufferImplementationDefault(Buffer&);
@@ -1000,12 +1025,16 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
 
         #ifdef MAGNUM_TARGET_GLES2
         void MAGNUM_LOCAL drawArraysInstancedImplementationANGLE(GLint baseVertex, GLsizei count, GLsizei instanceCount);
+        #ifndef MAGNUM_TARGET_WEBGL
         void MAGNUM_LOCAL drawArraysInstancedImplementationEXT(GLint baseVertex, GLsizei count, GLsizei instanceCount);
         void MAGNUM_LOCAL drawArraysInstancedImplementationNV(GLint baseVertex, GLsizei count, GLsizei instanceCount);
+        #endif
 
         void MAGNUM_LOCAL drawElementsInstancedImplementationANGLE(GLsizei count, GLintptr indexOffset, GLsizei instanceCount);
+        #ifndef MAGNUM_TARGET_WEBGL
         void MAGNUM_LOCAL drawElementsInstancedImplementationEXT(GLsizei count, GLintptr indexOffset, GLsizei instanceCount);
         void MAGNUM_LOCAL drawElementsInstancedImplementationNV(GLsizei count, GLintptr indexOffset, GLsizei instanceCount);
+        #endif
         #endif
 
         GLuint _id;

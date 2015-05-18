@@ -72,7 +72,8 @@ class MAGNUM_EXPORT MeshView {
          * @ref draw(AbstractShaderProgram&) calls.
          *
          * If @extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL
-         * ES 3.0 or @es_extension{OES,vertex_array_object} in OpenGL ES 2.0 is
+         * ES 3.0, WebGL 2.0, @es_extension{OES,vertex_array_object} in OpenGL
+         * ES 2.0 or @webgl_extension{OES,vertex_array_object} in WebGL 1.0 is
          * available, the associated vertex array object is bound instead of
          * setting up the mesh from scratch.
          * @attention All meshes must be views of the same original mesh and
@@ -128,7 +129,7 @@ class MAGNUM_EXPORT MeshView {
          * @requires_gl32 Extension @extension{ARB,draw_elements_base_vertex}
          *      for indexed meshes
          * @requires_gl Base vertex cannot be specified for indexed meshes in
-         *      OpenGL ES.
+         *      OpenGL ES or WebGL.
          */
         MeshView& setBaseVertex(Int baseVertex) {
             _baseVertex = baseVertex;
@@ -217,6 +218,8 @@ class MAGNUM_EXPORT MeshView {
          * @requires_gles30 Extension @es_extension{ANGLE,instanced_arrays},
          *      @es_extension2{EXT,draw_instanced,draw_instanced} or
          *      @es_extension{NV,draw_instanced} in OpenGL ES 2.0.
+         * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
+         *      in WebGL 1.0.
          */
         MeshView& setInstanceCount(Int count) {
             _instanceCount = count;
@@ -233,7 +236,8 @@ class MAGNUM_EXPORT MeshView {
          *
          * Default is `0`.
          * @requires_gl42 Extension @extension{ARB,base_instance}
-         * @requires_gl Base instance cannot be specified in OpenGL ES.
+         * @requires_gl Base instance cannot be specified in OpenGL ES or
+         *      WebGL.
          */
         MeshView& setBaseInstance(UnsignedInt baseInstance) {
             _baseInstance = baseInstance;
@@ -259,7 +263,9 @@ class MAGNUM_EXPORT MeshView {
         #endif
 
     private:
+        #ifndef MAGNUM_TARGET_WEBGL
         static MAGNUM_LOCAL void multiDrawImplementationDefault(std::initializer_list<std::reference_wrapper<MeshView>> meshes);
+        #endif
         static MAGNUM_LOCAL void multiDrawImplementationFallback(std::initializer_list<std::reference_wrapper<MeshView>> meshes);
 
         std::reference_wrapper<Mesh> _original;
