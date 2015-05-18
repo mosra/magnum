@@ -62,6 +62,9 @@ is supported on older Intel GPUs even if they are capable of OpenGL 2.1 only).
 -   @subpage requires-gles30
 -   @subpage requires-gles31
 -   @subpage requires-es-extension
+-   @subpage requires-gles
+-   @subpage requires-webgl20
+-   @subpage requires-webgl-extension
 
 @see @ref building, @ref cmake, @ref MAGNUM_TARGET_GLES,
     @ref MAGNUM_TARGET_GLES2
@@ -79,21 +82,37 @@ is supported on older Intel GPUs even if they are capable of OpenGL 2.1 only).
 
 @page requires-extension Functionality requiring specific OpenGL extension
 
-@page requires-gl Functionality requiring desktop OpenGL (not available on OpenGL ES)
+@page requires-gl Functionality requiring desktop OpenGL
+
+The following symbols are not defined when targeting OpenGL ES or WebGL.
+
 @see @ref MAGNUM_TARGET_GLES
 
-@page requires-gles20 Functionality requiring OpenGL ES 2.0 (not available on desktop or ES 3.0)
+@page requires-gles20 Functionality requiring OpenGL ES 2.0 or WebGL 1.0
+
+The following symbols are not defined when targeting OpenGL ES 3.0, WebGL 2.0
+or desktop OpenGL.
+
 @see @ref MAGNUM_TARGET_GLES2
 
-@page requires-gles30 Functionality requiring at least OpenGL ES 3.0
-
-The following symbols are not defined at all when targeting OpenGL ES 2.0.
+@page requires-gles30 Functionality requiring OpenGL ES 3.0
 
 @see @ref MAGNUM_TARGET_GLES3
 
 @page requires-gles31 Functionality requiring OpenGL ES 3.1
 
+The following symbols are not defined when targeting OpenGL ES 2.0.
+
 @page requires-es-extension Functionality requiring specific OpenGL ES extension
-@see @ref MAGNUM_TARGET_GLES2
+
+@page requires-gles Functionality requiring OpenGL ES or desktop OpenGL
+
+The following symbols are not defined when targeting WebGL.
+
+@see @ref MAGNUM_TARGET_WEBGL, @ref requires-gl
+
+@page requires-webgl20 Functionality requiring WebGL 2.0
+
+@page requires-webgl-extension Functionality requiring specific WebGL extension
 
 */

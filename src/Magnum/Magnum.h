@@ -167,14 +167,14 @@ typedef std::int32_t Int;
 /**
 @brief Unsigned long (64bit)
 
-@attention 64-bit integers are not available in @ref MAGNUM_TARGET_WEBGL "WebGL".
+@requires_gles 64-bit integers are not available in WebGL.
 */
 typedef std::uint64_t UnsignedLong;
 
 /**
 @brief Signed long (64bit)
 
-@attention 64-bit integers are not available in @ref MAGNUM_TARGET_WEBGL "WebGL".
+@requires_gles 64-bit integers are not available in WebGL.
 */
 typedef std::int64_t Long;
 #endif
@@ -305,7 +305,7 @@ typedef Math::Range3D<Int> Range3Di;
 /** @{ @name Double-precision types
 
 See @ref types for more information.
-@requires_gl Only single-precision types are available in OpenGL ES.
+@requires_gl Only single-precision types are available in OpenGL ES and WebGL.
 */
 
 /** @brief Double (64bit) */

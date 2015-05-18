@@ -156,7 +156,7 @@ Double cosine = Math::cos(60.0_deg);  // cosine = 0.5
 Double cosine = Math::cos(1.047_rad); // cosine = 0.5
 @endcode
 @see @link operator""_degf() @endlink, @link operator""_rad() @endlink
-@requires_gl Only single-precision types are available in OpenGL ES.
+@requires_gl Only single-precision types are available in OpenGL ES and WebGL.
 */
 constexpr Deg<Double> operator "" _deg(long double value) { return Deg<Double>(value); }
 #endif
@@ -210,7 +210,7 @@ template<class T> class Rad: public Unit<Rad, T> {
 
 See @link operator""_deg() @endlink for more information.
 @see @link operator""_radf() @endlink
-@requires_gl Only single-precision types are available in OpenGL ES.
+@requires_gl Only single-precision types are available in OpenGL ES and WebGL.
 */
 constexpr Rad<Double> operator "" _rad(long double value) { return Rad<Double>(value); }
 #endif

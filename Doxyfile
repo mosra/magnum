@@ -260,16 +260,20 @@ ALIASES                = \
     "requires_gl44=@xrefitem requires-gl44 \"Requires OpenGL 4.4\" \"Functionality requiring OpenGL 4.4\"" \
     "requires_gl45=@xrefitem requires-gl45 \"Requires OpenGL 4.5\" \"Functionality requiring OpenGL 4.5\"" \
     "requires_extension=@xrefitem requires-extension \"Requires OpenGL extension\" \"Functionality requiring specific OpenGL extension\"" \
-    "requires_gl=@xrefitem requires-gl \"Requires desktop OpenGL\" \"Functionality requiring desktop OpenGL (not available in OpenGL ES)\"" \
+    "requires_gl=@xrefitem requires-gl \"Requires desktop OpenGL\" \"Functionality requiring desktop OpenGL\"" \
     "extension{2}=<a href=\"http://www.opengl.org/registry/specs/\1/\2.txt\"><tt>\1_\2</tt></a>" \
     "extension2{2}=<a href=\"http://www.opengl.org/registry/specs/\1/\1_\2.txt\"><tt>\1_\2</tt></a>" \
     "extension3{3}=<a href=\"http://www.opengl.org/registry/specs/\1/\3.txt\"><tt>\1_\2</tt></a>" \
-    "requires_gles20=@xrefitem requires-gles20 \"Requires OpenGL ES 2.0\" \"Functionality requiring OpenGL ES 2.0 (not available in ES 3.0 and desktop OpenGL)\"" \
+    "requires_gles20=@xrefitem requires-gles20 \"Requires OpenGL ES 2.0 / WebGL 1.%\" \"Functionality requiring OpenGL ES 2.0 or WebGL 1.0\"" \
     "requires_gles30=@xrefitem requires-gles30 \"Requires OpenGL ES 3.0\" \"Functionality requiring OpenGL ES 3.0\"" \
     "requires_gles31=@xrefitem requires-gles31 \"Requires OpenGL ES 3.1\" \"Functionality requiring OpenGL ES 3.1\"" \
     "requires_es_extension=@xrefitem requires-es-extension \"Requires OpenGL ES extension\" \"Functionality requiring specific OpenGL ES extension\"" \
+    "requires_gles=@xrefitem requires-gles \"Requires OpenGL ES or desktop OpenGL\" \"Functionality requiring OpenGL ES or desktop OpenGL\"" \
+    "requires_webgl20=@xrefitem requires-webgl20 \"Requires WebGL 2.0\" \"Functionality requiring WebGL 2.0\"" \
+    "requires_webgl_extension=@xrefitem requires-webgl-extension \"Requires WebGL extension\" \"Functionality requiring specific WebGL extension\"" \
     "es_extension{2}=<a href=\"http://www.khronos.org/registry/gles/extensions/\1/\1_\2.txt\"><tt>\1_\2</tt></a>" \
     "es_extension2{3}=<a href=\"http://www.khronos.org/registry/gles/extensions/\1/\3.txt\"><tt>\1_\2</tt></a>" \
+    "webgl_extension{2}=<a href=\"https://www.khronos.org/registry/webgl/extensions/\1_\2/\"><tt>\1_\2</tt></a>" \
     "fn_al{1}=`al\1()`" \
     "def_al{1}=`AL_\1`"
 
