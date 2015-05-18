@@ -60,6 +60,8 @@ enum class BufferUsage: GLenum {
      * drawing.
      * @requires_gles30 Only @ref BufferUsage::StreamDraw is available in
      *      OpenGL ES 2.0.
+     * @requires_webgl20 Only @ref BufferUsage::StreamDraw is available in
+     *      WebGL 1.0.
      */
     StreamRead = GL_STREAM_READ,
 
@@ -68,6 +70,8 @@ enum class BufferUsage: GLenum {
      * drawing or copying to other buffers.
      * @requires_gles30 Only @ref BufferUsage::StreamDraw is available in
      *      OpenGL ES 2.0.
+     * @requires_webgl20 Only @ref BufferUsage::StreamDraw is available in
+     *      WebGL 1.0.
      */
     StreamCopy = GL_STREAM_COPY,
     #endif
@@ -81,6 +85,8 @@ enum class BufferUsage: GLenum {
      * application.
      * @requires_gles30 Only @ref BufferUsage::StaticDraw is available in
      *      OpenGL ES 2.0.
+     * @requires_webgl20 Only @ref BufferUsage::StaticDraw is available in
+     *      WebGL 1.0.
      */
     StaticRead = GL_STATIC_READ,
 
@@ -89,6 +95,8 @@ enum class BufferUsage: GLenum {
      * drawing or copying to other buffers.
      * @requires_gles30 Only @ref BufferUsage::StaticDraw is available in
      *      OpenGL ES 2.0.
+     * @requires_webgl20 Only @ref BufferUsage::StaticDraw is available in
+     *      WebGL 1.0.
      */
     StaticCopy = GL_STATIC_COPY,
     #endif
@@ -105,6 +113,8 @@ enum class BufferUsage: GLenum {
      * from the application.
      * @requires_gles30 Only @ref BufferUsage::DynamicDraw is available in
      *      OpenGL ES 2.0.
+     * @requires_webgl20 Only @ref BufferUsage::DynamicDraw is available in
+     *      WebGL 1.0.
      */
     DynamicRead = GL_DYNAMIC_READ,
 
@@ -113,6 +123,8 @@ enum class BufferUsage: GLenum {
      * drawing or copying to other images.
      * @requires_gles30 Only @ref BufferUsage::DynamicDraw is available in
      *      OpenGL ES 2.0.
+     * @requires_webgl20 Only @ref BufferUsage::DynamicDraw is available in
+     *      WebGL 1.0.
      */
     DynamicCopy = GL_DYNAMIC_COPY
     #endif
@@ -199,8 +211,8 @@ rebinding. Buffer limits and implementation-defined values (such as
 @ref maxUniformBindings()) are cached, so repeated queries don't result in
 repeated @fn_gl{Get} calls.
 
-If on desktop GL and either @extension{ARB,direct_state_access} (part of OpenGL
-4.5) or @extension{EXT,direct_state_access} is available, functions
+If either @extension{ARB,direct_state_access} (part of OpenGL 4.5) or
+@extension{EXT,direct_state_access} desktop extension is available, functions
 @ref copy(), @ref size(), @ref data(), @ref subData(), @ref setData(),
 @ref setSubData(), @ref map(), @ref flushMappedRange() and @ref unmap() use DSA
 functions to avoid unnecessary calls to @fn_gl{BindBuffer}. See their
@@ -226,19 +238,23 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
             Array = GL_ARRAY_BUFFER,
 
             #ifndef MAGNUM_TARGET_GLES2
+            #ifndef MAGNUM_TARGET_WEBGL
             /**
              * Used for storing atomic counters.
              * @requires_gl42 Extension @extension{ARB,shader_atomic_counters}
              * @requires_gles31 Atomic counters are not available in OpenGL ES
              *      3.0 and older.
+             * @requires_gles Atomic counters are not available in WebGL.
              */
             AtomicCounter = GL_ATOMIC_COUNTER_BUFFER,
+            #endif
 
             /**
              * Source for copies. See @ref copy().
              * @requires_gl31 Extension @extension{ARB,copy_buffer}
              * @requires_gles30 Buffer copying is not available in OpenGL ES
              *      2.0.
+             * @requires_webgl20 Buffer copying is not available in WebGL 1.0.
              */
             CopyRead = GL_COPY_READ_BUFFER,
 
@@ -247,24 +263,29 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
              * @requires_gl31 Extension @extension{ARB,copy_buffer}
              * @requires_gles30 Buffer copying is not available in OpenGL ES
              *      2.0.
+             * @requires_webgl20 Buffer copying is not available in WebGL 1.0.
              */
             CopyWrite = GL_COPY_WRITE_BUFFER,
 
+            #ifndef MAGNUM_TARGET_WEBGL
             /**
              * Indirect compute dispatch commands.
              * @requires_gl43 Extension @extension{ARB,compute_shader}
              * @requires_gles31 Compute shaders are not available in OpenGL ES
              *      3.0 and older.
+             * @requires_gles Compute shaders are not available in WebGL.
              */
             DispatchIndirect = GL_DISPATCH_INDIRECT_BUFFER,
 
             /**
              * Used for supplying arguments for indirect drawing.
              * @requires_gl40 Extension @extension{ARB,draw_indirect}
-             * @requires_gles31 Indirect drawing not available in OpenGL ES 3.0
-             *      and older.
+             * @requires_gles31 Indirect drawing is not available in OpenGL ES
+             *      3.0 and older.
+             * @requires_gles Indirect drawing is not available in WebGL.
              */
             DrawIndirect = GL_DRAW_INDIRECT_BUFFER,
+            #endif
             #endif
 
             /** Used for storing vertex indices. */
@@ -275,6 +296,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
              * Target for pixel pack operations.
              * @requires_gles30 Pixel buffer objects are not available in
              *      OpenGL ES 2.0.
+             * @requires_webgl20 Pixel buffer objects are not available in
+             *      WebGL 1.0.
              */
             PixelPack = GL_PIXEL_PACK_BUFFER,
 
@@ -282,23 +305,29 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
              * Source for texture update operations.
              * @requires_gles30 Pixel buffer objects are not available in
              *      OpenGL ES 2.0.
+             * @requires_webgl20 Pixel buffer objects are not available in
+             *      WebGL 1.0.
              */
             PixelUnpack = GL_PIXEL_UNPACK_BUFFER,
 
+            #ifndef MAGNUM_TARGET_WEBGL
             /**
              * Used for shader storage.
              * @requires_gl43 Extension @extension{ARB,shader_storage_buffer_object}
              * @requires_gles31 Shader storage is not available in OpenGL ES
              *      3.0 and older.
+             * @requires_gles Shader storage is not available in WebGL.
              */
             ShaderStorage = GL_SHADER_STORAGE_BUFFER,
+            #endif
             #endif
 
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Source for texel fetches. See @ref BufferTexture.
              * @requires_gl31 Extension @extension{ARB,texture_buffer_object}
-             * @requires_gl Texture buffers are not available in OpenGL ES.
+             * @requires_gl Texture buffers are not available in OpenGL ES or
+             *      WebGL.
              */
             Texture = GL_TEXTURE_BUFFER,
             #endif
@@ -309,6 +338,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
              * @requires_gl30 Extension @extension{EXT,transform_feedback}
              * @requires_gles30 Transform feedback is not available in OpenGL
              *      ES 2.0.
+             * @requires_webgl20 Transform feedback is not available in WebGL
+             *      1.0.
              */
             TransformFeedback = GL_TRANSFORM_FEEDBACK_BUFFER,
 
@@ -317,6 +348,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
              * @requires_gl31 Extension @extension{ARB,uniform_buffer_object}
              * @requires_gles30 Uniform buffers are not available in OpenGL ES
              *      2.0.
+             * @requires_webgl20 Uniform buffers are not available in WebGL
+             *      1.0.
              */
             Uniform = GL_UNIFORM_BUFFER
             #endif
@@ -338,12 +371,13 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
             Array = GL_ARRAY_BUFFER,
             #endif
 
-            #ifndef MAGNUM_TARGET_GLES2
+            #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
             /**
              * Atomic counter binding
              * @requires_gl42 Extension @extension{ARB,shader_atomic_counters}
              * @requires_gles31 Atomic counters are not available in OpenGL ES
-             *      3.0 and older
+             *      3.0 and older.
+             * @requires_gles Atomic counters are not available in WebGL.
              */
             AtomicCounter = GL_ATOMIC_COUNTER_BUFFER,
             #endif
@@ -365,7 +399,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
             CopyWrite = GL_COPY_WRITE_BUFFER,
             #endif
 
-            #ifndef MAGNUM_TARGET_GLES2
+            #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
             /**
              * @copydoc TargetHint::DispatchIndirect
              * @deprecated For @ref setTargetHint() only, use
@@ -405,12 +439,13 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
             #endif
             #endif
 
-            #ifndef MAGNUM_TARGET_GLES2
+            #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
             /**
              * Shader storage binding
              * @requires_gl43 Extension @extension{ARB,shader_storage_buffer_object}
              * @requires_gles31 Shader storage is not available in OpenGL ES
-             *      3.0 and older
+             *      3.0 and older.
+             * @requires_gles Shader storage is not available in WebGL.
              */
             ShaderStorage = GL_SHADER_STORAGE_BUFFER,
             #endif
@@ -438,7 +473,9 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
              * Uniform binding
              * @requires_gl31 Extension @extension{ARB,uniform_buffer_object}
              * @requires_gles30 Uniform buffers are not available in OpenGL ES
-             *      2.0
+             *      2.0.
+             * @requires_webgl20 Uniform buffers are not available in WebGL
+             *      1.0.
              */
             Uniform = GL_UNIFORM_BUFFER
             #endif
@@ -453,12 +490,14 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         typedef CORRADE_DEPRECATED("use BufferUsage instead") BufferUsage Usage;
         #endif
 
+        #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @brief Memory mapping access
          *
          * @see @ref map(MapAccess), @ref mapSub()
          * @requires_es_extension Extension @es_extension{OES,mapbuffer} or
          *      @es_extension{CHROMIUM,map_sub}
+         * @requires_gles Buffer mapping is not available in WebGL.
          * @deprecated_gl Prefer to use @ref map(GLintptr, GLsizeiptr, MapFlags)
          *      instead, as it has more complete set of features.
          */
@@ -493,7 +532,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @see @ref MapFlags, @ref map(GLintptr, GLsizeiptr, MapFlags)
          * @requires_gl30 Extension @extension{ARB,map_buffer_range}
          * @requires_gles30 Extension @es_extension{EXT,map_buffer_range} in
-         *      OpenGL ES 2.0
+         *      OpenGL ES 2.0.
+         * @requires_gles Buffer mapping is not available in WebGL.
          */
         enum class MapFlag: GLbitfield {
             /** Map buffer for reading. */
@@ -560,9 +600,11 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @see @ref map(GLintptr, GLsizeiptr, MapFlags)
          * @requires_gl30 Extension @extension{ARB,map_buffer_range}
          * @requires_gles30 Extension @es_extension{EXT,map_buffer_range} in
-         *      OpenGL ES 2.0
+         *      OpenGL ES 2.0.
+         * @requires_gles Buffer mapping is not available in WebGL.
          */
         typedef Containers::EnumSet<MapFlag> MapFlags;
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES
         /**
@@ -572,12 +614,14 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * OpenGL calls. If extension @extension{ARB,map_buffer_alignment}
          * (part of OpenGL 4.2) is not available, returns `1`.
          * @see @ref map(), @fn_gl{Get} with @def_gl{MIN_MAP_BUFFER_ALIGNMENT}
-         * @requires_gl No minimal value is specified for OpenGL ES.
+         * @requires_gl No minimal value is specified for OpenGL ES. Buffer
+         *      mapping is not available in WebGL.
          */
         static Int minMapAlignment();
         #endif
 
         #ifndef MAGNUM_TARGET_GLES2
+        #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @brief Max supported atomic counter buffer binding count
          *
@@ -586,7 +630,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * (part of OpenGL 4.2) nor OpenGL ES 3.1 is available, returns `0`.
          * @see @ref bind(), @ref unbind(), @fn_gl{Get} with
          *      @def_gl{MAX_ATOMIC_COUNTER_BUFFER_BINDINGS}
-         * @requires_gles30 Not defined in OpenGL ES 2.0
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_gles Atomic counters are not available in WebGL.
          */
         static Int maxAtomicCounterBindings();
 
@@ -598,9 +643,11 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * (part of OpenGL 4.3) nor OpenGL ES 3.1 is available, returns `0`.
          * @see @ref bind(), @ref unbind(), @fn_gl{Get} with
          *      @def_gl{MAX_SHADER_STORAGE_BUFFER_BINDINGS}
-         * @requires_gles30 Not defined in OpenGL ES 2.0
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_gles Shader storage is not available in WebGL.
          */
         static Int maxShaderStorageBindings();
+        #endif
 
         /**
          * @brief Alignment of uniform buffer binding offset
@@ -609,10 +656,12 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * OpenGL calls. If extension @extension{ARB,uniform_buffer_object}
          * (part of OpenGL 3.1) is not available, returns `1`.
          * @see @ref bind(), @fn_gl{Get} with @def_gl{UNIFORM_BUFFER_OFFSET_ALIGNMENT}
-         * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0
+         * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
          */
         static Int uniformOffsetAlignment();
 
+        #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @brief Alignment of shader storage buffer binding offset
          *
@@ -620,9 +669,11 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * OpenGL calls. If neither extension @extension{ARB,shader_storage_buffer_object}
          * (part of OpenGL 4.3) nor OpenGL ES 3.1 is available, returns `1`.
          * @see @ref bind(), @fn_gl{Get} with @def_gl{SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT}
-         * @requires_gles30 Not defined in OpenGL ES 2.0
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_gles Shader storage is not available in WebGL.
          */
         static Int shaderStorageOffsetAlignment();
+        #endif
 
         /**
          * @brief Max supported uniform buffer binding count
@@ -632,7 +683,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * (part of OpenGL 3.1) is not available, returns `0`.
          * @see @ref bind(), @ref unbind(), @fn_gl{Get} with
          *      @def_gl{MAX_UNIFORM_BUFFER_BINDINGS}
-         * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0
+         * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
          */
         static Int maxUniformBindings();
 
@@ -651,6 +703,9 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      version/extension requirements.
          * @requires_gles30 No form of indexed buffer binding is available in
          *      OpenGL ES 2.0, see particular @ref Target values for version
+         *      requirements.
+         * @requires_webgl20 No form of indexed buffer binding is available in
+         *      WebGL 1.0, see particular @ref Target values for version
          *      requirements.
          */
         static void unbind(Target target, UnsignedInt index);
@@ -674,6 +729,9 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      version/extension requirements.
          * @requires_gles30 No form of indexed buffer binding is available in
          *      OpenGL ES 2.0, see particular @ref Target values for version
+         *      requirements.
+         * @requires_webgl20 No form of indexed buffer binding is available in
+         *      WebGL 1.0, see particular @ref Target values for version
          *      requirements.
          */
         static void unbind(Target target, UnsignedInt firstIndex, std::size_t count);
@@ -705,6 +763,9 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @requires_gles30 No form of indexed buffer binding is available in
          *      OpenGL ES 2.0, see particular @ref Target values for version
          *      requirements.
+         * @requires_webgl20 No form of indexed buffer binding is available in
+         *      WebGL 1.0, see particular @ref Target values for version
+         *      requirements.
          */
         static void bind(Target target, UnsignedInt firstIndex, std::initializer_list<std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers);
 
@@ -731,6 +792,9 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @requires_gles30 No form of indexed buffer binding is available in
          *      OpenGL ES 2.0, see particular @ref Target values for version
          *      requirements.
+         * @requires_webgl20 No form of indexed buffer binding is available in
+         *      WebGL 1.0, see particular @ref Target values for version
+         *      requirements.
          */
         static void bind(Target target, UnsignedInt firstIndex, std::initializer_list<Buffer*> buffers);
 
@@ -742,15 +806,16 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @param writeOffset   Offset in the write buffer
          * @param size          Data size
          *
-         * If on OpenGL ES or neither @extension{ARB,direct_state_access} (part
-         * of OpenGL 4.5) nor @extension{EXT,direct_state_access} is available,
-         * @p read buffer is bound for reading and @p write buffer is bound for
-         * writing before the copy is performed (if not already).
+         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @extension{EXT,direct_state_access} desktop extension is
+         * available, @p read buffer is bound for reading and @p write buffer
+         * is bound for writing before the copy is performed (if not already).
          * @see @fn_gl2{CopyNamedBufferSubData,CopyBufferSubData},
          *      @fn_gl_extension{NamedCopyBufferSubData,EXT,direct_state_access},
          *      eventually @fn_gl{BindBuffer} and @fn_gl{CopyBufferSubData}
          * @requires_gl31 Extension @extension{ARB,copy_buffer}
          * @requires_gles30 Buffer copying is not available in OpenGL ES 2.0.
+         * @requires_webgl20 Buffer copying is not available in WebGL 1.0.
          */
         static void copy(Buffer& read, Buffer& write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
         #endif
@@ -761,7 +826,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      information
          *
          * Creates new OpenGL buffer object. If @extension{ARB,direct_state_access}
-         * (part of OpenGL 4.5) is not supported, the buffer is created on
+         * (part of OpenGL 4.5) is not available, the buffer is created on
          * first use.
          * @see @fn_gl{CreateBuffers}, eventually @fn_gl{GenBuffers}
          */
@@ -842,12 +907,12 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @brief Set target hint
          * @return Reference to self (for method chaining)
          *
-         * If on OpenGL ES or neither @extension{ARB,direct_state_access} (part
-         * of OpenGL 4.5) nor @extension{EXT,direct_state_access} is available,
-         * the buffer needs to be internally bound to some target before any
-         * operation. You can specify target which will always be used when
-         * binding the buffer internally, possibly saving some calls to
-         * @fn_gl{BindBuffer}. Default target hint is @ref Target::Array.
+         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @extension{EXT,direct_state_access} desktop extension is
+         * available, the buffer needs to be internally bound to some target
+         * before any operation. You can specify target which will always be
+         * used when binding the buffer internally, possibly saving some calls
+         * to @fn_gl{BindBuffer}. Default target hint is @ref Target::Array.
          * @see @ref setData(), @ref setSubData()
          * @todo Target::ElementArray cannot be used when no VAO is bound -
          *      http://www.opengl.org/wiki/Vertex_Specification#Index_buffers
@@ -890,6 +955,9 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @requires_gles30 No form of indexed buffer binding is available in
          *      OpenGL ES 2.0, see particular @ref Target values for version
          *      requirements.
+         * @requires_webgl20 No form of indexed buffer binding is available in
+         *      WebGL 1.0, see particular @ref Target values for version
+         *      requirements.
          * @todo State tracking for indexed binding
          */
         Buffer& bind(Target target, UnsignedInt index, GLintptr offset, GLsizeiptr size);
@@ -912,6 +980,9 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @requires_gles30 No form of indexed buffer binding is available in
          *      OpenGL ES 2.0, see particular @ref Target values for version
          *      requirements.
+         * @requires_webgl20 No form of indexed buffer binding is available in
+         *      WebGL 1.0, see particular @ref Target values for version
+         *      requirements.
          */
         Buffer& bind(Target target, UnsignedInt index);
         #endif
@@ -919,10 +990,10 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         /**
          * @brief Buffer size
          *
-         * If on OpenGL ES or neither @extension{ARB,direct_state_access} (part
-         * of OpenGL 4.5) nor @extension{EXT,direct_state_access} is available,
-         * the buffer is bound to hinted target before the operation (if not
-         * already).
+         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @extension{EXT,direct_state_access} desktop extension is
+         * available, the buffer is bound to hinted target before the operation
+         * (if not already).
          * @see @ref setTargetHint(), @fn_gl2{GetNamedBufferParameter,GetBufferParameter},
          *      @fn_gl_extension{GetNamedBufferParameter,EXT,direct_state_access},
          *      eventually @fn_gl{BindBuffer} and @fn_gl{GetBufferParameter}
@@ -944,8 +1015,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      with @def_gl{BUFFER_SIZE}, then @fn_gl2{GetNamedBufferSubData,GetBufferSubData},
          *      @fn_gl_extension{GetNamedBufferSubData,EXT,direct_state_access},
          *      eventually @fn_gl{GetBufferSubData}
-         * @requires_gl Buffer data queries are not available in OpenGL ES. Use
-         *      @ref map() instead.
+         * @requires_gl Buffer data queries are not available in OpenGL ES and
+         *      WebGL. Use @ref map() in OpenGL ES instead.
          */
         template<class T = char> Containers::Array<T> data();
 
@@ -962,8 +1033,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      @fn_gl2{GetNamedBufferSubData,GetBufferSubData},
          *      @fn_gl_extension{GetNamedBufferSubData,EXT,direct_state_access},
          *      eventually @fn_gl{BindBuffer} and @fn_gl{GetBufferSubData}
-         * @requires_gl Buffer data queries are not available in OpenGL ES. Use
-         *      @ref map() instead.
+         * @requires_gl Buffer data queries are not available in OpenGL ES and
+         *      WebGL. Use @ref map() in OpenGL ES instead.
          */
         template<class T = char> Containers::Array<T> subData(GLintptr offset, GLsizeiptr size);
         #endif
@@ -974,10 +1045,10 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @param usage     Buffer usage
          * @return Reference to self (for method chaining)
          *
-         * If on OpenGL ES or neither @extension{ARB,direct_state_access} (part
-         * of OpenGL 4.5) nor @extension{EXT,direct_state_access} is available,
-         * the buffer is bound to hinted target before the operation (if not
-         * already).
+         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @extension{EXT,direct_state_access} desktop extension is
+         * available, the buffer is bound to hinted target before the operation
+         * (if not already).
          * @see @ref setTargetHint(), @fn_gl2{NamedBufferData,BufferData},
          *      @fn_gl_extension{NamedBufferData,EXT,direct_state_access},
          *      eventually @fn_gl{BindBuffer} and @fn_gl{BufferData}
@@ -1002,10 +1073,10 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @param data      Data
          * @return Reference to self (for method chaining)
          *
-         * If on OpenGL ES or neither @extension{ARB,direct_state_access} (part
-         * of OpenGL 4.5) nor @extension{EXT,direct_state_access} is available,
-         * the buffer is bound to hinted target before the operation (if not
-         * already).
+         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @extension{EXT,direct_state_access} desktop extension is
+         * available, the buffer is bound to hinted target before the operation
+         * (if not already).
          * @see @ref setTargetHint(), @fn_gl2{NamedBufferSubData,BufferSubData},
          *      @fn_gl_extension{NamedBufferSubData,EXT,direct_state_access},
          *      eventually @fn_gl{BindBuffer} and @fn_gl{BufferSubData}
@@ -1046,15 +1117,16 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          */
         Buffer& invalidateSubData(GLintptr offset, GLsizeiptr length);
 
+        #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @brief Map buffer to client memory
          * @param access    Access
          * @return Pointer to buffer data
          *
-         * If on OpenGL ES or neither @extension{ARB,direct_state_access} (part
-         * of OpenGL 4.5) nor @extension{EXT,direct_state_access} is available,
-         * the buffer is bound to hinted target before the operation (if not
-         * already).
+         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @extension{EXT,direct_state_access} desktop extension is
+         * available, the buffer is bound to hinted target before the operation
+         * (if not already).
          * @see @ref minMapAlignment(), @ref unmap(), @ref setTargetHint(),
          *      @fn_gl2{MapNamedBuffer,MapBuffer},
          *      @fn_gl_extension{MapNamedBuffer,EXT,direct_state_access},
@@ -1062,6 +1134,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @requires_es_extension Extension @es_extension{OES,mapbuffer} in
          *      OpenGL ES 2.0, use @ref map(GLintptr, GLsizeiptr, MapFlags) in
          *      OpenGL ES 3.0 instead.
+         * @requires_gles Buffer mapping is not available in WebGL.
          * @deprecated_gl Prefer to use @ref map(GLintptr, GLsizeiptr, MapFlags)
          *      instead, as it has more complete set of features.
          */
@@ -1084,9 +1157,10 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * already).
          * @see @ref unmapSub(), @ref setTargetHint(),
          *      @fn_gl_extension{MapBufferSubData,CHROMIUM,map_sub}
-         * @requires_gles20 Not available in ES 3.0 or desktop OpenGL. Use
-         *      @ref map(GLintptr, GLsizeiptr, MapFlags) instead.
+         * @requires_gles20 Available only in NaCl build. Use
+         *      @ref map(GLintptr, GLsizeiptr, MapFlags) elsewhere.
          * @requires_es_extension Extension @es_extension{CHROMIUM,map_sub}
+         * @requires_gles Buffer mapping is not available in WebGL.
          * @deprecated_gl Prefer to use @ref map(GLintptr, GLsizeiptr, MapFlags)
          *      instead, as it has more complete set of features.
          */
@@ -1106,10 +1180,10 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      @ref MapFlag::Write must be specified.
          * @return Pointer to buffer data
          *
-         * If on OpenGL ES or neither @extension{ARB,direct_state_access} (part
-         * of OpenGL 4.5) nor @extension{EXT,direct_state_access} is available,
-         * the buffer is bound to hinted target before the operation (if not
-         * already).
+         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @extension{EXT,direct_state_access} desktop extension is
+         * available, the buffer is bound to hinted target before the operation
+         * (if not already).
          * @see @ref minMapAlignment(), @ref flushMappedRange(), @ref unmap(),
          *      @ref map(MapAccess), @ref setTargetHint(),
          *      @fn_gl2{MapNamedBufferRange,MapBufferRange},
@@ -1117,7 +1191,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      eventually @fn_gl{BindBuffer} and @fn_gl{MapBufferRange}
          * @requires_gl30 Extension @extension{ARB,map_buffer_range}
          * @requires_gles30 Extension @es_extension{EXT,map_buffer_range} in
-         *      OpenGL ES 2.0
+         *      OpenGL ES 2.0.
+         * @requires_gles Buffer mapping is not available in WebGL.
          */
         void* map(GLintptr offset, GLsizeiptr length, MapFlags flags);
 
@@ -1136,16 +1211,17 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @ref map() with @ref MapFlag::FlushExplicit flag. See
          * @ref Buffer-data-mapping "class documentation" for usage example.
          *
-         * If on OpenGL ES or neither @extension{ARB,direct_state_access} (part
-         * of OpenGL 4.5) nor @extension{EXT,direct_state_access} is available,
-         * the buffer is bound to hinted target before the operation (if not
-         * already).
+         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @extension{EXT,direct_state_access} desktop extension is
+         * available, the buffer is bound to hinted target before the operation
+         * (if not already).
          * @see @ref setTargetHint(), @fn_gl2{FlushMappedNamedBufferRange,FlushMappedBufferRange},
          *      @fn_gl_extension{FlushMappedNamedBufferRange,EXT,direct_state_access},
          *      eventually @fn_gl{BindBuffer} and @fn_gl{FlushMappedBufferRange}
          * @requires_gl30 Extension @extension{ARB,map_buffer_range}
          * @requires_gles30 Extension @es_extension{EXT,map_buffer_range} in
-         *      OpenGL ES 2.0
+         *      OpenGL ES 2.0.
+         * @requires_gles Buffer mapping is not available in WebGL.
          */
         Buffer& flushMappedRange(GLintptr offset, GLsizeiptr length);
 
@@ -1156,15 +1232,17 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      otherwise.
          *
          * Unmaps buffer previously mapped with @ref map(), invalidating the
-         * pointer returned by these functions. If on OpenGL ES or neither
+         * pointer returned by these functions. If neither
          * @extension{ARB,direct_state_access} (part of OpenGL 4.5) nor
-         * @extension{EXT,direct_state_access} is available, the buffer is
-         * bound to hinted target before the operation (if not already).
+         * @extension{EXT,direct_state_access} desktop extension is available,
+         * the buffer is bound to hinted target before the operation (if not
+         * already).
          * @see @ref setTargetHint(), @fn_gl2{UnmapNamedBuffer,UnmapBuffer},
          *      @fn_gl_extension{UnmapNamedBuffer,EXT,direct_state_access},
          *      eventually  @fn_gl{BindBuffer} and @fn_gl{UnmapBuffer}
          * @requires_gles30 Extension @es_extension{OES,mapbuffer} in OpenGL
-         *      ES 2.0
+         *      ES 2.0.
+         * @requires_gles Buffer mapping is not available in WebGL.
          */
         bool unmap();
 
@@ -1175,11 +1253,13 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * Unmaps portion of buffer previously mapped with @ref mapSub(),
          * invalidating the pointer returned by the function.
          * @see @fn_gl_extension{UnmapBufferSubData,CHROMIUM,map_sub}
-         * @requires_gles20 Not available in ES 3.0 or desktop OpenGL. Use
-         *      @ref map(GLintptr, GLsizeiptr, MapFlags) instead.
+         * @requires_gles20 Available only in NaCl build. Use
+         *      @ref map(GLintptr, GLsizeiptr, MapFlags) elsewhere.
          * @requires_es_extension Extension @es_extension{CHROMIUM,map_sub}
+         * @requires_gles Buffer mapping is not available in WebGL.
          */
         void unmapSub();
+        #endif
         #endif
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -1263,6 +1343,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         void MAGNUM_LOCAL invalidateSubImplementationARB(GLintptr offset, GLsizeiptr length);
         #endif
 
+        #ifndef MAGNUM_TARGET_WEBGL
         void MAGNUM_LOCAL * mapImplementationDefault(MapAccess access);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL * mapImplementationDSA(MapAccess access);
@@ -1286,6 +1367,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         bool MAGNUM_LOCAL unmapImplementationDSA();
         bool MAGNUM_LOCAL unmapImplementationDSAEXT();
         #endif
+        #endif
 
         GLuint _id;
         TargetHint _targetHint;
@@ -1295,7 +1377,9 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         bool _created; /* see createIfNotAlready() for details */
 };
 
+#ifndef MAGNUM_TARGET_WEBGL
 CORRADE_ENUMSET_OPERATORS(Buffer::MapFlags)
+#endif
 
 /** @debugoperatorclassenum{Magnum::Buffer,Magnum::Buffer::TargetHint} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Buffer::TargetHint value);

@@ -32,6 +32,8 @@ namespace Magnum { namespace Implementation {
 struct BufferState {
     #ifndef MAGNUM_TARGET_GLES
     static const std::size_t TargetCount = 13+1;
+    #elif !defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL)
+    static const std::size_t TargetCount = 8+1;
     #elif !defined(MAGNUM_TARGET_GLES2)
     static const std::size_t TargetCount = 12+1;
     #else
@@ -60,10 +62,12 @@ struct BufferState {
     void(Buffer::*subDataImplementation)(GLintptr, GLsizeiptr, const GLvoid*);
     void(Buffer::*invalidateImplementation)();
     void(Buffer::*invalidateSubImplementation)(GLintptr, GLsizeiptr);
+    #ifndef MAGNUM_TARGET_WEBGL
     void*(Buffer::*mapImplementation)(Buffer::MapAccess);
     void*(Buffer::*mapRangeImplementation)(GLintptr, GLsizeiptr, Buffer::MapFlags);
     void(Buffer::*flushMappedRangeImplementation)(GLintptr, GLsizeiptr);
     bool(Buffer::*unmapImplementation)();
+    #endif
 
     /* Currently bound buffer for all targets */
     GLuint bindings[TargetCount];
@@ -74,9 +78,11 @@ struct BufferState {
         #ifndef MAGNUM_TARGET_GLES
         minMapAlignment,
         #endif
+        #ifndef MAGNUM_TARGET_WEBGL
         maxAtomicCounterBindings,
         maxShaderStorageBindings,
         shaderStorageOffsetAlignment,
+        #endif
         uniformOffsetAlignment,
         maxUniformBindings;
     #endif

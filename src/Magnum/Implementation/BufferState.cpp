@@ -44,10 +44,12 @@ const Buffer::TargetHint BufferState::targetForIndex[] = {
     Buffer::TargetHint::PixelUnpack,
     Buffer::TargetHint::TransformFeedback,
     Buffer::TargetHint::Uniform,
+    #ifndef MAGNUM_TARGET_WEBGL
     Buffer::TargetHint::AtomicCounter,
     Buffer::TargetHint::DispatchIndirect,
     Buffer::TargetHint::DrawIndirect,
     Buffer::TargetHint::ShaderStorage,
+    #endif
     #ifndef MAGNUM_TARGET_GLES
     Buffer::TargetHint::Texture
     #endif
@@ -65,10 +67,12 @@ std::size_t BufferState::indexForTarget(Buffer::TargetHint target) {
         case Buffer::TargetHint::PixelUnpack:       return 6;
         case Buffer::TargetHint::TransformFeedback: return 7;
         case Buffer::TargetHint::Uniform:           return 8;
+        #ifndef MAGNUM_TARGET_WEBGL
         case Buffer::TargetHint::AtomicCounter:     return 9;
         case Buffer::TargetHint::DispatchIndirect:  return 10;
         case Buffer::TargetHint::DrawIndirect:      return 11;
         case Buffer::TargetHint::ShaderStorage:     return 12;
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         case Buffer::TargetHint::Texture:           return 13;
         #endif
@@ -83,7 +87,10 @@ BufferState::BufferState(Context& context, std::vector<std::string>& extensions)
     #ifndef MAGNUM_TARGET_GLES
     , minMapAlignment(0)
     #endif
-    , maxAtomicCounterBindings{0}, maxShaderStorageBindings{0}, shaderStorageOffsetAlignment{0}, uniformOffsetAlignment{0}, maxUniformBindings{0}
+    #ifndef MAGNUM_TARGET_WEBGL
+    , maxAtomicCounterBindings{0}, maxShaderStorageBindings{0}, shaderStorageOffsetAlignment{0}
+    #endif
+    , uniformOffsetAlignment{0}, maxUniformBindings{0}
     #endif
 {
     /* Create implementation */
@@ -135,10 +142,12 @@ BufferState::BufferState(Context& context, std::vector<std::string>& extensions)
         #endif
         dataImplementation = &Buffer::dataImplementationDefault;
         subDataImplementation = &Buffer::subDataImplementationDefault;
+        #ifndef MAGNUM_TARGET_WEBGL
         mapImplementation = &Buffer::mapImplementationDefault;
         mapRangeImplementation = &Buffer::mapRangeImplementationDefault;
         flushMappedRangeImplementation = &Buffer::flushMappedRangeImplementationDefault;
         unmapImplementation = &Buffer::unmapImplementationDefault;
+        #endif
     }
 
     #ifndef MAGNUM_TARGET_GLES
