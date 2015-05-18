@@ -33,7 +33,9 @@ namespace Magnum {
 Debug operator<<(Debug debug, const ColorFormat value) {
     switch(value) {
         #define _c(value) case ColorFormat::value: return debug << "ColorFormat::" #value;
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         _c(Red)
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         _c(Green)
         _c(Blue)
@@ -41,7 +43,9 @@ Debug operator<<(Debug debug, const ColorFormat value) {
         #ifdef MAGNUM_TARGET_GLES2
         _c(Luminance)
         #endif
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         _c(RG)
+        #endif
         #ifdef MAGNUM_TARGET_GLES2
         _c(LuminanceAlpha)
         #endif
@@ -50,7 +54,9 @@ Debug operator<<(Debug debug, const ColorFormat value) {
         #ifndef MAGNUM_TARGET_GLES
         _c(BGR)
         #endif
+        #ifndef MAGNUM_TARGET_WEBGL
         _c(BGRA)
+        #endif
         #ifndef MAGNUM_TARGET_GLES2
         _c(RedInteger)
         #ifndef MAGNUM_TARGET_GLES
@@ -66,7 +72,9 @@ Debug operator<<(Debug debug, const ColorFormat value) {
         #endif
         #endif
         _c(DepthComponent)
+        #ifndef MAGNUM_TARGET_WEBGL
         _c(StencilIndex)
+        #endif
         _c(DepthStencil)
         #undef _c
     }
@@ -100,15 +108,21 @@ Debug operator<<(Debug debug, const ColorType value) {
         _c(UnsignedShort565Rev)
         #endif
         _c(UnsignedShort4444)
+        #ifndef MAGNUM_TARGET_WEBGL
         _c(UnsignedShort4444Rev)
+        #endif
         _c(UnsignedShort5551)
+        #ifndef MAGNUM_TARGET_WEBGL
         _c(UnsignedShort1555Rev)
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         _c(UnsignedInt8888)
         _c(UnsignedInt8888Rev)
         _c(UnsignedInt1010102)
         #endif
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         _c(UnsignedInt2101010Rev)
+        #endif
         #ifndef MAGNUM_TARGET_GLES2
         _c(UnsignedInt10F11F11FRev)
         _c(UnsignedInt5999Rev)

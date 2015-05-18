@@ -47,8 +47,14 @@ auto TgaImageConverter::doFeatures() const -> Features { return Feature::Convert
 
 Containers::Array<char> TgaImageConverter::doExportToData(const ImageReference2D& image) const {
     if(image.format() != ColorFormat::RGB &&
-       image.format() != ColorFormat::RGBA &&
-       image.format() != ColorFormat::Red)
+       image.format() != ColorFormat::RGBA
+       #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+       && image.format() != ColorFormat::Red
+       #endif
+       #ifdef MAGNUM_TARGET_GLES2
+       && image.format() != ColorFormat::Luminance
+       #endif
+       )
     {
         Error() << "Trade::TgaImageConverter::exportToData(): unsupported color format" << image.format();
         return nullptr;
@@ -65,7 +71,21 @@ Containers::Array<char> TgaImageConverter::doExportToData(const ImageReference2D
 
     /* Fill header */
     auto header = reinterpret_cast<TgaHeader*>(data.begin());
-    header->imageType = image.format() == ColorFormat::Red ? 3 : 2;
+    switch(image.format()) {
+        case ColorFormat::RGB:
+        case ColorFormat::RGBA:
+            header->imageType = 2;
+            break;
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+        case ColorFormat::Red:
+        #endif
+        #ifdef MAGNUM_TARGET_GLES2
+        case ColorFormat::Luminance:
+        #endif
+            header->imageType = 3;
+            break;
+        default: CORRADE_ASSERT_UNREACHABLE();
+    }
     header->bpp = pixelSize*8;
     header->width = UnsignedShort(Utility::Endianness::littleEndian(image.size().x()));
     header->height = UnsignedShort(Utility::Endianness::littleEndian(image.size().y()));

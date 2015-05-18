@@ -463,6 +463,7 @@ void AbstractTexture::bindInternal() {
 
 ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat internalFormat) {
     switch(internalFormat) {
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         case TextureFormat::Red:
         case TextureFormat::R8:
         #ifndef MAGNUM_TARGET_GLES2
@@ -482,6 +483,7 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         case TextureFormat::CompressedSignedRedRgtc1:
         #endif
             return ColorFormat::Red;
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::R8UI:
@@ -493,6 +495,7 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
             return ColorFormat::RedInteger;
         #endif
 
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         case TextureFormat::RG:
         case TextureFormat::RG8:
         #ifndef MAGNUM_TARGET_GLES2
@@ -512,6 +515,7 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         case TextureFormat::CompressedSignedRGRgtc2:
         #endif
             return ColorFormat::RG;
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::RG8UI:
@@ -524,7 +528,9 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         #endif
 
         case TextureFormat::RGB:
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         case TextureFormat::RGB8:
+        #endif
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::RGB8Snorm:
         #endif
@@ -542,7 +548,7 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         case TextureFormat::RGB5:
         #endif
         case TextureFormat::RGB565:
-        #ifndef MAGNUM_TARGET_GLES3
+        #if !defined(MAGNUM_TARGET_GLES3) && !defined(MAGNUM_TARGET_WEBGL)
         case TextureFormat::RGB10:
         #endif
         #ifndef MAGNUM_TARGET_GLES
@@ -574,7 +580,9 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         #endif
 
         case TextureFormat::RGBA:
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         case TextureFormat::RGBA8:
+        #endif
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::RGBA8Snorm:
         #endif
@@ -591,7 +599,9 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         #endif
         case TextureFormat::RGBA4:
         case TextureFormat::RGB5A1:
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         case TextureFormat::RGB10A2:
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         case TextureFormat::RGBA12:
         #endif
@@ -625,9 +635,13 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         #endif
 
         case TextureFormat::DepthComponent:
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         case TextureFormat::DepthComponent16:
         case TextureFormat::DepthComponent24:
+        #endif
+        #ifndef MAGNUM_TARGET_WEBGL
         case TextureFormat::DepthComponent32:
+        #endif
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::DepthComponent32F:
         #endif
@@ -639,7 +653,9 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         #endif
 
         case TextureFormat::DepthStencil:
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         case TextureFormat::Depth24Stencil8:
+        #endif
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::Depth32FStencil8:
         #endif
@@ -651,14 +667,18 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
 
 ColorType AbstractTexture::imageTypeForInternalFormat(const TextureFormat internalFormat) {
     switch(internalFormat) {
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         case TextureFormat::Red:
         case TextureFormat::RG:
+        #endif
         case TextureFormat::RGB:
         case TextureFormat::RGBA:
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         case TextureFormat::R8:
         case TextureFormat::RG8:
         case TextureFormat::RGB8:
         case TextureFormat::RGBA8:
+        #endif
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::R8UI:
         case TextureFormat::RG8UI:
@@ -785,6 +805,7 @@ ColorType AbstractTexture::imageTypeForInternalFormat(const TextureFormat intern
         case TextureFormat::RGB565:
             return ColorType::UnsignedShort565;
 
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         #ifndef MAGNUM_TARGET_GLES3
         case TextureFormat::RGB10:
         #endif
@@ -793,6 +814,7 @@ ColorType AbstractTexture::imageTypeForInternalFormat(const TextureFormat intern
         case TextureFormat::RGB10A2UI:
         #endif
             return ColorType::UnsignedInt2101010Rev; /**< @todo Rev for all? */
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::R11FG11FB10F:
@@ -801,12 +823,18 @@ ColorType AbstractTexture::imageTypeForInternalFormat(const TextureFormat intern
             return ColorType::UnsignedInt5999Rev;
         #endif
 
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         case TextureFormat::DepthComponent16:
             return ColorType::UnsignedShort;
+        #endif
 
         case TextureFormat::DepthComponent:
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         case TextureFormat::DepthComponent24:
+        #endif
+        #ifndef MAGNUM_TARGET_WEBGL
         case TextureFormat::DepthComponent32:
+        #endif
             return ColorType::UnsignedInt;
 
         #ifndef MAGNUM_TARGET_GLES2
@@ -820,7 +848,9 @@ ColorType AbstractTexture::imageTypeForInternalFormat(const TextureFormat intern
         #endif
 
         case TextureFormat::DepthStencil:
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         case TextureFormat::Depth24Stencil8:
+        #endif
             return ColorType::UnsignedInt248;
 
         #ifndef MAGNUM_TARGET_GLES2

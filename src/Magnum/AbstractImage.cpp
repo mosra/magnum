@@ -63,16 +63,22 @@ std::size_t AbstractImage::pixelSize(ColorFormat format, ColorType type) {
         case ColorType::UnsignedShort565Rev:
         #endif
         case ColorType::UnsignedShort4444:
+        #ifndef MAGNUM_TARGET_WEBGL
         case ColorType::UnsignedShort4444Rev:
+        #endif
         case ColorType::UnsignedShort5551:
+        #ifndef MAGNUM_TARGET_WEBGL
         case ColorType::UnsignedShort1555Rev:
+        #endif
             return 2;
         #ifndef MAGNUM_TARGET_GLES
         case ColorType::UnsignedInt8888:
         case ColorType::UnsignedInt8888Rev:
         case ColorType::UnsignedInt1010102:
         #endif
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         case ColorType::UnsignedInt2101010Rev:
+        #endif
         #ifndef MAGNUM_TARGET_GLES2
         case ColorType::UnsignedInt10F11F11FRev:
         case ColorType::UnsignedInt5999Rev:
@@ -86,7 +92,9 @@ std::size_t AbstractImage::pixelSize(ColorFormat format, ColorType type) {
     }
 
     switch(format) {
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         case ColorFormat::Red:
+        #endif
         #ifndef MAGNUM_TARGET_GLES2
         case ColorFormat::RedInteger:
         #endif
@@ -100,9 +108,13 @@ std::size_t AbstractImage::pixelSize(ColorFormat format, ColorType type) {
         case ColorFormat::Luminance:
         #endif
         case ColorFormat::DepthComponent:
+        #ifndef MAGNUM_TARGET_WEBGL
         case ColorFormat::StencilIndex:
+        #endif
             return 1*size;
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         case ColorFormat::RG:
+        #endif
         #ifndef MAGNUM_TARGET_GLES2
         case ColorFormat::RGInteger:
         #endif
@@ -123,7 +135,9 @@ std::size_t AbstractImage::pixelSize(ColorFormat format, ColorType type) {
         #ifndef MAGNUM_TARGET_GLES2
         case ColorFormat::RGBAInteger:
         #endif
+        #ifndef MAGNUM_TARGET_WEBGL
         case ColorFormat::BGRA:
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         case ColorFormat::BGRAInteger:
         #endif
