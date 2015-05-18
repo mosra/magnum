@@ -30,7 +30,11 @@
 
 namespace Magnum { namespace Implementation {
 
-RendererState::RendererState(Context& context, std::vector<std::string>& extensions): resetNotificationStrategy() {
+RendererState::RendererState(Context& context, std::vector<std::string>& extensions)
+    #ifndef MAGNUM_TARGET_WEBGL
+    : resetNotificationStrategy()
+    #endif
+{
     /* Float depth clear value implementation */
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::GL::ARB::ES2_compatibility>())
@@ -46,6 +50,7 @@ RendererState::RendererState(Context& context, std::vector<std::string>& extensi
     else clearDepthfImplementation = &Renderer::clearDepthfImplementationDefault;
     #endif
 
+    #ifndef MAGNUM_TARGET_WEBGL
     /* Graphics reset status implementation */
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::GL::ARB::robustness>())
@@ -61,6 +66,10 @@ RendererState::RendererState(Context& context, std::vector<std::string>& extensi
 
         graphicsResetStatusImplementation = &Renderer::graphicsResetStatusImplementationRobustness;
     } else graphicsResetStatusImplementation = &Renderer::graphicsResetStatusImplementationDefault;
+    #else
+    static_cast<void>(context);
+    static_cast<void>(extensions);
+    #endif
 }
 
 }}

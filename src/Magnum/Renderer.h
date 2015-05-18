@@ -119,7 +119,8 @@ class MAGNUM_EXPORT Renderer {
             /**
              * Depth clamping. If enabled, ignores near and far clipping plane.
              * @requires_gl32 Extension @extension{ARB,depth_clamp}
-             * @requires_gl Depth clamping is not available in OpenGL ES.
+             * @requires_gl Depth clamping is not available in OpenGL ES and
+             *      WebGL.
              */
             DepthClamp = GL_DEPTH_CLAMP,
             #endif
@@ -144,7 +145,7 @@ class MAGNUM_EXPORT Renderer {
              * sRGB encoding of the default framebuffer
              * @requires_gl30 Extension @extension{ARB,framebuffer_sRGB}
              * @requires_gl sRGB encoding of the default framebuffer is
-             *      implementation-defined in OpenGL ES.
+             *      implementation-defined in OpenGL ES and WebGL.
              */
             FramebufferSRGB = GL_FRAMEBUFFER_SRGB,
 
@@ -152,7 +153,7 @@ class MAGNUM_EXPORT Renderer {
              * Logical operation
              * @see @ref setLogicOperation()
              * @requires_gl Logical operations on framebuffer are not
-             *      available in OpenGL ES.
+             *      available in OpenGL ES and WebGL.
              */
             LogicOperation = GL_COLOR_LOGIC_OP,
             #endif
@@ -162,7 +163,7 @@ class MAGNUM_EXPORT Renderer {
              * Multisampling. Enabled by default. Note that the actual presence
              * of this feature in default framebuffer depends on context
              * configuration, see for example @ref Platform::Sdl2Application::Configuration::setSampleCount().
-             * @requires_gl Always enabled in OpenGL ES.
+             * @requires_gl Always enabled in OpenGL ES and WebGL.
              */
             Multisampling = GL_MULTISAMPLE,
             #endif
@@ -180,7 +181,7 @@ class MAGNUM_EXPORT Renderer {
              * @see @ref Feature::PolygonOffsetFill, @ref Feature::PolygonOffsetPoint,
              *      @ref setPolygonOffset()
              * @requires_gl Only @ref Feature::PolygonOffsetFill is available
-             *      in OpenGL ES.
+             *      in OpenGL ES and WebGL.
              */
             PolygonOffsetLine = GL_POLYGON_OFFSET_LINE,
 
@@ -189,17 +190,15 @@ class MAGNUM_EXPORT Renderer {
              * @see @ref Feature::PolygonOffsetFill, @ref Feature::PolygonOffsetLine,
              *      @ref setPolygonOffset()
              * @requires_gl Only @ref Feature::PolygonOffsetFill is available
-             *      in OpenGL ES.
+             *      in OpenGL ES and WebGL.
              */
             PolygonOffsetPoint = GL_POLYGON_OFFSET_POINT,
-            #endif
 
-            #ifndef MAGNUM_TARGET_GLES
             /**
              * Programmable point size. If enabled, the point size is taken
              * from vertex/geometry shader builtin `gl_PointSize`.
              * @see @ref setPointSize()
-             * @requires_gl Always enabled on OpenGL ES.
+             * @requires_gl Always enabled on OpenGL ES and WebGL.
              */
             ProgramPointSize = GL_PROGRAM_POINT_SIZE,
             #endif
@@ -210,6 +209,8 @@ class MAGNUM_EXPORT Renderer {
              * @requires_gl30 Extension @extension{EXT,transform_feedback}
              * @requires_gles30 Transform feedback is not available in OpenGL
              *      ES 2.0.
+             * @requires_webgl20 Transform feedback is not available in WebGL
+             *      1.0.
              */
             RasterizerDiscard = GL_RASTERIZER_DISCARD,
             #endif
@@ -225,8 +226,8 @@ class MAGNUM_EXPORT Renderer {
              * Seamless cube map texture.
              * @see @ref CubeMapTexture, @ref CubeMapTextureArray
              * @requires_gl32 Extension @extension{ARB,seamless_cube_map}
-             * @requires_gl Not available in OpenGL ES 2.0, always enabled in
-             *      OpenGL ES 3.0.
+             * @requires_gl Not available in OpenGL ES 2.0 and WebGL 1.0,
+             *      always enabled in OpenGL ES 3.0 and WebGL 2.0.
              */
             SeamlessCubeMapTexture = GL_TEXTURE_CUBE_MAP_SEAMLESS,
             #endif
@@ -275,7 +276,9 @@ class MAGNUM_EXPORT Renderer {
             /**
              * Accuracy of derivative calculation in fragment shader.
              * @requires_gles30 Extension @es_extension{OES,standard_derivatives}
-             *      in OpenGL ES 2.0
+             *      in OpenGL ES 2.0.
+             * @requires_webgl20 Extension @webgl_extension{OES,standard_derivatives}
+             *      in WebGL 1.0.
              */
             #ifndef MAGNUM_TARGET_GLES2
             FragmentShaderDerivative = GL_FRAGMENT_SHADER_DERIVATIVE_HINT
@@ -322,7 +325,7 @@ class MAGNUM_EXPORT Renderer {
          * Initial value is `1.0`.
          * @see @ref Feature::DepthTest, @fn_gl{ClearDepth}
          * @requires_gl See @ref setClearDepth(Float), which is available in
-         *      OpenGL ES.
+         *      OpenGL ES and WebGL.
          */
         static void setClearDepth(Double depth);
         #endif
@@ -387,7 +390,7 @@ class MAGNUM_EXPORT Renderer {
          * @see @ref setProvokingVertex()
          * @requires_gl32 Extension @extension{ARB,provoking_vertex}. Older
          *      versions behave always like @ref ProvokingVertex::LastVertexConvention.
-         * @requires_gl OpenGL ES behaves always like
+         * @requires_gl OpenGL ES and WebGL behave always like
          *      @ref ProvokingVertex::LastVertexConvention.
          */
         enum class ProvokingVertex: GLenum {
@@ -405,7 +408,7 @@ class MAGNUM_EXPORT Renderer {
          * @see @fn_gl{ProvokingVertex}
          * @requires_gl32 Extension @extension{ARB,provoking_vertex}. Older
          *      versions behave always like the default.
-         * @requires_gl OpenGL ES behaves always like the default.
+         * @requires_gl OpenGL ES and WebGL behave always like the default.
          */
         static void setProvokingVertex(ProvokingVertex mode);
 
@@ -413,8 +416,9 @@ class MAGNUM_EXPORT Renderer {
          * @brief Polygon mode
          *
          * @see @ref setPolygonMode()
-         * @requires_gl OpenGL ES behaves always like @ref PolygonMode::Fill.
-         *      See @ref Mesh::setPrimitive() for possible workaround.
+         * @requires_gl OpenGL ES and WebGL behaves always like
+         *      @ref PolygonMode::Fill. See @ref Mesh::setPrimitive() for
+         *      possible workaround.
          */
         enum class PolygonMode: GLenum {
             /**
@@ -439,8 +443,8 @@ class MAGNUM_EXPORT Renderer {
          *
          * Initial value is @ref PolygonMode::Fill.
          * @see @fn_gl{PolygonMode}
-         * @requires_gl OpenGL ES behaves always like the default. See
-         *      @ref Mesh::setPrimitive() for possible workaround.
+         * @requires_gl OpenGL ES and WebGL behaves always like the default.
+         *      See @ref Mesh::setPrimitive() for possible workaround.
          */
         static void setPolygonMode(PolygonMode mode);
         #endif
@@ -470,7 +474,7 @@ class MAGNUM_EXPORT Renderer {
          * Initial value is `1.0f`.
          * @see @ref Feature::ProgramPointSize, @fn_gl{PointSize}
          * @requires_gl Use `gl_PointSize` builtin vertex shader variable in
-         *      OpenGL ES instead.
+         *      OpenGL ES and WebGL instead.
          */
         static void setPointSize(Float size);
         #endif
@@ -561,11 +565,10 @@ class MAGNUM_EXPORT Renderer {
          * @param mask              Mask for both reference and buffer value.
          *      Initial value is all `1`s.
          *
-         * @attention In @ref MAGNUM_TARGET_WEBGL "WebGL" the reference value
-         *      and mask must be the same for both front and back polygon
-         *      facing.
          * @see @ref Feature::StencilTest, @ref setStencilFunction(StencilFunction, Int, UnsignedInt),
          *      @ref setStencilOperation(), @fn_gl{StencilFuncSeparate}
+         * @requires_gles In WebGL the reference value and mask must be the
+         *      same for both front and back polygon facing.
          */
         static void setStencilFunction(PolygonFacing facing, StencilFunction function, Int referenceValue, UnsignedInt mask);
 
@@ -652,10 +655,10 @@ class MAGNUM_EXPORT Renderer {
          * Set given bit to `0` to disallow writing stencil value for given
          * faces to it. Initial value is all `1`s.
          *
-         * @attention In @ref MAGNUM_TARGET_WEBGL "WebGL" the mask must be the
-         *      same for both front and back polygon facing.
          * @see @ref setStencilMask(UnsignedInt), @ref setColorMask(),
          *      @ref setDepthMask(), @fn_gl{StencilMaskSeparate}
+         * @requires_gles In WebGL the mask must be the same for both front and
+         *      back polygon facing.
          */
         static void setStencilMask(PolygonFacing facing, UnsignedInt allowBits);
 
@@ -755,7 +758,7 @@ class MAGNUM_EXPORT Renderer {
              * @see @ref AbstractShaderProgram::bindFragmentDataLocationIndexed()
              * @requires_gl33 Extension @extension{ARB,blend_func_extended}
              * @requires_gl Multiple blending inputs are not available in
-             *      OpenGL ES.
+             *      OpenGL ES and WebGL.
              */
             SecondSourceColor = GL_SRC1_COLOR,
             #endif
@@ -772,7 +775,7 @@ class MAGNUM_EXPORT Renderer {
              * @see @ref AbstractShaderProgram::bindFragmentDataLocationIndexed()
              * @requires_gl33 Extension @extension{ARB,blend_func_extended}
              * @requires_gl Multiple blending inputs are not available in
-             *      OpenGL ES.
+             *      OpenGL ES and WebGL.
              */
             OneMinusSecondSourceColor = GL_ONE_MINUS_SRC1_COLOR,
             #endif
@@ -794,7 +797,7 @@ class MAGNUM_EXPORT Renderer {
              * @see @ref AbstractShaderProgram::bindFragmentDataLocationIndexed()
              * @requires_gl33 Extension @extension{ARB,blend_func_extended}
              * @requires_gl Multiple blending inputs are not available in
-             *      OpenGL ES.
+             *      OpenGL ES and WebGL.
              */
             SecondSourceAlpha = GL_SRC1_ALPHA,
             #endif
@@ -811,7 +814,7 @@ class MAGNUM_EXPORT Renderer {
              * @see @ref AbstractShaderProgram::bindFragmentDataLocationIndexed()
              * @requires_gl33 Extension @extension{ARB,blend_func_extended}
              * @requires_gl Multiple blending inputs are not available in
-             *      OpenGL ES.
+             *      OpenGL ES and WebGL.
              */
             OneMinusSecondSourceAlpha = GL_ONE_MINUS_SRC1_ALPHA,
             #endif
@@ -860,12 +863,11 @@ class MAGNUM_EXPORT Renderer {
          * @param destination   How the destination blending factor is
          *      computed from framebuffer. Initial value is @ref BlendFunction::Zero.
          *
-         * @attention In @ref MAGNUM_TARGET_WEBGL "WebGL", constant color and
-         *      constant alpha cannot be used together as source and
-         *      destination factors.
          * @see @ref Feature::Blending, @ref setBlendFunction(BlendFunction, BlendFunction, BlendFunction, BlendFunction),
          *      @ref setBlendEquation(), @ref setBlendColor(),
          *      @fn_gl{BlendFunc}
+         * @requires_gles In WebGL, constant color and constant alpha cannot be
+         *      used together as source and destination factors.
          */
         static void setBlendFunction(BlendFunction source, BlendFunction destination);
 
@@ -900,7 +902,7 @@ class MAGNUM_EXPORT Renderer {
          *
          * @see @ref setLogicOperation()
          * @requires_gl Logical operations on framebuffer are not available in
-         *      OpenGL ES.
+         *      OpenGL ES and WebGL.
          */
         enum class LogicOperation: GLenum {
             Clear = GL_CLEAR,               /**< `0` */
@@ -926,7 +928,7 @@ class MAGNUM_EXPORT Renderer {
          *
          * @see @ref Feature::LogicOperation, @fn_gl{LogicOp}
          * @requires_gl Logical operations on framebuffer are not available in
-         *      OpenGL ES.
+         *      OpenGL ES and WebGL.
          */
         static void setLogicOperation(LogicOperation operation);
 
@@ -1017,18 +1019,19 @@ class MAGNUM_EXPORT Renderer {
          */
         static Error error() { return static_cast<Error>(glGetError()); }
 
+        #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @brief Graphics reset notification strategy
          *
          * @see @ref resetNotificationStrategy()
-         * @requires_extension Extension @extension{ARB,robustness}
-         * @requires_es_extension Extension @es_extension{EXT,robustness}
+         * @requires_gles Graphics reset notification is not available in
+         *      WebGL.
          */
         enum class ResetNotificationStrategy: GLint {
             /**
              * No reset notification, thus @ref graphicsResetStatus() will
-             * always return @ref GraphicsResetStatus::NoError.
-             * However this doesn't mean that the context cannot be lost.
+             * always return @ref GraphicsResetStatus::NoError. However this
+             * doesn't mean that the context cannot be lost.
              */
             #ifndef MAGNUM_TARGET_GLES
             NoResetNotification = GL_NO_RESET_NOTIFICATION_ARB,
@@ -1039,6 +1042,8 @@ class MAGNUM_EXPORT Renderer {
             /**
              * Graphics reset will result in context loss, cause of the reset
              * can be queried with @ref graphicsResetStatus().
+             * @requires_extension Extension @extension{ARB,robustness}
+             * @requires_es_extension Extension @es_extension{EXT,robustness}
              */
             #ifndef MAGNUM_TARGET_GLES
             LoseContextOnReset = GL_LOSE_CONTEXT_ON_RESET_ARB
@@ -1062,6 +1067,8 @@ class MAGNUM_EXPORT Renderer {
          *
          * @see @ref graphicsResetStatus(), @fn_gl{Get} with
          *      @def_gl{RESET_NOTIFICATION_STRATEGY_ARB}
+         * @requires_gles Graphics reset notification is not available in
+         *      WebGL.
          */
         static ResetNotificationStrategy resetNotificationStrategy();
 
@@ -1069,28 +1076,40 @@ class MAGNUM_EXPORT Renderer {
          * @brief Graphics reset status
          *
          * @see @ref resetNotificationStrategy(), @ref graphicsResetStatus()
-         * @requires_extension Extension @extension{ARB,robustness}
-         * @requires_es_extension Extension @es_extension{EXT,robustness}
+         * @requires_gles Graphics reset notification is not available in
+         *      WebGL.
          */
         enum class GraphicsResetStatus: GLenum {
             /** No reset occured since last call. */
             NoError = GL_NO_ERROR,
 
-            /** Reset attributable to the current context has been detected. */
+            /**
+             * Reset attributable to the current context has been detected.
+             * @requires_extension Extension @extension{ARB,robustness}
+             * @requires_es_extension Extension @es_extension{EXT,robustness}
+             */
             #ifndef MAGNUM_TARGET_GLES
             GuiltyContextReset = GL_GUILTY_CONTEXT_RESET_ARB,
             #else
             GuiltyContextReset = GL_GUILTY_CONTEXT_RESET_EXT,
             #endif
 
-            /** Reset not attributable to the current context has been detected. */
+            /**
+             * Reset not attributable to the current context has been detected.
+             * @requires_extension Extension @extension{ARB,robustness}
+             * @requires_es_extension Extension @es_extension{EXT,robustness}
+             */
             #ifndef MAGNUM_TARGET_GLES
             InnocentContextReset = GL_INNOCENT_CONTEXT_RESET_ARB,
             #else
             InnocentContextReset = GL_INNOCENT_CONTEXT_RESET_EXT,
             #endif
 
-            /** Reset with unknown cause has been detected. */
+            /**
+             * Reset with unknown cause has been detected.
+             * @requires_extension Extension @extension{ARB,robustness}
+             * @requires_es_extension Extension @es_extension{EXT,robustness}
+             */
             #ifndef MAGNUM_TARGET_GLES
             UnknownContextReset = GL_UNKNOWN_CONTEXT_RESET_ARB
             #else
@@ -1120,8 +1139,11 @@ class MAGNUM_EXPORT Renderer {
          * other share group will be affected by the graphics reset.
          * @see @ref resetNotificationStrategy(),
          *      @fn_gl_extension{GetGraphicsResetStatus,ARB,robustness}
+         * @requires_gles Graphics reset notification is not available in
+         *      WebGL.
          */
         static GraphicsResetStatus graphicsResetStatus();
+        #endif
 
         /*@}*/
 
@@ -1133,18 +1155,22 @@ class MAGNUM_EXPORT Renderer {
         #endif
         static void MAGNUM_LOCAL clearDepthfImplementationES(GLfloat depth);
 
+        #ifndef MAGNUM_TARGET_WEBGL
         static GraphicsResetStatus MAGNUM_LOCAL graphicsResetStatusImplementationDefault();
         static GraphicsResetStatus MAGNUM_LOCAL graphicsResetStatusImplementationRobustness();
+        #endif
 };
 
 /** @debugoperatorclassenum{Magnum::Renderer,Magnum::Renderer::Error} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Renderer::Error value);
 
+#ifndef MAGNUM_TARGET_WEBGL
 /** @debugoperatorclassenum{Magnum::Renderer,Magnum::Renderer::ResetNotificationStrategy} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Renderer::ResetNotificationStrategy value);
 
 /** @debugoperatorclassenum{Magnum::Renderer,Magnum::Renderer::GraphicsResetStatus} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Renderer::GraphicsResetStatus value);
+#endif
 
 }
 

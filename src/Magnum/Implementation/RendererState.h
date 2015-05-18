@@ -36,9 +36,11 @@ struct RendererState {
     explicit RendererState(Context& context, std::vector<std::string>& extensions);
 
     void(*clearDepthfImplementation)(GLfloat);
+    #ifndef MAGNUM_TARGET_WEBGL
     Renderer::GraphicsResetStatus(*graphicsResetStatusImplementation)();
 
     Renderer::ResetNotificationStrategy resetNotificationStrategy;
+    #endif
 };
 
 }}
