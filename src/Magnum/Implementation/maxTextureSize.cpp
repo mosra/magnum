@@ -41,6 +41,7 @@ GLint maxTextureSideSize() {
     return value;
 }
 
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 GLint max3DTextureDepth() {
     GLint& value = Context::current()->state().texture->max3DSize;
 
@@ -53,6 +54,7 @@ GLint max3DTextureDepth() {
 
     return value;
 }
+#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 GLint maxTextureArrayLayers() {

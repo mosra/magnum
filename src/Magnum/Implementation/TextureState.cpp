@@ -38,7 +38,11 @@
 
 namespace Magnum { namespace Implementation {
 
-TextureState::TextureState(Context& context, std::vector<std::string>& extensions): maxSize{}, max3DSize{}, maxCubeMapSize{},
+TextureState::TextureState(Context& context, std::vector<std::string>& extensions): maxSize{},
+    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+    max3DSize{},
+    #endif
+    maxCubeMapSize{},
     #ifndef MAGNUM_TARGET_GLES2
     maxArrayLayers{},
     #endif
@@ -165,7 +169,7 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         parameterIuivImplementation = &AbstractTexture::parameterIImplementationDefault;
         parameterIivImplementation = &AbstractTexture::parameterIImplementationDefault;
         #endif
-        #ifndef MAGNUM_TARGET_GLES2
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         getLevelParameterivImplementation = &AbstractTexture::getLevelParameterImplementationDefault;
         #endif
         mipmapImplementation = &AbstractTexture::mipmapImplementationDefault;
@@ -173,14 +177,16 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         subImage1DImplementation = &AbstractTexture::subImageImplementationDefault;
         #endif
         subImage2DImplementation = &AbstractTexture::subImageImplementationDefault;
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         subImage3DImplementation = &AbstractTexture::subImageImplementationDefault;
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES
         setBufferImplementation = &BufferTexture::setBufferImplementationDefault;
         setBufferRangeImplementation = &BufferTexture::setBufferRangeImplementationDefault;
         #endif
 
-        #ifndef MAGNUM_TARGET_GLES2
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         getCubeImageSizeImplementation = &CubeMapTexture::getImageSizeImplementationDefault;
         #endif
         cubeSubImageImplementation = &CubeMapTexture::subImageImplementationDefault;
@@ -232,7 +238,8 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     } else getCubeImageImplementation = &CubeMapTexture::getImageImplementationDefault;
     #endif
 
-    /* Texture storage implementation */
+    /* Texture storage implementation for desktop and ES */
+    #ifndef MAGNUM_TARGET_WEBGL
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::GL::ARB::texture_storage>())
     #elif defined(MAGNUM_TARGET_GLES2)
@@ -275,6 +282,16 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     }
     #endif
 
+    /* Texture storage implementation for WebGL 1.0 */
+    #elif defined(MAGNUM_TARGET_GLES2)
+    storage2DImplementation = &AbstractTexture::storageImplementationFallback;
+
+    /* Texture storage implementation for WebGL 2.0 */
+    #else
+    storage2DImplementation = &AbstractTexture::storageImplementationDefault;
+    storage3DImplementation = &AbstractTexture::storageImplementationDefault;
+    #endif
+
     #ifndef MAGNUM_TARGET_GLES
     /* Storage implementation for multisample textures. The fallback doesn't
        have DSA alternative, so it must be handled specially. */
@@ -295,7 +312,7 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         storage2DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationFallback;
         storage3DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationFallback;
     }
-    #elif !defined(MAGNUM_TARGET_GLES2)
+    #elif !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     storage2DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationDefault;
     #endif
 

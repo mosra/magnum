@@ -187,9 +187,9 @@ documentation for more information about usage in shaders.
 
 ## Performance optimizations
 
-If on desktop GL and either @extension{ARB,direct_state_access} (part of OpenGL
-4.5) or @extension{EXT,direct_state_access} is available, @ref setBuffer()
-functions use DSA to avoid unnecessary calls to @fn_gl{ActiveTexture} and
+If either @extension{ARB,direct_state_access} (part of OpenGL 4.5) or
+@extension{EXT,direct_state_access} is available, @ref setBuffer() functions
+use DSA to avoid unnecessary calls to @fn_gl{ActiveTexture} and
 @fn_gl{BindTexture}. See
 @ref AbstractTexture-performance-optimization "relevant section in AbstractTexture documentation"
 and respective function documentation for more information.
@@ -197,7 +197,7 @@ and respective function documentation for more information.
 @see @ref Texture, @ref TextureArray, @ref CubeMapTexture,
     @ref CubeMapTextureArray, @ref RectangleTexture, @ref MultisampleTexture
 @requires_gl31 Extension @extension{ARB,texture_buffer_object}
-@requires_gl Texture buffers are not available in OpenGL ES.
+@requires_gl Texture buffers are not available in OpenGL ES or WebGL.
 */
 class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
     friend Implementation::TextureState;
@@ -227,7 +227,7 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
          * @brief Constructor
          *
          * Creates new OpenGL texture object. If @extension{ARB,direct_state_access}
-         * (part of OpenGL 4.5) is not supported, the texture is created on
+         * (part of OpenGL 4.5) is not available, the texture is created on
          * first use.
          * @see @fn_gl{CreateTextures} with @def_gl{TEXTURE_BUFFER}, eventually
          *      @fn_gl{GenTextures}

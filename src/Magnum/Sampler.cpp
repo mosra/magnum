@@ -90,7 +90,9 @@ Debug operator<<(Debug debug, const Sampler::Wrapping value) {
         _c(Repeat)
         _c(MirroredRepeat)
         _c(ClampToEdge)
+        #ifndef MAGNUM_TARGET_WEBGL
         _c(ClampToBorder)
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         _c(MirrorClampToEdge)
         #endif
@@ -100,6 +102,7 @@ Debug operator<<(Debug debug, const Sampler::Wrapping value) {
     return debug << "Sampler::Wrapping::(invalid)";
 }
 
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 Debug operator<<(Debug debug, const Sampler::CompareMode value) {
     switch(value) {
         #define _c(value) case Sampler::CompareMode::value: return debug << "Sampler::CompareMode::" #value;
@@ -127,6 +130,7 @@ Debug operator<<(Debug debug, const Sampler::CompareFunction value) {
 
     return debug << "Sampler::CompareFunction::(invalid)";
 }
+#endif
 
 #ifndef MAGNUM_TARGET_GLES
 Debug operator<<(Debug debug, const Sampler::DepthStencilMode value) {

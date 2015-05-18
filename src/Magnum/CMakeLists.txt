@@ -154,11 +154,10 @@ if(NOT TARGET_GLES)
         RectangleTexture.h)
 endif()
 
-# Non-ES2 stuff
+# OpenGL ES 3.0 and WebGL 2.0 stuff
 if(NOT TARGET_GLES2)
     list(APPEND Magnum_SRCS
         BufferImage.cpp
-        MultisampleTexture.cpp
         TextureArray.cpp
         TransformFeedback.cpp
 
@@ -166,7 +165,6 @@ if(NOT TARGET_GLES2)
 
     list(APPEND Magnum_HEADERS
         BufferImage.h
-        MultisampleTexture.h
         PrimitiveQuery.h
         TextureArray.h
         TransformFeedback.h)
@@ -176,7 +174,7 @@ if(NOT TARGET_GLES2)
 
 endif()
 
-# Non-WebGL stuff
+# Desktop and OpenGL ES stuff that is not available in WebGL
 if(NOT TARGET_WEBGL)
     list(APPEND Magnum_SRCS
         DebugOutput.cpp
@@ -188,6 +186,11 @@ if(NOT TARGET_WEBGL)
 
     list(APPEND Magnum_PRIVATE_HEADERS
         Implementation/DebugState.h)
+
+    if(NOT TARGET_GLES2)
+        list(APPEND Magnum_SRCS MultisampleTexture.cpp)
+        list(APPEND Magnum_HEADERS MultisampleTexture.h)
+    endif()
 
     if(BUILD_DEPRECATED)
         list(APPEND Magnum_HEADERS

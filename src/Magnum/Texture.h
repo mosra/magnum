@@ -44,6 +44,7 @@ namespace Implementation {
     template<> constexpr GLenum textureTarget<1>() { return GL_TEXTURE_1D; }
     #endif
     template<> constexpr GLenum textureTarget<2>() { return GL_TEXTURE_2D; }
+    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     template<> constexpr GLenum textureTarget<3>() {
         #ifndef MAGNUM_TARGET_GLES2
         return GL_TEXTURE_3D;
@@ -51,6 +52,7 @@ namespace Implementation {
         return GL_TEXTURE_3D_OES;
         #endif
     }
+    #endif
 
     template<UnsignedInt dimensions> VectorTypeFor<dimensions, Int> maxTextureSize();
     template<> MAGNUM_EXPORT Vector3i maxTextureSize<3>();
@@ -97,8 +99,9 @@ in shaders.
     @ref CubeMapTexture, @ref CubeMapTextureArray, @ref RectangleTexture,
     @ref BufferTexture, @ref MultisampleTexture
 @requires_gles30 Extension @es_extension{OES,texture_3D} for 3D textures in
-    OpenGL ES 2.0
-@requires_gl 1D textures are not available in OpenGL ES, only 2D and 3D ones.
+    OpenGL ES 2.0.
+@requires_webgl20 3D textures are not available in WebGL 1.0.
+@requires_gl 1D textures are not available in OpenGL ES or WebGL.
  */
 template<UnsignedInt dimensions> class Texture: public AbstractTexture {
     public:
@@ -160,7 +163,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @brief Constructor
          *
          * Creates new OpenGL texture object. If @extension{ARB,direct_state_access}
-         * (part of OpenGL 4.5) is not supported, the texture is created on
+         * (part of OpenGL 4.5) is not available, the texture is created on
          * first use.
          * @see @fn_gl{CreateTextures} with @def_gl{TEXTURE_1D},
          *      @def_gl{TEXTURE_2D} or @def_gl{TEXTURE_3D}, eventually
@@ -190,16 +193,17 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *
          * Taken into account when generating mipmap using @ref generateMipmap()
          * and when considering texture completeness when using mipmap
-         * filtering. If on OpenGL ES or neither @extension{ARB,direct_state_access}
-         * (part of OpenGL 4.5) nor @extension{EXT,direct_state_access} is
-         * available, the texture is bound before the operation (if not
-         * already). Initial value is `0`.
+         * filtering. If neither @extension{ARB,direct_state_access} (part of
+         * OpenGL 4.5) nor @extension{EXT,direct_state_access} desktop
+         * extension is available, the texture is bound before the operation
+         * (if not already). Initial value is `0`.
          * @see @ref setMaxLevel(), @ref setMinificationFilter(),
          *      @fn_gl2{TextureParameter,TexParameter},
          *      @fn_gl_extension{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{TexParameter} with @def_gl{TEXTURE_BASE_LEVEL}
          * @requires_gles30 Base level is always `0` in OpenGL ES 2.0.
+         * @requires_webgl20 Base level is always `0` in WebGL 1.0.
          */
         Texture<dimensions>& setBaseLevel(Int level) {
             AbstractTexture::setBaseLevel(level);
@@ -207,17 +211,18 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         }
         #endif
 
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         /**
          * @brief Set max mip level
          * @return Reference to self (for method chaining)
          *
          * Taken into account when generating mipmap using @ref generateMipmap()
          * and when considering texture completeness when using mipmap
-         * filtering. If on OpenGL ES or neither @extension{ARB,direct_state_access}
-         * (part of OpenGL 4.5) nor @extension{EXT,direct_state_access} is
-         * available, the texture is bound before the operation (if not
-         * already). Initial value is `1000`, which is clamped to count of
-         * levels specified when using @ref setStorage().
+         * filtering. If neither @extension{ARB,direct_state_access} (part of
+         * OpenGL 4.5) nor @extension{EXT,direct_state_access} desktop
+         * extension is available, the texture is bound before the operation
+         * (if not already). Initial value is `1000`, which is clamped to count
+         * of levels specified when using @ref setStorage().
          * @see @ref setBaseLevel(), @ref setMinificationFilter(),
          *      @fn_gl2{TextureParameter,TexParameter},
          *      @fn_gl_extension{TextureParameter,EXT,direct_state_access},
@@ -226,11 +231,13 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @requires_gles30 Extension @es_extension{APPLE,texture_max_level},
          *      otherwise the max level is always set to largest possible value
          *      in OpenGL ES 2.0.
+         * @requires_webgl20 Always set to largest possible value in WebGL 1.0.
          */
         Texture<dimensions>& setMaxLevel(Int level) {
             AbstractTexture::setMaxLevel(level);
             return *this;
         }
+        #endif
 
         /**
          * @brief Set minification filter
@@ -241,10 +248,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * Sets filter used when the object pixel size is smaller than the
-         * texture size. If on OpenGL ES or neither @extension{ARB,direct_state_access}
-         * (part of OpenGL 4.5) nor @extension{EXT,direct_state_access} is
-         * available, the texture is bound before the operation (if not
-         * already). Initial value is {@ref Sampler::Filter::Nearest,
+         * texture size. If neither @extension{ARB,direct_state_access} (part
+         * of OpenGL 4.5) nor @extension{EXT,direct_state_access} desktop
+         * extension is available, the texture is bound before the operation
+         * (if not already). Initial value is {@ref Sampler::Filter::Nearest,
          * @ref Sampler::Mipmap::Linear}.
          * @see @ref setMagnificationFilter(), @ref setBaseLevel(),
          *      @ref setMaxLevel(), @fn_gl2{TextureParameter,TexParameter},
@@ -263,10 +270,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * Sets filter used when the object pixel size is larger than largest
-         * texture size. If on OpenGL ES or neither @extension{ARB,direct_state_access}
-         * (part of OpenGL 4.5) nor @extension{EXT,direct_state_access} is
-         * available, the texture is bound before the operation (if not
-         * already). Initial value is @ref Sampler::Filter::Linear.
+         * texture size. If neither @extension{ARB,direct_state_access} (part
+         * of OpenGL 4.5) nor @extension{EXT,direct_state_access} desktop
+         * extension is available, the texture is bound before the operation
+         * (if not already). Initial value is @ref Sampler::Filter::Linear.
          * @see @ref setMinificationFilter(), @fn_gl2{TextureParameter,TexParameter},
          *      @fn_gl_extension{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
@@ -282,17 +289,19 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @brief Set minimum level-of-detail parameter
          * @return Reference to self (for method chaining)
          *
-         * Limits selection of highest resolution mipmap. If on OpenGL ES or
-         * neither @extension{ARB,direct_state_access} (part of OpenGL 4.5) nor
-         * @extension{EXT,direct_state_access} is available, the texture is
-         * bound before the operation (if not already). Initial value is
-         * `-1000.0f`.
+         * Limits selection of highest resolution mipmap. If neither
+         * @extension{ARB,direct_state_access} (part of OpenGL 4.5) nor
+         * @extension{EXT,direct_state_access} desktop extension is available,
+         * the texture is bound before the operation (if not already). Initial
+         * value is `-1000.0f`.
          * @see @ref setMaxLod(), @ref setLodBias(), @fn_gl2{TextureParameter,TexParameter},
          *      @fn_gl_extension{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{TexParameter} with @def_gl{TEXTURE_MIN_LOD}
          * @requires_gles30 Texture LOD parameters are not available in OpenGL
          *      ES 2.0.
+         * @requires_webgl20 Texture LOD parameters are not available in WebGL
+         *      1.0.
          */
         Texture<dimensions>& setMinLod(Float lod) {
             AbstractTexture::setMinLod(lod);
@@ -303,17 +312,19 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @brief Set maximum level-of-detail parameter
          * @return Reference to self (for method chaining)
          *
-         * Limits selection of lowest resolution mipmap. If on OpenGL ES or
-         * neither @extension{ARB,direct_state_access} (part of OpenGL 4.5) nor
-         * @extension{EXT,direct_state_access} is available, the texture is
-         * bound before the operation (if not already). Initial value is
-         * `1000.0f`.
+         * Limits selection of lowest resolution mipmap. If neither
+         * @extension{ARB,direct_state_access} (part of OpenGL 4.5) nor
+         * @extension{EXT,direct_state_access} desktop extension is available,
+         * the texture is bound before the operation (if not already). Initial
+         * value is `1000.0f`.
          * @see @ref setMinLod(), @ref setLodBias(), @fn_gl2{TextureParameter,TexParameter},
          *      @fn_gl_extension{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{TexParameter} with @def_gl{TEXTURE_MAX_LOD}
          * @requires_gles30 Texture LOD parameters are not available in OpenGL
          *      ES 2.0.
+         * @requires_webgl20 Texture LOD parameters are not available in WebGL
+         *      1.0.
          */
         Texture<dimensions>& setMaxLod(Float lod) {
             AbstractTexture::setMaxLod(lod);
@@ -337,7 +348,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{TexParameter} with @def_gl{TEXTURE_LOD_BIAS}
          * @requires_gl Texture LOD bias can be specified only directly in
-         *      fragment shader in OpenGL ES.
+         *      fragment shader in OpenGL ES and WebGL.
          */
         Texture<dimensions>& setLodBias(Float bias) {
             AbstractTexture::setLodBias(bias);
@@ -351,10 +362,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * Sets wrapping type for coordinates out of range @f$ [ 0.0, 1.0 ] @f$.
-         * If on OpenGL ES or neither @extension{ARB,direct_state_access} (part
-         * of OpenGL 4.5) nor @extension{EXT,direct_state_access} is available,
-         * the texture is bound before the operation (if not already). Initial
-         * value is @ref Sampler::Wrapping::Repeat.
+         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @extension{EXT,direct_state_access} desktop extension is
+         * available, the texture is bound before the operation (if not
+         * already). Initial value is @ref Sampler::Wrapping::Repeat.
          * @see @ref setBorderColor(), @fn_gl2{TextureParameter,TexParameter},
          *      @fn_gl_extension{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
@@ -366,25 +377,28 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
             return *this;
         }
 
+        #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @brief Set border color
          * @return Reference to self (for method chaining)
          *
          * Border color when wrapping is set to @ref Sampler::Wrapping::ClampToBorder.
-         * If on OpenGL ES or neither @extension{ARB,direct_state_access} (part
-         * of OpenGL 4.5) nor @extension{EXT,direct_state_access} is available,
-         * the texture is bound before the operation (if not already). Initial
-         * value is `{0.0f, 0.0f, 0.0f, 0.0f}`.
+         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @extension{EXT,direct_state_access} is available, the texture is
+         * bound before the operation (if not already). Initial value is
+         * `{0.0f, 0.0f, 0.0f, 0.0f}`.
          * @see @ref setWrapping(), @fn_gl2{TextureParameter,TexParameter},
          *      @fn_gl_extension{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{TexParameter} with @def_gl{TEXTURE_BORDER_COLOR}
          * @requires_es_extension Extension @es_extension{NV,texture_border_clamp}
+         * @requires_gles Border clamp is not available in WebGL.
          */
         Texture<dimensions>& setBorderColor(const Color4& color) {
             AbstractTexture::setBorderColor(color);
             return *this;
         }
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES
         /**
@@ -402,8 +416,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{TexParameter} with @def_gl{TEXTURE_BORDER_COLOR}
          * @requires_gl30 Extension @extension{EXT,texture_integer}
-         * @requires_gl Border is available only for float textures in OpenGL
-         *      ES.
+         * @requires_gl Border clamp is available only for float textures in
+         *      OpenGL ES. Border clamp is not available in WebGL.
          */
         Texture<dimensions>& setBorderColor(const Vector4ui& color) {
             AbstractTexture::setBorderColor(color);
@@ -412,8 +426,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
 
         /** @overload
          * @requires_gl30 Extension @extension{EXT,texture_integer}
-         * @requires_gl Border is available only for float textures in OpenGL
-         *      ES.
+         * @requires_gl Border clamp is available only for float textures in
+         *      OpenGL ES. Border clamp is not available in WebGL.
          */
         Texture<dimensions>& setBorderColor(const Vector4i& color) {
             AbstractTexture::setBorderColor(color);
@@ -428,10 +442,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * Default value is `1.0f`, which means no anisotropy. Set to value
          * greater than `1.0f` for anisotropic filtering. If extension
          * @extension{EXT,texture_filter_anisotropic} (desktop or ES) is not
-         * available, this function does nothing. If on OpenGL ES or neither
+         * available, this function does nothing. If neither
          * @extension{ARB,direct_state_access} (part of OpenGL 4.5) nor
-         * @extension{EXT,direct_state_access} is available, the texture is
-         * bound before the operation (if not already).
+         * @extension{EXT,direct_state_access} desktop extension is available,
+         * the texture is bound before the operation (if not already).
          * @see @ref Sampler::maxMaxAnisotropy(), @fn_gl2{TextureParameter,TexParameter},
          *      @fn_gl_extension{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
@@ -442,15 +456,16 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
             return *this;
         }
 
+        #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @brief Set sRGB decoding
          * @return Reference to self (for method chaining)
          *
-         * Disables or reenables decoding of sRGB values. If on OpenGL ES or
-         * neither @extension{ARB,direct_state_access} (part of OpenGL 4.5) nor
-         * @extension{EXT,direct_state_access} is available, the texture is
-         * bound before the operation (if not already). Initial value is
-         * `true`.
+         * Disables or reenables decoding of sRGB values. If neither
+         * @extension{ARB,direct_state_access} (part of OpenGL 4.5) nor
+         * @extension{EXT,direct_state_access} desktop extension is available,
+         * the texture is bound before the operation (if not already). Initial
+         * value is `true`.
          * @see @fn_gl2{TextureParameter,TexParameter},
          *      @fn_gl_extension{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
@@ -459,13 +474,15 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @requires_es_extension OpenGL ES 3.0 or extension
          *      @es_extension{EXT,sRGB} and
          *      @es_extension2{EXT,texture_sRGB_decode,texture_sRGB_decode}
+         * @requires_gles SRGB decode is not available in WebGL.
          */
         Texture<dimensions>& setSRGBDecode(bool decode) {
             AbstractTexture::setSRGBDecode(decode);
             return *this;
         }
+        #endif
 
-        #ifndef MAGNUM_TARGET_GLES2
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         /**
          * @brief Set component swizzle
          * @return Reference to self (for method chaining)
@@ -476,10 +493,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @code
          * texture.setSwizzle<'b', 'g', 'r', '0'>();
          * @endcode
-         * If on OpenGL ES or neither @extension{ARB,direct_state_access} (part
-         * of OpenGL 4.5) nor @extension{EXT,direct_state_access} is available,
-         * the texture is bound before the operation (if not already). Initial
-         * value is `rgba`.
+         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @extension{EXT,direct_state_access} desktop extension is
+         * available, the texture is bound before the operation (if not
+         * already). Initial value is `rgba`.
          * @see @fn_gl2{TextureParameter,TexParameter},
          *      @fn_gl_extension{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
@@ -489,6 +506,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      separately in OpenGL ES)
          * @requires_gl33 Extension @extension{ARB,texture_swizzle}
          * @requires_gles30 Texture swizzle is not available in OpenGL ES 2.0.
+         * @requires_gles Texture swizzle is not available in WebGL.
          */
         template<char r, char g, char b, char a> Texture<dimensions>& setSwizzle() {
             AbstractTexture::setSwizzle<r, g, b, a>();
@@ -496,20 +514,24 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         }
         #endif
 
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         /**
          * @brief Set depth texture comparison mode
          * @return Reference to self (for method chaining)
          *
-         * If on OpenGL ES or neither @extension{ARB,direct_state_access} (part
-         * of OpenGL 4.5) nor @extension{EXT,direct_state_access} is available,
-         * the texture is bound before the operation (if not already). Initial
-         * value is @ref Sampler::CompareMode::None.
+         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @extension{EXT,direct_state_access} desktop extension is
+         * available, the texture is bound before the operation (if not
+         * already). Initial value is @ref Sampler::CompareMode::None.
          * @note Depth textures can be only 1D or 2D.
          * @see @ref setCompareFunction(), @fn_gl2{TextureParameter,TexParameter},
          *      @fn_gl_extension{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{TexParameter} with @def_gl{TEXTURE_COMPARE_MODE}
-         * @requires_gles30 Extension @es_extension{EXT,shadow_samplers}
+         * @requires_gles30 Extension @es_extension{EXT,shadow_samplers} in
+         *      OpenGL ES 2.0.
+         * @requires_webgl20 Depth texture comparison is not available in WebGL
+         *      1.0.
          */
         Texture<dimensions>& setCompareMode(Sampler::CompareMode mode) {
             AbstractTexture::setCompareMode(mode);
@@ -521,33 +543,37 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * Comparison operator used when comparison mode is set to
-         * @ref Sampler::CompareMode::CompareRefToTexture. If on OpenGL ES or
-         * neither @extension{ARB,direct_state_access} (part of OpenGL 4.5) nor
-         * @extension{EXT,direct_state_access} is available, the texture is
-         * bound before the operation (if not already). Initial value is
-         * @ref Sampler::CompareFunction::LessOrEqual.
+         * @ref Sampler::CompareMode::CompareRefToTexture. If neither
+         * @extension{ARB,direct_state_access} (part of OpenGL 4.5) nor
+         * @extension{EXT,direct_state_access} desktop extension is available,
+         * the texture is bound before the operation (if not already). Initial
+         * value is @ref Sampler::CompareFunction::LessOrEqual.
          * @note Depth textures can be only 1D or 2D.
          * @see @ref setCompareMode(), @fn_gl2{TextureParameter,TexParameter},
          *      @fn_gl_extension{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{TexParameter} with @def_gl{TEXTURE_COMPARE_FUNC}
-         * @requires_gles30 Extension @es_extension{EXT,shadow_samplers}
+         * @requires_gles30 Extension @es_extension{EXT,shadow_samplers} in
+         *      OpenGL ES 2.0.
+         * @requires_webgl20 Depth texture comparison is not available in WebGL
+         *      1.0.
          */
         Texture<dimensions>& setCompareFunction(Sampler::CompareFunction function) {
             AbstractTexture::setCompareFunction(function);
             return *this;
         }
+        #endif
 
-        #ifndef MAGNUM_TARGET_GLES2
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         /**
          * @brief Set depth/stencil texture mode
          * @return Reference to self (for method chaining)
          *
          * Selects which component of packed depth/stencil texture is used for
-         * texturing. If on OpenGL ES or neither @extension{ARB,direct_state_access}
-         * (part of OpenGL 4.5) nor @extension{EXT,direct_state_access} is
-         * available, the texture is bound before the operation (if not
-         * already). Initial value is @ref Sampler::DepthStencilMode::DepthComponent.
+         * texturing. If neither @extension{ARB,direct_state_access} (part of
+         * OpenGL 4.5) nor @extension{EXT,direct_state_access} is available,
+         * the texture is bound before the operation (if not already). Initial
+         * value is @ref Sampler::DepthStencilMode::DepthComponent.
          * @note Depth textures can be only 1D or 2D.
          * @see @fn_gl2{TextureParameter,TexParameter},
          *      @fn_gl_extension{TextureParameter,EXT,direct_state_access},
@@ -556,6 +582,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @requires_gl43 Extension @extension{ARB,stencil_texturing}
          * @requires_gles31 Stencil texturing is not available in OpenGL ES 3.0
          *      and older.
+         * @requires_gles Stencil texturing is not available in WebGL.
          */
         Texture<dimensions>& setDepthStencilMode(Sampler::DepthStencilMode mode) {
             AbstractTexture::setDepthStencilMode(mode);
@@ -573,8 +600,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * After calling this function the texture is immutable and calling
          * @ref setStorage() or @ref setImage() is not allowed.
          *
-         * If on OpenGL ES or neither @extension{ARB,direct_state_access}
-         * (part of OpenGL 4.5) nor @extension{EXT,direct_state_access} is
+         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @extension{EXT,direct_state_access} desktop extension is
          * available, the texture is bound before the operation (if not
          * already). If neither @extension{ARB,texture_storage} (part of OpenGL
          * 4.2), OpenGL ES 3.0 nor @es_extension{EXT,texture_storage} in OpenGL
@@ -599,10 +626,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         /**
          * @brief Image size in given mip level
          *
-         * The result is not cached in any way. If on OpenGL ES or neither
+         * The result is not cached in any way. If neither
          * @extension{ARB,direct_state_access} (part of OpenGL 4.5) nor
-         * @extension{EXT,direct_state_access} is available, the texture is
-         * bound before the operation (if not already).
+         * @extension{EXT,direct_state_access} desktop extension is available,
+         * the texture is bound before the operation (if not already).
          * @see @ref image(), @fn_gl2{GetTextureLevelParameter,GetTexLevelParameter},
          *      @fn_gl_extension{GetTextureLevelParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
@@ -610,6 +637,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @def_gl{TEXTURE_HEIGHT}, @def_gl{TEXTURE_DEPTH}
          * @requires_gles31 Texture image size queries are not available in
          *      OpenGL ES 3.0 and older.
+         * @requires_gles Texture image size queries are not available in
+         *      WebGL.
          */
         VectorTypeFor<dimensions, Int> imageSize(Int level) {
             return DataHelper<dimensions>::imageSize(*this, level);
@@ -643,8 +672,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl_extension{GetnTexImage,ARB,robustness},
          *      @fn_gl_extension{GetTextureImage,EXT,direct_state_access},
          *      eventually @fn_gl{GetTexImage}
-         * @requires_gl Texture image queries are not available in OpenGL ES.
-         *      See @ref Framebuffer::read() for possible workaround.
+         * @requires_gl Texture image queries are not available in OpenGL ES or
+         *      WebGL. See @ref Framebuffer::read() for possible workaround.
          */
         void image(Int level, Image<dimensions>& image) {
             AbstractTexture::image<dimensions>(level, image);
@@ -666,8 +695,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @param usage             Buffer usage
          *
          * See @ref image(Int, Image&) for more information.
-         * @requires_gl Texture image queries are not available in OpenGL ES.
-         *      See @ref Framebuffer::read() for possible workaround.
+         * @requires_gl Texture image queries are not available in OpenGL ES or
+         *      WebGL. See @ref Framebuffer::read() for possible workaround.
          * @todo Make it more flexible (usable with
          *      @extension{ARB,buffer_storage}, avoiding relocations...)
          */
@@ -694,8 +723,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * given image.
          * @see @fn_gl{GetTextureSubImage}
          * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
-         * @requires_gl Texture image queries are not available in OpenGL ES.
-         *      See @ref Framebuffer::read() for possible workaround.
+         * @requires_gl Texture image queries are not available in OpenGL ES or
+         *      WebGL. See @ref Framebuffer::read() for possible workaround.
          */
         void subImage(Int level, const RangeTypeFor<dimensions, Int>& range, Image<dimensions>& image) {
             AbstractTexture::subImage<dimensions>(level, range, image);
@@ -720,8 +749,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * See @ref subImage(Int, const RangeTypeFor<dimensions, Int>&, Image&)
          * for more information.
          * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
-         * @requires_gl Texture image queries are not available in OpenGL ES.
-         *      See @ref Framebuffer::read() for possible workaround.
+         * @requires_gl Texture image queries are not available in OpenGL ES or
+         *      WebGL. See @ref Framebuffer::read() for possible workaround.
          */
         void subImage(Int level, const RangeTypeFor<dimensions, Int>& range, BufferImage<dimensions>& image, BufferUsage usage) {
             AbstractTexture::subImage<dimensions>(level, range, image, usage);
@@ -764,6 +793,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         /** @overload
          * @requires_gles30 Pixel buffer objects are not available in OpenGL ES
          *      2.0.
+         * @requires_webgl20 Pixel buffer objects are not available in WebGL
+         *      1.0.
          * @deprecated_gl Prefer to use @ref setStorage() and @ref setSubImage()
          *      instead.
          */
@@ -775,6 +806,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         /** @overload
          * @requires_gles30 Pixel buffer objects are not available in OpenGL ES
          *      2.0.
+         * @requires_webgl20 Pixel buffer objects are not available in WebGL
+         *      1.0.
          * @deprecated_gl Prefer to use @ref setStorage() and @ref setSubImage()
          *      instead.
          */
@@ -791,15 +824,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @ref Trade::ImageData of the same dimension count
          * @return Reference to self (for method chaining)
          *
-         * If on OpenGL ES or neither @extension{ARB,direct_state_access} (part
-         * of OpenGL 4.5) nor @extension{EXT,direct_state_access} is available,
-         * the texture is bound before the operation (if not already).
-         *
-         * @attention In @ref MAGNUM_TARGET_WEBGL "WebGL" the @ref ColorType of
-         *      data passed in @p image must match the original one specified
-         *      in @ref setImage(). It means that you might not be able to use
-         *      @ref setStorage() as it uses implicit @ref ColorType value.
-         *
+         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @extension{EXT,direct_state_access} desktop extension is
+         * available, the texture is bound before the operation (if not
+         * already).
          * @see @ref setStorage(), @fn_gl2{TextureSubImage1D,TexSubImage1D} /
          *      @fn_gl2{TextureSubImage2D,TexSubImage2D} / @fn_gl2{TextureSubImage3D,TexSubImage3D},
          *      @fn_gl_extension{TextureSubImage1D,EXT,direct_state_access} /
@@ -807,6 +835,11 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl_extension{TextureSubImage3D,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{TexSubImage1D} / @fn_gl{TexSubImage2D} / @fn_gl{TexSubImage3D}
+         * @requires_gles In @ref MAGNUM_TARGET_WEBGL "WebGL" the @ref ColorType
+         *      of data passed in @p image must match the original one
+         *      specified in @ref setImage(). It means that you might not be
+         *      able to use @ref setStorage() as it uses implicit @ref ColorType
+         *      value.
          */
         Texture<dimensions>& setSubImage(Int level, const VectorTypeFor<dimensions, Int>& offset, const ImageReference<dimensions>& image) {
             DataHelper<Dimensions>::setSubImage(*this, level, offset, image);
@@ -817,6 +850,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         /** @overload
          * @requires_gles30 Pixel buffer objects are not available in OpenGL ES
          *      2.0.
+         * @requires_webgl20 Pixel buffer objects are not available in WebGL
+         *      1.0.
          */
         Texture<dimensions>& setSubImage(Int level, const VectorTypeFor<dimensions, Int>& offset, BufferImage<dimensions>& image) {
             DataHelper<Dimensions>::setSubImage(*this, level, offset, image);
@@ -826,6 +861,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         /** @overload
          * @requires_gles30 Pixel buffer objects are not available in OpenGL ES
          *      2.0.
+         * @requires_webgl20 Pixel buffer objects are not available in WebGL
+         *      1.0.
          */
         Texture<dimensions>& setSubImage(Int level, const VectorTypeFor<dimensions, Int>& offset, BufferImage<dimensions>&& image) {
             return setSubImage(level, offset, image);
@@ -836,9 +873,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @brief Generate mipmap
          * @return Reference to self (for method chaining)
          *
-         * If on OpenGL ES or neither @extension{ARB,direct_state_access} (part
-         * of OpenGL 4.5) nor @extension{EXT,direct_state_access} is available,
-         * the texture is bound before the operation (if not already).
+         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @extension{EXT,direct_state_access} desktop extension is
+         * available, the texture is bound before the operation (if not
+         * already).
          * @see @ref setMinificationFilter(), @fn_gl2{GenerateTextureMipmap,GenerateMipmap},
          *      @fn_gl_extension{GenerateTextureMipmap,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
@@ -891,7 +929,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
 /**
 @brief One-dimensional texture
 
-@requires_gl Only 2D and 3D textures are available in OpenGL ES.
+@requires_gl Only 2D and 3D textures are available in OpenGL ES and WebGL.
 */
 typedef Texture<1> Texture1D;
 #endif
@@ -903,6 +941,7 @@ typedef Texture<2> Texture2D;
 @brief Three-dimensional texture
 
 @requires_gles30 Extension @es_extension{OES,texture_3D} in OpenGL ES 2.0
+@requires_webgl20 3D textures are not available in WebGL 1.0.
 */
 typedef Texture<3> Texture3D;
 

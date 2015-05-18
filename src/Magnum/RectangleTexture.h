@@ -66,7 +66,7 @@ documentation for more information about usage in shaders.
 @see @ref Texture, @ref TextureArray, @ref CubeMapTexture,
     @ref CubeMapTextureArray, @ref BufferTexture, @ref MultisampleTexture
 @requires_gl31 Extension @extension{ARB,texture_rectangle}
-@requires_gl Rectangle textures are not available in OpenGL ES.
+@requires_gl Rectangle textures are not available in OpenGL ES and WebGL.
  */
 class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
     public:
@@ -84,7 +84,7 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
          * @brief Constructor
          *
          * Creates new OpenGL texture object. If @extension{ARB,direct_state_access}
-         * (part of OpenGL 4.5) is not supported, the texture is created on
+         * (part of OpenGL 4.5) is not available, the texture is created on
          * first use.
          * @see @fn_gl{CreateTextures}  with @def_gl{TEXTURE_RECTANGLE},
          *      eventually @fn_gl{GenTextures}

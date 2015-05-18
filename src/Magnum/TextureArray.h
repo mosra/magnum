@@ -89,7 +89,9 @@ documentation for more information about usage in shaders.
     @ref BufferTexture, @ref MultisampleTexture
 @requires_gl30 Extension @extension{EXT,texture_array}
 @requires_gles30 Array textures are not available in OpenGL ES 2.0.
-@requires_gl 1D array textures are not available in OpenGL ES, only 2D ones.
+@requires_webgl20 Array textures are not available in WebGL 1.0.
+@requires_gl 1D array textures are not available in OpenGL ES or WebGL, only
+    2D ones.
 @todo Fix this when @es_extension{NV,texture_array} is in ES2 extension headers
  */
 template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
@@ -111,7 +113,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @brief Constructor
          *
          * Creates new OpenGL texture object. If @extension{ARB,direct_state_access}
-         * (part of OpenGL 4.5) is not supported, the texture is created on
+         * (part of OpenGL 4.5) is not available, the texture is created on
          * first use.
          * @see @fn_gl{CreateTextures} with @def_gl{TEXTURE_1D_ARRAY} or
          *      @def_gl{TEXTURE_2D_ARRAY}, eventually @fn_gl{GenTextures}
@@ -191,7 +193,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *
          * See @ref Texture::setLodBias() for more information.
          * @requires_gl Texture LOD bias can be specified only directly in
-         *      fragment shader in OpenGL ES.
+         *      fragment shader in OpenGL ES and WebGL.
          */
         TextureArray<dimensions>& setLodBias(Float bias) {
             AbstractTexture::setLodBias(bias);
@@ -210,6 +212,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
             return *this;
         }
 
+        #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @copybrief Texture::setBorderColor(const Color4&)
          * @return Reference to self (for method chaining)
@@ -217,11 +220,13 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * See @ref Texture::setBorderColor(const Color4&) for more
          * information.
          * @requires_es_extension Extension @es_extension{NV,texture_border_clamp}
+         * @requires_gles Border clamp is not available in WebGL.
          */
         TextureArray<dimensions>& setBorderColor(const Color4& color) {
             AbstractTexture::setBorderColor(color);
             return *this;
         }
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES
         /**
@@ -231,8 +236,8 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * See @ref Texture::setBorderColor(const Vector4ui&) for more
          * information.
          * @requires_gl30 Extension @extension{EXT,texture_integer}
-         * @requires_gl Border is available only for float textures in OpenGL
-         *      ES.
+         * @requires_gl Border clamp is available only for float textures in
+         *      OpenGL ES. Border clamp is not available in WebGL.
          */
         TextureArray<dimensions>& setBorderColor(const Vector4ui& color) {
             AbstractTexture::setBorderColor(color);
@@ -241,8 +246,8 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
 
         /** @overload
          * @requires_gl30 Extension @extension{EXT,texture_integer}
-         * @requires_gl Border is available only for float textures in OpenGL
-         *      ES.
+         * @requires_gl Border clamp is available only for float textures in
+         *      OpenGL ES. Border clamp is not available in WebGL.
          */
         TextureArray<dimensions>& setBorderColor(const Vector4i& color) {
             AbstractTexture::setBorderColor(color);
@@ -261,6 +266,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
             return *this;
         }
 
+        #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @copybrief Texture::setSRGBDecode()
          * @return Reference to self (for method chaining)
@@ -268,6 +274,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * See @ref Texture::setSRGBDecode() for more information.
          * @requires_extension Extension @extension{EXT,texture_sRGB_decode}
          * @requires_es_extension Extension @es_extension2{EXT,texture_sRGB_decode,texture_sRGB_decode}
+         * @requires_gles SRGB decode is not available in WebGL.
          */
         TextureArray<dimensions>& setSRGBDecode(bool decode) {
             AbstractTexture::setSRGBDecode(decode);
@@ -285,6 +292,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
             AbstractTexture::setSwizzle<r, g, b, a>();
             return *this;
         }
+        #endif
 
         /**
          * @copybrief Texture::setCompareMode()
@@ -308,6 +316,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
             return *this;
         }
 
+        #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @copybrief Texture::setDepthStencilMode()
          * @return Reference to self (for method chaining)
@@ -316,11 +325,13 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @requires_gl43 Extension @extension{ARB,stencil_texturing}
          * @requires_gles31 Stencil texturing is not available in OpenGL ES 3.0
          *      and older.
+         * @requires_gles Stencil texturing is not available in WebGL.
          */
         TextureArray<dimensions>& setDepthStencilMode(Sampler::DepthStencilMode mode) {
             AbstractTexture::setDepthStencilMode(mode);
             return *this;
         }
+        #endif
 
         /**
          * @copybrief Texture::setStorage()
@@ -334,16 +345,20 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
             return *this;
         }
 
+        #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @copybrief Texture::imageSize()
          *
          * See @ref Texture::imageSize() for more information.
          * @requires_gles31 Texture image size queries are not available in
          *      OpenGL ES 3.0 and older.
+         * @requires_gles Texture image size queries are not available in
+         *      WebGL.
          */
         VectorTypeFor<dimensions+1, Int> imageSize(Int level) {
             return DataHelper<dimensions+1>::imageSize(*this, level);
         }
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES
         /**
@@ -351,8 +366,8 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::image(Int, Image&) for more information.
-         * @requires_gl Texture image queries are not available in OpenGL ES.
-         *      See @ref Framebuffer::read() for possible workaround.
+         * @requires_gl Texture image queries are not available in OpenGL ES or
+         *      WebGL. See @ref Framebuffer::read() for possible workaround.
          */
         void image(Int level, Image<dimensions+1>& image) {
             AbstractTexture::image<dimensions+1>(level, image);
@@ -373,8 +388,8 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *
          * See @ref Texture::image(Int, BufferImage&, BufferUsage) for more
          * information.
-         * @requires_gl Texture image queries are not available in OpenGL ES.
-         *      See @ref Framebuffer::read() for possible workaround.
+         * @requires_gl Texture image queries are not available in OpenGL ES or
+         *      WebGL. See @ref Framebuffer::read() for possible workaround.
          */
         void image(Int level, BufferImage<dimensions+1>& image, BufferUsage usage) {
             AbstractTexture::image<dimensions+1>(level, image, usage);
@@ -395,8 +410,8 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * See @ref Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, Image&)
          * for more information.
          * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
-         * @requires_gl Texture image queries are not available in OpenGL ES.
-         *      See @ref Framebuffer::read() for possible workaround.
+         * @requires_gl Texture image queries are not available in OpenGL ES or
+         *      WebGL. See @ref Framebuffer::read() for possible workaround.
          */
         void subImage(Int level, const RangeTypeFor<dimensions+1, Int>& range, Image<dimensions+1>& image) {
             AbstractTexture::subImage<dimensions+1>(level, range, image);
@@ -417,8 +432,8 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * See @ref Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, BufferImage&, BufferUsage)
          * for more information.
          * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
-         * @requires_gl Texture image queries are not available in OpenGL ES.
-         *      See @ref Framebuffer::read() for possible workaround.
+         * @requires_gl Texture image queries are not available in OpenGL ES or
+         *      WebGL. See @ref Framebuffer::read() for possible workaround.
          */
         void subImage(Int level, const RangeTypeFor<dimensions+1, Int>& range, BufferImage<dimensions+1>& image, BufferUsage usage) {
             AbstractTexture::subImage<dimensions+1>(level, range, image, usage);
@@ -473,9 +488,10 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *      @ref Trade::ImageData of the same dimension count
          * @return Reference to self (for method chaining)
          *
-         * If on OpenGL ES or neither @extension{ARB,direct_state_access} (part
-         * of OpenGL 4.5) nor @extension{EXT,direct_state_access} is available,
-         * the texture is bound before the operation (if not already).
+         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @extension{EXT,direct_state_access} desktop extension is
+         * available, the texture is bound before the operation (if not
+         * already).
          * @see @ref setStorage(), @fn_gl2{TextureSubImage2D,TexSubImage2D}/
          *      @fn_gl2{TextureSubImage3D,TexSubImage3D},
          *      @fn_gl_extension{TextureSubImage2D,EXT,direct_state_access}/
@@ -547,7 +563,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
 @brief One-dimensional texture array
 
 @requires_gl30 Extension @extension{EXT,texture_array}
-@requires_gl Only @ref Texture2DArray is available in OpenGL ES.
+@requires_gl Only @ref Texture2DArray is available in OpenGL ES and WebGL.
 */
 typedef TextureArray<1> Texture1DArray;
 #endif
@@ -557,6 +573,7 @@ typedef TextureArray<1> Texture1DArray;
 
 @requires_gl30 Extension @extension{EXT,texture_array}
 @requires_gles30 Array textures are not available in OpenGL ES 2.0.
+@requires_webgl20 Array textures are not available in WebGL 1.0.
 */
 typedef TextureArray<2> Texture2DArray;
 

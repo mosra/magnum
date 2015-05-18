@@ -50,6 +50,7 @@ template MAGNUM_EXPORT Math::Vector<1, Int> maxTextureSize<1>();
 #endif
 template MAGNUM_EXPORT Vector2i maxTextureSize<2>();
 
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 template<> MAGNUM_EXPORT Vector3i maxTextureSize<3>() {
     #ifdef MAGNUM_TARGET_GLES2
     if(!Context::current()->isExtensionSupported<Extensions::GL::OES::texture_3D>())
@@ -57,6 +58,7 @@ template<> MAGNUM_EXPORT Vector3i maxTextureSize<3>() {
     #endif
     return {Vector2i(Implementation::maxTextureSideSize()), Implementation::max3DTextureDepth()};
 }
+#endif
 
 }
 

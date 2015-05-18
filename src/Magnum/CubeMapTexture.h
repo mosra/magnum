@@ -106,7 +106,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * @brief Constructor
          *
          * Creates new OpenGL texture object. If @extension{ARB,direct_state_access}
-         * (part of OpenGL 4.5) is not supported, the texture is created on
+         * (part of OpenGL 4.5) is not available, the texture is created on
          * first use.
          * @see @fn_gl{CreateTextures} with @def_gl{TEXTURE_CUBE_MAP},
          *      eventually @fn_gl{GenTextures}
@@ -120,6 +120,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * See @ref Texture::setBaseLevel() for more information.
          * @requires_gles30 Base level is always `0` in OpenGL ES 2.0.
+         * @requires_webgl20 Base level is always `0` in WebGL 1.0.
          */
         CubeMapTexture& setBaseLevel(Int level) {
             AbstractTexture::setBaseLevel(level);
@@ -127,6 +128,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         }
         #endif
 
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         /**
          * @copybrief Texture::setMaxLevel()
          * @return Reference to self (for method chaining)
@@ -135,11 +137,13 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * @requires_gles30 Extension @es_extension{APPLE,texture_max_level},
          *      otherwise the max level is always set to largest possible value
          *      in OpenGL ES 2.0.
+         * @requires_webgl20 Always set to largest possible value in WebGL 1.0.
          */
         CubeMapTexture& setMaxLevel(Int level) {
             AbstractTexture::setMaxLevel(level);
             return *this;
         }
+        #endif
 
         /**
          * @copybrief Texture::setMinificationFilter()
@@ -171,6 +175,8 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * See @ref Texture::setMinLod() for more information.
          * @requires_gles30 Texture LOD parameters are not available in OpenGL
          *      ES 2.0.
+         * @requires_webgl20 Texture LOD parameters are not available in WebGL
+         *      1.0.
          */
         CubeMapTexture& setMinLod(Float lod) {
             AbstractTexture::setMinLod(lod);
@@ -184,6 +190,8 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * See @ref Texture::setMaxLod() for more information.
          * @requires_gles30 Texture LOD parameters are not available in OpenGL
          *      ES 2.0.
+         * @requires_webgl20 Texture LOD parameters are not available in WebGL
+         *      1.0.
          */
         CubeMapTexture& setMaxLod(Float lod) {
             AbstractTexture::setMaxLod(lod);
@@ -198,7 +206,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * See @ref Texture::setLodBias() for more information.
          * @requires_gl Texture LOD bias can be specified only directly in
-         *      fragment shader in OpenGL ES.
+         *      fragment shader in OpenGL ES and WebGL.
          */
         CubeMapTexture& setLodBias(Float bias) {
             AbstractTexture::setLodBias(bias);
@@ -217,6 +225,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
             return *this;
         }
 
+        #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @copybrief Texture::setBorderColor(const Color4&)
          * @return Reference to self (for method chaining)
@@ -224,11 +233,13 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * See @ref Texture::setBorderColor(const Color4&) for more
          * information.
          * @requires_es_extension Extension @es_extension{NV,texture_border_clamp}
+         * @requires_gles Border clamp is not available in WebGL.
          */
         CubeMapTexture& setBorderColor(const Color4& color) {
             AbstractTexture::setBorderColor(color);
             return *this;
         }
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES
         /**
@@ -238,8 +249,8 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * See @ref Texture::setBorderColor(const Vector4ui&) for more
          * information.
          * @requires_gl30 Extension @extension{EXT,texture_integer}
-         * @requires_gl Border is available only for float textures in OpenGL
-         *      ES.
+         * @requires_gl Border clamp is available only for float textures in
+         *      OpenGL ES. Border clamp is not available in WebGL.
          */
         CubeMapTexture& setBorderColor(const Vector4ui& color) {
             AbstractTexture::setBorderColor(color);
@@ -248,8 +259,8 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
 
         /** @overload
          * @requires_gl30 Extension @extension{EXT,texture_integer}
-         * @requires_gl Border is available only for float textures in OpenGL
-         *      ES.
+         * @requires_gl Border clamp is available only for float textures in
+         *      OpenGL ES. Border clamp is not available in WebGL.
          */
         CubeMapTexture& setBorderColor(const Vector4i& color) {
             AbstractTexture::setBorderColor(color);
@@ -268,6 +279,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
             return *this;
         }
 
+        #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @copybrief Texture::setSRGBDecode()
          * @return Reference to self (for method chaining)
@@ -277,13 +289,15 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * @requires_es_extension OpenGL ES 3.0 or extension
          *      @es_extension{EXT,sRGB} and
          *      @es_extension2{EXT,texture_sRGB_decode,texture_sRGB_decode}
+         * @requires_gles SRGB decode is not available in WebGL.
          */
         CubeMapTexture& setSRGBDecode(bool decode) {
             AbstractTexture::setSRGBDecode(decode);
             return *this;
         }
+        #endif
 
-        #ifndef MAGNUM_TARGET_GLES2
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         /**
          * @copybrief Texture::setSwizzle()
          * @return Reference to self (for method chaining)
@@ -291,6 +305,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * See @ref Texture::setSwizzle() for more information.
          * @requires_gl33 Extension @extension{ARB,texture_swizzle}
          * @requires_gles30 Texture swizzle is not available in OpenGL ES 2.0.
+         * @requires_gles Texture swizzle is not available in WebGL.
          */
         template<char r, char g, char b, char a> CubeMapTexture& setSwizzle() {
             AbstractTexture::setSwizzle<r, g, b, a>();
@@ -298,13 +313,16 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         }
         #endif
 
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         /**
          * @copybrief Texture::setCompareMode()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setCompareMode() for more information.
          * @requires_gles30 Extension @es_extension{EXT,shadow_samplers} and
-         *      @es_extension{NV,shadow_samplers_cube}
+         *      @es_extension{NV,shadow_samplers_cube} in OpenGL ES 2.0.
+         * @requires_webgl20 Depth texture comparison is not available in WebGL
+         *      1.0.
          */
         CubeMapTexture& setCompareMode(Sampler::CompareMode mode) {
             AbstractTexture::setCompareMode(mode);
@@ -317,14 +335,17 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * See @ref Texture::setCompareFunction() for more information.
          * @requires_gles30 Extension @es_extension{EXT,shadow_samplers} and
-         *      @es_extension{NV,shadow_samplers_cube}
+         *      @es_extension{NV,shadow_samplers_cube} in OpenGL ES 2.0.
+         * @requires_webgl20 Depth texture comparison is not available in WebGL
+         *      1.0.
          */
         CubeMapTexture& setCompareFunction(Sampler::CompareFunction function) {
             AbstractTexture::setCompareFunction(function);
             return *this;
         }
+        #endif
 
-        #ifndef MAGNUM_TARGET_GLES2
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         /**
          * @copybrief Texture::setDepthStencilMode()
          * @return Reference to self (for method chaining)
@@ -333,6 +354,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * @requires_gl43 Extension @extension{ARB,stencil_texturing}
          * @requires_gles31 Stencil texturing is not available in OpenGL ES 3.0
          *      and older.
+         * @requires_gles Stencil texturing is not available in WebGL.
          */
         CubeMapTexture& setDepthStencilMode(Sampler::DepthStencilMode mode) {
             AbstractTexture::setDepthStencilMode(mode);
@@ -352,16 +374,18 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
             return *this;
         }
 
-        #ifndef MAGNUM_TARGET_GLES2
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         /**
          * @copybrief Texture::imageSize()
          *
-         * If on OpenGL ES or @extension{ARB,direct_state_access} (part of
-         * OpenGL 4.5) is not available, it is assumed that faces have the same
-         * size and just the size of @ref Coordinate::PositiveX face is
-         * queried. See @ref Texture::imageSize() for more information.
+         * If @extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
+         * available, it is assumed that faces have the same size and just the
+         * size of @ref Coordinate::PositiveX face is queried. See
+         * @ref Texture::imageSize() for more information.
          * @requires_gles31 Texture image size queries are not available in
          *      OpenGL ES 3.0 and older.
+         * @requires_gles Texture image size queries are not available in
+         *      WebGL.
          */
         Vector2i imageSize(Int level);
 
@@ -387,8 +411,8 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          *      @def_gl{TEXTURE_WIDTH}, @def_gl{TEXTURE_HEIGHT}, then
          *      @fn_gl{GetTextureImage}
          * @requires_gl45 Extension @extension{ARB,direct_state_access}
-         * @requires_gl Texture image queries are not available in OpenGL ES.
-         *      See @ref Framebuffer::read() for possible workaround.
+         * @requires_gl Texture image queries are not available in OpenGL ES or
+         *      WebGL. See @ref Framebuffer::read() for possible workaround.
          */
         void image(Int level, Image3D& image);
 
@@ -406,8 +430,8 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * See @ref image(Int, Image3D&) for more information.
          * @requires_gl45 Extension @extension{ARB,direct_state_access}
-         * @requires_gl Texture image queries are not available in OpenGL ES.
-         *      See @ref Framebuffer::read() for possible workaround.
+         * @requires_gl Texture image queries are not available in OpenGL ES or
+         *      WebGL. See @ref Framebuffer::read() for possible workaround.
          */
         void image(Int level, BufferImage3D& image, BufferUsage usage);
 
@@ -444,8 +468,8 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          *      @fn_gl_extension{GetnTexImage,ARB,robustness},
          *      @fn_gl_extension{GetTextureImage,EXT,direct_state_access},
          *      eventually @fn_gl{GetTexImage}
-         * @requires_gl Texture image queries are not available in OpenGL ES.
-         *      See @ref Framebuffer::read() for possible workaround.
+         * @requires_gl Texture image queries are not available in OpenGL ES or
+         *      WebGL. See @ref Framebuffer::read() for possible workaround.
          */
         void image(Coordinate coordinate, Int level, Image2D& image);
 
@@ -462,8 +486,8 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * @brief Read given mip level and coordinate of texture to buffer image
          *
          * See @ref image(Coordinate, Int, Image2D&) for more information.
-         * @requires_gl Texture image queries are not available in OpenGL ES.
-         *      See @ref Framebuffer::read() for possible workaround.
+         * @requires_gl Texture image queries are not available in OpenGL ES or
+         *      WebGL. See @ref Framebuffer::read() for possible workaround.
          */
         void image(Coordinate coordinate, Int level, BufferImage2D& image, BufferUsage usage);
 
@@ -482,8 +506,8 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * See @ref Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, Image&)
          * for more information.
          * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
-         * @requires_gl Texture image queries are not available in OpenGL ES.
-         *      See @ref Framebuffer::read() for possible workaround.
+         * @requires_gl Texture image queries are not available in OpenGL ES or
+         *      WebGL. See @ref Framebuffer::read() for possible workaround.
          */
         void subImage(Int level, const Range3Di& range, Image3D& image) {
             AbstractTexture::subImage<3>(level, range, image);
@@ -504,8 +528,8 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * See @ref Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, BufferImage&, BufferUsage)
          * for more information.
          * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
-         * @requires_gl Texture image queries are not available in OpenGL ES.
-         *      See @ref Framebuffer::read() for possible workaround.
+         * @requires_gl Texture image queries are not available in OpenGL ES or
+         *      WebGL. See @ref Framebuffer::read() for possible workaround.
          */
         void subImage(Int level, const Range3Di& range, BufferImage3D& image, BufferUsage usage) {
             AbstractTexture::subImage<3>(level, range, image, usage);
@@ -539,6 +563,8 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         /** @overload
          * @requires_gles30 Pixel buffer objects are not available in OpenGL ES
          *      2.0.
+         * @requires_webgl20 Pixel buffer objects are not available in WebGL
+         *      1.0.
          * @deprecated_gl Prefer to use @ref setStorage() and @ref setSubImage()
          *      instead.
          */
@@ -550,6 +576,8 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         /** @overload
          * @requires_gles30 Pixel buffer objects are not available in OpenGL ES
          *      2.0.
+         * @requires_webgl20 Pixel buffer objects are not available in WebGL
+         *      1.0.
          * @deprecated_gl Prefer to use @ref setStorage() and @ref setSubImage()
          *      instead.
          */
@@ -569,22 +597,22 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * @see @ref setStorage(), @fn_gl2{TextureSubImage3D,TexSubImage3D}
          * @requires_gl45 Extension @extension{ARB,direct_state_access}
-         * @requires_gl In OpenGL ES you need to set image for each face
-         *      separately.
+         * @requires_gl In OpenGL ES and WebGL you need to set image for each
+         *      face separately.
          */
         CubeMapTexture& setSubImage(Int level, const Vector3i& offset, const ImageReference3D& image);
 
         /** @overload
          * @requires_gl45 Extension @extension{ARB,direct_state_access}
-         * @requires_gl In OpenGL ES you need to set image for each face
-         *      separately.
+         * @requires_gl In OpenGL ES and WebGL you need to set image for each
+         *      face separately.
          */
         CubeMapTexture& setSubImage(Int level, const Vector3i& offset, BufferImage3D& image);
 
         /** @overload
          * @requires_gl45 Extension @extension{ARB,direct_state_access}
-         * @requires_gl In OpenGL ES you need to set image for each face
-         *      separately.
+         * @requires_gl In OpenGL ES and WebGL you need to set image for each
+         *      face separately.
          */
         CubeMapTexture& setSubImage(Int level, const Vector3i& offset, BufferImage3D&& image) {
             return setSubImage(level, offset, image);
@@ -603,12 +631,16 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         /** @overload
          * @requires_gles30 Pixel buffer objects are not available in OpenGL ES
          *      2.0.
+         * @requires_webgl20 Pixel buffer objects are not available in WebGL
+         *      1.0.
          */
         CubeMapTexture& setSubImage(Coordinate coordinate, Int level, const Vector2i& offset, BufferImage2D& image);
 
         /** @overload
          * @requires_gles30 Pixel buffer objects are not available in OpenGL ES
          *      2.0.
+         * @requires_webgl20 Pixel buffer objects are not available in WebGL
+         *      1.0.
          */
         CubeMapTexture& setSubImage(Coordinate coordinate, Int level, const Vector2i& offset, BufferImage2D&& image) {
             return setSubImage(coordinate, level, offset, image);
@@ -660,10 +692,12 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         #endif
 
     private:
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         Vector2i MAGNUM_LOCAL getImageSizeImplementationDefault(Int level);
         #ifndef MAGNUM_TARGET_GLES
         Vector2i MAGNUM_LOCAL getImageSizeImplementationDSA(Int level);
         Vector2i MAGNUM_LOCAL getImageSizeImplementationDSAEXT(Int level);
+        #endif
         #endif
 
         #ifndef MAGNUM_TARGET_GLES

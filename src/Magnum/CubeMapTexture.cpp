@@ -49,7 +49,7 @@ Vector2i CubeMapTexture::maxSize() {
     return Vector2i{Implementation::maxCubeMapTextureSideSize()};
 }
 
-#ifndef MAGNUM_TARGET_GLES2
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 Vector2i CubeMapTexture::imageSize(const Int level) {
     return (this->*Context::current()->state().texture->getCubeImageSizeImplementation)(level);
 }
@@ -153,7 +153,7 @@ CubeMapTexture& CubeMapTexture::setSubImage(const Coordinate coordinate, const I
 }
 #endif
 
-#ifndef MAGNUM_TARGET_GLES2
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 Vector2i CubeMapTexture::getImageSizeImplementationDefault(const Int level) {
     Vector2i size;
     bindInternal();

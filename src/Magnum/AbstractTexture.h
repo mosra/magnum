@@ -79,16 +79,17 @@ to not affect active bindings in user units. Texture limits and
 implementation-defined values (such as @ref maxColorSamples()) are cached, so
 repeated queries don't result in repeated @fn_gl{Get} calls.
 
-If on desktop GL and @extension{ARB,direct_state_access} (part of OpenGL 4.5)
-is available, @ref bind(Int) and @ref unbind(Int) use @fn_gl{BindTextureUnit}.
-Otherwise, if @extension{ARB,multi_bind} (part of OpenGL 4.4) is available,
-@ref bind(Int) and @ref unbind() uses @fn_gl{BindTextures}. Lastly, if
-@extension{EXT,direct_state_access} is available, @fn_gl_extension{BindNamedTexture,EXT,direct_state_access}
-function is used to avoid unnecessary calls to @fn_gl{ActiveTexture}.
+If @extension{ARB,direct_state_access} (part of OpenGL 4.5) is available,
+@ref bind(Int) and @ref unbind(Int) use @fn_gl{BindTextureUnit}. Otherwise, if
+@extension{ARB,multi_bind} (part of OpenGL 4.4) is available, @ref bind(Int)
+and @ref unbind() uses @fn_gl{BindTextures}. Lastly, if
+@extension{EXT,direct_state_access} desktop extension is available,
+@fn_gl_extension{BindNamedTexture,EXT,direct_state_access} function is used to
+avoid unnecessary calls to @fn_gl{ActiveTexture}.
 
 In addition, if either @extension{ARB,direct_state_access} (part of OpenGL 4.5)
-or @extension{EXT,direct_state_access} is available, also all texture
-configuration and data updating functions use DSA functions to avoid
+or @extension{EXT,direct_state_access} desktop extension is available, also all
+texture configuration and data updating functions use DSA functions to avoid
 unnecessary calls to @fn_gl{ActiveTexture} and @fn_gl{BindTexture}. See
 respective function documentation for more information.
 
@@ -98,12 +99,12 @@ use @fn_gl{BindTextures} to avoid unnecessary calls to @fn_gl{ActiveTexture}.
 Otherwise the feature is emulated with sequence of @ref bind(Int)/@ref unbind(Int)
 calls.
 
-If either @extension{ARB,direct_state_access} or @extension{ARB,robustness} is
-available, image reading operations (such as @ref Texture::image()) are
-protected from buffer overflow. However, if @extension{ARB,direct_state_access}
-is not available and both @extension{EXT,direct_state_access} and
-@extension{ARB,robustness} are available, the robust version is preferred over
-DSA.
+If either @extension{ARB,direct_state_access} (part of OpenGL 4.5) or
+@extension{ARB,robustness} desktop extension is available, image reading
+operations (such as @ref Texture::image()) are protected from buffer overflow.
+However, if @extension{ARB,direct_state_access} is not available and both
+@extension{EXT,direct_state_access} and @extension{ARB,robustness} are
+available, the robust version is preferred over DSA.
 
 To achieve least state changes, fully configure each texture in one run --
 method chaining comes in handy -- and try to have often used textures in
@@ -159,11 +160,13 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          * @see @fn_gl{Get} with @def_gl{MAX_TEXTURE_LOD_BIAS}
          * @requires_gles30 Texture LOD bias doesn't have
          *      implementation-defined range in OpenGL ES 2.0.
+         * @requires_webgl20 Texture LOD bias doesn't have
+         *      implementation-defined range in WebGL 1.0.
          */
         static Float maxLodBias();
         #endif
 
-        #ifndef MAGNUM_TARGET_GLES2
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         /**
          * @brief Max supported color sample count
          *
@@ -171,7 +174,8 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          * OpenGL calls. If neither extension @extension{ARB,texture_multisample}
          * (part of OpenGL 3.2) nor OpenGL ES 3.1 is available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_COLOR_TEXTURE_SAMPLES}
-         * @requires_gles30 Not defined in OpenGL ES 2.0
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_gles Multisample textures are not available in WebGL.
          */
         static Int maxColorSamples();
 
@@ -182,7 +186,8 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          * OpenGL calls. If neither extension @extension{ARB,texture_multisample}
          * (part of OpenGL 3.2) nor OpenGL ES 3.1 is available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_DEPTH_TEXTURE_SAMPLES}
-         * @requires_gles30 Not defined in OpenGL ES 2.0
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_gles Multisample textures are not available in WebGL.
          */
         static Int maxDepthSamples();
 
@@ -193,7 +198,8 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          * OpenGL calls. If neither extension @extension{ARB,texture_multisample}
          * (part of OpenGL 3.2) nor OpenGL ES 3.1 is available, returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_INTEGER_SAMPLES}
-         * @requires_gles30 Not defined in OpenGL ES 2.0
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_gles Multisample textures are not available in WebGL.
          */
         static Int maxIntegerSamples();
         #endif
@@ -201,10 +207,10 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         /**
          * @brief Unbind any texture from given texture unit
          *
-         * If on OpenGL ES or neither @extension{ARB,direct_state_access} (part
-         * of OpenGL 4.5), @extension{ARB,multi_bind} (part of OpenGL 4.4) nor
-         * @extension{EXT,direct_state_access} is available, the texture unit
-         * is made active before unbinding the texture.
+         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5),
+         * @extension{ARB,multi_bind} (part of OpenGL 4.4) nor
+         * @extension{EXT,direct_state_access} desktop extension is available,
+         * the texture unit is made active before unbinding the texture.
          * @note This function is meant to be used only internally from
          *      @ref AbstractShaderProgram subclasses. See its documentation
          *      for more information.
@@ -306,10 +312,10 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         /**
          * @brief Bind texture to given texture unit
          *
-         * If on OpenGL ES or neither @extension{ARB,direct_state_access} (part
-         * of OpenGL 4.5), @extension{ARB,multi_bind} (part of OpenGL 4.4) nor
-         * @extension{EXT,direct_state_access} is available, the texture unit
-         * is made active before binding the texture.
+         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5),
+         * @extension{ARB,multi_bind} (part of OpenGL 4.4) nor
+         * @extension{EXT,direct_state_access} desktop extension is available,
+         * the texture unit is made active before binding the texture.
          * @note This function is meant to be used only internally from
          *      @ref AbstractShaderProgram subclasses. See its documentation
          *      for more information.
@@ -340,7 +346,9 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         #ifndef MAGNUM_TARGET_GLES2
         void setBaseLevel(Int level);
         #endif
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         void setMaxLevel(Int level);
+        #endif
         void setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap);
         void setMagnificationFilter(Sampler::Filter filter);
         #ifndef MAGNUM_TARGET_GLES2
@@ -350,15 +358,19 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         #ifndef MAGNUM_TARGET_GLES
         void setLodBias(Float bias);
         #endif
+        #ifndef MAGNUM_TARGET_WEBGL
         void setBorderColor(const Color4& color);
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         void setBorderColor(const Vector4i& color);
         void setBorderColor(const Vector4ui& color);
         #endif
         void setMaxAnisotropy(Float anisotropy);
+        #ifndef MAGNUM_TARGET_WEBGL
         void setSRGBDecode(bool decode);
+        #endif
 
-        #ifndef MAGNUM_TARGET_GLES2
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         template<char r, char g, char b, char a> void setSwizzle() {
             setSwizzleInternal(Implementation::TextureSwizzle<r>::Value,
                                Implementation::TextureSwizzle<g>::Value,
@@ -368,9 +380,11 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         void setSwizzleInternal(GLint r, GLint g, GLint b, GLint a);
         #endif
 
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         void setCompareMode(Sampler::CompareMode mode);
         void setCompareFunction(Sampler::CompareFunction function);
-        #ifndef MAGNUM_TARGET_GLES2
+        #endif
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         void setDepthStencilMode(Sampler::DepthStencilMode mode);
         #endif
         void invalidateImage(Int level);
@@ -440,7 +454,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         void MAGNUM_LOCAL setMaxAnisotropyImplementationNoOp(GLfloat);
         void MAGNUM_LOCAL setMaxAnisotropyImplementationExt(GLfloat anisotropy);
 
-        #ifndef MAGNUM_TARGET_GLES2
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         void MAGNUM_LOCAL getLevelParameterImplementationDefault(GLint level, GLenum parameter, GLint* values);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL getLevelParameterImplementationDSA(GLint level, GLenum parameter, GLint* values);
@@ -461,15 +475,23 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         void MAGNUM_LOCAL storageImplementationDSAEXT(GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size);
         #endif
 
+        #if !defined(MAGNUM_TARGET_WEBGL) || defined(MAGNUM_TARGET_GLES2)
         void MAGNUM_LOCAL storageImplementationFallback(GLsizei levels, TextureFormat internalFormat, const Vector2i& size);
+        #endif
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         void MAGNUM_LOCAL storageImplementationDefault(GLsizei levels, TextureFormat internalFormat, const Vector2i& size);
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL storageImplementationDSA(GLsizei levels, TextureFormat internalFormat, const Vector2i& size);
         void MAGNUM_LOCAL storageImplementationDSAEXT(GLsizei levels, TextureFormat internalFormat, const Vector2i& size);
         #endif
 
+        #ifndef MAGNUM_TARGET_WEBGL
         void MAGNUM_LOCAL storageImplementationFallback(GLsizei levels, TextureFormat internalFormat, const Vector3i& size);
+        #endif
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         void MAGNUM_LOCAL storageImplementationDefault(GLsizei levels, TextureFormat internalFormat, const Vector3i& size);
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL storageImplementationDSA(GLsizei levels, TextureFormat internalFormat, const Vector3i& size);
         void MAGNUM_LOCAL storageImplementationDSAEXT(GLsizei levels, TextureFormat internalFormat, const Vector3i& size);
@@ -478,7 +500,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL storageMultisampleImplementationFallback(GLsizei samples, TextureFormat internalFormat, const Vector2i& size, GLboolean fixedsamplelocations);
         #endif
-        #ifndef MAGNUM_TARGET_GLES2
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         void MAGNUM_LOCAL storageMultisampleImplementationDefault(GLsizei samples, TextureFormat internalFormat, const Vector2i& size, GLboolean fixedsamplelocations);
         #endif
         #ifndef MAGNUM_TARGET_GLES
@@ -512,7 +534,9 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         void MAGNUM_LOCAL subImageImplementationDSAEXT(GLint level, const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, const GLvoid* data);
         #endif
 
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         void MAGNUM_LOCAL subImageImplementationDefault(GLint level, const Vector3i& offset, const Vector3i& size, ColorFormat format, ColorType type, const GLvoid* data);
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL subImageImplementationDSA(GLint level, const Vector3i& offset, const Vector3i& size, ColorFormat format, ColorType type, const GLvoid* data);
         void MAGNUM_LOCAL subImageImplementationDSAEXT(GLint level, const Vector3i& offset, const Vector3i& size, ColorFormat format, ColorType type, const GLvoid* data);
@@ -571,7 +595,7 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
     };
     #endif
 
-    #ifndef MAGNUM_TARGET_GLES2
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     static Vector2i imageSize(AbstractTexture& texture, GLint level);
     #endif
 
@@ -579,7 +603,7 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
 
     static void setStorage(AbstractTexture& texture, GLsizei levels, TextureFormat internalFormat, const Vector2i& size);
 
-    #ifndef MAGNUM_TARGET_GLES2
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     static void setStorageMultisample(AbstractTexture& texture, GLsizei samples, TextureFormat internalFormat, const Vector2i& size, GLboolean fixedSampleLocations);
     #endif
 
@@ -602,6 +626,7 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
     static void invalidateSubImage(AbstractTexture& texture, GLint level, const Vector2i& offset, const Vector2i& size);
 };
 template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
+    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     #ifdef MAGNUM_BUILD_DEPRECATED
     enum class Target: GLenum {
         #ifndef MAGNUM_TARGET_GLES2
@@ -619,9 +644,11 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
     #ifndef MAGNUM_TARGET_GLES2
     static Vector3i imageSize(AbstractTexture& texture, GLint level);
     #endif
+    #endif
 
     static void setWrapping(AbstractTexture& texture, const Array3D<Sampler::Wrapping>& wrapping);
 
+    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     static void setStorage(AbstractTexture& texture, GLsizei levels, TextureFormat internalFormat, const Vector3i& size);
 
     #ifndef MAGNUM_TARGET_GLES
@@ -636,6 +663,7 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
     static void setSubImage(AbstractTexture& texture, GLint level, const Vector3i& offset, const ImageReference3D& image);
     #ifndef MAGNUM_TARGET_GLES2
     static void setSubImage(AbstractTexture& texture, GLint level, const Vector3i& offset, BufferImage3D& image);
+    #endif
     #endif
 
     static void invalidateSubImage(AbstractTexture& texture, GLint level, const Vector3i& offset, const Vector3i& size);

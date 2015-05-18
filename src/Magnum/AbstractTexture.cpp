@@ -65,7 +65,7 @@ Float AbstractTexture::maxLodBias() {
 }
 #endif
 
-#ifndef MAGNUM_TARGET_GLES2
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 Int AbstractTexture::maxColorSamples() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
@@ -302,6 +302,7 @@ void AbstractTexture::setBaseLevel(Int level) {
 }
 #endif
 
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 void AbstractTexture::setMaxLevel(Int level) {
     (this->*Context::current()->state().texture->parameteriImplementation)(
         #ifndef MAGNUM_TARGET_GLES2
@@ -311,6 +312,7 @@ void AbstractTexture::setMaxLevel(Int level) {
         #endif
     , level);
 }
+#endif
 
 void AbstractTexture::setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap) {
     (this->*Context::current()->state().texture->parameteriImplementation)(GL_TEXTURE_MIN_FILTER, GLint(filter)|GLint(mipmap));
@@ -336,6 +338,7 @@ void AbstractTexture::setLodBias(const Float bias) {
 }
 #endif
 
+#ifndef MAGNUM_TARGET_WEBGL
 void AbstractTexture::setBorderColor(const Color4& color) {
     #ifndef MAGNUM_TARGET_GLES
     (this->*Context::current()->state().texture->parameterfvImplementation)(GL_TEXTURE_BORDER_COLOR, color.data());
@@ -343,6 +346,7 @@ void AbstractTexture::setBorderColor(const Color4& color) {
     (this->*Context::current()->state().texture->parameterfvImplementation)(GL_TEXTURE_BORDER_COLOR_NV, color.data());
     #endif
 }
+#endif
 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::setBorderColor(const Vector4ui& color) {
@@ -358,12 +362,14 @@ void AbstractTexture::setMaxAnisotropy(const Float anisotropy) {
     (this->*Context::current()->state().texture->setMaxAnisotropyImplementation)(anisotropy);
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
 void AbstractTexture::setSRGBDecode(bool decode) {
     (this->*Context::current()->state().texture->parameteriImplementation)(GL_TEXTURE_SRGB_DECODE_EXT,
         decode ? GL_DECODE_EXT : GL_SKIP_DECODE_EXT);
 }
+#endif
 
-#ifndef MAGNUM_TARGET_GLES2
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void AbstractTexture::setSwizzleInternal(const GLint r, const GLint g, const GLint b, const GLint a) {
     #ifndef MAGNUM_TARGET_GLES
     const GLint rgba[] = {r, g, b, a};
@@ -377,6 +383,7 @@ void AbstractTexture::setSwizzleInternal(const GLint r, const GLint g, const GLi
 }
 #endif
 
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 void AbstractTexture::setCompareMode(const Sampler::CompareMode mode) {
     (this->*Context::current()->state().texture->parameteriImplementation)(
         #ifndef MAGNUM_TARGET_GLES2
@@ -396,8 +403,9 @@ void AbstractTexture::setCompareFunction(const Sampler::CompareFunction function
         #endif
         , GLenum(function));
 }
+#endif
 
-#ifndef MAGNUM_TARGET_GLES2
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void AbstractTexture::setDepthStencilMode(const Sampler::DepthStencilMode mode) {
     (this->*Context::current()->state().texture->parameteriImplementation)(GL_DEPTH_STENCIL_TEXTURE_MODE, GLenum(mode));
 }
@@ -926,7 +934,7 @@ void AbstractTexture::setMaxAnisotropyImplementationExt(GLfloat anisotropy) {
     (this->*Context::current()->state().texture->parameterfImplementation)(GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy);
 }
 
-#ifndef MAGNUM_TARGET_GLES2
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void AbstractTexture::getLevelParameterImplementationDefault(GLint level, GLenum parameter, GLint* values) {
     bindInternal();
     glGetTexLevelParameteriv(_target, level, parameter, values);
@@ -969,6 +977,7 @@ void AbstractTexture::storageImplementationDSAEXT(GLsizei levels, TextureFormat 
 }
 #endif
 
+#if !defined(MAGNUM_TARGET_WEBGL) || defined(MAGNUM_TARGET_GLES2)
 void AbstractTexture::storageImplementationFallback(const GLsizei levels, const TextureFormat internalFormat, const Vector2i& size) {
     const ColorFormat format = imageFormatForInternalFormat(internalFormat);
     const ColorType type = imageTypeForInternalFormat(internalFormat);
@@ -1008,12 +1017,14 @@ void AbstractTexture::storageImplementationFallback(const GLsizei levels, const 
     /* No other targets are available */
     } else CORRADE_ASSERT_UNREACHABLE();
 }
+#endif
 
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 void AbstractTexture::storageImplementationDefault(GLsizei levels, TextureFormat internalFormat, const Vector2i& size) {
     bindInternal();
     #ifndef MAGNUM_TARGET_GLES2
     glTexStorage2D(_target, levels, GLenum(internalFormat), size.x(), size.y());
-    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    #elif !defined(CORRADE_TARGET_NACL)
     glTexStorage2DEXT(_target, levels, GLenum(internalFormat), size.x(), size.y());
     #else
     static_cast<void>(levels);
@@ -1022,6 +1033,7 @@ void AbstractTexture::storageImplementationDefault(GLsizei levels, TextureFormat
     CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
+#endif
 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::storageImplementationDSA(const GLsizei levels, const TextureFormat internalFormat, const Vector2i& size) {
@@ -1034,6 +1046,7 @@ void AbstractTexture::storageImplementationDSAEXT(GLsizei levels, TextureFormat 
 }
 #endif
 
+#ifndef MAGNUM_TARGET_WEBGL
 void AbstractTexture::storageImplementationFallback(GLsizei levels, TextureFormat internalFormat, const Vector3i& size) {
     const ColorFormat format = imageFormatForInternalFormat(internalFormat);
     const ColorType type = imageTypeForInternalFormat(internalFormat);
@@ -1063,12 +1076,14 @@ void AbstractTexture::storageImplementationFallback(GLsizei levels, TextureForma
     /* No other targets are available */
     else CORRADE_ASSERT_UNREACHABLE();
 }
+#endif
 
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 void AbstractTexture::storageImplementationDefault(GLsizei levels, TextureFormat internalFormat, const Vector3i& size) {
     bindInternal();
     #ifndef MAGNUM_TARGET_GLES2
     glTexStorage3D(_target, levels, GLenum(internalFormat), size.x(), size.y(), size.z());
-    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    #elif !defined(CORRADE_TARGET_NACL)
     glTexStorage3DEXT(_target, levels, GLenum(internalFormat), size.x(), size.y(), size.z());
     #else
     static_cast<void>(levels);
@@ -1077,6 +1092,7 @@ void AbstractTexture::storageImplementationDefault(GLsizei levels, TextureFormat
     CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
+#endif
 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::storageImplementationDSA(const GLsizei levels, const TextureFormat internalFormat, const Vector3i& size) {
@@ -1096,7 +1112,7 @@ void AbstractTexture::storageMultisampleImplementationFallback(const GLsizei sam
 }
 #endif
 
-#ifndef MAGNUM_TARGET_GLES2
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void AbstractTexture::storageMultisampleImplementationDefault(const GLsizei samples, const TextureFormat internalFormat, const Vector2i& size, const GLboolean fixedSampleLocations) {
     bindInternal();
     glTexStorage2DMultisample(_target, samples, GLenum(internalFormat), size.x(), size.y(), fixedSampleLocations);
@@ -1186,11 +1202,12 @@ void AbstractTexture::subImageImplementationDSAEXT(GLint level, const Vector2i& 
 }
 #endif
 
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 void AbstractTexture::subImageImplementationDefault(GLint level, const Vector3i& offset, const Vector3i& size, ColorFormat format, ColorType type, const GLvoid* data) {
     bindInternal();
     #ifndef MAGNUM_TARGET_GLES2
     glTexSubImage3D(_target, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), GLenum(format), GLenum(type), data);
-    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    #elif !defined(CORRADE_TARGET_NACL)
     glTexSubImage3DOES(_target, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), GLenum(format), GLenum(type), data);
     #else
     static_cast<void>(level);
@@ -1202,6 +1219,7 @@ void AbstractTexture::subImageImplementationDefault(GLint level, const Vector3i&
     CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
+#endif
 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::subImageImplementationDSA(const GLint level, const Vector3i& offset, const Vector3i& size, const ColorFormat format, const ColorType type, const GLvoid* const data) {
@@ -1308,7 +1326,7 @@ Math::Vector<1, GLint> AbstractTexture::DataHelper<1>::imageSize(AbstractTexture
 }
 #endif
 
-#ifndef MAGNUM_TARGET_GLES2
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 Vector2i AbstractTexture::DataHelper<2>::imageSize(AbstractTexture& texture, const GLint level) {
     const Implementation::TextureState& state = *Context::current()->state().texture;
 
@@ -1339,11 +1357,13 @@ void AbstractTexture::DataHelper<2>::setStorage(AbstractTexture& texture, const 
     (texture.*Context::current()->state().texture->storage2DImplementation)(levels, internalFormat, size);
 }
 
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 void AbstractTexture::DataHelper<3>::setStorage(AbstractTexture& texture, const GLsizei levels, const TextureFormat internalFormat, const Vector3i& size) {
     (texture.*Context::current()->state().texture->storage3DImplementation)(levels, internalFormat, size);
 }
+#endif
 
-#ifndef MAGNUM_TARGET_GLES2
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void AbstractTexture::DataHelper<2>::setStorageMultisample(AbstractTexture& texture, const GLsizei samples, const TextureFormat internalFormat, const Vector2i& size, const GLboolean fixedSampleLocations) {
     (texture.*Context::current()->state().texture->storage2DMultisampleImplementation)(samples, internalFormat, size, fixedSampleLocations);
 }
@@ -1409,6 +1429,7 @@ void AbstractTexture::DataHelper<2>::setSubImage(AbstractTexture& texture, const
 }
 #endif
 
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 void AbstractTexture::DataHelper<3>::setImage(AbstractTexture& texture, const GLint level, const TextureFormat internalFormat, const ImageReference3D& image) {
     #ifndef MAGNUM_TARGET_GLES2
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
@@ -1416,7 +1437,7 @@ void AbstractTexture::DataHelper<3>::setImage(AbstractTexture& texture, const GL
     texture.bindInternal();
     #ifndef MAGNUM_TARGET_GLES2
     glTexImage3D(texture._target, level, GLint(internalFormat), image.size().x(), image.size().y(), image.size().z(), 0, GLenum(image.format()), GLenum(image.type()), image.data());
-    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    #elif !defined(CORRADE_TARGET_NACL)
     glTexImage3DOES(texture._target, level, GLint(internalFormat), image.size().x(), image.size().y(), image.size().z(), 0, GLenum(image.format()), GLenum(image.type()), image.data());
     #else
     static_cast<void>(level);
@@ -1425,6 +1446,7 @@ void AbstractTexture::DataHelper<3>::setImage(AbstractTexture& texture, const GL
     CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
+#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 void AbstractTexture::DataHelper<3>::setImage(AbstractTexture& texture, const GLint level, const TextureFormat internalFormat, BufferImage3D& image) {
@@ -1434,12 +1456,14 @@ void AbstractTexture::DataHelper<3>::setImage(AbstractTexture& texture, const GL
 }
 #endif
 
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 void AbstractTexture::DataHelper<3>::setSubImage(AbstractTexture& texture, const GLint level, const Vector3i& offset, const ImageReference3D& image) {
     #ifndef MAGNUM_TARGET_GLES2
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
     #endif
     (texture.*Context::current()->state().texture->subImage3DImplementation)(level, offset, image.size(), image.format(), image.type(), image.data());
 }
+#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 void AbstractTexture::DataHelper<3>::setSubImage(AbstractTexture& texture, const GLint level, const Vector3i& offset, BufferImage3D& image) {

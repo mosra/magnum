@@ -80,7 +80,7 @@ the six sides of the cube map, fourth part is layer in the array. See
     @ref Texture, @ref TextureArray, @ref RectangleTexture, @ref BufferTexture,
     @ref MultisampleTexture
 @requires_gl40 Extension @extension{ARB,texture_cube_map_array}
-@requires_gl Cube map texture arrays are not available in OpenGL ES.
+@requires_gl Cube map texture arrays are not available in OpenGL ES or WebGL.
 */
 class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
     public:
@@ -88,7 +88,7 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          * @brief Constructor
          *
          * Creates new OpenGL texture object. If @extension{ARB,direct_state_access}
-         * (part of OpenGL 4.5) is not supported, the texture is created on
+         * (part of OpenGL 4.5) is not available, the texture is created on
          * first use.
          * @see @fn_gl{CreateTextures} with @def_gl{TEXTURE_CUBE_MAP_ARRAY},
          *      eventually @fn_gl{GenTextures}

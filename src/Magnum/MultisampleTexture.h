@@ -25,7 +25,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MAGNUM_TARGET_GLES2
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 /** @file
  * @brief Class @ref Magnum::MultisampleTexture, typedef @ref Magnum::MultisampleTexture2D, @ref Magnum::MultisampleTexture2DArray
  */
@@ -35,7 +35,7 @@
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/Math/Vector3.h"
 
-#ifndef MAGNUM_TARGET_GLES2
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 namespace Magnum {
 
 namespace Implementation {
@@ -90,7 +90,8 @@ shaders.
 @requires_gles31 Multisample textures are not available in OpenGL ES 3.0 and
     older.
 @requires_gl 2D array multisample textures are not available in OpenGL ES, only
-    2D ones.
+    2D ones. No multisample textures are available in WebGL.
+@requires_gles Multisample textures are not available in WebGL.
  */
 template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTexture {
     public:
@@ -114,7 +115,7 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
          * @brief Constructor
          *
          * Creates new OpenGL texture object. If @extension{ARB,direct_state_access}
-         * (part of OpenGL 4.5) is not supported, the texture is created on
+         * (part of OpenGL 4.5) is not available, the texture is created on
          * first use.
          * @see @fn_gl{CreateTextures} with @def_gl{TEXTURE_2D_MULTISAMPLE} or
          *      @def_gl{TEXTURE_2D_MULTISAMPLE_ARRAY}, eventually
@@ -133,12 +134,13 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
          * After calling this function the texture is immutable and calling
          * @ref setStorage() again is not allowed.
          *
-         * If on OpenGL ES or neither @extension{ARB,direct_state_access} (part
-         * of OpenGL 4.5) nor @extension{EXT,direct_state_access} is available,
-         * the texture is bound before the operation (if not already). If
-         * @extension{ARB,texture_storage_multisample} (part of OpenGL 4.3) is
-         * not available, the texture is bound and the feature is emulated
-         * using plain @extension{ARB,texture_multisample} functionality.
+         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @extension{EXT,direct_state_access} desktop extension is
+         * available, the texture is bound before the operation (if not
+         * already). If @extension{ARB,texture_storage_multisample} (part of
+         * OpenGL 4.3) is not available, the texture is bound and the feature
+         * is emulated using plain @extension{ARB,texture_multisample}
+         * functionality.
          * @see @ref maxSize(), @ref maxColorSamples(), @ref maxDepthSamples(),
          *      @ref maxIntegerSamples(), @fn_gl2{TextureStorage2DMultisample,TexStorage2DMultisample} /
          *      @fn_gl2{TextureStorage3DMultisample,TexStorage3DMultisample},
@@ -211,6 +213,7 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
 @requires_gl32 Extension @extension{ARB,texture_multisample}
 @requires_gles31 Multisample textures are not available in OpenGL ES 3.0 and
     older.
+@requires_gles Multisample textures are not available in WebGL.
 */
 typedef MultisampleTexture<2> MultisampleTexture2D;
 
@@ -220,13 +223,14 @@ typedef MultisampleTexture<2> MultisampleTexture2D;
 
 @requires_gl32 Extension @extension{ARB,texture_multisample}
 @requires_gl Only @ref MultisampleTexture2D is available in OpenGL ES.
+    No multisample textures are available in WebGL.
 */
 typedef MultisampleTexture<3> MultisampleTexture2DArray;
 #endif
 
 }
 #else
-#error this header is not available in OpenGL ES 2.0 build
+#error this header is not available in OpenGL ES 2.0 and WebGL build
 #endif
 
 #endif
