@@ -149,19 +149,28 @@ endif()
 
 # Desktop-only stuff
 if(NOT TARGET_GLES)
-    set(Magnum_HEADERS ${Magnum_HEADERS}
-        BufferTexture.h
-        CubeMapTextureArray.h
-        RectangleTexture.h)
-    set(Magnum_SRCS ${Magnum_SRCS}
+    list(APPEND Magnum_SRCS
         BufferTexture.cpp
         CubeMapTextureArray.cpp
         RectangleTexture.cpp)
+
+    list(APPEND Magnum_HEADERS
+        BufferTexture.h
+        CubeMapTextureArray.h
+        RectangleTexture.h)
 endif()
 
 # Non-ES2 stuff
 if(NOT TARGET_GLES2)
-    set(Magnum_HEADERS ${Magnum_HEADERS}
+    list(APPEND Magnum_SRCS
+        BufferImage.cpp
+        MultisampleTexture.cpp
+        TextureArray.cpp
+        TransformFeedback.cpp
+
+        Implementation/TransformFeedbackState.cpp)
+
+    list(APPEND Magnum_HEADERS
         BufferImage.h
         MultisampleTexture.h
         PrimitiveQuery.h
@@ -171,13 +180,6 @@ if(NOT TARGET_GLES2)
     list(APPEND Magnum_PRIVATE_HEADES
         Implementation/TransformFeedbackState.h)
 
-    set(Magnum_SRCS ${Magnum_SRCS}
-        BufferImage.cpp
-        MultisampleTexture.cpp
-        TextureArray.cpp
-        TransformFeedback.cpp
-
-        Implementation/TransformFeedbackState.cpp)
 endif()
 
 # Link in GL function pointer variables on platforms that support it
