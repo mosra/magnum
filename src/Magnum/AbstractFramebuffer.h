@@ -61,13 +61,15 @@ typedef Containers::EnumSet<FramebufferClear,
 typedef Containers::EnumSet<FramebufferClear> FramebufferClearMask;
 #endif
 
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 /**
 @brief Mask for framebuffer blitting
 
 @see @ref AbstractFramebuffer, @ref FramebufferBlitMask
 @requires_gl30 Extension @extension{ARB,framebuffer_object}
 @requires_gles30 Extension @es_extension{ANGLE,framebuffer_blit} or
-    @es_extension{NV,framebuffer_blit} in OpenGL ES 2.0
+    @es_extension{NV,framebuffer_blit} in OpenGL ES 2.0.
+@requires_webgl20 Framebuffer blit is not available in WebGL 1.0.
 */
 enum class FramebufferBlit: GLbitfield {
     #ifdef MAGNUM_BUILD_DEPRECATED
@@ -98,7 +100,8 @@ enum class FramebufferBlit: GLbitfield {
 @see @ref AbstractFramebuffer::blit()
 @requires_gl30 Extension @extension{ARB,framebuffer_object}
 @requires_gles30 Extension @es_extension{ANGLE,framebuffer_blit} or
-    @es_extension{NV,framebuffer_blit} in OpenGL ES 2.0
+    @es_extension{NV,framebuffer_blit} in OpenGL ES 2.0.
+@requires_webgl20 Framebuffer blit is not available in WebGL 1.0.
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
 typedef Containers::EnumSet<FramebufferBlit,
@@ -113,12 +116,14 @@ typedef Containers::EnumSet<FramebufferBlit> FramebufferBlitMask;
 @see @ref AbstractFramebuffer::blit()
 @requires_gl30 Extension @extension{ARB,framebuffer_object}
 @requires_gles30 Extension @es_extension{ANGLE,framebuffer_blit} or
-    @es_extension{NV,framebuffer_blit} in OpenGL ES 2.0
+    @es_extension{NV,framebuffer_blit} in OpenGL ES 2.0.
+@requires_webgl20 Framebuffer blit is not available in WebGL 1.0.
 */
 enum class FramebufferBlitFilter: GLenum {
     Nearest = GL_NEAREST,   /**< Nearest neighbor filtering */
     Linear = GL_LINEAR      /**< Linear interpolation filtering */
 };
+#endif
 
 /**
 @brief Framebuffer target
@@ -130,15 +135,19 @@ enum class FramebufferTarget: GLenum {
     /** Frambebuffer reading target */
     #ifndef MAGNUM_TARGET_GLES2
     Read = GL_READ_FRAMEBUFFER,
-    #else
+    #elif !defined(MAGNUM_TARGET_WEBGL)
     Read = GL_READ_FRAMEBUFFER_APPLE,
+    #else
+    Read,
     #endif
 
     /** Framebuffer drawing target */
     #ifndef MAGNUM_TARGET_GLES2
     Draw = GL_DRAW_FRAMEBUFFER,
-    #else
+    #elif !defined(MAGNUM_TARGET_WEBGL)
     Draw = GL_DRAW_FRAMEBUFFER_APPLE,
+    #else
+    Draw,
     #endif
 
     #ifdef MAGNUM_BUILD_DEPRECATED
@@ -149,8 +158,10 @@ enum class FramebufferTarget: GLenum {
     ReadDraw CORRADE_DEPRECATED_ENUM("use FramebufferTarget::Draw instead") =
         #ifndef MAGNUM_TARGET_GLES2
         GL_DRAW_FRAMEBUFFER
-        #else
+        #elif !defined(MAGNUM_TARGET_WEBGL)
         GL_DRAW_FRAMEBUFFER_APPLE
+        #else
+        1
         #endif
     #endif
 };
@@ -197,8 +208,10 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @brief Max supported draw buffer count
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. In OpenGL ES 2.0, if neither @es_extension{EXT,draw_buffers}
-         * nor @es_extension{NV,draw_buffers} is available, returns `0`.
+         * OpenGL calls. If neither @es_extension{EXT,draw_buffers} nor
+         * @es_extension{NV,draw_buffers} is available in OpenGL ES 2.0 and
+         * @webgl_extension{WEBGL,draw_buffers} is not available in WebGL 1.0,
+         * returns `0`.
          * @see @ref DefaultFramebuffer::mapForDraw(), @ref Framebuffer::mapForDraw(),
          *      @fn_gl{Get} with @def_gl{MAX_DRAW_BUFFERS}
          */
@@ -214,11 +227,12 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @see @ref DefaultFramebuffer::mapForDraw(), @ref Framebuffer::mapForDraw(),
          *      @fn_gl{Get} with @def_gl{MAX_DUAL_SOURCE_DRAW_BUFFERS}
          * @requires_gl Multiple blending inputs are not available in
-         *      OpenGL ES.
+         *      OpenGL ES or WebGL.
          */
         static Int maxDualSourceDrawBuffers();
         #endif
 
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         /**
          * @brief Copy block of pixels
          * @param source            Source framebuffer
@@ -238,7 +252,8 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @see @fn_gl2{BlitNamedFramebuffer,BlitFramebuffer}, eventually
          *      @fn_gl{BlitFramebuffer}
          * @requires_gles30 Extension @es_extension{ANGLE,framebuffer_blit} or
-         *      @es_extension{NV,framebuffer_blit} in OpenGL ES 2.0
+         *      @es_extension{NV,framebuffer_blit} in OpenGL ES 2.0.
+         * @requires_webgl20 Framebuffer blit is not available in WebGL 1.0.
          * @todo NaCl exports `BlitFramebufferEXT` (although no such extension
          *      exists for ES)
          */
@@ -255,6 +270,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         static void blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& rectangle, FramebufferBlitMask mask) {
             blit(source, destination, rectangle, rectangle, mask, FramebufferBlitFilter::Nearest);
         }
+        #endif
 
         /**
          * @brief Bind framebuffer for drawing
@@ -352,7 +368,10 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          *
          * See @ref read(const Vector2i&, const Vector2i&, Image2D&) for more
          * information.
-         * @requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
+         * @requires_gles30 Pixel buffer objects are not available in OpenGL ES
+         *      2.0.
+         * @requires_webgl20 Pixel buffer objects are not available in WebGL
+         *      1.0.
          * @todo Make it more flexible (usable with
          *      @extension{ARB,buffer_storage}, avoiding relocations...)
          */
@@ -403,7 +422,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         #ifndef MAGNUM_TARGET_GLES
         static void MAGNUM_LOCAL blitImplementationDSA(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter);
         #endif
-        #else
+        #elif !defined(MAGNUM_TARGET_WEBGL)
         static void MAGNUM_LOCAL blitImplementationANGLE(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter);
         static void MAGNUM_LOCAL blitImplementationNV(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter);
         #endif
@@ -432,7 +451,9 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         #endif
         #else
         void MAGNUM_LOCAL drawBuffersImplementationEXT(GLsizei count, const GLenum* buffers);
+        #ifndef MAGNUM_TARGET_WEBGL
         void MAGNUM_LOCAL drawBuffersImplementationNV(GLsizei count, const GLenum* buffers);
+        #endif
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
@@ -441,14 +462,18 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         void MAGNUM_LOCAL drawBufferImplementationDSAEXT(GLenum buffer);
         #endif
 
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         void MAGNUM_LOCAL readBufferImplementationDefault(GLenum buffer);
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL readBufferImplementationDSA(GLenum buffer);
         void MAGNUM_LOCAL readBufferImplementationDSAEXT(GLenum buffer);
         #endif
 
         static void MAGNUM_LOCAL readImplementationDefault(const Range2Di& rectangle, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
+        #ifndef MAGNUM_TARGET_WEBGL
         static void MAGNUM_LOCAL readImplementationRobustness(const Range2Di& rectangle, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
+        #endif
 
         void MAGNUM_LOCAL invalidateImplementationNoOp(GLsizei, const GLenum*);
         void MAGNUM_LOCAL invalidateImplementationDefault(GLsizei count, const GLenum* attachments);
@@ -466,7 +491,9 @@ class MAGNUM_EXPORT AbstractFramebuffer {
 };
 
 CORRADE_ENUMSET_OPERATORS(FramebufferClearMask)
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 CORRADE_ENUMSET_OPERATORS(FramebufferBlitMask)
+#endif
 
 }
 

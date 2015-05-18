@@ -36,7 +36,9 @@
 
 #ifndef MAGNUM_TARGET_GLES2
 #include "Magnum/BufferImage.h"
+#ifndef MAGNUM_TARGET_WEBGL
 #include "Magnum/MultisampleTexture.h"
+#endif
 #include "Magnum/TextureArray.h"
 #endif
 
@@ -56,17 +58,27 @@ namespace Magnum {
 const Framebuffer::DrawAttachment Framebuffer::DrawAttachment::None = Framebuffer::DrawAttachment(GL_NONE);
 const Framebuffer::BufferAttachment Framebuffer::BufferAttachment::Depth = Framebuffer::BufferAttachment(GL_DEPTH_ATTACHMENT);
 const Framebuffer::BufferAttachment Framebuffer::BufferAttachment::Stencil = Framebuffer::BufferAttachment(GL_STENCIL_ATTACHMENT);
+/** @todo where to get GL_DEPTH_STENCIL_ATTACHMENT for WebGL? */
 #ifndef MAGNUM_TARGET_GLES2
 const Framebuffer::BufferAttachment Framebuffer::BufferAttachment::DepthStencil = Framebuffer::BufferAttachment(GL_DEPTH_STENCIL_ATTACHMENT);
+#elif defined(MAGNUM_TARGET_WEBGL)
+const Framebuffer::BufferAttachment Framebuffer::BufferAttachment::DepthStencil = Framebuffer::BufferAttachment(0x821A);
 #endif
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 const Framebuffer::InvalidationAttachment Framebuffer::InvalidationAttachment::Depth = Framebuffer::InvalidationAttachment(GL_DEPTH_ATTACHMENT);
 const Framebuffer::InvalidationAttachment Framebuffer::InvalidationAttachment::Stencil = Framebuffer::InvalidationAttachment(GL_STENCIL_ATTACHMENT);
+#endif
 
 Int Framebuffer::maxColorAttachments() {
     #ifdef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
     if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::draw_buffers>() &&
        !Context::current()->isExtensionSupported<Extensions::GL::NV::fbo_color_attachments>())
         return 0;
+    #else
+    if(!Context::current()->isExtensionSupported<Extensions::GL::WEBGL::draw_buffers>())
+        return 0;
+    #endif
     #endif
 
     GLint& value = Context::current()->state().framebuffer->maxColorAttachments;
@@ -166,6 +178,7 @@ Framebuffer& Framebuffer::mapForDraw(const DrawAttachment attachment) {
     return *this;
 }
 
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 Framebuffer& Framebuffer::mapForRead(const ColorAttachment attachment) {
     (this->*Context::current()->state().framebuffer->readBufferImplementation)(GLenum(attachment));
     return *this;
@@ -189,6 +202,7 @@ void Framebuffer::invalidate(std::initializer_list<InvalidationAttachment> attac
 
     (this->*Context::current()->state().framebuffer->invalidateSubImplementation)(attachments.size(), _attachments, rectangle);
 }
+#endif
 #endif
 
 Framebuffer& Framebuffer::attachRenderbuffer(const BufferAttachment attachment, Renderbuffer& renderbuffer) {
@@ -215,7 +229,7 @@ Framebuffer& Framebuffer::attachTexture(const BufferAttachment attachment, Recta
 }
 #endif
 
-#ifndef MAGNUM_TARGET_GLES2
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 Framebuffer& Framebuffer::attachTexture(const BufferAttachment attachment, MultisampleTexture2D& texture) {
     (this->*Context::current()->state().framebuffer->texture2DImplementation)(attachment, GL_TEXTURE_2D_MULTISAMPLE, texture.id(), 0);
     return *this;
@@ -227,10 +241,12 @@ Framebuffer& Framebuffer::attachCubeMapTexture(const BufferAttachment attachment
     return *this;
 }
 
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 Framebuffer& Framebuffer::attachTextureLayer(Framebuffer::BufferAttachment attachment, Texture3D& texture, Int level, Int layer) {
     (this->*Context::current()->state().framebuffer->textureLayerImplementation)(attachment, texture.id(), level, layer);
     return *this;
 }
+#endif
 
 #ifndef MAGNUM_TARGET_GLES
 Framebuffer& Framebuffer::attachTextureLayer(Framebuffer::BufferAttachment attachment, Texture1DArray& texture, Int level, Int layer) {
@@ -322,10 +338,11 @@ void Framebuffer::texture2DImplementationDSAEXT(BufferAttachment attachment, GLe
 }
 #endif
 
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 void Framebuffer::textureLayerImplementationDefault(BufferAttachment attachment, GLuint textureId, GLint mipLevel, GLint layer) {
     #ifndef MAGNUM_TARGET_GLES2
     glFramebufferTextureLayer(GLenum(bindInternal()), GLenum(attachment), textureId, mipLevel, layer);
-    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    #elif !defined(CORRADE_TARGET_NACL)
     glFramebufferTexture3DOES(GLenum(bindInternal()), GLenum(attachment), GL_TEXTURE_3D_OES, textureId, mipLevel, layer);
     #else
     static_cast<void>(attachment);
@@ -335,6 +352,7 @@ void Framebuffer::textureLayerImplementationDefault(BufferAttachment attachment,
     CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
+#endif
 
 #ifndef MAGNUM_TARGET_GLES
 void Framebuffer::textureLayerImplementationDSA(const BufferAttachment attachment, const GLuint textureId, const GLint mipLevel, const GLint layer) {
@@ -359,7 +377,9 @@ Debug operator<<(Debug debug, const Framebuffer::Status value) {
         _c(IncompleteReadBuffer)
         #endif
         _c(Unsupported)
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         _c(IncompleteMultisample)
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         _c(IncompleteLayerTargets)
         #endif

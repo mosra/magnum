@@ -73,8 +73,8 @@ more involved usage, usage of non-default or multiple framebuffers.
 
 See also @ref AbstractFramebuffer-performance-optimization "relevant section in AbstractFramebuffer".
 
-If on desktop GL and either @extension{ARB,direct_state_access} (part of OpenGL
-4.5) or @extension{EXT,direct_state_access} is available, functions
+If either @extension{ARB,direct_state_access} (part of OpenGL 4.5) or
+@extension{EXT,direct_state_access} desktop extension is available, functions
 @ref checkStatus(), @ref mapForDraw(), @ref mapForRead() and @ref invalidate()
 use DSA to avoid unnecessary calls to @fn_gl{BindFramebuffer}. See their
 respective documentation for more information.
@@ -93,15 +93,18 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
             /** The framebuffer is complete */
             Complete = GL_FRAMEBUFFER_COMPLETE,
 
+            #ifndef MAGNUM_TARGET_WEBGL
             /**
              * The default framebuffer does not exist.
              * @requires_gles30 Extension @es_extension{OES,surfaceless_context}
-             *      in OpenGL ES 2.0
+             *      in OpenGL ES 2.0.
+             * @requires_gles Surfaceless context is not available in WebGL.
              */
             #ifndef MAGNUM_TARGET_GLES2
             Undefined = GL_FRAMEBUFFER_UNDEFINED
             #else
             Undefined = GL_FRAMEBUFFER_UNDEFINED_OES
+            #endif
             #endif
         };
 
@@ -111,6 +114,8 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @see @ref mapForDraw()
          * @requires_gles30 Extension @es_extension{EXT,draw_buffers} in OpenGL
          *      ES 2.0.
+         * @requires_webgl20 Extension @webgl_extension{WEBGL,draw_buffers} in
+         *      WebGL 1.0.
          */
         enum class DrawAttachment: GLenum {
             /** Don't use the output. */
@@ -119,25 +124,29 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Write output to front left buffer.
-             * @requires_gl Stereo rendering is not available in OpenGL ES.
+             * @requires_gl Stereo rendering is not available in OpenGL ES
+             *      or WebGL.
              */
             FrontLeft = GL_FRONT_LEFT,
 
             /**
              * Write output to front right buffer.
-             * @requires_gl Stereo rendering is not available in OpenGL ES.
+             * @requires_gl Stereo rendering is not available in OpenGL ES
+             *      or WebGL.
              */
             FrontRight = GL_FRONT_RIGHT,
 
             /**
              * Write output to back left buffer.
-             * @requires_gl Stereo rendering is not available in OpenGL ES.
+             * @requires_gl Stereo rendering is not available in OpenGL ES
+             *      or WebGL.
              */
             BackLeft = GL_BACK_LEFT,
 
             /**
              * Write output to back right buffer.
-             * @requires_gl Stereo rendering is not available in OpenGL ES.
+             * @requires_gl Stereo rendering is not available in OpenGL ES
+             *      or WebGL.
              */
             BackRight = GL_BACK_RIGHT,
             #endif
@@ -145,8 +154,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
             /**
              * Write output to back buffer.
              *
-             * On desktop OpenGL, this is equal to
-             * @ref DrawAttachment::BackLeft.
+             * On desktop OpenGL this is equal to @ref DrawAttachment::BackLeft.
              */
             #ifdef MAGNUM_TARGET_GLES
             Back = GL_BACK
@@ -155,12 +163,15 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
             #endif
         };
 
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         /**
          * @brief Read attachment
          *
          * @see @ref mapForRead()
          * @requires_gles30 Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
-         *      in OpenGL ES 2.0
+         *      in OpenGL ES 2.0.
+         * @requires_webgl20 Framebuffer read mapping is not available in WebGL
+         *      1.0.
          */
         enum class ReadAttachment: GLenum {
             /** Don't read from any buffer */
@@ -169,37 +180,43 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Read from front left buffer.
-             * @requires_gl Stereo rendering is not available in OpenGL ES.
+             * @requires_gl Stereo rendering is not available in OpenGL ES or
+             *      WebGL.
              */
             FrontLeft = GL_FRONT_LEFT,
 
             /**
              * Read from front right buffer.
-             * @requires_gl Stereo rendering is not available in OpenGL ES.
+             * @requires_gl Stereo rendering is not available in OpenGL ES or
+             *      WebGL.
              */
             FrontRight = GL_FRONT_RIGHT,
 
             /**
              * Read from back left buffer.
-             * @requires_gl Stereo rendering is not available in OpenGL ES.
+             * @requires_gl Stereo rendering is not available in OpenGL ES or
+             *      WebGL.
              */
             BackLeft = GL_BACK_LEFT,
 
             /**
              * Read from back right buffer.
-             * @requires_gl Stereo rendering is not available in OpenGL ES.
+             * @requires_gl Stereo rendering is not available in OpenGL ES or
+             *      WebGL.
              */
             BackRight = GL_BACK_RIGHT,
 
             /**
              * Read from left buffer.
-             * @requires_gl Stereo rendering is not available in OpenGL ES.
+             * @requires_gl Stereo rendering is not available in OpenGL ES or
+             *      WebGL.
              */
             Left = GL_LEFT,
 
             /**
              * Read from right buffer.
-             * @requires_gl Stereo rendering is not available in OpenGL ES.
+             * @requires_gl Stereo rendering is not available in OpenGL ES or
+             *      WebGL.
              */
             Right = GL_RIGHT,
             #endif
@@ -210,6 +227,8 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
             /**
              * Read from front buffer.
              * @requires_es_extension Extension @es_extension2{NV,read_buffer_front,GL_NV_read_buffer}
+             * @requires_gles Reading from front buffer is not available in
+             *      WebGL.
              */
             Front = GL_FRONT
 
@@ -219,7 +238,8 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
             /**
              * Read from front and back buffer.
              * @requires_gl In OpenGL ES you must specify either
-             *      @ref ReadAttachment::Front or @ref ReadAttachment::Back.
+             *      @ref ReadAttachment::Front or @ref ReadAttachment::Back. In
+             *      WebGL there is only @ref ReadAttachment::Back.
              */
             FrontAndBack = GL_FRONT_AND_BACK
             #endif
@@ -230,32 +250,38 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          *
          * @see @ref invalidate()
          * @requires_gl43 Extension @extension{ARB,invalidate_subdata}
-         * @requires_gles30 Extension @es_extension{EXT,discard_framebuffer}
-         *      in OpenGL ES 2.0
+         * @requires_gles30 Extension @es_extension{EXT,discard_framebuffer} in
+         *      OpenGL ES 2.0.
+         * @requires_webgl20 Framebuffer invalidation is not available in WebGL
+         *      1.0.
          */
         enum class InvalidationAttachment: GLenum {
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Invalidate front left buffer.
-             * @requires_gl Stereo rendering is not available in OpenGL ES.
+             * @requires_gl Stereo rendering is not available in OpenGL ES
+             *      or WebGL.
              */
             FrontLeft = GL_FRONT_LEFT,
 
             /**
              * Invalidate front right buffer.
-             * @requires_gl Stereo rendering is not available in OpenGL ES.
+             * @requires_gl Stereo rendering is not available in OpenGL ES
+             *      or WebGL.
              */
             FrontRight = GL_FRONT_RIGHT,
 
             /**
              * Invalidate back left buffer.
-             * @requires_gl Stereo rendering is not available in OpenGL ES.
+             * @requires_gl Stereo rendering is not available in OpenGL ES
+             *      or WebGL.
              */
             BackLeft = GL_BACK_LEFT,
 
             /**
              * Invalidate back right buffer.
-             * @requires_gl Stereo rendering is not available in OpenGL ES.
+             * @requires_gl Stereo rendering is not available in OpenGL ES
+             *      or WebGL.
              */
             BackRight = GL_BACK_RIGHT,
             #endif
@@ -281,6 +307,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
             Stencil = GL_STENCIL_EXT
             #endif
         };
+        #endif
 
         explicit MAGNUM_LOCAL DefaultFramebuffer();
 
@@ -300,13 +327,15 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @brief Check framebuffer status
          * @param target    Target for which to check the status
          *
-         * If on OpenGL ES or neither @extension{ARB,direct_state_access} (part
-         * of OpenGL 4.5) nor @extension{EXT,direct_state_access} is available,
-         * the framebuffer is bound before the operation (if not already).
+         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @extension{EXT,direct_state_access} desktop extension is
+         * available, the framebuffer is bound before the operation (if not
+         * already).
          *
-         * On OpenGL ES 2.0, if none of @es_extension{APPLE,framebuffer_multisample},
-         * @es_extension{ANGLE,framebuffer_blit} or @es_extension{NV,framebuffer_blit}
-         * is available, the @p target parameter is ignored.
+         * The @p target parameter is ignored on OpenGL ES 2.0 if none of
+         * @es_extension{APPLE,framebuffer_multisample}, @es_extension{ANGLE,framebuffer_blit}
+         * or @es_extension{NV,framebuffer_blit} is available and also on WebGL
+         * 1.0.
          * @see @fn_gl2{CheckNamedFramebufferStatus,CheckFramebufferStatus},
          *      @fn_gl_extension{CheckNamedFramebufferStatus,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and @fn_gl{CheckFramebufferStatus}
@@ -327,15 +356,18 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          *                                {MyShader::NormalOutput, DefaultFramebuffer::DrawAttachment::None}});
          * @endcode
          *
-         * If on OpenGL ES or neither @extension{ARB,direct_state_access} (part
-         * of OpenGL 4.5) nor @extension{EXT,direct_state_access} is available,
-         * the framebuffer is bound before the operation (if not already).
+         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @extension{EXT,direct_state_access} desktop extension is
+         * available, the framebuffer is bound before the operation (if not
+         * already).
          * @see @ref maxDrawBuffers(), @ref maxDualSourceDrawBuffers(),
          *      @ref mapForRead(), @fn_gl2{NamedFramebufferDrawBuffers,DrawBuffers},
          *      @fn_gl_extension{FramebufferDrawBuffers,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and @fn_gl{DrawBuffers}
          * @requires_gles30 Extension @es_extension{EXT,draw_buffers} in OpenGL
          *      ES 2.0.
+         * @requires_webgl20 Extension @webgl_extension{WEBGL,draw_buffers} in
+         *      WebGL 1.0.
          */
         DefaultFramebuffer& mapForDraw(std::initializer_list<std::pair<UnsignedInt, DrawAttachment>> attachments);
 
@@ -347,31 +379,38 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * Similar to above function, can be used in cases when shader has
          * only one (unnamed) output.
          *
-         * If on OpenGL ES or neither @extension{ARB,direct_state_access} (part
-         * of OpenGL 4.5) nor @extension{EXT,direct_state_access} is available,
-         * the framebuffer is bound before the operation (if not already).
+         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @extension{EXT,direct_state_access} desktop extension is
+         * available, the framebuffer is bound before the operation (if not
+         * already).
          * @see @ref mapForRead(), @fn_gl2{NamedFramebufferDrawBuffer,DrawBuffer},
          *      @fn_gl_extension{FramebufferDrawBuffer,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and @fn_gl{DrawBuffer} or
          *      @fn_gl{DrawBuffers} in OpenGL ES 3.0
          * @requires_gles30 Extension @es_extension{EXT,draw_buffers} in OpenGL
          *      ES 2.0.
+         * @requires_webgl20 Extension @webgl_extension{WEBGL,draw_buffers} in
+         *      WebGL 1.0.
          */
         DefaultFramebuffer& mapForDraw(DrawAttachment attachment);
 
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         /**
          * @brief Map given attachment for reading
          * @param attachment        Buffer attachment
          * @return Reference to self (for method chaining)
          *
-         * If on OpenGL ES or neither @extension{ARB,direct_state_access} (part
-         * of OpenGL 4.5) nor @extension{EXT,direct_state_access} is available,
-         * the framebuffer is bound before the operation (if not already).
+         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @extension{EXT,direct_state_access} desktop extension is
+         * available, the framebuffer is bound before the operation (if not
+         * already).
          * @see @ref mapForDraw(), @fn_gl2{NamedFramebufferReadBuffer,ReadBuffer},
          *      @fn_gl_extension{FramebufferReadBuffer,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and @fn_gl{ReadBuffer}
          * @requires_gles30 Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
-         *      in OpenGL ES 2.0
+         *      in OpenGL ES 2.0.
+         * @requires_webgl20 Framebuffer read mapping is not available in WebGL
+         *      1.0.
          */
         DefaultFramebuffer& mapForRead(ReadAttachment attachment);
 
@@ -389,8 +428,11 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          *      eventually @fn_gl{InvalidateFramebuffer} or
          *      @fn_gles_extension{DiscardFramebuffer,EXT,discard_framebuffer}
          *      on OpenGL ES 2.0
+         * @requires_webgl20 Framebuffer invalidation is not available in WebGL
+         *      1.0.
          */
         void invalidate(std::initializer_list<InvalidationAttachment> attachments);
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
@@ -408,6 +450,8 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          *      eventually @fn_gl{InvalidateSubFramebuffer}
          * @requires_gles30 Use @ref invalidate(std::initializer_list<InvalidationAttachment>)
          *      in OpenGL ES 2.0 instead.
+         * @requires_webgl20 Framebuffer invalidation is not available in WebGL
+         *      1.0.
          */
         void invalidate(std::initializer_list<InvalidationAttachment> attachments, const Range2Di& rectangle);
         #endif

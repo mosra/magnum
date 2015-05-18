@@ -46,6 +46,7 @@ Int Renderbuffer::maxSize() {
     return value;
 }
 
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 Int Renderbuffer::maxSamples() {
     #ifdef MAGNUM_TARGET_GLES2
     if(!Context::current()->isExtensionSupported<Extensions::GL::ANGLE::framebuffer_multisample>() && !Context::current()->isExtensionSupported<Extensions::GL::NV::framebuffer_multisample>())
@@ -65,6 +66,7 @@ Int Renderbuffer::maxSamples() {
 
     return value;
 }
+#endif
 
 Renderbuffer::Renderbuffer() {
     (this->*Context::current()->state().framebuffer->createRenderbufferImplementation)();
@@ -121,9 +123,11 @@ void Renderbuffer::setStorage(const RenderbufferFormat internalFormat, const Vec
     (this->*Context::current()->state().framebuffer->renderbufferStorageImplementation)(internalFormat, size);
 }
 
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 void Renderbuffer::setStorageMultisample(const Int samples, const RenderbufferFormat internalFormat, const Vector2i& size) {
     (this->*Context::current()->state().framebuffer->renderbufferStorageMultisampleImplementation)(samples, internalFormat, size);
 }
+#endif
 
 void Renderbuffer::bind() {
     GLuint& binding = Context::current()->state().framebuffer->renderbufferBinding;
@@ -157,9 +161,9 @@ void Renderbuffer::storageMultisampleImplementationDefault(const GLsizei samples
     bind();
     glRenderbufferStorageMultisample(GL_RENDERBUFFER, samples, GLenum(internalFormat), size.x(), size.y());
 }
-#else
+#elif !defined(MAGNUM_TARGET_WEBGL)
 void Renderbuffer::storageMultisampleImplementationANGLE(const GLsizei samples, const RenderbufferFormat internalFormat, const Vector2i& size) {
-    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    #ifndef CORRADE_TARGET_NACL
     bind();
     glRenderbufferStorageMultisampleANGLE(GL_RENDERBUFFER, samples, GLenum(internalFormat), size.x(), size.y());
     #else
@@ -171,7 +175,7 @@ void Renderbuffer::storageMultisampleImplementationANGLE(const GLsizei samples, 
 }
 
 void Renderbuffer::storageMultisampleImplementationNV(const GLsizei samples, const RenderbufferFormat internalFormat, const Vector2i& size) {
-    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    #ifndef CORRADE_TARGET_NACL
     bind();
     glRenderbufferStorageMultisampleNV(GL_RENDERBUFFER, samples, GLenum(internalFormat), size.x(), size.y());
     #else

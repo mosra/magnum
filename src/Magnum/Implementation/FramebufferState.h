@@ -39,14 +39,18 @@ struct FramebufferState {
 
     void reset();
 
+    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     void(*blitImplementation)(AbstractFramebuffer&, AbstractFramebuffer&, const Range2Di&, const Range2Di&, FramebufferBlitMask, FramebufferBlitFilter);
+    #endif
     GLenum(AbstractFramebuffer::*checkStatusImplementation)(FramebufferTarget);
     void(AbstractFramebuffer::*drawBuffersImplementation)(GLsizei, const GLenum*);
     #ifndef MAGNUM_TARGET_GLES
     void(AbstractFramebuffer::*drawBufferImplementation)(GLenum);
     #endif
+    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     void(AbstractFramebuffer::*readBufferImplementation)(GLenum);
     void(AbstractFramebuffer::*invalidateImplementation)(GLsizei, const GLenum*);
+    #endif
     #ifndef MAGNUM_TARGET_GLES2
     void(AbstractFramebuffer::*invalidateSubImplementation)(GLsizei, const GLenum*, const Range2Di&);
     #endif
@@ -61,16 +65,23 @@ struct FramebufferState {
     void(Framebuffer::*texture1DImplementation)(Framebuffer::BufferAttachment, GLuint, GLint);
     #endif
     void(Framebuffer::*texture2DImplementation)(Framebuffer::BufferAttachment, GLenum, GLuint, GLint);
+    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     void(Framebuffer::*textureLayerImplementation)(Framebuffer::BufferAttachment, GLuint, GLint, GLint);
+    #endif
 
     void(Renderbuffer::*createRenderbufferImplementation)();
     void(Renderbuffer::*renderbufferStorageImplementation)(RenderbufferFormat, const Vector2i&);
+    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     void(Renderbuffer::*renderbufferStorageMultisampleImplementation)(GLsizei, RenderbufferFormat, const Vector2i&);
+    #endif
 
     void(*readImplementation)(const Range2Di&, ColorFormat, ColorType, std::size_t, GLvoid*);
 
     GLuint readBinding, drawBinding, renderbufferBinding;
-    GLint maxDrawBuffers, maxColorAttachments, maxRenderbufferSize, maxSamples;
+    GLint maxDrawBuffers, maxColorAttachments, maxRenderbufferSize;
+    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+    GLint maxSamples;
+    #endif
     #ifndef MAGNUM_TARGET_GLES
     GLint maxDualSourceDrawBuffers;
     #endif

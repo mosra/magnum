@@ -51,8 +51,8 @@ The engine tracks currently bound renderbuffer to avoid unnecessary calls to
 implementation-defined values (such as @ref maxSize()) are cached, so repeated
 queries don't result in repeated @fn_gl{Get} calls.
 
-If not on OpenGL ES and either @extension{ARB,direct_state_access} (part of
-OpenGL 4.5) or @extension{EXT,direct_state_access} is available, functions
+If either @extension{ARB,direct_state_access} (part of OpenGL 4.5) or
+@extension{EXT,direct_state_access} desktop extension is available, functions
 @ref setStorage() and @ref setStorageMultisample() use DSA to avoid unnecessary
 calls to @fn_gl{BindRenderbuffer}. See their respective documentation for more
 information.
@@ -73,6 +73,7 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
          */
         static Int maxSize();
 
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         /**
          * @brief Max supported sample count
          *
@@ -81,14 +82,17 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
          * @es_extension{ANGLE,framebuffer_multisample} /
          * @es_extension{NV,framebuffer_multisample} is available, returns `0`.
          * @see @ref setStorageMultisample(), @fn_gl{Get} with @def_gl{MAX_SAMPLES}
+         * @requires_webgl20 Multisample framebuffers are not available in
+         *      WebGL 1.0.
          */
         static Int maxSamples();
+        #endif
 
         /**
          * @brief Constructor
          *
          * Generates new OpenGL renderbuffer object. If @extension{ARB,direct_state_access}
-         * (part of OpenGL 4.5) is not supported, the renderbuffer is created
+         * (part of OpenGL 4.5) is not available, the renderbuffer is created
          * on first use.
          * @see @fn_gl{CreateRenderbuffers}, eventually @fn_gl{GenRenderbuffers}
          */
@@ -159,34 +163,40 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
          * @param internalFormat    Internal format
          * @param size              Renderbuffer size
          *
-         * If on OpenGL ES or neither @extension{ARB,direct_state_access} (part
-         * of OpenGL 4.5) nor @extension{EXT,direct_state_access} is available,
-         * the renderbuffer is bound before the operation (if not already).
+         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @extension{EXT,direct_state_access} desktop extension is
+         * available, the renderbuffer is bound before the operation (if not
+         * already).
          * @see @ref maxSize(), @fn_gl2{NamedRenderbufferStorage,RenderbufferStorage},
          *      @fn_gl_extension{NamedRenderbufferStorage,EXT,direct_state_access},
          *      eventually @fn_gl{BindRenderbuffer} and @fn_gl{RenderbufferStorage}
          */
         void setStorage(RenderbufferFormat internalFormat, const Vector2i& size);
 
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         /**
          * @brief Set multisample renderbuffer storage
          * @param samples           Sample count
          * @param internalFormat    Internal format
          * @param size              Renderbuffer size
          *
-         * If on OpenGL ES or neither @extension{ARB,direct_state_access} (part
-         * of OpenGL 4.5) nor @extension{EXT,direct_state_access} is available,
-         * the renderbuffer is bound before the operation (if not already).
+         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @extension{EXT,direct_state_access} desktop extension is
+         * available, the renderbuffer is bound before the operation (if not
+         * already).
          * @see @ref maxSize(), @ref maxSamples(),
          *      @fn_gl2{NamedRenderbufferStorageMultisample,RenderbufferStorageMultisample},
          *      @fn_gl_extension{NamedRenderbufferStorageMultisample,EXT,direct_state_access},
          *      eventually @fn_gl{BindRenderbuffer} and @fn_gl{RenderbufferStorageMultisample}
          * @requires_gles30 Extension @es_extension{ANGLE,framebuffer_multisample}
-         *      or @es_extension{NV,framebuffer_multisample} in OpenGL ES 2.0
+         *      or @es_extension{NV,framebuffer_multisample} in OpenGL ES 2.0.
+         * @requires_webgl20 Multisample framebuffers are not available in
+         *      WebGL 1.0.
          * @todo How about @es_extension{APPLE,framebuffer_multisample}?
          * @todo NaCl has @fn_gl_extension{RenderbufferStorageMultisample,EXT,multisampled_render_to_texture}
          */
         void setStorageMultisample(Int samples, RenderbufferFormat internalFormat, const Vector2i& size);
+        #endif
 
     private:
         void MAGNUM_LOCAL createImplementationDefault();
@@ -212,7 +222,7 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
         void MAGNUM_LOCAL storageMultisampleImplementationDSA(GLsizei samples, RenderbufferFormat internalFormat, const Vector2i& size);
         void MAGNUM_LOCAL storageMultisampleImplementationDSAEXT(GLsizei samples, RenderbufferFormat internalFormat, const Vector2i& size);
         #endif
-        #else
+        #elif !defined(MAGNUM_TARGET_WEBGL)
         void MAGNUM_LOCAL storageMultisampleImplementationANGLE(GLsizei samples, RenderbufferFormat internalFormat, const Vector2i& size);
         void MAGNUM_LOCAL storageMultisampleImplementationNV(GLsizei samples, RenderbufferFormat internalFormat, const Vector2i& size);
         #endif

@@ -49,9 +49,14 @@ Vector2i AbstractFramebuffer::maxViewportSize() {
 
 Int AbstractFramebuffer::maxDrawBuffers() {
     #ifdef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
     if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::draw_buffers>() &&
        !Context::current()->isExtensionSupported<Extensions::GL::NV::draw_buffers>())
         return 0;
+    #else
+    if(!Context::current()->isExtensionSupported<Extensions::GL::WEBGL::draw_buffers>())
+        return 0;
+    #endif
     #endif
 
     GLint& value = Context::current()->state().framebuffer->maxDrawBuffers;
@@ -187,9 +192,11 @@ FramebufferTarget AbstractFramebuffer::bindImplementationDefault() {
     return FramebufferTarget::Read;
 }
 
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 void AbstractFramebuffer::blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, const FramebufferBlitMask mask, const FramebufferBlitFilter filter) {
     Context::current()->state().framebuffer->blitImplementation(source, destination, sourceRectangle, destinationRectangle, mask, filter);
 }
+#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 void AbstractFramebuffer::blitImplementationDefault(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, const FramebufferBlitMask mask, const FramebufferBlitFilter filter) {
@@ -204,9 +211,9 @@ void AbstractFramebuffer::blitImplementationDSA(AbstractFramebuffer& source, Abs
 }
 #endif
 
-#else
+#elif !defined(MAGNUM_TARGET_WEBGL)
 void AbstractFramebuffer::blitImplementationANGLE(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, const FramebufferBlitMask mask, const FramebufferBlitFilter filter) {
-    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    #ifndef CORRADE_TARGET_NACL
     source.bindInternal(FramebufferTarget::Read);
     destination.bindInternal(FramebufferTarget::Draw);
     glBlitFramebufferANGLE(sourceRectangle.left(), sourceRectangle.bottom(), sourceRectangle.right(), sourceRectangle.top(), destinationRectangle.left(), destinationRectangle.bottom(), destinationRectangle.right(), destinationRectangle.top(), GLbitfield(mask), GLenum(filter));
@@ -222,7 +229,7 @@ void AbstractFramebuffer::blitImplementationANGLE(AbstractFramebuffer& source, A
 }
 
 void AbstractFramebuffer::blitImplementationNV(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, const FramebufferBlitMask mask, const FramebufferBlitFilter filter) {
-    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    #ifndef CORRADE_TARGET_NACL
     source.bindInternal(FramebufferTarget::Read);
     destination.bindInternal(FramebufferTarget::Draw);
     glBlitFramebufferNV(sourceRectangle.left(), sourceRectangle.bottom(), sourceRectangle.right(), sourceRectangle.top(), destinationRectangle.left(), destinationRectangle.bottom(), destinationRectangle.right(), destinationRectangle.top(), GLbitfield(mask), GLenum(filter));
@@ -380,7 +387,7 @@ void AbstractFramebuffer::drawBuffersImplementationDSAEXT(GLsizei count, const G
 void AbstractFramebuffer::drawBuffersImplementationEXT(GLsizei count, const GLenum* buffers) {
     bindInternal(FramebufferTarget::Draw);
 
-    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    #ifndef CORRADE_TARGET_NACL
     glDrawBuffersEXT(count, buffers);
     #else
     static_cast<void>(count);
@@ -389,10 +396,11 @@ void AbstractFramebuffer::drawBuffersImplementationEXT(GLsizei count, const GLen
     #endif
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
 void AbstractFramebuffer::drawBuffersImplementationNV(GLsizei count, const GLenum* buffers) {
     bindInternal(FramebufferTarget::Draw);
 
-    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    #ifndef CORRADE_TARGET_NACL
     glDrawBuffersNV(count, buffers);
     #else
     static_cast<void>(count);
@@ -400,6 +408,7 @@ void AbstractFramebuffer::drawBuffersImplementationNV(GLsizei count, const GLenu
     CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
+#endif
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
@@ -419,18 +428,20 @@ void AbstractFramebuffer::drawBufferImplementationDSAEXT(GLenum buffer) {
 }
 #endif
 
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 void AbstractFramebuffer::readBufferImplementationDefault(GLenum buffer) {
     bindInternal(FramebufferTarget::Read);
 
     #ifndef MAGNUM_TARGET_GLES2
     glReadBuffer(buffer);
-    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    #elif !defined(CORRADE_TARGET_NACL)
     glReadBufferNV(buffer);
     #else
     static_cast<void>(buffer);
     CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
+#endif
 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractFramebuffer::readBufferImplementationDSA(const GLenum buffer) {
@@ -447,10 +458,11 @@ void AbstractFramebuffer::readImplementationDefault(const Range2Di& rectangle, c
     glReadPixels(rectangle.min().x(), rectangle.min().y(), rectangle.sizeX(), rectangle.sizeY(), GLenum(format), GLenum(type), data);
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
 void AbstractFramebuffer::readImplementationRobustness(const Range2Di& rectangle, const ColorFormat format, const ColorType type, const std::size_t dataSize, GLvoid* const data) {
     #ifndef MAGNUM_TARGET_GLES
     glReadnPixelsARB(rectangle.min().x(), rectangle.min().y(), rectangle.sizeX(), rectangle.sizeY(), GLenum(format), GLenum(type), dataSize, data);
-    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    #elif !defined(CORRADE_TARGET_NACL)
     glReadnPixelsEXT(rectangle.min().x(), rectangle.min().y(), rectangle.sizeX(), rectangle.sizeY(), GLenum(format), GLenum(type), dataSize, data);
     #else
     static_cast<void>(rectangle);
@@ -461,5 +473,6 @@ void AbstractFramebuffer::readImplementationRobustness(const Range2Di& rectangle
     CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
+#endif
 
 }
