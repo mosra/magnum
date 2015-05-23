@@ -40,6 +40,13 @@
   <customWorkspace>Magnum</customWorkspace>
   <axes>
     <hudson.matrix.TextAxis>
+      <name>gl</name>
+      <values>
+        <string>webgl1</string>
+        <string>webgl2</string>
+      </values>
+    </hudson.matrix.TextAxis>
+    <hudson.matrix.TextAxis>
       <name>compatibility</name>
       <values>
         <string></string>
@@ -60,17 +67,25 @@ else
     deprecated_build_flag=OFF
 fi
 
-mkdir -p build-emscripten-${compatibility}
-cd build-emscripten-${compatibility}
+if [ "${gl}" = "webgl1" ] ; then
+    target_gles2_flag=ON
+else
+    target_gles2_flag=OFF
+fi
+
+mkdir -p build-emscripten-${compatibility}-${gl}
+cd build-emscripten-${compatibility}-${gl}
 
 cmake .. \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_MODULE_PATH="${WORKSPACE}/toolchains/modules" \
     -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Emscripten.cmake" \
     -DCMAKE_FIND_ROOT_PATH=${JENKINS_HOME}/filesystem/emscripten-${compatibility} \
-    -DCMAKE_INSTALL_PREFIX=${JENKINS_HOME}/filesystem/emscripten-${compatibility} \
+    -DCMAKE_PREFIX_PATH=${JENKINS_HOME}/filesystem/emscripten-${compatibility} \
+    -DCMAKE_INSTALL_PREFIX=${JENKINS_HOME}/filesystem/emscripten-${compatibility}-${gl} \
     -DBUILD_DEPRECATED=${deprecated_build_flag} \
   `#-DWITH_AUDIO=ON` \
+    -DTARGET_GLES2=${target_gles2_flag} \
     -DWITH_SDL2APPLICATION=ON \
     -DWITH_MAGNUMFONT=ON \
     -DWITH_OBJIMPORTER=ON \
@@ -98,7 +113,7 @@ make -j install
     <runSequentially>true</runSequentially>
     <touchStoneCombinationFilter>
 <![CDATA[
-compatibility == "deprecated"
+compatibility == "deprecated" && gl == "webgl1"
 ]]>
     </touchStoneCombinationFilter>
     <touchStoneResultCondition>
