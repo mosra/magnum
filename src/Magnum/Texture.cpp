@@ -68,44 +68,24 @@ template<UnsignedInt dimensions> Image<dimensions> Texture<dimensions>::image(co
     return std::move(image);
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template MAGNUM_EXPORT Image<1> Texture<1>::image(Int, Image<1>&&);
-template MAGNUM_EXPORT Image<2> Texture<2>::image(Int, Image<2>&&);
-template MAGNUM_EXPORT Image<3> Texture<3>::image(Int, Image<3>&&);
-#endif
-
 template<UnsignedInt dimensions> BufferImage<dimensions> Texture<dimensions>::image(const Int level, BufferImage<dimensions>&& image, const BufferUsage usage) {
     this->image(level, image, usage);
     return std::move(image);
 }
-
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template MAGNUM_EXPORT BufferImage<1> Texture<1>::image(Int, BufferImage<1>&&, BufferUsage);
-template MAGNUM_EXPORT BufferImage<2> Texture<2>::image(Int, BufferImage<2>&&, BufferUsage);
-template MAGNUM_EXPORT BufferImage<3> Texture<3>::image(Int, BufferImage<3>&&, BufferUsage);
-#endif
 
 template<UnsignedInt dimensions> Image<dimensions> Texture<dimensions>::subImage(const Int level, const RangeTypeFor<dimensions, Int>& range, Image<dimensions>&& image) {
     this->subImage(level, range, image);
     return std::move(image);
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template MAGNUM_EXPORT Image<1> Texture<1>::subImage(Int, const Range1Di&, Image<1>&&);
-template MAGNUM_EXPORT Image<2> Texture<2>::subImage(Int, const Range2Di&, Image<2>&&);
-template MAGNUM_EXPORT Image<3> Texture<3>::subImage(Int, const Range3Di&, Image<3>&&);
-#endif
-
 template<UnsignedInt dimensions> BufferImage<dimensions> Texture<dimensions>::subImage(const Int level, const RangeTypeFor<dimensions, Int>& range, BufferImage<dimensions>&& image, const BufferUsage usage) {
     this->subImage(level, range, image, usage);
     return std::move(image);
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template MAGNUM_EXPORT BufferImage<1> Texture<1>::subImage(Int, const Range1Di&, BufferImage<1>&&, BufferUsage);
-template MAGNUM_EXPORT BufferImage<2> Texture<2>::subImage(Int, const Range2Di&, BufferImage<2>&&, BufferUsage);
-template MAGNUM_EXPORT BufferImage<3> Texture<3>::subImage(Int, const Range3Di&, BufferImage<3>&&, BufferUsage);
-#endif
+template class MAGNUM_EXPORT Texture<1>;
+template class MAGNUM_EXPORT Texture<2>;
+template class MAGNUM_EXPORT Texture<3>;
 #endif
 
 }
