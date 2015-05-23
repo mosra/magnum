@@ -77,11 +77,10 @@ cmake .. \
     -DWITH_TGAIMAGECONVERTER=ON \
     -DWITH_TGAIMPORTER=ON \
   `#-DWITH_WAVAUDIOIMPORTER=ON` \
-  `#-DWITH_MAGNUMINFO=ON` \
-    -G Ninja
+  `#-DWITH_MAGNUMINFO=ON`
 
-ninja
-ninja install
+make -j
+make -j install
 ]]>
     </command>
     </hudson.tasks.Shell>
