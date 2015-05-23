@@ -32,8 +32,14 @@ find_package(Corrade REQUIRED)
 
 include(CMakeDependentOption)
 
-option(TARGET_GLES "Build for OpenGL ES instead of desktop OpenGL" OFF)
-cmake_dependent_option(TARGET_GLES2 "Build for OpenGL ES 2" ON "TARGET_GLES" OFF)
+# If targeting Android, NaCl or Emscripten, set explicit OpenGL ES support
+if(NOT CORRADE_TARGET_ANDROID AND NOT CORRADE_TARGET_EMSCRIPTEN AND NOT CORRADE_TARGET_NACL)
+    option(TARGET_GLES "Build for OpenGL ES / WebGL" OFF)
+else()
+    set(TARGET_GLES ON)
+endif()
+
+cmake_dependent_option(TARGET_GLES2 "Build for OpenGL ES 2 / WebGL 1.0" ON "TARGET_GLES" OFF)
 cmake_dependent_option(TARGET_DESKTOP_GLES "Build for OpenGL ES on desktop" OFF "TARGET_GLES" OFF)
 
 # Parts of the library
@@ -125,16 +131,11 @@ elseif(MSVC)
     message(FATAL_ERROR "Compatibility branch of Magnum is needed for use with MSVC. See the documentation for more information.")
 endif()
 
-# If targeting NaCl or Emscripten, set explicit OpenGL ES 2.0 support
-if(CORRADE_TARGET_NACL OR CORRADE_TARGET_EMSCRIPTEN)
-    set(TARGET_GLES 1)
-    set(TARGET_GLES2 1)
-endif()
-
-# If targeting Android, set explicit OpenGL ES support. Decision between 2.0
-# and 3.0 is up to the user
-if(CORRADE_TARGET_ANDROID)
-    set(TARGET_GLES 1)
+# If targeting NaCl, set explicit OpenGL ES 2.0 support. For Android and
+# Emscripten the decision between ES 2.0 / WebGL 1.0 and ES 3.0 / WebGL 2.0
+# must be done by the user.
+if(CORRADE_TARGET_NACL)
+    set(TARGET_GLES2 ON)
 endif()
 
 # NaCl newlib toolchain supports only static linking, dynamic linking is

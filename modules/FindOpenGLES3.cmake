@@ -32,13 +32,17 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-# Library
-find_library(OPENGLES3_LIBRARY NAMES
-    GLESv3
+# In Emscripten OpenGL ES 3 is linked automatically, thus no need to find the
+# library.
+if(NOT CORRADE_TARGET_EMSCRIPTEN)
+    find_library(OPENGLES3_LIBRARY NAMES
+        GLESv3
 
-    # On some platforms (e.g. desktop emulation with Mesa or NVidia) ES3
-    # support is provided in ES2 lib
-    GLESv2)
+        # On some platforms (e.g. desktop emulation with Mesa or NVidia) ES3
+        # support is provided in ES2 lib
+        GLESv2)
+    set(OPENGLES3_LIBRARY_NEEDED OPENGLES3_LIBRARY)
+endif()
 
 # Include dir
 find_path(OPENGLES3_INCLUDE_DIR
@@ -46,5 +50,5 @@ find_path(OPENGLES3_INCLUDE_DIR
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args("OpenGLES3" DEFAULT_MSG
-    OPENGLES3_LIBRARY
+    ${OPENGLES3_LIBRARY_NEEDED}
     OPENGLES3_INCLUDE_DIR)

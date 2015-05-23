@@ -6,6 +6,14 @@ Call `flextGLgen.py` in this directory with the following arguments:
 
     .../flextGLgen.py -D . -t . extensions.txt
 
-It will generate `flextGL.h` and `flextGL.cpp` files. As usual, be sure to
-check the diff for suspicious changes and whitespace-at-EOL (although there
-shouldn't be any).
+It will generate `flextGL.h` and `flextGL.cpp` files.
+
+Emscripten doesn't have the ability to manually load extension pointers,
+thus it has only header files:
+
+    .../flextGLgen.py -D . -t Emscripten/ Emscripten/extensions.txt
+
+This will generate stripped-down `flextGLEmscripten.h` file.
+
+As usual, be sure to check the diff for suspicious changes and
+whitespace-at-EOL (although there shouldn't be any).

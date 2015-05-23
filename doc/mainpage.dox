@@ -72,7 +72,7 @@ Graphics APIs:
     extensions
 -   **OpenGL ES** 2.0, 3.0, 3.1 and extensions to match desktop OpenGL
     functionality
--   **WebGL** 1.0 and extensions to match desktop OpenGL functionality
+-   **WebGL** 1.0, 2.0 and extensions to match desktop OpenGL functionality
 
 Platforms:
 

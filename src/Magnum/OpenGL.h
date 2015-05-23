@@ -49,7 +49,11 @@
 
 /* Special case for Emscripten (no extension loading) */
 #elif defined(CORRADE_TARGET_EMSCRIPTEN)
-    #include "MagnumExternal/OpenGL/GLES2/flextGLEmscripten.h"
+    #ifdef MAGNUM_TARGET_GLES2
+        #include "MagnumExternal/OpenGL/GLES2/flextGLEmscripten.h"
+    #else
+        #include "MagnumExternal/OpenGL/GLES3/flextGLEmscripten.h"
+    #endif
 
 /* Generic OpenGL ES */
 #elif defined(MAGNUM_TARGET_GLES2)
