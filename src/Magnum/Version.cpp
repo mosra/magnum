@@ -46,6 +46,9 @@ Debug operator<<(Debug debug, Version value) {
         _c(GL430, "OpenGL 4.3")
         _c(GL440, "OpenGL 4.4")
         _c(GL450, "OpenGL 4.5")
+        #elif defined(MAGNUM_TARGET_WEBGL)
+        _c(GLES200, "WebGL 1.0")
+        _c(GLES300, "WebGL 2.0")
         #else
         _c(GLES200, "OpenGL ES 2.0")
         _c(GLES300, "OpenGL ES 3.0")

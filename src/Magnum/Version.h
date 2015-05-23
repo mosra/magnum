@@ -58,7 +58,7 @@ enum class Version: Int {
     #endif
 
     /**
-     * @brief OpenGL ES 2.0, GLSL ES 1.00
+     * @brief OpenGL ES 2.0 or WebGL 1.0, GLSL ES 1.00
      *
      * All the functionality is present in OpenGL 4.2 (extension
      * @extension{ARB,ES2_compatibility}), so on desktop OpenGL this is
@@ -71,7 +71,7 @@ enum class Version: Int {
     #endif
 
     /**
-     * @brief OpenGL ES 3.0, GLSL ES 3.00
+     * @brief OpenGL ES 3.0 or WebGL 2.0, GLSL ES 3.00
      *
      * All the functionality is present in OpenGL 4.3 (extension
      * @extension{ARB,ES3_compatibility}), so on desktop OpenGL this is the
@@ -83,6 +83,7 @@ enum class Version: Int {
     GLES300 = 300,
     #endif
 
+    #ifndef MAGNUM_TARGET_WEBGL
     /**
      * @brief OpenGL ES 3.1, GLSL ES 3.10
      *
@@ -94,6 +95,7 @@ enum class Version: Int {
     GLES310 = 450
     #else
     GLES310 = 310
+    #endif
     #endif
 };
 

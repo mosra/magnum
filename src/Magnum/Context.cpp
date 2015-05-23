@@ -323,7 +323,9 @@ const std::vector<Extension>& Extension::extensions(Version version) {
             #else
             return empty;
             #endif
+        #ifndef MAGNUM_TARGET_WEBGL
         case Version::GLES310: return empty;
+        #endif
         #endif
     }
 
@@ -435,7 +437,9 @@ Context::Context(void functionLoader()) {
         #else
         Version::GLES200,
         Version::GLES300,
+        #ifndef MAGNUM_TARGET_WEBGL
         Version::GLES310,
+        #endif
         #endif
         Version::None
     };

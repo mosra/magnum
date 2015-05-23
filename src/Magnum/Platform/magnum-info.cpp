@@ -261,7 +261,9 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         Version::GL450,
         #else
         Version::GLES300,
+        #ifndef MAGNUM_TARGET_WEBGL
         Version::GLES310,
+        #endif
         #endif
         Version::None
     };
