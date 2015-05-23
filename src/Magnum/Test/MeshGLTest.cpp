@@ -553,7 +553,7 @@ void MeshGLTest::addVertexBufferDouble() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    const auto value = Checker(DoubleShader("double", "float", "vec4(value, 0.0, 0.0, 0.0)"),
+    const auto value = Checker(DoubleShader("double", "float", "float(value)"),
         RenderbufferFormat::R16, mesh).get<UnsignedShort>(ColorFormat::Red, ColorType::UnsignedShort);
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -1696,7 +1696,7 @@ void MeshGLTest::addVertexBufferInstancedDouble() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    const auto value = Checker(DoubleShader("double", "float", "vec4(value, 0.0, 0.0, 0.0)"),
+    const auto value = Checker(DoubleShader("double", "float", "float(value)"),
         RenderbufferFormat::R16, mesh).get<UnsignedShort>(ColorFormat::Red, ColorType::UnsignedShort);
 
     MAGNUM_VERIFY_NO_ERROR();
