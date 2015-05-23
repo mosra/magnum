@@ -31,4 +31,8 @@
 
 #include "Magnum/DebugOutput.h"
 
+#ifndef MAGNUM_BUILD_DEPRECATED
+#error use DebugMessage.h instead
+#endif
+
 #endif
