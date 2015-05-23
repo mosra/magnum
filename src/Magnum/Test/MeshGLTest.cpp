@@ -349,7 +349,7 @@ FloatShader::FloatShader(const std::string& type, const std::string& conversion)
     #endif
 
     vert.addSource(
-        #ifndef MAGNUM_TARGET_GLES3
+        #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
         "attribute mediump " + type + " value;\n"
         "varying mediump " + type + " valueInterpolated;\n"
         #else
@@ -361,7 +361,7 @@ FloatShader::FloatShader(const std::string& type, const std::string& conversion)
         "    gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n"
         "}\n");
 
-    #ifndef MAGNUM_TARGET_GLES3
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
     frag.addSource("varying mediump " + type + " valueInterpolated;\n"
                    "void main() { gl_FragColor = " + conversion + "; }\n");
     #else

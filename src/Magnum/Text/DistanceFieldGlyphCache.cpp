@@ -37,7 +37,7 @@
 namespace Magnum { namespace Text {
 
 DistanceFieldGlyphCache::DistanceFieldGlyphCache(const Vector2i& originalSize, const Vector2i& size, const UnsignedInt radius):
-    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES3)
+    #if !(defined(MAGNUM_TARGET_GLES) && defined(MAGNUM_TARGET_GLES2))
     GlyphCache(TextureFormat::R8, originalSize, size, Vector2i(radius)),
     #elif !defined(MAGNUM_TARGET_WEBGL)
     /* Luminance is not renderable in most cases */
@@ -60,7 +60,7 @@ DistanceFieldGlyphCache::DistanceFieldGlyphCache(const Vector2i& originalSize, c
 }
 
 void DistanceFieldGlyphCache::setImage(const Vector2i& offset, const ImageReference2D& image) {
-    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES3)
+    #if !(defined(MAGNUM_TARGET_GLES) && defined(MAGNUM_TARGET_GLES2))
     const TextureFormat internalFormat = TextureFormat::R8;
     CORRADE_ASSERT(image.format() == ColorFormat::Red,
         "Text::DistanceFieldGlyphCache::setImage(): expected" << ColorFormat::Red << "but got" << image.format(), );
@@ -91,7 +91,7 @@ void DistanceFieldGlyphCache::setImage(const Vector2i& offset, const ImageRefere
 }
 
 void DistanceFieldGlyphCache::setDistanceFieldImage(const Vector2i& offset, const ImageReference2D& image) {
-    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES3)
+    #if !(defined(MAGNUM_TARGET_GLES) && defined(MAGNUM_TARGET_GLES2))
     CORRADE_ASSERT(image.format() == ColorFormat::Red,
         "Text::DistanceFieldGlyphCache::setDistanceFieldImage(): expected" << ColorFormat::Red << "but got" << image.format(), );
     #else

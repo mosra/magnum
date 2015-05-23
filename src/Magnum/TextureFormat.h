@@ -648,7 +648,7 @@ enum class TextureFormat: GLenum {
      */
     RGB565 = GL_RGB565,
 
-    #if !defined(MAGNUM_TARGET_GLES3) && !defined(MAGNUM_TARGET_WEBGL)
+    #if !defined(MAGNUM_TARGET_GLES) || (defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
     /**
      * RGB, each component normalized unsigned 10bit.
      * @requires_es_extension Extension @es_extension{EXT,texture_type_2_10_10_10_REV}
