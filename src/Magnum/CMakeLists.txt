@@ -31,7 +31,6 @@ set(Magnum_SRCS
     AbstractFramebuffer.cpp
     AbstractImage.cpp
     AbstractObject.cpp
-    AbstractQuery.cpp
     AbstractTexture.cpp
     AbstractShaderProgram.cpp
     Attribute.cpp
@@ -57,7 +56,6 @@ set(Magnum_SRCS
     Implementation/BufferState.cpp
     Implementation/FramebufferState.cpp
     Implementation/MeshState.cpp
-    Implementation/QueryState.cpp
     Implementation/RendererState.cpp
     Implementation/ShaderProgramState.cpp
     Implementation/State.cpp
@@ -83,7 +81,6 @@ set(Magnum_HEADERS
     AbstractFramebuffer.h
     AbstractImage.h
     AbstractObject.h
-    AbstractQuery.h
     AbstractResourceLoader.h
     AbstractShaderProgram.h
     AbstractTexture.h
@@ -110,13 +107,11 @@ set(Magnum_HEADERS
     Resource.h
     ResourceManager.h
     ResourceManager.hpp
-    SampleQuery.h
     Sampler.h
     Shader.h
     Texture.h
     TextureFormat.h
     Timeline.h
-    TimeQuery.h
     Types.h
     Version.h
 
@@ -128,18 +123,11 @@ set(Magnum_PRIVATE_HEADERS
     Implementation/FramebufferState.h
     Implementation/maxTextureSize.h
     Implementation/MeshState.h
-    Implementation/QueryState.h
     Implementation/RendererState.h
     Implementation/ShaderProgramState.h
     Implementation/ShaderState.h
     Implementation/State.h
     Implementation/TextureState.h)
-
-# Deprecated headers
-if(BUILD_DEPRECATED)
-    set(Magnum_HEADERS ${Magnum_HEADERS}
-        Query.h)
-endif()
 
 # Desktop-only stuff
 if(NOT TARGET_GLES)
@@ -182,7 +170,8 @@ if(NOT TARGET_WEBGL)
         Implementation/DebugState.cpp)
 
     list(APPEND Magnum_HEADERS
-        DebugOutput.h)
+        DebugOutput.h
+        TimeQuery.h)
 
     list(APPEND Magnum_PRIVATE_HEADERS
         Implementation/DebugState.h)
@@ -196,6 +185,26 @@ if(NOT TARGET_WEBGL)
         list(APPEND Magnum_HEADERS
             DebugMarker.h
             DebugMessage.h)
+    endif()
+endif()
+
+# Desktop, OpenGL ES and WebGL 2.0 stuff that is not available in WebGL 1.0
+if(NOT (TARGET_WEBGL AND TARGET_GLES2))
+    list(APPEND Magnum_SRCS
+        AbstractQuery.cpp
+
+        Implementation/QueryState.cpp)
+
+    list(APPEND Magnum_HEADERS
+        AbstractQuery.h
+        SampleQuery.h)
+
+    list(APPEND Magnum_PRIVATE_HEADERS
+        Implementation/QueryState.h)
+
+    if(BUILD_DEPRECATED)
+        list(APPEND Magnum_HEADERS
+            Query.h)
     endif()
 endif()
 

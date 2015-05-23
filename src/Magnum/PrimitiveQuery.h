@@ -59,10 +59,10 @@ if(!q.resultAvailable()) {
 // ...or block until the result is available
 UnsignedInt primitiveCount = q.result<UnsignedInt>();
 @endcode
-@requires_gl30 Extension @extension{EXT,transform_feedback}
-@requires_gles30 Only sample queries are available on OpenGL ES 2.0.
-
 @see @ref SampleQuery, @ref TimeQuery, @ref TransformFeedback
+@requires_gl30 Extension @extension{EXT,transform_feedback}
+@requires_gles30 Only sample queries are available in OpenGL ES 2.0.
+@requires_webgl20 Queries are not available in WebGL 1.0.
 @todo glBeginQueryIndexed
 @todo @extension{ARB,transform_feedback_overflow_query}
 */
@@ -75,7 +75,7 @@ class PrimitiveQuery: public AbstractQuery {
              * Count of primitives generated from vertex shader or geometry
              * shader.
              * @requires_gl Only transform feedback query is available in
-             *      OpenGL ES.
+             *      OpenGL ES and WebGL.
              */
             PrimitivesGenerated = GL_PRIMITIVES_GENERATED,
             #endif
@@ -96,7 +96,7 @@ class PrimitiveQuery: public AbstractQuery {
          * @brief Constructor
          *
          * Creates new OpenGL query object. If @extension{ARB,direct_state_access}
-         * (part of OpenGL 4.5) is not supported, the query is created on first
+         * (part of OpenGL 4.5) is not available, the query is created on first
          * use.
          * @see @fn_gl{CreateQueries}, eventually @fn_gl{GenQueries}
          */

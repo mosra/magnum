@@ -98,10 +98,8 @@ bool AbstractQuery::resultAvailable() {
     GLuint result;
     #ifndef MAGNUM_TARGET_GLES2
     glGetQueryObjectuiv(_id, GL_QUERY_RESULT_AVAILABLE, &result);
-    #elif !defined(CORRADE_TARGET_EMSCRIPTEN)
-    glGetQueryObjectuivEXT(_id, GL_QUERY_RESULT_AVAILABLE_EXT, &result);
     #else
-    CORRADE_ASSERT_UNREACHABLE();
+    glGetQueryObjectuivEXT(_id, GL_QUERY_RESULT_AVAILABLE_EXT, &result);
     #endif
     return result == GL_TRUE;
 }
@@ -111,21 +109,20 @@ template<> UnsignedInt AbstractQuery::result<UnsignedInt>() {
     UnsignedInt result;
     #ifndef MAGNUM_TARGET_GLES2
     glGetQueryObjectuiv(_id, GL_QUERY_RESULT, &result);
-    #elif !defined(CORRADE_TARGET_EMSCRIPTEN)
-    glGetQueryObjectuivEXT(_id, GL_QUERY_RESULT_EXT, &result);
     #else
-    CORRADE_ASSERT_UNREACHABLE();
+    glGetQueryObjectuivEXT(_id, GL_QUERY_RESULT_EXT, &result);
     #endif
     return result;
 }
 
 template<> bool AbstractQuery::result<bool>() { return result<UnsignedInt>() != 0; }
 
+#ifndef MAGNUM_TARGET_WEBGL
 template<> Int AbstractQuery::result<Int>() {
     Int result;
     #ifndef MAGNUM_TARGET_GLES
     glGetQueryObjectiv(_id, GL_QUERY_RESULT, &result);
-    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    #elif !defined(CORRADE_TARGET_NACL)
     glGetQueryObjectivEXT(_id, GL_QUERY_RESULT_EXT, &result);
     #else
     CORRADE_ASSERT_UNREACHABLE();
@@ -133,12 +130,11 @@ template<> Int AbstractQuery::result<Int>() {
     return result;
 }
 
-#ifndef MAGNUM_TARGET_WEBGL
 template<> UnsignedLong AbstractQuery::result<UnsignedLong>() {
     UnsignedLong result;
     #ifndef MAGNUM_TARGET_GLES
     glGetQueryObjectui64v(_id, GL_QUERY_RESULT, &result);
-    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    #elif !defined(CORRADE_TARGET_NACL)
     glGetQueryObjectui64vEXT(_id, GL_QUERY_RESULT_EXT, &result);
     #else
     CORRADE_ASSERT_UNREACHABLE();
@@ -150,7 +146,7 @@ template<> Long AbstractQuery::result<Long>() {
     Long result;
     #ifndef MAGNUM_TARGET_GLES
     glGetQueryObjecti64v(_id, GL_QUERY_RESULT, &result);
-    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    #elif !defined(CORRADE_TARGET_NACL)
     glGetQueryObjecti64vEXT(_id, GL_QUERY_RESULT_EXT, &result);
     #else
     CORRADE_ASSERT_UNREACHABLE();
@@ -167,10 +163,8 @@ void AbstractQuery::begin() {
 
     #ifndef MAGNUM_TARGET_GLES2
     glBeginQuery(_target, _id);
-    #elif !defined(CORRADE_TARGET_EMSCRIPTEN)
-    glBeginQueryEXT(_target, _id);
     #else
-    CORRADE_ASSERT_UNREACHABLE();
+    glBeginQueryEXT(_target, _id);
     #endif
 }
 
@@ -190,10 +184,8 @@ void AbstractQuery::end() {
 
     #ifndef MAGNUM_TARGET_GLES2
     glEndQuery(_target);
-    #elif !defined(CORRADE_TARGET_EMSCRIPTEN)
-    glEndQueryEXT(_target);
     #else
-    CORRADE_ASSERT_UNREACHABLE();
+    glEndQueryEXT(_target);
     #endif
 }
 

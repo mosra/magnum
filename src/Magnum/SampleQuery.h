@@ -25,9 +25,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 /** @file
  * @brief Class @ref Magnum::SampleQuery
  */
+#endif
 
 #include "Magnum/AbstractQuery.h"
 
@@ -35,6 +37,7 @@
 #include <Corrade/Utility/Macros.h>
 #endif
 
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 namespace Magnum {
 
 /**
@@ -74,7 +77,8 @@ q.endConditionalRender();
 
 @see @ref PrimitiveQuery, @ref TimeQuery
 @requires_gles30 Extension @es_extension{EXT,occlusion_query_boolean} in
-    OpenGL ES 2.0
+    OpenGL ES 2.0.
+@requires_webgl20 Queries are not available in WebGL 1.0.
 */
 class SampleQuery: public AbstractQuery {
     public:
@@ -83,7 +87,8 @@ class SampleQuery: public AbstractQuery {
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Count of samples passed from fragment shader
-             * @requires_gl Only boolean query is available in OpenGL ES.
+             * @requires_gl Only boolean query is available in OpenGL ES and
+             *      WebGL.
              */
             SamplesPassed = GL_SAMPLES_PASSED,
             #endif
@@ -117,7 +122,8 @@ class SampleQuery: public AbstractQuery {
          * @brief Conditional render mode
          *
          * @requires_gl30 Extension @extension{NV,conditional_render}
-         * @requires_gl Conditional rendering is not available in OpenGL ES.
+         * @requires_gl Conditional rendering is not available in OpenGL ES or
+         *      WebGL.
          */
         enum class ConditionalRenderMode: GLenum {
             /**
@@ -189,7 +195,7 @@ class SampleQuery: public AbstractQuery {
          * @brief Constructor
          *
          * Creates new OpenGL query object. If @extension{ARB,direct_state_access}
-         * (part of OpenGL 4.5) is not supported, the query is created on first
+         * (part of OpenGL 4.5) is not available, the query is created on first
          * use.
          * @see @fn_gl{CreateQueries}, eventually @fn_gl{GenQueries}
          */
@@ -213,7 +219,8 @@ class SampleQuery: public AbstractQuery {
          *
          * @see @fn_gl{BeginConditionalRender}
          * @requires_gl30 Extension @extension{NV,conditional_render}
-         * @requires_gl Conditional rendering is not available in OpenGL ES.
+         * @requires_gl Conditional rendering is not available in OpenGL ES or
+         *      WebGL.
          */
         void beginConditionalRender(ConditionalRenderMode mode) {
             glBeginConditionalRender(id(), GLenum(mode));
@@ -224,7 +231,8 @@ class SampleQuery: public AbstractQuery {
          *
          * @see @fn_gl{EndConditionalRender}
          * @requires_gl30 Extension @extension{NV,conditional_render}
-         * @requires_gl Conditional rendering is not available in OpenGL ES.
+         * @requires_gl Conditional rendering is not available in OpenGL ES or
+         *      WebGL.
          */
         void endConditionalRender() {
             glEndConditionalRender();
@@ -245,5 +253,8 @@ class SampleQuery: public AbstractQuery {
 };
 
 }
+#else
+#error this header is not available in WebGL 1.0 build
+#endif
 
 #endif

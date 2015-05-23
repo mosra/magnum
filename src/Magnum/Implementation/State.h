@@ -38,7 +38,9 @@ struct DebugState;
 #endif
 struct FramebufferState;
 struct MeshState;
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 struct QueryState;
+#endif
 struct RendererState;
 struct ShaderState;
 struct ShaderProgramState;
@@ -61,7 +63,9 @@ struct State {
     #endif
     std::unique_ptr<FramebufferState> framebuffer;
     std::unique_ptr<MeshState> mesh;
+    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     std::unique_ptr<QueryState> query;
+    #endif
     std::unique_ptr<RendererState> renderer;
     std::unique_ptr<ShaderState> shader;
     std::unique_ptr<ShaderProgramState> shaderProgram;

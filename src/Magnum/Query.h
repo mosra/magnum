@@ -32,12 +32,16 @@
 
 #include "Magnum/configure.h"
 
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include "Magnum/PrimitiveQuery.h"
 #include "Magnum/SampleQuery.h"
 #include "Magnum/TimeQuery.h"
 #else
 #error use Magnum/PrimitiveQuery.h, Magnum/SampleQuery.h or Magnum/TimeQuery.h instead.
+#endif
+#else
+#error this header is not available in WebGL 1.0 build
 #endif
 
 #endif

@@ -25,9 +25,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 /** @file
  * @brief Class @ref Magnum::AbstractQuery
  */
+#endif
 
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Utility/Assert.h>
@@ -35,6 +37,7 @@
 #include "Magnum/AbstractObject.h"
 #include "Magnum/configure.h"
 
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 namespace Magnum {
 
 namespace Implementation { struct QueryState; }
@@ -44,6 +47,7 @@ namespace Implementation { struct QueryState; }
 
 See @ref PrimitiveQuery, @ref SampleQuery and @ref TimeQuery documentation for
 more information.
+@requires_webgl20 Queries are not available in WebGL 1.0.
 @todo `QUERY_COUNTER_BITS` (not sure since when this is supported)
 */
 class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
@@ -116,8 +120,6 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
          *
          * Note that this function is blocking until the result is available.
          * See @ref resultAvailable().
-         * @attention @ref Magnum::UnsignedLong "UnsignedLong" and @ref Magnum::Long "Long"
-         *      result type is not available in @ref MAGNUM_TARGET_WEBGL "WebGL".
          * @see @fn_gl{GetQueryObject} with @def_gl{QUERY_RESULT}
          * @requires_gl33 Extension @extension{ARB,timer_query} for result
          *      type @ref Magnum::UnsignedInt "UnsignedInt" and @ref Magnum::Long
@@ -125,6 +127,8 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
          * @requires_es_extension Extension @es_extension{EXT,disjoint_timer_query}
          *      for result types @ref Magnum::Int "Int", @ref Magnum::UnsignedLong "UnsignedLong"
          *      @ref Magnum::Long "Long".
+         * @requires_gles Only @ref Magnum::UnsignedInt "UnsignedInt" result
+         *      type is available in WebGL.
          */
         template<class T> T result();
 
@@ -199,5 +203,8 @@ inline AbstractQuery& AbstractQuery::operator=(AbstractQuery&& other) noexcept {
 }
 
 }
+#else
+#error this header is not available in WebGL 1.0 build
+#endif
 
 #endif
