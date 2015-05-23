@@ -218,6 +218,26 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,ARB,texture_barrier),
         _extension(GL,KHR,context_flush_control),
         _extension(GL,KHR,robustness)};
+    #elif defined(MAGNUM_TARGET_WEBGL)
+    static const std::vector<Extension> extensions{
+        _extension(GL,EXT,texture_filter_anisotropic),
+        _extension(GL,EXT,sRGB),
+        _extension(GL,EXT,disjoint_timer_query)};
+    #ifdef MAGNUM_TARGET_GLES2
+    static const std::vector<Extension> extensionsES300{
+        _extension(GL,ANGLE,instanced_arrays),
+        _extension(GL,EXT,blend_minmax),
+        _extension(GL,EXT,shader_texture_lod),
+        _extension(GL,OES,texture_float),
+        _extension(GL,OES,texture_half_float),
+        _extension(GL,OES,standard_derivatives),
+        _extension(GL,OES,element_index_uint),
+        _extension(GL,OES,texture_float_linear),
+        _extension(GL,OES,texture_half_float_linear),
+        _extension(GL,OES,vertex_array_object),
+        _extension(GL,WEBGL,depth_texture),
+        _extension(GL,WEBGL,draw_buffers)};
+    #endif
     #else
     static const std::vector<Extension> extensions{
         _extension(GL,APPLE,texture_format_BGRA8888),

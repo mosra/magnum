@@ -13,7 +13,7 @@ NaCl and Emscripten don't have the ability to manually load extension pointers,
 thus they have only header files:
 
     .../flextGLgen.py -D . -t NaCl/ extensions.txt
-    .../flextGLgen.py -D . -t Emscripten/ extensions.txt
+    .../flextGLgen.py -D . -t Emscripten/ Emscripten/extensions.txt
 
 This will generate stripped-down `flextGLNaCl.h` and `flextGLEmscripten.h`
 files.

@@ -364,6 +364,29 @@ Extension                                   | Status
 @es_extension{OES,stencil1}                 | done
 @es_extension{OES,stencil4}                 | done
 
+@subsection opengl-support-webgl10 WebGL 1.0
+
+Features that have their equivalents implemented in OpenGL ES 2.0 are
+supported.
+
+@subsection opengl-support-webgl20 WebGL 2.0
+
+Features that have their equivalents implemented in OpenGL ES 3.0 are
+supported.
+
+@subsection opengl-support-webgl20-extensions WebGL 1.0 extensions to match WebGL 2.0 functionality
+
+Only extensions not already listed in above tables are included here.
+
+Extension                                   | Status
+------------------------------------------- | ------
+@webgl_extension{WEBGL,depth_texture}       | done
+@webgl_extension{WEBGL,draw_buffers}        | done
+
+@subsection opengl-support-webgl-extensions WebGL extensions to match desktop functionality
+
+All currently implemented extensions are already listed in above tables.
+
 @section opengl-unsupported Unsupported OpenGL features
 
 Some functionality, which is either soon-to-be deprecated or isn't proven to

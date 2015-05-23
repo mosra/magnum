@@ -43,8 +43,6 @@ typedef unsigned int GLuint;
 typedef int GLsizei;
 typedef char GLchar;
 typedef struct __GLsync *GLsync;
-typedef void (APIENTRY *GLDEBUGPROC)(GLenum source,GLenum type,GLuint id,GLenum severity,GLsizei length,const GLchar *message,const void *userParam);
-typedef void (APIENTRY *GLDEBUGPROCKHR)(GLenum source,GLenum type,GLuint id,GLenum severity,GLsizei length,const GLchar *message,const void *userParam);
 typedef khronos_int8_t GLbyte;
 typedef khronos_uint8_t GLubyte;
 typedef khronos_float_t GLfloat;
@@ -361,22 +359,36 @@ typedef khronos_ssize_t GLsizeiptr;
 #define GL_MAX_RENDERBUFFER_SIZE 0x84E8
 #define GL_INVALID_FRAMEBUFFER_OPERATION 0x0506
 
-/* GL_ANGLE_framebuffer_blit */
-
-#define GL_READ_FRAMEBUFFER_ANGLE 0x8CA8
-#define GL_DRAW_FRAMEBUFFER_ANGLE 0x8CA9
-#define GL_DRAW_FRAMEBUFFER_BINDING_ANGLE 0x8CA6
-#define GL_READ_FRAMEBUFFER_BINDING_ANGLE 0x8CAA
-
-/* GL_ANGLE_framebuffer_multisample */
-
-#define GL_RENDERBUFFER_SAMPLES_ANGLE 0x8CAB
-#define GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE_ANGLE 0x8D56
-#define GL_MAX_SAMPLES_ANGLE 0x8D57
-
 /* GL_ANGLE_instanced_arrays */
 
 #define GL_VERTEX_ATTRIB_ARRAY_DIVISOR_ANGLE 0x88FE
+
+/* GL_EXT_blend_minmax */
+
+#define GL_MIN_EXT 0x8007
+#define GL_MAX_EXT 0x8008
+#define GL_FUNC_ADD_EXT 0x8006
+#define GL_BLEND_EQUATION_EXT 0x8009
+
+/* GL_OES_element_index_uint */
+
+#define GL_UNSIGNED_INT 0x1405
+
+/* GL_OES_texture_half_float */
+
+#define GL_HALF_FLOAT_OES 0x8D61
+
+/* GL_OES_texture_float */
+
+#define GL_FLOAT 0x1406
+
+/* GL_OES_standard_derivatives */
+
+#define GL_FRAGMENT_SHADER_DERIVATIVE_HINT_OES 0x8B8B
+
+/* GL_OES_vertex_array_object */
+
+#define GL_VERTEX_ARRAY_BINDING_OES 0x85B5
 
 /* GL_ANGLE_depth_texture */
 
@@ -388,94 +400,6 @@ typedef khronos_ssize_t GLsizeiptr;
 #define GL_DEPTH_COMPONENT16 0x81A5
 #define GL_DEPTH_COMPONENT32_OES 0x81A7
 #define GL_DEPTH24_STENCIL8_OES 0x88F0
-
-/* GL_APPLE_framebuffer_multisample */
-
-#define GL_RENDERBUFFER_SAMPLES_APPLE 0x8CAB
-#define GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE_APPLE 0x8D56
-#define GL_MAX_SAMPLES_APPLE 0x8D57
-#define GL_READ_FRAMEBUFFER_APPLE 0x8CA8
-#define GL_DRAW_FRAMEBUFFER_APPLE 0x8CA9
-#define GL_DRAW_FRAMEBUFFER_BINDING_APPLE 0x8CA6
-#define GL_READ_FRAMEBUFFER_BINDING_APPLE 0x8CAA
-
-/* GL_APPLE_texture_max_level */
-
-#define GL_TEXTURE_MAX_LEVEL_APPLE 0x813D
-
-/* GL_EXT_texture_type_2_10_10_10_REV */
-
-#define GL_UNSIGNED_INT_2_10_10_10_REV_EXT 0x8368
-
-/* GL_EXT_discard_framebuffer */
-
-#define GL_COLOR_EXT 0x1800
-#define GL_DEPTH_EXT 0x1801
-#define GL_STENCIL_EXT 0x1802
-
-/* GL_EXT_blend_minmax */
-
-#define GL_MIN_EXT 0x8007
-#define GL_MAX_EXT 0x8008
-#define GL_FUNC_ADD_EXT 0x8006
-#define GL_BLEND_EQUATION_EXT 0x8009
-
-/* GL_EXT_occlusion_query_boolean */
-
-#define GL_ANY_SAMPLES_PASSED_EXT 0x8C2F
-#define GL_ANY_SAMPLES_PASSED_CONSERVATIVE_EXT 0x8D6A
-#define GL_CURRENT_QUERY_EXT 0x8865
-#define GL_QUERY_RESULT_EXT 0x8866
-#define GL_QUERY_RESULT_AVAILABLE_EXT 0x8867
-
-/* GL_EXT_shadow_samplers */
-
-#define GL_TEXTURE_COMPARE_MODE_EXT 0x884C
-#define GL_TEXTURE_COMPARE_FUNC_EXT 0x884D
-#define GL_COMPARE_REF_TO_TEXTURE_EXT 0x884E
-#define GL_SAMPLER_2D_SHADOW_EXT 0x8B62
-
-/* GL_EXT_texture_rg */
-
-#define GL_RED_EXT 0x1903
-#define GL_RG_EXT 0x8227
-#define GL_R8_EXT 0x8229
-#define GL_RG8_EXT 0x822B
-
-/* GL_EXT_texture_storage */
-
-#define GL_TEXTURE_IMMUTABLE_FORMAT_EXT 0x912F
-#define GL_ALPHA8_EXT 0x803C
-#define GL_LUMINANCE8_EXT 0x8040
-#define GL_LUMINANCE8_ALPHA8_EXT 0x8045
-#define GL_RGBA32F_EXT 0x8814
-#define GL_RGB32F_EXT 0x8815
-#define GL_ALPHA32F_EXT 0x8816
-#define GL_LUMINANCE32F_EXT 0x8818
-#define GL_LUMINANCE_ALPHA32F_EXT 0x8819
-#define GL_RGBA16F_EXT 0x881A
-#define GL_RGB16F_EXT 0x881B
-#define GL_ALPHA16F_EXT 0x881C
-#define GL_LUMINANCE16F_EXT 0x881E
-#define GL_LUMINANCE_ALPHA16F_EXT 0x881F
-#define GL_RGB10_A2_EXT 0x8059
-#define GL_RGB10_EXT 0x8052
-#define GL_BGRA8_EXT 0x93A1
-#define GL_R8_EXT 0x8229
-#define GL_RG8_EXT 0x822B
-#define GL_R32F_EXT 0x822E
-#define GL_RG32F_EXT 0x8230
-#define GL_R16F_EXT 0x822D
-#define GL_RG16F_EXT 0x822F
-
-/* GL_EXT_map_buffer_range */
-
-#define GL_MAP_READ_BIT_EXT 0x0001
-#define GL_MAP_WRITE_BIT_EXT 0x0002
-#define GL_MAP_INVALIDATE_RANGE_BIT_EXT 0x0004
-#define GL_MAP_INVALIDATE_BUFFER_BIT_EXT 0x0008
-#define GL_MAP_FLUSH_EXPLICIT_BIT_EXT 0x0010
-#define GL_MAP_UNSYNCHRONIZED_BIT_EXT 0x0020
 
 /* GL_EXT_draw_buffers */
 
@@ -514,227 +438,10 @@ typedef khronos_ssize_t GLsizeiptr;
 #define GL_COLOR_ATTACHMENT14_EXT 0x8CEE
 #define GL_COLOR_ATTACHMENT15_EXT 0x8CEF
 
-/* GL_EXT_instanced_arrays */
-
-#define GL_VERTEX_ATTRIB_ARRAY_DIVISOR_EXT 0x88FE
-
-/* GL_NV_draw_buffers */
-
-#define GL_MAX_DRAW_BUFFERS_NV 0x8824
-#define GL_DRAW_BUFFER0_NV 0x8825
-#define GL_DRAW_BUFFER1_NV 0x8826
-#define GL_DRAW_BUFFER2_NV 0x8827
-#define GL_DRAW_BUFFER3_NV 0x8828
-#define GL_DRAW_BUFFER4_NV 0x8829
-#define GL_DRAW_BUFFER5_NV 0x882A
-#define GL_DRAW_BUFFER6_NV 0x882B
-#define GL_DRAW_BUFFER7_NV 0x882C
-#define GL_DRAW_BUFFER8_NV 0x882D
-#define GL_DRAW_BUFFER9_NV 0x882E
-#define GL_DRAW_BUFFER10_NV 0x882F
-#define GL_DRAW_BUFFER11_NV 0x8830
-#define GL_DRAW_BUFFER12_NV 0x8831
-#define GL_DRAW_BUFFER13_NV 0x8832
-#define GL_DRAW_BUFFER14_NV 0x8833
-#define GL_DRAW_BUFFER15_NV 0x8834
-#define GL_COLOR_ATTACHMENT0_NV 0x8CE0
-#define GL_COLOR_ATTACHMENT1_NV 0x8CE1
-#define GL_COLOR_ATTACHMENT2_NV 0x8CE2
-#define GL_COLOR_ATTACHMENT3_NV 0x8CE3
-#define GL_COLOR_ATTACHMENT4_NV 0x8CE4
-#define GL_COLOR_ATTACHMENT5_NV 0x8CE5
-#define GL_COLOR_ATTACHMENT6_NV 0x8CE6
-#define GL_COLOR_ATTACHMENT7_NV 0x8CE7
-#define GL_COLOR_ATTACHMENT8_NV 0x8CE8
-#define GL_COLOR_ATTACHMENT9_NV 0x8CE9
-#define GL_COLOR_ATTACHMENT10_NV 0x8CEA
-#define GL_COLOR_ATTACHMENT11_NV 0x8CEB
-#define GL_COLOR_ATTACHMENT12_NV 0x8CEC
-#define GL_COLOR_ATTACHMENT13_NV 0x8CED
-#define GL_COLOR_ATTACHMENT14_NV 0x8CEE
-#define GL_COLOR_ATTACHMENT15_NV 0x8CEF
-
-/* GL_NV_fbo_color_attachments */
-
-#define GL_MAX_COLOR_ATTACHMENTS_NV 0x8CDF
-#define GL_COLOR_ATTACHMENT0_NV 0x8CE0
-#define GL_COLOR_ATTACHMENT1_NV 0x8CE1
-#define GL_COLOR_ATTACHMENT2_NV 0x8CE2
-#define GL_COLOR_ATTACHMENT3_NV 0x8CE3
-#define GL_COLOR_ATTACHMENT4_NV 0x8CE4
-#define GL_COLOR_ATTACHMENT5_NV 0x8CE5
-#define GL_COLOR_ATTACHMENT6_NV 0x8CE6
-#define GL_COLOR_ATTACHMENT7_NV 0x8CE7
-#define GL_COLOR_ATTACHMENT8_NV 0x8CE8
-#define GL_COLOR_ATTACHMENT9_NV 0x8CE9
-#define GL_COLOR_ATTACHMENT10_NV 0x8CEA
-#define GL_COLOR_ATTACHMENT11_NV 0x8CEB
-#define GL_COLOR_ATTACHMENT12_NV 0x8CEC
-#define GL_COLOR_ATTACHMENT13_NV 0x8CED
-#define GL_COLOR_ATTACHMENT14_NV 0x8CEE
-#define GL_COLOR_ATTACHMENT15_NV 0x8CEF
-
-/* GL_NV_read_buffer */
-
-#define GL_READ_BUFFER_NV 0x0C02
-
-/* GL_NV_framebuffer_blit */
-
-#define GL_READ_FRAMEBUFFER_NV 0x8CA8
-#define GL_DRAW_FRAMEBUFFER_NV 0x8CA9
-#define GL_DRAW_FRAMEBUFFER_BINDING_NV 0x8CA6
-#define GL_READ_FRAMEBUFFER_BINDING_NV 0x8CAA
-
-/* GL_NV_framebuffer_multisample */
-
-#define GL_RENDERBUFFER_SAMPLES_NV 0x8CAB
-#define GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE_NV 0x8D56
-#define GL_MAX_SAMPLES_NV 0x8D57
-
-/* GL_NV_instanced_arrays */
-
-#define GL_VERTEX_ATTRIB_ARRAY_DIVISOR_NV 0x88FE
-
-/* GL_NV_shadow_samplers_array */
-
-#define GL_SAMPLER_2D_ARRAY_SHADOW_NV 0x8DC4
-
-/* GL_NV_shadow_samplers_cube */
-
-#define GL_SAMPLER_CUBE_SHADOW_NV 0x8DC5
-
-/* GL_OES_depth24 */
-
-#define GL_DEPTH_COMPONENT24_OES 0x81A6
-
-/* GL_OES_element_index_uint */
-
-#define GL_UNSIGNED_INT 0x1405
-
-/* GL_OES_rgb8_rgba8 */
-
-#define GL_RGB8_OES 0x8051
-#define GL_RGBA8_OES 0x8058
-
-/* GL_OES_texture_3D */
-
-#define GL_TEXTURE_WRAP_R_OES 0x8072
-#define GL_TEXTURE_3D_OES 0x806F
-#define GL_TEXTURE_BINDING_3D_OES 0x806A
-#define GL_MAX_3D_TEXTURE_SIZE_OES 0x8073
-#define GL_SAMPLER_3D_OES 0x8B5F
-#define GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_3D_ZOFFSET_OES 0x8CD4
-
-/* GL_OES_texture_half_float */
-
-#define GL_HALF_FLOAT_OES 0x8D61
-
-/* GL_OES_texture_float */
-
-#define GL_FLOAT 0x1406
-
-/* GL_OES_vertex_half_float */
-
-#define GL_HALF_FLOAT_OES 0x8D61
-
-/* GL_OES_packed_depth_stencil */
-
-#define GL_DEPTH_STENCIL_OES 0x84F9
-#define GL_UNSIGNED_INT_24_8_OES 0x84FA
-#define GL_DEPTH24_STENCIL8_OES 0x88F0
-
-/* GL_OES_depth_texture */
-
-#define GL_DEPTH_COMPONENT 0x1902
-#define GL_UNSIGNED_SHORT 0x1403
-#define GL_UNSIGNED_INT 0x1405
-
-/* GL_OES_standard_derivatives */
-
-#define GL_FRAGMENT_SHADER_DERIVATIVE_HINT_OES 0x8B8B
-
-/* GL_OES_vertex_array_object */
-
-#define GL_VERTEX_ARRAY_BINDING_OES 0x85B5
-
-/* GL_OES_required_internalformat */
-
-#define GL_ALPHA8_OES 0x803C
-#define GL_DEPTH_COMPONENT16_OES 0x81A5
-#define GL_DEPTH_COMPONENT24_OES 0x81A6
-#define GL_DEPTH24_STENCIL8_OES 0x88F0
-#define GL_DEPTH_COMPONENT32_OES 0x81A7
-#define GL_LUMINANCE4_ALPHA4_OES 0x8043
-#define GL_LUMINANCE8_ALPHA8_OES 0x8045
-#define GL_LUMINANCE8_OES 0x8040
-#define GL_RGBA4_OES 0x8056
-#define GL_RGB5_A1_OES 0x8057
-#define GL_RGB565_OES 0x8D62
-#define GL_RGB8_OES 0x8051
-#define GL_RGBA8_OES 0x8058
-#define GL_RGB10_EXT 0x8052
-#define GL_RGB10_A2_EXT 0x8059
-
-/* GL_OES_surfaceless_context */
-
-#define GL_FRAMEBUFFER_UNDEFINED_OES 0x8219
-
-/* GL_APPLE_texture_format_BGRA8888 */
-
-#define GL_BGRA_EXT 0x80E1
-#define GL_BGRA8_EXT 0x93A1
-
 /* GL_EXT_texture_filter_anisotropic */
 
 #define GL_TEXTURE_MAX_ANISOTROPY_EXT 0x84FE
 #define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT 0x84FF
-
-/* GL_EXT_texture_format_BGRA8888 */
-
-#define GL_BGRA_EXT 0x80E1
-
-/* GL_EXT_read_format_bgra */
-
-#define GL_BGRA_EXT 0x80E1
-#define GL_UNSIGNED_SHORT_4_4_4_4_REV_EXT 0x8365
-#define GL_UNSIGNED_SHORT_1_5_5_5_REV_EXT 0x8366
-
-/* GL_EXT_debug_label */
-
-#define GL_PROGRAM_PIPELINE_OBJECT_EXT 0x8A4F
-#define GL_PROGRAM_OBJECT_EXT 0x8B40
-#define GL_SHADER_OBJECT_EXT 0x8B48
-#define GL_BUFFER_OBJECT_EXT 0x9151
-#define GL_QUERY_OBJECT_EXT 0x9153
-#define GL_VERTEX_ARRAY_OBJECT_EXT 0x9154
-#define GL_SAMPLER 0x82E6
-#define GL_TRANSFORM_FEEDBACK 0x8E22
-
-/* GL_EXT_disjoint_timer_query */
-
-#define GL_QUERY_COUNTER_BITS_EXT 0x8864
-#define GL_CURRENT_QUERY_EXT 0x8865
-#define GL_QUERY_RESULT_EXT 0x8866
-#define GL_QUERY_RESULT_AVAILABLE_EXT 0x8867
-#define GL_TIME_ELAPSED_EXT 0x88BF
-#define GL_TIMESTAMP_EXT 0x8E28
-#define GL_GPU_DISJOINT_EXT 0x8FBB
-
-/* GL_EXT_texture_sRGB_decode */
-
-#define GL_TEXTURE_SRGB_DECODE_EXT 0x8A48
-#define GL_DECODE_EXT 0x8A49
-#define GL_SKIP_DECODE_EXT 0x8A4A
-
-/* GL_EXT_separate_shader_objects */
-
-#define GL_ACTIVE_PROGRAM_EXT 0x8259
-#define GL_VERTEX_SHADER_BIT_EXT 0x00000001
-#define GL_FRAGMENT_SHADER_BIT_EXT 0x00000002
-#define GL_ALL_SHADER_BITS_EXT 0xFFFFFFFF
-#define GL_PROGRAM_SEPARABLE_EXT 0x8258
-#define GL_ACTIVE_PROGRAM_EXT 0x8259
-#define GL_PROGRAM_PIPELINE_BINDING_EXT 0x825A
 
 /* GL_EXT_sRGB */
 
@@ -742,132 +449,6 @@ typedef khronos_ssize_t GLsizeiptr;
 #define GL_SRGB_ALPHA_EXT 0x8C42
 #define GL_SRGB8_ALPHA8_EXT 0x8C43
 #define GL_FRAMEBUFFER_ATTACHMENT_COLOR_ENCODING_EXT 0x8210
-
-/* GL_EXT_multisampled_render_to_texture */
-
-#define GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_SAMPLES_EXT 0x8D6C
-#define GL_RENDERBUFFER_SAMPLES_EXT 0x8CAB
-#define GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE_EXT 0x8D56
-#define GL_MAX_SAMPLES_EXT 0x8D57
-
-/* GL_EXT_robustness */
-
-#define GL_NO_ERROR 0
-#define GL_GUILTY_CONTEXT_RESET_EXT 0x8253
-#define GL_INNOCENT_CONTEXT_RESET_EXT 0x8254
-#define GL_UNKNOWN_CONTEXT_RESET_EXT 0x8255
-#define GL_CONTEXT_ROBUST_ACCESS_EXT 0x90F3
-#define GL_RESET_NOTIFICATION_STRATEGY_EXT 0x8256
-#define GL_LOSE_CONTEXT_ON_RESET_EXT 0x8252
-#define GL_NO_RESET_NOTIFICATION_EXT 0x8261
-
-/* GL_KHR_debug */
-
-#define GL_DEBUG_OUTPUT_SYNCHRONOUS 0x8242
-#define GL_DEBUG_NEXT_LOGGED_MESSAGE_LENGTH 0x8243
-#define GL_DEBUG_CALLBACK_FUNCTION 0x8244
-#define GL_DEBUG_CALLBACK_USER_PARAM 0x8245
-#define GL_DEBUG_SOURCE_API 0x8246
-#define GL_DEBUG_SOURCE_WINDOW_SYSTEM 0x8247
-#define GL_DEBUG_SOURCE_SHADER_COMPILER 0x8248
-#define GL_DEBUG_SOURCE_THIRD_PARTY 0x8249
-#define GL_DEBUG_SOURCE_APPLICATION 0x824A
-#define GL_DEBUG_SOURCE_OTHER 0x824B
-#define GL_DEBUG_TYPE_ERROR 0x824C
-#define GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR 0x824D
-#define GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR 0x824E
-#define GL_DEBUG_TYPE_PORTABILITY 0x824F
-#define GL_DEBUG_TYPE_PERFORMANCE 0x8250
-#define GL_DEBUG_TYPE_OTHER 0x8251
-#define GL_DEBUG_TYPE_MARKER 0x8268
-#define GL_DEBUG_TYPE_PUSH_GROUP 0x8269
-#define GL_DEBUG_TYPE_POP_GROUP 0x826A
-#define GL_DEBUG_SEVERITY_NOTIFICATION 0x826B
-#define GL_MAX_DEBUG_GROUP_STACK_DEPTH 0x826C
-#define GL_DEBUG_GROUP_STACK_DEPTH 0x826D
-#define GL_BUFFER 0x82E0
-#define GL_SHADER 0x82E1
-#define GL_PROGRAM 0x82E2
-#define GL_VERTEX_ARRAY 0x8074
-#define GL_QUERY 0x82E3
-#define GL_PROGRAM_PIPELINE 0x82E4
-#define GL_SAMPLER 0x82E6
-#define GL_MAX_LABEL_LENGTH 0x82E8
-#define GL_MAX_DEBUG_MESSAGE_LENGTH 0x9143
-#define GL_MAX_DEBUG_LOGGED_MESSAGES 0x9144
-#define GL_DEBUG_LOGGED_MESSAGES 0x9145
-#define GL_DEBUG_SEVERITY_HIGH 0x9146
-#define GL_DEBUG_SEVERITY_MEDIUM 0x9147
-#define GL_DEBUG_SEVERITY_LOW 0x9148
-#define GL_DEBUG_OUTPUT 0x92E0
-#define GL_CONTEXT_FLAG_DEBUG_BIT 0x00000002
-#define GL_STACK_OVERFLOW 0x0503
-#define GL_STACK_UNDERFLOW 0x0504
-#define GL_DEBUG_OUTPUT_SYNCHRONOUS_KHR 0x8242
-#define GL_DEBUG_NEXT_LOGGED_MESSAGE_LENGTH_KHR 0x8243
-#define GL_DEBUG_CALLBACK_FUNCTION_KHR 0x8244
-#define GL_DEBUG_CALLBACK_USER_PARAM_KHR 0x8245
-#define GL_DEBUG_SOURCE_API_KHR 0x8246
-#define GL_DEBUG_SOURCE_WINDOW_SYSTEM_KHR 0x8247
-#define GL_DEBUG_SOURCE_SHADER_COMPILER_KHR 0x8248
-#define GL_DEBUG_SOURCE_THIRD_PARTY_KHR 0x8249
-#define GL_DEBUG_SOURCE_APPLICATION_KHR 0x824A
-#define GL_DEBUG_SOURCE_OTHER_KHR 0x824B
-#define GL_DEBUG_TYPE_ERROR_KHR 0x824C
-#define GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR_KHR 0x824D
-#define GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR_KHR 0x824E
-#define GL_DEBUG_TYPE_PORTABILITY_KHR 0x824F
-#define GL_DEBUG_TYPE_PERFORMANCE_KHR 0x8250
-#define GL_DEBUG_TYPE_OTHER_KHR 0x8251
-#define GL_DEBUG_TYPE_MARKER_KHR 0x8268
-#define GL_DEBUG_TYPE_PUSH_GROUP_KHR 0x8269
-#define GL_DEBUG_TYPE_POP_GROUP_KHR 0x826A
-#define GL_DEBUG_SEVERITY_NOTIFICATION_KHR 0x826B
-#define GL_MAX_DEBUG_GROUP_STACK_DEPTH_KHR 0x826C
-#define GL_DEBUG_GROUP_STACK_DEPTH_KHR 0x826D
-#define GL_BUFFER_KHR 0x82E0
-#define GL_SHADER_KHR 0x82E1
-#define GL_PROGRAM_KHR 0x82E2
-#define GL_VERTEX_ARRAY_KHR 0x8074
-#define GL_QUERY_KHR 0x82E3
-#define GL_PROGRAM_PIPELINE_KHR 0x82E4
-#define GL_SAMPLER_KHR 0x82E6
-#define GL_MAX_LABEL_LENGTH_KHR 0x82E8
-#define GL_MAX_DEBUG_MESSAGE_LENGTH_KHR 0x9143
-#define GL_MAX_DEBUG_LOGGED_MESSAGES_KHR 0x9144
-#define GL_DEBUG_LOGGED_MESSAGES_KHR 0x9145
-#define GL_DEBUG_SEVERITY_HIGH_KHR 0x9146
-#define GL_DEBUG_SEVERITY_MEDIUM_KHR 0x9147
-#define GL_DEBUG_SEVERITY_LOW_KHR 0x9148
-#define GL_DEBUG_OUTPUT_KHR 0x92E0
-#define GL_CONTEXT_FLAG_DEBUG_BIT_KHR 0x00000002
-#define GL_STACK_OVERFLOW_KHR 0x0503
-#define GL_STACK_UNDERFLOW_KHR 0x0504
-#define GL_DISPLAY_LIST 0x82E7
-
-/* GL_NV_texture_border_clamp */
-
-#define GL_TEXTURE_BORDER_COLOR_NV 0x1004
-#define GL_CLAMP_TO_BORDER_NV 0x812D
-
-/* GL_OES_depth32 */
-
-#define GL_DEPTH_COMPONENT32_OES 0x81A7
-
-/* GL_OES_mapbuffer */
-
-#define GL_WRITE_ONLY_OES 0x88B9
-#define GL_BUFFER_ACCESS_OES 0x88BB
-#define GL_BUFFER_MAPPED_OES 0x88BC
-#define GL_BUFFER_MAP_POINTER_OES 0x88BD
-
-/* GL_OES_stencil1 */
-
-#define GL_STENCIL_INDEX1_OES 0x8D46
-
-/* GL_OES_stencil4 */
-
-#define GL_STENCIL_INDEX4_OES 0x8D47
 
 /* Function prototypes */
 
@@ -1016,40 +597,11 @@ GLAPI void glVertexAttrib4fv(GLuint, const GLfloat *);
 GLAPI void glVertexAttribPointer(GLuint, GLint, GLenum, GLboolean, GLsizei, const void *);
 GLAPI void glViewport(GLint, GLint, GLsizei, GLsizei);
 
-/* GL_ANGLE_framebuffer_blit */
-
-GLAPI void glBlitFramebufferANGLE(GLint, GLint, GLint, GLint, GLint, GLint, GLint, GLint, GLbitfield, GLenum);
-
-/* GL_ANGLE_framebuffer_multisample */
-
-GLAPI void glRenderbufferStorageMultisampleANGLE(GLenum, GLsizei, GLenum, GLsizei, GLsizei);
-
 /* GL_ANGLE_instanced_arrays */
 
 GLAPI void glDrawArraysInstancedANGLE(GLenum, GLint, GLsizei, GLsizei);
 GLAPI void glDrawElementsInstancedANGLE(GLenum, GLsizei, GLenum, const void *, GLsizei);
 GLAPI void glVertexAttribDivisorANGLE(GLuint, GLuint);
-
-/* GL_ANGLE_depth_texture */
-
-
-/* GL_APPLE_framebuffer_multisample */
-
-GLAPI void glRenderbufferStorageMultisampleAPPLE(GLenum, GLsizei, GLenum, GLsizei, GLsizei);
-GLAPI void glResolveMultisampleFramebufferAPPLE(void);
-
-/* GL_APPLE_texture_max_level */
-
-
-/* GL_ARM_rgba8 */
-
-
-/* GL_EXT_texture_type_2_10_10_10_REV */
-
-
-/* GL_EXT_discard_framebuffer */
-
-GLAPI void glDiscardFramebufferEXT(GLenum, GLsizei, const GLenum *);
 
 /* GL_EXT_blend_minmax */
 
@@ -1058,100 +610,8 @@ GLAPI void glBlendEquationEXT(GLenum);
 /* GL_EXT_shader_texture_lod */
 
 
-/* GL_EXT_occlusion_query_boolean */
-
-GLAPI void glGenQueriesEXT(GLsizei, GLuint *);
-GLAPI void glDeleteQueriesEXT(GLsizei, const GLuint *);
-GLAPI GLboolean glIsQueryEXT(GLuint);
-GLAPI void glBeginQueryEXT(GLenum, GLuint);
-GLAPI void glEndQueryEXT(GLenum);
-GLAPI void glGetQueryivEXT(GLenum, GLenum, GLint *);
-GLAPI void glGetQueryObjectuivEXT(GLuint, GLenum, GLuint *);
-
-/* GL_EXT_shadow_samplers */
-
-
-/* GL_EXT_texture_rg */
-
-
-/* GL_EXT_texture_storage */
-
-GLAPI void glTexStorage1DEXT(GLenum, GLsizei, GLenum, GLsizei);
-GLAPI void glTexStorage2DEXT(GLenum, GLsizei, GLenum, GLsizei, GLsizei);
-GLAPI void glTexStorage3DEXT(GLenum, GLsizei, GLenum, GLsizei, GLsizei, GLsizei);
-GLAPI void glTextureStorage1DEXT(GLuint, GLenum, GLsizei, GLenum, GLsizei);
-GLAPI void glTextureStorage2DEXT(GLuint, GLenum, GLsizei, GLenum, GLsizei, GLsizei);
-GLAPI void glTextureStorage3DEXT(GLuint, GLenum, GLsizei, GLenum, GLsizei, GLsizei, GLsizei);
-
-/* GL_EXT_map_buffer_range */
-
-GLAPI void * glMapBufferRangeEXT(GLenum, GLintptr, GLsizeiptr, GLbitfield);
-GLAPI void glFlushMappedBufferRangeEXT(GLenum, GLintptr, GLsizeiptr);
-
-/* GL_EXT_draw_buffers */
-
-GLAPI void glDrawBuffersEXT(GLsizei, const GLenum *);
-
-/* GL_EXT_instanced_arrays */
-
-GLAPI void glDrawArraysInstancedEXT(GLenum, GLint, GLsizei, GLsizei);
-GLAPI void glDrawElementsInstancedEXT(GLenum, GLsizei, GLenum, const void *, GLsizei);
-GLAPI void glVertexAttribDivisorEXT(GLuint, GLuint);
-
-/* GL_EXT_draw_instanced */
-
-
-/* GL_NV_draw_buffers */
-
-GLAPI void glDrawBuffersNV(GLsizei, const GLenum *);
-
-/* GL_NV_fbo_color_attachments */
-
-
-/* GL_NV_read_buffer */
-
-GLAPI void glReadBufferNV(GLenum);
-
-/* GL_NV_draw_instanced */
-
-GLAPI void glDrawArraysInstancedNV(GLenum, GLint, GLsizei, GLsizei);
-GLAPI void glDrawElementsInstancedNV(GLenum, GLsizei, GLenum, const void *, GLsizei);
-
-/* GL_NV_framebuffer_blit */
-
-GLAPI void glBlitFramebufferNV(GLint, GLint, GLint, GLint, GLint, GLint, GLint, GLint, GLbitfield, GLenum);
-
-/* GL_NV_framebuffer_multisample */
-
-GLAPI void glRenderbufferStorageMultisampleNV(GLenum, GLsizei, GLenum, GLsizei, GLsizei);
-
-/* GL_NV_instanced_arrays */
-
-GLAPI void glVertexAttribDivisorNV(GLuint, GLuint);
-
-/* GL_NV_shadow_samplers_array */
-
-
-/* GL_NV_shadow_samplers_cube */
-
-
-/* GL_OES_depth24 */
-
-
 /* GL_OES_element_index_uint */
 
-
-/* GL_OES_rgb8_rgba8 */
-
-
-/* GL_OES_texture_3D */
-
-GLAPI void glTexImage3DOES(GLenum, GLint, GLenum, GLsizei, GLsizei, GLsizei, GLint, GLenum, GLenum, const void *);
-GLAPI void glTexSubImage3DOES(GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLenum, const void *);
-GLAPI void glCopyTexSubImage3DOES(GLenum, GLint, GLint, GLint, GLint, GLint, GLint, GLsizei, GLsizei);
-GLAPI void glCompressedTexImage3DOES(GLenum, GLint, GLenum, GLsizei, GLsizei, GLsizei, GLint, GLsizei, const void *);
-GLAPI void glCompressedTexSubImage3DOES(GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLsizei, const void *);
-GLAPI void glFramebufferTexture3DOES(GLenum, GLenum, GLenum, GLuint, GLint, GLint);
 
 /* GL_OES_texture_half_float_linear */
 
@@ -1165,15 +625,6 @@ GLAPI void glFramebufferTexture3DOES(GLenum, GLenum, GLenum, GLuint, GLint, GLin
 /* GL_OES_texture_float */
 
 
-/* GL_OES_vertex_half_float */
-
-
-/* GL_OES_packed_depth_stencil */
-
-
-/* GL_OES_depth_texture */
-
-
 /* GL_OES_standard_derivatives */
 
 
@@ -1184,168 +635,17 @@ GLAPI void glDeleteVertexArraysOES(GLsizei, const GLuint *);
 GLAPI void glGenVertexArraysOES(GLsizei, GLuint *);
 GLAPI GLboolean glIsVertexArrayOES(GLuint);
 
-/* GL_OES_required_internalformat */
+/* GL_ANGLE_depth_texture */
 
 
-/* GL_OES_surfaceless_context */
+/* GL_EXT_draw_buffers */
 
-
-/* GL_APPLE_texture_format_BGRA8888 */
-
+GLAPI void glDrawBuffersEXT(GLsizei, const GLenum *);
 
 /* GL_EXT_texture_filter_anisotropic */
 
 
-/* GL_EXT_texture_format_BGRA8888 */
-
-
-/* GL_EXT_read_format_bgra */
-
-
-/* GL_EXT_multi_draw_arrays */
-
-GLAPI void glMultiDrawArraysEXT(GLenum, const GLint *, const GLsizei *, GLsizei);
-GLAPI void glMultiDrawElementsEXT(GLenum, const GLsizei *, GLenum, const void *const*, GLsizei);
-
-/* GL_EXT_debug_label */
-
-GLAPI void glLabelObjectEXT(GLenum, GLuint, GLsizei, const GLchar *);
-GLAPI void glGetObjectLabelEXT(GLenum, GLuint, GLsizei, GLsizei *, GLchar *);
-
-/* GL_EXT_debug_marker */
-
-GLAPI void glInsertEventMarkerEXT(GLsizei, const GLchar *);
-GLAPI void glPushGroupMarkerEXT(GLsizei, const GLchar *);
-GLAPI void glPopGroupMarkerEXT(void);
-
-/* GL_EXT_disjoint_timer_query */
-
-GLAPI void glQueryCounterEXT(GLuint, GLenum);
-GLAPI void glGetQueryObjectivEXT(GLuint, GLenum, GLint *);
-GLAPI void glGetQueryObjecti64vEXT(GLuint, GLenum, GLint64 *);
-GLAPI void glGetQueryObjectui64vEXT(GLuint, GLenum, GLuint64 *);
-
-/* GL_EXT_texture_sRGB_decode */
-
-
-/* GL_EXT_separate_shader_objects */
-
-GLAPI void glUseShaderProgramEXT(GLenum, GLuint);
-GLAPI void glActiveProgramEXT(GLuint);
-GLAPI GLuint glCreateShaderProgramEXT(GLenum, const GLchar *);
-GLAPI void glActiveShaderProgramEXT(GLuint, GLuint);
-GLAPI void glBindProgramPipelineEXT(GLuint);
-GLAPI GLuint glCreateShaderProgramvEXT(GLenum, GLsizei, const GLchar **);
-GLAPI void glDeleteProgramPipelinesEXT(GLsizei, const GLuint *);
-GLAPI void glGenProgramPipelinesEXT(GLsizei, GLuint *);
-GLAPI void glGetProgramPipelineInfoLogEXT(GLuint, GLsizei, GLsizei *, GLchar *);
-GLAPI void glGetProgramPipelineivEXT(GLuint, GLenum, GLint *);
-GLAPI GLboolean glIsProgramPipelineEXT(GLuint);
-GLAPI void glProgramParameteriEXT(GLuint, GLenum, GLint);
-GLAPI void glProgramUniform1fEXT(GLuint, GLint, GLfloat);
-GLAPI void glProgramUniform1fvEXT(GLuint, GLint, GLsizei, const GLfloat *);
-GLAPI void glProgramUniform1iEXT(GLuint, GLint, GLint);
-GLAPI void glProgramUniform1ivEXT(GLuint, GLint, GLsizei, const GLint *);
-GLAPI void glProgramUniform2fEXT(GLuint, GLint, GLfloat, GLfloat);
-GLAPI void glProgramUniform2fvEXT(GLuint, GLint, GLsizei, const GLfloat *);
-GLAPI void glProgramUniform2iEXT(GLuint, GLint, GLint, GLint);
-GLAPI void glProgramUniform2ivEXT(GLuint, GLint, GLsizei, const GLint *);
-GLAPI void glProgramUniform3fEXT(GLuint, GLint, GLfloat, GLfloat, GLfloat);
-GLAPI void glProgramUniform3fvEXT(GLuint, GLint, GLsizei, const GLfloat *);
-GLAPI void glProgramUniform3iEXT(GLuint, GLint, GLint, GLint, GLint);
-GLAPI void glProgramUniform3ivEXT(GLuint, GLint, GLsizei, const GLint *);
-GLAPI void glProgramUniform4fEXT(GLuint, GLint, GLfloat, GLfloat, GLfloat, GLfloat);
-GLAPI void glProgramUniform4fvEXT(GLuint, GLint, GLsizei, const GLfloat *);
-GLAPI void glProgramUniform4iEXT(GLuint, GLint, GLint, GLint, GLint, GLint);
-GLAPI void glProgramUniform4ivEXT(GLuint, GLint, GLsizei, const GLint *);
-GLAPI void glProgramUniformMatrix2fvEXT(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
-GLAPI void glProgramUniformMatrix3fvEXT(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
-GLAPI void glProgramUniformMatrix4fvEXT(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
-GLAPI void glUseProgramStagesEXT(GLuint, GLbitfield, GLuint);
-GLAPI void glValidateProgramPipelineEXT(GLuint);
-GLAPI void glProgramUniform1uiEXT(GLuint, GLint, GLuint);
-GLAPI void glProgramUniform2uiEXT(GLuint, GLint, GLuint, GLuint);
-GLAPI void glProgramUniform3uiEXT(GLuint, GLint, GLuint, GLuint, GLuint);
-GLAPI void glProgramUniform4uiEXT(GLuint, GLint, GLuint, GLuint, GLuint, GLuint);
-GLAPI void glProgramUniform1uivEXT(GLuint, GLint, GLsizei, const GLuint *);
-GLAPI void glProgramUniform2uivEXT(GLuint, GLint, GLsizei, const GLuint *);
-GLAPI void glProgramUniform3uivEXT(GLuint, GLint, GLsizei, const GLuint *);
-GLAPI void glProgramUniform4uivEXT(GLuint, GLint, GLsizei, const GLuint *);
-GLAPI void glProgramUniformMatrix2x3fvEXT(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
-GLAPI void glProgramUniformMatrix3x2fvEXT(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
-GLAPI void glProgramUniformMatrix2x4fvEXT(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
-GLAPI void glProgramUniformMatrix4x2fvEXT(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
-GLAPI void glProgramUniformMatrix3x4fvEXT(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
-GLAPI void glProgramUniformMatrix4x3fvEXT(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
-
 /* GL_EXT_sRGB */
-
-
-/* GL_EXT_multisampled_render_to_texture */
-
-GLAPI void glRenderbufferStorageMultisampleEXT(GLenum, GLsizei, GLenum, GLsizei, GLsizei);
-GLAPI void glFramebufferTexture2DMultisampleEXT(GLenum, GLenum, GLenum, GLuint, GLint, GLsizei);
-
-/* GL_EXT_robustness */
-
-GLAPI GLenum glGetGraphicsResetStatusEXT(void);
-GLAPI void glReadnPixelsEXT(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void *);
-GLAPI void glGetnUniformfvEXT(GLuint, GLint, GLsizei, GLfloat *);
-GLAPI void glGetnUniformivEXT(GLuint, GLint, GLsizei, GLint *);
-
-/* GL_KHR_debug */
-
-GLAPI void glDebugMessageControl(GLenum, GLenum, GLenum, GLsizei, const GLuint *, GLboolean);
-GLAPI void glDebugMessageInsert(GLenum, GLenum, GLuint, GLenum, GLsizei, const GLchar *);
-GLAPI void glDebugMessageCallback(GLDEBUGPROC, const void *);
-GLAPI GLuint glGetDebugMessageLog(GLuint, GLsizei, GLenum *, GLenum *, GLuint *, GLenum *, GLsizei *, GLchar *);
-GLAPI void glPushDebugGroup(GLenum, GLuint, GLsizei, const GLchar *);
-GLAPI void glPopDebugGroup(void);
-GLAPI void glObjectLabel(GLenum, GLuint, GLsizei, const GLchar *);
-GLAPI void glGetObjectLabel(GLenum, GLuint, GLsizei, GLsizei *, GLchar *);
-GLAPI void glObjectPtrLabel(const void *, GLsizei, const GLchar *);
-GLAPI void glGetObjectPtrLabel(const void *, GLsizei, GLsizei *, GLchar *);
-GLAPI void glGetPointerv(GLenum, void **);
-GLAPI void glDebugMessageControlKHR(GLenum, GLenum, GLenum, GLsizei, const GLuint *, GLboolean);
-GLAPI void glDebugMessageInsertKHR(GLenum, GLenum, GLuint, GLenum, GLsizei, const GLchar *);
-GLAPI void glDebugMessageCallbackKHR(GLDEBUGPROCKHR, const void *);
-GLAPI GLuint glGetDebugMessageLogKHR(GLuint, GLsizei, GLenum *, GLenum *, GLuint *, GLenum *, GLsizei *, GLchar *);
-GLAPI void glPushDebugGroupKHR(GLenum, GLuint, GLsizei, const GLchar *);
-GLAPI void glPopDebugGroupKHR(void);
-GLAPI void glObjectLabelKHR(GLenum, GLuint, GLsizei, const GLchar *);
-GLAPI void glGetObjectLabelKHR(GLenum, GLuint, GLsizei, GLsizei *, GLchar *);
-GLAPI void glObjectPtrLabelKHR(const void *, GLsizei, const GLchar *);
-GLAPI void glGetObjectPtrLabelKHR(const void *, GLsizei, GLsizei *, GLchar *);
-GLAPI void glGetPointervKHR(GLenum, void **);
-
-/* GL_NV_read_buffer_front */
-
-
-/* GL_NV_read_depth */
-
-
-/* GL_NV_read_stencil */
-
-
-/* GL_NV_read_depth_stencil */
-
-
-/* GL_NV_texture_border_clamp */
-
-
-/* GL_OES_depth32 */
-
-
-/* GL_OES_mapbuffer */
-
-GLAPI void * glMapBufferOES(GLenum, GLenum);
-GLAPI GLboolean glUnmapBufferOES(GLenum);
-GLAPI void glGetBufferPointervOES(GLenum, GLenum, void **);
-
-/* GL_OES_stencil1 */
-
-
-/* GL_OES_stencil4 */
 
 
 #ifdef __cplusplus

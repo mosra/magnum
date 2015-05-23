@@ -53,8 +53,8 @@ void Context::setupDriverWorkarounds() {
     _setRequiredVersion(GL::ARB::shading_language_420pack, GL320);
     #endif
 
-    /* Disable extensions not available on NaCl and Emscripten */
-    #if defined(CORRADE_TARGET_NACL) || defined(CORRADE_TARGET_EMSCRIPTEN)
+    /* Disable extensions not available on NaCl */
+    #ifdef CORRADE_TARGET_NACL
     _setRequiredVersion(GL::EXT::multi_draw_arrays, None);
     _setRequiredVersion(GL::EXT::debug_label, None);
     _setRequiredVersion(GL::EXT::debug_marker, None);
@@ -84,12 +84,6 @@ void Context::setupDriverWorkarounds() {
     _setRequiredVersion(GL::NV::instanced_arrays, None);
     _setRequiredVersion(GL::OES::texture_3D, None);
     _setRequiredVersion(GL::OES::vertex_array_object, None);
-    #endif
-
-    /* Disable extensions not available on Emscripten */
-    #ifdef CORRADE_TARGET_EMSCRIPTEN
-    _setRequiredVersion(GL::CHROMIUM::map_sub, None);
-    _setRequiredVersion(GL::EXT::occlusion_query_boolean, None);
     #endif
 
     #undef _setRequiredVersion
