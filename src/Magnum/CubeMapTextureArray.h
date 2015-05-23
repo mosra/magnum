@@ -85,17 +85,6 @@ the six sides of the cube map, fourth part is layer in the array. See
 class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
     public:
         /**
-         * @brief Constructor
-         *
-         * Creates new OpenGL texture object. If @extension{ARB,direct_state_access}
-         * (part of OpenGL 4.5) is not available, the texture is created on
-         * first use.
-         * @see @fn_gl{CreateTextures} with @def_gl{TEXTURE_CUBE_MAP_ARRAY},
-         *      eventually @fn_gl{GenTextures}
-         */
-        explicit CubeMapTextureArray(): AbstractTexture(GL_TEXTURE_CUBE_MAP_ARRAY) {}
-
-        /**
          * @brief Max supported size of one side of cube map texture array
          *
          * The result is cached, repeated queries don't result in repeated
@@ -105,6 +94,17 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          *      @def_gl{MAX_ARRAY_TEXTURE_LAYERS}
          */
         static Vector3i maxSize();
+
+        /**
+         * @brief Constructor
+         *
+         * Creates new OpenGL texture object. If @extension{ARB,direct_state_access}
+         * (part of OpenGL 4.5) is not available, the texture is created on
+         * first use.
+         * @see @fn_gl{CreateTextures} with @def_gl{TEXTURE_CUBE_MAP_ARRAY},
+         *      eventually @fn_gl{GenTextures}
+         */
+        explicit CubeMapTextureArray(): AbstractTexture(GL_TEXTURE_CUBE_MAP_ARRAY) {}
 
         /**
          * @copybrief Texture::setBaseLevel()

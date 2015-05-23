@@ -269,6 +269,9 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         /** @brief Move assignment */
         AbstractTexture& operator=(AbstractTexture&& other) noexcept;
 
+        /** @brief OpenGL texture ID */
+        GLuint id() const { return _id; }
+
         #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @brief Texture label
@@ -305,9 +308,6 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
             return setLabelInternal({label, size - 1});
         }
         #endif
-
-        /** @brief OpenGL texture ID */
-        GLuint id() const { return _id; }
 
         /**
          * @brief Bind texture to given texture unit
