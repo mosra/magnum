@@ -51,7 +51,7 @@ AbstractImporter::AbstractImporter(PluginManager::AbstractManager& manager, std:
 
 bool AbstractImporter::openData(Containers::ArrayReference<const char> data) {
     CORRADE_ASSERT(features() & Feature::OpenData,
-        "Trade::AbstractImporter::openData(): feature not supported", nullptr);
+        "Trade::AbstractImporter::openData(): feature not supported", {});
 
     close();
     doOpenData(data);

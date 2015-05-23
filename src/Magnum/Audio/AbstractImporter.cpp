@@ -37,7 +37,7 @@ AbstractImporter::AbstractImporter(PluginManager::AbstractManager& manager, std:
 
 bool AbstractImporter::openData(Containers::ArrayReference<const char> data) {
     CORRADE_ASSERT(features() & Feature::OpenData,
-        "Audio::AbstractImporter::openData(): feature not supported", nullptr);
+        "Audio::AbstractImporter::openData(): feature not supported", {});
 
     close();
     doOpenData(data);
