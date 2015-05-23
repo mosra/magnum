@@ -344,17 +344,10 @@ void* Buffer::map(const MapAccess access) {
     return (this->*Context::current()->state().buffer->mapImplementation)(access);
 }
 
-#ifdef MAGNUM_TARGET_GLES2
+#ifdef CORRADE_TARGET_NACL
 void* Buffer::mapSub(const GLintptr offset, const GLsizeiptr length, const MapAccess access) {
-    #ifdef CORRADE_TARGET_NACL
     CORRADE_ASSERT(!_mappedBuffer, "Buffer::mapSub(): the buffer is already mapped", nullptr);
     return _mappedBuffer = glMapBufferSubDataCHROMIUM(GLenum(bindSomewhereInternal(_targetHint)), offset, length, GLenum(access));
-    #else
-    static_cast<void>(offset);
-    static_cast<void>(length);
-    static_cast<void>(access);
-    CORRADE_ASSERT_UNREACHABLE();
-    #endif
 }
 #endif
 
@@ -369,15 +362,11 @@ Buffer& Buffer::flushMappedRange(const GLintptr offset, const GLsizeiptr length)
 
 bool Buffer::unmap() { return (this->*Context::current()->state().buffer->unmapImplementation)(); }
 
-#ifdef MAGNUM_TARGET_GLES2
+#ifdef CORRADE_TARGET_NACL
 void Buffer::unmapSub() {
-    #ifdef CORRADE_TARGET_NACL
     CORRADE_ASSERT(_mappedBuffer, "Buffer::unmapSub(): the buffer is not mapped", );
     glUnmapBufferSubDataCHROMIUM(_mappedBuffer);
     _mappedBuffer = nullptr;
-    #else
-    CORRADE_ASSERT_UNREACHABLE();
-    #endif
 }
 #endif
 #endif

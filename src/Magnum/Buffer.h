@@ -1145,7 +1145,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
             return static_cast<T*>(map(access));
         }
 
-        #if defined(MAGNUM_TARGET_GLES2) || defined(DOXYGEN_GENERATING_OUTPUT)
+        #ifdef CORRADE_TARGET_NACL
         /**
          * @brief Map portion of buffer to client memory
          * @param offset    Offset into the buffer
@@ -1246,7 +1246,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          */
         bool unmap();
 
-        #if defined(MAGNUM_TARGET_GLES2) || defined(DOXYGEN_GENERATING_OUTPUT)
+        #ifdef CORRADE_TARGET_NACL
         /**
          * @brief Unmap portion of buffer
          *

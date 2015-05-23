@@ -50,7 +50,7 @@ struct BufferGLTest: AbstractOpenGLTester {
 
     void data();
     void map();
-    #ifdef MAGNUM_TARGET_GLES2
+    #ifdef CORRADE_TARGET_NACL
     void mapSub();
     #endif
     void mapRange();
@@ -75,7 +75,7 @@ BufferGLTest::BufferGLTest() {
 
               &BufferGLTest::data,
               &BufferGLTest::map,
-              #ifdef MAGNUM_TARGET_GLES2
+              #ifdef CORRADE_TARGET_NACL
               &BufferGLTest::mapSub,
               #endif
               &BufferGLTest::mapRange,
@@ -288,7 +288,7 @@ void BufferGLTest::map() {
     #endif
 }
 
-#ifdef MAGNUM_TARGET_GLES2
+#ifdef CORRADE_TARGET_NACL
 void BufferGLTest::mapSub() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::CHROMIUM::map_sub>())
         CORRADE_SKIP(Extensions::GL::CHROMIUM::map_sub::string() + std::string(" is not supported"));

@@ -241,7 +241,9 @@ const std::vector<Extension>& Extension::extensions(Version version) {
     #else
     static const std::vector<Extension> extensions{
         _extension(GL,APPLE,texture_format_BGRA8888),
+        #ifdef CORRADE_TARGET_NACL
         _extension(GL,CHROMIUM,map_sub),
+        #endif
         _extension(GL,EXT,texture_filter_anisotropic),
         _extension(GL,EXT,texture_format_BGRA8888),
         _extension(GL,EXT,read_format_bgra),

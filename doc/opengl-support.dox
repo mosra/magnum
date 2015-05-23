@@ -344,7 +344,7 @@ Only extensions not already listed in above tables are included here.
 Extension                                   | Status
 ------------------------------------------- | ------
 @es_extension{APPLE,texture_format_BGRA8888} | done
-@es_extension{CHROMIUM,map_sub}             | only buffer mapping
+@es_extension{CHROMIUM,map_sub} (NaCl only) | only buffer mapping
 @es_extension{EXT,texture_format_BGRA8888}  | done
 @es_extension{EXT,read_format_bgra}         | done
 @es_extension2{EXT,multi_draw_arrays,multi_draw_arrays} | done

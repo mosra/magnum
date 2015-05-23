@@ -281,7 +281,9 @@ namespace GL {
         _extension(GL,ARM,rgba8,                    GLES200, GLES300) // #82
         #endif
     } namespace CHROMIUM {
+        #ifdef CORRADE_TARGET_NACL
         _extension(GL,CHROMIUM,map_sub,             GLES200,    None)
+        #endif
     } namespace EXT {
         _extension(GL,EXT,texture_filter_anisotropic, GLES200,  None) // #41
         #ifdef MAGNUM_TARGET_GLES2

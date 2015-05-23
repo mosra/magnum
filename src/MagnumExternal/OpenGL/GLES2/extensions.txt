@@ -47,7 +47,6 @@ extension OES_required_internalformat           optional
 extension OES_surfaceless_context               optional
 
 extension APPLE_texture_format_BGRA8888         optional
-extension CHROMIUM_map_sub                      optional
 extension EXT_texture_filter_anisotropic        optional
 extension EXT_texture_format_BGRA8888           optional
 extension EXT_read_format_bgra                  optional

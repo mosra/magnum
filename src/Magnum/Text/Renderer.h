@@ -136,7 +136,9 @@ class MAGNUM_TEXT_EXPORT AbstractRenderer {
         #if defined(MAGNUM_TARGET_GLES2) && !defined(CORRADE_TARGET_EMSCRIPTEN)
         typedef void*(*BufferMapImplementation)(Buffer&, GLsizeiptr);
         static MAGNUM_TEXT_LOCAL void* bufferMapImplementationFull(Buffer& buffer, GLsizeiptr length);
+        #ifdef CORRADE_TARGET_NACL
         static MAGNUM_TEXT_LOCAL void* bufferMapImplementationSub(Buffer& buffer, GLsizeiptr length);
+        #endif
         static MAGNUM_TEXT_LOCAL void* bufferMapImplementationRange(Buffer& buffer, GLsizeiptr length);
         static BufferMapImplementation bufferMapImplementation;
         #else
@@ -151,7 +153,9 @@ class MAGNUM_TEXT_EXPORT AbstractRenderer {
         #if defined(MAGNUM_TARGET_GLES2) && !defined(CORRADE_TARGET_EMSCRIPTEN)
         typedef void(*BufferUnmapImplementation)(Buffer&);
         static MAGNUM_TEXT_LOCAL void bufferUnmapImplementationDefault(Buffer& buffer);
+        #ifdef CORRADE_TARGET_NACL
         static MAGNUM_TEXT_LOCAL void bufferUnmapImplementationSub(Buffer& buffer);
+        #endif
         static MAGNUM_TEXT_LOCAL BufferUnmapImplementation bufferUnmapImplementation;
         #else
         #ifndef CORRADE_TARGET_EMSCRIPTEN

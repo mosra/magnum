@@ -265,6 +265,7 @@ void* AbstractRenderer::bufferMapImplementationFull(Buffer& buffer, GLsizeiptr) 
     return buffer.map(Buffer::MapAccess::WriteOnly);
 }
 
+#ifdef CORRADE_TARGET_NACL
 void* AbstractRenderer::bufferMapImplementationSub(Buffer& buffer, GLsizeiptr length) {
     return buffer.mapSub(0, length, Buffer::MapAccess::WriteOnly);
 }
@@ -272,6 +273,7 @@ void* AbstractRenderer::bufferMapImplementationSub(Buffer& buffer, GLsizeiptr le
 void AbstractRenderer::bufferUnmapImplementationSub(Buffer& buffer) {
     buffer.unmapSub();
 }
+#endif
 #endif
 
 #if !defined(MAGNUM_TARGET_GLES2) || defined(CORRADE_TARGET_EMSCRIPTEN)
@@ -307,14 +309,20 @@ AbstractRenderer::AbstractRenderer(AbstractFont& font, const GlyphCache& cache, 
     #elif defined(MAGNUM_TARGET_GLES2) && !defined(CORRADE_TARGET_EMSCRIPTEN)
     if(Context::current()->isExtensionSupported<Extensions::GL::EXT::map_buffer_range>()) {
         bufferMapImplementation = &AbstractRenderer::bufferMapImplementationRange;
-    } else if(Context::current()->isExtensionSupported<Extensions::GL::CHROMIUM::map_sub>()) {
+    }
+    #ifdef CORRADE_TARGET_NACL
+    else if(Context::current()->isExtensionSupported<Extensions::GL::CHROMIUM::map_sub>()) {
         bufferMapImplementation = &AbstractRenderer::bufferMapImplementationSub;
         bufferUnmapImplementation = &AbstractRenderer::bufferUnmapImplementationSub;
-    } else {
+    }
+    #endif
+    else {
         MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::OES::mapbuffer);
-        Warning() << "Text::Renderer: neither" << Extensions::GL::EXT::map_buffer_range::string()
-                  << "nor" << Extensions::GL::CHROMIUM::map_sub::string()
-                  << "is supported, using inefficient" << Extensions::GL::OES::mapbuffer::string()
+        Warning() << "Text::Renderer:" << Extensions::GL::EXT::map_buffer_range::string()
+                  #ifdef CORRADE_TARGET_NACL
+                  << "or" << Extensions::GL::CHROMIUM::map_sub::string()
+                  #endif
+                  << "is not supported, using inefficient" << Extensions::GL::OES::mapbuffer::string()
                   << "instead";
     }
     #endif
