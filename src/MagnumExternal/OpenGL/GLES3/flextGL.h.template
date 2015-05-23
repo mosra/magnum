@@ -15,7 +15,7 @@
 #error Attempt to include auto-generated header after including gl3ext.h
 #endif
 #if defined(__gl2platform_h_) || defined(__gl3platform_h_)
-#error Attempt to include auto-generated header after including gl2platform.h
+#error Attempt to include auto-generated header after including gl3platform.h
 #endif
 
 #define __gl_h_
