@@ -27,6 +27,7 @@
 
 #ifndef MAGNUM_TARGET_WEBGL
 #include <Corrade/Utility/Assert.h>
+#include <Corrade/Utility/Debug.h>
 
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
