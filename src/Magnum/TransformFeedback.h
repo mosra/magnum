@@ -183,7 +183,7 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
 
         #ifndef MAGNUM_TARGET_WEBGL
         /**
-         * @brief Buffer label
+         * @brief Transform feedback label
          *
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls. If OpenGL 4.3 is not supported and neither
@@ -196,7 +196,7 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
         std::string label();
 
         /**
-         * @brief Set buffer label
+         * @brief Set transform feedback label
          * @return Reference to self (for method chaining)
          *
          * Default is empty string. If OpenGL 4.3 is not supported and neither

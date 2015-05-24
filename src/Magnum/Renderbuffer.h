@@ -118,7 +118,7 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
         /** @brief Move assignment */
         Renderbuffer& operator=(Renderbuffer&& other) noexcept;
 
-        /** @brief OpenGL internal renderbuffer ID */
+        /** @brief OpenGL renderbuffer ID */
         GLuint id() const { return _id; }
 
         #ifndef MAGNUM_TARGET_WEBGL

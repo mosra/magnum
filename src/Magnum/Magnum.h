@@ -420,6 +420,7 @@ using Math::operator "" _radf;
 class AbstractFramebuffer;
 
 class AbstractImage;
+/* AbstractQuery is not used directly */
 class AbstractShaderProgram;
 class AbstractTexture;
 
@@ -493,7 +494,6 @@ typedef MultisampleTexture<3> MultisampleTexture2DArray;
 #endif
 #endif
 
-/* AbstractQuery is not used directly */
 class PrimitiveQuery;
 class SampleQuery;
 class TimeQuery;

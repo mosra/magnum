@@ -464,7 +464,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         Mesh& operator=(Mesh&& other) noexcept;
 
         /**
-         * @brief OpenGL mesh ID
+         * @brief OpenGL vertex array ID
          *
          * If neither @extension{ARB,vertex_array_object} (part of OpenGL 3.0)
          * nor OpenGL ES 3.0 / WebGL 2.0 nor @es_extension{OES,vertex_array_object}
