@@ -25,6 +25,8 @@
 
 #include "Animable.h"
 
+#include <Corrade/Utility/Debug.h>
+
 namespace Magnum { namespace SceneGraph {
 
 Debug operator<<(Debug debug, AnimationState value) {
