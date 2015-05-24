@@ -54,7 +54,11 @@ void TimeQueryGLTest::wrap() {
     #endif
 
     GLuint id;
+    #ifndef MAGNUM_TARGET_GLES2
     glGenQueries(1, &id);
+    #else
+    glGenQueriesEXT(1, &id);
+    #endif
 
     /* Releasing won't delete anything */
     {
@@ -64,7 +68,11 @@ void TimeQueryGLTest::wrap() {
 
     /* ...so we can wrap it again */
     TimeQuery::wrap(id, TimeQuery::Target::TimeElapsed);
+    #ifndef MAGNUM_TARGET_GLES2
     glDeleteQueries(1, &id);
+    #else
+    glDeleteQueriesEXT(1, &id);
+    #endif
 }
 
 void TimeQueryGLTest::queryTime() {

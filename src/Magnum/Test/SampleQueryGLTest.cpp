@@ -66,7 +66,11 @@ void SampleQueryGLTest::wrap() {
     #endif
 
     GLuint id;
+    #ifndef MAGNUM_TARGET_GLES2
     glGenQueries(1, &id);
+    #else
+    glGenQueriesEXT(1, &id);
+    #endif
 
     /* Releasing won't delete anything */
     {
@@ -76,7 +80,11 @@ void SampleQueryGLTest::wrap() {
 
     /* ...so we can wrap it again */
     SampleQuery::wrap(id, SampleQuery::Target::AnySamplesPassed);
+    #ifndef MAGNUM_TARGET_GLES2
     glDeleteQueries(1, &id);
+    #else
+    glDeleteQueriesEXT(1, &id);
+    #endif
 }
 
 namespace {
