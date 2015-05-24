@@ -301,7 +301,11 @@ void MeshGLTest::wrap() {
     #endif
 
     GLuint id;
+    #ifndef MAGNUM_TARGET_GLES2
     glGenVertexArrays(1, &id);
+    #else
+    glGenVertexArraysOES(1, &id);
+    #endif
 
     /* Releasing won't delete anything */
     {
@@ -311,7 +315,11 @@ void MeshGLTest::wrap() {
 
     /* ...so we can wrap it again */
     Mesh::wrap(id);
+    #ifndef MAGNUM_TARGET_GLES2
     glDeleteVertexArrays(1, &id);
+    #else
+    glDeleteVertexArraysOES(1, &id);
+    #endif
 }
 
 void MeshGLTest::label() {
