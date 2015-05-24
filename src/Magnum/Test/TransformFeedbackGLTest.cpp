@@ -48,7 +48,9 @@ struct TransformFeedbackGLTest: AbstractOpenGLTester {
     void attachBases();
     void attachRanges();
 
+    #ifndef MAGNUM_TARGET_GLES
     void interleaved();
+    #endif
 };
 
 TransformFeedbackGLTest::TransformFeedbackGLTest() {
@@ -64,10 +66,18 @@ TransformFeedbackGLTest::TransformFeedbackGLTest() {
               &TransformFeedbackGLTest::attachBases,
               &TransformFeedbackGLTest::attachRanges,
 
-              &TransformFeedbackGLTest::interleaved});
+              #ifndef MAGNUM_TARGET_GLES
+              &TransformFeedbackGLTest::interleaved
+              #endif
+              });
 }
 
 void TransformFeedbackGLTest::construct() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
+        CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not supported."));
+    #endif
+
     {
         TransformFeedback feedback;
 
@@ -84,6 +94,11 @@ void TransformFeedbackGLTest::constructCopy() {
 }
 
 void TransformFeedbackGLTest::constructMove() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
+        CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not supported."));
+    #endif
+
     TransformFeedback a;
     const Int id = a.id();
 
@@ -106,6 +121,11 @@ void TransformFeedbackGLTest::constructMove() {
 }
 
 void TransformFeedbackGLTest::wrap() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
+        CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not supported."));
+    #endif
+
     GLuint id;
     glGenTransformFeedbacks(1, &id);
 
@@ -122,6 +142,10 @@ void TransformFeedbackGLTest::wrap() {
 
 void TransformFeedbackGLTest::label() {
     /* No-Op version is tested in AbstractObjectGLTest */
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
+        CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not supported."));
+    #endif
     if(!Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>() &&
        !Context::current()->isExtensionSupported<Extensions::GL::EXT::debug_label>())
         CORRADE_SKIP("Required extension is not available");
@@ -178,6 +202,11 @@ XfbShader::XfbShader() {
 }
 
 void TransformFeedbackGLTest::attachBase() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
+        CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not supported."));
+    #endif
+
     XfbShader shader;
 
     Buffer input;
@@ -209,6 +238,11 @@ void TransformFeedbackGLTest::attachBase() {
 }
 
 void TransformFeedbackGLTest::attachRange() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
+        CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not supported."));
+    #endif
+
     XfbShader shader;
 
     Buffer input;
@@ -277,6 +311,11 @@ XfbMultiShader::XfbMultiShader() {
 }
 
 void TransformFeedbackGLTest::attachBases() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
+        CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not supported."));
+    #endif
+
     XfbMultiShader shader;
 
     Buffer input;
@@ -314,6 +353,11 @@ void TransformFeedbackGLTest::attachBases() {
 }
 
 void TransformFeedbackGLTest::attachRanges() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
+        CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not supported."));
+    #endif
+
     Buffer input;
     input.setData(inputData, BufferUsage::StaticDraw);
     Buffer output1, output2;
@@ -353,17 +397,17 @@ void TransformFeedbackGLTest::attachRanges() {
     output2.unmap();
 }
 
+#ifndef MAGNUM_TARGET_GLES
 void TransformFeedbackGLTest::interleaved() {
+    /* ARB_transform_feedback3 needed for gl_SkipComponents1 */
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::transform_feedback3>())
+        CORRADE_SKIP(Extensions::GL::ARB::transform_feedback3::string() + std::string(" is not supported."));
+
     struct XfbInterleavedShader: AbstractShaderProgram {
         typedef Attribute<0, Vector2> Input;
 
         explicit XfbInterleavedShader() {
-            #ifndef MAGNUM_TARGET_GLES
             Shader vert(Version::GL300, Shader::Type::Vertex);
-            #else
-            Shader vert(Version::GLES300, Shader::Type::Vertex);
-            Shader frag(Version::GLES300, Shader::Type::Fragment);
-            #endif
             CORRADE_INTERNAL_ASSERT_OUTPUT(vert.addSource(
                 "in mediump vec2 inputData;\n"
                 "out mediump vec2 output1;\n"
@@ -372,13 +416,7 @@ void TransformFeedbackGLTest::interleaved() {
                 "    output1 = inputData + vec2(1.0, -1.0);\n"
                 "    output2 = inputData.x - inputData.y + 5.0;\n"
                 "}\n").compile());
-            #ifndef MAGNUM_TARGET_GLES
             attachShader(vert);
-            #else
-            /* ES for some reason needs both vertex and fragment shader */
-            CORRADE_INTERNAL_ASSERT_OUTPUT(frag.addSource("void main() {}\n").compile());
-            attachShaders({vert, frag});
-            #endif
             bindAttributeLocation(Input::Location, "inputData");
             setTransformFeedbackOutputs({"output1", "gl_SkipComponents1", "output2"}, TransformFeedbackBufferMode::InterleavedAttributes);
             CORRADE_INTERNAL_ASSERT_OUTPUT(link());
@@ -414,6 +452,7 @@ void TransformFeedbackGLTest::interleaved() {
     CORRADE_COMPARE(data[3].y(), 3.0f);
     output.unmap();
 }
+#endif
 
 }}
 
