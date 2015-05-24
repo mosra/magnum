@@ -50,6 +50,7 @@
     <hudson.matrix.TextAxis>
       <name>compiler</name>
       <values>
+        <string>g++-noassert</string>
         <string>g++</string>
         <string>g++-4.8</string>
         <string>g++-4.7</string>
