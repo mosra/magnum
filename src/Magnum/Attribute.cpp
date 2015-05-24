@@ -26,6 +26,7 @@
 #include "Attribute.h"
 
 #include <Corrade/Utility/Assert.h>
+#include <Corrade/Utility/Debug.h>
 
 namespace Magnum { namespace Implementation {
 
