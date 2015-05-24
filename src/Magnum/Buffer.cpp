@@ -184,7 +184,7 @@ void Buffer::copy(Buffer& read, Buffer& write, const GLintptr readOffset, const 
 }
 #endif
 
-Buffer::Buffer(const TargetHint targetHint): _targetHint{targetHint}
+Buffer::Buffer(const TargetHint targetHint): _targetHint{targetHint}, _flags{ObjectFlag::DeleteOnDestruction}
     #ifdef CORRADE_TARGET_NACL
     , _mappedBuffer{nullptr}
     #endif
@@ -195,19 +195,18 @@ Buffer::Buffer(const TargetHint targetHint): _targetHint{targetHint}
 
 void Buffer::createImplementationDefault() {
     glGenBuffers(1, &_id);
-    _created = false;
 }
 
 #ifndef MAGNUM_TARGET_GLES
 void Buffer::createImplementationDSA() {
     glCreateBuffers(1, &_id);
-    _created = true;
+    _flags |= ObjectFlag::Created;
 }
 #endif
 
 Buffer::~Buffer() {
-    /* Moved out, nothing to do */
-    if(!_id) return;
+    /* Moved out or not deleting on destruction, nothing to do */
+    if(!_id || !(_flags & ObjectFlag::DeleteOnDestruction)) return;
 
     GLuint* bindings = Context::current()->state().buffer->bindings;
 
@@ -219,7 +218,7 @@ Buffer::~Buffer() {
 }
 
 inline void Buffer::createIfNotAlready() {
-    if(_created) return;
+    if(_flags & ObjectFlag::Created) return;
 
     /* glGen*() does not create the object, just reserves the name. Some
        commands (such as glInvalidateBufferData() or glObjectLabel()) operate
@@ -227,7 +226,7 @@ inline void Buffer::createIfNotAlready() {
        buffer finally creates it. Also all EXT DSA functions implicitly create
        it. */
     bindSomewhereInternal(_targetHint);
-    CORRADE_INTERNAL_ASSERT(_created);
+    CORRADE_INTERNAL_ASSERT(_flags & ObjectFlag::Created);
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
@@ -260,7 +259,7 @@ void Buffer::bindInternal(const TargetHint target, Buffer* const buffer) {
 
     /* Bind the buffer otherwise, which will also finally create it */
     bound = id;
-    if(buffer) buffer->_created = true;
+    if(buffer) buffer->_flags |= ObjectFlag::Created;
     glBindBuffer(GLenum(target), id);
 }
 
@@ -278,7 +277,7 @@ auto Buffer::bindSomewhereInternal(const TargetHint hint) -> TargetHint {
 
     /* Bind the buffer to hint target otherwise */
     hintBinding = _id;
-    _created = true;
+    _flags |= ObjectFlag::Created;
     glBindBuffer(GLenum(hint), _id);
     return hint;
 }
@@ -443,7 +442,8 @@ void Buffer::copyImplementationDSA(Buffer& read, Buffer& write, const GLintptr r
 }
 
 void Buffer::copyImplementationDSAEXT(Buffer& read, Buffer& write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size) {
-    read._created = write._created = true;
+    read._flags |= ObjectFlag::Created;
+    write._flags |= ObjectFlag::Created;
     glNamedCopyBufferSubDataEXT(read._id, write._id, readOffset, writeOffset, size);
 }
 #endif
@@ -459,7 +459,7 @@ void Buffer::getParameterImplementationDSA(const GLenum value, GLint* const data
 }
 
 void Buffer::getParameterImplementationDSAEXT(const GLenum value, GLint* const data) {
-    _created = true;
+    _flags |= ObjectFlag::Created;
     glGetNamedBufferParameterivEXT(_id, value, data);
 }
 #endif
@@ -474,7 +474,7 @@ void Buffer::getSubDataImplementationDSA(const GLintptr offset, const GLsizeiptr
 }
 
 void Buffer::getSubDataImplementationDSAEXT(const GLintptr offset, const GLsizeiptr size, GLvoid* const data) {
-    _created = true;
+    _flags |= ObjectFlag::Created;
     glGetNamedBufferSubDataEXT(_id, offset, size, data);
 }
 #endif
@@ -489,7 +489,7 @@ void Buffer::dataImplementationDSA(const GLsizeiptr size, const GLvoid* const da
 }
 
 void Buffer::dataImplementationDSAEXT(GLsizeiptr size, const GLvoid* data, BufferUsage usage) {
-    _created = true;
+    _flags |= ObjectFlag::Created;
     glNamedBufferDataEXT(_id, size, data, GLenum(usage));
 }
 #endif
@@ -504,7 +504,7 @@ void Buffer::subDataImplementationDSA(const GLintptr offset, const GLsizeiptr si
 }
 
 void Buffer::subDataImplementationDSAEXT(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
-    _created = true;
+    _flags |= ObjectFlag::Created;
     glNamedBufferSubDataEXT(_id, offset, size, data);
 }
 #endif
@@ -545,7 +545,7 @@ void* Buffer::mapImplementationDSA(const MapAccess access) {
 }
 
 void* Buffer::mapImplementationDSAEXT(MapAccess access) {
-    _created = true;
+    _flags |= ObjectFlag::Created;
     return glMapNamedBufferEXT(_id, GLenum(access));
 }
 #endif
@@ -569,7 +569,7 @@ void* Buffer::mapRangeImplementationDSA(const GLintptr offset, const GLsizeiptr 
 }
 
 void* Buffer::mapRangeImplementationDSAEXT(GLintptr offset, GLsizeiptr length, MapFlags access) {
-    _created = true;
+    _flags |= ObjectFlag::Created;
     return glMapNamedBufferRangeEXT(_id, offset, length, GLenum(access));
 }
 #endif
@@ -592,7 +592,7 @@ void Buffer::flushMappedRangeImplementationDSA(const GLintptr offset, const GLsi
 }
 
 void Buffer::flushMappedRangeImplementationDSAEXT(GLintptr offset, GLsizeiptr length) {
-    _created = true;
+    _flags |= ObjectFlag::Created;
     glFlushMappedNamedBufferRangeEXT(_id, offset, length);
 }
 #endif
@@ -613,7 +613,7 @@ bool Buffer::unmapImplementationDSA() {
 }
 
 bool Buffer::unmapImplementationDSAEXT() {
-    _created = true;
+    _flags |= ObjectFlag::Created;
     return glUnmapNamedBufferEXT(_id);
 }
 #endif

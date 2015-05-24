@@ -494,6 +494,8 @@ typedef MultisampleTexture<3> MultisampleTexture2DArray;
 #endif
 #endif
 
+/* ObjectFlag, ObjectFlags are used only in conjunction with *::wrap() function */
+
 class PrimitiveQuery;
 class SampleQuery;
 class TimeQuery;

@@ -224,13 +224,28 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
         static Int offsetAlignment();
 
         /**
+         * @brief Wrap existing OpenGL buffer texture object
+         * @param id            OpenGL buffer texture ID
+         * @param flags         Object creation flags
+         *
+         * The @p id is expected to be of an existing OpenGL texture object
+         * with target @def_gl{TEXTURE_BUFFER}. Unlike texture created using
+         * constructor, the OpenGL object is by default not deleted on
+         * destruction, use @p flags for different behavior.
+         * @see @ref release()
+         */
+        static BufferTexture wrap(GLuint id, ObjectFlags flags = {}) {
+            return BufferTexture{id, flags};
+        }
+
+        /**
          * @brief Constructor
          *
          * Creates new OpenGL texture object. If @extension{ARB,direct_state_access}
          * (part of OpenGL 4.5) is not available, the texture is created on
          * first use.
-         * @see @fn_gl{CreateTextures} with @def_gl{TEXTURE_BUFFER}, eventually
-         *      @fn_gl{GenTextures}
+         * @see @ref wrap(), @fn_gl{CreateTextures} with @def_gl{TEXTURE_BUFFER},
+         *      eventually @fn_gl{GenTextures}
          */
         explicit BufferTexture(): AbstractTexture(GL_TEXTURE_BUFFER) {}
 
@@ -288,6 +303,8 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
         #endif
 
     private:
+        explicit BufferTexture(GLuint id, ObjectFlags flags): AbstractTexture{id, GL_TEXTURE_BUFFER, flags} {}
+
         void MAGNUM_LOCAL setBufferImplementationDefault(BufferTextureFormat internalFormat, Buffer& buffer);
         void MAGNUM_LOCAL setBufferImplementationDSA(BufferTextureFormat internalFormat, Buffer& buffer);
         void MAGNUM_LOCAL setBufferImplementationDSAEXT(BufferTextureFormat internalFormat, Buffer& buffer);

@@ -96,13 +96,28 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
         static Vector3i maxSize();
 
         /**
+         * @brief Wrap existing OpenGL cube map array texture object
+         * @param id            OpenGL cube map array texture ID
+         * @param flags         Object creation flags
+         *
+         * The @p id is expected to be of an existing OpenGL texture object
+         * with target @def_gl{TEXTURE_CUBE_MAP_ARRAY}. Unlike texture created
+         * using constructor, the OpenGL object is by default not deleted on
+         * destruction, use @p flags for different behavior.
+         * @see @ref release()
+         */
+        static CubeMapTextureArray wrap(GLuint id, ObjectFlags flags = {}) {
+            return CubeMapTextureArray{id, flags};
+        }
+
+        /**
          * @brief Constructor
          *
          * Creates new OpenGL texture object. If @extension{ARB,direct_state_access}
          * (part of OpenGL 4.5) is not available, the texture is created on
          * first use.
-         * @see @fn_gl{CreateTextures} with @def_gl{TEXTURE_CUBE_MAP_ARRAY},
-         *      eventually @fn_gl{GenTextures}
+         * @see @ref wrap(), @fn_gl{CreateTextures} with
+         *      @def_gl{TEXTURE_CUBE_MAP_ARRAY}, eventually @fn_gl{GenTextures}
          */
         explicit CubeMapTextureArray(): AbstractTexture(GL_TEXTURE_CUBE_MAP_ARRAY) {}
 
@@ -499,6 +514,9 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
             return *this;
         }
         #endif
+
+    private:
+        explicit CubeMapTextureArray(GLuint id, ObjectFlags flags) noexcept: AbstractTexture{id, GL_TEXTURE_CUBE_MAP_ARRAY, flags} {}
 };
 
 }

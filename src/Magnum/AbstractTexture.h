@@ -259,7 +259,11 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          * @brief Destructor
          *
          * Deletes associated OpenGL texture.
-         * @see @fn_gl{DeleteTextures}
+         * @see @ref BufferTexture::wrap(), @ref CubeMapTexture::wrap(),
+         *      @ref CubeMapTextureArray::wrap(),
+         *      @ref MultisampleTexture::wrap(), @ref RectangleTexture::wrap(),
+         *      @ref Texture::wrap(), @ref TextureArray::wrap(),
+         *      @ref release(), @fn_gl{DeleteTextures}
          */
         ~AbstractTexture();
 
@@ -271,6 +275,19 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
 
         /** @brief OpenGL texture ID */
         GLuint id() const { return _id; }
+
+        /**
+         * @brief Release OpenGL object
+         *
+         * Releases ownership of OpenGL texture object and returns its ID so it
+         * is not deleted on destruction. The internal state is then equivalent
+         * to moved-from state.
+         * @see @ref BufferTexture::wrap(), @ref CubeMapTexture::wrap(),
+         *      @ref CubeMapTextureArray::wrap(),
+         *      @ref MultisampleTexture::wrap(), @ref RectangleTexture::wrap(),
+         *      @ref Texture::wrap(), @ref TextureArray::wrap()
+         */
+        GLuint release();
 
         #ifndef MAGNUM_TARGET_WEBGL
         /**
@@ -335,6 +352,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         template<UnsignedInt textureDimensions> struct DataHelper {};
 
         explicit AbstractTexture(GLenum target);
+        explicit AbstractTexture(GLuint id, GLenum target, ObjectFlags flags) noexcept: _target{target}, _id{id}, _flags{flags} {}
 
         #ifndef MAGNUM_TARGET_WEBGL
         AbstractTexture& setLabelInternal(Containers::ArrayReference<const char> label);
@@ -556,7 +574,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         ColorType MAGNUM_LOCAL imageTypeForInternalFormat(TextureFormat internalFormat);
 
         GLuint _id;
-        bool _created; /* see createIfNotAlready() for details */
+        ObjectFlags _flags;
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -670,7 +688,7 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
 };
 #endif
 
-inline AbstractTexture::AbstractTexture(AbstractTexture&& other) noexcept: _target{other._target}, _id{other._id}, _created{other._created} {
+inline AbstractTexture::AbstractTexture(AbstractTexture&& other) noexcept: _target{other._target}, _id{other._id}, _flags{other._flags} {
     other._id = 0;
 }
 
@@ -678,8 +696,14 @@ inline AbstractTexture& AbstractTexture::operator=(AbstractTexture&& other) noex
     using std::swap;
     swap(_target, other._target);
     swap(_id, other._id);
-    swap(_created, other._created);
+    swap(_flags, other._flags);
     return *this;
+}
+
+inline GLuint AbstractTexture::release() {
+    const GLuint id = _id;
+    _id = 0;
+    return id;
 }
 
 }

@@ -40,6 +40,11 @@ struct MultisampleTextureGLTest: AbstractOpenGLTester {
     void construct2DArray();
     #endif
 
+    void wrap2D();
+    #ifndef MAGNUM_TARGET_GLES
+    void wrap2DArray();
+    #endif
+
     void bind2D();
     #ifndef MAGNUM_TARGET_GLES
     void bind2DArray();
@@ -65,6 +70,11 @@ MultisampleTextureGLTest::MultisampleTextureGLTest() {
     addTests({&MultisampleTextureGLTest::construct2D,
               #ifndef MAGNUM_TARGET_GLES
               &MultisampleTextureGLTest::construct2DArray,
+              #endif
+
+              &MultisampleTextureGLTest::wrap2D,
+              #ifndef MAGNUM_TARGET_GLES
+              &MultisampleTextureGLTest::wrap2DArray,
               #endif
 
               &MultisampleTextureGLTest::bind2D,
@@ -121,6 +131,49 @@ void MultisampleTextureGLTest::construct2DArray() {
     }
 
     MAGNUM_VERIFY_NO_ERROR();
+}
+#endif
+
+void MultisampleTextureGLTest::wrap2D() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string{" is not supported."});
+    #else
+    if(!Context::current()->isVersionSupported(Version::GLES310))
+        CORRADE_SKIP("OpenGL ES 3.1 is not supported.");
+    #endif
+
+    GLuint id;
+    glGenTextures(1, &id);
+
+    /* Releasing won't delete anything */
+    {
+        auto texture = MultisampleTexture2D::wrap(id, ObjectFlag::DeleteOnDestruction);
+        CORRADE_COMPARE(texture.release(), id);
+    }
+
+    /* ...so we can wrap it again */
+    MultisampleTexture2D::wrap(id);
+    glDeleteTextures(1, &id);
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void MultisampleTextureGLTest::wrap2DArray() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string{" is not supported."});
+
+    GLuint id;
+    glGenTextures(1, &id);
+
+    /* Releasing won't delete anything */
+    {
+        auto texture = MultisampleTexture2DArray::wrap(id, ObjectFlag::DeleteOnDestruction);
+        CORRADE_COMPARE(texture.release(), id);
+    }
+
+    /* ...so we can wrap it again */
+    MultisampleTexture2DArray::wrap(id);
+    glDeleteTextures(1, &id);
 }
 #endif
 

@@ -103,19 +103,18 @@ Framebuffer::Framebuffer(const Range2Di& viewport) {
 
 void Framebuffer::createImplementationDefault() {
     glGenFramebuffers(1, &_id);
-    _created = false;
 }
 
 #ifndef MAGNUM_TARGET_GLES
 void Framebuffer::createImplementationDSA() {
     glCreateFramebuffers(1, &_id);
-    _created = true;
+    _flags |= ObjectFlag::Created;
 }
 #endif
 
 Framebuffer::~Framebuffer() {
-    /* Moved out, nothing to do */
-    if(!_id) return;
+    /* Moved out or not deleting on destruction, nothing to do */
+    if(!_id || !(_flags & ObjectFlag::DeleteOnDestruction)) return;
 
     /* If bound, remove itself from state */
     Implementation::FramebufferState& state = *Context::current()->state().framebuffer;
@@ -305,7 +304,7 @@ void Framebuffer::renderbufferImplementationDSA(const BufferAttachment attachmen
 }
 
 void Framebuffer::renderbufferImplementationDSAEXT(BufferAttachment attachment, Renderbuffer& renderbuffer) {
-    _created = true;
+    _flags |= ObjectFlag::Created;
     glNamedFramebufferRenderbufferEXT(_id, GLenum(attachment), GL_RENDERBUFFER, renderbuffer.id());
 }
 
@@ -318,7 +317,7 @@ void Framebuffer::texture1DImplementationDSA(const BufferAttachment attachment, 
 }
 
 void Framebuffer::texture1DImplementationDSAEXT(BufferAttachment attachment, GLuint textureId, GLint mipLevel) {
-    _created = true;
+    _flags |= ObjectFlag::Created;
     glNamedFramebufferTexture1DEXT(_id, GLenum(attachment), GL_TEXTURE_1D, textureId, mipLevel);
 }
 #endif
@@ -333,7 +332,7 @@ void Framebuffer::texture2DImplementationDSA(const BufferAttachment attachment, 
 }
 
 void Framebuffer::texture2DImplementationDSAEXT(BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint mipLevel) {
-    _created = true;
+    _flags |= ObjectFlag::Created;
     glNamedFramebufferTexture2DEXT(_id, GLenum(attachment), textureTarget, textureId, mipLevel);
 }
 #endif
@@ -360,7 +359,7 @@ void Framebuffer::textureLayerImplementationDSA(const BufferAttachment attachmen
 }
 
 void Framebuffer::textureLayerImplementationDSAEXT(BufferAttachment attachment, GLuint textureId, GLint mipLevel, GLint layer) {
-    _created = true;
+    _flags |= ObjectFlag::Created;
     glNamedFramebufferTextureLayerEXT(_id, GLenum(attachment), textureId, mipLevel, layer);
 }
 #endif

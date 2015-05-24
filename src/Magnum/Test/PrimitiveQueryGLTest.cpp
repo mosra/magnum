@@ -40,6 +40,8 @@ namespace Magnum { namespace Test {
 struct PrimitiveQueryGLTest: AbstractOpenGLTester {
     explicit PrimitiveQueryGLTest();
 
+    void wrap();
+
     #ifndef MAGNUM_TARGET_GLES
     void primitivesGenerated();
     #endif
@@ -47,11 +49,32 @@ struct PrimitiveQueryGLTest: AbstractOpenGLTester {
 };
 
 PrimitiveQueryGLTest::PrimitiveQueryGLTest() {
-    addTests({
+    addTests({&PrimitiveQueryGLTest::wrap,
+
               #ifndef MAGNUM_TARGET_GLES
               &PrimitiveQueryGLTest::primitivesGenerated,
               #endif
               &PrimitiveQueryGLTest::transformFeedbackPrimitivesWritten});
+}
+
+void PrimitiveQueryGLTest::wrap() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
+        CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not available."));
+    #endif
+
+    GLuint id;
+    glGenQueries(1, &id);
+
+    /* Releasing won't delete anything */
+    {
+        auto query = PrimitiveQuery::wrap(id, PrimitiveQuery::Target::TransformFeedbackPrimitivesWritten, ObjectFlag::DeleteOnDestruction);
+        CORRADE_COMPARE(query.release(), id);
+    }
+
+    /* ...so we can wrap it again */
+    PrimitiveQuery::wrap(id, PrimitiveQuery::Target::TransformFeedbackPrimitivesWritten);
+    glDeleteQueries(1, &id);
 }
 
 #ifndef MAGNUM_TARGET_GLES

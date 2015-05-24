@@ -105,12 +105,28 @@ class TimeQuery: public AbstractQuery {
         #endif
 
         /**
+         * @brief Wrap existing OpenGL time query object
+         * @param id            OpenGL time query ID
+         * @param target        Query target
+         * @param flags         Object creation flags
+         *
+         * The @p id is expected to be of an existing OpenGL query object.
+         * Unlike query created using constructor, the OpenGL object is by
+         * default not deleted on destruction, use @p flags for different
+         * behavior.
+         * @see @ref release()
+         */
+        static TimeQuery wrap(GLuint id, Target target, ObjectFlags flags = {}) {
+            return TimeQuery{id, target, flags};
+        }
+
+        /**
          * @brief Constructor
          *
          * Creates new OpenGL query object. If @extension{ARB,direct_state_access}
          * (part of OpenGL 4.5) is not available, the query is created on first
          * use.
-         * @see @fn_gl{CreateQueries}, eventually @fn_gl{GenQueries}
+         * @see @ref wrap(), @fn_gl{CreateQueries}, eventually @fn_gl{GenQueries}
          */
         explicit TimeQuery(Target target): AbstractQuery(GLenum(target)) {}
 
@@ -152,6 +168,9 @@ class TimeQuery: public AbstractQuery {
             return *this;
         }
         #endif
+
+    private:
+        explicit TimeQuery(GLuint id, Target target, ObjectFlags flags) noexcept: AbstractQuery{id, GLenum(target), flags} {}
 };
 
 }

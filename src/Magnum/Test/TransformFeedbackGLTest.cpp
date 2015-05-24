@@ -39,6 +39,7 @@ struct TransformFeedbackGLTest: AbstractOpenGLTester {
     void construct();
     void constructCopy();
     void constructMove();
+    void wrap();
 
     void label();
 
@@ -54,6 +55,7 @@ TransformFeedbackGLTest::TransformFeedbackGLTest() {
     addTests({&TransformFeedbackGLTest::construct,
               &TransformFeedbackGLTest::constructCopy,
               &TransformFeedbackGLTest::constructMove,
+              &TransformFeedbackGLTest::wrap,
 
               &TransformFeedbackGLTest::label,
 
@@ -101,6 +103,21 @@ void TransformFeedbackGLTest::constructMove() {
     CORRADE_VERIFY(cId > 0);
     CORRADE_COMPARE(b.id(), cId);
     CORRADE_COMPARE(c.id(), id);
+}
+
+void TransformFeedbackGLTest::wrap() {
+    GLuint id;
+    glGenTransformFeedbacks(1, &id);
+
+    /* Releasing won't delete anything */
+    {
+        auto feedback = TransformFeedback::wrap(id, ObjectFlag::DeleteOnDestruction);
+        CORRADE_COMPARE(feedback.release(), id);
+    }
+
+    /* ...so we can wrap it again */
+    TransformFeedback::wrap(id);
+    glDeleteTransformFeedbacks(1, &id);
 }
 
 void TransformFeedbackGLTest::label() {

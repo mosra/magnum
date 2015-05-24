@@ -69,6 +69,17 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
         /** @brief OpenGL query ID */
         GLuint id() const { return _id; }
 
+        /**
+         * @brief Release OpenGL object
+         *
+         * Releases ownership of OpenGL query object and returns its ID so it
+         * is not deleted on destruction. The internal state is then equivalent
+         * to moved-from state.
+         * @see @ref PrimitiveQuery::wrap(), @ref SampleQuery::wrap(),
+         *      @ref TimeQuery::wrap()
+         */
+        GLuint release();
+
         #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @brief Query label
@@ -153,7 +164,8 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
          * @brief Destructor
          *
          * Deletes assigned OpenGL query.
-         * @see @fn_gl{DeleteQueries}
+         * @see @ref PrimitiveQuery::wrap(), @ref SampleQuery::wrap(),
+         *      @ref TimeQuery::wrap(), @ref release(), @fn_gl{DeleteQueries}
          */
         ~AbstractQuery();
 
@@ -161,6 +173,7 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
     private:
     #endif
         explicit AbstractQuery(GLenum target);
+        explicit AbstractQuery(GLuint id, GLenum target, ObjectFlags flags) noexcept: _id{id}, _target{target}, _flags{flags} {}
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         explicit AbstractQuery();
@@ -179,6 +192,7 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
 
         GLuint _id;
         GLenum _target;
+        ObjectFlags _flags;
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -200,6 +214,12 @@ inline AbstractQuery& AbstractQuery::operator=(AbstractQuery&& other) noexcept {
     swap(_id, other._id);
     swap(_target, other._target);
     return *this;
+}
+
+inline GLuint AbstractQuery::release() {
+    const GLuint id = _id;
+    _id = 0;
+    return id;
 }
 
 }

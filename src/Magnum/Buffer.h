@@ -821,6 +821,28 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         #endif
 
         /**
+         * @brief Wrap existing OpenGL buffer object
+         * @param id            OpenGL buffer ID
+         * @param targetHint    Target hint, see @ref setTargetHint() for more
+         *      information
+         * @param flags         Object creation flags
+         *
+         * The @p id is expected to be of an existing OpenGL buffer object.
+         * Unlike buffer created using constructor, the OpenGL object is by
+         * default not deleted on destruction, use @p flags for different
+         * behavior.
+         * @see @ref release()
+         */
+        static Buffer wrap(GLuint id, TargetHint targetHint = TargetHint::Array, ObjectFlags flags = {}) {
+            return Buffer{id, targetHint, flags};
+        }
+
+        /** @overload */
+        static Buffer wrap(GLuint id, ObjectFlags flags) {
+            return Buffer(id, TargetHint::Array, flags);
+        }
+
+        /**
          * @brief Constructor
          * @param targetHint    Target hint, see @ref setTargetHint() for more
          *      information
@@ -828,7 +850,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * Creates new OpenGL buffer object. If @extension{ARB,direct_state_access}
          * (part of OpenGL 4.5) is not available, the buffer is created on
          * first use.
-         * @see @fn_gl{CreateBuffers}, eventually @fn_gl{GenBuffers}
+         * @see @ref wrap(), @fn_gl{CreateBuffers}, eventually
+         *      @fn_gl{GenBuffers}
          */
         explicit Buffer(TargetHint targetHint = TargetHint::Array);
 
@@ -850,7 +873,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @brief Destructor
          *
          * Deletes associated OpenGL buffer object.
-         * @see @fn_gl{DeleteBuffers}
+         * @see @ref wrap(), @ref release(), @fn_gl{DeleteBuffers}
          */
         ~Buffer();
 
@@ -862,6 +885,16 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
 
         /** @brief OpenGL buffer ID */
         GLuint id() const { return _id; }
+
+        /**
+         * @brief Release OpenGL object
+         *
+         * Releases ownership of OpenGL buffer object and returns its ID so it
+         * is not deleted on destruction. The internal state is then equivalent
+         * to moved-from state.
+         * @see @ref wrap()
+         */
+        GLuint release();
 
         #ifndef MAGNUM_TARGET_WEBGL
         /**
@@ -1294,6 +1327,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         #endif
         #endif
 
+        explicit Buffer(GLuint id, TargetHint targetHint, ObjectFlags flags) noexcept: _id{id}, _targetHint{targetHint}, _flags{flags} {}
+
         void MAGNUM_LOCAL createImplementationDefault();
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL createImplementationDSA();
@@ -1374,7 +1409,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         #ifdef CORRADE_TARGET_NACL
         void* _mappedBuffer;
         #endif
-        bool _created; /* see createIfNotAlready() for details */
+        ObjectFlags _flags;
 };
 
 #ifndef MAGNUM_TARGET_WEBGL
@@ -1393,7 +1428,7 @@ inline Buffer::Buffer(Buffer&& other) noexcept: _id{other._id}, _targetHint{othe
     #ifdef CORRADE_TARGET_NACL
     _mappedBuffer{other._mappedBuffer},
     #endif
-     _created{other._created}
+     _flags{other._flags}
 {
     other._id = 0;
     #ifdef CORRADE_TARGET_NACL
@@ -1408,8 +1443,14 @@ inline Buffer& Buffer::operator=(Buffer&& other) noexcept {
     #ifdef CORRADE_TARGET_NACL
     swap(_mappedBuffer, other._mappedBuffer);
     #endif
-    swap(_created, other._created);
+    swap(_flags, other._flags);
     return *this;
+}
+
+inline GLuint Buffer::release() {
+    const GLuint id = _id;
+    _id = 0;
+    return id;
 }
 
 #ifndef MAGNUM_TARGET_GLES

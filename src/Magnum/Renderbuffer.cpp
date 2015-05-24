@@ -68,25 +68,24 @@ Int Renderbuffer::maxSamples() {
 }
 #endif
 
-Renderbuffer::Renderbuffer() {
+Renderbuffer::Renderbuffer(): _flags{ObjectFlag::DeleteOnDestruction} {
     (this->*Context::current()->state().framebuffer->createRenderbufferImplementation)();
 }
 
 void Renderbuffer::createImplementationDefault() {
     glGenRenderbuffers(1, &_id);
-    _created = false;
 }
 
 #ifndef MAGNUM_TARGET_GLES
 void Renderbuffer::createImplementationDSA() {
     glCreateRenderbuffers(1, &_id);
-    _created = true;
+    _flags |= ObjectFlag::Created;
 }
 #endif
 
 Renderbuffer::~Renderbuffer() {
     /* Moved out, nothing to do */
-    if(!_id) return;
+    if(!_id || !(_flags & ObjectFlag::DeleteOnDestruction)) return;
 
     /* If bound, remove itself from state */
     GLuint& binding = Context::current()->state().framebuffer->renderbufferBinding;
@@ -96,14 +95,14 @@ Renderbuffer::~Renderbuffer() {
 }
 
 inline void Renderbuffer::createIfNotAlready() {
-    if(_created) return;
+    if(_flags & ObjectFlag::Created) return;
 
     /* glGen*() does not create the object, just reserves the name. Some
        commands (such as glObjectLabel()) operate with IDs directly and they
        require the object to be created. Binding the renderbuffer finally
        creates it. Also all EXT DSA functions implicitly create it. */
     bind();
-    CORRADE_INTERNAL_ASSERT(_created);
+    CORRADE_INTERNAL_ASSERT(_flags & ObjectFlag::Created);
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
@@ -136,7 +135,7 @@ void Renderbuffer::bind() {
 
     /* Binding the renderbuffer finally creates it */
     binding = _id;
-    _created = true;
+    _flags |= ObjectFlag::Created;
     glBindRenderbuffer(GL_RENDERBUFFER, _id);
 }
 
@@ -151,7 +150,7 @@ void Renderbuffer::storageImplementationDSA(const RenderbufferFormat internalFor
 }
 
 void Renderbuffer::storageImplementationDSAEXT(RenderbufferFormat internalFormat, const Vector2i& size) {
-    _created = true;
+    _flags |= ObjectFlag::Created;
     glNamedRenderbufferStorageEXT(_id, GLenum(internalFormat), size.x(), size.y());
 }
 #endif
@@ -193,7 +192,7 @@ void Renderbuffer::storageMultisampleImplementationDSA(const GLsizei samples, co
 }
 
 void Renderbuffer::storageMultisampleImplementationDSAEXT(GLsizei samples, RenderbufferFormat internalFormat, const Vector2i& size) {
-    _created = true;
+    _flags |= ObjectFlag::Created;
     glNamedRenderbufferStorageMultisampleEXT(_id, samples, GLenum(internalFormat), size.x(), size.y());
 }
 #endif

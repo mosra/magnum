@@ -48,6 +48,7 @@ struct MeshGLTest: AbstractOpenGLTester {
     void construct();
     void constructCopy();
     void constructMove();
+    void wrap();
 
     void label();
 
@@ -139,6 +140,7 @@ MeshGLTest::MeshGLTest() {
     addTests({&MeshGLTest::construct,
               &MeshGLTest::constructCopy,
               &MeshGLTest::constructMove,
+              &MeshGLTest::wrap,
 
               &MeshGLTest::label,
 
@@ -287,6 +289,30 @@ void MeshGLTest::constructMove() {
 
     CORRADE_COMPARE(b.id(), cId);
     CORRADE_COMPARE(c.id(), id);
+}
+
+void MeshGLTest::wrap() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::vertex_array_object>())
+    #elif defined(MAGNUM_TARGET_GLES2)
+    if(!Context::current()->isExtensionSupported<Extensions::GL::OES::vertex_array_object>())
+    #endif
+    {
+        CORRADE_SKIP(Extensions::GL::ARB::vertex_array_object::string() + std::string{" is not supported."});
+    }
+
+    GLuint id;
+    glGenVertexArrays(1, &id);
+
+    /* Releasing won't delete anything */
+    {
+        auto mesh = Mesh::wrap(id, ObjectFlag::DeleteOnDestruction);
+        CORRADE_COMPARE(mesh.release(), id);
+    }
+
+    /* ...so we can wrap it again */
+    Mesh::wrap(id);
+    glDeleteVertexArrays(1, &id);
 }
 
 void MeshGLTest::label() {

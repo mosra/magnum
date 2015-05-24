@@ -41,6 +41,8 @@ namespace Magnum { namespace Test {
 struct SampleQueryGLTest: AbstractOpenGLTester {
     explicit SampleQueryGLTest();
 
+    void wrap();
+
     void querySamplesPassed();
     #ifndef MAGNUM_TARGET_GLES
     void conditionalRender();
@@ -48,12 +50,33 @@ struct SampleQueryGLTest: AbstractOpenGLTester {
 };
 
 SampleQueryGLTest::SampleQueryGLTest() {
-    addTests({
-        &SampleQueryGLTest::querySamplesPassed,
-        #ifndef MAGNUM_TARGET_GLES
-        &SampleQueryGLTest::conditionalRender
-        #endif
-    });
+    addTests({&SampleQueryGLTest::wrap,
+
+              &SampleQueryGLTest::querySamplesPassed,
+              #ifndef MAGNUM_TARGET_GLES
+              &SampleQueryGLTest::conditionalRender
+              #endif
+              });
+}
+
+void SampleQueryGLTest::wrap() {
+    #ifdef MAGNUM_TARGET_GLES2
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::occlusion_query_boolean>())
+        CORRADE_SKIP(Extensions::GL::EXT::occlusion_query_boolean::string() + std::string(" is not available."));
+    #endif
+
+    GLuint id;
+    glGenQueries(1, &id);
+
+    /* Releasing won't delete anything */
+    {
+        auto query = SampleQuery::wrap(id, SampleQuery::Target::AnySamplesPassed, ObjectFlag::DeleteOnDestruction);
+        CORRADE_COMPARE(query.release(), id);
+    }
+
+    /* ...so we can wrap it again */
+    SampleQuery::wrap(id, SampleQuery::Target::AnySamplesPassed);
+    glDeleteQueries(1, &id);
 }
 
 namespace {

@@ -46,6 +46,11 @@ struct TextureArrayGLTest: AbstractOpenGLTester {
     void construct2D();
 
     #ifndef MAGNUM_TARGET_GLES
+    void wrap1D();
+    #endif
+    void wrap2D();
+
+    #ifndef MAGNUM_TARGET_GLES
     void bind1D();
     #endif
     void bind2D();
@@ -131,6 +136,11 @@ TextureArrayGLTest::TextureArrayGLTest() {
         &TextureArrayGLTest::construct1D,
         #endif
         &TextureArrayGLTest::construct2D,
+
+        #ifndef MAGNUM_TARGET_GLES
+        &TextureArrayGLTest::wrap1D,
+        #endif
+        &TextureArrayGLTest::wrap2D,
 
         #ifndef MAGNUM_TARGET_GLES
         &TextureArrayGLTest::bind1D,
@@ -237,6 +247,43 @@ void TextureArrayGLTest::construct2D() {
     }
 
     MAGNUM_VERIFY_NO_ERROR();
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void TextureArrayGLTest::wrap1D() {
+    GLuint id;
+    glGenTextures(1, &id);
+
+    /* Releasing won't delete anything */
+    {
+        auto texture = Texture1DArray::wrap(id, ObjectFlag::DeleteOnDestruction);
+        CORRADE_COMPARE(texture.release(), id);
+    }
+
+    /* ...so we can wrap it again */
+    Texture1DArray::wrap(id);
+    glDeleteTextures(1, &id);
+}
+#endif
+
+void TextureArrayGLTest::wrap2D() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    #endif
+
+    GLuint id;
+    glGenTextures(1, &id);
+
+    /* Releasing won't delete anything */
+    {
+        auto texture = Texture2DArray::wrap(id, ObjectFlag::DeleteOnDestruction);
+        CORRADE_COMPARE(texture.release(), id);
+    }
+
+    /* ...so we can wrap it again */
+    Texture2DArray::wrap(id);
+    glDeleteTextures(1, &id);
 }
 
 #ifndef MAGNUM_TARGET_GLES

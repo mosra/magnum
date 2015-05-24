@@ -96,25 +96,25 @@ Int TransformFeedback::maxBuffers() {
 }
 #endif
 
-TransformFeedback::TransformFeedback() {
+TransformFeedback::TransformFeedback(): _flags{ObjectFlag::DeleteOnDestruction} {
     (this->*Context::current()->state().transformFeedback->createImplementation)();
     CORRADE_INTERNAL_ASSERT(_id != Implementation::State::DisengagedBinding);
 }
 
 void TransformFeedback::createImplementationDefault() {
     glGenTransformFeedbacks(1, &_id);
-    _created = false;
 }
 
 #ifndef MAGNUM_TARGET_GLES
 void TransformFeedback::createImplementationDSA() {
     glCreateTransformFeedbacks(1, &_id);
-    _created = true;
+    _flags |= ObjectFlag::Created;
 }
 #endif
 
 TransformFeedback::~TransformFeedback() {
-    if(!_id) return;
+    /* Moved out or not deleting on destruction, nothing to do */
+    if(!_id || !(_flags & ObjectFlag::DeleteOnDestruction)) return;
 
     /* If bound, remove itself from state */
     GLuint& binding = Context::current()->state().transformFeedback->binding;
@@ -131,19 +131,19 @@ void TransformFeedback::bindInternal() {
 
     /* Bind the transform feedback otherwise, which will also finally create it */
     bound = _id;
-    _created = true;
+    _flags |= ObjectFlag::Created;
     glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, _id);
 }
 
 inline void TransformFeedback::createIfNotAlready() {
-    if(_created) return;
+    if(_flags & ObjectFlag::Created) return;
 
     /* glGen*() does not create the object, just reserves the name. Some
        commands (such as glObjectLabel()) operate with IDs directly and they
        require the object to be created. Binding the transform feedback finally
        creates it. Also all EXT DSA functions implicitly create it. */
     bindInternal();
-    CORRADE_INTERNAL_ASSERT(_created);
+    CORRADE_INTERNAL_ASSERT(_flags & ObjectFlag::Created);
 }
 
 #ifndef MAGNUM_TARGET_WEBGL

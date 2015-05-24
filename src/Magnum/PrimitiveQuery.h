@@ -84,6 +84,22 @@ class PrimitiveQuery: public AbstractQuery {
             TransformFeedbackPrimitivesWritten = GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN
         };
 
+        /**
+         * @brief Wrap existing OpenGL primitive query object
+         * @param id            OpenGL primitive query ID
+         * @param target        Query target
+         * @param flags         Object creation flags
+         *
+         * The @p id is expected to be of an existing OpenGL query object.
+         * Unlike query created using constructor, the OpenGL object is by
+         * default not deleted on destruction, use @p flags for different
+         * behavior.
+         * @see @ref release()
+         */
+        static PrimitiveQuery wrap(GLuint id, Target target, ObjectFlags flags = {}) {
+            return PrimitiveQuery{id, target, flags};
+        }
+
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @copybrief PrimitiveQuery(Target)
@@ -98,7 +114,7 @@ class PrimitiveQuery: public AbstractQuery {
          * Creates new OpenGL query object. If @extension{ARB,direct_state_access}
          * (part of OpenGL 4.5) is not available, the query is created on first
          * use.
-         * @see @fn_gl{CreateQueries}, eventually @fn_gl{GenQueries}
+         * @see @ref wrap(), @fn_gl{CreateQueries}, eventually @fn_gl{GenQueries}
          */
         explicit PrimitiveQuery(Target target): AbstractQuery(GLenum(target)) {}
 
@@ -125,6 +141,9 @@ class PrimitiveQuery: public AbstractQuery {
             return *this;
         }
         #endif
+
+    private:
+        explicit PrimitiveQuery(GLuint id, Target target, ObjectFlags flags) noexcept: AbstractQuery{id, GLenum(target), flags} {}
 };
 
 }

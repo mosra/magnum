@@ -81,13 +81,28 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
         static Vector2i maxSize();
 
         /**
+         * @brief Wrap existing OpenGL rectangle texture object
+         * @param id            OpenGL rectangle texture ID
+         * @param flags         Object creation flags
+         *
+         * The @p id is expected to be of an existing OpenGL texture object
+         * with target @def_gl{TEXTURE_RECTANGLE}. Unlike texture created using
+         * constructor, the OpenGL object is by default not deleted on
+         * destruction, use @p flags for different behavior.
+         * @see @ref release()
+         */
+        static RectangleTexture wrap(GLuint id, ObjectFlags flags = {}) {
+            return RectangleTexture{id, flags};
+        }
+
+        /**
          * @brief Constructor
          *
          * Creates new OpenGL texture object. If @extension{ARB,direct_state_access}
          * (part of OpenGL 4.5) is not available, the texture is created on
          * first use.
-         * @see @fn_gl{CreateTextures}  with @def_gl{TEXTURE_RECTANGLE},
-         *      eventually @fn_gl{GenTextures}
+         * @see @ref wrap(), @fn_gl{CreateTextures} with
+         *      @def_gl{TEXTURE_RECTANGLE}, eventually @fn_gl{GenTextures}
          */
         explicit RectangleTexture(): AbstractTexture(GL_TEXTURE_RECTANGLE) {}
 
@@ -410,6 +425,9 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
             return *this;
         }
         #endif
+
+    private:
+        explicit RectangleTexture(GLuint id, ObjectFlags flags) noexcept: AbstractTexture{id, GL_TEXTURE_RECTANGLE, flags} {}
 };
 
 }

@@ -38,7 +38,7 @@ DefaultFramebuffer defaultFramebuffer;
 
 DefaultFramebuffer::DefaultFramebuffer() {
     _id = 0;
-    _created = true;
+    _flags |= ObjectFlag::Created;
 }
 
 DefaultFramebuffer::Status DefaultFramebuffer::checkStatus(const FramebufferTarget target) {

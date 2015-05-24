@@ -40,6 +40,8 @@ struct CubeMapTextureArrayGLTest: AbstractOpenGLTester {
     explicit CubeMapTextureArrayGLTest();
 
     void construct();
+    void wrap();
+
     void bind();
 
     void sampling();
@@ -65,6 +67,8 @@ struct CubeMapTextureArrayGLTest: AbstractOpenGLTester {
 
 CubeMapTextureArrayGLTest::CubeMapTextureArrayGLTest() {
     addTests({&CubeMapTextureArrayGLTest::construct,
+              &CubeMapTextureArrayGLTest::wrap,
+
               &CubeMapTextureArrayGLTest::bind,
 
               &CubeMapTextureArrayGLTest::sampling,
@@ -100,6 +104,24 @@ void CubeMapTextureArrayGLTest::construct() {
     }
 
     MAGNUM_VERIFY_NO_ERROR();
+}
+
+void CubeMapTextureArrayGLTest::wrap() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+
+    GLuint id;
+    glGenTextures(1, &id);
+
+    /* Releasing won't delete anything */
+    {
+        auto texture = CubeMapTextureArray::wrap(id, ObjectFlag::DeleteOnDestruction);
+        CORRADE_COMPARE(texture.release(), id);
+    }
+
+    /* ...so we can wrap it again */
+    CubeMapTextureArray::wrap(id);
+    glDeleteTextures(1, &id);
 }
 
 void CubeMapTextureArrayGLTest::bind() {

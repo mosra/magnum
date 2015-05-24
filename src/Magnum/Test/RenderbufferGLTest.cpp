@@ -38,6 +38,7 @@ struct RenderbufferGLTest: AbstractOpenGLTester {
     void construct();
     void constructCopy();
     void constructMove();
+    void wrap();
 
     void label();
 
@@ -49,6 +50,7 @@ RenderbufferGLTest::RenderbufferGLTest() {
     addTests({&RenderbufferGLTest::construct,
               &RenderbufferGLTest::constructCopy,
               &RenderbufferGLTest::constructMove,
+              &RenderbufferGLTest::wrap,
 
               &RenderbufferGLTest::label,
 
@@ -102,6 +104,26 @@ void RenderbufferGLTest::constructMove() {
     CORRADE_VERIFY(cId > 0);
     CORRADE_COMPARE(b.id(), cId);
     CORRADE_COMPARE(c.id(), id);
+}
+
+void RenderbufferGLTest::wrap() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    #endif
+
+    GLuint id;
+    glGenRenderbuffers(1, &id);
+
+    /* Releasing won't delete anything */
+    {
+        auto renderbuffer = Renderbuffer::wrap(id, ObjectFlag::DeleteOnDestruction);
+        CORRADE_COMPARE(renderbuffer.release(), id);
+    }
+
+    /* ...so we can wrap it again */
+    Renderbuffer::wrap(id);
+    glDeleteRenderbuffers(1, &id);
 }
 
 void RenderbufferGLTest::label() {

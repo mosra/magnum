@@ -89,12 +89,28 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
         #endif
 
         /**
+         * @brief Wrap existing OpenGL renderbuffer object
+         * @param id            OpenGL renderbuffer ID
+         * @param flags         Object creation flags
+         *
+         * The @p id is expected to be of an existing OpenGL renderbuffer
+         * object. Unlike renderbuffer created using constructor, the OpenGL
+         * object is by default not deleted on destruction, use @p flags for
+         * different behavior.
+         * @see @ref release()
+         */
+        static Renderbuffer wrap(GLuint id, ObjectFlags flags = {}) {
+            return Renderbuffer{id, flags};
+        }
+
+        /**
          * @brief Constructor
          *
          * Generates new OpenGL renderbuffer object. If @extension{ARB,direct_state_access}
          * (part of OpenGL 4.5) is not available, the renderbuffer is created
          * on first use.
-         * @see @fn_gl{CreateRenderbuffers}, eventually @fn_gl{GenRenderbuffers}
+         * @see @ref wrap(), @fn_gl{CreateRenderbuffers}, eventually
+         *      @fn_gl{GenRenderbuffers}
          */
         explicit Renderbuffer();
 
@@ -108,7 +124,7 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
          * @brief Destructor
          *
          * Deletes associated OpenGL renderbuffer object.
-         * @see @fn_gl{DeleteRenderbuffers}
+         * @see @ref wrap(), @ref release(), @fn_gl{DeleteRenderbuffers}
          */
         ~Renderbuffer();
 
@@ -120,6 +136,16 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
 
         /** @brief OpenGL renderbuffer ID */
         GLuint id() const { return _id; }
+
+        /**
+         * @brief Release OpenGL object
+         *
+         * Releases ownership of OpenGL renderbuffer object and returns its ID
+         * so it is not deleted on destruction. The internal state is then
+         * equivalent to moved-from state.
+         * @see @ref wrap()
+         */
+        GLuint release();
 
         #ifndef MAGNUM_TARGET_WEBGL
         /**
@@ -199,6 +225,8 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
         #endif
 
     private:
+        explicit Renderbuffer(GLuint id, ObjectFlags flags) noexcept: _id{id}, _flags{flags} {}
+
         void MAGNUM_LOCAL createImplementationDefault();
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL createImplementationDSA();
@@ -230,18 +258,24 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
         void MAGNUM_LOCAL bind();
 
         GLuint _id;
-        bool _created; /* see createIfNotAlready() for details */
+        ObjectFlags _flags;
 };
 
-inline Renderbuffer::Renderbuffer(Renderbuffer&& other) noexcept: _id{other._id}, _created{other._created} {
+inline Renderbuffer::Renderbuffer(Renderbuffer&& other) noexcept: _id{other._id}, _flags{other._flags} {
     other._id = 0;
 }
 
 inline Renderbuffer& Renderbuffer::operator=(Renderbuffer&& other) noexcept {
     using std::swap;
     swap(_id, other._id);
-    swap(_created, other._created);
+    swap(_flags, other._flags);
     return *this;
+}
+
+inline GLuint Renderbuffer::release() {
+    const GLuint id = _id;
+    _id = 0;
+    return id;
 }
 
 }

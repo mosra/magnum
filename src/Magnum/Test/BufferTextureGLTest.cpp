@@ -35,6 +35,8 @@ struct BufferTextureGLTest: AbstractOpenGLTester {
     explicit BufferTextureGLTest();
 
     void construct();
+    void wrap();
+
     void bind();
     void setBuffer();
     void setBufferOffset();
@@ -42,6 +44,8 @@ struct BufferTextureGLTest: AbstractOpenGLTester {
 
 BufferTextureGLTest::BufferTextureGLTest() {
     addTests({&BufferTextureGLTest::construct,
+              &BufferTextureGLTest::wrap,
+
               &BufferTextureGLTest::bind,
               &BufferTextureGLTest::setBuffer,
               &BufferTextureGLTest::setBufferOffset});
@@ -59,6 +63,24 @@ void BufferTextureGLTest::construct() {
     }
 
     MAGNUM_VERIFY_NO_ERROR();
+}
+
+void BufferTextureGLTest::wrap() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_buffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_buffer_object::string() + std::string(" is not supported."));
+
+    GLuint id;
+    glGenTextures(1, &id);
+
+    /* Releasing won't delete anything */
+    {
+        auto texture = BufferTexture::wrap(id, ObjectFlag::DeleteOnDestruction);
+        CORRADE_COMPARE(texture.release(), id);
+    }
+
+    /* ...so we can wrap it again */
+    BufferTexture::wrap(id);
+    glDeleteTextures(1, &id);
 }
 
 void BufferTextureGLTest::bind() {

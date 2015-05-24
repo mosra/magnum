@@ -148,12 +148,27 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
         #endif
 
         /**
+         * @brief Wrap existing OpenGL transform feedback object
+         * @param id            OpenGL transform feedback ID
+         * @param flags         Object creation flags
+         *
+         * The @p id is expected to be of an existing OpenGL transform feedback
+         * object. Unlike renderbuffer created using constructor, the OpenGL
+         * object is by default not deleted on destruction, use @p flags for
+         * different behavior.
+         * @see @ref release()
+         */
+        static TransformFeedback wrap(GLuint id, ObjectFlags flags = {}) {
+            return TransformFeedback{id, flags};
+        }
+
+        /**
          * @brief Constructor
          *
          * Creates new OpenGL transform feedback object. If
          * @extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
          * available, the transform feedback object is created on first use.
-         * @see @fn_gl{CreateTransformFeedbacks}, eventually
+         * @see @ref wrap(), @fn_gl{CreateTransformFeedbacks}, eventually
          *      @fn_gl{GenTransformFeedbacks}
          */
         explicit TransformFeedback();
@@ -168,7 +183,7 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
          * @brief Destructor
          *
          * Deletes associated OpenGL transform feedback object.
-         * @see @fn_gl{DeleteTransformFeedbacks}
+         * @see @ref wrap(), @ref release(), @fn_gl{DeleteTransformFeedbacks}
          */
         ~TransformFeedback();
 
@@ -180,6 +195,16 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
 
         /** @brief OpenGL transform feedback ID */
         GLuint id() const { return _id; }
+
+        /**
+         * @brief Release OpenGL object
+         *
+         * Releases ownership of OpenGL transform feedback object and returns
+         * its ID so it is not deleted on destruction. The internal state is
+         * then equivalent to moved-from state.
+         * @see @ref wrap()
+         */
+        GLuint release();
 
         #ifndef MAGNUM_TARGET_WEBGL
         /**
@@ -347,6 +372,8 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
         void end();
 
     private:
+        explicit TransformFeedback(GLuint id, ObjectFlags flags) noexcept: _id{id}, _flags{flags} {}
+
         void bindInternal();
 
         void MAGNUM_LOCAL createIfNotAlready();
@@ -375,18 +402,24 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
         #endif
 
         GLuint _id;
-        bool _created; /* see createIfNotAlready() for details */
+        ObjectFlags _flags;
 };
 
-inline TransformFeedback::TransformFeedback(TransformFeedback&& other) noexcept: _id{other._id}, _created{other._created} {
+inline TransformFeedback::TransformFeedback(TransformFeedback&& other) noexcept: _id{other._id}, _flags{other._flags} {
     other._id = 0;
 }
 
 inline TransformFeedback& TransformFeedback::operator=(TransformFeedback&& other) noexcept {
     using std::swap;
     swap(_id, other._id);
-    swap(_created, other._created);
+    swap(_flags, other._flags);
     return *this;
+}
+
+inline GLuint TransformFeedback::release() {
+    const GLuint id = _id;
+    _id = 0;
+    return id;
 }
 
 }

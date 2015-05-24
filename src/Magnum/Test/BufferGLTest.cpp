@@ -40,6 +40,7 @@ struct BufferGLTest: AbstractOpenGLTester {
     void construct();
     void constructCopy();
     void constructMove();
+    void wrap();
 
     void label();
 
@@ -65,6 +66,7 @@ BufferGLTest::BufferGLTest() {
     addTests({&BufferGLTest::construct,
               &BufferGLTest::constructCopy,
               &BufferGLTest::constructMove,
+              &BufferGLTest::wrap,
 
               &BufferGLTest::label,
 
@@ -124,6 +126,21 @@ void BufferGLTest::constructMove() {
     CORRADE_VERIFY(cId > 0);
     CORRADE_COMPARE(b.id(), cId);
     CORRADE_COMPARE(c.id(), id);
+}
+
+void BufferGLTest::wrap() {
+    GLuint id;
+    glGenBuffers(1, &id);
+
+    /* Releasing won't delete anything */
+    {
+        auto buffer = Buffer::wrap(id, ObjectFlag::DeleteOnDestruction);
+        CORRADE_COMPARE(buffer.release(), id);
+    }
+
+    /* ...so we can wrap it again */
+    Buffer::wrap(id);
+    glDeleteBuffers(1, &id);
 }
 
 void BufferGLTest::label() {

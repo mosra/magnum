@@ -319,13 +319,29 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         static Int maxColorAttachments();
 
         /**
+         * @brief Wrap existing OpenGL framebuffer object
+         * @param id            OpenGL framebuffer ID
+         * @param viewport      Viewport to use with this framebuffer
+         * @param flags         Object creation flags
+         *
+         * The @p id is expected to be of an existing OpenGL framebuffer
+         * object. Unlike framebuffer created using constructor, the OpenGL
+         * object is by default not deleted on destruction, use @p flags for
+         * different behavior.
+         * @see @ref release()
+         */
+        static Framebuffer wrap(GLuint id, const Range2Di& viewport, ObjectFlags flags = {}) {
+            return Framebuffer{id, viewport, flags};
+        }
+
+        /**
          * @brief Constructor
          *
          * Generates new OpenGL framebuffer object. If @extension{ARB,direct_state_access}
          * (part of OpenGL 4.5) is not available, the framebuffer is created on
          * first use.
-         * @see @ref setViewport(), @fn_gl{CreateFramebuffers}, eventually
-         *      @fn_gl{GenFramebuffers}
+         * @see @ref setViewport(), @ref wrap(), @fn_gl{CreateFramebuffers},
+         *      eventually @fn_gl{GenFramebuffers}
          */
         explicit Framebuffer(const Range2Di& viewport);
 
@@ -339,7 +355,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @brief Destructor
          *
          * Deletes associated OpenGL framebuffer object.
-         * @see @fn_gl{DeleteFramebuffers}
+         * @see @ref wrap(), @ref release(), @fn_gl{DeleteFramebuffers}
          */
         ~Framebuffer();
 
@@ -351,6 +367,16 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
 
         /** @brief OpenGL framebuffer ID */
         GLuint id() const { return _id; }
+
+        /**
+         * @brief Release OpenGL object
+         *
+         * Releases ownership of OpenGL framebuffer object and returns its ID
+         * so it is not deleted on destruction. The internal state is then
+         * equivalent to moved-from state.
+         * @see @ref wrap()
+         */
+        GLuint release();
 
         #ifndef MAGNUM_TARGET_WEBGL
         /**
@@ -716,6 +742,8 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         #endif
 
     private:
+        explicit Framebuffer(GLuint id, const Range2Di& viewport, ObjectFlags flags) noexcept: AbstractFramebuffer{id, viewport, flags} {}
+
         void MAGNUM_LOCAL createImplementationDefault();
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL createImplementationDSA();
@@ -758,7 +786,7 @@ Debug MAGNUM_EXPORT operator<<(Debug debug, Framebuffer::Status value);
 inline Framebuffer::Framebuffer(Framebuffer&& other) noexcept {
     _id = other._id;
     _viewport = other._viewport;
-    _created = other._created;
+    _flags = other._flags;
     other._id = 0;
     other._viewport = {};
 }
@@ -767,8 +795,14 @@ inline Framebuffer& Framebuffer::operator=(Framebuffer&& other) noexcept {
     using std::swap;
     swap(_id, other._id);
     swap(_viewport, other._viewport);
-    swap(_created, other._created);
+    swap(_flags, other._flags);
     return *this;
+}
+
+inline GLuint Framebuffer::release() {
+    const GLuint id = _id;
+    _id = 0;
+    return id;
 }
 
 }

@@ -36,19 +36,19 @@
 
 namespace Magnum {
 
-AbstractQuery::AbstractQuery(GLenum target): _target{target} {
+AbstractQuery::AbstractQuery(GLenum target): _target{target}, _flags{ObjectFlag::DeleteOnDestruction} {
     (this->*Context::current()->state().query->createImplementation)();
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
-AbstractQuery::AbstractQuery(): _target{} {
+AbstractQuery::AbstractQuery(): _target{}, _flags{ObjectFlag::DeleteOnDestruction} {
     createImplementationDefault();
 }
 #endif
 
 AbstractQuery::~AbstractQuery() {
-    /* Moved out, nothing to do */
-    if(!_id) return;
+    /* Moved out or not deleting on destruction, nothing to do */
+    if(!_id || !(_flags & ObjectFlag::DeleteOnDestruction)) return;
 
     #ifndef MAGNUM_TARGET_GLES2
     glDeleteQueries(1, &_id);
@@ -57,6 +57,7 @@ AbstractQuery::~AbstractQuery() {
     #else
     CORRADE_ASSERT_UNREACHABLE();
     #endif
+    _flags |= ObjectFlag::Created;
 }
 
 void AbstractQuery::createImplementationDefault() {

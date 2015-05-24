@@ -426,6 +426,32 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         static std::size_t indexSize(IndexType type);
 
         /**
+         * @brief Wrap existing OpenGL vertex array object
+         * @param id            OpenGL vertex array ID
+         * @param primitive     Primitive type
+         * @param flags         Object creation flags
+         *
+         * The @p id is expected to be of an existing OpenGL vertex array
+         * object. Unlike vertex array created using constructor, the OpenGL
+         * object is by default not deleted on destruction, use @p flags for
+         * different behavior.
+         * @see @ref release()
+         * @requires_gl30 Extension @extension{ARB,vertex_array_object}
+         * @requires_gles30 Extension @es_extension{OES,vertex_array_object} in
+         *      OpenGL ES 2.0.
+         * @requires_webgl20 Extension @webgl_extension{OES,vertex_array_object}
+         *      in WebGL 1.0.
+         */
+        static Mesh wrap(GLuint id, MeshPrimitive primitive = MeshPrimitive::Triangles, ObjectFlags flags = {}) {
+            return Mesh{id, primitive, flags};
+        }
+
+        /** @overload */
+        static Mesh wrap(GLuint id, ObjectFlags flags) {
+            return wrap(id, MeshPrimitive::Triangles, flags);
+        }
+
+        /**
          * @brief Constructor
          * @param primitive     Primitive type
          *
@@ -435,8 +461,8 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * available, vertex array object is created. If @extension{ARB,direct_state_access}
          * (part of OpenGL 4.5) is not available, the vertex array object is
          * created on first use.
-         * @see @ref setPrimitive(), @ref setCount(), @fn_gl{CreateVertexArrays},
-         *      eventually @fn_gl{GenVertexArrays}
+         * @see @ref setPrimitive(), @ref setCount(), @ref wrap(),
+         *      @fn_gl{CreateVertexArrays}, eventually @fn_gl{GenVertexArrays}
          */
         explicit Mesh(MeshPrimitive primitive = MeshPrimitive::Triangles);
 
@@ -453,7 +479,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * ES 3.0, WebGL 2.0, @es_extension{OES,vertex_array_object} in OpenGL
          * ES 2.0 or @webgl_extension{OES,vertex_array_object} in WebGL 1.0 is
          * available, associated vertex array object is deleted.
-         * @see @fn_gl{DeleteVertexArrays}
+         * @see @ref wrap(), @ref release(), @fn_gl{DeleteVertexArrays}
          */
         ~Mesh();
 
@@ -472,6 +498,21 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * WebGL 1.0 is available, returns `0`.
          */
         GLuint id() const { return _id; }
+
+        /**
+         * @brief Release OpenGL object
+         *
+         * Releases ownership of OpenGL vertex array object and returns its ID
+         * so it is not deleted on destruction. The internal state is then
+         * equivalent to moved-from state.
+         * @see @ref wrap()
+         * @requires_gl30 Extension @extension{ARB,vertex_array_object}
+         * @requires_gles30 Extension @es_extension{OES,vertex_array_object} in
+         *      OpenGL ES 2.0.
+         * @requires_webgl20 Extension @webgl_extension{OES,vertex_array_object}
+         *      in WebGL 1.0.
+         */
+        GLuint release();
 
         #ifndef MAGNUM_TARGET_WEBGL
         /**
@@ -887,6 +928,8 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         #endif
         #endif
 
+        explicit Mesh(GLuint id, MeshPrimitive primitive, ObjectFlags flags): _id{id}, _primitive{primitive}, _flags{flags} {}
+
         void MAGNUM_LOCAL createIfNotAlready();
 
         #ifndef MAGNUM_TARGET_WEBGL
@@ -1038,8 +1081,8 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         #endif
 
         GLuint _id;
-        bool _created; /* see createIfNotAlready() for details */
         MeshPrimitive _primitive;
+        ObjectFlags _flags;
         Int _count, _baseVertex, _instanceCount;
         #ifndef MAGNUM_TARGET_GLES
         UnsignedInt _baseInstance;
@@ -1065,6 +1108,12 @@ Debug MAGNUM_EXPORT operator<<(Debug debug, MeshPrimitive value);
 
 /** @debugoperatorclassenum{Magnum::Mesh,Magnum::Mesh::IndexType} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Mesh::IndexType value);
+
+inline GLuint Mesh::release() {
+    const GLuint id = _id;
+    _id = 0;
+    return id;
+}
 
 }
 

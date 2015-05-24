@@ -43,6 +43,8 @@ struct CubeMapTextureGLTest: AbstractOpenGLTester {
     explicit CubeMapTextureGLTest();
 
     void construct();
+    void wrap();
+
     void bind();
 
     void sampling();
@@ -88,6 +90,8 @@ struct CubeMapTextureGLTest: AbstractOpenGLTester {
 
 CubeMapTextureGLTest::CubeMapTextureGLTest() {
     addTests({&CubeMapTextureGLTest::construct,
+              &CubeMapTextureGLTest::wrap,
+
               &CubeMapTextureGLTest::bind,
 
               &CubeMapTextureGLTest::sampling,
@@ -140,6 +144,21 @@ void CubeMapTextureGLTest::construct() {
     }
 
     MAGNUM_VERIFY_NO_ERROR();
+}
+
+void CubeMapTextureGLTest::wrap() {
+    GLuint id;
+    glGenTextures(1, &id);
+
+    /* Releasing won't delete anything */
+    {
+        auto texture = CubeMapTexture::wrap(id, ObjectFlag::DeleteOnDestruction);
+        CORRADE_COMPARE(texture.release(), id);
+    }
+
+    /* ...so we can wrap it again */
+    CubeMapTexture::wrap(id);
+    glDeleteTextures(1, &id);
 }
 
 void CubeMapTextureGLTest::bind() {

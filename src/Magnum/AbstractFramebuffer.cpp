@@ -89,14 +89,14 @@ Int AbstractFramebuffer::maxDualSourceDrawBuffers() {
 #endif
 
 void AbstractFramebuffer::createIfNotAlready() {
-    if(_created) return;
+    if(_flags & ObjectFlag::Created) return;
 
     /* glGen*() does not create the object, just reserves the name. Some
        commands (such as glObjectLabel()) operate with IDs directly and they
        require the object to be created. Binding the framebuffer finally
        creates it. Also all EXT DSA functions implicitly create it. */
     bindInternal();
-    CORRADE_INTERNAL_ASSERT(_created);
+    CORRADE_INTERNAL_ASSERT(_flags & ObjectFlag::Created);
 }
 
 void AbstractFramebuffer::bind() {
@@ -141,7 +141,7 @@ void AbstractFramebuffer::bindImplementationDefault(FramebufferTarget target) {
     } else CORRADE_ASSERT_UNREACHABLE();
 
     /* Binding the framebuffer finally creates it */
-    _created = true;
+    _flags |= ObjectFlag::Created;
     glBindFramebuffer(GLenum(target), _id);
 }
 
@@ -187,7 +187,7 @@ FramebufferTarget AbstractFramebuffer::bindImplementationDefault() {
     state.readBinding = _id;
 
     /* Binding the framebuffer finally creates it */
-    _created = true;
+    _flags |= ObjectFlag::Created;
     glBindFramebuffer(GLenum(FramebufferTarget::Read), _id);
     return FramebufferTarget::Read;
 }
@@ -361,7 +361,7 @@ GLenum AbstractFramebuffer::checkStatusImplementationDSA(const FramebufferTarget
 }
 
 GLenum AbstractFramebuffer::checkStatusImplementationDSAEXT(const FramebufferTarget target) {
-    _created = true;
+    _flags |= ObjectFlag::Created;
     return glCheckNamedFramebufferStatusEXT(_id, GLenum(target));
 }
 #endif
@@ -379,7 +379,7 @@ void AbstractFramebuffer::drawBuffersImplementationDSA(const GLsizei count, cons
 }
 
 void AbstractFramebuffer::drawBuffersImplementationDSAEXT(GLsizei count, const GLenum* buffers) {
-    _created = true;
+    _flags |= ObjectFlag::Created;
     glFramebufferDrawBuffersEXT(_id, count, buffers);
 }
 #endif
@@ -423,7 +423,7 @@ void AbstractFramebuffer::drawBufferImplementationDSA(const GLenum buffer) {
 }
 
 void AbstractFramebuffer::drawBufferImplementationDSAEXT(GLenum buffer) {
-    _created = true;
+    _flags |= ObjectFlag::Created;
     glFramebufferDrawBufferEXT(_id, buffer);
 }
 #endif
@@ -449,7 +449,7 @@ void AbstractFramebuffer::readBufferImplementationDSA(const GLenum buffer) {
 }
 
 void AbstractFramebuffer::readBufferImplementationDSAEXT(GLenum buffer) {
-    _created = true;
+    _flags |= ObjectFlag::Created;
     glFramebufferReadBufferEXT(_id, buffer);
 }
 #endif

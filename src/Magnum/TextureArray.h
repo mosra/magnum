@@ -110,13 +110,30 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         static VectorTypeFor<dimensions+1, Int> maxSize();
 
         /**
+         * @brief Wrap existing OpenGL texture array object
+         * @param id            OpenGL texture array ID
+         * @param flags         Object creation flags
+         *
+         * The @p id is expected to be of an existing OpenGL texture object
+         * with target @def_gl{TEXTURE_1D_ARRAY} or @def_gl{TEXTURE_2D_ARRAY}
+         * based on dimension count. Unlike texture created using constructor,
+         * the OpenGL object is by default not deleted on destruction, use
+         * @p flags for different behavior.
+         * @see @ref release()
+         */
+        static TextureArray<dimensions> wrap(GLuint id, ObjectFlags flags = {}) {
+            return TextureArray<dimensions>{id, flags};
+        }
+
+        /**
          * @brief Constructor
          *
          * Creates new OpenGL texture object. If @extension{ARB,direct_state_access}
          * (part of OpenGL 4.5) is not available, the texture is created on
          * first use.
-         * @see @fn_gl{CreateTextures} with @def_gl{TEXTURE_1D_ARRAY} or
-         *      @def_gl{TEXTURE_2D_ARRAY}, eventually @fn_gl{GenTextures}
+         * @see @ref wrap(), @fn_gl{CreateTextures} with
+         *      @def_gl{TEXTURE_1D_ARRAY} or @def_gl{TEXTURE_2D_ARRAY},
+         *      eventually @fn_gl{GenTextures}
          */
         explicit TextureArray(): AbstractTexture(Implementation::textureArrayTarget<dimensions>()) {}
 
@@ -556,6 +573,9 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
             return *this;
         }
         #endif
+
+    private:
+        explicit TextureArray(GLuint id, ObjectFlags flags): AbstractTexture{id, Implementation::textureArrayTarget<dimensions>(), flags} {}
 };
 
 #ifndef MAGNUM_TARGET_GLES

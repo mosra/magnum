@@ -32,8 +32,7 @@
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/Utility/Macros.h>
 
-#include "Magnum/Magnum.h"
-#include "Magnum/OpenGL.h"
+#include "Magnum/AbstractObject.h"
 #include "Magnum/Math/Range.h"
 
 namespace Magnum {
@@ -403,7 +402,9 @@ class MAGNUM_EXPORT AbstractFramebuffer {
     #else
     protected:
     #endif
-        explicit AbstractFramebuffer() = default;
+        explicit AbstractFramebuffer(): _flags{ObjectFlag::DeleteOnDestruction} {}
+        explicit AbstractFramebuffer(GLuint id, const Range2Di& viewport, ObjectFlags flags) noexcept: _id{id}, _viewport{viewport}, _flags{flags} {}
+
         ~AbstractFramebuffer() = default;
 
         void MAGNUM_LOCAL createIfNotAlready();
@@ -413,8 +414,8 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         void MAGNUM_LOCAL setViewportInternal();
 
         GLuint _id;
-        bool _created; /* see createIfNotAlready() for details */
         Range2Di _viewport;
+        ObjectFlags _flags;
 
     private:
         #ifndef MAGNUM_TARGET_GLES2

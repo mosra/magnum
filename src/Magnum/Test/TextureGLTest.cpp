@@ -49,6 +49,12 @@ struct TextureGLTest: AbstractOpenGLTester {
     void construct3D();
 
     #ifndef MAGNUM_TARGET_GLES
+    void wrap1D();
+    #endif
+    void wrap2D();
+    void wrap3D();
+
+    #ifndef MAGNUM_TARGET_GLES
     void bind1D();
     #endif
     void bind2D();
@@ -162,6 +168,12 @@ TextureGLTest::TextureGLTest() {
         #endif
         &TextureGLTest::construct2D,
         &TextureGLTest::construct3D,
+
+        #ifndef MAGNUM_TARGET_GLES
+        &TextureGLTest::wrap1D,
+        #endif
+        &TextureGLTest::wrap2D,
+        &TextureGLTest::wrap3D,
 
         #ifndef MAGNUM_TARGET_GLES
         &TextureGLTest::bind1D,
@@ -307,6 +319,58 @@ void TextureGLTest::construct3D() {
     }
 
     MAGNUM_VERIFY_NO_ERROR();
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void TextureGLTest::wrap1D() {
+    GLuint id;
+    glGenTextures(1, &id);
+
+    /* Releasing won't delete anything */
+    {
+        auto texture = Texture1D::wrap(id, ObjectFlag::DeleteOnDestruction);
+        CORRADE_COMPARE(texture.release(), id);
+    }
+
+    /* ...so we can wrap it again */
+    Texture1D::wrap(id);
+    glDeleteTextures(1, &id);
+}
+#endif
+
+void TextureGLTest::wrap2D() {
+    GLuint id;
+    glGenTextures(1, &id);
+
+    /* Releasing won't delete anything */
+    {
+        auto texture = Texture2D::wrap(id, ObjectFlag::DeleteOnDestruction);
+        CORRADE_COMPARE(texture.release(), id);
+    }
+
+    /* ...so we can wrap it again */
+    Texture2D::wrap(id);
+    glDeleteTextures(1, &id);
+}
+
+void TextureGLTest::wrap3D() {
+    #ifdef MAGNUM_TARGET_GLES2
+    if(!Context::current()->isExtensionSupported<Extensions::GL::OES::texture_3D>())
+        CORRADE_SKIP(Extensions::GL::OES::texture_3D::string() + std::string(" is not supported."));
+    #endif
+
+    GLuint id;
+    glGenTextures(1, &id);
+
+    /* Releasing won't delete anything */
+    {
+        auto texture = Texture3D::wrap(id, ObjectFlag::DeleteOnDestruction);
+        CORRADE_COMPARE(texture.release(), id);
+    }
+
+    /* ...so we can wrap it again */
+    Texture3D::wrap(id);
+    glDeleteTextures(1, &id);
 }
 
 #ifndef MAGNUM_TARGET_GLES

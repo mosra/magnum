@@ -107,7 +107,7 @@ std::size_t Mesh::indexSize(IndexType type) {
     CORRADE_ASSERT_UNREACHABLE();
 }
 
-Mesh::Mesh(const MeshPrimitive primitive): _primitive{primitive}, _count{0}, _baseVertex{0}, _instanceCount{1},
+Mesh::Mesh(const MeshPrimitive primitive): _primitive{primitive}, _flags{ObjectFlag::DeleteOnDestruction}, _count{0}, _baseVertex{0}, _instanceCount{1},
     #ifndef MAGNUM_TARGET_GLES
     _baseInstance{0},
     #endif
@@ -120,8 +120,8 @@ Mesh::Mesh(const MeshPrimitive primitive): _primitive{primitive}, _count{0}, _ba
 }
 
 Mesh::~Mesh() {
-    /* Moved out, nothing to do */
-    if(!_id) return;
+    /* Moved out or not deleting on destruction, nothing to do */
+    if(!_id || !(_flags & ObjectFlag::DeleteOnDestruction)) return;
 
     /* Remove current vao from the state */
     GLuint& current = Context::current()->state().mesh->currentVAO;
@@ -130,7 +130,7 @@ Mesh::~Mesh() {
     (this->*Context::current()->state().mesh->destroyImplementation)();
 }
 
-Mesh::Mesh(Mesh&& other) noexcept: _id(other._id), _created{other._created}, _primitive(other._primitive), _count(other._count), _baseVertex{other._baseVertex}, _instanceCount{other._instanceCount},
+Mesh::Mesh(Mesh&& other) noexcept: _id(other._id), _primitive(other._primitive), _flags{other._flags}, _count(other._count), _baseVertex{other._baseVertex}, _instanceCount{other._instanceCount},
     #ifndef MAGNUM_TARGET_GLES
     _baseInstance{other._baseInstance},
     #endif
@@ -151,7 +151,7 @@ Mesh::Mesh(Mesh&& other) noexcept: _id(other._id), _created{other._created}, _pr
 Mesh& Mesh::operator=(Mesh&& other) noexcept {
     using std::swap;
     swap(_id, other._id);
-    swap(_created, other._created);
+    swap(_flags, other._flags);
     swap(_primitive, other._primitive);
     swap(_count, other._count);
     swap(_baseVertex, other._baseVertex);
@@ -178,15 +178,15 @@ Mesh& Mesh::operator=(Mesh&& other) noexcept {
 }
 
 inline void Mesh::createIfNotAlready() {
-    /* If VAO extension is not available, _created is always true */
-    if(_created) return;
+    /* If VAO extension is not available, the following is always true */
+    if(_flags & ObjectFlag::Created) return;
 
     /* glGen*() does not create the object, just reserves the name. Some
        commands (such as glObjectLabel()) operate with IDs directly and they
        require the object to be created. Binding the VAO finally creates it.
        Also all EXT DSA functions implicitly create it. */
     bindVAO();
-    CORRADE_INTERNAL_ASSERT(_created);
+    CORRADE_INTERNAL_ASSERT(_flags & ObjectFlag::Created);
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
@@ -353,7 +353,7 @@ void Mesh::bindVAO() {
     GLuint& current = Context::current()->state().mesh->currentVAO;
     if(current != _id) {
         /* Binding the VAO finally creates it */
-        _created = true;
+        _flags |= ObjectFlag::Created;
         #ifndef MAGNUM_TARGET_GLES2
         glBindVertexArray(current = _id);
         #elif !defined(CORRADE_TARGET_NACL)
@@ -366,7 +366,7 @@ void Mesh::bindVAO() {
 
 void Mesh::createImplementationDefault() {
     _id = 0;
-    _created = true;
+    _flags |= ObjectFlag::Created;
 }
 
 void Mesh::createImplementationVAO() {
@@ -377,14 +377,13 @@ void Mesh::createImplementationVAO() {
     #else
     CORRADE_ASSERT_UNREACHABLE();
     #endif
-    _created = false;
     CORRADE_INTERNAL_ASSERT(_id != Implementation::State::DisengagedBinding);
 }
 
 #ifndef MAGNUM_TARGET_GLES
 void Mesh::createImplementationVAODSA() {
     glCreateVertexArrays(1, &_id);
-    _created = true;
+    _flags |= ObjectFlag::Created;
 }
 #endif
 
@@ -425,7 +424,7 @@ void Mesh::attributePointerImplementationVAO(const GenericAttribute& attribute) 
 
 #ifndef MAGNUM_TARGET_GLES
 void Mesh::attributePointerImplementationDSAEXT(const GenericAttribute& attribute) {
-    _created = true;
+    _flags |= ObjectFlag::Created;
     glEnableVertexArrayAttribEXT(_id, attribute.location);
     glVertexArrayVertexAttribOffsetEXT(_id, attribute.buffer->id(), attribute.location, attribute.size, attribute.type, attribute.normalized, attribute.stride, attribute.offset);
     if(attribute.divisor)
@@ -462,7 +461,7 @@ void Mesh::attributePointerImplementationVAO(const IntegerAttribute& attribute) 
 
 #ifndef MAGNUM_TARGET_GLES
 void Mesh::attributePointerImplementationDSAEXT(const IntegerAttribute& attribute) {
-    _created = true;
+    _flags |= ObjectFlag::Created;
     glEnableVertexArrayAttribEXT(_id, attribute.location);
     glVertexArrayVertexAttribIOffsetEXT(_id, attribute.buffer->id(), attribute.location, attribute.size, attribute.type, attribute.stride, attribute.offset);
     if(attribute.divisor)
@@ -493,7 +492,7 @@ void Mesh::attributePointerImplementationVAO(const LongAttribute& attribute) {
 }
 
 void Mesh::attributePointerImplementationDSAEXT(const LongAttribute& attribute) {
-    _created = true;
+    _flags |= ObjectFlag::Created;
     glEnableVertexArrayAttribEXT(_id, attribute.location);
     glVertexArrayVertexAttribLOffsetEXT(_id, attribute.buffer->id(), attribute.location, attribute.size, attribute.type, attribute.stride, attribute.offset);
     if(attribute.divisor)
