@@ -121,7 +121,7 @@ void AbstractFramebuffer::bindImplementationSingle(FramebufferTarget) {
     state.readBinding = state.drawBinding = _id;
 
     /* Binding the framebuffer finally creates it */
-    _created = true;
+    _flags |= ObjectFlag::Created;
     glBindFramebuffer(GL_FRAMEBUFFER, _id);
 }
 #endif
@@ -163,7 +163,7 @@ FramebufferTarget AbstractFramebuffer::bindImplementationSingle() {
         state.readBinding = state.drawBinding = _id;
 
         /* Binding the framebuffer finally creates it */
-        _created = true;
+        _flags |= ObjectFlag::Created;
         glBindFramebuffer(GL_FRAMEBUFFER, _id);
     }
 
