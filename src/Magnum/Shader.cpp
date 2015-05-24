@@ -27,6 +27,7 @@
 
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Utility/Assert.h>
+#include <Corrade/Utility/Debug.h>
 #include <Corrade/Utility/Directory.h>
 
 #include "Magnum/Context.h"
