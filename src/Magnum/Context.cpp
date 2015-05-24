@@ -565,7 +565,8 @@ std::vector<std::string> Context::shadingLanguageVersionStrings() const {
 std::vector<std::string> Context::extensionStrings() const {
     std::vector<std::string> extensions;
 
-    #ifndef MAGNUM_TARGET_GLES2
+    /** @todo remove workaround when Emscripten has glGetStringi() etc. */
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     GLint extensionCount = 0;
     glGetIntegerv(GL_NUM_EXTENSIONS, &extensionCount);
     #ifndef MAGNUM_TARGET_GLES3
