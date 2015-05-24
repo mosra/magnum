@@ -360,16 +360,30 @@ Context::Context(void functionLoader()) {
     /* Load GL function pointers */
     if(functionLoader) functionLoader();
 
-    /* Get version */
+    /* Get version on ES 3.0+/WebGL 2.0+ */
     #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
+
+    /* ES 3.0+ */
+    #ifndef MAGNUM_TARGET_WEBGL
     glGetIntegerv(GL_MAJOR_VERSION, &_majorVersion);
     glGetIntegerv(GL_MINOR_VERSION, &_minorVersion);
+
+    /* WebGL 2.0, treat it as ES 3.0 */
     #else
+    const std::string version = versionString();
+    if(version.find("WebGL 2") == std::string::npos) {
+        Error() << "Context: unsupported version string:" << version;
+        std::exit(65);
+    }
+    _majorVersion = 3;
+    _minorVersion = 0;
+    #endif
 
     /* On GL 2.1 and ES 2.0 there is no GL_{MAJOR,MINOR}_VERSION, we have to
        parse version string. On desktop GL we have no way to check version
        without version (duh) so we work around that by checking for invalid
        enum error. */
+    #else
     #ifndef MAGNUM_TARGET_GLES2
     glGetIntegerv(GL_MAJOR_VERSION, &_majorVersion);
     const auto versionNumberError = Renderer::error();
