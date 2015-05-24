@@ -294,12 +294,11 @@ void MeshGLTest::constructMove() {
 void MeshGLTest::wrap() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::vertex_array_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::vertex_array_object::string() + std::string{" is not supported."});
     #elif defined(MAGNUM_TARGET_GLES2)
     if(!Context::current()->isExtensionSupported<Extensions::GL::OES::vertex_array_object>())
+        CORRADE_SKIP(Extensions::GL::OES::vertex_array_object::string() + std::string{" is not supported."});
     #endif
-    {
-        CORRADE_SKIP(Extensions::GL::ARB::vertex_array_object::string() + std::string{" is not supported."});
-    }
 
     GLuint id;
     glGenVertexArrays(1, &id);
