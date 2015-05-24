@@ -279,7 +279,8 @@ void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr i
 
         /* Indexed mesh */
         } else {
-            #ifndef MAGNUM_TARGET_GLES2
+            /** @todo re-enable for WebGL 2.0 when glDrawRangeElements() no longer crashes Firefox */
+            #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
             /* Indexed mesh with specified range */
             if(indexEnd) {
                 glDrawRangeElements(GLenum(_primitive), indexStart, indexEnd, count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset));
