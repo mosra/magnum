@@ -44,6 +44,7 @@ Image2D* AbstractImageConverter::exportToImage(const ImageReference2D& image) co
 
 Image2D* AbstractImageConverter::doExportToImage(const ImageReference2D&) const {
     CORRADE_ASSERT(false, "Trade::AbstractImageConverter::exportToImage(): feature advertised but not implemented", nullptr);
+    return nullptr;
 }
 
 Containers::Array<char> AbstractImageConverter::exportToData(const ImageReference2D& image) const {
@@ -55,6 +56,7 @@ Containers::Array<char> AbstractImageConverter::exportToData(const ImageReferenc
 
 Containers::Array<char> AbstractImageConverter::doExportToData(const ImageReference2D&) const {
     CORRADE_ASSERT(false, "Trade::AbstractImageConverter::exportToData(): feature advertised but not implemented", nullptr);
+    return nullptr;
 }
 
 bool AbstractImageConverter::exportToFile(const ImageReference2D& image, const std::string& filename) const {
