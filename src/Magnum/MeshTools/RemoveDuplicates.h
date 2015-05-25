@@ -38,12 +38,6 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Functions.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <tuple>
-
-#include "Magnum/MeshTools/Duplicate.h"
-#endif
-
 namespace Magnum { namespace MeshTools {
 
 namespace Implementation {
@@ -162,19 +156,6 @@ template<class Vector> std::vector<UnsignedInt> removeDuplicates(std::vector<Vec
 
     return resultIndices;
 }
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/**
-@copybrief removeDuplicates(std::vector<Vector>&, typename Vector::Type)
-@deprecated Use @ref removeDuplicates(std::vector<Vector>&, typename Vector::Type)
-    instead.
-*/
-template<class Vector> void removeDuplicates(std::vector<UnsignedInt>& indices, std::vector<Vector>& data, typename Vector::Type epsilon = Math::TypeTraits<typename Vector::Type>::epsilon()) {
-    std::vector<UnsignedInt> uniqueIndices;
-    std::tie(uniqueIndices, data) = removeDuplicates(data, epsilon);
-    indices = MeshTools::duplicate(indices, uniqueIndices);
-}
-#endif
 
 }}
 
