@@ -30,7 +30,6 @@
 #include <Corrade/Containers/Array.h>
 
 #include "Magnum/Math/Functions.h"
-#include "Magnum/Buffer.h"
 
 namespace Magnum { namespace MeshTools {
 
@@ -75,19 +74,5 @@ std::tuple<Containers::Array<char>, Mesh::IndexType, UnsignedInt, UnsignedInt> c
 
     return std::make_tuple(std::move(typeData.first), typeData.second, *minmax.first, *minmax.second);
 }
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-void compressIndices(Mesh& mesh, Buffer& buffer, BufferUsage usage, const std::vector<UnsignedInt>& indices) {
-    Containers::Array<char> data;
-    Mesh::IndexType type;
-    UnsignedInt start, end;
-    std::tie(data, type, start, end) = compressIndices(indices);
-
-    buffer.setData(data, usage);
-
-    mesh.setCount(indices.size())
-        .setIndexBuffer(buffer, 0, type, start, end);
-}
-#endif
 
 }}
