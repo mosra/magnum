@@ -74,6 +74,7 @@ bool AbstractFont::openSingleData(const Containers::ArrayReference<const char> d
 
 std::pair<Float, Float> AbstractFont::doOpenSingleData(Containers::ArrayReference<const char>, Float) {
     CORRADE_ASSERT(false, "Text::AbstractFont::openSingleData(): feature advertised but not implemented", {});
+    return {};
 }
 
 bool AbstractFont::openFile(const std::string& filename, const Float size) {
@@ -146,6 +147,7 @@ std::unique_ptr<GlyphCache> AbstractFont::createGlyphCache() {
 
 std::unique_ptr<GlyphCache> AbstractFont::doCreateGlyphCache() {
     CORRADE_ASSERT(false, "Text::AbstractFont::createGlyphCache(): feature advertised but not implemented", nullptr);
+    return nullptr;
 }
 
 std::unique_ptr<AbstractLayouter> AbstractFont::layout(const GlyphCache& cache, const Float size, const std::string& text) {
