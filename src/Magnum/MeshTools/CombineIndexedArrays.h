@@ -37,10 +37,6 @@
 #include "Magnum/Types.h"
 #include "Magnum/MeshTools/visibility.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Utility/Macros.h>
-#endif
-
 namespace Magnum { namespace MeshTools {
 
 namespace Implementation {
@@ -192,16 +188,6 @@ template<class ...T> std::vector<UnsignedInt> combineIndexedArrays(const std::pa
 
     return combinedIndices;
 }
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/**
- * @copybrief combineIndexedArrays()
- * @deprecated Use @ref combineIndexedArrays() "combineIndexedArrays(const std::pair<const std::vector<UnsignedInt>&, std::vector<T>&>&...)" instead.
- */
-template<class ...T> inline CORRADE_DEPRECATED("use combineIndexedArrays(const std::pair<const std::vector<UnsignedInt>&, std::vector<T>&>&...) instead") std::vector<UnsignedInt> combineIndexedArrays(const std::tuple<const std::vector<UnsignedInt>&, std::vector<T>&>&... indexedArrays) {
-    return combineIndexedArrays(std::make_pair(std::cref(std::get<0>(indexedArrays)), std::ref(std::get<1>(indexedArrays)))...);
-}
-#endif
 
 }}
 
