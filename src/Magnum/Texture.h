@@ -107,44 +107,6 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
     public:
         static const UnsignedInt Dimensions = dimensions; /**< @brief Texture dimension count */
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief Texture target
-         *
-         * @deprecated Use dedicated classes instead, see documentation of
-         *      particular enum value for more information.
-         */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        enum class Target: GLenum {
-            /** @deprecated Used implicitly in @ref Texture1D class. */
-            Texture1D = GL_TEXTURE_1D,
-
-            /** @deprecated Used implicitly in @ref Texture2D class. */
-            Texture2D = GL_TEXTURE_2D,
-
-            /** @deprecated Used implicitly in @ref Texture3D class. */
-            Texture3D = GL_TEXTURE_3D,
-
-            /** @deprecated Use @ref Texture1DArray class instead. */
-            Texture1DArray = GL_TEXTURE_1D_ARRAY,
-
-            /** @deprecated Use @ref Texture2DArray class instead. */
-            Texture2DArray = GL_TEXTURE_2D_ARRAY,
-
-            /** @deprecated Use @ref MultisampleTexture2D class instead. */
-            Texture2DMultisample = GL_TEXTURE_2D_MULTISAMPLE,
-
-            /** @deprecated Use @ref MultisampleTexture2DArray class instead. */
-            Texture2DMultisampleArray = GL_TEXTURE_2D_MULTISAMPLE_ARRAY,
-
-            /** @deprecated Use @ref RectangleTexture class instead. */
-            Rectangle = GL_TEXTURE_RECTANGLE
-        };
-        #else
-        typedef typename DataHelper<Dimensions>::Target Target;
-        #endif
-        #endif
-
         /**
          * @brief Max supported texture size
          *
@@ -186,21 +148,6 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl{GenTextures}
          */
         explicit Texture(): AbstractTexture(Implementation::textureTarget<dimensions>()) {}
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @copybrief Texture()
-         * @deprecated Use the parameterless @ref Texture() "Texture()"
-         *      constructor or dedicated @ref TextureArray,
-         *      @ref MultisampleTexture, @ref RectangleTexture classes instead.
-         */
-        explicit CORRADE_DEPRECATED("use the parameterless constructor or dedicated TextureArray, MultisampleTexture, RectangleTexture classes instead") Texture(Target target): AbstractTexture(GLenum(target)) {}
-
-        /** @brief Texture target
-         * @deprecated Use dedicated @ref Texture, @ref TextureArray,
-         *      @ref MultisampleTexture, @ref RectangleTexture classes instead.
-         */
-        constexpr CORRADE_DEPRECATED("use dedicated Texture, TextureArray, MultisampleTexture, RectangleTexture classes instead") Target target() const { return static_cast<Target>(_target); }
-        #endif
 
         #ifndef MAGNUM_TARGET_GLES2
         /**

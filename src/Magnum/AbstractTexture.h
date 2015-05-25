@@ -35,10 +35,6 @@
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/Sampler.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Utility/Macros.h>
-#endif
-
 namespace Magnum {
 
 namespace Implementation {
@@ -572,12 +568,6 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_TARGET_GLES
 template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<1> {
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    enum class Target: GLenum {
-        Texture1D = GL_TEXTURE_1D
-    };
-    #endif
-
     static Math::Vector<1, GLint> imageSize(AbstractTexture& texture, GLint level);
 
     static void setWrapping(AbstractTexture& texture, const Array1D<Sampler::Wrapping>& wrapping);
@@ -594,17 +584,6 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<1> {
 };
 #endif
 template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    enum class Target: GLenum {
-        Texture2D = GL_TEXTURE_2D,
-        #ifndef MAGNUM_TARGET_GLES
-        Texture2DMultisample = GL_TEXTURE_2D_MULTISAMPLE,
-        Texture1DArray = GL_TEXTURE_1D_ARRAY,
-        Rectangle = GL_TEXTURE_RECTANGLE
-        #endif
-    };
-    #endif
-
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     static Vector2i imageSize(AbstractTexture& texture, GLint level);
     #endif
@@ -637,20 +616,6 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
 };
 template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    enum class Target: GLenum {
-        #ifndef MAGNUM_TARGET_GLES2
-        Texture3D = GL_TEXTURE_3D,
-        Texture2DArray = GL_TEXTURE_2D_ARRAY,
-        #ifndef MAGNUM_TARGET_GLES
-        Texture2DMultisampleArray = GL_TEXTURE_2D_MULTISAMPLE_ARRAY
-        #endif
-        #else
-        Texture3D = GL_TEXTURE_3D_OES
-        #endif
-    };
-    #endif
-
     #ifndef MAGNUM_TARGET_GLES2
     static Vector3i imageSize(AbstractTexture& texture, GLint level);
     #endif
