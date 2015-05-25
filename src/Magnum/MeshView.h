@@ -36,10 +36,6 @@
 #include "Magnum/OpenGL.h"
 #include "Magnum/visibility.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Utility/Macros.h>
-#endif
-
 namespace Magnum {
 
 namespace Implementation { struct MeshState; }
@@ -211,14 +207,6 @@ class MAGNUM_EXPORT MeshView {
          */
         void draw(AbstractShaderProgram& shader);
         void draw(AbstractShaderProgram&& shader) { draw(shader); } /**< @overload */
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @copybrief draw(AbstractShaderProgram&)
-         * @deprecated Use @ref draw(AbstractShaderProgram&) instead.
-         */
-        CORRADE_DEPRECATED("use draw(AbstractShaderProgram&) instead") void draw();
-        #endif
 
     private:
         #ifndef MAGNUM_TARGET_WEBGL

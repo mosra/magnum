@@ -841,22 +841,6 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
 
         void draw(AbstractShaderProgram&& shader) { draw(shader); } /**< @overload */
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @copybrief draw(AbstractShaderProgram&)
-         * @deprecated Use @ref draw(AbstractShaderProgram&) instead.
-         */
-        CORRADE_DEPRECATED("use draw(AbstractShaderProgram&) instead") void draw() {
-            #ifndef MAGNUM_TARGET_GLES
-            drawInternal(_count, _baseVertex, _instanceCount, _baseInstance, _indexOffset, _indexStart, _indexEnd);
-            #elif !defined(MAGNUM_TARGET_GLES2)
-            drawInternal(_count, _baseVertex, _instanceCount, _indexOffset, _indexStart, _indexEnd);
-            #else
-            drawInternal(_count, _baseVertex, _instanceCount, _indexOffset);
-            #endif
-        }
-        #endif
-
     private:
         #ifndef DOXYGEN_GENERATING_OUTPUT
         struct MAGNUM_LOCAL GenericAttribute {

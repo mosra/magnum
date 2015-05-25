@@ -156,16 +156,4 @@ void MeshView::draw(AbstractShaderProgram& shader) {
     #endif
 }
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-void MeshView::draw() {
-    #ifndef MAGNUM_TARGET_GLES
-    _original.get().drawInternal(_count, _baseVertex, _instanceCount, _baseInstance, _indexOffset, _indexStart, _indexEnd);
-    #elif !defined(MAGNUM_TARGET_GLES2)
-    _original.get().drawInternal(_count, _baseVertex, _instanceCount, _indexOffset, _indexStart, _indexEnd);
-    #else
-    _original.get().drawInternal(_count, _baseVertex, _instanceCount, _indexOffset);
-    #endif
-}
-#endif
-
 }
