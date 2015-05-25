@@ -204,23 +204,6 @@ template<UnsignedInt dimensions, class T> class AbstractObject
             return doTransformationMatrices(objects, initialTransformationMatrix);
         }
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @copybrief transformationMatrices()
-         * @deprecated Use @ref transformationMatrices() "transformationMatrices(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&, const MatrixType&)" instead.
-         */
-        CORRADE_DEPRECATED("use transformationMatrices(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&, const MatrixType&) instead") std::vector<MatrixType> transformationMatrices(const std::vector<AbstractObject<dimensions, T>*>& objects, const MatrixType& initialTransformationMatrix = MatrixType()) const;
-
-        #ifdef CORRADE_GCC47_COMPATIBILITY
-        /* Workarounds to avoid ambiguous overload errors on GCC < 4.8. And I
-           thought 4.7 was bug-free. */
-        std::vector<MatrixType> transformationMatrices(std::initializer_list<std::reference_wrapper<AbstractObject<dimensions, T>>>& objects, const MatrixType& initialTransformationMatrix = MatrixType()) {
-            return transformationMatrices(std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>{objects}, initialTransformationMatrix);
-        }
-        CORRADE_DEPRECATED("use transformationMatrices(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&, const MatrixType&) instead") std::vector<MatrixType> transformationMatrices(std::initializer_list<AbstractObject<dimensions, T>*> objects, const MatrixType& initialTransformationMatrix = MatrixType()) const;
-        #endif
-        #endif
-
         /*@}*/
 
         /**
@@ -241,23 +224,6 @@ template<UnsignedInt dimensions, class T> class AbstractObject
             if(objects.empty()) return;
             objects.front().get().doSetClean(objects);
         }
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @copybrief setClean(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&)
-         * @deprecated Use @ref setClean(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&) instead.
-         */
-        static CORRADE_DEPRECATED("use setClean(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&) instead") void setClean(const std::vector<AbstractObject<dimensions, T>*>& objects);
-
-        #ifdef CORRADE_GCC47_COMPATIBILITY
-        /* Workarounds to avoid ambiguous overload errors on GCC < 4.8. And I
-           thought 4.7 was bug-free. */
-        static void setClean(std::initializer_list<std::reference_wrapper<AbstractObject<dimensions, T>>> objects) {
-            return setClean(std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>{objects});
-        }
-        static CORRADE_DEPRECATED("use setClean(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&) instead") void setClean(std::initializer_list<AbstractObject<dimensions, T>*> objects);
-        #endif
-        #endif
 
         /**
          * @brief Whether absolute transformation is dirty

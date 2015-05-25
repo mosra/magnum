@@ -38,60 +38,8 @@
 
 namespace Magnum { namespace SceneGraph {
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-template<UnsignedInt dimensions, class T> void AbstractObject<dimensions, T>::setClean(const std::vector<AbstractObject<dimensions, T>*>& objects) {
-    std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>> references;
-    references.reserve(objects.size());
-    for(auto o: objects) {
-        CORRADE_INTERNAL_ASSERT(o != nullptr);
-        references.push_back(*o);
-    }
-
-    setClean(references);
-}
-
-#ifdef CORRADE_GCC47_COMPATIBILITY
-template<UnsignedInt dimensions, class T> void AbstractObject<dimensions, T>::setClean(std::initializer_list<AbstractObject<dimensions, T>*> objects) {
-    #ifdef __GNUC__
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-    #endif
-    return setClean(std::vector<AbstractObject<dimensions, T>*>{objects});
-    #ifdef __GNUC__
-    #pragma GCC diagnostic pop
-    #endif
-}
-#endif
-#endif
-
 template<UnsignedInt dimensions, class T> AbstractObject<dimensions, T>::AbstractObject() {}
 template<UnsignedInt dimensions, class T> AbstractObject<dimensions, T>::~AbstractObject() {}
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-template<UnsignedInt dimensions, class T> auto AbstractObject<dimensions, T>::transformationMatrices(const std::vector<AbstractObject<dimensions, T>*>& objects, const MatrixType& initialTransformationMatrix) const -> std::vector<MatrixType> {
-    std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>> references;
-    references.reserve(objects.size());
-    for(auto o: objects) {
-        CORRADE_INTERNAL_ASSERT(o != nullptr);
-        references.push_back(*o);
-    }
-
-    return transformationMatrices(references, initialTransformationMatrix);
-}
-
-#ifdef CORRADE_GCC47_COMPATIBILITY
-template<UnsignedInt dimensions, class T> auto AbstractObject<dimensions, T>::transformationMatrices(std::initializer_list<AbstractObject<dimensions, T>*> objects, const MatrixType& initialTransformationMatrix) const -> std::vector<MatrixType> {
-    #ifdef __GNUC__
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-    #endif
-    return transformationMatrices(std::vector<AbstractObject<dimensions, T>*>{objects}, initialTransformationMatrix);
-    #ifdef __GNUC__
-    #pragma GCC diagnostic pop
-    #endif
-}
-#endif
-#endif
 
 template<UnsignedInt dimensions, class T> AbstractTransformation<dimensions, T>::AbstractTransformation() {}
 
@@ -232,32 +180,6 @@ template<class Transformation> auto Object<Transformation>::transformationMatric
     return transformationMatrices;
 }
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-template<class Transformation> auto Object<Transformation>::transformationMatrices(const std::vector<Object<Transformation>*>& objects, const MatrixType& initialTransformationMatrix) const -> std::vector<MatrixType> {
-    std::vector<std::reference_wrapper<Object<Transformation>>> references;
-    references.reserve(objects.size());
-    for(auto o: objects) {
-        CORRADE_INTERNAL_ASSERT(o != nullptr);
-        references.push_back(*o);
-    }
-
-    return transformationMatrices(references, initialTransformationMatrix);
-}
-
-#ifdef CORRADE_GCC47_COMPATIBILITY
-template<class Transformation> auto Object<Transformation>::transformationMatrices(std::initializer_list<Object<Transformation>*> objects, const MatrixType& initialTransformationMatrix) const -> std::vector<MatrixType> {
-    #ifdef __GNUC__
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-    #endif
-    return transformationMatrices(std::vector<Object<Transformation>*>{objects}, initialTransformationMatrix);
-    #ifdef __GNUC__
-    #pragma GCC diagnostic pop
-    #endif
-}
-#endif
-#endif
-
 /*
 Computing absolute transformations for given list of objects
 
@@ -365,32 +287,6 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
     return jointTransformations;
 }
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-template<class Transformation> std::vector<typename Transformation::DataType> Object<Transformation>::transformations(const std::vector<Object<Transformation>*>& objects, const typename Transformation::DataType& initialTransformation) const {
-    std::vector<std::reference_wrapper<Object<Transformation>>> references;
-    references.reserve(objects.size());
-    for(auto o: objects) {
-        CORRADE_INTERNAL_ASSERT(o != nullptr);
-        references.push_back(*o);
-    }
-
-    return transformations(std::move(references), initialTransformation);
-}
-
-#ifdef CORRADE_GCC47_COMPATIBILITY
-template<class Transformation> std::vector<typename Transformation::DataType> Object<Transformation>::transformations(std::initializer_list<Object<Transformation>*> objects, const typename Transformation::DataType& initialTransformation) const {
-    #ifdef __GNUC__
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-    #endif
-    return transformations(std::vector<Object<Transformation>*>{objects}, initialTransformation);
-    #ifdef __GNUC__
-    #pragma GCC diagnostic pop
-    #endif
-}
-#endif
-#endif
-
 template<class Transformation> typename Transformation::DataType Object<Transformation>::computeJointTransformation(const std::vector<std::reference_wrapper<Object<Transformation>>>& jointObjects, std::vector<typename Transformation::DataType>& jointTransformations, const std::size_t joint, const typename Transformation::DataType& initialTransformation) const {
     std::reference_wrapper<Object<Transformation>> o = jointObjects[joint];
 
@@ -475,32 +371,6 @@ template<class Transformation> void Object<Transformation>::setClean(std::vector
         CORRADE_ASSERT(!objects[i].get().isDirty(), "SceneGraph::Object::setClean(): original implementation was not called", );
     }
 }
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-template<class Transformation> void Object<Transformation>::setClean(const std::vector<Object<Transformation>*>& objects) {
-    std::vector<std::reference_wrapper<Object<Transformation>>> references;
-    references.reserve(objects.size());
-    for(auto o: objects) {
-        CORRADE_INTERNAL_ASSERT(o != nullptr);
-        references.push_back(*o);
-    }
-
-    setClean(std::move(references));
-}
-
-#ifdef CORRADE_GCC47_COMPATIBILITY
-template<class Transformation> void Object<Transformation>::setClean(std::initializer_list<Object<Transformation>*> objects) {
-    #ifdef __GNUC__
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-    #endif
-    setClean(std::vector<Object<Transformation>*>{objects});
-    #ifdef __GNUC__
-    #pragma GCC diagnostic pop
-    #endif
-}
-#endif
-#endif
 
 template<class Transformation> void Object<Transformation>::setCleanInternal(const typename Transformation::DataType& absoluteTransformation) {
     /* "Lazy storage" for transformation matrix and inverted transformation matrix */
