@@ -125,15 +125,7 @@ class MAGNUM_EXPORT Context {
              * @todo In ES available under glGetIntegerv(CONTEXT_ROBUST_ACCESS_EXT),
              *      how to make it compatible?
              */
-            RobustAccess = GL_CONTEXT_FLAG_ROBUST_ACCESS_BIT_ARB,
-
-            #ifdef MAGNUM_BUILD_DEPRECATED
-            /**
-             * @copybrief Flag::RobustAccess
-             * @deprecated Use @ref Flag::RobustAccess instead.
-             */
-            Robustness = GL_CONTEXT_FLAG_ROBUST_ACCESS_BIT_ARB
-            #endif
+            RobustAccess = GL_CONTEXT_FLAG_ROBUST_ACCESS_BIT_ARB
             #endif
         };
 
