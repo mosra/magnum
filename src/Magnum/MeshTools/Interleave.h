@@ -35,12 +35,6 @@
 
 #include "Magnum/Magnum.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <tuple>
-#include "Magnum/Buffer.h"
-#include "Magnum/Mesh.h"
-#endif
-
 namespace Magnum { namespace MeshTools {
 
 namespace Implementation {
@@ -177,49 +171,6 @@ template<class T, class ...U> void interleaveInto(Containers::ArrayReference<cha
     /* Write data */
     Implementation::writeInterleaved(stride, buffer.begin(), first, next...);
 }
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/**
-@brief Interleave vertex attributes, write them to array buffer and configure the mesh
-@param mesh         Output mesh
-@param buffer       Output vertex buffer
-@param usage        Vertex buffer usage
-@param attributes   Attribute arrays and gaps
-
-The same as @ref interleave(const T&, const U&...), but this function also
-writes the output to given array buffer. If given mesh is not indexed, it also
-updates vertex count in the mesh accordingly, so you don't have to call
-@ref Mesh::setCount() on your own.
-
-@attention You still must call @ref Mesh::setPrimitive() and
-    @ref Mesh::addVertexBuffer() on the mesh afterwards.
-
-@see @ref compressIndices(), @ref compile()
-
-@deprecated Use general-purpose @ref interleave(const T&...) instead.
-*/
-template<class ...T> CORRADE_DEPRECATED("Use interleave(const T&...) instead") void interleave(Mesh& mesh, Buffer& buffer, BufferUsage usage, const T&... attributes) {
-    if(!mesh.isIndexed()) mesh.setCount(Implementation::AttributeCount{}(attributes...));
-    buffer.setData(interleave(attributes...), usage);
-}
-
-/**
-@brief Write vertex attribute to array buffer and configure the mesh
-
-Simplified specialization of the above function for only one attribute array,
-equivalent to the following:
-@code
-if(!mesh.isIndexed()) mesh.setCount(attribute.size());
-buffer.setData(attribute, usage);
-@endcode
-
-@deprecated Use general-purpose @ref interleave(const T&...) instead.
-*/
-template<class T> CORRADE_DEPRECATED("Use interleave(const T&...) instead") typename std::enable_if<!std::is_convertible<T, std::size_t>::value, void>::type interleave(Mesh& mesh, Buffer& buffer, BufferUsage usage, const T& attribute) {
-    if(!mesh.isIndexed()) mesh.setCount(attribute.size());
-    buffer.setData(attribute, usage);
-}
-#endif
 
 }}
 
