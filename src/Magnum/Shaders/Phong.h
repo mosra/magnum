@@ -153,31 +153,6 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          */
         typedef Generic3D::TextureCoordinates TextureCoordinates;
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        enum: Int {
-            /**
-             * Ambient texture binding unit. Used only if
-             * @ref Flag::AmbientTexture is set.
-             * @deprecated Use @ref setAmbientTexture() instead.
-             */
-            AmbientTextureLayer = 0,
-
-            /**
-             * Diffuse texture binding unit. Used only if
-             * @ref Flag::DiffuseTexture is set.
-             * @deprecated Use @ref setDiffuseTexture() instead.
-             */
-            DiffuseTextureLayer = 1,
-
-            /**
-             * Specular texture binding unit. Used only if
-             * @ref Flag::SpecularTexture is set.
-             * @deprecated Use @ref setSpecularTexture() instead.
-             */
-            SpecularTextureLayer = 2
-        };
-        #endif
-
         /**
          * @brief Flag
          *

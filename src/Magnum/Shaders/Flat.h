@@ -142,17 +142,6 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public Abstra
          */
         typedef typename Generic<dimensions>::TextureCoordinates TextureCoordinates;
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        enum: Int {
-            /**
-             * Color texture binding unit. Used only if @ref Flag::Textured is
-             * set.
-             * @deprecated use @ref setTexture() instead.
-             */
-            TextureLayer = 0
-        };
-        #endif
-
         #ifdef DOXYGEN_GENERATING_OUTPUT
         /**
          * @brief Flag
