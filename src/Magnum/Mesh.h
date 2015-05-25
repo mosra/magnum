@@ -616,39 +616,6 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
             return *this;
         }
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @copybrief count()
-         * @deprecated Use @ref count() instead.
-         */
-        CORRADE_DEPRECATED("use count() instead") Int vertexCount() const {
-            return isIndexed() ? 0 : count();
-        }
-
-        /**
-         * @copybrief setCount()
-         * @deprecated Use @ref setCount() instead.
-         */
-        CORRADE_DEPRECATED("use setCount() instead") Mesh& setVertexCount(Int count) {
-            if(!isIndexed()) setCount(count);
-            return *this;
-        }
-
-        /**
-         * @copybrief count()
-         * @deprecated Use @ref count() instead.
-         */
-        CORRADE_DEPRECATED("use count() instead") Int indexCount() const {
-            return count();
-        }
-
-        /**
-         * @copybrief setCount()
-         * @deprecated Use @ref setCount() instead.
-         */
-        CORRADE_DEPRECATED("use setCount() instead") Mesh& setIndexCount(Int count) { return setCount(count); }
-        #endif
-
         /** @brief Instance count */
         Int instanceCount() const { return _instanceCount; }
 

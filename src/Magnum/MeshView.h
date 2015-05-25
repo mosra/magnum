@@ -136,19 +136,6 @@ class MAGNUM_EXPORT MeshView {
             return *this;
         }
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief Set vertex range
-         * @param first     First vertex
-         * @param count     Vertex count
-         *
-         * @deprecated Use @ref setCount() and @ref setBaseVertex() instead.
-         */
-        CORRADE_DEPRECATED("use setCount() and setBaseVertex() instead") MeshView& setVertexRange(Int first, Int count) {
-            return setCount(count), setBaseVertex(first);
-        }
-        #endif
-
         /**
          * @brief Set index range
          * @param first     First vertex
@@ -166,22 +153,6 @@ class MAGNUM_EXPORT MeshView {
         /* MinGW/MSVC needs inline also here to avoid linkage conflicts */
         inline MeshView& setIndexRange(Int first, UnsignedInt start, UnsignedInt end);
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief Set index range
-         * @param first     First index
-         * @param count     Index count
-         * @param start     Minimum array index contained in the buffer
-         * @param end       Maximum array index contained in the buffer
-         *
-         * @deprecated Use @ref setCount() and
-         *      @ref setIndexRange(Int, UnsignedInt, UnsignedInt) instead.
-         */
-        CORRADE_DEPRECATED("use setCount() and setIndexRange(Int, UnsignedInt, UnsignedInt) instead") MeshView& setIndexRange(Int first, Int count, UnsignedInt start, UnsignedInt end) {
-            return setCount(count), setIndexRange(first, start, end);
-        }
-        #endif
-
         /**
          * @brief Set index range
          * @param first     First index
@@ -192,19 +163,6 @@ class MAGNUM_EXPORT MeshView {
          * @see @ref setCount()
          */
         MeshView& setIndexRange(Int first);
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief Set index range
-         * @param first     First index
-         * @param count     Index count
-         *
-         * @deprecated Use @ref setCount() and @ref setIndexRange(Int) instead.
-         */
-        CORRADE_DEPRECATED("use setCount() and setIndexRange(Int) instead") MeshView& setIndexRange(Int first, Int count) {
-            return setCount(count), setIndexRange(first);
-        }
-        #endif
 
         /** @brief Instance count */
         Int instanceCount() const { return _instanceCount; }
