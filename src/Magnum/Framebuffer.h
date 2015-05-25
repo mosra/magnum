@@ -61,8 +61,8 @@ Renderbuffer depthStencil;
 
 // configure the textures and allocate texture memory...
 
-framebuffer.attachTexture2D(Framebuffer::ColorAttachment(0), color);
-framebuffer.attachTexture2D(Framebuffer::ColorAttachment(1), normal);
+framebuffer.attachTexture(Framebuffer::ColorAttachment(0), color);
+framebuffer.attachTexture(Framebuffer::ColorAttachment(1), normal);
 framebuffer.attachRenderbuffer(Framebuffer::BufferAttachment::DepthStencil, depthStencil);
 @endcode
 
@@ -636,7 +636,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * nor @extension{EXT,direct_state_access} desktop extension is
          * available, the framebuffer is bound before the operation (if not
          * already).
-         * @see @ref attachTexture2D(), @fn_gl2{NamedFramebufferTexture,FramebufferTexture},
+         * @see @ref attachTexture(), @fn_gl2{NamedFramebufferTexture,FramebufferTexture},
          *      @fn_gl_extension{NamedFramebufferTexture2D,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and @fn_gl2{FramebufferTexture2D,FramebufferTexture}
          */
@@ -699,34 +699,6 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          *      ES or WebGL.
          */
         Framebuffer& attachTextureLayer(BufferAttachment attachment, MultisampleTexture2DArray& texture, Int layer);
-        #endif
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        #ifndef MAGNUM_TARGET_GLES
-        /**
-         * @copybrief attachTexture()
-         * @deprecated Use one of @ref attachTexture() overloads instead.
-         */
-        CORRADE_DEPRECATED("use one of attachTexture() overloads instead") Framebuffer& attachTexture1D(BufferAttachment attachment, Texture1D& texture, Int level) {
-            return attachTexture(attachment, texture, level);
-        }
-        #endif
-
-        /**
-         * @copybrief attachTexture()
-         * @deprecated Use one of @ref attachTexture() overloads instead.
-         */
-        CORRADE_DEPRECATED("use one of attachTexture() overloads instead") Framebuffer& attachTexture2D(BufferAttachment attachment, Texture2D& texture, Int level);
-
-        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        /**
-         * @copybrief attachTextureLayer()
-         * @deprecated Use one of @ref attachTextureLayer() overloads instead.
-         */
-        CORRADE_DEPRECATED("use one of attachTexture() overloads instead") Framebuffer& attachTexture3D(BufferAttachment attachment, Texture3D& texture, Int level, Int layer) {
-            return attachTextureLayer(attachment, texture, level, layer);
-        }
-        #endif
         #endif
 
         /* Overloads to remove WTF-factor from method chaining order */

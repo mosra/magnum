@@ -273,27 +273,6 @@ Framebuffer& Framebuffer::attachTextureLayer(Framebuffer::BufferAttachment attac
 }
 #endif
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable: 4996) /* deprecated warning */
-#endif
-Framebuffer& Framebuffer::attachTexture2D(BufferAttachment attachment, Texture2D& texture, Int mipLevel) {
-    #ifdef __GNUC__
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-    #endif
-    (this->*Context::current()->state().framebuffer->texture2DImplementation)(attachment, GLenum(texture.target()), texture.id(), mipLevel);
-    #ifdef __GNUC__
-    #pragma GCC diagnostic pop
-    #endif
-    return *this;
-}
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif
-#endif
-
 void Framebuffer::renderbufferImplementationDefault(BufferAttachment attachment, Renderbuffer& renderbuffer) {
     glFramebufferRenderbuffer(GLenum(bindInternal()), GLenum(attachment), GL_RENDERBUFFER, renderbuffer.id());
 }
