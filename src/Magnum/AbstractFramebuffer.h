@@ -71,23 +71,6 @@ typedef Containers::EnumSet<FramebufferClear> FramebufferClearMask;
 @requires_webgl20 Framebuffer blit is not available in WebGL 1.0.
 */
 enum class FramebufferBlit: GLbitfield {
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    /** @copydoc FramebufferBlit::Color
-     * @deprecated Use @ref FramebufferBlit::Color instead.
-     */
-    ColorBuffer = GL_COLOR_BUFFER_BIT,
-
-    /** @copydoc FramebufferBlit::Depth
-     * @deprecated Use @ref FramebufferBlit::Depth instead.
-     */
-    DepthBuffer = GL_DEPTH_BUFFER_BIT,
-
-    /** @copydoc FramebufferBlit::Stencil
-     * @deprecated Use @ref FramebufferBlit::Stencil instead.
-     */
-    StencilBuffer = GL_STENCIL_BUFFER_BIT,
-    #endif
-
     Color = GL_COLOR_BUFFER_BIT,    /**< Color buffer */
     Depth = GL_DEPTH_BUFFER_BIT,    /**< Depth buffer */
     Stencil = GL_STENCIL_BUFFER_BIT /**< Stencil buffer */
