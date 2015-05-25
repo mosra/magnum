@@ -360,13 +360,15 @@ Context::Context(void functionLoader()) {
     /* Load GL function pointers */
     if(functionLoader) functionLoader();
 
+    GLint majorVersion, minorVersion;
+
     /* Get version on ES 3.0+/WebGL 2.0+ */
     #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
 
     /* ES 3.0+ */
     #ifndef MAGNUM_TARGET_WEBGL
-    glGetIntegerv(GL_MAJOR_VERSION, &_majorVersion);
-    glGetIntegerv(GL_MINOR_VERSION, &_minorVersion);
+    glGetIntegerv(GL_MAJOR_VERSION, &majorVersion);
+    glGetIntegerv(GL_MINOR_VERSION, &minorVersion);
 
     /* WebGL 2.0, treat it as ES 3.0 */
     #else
@@ -375,8 +377,8 @@ Context::Context(void functionLoader()) {
         Error() << "Context: unsupported version string:" << version;
         std::exit(65);
     }
-    _majorVersion = 3;
-    _minorVersion = 0;
+    majorVersion = 3;
+    minorVersion = 0;
     #endif
 
     /* On GL 2.1 and ES 2.0 there is no GL_{MAJOR,MINOR}_VERSION, we have to
@@ -385,10 +387,10 @@ Context::Context(void functionLoader()) {
        enum error. */
     #else
     #ifndef MAGNUM_TARGET_GLES2
-    glGetIntegerv(GL_MAJOR_VERSION, &_majorVersion);
+    glGetIntegerv(GL_MAJOR_VERSION, &majorVersion);
     const auto versionNumberError = Renderer::error();
     if(versionNumberError == Renderer::Error::NoError)
-        glGetIntegerv(GL_MINOR_VERSION, &_minorVersion);
+        glGetIntegerv(GL_MINOR_VERSION, &minorVersion);
     else
     #endif
     {
@@ -408,11 +410,11 @@ Context::Context(void functionLoader()) {
            version.find("OpenGL ES 3.") != std::string::npos)
         #endif
         {
-            _majorVersion = 2;
+            majorVersion = 2;
             #ifndef MAGNUM_TARGET_GLES
-            _minorVersion = 1;
+            minorVersion = 1;
             #else
-            _minorVersion = 0;
+            minorVersion = 0;
             #endif
         } else {
             Error() << "Context: unsupported version string:" << version;
@@ -422,7 +424,7 @@ Context::Context(void functionLoader()) {
     #endif
 
     /* Compose the version enum */
-    _version = Magnum::version(_majorVersion, _minorVersion);
+    _version = Magnum::version(majorVersion, minorVersion);
 
     /* Check that version retrieval went right */
     #ifndef CORRADE_NO_ASSERT
@@ -441,9 +443,9 @@ Context::Context(void functionLoader()) {
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
-        Error() << "Context: unsupported OpenGL version" << Magnum::version(_version);
+        Error() << "Context: unsupported OpenGL version" << std::make_pair(majorVersion, minorVersion);
         #else
-        Error() << "Context: unsupported OpenGL ES version" << Magnum::version(_version);
+        Error() << "Context: unsupported OpenGL ES version" << std::make_pair(majorVersion, minorVersion);
         #endif
         std::exit(66);
     }

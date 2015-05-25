@@ -241,22 +241,6 @@ class MAGNUM_EXPORT Context {
         Version version() const { return _version; }
 
         /**
-         * @brief Major OpenGL version (e.g. `4`)
-         *
-         * @see @ref minorVersion(), @ref version(), @ref versionString(),
-         *      @ref shadingLanguageVersionString()
-         */
-        Int majorVersion() const { return _majorVersion; }
-
-        /**
-         * @brief Minor OpenGL version (e.g. `3`)
-         *
-         * @see @ref majorVersion(), @ref version(), @ref versionString(),
-         *      @ref shadingLanguageVersionString()
-         */
-        Int minorVersion() const { return _minorVersion; }
-
-        /**
          * @brief Vendor string
          *
          * The result is *not* cached, repeated queries will result in repeated
@@ -490,8 +474,6 @@ class MAGNUM_EXPORT Context {
         MAGNUM_LOCAL void setupDriverWorkarounds();
 
         Version _version;
-        Int _majorVersion;
-        Int _minorVersion;
         #ifndef MAGNUM_TARGET_WEBGL
         Flags _flags;
         #endif
