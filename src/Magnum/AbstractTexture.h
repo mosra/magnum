@@ -143,14 +143,6 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
     friend CubeMapTexture;
 
     public:
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @copybrief Shader::maxCombinedTextureImageUnits()
-         * @deprecated Use @ref Shader::maxCombinedTextureImageUnits() instead.
-         */
-        static CORRADE_DEPRECATED("use Shader::maxCombinedTextureImageUnits() instead") Int maxLayers();
-        #endif
-
         #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Max level-of-detail bias

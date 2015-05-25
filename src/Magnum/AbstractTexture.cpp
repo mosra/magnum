@@ -37,10 +37,6 @@
 #include "Magnum/TextureFormat.h"
 #include "Magnum/Math/Range.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include "Magnum/Shader.h"
-#endif
-
 #ifndef MAGNUM_TARGET_WEBGL
 #include "Implementation/DebugState.h"
 #endif
@@ -48,10 +44,6 @@
 #include "Implementation/TextureState.h"
 
 namespace Magnum {
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-Int AbstractTexture::maxLayers() { return Shader::maxCombinedTextureImageUnits(); }
-#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 Float AbstractTexture::maxLodBias() {
