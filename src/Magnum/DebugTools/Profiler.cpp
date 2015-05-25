@@ -28,6 +28,7 @@
 #include <algorithm>
 #include <numeric>
 #include <Corrade/Utility/Assert.h>
+#include <Corrade/Utility/Debug.h>
 
 #include "Magnum/Magnum.h"
 
