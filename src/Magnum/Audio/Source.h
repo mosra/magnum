@@ -386,15 +386,6 @@ class MAGNUM_AUDIO_EXPORT Source {
         static void play(std::initializer_list<std::reference_wrapper<Source>> sources);
         static void play(const std::vector<std::reference_wrapper<Source>>& sources); /**< @overload */
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @copybrief play(const std::vector<std::reference_wrapper<Source>>&)
-         * @deprecated Use @ref play(const std::vector<std::reference_wrapper<Source>>&)
-         *      instead.
-         */
-        static CORRADE_DEPRECATED("use play(const std::vector<std::reference_wrapper<Source>>&) instead") void play(const std::vector<Source*>& sources);
-        #endif
-
         /**
          * @brief Pause more sources at once
          *
@@ -407,15 +398,6 @@ class MAGNUM_AUDIO_EXPORT Source {
          */
         static void pause(std::initializer_list<std::reference_wrapper<Source>> sources);
         static void pause(const std::vector<std::reference_wrapper<Source>>& sources); /**< @overload */
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @copybrief pause(const std::vector<std::reference_wrapper<Source>>&)
-         * @deprecated Use @ref pause(const std::vector<std::reference_wrapper<Source>>&)
-         *      instead.
-         */
-        static CORRADE_DEPRECATED("use pause(const std::vector<std::reference_wrapper<Source>>&) instead") void pause(const std::vector<Source*>& sources);
-        #endif
 
         /**
          * @brief Stop more sources at once
@@ -430,15 +412,6 @@ class MAGNUM_AUDIO_EXPORT Source {
         static void stop(std::initializer_list<std::reference_wrapper<Source>> sources);
         static void stop(const std::vector<std::reference_wrapper<Source>>& sources); /**< @overload */
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @copybrief stop(const std::vector<std::reference_wrapper<Source>>&)
-         * @deprecated Use @ref stop(const std::vector<std::reference_wrapper<Source>>&)
-         *      instead.
-         */
-        static CORRADE_DEPRECATED("use stop(const std::vector<std::reference_wrapper<Source>>&) instead") void stop(const std::vector<Source*>& sources);
-        #endif
-
         /**
          * @brief Rewind more sources at once
          *
@@ -451,15 +424,6 @@ class MAGNUM_AUDIO_EXPORT Source {
          */
         static void rewind(std::initializer_list<std::reference_wrapper<Source>> sources);
         static void rewind(const std::vector<std::reference_wrapper<Source>>& sources); /**< @overload */
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @copybrief rewind(const std::vector<std::reference_wrapper<Source>>&)
-         * @deprecated Use @ref rewind(const std::vector<std::reference_wrapper<Source>>&)
-         *      instead.
-         */
-        static CORRADE_DEPRECATED("use rewind(const std::vector<std::reference_wrapper<Source>>&) instead") void rewind(const std::vector<Source*>& sources);
-        #endif
 
         /**
          * @brief State

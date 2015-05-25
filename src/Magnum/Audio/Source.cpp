@@ -54,17 +54,6 @@ Containers::Array<ALuint> sourceIds(const std::vector<std::reference_wrapper<Sou
     return ids;
 }
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-Containers::Array<ALuint> sourceIds(const std::vector<Source*>& sources) {
-    Containers::Array<ALuint> ids(sources.size());
-    for(auto it = sources.begin(); it != sources.end(); ++it) {
-        CORRADE_INTERNAL_ASSERT(*it);
-        ids[it-sources.begin()] = (*it)->id();
-    }
-    return ids;
-}
-#endif
-
 }
 
 void Source::play(std::initializer_list<std::reference_wrapper<Source>> sources) {
@@ -77,13 +66,6 @@ void Source::play(const std::vector<std::reference_wrapper<Source>>& sources) {
     alSourcePlayv(ids.size(), ids);
 }
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-void Source::play(const std::vector<Source*>& sources) {
-    const auto ids = sourceIds(sources);
-    alSourcePlayv(ids.size(), ids);
-}
-#endif
-
 void Source::pause(std::initializer_list<std::reference_wrapper<Source>> sources) {
     const auto ids = sourceIds(sources);
     alSourcePausev(ids.size(), ids);
@@ -93,13 +75,6 @@ void Source::pause(const std::vector<std::reference_wrapper<Source>>& sources) {
     const auto ids = sourceIds(sources);
     alSourcePausev(ids.size(), ids);
 }
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-void Source::pause(const std::vector<Source*>& sources) {
-    const auto ids = sourceIds(sources);
-    alSourcePausev(ids.size(), ids);
-}
-#endif
 
 void Source::stop(std::initializer_list<std::reference_wrapper<Source>> sources) {
     const auto ids = sourceIds(sources);
@@ -111,13 +86,6 @@ void Source::stop(const std::vector<std::reference_wrapper<Source>>& sources) {
     alSourceStopv(ids.size(), ids);
 }
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-void Source::stop(const std::vector<Source*>& sources) {
-    const auto ids = sourceIds(sources);
-    alSourceStopv(ids.size(), ids);
-}
-#endif
-
 void Source::rewind(std::initializer_list<std::reference_wrapper<Source>> sources) {
     const auto ids = sourceIds(sources);
     alSourceRewindv(ids.size(), ids);
@@ -127,13 +95,6 @@ void Source::rewind(const std::vector<std::reference_wrapper<Source>>& sources) 
     const auto ids = sourceIds(sources);
     alSourceRewindv(ids.size(), ids);
 }
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-void Source::rewind(const std::vector<Source*>& sources) {
-    const auto ids = sourceIds(sources);
-    alSourceRewindv(ids.size(), ids);
-}
-#endif
 
 Debug operator<<(Debug debug, const Source::State value) {
     switch(value) {
