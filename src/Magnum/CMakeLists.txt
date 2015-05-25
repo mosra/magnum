@@ -183,7 +183,6 @@ if(NOT TARGET_WEBGL)
 
     if(BUILD_DEPRECATED)
         list(APPEND Magnum_HEADERS
-            DebugMarker.h
             DebugMessage.h)
     endif()
 endif()
