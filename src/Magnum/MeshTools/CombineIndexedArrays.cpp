@@ -40,7 +40,7 @@ std::pair<std::vector<UnsignedInt>, std::vector<UnsignedInt>> interleaveAndCombi
     /* Array stride and size */
     const UnsignedInt stride = end - begin;
     const UnsignedInt inputSize = begin->get().size();
-    #ifndef CORRADE_NO_ASSERT
+    #if !defined(CORRADE_NO_ASSERT) || defined(CORRADE_GRACEFUL_ASSERT)
     for(auto it = begin; it != end; ++it)
         CORRADE_ASSERT(it->get().size() == inputSize, "MeshTools::combineIndexArrays(): the arrays don't have the same size", {});
     #endif
