@@ -688,23 +688,32 @@ class MAGNUM_EXPORT Renderer {
         enum class BlendEquation: GLenum {
             Add = GL_FUNC_ADD,                          /**< `source + destination` */
             Subtract = GL_FUNC_SUBTRACT,                /**< `source - destination` */
-            ReverseSubtract = GL_FUNC_REVERSE_SUBTRACT  /**< `destination - source` */
+            ReverseSubtract = GL_FUNC_REVERSE_SUBTRACT, /**< `destination - source` */
 
-            #ifndef MAGNUM_TARGET_GLES2
-            ,
             /**
              * `min(source, destination)`
              * @requires_gles30 Extension @es_extension2{EXT,blend_minmax,blend_minmax}
-             *      in OpenGL ES 2.0
+             *      in OpenGL ES 2.0.
+             * @requires_webgl20 Extension @webgl_extension{EXT,blend_minmax}
+             *      in WebGL 1.0.
              */
+            #ifndef MAGNUM_TARGET_GLES2
             Min = GL_MIN,
+            #else
+            Min = GL_MIN_EXT,
+            #endif
 
             /**
              * `max(source, destination)`
              * @requires_gles30 Extension @es_extension2{EXT,blend_minmax,blend_minmax}
-             *      in OpenGL ES 2.0
+             *      in OpenGL ES 2.0.
+             * @requires_webgl20 Extension @webgl_extension{EXT,blend_minmax}
+             *      in WebGL 1.0.
              */
+            #ifndef MAGNUM_TARGET_GLES2
             Max = GL_MAX
+            #else
+            Max = GL_MAX_EXT
             #endif
         };
 
