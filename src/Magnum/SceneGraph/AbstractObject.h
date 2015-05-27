@@ -255,7 +255,7 @@ template<UnsignedInt dimensions, class T> class AbstractObject
          * calls @ref setClean() on every parent which is not already clean. If
          * the object is already clean, the function does nothing.
          *
-         * See also @ref setClean(const std::vector<AbstractObject<dimensions, T>*>&),
+         * See also @ref setClean(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>&),
          * which cleans given set of objects more efficiently than when calling
          * @ref setClean() on each object individually.
          * @see @ref scenegraph-features-caching, @ref setDirty(),

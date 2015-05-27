@@ -227,8 +227,7 @@ class MAGNUM_EXPORT Context {
         /**
          * @brief OpenGL version
          *
-         * @see @ref majorVersion(), @ref minorVersion(), @ref versionString(),
-         *      @ref shadingLanguageVersionString()
+         * @see @ref versionString(), @ref shadingLanguageVersionString()
          */
         Version version() const { return _version; }
 
