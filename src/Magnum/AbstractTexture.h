@@ -619,11 +619,9 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
     #ifndef MAGNUM_TARGET_GLES2
     static Vector3i imageSize(AbstractTexture& texture, GLint level);
     #endif
-    #endif
 
     static void setWrapping(AbstractTexture& texture, const Array3D<Sampler::Wrapping>& wrapping);
 
-    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     static void setStorage(AbstractTexture& texture, GLsizei levels, TextureFormat internalFormat, const Vector3i& size);
 
     #ifndef MAGNUM_TARGET_GLES

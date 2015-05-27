@@ -235,8 +235,8 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * See @ref Texture::setWrapping() for more information.
          */
-        CubeMapTexture& setWrapping(const Array3D<Sampler::Wrapping>& wrapping) {
-            DataHelper<3>::setWrapping(*this, wrapping);
+        CubeMapTexture& setWrapping(const Array2D<Sampler::Wrapping>& wrapping) {
+            DataHelper<2>::setWrapping(*this, wrapping);
             return *this;
         }
 

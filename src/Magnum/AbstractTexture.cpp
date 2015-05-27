@@ -1520,15 +1520,19 @@ void AbstractTexture::DataHelper<2>::setWrapping(AbstractTexture& texture, const
     (texture.*state.parameteriImplementation)(GL_TEXTURE_WRAP_T, GLint(wrapping.y()));
 }
 
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 void AbstractTexture::DataHelper<3>::setWrapping(AbstractTexture& texture, const Array3D<Sampler::Wrapping>& wrapping) {
     const Implementation::TextureState& state = *Context::current()->state().texture;
 
     (texture.*state.parameteriImplementation)(GL_TEXTURE_WRAP_S, GLint(wrapping.x()));
     (texture.*state.parameteriImplementation)(GL_TEXTURE_WRAP_T, GLint(wrapping.y()));
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
     (texture.*state.parameteriImplementation)(GL_TEXTURE_WRAP_R, GLint(wrapping.z()));
+    #else
+    (texture.*state.parameteriImplementation)(GL_TEXTURE_WRAP_R_OES, GLint(wrapping.z()));
     #endif
 }
+#endif
 #endif
 
 }

@@ -224,8 +224,8 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *
          * See @ref Texture::setWrapping() for more information.
          */
-        TextureArray<dimensions>& setWrapping(const Array<dimensions+1, Sampler::Wrapping>& wrapping) {
-            DataHelper<dimensions+1>::setWrapping(*this, wrapping);
+        TextureArray<dimensions>& setWrapping(const Array<dimensions, Sampler::Wrapping>& wrapping) {
+            DataHelper<dimensions>::setWrapping(*this, wrapping);
             return *this;
         }
 
