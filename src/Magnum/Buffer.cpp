@@ -343,7 +343,7 @@ void* Buffer::map(const MapAccess access) {
     return (this->*Context::current()->state().buffer->mapImplementation)(access);
 }
 
-#ifdef CORRADE_TARGET_NACL
+#if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_NACL)
 void* Buffer::mapSub(const GLintptr offset, const GLsizeiptr length, const MapAccess access) {
     CORRADE_ASSERT(!_mappedBuffer, "Buffer::mapSub(): the buffer is already mapped", nullptr);
     return _mappedBuffer = glMapBufferSubDataCHROMIUM(GLenum(bindSomewhereInternal(_targetHint)), offset, length, GLenum(access));
@@ -361,7 +361,7 @@ Buffer& Buffer::flushMappedRange(const GLintptr offset, const GLsizeiptr length)
 
 bool Buffer::unmap() { return (this->*Context::current()->state().buffer->unmapImplementation)(); }
 
-#ifdef CORRADE_TARGET_NACL
+#if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_NACL)
 void Buffer::unmapSub() {
     CORRADE_ASSERT(_mappedBuffer, "Buffer::unmapSub(): the buffer is not mapped", );
     glUnmapBufferSubDataCHROMIUM(_mappedBuffer);
