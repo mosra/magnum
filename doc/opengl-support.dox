@@ -177,7 +177,7 @@ GLSL 4.30                                   | done
 @extension{ARB,clear_buffer_object}         | |
 @extension{ARB,compute_shader}              | |
 @extension{ARB,copy_image}                  | |
-@extension{KHR,debug} (also in ES)          | missing log retrieval, sync, pipeline and sampler label
+@extension{KHR,debug}                       | missing log retrieval, sync, pipeline and sampler label
 @extension{ARB,explicit_uniform_location}   | done
 @extension{ARB,fragment_layer_viewport}     | done (shading language only)
 @extension{ARB,framebuffer_no_attachments}  | |
@@ -227,16 +227,16 @@ GLSL 4.50                                   | done
 @extension{ARB,get_texture_sub_image}       | missing compressed texture queries
 @extension{ARB,shader_texture_image_samples} | done (shading language only)
 @extension{ARB,texture_barrier}             | |
-@extension{KHR,context_flush_control} (also in ES) | |
-@extension{KHR,robustness} (also in ES)     | |
+@extension{KHR,context_flush_control}       | |
+@extension{KHR,robustness}                  | |
 
 @subsection opengl-support-extensions ARB / Khronos OpenGL extensions
 
 Extension                                   | Status
 ------------------------------------------- | ------
 @extension{ARB,robustness}                  | done
-@extension3{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr} (also in ES) | |
-@extension{KHR,texture_compression_astc_hdr} (also in ES) | |
+@extension3{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr} | |
+@extension{KHR,texture_compression_astc_hdr} | |
 @extension{ARB,robustness_isolation}        | done
 @extension{ARB,bindless_texture}            | |
 @extension{ARB,compute_variable_group_size} | |
@@ -260,13 +260,13 @@ Extension                                   | Status
 @extension{AMD,vertex_shader_layer}         | done (shading language only)
 @extension{AMD,shader_trinary_minmax}       | done (shading language only)
 @extension{ATI,texture_mirror_once}         | done (GL 4.4 subset)
-@extension{EXT,texture_filter_anisotropic} (also in ES, WebGL) | done
+@extension{EXT,texture_filter_anisotropic}  | done
 @extension{EXT,texture_mirror_clamp}        | only GL 4.4 subset
 @extension{EXT,direct_state_access}         | done for implemented functionality
-@extension{EXT,texture_sRGB_decode} (also in ES) | done
-@extension{EXT,shader_integer_mix} (also in ES) | done (shading language only)
-@extension2{EXT,debug_label} (also in ES)   | missing pipeline and sampler label
-@extension2{EXT,debug_marker} (also in ES)  | done
+@extension{EXT,texture_sRGB_decode}         | done
+@extension{EXT,shader_integer_mix}          | done (shading language only)
+@extension2{EXT,debug_label}                | missing pipeline and sampler label
+@extension2{EXT,debug_marker}               | done
 @extension{GREMEDY,string_marker}           | done
 
 @subsection opengl-support-es20 OpenGL ES 2.0
@@ -290,15 +290,15 @@ Extension                                   | Status
 ------------------------------------------- | ------
 @es_extension{ANGLE,framebuffer_blit}       | done
 @es_extension{ANGLE,framebuffer_multisample} | done
-@es_extension{ANGLE,instanced_arrays} (also in WebGL 1.0) | done
+@es_extension{ANGLE,instanced_arrays}       | done
 @es_extension{ANGLE,depth_texture}          | done
 @es_extension{APPLE,framebuffer_multisample} | done (ES 3.0 subset)
 @es_extension{APPLE,texture_max_level}      | done
 @es_extension{ARM,rgba8}                    | done
 @es_extension{EXT,texture_type_2_10_10_10_REV} | done
 @es_extension{EXT,discard_framebuffer}      | done
-@es_extension2{EXT,blend_minmax,blend_minmax} (also in WebGL 1.0) | done
-@es_extension{EXT,shader_texture_lod} (also in WebGL 1.0) | done (shading language only)
+@es_extension2{EXT,blend_minmax,blend_minmax} | done
+@es_extension{EXT,shader_texture_lod}       | done (shading language only)
 @es_extension{EXT,occlusion_query_boolean}  | done
 @es_extension{EXT,shadow_samplers}          | done
 @es_extension{EXT,texture_rg}               | done
@@ -317,26 +317,23 @@ Extension                                   | Status
 @es_extension{NV,shadow_samplers_array}     | done (shading language only)
 @es_extension{NV,shadow_samplers_cube}      | done (shading language only)
 @es_extension{OES,depth24}                  | done
-@es_extension{OES,element_index_uint} (also in WebGL 1.0) | done
+@es_extension{OES,element_index_uint}       | done
 @es_extension{OES,rgb8_rgba8}               | done (desktop-compatible subset)
 @es_extension{OES,texture_3D}               | done
-@es_extension2{OES,texture_half_float_linear,OES_texture_float_linear} (also in WebGL 1.0) | done
-@es_extension{OES,texture_float_linear} (also in WebGL 1.0) | done
-@es_extension2{OES,texture_half_float,OES_texture_float} (also in WebGL 1.0) | done
-@es_extension{OES,texture_float} (also in WebGL 1.0) | done
+@es_extension2{OES,texture_half_float_linear,OES_texture_float_linear} | done
+@es_extension{OES,texture_float_linear}     | done
+@es_extension2{OES,texture_half_float,OES_texture_float} | done
+@es_extension{OES,texture_float}            | done
 @es_extension{OES,texture_npot}             | done (nothing to do)
 @es_extension{OES,vertex_half_float}        | done
 @es_extension{OES,packed_depth_stencil}     | done
 @es_extension{OES,depth_texture}            | done
-@es_extension{OES,standard_derivatives} (also in WebGL 1,0) | done
-@es_extension{OES,vertex_array_object} (also in WebGL 1.0) | done
+@es_extension{OES,standard_derivatives}     | done
+@es_extension{OES,vertex_array_object}      | done
 @es_extension{OES,required_internalformat}  | done (desktop-compatible subset)
 @es_extension{OES,surfaceless_context}      | done
 
 @subsection opengl-support-es-extensions OpenGL ES extensions to match desktop functionality
-
-Only extensions not already listed in above tables (marked with *also in ES*)
-are included here.
 
 @todo @es_extension{NV,non_square_matrices}
 @todo Support also IMG_multisampled_render_to_texture? It has different enum
@@ -346,15 +343,25 @@ Extension                                   | Status
 ------------------------------------------- | ------
 @es_extension{APPLE,texture_format_BGRA8888} | done
 @es_extension{CHROMIUM,map_sub} (NaCl only) | only buffer mapping
+@es_extension{EXT,texture_filter_anisotropic} | done
 @es_extension{EXT,texture_format_BGRA8888}  | done
 @es_extension{EXT,read_format_bgra}         | done
 @es_extension2{EXT,multi_draw_arrays,multi_draw_arrays} | done
-@es_extension{EXT,disjoint_timer_query}     | only time elapsed query
+@es_extension{EXT,debug_label}              | see above
+@es_extension{EXT,debug_marker}             | done
 @es_extension{EXT,separate_shader_objects}  | only direct uniform binding
 @es_extension{EXT,sRGB}                     | done
 @es_extension{EXT,multisampled_render_to_texture} | only renderbuffer storage
 @es_extension{EXT,robustness}               | done
+@es_extension{EXT,disjoint_timer_query}     | only time elapsed query
+@es_extension{EXT,texture_sRGB_decode}      | done
+@es_extension{EXT,shader_integer_mix}       | done (shading language only)
+@extension3{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr} | |
+@extension{KHR,texture_compression_astc_hdr} | |
+@es_extension{KHR,debug}                    | see above
+@es_extension{KHR,robustness}               | |
 @es_extension{KHR,robust_buffer_access_behavior} | done (nothing to do)
+@es_extension{KHR,context_flush_control}    | |
 @es_extension2{NV,read_buffer_front,NV_read_buffer} | done
 @es_extension2{NV,read_depth,NV_read_depth_stencil} | done
 @es_extension2{NV,read_stencil,NV_read_depth_stencil} | done
@@ -377,18 +384,28 @@ supported.
 
 @subsection opengl-support-webgl20-extensions WebGL 1.0 extensions to match WebGL 2.0 functionality
 
-Only extensions not already listed in above tables (marked with *also in WebGL
-1.0*) are included here.
-
 Extension                                   | Status
 ------------------------------------------- | ------
+@webgl_extension{ANGLE,instanced_arrays}    | done
+@webgl_extension{EXT,blend_minmax}          | done
+@webgl_extension{EXT,shader_texture_lod}    | done (shading language only)
+@webgl_extension{OES,texture_float}         | done
+@webgl_extension{OES,texture_half_float}    | done
+@webgl_extension{OES,standard_derivatives}  | done
+@webgl_extension{OES,vertex_array_object}   | done
+@webgl_extension{OES,element_index_uint}    | done
+@webgl_extension{OES,texture_float_linear}  | done
+@webgl_extension{OES,texture_half_float_linear} | done
 @webgl_extension{WEBGL,depth_texture}       | done
 @webgl_extension{WEBGL,draw_buffers}        | done
 
 @subsection opengl-support-webgl-extensions WebGL extensions to match desktop functionality
 
-All currently implemented extensions are already listed in above tables (marked
-with *also in WebGL*).
+Extension                                   | Status
+------------------------------------------- | ------
+@webgl_extension{EXT,texture_filter_anisotropic} | done
+@webgl_extension{EXT,sRGB}                  | done
+@webgl_extension{EXT,disjoint_timer_query}  | only time elapsed query
 
 @section opengl-unsupported Unsupported OpenGL features
 

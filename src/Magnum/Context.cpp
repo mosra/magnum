@@ -231,10 +231,10 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,OES,texture_float),
         _extension(GL,OES,texture_half_float),
         _extension(GL,OES,standard_derivatives),
+        _extension(GL,OES,vertex_array_object),
         _extension(GL,OES,element_index_uint),
         _extension(GL,OES,texture_float_linear),
         _extension(GL,OES,texture_half_float_linear),
-        _extension(GL,OES,vertex_array_object),
         _extension(GL,WEBGL,depth_texture),
         _extension(GL,WEBGL,draw_buffers)};
     #endif

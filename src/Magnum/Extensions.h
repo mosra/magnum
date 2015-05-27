@@ -240,23 +240,25 @@ namespace GL {
         _extension(GL,EXT,sRGB,                     GLES200,    None) // #17
         #ifdef MAGNUM_TARGET_GLES2
         _extension(GL,EXT,blend_minmax,             GLES200, GLES300) // #25
-        _extension(GL,EXT,shader_texture_lod,       GLES200, GLES300) // #27
         #endif
         _extension(GL,EXT,disjoint_timer_query,     GLES200,    None) // #26
+        #ifdef MAGNUM_TARGET_GLES2
+        _extension(GL,EXT,shader_texture_lod,       GLES200, GLES300) // #27
+        #endif
     } namespace OES {
         #ifdef MAGNUM_TARGET_GLES2
         _extension(GL,OES,texture_float,            GLES200, GLES300) // #1
         _extension(GL,OES,texture_half_float,       GLES200, GLES300) // #2
         _extension(GL,OES,standard_derivatives,     GLES200, GLES300) // #4
+        _extension(GL,OES,vertex_array_object,      GLES200, GLES300) // #5
         _extension(GL,OES,element_index_uint,       GLES200, GLES300) // #10
         _extension(GL,OES,texture_float_linear,     GLES200, GLES300) // #20
         _extension(GL,OES,texture_half_float_linear, GLES200, GLES300) // #21
-        _extension(GL,OES,vertex_array_object,      GLES200, GLES300) // #5
         #endif
     } namespace WEBGL {
         #ifdef MAGNUM_TARGET_GLES2
-        _extension(GL,WEBGL,depth_texture,          GLES200, GLES300) // #9, EXT
-        _extension(GL,WEBGL,draw_buffers,           GLES200, GLES300) // #18, EXT
+        _extension(GL,WEBGL,depth_texture,          GLES200, GLES300) // #9
+        _extension(GL,WEBGL,draw_buffers,           GLES200, GLES300) // #18
         #endif
     }
     #else
