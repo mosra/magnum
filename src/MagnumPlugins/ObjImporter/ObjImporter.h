@@ -67,7 +67,7 @@ class ObjImporter: public AbstractImporter {
         Features doFeatures() const override;
 
         bool doIsOpened() const override;
-        void doOpenData(Containers::ArrayReference<const char> data) override;
+        void doOpenData(Containers::ArrayView<const char> data) override;
         void doOpenFile(const std::string& filename) override;
         void doClose() override;
 

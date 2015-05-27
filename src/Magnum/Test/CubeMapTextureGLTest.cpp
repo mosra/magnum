@@ -361,8 +361,8 @@ void CubeMapTextureGLTest::imageFull() {
 
     CORRADE_COMPARE(image.size(), Vector3i(2, 2, 6));
     CORRADE_COMPARE_AS(
-        Containers::ArrayReference<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()),
-        Containers::ArrayReference<const UnsignedByte>{DataFull}, TestSuite::Compare::Container);
+        Containers::ArrayView<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()),
+        Containers::ArrayView<const UnsignedByte>{DataFull}, TestSuite::Compare::Container);
 }
 
 void CubeMapTextureGLTest::imageFullBuffer() {
@@ -381,7 +381,7 @@ void CubeMapTextureGLTest::imageFullBuffer() {
 
     CORRADE_COMPARE(image.size(), Vector3i(2, 2, 6));
     const auto imageData = image.buffer().data<UnsignedByte>();
-    CORRADE_COMPARE_AS(imageData, Containers::ArrayReference<const UnsignedByte>{DataFull}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedByte>{DataFull}, TestSuite::Compare::Container);
 }
 #endif
 
@@ -407,8 +407,8 @@ void CubeMapTextureGLTest::image() {
 
     CORRADE_COMPARE(image.size(), Vector2i(2));
     CORRADE_COMPARE_AS(
-        Containers::ArrayReference<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()),
-        Containers::ArrayReference<const UnsignedByte>{Data}, TestSuite::Compare::Container);
+        Containers::ArrayView<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()),
+        Containers::ArrayView<const UnsignedByte>{Data}, TestSuite::Compare::Container);
     #endif
 }
 
@@ -428,7 +428,7 @@ void CubeMapTextureGLTest::imageBuffer() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(2));
-    CORRADE_COMPARE_AS(imageData, Containers::ArrayReference<const UnsignedByte>{Data}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedByte>{Data}, TestSuite::Compare::Container);
     #endif
 }
 #endif
@@ -460,8 +460,8 @@ void CubeMapTextureGLTest::subImage() {
 
     CORRADE_COMPARE(image.size(), Vector2i(4));
     CORRADE_COMPARE_AS(
-        Containers::ArrayReference<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()),
-        Containers::ArrayReference<const UnsignedByte>{SubDataComplete}, TestSuite::Compare::Container);
+        Containers::ArrayView<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()),
+        Containers::ArrayView<const UnsignedByte>{SubDataComplete}, TestSuite::Compare::Container);
     #endif
 }
 
@@ -483,7 +483,7 @@ void CubeMapTextureGLTest::subImageBuffer() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(4));
-    CORRADE_COMPARE_AS(imageData, Containers::ArrayReference<const UnsignedByte>{SubDataComplete}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedByte>{SubDataComplete}, TestSuite::Compare::Container);
     #endif
 }
 #endif
@@ -508,8 +508,8 @@ void CubeMapTextureGLTest::subImageQuery() {
 
     CORRADE_COMPARE(image.size(), Vector3i(2, 2, 1));
     CORRADE_COMPARE_AS(
-        Containers::ArrayReference<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()),
-        Containers::ArrayReference<const UnsignedByte>{Data}, TestSuite::Compare::Container);
+        Containers::ArrayView<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()),
+        Containers::ArrayView<const UnsignedByte>{Data}, TestSuite::Compare::Container);
 }
 
 void CubeMapTextureGLTest::subImageQueryBuffer() {
@@ -531,7 +531,7 @@ void CubeMapTextureGLTest::subImageQueryBuffer() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i(2, 2, 1));
-    CORRADE_COMPARE_AS(imageData, Containers::ArrayReference<const UnsignedByte>{Data}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedByte>{Data}, TestSuite::Compare::Container);
 }
 #endif
 

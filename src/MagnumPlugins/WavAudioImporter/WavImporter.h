@@ -62,7 +62,7 @@ class WavImporter: public AbstractImporter {
     private:
         Features doFeatures() const override;
         bool doIsOpened() const override;
-        void doOpenData(Containers::ArrayReference<const char> data) override;
+        void doOpenData(Containers::ArrayView<const char> data) override;
         void doClose() override;
 
         Buffer::Format doFormat() const override;

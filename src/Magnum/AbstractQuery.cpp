@@ -85,7 +85,7 @@ std::string AbstractQuery::label() const {
     #endif
 }
 
-AbstractQuery& AbstractQuery::setLabelInternal(const Containers::ArrayReference<const char> label) {
+AbstractQuery& AbstractQuery::setLabelInternal(const Containers::ArrayView<const char> label) {
     #ifndef MAGNUM_TARGET_GLES
     Context::current()->state().debug->labelImplementation(GL_QUERY, _id, label);
     #else

@@ -29,7 +29,7 @@
  * @brief Class @ref Magnum::AbstractTexture
  */
 
-#include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/ArrayView.h>
 
 #include "Magnum/AbstractObject.h"
 #include "Magnum/DimensionTraits.h"
@@ -343,7 +343,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         explicit AbstractTexture(GLuint id, GLenum target, ObjectFlags flags) noexcept: _target{target}, _id{id}, _flags{flags} {}
 
         #ifndef MAGNUM_TARGET_WEBGL
-        AbstractTexture& setLabelInternal(Containers::ArrayReference<const char> label);
+        AbstractTexture& setLabelInternal(Containers::ArrayView<const char> label);
         #endif
 
         /* Unlike bind() this also sets the texture binding unit as active */
@@ -413,9 +413,9 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         static void MAGNUM_LOCAL unbindImplementationDSAEXT(GLint textureUnit);
         #endif
 
-        static void MAGNUM_LOCAL bindImplementationFallback(GLint firstTextureUnit, Containers::ArrayReference<AbstractTexture* const> textures);
+        static void MAGNUM_LOCAL bindImplementationFallback(GLint firstTextureUnit, Containers::ArrayView<AbstractTexture* const> textures);
         #ifndef MAGNUM_TARGET_GLES
-        static void MAGNUM_LOCAL bindImplementationMulti(GLint firstTextureUnit, Containers::ArrayReference<AbstractTexture* const> textures);
+        static void MAGNUM_LOCAL bindImplementationMulti(GLint firstTextureUnit, Containers::ArrayView<AbstractTexture* const> textures);
         #endif
 
         void MAGNUM_LOCAL createImplementationDefault();

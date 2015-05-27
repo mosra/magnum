@@ -662,7 +662,7 @@ std::string Shader::label() const {
     #endif
 }
 
-Shader& Shader::setLabelInternal(const Containers::ArrayReference<const char> label) {
+Shader& Shader::setLabelInternal(const Containers::ArrayView<const char> label) {
     #ifndef MAGNUM_TARGET_GLES
     Context::current()->state().debug->labelImplementation(GL_SHADER, _id, label);
     #else
@@ -715,6 +715,7 @@ bool Shader::compile(std::initializer_list<std::reference_wrapper<Shader>> shade
         CORRADE_ASSERT(shader._sources.size() > 1, "Shader::compile(): no files added", false);
         maxSourceCount = std::max(shader._sources.size(), maxSourceCount);
     }
+    /** @todo ArrayTuple/VLAs */
     Containers::Array<const GLchar*> pointers(maxSourceCount);
     Containers::Array<GLint> sizes(maxSourceCount);
 

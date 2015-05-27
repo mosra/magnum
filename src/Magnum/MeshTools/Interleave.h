@@ -162,7 +162,7 @@ parameters.
     arrays have the same size. The passed buffer must also be large enough to
     contain the interleaved data.
 */
-template<class T, class ...U> void interleaveInto(Containers::ArrayReference<char> buffer, const T& first, const U&... next) {
+template<class T, class ...U> void interleaveInto(Containers::ArrayView<char> buffer, const T& first, const U&... next) {
     /* Verify expected buffer size */
     const std::size_t attributeCount = Implementation::AttributeCount{}(first, next...);
     const std::size_t stride = Implementation::Stride{}(first, next...);

@@ -111,7 +111,7 @@ std::string Renderbuffer::label() {
     return Context::current()->state().debug->getLabelImplementation(GL_RENDERBUFFER, _id);
 }
 
-Renderbuffer& Renderbuffer::setLabelInternal(const Containers::ArrayReference<const char> label) {
+Renderbuffer& Renderbuffer::setLabelInternal(const Containers::ArrayView<const char> label) {
     createIfNotAlready();
     Context::current()->state().debug->labelImplementation(GL_RENDERBUFFER, _id, label);
     return *this;

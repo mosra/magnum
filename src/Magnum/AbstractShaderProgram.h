@@ -31,7 +31,7 @@
 
 #include <functional>
 #include <string>
-#include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/ArrayView.h>
 
 #include "Magnum/AbstractObject.h"
 #include "Magnum/Attribute.h"
@@ -387,7 +387,7 @@ comes in handy.
 
 @see @ref portability-shaders
 
-@todo Use Containers::ArrayReference for setting uniform arrays?
+@todo Use Containers::ArrayView for setting uniform arrays?
 @todo `GL_NUM_{PROGRAM,SHADER}_BINARY_FORMATS` + `GL_{PROGRAM,SHADER}_BINARY_FORMATS` (vector), (@extension{ARB,ES2_compatibility})
  */
 class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
@@ -994,13 +994,13 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
 
     private:
         #ifndef MAGNUM_TARGET_WEBGL
-        AbstractShaderProgram& setLabelInternal(Containers::ArrayReference<const char> label);
+        AbstractShaderProgram& setLabelInternal(Containers::ArrayView<const char> label);
         #endif
 
-        void bindAttributeLocationInternal(UnsignedInt location, Containers::ArrayReference<const char> name);
-        void bindFragmentDataLocationIndexedInternal(UnsignedInt location, UnsignedInt index, Containers::ArrayReference<const char> name);
-        void bindFragmentDataLocationInternal(UnsignedInt location, Containers::ArrayReference<const char> name);
-        Int uniformLocationInternal(Containers::ArrayReference<const char> name);
+        void bindAttributeLocationInternal(UnsignedInt location, Containers::ArrayView<const char> name);
+        void bindFragmentDataLocationIndexedInternal(UnsignedInt location, UnsignedInt index, Containers::ArrayView<const char> name);
+        void bindFragmentDataLocationInternal(UnsignedInt location, Containers::ArrayView<const char> name);
+        Int uniformLocationInternal(Containers::ArrayView<const char> name);
 
         #ifndef MAGNUM_BUILD_DEPRECATED
         void use();

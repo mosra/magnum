@@ -31,7 +31,7 @@
 
 #include <utility>
 #include <al.h>
-#include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/ArrayView.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Audio/visibility.h"
@@ -95,7 +95,7 @@ class Buffer {
          *
          * @see @fn_al{BufferData}
          */
-        Buffer& setData(Format format, Containers::ArrayReference<const void> data, ALsizei frequency) {
+        Buffer& setData(Format format, Containers::ArrayView<const void> data, ALsizei frequency) {
             alBufferData(_id, ALenum(format), data, data.size(), frequency);
             return *this;
         }

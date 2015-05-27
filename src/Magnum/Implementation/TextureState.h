@@ -39,7 +39,7 @@ struct TextureState {
     void reset();
 
     void(*unbindImplementation)(GLint);
-    void(*bindMultiImplementation)(GLint, Containers::ArrayReference<AbstractTexture* const>);
+    void(*bindMultiImplementation)(GLint, Containers::ArrayView<AbstractTexture* const>);
     void(AbstractTexture::*createImplementation)();
     void(AbstractTexture::*bindImplementation)(GLint);
     void(AbstractTexture::*parameteriImplementation)(GLenum, GLint);

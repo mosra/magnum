@@ -43,7 +43,7 @@ auto WavImporter::doFeatures() const -> Features { return Feature::OpenData; }
 
 bool WavImporter::doIsOpened() const { return _data; }
 
-void WavImporter::doOpenData(Containers::ArrayReference<const char> data) {
+void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
     /* Check file size */
     if(data.size() < sizeof(WavHeader)) {
         Error() << "Audio::WavImporter::openData(): the file is too short:" << data.size() << "bytes";

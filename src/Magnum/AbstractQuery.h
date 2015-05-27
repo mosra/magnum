@@ -31,7 +31,7 @@
  */
 #endif
 
-#include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Utility/Assert.h>
 
 #include "Magnum/AbstractObject.h"
@@ -182,7 +182,7 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
 
     private:
         #ifndef MAGNUM_TARGET_WEBGL
-        AbstractQuery& setLabelInternal(Containers::ArrayReference<const char> label);
+        AbstractQuery& setLabelInternal(Containers::ArrayView<const char> label);
         #endif
 
         void MAGNUM_LOCAL createImplementationDefault();

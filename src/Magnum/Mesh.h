@@ -30,7 +30,7 @@
  */
 
 #include <vector>
-#include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Utility/ConfigurationValue.h>
 
 #include "Magnum/AbstractObject.h"
@@ -884,7 +884,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         void MAGNUM_LOCAL createIfNotAlready();
 
         #ifndef MAGNUM_TARGET_WEBGL
-        Mesh& setLabelInternal(Containers::ArrayReference<const char> label);
+        Mesh& setLabelInternal(Containers::ArrayView<const char> label);
         #endif
 
         /* Computing stride of interleaved vertex attributes */

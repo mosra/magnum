@@ -25,7 +25,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/ArrayView.h>
 
 #include "Magnum/AbstractObject.h"
 
@@ -398,7 +398,7 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
         #endif
 
         #ifndef MAGNUM_TARGET_WEBGL
-        TransformFeedback& setLabelInternal(Containers::ArrayReference<const char> label);
+        TransformFeedback& setLabelInternal(Containers::ArrayView<const char> label);
         #endif
 
         GLuint _id;

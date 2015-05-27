@@ -29,7 +29,7 @@
 #include <limits>
 #include <sstream>
 #include <unordered_map>
-#include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Utility/String.h>
 
 #include "Magnum/Mesh.h"
@@ -132,7 +132,7 @@ void ObjImporter::doOpenFile(const std::string& filename) {
     parseMeshNames();
 }
 
-void ObjImporter::doOpenData(Containers::ArrayReference<const char> data) {
+void ObjImporter::doOpenData(Containers::ArrayView<const char> data) {
     /* Open file in *text* mode (to avoid \r handling) */
     _file.reset(new File);
     _file->in.reset(new std::istringstream{{data.begin(), data.size()}});

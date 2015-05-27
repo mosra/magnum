@@ -25,6 +25,7 @@
 
 #include "Buffer.h"
 
+#include <Corrade/Containers/Array.h>
 #include <Corrade/Utility/Debug.h>
 
 #include "Magnum/Context.h"
@@ -239,7 +240,7 @@ std::string Buffer::label() {
     #endif
 }
 
-Buffer& Buffer::setLabelInternal(const Containers::ArrayReference<const char> label) {
+Buffer& Buffer::setLabelInternal(const Containers::ArrayView<const char> label) {
     createIfNotAlready();
     #ifndef MAGNUM_TARGET_GLES
     Context::current()->state().debug->labelImplementation(GL_BUFFER, _id, label);
@@ -318,12 +319,12 @@ Int Buffer::size() {
     return size;
 }
 
-Buffer& Buffer::setData(const Containers::ArrayReference<const void> data, const BufferUsage usage) {
+Buffer& Buffer::setData(const Containers::ArrayView<const void> data, const BufferUsage usage) {
     (this->*Context::current()->state().buffer->dataImplementation)(data.size(), data, usage);
     return *this;
 }
 
-Buffer& Buffer::setSubData(const GLintptr offset, const Containers::ArrayReference<const void> data) {
+Buffer& Buffer::setSubData(const GLintptr offset, const Containers::ArrayView<const void> data) {
     (this->*Context::current()->state().buffer->subDataImplementation)(offset, data.size(), data);
     return *this;
 }
@@ -377,7 +378,7 @@ void Buffer::subDataInternal(GLintptr offset, GLsizeiptr size, GLvoid* data) {
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
-void Buffer::bindImplementationFallback(const Target target, const GLuint firstIndex, Containers::ArrayReference<Buffer* const> buffers) {
+void Buffer::bindImplementationFallback(const Target target, const GLuint firstIndex, Containers::ArrayView<Buffer* const> buffers) {
     for(std::size_t i = 0; i != buffers.size(); ++i) {
         if(buffers && buffers[i]) buffers[i]->bind(target, firstIndex + i);
         else unbind(target, firstIndex + i);
@@ -385,7 +386,8 @@ void Buffer::bindImplementationFallback(const Target target, const GLuint firstI
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Buffer::bindImplementationMulti(const Target target, const GLuint firstIndex, Containers::ArrayReference<Buffer* const> buffers) {
+void Buffer::bindImplementationMulti(const Target target, const GLuint firstIndex, Containers::ArrayView<Buffer* const> buffers) {
+    /** @todo C++1z: VLAs? */
     Containers::Array<GLuint> ids{buffers ? buffers.size() : 0};
     if(buffers) for(std::size_t i = 0; i != buffers.size(); ++i) {
         if(buffers[i]) {
@@ -400,8 +402,8 @@ void Buffer::bindImplementationMulti(const Target target, const GLuint firstInde
 }
 #endif
 
-/** @todoc const Containers::ArrayReference makes Doxygen grumpy */
-void Buffer::bindImplementationFallback(const Target target, const GLuint firstIndex, Containers::ArrayReference<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
+/** @todoc const Containers::ArrayView makes Doxygen grumpy */
+void Buffer::bindImplementationFallback(const Target target, const GLuint firstIndex, Containers::ArrayView<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
     for(std::size_t i = 0; i != buffers.size(); ++i) {
         if(buffers && std::get<0>(buffers[i]))
             std::get<0>(buffers[i])->bind(target, firstIndex + i, std::get<1>(buffers[i]), std::get<2>(buffers[i]));
@@ -410,8 +412,8 @@ void Buffer::bindImplementationFallback(const Target target, const GLuint firstI
 }
 
 #ifndef MAGNUM_TARGET_GLES
-/** @todoc const Containers::ArrayReference makes Doxygen grumpy */
-void Buffer::bindImplementationMulti(const Target target, const GLuint firstIndex, Containers::ArrayReference<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
+/** @todoc const Containers::ArrayView makes Doxygen grumpy */
+void Buffer::bindImplementationMulti(const Target target, const GLuint firstIndex, Containers::ArrayView<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
     /** @todo use ArrayTuple */
     Containers::Array<GLuint> ids{buffers ? buffers.size() : 0};
     Containers::Array<GLintptr> offsetsSizes{buffers ? buffers.size()*2 : 0};

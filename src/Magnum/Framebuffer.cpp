@@ -140,7 +140,7 @@ std::string Framebuffer::label() {
     return Context::current()->state().debug->getLabelImplementation(GL_FRAMEBUFFER, _id);
 }
 
-Framebuffer& Framebuffer::setLabelInternal(const Containers::ArrayReference<const char> label) {
+Framebuffer& Framebuffer::setLabelInternal(const Containers::ArrayView<const char> label) {
     createIfNotAlready();
     Context::current()->state().debug->labelImplementation(GL_FRAMEBUFFER, _id, label);
     return *this;

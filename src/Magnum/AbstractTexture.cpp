@@ -25,6 +25,8 @@
 
 #include "AbstractTexture.h"
 
+#include <Corrade/Containers/Array.h>
+
 #ifndef MAGNUM_TARGET_GLES2
 #include "Magnum/BufferImage.h"
 #endif
@@ -164,17 +166,18 @@ void AbstractTexture::bind(const Int firstTextureUnit, std::initializer_list<Abs
     Context::current()->state().texture->bindMultiImplementation(firstTextureUnit, {textures.begin(), textures.size()});
 }
 
-void AbstractTexture::bindImplementationFallback(const GLint firstTextureUnit, const Containers::ArrayReference<AbstractTexture* const> textures) {
+void AbstractTexture::bindImplementationFallback(const GLint firstTextureUnit, const Containers::ArrayView<AbstractTexture* const> textures) {
     for(std::size_t i = 0; i != textures.size(); ++i)
         textures && textures[i] ? textures[i]->bind(firstTextureUnit + i) : unbind(firstTextureUnit + i);
 }
 
 #ifndef MAGNUM_TARGET_GLES
-/** @todoc const Containers::ArrayReference makes Doxygen grumpy */
-void AbstractTexture::bindImplementationMulti(const GLint firstTextureUnit, Containers::ArrayReference<AbstractTexture* const> textures) {
+/** @todoc const Containers::ArrayView makes Doxygen grumpy */
+void AbstractTexture::bindImplementationMulti(const GLint firstTextureUnit, Containers::ArrayView<AbstractTexture* const> textures) {
     Implementation::TextureState& textureState = *Context::current()->state().texture;
 
     /* Create array of IDs and also update bindings in state tracker */
+    /** @todo VLAs */
     Containers::Array<GLuint> ids{textures ? textures.size() : 0};
     bool different = false;
     for(std::size_t i = 0; i != textures.size(); ++i) {
@@ -241,7 +244,7 @@ std::string AbstractTexture::label() {
     return Context::current()->state().debug->getLabelImplementation(GL_TEXTURE, _id);
 }
 
-AbstractTexture& AbstractTexture::setLabelInternal(const Containers::ArrayReference<const char> label) {
+AbstractTexture& AbstractTexture::setLabelInternal(const Containers::ArrayView<const char> label) {
     createIfNotAlready();
     Context::current()->state().debug->labelImplementation(GL_TEXTURE, _id, label);
     return *this;

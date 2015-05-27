@@ -32,7 +32,7 @@
 #include <functional>
 #include <string>
 #include <vector>
-#include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/ArrayView.h>
 
 #include "Magnum/AbstractObject.h"
 #include "Magnum/Magnum.h"
@@ -587,7 +587,7 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
         bool compile() { return compile({*this}); }
 
     private:
-        Shader& setLabelInternal(Containers::ArrayReference<const char> label);
+        Shader& setLabelInternal(Containers::ArrayView<const char> label);
 
         Type _type;
         GLuint _id;

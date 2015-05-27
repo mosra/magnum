@@ -722,7 +722,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         #endif
 
         #ifndef MAGNUM_TARGET_WEBGL
-        Framebuffer& setLabelInternal(Containers::ArrayReference<const char> label);
+        Framebuffer& setLabelInternal(Containers::ArrayView<const char> label);
         #endif
 
         void MAGNUM_LOCAL renderbufferImplementationDefault(BufferAttachment attachment, Renderbuffer& renderbuffer);

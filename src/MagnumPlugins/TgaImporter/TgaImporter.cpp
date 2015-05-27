@@ -29,7 +29,7 @@
 #include <fstream>
 #include <sstream>
 #include <Corrade/Utility/Endianness.h>
-#include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/ArrayView.h>
 
 #include "Magnum/ColorFormat.h"
 #include "Magnum/Math/Swizzle.h"
@@ -54,7 +54,7 @@ auto TgaImporter::doFeatures() const -> Features { return Feature::OpenData; }
 
 bool TgaImporter::doIsOpened() const { return in; }
 
-void TgaImporter::doOpenData(const Containers::ArrayReference<const char> data) {
+void TgaImporter::doOpenData(const Containers::ArrayView<const char> data) {
     in = new std::istringstream{{data, data.size()}};
 }
 

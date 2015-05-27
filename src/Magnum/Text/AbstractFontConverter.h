@@ -232,7 +232,7 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * @see @ref features(), @ref importGlyphCacheFromFile(),
          *      @ref exportGlyphCacheToData()
          */
-        std::unique_ptr<GlyphCache> importGlyphCacheFromData(const std::vector<std::pair<std::string, Containers::ArrayReference<const char>>>& data) const;
+        std::unique_ptr<GlyphCache> importGlyphCacheFromData(const std::vector<std::pair<std::string, Containers::ArrayView<const char>>>& data) const;
 
         /**
          * @brief Import glyph cache from single raw data
@@ -244,7 +244,7 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * @see @ref features(), @ref importGlyphCacheFromFile(),
          *      @ref exportFontToSingleData()
          */
-        std::unique_ptr<GlyphCache> importGlyphCacheFromSingleData(Containers::ArrayReference<const char> data) const;
+        std::unique_ptr<GlyphCache> importGlyphCacheFromSingleData(Containers::ArrayView<const char> data) const;
 
         /**
          * @brief Import glyph cache from file
@@ -337,10 +337,10 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * If the plugin doesn't have @ref Feature::MultiFile, default
          * implementation calls @ref doImportGlyphCacheFromSingleData().
          */
-        virtual std::unique_ptr<GlyphCache> doImportGlyphCacheFromData(const std::vector<std::pair<std::string, Containers::ArrayReference<const char>>>& data) const;
+        virtual std::unique_ptr<GlyphCache> doImportGlyphCacheFromData(const std::vector<std::pair<std::string, Containers::ArrayView<const char>>>& data) const;
 
         /** @brief Implementation for @ref importGlyphCacheFromSingleData() */
-        virtual std::unique_ptr<GlyphCache> doImportGlyphCacheFromSingleData(Containers::ArrayReference<const char> data) const;
+        virtual std::unique_ptr<GlyphCache> doImportGlyphCacheFromSingleData(Containers::ArrayView<const char> data) const;
 
         /**
          * @brief Implementation for @ref importGlyphCacheFromFile()

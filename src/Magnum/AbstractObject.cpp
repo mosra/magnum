@@ -26,7 +26,7 @@
 #include "AbstractObject.h"
 
 #include <Corrade/Utility/Assert.h>
-#include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/ArrayView.h>
 
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
@@ -129,9 +129,9 @@ Int AbstractObject::maxLabelLength() {
     return value;
 }
 
-void AbstractObject::labelImplementationNoOp(GLenum, GLuint, Containers::ArrayReference<const char>) {}
+void AbstractObject::labelImplementationNoOp(GLenum, GLuint, Containers::ArrayView<const char>) {}
 
-void AbstractObject::labelImplementationKhr(const GLenum identifier, const GLuint name, const Containers::ArrayReference<const char> label) {
+void AbstractObject::labelImplementationKhr(const GLenum identifier, const GLuint name, const Containers::ArrayView<const char> label) {
     #ifndef MAGNUM_TARGET_GLES
     glObjectLabel(identifier, name, label.size(), label);
     #elif !defined(CORRADE_TARGET_NACL)
@@ -144,7 +144,7 @@ void AbstractObject::labelImplementationKhr(const GLenum identifier, const GLuin
     #endif
 }
 
-void AbstractObject::labelImplementationExt(const GLenum identifier, const GLuint name, const Containers::ArrayReference<const char> label) {
+void AbstractObject::labelImplementationExt(const GLenum identifier, const GLuint name, const Containers::ArrayView<const char> label) {
     #ifndef CORRADE_TARGET_NACL
     const GLenum type = extTypeFromKhrIdentifier(identifier);
     glLabelObjectEXT(type, name, label.size(), label);

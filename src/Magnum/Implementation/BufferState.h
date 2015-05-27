@@ -49,8 +49,8 @@ struct BufferState {
     void reset();
 
     #ifndef MAGNUM_TARGET_GLES2
-    void(*bindBasesImplementation)(Buffer::Target, UnsignedInt, Containers::ArrayReference<Buffer* const>);
-    void(*bindRangesImplementation)(Buffer::Target, UnsignedInt, Containers::ArrayReference<const std::tuple<Buffer*, GLintptr, GLsizeiptr>>);
+    void(*bindBasesImplementation)(Buffer::Target, UnsignedInt, Containers::ArrayView<Buffer* const>);
+    void(*bindRangesImplementation)(Buffer::Target, UnsignedInt, Containers::ArrayView<const std::tuple<Buffer*, GLintptr, GLsizeiptr>>);
     void(*copyImplementation)(Buffer&, Buffer&, GLintptr, GLintptr, GLsizeiptr);
     #endif
     void(Buffer::*createImplementation)();

@@ -272,13 +272,13 @@ Debug operator<<(Debug debug, const DebugOutput::Severity value) {
 }
 #endif
 
-void DebugMessage::insertInternal(const Source source, const Type type, const UnsignedInt id, const DebugOutput::Severity severity, const Containers::ArrayReference<const char> string) {
+void DebugMessage::insertInternal(const Source source, const Type type, const UnsignedInt id, const DebugOutput::Severity severity, const Containers::ArrayView<const char> string) {
     Context::current()->state().debug->messageInsertImplementation(source, type, id, severity, string);
 }
 
-void DebugMessage::insertImplementationNoOp(Source, Type, UnsignedInt, DebugOutput::Severity, const Containers::ArrayReference<const char>) {}
+void DebugMessage::insertImplementationNoOp(Source, Type, UnsignedInt, DebugOutput::Severity, const Containers::ArrayView<const char>) {}
 
-void DebugMessage::insertImplementationKhr(const Source source, const Type type, const UnsignedInt id, const DebugOutput::Severity severity, const Containers::ArrayReference<const char> string) {
+void DebugMessage::insertImplementationKhr(const Source source, const Type type, const UnsignedInt id, const DebugOutput::Severity severity, const Containers::ArrayView<const char> string) {
     #ifndef CORRADE_TARGET_NACL
     #ifndef MAGNUM_TARGET_GLES
     glDebugMessageInsert
@@ -296,7 +296,7 @@ void DebugMessage::insertImplementationKhr(const Source source, const Type type,
     #endif
 }
 
-void DebugMessage::insertImplementationExt(Source, Type, UnsignedInt, DebugOutput::Severity, const Containers::ArrayReference<const char> string) {
+void DebugMessage::insertImplementationExt(Source, Type, UnsignedInt, DebugOutput::Severity, const Containers::ArrayView<const char> string) {
     #ifndef CORRADE_TARGET_NACL
     glInsertEventMarkerEXT(string.size(), string.data());
     #else
@@ -306,7 +306,7 @@ void DebugMessage::insertImplementationExt(Source, Type, UnsignedInt, DebugOutpu
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void DebugMessage::insertImplementationGremedy(Source, Type, UnsignedInt, DebugOutput::Severity, const Containers::ArrayReference<const char> string) {
+void DebugMessage::insertImplementationGremedy(Source, Type, UnsignedInt, DebugOutput::Severity, const Containers::ArrayView<const char> string) {
     glStringMarkerGREMEDY(string.size(), string.data());
 }
 #endif
@@ -364,7 +364,7 @@ Int DebugGroup::maxStackDepth() {
     return value;
 }
 
-void DebugGroup::pushInternal(const Source source, const UnsignedInt id, const Containers::ArrayReference<const char> message) {
+void DebugGroup::pushInternal(const Source source, const UnsignedInt id, const Containers::ArrayView<const char> message) {
     CORRADE_ASSERT(!_active, "DebugGroup::push(): group is already active", );
     Context::current()->state().debug->pushGroupImplementation(source, id, message);
     _active = true;
@@ -376,9 +376,9 @@ void DebugGroup::pop() {
     _active = false;
 }
 
-void DebugGroup::pushImplementationNoOp(Source, UnsignedInt, Containers::ArrayReference<const char>) {}
+void DebugGroup::pushImplementationNoOp(Source, UnsignedInt, Containers::ArrayView<const char>) {}
 
-void DebugGroup::pushImplementationKhr(const Source source, const UnsignedInt id, const Containers::ArrayReference<const char> message) {
+void DebugGroup::pushImplementationKhr(const Source source, const UnsignedInt id, const Containers::ArrayView<const char> message) {
     #ifndef CORRADE_TARGET_NACL
     #ifndef MAGNUM_TARGET_GLES
     glPushDebugGroup
@@ -394,7 +394,7 @@ void DebugGroup::pushImplementationKhr(const Source source, const UnsignedInt id
     #endif
 }
 
-void DebugGroup::pushImplementationExt(Source, UnsignedInt, const Containers::ArrayReference<const char> message) {
+void DebugGroup::pushImplementationExt(Source, UnsignedInt, const Containers::ArrayView<const char> message) {
     #ifndef CORRADE_TARGET_NACL
     glPushGroupMarkerEXT(message.size(), message.data());
     #else

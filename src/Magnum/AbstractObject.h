@@ -107,9 +107,9 @@ class MAGNUM_EXPORT AbstractObject {
 
     private:
         #ifndef MAGNUM_TARGET_WEBGL
-        static MAGNUM_LOCAL void labelImplementationNoOp(GLenum, GLuint, Containers::ArrayReference<const char> label);
-        static MAGNUM_LOCAL void labelImplementationExt(GLenum identifier, GLuint name, Containers::ArrayReference<const char> label);
-        static MAGNUM_LOCAL void labelImplementationKhr(GLenum identifier, GLuint name, Containers::ArrayReference<const char> label);
+        static MAGNUM_LOCAL void labelImplementationNoOp(GLenum, GLuint, Containers::ArrayView<const char> label);
+        static MAGNUM_LOCAL void labelImplementationExt(GLenum identifier, GLuint name, Containers::ArrayView<const char> label);
+        static MAGNUM_LOCAL void labelImplementationKhr(GLenum identifier, GLuint name, Containers::ArrayView<const char> label);
         static MAGNUM_LOCAL std::string getLabelImplementationNoOp(GLenum, GLuint);
         static MAGNUM_LOCAL std::string getLabelImplementationExt(GLenum identifier, GLuint name);
         static MAGNUM_LOCAL std::string getLabelImplementationKhr(GLenum identifier, GLuint name);

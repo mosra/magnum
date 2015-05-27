@@ -48,7 +48,7 @@ namespace Magnum {
 /**
 @brief Buffer usage
 
-@see @ref Buffer, @ref Buffer::setData(Containers::ArrayReference<const void>, BufferUsage)
+@see @ref Buffer, @ref Buffer::setData(Containers::ArrayView<const void>, BufferUsage)
 */
 enum class BufferUsage: GLenum {
     /** Set once by the application and used infrequently for drawing. */
@@ -141,10 +141,10 @@ data updates.
 ## Data updating
 
 Default way to set or update buffer data with @ref setData() or @ref setSubData()
-is to use @ref Corrade::Containers::ArrayReference. See its documentation for
+is to use @ref Corrade::Containers::ArrayView. See its documentation for
 more information about automatic conversions etc.
 @code
-Containers::ArrayReference<Vector3> data;
+Containers::ArrayView<Vector3> data;
 buffer.setData(data, BufferUsage::StaticDraw);
 @endcode
 There is also overload for array-like containers from STL, such as `std::vector`
@@ -1086,7 +1086,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      @fn_gl_extension{NamedBufferData,EXT,direct_state_access},
          *      eventually @fn_gl{BindBuffer} and @fn_gl{BufferData}
          */
-        Buffer& setData(Containers::ArrayReference<const void> data, BufferUsage usage);
+        Buffer& setData(Containers::ArrayView<const void> data, BufferUsage usage);
 
         /** @overload */
         template<class T> Buffer& setData(const std::vector<T>& data, BufferUsage usage) {
@@ -1114,7 +1114,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      @fn_gl_extension{NamedBufferSubData,EXT,direct_state_access},
          *      eventually @fn_gl{BindBuffer} and @fn_gl{BufferSubData}
          */
-        Buffer& setSubData(GLintptr offset, Containers::ArrayReference<const void> data);
+        Buffer& setSubData(GLintptr offset, Containers::ArrayView<const void> data);
 
         /** @overload */
         template<class T> Buffer& setSubData(GLintptr offset, const std::vector<T>& data) {
@@ -1310,14 +1310,14 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         TargetHint MAGNUM_LOCAL bindSomewhereInternal(TargetHint hint);
 
         #ifndef MAGNUM_TARGET_GLES2
-        static void MAGNUM_LOCAL bindImplementationFallback(Target target, GLuint firstIndex, Containers::ArrayReference<Buffer* const> buffers);
+        static void MAGNUM_LOCAL bindImplementationFallback(Target target, GLuint firstIndex, Containers::ArrayView<Buffer* const> buffers);
         #ifndef MAGNUM_TARGET_GLES
-        static void MAGNUM_LOCAL bindImplementationMulti(Target target, GLuint firstIndex, Containers::ArrayReference<Buffer* const> buffers);
+        static void MAGNUM_LOCAL bindImplementationMulti(Target target, GLuint firstIndex, Containers::ArrayView<Buffer* const> buffers);
         #endif
 
-        static void MAGNUM_LOCAL bindImplementationFallback(Target target, GLuint firstIndex, Containers::ArrayReference<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers);
+        static void MAGNUM_LOCAL bindImplementationFallback(Target target, GLuint firstIndex, Containers::ArrayView<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers);
         #ifndef MAGNUM_TARGET_GLES
-        static void MAGNUM_LOCAL bindImplementationMulti(Target target, GLuint firstIndex, Containers::ArrayReference<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers);
+        static void MAGNUM_LOCAL bindImplementationMulti(Target target, GLuint firstIndex, Containers::ArrayView<const std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers);
         #endif
 
         static void MAGNUM_LOCAL copyImplementationDefault(Buffer& read, Buffer& write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
@@ -1337,7 +1337,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         void MAGNUM_LOCAL createIfNotAlready();
 
         #ifndef MAGNUM_TARGET_WEBGL
-        Buffer& setLabelInternal(Containers::ArrayReference<const char> label);
+        Buffer& setLabelInternal(Containers::ArrayView<const char> label);
         #endif
 
         #ifndef MAGNUM_TARGET_GLES

@@ -32,7 +32,7 @@
 #endif
 
 #include <string>
-#include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/ArrayView.h>
 
 #include "Magnum/OpenGL.h"
 #include "Magnum/Magnum.h"
@@ -675,12 +675,12 @@ class MAGNUM_EXPORT DebugMessage {
         DebugMessage() = delete;
 
     private:
-        static void insertInternal(Source source, Type type, UnsignedInt id, DebugOutput::Severity severity, Containers::ArrayReference<const char> string);
-        static MAGNUM_LOCAL void insertImplementationNoOp(Source, Type, UnsignedInt, DebugOutput::Severity, Containers::ArrayReference<const char>);
-        static MAGNUM_LOCAL void insertImplementationKhr(Source source, Type type, UnsignedInt id, DebugOutput::Severity severity, Containers::ArrayReference<const char> string);
-        static MAGNUM_LOCAL void insertImplementationExt(Source, Type, UnsignedInt, DebugOutput::Severity, Containers::ArrayReference<const char> string);
+        static void insertInternal(Source source, Type type, UnsignedInt id, DebugOutput::Severity severity, Containers::ArrayView<const char> string);
+        static MAGNUM_LOCAL void insertImplementationNoOp(Source, Type, UnsignedInt, DebugOutput::Severity, Containers::ArrayView<const char>);
+        static MAGNUM_LOCAL void insertImplementationKhr(Source source, Type type, UnsignedInt id, DebugOutput::Severity severity, Containers::ArrayView<const char> string);
+        static MAGNUM_LOCAL void insertImplementationExt(Source, Type, UnsignedInt, DebugOutput::Severity, Containers::ArrayView<const char> string);
         #ifndef MAGNUM_TARGET_GLES
-        static MAGNUM_LOCAL void insertImplementationGremedy(Source, Type, UnsignedInt, DebugOutput::Severity, Containers::ArrayReference<const char> string);
+        static MAGNUM_LOCAL void insertImplementationGremedy(Source, Type, UnsignedInt, DebugOutput::Severity, Containers::ArrayView<const char> string);
         #endif
 };
 
@@ -880,11 +880,11 @@ class MAGNUM_EXPORT DebugGroup {
         void pop();
 
     private:
-        void pushInternal(Source source, UnsignedInt id, Containers::ArrayReference<const char> message);
+        void pushInternal(Source source, UnsignedInt id, Containers::ArrayView<const char> message);
 
-        static MAGNUM_LOCAL void pushImplementationNoOp(Source source, UnsignedInt id, Containers::ArrayReference<const char> message);
-        static MAGNUM_LOCAL void pushImplementationKhr(Source source, UnsignedInt id, Containers::ArrayReference<const char> message);
-        static MAGNUM_LOCAL void pushImplementationExt(Source source, UnsignedInt id, Containers::ArrayReference<const char> message);
+        static MAGNUM_LOCAL void pushImplementationNoOp(Source source, UnsignedInt id, Containers::ArrayView<const char> message);
+        static MAGNUM_LOCAL void pushImplementationKhr(Source source, UnsignedInt id, Containers::ArrayView<const char> message);
+        static MAGNUM_LOCAL void pushImplementationExt(Source source, UnsignedInt id, Containers::ArrayView<const char> message);
 
         static MAGNUM_LOCAL void popImplementationNoOp();
         static MAGNUM_LOCAL void popImplementationKhr();

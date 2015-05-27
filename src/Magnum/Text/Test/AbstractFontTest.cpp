@@ -23,7 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/ArrayView.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/Directory.h>
 
@@ -56,7 +56,7 @@ class SingleDataFont: public Text::AbstractFont {
         bool doIsOpened() const override { return opened; }
         void doClose() override {}
 
-        std::pair<Float, Float> doOpenSingleData(const Containers::ArrayReference<const char> data, Float) override {
+        std::pair<Float, Float> doOpenSingleData(const Containers::ArrayView<const char> data, Float) override {
             opened = (data.size() == 1 && data[0] == '\xa5');
             return {};
         }

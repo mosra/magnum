@@ -40,12 +40,12 @@ struct DebugState {
     explicit DebugState(Context& context, std::vector<std::string>& extensions);
 
     std::string(*getLabelImplementation)(GLenum, GLuint);
-    void(*labelImplementation)(GLenum, GLuint, Containers::ArrayReference<const char>);
+    void(*labelImplementation)(GLenum, GLuint, Containers::ArrayView<const char>);
 
-    void(*messageInsertImplementation)(DebugMessage::Source, DebugMessage::Type, UnsignedInt, DebugOutput::Severity, Containers::ArrayReference<const char>);
+    void(*messageInsertImplementation)(DebugMessage::Source, DebugMessage::Type, UnsignedInt, DebugOutput::Severity, Containers::ArrayView<const char>);
     void(*controlImplementation)(GLenum, GLenum, GLenum, std::initializer_list<UnsignedInt>, bool);
     void(*callbackImplementation)(DebugOutput::Callback, const void*);
-    void(*pushGroupImplementation)(DebugGroup::Source, UnsignedInt, Containers::ArrayReference<const char>);
+    void(*pushGroupImplementation)(DebugGroup::Source, UnsignedInt, Containers::ArrayView<const char>);
     void(*popGroupImplementation)();
 
     GLint maxLabelLength, maxLoggedMessages, maxMessageLength, maxStackDepth;

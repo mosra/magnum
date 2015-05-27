@@ -26,7 +26,7 @@
 #include "MagnumFont.h"
 
 #include <sstream>
-#include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Utility/Directory.h>
 #include <Corrade/Utility/Unicode.h>
 
@@ -68,7 +68,7 @@ auto MagnumFont::doFeatures() const -> Features { return Feature::OpenData|Featu
 
 bool MagnumFont::doIsOpened() const { return _opened; }
 
-std::pair<Float, Float> MagnumFont::doOpenData(const std::vector<std::pair<std::string, Containers::ArrayReference<const char>>>& data, const Float) {
+std::pair<Float, Float> MagnumFont::doOpenData(const std::vector<std::pair<std::string, Containers::ArrayView<const char>>>& data, const Float) {
     /* We need just the configuration file and image file */
     if(data.size() != 2) {
         Error() << "Text::MagnumFont::openData(): wanted two files, got" << data.size();

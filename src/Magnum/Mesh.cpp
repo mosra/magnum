@@ -199,7 +199,7 @@ std::string Mesh::label() {
     #endif
 }
 
-Mesh& Mesh::setLabelInternal(const Containers::ArrayReference<const char> label) {
+Mesh& Mesh::setLabelInternal(const Containers::ArrayView<const char> label) {
     createIfNotAlready();
     #ifndef MAGNUM_TARGET_GLES
     Context::current()->state().debug->labelImplementation(GL_VERTEX_ARRAY, _id, label);

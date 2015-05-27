@@ -29,7 +29,7 @@
  * @brief Class @ref Magnum::Renderbuffer
  */
 
-#include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/ArrayView.h>
 
 #include "Magnum/AbstractObject.h"
 #include "Magnum/Magnum.h"
@@ -235,7 +235,7 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
         void MAGNUM_LOCAL createIfNotAlready();
 
         #ifndef MAGNUM_TARGET_WEBGL
-        Renderbuffer& setLabelInternal(Containers::ArrayReference<const char> label);
+        Renderbuffer& setLabelInternal(Containers::ArrayView<const char> label);
         #endif
 
         void MAGNUM_LOCAL storageImplementationDefault(RenderbufferFormat internalFormat, const Vector2i& size);

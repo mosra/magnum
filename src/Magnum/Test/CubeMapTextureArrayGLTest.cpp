@@ -276,8 +276,8 @@ void CubeMapTextureArrayGLTest::image() {
 
     CORRADE_COMPARE(image.size(), Vector3i(2, 2, 6));
     CORRADE_COMPARE_AS(
-        Containers::ArrayReference<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()),
-        Containers::ArrayReference<const UnsignedByte>{Data}, TestSuite::Compare::Container);
+        Containers::ArrayView<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()),
+        Containers::ArrayView<const UnsignedByte>{Data}, TestSuite::Compare::Container);
 }
 
 void CubeMapTextureArrayGLTest::imageBuffer() {
@@ -296,7 +296,7 @@ void CubeMapTextureArrayGLTest::imageBuffer() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i(2, 2, 6));
-    CORRADE_COMPARE_AS(imageData, Containers::ArrayReference<const UnsignedByte>{Data}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedByte>{Data}, TestSuite::Compare::Container);
 }
 
 namespace {
@@ -367,8 +367,8 @@ void CubeMapTextureArrayGLTest::subImage() {
 
     CORRADE_COMPARE(image.size(), Vector3i(4, 4, 6));
     CORRADE_COMPARE_AS(
-        Containers::ArrayReference<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()),
-        Containers::ArrayReference<const UnsignedByte>{SubDataComplete}, TestSuite::Compare::Container);
+        Containers::ArrayView<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()),
+        Containers::ArrayView<const UnsignedByte>{SubDataComplete}, TestSuite::Compare::Container);
 }
 
 void CubeMapTextureArrayGLTest::subImageBuffer() {
@@ -389,7 +389,7 @@ void CubeMapTextureArrayGLTest::subImageBuffer() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i(4, 4, 6));
-    CORRADE_COMPARE_AS(imageData, Containers::ArrayReference<const UnsignedByte>{SubDataComplete}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedByte>{SubDataComplete}, TestSuite::Compare::Container);
 }
 
 void CubeMapTextureArrayGLTest::subImageQuery() {
@@ -410,8 +410,8 @@ void CubeMapTextureArrayGLTest::subImageQuery() {
 
     CORRADE_COMPARE(image.size(), Vector3i(2, 2, 4));
     CORRADE_COMPARE_AS(
-        Containers::ArrayReference<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()),
-        Containers::ArrayReference<const UnsignedByte>{SubData}, TestSuite::Compare::Container);
+        Containers::ArrayView<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()),
+        Containers::ArrayView<const UnsignedByte>{SubData}, TestSuite::Compare::Container);
 }
 
 void CubeMapTextureArrayGLTest::subImageQueryBuffer() {
@@ -432,7 +432,7 @@ void CubeMapTextureArrayGLTest::subImageQueryBuffer() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i(2, 2, 4));
-    CORRADE_COMPARE_AS(imageData, Containers::ArrayReference<const UnsignedByte>{SubData}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedByte>{SubData}, TestSuite::Compare::Container);
 }
 
 void CubeMapTextureArrayGLTest::generateMipmap() {

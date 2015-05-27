@@ -25,6 +25,8 @@
 
 #include "AbstractShaderProgram.h"
 
+#include <Corrade/Containers/Array.h>
+
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
 #include "Magnum/Shader.h"
@@ -259,7 +261,7 @@ std::string AbstractShaderProgram::label() const {
     #endif
 }
 
-AbstractShaderProgram& AbstractShaderProgram::setLabelInternal(const Containers::ArrayReference<const char> label) {
+AbstractShaderProgram& AbstractShaderProgram::setLabelInternal(const Containers::ArrayView<const char> label) {
     #ifndef MAGNUM_TARGET_GLES
     Context::current()->state().debug->labelImplementation(GL_PROGRAM, _id, label);
     #else
@@ -301,21 +303,22 @@ void AbstractShaderProgram::attachShaders(std::initializer_list<std::reference_w
     for(Shader& s: shaders) attachShader(s);
 }
 
-void AbstractShaderProgram::bindAttributeLocationInternal(const UnsignedInt location, const Containers::ArrayReference<const char> name) {
+void AbstractShaderProgram::bindAttributeLocationInternal(const UnsignedInt location, const Containers::ArrayView<const char> name) {
     glBindAttribLocation(_id, location, name);
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractShaderProgram::bindFragmentDataLocationInternal(const UnsignedInt location, const Containers::ArrayReference<const char> name) {
+void AbstractShaderProgram::bindFragmentDataLocationInternal(const UnsignedInt location, const Containers::ArrayView<const char> name) {
     glBindFragDataLocation(_id, location, name);
 }
-void AbstractShaderProgram::bindFragmentDataLocationIndexedInternal(const UnsignedInt location, UnsignedInt index, const Containers::ArrayReference<const char> name) {
+void AbstractShaderProgram::bindFragmentDataLocationIndexedInternal(const UnsignedInt location, UnsignedInt index, const Containers::ArrayView<const char> name) {
     glBindFragDataLocationIndexed(_id, location, index, name);
 }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
 void AbstractShaderProgram::setTransformFeedbackOutputs(const std::initializer_list<std::string> outputs, const TransformFeedbackBufferMode bufferMode) {
+    /** @todo VLAs */
     Containers::Array<const char*> names{outputs.size()};
 
     Int i = 0;
@@ -392,7 +395,7 @@ bool AbstractShaderProgram::link(std::initializer_list<std::reference_wrapper<Ab
     return allSuccess;
 }
 
-Int AbstractShaderProgram::uniformLocationInternal(const Containers::ArrayReference<const char> name) {
+Int AbstractShaderProgram::uniformLocationInternal(const Containers::ArrayView<const char> name) {
     GLint location = glGetUniformLocation(_id, name);
     if(location == -1)
         Warning() << "AbstractShaderProgram: location of uniform \'" + std::string{name, name.size()} + "\' cannot be retrieved!";

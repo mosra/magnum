@@ -182,7 +182,7 @@ bool AbstractFontConverter::doExportGlyphCacheToFile(GlyphCache& cache, const st
     return true;
 }
 
-std::unique_ptr<GlyphCache> AbstractFontConverter::importGlyphCacheFromData(const std::vector<std::pair<std::string, Containers::ArrayReference<const char>>>& data) const {
+std::unique_ptr<GlyphCache> AbstractFontConverter::importGlyphCacheFromData(const std::vector<std::pair<std::string, Containers::ArrayView<const char>>>& data) const {
     CORRADE_ASSERT(features() >= (Feature::ImportGlyphCache|Feature::ConvertData),
         "Text::AbstractFontConverter::importGlyphCacheFromData(): feature not supported", nullptr);
     CORRADE_ASSERT(!data.empty(),
@@ -191,7 +191,7 @@ std::unique_ptr<GlyphCache> AbstractFontConverter::importGlyphCacheFromData(cons
     return doImportGlyphCacheFromData(data);
 }
 
-std::unique_ptr<GlyphCache> AbstractFontConverter::doImportGlyphCacheFromData(const std::vector<std::pair<std::string, Containers::ArrayReference<const char>>>& data) const {
+std::unique_ptr<GlyphCache> AbstractFontConverter::doImportGlyphCacheFromData(const std::vector<std::pair<std::string, Containers::ArrayView<const char>>>& data) const {
     CORRADE_ASSERT(!(features() & Feature::MultiFile),
         "Text::AbstractFontConverter::importGlyphCacheFromData(): feature advertised but not implemented", nullptr);
     CORRADE_ASSERT(data.size() == 1,
@@ -200,7 +200,7 @@ std::unique_ptr<GlyphCache> AbstractFontConverter::doImportGlyphCacheFromData(co
     return doImportGlyphCacheFromSingleData(data[0].second);
 }
 
-std::unique_ptr<GlyphCache> AbstractFontConverter::importGlyphCacheFromSingleData(Containers::ArrayReference<const char> data) const {
+std::unique_ptr<GlyphCache> AbstractFontConverter::importGlyphCacheFromSingleData(Containers::ArrayView<const char> data) const {
     CORRADE_ASSERT(features() >= (Feature::ImportGlyphCache|Feature::ConvertData),
         "Text::AbstractFontConverter::importGlyphCacheFromSingleData(): feature not supported", nullptr);
     CORRADE_ASSERT(!(features() & Feature::MultiFile),
@@ -209,7 +209,7 @@ std::unique_ptr<GlyphCache> AbstractFontConverter::importGlyphCacheFromSingleDat
     return doImportGlyphCacheFromSingleData(data);
 }
 
-std::unique_ptr<GlyphCache> AbstractFontConverter::doImportGlyphCacheFromSingleData(Containers::ArrayReference<const char>) const {
+std::unique_ptr<GlyphCache> AbstractFontConverter::doImportGlyphCacheFromSingleData(Containers::ArrayView<const char>) const {
     CORRADE_ASSERT(false,
         "Text::AbstractFontConverter::importGlyphCacheFromSingleData(): feature advertised but not implemented", nullptr);
     return nullptr;

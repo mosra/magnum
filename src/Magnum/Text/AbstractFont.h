@@ -125,7 +125,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * file. Available only if @ref Feature::OpenData is supported. Returns
          * `true` on success, `false` otherwise.
          */
-        bool openData(const std::vector<std::pair<std::string, Containers::ArrayReference<const char>>>& data, Float size);
+        bool openData(const std::vector<std::pair<std::string, Containers::ArrayView<const char>>>& data, Float size);
 
         /**
          * @brief Open font from single data
@@ -137,7 +137,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * plugin doesn't have @ref Feature::MultiFile. Returns `true` on
          * success, `false` otherwise.
          */
-        bool openSingleData(Containers::ArrayReference<const char> data, Float size);
+        bool openSingleData(Containers::ArrayView<const char> data, Float size);
 
         /**
          * @brief Open font from file
@@ -243,7 +243,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * zeros otherwise. If the plugin doesn't have @ref Feature::MultiFile,
          * default implementation calls @ref doOpenSingleData().
          */
-        virtual std::pair<Float, Float> doOpenData(const std::vector<std::pair<std::string, Containers::ArrayReference<const char>>>& data, Float size);
+        virtual std::pair<Float, Float> doOpenData(const std::vector<std::pair<std::string, Containers::ArrayView<const char>>>& data, Float size);
 
         /**
          * @brief Implementation for @ref openSingleData()
@@ -251,7 +251,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * Return size and line height of opened font on successful opening,
          * zeros otherwise.
          */
-        virtual std::pair<Float, Float> doOpenSingleData(Containers::ArrayReference<const char> data, Float size);
+        virtual std::pair<Float, Float> doOpenSingleData(Containers::ArrayView<const char> data, Float size);
 
         /**
          * @brief Implementation for @ref openFile()

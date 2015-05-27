@@ -152,7 +152,7 @@ std::string TransformFeedback::label() {
     return Context::current()->state().debug->getLabelImplementation(GL_TRANSFORM_FEEDBACK, _id);
 }
 
-TransformFeedback& TransformFeedback::setLabelInternal(const Containers::ArrayReference<const char> label) {
+TransformFeedback& TransformFeedback::setLabelInternal(const Containers::ArrayView<const char> label) {
     createIfNotAlready();
     Context::current()->state().debug->labelImplementation(GL_TRANSFORM_FEEDBACK, _id, label);
     return *this;
@@ -210,7 +210,7 @@ void TransformFeedback::attachImplementationFallback(const GLuint firstIndex, st
 }
 
 #ifndef MAGNUM_TARGET_GLES
-/** @todoc const Containers::ArrayReference makes Doxygen grumpy */
+/** @todoc const Containers::ArrayView makes Doxygen grumpy */
 void TransformFeedback::attachImplementationDSA(const GLuint firstIndex, std::initializer_list<std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers) {
     for(std::size_t i = 0; i != buffers.size(); ++i) {
         Buffer* buffer;
@@ -223,14 +223,14 @@ void TransformFeedback::attachImplementationDSA(const GLuint firstIndex, std::in
 }
 #endif
 
-/** @todoc const Containers::ArrayReference makes Doxygen grumpy */
+/** @todoc const Containers::ArrayView makes Doxygen grumpy */
 void TransformFeedback::attachImplementationFallback(const GLuint firstIndex, std::initializer_list<Buffer*> buffers) {
     bindInternal();
     Buffer::bind(Buffer::Target(GL_TRANSFORM_FEEDBACK_BUFFER), firstIndex, buffers);
 }
 
 #ifndef MAGNUM_TARGET_GLES
-/** @todoc const Containers::ArrayReference makes Doxygen grumpy */
+/** @todoc const Containers::ArrayView makes Doxygen grumpy */
 void TransformFeedback::attachImplementationDSA(const GLuint firstIndex, std::initializer_list<Buffer*> buffers) {
     for(std::size_t i = 0; i != buffers.size(); ++i)
         glTransformFeedbackBufferBase(_id, firstIndex + i, *(buffers.begin() + i) ? (*(buffers.begin() + i))->id() : 0);
