@@ -79,7 +79,7 @@ void flextGLInit();
 
 /* GL_@cat */
 
-    @if cat in ['VERSION_1_0', 'VERSION_1_1','VERSION_1_0_DEPRECATED', 'VERSION_1_1_DEPRECATED']:
+    @if cat in ['VERSION_1_0', 'VERSION_1_1']:
         @for f in funcs:
 GLAPI FLEXTGL_EXPORT @f.returntype APIENTRY gl@f.name\
 (@f.param_type_list_string());

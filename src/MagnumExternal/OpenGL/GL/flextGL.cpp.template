@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 @for category,funcs in functions:
-@if len(funcs) > 0 and category not in ['VERSION_1_0', 'VERSION_1_1','VERSION_1_0_DEPRECATED', 'VERSION_1_1_DEPRECATED' ]:
+@if len(funcs) > 0 and category not in ['VERSION_1_0', 'VERSION_1_1']:
 
 /* GL_@category */
 @for f in funcs:
