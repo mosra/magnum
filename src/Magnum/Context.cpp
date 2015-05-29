@@ -407,6 +407,7 @@ Context::Context(void functionLoader()) {
         if(version.find("WebGL 1") != std::string::npos)
         #else
         if(version.find("OpenGL ES 2.0") != std::string::npos ||
+           /* It is possible to use Magnum compiled for ES2 on ES3 contexts */
            version.find("OpenGL ES 3.") != std::string::npos)
         #endif
         {
