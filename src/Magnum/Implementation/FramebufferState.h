@@ -54,7 +54,7 @@ struct FramebufferState {
     #ifndef MAGNUM_TARGET_GLES2
     void(AbstractFramebuffer::*invalidateSubImplementation)(GLsizei, const GLenum*, const Range2Di&);
     #endif
-    #ifdef MAGNUM_TARGET_GLES2
+    #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     void(AbstractFramebuffer::*bindImplementation)(FramebufferTarget);
     FramebufferTarget(AbstractFramebuffer::*bindInternalImplementation)();
     #endif
