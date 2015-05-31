@@ -25,6 +25,7 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
+#include "Magnum/Math/Constants.h"
 #include "Magnum/Math/Unit.h"
 
 namespace Magnum { namespace Math { namespace Test {
@@ -36,6 +37,7 @@ struct UnitTest: Corrade::TestSuite::Tester {
     void constructDefault();
     void constructConversion();
     void compare();
+    void compareNaN();
 
     void negated();
     void addSubtract();
@@ -47,6 +49,7 @@ UnitTest::UnitTest() {
               &UnitTest::constructDefault,
               &UnitTest::constructConversion,
               &UnitTest::compare,
+              &UnitTest::compareNaN,
 
               &UnitTest::negated,
               &UnitTest::addSubtract,
@@ -56,6 +59,7 @@ UnitTest::UnitTest() {
 template<class> struct Sec_;
 typedef Unit<Sec_, Float> Sec;
 typedef Unit<Sec_, Int> Seci;
+typedef Constants<Float> Constants;
 
 inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, Sec value) {
     return debug << Float(value);
@@ -114,6 +118,11 @@ void UnitTest::compare() {
     CORRADE_VERIFY(!m);
     CORRADE_VERIFY(!n);
     CORRADE_VERIFY(!o);
+}
+
+void UnitTest::compareNaN() {
+    CORRADE_VERIFY(Sec{Constants::nan()} != Sec{Constants::nan()});
+    CORRADE_VERIFY(!(Sec{Constants::nan()} == Sec{Constants::nan()}));
 }
 
 void UnitTest::negated() {
