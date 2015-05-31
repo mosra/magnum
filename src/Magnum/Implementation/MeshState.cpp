@@ -61,18 +61,10 @@ MeshState::MeshState(Context& context, std::vector<std::string>& extensions): cu
             extensions.push_back(Extensions::GL::EXT::direct_state_access::string());
 
             attributePointerImplementation = &Mesh::attributePointerImplementationDSAEXT;
-            attributeIPointerImplementation = &Mesh::attributePointerImplementationDSAEXT;
-            attributeLPointerImplementation = &Mesh::attributePointerImplementationDSAEXT;
         } else
         #endif
         {
             attributePointerImplementation = &Mesh::attributePointerImplementationVAO;
-            #ifndef MAGNUM_TARGET_GLES2
-            attributeIPointerImplementation = &Mesh::attributePointerImplementationVAO;
-            #ifndef MAGNUM_TARGET_GLES
-            attributeLPointerImplementation = &Mesh::attributePointerImplementationVAO;
-            #endif
-            #endif
         }
 
         bindIndexBufferImplementation = &Mesh::bindIndexBufferImplementationVAO;
@@ -84,12 +76,6 @@ MeshState::MeshState(Context& context, std::vector<std::string>& extensions): cu
         createImplementation = &Mesh::createImplementationDefault;
         destroyImplementation = &Mesh::destroyImplementationDefault;
         attributePointerImplementation = &Mesh::attributePointerImplementationDefault;
-        #ifndef MAGNUM_TARGET_GLES2
-        attributeIPointerImplementation = &Mesh::attributePointerImplementationDefault;
-        #ifndef MAGNUM_TARGET_GLES
-        attributeLPointerImplementation = &Mesh::attributePointerImplementationDefault;
-        #endif
-        #endif
         bindIndexBufferImplementation = &Mesh::bindIndexBufferImplementationDefault;
         bindImplementation = &Mesh::bindImplementationDefault;
         unbindImplementation = &Mesh::unbindImplementationDefault;

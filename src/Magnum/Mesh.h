@@ -842,42 +842,27 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         void draw(AbstractShaderProgram&& shader) { draw(shader); } /**< @overload */
 
     private:
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        struct MAGNUM_LOCAL GenericAttribute {
-            Buffer* buffer;
-            GLuint location;
-            GLint size;
-            GLenum type;
-            bool normalized;
-            GLintptr offset;
-            GLsizei stride;
-            GLuint divisor;
-        };
+        struct MAGNUM_LOCAL AttributeLayout {
+            enum class Kind {
+                Generic,
+                GenericNormalized,
+                #ifndef MAGNUM_TARGET_GLES2
+                Integral,
+                #ifndef MAGNUM_TARGET_GLES
+                Long
+                #endif
+                #endif
+            };
 
-        #ifndef MAGNUM_TARGET_GLES2
-        struct MAGNUM_LOCAL IntegerAttribute {
             Buffer* buffer;
             GLuint location;
             GLint size;
             GLenum type;
+            Kind kind;
             GLintptr offset;
             GLsizei stride;
             GLuint divisor;
         };
-
-        #ifndef MAGNUM_TARGET_GLES
-        struct MAGNUM_LOCAL LongAttribute {
-            Buffer* buffer;
-            GLuint location;
-            GLint size;
-            GLenum type;
-            GLintptr offset;
-            GLsizei stride;
-            GLuint divisor;
-        };
-        #endif
-        #endif
-        #endif
 
         explicit Mesh(GLuint id, MeshPrimitive primitive, ObjectFlags flags): _id{id}, _primitive{primitive}, _flags{flags} {}
 
@@ -911,12 +896,12 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
 
         template<UnsignedInt location, class T> void addVertexAttribute(typename std::enable_if<std::is_same<typename Implementation::Attribute<T>::ScalarType, Float>::value, Buffer&>::type buffer, const Attribute<location, T>& attribute, GLintptr offset, GLsizei stride, GLuint divisor) {
             for(UnsignedInt i = 0; i != Attribute<location, T>::VectorCount; ++i)
-                attributePointerInternal(GenericAttribute{
+                attributePointerInternal(AttributeLayout{
                     &buffer,
                     location+i,
                     GLint(attribute.components()),
                     GLenum(attribute.dataType()),
-                    bool(attribute.dataOptions() & Attribute<location, T>::DataOption::Normalized),
+                    attribute.dataOptions() & Attribute<location, T>::DataOption::Normalized ? AttributeLayout::Kind::GenericNormalized : AttributeLayout::Kind::Generic,
                     GLintptr(offset+i*attribute.vectorSize()),
                     stride,
                     divisor
@@ -925,11 +910,12 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
 
         #ifndef MAGNUM_TARGET_GLES2
         template<UnsignedInt location, class T> void addVertexAttribute(typename std::enable_if<std::is_integral<typename Implementation::Attribute<T>::ScalarType>::value, Buffer&>::type buffer, const Attribute<location, T>& attribute, GLintptr offset, GLsizei stride, GLuint divisor) {
-            attributePointerInternal(IntegerAttribute{
+            attributePointerInternal(AttributeLayout{
                 &buffer,
                 location,
                 GLint(attribute.components()),
                 GLenum(attribute.dataType()),
+                AttributeLayout::Kind::Integral,
                 offset,
                 stride,
                 divisor
@@ -939,11 +925,12 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         #ifndef MAGNUM_TARGET_GLES
         template<UnsignedInt location, class T> void addVertexAttribute(typename std::enable_if<std::is_same<typename Implementation::Attribute<T>::ScalarType, Double>::value, Buffer&>::type buffer, const Attribute<location, T>& attribute, GLintptr offset, GLsizei stride, GLuint divisor) {
             for(UnsignedInt i = 0; i != Attribute<location, T>::VectorCount; ++i)
-                attributePointerInternal(LongAttribute{
+                attributePointerInternal(AttributeLayout{
                     &buffer,
                     location+i,
                     GLint(attribute.components()),
                     GLenum(attribute.dataType()),
+                    AttributeLayout::Kind::Long,
                     GLintptr(offset+i*attribute.vectorSize()),
                     stride,
                     divisor
@@ -971,31 +958,13 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         void MAGNUM_LOCAL destroyImplementationDefault();
         void MAGNUM_LOCAL destroyImplementationVAO();
 
-        void attributePointerInternal(const GenericAttribute& attribute);
-        void MAGNUM_LOCAL attributePointerImplementationDefault(const GenericAttribute& attribute);
-        void MAGNUM_LOCAL attributePointerImplementationVAO(const GenericAttribute& attribute);
+        void attributePointerInternal(const AttributeLayout& attribute);
+        void MAGNUM_LOCAL attributePointerImplementationDefault(const AttributeLayout& attribute);
+        void MAGNUM_LOCAL attributePointerImplementationVAO(const AttributeLayout& attribute);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL attributePointerImplementationDSAEXT(const GenericAttribute& attribute);
+        void MAGNUM_LOCAL attributePointerImplementationDSAEXT(const AttributeLayout& attribute);
         #endif
-        void MAGNUM_LOCAL vertexAttribPointer(const GenericAttribute& attribute);
-
-        #ifndef MAGNUM_TARGET_GLES2
-        void attributePointerInternal(const IntegerAttribute& attribute);
-        void MAGNUM_LOCAL attributePointerImplementationDefault(const IntegerAttribute& attribute);
-        void MAGNUM_LOCAL attributePointerImplementationVAO(const IntegerAttribute& attribute);
-        #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL attributePointerImplementationDSAEXT(const IntegerAttribute& attribute);
-        #endif
-        void MAGNUM_LOCAL vertexAttribPointer(const IntegerAttribute& attribute);
-        #endif
-
-        #ifndef MAGNUM_TARGET_GLES
-        void attributePointerInternal(const LongAttribute& attribute);
-        void MAGNUM_LOCAL attributePointerImplementationDefault(const LongAttribute& attribute);
-        void MAGNUM_LOCAL attributePointerImplementationVAO(const LongAttribute& attribute);
-        void MAGNUM_LOCAL attributePointerImplementationDSAEXT(const LongAttribute& attribute);
-        void MAGNUM_LOCAL vertexAttribPointer(const LongAttribute& attribute);
-        #endif
+        void MAGNUM_LOCAL vertexAttribPointer(const AttributeLayout& attribute);
 
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL vertexAttribDivisorImplementationVAO(GLuint index, GLuint divisor);
@@ -1045,13 +1014,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         IndexType _indexType;
         Buffer* _indexBuffer;
 
-        std::vector<GenericAttribute> _attributes;
-        #ifndef MAGNUM_TARGET_GLES2
-        std::vector<IntegerAttribute> _integerAttributes;
-        #ifndef MAGNUM_TARGET_GLES
-        std::vector<LongAttribute> _longAttributes;
-        #endif
-        #endif
+        std::vector<AttributeLayout> _attributes;
 };
 
 /** @debugoperatorenum{Magnum::MeshPrimitive} */
