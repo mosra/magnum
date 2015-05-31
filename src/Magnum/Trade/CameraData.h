@@ -31,12 +31,46 @@
 
 #include <string>
 
+#include "Magnum/Math/Angle.h"
+#include "Magnum/Magnum.h"
+
 namespace Magnum { namespace Trade {
 
 /**
-@brief Camera data
+@brief 3D camera data
 */
-class CameraData {};
+class CameraData {
+    public:
+        /**
+         * @brief Constructor
+         * @param fov       Field-of-view angle
+         * @param near      Near clipping plane
+         * @param far       Far clipping plane
+         *
+         * If `NaN` is specified for any parameter, default value is used
+         * instead, which is `35.0_degf` for @p fov, `0.01f` for @p near and
+         * `100.0f` for @p far.
+         */
+        constexpr explicit CameraData(Rad fov, Float near, Float far) noexcept;
+
+        /** @brief Field-of-view angle */
+        constexpr Rad fov() const { return _fov; }
+
+        /** @brief Near clipping plane */
+        constexpr Float near() const { return _near; }
+
+        /** @brief Far clipping plane */
+        constexpr Float far() const { return _far; }
+
+    private:
+        Rad _fov;
+        Float _near, _far;
+};
+
+constexpr CameraData::CameraData(Rad fov, Float near, Float far) noexcept:
+    _fov{fov != fov ? Rad{35.0_degf} : fov},
+    _near{near != near ? 0.01f : near},
+    _far{far != far ? 100.0f : far} {}
 
 }}
 
