@@ -36,7 +36,7 @@ namespace Magnum { namespace Trade {
 /**
 @brief Light data
 */
-class MAGNUM_EXPORT LightData {};
+class LightData {};
 
 }}
 
