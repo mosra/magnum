@@ -34,6 +34,7 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/visibility.h"
 #include "Magnum/Text/Text.h"
+#include "MagnumExternal/Optional/optional.hpp"
 
 namespace Magnum { namespace Trade {
 
@@ -95,10 +96,10 @@ class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractPlugin
          * @brief Convert image to different format
          *
          * Available only if @ref Feature::ConvertImage is supported. Returns
-         * converted image on success, `nullptr` otherwise.
+         * converted image on success, `std::nullopt` otherwise.
          * @see @ref features(), @ref exportToData(), @ref exportToFile()
          */
-        Image2D* exportToImage(const ImageReference2D& image) const;
+        std::optional<Image2D> exportToImage(const ImageReference2D& image) const;
 
         /**
          * @brief Export image to raw data
@@ -126,7 +127,7 @@ class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractPlugin
         virtual Features doFeatures() const = 0;
 
         /** @brief Implementation of @ref exportToImage() */
-        virtual Image2D* doExportToImage(const ImageReference2D& image) const;
+        virtual std::optional<Image2D> doExportToImage(const ImageReference2D& image) const;
 
         /** @brief Implementation of @ref exportToData() */
         virtual Containers::Array<char> doExportToData(const ImageReference2D& image) const;

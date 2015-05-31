@@ -29,22 +29,24 @@
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Directory.h>
 
+#include "Magnum/Image.h"
+
 namespace Magnum { namespace Trade {
 
 AbstractImageConverter::AbstractImageConverter() = default;
 
 AbstractImageConverter::AbstractImageConverter(PluginManager::AbstractManager& manager, std::string plugin): AbstractPlugin(manager, std::move(plugin)) {}
 
-Image2D* AbstractImageConverter::exportToImage(const ImageReference2D& image) const {
+std::optional<Image2D> AbstractImageConverter::exportToImage(const ImageReference2D& image) const {
     CORRADE_ASSERT(features() & Feature::ConvertImage,
-        "Trade::AbstractImageConverter::exportToImage(): feature not supported", nullptr);
+        "Trade::AbstractImageConverter::exportToImage(): feature not supported", {});
 
     return doExportToImage(image);
 }
 
-Image2D* AbstractImageConverter::doExportToImage(const ImageReference2D&) const {
-    CORRADE_ASSERT(false, "Trade::AbstractImageConverter::exportToImage(): feature advertised but not implemented", nullptr);
-    return nullptr;
+std::optional<Image2D> AbstractImageConverter::doExportToImage(const ImageReference2D&) const {
+    CORRADE_ASSERT(false, "Trade::AbstractImageConverter::exportToImage(): feature advertised but not implemented", {});
+    return std::nullopt;
 }
 
 Containers::Array<char> AbstractImageConverter::exportToData(const ImageReference2D& image) const {
