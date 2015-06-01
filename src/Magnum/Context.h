@@ -189,10 +189,10 @@ class MAGNUM_EXPORT Context {
             IntelWindows = 1 << 1,
             #endif
 
-            #ifdef MAGNUM_TARGET_GLES2
+            #ifdef MAGNUM_TARGET_GLES
             /**
-             * OpenGL ES 2.0 implementation by ANGLE (translated to D3D9), used
-             * by browsers on Windows for Native Client and WebGL. As the WebGL
+             * OpenGL ES implementation by ANGLE (translated to D3D), used by
+             * browsers on Windows for Native Client and WebGL. As the WebGL
              * specification explicitly disallows exposing driver information
              * to the application, this check cannot be done reliably.
              */

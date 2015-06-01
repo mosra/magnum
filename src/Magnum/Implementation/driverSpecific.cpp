@@ -34,9 +34,9 @@ auto Context::detectedDriver() -> DetectedDrivers {
 
     _detectedDrivers = DetectedDrivers{};
 
-    #ifndef MAGNUM_TARGET_GLES
     const std::string vendor = vendorString();
 
+    #ifndef MAGNUM_TARGET_GLES
     /* AMD binary desktop drivers */
     if(vendor.find("ATI Technologies Inc.") != std::string::npos)
         return *_detectedDrivers |= DetectedDriver::AMD;
@@ -48,13 +48,16 @@ auto Context::detectedDriver() -> DetectedDrivers {
     #endif
     #endif
 
-    #ifdef MAGNUM_TARGET_GLES2
-    /* OpenGL ES 2.0 implementation using ANGLE. Taken from
-       http://stackoverflow.com/a/20149090 */
+    /** @todo there is also D3D9/D3D11 distinction on webglreport.com, is it useful? */
+    #ifdef MAGNUM_TARGET_GLES
+    /* OpenGL ES implementation using ANGLE. Taken from these sources:
+       http://stackoverflow.com/a/20149090
+       http://webglreport.com
+    */
     {
         Range1Di range;
         glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, range.data());
-        if(range.min() == 1 && range.max() == 1)
+        if(range.min() == 1 && range.max() == 1 && vendor != "Internet Explorer")
             return *_detectedDrivers |= DetectedDriver::ProbablyAngle;
     }
     #endif
