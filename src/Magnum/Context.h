@@ -462,7 +462,7 @@ class MAGNUM_EXPORT Context {
 
         explicit Context(void functionLoader());
 
-        /* defined in Implementation/setupDriverWorkarounds.cpp */
+        /* Defined in Implementation/driverSpecific.cpp */
         MAGNUM_LOCAL void setupDriverWorkarounds();
 
         Version _version;

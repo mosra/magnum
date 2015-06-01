@@ -25,8 +25,42 @@
 
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
+#include "Magnum/Math/Range.h"
 
 namespace Magnum {
+
+auto Context::detectedDriver() -> DetectedDrivers {
+    if(_detectedDrivers) return *_detectedDrivers;
+
+    _detectedDrivers = DetectedDrivers{};
+
+    #ifndef MAGNUM_TARGET_GLES
+    const std::string vendor = vendorString();
+
+    /* AMD binary desktop drivers */
+    if(vendor.find("ATI Technologies Inc.") != std::string::npos)
+        return *_detectedDrivers |= DetectedDriver::AMD;
+
+    #ifdef CORRADE_TARGET_WINDOWS
+    /* Intel Windows drivers */
+    if(vendor.find("Intel") != std::string::npos)
+        return *_detectedDrivers |= DetectedDriver::IntelWindows;
+    #endif
+    #endif
+
+    #ifdef MAGNUM_TARGET_GLES2
+    /* OpenGL ES 2.0 implementation using ANGLE. Taken from
+       http://stackoverflow.com/a/20149090 */
+    {
+        Range1Di range;
+        glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, range.data());
+        if(range.min() == 1 && range.max() == 1)
+            return *_detectedDrivers |= DetectedDriver::ProbablyAngle;
+    }
+    #endif
+
+    return *_detectedDrivers;
+}
 
 void Context::setupDriverWorkarounds() {
     #define _setRequiredVersion(extension, version)                           \
