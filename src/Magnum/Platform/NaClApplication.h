@@ -160,9 +160,9 @@ name of your executable.
   <body>
     <h1>Magnum NaCl Application</h1>
     <div id="listener">
-      <embed id="module" type="application/x-nacl" src="<application>.nmf" />
+      <embed id="module" type="application/x-nacl" src="<application>.nmf"></embed>
       <div id="status">Initialization...</div>
-      <div id="statusDescription" />
+      <div id="statusDescription"></div>
       <script src="NaClApplication.js"></script>
     </div>
   </body>

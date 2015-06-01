@@ -154,7 +154,7 @@ executable.
     <div id="listener">
       <canvas id="module"></canvas>
       <div id="status">Initialization...</div>
-      <div id="statusDescription" />
+      <div id="statusDescription"></div>
       <script src="EmscriptenApplication.js"></script>
       <script async="async" src="<application>.js"></script>
     </div>
