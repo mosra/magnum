@@ -5,6 +5,7 @@ version 2.0 es
 extension ANGLE_instanced_arrays                optional
 extension EXT_blend_minmax                      optional
 extension EXT_shader_texture_lod                optional
+extension EXT_sRGB                              optional
 extension OES_element_index_uint                optional
 extension OES_texture_half_float_linear         optional
 extension OES_texture_float_linear              optional
@@ -17,4 +18,3 @@ extension ANGLE_depth_texture                   optional
 extension EXT_draw_buffers                      optional
 
 extension EXT_texture_filter_anisotropic        optional
-extension EXT_sRGB                              optional

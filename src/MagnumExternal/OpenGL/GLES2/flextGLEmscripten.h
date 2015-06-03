@@ -370,6 +370,13 @@ typedef khronos_ssize_t GLsizeiptr;
 #define GL_FUNC_ADD_EXT 0x8006
 #define GL_BLEND_EQUATION_EXT 0x8009
 
+/* GL_EXT_sRGB */
+
+#define GL_SRGB_EXT 0x8C40
+#define GL_SRGB_ALPHA_EXT 0x8C42
+#define GL_SRGB8_ALPHA8_EXT 0x8C43
+#define GL_FRAMEBUFFER_ATTACHMENT_COLOR_ENCODING_EXT 0x8210
+
 /* GL_OES_element_index_uint */
 
 #define GL_UNSIGNED_INT 0x1405
@@ -442,13 +449,6 @@ typedef khronos_ssize_t GLsizeiptr;
 
 #define GL_TEXTURE_MAX_ANISOTROPY_EXT 0x84FE
 #define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT 0x84FF
-
-/* GL_EXT_sRGB */
-
-#define GL_SRGB_EXT 0x8C40
-#define GL_SRGB_ALPHA_EXT 0x8C42
-#define GL_SRGB8_ALPHA8_EXT 0x8C43
-#define GL_FRAMEBUFFER_ATTACHMENT_COLOR_ENCODING_EXT 0x8210
 
 /* Function prototypes */
 
@@ -610,6 +610,9 @@ GLAPI void glBlendEquationEXT(GLenum);
 /* GL_EXT_shader_texture_lod */
 
 
+/* GL_EXT_sRGB */
+
+
 /* GL_OES_element_index_uint */
 
 
@@ -643,9 +646,6 @@ GLAPI GLboolean glIsVertexArrayOES(GLuint);
 GLAPI void glDrawBuffersEXT(GLsizei, const GLenum *);
 
 /* GL_EXT_texture_filter_anisotropic */
-
-
-/* GL_EXT_sRGB */
 
 
 #ifdef __cplusplus

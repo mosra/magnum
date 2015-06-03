@@ -310,8 +310,8 @@ namespace GL {
         #ifdef MAGNUM_TARGET_GLES2
         _extension(GL,EXT,shadow_samplers,          GLES200, GLES300) // #102
         _extension(GL,EXT,texture_rg,               GLES200, GLES300) // #103
+        _extension(GL,EXT,sRGB,                     GLES200, GLES300) // #105
         #endif
-        _extension(GL,EXT,sRGB,                     GLES200,    None) // #105
         _extension(GL,EXT,multisampled_render_to_texture, GLES200, None) // #106
         _extension(GL,EXT,robustness,               GLES200,    None) // #107
         #ifdef MAGNUM_TARGET_GLES2

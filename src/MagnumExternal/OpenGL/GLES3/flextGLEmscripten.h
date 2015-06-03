@@ -694,13 +694,6 @@ typedef khronos_ssize_t GLsizeiptr;
 #define GL_TEXTURE_MAX_ANISOTROPY_EXT 0x84FE
 #define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT 0x84FF
 
-/* GL_EXT_sRGB */
-
-#define GL_SRGB_EXT 0x8C40
-#define GL_SRGB_ALPHA_EXT 0x8C42
-#define GL_SRGB8_ALPHA8_EXT 0x8C43
-#define GL_FRAMEBUFFER_ATTACHMENT_COLOR_ENCODING_EXT 0x8210
-
 /* Function prototypes */
 
 /* GL_ES_VERSION_2_0 */
@@ -956,9 +949,6 @@ GLAPI void glTexStorage3D(GLenum, GLsizei, GLenum, GLsizei, GLsizei, GLsizei);
 GLAPI void glGetInternalformativ(GLenum, GLenum, GLenum, GLsizei, GLint *);
 
 /* GL_EXT_texture_filter_anisotropic */
-
-
-/* GL_EXT_sRGB */
 
 
 #ifdef __cplusplus

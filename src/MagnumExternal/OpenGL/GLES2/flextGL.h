@@ -468,6 +468,13 @@ typedef khronos_ssize_t GLsizeiptr;
 #define GL_R8_EXT 0x8229
 #define GL_RG8_EXT 0x822B
 
+/* GL_EXT_sRGB */
+
+#define GL_SRGB_EXT 0x8C40
+#define GL_SRGB_ALPHA_EXT 0x8C42
+#define GL_SRGB8_ALPHA8_EXT 0x8C43
+#define GL_FRAMEBUFFER_ATTACHMENT_COLOR_ENCODING_EXT 0x8210
+
 /* GL_EXT_texture_storage */
 
 #define GL_TEXTURE_IMMUTABLE_FORMAT_EXT 0x912F
@@ -761,13 +768,6 @@ typedef khronos_ssize_t GLsizeiptr;
 #define GL_PROGRAM_SEPARABLE_EXT 0x8258
 #define GL_ACTIVE_PROGRAM_EXT 0x8259
 #define GL_PROGRAM_PIPELINE_BINDING_EXT 0x825A
-
-/* GL_EXT_sRGB */
-
-#define GL_SRGB_EXT 0x8C40
-#define GL_SRGB_ALPHA_EXT 0x8C42
-#define GL_SRGB8_ALPHA8_EXT 0x8C43
-#define GL_FRAMEBUFFER_ATTACHMENT_COLOR_ENCODING_EXT 0x8210
 
 /* GL_EXT_multisampled_render_to_texture */
 
@@ -1116,6 +1116,9 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetQueryObjectuivEXT)(GLuint, GLenum,
 /* GL_EXT_texture_rg */
 
 
+/* GL_EXT_sRGB */
+
+
 /* GL_EXT_texture_storage */
 
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglTexStorage1DEXT)(GLenum, GLsizei, GLenum, GLsizei);
@@ -1406,9 +1409,6 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix3x4fvEXT)(GLuint,
 #define glProgramUniformMatrix3x4fvEXT flextglProgramUniformMatrix3x4fvEXT
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix4x3fvEXT)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
 #define glProgramUniformMatrix4x3fvEXT flextglProgramUniformMatrix4x3fvEXT
-
-/* GL_EXT_sRGB */
-
 
 /* GL_EXT_multisampled_render_to_texture */
 

@@ -552,7 +552,9 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         case TextureFormat::R11FG11FB10F:
         case TextureFormat::RGB9E5:
         #endif
+        #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
         case TextureFormat::SRGB:
+        #endif
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::SRGB8:
         #endif
@@ -599,7 +601,9 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         #ifndef MAGNUM_TARGET_GLES
         case TextureFormat::RGBA12:
         #endif
+        #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
         case TextureFormat::SRGBAlpha:
+        #endif
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::SRGB8Alpha8:
         #endif
@@ -683,8 +687,10 @@ ColorType AbstractTexture::imageTypeForInternalFormat(const TextureFormat intern
         case TextureFormat::Luminance:
         case TextureFormat::LuminanceAlpha:
         #endif
+        #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
         case TextureFormat::SRGB:
         case TextureFormat::SRGBAlpha:
+        #endif
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::SRGB8:
         case TextureFormat::SRGB8Alpha8:

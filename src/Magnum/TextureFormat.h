@@ -694,20 +694,23 @@ enum class TextureFormat: GLenum {
     RGB9E5 = GL_RGB9_E5,
     #endif
 
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
     /**
      * sRGB, normalized unsigned, size implementation-dependent. Not allowed in
      * unemulated @ref Texture::setStorage() "*Texture::setStorage()" calls, in
      * that case use @ref TextureFormat::SRGB8 "TextureFormat::SRGB8" instead.
-     * @requires_es_extension Extension @es_extension{EXT,sRGB}
-     * @requires_webgl_extension Extension @webgl_extension{EXT,sRGB}
+     * @requires_es_extension Extension @es_extension{EXT,sRGB} in OpenGL ES 2.0.
+     *      Use @ref TextureFormat::SRGB8 in OpenGL ES 3.0 instead.
+     * @requires_webgl_extension Extension @webgl_extension{EXT,sRGB} in WebGL
+     *      1.0. Use @ref TextureFormat::SRGB8 in WebGL 2.0 instead.
      * @deprecated_gl Prefer to use the exactly specified version of this
      *      format, i.e. @ref TextureFormat::SRGB8.
-     * @todo is this allowed in core?
      */
     #ifndef MAGNUM_TARGET_GLES
     SRGB = GL_SRGB,
     #else
     SRGB = GL_SRGB_EXT,
+    #endif
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
@@ -785,20 +788,23 @@ enum class TextureFormat: GLenum {
     RGBA12 = GL_RGBA12,
     #endif
 
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
     /**
      * sRGBA, normalized unsigned, size implementation-dependent. Not allowed in
      * unemulated @ref Texture::setStorage() "*Texture::setStorage()" calls, in
      * that case use @ref TextureFormat::SRGB8Alpha8 "TextureFormat::SRGB8Alpha8" instead.
-     * @requires_es_extension Extension @es_extension{EXT,sRGB}
-     * @requires_webgl_extension Extension @webgl_extension{EXT,sRGB}
+     * @requires_es_extension Extension @es_extension{EXT,sRGB} in OpenGL ES
+     *      2.0. Use @ref TextureFormat::SRGB8Alpha8 in OpenGL ES 3.0 instead.
+     * @requires_webgl_extension Extension @webgl_extension{EXT,sRGB} in WebGL
+     *      1.0. Use @ref TextureFormat::SRGB8Alpha8 in WebGL 2.0 instead.
      * @deprecated_gl Prefer to use the exactly specified version of this
      *      format, i.e. @ref TextureFormat::SRGB8Alpha8.
-     * @todo is this allowed in core?
      */
     #ifndef MAGNUM_TARGET_GLES
     SRGBAlpha = GL_SRGB_ALPHA,
     #else
     SRGBAlpha = GL_SRGB_ALPHA_EXT,
+    #endif
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
