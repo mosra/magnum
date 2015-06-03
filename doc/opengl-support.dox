@@ -368,6 +368,7 @@ Extension                                   | Status
 @es_extension2{NV,read_stencil,NV_read_depth_stencil} | done
 @es_extension{NV,read_depth_stencil}        | done
 @es_extension{NV,texture_border_clamp}      | done
+@es_extension{NV,polygon_mode}              | done
 @es_extension{OES,depth32}                  | done
 @es_extension{OES,mapbuffer}                | done
 @es_extension{OES,stencil1}                 | done

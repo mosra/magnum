@@ -267,6 +267,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,NV,read_stencil),
         _extension(GL,NV,read_depth_stencil),
         _extension(GL,NV,texture_border_clamp),
+        _extension(GL,NV,polygon_mode),
         _extension(GL,OES,depth32),
         _extension(GL,OES,mapbuffer),
         _extension(GL,OES,stencil1),

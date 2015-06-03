@@ -182,25 +182,37 @@ class MAGNUM_EXPORT Renderer {
              */
             PolygonOffsetFill = GL_POLYGON_OFFSET_FILL,
 
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_WEBGL
             /**
              * Offset lines
              * @see @ref Feature::PolygonOffsetFill, @ref Feature::PolygonOffsetPoint,
              *      @ref setPolygonOffset()
-             * @requires_gl Only @ref Feature::PolygonOffsetFill is available
-             *      in OpenGL ES and WebGL.
+             * @requires_es_extension Extension @es_extension{NV,polygon_offset}
+             * @requires_gles Only @ref Feature::PolygonOffsetFill is available
+             *      in WebGL.
              */
+            #ifndef MAGNUM_TARGET_GLES
             PolygonOffsetLine = GL_POLYGON_OFFSET_LINE,
+            #else
+            PolygonOffsetLine = GL_POLYGON_OFFSET_LINE_NV,
+            #endif
 
             /**
              * Offset points
              * @see @ref Feature::PolygonOffsetFill, @ref Feature::PolygonOffsetLine,
              *      @ref setPolygonOffset()
-             * @requires_gl Only @ref Feature::PolygonOffsetFill is available
-             *      in OpenGL ES and WebGL.
+             * @requires_es_extension Extension @es_extension{NV,polygon_offset}
+             * @requires_gles Only @ref Feature::PolygonOffsetFill is available
+             *      in WebGL.
              */
+            #ifndef MAGNUM_TARGET_GLES
             PolygonOffsetPoint = GL_POLYGON_OFFSET_POINT,
+            #else
+            PolygonOffsetPoint = GL_POLYGON_OFFSET_POINT_NV,
+            #endif
+            #endif
 
+            #ifndef MAGNUM_TARGET_GLES
             /**
              * Programmable point size. If enabled, the point size is taken
              * from vertex/geometry shader builtin `gl_PointSize`.
@@ -418,31 +430,47 @@ class MAGNUM_EXPORT Renderer {
          * @requires_gl OpenGL ES and WebGL behave always like the default.
          */
         static void setProvokingVertex(ProvokingVertex mode);
+        #endif
 
+        #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @brief Polygon mode
          *
          * @see @ref setPolygonMode()
-         * @requires_gl OpenGL ES and WebGL behaves always like
-         *      @ref PolygonMode::Fill. See @ref Mesh::setPrimitive() for
-         *      possible workaround.
+         * @requires_es_extension Extension @es_extension{NV,polygon_mode}.
+         *      Otherwise behaves always like @ref PolygonMode::Fill. See
+         *      @ref Mesh::setPrimitive() for possible workaround.
+         * @requires_gles WebGL behaves always like @ref PolygonMode::Fill. See
+         *      @ref Mesh::setPrimitive() for possible workaround.
          */
         enum class PolygonMode: GLenum {
             /**
              * Interior of the polygon is filled (default).
              */
+            #ifndef MAGNUM_TARGET_GLES
             Fill = GL_FILL,
+            #else
+            Fill = GL_FILL_NV,
+            #endif
 
             /**
              * Boundary edges are filled. See also @ref setLineWidth().
              */
+            #ifndef MAGNUM_TARGET_GLES
             Line = GL_LINE,
+            #else
+            Line = GL_LINE_NV,
+            #endif
 
             /**
              * Starts of boundary edges are drawn as points. See also
              * @ref setPointSize().
              */
+            #ifndef MAGNUM_TARGET_GLES
             Point = GL_POINT
+            #else
+            Point = GL_POINT_NV
+            #endif
         };
 
         /**
@@ -450,8 +478,11 @@ class MAGNUM_EXPORT Renderer {
          *
          * Initial value is @ref PolygonMode::Fill.
          * @see @fn_gl{PolygonMode}
-         * @requires_gl OpenGL ES and WebGL behaves always like the default.
-         *      See @ref Mesh::setPrimitive() for possible workaround.
+         * @requires_es_extension Extension @es_extension{NV,polygon_mode}.
+         *      Otherwise behaves always like the default. See
+         *      @ref Mesh::setPrimitive() for possible workaround.
+         * @requires_gles WebGL behaves always like the default. See
+         *      @ref Mesh::setPrimitive() for possible workaround.
          */
         static void setPolygonMode(PolygonMode mode);
         #endif

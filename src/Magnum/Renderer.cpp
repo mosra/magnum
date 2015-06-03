@@ -81,9 +81,21 @@ void Renderer::setFaceCullingMode(const PolygonFacing mode) {
 void Renderer::setProvokingVertex(const ProvokingVertex mode) {
     glProvokingVertex(GLenum(mode));
 }
+#endif
 
+#ifndef MAGNUM_TARGET_WEBGL
 void Renderer::setPolygonMode(const PolygonMode mode) {
-    glPolygonMode(GL_FRONT_AND_BACK, GLenum(mode));
+    #ifndef CORRADE_TARGET_NACL
+    #ifndef MAGNUM_TARGET_GLES
+    glPolygonMode
+    #else
+    glPolygonModeNV
+    #endif
+        (GL_FRONT_AND_BACK, GLenum(mode));
+    #else
+    static_cast<void>(mode);
+    CORRADE_ASSERT_UNREACHABLE();
+    #endif
 }
 #endif
 

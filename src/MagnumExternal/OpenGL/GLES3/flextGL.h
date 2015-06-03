@@ -1064,6 +1064,15 @@ typedef khronos_ssize_t GLsizeiptr;
 #define GL_TEXTURE_BORDER_COLOR_NV 0x1004
 #define GL_CLAMP_TO_BORDER_NV 0x812D
 
+/* GL_NV_polygon_mode */
+
+#define GL_POLYGON_MODE_NV 0x0B40
+#define GL_POLYGON_OFFSET_POINT_NV 0x2A01
+#define GL_POLYGON_OFFSET_LINE_NV 0x2A02
+#define GL_POINT_NV 0x1B00
+#define GL_LINE_NV 0x1B01
+#define GL_FILL_NV 0x1B02
+
 /* GL_OES_depth32 */
 
 #define GL_DEPTH_COMPONENT32_OES 0x81A7
@@ -1718,6 +1727,11 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetPointervKHR)(GLenum, void **);
 
 /* GL_NV_texture_border_clamp */
 
+
+/* GL_NV_polygon_mode */
+
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglPolygonModeNV)(GLenum, GLenum);
+#define glPolygonModeNV flextglPolygonModeNV
 
 /* GL_OES_depth32 */
 

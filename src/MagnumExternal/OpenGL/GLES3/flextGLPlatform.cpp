@@ -209,6 +209,9 @@ void flextGLInit() {
 
     /* GL_NV_texture_border_clamp */
 
+    /* GL_NV_polygon_mode */
+    flextglPolygonModeNV = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum)>(loader.load("glPolygonModeNV"));
+
     /* GL_OES_depth32 */
 
     /* GL_OES_mapbuffer */
