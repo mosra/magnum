@@ -50,6 +50,11 @@ typedef char GLchar;
 
 namespace Magnum {
 
+namespace Implementation {
+    /* defined in Implementation/driverSpecific.cpp */
+    bool isShaderCompilationLogEmpty(const std::string& result);
+}
+
 namespace {
 
 std::string shaderName(const Shader::Type type) {
@@ -770,7 +775,7 @@ bool Shader::compile(std::initializer_list<std::reference_wrapper<Shader>> shade
                 << message;
 
         /* Or just warnings, if any */
-        } else if(!message.empty()) {
+        } else if(!message.empty() && !Implementation::isShaderCompilationLogEmpty(message)) {
             Warning out;
             out.setFlag(Debug::NewLineAtTheEnd, false);
             out.setFlag(Debug::SpaceAfterEachValue, false);

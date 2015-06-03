@@ -44,6 +44,11 @@
 
 namespace Magnum {
 
+namespace Implementation {
+    /* Defined in Implementation/driverSpecific.cpp */
+    bool isProgramLinkLogEmpty(const std::string& result);
+}
+
 Int AbstractShaderProgram::maxVertexAttributes() {
     GLint& value = Context::current()->state().shaderProgram->maxVertexAttributes;
 
@@ -371,7 +376,7 @@ bool AbstractShaderProgram::link(std::initializer_list<std::reference_wrapper<Ab
                 << message;
 
         /* Or just warnings, if any */
-        } else if(!message.empty()) {
+        } else if(!message.empty() && !Implementation::isProgramLinkLogEmpty(message)) {
             Warning out;
             out.setFlag(Debug::NewLineAtTheEnd, false);
             out.setFlag(Debug::SpaceAfterEachValue, false);
