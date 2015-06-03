@@ -252,6 +252,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,EXT,debug_marker),
         _extension(GL,EXT,disjoint_timer_query),
         _extension(GL,EXT,texture_sRGB_decode),
+        _extension(GL,EXT,sRGB_write_control),
         _extension(GL,EXT,separate_shader_objects),
         _extension(GL,EXT,multisampled_render_to_texture),
         _extension(GL,EXT,robustness),

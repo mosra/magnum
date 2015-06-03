@@ -140,15 +140,24 @@ class MAGNUM_EXPORT Renderer {
              */
             FaceCulling = GL_CULL_FACE,
 
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_WEBGL
             /**
              * sRGB encoding of the default framebuffer
              * @requires_gl30 Extension @extension{ARB,framebuffer_sRGB}
-             * @requires_gl sRGB encoding of the default framebuffer is
-             *      implementation-defined in OpenGL ES and WebGL.
+             * @requires_es_extension @es_extension{EXT,sRGB_write_control}.
+             *      Otherwise sRGB encoding of the default framebuffer is
+             *      implementation-defined.
+             * @requires_gles sRGB encoding of the default framebuffer is
+             *      implementation-defined in WebGL.
              */
+            #ifndef MAGNUM_TARGET_GLES
             FramebufferSRGB = GL_FRAMEBUFFER_SRGB,
+            #else
+            FramebufferSRGB = GL_FRAMEBUFFER_SRGB_EXT,
+            #endif
+            #endif
 
+            #ifndef MAGNUM_TARGET_GLES
             /**
              * Logical operation
              * @see @ref setLogicOperation()
@@ -156,9 +165,7 @@ class MAGNUM_EXPORT Renderer {
              *      available in OpenGL ES and WebGL.
              */
             LogicOperation = GL_COLOR_LOGIC_OP,
-            #endif
 
-            #ifndef MAGNUM_TARGET_GLES
             /**
              * Multisampling. Enabled by default. Note that the actual presence
              * of this feature in default framebuffer depends on context

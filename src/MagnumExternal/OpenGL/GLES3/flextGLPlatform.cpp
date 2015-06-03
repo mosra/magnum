@@ -114,6 +114,8 @@ void flextGLInit() {
 
     /* GL_EXT_texture_sRGB_decode */
 
+    /* GL_EXT_sRGB_write_control */
+
     /* GL_EXT_separate_shader_objects */
     flextglUseShaderProgramEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLuint)>(loader.load("glUseShaderProgramEXT"));
     flextglActiveProgramEXT = reinterpret_cast<void(APIENTRY*)(GLuint)>(loader.load("glActiveProgramEXT"));

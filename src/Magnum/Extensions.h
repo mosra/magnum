@@ -323,6 +323,7 @@ namespace GL {
         _extension(GL,EXT,draw_buffers,             GLES200, GLES300) // #151
         #endif
         _extension(GL,EXT,texture_sRGB_decode,      GLES200,    None) // #152
+        _extension(GL,EXT,sRGB_write_control,       GLES200,    None) // #153
         #ifdef MAGNUM_TARGET_GLES2
         _extension(GL,EXT,instanced_arrays,         GLES200, GLES300) // #156
         _extension(GL,EXT,draw_instanced,           GLES200, GLES300) // #157

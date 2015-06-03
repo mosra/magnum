@@ -355,6 +355,7 @@ Extension                                   | Status
 @es_extension{EXT,robustness}               | done
 @es_extension{EXT,disjoint_timer_query}     | only time elapsed query
 @es_extension{EXT,texture_sRGB_decode}      | done
+@es_extension{EXT,sRGB_write_control}       | done
 @es_extension{EXT,shader_integer_mix}       | done (shading language only)
 @extension3{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr} | |
 @extension{KHR,texture_compression_astc_hdr} | |

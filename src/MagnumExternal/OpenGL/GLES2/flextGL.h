@@ -759,6 +759,10 @@ typedef khronos_ssize_t GLsizeiptr;
 #define GL_DECODE_EXT 0x8A49
 #define GL_SKIP_DECODE_EXT 0x8A4A
 
+/* GL_EXT_sRGB_write_control */
+
+#define GL_FRAMEBUFFER_SRGB_EXT 0x8DB9
+
 /* GL_EXT_separate_shader_objects */
 
 #define GL_ACTIVE_PROGRAM_EXT 0x8259
@@ -1311,6 +1315,9 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetQueryObjectui64vEXT)(GLuint, GLenu
 #define glGetQueryObjectui64vEXT flextglGetQueryObjectui64vEXT
 
 /* GL_EXT_texture_sRGB_decode */
+
+
+/* GL_EXT_sRGB_write_control */
 
 
 /* GL_EXT_separate_shader_objects */
