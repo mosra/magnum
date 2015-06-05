@@ -701,6 +701,21 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         Framebuffer& attachTextureLayer(BufferAttachment attachment, MultisampleTexture2DArray& texture, Int layer);
         #endif
 
+        /**
+         * @brief Detach any texture or renderbuffer bound to given buffer
+         * @param attachment        Buffer attachment
+         * @return Reference to self (for method chaining)
+         *
+         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @extension{EXT,direct_state_access} desktop extension is
+         * available, the framebuffer is bound before the operation (if not
+         * already).
+         * @see @fn_gl2{NamedFramebufferRenderbuffer,FramebufferRenderbuffer},
+         *      @fn_gl_extension{NamedFramebufferRenderbuffer,EXT,direct_state_access},
+         *      eventually @fn_gl{BindFramebuffer} and @fn_gl{FramebufferRenderbuffer}
+         */
+        Framebuffer& detach(BufferAttachment attachment);
+
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         Framebuffer& setViewport(const Range2Di& rectangle) {
@@ -725,10 +740,10 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         Framebuffer& setLabelInternal(Containers::ArrayView<const char> label);
         #endif
 
-        void MAGNUM_LOCAL renderbufferImplementationDefault(BufferAttachment attachment, Renderbuffer& renderbuffer);
+        void MAGNUM_LOCAL renderbufferImplementationDefault(BufferAttachment attachment, GLuint renderbufferId);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL renderbufferImplementationDSA(BufferAttachment attachment, Renderbuffer& renderbuffer);
-        void MAGNUM_LOCAL renderbufferImplementationDSAEXT(BufferAttachment attachment, Renderbuffer& renderbuffer);
+        void MAGNUM_LOCAL renderbufferImplementationDSA(BufferAttachment attachment, GLuint renderbufferId);
+        void MAGNUM_LOCAL renderbufferImplementationDSAEXT(BufferAttachment attachment, GLuint renderbufferId);
         #endif
 
         #ifndef MAGNUM_TARGET_GLES

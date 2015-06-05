@@ -82,6 +82,7 @@ struct FramebufferGLTest: AbstractOpenGLTester {
     #ifndef MAGNUM_TARGET_GLES
     void attachCubeMapTextureArray();
     #endif
+    void detach();
 
     void multipleColorOutputs();
 
@@ -133,6 +134,7 @@ FramebufferGLTest::FramebufferGLTest() {
               #ifndef MAGNUM_TARGET_GLES
               &FramebufferGLTest::attachCubeMapTextureArray,
               #endif
+              &FramebufferGLTest::detach,
 
               &FramebufferGLTest::multipleColorOutputs,
 
@@ -629,6 +631,15 @@ void FramebufferGLTest::attachCubeMapTextureArray() {
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
 #endif
+
+void FramebufferGLTest::detach() {
+    Framebuffer framebuffer({{}, Vector2i(128)});
+    framebuffer.detach(Framebuffer::ColorAttachment(0))
+               .detach(Framebuffer::BufferAttachment::Depth)
+               .detach(Framebuffer::BufferAttachment::Stencil);
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
 
 void FramebufferGLTest::multipleColorOutputs() {
     #ifndef MAGNUM_TARGET_GLES

@@ -60,7 +60,7 @@ struct FramebufferState {
     #endif
 
     void(Framebuffer::*createImplementation)();
-    void(Framebuffer::*renderbufferImplementation)(Framebuffer::BufferAttachment, Renderbuffer&);
+    void(Framebuffer::*renderbufferImplementation)(Framebuffer::BufferAttachment, GLuint);
     #ifndef MAGNUM_TARGET_GLES
     void(Framebuffer::*texture1DImplementation)(Framebuffer::BufferAttachment, GLuint, GLint);
     #endif
