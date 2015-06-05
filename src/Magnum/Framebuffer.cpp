@@ -241,33 +241,33 @@ Framebuffer& Framebuffer::attachCubeMapTexture(const BufferAttachment attachment
 }
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-Framebuffer& Framebuffer::attachTextureLayer(Framebuffer::BufferAttachment attachment, Texture3D& texture, Int level, Int layer) {
+Framebuffer& Framebuffer::attachTextureLayer(const BufferAttachment attachment, Texture3D& texture, Int level, Int layer) {
     (this->*Context::current()->state().framebuffer->textureLayerImplementation)(attachment, texture.id(), level, layer);
     return *this;
 }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-Framebuffer& Framebuffer::attachTextureLayer(Framebuffer::BufferAttachment attachment, Texture1DArray& texture, Int level, Int layer) {
+Framebuffer& Framebuffer::attachTextureLayer(const BufferAttachment attachment, Texture1DArray& texture, Int level, Int layer) {
     (this->*Context::current()->state().framebuffer->textureLayerImplementation)(attachment, texture.id(), level, layer);
     return *this;
 }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
-Framebuffer& Framebuffer::attachTextureLayer(Framebuffer::BufferAttachment attachment, Texture2DArray& texture, Int level, Int layer) {
+Framebuffer& Framebuffer::attachTextureLayer(const BufferAttachment attachment, Texture2DArray& texture, Int level, Int layer) {
     (this->*Context::current()->state().framebuffer->textureLayerImplementation)(attachment, texture.id(), level, layer);
     return *this;
 }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-Framebuffer& Framebuffer::attachTextureLayer(Framebuffer::BufferAttachment attachment, CubeMapTextureArray& texture, Int level, Int layer) {
+Framebuffer& Framebuffer::attachTextureLayer(const BufferAttachment attachment, CubeMapTextureArray& texture, Int level, Int layer) {
     (this->*Context::current()->state().framebuffer->textureLayerImplementation)(attachment, texture.id(), level, layer);
     return *this;
 }
 
-Framebuffer& Framebuffer::attachTextureLayer(Framebuffer::BufferAttachment attachment, MultisampleTexture2DArray& texture, Int layer) {
+Framebuffer& Framebuffer::attachTextureLayer(const BufferAttachment attachment, MultisampleTexture2DArray& texture, Int layer) {
     (this->*Context::current()->state().framebuffer->textureLayerImplementation)(attachment, texture.id(), 0, layer);
     return *this;
 }
