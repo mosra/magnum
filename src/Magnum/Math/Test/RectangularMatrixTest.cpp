@@ -37,7 +37,7 @@ namespace Magnum { namespace Math {
 
 namespace Implementation {
 
-template<> struct RectangularMatrixConverter<2, 3, float, Mat2x3> {
+template<> struct RectangularMatrixConverter<2, 3, Float, Mat2x3> {
     constexpr static RectangularMatrix<2, 3, Float> from(const Mat2x3& other) {
         return RectangularMatrix<2, 3, Float>(
             Vector<3, Float>(other.a[0], other.a[1], other.a[2]),
