@@ -38,7 +38,10 @@ namespace Magnum { namespace Math {
 namespace Implementation {
 
 template<> struct VectorConverter<3, Float, Vec3> {
-    constexpr static Vector<3, Float> from(const Vec3& other) {
+    #if !defined(__GNUC__) || defined(__clang__)
+    constexpr /* See the convert() test case */
+    #endif
+    static Vector<3, Float> from(const Vec3& other) {
         return {other.x, other.y, other.z};
     }
 
@@ -224,7 +227,13 @@ void VectorTest::convert() {
     constexpr Vec3 a{1.5f, 2.0f, -3.5f};
     constexpr Vector3 b(1.5f, 2.0f, -3.5f);
 
-    constexpr Vector3 c{a};
+    /* GCC 5.1 fills the result with zeros instead of properly calling
+       delegated copy constructor if using constexpr. Reported here:
+       https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66450 */
+    #if !defined(__GNUC__) || defined(__clang__)
+    constexpr
+    #endif
+    Vector3 c{a};
     CORRADE_COMPARE(c, b);
 
     constexpr Vec3 d(b);

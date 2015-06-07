@@ -38,7 +38,10 @@ namespace Magnum { namespace Math {
 namespace Implementation {
 
 template<> struct DualComplexConverter<Float, DualCmpl> {
-    constexpr static DualComplex<Float> from(const DualCmpl& other) {
+    #if !defined(__GNUC__) || defined(__clang__)
+    constexpr /* See the convert() test case */
+    #endif
+    static DualComplex<Float> from(const DualCmpl& other) {
         return {{other.re, other.im}, {other.x, other.y}};
     }
 
@@ -158,7 +161,13 @@ void DualComplexTest::convert() {
     constexpr DualCmpl a{1.5f, -3.5f, 7.0f, -0.5f};
     constexpr DualComplex b{{1.5f, -3.5f}, {7.0f, -0.5f}};
 
-    constexpr DualComplex c{a};
+    /* GCC 5.1 fills the result with zeros instead of properly calling
+       delegated copy constructor if using constexpr. Reported here:
+       https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66450 */
+    #if !defined(__GNUC__) || defined(__clang__)
+    constexpr
+    #endif
+    DualComplex c{a};
     CORRADE_COMPARE(c, b);
 
     constexpr DualCmpl d(b);

@@ -38,7 +38,10 @@ namespace Magnum { namespace Math {
 namespace Implementation {
 
 template<> struct ComplexConverter<Float, Cmpl> {
-    constexpr static Complex<Float> from(const Cmpl& other) {
+    #if !defined(__GNUC__) || defined(__clang__)
+    constexpr /* See the convert() test case */
+    #endif
+    static Complex<Float> from(const Cmpl& other) {
         return {other.re, other.im};
     }
 
@@ -164,7 +167,13 @@ void ComplexTest::convert() {
     constexpr Cmpl a{1.5f, -3.5f};
     constexpr Complex b{1.5f, -3.5f};
 
-    constexpr Complex c(a);
+    /* GCC 5.1 fills the result with zeros instead of properly calling
+       delegated copy constructor if using constexpr. Reported here:
+       https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66450 */
+    #if !defined(__GNUC__) || defined(__clang__)
+    constexpr
+    #endif
+    Complex c(a);
     CORRADE_COMPARE(c, b);
 
     constexpr Cmpl d(b);

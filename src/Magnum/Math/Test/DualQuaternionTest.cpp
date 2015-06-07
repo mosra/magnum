@@ -38,7 +38,10 @@ namespace Magnum { namespace Math {
 namespace Implementation {
 
 template<> struct DualQuaternionConverter<Float, DualQuat> {
-    constexpr static DualQuaternion<Float> from(const DualQuat& other) {
+    #if !defined(__GNUC__) || defined(__clang__)
+    constexpr /* See the convert() test case */
+    #endif
+    static DualQuaternion<Float> from(const DualQuat& other) {
         return {{{other.re.x, other.re.y, other.re.z}, other.re.w},
                 {{other.du.x, other.du.y, other.du.z}, other.du.w}};
     }
@@ -159,7 +162,13 @@ void DualQuaternionTest::convert() {
     constexpr DualQuat a{{1.5f, -3.5f, 7.0f, -0.5f}, {15.0f, 0.25f, -9.5f, 0.8f}};
     constexpr DualQuaternion b{{{1.5f, -3.5f, 7.0f}, -0.5f}, {{15.0f, 0.25f, -9.5f}, 0.8f}};
 
-    constexpr DualQuaternion c{a};
+    /* GCC 5.1 fills the result with zeros instead of properly calling
+       delegated copy constructor if using constexpr. Reported here:
+       https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66450 */
+    #if !defined(__GNUC__) || defined(__clang__)
+    constexpr
+    #endif
+    DualQuaternion c{a};
     CORRADE_COMPARE(c, b);
 
     constexpr DualQuat d(b);
