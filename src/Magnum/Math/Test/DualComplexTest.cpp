@@ -29,7 +29,27 @@
 #include "Magnum/Math/DualComplex.h"
 #include "Magnum/Math/DualQuaternion.h"
 
-namespace Magnum { namespace Math { namespace Test {
+struct DualCmpl {
+    float re, im, x, y;
+};
+
+namespace Magnum { namespace Math {
+
+namespace Implementation {
+
+template<> struct DualComplexConverter<Float, DualCmpl> {
+    constexpr static DualComplex<Float> from(const DualCmpl& other) {
+        return {{other.re, other.im}, {other.x, other.y}};
+    }
+
+    constexpr static DualCmpl to(const DualComplex<Float>& other) {
+        return {other.real().real(), other.real().imaginary(), other.dual().real(), other.dual().imaginary() };
+    }
+};
+
+}
+
+namespace Test {
 
 struct DualComplexTest: Corrade::TestSuite::Tester {
     explicit DualComplexTest();
@@ -38,6 +58,7 @@ struct DualComplexTest: Corrade::TestSuite::Tester {
     void constructDefault();
     void constructFromVector();
     void constructCopy();
+    void convert();
 
     void isNormalized();
 
@@ -75,6 +96,7 @@ DualComplexTest::DualComplexTest() {
               &DualComplexTest::constructDefault,
               &DualComplexTest::constructFromVector,
               &DualComplexTest::constructCopy,
+              &DualComplexTest::convert,
 
               &DualComplexTest::isNormalized,
 
@@ -130,6 +152,24 @@ void DualComplexTest::constructCopy() {
     constexpr Math::Dual<Complex> a({-1.0f, 2.5f}, {3.0f, -7.5f});
     constexpr DualComplex b(a);
     CORRADE_COMPARE(b, DualComplex({-1.0f, 2.5f}, {3.0f, -7.5f}));
+}
+
+void DualComplexTest::convert() {
+    constexpr DualCmpl a{1.5f, -3.5f, 7.0f, -0.5f};
+    constexpr DualComplex b{{1.5f, -3.5f}, {7.0f, -0.5f}};
+
+    constexpr DualComplex c{a};
+    CORRADE_COMPARE(c, b);
+
+    constexpr DualCmpl d(b);
+    CORRADE_COMPARE(d.re, a.re);
+    CORRADE_COMPARE(d.im, a.im);
+    CORRADE_COMPARE(d.x, a.x);
+    CORRADE_COMPARE(d.y, a.y);
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<DualCmpl, DualComplex>::value));
+    CORRADE_VERIFY(!(std::is_convertible<DualComplex, DualCmpl>::value));
 }
 
 void DualComplexTest::isNormalized() {

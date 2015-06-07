@@ -35,6 +35,10 @@
 
 namespace Magnum { namespace Math {
 
+namespace Implementation {
+    template<class, class> struct DualComplexConverter;
+}
+
 /**
 @brief Dual complex number
 @tparam T   Underlying data type
@@ -127,8 +131,16 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
         constexpr explicit DualComplex(const Vector2<T>& vector): Dual<Complex<T>>({}, Complex<T>(vector)) {}
         #endif
 
+        /** @brief Construct dual complex number from external representation */
+        template<class U, class V = decltype(Implementation::DualComplexConverter<T, U>::from(std::declval<U>()))> constexpr explicit DualComplex(const U& other): DualComplex{Implementation::DualComplexConverter<T, U>::from(other)} {}
+
         /** @brief Copy constructor */
         constexpr DualComplex(const Dual<Complex<T>>& other): Dual<Complex<T>>(other) {}
+
+        /** @brief Convert dual complex number to external representation */
+        template<class U, class V = decltype(Implementation::DualComplexConverter<T, U>::to(std::declval<DualComplex<T>>()))> constexpr explicit operator U() const {
+            return Implementation::DualComplexConverter<T, U>::to(*this);
+        }
 
         /**
          * @brief Whether the dual complex number is normalized
