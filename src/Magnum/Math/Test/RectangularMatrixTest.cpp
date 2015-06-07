@@ -63,8 +63,8 @@ struct RectangularMatrixTest: Corrade::TestSuite::Tester {
     void constructFromData();
     void constructFromDiagonal();
     void constructCopy();
-
     void convert();
+
     void data();
     void row();
 
@@ -109,8 +109,8 @@ RectangularMatrixTest::RectangularMatrixTest() {
               &RectangularMatrixTest::constructFromData,
               &RectangularMatrixTest::constructFromDiagonal,
               &RectangularMatrixTest::constructCopy,
-
               &RectangularMatrixTest::convert,
+
               &RectangularMatrixTest::data,
               &RectangularMatrixTest::row,
 

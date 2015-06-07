@@ -62,11 +62,11 @@ struct VectorTest: Corrade::TestSuite::Tester {
     void constructOneComponent();
     void constructConversion();
     void constructCopy();
+    void convert();
 
     void isZero();
     void isNormalized();
 
-    void convert();
     void data();
 
     void negative();
@@ -118,11 +118,11 @@ VectorTest::VectorTest() {
               &VectorTest::constructOneComponent,
               &VectorTest::constructConversion,
               &VectorTest::constructCopy,
+              &VectorTest::convert,
 
               &VectorTest::isZero,
               &VectorTest::isNormalized,
 
-              &VectorTest::convert,
               &VectorTest::data,
 
               &VectorTest::negative,
@@ -220,16 +220,6 @@ void VectorTest::constructCopy() {
     CORRADE_COMPARE(b, Vector4(1.0f, 3.5f, 4.0f, -2.7f));
 }
 
-void VectorTest::isZero() {
-    CORRADE_VERIFY(!Vector3(0.01f, 0.0f, 0.0f).isZero());
-    CORRADE_VERIFY(Vector3(0.0f, 0.0f, 0.0f).isZero());
-}
-
-void VectorTest::isNormalized() {
-    CORRADE_VERIFY(!Vector3(1.0f, 2.0f, -1.0f).isNormalized());
-    CORRADE_VERIFY(Vector3(0.0f, 1.0f, 0.0f).isNormalized());
-}
-
 void VectorTest::convert() {
     constexpr Vec3 a{1.5f, 2.0f, -3.5f};
     constexpr Vector3 b(1.5f, 2.0f, -3.5f);
@@ -245,6 +235,16 @@ void VectorTest::convert() {
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Vec3, Vector3>::value));
     CORRADE_VERIFY(!(std::is_convertible<Vector3, Vec3>::value));
+}
+
+void VectorTest::isZero() {
+    CORRADE_VERIFY(!Vector3(0.01f, 0.0f, 0.0f).isZero());
+    CORRADE_VERIFY(Vector3(0.0f, 0.0f, 0.0f).isZero());
+}
+
+void VectorTest::isNormalized() {
+    CORRADE_VERIFY(!Vector3(1.0f, 2.0f, -1.0f).isNormalized());
+    CORRADE_VERIFY(Vector3(0.0f, 1.0f, 0.0f).isNormalized());
 }
 
 void VectorTest::data() {
