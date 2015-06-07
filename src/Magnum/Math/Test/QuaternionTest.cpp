@@ -29,7 +29,27 @@
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Math/Quaternion.h"
 
-namespace Magnum { namespace Math { namespace Test {
+struct Quat {
+    float x, y, z, w;
+};
+
+namespace Magnum { namespace Math {
+
+namespace Implementation {
+
+template<> struct QuaternionConverter<Float, Quat> {
+    constexpr static Quaternion<Float> from(const Quat& other) {
+        return {{other.x, other.y, other.z}, other.w};
+    }
+
+    constexpr static Quat to(const Quaternion<Float>& other) {
+        return {other.vector().x(), other.vector().y(), other.vector().z(), other.scalar() };
+    }
+};
+
+}
+
+namespace Test {
 
 struct QuaternionTest: Corrade::TestSuite::Tester {
     explicit QuaternionTest();
@@ -38,6 +58,7 @@ struct QuaternionTest: Corrade::TestSuite::Tester {
     void constructDefault();
     void constructFromVector();
     void constructCopy();
+    void convert();
 
     void compare();
     void isNormalized();
@@ -80,6 +101,7 @@ QuaternionTest::QuaternionTest() {
               &QuaternionTest::constructDefault,
               &QuaternionTest::constructFromVector,
               &QuaternionTest::constructCopy,
+              &QuaternionTest::convert,
 
               &QuaternionTest::compare,
               &QuaternionTest::isNormalized,
@@ -137,6 +159,24 @@ void QuaternionTest::constructCopy() {
     constexpr Quaternion a({1.0f, -3.0f, 7.0f}, 2.5f);
     constexpr Quaternion b(a);
     CORRADE_COMPARE(b, Quaternion({1.0f, -3.0f, 7.0f}, 2.5f));
+}
+
+void QuaternionTest::convert() {
+    constexpr Quat a{1.5f, -3.5f, 7.0f, -0.5f};
+    constexpr Quaternion b{{1.5f, -3.5f, 7.0f}, -0.5f};
+
+    constexpr Quaternion c{a};
+    CORRADE_COMPARE(c, b);
+
+    constexpr Quat d(b);
+    CORRADE_COMPARE(d.x, a.x);
+    CORRADE_COMPARE(d.y, a.y);
+    CORRADE_COMPARE(d.z, a.z);
+    CORRADE_COMPARE(d.w, a.w);
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Quat, Quaternion>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Quaternion, Quat>::value));
 }
 
 void QuaternionTest::compare() {

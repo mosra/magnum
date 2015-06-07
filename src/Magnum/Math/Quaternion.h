@@ -39,6 +39,10 @@
 
 namespace Magnum { namespace Math {
 
+namespace Implementation {
+    template<class, class> struct QuaternionConverter;
+}
+
 /** @relatesalso Quaternion
 @brief Dot product between two quaternions
 
@@ -214,6 +218,14 @@ template<class T> class Quaternion {
          */
         constexpr explicit Quaternion(const Vector3<T>& vector): _vector(vector), _scalar(T(0)) {}
 
+        /** @brief Construct quaternion from external representation */
+        template<class U, class V = decltype(Implementation::QuaternionConverter<T, U>::from(std::declval<U>()))> constexpr explicit Quaternion(const U& other): Quaternion{Implementation::QuaternionConverter<T, U>::from(other)} {}
+
+        /** @brief Convert quaternion to external representation */
+        template<class U, class V = decltype(Implementation::QuaternionConverter<T, U>::to(std::declval<Quaternion<T>>()))> constexpr explicit operator U() const {
+            return Implementation::QuaternionConverter<T, U>::to(*this);
+        }
+
         /** @brief Equality comparison */
         bool operator==(const Quaternion<T>& other) const {
             return _vector == other._vector && TypeTraits<T>::equals(_scalar, other._scalar);
@@ -237,7 +249,7 @@ template<class T> class Quaternion {
         }
 
         /** @brief Vector part */
-        constexpr Vector3<T> vector() const { return _vector; }
+        constexpr const Vector3<T> vector() const { return _vector; }
 
         /** @brief Scalar part */
         constexpr T scalar() const { return _scalar; }
