@@ -29,7 +29,79 @@
 
 #include "Magnum/Math/Range.h"
 
-namespace Magnum { namespace Math { namespace Test {
+struct Dim {
+    float offset, size;
+};
+
+struct Rect {
+    float x, y, w, h;
+};
+
+struct Box {
+    float x, y, z, w, h, d;
+};
+
+namespace Magnum { namespace Math {
+
+namespace Implementation {
+
+template<> struct RangeConverter<1, Float, Dim> {
+    #if !defined(__GNUC__) || defined(__clang__)
+    constexpr /* See the convert() test case */
+    #endif
+    static Range<1, Float> from(const Dim& other) {
+        /* Doing it this way to preserve constexpr */
+        return {other.offset, other.offset + other.size};
+    }
+
+    constexpr static Dim to(const Range<1, Float>& other) {
+        return {other.min()[0],
+                /* Doing it this way to preserve constexpr */
+                other.max()[0] - other.min()[0]};
+    }
+};
+
+template<> struct RangeConverter<2, Float, Rect> {
+    #if !defined(__GNUC__) || defined(__clang__)
+    constexpr /* See the convert() test case */
+    #endif
+    static Range<2, Float> from(const Rect& other) {
+        /* Doing it this way to preserve constexpr */
+        return {{other.x, other.y}, {other.x + other.w, other.y + other.h}};
+    }
+
+    constexpr static Rect to(const Range<2, Float>& other) {
+        return {other.min().x(), other.min().y(),
+                /* Doing it this way to preserve constexpr */
+                other.max().x() - other.min().x(),
+                other.max().y() - other.min().y()};
+    }
+};
+
+template<> struct RangeConverter<3, Float, Box> {
+    #if !defined(__GNUC__) || defined(__clang__)
+    constexpr /* See the convert() test case */
+    #endif
+    static Range<3, Float> from(const Box& other) {
+        return {{other.x, other.y, other.z},
+                /* Doing it this way to preserve constexpr */
+                {other.x + other.w,
+                 other.y + other.h,
+                 other.z + other.d}};
+    }
+
+    constexpr static Box to(const Range<3, Float>& other) {
+        return {other.min().x(), other.min().y(), other.min().z(),
+                /* Doing it this way to preserve constexpr */
+                other.max().x() - other.min().x(),
+                other.max().y() - other.min().y(),
+                other.max().z() - other.min().z()};
+    }
+};
+
+}
+
+namespace Test {
 
 struct RangeTest: Corrade::TestSuite::Tester {
     explicit RangeTest();
@@ -39,6 +111,7 @@ struct RangeTest: Corrade::TestSuite::Tester {
     void constructFromSize();
     void constructConversion();
     void constructCopy();
+    void convert();
 
     void access();
     void compare();
@@ -71,6 +144,7 @@ RangeTest::RangeTest() {
               &RangeTest::constructFromSize,
               &RangeTest::constructConversion,
               &RangeTest::constructCopy,
+              &RangeTest::convert,
 
               &RangeTest::access,
               &RangeTest::compare,
@@ -147,6 +221,68 @@ void RangeTest::constructCopy() {
     CORRADE_COMPARE(d, Range1Di(3, 23));
     CORRADE_COMPARE(e, Range2Di({3, 5}, {23, 78}));
     CORRADE_COMPARE(f, Range3Di({3, 5, -7}, {23, 78, 2}));
+}
+
+void RangeTest::convert() {
+    /* It's position/size, not min/max */
+    constexpr Dim a{1.5f, 3.5f};
+    constexpr Rect b{1.5f, -2.0f, 3.5f, 0.5f};
+    constexpr Box c{1.5f, -2.0f, -0.5f, 3.5f, 0.5f, 9.5f};
+    constexpr Range1D d{1.5f, 5.0f};
+    constexpr Range2D e{{1.5f, -2.0f}, {5.0f, -1.5f}};
+    constexpr Range3D f{{1.5f, -2.0f, -0.5f}, {5.0f, -1.5f, 9.0f}};
+
+    /* GCC 5.1 fills the result with zeros instead of properly calling
+       delegated copy constructor if using constexpr. Reported here:
+       https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66450 */
+    #if !defined(__GNUC__) || defined(__clang__)
+    constexpr
+    #endif
+    Range<2, Float> g{b};
+    #if !defined(__GNUC__) || defined(__clang__)
+    constexpr
+    #endif
+    Range1D h{a};
+    #if !defined(__GNUC__) || defined(__clang__)
+    constexpr
+    #endif
+    Range2D i{b};
+    #if !defined(__GNUC__) || defined(__clang__)
+    constexpr
+    #endif
+    Range3D j{c};
+    CORRADE_COMPARE(g, e);
+    CORRADE_COMPARE(h, d);
+    CORRADE_COMPARE(i, e);
+    CORRADE_COMPARE(j, f);
+
+    constexpr Dim k(d);
+    CORRADE_COMPARE(k.offset, a.offset);
+    CORRADE_COMPARE(k.size, a.size);
+
+    constexpr Rect l(e);
+    CORRADE_COMPARE(l.x, b.x);
+    CORRADE_COMPARE(l.y, b.y);
+    CORRADE_COMPARE(l.w, b.w);
+    CORRADE_COMPARE(l.h, b.h);
+
+    constexpr Box m(f);
+    CORRADE_COMPARE(m.x, c.x);
+    CORRADE_COMPARE(m.y, c.y);
+    CORRADE_COMPARE(m.z, c.z);
+    CORRADE_COMPARE(m.w, c.w);
+    CORRADE_COMPARE(m.h, c.h);
+    CORRADE_COMPARE(m.d, c.d);
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Rect, Range<2, Float>>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Dim, Range1D>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Rect, Range2D>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Box, Range3D>::value));
+
+    CORRADE_VERIFY(!(std::is_convertible<Range1D, Dim>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Range2D, Rect>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Range3D, Box>::value));
 }
 
 void RangeTest::access() {

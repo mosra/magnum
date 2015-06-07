@@ -39,6 +39,8 @@ namespace Implementation {
     template<class T> struct RangeTraits<1, T> { typedef Vector<1, T> Type; };
     template<class T> struct RangeTraits<2, T> { typedef Vector2<T> Type; };
     template<class T> struct RangeTraits<3, T> { typedef Vector3<T> Type; };
+
+    template<std::size_t, class, class> struct RangeConverter;
 }
 
 /**
@@ -92,6 +94,14 @@ template<UnsignedInt dimensions, class T> class Range {
          * @endcode
          */
         template<class U> constexpr explicit Range(const Range<dimensions, U>& other): _min(other._min), _max(other._max) {}
+
+        /** @brief Construct range from external representation */
+        template<class U, class V = decltype(Implementation::RangeConverter<dimensions, T, U>::from(std::declval<U>()))> constexpr explicit Range(const U& other): Range{Implementation::RangeConverter<dimensions, T, U>::from(other)} {}
+
+        /** @brief Convert range to external representation */
+        template<class U, class V = decltype(Implementation::RangeConverter<dimensions, T, U>::to(std::declval<Range<dimensions, T>>()))> constexpr explicit operator U() const {
+            return Implementation::RangeConverter<dimensions, T, U>::to(*this);
+        }
 
         /** @brief Equality comparison */
         constexpr bool operator==(const Range<dimensions, T>& other) const {
@@ -220,6 +230,9 @@ template<class T> class Range2D: public Range<2, T> {
         /** @copydoc Range(const Range<dimensions, U>&) */
         template<class U> constexpr explicit Range2D(const Range2D<U>& other): Range<2, T>(other) {}
 
+        /** @brief Construct range from external representation */
+        template<class U, class V = decltype(Implementation::RangeConverter<2, T, U>::from(std::declval<U>()))> constexpr explicit Range2D(const U& other): Range<2, T>{Implementation::RangeConverter<2, T, U>::from(other)} {}
+
         /**
          * @brief Bottom left corner
          *
@@ -320,6 +333,9 @@ template<class T> class Range3D: public Range<3, T> {
 
         /** @copydoc Range(const Range<dimensions, U>&) */
         template<class U> constexpr explicit Range3D(const Range3D<U>& other): Range<3, T>(other) {}
+
+        /** @brief Construct range from external representation */
+        template<class U, class V = decltype(Implementation::RangeConverter<3, T, U>::from(std::declval<U>()))> constexpr explicit Range3D(const U& other): Range<3, T>{Implementation::RangeConverter<3, T, U>::from(other)} {}
 
         /**
          * @brief Back bottom left corner
