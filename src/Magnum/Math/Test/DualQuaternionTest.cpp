@@ -28,7 +28,30 @@
 
 #include "Magnum/Math/DualQuaternion.h"
 
-namespace Magnum { namespace Math { namespace Test {
+struct DualQuat {
+    struct { float x, y, z, w; } re;
+    struct { float x, y, z, w; } du;
+};
+
+namespace Magnum { namespace Math {
+
+namespace Implementation {
+
+template<> struct DualQuaternionConverter<Float, DualQuat> {
+    constexpr static DualQuaternion<Float> from(const DualQuat& other) {
+        return {{{other.re.x, other.re.y, other.re.z}, other.re.w},
+                {{other.du.x, other.du.y, other.du.z}, other.du.w}};
+    }
+
+    constexpr static DualQuat to(const DualQuaternion<Float>& other) {
+        return {{other.real().vector().x(), other.real().vector().y(), other.real().vector().z(), other.real().scalar()},
+                {other.dual().vector().x(), other.dual().vector().y(), other.dual().vector().z(), other.dual().scalar()}};
+    }
+};
+
+}
+
+namespace Test {
 
 struct DualQuaternionTest: Corrade::TestSuite::Tester {
     explicit DualQuaternionTest();
@@ -37,6 +60,7 @@ struct DualQuaternionTest: Corrade::TestSuite::Tester {
     void constructDefault();
     void constructFromVector();
     void constructCopy();
+    void convert();
 
     void isNormalized();
 
@@ -73,6 +97,7 @@ DualQuaternionTest::DualQuaternionTest() {
               &DualQuaternionTest::constructDefault,
               &DualQuaternionTest::constructFromVector,
               &DualQuaternionTest::constructCopy,
+              &DualQuaternionTest::convert,
 
               &DualQuaternionTest::isNormalized,
 
@@ -128,6 +153,28 @@ void DualQuaternionTest::constructCopy() {
     constexpr Math::Dual<Quaternion> a({{1.0f, 2.0f, -3.0f}, -3.5f}, {{4.5f, -7.0f, 2.0f}, 1.0f});
     constexpr DualQuaternion b(a);
     CORRADE_COMPARE(b, DualQuaternion({{1.0f, 2.0f, -3.0f}, -3.5f}, {{4.5f, -7.0f, 2.0f}, 1.0f}));
+}
+
+void DualQuaternionTest::convert() {
+    constexpr DualQuat a{{1.5f, -3.5f, 7.0f, -0.5f}, {15.0f, 0.25f, -9.5f, 0.8f}};
+    constexpr DualQuaternion b{{{1.5f, -3.5f, 7.0f}, -0.5f}, {{15.0f, 0.25f, -9.5f}, 0.8f}};
+
+    constexpr DualQuaternion c{a};
+    CORRADE_COMPARE(c, b);
+
+    constexpr DualQuat d(b);
+    CORRADE_COMPARE(d.re.x, a.re.x);
+    CORRADE_COMPARE(d.re.y, a.re.y);
+    CORRADE_COMPARE(d.re.z, a.re.z);
+    CORRADE_COMPARE(d.re.w, a.re.w);
+    CORRADE_COMPARE(d.du.x, a.du.x);
+    CORRADE_COMPARE(d.du.y, a.du.y);
+    CORRADE_COMPARE(d.du.z, a.du.z);
+    CORRADE_COMPARE(d.du.w, a.du.w);
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<DualQuat, DualQuaternion>::value));
+    CORRADE_VERIFY(!(std::is_convertible<DualQuaternion, DualQuat>::value));
 }
 
 void DualQuaternionTest::isNormalized() {

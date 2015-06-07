@@ -35,6 +35,10 @@
 
 namespace Magnum { namespace Math {
 
+namespace Implementation {
+    template<class, class> struct DualQuaternionConverter;
+}
+
 /**
 @brief Dual quaternion
 @tparam T   Underlying data type
@@ -134,8 +138,16 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         constexpr explicit DualQuaternion(const Vector3<T>& vector): Dual<Quaternion<T>>({}, {vector, T(0)}) {}
         #endif
 
+        /** @brief Construct dual quaternion from external representation */
+        template<class U, class V = decltype(Implementation::DualQuaternionConverter<T, U>::from(std::declval<U>()))> constexpr explicit DualQuaternion(const U& other): DualQuaternion{Implementation::DualQuaternionConverter<T, U>::from(other)} {}
+
         /** @brief Copy constructor */
         constexpr DualQuaternion(const Dual<Quaternion<T>>& other): Dual<Quaternion<T>>(other) {}
+
+        /** @brief Convert dual quaternion to external representation */
+        template<class U, class V = decltype(Implementation::DualQuaternionConverter<T, U>::to(std::declval<DualQuaternion<T>>()))> constexpr explicit operator U() const {
+            return Implementation::DualQuaternionConverter<T, U>::to(*this);
+        }
 
         /**
          * @brief Whether the dual quaternion is normalized
