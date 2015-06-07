@@ -64,7 +64,6 @@ struct MatrixTest: Corrade::TestSuite::Tester {
     void constructZero();
     void constructConversion();
     void constructCopy();
-
     void convert();
 
     void isOrthogonal();
@@ -96,7 +95,6 @@ MatrixTest::MatrixTest() {
               &MatrixTest::constructZero,
               &MatrixTest::constructConversion,
               &MatrixTest::constructCopy,
-
               &MatrixTest::convert,
 
               &MatrixTest::isOrthogonal,

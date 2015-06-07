@@ -59,7 +59,6 @@ struct Vector2Test: Corrade::TestSuite::Tester {
     void constructOneValue();
     void constructConversion();
     void constructCopy();
-
     void convert();
 
     void access();
@@ -85,7 +84,6 @@ Vector2Test::Vector2Test() {
               &Vector2Test::constructOneValue,
               &Vector2Test::constructConversion,
               &Vector2Test::constructCopy,
-
               &Vector2Test::convert,
 
               &Vector2Test::access,

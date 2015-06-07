@@ -61,7 +61,6 @@ struct Vector4Test: Corrade::TestSuite::Tester {
     void constructParts();
     void constructConversion();
     void constructCopy();
-
     void convert();
 
     void access();
@@ -86,7 +85,6 @@ Vector4Test::Vector4Test() {
               &Vector4Test::constructParts,
               &Vector4Test::constructConversion,
               &Vector4Test::constructCopy,
-
               &Vector4Test::convert,
 
               &Vector4Test::access,

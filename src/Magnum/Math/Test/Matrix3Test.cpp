@@ -64,7 +64,6 @@ struct Matrix3Test: Corrade::TestSuite::Tester {
     void constructZero();
     void constructConversion();
     void constructCopy();
-
     void convert();
 
     void isRigidTransformation();
@@ -103,7 +102,6 @@ Matrix3Test::Matrix3Test() {
               &Matrix3Test::constructZero,
               &Matrix3Test::constructConversion,
               &Matrix3Test::constructCopy,
-
               &Matrix3Test::convert,
 
               &Matrix3Test::isRigidTransformation,
