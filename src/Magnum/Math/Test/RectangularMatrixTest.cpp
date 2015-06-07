@@ -211,7 +211,7 @@ void RectangularMatrixTest::convert() {
     constexpr Matrix2x3 b(Vector3(1.5f, 2.0f, -3.5f),
                           Vector3(2.0f, -3.1f,  0.4f));
 
-    constexpr Matrix2x3 c(b);
+    constexpr Matrix2x3 c{a};
     CORRADE_COMPARE(c, b);
 
     constexpr Mat2x3 d(b);

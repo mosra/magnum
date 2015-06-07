@@ -234,7 +234,7 @@ void VectorTest::convert() {
     constexpr Vec3 a{1.5f, 2.0f, -3.5f};
     constexpr Vector3 b(1.5f, 2.0f, -3.5f);
 
-    constexpr Vector3 c(b);
+    constexpr Vector3 c{a};
     CORRADE_COMPARE(c, b);
 
     constexpr Vec3 d(b);
