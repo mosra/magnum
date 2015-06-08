@@ -268,7 +268,13 @@ the application wrappers in @ref Platform namespace, you can initialize Magnum
 manually. First create OpenGL context and then create instance of
 @ref Platform::Context class, which will take care of proper initialization and
 feature detection. The instance must be alive for whole application lifetime.
-Example `main()` function with manual initialization:
+Example `main()` function with manual initialization is in the following code
+listing.
+
+@note Fully contained application using with manual Magnum initialization on
+    top of Qt toolkit is available in `base-qt` branch of
+    [Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap) repository.
+
 @code
 int main(int argc, char** argv) {
     // Create OpenGL context ...
@@ -305,7 +311,7 @@ Systems not listed here (such as Emscripten or NaCl) don't need any `Context`
 library, because dynamic function pointer loading is not available on these.
 
 For example, when you create the OpenGL context using GLX, you need to find
-`GlxContext` component, include `${MAGNUM_GLCCONTEXT_INCLUDE_DIRS}` and link to
+`GlxContext` component, include `${MAGNUM_GLXCONTEXT_INCLUDE_DIRS}` and link to
 `${MAGNUM_GLXCONTEXT_LIBRARIES}`. Similarly to application libraries, you can
 also use generic `${MAGNUM_CONTEXT_INCLUDE_DIRS}` and `${MAGNUM_CONTEXT_LIBRARIES}`,
 providing you requested only one `*Context` component in the `find_package()`
