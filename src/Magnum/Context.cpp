@@ -495,7 +495,7 @@ Context::Context(void functionLoader()) {
     /* Mark all extensions from past versions as supported */
     for(std::size_t i = 0; i != future; ++i)
         for(const Extension& extension: Extension::extensions(versions[i]))
-            extensionStatus.set(extension._index);
+            _extensionStatus.set(extension._index);
 
     /* List of extensions from future versions (extensions from current and
        previous versions should be supported automatically, so we don't need
@@ -511,7 +511,7 @@ Context::Context(void functionLoader()) {
         const auto found = futureExtensions.find(extension);
         if(found != futureExtensions.end()) {
             _supportedExtensions.push_back(found->second);
-            extensionStatus.set(found->second._index);
+            _extensionStatus.set(found->second._index);
         }
     }
 

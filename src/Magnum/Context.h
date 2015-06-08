@@ -384,7 +384,7 @@ class MAGNUM_EXPORT Context {
          * @endcode
          */
         template<class T> bool isExtensionSupported(Version version) const {
-            return _extensionRequiredVersion[T::Index] <= version && extensionStatus[T::Index];
+            return _extensionRequiredVersion[T::Index] <= version && _extensionStatus[T::Index];
         }
 
         /**
@@ -397,7 +397,7 @@ class MAGNUM_EXPORT Context {
          *      @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED()
          */
         bool isExtensionSupported(const Extension& extension) const {
-            return isVersionSupported(_extensionRequiredVersion[extension._index]) && extensionStatus[extension._index];
+            return isVersionSupported(_extensionRequiredVersion[extension._index]) && _extensionStatus[extension._index];
         }
 
         /**
@@ -471,7 +471,7 @@ class MAGNUM_EXPORT Context {
         #endif
 
         std::array<Version, 160> _extensionRequiredVersion;
-        std::bitset<160> extensionStatus;
+        std::bitset<160> _extensionStatus;
         std::vector<Extension> _supportedExtensions;
 
         Implementation::State* _state;
