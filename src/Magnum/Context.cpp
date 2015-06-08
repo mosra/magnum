@@ -543,10 +543,24 @@ Context::Context(void functionLoader()) {
     Renderer::initializeContextBasedFunctionality();
 }
 
+Context::Context(Context&& other): _version{std::move(other._version)},
+    #ifndef MAGNUM_TARGET_WEBGL
+    _flags{std::move(other._flags)},
+    #endif
+    _extensionRequiredVersion{std::move(other._extensionRequiredVersion)},
+    _extensionStatus{std::move(other._extensionStatus)},
+    _supportedExtensions{std::move(other._supportedExtensions)},
+    _state{std::move(other._state)},
+    _detectedDrivers{std::move(other._detectedDrivers)}
+{
+    other._state = nullptr;
+    if(_current == &other) _current = this;
+}
+
 Context::~Context() {
-    CORRADE_ASSERT(_current == this, "Context: Cannot destroy context which is not currently active", );
     delete _state;
-    _current = nullptr;
+
+    if(_current == this) _current = nullptr;
 }
 
 std::vector<std::string> Context::shadingLanguageVersionStrings() const {

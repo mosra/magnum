@@ -210,15 +210,15 @@ class MAGNUM_EXPORT Context {
         /** @brief Copying is not allowed */
         Context(const Context&) = delete;
 
-        /** @brief Moving is not allowed */
-        Context(Context&&) = delete;
+        /** @brief Move constructor */
+        Context(Context&& other);
 
         ~Context();
 
         /** @brief Copying is not allowed */
         Context& operator=(const Context&) = delete;
 
-        /** @brief Moving is not allowed */
+        /** @brief Move assignment is not allowed */
         Context& operator=(Context&&) = delete;
 
         /** @brief Current context */
