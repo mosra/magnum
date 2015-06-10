@@ -34,13 +34,17 @@
 #include "Magnum/Types.h"
 #include "Magnum/visibility.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#endif
+
 namespace Magnum {
 
 /**
 @brief Timeline
 
-Keeps track of time delta between frames and allows FPS limiting. Can be used
-as source for animation speed computations.
+Keeps track of time delta between frames. Can be used as source for animation
+speed computations.
 
 ## Basic usage
 
@@ -56,15 +60,21 @@ performed, after everything is properly initialized.
 
 In your draw event implementation don't forget to call @ref nextFrame() after
 buffer swap. You can use @ref previousFrameDuration() to compute animation
-speed.
+speed. To limit application framerate you can use
+@ref Platform::Sdl2Application::setSwapInterval() "Platform::*Application::setSwapInterval()" or
+@ref Platform::Sdl2Application::setMinimalLoopPeriod() "Platform::*Application::setMinimalLoopPeriod()".
+Note that on @ref CORRADE_TARGET_NACL "NaCl" and @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"
+the framerate is governed by browser and you can't do anything about it.
 
 Example usage:
 @code
 MyApplication::MyApplication(const Parameters& parameters): Platform::Application(parameters) {
     // Initialization ...
 
-    timeline.setMinimalFrameTime(1/120.0f)  // 120 FPS at max
-        .start();
+    // Enable VSync or set minimal loop period for the application, if
+    // needed/applicable ...
+
+    timeline.start();
 }
 
 void MyApplication::drawEvent() {
@@ -78,9 +88,6 @@ void MyApplication::drawEvent() {
     timeline.nextFrame();
 }
 @endcode
-@todo FPS should be governed by Application (imagine more than one simultaneous
-    timeline and the harm it could do, also vsync etc. can't be handled in
-    platform-independent way here)
 */
 class MAGNUM_EXPORT Timeline {
     public:
@@ -90,26 +97,32 @@ class MAGNUM_EXPORT Timeline {
          * Creates stopped timeline.
          * @see @ref start()
          */
-        explicit Timeline(): _minimalFrameTime(0), _previousFrameDuration(0), running(false) {}
+        explicit Timeline():
+            #ifdef MAGNUM_BUILD_DEPRECATED
+            _minimalFrameTime(0),
+            #endif
+            _previousFrameDuration(0), running(false) {}
 
         /** @brief Minimal frame time (in seconds) */
         Float minimalFrameTime() const { return _minimalFrameTime; }
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Set minimal frame time
          * @return Reference to self (for method chaining)
          *
          * Default value is `0.0f`. Cannot be used on some platforms where
          * blocking the main loop is not allowed (such as
-         * @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"). Prefer to use VSync
-         * where possible.
-         * @see @ref nextFrame(),
-         *      @ref Platform::Sdl2Application::setSwapInterval() "Platform::*Application::setSwapInterval()"
+         * @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten").
+         * @deprecated Use @ref Platform::Sdl2Application::setSwapInterval() "Platform::*Application::setSwapInterval()" or
+         *      @ref Platform::Sdl2Application::setMinimalLoopPeriod() "Platform::*Application::setMinimalLoopPeriod()"
+         *      instead.
          */
-        Timeline& setMinimalFrameTime(Float seconds) {
+        CORRADE_DEPRECATED("use Platfomr::*Application::setMinimalLoopPeriod() instead") Timeline& setMinimalFrameTime(Float seconds) {
             _minimalFrameTime = seconds;
             return *this;
         }
+        #endif
 
         /**
          * @brief Start timeline
@@ -129,10 +142,8 @@ class MAGNUM_EXPORT Timeline {
         /**
          * @brief Advance to next frame
          *
-         * If current frame time is smaller than minimal frame time, pauses
-         * the execution for remaining time.
          * @note This function does nothing if the timeline is stopped.
-         * @see @ref setMinimalFrameTime(), @ref stop()
+         * @see @ref stop()
          */
         void nextFrame();
 
@@ -154,7 +165,9 @@ class MAGNUM_EXPORT Timeline {
     private:
         std::chrono::high_resolution_clock::time_point _startTime;
         std::chrono::high_resolution_clock::time_point _previousFrameTime;
+        #ifdef MAGNUM_BUILD_DEPRECATED
         Float _minimalFrameTime;
+        #endif
         Float _previousFrameDuration;
 
         bool running;
