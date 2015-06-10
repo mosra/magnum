@@ -291,8 +291,25 @@ class Sdl2Application {
          * `-1` for late swap tearing. Prints error message and returns `false`
          * if swap interval cannot be set, `true` otherwise. Default is
          * driver-dependent, you can query the value with @ref swapInterval().
+         * @see @ref setMinimalLoopPeriod()
          */
         bool setSwapInterval(Int interval);
+
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        /**
+         * @brief Set minimal loop period
+         *
+         * This setting reduces the main loop frequency in case VSync is
+         * not/cannot be enabled or no drawing is done. Default is `0` (i.e.
+         * looping at maximum frequency).
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten",
+         *      the browser is managing the frequency instead.
+         * @see @ref setSwapInterval()
+         */
+        void setMinimalLoopPeriod(UnsignedInt milliseconds) {
+            _minimalLoopPeriod = milliseconds;
+        }
+        #endif
 
         /**
          * @brief Redraw immediately
@@ -403,8 +420,9 @@ class Sdl2Application {
     private:
         enum class Flag: UnsignedByte {
             Redraw = 1 << 0,
+            VSyncEnabled = 1 << 1,
             #ifndef CORRADE_TARGET_EMSCRIPTEN
-            Exit = 1 << 1
+            Exit = 1 << 2
             #endif
         };
 
@@ -421,6 +439,7 @@ class Sdl2Application {
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         SDL_Window* _window;
         SDL_GLContext _glContext;
+        UnsignedInt _minimalLoopPeriod;
         #else
         SDL_Surface* _glContext;
         #endif

@@ -70,7 +70,11 @@ Sdl2Application::Sdl2Application(const Arguments& arguments, const Configuration
     createContext(configuration);
 }
 
-Sdl2Application::Sdl2Application(const Arguments&, std::nullptr_t): _glContext{nullptr}, _flags{Flag::Redraw} {
+Sdl2Application::Sdl2Application(const Arguments&, std::nullptr_t): _glContext{nullptr},
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    _minimalLoopPeriod{0},
+    #endif
+    _flags{Flag::Redraw} {
     #ifdef CORRADE_TARGET_EMSCRIPTEN
     CORRADE_ASSERT(!_instance, "Platform::Sdl2Application::Sdl2Application(): the instance is already created", );
     _instance = this;
@@ -222,14 +226,17 @@ Int Sdl2Application::swapInterval() const {
 bool Sdl2Application::setSwapInterval(const Int interval) {
     if(SDL_GL_SetSwapInterval(interval) == -1) {
         Error() << "Platform::Sdl2Application::setSwapInterval(): cannot set swap interval:" << SDL_GetError();
+        _flags &= ~Flag::VSyncEnabled;
         return false;
     }
 
     if(SDL_GL_GetSwapInterval() != interval) {
         Error() << "Platform::Sdl2Application::setSwapInterval(): swap interval setting ignored by the driver";
+        _flags &= ~Flag::VSyncEnabled;
         return false;
     }
 
+    _flags |= Flag::VSyncEnabled;
     return true;
 }
 
@@ -265,8 +272,9 @@ void Sdl2Application::exit() {
 }
 
 void Sdl2Application::mainLoop() {
-    SDL_Event event;
+    const UnsignedInt timeBefore = _minimalLoopPeriod ? SDL_GetTicks() : 0;
 
+    SDL_Event event;
     while(SDL_PollEvent(&event)) {
         switch(event.type) {
             case SDL_WINDOWEVENT:
@@ -317,10 +325,28 @@ void Sdl2Application::mainLoop() {
     if(_flags & Flag::Redraw) {
         _flags &= ~Flag::Redraw;
         drawEvent();
+
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        /* If VSync is not enabled, delay to prevent CPU hogging (if set) */
+        if(!(_flags & Flag::VSyncEnabled) && _minimalLoopPeriod) {
+            const UnsignedInt loopTime = SDL_GetTicks() - timeBefore;
+            if(loopTime < _minimalLoopPeriod)
+                SDL_Delay(_minimalLoopPeriod - loopTime);
+        }
+        #endif
+
         return;
     }
 
     #ifndef CORRADE_TARGET_EMSCRIPTEN
+    /* If not drawing anything, delay to prevent CPU hogging (if set) */
+    if(_minimalLoopPeriod) {
+        const UnsignedInt loopTime = SDL_GetTicks() - timeBefore;
+        if(loopTime < _minimalLoopPeriod)
+            SDL_Delay(_minimalLoopPeriod - loopTime);
+    }
+
+    /* Then wait indefinitely for next input event */
     SDL_WaitEvent(nullptr);
     #endif
 }
