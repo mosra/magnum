@@ -63,14 +63,22 @@ DebugState::DebugState(Context& context, std::vector<std::string>& extensions):
         if(context.isExtensionSupported<Extensions::GL::EXT::debug_marker>()) {
             extensions.push_back(Extensions::GL::EXT::debug_marker::string());
 
+            pushGroupImplementation = &DebugGroup::pushImplementationExt;
+            popGroupImplementation = &DebugGroup::popImplementationExt;
             messageInsertImplementation = &DebugMessage::insertImplementationExt;
         #ifndef MAGNUM_TARGET_GLES
         } else if(context.isExtensionSupported<Extensions::GL::GREMEDY::string_marker>()) {
             extensions.push_back(Extensions::GL::GREMEDY::string_marker::string());
 
+            pushGroupImplementation = &DebugGroup::pushImplementationNoOp;
+            popGroupImplementation = &DebugGroup::popImplementationNoOp;
             messageInsertImplementation = &DebugMessage::insertImplementationGremedy;
         #endif
-        } else messageInsertImplementation = &DebugMessage::insertImplementationNoOp;
+        } else {
+            pushGroupImplementation = &DebugGroup::pushImplementationNoOp;
+            popGroupImplementation = &DebugGroup::popImplementationNoOp;
+            messageInsertImplementation = &DebugMessage::insertImplementationNoOp;
+        }
 
         controlImplementation = &DebugOutput::controlImplementationNoOp;
         callbackImplementation = &DebugOutput::callbackImplementationNoOp;
