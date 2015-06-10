@@ -272,7 +272,9 @@ void Sdl2Application::exit() {
 }
 
 void Sdl2Application::mainLoop() {
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
     const UnsignedInt timeBefore = _minimalLoopPeriod ? SDL_GetTicks() : 0;
+    #endif
 
     SDL_Event event;
     while(SDL_PollEvent(&event)) {
