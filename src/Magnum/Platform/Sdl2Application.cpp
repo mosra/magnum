@@ -322,6 +322,10 @@ void Sdl2Application::mainLoop() {
         }
     }
 
+    /* Tick event */
+    if(!(_flags & Flag::NoTickEvent)) tickEvent();
+
+    /* Draw event */
     if(_flags & Flag::Redraw) {
         _flags &= ~Flag::Redraw;
         drawEvent();
@@ -346,8 +350,9 @@ void Sdl2Application::mainLoop() {
             SDL_Delay(_minimalLoopPeriod - loopTime);
     }
 
-    /* Then wait indefinitely for next input event */
-    SDL_WaitEvent(nullptr);
+    /* Then, if the tick event doesn't need to be called periodically, wait
+       indefinitely for next input event */
+    if(_flags & Flag::NoTickEvent) SDL_WaitEvent(nullptr);
     #endif
 }
 
@@ -360,6 +365,12 @@ void Sdl2Application::setMouseLocked(bool enabled) {
     CORRADE_ASSERT(false, "Sdl2Application::setMouseLocked(): not implemented", );
     static_cast<void>(enabled);
     #endif
+}
+
+void Sdl2Application::tickEvent() {
+    /* If this got called, the tick event is not implemented by user and thus
+       we don't need to call it ever again */
+    _flags |= Flag::NoTickEvent;
 }
 
 void Sdl2Application::viewportEvent(const Vector2i&) {}

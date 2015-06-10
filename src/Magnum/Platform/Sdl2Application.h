@@ -326,6 +326,17 @@ class Sdl2Application {
     private:
     #endif
         /**
+         * @brief Tick event
+         *
+         * If implemented, this function is called periodically after
+         * processing all input events and before draw event even though there
+         * might be no input events and redraw is not requested. Useful e.g.
+         * for asynchronous task polling. Use @ref setMinimalLoopPeriod()/
+         * @ref setSwapInterval() to control main loop frequency.
+         */
+        virtual void tickEvent();
+
+        /**
          * @brief Viewport event
          *
          * Called when window size changes. The default implementation does
@@ -421,8 +432,9 @@ class Sdl2Application {
         enum class Flag: UnsignedByte {
             Redraw = 1 << 0,
             VSyncEnabled = 1 << 1,
+            NoTickEvent = 1 << 2,
             #ifndef CORRADE_TARGET_EMSCRIPTEN
-            Exit = 1 << 2
+            Exit = 1 << 3
             #endif
         };
 
