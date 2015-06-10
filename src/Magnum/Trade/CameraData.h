@@ -51,23 +51,23 @@ class CameraData {
          * instead, which is `35.0_degf` for @p fov, `0.01f` for @p near and
          * `100.0f` for @p far.
          */
-        constexpr explicit CameraData(Rad fov, Float near, Float far) noexcept;
+        explicit CameraData(Rad fov, Float near, Float far) noexcept;
 
         /** @brief Field-of-view angle */
-        constexpr Rad fov() const { return _fov; }
+        Rad fov() const { return _fov; }
 
         /** @brief Near clipping plane */
-        constexpr Float near() const { return _near; }
+        Float near() const { return _near; }
 
         /** @brief Far clipping plane */
-        constexpr Float far() const { return _far; }
+        Float far() const { return _far; }
 
     private:
         Rad _fov;
         Float _near, _far;
 };
 
-constexpr CameraData::CameraData(Rad fov, Float near, Float far) noexcept:
+inline CameraData::CameraData(Rad fov, Float near, Float far) noexcept:
     _fov{fov != fov ? Rad{35.0_degf} : fov},
     _near{near != near ? 0.01f : near},
     _far{far != far ? 100.0f : far} {}
