@@ -124,6 +124,8 @@ void BufferTextureGLTest::setBuffer() {
 void BufferTextureGLTest::setBufferOffset() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_buffer_object>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_buffer_object::string() + std::string(" is not supported."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_buffer_range>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_buffer_range::string() + std::string(" is not supported."));
 
     /* Check that we have correct offset alignment */
     CORRADE_INTERNAL_ASSERT(256 % BufferTexture::offsetAlignment() == 0);
