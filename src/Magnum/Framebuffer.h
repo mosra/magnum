@@ -220,7 +220,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @requires_webgl20 Framebuffer invalidation is not available in WebGL
          *      1.0.
          */
-        class InvalidationAttachment {
+        class MAGNUM_EXPORT InvalidationAttachment {
             public:
                 /** @brief Invalidate depth buffer */
                 static const InvalidationAttachment Depth;
