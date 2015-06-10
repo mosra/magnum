@@ -141,9 +141,7 @@ void AbstractTexture::unbindImplementationMulti(const GLint textureUnit) {
 }
 
 void AbstractTexture::unbindImplementationDSA(const GLint textureUnit) {
-    Implementation::TextureState& textureState = *Context::current()->state().texture;
-
-    CORRADE_INTERNAL_ASSERT(textureState.bindings[textureUnit].first != 0);
+    CORRADE_INTERNAL_ASSERT(Context::current()->state().texture->bindings[textureUnit].first != 0);
     glBindTextureUnit(textureUnit, 0);
 }
 
