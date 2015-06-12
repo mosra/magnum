@@ -32,3 +32,11 @@ corrade_add_test(MagnumFontConverterGLTest MagnumFontConverterGLTest.cpp LIBRARI
     MagnumMagnumFontConverterTestLib
     MagnumTgaImporterTestLib
     ${GL_TEST_LIBRARIES})
+
+# On Win32 we need to avoid dllimporting TgaImporter symbols, because it would
+# search for the symbols in some DLL even though they were linked statically.
+# However it apparently doesn't matter that they were dllexported when building
+# the static library. EH.
+if(WIN32)
+    set_target_properties(MagnumFontConverterGLTest PROPERTIES COMPILE_FLAGS "-DMAGNUM_TGAIMPORTER_BUILD_STATIC")
+endif()
