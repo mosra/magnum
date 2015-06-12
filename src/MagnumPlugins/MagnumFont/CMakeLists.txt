@@ -30,7 +30,9 @@ set(MagnumFont_HEADERS
     MagnumFont.h)
 
 # Objects shared between plugin and test library
-add_library(MagnumFontObjects OBJECT ${MagnumFont_SRCS})
+add_library(MagnumFontObjects OBJECT
+    ${MagnumFont_SRCS}
+    ${MagnumFont_HEADERS})
 if(NOT BUILD_PLUGINS_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(MagnumFontObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
