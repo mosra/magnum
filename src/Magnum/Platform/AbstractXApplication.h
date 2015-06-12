@@ -62,6 +62,9 @@ class AbstractXApplication {
     public:
         /** @brief Application arguments */
         struct Arguments {
+            /** @brief Constructor */
+            /*implicit*/ constexpr Arguments(int& argc, char** argv) noexcept: argc{argc}, argv{argv} {}
+
             int& argc;      /**< @brief Argument count */
             char** argv;    /**< @brief Argument values */
         };

@@ -95,6 +95,9 @@ class WindowlessWglApplication {
     public:
         /** @brief Application arguments */
         struct Arguments {
+            /** @brief Constructor */
+            /*implicit*/ constexpr Arguments(int& argc, char** argv, HWND window) noexcept: argc{argc}, argv{argv}, window{window} {}
+
             int& argc;      /**< @brief Argument count */
             char** argv;    /**< @brief Argument values */
             #ifndef DOXYGEN_GENERATING_OUTPUT
