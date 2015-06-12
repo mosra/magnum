@@ -230,8 +230,15 @@ template<class T> class Range2D: public Range<2, T> {
         /** @copydoc Range(const Range<dimensions, U>&) */
         template<class U> constexpr explicit Range2D(const Range2D<U>& other): Range<2, T>(other) {}
 
-        /** @brief Construct range from external representation */
-        template<class U, class V = decltype(Implementation::RangeConverter<2, T, U>::from(std::declval<U>()))> constexpr explicit Range2D(const U& other): Range<2, T>{Implementation::RangeConverter<2, T, U>::from(other)} {}
+        /**
+         * @brief Construct range from external representation
+         * @todoc Remove workaround when Doxygen no longer chokes on that line
+         */
+        template<class U, class V = decltype(Implementation::RangeConverter<2, T, U>::from(std::declval<U>()))> constexpr explicit Range2D(const U& other)
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            : Range<2, T>{Implementation::RangeConverter<2, T, U>::from(other)}
+            #endif
+            {}
 
         /**
          * @brief Bottom left corner
@@ -334,8 +341,15 @@ template<class T> class Range3D: public Range<3, T> {
         /** @copydoc Range(const Range<dimensions, U>&) */
         template<class U> constexpr explicit Range3D(const Range3D<U>& other): Range<3, T>(other) {}
 
-        /** @brief Construct range from external representation */
-        template<class U, class V = decltype(Implementation::RangeConverter<3, T, U>::from(std::declval<U>()))> constexpr explicit Range3D(const U& other): Range<3, T>{Implementation::RangeConverter<3, T, U>::from(other)} {}
+        /**
+         * @brief Construct range from external representation
+         * @todoc Remove workaround when Doxygen no longer chokes on that line
+         */
+        template<class U, class V = decltype(Implementation::RangeConverter<3, T, U>::from(std::declval<U>()))> constexpr explicit Range3D(const U& other)
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            : Range<3, T>{Implementation::RangeConverter<3, T, U>::from(other)}
+            #endif
+            {}
 
         /**
          * @brief Back bottom left corner
