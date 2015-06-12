@@ -103,10 +103,14 @@ class MAGNUM_EXPORT Timeline {
             #endif
             _previousFrameDuration(0), running(false) {}
 
-        /** @brief Minimal frame time (in seconds) */
-        Float minimalFrameTime() const { return _minimalFrameTime; }
-
         #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Minimal frame time (in seconds)
+         * @deprecated Replaced with @ref Platform::Sdl2Application::setSwapInterval() "Platform::*Application::setSwapInterval()" and
+         *      @ref Platform::Sdl2Application::setMinimalLoopPeriod() "Platform::*Application::setMinimalLoopPeriod()".
+         */
+        CORRADE_DEPRECATED("replaced with Platfomr::*Application functionality") Float minimalFrameTime() const { return _minimalFrameTime; }
+
         /**
          * @brief Set minimal frame time
          * @return Reference to self (for method chaining)
