@@ -30,7 +30,7 @@ include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
 
 corrade_add_test(TgaImageConverterTest TgaImageConverterTest.cpp LIBRARIES MagnumTgaImageConverterTestLib MagnumTgaImporterTestLib)
 # On Win32 we need to avoid dllimporting TgaImporter and TgaImageConverterTest
-# symbols, because it would search for the symbols in some DLL even when they
+# symbols, because it would search for the symbols in some DLL even though they
 # were linked statically. However it apparently doesn't matter that they were
 # dllexported when building the static library. EH.
 if(WIN32)

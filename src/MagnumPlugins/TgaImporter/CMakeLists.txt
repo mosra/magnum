@@ -65,5 +65,6 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configure.h DESTINATION ${MAGNUM_PLUGI
 if(BUILD_TESTS)
     add_library(MagnumTgaImporterTestLib STATIC $<TARGET_OBJECTS:TgaImporterObjects>)
     target_link_libraries(MagnumTgaImporterTestLib Magnum)
+
     add_subdirectory(Test)
 endif()
