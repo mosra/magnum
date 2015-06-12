@@ -48,8 +48,8 @@ things:
 
 @section troubleshooting-rendering Rendering issues
 
-If you are experiencing so-called "black screen of death", you might want to
-try these things:
+If you are experiencing so-called "black screen of death", weird behavior or
+crashes on GL calls, you might want to try these things:
 
 -   Verify that @ref Renderer::error() "no OpenGL error was emitted".
 -   Check that you use only extensions that are
@@ -78,6 +78,13 @@ try these things:
 -   @ref AbstractShaderProgram::validate() "Validate the shader", check that
     all used uniforms and attributes have proper locations. Try reducing it
     until it is able to draw something, possibly also with some simpler mesh.
+-   Magnum tracks the OpenGL state to improve performance, but the tracker can
+    get confused if you or any other library are doing OpenGL calls outside of
+    Magnum. You can use @ref Context::resetState() to reset the internal state
+    tracker. The other library also needs to be aware of this fact (either
+    setting all state explicitly every time or having similar ability to reset
+    its state tracker), otherwise you may need to save and restore GL state
+    manually for that library to work.
 
 @section troubleshooting-debugging Debugging rendering
 
