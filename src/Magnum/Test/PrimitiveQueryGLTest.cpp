@@ -192,4 +192,4 @@ void PrimitiveQueryGLTest::transformFeedbackPrimitivesWritten() {
 
 }}
 
-CORRADE_TEST_MAIN(Magnum::Test::PrimitiveQueryGLTest)
+MAGNUM_GL_TEST_MAIN(Magnum::Test::PrimitiveQueryGLTest)

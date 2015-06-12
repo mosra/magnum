@@ -52,4 +52,4 @@ void VectorGLTest::compile3D() {
 
 }}}
 
-CORRADE_TEST_MAIN(Magnum::Shaders::Test::VectorGLTest)
+MAGNUM_GL_TEST_MAIN(Magnum::Shaders::Test::VectorGLTest)

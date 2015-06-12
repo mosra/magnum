@@ -988,4 +988,4 @@ void FramebufferGLTest::blit() {
 
 }}
 
-CORRADE_TEST_MAIN(Magnum::Test::FramebufferGLTest)
+MAGNUM_GL_TEST_MAIN(Magnum::Test::FramebufferGLTest)

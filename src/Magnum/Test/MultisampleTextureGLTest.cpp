@@ -323,4 +323,4 @@ void MultisampleTextureGLTest::invalidateSubImage2DArray() {
 
 }}
 
-CORRADE_TEST_MAIN(Magnum::Test::MultisampleTextureGLTest)
+MAGNUM_GL_TEST_MAIN(Magnum::Test::MultisampleTextureGLTest)

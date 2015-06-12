@@ -123,4 +123,4 @@ void MagnumFontConverterGLTest::exportFont() {
 
 }}}
 
-CORRADE_TEST_MAIN(Magnum::Text::Test::MagnumFontConverterGLTest)
+MAGNUM_GL_TEST_MAIN(Magnum::Text::Test::MagnumFontConverterGLTest)

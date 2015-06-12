@@ -1047,4 +1047,4 @@ void TextureArrayGLTest::invalidateSubImage2D() {
 
 }}
 
-CORRADE_TEST_MAIN(Magnum::Test::TextureArrayGLTest)
+MAGNUM_GL_TEST_MAIN(Magnum::Test::TextureArrayGLTest)

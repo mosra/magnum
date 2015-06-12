@@ -52,4 +52,4 @@ void VertexColorGLTest::compile3D() {
 
 }}}
 
-CORRADE_TEST_MAIN(Magnum::Shaders::Test::VertexColorGLTest)
+MAGNUM_GL_TEST_MAIN(Magnum::Shaders::Test::VertexColorGLTest)

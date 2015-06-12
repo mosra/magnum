@@ -109,4 +109,4 @@ void ContextGLTest::isExtensionDisabled() {
 
 }}
 
-CORRADE_TEST_MAIN(Magnum::Test::ContextGLTest)
+MAGNUM_GL_TEST_MAIN(Magnum::Test::ContextGLTest)

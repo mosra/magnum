@@ -32,26 +32,33 @@
 #include "Magnum/DebugOutput.h"
 #include "Magnum/Renderer.h"
 
-#if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_DESKTOP_GLES)
+#if defined(CORRADE_TARGET_APPLE)
+#include "Magnum/Platform/WindowlessCglApplication.h"
+#elif defined(CORRADE_TARGET_UNIX) && (!defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_DESKTOP_GLES))
 #include "Magnum/Platform/WindowlessGlxApplication.h"
+#elif defined(CORRADE_TARGET_WINDOWS)
+#include "Magnum/Platform/WindowlessWglApplication.h"
 #else
 #error cannot run OpenGL tests on this platform
 #endif
 
 namespace Magnum { namespace Test {
 
-class AbstractOpenGLTester: public TestSuite::Tester, public Platform::WindowlessApplication {
+class AbstractOpenGLTester: public TestSuite::Tester {
     public:
         explicit AbstractOpenGLTester();
 
-        using TestSuite::Tester::exec;
-        int exec() override final { return TestSuite::Tester::exec(); }
+        /* Private use only */
+        static std::optional<Platform::WindowlessApplication::Arguments> _windowlessApplicationArguments;
 
     private:
-        static int _zero;
+        struct WindowlessApplication: Platform::WindowlessApplication {
+            explicit WindowlessApplication(const Arguments& arguments): Platform::WindowlessApplication{arguments} {}
+            int exec() override final { return 0; }
+        } _windowlessApplication;
 };
 
-AbstractOpenGLTester::AbstractOpenGLTester(): Platform::WindowlessApplication({_zero, nullptr}) {
+AbstractOpenGLTester::AbstractOpenGLTester(): _windowlessApplication{*_windowlessApplicationArguments} {
     if(Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>()) {
         Renderer::enable(Renderer::Feature::DebugOutput);
         Renderer::enable(Renderer::Feature::DebugOutputSynchronous);
@@ -62,9 +69,41 @@ AbstractOpenGLTester::AbstractOpenGLTester(): Platform::WindowlessApplication({_
     }
 }
 
-int AbstractOpenGLTester::_zero = 0;
+std::optional<Platform::WindowlessApplication::Arguments> AbstractOpenGLTester::_windowlessApplicationArguments;
 
 #define MAGNUM_VERIFY_NO_ERROR() CORRADE_COMPARE(Magnum::Renderer::error(), Magnum::Renderer::Error::NoError)
+
+#ifndef CORRADE_TARGET_WINDOWS
+#define MAGNUM_GL_TEST_MAIN(Class)                                          \
+    int main(int argc, char** argv) {                                       \
+        Magnum::Test::AbstractOpenGLTester::_windowlessApplicationArguments.emplace(argc, argv); \
+        Class t;                                                            \
+        t.registerTest(__FILE__, #Class);                                   \
+        return t.exec();                                                    \
+    }
+#else
+#define MAGNUM_GL_TEST_MAIN(Class)                                          \
+    LRESULT CALLBACK windowProcedure(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam); \
+    LRESULT CALLBACK windowProcedure(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) { \
+        int ret = 0;                                                        \
+        switch(message) {                                                   \
+            case WM_CREATE:                                                 \
+                {                                                           \
+                    Magnum::Test::AbstractOpenGLTester::_windowlessApplicationArguments->window = hWnd; \
+                    Class t;                                                \
+                    t.registerTest(__FILE__, #Class);                       \
+                    PostQuitMessage(ret = t.exec());                        \
+                }                                                           \
+                break;                                                      \
+            default: return DefWindowProc(hWnd, message, wParam, lParam);   \
+        }                                                                   \
+        return ret;                                                         \
+    }                                                                       \
+    int main(int argc, char** argv) {                                       \
+        Magnum::Test::AbstractOpenGLTester::_windowlessApplicationArguments.emplace(argc, argv, nullptr); \
+        return Magnum::Platform::WindowlessWglApplication::create(windowProcedure); \
+    }
+#endif
 
 }}
 

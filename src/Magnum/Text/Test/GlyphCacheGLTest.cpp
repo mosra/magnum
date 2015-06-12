@@ -93,4 +93,4 @@ void GlyphCacheGLTest::reserve() {
 
 }}}
 
-CORRADE_TEST_MAIN(Magnum::Text::Test::GlyphCacheGLTest)
+MAGNUM_GL_TEST_MAIN(Magnum::Text::Test::GlyphCacheGLTest)

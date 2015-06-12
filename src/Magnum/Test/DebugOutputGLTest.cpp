@@ -175,4 +175,4 @@ void DebugOutputGLTest::groupFallback() {
 
 }}
 
-CORRADE_TEST_MAIN(Magnum::Test::DebugOutputGLTest)
+MAGNUM_GL_TEST_MAIN(Magnum::Test::DebugOutputGLTest)

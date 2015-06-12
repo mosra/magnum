@@ -394,4 +394,4 @@ void RectangleTextureGLTest::invalidateSubImage() {
 
 }}
 
-CORRADE_TEST_MAIN(Magnum::Test::RectangleTextureGLTest)
+MAGNUM_GL_TEST_MAIN(Magnum::Test::RectangleTextureGLTest)

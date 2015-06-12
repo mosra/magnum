@@ -52,4 +52,4 @@ void DistanceFieldVectorGLTest::compile3D() {
 
 }}}
 
-CORRADE_TEST_MAIN(Magnum::Shaders::Test::DistanceFieldVectorGLTest)
+MAGNUM_GL_TEST_MAIN(Magnum::Shaders::Test::DistanceFieldVectorGLTest)

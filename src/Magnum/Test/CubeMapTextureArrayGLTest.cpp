@@ -486,4 +486,4 @@ void CubeMapTextureArrayGLTest::invalidateSubImage() {
 
 }}
 
-CORRADE_TEST_MAIN(Magnum::Test::CubeMapTextureArrayGLTest)
+MAGNUM_GL_TEST_MAIN(Magnum::Test::CubeMapTextureArrayGLTest)

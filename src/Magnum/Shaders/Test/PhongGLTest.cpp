@@ -94,4 +94,4 @@ void PhongGLTest::compileAmbientDiffuseSpecularTexture() {
 
 }}}
 
-CORRADE_TEST_MAIN(Magnum::Shaders::Test::PhongGLTest)
+MAGNUM_GL_TEST_MAIN(Magnum::Shaders::Test::PhongGLTest)

@@ -241,4 +241,4 @@ void SampleQueryGLTest::conditionalRender() {
 
 }}
 
-CORRADE_TEST_MAIN(Magnum::Test::SampleQueryGLTest)
+MAGNUM_GL_TEST_MAIN(Magnum::Test::SampleQueryGLTest)

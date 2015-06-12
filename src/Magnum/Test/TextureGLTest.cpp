@@ -1396,4 +1396,4 @@ void TextureGLTest::invalidateSubImage3D() {
 
 }}
 
-CORRADE_TEST_MAIN(Magnum::Test::TextureGLTest)
+MAGNUM_GL_TEST_MAIN(Magnum::Test::TextureGLTest)

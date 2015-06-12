@@ -132,4 +132,4 @@ void TimeQueryGLTest::queryTimestamp() {
 
 }}
 
-CORRADE_TEST_MAIN(Magnum::Test::TimeQueryGLTest)
+MAGNUM_GL_TEST_MAIN(Magnum::Test::TimeQueryGLTest)

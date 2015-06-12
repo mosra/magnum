@@ -66,4 +66,4 @@ void FlatGLTest::compile3DTextured() {
 
 }}}
 
-CORRADE_TEST_MAIN(Magnum::Shaders::Test::FlatGLTest)
+MAGNUM_GL_TEST_MAIN(Magnum::Shaders::Test::FlatGLTest)

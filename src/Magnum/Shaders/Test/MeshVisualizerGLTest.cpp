@@ -68,4 +68,4 @@ void MeshVisualizerGLTest::compileWireframeNoGeometryShader() {
 
 }}}
 
-CORRADE_TEST_MAIN(Magnum::Shaders::Test::MeshVisualizerGLTest)
+MAGNUM_GL_TEST_MAIN(Magnum::Shaders::Test::MeshVisualizerGLTest)

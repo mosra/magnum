@@ -143,4 +143,4 @@ void AbstractQueryGLTest::label() {
 
 }}
 
-CORRADE_TEST_MAIN(Magnum::Test::AbstractQueryGLTest)
+MAGNUM_GL_TEST_MAIN(Magnum::Test::AbstractQueryGLTest)

@@ -52,4 +52,4 @@ void AbstractObjectGLTest::labelNoOp() {
 
 }}
 
-CORRADE_TEST_MAIN(Magnum::Test::AbstractObjectGLTest)
+MAGNUM_GL_TEST_MAIN(Magnum::Test::AbstractObjectGLTest)

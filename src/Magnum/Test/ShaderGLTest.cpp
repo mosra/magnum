@@ -225,4 +225,4 @@ void ShaderGLTest::compile() {
 
 }}
 
-CORRADE_TEST_MAIN(Magnum::Test::ShaderGLTest)
+MAGNUM_GL_TEST_MAIN(Magnum::Test::ShaderGLTest)

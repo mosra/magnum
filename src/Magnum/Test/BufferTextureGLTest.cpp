@@ -147,4 +147,4 @@ void BufferTextureGLTest::setBufferOffset() {
 
 }}
 
-CORRADE_TEST_MAIN(Magnum::Test::BufferTextureGLTest)
+MAGNUM_GL_TEST_MAIN(Magnum::Test::BufferTextureGLTest)

@@ -430,4 +430,4 @@ void RendererGLTest::multiline() {
 
 }}}
 
-CORRADE_TEST_MAIN(Magnum::Text::Test::RendererGLTest)
+MAGNUM_GL_TEST_MAIN(Magnum::Text::Test::RendererGLTest)

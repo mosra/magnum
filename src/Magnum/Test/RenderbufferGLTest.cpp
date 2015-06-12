@@ -186,4 +186,4 @@ void RenderbufferGLTest::setStorageMultisample() {
 
 }}
 
-CORRADE_TEST_MAIN(Magnum::Test::RenderbufferGLTest)
+MAGNUM_GL_TEST_MAIN(Magnum::Test::RenderbufferGLTest)

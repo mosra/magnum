@@ -1862,4 +1862,4 @@ void MeshGLTest::multiDrawBaseVertex() {
 
 }}
 
-CORRADE_TEST_MAIN(Magnum::Test::MeshGLTest)
+MAGNUM_GL_TEST_MAIN(Magnum::Test::MeshGLTest)

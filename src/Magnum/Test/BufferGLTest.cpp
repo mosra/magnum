@@ -438,4 +438,4 @@ void BufferGLTest::invalidate() {
 
 }}
 
-CORRADE_TEST_MAIN(Magnum::Test::BufferGLTest)
+MAGNUM_GL_TEST_MAIN(Magnum::Test::BufferGLTest)
