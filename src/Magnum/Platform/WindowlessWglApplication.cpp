@@ -51,7 +51,10 @@ int WindowlessWglApplication::create(LRESULT(CALLBACK windowProcedure)(HWND, UIN
     CreateWindowW(wc.lpszClassName, L"Magnum Windowless Application",
         WS_OVERLAPPEDWINDOW, 0, 0, 32, 32, 0, 0, wc.hInstance, 0);
 
-    return 0;
+    /* Hammer the return code out of the messaging thingy */
+    MSG msg;
+    do {} while(GetMessageW(&msg, nullptr, 0, 0) != 0);
+    return msg.wParam;
 }
 #endif
 

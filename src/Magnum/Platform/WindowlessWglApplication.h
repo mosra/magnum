@@ -195,9 +195,8 @@ windowless application header is included this macro is also aliased to
             case WM_CREATE:                                                 \
                 {                                                           \
                     className app({globalArgc, globalArgv, hWnd});          \
-                    app.exec();                                             \
+                    PostQuitMessage(app.exec());                            \
                 }                                                           \
-                PostQuitMessage(0);                                         \
                 break;                                                      \
             default: return DefWindowProc(hWnd, message, wParam, lParam);   \
         }                                                                   \
