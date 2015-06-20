@@ -29,7 +29,7 @@
 #include "Magnum/Mesh.h"
 #include "Magnum/DebugTools/ResourceManager.h"
 #include "Magnum/MeshTools/Interleave.h"
-#include "Magnum/SceneGraph/AbstractCamera.h"
+#include "Magnum/SceneGraph/Camera.h"
 #include "Magnum/Shaders/VertexColor.h"
 
 namespace Magnum { namespace DebugTools {
@@ -178,7 +178,7 @@ template<UnsignedInt dimensions> ObjectRenderer<dimensions>::ObjectRenderer(Scen
 /* To avoid deleting pointers to incomplete type on destruction of Resource members */
 template<UnsignedInt dimensions> ObjectRenderer<dimensions>::~ObjectRenderer() = default;
 
-template<UnsignedInt dimensions> void ObjectRenderer<dimensions>::draw(const MatrixTypeFor<dimensions, Float>& transformationMatrix, SceneGraph::AbstractCamera<dimensions, Float>& camera) {
+template<UnsignedInt dimensions> void ObjectRenderer<dimensions>::draw(const MatrixTypeFor<dimensions, Float>& transformationMatrix, SceneGraph::Camera<dimensions, Float>& camera) {
     shader->setTransformationProjectionMatrix(camera.projectionMatrix()*transformationMatrix*MatrixTypeFor<dimensions, Float>::scaling(VectorTypeFor<dimensions, Float>{options->size()}));
     mesh->draw(*shader);
 }

@@ -345,8 +345,8 @@ class Sdl2Application {
          * Called when window size changes. The default implementation does
          * nothing, if you want to respond to size changes, you should pass the
          * new size to @ref DefaultFramebuffer::setViewport() and possibly
-         * elsewhere (to @ref SceneGraph::AbstractCamera::setViewport() "SceneGraph::Camera*D::setViewport()",
-         * other framebuffers...).
+         * elsewhere (to @ref SceneGraph::Camera::setViewport(), other
+         * framebuffers...).
          *
          * Note that this function might not get called at all if the window
          * size doesn't change. You should configure the initial state of your

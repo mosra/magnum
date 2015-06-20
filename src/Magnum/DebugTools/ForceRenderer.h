@@ -129,7 +129,7 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ForceRenderer: p
         ~ForceRenderer();
 
     private:
-        void draw(const MatrixTypeFor<dimensions, Float>& transformationMatrix, SceneGraph::AbstractCamera<dimensions, Float>& camera) override;
+        void draw(const MatrixTypeFor<dimensions, Float>& transformationMatrix, SceneGraph::Camera<dimensions, Float>& camera) override;
 
         const VectorTypeFor<dimensions, Float> forcePosition;
         const VectorTypeFor<dimensions, Float>& force;

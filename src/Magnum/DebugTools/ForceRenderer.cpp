@@ -28,7 +28,7 @@
 #include "Magnum/Buffer.h"
 #include "Magnum/Mesh.h"
 #include "Magnum/DebugTools/ResourceManager.h"
-#include "Magnum/SceneGraph/AbstractCamera.h"
+#include "Magnum/SceneGraph/Camera.h"
 #include "Magnum/Shaders/Flat.h"
 
 #include "Implementation/ForceRendererTransformation.h"
@@ -89,7 +89,7 @@ template<UnsignedInt dimensions> ForceRenderer<dimensions>::ForceRenderer(SceneG
 /* To avoid deleting pointers to incomplete type on destruction of Resource members */
 template<UnsignedInt dimensions> ForceRenderer<dimensions>::~ForceRenderer() = default;
 
-template<UnsignedInt dimensions> void ForceRenderer<dimensions>::draw(const MatrixTypeFor<dimensions, Float>& transformationMatrix, SceneGraph::AbstractCamera<dimensions, Float>& camera) {
+template<UnsignedInt dimensions> void ForceRenderer<dimensions>::draw(const MatrixTypeFor<dimensions, Float>& transformationMatrix, SceneGraph::Camera<dimensions, Float>& camera) {
     shader->setTransformationProjectionMatrix(camera.projectionMatrix()*Implementation::forceRendererTransformation<dimensions>(transformationMatrix.transformPoint(forcePosition), force)*MatrixTypeFor<dimensions, Float>::scaling(VectorTypeFor<dimensions, Float>{options->scale()}))
         .setColor(options->color());
     mesh->draw(*shader);

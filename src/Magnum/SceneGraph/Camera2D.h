@@ -26,86 +26,16 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::SceneGraph::BasicCamera2D, typedef @ref Magnum::SceneGraph::Camera2D
+ * @deprecated Use @ref Magnum/SceneGraph/Camera.h instead.
  */
 
-#include "Magnum/SceneGraph/AbstractCamera.h"
+#include "Magnum/configure.h"
 
-namespace Magnum { namespace SceneGraph {
-
-/**
-@brief Camera for two-dimensional scenes
-
-See @ref Drawable documentation for complete introduction. The camera by
-default displays OpenGL unit cube `[(-1, -1, -1); (1, 1, 1)]` and doesn't do
-any aspect ratio correction. Common setup example:
-@code
-SceneGraph::Camera2D camera{&cameraObject};
-camera.setProjection({4.0f/3.0f, 1.0f})
-      .setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend);
-@endcode
-
-@anchor SceneGraph-Camera2D-explicit-specializations
-## Explicit template specializations
-
-The following specialization is explicitly compiled into @ref SceneGraph
-library. For other specializations (e.g. using @ref Magnum::Double "Double"
-type) you have to use @ref Camera2D.hpp implementation file to avoid linker
-errors. See also relevant section in @ref SceneGraph-AbstractCamera-explicit-specializations "AbstractCamera"
-class documentation or @ref compilation-speedup-hpp for more information.
-
--   @ref Camera2D
-
-@see @ref scenegraph, @ref Camera2D, @ref BasicCamera3D, @ref Drawable,
-    @ref DrawableGroup
-*/
-template<class T> class BasicCamera2D: public AbstractBasicCamera2D<T> {
-    public:
-        /**
-         * @brief Constructor
-         * @param object    Object holding this feature
-         *
-         * Sets orthographic projection to the default OpenGL cube (range @f$ [-1; 1] @f$ in all directions).
-         * @see @ref setProjection()
-         */
-        explicit BasicCamera2D(AbstractBasicObject2D<T>& object);
-
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        /* This is here to avoid ambiguity with deleted copy constructor when
-           passing `*this` from class subclassing both BasicCamera2D and
-           AbstractObject */
-        template<class U, class = typename std::enable_if<std::is_base_of<AbstractBasicObject2D<T>, U>::value>::type> BasicCamera2D(U& object): BasicCamera2D(static_cast<AbstractBasicObject2D<T>&>(object)) {}
-        #endif
-
-        /**
-         * @brief Set projection
-         * @param size      Size of the view
-         * @return Reference to self (for method chaining)
-         *
-         * @see @ref Matrix3::projection()
-         */
-        BasicCamera2D<T>& setProjection(const Math::Vector2<T>& size);
-
-        /* Overloads to remove WTF-factor from method chaining order */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        BasicCamera2D<T>& setAspectRatioPolicy(AspectRatioPolicy policy) {
-            AbstractBasicCamera2D<T>::setAspectRatioPolicy(policy);
-            return *this;
-        }
-        #endif
-};
-
-/**
-@brief Camera for two-dimensional float scenes
-
-@see @ref Camera3D
-*/
-typedef BasicCamera2D<Float> Camera2D;
-
-#if defined(CORRADE_TARGET_WINDOWS) && !defined(__MINGW32__)
-extern template class MAGNUM_SCENEGRAPH_EXPORT BasicCamera2D<Float>;
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include "Magnum/SceneGraph/Camera.h"
+CORRADE_DEPRECATED_FILE("use Magnum/SceneGraph/Camera.h instead")
+#else
+#error use Magnum/SceneGraph/Camera.h instead
 #endif
-
-}}
 
 #endif

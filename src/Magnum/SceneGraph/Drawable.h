@@ -38,7 +38,7 @@ namespace Magnum { namespace SceneGraph {
 
 Adds drawing functionality to the object. Each Drawable is part of some
 @ref DrawableGroup and the whole group can be drawn with particular camera
-using @ref AbstractCamera::draw().
+using @ref Camera::draw().
 
 ## Usage
 
@@ -57,7 +57,7 @@ class RedCube: public Object3D, public SceneGraph::Drawable3D {
         }
 
     private:
-        void draw(const Matrix4& transformationMatrix, AbstractCamera3D& camera) override {
+        void draw(const Matrix4& transformationMatrix, Camera3D& camera) override {
             _shader.setDiffuseColor(Color3::fromHSV(216.0_degf, 0.85f, 1.0f))
                 .setLightPosition(camera.cameraMatrix().transformPoint({5.0f, 5.0f, 7.0f}))
                 .setTransformationMatrix(transformationMatrix)
@@ -110,7 +110,7 @@ information.
 auto cameraObject = new Object3D(&scene);
 cameraObject->translate(Vector3::zAxis(5.0f));
 auto camera = new SceneGraph::Camera3D(&cameraObject);
-camera->setPerspective(35.0_degf, 1.0f, 0.001f, 100.0f);
+camera->setProjectionMatrix(Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.001f, 100.0f));
 
 // ...
 
@@ -200,9 +200,9 @@ template<UnsignedInt dimensions, class T> class Drawable: public AbstractGrouped
          * @param camera                Camera
          *
          * Projection matrix can be retrieved from
-         * @ref SceneGraph::AbstractCamera::projectionMatrix() "AbstractCamera::projectionMatrix()".
+         * @ref SceneGraph::Camera::projectionMatrix() "Camera::projectionMatrix()".
          */
-        virtual void draw(const MatrixTypeFor<dimensions, T>& transformationMatrix, AbstractCamera<dimensions, T>& camera) = 0;
+        virtual void draw(const MatrixTypeFor<dimensions, T>& transformationMatrix, Camera<dimensions, T>& camera) = 0;
 };
 
 /**

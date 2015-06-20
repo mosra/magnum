@@ -26,76 +26,16 @@
 */
 
 /** @file
- * @brief @ref compilation-speedup-hpp "Template implementation" for @ref AbstractCamera.h
+ * @deprecated Use @ref Magnum/SceneGraph/Camera.hpp instead.
  */
 
-#include "Magnum/Math/Functions.h"
-#include "Magnum/SceneGraph/AbstractCamera.h"
-#include "Magnum/SceneGraph/Drawable.h"
+#include "Magnum/configure.h"
 
-namespace Magnum { namespace SceneGraph {
-
-namespace Implementation {
-
-template<UnsignedInt dimensions, class T> MatrixTypeFor<dimensions, T> aspectRatioFix(AspectRatioPolicy aspectRatioPolicy, const Math::Vector2<T>& projectionScale, const Vector2i& viewport) {
-    /* Don't divide by zero / don't preserve anything */
-    if(projectionScale.x() == 0 || projectionScale.y() == 0 || viewport.x() == 0 || viewport.y() == 0 || aspectRatioPolicy == AspectRatioPolicy::NotPreserved)
-        return {};
-
-    CORRADE_INTERNAL_ASSERT((projectionScale > Math::Vector2<T>(0)).all() && (viewport > Vector2i(0)).all());
-    Math::Vector2<T> relativeAspectRatio = Math::Vector2<T>(viewport)*projectionScale;
-
-    /* Extend on larger side = scale larger side down
-       Clip on smaller side = scale smaller side up */
-    return MatrixTypeFor<dimensions, T>::scaling(Math::Vector<dimensions, T>::pad(
-        (relativeAspectRatio.x() > relativeAspectRatio.y()) == (aspectRatioPolicy == AspectRatioPolicy::Extend) ?
-        Vector2(relativeAspectRatio.y()/relativeAspectRatio.x(), T(1)) :
-        Vector2(T(1), relativeAspectRatio.x()/relativeAspectRatio.y()), T(1)));
-}
-
-}
-
-template<UnsignedInt dimensions, class T> AbstractCamera<dimensions, T>::AbstractCamera(AbstractObject<dimensions, T>& object): AbstractFeature<dimensions, T>(object), _aspectRatioPolicy(AspectRatioPolicy::NotPreserved) {
-    AbstractFeature<dimensions, T>::setCachedTransformations(CachedTransformation::InvertedAbsolute);
-}
-
-template<UnsignedInt dimensions, class T> AbstractCamera<dimensions, T>::~AbstractCamera() = default;
-
-template<UnsignedInt dimensions, class T> void AbstractCamera<dimensions, T>::fixAspectRatio() {
-    _projectionMatrix = Implementation::aspectRatioFix<dimensions, T>(_aspectRatioPolicy, {Math::abs(rawProjectionMatrix[0].x()), Math::abs(rawProjectionMatrix[1].y())}, _viewport)*rawProjectionMatrix;
-}
-
-template<UnsignedInt dimensions, class T> AbstractCamera<dimensions, T>& AbstractCamera<dimensions, T>::setAspectRatioPolicy(AspectRatioPolicy policy) {
-    _aspectRatioPolicy = policy;
-    fixAspectRatio();
-    return *this;
-}
-
-template<UnsignedInt dimensions, class T> void AbstractCamera<dimensions, T>::setViewport(const Vector2i& size) {
-    _viewport = size;
-    fixAspectRatio();
-}
-
-template<UnsignedInt dimensions, class T> void AbstractCamera<dimensions, T>::draw(DrawableGroup<dimensions, T>& group) {
-    AbstractObject<dimensions, T>* scene = AbstractFeature<dimensions, T>::object().scene();
-    CORRADE_ASSERT(scene, "Camera::draw(): cannot draw when camera is not part of any scene", );
-
-    /* Compute camera matrix */
-    AbstractFeature<dimensions, T>::object().setClean();
-
-    /* Compute transformations of all objects in the group relative to the camera */
-    std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>> objects;
-    objects.reserve(group.size());
-    for(std::size_t i = 0; i != group.size(); ++i)
-        objects.push_back(group[i].object());
-    std::vector<MatrixTypeFor<dimensions, T>> transformations =
-        scene->transformationMatrices(objects, _cameraMatrix);
-
-    /* Perform the drawing */
-    for(std::size_t i = 0; i != transformations.size(); ++i)
-        group[i].draw(transformations[i], *this);
-}
-
-}}
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include "Magnum/SceneGraph/Camera.hpp"
+CORRADE_DEPRECATED_FILE("use Magnum/SceneGraph/Camera.hpp instead")
+#else
+#error use Magnum/SceneGraph/Camera.hpp instead
+#endif
 
 #endif

@@ -101,7 +101,7 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ObjectRenderer: 
         ~ObjectRenderer();
 
     private:
-        void draw(const MatrixTypeFor<dimensions, Float>& transformationMatrix, SceneGraph::AbstractCamera<dimensions, Float>& camera) override;
+        void draw(const MatrixTypeFor<dimensions, Float>& transformationMatrix, SceneGraph::Camera<dimensions, Float>& camera) override;
 
         Resource<ObjectRendererOptions> options;
         Resource<AbstractShaderProgram, Shaders::VertexColor<dimensions>> shader;

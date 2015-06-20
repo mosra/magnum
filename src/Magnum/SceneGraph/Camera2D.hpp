@@ -26,23 +26,16 @@
 */
 
 /** @file
- * @brief @ref compilation-speedup-hpp "Template implementation" for @ref Camera2D.h
+ * @deprecated Use @ref Magnum/SceneGraph/Camera.hpp instead.
  */
 
-#include "Magnum/SceneGraph/AbstractCamera.hpp"
-#include "Magnum/SceneGraph/Camera2D.h"
+#include "Magnum/configure.h"
 
-namespace Magnum { namespace SceneGraph {
-
-template<class T> BasicCamera2D<T>::BasicCamera2D(AbstractBasicObject2D<T>& object): AbstractBasicCamera2D<T>(object) {}
-
-template<class T> BasicCamera2D<T>& BasicCamera2D<T>::setProjection(const Math::Vector2<T>& size) {
-    AbstractBasicCamera2D<T>::rawProjectionMatrix = Math::Matrix3<T>::projection(size);
-
-    AbstractBasicCamera2D<T>::fixAspectRatio();
-    return *this;
-}
-
-}}
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include "Magnum/SceneGraph/Camera.hpp"
+CORRADE_DEPRECATED_FILE("use Magnum/SceneGraph/Camera.hpp instead")
+#else
+#error use Magnum/SceneGraph/Camera.hpp instead
+#endif
 
 #endif

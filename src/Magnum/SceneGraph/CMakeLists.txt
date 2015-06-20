@@ -32,8 +32,6 @@ set(MagnumSceneGraph_GracefulAssert_SRCS
     instantiation.cpp)
 
 set(MagnumSceneGraph_HEADERS
-    AbstractCamera.h
-    AbstractCamera.hpp
     AbstractFeature.h
     AbstractFeature.hpp
     AbstractGroupedFeature.h
@@ -47,10 +45,8 @@ set(MagnumSceneGraph_HEADERS
     Animable.h
     Animable.hpp
     AnimableGroup.h
-    Camera2D.h
-    Camera2D.hpp
-    Camera3D.h
-    Camera3D.hpp
+    Camera.h
+    Camera.hpp
     Drawable.h
     Drawable.hpp
     DualComplexTransformation.h
@@ -68,6 +64,16 @@ set(MagnumSceneGraph_HEADERS
     TranslationTransformation.h
 
     visibility.h)
+
+if(MAGNUM_BUILD_DEPRECATED)
+    list(APPEND MagnumSceneGraph_HEADERS
+        AbstractCamera.h
+        AbstractCamera.hpp
+        Camera2D.h
+        Camera2D.hpp
+        Camera3D.h
+        Camera3D.hpp)
+endif()
 
 # Objects shared between main and test library
 add_library(MagnumSceneGraphObjects OBJECT

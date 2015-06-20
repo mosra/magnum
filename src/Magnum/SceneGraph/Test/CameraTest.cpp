@@ -25,9 +25,8 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/SceneGraph/AbstractCamera.hpp" /* only for aspectRatioFix(), so it doesn't have to be exported */
-#include "Magnum/SceneGraph/Camera2D.h"
-#include "Magnum/SceneGraph/Camera3D.h"
+#include "Magnum/SceneGraph/Camera.hpp" /* only for aspectRatioFix(), so it doesn't have to be exported */
+#include "Magnum/SceneGraph/Camera.h"
 #include "Magnum/SceneGraph/Drawable.h"
 #include "Magnum/SceneGraph/MatrixTransformation2D.h"
 #include "Magnum/SceneGraph/MatrixTransformation3D.h"
@@ -124,7 +123,7 @@ void CameraTest::defaultProjection3D() {
 void CameraTest::projectionCorrectedInvertedY() {
     Object2D o;
     Camera2D camera(o);
-    camera.setProjection({4.0f, -2.0f})
+    camera.setProjectionMatrix(Matrix3::projection({4.0f, -2.0f}))
         .setAspectRatioPolicy(AspectRatioPolicy::Extend)
         .setViewport({4, 4});
 
@@ -139,7 +138,7 @@ void CameraTest::projectionSize2D() {
     Vector2 projectionSize(4.0f, 3.0f);
     Object2D o;
     Camera2D camera(o);
-    camera.setProjection(projectionSize);
+    camera.setProjectionMatrix(Matrix3::projection(projectionSize));
     CORRADE_COMPARE(camera.projectionSize(), projectionSize);
 }
 
@@ -147,14 +146,14 @@ void CameraTest::projectionSizeOrthographic() {
     Vector2 projectionSizeRectangle(5.0f, 4.0f);
     Object3D o;
     Camera3D camera(o);
-    camera.setOrthographic(projectionSizeRectangle, 1, 9);
+    camera.setProjectionMatrix(Matrix4::orthographicProjection(projectionSizeRectangle, 1, 9));
     CORRADE_COMPARE(camera.projectionSize(), projectionSizeRectangle);
 }
 
 void CameraTest::projectionSizePerspective() {
     Object3D o;
     Camera3D camera(o);
-    camera.setPerspective(Deg(27.0f), 2.35f, 32.0f, 100);
+    camera.setProjectionMatrix(Matrix4::perspectiveProjection(Deg(27.0f), 2.35f, 32.0f, 100));
     CORRADE_COMPARE(camera.projectionSize(), Vector2(0.48015756f, 0.204322f));
 }
 
@@ -177,7 +176,7 @@ void CameraTest::draw() {
             Drawable(AbstractObject3D& object, DrawableGroup3D* group, Matrix4& result): SceneGraph::Drawable3D(object, group), result(result) {}
 
         protected:
-            void draw(const Matrix4& transformationMatrix, AbstractCamera3D&) override {
+            void draw(const Matrix4& transformationMatrix, Camera3D&) override {
                 result = transformationMatrix;
             }
 

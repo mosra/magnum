@@ -28,7 +28,7 @@
 #include "Magnum/DebugTools/ResourceManager.h"
 #include "Magnum/Shapes/Composition.h"
 #include "Magnum/Shapes/Shape.h"
-#include "Magnum/SceneGraph/AbstractCamera.h"
+#include "Magnum/SceneGraph/Camera.h"
 
 #include "Implementation/AxisAlignedBoxRenderer.h"
 #include "Implementation/BoxRenderer.h"
@@ -122,7 +122,7 @@ template<UnsignedInt dimensions> ShapeRenderer<dimensions>::~ShapeRenderer() {
     for(auto i: renderers) delete i;
 }
 
-template<UnsignedInt dimensions> void ShapeRenderer<dimensions>::draw(const MatrixTypeFor<dimensions, Float>&, SceneGraph::AbstractCamera<dimensions, Float>& camera) {
+template<UnsignedInt dimensions> void ShapeRenderer<dimensions>::draw(const MatrixTypeFor<dimensions, Float>&, SceneGraph::Camera<dimensions, Float>& camera) {
     const MatrixTypeFor<dimensions, Float> projectionMatrix = camera.projectionMatrix()*camera.cameraMatrix();
     for(auto i: renderers) i->draw(options, projectionMatrix);
 }
