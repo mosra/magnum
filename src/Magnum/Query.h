@@ -26,7 +26,6 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::AbstractQuery, @ref Magnum::PrimitiveQuery, @ref Magnum::SampleQuery, @ref Magnum::TimeQuery
  * @deprecated Use @ref Magnum/PrimitiveQuery.h, @ref Magnum/SampleQuery.h or @ref Magnum/TimeQuery.h instead.
  */
 
@@ -37,8 +36,9 @@
 #include "Magnum/PrimitiveQuery.h"
 #include "Magnum/SampleQuery.h"
 #include "Magnum/TimeQuery.h"
+CORRADE_DEPRECATED_FILE("use Magnum/PrimitiveQuery.h, Magnum/SampleQuery.h or Magnum/TimeQuery.h instead")
 #else
-#error use Magnum/PrimitiveQuery.h, Magnum/SampleQuery.h or Magnum/TimeQuery.h instead.
+#error use Magnum/PrimitiveQuery.h, Magnum/SampleQuery.h or Magnum/TimeQuery.h instead
 #endif
 #else
 #error this header is not available in WebGL 1.0 build

@@ -26,13 +26,16 @@
 */
 
 /** @file
- * @deprecated Use @ref DebugOutput.h instead.
+ * @deprecated Use @ref Magnum/DebugOutput.h instead.
  */
 
-#include "Magnum/DebugOutput.h"
+#include "Magnum/configure.h"
 
-#ifndef MAGNUM_BUILD_DEPRECATED
-#error use DebugMessage.h instead
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include "Magnum/DebugOutput.h"
+CORRADE_DEPRECATED_FILE("use Magnum/DebugOutput.h instead")
+#else
+#error use Magnum/DebugOutput.h instead
 #endif
 
 #endif
