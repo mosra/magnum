@@ -36,6 +36,7 @@ struct ColorTest: TestSuite::Tester {
 
     void construct();
     void constructDefault();
+    void constructZero();
     void constructOneValue();
     void constructParts();
     void constructConversion();
@@ -64,6 +65,7 @@ struct ColorTest: TestSuite::Tester {
 ColorTest::ColorTest() {
     addTests({&ColorTest::construct,
               &ColorTest::constructDefault,
+              &ColorTest::constructZero,
               &ColorTest::constructOneValue,
               &ColorTest::constructParts,
               &ColorTest::constructConversion,
@@ -113,6 +115,13 @@ void ColorTest::constructDefault() {
     constexpr Color4ub c;
     CORRADE_COMPARE(b, Color4(0.0f, 0.0f, 0.0f, 1.0f));
     CORRADE_COMPARE(c, Color4ub(0, 0, 0, 255));
+}
+
+void ColorTest::constructZero() {
+    constexpr Color3 a{Math::ZeroInit};
+    constexpr Color4 b{Math::ZeroInit};
+    CORRADE_COMPARE(a, Color3(0.0f, 0.0f, 0.0f));
+    CORRADE_COMPARE(b, Color4(0.0f, 0.0f, 0.0f, 0.0f));
 }
 
 void ColorTest::constructOneValue() {

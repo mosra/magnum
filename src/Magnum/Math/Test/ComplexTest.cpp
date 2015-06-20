@@ -59,6 +59,7 @@ struct ComplexTest: Corrade::TestSuite::Tester {
 
     void construct();
     void constructIdentity();
+    void constructZero();
     void constructFromVector();
     void constructCopy();
     void convert();
@@ -91,6 +92,7 @@ struct ComplexTest: Corrade::TestSuite::Tester {
 ComplexTest::ComplexTest() {
     addTests({&ComplexTest::construct,
               &ComplexTest::constructIdentity,
+              &ComplexTest::constructZero,
               &ComplexTest::constructFromVector,
               &ComplexTest::constructCopy,
               &ComplexTest::convert,
@@ -144,6 +146,11 @@ void ComplexTest::constructIdentity() {
     CORRADE_COMPARE(b, Complex(1.0f, 0.0f));
     CORRADE_COMPARE(a.length(), 1.0f);
     CORRADE_COMPARE(b.length(), 1.0f);
+}
+
+void ComplexTest::constructZero() {
+    constexpr Complex a{ZeroInit};
+    CORRADE_COMPARE(a, Complex(0.0f, 0.0f));
 }
 
 void ComplexTest::constructFromVector() {

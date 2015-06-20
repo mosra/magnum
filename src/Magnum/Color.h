@@ -442,6 +442,9 @@ class BasicColor4: public Math::Vector4<T> {
          */
         constexpr /*implicit*/ BasicColor4(): Math::Vector4<T>(T(0), T(0), T(0), Implementation::fullChannel<T>()) {}
 
+        /** @copydoc Vector4::Vector4(ZeroInitT) */
+        constexpr explicit BasicColor4(Math::ZeroInitT): Math::Vector4<T>{Math::ZeroInit} {}
+
         /**
          * @copydoc BasicColor3::BasicColor3(T)
          * @param alpha Alpha value, defaults to `1.0` for floating-point types

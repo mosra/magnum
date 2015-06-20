@@ -61,6 +61,7 @@ struct DualQuaternionTest: Corrade::TestSuite::Tester {
 
     void construct();
     void constructIdentity();
+    void constructZero();
     void constructFromVector();
     void constructCopy();
     void convert();
@@ -98,6 +99,7 @@ typedef Math::Vector3<Float> Vector3;
 DualQuaternionTest::DualQuaternionTest() {
     addTests({&DualQuaternionTest::construct,
               &DualQuaternionTest::constructIdentity,
+              &DualQuaternionTest::constructZero,
               &DualQuaternionTest::constructFromVector,
               &DualQuaternionTest::constructCopy,
               &DualQuaternionTest::convert,
@@ -145,6 +147,11 @@ void DualQuaternionTest::constructIdentity() {
     CORRADE_COMPARE(b, DualQuaternion({{0.0f, 0.0f, 0.0f}, 1.0f}, {{0.0f, 0.0f, 0.0f}, 0.0f}));
     CORRADE_COMPARE(a.length(), 1.0f);
     CORRADE_COMPARE(b.length(), 1.0f);
+}
+
+void DualQuaternionTest::constructZero() {
+    constexpr DualQuaternion a{ZeroInit};
+    CORRADE_COMPARE(a, DualQuaternion({{0.0f, 0.0f, 0.0f}, 0.0f}, {{0.0f, 0.0f, 0.0f}, 0.0f}));
 }
 
 void DualQuaternionTest::constructFromVector() {

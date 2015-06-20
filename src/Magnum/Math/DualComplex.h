@@ -109,6 +109,9 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
         constexpr /*implicit*/ DualComplex(IdentityInitT = IdentityInit): Dual<Complex<T>>({}, {T(0), T(0)}) {}
         #endif
 
+        /** @brief Construct zero-initialized dual complex number */
+        constexpr explicit DualComplex(ZeroInitT): Dual<Complex<T>>{Complex<T>{ZeroInit}, Complex<T>{ZeroInit}} {}
+
         /**
          * @brief Construct dual complex number from real and dual part
          *
