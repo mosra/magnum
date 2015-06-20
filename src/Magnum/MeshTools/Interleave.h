@@ -141,7 +141,7 @@ template<class T, class ...U> typename std::enable_if<!std::is_same<T, Mesh>::va
 
     /* Create output buffer only if we have some attributes */
     if(attributeCount && attributeCount != ~std::size_t(0)) {
-        Containers::Array<char> data = Containers::Array<char>::zeroInitialized(attributeCount*stride);
+        Containers::Array<char> data{Containers::ValueInit, attributeCount*stride};
         Implementation::writeInterleaved(stride, data.begin(), first, next...);
 
         return data;

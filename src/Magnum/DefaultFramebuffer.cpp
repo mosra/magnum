@@ -54,7 +54,7 @@ DefaultFramebuffer& DefaultFramebuffer::mapForDraw(std::initializer_list<std::pa
     /* Create linear array from associative */
     /** @todo C++14: use VLA to avoid heap allocation */
     static_assert(GL_NONE == 0, "Expecting zero GL_NONE for zero-initialization");
-    auto _attachments = Containers::Array<GLenum>::zeroInitialized(max+1);
+    auto _attachments = Containers::Array<GLenum>{Containers::ValueInit, max+1};
     for(const auto& attachment: attachments)
         _attachments[attachment.first] = GLenum(attachment.second);
 
