@@ -73,6 +73,11 @@ template<std::size_t size> class BoolVector {
         /** @brief Construct zero-filled boolean vector */
         constexpr /*implicit*/ BoolVector(ZeroInitT = ZeroInit): _data{} {}
 
+        /** @brief Construct without initializing the contents */
+        explicit BoolVector(NoInitT) {
+            static_assert(std::is_trivially_constructible<decltype(_data)>{}, "");
+        }
+
         /**
          * @brief Construct boolean vector from segment values
          * @param first Value for first 8bit segment

@@ -26,10 +26,20 @@
 */
 
 /** @file
- * @brief Tag type @ref Magnum::Math::ZeroInitT, @ref Magnum::Math::IdentityInitT, tag @ref Magnum::Math::ZeroInit, @ref Magnum::Math::IdentityInit
+ * @brief Tag type @ref Magnum::Math::NoInitT, @ref Magnum::Math::ZeroInitT, @ref Magnum::Math::IdentityInitT, tag @ref Magnum::Math::NoInit, @ref Magnum::Math::ZeroInit, @ref Magnum::Math::IdentityInit
  */
 
+#include <Corrade/Containers/Tags.h>
+
 namespace Magnum { namespace Math {
+
+/**
+@brief No initialization tag type
+
+Used to distinguish construction with no initialization at all.
+@see @ref NoInit
+*/
+typedef Corrade::Containers::NoInitT NoInitT;
 
 /**
 @brief Zero initialization tag type
@@ -46,6 +56,17 @@ Used to distinguish construction with transformation set to identity.
 @see @ref IdentityInit
 */
 struct IdentityInitT {};
+
+/**
+@brief No initialization tag
+
+Use for construction with no initialization at all.
+*/
+#ifdef DOXYGEN_GENERATING_OUTPUT
+constexpr NoInitT NoInit{};
+#else
+using Corrade::Containers::NoInit;
+#endif
 
 /**
 @brief Zero initialization tag

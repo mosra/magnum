@@ -62,6 +62,7 @@ struct RectangularMatrixTest: Corrade::TestSuite::Tester {
 
     void construct();
     void constructDefault();
+    void constructNoInit();
     void constructConversion();
     void constructFromData();
     void constructFromDiagonal();
@@ -108,6 +109,7 @@ typedef Vector<2, Int> Vector2i;
 RectangularMatrixTest::RectangularMatrixTest() {
     addTests({&RectangularMatrixTest::construct,
               &RectangularMatrixTest::constructDefault,
+              &RectangularMatrixTest::constructNoInit,
               &RectangularMatrixTest::constructConversion,
               &RectangularMatrixTest::constructFromData,
               &RectangularMatrixTest::constructFromDiagonal,
@@ -157,6 +159,16 @@ void RectangularMatrixTest::constructDefault() {
                                  Vector3(0.0f, 0.0f, 0.0f),
                                  Vector3(0.0f, 0.0f, 0.0f),
                                  Vector3(0.0f, 0.0f, 0.0f)));
+}
+
+void RectangularMatrixTest::constructNoInit() {
+    Matrix3x4 a{Vector4(1.0f,  2.0f,  3.0f,  4.0f),
+                Vector4(5.0f,  6.0f,  7.0f,  8.0f),
+                Vector4(9.0f, 10.0f, 11.0f, 12.0f)};
+    new(&a) Matrix3x4{NoInit};
+    CORRADE_COMPARE(a, Matrix3x4(Vector4(1.0f,  2.0f,  3.0f,  4.0f),
+                                 Vector4(5.0f,  6.0f,  7.0f,  8.0f),
+                                 Vector4(9.0f, 10.0f, 11.0f, 12.0f)));
 }
 
 void RectangularMatrixTest::constructConversion() {

@@ -164,6 +164,9 @@ template<class T> class Matrix3: public Matrix3x3<T> {
         /** @copydoc Matrix::Matrix(ZeroInitT) */
         constexpr explicit Matrix3(ZeroInitT): Matrix3x3<T>{ZeroInit} {}
 
+        /** @copydoc Matrix::Matrix(NoInitT) */
+        constexpr explicit Matrix3(NoInitT): Matrix3x3<T>{NoInit} {}
+
         /** @brief Matrix from column vectors */
         constexpr /*implicit*/ Matrix3(const Vector3<T>& first, const Vector3<T>& second, const Vector3<T>& third): Matrix3x3<T>(first, second, third) {}
 

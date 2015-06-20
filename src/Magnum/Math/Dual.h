@@ -32,6 +32,7 @@
 #include <cmath>
 #include <Corrade/Utility/Debug.h>
 
+#include "Magnum/Math/Tags.h"
 #include "Magnum/Math/TypeTraits.h"
 
 namespace Magnum { namespace Math {
@@ -52,6 +53,14 @@ template<class T> class Dual {
          * Both parts are default-constructed.
          */
         constexpr /*implicit*/ Dual(): _real(), _dual() {}
+
+        /** @brief Construct without initializing the contents */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        explicit Dual(NoInitT);
+        #else
+        template<class U = T, class = typename std::enable_if<std::is_trivially_constructible<U>{}>::type> Dual(NoInitT) {}
+        template<class U = T, class V = T, class = typename std::enable_if<std::is_constructible<U, NoInitT>{}>::type> Dual(NoInitT): _real{NoInit}, _dual{NoInit} {}
+        #endif
 
         /**
          * @brief Construct dual number from real and dual part

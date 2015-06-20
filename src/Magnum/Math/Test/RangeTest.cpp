@@ -108,6 +108,7 @@ struct RangeTest: Corrade::TestSuite::Tester {
 
     void construct();
     void constructDefault();
+    void constructNoInit();
     void constructFromSize();
     void constructConversion();
     void constructCopy();
@@ -141,6 +142,7 @@ typedef Vector3<Int> Vector3i;
 RangeTest::RangeTest() {
     addTests({&RangeTest::construct,
               &RangeTest::constructDefault,
+              &RangeTest::constructNoInit,
               &RangeTest::constructFromSize,
               &RangeTest::constructConversion,
               &RangeTest::constructCopy,
@@ -186,6 +188,20 @@ void RangeTest::constructDefault() {
     CORRADE_COMPARE(b2, Range2Di({0, 0}, {0, 0}));
     CORRADE_COMPARE(c1, Range3Di({0, 0, 0}, {0, 0, 0}));
     CORRADE_COMPARE(c2, Range3Di({0, 0, 0}, {0, 0, 0}));
+}
+
+void RangeTest::constructNoInit() {
+    Range1Di a{3, 23};
+    Range2Di b{{3, 5}, {23, 78}};
+    Range3Di c{{3, 5, -7}, {23, 78, 2}};
+
+    new(&a) Range1Di{NoInit};
+    new(&b) Range2Di{NoInit};
+    new(&c) Range3Di{NoInit};
+
+    CORRADE_COMPARE(a, (Range1Di{3, 23}));
+    CORRADE_COMPARE(b, (Range2Di{{3, 5}, {23, 78}}));
+    CORRADE_COMPARE(c, (Range3Di{{3, 5, -7}, {23, 78, 2}}));
 }
 
 void RangeTest::constructFromSize() {

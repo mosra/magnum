@@ -60,6 +60,7 @@ struct QuaternionTest: Corrade::TestSuite::Tester {
     void construct();
     void constructIdentity();
     void constructZero();
+    void constructNoInit();
     void constructFromVector();
     void constructCopy();
     void convert();
@@ -104,6 +105,7 @@ QuaternionTest::QuaternionTest() {
     addTests({&QuaternionTest::construct,
               &QuaternionTest::constructIdentity,
               &QuaternionTest::constructZero,
+              &QuaternionTest::constructNoInit,
               &QuaternionTest::constructFromVector,
               &QuaternionTest::constructCopy,
               &QuaternionTest::convert,
@@ -158,6 +160,12 @@ void QuaternionTest::constructIdentity() {
 void QuaternionTest::constructZero() {
     constexpr Quaternion a{ZeroInit};
     CORRADE_COMPARE(a, Quaternion({0.0f, 0.0f, 0.0f}, 0.0f));
+}
+
+void QuaternionTest::constructNoInit() {
+    Quaternion a{{1.0f, 2.0f, 3.0f}, -4.0f};
+    new(&a) Quaternion{NoInit};
+    CORRADE_COMPARE(a, Quaternion({1.0f, 2.0f, 3.0f}, -4.0f));
 }
 
 void QuaternionTest::constructFromVector() {

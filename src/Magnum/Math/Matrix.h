@@ -86,6 +86,9 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
         /** @copydoc RectangularMatrix::RectangularMatrix(ZeroInitT) */
         constexpr explicit Matrix(ZeroInitT): RectangularMatrix<size, size, T>{ZeroInit} {}
 
+        /** @copydoc RectangularMatrix::RectangularMatrix(NoInitT) */
+        constexpr explicit Matrix(NoInitT): RectangularMatrix<size, size, T>{NoInit} {}
+
         /**
          * @brief Matrix from column vectors
          * @param first First column vector

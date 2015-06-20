@@ -56,6 +56,7 @@ struct Vector3Test: Corrade::TestSuite::Tester {
 
     void construct();
     void constructDefault();
+    void constructNoInit();
     void constructOneValue();
     void constructParts();
     void constructConversion();
@@ -80,6 +81,7 @@ typedef Math::Vector2<Float> Vector2;
 Vector3Test::Vector3Test() {
     addTests({&Vector3Test::construct,
               &Vector3Test::constructDefault,
+              &Vector3Test::constructNoInit,
               &Vector3Test::constructOneValue,
               &Vector3Test::constructParts,
               &Vector3Test::constructConversion,
@@ -107,6 +109,12 @@ void Vector3Test::constructDefault() {
     constexpr Vector3 b{ZeroInit};
     CORRADE_COMPARE(a, Vector3(0.0f, 0.0f, 0.0f));
     CORRADE_COMPARE(b, Vector3(0.0f, 0.0f, 0.0f));
+}
+
+void Vector3Test::constructNoInit() {
+    Vector3 a{1.0f, 2.5f, -3.0f};
+    new(&a) Vector3{NoInit};
+    CORRADE_COMPARE(a, (Vector3{1.0f, 2.5f, -3.0f}));
 }
 
 void Vector3Test::constructOneValue() {

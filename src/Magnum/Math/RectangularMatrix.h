@@ -108,6 +108,9 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         /** @brief Construct zero-filled matrix */
         constexpr /*implicit*/ RectangularMatrix(ZeroInitT = ZeroInit): RectangularMatrix<cols, rows, T>{typename Implementation::GenerateSequence<cols>::Type{}, ZeroInit} {}
 
+        /** @brief Construct matrix without initializing the contents */
+        explicit RectangularMatrix(NoInitT): RectangularMatrix<cols, rows, T>{typename Implementation::GenerateSequence<cols>::Type{}, NoInit} {}
+
         /**
          * @brief Construct matrix from column vectors
          * @param first First column vector
@@ -361,7 +364,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         /* Implementation for RectangularMatrix<cols, rows, T>::RectangularMatrix(const RectangularMatrix<cols, rows, U>&) */
         template<class U, std::size_t ...sequence> constexpr explicit RectangularMatrix(Implementation::Sequence<sequence...>, const RectangularMatrix<cols, rows, U>& matrix): _data{Vector<rows, T>(matrix[sequence])...} {}
 
-        /* Implementation for RectangularMatrix<cols, rows, T>::RectangularMatrix(ZeroInitT) */
+        /* Implementation for RectangularMatrix<cols, rows, T>::RectangularMatrix(ZeroInitT) and RectangularMatrix<cols, rows, T>::RectangularMatrix(NoInitT) */
         template<class U, std::size_t ...sequence> constexpr explicit RectangularMatrix(Implementation::Sequence<sequence...>, U): _data{Vector<rows, T>{(static_cast<void>(sequence), U{})}...} {}
 
         template<std::size_t ...sequence> constexpr Vector<DiagonalSize, T> diagonalInternal(Implementation::Sequence<sequence...>) const;

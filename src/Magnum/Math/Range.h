@@ -77,6 +77,9 @@ template<UnsignedInt dimensions, class T> class Range {
          */
         constexpr /*implicit*/ Range(ZeroInitT = ZeroInit): _min{ZeroInit}, _max{ZeroInit} {}
 
+        /** @brief Construct without initializing the contents */
+        explicit Range(NoInitT): _min{NoInit}, _max{NoInit} {}
+
         /** @brief Construct range from minimal and maximal coordinates */
         constexpr /*implicit*/ Range(const VectorType& min, const VectorType& max): _min{min}, _max{max} {}
 
@@ -221,6 +224,9 @@ template<class T> class Range2D: public Range<2, T> {
         /** @copydoc Range(ZeroInitT) */
         constexpr /*implicit*/ Range2D(ZeroInitT = ZeroInit): Range<2, T>{ZeroInit} {}
 
+        /** @copydoc Range(NoInitT) */
+        explicit Range2D(NoInitT): Range<2, T>{NoInit} {}
+
         /** @copydoc Range(const VectorType&, const VectorType&) */
         constexpr /*implicit*/ Range2D(const Vector2<T>& min, const Vector2<T>& max): Range<2, T>(min, max) {}
 
@@ -331,6 +337,9 @@ template<class T> class Range3D: public Range<3, T> {
     public:
         /** @copydoc Range(ZeroInitT) */
         constexpr /*implicit*/ Range3D(ZeroInitT = ZeroInit): Range<3, T>{ZeroInit} {}
+
+        /** @copybrief Range(NoInitT) */
+        explicit Range3D(NoInitT): Range<3, T>{NoInit} {}
 
         /** @copydoc Range(const VectorType&, const VectorType&) */
         constexpr /*implicit*/ Range3D(const Vector3<T>& min, const Vector3<T>& max): Range<3, T>(min, max) {}

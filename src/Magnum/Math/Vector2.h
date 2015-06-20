@@ -114,6 +114,9 @@ template<class T> class Vector2: public Vector<2, T> {
         /** @copydoc Vector::Vector(ZeroInitT) */
         constexpr /*implicit*/ Vector2(ZeroInitT = ZeroInit): Vector<2, T>{ZeroInit} {}
 
+        /** @copydoc Vector::Vector(NoInitT) */
+        explicit Vector2(NoInitT): Vector<2, T>{NoInit} {}
+
         /** @copydoc Vector::Vector(T) */
         constexpr explicit Vector2(T value): Vector<2, T>(value) {}
 

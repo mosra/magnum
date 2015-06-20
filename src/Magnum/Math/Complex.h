@@ -145,6 +145,12 @@ template<class T> class Complex {
         /** @brief Construct zero-initialized complex number */
         constexpr explicit Complex(ZeroInitT): _real{}, _imaginary{} {}
 
+        /** @brief Construct without initializing the contents */
+        explicit Complex(NoInitT) {
+            static_assert(std::is_trivially_constructible<decltype(_real)>{}, "");
+            static_assert(std::is_trivially_constructible<decltype(_imaginary)>{}, "");
+        }
+
         /**
          * @brief Construct complex number from real and imaginary part
          *

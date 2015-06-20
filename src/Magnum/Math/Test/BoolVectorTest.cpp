@@ -35,6 +35,7 @@ struct BoolVectorTest: Corrade::TestSuite::Tester {
 
     void construct();
     void constructDefault();
+    void constructNoInit();
     void constructOneValue();
     void constructOneElement();
     void constructCopy();
@@ -61,6 +62,7 @@ typedef Math::BoolVector<19> BoolVector19;
 BoolVectorTest::BoolVectorTest() {
     addTests({&BoolVectorTest::construct,
               &BoolVectorTest::constructDefault,
+              &BoolVectorTest::constructNoInit,
               &BoolVectorTest::constructOneValue,
               &BoolVectorTest::constructOneElement,
               &BoolVectorTest::constructCopy,
@@ -88,6 +90,12 @@ void BoolVectorTest::constructDefault() {
     constexpr BoolVector19 b{ZeroInit};
     CORRADE_COMPARE(a, BoolVector19(0x00, 0x00, 0x00));
     CORRADE_COMPARE(b, BoolVector19(0x00, 0x00, 0x00));
+}
+
+void BoolVectorTest::constructNoInit() {
+    BoolVector19 a{0xa5, 0x5f, 0x07};
+    new(&a) BoolVector19{NoInit};
+    CORRADE_COMPARE(a, BoolVector19(0xa5, 0x5f, 0x07));
 }
 
 void BoolVectorTest::constructOneValue() {

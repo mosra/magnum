@@ -56,6 +56,7 @@ struct Vector2Test: Corrade::TestSuite::Tester {
 
     void construct();
     void constructDefault();
+    void constructNoInit();
     void constructOneValue();
     void constructConversion();
     void constructCopy();
@@ -81,6 +82,7 @@ typedef Math::Vector2<Int> Vector2i;
 Vector2Test::Vector2Test() {
     addTests({&Vector2Test::construct,
               &Vector2Test::constructDefault,
+              &Vector2Test::constructNoInit,
               &Vector2Test::constructOneValue,
               &Vector2Test::constructConversion,
               &Vector2Test::constructCopy,
@@ -109,6 +111,12 @@ void Vector2Test::constructDefault() {
     constexpr Vector2 b{ZeroInit};
     CORRADE_COMPARE(a, Vector2(0.0f, 0.0f));
     CORRADE_COMPARE(b, Vector2(0.0f, 0.0f));
+}
+
+void Vector2Test::constructNoInit() {
+    Vector2 a{1.5f, 2.5f};
+    new(&a) Vector2{NoInit};
+    CORRADE_COMPARE(a, (Vector2{1.5f, 2.5f}));
 }
 
 void Vector2Test::constructOneValue() {

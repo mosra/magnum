@@ -118,6 +118,9 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         /** @brief Construct zero-initialized dual quaternion */
         constexpr explicit DualQuaternion(ZeroInitT): Dual<Quaternion<T>>{Quaternion<T>{ZeroInit}, Quaternion<T>{ZeroInit}} {}
 
+        /** @brief Construct without initializing the contents */
+        explicit DualQuaternion(NoInitT): Dual<Quaternion<T>>{NoInit} {}
+
         /**
          * @brief Construct dual quaternion from real and dual part
          *

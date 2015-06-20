@@ -62,6 +62,7 @@ struct MatrixTest: Corrade::TestSuite::Tester {
     void construct();
     void constructIdentity();
     void constructZero();
+    void constructNoInit();
     void constructConversion();
     void constructCopy();
     void convert();
@@ -93,6 +94,7 @@ MatrixTest::MatrixTest() {
     addTests({&MatrixTest::construct,
               &MatrixTest::constructIdentity,
               &MatrixTest::constructZero,
+              &MatrixTest::constructNoInit,
               &MatrixTest::constructConversion,
               &MatrixTest::constructCopy,
               &MatrixTest::convert,
@@ -149,6 +151,18 @@ void MatrixTest::constructZero() {
                                  Vector4(0.0f, 0.0f, 0.0f, 0.0f),
                                  Vector4(0.0f, 0.0f, 0.0f, 0.0f),
                                  Vector4(0.0f, 0.0f, 0.0f, 0.0f)));
+}
+
+void MatrixTest::constructNoInit() {
+    Matrix4x4 a{Vector4(3.0f,  5.0f, 8.0f, -3.0f),
+                Vector4(4.5f,  4.0f, 7.0f,  2.0f),
+                Vector4(1.0f,  2.0f, 3.0f, -1.0f),
+                Vector4(7.9f, -1.0f, 8.0f, -1.5f)};
+    new(&a) Matrix4x4{NoInit};
+    CORRADE_COMPARE(a, Matrix4x4(Vector4(3.0f,  5.0f, 8.0f, -3.0f),
+                                 Vector4(4.5f,  4.0f, 7.0f,  2.0f),
+                                 Vector4(1.0f,  2.0f, 3.0f, -1.0f),
+                                 Vector4(7.9f, -1.0f, 8.0f, -1.5f)));
 }
 
 void MatrixTest::constructConversion() {

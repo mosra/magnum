@@ -62,6 +62,7 @@ struct Matrix3Test: Corrade::TestSuite::Tester {
     void construct();
     void constructIdentity();
     void constructZero();
+    void constructNoInit();
     void constructConversion();
     void constructCopy();
     void convert();
@@ -100,6 +101,7 @@ Matrix3Test::Matrix3Test() {
     addTests({&Matrix3Test::construct,
               &Matrix3Test::constructIdentity,
               &Matrix3Test::constructZero,
+              &Matrix3Test::constructNoInit,
               &Matrix3Test::constructConversion,
               &Matrix3Test::constructCopy,
               &Matrix3Test::convert,
@@ -159,6 +161,16 @@ void Matrix3Test::constructZero() {
     CORRADE_COMPARE(a, Matrix3({0.0f, 0.0f, 0.0f},
                                {0.0f, 0.0f, 0.0f},
                                {0.0f, 0.0f, 0.0f}));
+}
+
+void Matrix3Test::constructNoInit() {
+    Matrix3 a{{3.0f,  5.0f, 8.0f},
+              {4.5f,  4.0f, 7.0f},
+              {7.9f, -1.0f, 8.0f}};
+    new(&a) Matrix3{NoInit};
+    CORRADE_COMPARE(a, Matrix3({3.0f,  5.0f, 8.0f},
+                               {4.5f,  4.0f, 7.0f},
+                               {7.9f, -1.0f, 8.0f}));
 }
 
 void Matrix3Test::constructConversion() {

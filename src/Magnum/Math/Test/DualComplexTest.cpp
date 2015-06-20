@@ -60,6 +60,7 @@ struct DualComplexTest: Corrade::TestSuite::Tester {
     void construct();
     void constructIdentity();
     void constructZero();
+    void constructNoInit();
     void constructFromVector();
     void constructCopy();
     void convert();
@@ -99,6 +100,7 @@ DualComplexTest::DualComplexTest() {
     addTests({&DualComplexTest::construct,
               &DualComplexTest::constructIdentity,
               &DualComplexTest::constructZero,
+              &DualComplexTest::constructNoInit,
               &DualComplexTest::constructFromVector,
               &DualComplexTest::constructCopy,
               &DualComplexTest::convert,
@@ -151,6 +153,12 @@ void DualComplexTest::constructIdentity() {
 void DualComplexTest::constructZero() {
     constexpr DualComplex a{ZeroInit};
     CORRADE_COMPARE(a, DualComplex({0.0f, 0.0f}, {0.0f, 0.0f}));
+}
+
+void DualComplexTest::constructNoInit() {
+    DualComplex a{{-1.0f, 2.5f}, {3.0f, -7.5f}};
+    new(&a) DualComplex{NoInit};
+    CORRADE_COMPARE(a, DualComplex({-1.0f, 2.5f}, {3.0f, -7.5f}));
 }
 
 void DualComplexTest::constructFromVector() {

@@ -126,6 +126,9 @@ template<class T> class Deg: public Unit<Deg, T> {
         /** @brief Construct zero angle */
         constexpr /*implicit*/ Deg(ZeroInitT = ZeroInit): Unit<Deg, T>{ZeroInit} {}
 
+        /** @brief Construct without initializing the contents */
+        explicit Deg(NoInitT): Unit<Deg, T>{NoInit} {}
+
         /** @brief Explicit constructor from unitless type */
         constexpr explicit Deg(T value): Unit<Math::Deg, T>(value) {}
 
@@ -183,6 +186,9 @@ template<class T> class Rad: public Unit<Rad, T> {
     public:
         /** @brief Default constructor */
         constexpr /*implicit*/ Rad(ZeroInitT = ZeroInit): Unit<Rad, T>{ZeroInit} {}
+
+        /** @brief Construct without initializing the contents */
+        explicit Rad(NoInitT): Unit<Rad, T>{NoInit} {}
 
         /** @brief Construct from unitless type */
         constexpr explicit Rad(T value): Unit<Math::Rad, T>(value) {}

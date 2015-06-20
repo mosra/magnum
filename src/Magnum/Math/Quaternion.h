@@ -202,6 +202,11 @@ template<class T> class Quaternion {
         /** @brief Construct zero-initialized quaternion */
         constexpr explicit Quaternion(ZeroInitT): _vector{ZeroInit}, _scalar{T{0}} {}
 
+        /** @brief Construct without initializing the contents */
+        explicit Quaternion(NoInitT): _vector{NoInit} {
+            static_assert(std::is_trivially_constructible<decltype(_scalar)>{}, "");
+        }
+
         /**
          * @brief Construct quaternion from vector and scalar
          *

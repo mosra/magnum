@@ -34,6 +34,7 @@ struct AngleTest: Corrade::TestSuite::Tester {
     explicit AngleTest();
 
     void construct();
+    void constructNoInit();
     void literals();
     void conversion();
 
@@ -50,6 +51,7 @@ typedef Math::Rad<Double> Radd;
 
 AngleTest::AngleTest() {
     addTests({&AngleTest::construct,
+              &AngleTest::constructNoInit,
               &AngleTest::literals,
               &AngleTest::conversion,
 
@@ -107,6 +109,15 @@ void AngleTest::construct() {
     constexpr Deg d(b);
     CORRADE_COMPARE(Float(d), 25.0f);
     #endif
+}
+
+void AngleTest::constructNoInit() {
+    Deg a{25.0f};
+    Rad b{3.14f};
+    new(&a) Deg{NoInit};
+    new(&b) Rad{NoInit};
+    CORRADE_COMPARE(Float(a), 25.0f);
+    CORRADE_COMPARE(Float(b), 3.14f);
 }
 
 void AngleTest::literals() {

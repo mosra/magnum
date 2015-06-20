@@ -148,6 +148,11 @@ template<std::size_t size, class T> class Vector {
          */
         constexpr /*implicit*/ Vector(ZeroInitT = ZeroInit): _data{} {}
 
+        /** @brief Construct vector without initializing the contents */
+        explicit Vector(NoInitT) {
+            static_assert(std::is_trivially_constructible<decltype(_data)>{}, "");
+        }
+
         /** @todo Creating Vector from combination of vector and scalar types */
 
         /**

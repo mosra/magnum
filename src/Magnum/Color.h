@@ -256,6 +256,9 @@ template<class T> class BasicColor3: public Math::Vector3<T> {
          */
         constexpr /*implicit*/ BasicColor3(Math::ZeroInitT = Math::ZeroInit): Math::Vector3<T>{Math::ZeroInit} {}
 
+        /** @copydoc Vector3::Vector3(NoInitT) */
+        explicit BasicColor3(Math::NoInitT): Math::Vector3<T>{Math::NoInit} {}
+
         /**
          * @brief Gray constructor
          * @param rgb   RGB value
@@ -444,6 +447,9 @@ class BasicColor4: public Math::Vector4<T> {
 
         /** @copydoc Vector4::Vector4(ZeroInitT) */
         constexpr explicit BasicColor4(Math::ZeroInitT): Math::Vector4<T>{Math::ZeroInit} {}
+
+        /** @copydoc Vector4::Vector4(NoInitT) */
+        explicit BasicColor4(Math::NoInitT): Math::Vector4<T>{Math::NoInit} {}
 
         /**
          * @copydoc BasicColor3::BasicColor3(T)

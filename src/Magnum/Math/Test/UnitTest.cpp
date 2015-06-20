@@ -35,6 +35,7 @@ struct UnitTest: Corrade::TestSuite::Tester {
 
     void construct();
     void constructDefault();
+    void constructNoInit();
     void constructConversion();
     void compare();
     void compareNaN();
@@ -47,6 +48,7 @@ struct UnitTest: Corrade::TestSuite::Tester {
 UnitTest::UnitTest() {
     addTests({&UnitTest::construct,
               &UnitTest::constructDefault,
+              &UnitTest::constructNoInit,
               &UnitTest::constructConversion,
               &UnitTest::compare,
               &UnitTest::compareNaN,
@@ -77,6 +79,12 @@ void UnitTest::construct() {
 void UnitTest::constructDefault() {
     constexpr Sec b;
     CORRADE_COMPARE(b, Sec(0.0f));
+}
+
+void UnitTest::constructNoInit() {
+    Sec a{25.0f};
+    new(&a) Sec{NoInit};
+    CORRADE_COMPARE(a, Sec{25.0f});
 }
 
 void UnitTest::constructConversion() {
