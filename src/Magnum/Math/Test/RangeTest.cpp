@@ -165,9 +165,9 @@ RangeTest::RangeTest() {
 }
 
 void RangeTest::construct() {
-    constexpr Range1Di a(3, 23);
-    constexpr Range2Di b({3, 5}, {23, 78});
-    constexpr Range3Di c({3, 5, -7}, {23, 78, 2});
+    constexpr Range1Di a = {3, 23};
+    constexpr Range2Di b = {{3, 5}, {23, 78}};
+    constexpr Range3Di c = {{3, 5, -7}, {23, 78, 2}};
 
     CORRADE_COMPARE(a, (Range<1, Int>(3, 23)));
     CORRADE_COMPARE(b, (Range<2, Int>({3, 5}, {23, 78})));

@@ -129,7 +129,7 @@ DualComplexTest::DualComplexTest() {
 }
 
 void DualComplexTest::construct() {
-    constexpr DualComplex a({-1.0f, 2.5f}, {3.0f, -7.5f});
+    constexpr DualComplex a = {{-1.0f, 2.5f}, {3.0f, -7.5f}};
     CORRADE_COMPARE(a, DualComplex({-1.0f, 2.5f}, {3.0f, -7.5f}));
 
     constexpr Complex b = a.real();

@@ -139,7 +139,7 @@ QuaternionTest::QuaternionTest() {
 }
 
 void QuaternionTest::construct() {
-    constexpr Quaternion a({1.0f, 2.0f, 3.0f}, -4.0f);
+    constexpr Quaternion a = {{1.0f, 2.0f, 3.0f}, -4.0f};
     CORRADE_COMPARE(a, Quaternion({1.0f, 2.0f, 3.0f}, -4.0f));
 
     constexpr Vector3 b = a.vector();

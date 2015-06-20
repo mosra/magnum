@@ -71,7 +71,7 @@ DualTest::DualTest() {
 }
 
 void DualTest::construct() {
-    constexpr Dual a(2.0f, -7.5f);
+    constexpr Dual a = {2.0f, -7.5f};
     constexpr Float b = a.real();
     constexpr Float c = a.dual();
     CORRADE_COMPARE(b, 2.0f);

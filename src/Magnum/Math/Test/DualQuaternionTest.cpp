@@ -129,7 +129,7 @@ DualQuaternionTest::DualQuaternionTest() {
 }
 
 void DualQuaternionTest::construct() {
-    constexpr DualQuaternion a({{1.0f, 2.0f, 3.0f}, -4.0f}, {{0.5f, -3.1f, 3.3f}, 2.0f});
+    constexpr DualQuaternion a = {{{1.0f, 2.0f, 3.0f}, -4.0f}, {{0.5f, -3.1f, 3.3f}, 2.0f}};
     CORRADE_COMPARE(a, DualQuaternion({{1.0f, 2.0f, 3.0f}, -4.0f}, {{0.5f, -3.1f, 3.3f}, 2.0f}));
 
     constexpr Quaternion b = a.real();

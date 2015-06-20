@@ -132,7 +132,7 @@ typedef Math::Matrix3<Float> Matrix3;
 typedef Math::Matrix2x2<Float> Matrix2x2;
 
 void ComplexTest::construct() {
-    constexpr Complex a(0.5f, -3.7f);
+    constexpr Complex a = {0.5f, -3.7f};
     CORRADE_COMPARE(a, Complex(0.5f, -3.7f));
 
     constexpr Float b = a.real();
