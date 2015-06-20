@@ -46,20 +46,20 @@ template<template<class> class Derived, class T> class Unit {
         typedef T Type;             /**< @brief Underlying data type */
 
         /** @brief Default constructor */
-        constexpr /*implicit*/ Unit(): value(T(0)) {}
+        constexpr /*implicit*/ Unit(): _value(T(0)) {}
 
         /** @brief Explicit conversion from unitless type */
-        constexpr explicit Unit(T value): value(value) {}
+        constexpr explicit Unit(T value): _value(value) {}
 
         /** @brief Construct from another underlying type */
-        template<class U> constexpr explicit Unit(Unit<Derived, U> value): value(T(value.value)) {}
+        template<class U> constexpr explicit Unit(Unit<Derived, U> value): _value(T(value._value)) {}
 
         /** @brief Explicit conversion to underlying type */
-        constexpr explicit operator T() const { return value; }
+        constexpr explicit operator T() const { return _value; }
 
         /** @brief Equality comparison */
         constexpr bool operator==(Unit<Derived, T> other) const {
-            return TypeTraits<T>::equals(value, other.value);
+            return TypeTraits<T>::equals(_value, other._value);
         }
 
         /** @brief Non-equality comparison */
@@ -69,12 +69,12 @@ template<template<class> class Derived, class T> class Unit {
 
         /** @brief Less than comparison */
         constexpr bool operator<(Unit<Derived, T> other) const {
-            return value < other.value;
+            return _value < other._value;
         }
 
         /** @brief Greater than comparison */
         constexpr bool operator>(Unit<Derived, T> other) const {
-            return value > other.value;
+            return _value > other._value;
         }
 
         /** @brief Less than or equal comparison */
@@ -89,60 +89,60 @@ template<template<class> class Derived, class T> class Unit {
 
         /** @brief Negated value */
         constexpr Unit<Derived, T> operator-() const {
-            return Unit<Derived, T>(-value);
+            return Unit<Derived, T>(-_value);
         }
 
         /** @brief Add and assign value */
         Unit<Derived, T>& operator+=(Unit<Derived, T> other) {
-            value += other.value;
+            _value += other._value;
             return *this;
         }
 
         /** @brief Add value */
         constexpr Unit<Derived, T> operator+(Unit<Derived, T> other) const {
-            return Unit<Derived, T>(value + other.value);
+            return Unit<Derived, T>(_value + other._value);
         }
 
         /** @brief Subtract and assign value */
         Unit<Derived, T>& operator-=(Unit<Derived, T> other) {
-            value -= other.value;
+            _value -= other._value;
             return *this;
         }
 
         /** @brief Subtract value */
         constexpr Unit<Derived, T> operator-(Unit<Derived, T> other) const {
-            return Unit<Derived, T>(value - other.value);
+            return Unit<Derived, T>(_value - other._value);
         }
 
         /** @brief Multiply with number and assign */
         Unit<Derived, T>& operator*=(T number) {
-            value *= number;
+            _value *= number;
             return *this;
         }
 
         /** @brief Multiply with number */
         constexpr Unit<Derived, T> operator*(T number) const {
-            return Unit<Derived, T>(value*number);
+            return Unit<Derived, T>(_value*number);
         }
 
         /** @brief Divide with number and assign */
         Unit<Derived, T>& operator/=(T number) {
-            value /= number;
+            _value /= number;
             return *this;
         }
 
         /** @brief Divide with number */
         constexpr Unit<Derived, T> operator/(T number) const {
-            return Unit<Derived, T>(value/number);
+            return Unit<Derived, T>(_value/number);
         }
 
         /** @brief Ratio of two values */
         constexpr T operator/(Unit<Derived, T> other) const {
-            return value/other.value;
+            return _value/other._value;
         }
 
     private:
-        T value;
+        T _value;
 };
 
 /** @relates Unit
