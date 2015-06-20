@@ -180,7 +180,6 @@ void Matrix4Test::constructIdentity() {
 }
 
 void Matrix4Test::constructZero() {
-    /* Zero constructor */
     constexpr Matrix4 a{ZeroInit};
     CORRADE_COMPARE(a, Matrix4({0.0f, 0.0f, 0.0f, 0.0f},
                                {0.0f, 0.0f, 0.0f, 0.0f},
