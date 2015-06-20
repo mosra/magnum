@@ -41,6 +41,7 @@ set(MagnumMath_HEADERS
     Range.h
     RectangularMatrix.h
     Swizzle.h
+    Tags.h
     Unit.h
     Vector.h
     Vector2.h
