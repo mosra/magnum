@@ -123,8 +123,8 @@ std::sin(Float(Rad<Float>(b));  // required explicit conversion hints to user
 */
 template<class T> class Deg: public Unit<Deg, T> {
     public:
-        /** @brief Default constructor */
-        constexpr /*implicit*/ Deg() {}
+        /** @brief Construct zero angle */
+        constexpr /*implicit*/ Deg(ZeroInitT = ZeroInit): Unit<Deg, T>{ZeroInit} {}
 
         /** @brief Explicit constructor from unitless type */
         constexpr explicit Deg(T value): Unit<Math::Deg, T>(value) {}
@@ -182,7 +182,7 @@ See @ref Deg for more information.
 template<class T> class Rad: public Unit<Rad, T> {
     public:
         /** @brief Default constructor */
-        constexpr /*implicit*/ Rad() {}
+        constexpr /*implicit*/ Rad(ZeroInitT = ZeroInit): Unit<Rad, T>{ZeroInit} {}
 
         /** @brief Construct from unitless type */
         constexpr explicit Rad(T value): Unit<Math::Rad, T>(value) {}

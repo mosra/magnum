@@ -138,8 +138,8 @@ void Matrix3Test::construct() {
 
 void Matrix3Test::constructIdentity() {
     constexpr Matrix3 identity;
-    constexpr Matrix3 identity2(Matrix3::Identity);
-    constexpr Matrix3 identity3(Matrix3::Identity, 4.0f);
+    constexpr Matrix3 identity2{IdentityInit};
+    constexpr Matrix3 identity3{IdentityInit, 4.0f};
 
     Matrix3 identityExpected({1.0f, 0.0f, 0.0f},
                              {0.0f, 1.0f, 0.0f},
@@ -155,7 +155,7 @@ void Matrix3Test::constructIdentity() {
 }
 
 void Matrix3Test::constructZero() {
-    constexpr Matrix3 a(Matrix3::Zero);
+    constexpr Matrix3 a{ZeroInit};
     CORRADE_COMPARE(a, Matrix3({0.0f, 0.0f, 0.0f},
                                {0.0f, 0.0f, 0.0f},
                                {0.0f, 0.0f, 0.0f}));

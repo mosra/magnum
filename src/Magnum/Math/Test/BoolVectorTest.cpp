@@ -85,7 +85,9 @@ void BoolVectorTest::construct() {
 
 void BoolVectorTest::constructDefault() {
     constexpr BoolVector19 a;
+    constexpr BoolVector19 b{ZeroInit};
     CORRADE_COMPARE(a, BoolVector19(0x00, 0x00, 0x00));
+    CORRADE_COMPARE(b, BoolVector19(0x00, 0x00, 0x00));
 }
 
 void BoolVectorTest::constructOneValue() {

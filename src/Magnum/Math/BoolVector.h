@@ -33,6 +33,7 @@
 #include <Corrade/Utility/Debug.h>
 
 #include "Magnum/Types.h"
+#include "Magnum/Math/Tags.h"
 
 namespace Magnum { namespace Math {
 
@@ -70,7 +71,7 @@ template<std::size_t size> class BoolVector {
         static const std::size_t DataSize = (size-1)/8+1;   /**< @brief Vector storage size */
 
         /** @brief Construct zero-filled boolean vector */
-        constexpr BoolVector(): _data() {}
+        constexpr /*implicit*/ BoolVector(ZeroInitT = ZeroInit): _data{} {}
 
         /**
          * @brief Construct boolean vector from segment values

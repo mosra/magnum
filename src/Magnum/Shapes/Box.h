@@ -56,7 +56,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Box {
          *
          * Creates zero-sized box positioned at origin.
          */
-        constexpr /*implicit*/ Box(): _transformation(MatrixTypeFor<dimensions, Float>::Zero) {}
+        constexpr /*implicit*/ Box(): _transformation{Math::ZeroInit} {}
 
         /** @brief Constructor */
         constexpr /*implicit*/ Box(const MatrixTypeFor<dimensions, Float>& transformation): _transformation(transformation) {}

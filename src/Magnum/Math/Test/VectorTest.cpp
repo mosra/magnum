@@ -187,7 +187,9 @@ void VectorTest::constructPad() {
 
 void VectorTest::constructDefault() {
     constexpr Vector4 a;
+    constexpr Vector4 b{ZeroInit};
     CORRADE_COMPARE(a, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
+    CORRADE_COMPARE(b, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
 }
 
 void VectorTest::constructOneValue() {

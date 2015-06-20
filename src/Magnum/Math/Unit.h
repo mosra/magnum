@@ -30,6 +30,7 @@
  */
 
 #include "Magnum/Math/TypeTraits.h"
+#include "Magnum/Math/Tags.h"
 
 namespace Magnum { namespace Math {
 
@@ -45,8 +46,8 @@ template<template<class> class Derived, class T> class Unit {
     public:
         typedef T Type;             /**< @brief Underlying data type */
 
-        /** @brief Default constructor */
-        constexpr /*implicit*/ Unit(): _value(T(0)) {}
+        /** @brief Construct zero value */
+        constexpr /*implicit*/ Unit(ZeroInitT = ZeroInit): _value(T(0)) {}
 
         /** @brief Explicit conversion from unitless type */
         constexpr explicit Unit(T value): _value(value) {}

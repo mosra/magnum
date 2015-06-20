@@ -58,7 +58,7 @@ struct QuaternionTest: Corrade::TestSuite::Tester {
     explicit QuaternionTest();
 
     void construct();
-    void constructDefault();
+    void constructIdentity();
     void constructFromVector();
     void constructCopy();
     void convert();
@@ -101,7 +101,7 @@ typedef Math::Vector4<Float> Vector4;
 
 QuaternionTest::QuaternionTest() {
     addTests({&QuaternionTest::construct,
-              &QuaternionTest::constructDefault,
+              &QuaternionTest::constructIdentity,
               &QuaternionTest::constructFromVector,
               &QuaternionTest::constructCopy,
               &QuaternionTest::convert,
@@ -144,10 +144,13 @@ void QuaternionTest::construct() {
     CORRADE_COMPARE(c, -4.0f);
 }
 
-void QuaternionTest::constructDefault() {
+void QuaternionTest::constructIdentity() {
     constexpr Quaternion a;
+    constexpr Quaternion b{IdentityInit};
     CORRADE_COMPARE(a, Quaternion({0.0f, 0.0f, 0.0f}, 1.0f));
+    CORRADE_COMPARE(b, Quaternion({0.0f, 0.0f, 0.0f}, 1.0f));
     CORRADE_COMPARE(a.length(), 1.0f);
+    CORRADE_COMPARE(b.length(), 1.0f);
 }
 
 void QuaternionTest::constructFromVector() {

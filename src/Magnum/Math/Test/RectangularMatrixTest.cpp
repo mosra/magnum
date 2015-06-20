@@ -148,7 +148,12 @@ void RectangularMatrixTest::construct() {
 
 void RectangularMatrixTest::constructDefault() {
     constexpr Matrix4x3 a;
+    constexpr Matrix4x3 b{ZeroInit};
     CORRADE_COMPARE(a, Matrix4x3(Vector3(0.0f, 0.0f, 0.0f),
+                                 Vector3(0.0f, 0.0f, 0.0f),
+                                 Vector3(0.0f, 0.0f, 0.0f),
+                                 Vector3(0.0f, 0.0f, 0.0f)));
+    CORRADE_COMPARE(b, Matrix4x3(Vector3(0.0f, 0.0f, 0.0f),
                                  Vector3(0.0f, 0.0f, 0.0f),
                                  Vector3(0.0f, 0.0f, 0.0f),
                                  Vector3(0.0f, 0.0f, 0.0f)));

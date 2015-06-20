@@ -106,7 +106,9 @@ void Vector2Test::construct() {
 
 void Vector2Test::constructDefault() {
     constexpr Vector2 a;
+    constexpr Vector2 b{ZeroInit};
     CORRADE_COMPARE(a, Vector2(0.0f, 0.0f));
+    CORRADE_COMPARE(b, Vector2(0.0f, 0.0f));
 }
 
 void Vector2Test::constructOneValue() {

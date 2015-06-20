@@ -125,8 +125,8 @@ void MatrixTest::construct() {
 
 void MatrixTest::constructIdentity() {
     constexpr Matrix4x4 identity;
-    constexpr Matrix4x4 identity2(Matrix4x4::Identity);
-    constexpr Matrix4x4 identity3(Matrix4x4::Identity, 4.0f);
+    constexpr Matrix4x4 identity2{IdentityInit};
+    constexpr Matrix4x4 identity3{IdentityInit, 4.0f};
 
     Matrix4x4 identityExpected(Vector4(1.0f, 0.0f, 0.0f, 0.0f),
                                Vector4(0.0f, 1.0f, 0.0f, 0.0f),
@@ -144,7 +144,7 @@ void MatrixTest::constructIdentity() {
 }
 
 void MatrixTest::constructZero() {
-    constexpr Matrix4x4 a(Matrix4x4::Zero);
+    constexpr Matrix4x4 a{ZeroInit};
     CORRADE_COMPARE(a, Matrix4x4(Vector4(0.0f, 0.0f, 0.0f, 0.0f),
                                  Vector4(0.0f, 0.0f, 0.0f, 0.0f),
                                  Vector4(0.0f, 0.0f, 0.0f, 0.0f),

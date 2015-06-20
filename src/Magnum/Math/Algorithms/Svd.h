@@ -102,7 +102,7 @@ template<std::size_t cols, std::size_t rows, class T> std::tuple<RectangularMatr
     static_assert(tol > T(0), "Tol too small");
     constexpr std::size_t maxIterations = 50;
 
-    Matrix<cols, T> v(Matrix<cols, T>::Zero);
+    Matrix<cols, T> v{ZeroInit};
     Vector<cols, T> e, q;
 
     /* Householder's reduction to bidiagonal form */
@@ -270,7 +270,7 @@ template<std::size_t cols, std::size_t rows, class T> std::tuple<RectangularMatr
             /* Exceeded iteration count, done */
             } else if(iteration >= maxIterations-1) {
                 Corrade::Utility::Error() << "Magnum::Math::Algorithms::svd(): no convergence";
-                return std::make_tuple(RectangularMatrix<cols, rows, T>(), Vector<cols, T>(), Matrix<cols, T>(Matrix<cols, T>::Zero));
+                return std::make_tuple(RectangularMatrix<cols, rows, T>{}, Vector<cols, T>{}, Matrix<cols, T>{ZeroInit});
             }
 
             /* Shift from bottom 2x2 minor */

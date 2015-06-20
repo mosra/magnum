@@ -88,8 +88,8 @@ void SvdTest::testDouble() {
     CORRADE_COMPARE(u2*w2*v.transposed(), ad);
 
     /* Test that V is unitary */
-    CORRADE_COMPARE(v*v.transposed(), Matrix5d(Matrix5d::Identity));
-    CORRADE_COMPARE(v.transposed()*v, Matrix5d(Matrix5d::Identity));
+    CORRADE_COMPARE(v*v.transposed(), Matrix5d{IdentityInit});
+    CORRADE_COMPARE(v.transposed()*v, Matrix5d{IdentityInit});
 
     /* Test W */
     CORRADE_COMPARE(w, expectedd);
@@ -110,8 +110,8 @@ void SvdTest::testFloat() {
     CORRADE_VERIFY(Math::abs((u2*w2*v.transposed()-af).toVector()).max() < 1.0e-5f);
 
     /* Test that V is unitary */
-    CORRADE_COMPARE(v*v.transposed(), Matrix5f(Matrix5f::Identity));
-    CORRADE_COMPARE(v.transposed()*v, Matrix5f(Matrix5f::Identity));
+    CORRADE_COMPARE(v*v.transposed(), Matrix5f{IdentityInit});
+    CORRADE_COMPARE(v.transposed()*v, Matrix5f{IdentityInit});
 
     /* Test W (single precision is not enough, test for similarity) */
     CORRADE_VERIFY(Math::abs(w-expectedf).max() < 1.0e-5f);

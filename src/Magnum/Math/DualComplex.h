@@ -104,9 +104,9 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @f]
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        constexpr /*implicit*/ DualComplex();
+        constexpr /*implicit*/ DualComplex(IdentityInitT = IdentityInit);
         #else
-        constexpr /*implicit*/ DualComplex(): Dual<Complex<T>>({}, {T(0), T(0)}) {}
+        constexpr /*implicit*/ DualComplex(IdentityInitT = IdentityInit): Dual<Complex<T>>({}, {T(0), T(0)}) {}
         #endif
 
         /**

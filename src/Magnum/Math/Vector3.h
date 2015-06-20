@@ -133,8 +133,8 @@ template<class T> class Vector3: public Vector<3, T> {
         }
         #endif
 
-        /** @copydoc Vector::Vector() */
-        constexpr /*implicit*/ Vector3() {}
+        /** @copydoc Vector::Vector(ZeroInitT) */
+        constexpr /*implicit*/ Vector3(ZeroInitT = ZeroInit): Vector<3, T>{ZeroInit} {}
 
         /** @copydoc Vector::Vector(T) */
         constexpr explicit Vector3(T value): Vector<3, T>(value) {}

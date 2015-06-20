@@ -173,13 +173,19 @@ void RangeTest::construct() {
 }
 
 void RangeTest::constructDefault() {
-    constexpr Range1Di a;
-    constexpr Range2Di b;
-    constexpr Range3Di c;
+    constexpr Range1Di a1;
+    constexpr Range2Di b1;
+    constexpr Range3Di c1;
+    constexpr Range1Di a2{ZeroInit};
+    constexpr Range2Di b2{ZeroInit};
+    constexpr Range3Di c2{ZeroInit};
 
-    CORRADE_COMPARE(a, Range1Di(0, 0));
-    CORRADE_COMPARE(b, Range2Di({0, 0}, {0, 0}));
-    CORRADE_COMPARE(c, Range3Di({0, 0, 0}, {0, 0, 0}));
+    CORRADE_COMPARE(a1, Range1Di(0, 0));
+    CORRADE_COMPARE(a2, Range1Di(0, 0));
+    CORRADE_COMPARE(b1, Range2Di({0, 0}, {0, 0}));
+    CORRADE_COMPARE(b2, Range2Di({0, 0}, {0, 0}));
+    CORRADE_COMPARE(c1, Range3Di({0, 0, 0}, {0, 0, 0}));
+    CORRADE_COMPARE(c2, Range3Di({0, 0, 0}, {0, 0, 0}));
 }
 
 void RangeTest::constructFromSize() {

@@ -146,7 +146,7 @@ template<std::size_t size, class T> class Vector {
          *      \boldsymbol v = \boldsymbol 0
          * @f]
          */
-        constexpr /*implicit*/ Vector(): _data() {}
+        constexpr /*implicit*/ Vector(ZeroInitT = ZeroInit): _data{} {}
 
         /** @todo Creating Vector from combination of vector and scalar types */
 

@@ -254,7 +254,7 @@ template<class T> class BasicColor3: public Math::Vector3<T> {
          *
          * All components are set to zero.
          */
-        constexpr /*implicit*/ BasicColor3() {}
+        constexpr /*implicit*/ BasicColor3(Math::ZeroInitT = Math::ZeroInit): Math::Vector3<T>{Math::ZeroInit} {}
 
         /**
          * @brief Gray constructor

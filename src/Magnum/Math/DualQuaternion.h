@@ -110,9 +110,9 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @f]
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        constexpr /*implicit*/ DualQuaternion();
+        constexpr /*implicit*/ DualQuaternion(IdentityInitT = IdentityInit);
         #else
-        constexpr /*implicit*/ DualQuaternion(): Dual<Quaternion<T>>({}, {{}, T(0)}) {}
+        constexpr /*implicit*/ DualQuaternion(IdentityInitT = IdentityInit): Dual<Quaternion<T>>({}, {{}, T(0)}) {}
         #endif
 
         /**

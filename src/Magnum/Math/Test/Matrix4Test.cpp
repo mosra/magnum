@@ -159,8 +159,8 @@ void Matrix4Test::construct() {
 
 void Matrix4Test::constructIdentity() {
     constexpr Matrix4 identity;
-    constexpr Matrix4 identity2(Matrix4::Identity);
-    constexpr Matrix4 identity3(Matrix4::Identity, 4.0f);
+    constexpr Matrix4 identity2{IdentityInit};
+    constexpr Matrix4 identity3{IdentityInit, 4.0f};
 
     Matrix4 identityExpected({1.0f, 0.0f, 0.0f, 0.0f},
                              {0.0f, 1.0f, 0.0f, 0.0f},
@@ -179,7 +179,7 @@ void Matrix4Test::constructIdentity() {
 
 void Matrix4Test::constructZero() {
     /* Zero constructor */
-    constexpr Matrix4 a(Matrix4::Zero);
+    constexpr Matrix4 a{ZeroInit};
     CORRADE_COMPARE(a, Matrix4({0.0f, 0.0f, 0.0f, 0.0f},
                                {0.0f, 0.0f, 0.0f, 0.0f},
                                {0.0f, 0.0f, 0.0f, 0.0f},

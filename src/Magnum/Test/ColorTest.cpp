@@ -104,8 +104,10 @@ void ColorTest::construct() {
 }
 
 void ColorTest::constructDefault() {
-    constexpr Vector3 a;
-    CORRADE_COMPARE(a, Color3(0.0f, 0.0f, 0.0f));
+    constexpr Color3 a1;
+    constexpr Color3 a2{Math::ZeroInit};
+    CORRADE_COMPARE(a1, Color3(0.0f, 0.0f, 0.0f));
+    CORRADE_COMPARE(a2, Color3(0.0f, 0.0f, 0.0f));
 
     constexpr Color4 b;
     constexpr Color4ub c;

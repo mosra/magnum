@@ -104,7 +104,9 @@ void Vector3Test::construct() {
 
 void Vector3Test::constructDefault() {
     constexpr Vector3 a;
+    constexpr Vector3 b{ZeroInit};
     CORRADE_COMPARE(a, Vector3(0.0f, 0.0f, 0.0f));
+    CORRADE_COMPARE(b, Vector3(0.0f, 0.0f, 0.0f));
 }
 
 void Vector3Test::constructOneValue() {

@@ -59,14 +59,20 @@ AngleTest::AngleTest() {
 
 void AngleTest::construct() {
     /* Default constructor */
-    constexpr Deg m;
-    CORRADE_COMPARE(Float(m), 0.0f);
+    constexpr Deg m1;
+    constexpr Deg m2{ZeroInit};
+    CORRADE_COMPARE(Float(m1), 0.0f);
+    CORRADE_COMPARE(Float(m2), 0.0f);
     #ifndef MAGNUM_TARGET_GLES
-    constexpr Degd a;
-    CORRADE_COMPARE(Double(a), 0.0);
+    constexpr Radd a1;
+    constexpr Radd a2{ZeroInit};
+    CORRADE_COMPARE(Double(a1), 0.0);
+    CORRADE_COMPARE(Double(a2), 0.0);
     #else
-    constexpr Deg a;
-    CORRADE_COMPARE(Float(a), 0.0f);
+    constexpr Rad a1;
+    constexpr Rad a2{ZeroInit};
+    CORRADE_COMPARE(Float(a1), 0.0f);
+    CORRADE_COMPARE(Float(a2), 0.0f);
     #endif
 
     /* Value constructor */
