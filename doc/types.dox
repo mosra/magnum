@@ -33,6 +33,8 @@ namespace Magnum {
 The root @ref Magnum namespace defines a few aliases for essential types. See
 its documentation for more information about usage with CMake.
 
+@tableofcontents
+
 @section types-builtin Builtin types
 
 Magnum provides typedefs for builtin integral and floating-point arithmetic
@@ -163,6 +165,38 @@ quaternion to matrix).
 
 For your convenience, there is also alias for class with often used constants
 -- @ref Constants or @ref Constantsd.
+
+@section types-initialization Initialization
+
+Vectors, general matrices and range types are by default zero-initialized,
+transformation types (square matrices, (dual) complex numbers and quaternions)
+are set to identity transformation. It is possible to initialize the instances
+differently using so-called *tags* or use the *tag* to make the choice appear
+explicit:
+
+-   @ref Math::ZeroInit zero-initializes the contents (works for all types).
+-   @ref Math::IdentityInit initializes the contents to identity transformation
+    (works only for transformation types, where it is also the default).
+-   @ref Math::NoInit leaves the contents uninitialized (useful if you will
+    overwrite the contents anyway, works for all types).
+
+Example:
+@code
+// These are equivalent
+Vector3 a1;
+Vector3 a1{Math::ZeroInit};
+
+// These too
+Quaternion q;
+Quaternion q{Math::IdentityInit};
+
+// Avoid unnecessary initialization if is overwritten anyway
+Matrix4 projection{Math::NoInit};
+if(orthographic)
+    projection = Matrix4::orthographicProjection(...);
+else
+    projection = Matrix4::perspectiveProjection(...);
+@endcode
 
 -   Previous page: @ref platform
 -   Next page: @ref matrix-vector
