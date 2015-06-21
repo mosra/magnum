@@ -254,10 +254,20 @@ template<class T> class BasicColor3: public Math::Vector3<T> {
          *
          * All components are set to zero.
          */
-        constexpr /*implicit*/ BasicColor3(Math::ZeroInitT = Math::ZeroInit): Math::Vector3<T>{Math::ZeroInit} {}
+        constexpr /*implicit*/ BasicColor3(Math::ZeroInitT = Math::ZeroInit)
+            /** @todoc remove workaround when doxygen is sane */
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            : Math::Vector3<T>{Math::ZeroInit}
+            #endif
+            {}
 
-        /** @copydoc Vector3::Vector3(NoInitT) */
-        explicit BasicColor3(Math::NoInitT): Math::Vector3<T>{Math::NoInit} {}
+        /** @copydoc Math::Vector::Vector(NoInitT) */
+        explicit BasicColor3(Math::NoInitT)
+            /** @todoc remove workaround when doxygen is sane */
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            : Math::Vector3<T>{Math::NoInit}
+            #endif
+            {}
 
         /**
          * @brief Gray constructor
@@ -445,11 +455,21 @@ class BasicColor4: public Math::Vector4<T> {
          */
         constexpr /*implicit*/ BasicColor4(): Math::Vector4<T>(T(0), T(0), T(0), Implementation::fullChannel<T>()) {}
 
-        /** @copydoc Vector4::Vector4(ZeroInitT) */
-        constexpr explicit BasicColor4(Math::ZeroInitT): Math::Vector4<T>{Math::ZeroInit} {}
+        /** @copydoc Math::Vector::Vector(ZeroInitT) */
+        constexpr explicit BasicColor4(Math::ZeroInitT)
+            /** @todoc remove workaround when doxygen is sane */
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            : Math::Vector4<T>{Math::ZeroInit}
+            #endif
+            {}
 
-        /** @copydoc Vector4::Vector4(NoInitT) */
-        explicit BasicColor4(Math::NoInitT): Math::Vector4<T>{Math::NoInit} {}
+        /** @copydoc Math::Vector::Vector(NoInitT) */
+        explicit BasicColor4(Math::NoInitT)
+            /** @todoc remove workaround when doxygen is sane */
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            : Math::Vector4<T>{Math::NoInit}
+            #endif
+            {}
 
         /**
          * @copydoc BasicColor3::BasicColor3(T)

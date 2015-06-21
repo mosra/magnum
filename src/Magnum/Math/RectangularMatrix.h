@@ -106,10 +106,20 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         }
 
         /** @brief Construct zero-filled matrix */
-        constexpr /*implicit*/ RectangularMatrix(ZeroInitT = ZeroInit): RectangularMatrix<cols, rows, T>{typename Implementation::GenerateSequence<cols>::Type{}, ZeroInit} {}
+        constexpr /*implicit*/ RectangularMatrix(ZeroInitT = ZeroInit)
+            /** @todoc remove workaround when doxygen is sane */
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            : RectangularMatrix<cols, rows, T>{typename Implementation::GenerateSequence<cols>::Type{}, ZeroInit}
+            #endif
+            {}
 
         /** @brief Construct matrix without initializing the contents */
-        explicit RectangularMatrix(NoInitT): RectangularMatrix<cols, rows, T>{typename Implementation::GenerateSequence<cols>::Type{}, NoInit} {}
+        explicit RectangularMatrix(NoInitT)
+            /** @todoc remove workaround when doxygen is sane */
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            : RectangularMatrix<cols, rows, T>{typename Implementation::GenerateSequence<cols>::Type{}, NoInit}
+            #endif
+            {}
 
         /**
          * @brief Construct matrix from column vectors

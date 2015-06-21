@@ -116,10 +116,20 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         #endif
 
         /** @brief Construct zero-initialized dual quaternion */
-        constexpr explicit DualQuaternion(ZeroInitT): Dual<Quaternion<T>>{Quaternion<T>{ZeroInit}, Quaternion<T>{ZeroInit}} {}
+        constexpr explicit DualQuaternion(ZeroInitT)
+            /** @todoc remove workaround when doxygen is sane */
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            : Dual<Quaternion<T>>{Quaternion<T>{ZeroInit}, Quaternion<T>{ZeroInit}}
+            #endif
+            {}
 
         /** @brief Construct without initializing the contents */
-        explicit DualQuaternion(NoInitT): Dual<Quaternion<T>>{NoInit} {}
+        explicit DualQuaternion(NoInitT)
+            /** @todoc remove workaround when doxygen is sane */
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            : Dual<Quaternion<T>>{NoInit}
+            #endif
+            {}
 
         /**
          * @brief Construct dual quaternion from real and dual part

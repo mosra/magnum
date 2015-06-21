@@ -222,10 +222,20 @@ See @ref Range for more information.
 template<class T> class Range2D: public Range<2, T> {
     public:
         /** @copydoc Range(ZeroInitT) */
-        constexpr /*implicit*/ Range2D(ZeroInitT = ZeroInit): Range<2, T>{ZeroInit} {}
+        constexpr /*implicit*/ Range2D(ZeroInitT = ZeroInit)
+            /** @todoc remove workaround when doxygen is sane */
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            : Range<2, T>{ZeroInit}
+            #endif
+            {}
 
         /** @copydoc Range(NoInitT) */
-        explicit Range2D(NoInitT): Range<2, T>{NoInit} {}
+        explicit Range2D(NoInitT)
+            /** @todoc remove workaround when doxygen is sane */
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            : Range<2, T>{NoInit}
+            #endif
+            {}
 
         /** @copydoc Range(const VectorType&, const VectorType&) */
         constexpr /*implicit*/ Range2D(const Vector2<T>& min, const Vector2<T>& max): Range<2, T>(min, max) {}
@@ -336,10 +346,20 @@ See @ref Range for more information.
 template<class T> class Range3D: public Range<3, T> {
     public:
         /** @copydoc Range(ZeroInitT) */
-        constexpr /*implicit*/ Range3D(ZeroInitT = ZeroInit): Range<3, T>{ZeroInit} {}
+        constexpr /*implicit*/ Range3D(ZeroInitT = ZeroInit)
+            /** @todoc remove workaround when doxygen is sane */
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            : Range<3, T>{ZeroInit}
+            #endif
+            {}
 
         /** @copybrief Range(NoInitT) */
-        explicit Range3D(NoInitT): Range<3, T>{NoInit} {}
+        explicit Range3D(NoInitT)
+            /** @todoc remove workaround when doxygen is sane */
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            : Range<3, T>{NoInit}
+            #endif
+            {}
 
         /** @copydoc Range(const VectorType&, const VectorType&) */
         constexpr /*implicit*/ Range3D(const Vector3<T>& min, const Vector3<T>& max): Range<3, T>(min, max) {}

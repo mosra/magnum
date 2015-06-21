@@ -81,13 +81,28 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          * Creates identity matrix. @p value allows you to specify value on
          * diagonal.
          */
-        constexpr /*implicit*/ Matrix(IdentityInitT = IdentityInit, T value = T(1)): RectangularMatrix<size, size, T>(typename Implementation::GenerateSequence<size>::Type(), Vector<size, T>(value)) {}
+        constexpr /*implicit*/ Matrix(IdentityInitT = IdentityInit, T value = T(1))
+            /** @todoc remove workaround when doxygen is sane */
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            : RectangularMatrix<size, size, T>{typename Implementation::GenerateSequence<size>::Type(), Vector<size, T>(value)}
+            #endif
+            {}
 
         /** @copydoc RectangularMatrix::RectangularMatrix(ZeroInitT) */
-        constexpr explicit Matrix(ZeroInitT): RectangularMatrix<size, size, T>{ZeroInit} {}
+        constexpr explicit Matrix(ZeroInitT)
+            /** @todoc remove workaround when doxygen is sane */
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            : RectangularMatrix<size, size, T>{ZeroInit}
+            #endif
+            {}
 
         /** @copydoc RectangularMatrix::RectangularMatrix(NoInitT) */
-        constexpr explicit Matrix(NoInitT): RectangularMatrix<size, size, T>{NoInit} {}
+        constexpr explicit Matrix(NoInitT)
+            /** @todoc remove workaround when doxygen is sane */
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            : RectangularMatrix<size, size, T>{NoInit}
+            #endif
+            {}
 
         /**
          * @brief Matrix from column vectors

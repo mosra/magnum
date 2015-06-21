@@ -255,13 +255,28 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * Creates identity matrix. @p value allows you to specify value on
          * diagonal.
          */
-        constexpr /*implicit*/ Matrix4(IdentityInitT = IdentityInit, T value = T{1}): Matrix4x4<T>{IdentityInit, value} {}
+        constexpr /*implicit*/ Matrix4(IdentityInitT = IdentityInit, T value = T{1})
+            /** @todoc remove workaround when doxygen is sane */
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            : Matrix4x4<T>{IdentityInit, value}
+            #endif
+            {}
 
         /** @copydoc Matrix::Matrix(ZeroInitT) */
-        constexpr explicit Matrix4(ZeroInitT): Matrix4x4<T>{ZeroInit} {}
+        constexpr explicit Matrix4(ZeroInitT)
+            /** @todoc remove workaround when doxygen is sane */
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            : Matrix4x4<T>{ZeroInit}
+            #endif
+            {}
 
         /** @copydoc Matrix::Matrix(NoInitT) */
-        constexpr explicit Matrix4(NoInitT): Matrix4x4<T>{NoInit} {}
+        constexpr explicit Matrix4(NoInitT)
+            /** @todoc remove workaround when doxygen is sane */
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            : Matrix4x4<T>{NoInit}
+            #endif
+            {}
 
         /** @brief Matrix from column vectors */
         constexpr /*implicit*/ Matrix4(const Vector4<T>& first, const Vector4<T>& second, const Vector4<T>& third, const Vector4<T>& fourth): Matrix4x4<T>(first, second, third, fourth) {}

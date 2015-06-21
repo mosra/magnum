@@ -159,13 +159,28 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          * Creates identity matrix. @p value allows you to specify value on
          * diagonal.
          */
-        constexpr /*implicit*/ Matrix3(IdentityInitT = IdentityInit, T value = T{1}): Matrix3x3<T>{IdentityInit, value} {}
+        constexpr /*implicit*/ Matrix3(IdentityInitT = IdentityInit, T value = T{1})
+            /** @todoc remove workaround when doxygen is sane */
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            : Matrix3x3<T>{IdentityInit, value}
+            #endif
+            {}
 
         /** @copydoc Matrix::Matrix(ZeroInitT) */
-        constexpr explicit Matrix3(ZeroInitT): Matrix3x3<T>{ZeroInit} {}
+        constexpr explicit Matrix3(ZeroInitT)
+            /** @todoc remove workaround when doxygen is sane */
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            : Matrix3x3<T>{ZeroInit}
+            #endif
+            {}
 
         /** @copydoc Matrix::Matrix(NoInitT) */
-        constexpr explicit Matrix3(NoInitT): Matrix3x3<T>{NoInit} {}
+        constexpr explicit Matrix3(NoInitT)
+            /** @todoc remove workaround when doxygen is sane */
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            : Matrix3x3<T>{NoInit}
+            #endif
+            {}
 
         /** @brief Matrix from column vectors */
         constexpr /*implicit*/ Matrix3(const Vector3<T>& first, const Vector3<T>& second, const Vector3<T>& third): Matrix3x3<T>(first, second, third) {}
