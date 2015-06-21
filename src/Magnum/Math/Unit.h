@@ -50,9 +50,7 @@ template<template<class> class Derived, class T> class Unit {
         constexpr /*implicit*/ Unit(ZeroInitT = ZeroInit): _value(T(0)) {}
 
         /** @brief Construct without initializing the contents */
-        explicit Unit(NoInitT) {
-            static_assert(std::is_trivially_constructible<decltype(_value)>{}, "");
-        }
+        explicit Unit(NoInitT) {}
 
         /** @brief Explicit conversion from unitless type */
         constexpr explicit Unit(T value): _value(value) {}

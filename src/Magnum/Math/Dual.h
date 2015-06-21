@@ -58,7 +58,7 @@ template<class T> class Dual {
         #ifdef DOXYGEN_GENERATING_OUTPUT
         explicit Dual(NoInitT);
         #else
-        template<class U = T, class = typename std::enable_if<std::is_trivially_constructible<U>{}>::type> Dual(NoInitT) {}
+        template<class U = T, class = typename std::enable_if<std::is_pod<U>{}>::type> Dual(NoInitT) {}
         template<class U = T, class V = T, class = typename std::enable_if<std::is_constructible<U, NoInitT>{}>::type> Dual(NoInitT): _real{NoInit}, _dual{NoInit} {}
         #endif
 
