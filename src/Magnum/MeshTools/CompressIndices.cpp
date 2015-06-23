@@ -49,7 +49,7 @@ template<class T> inline Containers::Array<char> compress(const std::vector<Unsi
 
 std::tuple<Containers::Array<char>, Mesh::IndexType, UnsignedInt, UnsignedInt> compressIndices(const std::vector<UnsignedInt>& indices) {
     /** @todo Performance hint when range can be represented by smaller value? */
-    auto minmax = std::minmax_element(indices.begin(), indices.end());
+    const auto minmax = std::minmax_element(indices.begin(), indices.end());
     Containers::Array<char> data;
     Mesh::IndexType type;
     switch(Math::log(256, *minmax.second)) {
