@@ -62,9 +62,28 @@ Mesh mesh;
 mesh.setCount(indices.size())
     .setIndexBuffer(indexBuffer, 0, indexType, indexStart, indexEnd);
 @endcode
+
+@see @ref compressIndicesAs()
 @todo Extract IndexType out of Mesh class
 */
 std::tuple<Containers::Array<char>, Mesh::IndexType, UnsignedInt, UnsignedInt> MAGNUM_MESHTOOLS_EXPORT compressIndices(const std::vector<UnsignedInt>& indices);
+
+/**
+@brief Compress vertex indices as given type
+
+The type can be either @ref Magnum::UnsignedByte "UnsignedByte",
+@ref Magnum::UnsignedShort "UnsignedShort" or @ref Magnum::UnsignedInt "UnsignedInt".
+Values in the index array are expected to be representable with given type.
+
+Example usage:
+@code
+std::vector<UnsignedInt> indices;
+Containers::Array<UnsignedShort> indexData = MeshTools::compressIndicesAs<UnsignedShort>(indices);
+@endcode
+
+@see @ref compressIndices()
+*/
+template<class T> MAGNUM_MESHTOOLS_EXPORT Containers::Array<T> compressIndicesAs(const std::vector<UnsignedInt>& indices);
 
 }}
 

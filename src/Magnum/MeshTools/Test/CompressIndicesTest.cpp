@@ -23,8 +23,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/Endianness.h>
 
 #include "Magnum/MeshTools/CompressIndices.h"
@@ -37,12 +39,16 @@ struct CompressIndicesTest: TestSuite::Tester {
     void compressChar();
     void compressShort();
     void compressInt();
+
+    void compressAsShort();
 };
 
 CompressIndicesTest::CompressIndicesTest() {
     addTests({&CompressIndicesTest::compressChar,
               &CompressIndicesTest::compressShort,
-              &CompressIndicesTest::compressInt});
+              &CompressIndicesTest::compressInt,
+
+              &CompressIndicesTest::compressAsShort});
 }
 
 void CompressIndicesTest::compressChar() {
@@ -106,6 +112,17 @@ void CompressIndicesTest::compressInt() {
                            0x00, 0x00, 0x00, 0x03,
                            0x00, 0x00, 0x00, 0x02 }));
     }
+}
+
+void CompressIndicesTest::compressAsShort() {
+    CORRADE_COMPARE_AS(MeshTools::compressIndicesAs<UnsignedShort>({123, 456}),
+        Containers::Array<UnsignedShort>::from(123, 456),
+        TestSuite::Compare::Container);
+
+    std::ostringstream out;
+    Error::setOutput(&out);
+    MeshTools::compressIndicesAs<UnsignedShort>({65536});
+    CORRADE_COMPARE(out.str(), "MeshTools::compressIndicesAs(): type too small to represent value 65536\n");
 }
 
 }}}

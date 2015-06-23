@@ -74,4 +74,21 @@ std::tuple<Containers::Array<char>, Mesh::IndexType, UnsignedInt, UnsignedInt> c
     return std::make_tuple(std::move(data), type, *minmax.first, *minmax.second);
 }
 
+template<class T> Containers::Array<T> compressIndicesAs(const std::vector<UnsignedInt>& indices) {
+    #if !defined(CORRADE_NO_ASSERT) || defined(CORRADE_GRACEFUL_ASSERT)
+    const auto max = std::max_element(indices.begin(), indices.end());
+    CORRADE_ASSERT(Math::log(256, *max) < sizeof(T), "MeshTools::compressIndicesAs(): type too small to represent value" << *max, {});
+    #endif
+
+    Containers::Array<T> buffer(indices.size());
+    for(std::size_t i = 0; i != indices.size(); ++i)
+        buffer[i] = indices[i];
+
+    return buffer;
+}
+
+template Containers::Array<UnsignedByte> compressIndicesAs(const std::vector<UnsignedInt>& indices);
+template Containers::Array<UnsignedShort> compressIndicesAs(const std::vector<UnsignedInt>& indices);
+template Containers::Array<UnsignedInt> compressIndicesAs(const std::vector<UnsignedInt>& indices);
+
 }}

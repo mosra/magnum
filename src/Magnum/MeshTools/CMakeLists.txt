@@ -26,13 +26,13 @@
 # Files shared between main library and unit test library
 set(MagnumMeshTools_SRCS
     Compile.cpp
-    CompressIndices.cpp
     FullScreenTriangle.cpp
     Tipsify.cpp)
 
 # Files compiled with different flags for main library and unit test library
 set(MagnumMeshTools_GracefulAssert_SRCS
     CombineIndexedArrays.cpp
+    CompressIndices.cpp
     FlipNormals.cpp
     GenerateFlatNormals.cpp)
 
