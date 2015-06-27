@@ -532,7 +532,7 @@ enum class RenderbufferFormat: GLenum {
     StencilIndex16 = GL_STENCIL_INDEX16,
     #endif
 
-    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_WEBGL)
+    #if !defined(MAGNUM_TARGET_GLES) || (defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     /**
      * Depth and stencil component, size implementation-dependent.
      * @requires_gl Use exactly specified format in OpenGL ES instead. This is,
