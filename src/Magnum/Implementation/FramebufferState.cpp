@@ -276,8 +276,8 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
 
     } else blitImplementation = nullptr;
 
-    /* Always available on ES3 */
-    #elif !defined(MAGNUM_TARGET_WEBGL)
+    /* Always available on ES3 and WebGL 2 */
+    #elif !defined(MAGNUM_TARGET_GLES2)
     blitImplementation = &AbstractFramebuffer::blitImplementationDefault;
     #endif
 
