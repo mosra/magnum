@@ -508,7 +508,7 @@ foreach(component ${Magnum_FIND_COMPONENTS})
             list(APPEND _MAGNUM_${_COMPONENT}_DEPENDENCY_LIBRARIES ${MAGNUM_${_DEPENDENCY}_LIBRARY} ${_MAGNUM_${_DEPENDENCY}_LIBRARIES})
             list(APPEND _MAGNUM_${_COMPONENT}_DEPENDENCY_INCLUDE_DIRS ${MAGNUM_${_DEPENDENCY}_INCLUDE_DIRS})
         else()
-            unset(MAGNUM_${_DEPENDENCY}_LIBRARY)
+            unset(MAGNUM_${_COMPONENT}_LIBRARY)
         endif()
     endforeach()
 
