@@ -31,6 +31,8 @@
 
 #include <Magnum/Trade/AbstractImporter.h>
 
+#include "MagnumPlugins/AnyImageImporter/configure.h"
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_ANYIMAGEIMPORTER_BUILD_STATIC
     #if defined(AnyImageImporter_EXPORTS) || defined(AnyImageImporterObjects_EXPORTS)

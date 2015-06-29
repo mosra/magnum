@@ -23,6 +23,13 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+if(BUILD_STATIC)
+    set(MAGNUM_ANYIMAGEIMPORTER_BUILD_STATIC 1)
+endif()
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+
 set(AnyImageImporter_SRCS
     AnyImageImporter.cpp)
 
@@ -50,6 +57,7 @@ endif()
 target_link_libraries(AnyImageImporter ${MAGNUM_LIBRARIES})
 
 install(FILES ${AnyImageImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/AnyImageImporter)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configure.h DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/AnyImageImporter)
 
 if(BUILD_TESTS)
     add_library(MagnumAnyImageImporterTestLib STATIC $<TARGET_OBJECTS:AnyImageImporterObjects>)
