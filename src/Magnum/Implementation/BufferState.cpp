@@ -185,7 +185,8 @@ BufferState::BufferState(Context& context, std::vector<std::string>& extensions)
 }
 
 void BufferState::reset() {
-    std::fill_n(bindings, TargetCount, State::DisengagedBinding);
+    /* libc++ complains about decrementing enum value otherwise */
+    std::fill_n(bindings, std::size_t{TargetCount}, State::DisengagedBinding);
 }
 
 }}
