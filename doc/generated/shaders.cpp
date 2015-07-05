@@ -149,7 +149,7 @@ namespace {
 
 std::string ShaderVisualizer::phong() {
     std::unique_ptr<Buffer> vertices, indices;
-    Mesh mesh;
+    Mesh mesh{NoCreate};
     std::tie(mesh, vertices, indices) = MeshTools::compile(Primitives::UVSphere::solid(16, 32), BufferUsage::StaticDraw);
 
     Shaders::Phong shader;
@@ -168,7 +168,7 @@ std::string ShaderVisualizer::phong() {
 
 std::string ShaderVisualizer::meshVisualizer() {
     std::unique_ptr<Buffer> vertices, indices;
-    Mesh mesh;
+    Mesh mesh{NoCreate};
     std::tie(mesh, vertices, indices) = MeshTools::compile(Primitives::Icosphere::solid(1), BufferUsage::StaticDraw);
 
     const Matrix4 projection = Projection*Transformation*
@@ -188,7 +188,7 @@ std::string ShaderVisualizer::meshVisualizer() {
 
 std::string ShaderVisualizer::flat() {
     std::unique_ptr<Buffer> vertices, indices;
-    Mesh mesh;
+    Mesh mesh{NoCreate};
     std::tie(mesh, vertices, indices) = MeshTools::compile(Primitives::UVSphere::solid(16, 32), BufferUsage::StaticDraw);
 
     Shaders::Flat3D shader;
@@ -242,7 +242,7 @@ std::string ShaderVisualizer::vector() {
         .setStorage(1, TextureFormat::RGBA8, image->size())
         .setSubImage(0, {}, *image);
 
-    Mesh mesh;
+    Mesh mesh{NoCreate};
     std::unique_ptr<Buffer> vertices;
     std::tie(mesh, vertices, std::ignore) = MeshTools::compile(Primitives::Square::solid(Primitives::Square::TextureCoords::Generate), BufferUsage::StaticDraw);
 
@@ -276,7 +276,7 @@ std::string ShaderVisualizer::distanceFieldVector() {
         .setStorage(1, TextureFormat::RGBA8, image->size())
         .setSubImage(0, {}, *image);
 
-    Mesh mesh;
+    Mesh mesh{NoCreate};
     std::unique_ptr<Buffer> vertices;
     std::tie(mesh, vertices, std::ignore) = MeshTools::compile(Primitives::Square::solid(Primitives::Square::TextureCoords::Generate), BufferUsage::StaticDraw);
 
