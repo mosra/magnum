@@ -228,7 +228,7 @@ namespace GL {
         _extension(GL,NV,conditional_render,            GL210, GL300) // #346
         /* NV_draw_texture not supported */                           // #430
     }
-    /* IMPORTANT: if this line is > 233 (73 + size), don't forget to update array size in Context.h */
+    /* IMPORTANT: if this line is > 329 (73 + size), don't forget to update array size in Context.h */
     #elif defined(MAGNUM_TARGET_WEBGL)
     #line 1
     namespace ANGLE {
