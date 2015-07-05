@@ -54,15 +54,19 @@ information.
 - [Best Practices for Working with Texture Data](http://developer.apple.com/library/ios/#documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/TechniquesForWorkingWithTextureData/TechniquesForWorkingWithTextureData.html)
 - [Best Practices for Shaders](http://developer.apple.com/library/ios/#documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/BestPracticesforShaders/BestPracticesforShaders.html#//apple_ref/doc/uid/TP40008793-CH7-SW3)
 
+@subsection best-practices-angle ANGLE (WebGL, NaCl)
+
+- [WebGL Insights -- ANGLE](https://books.google.cz/books?id=6crECQAAQBAJ&lpg=PP1&pg=PA3&redir_esc=y#v=onepage&q&f=true)
+
 @subsection best-practices-webgl WebGL (Emscripten)
 
-WebGL is subset of OpenGL ES 2.0 with some [specific restrictions and features](http://www.khronos.org/registry/webgl/specs/latest/1.0/#6), namely requirement
-for unique buffer target binding, aligned buffer offset and stride and some
-other restrictions and also support for combined depth/stencil buffer
-attachments. See @ref Buffer, @ref Framebuffer, @ref Texture::setSubImage() "*Texture::setSubImage()",
-@ref Mesh::addVertexBuffer(), @ref Renderer::setStencilFunction(),
-@ref Renderer::setStencilMask() and @ref Renderer::setBlendFunction()
-documentation for more information.
+WebGL is subset of OpenGL ES with some [specific restrictions and features](http://www.khronos.org/registry/webgl/specs/latest/1.0/#6),
+namely requirement for unique buffer target binding, aligned buffer offset and
+stride and some other restrictions and also support for combined depth/stencil
+buffer attachments. See @ref Buffer, @ref Framebuffer,
+@ref Texture::setSubImage() "*Texture::setSubImage()", @ref Mesh::addVertexBuffer(),
+@ref Renderer::setStencilFunction(), @ref Renderer::setStencilMask() and
+@ref Renderer::setBlendFunction() documentation for more information.
 
 @subsection best-practices-nacl Google Chrome Native Client
 
