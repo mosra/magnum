@@ -650,6 +650,39 @@ FLEXTGL_EXPORT void(APIENTRY *flextglGetnSeparableFilterARB)(GLenum, GLenum, GLe
 FLEXTGL_EXPORT void(APIENTRY *flextglGetnHistogramARB)(GLenum, GLboolean, GLenum, GLenum, GLsizei, void *) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglGetnMinmaxARB)(GLenum, GLboolean, GLenum, GLenum, GLsizei, void *) = nullptr;
 
+/* GL_ARB_bindless_texture */
+FLEXTGL_EXPORT GLuint64(APIENTRY *flextglGetTextureHandleARB)(GLuint) = nullptr;
+FLEXTGL_EXPORT GLuint64(APIENTRY *flextglGetTextureSamplerHandleARB)(GLuint, GLuint) = nullptr;
+FLEXTGL_EXPORT void(APIENTRY *flextglMakeTextureHandleResidentARB)(GLuint64) = nullptr;
+FLEXTGL_EXPORT void(APIENTRY *flextglMakeTextureHandleNonResidentARB)(GLuint64) = nullptr;
+FLEXTGL_EXPORT GLuint64(APIENTRY *flextglGetImageHandleARB)(GLuint, GLint, GLboolean, GLint, GLenum) = nullptr;
+FLEXTGL_EXPORT void(APIENTRY *flextglMakeImageHandleResidentARB)(GLuint64, GLenum) = nullptr;
+FLEXTGL_EXPORT void(APIENTRY *flextglMakeImageHandleNonResidentARB)(GLuint64) = nullptr;
+FLEXTGL_EXPORT void(APIENTRY *flextglUniformHandleui64ARB)(GLint, GLuint64) = nullptr;
+FLEXTGL_EXPORT void(APIENTRY *flextglUniformHandleui64vARB)(GLint, GLsizei, const GLuint64 *) = nullptr;
+FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformHandleui64ARB)(GLuint, GLint, GLuint64) = nullptr;
+FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformHandleui64vARB)(GLuint, GLint, GLsizei, const GLuint64 *) = nullptr;
+FLEXTGL_EXPORT GLboolean(APIENTRY *flextglIsTextureHandleResidentARB)(GLuint64) = nullptr;
+FLEXTGL_EXPORT GLboolean(APIENTRY *flextglIsImageHandleResidentARB)(GLuint64) = nullptr;
+FLEXTGL_EXPORT void(APIENTRY *flextglVertexAttribL1ui64ARB)(GLuint, GLuint64EXT) = nullptr;
+FLEXTGL_EXPORT void(APIENTRY *flextglVertexAttribL1ui64vARB)(GLuint, const GLuint64EXT *) = nullptr;
+FLEXTGL_EXPORT void(APIENTRY *flextglGetVertexAttribLui64vARB)(GLuint, GLenum, GLuint64EXT *) = nullptr;
+
+/* GL_ARB_compute_variable_group_size */
+FLEXTGL_EXPORT void(APIENTRY *flextglDispatchComputeGroupSizeARB)(GLuint, GLuint, GLuint, GLuint, GLuint, GLuint) = nullptr;
+
+/* GL_ARB_indirect_parameters */
+FLEXTGL_EXPORT void(APIENTRY *flextglMultiDrawArraysIndirectCountARB)(GLenum, GLintptr, GLintptr, GLsizei, GLsizei) = nullptr;
+FLEXTGL_EXPORT void(APIENTRY *flextglMultiDrawElementsIndirectCountARB)(GLenum, GLenum, GLintptr, GLintptr, GLsizei, GLsizei) = nullptr;
+
+/* GL_ARB_sparse_texture */
+FLEXTGL_EXPORT void(APIENTRY *flextglTexPageCommitmentARB)(GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLboolean) = nullptr;
+
+/* GL_ARB_sparse_buffer */
+FLEXTGL_EXPORT void(APIENTRY *flextglBufferPageCommitmentARB)(GLenum, GLintptr, GLsizeiptr, GLboolean) = nullptr;
+FLEXTGL_EXPORT void(APIENTRY *flextglNamedBufferPageCommitmentEXT)(GLuint, GLintptr, GLsizeiptr, GLboolean) = nullptr;
+FLEXTGL_EXPORT void(APIENTRY *flextglNamedBufferPageCommitmentARB)(GLuint, GLintptr, GLsizeiptr, GLboolean) = nullptr;
+
 /* GL_EXT_direct_state_access */
 FLEXTGL_EXPORT void(APIENTRY *flextglMatrixLoadfEXT)(GLenum, const GLfloat *) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglMatrixLoaddEXT)(GLenum, const GLdouble *) = nullptr;

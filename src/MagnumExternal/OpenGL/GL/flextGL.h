@@ -126,6 +126,7 @@ typedef ptrdiff_t GLintptr;
 typedef ptrdiff_t GLsizeiptr;
 typedef int64_t GLint64;
 typedef uint64_t GLuint64;
+typedef uint64_t GLuint64EXT;
 typedef struct __GLsync *GLsync;
 typedef void (APIENTRY *GLDEBUGPROC)(GLenum source,GLenum type,GLuint id,GLenum severity,GLsizei length,const GLchar *message,const void *userParam);
 
@@ -1560,6 +1561,64 @@ typedef void (APIENTRY *GLDEBUGPROC)(GLenum source,GLenum type,GLuint id,GLenum 
 #define GL_RESET_NOTIFICATION_STRATEGY_ARB 0x8256
 #define GL_NO_RESET_NOTIFICATION_ARB 0x8261
 
+/* GL_ARB_bindless_texture */
+
+#define GL_UNSIGNED_INT64_ARB 0x140F
+
+/* GL_ARB_compute_variable_group_size */
+
+#define GL_MAX_COMPUTE_VARIABLE_GROUP_INVOCATIONS_ARB 0x9344
+#define GL_MAX_COMPUTE_FIXED_GROUP_INVOCATIONS_ARB 0x90EB
+#define GL_MAX_COMPUTE_VARIABLE_GROUP_SIZE_ARB 0x9345
+#define GL_MAX_COMPUTE_FIXED_GROUP_SIZE_ARB 0x91BF
+
+/* GL_ARB_indirect_parameters */
+
+#define GL_PARAMETER_BUFFER_ARB 0x80EE
+#define GL_PARAMETER_BUFFER_BINDING_ARB 0x80EF
+
+/* GL_ARB_seamless_cubemap_per_texture */
+
+#define GL_TEXTURE_CUBE_MAP_SEAMLESS 0x884F
+
+/* GL_ARB_sparse_texture */
+
+#define GL_TEXTURE_SPARSE_ARB 0x91A6
+#define GL_VIRTUAL_PAGE_SIZE_INDEX_ARB 0x91A7
+#define GL_NUM_SPARSE_LEVELS_ARB 0x91AA
+#define GL_NUM_VIRTUAL_PAGE_SIZES_ARB 0x91A8
+#define GL_VIRTUAL_PAGE_SIZE_X_ARB 0x9195
+#define GL_VIRTUAL_PAGE_SIZE_Y_ARB 0x9196
+#define GL_VIRTUAL_PAGE_SIZE_Z_ARB 0x9197
+#define GL_MAX_SPARSE_TEXTURE_SIZE_ARB 0x9198
+#define GL_MAX_SPARSE_3D_TEXTURE_SIZE_ARB 0x9199
+#define GL_MAX_SPARSE_ARRAY_TEXTURE_LAYERS_ARB 0x919A
+#define GL_SPARSE_TEXTURE_FULL_ARRAY_CUBE_MIPMAPS_ARB 0x91A9
+
+/* GL_ARB_pipeline_statistics_query */
+
+#define GL_VERTICES_SUBMITTED_ARB 0x82EE
+#define GL_PRIMITIVES_SUBMITTED_ARB 0x82EF
+#define GL_VERTEX_SHADER_INVOCATIONS_ARB 0x82F0
+#define GL_TESS_CONTROL_SHADER_PATCHES_ARB 0x82F1
+#define GL_TESS_EVALUATION_SHADER_INVOCATIONS_ARB 0x82F2
+#define GL_GEOMETRY_SHADER_INVOCATIONS 0x887F
+#define GL_GEOMETRY_SHADER_PRIMITIVES_EMITTED_ARB 0x82F3
+#define GL_FRAGMENT_SHADER_INVOCATIONS_ARB 0x82F4
+#define GL_COMPUTE_SHADER_INVOCATIONS_ARB 0x82F5
+#define GL_CLIPPING_INPUT_PRIMITIVES_ARB 0x82F6
+#define GL_CLIPPING_OUTPUT_PRIMITIVES_ARB 0x82F7
+
+/* GL_ARB_sparse_buffer */
+
+#define GL_SPARSE_STORAGE_BIT_ARB 0x0400
+#define GL_SPARSE_BUFFER_PAGE_SIZE_ARB 0x82F8
+
+/* GL_ARB_transform_feedback_overflow_query */
+
+#define GL_TRANSFORM_FEEDBACK_OVERFLOW_ARB 0x82EC
+#define GL_TRANSFORM_FEEDBACK_STREAM_OVERFLOW_ARB 0x82ED
+
 /* GL_ATI_texture_mirror_once */
 
 #define GL_MIRROR_CLAMP_ATI 0x8742
@@ -1598,6 +1657,68 @@ typedef void (APIENTRY *GLDEBUGPROC)(GLenum source,GLenum type,GLuint id,GLenum 
 #define GL_VERTEX_ARRAY_OBJECT_EXT 0x9154
 #define GL_SAMPLER 0x82E6
 #define GL_TRANSFORM_FEEDBACK 0x8E22
+
+/* GL_KHR_texture_compression_astc_ldr */
+
+#define GL_COMPRESSED_RGBA_ASTC_4x4_KHR 0x93B0
+#define GL_COMPRESSED_RGBA_ASTC_5x4_KHR 0x93B1
+#define GL_COMPRESSED_RGBA_ASTC_5x5_KHR 0x93B2
+#define GL_COMPRESSED_RGBA_ASTC_6x5_KHR 0x93B3
+#define GL_COMPRESSED_RGBA_ASTC_6x6_KHR 0x93B4
+#define GL_COMPRESSED_RGBA_ASTC_8x5_KHR 0x93B5
+#define GL_COMPRESSED_RGBA_ASTC_8x6_KHR 0x93B6
+#define GL_COMPRESSED_RGBA_ASTC_8x8_KHR 0x93B7
+#define GL_COMPRESSED_RGBA_ASTC_10x5_KHR 0x93B8
+#define GL_COMPRESSED_RGBA_ASTC_10x6_KHR 0x93B9
+#define GL_COMPRESSED_RGBA_ASTC_10x8_KHR 0x93BA
+#define GL_COMPRESSED_RGBA_ASTC_10x10_KHR 0x93BB
+#define GL_COMPRESSED_RGBA_ASTC_12x10_KHR 0x93BC
+#define GL_COMPRESSED_RGBA_ASTC_12x12_KHR 0x93BD
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_4x4_KHR 0x93D0
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x4_KHR 0x93D1
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x5_KHR 0x93D2
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x5_KHR 0x93D3
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x6_KHR 0x93D4
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x5_KHR 0x93D5
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x6_KHR 0x93D6
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x8_KHR 0x93D7
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x5_KHR 0x93D8
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x6_KHR 0x93D9
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x8_KHR 0x93DA
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x10_KHR 0x93DB
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x10_KHR 0x93DC
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x12_KHR 0x93DD
+
+/* GL_KHR_texture_compression_astc_hdr */
+
+#define GL_COMPRESSED_RGBA_ASTC_4x4_KHR 0x93B0
+#define GL_COMPRESSED_RGBA_ASTC_5x4_KHR 0x93B1
+#define GL_COMPRESSED_RGBA_ASTC_5x5_KHR 0x93B2
+#define GL_COMPRESSED_RGBA_ASTC_6x5_KHR 0x93B3
+#define GL_COMPRESSED_RGBA_ASTC_6x6_KHR 0x93B4
+#define GL_COMPRESSED_RGBA_ASTC_8x5_KHR 0x93B5
+#define GL_COMPRESSED_RGBA_ASTC_8x6_KHR 0x93B6
+#define GL_COMPRESSED_RGBA_ASTC_8x8_KHR 0x93B7
+#define GL_COMPRESSED_RGBA_ASTC_10x5_KHR 0x93B8
+#define GL_COMPRESSED_RGBA_ASTC_10x6_KHR 0x93B9
+#define GL_COMPRESSED_RGBA_ASTC_10x8_KHR 0x93BA
+#define GL_COMPRESSED_RGBA_ASTC_10x10_KHR 0x93BB
+#define GL_COMPRESSED_RGBA_ASTC_12x10_KHR 0x93BC
+#define GL_COMPRESSED_RGBA_ASTC_12x12_KHR 0x93BD
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_4x4_KHR 0x93D0
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x4_KHR 0x93D1
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x5_KHR 0x93D2
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x5_KHR 0x93D3
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x6_KHR 0x93D4
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x5_KHR 0x93D5
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x6_KHR 0x93D6
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x8_KHR 0x93D7
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x5_KHR 0x93D8
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x6_KHR 0x93D9
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x8_KHR 0x93DA
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x10_KHR 0x93DB
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x10_KHR 0x93DC
+#define GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x12_KHR 0x93DD
 
 /* Function prototypes */
 
@@ -2949,6 +3070,85 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnHistogramARB)(GLenum, GLboolean, 
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnMinmaxARB)(GLenum, GLboolean, GLenum, GLenum, GLsizei, void *);
 #define glGetnMinmaxARB flextglGetnMinmaxARB
 
+/* GL_ARB_robustness_isolation */
+
+
+/* GL_ARB_bindless_texture */
+
+GLAPI FLEXTGL_EXPORT GLuint64(APIENTRY *flextglGetTextureHandleARB)(GLuint);
+#define glGetTextureHandleARB flextglGetTextureHandleARB
+GLAPI FLEXTGL_EXPORT GLuint64(APIENTRY *flextglGetTextureSamplerHandleARB)(GLuint, GLuint);
+#define glGetTextureSamplerHandleARB flextglGetTextureSamplerHandleARB
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglMakeTextureHandleResidentARB)(GLuint64);
+#define glMakeTextureHandleResidentARB flextglMakeTextureHandleResidentARB
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglMakeTextureHandleNonResidentARB)(GLuint64);
+#define glMakeTextureHandleNonResidentARB flextglMakeTextureHandleNonResidentARB
+GLAPI FLEXTGL_EXPORT GLuint64(APIENTRY *flextglGetImageHandleARB)(GLuint, GLint, GLboolean, GLint, GLenum);
+#define glGetImageHandleARB flextglGetImageHandleARB
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglMakeImageHandleResidentARB)(GLuint64, GLenum);
+#define glMakeImageHandleResidentARB flextglMakeImageHandleResidentARB
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglMakeImageHandleNonResidentARB)(GLuint64);
+#define glMakeImageHandleNonResidentARB flextglMakeImageHandleNonResidentARB
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglUniformHandleui64ARB)(GLint, GLuint64);
+#define glUniformHandleui64ARB flextglUniformHandleui64ARB
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglUniformHandleui64vARB)(GLint, GLsizei, const GLuint64 *);
+#define glUniformHandleui64vARB flextglUniformHandleui64vARB
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformHandleui64ARB)(GLuint, GLint, GLuint64);
+#define glProgramUniformHandleui64ARB flextglProgramUniformHandleui64ARB
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformHandleui64vARB)(GLuint, GLint, GLsizei, const GLuint64 *);
+#define glProgramUniformHandleui64vARB flextglProgramUniformHandleui64vARB
+GLAPI FLEXTGL_EXPORT GLboolean(APIENTRY *flextglIsTextureHandleResidentARB)(GLuint64);
+#define glIsTextureHandleResidentARB flextglIsTextureHandleResidentARB
+GLAPI FLEXTGL_EXPORT GLboolean(APIENTRY *flextglIsImageHandleResidentARB)(GLuint64);
+#define glIsImageHandleResidentARB flextglIsImageHandleResidentARB
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglVertexAttribL1ui64ARB)(GLuint, GLuint64EXT);
+#define glVertexAttribL1ui64ARB flextglVertexAttribL1ui64ARB
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglVertexAttribL1ui64vARB)(GLuint, const GLuint64EXT *);
+#define glVertexAttribL1ui64vARB flextglVertexAttribL1ui64vARB
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetVertexAttribLui64vARB)(GLuint, GLenum, GLuint64EXT *);
+#define glGetVertexAttribLui64vARB flextglGetVertexAttribLui64vARB
+
+/* GL_ARB_compute_variable_group_size */
+
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDispatchComputeGroupSizeARB)(GLuint, GLuint, GLuint, GLuint, GLuint, GLuint);
+#define glDispatchComputeGroupSizeARB flextglDispatchComputeGroupSizeARB
+
+/* GL_ARB_indirect_parameters */
+
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglMultiDrawArraysIndirectCountARB)(GLenum, GLintptr, GLintptr, GLsizei, GLsizei);
+#define glMultiDrawArraysIndirectCountARB flextglMultiDrawArraysIndirectCountARB
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglMultiDrawElementsIndirectCountARB)(GLenum, GLenum, GLintptr, GLintptr, GLsizei, GLsizei);
+#define glMultiDrawElementsIndirectCountARB flextglMultiDrawElementsIndirectCountARB
+
+/* GL_ARB_seamless_cubemap_per_texture */
+
+
+/* GL_ARB_shader_draw_parameters */
+
+
+/* GL_ARB_shader_group_vote */
+
+
+/* GL_ARB_sparse_texture */
+
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglTexPageCommitmentARB)(GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLboolean);
+#define glTexPageCommitmentARB flextglTexPageCommitmentARB
+
+/* GL_ARB_pipeline_statistics_query */
+
+
+/* GL_ARB_sparse_buffer */
+
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglBufferPageCommitmentARB)(GLenum, GLintptr, GLsizeiptr, GLboolean);
+#define glBufferPageCommitmentARB flextglBufferPageCommitmentARB
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglNamedBufferPageCommitmentEXT)(GLuint, GLintptr, GLsizeiptr, GLboolean);
+#define glNamedBufferPageCommitmentEXT flextglNamedBufferPageCommitmentEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglNamedBufferPageCommitmentARB)(GLuint, GLintptr, GLsizeiptr, GLboolean);
+#define glNamedBufferPageCommitmentARB flextglNamedBufferPageCommitmentARB
+
+/* GL_ARB_transform_feedback_overflow_query */
+
+
 /* GL_ATI_texture_mirror_once */
 
 
@@ -3474,6 +3674,9 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglVertexArrayVertexAttribDivisorEXT)(GL
 /* GL_EXT_texture_sRGB_decode */
 
 
+/* GL_EXT_shader_integer_mix */
+
+
 /* GL_EXT_debug_label */
 
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglLabelObjectEXT)(GLenum, GLuint, GLsizei, const GLchar *);
@@ -3494,6 +3697,12 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglPopGroupMarkerEXT)(void);
 
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglStringMarkerGREMEDY)(GLsizei, const void *);
 #define glStringMarkerGREMEDY flextglStringMarkerGREMEDY
+
+/* GL_KHR_texture_compression_astc_ldr */
+
+
+/* GL_KHR_texture_compression_astc_hdr */
+
 
 #ifdef __cplusplus
 }
