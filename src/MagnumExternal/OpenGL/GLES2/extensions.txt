@@ -39,6 +39,7 @@ extension OES_texture_half_float_linear         optional
 extension OES_texture_float_linear              optional
 extension OES_texture_half_float                optional
 extension OES_texture_float                     optional
+extension OES_texture_npot                      optional
 extension OES_vertex_half_float                 optional
 extension OES_packed_depth_stencil              optional
 extension OES_depth_texture                     optional
@@ -60,7 +61,12 @@ extension EXT_sRGB_write_control                optional
 extension EXT_separate_shader_objects           optional
 extension EXT_multisampled_render_to_texture    optional
 extension EXT_robustness                        optional
+extension KHR_texture_compression_astc_ldr      optional
+extension KHR_texture_compression_astc_hdr      optional
 extension KHR_debug                             optional
+extension KHR_robustness                        optional
+extension KHR_robust_buffer_access_behavior     optional
+extension KHR_context_flush_control             optional
 extension NV_read_buffer_front                  optional
 extension NV_read_depth                         optional
 extension NV_read_stencil                       optional
