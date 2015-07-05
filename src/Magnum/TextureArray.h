@@ -96,7 +96,9 @@ documentation for more information about usage in shaders.
  */
 template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
     public:
-        static const UnsignedInt Dimensions = dimensions; /**< @brief Texture dimension count */
+        enum: UnsignedInt {
+            Dimensions = dimensions /**< Texture dimension count */
+        };
 
         /**
          * @brief Max supported texture array size

@@ -89,8 +89,11 @@ template<std::size_t size, class T> class Vector {
     template<std::size_t, class> friend class Vector;
 
     public:
-        typedef T Type;                         /**< @brief Underlying data type */
-        const static std::size_t Size = size;   /**< @brief Vector size */
+        typedef T Type;         /**< @brief Underlying data type */
+
+        enum: std::size_t {
+            Size = size         /**< Vector size */
+        };
 
         /**
          * @brief Vector from array

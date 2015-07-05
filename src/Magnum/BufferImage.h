@@ -50,7 +50,9 @@ Stores image data in GPU memory. Interchangeable with @ref Image,
 */
 template<UnsignedInt dimensions> class BufferImage: public AbstractImage {
     public:
-        const static UnsignedInt Dimensions = dimensions; /**< @brief Image dimension count */
+        enum: UnsignedInt {
+            Dimensions = dimensions /**< Image dimension count */
+        };
 
         /**
          * @brief Constructor

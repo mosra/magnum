@@ -48,8 +48,11 @@ don't need any math operations and fuzzy comparison (e.g. enum values). Unlike
 */
 template<UnsignedInt dimensions, class T> class Array {
     public:
-        typedef T Type;                                     /**< @brief Data type */
-        const static UnsignedInt Dimensions = dimensions;   /**< @brief Dimension count */
+        typedef T Type;                 /**< @brief Data type */
+
+        enum: UnsignedInt {
+            Dimensions = dimensions     /**< Dimension count */
+        };
 
         /**
          * @brief Default constructor

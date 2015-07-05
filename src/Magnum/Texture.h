@@ -105,7 +105,9 @@ in shaders.
  */
 template<UnsignedInt dimensions> class Texture: public AbstractTexture {
     public:
-        static const UnsignedInt Dimensions = dimensions; /**< @brief Texture dimension count */
+        enum: UnsignedInt {
+            Dimensions = dimensions /**< Texture dimension count */
+        };
 
         /**
          * @brief Max supported texture size

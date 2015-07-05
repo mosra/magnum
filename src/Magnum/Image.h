@@ -42,7 +42,9 @@ Stores image data on client memory. Interchangeable with @ref ImageReference,
 */
 template<UnsignedInt dimensions> class Image: public AbstractImage {
     public:
-        const static UnsignedInt Dimensions = dimensions; /**< @brief Image dimension count */
+        enum: UnsignedInt {
+            Dimensions = dimensions /**< Image dimension count */
+        };
 
         /**
          * @brief Constructor

@@ -30,15 +30,17 @@
 namespace Magnum { namespace Implementation {
 
 struct BufferState {
-    #ifndef MAGNUM_TARGET_GLES
-    static const std::size_t TargetCount = 13+1;
-    #elif !defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL)
-    static const std::size_t TargetCount = 8+1;
-    #elif !defined(MAGNUM_TARGET_GLES2)
-    static const std::size_t TargetCount = 12+1;
-    #else
-    static const std::size_t TargetCount = 2+1;
-    #endif
+    enum: std::size_t {
+        #ifndef MAGNUM_TARGET_GLES
+        TargetCount = 13+1
+        #elif !defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL)
+        TargetCount = 8+1
+        #elif !defined(MAGNUM_TARGET_GLES2)
+        TargetCount = 12+1
+        #else
+        TargetCount = 2+1
+        #endif
+    };
 
     /* Target <-> index mapping */
     static std::size_t indexForTarget(Buffer::TargetHint target);

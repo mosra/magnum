@@ -62,8 +62,9 @@ template<UnsignedInt dimensions, class T> class AbstractTransformation {
         /** @brief Underlying floating-point type */
         typedef T Type;
 
-        /** @brief Dimension count */
-        static const UnsignedInt Dimensions = dimensions;
+        enum: UnsignedInt {
+            Dimensions = dimensions /**< Dimension count */
+        };
 
         explicit AbstractTransformation();
 

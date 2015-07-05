@@ -67,8 +67,10 @@ template<std::size_t size> class BoolVector {
     static_assert(size != 0, "BoolVector cannot have zero elements");
 
     public:
-        static const std::size_t Size = size;               /**< @brief Vector size */
-        static const std::size_t DataSize = (size-1)/8+1;   /**< @brief Vector storage size */
+        enum: std::size_t {
+            Size = size,                /**< Vector size */
+            DataSize = (size-1)/8+1     /**< Vector storage size */
+        };
 
         /** @brief Construct zero-filled boolean vector */
         constexpr /*implicit*/ BoolVector(ZeroInitT = ZeroInit): _data{} {}

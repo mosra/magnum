@@ -52,7 +52,9 @@ Interchangeable with @ref Image, @ref BufferImage or @ref Trade::ImageData.
 */
 template<UnsignedInt dimensions> class ImageReference: public AbstractImage {
     public:
-        const static UnsignedInt Dimensions = dimensions; /**< @brief Image dimension count */
+        enum: UnsignedInt {
+            Dimensions = dimensions /**< Image dimension count */
+        };
 
         /**
          * @brief Constructor

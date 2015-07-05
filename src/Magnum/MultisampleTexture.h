@@ -95,7 +95,9 @@ shaders.
  */
 template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTexture {
     public:
-        static const UnsignedInt Dimensions = dimensions; /**< @brief Texture dimension count */
+        enum: UnsignedInt {
+            Dimensions = dimensions /**< Texture dimension count */
+        };
 
         /**
          * @brief Max supported multisample texture size

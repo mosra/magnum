@@ -49,7 +49,9 @@ See @ref matrix-vector for brief introduction.
  */
 template<std::size_t size, class T> class Matrix: public RectangularMatrix<size, size, T> {
     public:
-        const static std::size_t Size = size; /**< @brief Matrix size */
+        enum: std::size_t {
+            Size = size         /**< Matrix size */
+        };
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
