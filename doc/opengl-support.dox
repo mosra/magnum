@@ -357,8 +357,8 @@ Extension                                   | Status
 @es_extension{EXT,texture_sRGB_decode}      | done
 @es_extension{EXT,sRGB_write_control}       | done
 @es_extension{EXT,shader_integer_mix}       | done (shading language only)
-@extension3{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr} | |
-@extension{KHR,texture_compression_astc_hdr} | |
+@es_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr} | |
+@es_extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr} | |
 @es_extension{KHR,debug}                    | see above
 @es_extension{KHR,robustness}               | |
 @es_extension{KHR,robust_buffer_access_behavior} | done (nothing to do)
