@@ -41,6 +41,7 @@ namespace Magnum { namespace Test {
 struct SampleQueryGLTest: AbstractOpenGLTester {
     explicit SampleQueryGLTest();
 
+    void constructNoCreate();
     void wrap();
 
     void querySamplesPassed();
@@ -50,13 +51,25 @@ struct SampleQueryGLTest: AbstractOpenGLTester {
 };
 
 SampleQueryGLTest::SampleQueryGLTest() {
-    addTests({&SampleQueryGLTest::wrap,
+    addTests({&SampleQueryGLTest::constructNoCreate,
+              &SampleQueryGLTest::wrap,
 
               &SampleQueryGLTest::querySamplesPassed,
               #ifndef MAGNUM_TARGET_GLES
               &SampleQueryGLTest::conditionalRender
               #endif
               });
+}
+
+void SampleQueryGLTest::constructNoCreate() {
+    {
+        SampleQuery query{NoCreate};
+
+        MAGNUM_VERIFY_NO_ERROR();
+        CORRADE_COMPARE(query.id(), 0);
+    }
+
+    MAGNUM_VERIFY_NO_ERROR();
 }
 
 void SampleQueryGLTest::wrap() {

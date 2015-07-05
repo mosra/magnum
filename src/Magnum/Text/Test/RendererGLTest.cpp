@@ -172,7 +172,7 @@ void RendererGLTest::renderData() {
 
 void RendererGLTest::renderMesh() {
     TestFont font;
-    Mesh mesh;
+    Mesh mesh{NoCreate};
     Buffer vertexBuffer, indexBuffer;
     Range2D bounds;
     std::tie(mesh, bounds) = Text::Renderer3D::render(font, nullGlyphCache,
@@ -220,7 +220,7 @@ void RendererGLTest::renderMesh() {
 void RendererGLTest::renderMeshIndexType() {
     #ifndef MAGNUM_TARGET_GLES
     TestFont font;
-    Mesh mesh;
+    Mesh mesh{NoCreate};
     Buffer vertexBuffer, indexBuffer;
 
     /* Sizes: four vertices per glyph, each vertex has 2D position and 2D

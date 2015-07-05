@@ -33,6 +33,7 @@
 
 #include "Magnum/AbstractObject.h"
 #include "Magnum/Magnum.h"
+#include "Magnum/Tags.h"
 
 namespace Magnum {
 
@@ -109,10 +110,20 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
          * Generates new OpenGL renderbuffer object. If @extension{ARB,direct_state_access}
          * (part of OpenGL 4.5) is not available, the renderbuffer is created
          * on first use.
-         * @see @ref wrap(), @fn_gl{CreateRenderbuffers}, eventually
-         *      @fn_gl{GenRenderbuffers}
+         * @see @ref Renderbuffer(NoCreateT), @ref wrap(),
+         *      @fn_gl{CreateRenderbuffers}, eventually @fn_gl{GenRenderbuffers}
          */
         explicit Renderbuffer();
+
+        /**
+         * @brief Construct without creating the underlying OpenGL object
+         *
+         * The constructed instance is equivalent to moved-from state. Useful
+         * in cases where you will overwrite the instance later anyway. Move
+         * another object over it to make it useful.
+         * @see @ref Renderbuffer(), @ref wrap()
+         */
+        explicit Renderbuffer(NoCreateT) noexcept: _id{0}, _flags{ObjectFlag::DeleteOnDestruction} {}
 
         /** @brief Copying is not allowed */
         Renderbuffer(const Renderbuffer&) = delete;

@@ -42,6 +42,7 @@ struct RectangleTextureGLTest: AbstractOpenGLTester {
     explicit RectangleTextureGLTest();
 
     void construct();
+    void constructNoCreate();
     void wrap();
 
     void bind();
@@ -67,6 +68,7 @@ struct RectangleTextureGLTest: AbstractOpenGLTester {
 
 RectangleTextureGLTest::RectangleTextureGLTest() {
     addTests({&RectangleTextureGLTest::construct,
+              &RectangleTextureGLTest::constructNoCreate,
               &RectangleTextureGLTest::wrap,
 
               &RectangleTextureGLTest::bind,
@@ -100,6 +102,17 @@ void RectangleTextureGLTest::construct() {
 
         MAGNUM_VERIFY_NO_ERROR();
         CORRADE_VERIFY(texture.id() > 0);
+    }
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void RectangleTextureGLTest::constructNoCreate() {
+    {
+        RectangleTexture texture{NoCreate};
+
+        MAGNUM_VERIFY_NO_ERROR();
+        CORRADE_COMPARE(texture.id(), 0);
     }
 
     MAGNUM_VERIFY_NO_ERROR();

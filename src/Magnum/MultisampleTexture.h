@@ -136,12 +136,22 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
          * Creates new OpenGL texture object. If @extension{ARB,direct_state_access}
          * (part of OpenGL 4.5) is not available, the texture is created on
          * first use.
-         * @see @ref wrap(), @fn_gl{CreateTextures} with
-         *      @def_gl{TEXTURE_2D_MULTISAMPLE} or
+         * @see @ref MultisampleTexture(NoCreateT), @ref wrap(),
+         *      @fn_gl{CreateTextures} with @def_gl{TEXTURE_2D_MULTISAMPLE} or
          *      @def_gl{TEXTURE_2D_MULTISAMPLE_ARRAY}, eventually
          *      @fn_gl{GenTextures}
          */
         explicit MultisampleTexture(): AbstractTexture(Implementation::multisampleTextureTarget<dimensions>()) {}
+
+        /**
+         * @brief Construct without creating the underlying OpenGL object
+         *
+         * The constructed instance is equivalent to moved-from state. Useful
+         * in cases where you will overwrite the instance later anyway. Move
+         * another object over it to make it useful.
+         * @see @ref MultisampleTexture(), @ref wrap()
+         */
+        explicit MultisampleTexture(NoCreateT) noexcept: AbstractTexture{NoCreate, Implementation::multisampleTextureTarget<dimensions>()} {}
 
         /**
          * @brief Set storage

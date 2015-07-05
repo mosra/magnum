@@ -145,11 +145,21 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * Creates new OpenGL texture object. If @extension{ARB,direct_state_access}
          * (part of OpenGL 4.5) is not available, the texture is created on
          * first use.
-         * @see @ref wrap(), @fn_gl{CreateTextures} with @def_gl{TEXTURE_1D},
-         *      @def_gl{TEXTURE_2D} or @def_gl{TEXTURE_3D}, eventually
-         *      @fn_gl{GenTextures}
+         * @see @ref Texture(NoCreateT), @ref wrap(), @fn_gl{CreateTextures}
+         *      with @def_gl{TEXTURE_1D}, @def_gl{TEXTURE_2D} or
+         *      @def_gl{TEXTURE_3D}, eventually @fn_gl{GenTextures}
          */
         explicit Texture(): AbstractTexture(Implementation::textureTarget<dimensions>()) {}
+
+        /**
+         * @brief Construct without creating the underlying OpenGL object
+         *
+         * The constructed instance is equivalent to moved-from state. Useful
+         * in cases where you will overwrite the instance later anyway. Move
+         * another object over it to make it useful.
+         * @see @ref Texture(), @ref wrap()
+         */
+        explicit Texture(NoCreateT) noexcept: AbstractTexture{NoCreate, Implementation::textureTarget<dimensions>()} {}
 
         #ifndef MAGNUM_TARGET_GLES2
         /**

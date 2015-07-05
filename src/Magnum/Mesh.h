@@ -35,6 +35,7 @@
 
 #include "Magnum/AbstractObject.h"
 #include "Magnum/Attribute.h"
+#include "Magnum/Tags.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include <Corrade/Utility/Macros.h>
@@ -461,10 +462,21 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * available, vertex array object is created. If @extension{ARB,direct_state_access}
          * (part of OpenGL 4.5) is not available, the vertex array object is
          * created on first use.
-         * @see @ref setPrimitive(), @ref setCount(), @ref wrap(),
-         *      @fn_gl{CreateVertexArrays}, eventually @fn_gl{GenVertexArrays}
+         * @see @ref Mesh(NoCreateT), @ref wrap(), @ref setPrimitive(),
+         *      @ref setCount(), @fn_gl{CreateVertexArrays}, eventually
+         *      @fn_gl{GenVertexArrays}
          */
         explicit Mesh(MeshPrimitive primitive = MeshPrimitive::Triangles);
+
+        /**
+         * @brief Construct without creating the underlying OpenGL object
+         *
+         * The constructed instance is equivalent to moved-from state. Useful
+         * in cases where you will overwrite the instance later anyway. Move
+         * another object over it to make it useful.
+         * @see @ref Mesh(MeshPrimitive), @ref wrap()
+         */
+        explicit Mesh(NoCreateT) noexcept;
 
         /** @brief Copying is not allowed */
         Mesh(const Mesh&) = delete;

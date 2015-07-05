@@ -38,6 +38,7 @@
 
 #include "Magnum/AbstractObject.h"
 #include "Magnum/Magnum.h"
+#include "Magnum/Tags.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include <Corrade/Utility/Macros.h>
@@ -850,10 +851,20 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * Creates new OpenGL buffer object. If @extension{ARB,direct_state_access}
          * (part of OpenGL 4.5) is not available, the buffer is created on
          * first use.
-         * @see @ref wrap(), @fn_gl{CreateBuffers}, eventually
-         *      @fn_gl{GenBuffers}
+         * @see @ref Buffer(NoCreateT), @ref wrap(), @fn_gl{CreateBuffers},
+         *      eventually @fn_gl{GenBuffers}
          */
         explicit Buffer(TargetHint targetHint = TargetHint::Array);
+
+        /**
+         * @brief Construct without creating the underlying OpenGL object
+         *
+         * The constructed instance is equivalent to moved-from state. Useful
+         * in cases where you will overwrite the instance later anyway. Move
+         * another object over it to make it useful.
+         * @see @ref Buffer(TargetHint), @ref wrap()
+         */
+        explicit Buffer(NoCreateT) noexcept;
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
@@ -1423,6 +1434,12 @@ Debug MAGNUM_EXPORT operator<<(Debug debug, Buffer::TargetHint value);
 /** @debugoperatorclassenum{Magnum::Buffer,Magnum::Buffer::Target} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Buffer::Target value);
 #endif
+
+inline Buffer::Buffer(NoCreateT) noexcept: _id{0}, _targetHint{TargetHint::Array}, _flags{ObjectFlag::DeleteOnDestruction}
+    #ifdef CORRADE_TARGET_NACL
+    , _mappedBuffer{nullptr}
+    #endif
+{}
 
 inline Buffer::Buffer(Buffer&& other) noexcept: _id{other._id}, _targetHint{other._targetHint},
     #ifdef CORRADE_TARGET_NACL

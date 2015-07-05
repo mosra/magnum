@@ -38,6 +38,7 @@ struct BufferGLTest: AbstractOpenGLTester {
     explicit BufferGLTest();
 
     void construct();
+    void constructNoCreate();
     void constructCopy();
     void constructMove();
     void wrap();
@@ -64,6 +65,7 @@ struct BufferGLTest: AbstractOpenGLTester {
 
 BufferGLTest::BufferGLTest() {
     addTests({&BufferGLTest::construct,
+              &BufferGLTest::constructNoCreate,
               &BufferGLTest::constructCopy,
               &BufferGLTest::constructMove,
               &BufferGLTest::wrap,
@@ -96,6 +98,17 @@ void BufferGLTest::construct() {
         CORRADE_VERIFY(buffer.id() > 0);
         CORRADE_COMPARE(buffer.targetHint(), Buffer::TargetHint::Array);
         CORRADE_COMPARE(buffer.size(), 0);
+    }
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void BufferGLTest::constructNoCreate() {
+    {
+        Buffer buffer{NoCreate};
+
+        MAGNUM_VERIFY_NO_ERROR();
+        CORRADE_COMPARE(buffer.id(), 0);
     }
 
     MAGNUM_VERIFY_NO_ERROR();

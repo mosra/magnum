@@ -35,6 +35,7 @@
 #include <Corrade/Utility/Assert.h>
 
 #include "Magnum/AbstractObject.h"
+#include "Magnum/Tags.h"
 #include "Magnum/configure.h"
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
@@ -173,6 +174,7 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
     private:
     #endif
         explicit AbstractQuery(GLenum target);
+        explicit AbstractQuery(NoCreateT, GLenum target) noexcept: _id{0}, _target{target}, _flags{ObjectFlag::DeleteOnDestruction} {}
         explicit AbstractQuery(GLuint id, GLenum target, ObjectFlags flags) noexcept: _id{id}, _target{target}, _flags{flags} {}
 
         #ifdef MAGNUM_BUILD_DEPRECATED

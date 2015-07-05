@@ -35,6 +35,7 @@ struct BufferTextureGLTest: AbstractOpenGLTester {
     explicit BufferTextureGLTest();
 
     void construct();
+    void constructNoCreate();
     void wrap();
 
     void bind();
@@ -44,6 +45,7 @@ struct BufferTextureGLTest: AbstractOpenGLTester {
 
 BufferTextureGLTest::BufferTextureGLTest() {
     addTests({&BufferTextureGLTest::construct,
+              &BufferTextureGLTest::constructNoCreate,
               &BufferTextureGLTest::wrap,
 
               &BufferTextureGLTest::bind,
@@ -60,6 +62,17 @@ void BufferTextureGLTest::construct() {
 
         MAGNUM_VERIFY_NO_ERROR();
         CORRADE_VERIFY(texture.id() > 0);
+    }
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void BufferTextureGLTest::constructNoCreate() {
+    {
+        BufferTexture texture{NoCreate};
+
+        MAGNUM_VERIFY_NO_ERROR();
+        CORRADE_COMPARE(texture.id(), 0);
     }
 
     MAGNUM_VERIFY_NO_ERROR();

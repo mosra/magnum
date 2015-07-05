@@ -244,10 +244,20 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
          * Creates new OpenGL texture object. If @extension{ARB,direct_state_access}
          * (part of OpenGL 4.5) is not available, the texture is created on
          * first use.
-         * @see @ref wrap(), @fn_gl{CreateTextures} with @def_gl{TEXTURE_BUFFER},
-         *      eventually @fn_gl{GenTextures}
+         * @see @ref BufferTexture(NoCreateT), @ref wrap(), @fn_gl{CreateTextures}
+         *      with @def_gl{TEXTURE_BUFFER}, eventually @fn_gl{GenTextures}
          */
         explicit BufferTexture(): AbstractTexture(GL_TEXTURE_BUFFER) {}
+
+        /**
+         * @brief Construct without creating the underlying OpenGL object
+         *
+         * The constructed instance is equivalent to moved-from state. Useful
+         * in cases where you will overwrite the instance later anyway. Move
+         * another object over it to make it useful.
+         * @see @ref BufferTexture(), @ref wrap()
+         */
+        explicit BufferTexture(NoCreateT) noexcept: AbstractTexture{NoCreate, GL_TEXTURE_BUFFER} {}
 
         /**
          * @brief Set texture buffer

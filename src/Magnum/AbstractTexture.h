@@ -34,6 +34,7 @@
 #include "Magnum/AbstractObject.h"
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/Sampler.h"
+#include "Magnum/Tags.h"
 
 namespace Magnum {
 
@@ -340,6 +341,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         template<UnsignedInt textureDimensions> struct DataHelper {};
 
         explicit AbstractTexture(GLenum target);
+        explicit AbstractTexture(NoCreateT, GLenum target) noexcept: _target{target}, _id{0}, _flags{ObjectFlag::DeleteOnDestruction} {}
         explicit AbstractTexture(GLuint id, GLenum target, ObjectFlags flags) noexcept: _target{target}, _id{id}, _flags{flags} {}
 
         #ifndef MAGNUM_TARGET_WEBGL

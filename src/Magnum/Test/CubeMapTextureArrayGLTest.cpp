@@ -40,6 +40,7 @@ struct CubeMapTextureArrayGLTest: AbstractOpenGLTester {
     explicit CubeMapTextureArrayGLTest();
 
     void construct();
+    void constructNoCreate();
     void wrap();
 
     void bind();
@@ -67,6 +68,7 @@ struct CubeMapTextureArrayGLTest: AbstractOpenGLTester {
 
 CubeMapTextureArrayGLTest::CubeMapTextureArrayGLTest() {
     addTests({&CubeMapTextureArrayGLTest::construct,
+              &CubeMapTextureArrayGLTest::constructNoCreate,
               &CubeMapTextureArrayGLTest::wrap,
 
               &CubeMapTextureArrayGLTest::bind,
@@ -101,6 +103,17 @@ void CubeMapTextureArrayGLTest::construct() {
 
         MAGNUM_VERIFY_NO_ERROR();
         CORRADE_VERIFY(texture.id() > 0);
+    }
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void CubeMapTextureArrayGLTest::constructNoCreate() {
+    {
+        CubeMapTextureArray texture{NoCreate};
+
+        MAGNUM_VERIFY_NO_ERROR();
+        CORRADE_COMPARE(texture.id(), 0);
     }
 
     MAGNUM_VERIFY_NO_ERROR();

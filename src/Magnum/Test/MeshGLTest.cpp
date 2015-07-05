@@ -46,6 +46,7 @@ struct MeshGLTest: AbstractOpenGLTester {
     explicit MeshGLTest();
 
     void construct();
+    void constructNoCreate();
     void constructCopy();
     void constructMove();
     void wrap();
@@ -138,6 +139,7 @@ struct MeshGLTest: AbstractOpenGLTester {
 
 MeshGLTest::MeshGLTest() {
     addTests({&MeshGLTest::construct,
+              &MeshGLTest::constructNoCreate,
               &MeshGLTest::constructCopy,
               &MeshGLTest::constructMove,
               &MeshGLTest::wrap,
@@ -242,6 +244,17 @@ void MeshGLTest::construct() {
         {
             CORRADE_VERIFY(mesh.id() > 0);
         }
+    }
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void MeshGLTest::constructNoCreate() {
+    {
+        Mesh mesh{NoCreate};
+
+        MAGNUM_VERIFY_NO_ERROR();
+        CORRADE_COMPARE(mesh.id(), 0);
     }
 
     MAGNUM_VERIFY_NO_ERROR();

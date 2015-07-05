@@ -116,10 +116,21 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          * Creates new OpenGL texture object. If @extension{ARB,direct_state_access}
          * (part of OpenGL 4.5) is not available, the texture is created on
          * first use.
-         * @see @ref wrap(), @fn_gl{CreateTextures} with
-         *      @def_gl{TEXTURE_CUBE_MAP_ARRAY}, eventually @fn_gl{GenTextures}
+         * @see @ref CubeMapTextureArray(NoCreateT), @ref wrap(),
+         *      @fn_gl{CreateTextures} with @def_gl{TEXTURE_CUBE_MAP_ARRAY},
+         *      eventually @fn_gl{GenTextures}
          */
         explicit CubeMapTextureArray(): AbstractTexture(GL_TEXTURE_CUBE_MAP_ARRAY) {}
+
+        /**
+         * @brief Construct without creating the underlying OpenGL object
+         *
+         * The constructed instance is equivalent to moved-from state. Useful
+         * in cases where you will overwrite the instance later anyway. Move
+         * another object over it to make it useful.
+         * @see @ref CubeMapTextureArray(), @ref wrap()
+         */
+        explicit CubeMapTextureArray(NoCreateT) noexcept: AbstractTexture{NoCreate, GL_TEXTURE_CUBE_MAP_ARRAY} {}
 
         /**
          * @copybrief Texture::setBaseLevel()

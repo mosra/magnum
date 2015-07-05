@@ -108,6 +108,7 @@ set(Magnum_HEADERS
     ResourceManager.hpp
     Sampler.h
     Shader.h
+    Tags.h
     Texture.h
     TextureFormat.h
     Timeline.h

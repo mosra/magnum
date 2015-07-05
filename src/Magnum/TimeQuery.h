@@ -126,9 +126,20 @@ class TimeQuery: public AbstractQuery {
          * Creates new OpenGL query object. If @extension{ARB,direct_state_access}
          * (part of OpenGL 4.5) is not available, the query is created on first
          * use.
-         * @see @ref wrap(), @fn_gl{CreateQueries}, eventually @fn_gl{GenQueries}
+         * @see @ref TimeQuery(NoCreateT), @ref wrap(), @fn_gl{CreateQueries},
+         *      eventually @fn_gl{GenQueries}
          */
         explicit TimeQuery(Target target): AbstractQuery(GLenum(target)) {}
+
+        /**
+         * @brief Construct without creating the underlying OpenGL object
+         *
+         * The constructed instance is equivalent to moved-from state. Useful
+         * in cases where you will overwrite the instance later anyway. Move
+         * another object over it to make it useful.
+         * @see @ref TimeQuery(Target), @ref wrap()
+         */
+        explicit TimeQuery(NoCreateT) noexcept: AbstractQuery{NoCreate, GLenum(Target::TimeElapsed)} {}
 
         /**
          * @brief Query timestamp

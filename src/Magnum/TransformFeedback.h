@@ -28,6 +28,7 @@
 #include <Corrade/Containers/ArrayView.h>
 
 #include "Magnum/AbstractObject.h"
+#include "Magnum/Tags.h"
 
 #ifndef MAGNUM_TARGET_GLES2
 /** @file
@@ -168,10 +169,21 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
          * Creates new OpenGL transform feedback object. If
          * @extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
          * available, the transform feedback object is created on first use.
-         * @see @ref wrap(), @fn_gl{CreateTransformFeedbacks}, eventually
+         * @see @ref TransformFeedback(NoCreateT), @ref wrap(),
+         *      @fn_gl{CreateTransformFeedbacks}, eventually
          *      @fn_gl{GenTransformFeedbacks}
          */
         explicit TransformFeedback();
+
+        /**
+         * @brief Construct without creating the underlying OpenGL object
+         *
+         * The constructed instance is equivalent to moved-from state. Useful
+         * in cases where you will overwrite the instance later anyway. Move
+         * another object over it to make it useful.
+         * @see @ref TransformFeedback(), @ref wrap()
+         */
+        explicit TransformFeedback(NoCreateT) noexcept: _id{0}, _flags{ObjectFlag::DeleteOnDestruction} {}
 
         /** @brief Copying is not allowed */
         TransformFeedback(const TransformFeedback&) = delete;

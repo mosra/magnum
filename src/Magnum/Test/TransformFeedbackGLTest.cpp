@@ -37,6 +37,7 @@ struct TransformFeedbackGLTest: AbstractOpenGLTester {
     explicit TransformFeedbackGLTest();
 
     void construct();
+    void constructNoCreate();
     void constructCopy();
     void constructMove();
     void wrap();
@@ -55,6 +56,7 @@ struct TransformFeedbackGLTest: AbstractOpenGLTester {
 
 TransformFeedbackGLTest::TransformFeedbackGLTest() {
     addTests({&TransformFeedbackGLTest::construct,
+              &TransformFeedbackGLTest::constructNoCreate,
               &TransformFeedbackGLTest::constructCopy,
               &TransformFeedbackGLTest::constructMove,
               &TransformFeedbackGLTest::wrap,
@@ -83,6 +85,17 @@ void TransformFeedbackGLTest::construct() {
 
         MAGNUM_VERIFY_NO_ERROR();
         CORRADE_VERIFY(feedback.id() > 0);
+    }
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void TransformFeedbackGLTest::constructNoCreate() {
+    {
+        TransformFeedback feedback{NoCreate};
+
+        MAGNUM_VERIFY_NO_ERROR();
+        CORRADE_COMPARE(feedback.id(), 0);
     }
 
     MAGNUM_VERIFY_NO_ERROR();

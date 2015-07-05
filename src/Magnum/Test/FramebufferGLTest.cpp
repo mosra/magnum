@@ -53,6 +53,7 @@ struct FramebufferGLTest: AbstractOpenGLTester {
     explicit FramebufferGLTest();
 
     void construct();
+    void constructNoCreate();
     void constructCopy();
     void constructMove();
     void wrap();
@@ -105,6 +106,7 @@ struct FramebufferGLTest: AbstractOpenGLTester {
 
 FramebufferGLTest::FramebufferGLTest() {
     addTests({&FramebufferGLTest::construct,
+              &FramebufferGLTest::constructNoCreate,
               &FramebufferGLTest::constructCopy,
               &FramebufferGLTest::constructMove,
               &FramebufferGLTest::wrap,
@@ -172,6 +174,17 @@ void FramebufferGLTest::construct() {
         MAGNUM_VERIFY_NO_ERROR();
         CORRADE_VERIFY(framebuffer.id() > 0);
         CORRADE_COMPARE(framebuffer.viewport(), Range2Di({32, 16}, {128, 256}));
+    }
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void FramebufferGLTest::constructNoCreate() {
+    {
+        Framebuffer framebuffer{NoCreate};
+
+        MAGNUM_VERIFY_NO_ERROR();
+        CORRADE_COMPARE(framebuffer.id(), 0);
     }
 
     MAGNUM_VERIFY_NO_ERROR();
