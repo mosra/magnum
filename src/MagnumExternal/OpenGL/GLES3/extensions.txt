@@ -12,10 +12,16 @@ extension EXT_debug_marker                      optional
 extension EXT_disjoint_timer_query              optional
 extension EXT_texture_sRGB_decode               optional
 extension EXT_sRGB_write_control                optional
+extension EXT_shader_integer_mix                optional
 extension EXT_separate_shader_objects           optional
 extension EXT_multisampled_render_to_texture    optional
 extension EXT_robustness                        optional
+extension KHR_texture_compression_astc_ldr      optional
+extension KHR_texture_compression_astc_hdr      optional
 extension KHR_debug                             optional
+extension KHR_robustness                        optional
+extension KHR_robust_buffer_access_behavior     optional
+extension KHR_context_flush_control             optional
 extension NV_read_buffer_front                  optional
 extension NV_read_depth                         optional
 extension NV_read_stencil                       optional
