@@ -27,7 +27,7 @@ namespace Magnum {
 /** @page shaders Builtin shaders
 @brief Overview and basic usage of builtin shaders.
 
--   Previous page: @ref plugins
+-   Previous page: @ref opengl-wrapping
 -   Next page: @ref scenegraph
 
 @tableofcontents
@@ -129,7 +129,7 @@ mesh.draw(visualizerShader);
 The @ref MeshTools::compile() utility configures meshes using generic vertex
 attribute definitions to make them usable with any shader.
 
--   Previous page: @ref plugins
+-   Previous page: @ref opengl-wrapping
 -   Next page: @ref scenegraph
 
 */

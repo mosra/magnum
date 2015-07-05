@@ -28,7 +28,7 @@ namespace Magnum {
 @brief Extending Magnum with additional functionality
 
 -   Previous page: @ref transformations
--   Next page: @ref shaders
+-   Next page: @ref opengl-wrapping
 
 The base Magnum library contains math support, scene graph implementation and
 is able to interact with graphics and audio hardware. However, the base library
@@ -217,7 +217,7 @@ to how static plugins are found above. See @ref cmake and @ref cmake-plugins
 for more information.
 
 -   Previous page: @ref transformations
--   Next page: @ref shaders
+-   Next page: @ref opengl-wrapping
 
 */
 }

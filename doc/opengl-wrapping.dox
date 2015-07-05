@@ -1,0 +1,176 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+              Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+namespace Magnum {
+/** @page opengl-wrapping OpenGL wrapping layer
+@brief Overview of the base OpenGL wrapper API
+
+-   Previous page: @ref plugins
+-   Next page: @ref shaders
+
+OpenGL wrapper classes are core part of Magnum. Their purpose is to simplify
+interaction with the OpenGL API using type-safe C++11 features, abstracting
+away extension and platform differences, tracking the state for optimum
+performance and selecting the best available code path for given system.
+
+@tableofcontents
+
+Magnum provides wrappers for most native OpenGL objects like buffers, textures,
+meshes, queries, transform feedback objects, shaders etc., but makes it
+possible to use raw GL calls or combine Magnum with third-party OpenGL
+libraries if the user wants to.
+
+@section opengl-wrapping-instances OpenGL object wrapper instances
+
+By default, all underlying OpenGL objects are created in wrapper class
+constructor and deleted in wrapper class destructor. Constructing an object
+using default constructor requires active @ref Context instance. All OpenGL
+objects are movable (but not copyable), although for performance reasons (and
+contrary to standard C++11 practice), the moved-from instance does *not* have
+any associated OpenGL object and is thus in *invalid state*. Using instance in
+moved-from state may result in OpenGL errors being generated, in some cases
+even application crashes.
+
+Besides the default behavior, it is possible to construct the object without
+creating the underlying OpenGL object using the @ref NoCreate tag. Constructing
+the object this way does not require any active context and its state is then
+equivalent to the moved-from state. It is useful in case you need to construct
+the object before creating context (such as class members) or if you know you
+would overwrite it later with another object:
+@code
+Mesh mesh{NoCreate};
+Buffer vertices{NoCreate}, indices{NoCreate};
+std::tie(mesh, vertices, indices) = importSomeMesh();
+@endcode
+
+If you need to preserve the underlying OpenGL object after destruction, you can
+call `release()`. It returns ID of the underlying object, the instance is then
+equivalent to moved-from state and you are responsible for proper deletion
+of the returned OpenGL object (note that it is possible to just query ID of the
+underlying without releasing it using `id()`). It is also possible to do the
+opposite -- wrapping existing OpenGL object ID into Magnum object instance
+using `wrap()`.
+@code
+// Transferring the instance to external library
+{
+    Buffer buffer;
+    buffer.setData(...);
+    GLuint id = buffer.release();
+    externallibrary.setSomeBuffer(id); // the library is responsible for deletion
+}
+
+// Acquiring an instance from external library
+{
+    GLuint id = externallibrary.someBuffer();
+    Buffer buffer = Buffer::wrap(id, ObjectFlag::DeleteOnDestruction);
+    // we are now responsible for deletion
+}
+@endcode
+
+The `NoInit` constructor, `wrap()` and `release()` functions are available for
+all OpenGL classes except @ref Shader and @ref AbstractShaderProgram, where
+wrapping external instances makes less sense.
+
+@section opengl-state-tracking State tracking and interaction with third-party code
+
+It is possible (and encouraged) to combine Magnum with third-party libraries or
+even raw OpenGL calls -- trying features that are not yet implemented in
+Magnum, using some specialized GUI library etc. But bear in mind that to
+improve performance and avoid redundant state changes, Magnum internally tracks
+OpenGL state such as currently bound objects, activated renderer features etc.
+When combining Magnum with third-party code, the internal state tracker may get
+confused and you need to reset it using @ref Context::resetState():
+@code
+Buffer buffer;
+
+// Raw OpenGL calls
+glBindBuffer(GL_ARRAY_BUFFER, buffer.id());
+glBufferStorage(GL_ARRAY_BUFFER, 32768, GL_MAP_READ_BIT|GL_MAP_WRITE_BIT);
+// ...
+
+// Reset buffer-related state tracker
+Context::current()->resetState(Context::State::Buffers);
+
+// Use the buffer through Magnum again
+auto data = buffer.map<UnsignedInt>(...);
+@endcode
+
+Note that it is currently not possible to do the opposite -- reseting all state
+touched by Magnum to previous values -- as it would involve impractically large
+amount of queries and state switches with serious performance impact.
+
+@section opengl-wrapping-dsa Extension-dependent functionality
+
+While the majority of Magnum API stays the same on all platforms and driver
+capabilities, large portion of the functionality needs to be realized under the
+hood using various different OpenGL API calls based on available extensions. If
+required extension is not available, there are two possible outcomes -- either
+given API is simply not available or it is emulated using older functionality.
+
+In the first case, to avoid performance overhead, Magnum does not check that
+you use only the APIs that are implemented in the driver -- you are expected to
+do the checks. Documentation of each type, function and enum value explicitly
+states whether the functionality is available everywhere or whether particular
+GL version/extension is required. The information is also aggregated on
+@ref opengl-required-extensions documentation page. Use
+@ref Context::isVersionSupported() or @ref Context::isExtensionSupported():
+@code
+TextureFormat format;
+if(Context::current()->isExtensionSupported<Extensions::GL::ARB_depth_buffer_float>())
+    format = TextureFormat::DepthComponent32F;
+else
+    format = TextureFormat::DepthComponent24;
+@endcode
+
+Some functionality can be emulated by Magnum -- it detects available extensions
+and selects best possible code path for optimal performance. On startup, the
+application prints list of extensions that were used to improve the default
+functionality. The most prominent feature is @extension{ARB,direct_state_access}
+(part of OpenGL 4.3) and its predecessor @extension{EXT,direct_state_access}.
+These extensions make it possible to modify OpenGL objects without explicitly
+binding them, reducing the amount of needed API calls. Magnum API is designed
+around direct state access as it is far easier to use and less error-prone, but
+if these extensions are not available, the functionality is emulated through
+classic bind-to-edit approach. Other examples of extension-dependent
+functionality is @ref DebugMessage "debug output" which is simply no-op when
+required extensions are not available, @ref Texture::setStorage() emulation on
+platforms that don't support it etc. The goal is to abstract away the (mostly
+unimportant) differences for easier porting.
+@code
+Texture2D texture;
+
+// - on OpenGL 4.5+/ARB_direct_state_access this calls glTextureStorage2D()
+// - if EXT_direct_state_access is available, calls glTextureStorage2DEXT()
+// - on OpenGL 4.2+/ARB_texture_storage and OpenGL ES 3.0+ calls glTexStorage2D()
+// - on OpenGL ES 2.0 with EXT_texture_storage calls glTexStorage2DEXT()
+// - otherwise emulated using a sequence of four glTexImage2D() calls
+texture.setStorage(4, TextureFormat::RGBA8, {256, 256});
+@endcode
+
+-   Previous page: @ref plugins
+-   Next page: @ref shaders
+
+*/
+}
