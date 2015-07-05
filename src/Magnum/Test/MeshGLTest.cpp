@@ -1269,6 +1269,7 @@ namespace {
                 1.0f, -0.5f
     };
 
+    #ifndef MAGNUM_TARGET_GLES
     const Float indexedVertexDataBaseVertex[] = {
         0.0f, 0.0f, /* Offset */
 
@@ -1297,6 +1298,7 @@ namespace {
             0.4f, 0.0f, -0.9f,
                 1.0f, -0.5f
     };
+    #endif
 
     constexpr Color4ub indexedResult(64 + 15 + 97, 17 + 164 + 28, 56 + 17, 255);
 }
