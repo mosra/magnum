@@ -189,6 +189,9 @@ FLEXTGL_EXPORT void(APIENTRY *flextglObjectPtrLabelKHR)(const void *, GLsizei, c
 FLEXTGL_EXPORT void(APIENTRY *flextglGetObjectPtrLabelKHR)(const void *, GLsizei, GLsizei *, GLchar *) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglGetPointervKHR)(GLenum, void **) = nullptr;
 
+/* GL_KHR_blend_equation_advanced */
+FLEXTGL_EXPORT void(APIENTRY *flextglBlendBarrierKHR)(void) = nullptr;
+
 /* GL_KHR_robustness */
 FLEXTGL_EXPORT GLenum(APIENTRY *flextglGetGraphicsResetStatus)(void) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglReadnPixels)(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void *) = nullptr;

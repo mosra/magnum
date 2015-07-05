@@ -68,6 +68,7 @@ OpenGL function                         | Matching API
 @fn_gl{BindTransformFeedback}           | not needed, handled internally in @ref TransformFeedback
 @fn_gl{BindVertexArray}                 | not needed, handled internally in @ref Mesh
 @fn_gl{BindVertexBuffer}, \n `glVertexArrayVertexBuffer()`, \n @fn_gl_extension{VertexArrayBindVertexBuffer,EXT,direct_state_access} \n @fn_gl{BindVertexBuffers}, \n `glVertexArrayVertexBuffers()` | |
+@fn_gl_extension{BlendBarrier,KHR,blend_equation_advanced} | |
 @fn_gl{BlendColor}                      | @ref Renderer::setBlendColor()
 @fn_gl{BlendEquation}, \n @fn_gl{BlendEquationSeparate} | @ref Renderer::setBlendEquation()
 @fn_gl{BlendFunc}, \n @fn_gl{BlendFuncSeparate} | @ref Renderer::setBlendFunction()

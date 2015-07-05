@@ -88,7 +88,9 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,EXT,debug_marker),
         _extension(GL,GREMEDY,string_marker),
         _extension(GL,KHR,texture_compression_astc_ldr),
-        _extension(GL,KHR,texture_compression_astc_hdr)};
+        _extension(GL,KHR,texture_compression_astc_hdr),
+        _extension(GL,KHR,blend_equation_advanced),
+        _extension(GL,KHR,blend_equation_advanced_coherent)};
     static const std::vector<Extension> extensions300{
         _extension(GL,ARB,map_buffer_range),
         _extension(GL,ARB,color_buffer_float),
@@ -259,6 +261,8 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,KHR,texture_compression_astc_ldr),
         _extension(GL,KHR,texture_compression_astc_hdr),
         _extension(GL,KHR,debug),
+        _extension(GL,KHR,blend_equation_advanced),
+        _extension(GL,KHR,blend_equation_advanced_coherent),
         _extension(GL,KHR,robustness),
         _extension(GL,KHR,robust_buffer_access_behavior),
         _extension(GL,KHR,context_flush_control),

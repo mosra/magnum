@@ -30,3 +30,5 @@ extension EXT_debug_marker                      optional
 extension GREMEDY_string_marker                 optional
 extension KHR_texture_compression_astc_ldr      optional
 extension KHR_texture_compression_astc_hdr      optional
+extension KHR_blend_equation_advanced           optional
+extension KHR_blend_equation_advanced_coherent  optional

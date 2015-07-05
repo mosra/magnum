@@ -952,6 +952,9 @@ FLEXTGL_EXPORT void(APIENTRY *flextglPopGroupMarkerEXT)(void) = nullptr;
 /* GL_GREMEDY_string_marker */
 FLEXTGL_EXPORT void(APIENTRY *flextglStringMarkerGREMEDY)(GLsizei, const void *) = nullptr;
 
+/* GL_KHR_blend_equation_advanced */
+FLEXTGL_EXPORT void(APIENTRY *flextglBlendBarrierKHR)(void) = nullptr;
+
 #ifdef __cplusplus
 }
 #endif

@@ -985,4 +985,9 @@ void flextGLInit() {
     /* GL_KHR_texture_compression_astc_ldr */
 
     /* GL_KHR_texture_compression_astc_hdr */
+
+    /* GL_KHR_blend_equation_advanced */
+    flextglBlendBarrierKHR = reinterpret_cast<void(APIENTRY*)(void)>(loader.load("glBlendBarrierKHR"));
+
+    /* GL_KHR_blend_equation_advanced_coherent */
 }

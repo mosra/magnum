@@ -222,6 +222,8 @@ namespace GL {
         _extension(GL,KHR,debug,                        GL210, GL430) // #119
         _extension(GL,KHR,context_flush_control,        GL210, GL450) // #168
         _extension(GL,KHR,robustness,                   GL320, GL450) // #170
+        _extension(GL,KHR,blend_equation_advanced,      GL210,  None) // #174
+        _extension(GL,KHR,blend_equation_advanced_coherent, GL210, None) // #174
     } namespace NV {
         _extension(GL,NV,primitive_restart,             GL210, GL310) // #285
         _extension(GL,NV,depth_buffer_float,            GL210, GL300) // #334
@@ -335,6 +337,8 @@ namespace GL {
         _extension(GL,KHR,texture_compression_astc_ldr, GLES200, None) // #117
         _extension(GL,KHR,texture_compression_astc_hdr, GLES200, None) // #117
         _extension(GL,KHR,debug,                    GLES200,    None) // #118
+        _extension(GL,KHR,blend_equation_advanced,  GLES200,    None) // #168
+        _extension(GL,KHR,blend_equation_advanced_coherent, GLES200, None) // #168
         _extension(GL,KHR,robustness,               GLES200,    None) // #170
         _extension(GL,KHR,robust_buffer_access_behavior, GLES200, None) // #189
         _extension(GL,KHR,context_flush_control,    GLES200,    None) // #191
