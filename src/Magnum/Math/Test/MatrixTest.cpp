@@ -326,8 +326,9 @@ void MatrixTest::subclassTypes() {
 }
 
 void MatrixTest::subclass() {
-    const Mat2 a(Vec2(2.0f, 3.5f),
-                 Vec2(3.0f, 1.0f));
+    /* Constexpr constructor */
+    constexpr Mat2 a(Vec2(2.0f, 3.5f),
+                     Vec2(3.0f, 1.0f));
     Mat2 b(Vec2(2.0f, 3.5f),
            Vec2(3.0f, 1.0f));
     CORRADE_COMPARE(a[1], Vec2(3.0f, 1.0f));

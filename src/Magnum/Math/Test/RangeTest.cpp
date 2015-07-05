@@ -466,6 +466,10 @@ void RangeTest::subclassTypes() {
 }
 
 void RangeTest::subclass() {
+    /* Constexpr constructor */
+    constexpr Recti a{Vector2i{34, 23}, Vector2i{47, 30}};
+    CORRADE_COMPARE(a.min(), (Vector2i{34, 23}));
+
     CORRADE_COMPARE(Recti::fromSize({3, 5}, {23, 78}),
                     Recti(Vector2i{3, 5}, Vector2i{26, 83}));
 

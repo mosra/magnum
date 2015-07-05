@@ -500,8 +500,9 @@ void RectangularMatrixTest::subclass() {
     CORRADE_COMPARE(Mat2x2::fromDiagonal({1.0f, -2.0f}), Mat2x2(Vector2(1.0f,  0.0f),
                                                                 Vector2(0.0f, -2.0f)));
 
-    const Mat2x2 a(Vector2(1.0f, -3.0f),
-                   Vector2(-3.0f, 1.0f));
+    /* Constexpr constructor */
+    constexpr Mat2x2 a(Vector2(1.0f, -3.0f),
+                       Vector2(-3.0f, 1.0f));
     CORRADE_COMPARE(-a, Mat2x2(Vector2(-1.0f, 3.0f),
                                Vector2(3.0f, -1.0f)));
 
