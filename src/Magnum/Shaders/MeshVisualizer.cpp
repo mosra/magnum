@@ -61,9 +61,11 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
     #ifndef MAGNUM_TARGET_GLES
     const Version version = Context::current()->supportedVersion({Version::GL320, Version::GL310, Version::GL300, Version::GL210});
     CORRADE_INTERNAL_ASSERT(!flags || flags & Flag::NoGeometryShader || version >= Version::GL320);
-    #else
+    #elif !defined(MAGNUM_TARGET_WEBGL)
     const Version version = Context::current()->supportedVersion({Version::GLES310, Version::GLES300, Version::GLES200});
     CORRADE_INTERNAL_ASSERT(!flags || flags & Flag::NoGeometryShader || version >= Version::GLES310);
+    #else
+    const Version version = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
     #endif
 
     Shader vert = Implementation::createCompatibilityShader(rs, version, Shader::Type::Vertex);
