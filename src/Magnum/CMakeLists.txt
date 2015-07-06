@@ -177,6 +177,7 @@ if(NOT TARGET_WEBGL)
             MultisampleTexture.cpp)
         list(APPEND Magnum_HEADERS
             BufferTexture.h
+            BufferTextureFormat.h
             CubeMapTextureArray.h
             MultisampleTexture.h)
     endif()

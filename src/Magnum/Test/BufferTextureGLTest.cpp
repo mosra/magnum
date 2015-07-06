@@ -27,6 +27,7 @@
 
 #include "Magnum/Buffer.h"
 #include "Magnum/BufferTexture.h"
+#include "Magnum/BufferTextureFormat.h"
 #include "Magnum/Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Test {
