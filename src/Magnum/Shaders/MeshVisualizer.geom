@@ -27,6 +27,13 @@
 #define const
 #endif
 
+#ifdef GL_ES
+#extension GL_EXT_geometry_shader: require
+#ifdef GL_NV_shader_noperspective_interpolation
+#extension GL_NV_shader_noperspective_interpolation: require
+#endif
+#endif
+
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 1) uniform vec2 viewportSize;
 #else
@@ -37,8 +44,11 @@ layout(triangles) in;
 
 layout(triangle_strip, max_vertices = 3) out;
 
-/* Interpolate in screen space */
-noperspective out vec3 dist;
+/* Interpolate in screen space (if possible) */
+#ifdef GL_NV_shader_noperspective_interpolation
+noperspective
+#endif
+out lowp vec3 dist;
 
 void main() {
     /* Screen position of each vertex */
@@ -47,11 +57,11 @@ void main() {
         p[i] = viewportSize*gl_in[i].gl_Position.xy/gl_in[i].gl_Position.w;
 
     /* Vector of each triangle side */
-    const vec2 v[3] = {
+    const vec2 v[3] = vec2[3](
         p[2]-p[1],
         p[2]-p[0],
         p[1]-p[0]
-    };
+    );
 
     /* Compute area using perp-dot product */
     const float area = abs(dot(vec2(-v[1].y, v[1].x), v[2]));

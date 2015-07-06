@@ -56,15 +56,20 @@ If you have geometry shaders available, you don't need to do anything else.
 
 @requires_gl32 Extension @extension{ARB,geometry_shader4} for wireframe
     rendering using geometry shaders.
+@requires_es_extension Extension @es_extension{EXT,geometry_shader} for
+    wireframe rendering using geometry shaders.
 
 If you don't have geometry shaders, you need to set @ref Flag::NoGeometryShader
-(it's enabled by default in OpenGL ES) and use only **non-indexed** triangle
+(it's enabled by default in OpenGL ES 2.0) and use only **non-indexed** triangle
 meshes (see @ref MeshTools::duplicate() for possible solution). Additionaly, if
 you have OpenGL < 3.1 or OpenGL ES 2.0, you need to provide also
 @ref VertexIndex attribute.
 
-@requires_es_extension Extension @extension{OES,standard_derivatives} for
-    wireframe rendering.
+@requires_gles30 Extension @es_extension{OES,standard_derivatives} for
+    wireframe rendering without geometry shaders.
+
+If using geometry shaders on OpenGL ES, @es_extension{NV,shader_noperspective_interpolation}
+is optionally used for improving line appearance.
 
 ## Example usage
 
@@ -174,10 +179,10 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public AbstractShaderProgram {
          */
         enum class Flag: UnsignedByte {
             /**
-             * Visualize wireframe. On OpenGL ES this also enables
+             * Visualize wireframe. On OpenGL ES 2.0 this also enables
              * @ref Flag::NoGeometryShader.
              */
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             Wireframe = 1 << 0,
             #else
             Wireframe = (1 << 0) | (1 << 1),

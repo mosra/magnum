@@ -37,12 +37,16 @@
 namespace Magnum { namespace Shaders {
 
 MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationProjectionMatrixUniform(0), viewportSizeUniform(1), colorUniform(2), wireframeColorUniform(3), wireframeWidthUniform(4), smoothnessUniform(5) {
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
     if(flags & Flag::Wireframe && !(flags & Flag::NoGeometryShader)) {
+        #ifndef MAGNUM_TARGET_GLES
         MAGNUM_ASSERT_VERSION_SUPPORTED(Version::GL320);
         MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::geometry_shader4);
+        #else
+        MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::EXT::geometry_shader);
+        #endif
     }
-    #elif defined(MAGNUM_TARGET_GLES2)
+    #else
     if(flags & Flag::Wireframe)
         MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::OES::standard_derivatives);
     #endif
@@ -58,7 +62,8 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
     const Version version = Context::current()->supportedVersion({Version::GL320, Version::GL310, Version::GL300, Version::GL210});
     CORRADE_INTERNAL_ASSERT(flags & Flag::NoGeometryShader || version >= Version::GL320);
     #else
-    const Version version = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
+    const Version version = Context::current()->supportedVersion({Version::GLES310, Version::GLES300, Version::GLES200});
+    CORRADE_INTERNAL_ASSERT(flags & Flag::NoGeometryShader || version >= Version::GLES310);
     #endif
 
     Shader vert = Implementation::createCompatibilityShader(rs, version, Shader::Type::Vertex);
@@ -78,7 +83,7 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
         .addSource(flags & Flag::NoGeometryShader ? "#define NO_GEOMETRY_SHADER\n" : "")
         .addSource(rs.get("MeshVisualizer.frag"));
 
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
     std::optional<Shader> geom;
     if(flags & Flag::Wireframe && !(flags & Flag::NoGeometryShader)) {
         geom = Implementation::createCompatibilityShader(rs, version, Shader::Type::Geometry);
@@ -86,14 +91,14 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
     }
     #endif
 
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
     if(geom) CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, *geom, frag}));
     else
     #endif
         CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
 
     attachShaders({vert, frag});
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
     if(geom) attachShader(*geom);
     #endif
 

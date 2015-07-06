@@ -34,13 +34,17 @@ struct MeshVisualizerGLTest: Magnum::Test::AbstractOpenGLTester {
     explicit MeshVisualizerGLTest();
 
     void compile();
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     void compileWireframeGeometryShader();
+    #endif
     void compileWireframeNoGeometryShader();
 };
 
 MeshVisualizerGLTest::MeshVisualizerGLTest() {
     addTests({&MeshVisualizerGLTest::compile,
+              #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
               &MeshVisualizerGLTest::compileWireframeGeometryShader,
+              #endif
               &MeshVisualizerGLTest::compileWireframeNoGeometryShader});
 }
 
@@ -49,17 +53,23 @@ void MeshVisualizerGLTest::compile() {
     CORRADE_VERIFY(shader.validate().first);
 }
 
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void MeshVisualizerGLTest::compileWireframeGeometryShader() {
-    #ifdef MAGNUM_TARGET_GLES
-    CORRADE_SKIP("Geometry shader is not available in OpenGL ES");
-    #else
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::geometry_shader4>())
         CORRADE_SKIP(Extensions::GL::ARB::geometry_shader4::string() + std::string(" is not supported"));
+    #else
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::geometry_shader>())
+        CORRADE_SKIP(Extensions::GL::EXT::geometry_shader::string() + std::string(" is not supported"));
+    #endif
+
+    if(Context::current()->isExtensionSupported<Extensions::GL::NV::shader_noperspective_interpolation>())
+        Debug() << "Using" << Extensions::GL::NV::shader_noperspective_interpolation::string();
 
     Shaders::MeshVisualizer shader(Shaders::MeshVisualizer::Flag::Wireframe);
     CORRADE_VERIFY(shader.validate().first);
-    #endif
 }
+#endif
 
 void MeshVisualizerGLTest::compileWireframeNoGeometryShader() {
     Shaders::MeshVisualizer shader(Shaders::MeshVisualizer::Flag::Wireframe|Shaders::MeshVisualizer::Flag::NoGeometryShader);

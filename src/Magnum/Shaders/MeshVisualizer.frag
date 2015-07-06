@@ -40,6 +40,10 @@
 #extension GL_OES_standard_derivatives : enable
 #endif
 
+#if defined(GL_ES) && !defined(NO_GEOMETRY_SHADER) && defined(GL_NV_shader_noperspective_interpolation)
+#extension GL_NV_shader_noperspective_interpolation: require
+#endif
+
 #ifndef GL_ES
 layout(location = 2) uniform vec4 color = vec4(1.0, 1.0, 1.0, 1.0);
 #else
@@ -58,7 +62,10 @@ uniform lowp float smoothness;
 #endif
 
 #ifndef NO_GEOMETRY_SHADER
-noperspective in lowp vec3 dist;
+#ifdef GL_NV_shader_noperspective_interpolation
+noperspective
+#endif
+in lowp vec3 dist;
 #else
 in lowp vec3 barycentric;
 #endif
@@ -72,7 +79,7 @@ void main() {
     #ifdef WIREFRAME_RENDERING
     #ifndef NO_GEOMETRY_SHADER
     /* Distance to nearest side */
-    const float nearest = min(min(dist.x, dist.y), dist.z);
+    lowp const float nearest = min(min(dist.x, dist.y), dist.z);
 
     /* Smooth step between face color and wireframe color based on distance */
     fragmentColor = mix(wireframeColor, color, smoothstep(wireframeWidth-smoothness, wireframeWidth+smoothness, nearest));
