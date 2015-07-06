@@ -83,17 +83,23 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
              *      or WebGL.
              */
             TessellationEvaluation = GL_TESS_EVALUATION_SHADER,
-
-            /**
-             * Geometry shader
-             * @requires_gl32 Extension @extension{ARB,geometry_shader4}
-             * @requires_gl Geometry shaders are not available in OpenGL ES or
-             *      WebGL.
-             */
-            Geometry = GL_GEOMETRY_SHADER,
             #endif
 
             #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+            /**
+             * Geometry shader
+             * @requires_gl32 Extension @extension{ARB,geometry_shader4}
+             * @requires_gles30 Not defined in OpenGL ES 2.0.
+             * @requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
+             *      @es_extension{EXT,geometry_shader}
+             * @requires_gles Geometry shaders are not available in WebGL.
+             */
+            #ifndef MAGNUM_TARGET_GLES
+            Geometry = GL_GEOMETRY_SHADER,
+            #else
+            Geometry = GL_GEOMETRY_SHADER_EXT,
+            #endif
+
             /**
              * Compute shader
              * @requires_gl43 Extension @extension{ARB,compute_shader}
@@ -181,16 +187,20 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          *      WebGL.
          */
         static Int maxTessellationEvaluationOutputComponents();
+        #endif
 
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         /**
          * @brief Max supported component count of geometry shader input vertex
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,geometry_shader4} (part of
-         * OpenGL 3.2) is not available, returns `0`.
+         * OpenGL calls. If neither @extension{ARB,geometry_shader4} (part of
+         * OpenGL 3.2) nor @es_extension{ANDROID,extension_pack_es31a}/
+         * @es_extension{EXT,geometry_shader} ES extension is not available,
+         * returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_GEOMETRY_INPUT_COMPONENTS}
-         * @requires_gl Geometry shaders are not available in OpenGL ES or
-         *      WebGL.
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_gles Geometry shaders are not available in WebGL.
          */
         static Int maxGeometryInputComponents();
 
@@ -198,11 +208,13 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * @brief Max supported component count of geometry shader output vertex
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,geometry_shader4} (part of
-         * OpenGL 3.2) is not available, returns `0`.
+         * OpenGL calls. If neither @extension{ARB,geometry_shader4} (part of
+         * OpenGL 3.2) nor @es_extension{ANDROID,extension_pack_es31a}/
+         * @es_extension{EXT,geometry_shader} ES extension is not available,
+         * returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_GEOMETRY_OUTPUT_COMPONENTS}
-         * @requires_gl Geometry shaders are not available in OpenGL ES or
-         *      WebGL.
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_gles Geometry shaders are not available in WebGL.
          */
         static Int maxGeometryOutputComponents();
 
@@ -210,11 +222,13 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          * @brief Max supported component count of all geometry shader output vertices combined
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,geometry_shader4} (part of
-         * OpenGL 3.2) is not available, returns `0`.
+         * OpenGL calls. If neither @extension{ARB,geometry_shader4} (part of
+         * OpenGL 3.2) nor @es_extension{ANDROID,extension_pack_es31a}/
+         * @es_extension{EXT,geometry_shader} ES extension is not available,
+         * returns `0`.
          * @see @fn_gl{Get} with @def_gl{MAX_GEOMETRY_TOTAL_OUTPUT_COMPONENTS}
-         * @requires_gl Geometry shaders are not available in OpenGL ES or
-         *      WebGL.
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_gles Geometry shaders are not available in WebGL.
          */
         static Int maxGeometryTotalOutputComponents();
         #endif

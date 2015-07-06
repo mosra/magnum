@@ -92,7 +92,7 @@ GLSL 1.40                                   | done
 Extension                                   | Status
 ------------------------------------------- | ------
 GLSL 1.50                                   | done
-@extension{ARB,geometry_shader4}            | missing layered attachments
+@extension{ARB,geometry_shader4}            | missing layered attachments and some limit queries
 @extension{ARB,depth_clamp}                 | done
 @extension{ARB,draw_elements_base_vertex}   | done
 @extension{ARB,fragment_coord_conventions}  | done (shading language only)
@@ -362,7 +362,7 @@ Extension                                   | Status
 @es_extension{EXT,shader_integer_mix}       | done (shading language only)
 @es_extension{EXT,copy_image}               | |
 @es_extension{EXT,draw_buffers_indexed}     | |
-@es_extension{EXT,geometry_shader}          | |
+@es_extension{EXT,geometry_shader}          | missing some ES-specific limit queries
 @es_extension{EXT,gpu_shader5}              | done (shading language only)
 @es_extension{EXT,shader_io_blocks}         | done (shading language only)
 @es_extension{EXT,tessellation_shader}      | |

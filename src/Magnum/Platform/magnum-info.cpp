@@ -320,9 +320,9 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #ifndef MAGNUM_TARGET_GLES
     _l(Shader::maxTextureImageUnits(Shader::Type::TessellationControl))
     _l(Shader::maxTextureImageUnits(Shader::Type::TessellationEvaluation))
-    _l(Shader::maxTextureImageUnits(Shader::Type::Geometry))
     #endif
     #ifndef MAGNUM_TARGET_GLES2
+    _l(Shader::maxTextureImageUnits(Shader::Type::Geometry))
     _l(Shader::maxTextureImageUnits(Shader::Type::Compute))
     #endif
     _l(Shader::maxTextureImageUnits(Shader::Type::Fragment))
@@ -331,9 +331,9 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #ifndef MAGNUM_TARGET_GLES
     _l(Shader::maxUniformComponents(Shader::Type::TessellationControl))
     _l(Shader::maxUniformComponents(Shader::Type::TessellationEvaluation))
-    _l(Shader::maxUniformComponents(Shader::Type::Geometry))
     #endif
     #ifndef MAGNUM_TARGET_GLES2
+    _l(Shader::maxUniformComponents(Shader::Type::Geometry))
     _l(Shader::maxUniformComponents(Shader::Type::Compute))
     #endif
     _l(Shader::maxUniformComponents(Shader::Type::Fragment))
@@ -383,9 +383,18 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     }
     #endif
 
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     #ifndef MAGNUM_TARGET_GLES
-    if(c->isExtensionSupported<Extensions::GL::ARB::geometry_shader4>()) {
+    if(c->isExtensionSupported<Extensions::GL::ARB::geometry_shader4>())
+    #else
+    if(c->isExtensionSupported<Extensions::GL::EXT::geometry_shader>())
+    #endif
+    {
+        #ifndef MAGNUM_TARGET_GLES
         _h(ARB::geometry_shader4)
+        #else
+        _h(EXT::geometry_shader)
+        #endif
 
         _l(Shader::maxGeometryInputComponents())
         _l(Shader::maxGeometryOutputComponents())
@@ -407,8 +416,8 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         #ifndef MAGNUM_TARGET_GLES
         _l(Shader::maxAtomicCounterBuffers(Shader::Type::TessellationControl))
         _l(Shader::maxAtomicCounterBuffers(Shader::Type::TessellationEvaluation))
-        _l(Shader::maxAtomicCounterBuffers(Shader::Type::Geometry))
         #endif
+        _l(Shader::maxAtomicCounterBuffers(Shader::Type::Geometry))
         _l(Shader::maxAtomicCounterBuffers(Shader::Type::Compute))
         _l(Shader::maxAtomicCounterBuffers(Shader::Type::Fragment))
         _l(Shader::maxCombinedAtomicCounterBuffers())
@@ -416,8 +425,8 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         #ifndef MAGNUM_TARGET_GLES
         _l(Shader::maxAtomicCounters(Shader::Type::TessellationControl))
         _l(Shader::maxAtomicCounters(Shader::Type::TessellationEvaluation))
-        _l(Shader::maxAtomicCounters(Shader::Type::Geometry))
         #endif
+        _l(Shader::maxAtomicCounters(Shader::Type::Geometry))
         _l(Shader::maxAtomicCounters(Shader::Type::Compute))
         _l(Shader::maxAtomicCounters(Shader::Type::Fragment))
         _l(Shader::maxCombinedAtomicCounters())
@@ -436,8 +445,8 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         #ifndef MAGNUM_TARGET_GLES
         _l(Shader::maxImageUniforms(Shader::Type::TessellationControl))
         _l(Shader::maxImageUniforms(Shader::Type::TessellationEvaluation))
-        _l(Shader::maxImageUniforms(Shader::Type::Geometry))
         #endif
+        _l(Shader::maxImageUniforms(Shader::Type::Geometry))
         _l(Shader::maxImageUniforms(Shader::Type::Compute))
         _l(Shader::maxImageUniforms(Shader::Type::Fragment))
         _l(Shader::maxCombinedImageUniforms())
@@ -460,8 +469,8 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         #ifndef MAGNUM_TARGET_GLES
         _l(Shader::maxShaderStorageBlocks(Shader::Type::TessellationControl))
         _l(Shader::maxShaderStorageBlocks(Shader::Type::TessellationEvaluation))
-        _l(Shader::maxShaderStorageBlocks(Shader::Type::Geometry))
         #endif
+        _l(Shader::maxShaderStorageBlocks(Shader::Type::Geometry))
         _l(Shader::maxShaderStorageBlocks(Shader::Type::Compute))
         _l(Shader::maxShaderStorageBlocks(Shader::Type::Fragment))
         _l(Shader::maxCombinedShaderStorageBlocks())
@@ -570,8 +579,8 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         #ifndef MAGNUM_TARGET_GLES
         _l(Shader::maxUniformBlocks(Shader::Type::TessellationControl))
         _l(Shader::maxUniformBlocks(Shader::Type::TessellationEvaluation))
-        _l(Shader::maxUniformBlocks(Shader::Type::Geometry))
         #endif
+        _l(Shader::maxUniformBlocks(Shader::Type::Geometry))
         _l(Shader::maxUniformBlocks(Shader::Type::Compute))
         _l(Shader::maxUniformBlocks(Shader::Type::Fragment))
         _l(Shader::maxCombinedUniformBlocks())
@@ -579,8 +588,8 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         #ifndef MAGNUM_TARGET_GLES
         _l(Shader::maxCombinedUniformComponents(Shader::Type::TessellationControl))
         _l(Shader::maxCombinedUniformComponents(Shader::Type::TessellationEvaluation))
-        _l(Shader::maxCombinedUniformComponents(Shader::Type::Geometry))
         #endif
+        _l(Shader::maxCombinedUniformComponents(Shader::Type::Geometry))
         _l(Shader::maxCombinedUniformComponents(Shader::Type::Compute))
         _l(Shader::maxCombinedUniformComponents(Shader::Type::Fragment))
         _l(AbstractShaderProgram::maxUniformBlockSize())
