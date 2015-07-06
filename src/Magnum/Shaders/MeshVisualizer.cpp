@@ -42,7 +42,7 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
         #ifndef MAGNUM_TARGET_GLES
         MAGNUM_ASSERT_VERSION_SUPPORTED(Version::GL320);
         MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::geometry_shader4);
-        #else
+        #elif !defined(MAGNUM_TARGET_WEBGL)
         MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::EXT::geometry_shader);
         #endif
     }
@@ -85,7 +85,7 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
         .addSource(flags & Flag::NoGeometryShader ? "#define NO_GEOMETRY_SHADER\n" : "")
         .addSource(rs.get("MeshVisualizer.frag"));
 
-    #ifndef MAGNUM_TARGET_GLES2
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     std::optional<Shader> geom;
     if(flags & Flag::Wireframe && !(flags & Flag::NoGeometryShader)) {
         geom = Implementation::createCompatibilityShader(rs, version, Shader::Type::Geometry);
