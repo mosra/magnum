@@ -63,8 +63,10 @@ void MeshVisualizerGLTest::compileWireframeGeometryShader() {
         CORRADE_SKIP(Extensions::GL::EXT::geometry_shader::string() + std::string(" is not supported"));
     #endif
 
+    #ifdef MAGNUM_TARGET_GLES
     if(Context::current()->isExtensionSupported<Extensions::GL::NV::shader_noperspective_interpolation>())
         Debug() << "Using" << Extensions::GL::NV::shader_noperspective_interpolation::string();
+    #endif
 
     Shaders::MeshVisualizer shader(Shaders::MeshVisualizer::Flag::Wireframe);
     CORRADE_VERIFY(shader.validate().first);
