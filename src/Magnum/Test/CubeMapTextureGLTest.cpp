@@ -62,6 +62,9 @@ struct CubeMapTextureGLTest: AbstractOpenGLTester {
     #ifndef MAGNUM_TARGET_GLES2
     void samplingDepthStencilMode();
     #endif
+    #ifdef MAGNUM_TARGET_GLES
+    void samplingBorder();
+    #endif
 
     void storage();
 
@@ -109,6 +112,9 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
               #endif
               #ifndef MAGNUM_TARGET_GLES2
               &CubeMapTextureGLTest::samplingDepthStencilMode,
+              #endif
+              #ifdef MAGNUM_TARGET_GLES
+              &CubeMapTextureGLTest::samplingBorder,
               #endif
 
               &CubeMapTextureGLTest::storage,
@@ -206,8 +212,12 @@ void CubeMapTextureGLTest::sampling() {
            .setBaseLevel(1)
            .setMaxLevel(750)
            #endif
+           #ifndef MAGNUM_TARGET_GLES
            .setWrapping(Sampler::Wrapping::ClampToBorder)
            .setBorderColor(Color3(0.5f))
+           #else
+           .setWrapping(Sampler::Wrapping::ClampToEdge)
+           #endif
            .setMaxAnisotropy(Sampler::maxMaxAnisotropy())
             #ifndef MAGNUM_TARGET_GLES2
            .setCompareMode(Sampler::CompareMode::CompareRefToTexture)
@@ -296,6 +306,19 @@ void CubeMapTextureGLTest::samplingDepthStencilMode() {
 
     CubeMapTexture texture;
     texture.setDepthStencilMode(Sampler::DepthStencilMode::StencilIndex);
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+#endif
+
+#ifdef MAGNUM_TARGET_GLES
+void CubeMapTextureGLTest::samplingBorder2D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::NV::texture_border_clamp>())
+        CORRADE_SKIP(Extensions::GL::NV::texture_border_clamp::string() + std::string(" is not supported."));
+
+    CubeMapTexture texture;
+    texture.setWrapping(Sampler::Wrapping::ClampToBorder)
+           .setBorderColor(Color3(0.5f));
 
     MAGNUM_VERIFY_NO_ERROR();
 }
