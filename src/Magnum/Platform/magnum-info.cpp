@@ -31,7 +31,7 @@
 
 #include "Magnum/AbstractShaderProgram.h"
 #include "Magnum/Buffer.h"
-#ifndef MAGNUM_TARGET_GLES
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 #include "Magnum/BufferTexture.h"
 #endif
 #include "Magnum/Context.h"
@@ -482,21 +482,39 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         _l(Shader::maxTessellationEvaluationInputComponents())
         _l(Shader::maxTessellationEvaluationOutputComponents())
     }
+    #endif
 
-    if(c->isExtensionSupported<Extensions::GL::ARB::texture_buffer_object>()) {
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    #ifndef MAGNUM_TARGET_GLES
+    if(c->isExtensionSupported<Extensions::GL::ARB::texture_buffer_object>())
+    #else
+    if(c->isExtensionSupported<Extensions::GL::EXT::texture_buffer>())
+    #endif
+    {
+        #ifndef MAGNUM_TARGET_GLES
         _h(ARB::texture_buffer_object)
+        #else
+        _h(EXT::texture_buffer)
+        #endif
 
         _l(BufferTexture::maxSize())
     }
 
-    if(c->isExtensionSupported<Extensions::GL::ARB::texture_buffer_range>()) {
+    #ifndef MAGNUM_TARGET_GLES
+    if(c->isExtensionSupported<Extensions::GL::ARB::texture_buffer_range>())
+    #else
+    if(c->isExtensionSupported<Extensions::GL::EXT::texture_buffer>())
+    #endif
+    {
+        #ifndef MAGNUM_TARGET_GLES
         _h(ARB::texture_buffer_range)
+        #else
+        /* Header added above */
+        #endif
 
         _l(BufferTexture::offsetAlignment())
     }
-    #endif
 
-    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     #ifndef MAGNUM_TARGET_GLES
     if(c->isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>())
     #else

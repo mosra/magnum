@@ -131,13 +131,8 @@ set(Magnum_PRIVATE_HEADERS
 
 # Desktop-only stuff
 if(NOT TARGET_GLES)
-    list(APPEND Magnum_SRCS
-        BufferTexture.cpp
-        RectangleTexture.cpp)
-
-    list(APPEND Magnum_HEADERS
-        BufferTexture.h
-        RectangleTexture.h)
+    list(APPEND Magnum_SRCS RectangleTexture.cpp)
+    list(APPEND Magnum_HEADERS RectangleTexture.h)
 endif()
 
 # OpenGL ES 3.0 and WebGL 2.0 stuff
@@ -177,9 +172,11 @@ if(NOT TARGET_WEBGL)
     # Desktop and OpenGL ES 3.0 stuff that is not available in ES2 and WebGL
     if(NOT TARGET_GLES2)
         list(APPEND Magnum_SRCS
+            BufferTexture.cpp
             CubeMapTextureArray.cpp
             MultisampleTexture.cpp)
         list(APPEND Magnum_HEADERS
+            BufferTexture.h
             CubeMapTextureArray.h
             MultisampleTexture.h)
     endif()

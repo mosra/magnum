@@ -25,7 +25,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MAGNUM_TARGET_GLES
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 /** @file
  * @brief Class @ref Magnum::BufferTexture, enum @ref Magnum::BufferTextureFormat
  */
@@ -33,13 +33,17 @@
 
 #include "Magnum/AbstractTexture.h"
 
-#ifndef MAGNUM_TARGET_GLES
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 namespace Magnum {
 
 /**
 @brief Internal buffer texture format
 
 @see @ref BufferTexture
+@requires_gl31 Extension @extension{ARB,texture_buffer_object}
+@requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
+    @es_extension{EXT,texture_buffer}
+@requires_gles Texture buffers are not available in WebGL.
 */
 enum class BufferTextureFormat: GLenum {
     /** Red component, normalized unsigned byte. */
@@ -51,14 +55,28 @@ enum class BufferTextureFormat: GLenum {
     /** RGBA, each component normalized unsigned byte. */
     RGBA8 = GL_RGBA8,
 
-    /** Red component, normalized unsigned short. */
+    #ifndef MAGNUM_TARGET_GLES
+    /**
+     * Red component, normalized unsigned short.
+     * @requires_gl Only @ref BufferTextureFormat::R8 is available in OpenGL
+     *      ES.
+     */
     R16 = GL_R16,
 
-    /** Red and green component, each normalized unsigned short. */
+    /**
+     * Red and green component, each normalized unsigned short.
+     * @requires_gl Only @ref BufferTextureFormat::RG8 is available in OpenGL
+     *      ES.
+     */
     RG16 = GL_RG16,
 
-    /** RGBA, each component normalized unsigned short. */
+    /**
+     * RGBA, each component normalized unsigned short.
+     * @requires_gl Only @ref BufferTextureFormat::RGBA8 is available in OpenGL
+     *      ES.
+     */
     RGBA16 = GL_RGBA16,
+    #endif
 
     /** Red component, non-normalized unsigned byte. */
     R8UI = GL_R8UI,
@@ -197,7 +215,10 @@ and respective function documentation for more information.
 @see @ref Texture, @ref TextureArray, @ref CubeMapTexture,
     @ref CubeMapTextureArray, @ref RectangleTexture, @ref MultisampleTexture
 @requires_gl31 Extension @extension{ARB,texture_buffer_object}
-@requires_gl Texture buffers are not available in OpenGL ES or WebGL.
+@requires_gles30 Not defined in OpenGL ES 2.0.
+@requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
+    @es_extension{EXT,texture_buffer}
+@requires_gles Texture buffers are not available in WebGL.
 */
 class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
     friend Implementation::TextureState;
@@ -247,7 +268,12 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
          * @see @ref BufferTexture(NoCreateT), @ref wrap(), @fn_gl{CreateTextures}
          *      with @def_gl{TEXTURE_BUFFER}, eventually @fn_gl{GenTextures}
          */
-        explicit BufferTexture(): AbstractTexture(GL_TEXTURE_BUFFER) {}
+        explicit BufferTexture():
+            #ifndef MAGNUM_TARGET_GLES
+            AbstractTexture(GL_TEXTURE_BUFFER) {}
+            #else
+            AbstractTexture(GL_TEXTURE_BUFFER_EXT) {}
+            #endif
 
         /**
          * @brief Construct without creating the underlying OpenGL object
@@ -257,7 +283,12 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
          * another object over it to make it useful.
          * @see @ref BufferTexture(), @ref wrap()
          */
-        explicit BufferTexture(NoCreateT) noexcept: AbstractTexture{NoCreate, GL_TEXTURE_BUFFER} {}
+        explicit BufferTexture(NoCreateT) noexcept:
+            #ifndef MAGNUM_TARGET_GLES
+            AbstractTexture{NoCreate, GL_TEXTURE_BUFFER} {}
+            #else
+            AbstractTexture{NoCreate, GL_TEXTURE_BUFFER_EXT} {}
+            #endif
 
         /**
          * @brief Set texture buffer
@@ -313,20 +344,30 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
         #endif
 
     private:
-        explicit BufferTexture(GLuint id, ObjectFlags flags): AbstractTexture{id, GL_TEXTURE_BUFFER, flags} {}
+        explicit BufferTexture(GLuint id, ObjectFlags flags): AbstractTexture{id,
+            #ifndef MAGNUM_TARGET_GLES
+            GL_TEXTURE_BUFFER,
+            #else
+            GL_TEXTURE_BUFFER_EXT,
+            #endif
+            flags} {}
 
         void MAGNUM_LOCAL setBufferImplementationDefault(BufferTextureFormat internalFormat, Buffer& buffer);
+        #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL setBufferImplementationDSA(BufferTextureFormat internalFormat, Buffer& buffer);
         void MAGNUM_LOCAL setBufferImplementationDSAEXT(BufferTextureFormat internalFormat, Buffer& buffer);
+        #endif
 
         void MAGNUM_LOCAL setBufferRangeImplementationDefault(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
+        #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL setBufferRangeImplementationDSA(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
         void MAGNUM_LOCAL setBufferRangeImplementationDSAEXT(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
+        #endif
 };
 
 }
 #else
-#error this header is not available in OpenGL ES build
+#error this header is not available in OpenGL ES 2.0 and WebGL build
 #endif
 
 #endif

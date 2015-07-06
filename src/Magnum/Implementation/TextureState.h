@@ -81,7 +81,7 @@ struct TextureState {
     void(AbstractTexture::*invalidateImageImplementation)(GLint);
     void(AbstractTexture::*invalidateSubImageImplementation)(GLint, const Vector3i&, const Vector3i&);
 
-    #ifndef MAGNUM_TARGET_GLES
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     void(BufferTexture::*setBufferImplementation)(BufferTextureFormat, Buffer&);
     void(BufferTexture::*setBufferRangeImplementation)(BufferTextureFormat, Buffer&, GLintptr, GLsizeiptr);
     #endif
@@ -103,8 +103,10 @@ struct TextureState {
     GLint maxArrayLayers;
     #endif
     #ifndef MAGNUM_TARGET_GLES
-    GLint maxRectangleSize,
-        maxBufferSize;
+    GLint maxRectangleSize;
+    #endif
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    GLint maxBufferSize;
     #endif
     GLint maxTextureUnits;
     #ifndef MAGNUM_TARGET_GLES2
@@ -117,7 +119,7 @@ struct TextureState {
         maxDepthSamples,
         maxIntegerSamples;
     #endif
-    #ifndef MAGNUM_TARGET_GLES
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     GLint bufferOffsetAlignment;
     #endif
 

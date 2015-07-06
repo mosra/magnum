@@ -28,7 +28,7 @@
 #include <Corrade/Utility/Assert.h>
 
 #include "Magnum/AbstractTexture.h"
-#ifndef MAGNUM_TARGET_GLES
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 #include "Magnum/BufferTexture.h"
 #endif
 #include "Magnum/Context.h"
@@ -181,7 +181,7 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         subImage3DImplementation = &AbstractTexture::subImageImplementationDefault;
         #endif
 
-        #ifndef MAGNUM_TARGET_GLES
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         setBufferImplementation = &BufferTexture::setBufferImplementationDefault;
         setBufferRangeImplementation = &BufferTexture::setBufferRangeImplementationDefault;
         #endif

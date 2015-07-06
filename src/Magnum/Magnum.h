@@ -441,7 +441,7 @@ typedef BufferImage<2> BufferImage2D;
 typedef BufferImage<3> BufferImage3D;
 #endif
 
-#ifndef MAGNUM_TARGET_GLES
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 class BufferTexture;
 enum class BufferTextureFormat: GLenum;
 #endif

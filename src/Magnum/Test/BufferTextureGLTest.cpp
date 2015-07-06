@@ -54,8 +54,13 @@ BufferTextureGLTest::BufferTextureGLTest() {
 }
 
 void BufferTextureGLTest::construct() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_buffer_object>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_buffer_object::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_buffer>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_buffer::string() + std::string(" is not supported."));
+    #endif
 
     {
         BufferTexture texture;
@@ -79,8 +84,13 @@ void BufferTextureGLTest::constructNoCreate() {
 }
 
 void BufferTextureGLTest::wrap() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_buffer_object>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_buffer_object::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_buffer>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_buffer::string() + std::string(" is not supported."));
+    #endif
 
     GLuint id;
     glGenTextures(1, &id);
@@ -97,8 +107,13 @@ void BufferTextureGLTest::wrap() {
 }
 
 void BufferTextureGLTest::bind() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_buffer_object>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_buffer_object::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_buffer>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_buffer::string() + std::string(" is not supported."));
+    #endif
 
     BufferTexture texture;
     texture.bind(15);
@@ -119,8 +134,13 @@ void BufferTextureGLTest::bind() {
 }
 
 void BufferTextureGLTest::setBuffer() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_buffer_object>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_buffer_object::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_buffer>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_buffer::string() + std::string(" is not supported."));
+    #endif
 
     BufferTexture texture;
     Buffer buffer;
@@ -135,10 +155,15 @@ void BufferTextureGLTest::setBuffer() {
 }
 
 void BufferTextureGLTest::setBufferOffset() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_buffer_object>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_buffer_object::string() + std::string(" is not supported."));
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_buffer_range>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_buffer_range::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_buffer>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_buffer::string() + std::string(" is not supported."));
+    #endif
 
     /* Check that we have correct offset alignment */
     CORRADE_INTERNAL_ASSERT(256 % BufferTexture::offsetAlignment() == 0);
