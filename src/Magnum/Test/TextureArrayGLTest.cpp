@@ -174,8 +174,11 @@ TextureArrayGLTest::TextureArrayGLTest() {
         &TextureArrayGLTest::samplingBorderInteger1D,
         &TextureArrayGLTest::samplingBorderInteger2D,
         &TextureArrayGLTest::samplingDepthStencilMode1D,
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
         &TextureArrayGLTest::samplingDepthStencilMode2D,
-        #else
+        #endif
+        #ifdef MAGNUM_TARGET_GLES
         &TextureArrayGLTest::samplingBorder2D,
         #endif
 
