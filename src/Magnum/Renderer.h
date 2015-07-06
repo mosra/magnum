@@ -91,7 +91,8 @@ class MAGNUM_EXPORT Renderer {
              * @see @ref DebugOutput, @ref Feature::DebugOutputSynchronous,
              *      @ref Platform::Sdl2Application::Configuration::Flag::Debug "Platform::*Application::Configuration::Flag::Debug"
              * @requires_gl43 Extension @extension{KHR,debug}
-             * @requires_es_extension Extension @es_extension2{KHR,debug,debug}
+             * @requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
+             *      @es_extension2{KHR,debug,debug}
              * @requires_gles Debug output is not available in WebGL.
              */
             #ifndef MAGNUM_TARGET_GLES
@@ -105,7 +106,8 @@ class MAGNUM_EXPORT Renderer {
              * @ref Feature::DebugOutput is enabled.
              * @see @ref DebugMessage
              * @requires_gl43 Extension @extension{KHR,debug}
-             * @requires_es_extension Extension @es_extension2{KHR,debug,debug}
+             * @requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
+             *      @es_extension2{KHR,debug,debug}
              * @requires_gles Debug output is not available in WebGL.
              */
             #ifndef MAGNUM_TARGET_GLES
@@ -1032,7 +1034,8 @@ class MAGNUM_EXPORT Renderer {
              * Given operation would cause an internal stack to underflow.
              * @see @ref DebugGroup
              * @requires_gl43 Extension @extension{KHR,debug}
-             * @requires_es_extension Extension @es_extension2{KHR,debug,debug}
+             * @requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
+             *      @es_extension2{KHR,debug,debug}
              * @requires_gles Debug output is not available in WebGL.
              */
             #ifndef MAGNUM_TARGET_GLES
@@ -1045,7 +1048,8 @@ class MAGNUM_EXPORT Renderer {
              * Given operation would cause an internal stack to overflow.
              * @see @ref DebugGroup
              * @requires_gl43 Extension @extension{KHR,debug}
-             * @requires_es_extension Extension @es_extension2{KHR,debug,debug}
+             * @requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
+             *      @es_extension2{KHR,debug,debug}
              * @requires_gles Debug output is not available in WebGL.
              */
             #ifndef MAGNUM_TARGET_GLES

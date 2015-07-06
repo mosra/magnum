@@ -108,8 +108,9 @@ class MAGNUM_EXPORT Context {
         enum class Flag: GLint {
             /**
              * Debug context
-             * @requires_gl43 Extension @es_extension{KHR,debug}
-             * @requires_es_extension Extension @es_extension{KHR,debug}
+             * @requires_gl43 Extension @extension{KHR,debug}
+             * @requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
+             *      @es_extension2{KHR,debug,debug}
              */
             #ifndef MAGNUM_TARGET_GLES
             Debug = GL_CONTEXT_FLAG_DEBUG_BIT,
