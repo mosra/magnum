@@ -104,6 +104,13 @@ bool isTypeSupported(const Shader::Type type) {
 
     return true;
 }
+#elif !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+bool isTypeSupported(const Shader::Type type) {
+    if(type == Shader::Type::Compute && !Context::current()->isVersionSupported(Version::GLES310))
+        return false;
+
+    return true;
+}
 #else
 constexpr bool isTypeSupported(Shader::Type) { return true; }
 #endif
