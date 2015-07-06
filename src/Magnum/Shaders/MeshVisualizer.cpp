@@ -93,14 +93,14 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
     }
     #endif
 
-    #ifndef MAGNUM_TARGET_GLES2
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     if(geom) CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, *geom, frag}));
     else
     #endif
         CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
 
     attachShaders({vert, frag});
-    #ifndef MAGNUM_TARGET_GLES2
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     if(geom) attachShader(*geom);
     #endif
 
