@@ -56,7 +56,7 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
 
     #ifndef MAGNUM_TARGET_GLES
     const Version version = Context::current()->supportedVersion({Version::GL320, Version::GL310, Version::GL300, Version::GL210});
-    CORRADE_INTERNAL_ASSERT_OUTPUT(flags & Flag::NoGeometryShader || version >= Version::GL320);
+    CORRADE_INTERNAL_ASSERT(flags & Flag::NoGeometryShader || version >= Version::GL320);
     #else
     const Version version = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
     #endif
