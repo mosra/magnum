@@ -291,6 +291,9 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,NV,read_stencil),
         _extension(GL,NV,read_depth_stencil),
         _extension(GL,NV,texture_border_clamp),
+        #ifndef MAGNUM_TARGET_GLES2
+        _extension(GL,NV,shader_noperspective_interpolation),
+        #endif
         _extension(GL,NV,polygon_mode),
         _extension(GL,OES,depth32),
         _extension(GL,OES,mapbuffer),

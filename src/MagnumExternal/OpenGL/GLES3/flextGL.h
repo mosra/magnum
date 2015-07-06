@@ -2144,6 +2144,9 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnUniformuivKHR)(GLuint, GLint, GLs
 /* GL_NV_texture_border_clamp */
 
 
+/* GL_NV_shader_noperspective_interpolation */
+
+
 /* GL_NV_polygon_mode */
 
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglPolygonModeNV)(GLenum, GLenum);

@@ -379,6 +379,9 @@ namespace GL {
         _extension(GL,NV,shadow_samplers_cube,      GLES200, GLES300) // #147
         #endif
         _extension(GL,NV,texture_border_clamp,      GLES200,    None) // #149
+        #ifndef MAGNUM_TARGET_GLES2
+        _extension(GL,NV,shader_noperspective_interpolation, GLES300, None) // #201
+        #endif
         _extension(GL,NV,polygon_mode,              GLES200,    None) // #238
     } namespace OES {
         #ifdef MAGNUM_TARGET_GLES2

@@ -280,6 +280,8 @@ void flextGLInit() {
 
     /* GL_NV_texture_border_clamp */
 
+    /* GL_NV_shader_noperspective_interpolation */
+
     /* GL_NV_polygon_mode */
     flextglPolygonModeNV = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum)>(loader.load("glPolygonModeNV"));
 
