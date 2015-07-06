@@ -25,7 +25,7 @@
 
 #include "CubeMapTextureArray.h"
 
-#ifndef MAGNUM_TARGET_GLES
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 #include "Magnum/BufferImage.h"
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
@@ -36,13 +36,19 @@
 namespace Magnum {
 
 Vector3i CubeMapTextureArray::maxSize() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>())
         return {};
+    #else
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_cube_map_array>())
+        return {};
+    #endif
 
     return Vector3i{Vector2i{Implementation::maxCubeMapTextureSideSize()},
                              Implementation::maxTextureArrayLayers()};
 }
 
+#ifndef MAGNUM_TARGET_GLES
 Image3D CubeMapTextureArray::image(const Int level, Image3D&& image) {
     this->image(level, image);
     return std::move(image);
@@ -62,6 +68,7 @@ BufferImage3D CubeMapTextureArray::subImage(const Int level, const Range3Di& ran
     this->subImage(level, range, image, usage);
     return std::move(image);
 }
+#endif
 
 }
 #endif

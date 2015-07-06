@@ -35,7 +35,7 @@
 #include "Magnum/BufferTexture.h"
 #endif
 #include "Magnum/Context.h"
-#ifndef MAGNUM_TARGET_GLES
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 #include "Magnum/CubeMapTextureArray.h"
 #endif
 #include "Magnum/DebugOutput.h"
@@ -494,9 +494,20 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
 
         _l(BufferTexture::offsetAlignment())
     }
+    #endif
 
-    if(c->isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>()) {
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    #ifndef MAGNUM_TARGET_GLES
+    if(c->isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>())
+    #else
+    if(c->isExtensionSupported<Extensions::GL::EXT::texture_cube_map_array>())
+    #endif
+    {
+        #ifndef MAGNUM_TARGET_GLES
         _h(ARB::texture_cube_map_array)
+        #else
+        _h(EXT::texture_cube_map_array)
+        #endif
 
         _l(CubeMapTextureArray::maxSize())
     }

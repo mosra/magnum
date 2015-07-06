@@ -459,7 +459,7 @@ enum class ColorType: GLenum;
 class Context;
 
 class CubeMapTexture;
-#ifndef MAGNUM_TARGET_GLES
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 class CubeMapTextureArray;
 #endif
 

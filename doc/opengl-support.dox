@@ -368,7 +368,7 @@ Extension                                   | Status
 @es_extension{EXT,tessellation_shader}      | |
 @es_extension{EXT,texture_border_clamp}     | done
 @es_extension{EXT,texture_buffer}           | |
-@es_extension{EXT,texture_cube_map_array}   | |
+@es_extension{EXT,texture_cube_map_array}   | done
 @es_extension{EXT,primitive_bounding_box}   | |
 @es_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr} | |
 @es_extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr} | |
