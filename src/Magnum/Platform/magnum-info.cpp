@@ -379,25 +379,6 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     }
     #endif
 
-    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    #ifndef MAGNUM_TARGET_GLES
-    if(c->isExtensionSupported<Extensions::GL::ARB::geometry_shader4>())
-    #else
-    if(c->isExtensionSupported<Extensions::GL::EXT::geometry_shader>())
-    #endif
-    {
-        #ifndef MAGNUM_TARGET_GLES
-        _h(ARB::geometry_shader4)
-        #else
-        _h(EXT::geometry_shader)
-        #endif
-
-        _l(Shader::maxGeometryInputComponents())
-        _l(Shader::maxGeometryOutputComponents())
-        _l(Shader::maxGeometryTotalOutputComponents())
-    }
-    #endif
-
     #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_GLES
     if(c->isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>())
@@ -464,76 +445,6 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         _l(Shader::maxCombinedShaderStorageBlocks())
         /* AbstractShaderProgram::maxCombinedShaderOutputResources() already in shader_image_load_store */
         _l(AbstractShaderProgram::maxShaderStorageBlockSize())
-    }
-    #endif
-
-    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    #ifndef MAGNUM_TARGET_GLES
-    if(c->isExtensionSupported<Extensions::GL::ARB::tessellation_shader>())
-    #else
-    if(c->isExtensionSupported<Extensions::GL::EXT::tessellation_shader>())
-    #endif
-    {
-        #ifndef MAGNUM_TARGET_GLES
-        _h(ARB::tessellation_shader)
-        #else
-        _h(EXT::tessellation_shader)
-        #endif
-
-        _l(Buffer::shaderStorageOffsetAlignment())
-        _l(Buffer::maxShaderStorageBindings())
-        _l(Shader::maxTessellationControlInputComponents())
-        _l(Shader::maxTessellationControlOutputComponents())
-        _l(Shader::maxTessellationControlTotalOutputComponents())
-        _l(Shader::maxTessellationEvaluationInputComponents())
-        _l(Shader::maxTessellationEvaluationOutputComponents())
-    }
-    #endif
-
-    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    #ifndef MAGNUM_TARGET_GLES
-    if(c->isExtensionSupported<Extensions::GL::ARB::texture_buffer_object>())
-    #else
-    if(c->isExtensionSupported<Extensions::GL::EXT::texture_buffer>())
-    #endif
-    {
-        #ifndef MAGNUM_TARGET_GLES
-        _h(ARB::texture_buffer_object)
-        #else
-        _h(EXT::texture_buffer)
-        #endif
-
-        _l(BufferTexture::maxSize())
-    }
-
-    #ifndef MAGNUM_TARGET_GLES
-    if(c->isExtensionSupported<Extensions::GL::ARB::texture_buffer_range>())
-    #else
-    if(c->isExtensionSupported<Extensions::GL::EXT::texture_buffer>())
-    #endif
-    {
-        #ifndef MAGNUM_TARGET_GLES
-        _h(ARB::texture_buffer_range)
-        #else
-        /* Header added above */
-        #endif
-
-        _l(BufferTexture::offsetAlignment())
-    }
-
-    #ifndef MAGNUM_TARGET_GLES
-    if(c->isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>())
-    #else
-    if(c->isExtensionSupported<Extensions::GL::EXT::texture_cube_map_array>())
-    #endif
-    {
-        #ifndef MAGNUM_TARGET_GLES
-        _h(ARB::texture_cube_map_array)
-        #else
-        _h(EXT::texture_cube_map_array)
-        #endif
-
-        _l(CubeMapTextureArray::maxSize())
     }
     #endif
 
@@ -616,12 +527,6 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     }
     #endif
 
-    if(c->isExtensionSupported<Extensions::GL::EXT::texture_filter_anisotropic>()) {
-        _h(EXT::texture_filter_anisotropic)
-
-        _l(Sampler::maxMaxAnisotropy())
-    }
-
     #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_GLES
     if(c->isExtensionSupported<Extensions::GL::EXT::transform_feedback>())
@@ -644,6 +549,101 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         _l(TransformFeedback::maxBuffers())
     }
     #endif
+
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    #ifndef MAGNUM_TARGET_GLES
+    if(c->isExtensionSupported<Extensions::GL::ARB::geometry_shader4>())
+    #else
+    if(c->isExtensionSupported<Extensions::GL::EXT::geometry_shader>())
+    #endif
+    {
+        #ifndef MAGNUM_TARGET_GLES
+        _h(ARB::geometry_shader4)
+        #else
+        _h(EXT::geometry_shader)
+        #endif
+
+        _l(Shader::maxGeometryInputComponents())
+        _l(Shader::maxGeometryOutputComponents())
+        _l(Shader::maxGeometryTotalOutputComponents())
+    }
+    #endif
+
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    #ifndef MAGNUM_TARGET_GLES
+    if(c->isExtensionSupported<Extensions::GL::ARB::tessellation_shader>())
+    #else
+    if(c->isExtensionSupported<Extensions::GL::EXT::tessellation_shader>())
+    #endif
+    {
+        #ifndef MAGNUM_TARGET_GLES
+        _h(ARB::tessellation_shader)
+        #else
+        _h(EXT::tessellation_shader)
+        #endif
+
+        _l(Buffer::shaderStorageOffsetAlignment())
+        _l(Buffer::maxShaderStorageBindings())
+        _l(Shader::maxTessellationControlInputComponents())
+        _l(Shader::maxTessellationControlOutputComponents())
+        _l(Shader::maxTessellationControlTotalOutputComponents())
+        _l(Shader::maxTessellationEvaluationInputComponents())
+        _l(Shader::maxTessellationEvaluationOutputComponents())
+    }
+    #endif
+
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    #ifndef MAGNUM_TARGET_GLES
+    if(c->isExtensionSupported<Extensions::GL::ARB::texture_buffer_object>())
+    #else
+    if(c->isExtensionSupported<Extensions::GL::EXT::texture_buffer>())
+    #endif
+    {
+        #ifndef MAGNUM_TARGET_GLES
+        _h(ARB::texture_buffer_object)
+        #else
+        _h(EXT::texture_buffer)
+        #endif
+
+        _l(BufferTexture::maxSize())
+    }
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(c->isExtensionSupported<Extensions::GL::ARB::texture_buffer_range>())
+    #else
+    if(c->isExtensionSupported<Extensions::GL::EXT::texture_buffer>())
+    #endif
+    {
+        #ifndef MAGNUM_TARGET_GLES
+        _h(ARB::texture_buffer_range)
+        #else
+        /* Header added above */
+        #endif
+
+        _l(BufferTexture::offsetAlignment())
+    }
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(c->isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>())
+    #else
+    if(c->isExtensionSupported<Extensions::GL::EXT::texture_cube_map_array>())
+    #endif
+    {
+        #ifndef MAGNUM_TARGET_GLES
+        _h(ARB::texture_cube_map_array)
+        #else
+        _h(EXT::texture_cube_map_array)
+        #endif
+
+        _l(CubeMapTextureArray::maxSize())
+    }
+    #endif
+
+    if(c->isExtensionSupported<Extensions::GL::EXT::texture_filter_anisotropic>()) {
+        _h(EXT::texture_filter_anisotropic)
+
+        _l(Sampler::maxMaxAnisotropy())
+    }
 
     if(c->isExtensionSupported<Extensions::GL::KHR::debug>()) {
         _h(KHR::debug)
