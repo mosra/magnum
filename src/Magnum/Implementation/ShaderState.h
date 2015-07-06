@@ -52,7 +52,9 @@ struct ShaderState {
 
     enum: std::size_t {
         #ifndef MAGNUM_TARGET_GLES
-        StageCount = 5
+        StageCount = 6
+        #elif !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        StageCount = 3
         #else
         StageCount = 2
         #endif
