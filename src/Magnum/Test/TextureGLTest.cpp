@@ -88,6 +88,7 @@ struct TextureGLTest: AbstractOpenGLTester {
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
+    void samplingBorderInteger1D();
     void samplingBorderInteger2D();
     void samplingBorderInteger3D();
     void samplingDepthStencilMode1D();
@@ -212,6 +213,7 @@ TextureGLTest::TextureGLTest() {
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
+        &TextureGLTest::samplingBorderInteger1D,
         &TextureGLTest::samplingBorderInteger2D,
         &TextureGLTest::samplingBorderInteger3D,
         &TextureGLTest::samplingDepthStencilMode1D,
@@ -511,6 +513,20 @@ void TextureGLTest::samplingSwizzle1D() {
 
     Texture1D texture;
     texture.setSwizzle<'b', 'g', 'r', '0'>();
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void TextureGLTest::samplingBorderInteger1D() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_integer>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_integer::string() + std::string(" is not supported."));
+
+    Texture1D a;
+    a.setWrapping(Sampler::Wrapping::ClampToBorder)
+     .setBorderColor(Vector4i(1, 56, 78, -2));
+    Texture1D b;
+    b.setWrapping(Sampler::Wrapping::ClampToBorder)
+     .setBorderColor(Vector4ui(35, 56, 78, 15));
 
     MAGNUM_VERIFY_NO_ERROR();
 }
