@@ -635,7 +635,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         _h(EXT::texture_cube_map_array)
         #endif
 
-        _l(CubeMapTextureArray::maxSize())
+        _lvec(CubeMapTextureArray::maxSize())
     }
     #endif
 
