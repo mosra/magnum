@@ -79,7 +79,11 @@ struct TextureArrayGLTest: AbstractOpenGLTester {
 
     #ifndef MAGNUM_TARGET_GLES
     void samplingBorderInteger1D();
+    #endif
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     void samplingBorderInteger2D();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES
     void samplingDepthStencilMode1D();
     #endif
     #ifndef MAGNUM_TARGET_GLES2
@@ -172,7 +176,11 @@ TextureArrayGLTest::TextureArrayGLTest() {
 
         #ifndef MAGNUM_TARGET_GLES
         &TextureArrayGLTest::samplingBorderInteger1D,
+        #endif
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         &TextureArrayGLTest::samplingBorderInteger2D,
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
         &TextureArrayGLTest::samplingDepthStencilMode1D,
         #endif
         #ifndef MAGNUM_TARGET_GLES2
@@ -524,12 +532,17 @@ void TextureArrayGLTest::samplingCompare2D() {
 }
 #endif
 
-#ifndef MAGNUM_TARGET_GLES
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void TextureArrayGLTest::samplingBorderInteger2D() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_array>())
         CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
     if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_integer>())
         CORRADE_SKIP(Extensions::GL::EXT::texture_integer::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_border_clamp>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_border_clamp::string() + std::string(" is not supported."));
+    #endif
 
     Texture2DArray a;
     a.setWrapping(Sampler::Wrapping::ClampToBorder)
@@ -563,8 +576,9 @@ void TextureArrayGLTest::samplingDepthStencilMode2D() {
 
 #ifdef MAGNUM_TARGET_GLES
 void TextureArrayGLTest::samplingBorder2D() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::NV::texture_border_clamp>())
-        CORRADE_SKIP(Extensions::GL::NV::texture_border_clamp::string() + std::string(" is not supported."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::NV::texture_border_clamp>() &&
+       !Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_border_clamp>())
+        CORRADE_SKIP("No required extension is supported.");
 
     Texture2DArray texture;
     texture.setWrapping(Sampler::Wrapping::ClampToBorder)

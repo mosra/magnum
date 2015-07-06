@@ -366,16 +366,17 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl_extension{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{TexParameter} with @def_gl{TEXTURE_BORDER_COLOR}
-         * @requires_es_extension Extension @es_extension{NV,texture_border_clamp}
+         * @requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
+         *      @es_extension{EXT,texture_border_clamp} or
+         *      @es_extension{NV,texture_border_clamp}
          * @requires_gles Border clamp is not available in WebGL.
          */
         Texture<dimensions>& setBorderColor(const Color4& color) {
             AbstractTexture::setBorderColor(color);
             return *this;
         }
-        #endif
 
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Set border color for integer texture
          * @return Reference to self (for method chaining)
@@ -391,8 +392,11 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{TexParameter} with @def_gl{TEXTURE_BORDER_COLOR}
          * @requires_gl30 Extension @extension{EXT,texture_integer}
-         * @requires_gl Border clamp is available only for float textures in
-         *      OpenGL ES. Border clamp is not available in WebGL.
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_es_extension Extension
+         *      @es_extension{ANDROID,extension_pack_es31a}/
+         *      @es_extension{EXT,texture_border_clamp}
+         * @requires_gles Border clamp is not available in WebGL.
          */
         Texture<dimensions>& setBorderColor(const Vector4ui& color) {
             AbstractTexture::setBorderColor(color);
@@ -401,13 +405,17 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
 
         /** @overload
          * @requires_gl30 Extension @extension{EXT,texture_integer}
-         * @requires_gl Border clamp is available only for float textures in
-         *      OpenGL ES. Border clamp is not available in WebGL.
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_es_extension Extension
+         *      @es_extension{ANDROID,extension_pack_es31a}/
+         *      @es_extension{EXT,texture_border_clamp}
+         * @requires_gles Border clamp is not available in WebGL.
          */
         Texture<dimensions>& setBorderColor(const Vector4i& color) {
             AbstractTexture::setBorderColor(color);
             return *this;
         }
+        #endif
         #endif
 
         /**

@@ -48,7 +48,7 @@ struct TextureState {
     void(AbstractTexture::*parameterivImplementation)(GLenum, const GLint*);
     #endif
     void(AbstractTexture::*parameterfvImplementation)(GLenum, const GLfloat*);
-    #ifndef MAGNUM_TARGET_GLES
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     void(AbstractTexture::*parameterIuivImplementation)(GLenum, const GLuint*);
     void(AbstractTexture::*parameterIivImplementation)(GLenum, const GLint*);
     #endif

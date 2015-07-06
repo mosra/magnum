@@ -89,8 +89,12 @@ struct TextureGLTest: AbstractOpenGLTester {
 
     #ifndef MAGNUM_TARGET_GLES
     void samplingBorderInteger1D();
+    #endif
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     void samplingBorderInteger2D();
     void samplingBorderInteger3D();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES
     void samplingDepthStencilMode1D();
     #endif
     #ifndef MAGNUM_TARGET_GLES2
@@ -214,8 +218,12 @@ TextureGLTest::TextureGLTest() {
 
         #ifndef MAGNUM_TARGET_GLES
         &TextureGLTest::samplingBorderInteger1D,
+        #endif
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         &TextureGLTest::samplingBorderInteger2D,
         &TextureGLTest::samplingBorderInteger3D,
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
         &TextureGLTest::samplingDepthStencilMode1D,
         #endif
         #ifndef MAGNUM_TARGET_GLES2
@@ -617,10 +625,15 @@ void TextureGLTest::samplingCompare2D() {
 }
 #endif
 
-#ifndef MAGNUM_TARGET_GLES
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void TextureGLTest::samplingBorderInteger2D() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_integer>())
         CORRADE_SKIP(Extensions::GL::EXT::texture_integer::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_border_clamp>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_border_clamp::string() + std::string(" is not supported."));
+    #endif
 
     Texture2D a;
     a.setWrapping(Sampler::Wrapping::ClampToBorder)
@@ -652,8 +665,9 @@ void TextureGLTest::samplingDepthStencilMode2D() {
 
 #ifdef MAGNUM_TARGET_GLES
 void TextureGLTest::samplingBorder2D() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::NV::texture_border_clamp>())
-        CORRADE_SKIP(Extensions::GL::NV::texture_border_clamp::string() + std::string(" is not supported."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::NV::texture_border_clamp>() &&
+       !Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_border_clamp>())
+        CORRADE_SKIP("No required extension is supported.");
 
     Texture2D texture;
     texture.setWrapping(Sampler::Wrapping::ClampToBorder)
@@ -734,10 +748,15 @@ void TextureGLTest::samplingMaxLevel3D() {
 }
 #endif
 
-#ifndef MAGNUM_TARGET_GLES
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void TextureGLTest::samplingBorderInteger3D() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_integer>())
         CORRADE_SKIP(Extensions::GL::EXT::texture_integer::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_border_clamp>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_border_clamp::string() + std::string(" is not supported."));
+    #endif
 
     Texture3D a;
     a.setWrapping(Sampler::Wrapping::ClampToBorder)
@@ -774,8 +793,9 @@ void TextureGLTest::samplingBorder3D() {
         CORRADE_SKIP(Extensions::GL::OES::texture_3D::string() + std::string(" is not supported."));
     #endif
 
-    if(!Context::current()->isExtensionSupported<Extensions::GL::NV::texture_border_clamp>())
-        CORRADE_SKIP(Extensions::GL::NV::texture_border_clamp::string() + std::string(" is not supported."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::NV::texture_border_clamp>() &&
+       !Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_border_clamp>())
+        CORRADE_SKIP("No required extension is supported.");
 
     Texture3D texture;
     texture.setWrapping(Sampler::Wrapping::ClampToBorder)

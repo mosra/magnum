@@ -368,10 +368,10 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         #endif
         #ifndef MAGNUM_TARGET_WEBGL
         void setBorderColor(const Color4& color);
-        #endif
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES2
         void setBorderColor(const Vector4i& color);
         void setBorderColor(const Vector4ui& color);
+        #endif
         #endif
         void setMaxAnisotropy(Float anisotropy);
         #ifndef MAGNUM_TARGET_WEBGL
@@ -440,7 +440,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         void MAGNUM_LOCAL parameterImplementationDefault(GLenum parameter, const GLint* values);
         #endif
         void MAGNUM_LOCAL parameterImplementationDefault(GLenum parameter, const GLfloat* values);
-        #ifndef MAGNUM_TARGET_GLES
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         void MAGNUM_LOCAL parameterIImplementationDefault(GLenum parameter, const GLuint* values);
         void MAGNUM_LOCAL parameterIImplementationDefault(GLenum parameter, const GLint* values);
         #endif

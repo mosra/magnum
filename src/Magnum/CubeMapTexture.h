@@ -257,16 +257,17 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * See @ref Texture::setBorderColor(const Color4&) for more
          * information.
-         * @requires_es_extension Extension @es_extension{NV,texture_border_clamp}
+         * @requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
+         *      @es_extension{EXT,texture_border_clamp} or
+         *      @es_extension{NV,texture_border_clamp}
          * @requires_gles Border clamp is not available in WebGL.
          */
         CubeMapTexture& setBorderColor(const Color4& color) {
             AbstractTexture::setBorderColor(color);
             return *this;
         }
-        #endif
 
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES2
         /**
          * @copybrief Texture::setBorderColor(const Vector4ui&)
          * @return Reference to self (for method chaining)
@@ -274,8 +275,11 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * See @ref Texture::setBorderColor(const Vector4ui&) for more
          * information.
          * @requires_gl30 Extension @extension{EXT,texture_integer}
-         * @requires_gl Border clamp is available only for float textures in
-         *      OpenGL ES. Border clamp is not available in WebGL.
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_es_extension Extension
+         *      @es_extension{ANDROID,extension_pack_es31a}/
+         *      @es_extension{EXT,texture_border_clamp}
+         * @requires_gles Border clamp is not available in WebGL.
          */
         CubeMapTexture& setBorderColor(const Vector4ui& color) {
             AbstractTexture::setBorderColor(color);
@@ -284,13 +288,17 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
 
         /** @overload
          * @requires_gl30 Extension @extension{EXT,texture_integer}
-         * @requires_gl Border clamp is available only for float textures in
-         *      OpenGL ES. Border clamp is not available in WebGL.
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_es_extension Extension
+         *      @es_extension{ANDROID,extension_pack_es31a}/
+         *      @es_extension{EXT,texture_border_clamp}
+         * @requires_gles Border clamp is not available in WebGL.
          */
         CubeMapTexture& setBorderColor(const Vector4i& color) {
             AbstractTexture::setBorderColor(color);
             return *this;
         }
+        #endif
         #endif
 
         /**

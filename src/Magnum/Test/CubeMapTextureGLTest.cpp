@@ -56,7 +56,7 @@ struct CubeMapTextureGLTest: AbstractOpenGLTester {
     void samplingMaxLevel();
     void samplingCompare();
     #endif
-    #ifndef MAGNUM_TARGET_GLES
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     void samplingBorderInteger();
     #endif
     #ifndef MAGNUM_TARGET_GLES2
@@ -107,7 +107,7 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
               &CubeMapTextureGLTest::samplingMaxLevel,
               &CubeMapTextureGLTest::samplingCompare,
               #endif
-              #ifndef MAGNUM_TARGET_GLES
+              #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
               &CubeMapTextureGLTest::samplingBorderInteger,
               #endif
               #ifndef MAGNUM_TARGET_GLES2
@@ -278,10 +278,15 @@ void CubeMapTextureGLTest::samplingCompare() {
 }
 #endif
 
-#ifndef MAGNUM_TARGET_GLES
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void CubeMapTextureGLTest::samplingBorderInteger() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_integer>())
         CORRADE_SKIP(Extensions::GL::EXT::texture_integer::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_border_clamp>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_border_clamp::string() + std::string(" is not supported."));
+    #endif
 
     CubeMapTexture a;
     a.setWrapping(Sampler::Wrapping::ClampToBorder)
@@ -312,9 +317,10 @@ void CubeMapTextureGLTest::samplingDepthStencilMode() {
 #endif
 
 #ifdef MAGNUM_TARGET_GLES
-void CubeMapTextureGLTest::samplingBorder2D() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::NV::texture_border_clamp>())
-        CORRADE_SKIP(Extensions::GL::NV::texture_border_clamp::string() + std::string(" is not supported."));
+void CubeMapTextureGLTest::samplingBorder() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::NV::texture_border_clamp>() &&
+       !Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_border_clamp>())
+        CORRADE_SKIP("No required extension is supported.");
 
     CubeMapTexture texture;
     texture.setWrapping(Sampler::Wrapping::ClampToBorder)

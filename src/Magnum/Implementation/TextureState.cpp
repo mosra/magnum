@@ -165,7 +165,7 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         parameterivImplementation = &AbstractTexture::parameterImplementationDefault;
         #endif
         parameterfvImplementation = &AbstractTexture::parameterImplementationDefault;
-        #ifndef MAGNUM_TARGET_GLES
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         parameterIuivImplementation = &AbstractTexture::parameterIImplementationDefault;
         parameterIivImplementation = &AbstractTexture::parameterIImplementationDefault;
         #endif
