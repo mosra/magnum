@@ -105,12 +105,14 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
     {
         bindAttributeLocation(Position::Location, "position");
 
+        #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
         #ifndef MAGNUM_TARGET_GLES
         if(!Context::current()->isVersionSupported(Version::GL310))
         #endif
         {
             bindAttributeLocation(VertexIndex::Location, "vertexIndex");
         }
+        #endif
     }
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
