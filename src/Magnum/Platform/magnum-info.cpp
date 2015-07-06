@@ -515,9 +515,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         _l(AbstractTexture::maxDepthSamples())
         _l(AbstractTexture::maxIntegerSamples())
         _lvec(MultisampleTexture2D::maxSize())
-        #ifndef MAGNUM_TARGET_GLES
         _lvec(MultisampleTexture2DArray::maxSize())
-        #endif
     }
     #endif
 

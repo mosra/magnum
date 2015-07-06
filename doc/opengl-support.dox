@@ -393,7 +393,7 @@ Extension                                   | Status
 @es_extension{OES,shader_image_atomic}      | done (shading language only)
 @es_extension{OES,shader_multisample_interpolation} | |
 @es_extension{OES,texture_stencil8}         | |
-@es_extension{OES,texture_storage_multisample_2d_array} | |
+@es_extension{OES,texture_storage_multisample_2d_array} | done
 
 @subsection opengl-support-webgl10 WebGL 1.0
 

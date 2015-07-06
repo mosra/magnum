@@ -44,14 +44,17 @@ template<> Vector2i MAGNUM_EXPORT maxMultisampleTextureSize<2>() {
     return Vector2i{Implementation::maxTextureSideSize()};
 }
 
-#ifndef MAGNUM_TARGET_GLES
 template<> Vector3i MAGNUM_EXPORT maxMultisampleTextureSize<3>() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
         return Vector3i{0};
+    #else
+    if(!Context::current()->isExtensionSupported<Extensions::GL::OES::texture_storage_multisample_2d_array>())
+        return Vector3i{0};
+    #endif
 
     return {Vector2i{Implementation::maxTextureSideSize()}, Implementation::max3DTextureDepth()};
 }
-#endif
 
 }}
 #endif

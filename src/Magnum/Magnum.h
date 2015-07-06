@@ -489,9 +489,7 @@ class MeshView;
 /* MultisampleTextureSampleLocations enum used only in the function */
 template<UnsignedInt> class MultisampleTexture;
 typedef MultisampleTexture<2> MultisampleTexture2D;
-#ifndef MAGNUM_TARGET_GLES
 typedef MultisampleTexture<3> MultisampleTexture2DArray;
-#endif
 #endif
 
 /* ObjectFlag, ObjectFlags are used only in conjunction with *::wrap() function */

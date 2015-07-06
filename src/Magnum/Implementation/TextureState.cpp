@@ -314,6 +314,7 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     }
     #elif !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     storage2DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationDefault;
+    storage3DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationDefault;
     #endif
 
     /* Anisotropic filter implementation */

@@ -36,71 +36,48 @@ struct MultisampleTextureGLTest: AbstractOpenGLTester {
     explicit MultisampleTextureGLTest();
 
     void construct2D();
-    void construct2DNoCreate();
-    #ifndef MAGNUM_TARGET_GLES
     void construct2DArray();
+
+    void construct2DNoCreate();
     void construct2DArrayNoCreate();
-    #endif
 
     void wrap2D();
-    #ifndef MAGNUM_TARGET_GLES
     void wrap2DArray();
-    #endif
 
     void bind2D();
-    #ifndef MAGNUM_TARGET_GLES
     void bind2DArray();
-    #endif
 
     void storage2D();
-    #ifndef MAGNUM_TARGET_GLES
     void storage2DArray();
-    #endif
 
     void invalidateImage2D();
-    #ifndef MAGNUM_TARGET_GLES
     void invalidateImage2DArray();
-    #endif
 
     void invalidateSubImage2D();
-    #ifndef MAGNUM_TARGET_GLES
     void invalidateSubImage2DArray();
-    #endif
 };
 
 MultisampleTextureGLTest::MultisampleTextureGLTest() {
     addTests({&MultisampleTextureGLTest::construct2D,
-              &MultisampleTextureGLTest::construct2DNoCreate,
-              #ifndef MAGNUM_TARGET_GLES
               &MultisampleTextureGLTest::construct2DArray,
+
+              &MultisampleTextureGLTest::construct2DNoCreate,
               &MultisampleTextureGLTest::construct2DArrayNoCreate,
-              #endif
 
               &MultisampleTextureGLTest::wrap2D,
-              #ifndef MAGNUM_TARGET_GLES
               &MultisampleTextureGLTest::wrap2DArray,
-              #endif
 
               &MultisampleTextureGLTest::bind2D,
-              #ifndef MAGNUM_TARGET_GLES
               &MultisampleTextureGLTest::bind2DArray,
-              #endif
 
               &MultisampleTextureGLTest::storage2D,
-              #ifndef MAGNUM_TARGET_GLES
               &MultisampleTextureGLTest::storage2DArray,
-              #endif
 
               &MultisampleTextureGLTest::invalidateImage2D,
-              #ifndef MAGNUM_TARGET_GLES
               &MultisampleTextureGLTest::invalidateImage2DArray,
-              #endif
 
               &MultisampleTextureGLTest::invalidateSubImage2D,
-              #ifndef MAGNUM_TARGET_GLES
-              &MultisampleTextureGLTest::invalidateSubImage2DArray
-              #endif
-              });
+              &MultisampleTextureGLTest::invalidateSubImage2DArray});
 }
 
 void MultisampleTextureGLTest::construct2D() {
@@ -133,10 +110,14 @@ void MultisampleTextureGLTest::construct2DNoCreate() {
     MAGNUM_VERIFY_NO_ERROR();
 }
 
-#ifndef MAGNUM_TARGET_GLES
 void MultisampleTextureGLTest::construct2DArray() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current()->isExtensionSupported<Extensions::GL::OES::texture_storage_multisample_2d_array>())
+        CORRADE_SKIP(Extensions::GL::OES::texture_storage_multisample_2d_array::string() + std::string(" is not supported."));
+    #endif
 
     {
         MultisampleTexture2DArray texture;
@@ -158,7 +139,6 @@ void MultisampleTextureGLTest::construct2DArrayNoCreate() {
 
     MAGNUM_VERIFY_NO_ERROR();
 }
-#endif
 
 void MultisampleTextureGLTest::wrap2D() {
     #ifndef MAGNUM_TARGET_GLES
@@ -183,10 +163,14 @@ void MultisampleTextureGLTest::wrap2D() {
     glDeleteTextures(1, &id);
 }
 
-#ifndef MAGNUM_TARGET_GLES
 void MultisampleTextureGLTest::wrap2DArray() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string{" is not supported."});
+        CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current()->isExtensionSupported<Extensions::GL::OES::texture_storage_multisample_2d_array>())
+        CORRADE_SKIP(Extensions::GL::OES::texture_storage_multisample_2d_array::string() + std::string(" is not supported."));
+    #endif
 
     GLuint id;
     glGenTextures(1, &id);
@@ -201,7 +185,6 @@ void MultisampleTextureGLTest::wrap2DArray() {
     MultisampleTexture2DArray::wrap(id);
     glDeleteTextures(1, &id);
 }
-#endif
 
 void MultisampleTextureGLTest::bind2D() {
     #ifndef MAGNUM_TARGET_GLES
@@ -230,10 +213,14 @@ void MultisampleTextureGLTest::bind2D() {
     MAGNUM_VERIFY_NO_ERROR();
 }
 
-#ifndef MAGNUM_TARGET_GLES
 void MultisampleTextureGLTest::bind2DArray() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current()->isExtensionSupported<Extensions::GL::OES::texture_storage_multisample_2d_array>())
+        CORRADE_SKIP(Extensions::GL::OES::texture_storage_multisample_2d_array::string() + std::string(" is not supported."));
+    #endif
 
     MultisampleTexture2DArray texture;
     texture.bind(15);
@@ -252,7 +239,6 @@ void MultisampleTextureGLTest::bind2DArray() {
 
     MAGNUM_VERIFY_NO_ERROR();
 }
-#endif
 
 void MultisampleTextureGLTest::storage2D() {
     #ifndef MAGNUM_TARGET_GLES
@@ -273,10 +259,14 @@ void MultisampleTextureGLTest::storage2D() {
     MAGNUM_VERIFY_NO_ERROR();
 }
 
-#ifndef MAGNUM_TARGET_GLES
 void MultisampleTextureGLTest::storage2DArray() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current()->isExtensionSupported<Extensions::GL::OES::texture_storage_multisample_2d_array>())
+        CORRADE_SKIP(Extensions::GL::OES::texture_storage_multisample_2d_array::string() + std::string(" is not supported."));
+    #endif
 
     MultisampleTexture2DArray texture;
     texture.setStorage(4, TextureFormat::RGBA8, {16, 16, 5});
@@ -287,7 +277,6 @@ void MultisampleTextureGLTest::storage2DArray() {
 
     MAGNUM_VERIFY_NO_ERROR();
 }
-#endif
 
 void MultisampleTextureGLTest::invalidateImage2D() {
     #ifndef MAGNUM_TARGET_GLES
@@ -305,10 +294,14 @@ void MultisampleTextureGLTest::invalidateImage2D() {
     MAGNUM_VERIFY_NO_ERROR();
 }
 
-#ifndef MAGNUM_TARGET_GLES
 void MultisampleTextureGLTest::invalidateImage2DArray() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current()->isExtensionSupported<Extensions::GL::OES::texture_storage_multisample_2d_array>())
+        CORRADE_SKIP(Extensions::GL::OES::texture_storage_multisample_2d_array::string() + std::string(" is not supported."));
+    #endif
 
     MultisampleTexture2DArray texture;
     texture.setStorage(4, TextureFormat::RGBA8, {16, 16, 5});
@@ -316,7 +309,6 @@ void MultisampleTextureGLTest::invalidateImage2DArray() {
 
     MAGNUM_VERIFY_NO_ERROR();
 }
-#endif
 
 void MultisampleTextureGLTest::invalidateSubImage2D() {
     #ifndef MAGNUM_TARGET_GLES
@@ -334,10 +326,14 @@ void MultisampleTextureGLTest::invalidateSubImage2D() {
     MAGNUM_VERIFY_NO_ERROR();
 }
 
-#ifndef MAGNUM_TARGET_GLES
 void MultisampleTextureGLTest::invalidateSubImage2DArray() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current()->isExtensionSupported<Extensions::GL::OES::texture_storage_multisample_2d_array>())
+        CORRADE_SKIP(Extensions::GL::OES::texture_storage_multisample_2d_array::string() + std::string(" is not supported."));
+    #endif
 
     MultisampleTexture2DArray texture;
     texture.setStorage(4, TextureFormat::RGBA8, {16, 16, 5});
@@ -345,7 +341,6 @@ void MultisampleTextureGLTest::invalidateSubImage2DArray() {
 
     MAGNUM_VERIFY_NO_ERROR();
 }
-#endif
 
 }}
 

@@ -1161,12 +1161,21 @@ void AbstractTexture::storageMultisampleImplementationFallback(const GLsizei sam
     bindInternal();
     glTexImage3DMultisample(_target, samples, GLenum(internalFormat), size.x(), size.y(), size.z(), fixedSampleLocations);
 }
+#endif
 
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void AbstractTexture::storageMultisampleImplementationDefault(const GLsizei samples, const TextureFormat internalFormat, const Vector3i& size, const GLboolean fixedSampleLocations) {
     bindInternal();
-    glTexStorage3DMultisample(_target, samples, GLenum(internalFormat), size.x(), size.y(), size.z(), fixedSampleLocations);
+    #ifndef MAGNUM_TARGET_GLES
+    glTexStorage3DMultisample
+    #else
+    glTexStorage3DMultisampleOES
+    #endif
+        (_target, samples, GLenum(internalFormat), size.x(), size.y(), size.z(), fixedSampleLocations);
 }
+#endif
 
+#ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::storageMultisampleImplementationDSA(const GLsizei samples, const TextureFormat internalFormat, const Vector3i& size, const GLboolean fixedSampleLocations) {
     glTextureStorage3DMultisample(_id, samples, GLenum(internalFormat), size.x(), size.y(), size.z(), fixedSampleLocations);
 }
@@ -1395,9 +1404,7 @@ void AbstractTexture::DataHelper<3>::setStorage(AbstractTexture& texture, const 
 void AbstractTexture::DataHelper<2>::setStorageMultisample(AbstractTexture& texture, const GLsizei samples, const TextureFormat internalFormat, const Vector2i& size, const GLboolean fixedSampleLocations) {
     (texture.*Context::current()->state().texture->storage2DMultisampleImplementation)(samples, internalFormat, size, fixedSampleLocations);
 }
-#endif
 
-#ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::DataHelper<3>::setStorageMultisample(AbstractTexture& texture, const GLsizei samples, const TextureFormat internalFormat, const Vector3i& size, const GLboolean fixedSampleLocations) {
     (texture.*Context::current()->state().texture->storage3DMultisampleImplementation)(samples, internalFormat, size, fixedSampleLocations);
 }
