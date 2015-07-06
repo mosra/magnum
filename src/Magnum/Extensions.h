@@ -265,7 +265,11 @@ namespace GL {
     }
     #else
     #line 1
-    namespace ANGLE {
+    namespace ANDROID {
+        #ifndef MAGNUM_TARGET_GLES2
+        _extension(GL,ANDROID,extension_pack_es31a, GLES310,    None) // #187
+        #endif
+    } namespace ANGLE {
         #ifdef MAGNUM_TARGET_GLES2
         _extension(GL,ANGLE,framebuffer_blit,       GLES200, GLES300) // #83
         _extension(GL,ANGLE,framebuffer_multisample, GLES200, GLES300) // #84
@@ -332,6 +336,20 @@ namespace GL {
         #endif
         #ifndef MAGNUM_TARGET_GLES2
         _extension(GL,EXT,shader_integer_mix,       GLES300,    None) // #161
+        _extension(GL,EXT,copy_image,               GLES300,    None) // #175
+        #endif
+        _extension(GL,EXT,draw_buffers_indexed,     GLES200,    None) // #176
+        #ifndef MAGNUM_TARGET_GLES2
+        _extension(GL,EXT,geometry_shader,          GLES310,    None) // #177
+        _extension(GL,EXT,gpu_shader5,              GLES310,    None) // #178
+        _extension(GL,EXT,shader_io_blocks,         GLES310,    None) // #180
+        _extension(GL,EXT,tessellation_shader,      GLES310,    None) // #181
+        #endif
+        _extension(GL,EXT,texture_border_clamp,     GLES200,    None) // #182
+        #ifndef MAGNUM_TARGET_GLES2
+        _extension(GL,EXT,texture_buffer,           GLES310,    None) // #183
+        _extension(GL,EXT,texture_cube_map_array,   GLES310,    None) // #184
+        _extension(GL,EXT,primitive_bounding_box,   GLES310,    None) // #186
         #endif
     } namespace KHR {
         _extension(GL,KHR,texture_compression_astc_ldr, GLES200, None) // #117
@@ -390,6 +408,16 @@ namespace GL {
         _extension(GL,OES,vertex_array_object,      GLES200, GLES300) // #71
         _extension(GL,OES,required_internalformat,  GLES200, GLES300) // #115
         _extension(GL,OES,surfaceless_context,      GLES200, GLES300) // #116
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        _extension(GL,OES,sample_shading,           GLES300,    None) // #169
+        _extension(GL,OES,sample_variables,         GLES300,    None) // #170
+        _extension(GL,OES,shader_image_atomic,      GLES310,    None) // #171
+        _extension(GL,OES,shader_multisample_interpolation, GLES300, None) // #172
+        #endif
+        _extension(GL,OES,texture_stencil8,         GLES200,    None) // #173
+        #ifndef MAGNUM_TARGET_GLES2
+        _extension(GL,OES,texture_storage_multisample_2d_array, GLES310, None) // #174
         #endif
     }
     #endif

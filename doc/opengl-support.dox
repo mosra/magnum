@@ -344,6 +344,7 @@ Extension                                   | Status
 
 Extension                                   | Status
 ------------------------------------------- | ------
+@es_extension{ANDROID,extension_pack_es31a} | done (nothing to do)
 @es_extension{APPLE,texture_format_BGRA8888} | done
 @es_extension{CHROMIUM,map_sub} (NaCl only) | only buffer mapping
 @es_extension{EXT,texture_filter_anisotropic} | done
@@ -359,6 +360,16 @@ Extension                                   | Status
 @es_extension{EXT,texture_sRGB_decode}      | done
 @es_extension{EXT,sRGB_write_control}       | done
 @es_extension{EXT,shader_integer_mix}       | done (shading language only)
+@es_extension{EXT,copy_image}               | |
+@es_extension{EXT,draw_buffers_indexed}     | |
+@es_extension{EXT,geometry_shader}          | |
+@es_extension{EXT,gpu_shader5}              | done (shading language only)
+@es_extension{EXT,shader_io_blocks}         | done (shading language only)
+@es_extension{EXT,tessellation_shader}      | |
+@es_extension{EXT,texture_border_clamp}     | |
+@es_extension{EXT,texture_buffer}           | |
+@es_extension{EXT,texture_cube_map_array}   | |
+@es_extension{EXT,primitive_bounding_box}   | |
 @es_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr} | |
 @es_extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr} | |
 @es_extension{KHR,debug}                    | see above
@@ -377,6 +388,12 @@ Extension                                   | Status
 @es_extension{OES,mapbuffer}                | done
 @es_extension{OES,stencil1}                 | done
 @es_extension{OES,stencil4}                 | done
+@es_extension{OES,sample_shading}           | |
+@es_extension{OES,sample_variables}         | done (shading language only)
+@es_extension{OES,shader_image_atomic}      | done (shading language only)
+@es_extension{OES,shader_multisample_interpolation} | |
+@es_extension{OES,texture_stencil8}         | |
+@es_extension{OES,texture_storage_multisample_2d_array} | |
 
 @subsection opengl-support-webgl10 WebGL 1.0
 

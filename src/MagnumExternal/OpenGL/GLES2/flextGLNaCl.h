@@ -738,6 +738,42 @@ typedef khronos_ssize_t GLsizeiptr;
 
 #define GL_FRAMEBUFFER_SRGB_EXT 0x8DB9
 
+/* GL_EXT_draw_buffers_indexed */
+
+#define GL_BLEND_EQUATION_RGB 0x8009
+#define GL_BLEND_EQUATION_ALPHA 0x883D
+#define GL_BLEND_SRC_RGB 0x80C9
+#define GL_BLEND_SRC_ALPHA 0x80CB
+#define GL_BLEND_DST_RGB 0x80C8
+#define GL_BLEND_DST_ALPHA 0x80CA
+#define GL_COLOR_WRITEMASK 0x0C23
+#define GL_BLEND 0x0BE2
+#define GL_FUNC_ADD 0x8006
+#define GL_FUNC_SUBTRACT 0x800A
+#define GL_FUNC_REVERSE_SUBTRACT 0x800B
+#define GL_MIN 0x8007
+#define GL_MAX 0x8008
+#define GL_ZERO 0
+#define GL_ONE 1
+#define GL_SRC_COLOR 0x0300
+#define GL_ONE_MINUS_SRC_COLOR 0x0301
+#define GL_DST_COLOR 0x0306
+#define GL_ONE_MINUS_DST_COLOR 0x0307
+#define GL_SRC_ALPHA 0x0302
+#define GL_ONE_MINUS_SRC_ALPHA 0x0303
+#define GL_DST_ALPHA 0x0304
+#define GL_ONE_MINUS_DST_ALPHA 0x0305
+#define GL_CONSTANT_COLOR 0x8001
+#define GL_ONE_MINUS_CONSTANT_COLOR 0x8002
+#define GL_CONSTANT_ALPHA 0x8003
+#define GL_ONE_MINUS_CONSTANT_ALPHA 0x8004
+#define GL_SRC_ALPHA_SATURATE 0x0308
+
+/* GL_EXT_texture_border_clamp */
+
+#define GL_TEXTURE_BORDER_COLOR_EXT 0x1004
+#define GL_CLAMP_TO_BORDER_EXT 0x812D
+
 /* GL_EXT_separate_shader_objects */
 
 #define GL_ACTIVE_PROGRAM_EXT 0x8259
@@ -996,6 +1032,11 @@ typedef khronos_ssize_t GLsizeiptr;
 /* GL_OES_stencil4 */
 
 #define GL_STENCIL_INDEX4_OES 0x8D47
+
+/* GL_OES_texture_stencil8 */
+
+#define GL_STENCIL_INDEX_OES 0x1901
+#define GL_STENCIL_INDEX8_OES 0x8D48
 
 /* Function prototypes */
 
@@ -1675,6 +1716,48 @@ GL_APICALL void GL_APIENTRY GLES2GetQueryObjectui64vEXT(GLuint, GLenum, GLuint64
 #define GL_EXT_sRGB_write_control 1
 #endif
 
+/* GL_EXT_draw_buffers_indexed */
+#ifndef GL_EXT_draw_buffers_indexed
+#define GL_EXT_draw_buffers_indexed 1
+GL_APICALL void GL_APIENTRY GLES2EnableiEXT(GLenum, GLuint);
+#define glEnableiEXT GLES2EnableiEXT
+GL_APICALL void GL_APIENTRY GLES2DisableiEXT(GLenum, GLuint);
+#define glDisableiEXT GLES2DisableiEXT
+GL_APICALL void GL_APIENTRY GLES2BlendEquationiEXT(GLuint, GLenum);
+#define glBlendEquationiEXT GLES2BlendEquationiEXT
+GL_APICALL void GL_APIENTRY GLES2BlendEquationSeparateiEXT(GLuint, GLenum, GLenum);
+#define glBlendEquationSeparateiEXT GLES2BlendEquationSeparateiEXT
+GL_APICALL void GL_APIENTRY GLES2BlendFunciEXT(GLuint, GLenum, GLenum);
+#define glBlendFunciEXT GLES2BlendFunciEXT
+GL_APICALL void GL_APIENTRY GLES2BlendFuncSeparateiEXT(GLuint, GLenum, GLenum, GLenum, GLenum);
+#define glBlendFuncSeparateiEXT GLES2BlendFuncSeparateiEXT
+GL_APICALL void GL_APIENTRY GLES2ColorMaskiEXT(GLuint, GLboolean, GLboolean, GLboolean, GLboolean);
+#define glColorMaskiEXT GLES2ColorMaskiEXT
+GL_APICALL GLboolean GL_APIENTRY GLES2IsEnablediEXT(GLenum, GLuint);
+#define glIsEnablediEXT GLES2IsEnablediEXT
+#endif
+
+/* GL_EXT_texture_border_clamp */
+#ifndef GL_EXT_texture_border_clamp
+#define GL_EXT_texture_border_clamp 1
+GL_APICALL void GL_APIENTRY GLES2TexParameterIivEXT(GLenum, GLenum, const GLint *);
+#define glTexParameterIivEXT GLES2TexParameterIivEXT
+GL_APICALL void GL_APIENTRY GLES2TexParameterIuivEXT(GLenum, GLenum, const GLuint *);
+#define glTexParameterIuivEXT GLES2TexParameterIuivEXT
+GL_APICALL void GL_APIENTRY GLES2GetTexParameterIivEXT(GLenum, GLenum, GLint *);
+#define glGetTexParameterIivEXT GLES2GetTexParameterIivEXT
+GL_APICALL void GL_APIENTRY GLES2GetTexParameterIuivEXT(GLenum, GLenum, GLuint *);
+#define glGetTexParameterIuivEXT GLES2GetTexParameterIuivEXT
+GL_APICALL void GL_APIENTRY GLES2SamplerParameterIivEXT(GLuint, GLenum, const GLint *);
+#define glSamplerParameterIivEXT GLES2SamplerParameterIivEXT
+GL_APICALL void GL_APIENTRY GLES2SamplerParameterIuivEXT(GLuint, GLenum, const GLuint *);
+#define glSamplerParameterIuivEXT GLES2SamplerParameterIuivEXT
+GL_APICALL void GL_APIENTRY GLES2GetSamplerParameterIivEXT(GLuint, GLenum, GLint *);
+#define glGetSamplerParameterIivEXT GLES2GetSamplerParameterIivEXT
+GL_APICALL void GL_APIENTRY GLES2GetSamplerParameterIuivEXT(GLuint, GLenum, GLuint *);
+#define glGetSamplerParameterIuivEXT GLES2GetSamplerParameterIuivEXT
+#endif
+
 /* GL_EXT_separate_shader_objects */
 #ifndef GL_EXT_separate_shader_objects
 #define GL_EXT_separate_shader_objects 1
@@ -1958,6 +2041,11 @@ GL_APICALL void GL_APIENTRY GLES2GetBufferPointervOES(GLenum, GLenum, void **);
 /* GL_OES_stencil4 */
 #ifndef GL_OES_stencil4
 #define GL_OES_stencil4 1
+#endif
+
+/* GL_OES_texture_stencil8 */
+#ifndef GL_OES_texture_stencil8
+#define GL_OES_texture_stencil8 1
 #endif
 
 #ifdef __cplusplus

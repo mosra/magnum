@@ -58,6 +58,8 @@ extension EXT_debug_marker                      optional
 extension EXT_disjoint_timer_query              optional
 extension EXT_texture_sRGB_decode               optional
 extension EXT_sRGB_write_control                optional
+extension EXT_draw_buffers_indexed              optional
+extension EXT_texture_border_clamp              optional
 extension EXT_separate_shader_objects           optional
 extension EXT_multisampled_render_to_texture    optional
 extension EXT_robustness                        optional
@@ -79,3 +81,4 @@ extension OES_depth32                           optional
 extension OES_mapbuffer                         optional
 extension OES_stencil1                          optional
 extension OES_stencil4                          optional
+extension OES_texture_stencil8                  optional

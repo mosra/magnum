@@ -763,6 +763,42 @@ typedef khronos_ssize_t GLsizeiptr;
 
 #define GL_FRAMEBUFFER_SRGB_EXT 0x8DB9
 
+/* GL_EXT_draw_buffers_indexed */
+
+#define GL_BLEND_EQUATION_RGB 0x8009
+#define GL_BLEND_EQUATION_ALPHA 0x883D
+#define GL_BLEND_SRC_RGB 0x80C9
+#define GL_BLEND_SRC_ALPHA 0x80CB
+#define GL_BLEND_DST_RGB 0x80C8
+#define GL_BLEND_DST_ALPHA 0x80CA
+#define GL_COLOR_WRITEMASK 0x0C23
+#define GL_BLEND 0x0BE2
+#define GL_FUNC_ADD 0x8006
+#define GL_FUNC_SUBTRACT 0x800A
+#define GL_FUNC_REVERSE_SUBTRACT 0x800B
+#define GL_MIN 0x8007
+#define GL_MAX 0x8008
+#define GL_ZERO 0
+#define GL_ONE 1
+#define GL_SRC_COLOR 0x0300
+#define GL_ONE_MINUS_SRC_COLOR 0x0301
+#define GL_DST_COLOR 0x0306
+#define GL_ONE_MINUS_DST_COLOR 0x0307
+#define GL_SRC_ALPHA 0x0302
+#define GL_ONE_MINUS_SRC_ALPHA 0x0303
+#define GL_DST_ALPHA 0x0304
+#define GL_ONE_MINUS_DST_ALPHA 0x0305
+#define GL_CONSTANT_COLOR 0x8001
+#define GL_ONE_MINUS_CONSTANT_COLOR 0x8002
+#define GL_CONSTANT_ALPHA 0x8003
+#define GL_ONE_MINUS_CONSTANT_ALPHA 0x8004
+#define GL_SRC_ALPHA_SATURATE 0x0308
+
+/* GL_EXT_texture_border_clamp */
+
+#define GL_TEXTURE_BORDER_COLOR_EXT 0x1004
+#define GL_CLAMP_TO_BORDER_EXT 0x812D
+
 /* GL_EXT_separate_shader_objects */
 
 #define GL_ACTIVE_PROGRAM_EXT 0x8259
@@ -1021,6 +1057,11 @@ typedef khronos_ssize_t GLsizeiptr;
 /* GL_OES_stencil4 */
 
 #define GL_STENCIL_INDEX4_OES 0x8D47
+
+/* GL_OES_texture_stencil8 */
+
+#define GL_STENCIL_INDEX_OES 0x1901
+#define GL_STENCIL_INDEX8_OES 0x8D48
 
 /* Function prototypes */
 
@@ -1446,6 +1487,44 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetQueryObjectui64vEXT)(GLuint, GLenu
 /* GL_EXT_sRGB_write_control */
 
 
+/* GL_EXT_draw_buffers_indexed */
+
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglEnableiEXT)(GLenum, GLuint);
+#define glEnableiEXT flextglEnableiEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDisableiEXT)(GLenum, GLuint);
+#define glDisableiEXT flextglDisableiEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglBlendEquationiEXT)(GLuint, GLenum);
+#define glBlendEquationiEXT flextglBlendEquationiEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglBlendEquationSeparateiEXT)(GLuint, GLenum, GLenum);
+#define glBlendEquationSeparateiEXT flextglBlendEquationSeparateiEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglBlendFunciEXT)(GLuint, GLenum, GLenum);
+#define glBlendFunciEXT flextglBlendFunciEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglBlendFuncSeparateiEXT)(GLuint, GLenum, GLenum, GLenum, GLenum);
+#define glBlendFuncSeparateiEXT flextglBlendFuncSeparateiEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglColorMaskiEXT)(GLuint, GLboolean, GLboolean, GLboolean, GLboolean);
+#define glColorMaskiEXT flextglColorMaskiEXT
+GLAPI FLEXTGL_EXPORT GLboolean(APIENTRY *flextglIsEnablediEXT)(GLenum, GLuint);
+#define glIsEnablediEXT flextglIsEnablediEXT
+
+/* GL_EXT_texture_border_clamp */
+
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglTexParameterIivEXT)(GLenum, GLenum, const GLint *);
+#define glTexParameterIivEXT flextglTexParameterIivEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglTexParameterIuivEXT)(GLenum, GLenum, const GLuint *);
+#define glTexParameterIuivEXT flextglTexParameterIuivEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetTexParameterIivEXT)(GLenum, GLenum, GLint *);
+#define glGetTexParameterIivEXT flextglGetTexParameterIivEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetTexParameterIuivEXT)(GLenum, GLenum, GLuint *);
+#define glGetTexParameterIuivEXT flextglGetTexParameterIuivEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglSamplerParameterIivEXT)(GLuint, GLenum, const GLint *);
+#define glSamplerParameterIivEXT flextglSamplerParameterIivEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglSamplerParameterIuivEXT)(GLuint, GLenum, const GLuint *);
+#define glSamplerParameterIuivEXT flextglSamplerParameterIuivEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetSamplerParameterIivEXT)(GLuint, GLenum, GLint *);
+#define glGetSamplerParameterIivEXT flextglGetSamplerParameterIivEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetSamplerParameterIuivEXT)(GLuint, GLenum, GLuint *);
+#define glGetSamplerParameterIuivEXT flextglGetSamplerParameterIuivEXT
+
 /* GL_EXT_separate_shader_objects */
 
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglUseShaderProgramEXT)(GLenum, GLuint);
@@ -1687,6 +1766,9 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetBufferPointervOES)(GLenum, GLenum,
 
 
 /* GL_OES_stencil4 */
+
+
+/* GL_OES_texture_stencil8 */
 
 
 #ifdef __cplusplus

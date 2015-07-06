@@ -947,6 +947,161 @@ typedef khronos_ssize_t GLsizeiptr;
 
 #define GL_FRAMEBUFFER_SRGB_EXT 0x8DB9
 
+/* GL_EXT_draw_buffers_indexed */
+
+#define GL_BLEND_EQUATION_RGB 0x8009
+#define GL_BLEND_EQUATION_ALPHA 0x883D
+#define GL_BLEND_SRC_RGB 0x80C9
+#define GL_BLEND_SRC_ALPHA 0x80CB
+#define GL_BLEND_DST_RGB 0x80C8
+#define GL_BLEND_DST_ALPHA 0x80CA
+#define GL_COLOR_WRITEMASK 0x0C23
+#define GL_BLEND 0x0BE2
+#define GL_FUNC_ADD 0x8006
+#define GL_FUNC_SUBTRACT 0x800A
+#define GL_FUNC_REVERSE_SUBTRACT 0x800B
+#define GL_MIN 0x8007
+#define GL_MAX 0x8008
+#define GL_ZERO 0
+#define GL_ONE 1
+#define GL_SRC_COLOR 0x0300
+#define GL_ONE_MINUS_SRC_COLOR 0x0301
+#define GL_DST_COLOR 0x0306
+#define GL_ONE_MINUS_DST_COLOR 0x0307
+#define GL_SRC_ALPHA 0x0302
+#define GL_ONE_MINUS_SRC_ALPHA 0x0303
+#define GL_DST_ALPHA 0x0304
+#define GL_ONE_MINUS_DST_ALPHA 0x0305
+#define GL_CONSTANT_COLOR 0x8001
+#define GL_ONE_MINUS_CONSTANT_COLOR 0x8002
+#define GL_CONSTANT_ALPHA 0x8003
+#define GL_ONE_MINUS_CONSTANT_ALPHA 0x8004
+#define GL_SRC_ALPHA_SATURATE 0x0308
+
+/* GL_EXT_geometry_shader */
+
+#define GL_GEOMETRY_SHADER_EXT 0x8DD9
+#define GL_GEOMETRY_SHADER_BIT_EXT 0x00000004
+#define GL_GEOMETRY_LINKED_VERTICES_OUT_EXT 0x8916
+#define GL_GEOMETRY_LINKED_INPUT_TYPE_EXT 0x8917
+#define GL_GEOMETRY_LINKED_OUTPUT_TYPE_EXT 0x8918
+#define GL_GEOMETRY_SHADER_INVOCATIONS_EXT 0x887F
+#define GL_LAYER_PROVOKING_VERTEX_EXT 0x825E
+#define GL_LINES_ADJACENCY_EXT 0x000A
+#define GL_LINE_STRIP_ADJACENCY_EXT 0x000B
+#define GL_TRIANGLES_ADJACENCY_EXT 0x000C
+#define GL_TRIANGLE_STRIP_ADJACENCY_EXT 0x000D
+#define GL_MAX_GEOMETRY_UNIFORM_COMPONENTS_EXT 0x8DDF
+#define GL_MAX_GEOMETRY_UNIFORM_BLOCKS_EXT 0x8A2C
+#define GL_MAX_COMBINED_GEOMETRY_UNIFORM_COMPONENTS_EXT 0x8A32
+#define GL_MAX_GEOMETRY_INPUT_COMPONENTS_EXT 0x9123
+#define GL_MAX_GEOMETRY_OUTPUT_COMPONENTS_EXT 0x9124
+#define GL_MAX_GEOMETRY_OUTPUT_VERTICES_EXT 0x8DE0
+#define GL_MAX_GEOMETRY_TOTAL_OUTPUT_COMPONENTS_EXT 0x8DE1
+#define GL_MAX_GEOMETRY_SHADER_INVOCATIONS_EXT 0x8E5A
+#define GL_MAX_GEOMETRY_TEXTURE_IMAGE_UNITS_EXT 0x8C29
+#define GL_MAX_GEOMETRY_ATOMIC_COUNTER_BUFFERS_EXT 0x92CF
+#define GL_MAX_GEOMETRY_ATOMIC_COUNTERS_EXT 0x92D5
+#define GL_MAX_GEOMETRY_IMAGE_UNIFORMS_EXT 0x90CD
+#define GL_MAX_GEOMETRY_SHADER_STORAGE_BLOCKS_EXT 0x90D7
+#define GL_FIRST_VERTEX_CONVENTION_EXT 0x8E4D
+#define GL_LAST_VERTEX_CONVENTION_EXT 0x8E4E
+#define GL_UNDEFINED_VERTEX_EXT 0x8260
+#define GL_PRIMITIVES_GENERATED_EXT 0x8C87
+#define GL_FRAMEBUFFER_DEFAULT_LAYERS_EXT 0x9312
+#define GL_MAX_FRAMEBUFFER_LAYERS_EXT 0x9317
+#define GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS_EXT 0x8DA8
+#define GL_FRAMEBUFFER_ATTACHMENT_LAYERED_EXT 0x8DA7
+#define GL_REFERENCED_BY_GEOMETRY_SHADER_EXT 0x9309
+
+/* GL_EXT_tessellation_shader */
+
+#define GL_PATCHES_EXT 0x000E
+#define GL_PATCH_VERTICES_EXT 0x8E72
+#define GL_TESS_CONTROL_OUTPUT_VERTICES_EXT 0x8E75
+#define GL_TESS_GEN_MODE_EXT 0x8E76
+#define GL_TESS_GEN_SPACING_EXT 0x8E77
+#define GL_TESS_GEN_VERTEX_ORDER_EXT 0x8E78
+#define GL_TESS_GEN_POINT_MODE_EXT 0x8E79
+#define GL_TRIANGLES 0x0004
+#define GL_ISOLINES_EXT 0x8E7A
+#define GL_QUADS_EXT 0x0007
+#define GL_EQUAL 0x0202
+#define GL_FRACTIONAL_ODD_EXT 0x8E7B
+#define GL_FRACTIONAL_EVEN_EXT 0x8E7C
+#define GL_CCW 0x0901
+#define GL_CW 0x0900
+#define GL_MAX_PATCH_VERTICES_EXT 0x8E7D
+#define GL_MAX_TESS_GEN_LEVEL_EXT 0x8E7E
+#define GL_MAX_TESS_CONTROL_UNIFORM_COMPONENTS_EXT 0x8E7F
+#define GL_MAX_TESS_EVALUATION_UNIFORM_COMPONENTS_EXT 0x8E80
+#define GL_MAX_TESS_CONTROL_TEXTURE_IMAGE_UNITS_EXT 0x8E81
+#define GL_MAX_TESS_EVALUATION_TEXTURE_IMAGE_UNITS_EXT 0x8E82
+#define GL_MAX_TESS_CONTROL_OUTPUT_COMPONENTS_EXT 0x8E83
+#define GL_MAX_TESS_PATCH_COMPONENTS_EXT 0x8E84
+#define GL_MAX_TESS_CONTROL_TOTAL_OUTPUT_COMPONENTS_EXT 0x8E85
+#define GL_MAX_TESS_EVALUATION_OUTPUT_COMPONENTS_EXT 0x8E86
+#define GL_MAX_TESS_CONTROL_UNIFORM_BLOCKS_EXT 0x8E89
+#define GL_MAX_TESS_EVALUATION_UNIFORM_BLOCKS_EXT 0x8E8A
+#define GL_MAX_TESS_CONTROL_INPUT_COMPONENTS_EXT 0x886C
+#define GL_MAX_TESS_EVALUATION_INPUT_COMPONENTS_EXT 0x886D
+#define GL_MAX_COMBINED_TESS_CONTROL_UNIFORM_COMPONENTS_EXT 0x8E1E
+#define GL_MAX_COMBINED_TESS_EVALUATION_UNIFORM_COMPONENTS_EXT 0x8E1F
+#define GL_MAX_TESS_CONTROL_ATOMIC_COUNTER_BUFFERS_EXT 0x92CD
+#define GL_MAX_TESS_EVALUATION_ATOMIC_COUNTER_BUFFERS_EXT 0x92CE
+#define GL_MAX_TESS_CONTROL_ATOMIC_COUNTERS_EXT 0x92D3
+#define GL_MAX_TESS_EVALUATION_ATOMIC_COUNTERS_EXT 0x92D4
+#define GL_MAX_TESS_CONTROL_IMAGE_UNIFORMS_EXT 0x90CB
+#define GL_MAX_TESS_EVALUATION_IMAGE_UNIFORMS_EXT 0x90CC
+#define GL_MAX_TESS_CONTROL_SHADER_STORAGE_BLOCKS_EXT 0x90D8
+#define GL_MAX_TESS_EVALUATION_SHADER_STORAGE_BLOCKS_EXT 0x90D9
+#define GL_PRIMITIVE_RESTART_FOR_PATCHES_SUPPORTED 0x8221
+#define GL_IS_PER_PATCH_EXT 0x92E7
+#define GL_REFERENCED_BY_TESS_CONTROL_SHADER_EXT 0x9307
+#define GL_REFERENCED_BY_TESS_EVALUATION_SHADER_EXT 0x9308
+#define GL_TESS_CONTROL_SHADER_EXT 0x8E88
+#define GL_TESS_EVALUATION_SHADER_EXT 0x8E87
+#define GL_TESS_CONTROL_SHADER_BIT_EXT 0x00000008
+#define GL_TESS_EVALUATION_SHADER_BIT_EXT 0x00000010
+
+/* GL_EXT_texture_border_clamp */
+
+#define GL_TEXTURE_BORDER_COLOR_EXT 0x1004
+#define GL_CLAMP_TO_BORDER_EXT 0x812D
+
+/* GL_EXT_texture_buffer */
+
+#define GL_TEXTURE_BUFFER_EXT 0x8C2A
+#define GL_TEXTURE_BUFFER_BINDING_EXT 0x8C2A
+#define GL_MAX_TEXTURE_BUFFER_SIZE_EXT 0x8C2B
+#define GL_TEXTURE_BINDING_BUFFER_EXT 0x8C2C
+#define GL_TEXTURE_BUFFER_DATA_STORE_BINDING_EXT 0x8C2D
+#define GL_TEXTURE_BUFFER_OFFSET_ALIGNMENT_EXT 0x919F
+#define GL_SAMPLER_BUFFER_EXT 0x8DC2
+#define GL_INT_SAMPLER_BUFFER_EXT 0x8DD0
+#define GL_UNSIGNED_INT_SAMPLER_BUFFER_EXT 0x8DD8
+#define GL_IMAGE_BUFFER_EXT 0x9051
+#define GL_INT_IMAGE_BUFFER_EXT 0x905C
+#define GL_UNSIGNED_INT_IMAGE_BUFFER_EXT 0x9067
+#define GL_TEXTURE_BUFFER_OFFSET_EXT 0x919D
+#define GL_TEXTURE_BUFFER_SIZE_EXT 0x919E
+
+/* GL_EXT_texture_cube_map_array */
+
+#define GL_TEXTURE_CUBE_MAP_ARRAY_EXT 0x9009
+#define GL_TEXTURE_BINDING_CUBE_MAP_ARRAY_EXT 0x900A
+#define GL_SAMPLER_CUBE_MAP_ARRAY_EXT 0x900C
+#define GL_SAMPLER_CUBE_MAP_ARRAY_SHADOW_EXT 0x900D
+#define GL_INT_SAMPLER_CUBE_MAP_ARRAY_EXT 0x900E
+#define GL_UNSIGNED_INT_SAMPLER_CUBE_MAP_ARRAY_EXT 0x900F
+#define GL_IMAGE_CUBE_MAP_ARRAY_EXT 0x9054
+#define GL_INT_IMAGE_CUBE_MAP_ARRAY_EXT 0x905F
+#define GL_UNSIGNED_INT_IMAGE_CUBE_MAP_ARRAY_EXT 0x906A
+
+/* GL_EXT_primitive_bounding_box */
+
+#define GL_PRIMITIVE_BOUNDING_BOX_EXT 0x92BE
+
 /* GL_EXT_separate_shader_objects */
 
 #define GL_ACTIVE_PROGRAM_EXT 0x8259
@@ -1205,6 +1360,30 @@ typedef khronos_ssize_t GLsizeiptr;
 /* GL_OES_stencil4 */
 
 #define GL_STENCIL_INDEX4_OES 0x8D47
+
+/* GL_OES_sample_shading */
+
+#define GL_SAMPLE_SHADING_OES 0x8C36
+#define GL_MIN_SAMPLE_SHADING_VALUE_OES 0x8C37
+
+/* GL_OES_shader_multisample_interpolation */
+
+#define GL_MIN_FRAGMENT_INTERPOLATION_OFFSET_OES 0x8E5B
+#define GL_MAX_FRAGMENT_INTERPOLATION_OFFSET_OES 0x8E5C
+#define GL_FRAGMENT_INTERPOLATION_OFFSET_BITS_OES 0x8E5D
+
+/* GL_OES_texture_stencil8 */
+
+#define GL_STENCIL_INDEX_OES 0x1901
+#define GL_STENCIL_INDEX8_OES 0x8D48
+
+/* GL_OES_texture_storage_multisample_2d_array */
+
+#define GL_TEXTURE_2D_MULTISAMPLE_ARRAY_OES 0x9102
+#define GL_TEXTURE_BINDING_2D_MULTISAMPLE_ARRAY_OES 0x9105
+#define GL_SAMPLER_2D_MULTISAMPLE_ARRAY_OES 0x910B
+#define GL_INT_SAMPLER_2D_MULTISAMPLE_ARRAY_OES 0x910C
+#define GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY_OES 0x910D
 
 /* Function prototypes */
 
@@ -1599,6 +1778,9 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglVertexAttribBinding)(GLuint, GLuint);
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglVertexBindingDivisor)(GLuint, GLuint);
 #define glVertexBindingDivisor flextglVertexBindingDivisor
 
+/* GL_ANDROID_extension_pack_es31a */
+
+
 /* GL_APPLE_texture_format_BGRA8888 */
 
 
@@ -1667,6 +1849,80 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetQueryObjectui64vEXT)(GLuint, GLenu
 
 /* GL_EXT_shader_integer_mix */
 
+
+/* GL_EXT_copy_image */
+
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglCopyImageSubDataEXT)(GLuint, GLenum, GLint, GLint, GLint, GLint, GLuint, GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei);
+#define glCopyImageSubDataEXT flextglCopyImageSubDataEXT
+
+/* GL_EXT_draw_buffers_indexed */
+
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglEnableiEXT)(GLenum, GLuint);
+#define glEnableiEXT flextglEnableiEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDisableiEXT)(GLenum, GLuint);
+#define glDisableiEXT flextglDisableiEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglBlendEquationiEXT)(GLuint, GLenum);
+#define glBlendEquationiEXT flextglBlendEquationiEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglBlendEquationSeparateiEXT)(GLuint, GLenum, GLenum);
+#define glBlendEquationSeparateiEXT flextglBlendEquationSeparateiEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglBlendFunciEXT)(GLuint, GLenum, GLenum);
+#define glBlendFunciEXT flextglBlendFunciEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglBlendFuncSeparateiEXT)(GLuint, GLenum, GLenum, GLenum, GLenum);
+#define glBlendFuncSeparateiEXT flextglBlendFuncSeparateiEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglColorMaskiEXT)(GLuint, GLboolean, GLboolean, GLboolean, GLboolean);
+#define glColorMaskiEXT flextglColorMaskiEXT
+GLAPI FLEXTGL_EXPORT GLboolean(APIENTRY *flextglIsEnablediEXT)(GLenum, GLuint);
+#define glIsEnablediEXT flextglIsEnablediEXT
+
+/* GL_EXT_geometry_shader */
+
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglFramebufferTextureEXT)(GLenum, GLenum, GLuint, GLint);
+#define glFramebufferTextureEXT flextglFramebufferTextureEXT
+
+/* GL_EXT_gpu_shader5 */
+
+
+/* GL_EXT_shader_io_blocks */
+
+
+/* GL_EXT_tessellation_shader */
+
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglPatchParameteriEXT)(GLenum, GLint);
+#define glPatchParameteriEXT flextglPatchParameteriEXT
+
+/* GL_EXT_texture_border_clamp */
+
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglTexParameterIivEXT)(GLenum, GLenum, const GLint *);
+#define glTexParameterIivEXT flextglTexParameterIivEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglTexParameterIuivEXT)(GLenum, GLenum, const GLuint *);
+#define glTexParameterIuivEXT flextglTexParameterIuivEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetTexParameterIivEXT)(GLenum, GLenum, GLint *);
+#define glGetTexParameterIivEXT flextglGetTexParameterIivEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetTexParameterIuivEXT)(GLenum, GLenum, GLuint *);
+#define glGetTexParameterIuivEXT flextglGetTexParameterIuivEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglSamplerParameterIivEXT)(GLuint, GLenum, const GLint *);
+#define glSamplerParameterIivEXT flextglSamplerParameterIivEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglSamplerParameterIuivEXT)(GLuint, GLenum, const GLuint *);
+#define glSamplerParameterIuivEXT flextglSamplerParameterIuivEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetSamplerParameterIivEXT)(GLuint, GLenum, GLint *);
+#define glGetSamplerParameterIivEXT flextglGetSamplerParameterIivEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetSamplerParameterIuivEXT)(GLuint, GLenum, GLuint *);
+#define glGetSamplerParameterIuivEXT flextglGetSamplerParameterIuivEXT
+
+/* GL_EXT_texture_buffer */
+
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglTexBufferEXT)(GLenum, GLenum, GLuint);
+#define glTexBufferEXT flextglTexBufferEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglTexBufferRangeEXT)(GLenum, GLenum, GLuint, GLintptr, GLsizeiptr);
+#define glTexBufferRangeEXT flextglTexBufferRangeEXT
+
+/* GL_EXT_texture_cube_map_array */
+
+
+/* GL_EXT_primitive_bounding_box */
+
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglPrimitiveBoundingBoxEXT)(GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat);
+#define glPrimitiveBoundingBoxEXT flextglPrimitiveBoundingBoxEXT
 
 /* GL_EXT_separate_shader_objects */
 
@@ -1910,6 +2166,28 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetBufferPointervOES)(GLenum, GLenum,
 
 /* GL_OES_stencil4 */
 
+
+/* GL_OES_sample_shading */
+
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglMinSampleShadingOES)(GLfloat);
+#define glMinSampleShadingOES flextglMinSampleShadingOES
+
+/* GL_OES_sample_variables */
+
+
+/* GL_OES_shader_image_atomic */
+
+
+/* GL_OES_shader_multisample_interpolation */
+
+
+/* GL_OES_texture_stencil8 */
+
+
+/* GL_OES_texture_storage_multisample_2d_array */
+
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglTexStorage3DMultisampleOES)(GLenum, GLsizei, GLenum, GLsizei, GLsizei, GLsizei, GLboolean);
+#define glTexStorage3DMultisampleOES flextglTexStorage3DMultisampleOES
 
 #ifdef __cplusplus
 }
