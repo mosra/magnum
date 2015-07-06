@@ -324,9 +324,7 @@ Int Shader::maxAtomicCounterBuffers(const Type type) {
     constexpr static GLenum what[] = {
         GL_MAX_VERTEX_ATOMIC_COUNTER_BUFFERS,
         GL_MAX_FRAGMENT_ATOMIC_COUNTER_BUFFERS,
-        #ifndef MAGNUM_TARGET_GLES2
         GL_MAX_COMPUTE_ATOMIC_COUNTER_BUFFERS,
-        #endif
         #ifndef MAGNUM_TARGET_GLES
         GL_MAX_GEOMETRY_ATOMIC_COUNTER_BUFFERS,
         GL_MAX_TESS_CONTROL_ATOMIC_COUNTER_BUFFERS,
@@ -377,9 +375,7 @@ Int Shader::maxAtomicCounters(const Type type) {
     constexpr static GLenum what[] = {
         GL_MAX_VERTEX_ATOMIC_COUNTERS,
         GL_MAX_FRAGMENT_ATOMIC_COUNTERS,
-        #ifndef MAGNUM_TARGET_GLES2
         GL_MAX_COMPUTE_ATOMIC_COUNTERS,
-        #endif
         #ifndef MAGNUM_TARGET_GLES
         GL_MAX_GEOMETRY_ATOMIC_COUNTERS,
         GL_MAX_TESS_CONTROL_ATOMIC_COUNTERS,
@@ -430,9 +426,7 @@ Int Shader::maxImageUniforms(const Type type) {
     constexpr static GLenum what[] = {
         GL_MAX_VERTEX_IMAGE_UNIFORMS,
         GL_MAX_FRAGMENT_IMAGE_UNIFORMS,
-        #ifndef MAGNUM_TARGET_GLES2
         GL_MAX_COMPUTE_IMAGE_UNIFORMS,
-        #endif
         #ifndef MAGNUM_TARGET_GLES
         GL_MAX_GEOMETRY_IMAGE_UNIFORMS,
         GL_MAX_TESS_CONTROL_IMAGE_UNIFORMS,
@@ -483,9 +477,7 @@ Int Shader::maxShaderStorageBlocks(const Type type) {
     constexpr static GLenum what[] = {
         GL_MAX_VERTEX_SHADER_STORAGE_BLOCKS,
         GL_MAX_FRAGMENT_SHADER_STORAGE_BLOCKS,
-        #ifndef MAGNUM_TARGET_GLES2
         GL_MAX_COMPUTE_SHADER_STORAGE_BLOCKS,
-        #endif
         #ifndef MAGNUM_TARGET_GLES
         GL_MAX_GEOMETRY_SHADER_STORAGE_BLOCKS,
         GL_MAX_TESS_CONTROL_SHADER_STORAGE_BLOCKS,
