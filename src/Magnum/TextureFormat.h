@@ -998,12 +998,13 @@ enum class TextureFormat: GLenum {
     DepthComponent32F = GL_DEPTH_COMPONENT32F,
     #endif
 
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_WEBGL
     /**
      * Stencil index, 8bit. Not supported in 3D textures.
      * @requires_gl44 Extension @extension{ARB,texture_stencil8}
-     * @requires_gl Only available as renderbuffer format in OpenGL ES and
-     *      WebGL.
+     * @requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
+     *      @es_extension{OES,texture_stencil8}
+     * @requires_gles Only available as renderbuffer format in WebGL.
      */
     StencilIndex8 = GL_STENCIL_INDEX8,
     #endif

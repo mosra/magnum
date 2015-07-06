@@ -643,7 +643,7 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         #endif
             return ColorFormat::DepthComponent;
 
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_WEBGL
         case TextureFormat::StencilIndex8:
             return ColorFormat::StencilIndex;
         #endif
@@ -840,7 +840,7 @@ ColorType AbstractTexture::imageTypeForInternalFormat(const TextureFormat intern
             return ColorType::Float;
         #endif
 
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_WEBGL
         case TextureFormat::StencilIndex8:
             return ColorType::UnsignedByte;
         #endif

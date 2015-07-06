@@ -265,13 +265,14 @@ enum class ColorFormat: GLenum {
      *      data, otherwise for framebuffer reading only.
      * @requires_es_extension Extension @es_extension2{NV,read_stencil,GL_NV_read_depth_stencil},
      *      for framebuffer reading only.
+     * @requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
+     *      @es_extension{OES,texture_stencil8}, for texture data only.
      * @requires_gles Stencil index is not available in WebGL.
-     * @todo Where to get GL_STENCIL_INDEX in ES?
      */
     #ifndef MAGNUM_TARGET_GLES
     StencilIndex = GL_STENCIL_INDEX,
     #else
-    StencilIndex = 0x1901,
+    StencilIndex = GL_STENCIL_INDEX_OES,
     #endif
     #endif
 
