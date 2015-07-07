@@ -387,7 +387,6 @@ comes in handy.
 
 @see @ref portability-shaders
 
-@todo Use Containers::ArrayView for setting uniform arrays?
 @todo `GL_NUM_{PROGRAM,SHADER}_BINARY_FORMATS` + `GL_{PROGRAM,SHADER}_BINARY_FORMATS` (vector), (@extension{ARB,ES2_compatibility})
  */
 class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
@@ -878,40 +877,39 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * @param value         Value
          *
          * Convenience alternative for setting one value, see
-         * @ref setUniform(Int, UnsignedInt, const Float*) for more
+         * @ref setUniform(Int, Containers::ArrayView<const Float>) for more
          * information.
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         template<class T> inline void setUniform(Int location, const T& value);
         #else
         void setUniform(Int location, Float value) {
-            setUniform(location, 1, &value);
+            setUniform(location, {&value, 1});
         }
         void setUniform(Int location, Int value) {
-            setUniform(location, 1, &value);
+            setUniform(location, {&value, 1});
         }
         #ifndef MAGNUM_TARGET_GLES2
         void setUniform(Int location, UnsignedInt value) {
-            setUniform(location, 1, &value);
+            setUniform(location, {&value, 1});
         }
         #endif
         #ifndef MAGNUM_TARGET_GLES
         void setUniform(Int location, Double value) {
-            setUniform(location, 1, &value);
+            setUniform(location, {&value, 1});
         }
         #endif
         template<std::size_t size, class T> void setUniform(Int location, const Math::Vector<size, T>& value) {
-            setUniform(location, 1, &value);
+            setUniform(location, {&value, 1});
         }
         template<std::size_t cols, std::size_t rows, class T> void setUniform(Int location, const Math::RectangularMatrix<cols, rows, T>& value) {
-            setUniform(location, 1, &value);
+            setUniform(location, {&value, 1});
         }
         #endif
 
         /**
          * @brief Set uniform values
          * @param location      Uniform location
-         * @param count         Value count
          * @param values        Values
          *
          * If neither @extension{ARB,separate_shader_objects} (part of OpenGL
@@ -922,76 +920,87 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * @see @ref setUniform(Int, const T&), @fn_gl{UseProgram}, @fn_gl{Uniform}
          *      or @fn_gl{ProgramUniform}/@fn_gl_extension{ProgramUniform,EXT,direct_state_access}.
          */
-        void setUniform(Int location, UnsignedInt count, const Float* values);
-        void setUniform(Int location, UnsignedInt count, const Math::Vector<2, Float>* values); /**< @overload */
-        void setUniform(Int location, UnsignedInt count, const Math::Vector<3, Float>* values); /**< @overload */
-        void setUniform(Int location, UnsignedInt count, const Math::Vector<4, Float>* values); /**< @overload */
+        void setUniform(Int location, Containers::ArrayView<const Float> values);
+        void setUniform(Int location, Containers::ArrayView<const Math::Vector<2, Float>> values); /**< @overload */
+        void setUniform(Int location, Containers::ArrayView<const Math::Vector<3, Float>> values); /**< @overload */
+        void setUniform(Int location, Containers::ArrayView<const Math::Vector<4, Float>> values); /**< @overload */
 
-        /** @copydoc setUniform(Int, UnsignedInt, const Float*) */
-        void setUniform(Int location, UnsignedInt count, const Int* values);
-        void setUniform(Int location, UnsignedInt count, const Math::Vector<2, Int>* values); /**< @overload */
-        void setUniform(Int location, UnsignedInt count, const Math::Vector<3, Int>* values); /**< @overload */
-        void setUniform(Int location, UnsignedInt count, const Math::Vector<4, Int>* values); /**< @overload */
+        /** @copydoc setUniform(Int, Containers::ArrayView<const Float>) */
+        void setUniform(Int location, Containers::ArrayView<const Int> values);
+        void setUniform(Int location, Containers::ArrayView<const Math::Vector<2, Int>> values); /**< @overload */
+        void setUniform(Int location, Containers::ArrayView<const Math::Vector<3, Int>> values); /**< @overload */
+        void setUniform(Int location, Containers::ArrayView<const Math::Vector<4, Int>> values); /**< @overload */
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
-         * @copydoc setUniform(Int, UnsignedInt, const Float*)
+         * @copydoc setUniform(Int, Containers::ArrayView<const Float>)
          * @requires_gl30 Extension @extension{EXT,gpu_shader4}
          * @requires_gles30 Only signed integers are available in OpenGL ES 2.0.
          * @requires_webgl20 Only signed integers are available in WebGL 1.0.
          */
-        void setUniform(Int location, UnsignedInt count, const UnsignedInt* values);
-        void setUniform(Int location, UnsignedInt count, const Math::Vector<2, UnsignedInt>* values); /**< @overload */
-        void setUniform(Int location, UnsignedInt count, const Math::Vector<3, UnsignedInt>* values); /**< @overload */
-        void setUniform(Int location, UnsignedInt count, const Math::Vector<4, UnsignedInt>* values); /**< @overload */
+        void setUniform(Int location, Containers::ArrayView<const UnsignedInt> values);
+        void setUniform(Int location, Containers::ArrayView<const Math::Vector<2, UnsignedInt>> values); /**< @overload */
+        void setUniform(Int location, Containers::ArrayView<const Math::Vector<3, UnsignedInt>> values); /**< @overload */
+        void setUniform(Int location, Containers::ArrayView<const Math::Vector<4, UnsignedInt>> values); /**< @overload */
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
         /**
-         * @copydoc setUniform(Int, UnsignedInt, const Float*)
+         * @copydoc setUniform(Int, Containers::ArrayView<const Float>)
          * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES or WebGL.
          */
-        void setUniform(Int location, UnsignedInt count, const Double* values);
-        void setUniform(Int location, UnsignedInt count, const Math::Vector<2, Double>* values); /**< @overload */
-        void setUniform(Int location, UnsignedInt count, const Math::Vector<3, Double>* values); /**< @overload */
-        void setUniform(Int location, UnsignedInt count, const Math::Vector<4, Double>* values); /**< @overload */
+        void setUniform(Int location, Containers::ArrayView<const Double> values);
+        void setUniform(Int location, Containers::ArrayView<const Math::Vector<2, Double>> values); /**< @overload */
+        void setUniform(Int location, Containers::ArrayView<const Math::Vector<3, Double>> values); /**< @overload */
+        void setUniform(Int location, Containers::ArrayView<const Math::Vector<4, Double>> values); /**< @overload */
         #endif
 
-        /** @copydoc setUniform(Int, UnsignedInt, const Float*) */
-        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<2, 2, Float>* values);
-        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<3, 3, Float>* values); /**< @overload */
-        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<4, 4, Float>* values); /**< @overload */
+        /** @copydoc setUniform(Int, Containers::ArrayView<const Float>) */
+        void setUniform(Int location, Containers::ArrayView<const Math::RectangularMatrix<2, 2, Float>> values);
+        void setUniform(Int location, Containers::ArrayView<const Math::RectangularMatrix<3, 3, Float>> values); /**< @overload */
+        void setUniform(Int location, Containers::ArrayView<const Math::RectangularMatrix<4, 4, Float>> values); /**< @overload */
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
-         * @copydoc setUniform(Int, UnsignedInt, const Float*)
+         * @copydoc setUniform(Int, Containers::ArrayView<const Float>)
          * @requires_gles30 Only square matrices are available in OpenGL ES 2.0.
          * @requires_webgl20 Only square matrices are available in WebGL 1.0.
          */
-        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<2, 3, Float>* values);
-        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<3, 2, Float>* values); /**< @overload */
-        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<2, 4, Float>* values); /**< @overload */
-        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<4, 2, Float>* values); /**< @overload */
-        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<3, 4, Float>* values); /**< @overload */
-        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<4, 3, Float>* values); /**< @overload */
+        void setUniform(Int location, Containers::ArrayView<const Math::RectangularMatrix<2, 3, Float>> values);
+        void setUniform(Int location, Containers::ArrayView<const Math::RectangularMatrix<3, 2, Float>> values); /**< @overload */
+        void setUniform(Int location, Containers::ArrayView<const Math::RectangularMatrix<2, 4, Float>> values); /**< @overload */
+        void setUniform(Int location, Containers::ArrayView<const Math::RectangularMatrix<4, 2, Float>> values); /**< @overload */
+        void setUniform(Int location, Containers::ArrayView<const Math::RectangularMatrix<3, 4, Float>> values); /**< @overload */
+        void setUniform(Int location, Containers::ArrayView<const Math::RectangularMatrix<4, 3, Float>> values); /**< @overload */
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
         /**
-         * @copydoc setUniform(Int, UnsignedInt, const Float*)
+         * @copydoc setUniform(Int, Containers::ArrayView<const Float>)
          * @requires_gl40 Extension @extension{ARB,gpu_shader_fp64}
          * @requires_gl Only floats are available in OpenGL ES or WebGL.
          */
-        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<2, 2, Double>* values);
-        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<3, 3, Double>* values); /**< @overload */
-        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<4, 4, Double>* values); /**< @overload */
-        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<2, 3, Double>* values); /**< @overload */
-        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<3, 2, Double>* values); /**< @overload */
-        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<2, 4, Double>* values); /**< @overload */
-        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<4, 2, Double>* values); /**< @overload */
-        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<3, 4, Double>* values); /**< @overload */
-        void setUniform(Int location, UnsignedInt count, const Math::RectangularMatrix<4, 3, Double>* values); /**< @overload */
+        void setUniform(Int location, Containers::ArrayView<const Math::RectangularMatrix<2, 2, Double>> values);
+        void setUniform(Int location, Containers::ArrayView<const Math::RectangularMatrix<3, 3, Double>> values); /**< @overload */
+        void setUniform(Int location, Containers::ArrayView<const Math::RectangularMatrix<4, 4, Double>> values); /**< @overload */
+        void setUniform(Int location, Containers::ArrayView<const Math::RectangularMatrix<2, 3, Double>> values); /**< @overload */
+        void setUniform(Int location, Containers::ArrayView<const Math::RectangularMatrix<3, 2, Double>> values); /**< @overload */
+        void setUniform(Int location, Containers::ArrayView<const Math::RectangularMatrix<2, 4, Double>> values); /**< @overload */
+        void setUniform(Int location, Containers::ArrayView<const Math::RectangularMatrix<4, 2, Double>> values); /**< @overload */
+        void setUniform(Int location, Containers::ArrayView<const Math::RectangularMatrix<3, 4, Double>> values); /**< @overload */
+        void setUniform(Int location, Containers::ArrayView<const Math::RectangularMatrix<4, 3, Double>> values); /**< @overload */
+        #endif
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Set uniform values
+         * @deprecated Use @ref setUniform(Int, Containers::ArrayView<const Float>)
+         *      and similar instead.
+         */
+        template<class T> CORRADE_DEPRECATED("use setUniform(Int, Containers::ArrayView<const T>) instead") void setUniform(Int location, UnsignedInt count, const T* values) {
+            setUniform(location, {values, count});
+        }
         #endif
 
     private:
