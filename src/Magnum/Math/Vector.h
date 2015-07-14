@@ -33,12 +33,15 @@
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/ConfigurationValue.h>
 #include <Corrade/Utility/Debug.h>
-#include <Corrade/Utility/Macros.h>
 
 #include "Magnum/visibility.h"
 #include "Magnum/Math/Angle.h"
 #include "Magnum/Math/BoolVector.h"
 #include "Magnum/Math/TypeTraits.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#endif
 
 namespace Magnum { namespace Math {
 
