@@ -103,12 +103,9 @@ template<UnsignedInt dimensions, class T> class Camera: public AbstractFeature<d
          */
         explicit Camera(AbstractObject<dimensions, T>& object);
 
-        #ifndef MAGNUM_BUILD_DEPRECATED
         /* This is here to avoid ambiguity with deleted copy constructor when
-           passing `*this` from class subclassing both BasicCamera3D and
-           AbstractObject */
+           passing `*this` from class subclassing both Camera and AbstractObject */
         template<class U, class = typename std::enable_if<std::is_base_of<AbstractObject<dimensions, T>, U>::value>::type> Camera(U& object): Camera<dimensions, T>{static_cast<AbstractObject<dimensions, T>&>(object)} {}
-        #endif
 
         ~Camera();
 
