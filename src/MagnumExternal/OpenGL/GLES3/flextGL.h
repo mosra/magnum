@@ -1387,6 +1387,12 @@ typedef khronos_ssize_t GLsizeiptr;
 
 /* Function prototypes */
 
+/* GL_ANDROID_extension_pack_es31a */
+
+
+/* GL_APPLE_texture_format_BGRA8888 */
+
+
 /* GL_ES_VERSION_2_0 */
 
 GLAPI FLEXTGL_EXPORT void APIENTRY glActiveTexture(GLenum);
@@ -1439,10 +1445,10 @@ GLAPI FLEXTGL_EXPORT void APIENTRY glFramebufferRenderbuffer(GLenum, GLenum, GLe
 GLAPI FLEXTGL_EXPORT void APIENTRY glFramebufferTexture2D(GLenum, GLenum, GLenum, GLuint, GLint);
 GLAPI FLEXTGL_EXPORT void APIENTRY glFrontFace(GLenum);
 GLAPI FLEXTGL_EXPORT void APIENTRY glGenBuffers(GLsizei, GLuint *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glGenerateMipmap(GLenum);
 GLAPI FLEXTGL_EXPORT void APIENTRY glGenFramebuffers(GLsizei, GLuint *);
 GLAPI FLEXTGL_EXPORT void APIENTRY glGenRenderbuffers(GLsizei, GLuint *);
 GLAPI FLEXTGL_EXPORT void APIENTRY glGenTextures(GLsizei, GLuint *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glGenerateMipmap(GLenum);
 GLAPI FLEXTGL_EXPORT void APIENTRY glGetActiveAttrib(GLuint, GLuint, GLsizei, GLsizei *, GLint *, GLenum *, GLchar *);
 GLAPI FLEXTGL_EXPORT void APIENTRY glGetActiveUniform(GLuint, GLuint, GLsizei, GLsizei *, GLint *, GLenum *, GLchar *);
 GLAPI FLEXTGL_EXPORT void APIENTRY glGetAttachedShaders(GLuint, GLsizei, GLsizei *, GLuint *);
@@ -1453,22 +1459,22 @@ GLAPI FLEXTGL_EXPORT GLenum APIENTRY glGetError(void);
 GLAPI FLEXTGL_EXPORT void APIENTRY glGetFloatv(GLenum, GLfloat *);
 GLAPI FLEXTGL_EXPORT void APIENTRY glGetFramebufferAttachmentParameteriv(GLenum, GLenum, GLenum, GLint *);
 GLAPI FLEXTGL_EXPORT void APIENTRY glGetIntegerv(GLenum, GLint *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glGetProgramiv(GLuint, GLenum, GLint *);
 GLAPI FLEXTGL_EXPORT void APIENTRY glGetProgramInfoLog(GLuint, GLsizei, GLsizei *, GLchar *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glGetProgramiv(GLuint, GLenum, GLint *);
 GLAPI FLEXTGL_EXPORT void APIENTRY glGetRenderbufferParameteriv(GLenum, GLenum, GLint *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glGetShaderiv(GLuint, GLenum, GLint *);
 GLAPI FLEXTGL_EXPORT void APIENTRY glGetShaderInfoLog(GLuint, GLsizei, GLsizei *, GLchar *);
 GLAPI FLEXTGL_EXPORT void APIENTRY glGetShaderPrecisionFormat(GLenum, GLenum, GLint *, GLint *);
 GLAPI FLEXTGL_EXPORT void APIENTRY glGetShaderSource(GLuint, GLsizei, GLsizei *, GLchar *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glGetShaderiv(GLuint, GLenum, GLint *);
 GLAPI FLEXTGL_EXPORT const GLubyte * APIENTRY glGetString(GLenum);
 GLAPI FLEXTGL_EXPORT void APIENTRY glGetTexParameterfv(GLenum, GLenum, GLfloat *);
 GLAPI FLEXTGL_EXPORT void APIENTRY glGetTexParameteriv(GLenum, GLenum, GLint *);
+GLAPI FLEXTGL_EXPORT GLint APIENTRY glGetUniformLocation(GLuint, const GLchar *);
 GLAPI FLEXTGL_EXPORT void APIENTRY glGetUniformfv(GLuint, GLint, GLfloat *);
 GLAPI FLEXTGL_EXPORT void APIENTRY glGetUniformiv(GLuint, GLint, GLint *);
-GLAPI FLEXTGL_EXPORT GLint APIENTRY glGetUniformLocation(GLuint, const GLchar *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glGetVertexAttribPointerv(GLuint, GLenum, void **);
 GLAPI FLEXTGL_EXPORT void APIENTRY glGetVertexAttribfv(GLuint, GLenum, GLfloat *);
 GLAPI FLEXTGL_EXPORT void APIENTRY glGetVertexAttribiv(GLuint, GLenum, GLint *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glGetVertexAttribPointerv(GLuint, GLenum, void **);
 GLAPI FLEXTGL_EXPORT void APIENTRY glHint(GLenum, GLenum);
 GLAPI FLEXTGL_EXPORT GLboolean APIENTRY glIsBuffer(GLuint);
 GLAPI FLEXTGL_EXPORT GLboolean APIENTRY glIsEnabled(GLenum);
@@ -1534,113 +1540,125 @@ GLAPI FLEXTGL_EXPORT void APIENTRY glViewport(GLint, GLint, GLsizei, GLsizei);
 
 /* GL_ES_VERSION_3_0 */
 
-GLAPI FLEXTGL_EXPORT void APIENTRY glReadBuffer(GLenum);
-GLAPI FLEXTGL_EXPORT void APIENTRY glDrawRangeElements(GLenum, GLuint, GLuint, GLsizei, GLenum, const void *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glTexImage3D(GLenum, GLint, GLint, GLsizei, GLsizei, GLsizei, GLint, GLenum, GLenum, const void *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glTexSubImage3D(GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLenum, const void *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glCopyTexSubImage3D(GLenum, GLint, GLint, GLint, GLint, GLint, GLint, GLsizei, GLsizei);
-GLAPI FLEXTGL_EXPORT void APIENTRY glCompressedTexImage3D(GLenum, GLint, GLenum, GLsizei, GLsizei, GLsizei, GLint, GLsizei, const void *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glCompressedTexSubImage3D(GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLsizei, const void *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glGenQueries(GLsizei, GLuint *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glDeleteQueries(GLsizei, const GLuint *);
-GLAPI FLEXTGL_EXPORT GLboolean APIENTRY glIsQuery(GLuint);
 GLAPI FLEXTGL_EXPORT void APIENTRY glBeginQuery(GLenum, GLuint);
-GLAPI FLEXTGL_EXPORT void APIENTRY glEndQuery(GLenum);
-GLAPI FLEXTGL_EXPORT void APIENTRY glGetQueryiv(GLenum, GLenum, GLint *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glGetQueryObjectuiv(GLuint, GLenum, GLuint *);
-GLAPI FLEXTGL_EXPORT GLboolean APIENTRY glUnmapBuffer(GLenum);
-GLAPI FLEXTGL_EXPORT void APIENTRY glGetBufferPointerv(GLenum, GLenum, void **);
-GLAPI FLEXTGL_EXPORT void APIENTRY glDrawBuffers(GLsizei, const GLenum *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glUniformMatrix2x3fv(GLint, GLsizei, GLboolean, const GLfloat *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glUniformMatrix3x2fv(GLint, GLsizei, GLboolean, const GLfloat *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glUniformMatrix2x4fv(GLint, GLsizei, GLboolean, const GLfloat *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glUniformMatrix4x2fv(GLint, GLsizei, GLboolean, const GLfloat *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glUniformMatrix3x4fv(GLint, GLsizei, GLboolean, const GLfloat *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glUniformMatrix4x3fv(GLint, GLsizei, GLboolean, const GLfloat *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glBlitFramebuffer(GLint, GLint, GLint, GLint, GLint, GLint, GLint, GLint, GLbitfield, GLenum);
-GLAPI FLEXTGL_EXPORT void APIENTRY glRenderbufferStorageMultisample(GLenum, GLsizei, GLenum, GLsizei, GLsizei);
-GLAPI FLEXTGL_EXPORT void APIENTRY glFramebufferTextureLayer(GLenum, GLenum, GLuint, GLint, GLint);
-GLAPI FLEXTGL_EXPORT void * APIENTRY glMapBufferRange(GLenum, GLintptr, GLsizeiptr, GLbitfield);
-GLAPI FLEXTGL_EXPORT void APIENTRY glFlushMappedBufferRange(GLenum, GLintptr, GLsizeiptr);
-GLAPI FLEXTGL_EXPORT void APIENTRY glBindVertexArray(GLuint);
-GLAPI FLEXTGL_EXPORT void APIENTRY glDeleteVertexArrays(GLsizei, const GLuint *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glGenVertexArrays(GLsizei, GLuint *);
-GLAPI FLEXTGL_EXPORT GLboolean APIENTRY glIsVertexArray(GLuint);
-GLAPI FLEXTGL_EXPORT void APIENTRY glGetIntegeri_v(GLenum, GLuint, GLint *);
 GLAPI FLEXTGL_EXPORT void APIENTRY glBeginTransformFeedback(GLenum);
-GLAPI FLEXTGL_EXPORT void APIENTRY glEndTransformFeedback(void);
-GLAPI FLEXTGL_EXPORT void APIENTRY glBindBufferRange(GLenum, GLuint, GLuint, GLintptr, GLsizeiptr);
 GLAPI FLEXTGL_EXPORT void APIENTRY glBindBufferBase(GLenum, GLuint, GLuint);
-GLAPI FLEXTGL_EXPORT void APIENTRY glTransformFeedbackVaryings(GLuint, GLsizei, const GLchar *const*, GLenum);
-GLAPI FLEXTGL_EXPORT void APIENTRY glGetTransformFeedbackVarying(GLuint, GLuint, GLsizei, GLsizei *, GLsizei *, GLenum *, GLchar *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glVertexAttribIPointer(GLuint, GLint, GLenum, GLsizei, const void *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glGetVertexAttribIiv(GLuint, GLenum, GLint *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glGetVertexAttribIuiv(GLuint, GLenum, GLuint *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glVertexAttribI4i(GLuint, GLint, GLint, GLint, GLint);
-GLAPI FLEXTGL_EXPORT void APIENTRY glVertexAttribI4ui(GLuint, GLuint, GLuint, GLuint, GLuint);
-GLAPI FLEXTGL_EXPORT void APIENTRY glVertexAttribI4iv(GLuint, const GLint *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glVertexAttribI4uiv(GLuint, const GLuint *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glGetUniformuiv(GLuint, GLint, GLuint *);
-GLAPI FLEXTGL_EXPORT GLint APIENTRY glGetFragDataLocation(GLuint, const GLchar *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glUniform1ui(GLint, GLuint);
-GLAPI FLEXTGL_EXPORT void APIENTRY glUniform2ui(GLint, GLuint, GLuint);
-GLAPI FLEXTGL_EXPORT void APIENTRY glUniform3ui(GLint, GLuint, GLuint, GLuint);
-GLAPI FLEXTGL_EXPORT void APIENTRY glUniform4ui(GLint, GLuint, GLuint, GLuint, GLuint);
-GLAPI FLEXTGL_EXPORT void APIENTRY glUniform1uiv(GLint, GLsizei, const GLuint *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glUniform2uiv(GLint, GLsizei, const GLuint *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glUniform3uiv(GLint, GLsizei, const GLuint *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glUniform4uiv(GLint, GLsizei, const GLuint *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glBindBufferRange(GLenum, GLuint, GLuint, GLintptr, GLsizeiptr);
+GLAPI FLEXTGL_EXPORT void APIENTRY glBindSampler(GLuint, GLuint);
+GLAPI FLEXTGL_EXPORT void APIENTRY glBindTransformFeedback(GLenum, GLuint);
+GLAPI FLEXTGL_EXPORT void APIENTRY glBindVertexArray(GLuint);
+GLAPI FLEXTGL_EXPORT void APIENTRY glBlitFramebuffer(GLint, GLint, GLint, GLint, GLint, GLint, GLint, GLint, GLbitfield, GLenum);
+GLAPI FLEXTGL_EXPORT void APIENTRY glClearBufferfi(GLenum, GLint, GLfloat, GLint);
+GLAPI FLEXTGL_EXPORT void APIENTRY glClearBufferfv(GLenum, GLint, const GLfloat *);
 GLAPI FLEXTGL_EXPORT void APIENTRY glClearBufferiv(GLenum, GLint, const GLint *);
 GLAPI FLEXTGL_EXPORT void APIENTRY glClearBufferuiv(GLenum, GLint, const GLuint *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glClearBufferfv(GLenum, GLint, const GLfloat *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glClearBufferfi(GLenum, GLint, GLfloat, GLint);
-GLAPI FLEXTGL_EXPORT const GLubyte * APIENTRY glGetStringi(GLenum, GLuint);
-GLAPI FLEXTGL_EXPORT void APIENTRY glCopyBufferSubData(GLenum, GLenum, GLintptr, GLintptr, GLsizeiptr);
-GLAPI FLEXTGL_EXPORT void APIENTRY glGetUniformIndices(GLuint, GLsizei, const GLchar *const*, GLuint *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glGetActiveUniformsiv(GLuint, GLsizei, const GLuint *, GLenum, GLint *);
-GLAPI FLEXTGL_EXPORT GLuint APIENTRY glGetUniformBlockIndex(GLuint, const GLchar *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glGetActiveUniformBlockiv(GLuint, GLuint, GLenum, GLint *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glGetActiveUniformBlockName(GLuint, GLuint, GLsizei, GLsizei *, GLchar *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glUniformBlockBinding(GLuint, GLuint, GLuint);
-GLAPI FLEXTGL_EXPORT void APIENTRY glDrawArraysInstanced(GLenum, GLint, GLsizei, GLsizei);
-GLAPI FLEXTGL_EXPORT void APIENTRY glDrawElementsInstanced(GLenum, GLsizei, GLenum, const void *, GLsizei);
-GLAPI FLEXTGL_EXPORT GLsync APIENTRY glFenceSync(GLenum, GLbitfield);
-GLAPI FLEXTGL_EXPORT GLboolean APIENTRY glIsSync(GLsync);
-GLAPI FLEXTGL_EXPORT void APIENTRY glDeleteSync(GLsync);
 GLAPI FLEXTGL_EXPORT GLenum APIENTRY glClientWaitSync(GLsync, GLbitfield, GLuint64);
-GLAPI FLEXTGL_EXPORT void APIENTRY glWaitSync(GLsync, GLbitfield, GLuint64);
-GLAPI FLEXTGL_EXPORT void APIENTRY glGetInteger64v(GLenum, GLint64 *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glGetSynciv(GLsync, GLenum, GLsizei, GLsizei *, GLint *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glGetInteger64i_v(GLenum, GLuint, GLint64 *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glGetBufferParameteri64v(GLenum, GLenum, GLint64 *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glGenSamplers(GLsizei, GLuint *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glCompressedTexImage3D(GLenum, GLint, GLenum, GLsizei, GLsizei, GLsizei, GLint, GLsizei, const void *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glCompressedTexSubImage3D(GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLsizei, const void *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glCopyBufferSubData(GLenum, GLenum, GLintptr, GLintptr, GLsizeiptr);
+GLAPI FLEXTGL_EXPORT void APIENTRY glCopyTexSubImage3D(GLenum, GLint, GLint, GLint, GLint, GLint, GLint, GLsizei, GLsizei);
+GLAPI FLEXTGL_EXPORT void APIENTRY glDeleteQueries(GLsizei, const GLuint *);
 GLAPI FLEXTGL_EXPORT void APIENTRY glDeleteSamplers(GLsizei, const GLuint *);
-GLAPI FLEXTGL_EXPORT GLboolean APIENTRY glIsSampler(GLuint);
-GLAPI FLEXTGL_EXPORT void APIENTRY glBindSampler(GLuint, GLuint);
-GLAPI FLEXTGL_EXPORT void APIENTRY glSamplerParameteri(GLuint, GLenum, GLint);
-GLAPI FLEXTGL_EXPORT void APIENTRY glSamplerParameteriv(GLuint, GLenum, const GLint *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glSamplerParameterf(GLuint, GLenum, GLfloat);
-GLAPI FLEXTGL_EXPORT void APIENTRY glSamplerParameterfv(GLuint, GLenum, const GLfloat *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glGetSamplerParameteriv(GLuint, GLenum, GLint *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glGetSamplerParameterfv(GLuint, GLenum, GLfloat *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glVertexAttribDivisor(GLuint, GLuint);
-GLAPI FLEXTGL_EXPORT void APIENTRY glBindTransformFeedback(GLenum, GLuint);
+GLAPI FLEXTGL_EXPORT void APIENTRY glDeleteSync(GLsync);
 GLAPI FLEXTGL_EXPORT void APIENTRY glDeleteTransformFeedbacks(GLsizei, const GLuint *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glDeleteVertexArrays(GLsizei, const GLuint *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glDrawArraysInstanced(GLenum, GLint, GLsizei, GLsizei);
+GLAPI FLEXTGL_EXPORT void APIENTRY glDrawBuffers(GLsizei, const GLenum *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glDrawElementsInstanced(GLenum, GLsizei, GLenum, const void *, GLsizei);
+GLAPI FLEXTGL_EXPORT void APIENTRY glDrawRangeElements(GLenum, GLuint, GLuint, GLsizei, GLenum, const void *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glEndQuery(GLenum);
+GLAPI FLEXTGL_EXPORT void APIENTRY glEndTransformFeedback(void);
+GLAPI FLEXTGL_EXPORT GLsync APIENTRY glFenceSync(GLenum, GLbitfield);
+GLAPI FLEXTGL_EXPORT void APIENTRY glFlushMappedBufferRange(GLenum, GLintptr, GLsizeiptr);
+GLAPI FLEXTGL_EXPORT void APIENTRY glFramebufferTextureLayer(GLenum, GLenum, GLuint, GLint, GLint);
+GLAPI FLEXTGL_EXPORT void APIENTRY glGenQueries(GLsizei, GLuint *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glGenSamplers(GLsizei, GLuint *);
 GLAPI FLEXTGL_EXPORT void APIENTRY glGenTransformFeedbacks(GLsizei, GLuint *);
-GLAPI FLEXTGL_EXPORT GLboolean APIENTRY glIsTransformFeedback(GLuint);
-GLAPI FLEXTGL_EXPORT void APIENTRY glPauseTransformFeedback(void);
-GLAPI FLEXTGL_EXPORT void APIENTRY glResumeTransformFeedback(void);
+GLAPI FLEXTGL_EXPORT void APIENTRY glGenVertexArrays(GLsizei, GLuint *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glGetActiveUniformBlockName(GLuint, GLuint, GLsizei, GLsizei *, GLchar *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glGetActiveUniformBlockiv(GLuint, GLuint, GLenum, GLint *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glGetActiveUniformsiv(GLuint, GLsizei, const GLuint *, GLenum, GLint *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glGetBufferParameteri64v(GLenum, GLenum, GLint64 *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glGetBufferPointerv(GLenum, GLenum, void **);
+GLAPI FLEXTGL_EXPORT GLint APIENTRY glGetFragDataLocation(GLuint, const GLchar *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glGetInteger64i_v(GLenum, GLuint, GLint64 *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glGetInteger64v(GLenum, GLint64 *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glGetIntegeri_v(GLenum, GLuint, GLint *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glGetInternalformativ(GLenum, GLenum, GLenum, GLsizei, GLint *);
 GLAPI FLEXTGL_EXPORT void APIENTRY glGetProgramBinary(GLuint, GLsizei, GLsizei *, GLenum *, void *);
-GLAPI FLEXTGL_EXPORT void APIENTRY glProgramBinary(GLuint, GLenum, const void *, GLsizei);
-GLAPI FLEXTGL_EXPORT void APIENTRY glProgramParameteri(GLuint, GLenum, GLint);
+GLAPI FLEXTGL_EXPORT void APIENTRY glGetQueryObjectuiv(GLuint, GLenum, GLuint *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glGetQueryiv(GLenum, GLenum, GLint *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glGetSamplerParameterfv(GLuint, GLenum, GLfloat *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glGetSamplerParameteriv(GLuint, GLenum, GLint *);
+GLAPI FLEXTGL_EXPORT const GLubyte * APIENTRY glGetStringi(GLenum, GLuint);
+GLAPI FLEXTGL_EXPORT void APIENTRY glGetSynciv(GLsync, GLenum, GLsizei, GLsizei *, GLint *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glGetTransformFeedbackVarying(GLuint, GLuint, GLsizei, GLsizei *, GLsizei *, GLenum *, GLchar *);
+GLAPI FLEXTGL_EXPORT GLuint APIENTRY glGetUniformBlockIndex(GLuint, const GLchar *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glGetUniformIndices(GLuint, GLsizei, const GLchar *const*, GLuint *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glGetUniformuiv(GLuint, GLint, GLuint *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glGetVertexAttribIiv(GLuint, GLenum, GLint *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glGetVertexAttribIuiv(GLuint, GLenum, GLuint *);
 GLAPI FLEXTGL_EXPORT void APIENTRY glInvalidateFramebuffer(GLenum, GLsizei, const GLenum *);
 GLAPI FLEXTGL_EXPORT void APIENTRY glInvalidateSubFramebuffer(GLenum, GLsizei, const GLenum *, GLint, GLint, GLsizei, GLsizei);
+GLAPI FLEXTGL_EXPORT GLboolean APIENTRY glIsQuery(GLuint);
+GLAPI FLEXTGL_EXPORT GLboolean APIENTRY glIsSampler(GLuint);
+GLAPI FLEXTGL_EXPORT GLboolean APIENTRY glIsSync(GLsync);
+GLAPI FLEXTGL_EXPORT GLboolean APIENTRY glIsTransformFeedback(GLuint);
+GLAPI FLEXTGL_EXPORT GLboolean APIENTRY glIsVertexArray(GLuint);
+GLAPI FLEXTGL_EXPORT void * APIENTRY glMapBufferRange(GLenum, GLintptr, GLsizeiptr, GLbitfield);
+GLAPI FLEXTGL_EXPORT void APIENTRY glPauseTransformFeedback(void);
+GLAPI FLEXTGL_EXPORT void APIENTRY glProgramBinary(GLuint, GLenum, const void *, GLsizei);
+GLAPI FLEXTGL_EXPORT void APIENTRY glProgramParameteri(GLuint, GLenum, GLint);
+GLAPI FLEXTGL_EXPORT void APIENTRY glReadBuffer(GLenum);
+GLAPI FLEXTGL_EXPORT void APIENTRY glRenderbufferStorageMultisample(GLenum, GLsizei, GLenum, GLsizei, GLsizei);
+GLAPI FLEXTGL_EXPORT void APIENTRY glResumeTransformFeedback(void);
+GLAPI FLEXTGL_EXPORT void APIENTRY glSamplerParameterf(GLuint, GLenum, GLfloat);
+GLAPI FLEXTGL_EXPORT void APIENTRY glSamplerParameterfv(GLuint, GLenum, const GLfloat *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glSamplerParameteri(GLuint, GLenum, GLint);
+GLAPI FLEXTGL_EXPORT void APIENTRY glSamplerParameteriv(GLuint, GLenum, const GLint *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glTexImage3D(GLenum, GLint, GLint, GLsizei, GLsizei, GLsizei, GLint, GLenum, GLenum, const void *);
 GLAPI FLEXTGL_EXPORT void APIENTRY glTexStorage2D(GLenum, GLsizei, GLenum, GLsizei, GLsizei);
 GLAPI FLEXTGL_EXPORT void APIENTRY glTexStorage3D(GLenum, GLsizei, GLenum, GLsizei, GLsizei, GLsizei);
-GLAPI FLEXTGL_EXPORT void APIENTRY glGetInternalformativ(GLenum, GLenum, GLenum, GLsizei, GLint *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glTexSubImage3D(GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLenum, const void *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glTransformFeedbackVaryings(GLuint, GLsizei, const GLchar *const*, GLenum);
+GLAPI FLEXTGL_EXPORT void APIENTRY glUniform1ui(GLint, GLuint);
+GLAPI FLEXTGL_EXPORT void APIENTRY glUniform1uiv(GLint, GLsizei, const GLuint *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glUniform2ui(GLint, GLuint, GLuint);
+GLAPI FLEXTGL_EXPORT void APIENTRY glUniform2uiv(GLint, GLsizei, const GLuint *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glUniform3ui(GLint, GLuint, GLuint, GLuint);
+GLAPI FLEXTGL_EXPORT void APIENTRY glUniform3uiv(GLint, GLsizei, const GLuint *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glUniform4ui(GLint, GLuint, GLuint, GLuint, GLuint);
+GLAPI FLEXTGL_EXPORT void APIENTRY glUniform4uiv(GLint, GLsizei, const GLuint *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glUniformBlockBinding(GLuint, GLuint, GLuint);
+GLAPI FLEXTGL_EXPORT void APIENTRY glUniformMatrix2x3fv(GLint, GLsizei, GLboolean, const GLfloat *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glUniformMatrix2x4fv(GLint, GLsizei, GLboolean, const GLfloat *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glUniformMatrix3x2fv(GLint, GLsizei, GLboolean, const GLfloat *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glUniformMatrix3x4fv(GLint, GLsizei, GLboolean, const GLfloat *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glUniformMatrix4x2fv(GLint, GLsizei, GLboolean, const GLfloat *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glUniformMatrix4x3fv(GLint, GLsizei, GLboolean, const GLfloat *);
+GLAPI FLEXTGL_EXPORT GLboolean APIENTRY glUnmapBuffer(GLenum);
+GLAPI FLEXTGL_EXPORT void APIENTRY glVertexAttribDivisor(GLuint, GLuint);
+GLAPI FLEXTGL_EXPORT void APIENTRY glVertexAttribI4i(GLuint, GLint, GLint, GLint, GLint);
+GLAPI FLEXTGL_EXPORT void APIENTRY glVertexAttribI4iv(GLuint, const GLint *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glVertexAttribI4ui(GLuint, GLuint, GLuint, GLuint, GLuint);
+GLAPI FLEXTGL_EXPORT void APIENTRY glVertexAttribI4uiv(GLuint, const GLuint *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glVertexAttribIPointer(GLuint, GLint, GLenum, GLsizei, const void *);
+GLAPI FLEXTGL_EXPORT void APIENTRY glWaitSync(GLsync, GLbitfield, GLuint64);
 
 /* GL_ES_VERSION_3_1 */
 
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglActiveShaderProgram)(GLuint, GLuint);
+#define glActiveShaderProgram flextglActiveShaderProgram
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglBindImageTexture)(GLuint, GLuint, GLint, GLboolean, GLint, GLenum, GLenum);
+#define glBindImageTexture flextglBindImageTexture
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglBindProgramPipeline)(GLuint);
+#define glBindProgramPipeline flextglBindProgramPipeline
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglBindVertexBuffer)(GLuint, GLuint, GLintptr, GLsizei);
+#define glBindVertexBuffer flextglBindVertexBuffer
+GLAPI FLEXTGL_EXPORT GLuint(APIENTRY *flextglCreateShaderProgramv)(GLenum, GLsizei, const GLchar *const*);
+#define glCreateShaderProgramv flextglCreateShaderProgramv
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDeleteProgramPipelines)(GLsizei, const GLuint *);
+#define glDeleteProgramPipelines flextglDeleteProgramPipelines
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDispatchCompute)(GLuint, GLuint, GLuint);
 #define glDispatchCompute flextglDispatchCompute
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDispatchComputeIndirect)(GLintptr);
@@ -1651,226 +1669,183 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDrawElementsIndirect)(GLenum, GLenum,
 #define glDrawElementsIndirect flextglDrawElementsIndirect
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglFramebufferParameteri)(GLenum, GLenum, GLint);
 #define glFramebufferParameteri flextglFramebufferParameteri
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGenProgramPipelines)(GLsizei, GLuint *);
+#define glGenProgramPipelines flextglGenProgramPipelines
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetBooleani_v)(GLenum, GLuint, GLboolean *);
+#define glGetBooleani_v flextglGetBooleani_v
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetFramebufferParameteriv)(GLenum, GLenum, GLint *);
 #define glGetFramebufferParameteriv flextglGetFramebufferParameteriv
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetMultisamplefv)(GLenum, GLuint, GLfloat *);
+#define glGetMultisamplefv flextglGetMultisamplefv
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetProgramInterfaceiv)(GLuint, GLenum, GLenum, GLint *);
 #define glGetProgramInterfaceiv flextglGetProgramInterfaceiv
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetProgramPipelineInfoLog)(GLuint, GLsizei, GLsizei *, GLchar *);
+#define glGetProgramPipelineInfoLog flextglGetProgramPipelineInfoLog
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetProgramPipelineiv)(GLuint, GLenum, GLint *);
+#define glGetProgramPipelineiv flextglGetProgramPipelineiv
 GLAPI FLEXTGL_EXPORT GLuint(APIENTRY *flextglGetProgramResourceIndex)(GLuint, GLenum, const GLchar *);
 #define glGetProgramResourceIndex flextglGetProgramResourceIndex
+GLAPI FLEXTGL_EXPORT GLint(APIENTRY *flextglGetProgramResourceLocation)(GLuint, GLenum, const GLchar *);
+#define glGetProgramResourceLocation flextglGetProgramResourceLocation
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetProgramResourceName)(GLuint, GLenum, GLuint, GLsizei, GLsizei *, GLchar *);
 #define glGetProgramResourceName flextglGetProgramResourceName
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetProgramResourceiv)(GLuint, GLenum, GLuint, GLsizei, const GLenum *, GLsizei, GLsizei *, GLint *);
 #define glGetProgramResourceiv flextglGetProgramResourceiv
-GLAPI FLEXTGL_EXPORT GLint(APIENTRY *flextglGetProgramResourceLocation)(GLuint, GLenum, const GLchar *);
-#define glGetProgramResourceLocation flextglGetProgramResourceLocation
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglUseProgramStages)(GLuint, GLbitfield, GLuint);
-#define glUseProgramStages flextglUseProgramStages
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglActiveShaderProgram)(GLuint, GLuint);
-#define glActiveShaderProgram flextglActiveShaderProgram
-GLAPI FLEXTGL_EXPORT GLuint(APIENTRY *flextglCreateShaderProgramv)(GLenum, GLsizei, const GLchar *const*);
-#define glCreateShaderProgramv flextglCreateShaderProgramv
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglBindProgramPipeline)(GLuint);
-#define glBindProgramPipeline flextglBindProgramPipeline
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDeleteProgramPipelines)(GLsizei, const GLuint *);
-#define glDeleteProgramPipelines flextglDeleteProgramPipelines
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGenProgramPipelines)(GLsizei, GLuint *);
-#define glGenProgramPipelines flextglGenProgramPipelines
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetTexLevelParameterfv)(GLenum, GLint, GLenum, GLfloat *);
+#define glGetTexLevelParameterfv flextglGetTexLevelParameterfv
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetTexLevelParameteriv)(GLenum, GLint, GLenum, GLint *);
+#define glGetTexLevelParameteriv flextglGetTexLevelParameteriv
 GLAPI FLEXTGL_EXPORT GLboolean(APIENTRY *flextglIsProgramPipeline)(GLuint);
 #define glIsProgramPipeline flextglIsProgramPipeline
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetProgramPipelineiv)(GLuint, GLenum, GLint *);
-#define glGetProgramPipelineiv flextglGetProgramPipelineiv
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform1i)(GLuint, GLint, GLint);
-#define glProgramUniform1i flextglProgramUniform1i
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform2i)(GLuint, GLint, GLint, GLint);
-#define glProgramUniform2i flextglProgramUniform2i
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform3i)(GLuint, GLint, GLint, GLint, GLint);
-#define glProgramUniform3i flextglProgramUniform3i
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform4i)(GLuint, GLint, GLint, GLint, GLint, GLint);
-#define glProgramUniform4i flextglProgramUniform4i
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform1ui)(GLuint, GLint, GLuint);
-#define glProgramUniform1ui flextglProgramUniform1ui
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform2ui)(GLuint, GLint, GLuint, GLuint);
-#define glProgramUniform2ui flextglProgramUniform2ui
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform3ui)(GLuint, GLint, GLuint, GLuint, GLuint);
-#define glProgramUniform3ui flextglProgramUniform3ui
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform4ui)(GLuint, GLint, GLuint, GLuint, GLuint, GLuint);
-#define glProgramUniform4ui flextglProgramUniform4ui
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform1f)(GLuint, GLint, GLfloat);
-#define glProgramUniform1f flextglProgramUniform1f
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform2f)(GLuint, GLint, GLfloat, GLfloat);
-#define glProgramUniform2f flextglProgramUniform2f
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform3f)(GLuint, GLint, GLfloat, GLfloat, GLfloat);
-#define glProgramUniform3f flextglProgramUniform3f
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform4f)(GLuint, GLint, GLfloat, GLfloat, GLfloat, GLfloat);
-#define glProgramUniform4f flextglProgramUniform4f
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform1iv)(GLuint, GLint, GLsizei, const GLint *);
-#define glProgramUniform1iv flextglProgramUniform1iv
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform2iv)(GLuint, GLint, GLsizei, const GLint *);
-#define glProgramUniform2iv flextglProgramUniform2iv
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform3iv)(GLuint, GLint, GLsizei, const GLint *);
-#define glProgramUniform3iv flextglProgramUniform3iv
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform4iv)(GLuint, GLint, GLsizei, const GLint *);
-#define glProgramUniform4iv flextglProgramUniform4iv
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform1uiv)(GLuint, GLint, GLsizei, const GLuint *);
-#define glProgramUniform1uiv flextglProgramUniform1uiv
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform2uiv)(GLuint, GLint, GLsizei, const GLuint *);
-#define glProgramUniform2uiv flextglProgramUniform2uiv
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform3uiv)(GLuint, GLint, GLsizei, const GLuint *);
-#define glProgramUniform3uiv flextglProgramUniform3uiv
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform4uiv)(GLuint, GLint, GLsizei, const GLuint *);
-#define glProgramUniform4uiv flextglProgramUniform4uiv
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform1fv)(GLuint, GLint, GLsizei, const GLfloat *);
-#define glProgramUniform1fv flextglProgramUniform1fv
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform2fv)(GLuint, GLint, GLsizei, const GLfloat *);
-#define glProgramUniform2fv flextglProgramUniform2fv
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform3fv)(GLuint, GLint, GLsizei, const GLfloat *);
-#define glProgramUniform3fv flextglProgramUniform3fv
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform4fv)(GLuint, GLint, GLsizei, const GLfloat *);
-#define glProgramUniform4fv flextglProgramUniform4fv
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix2fv)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
-#define glProgramUniformMatrix2fv flextglProgramUniformMatrix2fv
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix3fv)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
-#define glProgramUniformMatrix3fv flextglProgramUniformMatrix3fv
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix4fv)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
-#define glProgramUniformMatrix4fv flextglProgramUniformMatrix4fv
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix2x3fv)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
-#define glProgramUniformMatrix2x3fv flextglProgramUniformMatrix2x3fv
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix3x2fv)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
-#define glProgramUniformMatrix3x2fv flextglProgramUniformMatrix3x2fv
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix2x4fv)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
-#define glProgramUniformMatrix2x4fv flextglProgramUniformMatrix2x4fv
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix4x2fv)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
-#define glProgramUniformMatrix4x2fv flextglProgramUniformMatrix4x2fv
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix3x4fv)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
-#define glProgramUniformMatrix3x4fv flextglProgramUniformMatrix3x4fv
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix4x3fv)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
-#define glProgramUniformMatrix4x3fv flextglProgramUniformMatrix4x3fv
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglValidateProgramPipeline)(GLuint);
-#define glValidateProgramPipeline flextglValidateProgramPipeline
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetProgramPipelineInfoLog)(GLuint, GLsizei, GLsizei *, GLchar *);
-#define glGetProgramPipelineInfoLog flextglGetProgramPipelineInfoLog
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglBindImageTexture)(GLuint, GLuint, GLint, GLboolean, GLint, GLenum, GLenum);
-#define glBindImageTexture flextglBindImageTexture
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetBooleani_v)(GLenum, GLuint, GLboolean *);
-#define glGetBooleani_v flextglGetBooleani_v
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglMemoryBarrier)(GLbitfield);
 #define glMemoryBarrier flextglMemoryBarrier
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglMemoryBarrierByRegion)(GLbitfield);
 #define glMemoryBarrierByRegion flextglMemoryBarrierByRegion
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglTexStorage2DMultisample)(GLenum, GLsizei, GLenum, GLsizei, GLsizei, GLboolean);
-#define glTexStorage2DMultisample flextglTexStorage2DMultisample
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetMultisamplefv)(GLenum, GLuint, GLfloat *);
-#define glGetMultisamplefv flextglGetMultisamplefv
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform1f)(GLuint, GLint, GLfloat);
+#define glProgramUniform1f flextglProgramUniform1f
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform1fv)(GLuint, GLint, GLsizei, const GLfloat *);
+#define glProgramUniform1fv flextglProgramUniform1fv
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform1i)(GLuint, GLint, GLint);
+#define glProgramUniform1i flextglProgramUniform1i
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform1iv)(GLuint, GLint, GLsizei, const GLint *);
+#define glProgramUniform1iv flextglProgramUniform1iv
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform1ui)(GLuint, GLint, GLuint);
+#define glProgramUniform1ui flextglProgramUniform1ui
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform1uiv)(GLuint, GLint, GLsizei, const GLuint *);
+#define glProgramUniform1uiv flextglProgramUniform1uiv
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform2f)(GLuint, GLint, GLfloat, GLfloat);
+#define glProgramUniform2f flextglProgramUniform2f
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform2fv)(GLuint, GLint, GLsizei, const GLfloat *);
+#define glProgramUniform2fv flextglProgramUniform2fv
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform2i)(GLuint, GLint, GLint, GLint);
+#define glProgramUniform2i flextglProgramUniform2i
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform2iv)(GLuint, GLint, GLsizei, const GLint *);
+#define glProgramUniform2iv flextglProgramUniform2iv
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform2ui)(GLuint, GLint, GLuint, GLuint);
+#define glProgramUniform2ui flextglProgramUniform2ui
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform2uiv)(GLuint, GLint, GLsizei, const GLuint *);
+#define glProgramUniform2uiv flextglProgramUniform2uiv
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform3f)(GLuint, GLint, GLfloat, GLfloat, GLfloat);
+#define glProgramUniform3f flextglProgramUniform3f
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform3fv)(GLuint, GLint, GLsizei, const GLfloat *);
+#define glProgramUniform3fv flextglProgramUniform3fv
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform3i)(GLuint, GLint, GLint, GLint, GLint);
+#define glProgramUniform3i flextglProgramUniform3i
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform3iv)(GLuint, GLint, GLsizei, const GLint *);
+#define glProgramUniform3iv flextglProgramUniform3iv
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform3ui)(GLuint, GLint, GLuint, GLuint, GLuint);
+#define glProgramUniform3ui flextglProgramUniform3ui
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform3uiv)(GLuint, GLint, GLsizei, const GLuint *);
+#define glProgramUniform3uiv flextglProgramUniform3uiv
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform4f)(GLuint, GLint, GLfloat, GLfloat, GLfloat, GLfloat);
+#define glProgramUniform4f flextglProgramUniform4f
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform4fv)(GLuint, GLint, GLsizei, const GLfloat *);
+#define glProgramUniform4fv flextglProgramUniform4fv
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform4i)(GLuint, GLint, GLint, GLint, GLint, GLint);
+#define glProgramUniform4i flextglProgramUniform4i
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform4iv)(GLuint, GLint, GLsizei, const GLint *);
+#define glProgramUniform4iv flextglProgramUniform4iv
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform4ui)(GLuint, GLint, GLuint, GLuint, GLuint, GLuint);
+#define glProgramUniform4ui flextglProgramUniform4ui
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform4uiv)(GLuint, GLint, GLsizei, const GLuint *);
+#define glProgramUniform4uiv flextglProgramUniform4uiv
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix2fv)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
+#define glProgramUniformMatrix2fv flextglProgramUniformMatrix2fv
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix2x3fv)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
+#define glProgramUniformMatrix2x3fv flextglProgramUniformMatrix2x3fv
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix2x4fv)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
+#define glProgramUniformMatrix2x4fv flextglProgramUniformMatrix2x4fv
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix3fv)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
+#define glProgramUniformMatrix3fv flextglProgramUniformMatrix3fv
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix3x2fv)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
+#define glProgramUniformMatrix3x2fv flextglProgramUniformMatrix3x2fv
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix3x4fv)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
+#define glProgramUniformMatrix3x4fv flextglProgramUniformMatrix3x4fv
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix4fv)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
+#define glProgramUniformMatrix4fv flextglProgramUniformMatrix4fv
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix4x2fv)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
+#define glProgramUniformMatrix4x2fv flextglProgramUniformMatrix4x2fv
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix4x3fv)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
+#define glProgramUniformMatrix4x3fv flextglProgramUniformMatrix4x3fv
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglSampleMaski)(GLuint, GLbitfield);
 #define glSampleMaski flextglSampleMaski
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetTexLevelParameteriv)(GLenum, GLint, GLenum, GLint *);
-#define glGetTexLevelParameteriv flextglGetTexLevelParameteriv
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetTexLevelParameterfv)(GLenum, GLint, GLenum, GLfloat *);
-#define glGetTexLevelParameterfv flextglGetTexLevelParameterfv
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglBindVertexBuffer)(GLuint, GLuint, GLintptr, GLsizei);
-#define glBindVertexBuffer flextglBindVertexBuffer
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglTexStorage2DMultisample)(GLenum, GLsizei, GLenum, GLsizei, GLsizei, GLboolean);
+#define glTexStorage2DMultisample flextglTexStorage2DMultisample
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglUseProgramStages)(GLuint, GLbitfield, GLuint);
+#define glUseProgramStages flextglUseProgramStages
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglValidateProgramPipeline)(GLuint);
+#define glValidateProgramPipeline flextglValidateProgramPipeline
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglVertexAttribBinding)(GLuint, GLuint);
+#define glVertexAttribBinding flextglVertexAttribBinding
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglVertexAttribFormat)(GLuint, GLint, GLenum, GLboolean, GLuint);
 #define glVertexAttribFormat flextglVertexAttribFormat
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglVertexAttribIFormat)(GLuint, GLint, GLenum, GLuint);
 #define glVertexAttribIFormat flextglVertexAttribIFormat
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglVertexAttribBinding)(GLuint, GLuint);
-#define glVertexAttribBinding flextglVertexAttribBinding
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglVertexBindingDivisor)(GLuint, GLuint);
 #define glVertexBindingDivisor flextglVertexBindingDivisor
-
-/* GL_ANDROID_extension_pack_es31a */
-
-
-/* GL_APPLE_texture_format_BGRA8888 */
-
-
-/* GL_EXT_texture_filter_anisotropic */
-
-
-/* GL_EXT_texture_format_BGRA8888 */
-
-
-/* GL_EXT_read_format_bgra */
-
-
-/* GL_EXT_multi_draw_arrays */
-
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglMultiDrawArraysEXT)(GLenum, const GLint *, const GLsizei *, GLsizei);
-#define glMultiDrawArraysEXT flextglMultiDrawArraysEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglMultiDrawElementsEXT)(GLenum, const GLsizei *, GLenum, const void *const*, GLsizei);
-#define glMultiDrawElementsEXT flextglMultiDrawElementsEXT
-
-/* GL_EXT_debug_label */
-
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglLabelObjectEXT)(GLenum, GLuint, GLsizei, const GLchar *);
-#define glLabelObjectEXT flextglLabelObjectEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetObjectLabelEXT)(GLenum, GLuint, GLsizei, GLsizei *, GLchar *);
-#define glGetObjectLabelEXT flextglGetObjectLabelEXT
-
-/* GL_EXT_debug_marker */
-
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglInsertEventMarkerEXT)(GLsizei, const GLchar *);
-#define glInsertEventMarkerEXT flextglInsertEventMarkerEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglPushGroupMarkerEXT)(GLsizei, const GLchar *);
-#define glPushGroupMarkerEXT flextglPushGroupMarkerEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglPopGroupMarkerEXT)(void);
-#define glPopGroupMarkerEXT flextglPopGroupMarkerEXT
-
-/* GL_EXT_disjoint_timer_query */
-
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGenQueriesEXT)(GLsizei, GLuint *);
-#define glGenQueriesEXT flextglGenQueriesEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDeleteQueriesEXT)(GLsizei, const GLuint *);
-#define glDeleteQueriesEXT flextglDeleteQueriesEXT
-GLAPI FLEXTGL_EXPORT GLboolean(APIENTRY *flextglIsQueryEXT)(GLuint);
-#define glIsQueryEXT flextglIsQueryEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglBeginQueryEXT)(GLenum, GLuint);
-#define glBeginQueryEXT flextglBeginQueryEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglEndQueryEXT)(GLenum);
-#define glEndQueryEXT flextglEndQueryEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglQueryCounterEXT)(GLuint, GLenum);
-#define glQueryCounterEXT flextglQueryCounterEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetQueryivEXT)(GLenum, GLenum, GLint *);
-#define glGetQueryivEXT flextglGetQueryivEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetQueryObjectivEXT)(GLuint, GLenum, GLint *);
-#define glGetQueryObjectivEXT flextglGetQueryObjectivEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetQueryObjectuivEXT)(GLuint, GLenum, GLuint *);
-#define glGetQueryObjectuivEXT flextglGetQueryObjectuivEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetQueryObjecti64vEXT)(GLuint, GLenum, GLint64 *);
-#define glGetQueryObjecti64vEXT flextglGetQueryObjecti64vEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetQueryObjectui64vEXT)(GLuint, GLenum, GLuint64 *);
-#define glGetQueryObjectui64vEXT flextglGetQueryObjectui64vEXT
-
-/* GL_EXT_texture_sRGB_decode */
-
-
-/* GL_EXT_sRGB_write_control */
-
-
-/* GL_EXT_shader_integer_mix */
-
 
 /* GL_EXT_copy_image */
 
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglCopyImageSubDataEXT)(GLuint, GLenum, GLint, GLint, GLint, GLint, GLuint, GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei);
 #define glCopyImageSubDataEXT flextglCopyImageSubDataEXT
 
+/* GL_EXT_debug_label */
+
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetObjectLabelEXT)(GLenum, GLuint, GLsizei, GLsizei *, GLchar *);
+#define glGetObjectLabelEXT flextglGetObjectLabelEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglLabelObjectEXT)(GLenum, GLuint, GLsizei, const GLchar *);
+#define glLabelObjectEXT flextglLabelObjectEXT
+
+/* GL_EXT_debug_marker */
+
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglInsertEventMarkerEXT)(GLsizei, const GLchar *);
+#define glInsertEventMarkerEXT flextglInsertEventMarkerEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglPopGroupMarkerEXT)(void);
+#define glPopGroupMarkerEXT flextglPopGroupMarkerEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglPushGroupMarkerEXT)(GLsizei, const GLchar *);
+#define glPushGroupMarkerEXT flextglPushGroupMarkerEXT
+
+/* GL_EXT_disjoint_timer_query */
+
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglBeginQueryEXT)(GLenum, GLuint);
+#define glBeginQueryEXT flextglBeginQueryEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDeleteQueriesEXT)(GLsizei, const GLuint *);
+#define glDeleteQueriesEXT flextglDeleteQueriesEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglEndQueryEXT)(GLenum);
+#define glEndQueryEXT flextglEndQueryEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGenQueriesEXT)(GLsizei, GLuint *);
+#define glGenQueriesEXT flextglGenQueriesEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetQueryObjecti64vEXT)(GLuint, GLenum, GLint64 *);
+#define glGetQueryObjecti64vEXT flextglGetQueryObjecti64vEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetQueryObjectivEXT)(GLuint, GLenum, GLint *);
+#define glGetQueryObjectivEXT flextglGetQueryObjectivEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetQueryObjectui64vEXT)(GLuint, GLenum, GLuint64 *);
+#define glGetQueryObjectui64vEXT flextglGetQueryObjectui64vEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetQueryObjectuivEXT)(GLuint, GLenum, GLuint *);
+#define glGetQueryObjectuivEXT flextglGetQueryObjectuivEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetQueryivEXT)(GLenum, GLenum, GLint *);
+#define glGetQueryivEXT flextglGetQueryivEXT
+GLAPI FLEXTGL_EXPORT GLboolean(APIENTRY *flextglIsQueryEXT)(GLuint);
+#define glIsQueryEXT flextglIsQueryEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglQueryCounterEXT)(GLuint, GLenum);
+#define glQueryCounterEXT flextglQueryCounterEXT
+
 /* GL_EXT_draw_buffers_indexed */
 
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglEnableiEXT)(GLenum, GLuint);
-#define glEnableiEXT flextglEnableiEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDisableiEXT)(GLenum, GLuint);
-#define glDisableiEXT flextglDisableiEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglBlendEquationiEXT)(GLuint, GLenum);
-#define glBlendEquationiEXT flextglBlendEquationiEXT
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglBlendEquationSeparateiEXT)(GLuint, GLenum, GLenum);
 #define glBlendEquationSeparateiEXT flextglBlendEquationSeparateiEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglBlendFunciEXT)(GLuint, GLenum, GLenum);
-#define glBlendFunciEXT flextglBlendFunciEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglBlendEquationiEXT)(GLuint, GLenum);
+#define glBlendEquationiEXT flextglBlendEquationiEXT
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglBlendFuncSeparateiEXT)(GLuint, GLenum, GLenum, GLenum, GLenum);
 #define glBlendFuncSeparateiEXT flextglBlendFuncSeparateiEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglBlendFunciEXT)(GLuint, GLenum, GLenum);
+#define glBlendFunciEXT flextglBlendFunciEXT
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglColorMaskiEXT)(GLuint, GLboolean, GLboolean, GLboolean, GLboolean);
 #define glColorMaskiEXT flextglColorMaskiEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDisableiEXT)(GLenum, GLuint);
+#define glDisableiEXT flextglDisableiEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglEnableiEXT)(GLenum, GLuint);
+#define glEnableiEXT flextglEnableiEXT
 GLAPI FLEXTGL_EXPORT GLboolean(APIENTRY *flextglIsEnablediEXT)(GLenum, GLuint);
 #define glIsEnablediEXT flextglIsEnablediEXT
 
@@ -1882,60 +1857,52 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglFramebufferTextureEXT)(GLenum, GLenum
 /* GL_EXT_gpu_shader5 */
 
 
-/* GL_EXT_shader_io_blocks */
+/* GL_EXT_multi_draw_arrays */
 
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglMultiDrawArraysEXT)(GLenum, const GLint *, const GLsizei *, GLsizei);
+#define glMultiDrawArraysEXT flextglMultiDrawArraysEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglMultiDrawElementsEXT)(GLenum, const GLsizei *, GLenum, const void *const*, GLsizei);
+#define glMultiDrawElementsEXT flextglMultiDrawElementsEXT
 
-/* GL_EXT_tessellation_shader */
+/* GL_EXT_multisampled_render_to_texture */
 
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglPatchParameteriEXT)(GLenum, GLint);
-#define glPatchParameteriEXT flextglPatchParameteriEXT
-
-/* GL_EXT_texture_border_clamp */
-
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglTexParameterIivEXT)(GLenum, GLenum, const GLint *);
-#define glTexParameterIivEXT flextglTexParameterIivEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglTexParameterIuivEXT)(GLenum, GLenum, const GLuint *);
-#define glTexParameterIuivEXT flextglTexParameterIuivEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetTexParameterIivEXT)(GLenum, GLenum, GLint *);
-#define glGetTexParameterIivEXT flextglGetTexParameterIivEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetTexParameterIuivEXT)(GLenum, GLenum, GLuint *);
-#define glGetTexParameterIuivEXT flextglGetTexParameterIuivEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglSamplerParameterIivEXT)(GLuint, GLenum, const GLint *);
-#define glSamplerParameterIivEXT flextglSamplerParameterIivEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglSamplerParameterIuivEXT)(GLuint, GLenum, const GLuint *);
-#define glSamplerParameterIuivEXT flextglSamplerParameterIuivEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetSamplerParameterIivEXT)(GLuint, GLenum, GLint *);
-#define glGetSamplerParameterIivEXT flextglGetSamplerParameterIivEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetSamplerParameterIuivEXT)(GLuint, GLenum, GLuint *);
-#define glGetSamplerParameterIuivEXT flextglGetSamplerParameterIuivEXT
-
-/* GL_EXT_texture_buffer */
-
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglTexBufferEXT)(GLenum, GLenum, GLuint);
-#define glTexBufferEXT flextglTexBufferEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglTexBufferRangeEXT)(GLenum, GLenum, GLuint, GLintptr, GLsizeiptr);
-#define glTexBufferRangeEXT flextglTexBufferRangeEXT
-
-/* GL_EXT_texture_cube_map_array */
-
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglFramebufferTexture2DMultisampleEXT)(GLenum, GLenum, GLenum, GLuint, GLint, GLsizei);
+#define glFramebufferTexture2DMultisampleEXT flextglFramebufferTexture2DMultisampleEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglRenderbufferStorageMultisampleEXT)(GLenum, GLsizei, GLenum, GLsizei, GLsizei);
+#define glRenderbufferStorageMultisampleEXT flextglRenderbufferStorageMultisampleEXT
 
 /* GL_EXT_primitive_bounding_box */
 
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglPrimitiveBoundingBoxEXT)(GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat);
 #define glPrimitiveBoundingBoxEXT flextglPrimitiveBoundingBoxEXT
 
+/* GL_EXT_read_format_bgra */
+
+
+/* GL_EXT_robustness */
+
+GLAPI FLEXTGL_EXPORT GLenum(APIENTRY *flextglGetGraphicsResetStatusEXT)(void);
+#define glGetGraphicsResetStatusEXT flextglGetGraphicsResetStatusEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnUniformfvEXT)(GLuint, GLint, GLsizei, GLfloat *);
+#define glGetnUniformfvEXT flextglGetnUniformfvEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnUniformivEXT)(GLuint, GLint, GLsizei, GLint *);
+#define glGetnUniformivEXT flextglGetnUniformivEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglReadnPixelsEXT)(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void *);
+#define glReadnPixelsEXT flextglReadnPixelsEXT
+
+/* GL_EXT_sRGB_write_control */
+
+
 /* GL_EXT_separate_shader_objects */
 
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglUseShaderProgramEXT)(GLenum, GLuint);
-#define glUseShaderProgramEXT flextglUseShaderProgramEXT
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglActiveProgramEXT)(GLuint);
 #define glActiveProgramEXT flextglActiveProgramEXT
-GLAPI FLEXTGL_EXPORT GLuint(APIENTRY *flextglCreateShaderProgramEXT)(GLenum, const GLchar *);
-#define glCreateShaderProgramEXT flextglCreateShaderProgramEXT
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglActiveShaderProgramEXT)(GLuint, GLuint);
 #define glActiveShaderProgramEXT flextglActiveShaderProgramEXT
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglBindProgramPipelineEXT)(GLuint);
 #define glBindProgramPipelineEXT flextglBindProgramPipelineEXT
+GLAPI FLEXTGL_EXPORT GLuint(APIENTRY *flextglCreateShaderProgramEXT)(GLenum, const GLchar *);
+#define glCreateShaderProgramEXT flextglCreateShaderProgramEXT
 GLAPI FLEXTGL_EXPORT GLuint(APIENTRY *flextglCreateShaderProgramvEXT)(GLenum, GLsizei, const GLchar **);
 #define glCreateShaderProgramvEXT flextglCreateShaderProgramvEXT
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDeleteProgramPipelinesEXT)(GLsizei, const GLuint *);
@@ -1958,6 +1925,10 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform1iEXT)(GLuint, GLint, G
 #define glProgramUniform1iEXT flextglProgramUniform1iEXT
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform1ivEXT)(GLuint, GLint, GLsizei, const GLint *);
 #define glProgramUniform1ivEXT flextglProgramUniform1ivEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform1uiEXT)(GLuint, GLint, GLuint);
+#define glProgramUniform1uiEXT flextglProgramUniform1uiEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform1uivEXT)(GLuint, GLint, GLsizei, const GLuint *);
+#define glProgramUniform1uivEXT flextglProgramUniform1uivEXT
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform2fEXT)(GLuint, GLint, GLfloat, GLfloat);
 #define glProgramUniform2fEXT flextglProgramUniform2fEXT
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform2fvEXT)(GLuint, GLint, GLsizei, const GLfloat *);
@@ -1966,6 +1937,10 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform2iEXT)(GLuint, GLint, G
 #define glProgramUniform2iEXT flextglProgramUniform2iEXT
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform2ivEXT)(GLuint, GLint, GLsizei, const GLint *);
 #define glProgramUniform2ivEXT flextglProgramUniform2ivEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform2uiEXT)(GLuint, GLint, GLuint, GLuint);
+#define glProgramUniform2uiEXT flextglProgramUniform2uiEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform2uivEXT)(GLuint, GLint, GLsizei, const GLuint *);
+#define glProgramUniform2uivEXT flextglProgramUniform2uivEXT
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform3fEXT)(GLuint, GLint, GLfloat, GLfloat, GLfloat);
 #define glProgramUniform3fEXT flextglProgramUniform3fEXT
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform3fvEXT)(GLuint, GLint, GLsizei, const GLfloat *);
@@ -1974,6 +1949,10 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform3iEXT)(GLuint, GLint, G
 #define glProgramUniform3iEXT flextglProgramUniform3iEXT
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform3ivEXT)(GLuint, GLint, GLsizei, const GLint *);
 #define glProgramUniform3ivEXT flextglProgramUniform3ivEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform3uiEXT)(GLuint, GLint, GLuint, GLuint, GLuint);
+#define glProgramUniform3uiEXT flextglProgramUniform3uiEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform3uivEXT)(GLuint, GLint, GLsizei, const GLuint *);
+#define glProgramUniform3uivEXT flextglProgramUniform3uivEXT
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform4fEXT)(GLuint, GLint, GLfloat, GLfloat, GLfloat, GLfloat);
 #define glProgramUniform4fEXT flextglProgramUniform4fEXT
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform4fvEXT)(GLuint, GLint, GLsizei, const GLfloat *);
@@ -1982,115 +1961,83 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform4iEXT)(GLuint, GLint, G
 #define glProgramUniform4iEXT flextglProgramUniform4iEXT
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform4ivEXT)(GLuint, GLint, GLsizei, const GLint *);
 #define glProgramUniform4ivEXT flextglProgramUniform4ivEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix2fvEXT)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
-#define glProgramUniformMatrix2fvEXT flextglProgramUniformMatrix2fvEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix3fvEXT)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
-#define glProgramUniformMatrix3fvEXT flextglProgramUniformMatrix3fvEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix4fvEXT)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
-#define glProgramUniformMatrix4fvEXT flextglProgramUniformMatrix4fvEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglUseProgramStagesEXT)(GLuint, GLbitfield, GLuint);
-#define glUseProgramStagesEXT flextglUseProgramStagesEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglValidateProgramPipelineEXT)(GLuint);
-#define glValidateProgramPipelineEXT flextglValidateProgramPipelineEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform1uiEXT)(GLuint, GLint, GLuint);
-#define glProgramUniform1uiEXT flextglProgramUniform1uiEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform2uiEXT)(GLuint, GLint, GLuint, GLuint);
-#define glProgramUniform2uiEXT flextglProgramUniform2uiEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform3uiEXT)(GLuint, GLint, GLuint, GLuint, GLuint);
-#define glProgramUniform3uiEXT flextglProgramUniform3uiEXT
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform4uiEXT)(GLuint, GLint, GLuint, GLuint, GLuint, GLuint);
 #define glProgramUniform4uiEXT flextglProgramUniform4uiEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform1uivEXT)(GLuint, GLint, GLsizei, const GLuint *);
-#define glProgramUniform1uivEXT flextglProgramUniform1uivEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform2uivEXT)(GLuint, GLint, GLsizei, const GLuint *);
-#define glProgramUniform2uivEXT flextglProgramUniform2uivEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform3uivEXT)(GLuint, GLint, GLsizei, const GLuint *);
-#define glProgramUniform3uivEXT flextglProgramUniform3uivEXT
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniform4uivEXT)(GLuint, GLint, GLsizei, const GLuint *);
 #define glProgramUniform4uivEXT flextglProgramUniform4uivEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix2fvEXT)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
+#define glProgramUniformMatrix2fvEXT flextglProgramUniformMatrix2fvEXT
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix2x3fvEXT)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
 #define glProgramUniformMatrix2x3fvEXT flextglProgramUniformMatrix2x3fvEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix3x2fvEXT)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
-#define glProgramUniformMatrix3x2fvEXT flextglProgramUniformMatrix3x2fvEXT
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix2x4fvEXT)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
 #define glProgramUniformMatrix2x4fvEXT flextglProgramUniformMatrix2x4fvEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix4x2fvEXT)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
-#define glProgramUniformMatrix4x2fvEXT flextglProgramUniformMatrix4x2fvEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix3fvEXT)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
+#define glProgramUniformMatrix3fvEXT flextglProgramUniformMatrix3fvEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix3x2fvEXT)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
+#define glProgramUniformMatrix3x2fvEXT flextglProgramUniformMatrix3x2fvEXT
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix3x4fvEXT)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
 #define glProgramUniformMatrix3x4fvEXT flextglProgramUniformMatrix3x4fvEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix4fvEXT)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
+#define glProgramUniformMatrix4fvEXT flextglProgramUniformMatrix4fvEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix4x2fvEXT)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
+#define glProgramUniformMatrix4x2fvEXT flextglProgramUniformMatrix4x2fvEXT
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix4x3fvEXT)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
 #define glProgramUniformMatrix4x3fvEXT flextglProgramUniformMatrix4x3fvEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglUseProgramStagesEXT)(GLuint, GLbitfield, GLuint);
+#define glUseProgramStagesEXT flextglUseProgramStagesEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglUseShaderProgramEXT)(GLenum, GLuint);
+#define glUseShaderProgramEXT flextglUseShaderProgramEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglValidateProgramPipelineEXT)(GLuint);
+#define glValidateProgramPipelineEXT flextglValidateProgramPipelineEXT
 
-/* GL_EXT_multisampled_render_to_texture */
-
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglRenderbufferStorageMultisampleEXT)(GLenum, GLsizei, GLenum, GLsizei, GLsizei);
-#define glRenderbufferStorageMultisampleEXT flextglRenderbufferStorageMultisampleEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglFramebufferTexture2DMultisampleEXT)(GLenum, GLenum, GLenum, GLuint, GLint, GLsizei);
-#define glFramebufferTexture2DMultisampleEXT flextglFramebufferTexture2DMultisampleEXT
-
-/* GL_EXT_robustness */
-
-GLAPI FLEXTGL_EXPORT GLenum(APIENTRY *flextglGetGraphicsResetStatusEXT)(void);
-#define glGetGraphicsResetStatusEXT flextglGetGraphicsResetStatusEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglReadnPixelsEXT)(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void *);
-#define glReadnPixelsEXT flextglReadnPixelsEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnUniformfvEXT)(GLuint, GLint, GLsizei, GLfloat *);
-#define glGetnUniformfvEXT flextglGetnUniformfvEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnUniformivEXT)(GLuint, GLint, GLsizei, GLint *);
-#define glGetnUniformivEXT flextglGetnUniformivEXT
-
-/* GL_KHR_texture_compression_astc_ldr */
+/* GL_EXT_shader_integer_mix */
 
 
-/* GL_KHR_texture_compression_astc_hdr */
+/* GL_EXT_shader_io_blocks */
 
 
-/* GL_KHR_debug */
+/* GL_EXT_tessellation_shader */
 
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDebugMessageControl)(GLenum, GLenum, GLenum, GLsizei, const GLuint *, GLboolean);
-#define glDebugMessageControl flextglDebugMessageControl
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDebugMessageInsert)(GLenum, GLenum, GLuint, GLenum, GLsizei, const GLchar *);
-#define glDebugMessageInsert flextglDebugMessageInsert
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDebugMessageCallback)(GLDEBUGPROC, const void *);
-#define glDebugMessageCallback flextglDebugMessageCallback
-GLAPI FLEXTGL_EXPORT GLuint(APIENTRY *flextglGetDebugMessageLog)(GLuint, GLsizei, GLenum *, GLenum *, GLuint *, GLenum *, GLsizei *, GLchar *);
-#define glGetDebugMessageLog flextglGetDebugMessageLog
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglPushDebugGroup)(GLenum, GLuint, GLsizei, const GLchar *);
-#define glPushDebugGroup flextglPushDebugGroup
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglPopDebugGroup)(void);
-#define glPopDebugGroup flextglPopDebugGroup
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglObjectLabel)(GLenum, GLuint, GLsizei, const GLchar *);
-#define glObjectLabel flextglObjectLabel
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetObjectLabel)(GLenum, GLuint, GLsizei, GLsizei *, GLchar *);
-#define glGetObjectLabel flextglGetObjectLabel
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglObjectPtrLabel)(const void *, GLsizei, const GLchar *);
-#define glObjectPtrLabel flextglObjectPtrLabel
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetObjectPtrLabel)(const void *, GLsizei, GLsizei *, GLchar *);
-#define glGetObjectPtrLabel flextglGetObjectPtrLabel
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetPointerv)(GLenum, void **);
-#define glGetPointerv flextglGetPointerv
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDebugMessageControlKHR)(GLenum, GLenum, GLenum, GLsizei, const GLuint *, GLboolean);
-#define glDebugMessageControlKHR flextglDebugMessageControlKHR
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDebugMessageInsertKHR)(GLenum, GLenum, GLuint, GLenum, GLsizei, const GLchar *);
-#define glDebugMessageInsertKHR flextglDebugMessageInsertKHR
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDebugMessageCallbackKHR)(GLDEBUGPROCKHR, const void *);
-#define glDebugMessageCallbackKHR flextglDebugMessageCallbackKHR
-GLAPI FLEXTGL_EXPORT GLuint(APIENTRY *flextglGetDebugMessageLogKHR)(GLuint, GLsizei, GLenum *, GLenum *, GLuint *, GLenum *, GLsizei *, GLchar *);
-#define glGetDebugMessageLogKHR flextglGetDebugMessageLogKHR
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglPushDebugGroupKHR)(GLenum, GLuint, GLsizei, const GLchar *);
-#define glPushDebugGroupKHR flextglPushDebugGroupKHR
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglPopDebugGroupKHR)(void);
-#define glPopDebugGroupKHR flextglPopDebugGroupKHR
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglObjectLabelKHR)(GLenum, GLuint, GLsizei, const GLchar *);
-#define glObjectLabelKHR flextglObjectLabelKHR
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetObjectLabelKHR)(GLenum, GLuint, GLsizei, GLsizei *, GLchar *);
-#define glGetObjectLabelKHR flextglGetObjectLabelKHR
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglObjectPtrLabelKHR)(const void *, GLsizei, const GLchar *);
-#define glObjectPtrLabelKHR flextglObjectPtrLabelKHR
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetObjectPtrLabelKHR)(const void *, GLsizei, GLsizei *, GLchar *);
-#define glGetObjectPtrLabelKHR flextglGetObjectPtrLabelKHR
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetPointervKHR)(GLenum, void **);
-#define glGetPointervKHR flextglGetPointervKHR
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglPatchParameteriEXT)(GLenum, GLint);
+#define glPatchParameteriEXT flextglPatchParameteriEXT
+
+/* GL_EXT_texture_border_clamp */
+
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetSamplerParameterIivEXT)(GLuint, GLenum, GLint *);
+#define glGetSamplerParameterIivEXT flextglGetSamplerParameterIivEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetSamplerParameterIuivEXT)(GLuint, GLenum, GLuint *);
+#define glGetSamplerParameterIuivEXT flextglGetSamplerParameterIuivEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetTexParameterIivEXT)(GLenum, GLenum, GLint *);
+#define glGetTexParameterIivEXT flextglGetTexParameterIivEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetTexParameterIuivEXT)(GLenum, GLenum, GLuint *);
+#define glGetTexParameterIuivEXT flextglGetTexParameterIuivEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglSamplerParameterIivEXT)(GLuint, GLenum, const GLint *);
+#define glSamplerParameterIivEXT flextglSamplerParameterIivEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglSamplerParameterIuivEXT)(GLuint, GLenum, const GLuint *);
+#define glSamplerParameterIuivEXT flextglSamplerParameterIuivEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglTexParameterIivEXT)(GLenum, GLenum, const GLint *);
+#define glTexParameterIivEXT flextglTexParameterIivEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglTexParameterIuivEXT)(GLenum, GLenum, const GLuint *);
+#define glTexParameterIuivEXT flextglTexParameterIuivEXT
+
+/* GL_EXT_texture_buffer */
+
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglTexBufferEXT)(GLenum, GLenum, GLuint);
+#define glTexBufferEXT flextglTexBufferEXT
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglTexBufferRangeEXT)(GLenum, GLenum, GLuint, GLintptr, GLsizeiptr);
+#define glTexBufferRangeEXT flextglTexBufferRangeEXT
+
+/* GL_EXT_texture_cube_map_array */
+
+
+/* GL_EXT_texture_filter_anisotropic */
+
+
+/* GL_EXT_texture_format_BGRA8888 */
+
+
+/* GL_EXT_texture_sRGB_decode */
+
 
 /* GL_KHR_blend_equation_advanced */
 
@@ -2100,51 +2047,86 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglBlendBarrierKHR)(void);
 /* GL_KHR_blend_equation_advanced_coherent */
 
 
-/* GL_KHR_robustness */
+/* GL_KHR_context_flush_control */
 
-GLAPI FLEXTGL_EXPORT GLenum(APIENTRY *flextglGetGraphicsResetStatus)(void);
-#define glGetGraphicsResetStatus flextglGetGraphicsResetStatus
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglReadnPixels)(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void *);
-#define glReadnPixels flextglReadnPixels
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnUniformfv)(GLuint, GLint, GLsizei, GLfloat *);
-#define glGetnUniformfv flextglGetnUniformfv
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnUniformiv)(GLuint, GLint, GLsizei, GLint *);
-#define glGetnUniformiv flextglGetnUniformiv
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnUniformuiv)(GLuint, GLint, GLsizei, GLuint *);
-#define glGetnUniformuiv flextglGetnUniformuiv
-GLAPI FLEXTGL_EXPORT GLenum(APIENTRY *flextglGetGraphicsResetStatusKHR)(void);
-#define glGetGraphicsResetStatusKHR flextglGetGraphicsResetStatusKHR
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglReadnPixelsKHR)(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void *);
-#define glReadnPixelsKHR flextglReadnPixelsKHR
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnUniformfvKHR)(GLuint, GLint, GLsizei, GLfloat *);
-#define glGetnUniformfvKHR flextglGetnUniformfvKHR
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnUniformivKHR)(GLuint, GLint, GLsizei, GLint *);
-#define glGetnUniformivKHR flextglGetnUniformivKHR
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnUniformuivKHR)(GLuint, GLint, GLsizei, GLuint *);
-#define glGetnUniformuivKHR flextglGetnUniformuivKHR
+
+/* GL_KHR_debug */
+
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDebugMessageCallback)(GLDEBUGPROC, const void *);
+#define glDebugMessageCallback flextglDebugMessageCallback
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDebugMessageCallbackKHR)(GLDEBUGPROCKHR, const void *);
+#define glDebugMessageCallbackKHR flextglDebugMessageCallbackKHR
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDebugMessageControl)(GLenum, GLenum, GLenum, GLsizei, const GLuint *, GLboolean);
+#define glDebugMessageControl flextglDebugMessageControl
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDebugMessageControlKHR)(GLenum, GLenum, GLenum, GLsizei, const GLuint *, GLboolean);
+#define glDebugMessageControlKHR flextglDebugMessageControlKHR
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDebugMessageInsert)(GLenum, GLenum, GLuint, GLenum, GLsizei, const GLchar *);
+#define glDebugMessageInsert flextglDebugMessageInsert
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDebugMessageInsertKHR)(GLenum, GLenum, GLuint, GLenum, GLsizei, const GLchar *);
+#define glDebugMessageInsertKHR flextglDebugMessageInsertKHR
+GLAPI FLEXTGL_EXPORT GLuint(APIENTRY *flextglGetDebugMessageLog)(GLuint, GLsizei, GLenum *, GLenum *, GLuint *, GLenum *, GLsizei *, GLchar *);
+#define glGetDebugMessageLog flextglGetDebugMessageLog
+GLAPI FLEXTGL_EXPORT GLuint(APIENTRY *flextglGetDebugMessageLogKHR)(GLuint, GLsizei, GLenum *, GLenum *, GLuint *, GLenum *, GLsizei *, GLchar *);
+#define glGetDebugMessageLogKHR flextglGetDebugMessageLogKHR
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetObjectLabel)(GLenum, GLuint, GLsizei, GLsizei *, GLchar *);
+#define glGetObjectLabel flextglGetObjectLabel
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetObjectLabelKHR)(GLenum, GLuint, GLsizei, GLsizei *, GLchar *);
+#define glGetObjectLabelKHR flextglGetObjectLabelKHR
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetObjectPtrLabel)(const void *, GLsizei, GLsizei *, GLchar *);
+#define glGetObjectPtrLabel flextglGetObjectPtrLabel
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetObjectPtrLabelKHR)(const void *, GLsizei, GLsizei *, GLchar *);
+#define glGetObjectPtrLabelKHR flextglGetObjectPtrLabelKHR
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetPointerv)(GLenum, void **);
+#define glGetPointerv flextglGetPointerv
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetPointervKHR)(GLenum, void **);
+#define glGetPointervKHR flextglGetPointervKHR
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglObjectLabel)(GLenum, GLuint, GLsizei, const GLchar *);
+#define glObjectLabel flextglObjectLabel
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglObjectLabelKHR)(GLenum, GLuint, GLsizei, const GLchar *);
+#define glObjectLabelKHR flextglObjectLabelKHR
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglObjectPtrLabel)(const void *, GLsizei, const GLchar *);
+#define glObjectPtrLabel flextglObjectPtrLabel
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglObjectPtrLabelKHR)(const void *, GLsizei, const GLchar *);
+#define glObjectPtrLabelKHR flextglObjectPtrLabelKHR
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglPopDebugGroup)(void);
+#define glPopDebugGroup flextglPopDebugGroup
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglPopDebugGroupKHR)(void);
+#define glPopDebugGroupKHR flextglPopDebugGroupKHR
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglPushDebugGroup)(GLenum, GLuint, GLsizei, const GLchar *);
+#define glPushDebugGroup flextglPushDebugGroup
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglPushDebugGroupKHR)(GLenum, GLuint, GLsizei, const GLchar *);
+#define glPushDebugGroupKHR flextglPushDebugGroupKHR
 
 /* GL_KHR_robust_buffer_access_behavior */
 
 
-/* GL_KHR_context_flush_control */
+/* GL_KHR_robustness */
+
+GLAPI FLEXTGL_EXPORT GLenum(APIENTRY *flextglGetGraphicsResetStatus)(void);
+#define glGetGraphicsResetStatus flextglGetGraphicsResetStatus
+GLAPI FLEXTGL_EXPORT GLenum(APIENTRY *flextglGetGraphicsResetStatusKHR)(void);
+#define glGetGraphicsResetStatusKHR flextglGetGraphicsResetStatusKHR
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnUniformfv)(GLuint, GLint, GLsizei, GLfloat *);
+#define glGetnUniformfv flextglGetnUniformfv
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnUniformfvKHR)(GLuint, GLint, GLsizei, GLfloat *);
+#define glGetnUniformfvKHR flextglGetnUniformfvKHR
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnUniformiv)(GLuint, GLint, GLsizei, GLint *);
+#define glGetnUniformiv flextglGetnUniformiv
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnUniformivKHR)(GLuint, GLint, GLsizei, GLint *);
+#define glGetnUniformivKHR flextglGetnUniformivKHR
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnUniformuiv)(GLuint, GLint, GLsizei, GLuint *);
+#define glGetnUniformuiv flextglGetnUniformuiv
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnUniformuivKHR)(GLuint, GLint, GLsizei, GLuint *);
+#define glGetnUniformuivKHR flextglGetnUniformuivKHR
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglReadnPixels)(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void *);
+#define glReadnPixels flextglReadnPixels
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglReadnPixelsKHR)(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void *);
+#define glReadnPixelsKHR flextglReadnPixelsKHR
+
+/* GL_KHR_texture_compression_astc_hdr */
 
 
-/* GL_NV_read_buffer_front */
-
-
-/* GL_NV_read_depth */
-
-
-/* GL_NV_read_stencil */
-
-
-/* GL_NV_read_depth_stencil */
-
-
-/* GL_NV_texture_border_clamp */
-
-
-/* GL_NV_shader_noperspective_interpolation */
+/* GL_KHR_texture_compression_astc_ldr */
 
 
 /* GL_NV_polygon_mode */
@@ -2152,23 +2134,35 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnUniformuivKHR)(GLuint, GLint, GLs
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglPolygonModeNV)(GLenum, GLenum);
 #define glPolygonModeNV flextglPolygonModeNV
 
+/* GL_NV_read_buffer_front */
+
+
+/* GL_NV_read_depth */
+
+
+/* GL_NV_read_depth_stencil */
+
+
+/* GL_NV_read_stencil */
+
+
+/* GL_NV_shader_noperspective_interpolation */
+
+
+/* GL_NV_texture_border_clamp */
+
+
 /* GL_OES_depth32 */
 
 
 /* GL_OES_mapbuffer */
 
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetBufferPointervOES)(GLenum, GLenum, void **);
+#define glGetBufferPointervOES flextglGetBufferPointervOES
 GLAPI FLEXTGL_EXPORT void *(APIENTRY *flextglMapBufferOES)(GLenum, GLenum);
 #define glMapBufferOES flextglMapBufferOES
 GLAPI FLEXTGL_EXPORT GLboolean(APIENTRY *flextglUnmapBufferOES)(GLenum);
 #define glUnmapBufferOES flextglUnmapBufferOES
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetBufferPointervOES)(GLenum, GLenum, void **);
-#define glGetBufferPointervOES flextglGetBufferPointervOES
-
-/* GL_OES_stencil1 */
-
-
-/* GL_OES_stencil4 */
-
 
 /* GL_OES_sample_shading */
 
@@ -2182,6 +2176,12 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglMinSampleShadingOES)(GLfloat);
 
 
 /* GL_OES_shader_multisample_interpolation */
+
+
+/* GL_OES_stencil1 */
+
+
+/* GL_OES_stencil4 */
 
 
 /* GL_OES_texture_stencil8 */

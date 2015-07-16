@@ -452,6 +452,15 @@ typedef khronos_ssize_t GLsizeiptr;
 
 /* Function prototypes */
 
+/* GL_ANGLE_depth_texture */
+
+
+/* GL_ANGLE_instanced_arrays */
+
+GLAPI void glDrawArraysInstancedANGLE(GLenum, GLint, GLsizei, GLsizei);
+GLAPI void glDrawElementsInstancedANGLE(GLenum, GLsizei, GLenum, const void *, GLsizei);
+GLAPI void glVertexAttribDivisorANGLE(GLuint, GLuint);
+
 /* GL_ES_VERSION_2_0 */
 
 GLAPI void glActiveTexture(GLenum);
@@ -504,10 +513,10 @@ GLAPI void glFramebufferRenderbuffer(GLenum, GLenum, GLenum, GLuint);
 GLAPI void glFramebufferTexture2D(GLenum, GLenum, GLenum, GLuint, GLint);
 GLAPI void glFrontFace(GLenum);
 GLAPI void glGenBuffers(GLsizei, GLuint *);
-GLAPI void glGenerateMipmap(GLenum);
 GLAPI void glGenFramebuffers(GLsizei, GLuint *);
 GLAPI void glGenRenderbuffers(GLsizei, GLuint *);
 GLAPI void glGenTextures(GLsizei, GLuint *);
+GLAPI void glGenerateMipmap(GLenum);
 GLAPI void glGetActiveAttrib(GLuint, GLuint, GLsizei, GLsizei *, GLint *, GLenum *, GLchar *);
 GLAPI void glGetActiveUniform(GLuint, GLuint, GLsizei, GLsizei *, GLint *, GLenum *, GLchar *);
 GLAPI void glGetAttachedShaders(GLuint, GLsizei, GLsizei *, GLuint *);
@@ -518,22 +527,22 @@ GLAPI GLenum glGetError(void);
 GLAPI void glGetFloatv(GLenum, GLfloat *);
 GLAPI void glGetFramebufferAttachmentParameteriv(GLenum, GLenum, GLenum, GLint *);
 GLAPI void glGetIntegerv(GLenum, GLint *);
-GLAPI void glGetProgramiv(GLuint, GLenum, GLint *);
 GLAPI void glGetProgramInfoLog(GLuint, GLsizei, GLsizei *, GLchar *);
+GLAPI void glGetProgramiv(GLuint, GLenum, GLint *);
 GLAPI void glGetRenderbufferParameteriv(GLenum, GLenum, GLint *);
-GLAPI void glGetShaderiv(GLuint, GLenum, GLint *);
 GLAPI void glGetShaderInfoLog(GLuint, GLsizei, GLsizei *, GLchar *);
 GLAPI void glGetShaderPrecisionFormat(GLenum, GLenum, GLint *, GLint *);
 GLAPI void glGetShaderSource(GLuint, GLsizei, GLsizei *, GLchar *);
+GLAPI void glGetShaderiv(GLuint, GLenum, GLint *);
 GLAPI const GLubyte * glGetString(GLenum);
 GLAPI void glGetTexParameterfv(GLenum, GLenum, GLfloat *);
 GLAPI void glGetTexParameteriv(GLenum, GLenum, GLint *);
+GLAPI GLint glGetUniformLocation(GLuint, const GLchar *);
 GLAPI void glGetUniformfv(GLuint, GLint, GLfloat *);
 GLAPI void glGetUniformiv(GLuint, GLint, GLint *);
-GLAPI GLint glGetUniformLocation(GLuint, const GLchar *);
+GLAPI void glGetVertexAttribPointerv(GLuint, GLenum, void **);
 GLAPI void glGetVertexAttribfv(GLuint, GLenum, GLfloat *);
 GLAPI void glGetVertexAttribiv(GLuint, GLenum, GLint *);
-GLAPI void glGetVertexAttribPointerv(GLuint, GLenum, void **);
 GLAPI void glHint(GLenum, GLenum);
 GLAPI GLboolean glIsBuffer(GLuint);
 GLAPI GLboolean glIsEnabled(GLenum);
@@ -597,26 +606,30 @@ GLAPI void glVertexAttrib4fv(GLuint, const GLfloat *);
 GLAPI void glVertexAttribPointer(GLuint, GLint, GLenum, GLboolean, GLsizei, const void *);
 GLAPI void glViewport(GLint, GLint, GLsizei, GLsizei);
 
-/* GL_ANGLE_instanced_arrays */
-
-GLAPI void glDrawArraysInstancedANGLE(GLenum, GLint, GLsizei, GLsizei);
-GLAPI void glDrawElementsInstancedANGLE(GLenum, GLsizei, GLenum, const void *, GLsizei);
-GLAPI void glVertexAttribDivisorANGLE(GLuint, GLuint);
-
 /* GL_EXT_blend_minmax */
 
 GLAPI void glBlendEquationEXT(GLenum);
 
+/* GL_EXT_draw_buffers */
+
+GLAPI void glDrawBuffersEXT(GLsizei, const GLenum *);
+
+/* GL_EXT_sRGB */
+
+
 /* GL_EXT_shader_texture_lod */
 
 
-/* GL_EXT_sRGB */
+/* GL_EXT_texture_filter_anisotropic */
 
 
 /* GL_OES_element_index_uint */
 
 
-/* GL_OES_texture_half_float_linear */
+/* GL_OES_standard_derivatives */
+
+
+/* GL_OES_texture_float */
 
 
 /* GL_OES_texture_float_linear */
@@ -625,10 +638,7 @@ GLAPI void glBlendEquationEXT(GLenum);
 /* GL_OES_texture_half_float */
 
 
-/* GL_OES_texture_float */
-
-
-/* GL_OES_standard_derivatives */
+/* GL_OES_texture_half_float_linear */
 
 
 /* GL_OES_vertex_array_object */
@@ -637,16 +647,6 @@ GLAPI void glBindVertexArrayOES(GLuint);
 GLAPI void glDeleteVertexArraysOES(GLsizei, const GLuint *);
 GLAPI void glGenVertexArraysOES(GLsizei, GLuint *);
 GLAPI GLboolean glIsVertexArrayOES(GLuint);
-
-/* GL_ANGLE_depth_texture */
-
-
-/* GL_EXT_draw_buffers */
-
-GLAPI void glDrawBuffersEXT(GLsizei, const GLenum *);
-
-/* GL_EXT_texture_filter_anisotropic */
-
 
 #ifdef __cplusplus
 }

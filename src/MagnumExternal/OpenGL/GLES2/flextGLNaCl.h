@@ -1040,6 +1040,60 @@ typedef khronos_ssize_t GLsizeiptr;
 
 /* Function prototypes */
 
+/* GL_ANGLE_depth_texture */
+#ifndef GL_ANGLE_depth_texture
+#define GL_ANGLE_depth_texture 1
+#endif
+
+/* GL_ANGLE_framebuffer_blit */
+#ifndef GL_ANGLE_framebuffer_blit
+#define GL_ANGLE_framebuffer_blit 1
+GL_APICALL void GL_APIENTRY GLES2BlitFramebufferANGLE(GLint, GLint, GLint, GLint, GLint, GLint, GLint, GLint, GLbitfield, GLenum);
+#define glBlitFramebufferANGLE GLES2BlitFramebufferANGLE
+#endif
+
+/* GL_ANGLE_framebuffer_multisample */
+#ifndef GL_ANGLE_framebuffer_multisample
+#define GL_ANGLE_framebuffer_multisample 1
+GL_APICALL void GL_APIENTRY GLES2RenderbufferStorageMultisampleANGLE(GLenum, GLsizei, GLenum, GLsizei, GLsizei);
+#define glRenderbufferStorageMultisampleANGLE GLES2RenderbufferStorageMultisampleANGLE
+#endif
+
+/* GL_ANGLE_instanced_arrays */
+#ifndef GL_ANGLE_instanced_arrays
+#define GL_ANGLE_instanced_arrays 1
+GL_APICALL void GL_APIENTRY GLES2DrawArraysInstancedANGLE(GLenum, GLint, GLsizei, GLsizei);
+#define glDrawArraysInstancedANGLE GLES2DrawArraysInstancedANGLE
+GL_APICALL void GL_APIENTRY GLES2DrawElementsInstancedANGLE(GLenum, GLsizei, GLenum, const void *, GLsizei);
+#define glDrawElementsInstancedANGLE GLES2DrawElementsInstancedANGLE
+GL_APICALL void GL_APIENTRY GLES2VertexAttribDivisorANGLE(GLuint, GLuint);
+#define glVertexAttribDivisorANGLE GLES2VertexAttribDivisorANGLE
+#endif
+
+/* GL_APPLE_framebuffer_multisample */
+#ifndef GL_APPLE_framebuffer_multisample
+#define GL_APPLE_framebuffer_multisample 1
+GL_APICALL void GL_APIENTRY GLES2RenderbufferStorageMultisampleAPPLE(GLenum, GLsizei, GLenum, GLsizei, GLsizei);
+#define glRenderbufferStorageMultisampleAPPLE GLES2RenderbufferStorageMultisampleAPPLE
+GL_APICALL void GL_APIENTRY GLES2ResolveMultisampleFramebufferAPPLE(void);
+#define glResolveMultisampleFramebufferAPPLE GLES2ResolveMultisampleFramebufferAPPLE
+#endif
+
+/* GL_APPLE_texture_format_BGRA8888 */
+#ifndef GL_APPLE_texture_format_BGRA8888
+#define GL_APPLE_texture_format_BGRA8888 1
+#endif
+
+/* GL_APPLE_texture_max_level */
+#ifndef GL_APPLE_texture_max_level
+#define GL_APPLE_texture_max_level 1
+#endif
+
+/* GL_ARM_rgba8 */
+#ifndef GL_ARM_rgba8
+#define GL_ARM_rgba8 1
+#endif
+
 /* GL_ES_VERSION_2_0 */
 #ifndef GL_ES_VERSION_2_0
 #define GL_ES_VERSION_2_0 1
@@ -1143,14 +1197,14 @@ GL_APICALL void GL_APIENTRY GLES2FrontFace(GLenum);
 #define glFrontFace GLES2FrontFace
 GL_APICALL void GL_APIENTRY GLES2GenBuffers(GLsizei, GLuint *);
 #define glGenBuffers GLES2GenBuffers
-GL_APICALL void GL_APIENTRY GLES2GenerateMipmap(GLenum);
-#define glGenerateMipmap GLES2GenerateMipmap
 GL_APICALL void GL_APIENTRY GLES2GenFramebuffers(GLsizei, GLuint *);
 #define glGenFramebuffers GLES2GenFramebuffers
 GL_APICALL void GL_APIENTRY GLES2GenRenderbuffers(GLsizei, GLuint *);
 #define glGenRenderbuffers GLES2GenRenderbuffers
 GL_APICALL void GL_APIENTRY GLES2GenTextures(GLsizei, GLuint *);
 #define glGenTextures GLES2GenTextures
+GL_APICALL void GL_APIENTRY GLES2GenerateMipmap(GLenum);
+#define glGenerateMipmap GLES2GenerateMipmap
 GL_APICALL void GL_APIENTRY GLES2GetActiveAttrib(GLuint, GLuint, GLsizei, GLsizei *, GLint *, GLenum *, GLchar *);
 #define glGetActiveAttrib GLES2GetActiveAttrib
 GL_APICALL void GL_APIENTRY GLES2GetActiveUniform(GLuint, GLuint, GLsizei, GLsizei *, GLint *, GLenum *, GLchar *);
@@ -1171,38 +1225,38 @@ GL_APICALL void GL_APIENTRY GLES2GetFramebufferAttachmentParameteriv(GLenum, GLe
 #define glGetFramebufferAttachmentParameteriv GLES2GetFramebufferAttachmentParameteriv
 GL_APICALL void GL_APIENTRY GLES2GetIntegerv(GLenum, GLint *);
 #define glGetIntegerv GLES2GetIntegerv
-GL_APICALL void GL_APIENTRY GLES2GetProgramiv(GLuint, GLenum, GLint *);
-#define glGetProgramiv GLES2GetProgramiv
 GL_APICALL void GL_APIENTRY GLES2GetProgramInfoLog(GLuint, GLsizei, GLsizei *, GLchar *);
 #define glGetProgramInfoLog GLES2GetProgramInfoLog
+GL_APICALL void GL_APIENTRY GLES2GetProgramiv(GLuint, GLenum, GLint *);
+#define glGetProgramiv GLES2GetProgramiv
 GL_APICALL void GL_APIENTRY GLES2GetRenderbufferParameteriv(GLenum, GLenum, GLint *);
 #define glGetRenderbufferParameteriv GLES2GetRenderbufferParameteriv
-GL_APICALL void GL_APIENTRY GLES2GetShaderiv(GLuint, GLenum, GLint *);
-#define glGetShaderiv GLES2GetShaderiv
 GL_APICALL void GL_APIENTRY GLES2GetShaderInfoLog(GLuint, GLsizei, GLsizei *, GLchar *);
 #define glGetShaderInfoLog GLES2GetShaderInfoLog
 GL_APICALL void GL_APIENTRY GLES2GetShaderPrecisionFormat(GLenum, GLenum, GLint *, GLint *);
 #define glGetShaderPrecisionFormat GLES2GetShaderPrecisionFormat
 GL_APICALL void GL_APIENTRY GLES2GetShaderSource(GLuint, GLsizei, GLsizei *, GLchar *);
 #define glGetShaderSource GLES2GetShaderSource
+GL_APICALL void GL_APIENTRY GLES2GetShaderiv(GLuint, GLenum, GLint *);
+#define glGetShaderiv GLES2GetShaderiv
 GL_APICALL const GLubyte * GL_APIENTRY GLES2GetString(GLenum);
 #define glGetString GLES2GetString
 GL_APICALL void GL_APIENTRY GLES2GetTexParameterfv(GLenum, GLenum, GLfloat *);
 #define glGetTexParameterfv GLES2GetTexParameterfv
 GL_APICALL void GL_APIENTRY GLES2GetTexParameteriv(GLenum, GLenum, GLint *);
 #define glGetTexParameteriv GLES2GetTexParameteriv
+GL_APICALL GLint GL_APIENTRY GLES2GetUniformLocation(GLuint, const GLchar *);
+#define glGetUniformLocation GLES2GetUniformLocation
 GL_APICALL void GL_APIENTRY GLES2GetUniformfv(GLuint, GLint, GLfloat *);
 #define glGetUniformfv GLES2GetUniformfv
 GL_APICALL void GL_APIENTRY GLES2GetUniformiv(GLuint, GLint, GLint *);
 #define glGetUniformiv GLES2GetUniformiv
-GL_APICALL GLint GL_APIENTRY GLES2GetUniformLocation(GLuint, const GLchar *);
-#define glGetUniformLocation GLES2GetUniformLocation
+GL_APICALL void GL_APIENTRY GLES2GetVertexAttribPointerv(GLuint, GLenum, void **);
+#define glGetVertexAttribPointerv GLES2GetVertexAttribPointerv
 GL_APICALL void GL_APIENTRY GLES2GetVertexAttribfv(GLuint, GLenum, GLfloat *);
 #define glGetVertexAttribfv GLES2GetVertexAttribfv
 GL_APICALL void GL_APIENTRY GLES2GetVertexAttribiv(GLuint, GLenum, GLint *);
 #define glGetVertexAttribiv GLES2GetVertexAttribiv
-GL_APICALL void GL_APIENTRY GLES2GetVertexAttribPointerv(GLuint, GLenum, void **);
-#define glGetVertexAttribPointerv GLES2GetVertexAttribPointerv
 GL_APICALL void GL_APIENTRY GLES2Hint(GLenum, GLenum);
 #define glHint GLES2Hint
 GL_APICALL GLboolean GL_APIENTRY GLES2IsBuffer(GLuint);
@@ -1329,58 +1383,31 @@ GL_APICALL void GL_APIENTRY GLES2Viewport(GLint, GLint, GLsizei, GLsizei);
 #define glViewport GLES2Viewport
 #endif
 
-/* GL_ANGLE_framebuffer_blit */
-#ifndef GL_ANGLE_framebuffer_blit
-#define GL_ANGLE_framebuffer_blit 1
-GL_APICALL void GL_APIENTRY GLES2BlitFramebufferANGLE(GLint, GLint, GLint, GLint, GLint, GLint, GLint, GLint, GLbitfield, GLenum);
-#define glBlitFramebufferANGLE GLES2BlitFramebufferANGLE
+/* GL_EXT_blend_minmax */
+#ifndef GL_EXT_blend_minmax
+#define GL_EXT_blend_minmax 1
+GL_APICALL void GL_APIENTRY GLES2BlendEquationEXT(GLenum);
+#define glBlendEquationEXT GLES2BlendEquationEXT
 #endif
 
-/* GL_ANGLE_framebuffer_multisample */
-#ifndef GL_ANGLE_framebuffer_multisample
-#define GL_ANGLE_framebuffer_multisample 1
-GL_APICALL void GL_APIENTRY GLES2RenderbufferStorageMultisampleANGLE(GLenum, GLsizei, GLenum, GLsizei, GLsizei);
-#define glRenderbufferStorageMultisampleANGLE GLES2RenderbufferStorageMultisampleANGLE
+/* GL_EXT_debug_label */
+#ifndef GL_EXT_debug_label
+#define GL_EXT_debug_label 1
+GL_APICALL void GL_APIENTRY GLES2GetObjectLabelEXT(GLenum, GLuint, GLsizei, GLsizei *, GLchar *);
+#define glGetObjectLabelEXT GLES2GetObjectLabelEXT
+GL_APICALL void GL_APIENTRY GLES2LabelObjectEXT(GLenum, GLuint, GLsizei, const GLchar *);
+#define glLabelObjectEXT GLES2LabelObjectEXT
 #endif
 
-/* GL_ANGLE_instanced_arrays */
-#ifndef GL_ANGLE_instanced_arrays
-#define GL_ANGLE_instanced_arrays 1
-GL_APICALL void GL_APIENTRY GLES2DrawArraysInstancedANGLE(GLenum, GLint, GLsizei, GLsizei);
-#define glDrawArraysInstancedANGLE GLES2DrawArraysInstancedANGLE
-GL_APICALL void GL_APIENTRY GLES2DrawElementsInstancedANGLE(GLenum, GLsizei, GLenum, const void *, GLsizei);
-#define glDrawElementsInstancedANGLE GLES2DrawElementsInstancedANGLE
-GL_APICALL void GL_APIENTRY GLES2VertexAttribDivisorANGLE(GLuint, GLuint);
-#define glVertexAttribDivisorANGLE GLES2VertexAttribDivisorANGLE
-#endif
-
-/* GL_ANGLE_depth_texture */
-#ifndef GL_ANGLE_depth_texture
-#define GL_ANGLE_depth_texture 1
-#endif
-
-/* GL_APPLE_framebuffer_multisample */
-#ifndef GL_APPLE_framebuffer_multisample
-#define GL_APPLE_framebuffer_multisample 1
-GL_APICALL void GL_APIENTRY GLES2RenderbufferStorageMultisampleAPPLE(GLenum, GLsizei, GLenum, GLsizei, GLsizei);
-#define glRenderbufferStorageMultisampleAPPLE GLES2RenderbufferStorageMultisampleAPPLE
-GL_APICALL void GL_APIENTRY GLES2ResolveMultisampleFramebufferAPPLE(void);
-#define glResolveMultisampleFramebufferAPPLE GLES2ResolveMultisampleFramebufferAPPLE
-#endif
-
-/* GL_APPLE_texture_max_level */
-#ifndef GL_APPLE_texture_max_level
-#define GL_APPLE_texture_max_level 1
-#endif
-
-/* GL_ARM_rgba8 */
-#ifndef GL_ARM_rgba8
-#define GL_ARM_rgba8 1
-#endif
-
-/* GL_EXT_texture_type_2_10_10_10_REV */
-#ifndef GL_EXT_texture_type_2_10_10_10_REV
-#define GL_EXT_texture_type_2_10_10_10_REV 1
+/* GL_EXT_debug_marker */
+#ifndef GL_EXT_debug_marker
+#define GL_EXT_debug_marker 1
+GL_APICALL void GL_APIENTRY GLES2InsertEventMarkerEXT(GLsizei, const GLchar *);
+#define glInsertEventMarkerEXT GLES2InsertEventMarkerEXT
+GL_APICALL void GL_APIENTRY GLES2PopGroupMarkerEXT(void);
+#define glPopGroupMarkerEXT GLES2PopGroupMarkerEXT
+GL_APICALL void GL_APIENTRY GLES2PushGroupMarkerEXT(GLsizei, const GLchar *);
+#define glPushGroupMarkerEXT GLES2PushGroupMarkerEXT
 #endif
 
 /* GL_EXT_discard_framebuffer */
@@ -1390,11 +1417,234 @@ GL_APICALL void GL_APIENTRY GLES2DiscardFramebufferEXT(GLenum, GLsizei, const GL
 #define glDiscardFramebufferEXT GLES2DiscardFramebufferEXT
 #endif
 
-/* GL_EXT_blend_minmax */
-#ifndef GL_EXT_blend_minmax
-#define GL_EXT_blend_minmax 1
-GL_APICALL void GL_APIENTRY GLES2BlendEquationEXT(GLenum);
-#define glBlendEquationEXT GLES2BlendEquationEXT
+/* GL_EXT_disjoint_timer_query */
+#ifndef GL_EXT_disjoint_timer_query
+#define GL_EXT_disjoint_timer_query 1
+GL_APICALL void GL_APIENTRY GLES2GetQueryObjecti64vEXT(GLuint, GLenum, GLint64 *);
+#define glGetQueryObjecti64vEXT GLES2GetQueryObjecti64vEXT
+GL_APICALL void GL_APIENTRY GLES2GetQueryObjectivEXT(GLuint, GLenum, GLint *);
+#define glGetQueryObjectivEXT GLES2GetQueryObjectivEXT
+GL_APICALL void GL_APIENTRY GLES2GetQueryObjectui64vEXT(GLuint, GLenum, GLuint64 *);
+#define glGetQueryObjectui64vEXT GLES2GetQueryObjectui64vEXT
+GL_APICALL void GL_APIENTRY GLES2QueryCounterEXT(GLuint, GLenum);
+#define glQueryCounterEXT GLES2QueryCounterEXT
+#endif
+
+/* GL_EXT_draw_buffers */
+#ifndef GL_EXT_draw_buffers
+#define GL_EXT_draw_buffers 1
+GL_APICALL void GL_APIENTRY GLES2DrawBuffersEXT(GLsizei, const GLenum *);
+#define glDrawBuffersEXT GLES2DrawBuffersEXT
+#endif
+
+/* GL_EXT_draw_buffers_indexed */
+#ifndef GL_EXT_draw_buffers_indexed
+#define GL_EXT_draw_buffers_indexed 1
+GL_APICALL void GL_APIENTRY GLES2BlendEquationSeparateiEXT(GLuint, GLenum, GLenum);
+#define glBlendEquationSeparateiEXT GLES2BlendEquationSeparateiEXT
+GL_APICALL void GL_APIENTRY GLES2BlendEquationiEXT(GLuint, GLenum);
+#define glBlendEquationiEXT GLES2BlendEquationiEXT
+GL_APICALL void GL_APIENTRY GLES2BlendFuncSeparateiEXT(GLuint, GLenum, GLenum, GLenum, GLenum);
+#define glBlendFuncSeparateiEXT GLES2BlendFuncSeparateiEXT
+GL_APICALL void GL_APIENTRY GLES2BlendFunciEXT(GLuint, GLenum, GLenum);
+#define glBlendFunciEXT GLES2BlendFunciEXT
+GL_APICALL void GL_APIENTRY GLES2ColorMaskiEXT(GLuint, GLboolean, GLboolean, GLboolean, GLboolean);
+#define glColorMaskiEXT GLES2ColorMaskiEXT
+GL_APICALL void GL_APIENTRY GLES2DisableiEXT(GLenum, GLuint);
+#define glDisableiEXT GLES2DisableiEXT
+GL_APICALL void GL_APIENTRY GLES2EnableiEXT(GLenum, GLuint);
+#define glEnableiEXT GLES2EnableiEXT
+GL_APICALL GLboolean GL_APIENTRY GLES2IsEnablediEXT(GLenum, GLuint);
+#define glIsEnablediEXT GLES2IsEnablediEXT
+#endif
+
+/* GL_EXT_draw_instanced */
+#ifndef GL_EXT_draw_instanced
+#define GL_EXT_draw_instanced 1
+#endif
+
+/* GL_EXT_instanced_arrays */
+#ifndef GL_EXT_instanced_arrays
+#define GL_EXT_instanced_arrays 1
+GL_APICALL void GL_APIENTRY GLES2DrawArraysInstancedEXT(GLenum, GLint, GLsizei, GLsizei);
+#define glDrawArraysInstancedEXT GLES2DrawArraysInstancedEXT
+GL_APICALL void GL_APIENTRY GLES2DrawElementsInstancedEXT(GLenum, GLsizei, GLenum, const void *, GLsizei);
+#define glDrawElementsInstancedEXT GLES2DrawElementsInstancedEXT
+GL_APICALL void GL_APIENTRY GLES2VertexAttribDivisorEXT(GLuint, GLuint);
+#define glVertexAttribDivisorEXT GLES2VertexAttribDivisorEXT
+#endif
+
+/* GL_EXT_map_buffer_range */
+#ifndef GL_EXT_map_buffer_range
+#define GL_EXT_map_buffer_range 1
+GL_APICALL void GL_APIENTRY GLES2FlushMappedBufferRangeEXT(GLenum, GLintptr, GLsizeiptr);
+#define glFlushMappedBufferRangeEXT GLES2FlushMappedBufferRangeEXT
+GL_APICALL void * GL_APIENTRY GLES2MapBufferRangeEXT(GLenum, GLintptr, GLsizeiptr, GLbitfield);
+#define glMapBufferRangeEXT GLES2MapBufferRangeEXT
+#endif
+
+/* GL_EXT_multi_draw_arrays */
+#ifndef GL_EXT_multi_draw_arrays
+#define GL_EXT_multi_draw_arrays 1
+GL_APICALL void GL_APIENTRY GLES2MultiDrawArraysEXT(GLenum, const GLint *, const GLsizei *, GLsizei);
+#define glMultiDrawArraysEXT GLES2MultiDrawArraysEXT
+GL_APICALL void GL_APIENTRY GLES2MultiDrawElementsEXT(GLenum, const GLsizei *, GLenum, const void *const*, GLsizei);
+#define glMultiDrawElementsEXT GLES2MultiDrawElementsEXT
+#endif
+
+/* GL_EXT_multisampled_render_to_texture */
+#ifndef GL_EXT_multisampled_render_to_texture
+#define GL_EXT_multisampled_render_to_texture 1
+GL_APICALL void GL_APIENTRY GLES2FramebufferTexture2DMultisampleEXT(GLenum, GLenum, GLenum, GLuint, GLint, GLsizei);
+#define glFramebufferTexture2DMultisampleEXT GLES2FramebufferTexture2DMultisampleEXT
+GL_APICALL void GL_APIENTRY GLES2RenderbufferStorageMultisampleEXT(GLenum, GLsizei, GLenum, GLsizei, GLsizei);
+#define glRenderbufferStorageMultisampleEXT GLES2RenderbufferStorageMultisampleEXT
+#endif
+
+/* GL_EXT_occlusion_query_boolean */
+#ifndef GL_EXT_occlusion_query_boolean
+#define GL_EXT_occlusion_query_boolean 1
+GL_APICALL void GL_APIENTRY GLES2BeginQueryEXT(GLenum, GLuint);
+#define glBeginQueryEXT GLES2BeginQueryEXT
+GL_APICALL void GL_APIENTRY GLES2DeleteQueriesEXT(GLsizei, const GLuint *);
+#define glDeleteQueriesEXT GLES2DeleteQueriesEXT
+GL_APICALL void GL_APIENTRY GLES2EndQueryEXT(GLenum);
+#define glEndQueryEXT GLES2EndQueryEXT
+GL_APICALL void GL_APIENTRY GLES2GenQueriesEXT(GLsizei, GLuint *);
+#define glGenQueriesEXT GLES2GenQueriesEXT
+GL_APICALL void GL_APIENTRY GLES2GetQueryObjectuivEXT(GLuint, GLenum, GLuint *);
+#define glGetQueryObjectuivEXT GLES2GetQueryObjectuivEXT
+GL_APICALL void GL_APIENTRY GLES2GetQueryivEXT(GLenum, GLenum, GLint *);
+#define glGetQueryivEXT GLES2GetQueryivEXT
+GL_APICALL GLboolean GL_APIENTRY GLES2IsQueryEXT(GLuint);
+#define glIsQueryEXT GLES2IsQueryEXT
+#endif
+
+/* GL_EXT_read_format_bgra */
+#ifndef GL_EXT_read_format_bgra
+#define GL_EXT_read_format_bgra 1
+#endif
+
+/* GL_EXT_robustness */
+#ifndef GL_EXT_robustness
+#define GL_EXT_robustness 1
+GL_APICALL GLenum GL_APIENTRY GLES2GetGraphicsResetStatusEXT(void);
+#define glGetGraphicsResetStatusEXT GLES2GetGraphicsResetStatusEXT
+GL_APICALL void GL_APIENTRY GLES2GetnUniformfvEXT(GLuint, GLint, GLsizei, GLfloat *);
+#define glGetnUniformfvEXT GLES2GetnUniformfvEXT
+GL_APICALL void GL_APIENTRY GLES2GetnUniformivEXT(GLuint, GLint, GLsizei, GLint *);
+#define glGetnUniformivEXT GLES2GetnUniformivEXT
+GL_APICALL void GL_APIENTRY GLES2ReadnPixelsEXT(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void *);
+#define glReadnPixelsEXT GLES2ReadnPixelsEXT
+#endif
+
+/* GL_EXT_sRGB */
+#ifndef GL_EXT_sRGB
+#define GL_EXT_sRGB 1
+#endif
+
+/* GL_EXT_sRGB_write_control */
+#ifndef GL_EXT_sRGB_write_control
+#define GL_EXT_sRGB_write_control 1
+#endif
+
+/* GL_EXT_separate_shader_objects */
+#ifndef GL_EXT_separate_shader_objects
+#define GL_EXT_separate_shader_objects 1
+GL_APICALL void GL_APIENTRY GLES2ActiveProgramEXT(GLuint);
+#define glActiveProgramEXT GLES2ActiveProgramEXT
+GL_APICALL void GL_APIENTRY GLES2ActiveShaderProgramEXT(GLuint, GLuint);
+#define glActiveShaderProgramEXT GLES2ActiveShaderProgramEXT
+GL_APICALL void GL_APIENTRY GLES2BindProgramPipelineEXT(GLuint);
+#define glBindProgramPipelineEXT GLES2BindProgramPipelineEXT
+GL_APICALL GLuint GL_APIENTRY GLES2CreateShaderProgramEXT(GLenum, const GLchar *);
+#define glCreateShaderProgramEXT GLES2CreateShaderProgramEXT
+GL_APICALL GLuint GL_APIENTRY GLES2CreateShaderProgramvEXT(GLenum, GLsizei, const GLchar **);
+#define glCreateShaderProgramvEXT GLES2CreateShaderProgramvEXT
+GL_APICALL void GL_APIENTRY GLES2DeleteProgramPipelinesEXT(GLsizei, const GLuint *);
+#define glDeleteProgramPipelinesEXT GLES2DeleteProgramPipelinesEXT
+GL_APICALL void GL_APIENTRY GLES2GenProgramPipelinesEXT(GLsizei, GLuint *);
+#define glGenProgramPipelinesEXT GLES2GenProgramPipelinesEXT
+GL_APICALL void GL_APIENTRY GLES2GetProgramPipelineInfoLogEXT(GLuint, GLsizei, GLsizei *, GLchar *);
+#define glGetProgramPipelineInfoLogEXT GLES2GetProgramPipelineInfoLogEXT
+GL_APICALL void GL_APIENTRY GLES2GetProgramPipelineivEXT(GLuint, GLenum, GLint *);
+#define glGetProgramPipelineivEXT GLES2GetProgramPipelineivEXT
+GL_APICALL GLboolean GL_APIENTRY GLES2IsProgramPipelineEXT(GLuint);
+#define glIsProgramPipelineEXT GLES2IsProgramPipelineEXT
+GL_APICALL void GL_APIENTRY GLES2ProgramParameteriEXT(GLuint, GLenum, GLint);
+#define glProgramParameteriEXT GLES2ProgramParameteriEXT
+GL_APICALL void GL_APIENTRY GLES2ProgramUniform1fEXT(GLuint, GLint, GLfloat);
+#define glProgramUniform1fEXT GLES2ProgramUniform1fEXT
+GL_APICALL void GL_APIENTRY GLES2ProgramUniform1fvEXT(GLuint, GLint, GLsizei, const GLfloat *);
+#define glProgramUniform1fvEXT GLES2ProgramUniform1fvEXT
+GL_APICALL void GL_APIENTRY GLES2ProgramUniform1iEXT(GLuint, GLint, GLint);
+#define glProgramUniform1iEXT GLES2ProgramUniform1iEXT
+GL_APICALL void GL_APIENTRY GLES2ProgramUniform1ivEXT(GLuint, GLint, GLsizei, const GLint *);
+#define glProgramUniform1ivEXT GLES2ProgramUniform1ivEXT
+GL_APICALL void GL_APIENTRY GLES2ProgramUniform1uiEXT(GLuint, GLint, GLuint);
+#define glProgramUniform1uiEXT GLES2ProgramUniform1uiEXT
+GL_APICALL void GL_APIENTRY GLES2ProgramUniform1uivEXT(GLuint, GLint, GLsizei, const GLuint *);
+#define glProgramUniform1uivEXT GLES2ProgramUniform1uivEXT
+GL_APICALL void GL_APIENTRY GLES2ProgramUniform2fEXT(GLuint, GLint, GLfloat, GLfloat);
+#define glProgramUniform2fEXT GLES2ProgramUniform2fEXT
+GL_APICALL void GL_APIENTRY GLES2ProgramUniform2fvEXT(GLuint, GLint, GLsizei, const GLfloat *);
+#define glProgramUniform2fvEXT GLES2ProgramUniform2fvEXT
+GL_APICALL void GL_APIENTRY GLES2ProgramUniform2iEXT(GLuint, GLint, GLint, GLint);
+#define glProgramUniform2iEXT GLES2ProgramUniform2iEXT
+GL_APICALL void GL_APIENTRY GLES2ProgramUniform2ivEXT(GLuint, GLint, GLsizei, const GLint *);
+#define glProgramUniform2ivEXT GLES2ProgramUniform2ivEXT
+GL_APICALL void GL_APIENTRY GLES2ProgramUniform2uiEXT(GLuint, GLint, GLuint, GLuint);
+#define glProgramUniform2uiEXT GLES2ProgramUniform2uiEXT
+GL_APICALL void GL_APIENTRY GLES2ProgramUniform2uivEXT(GLuint, GLint, GLsizei, const GLuint *);
+#define glProgramUniform2uivEXT GLES2ProgramUniform2uivEXT
+GL_APICALL void GL_APIENTRY GLES2ProgramUniform3fEXT(GLuint, GLint, GLfloat, GLfloat, GLfloat);
+#define glProgramUniform3fEXT GLES2ProgramUniform3fEXT
+GL_APICALL void GL_APIENTRY GLES2ProgramUniform3fvEXT(GLuint, GLint, GLsizei, const GLfloat *);
+#define glProgramUniform3fvEXT GLES2ProgramUniform3fvEXT
+GL_APICALL void GL_APIENTRY GLES2ProgramUniform3iEXT(GLuint, GLint, GLint, GLint, GLint);
+#define glProgramUniform3iEXT GLES2ProgramUniform3iEXT
+GL_APICALL void GL_APIENTRY GLES2ProgramUniform3ivEXT(GLuint, GLint, GLsizei, const GLint *);
+#define glProgramUniform3ivEXT GLES2ProgramUniform3ivEXT
+GL_APICALL void GL_APIENTRY GLES2ProgramUniform3uiEXT(GLuint, GLint, GLuint, GLuint, GLuint);
+#define glProgramUniform3uiEXT GLES2ProgramUniform3uiEXT
+GL_APICALL void GL_APIENTRY GLES2ProgramUniform3uivEXT(GLuint, GLint, GLsizei, const GLuint *);
+#define glProgramUniform3uivEXT GLES2ProgramUniform3uivEXT
+GL_APICALL void GL_APIENTRY GLES2ProgramUniform4fEXT(GLuint, GLint, GLfloat, GLfloat, GLfloat, GLfloat);
+#define glProgramUniform4fEXT GLES2ProgramUniform4fEXT
+GL_APICALL void GL_APIENTRY GLES2ProgramUniform4fvEXT(GLuint, GLint, GLsizei, const GLfloat *);
+#define glProgramUniform4fvEXT GLES2ProgramUniform4fvEXT
+GL_APICALL void GL_APIENTRY GLES2ProgramUniform4iEXT(GLuint, GLint, GLint, GLint, GLint, GLint);
+#define glProgramUniform4iEXT GLES2ProgramUniform4iEXT
+GL_APICALL void GL_APIENTRY GLES2ProgramUniform4ivEXT(GLuint, GLint, GLsizei, const GLint *);
+#define glProgramUniform4ivEXT GLES2ProgramUniform4ivEXT
+GL_APICALL void GL_APIENTRY GLES2ProgramUniform4uiEXT(GLuint, GLint, GLuint, GLuint, GLuint, GLuint);
+#define glProgramUniform4uiEXT GLES2ProgramUniform4uiEXT
+GL_APICALL void GL_APIENTRY GLES2ProgramUniform4uivEXT(GLuint, GLint, GLsizei, const GLuint *);
+#define glProgramUniform4uivEXT GLES2ProgramUniform4uivEXT
+GL_APICALL void GL_APIENTRY GLES2ProgramUniformMatrix2fvEXT(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
+#define glProgramUniformMatrix2fvEXT GLES2ProgramUniformMatrix2fvEXT
+GL_APICALL void GL_APIENTRY GLES2ProgramUniformMatrix2x3fvEXT(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
+#define glProgramUniformMatrix2x3fvEXT GLES2ProgramUniformMatrix2x3fvEXT
+GL_APICALL void GL_APIENTRY GLES2ProgramUniformMatrix2x4fvEXT(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
+#define glProgramUniformMatrix2x4fvEXT GLES2ProgramUniformMatrix2x4fvEXT
+GL_APICALL void GL_APIENTRY GLES2ProgramUniformMatrix3fvEXT(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
+#define glProgramUniformMatrix3fvEXT GLES2ProgramUniformMatrix3fvEXT
+GL_APICALL void GL_APIENTRY GLES2ProgramUniformMatrix3x2fvEXT(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
+#define glProgramUniformMatrix3x2fvEXT GLES2ProgramUniformMatrix3x2fvEXT
+GL_APICALL void GL_APIENTRY GLES2ProgramUniformMatrix3x4fvEXT(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
+#define glProgramUniformMatrix3x4fvEXT GLES2ProgramUniformMatrix3x4fvEXT
+GL_APICALL void GL_APIENTRY GLES2ProgramUniformMatrix4fvEXT(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
+#define glProgramUniformMatrix4fvEXT GLES2ProgramUniformMatrix4fvEXT
+GL_APICALL void GL_APIENTRY GLES2ProgramUniformMatrix4x2fvEXT(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
+#define glProgramUniformMatrix4x2fvEXT GLES2ProgramUniformMatrix4x2fvEXT
+GL_APICALL void GL_APIENTRY GLES2ProgramUniformMatrix4x3fvEXT(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
+#define glProgramUniformMatrix4x3fvEXT GLES2ProgramUniformMatrix4x3fvEXT
+GL_APICALL void GL_APIENTRY GLES2UseProgramStagesEXT(GLuint, GLbitfield, GLuint);
+#define glUseProgramStagesEXT GLES2UseProgramStagesEXT
+GL_APICALL void GL_APIENTRY GLES2UseShaderProgramEXT(GLenum, GLuint);
+#define glUseShaderProgramEXT GLES2UseShaderProgramEXT
+GL_APICALL void GL_APIENTRY GLES2ValidateProgramPipelineEXT(GLuint);
+#define glValidateProgramPipelineEXT GLES2ValidateProgramPipelineEXT
 #endif
 
 /* GL_EXT_shader_texture_lod */
@@ -1402,28 +1652,40 @@ GL_APICALL void GL_APIENTRY GLES2BlendEquationEXT(GLenum);
 #define GL_EXT_shader_texture_lod 1
 #endif
 
-/* GL_EXT_occlusion_query_boolean */
-#ifndef GL_EXT_occlusion_query_boolean
-#define GL_EXT_occlusion_query_boolean 1
-GL_APICALL void GL_APIENTRY GLES2GenQueriesEXT(GLsizei, GLuint *);
-#define glGenQueriesEXT GLES2GenQueriesEXT
-GL_APICALL void GL_APIENTRY GLES2DeleteQueriesEXT(GLsizei, const GLuint *);
-#define glDeleteQueriesEXT GLES2DeleteQueriesEXT
-GL_APICALL GLboolean GL_APIENTRY GLES2IsQueryEXT(GLuint);
-#define glIsQueryEXT GLES2IsQueryEXT
-GL_APICALL void GL_APIENTRY GLES2BeginQueryEXT(GLenum, GLuint);
-#define glBeginQueryEXT GLES2BeginQueryEXT
-GL_APICALL void GL_APIENTRY GLES2EndQueryEXT(GLenum);
-#define glEndQueryEXT GLES2EndQueryEXT
-GL_APICALL void GL_APIENTRY GLES2GetQueryivEXT(GLenum, GLenum, GLint *);
-#define glGetQueryivEXT GLES2GetQueryivEXT
-GL_APICALL void GL_APIENTRY GLES2GetQueryObjectuivEXT(GLuint, GLenum, GLuint *);
-#define glGetQueryObjectuivEXT GLES2GetQueryObjectuivEXT
-#endif
-
 /* GL_EXT_shadow_samplers */
 #ifndef GL_EXT_shadow_samplers
 #define GL_EXT_shadow_samplers 1
+#endif
+
+/* GL_EXT_texture_border_clamp */
+#ifndef GL_EXT_texture_border_clamp
+#define GL_EXT_texture_border_clamp 1
+GL_APICALL void GL_APIENTRY GLES2GetSamplerParameterIivEXT(GLuint, GLenum, GLint *);
+#define glGetSamplerParameterIivEXT GLES2GetSamplerParameterIivEXT
+GL_APICALL void GL_APIENTRY GLES2GetSamplerParameterIuivEXT(GLuint, GLenum, GLuint *);
+#define glGetSamplerParameterIuivEXT GLES2GetSamplerParameterIuivEXT
+GL_APICALL void GL_APIENTRY GLES2GetTexParameterIivEXT(GLenum, GLenum, GLint *);
+#define glGetTexParameterIivEXT GLES2GetTexParameterIivEXT
+GL_APICALL void GL_APIENTRY GLES2GetTexParameterIuivEXT(GLenum, GLenum, GLuint *);
+#define glGetTexParameterIuivEXT GLES2GetTexParameterIuivEXT
+GL_APICALL void GL_APIENTRY GLES2SamplerParameterIivEXT(GLuint, GLenum, const GLint *);
+#define glSamplerParameterIivEXT GLES2SamplerParameterIivEXT
+GL_APICALL void GL_APIENTRY GLES2SamplerParameterIuivEXT(GLuint, GLenum, const GLuint *);
+#define glSamplerParameterIuivEXT GLES2SamplerParameterIuivEXT
+GL_APICALL void GL_APIENTRY GLES2TexParameterIivEXT(GLenum, GLenum, const GLint *);
+#define glTexParameterIivEXT GLES2TexParameterIivEXT
+GL_APICALL void GL_APIENTRY GLES2TexParameterIuivEXT(GLenum, GLenum, const GLuint *);
+#define glTexParameterIuivEXT GLES2TexParameterIuivEXT
+#endif
+
+/* GL_EXT_texture_filter_anisotropic */
+#ifndef GL_EXT_texture_filter_anisotropic
+#define GL_EXT_texture_filter_anisotropic 1
+#endif
+
+/* GL_EXT_texture_format_BGRA8888 */
+#ifndef GL_EXT_texture_format_BGRA8888
+#define GL_EXT_texture_format_BGRA8888 1
 #endif
 
 /* GL_EXT_texture_rg */
@@ -1431,9 +1693,9 @@ GL_APICALL void GL_APIENTRY GLES2GetQueryObjectuivEXT(GLuint, GLenum, GLuint *);
 #define GL_EXT_texture_rg 1
 #endif
 
-/* GL_EXT_sRGB */
-#ifndef GL_EXT_sRGB
-#define GL_EXT_sRGB 1
+/* GL_EXT_texture_sRGB_decode */
+#ifndef GL_EXT_texture_sRGB_decode
+#define GL_EXT_texture_sRGB_decode 1
 #endif
 
 /* GL_EXT_texture_storage */
@@ -1453,36 +1715,115 @@ GL_APICALL void GL_APIENTRY GLES2TextureStorage3DEXT(GLuint, GLenum, GLsizei, GL
 #define glTextureStorage3DEXT GLES2TextureStorage3DEXT
 #endif
 
-/* GL_EXT_map_buffer_range */
-#ifndef GL_EXT_map_buffer_range
-#define GL_EXT_map_buffer_range 1
-GL_APICALL void * GL_APIENTRY GLES2MapBufferRangeEXT(GLenum, GLintptr, GLsizeiptr, GLbitfield);
-#define glMapBufferRangeEXT GLES2MapBufferRangeEXT
-GL_APICALL void GL_APIENTRY GLES2FlushMappedBufferRangeEXT(GLenum, GLintptr, GLsizeiptr);
-#define glFlushMappedBufferRangeEXT GLES2FlushMappedBufferRangeEXT
+/* GL_EXT_texture_type_2_10_10_10_REV */
+#ifndef GL_EXT_texture_type_2_10_10_10_REV
+#define GL_EXT_texture_type_2_10_10_10_REV 1
 #endif
 
-/* GL_EXT_draw_buffers */
-#ifndef GL_EXT_draw_buffers
-#define GL_EXT_draw_buffers 1
-GL_APICALL void GL_APIENTRY GLES2DrawBuffersEXT(GLsizei, const GLenum *);
-#define glDrawBuffersEXT GLES2DrawBuffersEXT
+/* GL_KHR_blend_equation_advanced */
+#ifndef GL_KHR_blend_equation_advanced
+#define GL_KHR_blend_equation_advanced 1
+GL_APICALL void GL_APIENTRY GLES2BlendBarrierKHR(void);
+#define glBlendBarrierKHR GLES2BlendBarrierKHR
 #endif
 
-/* GL_EXT_instanced_arrays */
-#ifndef GL_EXT_instanced_arrays
-#define GL_EXT_instanced_arrays 1
-GL_APICALL void GL_APIENTRY GLES2DrawArraysInstancedEXT(GLenum, GLint, GLsizei, GLsizei);
-#define glDrawArraysInstancedEXT GLES2DrawArraysInstancedEXT
-GL_APICALL void GL_APIENTRY GLES2DrawElementsInstancedEXT(GLenum, GLsizei, GLenum, const void *, GLsizei);
-#define glDrawElementsInstancedEXT GLES2DrawElementsInstancedEXT
-GL_APICALL void GL_APIENTRY GLES2VertexAttribDivisorEXT(GLuint, GLuint);
-#define glVertexAttribDivisorEXT GLES2VertexAttribDivisorEXT
+/* GL_KHR_blend_equation_advanced_coherent */
+#ifndef GL_KHR_blend_equation_advanced_coherent
+#define GL_KHR_blend_equation_advanced_coherent 1
 #endif
 
-/* GL_EXT_draw_instanced */
-#ifndef GL_EXT_draw_instanced
-#define GL_EXT_draw_instanced 1
+/* GL_KHR_context_flush_control */
+#ifndef GL_KHR_context_flush_control
+#define GL_KHR_context_flush_control 1
+#endif
+
+/* GL_KHR_debug */
+#ifndef GL_KHR_debug
+#define GL_KHR_debug 1
+GL_APICALL void GL_APIENTRY GLES2DebugMessageCallback(GLDEBUGPROC, const void *);
+#define glDebugMessageCallback GLES2DebugMessageCallback
+GL_APICALL void GL_APIENTRY GLES2DebugMessageCallbackKHR(GLDEBUGPROCKHR, const void *);
+#define glDebugMessageCallbackKHR GLES2DebugMessageCallbackKHR
+GL_APICALL void GL_APIENTRY GLES2DebugMessageControl(GLenum, GLenum, GLenum, GLsizei, const GLuint *, GLboolean);
+#define glDebugMessageControl GLES2DebugMessageControl
+GL_APICALL void GL_APIENTRY GLES2DebugMessageControlKHR(GLenum, GLenum, GLenum, GLsizei, const GLuint *, GLboolean);
+#define glDebugMessageControlKHR GLES2DebugMessageControlKHR
+GL_APICALL void GL_APIENTRY GLES2DebugMessageInsert(GLenum, GLenum, GLuint, GLenum, GLsizei, const GLchar *);
+#define glDebugMessageInsert GLES2DebugMessageInsert
+GL_APICALL void GL_APIENTRY GLES2DebugMessageInsertKHR(GLenum, GLenum, GLuint, GLenum, GLsizei, const GLchar *);
+#define glDebugMessageInsertKHR GLES2DebugMessageInsertKHR
+GL_APICALL GLuint GL_APIENTRY GLES2GetDebugMessageLog(GLuint, GLsizei, GLenum *, GLenum *, GLuint *, GLenum *, GLsizei *, GLchar *);
+#define glGetDebugMessageLog GLES2GetDebugMessageLog
+GL_APICALL GLuint GL_APIENTRY GLES2GetDebugMessageLogKHR(GLuint, GLsizei, GLenum *, GLenum *, GLuint *, GLenum *, GLsizei *, GLchar *);
+#define glGetDebugMessageLogKHR GLES2GetDebugMessageLogKHR
+GL_APICALL void GL_APIENTRY GLES2GetObjectLabel(GLenum, GLuint, GLsizei, GLsizei *, GLchar *);
+#define glGetObjectLabel GLES2GetObjectLabel
+GL_APICALL void GL_APIENTRY GLES2GetObjectLabelKHR(GLenum, GLuint, GLsizei, GLsizei *, GLchar *);
+#define glGetObjectLabelKHR GLES2GetObjectLabelKHR
+GL_APICALL void GL_APIENTRY GLES2GetObjectPtrLabel(const void *, GLsizei, GLsizei *, GLchar *);
+#define glGetObjectPtrLabel GLES2GetObjectPtrLabel
+GL_APICALL void GL_APIENTRY GLES2GetObjectPtrLabelKHR(const void *, GLsizei, GLsizei *, GLchar *);
+#define glGetObjectPtrLabelKHR GLES2GetObjectPtrLabelKHR
+GL_APICALL void GL_APIENTRY GLES2GetPointerv(GLenum, void **);
+#define glGetPointerv GLES2GetPointerv
+GL_APICALL void GL_APIENTRY GLES2GetPointervKHR(GLenum, void **);
+#define glGetPointervKHR GLES2GetPointervKHR
+GL_APICALL void GL_APIENTRY GLES2ObjectLabel(GLenum, GLuint, GLsizei, const GLchar *);
+#define glObjectLabel GLES2ObjectLabel
+GL_APICALL void GL_APIENTRY GLES2ObjectLabelKHR(GLenum, GLuint, GLsizei, const GLchar *);
+#define glObjectLabelKHR GLES2ObjectLabelKHR
+GL_APICALL void GL_APIENTRY GLES2ObjectPtrLabel(const void *, GLsizei, const GLchar *);
+#define glObjectPtrLabel GLES2ObjectPtrLabel
+GL_APICALL void GL_APIENTRY GLES2ObjectPtrLabelKHR(const void *, GLsizei, const GLchar *);
+#define glObjectPtrLabelKHR GLES2ObjectPtrLabelKHR
+GL_APICALL void GL_APIENTRY GLES2PopDebugGroup(void);
+#define glPopDebugGroup GLES2PopDebugGroup
+GL_APICALL void GL_APIENTRY GLES2PopDebugGroupKHR(void);
+#define glPopDebugGroupKHR GLES2PopDebugGroupKHR
+GL_APICALL void GL_APIENTRY GLES2PushDebugGroup(GLenum, GLuint, GLsizei, const GLchar *);
+#define glPushDebugGroup GLES2PushDebugGroup
+GL_APICALL void GL_APIENTRY GLES2PushDebugGroupKHR(GLenum, GLuint, GLsizei, const GLchar *);
+#define glPushDebugGroupKHR GLES2PushDebugGroupKHR
+#endif
+
+/* GL_KHR_robust_buffer_access_behavior */
+#ifndef GL_KHR_robust_buffer_access_behavior
+#define GL_KHR_robust_buffer_access_behavior 1
+#endif
+
+/* GL_KHR_robustness */
+#ifndef GL_KHR_robustness
+#define GL_KHR_robustness 1
+GL_APICALL GLenum GL_APIENTRY GLES2GetGraphicsResetStatus(void);
+#define glGetGraphicsResetStatus GLES2GetGraphicsResetStatus
+GL_APICALL GLenum GL_APIENTRY GLES2GetGraphicsResetStatusKHR(void);
+#define glGetGraphicsResetStatusKHR GLES2GetGraphicsResetStatusKHR
+GL_APICALL void GL_APIENTRY GLES2GetnUniformfv(GLuint, GLint, GLsizei, GLfloat *);
+#define glGetnUniformfv GLES2GetnUniformfv
+GL_APICALL void GL_APIENTRY GLES2GetnUniformfvKHR(GLuint, GLint, GLsizei, GLfloat *);
+#define glGetnUniformfvKHR GLES2GetnUniformfvKHR
+GL_APICALL void GL_APIENTRY GLES2GetnUniformiv(GLuint, GLint, GLsizei, GLint *);
+#define glGetnUniformiv GLES2GetnUniformiv
+GL_APICALL void GL_APIENTRY GLES2GetnUniformivKHR(GLuint, GLint, GLsizei, GLint *);
+#define glGetnUniformivKHR GLES2GetnUniformivKHR
+GL_APICALL void GL_APIENTRY GLES2GetnUniformuiv(GLuint, GLint, GLsizei, GLuint *);
+#define glGetnUniformuiv GLES2GetnUniformuiv
+GL_APICALL void GL_APIENTRY GLES2GetnUniformuivKHR(GLuint, GLint, GLsizei, GLuint *);
+#define glGetnUniformuivKHR GLES2GetnUniformuivKHR
+GL_APICALL void GL_APIENTRY GLES2ReadnPixels(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void *);
+#define glReadnPixels GLES2ReadnPixels
+GL_APICALL void GL_APIENTRY GLES2ReadnPixelsKHR(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void *);
+#define glReadnPixelsKHR GLES2ReadnPixelsKHR
+#endif
+
+/* GL_KHR_texture_compression_astc_hdr */
+#ifndef GL_KHR_texture_compression_astc_hdr
+#define GL_KHR_texture_compression_astc_hdr 1
+#endif
+
+/* GL_KHR_texture_compression_astc_ldr */
+#ifndef GL_KHR_texture_compression_astc_ldr
+#define GL_KHR_texture_compression_astc_ldr 1
 #endif
 
 /* GL_NV_draw_buffers */
@@ -1492,18 +1833,6 @@ GL_APICALL void GL_APIENTRY GLES2DrawBuffersNV(GLsizei, const GLenum *);
 #define glDrawBuffersNV GLES2DrawBuffersNV
 #endif
 
-/* GL_NV_fbo_color_attachments */
-#ifndef GL_NV_fbo_color_attachments
-#define GL_NV_fbo_color_attachments 1
-#endif
-
-/* GL_NV_read_buffer */
-#ifndef GL_NV_read_buffer
-#define GL_NV_read_buffer 1
-GL_APICALL void GL_APIENTRY GLES2ReadBufferNV(GLenum);
-#define glReadBufferNV GLES2ReadBufferNV
-#endif
-
 /* GL_NV_draw_instanced */
 #ifndef GL_NV_draw_instanced
 #define GL_NV_draw_instanced 1
@@ -1511,6 +1840,11 @@ GL_APICALL void GL_APIENTRY GLES2DrawArraysInstancedNV(GLenum, GLint, GLsizei, G
 #define glDrawArraysInstancedNV GLES2DrawArraysInstancedNV
 GL_APICALL void GL_APIENTRY GLES2DrawElementsInstancedNV(GLenum, GLsizei, GLenum, const void *, GLsizei);
 #define glDrawElementsInstancedNV GLES2DrawElementsInstancedNV
+#endif
+
+/* GL_NV_fbo_color_attachments */
+#ifndef GL_NV_fbo_color_attachments
+#define GL_NV_fbo_color_attachments 1
 #endif
 
 /* GL_NV_framebuffer_blit */
@@ -1534,6 +1868,40 @@ GL_APICALL void GL_APIENTRY GLES2VertexAttribDivisorNV(GLuint, GLuint);
 #define glVertexAttribDivisorNV GLES2VertexAttribDivisorNV
 #endif
 
+/* GL_NV_polygon_mode */
+#ifndef GL_NV_polygon_mode
+#define GL_NV_polygon_mode 1
+GL_APICALL void GL_APIENTRY GLES2PolygonModeNV(GLenum, GLenum);
+#define glPolygonModeNV GLES2PolygonModeNV
+#endif
+
+/* GL_NV_read_buffer */
+#ifndef GL_NV_read_buffer
+#define GL_NV_read_buffer 1
+GL_APICALL void GL_APIENTRY GLES2ReadBufferNV(GLenum);
+#define glReadBufferNV GLES2ReadBufferNV
+#endif
+
+/* GL_NV_read_buffer_front */
+#ifndef GL_NV_read_buffer_front
+#define GL_NV_read_buffer_front 1
+#endif
+
+/* GL_NV_read_depth */
+#ifndef GL_NV_read_depth
+#define GL_NV_read_depth 1
+#endif
+
+/* GL_NV_read_depth_stencil */
+#ifndef GL_NV_read_depth_stencil
+#define GL_NV_read_depth_stencil 1
+#endif
+
+/* GL_NV_read_stencil */
+#ifndef GL_NV_read_stencil
+#define GL_NV_read_stencil 1
+#endif
+
 /* GL_NV_shadow_samplers_array */
 #ifndef GL_NV_shadow_samplers_array
 #define GL_NV_shadow_samplers_array 1
@@ -1544,9 +1912,24 @@ GL_APICALL void GL_APIENTRY GLES2VertexAttribDivisorNV(GLuint, GLuint);
 #define GL_NV_shadow_samplers_cube 1
 #endif
 
+/* GL_NV_texture_border_clamp */
+#ifndef GL_NV_texture_border_clamp
+#define GL_NV_texture_border_clamp 1
+#endif
+
 /* GL_OES_depth24 */
 #ifndef GL_OES_depth24
 #define GL_OES_depth24 1
+#endif
+
+/* GL_OES_depth32 */
+#ifndef GL_OES_depth32
+#define GL_OES_depth32 1
+#endif
+
+/* GL_OES_depth_texture */
+#ifndef GL_OES_depth_texture
+#define GL_OES_depth_texture 1
 #endif
 
 /* GL_OES_element_index_uint */
@@ -1554,31 +1937,72 @@ GL_APICALL void GL_APIENTRY GLES2VertexAttribDivisorNV(GLuint, GLuint);
 #define GL_OES_element_index_uint 1
 #endif
 
+/* GL_OES_mapbuffer */
+#ifndef GL_OES_mapbuffer
+#define GL_OES_mapbuffer 1
+GL_APICALL void GL_APIENTRY GLES2GetBufferPointervOES(GLenum, GLenum, void **);
+#define glGetBufferPointervOES GLES2GetBufferPointervOES
+GL_APICALL void * GL_APIENTRY GLES2MapBufferOES(GLenum, GLenum);
+#define glMapBufferOES GLES2MapBufferOES
+GL_APICALL GLboolean GL_APIENTRY GLES2UnmapBufferOES(GLenum);
+#define glUnmapBufferOES GLES2UnmapBufferOES
+#endif
+
+/* GL_OES_packed_depth_stencil */
+#ifndef GL_OES_packed_depth_stencil
+#define GL_OES_packed_depth_stencil 1
+#endif
+
+/* GL_OES_required_internalformat */
+#ifndef GL_OES_required_internalformat
+#define GL_OES_required_internalformat 1
+#endif
+
 /* GL_OES_rgb8_rgba8 */
 #ifndef GL_OES_rgb8_rgba8
 #define GL_OES_rgb8_rgba8 1
 #endif
 
+/* GL_OES_standard_derivatives */
+#ifndef GL_OES_standard_derivatives
+#define GL_OES_standard_derivatives 1
+#endif
+
+/* GL_OES_stencil1 */
+#ifndef GL_OES_stencil1
+#define GL_OES_stencil1 1
+#endif
+
+/* GL_OES_stencil4 */
+#ifndef GL_OES_stencil4
+#define GL_OES_stencil4 1
+#endif
+
+/* GL_OES_surfaceless_context */
+#ifndef GL_OES_surfaceless_context
+#define GL_OES_surfaceless_context 1
+#endif
+
 /* GL_OES_texture_3D */
 #ifndef GL_OES_texture_3D
 #define GL_OES_texture_3D 1
-GL_APICALL void GL_APIENTRY GLES2TexImage3DOES(GLenum, GLint, GLenum, GLsizei, GLsizei, GLsizei, GLint, GLenum, GLenum, const void *);
-#define glTexImage3DOES GLES2TexImage3DOES
-GL_APICALL void GL_APIENTRY GLES2TexSubImage3DOES(GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLenum, const void *);
-#define glTexSubImage3DOES GLES2TexSubImage3DOES
-GL_APICALL void GL_APIENTRY GLES2CopyTexSubImage3DOES(GLenum, GLint, GLint, GLint, GLint, GLint, GLint, GLsizei, GLsizei);
-#define glCopyTexSubImage3DOES GLES2CopyTexSubImage3DOES
 GL_APICALL void GL_APIENTRY GLES2CompressedTexImage3DOES(GLenum, GLint, GLenum, GLsizei, GLsizei, GLsizei, GLint, GLsizei, const void *);
 #define glCompressedTexImage3DOES GLES2CompressedTexImage3DOES
 GL_APICALL void GL_APIENTRY GLES2CompressedTexSubImage3DOES(GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLsizei, const void *);
 #define glCompressedTexSubImage3DOES GLES2CompressedTexSubImage3DOES
+GL_APICALL void GL_APIENTRY GLES2CopyTexSubImage3DOES(GLenum, GLint, GLint, GLint, GLint, GLint, GLint, GLsizei, GLsizei);
+#define glCopyTexSubImage3DOES GLES2CopyTexSubImage3DOES
 GL_APICALL void GL_APIENTRY GLES2FramebufferTexture3DOES(GLenum, GLenum, GLenum, GLuint, GLint, GLint);
 #define glFramebufferTexture3DOES GLES2FramebufferTexture3DOES
+GL_APICALL void GL_APIENTRY GLES2TexImage3DOES(GLenum, GLint, GLenum, GLsizei, GLsizei, GLsizei, GLint, GLenum, GLenum, const void *);
+#define glTexImage3DOES GLES2TexImage3DOES
+GL_APICALL void GL_APIENTRY GLES2TexSubImage3DOES(GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLenum, const void *);
+#define glTexSubImage3DOES GLES2TexSubImage3DOES
 #endif
 
-/* GL_OES_texture_half_float_linear */
-#ifndef GL_OES_texture_half_float_linear
-#define GL_OES_texture_half_float_linear 1
+/* GL_OES_texture_float */
+#ifndef GL_OES_texture_float
+#define GL_OES_texture_float 1
 #endif
 
 /* GL_OES_texture_float_linear */
@@ -1591,9 +2015,9 @@ GL_APICALL void GL_APIENTRY GLES2FramebufferTexture3DOES(GLenum, GLenum, GLenum,
 #define GL_OES_texture_half_float 1
 #endif
 
-/* GL_OES_texture_float */
-#ifndef GL_OES_texture_float
-#define GL_OES_texture_float 1
+/* GL_OES_texture_half_float_linear */
+#ifndef GL_OES_texture_half_float_linear
+#define GL_OES_texture_half_float_linear 1
 #endif
 
 /* GL_OES_texture_npot */
@@ -1601,24 +2025,9 @@ GL_APICALL void GL_APIENTRY GLES2FramebufferTexture3DOES(GLenum, GLenum, GLenum,
 #define GL_OES_texture_npot 1
 #endif
 
-/* GL_OES_vertex_half_float */
-#ifndef GL_OES_vertex_half_float
-#define GL_OES_vertex_half_float 1
-#endif
-
-/* GL_OES_packed_depth_stencil */
-#ifndef GL_OES_packed_depth_stencil
-#define GL_OES_packed_depth_stencil 1
-#endif
-
-/* GL_OES_depth_texture */
-#ifndef GL_OES_depth_texture
-#define GL_OES_depth_texture 1
-#endif
-
-/* GL_OES_standard_derivatives */
-#ifndef GL_OES_standard_derivatives
-#define GL_OES_standard_derivatives 1
+/* GL_OES_texture_stencil8 */
+#ifndef GL_OES_texture_stencil8
+#define GL_OES_texture_stencil8 1
 #endif
 
 /* GL_OES_vertex_array_object */
@@ -1634,418 +2043,9 @@ GL_APICALL GLboolean GL_APIENTRY GLES2IsVertexArrayOES(GLuint);
 #define glIsVertexArrayOES GLES2IsVertexArrayOES
 #endif
 
-/* GL_OES_required_internalformat */
-#ifndef GL_OES_required_internalformat
-#define GL_OES_required_internalformat 1
-#endif
-
-/* GL_OES_surfaceless_context */
-#ifndef GL_OES_surfaceless_context
-#define GL_OES_surfaceless_context 1
-#endif
-
-/* GL_APPLE_texture_format_BGRA8888 */
-#ifndef GL_APPLE_texture_format_BGRA8888
-#define GL_APPLE_texture_format_BGRA8888 1
-#endif
-
-/* GL_EXT_texture_filter_anisotropic */
-#ifndef GL_EXT_texture_filter_anisotropic
-#define GL_EXT_texture_filter_anisotropic 1
-#endif
-
-/* GL_EXT_texture_format_BGRA8888 */
-#ifndef GL_EXT_texture_format_BGRA8888
-#define GL_EXT_texture_format_BGRA8888 1
-#endif
-
-/* GL_EXT_read_format_bgra */
-#ifndef GL_EXT_read_format_bgra
-#define GL_EXT_read_format_bgra 1
-#endif
-
-/* GL_EXT_multi_draw_arrays */
-#ifndef GL_EXT_multi_draw_arrays
-#define GL_EXT_multi_draw_arrays 1
-GL_APICALL void GL_APIENTRY GLES2MultiDrawArraysEXT(GLenum, const GLint *, const GLsizei *, GLsizei);
-#define glMultiDrawArraysEXT GLES2MultiDrawArraysEXT
-GL_APICALL void GL_APIENTRY GLES2MultiDrawElementsEXT(GLenum, const GLsizei *, GLenum, const void *const*, GLsizei);
-#define glMultiDrawElementsEXT GLES2MultiDrawElementsEXT
-#endif
-
-/* GL_EXT_debug_label */
-#ifndef GL_EXT_debug_label
-#define GL_EXT_debug_label 1
-GL_APICALL void GL_APIENTRY GLES2LabelObjectEXT(GLenum, GLuint, GLsizei, const GLchar *);
-#define glLabelObjectEXT GLES2LabelObjectEXT
-GL_APICALL void GL_APIENTRY GLES2GetObjectLabelEXT(GLenum, GLuint, GLsizei, GLsizei *, GLchar *);
-#define glGetObjectLabelEXT GLES2GetObjectLabelEXT
-#endif
-
-/* GL_EXT_debug_marker */
-#ifndef GL_EXT_debug_marker
-#define GL_EXT_debug_marker 1
-GL_APICALL void GL_APIENTRY GLES2InsertEventMarkerEXT(GLsizei, const GLchar *);
-#define glInsertEventMarkerEXT GLES2InsertEventMarkerEXT
-GL_APICALL void GL_APIENTRY GLES2PushGroupMarkerEXT(GLsizei, const GLchar *);
-#define glPushGroupMarkerEXT GLES2PushGroupMarkerEXT
-GL_APICALL void GL_APIENTRY GLES2PopGroupMarkerEXT(void);
-#define glPopGroupMarkerEXT GLES2PopGroupMarkerEXT
-#endif
-
-/* GL_EXT_disjoint_timer_query */
-#ifndef GL_EXT_disjoint_timer_query
-#define GL_EXT_disjoint_timer_query 1
-GL_APICALL void GL_APIENTRY GLES2QueryCounterEXT(GLuint, GLenum);
-#define glQueryCounterEXT GLES2QueryCounterEXT
-GL_APICALL void GL_APIENTRY GLES2GetQueryObjectivEXT(GLuint, GLenum, GLint *);
-#define glGetQueryObjectivEXT GLES2GetQueryObjectivEXT
-GL_APICALL void GL_APIENTRY GLES2GetQueryObjecti64vEXT(GLuint, GLenum, GLint64 *);
-#define glGetQueryObjecti64vEXT GLES2GetQueryObjecti64vEXT
-GL_APICALL void GL_APIENTRY GLES2GetQueryObjectui64vEXT(GLuint, GLenum, GLuint64 *);
-#define glGetQueryObjectui64vEXT GLES2GetQueryObjectui64vEXT
-#endif
-
-/* GL_EXT_texture_sRGB_decode */
-#ifndef GL_EXT_texture_sRGB_decode
-#define GL_EXT_texture_sRGB_decode 1
-#endif
-
-/* GL_EXT_sRGB_write_control */
-#ifndef GL_EXT_sRGB_write_control
-#define GL_EXT_sRGB_write_control 1
-#endif
-
-/* GL_EXT_draw_buffers_indexed */
-#ifndef GL_EXT_draw_buffers_indexed
-#define GL_EXT_draw_buffers_indexed 1
-GL_APICALL void GL_APIENTRY GLES2EnableiEXT(GLenum, GLuint);
-#define glEnableiEXT GLES2EnableiEXT
-GL_APICALL void GL_APIENTRY GLES2DisableiEXT(GLenum, GLuint);
-#define glDisableiEXT GLES2DisableiEXT
-GL_APICALL void GL_APIENTRY GLES2BlendEquationiEXT(GLuint, GLenum);
-#define glBlendEquationiEXT GLES2BlendEquationiEXT
-GL_APICALL void GL_APIENTRY GLES2BlendEquationSeparateiEXT(GLuint, GLenum, GLenum);
-#define glBlendEquationSeparateiEXT GLES2BlendEquationSeparateiEXT
-GL_APICALL void GL_APIENTRY GLES2BlendFunciEXT(GLuint, GLenum, GLenum);
-#define glBlendFunciEXT GLES2BlendFunciEXT
-GL_APICALL void GL_APIENTRY GLES2BlendFuncSeparateiEXT(GLuint, GLenum, GLenum, GLenum, GLenum);
-#define glBlendFuncSeparateiEXT GLES2BlendFuncSeparateiEXT
-GL_APICALL void GL_APIENTRY GLES2ColorMaskiEXT(GLuint, GLboolean, GLboolean, GLboolean, GLboolean);
-#define glColorMaskiEXT GLES2ColorMaskiEXT
-GL_APICALL GLboolean GL_APIENTRY GLES2IsEnablediEXT(GLenum, GLuint);
-#define glIsEnablediEXT GLES2IsEnablediEXT
-#endif
-
-/* GL_EXT_texture_border_clamp */
-#ifndef GL_EXT_texture_border_clamp
-#define GL_EXT_texture_border_clamp 1
-GL_APICALL void GL_APIENTRY GLES2TexParameterIivEXT(GLenum, GLenum, const GLint *);
-#define glTexParameterIivEXT GLES2TexParameterIivEXT
-GL_APICALL void GL_APIENTRY GLES2TexParameterIuivEXT(GLenum, GLenum, const GLuint *);
-#define glTexParameterIuivEXT GLES2TexParameterIuivEXT
-GL_APICALL void GL_APIENTRY GLES2GetTexParameterIivEXT(GLenum, GLenum, GLint *);
-#define glGetTexParameterIivEXT GLES2GetTexParameterIivEXT
-GL_APICALL void GL_APIENTRY GLES2GetTexParameterIuivEXT(GLenum, GLenum, GLuint *);
-#define glGetTexParameterIuivEXT GLES2GetTexParameterIuivEXT
-GL_APICALL void GL_APIENTRY GLES2SamplerParameterIivEXT(GLuint, GLenum, const GLint *);
-#define glSamplerParameterIivEXT GLES2SamplerParameterIivEXT
-GL_APICALL void GL_APIENTRY GLES2SamplerParameterIuivEXT(GLuint, GLenum, const GLuint *);
-#define glSamplerParameterIuivEXT GLES2SamplerParameterIuivEXT
-GL_APICALL void GL_APIENTRY GLES2GetSamplerParameterIivEXT(GLuint, GLenum, GLint *);
-#define glGetSamplerParameterIivEXT GLES2GetSamplerParameterIivEXT
-GL_APICALL void GL_APIENTRY GLES2GetSamplerParameterIuivEXT(GLuint, GLenum, GLuint *);
-#define glGetSamplerParameterIuivEXT GLES2GetSamplerParameterIuivEXT
-#endif
-
-/* GL_EXT_separate_shader_objects */
-#ifndef GL_EXT_separate_shader_objects
-#define GL_EXT_separate_shader_objects 1
-GL_APICALL void GL_APIENTRY GLES2UseShaderProgramEXT(GLenum, GLuint);
-#define glUseShaderProgramEXT GLES2UseShaderProgramEXT
-GL_APICALL void GL_APIENTRY GLES2ActiveProgramEXT(GLuint);
-#define glActiveProgramEXT GLES2ActiveProgramEXT
-GL_APICALL GLuint GL_APIENTRY GLES2CreateShaderProgramEXT(GLenum, const GLchar *);
-#define glCreateShaderProgramEXT GLES2CreateShaderProgramEXT
-GL_APICALL void GL_APIENTRY GLES2ActiveShaderProgramEXT(GLuint, GLuint);
-#define glActiveShaderProgramEXT GLES2ActiveShaderProgramEXT
-GL_APICALL void GL_APIENTRY GLES2BindProgramPipelineEXT(GLuint);
-#define glBindProgramPipelineEXT GLES2BindProgramPipelineEXT
-GL_APICALL GLuint GL_APIENTRY GLES2CreateShaderProgramvEXT(GLenum, GLsizei, const GLchar **);
-#define glCreateShaderProgramvEXT GLES2CreateShaderProgramvEXT
-GL_APICALL void GL_APIENTRY GLES2DeleteProgramPipelinesEXT(GLsizei, const GLuint *);
-#define glDeleteProgramPipelinesEXT GLES2DeleteProgramPipelinesEXT
-GL_APICALL void GL_APIENTRY GLES2GenProgramPipelinesEXT(GLsizei, GLuint *);
-#define glGenProgramPipelinesEXT GLES2GenProgramPipelinesEXT
-GL_APICALL void GL_APIENTRY GLES2GetProgramPipelineInfoLogEXT(GLuint, GLsizei, GLsizei *, GLchar *);
-#define glGetProgramPipelineInfoLogEXT GLES2GetProgramPipelineInfoLogEXT
-GL_APICALL void GL_APIENTRY GLES2GetProgramPipelineivEXT(GLuint, GLenum, GLint *);
-#define glGetProgramPipelineivEXT GLES2GetProgramPipelineivEXT
-GL_APICALL GLboolean GL_APIENTRY GLES2IsProgramPipelineEXT(GLuint);
-#define glIsProgramPipelineEXT GLES2IsProgramPipelineEXT
-GL_APICALL void GL_APIENTRY GLES2ProgramParameteriEXT(GLuint, GLenum, GLint);
-#define glProgramParameteriEXT GLES2ProgramParameteriEXT
-GL_APICALL void GL_APIENTRY GLES2ProgramUniform1fEXT(GLuint, GLint, GLfloat);
-#define glProgramUniform1fEXT GLES2ProgramUniform1fEXT
-GL_APICALL void GL_APIENTRY GLES2ProgramUniform1fvEXT(GLuint, GLint, GLsizei, const GLfloat *);
-#define glProgramUniform1fvEXT GLES2ProgramUniform1fvEXT
-GL_APICALL void GL_APIENTRY GLES2ProgramUniform1iEXT(GLuint, GLint, GLint);
-#define glProgramUniform1iEXT GLES2ProgramUniform1iEXT
-GL_APICALL void GL_APIENTRY GLES2ProgramUniform1ivEXT(GLuint, GLint, GLsizei, const GLint *);
-#define glProgramUniform1ivEXT GLES2ProgramUniform1ivEXT
-GL_APICALL void GL_APIENTRY GLES2ProgramUniform2fEXT(GLuint, GLint, GLfloat, GLfloat);
-#define glProgramUniform2fEXT GLES2ProgramUniform2fEXT
-GL_APICALL void GL_APIENTRY GLES2ProgramUniform2fvEXT(GLuint, GLint, GLsizei, const GLfloat *);
-#define glProgramUniform2fvEXT GLES2ProgramUniform2fvEXT
-GL_APICALL void GL_APIENTRY GLES2ProgramUniform2iEXT(GLuint, GLint, GLint, GLint);
-#define glProgramUniform2iEXT GLES2ProgramUniform2iEXT
-GL_APICALL void GL_APIENTRY GLES2ProgramUniform2ivEXT(GLuint, GLint, GLsizei, const GLint *);
-#define glProgramUniform2ivEXT GLES2ProgramUniform2ivEXT
-GL_APICALL void GL_APIENTRY GLES2ProgramUniform3fEXT(GLuint, GLint, GLfloat, GLfloat, GLfloat);
-#define glProgramUniform3fEXT GLES2ProgramUniform3fEXT
-GL_APICALL void GL_APIENTRY GLES2ProgramUniform3fvEXT(GLuint, GLint, GLsizei, const GLfloat *);
-#define glProgramUniform3fvEXT GLES2ProgramUniform3fvEXT
-GL_APICALL void GL_APIENTRY GLES2ProgramUniform3iEXT(GLuint, GLint, GLint, GLint, GLint);
-#define glProgramUniform3iEXT GLES2ProgramUniform3iEXT
-GL_APICALL void GL_APIENTRY GLES2ProgramUniform3ivEXT(GLuint, GLint, GLsizei, const GLint *);
-#define glProgramUniform3ivEXT GLES2ProgramUniform3ivEXT
-GL_APICALL void GL_APIENTRY GLES2ProgramUniform4fEXT(GLuint, GLint, GLfloat, GLfloat, GLfloat, GLfloat);
-#define glProgramUniform4fEXT GLES2ProgramUniform4fEXT
-GL_APICALL void GL_APIENTRY GLES2ProgramUniform4fvEXT(GLuint, GLint, GLsizei, const GLfloat *);
-#define glProgramUniform4fvEXT GLES2ProgramUniform4fvEXT
-GL_APICALL void GL_APIENTRY GLES2ProgramUniform4iEXT(GLuint, GLint, GLint, GLint, GLint, GLint);
-#define glProgramUniform4iEXT GLES2ProgramUniform4iEXT
-GL_APICALL void GL_APIENTRY GLES2ProgramUniform4ivEXT(GLuint, GLint, GLsizei, const GLint *);
-#define glProgramUniform4ivEXT GLES2ProgramUniform4ivEXT
-GL_APICALL void GL_APIENTRY GLES2ProgramUniformMatrix2fvEXT(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
-#define glProgramUniformMatrix2fvEXT GLES2ProgramUniformMatrix2fvEXT
-GL_APICALL void GL_APIENTRY GLES2ProgramUniformMatrix3fvEXT(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
-#define glProgramUniformMatrix3fvEXT GLES2ProgramUniformMatrix3fvEXT
-GL_APICALL void GL_APIENTRY GLES2ProgramUniformMatrix4fvEXT(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
-#define glProgramUniformMatrix4fvEXT GLES2ProgramUniformMatrix4fvEXT
-GL_APICALL void GL_APIENTRY GLES2UseProgramStagesEXT(GLuint, GLbitfield, GLuint);
-#define glUseProgramStagesEXT GLES2UseProgramStagesEXT
-GL_APICALL void GL_APIENTRY GLES2ValidateProgramPipelineEXT(GLuint);
-#define glValidateProgramPipelineEXT GLES2ValidateProgramPipelineEXT
-GL_APICALL void GL_APIENTRY GLES2ProgramUniform1uiEXT(GLuint, GLint, GLuint);
-#define glProgramUniform1uiEXT GLES2ProgramUniform1uiEXT
-GL_APICALL void GL_APIENTRY GLES2ProgramUniform2uiEXT(GLuint, GLint, GLuint, GLuint);
-#define glProgramUniform2uiEXT GLES2ProgramUniform2uiEXT
-GL_APICALL void GL_APIENTRY GLES2ProgramUniform3uiEXT(GLuint, GLint, GLuint, GLuint, GLuint);
-#define glProgramUniform3uiEXT GLES2ProgramUniform3uiEXT
-GL_APICALL void GL_APIENTRY GLES2ProgramUniform4uiEXT(GLuint, GLint, GLuint, GLuint, GLuint, GLuint);
-#define glProgramUniform4uiEXT GLES2ProgramUniform4uiEXT
-GL_APICALL void GL_APIENTRY GLES2ProgramUniform1uivEXT(GLuint, GLint, GLsizei, const GLuint *);
-#define glProgramUniform1uivEXT GLES2ProgramUniform1uivEXT
-GL_APICALL void GL_APIENTRY GLES2ProgramUniform2uivEXT(GLuint, GLint, GLsizei, const GLuint *);
-#define glProgramUniform2uivEXT GLES2ProgramUniform2uivEXT
-GL_APICALL void GL_APIENTRY GLES2ProgramUniform3uivEXT(GLuint, GLint, GLsizei, const GLuint *);
-#define glProgramUniform3uivEXT GLES2ProgramUniform3uivEXT
-GL_APICALL void GL_APIENTRY GLES2ProgramUniform4uivEXT(GLuint, GLint, GLsizei, const GLuint *);
-#define glProgramUniform4uivEXT GLES2ProgramUniform4uivEXT
-GL_APICALL void GL_APIENTRY GLES2ProgramUniformMatrix2x3fvEXT(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
-#define glProgramUniformMatrix2x3fvEXT GLES2ProgramUniformMatrix2x3fvEXT
-GL_APICALL void GL_APIENTRY GLES2ProgramUniformMatrix3x2fvEXT(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
-#define glProgramUniformMatrix3x2fvEXT GLES2ProgramUniformMatrix3x2fvEXT
-GL_APICALL void GL_APIENTRY GLES2ProgramUniformMatrix2x4fvEXT(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
-#define glProgramUniformMatrix2x4fvEXT GLES2ProgramUniformMatrix2x4fvEXT
-GL_APICALL void GL_APIENTRY GLES2ProgramUniformMatrix4x2fvEXT(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
-#define glProgramUniformMatrix4x2fvEXT GLES2ProgramUniformMatrix4x2fvEXT
-GL_APICALL void GL_APIENTRY GLES2ProgramUniformMatrix3x4fvEXT(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
-#define glProgramUniformMatrix3x4fvEXT GLES2ProgramUniformMatrix3x4fvEXT
-GL_APICALL void GL_APIENTRY GLES2ProgramUniformMatrix4x3fvEXT(GLuint, GLint, GLsizei, GLboolean, const GLfloat *);
-#define glProgramUniformMatrix4x3fvEXT GLES2ProgramUniformMatrix4x3fvEXT
-#endif
-
-/* GL_EXT_multisampled_render_to_texture */
-#ifndef GL_EXT_multisampled_render_to_texture
-#define GL_EXT_multisampled_render_to_texture 1
-GL_APICALL void GL_APIENTRY GLES2RenderbufferStorageMultisampleEXT(GLenum, GLsizei, GLenum, GLsizei, GLsizei);
-#define glRenderbufferStorageMultisampleEXT GLES2RenderbufferStorageMultisampleEXT
-GL_APICALL void GL_APIENTRY GLES2FramebufferTexture2DMultisampleEXT(GLenum, GLenum, GLenum, GLuint, GLint, GLsizei);
-#define glFramebufferTexture2DMultisampleEXT GLES2FramebufferTexture2DMultisampleEXT
-#endif
-
-/* GL_EXT_robustness */
-#ifndef GL_EXT_robustness
-#define GL_EXT_robustness 1
-GL_APICALL GLenum GL_APIENTRY GLES2GetGraphicsResetStatusEXT(void);
-#define glGetGraphicsResetStatusEXT GLES2GetGraphicsResetStatusEXT
-GL_APICALL void GL_APIENTRY GLES2ReadnPixelsEXT(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void *);
-#define glReadnPixelsEXT GLES2ReadnPixelsEXT
-GL_APICALL void GL_APIENTRY GLES2GetnUniformfvEXT(GLuint, GLint, GLsizei, GLfloat *);
-#define glGetnUniformfvEXT GLES2GetnUniformfvEXT
-GL_APICALL void GL_APIENTRY GLES2GetnUniformivEXT(GLuint, GLint, GLsizei, GLint *);
-#define glGetnUniformivEXT GLES2GetnUniformivEXT
-#endif
-
-/* GL_KHR_texture_compression_astc_ldr */
-#ifndef GL_KHR_texture_compression_astc_ldr
-#define GL_KHR_texture_compression_astc_ldr 1
-#endif
-
-/* GL_KHR_texture_compression_astc_hdr */
-#ifndef GL_KHR_texture_compression_astc_hdr
-#define GL_KHR_texture_compression_astc_hdr 1
-#endif
-
-/* GL_KHR_debug */
-#ifndef GL_KHR_debug
-#define GL_KHR_debug 1
-GL_APICALL void GL_APIENTRY GLES2DebugMessageControl(GLenum, GLenum, GLenum, GLsizei, const GLuint *, GLboolean);
-#define glDebugMessageControl GLES2DebugMessageControl
-GL_APICALL void GL_APIENTRY GLES2DebugMessageInsert(GLenum, GLenum, GLuint, GLenum, GLsizei, const GLchar *);
-#define glDebugMessageInsert GLES2DebugMessageInsert
-GL_APICALL void GL_APIENTRY GLES2DebugMessageCallback(GLDEBUGPROC, const void *);
-#define glDebugMessageCallback GLES2DebugMessageCallback
-GL_APICALL GLuint GL_APIENTRY GLES2GetDebugMessageLog(GLuint, GLsizei, GLenum *, GLenum *, GLuint *, GLenum *, GLsizei *, GLchar *);
-#define glGetDebugMessageLog GLES2GetDebugMessageLog
-GL_APICALL void GL_APIENTRY GLES2PushDebugGroup(GLenum, GLuint, GLsizei, const GLchar *);
-#define glPushDebugGroup GLES2PushDebugGroup
-GL_APICALL void GL_APIENTRY GLES2PopDebugGroup(void);
-#define glPopDebugGroup GLES2PopDebugGroup
-GL_APICALL void GL_APIENTRY GLES2ObjectLabel(GLenum, GLuint, GLsizei, const GLchar *);
-#define glObjectLabel GLES2ObjectLabel
-GL_APICALL void GL_APIENTRY GLES2GetObjectLabel(GLenum, GLuint, GLsizei, GLsizei *, GLchar *);
-#define glGetObjectLabel GLES2GetObjectLabel
-GL_APICALL void GL_APIENTRY GLES2ObjectPtrLabel(const void *, GLsizei, const GLchar *);
-#define glObjectPtrLabel GLES2ObjectPtrLabel
-GL_APICALL void GL_APIENTRY GLES2GetObjectPtrLabel(const void *, GLsizei, GLsizei *, GLchar *);
-#define glGetObjectPtrLabel GLES2GetObjectPtrLabel
-GL_APICALL void GL_APIENTRY GLES2GetPointerv(GLenum, void **);
-#define glGetPointerv GLES2GetPointerv
-GL_APICALL void GL_APIENTRY GLES2DebugMessageControlKHR(GLenum, GLenum, GLenum, GLsizei, const GLuint *, GLboolean);
-#define glDebugMessageControlKHR GLES2DebugMessageControlKHR
-GL_APICALL void GL_APIENTRY GLES2DebugMessageInsertKHR(GLenum, GLenum, GLuint, GLenum, GLsizei, const GLchar *);
-#define glDebugMessageInsertKHR GLES2DebugMessageInsertKHR
-GL_APICALL void GL_APIENTRY GLES2DebugMessageCallbackKHR(GLDEBUGPROCKHR, const void *);
-#define glDebugMessageCallbackKHR GLES2DebugMessageCallbackKHR
-GL_APICALL GLuint GL_APIENTRY GLES2GetDebugMessageLogKHR(GLuint, GLsizei, GLenum *, GLenum *, GLuint *, GLenum *, GLsizei *, GLchar *);
-#define glGetDebugMessageLogKHR GLES2GetDebugMessageLogKHR
-GL_APICALL void GL_APIENTRY GLES2PushDebugGroupKHR(GLenum, GLuint, GLsizei, const GLchar *);
-#define glPushDebugGroupKHR GLES2PushDebugGroupKHR
-GL_APICALL void GL_APIENTRY GLES2PopDebugGroupKHR(void);
-#define glPopDebugGroupKHR GLES2PopDebugGroupKHR
-GL_APICALL void GL_APIENTRY GLES2ObjectLabelKHR(GLenum, GLuint, GLsizei, const GLchar *);
-#define glObjectLabelKHR GLES2ObjectLabelKHR
-GL_APICALL void GL_APIENTRY GLES2GetObjectLabelKHR(GLenum, GLuint, GLsizei, GLsizei *, GLchar *);
-#define glGetObjectLabelKHR GLES2GetObjectLabelKHR
-GL_APICALL void GL_APIENTRY GLES2ObjectPtrLabelKHR(const void *, GLsizei, const GLchar *);
-#define glObjectPtrLabelKHR GLES2ObjectPtrLabelKHR
-GL_APICALL void GL_APIENTRY GLES2GetObjectPtrLabelKHR(const void *, GLsizei, GLsizei *, GLchar *);
-#define glGetObjectPtrLabelKHR GLES2GetObjectPtrLabelKHR
-GL_APICALL void GL_APIENTRY GLES2GetPointervKHR(GLenum, void **);
-#define glGetPointervKHR GLES2GetPointervKHR
-#endif
-
-/* GL_KHR_blend_equation_advanced */
-#ifndef GL_KHR_blend_equation_advanced
-#define GL_KHR_blend_equation_advanced 1
-GL_APICALL void GL_APIENTRY GLES2BlendBarrierKHR(void);
-#define glBlendBarrierKHR GLES2BlendBarrierKHR
-#endif
-
-/* GL_KHR_blend_equation_advanced_coherent */
-#ifndef GL_KHR_blend_equation_advanced_coherent
-#define GL_KHR_blend_equation_advanced_coherent 1
-#endif
-
-/* GL_KHR_robustness */
-#ifndef GL_KHR_robustness
-#define GL_KHR_robustness 1
-GL_APICALL GLenum GL_APIENTRY GLES2GetGraphicsResetStatus(void);
-#define glGetGraphicsResetStatus GLES2GetGraphicsResetStatus
-GL_APICALL void GL_APIENTRY GLES2ReadnPixels(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void *);
-#define glReadnPixels GLES2ReadnPixels
-GL_APICALL void GL_APIENTRY GLES2GetnUniformfv(GLuint, GLint, GLsizei, GLfloat *);
-#define glGetnUniformfv GLES2GetnUniformfv
-GL_APICALL void GL_APIENTRY GLES2GetnUniformiv(GLuint, GLint, GLsizei, GLint *);
-#define glGetnUniformiv GLES2GetnUniformiv
-GL_APICALL void GL_APIENTRY GLES2GetnUniformuiv(GLuint, GLint, GLsizei, GLuint *);
-#define glGetnUniformuiv GLES2GetnUniformuiv
-GL_APICALL GLenum GL_APIENTRY GLES2GetGraphicsResetStatusKHR(void);
-#define glGetGraphicsResetStatusKHR GLES2GetGraphicsResetStatusKHR
-GL_APICALL void GL_APIENTRY GLES2ReadnPixelsKHR(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void *);
-#define glReadnPixelsKHR GLES2ReadnPixelsKHR
-GL_APICALL void GL_APIENTRY GLES2GetnUniformfvKHR(GLuint, GLint, GLsizei, GLfloat *);
-#define glGetnUniformfvKHR GLES2GetnUniformfvKHR
-GL_APICALL void GL_APIENTRY GLES2GetnUniformivKHR(GLuint, GLint, GLsizei, GLint *);
-#define glGetnUniformivKHR GLES2GetnUniformivKHR
-GL_APICALL void GL_APIENTRY GLES2GetnUniformuivKHR(GLuint, GLint, GLsizei, GLuint *);
-#define glGetnUniformuivKHR GLES2GetnUniformuivKHR
-#endif
-
-/* GL_KHR_robust_buffer_access_behavior */
-#ifndef GL_KHR_robust_buffer_access_behavior
-#define GL_KHR_robust_buffer_access_behavior 1
-#endif
-
-/* GL_KHR_context_flush_control */
-#ifndef GL_KHR_context_flush_control
-#define GL_KHR_context_flush_control 1
-#endif
-
-/* GL_NV_read_buffer_front */
-#ifndef GL_NV_read_buffer_front
-#define GL_NV_read_buffer_front 1
-#endif
-
-/* GL_NV_read_depth */
-#ifndef GL_NV_read_depth
-#define GL_NV_read_depth 1
-#endif
-
-/* GL_NV_read_stencil */
-#ifndef GL_NV_read_stencil
-#define GL_NV_read_stencil 1
-#endif
-
-/* GL_NV_read_depth_stencil */
-#ifndef GL_NV_read_depth_stencil
-#define GL_NV_read_depth_stencil 1
-#endif
-
-/* GL_NV_texture_border_clamp */
-#ifndef GL_NV_texture_border_clamp
-#define GL_NV_texture_border_clamp 1
-#endif
-
-/* GL_NV_polygon_mode */
-#ifndef GL_NV_polygon_mode
-#define GL_NV_polygon_mode 1
-GL_APICALL void GL_APIENTRY GLES2PolygonModeNV(GLenum, GLenum);
-#define glPolygonModeNV GLES2PolygonModeNV
-#endif
-
-/* GL_OES_depth32 */
-#ifndef GL_OES_depth32
-#define GL_OES_depth32 1
-#endif
-
-/* GL_OES_mapbuffer */
-#ifndef GL_OES_mapbuffer
-#define GL_OES_mapbuffer 1
-GL_APICALL void * GL_APIENTRY GLES2MapBufferOES(GLenum, GLenum);
-#define glMapBufferOES GLES2MapBufferOES
-GL_APICALL GLboolean GL_APIENTRY GLES2UnmapBufferOES(GLenum);
-#define glUnmapBufferOES GLES2UnmapBufferOES
-GL_APICALL void GL_APIENTRY GLES2GetBufferPointervOES(GLenum, GLenum, void **);
-#define glGetBufferPointervOES GLES2GetBufferPointervOES
-#endif
-
-/* GL_OES_stencil1 */
-#ifndef GL_OES_stencil1
-#define GL_OES_stencil1 1
-#endif
-
-/* GL_OES_stencil4 */
-#ifndef GL_OES_stencil4
-#define GL_OES_stencil4 1
-#endif
-
-/* GL_OES_texture_stencil8 */
-#ifndef GL_OES_texture_stencil8
-#define GL_OES_texture_stencil8 1
+/* GL_OES_vertex_half_float */
+#ifndef GL_OES_vertex_half_float
+#define GL_OES_vertex_half_float 1
 #endif
 
 #ifdef __cplusplus
