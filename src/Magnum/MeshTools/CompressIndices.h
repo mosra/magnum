@@ -85,6 +85,12 @@ Containers::Array<UnsignedShort> indexData = MeshTools::compressIndicesAs<Unsign
 */
 template<class T> MAGNUM_MESHTOOLS_EXPORT Containers::Array<T> compressIndicesAs(const std::vector<UnsignedInt>& indices);
 
+#if defined(CORRADE_TARGET_WINDOWS) && !defined(__MINGW32__)
+extern template MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedByte> compressIndicesAs<UnsignedByte>(const std::vector<UnsignedInt>& indices);
+extern template MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedShort> compressIndicesAs<UnsignedShort>(const std::vector<UnsignedInt>& indices);
+extern template MAGNUM_MESHTOOLS_EXPORT Containers::Array<UnsignedInt> compressIndicesAs<UnsignedInt>(const std::vector<UnsignedInt>& indices);
+#endif
+
 }}
 
 #endif
