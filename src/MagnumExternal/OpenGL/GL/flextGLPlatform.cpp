@@ -41,19 +41,7 @@ void flextGLInit() {
 
     /* GL_ARB_robustness */
     flextglGetGraphicsResetStatusARB = reinterpret_cast<GLenum(APIENTRY*)(void)>(loader.load("glGetGraphicsResetStatusARB"));
-    flextglGetnColorTableARB = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLenum, GLsizei, void *)>(loader.load("glGetnColorTableARB"));
     flextglGetnCompressedTexImageARB = reinterpret_cast<void(APIENTRY*)(GLenum, GLint, GLsizei, void *)>(loader.load("glGetnCompressedTexImageARB"));
-    flextglGetnConvolutionFilterARB = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLenum, GLsizei, void *)>(loader.load("glGetnConvolutionFilterARB"));
-    flextglGetnHistogramARB = reinterpret_cast<void(APIENTRY*)(GLenum, GLboolean, GLenum, GLenum, GLsizei, void *)>(loader.load("glGetnHistogramARB"));
-    flextglGetnMapdvARB = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLsizei, GLdouble *)>(loader.load("glGetnMapdvARB"));
-    flextglGetnMapfvARB = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLsizei, GLfloat *)>(loader.load("glGetnMapfvARB"));
-    flextglGetnMapivARB = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLsizei, GLint *)>(loader.load("glGetnMapivARB"));
-    flextglGetnMinmaxARB = reinterpret_cast<void(APIENTRY*)(GLenum, GLboolean, GLenum, GLenum, GLsizei, void *)>(loader.load("glGetnMinmaxARB"));
-    flextglGetnPixelMapfvARB = reinterpret_cast<void(APIENTRY*)(GLenum, GLsizei, GLfloat *)>(loader.load("glGetnPixelMapfvARB"));
-    flextglGetnPixelMapuivARB = reinterpret_cast<void(APIENTRY*)(GLenum, GLsizei, GLuint *)>(loader.load("glGetnPixelMapuivARB"));
-    flextglGetnPixelMapusvARB = reinterpret_cast<void(APIENTRY*)(GLenum, GLsizei, GLushort *)>(loader.load("glGetnPixelMapusvARB"));
-    flextglGetnPolygonStippleARB = reinterpret_cast<void(APIENTRY*)(GLsizei, GLubyte *)>(loader.load("glGetnPolygonStippleARB"));
-    flextglGetnSeparableFilterARB = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLenum, GLsizei, void *, GLsizei, void *, void *)>(loader.load("glGetnSeparableFilterARB"));
     flextglGetnTexImageARB = reinterpret_cast<void(APIENTRY*)(GLenum, GLint, GLenum, GLenum, GLsizei, void *)>(loader.load("glGetnTexImageARB"));
     flextglGetnUniformdvARB = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, GLdouble *)>(loader.load("glGetnUniformdvARB"));
     flextglGetnUniformfvARB = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, GLfloat *)>(loader.load("glGetnUniformfvARB"));

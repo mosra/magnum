@@ -31,19 +31,7 @@ FLEXTGL_EXPORT void(APIENTRY *flextglMultiDrawElementsIndirectCountARB)(GLenum, 
 
 /* GL_ARB_robustness */
 FLEXTGL_EXPORT GLenum(APIENTRY *flextglGetGraphicsResetStatusARB)(void) = nullptr;
-FLEXTGL_EXPORT void(APIENTRY *flextglGetnColorTableARB)(GLenum, GLenum, GLenum, GLsizei, void *) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglGetnCompressedTexImageARB)(GLenum, GLint, GLsizei, void *) = nullptr;
-FLEXTGL_EXPORT void(APIENTRY *flextglGetnConvolutionFilterARB)(GLenum, GLenum, GLenum, GLsizei, void *) = nullptr;
-FLEXTGL_EXPORT void(APIENTRY *flextglGetnHistogramARB)(GLenum, GLboolean, GLenum, GLenum, GLsizei, void *) = nullptr;
-FLEXTGL_EXPORT void(APIENTRY *flextglGetnMapdvARB)(GLenum, GLenum, GLsizei, GLdouble *) = nullptr;
-FLEXTGL_EXPORT void(APIENTRY *flextglGetnMapfvARB)(GLenum, GLenum, GLsizei, GLfloat *) = nullptr;
-FLEXTGL_EXPORT void(APIENTRY *flextglGetnMapivARB)(GLenum, GLenum, GLsizei, GLint *) = nullptr;
-FLEXTGL_EXPORT void(APIENTRY *flextglGetnMinmaxARB)(GLenum, GLboolean, GLenum, GLenum, GLsizei, void *) = nullptr;
-FLEXTGL_EXPORT void(APIENTRY *flextglGetnPixelMapfvARB)(GLenum, GLsizei, GLfloat *) = nullptr;
-FLEXTGL_EXPORT void(APIENTRY *flextglGetnPixelMapuivARB)(GLenum, GLsizei, GLuint *) = nullptr;
-FLEXTGL_EXPORT void(APIENTRY *flextglGetnPixelMapusvARB)(GLenum, GLsizei, GLushort *) = nullptr;
-FLEXTGL_EXPORT void(APIENTRY *flextglGetnPolygonStippleARB)(GLsizei, GLubyte *) = nullptr;
-FLEXTGL_EXPORT void(APIENTRY *flextglGetnSeparableFilterARB)(GLenum, GLenum, GLenum, GLsizei, void *, GLsizei, void *, void *) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglGetnTexImageARB)(GLenum, GLint, GLenum, GLenum, GLsizei, void *) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglGetnUniformdvARB)(GLuint, GLint, GLsizei, GLdouble *) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglGetnUniformfvARB)(GLuint, GLint, GLsizei, GLfloat *) = nullptr;

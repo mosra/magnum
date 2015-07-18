@@ -44,7 +44,6 @@ typedef unsigned int GLuint;
 typedef int GLsizei;
 typedef char GLchar;
 typedef struct __GLsync *GLsync;
-typedef void (APIENTRY *GLDEBUGPROC)(GLenum source,GLenum type,GLuint id,GLenum severity,GLsizei length,const GLchar *message,const void *userParam);
 typedef void (APIENTRY *GLDEBUGPROCKHR)(GLenum source,GLenum type,GLuint id,GLenum severity,GLsizei length,const GLchar *message,const void *userParam);
 typedef khronos_int8_t GLbyte;
 typedef khronos_uint8_t GLubyte;
@@ -418,8 +417,6 @@ typedef khronos_ssize_t GLsizeiptr;
 
 #define GL_MIN_EXT 0x8007
 #define GL_MAX_EXT 0x8008
-#define GL_FUNC_ADD_EXT 0x8006
-#define GL_BLEND_EQUATION_EXT 0x8009
 
 /* GL_EXT_occlusion_query_boolean */
 
@@ -776,7 +773,6 @@ typedef khronos_ssize_t GLsizeiptr;
 
 /* GL_EXT_separate_shader_objects */
 
-#define GL_ACTIVE_PROGRAM_EXT 0x8259
 #define GL_VERTEX_SHADER_BIT_EXT 0x00000001
 #define GL_FRAGMENT_SHADER_BIT_EXT 0x00000002
 #define GL_ALL_SHADER_BITS_EXT 0xFFFFFFFF
@@ -866,46 +862,6 @@ typedef khronos_ssize_t GLsizeiptr;
 
 /* GL_KHR_debug */
 
-#define GL_DEBUG_OUTPUT_SYNCHRONOUS 0x8242
-#define GL_DEBUG_NEXT_LOGGED_MESSAGE_LENGTH 0x8243
-#define GL_DEBUG_CALLBACK_FUNCTION 0x8244
-#define GL_DEBUG_CALLBACK_USER_PARAM 0x8245
-#define GL_DEBUG_SOURCE_API 0x8246
-#define GL_DEBUG_SOURCE_WINDOW_SYSTEM 0x8247
-#define GL_DEBUG_SOURCE_SHADER_COMPILER 0x8248
-#define GL_DEBUG_SOURCE_THIRD_PARTY 0x8249
-#define GL_DEBUG_SOURCE_APPLICATION 0x824A
-#define GL_DEBUG_SOURCE_OTHER 0x824B
-#define GL_DEBUG_TYPE_ERROR 0x824C
-#define GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR 0x824D
-#define GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR 0x824E
-#define GL_DEBUG_TYPE_PORTABILITY 0x824F
-#define GL_DEBUG_TYPE_PERFORMANCE 0x8250
-#define GL_DEBUG_TYPE_OTHER 0x8251
-#define GL_DEBUG_TYPE_MARKER 0x8268
-#define GL_DEBUG_TYPE_PUSH_GROUP 0x8269
-#define GL_DEBUG_TYPE_POP_GROUP 0x826A
-#define GL_DEBUG_SEVERITY_NOTIFICATION 0x826B
-#define GL_MAX_DEBUG_GROUP_STACK_DEPTH 0x826C
-#define GL_DEBUG_GROUP_STACK_DEPTH 0x826D
-#define GL_BUFFER 0x82E0
-#define GL_SHADER 0x82E1
-#define GL_PROGRAM 0x82E2
-#define GL_VERTEX_ARRAY 0x8074
-#define GL_QUERY 0x82E3
-#define GL_PROGRAM_PIPELINE 0x82E4
-#define GL_SAMPLER 0x82E6
-#define GL_MAX_LABEL_LENGTH 0x82E8
-#define GL_MAX_DEBUG_MESSAGE_LENGTH 0x9143
-#define GL_MAX_DEBUG_LOGGED_MESSAGES 0x9144
-#define GL_DEBUG_LOGGED_MESSAGES 0x9145
-#define GL_DEBUG_SEVERITY_HIGH 0x9146
-#define GL_DEBUG_SEVERITY_MEDIUM 0x9147
-#define GL_DEBUG_SEVERITY_LOW 0x9148
-#define GL_DEBUG_OUTPUT 0x92E0
-#define GL_CONTEXT_FLAG_DEBUG_BIT 0x00000002
-#define GL_STACK_OVERFLOW 0x0503
-#define GL_STACK_UNDERFLOW 0x0504
 #define GL_DEBUG_OUTPUT_SYNCHRONOUS_KHR 0x8242
 #define GL_DEBUG_NEXT_LOGGED_MESSAGE_LENGTH_KHR 0x8243
 #define GL_DEBUG_CALLBACK_FUNCTION_KHR 0x8244
@@ -946,7 +902,6 @@ typedef khronos_ssize_t GLsizeiptr;
 #define GL_CONTEXT_FLAG_DEBUG_BIT_KHR 0x00000002
 #define GL_STACK_OVERFLOW_KHR 0x0503
 #define GL_STACK_UNDERFLOW_KHR 0x0504
-#define GL_DISPLAY_LIST 0x82E7
 
 /* GL_KHR_blend_equation_advanced */
 
@@ -973,15 +928,6 @@ typedef khronos_ssize_t GLsizeiptr;
 /* GL_KHR_robustness */
 
 #define GL_NO_ERROR 0
-#define GL_CONTEXT_ROBUST_ACCESS 0x90F3
-#define GL_LOSE_CONTEXT_ON_RESET 0x8252
-#define GL_GUILTY_CONTEXT_RESET 0x8253
-#define GL_INNOCENT_CONTEXT_RESET 0x8254
-#define GL_UNKNOWN_CONTEXT_RESET 0x8255
-#define GL_RESET_NOTIFICATION_STRATEGY 0x8256
-#define GL_NO_RESET_NOTIFICATION 0x8261
-#define GL_CONTEXT_LOST 0x0507
-#define GL_NO_ERROR 0
 #define GL_CONTEXT_ROBUST_ACCESS_KHR 0x90F3
 #define GL_LOSE_CONTEXT_ON_RESET_KHR 0x8252
 #define GL_GUILTY_CONTEXT_RESET_KHR 0x8253
@@ -993,9 +939,6 @@ typedef khronos_ssize_t GLsizeiptr;
 
 /* GL_KHR_context_flush_control */
 
-#define GL_CONTEXT_RELEASE_BEHAVIOR 0x82FB
-#define GL_CONTEXT_RELEASE_BEHAVIOR_FLUSH 0x82FC
-#define GL_NONE 0
 #define GL_CONTEXT_RELEASE_BEHAVIOR_KHR 0x82FB
 #define GL_CONTEXT_RELEASE_BEHAVIOR_FLUSH_KHR 0x82FC
 #define GL_NONE 0
@@ -1386,8 +1329,6 @@ GL_APICALL void GL_APIENTRY GLES2Viewport(GLint, GLint, GLsizei, GLsizei);
 /* GL_EXT_blend_minmax */
 #ifndef GL_EXT_blend_minmax
 #define GL_EXT_blend_minmax 1
-GL_APICALL void GL_APIENTRY GLES2BlendEquationEXT(GLenum);
-#define glBlendEquationEXT GLES2BlendEquationEXT
 #endif
 
 /* GL_EXT_debug_label */
@@ -1551,14 +1492,10 @@ GL_APICALL void GL_APIENTRY GLES2ReadnPixelsEXT(GLint, GLint, GLsizei, GLsizei, 
 /* GL_EXT_separate_shader_objects */
 #ifndef GL_EXT_separate_shader_objects
 #define GL_EXT_separate_shader_objects 1
-GL_APICALL void GL_APIENTRY GLES2ActiveProgramEXT(GLuint);
-#define glActiveProgramEXT GLES2ActiveProgramEXT
 GL_APICALL void GL_APIENTRY GLES2ActiveShaderProgramEXT(GLuint, GLuint);
 #define glActiveShaderProgramEXT GLES2ActiveShaderProgramEXT
 GL_APICALL void GL_APIENTRY GLES2BindProgramPipelineEXT(GLuint);
 #define glBindProgramPipelineEXT GLES2BindProgramPipelineEXT
-GL_APICALL GLuint GL_APIENTRY GLES2CreateShaderProgramEXT(GLenum, const GLchar *);
-#define glCreateShaderProgramEXT GLES2CreateShaderProgramEXT
 GL_APICALL GLuint GL_APIENTRY GLES2CreateShaderProgramvEXT(GLenum, GLsizei, const GLchar **);
 #define glCreateShaderProgramvEXT GLES2CreateShaderProgramvEXT
 GL_APICALL void GL_APIENTRY GLES2DeleteProgramPipelinesEXT(GLsizei, const GLuint *);
@@ -1641,8 +1578,6 @@ GL_APICALL void GL_APIENTRY GLES2ProgramUniformMatrix4x3fvEXT(GLuint, GLint, GLs
 #define glProgramUniformMatrix4x3fvEXT GLES2ProgramUniformMatrix4x3fvEXT
 GL_APICALL void GL_APIENTRY GLES2UseProgramStagesEXT(GLuint, GLbitfield, GLuint);
 #define glUseProgramStagesEXT GLES2UseProgramStagesEXT
-GL_APICALL void GL_APIENTRY GLES2UseShaderProgramEXT(GLenum, GLuint);
-#define glUseShaderProgramEXT GLES2UseShaderProgramEXT
 GL_APICALL void GL_APIENTRY GLES2ValidateProgramPipelineEXT(GLuint);
 #define glValidateProgramPipelineEXT GLES2ValidateProgramPipelineEXT
 #endif
@@ -1740,48 +1675,26 @@ GL_APICALL void GL_APIENTRY GLES2BlendBarrierKHR(void);
 /* GL_KHR_debug */
 #ifndef GL_KHR_debug
 #define GL_KHR_debug 1
-GL_APICALL void GL_APIENTRY GLES2DebugMessageCallback(GLDEBUGPROC, const void *);
-#define glDebugMessageCallback GLES2DebugMessageCallback
 GL_APICALL void GL_APIENTRY GLES2DebugMessageCallbackKHR(GLDEBUGPROCKHR, const void *);
 #define glDebugMessageCallbackKHR GLES2DebugMessageCallbackKHR
-GL_APICALL void GL_APIENTRY GLES2DebugMessageControl(GLenum, GLenum, GLenum, GLsizei, const GLuint *, GLboolean);
-#define glDebugMessageControl GLES2DebugMessageControl
 GL_APICALL void GL_APIENTRY GLES2DebugMessageControlKHR(GLenum, GLenum, GLenum, GLsizei, const GLuint *, GLboolean);
 #define glDebugMessageControlKHR GLES2DebugMessageControlKHR
-GL_APICALL void GL_APIENTRY GLES2DebugMessageInsert(GLenum, GLenum, GLuint, GLenum, GLsizei, const GLchar *);
-#define glDebugMessageInsert GLES2DebugMessageInsert
 GL_APICALL void GL_APIENTRY GLES2DebugMessageInsertKHR(GLenum, GLenum, GLuint, GLenum, GLsizei, const GLchar *);
 #define glDebugMessageInsertKHR GLES2DebugMessageInsertKHR
-GL_APICALL GLuint GL_APIENTRY GLES2GetDebugMessageLog(GLuint, GLsizei, GLenum *, GLenum *, GLuint *, GLenum *, GLsizei *, GLchar *);
-#define glGetDebugMessageLog GLES2GetDebugMessageLog
 GL_APICALL GLuint GL_APIENTRY GLES2GetDebugMessageLogKHR(GLuint, GLsizei, GLenum *, GLenum *, GLuint *, GLenum *, GLsizei *, GLchar *);
 #define glGetDebugMessageLogKHR GLES2GetDebugMessageLogKHR
-GL_APICALL void GL_APIENTRY GLES2GetObjectLabel(GLenum, GLuint, GLsizei, GLsizei *, GLchar *);
-#define glGetObjectLabel GLES2GetObjectLabel
 GL_APICALL void GL_APIENTRY GLES2GetObjectLabelKHR(GLenum, GLuint, GLsizei, GLsizei *, GLchar *);
 #define glGetObjectLabelKHR GLES2GetObjectLabelKHR
-GL_APICALL void GL_APIENTRY GLES2GetObjectPtrLabel(const void *, GLsizei, GLsizei *, GLchar *);
-#define glGetObjectPtrLabel GLES2GetObjectPtrLabel
 GL_APICALL void GL_APIENTRY GLES2GetObjectPtrLabelKHR(const void *, GLsizei, GLsizei *, GLchar *);
 #define glGetObjectPtrLabelKHR GLES2GetObjectPtrLabelKHR
-GL_APICALL void GL_APIENTRY GLES2GetPointerv(GLenum, void **);
-#define glGetPointerv GLES2GetPointerv
 GL_APICALL void GL_APIENTRY GLES2GetPointervKHR(GLenum, void **);
 #define glGetPointervKHR GLES2GetPointervKHR
-GL_APICALL void GL_APIENTRY GLES2ObjectLabel(GLenum, GLuint, GLsizei, const GLchar *);
-#define glObjectLabel GLES2ObjectLabel
 GL_APICALL void GL_APIENTRY GLES2ObjectLabelKHR(GLenum, GLuint, GLsizei, const GLchar *);
 #define glObjectLabelKHR GLES2ObjectLabelKHR
-GL_APICALL void GL_APIENTRY GLES2ObjectPtrLabel(const void *, GLsizei, const GLchar *);
-#define glObjectPtrLabel GLES2ObjectPtrLabel
 GL_APICALL void GL_APIENTRY GLES2ObjectPtrLabelKHR(const void *, GLsizei, const GLchar *);
 #define glObjectPtrLabelKHR GLES2ObjectPtrLabelKHR
-GL_APICALL void GL_APIENTRY GLES2PopDebugGroup(void);
-#define glPopDebugGroup GLES2PopDebugGroup
 GL_APICALL void GL_APIENTRY GLES2PopDebugGroupKHR(void);
 #define glPopDebugGroupKHR GLES2PopDebugGroupKHR
-GL_APICALL void GL_APIENTRY GLES2PushDebugGroup(GLenum, GLuint, GLsizei, const GLchar *);
-#define glPushDebugGroup GLES2PushDebugGroup
 GL_APICALL void GL_APIENTRY GLES2PushDebugGroupKHR(GLenum, GLuint, GLsizei, const GLchar *);
 #define glPushDebugGroupKHR GLES2PushDebugGroupKHR
 #endif
@@ -1794,24 +1707,14 @@ GL_APICALL void GL_APIENTRY GLES2PushDebugGroupKHR(GLenum, GLuint, GLsizei, cons
 /* GL_KHR_robustness */
 #ifndef GL_KHR_robustness
 #define GL_KHR_robustness 1
-GL_APICALL GLenum GL_APIENTRY GLES2GetGraphicsResetStatus(void);
-#define glGetGraphicsResetStatus GLES2GetGraphicsResetStatus
 GL_APICALL GLenum GL_APIENTRY GLES2GetGraphicsResetStatusKHR(void);
 #define glGetGraphicsResetStatusKHR GLES2GetGraphicsResetStatusKHR
-GL_APICALL void GL_APIENTRY GLES2GetnUniformfv(GLuint, GLint, GLsizei, GLfloat *);
-#define glGetnUniformfv GLES2GetnUniformfv
 GL_APICALL void GL_APIENTRY GLES2GetnUniformfvKHR(GLuint, GLint, GLsizei, GLfloat *);
 #define glGetnUniformfvKHR GLES2GetnUniformfvKHR
-GL_APICALL void GL_APIENTRY GLES2GetnUniformiv(GLuint, GLint, GLsizei, GLint *);
-#define glGetnUniformiv GLES2GetnUniformiv
 GL_APICALL void GL_APIENTRY GLES2GetnUniformivKHR(GLuint, GLint, GLsizei, GLint *);
 #define glGetnUniformivKHR GLES2GetnUniformivKHR
-GL_APICALL void GL_APIENTRY GLES2GetnUniformuiv(GLuint, GLint, GLsizei, GLuint *);
-#define glGetnUniformuiv GLES2GetnUniformuiv
 GL_APICALL void GL_APIENTRY GLES2GetnUniformuivKHR(GLuint, GLint, GLsizei, GLuint *);
 #define glGetnUniformuivKHR GLES2GetnUniformuivKHR
-GL_APICALL void GL_APIENTRY GLES2ReadnPixels(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void *);
-#define glReadnPixels GLES2ReadnPixels
 GL_APICALL void GL_APIENTRY GLES2ReadnPixelsKHR(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void *);
 #define glReadnPixelsKHR GLES2ReadnPixelsKHR
 #endif

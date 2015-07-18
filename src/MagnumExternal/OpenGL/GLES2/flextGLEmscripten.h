@@ -367,8 +367,6 @@ typedef khronos_ssize_t GLsizeiptr;
 
 #define GL_MIN_EXT 0x8007
 #define GL_MAX_EXT 0x8008
-#define GL_FUNC_ADD_EXT 0x8006
-#define GL_BLEND_EQUATION_EXT 0x8009
 
 /* GL_EXT_sRGB */
 
@@ -608,7 +606,6 @@ GLAPI void glViewport(GLint, GLint, GLsizei, GLsizei);
 
 /* GL_EXT_blend_minmax */
 
-GLAPI void glBlendEquationEXT(GLenum);
 
 /* GL_EXT_draw_buffers */
 

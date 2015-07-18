@@ -1804,32 +1804,8 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglMultiDrawElementsIndirectCountARB)(GL
 
 GLAPI FLEXTGL_EXPORT GLenum(APIENTRY *flextglGetGraphicsResetStatusARB)(void);
 #define glGetGraphicsResetStatusARB flextglGetGraphicsResetStatusARB
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnColorTableARB)(GLenum, GLenum, GLenum, GLsizei, void *);
-#define glGetnColorTableARB flextglGetnColorTableARB
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnCompressedTexImageARB)(GLenum, GLint, GLsizei, void *);
 #define glGetnCompressedTexImageARB flextglGetnCompressedTexImageARB
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnConvolutionFilterARB)(GLenum, GLenum, GLenum, GLsizei, void *);
-#define glGetnConvolutionFilterARB flextglGetnConvolutionFilterARB
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnHistogramARB)(GLenum, GLboolean, GLenum, GLenum, GLsizei, void *);
-#define glGetnHistogramARB flextglGetnHistogramARB
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnMapdvARB)(GLenum, GLenum, GLsizei, GLdouble *);
-#define glGetnMapdvARB flextglGetnMapdvARB
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnMapfvARB)(GLenum, GLenum, GLsizei, GLfloat *);
-#define glGetnMapfvARB flextglGetnMapfvARB
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnMapivARB)(GLenum, GLenum, GLsizei, GLint *);
-#define glGetnMapivARB flextglGetnMapivARB
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnMinmaxARB)(GLenum, GLboolean, GLenum, GLenum, GLsizei, void *);
-#define glGetnMinmaxARB flextglGetnMinmaxARB
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnPixelMapfvARB)(GLenum, GLsizei, GLfloat *);
-#define glGetnPixelMapfvARB flextglGetnPixelMapfvARB
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnPixelMapuivARB)(GLenum, GLsizei, GLuint *);
-#define glGetnPixelMapuivARB flextglGetnPixelMapuivARB
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnPixelMapusvARB)(GLenum, GLsizei, GLushort *);
-#define glGetnPixelMapusvARB flextglGetnPixelMapusvARB
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnPolygonStippleARB)(GLsizei, GLubyte *);
-#define glGetnPolygonStippleARB flextglGetnPolygonStippleARB
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnSeparableFilterARB)(GLenum, GLenum, GLenum, GLsizei, void *, GLsizei, void *, void *);
-#define glGetnSeparableFilterARB flextglGetnSeparableFilterARB
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnTexImageARB)(GLenum, GLint, GLenum, GLenum, GLsizei, void *);
 #define glGetnTexImageARB flextglGetnTexImageARB
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnUniformdvARB)(GLuint, GLint, GLsizei, GLdouble *);

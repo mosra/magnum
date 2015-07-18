@@ -74,7 +74,6 @@ typedef int GLsizei;
 typedef char GLchar;
 typedef unsigned short GLhalf;
 typedef struct __GLsync *GLsync;
-typedef void (APIENTRY *GLDEBUGPROC)(GLenum source,GLenum type,GLuint id,GLenum severity,GLsizei length,const GLchar *message,const void *userParam);
 typedef void (APIENTRY *GLDEBUGPROCKHR)(GLenum source,GLenum type,GLuint id,GLenum severity,GLsizei length,const GLchar *message,const void *userParam);
 typedef khronos_int8_t GLbyte;
 typedef khronos_uint8_t GLubyte;
@@ -1104,7 +1103,6 @@ typedef khronos_ssize_t GLsizeiptr;
 
 /* GL_EXT_separate_shader_objects */
 
-#define GL_ACTIVE_PROGRAM_EXT 0x8259
 #define GL_VERTEX_SHADER_BIT_EXT 0x00000001
 #define GL_FRAGMENT_SHADER_BIT_EXT 0x00000002
 #define GL_ALL_SHADER_BITS_EXT 0xFFFFFFFF
@@ -1194,46 +1192,6 @@ typedef khronos_ssize_t GLsizeiptr;
 
 /* GL_KHR_debug */
 
-#define GL_DEBUG_OUTPUT_SYNCHRONOUS 0x8242
-#define GL_DEBUG_NEXT_LOGGED_MESSAGE_LENGTH 0x8243
-#define GL_DEBUG_CALLBACK_FUNCTION 0x8244
-#define GL_DEBUG_CALLBACK_USER_PARAM 0x8245
-#define GL_DEBUG_SOURCE_API 0x8246
-#define GL_DEBUG_SOURCE_WINDOW_SYSTEM 0x8247
-#define GL_DEBUG_SOURCE_SHADER_COMPILER 0x8248
-#define GL_DEBUG_SOURCE_THIRD_PARTY 0x8249
-#define GL_DEBUG_SOURCE_APPLICATION 0x824A
-#define GL_DEBUG_SOURCE_OTHER 0x824B
-#define GL_DEBUG_TYPE_ERROR 0x824C
-#define GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR 0x824D
-#define GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR 0x824E
-#define GL_DEBUG_TYPE_PORTABILITY 0x824F
-#define GL_DEBUG_TYPE_PERFORMANCE 0x8250
-#define GL_DEBUG_TYPE_OTHER 0x8251
-#define GL_DEBUG_TYPE_MARKER 0x8268
-#define GL_DEBUG_TYPE_PUSH_GROUP 0x8269
-#define GL_DEBUG_TYPE_POP_GROUP 0x826A
-#define GL_DEBUG_SEVERITY_NOTIFICATION 0x826B
-#define GL_MAX_DEBUG_GROUP_STACK_DEPTH 0x826C
-#define GL_DEBUG_GROUP_STACK_DEPTH 0x826D
-#define GL_BUFFER 0x82E0
-#define GL_SHADER 0x82E1
-#define GL_PROGRAM 0x82E2
-#define GL_VERTEX_ARRAY 0x8074
-#define GL_QUERY 0x82E3
-#define GL_PROGRAM_PIPELINE 0x82E4
-#define GL_SAMPLER 0x82E6
-#define GL_MAX_LABEL_LENGTH 0x82E8
-#define GL_MAX_DEBUG_MESSAGE_LENGTH 0x9143
-#define GL_MAX_DEBUG_LOGGED_MESSAGES 0x9144
-#define GL_DEBUG_LOGGED_MESSAGES 0x9145
-#define GL_DEBUG_SEVERITY_HIGH 0x9146
-#define GL_DEBUG_SEVERITY_MEDIUM 0x9147
-#define GL_DEBUG_SEVERITY_LOW 0x9148
-#define GL_DEBUG_OUTPUT 0x92E0
-#define GL_CONTEXT_FLAG_DEBUG_BIT 0x00000002
-#define GL_STACK_OVERFLOW 0x0503
-#define GL_STACK_UNDERFLOW 0x0504
 #define GL_DEBUG_OUTPUT_SYNCHRONOUS_KHR 0x8242
 #define GL_DEBUG_NEXT_LOGGED_MESSAGE_LENGTH_KHR 0x8243
 #define GL_DEBUG_CALLBACK_FUNCTION_KHR 0x8244
@@ -1274,7 +1232,6 @@ typedef khronos_ssize_t GLsizeiptr;
 #define GL_CONTEXT_FLAG_DEBUG_BIT_KHR 0x00000002
 #define GL_STACK_OVERFLOW_KHR 0x0503
 #define GL_STACK_UNDERFLOW_KHR 0x0504
-#define GL_DISPLAY_LIST 0x82E7
 
 /* GL_KHR_blend_equation_advanced */
 
@@ -1301,15 +1258,6 @@ typedef khronos_ssize_t GLsizeiptr;
 /* GL_KHR_robustness */
 
 #define GL_NO_ERROR 0
-#define GL_CONTEXT_ROBUST_ACCESS 0x90F3
-#define GL_LOSE_CONTEXT_ON_RESET 0x8252
-#define GL_GUILTY_CONTEXT_RESET 0x8253
-#define GL_INNOCENT_CONTEXT_RESET 0x8254
-#define GL_UNKNOWN_CONTEXT_RESET 0x8255
-#define GL_RESET_NOTIFICATION_STRATEGY 0x8256
-#define GL_NO_RESET_NOTIFICATION 0x8261
-#define GL_CONTEXT_LOST 0x0507
-#define GL_NO_ERROR 0
 #define GL_CONTEXT_ROBUST_ACCESS_KHR 0x90F3
 #define GL_LOSE_CONTEXT_ON_RESET_KHR 0x8252
 #define GL_GUILTY_CONTEXT_RESET_KHR 0x8253
@@ -1321,9 +1269,6 @@ typedef khronos_ssize_t GLsizeiptr;
 
 /* GL_KHR_context_flush_control */
 
-#define GL_CONTEXT_RELEASE_BEHAVIOR 0x82FB
-#define GL_CONTEXT_RELEASE_BEHAVIOR_FLUSH 0x82FC
-#define GL_NONE 0
 #define GL_CONTEXT_RELEASE_BEHAVIOR_KHR 0x82FB
 #define GL_CONTEXT_RELEASE_BEHAVIOR_FLUSH_KHR 0x82FC
 #define GL_NONE 0
@@ -1895,14 +1840,10 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglReadnPixelsEXT)(GLint, GLint, GLsizei
 
 /* GL_EXT_separate_shader_objects */
 
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglActiveProgramEXT)(GLuint);
-#define glActiveProgramEXT flextglActiveProgramEXT
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglActiveShaderProgramEXT)(GLuint, GLuint);
 #define glActiveShaderProgramEXT flextglActiveShaderProgramEXT
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglBindProgramPipelineEXT)(GLuint);
 #define glBindProgramPipelineEXT flextglBindProgramPipelineEXT
-GLAPI FLEXTGL_EXPORT GLuint(APIENTRY *flextglCreateShaderProgramEXT)(GLenum, const GLchar *);
-#define glCreateShaderProgramEXT flextglCreateShaderProgramEXT
 GLAPI FLEXTGL_EXPORT GLuint(APIENTRY *flextglCreateShaderProgramvEXT)(GLenum, GLsizei, const GLchar **);
 #define glCreateShaderProgramvEXT flextglCreateShaderProgramvEXT
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDeleteProgramPipelinesEXT)(GLsizei, const GLuint *);
@@ -1985,8 +1926,6 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix4x3fvEXT)(GLuint,
 #define glProgramUniformMatrix4x3fvEXT flextglProgramUniformMatrix4x3fvEXT
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglUseProgramStagesEXT)(GLuint, GLbitfield, GLuint);
 #define glUseProgramStagesEXT flextglUseProgramStagesEXT
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglUseShaderProgramEXT)(GLenum, GLuint);
-#define glUseShaderProgramEXT flextglUseShaderProgramEXT
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglValidateProgramPipelineEXT)(GLuint);
 #define glValidateProgramPipelineEXT flextglValidateProgramPipelineEXT
 
@@ -2052,48 +1991,26 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglBlendBarrierKHR)(void);
 
 /* GL_KHR_debug */
 
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDebugMessageCallback)(GLDEBUGPROC, const void *);
-#define glDebugMessageCallback flextglDebugMessageCallback
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDebugMessageCallbackKHR)(GLDEBUGPROCKHR, const void *);
 #define glDebugMessageCallbackKHR flextglDebugMessageCallbackKHR
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDebugMessageControl)(GLenum, GLenum, GLenum, GLsizei, const GLuint *, GLboolean);
-#define glDebugMessageControl flextglDebugMessageControl
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDebugMessageControlKHR)(GLenum, GLenum, GLenum, GLsizei, const GLuint *, GLboolean);
 #define glDebugMessageControlKHR flextglDebugMessageControlKHR
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDebugMessageInsert)(GLenum, GLenum, GLuint, GLenum, GLsizei, const GLchar *);
-#define glDebugMessageInsert flextglDebugMessageInsert
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDebugMessageInsertKHR)(GLenum, GLenum, GLuint, GLenum, GLsizei, const GLchar *);
 #define glDebugMessageInsertKHR flextglDebugMessageInsertKHR
-GLAPI FLEXTGL_EXPORT GLuint(APIENTRY *flextglGetDebugMessageLog)(GLuint, GLsizei, GLenum *, GLenum *, GLuint *, GLenum *, GLsizei *, GLchar *);
-#define glGetDebugMessageLog flextglGetDebugMessageLog
 GLAPI FLEXTGL_EXPORT GLuint(APIENTRY *flextglGetDebugMessageLogKHR)(GLuint, GLsizei, GLenum *, GLenum *, GLuint *, GLenum *, GLsizei *, GLchar *);
 #define glGetDebugMessageLogKHR flextglGetDebugMessageLogKHR
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetObjectLabel)(GLenum, GLuint, GLsizei, GLsizei *, GLchar *);
-#define glGetObjectLabel flextglGetObjectLabel
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetObjectLabelKHR)(GLenum, GLuint, GLsizei, GLsizei *, GLchar *);
 #define glGetObjectLabelKHR flextglGetObjectLabelKHR
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetObjectPtrLabel)(const void *, GLsizei, GLsizei *, GLchar *);
-#define glGetObjectPtrLabel flextglGetObjectPtrLabel
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetObjectPtrLabelKHR)(const void *, GLsizei, GLsizei *, GLchar *);
 #define glGetObjectPtrLabelKHR flextglGetObjectPtrLabelKHR
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetPointerv)(GLenum, void **);
-#define glGetPointerv flextglGetPointerv
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetPointervKHR)(GLenum, void **);
 #define glGetPointervKHR flextglGetPointervKHR
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglObjectLabel)(GLenum, GLuint, GLsizei, const GLchar *);
-#define glObjectLabel flextglObjectLabel
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglObjectLabelKHR)(GLenum, GLuint, GLsizei, const GLchar *);
 #define glObjectLabelKHR flextglObjectLabelKHR
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglObjectPtrLabel)(const void *, GLsizei, const GLchar *);
-#define glObjectPtrLabel flextglObjectPtrLabel
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglObjectPtrLabelKHR)(const void *, GLsizei, const GLchar *);
 #define glObjectPtrLabelKHR flextglObjectPtrLabelKHR
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglPopDebugGroup)(void);
-#define glPopDebugGroup flextglPopDebugGroup
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglPopDebugGroupKHR)(void);
 #define glPopDebugGroupKHR flextglPopDebugGroupKHR
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglPushDebugGroup)(GLenum, GLuint, GLsizei, const GLchar *);
-#define glPushDebugGroup flextglPushDebugGroup
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglPushDebugGroupKHR)(GLenum, GLuint, GLsizei, const GLchar *);
 #define glPushDebugGroupKHR flextglPushDebugGroupKHR
 
@@ -2102,24 +2019,14 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglPushDebugGroupKHR)(GLenum, GLuint, GL
 
 /* GL_KHR_robustness */
 
-GLAPI FLEXTGL_EXPORT GLenum(APIENTRY *flextglGetGraphicsResetStatus)(void);
-#define glGetGraphicsResetStatus flextglGetGraphicsResetStatus
 GLAPI FLEXTGL_EXPORT GLenum(APIENTRY *flextglGetGraphicsResetStatusKHR)(void);
 #define glGetGraphicsResetStatusKHR flextglGetGraphicsResetStatusKHR
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnUniformfv)(GLuint, GLint, GLsizei, GLfloat *);
-#define glGetnUniformfv flextglGetnUniformfv
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnUniformfvKHR)(GLuint, GLint, GLsizei, GLfloat *);
 #define glGetnUniformfvKHR flextglGetnUniformfvKHR
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnUniformiv)(GLuint, GLint, GLsizei, GLint *);
-#define glGetnUniformiv flextglGetnUniformiv
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnUniformivKHR)(GLuint, GLint, GLsizei, GLint *);
 #define glGetnUniformivKHR flextglGetnUniformivKHR
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnUniformuiv)(GLuint, GLint, GLsizei, GLuint *);
-#define glGetnUniformuiv flextglGetnUniformuiv
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnUniformuivKHR)(GLuint, GLint, GLsizei, GLuint *);
 #define glGetnUniformuivKHR flextglGetnUniformuivKHR
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglReadnPixels)(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void *);
-#define glReadnPixels flextglReadnPixels
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglReadnPixelsKHR)(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void *);
 #define glReadnPixelsKHR flextglReadnPixelsKHR
 
