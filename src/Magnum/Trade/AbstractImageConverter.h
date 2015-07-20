@@ -33,7 +33,6 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/visibility.h"
-#include "Magnum/Text/Text.h"
 #include "MagnumExternal/Optional/optional.hpp"
 
 namespace Magnum { namespace Trade {
