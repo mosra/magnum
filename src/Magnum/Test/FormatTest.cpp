@@ -35,11 +35,13 @@ struct FormatTest: TestSuite::Tester {
 
     void debugColorFormat();
     void debugColorType();
+    void debugCompressedColorFormat();
 };
 
 FormatTest::FormatTest() {
     addTests({&FormatTest::debugColorFormat,
-              &FormatTest::debugColorType});
+              &FormatTest::debugColorType,
+              &FormatTest::debugCompressedColorFormat});
 }
 
 void FormatTest::debugColorFormat() {
@@ -54,6 +56,17 @@ void FormatTest::debugColorType() {
 
     Debug(&out) << ColorType::UnsignedByte;
     CORRADE_COMPARE(out.str(), "ColorType::UnsignedByte\n");
+}
+
+void FormatTest::debugCompressedColorFormat() {
+    #ifdef MAGNUM_TARGET_GLES
+    CORRADE_SKIP("No enum value available");
+    #else
+    std::ostringstream out;
+
+    Debug(&out) << CompressedColorFormat::RGBBptcUnsignedFloat;
+    CORRADE_COMPARE(out.str(), "CompressedColorFormat::RGBBptcUnsignedFloat\n");
+    #endif
 }
 
 }}

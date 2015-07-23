@@ -459,6 +459,7 @@ typedef BasicColor4<UnsignedByte> Color4ub;
 
 enum class ColorFormat: GLenum;
 enum class ColorType: GLenum;
+enum class CompressedColorFormat: GLenum;
 
 class Context;
 

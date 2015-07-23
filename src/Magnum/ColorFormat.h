@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Enum @ref Magnum::ColorFormat, @ref Magnum::ColorType
+ * @brief Enum @ref Magnum::ColorFormat, @ref Magnum::ColorType, @ref Magnum::CompressedColorFormat
  */
 
 #include "Magnum/Magnum.h"
@@ -554,11 +554,120 @@ enum class ColorType: GLenum {
     #endif
 };
 
+/**
+@brief Format of compressed image data
+
+Equivalent to `Compressed*` values of @ref TextureFormat enum.
+
+@see @ref CompressedImage, @ref CompressedImageView, @ref CompressedBufferImage,
+    @ref Trade::ImageData
+*/
+enum class CompressedColorFormat: GLenum {
+    #ifndef MAGNUM_TARGET_GLES
+    /**
+     * Compressed red channel, normalized unsigned.
+     * @requires_gl30 Extension @extension{ARB,texture_rg}
+     * @requires_gl Generic texture compression is not available in OpenGL ES
+     *      or WebGL.
+     */
+    Red = GL_COMPRESSED_RED,
+
+    /**
+     * Compressed red and green channel, normalized unsigned.
+     * @requires_gl30 Extension @extension{ARB,texture_rg}
+     * @requires_gl Generic texture compression is not available in OpenGL ES
+     *      or WebGL.
+     */
+    RG = GL_COMPRESSED_RG,
+
+    /**
+     * Compressed RGB, normalized unsigned.
+     * @requires_gl Generic texture compression is not available in OpenGL ES
+     *      or WebGL.
+     */
+    RGB = GL_COMPRESSED_RGB,
+
+    /**
+     * Compressed RGBA, normalized unsigned.
+     * @requires_gl Generic texture compression is not available in OpenGL ES
+     *      or WebGL.
+     */
+    RGBA = GL_COMPRESSED_RGBA,
+
+    /**
+     * RGTC compressed red channel, normalized unsigned.
+     * @requires_gl30 Extension @extension{EXT,texture_compression_rgtc}
+     * @requires_gl Generic texture compression is not available in OpenGL ES
+     *      or WebGL.
+     */
+    RedRgtc1 = GL_COMPRESSED_RED_RGTC1,
+
+    /**
+     * RGTC compressed red and green channel, normalized unsigned.
+     * @requires_gl30 Extension @extension{EXT,texture_compression_rgtc}
+     * @requires_gl RGTC texture compression is not available in OpenGL ES or
+     *      WebGL.
+     */
+    RGRgtc2 = GL_COMPRESSED_RG_RGTC2,
+
+    /**
+     * RGTC compressed red channel, normalized signed.
+     * @requires_gl30 Extension @extension{EXT,texture_compression_rgtc}
+     * @requires_gl RGTC texture compression is not available in OpenGL ES or
+     *      WebGL.
+     */
+    SignedRedRgtc1 = GL_COMPRESSED_SIGNED_RED_RGTC1,
+
+    /**
+     * RGTC compressed red and green channel, normalized signed.
+     * @requires_gl30 Extension @extension{EXT,texture_compression_rgtc}
+     * @requires_gl RGTC texture compression is not available in OpenGL ES or
+     *      WebGL.
+     */
+    SignedRGRgtc2 = GL_COMPRESSED_SIGNED_RG_RGTC2,
+
+    /**
+     * BPTC compressed RGB, unsigned float.
+     * @requires_gl42 Extension @extension{ARB,texture_compression_bptc}
+     * @requires_gl BPTC texture compression is not available in OpenGL ES or
+     *      WebGL.
+     */
+    RGBBptcUnsignedFloat = GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT,
+
+    /**
+     * BPTC compressed RGB, signed float.
+     * @requires_gl42 Extension @extension{ARB,texture_compression_bptc}
+     * @requires_gl BPTC texture compression is not available in OpenGL ES or
+     *      WebGL.
+     */
+    RGBBptcSignedFloat = GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT,
+
+    /**
+     * BPTC compressed RGBA, normalized unsigned.
+     * @requires_gl42 Extension @extension{ARB,texture_compression_bptc}
+     * @requires_gl BPTC texture compression is not available in OpenGL ES or
+     *      WebGL.
+     */
+    RGBABptcUnorm = GL_COMPRESSED_RGBA_BPTC_UNORM,
+
+    /**
+     * BPTC compressed sRGBA, normalized unsigned.
+     * @requires_gl42 Extension @extension{ARB,texture_compression_bptc}
+     * @requires_gl BPTC texture compression is not available in OpenGL ES or
+     *      WebGL.
+     */
+    SRGBAlphaBptcUnorm = GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM,
+    #endif
+};
+
 /** @debugoperatorenum{Magnum::ColorFormat} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, ColorFormat value);
 
 /** @debugoperatorenum{Magnum::ColorType} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, ColorType value);
+
+/** @debugoperatorenum{Magnum::CompressedColorFormat} */
+Debug MAGNUM_EXPORT operator<<(Debug debug, CompressedColorFormat value);
 
 }
 

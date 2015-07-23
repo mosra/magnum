@@ -136,6 +136,29 @@ Debug operator<<(Debug debug, const ColorType value) {
 
     return debug << "ColorType::(invalid)";
 }
+
+Debug operator<<(Debug debug, const CompressedColorFormat value) {
+    switch(value) {
+        #define _c(value) case CompressedColorFormat::value: return debug << "CompressedColorFormat::" #value;
+        #ifndef MAGNUM_TARGET_GLES
+        _c(Red)
+        _c(RG)
+        _c(RGB)
+        _c(RGBA)
+        _c(RedRgtc1)
+        _c(RGRgtc2)
+        _c(SignedRedRgtc1)
+        _c(SignedRGRgtc2)
+        _c(RGBBptcUnsignedFloat)
+        _c(RGBBptcSignedFloat)
+        _c(RGBABptcUnorm)
+        _c(SRGBAlphaBptcUnorm)
+        #endif
+        #undef _c
+    }
+
+    return debug << "CompressedColorFormat::(invalid)";
+}
 #endif
 
 }
