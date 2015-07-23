@@ -29,7 +29,7 @@
 #include <Corrade/Utility/Directory.h>
 
 #include "Magnum/ColorFormat.h"
-#include "Magnum/ImageReference.h"
+#include "Magnum/ImageView.h"
 #include "Magnum/Trade/AbstractImageConverter.h"
 
 #include "configure.h"
@@ -52,7 +52,7 @@ void AbstractImageConverterTest::exportToFile() {
         private:
             Features doFeatures() const override { return Feature::ConvertData; }
 
-            Containers::Array<char> doExportToData(const ImageReference2D& image) const override {
+            Containers::Array<char> doExportToData(const ImageView2D& image) const override {
                 return Containers::Array<char>::from(char(image.size().x()), char(image.size().y()));
             };
     };
@@ -62,7 +62,7 @@ void AbstractImageConverterTest::exportToFile() {
 
     /* doExportToFile() should call doExportToData() */
     DataExporter exporter;
-    ImageReference2D image(ColorFormat::RGBA, ColorType::UnsignedByte, {0xfe, 0xed}, nullptr);
+    ImageView2D image(ColorFormat::RGBA, ColorType::UnsignedByte, {0xfe, 0xed}, nullptr);
     CORRADE_VERIFY(exporter.exportToFile(image, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
     CORRADE_COMPARE_AS(Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"),
         "\xFE\xED", TestSuite::Compare::FileToString);

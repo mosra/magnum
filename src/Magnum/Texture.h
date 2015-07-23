@@ -754,7 +754,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @brief Set image data
          * @param level             Mip level
          * @param internalFormat    Internal format
-         * @param image             @ref Image, @ref ImageReference or
+         * @param image             @ref Image, @ref ImageView or
          *      @ref Trade::ImageData of the same dimension count
          * @return Reference to self (for method chaining)
          *
@@ -768,7 +768,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @deprecated_gl Prefer to use @ref setStorage() and @ref setSubImage()
          *      instead.
          */
-        Texture<dimensions>& setImage(Int level, TextureFormat internalFormat, const ImageReference<dimensions>& image) {
+        Texture<dimensions>& setImage(Int level, TextureFormat internalFormat, const ImageView<dimensions>& image) {
             DataHelper<dimensions>::setImage(*this, level, internalFormat, image);
             return *this;
         }
@@ -804,7 +804,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @brief Set image subdata
          * @param level             Mip level
          * @param offset            Offset where to put data in the texture
-         * @param image             @ref Image, @ref ImageReference or
+         * @param image             @ref Image, @ref ImageView or
          *      @ref Trade::ImageData of the same dimension count
          * @return Reference to self (for method chaining)
          *
@@ -825,7 +825,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      able to use @ref setStorage() as it uses implicit @ref ColorType
          *      value.
          */
-        Texture<dimensions>& setSubImage(Int level, const VectorTypeFor<dimensions, Int>& offset, const ImageReference<dimensions>& image) {
+        Texture<dimensions>& setSubImage(Int level, const VectorTypeFor<dimensions, Int>& offset, const ImageView<dimensions>& image) {
             DataHelper<Dimensions>::setSubImage(*this, level, offset, image);
             return *this;
         }

@@ -34,6 +34,10 @@
 #include "Magnum/Types.h"
 #include "Magnum/Math/Math.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#endif
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 typedef unsigned int GLenum; /* Needed for *Format and *Type enums */
 #endif
@@ -475,10 +479,17 @@ typedef Image<1> Image1D;
 typedef Image<2> Image2D;
 typedef Image<3> Image3D;
 
-template<UnsignedInt> class ImageReference;
-typedef ImageReference<1> ImageReference1D;
-typedef ImageReference<2> ImageReference2D;
-typedef ImageReference<3> ImageReference3D;
+template<UnsignedInt> class ImageView;
+typedef ImageView<1> ImageView1D;
+typedef ImageView<2> ImageView2D;
+typedef ImageView<3> ImageView3D;
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+template<UnsignedInt dimensions> using CORRADE_DEPRECATED("use ImageView instead") ImageReference = ImageView<dimensions>;
+typedef CORRADE_DEPRECATED("use ImageView1D instead") ImageView1D ImageReference1D;
+typedef CORRADE_DEPRECATED("use ImageView2D instead") ImageView2D ImageReference2D;
+typedef CORRADE_DEPRECATED("use ImageView3D instead") ImageView3D ImageReference3D;
+#endif
 
 enum class MeshPrimitive: GLenum;
 

@@ -651,7 +651,7 @@ void TextureArrayGLTest::image1D() {
 
     Texture1DArray texture;
     texture.setImage(0, TextureFormat::RGBA8,
-        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), Data1D));
+        ImageView2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), Data1D));
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -704,7 +704,7 @@ void TextureArrayGLTest::image2D() {
 
     Texture2DArray texture;
     texture.setImage(0, TextureFormat::RGBA8,
-        ImageReference3D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i(2), Data2D));
+        ImageView3D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i(2), Data2D));
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -766,9 +766,9 @@ void TextureArrayGLTest::subImage1D() {
 
     Texture1DArray texture;
     texture.setImage(0, TextureFormat::RGBA8,
-        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(4), Zero1D));
+        ImageView2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(4), Zero1D));
     texture.setSubImage(0, Vector2i(1),
-        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), SubData1D));
+        ImageView2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), SubData1D));
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -788,7 +788,7 @@ void TextureArrayGLTest::subImage1DBuffer() {
 
     Texture1DArray texture;
     texture.setImage(0, TextureFormat::RGBA8,
-        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(4), Zero1D));
+        ImageView2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(4), Zero1D));
     texture.setSubImage(0, Vector2i(1),
         BufferImage2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), SubData1D, BufferUsage::StaticDraw));
 
@@ -811,7 +811,7 @@ void TextureArrayGLTest::subImage1DQuery() {
 
     Texture1DArray texture;
     texture.setStorage(1, TextureFormat::RGBA8, Vector2i{4})
-           .setSubImage(0, {}, ImageReference2D{ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i{4}, SubData1DComplete});
+           .setSubImage(0, {}, ImageView2D{ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i{4}, SubData1DComplete});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -832,7 +832,7 @@ void TextureArrayGLTest::subImage1DQueryBuffer() {
 
     Texture1DArray texture;
     texture.setStorage(1, TextureFormat::RGBA8, Vector2i{4})
-           .setSubImage(0, {}, ImageReference2D{ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i{4}, SubData1DComplete});
+           .setSubImage(0, {}, ImageView2D{ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i{4}, SubData1DComplete});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -887,9 +887,9 @@ void TextureArrayGLTest::subImage2D() {
 
     Texture2DArray texture;
     texture.setImage(0, TextureFormat::RGBA8,
-        ImageReference3D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i(4), Zero2D));
+        ImageView3D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i(4), Zero2D));
     texture.setSubImage(0, Vector3i(1),
-        ImageReference3D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i(2), SubData2D));
+        ImageView3D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i(2), SubData2D));
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -913,7 +913,7 @@ void TextureArrayGLTest::subImage2DBuffer() {
 
     Texture2DArray texture;
     texture.setImage(0, TextureFormat::RGBA8,
-        ImageReference3D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i(4), Zero2D));
+        ImageView3D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i(4), Zero2D));
     texture.setSubImage(0, Vector3i(1),
         BufferImage3D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i(2), SubData2D, BufferUsage::StaticDraw));
 
@@ -940,7 +940,7 @@ void TextureArrayGLTest::subImage2DQuery() {
 
     Texture2DArray texture;
     texture.setStorage(1, TextureFormat::RGBA8, Vector3i{4})
-           .setSubImage(0, {}, ImageReference3D{ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i{4}, SubData2DComplete});
+           .setSubImage(0, {}, ImageView3D{ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i{4}, SubData2DComplete});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -961,7 +961,7 @@ void TextureArrayGLTest::subImage2DQueryBuffer() {
 
     Texture2DArray texture;
     texture.setStorage(1, TextureFormat::RGBA8, Vector3i{4})
-           .setSubImage(0, {}, ImageReference3D{ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i{4}, SubData2DComplete});
+           .setSubImage(0, {}, ImageView3D{ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i{4}, SubData2DComplete});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -982,7 +982,7 @@ void TextureArrayGLTest::generateMipmap1D() {
 
     Texture1DArray texture;
     texture.setImage(0, TextureFormat::RGBA8,
-        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(32)));
+        ImageView2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(32)));
 
     CORRADE_COMPARE(texture.imageSize(0), Vector2i(32));
     CORRADE_COMPARE(texture.imageSize(1), Vector2i( 0));
@@ -1012,7 +1012,7 @@ void TextureArrayGLTest::generateMipmap2D() {
 
     Texture2DArray texture;
     texture.setImage(0, TextureFormat::RGBA8,
-        ImageReference3D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i(32)));
+        ImageView3D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i(32)));
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES

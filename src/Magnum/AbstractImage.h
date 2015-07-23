@@ -45,7 +45,7 @@ namespace Implementation {
 /**
 @brief Non-templated base for one-, two- or three-dimensional images
 
-See @ref Image, @ref ImageReference, @ref BufferImage and @ref Trade::ImageData
+See @ref Image, @ref ImageView, @ref BufferImage and @ref Trade::ImageData
 documentation for more information.
 @todo Where to put glClampColor() and glPixelStore() encapsulation? It is
     needed in AbstractFramebuffer::read(), Texture::setImage() etc (i.e. all

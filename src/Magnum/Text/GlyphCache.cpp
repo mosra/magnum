@@ -92,7 +92,7 @@ void GlyphCache::insert(const UnsignedInt glyph, const Vector2i& position, const
     else CORRADE_INTERNAL_ASSERT_OUTPUT(glyphs.insert({glyph, glyphData}).second);
 }
 
-void GlyphCache::setImage(const Vector2i& offset, const ImageReference2D& image) {
+void GlyphCache::setImage(const Vector2i& offset, const ImageView2D& image) {
     /** @todo some internalformat/format checking also here (if querying internal format is not slow) */
     _texture.setSubImage(0, offset, image);
 }

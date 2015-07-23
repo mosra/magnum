@@ -56,7 +56,7 @@ namespace {
         5, 6, 7, 6, 7, 8
     };
 
-    const ImageReference2D original(ColorFormat::RGB, ColorType::UnsignedByte, {2, 3}, originalData);
+    const ImageView2D original(ColorFormat::RGB, ColorType::UnsignedByte, {2, 3}, originalData);
 }
 
 TgaImageConverterTest::TgaImageConverterTest() {
@@ -67,7 +67,7 @@ TgaImageConverterTest::TgaImageConverterTest() {
 }
 
 void TgaImageConverterTest::wrongFormat() {
-    ImageReference2D image(ColorFormat::RG, ColorType::UnsignedByte, {}, nullptr);
+    ImageView2D image(ColorFormat::RG, ColorType::UnsignedByte, {}, nullptr);
 
     std::ostringstream out;
     Error::setOutput(&out);
@@ -78,7 +78,7 @@ void TgaImageConverterTest::wrongFormat() {
 }
 
 void TgaImageConverterTest::wrongType() {
-    ImageReference2D image(ColorFormat::Red, ColorType::Float, {}, nullptr);
+    ImageView2D image(ColorFormat::Red, ColorType::Float, {}, nullptr);
 
     std::ostringstream out;
     Error::setOutput(&out);

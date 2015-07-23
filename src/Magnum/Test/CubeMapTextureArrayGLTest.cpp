@@ -362,7 +362,7 @@ void CubeMapTextureArrayGLTest::image() {
 
     CubeMapTextureArray texture;
     texture.setImage(0, TextureFormat::RGBA8,
-        ImageReference3D(ColorFormat::RGBA, ColorType::UnsignedByte, {2, 2, 6}, Data));
+        ImageView3D(ColorFormat::RGBA, ColorType::UnsignedByte, {2, 2, 6}, Data));
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -467,9 +467,9 @@ void CubeMapTextureArrayGLTest::subImage() {
 
     CubeMapTextureArray texture;
     texture.setImage(0, TextureFormat::RGBA8,
-        ImageReference3D(ColorFormat::RGBA, ColorType::UnsignedByte, {4, 4, 6}, Zero));
+        ImageView3D(ColorFormat::RGBA, ColorType::UnsignedByte, {4, 4, 6}, Zero));
     texture.setSubImage(0, Vector3i(1),
-        ImageReference3D(ColorFormat::RGBA, ColorType::UnsignedByte, {2, 2, 4}, SubData));
+        ImageView3D(ColorFormat::RGBA, ColorType::UnsignedByte, {2, 2, 4}, SubData));
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -497,7 +497,7 @@ void CubeMapTextureArrayGLTest::subImageBuffer() {
 
     CubeMapTextureArray texture;
     texture.setImage(0, TextureFormat::RGBA8,
-        ImageReference3D(ColorFormat::RGBA, ColorType::UnsignedByte, {4, 4, 6}, Zero));
+        ImageView3D(ColorFormat::RGBA, ColorType::UnsignedByte, {4, 4, 6}, Zero));
     texture.setSubImage(0, Vector3i(1),
         BufferImage3D(ColorFormat::RGBA, ColorType::UnsignedByte, {2, 2, 4}, SubData, BufferUsage::StaticDraw));
 
@@ -524,7 +524,7 @@ void CubeMapTextureArrayGLTest::subImageQuery() {
 
     CubeMapTextureArray texture;
     texture.setStorage(1, TextureFormat::RGBA8, {4, 4, 6})
-           .setSubImage(0, {}, ImageReference3D{ColorFormat::RGBA, ColorType::UnsignedByte, {4, 4, 6}, SubDataComplete});
+           .setSubImage(0, {}, ImageView3D{ColorFormat::RGBA, ColorType::UnsignedByte, {4, 4, 6}, SubDataComplete});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -546,7 +546,7 @@ void CubeMapTextureArrayGLTest::subImageQueryBuffer() {
 
     CubeMapTextureArray texture;
     texture.setStorage(1, TextureFormat::RGBA8, {4, 4, 6})
-           .setSubImage(0, {}, ImageReference3D{ColorFormat::RGBA, ColorType::UnsignedByte, {4, 4, 6}, SubDataComplete});
+           .setSubImage(0, {}, ImageView3D{ColorFormat::RGBA, ColorType::UnsignedByte, {4, 4, 6}, SubDataComplete});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -573,7 +573,7 @@ void CubeMapTextureArrayGLTest::generateMipmap() {
 
     CubeMapTextureArray texture;
     texture.setImage(0, TextureFormat::RGBA8,
-        ImageReference3D(ColorFormat::RGBA, ColorType::UnsignedByte, {32, 32, 24}));
+        ImageView3D(ColorFormat::RGBA, ColorType::UnsignedByte, {32, 32, 24}));
 
     CORRADE_COMPARE(texture.imageSize(0), Vector3i(32, 32, 24));
     CORRADE_COMPARE(texture.imageSize(1), Vector3i(0));

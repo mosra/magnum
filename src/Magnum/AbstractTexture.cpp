@@ -1015,7 +1015,7 @@ void AbstractTexture::storageImplementationFallback(const GLsizei levels, const 
 
     for(GLsizei level = 0; level != levels; ++level)
         DataHelper<1>::setImage(*this, level, internalFormat,
-            ImageReference1D{format, type, Math::max(Math::Vector<1, GLsizei>(1), size >> level)});
+            ImageView1D{format, type, Math::max(Math::Vector<1, GLsizei>(1), size >> level)});
 }
 
 void AbstractTexture::storageImplementationDefault(GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size) {
@@ -1047,7 +1047,7 @@ void AbstractTexture::storageImplementationFallback(const GLsizei levels, const 
     {
         for(GLsizei level = 0; level != levels; ++level)
             DataHelper<2>::setImage(*this, level, internalFormat,
-                ImageReference2D{format, type, Math::max(Vector2i(1), size >> level)});
+                ImageView2D{format, type, Math::max(Vector2i(1), size >> level)});
 
     /* Cube map additionally needs to specify all faces */
     } else if(_target == GL_TEXTURE_CUBE_MAP) {
@@ -1059,7 +1059,7 @@ void AbstractTexture::storageImplementationFallback(const GLsizei levels, const 
                               GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
                               GL_TEXTURE_CUBE_MAP_NEGATIVE_Z})
                 DataHelper<2>::setImage(*this, face, level, internalFormat,
-                    ImageReference2D{format, type, Math::max(Vector2i(1), size >> level)});
+                    ImageView2D{format, type, Math::max(Vector2i(1), size >> level)});
         }
 
     #ifndef MAGNUM_TARGET_GLES
@@ -1067,7 +1067,7 @@ void AbstractTexture::storageImplementationFallback(const GLsizei levels, const 
     } else if(_target == GL_TEXTURE_1D_ARRAY) {
         for(GLsizei level = 0; level != levels; ++level)
             DataHelper<2>::setImage(*this, level, internalFormat,
-                ImageReference2D{format, type, Vector2i{Math::max(1, size.x() >> level), size.y()}});
+                ImageView2D{format, type, Vector2i{Math::max(1, size.x() >> level), size.y()}});
     #endif
 
     /* No other targets are available */
@@ -1115,7 +1115,7 @@ void AbstractTexture::storageImplementationFallback(GLsizei levels, TextureForma
     #endif
         for(GLsizei level = 0; level != levels; ++level)
             DataHelper<3>::setImage(*this, level, internalFormat,
-                ImageReference3D{format, type, Math::max(Vector3i(1), size >> level)});
+                ImageView3D{format, type, Math::max(Vector3i(1), size >> level)});
 
     #ifndef MAGNUM_TARGET_GLES2
     /* Array texture is not scaled in "layer" dimension */
@@ -1126,7 +1126,7 @@ void AbstractTexture::storageImplementationFallback(GLsizei levels, TextureForma
     #endif
         for(GLsizei level = 0; level != levels; ++level)
             DataHelper<3>::setImage(*this, level, internalFormat,
-                ImageReference3D{format, type, Vector3i{Math::max(Vector2i{1}, size.xy() >> level), size.z()}});
+                ImageView3D{format, type, Vector3i{Math::max(Vector2i{1}, size.xy() >> level), size.z()}});
     #endif
 
     /* No other targets are available */
@@ -1439,7 +1439,7 @@ void AbstractTexture::DataHelper<3>::setStorageMultisample(AbstractTexture& text
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractTexture::DataHelper<1>::setImage(AbstractTexture& texture, const GLint level, const TextureFormat internalFormat, const ImageReference1D& image) {
+void AbstractTexture::DataHelper<1>::setImage(AbstractTexture& texture, const GLint level, const TextureFormat internalFormat, const ImageView1D& image) {
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
     texture.bindInternal();
     glTexImage1D(texture._target, level, GLint(internalFormat), image.size()[0], 0, GLenum(image.format()), GLenum(image.type()), image.data());
@@ -1451,7 +1451,7 @@ void AbstractTexture::DataHelper<1>::setImage(AbstractTexture& texture, const GL
     glTexImage1D(texture._target, level, GLint(internalFormat), image.size()[0], 0, GLenum(image.format()), GLenum(image.type()), nullptr);
 }
 
-void AbstractTexture::DataHelper<1>::setSubImage(AbstractTexture& texture, const GLint level, const Math::Vector<1, GLint>& offset, const ImageReference1D& image) {
+void AbstractTexture::DataHelper<1>::setSubImage(AbstractTexture& texture, const GLint level, const Math::Vector<1, GLint>& offset, const ImageView1D& image) {
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
     (texture.*Context::current()->state().texture->subImage1DImplementation)(level, offset, image.size(), image.format(), image.type(), image.data());
 }
@@ -1462,7 +1462,7 @@ void AbstractTexture::DataHelper<1>::setSubImage(AbstractTexture& texture, const
 }
 #endif
 
-void AbstractTexture::DataHelper<2>::setImage(AbstractTexture& texture, const GLenum target, const GLint level, const TextureFormat internalFormat, const ImageReference2D& image) {
+void AbstractTexture::DataHelper<2>::setImage(AbstractTexture& texture, const GLenum target, const GLint level, const TextureFormat internalFormat, const ImageView2D& image) {
     #ifndef MAGNUM_TARGET_GLES2
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
     #endif
@@ -1478,7 +1478,7 @@ void AbstractTexture::DataHelper<2>::setImage(AbstractTexture& texture, const GL
 }
 #endif
 
-void AbstractTexture::DataHelper<2>::setSubImage(AbstractTexture& texture, const GLint level, const Vector2i& offset, const ImageReference2D& image) {
+void AbstractTexture::DataHelper<2>::setSubImage(AbstractTexture& texture, const GLint level, const Vector2i& offset, const ImageView2D& image) {
     #ifndef MAGNUM_TARGET_GLES2
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
     #endif
@@ -1493,7 +1493,7 @@ void AbstractTexture::DataHelper<2>::setSubImage(AbstractTexture& texture, const
 #endif
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-void AbstractTexture::DataHelper<3>::setImage(AbstractTexture& texture, const GLint level, const TextureFormat internalFormat, const ImageReference3D& image) {
+void AbstractTexture::DataHelper<3>::setImage(AbstractTexture& texture, const GLint level, const TextureFormat internalFormat, const ImageView3D& image) {
     #ifndef MAGNUM_TARGET_GLES2
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
     #endif
@@ -1520,7 +1520,7 @@ void AbstractTexture::DataHelper<3>::setImage(AbstractTexture& texture, const GL
 #endif
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-void AbstractTexture::DataHelper<3>::setSubImage(AbstractTexture& texture, const GLint level, const Vector3i& offset, const ImageReference3D& image) {
+void AbstractTexture::DataHelper<3>::setSubImage(AbstractTexture& texture, const GLint level, const Vector3i& offset, const ImageView3D& image) {
     #ifndef MAGNUM_TARGET_GLES2
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
     #endif

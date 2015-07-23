@@ -393,7 +393,7 @@ void CubeMapTextureGLTest::imageFull() {
 
     CubeMapTexture texture;
     texture.setStorage(1, TextureFormat::RGBA8, Vector2i{2, 2})
-        .setSubImage(0, {}, ImageReference3D{ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i{2, 2, 6}, DataFull});
+        .setSubImage(0, {}, ImageView3D{ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i{2, 2, 6}, DataFull});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -437,7 +437,7 @@ namespace {
 void CubeMapTextureGLTest::image() {
     CubeMapTexture texture;
     texture.setImage(CubeMapTexture::Coordinate::PositiveX, 0, TextureFormat::RGBA8,
-        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), Data));
+        ImageView2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), Data));
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -488,9 +488,9 @@ namespace {
 void CubeMapTextureGLTest::subImage() {
     CubeMapTexture texture;
     texture.setImage(CubeMapTexture::Coordinate::PositiveX, 0, TextureFormat::RGBA8,
-        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(4), Zero));
+        ImageView2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(4), Zero));
     texture.setSubImage(CubeMapTexture::Coordinate::PositiveX, 0, Vector2i(1),
-        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), Data));
+        ImageView2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), Data));
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -511,7 +511,7 @@ void CubeMapTextureGLTest::subImage() {
 void CubeMapTextureGLTest::subImageBuffer() {
     CubeMapTexture texture;
     texture.setImage(CubeMapTexture::Coordinate::PositiveX, 0, TextureFormat::RGBA8,
-        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(4), Zero));
+        ImageView2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(4), Zero));
     texture.setSubImage(CubeMapTexture::Coordinate::PositiveX, 0, Vector2i(1),
         BufferImage2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), Data, BufferUsage::StaticDraw));
 
@@ -540,7 +540,7 @@ void CubeMapTextureGLTest::subImageQuery() {
 
     CubeMapTexture texture;
     texture.setStorage(1, TextureFormat::RGBA8, Vector2i{4})
-           .setSubImage(0, {}, ImageReference3D{ColorFormat::RGBA, ColorType::UnsignedByte, {4, 4, 1}, SubDataComplete});
+           .setSubImage(0, {}, ImageView3D{ColorFormat::RGBA, ColorType::UnsignedByte, {4, 4, 1}, SubDataComplete});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -563,7 +563,7 @@ void CubeMapTextureGLTest::subImageQueryBuffer() {
 
     CubeMapTexture texture;
     texture.setStorage(1, TextureFormat::RGBA8, Vector2i{4})
-           .setSubImage(0, {}, ImageReference3D{ColorFormat::RGBA, ColorType::UnsignedByte, {4, 4, 1}, SubDataComplete});
+           .setSubImage(0, {}, ImageView3D{ColorFormat::RGBA, ColorType::UnsignedByte, {4, 4, 1}, SubDataComplete});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -580,17 +580,17 @@ void CubeMapTextureGLTest::subImageQueryBuffer() {
 void CubeMapTextureGLTest::generateMipmap() {
     CubeMapTexture texture;
     texture.setImage(CubeMapTexture::Coordinate::PositiveX, 0, TextureFormat::RGBA8,
-        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(32)));
+        ImageView2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(32)));
     texture.setImage(CubeMapTexture::Coordinate::PositiveY, 0, TextureFormat::RGBA8,
-        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(32)));
+        ImageView2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(32)));
     texture.setImage(CubeMapTexture::Coordinate::PositiveZ, 0, TextureFormat::RGBA8,
-        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(32)));
+        ImageView2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(32)));
     texture.setImage(CubeMapTexture::Coordinate::NegativeX, 0, TextureFormat::RGBA8,
-        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(32)));
+        ImageView2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(32)));
     texture.setImage(CubeMapTexture::Coordinate::NegativeY, 0, TextureFormat::RGBA8,
-        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(32)));
+        ImageView2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(32)));
     texture.setImage(CubeMapTexture::Coordinate::NegativeZ, 0, TextureFormat::RGBA8,
-        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(32)));
+        ImageView2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(32)));
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES

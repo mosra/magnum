@@ -37,35 +37,35 @@ AbstractImageConverter::AbstractImageConverter() = default;
 
 AbstractImageConverter::AbstractImageConverter(PluginManager::AbstractManager& manager, std::string plugin): AbstractPlugin(manager, std::move(plugin)) {}
 
-std::optional<Image2D> AbstractImageConverter::exportToImage(const ImageReference2D& image) const {
+std::optional<Image2D> AbstractImageConverter::exportToImage(const ImageView2D& image) const {
     CORRADE_ASSERT(features() & Feature::ConvertImage,
         "Trade::AbstractImageConverter::exportToImage(): feature not supported", {});
 
     return doExportToImage(image);
 }
 
-std::optional<Image2D> AbstractImageConverter::doExportToImage(const ImageReference2D&) const {
+std::optional<Image2D> AbstractImageConverter::doExportToImage(const ImageView2D&) const {
     CORRADE_ASSERT(false, "Trade::AbstractImageConverter::exportToImage(): feature advertised but not implemented", {});
     return std::nullopt;
 }
 
-Containers::Array<char> AbstractImageConverter::exportToData(const ImageReference2D& image) const {
+Containers::Array<char> AbstractImageConverter::exportToData(const ImageView2D& image) const {
     CORRADE_ASSERT(features() & Feature::ConvertData,
         "Trade::AbstractImageConverter::exportToData(): feature not supported", nullptr);
 
     return doExportToData(image);
 }
 
-Containers::Array<char> AbstractImageConverter::doExportToData(const ImageReference2D&) const {
+Containers::Array<char> AbstractImageConverter::doExportToData(const ImageView2D&) const {
     CORRADE_ASSERT(false, "Trade::AbstractImageConverter::exportToData(): feature advertised but not implemented", nullptr);
     return nullptr;
 }
 
-bool AbstractImageConverter::exportToFile(const ImageReference2D& image, const std::string& filename) const {
+bool AbstractImageConverter::exportToFile(const ImageView2D& image, const std::string& filename) const {
     return doExportToFile(image, filename);
 }
 
-bool AbstractImageConverter::doExportToFile(const ImageReference2D& image, const std::string& filename) const {
+bool AbstractImageConverter::doExportToFile(const ImageView2D& image, const std::string& filename) const {
     CORRADE_ASSERT(features() & Feature::ConvertData, "Trade::AbstractImageConverter::exportToFile(): not implemented", false);
 
     const auto data = doExportToData(image);

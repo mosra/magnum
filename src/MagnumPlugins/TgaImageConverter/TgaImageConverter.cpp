@@ -45,7 +45,7 @@ TgaImageConverter::TgaImageConverter(PluginManager::AbstractManager& manager, st
 
 auto TgaImageConverter::doFeatures() const -> Features { return Feature::ConvertData; }
 
-Containers::Array<char> TgaImageConverter::doExportToData(const ImageReference2D& image) const {
+Containers::Array<char> TgaImageConverter::doExportToData(const ImageView2D& image) const {
     if(image.format() != ColorFormat::RGB &&
        image.format() != ColorFormat::RGBA
        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))

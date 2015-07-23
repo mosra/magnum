@@ -26,109 +26,40 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::ImageReference, typedef @ref Magnum::ImageReference1D, @ref Magnum::ImageReference2D, @ref Magnum::ImageReference3D
+ * @deprecated Use @ref Magnum/ImageView.h instead.
  */
 
-#include "Magnum/Math/Vector3.h"
-#include "Magnum/AbstractImage.h"
-#include "Magnum/DimensionTraits.h"
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include "Magnum/ImageView.h"
+CORRADE_DEPRECATED_FILE("use Magnum/ImageView.h instead")
 
 namespace Magnum {
 
-/**
-@brief Image reference
+/** @copybrief ImageView
+ * @deprecated Use @ref ImageView instead.
+ */
+template<UnsignedInt dimensions> using CORRADE_DEPRECATED("use ImageView instead") ImageReference = ImageView<dimensions>;
 
-Adds information about dimensions, color components and component type to some
-data in memory.
+/** @copybrief ImageView1D
+ * @deprecated Use @ref ImageView1D instead.
+ */
+typedef CORRADE_DEPRECATED("use ImageView1D instead") ImageView1D ImageReference1D;
 
-Unlike @ref Image, this class doesn't delete the data on destruction, so it is
-targeted for wrapping data which are either stored in stack/constant memory
-(and shouldn't be deleted) or they are managed by someone else and have the
-same properties for each frame, such as video stream. Thus it is not possible
-to change image properties, only data pointer.
+/** @copybrief ImageView2D
+ * @deprecated Use @ref ImageView2D instead.
+ */
+typedef CORRADE_DEPRECATED("use ImageView2D instead") ImageView2D ImageReference2D;
 
-Interchangeable with @ref Image, @ref BufferImage or @ref Trade::ImageData.
-@see @ref ImageReference1D, @ref ImageReference2D, @ref ImageReference3D
-*/
-template<UnsignedInt dimensions> class ImageReference: public AbstractImage {
-    public:
-        enum: UnsignedInt {
-            Dimensions = dimensions /**< Image dimension count */
-        };
-
-        /**
-         * @brief Constructor
-         * @param format            Format of pixel data
-         * @param type              Data type of pixel data
-         * @param size              Image size
-         * @param data              Image data
-         */
-        constexpr explicit ImageReference(ColorFormat format, ColorType type, const VectorTypeFor<dimensions, Int>& size, const void* data): _format{format}, _type{type}, _size{size}, _data{reinterpret_cast<const char*>(data)} {}
-
-        /**
-         * @brief Constructor
-         * @param format            Format of pixel data
-         * @param type              Data type of pixel data
-         * @param size              Image size
-         *
-         * Data pointer is set to `nullptr`, call @ref setData() to fill the
-         * image with data.
-         */
-        constexpr explicit ImageReference(ColorFormat format, ColorType type, const VectorTypeFor<dimensions, Int>& size): _format{format}, _type{type}, _size{size}, _data{nullptr} {}
-
-        /** @brief Format of pixel data */
-        ColorFormat format() const { return _format; }
-
-        /** @brief Data type of pixel data */
-        ColorType type() const { return _type; }
-
-        /** @brief Pixel size (in bytes) */
-        std::size_t pixelSize() const { return Implementation::imagePixelSize(_format, _type); }
-
-        /** @brief Image size */
-        constexpr VectorTypeFor<dimensions, Int> size() const { return _size; }
-
-        /** @copydoc Image::dataSize() */
-        std::size_t dataSize(const VectorTypeFor<dimensions, Int>& size) const {
-            return Implementation::imageDataSize<dimensions>(*this, _format, _type, size);
-        }
-
-        /** @brief Pointer to raw data */
-        constexpr const char* data() const { return _data; }
-
-        /** @overload */
-        template<class T = char> const T* data() const {
-            return reinterpret_cast<const T*>(_data);
-        }
-
-        /**
-         * @brief Set image data
-         * @param data              Image data
-         *
-         * Dimensions, color compnents and data type remains the same as
-         * passed in constructor. The data are not copied nor deleted on
-         * destruction.
-         */
-        void setData(const void* data) {
-            _data = reinterpret_cast<const char*>(data);
-        }
-
-    private:
-        ColorFormat _format;
-        ColorType _type;
-        Math::Vector<Dimensions, Int> _size;
-        const char* _data;
-};
-
-/** @brief One-dimensional image wrapper */
-typedef ImageReference<1> ImageReference1D;
-
-/** @brief Two-dimensional image wrapper */
-typedef ImageReference<2> ImageReference2D;
-
-/** @brief Three-dimensional image wrapper */
-typedef ImageReference<3> ImageReference3D;
+/** @copybrief ImageView3D
+ * @deprecated Use @ref ImageView3D instead.
+ */
+typedef CORRADE_DEPRECATED("use ImageView3D instead") ImageView3D ImageReference3D;
 
 }
+#else
+#error use Magnum/ImageView.h instead
+#endif
 
 #endif

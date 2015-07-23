@@ -30,7 +30,7 @@
 #endif
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
-#include "Magnum/ImageReference.h"
+#include "Magnum/ImageView.h"
 #include "Magnum/TextureFormat.h"
 #include "Magnum/TextureTools/DistanceField.h"
 
@@ -59,7 +59,7 @@ DistanceFieldGlyphCache::DistanceFieldGlyphCache(const Vector2i& originalSize, c
     #endif
 }
 
-void DistanceFieldGlyphCache::setImage(const Vector2i& offset, const ImageReference2D& image) {
+void DistanceFieldGlyphCache::setImage(const Vector2i& offset, const ImageView2D& image) {
     #if !(defined(MAGNUM_TARGET_GLES) && defined(MAGNUM_TARGET_GLES2))
     const TextureFormat internalFormat = TextureFormat::R8;
     CORRADE_ASSERT(image.format() == ColorFormat::Red,
@@ -90,7 +90,7 @@ void DistanceFieldGlyphCache::setImage(const Vector2i& offset, const ImageRefere
     TextureTools::distanceField(input, texture(), Range2Di::fromSize(offset*scale, image.size()*scale), radius, image.size());
 }
 
-void DistanceFieldGlyphCache::setDistanceFieldImage(const Vector2i& offset, const ImageReference2D& image) {
+void DistanceFieldGlyphCache::setDistanceFieldImage(const Vector2i& offset, const ImageView2D& image) {
     #if !(defined(MAGNUM_TARGET_GLES) && defined(MAGNUM_TARGET_GLES2))
     CORRADE_ASSERT(image.format() == ColorFormat::Red,
         "Text::DistanceFieldGlyphCache::setDistanceFieldImage(): expected" << ColorFormat::Red << "but got" << image.format(), );

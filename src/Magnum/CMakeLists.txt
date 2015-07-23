@@ -95,7 +95,7 @@ set(Magnum_HEADERS
     Extensions.h
     Framebuffer.h
     Image.h
-    ImageReference.h
+    ImageView.h
     Magnum.h
     Mesh.h
     MeshView.h
@@ -128,6 +128,11 @@ set(Magnum_PRIVATE_HEADERS
     Implementation/ShaderState.h
     Implementation/State.h
     Implementation/TextureState.h)
+
+# Deprecated stuff
+if(BUILD_DEPRECATED)
+    list(APPEND Magnum_HEADERS ImageReference.h)
+endif()
 
 # Desktop-only stuff
 if(NOT TARGET_GLES)

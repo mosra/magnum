@@ -575,10 +575,10 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<1> {
 
     static void setStorage(AbstractTexture& texture, GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size);
 
-    static void setImage(AbstractTexture& texture, GLint level, TextureFormat internalFormat, const ImageReference1D& image);
+    static void setImage(AbstractTexture& texture, GLint level, TextureFormat internalFormat, const ImageView1D& image);
     static void setImage(AbstractTexture& texture, GLint level, TextureFormat internalFormat, BufferImage1D& image);
 
-    static void setSubImage(AbstractTexture& texture, GLint level, const Math::Vector<1, GLint>& offset, const ImageReference1D& image);
+    static void setSubImage(AbstractTexture& texture, GLint level, const Math::Vector<1, GLint>& offset, const ImageView1D& image);
     static void setSubImage(AbstractTexture& texture, GLint level, const Math::Vector<1, GLint>& offset, BufferImage1D& image);
 
     static void invalidateSubImage(AbstractTexture& texture, GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLint>& size);
@@ -597,10 +597,10 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
     static void setStorageMultisample(AbstractTexture& texture, GLsizei samples, TextureFormat internalFormat, const Vector2i& size, GLboolean fixedSampleLocations);
     #endif
 
-    static void setImage(AbstractTexture& texture, GLint level, TextureFormat internalFormat, const ImageReference2D& image) {
+    static void setImage(AbstractTexture& texture, GLint level, TextureFormat internalFormat, const ImageView2D& image) {
         setImage(texture, texture._target, level, internalFormat, image);
     }
-    static void setImage(AbstractTexture& texture, GLenum target, GLint level, TextureFormat internalFormat, const ImageReference2D& image);
+    static void setImage(AbstractTexture& texture, GLenum target, GLint level, TextureFormat internalFormat, const ImageView2D& image);
     #ifndef MAGNUM_TARGET_GLES2
     static void setImage(AbstractTexture& texture, GLint level, TextureFormat internalFormat, BufferImage2D& image) {
         setImage(texture, texture._target, level, internalFormat, image);
@@ -608,7 +608,7 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
     static void setImage(AbstractTexture& texture, GLenum target, GLint level, TextureFormat internalFormat, BufferImage2D& image);
     #endif
 
-    static void setSubImage(AbstractTexture& texture, GLint level, const Vector2i& offset, const ImageReference2D& image);
+    static void setSubImage(AbstractTexture& texture, GLint level, const Vector2i& offset, const ImageView2D& image);
     #ifndef MAGNUM_TARGET_GLES2
     static void setSubImage(AbstractTexture& texture, GLint level, const Vector2i& offset, BufferImage2D& image);
     #endif
@@ -629,12 +629,12 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
     static void setStorageMultisample(AbstractTexture& texture, GLsizei samples, TextureFormat internalFormat, const Vector3i& size, GLboolean fixedSampleLocations);
     #endif
 
-    static void setImage(AbstractTexture& texture, GLint level, TextureFormat internalFormat, const ImageReference3D& image);
+    static void setImage(AbstractTexture& texture, GLint level, TextureFormat internalFormat, const ImageView3D& image);
     #ifndef MAGNUM_TARGET_GLES2
     static void setImage(AbstractTexture& texture, GLint level, TextureFormat internalFormat, BufferImage3D& image);
     #endif
 
-    static void setSubImage(AbstractTexture& texture, GLint level, const Vector3i& offset, const ImageReference3D& image);
+    static void setSubImage(AbstractTexture& texture, GLint level, const Vector3i& offset, const ImageView3D& image);
     #ifndef MAGNUM_TARGET_GLES2
     static void setSubImage(AbstractTexture& texture, GLint level, const Vector3i& offset, BufferImage3D& image);
     #endif

@@ -363,7 +363,7 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
          * @deprecated_gl Prefer to use @ref setStorage() and @ref setSubImage()
          *      instead.
          */
-        RectangleTexture& setImage(TextureFormat internalFormat, const ImageReference2D& image) {
+        RectangleTexture& setImage(TextureFormat internalFormat, const ImageView2D& image) {
             DataHelper<2>::setImage(*this, 0, internalFormat, image);
             return *this;
         }
@@ -391,7 +391,7 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
          *
          * See @ref Texture::setSubImage() for more information.
          */
-        RectangleTexture& setSubImage(const Vector2i& offset, const ImageReference2D& image) {
+        RectangleTexture& setSubImage(const Vector2i& offset, const ImageView2D& image) {
             DataHelper<2>::setSubImage(*this, 0, offset, image);
             return *this;
         }

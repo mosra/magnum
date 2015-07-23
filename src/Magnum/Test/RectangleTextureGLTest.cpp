@@ -253,7 +253,7 @@ void RectangleTextureGLTest::image() {
 
     RectangleTexture texture;
     texture.setImage(TextureFormat::RGBA8,
-        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), Data));
+        ImageView2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), Data));
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -303,9 +303,9 @@ void RectangleTextureGLTest::subImage() {
 
     RectangleTexture texture;
     texture.setImage(TextureFormat::RGBA8,
-        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(4), Zero));
+        ImageView2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(4), Zero));
     texture.setSubImage(Vector2i(1),
-        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), Data));
+        ImageView2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), Data));
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -325,7 +325,7 @@ void RectangleTextureGLTest::subImageBuffer() {
 
     RectangleTexture texture;
     texture.setImage(TextureFormat::RGBA8,
-        ImageReference2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(4), Zero));
+        ImageView2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(4), Zero));
     texture.setSubImage(Vector2i(1),
         BufferImage2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), Data, BufferUsage::StaticDraw));
 
@@ -348,7 +348,7 @@ void RectangleTextureGLTest::subImageQuery() {
 
     RectangleTexture texture;
     texture.setStorage(TextureFormat::RGBA8, Vector2i{4})
-           .setSubImage({}, ImageReference2D{ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i{4}, SubDataComplete});
+           .setSubImage({}, ImageView2D{ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i{4}, SubDataComplete});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -370,7 +370,7 @@ void RectangleTextureGLTest::subImageQueryBuffer() {
 
     RectangleTexture texture;
     texture.setStorage(TextureFormat::RGBA8, Vector2i{4})
-           .setSubImage({}, ImageReference2D{ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i{4}, SubDataComplete});
+           .setSubImage({}, ImageView2D{ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i{4}, SubDataComplete});
 
     MAGNUM_VERIFY_NO_ERROR();
 

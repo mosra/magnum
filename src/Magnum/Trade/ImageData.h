@@ -29,7 +29,7 @@
  * @brief Class @ref Magnum::Trade::ImageData, typedef @ref Magnum::Trade::ImageData1D, @ref Magnum::Trade::ImageData2D, @ref Magnum::Trade::ImageData3D
  */
 
-#include "Magnum/ImageReference.h"
+#include "Magnum/ImageView.h"
 
 namespace Magnum { namespace Trade {
 
@@ -37,7 +37,7 @@ namespace Magnum { namespace Trade {
 @brief Image data
 
 Access to image data provided by @ref AbstractImporter subclasses.
-Interchangeable with @ref Image, @ref ImageReference or @ref BufferImage.
+Interchangeable with @ref Image, @ref ImageView or @ref BufferImage.
 @see @ref ImageData1D, @ref ImageData2D, @ref ImageData3D
 */
 template<UnsignedInt dimensions> class ImageData: public AbstractImage {
@@ -73,8 +73,8 @@ template<UnsignedInt dimensions> class ImageData: public AbstractImage {
         /** @brief Destructor */
         ~ImageData() { delete[] _data; }
 
-        /** @brief Conversion to reference */
-        /*implicit*/ operator ImageReference<dimensions>()
+        /** @brief Conversion to view */
+        /*implicit*/ operator ImageView<dimensions>()
         #ifndef CORRADE_GCC47_COMPATIBILITY
         const &;
         #else
@@ -83,7 +83,7 @@ template<UnsignedInt dimensions> class ImageData: public AbstractImage {
 
         #ifndef CORRADE_GCC47_COMPATIBILITY
         /** @overload */
-        /*implicit*/ operator ImageReference<dimensions>() const && = delete;
+        /*implicit*/ operator ImageView<dimensions>() const && = delete;
         #endif
 
         /** @brief Format of pixel data */
@@ -157,14 +157,14 @@ template<UnsignedInt dimensions> inline ImageData<dimensions>& ImageData<dimensi
     return *this;
 }
 
-template<UnsignedInt dimensions> inline ImageData<dimensions>::operator ImageReference<dimensions>()
+template<UnsignedInt dimensions> inline ImageData<dimensions>::operator ImageView<dimensions>()
 #ifndef CORRADE_GCC47_COMPATIBILITY
 const &
 #else
 const
 #endif
 {
-    return ImageReference<dimensions>(_format, _type, _size, _data);
+    return ImageView<dimensions>(_format, _type, _size, _data);
 }
 
 template<UnsignedInt dimensions> inline char* ImageData<dimensions>::release() {

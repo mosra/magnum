@@ -490,7 +490,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @deprecated_gl Prefer to use @ref setStorage() and @ref setSubImage()
          *      instead.
          */
-        TextureArray<dimensions>& setImage(Int level, TextureFormat internalFormat, const ImageReference<dimensions+1>& image) {
+        TextureArray<dimensions>& setImage(Int level, TextureFormat internalFormat, const ImageView<dimensions+1>& image) {
             DataHelper<dimensions+1>::setImage(*this, level, internalFormat, image);
             return *this;
         }
@@ -516,7 +516,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @brief Set image subdata
          * @param level             Mip level
          * @param offset            Offset where to put data in the texture
-         * @param image             @ref Image, @ref ImageReference or
+         * @param image             @ref Image, @ref ImageView or
          *      @ref Trade::ImageData of the same dimension count
          * @return Reference to self (for method chaining)
          *
@@ -531,7 +531,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{TexSubImage2D}/@fn_gl{TexSubImage3D}
          */
-        TextureArray<dimensions>& setSubImage(Int level, const VectorTypeFor<dimensions+1, Int>& offset, const ImageReference<dimensions+1>& image) {
+        TextureArray<dimensions>& setSubImage(Int level, const VectorTypeFor<dimensions+1, Int>& offset, const ImageView<dimensions+1>& image) {
             DataHelper<dimensions+1>::setSubImage(*this, level, offset, image);
             return *this;
         }

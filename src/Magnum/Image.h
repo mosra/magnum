@@ -29,14 +29,14 @@
  * @brief Class @ref Magnum::Image, typedef @ref Magnum::Image1D, @ref Magnum::Image2D, @ref Magnum::Image3D
  */
 
-#include "Magnum/ImageReference.h"
+#include "Magnum/ImageView.h"
 
 namespace Magnum {
 
 /**
 @brief Image
 
-Stores image data on client memory. Interchangeable with @ref ImageReference,
+Stores image data on client memory. Interchangeable with @ref ImageView,
 @ref BufferImage or @ref Trade::ImageData.
 @see @ref Image1D, @ref Image2D, @ref Image3D
 */
@@ -83,8 +83,8 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
         /** @brief Destructor */
         ~Image() { delete[] _data; }
 
-        /** @brief Conversion to reference */
-        /*implicit*/ operator ImageReference<dimensions>()
+        /** @brief Conversion to view */
+        /*implicit*/ operator ImageView<dimensions>()
         #ifndef CORRADE_GCC47_COMPATIBILITY
         const &;
         #else
@@ -93,7 +93,7 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
 
         #ifndef CORRADE_GCC47_COMPATIBILITY
         /** @overload */
-        /*implicit*/ operator ImageReference<dimensions>() const && = delete;
+        /*implicit*/ operator ImageView<dimensions>() const && = delete;
         #endif
 
         /** @brief Format of pixel data */
@@ -186,14 +186,14 @@ template<UnsignedInt dimensions> inline Image<dimensions>& Image<dimensions>::op
     return *this;
 }
 
-template<UnsignedInt dimensions> inline Image<dimensions>::operator ImageReference<dimensions>()
+template<UnsignedInt dimensions> inline Image<dimensions>::operator ImageView<dimensions>()
 #ifndef CORRADE_GCC47_COMPATIBILITY
 const &
 #else
 const
 #endif
 {
-    return ImageReference<dimensions>{_format, _type, _size, _data};
+    return ImageView<dimensions>{_format, _type, _size, _data};
 }
 
 template<UnsignedInt dimensions> inline char* Image<dimensions>::release() {

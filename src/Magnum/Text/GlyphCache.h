@@ -185,7 +185,7 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
          * Uploads image for one or more glyphs to given offset in cache
          * texture.
          */
-        virtual void setImage(const Vector2i& offset, const ImageReference2D& image);
+        virtual void setImage(const Vector2i& offset, const ImageView2D& image);
 
     private:
         void MAGNUM_LOCAL initialize(TextureFormat internalFormat, const Vector2i& size);

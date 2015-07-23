@@ -472,7 +472,7 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          * @deprecated_gl Prefer to use @ref setStorage() and @ref setSubImage()
          *      instead.
          */
-        CubeMapTextureArray& setImage(Int level, TextureFormat internalFormat, const ImageReference3D& image) {
+        CubeMapTextureArray& setImage(Int level, TextureFormat internalFormat, const ImageView3D& image) {
             DataHelper<3>::setImage(*this, level, internalFormat, image);
             return *this;
         }
@@ -503,7 +503,7 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          *
          * See @ref Texture::setSubImage() for more information.
          */
-        CubeMapTextureArray& setSubImage(Int level, const Vector3i& offset, const ImageReference3D& image) {
+        CubeMapTextureArray& setSubImage(Int level, const Vector3i& offset, const ImageView3D& image) {
             DataHelper<3>::setSubImage(*this, level, offset, image);
             return *this;
         }

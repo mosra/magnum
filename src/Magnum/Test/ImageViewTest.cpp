@@ -26,25 +26,25 @@
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/ColorFormat.h"
-#include "Magnum/ImageReference.h"
+#include "Magnum/ImageView.h"
 
 namespace Magnum { namespace Test {
 
-struct ImageReferenceTest: TestSuite::Tester {
-    explicit ImageReferenceTest();
+struct ImageViewTest: TestSuite::Tester {
+    explicit ImageViewTest();
 
     void construct();
     void setData();
 };
 
-ImageReferenceTest::ImageReferenceTest() {
-    addTests({&ImageReferenceTest::construct,
-              &ImageReferenceTest::setData});
+ImageViewTest::ImageViewTest() {
+    addTests({&ImageViewTest::construct,
+              &ImageViewTest::setData});
 }
 
-void ImageReferenceTest::construct() {
+void ImageViewTest::construct() {
     const char data[3] = {};
-    ImageReference2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
+    ImageView2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
 
     CORRADE_COMPARE(a.format(), ColorFormat::Red);
     CORRADE_COMPARE(a.type(), ColorType::UnsignedByte);
@@ -52,9 +52,9 @@ void ImageReferenceTest::construct() {
     CORRADE_COMPARE(a.data(), data);
 }
 
-void ImageReferenceTest::setData() {
+void ImageViewTest::setData() {
     const char data[3] = {};
-    ImageReference2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
+    ImageView2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
     const char data2[8] = {};
     a.setData(data2);
 
@@ -66,4 +66,4 @@ void ImageReferenceTest::setData() {
 
 }}
 
-CORRADE_TEST_MAIN(Magnum::Test::ImageReferenceTest)
+CORRADE_TEST_MAIN(Magnum::Test::ImageViewTest)

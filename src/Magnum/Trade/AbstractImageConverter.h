@@ -98,7 +98,7 @@ class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractPlugin
          * converted image on success, `std::nullopt` otherwise.
          * @see @ref features(), @ref exportToData(), @ref exportToFile()
          */
-        std::optional<Image2D> exportToImage(const ImageReference2D& image) const;
+        std::optional<Image2D> exportToImage(const ImageView2D& image) const;
 
         /**
          * @brief Export image to raw data
@@ -107,7 +107,7 @@ class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractPlugin
          * data on success, zero-sized array otherwise.
          * @see @ref features(), @ref exportToImage(), @ref exportToFile()
          */
-        Containers::Array<char> exportToData(const ImageReference2D& image) const;
+        Containers::Array<char> exportToData(const ImageView2D& image) const;
 
         /**
          * @brief Export image to file
@@ -115,7 +115,7 @@ class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractPlugin
          * Returns `true` on success, `false` otherwise.
          * @see @ref features(), @ref exportToImage(), @ref exportToData()
          */
-        bool exportToFile(const ImageReference2D& image, const std::string& filename) const;
+        bool exportToFile(const ImageView2D& image, const std::string& filename) const;
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
     private:
@@ -126,10 +126,10 @@ class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractPlugin
         virtual Features doFeatures() const = 0;
 
         /** @brief Implementation of @ref exportToImage() */
-        virtual std::optional<Image2D> doExportToImage(const ImageReference2D& image) const;
+        virtual std::optional<Image2D> doExportToImage(const ImageView2D& image) const;
 
         /** @brief Implementation of @ref exportToData() */
-        virtual Containers::Array<char> doExportToData(const ImageReference2D& image) const;
+        virtual Containers::Array<char> doExportToData(const ImageView2D& image) const;
 
         /**
          * @brief Implementation of @ref exportToFile()
@@ -137,7 +137,7 @@ class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractPlugin
          * If @ref Feature::ConvertData is supported, default implementation
          * calls @ref doExportToData() and saves the result to given file.
          */
-        virtual bool doExportToFile(const ImageReference2D& image, const std::string& filename) const;
+        virtual bool doExportToFile(const ImageView2D& image, const std::string& filename) const;
 };
 
 CORRADE_ENUMSET_OPERATORS(AbstractImageConverter::Features)

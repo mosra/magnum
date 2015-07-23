@@ -50,7 +50,7 @@ In most cases you may want to use @ref ColorFormat::Red (for grayscale images),
 See documentation of these values for possible limitations when using OpenGL ES
 2.0 or WebGL.
 
-@see @ref Image, @ref ImageReference, @ref BufferImage, @ref Trade::ImageData
+@see @ref Image, @ref ImageView, @ref BufferImage, @ref Trade::ImageData
 */
 enum class ColorFormat: GLenum {
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
@@ -310,7 +310,7 @@ In most cases you may want to use @ref ColorType::UnsignedByte along with
 See documentation of these values for possible limitations when using OpenGL ES
 2.0 or WebGL.
 
-@see @ref Image, @ref ImageReference, @ref BufferImage, @ref Trade::ImageData
+@see @ref Image, @ref ImageView, @ref BufferImage, @ref Trade::ImageData
 */
 enum class ColorType: GLenum {
     /** Each component unsigned byte. */

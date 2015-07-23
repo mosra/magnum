@@ -43,7 +43,7 @@ namespace Magnum {
 @brief Buffer image
 
 Stores image data in GPU memory. Interchangeable with @ref Image,
-@ref ImageReference or @ref Trade::ImageData.
+@ref ImageView or @ref Trade::ImageData.
 @see @ref BufferImage1D, @ref BufferImage2D, @ref BufferImage3D, @ref Buffer
 @requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
 @requires_webgl20 Pixel buffer objects are not available in WebGL 1.0.

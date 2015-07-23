@@ -588,7 +588,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * @deprecated_gl Prefer to use @ref setStorage() and @ref setSubImage()
          *      instead.
          */
-        CubeMapTexture& setImage(Coordinate coordinate, Int level, TextureFormat internalFormat, const ImageReference2D& image) {
+        CubeMapTexture& setImage(Coordinate coordinate, Int level, TextureFormat internalFormat, const ImageView2D& image) {
             DataHelper<2>::setImage(*this, GLenum(coordinate), level, internalFormat, image);
             return *this;
         }
@@ -625,7 +625,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * @brief Set image subdata
          * @param level             Mip level
          * @param offset            Offset where to put data in the texture
-         * @param image             @ref Image3D, @ref ImageReference3D or
+         * @param image             @ref Image3D, @ref ImageView3D or
          *      @ref Trade::ImageData3D
          * @return Reference to self (for method chaining)
          *
@@ -634,7 +634,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * @requires_gl In OpenGL ES and WebGL you need to set image for each
          *      face separately.
          */
-        CubeMapTexture& setSubImage(Int level, const Vector3i& offset, const ImageReference3D& image);
+        CubeMapTexture& setSubImage(Int level, const Vector3i& offset, const ImageView3D& image);
 
         /** @overload
          * @requires_gl45 Extension @extension{ARB,direct_state_access}
@@ -659,7 +659,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * See @ref Texture::setSubImage() for more information.
          */
-        CubeMapTexture& setSubImage(Coordinate coordinate, Int level, const Vector2i& offset, const ImageReference2D& image);
+        CubeMapTexture& setSubImage(Coordinate coordinate, Int level, const Vector2i& offset, const ImageView2D& image);
 
         #ifndef MAGNUM_TARGET_GLES2
         /** @overload

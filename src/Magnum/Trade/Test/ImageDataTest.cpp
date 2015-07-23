@@ -95,20 +95,20 @@ void ImageDataTest::constructMove() {
 void ImageDataTest::toReference() {
     auto data = new char[3];
     const Trade::ImageData2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
-    ImageReference2D b = a;
+    ImageView2D b = a;
 
     CORRADE_COMPARE(b.format(), ColorFormat::Red);
     CORRADE_COMPARE(b.type(), ColorType::UnsignedByte);
     CORRADE_COMPARE(b.size(), Vector2i(1, 3));
     CORRADE_COMPARE(b.data(), data);
 
-    CORRADE_VERIFY((std::is_convertible<const Trade::ImageData2D&, ImageReference2D>::value));
+    CORRADE_VERIFY((std::is_convertible<const Trade::ImageData2D&, ImageView2D>::value));
     {
         #ifdef CORRADE_GCC47_COMPATIBILITY
         CORRADE_EXPECT_FAIL("Rvalue references for *this are not supported in GCC < 4.8.1.");
         #endif
-        CORRADE_VERIFY(!(std::is_convertible<const Trade::ImageData2D, ImageReference2D>::value));
-        CORRADE_VERIFY(!(std::is_convertible<const Trade::ImageData2D&&, ImageReference2D>::value));
+        CORRADE_VERIFY(!(std::is_convertible<const Trade::ImageData2D, ImageView2D>::value));
+        CORRADE_VERIFY(!(std::is_convertible<const Trade::ImageData2D&&, ImageView2D>::value));
     }
 }
 
