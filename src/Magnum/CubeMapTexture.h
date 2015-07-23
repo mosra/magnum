@@ -443,7 +443,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * @ref imageSize().
          * @see @fn_gl2{GetTextureLevelParameter,GetTexLevelParameter} with
          *      @def_gl{TEXTURE_WIDTH}, @def_gl{TEXTURE_HEIGHT}, then
-         *      @fn_gl{GetTextureImage}
+         *      @fn_gl2{GetTextureImage,GetTexImage}
          * @requires_gl45 Extension @extension{ARB,direct_state_access}
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() for possible workaround.
@@ -625,8 +625,8 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * @brief Set image subdata
          * @param level             Mip level
          * @param offset            Offset where to put data in the texture
-         * @param image             @ref Image, @ref ImageReference or
-         *      @ref Trade::ImageData of the same dimension count
+         * @param image             @ref Image3D, @ref ImageReference3D or
+         *      @ref Trade::ImageData3D
          * @return Reference to self (for method chaining)
          *
          * @see @ref setStorage(), @fn_gl2{TextureSubImage3D,TexSubImage3D}

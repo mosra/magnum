@@ -62,8 +62,7 @@ template<UnsignedInt dimensions> class BufferImage: public AbstractImage {
          * @param data              Image data
          * @param usage             Image buffer usage
          *
-         * Note that the image data are not copied on construction, but they
-         * are deleted on class destruction.
+         * The data are *not* deleted after filling the buffer.
          * @todo Make it more flexible (usable with
          *      @extension{ARB,buffer_storage}, avoiding relocations...)
          */
@@ -110,7 +109,7 @@ template<UnsignedInt dimensions> class BufferImage: public AbstractImage {
          * @param data              Image data
          * @param usage             Image buffer usage
          *
-         * Updates the image buffer with given data. The data are not deleted
+         * Updates the image buffer with given data. The data are *not* deleted
          * after filling the buffer.
          * @see @ref Buffer::setData()
          * @todo Make it more flexible (usable with
