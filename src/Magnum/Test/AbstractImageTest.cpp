@@ -23,7 +23,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/AbstractImage.h"
@@ -37,17 +36,11 @@ struct AbstractImageTest: TestSuite::Tester {
 
     void pixelSize();
     void dataSize();
-
-    void debugFormat();
-    void debugType();
 };
 
 AbstractImageTest::AbstractImageTest() {
     addTests({&AbstractImageTest::pixelSize,
-              &AbstractImageTest::dataSize,
-
-              &AbstractImageTest::debugFormat,
-              &AbstractImageTest::debugType});
+              &AbstractImageTest::dataSize});
 }
 
 void AbstractImageTest::pixelSize() {
@@ -66,18 +59,6 @@ void AbstractImageTest::dataSize() {
 
     CORRADE_COMPARE(Image2D(ColorFormat::RGBA, ColorType::UnsignedShort).dataSize({16, 8}),
                     4*2*16*8);
-}
-
-void AbstractImageTest::debugFormat() {
-    std::ostringstream o;
-    Debug(&o) << ColorFormat::RGBA;
-    CORRADE_COMPARE(o.str(), "ColorFormat::RGBA\n");
-}
-
-void AbstractImageTest::debugType() {
-    std::ostringstream o;
-    Debug(&o) << ColorType::UnsignedShort5551;
-    CORRADE_COMPARE(o.str(), "ColorType::UnsignedShort5551\n");
 }
 
 }}
