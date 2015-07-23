@@ -56,7 +56,7 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        explicit Image(ColorFormat format, ColorType type, const VectorTypeFor<dimensions, Int>& size, void* data): AbstractImage{format, type}, _size{size}, _data{reinterpret_cast<char*>(data)} {}
+        explicit Image(ColorFormat format, ColorType type, const VectorTypeFor<dimensions, Int>& size, void* data): _format{format}, _type{type}, _size{size}, _data{reinterpret_cast<char*>(data)} {}
 
         /**
          * @brief Constructor
@@ -66,7 +66,7 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
          * Dimensions are set to zero and data pointer to `nullptr`, call
          * @ref setData() to fill the image with data.
          */
-        /*implicit*/ Image(ColorFormat format, ColorType type): AbstractImage(format, type), _data{} {}
+        /*implicit*/ Image(ColorFormat format, ColorType type): _format{format}, _type{type}, _data{} {}
 
         /** @brief Copying is not allowed */
         Image(const Image<dimensions>&) = delete;
@@ -96,6 +96,15 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
         /*implicit*/ operator ImageReference<dimensions>() const && = delete;
         #endif
 
+        /** @brief Format of pixel data */
+        ColorFormat format() const { return _format; }
+
+        /** @brief Data type of pixel data */
+        ColorType type() const { return _type; }
+
+        /** @brief Pixel size (in bytes) */
+        std::size_t pixelSize() const { return Implementation::imagePixelSize(_format, _type); }
+
         /** @brief Image size */
         VectorTypeFor<dimensions, Int> size() const { return _size; }
 
@@ -107,7 +116,7 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
          * @see @ref pixelSize()
          */
         std::size_t dataSize(const VectorTypeFor<dimensions, Int>& size) const {
-            return AbstractImage::dataSize<dimensions>(size);
+            return Implementation::imageDataSize<dimensions>(*this, _format, _type, size);
         }
 
         /**
@@ -147,6 +156,8 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
         char* release();
 
     private:
+        ColorFormat _format;
+        ColorType _type;
         Math::Vector<Dimensions, Int> _size;
         char* _data;
 };
@@ -160,7 +171,7 @@ typedef Image<2> Image2D;
 /** @brief Three-dimensional image */
 typedef Image<3> Image3D;
 
-template<UnsignedInt dimensions> inline Image<dimensions>::Image(Image<dimensions>&& other) noexcept: AbstractImage(std::move(other)), _size(std::move(other._size)), _data(std::move(other._data)) {
+template<UnsignedInt dimensions> inline Image<dimensions>::Image(Image<dimensions>&& other) noexcept: AbstractImage{std::move(other)}, _format{std::move(other._format)}, _type{std::move(other._type)}, _size{std::move(other._size)}, _data{std::move(other._data)} {
     other._size = {};
     other._data = nullptr;
 }
@@ -168,6 +179,8 @@ template<UnsignedInt dimensions> inline Image<dimensions>::Image(Image<dimension
 template<UnsignedInt dimensions> inline Image<dimensions>& Image<dimensions>::operator=(Image<dimensions>&& other) noexcept {
     AbstractImage::operator=(std::move(other));
     using std::swap;
+    swap(_format, other._format);
+    swap(_type, other._type);
     swap(_size, other._size);
     swap(_data, other._data);
     return *this;
@@ -180,7 +193,7 @@ const &
 const
 #endif
 {
-    return ImageReference<dimensions>(AbstractImage::format(), AbstractImage::type(), _size, _data);
+    return ImageReference<dimensions>{_format, _type, _size, _data};
 }
 
 template<UnsignedInt dimensions> inline char* Image<dimensions>::release() {

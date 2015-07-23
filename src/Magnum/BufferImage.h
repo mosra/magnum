@@ -90,12 +90,21 @@ template<UnsignedInt dimensions> class BufferImage: public AbstractImage {
         /** @brief Move assignment */
         BufferImage<dimensions>& operator=(BufferImage<dimensions>&& other) noexcept;
 
+        /** @brief Format of pixel data */
+        ColorFormat format() const { return _format; }
+
+        /** @brief Data type of pixel data */
+        ColorType type() const { return _type; }
+
+        /** @brief Pixel size (in bytes) */
+        std::size_t pixelSize() const { return Implementation::imagePixelSize(_format, _type); }
+
         /** @brief Image size */
         VectorTypeFor<Dimensions, Int> size() const { return _size; }
 
         /** @copydoc Image::dataSize() */
         std::size_t dataSize(const VectorTypeFor<dimensions, Int>& size) const {
-            return AbstractImage::dataSize<dimensions>(size);
+            return Implementation::imageDataSize<dimensions>(*this, _format, _type, size);
         }
 
         /** @brief Image buffer */
@@ -118,6 +127,8 @@ template<UnsignedInt dimensions> class BufferImage: public AbstractImage {
         void setData(ColorFormat format, ColorType type, const VectorTypeFor<dimensions, Int>& size, const void* data, BufferUsage usage);
 
     private:
+        ColorFormat _format;
+        ColorType _type;
         Math::Vector<Dimensions, Int> _size;
         Buffer _buffer;
 };
@@ -131,13 +142,15 @@ typedef BufferImage<2> BufferImage2D;
 /** @brief Three-dimensional buffer image */
 typedef BufferImage<3> BufferImage3D;
 
-template<UnsignedInt dimensions> inline BufferImage<dimensions>::BufferImage(BufferImage<dimensions>&& other) noexcept: AbstractImage(std::move(other)), _size(other._size), _buffer(std::move(other._buffer)) {
+template<UnsignedInt dimensions> inline BufferImage<dimensions>::BufferImage(BufferImage<dimensions>&& other) noexcept: AbstractImage{std::move(other)}, _format{std::move(other._format)}, _type{std::move(other._type)}, _size{std::move(other._size)}, _buffer{std::move(other._buffer)} {
     other._size = {};
 }
 
 template<UnsignedInt dimensions> inline BufferImage<dimensions>& BufferImage<dimensions>::operator=(BufferImage<dimensions>&& other) noexcept {
     AbstractImage::operator=(std::move(other));
     using std::swap;
+    swap(_format, other._format);
+    swap(_type, other._type);
     swap(_size, other._size);
     swap(_buffer, other._buffer);
     return *this;

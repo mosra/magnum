@@ -44,10 +44,10 @@ AbstractImageTest::AbstractImageTest() {
 }
 
 void AbstractImageTest::pixelSize() {
-    CORRADE_COMPARE(AbstractImage::pixelSize(ColorFormat::RGBA, ColorType::UnsignedInt), 4*4);
-    CORRADE_COMPARE(AbstractImage::pixelSize(ColorFormat::DepthComponent, ColorType::UnsignedShort), 2);
-    CORRADE_COMPARE(AbstractImage::pixelSize(ColorFormat::StencilIndex, ColorType::UnsignedByte), 1);
-    CORRADE_COMPARE(AbstractImage::pixelSize(ColorFormat::DepthStencil, ColorType::UnsignedInt248), 4);
+    CORRADE_COMPARE(Implementation::imagePixelSize(ColorFormat::RGBA, ColorType::UnsignedInt), 4*4);
+    CORRADE_COMPARE(Implementation::imagePixelSize(ColorFormat::DepthComponent, ColorType::UnsignedShort), 2);
+    CORRADE_COMPARE(Implementation::imagePixelSize(ColorFormat::StencilIndex, ColorType::UnsignedByte), 1);
+    CORRADE_COMPARE(Implementation::imagePixelSize(ColorFormat::DepthStencil, ColorType::UnsignedInt248), 4);
 }
 
 void AbstractImageTest::dataSize() {

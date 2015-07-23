@@ -30,9 +30,9 @@
 #include "Magnum/ColorFormat.h"
 #include "Magnum/Math/Vector.h"
 
-namespace Magnum {
+namespace Magnum { namespace Implementation {
 
-std::size_t AbstractImage::pixelSize(ColorFormat format, ColorType type) {
+std::size_t imagePixelSize(ColorFormat format, ColorType type) {
     std::size_t size = 0;
     switch(type) {
         case ColorType::UnsignedByte:
@@ -151,18 +151,18 @@ std::size_t AbstractImage::pixelSize(ColorFormat format, ColorType type) {
     CORRADE_ASSERT_UNREACHABLE();
 }
 
-template<UnsignedInt dimensions> std::size_t AbstractImage::dataSize(Math::Vector<dimensions, Int> size) const {
+template<UnsignedInt dimensions> std::size_t imageDataSize(const AbstractImage&, const ColorFormat format, const ColorType type, Math::Vector<dimensions, Int> size) {
     /** @todo Code this properly when all @fn_gl{PixelStore} parameters are implemented */
     /* Row size, rounded to multiple of 4 bytes */
-    const std::size_t rowSize = ((size[0]*pixelSize() + 3)/4)*4;
+    const std::size_t rowSize = ((size[0]*imagePixelSize(format, type) + 3)/4)*4;
 
     /** @todo Can't this be done somewhat nicer? */
     size[0] = 1;
     return rowSize*size.product();
 }
 
-template MAGNUM_EXPORT std::size_t AbstractImage::dataSize<1>(Math::Vector<1, Int>) const;
-template MAGNUM_EXPORT std::size_t AbstractImage::dataSize<2>(Math::Vector<2, Int>) const;
-template MAGNUM_EXPORT std::size_t AbstractImage::dataSize<3>(Math::Vector<3, Int>) const;
+template MAGNUM_EXPORT std::size_t imageDataSize<1>(const AbstractImage&, ColorFormat, ColorType, Math::Vector<1, Int>);
+template MAGNUM_EXPORT std::size_t imageDataSize<2>(const AbstractImage&, ColorFormat, ColorType, Math::Vector<2, Int>);
+template MAGNUM_EXPORT std::size_t imageDataSize<3>(const AbstractImage&, ColorFormat, ColorType, Math::Vector<3, Int>);
 
-}
+}}

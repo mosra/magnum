@@ -63,7 +63,7 @@ template<UnsignedInt dimensions> class ImageReference: public AbstractImage {
          * @param size              Image size
          * @param data              Image data
          */
-        constexpr explicit ImageReference(ColorFormat format, ColorType type, const VectorTypeFor<dimensions, Int>& size, const void* data): AbstractImage(format, type), _size(size), _data(reinterpret_cast<const char*>(data)) {}
+        constexpr explicit ImageReference(ColorFormat format, ColorType type, const VectorTypeFor<dimensions, Int>& size, const void* data): _format{format}, _type{type}, _size{size}, _data{reinterpret_cast<const char*>(data)} {}
 
         /**
          * @brief Constructor
@@ -74,14 +74,23 @@ template<UnsignedInt dimensions> class ImageReference: public AbstractImage {
          * Data pointer is set to `nullptr`, call @ref setData() to fill the
          * image with data.
          */
-        constexpr explicit ImageReference(ColorFormat format, ColorType type, const VectorTypeFor<dimensions, Int>& size): AbstractImage(format, type), _size(size), _data(nullptr) {}
+        constexpr explicit ImageReference(ColorFormat format, ColorType type, const VectorTypeFor<dimensions, Int>& size): _format{format}, _type{type}, _size{size}, _data{nullptr} {}
+
+        /** @brief Format of pixel data */
+        ColorFormat format() const { return _format; }
+
+        /** @brief Data type of pixel data */
+        ColorType type() const { return _type; }
+
+        /** @brief Pixel size (in bytes) */
+        std::size_t pixelSize() const { return Implementation::imagePixelSize(_format, _type); }
 
         /** @brief Image size */
         constexpr VectorTypeFor<dimensions, Int> size() const { return _size; }
 
         /** @copydoc Image::dataSize() */
         std::size_t dataSize(const VectorTypeFor<dimensions, Int>& size) const {
-            return AbstractImage::dataSize<dimensions>(size);
+            return Implementation::imageDataSize<dimensions>(*this, _format, _type, size);
         }
 
         /** @brief Pointer to raw data */
@@ -105,6 +114,8 @@ template<UnsignedInt dimensions> class ImageReference: public AbstractImage {
         }
 
     private:
+        ColorFormat _format;
+        ColorType _type;
         Math::Vector<Dimensions, Int> _size;
         const char* _data;
 };
