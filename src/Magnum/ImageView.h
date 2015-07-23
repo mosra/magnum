@@ -26,8 +26,10 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::ImageView, typedef @ref Magnum::ImageView1D, @ref Magnum::ImageView2D, @ref Magnum::ImageView3D
+ * @brief Class @ref Magnum::ImageView, @ref Magnum::CompressedImageView, typedef @ref Magnum::ImageView1D, @ref Magnum::ImageView2D, @ref Magnum::ImageView3D, @ref Magnum::CompressedImageView1D, @ref Magnum::CompressedImageView2D, @ref Magnum::CompressedImageView3D
  */
+
+#include <Corrade/Containers/ArrayView.h>
 
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/AbstractImage.h"
@@ -48,7 +50,8 @@ same properties for each frame, such as video stream. Thus it is not possible
 to change image properties, only data pointer.
 
 Interchangeable with @ref Image, @ref BufferImage or @ref Trade::ImageData.
-@see @ref ImageView1D, @ref ImageView2D, @ref ImageView3D
+@see @ref ImageView1D, @ref ImageView2D, @ref ImageView3D,
+    @ref CompressedImageView
 */
 template<UnsignedInt dimensions> class ImageView: public AbstractImage {
     public:
@@ -128,6 +131,81 @@ typedef ImageView<2> ImageView2D;
 
 /** @brief Three-dimensional image view */
 typedef ImageView<3> ImageView3D;
+
+/**
+@brief Compressed image view
+
+Adds information about dimensions and compression type to some data in memory.
+
+See @ref ImageView for more information. Interchangeable with
+@ref CompressedImage, @ref CompressedBufferImage or @ref Trade::ImageData.
+@see @ref CompressedImageView1D, @ref CompressedImageView2D,
+    @ref CompressedImageView3D
+*/
+template<UnsignedInt dimensions> class CompressedImageView: public AbstractCompressedImage {
+    public:
+        enum: UnsignedInt {
+            Dimensions = dimensions /**< Image dimension count */
+        };
+
+        /**
+         * @brief Constructor
+         * @param format            Format of compressed data
+         * @param size              Image size
+         * @param data              Image data
+         */
+        constexpr explicit CompressedImageView(CompressedColorFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data): _format{format}, _size{size}, _data{reinterpret_cast<const char*>(data.data()), data.size()} {}
+
+        /**
+         * @brief Constructor
+         * @param format            Format of compressed data
+         * @param size              Image size
+         *
+         * Data pointer is set to `nullptr`, call @ref setData() to fill the
+         * image with data.
+         */
+        constexpr explicit CompressedImageView(CompressedColorFormat format, const VectorTypeFor<dimensions, Int>& size): _format{format}, _size{size} {}
+
+        /** @brief Format of compressed data */
+        CompressedColorFormat format() const { return _format; }
+
+        /** @brief Image size */
+        constexpr VectorTypeFor<dimensions, Int> size() const { return _size; }
+
+        /** @brief Raw data */
+        constexpr Containers::ArrayView<const char> data() const { return _data; }
+
+        /** @overload */
+        template<class T> const T* data() const {
+            return reinterpret_cast<const T*>(_data.data());
+        }
+
+        /**
+         * @brief Set image data
+         * @param data              Image data
+         *
+         * Dimensions, color compnents and data type remains the same as
+         * passed in constructor. The data are not copied nor deleted on
+         * destruction.
+         */
+        void setData(Containers::ArrayView<const void> data) {
+            _data = {reinterpret_cast<const char*>(data.data()), data.size()};
+        }
+
+    private:
+        CompressedColorFormat _format;
+        Math::Vector<Dimensions, Int> _size;
+        Containers::ArrayView<const char> _data;
+};
+
+/** @brief One-dimensional compressed image view */
+typedef CompressedImageView<1> CompressedImageView1D;
+
+/** @brief Two-dimensional compressed image view */
+typedef CompressedImageView<2> CompressedImageView2D;
+
+/** @brief Three-dimensional compressed image view */
+typedef CompressedImageView<3> CompressedImageView3D;
 
 }
 

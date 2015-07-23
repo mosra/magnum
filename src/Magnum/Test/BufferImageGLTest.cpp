@@ -35,18 +35,26 @@ struct BufferImageGLTest: AbstractOpenGLTester {
     explicit BufferImageGLTest();
 
     void construct();
+    void constructCompressed();
     void constructCopy();
+    void constructCopyCompressed();
     void constructMove();
+    void constructMoveCompressed();
 
     void setData();
+    void setDataCompressed();
 };
 
 BufferImageGLTest::BufferImageGLTest() {
     addTests({&BufferImageGLTest::construct,
+              &BufferImageGLTest::constructCompressed,
               &BufferImageGLTest::constructCopy,
+              &BufferImageGLTest::constructCopyCompressed,
               &BufferImageGLTest::constructMove,
+              &BufferImageGLTest::constructMoveCompressed,
 
-              &BufferImageGLTest::setData});
+              &BufferImageGLTest::setData,
+              &BufferImageGLTest::setDataCompressed});
 }
 
 void BufferImageGLTest::construct() {
@@ -70,9 +78,35 @@ void BufferImageGLTest::construct() {
     #endif
 }
 
+void BufferImageGLTest::constructCompressed() {
+    const char data[] = { 'a', 0, 0, 0, 'b', 0, 0, 0 };
+    CompressedBufferImage2D a{CompressedColorFormat::RGBAS3tcDxt1, {4, 4}, data, BufferUsage::StaticDraw};
+
+    #ifndef MAGNUM_TARGET_GLES
+    const auto imageData = a.buffer().data();
+    #endif
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(a.format(), CompressedColorFormat::RGBAS3tcDxt1);
+    CORRADE_COMPARE(a.size(), Vector2i(4, 4));
+    CORRADE_COMPARE(a.dataSize(), 8);
+
+    /** @todo How to verify the contents in ES? */
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const char>{data},
+                       TestSuite::Compare::Container);
+    #endif
+}
+
 void BufferImageGLTest::constructCopy() {
     CORRADE_VERIFY(!(std::is_constructible<BufferImage2D, const BufferImage2D&>{}));
     CORRADE_VERIFY(!(std::is_assignable<BufferImage2D, const BufferImage2D&>{}));
+}
+
+void BufferImageGLTest::constructCopyCompressed() {
+    CORRADE_VERIFY(!(std::is_constructible<CompressedBufferImage2D, const CompressedBufferImage2D&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<CompressedBufferImage2D, const CompressedBufferImage2D&>{}));
 }
 
 void BufferImageGLTest::constructMove() {
@@ -110,6 +144,43 @@ void BufferImageGLTest::constructMove() {
     CORRADE_COMPARE(c.buffer().id(), id);
 }
 
+void BufferImageGLTest::constructMoveCompressed() {
+    const char data[] = { 'a', 0, 0, 0, 'b', 0, 0, 0 };
+    CompressedBufferImage2D a{CompressedColorFormat::RGBAS3tcDxt1, {4, 4}, data, BufferUsage::StaticDraw};
+    const Int id = a.buffer().id();
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_VERIFY(id > 0);
+
+    CompressedBufferImage2D b{std::move(a)};
+
+    CORRADE_COMPARE(a.buffer().id(), 0);
+    CORRADE_COMPARE(a.size(), Vector2i());
+    CORRADE_COMPARE(a.dataSize(), 0);
+
+    CORRADE_COMPARE(b.format(), CompressedColorFormat::RGBAS3tcDxt1);
+    CORRADE_COMPARE(b.size(), Vector2i(4, 4));
+    CORRADE_COMPARE(b.dataSize(), 8);
+    CORRADE_COMPARE(b.buffer().id(), id);
+
+    const unsigned char data2[] = { 'a', 0, 0, 0, 'b', 0, 0, 0, 'c', 0, 0, 0, 'd', 0, 0, 0 };
+    CompressedBufferImage2D c{CompressedColorFormat::RGBAS3tcDxt1, {8, 4}, data2, BufferUsage::StaticDraw};
+    const Int cId = c.buffer().id();
+    c = std::move(b);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_VERIFY(cId > 0);
+    CORRADE_COMPARE(b.buffer().id(), cId);
+    CORRADE_COMPARE(b.size(), Vector2i(8, 4));
+    CORRADE_COMPARE(b.dataSize(), 16);
+
+    CORRADE_COMPARE(c.format(), CompressedColorFormat::RGBAS3tcDxt1);
+    CORRADE_COMPARE(c.size(), Vector2i(4, 4));
+    CORRADE_COMPARE(c.dataSize(), 8);
+    CORRADE_COMPARE(c.buffer().id(), id);
+}
+
 void BufferImageGLTest::setData() {
     const char data[4] = { 'a', 'b', 'c', 'd' };
     BufferImage2D a(ColorFormat::Red, ColorType::UnsignedByte, {4, 1}, data, BufferUsage::StaticDraw);
@@ -126,6 +197,30 @@ void BufferImageGLTest::setData() {
     CORRADE_COMPARE(a.format(), ColorFormat::RGBA);
     CORRADE_COMPARE(a.type(), ColorType::UnsignedShort);
     CORRADE_COMPARE(a.size(), Vector2i(1, 2));
+
+    /** @todo How to verify the contents in ES? */
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedShort>{data2},
+                       TestSuite::Compare::Container);
+    #endif
+}
+
+void BufferImageGLTest::setDataCompressed() {
+    const char data[] = { 'a', 0, 0, 0, 'b', 0, 0, 0 };
+    CompressedBufferImage2D a{CompressedColorFormat::RGBAS3tcDxt1, {4, 4}, data, BufferUsage::StaticDraw};
+
+    const char data2[] = { 'a', 0, 0, 0, 'b', 0, 0, 0, 'c', 0, 0, 0, 'd', 0, 0, 0 };
+    a.setData(CompressedColorFormat::RGBAS3tcDxt3, {8, 4}, data2, BufferUsage::StaticDraw);
+
+    #ifndef MAGNUM_TARGET_GLES
+    const auto imageData = a.buffer().data();
+    #endif
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(a.format(), CompressedColorFormat::RGBAS3tcDxt3);
+    CORRADE_COMPARE(a.size(), Vector2i(8, 4));
+    CORRADE_COMPARE(a.dataSize(), 16);
 
     /** @todo How to verify the contents in ES? */
     #ifndef MAGNUM_TARGET_GLES

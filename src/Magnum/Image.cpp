@@ -35,10 +35,20 @@ template<UnsignedInt dimensions> void Image<dimensions>::setData(ColorFormat for
     _data = reinterpret_cast<char*>(data);
 }
 
+template<UnsignedInt dimensions> void CompressedImage<dimensions>::setData(CompressedColorFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) {
+    _format = format;
+    _size = size;
+    _data = std::move(data);
+}
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template class MAGNUM_EXPORT Image<1>;
 template class MAGNUM_EXPORT Image<2>;
 template class MAGNUM_EXPORT Image<3>;
+
+template class MAGNUM_EXPORT CompressedImage<1>;
+template class MAGNUM_EXPORT CompressedImage<2>;
+template class MAGNUM_EXPORT CompressedImage<3>;
 #endif
 
 }

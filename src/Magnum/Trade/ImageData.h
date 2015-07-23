@@ -29,6 +29,8 @@
  * @brief Class @ref Magnum::Trade::ImageData, typedef @ref Magnum::Trade::ImageData1D, @ref Magnum::Trade::ImageData2D, @ref Magnum::Trade::ImageData3D
  */
 
+#include <Corrade/Containers/Array.h>
+
 #include "Magnum/ImageView.h"
 
 namespace Magnum { namespace Trade {
@@ -36,18 +38,26 @@ namespace Magnum { namespace Trade {
 /**
 @brief Image data
 
-Access to image data provided by @ref AbstractImporter subclasses.
-Interchangeable with @ref Image, @ref ImageView or @ref BufferImage.
+Access to either uncompressed or compressed image data provided by
+@ref AbstractImporter subclasses, the compression state is distinguished with
+@ref isCompressed(). Uncompressed images have @ref format(), @ref type(),
+@ref pixelSize() and @ref dataSize() properties and are convertible to
+@ref ImageView. Compressed images have just the @ref compressedFormat()
+property and are convertible to @ref CompressedImageView.
+
+Uncompressed image is interchangeable with @ref Image, @ref ImageView or
+@ref BufferImage, compressed with @ref CompressedImage, @ref CompressedImageView
+or @ref CompressedBufferImage.
 @see @ref ImageData1D, @ref ImageData2D, @ref ImageData3D
 */
-template<UnsignedInt dimensions> class ImageData: public AbstractImage {
+template<UnsignedInt dimensions> class ImageData: public AbstractCompressedImage {
     public:
         enum: UnsignedInt {
             Dimensions = dimensions /**< Image dimension count */
         };
 
         /**
-         * @brief Constructor
+         * @brief Construct uncompressed image data
          * @param format            Format of pixel data
          * @param type              Data type of pixel data
          * @param size              Image size
@@ -56,7 +66,18 @@ template<UnsignedInt dimensions> class ImageData: public AbstractImage {
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        explicit ImageData(ColorFormat format, ColorType type, const VectorTypeFor<dimensions, Int>& size, void* data): _format{format}, _type{type}, _size{size}, _data{reinterpret_cast<char*>(data)} {}
+        explicit ImageData(ColorFormat format, ColorType type, const VectorTypeFor<dimensions, Int>& size, void* data): _compressed{false}, _format{format}, _type{type}, _size{size}, _data{reinterpret_cast<char*>(data), dataSize(size)} {}
+
+        /**
+         * @brief Construct compressed image data
+         * @param format            Format of compressed data
+         * @param size              Image size
+         * @param data              Image data
+         *
+         * Note that the image data are not copied on construction, but they
+         * are deleted on class destruction.
+         */
+        explicit ImageData(CompressedColorFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data): _compressed{true}, _compressedFormat{format}, _size{size}, _data{std::move(data)} {}
 
         /** @brief Copying is not allowed */
         ImageData(const ImageData<dimensions>&) = delete;
@@ -70,10 +91,15 @@ template<UnsignedInt dimensions> class ImageData: public AbstractImage {
         /** @brief Move assignment */
         ImageData<dimensions>& operator=(ImageData<dimensions>&& other) noexcept;
 
-        /** @brief Destructor */
-        ~ImageData() { delete[] _data; }
+        /** @brief Whether the image is compressed */
+        bool isCompressed() const { return _compressed; }
 
-        /** @brief Conversion to view */
+        /**
+         * @brief Conversion to view
+         *
+         * The image is expected to be uncompressed.
+         * @see @ref isCompressed()
+         */
         /*implicit*/ operator ImageView<dimensions>()
         #ifndef CORRADE_GCC47_COMPATIBILITY
         const &;
@@ -86,35 +112,86 @@ template<UnsignedInt dimensions> class ImageData: public AbstractImage {
         /*implicit*/ operator ImageView<dimensions>() const && = delete;
         #endif
 
-        /** @brief Format of pixel data */
-        ColorFormat format() const { return _format; }
+        /**
+         * @brief Conversion to compressed view
+         *
+         * The image is expected to be compressed.
+         * @see @ref isCompressed()
+         */
+        /*implicit*/ operator CompressedImageView<dimensions>()
+        #ifndef CORRADE_GCC47_COMPATIBILITY
+        const &;
+        #else
+        const;
+        #endif
 
-        /** @brief Data type of pixel data */
-        ColorType type() const { return _type; }
+        #ifndef CORRADE_GCC47_COMPATIBILITY
+        /** @overload */
+        /*implicit*/ operator CompressedImageView<dimensions>() const && = delete;
+        #endif
 
-        /** @brief Pixel size (in bytes) */
-        std::size_t pixelSize() const { return Implementation::imagePixelSize(_format, _type); }
+        /**
+         * @brief Format of pixel data
+         *
+         * The image is expected to be uncompressed.
+         * @see @ref isCompressed()
+         */
+        ColorFormat format() const;
+
+        /**
+         * @brief Data type of pixel data
+         *
+         * The image is expected to be uncompressed.
+         * @see @ref isCompressed()
+         */
+        ColorType type() const;
+
+        /**
+         * @brief Format of compressed data
+         *
+         * The image is expected to be compressed.
+         * @see @ref isCompressed()
+         */
+        CompressedColorFormat compressedFormat() const;
+
+        /**
+         * @brief Pixel size (in bytes)
+         *
+         * The image is expected to be uncompressed.
+         * @see @ref isCompressed()
+         */
+        std::size_t pixelSize() const;
 
         /** @brief Image size */
         VectorTypeFor<dimensions, Int> size() const { return _size; }
 
-        /** @copydoc Image::dataSize() */
-        std::size_t dataSize(const VectorTypeFor<dimensions, Int>& size) const {
-            return Implementation::imageDataSize<dimensions>(*this, _format, _type, size);
-        }
+        /**
+         * @brief Size of data required to store uncompressed image of given size
+         *
+         * The image is expected to be uncompressed. Takes color format, type
+         * and row alignment of this image into account.
+         * @see @ref isCompressed(), @ref pixelSize()
+         */
+        std::size_t dataSize(const VectorTypeFor<dimensions, Int>& size) const;
+
+        /** @brief Raw data */
+        Containers::ArrayView<char> data() { return _data; }
+
+        /** @overload */
+        Containers::ArrayView<const char> data() const { return _data; }
 
         /**
          * @brief Pointer to raw data
          *
          * @see @ref release()
          */
-        template<class T = char> T* data() {
-            return reinterpret_cast<T*>(_data);
+        template<class T> T* data() {
+            return reinterpret_cast<T*>(_data.data());
         }
 
         /** @overload */
-        template<class T = char> const T* data() const {
-            return reinterpret_cast<const T*>(_data);
+        template<class T> const T* data() const {
+            return reinterpret_cast<const T*>(_data.data());
         }
 
         /**
@@ -124,13 +201,17 @@ template<UnsignedInt dimensions> class ImageData: public AbstractImage {
          * to default. Deleting the returned array is then user responsibility.
          * @see @ref data()
          */
-        char* release();
+        Containers::Array<char> release();
 
     private:
-        ColorFormat _format;
+        bool _compressed;
+        union {
+            ColorFormat _format;
+            CompressedColorFormat _compressedFormat;
+        };
         ColorType _type;
         Math::Vector<Dimensions, Int> _size;
-        char* _data;
+        Containers::Array<char> _data;
 };
 
 /** @brief One-dimensional image */
@@ -142,34 +223,28 @@ typedef ImageData<2> ImageData2D;
 /** @brief Three-dimensional image */
 typedef ImageData<3> ImageData3D;
 
-template<UnsignedInt dimensions> inline ImageData<dimensions>::ImageData(ImageData<dimensions>&& other) noexcept: AbstractImage{std::move(other)}, _format{std::move(other._format)}, _type{std::move(other._type)}, _size{std::move(other._size)}, _data{std::move(other._data)} {
+template<UnsignedInt dimensions> inline ImageData<dimensions>::ImageData(ImageData<dimensions>&& other) noexcept: AbstractCompressedImage{std::move(other)}, _compressed{std::move(other._compressed)}, _type{std::move(other._type)}, _size{std::move(other._size)}, _data{std::move(other._data)} {
+    if(_compressed) _compressedFormat = std::move(other._compressedFormat);
+    else _format = std::move(other._format);
+
     other._size = {};
     other._data = nullptr;
 }
 
 template<UnsignedInt dimensions> inline ImageData<dimensions>& ImageData<dimensions>::operator=(ImageData<dimensions>&& other) noexcept {
-    AbstractImage::operator=(std::move(other));
+    AbstractCompressedImage::operator=(std::move(other));
     using std::swap;
-    swap(_format, other._format);
+    swap(_compressed, other._compressed);
+    if(_compressed) swap(_compressedFormat, other._compressedFormat);
+    else swap(_format, other._format);
     swap(_type, other._type);
     swap(_size, other._size);
     swap(_data, other._data);
     return *this;
 }
 
-template<UnsignedInt dimensions> inline ImageData<dimensions>::operator ImageView<dimensions>()
-#ifndef CORRADE_GCC47_COMPATIBILITY
-const &
-#else
-const
-#endif
-{
-    return ImageView<dimensions>(_format, _type, _size, _data);
-}
-
-template<UnsignedInt dimensions> inline char* ImageData<dimensions>::release() {
-    /** @todo I need `std::exchange` NOW. */
-    char* const data = _data;
+template<UnsignedInt dimensions> inline Containers::Array<char> ImageData<dimensions>::release() {
+    Containers::Array<char> data{std::move(_data)};
     _size = {};
     _data = nullptr;
     return data;

@@ -41,10 +41,27 @@ template<UnsignedInt dimensions> void BufferImage<dimensions>::setData(ColorForm
     _buffer.setData({data, dataSize(size)}, usage);
 }
 
+template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(CompressedColorFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage): _format{format}, _size{size}, _buffer{Buffer::TargetHint::PixelPack}, _dataSize{data.size()} {
+    _buffer.setData(data, usage);
+}
+
+template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(): _format{}, _buffer{Buffer::TargetHint::PixelPack}, _dataSize{} {}
+
+template<UnsignedInt dimensions> void CompressedBufferImage<dimensions>::setData(CompressedColorFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage) {
+    _format = format;
+    _size = size;
+    _buffer.setData(data, usage);
+    _dataSize = data.size();
+}
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template class MAGNUM_EXPORT BufferImage<1>;
 template class MAGNUM_EXPORT BufferImage<2>;
 template class MAGNUM_EXPORT BufferImage<3>;
+
+template class MAGNUM_EXPORT CompressedBufferImage<1>;
+template class MAGNUM_EXPORT CompressedBufferImage<2>;
+template class MAGNUM_EXPORT CompressedBufferImage<3>;
 #endif
 #endif
 

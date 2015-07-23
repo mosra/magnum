@@ -443,6 +443,11 @@ template<UnsignedInt> class BufferImage;
 typedef BufferImage<1> BufferImage1D;
 typedef BufferImage<2> BufferImage2D;
 typedef BufferImage<3> BufferImage3D;
+
+template<UnsignedInt> class CompressedBufferImage;
+typedef CompressedBufferImage<1> CompressedBufferImage1D;
+typedef CompressedBufferImage<2> CompressedBufferImage2D;
+typedef CompressedBufferImage<3> CompressedBufferImage3D;
 #endif
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
@@ -480,17 +485,27 @@ typedef Image<1> Image1D;
 typedef Image<2> Image2D;
 typedef Image<3> Image3D;
 
+template<UnsignedInt> class CompressedImage;
+typedef CompressedImage<1> CompressedImage1D;
+typedef CompressedImage<2> CompressedImage2D;
+typedef CompressedImage<3> CompressedImage3D;
+
 template<UnsignedInt> class ImageView;
 typedef ImageView<1> ImageView1D;
 typedef ImageView<2> ImageView2D;
 typedef ImageView<3> ImageView3D;
 
 #ifdef MAGNUM_BUILD_DEPRECATED
-template<UnsignedInt dimensions> using CORRADE_DEPRECATED("use ImageView instead") ImageReference = ImageView<dimensions>;
+template<UnsignedInt dimensions> using ImageReference CORRADE_DEPRECATED("use ImageView instead") = ImageView<dimensions>;
 typedef CORRADE_DEPRECATED("use ImageView1D instead") ImageView1D ImageReference1D;
 typedef CORRADE_DEPRECATED("use ImageView2D instead") ImageView2D ImageReference2D;
 typedef CORRADE_DEPRECATED("use ImageView3D instead") ImageView3D ImageReference3D;
 #endif
+
+template<UnsignedInt> class CompressedImageView;
+typedef CompressedImageView<1> CompressedImageView1D;
+typedef CompressedImageView<2> CompressedImageView2D;
+typedef CompressedImageView<3> CompressedImageView3D;
 
 enum class MeshPrimitive: GLenum;
 

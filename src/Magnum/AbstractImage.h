@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::AbstractImage
+ * @brief Class @ref Magnum::AbstractImage, @ref Magnum::AbstractCompressedImage
  */
 
 #include <cstddef>
@@ -43,10 +43,11 @@ namespace Implementation {
 }
 
 /**
-@brief Non-templated base for one-, two- or three-dimensional images
+@brief Non-templated base for one-, two- or three-dimensional uncompressed images
 
 See @ref Image, @ref ImageView, @ref BufferImage and @ref Trade::ImageData
 documentation for more information.
+@see @ref AbstractCompressedImage
 @todo Where to put glClampColor() and glPixelStore() encapsulation? It is
     needed in AbstractFramebuffer::read(), Texture::setImage() etc (i.e. all
     functions operating with images). It also possibly needs to be "stackable"
@@ -64,6 +65,18 @@ class AbstractImage {
         /** @todo remove this when the class has actual contents */
         /* Otherwise both (heh) GCC and Clang complain when move-constructing using {} */
         Int _dummy;
+};
+
+/**
+@brief Non-templated base for one-, two- or three-dimensional compressed images
+
+See @ref CompressedImage, @ref CompressedImageView, @ref CompressedBufferImage
+and @ref Trade::ImageData documentation for more information.
+@see @ref AbstractImage
+*/
+class AbstractCompressedImage: public AbstractImage {
+    protected:
+        ~AbstractCompressedImage() = default;
 };
 
 }
