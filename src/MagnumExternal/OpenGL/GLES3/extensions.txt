@@ -13,6 +13,7 @@ extension EXT_debug_marker                          optional
 extension EXT_disjoint_timer_query                  optional
 extension EXT_texture_sRGB_decode                   optional
 extension EXT_sRGB_write_control                    optional
+extension EXT_texture_compression_s3tc              optional
 extension EXT_shader_integer_mix                    optional
 extension EXT_copy_image                            optional
 extension EXT_draw_buffers_indexed                  optional

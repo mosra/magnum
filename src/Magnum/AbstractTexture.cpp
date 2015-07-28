@@ -575,6 +575,7 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         case TextureFormat::CompressedRGBBptcUnsignedFloat:
         case TextureFormat::CompressedRGBBptcSignedFloat:
         #endif
+        case TextureFormat::CompressedRGBS3tcDxt1:
             return ColorFormat::RGB;
 
         #ifndef MAGNUM_TARGET_GLES2
@@ -624,6 +625,9 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         case TextureFormat::CompressedRGBABptcUnorm:
         case TextureFormat::CompressedSRGBAlphaBptcUnorm:
         #endif
+        case TextureFormat::CompressedRGBAS3tcDxt1:
+        case TextureFormat::CompressedRGBAS3tcDxt3:
+        case TextureFormat::CompressedRGBAS3tcDxt5:
             return ColorFormat::RGBA;
 
         #ifndef MAGNUM_TARGET_GLES2
@@ -718,6 +722,10 @@ ColorType AbstractTexture::imageTypeForInternalFormat(const TextureFormat intern
         case TextureFormat::CompressedRGBABptcUnorm:
         case TextureFormat::CompressedSRGBAlphaBptcUnorm:
         #endif
+        case TextureFormat::CompressedRGBS3tcDxt1:
+        case TextureFormat::CompressedRGBAS3tcDxt1:
+        case TextureFormat::CompressedRGBAS3tcDxt3:
+        case TextureFormat::CompressedRGBAS3tcDxt5:
             return ColorType::UnsignedByte;
 
         #ifndef MAGNUM_TARGET_GLES2

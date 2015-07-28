@@ -946,6 +946,13 @@ typedef khronos_ssize_t GLsizeiptr;
 
 #define GL_FRAMEBUFFER_SRGB_EXT 0x8DB9
 
+/* GL_EXT_texture_compression_s3tc */
+
+#define GL_COMPRESSED_RGB_S3TC_DXT1_EXT 0x83F0
+#define GL_COMPRESSED_RGBA_S3TC_DXT1_EXT 0x83F1
+#define GL_COMPRESSED_RGBA_S3TC_DXT3_EXT 0x83F2
+#define GL_COMPRESSED_RGBA_S3TC_DXT5_EXT 0x83F3
+
 /* GL_EXT_draw_buffers_indexed */
 
 #define GL_BLEND_EQUATION_RGB 0x8009
@@ -1965,6 +1972,9 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglTexBufferEXT)(GLenum, GLenum, GLuint)
 #define glTexBufferEXT flextglTexBufferEXT
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglTexBufferRangeEXT)(GLenum, GLenum, GLuint, GLintptr, GLsizeiptr);
 #define glTexBufferRangeEXT flextglTexBufferRangeEXT
+
+/* GL_EXT_texture_compression_s3tc */
+
 
 /* GL_EXT_texture_cube_map_array */
 

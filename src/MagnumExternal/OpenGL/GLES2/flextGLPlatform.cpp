@@ -164,6 +164,8 @@ void flextGLInit() {
     flextglTexParameterIivEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, const GLint *)>(loader.load("glTexParameterIivEXT"));
     flextglTexParameterIuivEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, const GLuint *)>(loader.load("glTexParameterIuivEXT"));
 
+    /* GL_EXT_texture_compression_s3tc */
+
     /* GL_EXT_texture_filter_anisotropic */
 
     /* GL_EXT_texture_format_BGRA8888 */

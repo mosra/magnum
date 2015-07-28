@@ -448,6 +448,13 @@ typedef khronos_ssize_t GLsizeiptr;
 #define GL_TEXTURE_MAX_ANISOTROPY_EXT 0x84FE
 #define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT 0x84FF
 
+/* GL_EXT_texture_compression_s3tc */
+
+#define GL_COMPRESSED_RGB_S3TC_DXT1_EXT 0x83F0
+#define GL_COMPRESSED_RGBA_S3TC_DXT1_EXT 0x83F1
+#define GL_COMPRESSED_RGBA_S3TC_DXT3_EXT 0x83F2
+#define GL_COMPRESSED_RGBA_S3TC_DXT5_EXT 0x83F3
+
 /* Function prototypes */
 
 /* GL_ANGLE_depth_texture */
@@ -615,6 +622,9 @@ GLAPI void glDrawBuffersEXT(GLsizei, const GLenum *);
 
 
 /* GL_EXT_shader_texture_lod */
+
+
+/* GL_EXT_texture_compression_s3tc */
 
 
 /* GL_EXT_texture_filter_anisotropic */

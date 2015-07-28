@@ -210,6 +210,8 @@ void flextGLInit() {
     flextglTexBufferEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLuint)>(loader.load("glTexBufferEXT"));
     flextglTexBufferRangeEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLuint, GLintptr, GLsizeiptr)>(loader.load("glTexBufferRangeEXT"));
 
+    /* GL_EXT_texture_compression_s3tc */
+
     /* GL_EXT_texture_cube_map_array */
 
     /* GL_EXT_texture_filter_anisotropic */

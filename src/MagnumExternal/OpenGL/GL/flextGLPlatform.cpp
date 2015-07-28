@@ -337,6 +337,8 @@ void flextGLInit() {
 
     /* GL_EXT_shader_integer_mix */
 
+    /* GL_EXT_texture_compression_s3tc */
+
     /* GL_EXT_texture_filter_anisotropic */
 
     /* GL_EXT_texture_mirror_clamp */

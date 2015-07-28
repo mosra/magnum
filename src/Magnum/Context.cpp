@@ -80,6 +80,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,ARB,transform_feedback_overflow_query),
         _extension(GL,ATI,texture_mirror_once),
         _extension(GL,EXT,texture_filter_anisotropic),
+        _extension(GL,EXT,texture_compression_s3tc),
         _extension(GL,EXT,texture_mirror_clamp),
         _extension(GL,EXT,direct_state_access),
         _extension(GL,EXT,texture_sRGB_decode),
@@ -237,6 +238,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,OES,element_index_uint),
         _extension(GL,OES,texture_float_linear),
         _extension(GL,OES,texture_half_float_linear),
+        _extension(GL,WEBGL,compressed_texture_s3tc),
         _extension(GL,WEBGL,depth_texture),
         _extension(GL,WEBGL,draw_buffers)};
     #endif
@@ -258,6 +260,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,EXT,disjoint_timer_query),
         _extension(GL,EXT,texture_sRGB_decode),
         _extension(GL,EXT,sRGB_write_control),
+        _extension(GL,EXT,texture_compression_s3tc),
         #ifndef MAGNUM_TARGET_GLES2
         _extension(GL,EXT,shader_integer_mix),
         _extension(GL,EXT,copy_image),

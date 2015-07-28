@@ -666,6 +666,42 @@ enum class CompressedColorFormat: GLenum {
      */
     SRGBAlphaBptcUnorm = GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM,
     #endif
+
+    /**
+     * S3TC DXT1 compressed RGB. **Available only for 2D, 3D, 2D array, cube
+     * map and cube map array textures.**
+     * @requires_extension Extension @extension{EXT,texture_compression_s3tc}
+     * @requires_es_extension Extension @es_extension2{EXT,texture_compression_s3tc,texture_compression_s3tc}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_s3tc}
+     */
+    RGBS3tcDxt1 = GL_COMPRESSED_RGB_S3TC_DXT1_EXT,
+
+    /**
+     * S3TC DXT1 compressed RGBA. **Available only for 2D, 3D, 2D array, cube
+     * map and cube map array textures.**
+     * @requires_extension Extension @extension{EXT,texture_compression_s3tc}
+     * @requires_es_extension Extension @es_extension2{EXT,texture_compression_s3tc,texture_compression_s3tc}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_s3tc}
+     */
+    RGBAS3tcDxt1 = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT,
+
+    /**
+     * S3TC DXT3 compressed RGBA. **Available only for 2D, 3D, 2D array, cube
+     * map and cube map array textures.**
+     * @requires_extension Extension @extension{EXT,texture_compression_s3tc}
+     * @requires_es_extension Extension @es_extension2{EXT,texture_compression_s3tc,texture_compression_s3tc}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_s3tc}
+     */
+    RGBAS3tcDxt3 = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT,
+
+    /**
+     * S3TC DXT5 compressed RGBA. **Available only for 2D, 3D, 2D array, cube
+     * map and cube map array textures.**
+     * @requires_extension Extension @extension{EXT,texture_compression_s3tc}
+     * @requires_es_extension Extension @es_extension2{EXT,texture_compression_s3tc,texture_compression_s3tc}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_s3tc}
+     */
+    RGBAS3tcDxt5 = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT
 };
 
 /** @debugoperatorenum{Magnum::ColorFormat} */

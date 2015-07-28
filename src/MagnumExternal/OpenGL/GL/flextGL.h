@@ -1629,6 +1629,13 @@ typedef void (APIENTRY *GLDEBUGPROC)(GLenum source,GLenum type,GLuint id,GLenum 
 #define GL_TEXTURE_MAX_ANISOTROPY_EXT 0x84FE
 #define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT 0x84FF
 
+/* GL_EXT_texture_compression_s3tc */
+
+#define GL_COMPRESSED_RGB_S3TC_DXT1_EXT 0x83F0
+#define GL_COMPRESSED_RGBA_S3TC_DXT1_EXT 0x83F1
+#define GL_COMPRESSED_RGBA_S3TC_DXT3_EXT 0x83F2
+#define GL_COMPRESSED_RGBA_S3TC_DXT5_EXT 0x83F3
+
 /* GL_EXT_texture_mirror_clamp */
 
 #define GL_MIRROR_CLAMP_EXT 0x8742
@@ -2381,6 +2388,9 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglVertexArrayVertexOffsetEXT)(GLuint, G
 #define glVertexArrayVertexOffsetEXT flextglVertexArrayVertexOffsetEXT
 
 /* GL_EXT_shader_integer_mix */
+
+
+/* GL_EXT_texture_compression_s3tc */
 
 
 /* GL_EXT_texture_filter_anisotropic */

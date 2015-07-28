@@ -735,6 +735,13 @@ typedef khronos_ssize_t GLsizeiptr;
 
 #define GL_FRAMEBUFFER_SRGB_EXT 0x8DB9
 
+/* GL_EXT_texture_compression_s3tc */
+
+#define GL_COMPRESSED_RGB_S3TC_DXT1_EXT 0x83F0
+#define GL_COMPRESSED_RGBA_S3TC_DXT1_EXT 0x83F1
+#define GL_COMPRESSED_RGBA_S3TC_DXT3_EXT 0x83F2
+#define GL_COMPRESSED_RGBA_S3TC_DXT5_EXT 0x83F3
+
 /* GL_EXT_draw_buffers_indexed */
 
 #define GL_BLEND_EQUATION_RGB 0x8009
@@ -1611,6 +1618,11 @@ GL_APICALL void GL_APIENTRY GLES2TexParameterIivEXT(GLenum, GLenum, const GLint 
 #define glTexParameterIivEXT GLES2TexParameterIivEXT
 GL_APICALL void GL_APIENTRY GLES2TexParameterIuivEXT(GLenum, GLenum, const GLuint *);
 #define glTexParameterIuivEXT GLES2TexParameterIuivEXT
+#endif
+
+/* GL_EXT_texture_compression_s3tc */
+#ifndef GL_EXT_texture_compression_s3tc
+#define GL_EXT_texture_compression_s3tc 1
 #endif
 
 /* GL_EXT_texture_filter_anisotropic */

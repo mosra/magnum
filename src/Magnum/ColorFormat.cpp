@@ -154,6 +154,10 @@ Debug operator<<(Debug debug, const CompressedColorFormat value) {
         _c(RGBABptcUnorm)
         _c(SRGBAlphaBptcUnorm)
         #endif
+        _c(RGBS3tcDxt1)
+        _c(RGBAS3tcDxt1)
+        _c(RGBAS3tcDxt3)
+        _c(RGBAS3tcDxt5)
         #undef _c
     }
 

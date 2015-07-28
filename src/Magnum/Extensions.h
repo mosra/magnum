@@ -197,6 +197,7 @@ namespace GL {
         _extension(GL,ATI,texture_mirror_once,          GL210,  None) // #221
     } namespace EXT {
         _extension(GL,EXT,texture_filter_anisotropic,   GL210,  None) // #187
+        _extension(GL,EXT,texture_compression_s3tc,     GL210,  None) // #198
         /* EXT_framebuffer_object, EXT_packed_depth_stencil, EXT_framebuffer_blit,
            EXT_framebuffer_multisample replaced with ARB_framebuffer_object */
         _extension(GL,EXT,texture_mirror_clamp,         GL210,  None) // #298
@@ -259,6 +260,7 @@ namespace GL {
         #endif
     } namespace WEBGL {
         #ifdef MAGNUM_TARGET_GLES2
+        _extension(GL,WEBGL,compressed_texture_s3tc, GLES200,   None) // #8
         _extension(GL,WEBGL,depth_texture,          GLES200, GLES300) // #9
         _extension(GL,WEBGL,draw_buffers,           GLES200, GLES300) // #18
         #endif
@@ -330,6 +332,7 @@ namespace GL {
         #endif
         _extension(GL,EXT,texture_sRGB_decode,      GLES200,    None) // #152
         _extension(GL,EXT,sRGB_write_control,       GLES200,    None) // #153
+        _extension(GL,EXT,texture_compression_s3tc, GLES200,    None) // #154
         #ifdef MAGNUM_TARGET_GLES2
         _extension(GL,EXT,instanced_arrays,         GLES200, GLES300) // #156
         _extension(GL,EXT,draw_instanced,           GLES200, GLES300) // #157
