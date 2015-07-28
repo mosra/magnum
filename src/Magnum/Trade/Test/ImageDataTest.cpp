@@ -114,7 +114,7 @@ void ImageDataTest::toReference() {
 
 void ImageDataTest::release() {
     char data[] = {'b', 'e', 'e', 'r'};
-    ImageData2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 4}, data);
+    Trade::ImageData2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 4}, data);
     const char* const pointer = a.release();
 
     CORRADE_COMPARE(pointer, data);

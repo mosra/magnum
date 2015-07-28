@@ -65,8 +65,7 @@ void BufferImageGLTest::construct() {
 
     /** @todo How to verify the contents in ES? */
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE_AS(std::vector<char>(imageData.begin(), imageData.end()),
-                       std::vector<char>(data, data + 12),
+    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const char>{data},
                        TestSuite::Compare::Container);
     #endif
 }
@@ -130,8 +129,7 @@ void BufferImageGLTest::setData() {
 
     /** @todo How to verify the contents in ES? */
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE_AS(std::vector<UnsignedShort>(imageData.begin(), imageData.end()),
-                       std::vector<UnsignedShort>(data2, data2 + 8),
+    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const char>{data2},
                        TestSuite::Compare::Container);
     #endif
 }

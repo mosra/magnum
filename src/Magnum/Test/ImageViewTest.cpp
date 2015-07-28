@@ -43,7 +43,7 @@ ImageViewTest::ImageViewTest() {
 }
 
 void ImageViewTest::construct() {
-    const char data[3] = {};
+    const char data[3]{};
     ImageView2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
 
     CORRADE_COMPARE(a.format(), ColorFormat::Red);
@@ -53,9 +53,9 @@ void ImageViewTest::construct() {
 }
 
 void ImageViewTest::setData() {
-    const char data[3] = {};
+    const char data[3]{};
     ImageView2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
-    const char data2[8] = {};
+    const char data2[8]{};
     a.setData(data2);
 
     CORRADE_COMPARE(a.format(), ColorFormat::Red);

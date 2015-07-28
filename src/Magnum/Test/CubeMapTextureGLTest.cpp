@@ -393,7 +393,7 @@ void CubeMapTextureGLTest::imageFull() {
 
     CubeMapTexture texture;
     texture.setStorage(1, TextureFormat::RGBA8, Vector2i{2, 2})
-        .setSubImage(0, {}, ImageView3D{ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i{2, 2, 6}, DataFull});
+        .setSubImage(0, {}, ImageView3D{ColorFormat::RGBA, ColorType::UnsignedByte, {2, 2, 6}, DataFull});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -413,7 +413,7 @@ void CubeMapTextureGLTest::imageFullBuffer() {
 
     CubeMapTexture texture;
     texture.setStorage(1, TextureFormat::RGBA8, Vector2i{2})
-        .setSubImage(0, {}, BufferImage3D{ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i{2, 2, 6}, DataFull, BufferUsage::StaticDraw});
+        .setSubImage(0, {}, BufferImage3D{ColorFormat::RGBA, ColorType::UnsignedByte, {2, 2, 6}, DataFull, BufferUsage::StaticDraw});
 
     MAGNUM_VERIFY_NO_ERROR();
 
