@@ -1249,13 +1249,27 @@ void AbstractTexture::subImageImplementationDefault(GLint level, const Math::Vec
     glTexSubImage1D(_target, level, offset[0], size[0], GLenum(format), GLenum(type), data);
 }
 
+void AbstractTexture::compressedSubImageImplementationDefault(const GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, const CompressedColorFormat format, const Containers::ArrayView<const GLvoid> data) {
+    bindInternal();
+    glCompressedTexSubImage1D(_target, level, offset[0], size[0], GLenum(format), data.size(), data);
+}
+
 void AbstractTexture::subImageImplementationDSA(const GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, const ColorFormat format, const ColorType type, const GLvoid* const data) {
     glTextureSubImage1D(_id, level, offset[0], size[0], GLenum(format), GLenum(type), data);
+}
+
+void AbstractTexture::compressedSubImageImplementationDSA(const GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, const CompressedColorFormat format, const Containers::ArrayView<const GLvoid> data) {
+    glCompressedTextureSubImage1D(_id, level, offset[0], size[0], GLenum(format), data.size(), data);
 }
 
 void AbstractTexture::subImageImplementationDSAEXT(GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, ColorFormat format, ColorType type, const GLvoid* data) {
     _flags |= ObjectFlag::Created;
     glTextureSubImage1DEXT(_id, _target, level, offset[0], size[0], GLenum(format), GLenum(type), data);
+}
+
+void AbstractTexture::compressedSubImageImplementationDSAEXT(const GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, const CompressedColorFormat format, const Containers::ArrayView<const GLvoid> data) {
+    _flags |= ObjectFlag::Created;
+    glCompressedTextureSubImage1DEXT(_id, _target, level, offset[0], size[0], GLenum(format), data.size(), data);
 }
 #endif
 
@@ -1264,14 +1278,28 @@ void AbstractTexture::subImageImplementationDefault(GLint level, const Vector2i&
     glTexSubImage2D(_target, level, offset.x(), offset.y(), size.x(), size.y(), GLenum(format), GLenum(type), data);
 }
 
+void AbstractTexture::compressedSubImageImplementationDefault(const GLint level, const Vector2i& offset, const Vector2i& size, const CompressedColorFormat format, const Containers::ArrayView<const GLvoid> data) {
+    bindInternal();
+    glCompressedTexSubImage2D(_target, level, offset.x(), offset.y(), size.x(), size.y(), GLenum(format), data.size(), data);
+}
+
 #ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::subImageImplementationDSA(const GLint level, const Vector2i& offset, const Vector2i& size, const ColorFormat format, const ColorType type, const GLvoid* const data) {
     glTextureSubImage2D(_id, level, offset.x(), offset.y(), size.x(), size.y(), GLenum(format), GLenum(type), data);
 }
 
+void AbstractTexture::compressedSubImageImplementationDSA(const GLint level, const Vector2i& offset, const Vector2i& size, const CompressedColorFormat format, const Containers::ArrayView<const GLvoid> data) {
+    glCompressedTextureSubImage2D(_id, level, offset.x(), offset.y(), size.x(), size.y(), GLenum(format), data.size(), data);
+}
+
 void AbstractTexture::subImageImplementationDSAEXT(GLint level, const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, const GLvoid* data) {
     _flags |= ObjectFlag::Created;
     glTextureSubImage2DEXT(_id, _target, level, offset.x(), offset.y(), size.x(), size.y(), GLenum(format), GLenum(type), data);
+}
+
+void AbstractTexture::compressedSubImageImplementationDSAEXT(GLint level, const Vector2i& offset, const Vector2i& size, CompressedColorFormat format, Corrade::Containers::ArrayView< const GLvoid > data) {
+    _flags |= ObjectFlag::Created;
+    glCompressedTextureSubImage2DEXT(_id, _target, level, offset.x(), offset.y(), size.x(), size.y(), GLenum(format), data.size(), data);
 }
 #endif
 
@@ -1292,6 +1320,22 @@ void AbstractTexture::subImageImplementationDefault(GLint level, const Vector3i&
     CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
+
+void AbstractTexture::compressedSubImageImplementationDefault(const GLint level, const Vector3i& offset, const Vector3i& size, const CompressedColorFormat format, const Containers::ArrayView<const GLvoid> data) {
+    bindInternal();
+    #ifndef MAGNUM_TARGET_GLES2
+    glCompressedTexSubImage3D(_target, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), GLenum(format), data.size(), data);
+    #elif !defined(CORRADE_TARGET_NACL)
+    glCompressedTexSubImage3DOES(_target, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), GLenum(format), data.size(), data);
+    #else
+    static_cast<void>(level);
+    static_cast<void>(offset);
+    static_cast<void>(size);
+    static_cast<void>(format);
+    static_cast<void>(data);
+    CORRADE_ASSERT_UNREACHABLE();
+    #endif
+}
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
@@ -1299,9 +1343,18 @@ void AbstractTexture::subImageImplementationDSA(const GLint level, const Vector3
     glTextureSubImage3D(_id, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), GLenum(format), GLenum(type), data);
 }
 
+void AbstractTexture::compressedSubImageImplementationDSA(const GLint level, const Vector3i& offset, const Vector3i& size, const CompressedColorFormat format, const Containers::ArrayView<const GLvoid> data) {
+    glCompressedTextureSubImage3D(_id, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), GLenum(format), data.size(), data);
+}
+
 void AbstractTexture::subImageImplementationDSAEXT(GLint level, const Vector3i& offset, const Vector3i& size, ColorFormat format, ColorType type, const GLvoid* data) {
     _flags |= ObjectFlag::Created;
     glTextureSubImage3DEXT(_id, _target, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), GLenum(format), GLenum(type), data);
+}
+
+void AbstractTexture::compressedSubImageImplementationDSAEXT(const GLint level, const Vector3i& offset, const Vector3i& size, const CompressedColorFormat format, const Containers::ArrayView<const GLvoid> data) {
+    _flags |= ObjectFlag::Created;
+    glCompressedTextureSubImage3DEXT(_id, _target, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), GLenum(format), data.size(), data);
 }
 #endif
 
@@ -1453,10 +1506,22 @@ void AbstractTexture::DataHelper<1>::setImage(AbstractTexture& texture, const GL
     glTexImage1D(texture._target, level, GLint(internalFormat), image.size()[0], 0, GLenum(image.format()), GLenum(image.type()), image.data());
 }
 
+void AbstractTexture::DataHelper<1>::setCompressedImage(AbstractTexture& texture, const GLint level, const CompressedImageView1D& image) {
+    Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
+    texture.bindInternal();
+    glCompressedTexImage1D(texture._target, level, GLenum(image.format()), image.size()[0], 0, image.data().size(), image.data());
+}
+
 void AbstractTexture::DataHelper<1>::setImage(AbstractTexture& texture, const GLint level, const TextureFormat internalFormat, BufferImage1D& image) {
     image.buffer().bindInternal(Buffer::TargetHint::PixelUnpack);
     texture.bindInternal();
     glTexImage1D(texture._target, level, GLint(internalFormat), image.size()[0], 0, GLenum(image.format()), GLenum(image.type()), nullptr);
+}
+
+void AbstractTexture::DataHelper<1>::setCompressedImage(AbstractTexture& texture, const GLint level, CompressedBufferImage1D& image) {
+    image.buffer().bindInternal(Buffer::TargetHint::PixelUnpack);
+    texture.bindInternal();
+    glCompressedTexImage1D(texture._target, level, GLenum(image.format()), image.size()[0], 0, image.dataSize(), nullptr);
 }
 
 void AbstractTexture::DataHelper<1>::setSubImage(AbstractTexture& texture, const GLint level, const Math::Vector<1, GLint>& offset, const ImageView1D& image) {
@@ -1464,9 +1529,19 @@ void AbstractTexture::DataHelper<1>::setSubImage(AbstractTexture& texture, const
     (texture.*Context::current()->state().texture->subImage1DImplementation)(level, offset, image.size(), image.format(), image.type(), image.data());
 }
 
+void AbstractTexture::DataHelper<1>::setCompressedSubImage(AbstractTexture& texture, const GLint level, const Math::Vector<1, GLint>& offset, const CompressedImageView1D& image) {
+    Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
+    (texture.*Context::current()->state().texture->compressedSubImage1DImplementation)(level, offset, image.size(), image.format(), image.data());
+}
+
 void AbstractTexture::DataHelper<1>::setSubImage(AbstractTexture& texture, const GLint level, const Math::Vector<1, GLint>& offset, BufferImage1D& image) {
     image.buffer().bindInternal(Buffer::TargetHint::PixelUnpack);
     (texture.*Context::current()->state().texture->subImage1DImplementation)(level, offset, image.size(), image.format(), image.type(), nullptr);
+}
+
+void AbstractTexture::DataHelper<1>::setCompressedSubImage(AbstractTexture& texture, const GLint level, const Math::Vector<1, GLint>& offset, CompressedBufferImage1D& image) {
+    image.buffer().bindInternal(Buffer::TargetHint::PixelUnpack);
+    (texture.*Context::current()->state().texture->compressedSubImage1DImplementation)(level, offset, image.size(), image.format(), {nullptr, image.dataSize()});
 }
 #endif
 
@@ -1478,11 +1553,25 @@ void AbstractTexture::DataHelper<2>::setImage(AbstractTexture& texture, const GL
     glTexImage2D(target, level, GLint(internalFormat), image.size().x(), image.size().y(), 0, GLenum(image.format()), GLenum(image.type()), image.data());
 }
 
+void AbstractTexture::DataHelper<2>::setCompressedImage(AbstractTexture& texture, const GLenum target, const GLint level, const CompressedImageView2D& image) {
+    #ifndef MAGNUM_TARGET_GLES2
+    Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
+    #endif
+    texture.bindInternal();
+    glCompressedTexImage2D(target, level, GLenum(image.format()), image.size().x(), image.size().y(), 0, image.data().size(), image.data());
+}
+
 #ifndef MAGNUM_TARGET_GLES2
 void AbstractTexture::DataHelper<2>::setImage(AbstractTexture& texture, const GLenum target, const GLint level, const TextureFormat internalFormat, BufferImage2D& image) {
     image.buffer().bindInternal(Buffer::TargetHint::PixelUnpack);
     texture.bindInternal();
     glTexImage2D(target, level, GLint(internalFormat), image.size().x(), image.size().y(), 0, GLenum(image.format()), GLenum(image.type()), nullptr);
+}
+
+void AbstractTexture::DataHelper<2>::setCompressedImage(AbstractTexture& texture, const GLenum target, const GLint level, CompressedBufferImage2D& image) {
+    image.buffer().bindInternal(Buffer::TargetHint::PixelUnpack);
+    texture.bindInternal();
+    glCompressedTexImage2D(target, level, GLenum(image.format()), image.size().x(), image.size().y(), 0, image.dataSize(), nullptr);
 }
 #endif
 
@@ -1493,10 +1582,22 @@ void AbstractTexture::DataHelper<2>::setSubImage(AbstractTexture& texture, const
     (texture.*Context::current()->state().texture->subImage2DImplementation)(level, offset, image.size(), image.format(), image.type(), image.data());
 }
 
+void AbstractTexture::DataHelper<2>::setCompressedSubImage(AbstractTexture& texture, const GLint level, const Vector2i& offset, const CompressedImageView2D& image) {
+    #ifndef MAGNUM_TARGET_GLES2
+    Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
+    #endif
+    (texture.*Context::current()->state().texture->compressedSubImage2DImplementation)(level, offset, image.size(), image.format(), image.data());
+}
+
 #ifndef MAGNUM_TARGET_GLES2
 void AbstractTexture::DataHelper<2>::setSubImage(AbstractTexture& texture, const GLint level, const Vector2i& offset, BufferImage2D& image) {
     image.buffer().bindInternal(Buffer::TargetHint::PixelUnpack);
     (texture.*Context::current()->state().texture->subImage2DImplementation)(level, offset, image.size(), image.format(), image.type(), nullptr);
+}
+
+void AbstractTexture::DataHelper<2>::setCompressedSubImage(AbstractTexture& texture, const GLint level, const Vector2i& offset, CompressedBufferImage2D& image) {
+    image.buffer().bindInternal(Buffer::TargetHint::PixelUnpack);
+    (texture.*Context::current()->state().texture->compressedSubImage2DImplementation)(level, offset, image.size(), image.format(), {nullptr, image.dataSize()});
 }
 #endif
 
@@ -1517,6 +1618,22 @@ void AbstractTexture::DataHelper<3>::setImage(AbstractTexture& texture, const GL
     CORRADE_ASSERT_UNREACHABLE();
     #endif
 }
+
+void AbstractTexture::DataHelper<3>::setCompressedImage(AbstractTexture& texture, const GLint level, const CompressedImageView3D& image) {
+    #ifndef MAGNUM_TARGET_GLES2
+    Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
+    #endif
+    texture.bindInternal();
+    #ifndef MAGNUM_TARGET_GLES2
+    glCompressedTexImage3D(texture._target, level, GLenum(image.format()), image.size().x(), image.size().y(), image.size().z(), 0, image.data().size(), image.data());
+    #elif !defined(CORRADE_TARGET_NACL)
+    glCompressedTexImage3DOES(texture._target, level, GLenum(image.format()), image.size().x(), image.size().y(), image.size().z(), 0, image.data().size(), image.data());
+    #else
+    static_cast<void>(level);
+    static_cast<void>(image);
+    CORRADE_ASSERT_UNREACHABLE();
+    #endif
+}
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -1524,6 +1641,12 @@ void AbstractTexture::DataHelper<3>::setImage(AbstractTexture& texture, const GL
     image.buffer().bindInternal(Buffer::TargetHint::PixelUnpack);
     texture.bindInternal();
     glTexImage3D(texture._target, level, GLint(internalFormat), image.size().x(), image.size().y(), image.size().z(), 0, GLenum(image.format()), GLenum(image.type()), nullptr);
+}
+
+void AbstractTexture::DataHelper<3>::setCompressedImage(AbstractTexture& texture, const GLint level, CompressedBufferImage3D& image) {
+    image.buffer().bindInternal(Buffer::TargetHint::PixelUnpack);
+    texture.bindInternal();
+    glCompressedTexImage3D(texture._target, level, GLenum(image.format()), image.size().x(), image.size().y(), image.size().z(), 0, image.dataSize(), nullptr);
 }
 #endif
 
@@ -1534,12 +1657,24 @@ void AbstractTexture::DataHelper<3>::setSubImage(AbstractTexture& texture, const
     #endif
     (texture.*Context::current()->state().texture->subImage3DImplementation)(level, offset, image.size(), image.format(), image.type(), image.data());
 }
+
+void AbstractTexture::DataHelper<3>::setCompressedSubImage(AbstractTexture& texture, const GLint level, const Vector3i& offset, const CompressedImageView3D& image) {
+    #ifndef MAGNUM_TARGET_GLES2
+    Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
+    #endif
+    (texture.*Context::current()->state().texture->compressedSubImage3DImplementation)(level, offset, image.size(), image.format(), image.data());
+}
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
 void AbstractTexture::DataHelper<3>::setSubImage(AbstractTexture& texture, const GLint level, const Vector3i& offset, BufferImage3D& image) {
     image.buffer().bindInternal(Buffer::TargetHint::PixelUnpack);
     (texture.*Context::current()->state().texture->subImage3DImplementation)(level, offset, image.size(), image.format(), image.type(), nullptr);
+}
+
+void AbstractTexture::DataHelper<3>::setCompressedSubImage(AbstractTexture& texture, const GLint level, const Vector3i& offset, CompressedBufferImage3D& image) {
+    image.buffer().bindInternal(Buffer::TargetHint::PixelUnpack);
+    (texture.*Context::current()->state().texture->compressedSubImage3DImplementation)(level, offset, image.size(), image.format(), {nullptr, image.dataSize()});
 }
 #endif
 

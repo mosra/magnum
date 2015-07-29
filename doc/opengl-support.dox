@@ -40,7 +40,6 @@ The core subset of OpenGL 2.1 should be fully implemented, except for the
 following:
 
 -   Pixel store state (@fn_gl{PixelStore} function)
--   Compressed texture upload
 -   Proxy textures
 -   Copying framebuffer to texture (@fn_gl{CopyTexImage2D} etc.)
 -   Some forgotten limit queries

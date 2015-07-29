@@ -135,6 +135,18 @@ CubeMapTexture& CubeMapTexture::setSubImage(const Int level, const Vector3i& off
     glTextureSubImage3D(_id, level, offset.x(), offset.y(), offset.z(), image.size().x(), image.size().y(), image.size().z(), GLenum(image.format()), GLenum(image.type()), nullptr);
     return *this;
 }
+
+CubeMapTexture& CubeMapTexture::setCompressedSubImage(const Int level, const Vector3i& offset, const CompressedImageView3D& image) {
+    Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
+    glCompressedTextureSubImage3D(_id, level, offset.x(), offset.y(), offset.z(), image.size().x(), image.size().y(), image.size().z(), GLenum(image.format()), image.data().size(), image.data());
+    return *this;
+}
+
+CubeMapTexture& CubeMapTexture::setCompressedSubImage(const Int level, const Vector3i& offset, CompressedBufferImage3D& image) {
+    image.buffer().bindInternal(Buffer::TargetHint::PixelUnpack);
+    glCompressedTextureSubImage3D(_id, level, offset.x(), offset.y(), offset.z(), image.size().x(), image.size().y(), image.size().z(), GLenum(image.format()), image.dataSize(), nullptr);
+    return *this;
+}
 #endif
 
 CubeMapTexture& CubeMapTexture::setSubImage(const Coordinate coordinate, const Int level, const Vector2i& offset, const ImageView2D& image) {
@@ -149,6 +161,22 @@ CubeMapTexture& CubeMapTexture::setSubImage(const Coordinate coordinate, const I
 CubeMapTexture& CubeMapTexture::setSubImage(const Coordinate coordinate, const Int level, const Vector2i& offset, BufferImage2D& image) {
     image.buffer().bindInternal(Buffer::TargetHint::PixelUnpack);
     (this->*Context::current()->state().texture->cubeSubImageImplementation)(coordinate, level, offset, image.size(), image.format(), image.type(), nullptr);
+    return *this;
+}
+#endif
+
+CubeMapTexture& CubeMapTexture::setCompressedSubImage(const Coordinate coordinate, const Int level, const Vector2i& offset, const CompressedImageView2D& image) {
+    #ifndef MAGNUM_TARGET_GLES2
+    Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
+    #endif
+    (this->*Context::current()->state().texture->cubeCompressedSubImageImplementation)(coordinate, level, offset, image.size(), image.format(), image.data());
+    return *this;
+}
+
+#ifndef MAGNUM_TARGET_GLES2
+CubeMapTexture& CubeMapTexture::setCompressedSubImage(const Coordinate coordinate, const Int level, const Vector2i& offset, CompressedBufferImage2D& image) {
+    image.buffer().bindInternal(Buffer::TargetHint::PixelUnpack);
+    (this->*Context::current()->state().texture->cubeCompressedSubImageImplementation)(coordinate, level, offset, image.size(), image.format(), {nullptr, image.dataSize()});
     return *this;
 }
 #endif
@@ -206,14 +234,28 @@ void CubeMapTexture::subImageImplementationDefault(const Coordinate coordinate, 
     glTexSubImage2D(GLenum(coordinate), level, offset.x(), offset.y(), size.x(), size.y(), GLenum(format), GLenum(type), data);
 }
 
+void CubeMapTexture::compressedSubImageImplementationDefault(const Coordinate coordinate, const GLint level, const Vector2i& offset, const Vector2i& size, const CompressedColorFormat format, const Containers::ArrayView<const GLvoid> data) {
+    bindInternal();
+    glCompressedTexSubImage2D(GLenum(coordinate), level, offset.x(), offset.y(), size.x(), size.y(), GLenum(format), data.size(), data);
+}
+
 #ifndef MAGNUM_TARGET_GLES
 void CubeMapTexture::subImageImplementationDSA(const Coordinate coordinate, const GLint level, const Vector2i& offset, const Vector2i& size, const ColorFormat format, const ColorType type, const GLvoid* const data) {
     glTextureSubImage3D(_id, level, offset.x(), offset.y(), GLenum(coordinate) - GL_TEXTURE_CUBE_MAP_POSITIVE_X, size.x(), size.y(), 1, GLenum(format), GLenum(type), data);
 }
 
+void CubeMapTexture::compressedSubImageImplementationDSA(const Coordinate coordinate, const GLint level, const Vector2i& offset, const Vector2i& size, const CompressedColorFormat format, const Containers::ArrayView<const GLvoid> data) {
+    glCompressedTextureSubImage3D(_id, level, offset.x(), offset.y(), GLenum(coordinate) - GL_TEXTURE_CUBE_MAP_POSITIVE_X, size.x(), size.y(), 1, GLenum(format), data.size(), data);
+}
+
 void CubeMapTexture::subImageImplementationDSAEXT(const Coordinate coordinate, const GLint level, const Vector2i& offset, const Vector2i& size, const ColorFormat format, const ColorType type, const GLvoid* const data) {
     _flags |= ObjectFlag::Created;
     glTextureSubImage2DEXT(_id, GLenum(coordinate), level, offset.x(), offset.y(), size.x(), size.y(), GLenum(format), GLenum(type), data);
+}
+
+void CubeMapTexture::compressedSubImageImplementationDSAEXT(const Coordinate coordinate, const GLint level, const Vector2i& offset, const Vector2i& size, const CompressedColorFormat format, const Containers::ArrayView<const GLvoid> data) {
+    _flags |= ObjectFlag::Created;
+    glTextureSubImage2DEXT(_id, GLenum(coordinate), level, offset.x(), offset.y(), size.x(), size.y(), GLenum(format), data.size(), data);
 }
 #endif
 

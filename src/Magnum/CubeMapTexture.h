@@ -620,6 +620,47 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         }
         #endif
 
+        /**
+         * @copybrief Texture::setCompressedImage()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setCompressedImage() for more information.
+         * @see @ref maxSize()
+         * @deprecated_gl Prefer to use @ref setStorage() and
+         *      @ref setCompressedSubImage() instead.
+         */
+        CubeMapTexture& setCompressedImage(Coordinate coordinate, Int level, const CompressedImageView2D& image) {
+            DataHelper<2>::setCompressedImage(*this, GLenum(coordinate), level, image);
+            return *this;
+        }
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /** @overload
+         * @requires_gles30 Pixel buffer objects are not available in OpenGL ES
+         *      2.0.
+         * @requires_webgl20 Pixel buffer objects are not available in WebGL
+         *      1.0.
+         * @deprecated_gl Prefer to use @ref setStorage() and
+         *      @ref setCompressedSubImage() instead.
+         */
+        CubeMapTexture& setCompressedImage(Coordinate coordinate, Int level, CompressedBufferImage2D& image) {
+            DataHelper<2>::setCompressedImage(*this, GLenum(coordinate), level, image);
+            return *this;
+        }
+
+        /** @overload
+         * @requires_gles30 Pixel buffer objects are not available in OpenGL ES
+         *      2.0.
+         * @requires_webgl20 Pixel buffer objects are not available in WebGL
+         *      1.0.
+         * @deprecated_gl Prefer to use @ref setStorage() and
+         *      @ref setCompressedSubImage() instead.
+         */
+        CubeMapTexture& setCompressedImage(Coordinate coordinate, Int level, CompressedBufferImage2D&& image) {
+            return setCompressedImage(coordinate, level, image);
+        }
+        #endif
+
         #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Set image subdata
@@ -651,6 +692,37 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         CubeMapTexture& setSubImage(Int level, const Vector3i& offset, BufferImage3D&& image) {
             return setSubImage(level, offset, image);
         }
+
+        /**
+         * @brief Set compressed image subdata
+         * @param level             Mip level
+         * @param offset            Offset where to put data in the texture
+         * @param image             @ref CompressedImage3D, @ref CompressedImageView3D
+         *      or compressed @ref Trade::ImageData3D
+         * @return Reference to self (for method chaining)
+         *
+         * @see @ref setStorage(), @fn_gl2{CompressedTextureSubImage3D,CompressedTexSubImage3D}
+         * @requires_gl45 Extension @extension{ARB,direct_state_access}
+         * @requires_gl In OpenGL ES and WebGL you need to set image for each
+         *      face separately.
+         */
+        CubeMapTexture& setCompressedSubImage(Int level, const Vector3i& offset, const CompressedImageView3D& image);
+
+        /** @overload
+         * @requires_gl45 Extension @extension{ARB,direct_state_access}
+         * @requires_gl In OpenGL ES and WebGL you need to set image for each
+         *      face separately.
+         */
+        CubeMapTexture& setCompressedSubImage(Int level, const Vector3i& offset, CompressedBufferImage3D& image);
+
+        /** @overload
+         * @requires_gl45 Extension @extension{ARB,direct_state_access}
+         * @requires_gl In OpenGL ES and WebGL you need to set image for each
+         *      face separately.
+         */
+        CubeMapTexture& setCompressedSubImage(Int level, const Vector3i& offset, CompressedBufferImage3D&& image) {
+            return setCompressedSubImage(level, offset, image);
+        }
         #endif
 
         /**
@@ -678,6 +750,34 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          */
         CubeMapTexture& setSubImage(Coordinate coordinate, Int level, const Vector2i& offset, BufferImage2D&& image) {
             return setSubImage(coordinate, level, offset, image);
+        }
+        #endif
+
+        /**
+         * @copybrief Texture::setCompressedSubImage()
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::setCompressedSubImage() for more information.
+         */
+        CubeMapTexture& setCompressedSubImage(Coordinate coordinate, Int level, const Vector2i& offset, const CompressedImageView2D& image);
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /** @overload
+         * @requires_gles30 Pixel buffer objects are not available in OpenGL ES
+         *      2.0.
+         * @requires_webgl20 Pixel buffer objects are not available in WebGL
+         *      1.0.
+         */
+        CubeMapTexture& setCompressedSubImage(Coordinate coordinate, Int level, const Vector2i& offset, CompressedBufferImage2D& image);
+
+        /** @overload
+         * @requires_gles30 Pixel buffer objects are not available in OpenGL ES
+         *      2.0.
+         * @requires_webgl20 Pixel buffer objects are not available in WebGL
+         *      1.0.
+         */
+        CubeMapTexture& setCompressedSubImage(Coordinate coordinate, Int level, const Vector2i& offset, CompressedBufferImage2D&& image) {
+            return setCompressedSubImage(coordinate, level, offset, image);
         }
         #endif
 
@@ -747,6 +847,12 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL subImageImplementationDSA(Coordinate coordinate, GLint level, const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, const GLvoid* data);
         void MAGNUM_LOCAL subImageImplementationDSAEXT(Coordinate coordinate, GLint level, const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, const GLvoid* data);
+        #endif
+
+        void MAGNUM_LOCAL compressedSubImageImplementationDefault(Coordinate coordinate, GLint level, const Vector2i& offset, const Vector2i& size, CompressedColorFormat format, Containers::ArrayView<const GLvoid> data);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL compressedSubImageImplementationDSA(Coordinate coordinate, GLint level, const Vector2i& offset, const Vector2i& size, CompressedColorFormat format, Containers::ArrayView<const GLvoid> data);
+        void MAGNUM_LOCAL compressedSubImageImplementationDSAEXT(Coordinate coordinate, GLint level, const Vector2i& offset, const Vector2i& size, CompressedColorFormat format, Containers::ArrayView<const GLvoid> data);
         #endif
 };
 

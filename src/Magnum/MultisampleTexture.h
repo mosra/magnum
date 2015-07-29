@@ -85,6 +85,8 @@ In shader, the texture is used via `sampler2DMS`/`sampler2DMSArray`,
 @ref AbstractShaderProgram documentation for more information about usage in
 shaders.
 
+Note that multisample textures don't support compressed formats.
+
 @see @ref MultisampleTexture2D, @ref MultisampleTexture2DArray, @ref Texture,
     @ref TextureArray, @ref CubeMapTexture, @ref CubeMapTextureArray,
     @ref RectangleTexture, @ref BufferTexture

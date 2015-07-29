@@ -128,12 +128,16 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         subImage1DImplementation = &AbstractTexture::subImageImplementationDSA;
         subImage2DImplementation = &AbstractTexture::subImageImplementationDSA;
         subImage3DImplementation = &AbstractTexture::subImageImplementationDSA;
+        compressedSubImage1DImplementation = &AbstractTexture::compressedSubImageImplementationDSA;
+        compressedSubImage2DImplementation = &AbstractTexture::compressedSubImageImplementationDSA;
+        compressedSubImage3DImplementation = &AbstractTexture::compressedSubImageImplementationDSA;
 
         setBufferImplementation = &BufferTexture::setBufferImplementationDSA;
         setBufferRangeImplementation = &BufferTexture::setBufferRangeImplementationDSA;
 
         getCubeImageSizeImplementation = &CubeMapTexture::getImageSizeImplementationDSA;
         cubeSubImageImplementation = &CubeMapTexture::subImageImplementationDSA;
+        cubeCompressedSubImageImplementation = &CubeMapTexture::compressedSubImageImplementationDSA;
 
     } else if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
         extensions.push_back(Extensions::GL::EXT::direct_state_access::string());
@@ -149,12 +153,16 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         subImage1DImplementation = &AbstractTexture::subImageImplementationDSAEXT;
         subImage2DImplementation = &AbstractTexture::subImageImplementationDSAEXT;
         subImage3DImplementation = &AbstractTexture::subImageImplementationDSAEXT;
+        compressedSubImage1DImplementation = &AbstractTexture::compressedSubImageImplementationDSAEXT;
+        compressedSubImage2DImplementation = &AbstractTexture::compressedSubImageImplementationDSAEXT;
+        compressedSubImage3DImplementation = &AbstractTexture::compressedSubImageImplementationDSAEXT;
 
         setBufferImplementation = &BufferTexture::setBufferImplementationDSAEXT;
         setBufferRangeImplementation = &BufferTexture::setBufferRangeImplementationDSAEXT;
 
         getCubeImageSizeImplementation = &CubeMapTexture::getImageSizeImplementationDSAEXT;
         cubeSubImageImplementation = &CubeMapTexture::subImageImplementationDSAEXT;
+        cubeCompressedSubImageImplementation = &CubeMapTexture::compressedSubImageImplementationDSAEXT;
 
     } else
     #endif
@@ -175,10 +183,13 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         mipmapImplementation = &AbstractTexture::mipmapImplementationDefault;
         #ifndef MAGNUM_TARGET_GLES
         subImage1DImplementation = &AbstractTexture::subImageImplementationDefault;
+        compressedSubImage1DImplementation = &AbstractTexture::compressedSubImageImplementationDefault;
         #endif
         subImage2DImplementation = &AbstractTexture::subImageImplementationDefault;
+        compressedSubImage2DImplementation = &AbstractTexture::compressedSubImageImplementationDefault;
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         subImage3DImplementation = &AbstractTexture::subImageImplementationDefault;
+        compressedSubImage3DImplementation = &AbstractTexture::compressedSubImageImplementationDefault;
         #endif
 
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
@@ -190,6 +201,7 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         getCubeImageSizeImplementation = &CubeMapTexture::getImageSizeImplementationDefault;
         #endif
         cubeSubImageImplementation = &CubeMapTexture::subImageImplementationDefault;
+        cubeCompressedSubImageImplementation = &CubeMapTexture::compressedSubImageImplementationDefault;
     }
 
     /* Data invalidation implementation */

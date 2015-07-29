@@ -533,20 +533,30 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         void MAGNUM_LOCAL subImageImplementationDefault(GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, ColorFormat format, ColorType type, const GLvoid* data);
         void MAGNUM_LOCAL subImageImplementationDSA(GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, ColorFormat format, ColorType type, const GLvoid* data);
         void MAGNUM_LOCAL subImageImplementationDSAEXT(GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, ColorFormat format, ColorType type, const GLvoid* data);
+
+        void MAGNUM_LOCAL compressedSubImageImplementationDefault(GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, CompressedColorFormat format, Containers::ArrayView<const GLvoid> data);
+        void MAGNUM_LOCAL compressedSubImageImplementationDSA(GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, CompressedColorFormat format, Containers::ArrayView<const GLvoid> data);
+        void MAGNUM_LOCAL compressedSubImageImplementationDSAEXT(GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, CompressedColorFormat format, Containers::ArrayView<const GLvoid> data);
         #endif
 
         void MAGNUM_LOCAL subImageImplementationDefault(GLint level, const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, const GLvoid* data);
+        void MAGNUM_LOCAL compressedSubImageImplementationDefault(GLint level, const Vector2i& offset, const Vector2i& size, CompressedColorFormat format, Containers::ArrayView<const GLvoid> data);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL subImageImplementationDSA(GLint level, const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, const GLvoid* data);
         void MAGNUM_LOCAL subImageImplementationDSAEXT(GLint level, const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, const GLvoid* data);
+        void MAGNUM_LOCAL compressedSubImageImplementationDSA(GLint level, const Vector2i& offset, const Vector2i& size, CompressedColorFormat format, Containers::ArrayView<const GLvoid> data);
+        void MAGNUM_LOCAL compressedSubImageImplementationDSAEXT(GLint level, const Vector2i& offset, const Vector2i& size, CompressedColorFormat format, Containers::ArrayView<const GLvoid> data);
         #endif
 
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         void MAGNUM_LOCAL subImageImplementationDefault(GLint level, const Vector3i& offset, const Vector3i& size, ColorFormat format, ColorType type, const GLvoid* data);
+        void MAGNUM_LOCAL compressedSubImageImplementationDefault(GLint level, const Vector3i& offset, const Vector3i& size, CompressedColorFormat format, Containers::ArrayView<const GLvoid> data);
         #endif
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL subImageImplementationDSA(GLint level, const Vector3i& offset, const Vector3i& size, ColorFormat format, ColorType type, const GLvoid* data);
         void MAGNUM_LOCAL subImageImplementationDSAEXT(GLint level, const Vector3i& offset, const Vector3i& size, ColorFormat format, ColorType type, const GLvoid* data);
+        void MAGNUM_LOCAL compressedSubImageImplementationDSA(GLint level, const Vector3i& offset, const Vector3i& size, CompressedColorFormat format, Containers::ArrayView<const GLvoid> data);
+        void MAGNUM_LOCAL compressedSubImageImplementationDSAEXT(GLint level, const Vector3i& offset, const Vector3i& size, CompressedColorFormat format, Containers::ArrayView<const GLvoid> data);
         #endif
 
         void MAGNUM_LOCAL invalidateImageImplementationNoOp(GLint level);
@@ -577,9 +587,13 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<1> {
 
     static void setImage(AbstractTexture& texture, GLint level, TextureFormat internalFormat, const ImageView1D& image);
     static void setImage(AbstractTexture& texture, GLint level, TextureFormat internalFormat, BufferImage1D& image);
+    static void setCompressedImage(AbstractTexture& texture, GLint level, const CompressedImageView1D& image);
+    static void setCompressedImage(AbstractTexture& texture, GLint level, CompressedBufferImage1D& image);
 
     static void setSubImage(AbstractTexture& texture, GLint level, const Math::Vector<1, GLint>& offset, const ImageView1D& image);
     static void setSubImage(AbstractTexture& texture, GLint level, const Math::Vector<1, GLint>& offset, BufferImage1D& image);
+    static void setCompressedSubImage(AbstractTexture& texture, GLint level, const Math::Vector<1, GLint>& offset, const CompressedImageView1D& image);
+    static void setCompressedSubImage(AbstractTexture& texture, GLint level, const Math::Vector<1, GLint>& offset, CompressedBufferImage1D& image);
 
     static void invalidateSubImage(AbstractTexture& texture, GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLint>& size);
 };
@@ -601,16 +615,26 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
         setImage(texture, texture._target, level, internalFormat, image);
     }
     static void setImage(AbstractTexture& texture, GLenum target, GLint level, TextureFormat internalFormat, const ImageView2D& image);
+    static void setCompressedImage(AbstractTexture& texture, GLint level, const CompressedImageView2D& image) {
+        setCompressedImage(texture, texture._target, level, image);
+    }
+    static void setCompressedImage(AbstractTexture& texture, GLenum target, GLint level, const CompressedImageView2D& image);
     #ifndef MAGNUM_TARGET_GLES2
     static void setImage(AbstractTexture& texture, GLint level, TextureFormat internalFormat, BufferImage2D& image) {
         setImage(texture, texture._target, level, internalFormat, image);
     }
     static void setImage(AbstractTexture& texture, GLenum target, GLint level, TextureFormat internalFormat, BufferImage2D& image);
+    static void setCompressedImage(AbstractTexture& texture, GLint level, CompressedBufferImage2D& image) {
+        setCompressedImage(texture, texture._target, level, image);
+    }
+    static void setCompressedImage(AbstractTexture& texture, GLenum target, GLint level, CompressedBufferImage2D& image);
     #endif
 
     static void setSubImage(AbstractTexture& texture, GLint level, const Vector2i& offset, const ImageView2D& image);
+    static void setCompressedSubImage(AbstractTexture& texture, GLint level, const Vector2i& offset, const CompressedImageView2D& image);
     #ifndef MAGNUM_TARGET_GLES2
     static void setSubImage(AbstractTexture& texture, GLint level, const Vector2i& offset, BufferImage2D& image);
+    static void setCompressedSubImage(AbstractTexture& texture, GLint level, const Vector2i& offset, CompressedBufferImage2D& image);
     #endif
 
     static void invalidateSubImage(AbstractTexture& texture, GLint level, const Vector2i& offset, const Vector2i& size);
@@ -630,13 +654,17 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
     #endif
 
     static void setImage(AbstractTexture& texture, GLint level, TextureFormat internalFormat, const ImageView3D& image);
+    static void setCompressedImage(AbstractTexture& texture, GLint level, const CompressedImageView3D& image);
     #ifndef MAGNUM_TARGET_GLES2
     static void setImage(AbstractTexture& texture, GLint level, TextureFormat internalFormat, BufferImage3D& image);
+    static void setCompressedImage(AbstractTexture& texture, GLint level, CompressedBufferImage3D& image);
     #endif
 
     static void setSubImage(AbstractTexture& texture, GLint level, const Vector3i& offset, const ImageView3D& image);
+    static void setCompressedSubImage(AbstractTexture& texture, GLint level, const Vector3i& offset, const CompressedImageView3D& image);
     #ifndef MAGNUM_TARGET_GLES2
     static void setSubImage(AbstractTexture& texture, GLint level, const Vector3i& offset, BufferImage3D& image);
+    static void setCompressedSubImage(AbstractTexture& texture, GLint level, const Vector3i& offset, CompressedBufferImage3D& image);
     #endif
     #endif
 

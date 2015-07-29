@@ -495,6 +495,42 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
         }
 
         /**
+         * @copybrief Texture::setCompressedImage()
+         * @return Reference to self (for method chaining)
+         *
+         * Sets texture image data from three-dimensional image for all cube
+         * faces for all layers. Each group of 6 2D images is one cube map
+         * layer, thus Z coordinate of @p image size must be multiple of 6. The
+         * images are in order of (+X, -X, +Y, -Y, +Z, -Z).
+         *
+         * See @ref Texture::setCompressedImage() for more information.
+         * @see @ref maxSize()
+         * @deprecated_gl Prefer to use @ref setStorage() and
+         *      @ref setCompressedSubImage() instead.
+         */
+        CubeMapTextureArray& setCompressedImage(Int level, const CompressedImageView3D& image) {
+            DataHelper<3>::setCompressedImage(*this, level, image);
+            return *this;
+        }
+
+        /** @overload
+         * @deprecated_gl Prefer to use @ref setStorage() and
+         *      @ref setCompressedSubImage() instead.
+         */
+        CubeMapTextureArray& setCompressedImage(Int level, CompressedBufferImage3D& image) {
+            DataHelper<3>::setCompressedImage(*this, level, image);
+            return *this;
+        }
+
+        /** @overload
+         * @deprecated_gl Prefer to use @ref setStorage() and
+         *      @ref setCompressedSubImage() instead.
+         */
+        CubeMapTextureArray& setCompressedImage(Int level, CompressedBufferImage3D&& image) {
+            return setCompressedImage(level, image);
+        }
+
+        /**
          * @copybrief Texture::setSubImage()
          * @return Reference to self (for method chaining)
          *
@@ -517,6 +553,31 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
         /** @overload */
         CubeMapTextureArray& setSubImage(Int level, const Vector3i& offset, BufferImage3D&& image) {
             return setSubImage(level, offset, image);
+        }
+
+        /**
+         * @copybrief Texture::setCompressedSubImage()
+         * @return Reference to self (for method chaining)
+         *
+         * Z coordinate is equivalent to layer * 6 + number of texture face,
+         * i.e. +X is `0` and so on, in order of (+X, -X, +Y, -Y, +Z, -Z).
+         *
+         * See @ref Texture::setCompressedSubImage() for more information.
+         */
+        CubeMapTextureArray& setCompressedSubImage(Int level, const Vector3i& offset, const CompressedImageView3D& image) {
+            DataHelper<3>::setCompressedSubImage(*this, level, offset, image);
+            return *this;
+        }
+
+        /** @overload */
+        CubeMapTextureArray& setCompressedSubImage(Int level, const Vector3i& offset, CompressedBufferImage3D& image) {
+            DataHelper<3>::setCompressedSubImage(*this, level, offset, image);
+            return *this;
+        }
+
+        /** @overload */
+        CubeMapTextureArray& setCompressedSubImage(Int level, const Vector3i& offset, CompressedBufferImage3D&& image) {
+            return setCompressedSubImage(level, offset, image);
         }
 
         /**
