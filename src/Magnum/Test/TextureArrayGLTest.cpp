@@ -747,10 +747,6 @@ void TextureArrayGLTest::image2DBuffer() {
 
 namespace {
     constexpr UnsignedByte Zero1D[4*4*4] = {};
-    constexpr UnsignedByte SubData1D[] = { 0x00, 0x01, 0x02, 0x03,
-                                           0x04, 0x05, 0x06, 0x07,
-                                           0x08, 0x09, 0x0a, 0x0b,
-                                           0x0c, 0x0d, 0x0e, 0x0f };
     constexpr UnsignedByte SubData1DComplete[] = {
         0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
         0, 0, 0, 0, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0, 0, 0, 0,
@@ -768,7 +764,7 @@ void TextureArrayGLTest::subImage1D() {
     texture.setImage(0, TextureFormat::RGBA8,
         ImageView2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(4), Zero1D));
     texture.setSubImage(0, Vector2i(1),
-        ImageView2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), SubData1D));
+        ImageView2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), Data1D));
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -790,7 +786,7 @@ void TextureArrayGLTest::subImage1DBuffer() {
     texture.setImage(0, TextureFormat::RGBA8,
         ImageView2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(4), Zero1D));
     texture.setSubImage(0, Vector2i(1),
-        BufferImage2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), SubData1D, BufferUsage::StaticDraw));
+        BufferImage2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), Data1D, BufferUsage::StaticDraw));
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -848,14 +844,6 @@ void TextureArrayGLTest::subImage1DQueryBuffer() {
 
 namespace {
     constexpr UnsignedByte Zero2D[4*4*4*4] = {};
-    constexpr UnsignedByte SubData2D[] = { 0x00, 0x01, 0x02, 0x03,
-                                           0x04, 0x05, 0x06, 0x07,
-                                           0x08, 0x09, 0x0a, 0x0b,
-                                           0x0c, 0x0d, 0x0e, 0x0f,
-                                           0x10, 0x11, 0x12, 0x13,
-                                           0x14, 0x15, 0x16, 0x17,
-                                           0x18, 0x19, 0x1a, 0x1b,
-                                           0x1c, 0x1d, 0x1e, 0x1f };
     constexpr UnsignedByte SubData2DComplete[] = {
         0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
         0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
@@ -889,7 +877,7 @@ void TextureArrayGLTest::subImage2D() {
     texture.setImage(0, TextureFormat::RGBA8,
         ImageView3D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i(4), Zero2D));
     texture.setSubImage(0, Vector3i(1),
-        ImageView3D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i(2), SubData2D));
+        ImageView3D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i(2), Data2D));
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -915,7 +903,7 @@ void TextureArrayGLTest::subImage2DBuffer() {
     texture.setImage(0, TextureFormat::RGBA8,
         ImageView3D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i(4), Zero2D));
     texture.setSubImage(0, Vector3i(1),
-        BufferImage3D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i(2), SubData2D, BufferUsage::StaticDraw));
+        BufferImage3D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i(2), Data2D, BufferUsage::StaticDraw));
 
     MAGNUM_VERIFY_NO_ERROR();
 
