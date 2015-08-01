@@ -123,6 +123,39 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
             return Implementation::maxTextureSize<dimensions>();
         }
 
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Compressed block size
+         *
+         * If @p format is compressed, returns compressed block size (in
+         * pixels). For uncompressed formats returns zero vector.
+         * @see @ref compressedBlockDataSize(), @fn_gl{Getinternalformat} with
+         *      @def_gl{TEXTURE_COMPRESSED_BLOCK_WIDTH},
+         *      @def_gl{TEXTURE_COMPRESSED_BLOCK_HEIGHT}
+         * @requires_gl43 Extension @extension{ARB,internalformat_query2}
+         * @requires_gl Compressed texture queries are not available in OpenGL
+         *      ES.
+         */
+        static VectorTypeFor<dimensions, Int> compressedBlockSize(TextureFormat format) {
+            return DataHelper<dimensions>::compressedBlockSize(Implementation::textureTarget<dimensions>(), format);
+        }
+
+        /**
+         * @brief Compressed block data size
+         *
+         * If @p format is compressed, returns compressed block data size (in
+         * bytes). For uncompressed formats returns zero.
+         * @see @ref compressedBlockSize(), @fn_gl{Getinternalformat} with
+         *      @def_gl{TEXTURE_COMPRESSED_BLOCK_SIZE}
+         * @requires_gl43 Extension @extension{ARB,internalformat_query2}
+         * @requires_gl Compressed texture queries are not available in OpenGL
+         *      ES.
+         */
+        static Int compressedBlockDataSize(TextureFormat format) {
+            return AbstractTexture::compressedBlockDataSize(Implementation::textureTarget<dimensions>(), format);
+        }
+        #endif
+
         /**
          * @brief Wrap existing OpenGL texture object
          * @param id            OpenGL texture ID

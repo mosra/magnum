@@ -81,6 +81,28 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
         static Vector2i maxSize();
 
         /**
+         * @copybrief Texture::compressedBlockSize()
+         *
+         * See @ref Texture::compressedBlockSize() for more information.
+         * @requires_gl43 Extension @extension{ARB,internalformat_query2}
+         */
+        static Vector2i compressedBlockSize(TextureFormat format) {
+            return DataHelper<2>::compressedBlockSize(GL_TEXTURE_RECTANGLE, format);
+        }
+
+        /**
+         * @copybrief Texture::compressedBlockDataSize()
+         *
+         * See @ref Texture::compressedBlockDataSize() for more information.
+         * @requires_gl43 Extension @extension{ARB,internalformat_query2}
+         * @see @ref compressedBlockSize(), @fn_gl{Getinternalformat} with
+         *      @def_gl{TEXTURE_COMPRESSED_BLOCK_SIZE}
+         */
+        static Int compressedBlockDataSize(TextureFormat format) {
+            return AbstractTexture::compressedBlockDataSize(GL_TEXTURE_RECTANGLE, format);
+        }
+
+        /**
          * @brief Wrap existing OpenGL rectangle texture object
          * @param id            OpenGL rectangle texture ID
          * @param flags         Object creation flags

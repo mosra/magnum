@@ -338,6 +338,10 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
     #endif
         template<UnsignedInt textureDimensions> struct DataHelper {};
 
+        #ifndef MAGNUM_TARGET_GLES
+        static Int compressedBlockDataSize(GLenum target, TextureFormat format);
+        #endif
+
         explicit AbstractTexture(GLenum target);
         explicit AbstractTexture(NoCreateT, GLenum target) noexcept: _target{target}, _id{0}, _flags{ObjectFlag::DeleteOnDestruction} {}
         explicit AbstractTexture(GLuint id, GLenum target, ObjectFlags flags) noexcept: _target{target}, _id{id}, _flags{flags} {}
@@ -584,6 +588,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_TARGET_GLES
 template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<1> {
+    static Math::Vector<1, GLint> compressedBlockSize(GLenum target, TextureFormat format);
     static Math::Vector<1, GLint> imageSize(AbstractTexture& texture, GLint level);
 
     static void setWrapping(AbstractTexture& texture, const Array1D<Sampler::Wrapping>& wrapping);
@@ -604,6 +609,9 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<1> {
 };
 #endif
 template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
+    #ifndef MAGNUM_TARGET_GLES
+    static Vector2i compressedBlockSize(GLenum target, TextureFormat format);
+    #endif
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     static Vector2i imageSize(AbstractTexture& texture, GLint level);
     #endif
@@ -646,6 +654,9 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
 };
 template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+    #ifndef MAGNUM_TARGET_GLES
+    static Vector3i compressedBlockSize(GLenum target, TextureFormat format);
+    #endif
     #ifndef MAGNUM_TARGET_GLES2
     static Vector3i imageSize(AbstractTexture& texture, GLint level);
     #endif

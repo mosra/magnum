@@ -111,6 +111,34 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          */
         static VectorTypeFor<dimensions+1, Int> maxSize();
 
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @copybrief Texture::compressedBlockSize()
+         *
+         * See @ref Texture::compressedBlockSize() for more information.
+         * @requires_gl43 Extension @extension{ARB,internalformat_query2}
+         * @requires_gl Compressed texture queries are not available in OpenGL
+         *      ES.
+         */
+        static VectorTypeFor<dimensions, Int> compressedBlockSize(TextureFormat format) {
+            return DataHelper<dimensions>::compressedBlockSize(Implementation::textureArrayTarget<dimensions>(), format);
+        }
+
+        /**
+         * @copybrief Texture::compressedBlockDataSize()
+         *
+         * See @ref Texture::compressedBlockDataSize() for more information.
+         * @requires_gl43 Extension @extension{ARB,internalformat_query2}
+         * @requires_gl Compressed texture queries are not available in OpenGL
+         *      ES.
+         * @see @ref compressedBlockSize(), @fn_gl{Getinternalformat} with
+         *      @def_gl{TEXTURE_COMPRESSED_BLOCK_SIZE}
+         */
+        static Int compressedBlockDataSize(TextureFormat format) {
+            return AbstractTexture::compressedBlockDataSize(Implementation::textureArrayTarget<dimensions>(), format);
+        }
+        #endif
+
         /**
          * @brief Wrap existing OpenGL texture array object
          * @param id            OpenGL texture array ID

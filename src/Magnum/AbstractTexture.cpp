@@ -197,6 +197,14 @@ void AbstractTexture::bindImplementationMulti(const GLint firstTextureUnit, Cont
 }
 #endif
 
+#ifndef MAGNUM_TARGET_GLES
+Int AbstractTexture::compressedBlockDataSize(const GLenum target, const TextureFormat format) {
+    GLint value;
+    glGetInternalformativ(target, GLenum(format), GL_TEXTURE_COMPRESSED_BLOCK_SIZE, 1, &value);
+    return value;
+}
+#endif
+
 AbstractTexture::AbstractTexture(GLenum target): _target{target}, _flags{ObjectFlag::DeleteOnDestruction} {
     (this->*Context::current()->state().texture->createImplementation)();
     CORRADE_INTERNAL_ASSERT(_id != Implementation::State::DisengagedBinding);
@@ -1625,6 +1633,26 @@ template void MAGNUM_EXPORT AbstractTexture::subImage<3>(GLint, const Range3Di&,
 #endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
+#ifndef MAGNUM_TARGET_GLES
+Math::Vector<1, GLint> AbstractTexture::DataHelper<1>::compressedBlockSize(const GLenum target, const TextureFormat format) {
+    GLint value;
+    glGetInternalformativ(target, GLenum(format), GL_TEXTURE_COMPRESSED_BLOCK_WIDTH, 1, &value);
+    return value;
+}
+
+Vector2i AbstractTexture::DataHelper<2>::compressedBlockSize(const GLenum target, const TextureFormat format) {
+    Vector2i value{Math::NoInit};
+    glGetInternalformativ(target, GLenum(format), GL_TEXTURE_COMPRESSED_BLOCK_WIDTH, 1, &value.x());
+    glGetInternalformativ(target, GLenum(format), GL_TEXTURE_COMPRESSED_BLOCK_HEIGHT, 1, &value.y());
+    return value;
+}
+
+Vector3i AbstractTexture::DataHelper<3>::compressedBlockSize(const GLenum target, const TextureFormat format) {
+    /** @todo use real value when OpenGL has proper queries for 3D compression formats */
+    return Vector3i{DataHelper<2>::compressedBlockSize(target, format), 1};
+}
+#endif
+
 #ifndef MAGNUM_TARGET_GLES
 Math::Vector<1, GLint> AbstractTexture::DataHelper<1>::imageSize(AbstractTexture& texture, const GLint level) {
     Math::Vector<1, GLint> value;

@@ -179,7 +179,7 @@ GLSL 4.30                                   | done
 @extension{ARB,explicit_uniform_location}   | done
 @extension{ARB,fragment_layer_viewport}     | done (shading language only)
 @extension{ARB,framebuffer_no_attachments}  | |
-@extension{ARB,internalformat_query2}       | |
+@extension{ARB,internalformat_query2}       | only compressed texture block queries
 @extension{ARB,invalidate_subdata}          | done
 @extension{ARB,multi_draw_indirect}         | |
 @extension{ARB,program_interface_query}     | |

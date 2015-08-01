@@ -98,6 +98,34 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          */
         static Vector3i maxSize();
 
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @copybrief Texture::compressedBlockSize()
+         *
+         * See @ref Texture::compressedBlockSize() for more information.
+         * @requires_gl43 Extension @extension{ARB,internalformat_query2}
+         * @requires_gl Compressed texture queries are not available in OpenGL
+         *      ES.
+         */
+        static Vector2i compressedBlockSize(TextureFormat format) {
+            return DataHelper<2>::compressedBlockSize(GL_TEXTURE_CUBE_MAP_ARRAY, format);
+        }
+
+        /**
+         * @copybrief Texture::compressedBlockDataSize()
+         *
+         * See @ref Texture::compressedBlockDataSize() for more information.
+         * @requires_gl43 Extension @extension{ARB,internalformat_query2}
+         * @requires_gl Compressed texture queries are not available in OpenGL
+         *      ES.
+         * @see @ref compressedBlockSize(), @fn_gl{Getinternalformat} with
+         *      @def_gl{TEXTURE_COMPRESSED_BLOCK_SIZE}
+         */
+        static Int compressedBlockDataSize(TextureFormat format) {
+            return AbstractTexture::compressedBlockDataSize(GL_TEXTURE_CUBE_MAP_ARRAY, format);
+        }
+        #endif
+
         /**
          * @brief Wrap existing OpenGL cube map array texture object
          * @param id            OpenGL cube map array texture ID
