@@ -57,9 +57,13 @@ struct CubeMapTextureArrayGLTest: AbstractOpenGLTester {
     void storage();
 
     void image();
+    void compressedImage();
     void imageBuffer();
+    void compressedImageBuffer();
     void subImage();
+    void compressedSubImage();
     void subImageBuffer();
+    void compressedSubImageBuffer();
     #ifndef MAGNUM_TARGET_GLES
     void subImageQuery();
     void subImageQueryBuffer();
@@ -90,9 +94,13 @@ CubeMapTextureArrayGLTest::CubeMapTextureArrayGLTest() {
               &CubeMapTextureArrayGLTest::storage,
 
               &CubeMapTextureArrayGLTest::image,
+              &CubeMapTextureArrayGLTest::compressedImage,
               &CubeMapTextureArrayGLTest::imageBuffer,
+              &CubeMapTextureArrayGLTest::compressedImageBuffer,
               &CubeMapTextureArrayGLTest::subImage,
+              &CubeMapTextureArrayGLTest::compressedSubImage,
               &CubeMapTextureArrayGLTest::subImageBuffer,
+              &CubeMapTextureArrayGLTest::compressedSubImageBuffer,
               #ifndef MAGNUM_TARGET_GLES
               &CubeMapTextureArrayGLTest::subImageQuery,
               &CubeMapTextureArrayGLTest::subImageQueryBuffer,
@@ -349,6 +357,24 @@ namespace {
         0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57,
         0x58, 0x59, 0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f
     };
+
+    /* Just 4x4 0x00 - 0x3f compressed using RGBA DXT3 by the driver, repeated
+       six times */
+    constexpr UnsignedByte CompressedData[] = {
+          0,  17, 17,  34,  34,  51,  51,  67,
+        232,  57,  0,   0, 213, 255, 170,   2,
+          0,  17, 17,  34,  34,  51,  51,  67,
+        232,  57,  0,   0, 213, 255, 170,   2,
+          0,  17, 17,  34,  34,  51,  51,  67,
+        232,  57,  0,   0, 213, 255, 170,   2,
+
+          0,  17, 17,  34,  34,  51,  51,  67,
+        232,  57,  0,   0, 213, 255, 170,   2,
+          0,  17, 17,  34,  34,  51,  51,  67,
+        232,  57,  0,   0, 213, 255, 170,   2,
+          0,  17, 17,  34,  34,  51,  51,  67,
+        232,  57,  0,   0, 213, 255, 170,   2
+    };
 }
 
 void CubeMapTextureArrayGLTest::image() {
@@ -379,6 +405,35 @@ void CubeMapTextureArrayGLTest::image() {
     #endif
 }
 
+void CubeMapTextureArrayGLTest::compressedImage() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_cube_map_array>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_cube_map_array::string() + std::string(" is not supported."));
+    #endif
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_compression_s3tc>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
+
+    CubeMapTextureArray texture;
+    texture.setCompressedImage(0, CompressedImageView3D{CompressedColorFormat::RGBAS3tcDxt3,
+        {4, 4, 6}, CompressedData});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    #ifndef MAGNUM_TARGET_GLES
+    CompressedImage3D image = texture.compressedImage(0, {});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(image.size(), (Vector3i{4, 4, 6}));
+    CORRADE_COMPARE_AS(
+        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}),
+        Containers::ArrayView<const UnsignedByte>{CompressedData}, TestSuite::Compare::Container);
+    #endif
+}
+
 void CubeMapTextureArrayGLTest::imageBuffer() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>())
@@ -406,8 +461,40 @@ void CubeMapTextureArrayGLTest::imageBuffer() {
     #endif
 }
 
+void CubeMapTextureArrayGLTest::compressedImageBuffer() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_cube_map_array>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_cube_map_array::string() + std::string(" is not supported."));
+    #endif
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_compression_s3tc>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
+
+    CubeMapTextureArray texture;
+    texture.setCompressedImage(0, CompressedBufferImage3D{CompressedColorFormat::RGBAS3tcDxt3,
+        {4, 4, 6}, CompressedData, BufferUsage::StaticDraw});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    /** @todo How to test this on ES? */
+    #ifndef MAGNUM_TARGET_GLES
+    CompressedBufferImage3D image = texture.compressedImage(0, {}, BufferUsage::StaticRead);
+    const auto imageData = image.buffer().data<UnsignedByte>();
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(image.size(), (Vector3i{4, 4, 6}));
+    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedByte>{CompressedData}, TestSuite::Compare::Container);
+    #endif
+}
+
 namespace {
     constexpr UnsignedByte Zero[4*4*4*6] = {};
+
+    /* Just 12x12x6 zeros compressed using RGBA DXT3 by the driver */
+    constexpr UnsignedByte CompressedZero[9*16*6] = {};
 
     constexpr UnsignedByte SubData[] = {
         0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
@@ -421,6 +508,18 @@ namespace {
 
         0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
         0x38, 0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f
+    };
+
+    /* Just 4x4x4 0x00 - 0xff compressed using RGBA DXT3 by the driver */
+    constexpr UnsignedByte CompressedSubData[] = {
+          0,  17,  17,  34,  34,  51,  51,  67,
+        232,  57,   0,   0, 213, 255, 170,   2,
+         68,  84,  85, 101, 102, 118, 119, 119,
+        239, 123,   8,  66, 213, 255, 170,   2,
+        136, 136, 153, 153, 170, 170, 187, 187,
+        247, 189,  16, 132, 213, 255, 170,   2,
+        203, 204, 220, 221, 237, 238, 254, 255,
+        255, 255,  24, 190, 213, 255, 170,   2
     };
 
     constexpr UnsignedByte SubDataComplete[] = {
@@ -454,6 +553,67 @@ namespace {
         0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
         0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0
     };
+
+    /* Combination of CompressedZero and CompressedSubData */
+    constexpr UnsignedByte CompressedSubDataComplete[] = {
+        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+
+        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+                          0,  17,  17,  34,  34,  51,  51,  67,
+                        232,  57,   0,   0, 213, 255, 170,   2,
+                                                          0, 0, 0, 0, 0, 0, 0, 0,
+                                                          0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+
+        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+                         68,  84,  85, 101, 102, 118, 119, 119,
+                        239, 123,   8,  66, 213, 255, 170,   2,
+                                                          0, 0, 0, 0, 0, 0, 0, 0,
+                                                          0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+
+        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+                        136, 136, 153, 153, 170, 170, 187, 187,
+                        247, 189,  16, 132, 213, 255, 170,   2,
+                                                          0, 0, 0, 0, 0, 0, 0, 0,
+                                                          0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+
+        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,
+                        203, 204, 220, 221, 237, 238, 254, 255,
+                        255, 255,  24, 190, 213, 255, 170,   2,
+                                                          0, 0, 0, 0, 0, 0, 0, 0,
+                                                          0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+
+        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0
+    };
 }
 
 void CubeMapTextureArrayGLTest::subImage() {
@@ -486,6 +646,37 @@ void CubeMapTextureArrayGLTest::subImage() {
     #endif
 }
 
+void CubeMapTextureArrayGLTest::compressedSubImage() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_cube_map_array>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_cube_map_array::string() + std::string(" is not supported."));
+    #endif
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_compression_s3tc>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
+
+    CubeMapTextureArray texture;
+    texture.setCompressedImage(0, CompressedImageView3D{CompressedColorFormat::RGBAS3tcDxt3,
+        {12, 12, 6}, CompressedZero});
+    texture.setCompressedSubImage(0, {4, 4, 1},
+        CompressedImageView3D{CompressedColorFormat::RGBAS3tcDxt3, Vector3i{4}, CompressedSubData});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    #ifndef MAGNUM_TARGET_GLES
+    CompressedImage3D image = texture.compressedImage(0, {});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(image.size(), (Vector3i{12, 12, 6}));
+    CORRADE_COMPARE_AS(
+        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}),
+        Containers::ArrayView<const UnsignedByte>{CompressedSubDataComplete}, TestSuite::Compare::Container);
+    #endif
+}
+
 void CubeMapTextureArrayGLTest::subImageBuffer() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>())
@@ -512,6 +703,37 @@ void CubeMapTextureArrayGLTest::subImageBuffer() {
 
     CORRADE_COMPARE(image.size(), Vector3i(4, 4, 6));
     CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedByte>{SubDataComplete}, TestSuite::Compare::Container);
+    #endif
+}
+
+void CubeMapTextureArrayGLTest::compressedSubImageBuffer() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_cube_map_array>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_cube_map_array::string() + std::string(" is not supported."));
+    #endif
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_compression_s3tc>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
+
+    CubeMapTextureArray texture;
+    texture.setCompressedImage(0, CompressedImageView3D{CompressedColorFormat::RGBAS3tcDxt3,
+        {12, 12, 6}, CompressedZero});
+    texture.setCompressedSubImage(0, {4, 4, 1},
+        CompressedBufferImage3D(CompressedColorFormat::RGBAS3tcDxt3, Vector3i{4}, CompressedSubData, BufferUsage::StaticDraw));
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    /** @todo How to test this on ES? */
+    #ifndef MAGNUM_TARGET_GLES
+    CompressedBufferImage3D image = texture.compressedImage(0, {}, BufferUsage::StaticRead);
+    const auto imageData = image.buffer().data<UnsignedByte>();
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(image.size(), (Vector3i{12, 12, 6}));
+    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedByte>{CompressedSubDataComplete}, TestSuite::Compare::Container);
     #endif
 }
 

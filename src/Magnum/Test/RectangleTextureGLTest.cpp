@@ -56,9 +56,13 @@ struct RectangleTextureGLTest: AbstractOpenGLTester {
     void storage();
 
     void image();
+    void compressedImage();
     void imageBuffer();
+    void compressedImageBuffer();
     void subImage();
+    void compressedSubImage();
     void subImageBuffer();
+    void compressedSubImageBuffer();
     void subImageQuery();
     void subImageQueryBuffer();
 
@@ -82,10 +86,14 @@ RectangleTextureGLTest::RectangleTextureGLTest() {
               &RectangleTextureGLTest::storage,
 
               &RectangleTextureGLTest::image,
+              &RectangleTextureGLTest::compressedImage,
               &RectangleTextureGLTest::imageBuffer,
+              &RectangleTextureGLTest::compressedImageBuffer,
 
               &RectangleTextureGLTest::subImage,
+              &RectangleTextureGLTest::compressedSubImage,
               &RectangleTextureGLTest::subImageBuffer,
+              &RectangleTextureGLTest::compressedSubImageBuffer,
               &RectangleTextureGLTest::subImageQuery,
               &RectangleTextureGLTest::subImageQueryBuffer,
 
@@ -267,6 +275,10 @@ void RectangleTextureGLTest::image() {
         Containers::ArrayView<const UnsignedByte>{Data}, TestSuite::Compare::Container);
 }
 
+void RectangleTextureGLTest::compressedImage() {
+    CORRADE_SKIP("No rectangle texture compression format exists.");
+}
+
 void RectangleTextureGLTest::imageBuffer() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
@@ -284,6 +296,10 @@ void RectangleTextureGLTest::imageBuffer() {
 
     CORRADE_COMPARE(image.size(), Vector2i(2));
     CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedByte>{Data}, TestSuite::Compare::Container);
+}
+
+void RectangleTextureGLTest::compressedImageBuffer() {
+    CORRADE_SKIP("No rectangle texture compression format exists.");
 }
 
 namespace {
@@ -319,6 +335,10 @@ void RectangleTextureGLTest::subImage() {
         Containers::ArrayView<const UnsignedByte>{SubDataComplete}, TestSuite::Compare::Container);
 }
 
+void RectangleTextureGLTest::compressedSubImage() {
+    CORRADE_SKIP("No rectangle texture compression format exists.");
+}
+
 void RectangleTextureGLTest::subImageBuffer() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
@@ -338,6 +358,10 @@ void RectangleTextureGLTest::subImageBuffer() {
 
     CORRADE_COMPARE(image.size(), Vector2i(4));
     CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedByte>{SubDataComplete}, TestSuite::Compare::Container);
+}
+
+void RectangleTextureGLTest::compressedSubImageBuffer() {
+    CORRADE_SKIP("No rectangle texture compression format exists.");
 }
 
 void RectangleTextureGLTest::subImageQuery() {
