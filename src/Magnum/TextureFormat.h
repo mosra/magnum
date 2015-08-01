@@ -854,8 +854,8 @@ enum class TextureFormat: GLenum {
     CompressedRGBA = GL_COMPRESSED_RGBA,
 
     /**
-     * RGTC compressed red channel, normalized unsigned. **Not available on
-     * multisample textures.**
+     * RGTC compressed red channel, normalized unsigned. **Available only on
+     * 2D, 2D array, cube map and cube map array textures.**
      * @requires_gl30 Extension @extension{EXT,texture_compression_rgtc}
      * @requires_gl Generic texture compression is not available in OpenGL ES
      *      or WebGL.
@@ -863,8 +863,8 @@ enum class TextureFormat: GLenum {
     CompressedRedRgtc1 = GL_COMPRESSED_RED_RGTC1,
 
     /**
-     * RGTC compressed red and green channel, normalized unsigned. **Not
-     * available on multisample textures.**
+     * RGTC compressed red and green channel, normalized unsigned. **Available
+     * only on 2D, 2D array, cube map and cube map array textures.**
      * @requires_gl30 Extension @extension{EXT,texture_compression_rgtc}
      * @requires_gl RGTC texture compression is not available in OpenGL ES or
      *      WebGL.
@@ -872,8 +872,8 @@ enum class TextureFormat: GLenum {
     CompressedRGRgtc2 = GL_COMPRESSED_RG_RGTC2,
 
     /**
-     * RGTC compressed red channel, normalized signed. **Not available on
-     * multisample textures.**
+     * RGTC compressed red channel, normalized signed. **Available only on 2D,
+     * 2D array, cube map and cube map array textures.**
      * @requires_gl30 Extension @extension{EXT,texture_compression_rgtc}
      * @requires_gl RGTC texture compression is not available in OpenGL ES or
      *      WebGL.
@@ -881,8 +881,8 @@ enum class TextureFormat: GLenum {
     CompressedSignedRedRgtc1 = GL_COMPRESSED_SIGNED_RED_RGTC1,
 
     /**
-     * RGTC compressed red and green channel, normalized signed. **Not
-     * available on multisample textures.**
+     * RGTC compressed red and green channel, normalized signed. **Available
+     * only on 2D, 2D array, cube map and cube map array textures.**
      * @requires_gl30 Extension @extension{EXT,texture_compression_rgtc}
      * @requires_gl RGTC texture compression is not available in OpenGL ES or
      *      WebGL.
@@ -890,8 +890,8 @@ enum class TextureFormat: GLenum {
     CompressedSignedRGRgtc2 = GL_COMPRESSED_SIGNED_RG_RGTC2,
 
     /**
-     * BPTC compressed RGB, unsigned float. **Not available on multisample
-     * textures.**
+     * BPTC compressed RGB, unsigned float. **Available only on 2D, 3D, 2D
+     * array, cube map and cube map array textures.**
      * @requires_gl42 Extension @extension{ARB,texture_compression_bptc}
      * @requires_gl BPTC texture compression is not available in OpenGL ES or
      *      WebGL.
@@ -899,8 +899,8 @@ enum class TextureFormat: GLenum {
     CompressedRGBBptcUnsignedFloat = GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT,
 
     /**
-     * BPTC compressed RGB, signed float. **Not available on multisample
-     * textures.**
+     * BPTC compressed RGB, signed float. **Available only on 2D, 3D, 2D
+     * array, cube map and cube map array textures.**
      * @requires_gl42 Extension @extension{ARB,texture_compression_bptc}
      * @requires_gl BPTC texture compression is not available in OpenGL ES or
      *      WebGL.
@@ -908,8 +908,8 @@ enum class TextureFormat: GLenum {
     CompressedRGBBptcSignedFloat = GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT,
 
     /**
-     * BPTC compressed RGBA, normalized unsigned. **Not available on
-     * multisample textures.**
+     * BPTC compressed RGBA, normalized unsigned. **Available only on 2D, 3D,
+     * 2D array, cube map and cube map array textures.**
      * @requires_gl42 Extension @extension{ARB,texture_compression_bptc}
      * @requires_gl BPTC texture compression is not available in OpenGL ES or
      *      WebGL.
@@ -917,8 +917,8 @@ enum class TextureFormat: GLenum {
     CompressedRGBABptcUnorm = GL_COMPRESSED_RGBA_BPTC_UNORM,
 
     /**
-     * BPTC compressed sRGBA, normalized unsigned. **Not available on
-     * multisample textures.**
+     * BPTC compressed sRGBA, normalized unsigned. **Available only on 2D, 3D,
+     * 2D array, cube map and cube map array textures.**
      * @requires_gl42 Extension @extension{ARB,texture_compression_bptc}
      * @requires_gl BPTC texture compression is not available in OpenGL ES or
      *      WebGL.

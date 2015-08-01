@@ -595,7 +595,8 @@ enum class CompressedColorFormat: GLenum {
     RGBA = GL_COMPRESSED_RGBA,
 
     /**
-     * RGTC compressed red channel, normalized unsigned.
+     * RGTC compressed red channel, normalized unsigned. **Available only for
+     * 2D, 2D array, cube map and cube map array textures.**
      * @requires_gl30 Extension @extension{EXT,texture_compression_rgtc}
      * @requires_gl Generic texture compression is not available in OpenGL ES
      *      or WebGL.
@@ -603,7 +604,8 @@ enum class CompressedColorFormat: GLenum {
     RedRgtc1 = GL_COMPRESSED_RED_RGTC1,
 
     /**
-     * RGTC compressed red and green channel, normalized unsigned.
+     * RGTC compressed red and green channel, normalized unsigned. **Available
+     * only for 2D, 2D array, cube map and cube map array textures.**
      * @requires_gl30 Extension @extension{EXT,texture_compression_rgtc}
      * @requires_gl RGTC texture compression is not available in OpenGL ES or
      *      WebGL.
@@ -611,7 +613,8 @@ enum class CompressedColorFormat: GLenum {
     RGRgtc2 = GL_COMPRESSED_RG_RGTC2,
 
     /**
-     * RGTC compressed red channel, normalized signed.
+     * RGTC compressed red channel, normalized signed. **Available only for 2D,
+     * 2D array, cube map and cube map array textures.**
      * @requires_gl30 Extension @extension{EXT,texture_compression_rgtc}
      * @requires_gl RGTC texture compression is not available in OpenGL ES or
      *      WebGL.
@@ -619,7 +622,8 @@ enum class CompressedColorFormat: GLenum {
     SignedRedRgtc1 = GL_COMPRESSED_SIGNED_RED_RGTC1,
 
     /**
-     * RGTC compressed red and green channel, normalized signed.
+     * RGTC compressed red and green channel, normalized signed. **Available
+     * only for 2D, 2D array, cube map and cube map array textures.**
      * @requires_gl30 Extension @extension{EXT,texture_compression_rgtc}
      * @requires_gl RGTC texture compression is not available in OpenGL ES or
      *      WebGL.
@@ -627,7 +631,8 @@ enum class CompressedColorFormat: GLenum {
     SignedRGRgtc2 = GL_COMPRESSED_SIGNED_RG_RGTC2,
 
     /**
-     * BPTC compressed RGB, unsigned float.
+     * BPTC compressed RGB, unsigned float. **Available only on 2D, 3D, 2D
+     * array, cube map and cube map array textures.**
      * @requires_gl42 Extension @extension{ARB,texture_compression_bptc}
      * @requires_gl BPTC texture compression is not available in OpenGL ES or
      *      WebGL.
@@ -635,7 +640,8 @@ enum class CompressedColorFormat: GLenum {
     RGBBptcUnsignedFloat = GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT,
 
     /**
-     * BPTC compressed RGB, signed float.
+     * BPTC compressed RGB, signed float. **Available only on 2D, 3D, 2D array,
+     * cube map and cube map array textures.**
      * @requires_gl42 Extension @extension{ARB,texture_compression_bptc}
      * @requires_gl BPTC texture compression is not available in OpenGL ES or
      *      WebGL.
@@ -643,7 +649,8 @@ enum class CompressedColorFormat: GLenum {
     RGBBptcSignedFloat = GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT,
 
     /**
-     * BPTC compressed RGBA, normalized unsigned.
+     * BPTC compressed RGBA, normalized unsigned. **Available only on 2D, 3D,
+     * 2D array, cube map and cube map array textures.**
      * @requires_gl42 Extension @extension{ARB,texture_compression_bptc}
      * @requires_gl BPTC texture compression is not available in OpenGL ES or
      *      WebGL.
@@ -651,7 +658,8 @@ enum class CompressedColorFormat: GLenum {
     RGBABptcUnorm = GL_COMPRESSED_RGBA_BPTC_UNORM,
 
     /**
-     * BPTC compressed sRGBA, normalized unsigned.
+     * BPTC compressed sRGBA, normalized unsigned. **Available only on 2D, 3D,
+     * 2D array, cube map and cube map array textures.**
      * @requires_gl42 Extension @extension{ARB,texture_compression_bptc}
      * @requires_gl BPTC texture compression is not available in OpenGL ES or
      *      WebGL.
