@@ -526,6 +526,50 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          * @endcode
          */
         BufferImage3D subImage(Int level, const Range3Di& range, BufferImage3D&& image, BufferUsage usage);
+
+        /**
+         * @copybrief Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage&)
+         *
+         * See @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage&)
+         * for more information.
+         * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         * @requires_gl Texture image queries are not available in OpenGL ES.
+         *      See @ref Framebuffer::read() for possible workaround.
+         */
+        void compressedSubImage(Int level, const Range3Di& range, CompressedImage3D& image) {
+            AbstractTexture::compressedSubImage<3>(level, range, image);
+        }
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * CompressedImage3D image = texture.compressedSubImage(0, range, {});
+         * @endcode
+         */
+        CompressedImage3D compressedSubImage(Int level, const Range3Di& range, CompressedImage3D&& image);
+
+        /**
+         * @copybrief Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedBufferImage&, BufferUsage)
+         *
+         * See @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedBufferImage&, BufferUsage)
+         * for more information.
+         * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         * @requires_gl Texture image queries are not available in OpenGL ES.
+         *      See @ref Framebuffer::read() for possible workaround.
+         */
+        void compressedSubImage(Int level, const Range3Di& range, CompressedBufferImage3D& image, BufferUsage usage) {
+            AbstractTexture::compressedSubImage<3>(level, range, image, usage);
+        }
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * CompressedBufferImage3D image = texture.compressedSubImage(0, range, {}, BufferUsage::StaticRead);
+         * @endcode
+         */
+        CompressedBufferImage3D compressedSubImage(Int level, const Range3Di& range, CompressedBufferImage3D&& image, BufferUsage usage);
         #endif
 
         /**

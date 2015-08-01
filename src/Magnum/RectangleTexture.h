@@ -415,6 +415,46 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
         BufferImage2D subImage(const Range2Di& range, BufferImage2D&& image, BufferUsage usage);
 
         /**
+         * @copybrief Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage&)
+         *
+         * See @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage&)
+         * for more information.
+         * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         */
+        void compressedSubImage(const Range2Di& range, CompressedImage2D& image) {
+            AbstractTexture::compressedSubImage<2>(0, range, image);
+        }
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * CompressedImage2D image = texture.compressedSubImage(range, {});
+         * @endcode
+         */
+        CompressedImage2D compressedSubImage(const Range2Di& range, CompressedImage2D&& image);
+
+        /**
+         * @copybrief Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedBufferImage&, BufferUsage)
+         *
+         * See @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedBufferImage&, BufferUsage)
+         * for more information.
+         * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         */
+        void compressedSubImage(const Range2Di& range, CompressedBufferImage2D& image, BufferUsage usage) {
+            AbstractTexture::compressedSubImage<2>(0, range, image, usage);
+        }
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * CompressedBufferImage2D image = texture.compressedSubImage(range, {}, BufferUsage::StaticRead);
+         * @endcode
+         */
+        CompressedBufferImage2D compressedSubImage(const Range2Di& range, CompressedBufferImage2D&& image, BufferUsage usage);
+
+        /**
          * @copybrief Texture::setImage()
          * @return Reference to self (for method chaining)
          *

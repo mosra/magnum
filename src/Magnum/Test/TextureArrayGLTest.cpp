@@ -117,7 +117,9 @@ struct TextureArrayGLTest: AbstractOpenGLTester {
     void subImage1DBuffer();
     void compressedSubImage1DBuffer();
     void subImage1DQuery();
+    void compressedSubImage1DQuery();
     void subImage1DQueryBuffer();
+    void compressedSubImage1DQueryBuffer();
     #endif
     void subImage2D();
     void compressedSubImage2D();
@@ -125,7 +127,9 @@ struct TextureArrayGLTest: AbstractOpenGLTester {
     void compressedSubImage2DBuffer();
     #ifndef MAGNUM_TARGET_GLES
     void subImage2DQuery();
+    void compressedSubImage2DQuery();
     void subImage2DQueryBuffer();
+    void compressedSubImage2DQueryBuffer();
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
@@ -225,7 +229,9 @@ TextureArrayGLTest::TextureArrayGLTest() {
         &TextureArrayGLTest::subImage1DBuffer,
         &TextureArrayGLTest::compressedSubImage1DBuffer,
         &TextureArrayGLTest::subImage1DQuery,
+        &TextureArrayGLTest::compressedSubImage1DQuery,
         &TextureArrayGLTest::subImage1DQueryBuffer,
+        &TextureArrayGLTest::compressedSubImage1DQueryBuffer,
         #endif
         &TextureArrayGLTest::subImage2D,
         &TextureArrayGLTest::compressedSubImage2D,
@@ -233,7 +239,9 @@ TextureArrayGLTest::TextureArrayGLTest() {
         &TextureArrayGLTest::compressedSubImage2DBuffer,
         #ifndef MAGNUM_TARGET_GLES
         &TextureArrayGLTest::subImage2DQuery,
+        &TextureArrayGLTest::compressedSubImage2DQuery,
         &TextureArrayGLTest::subImage2DQueryBuffer,
+        &TextureArrayGLTest::compressedSubImage2DQueryBuffer,
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
@@ -967,6 +975,10 @@ void TextureArrayGLTest::subImage1DQuery() {
         (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}.suffix(DataOffset1D)), Containers::ArrayView<const UnsignedByte>{Data1D}, TestSuite::Compare::Container);
 }
 
+void TextureArrayGLTest::compressedSubImage1DQuery() {
+    CORRADE_SKIP("No 1D texture compression format exists.");
+}
+
 void TextureArrayGLTest::subImage1DQueryBuffer() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_array>())
         CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
@@ -988,6 +1000,10 @@ void TextureArrayGLTest::subImage1DQueryBuffer() {
     CORRADE_COMPARE(image.size(), Vector2i{2});
     CORRADE_COMPARE_AS(imageData.suffix(DataOffset1D),
         Containers::ArrayView<const UnsignedByte>{Data1D}, TestSuite::Compare::Container);
+}
+
+void TextureArrayGLTest::compressedSubImage1DQueryBuffer() {
+    CORRADE_SKIP("No 1D texture compression format exists.");
 }
 #endif
 
@@ -1252,6 +1268,44 @@ void TextureArrayGLTest::subImage2DQuery() {
         (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}.suffix(DataOffset2D)), Containers::ArrayView<const UnsignedByte>{Data2D}, TestSuite::Compare::Container);
 }
 
+void TextureArrayGLTest::compressedSubImage2DQuery() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>())
+        CORRADE_SKIP(Extensions::GL::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_compression_s3tc>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
+
+    Texture2DArray texture;
+    texture.setStorage(1, TextureFormat::CompressedRGBAS3tcDxt3, {12, 4, 4})
+           .setCompressedSubImage(0, {}, CompressedImageView3D{CompressedPixelFormat::RGBAS3tcDxt3,
+               {12, 4, 4}, CompressedSubData2DComplete});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    /* Test also without compressed pixel storage to ensure that both size
+       computations work */
+    if(Context::current()->isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>()) {
+        CompressedImage3D image = texture.compressedSubImage(0, Range3Di::fromSize({4, 0, 1}, {4, 4, 2}), {});
+
+        MAGNUM_VERIFY_NO_ERROR();
+
+        CORRADE_COMPARE(image.size(), (Vector3i{4, 4, 2}));
+        CORRADE_COMPARE_AS(
+            (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}),
+            Containers::ArrayView<const UnsignedByte>{CompressedData2D}, TestSuite::Compare::Container);
+    }
+
+    CompressedImage3D image = texture.compressedSubImage(0, Range3Di::fromSize({4, 0, 1}, {4, 4, 2}), {_compressedDataStorage2D});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(image.size(), (Vector3i{4, 4, 2}));
+    CORRADE_COMPARE_AS(
+        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}.suffix(_compressedDataOffset2D)),
+        Containers::ArrayView<const UnsignedByte>{CompressedData2D}, TestSuite::Compare::Container);
+}
+
 void TextureArrayGLTest::subImage2DQueryBuffer() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_array>())
         CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
@@ -1273,6 +1327,36 @@ void TextureArrayGLTest::subImage2DQueryBuffer() {
     CORRADE_COMPARE(image.size(), Vector3i{2});
     CORRADE_COMPARE_AS(imageData.suffix(DataOffset2D),
         Containers::ArrayView<const UnsignedByte>{Data2D}, TestSuite::Compare::Container);
+}
+
+void TextureArrayGLTest::compressedSubImage2DQueryBuffer() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>())
+        CORRADE_SKIP(Extensions::GL::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_compression_s3tc>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
+
+    Texture2DArray texture;
+    texture.setStorage(1, TextureFormat::CompressedRGBAS3tcDxt3, {12, 4, 4})
+           .setCompressedSubImage(0, {}, CompressedImageView3D{CompressedPixelFormat::RGBAS3tcDxt3,
+               {12, 4, 4}, CompressedSubData2DComplete});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CompressedBufferImage3D image = texture.compressedSubImage(0, Range3Di::fromSize({4, 0, 1}, {4, 4, 2}), {
+        #ifndef MAGNUM_TARGET_GLES
+        _compressedDataStorage2D
+        #endif
+    }, BufferUsage::StaticRead);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    const auto imageData = image.buffer().data<UnsignedByte>();
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(image.size(), (Vector3i{4, 4, 2}));
+    CORRADE_COMPARE_AS(imageData.suffix(_compressedDataOffset2D), Containers::ArrayView<const UnsignedByte>{CompressedData2D}, TestSuite::Compare::Container);
 }
 
 void TextureArrayGLTest::generateMipmap1D() {

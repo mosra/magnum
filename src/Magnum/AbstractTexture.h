@@ -409,6 +409,8 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         template<UnsignedInt dimensions> void compressedImage(GLint level, CompressedBufferImage<dimensions>& image, BufferUsage usage);
         template<UnsignedInt dimensions> void subImage(GLint level, const RangeTypeFor<dimensions, Int>& range, Image<dimensions>& image);
         template<UnsignedInt dimensions> void subImage(GLint level, const RangeTypeFor<dimensions, Int>& range, BufferImage<dimensions>& image, BufferUsage usage);
+        template<UnsignedInt dimensions> void compressedSubImage(GLint level, const RangeTypeFor<dimensions, Int>& range, CompressedImage<dimensions>& image);
+        template<UnsignedInt dimensions> void compressedSubImage(GLint level, const RangeTypeFor<dimensions, Int>& range, CompressedBufferImage<dimensions>& image, BufferUsage usage);
         #endif
 
         GLenum _target;
@@ -429,6 +431,10 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         void MAGNUM_LOCAL createImplementationDefault();
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL createImplementationDSA();
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES
+        template<UnsignedInt dimensions> std::size_t MAGNUM_LOCAL compressedSubImageSize(TextureFormat format, const Math::Vector<dimensions, Int>& size);
         #endif
 
         void MAGNUM_LOCAL bindImplementationDefault(GLint textureUnit);

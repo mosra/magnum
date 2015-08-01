@@ -84,6 +84,16 @@ template<UnsignedInt dimensions> BufferImage<dimensions+1> TextureArray<dimensio
     this->subImage(level, range, image, usage);
     return std::move(image);
 }
+
+template<UnsignedInt dimensions> CompressedImage<dimensions+1> TextureArray<dimensions>::compressedSubImage(const Int level, const RangeTypeFor<dimensions+1, Int>& range, CompressedImage<dimensions+1>&& image) {
+    compressedSubImage(level, range, image);
+    return std::move(image);
+}
+
+template<UnsignedInt dimensions> CompressedBufferImage<dimensions+1> TextureArray<dimensions>::compressedSubImage(const Int level, const RangeTypeFor<dimensions+1, Int>& range, CompressedBufferImage<dimensions+1>&& image, const BufferUsage usage) {
+    compressedSubImage(level, range, image, usage);
+    return std::move(image);
+}
 #endif
 
 #ifndef MAGNUM_TARGET_GLES

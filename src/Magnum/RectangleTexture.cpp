@@ -78,5 +78,15 @@ BufferImage2D RectangleTexture::subImage(const Range2Di& range, BufferImage2D&& 
     return std::move(image);
 }
 
+CompressedImage2D RectangleTexture::compressedSubImage(const Range2Di& range, CompressedImage2D&& image) {
+    compressedSubImage(range, image);
+    return std::move(image);
+}
+
+CompressedBufferImage2D RectangleTexture::compressedSubImage(const Range2Di& range, CompressedBufferImage2D&& image, const BufferUsage usage) {
+    compressedSubImage(range, image, usage);
+    return std::move(image);
+}
+
 }
 #endif

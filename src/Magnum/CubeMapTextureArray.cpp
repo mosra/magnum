@@ -78,6 +78,16 @@ BufferImage3D CubeMapTextureArray::subImage(const Int level, const Range3Di& ran
     this->subImage(level, range, image, usage);
     return std::move(image);
 }
+
+CompressedImage3D CubeMapTextureArray::compressedSubImage(const Int level, const Range3Di& range, CompressedImage3D&& image) {
+    compressedSubImage(level, range, image);
+    return std::move(image);
+}
+
+CompressedBufferImage3D CubeMapTextureArray::compressedSubImage(const Int level, const Range3Di& range, CompressedBufferImage3D&& image, const BufferUsage usage) {
+    compressedSubImage(level, range, image, usage);
+    return std::move(image);
+}
 #endif
 
 }

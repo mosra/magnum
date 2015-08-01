@@ -860,6 +860,61 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @endcode
          */
         BufferImage<dimensions> subImage(Int level, const RangeTypeFor<dimensions, Int>& range, BufferImage<dimensions>&& image, BufferUsage usage);
+
+        /**
+         * @brief Read range of given compressed texture mip level to image
+         * @param level             Mip level
+         * @param range             Range to read
+         * @param image             Image where to put the compressed data
+         *
+         * Compression format and data size are taken from the texture.
+         * @see @fn_gl2{GetTextureLevelParameter,GetTexLevelParameter},
+         *      @fn_gl_extension{GetTextureLevelParameter,EXT,direct_state_access},
+         *      eventually @fn_gl{GetTexLevelParameter} with
+         *      @def_gl{TEXTURE_COMPRESSED_IMAGE_SIZE}, @def_gl{TEXTURE_INTERNAL_FORMAT},
+         *      then @fn_gl{GetCompressedTextureSubImage}
+         * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         * @requires_gl Texture image queries are not available in OpenGL ES or
+         *      WebGL. See @ref Framebuffer::read() for possible workaround.
+         */
+        void compressedSubImage(Int level, const RangeTypeFor<dimensions, Int>& range, CompressedImage<dimensions>& image) {
+            AbstractTexture::compressedSubImage<dimensions>(level, range, image);
+        }
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * CompressedImage2D image = texture.compressedSubImage(0, rect, {});
+         * @endcode
+         */
+        CompressedImage<dimensions> compressedSubImage(Int level, const RangeTypeFor<dimensions, Int>& range, CompressedImage<dimensions>&& image);
+
+        /**
+         * @brief Read range of given compressed texture mip level to buffer image
+         * @param level             Mip level
+         * @param range             Range to read
+         * @param image             Buffer image where to put the compressed data
+         * @param usage             Buffer usage
+         *
+         * See @ref compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedBufferImage&, BufferUsage)
+         * for more information.
+         * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         * @requires_gl Texture image queries are not available in OpenGL ES or
+         *      WebGL. See @ref Framebuffer::read() for possible workaround.
+         */
+        void compressedSubImage(Int level, const RangeTypeFor<dimensions, Int>& range, CompressedBufferImage<dimensions>& image, BufferUsage usage) {
+            AbstractTexture::compressedSubImage<dimensions>(level, range, image, usage);
+        }
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * CompressedBufferImage2D image = texture.compressedSubImage(0, rect, {}, BufferUsage::StaticRead);
+         * @endcode
+         */
+        CompressedBufferImage<dimensions> compressedSubImage(Int level, const RangeTypeFor<dimensions, Int>& range, CompressedBufferImage<dimensions>&& image, BufferUsage usage);
         #endif
 
         /**

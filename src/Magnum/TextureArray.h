@@ -551,6 +551,50 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @endcode
          */
         BufferImage<dimensions+1> subImage(Int level, const RangeTypeFor<dimensions+1, Int>& range, BufferImage<dimensions+1>&& image, BufferUsage usage);
+
+        /**
+         * @copybrief Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage&)
+         *
+         * See @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage&)
+         * for more information.
+         * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         * @requires_gl Texture image queries are not available in OpenGL ES or
+         *      WebGL. See @ref Framebuffer::read() for possible workaround.
+         */
+        void compressedSubImage(Int level, const RangeTypeFor<dimensions+1, Int>& range, CompressedImage<dimensions+1>& image) {
+            AbstractTexture::compressedSubImage<dimensions+1>(level, range, image);
+        }
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * CompressedImage3D image = texture.compressedSubImage(0, range, {});
+         * @endcode
+         */
+        CompressedImage<dimensions+1> compressedSubImage(Int level, const RangeTypeFor<dimensions+1, Int>& range, CompressedImage<dimensions+1>&& image);
+
+        /**
+         * @copybrief Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedBufferImage&, BufferUsage)
+         *
+         * See @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedBufferImage&, BufferUsage)
+         * for more information.
+         * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         * @requires_gl Texture image queries are not available in OpenGL ES or
+         *      WebGL. See @ref Framebuffer::read() for possible workaround.
+         */
+        void compressedSubImage(Int level, const RangeTypeFor<dimensions+1, Int>& range, CompressedBufferImage<dimensions+1>& image, BufferUsage usage) {
+            AbstractTexture::compressedSubImage<dimensions+1>(level, range, image, usage);
+        }
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * CompressedBufferImage3D image = texture.compressedSubImage(0, range, {}, BufferUsage::StaticRead);
+         * @endcode
+         */
+        CompressedBufferImage<dimensions+1> compressedSubImage(Int level, const RangeTypeFor<dimensions+1, Int>& range, CompressedBufferImage<dimensions+1>&& image, BufferUsage usage);
         #endif
 
         /**

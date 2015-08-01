@@ -257,6 +257,16 @@ BufferImage3D CubeMapTexture::subImage(const Int level, const Range3Di& range, B
     return std::move(image);
 }
 
+CompressedImage3D CubeMapTexture::compressedSubImage(const Int level, const Range3Di& range, CompressedImage3D&& image) {
+    compressedSubImage(level, range, image);
+    return std::move(image);
+}
+
+CompressedBufferImage3D CubeMapTexture::compressedSubImage(const Int level, const Range3Di& range, CompressedBufferImage3D&& image, const BufferUsage usage) {
+    compressedSubImage(level, range, image, usage);
+    return std::move(image);
+}
+
 CubeMapTexture& CubeMapTexture::setSubImage(const Int level, const Vector3i& offset, const ImageView3D& image) {
     createIfNotAlready();
 

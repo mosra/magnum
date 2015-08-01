@@ -175,7 +175,7 @@ OpenGL function                         | Matching API
 @fn_gl2{GetBufferPointer,GetBufferPointerv}, \n `glGetNamedBufferPointer()`, \n @fn_gl_extension{GetNamedBufferPointer,EXT,direct_state_access} | not queryable, @ref Buffer::map() setter only
 @fn_gl{GetBufferSubData}, \n `glGetNamedBufferSubData()`, \n @fn_gl_extension{GetNamedBufferSubData,EXT,direct_state_access} | @ref Buffer::data(), \n @ref Buffer::subData()
 @fn_gl{GetCompressedTexImage}, \n `glGetnCompressedTexImage()`, \n @fn_gl_extension{GetnCompressedTexImage,ARB,robustness}, \n `glGetCompressedTextureImage()`,  \n @fn_gl_extension{GetCompressedTextureImage,EXT,direct_state_access} | @ref Texture::compressedImage(), \n @ref TextureArray::compressedImage(), \n @ref CubeMapTexture::compressedImage(), \n @ref CubeMapTextureArray::compressedImage(), \n @ref RectangleTexture::compressedImage()
-@fn_gl{GetCompressedTextureSubImage}    | |
+@fn_gl{GetCompressedTextureSubImage}    | @ref Texture::compressedSubImage(), \n @ref TextureArray::compressedSubImage(), \n @ref CubeMapTexture::compressedImage(), \n @ref CubeMapTexture::compressedSubImage(), \n @ref CubeMapTextureArray::compressedSubImage(), \n @ref RectangleTexture::compressedSubImage()
 @fn_gl{GetDebugMessageLog}              | |
 @fn_gl{GetError}                        | @ref Renderer::error()
 @fn_gl{GetFragDataIndex}, @fn_gl{GetFragDataLocation} | not queryable, @ref AbstractShaderProgram::bindFragmentDataLocation() and \n @ref AbstractShaderProgram::bindFragmentDataLocationIndexed() setters only
