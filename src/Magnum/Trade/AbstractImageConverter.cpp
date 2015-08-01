@@ -49,6 +49,18 @@ std::optional<Image2D> AbstractImageConverter::doExportToImage(const ImageView2D
     return std::nullopt;
 }
 
+std::optional<CompressedImage2D> AbstractImageConverter::exportToCompressedImage(const ImageView2D& image) const {
+    CORRADE_ASSERT(features() & Feature::CompressImage,
+        "Trade::AbstractImageConverter::exportToCompressedImage(): feature not supported", {});
+
+    return doExportToCompressedImage(image);
+}
+
+std::optional<CompressedImage2D> AbstractImageConverter::doExportToCompressedImage(const ImageView2D&) const {
+    CORRADE_ASSERT(false, "Trade::AbstractImageConverter::exportToCompressedImage(): feature advertised but not implemented", {});
+    return std::nullopt;
+}
+
 Containers::Array<char> AbstractImageConverter::exportToData(const ImageView2D& image) const {
     CORRADE_ASSERT(features() & Feature::ConvertData,
         "Trade::AbstractImageConverter::exportToData(): feature not supported", nullptr);

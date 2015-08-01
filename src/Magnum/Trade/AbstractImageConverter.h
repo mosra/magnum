@@ -47,14 +47,18 @@ classes in @ref Trade namespace for available image converter plugins.
 ## Subclassing
 
 Plugin implements function @ref doFeatures() and one or more of
-@ref doExportToImage(), @ref doExportToData() or @ref doExportToFile()
-functions based on what features are supported.
+@ref doExportToImage(), @ref doExportToCompressedImage(), @ref doExportToData()
+or @ref doExportToFile() functions based on what features are supported.
 
 You don't need to do most of the redundant sanity checks, these things are
 checked by the implementation:
 
--   Functions @ref doExportToImage() or @ref doExportToData() are called only
-    if @ref Feature::ConvertImage or @ref Feature::ConvertData is supported.
+-   Function @ref doExportToImage() is called only if @ref Feature::ConvertImage
+    is supported.
+-   Function @ref doExportToData() are called only if @ref Feature::ConvertData
+    is supported.
+-   Function @ref doExportToCompressedImage() is called only if
+    @ref Feature::CompressImage is supported.
 
 Plugin interface string is `"cz.mosra.magnum.Trade.AbstractImageConverter/0.2.1"`.
 */
@@ -71,8 +75,11 @@ class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractPlugin
             /** Conversion to image with different format with @ref exportToImage() */
             ConvertImage = 1 << 0,
 
+            /** Conversion to compressed image with @ref exportToCompressedImage() */
+            CompressImage = 1 << 1,
+
             /** Exporting to raw data with @ref exportToData() */
-            ConvertData = 1 << 1
+            ConvertData = 1 << 2
         };
 
         /**
@@ -101,6 +108,15 @@ class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractPlugin
         std::optional<Image2D> exportToImage(const ImageView2D& image) const;
 
         /**
+         * @brief Convert image to compressed format
+         *
+         * Available only if @ref Feature::CompressImage is supported. Returns
+         * converted image on success, `std::nullopt` otherwise.
+         * @see @ref features(), @ref exportToData(), @ref exportToFile()
+         */
+        std::optional<CompressedImage2D> exportToCompressedImage(const ImageView2D& image) const;
+
+        /**
          * @brief Export image to raw data
          *
          * Available only if @ref Feature::ConvertData is supported. Returns
@@ -127,6 +143,9 @@ class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractPlugin
 
         /** @brief Implementation of @ref exportToImage() */
         virtual std::optional<Image2D> doExportToImage(const ImageView2D& image) const;
+
+        /** @brief Implementation of @ref exportToCompressedImage() */
+        virtual std::optional<CompressedImage2D> doExportToCompressedImage(const ImageView2D& image) const;
 
         /** @brief Implementation of @ref exportToData() */
         virtual Containers::Array<char> doExportToData(const ImageView2D& image) const;
