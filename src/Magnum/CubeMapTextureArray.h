@@ -414,6 +414,48 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
         BufferImage3D image(Int level, BufferImage3D&& image, BufferUsage usage);
 
         /**
+         * @copybrief Texture::compressedImage(Int, CompressedImage&)
+         *
+         * See @ref Texture::compressedImage(Int, CompressedImage&) for more
+         *      information.
+         * @requires_gl Texture image queries are not available in OpenGL ES.
+         *      See @ref Framebuffer::read() for possible workaround.
+         */
+        void compressedImage(Int level, CompressedImage3D& image) {
+            AbstractTexture::compressedImage<3>(level, image);
+        }
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * CompressedImage3D image = texture.compressedImage(0, {});
+         * @endcode
+         */
+        CompressedImage3D compressedImage(Int level, CompressedImage3D&& image);
+
+        /**
+         * @copybrief Texture::compressedImage(Int, CompressedBufferImage&, BufferUsage)
+         *
+         * See @ref Texture::compressedImage(Int, CompressedBufferImage&, BufferUsage)
+         * for more information.
+         * @requires_gl Texture image queries are not available in OpenGL ES.
+         *      See @ref Framebuffer::read() for possible workaround.
+         */
+        void compressedImage(Int level, CompressedBufferImage3D& image, BufferUsage usage) {
+            AbstractTexture::compressedImage<3>(level, image, usage);
+        }
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * CompressedBufferImage3D image = texture.compressedImage(0, {}, BufferUsage::StaticRead);
+         * @endcode
+         */
+        CompressedBufferImage3D compressedImage(Int level, CompressedBufferImage3D&& image, BufferUsage usage);
+
+        /**
          * @copybrief Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, Image&)
          *
          * See @ref Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, Image&)

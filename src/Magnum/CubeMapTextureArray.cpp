@@ -59,6 +59,16 @@ BufferImage3D CubeMapTextureArray::image(const Int level, BufferImage3D&& image,
     return std::move(image);
 }
 
+CompressedImage3D CubeMapTextureArray::compressedImage(const Int level, CompressedImage3D&& image) {
+    compressedImage(level, image);
+    return std::move(image);
+}
+
+CompressedBufferImage3D CubeMapTextureArray::compressedImage(const Int level, CompressedBufferImage3D&& image, const BufferUsage usage) {
+    compressedImage(level, image, usage);
+    return std::move(image);
+}
+
 Image3D CubeMapTextureArray::subImage(const Int level, const Range3Di& range, Image3D&& image) {
     this->subImage(level, range, image);
     return std::move(image);

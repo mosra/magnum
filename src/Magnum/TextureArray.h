@@ -437,6 +437,50 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         BufferImage<dimensions+1> image(Int level, BufferImage<dimensions+1>&& image, BufferUsage usage);
 
         /**
+         * @copybrief Texture::compressedImage(Int, CompressedImage&)
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::compressedImage(Int, CompressedImage&) for more
+         * information.
+         * @requires_gl Texture image queries are not available in OpenGL ES or
+         *      WebGL. See @ref Framebuffer::read() for possible workaround.
+         */
+        void compressedImage(Int level, CompressedImage<dimensions+1>& image) {
+            AbstractTexture::compressedImage<dimensions+1>(level, image);
+        }
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * CompressedImage3D image = texture.compressedImage(0, {});
+         * @endcode
+         */
+        CompressedImage<dimensions+1> compressedImage(Int level, CompressedImage<dimensions+1>&& image);
+
+        /**
+         * @copybrief Texture::compressedImage(Int, CompressedBufferImage&, BufferUsage)
+         * @return Reference to self (for method chaining)
+         *
+         * See @ref Texture::compressedImage(Int, CompressedBufferImage&, BufferUsage)
+         * for more information.
+         * @requires_gl Texture image queries are not available in OpenGL ES or
+         *      WebGL. See @ref Framebuffer::read() for possible workaround.
+         */
+        void compressedImage(Int level, CompressedBufferImage<dimensions+1>& image, BufferUsage usage) {
+            AbstractTexture::compressedImage<dimensions+1>(level, image, usage);
+        }
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * CompressedBufferImage3D image = texture.compressedImage(0, {}, BufferUsage::StaticRead);
+         * @endcode
+         */
+        CompressedBufferImage<dimensions+1> compressedImage(Int level, CompressedBufferImage<dimensions+1>&& image, BufferUsage usage);
+
+        /**
          * @copybrief Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, Image&)
          *
          * See @ref Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, Image&)

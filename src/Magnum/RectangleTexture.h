@@ -315,6 +315,44 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
         BufferImage2D image(BufferImage2D&& image, BufferUsage usage);
 
         /**
+         * @brief Read compressed texture to image
+         *
+         * See @ref Texture::compressedImage(Int, CompressedImage&) for more
+         * information.
+         */
+        void compressedImage(CompressedImage2D& image) {
+            AbstractTexture::compressedImage<2>(0, image);
+        }
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * CompressedImage2D image = texture.compressedimage({});
+         * @endcode
+         */
+        CompressedImage2D compressedImage(CompressedImage2D&& image);
+
+        /**
+         * @brief Read compressed texture to buffer image
+         *
+         * See @ref Texture::compressedImage(Int, CompressedBufferImage&, BufferUsage)
+         * for more information.
+         */
+        void compressedImage(CompressedBufferImage2D& image, BufferUsage usage) {
+            AbstractTexture::compressedImage<2>(0, image, usage);
+        }
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * CompressedBufferImage2D image = texture.compressedImage({}, BufferUsage::StaticRead);
+         * @endcode
+         */
+        CompressedBufferImage2D compressedImage(CompressedBufferImage2D&& image, BufferUsage usage);
+
+        /**
          * @copybrief Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, Image&)
          *
          * See @ref Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, Image&)

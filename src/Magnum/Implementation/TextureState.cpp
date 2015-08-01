@@ -223,31 +223,43 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
         /* Extension name added above */
         getImageImplementation = &AbstractTexture::getImageImplementationDSA;
+        getCompressedImageImplementation = &AbstractTexture::getCompressedImageImplementationDSA;
 
     } else if(context.isExtensionSupported<Extensions::GL::ARB::robustness>()) {
         extensions.push_back(Extensions::GL::ARB::robustness::string());
         getImageImplementation = &AbstractTexture::getImageImplementationRobustness;
+        getCompressedImageImplementation = &AbstractTexture::getCompressedImageImplementationRobustness;
 
     } else if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
         /* Extension name added above */
         getImageImplementation = &AbstractTexture::getImageImplementationDSAEXT;
+        getCompressedImageImplementation = &AbstractTexture::getCompressedImageImplementationDSAEXT;
 
-    } else getImageImplementation = &AbstractTexture::getImageImplementationDefault;
+    } else {
+        getImageImplementation = &AbstractTexture::getImageImplementationDefault;
+        getCompressedImageImplementation = &AbstractTexture::getCompressedImageImplementationDefault;
+    }
 
     /* Image retrieval implementation for cube map */
     if(context.isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>()) {
         extensions.push_back(Extensions::GL::ARB::get_texture_sub_image::string());
         getCubeImageImplementation = &CubeMapTexture::getImageImplementationDSA;
+        getCompressedCubeImageImplementation = &CubeMapTexture::getCompressedImageImplementationDSA;
 
     } else if(context.isExtensionSupported<Extensions::GL::ARB::robustness>()) {
         /* Extension name added above */
         getCubeImageImplementation = &CubeMapTexture::getImageImplementationRobustness;
+        getCompressedCubeImageImplementation = &CubeMapTexture::getCompressedImageImplementationRobustness;
 
     } else if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
         /* Extension name added above */
         getCubeImageImplementation = &CubeMapTexture::getImageImplementationDSAEXT;
+        getCompressedCubeImageImplementation = &CubeMapTexture::getCompressedImageImplementationDSAEXT;
 
-    } else getCubeImageImplementation = &CubeMapTexture::getImageImplementationDefault;
+    } else {
+        getCubeImageImplementation = &CubeMapTexture::getImageImplementationDefault;
+        getCompressedCubeImageImplementation = &CubeMapTexture::getCompressedImageImplementationDefault;
+    }
     #endif
 
     /* Texture storage implementation for desktop and ES */

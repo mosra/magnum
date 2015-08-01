@@ -73,6 +73,16 @@ template<UnsignedInt dimensions> BufferImage<dimensions> Texture<dimensions>::im
     return std::move(image);
 }
 
+template<UnsignedInt dimensions> CompressedImage<dimensions> Texture<dimensions>::compressedImage(const Int level, CompressedImage<dimensions>&& image) {
+    compressedImage(level, image);
+    return std::move(image);
+}
+
+template<UnsignedInt dimensions> CompressedBufferImage<dimensions> Texture<dimensions>::compressedImage(const Int level, CompressedBufferImage<dimensions>&& image, const BufferUsage usage) {
+    compressedImage(level, image, usage);
+    return std::move(image);
+}
+
 template<UnsignedInt dimensions> Image<dimensions> Texture<dimensions>::subImage(const Int level, const RangeTypeFor<dimensions, Int>& range, Image<dimensions>&& image) {
     this->subImage(level, range, image);
     return std::move(image);

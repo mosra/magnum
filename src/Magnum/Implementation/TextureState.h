@@ -70,6 +70,7 @@ struct TextureState {
     #endif
     #ifndef MAGNUM_TARGET_GLES
     void(AbstractTexture::*getImageImplementation)(GLint, ColorFormat, ColorType, std::size_t, GLvoid*);
+    void(AbstractTexture::*getCompressedImageImplementation)(GLint, std::size_t, GLvoid*);
     #endif
     #ifndef MAGNUM_TARGET_GLES
     void(AbstractTexture::*subImage1DImplementation)(GLint, const Math::Vector<1, GLint>&, const Math::Vector<1, GLsizei>&, ColorFormat, ColorType, const GLvoid*);
@@ -94,6 +95,7 @@ struct TextureState {
     #endif
     #ifndef MAGNUM_TARGET_GLES
     void(CubeMapTexture::*getCubeImageImplementation)(CubeMapTexture::Coordinate, GLint, const Vector2i&, ColorFormat, ColorType, std::size_t, GLvoid*);
+    void(CubeMapTexture::*getCompressedCubeImageImplementation)(CubeMapTexture::Coordinate, GLint, const Vector2i&, std::size_t, GLvoid*);
     #endif
     void(CubeMapTexture::*cubeSubImageImplementation)(CubeMapTexture::Coordinate, GLint, const Vector2i&, const Vector2i&, ColorFormat, ColorType, const GLvoid*);
     void(CubeMapTexture::*cubeCompressedSubImageImplementation)(CubeMapTexture::Coordinate, GLint, const Vector2i&, const Vector2i&, CompressedColorFormat, Containers::ArrayView<const GLvoid>);

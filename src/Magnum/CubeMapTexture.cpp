@@ -85,10 +85,46 @@ BufferImage3D CubeMapTexture::image(const Int level, BufferImage3D&& image, cons
     return std::move(image);
 }
 
+void CubeMapTexture::compressedImage(const Int level, CompressedImage3D& image) {
+    const Vector3i size{imageSize(level), 6};
+    GLint dataSize;
+    (this->*Context::current()->state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &dataSize);
+    GLint format;
+    (this->*Context::current()->state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
+    Containers::Array<char> data{std::size_t(dataSize)};
+
+    Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
+    glGetCompressedTextureImage(_id, level, dataSize, data);
+    image.setData(CompressedColorFormat(format), size, std::move(data));
+}
+
+CompressedImage3D CubeMapTexture::compressedImage(const Int level, CompressedImage3D&& image) {
+    compressedImage(level, image);
+    return std::move(image);
+}
+
+void CubeMapTexture::compressedImage(const Int level, CompressedBufferImage3D& image, const BufferUsage usage) {
+    const Vector3i size{imageSize(level), 6};
+    GLint dataSize;
+    (this->*Context::current()->state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &dataSize);
+    GLint format;
+    (this->*Context::current()->state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
+
+    image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
+    image.setData(CompressedColorFormat(format), size, {nullptr, std::size_t(dataSize)}, usage);
+    glGetCompressedTextureImage(_id, level, dataSize, nullptr);
+}
+
+CompressedBufferImage3D CubeMapTexture::compressedImage(const Int level, CompressedBufferImage3D&& image, const BufferUsage usage) {
+    compressedImage(level, image, usage);
+    return std::move(image);
+}
+
 void CubeMapTexture::image(const Coordinate coordinate, const Int level, Image2D& image) {
     const Vector2i size = imageSize(level);
     const std::size_t dataSize = image.dataSize(size);
     char* data = new char[dataSize];
+
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     (this->*Context::current()->state().texture->getCubeImageImplementation)(coordinate, level, size, image.format(), image.type(), dataSize, data);
     image.setData(image.format(), image.type(), size, data);
@@ -111,6 +147,41 @@ void CubeMapTexture::image(const Coordinate coordinate, const Int level, BufferI
 
 BufferImage2D CubeMapTexture::image(const Coordinate coordinate, const Int level, BufferImage2D&& image, const BufferUsage usage) {
     this->image(coordinate, level, image, usage);
+    return std::move(image);
+}
+
+void CubeMapTexture::compressedImage(const Coordinate coordinate, const Int level, CompressedImage2D& image) {
+    const Vector2i size = imageSize(level);
+    GLint dataSize;
+    (this->*Context::current()->state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &dataSize);
+    GLint format;
+    (this->*Context::current()->state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
+    Containers::Array<char> data{std::size_t(dataSize)};
+
+    Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
+    (this->*Context::current()->state().texture->getCompressedCubeImageImplementation)(coordinate, level, size, dataSize, data);
+    image.setData(CompressedColorFormat(format), size, std::move(data));
+}
+
+CompressedImage2D CubeMapTexture::compressedImage(const Coordinate coordinate, const Int level, CompressedImage2D&& image) {
+    compressedImage(coordinate, level, image);
+    return std::move(image);
+}
+
+void CubeMapTexture::compressedImage(const Coordinate coordinate, const Int level, CompressedBufferImage2D& image, const BufferUsage usage) {
+    const Vector2i size = imageSize(level);
+    GLint dataSize;
+    (this->*Context::current()->state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &dataSize);
+    GLint format;
+    (this->*Context::current()->state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
+
+    image.setData(CompressedColorFormat(format), size, {nullptr, std::size_t(dataSize)}, usage);
+    image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
+    (this->*Context::current()->state().texture->getCompressedCubeImageImplementation)(coordinate, level, size, dataSize, nullptr);
+}
+
+CompressedBufferImage2D CubeMapTexture::compressedImage(const Coordinate coordinate, const Int level, CompressedBufferImage2D&& image, const BufferUsage usage) {
+    compressedImage(coordinate, level, image, usage);
     return std::move(image);
 }
 
@@ -214,8 +285,17 @@ void CubeMapTexture::getImageImplementationDefault(const Coordinate coordinate, 
     glGetTexImage(GLenum(coordinate), level, GLenum(format), GLenum(type), data);
 }
 
+void CubeMapTexture::getCompressedImageImplementationDefault(const Coordinate coordinate, const GLint level, const Vector2i&, std::size_t, GLvoid* const data) {
+    bindInternal();
+    glGetCompressedTexImage(GLenum(coordinate), level, data);
+}
+
 void CubeMapTexture::getImageImplementationDSA(const Coordinate coordinate, const GLint level, const Vector2i& size, const ColorFormat format, const ColorType type, const std::size_t dataSize, GLvoid* const data) {
     glGetTextureSubImage(_id, level, 0, 0, GLenum(coordinate) - GL_TEXTURE_CUBE_MAP_POSITIVE_X, size.x(), size.y(), 1, GLenum(format), GLenum(type), dataSize, data);
+}
+
+void CubeMapTexture::getCompressedImageImplementationDSA(const Coordinate coordinate, const GLint level, const Vector2i& size, const std::size_t dataSize, GLvoid* const data) {
+    glGetCompressedTextureSubImage(_id, level, 0, 0, GLenum(coordinate) - GL_TEXTURE_CUBE_MAP_POSITIVE_X, size.x(), size.y(), 1, dataSize, data);
 }
 
 void CubeMapTexture::getImageImplementationDSAEXT(const Coordinate coordinate, const GLint level, const Vector2i&, const ColorFormat format, const ColorType type, std::size_t, GLvoid* const data) {
@@ -223,9 +303,19 @@ void CubeMapTexture::getImageImplementationDSAEXT(const Coordinate coordinate, c
     glGetTextureImageEXT(_id, GLenum(coordinate), level, GLenum(format), GLenum(type), data);
 }
 
+void CubeMapTexture::getCompressedImageImplementationDSAEXT(const Coordinate coordinate, const GLint level, const Vector2i&, std::size_t, GLvoid* const data) {
+    _flags |= ObjectFlag::Created;
+    glGetCompressedTextureImageEXT(_id, GLenum(coordinate), level, data);
+}
+
 void CubeMapTexture::getImageImplementationRobustness(const Coordinate coordinate, const GLint level, const Vector2i&, const ColorFormat format, const ColorType type, const std::size_t dataSize, GLvoid* const data) {
     bindInternal();
     glGetnTexImageARB(GLenum(coordinate), level, GLenum(format), GLenum(type), dataSize, data);
+}
+
+void CubeMapTexture::getCompressedImageImplementationRobustness(const Coordinate coordinate, const GLint level, const Vector2i&, const std::size_t dataSize, GLvoid* const data) {
+    bindInternal();
+    glGetnCompressedTexImageARB(GLenum(coordinate), level, dataSize, data);
 }
 #endif
 

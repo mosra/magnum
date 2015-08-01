@@ -403,6 +403,8 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         #ifndef MAGNUM_TARGET_GLES
         template<UnsignedInt dimensions> void image(GLint level, Image<dimensions>& image);
         template<UnsignedInt dimensions> void image(GLint level, BufferImage<dimensions>& image, BufferUsage usage);
+        template<UnsignedInt dimensions> void compressedImage(GLint level, CompressedImage<dimensions>& image);
+        template<UnsignedInt dimensions> void compressedImage(GLint level, CompressedBufferImage<dimensions>& image, BufferUsage usage);
         template<UnsignedInt dimensions> void subImage(GLint level, const RangeTypeFor<dimensions, Int>& range, Image<dimensions>& image);
         template<UnsignedInt dimensions> void subImage(GLint level, const RangeTypeFor<dimensions, Int>& range, BufferImage<dimensions>& image, BufferUsage usage);
         #endif
@@ -527,6 +529,11 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         void MAGNUM_LOCAL getImageImplementationDSA(GLint level, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
         void MAGNUM_LOCAL getImageImplementationDSAEXT(GLint level, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
         void MAGNUM_LOCAL getImageImplementationRobustness(GLint level, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
+
+        void MAGNUM_LOCAL getCompressedImageImplementationDefault(GLint level, std::size_t dataSize, GLvoid* data);
+        void MAGNUM_LOCAL getCompressedImageImplementationDSA(GLint level, std::size_t dataSize, GLvoid* data);
+        void MAGNUM_LOCAL getCompressedImageImplementationDSAEXT(GLint level, std::size_t dataSize, GLvoid* data);
+        void MAGNUM_LOCAL getCompressedImageImplementationRobustness(GLint level, std::size_t dataSize, GLvoid* data);
         #endif
 
         #ifndef MAGNUM_TARGET_GLES

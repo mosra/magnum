@@ -174,7 +174,7 @@ OpenGL function                         | Matching API
 @fn_gl{GetBufferParameter}, \n `glGetNamedBufferParameter()`, \n @fn_gl_extension{GetNamedBufferParameter,EXT,direct_state_access} | @ref Buffer::size()
 @fn_gl2{GetBufferPointer,GetBufferPointerv}, \n `glGetNamedBufferPointer()`, \n @fn_gl_extension{GetNamedBufferPointer,EXT,direct_state_access} | not queryable, @ref Buffer::map() setter only
 @fn_gl{GetBufferSubData}, \n `glGetNamedBufferSubData()`, \n @fn_gl_extension{GetNamedBufferSubData,EXT,direct_state_access} | @ref Buffer::data(), \n @ref Buffer::subData()
-@fn_gl{GetCompressedTexImage}, \n `glGetnCompressedTexImage()`, \n @fn_gl_extension{GetnCompressedTexImage,ARB,robustness}, \n `glGetCompressedTextureImage()`,  \n @fn_gl_extension{GetCompressedTextureImage,EXT,direct_state_access} | |
+@fn_gl{GetCompressedTexImage}, \n `glGetnCompressedTexImage()`, \n @fn_gl_extension{GetnCompressedTexImage,ARB,robustness}, \n `glGetCompressedTextureImage()`,  \n @fn_gl_extension{GetCompressedTextureImage,EXT,direct_state_access} | @ref Texture::compressedImage(), \n @ref TextureArray::compressedImage(), \n @ref CubeMapTexture::compressedImage(), \n @ref CubeMapTextureArray::compressedImage(), \n @ref RectangleTexture::compressedImage()
 @fn_gl{GetCompressedTextureSubImage}    | |
 @fn_gl{GetDebugMessageLog}              | |
 @fn_gl{GetError}                        | @ref Renderer::error()

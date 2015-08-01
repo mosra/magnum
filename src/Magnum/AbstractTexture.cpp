@@ -1228,8 +1228,17 @@ void AbstractTexture::getImageImplementationDefault(const GLint level, const Col
     glGetTexImage(_target, level, GLenum(format), GLenum(type), data);
 }
 
+void AbstractTexture::getCompressedImageImplementationDefault(const GLint level, std::size_t, GLvoid* const data) {
+    bindInternal();
+    glGetCompressedTexImage(_target, level, data);
+}
+
 void AbstractTexture::getImageImplementationDSA(const GLint level, const ColorFormat format, const ColorType type, const std::size_t dataSize, GLvoid* const data) {
     glGetTextureImage(_id, level, GLenum(format), GLenum(type), dataSize, data);
+}
+
+void AbstractTexture::getCompressedImageImplementationDSA(const GLint level, const std::size_t dataSize, GLvoid* const data) {
+    glGetCompressedTextureImage(_id, level, dataSize, data);
 }
 
 void AbstractTexture::getImageImplementationDSAEXT(const GLint level, const ColorFormat format, const ColorType type, const std::size_t, GLvoid* const data) {
@@ -1237,9 +1246,19 @@ void AbstractTexture::getImageImplementationDSAEXT(const GLint level, const Colo
     glGetTextureImageEXT(_id, _target, level, GLenum(format), GLenum(type), data);
 }
 
+void AbstractTexture::getCompressedImageImplementationDSAEXT(const GLint level, std::size_t, GLvoid* const data) {
+    _flags |= ObjectFlag::Created;
+    glGetCompressedTextureImageEXT(_id, _target, level, data);
+}
+
 void AbstractTexture::getImageImplementationRobustness(const GLint level, const ColorFormat format, const ColorType type, const std::size_t dataSize, GLvoid* const data) {
     bindInternal();
     glGetnTexImageARB(_target, level, GLenum(format), GLenum(type), dataSize, data);
+}
+
+void AbstractTexture::getCompressedImageImplementationRobustness(const GLint level, const std::size_t dataSize, GLvoid* const data) {
+    bindInternal();
+    glGetnCompressedTexImageARB(_target, level, dataSize, data);
 }
 #endif
 
@@ -1382,6 +1401,7 @@ template<UnsignedInt dimensions> void AbstractTexture::image(GLint level, Image<
     const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, level);
     const std::size_t dataSize = image.dataSize(size);
     char* data = new char[dataSize];
+
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     (this->*Context::current()->state().texture->getImageImplementation)(level, image.format(), image.type(), dataSize, data);
     image.setData(image.format(), image.type(), size, data);
@@ -1404,6 +1424,39 @@ template<UnsignedInt dimensions> void AbstractTexture::image(GLint level, Buffer
 template void MAGNUM_EXPORT AbstractTexture::image<1>(GLint, BufferImage<1>&, BufferUsage);
 template void MAGNUM_EXPORT AbstractTexture::image<2>(GLint, BufferImage<2>&, BufferUsage);
 template void MAGNUM_EXPORT AbstractTexture::image<3>(GLint, BufferImage<3>&, BufferUsage);
+
+template<UnsignedInt dimensions> void AbstractTexture::compressedImage(const GLint level, CompressedImage<dimensions>& image) {
+    const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, level);
+    GLint dataSize;
+    (this->*Context::current()->state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &dataSize);
+    GLint format;
+    (this->*Context::current()->state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
+    Containers::Array<char> data{std::size_t(dataSize)};
+
+    Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
+    (this->*Context::current()->state().texture->getCompressedImageImplementation)(level, dataSize, data);
+    image.setData(CompressedColorFormat(format), size, std::move(data));
+}
+
+template void MAGNUM_EXPORT AbstractTexture::compressedImage<1>(GLint, CompressedImage<1>&);
+template void MAGNUM_EXPORT AbstractTexture::compressedImage<2>(GLint, CompressedImage<2>&);
+template void MAGNUM_EXPORT AbstractTexture::compressedImage<3>(GLint, CompressedImage<3>&);
+
+template<UnsignedInt dimensions> void AbstractTexture::compressedImage(const GLint level, CompressedBufferImage<dimensions>& image, BufferUsage usage) {
+    const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, level);
+    GLint dataSize;
+    (this->*Context::current()->state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &dataSize);
+    GLint format;
+    (this->*Context::current()->state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
+
+    image.setData(CompressedColorFormat(format), size, {nullptr, std::size_t(dataSize)}, usage);
+    image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
+    (this->*Context::current()->state().texture->getCompressedImageImplementation)(level, dataSize, nullptr);
+}
+
+template void MAGNUM_EXPORT AbstractTexture::compressedImage<1>(GLint, CompressedBufferImage<1>&, BufferUsage);
+template void MAGNUM_EXPORT AbstractTexture::compressedImage<2>(GLint, CompressedBufferImage<2>&, BufferUsage);
+template void MAGNUM_EXPORT AbstractTexture::compressedImage<3>(GLint, CompressedBufferImage<3>&, BufferUsage);
 
 template<UnsignedInt dimensions> void AbstractTexture::subImage(const GLint level, const RangeTypeFor<dimensions, Int>& range, Image<dimensions>& image) {
     createIfNotAlready();

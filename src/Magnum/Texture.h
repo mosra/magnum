@@ -698,6 +698,74 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         BufferImage<dimensions> image(Int level, BufferImage<dimensions>&& image, BufferUsage usage);
 
         /**
+         * @brief Read given mip level of compressed texture to image
+         * @param level             Mip level
+         * @param image             Image where to put the compressed data
+         *
+         * Compression format and data size are taken from the texture, image
+         * size is taken using @ref imageSize().
+         *
+         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @extension{EXT,direct_state_access} is available, the texture is
+         * bound before the operation (if not already). If either
+         * @extension{ARB,direct_state_access} or @extension{ARB,robustness}
+         * is available, the operation is protected from buffer overflow.
+         * However, if @extension{ARB,direct_state_access} is not available and
+         * both @extension{EXT,direct_state_access} and @extension{ARB,robustness}
+         * are available, the robust operation is preferred over DSA.
+         * @see @fn_gl2{GetTextureLevelParameter,GetTexLevelParameter},
+         *      @fn_gl_extension{GetTextureLevelParameter,EXT,direct_state_access},
+         *      eventually @fn_gl{GetTexLevelParameter} with
+         *      @def_gl{TEXTURE_COMPRESSED_IMAGE_SIZE},
+         *      @def_gl{TEXTURE_INTERNAL_FORMAT}, @def_gl{TEXTURE_WIDTH},
+         *      @def_gl{TEXTURE_HEIGHT}, @def_gl{TEXTURE_DEPTH}, then
+         *      @fn_gl2{GetCompressedTextureImage,GetCompressedTexImage},
+         *      @fn_gl_extension{GetnCompressedTexImage,ARB,robustness},
+         *      @fn_gl_extension{GetCompressedTextureImage,EXT,direct_state_access},
+         *      eventually @fn_gl{GetCompressedTexImage}
+         * @requires_gl Texture image queries are not available in OpenGL ES or
+         *      WebGL. See @ref Framebuffer::read() for possible workaround.
+         */
+        void compressedImage(Int level, CompressedImage<dimensions>& image) {
+            AbstractTexture::compressedImage<dimensions>(level, image);
+        }
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * CompressedImage2D image = texture.compressedImage(0, {});
+         * @endcode
+         */
+        CompressedImage<dimensions> compressedImage(Int level, CompressedImage<dimensions>&& image);
+
+        /**
+         * @brief Read given mip level of compressed texture to buffer image
+         * @param level             Mip level
+         * @param image             Buffer image where to put the compressed data
+         * @param usage             Buffer usage
+         *
+         * See @ref compressedImage(Int, CompressedImage&) for more
+         * information.
+         * @requires_gl Texture image queries are not available in OpenGL ES or
+         *      WebGL. See @ref Framebuffer::read() for possible workaround.
+         * @todo Make it more flexible (usable with
+         *      @extension{ARB,buffer_storage}, avoiding relocations...)
+         */
+        void compressedImage(Int level, CompressedBufferImage<dimensions>& image, BufferUsage usage) {
+            AbstractTexture::compressedImage<dimensions>(level, image, usage);
+        }
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * CompressedBufferImage2D image = texture.compressedImage(0, {}, BufferUsage::StaticRead);
+         * @endcode
+         */
+        CompressedBufferImage<dimensions> compressedImage(Int level, CompressedBufferImage<dimensions>&& image, BufferUsage usage);
+
+        /**
          * @brief Read range of given texture mip level to image
          * @param level             Mip level
          * @param range             Range to read
