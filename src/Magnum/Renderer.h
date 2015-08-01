@@ -302,9 +302,18 @@ class MAGNUM_EXPORT Renderer {
              *      in WebGL 1.0.
              */
             #ifndef MAGNUM_TARGET_GLES2
-            FragmentShaderDerivative = GL_FRAGMENT_SHADER_DERIVATIVE_HINT
+            FragmentShaderDerivative = GL_FRAGMENT_SHADER_DERIVATIVE_HINT,
             #else
-            FragmentShaderDerivative = GL_FRAGMENT_SHADER_DERIVATIVE_HINT_OES
+            FragmentShaderDerivative = GL_FRAGMENT_SHADER_DERIVATIVE_HINT_OES,
+            #endif
+
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * Quality and performance of texture image compression.
+             * @requires_gl On-the-fly texture image compression is not
+             *      available in OpenGL ES.
+             */
+            TextureCompression = GL_TEXTURE_COMPRESSION_HINT
             #endif
         };
 
