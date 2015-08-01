@@ -488,6 +488,10 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         case TextureFormat::CompressedRedRgtc1:
         case TextureFormat::CompressedSignedRedRgtc1:
         #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        case TextureFormat::CompressedR11Eac:
+        case TextureFormat::CompressedSignedR11Eac:
+        #endif
             return ColorFormat::Red;
         #endif
 
@@ -519,6 +523,10 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         case TextureFormat::CompressedRG:
         case TextureFormat::CompressedRGRgtc2:
         case TextureFormat::CompressedSignedRGRgtc2:
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        case TextureFormat::CompressedRG11Eac:
+        case TextureFormat::CompressedSignedRG11Eac:
         #endif
             return ColorFormat::RG;
         #endif
@@ -575,6 +583,10 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         case TextureFormat::CompressedRGBBptcUnsignedFloat:
         case TextureFormat::CompressedRGBBptcSignedFloat:
         #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        case TextureFormat::CompressedRGB8Etc2:
+        case TextureFormat::CompressedSRGB8Etc2:
+        #endif
         case TextureFormat::CompressedRGBS3tcDxt1:
             return ColorFormat::RGB;
 
@@ -624,6 +636,12 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         case TextureFormat::CompressedRGBA:
         case TextureFormat::CompressedRGBABptcUnorm:
         case TextureFormat::CompressedSRGBAlphaBptcUnorm:
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        case TextureFormat::CompressedRGB8PunchthroughAlpha1Etc2:
+        case TextureFormat::CompressedSRGB8PunchthroughAlpha1Etc2:
+        case TextureFormat::CompressedRGBA8Etc2Eac:
+        case TextureFormat::CompressedSRGB8Alpha8Etc2Eac:
         #endif
         case TextureFormat::CompressedRGBAS3tcDxt1:
         case TextureFormat::CompressedRGBAS3tcDxt3:
@@ -721,6 +739,18 @@ ColorType AbstractTexture::imageTypeForInternalFormat(const TextureFormat intern
         case TextureFormat::CompressedRGRgtc2:
         case TextureFormat::CompressedRGBABptcUnorm:
         case TextureFormat::CompressedSRGBAlphaBptcUnorm:
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        case TextureFormat::CompressedRGB8Etc2:
+        case TextureFormat::CompressedSRGB8Etc2:
+        case TextureFormat::CompressedRGB8PunchthroughAlpha1Etc2:
+        case TextureFormat::CompressedSRGB8PunchthroughAlpha1Etc2:
+        case TextureFormat::CompressedRGBA8Etc2Eac:
+        case TextureFormat::CompressedSRGB8Alpha8Etc2Eac:
+        case TextureFormat::CompressedR11Eac:
+        case TextureFormat::CompressedSignedR11Eac:
+        case TextureFormat::CompressedRG11Eac:
+        case TextureFormat::CompressedSignedRG11Eac:
         #endif
         case TextureFormat::CompressedRGBS3tcDxt1:
         case TextureFormat::CompressedRGBAS3tcDxt1:

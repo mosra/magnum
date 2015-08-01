@@ -667,6 +667,100 @@ enum class CompressedColorFormat: GLenum {
     SRGBAlphaBptcUnorm = GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM,
     #endif
 
+    #ifndef MAGNUM_TARGET_GLES2
+    /**
+     * ETC2 compressed RGB, normalized unsigned. **Available only on 2D, 2D
+     * array, cube map and cube map array textures.**
+     * @requires_gl43 Extension @extension{ARB,ES3_compatibility}
+     * @requires_gles30 ETC2 texture compression is not available in OpenGL ES
+     *      2.0.
+     */
+    RGB8Etc2 = GL_COMPRESSED_RGB8_ETC2,
+
+    /**
+     * ETC2 compressed sRGB, normalized unsigned. **Available only on 2D, 2D
+     * array, cube map and cube map array textures.**
+     * @requires_gl43 Extension @extension{ARB,ES3_compatibility}
+     * @requires_gles30 ETC2 texture compression is not available in OpenGL ES
+     *      2.0.
+     */
+    SRGB8Etc2 = GL_COMPRESSED_SRGB8_ETC2,
+
+    /**
+     * ETC2 compressed RGB with punchthrough (single-bit) alpha, normalized
+     * unsigned. **Available only on 2D, 2D array, cube map and cube map array
+     * textures.**
+     * @requires_gl43 Extension @extension{ARB,ES3_compatibility}
+     * @requires_gles30 ETC2 texture compression is not available in OpenGL ES
+     *      2.0.
+     */
+    RGB8PunchthroughAlpha1Etc2 = GL_COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2,
+
+    /**
+     * ETC2 compressed sRGB with punchthrough (single-bit) alpha, normalized
+     * unsigned. **Available only on 2D, 2D array, cube map and cube map array
+     * textures.**
+     * @requires_gl43 Extension @extension{ARB,ES3_compatibility}
+     * @requires_gles30 ETC2 texture compression is not available in OpenGL ES
+     *      2.0.
+     */
+    SRGB8PunchthroughAlpha1Etc2 = GL_COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2,
+
+    /**
+     * ETC2/EAC compressed RGBA, normalized unsigned. **Available only on 2D,
+     * 2D array, cube map and cube map array textures.**
+     * @requires_gl43 Extension @extension{ARB,ES3_compatibility}
+     * @requires_gles30 ETC2 texture compression is not available in OpenGL ES
+     *      2.0.
+     */
+    RGBA8Etc2Eac = GL_COMPRESSED_RGBA8_ETC2_EAC,
+
+    /**
+     * ETC2/EAC compressed sRGB with alpha, normalized unsigned. **Available
+     * only on 2D, 2D array, cube map and cube map array textures.**
+     * @requires_gl43 Extension @extension{ARB,ES3_compatibility}
+     * @requires_gles30 ETC2 texture compression is not available in OpenGL ES
+     *      2.0.
+     */
+    SRGB8Alpha8Etc2Eac = GL_COMPRESSED_SRGB8_ALPHA8_ETC2_EAC,
+
+    /**
+     * EAC compressed red channel, normalized unsigned. **Available only on 2D,
+     * 2D array, cube map and cube map array textures.**
+     * @requires_gl43 Extension @extension{ARB,ES3_compatibility}
+     * @requires_gles30 ETC2 texture compression is not available in OpenGL ES
+     *      2.0.
+     */
+    R11Eac = GL_COMPRESSED_R11_EAC,
+
+    /**
+     * EAC compressed red channel, normalized signed. **Available only on 2D,
+     * 2D array, cube map and cube map array textures.**
+     * @requires_gl43 Extension @extension{ARB,ES3_compatibility}
+     * @requires_gles30 ETC2 texture compression is not available in OpenGL ES
+     *      2.0.
+     */
+    SignedR11Eac = GL_COMPRESSED_SIGNED_R11_EAC,
+
+    /**
+     * EAC compressed red and green channel, normalized unsigned. **Available
+     * only on 2D, 2D array, cube map and cube map array textures.**
+     * @requires_gl43 Extension @extension{ARB,ES3_compatibility}
+     * @requires_gles30 ETC2 texture compression is not available in OpenGL ES
+     *      2.0.
+     */
+    RG11Eac = GL_COMPRESSED_RG11_EAC,
+
+    /**
+     * EAC compressed red and green channel, normalized signed. **Available
+     * only on 2D, 2D array, cube map and cube map array textures.**
+     * @requires_gl43 Extension @extension{ARB,ES3_compatibility}
+     * @requires_gles30 ETC2 texture compression is not available in OpenGL ES
+     *      2.0.
+     */
+    SignedRG11Eac = GL_COMPRESSED_SIGNED_RG11_EAC,
+    #endif
+
     /**
      * S3TC DXT1 compressed RGB. **Available only for 2D, 3D, 2D array, cube
      * map and cube map array textures.**

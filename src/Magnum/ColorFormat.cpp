@@ -154,6 +154,18 @@ Debug operator<<(Debug debug, const CompressedColorFormat value) {
         _c(RGBABptcUnorm)
         _c(SRGBAlphaBptcUnorm)
         #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        _c(RGB8Etc2)
+        _c(SRGB8Etc2)
+        _c(RGB8PunchthroughAlpha1Etc2)
+        _c(SRGB8PunchthroughAlpha1Etc2)
+        _c(RGBA8Etc2Eac)
+        _c(SRGB8Alpha8Etc2Eac)
+        _c(R11Eac)
+        _c(SignedR11Eac)
+        _c(RG11Eac)
+        _c(SignedRG11Eac)
+        #endif
         _c(RGBS3tcDxt1)
         _c(RGBAS3tcDxt1)
         _c(RGBAS3tcDxt3)
