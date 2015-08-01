@@ -234,8 +234,8 @@ GLSL 4.50                                   | done
 Extension                                   | Status
 ------------------------------------------- | ------
 @extension{ARB,robustness}                  | done
-@extension3{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr} | |
-@extension{KHR,texture_compression_astc_hdr} | |
+@extension3{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr} | done
+@extension{KHR,texture_compression_astc_hdr} | done
 @extension{ARB,robustness_isolation}        | done
 @extension{ARB,bindless_texture}            | |
 @extension{ARB,compute_variable_group_size} | |
@@ -371,8 +371,8 @@ Extension                                   | Status
 @es_extension{EXT,texture_buffer}           | done
 @es_extension{EXT,texture_cube_map_array}   | done
 @es_extension{EXT,primitive_bounding_box}   | |
-@es_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr} | |
-@es_extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr} | |
+@es_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr} | done
+@es_extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr} | done
 @es_extension{KHR,debug}                    | see above
 @es_extension2{KHR,blend_equation_advanced,blend_equation_advanced}  | |
 @es_extension2{KHR,blend_equation_advanced_coherent,blend_equation_advanced} | |
