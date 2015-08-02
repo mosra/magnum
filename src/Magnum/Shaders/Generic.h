@@ -66,6 +66,13 @@ template<UnsignedInt dimensions> struct Generic {
      * @ref Vector3, defined only in 3D.
      */
     typedef Attribute<2, Vector3> Normal;
+
+    /**
+     * @brief Vertex color
+     *
+     * @ref Color3.
+     */
+    typedef Attribute<3, Color3> Color;
 };
 #endif
 
@@ -78,6 +85,7 @@ typedef Generic<3> Generic3D;
 #ifndef DOXYGEN_GENERATING_OUTPUT
 struct BaseGeneric {
     typedef Attribute<1, Vector2> TextureCoordinates;
+    typedef Attribute<3, Color3> Color;
 };
 
 template<> struct Generic<2>: BaseGeneric {

@@ -93,9 +93,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColor: public
         /**
          * @brief Vertex color
          *
-         * @ref shaders-generic "Generic attribute", @ref Vector3.
+         * @ref shaders-generic "Generic attribute", @ref Color3.
          */
-        typedef Attribute<3, Color3> Color;
+        typedef typename Generic<dimensions>::Color Color;
 
         explicit VertexColor();
 
