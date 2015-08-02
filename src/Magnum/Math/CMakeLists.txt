@@ -26,6 +26,7 @@
 set(MagnumMath_HEADERS
     Angle.h
     BoolVector.h
+    Color.h
     Complex.h
     Constants.h
     Dual.h

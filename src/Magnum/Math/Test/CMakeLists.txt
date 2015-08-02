@@ -32,6 +32,7 @@ corrade_add_test(MathVectorTest VectorTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathVector2Test Vector2Test.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathVector3Test Vector3Test.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathVector4Test Vector4Test.cpp LIBRARIES MagnumMathTestLib)
+corrade_add_test(MathColorTest ColorTest.cpp LIBRARIES MagnumMathTestLib)
 
 corrade_add_test(MathRectangularMatrixTest RectangularMatrixTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathMatrixTest MatrixTest.cpp LIBRARIES MagnumMathTestLib)

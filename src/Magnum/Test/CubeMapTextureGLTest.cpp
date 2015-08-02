@@ -29,11 +29,11 @@
 #ifndef MAGNUM_TARGET_GLES2
 #include "Magnum/BufferImage.h"
 #endif
-#include "Magnum/Color.h"
 #include "Magnum/ColorFormat.h"
 #include "Magnum/CubeMapTexture.h"
 #include "Magnum/Image.h"
 #include "Magnum/TextureFormat.h"
+#include "Magnum/Math/Color.h"
 #include "Magnum/Math/Range.h"
 #include "Magnum/Test/AbstractOpenGLTester.h"
 

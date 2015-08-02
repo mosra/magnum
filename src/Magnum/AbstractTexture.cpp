@@ -31,12 +31,12 @@
 #include "Magnum/BufferImage.h"
 #endif
 #include "Magnum/Array.h"
-#include "Magnum/Color.h"
 #include "Magnum/ColorFormat.h"
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
 #include "Magnum/Image.h"
 #include "Magnum/TextureFormat.h"
+#include "Magnum/Math/Color.h"
 #include "Magnum/Math/Range.h"
 
 #ifndef MAGNUM_TARGET_WEBGL

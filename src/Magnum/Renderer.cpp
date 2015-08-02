@@ -25,10 +25,10 @@
 
 #include "Renderer.h"
 
-#include "Magnum/Math/Range.h"
-#include "Magnum/Color.h"
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
+#include "Magnum/Math/Color.h"
+#include "Magnum/Math/Range.h"
 
 #include "Implementation/State.h"
 #include "Implementation/RendererState.h"

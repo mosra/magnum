@@ -26,11 +26,11 @@
 #include <Corrade/TestSuite/Compare/Container.h>
 
 #include "Magnum/BufferImage.h"
-#include "Magnum/Color.h"
 #include "Magnum/ColorFormat.h"
 #include "Magnum/CubeMapTextureArray.h"
 #include "Magnum/Image.h"
 #include "Magnum/TextureFormat.h"
+#include "Magnum/Math/Color.h"
 #include "Magnum/Math/Range.h"
 #include "Magnum/Test/AbstractOpenGLTester.h"
 

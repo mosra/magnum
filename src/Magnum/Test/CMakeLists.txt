@@ -26,7 +26,6 @@
 corrade_add_test(AbstractImageTest AbstractImageTest.cpp LIBRARIES Magnum)
 corrade_add_test(AbstractShaderProgramTest AbstractShaderProgramTest.cpp LIBRARIES Magnum)
 corrade_add_test(ArrayTest ArrayTest.cpp)
-corrade_add_test(ColorTest ColorTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(FormatTest FormatTest.cpp LIBRARIES Magnum)
 corrade_add_test(ContextTest ContextTest.cpp LIBRARIES Magnum)
 corrade_add_test(DebugOutputTest DebugOutputTest.cpp LIBRARIES Magnum)

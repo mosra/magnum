@@ -25,7 +25,6 @@
 
 #include "Magnum/AbstractShaderProgram.h"
 #include "Magnum/Buffer.h"
-#include "Magnum/Color.h"
 #include "Magnum/ColorFormat.h"
 #include "Magnum/Framebuffer.h"
 #include "Magnum/Image.h"
@@ -34,6 +33,7 @@
 #include "Magnum/Renderbuffer.h"
 #include "Magnum/RenderbufferFormat.h"
 #include "Magnum/Shader.h"
+#include "Magnum/Math/Color.h"
 #include "Magnum/Math/Matrix.h"
 #include "Magnum/Math/Vector4.h"
 #include "Magnum/Test/AbstractOpenGLTester.h"

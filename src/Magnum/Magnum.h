@@ -213,6 +213,18 @@ typedef Math::Vector3<Int> Vector3i;
 /** @brief Four-component signed integer vector */
 typedef Math::Vector4<Int> Vector4i;
 
+/** @brief Three-component (RGB) float color */
+typedef Math::Color3<Float> Color3;
+
+/** @brief Four-component (RGBA) float color */
+typedef Math::Color4<Float> Color4;
+
+/** @brief Three-component (RGB) unsigned byte color */
+typedef Math::Color3<UnsignedByte> Color3ub;
+
+/** @brief Four-component (RGBA) unsigned byte color */
+typedef Math::Color4<UnsignedByte> Color4ub;
+
 /**
 @brief 3x3 float transformation matrix
 
@@ -455,12 +467,10 @@ class BufferTexture;
 enum class BufferTextureFormat: GLenum;
 #endif
 
-template<class> class BasicColor3;
-template<class> class BasicColor4;
-typedef BasicColor3<Float> Color3;
-typedef BasicColor3<UnsignedByte> Color3ub;
-typedef BasicColor4<Float> Color4;
-typedef BasicColor4<UnsignedByte> Color4ub;
+#ifdef MAGNUM_BUILD_DEPRECATED
+template<class T> using BasicColor3 CORRADE_DEPRECATED_ALIAS("use Math::Color3 instead") = Math::Color3<T>;
+template<class T> using BasicColor4 CORRADE_DEPRECATED_ALIAS("use Math::Color4 instead") = Math::Color4<T>;
+#endif
 
 enum class ColorFormat: GLenum;
 enum class ColorType: GLenum;

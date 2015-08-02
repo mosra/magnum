@@ -29,8 +29,8 @@
  * @brief Class @ref Magnum::DebugTools::ShapeRenderer, @ref Magnum::DebugTools::ShapeRendererOptions, typedef @ref Magnum::DebugTools::ShapeRenderer2D, @ref Magnum::DebugTools::ShapeRenderer3D
  */
 
-#include "Magnum/Color.h"
 #include "Magnum/Resource.h"
+#include "Magnum/Math/Color.h"
 #include "Magnum/SceneGraph/Drawable.h"
 #include "Magnum/Shapes/Shapes.h"
 #include "Magnum/Shapes/shapeImplementation.h"

@@ -24,7 +24,6 @@
 */
 
 #include "Magnum/configure.h"
-#include "Magnum/Color.h"
 #include "Magnum/ColorFormat.h"
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
@@ -34,6 +33,7 @@
 #include "Magnum/RenderbufferFormat.h"
 #include "Magnum/Texture.h"
 #include "Magnum/TextureFormat.h"
+#include "Magnum/Math/Color.h"
 #include "Magnum/Test/AbstractOpenGLTester.h"
 
 #ifndef MAGNUM_TARGET_GLES2

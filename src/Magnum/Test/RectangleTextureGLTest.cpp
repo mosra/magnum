@@ -28,11 +28,11 @@
 
 #include "Magnum/configure.h"
 #include "Magnum/BufferImage.h"
-#include "Magnum/Color.h"
 #include "Magnum/ColorFormat.h"
 #include "Magnum/Image.h"
 #include "Magnum/RectangleTexture.h"
 #include "Magnum/TextureFormat.h"
+#include "Magnum/Math/Color.h"
 #include "Magnum/Math/Range.h"
 #include "Magnum/Test/AbstractOpenGLTester.h"
 

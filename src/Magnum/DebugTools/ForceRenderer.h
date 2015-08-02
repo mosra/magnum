@@ -29,8 +29,8 @@
  * @brief Class @ref Magnum::DebugTools::ForceRenderer, @ref Magnum::DebugTools::ForceRendererOptions, typedef @ref Magnum::DebugTools::ForceRenderer2D, @ref Magnum::DebugTools::ForceRenderer3D
  */
 
-#include "Magnum/Color.h"
 #include "Magnum/Resource.h"
+#include "Magnum/Math/Color.h"
 #include "Magnum/SceneGraph/Drawable.h"
 #include "Magnum/Shaders/Shaders.h"
 #include "Magnum/DebugTools/visibility.h"

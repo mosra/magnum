@@ -87,7 +87,6 @@ set(Magnum_HEADERS
     Array.h
     Attribute.h
     Buffer.h
-    Color.h
     ColorFormat.h
     Context.h
     CubeMapTexture.h
@@ -132,7 +131,9 @@ set(Magnum_PRIVATE_HEADERS
 
 # Deprecated stuff
 if(BUILD_DEPRECATED)
-    list(APPEND Magnum_HEADERS ImageReference.h)
+    list(APPEND Magnum_HEADERS
+        Color.h
+        ImageReference.h)
 endif()
 
 # Desktop-only stuff

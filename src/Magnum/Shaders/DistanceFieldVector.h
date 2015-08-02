@@ -29,8 +29,8 @@
  * @brief Class @ref Magnum::Shaders::DistanceFieldVector, typedef @ref Magnum::Shaders::DistanceFieldVector2D, @ref Magnum::Shaders::DistanceFieldVector3D
  */
 
-#include "Magnum/Color.h"
 #include "Magnum/DimensionTraits.h"
+#include "Magnum/Math/Color.h"
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Shaders/AbstractVector.h"

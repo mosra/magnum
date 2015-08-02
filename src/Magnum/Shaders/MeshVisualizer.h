@@ -29,9 +29,9 @@
  * @brief Class @ref Magnum::Shaders::MeshVisualizer
  */
 
-#include "Magnum/Math/Matrix4.h"
 #include "Magnum/AbstractShaderProgram.h"
-#include "Magnum/Color.h"
+#include "Magnum/Math/Color.h"
+#include "Magnum/Math/Matrix4.h"
 
 #include "Magnum/Shaders/visibility.h"
 
