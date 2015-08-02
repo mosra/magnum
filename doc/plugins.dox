@@ -192,11 +192,10 @@ instead of @ref Corrade::PluginManager::LoadState::Loaded "PluginManager::LoadSt
 but there is no need to change the above code, as it will work for both dynamic
 and static case.
 
-If you link the plugin into dynamic library or executable, it will register
-itself automatically, but if you want to link the plugin into static library,
-you need to register it yourself with @ref CORRADE_PLUGIN_IMPORT() in some
-function which will be executed before you use the plugin. See the macro
-documentation for information about automatic importing and namespace issues.
+It's needed to register the static plugin with @ref CORRADE_PLUGIN_IMPORT() in
+some function which will be executed before you use the plugin, otherwise the
+plugin will not be found. See the macro documentation for information about
+automatic importing and namespace issues.
 @code
 int main(int argc, char** argv) {
     CORRADE_PLUGIN_IMPORT(TgaImporter)
