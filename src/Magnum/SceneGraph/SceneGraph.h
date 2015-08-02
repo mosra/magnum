@@ -105,10 +105,10 @@ typedef BasicCamera2D<Float> Camera2D;
 typedef BasicCamera3D<Float> Camera3D;
 
 #ifdef MAGNUM_BUILD_DEPRECATED
-template<UnsignedInt dimensions, class T> using AbstractCamera CORRADE_DEPRECATED("use BasicCamera2D instead") = Camera<dimensions, T>;
-template<class T> using AbstractBasicCamera2D CORRADE_DEPRECATED("use BasicCamera2D instead") = BasicCamera2D<T>;
+template<UnsignedInt dimensions, class T> using AbstractCamera CORRADE_DEPRECATED_ALIAS("use BasicCamera2D instead") = Camera<dimensions, T>;
+template<class T> using AbstractBasicCamera2D CORRADE_DEPRECATED_ALIAS("use BasicCamera2D instead") = BasicCamera2D<T>;
 CORRADE_DEPRECATED("use Camera2D instead") typedef Camera2D AbstractCamera2D;
-template<class T> using AbstractBasicCamera3D CORRADE_DEPRECATED("use BasicCamera3D instead") = BasicCamera3D<T>;
+template<class T> using AbstractBasicCamera3D CORRADE_DEPRECATED_ALIAS("use BasicCamera3D instead") = BasicCamera3D<T>;
 CORRADE_DEPRECATED("use Camera3D instead") typedef Camera3D AbstractCamera3D;
 #endif
 
