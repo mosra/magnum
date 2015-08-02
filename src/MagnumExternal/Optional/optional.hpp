@@ -55,6 +55,8 @@ namespace std{
     // leave it; our metafunctions are already defined.
 # elif (defined __clang__) && ((__clang_major__ > 3) || (__clang_major__ == 3) && (__clang_minor__ >= 3))
     // leave it; our metafunctions are already defined.
+# elif (defined _MSC_VER) && _MSC_VER >= 1800
+    // leave it; our metafunctions are already defined.
 # else
 
 #  if OPTIONAL_HAS_USING
@@ -67,6 +69,8 @@ using is_trivially_destructible = typename std::has_trivial_destructor<T>;
     // leave it; remaining metafunctions are already defined.
 #  elif defined __clang__
     // leave it; remaining metafunctions are already defined.
+# elif (defined _MSC_VER) && _MSC_VER >= 1900
+    // leave it; our metafunctions are already defined.
 #  else
 
 
@@ -155,6 +159,8 @@ template <class T> inline constexpr typename std::remove_reference<T>::type&& co
     __assert(expr, file, line);
   # elif defined __GNUC__
     _assert(expr, file, line);
+  # elif defined _MSC_VER
+    _CrtDbgReport(_CRT_ASSERT, file, line, expr, "");
   # else
   #   error UNSUPPORTED COMPILER
   # endif
