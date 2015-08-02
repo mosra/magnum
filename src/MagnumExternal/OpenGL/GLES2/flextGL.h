@@ -1015,9 +1015,6 @@ typedef khronos_ssize_t GLsizeiptr;
 
 /* Function prototypes */
 
-/* GL_ANGLE_depth_texture */
-
-
 /* GL_ANGLE_framebuffer_blit */
 
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglBlitFramebufferANGLE)(GLint, GLint, GLint, GLint, GLint, GLint, GLint, GLint, GLbitfield, GLenum);
@@ -1043,15 +1040,6 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglRenderbufferStorageMultisampleAPPLE)(
 #define glRenderbufferStorageMultisampleAPPLE flextglRenderbufferStorageMultisampleAPPLE
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglResolveMultisampleFramebufferAPPLE)(void);
 #define glResolveMultisampleFramebufferAPPLE flextglResolveMultisampleFramebufferAPPLE
-
-/* GL_APPLE_texture_format_BGRA8888 */
-
-
-/* GL_APPLE_texture_max_level */
-
-
-/* GL_ARM_rgba8 */
-
 
 /* GL_ES_VERSION_2_0 */
 
@@ -1198,9 +1186,6 @@ GLAPI FLEXTGL_EXPORT void APIENTRY glVertexAttrib4fv(GLuint, const GLfloat *);
 GLAPI FLEXTGL_EXPORT void APIENTRY glVertexAttribPointer(GLuint, GLint, GLenum, GLboolean, GLsizei, const void *);
 GLAPI FLEXTGL_EXPORT void APIENTRY glViewport(GLint, GLint, GLsizei, GLsizei);
 
-/* GL_EXT_blend_minmax */
-
-
 /* GL_EXT_debug_label */
 
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetObjectLabelEXT)(GLenum, GLuint, GLsizei, GLsizei *, GLchar *);
@@ -1257,9 +1242,6 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglEnableiEXT)(GLenum, GLuint);
 GLAPI FLEXTGL_EXPORT GLboolean(APIENTRY *flextglIsEnablediEXT)(GLenum, GLuint);
 #define glIsEnablediEXT flextglIsEnablediEXT
 
-/* GL_EXT_draw_instanced */
-
-
 /* GL_EXT_instanced_arrays */
 
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDrawArraysInstancedEXT)(GLenum, GLint, GLsizei, GLsizei);
@@ -1307,9 +1289,6 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetQueryivEXT)(GLenum, GLenum, GLint 
 GLAPI FLEXTGL_EXPORT GLboolean(APIENTRY *flextglIsQueryEXT)(GLuint);
 #define glIsQueryEXT flextglIsQueryEXT
 
-/* GL_EXT_read_format_bgra */
-
-
 /* GL_EXT_robustness */
 
 GLAPI FLEXTGL_EXPORT GLenum(APIENTRY *flextglGetGraphicsResetStatusEXT)(void);
@@ -1320,12 +1299,6 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnUniformivEXT)(GLuint, GLint, GLsi
 #define glGetnUniformivEXT flextglGetnUniformivEXT
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglReadnPixelsEXT)(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void *);
 #define glReadnPixelsEXT flextglReadnPixelsEXT
-
-/* GL_EXT_sRGB */
-
-
-/* GL_EXT_sRGB_write_control */
-
 
 /* GL_EXT_separate_shader_objects */
 
@@ -1418,12 +1391,6 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglUseProgramStagesEXT)(GLuint, GLbitfie
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglValidateProgramPipelineEXT)(GLuint);
 #define glValidateProgramPipelineEXT flextglValidateProgramPipelineEXT
 
-/* GL_EXT_shader_texture_lod */
-
-
-/* GL_EXT_shadow_samplers */
-
-
 /* GL_EXT_texture_border_clamp */
 
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetSamplerParameterIivEXT)(GLuint, GLenum, GLint *);
@@ -1443,21 +1410,6 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglTexParameterIivEXT)(GLenum, GLenum, c
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglTexParameterIuivEXT)(GLenum, GLenum, const GLuint *);
 #define glTexParameterIuivEXT flextglTexParameterIuivEXT
 
-/* GL_EXT_texture_compression_s3tc */
-
-
-/* GL_EXT_texture_filter_anisotropic */
-
-
-/* GL_EXT_texture_format_BGRA8888 */
-
-
-/* GL_EXT_texture_rg */
-
-
-/* GL_EXT_texture_sRGB_decode */
-
-
 /* GL_EXT_texture_storage */
 
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglTexStorage1DEXT)(GLenum, GLsizei, GLenum, GLsizei);
@@ -1473,19 +1425,10 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglTextureStorage2DEXT)(GLuint, GLenum, 
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglTextureStorage3DEXT)(GLuint, GLenum, GLsizei, GLenum, GLsizei, GLsizei, GLsizei);
 #define glTextureStorage3DEXT flextglTextureStorage3DEXT
 
-/* GL_EXT_texture_type_2_10_10_10_REV */
-
-
 /* GL_KHR_blend_equation_advanced */
 
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglBlendBarrierKHR)(void);
 #define glBlendBarrierKHR flextglBlendBarrierKHR
-
-/* GL_KHR_blend_equation_advanced_coherent */
-
-
-/* GL_KHR_context_flush_control */
-
 
 /* GL_KHR_debug */
 
@@ -1512,9 +1455,6 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglPopDebugGroupKHR)(void);
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglPushDebugGroupKHR)(GLenum, GLuint, GLsizei, const GLchar *);
 #define glPushDebugGroupKHR flextglPushDebugGroupKHR
 
-/* GL_KHR_robust_buffer_access_behavior */
-
-
 /* GL_KHR_robustness */
 
 GLAPI FLEXTGL_EXPORT GLenum(APIENTRY *flextglGetGraphicsResetStatusKHR)(void);
@@ -1528,12 +1468,6 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnUniformuivKHR)(GLuint, GLint, GLs
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglReadnPixelsKHR)(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void *);
 #define glReadnPixelsKHR flextglReadnPixelsKHR
 
-/* GL_KHR_texture_compression_astc_hdr */
-
-
-/* GL_KHR_texture_compression_astc_ldr */
-
-
 /* GL_NV_draw_buffers */
 
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDrawBuffersNV)(GLsizei, const GLenum *);
@@ -1545,9 +1479,6 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDrawArraysInstancedNV)(GLenum, GLint,
 #define glDrawArraysInstancedNV flextglDrawArraysInstancedNV
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDrawElementsInstancedNV)(GLenum, GLsizei, GLenum, const void *, GLsizei);
 #define glDrawElementsInstancedNV flextglDrawElementsInstancedNV
-
-/* GL_NV_fbo_color_attachments */
-
 
 /* GL_NV_framebuffer_blit */
 
@@ -1574,39 +1505,6 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglPolygonModeNV)(GLenum, GLenum);
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglReadBufferNV)(GLenum);
 #define glReadBufferNV flextglReadBufferNV
 
-/* GL_NV_read_buffer_front */
-
-
-/* GL_NV_read_depth */
-
-
-/* GL_NV_read_depth_stencil */
-
-
-/* GL_NV_read_stencil */
-
-
-/* GL_NV_shadow_samplers_array */
-
-
-/* GL_NV_shadow_samplers_cube */
-
-
-/* GL_NV_texture_border_clamp */
-
-
-/* GL_OES_depth24 */
-
-
-/* GL_OES_depth32 */
-
-
-/* GL_OES_depth_texture */
-
-
-/* GL_OES_element_index_uint */
-
-
 /* GL_OES_mapbuffer */
 
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetBufferPointervOES)(GLenum, GLenum, void **);
@@ -1615,27 +1513,6 @@ GLAPI FLEXTGL_EXPORT void *(APIENTRY *flextglMapBufferOES)(GLenum, GLenum);
 #define glMapBufferOES flextglMapBufferOES
 GLAPI FLEXTGL_EXPORT GLboolean(APIENTRY *flextglUnmapBufferOES)(GLenum);
 #define glUnmapBufferOES flextglUnmapBufferOES
-
-/* GL_OES_packed_depth_stencil */
-
-
-/* GL_OES_required_internalformat */
-
-
-/* GL_OES_rgb8_rgba8 */
-
-
-/* GL_OES_standard_derivatives */
-
-
-/* GL_OES_stencil1 */
-
-
-/* GL_OES_stencil4 */
-
-
-/* GL_OES_surfaceless_context */
-
 
 /* GL_OES_texture_3D */
 
@@ -1652,24 +1529,6 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglTexImage3DOES)(GLenum, GLint, GLenum,
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglTexSubImage3DOES)(GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLenum, GLenum, const void *);
 #define glTexSubImage3DOES flextglTexSubImage3DOES
 
-/* GL_OES_texture_float */
-
-
-/* GL_OES_texture_float_linear */
-
-
-/* GL_OES_texture_half_float */
-
-
-/* GL_OES_texture_half_float_linear */
-
-
-/* GL_OES_texture_npot */
-
-
-/* GL_OES_texture_stencil8 */
-
-
 /* GL_OES_vertex_array_object */
 
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglBindVertexArrayOES)(GLuint);
@@ -1680,9 +1539,6 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGenVertexArraysOES)(GLsizei, GLuint *
 #define glGenVertexArraysOES flextglGenVertexArraysOES
 GLAPI FLEXTGL_EXPORT GLboolean(APIENTRY *flextglIsVertexArrayOES)(GLuint);
 #define glIsVertexArrayOES flextglIsVertexArrayOES
-
-/* GL_OES_vertex_half_float */
-
 
 #ifdef __cplusplus
 }

@@ -8,10 +8,6 @@
 void flextGLInit() {
     Magnum::Platform::Implementation::OpenGLFunctionLoader loader;
 
-    /* GL_ANDROID_extension_pack_es31a */
-
-    /* GL_APPLE_texture_format_BGRA8888 */
-
     /* GL_ES_VERSION_3_1 */
     flextglActiveShaderProgram = reinterpret_cast<void(APIENTRY*)(GLuint, GLuint)>(loader.load("glActiveShaderProgram"));
     flextglBindImageTexture = reinterpret_cast<void(APIENTRY*)(GLuint, GLuint, GLint, GLboolean, GLint, GLenum, GLenum)>(loader.load("glBindImageTexture"));
@@ -120,8 +116,6 @@ void flextGLInit() {
     /* GL_EXT_geometry_shader */
     flextglFramebufferTextureEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLuint, GLint)>(loader.load("glFramebufferTextureEXT"));
 
-    /* GL_EXT_gpu_shader5 */
-
     /* GL_EXT_multi_draw_arrays */
     flextglMultiDrawArraysEXT = reinterpret_cast<void(APIENTRY*)(GLenum, const GLint *, const GLsizei *, GLsizei)>(loader.load("glMultiDrawArraysEXT"));
     flextglMultiDrawElementsEXT = reinterpret_cast<void(APIENTRY*)(GLenum, const GLsizei *, GLenum, const void *const*, GLsizei)>(loader.load("glMultiDrawElementsEXT"));
@@ -133,15 +127,11 @@ void flextGLInit() {
     /* GL_EXT_primitive_bounding_box */
     flextglPrimitiveBoundingBoxEXT = reinterpret_cast<void(APIENTRY*)(GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat)>(loader.load("glPrimitiveBoundingBoxEXT"));
 
-    /* GL_EXT_read_format_bgra */
-
     /* GL_EXT_robustness */
     flextglGetGraphicsResetStatusEXT = reinterpret_cast<GLenum(APIENTRY*)(void)>(loader.load("glGetGraphicsResetStatusEXT"));
     flextglGetnUniformfvEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, GLfloat *)>(loader.load("glGetnUniformfvEXT"));
     flextglGetnUniformivEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, GLint *)>(loader.load("glGetnUniformivEXT"));
     flextglReadnPixelsEXT = reinterpret_cast<void(APIENTRY*)(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void *)>(loader.load("glReadnPixelsEXT"));
-
-    /* GL_EXT_sRGB_write_control */
 
     /* GL_EXT_separate_shader_objects */
     flextglActiveShaderProgramEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLuint)>(loader.load("glActiveShaderProgramEXT"));
@@ -189,10 +179,6 @@ void flextGLInit() {
     flextglUseProgramStagesEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLbitfield, GLuint)>(loader.load("glUseProgramStagesEXT"));
     flextglValidateProgramPipelineEXT = reinterpret_cast<void(APIENTRY*)(GLuint)>(loader.load("glValidateProgramPipelineEXT"));
 
-    /* GL_EXT_shader_integer_mix */
-
-    /* GL_EXT_shader_io_blocks */
-
     /* GL_EXT_tessellation_shader */
     flextglPatchParameteriEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLint)>(loader.load("glPatchParameteriEXT"));
 
@@ -210,22 +196,8 @@ void flextGLInit() {
     flextglTexBufferEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLuint)>(loader.load("glTexBufferEXT"));
     flextglTexBufferRangeEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLuint, GLintptr, GLsizeiptr)>(loader.load("glTexBufferRangeEXT"));
 
-    /* GL_EXT_texture_compression_s3tc */
-
-    /* GL_EXT_texture_cube_map_array */
-
-    /* GL_EXT_texture_filter_anisotropic */
-
-    /* GL_EXT_texture_format_BGRA8888 */
-
-    /* GL_EXT_texture_sRGB_decode */
-
     /* GL_KHR_blend_equation_advanced */
     flextglBlendBarrierKHR = reinterpret_cast<void(APIENTRY*)(void)>(loader.load("glBlendBarrierKHR"));
-
-    /* GL_KHR_blend_equation_advanced_coherent */
-
-    /* GL_KHR_context_flush_control */
 
     /* GL_KHR_debug */
     flextglDebugMessageCallbackKHR = reinterpret_cast<void(APIENTRY*)(GLDEBUGPROCKHR, const void *)>(loader.load("glDebugMessageCallbackKHR"));
@@ -240,8 +212,6 @@ void flextGLInit() {
     flextglPopDebugGroupKHR = reinterpret_cast<void(APIENTRY*)(void)>(loader.load("glPopDebugGroupKHR"));
     flextglPushDebugGroupKHR = reinterpret_cast<void(APIENTRY*)(GLenum, GLuint, GLsizei, const GLchar *)>(loader.load("glPushDebugGroupKHR"));
 
-    /* GL_KHR_robust_buffer_access_behavior */
-
     /* GL_KHR_robustness */
     flextglGetGraphicsResetStatusKHR = reinterpret_cast<GLenum(APIENTRY*)(void)>(loader.load("glGetGraphicsResetStatusKHR"));
     flextglGetnUniformfvKHR = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, GLfloat *)>(loader.load("glGetnUniformfvKHR"));
@@ -249,26 +219,8 @@ void flextGLInit() {
     flextglGetnUniformuivKHR = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, GLuint *)>(loader.load("glGetnUniformuivKHR"));
     flextglReadnPixelsKHR = reinterpret_cast<void(APIENTRY*)(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void *)>(loader.load("glReadnPixelsKHR"));
 
-    /* GL_KHR_texture_compression_astc_hdr */
-
-    /* GL_KHR_texture_compression_astc_ldr */
-
     /* GL_NV_polygon_mode */
     flextglPolygonModeNV = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum)>(loader.load("glPolygonModeNV"));
-
-    /* GL_NV_read_buffer_front */
-
-    /* GL_NV_read_depth */
-
-    /* GL_NV_read_depth_stencil */
-
-    /* GL_NV_read_stencil */
-
-    /* GL_NV_shader_noperspective_interpolation */
-
-    /* GL_NV_texture_border_clamp */
-
-    /* GL_OES_depth32 */
 
     /* GL_OES_mapbuffer */
     flextglGetBufferPointervOES = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, void **)>(loader.load("glGetBufferPointervOES"));
@@ -277,18 +229,6 @@ void flextGLInit() {
 
     /* GL_OES_sample_shading */
     flextglMinSampleShadingOES = reinterpret_cast<void(APIENTRY*)(GLfloat)>(loader.load("glMinSampleShadingOES"));
-
-    /* GL_OES_sample_variables */
-
-    /* GL_OES_shader_image_atomic */
-
-    /* GL_OES_shader_multisample_interpolation */
-
-    /* GL_OES_stencil1 */
-
-    /* GL_OES_stencil4 */
-
-    /* GL_OES_texture_stencil8 */
 
     /* GL_OES_texture_storage_multisample_2d_array */
     flextglTexStorage3DMultisampleOES = reinterpret_cast<void(APIENTRY*)(GLenum, GLsizei, GLenum, GLsizei, GLsizei, GLsizei, GLboolean)>(loader.load("glTexStorage3DMultisampleOES"));

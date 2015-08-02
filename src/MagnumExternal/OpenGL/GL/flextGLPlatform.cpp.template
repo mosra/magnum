@@ -9,7 +9,7 @@
 void flextGLInit() {
     Magnum::Platform::Implementation::OpenGLFunctionLoader loader;
     @for category,funcs in functions:
-    @if category not in ['VERSION_1_0', 'VERSION_1_1']:
+    @if funcs and category not in ['VERSION_1_0', 'VERSION_1_1']:
 
     /* GL_@category */
     @for f in funcs:

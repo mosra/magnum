@@ -8,10 +8,6 @@
 void flextGLInit() {
     Magnum::Platform::Implementation::OpenGLFunctionLoader loader;
 
-    /* GL_AMD_shader_trinary_minmax */
-
-    /* GL_AMD_vertex_shader_layer */
-
     /* GL_ARB_bindless_texture */
     flextglGetImageHandleARB = reinterpret_cast<GLuint64(APIENTRY*)(GLuint, GLint, GLboolean, GLint, GLenum)>(loader.load("glGetImageHandleARB"));
     flextglGetTextureHandleARB = reinterpret_cast<GLuint64(APIENTRY*)(GLuint)>(loader.load("glGetTextureHandleARB"));
@@ -37,8 +33,6 @@ void flextGLInit() {
     flextglMultiDrawArraysIndirectCountARB = reinterpret_cast<void(APIENTRY*)(GLenum, GLintptr, GLintptr, GLsizei, GLsizei)>(loader.load("glMultiDrawArraysIndirectCountARB"));
     flextglMultiDrawElementsIndirectCountARB = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLintptr, GLintptr, GLsizei, GLsizei)>(loader.load("glMultiDrawElementsIndirectCountARB"));
 
-    /* GL_ARB_pipeline_statistics_query */
-
     /* GL_ARB_robustness */
     flextglGetGraphicsResetStatusARB = reinterpret_cast<GLenum(APIENTRY*)(void)>(loader.load("glGetGraphicsResetStatusARB"));
     flextglGetnCompressedTexImageARB = reinterpret_cast<void(APIENTRY*)(GLenum, GLint, GLsizei, void *)>(loader.load("glGetnCompressedTexImageARB"));
@@ -49,14 +43,6 @@ void flextGLInit() {
     flextglGetnUniformuivARB = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, GLuint *)>(loader.load("glGetnUniformuivARB"));
     flextglReadnPixelsARB = reinterpret_cast<void(APIENTRY*)(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void *)>(loader.load("glReadnPixelsARB"));
 
-    /* GL_ARB_robustness_isolation */
-
-    /* GL_ARB_seamless_cubemap_per_texture */
-
-    /* GL_ARB_shader_draw_parameters */
-
-    /* GL_ARB_shader_group_vote */
-
     /* GL_ARB_sparse_buffer */
     flextglBufferPageCommitmentARB = reinterpret_cast<void(APIENTRY*)(GLenum, GLintptr, GLsizeiptr, GLboolean)>(loader.load("glBufferPageCommitmentARB"));
     flextglNamedBufferPageCommitmentARB = reinterpret_cast<void(APIENTRY*)(GLuint, GLintptr, GLsizeiptr, GLboolean)>(loader.load("glNamedBufferPageCommitmentARB"));
@@ -64,10 +50,6 @@ void flextGLInit() {
 
     /* GL_ARB_sparse_texture */
     flextglTexPageCommitmentARB = reinterpret_cast<void(APIENTRY*)(GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLboolean)>(loader.load("glTexPageCommitmentARB"));
-
-    /* GL_ARB_transform_feedback_overflow_query */
-
-    /* GL_ATI_texture_mirror_once */
 
     /* GL_EXT_debug_label */
     flextglGetObjectLabelEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLuint, GLsizei, GLsizei *, GLchar *)>(loader.load("glGetObjectLabelEXT"));
@@ -335,27 +317,11 @@ void flextGLInit() {
     flextglVertexArrayVertexBindingDivisorEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLuint, GLuint)>(loader.load("glVertexArrayVertexBindingDivisorEXT"));
     flextglVertexArrayVertexOffsetEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLuint, GLint, GLenum, GLsizei, GLintptr)>(loader.load("glVertexArrayVertexOffsetEXT"));
 
-    /* GL_EXT_shader_integer_mix */
-
-    /* GL_EXT_texture_compression_s3tc */
-
-    /* GL_EXT_texture_filter_anisotropic */
-
-    /* GL_EXT_texture_mirror_clamp */
-
-    /* GL_EXT_texture_sRGB_decode */
-
     /* GL_GREMEDY_string_marker */
     flextglStringMarkerGREMEDY = reinterpret_cast<void(APIENTRY*)(GLsizei, const void *)>(loader.load("glStringMarkerGREMEDY"));
 
     /* GL_KHR_blend_equation_advanced */
     flextglBlendBarrierKHR = reinterpret_cast<void(APIENTRY*)(void)>(loader.load("glBlendBarrierKHR"));
-
-    /* GL_KHR_blend_equation_advanced_coherent */
-
-    /* GL_KHR_texture_compression_astc_hdr */
-
-    /* GL_KHR_texture_compression_astc_ldr */
 
     /* GL_VERSION_1_2 */
     flextglCopyTexSubImage3D = reinterpret_cast<void(APIENTRY*)(GLenum, GLint, GLint, GLint, GLint, GLint, GLint, GLsizei, GLsizei)>(loader.load("glCopyTexSubImage3D"));

@@ -70,6 +70,7 @@ void flextGLInit();
 
 /* Function prototypes */
 @for cat,funcs in functions:
+@if funcs:
 
 /* GL_@cat */
 
@@ -85,6 +86,7 @@ GLAPI FLEXTGL_EXPORT @f.returntype\
 #define gl@f.name flextgl@f.name
         @end
     @end
+@end
 @end
 
 #ifdef __cplusplus

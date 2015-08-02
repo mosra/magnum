@@ -40,12 +40,14 @@ void flextGLInit();
 
 /* Function prototypes */
 @for cat,funcs in functions:
+@if funcs:
 
 /* GL_@cat */
 
 @for f in funcs:
 GLAPI @f.returntype gl@f.name\
 (@f.param_type_list_string());
+@end
 @end
 @end
 

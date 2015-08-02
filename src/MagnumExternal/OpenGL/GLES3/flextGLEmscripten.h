@@ -955,12 +955,6 @@ GLAPI void glVertexAttribI4uiv(GLuint, const GLuint *);
 GLAPI void glVertexAttribIPointer(GLuint, GLint, GLenum, GLsizei, const void *);
 GLAPI void glWaitSync(GLsync, GLbitfield, GLuint64);
 
-/* GL_EXT_texture_compression_s3tc */
-
-
-/* GL_EXT_texture_filter_anisotropic */
-
-
 #ifdef __cplusplus
 }
 #endif

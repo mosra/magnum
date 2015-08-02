@@ -1339,12 +1339,6 @@ typedef khronos_ssize_t GLsizeiptr;
 
 /* Function prototypes */
 
-/* GL_ANDROID_extension_pack_es31a */
-
-
-/* GL_APPLE_texture_format_BGRA8888 */
-
-
 /* GL_ES_VERSION_2_0 */
 
 GLAPI FLEXTGL_EXPORT void APIENTRY glActiveTexture(GLenum);
@@ -1806,9 +1800,6 @@ GLAPI FLEXTGL_EXPORT GLboolean(APIENTRY *flextglIsEnablediEXT)(GLenum, GLuint);
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglFramebufferTextureEXT)(GLenum, GLenum, GLuint, GLint);
 #define glFramebufferTextureEXT flextglFramebufferTextureEXT
 
-/* GL_EXT_gpu_shader5 */
-
-
 /* GL_EXT_multi_draw_arrays */
 
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglMultiDrawArraysEXT)(GLenum, const GLint *, const GLsizei *, GLsizei);
@@ -1828,9 +1819,6 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglRenderbufferStorageMultisampleEXT)(GL
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglPrimitiveBoundingBoxEXT)(GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat);
 #define glPrimitiveBoundingBoxEXT flextglPrimitiveBoundingBoxEXT
 
-/* GL_EXT_read_format_bgra */
-
-
 /* GL_EXT_robustness */
 
 GLAPI FLEXTGL_EXPORT GLenum(APIENTRY *flextglGetGraphicsResetStatusEXT)(void);
@@ -1841,9 +1829,6 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnUniformivEXT)(GLuint, GLint, GLsi
 #define glGetnUniformivEXT flextglGetnUniformivEXT
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglReadnPixelsEXT)(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void *);
 #define glReadnPixelsEXT flextglReadnPixelsEXT
-
-/* GL_EXT_sRGB_write_control */
-
 
 /* GL_EXT_separate_shader_objects */
 
@@ -1936,12 +1921,6 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglUseProgramStagesEXT)(GLuint, GLbitfie
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglValidateProgramPipelineEXT)(GLuint);
 #define glValidateProgramPipelineEXT flextglValidateProgramPipelineEXT
 
-/* GL_EXT_shader_integer_mix */
-
-
-/* GL_EXT_shader_io_blocks */
-
-
 /* GL_EXT_tessellation_shader */
 
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglPatchParameteriEXT)(GLenum, GLint);
@@ -1973,31 +1952,10 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglTexBufferEXT)(GLenum, GLenum, GLuint)
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglTexBufferRangeEXT)(GLenum, GLenum, GLuint, GLintptr, GLsizeiptr);
 #define glTexBufferRangeEXT flextglTexBufferRangeEXT
 
-/* GL_EXT_texture_compression_s3tc */
-
-
-/* GL_EXT_texture_cube_map_array */
-
-
-/* GL_EXT_texture_filter_anisotropic */
-
-
-/* GL_EXT_texture_format_BGRA8888 */
-
-
-/* GL_EXT_texture_sRGB_decode */
-
-
 /* GL_KHR_blend_equation_advanced */
 
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglBlendBarrierKHR)(void);
 #define glBlendBarrierKHR flextglBlendBarrierKHR
-
-/* GL_KHR_blend_equation_advanced_coherent */
-
-
-/* GL_KHR_context_flush_control */
-
 
 /* GL_KHR_debug */
 
@@ -2024,9 +1982,6 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglPopDebugGroupKHR)(void);
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglPushDebugGroupKHR)(GLenum, GLuint, GLsizei, const GLchar *);
 #define glPushDebugGroupKHR flextglPushDebugGroupKHR
 
-/* GL_KHR_robust_buffer_access_behavior */
-
-
 /* GL_KHR_robustness */
 
 GLAPI FLEXTGL_EXPORT GLenum(APIENTRY *flextglGetGraphicsResetStatusKHR)(void);
@@ -2040,37 +1995,10 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetnUniformuivKHR)(GLuint, GLint, GLs
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglReadnPixelsKHR)(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void *);
 #define glReadnPixelsKHR flextglReadnPixelsKHR
 
-/* GL_KHR_texture_compression_astc_hdr */
-
-
-/* GL_KHR_texture_compression_astc_ldr */
-
-
 /* GL_NV_polygon_mode */
 
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglPolygonModeNV)(GLenum, GLenum);
 #define glPolygonModeNV flextglPolygonModeNV
-
-/* GL_NV_read_buffer_front */
-
-
-/* GL_NV_read_depth */
-
-
-/* GL_NV_read_depth_stencil */
-
-
-/* GL_NV_read_stencil */
-
-
-/* GL_NV_shader_noperspective_interpolation */
-
-
-/* GL_NV_texture_border_clamp */
-
-
-/* GL_OES_depth32 */
-
 
 /* GL_OES_mapbuffer */
 
@@ -2085,24 +2013,6 @@ GLAPI FLEXTGL_EXPORT GLboolean(APIENTRY *flextglUnmapBufferOES)(GLenum);
 
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglMinSampleShadingOES)(GLfloat);
 #define glMinSampleShadingOES flextglMinSampleShadingOES
-
-/* GL_OES_sample_variables */
-
-
-/* GL_OES_shader_image_atomic */
-
-
-/* GL_OES_shader_multisample_interpolation */
-
-
-/* GL_OES_stencil1 */
-
-
-/* GL_OES_stencil4 */
-
-
-/* GL_OES_texture_stencil8 */
-
 
 /* GL_OES_texture_storage_multisample_2d_array */
 
