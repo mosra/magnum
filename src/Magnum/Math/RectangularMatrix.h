@@ -111,7 +111,8 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         constexpr /*implicit*/ RectangularMatrix(ZeroInitT = ZeroInit)
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            : RectangularMatrix<cols, rows, T>{typename Implementation::GenerateSequence<cols>::Type{}, ZeroInit}
+            /* MSVC 2015 can't handle {} here */
+            : RectangularMatrix<cols, rows, T>(typename Implementation::GenerateSequence<cols>::Type{}, ZeroInit)
             #endif
             {}
 
@@ -119,7 +120,8 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         explicit RectangularMatrix(NoInitT)
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            : RectangularMatrix<cols, rows, T>{typename Implementation::GenerateSequence<cols>::Type{}, NoInit}
+            /* MSVC 2015 can't handle {} here */
+            : RectangularMatrix<cols, rows, T>(typename Implementation::GenerateSequence<cols>::Type{}, NoInit)
             #endif
             {}
 
