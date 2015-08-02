@@ -34,6 +34,7 @@
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include <Corrade/Utility/Macros.h>
 
+#include "Magnum/Magnum.h"
 #include "Magnum/Math/Color.h"
 CORRADE_DEPRECATED_FILE("use Magnum/Math/Color.h instead")
 
