@@ -57,6 +57,8 @@ Vector2i CubeMapTexture::imageSize(const Int level) {
 
 #ifndef MAGNUM_TARGET_GLES
 void CubeMapTexture::image(const Int level, Image3D& image) {
+    createIfNotAlready();
+
     const Vector3i size{imageSize(level), 6};
     const std::size_t dataSize = image.dataSize(size);
     char* data = new char[dataSize];
@@ -71,6 +73,8 @@ Image3D CubeMapTexture::image(const Int level, Image3D&& image) {
 }
 
 void CubeMapTexture::image(const Int level, BufferImage3D& image, const BufferUsage usage) {
+    createIfNotAlready();
+
     const Vector3i size{imageSize(level), 6};
     const std::size_t dataSize = image.dataSize(size);
     if(image.size() != size)
@@ -86,6 +90,8 @@ BufferImage3D CubeMapTexture::image(const Int level, BufferImage3D&& image, cons
 }
 
 void CubeMapTexture::compressedImage(const Int level, CompressedImage3D& image) {
+    createIfNotAlready();
+
     const Vector3i size{imageSize(level), 6};
     GLint dataSize;
     (this->*Context::current()->state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &dataSize);
@@ -104,6 +110,8 @@ CompressedImage3D CubeMapTexture::compressedImage(const Int level, CompressedIma
 }
 
 void CubeMapTexture::compressedImage(const Int level, CompressedBufferImage3D& image, const BufferUsage usage) {
+    createIfNotAlready();
+
     const Vector3i size{imageSize(level), 6};
     GLint dataSize;
     (this->*Context::current()->state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &dataSize);
@@ -196,24 +204,32 @@ BufferImage3D CubeMapTexture::subImage(const Int level, const Range3Di& range, B
 }
 
 CubeMapTexture& CubeMapTexture::setSubImage(const Int level, const Vector3i& offset, const ImageView3D& image) {
+    createIfNotAlready();
+
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
     glTextureSubImage3D(_id, level, offset.x(), offset.y(), offset.z(), image.size().x(), image.size().y(), image.size().z(), GLenum(image.format()), GLenum(image.type()), image.data());
     return *this;
 }
 
 CubeMapTexture& CubeMapTexture::setSubImage(const Int level, const Vector3i& offset, BufferImage3D& image) {
+    createIfNotAlready();
+
     image.buffer().bindInternal(Buffer::TargetHint::PixelUnpack);
     glTextureSubImage3D(_id, level, offset.x(), offset.y(), offset.z(), image.size().x(), image.size().y(), image.size().z(), GLenum(image.format()), GLenum(image.type()), nullptr);
     return *this;
 }
 
 CubeMapTexture& CubeMapTexture::setCompressedSubImage(const Int level, const Vector3i& offset, const CompressedImageView3D& image) {
+    createIfNotAlready();
+
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
     glCompressedTextureSubImage3D(_id, level, offset.x(), offset.y(), offset.z(), image.size().x(), image.size().y(), image.size().z(), GLenum(image.format()), image.data().size(), image.data());
     return *this;
 }
 
 CubeMapTexture& CubeMapTexture::setCompressedSubImage(const Int level, const Vector3i& offset, CompressedBufferImage3D& image) {
+    createIfNotAlready();
+
     image.buffer().bindInternal(Buffer::TargetHint::PixelUnpack);
     glCompressedTextureSubImage3D(_id, level, offset.x(), offset.y(), offset.z(), image.size().x(), image.size().y(), image.size().z(), GLenum(image.format()), image.dataSize(), nullptr);
     return *this;

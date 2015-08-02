@@ -350,6 +350,8 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         AbstractTexture& setLabelInternal(Containers::ArrayView<const char> label);
         #endif
 
+        void MAGNUM_LOCAL createIfNotAlready();
+
         /* Unlike bind() this also sets the texture binding unit as active */
         void MAGNUM_LOCAL bindInternal();
 
@@ -428,8 +430,6 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL createImplementationDSA();
         #endif
-
-        void MAGNUM_LOCAL createIfNotAlready();
 
         void MAGNUM_LOCAL bindImplementationDefault(GLint textureUnit);
         #ifndef MAGNUM_TARGET_GLES
