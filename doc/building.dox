@@ -504,7 +504,14 @@ For ArchLinux there are also prepared package files in `package/archlinux`,
 named `PKGBUILD-android-arm` and `PKGBUILD-android-x86`, see
 @ref building-packages-arch "above" for more information.
 
-@section building-ci-jenkins Jenkins Continuous Integration
+@section building-ci Continuous Integration
+
+@subsection building-ci-appveyor AppVeyor
+
+In `package/ci/` there is `appveyor.yml` file with Windows MSVC configuration.
+Online at https://ci.appveyor.com/project/mosra/magnum.
+
+@subsection building-ci-jenkins Jenkins
 
 In `package/ci/` there are `jenkins.xml` and `jenkins-gltests.xml` files
 containing job configuration, one for build and non-GL tests and the other for
