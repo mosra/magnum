@@ -487,7 +487,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         void MAGNUM_LOCAL storageImplementationDSAEXT(GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size);
         #endif
 
-        #if !defined(MAGNUM_TARGET_WEBGL) || defined(MAGNUM_TARGET_GLES2)
+        #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
         void MAGNUM_LOCAL storageImplementationFallback(GLsizei levels, TextureFormat internalFormat, const Vector2i& size);
         #endif
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
@@ -498,7 +498,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         void MAGNUM_LOCAL storageImplementationDSAEXT(GLsizei levels, TextureFormat internalFormat, const Vector2i& size);
         #endif
 
-        #ifndef MAGNUM_TARGET_WEBGL
+        #if !defined(MAGNUM_TARGET_GLES) || (defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
         void MAGNUM_LOCAL storageImplementationFallback(GLsizei levels, TextureFormat internalFormat, const Vector3i& size);
         #endif
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
@@ -576,8 +576,10 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         void MAGNUM_LOCAL invalidateSubImageImplementationARB(GLint level, const Vector3i& offset, const Vector3i& size);
         #endif
 
+        #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
         ColorFormat MAGNUM_LOCAL imageFormatForInternalFormat(TextureFormat internalFormat);
         ColorType MAGNUM_LOCAL imageTypeForInternalFormat(TextureFormat internalFormat);
+        #endif
 
         GLuint _id;
         ObjectFlags _flags;

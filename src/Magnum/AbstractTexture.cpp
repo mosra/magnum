@@ -467,6 +467,7 @@ void AbstractTexture::bindInternal() {
     glBindTexture(_target, _id);
 }
 
+#if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
 ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat internalFormat) {
     switch(internalFormat) {
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
@@ -971,6 +972,7 @@ ColorType AbstractTexture::imageTypeForInternalFormat(const TextureFormat intern
 
     CORRADE_ASSERT_UNREACHABLE();
 }
+#endif
 
 void AbstractTexture::parameterImplementationDefault(GLenum parameter, GLint value) {
     bindInternal();
@@ -1131,7 +1133,7 @@ void AbstractTexture::storageImplementationDSAEXT(GLsizei levels, TextureFormat 
 }
 #endif
 
-#if !defined(MAGNUM_TARGET_WEBGL) || defined(MAGNUM_TARGET_GLES2)
+#if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
 void AbstractTexture::storageImplementationFallback(const GLsizei levels, const TextureFormat internalFormat, const Vector2i& size) {
     const ColorFormat format = imageFormatForInternalFormat(internalFormat);
     const ColorType type = imageTypeForInternalFormat(internalFormat);
@@ -1200,7 +1202,7 @@ void AbstractTexture::storageImplementationDSAEXT(GLsizei levels, TextureFormat 
 }
 #endif
 
-#ifndef MAGNUM_TARGET_WEBGL
+#if !defined(MAGNUM_TARGET_GLES) || (defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
 void AbstractTexture::storageImplementationFallback(GLsizei levels, TextureFormat internalFormat, const Vector3i& size) {
     const ColorFormat format = imageFormatForInternalFormat(internalFormat);
     const ColorType type = imageTypeForInternalFormat(internalFormat);
