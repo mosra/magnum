@@ -128,7 +128,9 @@ endif()
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.7.0")
     message(FATAL_ERROR "Compatibility branch of Magnum is needed for use with GCC < 4.7. See the documentation for more information.")
 elseif(MSVC)
-    message(FATAL_ERROR "Compatibility branch of Magnum is needed for use with MSVC. See the documentation for more information.")
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "19.0")
+        message(FATAL_ERROR "Compatibility branch of Magnum is needed for use with MSVC < 2015. See the documentation for more information.")
+    endif()
 endif()
 
 # If targeting NaCl, set explicit OpenGL ES 2.0 support. For Android and
