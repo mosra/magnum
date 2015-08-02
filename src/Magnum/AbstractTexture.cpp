@@ -224,7 +224,7 @@ AbstractTexture::~AbstractTexture() {
     glDeleteTextures(1, &_id);
 }
 
-inline void AbstractTexture::createIfNotAlready() {
+void AbstractTexture::createIfNotAlready() {
     if(_flags & ObjectFlag::Created) return;
 
     /* glGen*() does not create the object, just reserves the name. Some
