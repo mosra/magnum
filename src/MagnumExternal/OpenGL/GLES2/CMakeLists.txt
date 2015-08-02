@@ -28,7 +28,7 @@ if(NOT CORRADE_TARGET_NACL AND NOT CORRADE_TARGET_EMSCRIPTEN)
     # flextGLPlatform.cpp is compiled as part of Magnum*Context libraries in Platform
     add_library(MagnumFlextGLObjects OBJECT flextGL.cpp)
 
-    if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" MATCHES "(Apple)?Clang")
+    if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "(Apple)?Clang")
         set_target_properties(MagnumFlextGLObjects PROPERTIES COMPILE_FLAGS "-fvisibility=hidden -DFlextGL_EXPORTS")
     else()
         set_target_properties(MagnumFlextGLObjects PROPERTIES COMPILE_FLAGS "-DFlextGL_EXPORTS")
