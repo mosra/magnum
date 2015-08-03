@@ -41,6 +41,21 @@
 
 namespace Magnum {
 
+struct Mesh::AttributeLayout {
+    explicit AttributeLayout(const Buffer& buffer, GLuint location, GLint size, GLenum type, AttributeKind kind, GLintptr offset, GLsizei stride, GLuint divisor) noexcept: buffer{Buffer::wrap(buffer.id())}, location{location}, size{size}, type{type}, kind{kind}, offset{offset}, stride{stride}, divisor{divisor} {}
+
+    explicit AttributeLayout(const AttributeLayout& other): buffer{Buffer::wrap(other.buffer.id())}, location{other.location}, size{other.size}, type{other.type}, kind{other.kind}, offset{other.offset}, stride{other.stride}, divisor{other.divisor} {}
+
+    Buffer buffer;
+    GLuint location;
+    GLint size;
+    GLenum type;
+    AttributeKind kind;
+    GLintptr offset;
+    GLsizei stride;
+    GLuint divisor;
+};
+
 #ifdef MAGNUM_BUILD_DEPRECATED
 Int Mesh::maxVertexAttributes() { return AbstractShaderProgram::maxVertexAttributes(); }
 #endif
@@ -173,6 +188,8 @@ Mesh& Mesh::operator=(Mesh&& other) noexcept {
 
     return *this;
 }
+
+Mesh::Mesh(const GLuint id, const MeshPrimitive primitive, const ObjectFlags flags): _id{id}, _primitive{primitive}, _flags{flags} {}
 
 inline void Mesh::createIfNotAlready() {
     /* If VAO extension is not available, the following is always true */
@@ -397,23 +414,28 @@ void Mesh::destroyImplementationVAO() {
     #endif
 }
 
-void Mesh::attributePointerInternal(const AttributeLayout& attribute) {
+void Mesh::attributePointerInternal(const Buffer& buffer, const GLuint location, const GLint size, const GLenum type, const AttributeKind kind, const GLintptr offset, const GLsizei stride, const GLuint divisor) {
+    AttributeLayout l{buffer, location, size, type, kind, offset, stride, divisor};
+    attributePointerInternal(l);
+}
+
+void Mesh::attributePointerInternal(AttributeLayout& attribute) {
     (this->*Context::current()->state().mesh->attributePointerImplementation)(attribute);
 }
 
-void Mesh::attributePointerImplementationDefault(const AttributeLayout& attribute) {
+void Mesh::attributePointerImplementationDefault(AttributeLayout& attribute) {
     #if defined(CORRADE_TARGET_NACL) || defined(MAGNUM_TARGET_WEBGL)
-    CORRADE_ASSERT(attribute.buffer->targetHint() == Buffer::TargetHint::Array,
-        "Mesh::addVertexBuffer(): the buffer has unexpected target hint, expected" << Buffer::TargetHint::Array << "but got" << attribute.buffer->targetHint(), );
+    CORRADE_ASSERT(attribute.buffer.targetHint() == Buffer::TargetHint::Array,
+        "Mesh::addVertexBuffer(): the buffer has unexpected target hint, expected" << Buffer::TargetHint::Array << "but got" << attribute.buffer.targetHint(), );
     #endif
 
     _attributes.push_back(attribute);
 }
 
-void Mesh::attributePointerImplementationVAO(const AttributeLayout& attribute) {
+void Mesh::attributePointerImplementationVAO(AttributeLayout& attribute) {
     #if defined(CORRADE_TARGET_NACL) || defined(MAGNUM_TARGET_WEBGL)
-    CORRADE_ASSERT(attribute.buffer->targetHint() == Buffer::TargetHint::Array,
-        "Mesh::addVertexBuffer(): the buffer has unexpected target hint, expected" << Buffer::TargetHint::Array << "but got" << attribute.buffer->targetHint(), );
+    CORRADE_ASSERT(attribute.buffer.targetHint() == Buffer::TargetHint::Array,
+        "Mesh::addVertexBuffer(): the buffer has unexpected target hint, expected" << Buffer::TargetHint::Array << "but got" << attribute.buffer.targetHint(), );
     #endif
 
     bindVAO();
@@ -421,21 +443,21 @@ void Mesh::attributePointerImplementationVAO(const AttributeLayout& attribute) {
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Mesh::attributePointerImplementationDSAEXT(const AttributeLayout& attribute) {
+void Mesh::attributePointerImplementationDSAEXT(AttributeLayout& attribute) {
     _flags |= ObjectFlag::Created;
     glEnableVertexArrayAttribEXT(_id, attribute.location);
 
     #ifndef MAGNUM_TARGET_GLES2
-    if(attribute.kind == AttributeLayout::Kind::Integral)
-        glVertexArrayVertexAttribIOffsetEXT(_id, attribute.buffer->id(), attribute.location, attribute.size, attribute.type, attribute.stride, attribute.offset);
+    if(attribute.kind == AttributeKind::Integral)
+        glVertexArrayVertexAttribIOffsetEXT(_id, attribute.buffer.id(), attribute.location, attribute.size, attribute.type, attribute.stride, attribute.offset);
     #ifndef MAGNUM_TARGET_GLES
-    else if(attribute.kind == AttributeLayout::Kind::Long)
-        glVertexArrayVertexAttribLOffsetEXT(_id, attribute.buffer->id(), attribute.location, attribute.size, attribute.type, attribute.stride, attribute.offset);
+    else if(attribute.kind == AttributeKind::Long)
+        glVertexArrayVertexAttribLOffsetEXT(_id, attribute.buffer.id(), attribute.location, attribute.size, attribute.type, attribute.stride, attribute.offset);
     #endif
     else
     #endif
     {
-        glVertexArrayVertexAttribOffsetEXT(_id, attribute.buffer->id(), attribute.location, attribute.size, attribute.type, attribute.kind == AttributeLayout::Kind::GenericNormalized, attribute.stride, attribute.offset);
+        glVertexArrayVertexAttribOffsetEXT(_id, attribute.buffer.id(), attribute.location, attribute.size, attribute.type, attribute.kind == AttributeKind::GenericNormalized, attribute.stride, attribute.offset);
     }
 
     if(attribute.divisor)
@@ -443,21 +465,21 @@ void Mesh::attributePointerImplementationDSAEXT(const AttributeLayout& attribute
 }
 #endif
 
-void Mesh::vertexAttribPointer(const AttributeLayout& attribute) {
+void Mesh::vertexAttribPointer(AttributeLayout& attribute) {
     glEnableVertexAttribArray(attribute.location);
-    attribute.buffer->bindInternal(Buffer::TargetHint::Array);
+    attribute.buffer.bindInternal(Buffer::TargetHint::Array);
 
     #ifndef MAGNUM_TARGET_GLES2
-    if(attribute.kind == AttributeLayout::Kind::Integral)
+    if(attribute.kind == AttributeKind::Integral)
         glVertexAttribIPointer(attribute.location, attribute.size, attribute.type, attribute.stride, reinterpret_cast<const GLvoid*>(attribute.offset));
     #ifndef MAGNUM_TARGET_GLES
-    else if(attribute.kind == AttributeLayout::Kind::Long)
+    else if(attribute.kind == AttributeKind::Long)
         glVertexAttribLPointer(attribute.location, attribute.size, attribute.type, attribute.stride, reinterpret_cast<const GLvoid*>(attribute.offset));
     #endif
     else
     #endif
     {
-        glVertexAttribPointer(attribute.location, attribute.size, attribute.type, attribute.kind == AttributeLayout::Kind::GenericNormalized, attribute.stride, reinterpret_cast<const GLvoid*>(attribute.offset));
+        glVertexAttribPointer(attribute.location, attribute.size, attribute.type, attribute.kind == AttributeKind::GenericNormalized, attribute.stride, reinterpret_cast<const GLvoid*>(attribute.offset));
     }
 
     if(attribute.divisor) {
@@ -523,7 +545,7 @@ void Mesh::bindIndexBufferImplementationVAO(Buffer& buffer) {
 
 void Mesh::bindImplementationDefault() {
     /* Specify vertex attributes */
-    for(const AttributeLayout& attribute: _attributes)
+    for(AttributeLayout& attribute: _attributes)
         vertexAttribPointer(attribute);
 
     /* Bind index buffer, if the mesh is indexed */
