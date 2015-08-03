@@ -23,11 +23,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Magnum/Color.h>
-#include <Magnum/DefaultFramebuffer.h>
 #include <Magnum/Context.h>
+#include <Magnum/DefaultFramebuffer.h>
 #include <Magnum/Renderer.h>
 #include <Magnum/Version.h>
+#include <Magnum/Magnum/Color.h>
 #include <Magnum/Platform/Sdl2Application.h>
 
 using namespace Magnum;
