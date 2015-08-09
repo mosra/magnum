@@ -121,6 +121,13 @@ Note that it is currently not possible to do the opposite -- reseting all state
 touched by Magnum to previous values -- as it would involve impractically large
 amount of queries and state switches with serious performance impact.
 
+Magnum by default uses VAOs -- each time a @ref Mesh is drawn or configured,
+its VAO is bound, but it is *not* unbound afterwards to avoid needless state
+changes. This may introduce problems when using third-party OpenGL code that
+does not use VAOs -- it will break internal state of Mesh that was used most
+recently. The solution, besides state resetting, is to create a new VAO and
+bind it every time the third-party OpenGL code is called.
+
 @section opengl-wrapping-dsa Extension-dependent functionality
 
 While the majority of Magnum API stays the same on all platforms and driver
