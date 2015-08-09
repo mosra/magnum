@@ -54,6 +54,8 @@ class TgaImporterTest: public TestSuite::Tester {
         void grayscaleBits16();
 
         void file();
+
+        void useTwice();
 };
 
 TgaImporterTest::TgaImporterTest() {
@@ -69,7 +71,9 @@ TgaImporterTest::TgaImporterTest() {
               &TgaImporterTest::grayscaleBits8,
               &TgaImporterTest::grayscaleBits16,
 
-              &TgaImporterTest::file});
+              &TgaImporterTest::file,
+
+              &TgaImporterTest::useTwice});
 }
 
 void TgaImporterTest::openNonexistent() {
@@ -228,6 +232,22 @@ void TgaImporterTest::file() {
     CORRADE_COMPARE(image->type(), ColorType::UnsignedByte);
     CORRADE_COMPARE_AS(image->data(), Containers::ArrayView<const char>{data}.suffix(18),
         TestSuite::Compare::Container);
+}
+
+void TgaImporterTest::useTwice() {
+    TgaImporter importer;
+    CORRADE_VERIFY(importer.openFile(Utility::Directory::join(TGAIMPORTER_TEST_DIR, "file.tga")));
+
+    /* Verify that the file is rewinded for second use */
+    {
+        std::optional<Trade::ImageData2D> image = importer.image2D(0);
+        CORRADE_VERIFY(image);
+        CORRADE_COMPARE(image->size(), (Vector2i{2, 3}));
+    } {
+        std::optional<Trade::ImageData2D> image = importer.image2D(0);
+        CORRADE_VERIFY(image);
+        CORRADE_COMPARE(image->size(), (Vector2i{2, 3}));
+    }
 }
 
 }}}
