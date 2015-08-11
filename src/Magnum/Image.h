@@ -58,7 +58,7 @@ template<UnsignedInt dimensions> class Image {
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        explicit Image(ColorFormat format, ColorType type, const VectorTypeFor<dimensions, Int>& size, void* data): _format{format}, _type{type}, _size{size}, _data{reinterpret_cast<char*>(data)} {}
+        explicit Image(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, void* data): _format{format}, _type{type}, _size{size}, _data{reinterpret_cast<char*>(data)} {}
 
         /**
          * @brief Constructor
@@ -68,7 +68,7 @@ template<UnsignedInt dimensions> class Image {
          * Dimensions are set to zero and data pointer to `nullptr`, call
          * @ref setData() to fill the image with data.
          */
-        /*implicit*/ Image(ColorFormat format, ColorType type): _format{format}, _type{type}, _data{} {}
+        /*implicit*/ Image(PixelFormat format, PixelType type): _format{format}, _type{type}, _data{} {}
 
         /** @brief Copying is not allowed */
         Image(const Image<dimensions>&) = delete;
@@ -99,10 +99,10 @@ template<UnsignedInt dimensions> class Image {
         #endif
 
         /** @brief Format of pixel data */
-        ColorFormat format() const { return _format; }
+        PixelFormat format() const { return _format; }
 
         /** @brief Data type of pixel data */
-        ColorType type() const { return _type; }
+        PixelType type() const { return _type; }
 
         /** @brief Pixel size (in bytes) */
         std::size_t pixelSize() const { return Implementation::imagePixelSize(_format, _type); }
@@ -146,7 +146,7 @@ template<UnsignedInt dimensions> class Image {
          * data are not copied, but they are deleted on destruction.
          * @see @ref release()
          */
-        void setData(ColorFormat format, ColorType type, const VectorTypeFor<dimensions, Int>& size, void* data);
+        void setData(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, void* data);
 
         /**
          * @brief Release data storage
@@ -158,8 +158,8 @@ template<UnsignedInt dimensions> class Image {
         char* release();
 
     private:
-        ColorFormat _format;
-        ColorType _type;
+        PixelFormat _format;
+        PixelType _type;
         Math::Vector<Dimensions, Int> _size;
         char* _data;
 };
@@ -194,7 +194,7 @@ template<UnsignedInt dimensions> class CompressedImage {
          * @param size              Image size
          * @param data              Image data
          */
-        explicit CompressedImage(CompressedColorFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data): _format{format}, _size{size}, _data{std::move(data)} {}
+        explicit CompressedImage(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data): _format{format}, _size{size}, _data{std::move(data)} {}
 
         /**
          * @brief Constructor
@@ -230,7 +230,7 @@ template<UnsignedInt dimensions> class CompressedImage {
         #endif
 
         /** @brief Format of compressed data */
-        CompressedColorFormat format() const { return _format; }
+        CompressedPixelFormat format() const { return _format; }
 
         /** @brief Image size */
         VectorTypeFor<dimensions, Int> size() const { return _size; }
@@ -265,7 +265,7 @@ template<UnsignedInt dimensions> class CompressedImage {
          * data are not copied, but they are deleted on destruction.
          * @see @ref release()
          */
-        void setData(CompressedColorFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data);
+        void setData(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data);
 
         /**
          * @brief Release data storage
@@ -277,7 +277,7 @@ template<UnsignedInt dimensions> class CompressedImage {
         Containers::Array<char> release();
 
     private:
-        CompressedColorFormat _format;
+        CompressedPixelFormat _format;
         Math::Vector<Dimensions, Int> _size;
         Containers::Array<char> _data;
 };

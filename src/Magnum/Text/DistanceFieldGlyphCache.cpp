@@ -25,12 +25,12 @@
 
 #include "DistanceFieldGlyphCache.h"
 
-#ifndef CORRADE_NO_ASSERT
-#include "Magnum/ColorFormat.h"
-#endif
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
 #include "Magnum/ImageView.h"
+#ifndef CORRADE_NO_ASSERT
+#include "Magnum/PixelFormat.h"
+#endif
 #include "Magnum/TextureFormat.h"
 #include "Magnum/TextureTools/DistanceField.h"
 
@@ -62,21 +62,21 @@ DistanceFieldGlyphCache::DistanceFieldGlyphCache(const Vector2i& originalSize, c
 void DistanceFieldGlyphCache::setImage(const Vector2i& offset, const ImageView2D& image) {
     #if !(defined(MAGNUM_TARGET_GLES) && defined(MAGNUM_TARGET_GLES2))
     const TextureFormat internalFormat = TextureFormat::R8;
-    CORRADE_ASSERT(image.format() == ColorFormat::Red,
-        "Text::DistanceFieldGlyphCache::setImage(): expected" << ColorFormat::Red << "but got" << image.format(), );
+    CORRADE_ASSERT(image.format() == PixelFormat::Red,
+        "Text::DistanceFieldGlyphCache::setImage(): expected" << PixelFormat::Red << "but got" << image.format(), );
     #else
     TextureFormat internalFormat;
     #ifndef MAGNUM_TARGET_WEBGL
     if(Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_rg>()) {
         internalFormat = TextureFormat::Red;
-        CORRADE_ASSERT(image.format() == ColorFormat::Red,
-            "Text::DistanceFieldGlyphCache::setImage(): expected" << ColorFormat::Red << "but got" << image.format(), );
+        CORRADE_ASSERT(image.format() == PixelFormat::Red,
+            "Text::DistanceFieldGlyphCache::setImage(): expected" << PixelFormat::Red << "but got" << image.format(), );
     } else
     #endif
     {
         internalFormat = TextureFormat::Luminance;
-        CORRADE_ASSERT(image.format() == ColorFormat::Luminance,
-            "Text::DistanceFieldGlyphCache::setImage(): expected" << ColorFormat::Luminance << "but got" << image.format(), );
+        CORRADE_ASSERT(image.format() == PixelFormat::Luminance,
+            "Text::DistanceFieldGlyphCache::setImage(): expected" << PixelFormat::Luminance << "but got" << image.format(), );
     }
     #endif
 
@@ -92,19 +92,19 @@ void DistanceFieldGlyphCache::setImage(const Vector2i& offset, const ImageView2D
 
 void DistanceFieldGlyphCache::setDistanceFieldImage(const Vector2i& offset, const ImageView2D& image) {
     #if !(defined(MAGNUM_TARGET_GLES) && defined(MAGNUM_TARGET_GLES2))
-    CORRADE_ASSERT(image.format() == ColorFormat::Red,
-        "Text::DistanceFieldGlyphCache::setDistanceFieldImage(): expected" << ColorFormat::Red << "but got" << image.format(), );
+    CORRADE_ASSERT(image.format() == PixelFormat::Red,
+        "Text::DistanceFieldGlyphCache::setDistanceFieldImage(): expected" << PixelFormat::Red << "but got" << image.format(), );
     #else
     #ifndef MAGNUM_TARGET_WEBGL
     if(Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_rg>())
-        CORRADE_ASSERT(image.format() == ColorFormat::Red,
-            "Text::DistanceFieldGlyphCache::setDistanceFieldImage(): expected" << ColorFormat::Red << "but got" << image.format(), );
+        CORRADE_ASSERT(image.format() == PixelFormat::Red,
+            "Text::DistanceFieldGlyphCache::setDistanceFieldImage(): expected" << PixelFormat::Red << "but got" << image.format(), );
     else
     #endif
     {
         /* Luminance is not renderable in most cases */
-        CORRADE_ASSERT(image.format() == ColorFormat::RGB,
-            "Text::DistanceFieldGlyphCache::setDistanceFieldImage(): expected" << ColorFormat::RGB << "but got" << image.format(), );
+        CORRADE_ASSERT(image.format() == PixelFormat::RGB,
+            "Text::DistanceFieldGlyphCache::setDistanceFieldImage(): expected" << PixelFormat::RGB << "but got" << image.format(), );
     }
     #endif
 

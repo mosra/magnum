@@ -27,7 +27,7 @@
 
 namespace Magnum {
 
-template<UnsignedInt dimensions> void Image<dimensions>::setData(ColorFormat format, ColorType type, const VectorTypeFor<dimensions, Int>& size, void* data) {
+template<UnsignedInt dimensions> void Image<dimensions>::setData(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, void* data) {
     delete[] _data;
     _format = format;
     _type = type;
@@ -35,7 +35,7 @@ template<UnsignedInt dimensions> void Image<dimensions>::setData(ColorFormat for
     _data = reinterpret_cast<char*>(data);
 }
 
-template<UnsignedInt dimensions> void CompressedImage<dimensions>::setData(CompressedColorFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) {
+template<UnsignedInt dimensions> void CompressedImage<dimensions>::setData(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) {
     _format = format;
     _size = size;
     _data = std::move(data);

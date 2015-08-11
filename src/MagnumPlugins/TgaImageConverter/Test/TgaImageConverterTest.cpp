@@ -29,8 +29,8 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/Directory.h>
 
-#include "Magnum/ColorFormat.h"
 #include "Magnum/Image.h"
+#include "Magnum/PixelFormat.h"
 #include "Magnum/Trade/ImageData.h"
 #include "MagnumPlugins/TgaImageConverter/TgaImageConverter.h"
 #include "MagnumPlugins/TgaImporter/TgaImporter.h"
@@ -56,7 +56,7 @@ namespace {
         5, 6, 7, 6, 7, 8
     };
 
-    const ImageView2D original(ColorFormat::RGB, ColorType::UnsignedByte, {2, 3}, originalData);
+    const ImageView2D original(PixelFormat::RGB, PixelType::UnsignedByte, {2, 3}, originalData);
 }
 
 TgaImageConverterTest::TgaImageConverterTest() {
@@ -67,25 +67,25 @@ TgaImageConverterTest::TgaImageConverterTest() {
 }
 
 void TgaImageConverterTest::wrongFormat() {
-    ImageView2D image(ColorFormat::RG, ColorType::UnsignedByte, {}, nullptr);
+    ImageView2D image(PixelFormat::RG, PixelType::UnsignedByte, {}, nullptr);
 
     std::ostringstream out;
     Error::setOutput(&out);
 
     const auto data = TgaImageConverter().exportToData(image);
     CORRADE_VERIFY(!data);
-    CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::exportToData(): unsupported color format ColorFormat::RG\n");
+    CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::exportToData(): unsupported color format PixelFormat::RG\n");
 }
 
 void TgaImageConverterTest::wrongType() {
-    ImageView2D image(ColorFormat::Red, ColorType::Float, {}, nullptr);
+    ImageView2D image(PixelFormat::Red, PixelType::Float, {}, nullptr);
 
     std::ostringstream out;
     Error::setOutput(&out);
 
     const auto data = TgaImageConverter().exportToData(image);
     CORRADE_VERIFY(!data);
-    CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::exportToData(): unsupported color type ColorType::Float\n");
+    CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::exportToData(): unsupported color type PixelType::Float\n");
 }
 
 void TgaImageConverterTest::data() {
@@ -97,8 +97,8 @@ void TgaImageConverterTest::data() {
     CORRADE_VERIFY(converted);
 
     CORRADE_COMPARE(converted->size(), Vector2i(2, 3));
-    CORRADE_COMPARE(converted->format(), ColorFormat::RGB);
-    CORRADE_COMPARE(converted->type(), ColorType::UnsignedByte);
+    CORRADE_COMPARE(converted->format(), PixelFormat::RGB);
+    CORRADE_COMPARE(converted->type(), PixelType::UnsignedByte);
     CORRADE_COMPARE((std::string{converted->data(), 2*3*3}),
                     (std::string{original.data(), 2*3*3}));
 }

@@ -28,8 +28,8 @@
 
 #include "Magnum/configure.h"
 #include "Magnum/BufferImage.h"
-#include "Magnum/ColorFormat.h"
 #include "Magnum/Image.h"
+#include "Magnum/PixelFormat.h"
 #include "Magnum/RectangleTexture.h"
 #include "Magnum/TextureFormat.h"
 #include "Magnum/Math/Color.h"
@@ -261,11 +261,11 @@ void RectangleTextureGLTest::image() {
 
     RectangleTexture texture;
     texture.setImage(TextureFormat::RGBA8,
-        ImageView2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), Data));
+        ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Data));
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    Image2D image = texture.image({ColorFormat::RGBA, ColorType::UnsignedByte});
+    Image2D image = texture.image({PixelFormat::RGBA, PixelType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -285,11 +285,11 @@ void RectangleTextureGLTest::imageBuffer() {
 
     RectangleTexture texture;
     texture.setImage(TextureFormat::RGBA8,
-        BufferImage2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), Data, BufferUsage::StaticDraw));
+        BufferImage2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Data, BufferUsage::StaticDraw));
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    BufferImage2D image = texture.image({ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+    BufferImage2D image = texture.image({PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -319,13 +319,13 @@ void RectangleTextureGLTest::subImage() {
 
     RectangleTexture texture;
     texture.setImage(TextureFormat::RGBA8,
-        ImageView2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(4), Zero));
+        ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero));
     texture.setSubImage(Vector2i(1),
-        ImageView2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), Data));
+        ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Data));
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    Image2D image = texture.image({ColorFormat::RGBA, ColorType::UnsignedByte});
+    Image2D image = texture.image({PixelFormat::RGBA, PixelType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -345,13 +345,13 @@ void RectangleTextureGLTest::subImageBuffer() {
 
     RectangleTexture texture;
     texture.setImage(TextureFormat::RGBA8,
-        ImageView2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(4), Zero));
+        ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero));
     texture.setSubImage(Vector2i(1),
-        BufferImage2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), Data, BufferUsage::StaticDraw));
+        BufferImage2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Data, BufferUsage::StaticDraw));
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    BufferImage2D image = texture.image({ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+    BufferImage2D image = texture.image({PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -372,11 +372,11 @@ void RectangleTextureGLTest::subImageQuery() {
 
     RectangleTexture texture;
     texture.setStorage(TextureFormat::RGBA8, Vector2i{4})
-           .setSubImage({}, ImageView2D{ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i{4}, SubDataComplete});
+           .setSubImage({}, ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{4}, SubDataComplete});
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    Image2D image = texture.subImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}), {ColorFormat::RGBA, ColorType::UnsignedByte});
+    Image2D image = texture.subImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}), {PixelFormat::RGBA, PixelType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -394,11 +394,11 @@ void RectangleTextureGLTest::subImageQueryBuffer() {
 
     RectangleTexture texture;
     texture.setStorage(TextureFormat::RGBA8, Vector2i{4})
-           .setSubImage({}, ImageView2D{ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i{4}, SubDataComplete});
+           .setSubImage({}, ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{4}, SubDataComplete});
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    BufferImage2D image = texture.subImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}), {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+    BufferImage2D image = texture.subImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}), {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
     MAGNUM_VERIFY_NO_ERROR();

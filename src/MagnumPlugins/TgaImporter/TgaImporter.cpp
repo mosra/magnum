@@ -31,7 +31,7 @@
 #include <Corrade/Utility/Endianness.h>
 #include <Corrade/Containers/ArrayView.h>
 
-#include "Magnum/ColorFormat.h"
+#include "Magnum/PixelFormat.h"
 #include "Magnum/Math/Swizzle.h"
 #include "Magnum/Math/Vector4.h"
 #include "Magnum/Trade/ImageData.h"
@@ -91,7 +91,7 @@ std::optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt) {
     header.height = Utility::Endianness::littleEndian(header.height);
 
     /* Image format */
-    ColorFormat format;
+    PixelFormat format;
     if(header.colorMapType != 0) {
         Error() << "Trade::TgaImporter::image2D(): paletted files are not supported";
         return std::nullopt;
@@ -101,10 +101,10 @@ std::optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt) {
     if(header.imageType == 2) {
         switch(header.bpp) {
             case 24:
-                format = ColorFormat::RGB;
+                format = PixelFormat::RGB;
                 break;
             case 32:
-                format = ColorFormat::RGBA;
+                format = PixelFormat::RGBA;
                 break;
             default:
                 Error() << "Trade::TgaImporter::image2D(): unsupported color bits-per-pixel:" << header.bpp;
@@ -115,11 +115,11 @@ std::optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt) {
     } else if(header.imageType == 3) {
         #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         format = Context::current() && Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_rg>() ?
-            ColorFormat::Red : ColorFormat::Luminance;
+            PixelFormat::Red : PixelFormat::Luminance;
         #elif !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        format = ColorFormat::Red;
+        format = PixelFormat::Red;
         #else
-        format = ColorFormat::Luminance;
+        format = PixelFormat::Luminance;
         #endif
         if(header.bpp != 8) {
             Error() << "Trade::TgaImporter::image2D(): unsupported grayscale bits-per-pixel:" << header.bpp;
@@ -138,17 +138,17 @@ std::optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt) {
 
     Vector2i size(header.width, header.height);
 
-    if(format == ColorFormat::RGB) {
+    if(format == PixelFormat::RGB) {
         auto pixels = reinterpret_cast<Math::Vector3<UnsignedByte>*>(data);
         std::transform(pixels, pixels + size.product(), pixels,
             [](Math::Vector3<UnsignedByte> pixel) { return Math::swizzle<'b', 'g', 'r'>(pixel); });
-    } else if(format == ColorFormat::RGBA) {
+    } else if(format == PixelFormat::RGBA) {
         auto pixels = reinterpret_cast<Math::Vector4<UnsignedByte>*>(data);
         std::transform(pixels, pixels + size.product(), pixels,
             [](Math::Vector4<UnsignedByte> pixel) { return Math::swizzle<'b', 'g', 'r', 'a'>(pixel); });
     }
 
-    return ImageData2D(format, ColorType::UnsignedByte, size, data);
+    return ImageData2D(format, PixelType::UnsignedByte, size, data);
 }
 
 }}

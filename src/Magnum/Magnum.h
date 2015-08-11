@@ -471,10 +471,6 @@ template<class T> using BasicColor3 CORRADE_DEPRECATED_ALIAS("use Math::Color3 i
 template<class T> using BasicColor4 CORRADE_DEPRECATED_ALIAS("use Math::Color4 instead") = Math::Color4<T>;
 #endif
 
-enum class ColorFormat: GLenum;
-enum class ColorType: GLenum;
-enum class CompressedColorFormat: GLenum;
-
 class Context;
 
 class CubeMapTexture;
@@ -526,6 +522,15 @@ class MeshView;
 template<UnsignedInt> class MultisampleTexture;
 typedef MultisampleTexture<2> MultisampleTexture2D;
 typedef MultisampleTexture<3> MultisampleTexture2DArray;
+#endif
+
+enum class PixelFormat: GLenum;
+enum class PixelType: GLenum;
+enum class CompressedPixelFormat: GLenum;
+#ifdef MAGNUM_BUILD_DEPRECATED
+typedef CORRADE_DEPRECATED("use PixelFormat instead") PixelFormat ColorFormat;
+typedef CORRADE_DEPRECATED("use PixelType instead") PixelType ColorType;
+typedef CORRADE_DEPRECATED("use CompressedPixelFormat instead") CompressedPixelFormat CompressedColorFormat;
 #endif
 
 /* ObjectFlag, ObjectFlags are used only in conjunction with *::wrap() function */

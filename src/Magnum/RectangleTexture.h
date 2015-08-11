@@ -48,7 +48,7 @@ See also @ref AbstractTexture documentation for more information.
 Common usage is to fully configure all texture parameters and then set the
 data from e.g. @ref Image2D. Example configuration:
 @code
-Image2D image(ColorFormat::RGBA, ColorType::UnsignedByte, {526, 137}, data);
+Image2D image(PixelFormat::RGBA, PixelType::UnsignedByte, {526, 137}, data);
 
 RectangleTexture texture;
 texture.setMagnificationFilter(Sampler::Filter::Linear)
@@ -290,7 +290,7 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          * @code
-         * Image2D image = texture.image({ColorFormat::RGBA, ColorType::UnsignedByte});
+         * Image2D image = texture.image({PixelFormat::RGBA, PixelType::UnsignedByte});
          * @endcode
          */
         Image2D image(Image2D&& image);
@@ -309,7 +309,7 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          * @code
-         * BufferImage2D image = texture.image({ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+         * BufferImage2D image = texture.image({PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
          * @endcode
          */
         BufferImage2D image(BufferImage2D&& image, BufferUsage usage);
@@ -367,7 +367,7 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          * @code
-         * Image2D image = texture.subImage(range, {ColorFormat::RGBA, ColorType::UnsignedByte});
+         * Image2D image = texture.subImage(range, {PixelFormat::RGBA, PixelType::UnsignedByte});
          * @endcode
          */
         Image2D subImage(const Range2Di& range, Image2D&& image);
@@ -387,7 +387,7 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          * @code
-         * BufferImage2D image = texture.subImage(range, {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+         * BufferImage2D image = texture.subImage(range, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
          * @endcode
          */
         BufferImage2D subImage(const Range2Di& range, BufferImage2D&& image, BufferUsage usage);

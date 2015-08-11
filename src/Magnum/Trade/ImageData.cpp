@@ -27,17 +27,17 @@
 
 namespace Magnum { namespace Trade {
 
-template<UnsignedInt dimensions> ColorFormat ImageData<dimensions>::format() const {
+template<UnsignedInt dimensions> PixelFormat ImageData<dimensions>::format() const {
     CORRADE_ASSERT(!_compressed, "Trade::ImageData::format(): the image is compressed", {});
     return _format;
 }
 
-template<UnsignedInt dimensions> ColorType ImageData<dimensions>::type() const {
+template<UnsignedInt dimensions> PixelType ImageData<dimensions>::type() const {
     CORRADE_ASSERT(!_compressed, "Trade::ImageData::type(): the image is compressed", {});
     return _type;
 }
 
-template<UnsignedInt dimensions> CompressedColorFormat ImageData<dimensions>::compressedFormat() const {
+template<UnsignedInt dimensions> CompressedPixelFormat ImageData<dimensions>::compressedFormat() const {
     CORRADE_ASSERT(_compressed, "Trade::ImageData::format(): the image is not compressed", {});
     return _compressedFormat;
 }

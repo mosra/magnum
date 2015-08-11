@@ -29,8 +29,8 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Utility/Directory.h>
 
-#include "Magnum/ColorFormat.h"
 #include "Magnum/Image.h"
+#include "Magnum/PixelFormat.h"
 #include "Magnum/Text/GlyphCache.h"
 #include "Magnum/Text/AbstractFont.h"
 #include "MagnumPlugins/TgaImageConverter/TgaImageConverter.h"
@@ -104,7 +104,7 @@ std::vector<std::pair<std::string, Containers::Array<char>>> MagnumFontConverter
     std::copy(confStr.begin(), confStr.end(), confData.begin());
 
     /* Save cache image */
-    Image2D image(ColorFormat::Red, ColorType::UnsignedByte);
+    Image2D image(PixelFormat::Red, PixelType::UnsignedByte);
     cache.texture().image(0, image);
     auto tgaData = Trade::TgaImageConverter().exportToData(image);
 

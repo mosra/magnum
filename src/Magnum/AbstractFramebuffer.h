@@ -327,7 +327,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          *
          * Convenience alternative to the above, example usage:
          * @code
-         * Image2D image = framebuffer.read(framebuffer.viewport(), {ColorFormat::RGBA, ColorType::UnsignedByte});
+         * Image2D image = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA, PixelType::UnsignedByte});
          * @endcode
          */
         Image2D read(const Range2Di& rectangle, Image2D&& image);
@@ -364,7 +364,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          *
          * Convenience alternative to the above, example usage:
          * @code
-         * BufferImage2D image = framebuffer.read(framebuffer.viewport(), {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+         * BufferImage2D image = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
          * @endcode
          */
         BufferImage2D read(const Range2Di& rectangle, BufferImage2D&& image, BufferUsage usage);
@@ -455,9 +455,9 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         void MAGNUM_LOCAL readBufferImplementationDSAEXT(GLenum buffer);
         #endif
 
-        static void MAGNUM_LOCAL readImplementationDefault(const Range2Di& rectangle, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
+        static void MAGNUM_LOCAL readImplementationDefault(const Range2Di& rectangle, PixelFormat format, PixelType type, std::size_t dataSize, GLvoid* data);
         #ifndef MAGNUM_TARGET_WEBGL
-        static void MAGNUM_LOCAL readImplementationRobustness(const Range2Di& rectangle, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
+        static void MAGNUM_LOCAL readImplementationRobustness(const Range2Di& rectangle, PixelFormat format, PixelType type, std::size_t dataSize, GLvoid* data);
         #endif
 
         void MAGNUM_LOCAL invalidateImplementationNoOp(GLsizei, const GLenum*);

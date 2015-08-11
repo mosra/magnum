@@ -25,11 +25,11 @@
 
 #include "Magnum/AbstractShaderProgram.h"
 #include "Magnum/Buffer.h"
-#include "Magnum/ColorFormat.h"
 #include "Magnum/Framebuffer.h"
 #include "Magnum/Image.h"
 #include "Magnum/Mesh.h"
 #include "Magnum/MeshView.h"
+#include "Magnum/PixelFormat.h"
 #include "Magnum/Renderbuffer.h"
 #include "Magnum/RenderbufferFormat.h"
 #include "Magnum/Shader.h"
@@ -372,7 +372,7 @@ namespace {
     struct Checker {
         Checker(AbstractShaderProgram&& shader, RenderbufferFormat format, Mesh& mesh);
 
-        template<class T> T get(ColorFormat format, ColorType type);
+        template<class T> T get(PixelFormat format, PixelType type);
 
         Renderbuffer renderbuffer;
         Framebuffer framebuffer;
@@ -500,7 +500,7 @@ Checker::Checker(AbstractShaderProgram&& shader, RenderbufferFormat format, Mesh
         .draw(shader);
 }
 
-template<class T> T Checker::get(ColorFormat format, ColorType type) {
+template<class T> T Checker::get(PixelFormat format, PixelType type) {
     return framebuffer.read({{}, Vector2i{1}}, {format, type}).data<T>()[0];
 }
 #endif
@@ -525,7 +525,7 @@ void MeshGLTest::addVertexBufferUnsignedInt() {
     MAGNUM_VERIFY_NO_ERROR();
 
     const auto value = Checker(IntegerShader("uint"), RenderbufferFormat::R32UI, mesh)
-        .get<UnsignedInt>(ColorFormat::RedInteger, ColorType::UnsignedInt);
+        .get<UnsignedInt>(PixelFormat::RedInteger, PixelType::UnsignedInt);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, 35681);
@@ -550,7 +550,7 @@ void MeshGLTest::addVertexBufferInt() {
     MAGNUM_VERIFY_NO_ERROR();
 
     const auto value = Checker(IntegerShader("int"), RenderbufferFormat::R32I, mesh)
-        .get<Int>(ColorFormat::RedInteger, ColorType::Int);
+        .get<Int>(PixelFormat::RedInteger, PixelType::Int);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, 27530);
@@ -576,7 +576,7 @@ void MeshGLTest::addVertexBufferFloat() {
         #else
         RenderbufferFormat::RGBA4,
         #endif
-        mesh).get<UnsignedByte>(ColorFormat::RGBA, ColorType::UnsignedByte);
+        mesh).get<UnsignedByte>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, 96);
@@ -600,7 +600,7 @@ void MeshGLTest::addVertexBufferDouble() {
     MAGNUM_VERIFY_NO_ERROR();
 
     const auto value = Checker(DoubleShader("double", "float", "float(value)"),
-        RenderbufferFormat::R16, mesh).get<UnsignedShort>(ColorFormat::Red, ColorType::UnsignedShort);
+        RenderbufferFormat::R16, mesh).get<UnsignedShort>(PixelFormat::Red, PixelType::UnsignedShort);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, 45828);
@@ -627,7 +627,7 @@ void MeshGLTest::addVertexBufferVectorNui() {
     MAGNUM_VERIFY_NO_ERROR();
 
     const auto value = Checker(IntegerShader("uvec3"), RenderbufferFormat::RGBA32UI, mesh)
-        .get<Vector3ui>(ColorFormat::RGBAInteger, ColorType::UnsignedInt);
+        .get<Vector3ui>(PixelFormat::RGBAInteger, PixelType::UnsignedInt);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, Vector3ui(27592, 157, 25));
@@ -652,7 +652,7 @@ void MeshGLTest::addVertexBufferVectorNi() {
     MAGNUM_VERIFY_NO_ERROR();
 
     const auto value = Checker(IntegerShader("ivec2"), RenderbufferFormat::RG32I, mesh)
-        .get<Vector2i>(ColorFormat::RGInteger, ColorType::Int);
+        .get<Vector2i>(PixelFormat::RGInteger, PixelType::Int);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, Vector2i(27592, -157));
@@ -678,7 +678,7 @@ void MeshGLTest::addVertexBufferVectorN() {
         #else
         RenderbufferFormat::RGBA4,
         #endif
-        mesh).get<Color3ub>(ColorFormat::RGBA, ColorType::UnsignedByte);
+        mesh).get<Color3ub>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, Color3ub(96, 24, 156));
@@ -705,7 +705,7 @@ void MeshGLTest::addVertexBufferVectorNd() {
     MAGNUM_VERIFY_NO_ERROR();
 
     const auto value = Checker(DoubleShader("dvec4", "vec4", "vec4(value)"),
-        RenderbufferFormat::RGBA16, mesh).get<Math::Vector4<UnsignedShort>>(ColorFormat::RGBA, ColorType::UnsignedShort);
+        RenderbufferFormat::RGBA16, mesh).get<Math::Vector4<UnsignedShort>>(PixelFormat::RGBA, PixelType::UnsignedShort);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, Math::Vector4<UnsignedShort>(315, 65201, 2576, 12));
@@ -731,7 +731,7 @@ void MeshGLTest::addVertexBufferMatrixNxN() {
 
     const auto value = Checker(FloatShader("mat3",
         "vec4(valueInterpolated[0][0], valueInterpolated[1][1], valueInterpolated[2][2], 0.0)"),
-        RenderbufferFormat::RGBA8, mesh).get<Color3ub>(ColorFormat::RGBA, ColorType::UnsignedByte);
+        RenderbufferFormat::RGBA8, mesh).get<Color3ub>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, Color3ub(96, 24, 156));
@@ -760,7 +760,7 @@ void MeshGLTest::addVertexBufferMatrixNxNd() {
 
     const auto value = Checker(DoubleShader("dmat3", "vec4",
         "vec4(value[0][0], value[1][1], value[2][2], 0.0)"),
-        RenderbufferFormat::RGBA16, mesh).get<Math::Vector3<UnsignedShort>>(ColorFormat::RGB, ColorType::UnsignedShort);
+        RenderbufferFormat::RGBA16, mesh).get<Math::Vector3<UnsignedShort>>(PixelFormat::RGB, PixelType::UnsignedShort);
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -793,7 +793,7 @@ void MeshGLTest::addVertexBufferMatrixMxN() {
 
     const auto value = Checker(FloatShader("mat3x4",
         "vec4(valueInterpolated[0][0], valueInterpolated[1][1], valueInterpolated[2][2], 0.0)"),
-        RenderbufferFormat::RGBA8, mesh).get<Color3ub>(ColorFormat::RGBA, ColorType::UnsignedByte);
+        RenderbufferFormat::RGBA8, mesh).get<Color3ub>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, Color3ub(96, 24, 156));
@@ -823,7 +823,7 @@ void MeshGLTest::addVertexBufferMatrixMxNd() {
 
     const auto value = Checker(DoubleShader("dmat3x4", "vec4",
         "vec4(value[0][0], value[1][1], value[2][2], 0.0)"),
-        RenderbufferFormat::RGBA16, mesh).get<Math::Vector3<UnsignedShort>>(ColorFormat::RGB, ColorType::UnsignedShort);
+        RenderbufferFormat::RGBA16, mesh).get<Math::Vector3<UnsignedShort>>(PixelFormat::RGB, PixelType::UnsignedShort);
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -856,7 +856,7 @@ void MeshGLTest::addVertexBufferUnsignedIntWithUnsignedShort() {
     MAGNUM_VERIFY_NO_ERROR();
 
     const auto value = Checker(IntegerShader("uint"), RenderbufferFormat::R16UI, mesh)
-        .get<UnsignedShort>(ColorFormat::RedInteger, ColorType::UnsignedShort);
+        .get<UnsignedShort>(PixelFormat::RedInteger, PixelType::UnsignedShort);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, 16583);
@@ -881,7 +881,7 @@ void MeshGLTest::addVertexBufferUnsignedIntWithShort() {
     MAGNUM_VERIFY_NO_ERROR();
 
     const auto value = Checker(IntegerShader("uint"), RenderbufferFormat::R16I, mesh)
-        .get<Short>(ColorFormat::RedInteger, ColorType::Short);
+        .get<Short>(PixelFormat::RedInteger, PixelType::Short);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, 16583);
@@ -906,7 +906,7 @@ void MeshGLTest::addVertexBufferIntWithUnsignedShort() {
     MAGNUM_VERIFY_NO_ERROR();
 
     const auto value = Checker(IntegerShader("int"), RenderbufferFormat::R16UI, mesh)
-        .get<UnsignedShort>(ColorFormat::RedInteger, ColorType::UnsignedShort);
+        .get<UnsignedShort>(PixelFormat::RedInteger, PixelType::UnsignedShort);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, 16583);
@@ -931,7 +931,7 @@ void MeshGLTest::addVertexBufferIntWithShort() {
     MAGNUM_VERIFY_NO_ERROR();
 
     const auto value = Checker(IntegerShader("int"), RenderbufferFormat::R16I, mesh)
-        .get<Short>(ColorFormat::RedInteger, ColorType::Short);
+        .get<Short>(PixelFormat::RedInteger, PixelType::Short);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, -16583);
@@ -975,7 +975,7 @@ void MeshGLTest::addVertexBufferFloatWithDouble() {
     MAGNUM_VERIFY_NO_ERROR();
 
     const auto value = Checker(FloatShader("float", "vec4(valueInterpolated, 0.0, 0.0, 0.0)"),
-        RenderbufferFormat::RGBA8, mesh).get<UnsignedByte>(ColorFormat::RGBA, ColorType::UnsignedShort);
+        RenderbufferFormat::RGBA8, mesh).get<UnsignedByte>(PixelFormat::RGBA, PixelType::UnsignedShort);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, 186);
@@ -1063,7 +1063,7 @@ void MeshGLTest::addVertexBufferLessVectorComponents() {
         #else
         RenderbufferFormat::RGBA4,
         #endif
-        mesh).get<Color4ub>(ColorFormat::RGBA, ColorType::UnsignedByte);
+        mesh).get<Color4ub>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, Color4ub(96, 24, 156, 255));
@@ -1088,7 +1088,7 @@ void MeshGLTest::addVertexBufferNormalized() {
         #else
         RenderbufferFormat::RGBA4,
         #endif
-        mesh).get<Color3ub>(ColorFormat::RGBA, ColorType::UnsignedByte);
+        mesh).get<Color3ub>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, Color3ub(32, 156, 228));
@@ -1114,7 +1114,7 @@ void MeshGLTest::addVertexBufferBGRA() {
     MAGNUM_VERIFY_NO_ERROR();
 
     const auto value = Checker(FloatShader("vec4", "valueInterpolated"),
-        RenderbufferFormat::RGBA8, mesh).get<Color4ub>(ColorFormat::RGBA, ColorType::UnsignedByte);
+        RenderbufferFormat::RGBA8, mesh).get<Color4ub>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, Color4ub(156, 24, 96, 225));
@@ -1200,7 +1200,7 @@ void MeshGLTest::addVertexBufferMultiple() {
         #else
         RenderbufferFormat::RGBA4,
         #endif
-        mesh).get<Color4ub>(ColorFormat::RGBA, ColorType::UnsignedByte);
+        mesh).get<Color4ub>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, Color4ub(64 + 15 + 97, 17 + 164 + 28, 56 + 17, 255));
@@ -1243,7 +1243,7 @@ void MeshGLTest::addVertexBufferMultipleGaps() {
         #else
         RenderbufferFormat::RGBA4,
         #endif
-        mesh).get<Color4ub>(ColorFormat::RGBA, ColorType::UnsignedByte);
+        mesh).get<Color4ub>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, Color4ub(64 + 15 + 97, 17 + 164 + 28, 56 + 17, 255));
@@ -1324,7 +1324,7 @@ void MeshGLTest::setIndexBuffer() {
         #else
         RenderbufferFormat::RGBA4,
         #endif
-        mesh).get<Color4ub>(ColorFormat::RGBA, ColorType::UnsignedByte);
+        mesh).get<Color4ub>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, indexedResult);
@@ -1351,7 +1351,7 @@ void MeshGLTest::setIndexBufferRange() {
         #else
         RenderbufferFormat::RGBA4,
         #endif
-        mesh).get<Color4ub>(ColorFormat::RGBA, ColorType::UnsignedByte);
+        mesh).get<Color4ub>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, indexedResult);
@@ -1383,7 +1383,7 @@ void MeshGLTest::setIndexBufferUnsignedInt() {
         #else
         RenderbufferFormat::RGBA4,
         #endif
-        mesh).get<Color4ub>(ColorFormat::RGBA, ColorType::UnsignedByte);
+        mesh).get<Color4ub>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, indexedResult);
@@ -1410,7 +1410,7 @@ void MeshGLTest::setBaseVertex() {
     MAGNUM_VERIFY_NO_ERROR();
 
     const auto value = Checker(MultipleShader{}, RenderbufferFormat::RGBA8,
-        mesh).get<Color4ub>(ColorFormat::RGBA, ColorType::UnsignedByte);
+        mesh).get<Color4ub>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, indexedResult);
@@ -1450,7 +1450,7 @@ void MeshGLTest::setInstanceCount() {
         #else
         RenderbufferFormat::RGBA4,
         #endif
-        mesh).get<UnsignedByte>(ColorFormat::RGBA, ColorType::UnsignedByte);
+        mesh).get<UnsignedByte>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, 96);
@@ -1491,7 +1491,7 @@ void MeshGLTest::setInstanceCountIndexed() {
         #else
         RenderbufferFormat::RGBA4,
         #endif
-        mesh).get<Color4ub>(ColorFormat::RGBA, ColorType::UnsignedByte);
+        mesh).get<Color4ub>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, indexedResult);
@@ -1525,7 +1525,7 @@ void MeshGLTest::setInstanceCountBaseInstance() {
 
     const auto value = Checker(FloatShader("float", "vec4(valueInterpolated, 0.0, 0.0, 0.0)"),
         RenderbufferFormat::RGBA8,
-        mesh).get<UnsignedByte>(ColorFormat::RGBA, ColorType::UnsignedByte);
+        mesh).get<UnsignedByte>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, 96);
@@ -1559,7 +1559,7 @@ void MeshGLTest::setInstanceCountBaseInstanceIndexed() {
     MAGNUM_VERIFY_NO_ERROR();
 
     const auto value = Checker(MultipleShader{}, RenderbufferFormat::RGBA8,
-        mesh).get<Color4ub>(ColorFormat::RGBA, ColorType::UnsignedByte);
+        mesh).get<Color4ub>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, indexedResult);
@@ -1593,7 +1593,7 @@ void MeshGLTest::setInstanceCountBaseVertex() {
     MAGNUM_VERIFY_NO_ERROR();
 
     const auto value = Checker(MultipleShader{}, RenderbufferFormat::RGBA8,
-        mesh).get<Color4ub>(ColorFormat::RGBA, ColorType::UnsignedByte);
+        mesh).get<Color4ub>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, indexedResult);
@@ -1630,7 +1630,7 @@ void MeshGLTest::setInstanceCountBaseVertexBaseInstance() {
     MAGNUM_VERIFY_NO_ERROR();
 
     const auto value = Checker(MultipleShader{}, RenderbufferFormat::RGBA8,
-        mesh).get<Color4ub>(ColorFormat::RGBA, ColorType::UnsignedByte);
+        mesh).get<Color4ub>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, indexedResult);
@@ -1674,7 +1674,7 @@ void MeshGLTest::addVertexBufferInstancedFloat() {
         #else
         RenderbufferFormat::RGBA4,
         #endif
-        mesh).get<UnsignedByte>(ColorFormat::RGBA, ColorType::UnsignedByte);
+        mesh).get<UnsignedByte>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, 96);
@@ -1710,7 +1710,7 @@ void MeshGLTest::addVertexBufferInstancedInteger() {
     MAGNUM_VERIFY_NO_ERROR();
 
     const auto value = Checker(IntegerShader("uint"), RenderbufferFormat::R32UI, mesh)
-        .get<UnsignedInt>(ColorFormat::RedInteger, ColorType::UnsignedInt);
+        .get<UnsignedInt>(PixelFormat::RedInteger, PixelType::UnsignedInt);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, 35681);
@@ -1745,7 +1745,7 @@ void MeshGLTest::addVertexBufferInstancedDouble() {
     MAGNUM_VERIFY_NO_ERROR();
 
     const auto value = Checker(DoubleShader("double", "float", "float(value)"),
-        RenderbufferFormat::R16, mesh).get<UnsignedShort>(ColorFormat::Red, ColorType::UnsignedShort);
+        RenderbufferFormat::R16, mesh).get<UnsignedShort>(PixelFormat::Red, PixelType::UnsignedShort);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, 45828);
@@ -1756,7 +1756,7 @@ namespace {
     struct MultiChecker {
         MultiChecker(AbstractShaderProgram&& shader, Mesh& mesh);
 
-        template<class T> T get(ColorFormat format, ColorType type);
+        template<class T> T get(PixelFormat format, PixelType type);
 
         Renderbuffer renderbuffer;
         Framebuffer framebuffer;
@@ -1793,7 +1793,7 @@ MultiChecker::MultiChecker(AbstractShaderProgram&& shader, Mesh& mesh): framebuf
     MeshView::draw(shader, {a, b});
 }
 
-template<class T> T MultiChecker::get(ColorFormat format, ColorType type) {
+template<class T> T MultiChecker::get(PixelFormat format, PixelType type) {
     return framebuffer.read({{}, Vector2i{1}}, {format, type}).data<T>()[0];
 }
 #endif
@@ -1816,7 +1816,7 @@ void MeshGLTest::multiDraw() {
     MAGNUM_VERIFY_NO_ERROR();
 
     const auto value = MultiChecker(FloatShader("float", "vec4(valueInterpolated, 0.0, 0.0, 0.0)"),
-        mesh).get<UnsignedByte>(ColorFormat::RGBA, ColorType::UnsignedByte);
+        mesh).get<UnsignedByte>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, 96);
@@ -1842,7 +1842,7 @@ void MeshGLTest::multiDrawIndexed() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    const auto value = MultiChecker(MultipleShader{}, mesh).get<Color4ub>(ColorFormat::RGBA, ColorType::UnsignedByte);
+    const auto value = MultiChecker(MultipleShader{}, mesh).get<Color4ub>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, indexedResult);
@@ -1868,7 +1868,7 @@ void MeshGLTest::multiDrawBaseVertex() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    const auto value = MultiChecker(MultipleShader{}, mesh).get<Color4ub>(ColorFormat::RGBA, ColorType::UnsignedByte);
+    const auto value = MultiChecker(MultipleShader{}, mesh).get<Color4ub>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, indexedResult);

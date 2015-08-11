@@ -66,7 +66,7 @@ template<UnsignedInt dimensions> class ImageData {
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        explicit ImageData(ColorFormat format, ColorType type, const VectorTypeFor<dimensions, Int>& size, void* data): _compressed{false}, _format{format}, _type{type}, _size{size}, _data{reinterpret_cast<char*>(data), dataSize(size)} {}
+        explicit ImageData(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, void* data): _compressed{false}, _format{format}, _type{type}, _size{size}, _data{reinterpret_cast<char*>(data), dataSize(size)} {}
 
         /**
          * @brief Construct compressed image data
@@ -77,7 +77,7 @@ template<UnsignedInt dimensions> class ImageData {
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        explicit ImageData(CompressedColorFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data): _compressed{true}, _compressedFormat{format}, _size{size}, _data{std::move(data)} {}
+        explicit ImageData(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data): _compressed{true}, _compressedFormat{format}, _size{size}, _data{std::move(data)} {}
 
         /** @brief Copying is not allowed */
         ImageData(const ImageData<dimensions>&) = delete;
@@ -136,7 +136,7 @@ template<UnsignedInt dimensions> class ImageData {
          * The image is expected to be uncompressed.
          * @see @ref isCompressed()
          */
-        ColorFormat format() const;
+        PixelFormat format() const;
 
         /**
          * @brief Data type of pixel data
@@ -144,7 +144,7 @@ template<UnsignedInt dimensions> class ImageData {
          * The image is expected to be uncompressed.
          * @see @ref isCompressed()
          */
-        ColorType type() const;
+        PixelType type() const;
 
         /**
          * @brief Format of compressed data
@@ -152,7 +152,7 @@ template<UnsignedInt dimensions> class ImageData {
          * The image is expected to be compressed.
          * @see @ref isCompressed()
          */
-        CompressedColorFormat compressedFormat() const;
+        CompressedPixelFormat compressedFormat() const;
 
         /**
          * @brief Pixel size (in bytes)
@@ -206,10 +206,10 @@ template<UnsignedInt dimensions> class ImageData {
     private:
         bool _compressed;
         union {
-            ColorFormat _format;
-            CompressedColorFormat _compressedFormat;
+            PixelFormat _format;
+            CompressedPixelFormat _compressedFormat;
         };
-        ColorType _type;
+        PixelType _type;
         Math::Vector<Dimensions, Int> _size;
         Containers::Array<char> _data;
 };

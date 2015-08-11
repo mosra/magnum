@@ -454,12 +454,12 @@ void AbstractFramebuffer::readBufferImplementationDSAEXT(GLenum buffer) {
 }
 #endif
 
-void AbstractFramebuffer::readImplementationDefault(const Range2Di& rectangle, const ColorFormat format, const ColorType type, const std::size_t, GLvoid* const data) {
+void AbstractFramebuffer::readImplementationDefault(const Range2Di& rectangle, const PixelFormat format, const PixelType type, const std::size_t, GLvoid* const data) {
     glReadPixels(rectangle.min().x(), rectangle.min().y(), rectangle.sizeX(), rectangle.sizeY(), GLenum(format), GLenum(type), data);
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
-void AbstractFramebuffer::readImplementationRobustness(const Range2Di& rectangle, const ColorFormat format, const ColorType type, const std::size_t dataSize, GLvoid* const data) {
+void AbstractFramebuffer::readImplementationRobustness(const Range2Di& rectangle, const PixelFormat format, const PixelType type, const std::size_t dataSize, GLvoid* const data) {
     #ifndef MAGNUM_TARGET_GLES
     glReadnPixelsARB(rectangle.min().x(), rectangle.min().y(), rectangle.sizeX(), rectangle.sizeY(), GLenum(format), GLenum(type), dataSize, data);
     #elif !defined(CORRADE_TARGET_NACL)

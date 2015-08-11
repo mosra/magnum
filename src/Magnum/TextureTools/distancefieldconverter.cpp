@@ -28,8 +28,8 @@
 #include <Corrade/PluginManager/Manager.h>
 
 #include "Magnum/Math/Range.h"
-#include "Magnum/ColorFormat.h"
 #include "Magnum/Image.h"
+#include "Magnum/PixelFormat.h"
 #include "Magnum/Renderer.h"
 #include "Magnum/Texture.h"
 #include "Magnum/TextureFormat.h"
@@ -71,7 +71,7 @@ Arguments:
 -   `--output-size "X Y"` -- size of output image
 -   `--radius N` -- distance field computation radius
 
-Images with @ref ColorFormat::Red, @ref ColorFormat::RGB or @ref ColorFormat::RGBA
+Images with @ref PixelFormat::Red, @ref PixelFormat::RGB or @ref PixelFormat::RGBA
 are accepted on input.
 
 The resulting image can be then used with @ref Shaders::DistanceFieldVector
@@ -136,9 +136,9 @@ int DistanceFieldConverter::exec() {
 
     /* Decide about internal format */
     TextureFormat internalFormat;
-    if(image->format() == ColorFormat::Red) internalFormat = TextureFormat::R8;
-    else if(image->format() == ColorFormat::RGB) internalFormat = TextureFormat::RGB8;
-    else if(image->format() == ColorFormat::RGBA) internalFormat = TextureFormat::RGBA8;
+    if(image->format() == PixelFormat::Red) internalFormat = TextureFormat::R8;
+    else if(image->format() == PixelFormat::RGB) internalFormat = TextureFormat::RGB8;
+    else if(image->format() == PixelFormat::RGBA) internalFormat = TextureFormat::RGBA8;
     else {
         Error() << "Unsupported image format" << image->format();
         return 1;
@@ -163,7 +163,7 @@ int DistanceFieldConverter::exec() {
     TextureTools::distanceField(input, output, {{}, args.value<Vector2i>("output-size")}, args.value<Int>("radius"), image->size());
 
     /* Save image */
-    Image2D result(ColorFormat::Red, ColorType::UnsignedByte);
+    Image2D result(PixelFormat::Red, PixelType::UnsignedByte);
     output.image(0, result);
     if(!converter->exportToFile(result, args.value("output"))) {
         Error() << "Cannot save file" << args.value("output");

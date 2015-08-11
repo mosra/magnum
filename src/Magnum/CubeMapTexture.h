@@ -57,7 +57,7 @@ See @ref Texture documentation for introduction.
 Common usage is to fully configure all texture parameters and then set the
 data from e.g. set of Image objects:
 @code
-Image2D positiveX(ColorFormat::RGBA, ColorType::UnsignedByte, {256, 256}, data);
+Image2D positiveX(PixelFormat::RGBA, PixelType::UnsignedByte, {256, 256}, data);
 // ...
 
 CubeMapTexture texture;
@@ -454,7 +454,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          * @code
-         * Image3D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte});
+         * Image3D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte});
          * @endcode
          */
         Image3D image(Int level, Image3D&& image);
@@ -473,7 +473,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          * @code
-         * BufferImage3D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+         * BufferImage3D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
          * @endcode
          */
         BufferImage3D image(Int level, BufferImage3D&& image, BufferUsage usage);
@@ -556,7 +556,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          * @code
-         * Image2D image = texture.image(CubeMapTexture::Coordinate::PositiveX, 0, {ColorFormat::RGBA, ColorType::UnsignedByte});
+         * Image2D image = texture.image(CubeMapTexture::Coordinate::PositiveX, 0, {PixelFormat::RGBA, PixelType::UnsignedByte});
          * @endcode
          */
         Image2D image(Coordinate coordinate, Int level, Image2D&& image);
@@ -574,7 +574,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          * @code
-         * BufferImage2D image = texture.image(CubeMapTexture::Coordinate::PositiveX, 0, {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+         * BufferImage2D image = texture.image(CubeMapTexture::Coordinate::PositiveX, 0, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
          * @endcode
          */
         BufferImage2D image(Coordinate coordinate, Int level, BufferImage2D&& image, BufferUsage usage);
@@ -653,7 +653,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          * @code
-         * Image3D image = texture.subImage(0, range, {ColorFormat::RGBA, ColorType::UnsignedByte});
+         * Image3D image = texture.subImage(0, range, {PixelFormat::RGBA, PixelType::UnsignedByte});
          * @endcode
          */
         Image3D subImage(Int level, const Range3Di& range, Image3D&& image);
@@ -675,7 +675,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          * @code
-         * BufferImage3D image = texture.subImage(0, range, {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+         * BufferImage3D image = texture.subImage(0, range, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
          * @endcode
          */
         BufferImage3D subImage(Int level, const Range3Di& range, BufferImage3D&& image, BufferUsage usage);
@@ -939,10 +939,10 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL getImageImplementationDefault(Coordinate coordinate, GLint level, const Vector2i& size, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
-        void MAGNUM_LOCAL getImageImplementationDSA(Coordinate coordinate, GLint level, const Vector2i& size, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
-        void MAGNUM_LOCAL getImageImplementationDSAEXT(Coordinate coordinate, GLint level, const Vector2i& size, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
-        void MAGNUM_LOCAL getImageImplementationRobustness(Coordinate coordinate, GLint level, const Vector2i& size, ColorFormat format, ColorType type, std::size_t dataSize, GLvoid* data);
+        void MAGNUM_LOCAL getImageImplementationDefault(Coordinate coordinate, GLint level, const Vector2i& size, PixelFormat format, PixelType type, std::size_t dataSize, GLvoid* data);
+        void MAGNUM_LOCAL getImageImplementationDSA(Coordinate coordinate, GLint level, const Vector2i& size, PixelFormat format, PixelType type, std::size_t dataSize, GLvoid* data);
+        void MAGNUM_LOCAL getImageImplementationDSAEXT(Coordinate coordinate, GLint level, const Vector2i& size, PixelFormat format, PixelType type, std::size_t dataSize, GLvoid* data);
+        void MAGNUM_LOCAL getImageImplementationRobustness(Coordinate coordinate, GLint level, const Vector2i& size, PixelFormat format, PixelType type, std::size_t dataSize, GLvoid* data);
 
         void MAGNUM_LOCAL getCompressedImageImplementationDefault(Coordinate coordinate, GLint level, const Vector2i& size, std::size_t dataSize, GLvoid* data);
         void MAGNUM_LOCAL getCompressedImageImplementationDSA(Coordinate coordinate, GLint level, const Vector2i& size, std::size_t dataSize, GLvoid* data);
@@ -950,16 +950,16 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         void MAGNUM_LOCAL getCompressedImageImplementationRobustness(Coordinate coordinate, GLint level, const Vector2i& size, std::size_t dataSize, GLvoid* data);
         #endif
 
-        void MAGNUM_LOCAL subImageImplementationDefault(Coordinate coordinate, GLint level, const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, const GLvoid* data);
+        void MAGNUM_LOCAL subImageImplementationDefault(Coordinate coordinate, GLint level, const Vector2i& offset, const Vector2i& size, PixelFormat format, PixelType type, const GLvoid* data);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL subImageImplementationDSA(Coordinate coordinate, GLint level, const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, const GLvoid* data);
-        void MAGNUM_LOCAL subImageImplementationDSAEXT(Coordinate coordinate, GLint level, const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, const GLvoid* data);
+        void MAGNUM_LOCAL subImageImplementationDSA(Coordinate coordinate, GLint level, const Vector2i& offset, const Vector2i& size, PixelFormat format, PixelType type, const GLvoid* data);
+        void MAGNUM_LOCAL subImageImplementationDSAEXT(Coordinate coordinate, GLint level, const Vector2i& offset, const Vector2i& size, PixelFormat format, PixelType type, const GLvoid* data);
         #endif
 
-        void MAGNUM_LOCAL compressedSubImageImplementationDefault(Coordinate coordinate, GLint level, const Vector2i& offset, const Vector2i& size, CompressedColorFormat format, Containers::ArrayView<const GLvoid> data);
+        void MAGNUM_LOCAL compressedSubImageImplementationDefault(Coordinate coordinate, GLint level, const Vector2i& offset, const Vector2i& size, CompressedPixelFormat format, Containers::ArrayView<const GLvoid> data);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL compressedSubImageImplementationDSA(Coordinate coordinate, GLint level, const Vector2i& offset, const Vector2i& size, CompressedColorFormat format, Containers::ArrayView<const GLvoid> data);
-        void MAGNUM_LOCAL compressedSubImageImplementationDSAEXT(Coordinate coordinate, GLint level, const Vector2i& offset, const Vector2i& size, CompressedColorFormat format, Containers::ArrayView<const GLvoid> data);
+        void MAGNUM_LOCAL compressedSubImageImplementationDSA(Coordinate coordinate, GLint level, const Vector2i& offset, const Vector2i& size, CompressedPixelFormat format, Containers::ArrayView<const GLvoid> data);
+        void MAGNUM_LOCAL compressedSubImageImplementationDSAEXT(Coordinate coordinate, GLint level, const Vector2i& offset, const Vector2i& size, CompressedPixelFormat format, Containers::ArrayView<const GLvoid> data);
         #endif
 };
 

@@ -23,16 +23,16 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "ColorFormat.h"
+#include "PixelFormat.h"
 
 #include <Corrade/Utility/Debug.h>
 
 namespace Magnum {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-Debug operator<<(Debug debug, const ColorFormat value) {
+Debug operator<<(Debug debug, const PixelFormat value) {
     switch(value) {
-        #define _c(value) case ColorFormat::value: return debug << "ColorFormat::" #value;
+        #define _c(value) case PixelFormat::value: return debug << "PixelFormat::" #value;
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         _c(Red)
         #endif
@@ -79,12 +79,12 @@ Debug operator<<(Debug debug, const ColorFormat value) {
         #undef _c
     }
 
-    return debug << "ColorFormat::(invalid)";
+    return debug << "PixelFormat::(invalid)";
 }
 
-Debug operator<<(Debug debug, const ColorType value) {
+Debug operator<<(Debug debug, const PixelType value) {
     switch(value) {
-        #define _c(value) case ColorType::value: return debug << "ColorType::" #value;
+        #define _c(value) case PixelType::value: return debug << "PixelType::" #value;
         _c(UnsignedByte)
         #ifndef MAGNUM_TARGET_GLES2
         _c(Byte)
@@ -134,12 +134,12 @@ Debug operator<<(Debug debug, const ColorType value) {
         #undef _c
     }
 
-    return debug << "ColorType::(invalid)";
+    return debug << "PixelType::(invalid)";
 }
 
-Debug operator<<(Debug debug, const CompressedColorFormat value) {
+Debug operator<<(Debug debug, const CompressedPixelFormat value) {
     switch(value) {
-        #define _c(value) case CompressedColorFormat::value: return debug << "CompressedColorFormat::" #value;
+        #define _c(value) case CompressedPixelFormat::value: return debug << "CompressedPixelFormat::" #value;
         #ifndef MAGNUM_TARGET_GLES
         _c(Red)
         _c(RG)
@@ -203,7 +203,7 @@ Debug operator<<(Debug debug, const CompressedColorFormat value) {
         #undef _c
     }
 
-    return debug << "CompressedColorFormat::(invalid)";
+    return debug << "CompressedPixelFormat::(invalid)";
 }
 #endif
 

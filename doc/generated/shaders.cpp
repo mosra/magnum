@@ -40,8 +40,12 @@
 #include <Magnum/Framebuffer.h>
 #include <Magnum/Image.h>
 #include <Magnum/Mesh.h>
+#include <Magnum/PixelFormat.h>
 #include <Magnum/Renderbuffer.h>
 #include <Magnum/RenderbufferFormat.h>
+#include <Magnum/Renderer.h>
+#include <Magnum/Texture.h>
+#include <Magnum/TextureFormat.h>
 #include <Magnum/MeshTools/Compile.h>
 #include <Magnum/MeshTools/Interleave.h>
 #include <Magnum/Primitives/Square.h>
@@ -59,10 +63,6 @@
 #include <Magnum/Trade/MeshData2D.h>
 #include <Magnum/Trade/MeshData3D.h>
 #include <Magnum/Trade/AbstractImporter.h>
-#include <Magnum/Renderer.h>
-#include <Magnum/ColorFormat.h>
-#include <Magnum/Texture.h>
-#include <Magnum/TextureFormat.h>
 
 #include "configure.h"
 
@@ -131,7 +131,7 @@ int ShaderVisualizer::exec() {
         std::string filename = (this->*fun)();
 
         AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), FramebufferBlit::Color);
-        Image2D result = framebuffer.read(framebuffer.viewport(), {ColorFormat::RGBA, ColorType::UnsignedByte});
+        Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA, PixelType::UnsignedByte});
         converter->exportToFile(result, Utility::Directory::join("../", "shaders-" + filename));
     }
 

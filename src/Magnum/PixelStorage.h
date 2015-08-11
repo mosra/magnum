@@ -37,9 +37,9 @@
 namespace Magnum {
 
 namespace Implementation {
-    std::size_t MAGNUM_EXPORT imagePixelSize(ColorFormat format, ColorType type);
+    std::size_t MAGNUM_EXPORT imagePixelSize(PixelFormat format, PixelType type);
 
-    template<UnsignedInt dimensions> std::size_t imageDataSize(ColorFormat format, ColorType type, Math::Vector<dimensions, Int> size);
+    template<UnsignedInt dimensions> std::size_t imageDataSize(PixelFormat format, PixelType type, Math::Vector<dimensions, Int> size);
 }
 
 }

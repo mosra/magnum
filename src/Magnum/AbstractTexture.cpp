@@ -31,10 +31,10 @@
 #include "Magnum/BufferImage.h"
 #endif
 #include "Magnum/Array.h"
-#include "Magnum/ColorFormat.h"
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
 #include "Magnum/Image.h"
+#include "Magnum/PixelFormat.h"
 #include "Magnum/TextureFormat.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Range.h"
@@ -471,7 +471,7 @@ void AbstractTexture::bindInternal() {
 }
 
 #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
-ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat internalFormat) {
+PixelFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat internalFormat) {
     switch(internalFormat) {
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         case TextureFormat::Red:
@@ -496,7 +496,7 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         case TextureFormat::CompressedR11Eac:
         case TextureFormat::CompressedSignedR11Eac:
         #endif
-            return ColorFormat::Red;
+            return PixelFormat::Red;
         #endif
 
         #ifndef MAGNUM_TARGET_GLES2
@@ -506,7 +506,7 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         case TextureFormat::R16I:
         case TextureFormat::R32UI:
         case TextureFormat::R32I:
-            return ColorFormat::RedInteger;
+            return PixelFormat::RedInteger;
         #endif
 
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
@@ -532,7 +532,7 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         case TextureFormat::CompressedRG11Eac:
         case TextureFormat::CompressedSignedRG11Eac:
         #endif
-            return ColorFormat::RG;
+            return PixelFormat::RG;
         #endif
 
         #ifndef MAGNUM_TARGET_GLES2
@@ -542,7 +542,7 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         case TextureFormat::RG16I:
         case TextureFormat::RG32UI:
         case TextureFormat::RG32I:
-            return ColorFormat::RGInteger;
+            return PixelFormat::RGInteger;
         #endif
 
         case TextureFormat::RGB:
@@ -592,7 +592,7 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         case TextureFormat::CompressedSRGB8Etc2:
         #endif
         case TextureFormat::CompressedRGBS3tcDxt1:
-            return ColorFormat::RGB;
+            return PixelFormat::RGB;
 
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::RGB8UI:
@@ -601,7 +601,7 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         case TextureFormat::RGB16I:
         case TextureFormat::RGB32UI:
         case TextureFormat::RGB32I:
-            return ColorFormat::RGBInteger;
+            return PixelFormat::RGBInteger;
         #endif
 
         case TextureFormat::RGBA:
@@ -680,7 +680,7 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         case TextureFormat::CompressedRGBAAstc12x12:
         case TextureFormat::CompressedSRGB8Alpha8Astc12x12:
         #endif
-            return ColorFormat::RGBA;
+            return PixelFormat::RGBA;
 
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::RGBA8UI:
@@ -690,14 +690,14 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         case TextureFormat::RGBA32UI:
         case TextureFormat::RGBA32I:
         case TextureFormat::RGB10A2UI:
-            return ColorFormat::RGBAInteger;
+            return PixelFormat::RGBAInteger;
         #endif
 
         #ifdef MAGNUM_TARGET_GLES2
         case TextureFormat::Luminance:
-            return ColorFormat::Luminance;
+            return PixelFormat::Luminance;
         case TextureFormat::LuminanceAlpha:
-            return ColorFormat::LuminanceAlpha;
+            return PixelFormat::LuminanceAlpha;
         #endif
 
         case TextureFormat::DepthComponent:
@@ -711,11 +711,11 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::DepthComponent32F:
         #endif
-            return ColorFormat::DepthComponent;
+            return PixelFormat::DepthComponent;
 
         #ifndef MAGNUM_TARGET_WEBGL
         case TextureFormat::StencilIndex8:
-            return ColorFormat::StencilIndex;
+            return PixelFormat::StencilIndex;
         #endif
 
         case TextureFormat::DepthStencil:
@@ -725,13 +725,13 @@ ColorFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::Depth32FStencil8:
         #endif
-            return ColorFormat::DepthStencil;
+            return PixelFormat::DepthStencil;
     }
 
     CORRADE_ASSERT_UNREACHABLE();
 }
 
-ColorType AbstractTexture::imageTypeForInternalFormat(const TextureFormat internalFormat) {
+PixelType AbstractTexture::imageTypeForInternalFormat(const TextureFormat internalFormat) {
     switch(internalFormat) {
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         case TextureFormat::Red:
@@ -820,7 +820,7 @@ ColorType AbstractTexture::imageTypeForInternalFormat(const TextureFormat intern
         case TextureFormat::CompressedRGBAAstc12x12:
         case TextureFormat::CompressedSRGB8Alpha8Astc12x12:
         #endif
-            return ColorType::UnsignedByte;
+            return PixelType::UnsignedByte;
 
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::R8Snorm:
@@ -835,7 +835,7 @@ ColorType AbstractTexture::imageTypeForInternalFormat(const TextureFormat intern
         case TextureFormat::CompressedSignedRedRgtc1:
         case TextureFormat::CompressedSignedRGRgtc2:
         #endif
-            return ColorType::Byte;
+            return PixelType::Byte;
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
@@ -857,7 +857,7 @@ ColorType AbstractTexture::imageTypeForInternalFormat(const TextureFormat intern
         #ifndef MAGNUM_TARGET_GLES
         case TextureFormat::RGBA12: /**< @todo really? */
         #endif
-            return ColorType::UnsignedShort;
+            return PixelType::UnsignedShort;
 
         #ifndef MAGNUM_TARGET_GLES2
         #ifndef MAGNUM_TARGET_GLES
@@ -870,7 +870,7 @@ ColorType AbstractTexture::imageTypeForInternalFormat(const TextureFormat intern
         case TextureFormat::RG16I:
         case TextureFormat::RGB16I:
         case TextureFormat::RGBA16I:
-            return ColorType::Short;
+            return PixelType::Short;
         #endif
 
         #ifndef MAGNUM_TARGET_GLES2
@@ -878,19 +878,19 @@ ColorType AbstractTexture::imageTypeForInternalFormat(const TextureFormat intern
         case TextureFormat::RG16F:
         case TextureFormat::RGB16F:
         case TextureFormat::RGBA16F:
-            return ColorType::HalfFloat;
+            return PixelType::HalfFloat;
 
         case TextureFormat::R32UI:
         case TextureFormat::RG32UI:
         case TextureFormat::RGB32UI:
         case TextureFormat::RGBA32UI:
-            return ColorType::UnsignedInt;
+            return PixelType::UnsignedInt;
 
         case TextureFormat::R32I:
         case TextureFormat::RG32I:
         case TextureFormat::RGB32I:
         case TextureFormat::RGBA32I:
-            return ColorType::Int;
+            return PixelType::Int;
 
         case TextureFormat::R32F:
         case TextureFormat::RG32F:
@@ -900,24 +900,24 @@ ColorType AbstractTexture::imageTypeForInternalFormat(const TextureFormat intern
         case TextureFormat::CompressedRGBBptcUnsignedFloat:
         case TextureFormat::CompressedRGBBptcSignedFloat:
         #endif
-            return ColorType::Float;
+            return PixelType::Float;
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
         case TextureFormat::R3B3G2:
-            return ColorType::UnsignedByte332;
+            return PixelType::UnsignedByte332;
         case TextureFormat::RGB4:
-            return ColorType::UnsignedShort4444;
+            return PixelType::UnsignedShort4444;
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
         case TextureFormat::RGB5:
         #endif
         case TextureFormat::RGB5A1:
-            return ColorType::UnsignedShort5551;
+            return PixelType::UnsignedShort5551;
 
         case TextureFormat::RGB565:
-            return ColorType::UnsignedShort565;
+            return PixelType::UnsignedShort565;
 
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
@@ -927,19 +927,19 @@ ColorType AbstractTexture::imageTypeForInternalFormat(const TextureFormat intern
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::RGB10A2UI:
         #endif
-            return ColorType::UnsignedInt2101010Rev; /**< @todo Rev for all? */
+            return PixelType::UnsignedInt2101010Rev; /**< @todo Rev for all? */
         #endif
 
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::R11FG11FB10F:
-            return ColorType::UnsignedInt10F11F11FRev;
+            return PixelType::UnsignedInt10F11F11FRev;
         case TextureFormat::RGB9E5:
-            return ColorType::UnsignedInt5999Rev;
+            return PixelType::UnsignedInt5999Rev;
         #endif
 
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         case TextureFormat::DepthComponent16:
-            return ColorType::UnsignedShort;
+            return PixelType::UnsignedShort;
         #endif
 
         case TextureFormat::DepthComponent:
@@ -949,27 +949,27 @@ ColorType AbstractTexture::imageTypeForInternalFormat(const TextureFormat intern
         #ifndef MAGNUM_TARGET_WEBGL
         case TextureFormat::DepthComponent32:
         #endif
-            return ColorType::UnsignedInt;
+            return PixelType::UnsignedInt;
 
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::DepthComponent32F:
-            return ColorType::Float;
+            return PixelType::Float;
         #endif
 
         #ifndef MAGNUM_TARGET_WEBGL
         case TextureFormat::StencilIndex8:
-            return ColorType::UnsignedByte;
+            return PixelType::UnsignedByte;
         #endif
 
         case TextureFormat::DepthStencil:
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         case TextureFormat::Depth24Stencil8:
         #endif
-            return ColorType::UnsignedInt248;
+            return PixelType::UnsignedInt248;
 
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::Depth32FStencil8:
-            return ColorType::Float32UnsignedInt248Rev;
+            return PixelType::Float32UnsignedInt248Rev;
         #endif
     }
 
@@ -1113,8 +1113,8 @@ void AbstractTexture::getLevelParameterImplementationDSAEXT(GLint level, GLenum 
 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::storageImplementationFallback(const GLsizei levels, const TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size) {
-    const ColorFormat format = imageFormatForInternalFormat(internalFormat);
-    const ColorType type = imageTypeForInternalFormat(internalFormat);
+    const PixelFormat format = imageFormatForInternalFormat(internalFormat);
+    const PixelType type = imageTypeForInternalFormat(internalFormat);
 
     for(GLsizei level = 0; level != levels; ++level)
         DataHelper<1>::setImage(*this, level, internalFormat,
@@ -1138,8 +1138,8 @@ void AbstractTexture::storageImplementationDSAEXT(GLsizei levels, TextureFormat 
 
 #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
 void AbstractTexture::storageImplementationFallback(const GLsizei levels, const TextureFormat internalFormat, const Vector2i& size) {
-    const ColorFormat format = imageFormatForInternalFormat(internalFormat);
-    const ColorType type = imageTypeForInternalFormat(internalFormat);
+    const PixelFormat format = imageFormatForInternalFormat(internalFormat);
+    const PixelType type = imageTypeForInternalFormat(internalFormat);
 
     /* Common code for classic types */
     #ifndef MAGNUM_TARGET_GLES
@@ -1207,8 +1207,8 @@ void AbstractTexture::storageImplementationDSAEXT(GLsizei levels, TextureFormat 
 
 #if !defined(MAGNUM_TARGET_GLES) || (defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
 void AbstractTexture::storageImplementationFallback(GLsizei levels, TextureFormat internalFormat, const Vector3i& size) {
-    const ColorFormat format = imageFormatForInternalFormat(internalFormat);
-    const ColorType type = imageTypeForInternalFormat(internalFormat);
+    const PixelFormat format = imageFormatForInternalFormat(internalFormat);
+    const PixelType type = imageTypeForInternalFormat(internalFormat);
 
     /* Common code for classic type */
     #ifndef MAGNUM_TARGET_GLES2
@@ -1318,7 +1318,7 @@ void AbstractTexture::storageMultisampleImplementationDSAEXT(const GLsizei sampl
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractTexture::getImageImplementationDefault(const GLint level, const ColorFormat format, const ColorType type, const std::size_t, GLvoid* const data) {
+void AbstractTexture::getImageImplementationDefault(const GLint level, const PixelFormat format, const PixelType type, const std::size_t, GLvoid* const data) {
     bindInternal();
     glGetTexImage(_target, level, GLenum(format), GLenum(type), data);
 }
@@ -1328,7 +1328,7 @@ void AbstractTexture::getCompressedImageImplementationDefault(const GLint level,
     glGetCompressedTexImage(_target, level, data);
 }
 
-void AbstractTexture::getImageImplementationDSA(const GLint level, const ColorFormat format, const ColorType type, const std::size_t dataSize, GLvoid* const data) {
+void AbstractTexture::getImageImplementationDSA(const GLint level, const PixelFormat format, const PixelType type, const std::size_t dataSize, GLvoid* const data) {
     glGetTextureImage(_id, level, GLenum(format), GLenum(type), dataSize, data);
 }
 
@@ -1336,7 +1336,7 @@ void AbstractTexture::getCompressedImageImplementationDSA(const GLint level, con
     glGetCompressedTextureImage(_id, level, dataSize, data);
 }
 
-void AbstractTexture::getImageImplementationDSAEXT(const GLint level, const ColorFormat format, const ColorType type, const std::size_t, GLvoid* const data) {
+void AbstractTexture::getImageImplementationDSAEXT(const GLint level, const PixelFormat format, const PixelType type, const std::size_t, GLvoid* const data) {
     _flags |= ObjectFlag::Created;
     glGetTextureImageEXT(_id, _target, level, GLenum(format), GLenum(type), data);
 }
@@ -1346,7 +1346,7 @@ void AbstractTexture::getCompressedImageImplementationDSAEXT(const GLint level, 
     glGetCompressedTextureImageEXT(_id, _target, level, data);
 }
 
-void AbstractTexture::getImageImplementationRobustness(const GLint level, const ColorFormat format, const ColorType type, const std::size_t dataSize, GLvoid* const data) {
+void AbstractTexture::getImageImplementationRobustness(const GLint level, const PixelFormat format, const PixelType type, const std::size_t dataSize, GLvoid* const data) {
     bindInternal();
     glGetnTexImageARB(_target, level, GLenum(format), GLenum(type), dataSize, data);
 }
@@ -1358,67 +1358,67 @@ void AbstractTexture::getCompressedImageImplementationRobustness(const GLint lev
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractTexture::subImageImplementationDefault(GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, ColorFormat format, ColorType type, const GLvoid* data) {
+void AbstractTexture::subImageImplementationDefault(GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, PixelFormat format, PixelType type, const GLvoid* data) {
     bindInternal();
     glTexSubImage1D(_target, level, offset[0], size[0], GLenum(format), GLenum(type), data);
 }
 
-void AbstractTexture::compressedSubImageImplementationDefault(const GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, const CompressedColorFormat format, const Containers::ArrayView<const GLvoid> data) {
+void AbstractTexture::compressedSubImageImplementationDefault(const GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, const CompressedPixelFormat format, const Containers::ArrayView<const GLvoid> data) {
     bindInternal();
     glCompressedTexSubImage1D(_target, level, offset[0], size[0], GLenum(format), data.size(), data);
 }
 
-void AbstractTexture::subImageImplementationDSA(const GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, const ColorFormat format, const ColorType type, const GLvoid* const data) {
+void AbstractTexture::subImageImplementationDSA(const GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, const PixelFormat format, const PixelType type, const GLvoid* const data) {
     glTextureSubImage1D(_id, level, offset[0], size[0], GLenum(format), GLenum(type), data);
 }
 
-void AbstractTexture::compressedSubImageImplementationDSA(const GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, const CompressedColorFormat format, const Containers::ArrayView<const GLvoid> data) {
+void AbstractTexture::compressedSubImageImplementationDSA(const GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, const CompressedPixelFormat format, const Containers::ArrayView<const GLvoid> data) {
     glCompressedTextureSubImage1D(_id, level, offset[0], size[0], GLenum(format), data.size(), data);
 }
 
-void AbstractTexture::subImageImplementationDSAEXT(GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, ColorFormat format, ColorType type, const GLvoid* data) {
+void AbstractTexture::subImageImplementationDSAEXT(GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, PixelFormat format, PixelType type, const GLvoid* data) {
     _flags |= ObjectFlag::Created;
     glTextureSubImage1DEXT(_id, _target, level, offset[0], size[0], GLenum(format), GLenum(type), data);
 }
 
-void AbstractTexture::compressedSubImageImplementationDSAEXT(const GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, const CompressedColorFormat format, const Containers::ArrayView<const GLvoid> data) {
+void AbstractTexture::compressedSubImageImplementationDSAEXT(const GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, const CompressedPixelFormat format, const Containers::ArrayView<const GLvoid> data) {
     _flags |= ObjectFlag::Created;
     glCompressedTextureSubImage1DEXT(_id, _target, level, offset[0], size[0], GLenum(format), data.size(), data);
 }
 #endif
 
-void AbstractTexture::subImageImplementationDefault(GLint level, const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, const GLvoid* data) {
+void AbstractTexture::subImageImplementationDefault(GLint level, const Vector2i& offset, const Vector2i& size, PixelFormat format, PixelType type, const GLvoid* data) {
     bindInternal();
     glTexSubImage2D(_target, level, offset.x(), offset.y(), size.x(), size.y(), GLenum(format), GLenum(type), data);
 }
 
-void AbstractTexture::compressedSubImageImplementationDefault(const GLint level, const Vector2i& offset, const Vector2i& size, const CompressedColorFormat format, const Containers::ArrayView<const GLvoid> data) {
+void AbstractTexture::compressedSubImageImplementationDefault(const GLint level, const Vector2i& offset, const Vector2i& size, const CompressedPixelFormat format, const Containers::ArrayView<const GLvoid> data) {
     bindInternal();
     glCompressedTexSubImage2D(_target, level, offset.x(), offset.y(), size.x(), size.y(), GLenum(format), data.size(), data);
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractTexture::subImageImplementationDSA(const GLint level, const Vector2i& offset, const Vector2i& size, const ColorFormat format, const ColorType type, const GLvoid* const data) {
+void AbstractTexture::subImageImplementationDSA(const GLint level, const Vector2i& offset, const Vector2i& size, const PixelFormat format, const PixelType type, const GLvoid* const data) {
     glTextureSubImage2D(_id, level, offset.x(), offset.y(), size.x(), size.y(), GLenum(format), GLenum(type), data);
 }
 
-void AbstractTexture::compressedSubImageImplementationDSA(const GLint level, const Vector2i& offset, const Vector2i& size, const CompressedColorFormat format, const Containers::ArrayView<const GLvoid> data) {
+void AbstractTexture::compressedSubImageImplementationDSA(const GLint level, const Vector2i& offset, const Vector2i& size, const CompressedPixelFormat format, const Containers::ArrayView<const GLvoid> data) {
     glCompressedTextureSubImage2D(_id, level, offset.x(), offset.y(), size.x(), size.y(), GLenum(format), data.size(), data);
 }
 
-void AbstractTexture::subImageImplementationDSAEXT(GLint level, const Vector2i& offset, const Vector2i& size, ColorFormat format, ColorType type, const GLvoid* data) {
+void AbstractTexture::subImageImplementationDSAEXT(GLint level, const Vector2i& offset, const Vector2i& size, PixelFormat format, PixelType type, const GLvoid* data) {
     _flags |= ObjectFlag::Created;
     glTextureSubImage2DEXT(_id, _target, level, offset.x(), offset.y(), size.x(), size.y(), GLenum(format), GLenum(type), data);
 }
 
-void AbstractTexture::compressedSubImageImplementationDSAEXT(GLint level, const Vector2i& offset, const Vector2i& size, CompressedColorFormat format, Corrade::Containers::ArrayView< const GLvoid > data) {
+void AbstractTexture::compressedSubImageImplementationDSAEXT(GLint level, const Vector2i& offset, const Vector2i& size, CompressedPixelFormat format, Corrade::Containers::ArrayView< const GLvoid > data) {
     _flags |= ObjectFlag::Created;
     glCompressedTextureSubImage2DEXT(_id, _target, level, offset.x(), offset.y(), size.x(), size.y(), GLenum(format), data.size(), data);
 }
 #endif
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-void AbstractTexture::subImageImplementationDefault(GLint level, const Vector3i& offset, const Vector3i& size, ColorFormat format, ColorType type, const GLvoid* data) {
+void AbstractTexture::subImageImplementationDefault(GLint level, const Vector3i& offset, const Vector3i& size, PixelFormat format, PixelType type, const GLvoid* data) {
     bindInternal();
     #ifndef MAGNUM_TARGET_GLES2
     glTexSubImage3D(_target, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), GLenum(format), GLenum(type), data);
@@ -1435,7 +1435,7 @@ void AbstractTexture::subImageImplementationDefault(GLint level, const Vector3i&
     #endif
 }
 
-void AbstractTexture::compressedSubImageImplementationDefault(const GLint level, const Vector3i& offset, const Vector3i& size, const CompressedColorFormat format, const Containers::ArrayView<const GLvoid> data) {
+void AbstractTexture::compressedSubImageImplementationDefault(const GLint level, const Vector3i& offset, const Vector3i& size, const CompressedPixelFormat format, const Containers::ArrayView<const GLvoid> data) {
     bindInternal();
     #ifndef MAGNUM_TARGET_GLES2
     glCompressedTexSubImage3D(_target, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), GLenum(format), data.size(), data);
@@ -1453,20 +1453,20 @@ void AbstractTexture::compressedSubImageImplementationDefault(const GLint level,
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractTexture::subImageImplementationDSA(const GLint level, const Vector3i& offset, const Vector3i& size, const ColorFormat format, const ColorType type, const GLvoid* const data) {
+void AbstractTexture::subImageImplementationDSA(const GLint level, const Vector3i& offset, const Vector3i& size, const PixelFormat format, const PixelType type, const GLvoid* const data) {
     glTextureSubImage3D(_id, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), GLenum(format), GLenum(type), data);
 }
 
-void AbstractTexture::compressedSubImageImplementationDSA(const GLint level, const Vector3i& offset, const Vector3i& size, const CompressedColorFormat format, const Containers::ArrayView<const GLvoid> data) {
+void AbstractTexture::compressedSubImageImplementationDSA(const GLint level, const Vector3i& offset, const Vector3i& size, const CompressedPixelFormat format, const Containers::ArrayView<const GLvoid> data) {
     glCompressedTextureSubImage3D(_id, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), GLenum(format), data.size(), data);
 }
 
-void AbstractTexture::subImageImplementationDSAEXT(GLint level, const Vector3i& offset, const Vector3i& size, ColorFormat format, ColorType type, const GLvoid* data) {
+void AbstractTexture::subImageImplementationDSAEXT(GLint level, const Vector3i& offset, const Vector3i& size, PixelFormat format, PixelType type, const GLvoid* data) {
     _flags |= ObjectFlag::Created;
     glTextureSubImage3DEXT(_id, _target, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), GLenum(format), GLenum(type), data);
 }
 
-void AbstractTexture::compressedSubImageImplementationDSAEXT(const GLint level, const Vector3i& offset, const Vector3i& size, const CompressedColorFormat format, const Containers::ArrayView<const GLvoid> data) {
+void AbstractTexture::compressedSubImageImplementationDSAEXT(const GLint level, const Vector3i& offset, const Vector3i& size, const CompressedPixelFormat format, const Containers::ArrayView<const GLvoid> data) {
     _flags |= ObjectFlag::Created;
     glCompressedTextureSubImage3DEXT(_id, _target, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), GLenum(format), data.size(), data);
 }
@@ -1530,7 +1530,7 @@ template<UnsignedInt dimensions> void AbstractTexture::compressedImage(const GLi
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     (this->*Context::current()->state().texture->getCompressedImageImplementation)(level, dataSize, data);
-    image.setData(CompressedColorFormat(format), size, std::move(data));
+    image.setData(CompressedPixelFormat(format), size, std::move(data));
 }
 
 template void MAGNUM_EXPORT AbstractTexture::compressedImage<1>(GLint, CompressedImage<1>&);
@@ -1544,7 +1544,7 @@ template<UnsignedInt dimensions> void AbstractTexture::compressedImage(const GLi
     GLint format;
     (this->*Context::current()->state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
 
-    image.setData(CompressedColorFormat(format), size, {nullptr, std::size_t(dataSize)}, usage);
+    image.setData(CompressedPixelFormat(format), size, {nullptr, std::size_t(dataSize)}, usage);
     image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
     (this->*Context::current()->state().texture->getCompressedImageImplementation)(level, dataSize, nullptr);
 }

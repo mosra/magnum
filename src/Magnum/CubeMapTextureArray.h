@@ -58,7 +58,7 @@ texture.setMagnificationFilter(Sampler::Filter::Linear)
     .setStorage(Math::log2(64)+1, TextureFormat::RGBA8, {64, 64, 24});
 
 for(std::size_t i = 0; i != 4; i += 6) {
-    Image3D imagePositiveX(ColorFormat::RGBA, ColorType::UnsignedByte, {64, 64, 1}, data);
+    Image3D imagePositiveX(PixelFormat::RGBA, PixelType::UnsignedByte, {64, 64, 1}, data);
     // ...
     texture.setSubImage(0, Vector3i::zAxis(i+0), imagePositiveX);
     texture.setSubImage(0, Vector3i::zAxis(i+1), imageNegativeX);
@@ -387,7 +387,7 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          * @code
-         * Image3D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte});
+         * Image3D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte});
          * @endcode
          */
         Image3D image(Int level, Image3D&& image);
@@ -408,7 +408,7 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          * @code
-         * BufferImage3D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+         * BufferImage3D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
          * @endcode
          */
         BufferImage3D image(Int level, BufferImage3D&& image, BufferUsage usage);
@@ -472,7 +472,7 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          * @code
-         * Image3D image = texture.subImage(0, range, {ColorFormat::RGBA, ColorType::UnsignedByte});
+         * Image3D image = texture.subImage(0, range, {PixelFormat::RGBA, PixelType::UnsignedByte});
          * @endcode
          */
         Image3D subImage(Int level, const Range3Di& range, Image3D&& image);
@@ -494,7 +494,7 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          * @code
-         * BufferImage3D image = texture.subImage(0, range, {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+         * BufferImage3D image = texture.subImage(0, range, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
          * @endcode
          */
         BufferImage3D subImage(Int level, const Range3Di& range, BufferImage3D&& image, BufferUsage usage);

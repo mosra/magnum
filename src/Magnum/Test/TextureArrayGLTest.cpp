@@ -27,8 +27,8 @@
 
 #include "Magnum/configure.h"
 #include "Magnum/BufferImage.h"
-#include "Magnum/ColorFormat.h"
 #include "Magnum/Image.h"
+#include "Magnum/PixelFormat.h"
 #include "Magnum/TextureArray.h"
 #include "Magnum/TextureFormat.h"
 #include "Magnum/Math/Color.h"
@@ -667,11 +667,11 @@ void TextureArrayGLTest::image1D() {
 
     Texture1DArray texture;
     texture.setImage(0, TextureFormat::RGBA8,
-        ImageView2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), Data1D));
+        ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Data1D));
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    Image2D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte});
+    Image2D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -691,11 +691,11 @@ void TextureArrayGLTest::image1DBuffer() {
 
     Texture1DArray texture;
     texture.setImage(0, TextureFormat::RGBA8,
-        BufferImage2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), Data1D, BufferUsage::StaticDraw));
+        BufferImage2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Data1D, BufferUsage::StaticDraw));
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    BufferImage2D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+    BufferImage2D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -736,13 +736,13 @@ void TextureArrayGLTest::image2D() {
 
     Texture2DArray texture;
     texture.setImage(0, TextureFormat::RGBA8,
-        ImageView3D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i(2), Data2D));
+        ImageView3D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i(2), Data2D));
 
     MAGNUM_VERIFY_NO_ERROR();
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
-    Image3D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte});
+    Image3D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -767,7 +767,7 @@ void TextureArrayGLTest::compressedImage2D() {
     #endif
 
     Texture2DArray texture;
-    texture.setCompressedImage(0, CompressedImageView3D{CompressedColorFormat::RGBAS3tcDxt3,
+    texture.setCompressedImage(0, CompressedImageView3D{CompressedPixelFormat::RGBAS3tcDxt3,
         {4, 4, 2}, CompressedData2D});
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -792,13 +792,13 @@ void TextureArrayGLTest::image2DBuffer() {
 
     Texture2DArray texture;
     texture.setImage(0, TextureFormat::RGBA8,
-        BufferImage3D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i(2), Data2D, BufferUsage::StaticDraw));
+        BufferImage3D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i(2), Data2D, BufferUsage::StaticDraw));
 
     MAGNUM_VERIFY_NO_ERROR();
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
-    BufferImage3D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+    BufferImage3D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -822,7 +822,7 @@ void TextureArrayGLTest::compressedImage2DBuffer() {
     #endif
 
     Texture2DArray texture;
-    texture.setCompressedImage(0, CompressedImageView3D{CompressedColorFormat::RGBAS3tcDxt3,
+    texture.setCompressedImage(0, CompressedImageView3D{CompressedPixelFormat::RGBAS3tcDxt3,
         {4, 4, 2}, CompressedData2D});
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -855,13 +855,13 @@ void TextureArrayGLTest::subImage1D() {
 
     Texture1DArray texture;
     texture.setImage(0, TextureFormat::RGBA8,
-        ImageView2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(4), Zero1D));
+        ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero1D));
     texture.setSubImage(0, Vector2i(1),
-        ImageView2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), Data1D));
+        ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Data1D));
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    Image2D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte});
+    Image2D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -881,13 +881,13 @@ void TextureArrayGLTest::subImage1DBuffer() {
 
     Texture1DArray texture;
     texture.setImage(0, TextureFormat::RGBA8,
-        ImageView2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(4), Zero1D));
+        ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero1D));
     texture.setSubImage(0, Vector2i(1),
-        BufferImage2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(2), Data1D, BufferUsage::StaticDraw));
+        BufferImage2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Data1D, BufferUsage::StaticDraw));
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    BufferImage2D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+    BufferImage2D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -908,11 +908,11 @@ void TextureArrayGLTest::subImage1DQuery() {
 
     Texture1DArray texture;
     texture.setStorage(1, TextureFormat::RGBA8, Vector2i{4})
-           .setSubImage(0, {}, ImageView2D{ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i{4}, SubData1DComplete});
+           .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{4}, SubData1DComplete});
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    Image2D image = texture.subImage(0, Range2Di::fromSize(Vector2i{1}, Vector2i{2}), {ColorFormat::RGBA, ColorType::UnsignedByte});
+    Image2D image = texture.subImage(0, Range2Di::fromSize(Vector2i{1}, Vector2i{2}), {PixelFormat::RGBA, PixelType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -929,11 +929,11 @@ void TextureArrayGLTest::subImage1DQueryBuffer() {
 
     Texture1DArray texture;
     texture.setStorage(1, TextureFormat::RGBA8, Vector2i{4})
-           .setSubImage(0, {}, ImageView2D{ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i{4}, SubData1DComplete});
+           .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{4}, SubData1DComplete});
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    BufferImage2D image = texture.subImage(0, Range2Di::fromSize(Vector2i{1}, Vector2i{2}), {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+    BufferImage2D image = texture.subImage(0, Range2Di::fromSize(Vector2i{1}, Vector2i{2}), {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -1011,15 +1011,15 @@ void TextureArrayGLTest::subImage2D() {
 
     Texture2DArray texture;
     texture.setImage(0, TextureFormat::RGBA8,
-        ImageView3D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i(4), Zero2D));
+        ImageView3D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i(4), Zero2D));
     texture.setSubImage(0, Vector3i(1),
-        ImageView3D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i(2), Data2D));
+        ImageView3D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i(2), Data2D));
 
     MAGNUM_VERIFY_NO_ERROR();
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
-    Image3D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte});
+    Image3D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -1043,9 +1043,9 @@ void TextureArrayGLTest::compressedSubImage2D() {
     #endif
 
     Texture2DArray texture;
-    texture.setCompressedImage(0, CompressedImageView3D{CompressedColorFormat::RGBAS3tcDxt3,
+    texture.setCompressedImage(0, CompressedImageView3D{CompressedPixelFormat::RGBAS3tcDxt3,
         Vector3i{12, 4, 4}, CompressedZero2D});
-    texture.setCompressedSubImage(0, {4, 0, 1}, CompressedImageView3D(CompressedColorFormat::RGBAS3tcDxt3,
+    texture.setCompressedSubImage(0, {4, 0, 1}, CompressedImageView3D(CompressedPixelFormat::RGBAS3tcDxt3,
         {4, 4, 2}, CompressedData2D));
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -1069,15 +1069,15 @@ void TextureArrayGLTest::subImage2DBuffer() {
 
     Texture2DArray texture;
     texture.setImage(0, TextureFormat::RGBA8,
-        ImageView3D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i(4), Zero2D));
+        ImageView3D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i(4), Zero2D));
     texture.setSubImage(0, Vector3i(1),
-        BufferImage3D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i(2), Data2D, BufferUsage::StaticDraw));
+        BufferImage3D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i(2), Data2D, BufferUsage::StaticDraw));
 
     MAGNUM_VERIFY_NO_ERROR();
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
-    BufferImage3D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+    BufferImage3D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -1101,9 +1101,9 @@ void TextureArrayGLTest::compressedSubImage2DBuffer() {
     #endif
 
     Texture2DArray texture;
-    texture.setCompressedImage(0, CompressedImageView3D{CompressedColorFormat::RGBAS3tcDxt3,
+    texture.setCompressedImage(0, CompressedImageView3D{CompressedPixelFormat::RGBAS3tcDxt3,
         Vector3i{12, 4, 4}, CompressedZero2D});
-    texture.setCompressedSubImage(0, {4, 0, 1}, CompressedImageView3D(CompressedColorFormat::RGBAS3tcDxt3,
+    texture.setCompressedSubImage(0, {4, 0, 1}, CompressedImageView3D(CompressedPixelFormat::RGBAS3tcDxt3,
         {4, 4, 2}, CompressedData2D));
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -1128,11 +1128,11 @@ void TextureArrayGLTest::subImage2DQuery() {
 
     Texture2DArray texture;
     texture.setStorage(1, TextureFormat::RGBA8, Vector3i{4})
-           .setSubImage(0, {}, ImageView3D{ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i{4}, SubData2DComplete});
+           .setSubImage(0, {}, ImageView3D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i{4}, SubData2DComplete});
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    Image3D image = texture.subImage(0, Range3Di::fromSize(Vector3i{1}, Vector3i{2}), {ColorFormat::RGBA, ColorType::UnsignedByte});
+    Image3D image = texture.subImage(0, Range3Di::fromSize(Vector3i{1}, Vector3i{2}), {PixelFormat::RGBA, PixelType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -1149,11 +1149,11 @@ void TextureArrayGLTest::subImage2DQueryBuffer() {
 
     Texture2DArray texture;
     texture.setStorage(1, TextureFormat::RGBA8, Vector3i{4})
-           .setSubImage(0, {}, ImageView3D{ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i{4}, SubData2DComplete});
+           .setSubImage(0, {}, ImageView3D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i{4}, SubData2DComplete});
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    BufferImage3D image = texture.subImage(0, Range3Di::fromSize(Vector3i{1}, Vector3i{2}), {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+    BufferImage3D image = texture.subImage(0, Range3Di::fromSize(Vector3i{1}, Vector3i{2}), {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -1170,7 +1170,7 @@ void TextureArrayGLTest::generateMipmap1D() {
 
     Texture1DArray texture;
     texture.setImage(0, TextureFormat::RGBA8,
-        ImageView2D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector2i(32)));
+        ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(32)));
 
     CORRADE_COMPARE(texture.imageSize(0), Vector2i(32));
     CORRADE_COMPARE(texture.imageSize(1), Vector2i( 0));
@@ -1200,7 +1200,7 @@ void TextureArrayGLTest::generateMipmap2D() {
 
     Texture2DArray texture;
     texture.setImage(0, TextureFormat::RGBA8,
-        ImageView3D(ColorFormat::RGBA, ColorType::UnsignedByte, Vector3i(32)));
+        ImageView3D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i(32)));
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES

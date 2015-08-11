@@ -31,8 +31,8 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Utility/Endianness.h>
 
-#include "Magnum/ColorFormat.h"
 #include "Magnum/Image.h"
+#include "Magnum/PixelFormat.h"
 #include "Magnum/Math/Swizzle.h"
 #include "Magnum/Math/Vector4.h"
 #include "MagnumPlugins/TgaImporter/TgaHeader.h"
@@ -46,13 +46,13 @@ TgaImageConverter::TgaImageConverter(PluginManager::AbstractManager& manager, st
 auto TgaImageConverter::doFeatures() const -> Features { return Feature::ConvertData; }
 
 Containers::Array<char> TgaImageConverter::doExportToData(const ImageView2D& image) const {
-    if(image.format() != ColorFormat::RGB &&
-       image.format() != ColorFormat::RGBA
+    if(image.format() != PixelFormat::RGB &&
+       image.format() != PixelFormat::RGBA
        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-       && image.format() != ColorFormat::Red
+       && image.format() != PixelFormat::Red
        #endif
        #ifdef MAGNUM_TARGET_GLES2
-       && image.format() != ColorFormat::Luminance
+       && image.format() != PixelFormat::Luminance
        #endif
        )
     {
@@ -60,7 +60,7 @@ Containers::Array<char> TgaImageConverter::doExportToData(const ImageView2D& ima
         return nullptr;
     }
 
-    if(image.type() != ColorType::UnsignedByte) {
+    if(image.type() != PixelType::UnsignedByte) {
         Error() << "Trade::TgaImageConverter::exportToData(): unsupported color type" << image.type();
         return nullptr;
     }
@@ -72,15 +72,15 @@ Containers::Array<char> TgaImageConverter::doExportToData(const ImageView2D& ima
     /* Fill header */
     auto header = reinterpret_cast<TgaHeader*>(data.begin());
     switch(image.format()) {
-        case ColorFormat::RGB:
-        case ColorFormat::RGBA:
+        case PixelFormat::RGB:
+        case PixelFormat::RGBA:
             header->imageType = 2;
             break;
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        case ColorFormat::Red:
+        case PixelFormat::Red:
         #endif
         #ifdef MAGNUM_TARGET_GLES2
-        case ColorFormat::Luminance:
+        case PixelFormat::Luminance:
         #endif
             header->imageType = 3;
             break;
@@ -93,11 +93,11 @@ Containers::Array<char> TgaImageConverter::doExportToData(const ImageView2D& ima
     /* Fill data */
     std::copy(image.data(), image.data()+pixelSize*image.size().product(), data.begin()+sizeof(TgaHeader));
 
-    if(image.format() == ColorFormat::RGB) {
+    if(image.format() == PixelFormat::RGB) {
         auto pixels = reinterpret_cast<Math::Vector3<UnsignedByte>*>(data.begin()+sizeof(TgaHeader));
         std::transform(pixels, pixels + image.size().product(), pixels,
             [](Math::Vector3<UnsignedByte> pixel) { return Math::swizzle<'b', 'g', 'r'>(pixel); });
-    } else if(image.format() == ColorFormat::RGBA) {
+    } else if(image.format() == PixelFormat::RGBA) {
         auto pixels = reinterpret_cast<Math::Vector4<UnsignedByte>*>(data.begin()+sizeof(TgaHeader));
         std::transform(pixels, pixels + image.size().product(), pixels,
             [](Math::Vector4<UnsignedByte> pixel) { return Math::swizzle<'b', 'g', 'r', 'a'>(pixel); });

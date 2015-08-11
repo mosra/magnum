@@ -26,7 +26,7 @@
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Image.h"
-#include "Magnum/ColorFormat.h"
+#include "Magnum/PixelFormat.h"
 #include "Magnum/PixelStorage.h"
 
 namespace Magnum { namespace Test {
@@ -44,20 +44,20 @@ PixelStorageTest::PixelStorageTest() {
 }
 
 void PixelStorageTest::pixelSize() {
-    CORRADE_COMPARE(Implementation::imagePixelSize(ColorFormat::RGBA, ColorType::UnsignedInt), 4*4);
-    CORRADE_COMPARE(Implementation::imagePixelSize(ColorFormat::DepthComponent, ColorType::UnsignedShort), 2);
-    CORRADE_COMPARE(Implementation::imagePixelSize(ColorFormat::StencilIndex, ColorType::UnsignedByte), 1);
-    CORRADE_COMPARE(Implementation::imagePixelSize(ColorFormat::DepthStencil, ColorType::UnsignedInt248), 4);
+    CORRADE_COMPARE(Implementation::imagePixelSize(PixelFormat::RGBA, PixelType::UnsignedInt), 4*4);
+    CORRADE_COMPARE(Implementation::imagePixelSize(PixelFormat::DepthComponent, PixelType::UnsignedShort), 2);
+    CORRADE_COMPARE(Implementation::imagePixelSize(PixelFormat::StencilIndex, PixelType::UnsignedByte), 1);
+    CORRADE_COMPARE(Implementation::imagePixelSize(PixelFormat::DepthStencil, PixelType::UnsignedInt248), 4);
 }
 
 void PixelStorageTest::dataSize() {
     /* Verify that row size is properly rounded */
-    CORRADE_COMPARE(Image2D(ColorFormat::RGBA, ColorType::UnsignedByte).dataSize({}), 0);
-    CORRADE_COMPARE(Image2D(ColorFormat::Red, ColorType::UnsignedByte).dataSize({4, 2}), 8);
-    CORRADE_COMPARE(Image2D(ColorFormat::Red, ColorType::UnsignedByte).dataSize({2, 4}), 16);
-    CORRADE_COMPARE(Image2D(ColorFormat::RGBA, ColorType::UnsignedByte).dataSize(Vector2i(1)), 4);
+    CORRADE_COMPARE(Image2D(PixelFormat::RGBA, PixelType::UnsignedByte).dataSize({}), 0);
+    CORRADE_COMPARE(Image2D(PixelFormat::Red, PixelType::UnsignedByte).dataSize({4, 2}), 8);
+    CORRADE_COMPARE(Image2D(PixelFormat::Red, PixelType::UnsignedByte).dataSize({2, 4}), 16);
+    CORRADE_COMPARE(Image2D(PixelFormat::RGBA, PixelType::UnsignedByte).dataSize(Vector2i(1)), 4);
 
-    CORRADE_COMPARE(Image2D(ColorFormat::RGBA, ColorType::UnsignedShort).dataSize({16, 8}),
+    CORRADE_COMPARE(Image2D(PixelFormat::RGBA, PixelType::UnsignedShort).dataSize({16, 8}),
                     4*2*16*8);
 }
 

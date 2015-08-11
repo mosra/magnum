@@ -25,8 +25,8 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/ColorFormat.h"
 #include "Magnum/ImageView.h"
+#include "Magnum/PixelFormat.h"
 
 namespace Magnum { namespace Test {
 
@@ -50,42 +50,42 @@ ImageViewTest::ImageViewTest() {
 
 void ImageViewTest::construct() {
     const char data[3]{};
-    ImageView2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
+    ImageView2D a(PixelFormat::Red, PixelType::UnsignedByte, {1, 3}, data);
 
-    CORRADE_COMPARE(a.format(), ColorFormat::Red);
-    CORRADE_COMPARE(a.type(), ColorType::UnsignedByte);
+    CORRADE_COMPARE(a.format(), PixelFormat::Red);
+    CORRADE_COMPARE(a.type(), PixelType::UnsignedByte);
     CORRADE_COMPARE(a.size(), Vector2i(1, 3));
     CORRADE_COMPARE(a.data(), data);
 }
 
 void ImageViewTest::constructCompressed() {
     const char data[8]{};
-    CompressedImageView2D a{CompressedColorFormat::RGBAS3tcDxt1, {4, 4}, data};
+    CompressedImageView2D a{CompressedPixelFormat::RGBAS3tcDxt1, {4, 4}, data};
 
-    CORRADE_COMPARE(a.format(), CompressedColorFormat::RGBAS3tcDxt1);
+    CORRADE_COMPARE(a.format(), CompressedPixelFormat::RGBAS3tcDxt1);
     CORRADE_COMPARE(a.size(), Vector2i(4, 4));
     CORRADE_COMPARE(a.data(), data);
 }
 
 void ImageViewTest::setData() {
     const char data[3]{};
-    ImageView2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
+    ImageView2D a(PixelFormat::Red, PixelType::UnsignedByte, {1, 3}, data);
     const char data2[8]{};
     a.setData(data2);
 
-    CORRADE_COMPARE(a.format(), ColorFormat::Red);
-    CORRADE_COMPARE(a.type(), ColorType::UnsignedByte);
+    CORRADE_COMPARE(a.format(), PixelFormat::Red);
+    CORRADE_COMPARE(a.type(), PixelType::UnsignedByte);
     CORRADE_COMPARE(a.size(), Vector2i(1, 3));
     CORRADE_COMPARE(a.data(), data2);
 }
 
 void ImageViewTest::setDataCompressed() {
     const char data[8]{};
-    CompressedImageView2D a{CompressedColorFormat::RGBAS3tcDxt1, {4, 4}, data};
+    CompressedImageView2D a{CompressedPixelFormat::RGBAS3tcDxt1, {4, 4}, data};
     const char data2[16]{};
     a.setData(data2);
 
-    CORRADE_COMPARE(a.format(), CompressedColorFormat::RGBAS3tcDxt1);
+    CORRADE_COMPARE(a.format(), CompressedPixelFormat::RGBAS3tcDxt1);
     CORRADE_COMPARE(a.size(), Vector2i(4, 4));
     CORRADE_COMPARE(a.data(), data2);
 }

@@ -25,7 +25,7 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/ColorFormat.h"
+#include "Magnum/PixelFormat.h"
 #include "Magnum/Trade/ImageData.h"
 
 namespace Magnum { namespace Trade { namespace Test {
@@ -61,21 +61,21 @@ ImageDataTest::ImageDataTest() {
 
 void ImageDataTest::construct() {
     auto data = new char[3];
-    Trade::ImageData2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
+    Trade::ImageData2D a(PixelFormat::Red, PixelType::UnsignedByte, {1, 3}, data);
 
     CORRADE_VERIFY(!a.isCompressed());
-    CORRADE_COMPARE(a.format(), ColorFormat::Red);
-    CORRADE_COMPARE(a.type(), ColorType::UnsignedByte);
+    CORRADE_COMPARE(a.format(), PixelFormat::Red);
+    CORRADE_COMPARE(a.type(), PixelType::UnsignedByte);
     CORRADE_COMPARE(a.size(), Vector2i(1, 3));
     CORRADE_COMPARE(a.data(), data);
 }
 
 void ImageDataTest::constructCompressed() {
     auto data = new char[8];
-    Trade::ImageData2D a{CompressedColorFormat::RGBAS3tcDxt1, {4, 4}, Containers::Array<char>{data, 8}};
+    Trade::ImageData2D a{CompressedPixelFormat::RGBAS3tcDxt1, {4, 4}, Containers::Array<char>{data, 8}};
 
     CORRADE_VERIFY(a.isCompressed());
-    CORRADE_COMPARE(a.compressedFormat(), CompressedColorFormat::RGBAS3tcDxt1);
+    CORRADE_COMPARE(a.compressedFormat(), CompressedPixelFormat::RGBAS3tcDxt1);
     CORRADE_COMPARE(a.size(), Vector2i(4, 4));
     CORRADE_COMPARE(a.data(), data);
     CORRADE_COMPARE(a.data().size(), 8);
@@ -88,48 +88,48 @@ void ImageDataTest::constructCopy() {
 
 void ImageDataTest::constructMove() {
     auto data = new char[3];
-    Trade::ImageData2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
+    Trade::ImageData2D a(PixelFormat::Red, PixelType::UnsignedByte, {1, 3}, data);
     Trade::ImageData2D b(std::move(a));
 
     CORRADE_COMPARE(a.data(), nullptr);
     CORRADE_COMPARE(a.size(), Vector2i());
 
     CORRADE_VERIFY(!b.isCompressed());
-    CORRADE_COMPARE(b.format(), ColorFormat::Red);
-    CORRADE_COMPARE(b.type(), ColorType::UnsignedByte);
+    CORRADE_COMPARE(b.format(), PixelFormat::Red);
+    CORRADE_COMPARE(b.type(), PixelType::UnsignedByte);
     CORRADE_COMPARE(b.size(), Vector2i(1, 3));
     CORRADE_COMPARE(b.data(), data);
 
     auto data2 = new char[3];
-    Trade::ImageData2D c(ColorFormat::RGBA, ColorType::UnsignedShort, {2, 6}, data2);
+    Trade::ImageData2D c(PixelFormat::RGBA, PixelType::UnsignedShort, {2, 6}, data2);
     c = std::move(b);
 
     CORRADE_COMPARE(b.data(), data2);
     CORRADE_COMPARE(b.size(), Vector2i(2, 6));
 
     CORRADE_VERIFY(!c.isCompressed());
-    CORRADE_COMPARE(c.format(), ColorFormat::Red);
-    CORRADE_COMPARE(c.type(), ColorType::UnsignedByte);
+    CORRADE_COMPARE(c.format(), PixelFormat::Red);
+    CORRADE_COMPARE(c.type(), PixelType::UnsignedByte);
     CORRADE_COMPARE(c.size(), Vector2i(1, 3));
     CORRADE_COMPARE(c.data(), data);
 }
 
 void ImageDataTest::constructMoveCompressed() {
     auto data = new char[8];
-    Trade::ImageData2D a{CompressedColorFormat::RGBAS3tcDxt1, {4, 4}, Containers::Array<char>{data, 8}};
+    Trade::ImageData2D a{CompressedPixelFormat::RGBAS3tcDxt1, {4, 4}, Containers::Array<char>{data, 8}};
     Trade::ImageData2D b{std::move(a)};
 
     CORRADE_COMPARE(a.data(), nullptr);
     CORRADE_COMPARE(a.size(), Vector2i());
 
     CORRADE_VERIFY(b.isCompressed());
-    CORRADE_COMPARE(b.compressedFormat(), CompressedColorFormat::RGBAS3tcDxt1);
+    CORRADE_COMPARE(b.compressedFormat(), CompressedPixelFormat::RGBAS3tcDxt1);
     CORRADE_COMPARE(b.size(), Vector2i(4, 4));
     CORRADE_COMPARE(b.data(), data);
     CORRADE_COMPARE(b.data().size(), 8);
 
     auto data2 = new char[16];
-    Trade::ImageData2D c{CompressedColorFormat::RGBAS3tcDxt3, {8, 4}, Containers::Array<char>{data2, 16}};
+    Trade::ImageData2D c{CompressedPixelFormat::RGBAS3tcDxt3, {8, 4}, Containers::Array<char>{data2, 16}};
     c = std::move(b);
 
     CORRADE_COMPARE_AS(b.data(), data2, char*);
@@ -137,7 +137,7 @@ void ImageDataTest::constructMoveCompressed() {
     CORRADE_COMPARE(b.size(), Vector2i(8, 4));
 
     CORRADE_VERIFY(c.isCompressed());
-    CORRADE_COMPARE(c.compressedFormat(), CompressedColorFormat::RGBAS3tcDxt1);
+    CORRADE_COMPARE(c.compressedFormat(), CompressedPixelFormat::RGBAS3tcDxt1);
     CORRADE_COMPARE(c.size(), Vector2i(4, 4));
     CORRADE_COMPARE(c.data(), data);
     CORRADE_COMPARE(c.data().size(), 8);
@@ -145,11 +145,11 @@ void ImageDataTest::constructMoveCompressed() {
 
 void ImageDataTest::toReference() {
     auto data = new char[3];
-    const Trade::ImageData2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 3}, data);
+    const Trade::ImageData2D a(PixelFormat::Red, PixelType::UnsignedByte, {1, 3}, data);
     ImageView2D b = a;
 
-    CORRADE_COMPARE(b.format(), ColorFormat::Red);
-    CORRADE_COMPARE(b.type(), ColorType::UnsignedByte);
+    CORRADE_COMPARE(b.format(), PixelFormat::Red);
+    CORRADE_COMPARE(b.type(), PixelType::UnsignedByte);
     CORRADE_COMPARE(b.size(), Vector2i(1, 3));
     CORRADE_COMPARE(b.data(), data);
 
@@ -165,10 +165,10 @@ void ImageDataTest::toReference() {
 
 void ImageDataTest::toReferenceCompressed() {
     auto data = new char[8];
-    const Trade::ImageData2D a{CompressedColorFormat::RGBAS3tcDxt1, {4, 4}, Containers::Array<char>{data, 8}};
+    const Trade::ImageData2D a{CompressedPixelFormat::RGBAS3tcDxt1, {4, 4}, Containers::Array<char>{data, 8}};
     CompressedImageView2D b = a;
 
-    CORRADE_COMPARE(b.format(), CompressedColorFormat::RGBAS3tcDxt1);
+    CORRADE_COMPARE(b.format(), CompressedPixelFormat::RGBAS3tcDxt1);
     CORRADE_COMPARE(b.size(), Vector2i(4, 4));
     CORRADE_COMPARE(b.data(), data);
     CORRADE_COMPARE(b.data().size(), 8);
@@ -185,7 +185,7 @@ void ImageDataTest::toReferenceCompressed() {
 
 void ImageDataTest::release() {
     char data[] = {'b', 'e', 'e', 'r'};
-    Trade::ImageData2D a(ColorFormat::Red, ColorType::UnsignedByte, {1, 4}, data);
+    Trade::ImageData2D a(PixelFormat::Red, PixelType::UnsignedByte, {1, 4}, data);
     const char* const pointer = a.release().release();
 
     CORRADE_COMPARE(pointer, data);
@@ -195,7 +195,7 @@ void ImageDataTest::release() {
 
 void ImageDataTest::releaseCompressed() {
     char data[8];
-    Trade::ImageData2D a{CompressedColorFormat::RGBAS3tcDxt1, {4, 4}, Containers::Array<char>{data, 8}};
+    Trade::ImageData2D a{CompressedPixelFormat::RGBAS3tcDxt1, {4, 4}, Containers::Array<char>{data, 8}};
     const char* const pointer = a.release().release();
 
     CORRADE_COMPARE(pointer, data);

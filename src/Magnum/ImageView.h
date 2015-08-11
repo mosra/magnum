@@ -66,7 +66,7 @@ template<UnsignedInt dimensions> class ImageView {
          * @param size              Image size
          * @param data              Image data
          */
-        constexpr explicit ImageView(ColorFormat format, ColorType type, const VectorTypeFor<dimensions, Int>& size, const void* data): _format{format}, _type{type}, _size{size}, _data{reinterpret_cast<const char*>(data)} {}
+        constexpr explicit ImageView(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, const void* data): _format{format}, _type{type}, _size{size}, _data{reinterpret_cast<const char*>(data)} {}
 
         /**
          * @brief Constructor
@@ -77,13 +77,13 @@ template<UnsignedInt dimensions> class ImageView {
          * Data pointer is set to `nullptr`, call @ref setData() to fill the
          * image with data.
          */
-        constexpr explicit ImageView(ColorFormat format, ColorType type, const VectorTypeFor<dimensions, Int>& size): _format{format}, _type{type}, _size{size}, _data{nullptr} {}
+        constexpr explicit ImageView(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size): _format{format}, _type{type}, _size{size}, _data{nullptr} {}
 
         /** @brief Format of pixel data */
-        ColorFormat format() const { return _format; }
+        PixelFormat format() const { return _format; }
 
         /** @brief Data type of pixel data */
-        ColorType type() const { return _type; }
+        PixelType type() const { return _type; }
 
         /** @brief Pixel size (in bytes) */
         std::size_t pixelSize() const { return Implementation::imagePixelSize(_format, _type); }
@@ -117,8 +117,8 @@ template<UnsignedInt dimensions> class ImageView {
         }
 
     private:
-        ColorFormat _format;
-        ColorType _type;
+        PixelFormat _format;
+        PixelType _type;
         Math::Vector<Dimensions, Int> _size;
         const char* _data;
 };
@@ -154,7 +154,7 @@ template<UnsignedInt dimensions> class CompressedImageView {
          * @param size              Image size
          * @param data              Image data
          */
-        constexpr explicit CompressedImageView(CompressedColorFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data): _format{format}, _size{size}, _data{reinterpret_cast<const char*>(data.data()), data.size()} {}
+        constexpr explicit CompressedImageView(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data): _format{format}, _size{size}, _data{reinterpret_cast<const char*>(data.data()), data.size()} {}
 
         /**
          * @brief Constructor
@@ -164,10 +164,10 @@ template<UnsignedInt dimensions> class CompressedImageView {
          * Data pointer is set to `nullptr`, call @ref setData() to fill the
          * image with data.
          */
-        constexpr explicit CompressedImageView(CompressedColorFormat format, const VectorTypeFor<dimensions, Int>& size): _format{format}, _size{size} {}
+        constexpr explicit CompressedImageView(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size): _format{format}, _size{size} {}
 
         /** @brief Format of compressed data */
-        CompressedColorFormat format() const { return _format; }
+        CompressedPixelFormat format() const { return _format; }
 
         /** @brief Image size */
         constexpr VectorTypeFor<dimensions, Int> size() const { return _size; }
@@ -193,7 +193,7 @@ template<UnsignedInt dimensions> class CompressedImageView {
         }
 
     private:
-        CompressedColorFormat _format;
+        CompressedPixelFormat _format;
         Math::Vector<Dimensions, Int> _size;
         Containers::ArrayView<const char> _data;
 };

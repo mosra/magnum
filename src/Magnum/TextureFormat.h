@@ -38,8 +38,8 @@ namespace Magnum {
 
 In most cases you may want to use @ref TextureFormat::R8 (for grayscale
 textures), @ref TextureFormat::RGB8 or @ref TextureFormat::RGBA8. The matching
-color format is then @ref ColorFormat::Red, @ref ColorFormat::RGB or
-@ref ColorFormat::RGBA along with @ref ColorType::UnsignedByte. See
+color format is then @ref PixelFormat::Red, @ref PixelFormat::RGB or
+@ref PixelFormat::RGBA along with @ref PixelType::UnsignedByte. See
 documentation of these values for possible limitations when using OpenGL ES 2.0
 or WebGL.
 

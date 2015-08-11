@@ -26,46 +26,46 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/ColorFormat.h"
+#include "Magnum/PixelFormat.h"
 
 namespace Magnum { namespace Test {
 
 struct FormatTest: TestSuite::Tester {
     explicit FormatTest();
 
-    void debugColorFormat();
-    void debugColorType();
-    void debugCompressedColorFormat();
+    void debugPixelFormat();
+    void debugPixelType();
+    void debugCompressedPixelFormat();
 };
 
 FormatTest::FormatTest() {
-    addTests({&FormatTest::debugColorFormat,
-              &FormatTest::debugColorType,
-              &FormatTest::debugCompressedColorFormat});
+    addTests({&FormatTest::debugPixelFormat,
+              &FormatTest::debugPixelType,
+              &FormatTest::debugCompressedPixelFormat});
 }
 
-void FormatTest::debugColorFormat() {
+void FormatTest::debugPixelFormat() {
     std::ostringstream out;
 
-    Debug(&out) << ColorFormat::RGBA;
-    CORRADE_COMPARE(out.str(), "ColorFormat::RGBA\n");
+    Debug(&out) << PixelFormat::RGBA;
+    CORRADE_COMPARE(out.str(), "PixelFormat::RGBA\n");
 }
 
-void FormatTest::debugColorType() {
+void FormatTest::debugPixelType() {
     std::ostringstream out;
 
-    Debug(&out) << ColorType::UnsignedByte;
-    CORRADE_COMPARE(out.str(), "ColorType::UnsignedByte\n");
+    Debug(&out) << PixelType::UnsignedByte;
+    CORRADE_COMPARE(out.str(), "PixelType::UnsignedByte\n");
 }
 
-void FormatTest::debugCompressedColorFormat() {
+void FormatTest::debugCompressedPixelFormat() {
     #ifdef MAGNUM_TARGET_GLES
     CORRADE_SKIP("No enum value available");
     #else
     std::ostringstream out;
 
-    Debug(&out) << CompressedColorFormat::RGBBptcUnsignedFloat;
-    CORRADE_COMPARE(out.str(), "CompressedColorFormat::RGBBptcUnsignedFloat\n");
+    Debug(&out) << CompressedPixelFormat::RGBBptcUnsignedFloat;
+    CORRADE_COMPARE(out.str(), "CompressedPixelFormat::RGBBptcUnsignedFloat\n");
     #endif
 }
 

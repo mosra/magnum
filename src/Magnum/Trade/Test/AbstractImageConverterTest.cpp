@@ -28,8 +28,8 @@
 #include <Corrade/TestSuite/Compare/FileToString.h>
 #include <Corrade/Utility/Directory.h>
 
-#include "Magnum/ColorFormat.h"
 #include "Magnum/ImageView.h"
+#include "Magnum/PixelFormat.h"
 #include "Magnum/Trade/AbstractImageConverter.h"
 
 #include "configure.h"
@@ -62,7 +62,7 @@ void AbstractImageConverterTest::exportToFile() {
 
     /* doExportToFile() should call doExportToData() */
     DataExporter exporter;
-    ImageView2D image(ColorFormat::RGBA, ColorType::UnsignedByte, {0xfe, 0xed}, nullptr);
+    ImageView2D image(PixelFormat::RGBA, PixelType::UnsignedByte, {0xfe, 0xed}, nullptr);
     CORRADE_VERIFY(exporter.exportToFile(image, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
     CORRADE_COMPARE_AS(Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"),
         "\xFE\xED", TestSuite::Compare::FileToString);

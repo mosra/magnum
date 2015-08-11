@@ -62,11 +62,11 @@ of another plugin, you need to request `TgaImporter` component of `Magnum`
 package in CMake and link to `${MAGNUM_TGAIMPORTER_LIBRARIES}`. See
 @ref building, @ref cmake and @ref plugins for more information.
 
-The images are imported with @ref ColorType::UnsignedByte and @ref ColorFormat::RGB,
-@ref ColorFormat::RGBA or @ref ColorFormat::Red, respectively. Grayscale images
+The images are imported with @ref PixelType::UnsignedByte and @ref PixelFormat::RGB,
+@ref PixelFormat::RGBA or @ref PixelFormat::Red, respectively. Grayscale images
 require extension @extension{ARB,texture_rg}. In OpenGL ES 2.0, if
 @es_extension{EXT,texture_rg} is not supported and in WebGL 1.0, grayscale
-images use @ref ColorFormat::Luminance instead of @ref ColorFormat::Red.
+images use @ref PixelFormat::Luminance instead of @ref PixelFormat::Red.
 */
 class MAGNUM_TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
     public:

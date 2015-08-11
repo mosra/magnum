@@ -26,8 +26,8 @@
 #include <Corrade/Utility/Directory.h>
 #include <Corrade/TestSuite/Compare/File.h>
 
-#include "Magnum/ColorFormat.h"
 #include "Magnum/Extensions.h"
+#include "Magnum/PixelFormat.h"
 #include "Magnum/TextureFormat.h"
 #include "Magnum/Test/AbstractOpenGLTester.h"
 #include "Magnum/Text/GlyphCache.h"
@@ -117,8 +117,8 @@ void MagnumFontConverterGLTest::exportFont() {
     std::optional<Trade::ImageData2D> image = importer.image2D(0);
     CORRADE_VERIFY(image);
     CORRADE_COMPARE(image->size(), Vector2i(256));
-    CORRADE_COMPARE(image->format(), ColorFormat::Red);
-    CORRADE_COMPARE(image->type(), ColorType::UnsignedByte);
+    CORRADE_COMPARE(image->format(), PixelFormat::Red);
+    CORRADE_COMPARE(image->type(), PixelType::UnsignedByte);
 }
 
 }}}

@@ -27,131 +27,131 @@
 
 #include <Corrade/Utility/Assert.h>
 
-#include "Magnum/ColorFormat.h"
+#include "Magnum/PixelFormat.h"
 #include "Magnum/Math/Vector.h"
 
 namespace Magnum { namespace Implementation {
 
-std::size_t imagePixelSize(ColorFormat format, ColorType type) {
+std::size_t imagePixelSize(PixelFormat format, PixelType type) {
     std::size_t size = 0;
     switch(type) {
-        case ColorType::UnsignedByte:
+        case PixelType::UnsignedByte:
         #ifndef MAGNUM_TARGET_GLES2
-        case ColorType::Byte:
+        case PixelType::Byte:
         #endif
             size = 1; break;
-        case ColorType::UnsignedShort:
+        case PixelType::UnsignedShort:
         #ifndef MAGNUM_TARGET_GLES2
-        case ColorType::Short:
+        case PixelType::Short:
         #endif
-        case ColorType::HalfFloat:
+        case PixelType::HalfFloat:
             size = 2; break;
-        case ColorType::UnsignedInt:
+        case PixelType::UnsignedInt:
         #ifndef MAGNUM_TARGET_GLES2
-        case ColorType::Int:
+        case PixelType::Int:
         #endif
-        case ColorType::Float:
+        case PixelType::Float:
             size = 4; break;
 
         #ifndef MAGNUM_TARGET_GLES
-        case ColorType::UnsignedByte332:
-        case ColorType::UnsignedByte233Rev:
+        case PixelType::UnsignedByte332:
+        case PixelType::UnsignedByte233Rev:
             return 1;
         #endif
-        case ColorType::UnsignedShort565:
+        case PixelType::UnsignedShort565:
         #ifndef MAGNUM_TARGET_GLES
-        case ColorType::UnsignedShort565Rev:
+        case PixelType::UnsignedShort565Rev:
         #endif
-        case ColorType::UnsignedShort4444:
+        case PixelType::UnsignedShort4444:
         #ifndef MAGNUM_TARGET_WEBGL
-        case ColorType::UnsignedShort4444Rev:
+        case PixelType::UnsignedShort4444Rev:
         #endif
-        case ColorType::UnsignedShort5551:
+        case PixelType::UnsignedShort5551:
         #ifndef MAGNUM_TARGET_WEBGL
-        case ColorType::UnsignedShort1555Rev:
+        case PixelType::UnsignedShort1555Rev:
         #endif
             return 2;
         #ifndef MAGNUM_TARGET_GLES
-        case ColorType::UnsignedInt8888:
-        case ColorType::UnsignedInt8888Rev:
-        case ColorType::UnsignedInt1010102:
+        case PixelType::UnsignedInt8888:
+        case PixelType::UnsignedInt8888Rev:
+        case PixelType::UnsignedInt1010102:
         #endif
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        case ColorType::UnsignedInt2101010Rev:
+        case PixelType::UnsignedInt2101010Rev:
         #endif
         #ifndef MAGNUM_TARGET_GLES2
-        case ColorType::UnsignedInt10F11F11FRev:
-        case ColorType::UnsignedInt5999Rev:
+        case PixelType::UnsignedInt10F11F11FRev:
+        case PixelType::UnsignedInt5999Rev:
         #endif
-        case ColorType::UnsignedInt248:
+        case PixelType::UnsignedInt248:
             return 4;
         #ifndef MAGNUM_TARGET_GLES2
-        case ColorType::Float32UnsignedInt248Rev:
+        case PixelType::Float32UnsignedInt248Rev:
             return 8;
         #endif
     }
 
     switch(format) {
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        case ColorFormat::Red:
+        case PixelFormat::Red:
         #endif
         #ifndef MAGNUM_TARGET_GLES2
-        case ColorFormat::RedInteger:
+        case PixelFormat::RedInteger:
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        case ColorFormat::Green:
-        case ColorFormat::Blue:
-        case ColorFormat::GreenInteger:
-        case ColorFormat::BlueInteger:
+        case PixelFormat::Green:
+        case PixelFormat::Blue:
+        case PixelFormat::GreenInteger:
+        case PixelFormat::BlueInteger:
         #endif
         #ifdef MAGNUM_TARGET_GLES2
-        case ColorFormat::Luminance:
+        case PixelFormat::Luminance:
         #endif
-        case ColorFormat::DepthComponent:
+        case PixelFormat::DepthComponent:
         #ifndef MAGNUM_TARGET_WEBGL
-        case ColorFormat::StencilIndex:
+        case PixelFormat::StencilIndex:
         #endif
             return 1*size;
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        case ColorFormat::RG:
+        case PixelFormat::RG:
         #endif
         #ifndef MAGNUM_TARGET_GLES2
-        case ColorFormat::RGInteger:
+        case PixelFormat::RGInteger:
         #endif
         #ifdef MAGNUM_TARGET_GLES2
-        case ColorFormat::LuminanceAlpha:
+        case PixelFormat::LuminanceAlpha:
         #endif
             return 2*size;
-        case ColorFormat::RGB:
+        case PixelFormat::RGB:
         #ifndef MAGNUM_TARGET_GLES2
-        case ColorFormat::RGBInteger:
+        case PixelFormat::RGBInteger:
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        case ColorFormat::BGR:
-        case ColorFormat::BGRInteger:
+        case PixelFormat::BGR:
+        case PixelFormat::BGRInteger:
         #endif
             return 3*size;
-        case ColorFormat::RGBA:
+        case PixelFormat::RGBA:
         #ifndef MAGNUM_TARGET_GLES2
-        case ColorFormat::RGBAInteger:
+        case PixelFormat::RGBAInteger:
         #endif
         #ifndef MAGNUM_TARGET_WEBGL
-        case ColorFormat::BGRA:
+        case PixelFormat::BGRA:
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        case ColorFormat::BGRAInteger:
+        case PixelFormat::BGRAInteger:
         #endif
             return 4*size;
 
         /* Handled above */
-        case ColorFormat::DepthStencil:
-            CORRADE_ASSERT(false, "AbstractImage::pixelSize(): invalid ColorType specified for depth/stencil ColorFormat", 0);
+        case PixelFormat::DepthStencil:
+            CORRADE_ASSERT(false, "AbstractImage::pixelSize(): invalid PixelType specified for depth/stencil PixelFormat", 0);
     }
 
     CORRADE_ASSERT_UNREACHABLE();
 }
 
-template<UnsignedInt dimensions> std::size_t imageDataSize(const ColorFormat format, const ColorType type, Math::Vector<dimensions, Int> size) {
+template<UnsignedInt dimensions> std::size_t imageDataSize(const PixelFormat format, const PixelType type, Math::Vector<dimensions, Int> size) {
     /** @todo Code this properly when all @fn_gl{PixelStore} parameters are implemented */
     /* Row size, rounded to multiple of 4 bytes */
     const std::size_t rowSize = ((size[0]*imagePixelSize(format, type) + 3)/4)*4;
@@ -161,8 +161,8 @@ template<UnsignedInt dimensions> std::size_t imageDataSize(const ColorFormat for
     return rowSize*size.product();
 }
 
-template MAGNUM_EXPORT std::size_t imageDataSize<1>(ColorFormat, ColorType, Math::Vector<1, Int>);
-template MAGNUM_EXPORT std::size_t imageDataSize<2>(ColorFormat, ColorType, Math::Vector<2, Int>);
-template MAGNUM_EXPORT std::size_t imageDataSize<3>(ColorFormat, ColorType, Math::Vector<3, Int>);
+template MAGNUM_EXPORT std::size_t imageDataSize<1>(PixelFormat, PixelType, Math::Vector<1, Int>);
+template MAGNUM_EXPORT std::size_t imageDataSize<2>(PixelFormat, PixelType, Math::Vector<2, Int>);
+template MAGNUM_EXPORT std::size_t imageDataSize<3>(PixelFormat, PixelType, Math::Vector<3, Int>);
 
 }}

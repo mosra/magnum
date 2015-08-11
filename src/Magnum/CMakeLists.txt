@@ -34,7 +34,6 @@ set(Magnum_SRCS
     AbstractShaderProgram.cpp
     Attribute.cpp
     Buffer.cpp
-    ColorFormat.cpp
     CubeMapTexture.cpp
     Context.cpp
     DefaultFramebuffer.cpp
@@ -43,6 +42,7 @@ set(Magnum_SRCS
     Mesh.cpp
     MeshView.cpp
     OpenGL.cpp
+    PixelFormat.cpp
     PixelStorage.cpp
     Renderbuffer.cpp
     Renderer.cpp
@@ -86,7 +86,6 @@ set(Magnum_HEADERS
     Array.h
     Attribute.h
     Buffer.h
-    ColorFormat.h
     Context.h
     CubeMapTexture.h
     DefaultFramebuffer.h
@@ -99,6 +98,7 @@ set(Magnum_HEADERS
     Mesh.h
     MeshView.h
     OpenGL.h
+    PixelFormat.h
     PixelStorage.h
     Renderbuffer.h
     RenderbufferFormat.h
@@ -133,6 +133,7 @@ set(Magnum_PRIVATE_HEADERS
 if(BUILD_DEPRECATED)
     list(APPEND Magnum_HEADERS
         Color.h
+        ColorFormat.h
         ImageReference.h)
 endif()
 

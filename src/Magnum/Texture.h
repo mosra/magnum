@@ -70,7 +70,7 @@ Common usage is to fully configure all texture parameters and then set the
 data from e.g. @ref Image. Example configuration of high quality texture with
 trilinear anisotropic filtering, i.e. the best you can ask for:
 @code
-Image2D image(ColorFormat::RGBA, ColorType::UnsignedByte, {4096, 4096}, data);
+Image2D image(PixelFormat::RGBA, PixelType::UnsignedByte, {4096, 4096}, data);
 
 Texture2D texture;
 texture.setMagnificationFilter(Sampler::Filter::Linear)
@@ -598,7 +598,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl_extension{TextureStorage3D,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{TexStorage1D}/@fn_gl{TexStorage2D}/@fn_gl{TexStorage3D}
-         * @todo allow the user to specify ColorType explicitly to avoid
+         * @todo allow the user to specify PixelType explicitly to avoid
          *      issues in WebGL (see setSubImage())
          */
         Texture<dimensions>& setStorage(Int levels, TextureFormat internalFormat, const VectorTypeFor<dimensions, Int>& size) {
@@ -667,7 +667,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          * @code
-         * Image2D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte});
+         * Image2D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte});
          * @endcode
          */
         Image<dimensions> image(Int level, Image<dimensions>&& image);
@@ -692,7 +692,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          * @code
-         * BufferImage2D image = texture.image(0, {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+         * BufferImage2D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
          * @endcode
          */
         BufferImage<dimensions> image(Int level, BufferImage<dimensions>&& image, BufferUsage usage);
@@ -786,7 +786,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          * @code
-         * Image2D image = texture.subImage(0, rect, {ColorFormat::RGBA, ColorType::UnsignedByte});
+         * Image2D image = texture.subImage(0, rect, {PixelFormat::RGBA, PixelType::UnsignedByte});
          * @endcode
          */
         Image<dimensions> subImage(Int level, const RangeTypeFor<dimensions, Int>& range, Image<dimensions>&& image);
@@ -812,7 +812,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          * @code
-         * BufferImage2D image = texture.subImage(0, rect, {ColorFormat::RGBA, ColorType::UnsignedByte}, BufferUsage::StaticRead);
+         * BufferImage2D image = texture.subImage(0, rect, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
          * @endcode
          */
         BufferImage<dimensions> subImage(Int level, const RangeTypeFor<dimensions, Int>& range, BufferImage<dimensions>&& image, BufferUsage usage);
@@ -938,10 +938,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl_extension{TextureSubImage3D,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{TexSubImage1D} / @fn_gl{TexSubImage2D} / @fn_gl{TexSubImage3D}
-         * @requires_gles In @ref MAGNUM_TARGET_WEBGL "WebGL" the @ref ColorType
+         * @requires_gles In @ref MAGNUM_TARGET_WEBGL "WebGL" the @ref PixelType
          *      of data passed in @p image must match the original one
          *      specified in @ref setImage(). It means that you might not be
-         *      able to use @ref setStorage() as it uses implicit @ref ColorType
+         *      able to use @ref setStorage() as it uses implicit @ref PixelType
          *      value.
          */
         Texture<dimensions>& setSubImage(Int level, const VectorTypeFor<dimensions, Int>& offset, const ImageView<dimensions>& image) {

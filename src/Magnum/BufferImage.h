@@ -67,7 +67,7 @@ template<UnsignedInt dimensions> class BufferImage {
          * @todo Make it more flexible (usable with
          *      @extension{ARB,buffer_storage}, avoiding relocations...)
          */
-        explicit BufferImage(ColorFormat format, ColorType type, const VectorTypeFor<dimensions, Int>& size, const void* data, BufferUsage usage);
+        explicit BufferImage(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, const void* data, BufferUsage usage);
 
         /**
          * @brief Constructor
@@ -77,7 +77,7 @@ template<UnsignedInt dimensions> class BufferImage {
          * Size is zero and buffer are empty, call @ref setData() to fill the
          * image with data.
          */
-        /*implicit*/ BufferImage(ColorFormat format, ColorType type);
+        /*implicit*/ BufferImage(PixelFormat format, PixelType type);
 
         /** @brief Copying is not allowed */
         BufferImage(const BufferImage<dimensions>&) = delete;
@@ -92,10 +92,10 @@ template<UnsignedInt dimensions> class BufferImage {
         BufferImage<dimensions>& operator=(BufferImage<dimensions>&& other) noexcept;
 
         /** @brief Format of pixel data */
-        ColorFormat format() const { return _format; }
+        PixelFormat format() const { return _format; }
 
         /** @brief Data type of pixel data */
-        ColorType type() const { return _type; }
+        PixelType type() const { return _type; }
 
         /** @brief Pixel size (in bytes) */
         std::size_t pixelSize() const { return Implementation::imagePixelSize(_format, _type); }
@@ -125,11 +125,11 @@ template<UnsignedInt dimensions> class BufferImage {
          * @todo Make it more flexible (usable with
          *      @extension{ARB,buffer_storage}, avoiding relocations...)
          */
-        void setData(ColorFormat format, ColorType type, const VectorTypeFor<dimensions, Int>& size, const void* data, BufferUsage usage);
+        void setData(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, const void* data, BufferUsage usage);
 
     private:
-        ColorFormat _format;
-        ColorType _type;
+        PixelFormat _format;
+        PixelType _type;
         Math::Vector<Dimensions, Int> _size;
         Buffer _buffer;
 };
@@ -172,7 +172,7 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
          * @todo Make it more flexible (usable with
          *      @extension{ARB,buffer_storage}, avoiding relocations...)
          */
-        explicit CompressedBufferImage(CompressedColorFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage);
+        explicit CompressedBufferImage(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage);
 
         /**
          * @brief Constructor
@@ -195,7 +195,7 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
         CompressedBufferImage<dimensions>& operator=(CompressedBufferImage<dimensions>&& other) noexcept;
 
         /** @brief Format of compressed data */
-        CompressedColorFormat format() const { return _format; }
+        CompressedPixelFormat format() const { return _format; }
 
         /** @brief Image size */
         VectorTypeFor<Dimensions, Int> size() const { return _size; }
@@ -219,10 +219,10 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
          * @todo Make it more flexible (usable with
          *      @extension{ARB,buffer_storage}, avoiding relocations...)
          */
-        void setData(CompressedColorFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage);
+        void setData(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage);
 
     private:
-        CompressedColorFormat _format;
+        CompressedPixelFormat _format;
         Math::Vector<Dimensions, Int> _size;
         Buffer _buffer;
         std::size_t _dataSize;

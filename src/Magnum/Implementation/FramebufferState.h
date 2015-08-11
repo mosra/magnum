@@ -81,7 +81,7 @@ struct FramebufferState {
     void(Renderbuffer::*renderbufferStorageMultisampleImplementation)(GLsizei, RenderbufferFormat, const Vector2i&);
     #endif
 
-    void(*readImplementation)(const Range2Di&, ColorFormat, ColorType, std::size_t, GLvoid*);
+    void(*readImplementation)(const Range2Di&, PixelFormat, PixelType, std::size_t, GLvoid*);
 
     GLuint readBinding, drawBinding, renderbufferBinding;
     GLint maxDrawBuffers, maxColorAttachments, maxRenderbufferSize;
