@@ -443,6 +443,12 @@ typedef khronos_ssize_t GLsizeiptr;
 #define GL_MIN_EXT 0x8007
 #define GL_MAX_EXT 0x8008
 
+/* GL_EXT_unpack_subimage */
+
+#define GL_UNPACK_ROW_LENGTH_EXT 0x0CF2
+#define GL_UNPACK_SKIP_ROWS_EXT 0x0CF3
+#define GL_UNPACK_SKIP_PIXELS_EXT 0x0CF4
+
 /* GL_EXT_occlusion_query_boolean */
 
 #define GL_ANY_SAMPLES_PASSED_EXT 0x8C2F

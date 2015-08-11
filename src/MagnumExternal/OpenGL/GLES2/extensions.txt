@@ -13,6 +13,7 @@ extension EXT_texture_type_2_10_10_10_REV       optional
 extension EXT_discard_framebuffer               optional
 extension EXT_blend_minmax                      optional
 extension EXT_shader_texture_lod                optional
+extension EXT_unpack_subimage                   optional
 extension EXT_occlusion_query_boolean           optional
 extension EXT_shadow_samplers                   optional
 extension EXT_texture_rg                        optional
@@ -25,6 +26,7 @@ extension EXT_draw_instanced                    optional
 extension NV_draw_buffers                       optional
 extension NV_fbo_color_attachments              optional
 extension NV_read_buffer                        optional
+extension NV_pack_subimage                      optional
 extension NV_draw_instanced                     optional
 extension NV_framebuffer_blit                   optional
 extension NV_framebuffer_multisample            optional

@@ -301,6 +301,7 @@ Extension                                   | Status
 @es_extension{EXT,discard_framebuffer}      | done
 @es_extension2{EXT,blend_minmax,blend_minmax} | done
 @es_extension{EXT,shader_texture_lod}       | done (shading language only)
+@es_extension{EXT,unpack_subimage}          | |
 @es_extension{EXT,occlusion_query_boolean}  | done
 @es_extension{EXT,shadow_samplers}          | done
 @es_extension{EXT,texture_rg}               | done
@@ -313,6 +314,7 @@ Extension                                   | Status
 @es_extension{NV,draw_buffers}              | done
 @es_extension{NV,fbo_color_attachments}     | done
 @es_extension{NV,read_buffer}               | done
+@es_extension{NV,pack_subimage}             | |
 @es_extension{NV,draw_instanced}            | done
 @es_extension{NV,framebuffer_blit}          | done
 @es_extension{NV,framebuffer_multisample}   | done

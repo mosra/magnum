@@ -308,6 +308,7 @@ namespace GL {
         _extension(GL,EXT,multi_draw_arrays,        GLES200,    None) // #67
         #ifdef MAGNUM_TARGET_GLES2
         _extension(GL,EXT,shader_texture_lod,       GLES200, GLES300) // #77
+        _extension(GL,EXT,unpack_subimage,          GLES200, GLES300) // #90
         #endif
         _extension(GL,EXT,debug_label,              GLES200,    None) // #98
         _extension(GL,EXT,debug_marker,             GLES200,    None) // #99
@@ -374,6 +375,7 @@ namespace GL {
         _extension(GL,NV,read_stencil,              GLES200,    None) // #94
         _extension(GL,NV,read_depth_stencil,        GLES200,    None) // #94
         #ifdef MAGNUM_TARGET_GLES2
+        _extension(GL,NV,pack_subimage,             GLES200, GLES300) // #132
         _extension(GL,NV,draw_instanced,            GLES200, GLES300) // #141
         _extension(GL,NV,framebuffer_blit,          GLES200, GLES300) // #142
         _extension(GL,NV,framebuffer_multisample,   GLES200, GLES300) // #143

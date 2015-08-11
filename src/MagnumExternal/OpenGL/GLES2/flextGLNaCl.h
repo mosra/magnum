@@ -418,6 +418,12 @@ typedef khronos_ssize_t GLsizeiptr;
 #define GL_MIN_EXT 0x8007
 #define GL_MAX_EXT 0x8008
 
+/* GL_EXT_unpack_subimage */
+
+#define GL_UNPACK_ROW_LENGTH_EXT 0x0CF2
+#define GL_UNPACK_SKIP_ROWS_EXT 0x0CF3
+#define GL_UNPACK_SKIP_PIXELS_EXT 0x0CF4
+
 /* GL_EXT_occlusion_query_boolean */
 
 #define GL_ANY_SAMPLES_PASSED_EXT 0x8C2F
@@ -1665,6 +1671,11 @@ GL_APICALL void GL_APIENTRY GLES2TextureStorage3DEXT(GLuint, GLenum, GLsizei, GL
 /* GL_EXT_texture_type_2_10_10_10_REV */
 #ifndef GL_EXT_texture_type_2_10_10_10_REV
 #define GL_EXT_texture_type_2_10_10_10_REV 1
+#endif
+
+/* GL_EXT_unpack_subimage */
+#ifndef GL_EXT_unpack_subimage
+#define GL_EXT_unpack_subimage 1
 #endif
 
 /* GL_KHR_blend_equation_advanced */
