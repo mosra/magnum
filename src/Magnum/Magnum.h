@@ -435,7 +435,6 @@ using Math::operator "" _radf;
    FramebufferTarget enums used only directly with framebuffer instance */
 class AbstractFramebuffer;
 
-class AbstractImage;
 /* AbstractQuery is not used directly */
 class AbstractShaderProgram;
 class AbstractTexture;

@@ -49,7 +49,7 @@ template<UnsignedInt dimensions> std::size_t ImageData<dimensions>::pixelSize() 
 
 template<UnsignedInt dimensions> std::size_t ImageData<dimensions>::dataSize(const VectorTypeFor< dimensions, Int >& size) const {
     CORRADE_ASSERT(!_compressed, "Trade::ImageData::dataSize(): the image is compressed", {});
-    return Implementation::imageDataSize<dimensions>(*this, _format, _type, size);
+    return Implementation::imageDataSize<dimensions>(_format, _type, size);
 }
 
 template<UnsignedInt dimensions> ImageData<dimensions>::operator ImageView<dimensions>()

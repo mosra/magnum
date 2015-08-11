@@ -31,9 +31,9 @@
 
 #include <Corrade/Containers/ArrayView.h>
 
-#include "Magnum/Math/Vector3.h"
-#include "Magnum/AbstractImage.h"
 #include "Magnum/DimensionTraits.h"
+#include "Magnum/PixelStorage.h"
+#include "Magnum/Math/Vector3.h"
 
 namespace Magnum {
 
@@ -53,7 +53,7 @@ Interchangeable with @ref Image, @ref BufferImage or @ref Trade::ImageData.
 @see @ref ImageView1D, @ref ImageView2D, @ref ImageView3D,
     @ref CompressedImageView
 */
-template<UnsignedInt dimensions> class ImageView: public AbstractImage {
+template<UnsignedInt dimensions> class ImageView {
     public:
         enum: UnsignedInt {
             Dimensions = dimensions /**< Image dimension count */
@@ -142,7 +142,7 @@ See @ref ImageView for more information. Interchangeable with
 @see @ref CompressedImageView1D, @ref CompressedImageView2D,
     @ref CompressedImageView3D
 */
-template<UnsignedInt dimensions> class CompressedImageView: public AbstractCompressedImage {
+template<UnsignedInt dimensions> class CompressedImageView {
     public:
         enum: UnsignedInt {
             Dimensions = dimensions /**< Image dimension count */

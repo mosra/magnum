@@ -31,9 +31,9 @@
  */
 #endif
 
-#include "Magnum/AbstractImage.h"
 #include "Magnum/Buffer.h"
 #include "Magnum/DimensionTraits.h"
+#include "Magnum/PixelStorage.h"
 #include "Magnum/Math/Vector3.h"
 
 namespace Magnum {
@@ -49,7 +49,7 @@ Stores image data in GPU memory. Interchangeable with @ref Image,
 @requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
 @requires_webgl20 Pixel buffer objects are not available in WebGL 1.0.
 */
-template<UnsignedInt dimensions> class BufferImage: public AbstractImage {
+template<UnsignedInt dimensions> class BufferImage {
     public:
         enum: UnsignedInt {
             Dimensions = dimensions /**< Image dimension count */
@@ -105,7 +105,7 @@ template<UnsignedInt dimensions> class BufferImage: public AbstractImage {
 
         /** @copydoc Image::dataSize() */
         std::size_t dataSize(const VectorTypeFor<dimensions, Int>& size) const {
-            return Implementation::imageDataSize<dimensions>(*this, _format, _type, size);
+            return Implementation::imageDataSize<dimensions>(_format, _type, size);
         }
 
         /** @brief Image buffer */
@@ -155,7 +155,7 @@ See @ref BufferImage for more information. Interchangeable with @ref CompressedI
 @requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
 @requires_webgl20 Pixel buffer objects are not available in WebGL 1.0.
 */
-template<UnsignedInt dimensions> class CompressedBufferImage: public AbstractCompressedImage {
+template<UnsignedInt dimensions> class CompressedBufferImage {
     public:
         enum: UnsignedInt {
             Dimensions = dimensions /**< Image dimension count */
@@ -237,17 +237,16 @@ typedef CompressedBufferImage<2> CompressedBufferImage2D;
 /** @brief Three-dimensional compressed buffer image */
 typedef CompressedBufferImage<3> CompressedBufferImage3D;
 
-template<UnsignedInt dimensions> inline BufferImage<dimensions>::BufferImage(BufferImage<dimensions>&& other) noexcept: AbstractImage{std::move(other)}, _format{std::move(other._format)}, _type{std::move(other._type)}, _size{std::move(other._size)}, _buffer{std::move(other._buffer)} {
+template<UnsignedInt dimensions> inline BufferImage<dimensions>::BufferImage(BufferImage<dimensions>&& other) noexcept: _format{std::move(other._format)}, _type{std::move(other._type)}, _size{std::move(other._size)}, _buffer{std::move(other._buffer)} {
     other._size = {};
 }
 
-template<UnsignedInt dimensions> inline CompressedBufferImage<dimensions>::CompressedBufferImage(CompressedBufferImage<dimensions>&& other) noexcept: AbstractCompressedImage{std::move(other)}, _format{std::move(other._format)}, _size{std::move(other._size)}, _buffer{std::move(other._buffer)}, _dataSize{std::move(other._dataSize)} {
+template<UnsignedInt dimensions> inline CompressedBufferImage<dimensions>::CompressedBufferImage(CompressedBufferImage<dimensions>&& other) noexcept: _format{std::move(other._format)}, _size{std::move(other._size)}, _buffer{std::move(other._buffer)}, _dataSize{std::move(other._dataSize)} {
     other._size = {};
     other._dataSize = {};
 }
 
 template<UnsignedInt dimensions> inline BufferImage<dimensions>& BufferImage<dimensions>::operator=(BufferImage<dimensions>&& other) noexcept {
-    AbstractImage::operator=(std::move(other));
     using std::swap;
     swap(_format, other._format);
     swap(_type, other._type);
@@ -257,7 +256,6 @@ template<UnsignedInt dimensions> inline BufferImage<dimensions>& BufferImage<dim
 }
 
 template<UnsignedInt dimensions> inline CompressedBufferImage<dimensions>& CompressedBufferImage<dimensions>::operator=(CompressedBufferImage<dimensions>&& other) noexcept {
-    AbstractCompressedImage::operator=(std::move(other));
     using std::swap;
     swap(_format, other._format);
     swap(_size, other._size);

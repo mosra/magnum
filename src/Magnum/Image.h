@@ -42,7 +42,7 @@ Stores image data on client memory. Interchangeable with @ref ImageView,
 @ref BufferImage or @ref Trade::ImageData.
 @see @ref Image1D, @ref Image2D, @ref Image3D, @ref CompressedImage
 */
-template<UnsignedInt dimensions> class Image: public AbstractImage {
+template<UnsignedInt dimensions> class Image {
     public:
         enum: UnsignedInt {
             Dimensions = dimensions /**< Image dimension count */
@@ -118,7 +118,7 @@ template<UnsignedInt dimensions> class Image: public AbstractImage {
          * @see @ref pixelSize()
          */
         std::size_t dataSize(const VectorTypeFor<dimensions, Int>& size) const {
-            return Implementation::imageDataSize<dimensions>(*this, _format, _type, size);
+            return Implementation::imageDataSize<dimensions>(_format, _type, size);
         }
 
         /**
@@ -182,7 +182,7 @@ See @ref Image for more information. Interchangeable with
 @ref CompressedImageView, @ref CompressedBufferImage or @ref Trade::ImageData.
 @see @ref CompressedImage1D, @ref CompressedImage2D, @ref CompressedImage3D
 */
-template<UnsignedInt dimensions> class CompressedImage: public AbstractCompressedImage {
+template<UnsignedInt dimensions> class CompressedImage {
     public:
         enum: UnsignedInt {
             Dimensions = dimensions /**< Image dimension count */
@@ -291,18 +291,17 @@ typedef CompressedImage<2> CompressedImage2D;
 /** @brief Three-dimensional compressed image */
 typedef CompressedImage<3> CompressedImage3D;
 
-template<UnsignedInt dimensions> inline Image<dimensions>::Image(Image<dimensions>&& other) noexcept: AbstractImage{std::move(other)}, _format{std::move(other._format)}, _type{std::move(other._type)}, _size{std::move(other._size)}, _data{std::move(other._data)} {
+template<UnsignedInt dimensions> inline Image<dimensions>::Image(Image<dimensions>&& other) noexcept: _format{std::move(other._format)}, _type{std::move(other._type)}, _size{std::move(other._size)}, _data{std::move(other._data)} {
     other._size = {};
     other._data = nullptr;
 }
 
-template<UnsignedInt dimensions> inline CompressedImage<dimensions>::CompressedImage(CompressedImage<dimensions>&& other) noexcept: AbstractCompressedImage{std::move(other)}, _format{std::move(other._format)}, _size{std::move(other._size)}, _data{std::move(other._data)} {
+template<UnsignedInt dimensions> inline CompressedImage<dimensions>::CompressedImage(CompressedImage<dimensions>&& other) noexcept: _format{std::move(other._format)}, _size{std::move(other._size)}, _data{std::move(other._data)} {
     other._size = {};
     other._data = nullptr;
 }
 
 template<UnsignedInt dimensions> inline Image<dimensions>& Image<dimensions>::operator=(Image<dimensions>&& other) noexcept {
-    AbstractImage::operator=(std::move(other));
     using std::swap;
     swap(_format, other._format);
     swap(_type, other._type);
@@ -312,7 +311,6 @@ template<UnsignedInt dimensions> inline Image<dimensions>& Image<dimensions>::op
 }
 
 template<UnsignedInt dimensions> inline CompressedImage<dimensions>& CompressedImage<dimensions>::operator=(CompressedImage<dimensions>&& other) noexcept {
-    AbstractCompressedImage::operator=(std::move(other));
     using std::swap;
     swap(_format, other._format);
     swap(_size, other._size);

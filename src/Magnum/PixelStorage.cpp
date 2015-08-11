@@ -23,7 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "AbstractImage.h"
+#include "PixelStorage.h"
 
 #include <Corrade/Utility/Assert.h>
 
@@ -151,7 +151,7 @@ std::size_t imagePixelSize(ColorFormat format, ColorType type) {
     CORRADE_ASSERT_UNREACHABLE();
 }
 
-template<UnsignedInt dimensions> std::size_t imageDataSize(const AbstractImage&, const ColorFormat format, const ColorType type, Math::Vector<dimensions, Int> size) {
+template<UnsignedInt dimensions> std::size_t imageDataSize(const ColorFormat format, const ColorType type, Math::Vector<dimensions, Int> size) {
     /** @todo Code this properly when all @fn_gl{PixelStore} parameters are implemented */
     /* Row size, rounded to multiple of 4 bytes */
     const std::size_t rowSize = ((size[0]*imagePixelSize(format, type) + 3)/4)*4;
@@ -161,8 +161,8 @@ template<UnsignedInt dimensions> std::size_t imageDataSize(const AbstractImage&,
     return rowSize*size.product();
 }
 
-template MAGNUM_EXPORT std::size_t imageDataSize<1>(const AbstractImage&, ColorFormat, ColorType, Math::Vector<1, Int>);
-template MAGNUM_EXPORT std::size_t imageDataSize<2>(const AbstractImage&, ColorFormat, ColorType, Math::Vector<2, Int>);
-template MAGNUM_EXPORT std::size_t imageDataSize<3>(const AbstractImage&, ColorFormat, ColorType, Math::Vector<3, Int>);
+template MAGNUM_EXPORT std::size_t imageDataSize<1>(ColorFormat, ColorType, Math::Vector<1, Int>);
+template MAGNUM_EXPORT std::size_t imageDataSize<2>(ColorFormat, ColorType, Math::Vector<2, Int>);
+template MAGNUM_EXPORT std::size_t imageDataSize<3>(ColorFormat, ColorType, Math::Vector<3, Int>);
 
 }}

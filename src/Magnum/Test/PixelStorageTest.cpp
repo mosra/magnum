@@ -25,32 +25,32 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/AbstractImage.h"
 #include "Magnum/Image.h"
 #include "Magnum/ColorFormat.h"
+#include "Magnum/PixelStorage.h"
 
 namespace Magnum { namespace Test {
 
-struct AbstractImageTest: TestSuite::Tester {
-    explicit AbstractImageTest();
+struct PixelStorageTest: TestSuite::Tester {
+    explicit PixelStorageTest();
 
     void pixelSize();
     void dataSize();
 };
 
-AbstractImageTest::AbstractImageTest() {
-    addTests({&AbstractImageTest::pixelSize,
-              &AbstractImageTest::dataSize});
+PixelStorageTest::PixelStorageTest() {
+    addTests({&PixelStorageTest::pixelSize,
+              &PixelStorageTest::dataSize});
 }
 
-void AbstractImageTest::pixelSize() {
+void PixelStorageTest::pixelSize() {
     CORRADE_COMPARE(Implementation::imagePixelSize(ColorFormat::RGBA, ColorType::UnsignedInt), 4*4);
     CORRADE_COMPARE(Implementation::imagePixelSize(ColorFormat::DepthComponent, ColorType::UnsignedShort), 2);
     CORRADE_COMPARE(Implementation::imagePixelSize(ColorFormat::StencilIndex, ColorType::UnsignedByte), 1);
     CORRADE_COMPARE(Implementation::imagePixelSize(ColorFormat::DepthStencil, ColorType::UnsignedInt248), 4);
 }
 
-void AbstractImageTest::dataSize() {
+void PixelStorageTest::dataSize() {
     /* Verify that row size is properly rounded */
     CORRADE_COMPARE(Image2D(ColorFormat::RGBA, ColorType::UnsignedByte).dataSize({}), 0);
     CORRADE_COMPARE(Image2D(ColorFormat::Red, ColorType::UnsignedByte).dataSize({4, 2}), 8);
@@ -63,4 +63,4 @@ void AbstractImageTest::dataSize() {
 
 }}
 
-CORRADE_TEST_MAIN(Magnum::Test::AbstractImageTest)
+CORRADE_TEST_MAIN(Magnum::Test::PixelStorageTest)

@@ -23,7 +23,6 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-corrade_add_test(AbstractImageTest AbstractImageTest.cpp LIBRARIES Magnum)
 corrade_add_test(AbstractShaderProgramTest AbstractShaderProgramTest.cpp LIBRARIES Magnum)
 corrade_add_test(ArrayTest ArrayTest.cpp)
 corrade_add_test(FormatTest FormatTest.cpp LIBRARIES Magnum)
@@ -34,6 +33,7 @@ corrade_add_test(FramebufferTest FramebufferTest.cpp LIBRARIES Magnum)
 corrade_add_test(ImageTest ImageTest.cpp LIBRARIES Magnum)
 corrade_add_test(ImageViewTest ImageViewTest.cpp LIBRARIES Magnum)
 corrade_add_test(MeshTest MeshTest.cpp LIBRARIES Magnum)
+corrade_add_test(PixelStorageTest PixelStorageTest.cpp LIBRARIES Magnum)
 corrade_add_test(RendererTest RendererTest.cpp LIBRARIES Magnum)
 corrade_add_test(ResourceManagerTest ResourceManagerTest.cpp LIBRARIES Magnum)
 corrade_add_test(SamplerTest SamplerTest.cpp LIBRARIES Magnum)

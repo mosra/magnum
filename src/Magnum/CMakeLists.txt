@@ -29,7 +29,6 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
 # Files shared between main library and unit test library
 set(Magnum_SRCS
     AbstractFramebuffer.cpp
-    AbstractImage.cpp
     AbstractObject.cpp
     AbstractTexture.cpp
     AbstractShaderProgram.cpp
@@ -44,6 +43,7 @@ set(Magnum_SRCS
     Mesh.cpp
     MeshView.cpp
     OpenGL.cpp
+    PixelStorage.cpp
     Renderbuffer.cpp
     Renderer.cpp
     Resource.cpp
@@ -79,7 +79,6 @@ set(Magnum_SRCS
 
 set(Magnum_HEADERS
     AbstractFramebuffer.h
-    AbstractImage.h
     AbstractObject.h
     AbstractResourceLoader.h
     AbstractShaderProgram.h
@@ -100,6 +99,7 @@ set(Magnum_HEADERS
     Mesh.h
     MeshView.h
     OpenGL.h
+    PixelStorage.h
     Renderbuffer.h
     RenderbufferFormat.h
     Renderer.h

@@ -50,7 +50,7 @@ Uncompressed image is interchangeable with @ref Image, @ref ImageView or
 or @ref CompressedBufferImage.
 @see @ref ImageData1D, @ref ImageData2D, @ref ImageData3D
 */
-template<UnsignedInt dimensions> class ImageData: public AbstractCompressedImage {
+template<UnsignedInt dimensions> class ImageData {
     public:
         enum: UnsignedInt {
             Dimensions = dimensions /**< Image dimension count */
@@ -223,7 +223,7 @@ typedef ImageData<2> ImageData2D;
 /** @brief Three-dimensional image */
 typedef ImageData<3> ImageData3D;
 
-template<UnsignedInt dimensions> inline ImageData<dimensions>::ImageData(ImageData<dimensions>&& other) noexcept: AbstractCompressedImage{std::move(other)}, _compressed{std::move(other._compressed)}, _type{std::move(other._type)}, _size{std::move(other._size)}, _data{std::move(other._data)} {
+template<UnsignedInt dimensions> inline ImageData<dimensions>::ImageData(ImageData<dimensions>&& other) noexcept: _compressed{std::move(other._compressed)}, _type{std::move(other._type)}, _size{std::move(other._size)}, _data{std::move(other._data)} {
     if(_compressed) _compressedFormat = std::move(other._compressedFormat);
     else _format = std::move(other._format);
 
@@ -232,7 +232,6 @@ template<UnsignedInt dimensions> inline ImageData<dimensions>::ImageData(ImageDa
 }
 
 template<UnsignedInt dimensions> inline ImageData<dimensions>& ImageData<dimensions>::operator=(ImageData<dimensions>&& other) noexcept {
-    AbstractCompressedImage::operator=(std::move(other));
     using std::swap;
     swap(_compressed, other._compressed);
     if(_compressed) swap(_compressedFormat, other._compressedFormat);
