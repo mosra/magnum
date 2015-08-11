@@ -27,15 +27,24 @@
 
 namespace Magnum {
 
-template<UnsignedInt dimensions> void Image<dimensions>::setData(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, void* data) {
+template<UnsignedInt dimensions> void Image<dimensions>::setData(PixelStorage storage, PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, void* data) {
     delete[] _data;
+    _storage = storage;
     _format = format;
     _type = type;
     _size = size;
     _data = reinterpret_cast<char*>(data);
 }
 
-template<UnsignedInt dimensions> void CompressedImage<dimensions>::setData(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) {
+template<UnsignedInt dimensions> void CompressedImage<dimensions>::setData(
+    #ifndef MAGNUM_TARGET_GLES
+    CompressedPixelStorage storage,
+    #endif
+    CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data)
+{
+    #ifndef MAGNUM_TARGET_GLES
+    _storage = storage;
+    #endif
     _format = format;
     _size = size;
     _data = std::move(data);

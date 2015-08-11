@@ -61,9 +61,11 @@ ImageDataTest::ImageDataTest() {
 
 void ImageDataTest::construct() {
     auto data = new char[3];
-    Trade::ImageData2D a(PixelFormat::Red, PixelType::UnsignedByte, {1, 3}, data);
+    Trade::ImageData2D a{PixelStorage{}.setAlignment(1),
+        PixelFormat::Red, PixelType::UnsignedByte, {1, 3}, data};
 
     CORRADE_VERIFY(!a.isCompressed());
+    CORRADE_COMPARE(a.storage().alignment(), 1);
     CORRADE_COMPARE(a.format(), PixelFormat::Red);
     CORRADE_COMPARE(a.type(), PixelType::UnsignedByte);
     CORRADE_COMPARE(a.size(), Vector2i(1, 3));
@@ -72,9 +74,16 @@ void ImageDataTest::construct() {
 
 void ImageDataTest::constructCompressed() {
     auto data = new char[8];
-    Trade::ImageData2D a{CompressedPixelFormat::RGBAS3tcDxt1, {4, 4}, Containers::Array<char>{data, 8}};
+    Trade::ImageData2D a{
+        #ifndef MAGNUM_TARGET_GLES
+        CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
+        #endif
+        CompressedPixelFormat::RGBAS3tcDxt1, {4, 4}, Containers::Array<char>{data, 8}};
 
     CORRADE_VERIFY(a.isCompressed());
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE(a.compressedStorage().compressedBlockSize(), Vector3i{4});
+    #endif
     CORRADE_COMPARE(a.compressedFormat(), CompressedPixelFormat::RGBAS3tcDxt1);
     CORRADE_COMPARE(a.size(), Vector2i(4, 4));
     CORRADE_COMPARE(a.data(), data);
@@ -88,13 +97,15 @@ void ImageDataTest::constructCopy() {
 
 void ImageDataTest::constructMove() {
     auto data = new char[3];
-    Trade::ImageData2D a(PixelFormat::Red, PixelType::UnsignedByte, {1, 3}, data);
+    Trade::ImageData2D a{PixelStorage{}.setAlignment(1),
+        PixelFormat::Red, PixelType::UnsignedByte, {1, 3}, data};
     Trade::ImageData2D b(std::move(a));
 
     CORRADE_COMPARE(a.data(), nullptr);
     CORRADE_COMPARE(a.size(), Vector2i());
 
     CORRADE_VERIFY(!b.isCompressed());
+    CORRADE_COMPARE(b.storage().alignment(), 1);
     CORRADE_COMPARE(b.format(), PixelFormat::Red);
     CORRADE_COMPARE(b.type(), PixelType::UnsignedByte);
     CORRADE_COMPARE(b.size(), Vector2i(1, 3));
@@ -108,6 +119,7 @@ void ImageDataTest::constructMove() {
     CORRADE_COMPARE(b.size(), Vector2i(2, 6));
 
     CORRADE_VERIFY(!c.isCompressed());
+    CORRADE_COMPARE(c.storage().alignment(), 1);
     CORRADE_COMPARE(c.format(), PixelFormat::Red);
     CORRADE_COMPARE(c.type(), PixelType::UnsignedByte);
     CORRADE_COMPARE(c.size(), Vector2i(1, 3));
@@ -116,13 +128,20 @@ void ImageDataTest::constructMove() {
 
 void ImageDataTest::constructMoveCompressed() {
     auto data = new char[8];
-    Trade::ImageData2D a{CompressedPixelFormat::RGBAS3tcDxt1, {4, 4}, Containers::Array<char>{data, 8}};
+    Trade::ImageData2D a{
+        #ifndef MAGNUM_TARGET_GLES
+        CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
+        #endif
+        CompressedPixelFormat::RGBAS3tcDxt1, {4, 4}, Containers::Array<char>{data, 8}};
     Trade::ImageData2D b{std::move(a)};
 
     CORRADE_COMPARE(a.data(), nullptr);
     CORRADE_COMPARE(a.size(), Vector2i());
 
     CORRADE_VERIFY(b.isCompressed());
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE(b.compressedStorage().compressedBlockSize(), Vector3i{4});
+    #endif
     CORRADE_COMPARE(b.compressedFormat(), CompressedPixelFormat::RGBAS3tcDxt1);
     CORRADE_COMPARE(b.size(), Vector2i(4, 4));
     CORRADE_COMPARE(b.data(), data);
@@ -137,6 +156,9 @@ void ImageDataTest::constructMoveCompressed() {
     CORRADE_COMPARE(b.size(), Vector2i(8, 4));
 
     CORRADE_VERIFY(c.isCompressed());
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE(c.compressedStorage().compressedBlockSize(), Vector3i{4});
+    #endif
     CORRADE_COMPARE(c.compressedFormat(), CompressedPixelFormat::RGBAS3tcDxt1);
     CORRADE_COMPARE(c.size(), Vector2i(4, 4));
     CORRADE_COMPARE(c.data(), data);

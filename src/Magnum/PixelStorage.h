@@ -26,13 +26,14 @@
 */
 
 /** @file
- * @brief
+ * @brief Class @ref Magnum::PixelStorage, @ref Magnum::CompressedPixelStorage
  */
 
 #include <cstddef>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/visibility.h"
+#include "Magnum/Math/Vector3.h"
 
 namespace Magnum {
 
@@ -41,6 +42,266 @@ namespace Implementation {
 
     template<UnsignedInt dimensions> std::size_t imageDataSize(PixelFormat format, PixelType type, Math::Vector<dimensions, Int> size);
 }
+
+/**
+@brief Pixel storage parameters
+
+Descibes how to interpret data which are read from or stored into @ref Image,
+@ref ImageView, @ref BufferImage and @ref Trade::ImageData using
+@ref Texture::setImage() "*Texture::setImage()", @ref Texture::setSubImage() "*Texture::setSubImage()",
+@ref Texture::image() "*Texture::image()", @ref Texture::subImage() "*Texture::subImage()"
+and @ref AbstractFramebuffer::read() "*Framebuffer::read()".
+
+## Performance optimizations
+
+The storage mode is applied either right before doing image upload using
+@fn_gl{PixelStore} with @def_gl{UNPACK_*} parameters or right before doing
+image download using @fn_gl{PixelStore} with @def_gl{PACK_*}. The engine tracks
+currently used pixel pack/unpack parameters to avoid unnecessary calls to
+@fn_gl{PixelStore}. See also @ref Context::resetState() and
+@ref Context::State::PixelStorage.
+
+@see @ref CompressedPixelStorage
+*/
+class PixelStorage {
+    public:
+        /**
+         * @brief Default constructor
+         *
+         * Sets all parameters to default values, i.e. all values set to
+         * `false`/`0` except for alignment, which is `4`.
+         */
+        constexpr /*implicit*/ PixelStorage() noexcept;
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Whether to reverse byte order
+         *
+         * @requires_gl Not available in OpenGL ES or WebGL.
+         */
+        constexpr bool swapBytes() const { return _swapBytes; }
+
+        /**
+         * @brief Enable or disable byte order reversion
+         *
+         * Not applicable for @ref CompressedPixelStorage. Default is `false`.
+         * @see @fn_gl{PixelStore} with @def_gl{PACK_SWAP_BYTES}/
+         *      @def_gl{UNPACK_SWAP_BYTES}
+         * @requires_gl Not available in OpenGL ES or WebGL.
+         */
+        PixelStorage& setSwapBytes(bool enabled) {
+            _swapBytes = enabled;
+            return *this;
+        }
+        #endif
+
+        /** @brief Row alignment */
+        constexpr Int alignment() const { return _alignment; }
+
+        /**
+         * @brief Set row alignment
+         *
+         * Not applicable for @ref CompressedPixelStorage. Valid values are
+         * `1`, `2`, `4` and `8`. Default is `4`.
+         * @see @fn_gl{PixelStore} with @def_gl{PACK_ALIGNMENT}/
+         *      @def_gl{UNPACK_ALIGNMENT}
+         */
+        PixelStorage& setAlignment(Int alignment) {
+            _alignment = alignment;
+            return *this;
+        }
+
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+        /**
+         * @brief Row length
+         *
+         * @requires_gles30 Extension @es_extension{EXT,unpack_subimage}/
+         *      @es_extension{NV,pack_subimage} in OpenGL ES 2.0.
+         * @requires_webgl20 Row length specification is not available in WebGL
+         *      1.0.
+         */
+        constexpr Int rowLength() const { return _rowLength; }
+
+        /**
+         * @brief Set row length
+         *
+         * Used only on 2D and 3D images. If set to `0`, size information from
+         * actual image is used. Default is `0`.
+         * @see @fn_gl{PixelStore} with @def_gl{UNPACK_ROW_LENGTH}/
+         *      @def_gl{PACK_ROW_LENGTH}
+         * @requires_gles30 Extension @es_extension{EXT,unpack_subimage}/
+         *      @es_extension{NV,pack_subimage} in OpenGL ES 2.0.
+         * @requires_webgl20 Row length specification is not available in WebGL
+         *      1.0.
+         */
+        PixelStorage& setRowLength(Int length) {
+            _rowLength = length;
+            return *this;
+        }
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Image height
+         *
+         * @requires_gles30 Image height specification is not available in
+         *      OpenGL ES 2.0
+         * @requires_webgl20 Image height specification is not available in
+         *      WebGL 1.0.
+         */
+        constexpr Int imageHeight() const { return _imageHeight; }
+
+        /**
+         * @brief Set image height
+         *
+         * Used only on 3D images. If set to `0`, size information from actual
+         * image is used. Default is `0`.
+         * @see @fn_gl{PixelStore} with @def_gl{UNPACK_IMAGE_HEIGHT}/
+         *      @def_gl{PACK_IMAGE_HEIGHT}
+         * @requires_gles30 Image height specification is not available in
+         *      OpenGL ES 2.0
+         * @requires_webgl20 Image height specification is not available in
+         *      WebGL 1.0.
+         * @requires_gl Image height specification is available only for unpack
+         *      in OpenGL ES and WebGL.
+         */
+        PixelStorage& setImageHeight(Int height) {
+            _imageHeight = height;
+            return *this;
+        }
+        #endif
+
+        /** @brief Pixel, row and image skipping */
+        constexpr Vector3i skip() const { return _skip; }
+
+        /**
+         * @brief Set pixel, row and image skipping
+         *
+         * The Y value is used only for 2D and 3D images, the Z value is used
+         * only for 3D images. Default is `0`. On OpenGL ES 2.0 and WebGL 1.0
+         * the functionality is emulated by increasing the data pointer.
+         * @see @fn_gl{PixelStore} with @def_gl{UNPACK_SKIP_PIXELS}/
+         *      @def_gl{PACK_SKIP_PIXELS}, @def_gl{UNPACK_SKIP_ROWS}/
+         *      @def_gl{PACK_SKIP_ROWS}, @def_gl{UNPACK_SKIP_IMAGES}/
+         *      @def_gl{PACK_SKIP_IMAGES}
+         * @requires_gl Image skip specification is available only for unpack
+         *      in OpenGL ES and WebGL.
+         */
+        PixelStorage& setSkip(const Vector3i& skip) {
+            _skip = skip;
+            return *this;
+        }
+
+    private:
+        #ifndef MAGNUM_TARGET_GLES
+        bool _swapBytes;
+        #endif
+        Int _alignment;
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+        Int _rowLength;
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        Int _imageHeight;
+        #endif
+        Vector3i _skip;
+};
+
+#ifndef MAGNUM_TARGET_GLES
+/**
+@brief Compressed pixel storage parameters
+
+Descibes how to interpret data which are read from or stored into
+@ref CompressedImage, @ref CompressedImageView, @ref CompressedBufferImage and
+@ref Trade::ImageData using @ref Texture::setCompressedImage() "*Texture::setCompressedImage(),
+@ref Texture::setCompressedSubImage() "*Texture::setCompressedSubImage()",
+@ref Texture::compressedImage() "*Texture::compressedImage()" and
+@ref Texture::compressedSubImage() "*Texture::compressedSubImage()".
+
+Includes all parameters from @ref PixelStorage, except for @ref swapBytes() and
+@ref alignment(), which are ignored for compressed images.
+
+@requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+@requires_gl Compressed pixel storage is hardcoded in OpenGL ES and WebGL.
+*/
+class CompressedPixelStorage: public PixelStorage {
+    public:
+        /**
+         * @brief Default constructor
+         *
+         * Sets all parameters to default values, i.e. all values set to
+         * `false`/`0` except for alignment, which is `4`.
+         */
+        constexpr /*implicit*/ CompressedPixelStorage() noexcept: _blockSize{0}, _blockDataSize{0} {}
+
+        /** @brief Compressed block size */
+        constexpr Vector3i compressedBlockSize() const { return _blockSize; }
+
+        /**
+         * @brief Set compressed block size
+         *
+         * If set to `0` for given dimension, size information from particular
+         * compressed format is used. Default is `0` in all dimensions.
+         */
+        CompressedPixelStorage& setCompressedBlockSize(const Vector3i& size) {
+            _blockSize = size;
+            return *this;
+        }
+
+        /** @brief Compressed block data size (in bytes) */
+        constexpr Int compressedBlockDataSize() const { return _blockDataSize; }
+
+        /**
+         * @brief Set compressed block data size (in bytes)
+         *
+         * If set to `0`, size information from particular compressed format is
+         * used. Default is `0` in all dimensions.
+         */
+        CompressedPixelStorage& setCompressedBlockDataSize(Int size) {
+            _blockDataSize = size;
+            return *this;
+        }
+
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        CompressedPixelStorage& setRowLength(Int length) {
+            PixelStorage::setRowLength(length);
+            return *this;
+        }
+        CompressedPixelStorage& setImageHeight(Int height) {
+            PixelStorage::setImageHeight(height);
+            return *this;
+        }
+        CompressedPixelStorage& setSkip(const Vector3i& skip) {
+            PixelStorage::setSkip(skip);
+            return *this;
+        }
+        #endif
+
+    private:
+        #ifndef MAGNUM_TARGET_GLES
+        using PixelStorage::swapBytes;
+        using PixelStorage::setSwapBytes;
+        #endif
+        using PixelStorage::alignment;
+        using PixelStorage::setAlignment;
+
+        Vector3i _blockSize;
+        Int _blockDataSize;
+};
+#endif
+
+constexpr PixelStorage::PixelStorage() noexcept:
+    #ifndef MAGNUM_TARGET_GLES
+    _swapBytes{false},
+    #endif
+    _alignment{4},
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    _rowLength{0},
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    _imageHeight{0},
+    #endif
+    _skip{0} {}
 
 }
 

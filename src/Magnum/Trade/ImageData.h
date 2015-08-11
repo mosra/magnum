@@ -58,6 +58,7 @@ template<UnsignedInt dimensions> class ImageData {
 
         /**
          * @brief Construct uncompressed image data
+         * @param storage           Storage of pixel data
          * @param format            Format of pixel data
          * @param type              Data type of pixel data
          * @param size              Image size
@@ -66,18 +67,40 @@ template<UnsignedInt dimensions> class ImageData {
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        explicit ImageData(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, void* data): _compressed{false}, _format{format}, _type{type}, _size{size}, _data{reinterpret_cast<char*>(data), dataSize(size)} {}
+        explicit ImageData(PixelStorage storage, PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, void* data): _compressed{false}, _storage{storage}, _format{format}, _type{type}, _size{size}, _data{reinterpret_cast<char*>(data), dataSize(size)} {}
 
+        /** @overload
+         * Similar to the above, but uses default @ref PixelStorage parameters.
+         */
+        explicit ImageData(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, void* data): ImageData{{}, format, type, size, data} {}
+
+        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Construct compressed image data
-         * @param format            Format of compressed data
+         * @param storage           Storage of compressed pixel data
+         * @param format            Format of compressed pixel data
          * @param size              Image size
          * @param data              Image data
          *
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl Compressed pixel storage is hardcoded in OpenGL ES and
+         *      WebGL.
          */
-        explicit ImageData(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data): _compressed{true}, _compressedFormat{format}, _size{size}, _data{std::move(data)} {}
+        explicit ImageData(CompressedPixelStorage storage, CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data);
+        #endif
+
+        /**
+         * @brief Construct compressed image data
+         * @param format            Format of compressed pixel data
+         * @param size              Image size
+         * @param data              Image data
+         *
+         * Similar the above, but uses default @ref CompressedPixelStorage
+         * parameters (or the hardcoded ones in OpenGL ES and WebGL).
+         */
+        explicit ImageData(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data);
 
         /** @brief Copying is not allowed */
         ImageData(const ImageData<dimensions>&) = delete;
@@ -131,10 +154,18 @@ template<UnsignedInt dimensions> class ImageData {
         #endif
 
         /**
+         * @brief Storage of pixel data
+         *
+         * The image is expected to be uncompressed.
+         * @see @ref isCompressed(), @ref compressedStorage()
+         */
+        PixelStorage storage() const;
+
+        /**
          * @brief Format of pixel data
          *
          * The image is expected to be uncompressed.
-         * @see @ref isCompressed()
+         * @see @ref isCompressed(), @ref compressedFormat()
          */
         PixelFormat format() const;
 
@@ -146,11 +177,24 @@ template<UnsignedInt dimensions> class ImageData {
          */
         PixelType type() const;
 
+        #ifndef MAGNUM_TARGET_GLES
         /**
-         * @brief Format of compressed data
+         * @brief Storage of compressed pixel data
          *
          * The image is expected to be compressed.
-         * @see @ref isCompressed()
+         * @see @ref isCompressed(), @ref storage())
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl Compressed pixel storage is hardcoded in OpenGL ES and
+         *      WebGL.
+         */
+        CompressedPixelStorage compressedStorage() const;
+        #endif
+
+        /**
+         * @brief Format of compressed pixel data
+         *
+         * The image is expected to be compressed.
+         * @see @ref isCompressed(), @ref format()
          */
         CompressedPixelFormat compressedFormat() const;
 
@@ -206,6 +250,12 @@ template<UnsignedInt dimensions> class ImageData {
     private:
         bool _compressed;
         union {
+            PixelStorage _storage;
+            #ifndef MAGNUM_TARGET_GLES
+            CompressedPixelStorage _compressedStorage;
+            #endif
+        };
+        union {
             PixelFormat _format;
             CompressedPixelFormat _compressedFormat;
         };
@@ -223,9 +273,31 @@ typedef ImageData<2> ImageData2D;
 /** @brief Three-dimensional image */
 typedef ImageData<3> ImageData3D;
 
+template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(
+    #ifndef MAGNUM_TARGET_GLES
+    const CompressedPixelStorage storage,
+    #endif
+    const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data): _compressed{true},
+    #ifndef MAGNUM_TARGET_GLES
+    _compressedStorage{storage},
+    #endif
+    _compressedFormat{format}, _size{size}, _data{std::move(data)} {}
+
+#ifndef MAGNUM_TARGET_GLES
+template<UnsignedInt dimensions> inline ImageData<dimensions>::ImageData(const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data): ImageData{{}, format, size, std::move(data)} {}
+#endif
+
 template<UnsignedInt dimensions> inline ImageData<dimensions>::ImageData(ImageData<dimensions>&& other) noexcept: _compressed{std::move(other._compressed)}, _type{std::move(other._type)}, _size{std::move(other._size)}, _data{std::move(other._data)} {
-    if(_compressed) _compressedFormat = std::move(other._compressedFormat);
-    else _format = std::move(other._format);
+    if(_compressed) {
+        #ifndef MAGNUM_TARGET_GLES
+        _compressedStorage = std::move(other._compressedStorage);
+        #endif
+        _compressedFormat = std::move(other._compressedFormat);
+    }
+    else {
+        _storage = std::move(other._storage);
+        _format = std::move(other._format);
+    }
 
     other._size = {};
     other._data = nullptr;
@@ -234,8 +306,16 @@ template<UnsignedInt dimensions> inline ImageData<dimensions>::ImageData(ImageDa
 template<UnsignedInt dimensions> inline ImageData<dimensions>& ImageData<dimensions>::operator=(ImageData<dimensions>&& other) noexcept {
     using std::swap;
     swap(_compressed, other._compressed);
-    if(_compressed) swap(_compressedFormat, other._compressedFormat);
-    else swap(_format, other._format);
+    if(_compressed) {
+        #ifndef MAGNUM_TARGET_GLES
+        swap(_compressedStorage, other._compressedStorage);
+        #endif
+        swap(_compressedFormat, other._compressedFormat);
+    }
+    else {
+        swap(_storage, other._storage);
+        swap(_format, other._format);
+    }
     swap(_type, other._type);
     swap(_size, other._size);
     swap(_data, other._data);

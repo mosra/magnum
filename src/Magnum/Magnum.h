@@ -533,6 +533,11 @@ typedef CORRADE_DEPRECATED("use PixelType instead") PixelType ColorType;
 typedef CORRADE_DEPRECATED("use CompressedPixelFormat instead") CompressedPixelFormat CompressedColorFormat;
 #endif
 
+class PixelStorage;
+#ifndef MAGNUM_TARGET_GLES
+class CompressedPixelStorage;
+#endif
+
 /* ObjectFlag, ObjectFlags are used only in conjunction with *::wrap() function */
 
 class PrimitiveQuery;

@@ -50,8 +50,10 @@ ImageViewTest::ImageViewTest() {
 
 void ImageViewTest::construct() {
     const char data[3]{};
-    ImageView2D a(PixelFormat::Red, PixelType::UnsignedByte, {1, 3}, data);
+    ImageView2D a{PixelStorage{}.setAlignment(1),
+        PixelFormat::Red, PixelType::UnsignedByte, {1, 3}, data};
 
+    CORRADE_COMPARE(a.storage().alignment(), 1);
     CORRADE_COMPARE(a.format(), PixelFormat::Red);
     CORRADE_COMPARE(a.type(), PixelType::UnsignedByte);
     CORRADE_COMPARE(a.size(), Vector2i(1, 3));
@@ -60,8 +62,15 @@ void ImageViewTest::construct() {
 
 void ImageViewTest::constructCompressed() {
     const char data[8]{};
-    CompressedImageView2D a{CompressedPixelFormat::RGBAS3tcDxt1, {4, 4}, data};
+    CompressedImageView2D a{
+        #ifndef MAGNUM_TARGET_GLES
+        CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
+        #endif
+        CompressedPixelFormat::RGBAS3tcDxt1, {4, 4}, data};
 
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{4});
+    #endif
     CORRADE_COMPARE(a.format(), CompressedPixelFormat::RGBAS3tcDxt1);
     CORRADE_COMPARE(a.size(), Vector2i(4, 4));
     CORRADE_COMPARE(a.data(), data);
@@ -69,10 +78,12 @@ void ImageViewTest::constructCompressed() {
 
 void ImageViewTest::setData() {
     const char data[3]{};
-    ImageView2D a(PixelFormat::Red, PixelType::UnsignedByte, {1, 3}, data);
+    ImageView2D a{PixelStorage{}.setAlignment(1),
+        PixelFormat::Red, PixelType::UnsignedByte, {1, 3}, data};
     const char data2[8]{};
     a.setData(data2);
 
+    CORRADE_COMPARE(a.storage().alignment(), 1);
     CORRADE_COMPARE(a.format(), PixelFormat::Red);
     CORRADE_COMPARE(a.type(), PixelType::UnsignedByte);
     CORRADE_COMPARE(a.size(), Vector2i(1, 3));
@@ -81,10 +92,17 @@ void ImageViewTest::setData() {
 
 void ImageViewTest::setDataCompressed() {
     const char data[8]{};
-    CompressedImageView2D a{CompressedPixelFormat::RGBAS3tcDxt1, {4, 4}, data};
+    CompressedImageView2D a{
+        #ifndef MAGNUM_TARGET_GLES
+        CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
+        #endif
+        CompressedPixelFormat::RGBAS3tcDxt1, {4, 4}, data};
     const char data2[16]{};
     a.setData(data2);
 
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{4});
+    #endif
     CORRADE_COMPARE(a.format(), CompressedPixelFormat::RGBAS3tcDxt1);
     CORRADE_COMPARE(a.size(), Vector2i(4, 4));
     CORRADE_COMPARE(a.data(), data2);
