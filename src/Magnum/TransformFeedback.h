@@ -49,7 +49,8 @@ namespace Implementation { struct TransformFeedbackState; }
 The engine tracks currently bound transform feedback to avoid unnecessary calls
 to @fn_gl{BindTransformFeedback}. Transform feedback limits and
 implementation-defined values (such as @ref maxSeparateComponents()) are
-cached, so repeated queries don't result in repeated @fn_gl{Get} calls.
+cached, so repeated queries don't result in repeated @fn_gl{Get} calls. See
+also @ref Context::resetState() and @ref Context::State::TransformFeedback.
 
 If @extension{ARB,direct_state_access} (part of OpenGL 4.5) is available,
 functions @ref attachBuffer() and @ref attachBuffers() use DSA to avoid

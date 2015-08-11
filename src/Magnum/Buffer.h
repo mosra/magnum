@@ -210,7 +210,8 @@ and @ref unmap() use that target instead of binding the buffer to some specific
 target. You can also use @ref setTargetHint() to possibly reduce unnecessary
 rebinding. Buffer limits and implementation-defined values (such as
 @ref maxUniformBindings()) are cached, so repeated queries don't result in
-repeated @fn_gl{Get} calls.
+repeated @fn_gl{Get} calls. See also @ref Context::resetState() and
+@ref Context::State::Buffers.
 
 If either @extension{ARB,direct_state_access} (part of OpenGL 4.5) or
 @extension{EXT,direct_state_access} desktop extension is available, functions

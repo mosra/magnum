@@ -74,7 +74,8 @@ avoid unnecessary calls to @fn_gl{ActiveTexture} and @fn_gl{BindTexture}.
 Texture configuration functions use dedicated highest available texture unit
 to not affect active bindings in user units. Texture limits and
 implementation-defined values (such as @ref maxColorSamples()) are cached, so
-repeated queries don't result in repeated @fn_gl{Get} calls.
+repeated queries don't result in repeated @fn_gl{Get} calls. See also
+@ref Context::resetState() and @ref Context::State::Textures.
 
 If @extension{ARB,direct_state_access} (part of OpenGL 4.5) is available,
 @ref bind(Int) and @ref unbind(Int) use @fn_gl{BindTextureUnit}. Otherwise, if

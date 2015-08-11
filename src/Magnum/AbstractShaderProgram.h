@@ -373,8 +373,10 @@ also @ref Attribute::DataType enum for additional type options.
 @anchor AbstractShaderProgram-performance-optimization
 ## Performance optimizations
 
-Shader limits (such as @ref maxVertexAttributes()) are cached, so repeated
-queries don't result in repeated @fn_gl{Get} calls.
+The engine tracks currently used shader program to avoid unnecessary calls to
+@fn_gl{UseProgram}. Shader limits (such as @ref maxVertexAttributes()) are
+cached, so repeated queries don't result in repeated @fn_gl{Get} calls. See
+also @ref Context::resetState() and @ref Context::State::Shaders.
 
 If extension @extension{ARB,separate_shader_objects} (part of OpenGL 4.1),
 @extension{EXT,direct_state_access} desktop extension, @es_extension{EXT,separate_shader_objects}
