@@ -27,6 +27,7 @@
 #include <tuple>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/Directory.h>
 
 #include "Magnum/Image.h"
@@ -46,24 +47,39 @@ class TgaImageConverterTest: public TestSuite::Tester {
         void wrongFormat();
         void wrongType();
 
-        void data();
+        void rgb();
+        void rgba();
 };
 
 namespace {
-    constexpr char originalData[] = {
+    /* Padded to four byte alignment (the resulting file is *not* padded) */
+    constexpr char OriginalDataRGB[] = {
+        1, 2, 3, 2, 3, 4, 0, 0,
+        3, 4, 5, 4, 5, 6, 0, 0,
+        5, 6, 7, 6, 7, 8, 0, 0
+    };
+    constexpr char ConvertedDataRGB[] = {
         1, 2, 3, 2, 3, 4,
         3, 4, 5, 4, 5, 6,
         5, 6, 7, 6, 7, 8
     };
 
-    const ImageView2D original(PixelFormat::RGB, PixelType::UnsignedByte, {2, 3}, originalData);
+    const ImageView2D OriginalRGB{PixelFormat::RGB, PixelType::UnsignedByte, {2, 3}, OriginalDataRGB};
+
+    constexpr char OriginalDataRGBA[] = {
+        1, 2, 3, 4, 2, 3, 4, 5,
+        3, 4, 5, 6, 4, 5, 6, 7,
+        5, 6, 7, 8, 6, 7, 8, 9
+    };
+    const ImageView2D OriginalRGBA{PixelFormat::RGBA, PixelType::UnsignedByte, {2, 3}, OriginalDataRGBA};
 }
 
 TgaImageConverterTest::TgaImageConverterTest() {
     addTests({&TgaImageConverterTest::wrongFormat,
               &TgaImageConverterTest::wrongType,
 
-              &TgaImageConverterTest::data});
+              &TgaImageConverterTest::rgb,
+              &TgaImageConverterTest::rgba});
 }
 
 void TgaImageConverterTest::wrongFormat() {
@@ -88,19 +104,36 @@ void TgaImageConverterTest::wrongType() {
     CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::exportToData(): unsupported color type PixelType::Float\n");
 }
 
-void TgaImageConverterTest::data() {
-    const auto data = TgaImageConverter().exportToData(original);
+void TgaImageConverterTest::rgb() {
+    const auto data = TgaImageConverter().exportToData(OriginalRGB);
 
     TgaImporter importer;
     CORRADE_VERIFY(importer.openData(data));
     std::optional<Trade::ImageData2D> converted = importer.image2D(0);
     CORRADE_VERIFY(converted);
 
+    CORRADE_COMPARE(converted->storage().alignment(), 1);
     CORRADE_COMPARE(converted->size(), Vector2i(2, 3));
     CORRADE_COMPARE(converted->format(), PixelFormat::RGB);
     CORRADE_COMPARE(converted->type(), PixelType::UnsignedByte);
-    CORRADE_COMPARE((std::string{converted->data(), 2*3*3}),
-                    (std::string{original.data(), 2*3*3}));
+    CORRADE_COMPARE_AS(converted->data(), Containers::ArrayView<const char>{ConvertedDataRGB},
+        TestSuite::Compare::Container);
+}
+
+void TgaImageConverterTest::rgba() {
+    const auto data = TgaImageConverter().exportToData(OriginalRGBA);
+
+    TgaImporter importer;
+    CORRADE_VERIFY(importer.openData(data));
+    std::optional<Trade::ImageData2D> converted = importer.image2D(0);
+    CORRADE_VERIFY(converted);
+
+    CORRADE_COMPARE(converted->storage().alignment(), 4);
+    CORRADE_COMPARE(converted->size(), Vector2i(2, 3));
+    CORRADE_COMPARE(converted->format(), PixelFormat::RGBA);
+    CORRADE_COMPARE(converted->type(), PixelType::UnsignedByte);
+    CORRADE_COMPARE_AS(converted->data(), Containers::ArrayView<const char>{OriginalDataRGBA},
+        TestSuite::Compare::Container);
 }
 
 }}}
