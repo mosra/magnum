@@ -136,6 +136,11 @@ std::optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt) {
     Containers::Array<char> data{dataSize};
     in->read(data, dataSize);
 
+    /* Adjust pixel storage if row size is not four byte aligned */
+    PixelStorage storage;
+    if((header.width*header.bpp/8)%4 != 0)
+        storage.setAlignment(1);
+
     Vector2i size(header.width, header.height);
 
     if(format == PixelFormat::RGB) {
@@ -148,7 +153,7 @@ std::optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt) {
             [](Math::Vector4<UnsignedByte> pixel) { return Math::swizzle<'b', 'g', 'r', 'a'>(pixel); });
     }
 
-    return ImageData2D{format, PixelType::UnsignedByte, size, std::move(data)};
+    return ImageData2D{storage, format, PixelType::UnsignedByte, size, std::move(data)};
 }
 
 }}
