@@ -53,7 +53,8 @@ namespace Magnum { namespace Trade {
 
 Supports images with format @ref PixelFormat::RGB, @ref PixelFormat::RGBA or
 @ref PixelFormat::Red (or @ref PixelFormat::Luminance in OpenGL ES 2.0 and
-WebGL 1.0) and type @ref PixelType::UnsignedByte.
+WebGL 1.0) and type @ref PixelType::UnsignedByte. Does *not* support
+non-default @ref PixelStorage::swapBytes() values.
 
 This plugin is built if `WITH_TGAIMAGECONVERTER` is enabled when building
 Magnum. To use dynamic plugin, you need to load `TgaImageConverter` plugin

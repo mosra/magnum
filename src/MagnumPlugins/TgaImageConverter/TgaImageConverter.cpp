@@ -46,6 +46,13 @@ TgaImageConverter::TgaImageConverter(PluginManager::AbstractManager& manager, st
 auto TgaImageConverter::doFeatures() const -> Features { return Feature::ConvertData; }
 
 Containers::Array<char> TgaImageConverter::doExportToData(const ImageView2D& image) const {
+    #ifndef MAGNUM_TARGET_GLES
+    if(image.storage().swapBytes()) {
+        Error() << "Trade::TgaImageConverter::exportToData(): pixel byte swap is not supported";
+        return nullptr;
+    }
+    #endif
+
     if(image.format() != PixelFormat::RGB &&
        image.format() != PixelFormat::RGBA
        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
@@ -90,13 +97,16 @@ Containers::Array<char> TgaImageConverter::doExportToData(const ImageView2D& ima
     header->width = UnsignedShort(Utility::Endianness::littleEndian(image.size().x()));
     header->height = UnsignedShort(Utility::Endianness::littleEndian(image.size().y()));
 
+    /* Image data pointer including skip */
+    const char* imageData = image.data() + std::get<0>(image.dataProperties());
+
     /* Fill data or copy them row by row if we need to drop the padding */
     const std::size_t rowSize = image.size().x()*pixelSize;
     const std::size_t rowStride = std::get<1>(image.dataProperties()).x();
     if(rowStride != rowSize) {
         for(std::int_fast32_t y = 0; y != image.size().y(); ++y)
-            std::copy_n(image.data() + y*rowStride, rowSize, data.begin() + sizeof(TgaHeader) + y*rowSize);
-    } else std::copy(image.data().data(), image.data()+pixelSize*image.size().product(), data.begin() + sizeof(TgaHeader));
+            std::copy_n(imageData + y*rowStride, rowSize, data.begin() + sizeof(TgaHeader) + y*rowSize);
+    } else std::copy_n(imageData, pixelSize*image.size().product(), data.begin() + sizeof(TgaHeader));
 
     if(image.format() == PixelFormat::RGB) {
         auto pixels = reinterpret_cast<Math::Vector3<UnsignedByte>*>(data.begin()+sizeof(TgaHeader));
