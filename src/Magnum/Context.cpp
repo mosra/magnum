@@ -48,6 +48,7 @@
 #include "Implementation/BufferState.h"
 #include "Implementation/FramebufferState.h"
 #include "Implementation/MeshState.h"
+#include "Implementation/RendererState.h"
 #include "Implementation/ShaderProgramState.h"
 #include "Implementation/TextureState.h"
 #ifndef MAGNUM_TARGET_GLES2
@@ -677,6 +678,11 @@ void Context::resetState(const States states) {
         _state->framebuffer->reset();
     if(states & State::Meshes)
         _state->mesh->reset();
+
+    if(states & State::PixelStorage) {
+        _state->renderer->unpackPixelStorage.reset();
+        _state->renderer->packPixelStorage.reset();
+    }
 
     /* Nothing to reset for renderer yet */
 

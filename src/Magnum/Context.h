@@ -154,18 +154,21 @@ class MAGNUM_EXPORT Context {
             /** Reset tracked mesh-related bindings */
             Meshes = 1 << 2,
 
+            /** Reset tracked pixel storage-related state */
+            PixelStorage = 1 << 3,
+
             /** Reset tracked renderer-related state */
-            Renderer = 1 << 3,
+            Renderer = 1 << 4,
 
             /** Reset tracked shader-related bindings */
-            Shaders = 1 << 4,
+            Shaders = 1 << 5,
 
             /** Reset tracked texture-related bindings and state */
-            Textures = 1 << 5,
+            Textures = 1 << 6,
 
             #ifndef MAGNUM_TARGET_GLES2
             /** Reset tracked transform feedback-related bindings */
-            TransformFeedback = 1 << 6
+            TransformFeedback = 1 << 7
             #endif
         };
 

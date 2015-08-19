@@ -29,6 +29,8 @@
 #include <vector>
 
 #include "Magnum/Renderer.h"
+#include "Magnum/Math/Vector3.h"
+#include "MagnumExternal/Optional/optional.hpp"
 
 namespace Magnum { namespace Implementation {
 
@@ -41,6 +43,36 @@ struct RendererState {
 
     Renderer::ResetNotificationStrategy resetNotificationStrategy;
     #endif
+
+    struct PixelStorage {
+        enum: Int { DisengagedValue = -1 };
+
+        explicit PixelStorage();
+
+        void reset();
+
+        #ifndef MAGNUM_TARGET_GLES
+        std::optional<bool> swapBytes;
+        #endif
+        Int alignment;
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+        Int rowLength;
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        Int imageHeight;
+        Vector3i skip;
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        Vector3i compressedBlockSize;
+        Int compressedBlockDataSize;
+        #endif
+
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+        Int disengagedRowLength;
+        #endif
+    };
+
+    PixelStorage packPixelStorage, unpackPixelStorage;
 };
 
 }}

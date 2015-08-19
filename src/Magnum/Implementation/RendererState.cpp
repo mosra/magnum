@@ -70,6 +70,58 @@ RendererState::RendererState(Context& context, std::vector<std::string>& extensi
     static_cast<void>(context);
     static_cast<void>(extensions);
     #endif
+
+    /* In case the extensions are not supported on ES2, row length is
+       constantly 0 to avoid modifying that state */
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    unpackPixelStorage.disengagedRowLength = PixelStorage::DisengagedValue;
+    packPixelStorage.disengagedRowLength = PixelStorage::DisengagedValue;
+    #ifdef MAGNUM_TARGET_GLES2
+    if(!context.isExtensionSupported<Extensions::GL::EXT::unpack_subimage>())
+        unpackPixelStorage.disengagedRowLength = 0;
+    if(!context.isExtensionSupported<Extensions::GL::NV::pack_subimage>())
+        packPixelStorage.disengagedRowLength = 0;
+    #endif
+    #endif
+}
+
+RendererState::PixelStorage::PixelStorage():
+    #ifndef MAGNUM_TARGET_GLES
+    swapBytes{false},
+    #endif
+    alignment{4}
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    , rowLength{0}
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    , imageHeight{0},
+    skip{0}
+    #endif
+    #ifndef MAGNUM_TARGET_GLES
+    , compressedBlockSize{0},
+    compressedBlockDataSize{0}
+    #endif
+    {}
+
+void RendererState::PixelStorage::reset() {
+    #ifndef MAGNUM_TARGET_GLES
+    swapBytes = std::nullopt;
+    #endif
+    alignment = DisengagedValue;
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    /* Resets to 0 instead of DisengagedValue in case the EXT_unpack_subimage/
+       NV_pack_image ES2 extension is not supported to avoid modifying that
+       state */
+    rowLength = disengagedRowLength;
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    imageHeight = DisengagedValue;
+    skip = Vector3i{DisengagedValue};
+    #endif
+    #ifndef MAGNUM_TARGET_GLES
+    compressedBlockSize = Vector3i{DisengagedValue};
+    compressedBlockDataSize = DisengagedValue;
+    #endif
 }
 
 }}
