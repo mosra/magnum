@@ -29,6 +29,7 @@
  * @brief Class @ref Magnum::Trade::TgaImporter
  */
 
+#include <Corrade/Containers/Array.h>
 #include <Corrade/Utility/VisibilityMacros.h>
 
 #include "Magnum/Trade/AbstractImporter.h"
@@ -86,12 +87,11 @@ class MAGNUM_TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
         Features MAGNUM_TGAIMPORTER_LOCAL doFeatures() const override;
         bool MAGNUM_TGAIMPORTER_LOCAL doIsOpened() const override;
         void MAGNUM_TGAIMPORTER_LOCAL doOpenData(Containers::ArrayView<const char> data) override;
-        void MAGNUM_TGAIMPORTER_LOCAL doOpenFile(const std::string& filename) override;
         void MAGNUM_TGAIMPORTER_LOCAL doClose() override;
         UnsignedInt MAGNUM_TGAIMPORTER_LOCAL doImage2DCount() const override;
         std::optional<ImageData2D> MAGNUM_TGAIMPORTER_LOCAL doImage2D(UnsignedInt id) override;
 
-        std::istream* in;
+        Containers::Array<char> _in;
 };
 
 }}
