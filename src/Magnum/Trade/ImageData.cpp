@@ -27,6 +27,10 @@
 
 namespace Magnum { namespace Trade {
 
+template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const PixelStorage storage, const PixelFormat format, const PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data): _compressed{false}, _storage{storage}, _format{format}, _type{type}, _size{size}, _data{std::move(data)} {
+    CORRADE_ASSERT(Implementation::imageDataSize(*this) <= _data.size(), "Trade::ImageDat::ImageData(): bad image data size, got" << _data.size() << "but expected at least" << Implementation::imageDataSize(*this), );
+}
+
 template<UnsignedInt dimensions> PixelStorage ImageData<dimensions>::storage() const {
     CORRADE_ASSERT(!_compressed, "Trade::ImageData::storage(): the image is compressed", {});
     return _storage;

@@ -80,7 +80,7 @@ void ImageViewTest::setData() {
     const char data[3]{};
     ImageView2D a{PixelStorage{}.setAlignment(1),
         PixelFormat::Red, PixelType::UnsignedByte, {1, 3}, data};
-    const char data2[8]{};
+    const char data2[3]{};
     a.setData(data2);
 
     CORRADE_COMPARE(a.storage().alignment(), 1);

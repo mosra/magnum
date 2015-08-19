@@ -66,13 +66,32 @@ template<UnsignedInt dimensions> class ImageView {
          * @param type              Data type of pixel data
          * @param size              Image size
          * @param data              Image data
+         *
+         * The data are expected to be of proper size for given @p storage
+         * parameters.
          */
-        constexpr explicit ImageView(PixelStorage storage, PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, const void* data) noexcept: _storage{storage}, _format{format}, _type{type}, _size{size}, _data{reinterpret_cast<const char*>(data)} {}
+        explicit ImageView(PixelStorage storage, PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data) noexcept: _storage{storage}, _format{format}, _type{type}, _size{size}, _data{reinterpret_cast<const char*>(data.data()), data.size()} {
+            CORRADE_ASSERT(Implementation::imageDataSize(*this) <= _data.size(), "ImageView::ImageView(): bad image data size, got" << _data.size() << "but expected at least" << Implementation::imageDataSize(*this), );
+        }
 
         /** @overload
          * Similar to the above, but uses default @ref PixelStorage parameters.
          */
-        constexpr explicit ImageView(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, const void* data) noexcept: ImageView{{}, format, type, size, data} {}
+        explicit ImageView(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data) noexcept: ImageView{{}, format, type, size, data} {}
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @copybrief ImageView(PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<const void>)
+         * @deprecated Use @ref ImageView(PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<const void>) instead.
+         */
+        explicit CORRADE_DEPRECATED("use ImageView(PixelFormat, PixelType, const VectorTypeFor&, Containers::ArrayView) instead") ImageView(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, const void* data) noexcept: ImageView{{}, format, type, size, {reinterpret_cast<const char*>(data), Implementation::imageDataSizeFor(format, type, size)}} {}
+
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        /* To avoid decay of sized arrays and nullptr to const void* and
+           unwanted use of deprecated function */
+        template<class T, std::size_t dataSize> explicit ImageView(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, const T(&data)[dataSize]): ImageView{{}, format, type, size, Containers::ArrayView<const void>{data}} {}
+        explicit ImageView(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, std::nullptr_t): ImageView{{}, format, type, size, Containers::ArrayView<const void>{nullptr}} {}
+        #endif
+        #endif
 
         /**
          * @brief Constructor
@@ -119,32 +138,54 @@ template<UnsignedInt dimensions> class ImageView {
             return Implementation::imageDataProperties<dimensions>(*this);
         }
 
-        /** @brief Pointer to raw data */
-        constexpr const char* data() const { return _data; }
+        /** @brief Raw data */
+        constexpr Containers::ArrayView<const char> data() const { return _data; }
 
         /** @overload */
-        template<class T = char> const T* data() const {
-            return reinterpret_cast<const T*>(_data);
+        template<class T> const T* data() const {
+            return reinterpret_cast<const T*>(_data.data());
         }
 
         /**
          * @brief Set image data
          * @param data              Image data
          *
-         * Dimensions, color compnents and data type remains the same as
-         * passed in constructor. The data are not copied nor deleted on
-         * destruction.
+         * Storage parameters, pixel format, type and size remain the same as
+         * passed in constructor. The data are expected to be of proper size
+         * for given @p storage parameters.
          */
-        void setData(const void* data) {
-            _data = reinterpret_cast<const char*>(data);
+        void setData(Containers::ArrayView<const void> data) {
+            CORRADE_ASSERT(Implementation::imageDataSize(*this) <= data.size(), "ImageView::setData(): bad image data size, got" << data.size() << "but expected at least" << Implementation::imageDataSize(*this), );
+            _data = {reinterpret_cast<const char*>(data.data()), data.size()};
         }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @copybrief setData(Containers::ArrayView<const void>)
+         * @deprecated Use @ref setData(Containers::ArrayView<const void>)
+         *      instead.
+         */
+        void CORRADE_DEPRECATED("use setData(Containers::ArrayView) instead") setData(const void* data) {
+            setData({reinterpret_cast<const char*>(data), Implementation::imageDataSize(*this)});
+        }
+
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        /* To avoid decay of sized arrays and nullptr to const void* and
+           unwanted use of deprecated function */
+        template<class T, std::size_t size> void setData(const T(&data)[size]) {
+            setData(Containers::ArrayView<const void>{data});
+        }
+        void setData(std::nullptr_t) {
+            setData(Containers::ArrayView<const void>{nullptr});
+        }
+        #endif
+        #endif
 
     private:
         PixelStorage _storage;
         PixelFormat _format;
         PixelType _type;
         Math::Vector<Dimensions, Int> _size;
-        const char* _data;
+        Containers::ArrayView<const char> _data;
 };
 
 /** @brief One-dimensional image view */

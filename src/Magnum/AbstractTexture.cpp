@@ -1494,12 +1494,11 @@ void AbstractTexture::invalidateSubImageImplementationARB(GLint level, const Vec
 #ifndef MAGNUM_TARGET_GLES
 template<UnsignedInt dimensions> void AbstractTexture::image(GLint level, Image<dimensions>& image) {
     const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, level);
-    const std::size_t dataSize = Implementation::imageDataSizeFor(image, size);
-    char* data = new char[dataSize];
+    Containers::Array<char> data{Implementation::imageDataSizeFor(image, size)};
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
-    (this->*Context::current()->state().texture->getImageImplementation)(level, image.format(), image.type(), dataSize, data);
-    image.setData(image.storage(), image.format(), image.type(), size, data);
+    (this->*Context::current()->state().texture->getImageImplementation)(level, image.format(), image.type(), data.size(), data);
+    image.setData(image.storage(), image.format(), image.type(), size, std::move(data));
 }
 
 template void MAGNUM_EXPORT AbstractTexture::image<1>(GLint, Image<1>&);
@@ -1510,7 +1509,7 @@ template<UnsignedInt dimensions> void AbstractTexture::image(GLint level, Buffer
     const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, level);
     const std::size_t dataSize = Implementation::imageDataSizeFor(image, size);
     if(image.size() != size)
-        image.setData(image.storage(), image.format(), image.type(), size, nullptr, usage);
+        image.setData(image.storage(), image.format(), image.type(), size, {nullptr, dataSize}, usage);
 
     image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
     (this->*Context::current()->state().texture->getImageImplementation)(level, image.format(), image.type(), dataSize, nullptr);
@@ -1560,12 +1559,11 @@ template<UnsignedInt dimensions> void AbstractTexture::subImage(const GLint leve
     const Math::Vector<dimensions, Int> size = range.size();
     const Vector3i paddedOffset = Vector3i::pad(range.min());
     const Vector3i paddedSize = Vector3i::pad(size, 1);
-    const std::size_t dataSize = Implementation::imageDataSizeFor(image, size);
-    char* data = new char[dataSize];
+    Containers::Array<char> data{Implementation::imageDataSizeFor(image, size)};
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
-    glGetTextureSubImage(_id, level, paddedOffset.x(), paddedOffset.y(), paddedOffset.z(), paddedSize.x(), paddedSize.y(), paddedSize.z(), GLenum(image.format()), GLenum(image.type()), dataSize, data);
-    image.setData(image.storage(), image.format(), image.type(), size, data);
+    glGetTextureSubImage(_id, level, paddedOffset.x(), paddedOffset.y(), paddedOffset.z(), paddedSize.x(), paddedSize.y(), paddedSize.z(), GLenum(image.format()), GLenum(image.type()), data.size(), data);
+    image.setData(image.storage(), image.format(), image.type(), size, std::move(data));
 }
 
 template void MAGNUM_EXPORT AbstractTexture::subImage<1>(GLint, const Range1Di&, Image<1>&);
@@ -1580,7 +1578,7 @@ template<UnsignedInt dimensions> void AbstractTexture::subImage(const GLint leve
     const Vector3i paddedOffset = Vector3i::pad(range.min());
     const Vector3i paddedSize = Vector3i::pad(size, 1);
     if(image.size() != size)
-        image.setData(image.storage(), image.format(), image.type(), size, nullptr, usage);
+        image.setData(image.storage(), image.format(), image.type(), size, {nullptr, dataSize}, usage);
 
     image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
     glGetTextureSubImage(_id, level, paddedOffset.x(), paddedOffset.y(), paddedOffset.z(), paddedSize.x(), paddedSize.y(), paddedSize.z(), GLenum(image.format()), GLenum(image.type()), dataSize, nullptr);

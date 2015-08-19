@@ -27,13 +27,17 @@
 
 namespace Magnum {
 
-template<UnsignedInt dimensions> void Image<dimensions>::setData(PixelStorage storage, PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, void* data) {
-    delete[] _data;
+template<UnsignedInt dimensions> Image<dimensions>::Image(PixelStorage storage, PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data): _storage{storage}, _format{format}, _type{type}, _size{size}, _data{std::move(data)} {
+    CORRADE_ASSERT(Implementation::imageDataSize(*this) <= _data.size(), "Image::Image(): bad image data size, got" << _data.size() << "but expected at least" << Implementation::imageDataSize(*this), );
+}
+
+template<UnsignedInt dimensions> void Image<dimensions>::setData(PixelStorage storage, PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) {
     _storage = storage;
     _format = format;
     _type = type;
     _size = size;
-    _data = reinterpret_cast<char*>(data);
+    CORRADE_ASSERT(Implementation::imageDataSize(*this) <= data.size(), "Image::setData(): bad image data size, got" << data.size() << "but expected at least" << Implementation::imageDataSize(*this), );
+    _data = std::move(data);
 }
 
 template<UnsignedInt dimensions> void CompressedImage<dimensions>::setData(

@@ -91,7 +91,7 @@ Containers::Array<char> TgaImageConverter::doExportToData(const ImageView2D& ima
     header->height = UnsignedShort(Utility::Endianness::littleEndian(image.size().y()));
 
     /* Fill data */
-    std::copy(image.data(), image.data()+pixelSize*image.size().product(), data.begin()+sizeof(TgaHeader));
+    std::copy(image.data().data(), image.data()+pixelSize*image.size().product(), data.begin()+sizeof(TgaHeader));
 
     if(image.format() == PixelFormat::RGB) {
         auto pixels = reinterpret_cast<Math::Vector3<UnsignedByte>*>(data.begin()+sizeof(TgaHeader));

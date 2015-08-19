@@ -64,15 +64,22 @@ template<UnsignedInt dimensions> class ImageData {
          * @param size              Image size
          * @param data              Image data
          *
-         * Note that the image data are not copied on construction, but they
-         * are deleted on class destruction.
+         * The data are expected to be of proper size for given @p storage
+         * parameters.
          */
-        explicit ImageData(PixelStorage storage, PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, void* data): _compressed{false}, _storage{storage}, _format{format}, _type{type}, _size{size}, _data{reinterpret_cast<char*>(data), Implementation::imageDataSizeFor(*this, size)} {}
+        explicit ImageData(PixelStorage storage, PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data);
 
         /** @overload
          * Similar to the above, but uses default @ref PixelStorage parameters.
          */
-        explicit ImageData(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, void* data): ImageData{{}, format, type, size, data} {}
+        explicit ImageData(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data): ImageData{{}, format, type, size, std::move(data)} {}
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @copybrief ImageData(PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&)
+         * @deprecated Use @ref ImageData(PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&) instead.
+         */
+        explicit CORRADE_DEPRECATED("use ImageData(PixelFormat, PixelType, const VectorTypeFor&, Containers::Array&&) instead") ImageData(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, void* data): ImageData{format, type, size, Containers::Array<char>{reinterpret_cast<char*>(data), Magnum::Implementation::imageDataSizeFor(format, type, size)}} {}
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES
         /**
@@ -222,17 +229,17 @@ template<UnsignedInt dimensions> class ImageData {
            are not setting any block size pixel storage properties to avoid
            needless state changes -- thus the calculation can't be done */
 
-        /** @brief Raw data */
+        /**
+         * @brief Raw data
+         *
+         * @see @ref release()
+         */
         Containers::ArrayView<char> data() { return _data; }
 
         /** @overload */
         Containers::ArrayView<const char> data() const { return _data; }
 
-        /**
-         * @brief Pointer to raw data
-         *
-         * @see @ref release()
-         */
+        /** @overload */
         template<class T> T* data() {
             return reinterpret_cast<T*>(_data.data());
         }
@@ -245,8 +252,8 @@ template<UnsignedInt dimensions> class ImageData {
         /**
          * @brief Release data storage
          *
-         * Releases the ownership of the data pointer and resets internal state
-         * to default. Deleting the returned array is then user responsibility.
+         * Releases the ownership of the data array and resets internal state
+         * to default.
          * @see @ref data()
          */
         Containers::Array<char> release();
@@ -305,7 +312,6 @@ template<UnsignedInt dimensions> inline ImageData<dimensions>::ImageData(ImageDa
     }
 
     other._size = {};
-    other._data = nullptr;
 }
 
 template<UnsignedInt dimensions> inline ImageData<dimensions>& ImageData<dimensions>::operator=(ImageData<dimensions>&& other) noexcept {
@@ -330,7 +336,6 @@ template<UnsignedInt dimensions> inline ImageData<dimensions>& ImageData<dimensi
 template<UnsignedInt dimensions> inline Containers::Array<char> ImageData<dimensions>::release() {
     Containers::Array<char> data{std::move(_data)};
     _size = {};
-    _data = nullptr;
     return data;
 }
 

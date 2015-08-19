@@ -28,18 +28,20 @@
 namespace Magnum {
 
 #ifndef MAGNUM_TARGET_GLES2
-template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const PixelFormat format, const PixelType type, const VectorTypeFor<dimensions, Int>& size, const void* const data, const BufferUsage usage): _storage{storage}, _format{format}, _type{type}, _size{size}, _buffer{Buffer::TargetHint::PixelPack} {
-    _buffer.setData({data, Implementation::imageDataSizeFor(*this, size)}, usage);
+template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const PixelFormat format, const PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> const data, const BufferUsage usage): _storage{storage}, _format{format}, _type{type}, _size{size}, _buffer{Buffer::TargetHint::PixelPack} {
+    CORRADE_ASSERT(Implementation::imageDataSize(*this) <= data.size(), "BufferImage::BufferImage(): bad image data size, got" << data.size() << "but expected at least" << Implementation::imageDataSize(*this), );
+    _buffer.setData(data, usage);
 }
 
 template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const PixelFormat format, const PixelType type): _storage{storage}, _format{format}, _type{type}, _buffer{Buffer::TargetHint::PixelPack} {}
 
-template<UnsignedInt dimensions> void BufferImage<dimensions>::setData(const PixelStorage storage, const PixelFormat format, const PixelType type, const VectorTypeFor<dimensions, Int>& size, const void* const data, const BufferUsage usage) {
+template<UnsignedInt dimensions> void BufferImage<dimensions>::setData(const PixelStorage storage, const PixelFormat format, const PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> const data, const BufferUsage usage) {
     _storage = storage;
     _format = format;
     _type = type;
     _size = size;
-    _buffer.setData({data, Implementation::imageDataSizeFor(*this, size)}, usage);
+    CORRADE_ASSERT(Implementation::imageDataSize(*this) <= data.size(), "BufferImage::setData(): bad image data size, got" << data.size() << "but expected at least" << Implementation::imageDataSize(*this), );
+    _buffer.setData(data, usage);
 }
 
 template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(

@@ -62,7 +62,7 @@ void AbstractImageConverterTest::exportToFile() {
 
     /* doExportToFile() should call doExportToData() */
     DataExporter exporter;
-    ImageView2D image(PixelFormat::RGBA, PixelType::UnsignedByte, {0xfe, 0xed}, nullptr);
+    ImageView2D image(PixelFormat::RGBA, PixelType::UnsignedByte, {0xfe, 0xed}, {nullptr, 0xfe*0xed*4});
     CORRADE_VERIFY(exporter.exportToFile(image, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
     CORRADE_COMPARE_AS(Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"),
         "\xFE\xED", TestSuite::Compare::FileToString);

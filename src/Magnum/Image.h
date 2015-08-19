@@ -56,15 +56,23 @@ template<UnsignedInt dimensions> class Image {
          * @param size              Image size
          * @param data              Image data
          *
-         * Note that the image data are not copied on construction, but they
-         * are deleted on class destruction.
+         * The data are expected to be of proper size for given @p storage
+         * parameters.
          */
-        explicit Image(PixelStorage storage, PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, void* data): _storage{storage}, _format{format}, _type{type}, _size{size}, _data{reinterpret_cast<char*>(data)} {}
+        explicit Image(PixelStorage storage, PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data);
 
         /** @overload
          * Similar to the above, but uses default @ref PixelStorage parameters.
          */
-        explicit Image(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, void* data): Image{{}, format, type, size, data} {}
+        explicit Image(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data): Image{{}, format, type, size, std::move(data)} {}
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @copybrief Image(PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&)
+         * @deprecated Use @ref Image(PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&)
+         *      instead.
+         */
+        explicit CORRADE_DEPRECATED("use Image(PixelFormat, PixelType, const VectorTypeFor&, Containers::Array&&) instead") Image(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, void* data): Image{{}, format, type, size, Containers::Array<char>{reinterpret_cast<char*>(data), Implementation::imageDataSizeFor(format, type, size)}} {}
+        #endif
 
         /**
          * @brief Constructor
@@ -97,9 +105,6 @@ template<UnsignedInt dimensions> class Image {
 
         /** @brief Move assignment */
         Image<dimensions>& operator=(Image<dimensions>&& other) noexcept;
-
-        /** @brief Destructor */
-        ~Image() { delete[] _data; }
 
         /** @brief Conversion to view */
         /*implicit*/ operator ImageView<dimensions>()
@@ -143,17 +148,23 @@ template<UnsignedInt dimensions> class Image {
         }
 
         /**
-         * @brief Pointer to raw data
+         * @brief Raw data
          *
          * @see @ref release()
          */
+        Containers::ArrayView<char> data() { return _data; }
+
+        /** @overload */
+        Containers::ArrayView<const char> data() const { return _data; }
+
+        /** @overload */
         template<class T = char> T* data() {
-            return reinterpret_cast<T*>(_data);
+            return reinterpret_cast<T*>(_data.data());
         }
 
         /** @overload */
         template<class T = char> const T* data() const {
-            return reinterpret_cast<const T*>(_data);
+            return reinterpret_cast<const T*>(_data.data());
         }
 
         /**
@@ -164,34 +175,44 @@ template<UnsignedInt dimensions> class Image {
          * @param size              Image size
          * @param data              Image data
          *
-         * Deletes previous data and replaces them with new. Note that the
-         * data are not copied, but they are deleted on destruction.
+         * Deletes previous data and replaces them with new. The data are
+         * expected to be of proper size for given @p storage parameters.
          * @see @ref release()
          */
-        void setData(PixelStorage storage, PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, void* data);
+        void setData(PixelStorage storage, PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data);
 
         /** @overload
          * Similar to the above, but uses default @ref PixelStorage parameters.
          */
-        void setData(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, void* data) {
-            setData({}, format, type, size, data);
+        void setData(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) {
+            setData({}, format, type, size, std::move(data));
         }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @copybrief setData(PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&)
+         * @deprecated Use @ref setData(PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&)
+         *      instead.
+         */
+        void CORRADE_DEPRECATED("use setData(PixelFormat, PixelType, const VectorTypeFor&, Containers::ArrayView) instead")  setData(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, void* data) {
+            setData({}, format, type, size, Containers::Array<char>{reinterpret_cast<char*>(data), Implementation::imageDataSizeFor(format, type, size)});
+        }
+        #endif
 
         /**
          * @brief Release data storage
          *
-         * Releases the ownership of the data pointer and resets internal state
-         * to default. Deleting the returned array is then user responsibility.
-         * @see @ref setData()
+         * Releases the ownership of the data array and resets internal state
+         * to default.
+         * @see @ref data()
          */
-        char* release();
+        Containers::Array<char> release();
 
     private:
         PixelStorage _storage;
         PixelFormat _format;
         PixelType _type;
         Math::Vector<Dimensions, Int> _size;
-        char* _data;
+        Containers::Array<char> _data;
 };
 
 /** @brief One-dimensional image */
@@ -327,17 +348,17 @@ template<UnsignedInt dimensions> class CompressedImage {
         }
         #endif
 
-        /** @brief Raw data */
+        /**
+         * @brief Raw data
+         *
+         * @see @ref release()
+         */
         Containers::ArrayView<char> data() { return _data; }
 
         /** @overload */
         Containers::ArrayView<const char> data() const { return _data; }
 
-        /**
-         * @brief Pointer to raw data
-         *
-         * @see @ref release()
-         */
+        /** @overload */
         template<class T> T* data() {
             return reinterpret_cast<T*>(_data.data());
         }
@@ -379,7 +400,7 @@ template<UnsignedInt dimensions> class CompressedImage {
         /**
          * @brief Release data storage
          *
-         * Releases the ownership of the data pointer and resets internal state
+         * Releases the ownership of the data array and resets internal state
          * to default.
          * @see @ref setData()
          */
@@ -405,7 +426,6 @@ typedef CompressedImage<3> CompressedImage3D;
 
 template<UnsignedInt dimensions> inline Image<dimensions>::Image(Image<dimensions>&& other) noexcept: _storage{std::move(other._storage)}, _format{std::move(other._format)}, _type{std::move(other._type)}, _size{std::move(other._size)}, _data{std::move(other._data)} {
     other._size = {};
-    other._data = nullptr;
 }
 
 template<UnsignedInt dimensions> inline CompressedImage<dimensions>::CompressedImage(CompressedImage<dimensions>&& other) noexcept:
@@ -415,7 +435,6 @@ template<UnsignedInt dimensions> inline CompressedImage<dimensions>::CompressedI
     _format{std::move(other._format)}, _size{std::move(other._size)}, _data{std::move(other._data)}
 {
     other._size = {};
-    other._data = nullptr;
 }
 
 template<UnsignedInt dimensions> inline Image<dimensions>& Image<dimensions>::operator=(Image<dimensions>&& other) noexcept {
@@ -463,19 +482,15 @@ const
         _format, _size, _data};
 }
 
-template<UnsignedInt dimensions> inline char* Image<dimensions>::release() {
-    /** @todo I need `std::exchange` NOW. */
-    char* const data = _data;
+template<UnsignedInt dimensions> inline Containers::Array<char> Image<dimensions>::release() {
+    Containers::Array<char> data{std::move(_data)};
     _size = {};
-    _data = nullptr;
     return data;
 }
 
 template<UnsignedInt dimensions> inline Containers::Array<char> CompressedImage<dimensions>::release() {
-    /** @todo I need `std::exchange` NOW. */
     Containers::Array<char> data{std::move(_data)};
     _size = {};
-    _data = nullptr;
     return data;
 }
 

@@ -60,11 +60,10 @@ void CubeMapTexture::image(const Int level, Image3D& image) {
     createIfNotAlready();
 
     const Vector3i size{imageSize(level), 6};
-    const std::size_t dataSize = Implementation::imageDataSizeFor(image, size);
-    char* data = new char[dataSize];
+    Containers::Array<char> data{Implementation::imageDataSizeFor(image, size)};
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
-    glGetTextureImage(_id, level, GLenum(image.format()), GLenum(image.type()), dataSize, data);
-    image.setData(image.storage(), image.format(), image.type(), size, data);
+    glGetTextureImage(_id, level, GLenum(image.format()), GLenum(image.type()), data.size(), data);
+    image.setData(image.storage(), image.format(), image.type(), size, std::move(data));
 }
 
 Image3D CubeMapTexture::image(const Int level, Image3D&& image) {
@@ -78,7 +77,7 @@ void CubeMapTexture::image(const Int level, BufferImage3D& image, const BufferUs
     const Vector3i size{imageSize(level), 6};
     const std::size_t dataSize = Implementation::imageDataSizeFor(image, size);
     if(image.size() != size)
-        image.setData(image.storage(), image.format(), image.type(), size, nullptr, usage);
+        image.setData(image.storage(), image.format(), image.type(), size, {nullptr, dataSize}, usage);
 
     image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
     glGetTextureImage(_id, level, GLenum(image.format()), GLenum(image.type()), dataSize, nullptr);
@@ -132,12 +131,11 @@ CompressedBufferImage3D CubeMapTexture::compressedImage(const Int level, Compres
 
 void CubeMapTexture::image(const Coordinate coordinate, const Int level, Image2D& image) {
     const Vector2i size = imageSize(level);
-    const std::size_t dataSize = Implementation::imageDataSizeFor(image, size);
-    char* data = new char[dataSize];
+    Containers::Array<char> data{Implementation::imageDataSizeFor(image, size)};
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
-    (this->*Context::current()->state().texture->getCubeImageImplementation)(coordinate, level, size, image.format(), image.type(), dataSize, data);
-    image.setData(image.storage(), image.format(), image.type(), size, data);
+    (this->*Context::current()->state().texture->getCubeImageImplementation)(coordinate, level, size, image.format(), image.type(), data.size(), data);
+    image.setData(image.storage(), image.format(), image.type(), size, std::move(data));
 }
 
 Image2D CubeMapTexture::image(const Coordinate coordinate, const Int level, Image2D&& image) {
@@ -149,7 +147,7 @@ void CubeMapTexture::image(const Coordinate coordinate, const Int level, BufferI
     const Vector2i size = imageSize(level);
     const std::size_t dataSize = Implementation::imageDataSizeFor(image, size);
     if(image.size() != size)
-        image.setData(image.storage(), image.format(), image.type(), size, nullptr, usage);
+        image.setData(image.storage(), image.format(), image.type(), size, {nullptr, dataSize}, usage);
 
     image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
     (this->*Context::current()->state().texture->getCubeImageImplementation)(coordinate, level, size, image.format(), image.type(), dataSize, nullptr);

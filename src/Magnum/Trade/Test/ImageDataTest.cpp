@@ -62,7 +62,7 @@ ImageDataTest::ImageDataTest() {
 void ImageDataTest::construct() {
     auto data = new char[3];
     Trade::ImageData2D a{PixelStorage{}.setAlignment(1),
-        PixelFormat::Red, PixelType::UnsignedByte, {1, 3}, data};
+        PixelFormat::Red, PixelType::UnsignedByte, {1, 3}, Containers::Array<char>{data, 3}};
 
     CORRADE_VERIFY(!a.isCompressed());
     CORRADE_COMPARE(a.storage().alignment(), 1);
@@ -98,7 +98,7 @@ void ImageDataTest::constructCopy() {
 void ImageDataTest::constructMove() {
     auto data = new char[3];
     Trade::ImageData2D a{PixelStorage{}.setAlignment(1),
-        PixelFormat::Red, PixelType::UnsignedByte, {1, 3}, data};
+        PixelFormat::Red, PixelType::UnsignedByte, {1, 3}, Containers::Array<char>{data, 3}};
     Trade::ImageData2D b(std::move(a));
 
     CORRADE_COMPARE(a.data(), nullptr);
@@ -111,8 +111,8 @@ void ImageDataTest::constructMove() {
     CORRADE_COMPARE(b.size(), Vector2i(1, 3));
     CORRADE_COMPARE(b.data(), data);
 
-    auto data2 = new char[3];
-    Trade::ImageData2D c(PixelFormat::RGBA, PixelType::UnsignedShort, {2, 6}, data2);
+    auto data2 = new char[2*2*6*4];
+    Trade::ImageData2D c{PixelFormat::RGBA, PixelType::UnsignedShort, {2, 6}, Containers::Array<char>{data2, 2*2*6*4}};
     c = std::move(b);
 
     CORRADE_COMPARE(b.data(), data2);
@@ -166,13 +166,13 @@ void ImageDataTest::constructMoveCompressed() {
 }
 
 void ImageDataTest::toReference() {
-    auto data = new char[3];
-    const Trade::ImageData2D a(PixelFormat::Red, PixelType::UnsignedByte, {1, 3}, data);
+    auto data = new char[4];
+    const Trade::ImageData2D a{PixelFormat::Red, PixelType::UnsignedByte, {4, 1}, Containers::Array<char>{data, 4}};
     ImageView2D b = a;
 
     CORRADE_COMPARE(b.format(), PixelFormat::Red);
     CORRADE_COMPARE(b.type(), PixelType::UnsignedByte);
-    CORRADE_COMPARE(b.size(), Vector2i(1, 3));
+    CORRADE_COMPARE(b.size(), Vector2i(4, 1));
     CORRADE_COMPARE(b.data(), data);
 
     CORRADE_VERIFY((std::is_convertible<const Trade::ImageData2D&, ImageView2D>::value));
@@ -207,7 +207,7 @@ void ImageDataTest::toReferenceCompressed() {
 
 void ImageDataTest::release() {
     char data[] = {'b', 'e', 'e', 'r'};
-    Trade::ImageData2D a(PixelFormat::Red, PixelType::UnsignedByte, {1, 4}, data);
+    Trade::ImageData2D a{PixelFormat::Red, PixelType::UnsignedByte, {4, 1}, Containers::Array<char>{data, 4}};
     const char* const pointer = a.release().release();
 
     CORRADE_COMPARE(pointer, data);

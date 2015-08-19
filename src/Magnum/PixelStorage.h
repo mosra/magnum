@@ -376,6 +376,13 @@ namespace Implementation {
         return imageDataSizeFor(image, image.size());
     }
 
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /* Uses default pixel storage */
+    template<std::size_t dimensions> std::size_t imageDataSizeFor(PixelFormat format, PixelType type, const Math::Vector<dimensions, Int>& size) {
+        return std::get<1>(PixelStorage{}.dataProperties(format, type, Vector3i::pad(size, 1))).product();
+    }
+    #endif
+
     #ifndef MAGNUM_TARGET_GLES
     /* Used in image query functions */
     template<std::size_t dimensions, class T> std::size_t compressedImageDataSizeFor(const T& image, const Math::Vector<dimensions, Int>& size, std::size_t dataSize) {

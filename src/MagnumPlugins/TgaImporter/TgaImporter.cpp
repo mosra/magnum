@@ -133,22 +133,22 @@ std::optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt) {
     }
 
     const std::size_t dataSize = header.width*header.height*header.bpp/8;
-    char* const data = new char[dataSize];
+    Containers::Array<char> data{dataSize};
     in->read(data, dataSize);
 
     Vector2i size(header.width, header.height);
 
     if(format == PixelFormat::RGB) {
-        auto pixels = reinterpret_cast<Math::Vector3<UnsignedByte>*>(data);
+        auto pixels = reinterpret_cast<Math::Vector3<UnsignedByte>*>(data.data());
         std::transform(pixels, pixels + size.product(), pixels,
             [](Math::Vector3<UnsignedByte> pixel) { return Math::swizzle<'b', 'g', 'r'>(pixel); });
     } else if(format == PixelFormat::RGBA) {
-        auto pixels = reinterpret_cast<Math::Vector4<UnsignedByte>*>(data);
+        auto pixels = reinterpret_cast<Math::Vector4<UnsignedByte>*>(data.data());
         std::transform(pixels, pixels + size.product(), pixels,
             [](Math::Vector4<UnsignedByte> pixel) { return Math::swizzle<'b', 'g', 'r', 'a'>(pixel); });
     }
 
-    return ImageData2D(format, PixelType::UnsignedByte, size, data);
+    return ImageData2D{format, PixelType::UnsignedByte, size, std::move(data)};
 }
 
 }}
