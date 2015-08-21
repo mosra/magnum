@@ -64,7 +64,7 @@ Arguments:
 -   `input` -- input image
 -   `output` -- output image
 -   `-h`, `--help` -- display help message and exit
--   `--importer IMPORTER` -- image importer plugin (default: @ref Trade::TgaImporter "TgaImporter")
+-   `--importer IMPORTER` -- image importer plugin (default: @ref Trade::AnyImageImporter "AnyImageImporter")
 -   `--converter CONVERTER` -- image converter plugin (default: @ref Trade::TgaImageConverter "TgaImageConverter")
 -   `--plugin-dir DIR` -- base plugin dir (defaults to plugin directory in
     Magnum install location)
@@ -103,7 +103,7 @@ class DistanceFieldConverter: public Platform::WindowlessApplication {
 DistanceFieldConverter::DistanceFieldConverter(const Arguments& arguments): Platform::WindowlessApplication(arguments, nullptr) {
     args.addArgument("input").setHelp("input", "input image")
         .addArgument("output").setHelp("output", "output image")
-        .addOption("importer", "TgaImporter").setHelp("importer", "image importer plugin")
+        .addOption("importer", "AnyImageImporter").setHelp("importer", "image importer plugin")
         .addOption("converter", "TgaImageConverter").setHelp("converter", "image converter plugin")
         .addOption("plugin-dir", MAGNUM_PLUGINS_DIR).setHelpKey("plugin-dir", "DIR").setHelp("plugin-dir", "base plugin dir")
         .addNamedArgument("output-size").setHelpKey("output-size", "\"X Y\"").setHelp("output-size", "size of output image")
