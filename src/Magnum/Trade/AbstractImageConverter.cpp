@@ -50,7 +50,7 @@ std::optional<Image2D> AbstractImageConverter::doExportToImage(const ImageView2D
 }
 
 std::optional<CompressedImage2D> AbstractImageConverter::exportToCompressedImage(const ImageView2D& image) const {
-    CORRADE_ASSERT(features() & Feature::CompressImage,
+    CORRADE_ASSERT(features() & Feature::ConvertCompressedImage,
         "Trade::AbstractImageConverter::exportToCompressedImage(): feature not supported", {});
 
     return doExportToCompressedImage(image);
@@ -73,12 +73,49 @@ Containers::Array<char> AbstractImageConverter::doExportToData(const ImageView2D
     return nullptr;
 }
 
+Containers::Array<char> AbstractImageConverter::exportToData(const CompressedImageView2D& image) const {
+    CORRADE_ASSERT(features() & Feature::ConvertCompressedData,
+        "Trade::AbstractImageConverter::exportToData(): feature not supported", nullptr);
+
+    return doExportToData(image);
+}
+
+Containers::Array<char> AbstractImageConverter::doExportToData(const CompressedImageView2D&) const {
+    CORRADE_ASSERT(false, "Trade::AbstractImageConverter::exportToData(): feature advertised but not implemented", nullptr);
+    return nullptr;
+}
+
 bool AbstractImageConverter::exportToFile(const ImageView2D& image, const std::string& filename) const {
+    CORRADE_ASSERT(features() & Feature::ConvertFile,
+        "Trade::AbstractImageConverter::exportToFile(): feature not supported", {});
+
     return doExportToFile(image, filename);
 }
 
 bool AbstractImageConverter::doExportToFile(const ImageView2D& image, const std::string& filename) const {
     CORRADE_ASSERT(features() & Feature::ConvertData, "Trade::AbstractImageConverter::exportToFile(): not implemented", false);
+
+    const auto data = doExportToData(image);
+    if(!data) return false;
+
+    /* Open file */
+    if(!Utility::Directory::write(filename, data)) {
+        Error() << "Trade::AbstractImageConverter::exportToFile(): cannot write to file" << filename;
+        return false;
+    }
+
+    return true;
+}
+
+bool AbstractImageConverter::exportToFile(const CompressedImageView2D& image, const std::string& filename) const {
+    CORRADE_ASSERT(features() & Feature::ConvertCompressedFile,
+        "Trade::AbstractImageConverter::exportToFile(): feature not supported", {});
+
+    return doExportToFile(image, filename);
+}
+
+bool AbstractImageConverter::doExportToFile(const CompressedImageView2D& image, const std::string& filename) const {
+    CORRADE_ASSERT(features() & Feature::ConvertCompressedData, "Trade::AbstractImageConverter::exportToFile(): not implemented", false);
 
     const auto data = doExportToData(image);
     if(!data) return false;
