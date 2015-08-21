@@ -55,6 +55,8 @@ Detects file type based on file extension, loads corresponding plugin and then
 tries to open the file with it. Supported formats:
 
 -   BMP (`*.bmp`), loaded with any plugin that provides `BmpImporter`
+-   DDS (`*.dds`), loaded with @ref DdsImporter or any other plugin that
+    provides it
 -   GIF (`*.gif`), loaded with any plugin that provides `GifImporter`
 -   HDR (`*.hdr`), loaded with any plugin that provides `HdrImporter`
 -   JPEG (`*.jpg`, `*.jpeg`), loaded with @ref JpegImporter or any other plugin

@@ -54,6 +54,8 @@ void AnyImageImporter::doOpenFile(const std::string& filename) {
     std::string plugin;
     if(Utility::String::endsWith(filename, ".bmp"))
         plugin = "BmpImporter";
+    if(Utility::String::endsWith(filename, ".dds"))
+        plugin = "DdsImporter";
     else if(Utility::String::endsWith(filename, ".gif"))
         plugin = "GifImporter";
     else if(Utility::String::endsWith(filename, ".hdr"))
