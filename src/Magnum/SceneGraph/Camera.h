@@ -197,6 +197,22 @@ template<UnsignedInt dimensions, class T> class Camera: public AbstractFeature<d
          * @brief Size of (near) XY plane in current projection
          *
          * Returns size of near XY plane computed from projection matrix.
+         *
+         * Conversion from integer window-space coordinates with origin in top
+         * left corner and Y down (e.g. from
+         * @ref Platform::Sdl2Application::MouseEvent "Platform::*Application::MouseEvent")
+         * to floating-point coordinates on near XY plane with origin at camera
+         * position and Y up can be done using the following snippet:
+         * @code
+         * Vector2 position = (Vector2{event.position()}/defaultFramebuffer.viewport().size() - Vector2{0.5f})*Vector2::yScale(-1.0f)*camera.projectionSize();
+         * @endcode
+         * This is position relative to camera transformation, getting absolute
+         * transformation in 2D scene can be done for example using
+         * @ref SceneGraph::Object::absoluteTransformation():
+         * @code
+         * Vector2 absolutePosition = cameraObject->absoluteTransformation().transformPoint(position);
+         * @endcode
+         *
          * @see @ref projectionMatrix()
          */
         Math::Vector2<T> projectionSize() const {
