@@ -163,7 +163,7 @@ Double cosine = Math::cos(1.047_rad); // cosine = 0.5
 @see @link operator""_degf() @endlink, @link operator""_rad() @endlink
 @requires_gl Only single-precision types are available in OpenGL ES and WebGL.
 */
-constexpr Deg<Double> operator "" _deg(long double value) { return Deg<Double>(value); }
+constexpr Deg<Double> operator "" _deg(long double value) { return Deg<Double>(Double(value)); }
 #endif
 
 /** @relatesalso Deg
@@ -176,7 +176,7 @@ Float tangent = Math::tan(1.047_radf); // tangent = 1.732f
 @endcode
 @see @link operator""_deg() @endlink, @link operator""_radf() @endlink
 */
-constexpr Deg<Float> operator "" _degf(long double value) { return Deg<Float>(value); }
+constexpr Deg<Float> operator "" _degf(long double value) { return Deg<Float>(Float(value)); }
 
 /**
 @brief Angle in radians
@@ -222,7 +222,7 @@ See @link operator""_deg() @endlink for more information.
 @see @link operator""_radf() @endlink
 @requires_gl Only single-precision types are available in OpenGL ES and WebGL.
 */
-constexpr Rad<Double> operator "" _rad(long double value) { return Rad<Double>(value); }
+constexpr Rad<Double> operator "" _rad(long double value) { return Rad<Double>(Double(value)); }
 #endif
 
 /** @relatesalso Rad
@@ -231,7 +231,7 @@ constexpr Rad<Double> operator "" _rad(long double value) { return Rad<Double>(v
 See @link operator""_degf() @endlink for more information.
 @see @link operator""_rad() @endlink
 */
-constexpr Rad<Float> operator "" _radf(long double value) { return Rad<Float>(value); }
+constexpr Rad<Float> operator "" _radf(long double value) { return Rad<Float>(Float(value)); }
 
 template<class T> constexpr Deg<T>::Deg(Unit<Rad, T> value): Unit<Math::Deg, T>(T(180)*T(value)/Math::Constants<T>::pi()) {}
 template<class T> constexpr Rad<T>::Rad(Unit<Deg, T> value): Unit<Math::Rad, T>(T(value)*Math::Constants<T>::pi()/T(180)) {}
