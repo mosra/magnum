@@ -219,7 +219,10 @@ AbstractTexture::~AbstractTexture() {
 
     /* Remove all bindings */
     for(auto& binding: Context::current()->state().texture->bindings)
+    {
+        /* MSVC 2015 needs the parentheses around */
         if(binding.second == _id) binding = {};
+    }
 
     glDeleteTextures(1, &_id);
 }
