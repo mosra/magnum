@@ -256,7 +256,8 @@ template<class T> class Color3: public Vector3<T> {
         constexpr /*implicit*/ Color3(ZeroInitT = ZeroInit)
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            : Vector3<T>{ZeroInit}
+            /* MSVC 2015 can't handle {} here */
+            : Vector3<T>(ZeroInit)
             #endif
             {}
 
@@ -264,7 +265,8 @@ template<class T> class Color3: public Vector3<T> {
         explicit Color3(NoInitT)
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            : Vector3<T>{NoInit}
+            /* MSVC 2015 can't handle {} here */
+            : Vector3<T>(NoInit)
             #endif
             {}
 
@@ -452,7 +454,8 @@ class Color4: public Vector4<T> {
         constexpr explicit Color4(ZeroInitT)
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            : Vector4<T>{ZeroInit}
+            /* MSVC 2015 can't handle {} here */
+            : Vector4<T>(ZeroInit)
             #endif
             {}
 
@@ -460,7 +463,8 @@ class Color4: public Vector4<T> {
         explicit Color4(NoInitT)
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            : Vector4<T>{NoInit}
+            /* MSVC 2015 can't handle {} here */
+            : Vector4<T>(NoInit)
             #endif
             {}
 
