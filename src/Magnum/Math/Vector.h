@@ -30,6 +30,9 @@
  */
 
 #include <cmath>
+#ifdef _MSC_VER
+#include <algorithm> /* std::max() */
+#endif
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/ConfigurationValue.h>
 #include <Corrade/Utility/Debug.h>
