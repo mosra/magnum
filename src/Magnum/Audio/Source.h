@@ -83,6 +83,16 @@ class MAGNUM_AUDIO_EXPORT Source {
         /** @{ @name Source positioning */
 
         /**
+         * @brief Position
+         * @see @ref setPosition(), @fn_al{GetSourcefv} with @def_al{POSITION}
+         */
+        Vector3 position() const {
+            Vector3 v;
+            alGetSourcefv(_id, AL_POSITION, v.data());
+            return v;
+        }
+
+        /**
          * @brief Set position
          * @return Reference to self (for method chaining)
          *
@@ -100,6 +110,16 @@ class MAGNUM_AUDIO_EXPORT Source {
         Source& setPosition(const Vector3i& position) {
             alSourceiv(_id, AL_POSITION, position.data());
             return *this;
+        }
+
+        /**
+         * @brief Velocity
+         * @see @ref setVelocity(), @fn_al{GetSourcefv} with @def_al{VELOCITY}
+         */
+        Vector3 velocity() const {
+            Vector3 v;
+            alGetSourcefv(_id, AL_VELOCITY, v.data());
+            return v;
         }
 
         /**
@@ -123,6 +143,17 @@ class MAGNUM_AUDIO_EXPORT Source {
         }
 
         /**
+         * @brief Whether the source is interpreted relative to the listener
+         * @see @ref setRelative(), @ref position(), @ref direction(), @ref velocity(),
+         *      @fn_al{GetSourcei} with @def_al{SOURCE_RELATIVE}
+         */
+        bool isRelative() const {
+            Int relative;
+            alGetSourcei(_id, AL_SOURCE_RELATIVE, &relative);
+            return (relative == 1);
+        }
+
+        /**
          * @brief Interpret source relatively to listener
          *
          * When enabled, source position, direction and velocity will be
@@ -140,6 +171,16 @@ class MAGNUM_AUDIO_EXPORT Source {
         /** @{ @name Source behavior */
 
         /**
+         * @brief Gain
+         * @see @ref setGain(), @fn_al{GetSourcef} with @def_al{GAIN}
+         */
+        Float gain() const {
+            Float gain;
+            alGetSourcef(_id, AL_GAIN, &gain);
+            return gain;
+        }
+
+        /**
          * @brief Set gain
          * @return Reference to self (for method chaining)
          *
@@ -151,6 +192,17 @@ class MAGNUM_AUDIO_EXPORT Source {
         Source& setGain(Float gain) {
             alSourcef(_id, AL_GAIN, gain);
             return *this;
+        }
+
+        /**
+         * @brief Minimal gain to clamp to
+         * @see @ref setMinGain(), @ref setMaxGain(), @ref setGain(), @ref maxGain(),
+         *      @ref gain(), @fn_al{GetSourcef} with @def_al{MIN_GAIN}
+         */
+        Float minGain() const {
+            Float minGain;
+            alGetSourcef(_id, AL_MIN_GAIN, &minGain);
+            return minGain;
         }
 
         /**
@@ -169,6 +221,17 @@ class MAGNUM_AUDIO_EXPORT Source {
         }
 
         /**
+         * @brief Maximal gain to clamp to
+         * @see @ref setMaxGain(), @ref setMinGain(), @ref setGain(), @ref maxGain(),
+         *      @ref gain(), @fn_al{GetSourcef} with @def_al{MAX_GAIN}
+         */
+        Float maxGain() const {
+            Float maxGain;
+            alGetSourcef(_id, AL_MAX_GAIN, &maxGain);
+            return maxGain;
+        }
+
+        /**
          * @brief Set max gain
          * @return Reference to self (for method chaining)
          *
@@ -184,10 +247,22 @@ class MAGNUM_AUDIO_EXPORT Source {
         }
 
         /**
+         * @brief Reference distance
+         * @see @ref setReferenceDistance(), @fn_al{GetSourcef} with @def_al{REFERENCE_DISTANCE}
+         */
+        Float referenceDistance() const {
+            Float distance;
+            alGetSourcef(_id, AL_REFERENCE_DISTANCE, &distance);
+            return distance;
+        }
+
+        /**
          * @brief Set reference distance
          * @return Reference to self (for method chaining)
          *
-         * Default is `1.0f`.
+         * Default is `1.0f`. Distance at which the listener will
+         * experience @ref gain() (or @ref minGain(), @ref maxGain()
+         * if gain was clamped).
          * @see @ref setRolloffFactor(), @fn_al{Sourcef} with
          *      @def_al{REFERENCE_DISTANCE}
          */
@@ -202,6 +277,16 @@ class MAGNUM_AUDIO_EXPORT Source {
         Source& setReferenceDistance(Int distance) {
             alSourcei(_id, AL_REFERENCE_DISTANCE, distance);
             return *this;
+        }
+
+        /**
+         * @brief Rolloff factor
+         * @see @ref setRolloffFactor(), @fn_al{GetSourcef} with @def_al{ROLLOFF_FACTOR}
+         */
+        Float rolloffFactor() const {
+            Float factor;
+            alGetSourcef(_id, AL_ROLLOFF_FACTOR, &factor);
+            return factor;
         }
 
         /**
@@ -226,6 +311,16 @@ class MAGNUM_AUDIO_EXPORT Source {
         }
 
         /**
+         * @brief Maximal distance to clamp to
+         * @see @ref setRolloffFactor(), @fn_al{GetSourcef} with @def_al{MAX_DISTANCE}
+         */
+        Float maxDistance() const {
+            Float distance;
+            alGetSourcef(_id, AL_MAX_DISTANCE, &distance);
+            return distance;
+        }
+
+        /**
          * @brief Set max distance
          * @return Reference to self (for method chaining)
          *
@@ -243,6 +338,16 @@ class MAGNUM_AUDIO_EXPORT Source {
         Source& setMaxDistance(Int distance) {
             alSourcei(_id, AL_MAX_DISTANCE, distance);
             return *this;
+        }
+
+        /**
+         * @brief Direction
+         * @see @ref setDirection(), @fn_al{GetSourcefv} with @def_al{DIRECTION}
+         */
+        Vector3 direction() const {
+            Vector3 direction;
+            alGetSourcef(_id, AL_DIRECTION, direction.data());
+            return direction;
         }
 
         /**
@@ -268,6 +373,16 @@ class MAGNUM_AUDIO_EXPORT Source {
         }
 
         /**
+         * @brief Inner cone angle
+         * @see @ref setInnerConeAngle(), @fn_al{GetSourcef} with @def_al{CONE_INNER_ANGLE}
+         */
+        Deg innerConeAngle() const {
+            Float angle;
+            alGetSourcef(_id, AL_CONE_INNER_ANGLE, &angle);
+            return Deg(angle);
+        }
+
+        /**
          * @brief Set inner cone angle
          * @return Reference to self (for method chaining)
          *
@@ -279,6 +394,16 @@ class MAGNUM_AUDIO_EXPORT Source {
         Source& setInnerConeAngle(Deg angle) {
             alSourcef(_id, AL_CONE_INNER_ANGLE, Float(angle));
             return *this;
+        }
+
+        /**
+         * @brief Outer cone angle
+         * @see @ref setOuterConeAngle(), @fn_al{GetSourcef} with @def_al{CONE_OUTER_ANGLE}
+         */
+        Deg outerConeAngle() const {
+            Float angle;
+            alGetSourcef(_id, AL_CONE_OUTER_ANGLE, &angle);
+            return Deg(angle);
         }
 
         /**
@@ -297,6 +422,16 @@ class MAGNUM_AUDIO_EXPORT Source {
         }
 
         /**
+         * @brief Outer cone gain
+         * @see @ref setOuterConeGain(), @fn_al{GetSourcef} with @def_al{CONE_OUTER_GAIN}
+         */
+        Float outerConeGain() const {
+            Float gain;
+            alGetSourcef(_id, AL_CONE_OUTER_GAIN, &gain);
+            return gain;
+        }
+
+        /**
          * @brief Set outer cone gain multiplier
          * @return Reference to self (for method chaining)
          *
@@ -306,8 +441,18 @@ class MAGNUM_AUDIO_EXPORT Source {
          *      @def_al{CONE_OUTER_GAIN}
          */
         Source& setOuterConeGain(Float multiplier) {
-            alSourcef(_id, AL_CONE_OUTER_ANGLE, multiplier);
+            alSourcef(_id, AL_CONE_OUTER_GAIN, multiplier);
             return *this;
+        }
+
+        /**
+         * @brief Pitch
+         * @see @ref setPitch(), @fn_al{GetSourcef} with @def_al{PITCH}
+         */
+        Float pitch() const {
+            Float pitch;
+            alGetSourcef(_id, AL_PITCH, &pitch);
+            return pitch;
         }
 
         /**
