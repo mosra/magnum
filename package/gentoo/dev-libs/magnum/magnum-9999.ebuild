@@ -19,7 +19,6 @@ IUSE=""
 RDEPEND="
 	dev-libs/corrade
 	media-libs/openal
-	media-libs/freeglut
 	media-libs/libsdl2
 "
 DEPEND="${RDEPEND}"
@@ -29,7 +28,6 @@ src_configure() {
 		-DCMAKE_INSTALL_PREFIX="${EPREFIX}/usr"
 		-DCMAKE_BUILD_TYPE=Release
 		-DWITH_AUDIO=ON
-		-DWITH_GLUTAPPLICATION=ON
 		-DWITH_GLXAPPLICATION=ON
 		-DWITH_SDL2APPLICATION=ON
 		-DWITH_WINDOWLESSGLXAPPLICATION=ON
