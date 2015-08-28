@@ -27,7 +27,7 @@
 #include <Magnum/DefaultFramebuffer.h>
 #include <Magnum/Renderer.h>
 #include <Magnum/Version.h>
-#include <Magnum/Magnum/Color.h>
+#include <Magnum/Math/Color.h>
 #include <Magnum/Platform/Sdl2Application.h>
 
 using namespace Magnum;
