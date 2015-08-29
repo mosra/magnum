@@ -281,6 +281,9 @@ AbstractFramebuffer& AbstractFramebuffer::clear(const FramebufferClearMask mask)
 void AbstractFramebuffer::read(const Range2Di& rectangle, Image2D& image) {
     bindInternal(FramebufferTarget::Read);
     Containers::Array<char> data{Implementation::imageDataSizeFor(image, rectangle.size())};
+    #ifndef MAGNUM_TARGET_GLES2
+    Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
+    #endif
     (Context::current()->state().framebuffer->readImplementation)(rectangle, image.format(), image.type(), data.size(), data);
     image.setData(image.storage(), image.format(), image.type(), rectangle.size(), std::move(data));
 }
