@@ -280,7 +280,13 @@ AbstractFramebuffer& AbstractFramebuffer::clear(const FramebufferClearMask mask)
 
 void AbstractFramebuffer::read(const Range2Di& rectangle, Image2D& image) {
     bindInternal(FramebufferTarget::Read);
-    Containers::Array<char> data{Implementation::imageDataSizeFor(image, rectangle.size())};
+
+    /* Reallocate only if needed */
+    const std::size_t dataSize = Implementation::imageDataSizeFor(image, rectangle.size());
+    Containers::Array<char> data{image.release()};
+    if(data.size() < dataSize)
+        data = Containers::Array<char>{dataSize};
+
     #ifndef MAGNUM_TARGET_GLES2
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     #endif
@@ -296,11 +302,13 @@ Image2D AbstractFramebuffer::read(const Range2Di& rectangle, Image2D&& image) {
 #ifndef MAGNUM_TARGET_GLES2
 void AbstractFramebuffer::read(const Range2Di& rectangle, BufferImage2D& image, BufferUsage usage) {
     bindInternal(FramebufferTarget::Read);
-    /* If the buffer doesn't have sufficient size, resize it */
-    /** @todo Explicitly reset also when buffer usage changes */
+
+    /* Reallocate only if needed */
     const std::size_t dataSize = Implementation::imageDataSizeFor(image, rectangle.size());
-    if(image.size() != rectangle.size())
+    if(image.dataSize() < dataSize)
         image.setData(image.storage(), image.format(), image.type(), rectangle.size(), {nullptr, dataSize}, usage);
+    else
+        image.setData(image.storage(), image.format(), image.type(), rectangle.size(), nullptr, usage);
 
     image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
     (Context::current()->state().framebuffer->readImplementation)(rectangle, image.format(), image.type(), dataSize, nullptr);

@@ -1494,7 +1494,12 @@ void AbstractTexture::invalidateSubImageImplementationARB(GLint level, const Vec
 #ifndef MAGNUM_TARGET_GLES
 template<UnsignedInt dimensions> void AbstractTexture::image(GLint level, Image<dimensions>& image) {
     const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, level);
-    Containers::Array<char> data{Implementation::imageDataSizeFor(image, size)};
+    const std::size_t dataSize = Implementation::imageDataSizeFor(image, size);
+
+    /* Reallocate only if needed */
+    Containers::Array<char> data{image.release()};
+    if(data.size() < dataSize)
+        data = Containers::Array<char>{dataSize};
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     (this->*Context::current()->state().texture->getImageImplementation)(level, image.format(), image.type(), data.size(), data);
@@ -1508,8 +1513,12 @@ template void MAGNUM_EXPORT AbstractTexture::image<3>(GLint, Image<3>&);
 template<UnsignedInt dimensions> void AbstractTexture::image(GLint level, BufferImage<dimensions>& image, BufferUsage usage) {
     const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, level);
     const std::size_t dataSize = Implementation::imageDataSizeFor(image, size);
-    if(image.size() != size)
+
+    /* Reallocate only if needed */
+    if(image.dataSize() < dataSize)
         image.setData(image.storage(), image.format(), image.type(), size, {nullptr, dataSize}, usage);
+    else
+        image.setData(image.storage(), image.format(), image.type(), size, nullptr, usage);
 
     image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
     (this->*Context::current()->state().texture->getImageImplementation)(level, image.format(), image.type(), dataSize, nullptr);
@@ -1523,9 +1532,14 @@ template<UnsignedInt dimensions> void AbstractTexture::compressedImage(const GLi
     const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, level);
     GLint textureDataSize;
     (this->*Context::current()->state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &textureDataSize);
+    const std::size_t dataSize = Implementation::compressedImageDataSizeFor(image, size, textureDataSize);
     GLint format;
     (this->*Context::current()->state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
-    Containers::Array<char> data{Implementation::compressedImageDataSizeFor(image, size, textureDataSize)};
+
+    /* Reallocate only if needed */
+    Containers::Array<char> data{image.release()};
+    if(data.size() < dataSize)
+        data = Containers::Array<char>{dataSize};
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     (this->*Context::current()->state().texture->getCompressedImageImplementation)(level, data.size(), data);
@@ -1544,7 +1558,12 @@ template<UnsignedInt dimensions> void AbstractTexture::compressedImage(const GLi
     GLint format;
     (this->*Context::current()->state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
 
-    image.setData(image.storage(), CompressedPixelFormat(format), size, {nullptr, dataSize}, usage);
+    /* Reallocate only if needed */
+    if(image.dataSize() < dataSize)
+        image.setData(image.storage(), CompressedPixelFormat(format), size, {nullptr, dataSize}, usage);
+    else
+        image.setData(image.storage(), CompressedPixelFormat(format), size, nullptr, usage);
+
     image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
     (this->*Context::current()->state().texture->getCompressedImageImplementation)(level, dataSize, nullptr);
 }
@@ -1557,9 +1576,14 @@ template<UnsignedInt dimensions> void AbstractTexture::subImage(const GLint leve
     createIfNotAlready();
 
     const Math::Vector<dimensions, Int> size = range.size();
+    const std::size_t dataSize = Implementation::imageDataSizeFor(image, size);
     const Vector3i paddedOffset = Vector3i::pad(range.min());
     const Vector3i paddedSize = Vector3i::pad(size, 1);
-    Containers::Array<char> data{Implementation::imageDataSizeFor(image, size)};
+
+    /* Reallocate only if needed */
+    Containers::Array<char> data{image.release()};
+    if(data.size() < dataSize)
+        data = Containers::Array<char>{dataSize};
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     glGetTextureSubImage(_id, level, paddedOffset.x(), paddedOffset.y(), paddedOffset.z(), paddedSize.x(), paddedSize.y(), paddedSize.z(), GLenum(image.format()), GLenum(image.type()), data.size(), data);
@@ -1577,8 +1601,12 @@ template<UnsignedInt dimensions> void AbstractTexture::subImage(const GLint leve
     const std::size_t dataSize = Implementation::imageDataSizeFor(image, size);
     const Vector3i paddedOffset = Vector3i::pad(range.min());
     const Vector3i paddedSize = Vector3i::pad(size, 1);
-    if(image.size() != size)
+
+    /* Reallocate only if needed */
+    if(image.dataSize() < dataSize)
         image.setData(image.storage(), image.format(), image.type(), size, {nullptr, dataSize}, usage);
+    else
+        image.setData(image.storage(), image.format(), image.type(), size, nullptr, usage);
 
     image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
     glGetTextureSubImage(_id, level, paddedOffset.x(), paddedOffset.y(), paddedOffset.z(), paddedSize.x(), paddedSize.y(), paddedSize.z(), GLenum(image.format()), GLenum(image.type()), dataSize, nullptr);

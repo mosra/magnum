@@ -637,7 +637,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *
          * Image parameters like format and type of pixel data are taken from
          * given image, image size is taken from the texture using
-         * @ref imageSize().
+         * @ref imageSize().  The storage is not reallocated if it is large
+         * enough to contain the new data.
          *
          * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
          * nor @extension{EXT,direct_state_access} is available, the texture is
@@ -678,7 +679,9 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @param image             Buffer image where to put the data
          * @param usage             Buffer usage
          *
-         * See @ref image(Int, Image&) for more information.
+         * See @ref image(Int, Image&) for more information. The storage is not
+         * reallocated if it is large enough to contain the new data, which
+         * means that @p usage might get ignored.
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() for possible workaround.
          * @todo Make it more flexible (usable with
@@ -703,7 +706,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @param image             Image where to put the compressed data
          *
          * Compression format and data size are taken from the texture, image
-         * size is taken using @ref imageSize().
+         * size is taken using @ref imageSize(). The storage is not reallocated
+         * if it is large enough to contain the new data.
          *
          * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
          * nor @extension{EXT,direct_state_access} is available, the texture is
@@ -746,7 +750,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @param usage             Buffer usage
          *
          * See @ref compressedImage(Int, CompressedImage&) for more
-         * information.
+         * information. The storage is not reallocated if it is large enough to
+         * contain the new data, which means that @p usage might get ignored.
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() for possible workaround.
          * @todo Make it more flexible (usable with
@@ -772,7 +777,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @param image             Image where to put the data
          *
          * Image parameters like format and type of pixel data are taken from
-         * given image.
+         * given image. The storage is not reallocated if it is large enough to
+         * contain the new data.
+         *
+         * The operation is protected from buffer overflow.
          * @see @fn_gl{GetTextureSubImage}
          * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
          * @requires_gl Texture image queries are not available in OpenGL ES or
@@ -799,7 +807,9 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @param usage             Buffer usage
          *
          * See @ref subImage(Int, const RangeTypeFor<dimensions, Int>&, Image&)
-         * for more information.
+         * for more information. The storage is not reallocated if it is large
+         * enough to contain the new data, which means that @p usage might get
+         * ignored.
          * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() for possible workaround.

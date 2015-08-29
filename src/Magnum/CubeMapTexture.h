@@ -440,7 +440,10 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * Image parameters like format and type of pixel data are taken from
          * given image, image size is taken from the texture using
-         * @ref imageSize().
+         * @ref imageSize(). The storage is not reallocated if it is large
+         * enough to contain the new data.
+         *
+         * The operation is protected from buffer overflow.
          * @see @fn_gl2{GetTextureLevelParameter,GetTexLevelParameter} with
          *      @def_gl{TEXTURE_WIDTH}, @def_gl{TEXTURE_HEIGHT}, then
          *      @fn_gl2{GetTextureImage,GetTexImage}
@@ -462,7 +465,9 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         /**
          * @brief Read given mip level of texture to buffer image
          *
-         * See @ref image(Int, Image3D&) for more information.
+         * See @ref image(Int, Image3D&) for more information. The storage is
+         * not reallocated if it is large enough to contain the new data, which
+         * means that @p usage might get ignored.
          * @requires_gl45 Extension @extension{ARB,direct_state_access}
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() for possible workaround.
@@ -482,7 +487,8 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * @brief Read given mip level of compressed texture to image
          *
          * Compression format and data size are taken from the texture, image
-         * size is taken using @ref imageSize().
+         * size is taken using @ref imageSize(). The storage is not reallocated
+         * if it is large enough to contain the new data.
          * @see @fn_gl2{GetTextureLevelParameter,GetTexLevelParameter} with
          *      @def_gl{TEXTURE_COMPRESSED_IMAGE_SIZE},
          *      @def_gl{TEXTURE_INTERNAL_FORMAT}, @def_gl{TEXTURE_WIDTH},
@@ -507,7 +513,8 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * @brief Read given mip level of compressed texture to buffer image
          *
          * See @ref compressedImage(Int, CompressedImage3D&) for more
-         * information.
+         * information. The storage is not reallocated if it is large enough to
+         * contain the new data, which means that @p usage might get ignored.
          * @requires_gl45 Extension @extension{ARB,direct_state_access}
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() for possible workaround.
@@ -528,7 +535,8 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * Image parameters like format and type of pixel data are taken from
          * given image, image size is taken from the texture using
-         * @ref imageSize().
+         * @ref imageSize(). The storage is not reallocated if it is large
+         * enough to contain the new data.
          *
          * If neither @extension{ARB,get_texture_sub_image} (part of OpenGL
          * 4.5) nor @extension{EXT,direct_state_access} is available, the
@@ -564,7 +572,9 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         /**
          * @brief Read given mip level and coordinate of texture to buffer image
          *
-         * See @ref image(Coordinate, Int, Image2D&) for more information.
+         * See @ref image(Coordinate, Int, Image2D&) for more information. The
+         * storage is not reallocated if it is large enough to contain the new
+         * data, which means that @p usage might get ignored.
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() for possible workaround.
          */
@@ -583,7 +593,8 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * @brief Read given mip level and coordinate of compressed texture to image
          *
          * Compression format and data size are taken from the texture, image
-         * size is taken using @ref imageSize().
+         * size is taken using @ref imageSize(). The storage is not reallocated
+         * if it is large enough to contain the new data.
          *
          * If neither @extension{ARB,get_texture_sub_image} (part of OpenGL
          * 4.5) nor @extension{EXT,direct_state_access} is available, the
@@ -621,7 +632,9 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * @brief Read given mip level and coordinate of compressed texture to buffer image
          *
          * See @ref compressedImage(Coordinate, Int, CompressedImage2D&) for
-         * more information.
+         * more information. The storage is not reallocated if it is large
+         * enough to contain the new data, which means that @p usage might get
+         * ignored.
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() for possible workaround.
          */

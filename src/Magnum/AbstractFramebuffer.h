@@ -314,7 +314,8 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @param image             Image where to put the data
          *
          * Image parameters like format and type of pixel data are taken from
-         * given image.
+         * given image. The storage is not reallocated if it is large enough to
+         * contain the new data.
          *
          * If @extension{ARB,robustness} is available, the operation is
          * protected from buffer overflow.
@@ -350,7 +351,8 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @param usage             Buffer usage
          *
          * See @ref read(const Vector2i&, const Vector2i&, Image2D&) for more
-         * information.
+         * information. The storage is not reallocated if it is large enough to
+         * contain the new data, which means that @p usage might get ignored.
          * @requires_gles30 Pixel buffer objects are not available in OpenGL ES
          *      2.0.
          * @requires_webgl20 Pixel buffer objects are not available in WebGL
