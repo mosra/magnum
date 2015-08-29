@@ -44,4 +44,20 @@ Debug operator<<(Debug debug, const Renderer::Error value) {
     return debug << "Audio::Renderer::Error::(invalid)";
 }
 
+Debug operator<<(Debug debug, const Renderer::DistanceModel value) {
+    switch(value) {
+        #define _c(value) case Renderer::DistanceModel::value: return debug << "Audio::Renderer::DistanceModel::" #value;
+        _c(None)
+        _c(Inverse)
+        _c(InverseClamped)
+        _c(Linear)
+        _c(LinearClamped)
+        _c(Exponent)
+        _c(ExponentClamped)
+        #undef _c
+    }
+
+    return debug << "Audio::Renderer::DistanceModel::(invalid)";
+}
+
 }}
