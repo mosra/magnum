@@ -148,6 +148,9 @@ template<UnsignedInt dimensions> class BufferImage {
             return Implementation::imageDataProperties<dimensions>(*this);
         }
 
+        /** @brief Currently allocated data size */
+        std::size_t dataSize() const { return _dataSize; }
+
         /** @brief Image buffer */
         Buffer& buffer() { return _buffer; }
 
@@ -160,7 +163,9 @@ template<UnsignedInt dimensions> class BufferImage {
          * @param data              Image data
          * @param usage             Image buffer usage
          *
-         * Updates the image buffer with given data.
+         * Updates the image buffer with given data. Passing `nullptr`
+         * zero-sized @p data will not reallocate current storage, but expects
+         * that current data size is large enough for the new parameters.
          * @see @ref Buffer::setData()
          * @todo Make it more flexible (usable with
          *      @extension{ARB,buffer_storage}, avoiding relocations...)
@@ -201,6 +206,7 @@ template<UnsignedInt dimensions> class BufferImage {
         PixelType _type;
         Math::Vector<Dimensions, Int> _size;
         Buffer _buffer;
+        std::size_t _dataSize;
 };
 
 /** @brief One-dimensional buffer image */

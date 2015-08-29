@@ -28,20 +28,27 @@
 namespace Magnum {
 
 #ifndef MAGNUM_TARGET_GLES2
-template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const PixelFormat format, const PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> const data, const BufferUsage usage): _storage{storage}, _format{format}, _type{type}, _size{size}, _buffer{Buffer::TargetHint::PixelPack} {
+template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const PixelFormat format, const PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> const data, const BufferUsage usage): _storage{storage}, _format{format}, _type{type}, _size{size}, _buffer{Buffer::TargetHint::PixelPack}, _dataSize{data.size()} {
     CORRADE_ASSERT(Implementation::imageDataSize(*this) <= data.size(), "BufferImage::BufferImage(): bad image data size, got" << data.size() << "but expected at least" << Implementation::imageDataSize(*this), );
     _buffer.setData(data, usage);
 }
 
-template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const PixelFormat format, const PixelType type): _storage{storage}, _format{format}, _type{type}, _buffer{Buffer::TargetHint::PixelPack} {}
+template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const PixelFormat format, const PixelType type): _storage{storage}, _format{format}, _type{type}, _buffer{Buffer::TargetHint::PixelPack}, _dataSize{0} {}
 
 template<UnsignedInt dimensions> void BufferImage<dimensions>::setData(const PixelStorage storage, const PixelFormat format, const PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> const data, const BufferUsage usage) {
     _storage = storage;
     _format = format;
     _type = type;
     _size = size;
-    CORRADE_ASSERT(Implementation::imageDataSize(*this) <= data.size(), "BufferImage::setData(): bad image data size, got" << data.size() << "but expected at least" << Implementation::imageDataSize(*this), );
-    _buffer.setData(data, usage);
+
+    /* Keep the old storage if zero-sized nullptr buffer was passed */
+    if(data.data() == nullptr && data.size() == 0)
+        CORRADE_ASSERT(Implementation::imageDataSize(*this) <= _dataSize, "BufferImage::setData(): bad current storage size, got" << _dataSize << "but expected at least" << Implementation::imageDataSize(*this), );
+    else {
+        CORRADE_ASSERT(Implementation::imageDataSize(*this) <= data.size(), "BufferImage::setData(): bad image data size, got" << data.size() << "but expected at least" << Implementation::imageDataSize(*this), );
+        _buffer.setData(data, usage);
+        _dataSize = data.size();
+    }
 }
 
 template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(
