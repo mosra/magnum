@@ -47,9 +47,7 @@ typedef std::uint64_t UnsignedLong;
 typedef std::int64_t Long;
 #endif
 
-/** @todo C++14: use std::float32_t and std::float_64t [N3626](http://open-std.org/jtc1/sc22/wg21/docs/papers/2013/n3626.pdf) */
 typedef float Float;
-
 #ifndef MAGNUM_TARGET_GLES
 typedef double Double;
 #endif
