@@ -280,10 +280,10 @@ AbstractFramebuffer& AbstractFramebuffer::clear(const FramebufferClearMask mask)
 
 void AbstractFramebuffer::read(const Range2Di& rectangle, Image2D& image) {
     bindInternal(FramebufferTarget::Read);
-    const std::size_t dataSize = image.dataSize(rectangle.size());
+    const std::size_t dataSize = Implementation::imageDataSizeFor(image, rectangle.size());
     char* const data = new char[dataSize];
     (Context::current()->state().framebuffer->readImplementation)(rectangle, image.format(), image.type(), dataSize, data);
-    image.setData(image.format(), image.type(), rectangle.size(), data);
+    image.setData(image.storage(), image.format(), image.type(), rectangle.size(), data);
 }
 
 Image2D AbstractFramebuffer::read(const Range2Di& rectangle, Image2D&& image) {
@@ -297,10 +297,10 @@ void AbstractFramebuffer::read(const Range2Di& rectangle, BufferImage2D& image, 
     /* If the buffer doesn't have sufficient size, resize it */
     /** @todo Explicitly reset also when buffer usage changes */
     if(image.size() != rectangle.size())
-        image.setData(image.format(), image.type(), rectangle.size(), nullptr, usage);
+        image.setData(image.storage(), image.format(), image.type(), rectangle.size(), nullptr, usage);
 
     image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
-    (Context::current()->state().framebuffer->readImplementation)(rectangle, image.format(), image.type(), image.dataSize(rectangle.size()), nullptr);
+    (Context::current()->state().framebuffer->readImplementation)(rectangle, image.format(), image.type(), Implementation::imageDataSizeFor(image, rectangle.size()), nullptr);
 }
 
 BufferImage2D AbstractFramebuffer::read(const Range2Di& rectangle, BufferImage2D&& image, BufferUsage usage) {

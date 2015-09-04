@@ -33,7 +33,7 @@
 
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/PixelStorage.h"
-#include "Magnum/Math/Vector3.h"
+#include "Magnum/Math/Vector4.h"
 
 namespace Magnum {
 
@@ -100,15 +100,23 @@ template<UnsignedInt dimensions> class ImageView {
         /** @brief Data type of pixel data */
         PixelType type() const { return _type; }
 
-        /** @brief Pixel size (in bytes) */
-        std::size_t pixelSize() const { return Implementation::imagePixelSize(_format, _type); }
+        /**
+         * @brief Pixel size (in bytes)
+         *
+         * @see @ref PixelStorage::pixelSize()
+         */
+        std::size_t pixelSize() const { return PixelStorage::pixelSize(_format, _type); }
 
         /** @brief Image size */
         constexpr VectorTypeFor<dimensions, Int> size() const { return _size; }
 
-        /** @copydoc Image::dataSize() */
-        std::size_t dataSize(const VectorTypeFor<dimensions, Int>& size) const {
-            return Implementation::imageDataSize<dimensions>(*this, _format, _type, size);
+        /**
+         * @brief Image data properties
+         *
+         * See @ref PixelStorage::dataProperties() for more information.
+         */
+        std::tuple<std::size_t, VectorTypeFor<dimensions, std::size_t>, std::size_t> dataProperties() const {
+            return Implementation::imageDataProperties<dimensions>(*this);
         }
 
         /** @brief Pointer to raw data */
@@ -232,6 +240,21 @@ template<UnsignedInt dimensions> class CompressedImageView {
 
         /** @brief Image size */
         constexpr VectorTypeFor<dimensions, Int> size() const { return _size; }
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Compressed image data properties
+         *
+         * See @ref CompressedPixelStorage::dataProperties() for more
+         * information.
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl Compressed pixel storage is hardcoded in OpenGL ES and
+         *      WebGL.
+         */
+        std::tuple<std::size_t, VectorTypeFor<dimensions, std::size_t>, std::size_t> dataProperties() const {
+            return Implementation::compressedImageDataProperties<dimensions>(*this);
+        }
+        #endif
 
         /** @brief Raw data */
         constexpr Containers::ArrayView<const char> data() const { return _data; }

@@ -60,11 +60,11 @@ void CubeMapTexture::image(const Int level, Image3D& image) {
     createIfNotAlready();
 
     const Vector3i size{imageSize(level), 6};
-    const std::size_t dataSize = image.dataSize(size);
+    const std::size_t dataSize = Implementation::imageDataSizeFor(image, size);
     char* data = new char[dataSize];
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     glGetTextureImage(_id, level, GLenum(image.format()), GLenum(image.type()), dataSize, data);
-    image.setData(image.format(), image.type(), size, data);
+    image.setData(image.storage(), image.format(), image.type(), size, data);
 }
 
 Image3D CubeMapTexture::image(const Int level, Image3D&& image) {
@@ -76,9 +76,9 @@ void CubeMapTexture::image(const Int level, BufferImage3D& image, const BufferUs
     createIfNotAlready();
 
     const Vector3i size{imageSize(level), 6};
-    const std::size_t dataSize = image.dataSize(size);
+    const std::size_t dataSize = Implementation::imageDataSizeFor(image, size);
     if(image.size() != size)
-        image.setData(image.format(), image.type(), size, nullptr, usage);
+        image.setData(image.storage(), image.format(), image.type(), size, nullptr, usage);
 
     image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
     glGetTextureImage(_id, level, GLenum(image.format()), GLenum(image.type()), dataSize, nullptr);
@@ -93,15 +93,16 @@ void CubeMapTexture::compressedImage(const Int level, CompressedImage3D& image) 
     createIfNotAlready();
 
     const Vector3i size{imageSize(level), 6};
-    GLint dataSize;
-    (this->*Context::current()->state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &dataSize);
+    GLint textureDataSize;
+    (this->*Context::current()->state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &textureDataSize);
+    const std::size_t dataSize = Implementation::compressedImageDataSizeFor(image, size, textureDataSize);
     GLint format;
     (this->*Context::current()->state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
-    Containers::Array<char> data{std::size_t(dataSize)};
+    Containers::Array<char> data{dataSize};
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     glGetCompressedTextureImage(_id, level, dataSize, data);
-    image.setData(CompressedPixelFormat(format), size, std::move(data));
+    image.setData(image.storage(), CompressedPixelFormat(format), size, std::move(data));
 }
 
 CompressedImage3D CubeMapTexture::compressedImage(const Int level, CompressedImage3D&& image) {
@@ -113,13 +114,14 @@ void CubeMapTexture::compressedImage(const Int level, CompressedBufferImage3D& i
     createIfNotAlready();
 
     const Vector3i size{imageSize(level), 6};
-    GLint dataSize;
-    (this->*Context::current()->state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &dataSize);
+    GLint textureDataSize;
+    (this->*Context::current()->state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &textureDataSize);
+    const std::size_t dataSize = Implementation::compressedImageDataSizeFor(image, size, textureDataSize);
     GLint format;
     (this->*Context::current()->state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
 
     image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
-    image.setData(CompressedPixelFormat(format), size, {nullptr, std::size_t(dataSize)}, usage);
+    image.setData(image.storage(), CompressedPixelFormat(format), size, {nullptr, dataSize}, usage);
     glGetCompressedTextureImage(_id, level, dataSize, nullptr);
 }
 
@@ -130,12 +132,12 @@ CompressedBufferImage3D CubeMapTexture::compressedImage(const Int level, Compres
 
 void CubeMapTexture::image(const Coordinate coordinate, const Int level, Image2D& image) {
     const Vector2i size = imageSize(level);
-    const std::size_t dataSize = image.dataSize(size);
+    const std::size_t dataSize = Implementation::imageDataSizeFor(image, size);
     char* data = new char[dataSize];
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     (this->*Context::current()->state().texture->getCubeImageImplementation)(coordinate, level, size, image.format(), image.type(), dataSize, data);
-    image.setData(image.format(), image.type(), size, data);
+    image.setData(image.storage(), image.format(), image.type(), size, data);
 }
 
 Image2D CubeMapTexture::image(const Coordinate coordinate, const Int level, Image2D&& image) {
@@ -145,9 +147,9 @@ Image2D CubeMapTexture::image(const Coordinate coordinate, const Int level, Imag
 
 void CubeMapTexture::image(const Coordinate coordinate, const Int level, BufferImage2D& image, const BufferUsage usage) {
     const Vector2i size = imageSize(level);
-    const std::size_t dataSize = image.dataSize(size);
+    const std::size_t dataSize = Implementation::imageDataSizeFor(image, size);
     if(image.size() != size)
-        image.setData(image.format(), image.type(), size, nullptr, usage);
+        image.setData(image.storage(), image.format(), image.type(), size, nullptr, usage);
 
     image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
     (this->*Context::current()->state().texture->getCubeImageImplementation)(coordinate, level, size, image.format(), image.type(), dataSize, nullptr);
@@ -160,15 +162,15 @@ BufferImage2D CubeMapTexture::image(const Coordinate coordinate, const Int level
 
 void CubeMapTexture::compressedImage(const Coordinate coordinate, const Int level, CompressedImage2D& image) {
     const Vector2i size = imageSize(level);
-    GLint dataSize;
-    (this->*Context::current()->state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &dataSize);
+    GLint textureDataSize;
+    (this->*Context::current()->state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &textureDataSize);
     GLint format;
     (this->*Context::current()->state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
-    Containers::Array<char> data{std::size_t(dataSize)};
+    Containers::Array<char> data{Implementation::compressedImageDataSizeFor(image, size, textureDataSize)};
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
-    (this->*Context::current()->state().texture->getCompressedCubeImageImplementation)(coordinate, level, size, dataSize, data);
-    image.setData(CompressedPixelFormat(format), size, std::move(data));
+    (this->*Context::current()->state().texture->getCompressedCubeImageImplementation)(coordinate, level, size, data.size(), data);
+    image.setData(image.storage(), CompressedPixelFormat(format), size, std::move(data));
 }
 
 CompressedImage2D CubeMapTexture::compressedImage(const Coordinate coordinate, const Int level, CompressedImage2D&& image) {
@@ -178,12 +180,13 @@ CompressedImage2D CubeMapTexture::compressedImage(const Coordinate coordinate, c
 
 void CubeMapTexture::compressedImage(const Coordinate coordinate, const Int level, CompressedBufferImage2D& image, const BufferUsage usage) {
     const Vector2i size = imageSize(level);
-    GLint dataSize;
-    (this->*Context::current()->state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &dataSize);
+    GLint textureDataSize;
+    (this->*Context::current()->state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &textureDataSize);
+    const std::size_t dataSize = Implementation::compressedImageDataSizeFor(image, size, textureDataSize);
     GLint format;
     (this->*Context::current()->state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
 
-    image.setData(CompressedPixelFormat(format), size, {nullptr, std::size_t(dataSize)}, usage);
+    image.setData(image.storage(), CompressedPixelFormat(format), size, {nullptr, dataSize}, usage);
     image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
     (this->*Context::current()->state().texture->getCompressedCubeImageImplementation)(coordinate, level, size, dataSize, nullptr);
 }

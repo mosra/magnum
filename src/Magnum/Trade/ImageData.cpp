@@ -56,12 +56,12 @@ template<UnsignedInt dimensions> CompressedPixelFormat ImageData<dimensions>::co
 
 template<UnsignedInt dimensions> std::size_t ImageData<dimensions>::pixelSize() const {
     CORRADE_ASSERT(!_compressed, "Trade::ImageData::pixelSize(): the image is compressed", {});
-    return Implementation::imagePixelSize(_format, _type);
+    return PixelStorage::pixelSize(_format, _type);
 }
 
-template<UnsignedInt dimensions> std::size_t ImageData<dimensions>::dataSize(const VectorTypeFor< dimensions, Int >& size) const {
-    CORRADE_ASSERT(!_compressed, "Trade::ImageData::dataSize(): the image is compressed", {});
-    return Implementation::imageDataSize<dimensions>(_format, _type, size);
+template<UnsignedInt dimensions> std::tuple<std::size_t, VectorTypeFor<dimensions, std::size_t>, std::size_t> ImageData<dimensions>::dataProperties() const {
+    CORRADE_ASSERT(!_compressed, "Trade::ImageData::dataProperties(): the image is compressed", {});
+    return Implementation::imageDataProperties<dimensions>(*this);
 }
 
 template<UnsignedInt dimensions> ImageData<dimensions>::operator ImageView<dimensions>()

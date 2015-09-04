@@ -123,21 +123,23 @@ template<UnsignedInt dimensions> class Image {
         /** @brief Data type of pixel data */
         PixelType type() const { return _type; }
 
-        /** @brief Pixel size (in bytes) */
-        std::size_t pixelSize() const { return Implementation::imagePixelSize(_format, _type); }
+        /**
+         * @brief Pixel size (in bytes)
+         *
+         * @see @ref PixelStorage::pixelSize()
+         */
+        std::size_t pixelSize() const { return PixelStorage::pixelSize(_format, _type); }
 
         /** @brief Image size */
         VectorTypeFor<dimensions, Int> size() const { return _size; }
 
         /**
-         * @brief Size of data required to store image of given size
+         * @brief Image data properties
          *
-         * Takes color format, type and row alignment of this image into
-         * account.
-         * @see @ref pixelSize()
+         * See @ref PixelStorage::dataProperties() for more information.
          */
-        std::size_t dataSize(const VectorTypeFor<dimensions, Int>& size) const {
-            return Implementation::imageDataSize<dimensions>(_format, _type, size);
+        std::tuple<std::size_t, VectorTypeFor<dimensions, std::size_t>, std::size_t> dataProperties() const {
+            return Implementation::imageDataProperties<dimensions>(*this);
         }
 
         /**
@@ -309,6 +311,21 @@ template<UnsignedInt dimensions> class CompressedImage {
 
         /** @brief Image size */
         VectorTypeFor<dimensions, Int> size() const { return _size; }
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Compressed image data properties
+         *
+         * See @ref CompressedPixelStorage::dataProperties() for more
+         * information.
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl Compressed pixel storage is hardcoded in OpenGL ES and
+         *      WebGL.
+         */
+        std::tuple<std::size_t, VectorTypeFor<dimensions, std::size_t>, std::size_t> dataProperties() const {
+            return Implementation::compressedImageDataProperties<dimensions>(*this);
+        }
+        #endif
 
         /** @brief Raw data */
         Containers::ArrayView<char> data() { return _data; }

@@ -41,7 +41,7 @@ namespace Magnum { namespace Trade {
 Access to either uncompressed or compressed image data provided by
 @ref AbstractImporter subclasses, the compression state is distinguished with
 @ref isCompressed(). Uncompressed images have @ref format(), @ref type(),
-@ref pixelSize() and @ref dataSize() properties and are convertible to
+@ref pixelSize() and @ref dataProperties() properties and are convertible to
 @ref ImageView. Compressed images have just the @ref compressedFormat()
 property and are convertible to @ref CompressedImageView.
 
@@ -67,7 +67,7 @@ template<UnsignedInt dimensions> class ImageData {
          * Note that the image data are not copied on construction, but they
          * are deleted on class destruction.
          */
-        explicit ImageData(PixelStorage storage, PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, void* data): _compressed{false}, _storage{storage}, _format{format}, _type{type}, _size{size}, _data{reinterpret_cast<char*>(data), dataSize(size)} {}
+        explicit ImageData(PixelStorage storage, PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, void* data): _compressed{false}, _storage{storage}, _format{format}, _type{type}, _size{size}, _data{reinterpret_cast<char*>(data), Implementation::imageDataSizeFor(*this, size)} {}
 
         /** @overload
          * Similar to the above, but uses default @ref PixelStorage parameters.
@@ -202,7 +202,7 @@ template<UnsignedInt dimensions> class ImageData {
          * @brief Pixel size (in bytes)
          *
          * The image is expected to be uncompressed.
-         * @see @ref isCompressed()
+         * @see @ref isCompressed(), @ref PixelStorage::pixelSize()
          */
         std::size_t pixelSize() const;
 
@@ -210,13 +210,17 @@ template<UnsignedInt dimensions> class ImageData {
         VectorTypeFor<dimensions, Int> size() const { return _size; }
 
         /**
-         * @brief Size of data required to store uncompressed image of given size
+         * @brief Uncompressed image data properties
          *
-         * The image is expected to be uncompressed. Takes color format, type
-         * and row alignment of this image into account.
-         * @see @ref isCompressed(), @ref pixelSize()
+         * The image is expected to be uncompressed. See
+         * @ref PixelStorage::dataProperties() for more information.
+         * @see @ref isCompressed()
          */
-        std::size_t dataSize(const VectorTypeFor<dimensions, Int>& size) const;
+        std::tuple<std::size_t, VectorTypeFor<dimensions, std::size_t>, std::size_t> dataProperties() const;
+
+        /* compressed data properties are not available because the importers
+           are not setting any block size pixel storage properties to avoid
+           needless state changes -- thus the calculation can't be done */
 
         /** @brief Raw data */
         Containers::ArrayView<char> data() { return _data; }

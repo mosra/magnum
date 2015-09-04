@@ -35,31 +35,195 @@ struct PixelStorageTest: TestSuite::Tester {
     explicit PixelStorageTest();
 
     void pixelSize();
+
+    void dataProperties();
+    void dataPropertiesAlignment();
+    void dataPropertiesRowLength();
+    #ifndef MAGNUM_TARGET_GLES2
+    void dataPropertiesImageHeight();
+    #endif
+
     void dataSize();
+
+    #ifndef MAGNUM_TARGET_GLES
+    void dataPropertiesCompressed();
+    void dataPropertiesCompressedRowLength();
+    void dataPropertiesCompressedImageHeight();
+
+    void dataSizeCompressed();
+    #endif
 };
+
+typedef Math::Vector3<std::size_t> Vector3st;
 
 PixelStorageTest::PixelStorageTest() {
     addTests({&PixelStorageTest::pixelSize,
-              &PixelStorageTest::dataSize});
+
+              &PixelStorageTest::dataProperties,
+              &PixelStorageTest::dataPropertiesAlignment,
+              &PixelStorageTest::dataPropertiesRowLength,
+              #ifndef MAGNUM_TARGET_GLES2
+              &PixelStorageTest::dataPropertiesImageHeight,
+              #endif
+
+              &PixelStorageTest::dataSize,
+
+              #ifndef MAGNUM_TARGET_GLES
+              &PixelStorageTest::dataPropertiesCompressed,
+              &PixelStorageTest::dataPropertiesCompressedRowLength,
+              &PixelStorageTest::dataPropertiesCompressedImageHeight,
+
+              &PixelStorageTest::dataSizeCompressed
+              #endif
+              });
 }
 
 void PixelStorageTest::pixelSize() {
-    CORRADE_COMPARE(Implementation::imagePixelSize(PixelFormat::RGBA, PixelType::UnsignedInt), 4*4);
-    CORRADE_COMPARE(Implementation::imagePixelSize(PixelFormat::DepthComponent, PixelType::UnsignedShort), 2);
-    CORRADE_COMPARE(Implementation::imagePixelSize(PixelFormat::StencilIndex, PixelType::UnsignedByte), 1);
-    CORRADE_COMPARE(Implementation::imagePixelSize(PixelFormat::DepthStencil, PixelType::UnsignedInt248), 4);
+    CORRADE_COMPARE(PixelStorage::pixelSize(PixelFormat::RGBA, PixelType::UnsignedInt), 4*4);
+    CORRADE_COMPARE(PixelStorage::pixelSize(PixelFormat::DepthComponent, PixelType::UnsignedShort), 2);
+    CORRADE_COMPARE(PixelStorage::pixelSize(PixelFormat::StencilIndex, PixelType::UnsignedByte), 1);
+    CORRADE_COMPARE(PixelStorage::pixelSize(PixelFormat::DepthStencil, PixelType::UnsignedInt248), 4);
 }
+
+void PixelStorageTest::dataProperties() {
+    PixelStorage storage;
+    storage.setAlignment(1);
+
+    CORRADE_COMPARE(storage.dataProperties(PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i{0}),
+        (std::tuple<std::size_t, Vector3st, std::size_t>{0, {0, 0, 0}, 4}));
+    CORRADE_COMPARE(storage.dataProperties(PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i{1}),
+        (std::tuple<std::size_t, Vector3st, std::size_t>{0, {4, 1, 1}, 4}));
+    CORRADE_COMPARE(storage.dataProperties(PixelFormat::Red, PixelType::UnsignedByte, {8, 2, 1}),
+        (std::tuple<std::size_t, Vector3st, std::size_t>{0, {8, 2, 1}, 1}));
+    CORRADE_COMPARE(storage.dataProperties(PixelFormat::Red, PixelType::UnsignedByte, {2, 4, 1}),
+        (std::tuple<std::size_t, Vector3st, std::size_t>{0, {2, 4, 1}, 1}));
+    CORRADE_COMPARE(storage.dataProperties(PixelFormat::Red, PixelType::UnsignedByte, {2, 4, 6}),
+        (std::tuple<std::size_t, Vector3st, std::size_t>{0, {2, 4, 6}, 1}));
+}
+
+void PixelStorageTest::dataPropertiesAlignment() {
+    PixelStorage storage;
+    storage.setAlignment(8)
+        .setSkip({3, 2, 1});
+
+    CORRADE_COMPARE(storage.dataProperties(PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i{0}),
+        (std::tuple<std::size_t, Vector3st, std::size_t>{3*4, {0, 0, 0}, 4}));
+    CORRADE_COMPARE(storage.dataProperties(PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i{1}),
+        (std::tuple<std::size_t, Vector3st, std::size_t>{8 + 16 + 3*4, {8, 1, 1}, 4}));
+    CORRADE_COMPARE(storage.dataProperties(PixelFormat::Red, PixelType::UnsignedByte, {8, 2, 1}),
+        (std::tuple<std::size_t, Vector3st, std::size_t>{16 + 16 + 3, {8, 2, 1}, 1}));
+    CORRADE_COMPARE(storage.dataProperties(PixelFormat::Red, PixelType::UnsignedByte, {2, 4, 1}),
+        (std::tuple<std::size_t, Vector3st, std::size_t>{32 + 16 + 3, {8, 4, 1}, 1}));
+    CORRADE_COMPARE(storage.dataProperties(PixelFormat::Red, PixelType::UnsignedByte, {2, 4, 6}),
+        (std::tuple<std::size_t, Vector3st, std::size_t>{32 + 16 + 3, {8, 4, 6}, 1}));
+}
+
+void PixelStorageTest::dataPropertiesRowLength() {
+    PixelStorage storage;
+    storage.setAlignment(4)
+        .setRowLength(15)
+        .setSkip({3, 7, 0});
+
+    CORRADE_COMPARE(storage.dataProperties(PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i{0}),
+        (std::tuple<std::size_t, Vector3st, std::size_t>{3*4 + 7*15*4, {0, 0, 0}, 4}));
+    CORRADE_COMPARE(storage.dataProperties(PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i{1}),
+        (std::tuple<std::size_t, Vector3st, std::size_t>{3*4 + 7*15*4, {60, 1, 1}, 4}));
+    CORRADE_COMPARE(storage.dataProperties(PixelFormat::Red, PixelType::UnsignedByte, {4, 2, 1}),
+        (std::tuple<std::size_t, Vector3st, std::size_t>{3 + 7*16, {16, 2, 1}, 1}));
+    CORRADE_COMPARE(storage.dataProperties(PixelFormat::Red, PixelType::UnsignedByte, {2, 4, 1}),
+        (std::tuple<std::size_t, Vector3st, std::size_t>{3 + 7*16, {16, 4, 1}, 1}));
+    CORRADE_COMPARE(storage.dataProperties(PixelFormat::Red, PixelType::UnsignedByte, {2, 4, 6}),
+        (std::tuple<std::size_t, Vector3st, std::size_t>{3 + 7*16, {16, 4, 6}, 1}));
+}
+
+#ifndef MAGNUM_TARGET_GLES2
+void PixelStorageTest::dataPropertiesImageHeight() {
+    PixelStorage storage;
+    storage.setAlignment(1)
+        .setImageHeight(128)
+        .setSkip({3, 7, 2});
+
+    CORRADE_COMPARE(storage.dataProperties(PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i{0}),
+        (std::tuple<std::size_t, Vector3st, std::size_t>{3*4, {0, 0, 0}, 4}));
+    CORRADE_COMPARE(storage.dataProperties(PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i{1}),
+        (std::tuple<std::size_t, Vector3st, std::size_t>{3*4 + 7*1*4 + 2*128*1*4, {4, 128, 1}, 4}));
+    CORRADE_COMPARE(storage.dataProperties(PixelFormat::Red, PixelType::UnsignedByte, {4, 2, 1}),
+        (std::tuple<std::size_t, Vector3st, std::size_t>{3 + 7*1*4 + 2*128*4, {4, 128, 1}, 1}));
+    CORRADE_COMPARE(storage.dataProperties(PixelFormat::Red, PixelType::UnsignedByte, {2, 4, 1}),
+        (std::tuple<std::size_t, Vector3st, std::size_t>{3 + 7*1*2 + 2*128*2, {2, 128, 1}, 1}));
+    CORRADE_COMPARE(storage.dataProperties(PixelFormat::Red, PixelType::UnsignedByte, {2, 4, 6}),
+        (std::tuple<std::size_t, Vector3st, std::size_t>{3 + 7*1*2 + 2*128*2, {2, 128, 6}, 1}));
+}
+#endif
 
 void PixelStorageTest::dataSize() {
-    /* Verify that row size is properly rounded */
-    CORRADE_COMPARE(Image2D(PixelFormat::RGBA, PixelType::UnsignedByte).dataSize({}), 0);
-    CORRADE_COMPARE(Image2D(PixelFormat::Red, PixelType::UnsignedByte).dataSize({4, 2}), 8);
-    CORRADE_COMPARE(Image2D(PixelFormat::Red, PixelType::UnsignedByte).dataSize({2, 4}), 16);
-    CORRADE_COMPARE(Image2D(PixelFormat::RGBA, PixelType::UnsignedByte).dataSize(Vector2i(1)), 4);
+    /* The same parameters as in PixelStorageGLTest 3D case */
+    const Image2D image{PixelStorage{}.setAlignment(2)
+        .setRowLength(3)
+        #ifndef MAGNUM_TARGET_GLES2
+        .setImageHeight(5)
+        #endif
+        .setSkip({2, 3, 1}),
+        PixelFormat::RGB, PixelType::UnsignedByte};
 
-    CORRADE_COMPARE(Image2D(PixelFormat::RGBA, PixelType::UnsignedShort).dataSize({16, 8}),
-                    4*2*16*8);
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_COMPARE(Implementation::imageDataSizeFor(image, Vector2i{2, 3}),
+        5*10 + 3*10 + 6 + 3*10);
+    #else
+    CORRADE_COMPARE(Implementation::imageDataSizeFor(image, Vector2i{2, 3}),
+        3*10 + 3*10 + 6 + 3*10);
+    #endif
 }
+
+#ifndef MAGNUM_TARGET_GLES
+void PixelStorageTest::dataPropertiesCompressed() {
+    CompressedPixelStorage storage;
+    storage.setCompressedBlockSize({3, 4, 5})
+        .setCompressedBlockDataSize(16);
+
+    CORRADE_COMPARE(storage.dataProperties({2, 8, 11}),
+        (std::tuple<std::size_t, Vector3st, std::size_t>{0, {1, 2, 3}, 16}));
+}
+
+void PixelStorageTest::dataPropertiesCompressedRowLength() {
+    CompressedPixelStorage storage;
+    storage.setCompressedBlockSize({3, 4, 5})
+        .setCompressedBlockDataSize(9)
+        .setRowLength(12)
+        .setSkip({5, 8, 0});
+
+    CORRADE_COMPARE(storage.dataProperties({2, 8, 11}),
+        (std::tuple<std::size_t, Vector3st, std::size_t>{(2 + 8)*9, {4, 2, 3}, 9}));
+}
+
+void PixelStorageTest::dataPropertiesCompressedImageHeight() {
+    CompressedPixelStorage storage;
+    storage.setCompressedBlockSize({3, 4, 5})
+        .setCompressedBlockDataSize(16)
+        .setImageHeight(12)
+        .setSkip({5, 8, 11});
+
+    CORRADE_COMPARE(storage.dataProperties({2, 8, 11}),
+        (std::tuple<std::size_t, Vector3st, std::size_t>{(2 + 2 + 9)*16, {1, 3, 3}, 16}));
+}
+
+void PixelStorageTest::dataSizeCompressed() {
+    /* Tf the storage doesn't contain any info about block sizes (the default,
+       using the provided value */
+    CORRADE_COMPARE(Implementation::compressedImageDataSizeFor(CompressedImage3D{},
+        Vector2i{37, 35}, 1579), 1579);
+
+    /* The same parameters as in PixelStorageGLTest 3D case */
+    const CompressedImage3D image{CompressedPixelStorage{}
+        .setCompressedBlockSize({4, 4, 1})
+        .setCompressedBlockDataSize(16)
+        .setRowLength(8)
+        .setImageHeight(8)
+        .setSkip({4, 4, 4})};
+    CORRADE_COMPARE(Implementation::compressedImageDataSizeFor(image, Vector3i{4, 4, 1}, 1579),
+        16*4*4 + 16*4);
+}
+#endif
 
 }}
 

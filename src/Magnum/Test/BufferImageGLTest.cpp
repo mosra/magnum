@@ -58,7 +58,7 @@ BufferImageGLTest::BufferImageGLTest() {
 }
 
 void BufferImageGLTest::construct() {
-    const char data[] = { 'a', 0, 0, 0, 'b', 0, 0, 0, 'c', 0, 0, 0 };
+    const char data[] = { 'a', 'b', 'c' };
     BufferImage2D a{PixelStorage{}.setAlignment(1),
         PixelFormat::Red, PixelType::UnsignedByte, {1, 3}, data, BufferUsage::StaticDraw};
 

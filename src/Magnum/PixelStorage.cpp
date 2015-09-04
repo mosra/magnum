@@ -28,11 +28,11 @@
 #include <Corrade/Utility/Assert.h>
 
 #include "Magnum/PixelFormat.h"
-#include "Magnum/Math/Vector.h"
+#include "Magnum/Math/Vector4.h"
 
-namespace Magnum { namespace Implementation {
+namespace Magnum {
 
-std::size_t imagePixelSize(PixelFormat format, PixelType type) {
+std::size_t PixelStorage::pixelSize(PixelFormat format, PixelType type) {
     std::size_t size = 0;
     switch(type) {
         case PixelType::UnsignedByte:
@@ -151,18 +151,40 @@ std::size_t imagePixelSize(PixelFormat format, PixelType type) {
     CORRADE_ASSERT_UNREACHABLE();
 }
 
-template<UnsignedInt dimensions> std::size_t imageDataSize(const PixelFormat format, const PixelType type, Math::Vector<dimensions, Int> size) {
-    /** @todo Code this properly when all @fn_gl{PixelStore} parameters are implemented */
-    /* Row size, rounded to multiple of 4 bytes */
-    const std::size_t rowSize = ((size[0]*imagePixelSize(format, type) + 3)/4)*4;
+std::tuple<std::size_t, Math::Vector3<std::size_t>, std::size_t> PixelStorage::dataProperties(const PixelFormat format, const PixelType type, const Vector3i& size) const {
+    const std::size_t pixelSize = PixelStorage::pixelSize(format, type);
+    const Math::Vector3<std::size_t> dataSize{
+        std::size_t((((
+            #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+            _rowLength ? _rowLength*pixelSize :
+            #endif
+            size[0]*pixelSize) + _alignment - 1)/_alignment)*_alignment),
+        #ifndef MAGNUM_TARGET_GLES2
+        std::size_t(_imageHeight ? _imageHeight : size.y()),
+        #else
+        std::size_t(size.y()),
+        #endif
+        std::size_t(size.z())};
+    const std::size_t offset = (Math::Vector3<std::size_t>{pixelSize, dataSize.x(), dataSize.xy().product()}*Math::Vector3<std::size_t>{_skip}).sum();
 
-    /** @todo Can't this be done somewhat nicer? */
-    size[0] = 1;
-    return rowSize*size.product();
+    return std::make_tuple(offset, size.product() ? dataSize : Math::Vector3<std::size_t>{}, pixelSize);
 }
 
-template MAGNUM_EXPORT std::size_t imageDataSize<1>(PixelFormat, PixelType, Math::Vector<1, Int>);
-template MAGNUM_EXPORT std::size_t imageDataSize<2>(PixelFormat, PixelType, Math::Vector<2, Int>);
-template MAGNUM_EXPORT std::size_t imageDataSize<3>(PixelFormat, PixelType, Math::Vector<3, Int>);
+#ifndef MAGNUM_TARGET_GLES
+std::tuple<std::size_t, Math::Vector3<std::size_t>, std::size_t> CompressedPixelStorage::dataProperties(const Vector3i& size) const {
+    CORRADE_ASSERT(_blockDataSize && _blockSize.product(), "CompressedPixelStorage::dataProperties(): expected non-zero storage parameters", {});
 
-}}
+    const Vector3i blockCount = (size + _blockSize - Vector3i{1})/_blockSize;
+    const Math::Vector3<std::size_t> dataSize{
+        std::size_t(_rowLength ? (_rowLength + _blockSize.x() - 1)/_blockSize.x() : blockCount.x()),
+        std::size_t(_imageHeight ? (_imageHeight + _blockSize.y() - 1)/_blockSize.y() : blockCount.y()),
+        std::size_t(blockCount.z())};
+
+    const Vector3i skipBlockCount = (_skip + _blockSize - Vector3i{1})/_blockSize;
+    const std::size_t offset = (Math::Vector3<std::size_t>{1, dataSize.x(), dataSize.xy().product()}*Math::Vector3<std::size_t>{skipBlockCount}).sum()*_blockDataSize;
+
+    return std::make_tuple(offset, size.product() ? dataSize : Math::Vector3<std::size_t>{}, _blockDataSize);
+}
+#endif
+
+}

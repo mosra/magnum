@@ -29,7 +29,7 @@ namespace Magnum {
 
 #ifndef MAGNUM_TARGET_GLES2
 template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const PixelFormat format, const PixelType type, const VectorTypeFor<dimensions, Int>& size, const void* const data, const BufferUsage usage): _storage{storage}, _format{format}, _type{type}, _size{size}, _buffer{Buffer::TargetHint::PixelPack} {
-    _buffer.setData({data, dataSize(size)}, usage);
+    _buffer.setData({data, Implementation::imageDataSizeFor(*this, size)}, usage);
 }
 
 template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const PixelFormat format, const PixelType type): _storage{storage}, _format{format}, _type{type}, _buffer{Buffer::TargetHint::PixelPack} {}
@@ -39,7 +39,7 @@ template<UnsignedInt dimensions> void BufferImage<dimensions>::setData(const Pix
     _format = format;
     _type = type;
     _size = size;
-    _buffer.setData({data, dataSize(size)}, usage);
+    _buffer.setData({data, Implementation::imageDataSizeFor(*this, size)}, usage);
 }
 
 template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(

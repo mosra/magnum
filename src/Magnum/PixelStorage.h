@@ -30,18 +30,13 @@
  */
 
 #include <cstddef>
+#include <tuple>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/visibility.h"
 #include "Magnum/Math/Vector3.h"
 
 namespace Magnum {
-
-namespace Implementation {
-    std::size_t MAGNUM_EXPORT imagePixelSize(PixelFormat format, PixelType type);
-
-    template<UnsignedInt dimensions> std::size_t imageDataSize(PixelFormat format, PixelType type, Math::Vector<dimensions, Int> size);
-}
 
 /**
 @brief Pixel storage parameters
@@ -63,8 +58,15 @@ currently used pixel pack/unpack parameters to avoid unnecessary calls to
 
 @see @ref CompressedPixelStorage
 */
-class PixelStorage {
+class MAGNUM_EXPORT PixelStorage {
     public:
+        /**
+         * @brief Pixel size for given format/type combination (in bytes)
+         *
+         * @see @ref dataProperties()
+         */
+        static std::size_t pixelSize(PixelFormat format, PixelType type);
+
         /**
          * @brief Default constructor
          *
@@ -192,11 +194,23 @@ class PixelStorage {
             return *this;
         }
 
+        /**
+         * @brief Data properties for given parameters
+         *
+         * Returns byte offset, (row length, row count, layer count) and pixel
+         * size for image of given @p size with current pixel storage
+         * parameters, @p format and @p type. The offset reflects the @ref skip()
+         * parameter. Adding byte offset and product of the vector gives
+         * minimal byte count to store given data.
+         * @see @ref pixelSize()
+         */
+        std::tuple<std::size_t, Math::Vector3<std::size_t>, std::size_t> dataProperties(PixelFormat format, PixelType type, const Vector3i& size) const;
+
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    protected:
+    #else
     private:
-        #ifndef MAGNUM_TARGET_GLES
-        bool _swapBytes;
-        #endif
-        Int _alignment;
+    #endif
         #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
         Int _rowLength;
         #endif
@@ -204,6 +218,12 @@ class PixelStorage {
         Int _imageHeight;
         #endif
         Vector3i _skip;
+
+    private:
+        #ifndef MAGNUM_TARGET_GLES
+        bool _swapBytes;
+        #endif
+        Int _alignment;
 };
 
 #ifndef MAGNUM_TARGET_GLES
@@ -223,7 +243,7 @@ Includes all parameters from @ref PixelStorage, except for @ref swapBytes() and
 @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
 @requires_gl Compressed pixel storage is hardcoded in OpenGL ES and WebGL.
 */
-class CompressedPixelStorage: public PixelStorage {
+class MAGNUM_EXPORT CompressedPixelStorage: public PixelStorage {
     public:
         /**
          * @brief Default constructor
@@ -261,6 +281,19 @@ class CompressedPixelStorage: public PixelStorage {
             return *this;
         }
 
+        /**
+         * @brief Data properties for given parameters
+         *
+         * Returns byte offset, count of blocks in each dimension and block
+         * data size for image of given @p size with current pixel storage
+         * parameters. Adding byte offset and product of the vector multiplied
+         * with block data size gives minimal byte count to store given data.
+         *
+         * Expects @ref compressedBlockSize() and @ref compressedBlockDataSize()
+         * to be non-zero.
+         */
+        std::tuple<std::size_t, Math::Vector3<std::size_t>, std::size_t> dataProperties(const Vector3i& size) const;
+
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         CompressedPixelStorage& setRowLength(Int length) {
@@ -291,17 +324,75 @@ class CompressedPixelStorage: public PixelStorage {
 #endif
 
 constexpr PixelStorage::PixelStorage() noexcept:
-    #ifndef MAGNUM_TARGET_GLES
-    _swapBytes{false},
-    #endif
-    _alignment{4},
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     _rowLength{0},
     #endif
     #ifndef MAGNUM_TARGET_GLES2
     _imageHeight{0},
     #endif
-    _skip{0} {}
+    _skip{0},
+    #ifndef MAGNUM_TARGET_GLES
+    _swapBytes{false},
+    #endif
+    _alignment{4} {}
+
+namespace Implementation {
+    /* Used in *Image::dataProperties() */
+    template<std::size_t dimensions, class T> std::tuple<std::size_t, Math::Vector<dimensions, std::size_t>, std::size_t> imageDataProperties(const T& image) {
+        std::size_t offset;
+        Math::Vector3<std::size_t> dataSize;
+        std::size_t pixelSize;
+        std::tie(offset, dataSize, pixelSize) = image.storage().dataProperties(image.format(), image.type(), Vector3i::pad(image.size(), 1));
+        return std::make_tuple(offset, Math::Vector<dimensions, std::size_t>::pad(dataSize), pixelSize);
+    }
+
+    #ifndef MAGNUM_TARGET_GLES2
+    /* Used in Compressed*Image::dataProperties() */
+    template<std::size_t dimensions, class T> std::tuple<std::size_t, Math::Vector<dimensions, std::size_t>, std::size_t> compressedImageDataProperties(const T& image) {
+        std::size_t offset;
+        Math::Vector3<std::size_t> blockCount;
+        std::size_t blockSize;
+        std::tie(offset, blockCount, blockSize) = image.storage().dataProperties(Vector3i::pad(image.size(), 1));
+        return std::make_tuple(offset, Math::Vector<dimensions, std::size_t>::pad(blockCount), blockSize);
+    }
+    #endif
+
+    /* Used in image query functions */
+    template<std::size_t dimensions, class T> std::size_t imageDataSizeFor(const T& image, const Math::Vector<dimensions, Int>& size) {
+        const auto paddedSize = Vector3i::pad(size, 1);
+
+        std::size_t offset;
+        Math::Vector3<std::size_t> dataSize;
+        std::size_t pixelSize;
+        std::tie(offset, dataSize, pixelSize) = image.storage().dataProperties(image.format(), image.type(), paddedSize);
+
+        /* I would subtract also (dataSize.x() - pixelSize*paddedSize.x()) but NVidia
+           then complains that the buffer is too small */
+        return offset + dataSize.product() - (dataSize.y() - paddedSize.y())*dataSize.x();
+    }
+
+    /* Used in data size assertions */
+    template<class T> inline std::size_t imageDataSize(const T& image) {
+        return imageDataSizeFor(image, image.size());
+    }
+
+    #ifndef MAGNUM_TARGET_GLES
+    /* Used in image query functions */
+    template<std::size_t dimensions, class T> std::size_t compressedImageDataSizeFor(const T& image, const Math::Vector<dimensions, Int>& size, std::size_t dataSize) {
+        if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize())
+            return dataSize;
+
+        std::size_t offset;
+        Math::Vector3<std::size_t> blockCount;
+        std::size_t blockDataSize;
+        std::tie(offset, blockCount, blockDataSize) = image.storage().dataProperties(Vector3i::pad(size, 1));
+
+        const auto realBlockCount = Math::Vector3<std::size_t>{(Vector3i::pad(size, 1) + image.storage().compressedBlockSize() - Vector3i{1})/image.storage().compressedBlockSize()};
+
+        return offset + (blockCount.product() - (blockCount.x() - realBlockCount.x()) - (blockCount.y() - realBlockCount.y())*blockCount.x())*blockDataSize;
+    }
+    #endif
+}
 
 }
 
