@@ -264,7 +264,6 @@ void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr i
 void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr indexOffset)
 #endif
 {
-
     const Implementation::MeshState& state = *Context::current()->state().mesh;
 
     /* Nothing to draw */
