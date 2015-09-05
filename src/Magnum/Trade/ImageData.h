@@ -287,16 +287,17 @@ template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(
 template<UnsignedInt dimensions> inline ImageData<dimensions>::ImageData(const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data): ImageData{{}, format, size, std::move(data)} {}
 #endif
 
-template<UnsignedInt dimensions> inline ImageData<dimensions>::ImageData(ImageData<dimensions>&& other) noexcept: _compressed{std::move(other._compressed)}, _type{std::move(other._type)}, _size{std::move(other._size)}, _data{std::move(other._data)} {
+template<UnsignedInt dimensions> inline ImageData<dimensions>::ImageData(ImageData<dimensions>&& other) noexcept: _compressed{std::move(other._compressed)}, _size{std::move(other._size)}, _data{std::move(other._data)} {
     if(_compressed) {
         #ifndef MAGNUM_TARGET_GLES
-        _compressedStorage = std::move(other._compressedStorage);
+        new(&_compressedStorage) CompressedPixelStorage{std::move(other._compressedStorage)};
         #endif
         _compressedFormat = std::move(other._compressedFormat);
     }
     else {
-        _storage = std::move(other._storage);
+        new(&_storage) PixelStorage{std::move(other._storage)};
         _format = std::move(other._format);
+        _type = std::move(other._type);
     }
 
     other._size = {};
