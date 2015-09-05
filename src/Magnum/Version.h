@@ -109,7 +109,7 @@ inline std::pair<Int, Int> version(Version version) {
     return {Int(version)/100, (Int(version)%100)/10};
 }
 
-/** @debugoperator{Magnum::Context} */
+/** @debugoperatorenum{Magnum::Version} */
 Debug MAGNUM_EXPORT operator<<(Debug debug, Version value);
 
 }
