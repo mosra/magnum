@@ -151,6 +151,11 @@ else
     format = TextureFormat::DepthComponent24;
 @endcode
 
+@attention Using API that requires OpenGL version or extension that is not
+    provided by the driver results in undefined behavior -- the best you can
+    get is GL error, it may lead to strange behavior and even crashes when
+    calling GL functions that are not available.
+
 Some functionality can be emulated by Magnum -- it detects available extensions
 and selects best possible code path for optimal performance. On startup, the
 application prints list of extensions that were used to improve the default
