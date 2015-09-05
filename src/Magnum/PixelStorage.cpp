@@ -27,8 +27,13 @@
 
 #include <Corrade/Utility/Assert.h>
 
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Math/Vector4.h"
+
+#include "Implementation/RendererState.h"
+#include "Implementation/State.h"
 
 namespace Magnum {
 
@@ -184,6 +189,112 @@ std::tuple<std::size_t, Math::Vector3<std::size_t>, std::size_t> CompressedPixel
     const std::size_t offset = (Math::Vector3<std::size_t>{1, dataSize.x(), dataSize.xy().product()}*Math::Vector3<std::size_t>{skipBlockCount}).sum()*_blockDataSize;
 
     return std::make_tuple(offset, size.product() ? dataSize : Math::Vector3<std::size_t>{}, _blockDataSize);
+}
+#endif
+
+void PixelStorage::applyInternal(const bool isUnpack) {
+    Implementation::RendererState::PixelStorage& state = isUnpack ?
+        Context::current()->state().renderer->unpackPixelStorage :
+        Context::current()->state().renderer->packPixelStorage;
+
+    #ifndef MAGNUM_TARGET_GLES
+    /* Byte swap */
+    if(state.swapBytes == std::nullopt || state.swapBytes != _swapBytes)
+        glPixelStorei(isUnpack ? GL_UNPACK_SWAP_BYTES : GL_PACK_SWAP_BYTES,
+          *(state.swapBytes = _swapBytes));
+    #endif
+
+    /* Alignment */
+    if(state.alignment == Implementation::RendererState::PixelStorage::DisengagedValue || state.alignment != _alignment)
+        glPixelStorei(isUnpack ? GL_UNPACK_ALIGNMENT : GL_PACK_ALIGNMENT,
+            state.alignment = _alignment);
+
+    /* Row length */
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    if(state.rowLength == Implementation::RendererState::PixelStorage::DisengagedValue || state.rowLength != _rowLength)
+    {
+        /** @todo Use real value for GL_PACK_ROW_LENGTH_NV when it is in headers */
+        #ifndef MAGNUM_TARGET_GLES2
+        glPixelStorei(isUnpack ? GL_UNPACK_ROW_LENGTH : GL_PACK_ROW_LENGTH,
+            state.rowLength = _rowLength);
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        glPixelStorei(isUnpack ? GL_UNPACK_ROW_LENGTH_EXT : 0xD02 /*GL_PACK_ROW_LENGTH_NV*/,
+            state.rowLength = _rowLength);
+        #endif
+    }
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    /* Image height (on ES for unpack only, taken care of below) */
+    if(state.imageHeight == Implementation::RendererState::PixelStorage::DisengagedValue || state.imageHeight != _imageHeight)
+        glPixelStorei(isUnpack ? GL_UNPACK_IMAGE_HEIGHT : GL_PACK_IMAGE_HEIGHT,
+            state.imageHeight = _imageHeight);
+    #endif
+
+    /* On ES2 done by modifying data pointer */
+    #ifndef MAGNUM_TARGET_GLES2
+    /* Skip pixels */
+    if(state.skip.x() == Implementation::RendererState::PixelStorage::DisengagedValue || state.skip.x() != _skip.x())
+        glPixelStorei(isUnpack ? GL_UNPACK_SKIP_PIXELS : GL_PACK_SKIP_PIXELS,
+            state.skip.x() = _skip.x());
+
+    /* Skip rows */
+    if(state.skip.y() == Implementation::RendererState::PixelStorage::DisengagedValue || state.skip.y() != _skip.y())
+        glPixelStorei(isUnpack ? GL_UNPACK_SKIP_ROWS : GL_PACK_SKIP_ROWS,
+            state.skip.y() = _skip.y());
+
+    #ifndef MAGNUM_TARGET_GLES
+    /* Skip images (on ES for unpack only, taken care of below) */
+    if(state.skip.z() == Implementation::RendererState::PixelStorage::DisengagedValue || state.skip.z() != _skip.z())
+        glPixelStorei(isUnpack ? GL_UNPACK_SKIP_IMAGES : GL_PACK_SKIP_IMAGES,
+            state.skip.z() = _skip.z());
+    #endif
+    #endif
+}
+
+void PixelStorage::applyUnpack() {
+    applyInternal(true);
+
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
+    Implementation::RendererState::PixelStorage& state = Context::current()->state().renderer->unpackPixelStorage;
+
+    /* Image height (on ES for unpack only) */
+    if(state.imageHeight == Implementation::RendererState::PixelStorage::DisengagedValue || state.imageHeight != _imageHeight)
+        glPixelStorei(GL_UNPACK_IMAGE_HEIGHT, state.imageHeight = _imageHeight);
+
+    /* Skip images (on ES for unpack only) */
+    if(state.skip.z() == Implementation::RendererState::PixelStorage::DisengagedValue || state.skip.z() != _skip.z())
+        glPixelStorei(GL_UNPACK_SKIP_IMAGES, state.skip.z() = _skip.z());
+    #endif
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void CompressedPixelStorage::applyInternal(const bool isUnpack) {
+    PixelStorage::applyInternal(isUnpack);
+
+    Implementation::RendererState::PixelStorage& state = isUnpack ?
+        Context::current()->state().renderer->unpackPixelStorage :
+        Context::current()->state().renderer->packPixelStorage;
+
+    /* Compressed block width */
+    if(state.compressedBlockSize.x() == Implementation::RendererState::PixelStorage::DisengagedValue || state.compressedBlockSize.x() != _blockSize.x())
+        glPixelStorei(isUnpack ? GL_UNPACK_COMPRESSED_BLOCK_WIDTH : GL_PACK_COMPRESSED_BLOCK_WIDTH,
+            state.compressedBlockSize.x() = _blockSize.x());
+
+    /* Compressed block height */
+    if(state.compressedBlockSize.y() == Implementation::RendererState::PixelStorage::DisengagedValue || state.compressedBlockSize.y() != _blockSize.y())
+        glPixelStorei(isUnpack ? GL_UNPACK_COMPRESSED_BLOCK_HEIGHT : GL_PACK_COMPRESSED_BLOCK_HEIGHT,
+            state.compressedBlockSize.y() = _blockSize.y());
+
+    /* Compressed block depth */
+    if(state.compressedBlockSize.z() == Implementation::RendererState::PixelStorage::DisengagedValue || state.compressedBlockSize.z() != _blockSize.z())
+        glPixelStorei(isUnpack ? GL_UNPACK_COMPRESSED_BLOCK_DEPTH : GL_PACK_COMPRESSED_BLOCK_DEPTH,
+            state.compressedBlockSize.z() = _blockSize.z());
+
+    /* Compressed block size */
+    if(state.compressedBlockDataSize == Implementation::RendererState::PixelStorage::DisengagedValue || state.compressedBlockDataSize != _blockDataSize)
+        glPixelStorei(isUnpack ? GL_UNPACK_COMPRESSED_BLOCK_SIZE : GL_PACK_COMPRESSED_BLOCK_SIZE,
+            state.compressedBlockDataSize = _blockDataSize);
 }
 #endif
 

@@ -38,6 +38,8 @@
 
 namespace Magnum {
 
+namespace Implementation { struct RendererState; }
+
 /**
 @brief Pixel storage parameters
 
@@ -59,6 +61,10 @@ currently used pixel pack/unpack parameters to avoid unnecessary calls to
 @see @ref CompressedPixelStorage
 */
 class MAGNUM_EXPORT PixelStorage {
+    friend AbstractFramebuffer;
+    friend AbstractTexture;
+    friend CubeMapTexture;
+
     public:
         /**
          * @brief Pixel size for given format/type combination (in bytes)
@@ -211,6 +217,10 @@ class MAGNUM_EXPORT PixelStorage {
     #else
     private:
     #endif
+        /* Bool parameter is ugly, but this is implementation detail of
+           internal API so who cares */
+        void MAGNUM_LOCAL applyInternal(bool isUnpack);
+
         #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
         Int _rowLength;
         #endif
@@ -220,6 +230,12 @@ class MAGNUM_EXPORT PixelStorage {
         Vector3i _skip;
 
     private:
+        /* Used internally in *Texture::image(), *Texture::subImage(),
+           *Texture::setImage(), *Texture::setSubImage() and
+           *Framebuffer::read() */
+        void MAGNUM_LOCAL applyUnpack();
+        void MAGNUM_LOCAL applyPack() { applyInternal(false); }
+
         #ifndef MAGNUM_TARGET_GLES
         bool _swapBytes;
         #endif
@@ -244,6 +260,9 @@ Includes all parameters from @ref PixelStorage, except for @ref swapBytes() and
 @requires_gl Compressed pixel storage is hardcoded in OpenGL ES and WebGL.
 */
 class MAGNUM_EXPORT CompressedPixelStorage: public PixelStorage {
+    friend AbstractTexture;
+    friend CubeMapTexture;
+
     public:
         /**
          * @brief Default constructor
@@ -318,6 +337,15 @@ class MAGNUM_EXPORT CompressedPixelStorage: public PixelStorage {
         using PixelStorage::alignment;
         using PixelStorage::setAlignment;
 
+        /* Bool parameter is ugly, but this is implementation detail of
+           internal API so who cares */
+        void MAGNUM_LOCAL applyInternal(bool isUnpack);
+
+        /* Used internally in *Texture::compressedImage(), *Texture::compressedSubImage(),
+           *Texture::setCompressedImage() and *Texture::setCompressedSubImage() */
+        void MAGNUM_LOCAL applyUnpack() { applyInternal(true); }
+        void MAGNUM_LOCAL applyPack() { applyInternal(false); }
+
         Vector3i _blockSize;
         Int _blockDataSize;
 };
@@ -383,6 +411,20 @@ namespace Implementation {
     }
     #endif
 
+    /* Use in compressed image upload functions */
+    #ifndef MAGNUM_TARGET_GLES
+    template<class T> std::size_t occupiedCompressedImageDataSize(const T& image, std::size_t dataSize) {
+        if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize())
+            return dataSize;
+
+        return ((Vector3i::pad(image.size(), 1) + image.storage().compressedBlockSize() - Vector3i{1})/image.storage().compressedBlockSize()).product()*image.storage().compressedBlockDataSize();
+    }
+    #else
+    template<class T> std::size_t occupiedCompressedImageDataSize(const T&, std::size_t dataSize) {
+        return dataSize;
+    }
+    #endif
+
     #ifndef MAGNUM_TARGET_GLES
     /* Used in image query functions */
     template<std::size_t dimensions, class T> std::size_t compressedImageDataSizeFor(const T& image, const Math::Vector<dimensions, Int>& size, std::size_t dataSize) {
@@ -397,6 +439,15 @@ namespace Implementation {
         const auto realBlockCount = Math::Vector3<std::size_t>{(Vector3i::pad(size, 1) + image.storage().compressedBlockSize() - Vector3i{1})/image.storage().compressedBlockSize()};
 
         return offset + (blockCount.product() - (blockCount.x() - realBlockCount.x()) - (blockCount.y() - realBlockCount.y())*blockCount.x())*blockDataSize;
+    }
+    #endif
+
+    #ifdef MAGNUM_TARGET_GLES2
+    template<std::size_t dimensions, class T> std::ptrdiff_t pixelStorageSkipOffsetFor(const T& image, const Math::Vector<dimensions, Int>& size) {
+        return std::get<0>(image.storage().dataProperties(image.format(), image.type(), Vector3i::pad(size, 1)));
+    }
+    template<class T> std::ptrdiff_t pixelStorageSkipOffset(const T& image) {
+        return pixelStorageSkipOffsetFor(image, image.size());
     }
     #endif
 }
