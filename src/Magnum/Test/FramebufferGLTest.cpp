@@ -811,6 +811,11 @@ void FramebufferGLTest::invalidateSub() {
 }
 #endif
 
+namespace {
+    const auto DataStorage = PixelStorage{}.setSkip({0, 16, 0});
+    const std::size_t DataOffset = 16*8;
+}
+
 void FramebufferGLTest::read() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
@@ -860,11 +865,13 @@ void FramebufferGLTest::read() {
     Renderer::setClearStencil(67);
     framebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth|FramebufferClear::Stencil);
 
-    Image2D colorImage = framebuffer.read(Range2Di::fromSize({16, 8}, {8, 16}), {PixelFormat::RGBA, PixelType::UnsignedByte});
+    Image2D colorImage = framebuffer.read(Range2Di::fromSize({16, 8}, {8, 16}),
+        {DataStorage, PixelFormat::RGBA, PixelType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(colorImage.size(), Vector2i(8, 16));
-    CORRADE_COMPARE(colorImage.data<Color4ub>()[0], Color4ub(128, 64, 32, 17));
+    CORRADE_COMPARE(colorImage.data().size(), (DataOffset + 8*16)*sizeof(Color4ub));
+    CORRADE_COMPARE(colorImage.data<Color4ub>()[DataOffset], Color4ub(128, 64, 32, 17));
 
     #ifdef MAGNUM_TARGET_GLES
     if(Context::current()->isExtensionSupported<Extensions::GL::NV::read_depth>())
@@ -937,15 +944,16 @@ void FramebufferGLTest::readBuffer() {
     Renderer::setClearStencil(67);
     framebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth|FramebufferClear::Stencil);
 
-    BufferImage2D colorImage = framebuffer.read(Range2Di::fromSize({16, 8}, {8, 16}), {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
+    BufferImage2D colorImage = framebuffer.read(Range2Di::fromSize({16, 8}, {8, 16}),
+        {DataStorage, PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
     CORRADE_COMPARE(colorImage.size(), Vector2i(8, 16));
 
     MAGNUM_VERIFY_NO_ERROR();
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
     const auto colorData = colorImage.buffer().data<Color4ub>();
-    CORRADE_COMPARE(colorData.size(), 8*16);
-    CORRADE_COMPARE(colorData[0], Color4ub(128, 64, 32, 17));
+    CORRADE_COMPARE(colorData.size(), DataOffset + 8*16);
+    CORRADE_COMPARE(colorData[DataOffset], Color4ub(128, 64, 32, 17));
     #endif
 }
 #endif

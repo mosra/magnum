@@ -39,7 +39,6 @@ listed below in @ref opengl-unsupported-features.
 The core subset of OpenGL 2.1 should be fully implemented, except for the
 following:
 
--   Pixel store state (@fn_gl{PixelStore} function)
 -   Proxy textures
 -   Copying framebuffer to texture (@fn_gl{CopyTexImage2D} etc.)
 -   Some forgotten limit queries
@@ -157,7 +156,7 @@ GLSL 4.20                                   | done
 @extension{ARB,base_instance}               | done
 @extension{ARB,shading_language_420pack}    | done (shading language only)
 @extension{ARB,transform_feedback_instanced} | |
-@extension{ARB,compressed_texture_pixel_storage} | |
+@extension{ARB,compressed_texture_pixel_storage} | done
 @extension{ARB,conservative_depth}          | done (shading language only)
 @extension{ARB,internalformat_query}        | |
 @extension{ARB,map_buffer_alignment}        | done
@@ -301,7 +300,7 @@ Extension                                   | Status
 @es_extension{EXT,discard_framebuffer}      | done
 @es_extension2{EXT,blend_minmax,blend_minmax} | done
 @es_extension{EXT,shader_texture_lod}       | done (shading language only)
-@es_extension{EXT,unpack_subimage}          | |
+@es_extension{EXT,unpack_subimage}          | done
 @es_extension{EXT,occlusion_query_boolean}  | done
 @es_extension{EXT,shadow_samplers}          | done
 @es_extension{EXT,texture_rg}               | done
@@ -314,7 +313,7 @@ Extension                                   | Status
 @es_extension{NV,draw_buffers}              | done
 @es_extension{NV,fbo_color_attachments}     | done
 @es_extension{NV,read_buffer}               | done
-@es_extension{NV,pack_subimage}             | |
+@es_extension{NV,pack_subimage}             | done
 @es_extension{NV,draw_instanced}            | done
 @es_extension{NV,framebuffer_blit}          | done
 @es_extension{NV,framebuffer_multisample}   | done

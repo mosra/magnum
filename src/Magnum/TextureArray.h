@@ -599,7 +599,8 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * nor @extension{EXT,direct_state_access} desktop extension is
          * available, the texture is bound before the operation (if not
          * already).
-         * @see @ref setStorage(), @fn_gl2{TextureSubImage2D,TexSubImage2D}/
+         * @see @ref setStorage(), @fn_gl{PixelStore}, then
+         *      @fn_gl2{TextureSubImage2D,TexSubImage2D}/
          *      @fn_gl2{TextureSubImage3D,TexSubImage3D},
          *      @fn_gl_extension{TextureSubImage2D,EXT,direct_state_access}/
          *      @fn_gl_extension{TextureSubImage3D,EXT,direct_state_access},
@@ -634,7 +635,8 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * nor @extension{EXT,direct_state_access} desktop extension is
          * available, the texture is bound before the operation (if not
          * already).
-         * @see @ref setStorage(), @fn_gl2{CompressedTextureSubImage2D,CompressedTexSubImage2D}/
+         * @see @ref setStorage(), @fn_gl{PixelStore}, then
+         *      @fn_gl2{CompressedTextureSubImage2D,CompressedTexSubImage2D}/
          *      @fn_gl2{CompressedTextureSubImage3D,CompressedTexSubImage3D},
          *      @fn_gl_extension{CompressedTextureSubImage2D,EXT,direct_state_access}/
          *      @fn_gl_extension{CompressedTextureSubImage3D,EXT,direct_state_access},

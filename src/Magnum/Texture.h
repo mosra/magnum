@@ -653,7 +653,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{GetTexLevelParameter} with @def_gl{TEXTURE_WIDTH},
          *      @def_gl{TEXTURE_HEIGHT}, @def_gl{TEXTURE_DEPTH}, then
-         *      @fn_gl2{GetTextureImage,GetTexImage},
+         *      @fn_gl{PixelStore}, then @fn_gl2{GetTextureImage,GetTexImage},
          *      @fn_gl_extension{GetnTexImage,ARB,robustness},
          *      @fn_gl_extension{GetTextureImage,EXT,direct_state_access},
          *      eventually @fn_gl{GetTexImage}
@@ -723,6 +723,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @def_gl{TEXTURE_COMPRESSED_IMAGE_SIZE},
          *      @def_gl{TEXTURE_INTERNAL_FORMAT}, @def_gl{TEXTURE_WIDTH},
          *      @def_gl{TEXTURE_HEIGHT}, @def_gl{TEXTURE_DEPTH}, then
+         *      @fn_gl{PixelStore}, then
          *      @fn_gl2{GetCompressedTextureImage,GetCompressedTexImage},
          *      @fn_gl_extension{GetnCompressedTexImage,ARB,robustness},
          *      @fn_gl_extension{GetCompressedTextureImage,EXT,direct_state_access},
@@ -841,8 +842,9 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * and has better performance characteristics. This call also has no
          * equivalent in @extension{ARB,direct_state_access}, thus the texture
          * needs to be bound to some texture unit before the operation.
-         * @see @ref maxSize(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{TexImage1D} / @fn_gl{TexImage2D} / @fn_gl{TexImage3D}
+         * @see @ref maxSize(), @fn_gl{PixelStore}, then @fn_gl{ActiveTexture},
+         *      @fn_gl{BindTexture} and @fn_gl{TexImage1D} / @fn_gl{TexImage2D}
+         *      / @fn_gl{TexImage3D}
          * @deprecated_gl Prefer to use @ref setStorage() and @ref setSubImage()
          *      instead.
          */
@@ -891,9 +893,9 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * also has no equivalent in @extension{ARB,direct_state_access}, thus
          * the texture needs to be bound to some texture unit before the
          * operation.
-         * @see @ref maxSize(), @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{CompressedTexImage1D} / @fn_gl{CompressedTexImage2D} /
-         *      @fn_gl{CompressedTexImage3D}
+         * @see @ref maxSize(), @fn_gl{PixelStore}, then @fn_gl{ActiveTexture},
+         *      @fn_gl{BindTexture} and @fn_gl{CompressedTexImage1D} /
+         *      @fn_gl{CompressedTexImage2D} / @fn_gl{CompressedTexImage3D}
          * @deprecated_gl Prefer to use @ref setStorage() and
          *      @ref setCompressedSubImage() instead.
          */
@@ -941,7 +943,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * nor @extension{EXT,direct_state_access} desktop extension is
          * available, the texture is bound before the operation (if not
          * already).
-         * @see @ref setStorage(), @fn_gl2{TextureSubImage1D,TexSubImage1D} /
+         * @see @ref setStorage(), @fn_gl{PixelStore}, @fn_gl2{TextureSubImage1D,TexSubImage1D} /
          *      @fn_gl2{TextureSubImage2D,TexSubImage2D} / @fn_gl2{TextureSubImage3D,TexSubImage3D},
          *      @fn_gl_extension{TextureSubImage1D,EXT,direct_state_access} /
          *      @fn_gl_extension{TextureSubImage2D,EXT,direct_state_access} /
@@ -994,7 +996,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * nor @extension{EXT,direct_state_access} desktop extension is
          * available, the texture is bound before the operation (if not
          * already).
-         * @see @ref setStorage(), @fn_gl2{CompressedTextureSubImage1D,CompressedTexSubImage1D} /
+         * @see @ref setStorage(), @fn_gl{PixelStore},
+         *      @fn_gl2{CompressedTextureSubImage1D,CompressedTexSubImage1D} /
          *      @fn_gl2{CompressedTextureSubImage2D,CompressedTexSubImage2D} /
          *      @fn_gl2{CompressedTextureSubImage3D,CompressedTexSubImage3D},
          *      @fn_gl_extension{CompressedTextureSubImage1D,EXT,direct_state_access} /

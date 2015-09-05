@@ -179,6 +179,14 @@ struct TextureGLTest: AbstractOpenGLTester {
     #endif
     void invalidateSubImage2D();
     void invalidateSubImage3D();
+
+    PixelStorage _dataStorage2D, _dataStorage3D;
+    std::size_t _dataOffset2D, _dataOffset3D;
+
+    #ifndef MAGNUM_TARGET_GLES
+    CompressedPixelStorage _compressedDataStorage2D, _compressedDataStorage3D;
+    #endif
+    std::size_t _compressedDataOffset2D, _compressedDataOffset3D;
 };
 
 TextureGLTest::TextureGLTest() {
@@ -319,6 +327,49 @@ TextureGLTest::TextureGLTest() {
         &TextureGLTest::invalidateSubImage2D,
         &TextureGLTest::invalidateSubImage3D,
     });
+
+    _dataStorage2D = PixelStorage{}.setSkip({0, 1, 0});
+    _dataStorage3D = PixelStorage{}.setSkip({0, 0, 1});
+    _dataOffset2D = 8;
+    _dataOffset3D = 16;
+    #ifdef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::unpack_subimage>())
+    #endif
+    {
+        _dataStorage2D = _dataStorage3D = {};
+        _dataOffset2D = _dataOffset3D = 0;
+    }
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(Context::current()->isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>())
+    {
+        _compressedDataStorage2D = CompressedPixelStorage{}
+            .setCompressedBlockSize({4, 4, 1})
+            .setCompressedBlockDataSize(16)
+            .setSkip({0, 4, 0});
+        _compressedDataStorage3D = CompressedPixelStorage{}
+            .setCompressedBlockSize({4, 4, 4})
+            .setCompressedBlockDataSize(16*4)
+            .setSkip({0, 0, 4});
+        _compressedDataOffset2D = 16;
+        _compressedDataOffset3D = 16*4;
+    } else
+    #endif
+    {
+        #ifndef MAGNUM_TARGET_GLES
+        _compressedDataStorage2D = _compressedDataStorage3D = {};
+        #endif
+        _compressedDataOffset2D = _compressedDataOffset3D = 0;
+    }
+}
+
+namespace {
+    template<std::size_t size, class T> Containers::ArrayView<const T> unsafeSuffix(const T(&data)[size], std::size_t offset) {
+        static_assert(sizeof(T) == 1, "");
+        return {data - offset, size + offset};
+    }
 }
 
 #ifndef MAGNUM_TARGET_GLES
@@ -901,23 +952,26 @@ void TextureGLTest::storage3D() {
 namespace {
     constexpr UnsignedByte Data1D[] = { 0x00, 0x01, 0x02, 0x03,
                                         0x04, 0x05, 0x06, 0x07 };
+
+    const auto DataStorage1D = PixelStorage{}.setSkip({1, 0, 0});
+    const std::size_t DataOffset1D = 4;
 }
 
 #ifndef MAGNUM_TARGET_GLES
 void TextureGLTest::image1D() {
     Texture1D texture;
-    texture.setImage(0, TextureFormat::RGBA8,
-        ImageView1D(PixelFormat::RGBA, PixelType::UnsignedByte, 2, Data1D));
+    texture.setImage(0, TextureFormat::RGBA8, ImageView1D{DataStorage1D,
+        PixelFormat::RGBA, PixelType::UnsignedByte, 2, unsafeSuffix(Data1D, DataOffset1D)});
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    Image1D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte});
+    Image1D image = texture.image(0, {DataStorage1D, PixelFormat::RGBA, PixelType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), 2);
     CORRADE_COMPARE_AS(
-        Containers::ArrayView<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()),
+        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}.suffix(DataOffset1D)),
         Containers::ArrayView<const UnsignedByte>{Data1D}, TestSuite::Compare::Container);
 }
 
@@ -927,18 +981,20 @@ void TextureGLTest::compressedImage1D() {
 
 void TextureGLTest::image1DBuffer() {
     Texture1D texture;
-    texture.setImage(0, TextureFormat::RGBA8,
-        BufferImage1D(PixelFormat::RGBA, PixelType::UnsignedByte, 2, Data1D, BufferUsage::StaticDraw));
+    texture.setImage(0, TextureFormat::RGBA8, BufferImage1D{DataStorage1D,
+        PixelFormat::RGBA, PixelType::UnsignedByte, 2, unsafeSuffix(Data1D, DataOffset1D), BufferUsage::StaticDraw});
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    BufferImage1D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticDraw);
+    BufferImage1D image = texture.image(0,
+        {DataStorage1D, PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticDraw);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), 2);
-    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedByte>{Data1D}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(imageData.suffix(DataOffset1D),
+        Containers::ArrayView<const UnsignedByte>{Data1D}, TestSuite::Compare::Container);
 }
 
 void TextureGLTest::compressedImage1DBuffer() {
@@ -961,20 +1017,20 @@ namespace {
 
 void TextureGLTest::image2D() {
     Texture2D texture;
-    texture.setImage(0, TextureFormat::RGBA8,
-        ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Data2D));
+    texture.setImage(0, TextureFormat::RGBA8, ImageView2D{_dataStorage2D,
+        PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), unsafeSuffix(Data2D, _dataOffset2D)});
 
     MAGNUM_VERIFY_NO_ERROR();
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
-    Image2D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte});
+    Image2D image = texture.image(0, {_dataStorage2D, PixelFormat::RGBA, PixelType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(2));
     CORRADE_COMPARE_AS(
-        Containers::ArrayView<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()),
+        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}.suffix(_dataOffset2D)),
         Containers::ArrayView<const UnsignedByte>{Data2D}, TestSuite::Compare::Container);
     #endif
 }
@@ -989,20 +1045,23 @@ void TextureGLTest::compressedImage2D() {
     #endif
 
     Texture2D texture;
-    texture.setCompressedImage(0, CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3,
-        Vector2i{4}, CompressedData2D});
+    texture.setCompressedImage(0, CompressedImageView2D{
+        #ifndef MAGNUM_TARGET_GLES
+        _compressedDataStorage2D,
+        #endif
+        CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4}, unsafeSuffix(CompressedData2D, _compressedDataOffset2D)});
 
     MAGNUM_VERIFY_NO_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
-    CompressedImage2D image = texture.compressedImage(0, {});
+    CompressedImage2D image = texture.compressedImage(0, {_compressedDataStorage2D});
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i{4});
 
     CORRADE_COMPARE_AS(
-        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}),
+        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}.suffix(_compressedDataOffset2D)),
         Containers::ArrayView<const UnsignedByte>{CompressedData2D}, TestSuite::Compare::Container);
     #endif
 }
@@ -1010,20 +1069,22 @@ void TextureGLTest::compressedImage2D() {
 #ifndef MAGNUM_TARGET_GLES2
 void TextureGLTest::image2DBuffer() {
     Texture2D texture;
-    texture.setImage(0, TextureFormat::RGBA8,
-        BufferImage2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Data2D, BufferUsage::StaticDraw));
+    texture.setImage(0, TextureFormat::RGBA8, BufferImage2D{_dataStorage2D,
+        PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), unsafeSuffix(Data2D, _dataOffset2D), BufferUsage::StaticDraw});
 
     MAGNUM_VERIFY_NO_ERROR();
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
-    BufferImage2D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
+    BufferImage2D image = texture.image(0,
+        {_dataStorage2D, PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(2));
-    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedByte>{Data2D}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(imageData.suffix(_dataOffset2D),
+        Containers::ArrayView<const UnsignedByte>{Data2D}, TestSuite::Compare::Container);
     #endif
 }
 
@@ -1037,19 +1098,23 @@ void TextureGLTest::compressedImage2DBuffer() {
     #endif
 
     Texture2D texture;
-    texture.setCompressedImage(0, CompressedBufferImage2D{CompressedPixelFormat::RGBAS3tcDxt3,
-        Vector2i{4}, CompressedData2D, BufferUsage::StaticDraw});
+    texture.setCompressedImage(0, CompressedBufferImage2D{
+        #ifndef MAGNUM_TARGET_GLES
+        _compressedDataStorage2D,
+        #endif
+        CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4}, unsafeSuffix(CompressedData2D, _compressedDataOffset2D), BufferUsage::StaticDraw});
 
     MAGNUM_VERIFY_NO_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
-    CompressedBufferImage2D image = texture.compressedImage(0, {}, BufferUsage::StaticRead);
+    CompressedBufferImage2D image = texture.compressedImage(0, {_compressedDataStorage2D}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i{4});
-    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedByte>{CompressedData2D}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(imageData.suffix(_compressedDataOffset2D),
+        Containers::ArrayView<const UnsignedByte>{CompressedData2D}, TestSuite::Compare::Container);
     #endif
 }
 #endif
@@ -1084,20 +1149,20 @@ void TextureGLTest::image3D() {
     #endif
 
     Texture3D texture;
-    texture.setImage(0, TextureFormat::RGBA8,
-        ImageView3D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i(2), Data3D));
+    texture.setImage(0, TextureFormat::RGBA8, ImageView3D{_dataStorage3D,
+        PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i(2), unsafeSuffix(Data3D, _dataOffset3D)});
 
     MAGNUM_VERIFY_NO_ERROR();
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
-    Image3D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte});
+    Image3D image = texture.image(0, {_dataStorage3D, PixelFormat::RGBA, PixelType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i(2));
     CORRADE_COMPARE_AS(
-        Containers::ArrayView<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()),
+        Containers::ArrayView<const UnsignedByte>(image.data<UnsignedByte>(), image.data().size()).suffix(_dataOffset3D),
         Containers::ArrayView<const UnsignedByte>{Data3D}, TestSuite::Compare::Container);
     #endif
 }
@@ -1116,19 +1181,22 @@ void TextureGLTest::compressedImage3D() {
     #endif
 
     Texture3D texture;
-    texture.setCompressedImage(0, CompressedImageView3D{CompressedPixelFormat::RGBAS3tcDxt3,
-        Vector3i{4}, CompressedData3D});
+    texture.setCompressedImage(0, CompressedImageView3D{
+        #ifndef MAGNUM_TARGET_GLES
+        _compressedDataStorage3D,
+        #endif
+        CompressedPixelFormat::RGBAS3tcDxt3, Vector3i{4}, unsafeSuffix(CompressedData3D, _compressedDataOffset3D)});
 
     MAGNUM_VERIFY_NO_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
-    CompressedImage3D image = texture.compressedImage(0, {});
+    CompressedImage3D image = texture.compressedImage(0, {_compressedDataStorage3D});
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i{4});
     CORRADE_COMPARE_AS(
-        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}),
+        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}.suffix(_compressedDataOffset3D)),
         Containers::ArrayView<const UnsignedByte>{CompressedData3D}, TestSuite::Compare::Container);
     #endif
 }
@@ -1136,20 +1204,22 @@ void TextureGLTest::compressedImage3D() {
 #ifndef MAGNUM_TARGET_GLES2
 void TextureGLTest::image3DBuffer() {
     Texture3D texture;
-    texture.setImage(0, TextureFormat::RGBA8,
-        BufferImage3D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i(2), Data3D, BufferUsage::StaticDraw));
+    texture.setImage(0, TextureFormat::RGBA8, BufferImage3D{_dataStorage3D,
+        PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i(2), unsafeSuffix(Data3D, _dataOffset3D), BufferUsage::StaticDraw});
 
     MAGNUM_VERIFY_NO_ERROR();
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
-    BufferImage3D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
+    BufferImage3D image = texture.image(0,
+        {_dataStorage3D, PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i(2));
-    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedByte>{Data3D}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(imageData.suffix(_dataOffset3D),
+        Containers::ArrayView<const UnsignedByte>{Data3D}, TestSuite::Compare::Container);
     #endif
 }
 
@@ -1163,19 +1233,23 @@ void TextureGLTest::compressedImage3DBuffer() {
     #endif
 
     Texture3D texture;
-    texture.setCompressedImage(0, CompressedBufferImage3D{CompressedPixelFormat::RGBAS3tcDxt3,
-        Vector3i{4}, CompressedData3D, BufferUsage::StaticDraw});
+    texture.setCompressedImage(0, CompressedBufferImage3D{
+        #ifndef MAGNUM_TARGET_GLES
+        _compressedDataStorage3D,
+        #endif
+        CompressedPixelFormat::RGBAS3tcDxt3, Vector3i{4}, unsafeSuffix(CompressedData3D, _compressedDataOffset3D), BufferUsage::StaticDraw});
 
     MAGNUM_VERIFY_NO_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
-    CompressedBufferImage3D image = texture.compressedImage(0, {}, BufferUsage::StaticRead);
+    CompressedBufferImage3D image = texture.compressedImage(0, {_compressedDataStorage3D}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i{4});
-    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedByte>{CompressedData3D}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(imageData.suffix(_compressedDataOffset3D),
+        Containers::ArrayView<const UnsignedByte>{CompressedData3D}, TestSuite::Compare::Container);
     #endif
 }
 #endif
@@ -1192,18 +1266,18 @@ void TextureGLTest::subImage1D() {
     Texture1D texture;
     texture.setImage(0, TextureFormat::RGBA8,
         ImageView1D(PixelFormat::RGBA, PixelType::UnsignedByte, 4, Zero1D));
-    texture.setSubImage(0, 1,
-        ImageView1D(PixelFormat::RGBA, PixelType::UnsignedByte, 2, Data1D));
+    texture.setSubImage(0, 1, ImageView1D{DataStorage1D,
+        PixelFormat::RGBA, PixelType::UnsignedByte, 2, unsafeSuffix(Data1D, DataOffset1D)});
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    Image1D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte});
+    Image1D image = texture.image(0, {DataStorage1D, PixelFormat::RGBA, PixelType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), 4);
     CORRADE_COMPARE_AS(
-        Containers::ArrayView<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()),
+        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}.suffix(DataOffset1D)),
         Containers::ArrayView<const UnsignedByte>{SubData1DComplete}, TestSuite::Compare::Container);
 }
 
@@ -1215,18 +1289,19 @@ void TextureGLTest::subImage1DBuffer() {
     Texture1D texture;
     texture.setImage(0, TextureFormat::RGBA8,
         ImageView1D(PixelFormat::RGBA, PixelType::UnsignedByte, 4, Zero1D));
-    texture.setSubImage(0, 1,
-        BufferImage1D(PixelFormat::RGBA, PixelType::UnsignedByte, 2, Data1D, BufferUsage::StaticDraw));
+    texture.setSubImage(0, 1, BufferImage1D{DataStorage1D,
+        PixelFormat::RGBA, PixelType::UnsignedByte, 2, unsafeSuffix(Data1D, DataOffset1D), BufferUsage::StaticDraw});
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    BufferImage1D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
+    BufferImage1D image = texture.image(0, {DataStorage1D, PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), 4);
-    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedByte>{SubData1DComplete}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(imageData.suffix(DataOffset1D),
+        Containers::ArrayView<const UnsignedByte>{SubData1DComplete}, TestSuite::Compare::Container);
 }
 
 void TextureGLTest::compressedSubImage1DBuffer() {
@@ -1243,13 +1318,14 @@ void TextureGLTest::subImage1DQuery() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    Image1D image = texture.subImage(0, Range1Di::fromSize(1, 2), {PixelFormat::RGBA, PixelType::UnsignedByte});
+    Image1D image = texture.subImage(0, Range1Di::fromSize(1, 2),
+        {DataStorage1D, PixelFormat::RGBA, PixelType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), 2);
     CORRADE_COMPARE_AS(
-        Containers::ArrayView<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()), Containers::ArrayView<const UnsignedByte>{Data1D}, TestSuite::Compare::Container);
+        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}.suffix(DataOffset1D)), Containers::ArrayView<const UnsignedByte>{Data1D}, TestSuite::Compare::Container);
 }
 
 void TextureGLTest::subImage1DQueryBuffer() {
@@ -1262,13 +1338,15 @@ void TextureGLTest::subImage1DQueryBuffer() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    BufferImage1D image = texture.subImage(0, Range1Di::fromSize(1, 2), {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
+    BufferImage1D image = texture.subImage(0, Range1Di::fromSize(1, 2),
+        {DataStorage1D, PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), 2);
-    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedByte>{Data1D}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(imageData.suffix(DataOffset1D),
+        Containers::ArrayView<const UnsignedByte>{Data1D}, TestSuite::Compare::Container);
 }
 #endif
 
@@ -1300,8 +1378,8 @@ void TextureGLTest::subImage2D() {
     Texture2D texture;
     texture.setImage(0, TextureFormat::RGBA8,
         ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero2D));
-    texture.setSubImage(0, Vector2i(1),
-        ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Data2D));
+    texture.setSubImage(0, Vector2i(1), ImageView2D{_dataStorage2D,
+        PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), unsafeSuffix(Data2D, _dataOffset2D)});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -1313,7 +1391,7 @@ void TextureGLTest::subImage2D() {
 
     CORRADE_COMPARE(image.size(), Vector2i(4));
     CORRADE_COMPARE_AS(
-        Containers::ArrayView<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()),
+        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}),
         Containers::ArrayView<const UnsignedByte>{SubData2DComplete}, TestSuite::Compare::Container);
     #endif
 }
@@ -1330,8 +1408,11 @@ void TextureGLTest::compressedSubImage2D() {
     Texture2D texture;
     texture.setCompressedImage(0, CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3,
         {12, 4}, CompressedZero2D});
-    texture.setCompressedSubImage(0, {4, 0}, CompressedImageView2D(CompressedPixelFormat::RGBAS3tcDxt3,
-        Vector2i{4}, CompressedData2D));
+    texture.setCompressedSubImage(0, {4, 0}, CompressedImageView2D{
+        #ifndef MAGNUM_TARGET_GLES
+        _compressedDataStorage2D,
+        #endif
+        CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4}, unsafeSuffix(CompressedData2D, _compressedDataOffset2D)});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -1352,8 +1433,8 @@ void TextureGLTest::subImage2DBuffer() {
     Texture2D texture;
     texture.setImage(0, TextureFormat::RGBA8,
         ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero2D));
-    texture.setSubImage(0, Vector2i(1),
-        BufferImage2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Data2D, BufferUsage::StaticDraw));
+    texture.setSubImage(0, Vector2i(1), BufferImage2D{_dataStorage2D,
+        PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), unsafeSuffix(Data2D, _dataOffset2D), BufferUsage::StaticDraw});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -1381,8 +1462,11 @@ void TextureGLTest::compressedSubImage2DBuffer() {
     Texture2D texture;
     texture.setCompressedImage(0, CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3,
         {12, 4}, CompressedZero2D});
-    texture.setCompressedSubImage(0, {4, 0}, CompressedBufferImage2D{CompressedPixelFormat::RGBAS3tcDxt3,
-        Vector2i{4}, CompressedData2D, BufferUsage::StaticDraw});
+    texture.setCompressedSubImage(0, {4, 0}, CompressedBufferImage2D{
+        #ifndef MAGNUM_TARGET_GLES
+        _compressedDataStorage2D,
+        #endif
+        CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4}, unsafeSuffix(CompressedData2D, _compressedDataOffset2D), BufferUsage::StaticDraw});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -1409,13 +1493,14 @@ void TextureGLTest::subImage2DQuery() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    Image2D image = texture.subImage(0, Range2Di::fromSize(Vector2i{1}, Vector2i{2}), {PixelFormat::RGBA, PixelType::UnsignedByte});
+    Image2D image = texture.subImage(0, Range2Di::fromSize(Vector2i{1}, Vector2i{2}),
+        {_dataStorage2D, PixelFormat::RGBA, PixelType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i{2});
     CORRADE_COMPARE_AS(
-        Containers::ArrayView<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()), Containers::ArrayView<const UnsignedByte>{Data2D}, TestSuite::Compare::Container);
+        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}.suffix(_dataOffset2D)), Containers::ArrayView<const UnsignedByte>{Data2D}, TestSuite::Compare::Container);
 }
 
 void TextureGLTest::subImage2DQueryBuffer() {
@@ -1428,13 +1513,15 @@ void TextureGLTest::subImage2DQueryBuffer() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    BufferImage2D image = texture.subImage(0, Range2Di::fromSize(Vector2i{1}, Vector2i{2}), {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
+    BufferImage2D image = texture.subImage(0, Range2Di::fromSize(Vector2i{1}, Vector2i{2}),
+        {_dataStorage2D, PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i{2});
-    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedByte>{Data2D}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(imageData.suffix(_dataOffset2D),
+        Containers::ArrayView<const UnsignedByte>{Data2D}, TestSuite::Compare::Container);
 }
 #endif
 
@@ -1508,8 +1595,8 @@ void TextureGLTest::subImage3D() {
     Texture3D texture;
     texture.setImage(0, TextureFormat::RGBA8,
         ImageView3D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i(4), Zero3D));
-    texture.setSubImage(0, Vector3i(1),
-        ImageView3D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i(2), Data3D));
+    texture.setSubImage(0, Vector3i(1), ImageView3D{_dataStorage3D,
+        PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i(2), unsafeSuffix(Data3D, _dataOffset3D)});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -1521,7 +1608,7 @@ void TextureGLTest::subImage3D() {
 
     CORRADE_COMPARE(image.size(), Vector3i(4));
     CORRADE_COMPARE_AS(
-        Containers::ArrayView<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()),
+        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}),
         Containers::ArrayView<const UnsignedByte>{SubData3DComplete}, TestSuite::Compare::Container);
     #endif
 }
@@ -1542,8 +1629,11 @@ void TextureGLTest::compressedSubImage3D() {
     Texture3D texture;
     texture.setCompressedImage(0, CompressedImageView3D{CompressedPixelFormat::RGBAS3tcDxt3,
         {12, 4, 4}, CompressedZero3D});
-    texture.setCompressedSubImage(0, {4, 0, 0}, CompressedImageView3D(CompressedPixelFormat::RGBAS3tcDxt3,
-        Vector3i{4}, CompressedData3D));
+    texture.setCompressedSubImage(0, {4, 0, 0}, CompressedImageView3D{
+        #ifndef MAGNUM_TARGET_GLES
+        _compressedDataStorage3D,
+        #endif
+        CompressedPixelFormat::RGBAS3tcDxt3, Vector3i{4}, unsafeSuffix(CompressedData3D, _compressedDataOffset3D)});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -1564,8 +1654,8 @@ void TextureGLTest::subImage3DBuffer() {
     Texture3D texture;
     texture.setImage(0, TextureFormat::RGBA8,
         ImageView3D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i(4), Zero3D));
-    texture.setSubImage(0, Vector3i(1),
-        BufferImage3D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i(2), Data3D, BufferUsage::StaticDraw));
+    texture.setSubImage(0, Vector3i(1), BufferImage3D{_dataStorage3D,
+        PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i(2), unsafeSuffix(Data3D, _dataOffset3D), BufferUsage::StaticDraw});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -1593,8 +1683,11 @@ void TextureGLTest::compressedSubImage3DBuffer() {
     Texture3D texture;
     texture.setCompressedImage(0, CompressedImageView3D{CompressedPixelFormat::RGBAS3tcDxt3,
         {12, 4, 4}, CompressedZero3D});
-    texture.setCompressedSubImage(0, {4, 0, 0}, CompressedImageView3D(CompressedPixelFormat::RGBAS3tcDxt3,
-        Vector3i{4}, CompressedData3D));
+    texture.setCompressedSubImage(0, {4, 0, 0}, CompressedImageView3D{
+        #ifndef MAGNUM_TARGET_GLES
+        _compressedDataStorage3D,
+        #endif
+        CompressedPixelFormat::RGBAS3tcDxt3, Vector3i{4}, unsafeSuffix(CompressedData3D, _compressedDataOffset3D)});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -1621,13 +1714,14 @@ void TextureGLTest::subImage3DQuery() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    Image3D image = texture.subImage(0, Range3Di::fromSize(Vector3i{1}, Vector3i{2}), {PixelFormat::RGBA, PixelType::UnsignedByte});
+    Image3D image = texture.subImage(0, Range3Di::fromSize(Vector3i{1}, Vector3i{2}),
+        {_dataStorage3D, PixelFormat::RGBA, PixelType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i{2});
     CORRADE_COMPARE_AS(
-        Containers::ArrayView<const UnsignedByte>(image.data<UnsignedByte>(), image.pixelSize()*image.size().product()), Containers::ArrayView<const UnsignedByte>{Data3D}, TestSuite::Compare::Container);
+        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}.suffix(_dataOffset3D)), Containers::ArrayView<const UnsignedByte>{Data3D}, TestSuite::Compare::Container);
 }
 
 void TextureGLTest::subImage3DQueryBuffer() {
@@ -1640,13 +1734,15 @@ void TextureGLTest::subImage3DQueryBuffer() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    BufferImage3D image = texture.subImage(0, Range3Di::fromSize(Vector3i{1}, Vector3i{2}), {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
+    BufferImage3D image = texture.subImage(0, Range3Di::fromSize(Vector3i{1}, Vector3i{2}),
+        {_dataStorage3D, PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i{2});
-    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedByte>{Data3D}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(imageData.suffix(_dataOffset3D),
+        Containers::ArrayView<const UnsignedByte>{Data3D}, TestSuite::Compare::Container);
 }
 
 void TextureGLTest::generateMipmap1D() {

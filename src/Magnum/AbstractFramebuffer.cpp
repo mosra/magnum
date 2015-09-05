@@ -290,7 +290,12 @@ void AbstractFramebuffer::read(const Range2Di& rectangle, Image2D& image) {
     #ifndef MAGNUM_TARGET_GLES2
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     #endif
-    (Context::current()->state().framebuffer->readImplementation)(rectangle, image.format(), image.type(), data.size(), data);
+    image.storage().applyPack();
+    (Context::current()->state().framebuffer->readImplementation)(rectangle, image.format(), image.type(), data.size(), data
+        #ifdef MAGNUM_TARGET_GLES2
+        + Implementation::pixelStorageSkipOffsetFor(image, rectangle.size())
+        #endif
+        );
     image.setData(image.storage(), image.format(), image.type(), rectangle.size(), std::move(data));
 }
 
@@ -311,6 +316,7 @@ void AbstractFramebuffer::read(const Range2Di& rectangle, BufferImage2D& image, 
         image.setData(image.storage(), image.format(), image.type(), rectangle.size(), nullptr, usage);
 
     image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
+    image.storage().applyPack();
     (Context::current()->state().framebuffer->readImplementation)(rectangle, image.format(), image.type(), dataSize, nullptr);
 }
 
