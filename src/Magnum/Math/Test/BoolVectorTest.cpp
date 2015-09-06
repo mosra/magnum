@@ -143,7 +143,10 @@ void BoolVectorTest::data() {
     constexpr bool b = a[9];
     CORRADE_COMPARE(b, true);
 
-    constexpr UnsignedByte c = *a.data();
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Apparently dereferencing pointer is verboten */
+    constexpr
+    #endif
+    UnsignedByte c = *a.data();
     CORRADE_COMPARE(c, 0x08);
 
     BoolVector19 d(0x08, 0x03, 0x04);

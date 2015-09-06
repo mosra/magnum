@@ -283,7 +283,10 @@ void RectangularMatrixTest::data() {
     #endif
     Vector4 b = a[2];
     constexpr Float c = a[1][2];
-    constexpr Float d = *a.data();
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Apparently dereferencing pointer is verboten */
+    constexpr
+    #endif
+    Float d = *a.data();
     CORRADE_COMPARE(b, Vector4(7.0f, -1.7f, 8.0f, 0.0f));
     CORRADE_COMPARE(c, 7.0f);
     CORRADE_COMPARE(d, 3.0f);
