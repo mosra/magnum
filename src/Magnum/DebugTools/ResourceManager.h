@@ -37,6 +37,17 @@
 #include "Magnum/SceneGraph/SceneGraph.h"
 #include "Magnum/Shapes/Shapes.h"
 
+/** @todo fix this better */
+#ifdef CORRADE_MSVC2015_COMPATIBILITY
+#include "Magnum/AbstractShaderProgram.h"
+#include "Magnum/Buffer.h"
+#include "Magnum/Mesh.h"
+#include "Magnum/MeshView.h"
+#include "Magnum/DebugTools/ForceRenderer.h"
+#include "Magnum/DebugTools/ObjectRenderer.h"
+#include "Magnum/DebugTools/ShapeRenderer.h"
+#endif
+
 namespace Magnum {
 
 namespace DebugTools {
