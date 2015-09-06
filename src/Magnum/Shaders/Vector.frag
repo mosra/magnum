@@ -30,18 +30,19 @@
 #endif
 
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 1) uniform vec4 backgroundColor;
-layout(location = 2) uniform vec4 color;
-#else
-uniform lowp vec4 backgroundColor;
-uniform lowp vec4 color;
+layout(location = 1)
 #endif
+uniform lowp vec4 backgroundColor;
+
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 2)
+#endif
+uniform lowp vec4 color;
 
 #ifdef EXPLICIT_TEXTURE_LAYER
-layout(binding = 15) uniform sampler2D vectorTexture;
-#else
-uniform lowp sampler2D vectorTexture;
+layout(binding = 15)
 #endif
+uniform lowp sampler2D vectorTexture;
 
 in mediump vec2 fragmentTextureCoordinates;
 

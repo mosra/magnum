@@ -29,20 +29,21 @@
 #endif
 
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 0) uniform mat3 transformationProjectionMatrix;
-#else
-uniform highp mat3 transformationProjectionMatrix;
+layout(location = 0)
 #endif
+uniform highp mat3 transformationProjectionMatrix;
 
 #ifdef EXPLICIT_ATTRIB_LOCATION
-layout(location = POSITION_ATTRIBUTE_LOCATION) in highp vec2 position;
-layout(location = TEXTURECOORDINATES_ATTRIBUTE_LOCATION) in mediump vec2 textureCoordinates;
-#else
-in highp vec2 position;
-in mediump vec2 textureCoordinates;
+layout(location = POSITION_ATTRIBUTE_LOCATION)
 #endif
+in highp vec2 position;
 
-out vec2 fragmentTextureCoordinates;
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = TEXTURECOORDINATES_ATTRIBUTE_LOCATION)
+#endif
+in mediump vec2 textureCoordinates;
+
+out mediump vec2 fragmentTextureCoordinates;
 
 void main() {
     gl_Position.xywz = vec4(transformationProjectionMatrix*vec3(position, 1.0), 0.0);

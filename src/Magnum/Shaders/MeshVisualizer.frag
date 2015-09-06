@@ -44,22 +44,42 @@
 #extension GL_NV_shader_noperspective_interpolation: require
 #endif
 
-#ifndef GL_ES
-layout(location = 2) uniform vec4 color = vec4(1.0, 1.0, 1.0, 1.0);
-#else
-uniform lowp vec4 color;
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 2)
 #endif
+uniform lowp vec4 color
+    #ifndef GL_ES
+    = vec4(1.0, 1.0, 1.0, 1.0)
+    #endif
+    ;
 
 #ifdef WIREFRAME_RENDERING
-#ifndef GL_ES
-layout(location = 3) uniform vec4 wireframeColor = vec4(0.0, 0.0, 0.0, 1.0);
-layout(location = 4) uniform float wireframeWidth = 1.0;
-layout(location = 5) uniform float smoothness = 2.0;
-#else
-uniform lowp vec4 wireframeColor;
-uniform lowp float wireframeWidth;
-uniform lowp float smoothness;
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 3)
 #endif
+uniform lowp vec4 wireframeColor
+    #ifndef GL_ES
+    = vec4(0.0, 0.0, 0.0, 1.0)
+    #endif
+    ;
+
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 4)
+#endif
+uniform lowp float wireframeWidth
+    #ifndef GL_ES
+    = 1.0
+    #endif
+    ;
+
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 5)
+#endif
+uniform lowp float smoothness
+    #ifndef GL_ES
+    = 2.0
+    #endif
+    ;
 
 #ifndef NO_GEOMETRY_SHADER
 #ifdef GL_NV_shader_noperspective_interpolation

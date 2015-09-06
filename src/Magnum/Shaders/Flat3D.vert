@@ -29,23 +29,21 @@
 #endif
 
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 0) uniform mat4 transformationProjectionMatrix;
-#else
-uniform highp mat4 transformationProjectionMatrix;
+layout(location = 0)
 #endif
+uniform highp mat4 transformationProjectionMatrix;
 
 #ifdef EXPLICIT_ATTRIB_LOCATION
-layout(location = POSITION_ATTRIBUTE_LOCATION) in highp vec4 position;
-#else
-in highp vec4 position;
+layout(location = POSITION_ATTRIBUTE_LOCATION)
 #endif
+in highp vec4 position;
 
 #ifdef TEXTURED
 #ifdef EXPLICIT_ATTRIB_LOCATION
-layout(location = TEXTURECOORDINATES_ATTRIBUTE_LOCATION) in mediump vec2 textureCoordinates;
-#else
-in mediump vec2 textureCoordinates;
+layout(location = TEXTURECOORDINATES_ATTRIBUTE_LOCATION)
 #endif
+in mediump vec2 textureCoordinates;
+
 out mediump vec2 interpolatedTextureCoordinates;
 #endif
 

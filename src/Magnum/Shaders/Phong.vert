@@ -29,31 +29,41 @@
 #endif
 
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 0) uniform mat4 transformationMatrix;
-layout(location = 1) uniform mat4 projectionMatrix;
-layout(location = 2) uniform mat3 normalMatrix;
-layout(location = 3) uniform vec3 light;
-#else
-uniform highp mat4 transformationMatrix;
-uniform highp mat4 projectionMatrix;
-uniform mediump mat3 normalMatrix;
-uniform highp vec3 light;
+layout(location = 0)
 #endif
+uniform highp mat4 transformationMatrix;
+
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 1)
+#endif
+uniform highp mat4 projectionMatrix;
+
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 2)
+#endif
+uniform mediump mat3 normalMatrix;
+
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 3)
+#endif
+uniform highp vec3 light;
 
 #ifdef EXPLICIT_ATTRIB_LOCATION
-layout(location = POSITION_ATTRIBUTE_LOCATION) in highp vec4 position;
-layout(location = NORMAL_ATTRIBUTE_LOCATION) in mediump vec3 normal;
-#else
-in highp vec4 position;
-in mediump vec3 normal;
+layout(location = POSITION_ATTRIBUTE_LOCATION)
 #endif
+in highp vec4 position;
+
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = NORMAL_ATTRIBUTE_LOCATION)
+#endif
+in mediump vec3 normal;
 
 #ifdef TEXTURED
 #ifdef EXPLICIT_ATTRIB_LOCATION
-layout(location = TEXTURECOORDINATES_ATTRIBUTE_LOCATION) in mediump vec2 textureCoords;
-#else
-in mediump vec2 textureCoords;
+layout(location = TEXTURECOORDINATES_ATTRIBUTE_LOCATION)
 #endif
+in mediump vec2 textureCoords;
+
 out mediump vec2 interpolatedTextureCoords;
 #endif
 

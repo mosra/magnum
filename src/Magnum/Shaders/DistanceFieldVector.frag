@@ -29,30 +29,38 @@
 #define texture texture2D
 #endif
 
-#ifndef GL_ES
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 1) uniform lowp vec4 color;
-layout(location = 2) uniform lowp vec4 outlineColor;
-layout(location = 3) uniform lowp vec2 outlineRange = vec2(0.5, 1.0);
-layout(location = 4) uniform lowp float smoothness = 0.04;
-#else
-uniform lowp vec4 color;
-uniform lowp vec4 outlineColor;
-uniform lowp vec2 outlineRange = vec2(0.5, 1.0);
-uniform lowp float smoothness = 0.04;
+layout(location = 1)
 #endif
-#else
 uniform lowp vec4 color;
-uniform lowp vec4 outlineColor;
-uniform lowp vec2 outlineRange;
-uniform lowp float smoothness;
+
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 2)
 #endif
+uniform lowp vec4 outlineColor;
+
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 3)
+#endif
+uniform lowp vec2 outlineRange
+    #ifndef GL_ES
+    = vec2(0.5, 1.0)
+    #endif
+    ;
+
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 4)
+#endif
+uniform lowp float smoothness
+    #ifndef GL_ES
+    = 0.04
+    #endif
+    ;
 
 #ifdef EXPLICIT_TEXTURE_LAYER
-layout(binding = 15) uniform sampler2D vectorTexture;
-#else
-uniform lowp sampler2D vectorTexture;
+layout(binding = 15)
 #endif
+uniform lowp sampler2D vectorTexture;
 
 in mediump vec2 fragmentTextureCoordinates;
 

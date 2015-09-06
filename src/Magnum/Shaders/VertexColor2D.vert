@@ -28,23 +28,24 @@
 #define out varying
 #endif
 
-#ifndef GL_ES
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 0) uniform mat3 transformationProjectionMatrix = mat3(1.0);
-#else
-uniform mat3 transformationProjectionMatrix = mat3(1.0);
+layout(location = 0)
 #endif
-#else
-uniform highp mat3 transformationProjectionMatrix;
-#endif
+uniform highp mat3 transformationProjectionMatrix
+    #ifndef GL_ES
+    = mat3(1.0)
+    #endif
+    ;
 
 #ifdef EXPLICIT_ATTRIB_LOCATION
-layout(location = POSITION_ATTRIBUTE_LOCATION) in highp vec2 position;
-layout(location = 3) in lowp vec3 color;
-#else
-in highp vec2 position;
-in lowp vec3 color;
+layout(location = POSITION_ATTRIBUTE_LOCATION)
 #endif
+in highp vec2 position;
+
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = 3)
+#endif
+in lowp vec3 color;
 
 out lowp vec3 interpolatedColor;
 
