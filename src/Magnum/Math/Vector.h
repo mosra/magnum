@@ -211,7 +211,12 @@ template<std::size_t size, class T> class Vector {
         explicit Vector(const Vector<size, U>& other): Vector(typename Implementation::GenerateSequence<size>::Type(), other) {}
 
         /** @brief Construct vector from external representation */
-        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::from(std::declval<U>()))> constexpr explicit Vector(const U& other): Vector(Implementation::VectorConverter<size, T, U>::from(other)) {}
+        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::from(std::declval<U>()))>
+        #ifndef CORRADE_MSVC2015_COMPATIBILITY
+        /* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
+        constexpr
+        #endif
+        explicit Vector(const U& other): Vector(Implementation::VectorConverter<size, T, U>::from(other)) {}
 
         /** @brief Copy constructor */
         constexpr Vector(const Vector<size, T>&) = default;
