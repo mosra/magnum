@@ -31,25 +31,19 @@
 
 #ifdef TEXTURED
 #ifdef EXPLICIT_TEXTURE_LAYER
-layout(binding = 0) uniform sampler2D textureData;
-#else
-uniform sampler2D textureData;
+layout(binding = 0)
 #endif
+uniform lowp sampler2D textureData;
 #endif
 
 #ifdef EXPLICIT_UNIFORM_LOCATION
-#   ifndef GL_ES
-layout(location = 1) uniform vec4 color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-#   else
-layout(location = 1) uniform vec4 color;
-#   endif
-#else
-#   ifndef GL_ES
-uniform lowp vec4 color = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-#   else
-uniform lowp vec4 color;
-#   endif
+layout(location = 1)
 #endif
+uniform lowp vec4 color
+    #if !defined(GL_ES) && defined(TEXTURED)
+    = vec4(1.0)
+    #endif
+    ;
 
 #ifdef TEXTURED
 in mediump vec2 interpolatedTextureCoordinates;
@@ -60,9 +54,9 @@ out lowp vec4 fragmentColor;
 #endif
 
 void main() {
-    #ifdef TEXTURED
-    fragmentColor = color * texture(textureData, interpolatedTextureCoordinates);
-    #else
-    fragmentColor = color;
-    #endif
+    fragmentColor =
+        #ifdef TEXTURED
+        texture(textureData, interpolatedTextureCoordinates)*
+        #endif
+        color;
 }

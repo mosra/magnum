@@ -50,11 +50,11 @@ Draws whole mesh with given unshaded color or texture. For colored mesh you
 need to provide @ref Position attribute in your triangle mesh and call at least
 @ref setTransformationProjectionMatrix() and @ref setColor().
 
-If you want to use texture instead of color, you need to provide also
-@ref TextureCoordinates attribute. Pass @ref Flag::Textured to constructor and
-then at render time don't forget to set also the texture via @ref setTexture().
-The texture will be multiplied with the color (which is white by default, thus
-it doesn't change texture color).
+If you want to use texture, you need to provide also @ref TextureCoordinates
+attribute. Pass @ref Flag::Textured to constructor and then at render time
+don't forget to set also the texture via @ref setTexture(). The texture is
+multipled by the color, which is by default set to fully opaque white if
+texturing is enabled.
 
 For coloring the texture based on intensity you can use the @ref Vector shader.
 
@@ -185,12 +185,14 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public Abstra
          * @brief Set color
          * @return Reference to self (for method chaining)
          *
-         * If not set, default value is fully opaque white. Color will be
-         * multiplied with texture if @ref Flag::Textured is set.
+         * If @ref Flag::Textured is set, default value is `{1.0f, 1.0f, 1.0f}`
+         * and the color will be multiplied with texture.
          * @see @ref setTexture()
          */
-        /* MSVC needs inline also here to avoid linkage conflicts */
-        inline Flat<dimensions>& setColor(const Color4& color);
+        Flat<dimensions>& setColor(const Color4& color){
+            setUniform(colorUniform, color);
+            return *this;
+        }
 
         /**
          * @brief Set texture
@@ -215,11 +217,6 @@ typedef Flat<2> Flat2D;
 typedef Flat<3> Flat3D;
 
 CORRADE_ENUMSET_OPERATORS(Implementation::FlatFlags)
-
-template<UnsignedInt dimensions> inline Flat<dimensions>& Flat<dimensions>::setColor(const Color4& color) {
-    setUniform(colorUniform, color);
-    return *this;
-}
 
 }}
 
