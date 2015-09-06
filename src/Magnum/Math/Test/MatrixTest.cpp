@@ -185,7 +185,10 @@ void MatrixTest::constructCopy() {
                                                Vector4(4.5f,  4.0f, 7.0f,  2.0f),
                                                Vector4(1.0f,  2.0f, 3.0f, -1.0f),
                                                Vector4(7.9f, -1.0f, 8.0f, -1.5f));
-    constexpr Matrix4x4 b(a);
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why can't be copy constexpr? */
+    constexpr
+    #endif
+    Matrix4x4 b(a);
     CORRADE_COMPARE(b, Matrix4x4(Vector4(3.0f,  5.0f, 8.0f, -3.0f),
                                  Vector4(4.5f,  4.0f, 7.0f,  2.0f),
                                  Vector4(1.0f,  2.0f, 3.0f, -1.0f),
@@ -203,7 +206,10 @@ void MatrixTest::convert() {
     constexpr Matrix3x3 c(b);
     CORRADE_COMPARE(c, b);
 
-    constexpr Mat3 d(b);
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why can't be conversion constexpr? */
+    constexpr
+    #endif
+    Mat3 d(b);
     for(std::size_t i = 0; i != 9; ++i)
         CORRADE_COMPARE(d.a[i], a.a[i]);
 

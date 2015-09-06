@@ -171,7 +171,10 @@ void DualComplexTest::constructFromVector() {
 
 void DualComplexTest::constructCopy() {
     constexpr Math::Dual<Complex> a({-1.0f, 2.5f}, {3.0f, -7.5f});
-    constexpr DualComplex b(a);
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why can't be copy constexpr? */
+    constexpr
+    #endif
+    DualComplex b(a);
     CORRADE_COMPARE(b, DualComplex({-1.0f, 2.5f}, {3.0f, -7.5f}));
 }
 
@@ -190,7 +193,10 @@ void DualComplexTest::convert() {
     DualComplex c{a};
     CORRADE_COMPARE(c, b);
 
-    constexpr DualCmpl d(b);
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why can't be conversion constexpr? */
+    constexpr
+    #endif
+    DualCmpl d(b);
     CORRADE_COMPARE(d.re, a.re);
     CORRADE_COMPARE(d.im, a.im);
     CORRADE_COMPARE(d.x, a.x);

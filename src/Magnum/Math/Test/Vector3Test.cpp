@@ -142,7 +142,10 @@ void Vector3Test::constructConversion() {
 
 void Vector3Test::constructCopy() {
     constexpr Vector<3, Float> a(1.0f, 2.5f, -3.0f);
-    constexpr Vector3 b(a);
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why can't be copy constexpr? */
+    constexpr
+    #endif
+    Vector3 b(a);
     CORRADE_COMPARE(b, Vector3(1.0f, 2.5f, -3.0f));
 }
 
@@ -153,7 +156,10 @@ void Vector3Test::convert() {
     constexpr Vector3 c(a);
     CORRADE_COMPARE(c, b);
 
-    constexpr Vec3 d(b);
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why can't be conversion constexpr? */
+    constexpr
+    #endif
+    Vec3 d(b);
     CORRADE_COMPARE(d.x, a.x);
     CORRADE_COMPARE(d.y, a.y);
     CORRADE_COMPARE(d.z, a.z);

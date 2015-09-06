@@ -219,7 +219,10 @@ void Matrix4Test::constructCopy() {
                                  Vector<4, Float>(4.5f,  4.0f, 7.0f,  2.0f),
                                  Vector<4, Float>(1.0f,  2.0f, 3.0f, -1.0f),
                                  Vector<4, Float>(7.9f, -1.0f, 8.0f, -1.5f));
-    constexpr Matrix4 b(a);
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why can't be copy constexpr? */
+    constexpr
+    #endif
+    Matrix4 b(a);
     CORRADE_COMPARE(b, Matrix4({3.0f,  5.0f, 8.0f, -3.0f},
                                {4.5f,  4.0f, 7.0f,  2.0f},
                                {1.0f,  2.0f, 3.0f, -1.0f},
@@ -239,7 +242,10 @@ void Matrix4Test::convert() {
     constexpr Matrix4 c(b);
     CORRADE_COMPARE(c, b);
 
-    constexpr Mat4 d(b);
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why can't be conversion constexpr? */
+    constexpr
+    #endif
+    Mat4 d(b);
     for(std::size_t i = 0; i != 16; ++i)
         CORRADE_COMPARE(d.a[i], a.a[i]);
 
@@ -400,7 +406,10 @@ void Matrix4Test::fromParts() {
                                         Vector3(4.0f,  4.0f, 7.0f),
                                         Vector3(7.0f, -1.0f, 8.0f));
     constexpr Vector3 translation(9.0f, 4.0f, 5.0f);
-    constexpr Matrix4 a = Matrix4::from(rotationScaling, translation);
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Probably because copy is not constexpr */
+    constexpr
+    #endif
+    Matrix4 a = Matrix4::from(rotationScaling, translation);
 
     CORRADE_COMPARE(a, Matrix4({3.0f,  5.0f, 8.0f, 0.0f},
                                {4.0f,  4.0f, 7.0f, 0.0f},
@@ -413,7 +422,10 @@ void Matrix4Test::rotationScalingPart() {
                         {4.0f,  4.0f, 7.0f, 3.0f},
                         {7.0f, -1.0f, 8.0f, 0.0f},
                         {9.0f,  4.0f, 5.0f, 9.0f});
-    constexpr Matrix3x3 b = a.rotationScaling();
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Probably because copy is not constexpr */
+    constexpr
+    #endif
+    Matrix3x3 b = a.rotationScaling();
 
     CORRADE_COMPARE(b, Matrix3x3(Vector3(3.0f, 5.0f, 8.0f),
                                  Vector3(4.0f, 4.0f, 7.0f),
@@ -486,10 +498,22 @@ void Matrix4Test::vectorParts() {
                         { 0.0f, 12.0f,  0.0f, 0.0f},
                         { 0.0f,  0.0f, 35.0f, 0.0f},
                         {-5.0f, 12.0f,  0.5f, 1.0f});
-    constexpr Vector3 right = a.right();
-    constexpr Vector3 up = a.up();
-    constexpr Vector3 backward = a.backward();
-    constexpr Vector3 translation = a.translation();
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Probably because copy is not constexpr */
+    constexpr
+    #endif
+    Vector3 right = a.right();
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Probably because copy is not constexpr */
+    constexpr
+    #endif
+    Vector3 up = a.up();
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Probably because copy is not constexpr */
+    constexpr
+    #endif
+    Vector3 backward = a.backward();
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Probably because copy is not constexpr */
+    constexpr
+    #endif
+    Vector3 translation = a.translation();
 
     CORRADE_COMPARE(right, Vector3::xAxis(-1.0f));
     CORRADE_COMPARE(up, Vector3::yAxis(12.0f));

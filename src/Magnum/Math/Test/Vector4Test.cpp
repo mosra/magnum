@@ -105,8 +105,14 @@ void Vector4Test::construct() {
 
 void Vector4Test::constructPad() {
     constexpr Vector<2, Float> a{3.0f, -1.0f};
-    constexpr Vector4 b = Vector4::pad(a);
-    constexpr Vector4 c = Vector4::pad(a, 5.0f);
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Probably because copy is not constexpr */
+    constexpr
+    #endif
+    Vector4 b = Vector4::pad(a);
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Probably because copy is not constexpr */
+    constexpr
+    #endif
+    Vector4 c = Vector4::pad(a, 5.0f);
     constexpr Vector4 d = Vector4::pad(a, 5.0f, 1.0f);
     CORRADE_COMPARE(b, Vector4(3.0f, -1.0f, 0.0f, 0.0f));
     CORRADE_COMPARE(c, Vector4(3.0f, -1.0f, 5.0f, 5.0f));
@@ -151,7 +157,10 @@ void Vector4Test::constructConversion() {
 
 void Vector4Test::constructCopy() {
     constexpr Vector<4, Float> a(1.0f, -2.5f, 3.0f, 4.1f);
-    constexpr Vector4 b(a);
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why can't be copy constexpr? */
+    constexpr
+    #endif
+    Vector4 b(a);
     CORRADE_COMPARE(b, Vector4(1.0f, -2.5f, 3.0f, 4.1f));
 }
 
@@ -162,7 +171,10 @@ void Vector4Test::convert() {
     constexpr Vector4 c(a);
     CORRADE_COMPARE(c, b);
 
-    constexpr Vec4 d(b);
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why can't be conversion constexpr? */
+    constexpr
+    #endif
+    Vec4 d(b);
     CORRADE_COMPARE(d.x, a.x);
     CORRADE_COMPARE(d.y, a.y);
     CORRADE_COMPARE(d.z, a.z);

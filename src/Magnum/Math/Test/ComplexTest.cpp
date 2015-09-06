@@ -196,7 +196,10 @@ void ComplexTest::convert() {
     Complex c(a);
     CORRADE_COMPARE(c, b);
 
-    constexpr Cmpl d(b);
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why can't be conversion constexpr? */
+    constexpr
+    #endif
+    Cmpl d(b);
     CORRADE_COMPARE(d.re, a.re);
     CORRADE_COMPARE(d.im, a.im);
 

@@ -246,7 +246,10 @@ void RectangularMatrixTest::convert() {
     Matrix2x3 c{a};
     CORRADE_COMPARE(c, b);
 
-    constexpr Mat2x3 d(b);
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why can't be conversion constexpr? */
+    constexpr
+    #endif
+    Mat2x3 d(b);
     for(std::size_t i = 0; i != 5; ++i)
         CORRADE_COMPARE(d.a[i], a.a[i]);
 
@@ -275,7 +278,10 @@ void RectangularMatrixTest::data() {
     constexpr Matrix3x4 a(Vector4(3.0f,  5.0f, 8.0f, 4.0f),
                           Vector4(4.5f,  4.0f, 7.0f, 3.0f),
                           Vector4(7.0f, -1.7f, 8.0f, 0.0f));
-    constexpr Vector4 b = a[2];
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Probably because copy is not constexpr */
+    constexpr
+    #endif
+    Vector4 b = a[2];
     constexpr Float c = a[1][2];
     constexpr Float d = *a.data();
     CORRADE_COMPARE(b, Vector4(7.0f, -1.7f, 8.0f, 0.0f));
@@ -416,13 +422,19 @@ void RectangularMatrixTest::diagonal() {
                           Vector3( 4.0f,  5.0f,  7.0f),
                           Vector3( 8.0f,  9.0f, 11.0f),
                           Vector3(12.0f, 13.0f, 15.0f));
-    constexpr Vector3 aDiagonal = a.diagonal();
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Probably because copy is not constexpr */
+    constexpr
+    #endif
+    Vector3 aDiagonal = a.diagonal();
     CORRADE_COMPARE(aDiagonal, diagonal);
 
     constexpr Matrix3x4 b(Vector4(-1.0f, 4.0f,  8.0f, 12.0f),
                           Vector4( 1.0f, 5.0f,  9.0f, 13.0f),
                           Vector4( 3.0f, 7.0f, 11.0f, 15.0f));
-    constexpr Vector3 bDiagonal = b.diagonal();
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Probably because copy is not constexpr */
+    constexpr
+    #endif
+    Vector3 bDiagonal = b.diagonal();
     CORRADE_COMPARE(bDiagonal, diagonal);
 }
 

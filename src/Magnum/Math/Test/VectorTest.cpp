@@ -256,7 +256,10 @@ void VectorTest::convert() {
     Vector3 c{a};
     CORRADE_COMPARE(c, b);
 
-    constexpr Vec3 d(b);
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why can't be conversion constexpr? */
+    constexpr
+    #endif
+    Vec3 d(b);
     CORRADE_COMPARE(d.x, a.x);
     CORRADE_COMPARE(d.y, a.y);
     CORRADE_COMPARE(d.z, a.z);
@@ -567,8 +570,14 @@ void VectorTest::subclass() {
 
     {
         constexpr Vector<1, Float> a = 5.0f;
-        constexpr Vec2 b = Vec2::pad(a);
-        constexpr Vec2 c = Vec2::pad(a, -1.0f);
+        #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Probably because copy is not constexpr */
+        constexpr
+        #endif
+        Vec2 b = Vec2::pad(a);
+        #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Probably because copy is not constexpr */
+        constexpr
+        #endif
+        Vec2 c = Vec2::pad(a, -1.0f);
         CORRADE_COMPARE(b, Vec2(5.0f, 0.0f));
         CORRADE_COMPARE(c, Vec2(5.0f, -1.0f));
     }

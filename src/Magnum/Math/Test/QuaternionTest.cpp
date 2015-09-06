@@ -197,7 +197,10 @@ void QuaternionTest::convert() {
     Quaternion c{a};
     CORRADE_COMPARE(c, b);
 
-    constexpr Quat d(b);
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why can't be conversion constexpr? */
+    constexpr
+    #endif
+    Quat d(b);
     CORRADE_COMPARE(d.x, a.x);
     CORRADE_COMPARE(d.y, a.y);
     CORRADE_COMPARE(d.z, a.z);

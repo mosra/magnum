@@ -203,11 +203,17 @@ void ColorTest::constructNormalization() {
 
 void ColorTest::constructCopy() {
     constexpr Math::Vector<3, Float> a(1.0f, 0.5f, 0.75f);
-    constexpr Color3 b(a);
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why can't be copy constexpr? */
+    constexpr
+    #endif
+    Color3 b(a);
     CORRADE_COMPARE(b, Color3(1.0f, 0.5f, 0.75f));
 
     constexpr Math::Vector<4, Float> c(1.0f, 0.5f, 0.75f, 0.25f);
-    constexpr Color4 d(c);
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why can't be copy constexpr? */
+    constexpr
+    #endif
+    Color4 d(c);
     CORRADE_COMPARE(d, Color4(1.0f, 0.5f, 0.75f, 0.25f));
 }
 

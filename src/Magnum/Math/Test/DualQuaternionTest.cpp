@@ -172,7 +172,10 @@ void DualQuaternionTest::constructFromVector() {
 
 void DualQuaternionTest::constructCopy() {
     constexpr Math::Dual<Quaternion> a({{1.0f, 2.0f, -3.0f}, -3.5f}, {{4.5f, -7.0f, 2.0f}, 1.0f});
-    constexpr DualQuaternion b(a);
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why can't be copy constexpr? */
+    constexpr
+    #endif
+    DualQuaternion b(a);
     CORRADE_COMPARE(b, DualQuaternion({{1.0f, 2.0f, -3.0f}, -3.5f}, {{4.5f, -7.0f, 2.0f}, 1.0f}));
 }
 
@@ -191,7 +194,10 @@ void DualQuaternionTest::convert() {
     DualQuaternion c{a};
     CORRADE_COMPARE(c, b);
 
-    constexpr DualQuat d(b);
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why can't be conversion constexpr? */
+    constexpr
+    #endif
+    DualQuat d(b);
     CORRADE_COMPARE(d.re.x, a.re.x);
     CORRADE_COMPARE(d.re.y, a.re.y);
     CORRADE_COMPARE(d.re.z, a.re.z);

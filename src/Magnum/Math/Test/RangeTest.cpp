@@ -284,17 +284,26 @@ void RangeTest::convert() {
     CORRADE_COMPARE(i, e);
     CORRADE_COMPARE(j, f);
 
-    constexpr Dim k(d);
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why can't be conversion constexpr? */
+    constexpr
+    #endif
+    Dim k(d);
     CORRADE_COMPARE(k.offset, a.offset);
     CORRADE_COMPARE(k.size, a.size);
 
-    constexpr Rect l(e);
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why can't be conversion constexpr? */
+    constexpr
+    #endif
+    Rect l(e);
     CORRADE_COMPARE(l.x, b.x);
     CORRADE_COMPARE(l.y, b.y);
     CORRADE_COMPARE(l.w, b.w);
     CORRADE_COMPARE(l.h, b.h);
 
-    constexpr Box m(f);
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why can't be conversion constexpr? */
+    constexpr
+    #endif
+    Box m(f);
     CORRADE_COMPARE(m.x, c.x);
     CORRADE_COMPARE(m.y, c.y);
     CORRADE_COMPARE(m.z, c.z);
