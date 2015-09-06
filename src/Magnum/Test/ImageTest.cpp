@@ -219,6 +219,9 @@ void ImageTest::toReference() {
         #ifdef CORRADE_GCC47_COMPATIBILITY
         CORRADE_EXPECT_FAIL("Rvalue references for *this are not supported in GCC < 4.8.1.");
         #endif
+        #ifdef CORRADE_MSVC2015_COMPATIBILITY
+        CORRADE_EXPECT_FAIL("std::is_convertible is still buggy in MSVC 2015.");
+        #endif
         CORRADE_VERIFY(!(std::is_convertible<const Image2D, ImageView2D>::value));
         CORRADE_VERIFY(!(std::is_convertible<const Image2D&&, ImageView2D>::value));
     }
@@ -245,6 +248,9 @@ void ImageTest::toReferenceCommpressed() {
     {
         #ifdef CORRADE_GCC47_COMPATIBILITY
         CORRADE_EXPECT_FAIL("Rvalue references for *this are not supported in GCC < 4.8.1.");
+        #endif
+        #ifdef CORRADE_MSVC2015_COMPATIBILITY
+        CORRADE_EXPECT_FAIL("std::is_convertible is still buggy in MSVC 2015.");
         #endif
         CORRADE_VERIFY(!(std::is_convertible<const CompressedImage2D, CompressedImageView2D>::value));
         CORRADE_VERIFY(!(std::is_convertible<const CompressedImage2D&&, CompressedImageView2D>::value));
