@@ -78,7 +78,10 @@ template<class T> void ConstantsTest::_constants() {
 }
 
 template<class T> void ConstantsTest::_specials() {
-    constexpr T a = Constants<T>::nan();
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* NaN is not constexpr */
+    constexpr
+    #endif
+    T a = Constants<T>::nan();
     CORRADE_VERIFY(std::isnan(a));
     CORRADE_VERIFY(a != a);
 
