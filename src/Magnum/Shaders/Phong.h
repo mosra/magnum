@@ -44,10 +44,12 @@ to provide @ref Position and @ref Normal attributes in your triangle mesh and
 call at least @ref setTransformationMatrix(), @ref setNormalMatrix(),
 @ref setProjectionMatrix(), @ref setDiffuseColor() and @ref setLightPosition().
 
-If you want to use texture instead of color, you need to provide also
-@ref TextureCoordinates attribute. Pass appropriate flags to constructor and
-then at render time don't forget to also call appropriate subset of
-@ref setAmbientTexture(), @ref setDiffuseTexture() and @ref setSpecularTexture().
+If you want to use textures, you need to provide also @ref TextureCoordinates
+attribute. Pass appropriate @ref Flags to constructor and then at render time
+don't forget to also call appropriate subset of @ref setAmbientTexture(),
+@ref setDiffuseTexture() and @ref setSpecularTexture(). The texture is
+multipled by the color, which is by default set to fully opaque white for
+enabled textures.
 
 @image html shaders-phong.png
 @image latex shaders-phong.png
@@ -184,11 +186,15 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * @brief Set ambient color
          * @return Reference to self (for method chaining)
          *
-         * If not set, default value is `{0.0f, 0.0f, 0.0f}`. Has no effect if
-         * @ref Flag::AmbientTexture is set.
+         * If @ref Flag::AmbientTexture is set, default value is
+         * `{1.0f, 1.0f, 1.0f}` and the color will be multiplied with ambient
+         * texture, otherwise default value is `{0.0f, 0.0f, 0.0f}`.
          * @see @ref setAmbientTexture()
          */
-        Phong& setAmbientColor(const Color3& color);
+        Phong& setAmbientColor(const Color3& color) {
+            setUniform(ambientColorUniform, color);
+            return *this;
+        }
 
         /**
          * @brief Set ambient texture
@@ -203,10 +209,15 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * @brief Set diffuse color
          * @return Reference to self (for method chaining)
          *
-         * Has no effect if @ref Flag::DiffuseTexture is used.
+         * If @ref Flag::DiffuseTexture is set, default value is
+         * `{1.0f, 1.0f, 1.0f}` and the color will be multiplied with diffuse
+         * texture.
          * @see @ref setDiffuseTexture()
          */
-        Phong& setDiffuseColor(const Color3& color);
+        Phong& setDiffuseColor(const Color3& color) {
+            setUniform(diffuseColorUniform, color);
+            return *this;
+        }
 
         /**
          * @brief Set diffuse texture
@@ -221,11 +232,14 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * @brief Set specular color
          * @return Reference to self (for method chaining)
          *
-         * If not set, default value is `{1.0f, 1.0f, 1.0f}`. Has no effect if
-         * @ref Flag::SpecularTexture is set.
+         * Default value is `{1.0f, 1.0f, 1.0f}`. Color will be multiplied with
+         * specular texture if @ref Flag::SpecularTexture is set.
          * @see @ref setSpecularTexture()
          */
-        Phong& setSpecularColor(const Color3& color);
+        Phong& setSpecularColor(const Color3& color) {
+            setUniform(specularColorUniform, color);
+            return *this;
+        }
 
         /**
          * @brief Set specular texture
@@ -325,21 +339,6 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
 };
 
 CORRADE_ENUMSET_OPERATORS(Phong::Flags)
-
-inline Phong& Phong::setAmbientColor(const Color3& color) {
-    if(!(_flags & Flag::AmbientTexture)) setUniform(ambientColorUniform, color);
-    return *this;
-}
-
-inline Phong& Phong::setDiffuseColor(const Color3& color) {
-    if(!(_flags & Flag::DiffuseTexture)) setUniform(diffuseColorUniform, color);
-    return *this;
-}
-
-inline Phong& Phong::setSpecularColor(const Color3& color) {
-    if(!(_flags & Flag::SpecularTexture)) setUniform(specularColorUniform, color);
-    return *this;
-}
 
 }}
 

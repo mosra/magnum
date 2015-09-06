@@ -94,9 +94,9 @@ Phong::Phong(const Flags flags): transformationMatrixUniform(0), projectionMatri
         projectionMatrixUniform = uniformLocation("projectionMatrix");
         normalMatrixUniform = uniformLocation("normalMatrix");
         lightUniform = uniformLocation("light");
-        if(!(flags & Flag::AmbientTexture)) ambientColorUniform = uniformLocation("ambientColor");
-        if(!(flags & Flag::DiffuseTexture)) diffuseColorUniform = uniformLocation("diffuseColor");
-        if(!(flags & Flag::SpecularTexture)) specularColorUniform = uniformLocation("specularColor");
+        ambientColorUniform = uniformLocation("ambientColor");
+        diffuseColorUniform = uniformLocation("diffuseColor");
+        specularColorUniform = uniformLocation("specularColor");
         lightColorUniform = uniformLocation("lightColor");
         shininessUniform = uniformLocation("shininess");
     }
@@ -112,7 +112,12 @@ Phong::Phong(const Flags flags): transformationMatrixUniform(0), projectionMatri
 
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
     #ifdef MAGNUM_TARGET_GLES
-    setAmbientColor({});
+    /* Default to fully opaque white so we can see the textures */
+    if(flags & Flag::AmbientTexture) setAmbientColor(Vector3{1.0f});
+    else setAmbientColor({});
+
+    if(flags & Flag::DiffuseTexture) setDiffuseColor(Vector3{1.0f});
+
     setSpecularColor(Vector3(1.0f));
     setLightColor(Vector3(1.0f));
     setShininess(80.0f);
