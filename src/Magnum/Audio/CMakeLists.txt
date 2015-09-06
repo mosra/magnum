@@ -40,6 +40,7 @@ set(MagnumAudio_HEADERS
     Audio.h
     Buffer.h
     Context.h
+    Extensions.h
     Renderer.h
     Source.h
 
