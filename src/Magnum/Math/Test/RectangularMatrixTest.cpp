@@ -149,8 +149,16 @@ void RectangularMatrixTest::construct() {
 }
 
 void RectangularMatrixTest::constructDefault() {
-    constexpr Matrix4x3 a;
-    constexpr Matrix4x3 b{ZeroInit};
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY
+    /* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
+    constexpr
+    #endif
+    Matrix4x3 a;
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY
+    /* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
+    constexpr
+    #endif
+    Matrix4x3 b{ZeroInit};
     CORRADE_COMPARE(a, Matrix4x3(Vector3(0.0f, 0.0f, 0.0f),
                                  Vector3(0.0f, 0.0f, 0.0f),
                                  Vector3(0.0f, 0.0f, 0.0f),
