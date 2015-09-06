@@ -1,5 +1,6 @@
 #include "TransformFeedbackState.h"
 
+#include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
 #include "Magnum/TransformFeedback.h"
 

@@ -25,6 +25,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <string>
 #include <vector>
 
 #include "Magnum/Magnum.h"

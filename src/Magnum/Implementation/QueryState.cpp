@@ -25,6 +25,7 @@
 
 #include "QueryState.h"
 
+#include "Magnum/AbstractQuery.h"
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
 
