@@ -54,6 +54,10 @@ Context::Context() {
 
     alcMakeContextCurrent(_context);
     _current = this;
+
+    /* Print some info */
+    Debug() << "Audio Renderer:" << rendererString() << "by" << vendorString();
+    Debug() << "OpenAL version:" << versionString();
 }
 
 Context::~Context() {
