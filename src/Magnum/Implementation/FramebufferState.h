@@ -47,7 +47,6 @@ struct FramebufferState {
     static const Range2Di DisengagedViewport;
     #endif
 
-
     explicit FramebufferState(Context& context, std::vector<std::string>& extensions);
 
     void reset();

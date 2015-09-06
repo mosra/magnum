@@ -43,7 +43,7 @@ struct ImageTest: TestSuite::Tester {
     void setData();
     void setDataCompressed();
     void toReference();
-    void toReferenceCommpressed();
+    void toReferenceCompressed();
     void release();
     void releaseCompressed();
 };
@@ -59,7 +59,7 @@ ImageTest::ImageTest() {
               &ImageTest::setData,
               &ImageTest::setDataCompressed,
               &ImageTest::toReference,
-              &ImageTest::toReferenceCommpressed,
+              &ImageTest::toReferenceCompressed,
               &ImageTest::release,
               &ImageTest::releaseCompressed});
 }
@@ -227,7 +227,7 @@ void ImageTest::toReference() {
     }
 }
 
-void ImageTest::toReferenceCommpressed() {
+void ImageTest::toReferenceCompressed() {
     auto data = new char[8];
     const CompressedImage2D a{
         #ifndef MAGNUM_TARGET_GLES
