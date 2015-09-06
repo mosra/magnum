@@ -120,7 +120,9 @@ Convenience alternative to `FeatureGroup<2, Feature, T>`. See
 @ref AbstractGroupedFeature for more information.
 @see @ref FeatureGroup2D, @ref BasicFeatureGroup3D
 */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class Feature, class T> using BasicFeatureGroup2D = FeatureGroup<2, Feature, T>;
+#endif
 
 /**
 @brief Base feature group for two-dimensional float scenes
@@ -129,7 +131,9 @@ Convenience alternative to `BasicFeatureGroup2D<Feature, Float>`. See
 @ref AbstractGroupedFeature for more information.
 @see @ref FeatureGroup3D
 */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class Feature> using FeatureGroup2D = BasicFeatureGroup2D<Feature, Float>;
+#endif
 
 /**
 @brief Base feature group for three-dimensional scenes
@@ -138,7 +142,9 @@ Convenience alternative to `FeatureGroup<3, Feature, T>`. See
 @ref AbstractGroupedFeature for more information.
 @see @ref FeatureGroup3D, @ref BasicFeatureGroup2D
 */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class Feature, class T> using BasicFeatureGroup3D = FeatureGroup<3, Feature, T>;
+#endif
 
 /**
 @brief Base feature group for three-dimensional float scenes
@@ -147,7 +153,9 @@ Convenience alternative to `BasicFeatureGroup3D<Feature, Float>`. See
 @ref AbstractGroupedFeature for more information.
 @see @ref FeatureGroup2D
 */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class Feature> using FeatureGroup3D = BasicFeatureGroup3D<Feature, Float>;
+#endif
 
 template<UnsignedInt dimensions, class Feature, class T> FeatureGroup<dimensions, Feature, T>::~FeatureGroup() {
     for(auto i: AbstractFeatureGroup<dimensions, T>::features) static_cast<Feature&>(i.get())._group = nullptr;

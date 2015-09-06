@@ -114,7 +114,9 @@ Convenience alternative to `AbstractGroupedFeature<2, Derived, T>`. See
 @ref AbstractGroupedFeature for more information.
 @see @ref AbstractGroupedFeature2D, @ref AbstractBasicGroupedFeature3D
 */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class Derived, class T> using AbstractBasicGroupedFeature2D = AbstractGroupedFeature<2, Derived, T>;
+#endif
 
 /**
 @brief Base grouped feature for two-dimensional float scenes
@@ -123,7 +125,9 @@ Convenience alternative to `AbstractBasicGroupedFeature2D<Derived, Float>`.
 See @ref AbstractGroupedFeature for more information.
 @see @ref AbstractGroupedFeature3D
 */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class Derived> using AbstractGroupedFeature2D = AbstractBasicGroupedFeature2D<Derived, Float>;
+#endif
 
 /**
 @brief Base grouped feature for three-dimensional scenes
@@ -132,7 +136,9 @@ Convenience alternative to `AbstractGroupedFeature<3, Derived, T>`. See
 @ref AbstractGroupedFeature for more information.
 @see @ref AbstractGroupedFeature3D, @ref AbstractBasicGroupedFeature2D
 */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class Derived, class T> using AbstractBasicGroupedFeature3D = AbstractGroupedFeature<3, Derived, T>;
+#endif
 
 /**
 @brief Base grouped feature for three-dimensional float scenes
@@ -141,7 +147,9 @@ Convenience alternative to `AbstractBasicGroupedFeature3D<Derived, Float>`.
 See @ref AbstractGroupedFeature for more information.
 @see @ref AbstractGroupedFeature2D
 */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class Derived> using AbstractGroupedFeature3D = AbstractBasicGroupedFeature3D<Derived, Float>;
+#endif
 
 }}
 

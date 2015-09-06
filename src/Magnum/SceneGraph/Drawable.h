@@ -212,7 +212,9 @@ Convenience alternative to `Drawable<2, T>`. See @ref Drawable for more
 information.
 @see @ref Drawable2D, @ref BasicDrawable3D
 */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class T> using BasicDrawable2D = Drawable<2, T>;
+#endif
 
 /**
 @brief Drawable for two-dimensional float scenes
@@ -228,7 +230,9 @@ Convenience alternative to `Drawable<3, T>`. See @ref Drawable for more
 information.
 @see @ref Drawable3D, @ref BasicDrawable3D
 */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class T> using BasicDrawable3D = Drawable<3, T>;
+#endif
 
 /**
 @brief Drawable for three-dimensional float scenes
@@ -244,7 +248,9 @@ See @ref Drawable for more information.
 @see @ref scenegraph, @ref BasicDrawableGroup2D, @ref BasicDrawableGroup3D,
     @ref DrawableGroup2D, @ref DrawableGroup3D
 */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<UnsignedInt dimensions, class T> using DrawableGroup = FeatureGroup<dimensions, Drawable<dimensions, T>, T>;
+#endif
 
 /**
 @brief Group of drawables for two-dimensional scenes
@@ -253,7 +259,9 @@ Convenience alternative to `DrawableGroup<2, T>`. See @ref Drawable for
 more information.
 @see @ref DrawableGroup2D, @ref BasicDrawableGroup3D
 */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class T> using BasicDrawableGroup2D = DrawableGroup<2, T>;
+#endif
 
 /**
 @brief Group of drawables for two-dimensional float scenes
@@ -269,7 +277,9 @@ Convenience alternative to `DrawableGroup<3, T>`. See @ref Drawable for
 more information.
 @see @ref DrawableGroup3D, @ref BasicDrawableGroup2D
 */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class T> using BasicDrawableGroup3D = DrawableGroup<3, T>;
+#endif
 
 /**
 @brief Group of drawables for three-dimensional float scenes

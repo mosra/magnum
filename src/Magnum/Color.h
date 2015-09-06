@@ -43,12 +43,16 @@ namespace Magnum {
 /** @copybrief Math::Color3
  * @deprecated Use @ref Math::Color3 instead.
  */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class T> using BasicColor3 CORRADE_DEPRECATED_ALIAS("use Math::Color3 instead") = Math::Color3<T>;
+#endif
 
 /** @copybrief Math::Color4
  * @deprecated Use @ref Math::Color4 instead.
  */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class T> using BasicColor4 CORRADE_DEPRECATED_ALIAS("use Math::Color4 instead") = Math::Color4<T>;
+#endif
 
 }
 #else

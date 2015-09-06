@@ -287,7 +287,9 @@ Convenience alternative to `AbstractFeature<2, T>`. See
 @ref AbstractFeature for more information.
 @see @ref AbstractFeature2D, @ref AbstractBasicFeature3D
 */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class T> using AbstractBasicFeature2D = AbstractFeature<2, T>;
+#endif
 
 /**
 @brief Base feature for two-dimensional float scenes
@@ -303,7 +305,9 @@ Convenience alternative to `AbstractFeature<3, T>`. See
 @ref AbstractFeature for more information.
 @see @ref AbstractFeature3D, @ref AbstractBasicFeature2D
 */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class T> using AbstractBasicFeature3D = AbstractFeature<3, T>;
+#endif
 
 /**
 @brief Base feature for three-dimensional float scenes

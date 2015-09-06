@@ -152,12 +152,14 @@ Convenience alternative to `TranslationTransformation<2, T, TranslationType>`.
 See @ref TranslationTransformation for more information.
 @see @ref TranslationTransformation2D, @ref BasicTranslationTransformation3D
 */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T, class TranslationType = T>
 #else
 template<class T, class TranslationType>
 #endif
 using BasicTranslationTransformation2D = TranslationTransformation<2, T, TranslationType>;
+#endif
 
 /**
 @brief Base transformation for two-dimensional float scenes supporting translation
@@ -173,12 +175,14 @@ Convenience alternative to `TranslationTransformation<3, T, TranslationType>`.
 See @ref TranslationTransformation for more information.
 @see @ref TranslationTransformation3D, @ref BasicTranslationTransformation2D
 */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T, class TranslationType = T>
 #else
 template<class T, class TranslationType>
 #endif
 using BasicTranslationTransformation3D = TranslationTransformation<3, T, TranslationType>;
+#endif
 
 /**
 @brief Base transformation for three-dimensional float scenes supporting translation

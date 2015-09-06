@@ -228,7 +228,9 @@ Convenience alternative to `Matrix<2, T>`. See @ref Matrix for more
 information.
 @see @ref Magnum::Matrix2x2, @ref Magnum::Matrix2x2d
 */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class T> using Matrix2x2 = Matrix<2, T>;
+#endif
 
 /**
 @brief 3x3 matrix
@@ -238,7 +240,9 @@ information. Note that this is different from @ref Matrix3, which contains
 additional functions for transformations in 2D.
 @see @ref Magnum::Matrix3x3, @ref Magnum::Matrix3x3d
 */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class T> using Matrix3x3 = Matrix<3, T>;
+#endif
 
 /**
 @brief 4x4 matrix
@@ -248,7 +252,9 @@ information. Note that this is different from @ref Matrix4, which contains
 additional functions for transformations in 3D.
 @see @ref Magnum::Matrix4x4, @ref Magnum::Matrix4x4d
 */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class T> using Matrix4x4 = Matrix<4, T>;
+#endif
 
 MAGNUM_MATRIX_OPERATOR_IMPLEMENTATION(Matrix<size, T>)
 

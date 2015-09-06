@@ -399,7 +399,9 @@ Convenience alternative to `RectangularMatrix<2, 3, T>`. See
 @ref RectangularMatrix for more information.
 @see @ref Magnum::Matrix2x3, @ref Magnum::Matrix2x3d
 */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class T> using Matrix2x3 = RectangularMatrix<2, 3, T>;
+#endif
 
 /**
 @brief Matrix with 3 columns and 2 rows
@@ -408,7 +410,9 @@ Convenience alternative to `RectangularMatrix<3, 2, T>`. See
 @ref RectangularMatrix for more information.
 @see @ref Magnum::Matrix3x2, @ref Magnum::Matrix3x2d
 */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class T> using Matrix3x2 = RectangularMatrix<3, 2, T>;
+#endif
 
 /**
 @brief Matrix with 2 columns and 4 rows
@@ -417,7 +421,9 @@ Convenience alternative to `RectangularMatrix<2, 4, T>`. See
 @ref RectangularMatrix for more information.
 @see @ref Magnum::Matrix2x4, @ref Magnum::Matrix2x4d
 */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class T> using Matrix2x4 = RectangularMatrix<2, 4, T>;
+#endif
 
 /**
 @brief Matrix with 4 columns and 2 rows
@@ -426,7 +432,9 @@ Convenience alternative to `RectangularMatrix<4, 2, T>`. See
 @ref RectangularMatrix for more information.
 @see @ref Magnum::Matrix4x2, @ref Magnum::Matrix4x2d
 */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class T> using Matrix4x2 = RectangularMatrix<4, 2, T>;
+#endif
 
 /**
 @brief Matrix with 3 columns and 4 rows
@@ -435,7 +443,9 @@ Convenience alternative to `RectangularMatrix<3, 4, T>`. See
 @ref RectangularMatrix for more information.
 @see @ref Magnum::Matrix3x4, @ref Magnum::Matrix3x4d
 */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class T> using Matrix3x4 = RectangularMatrix<3, 4, T>;
+#endif
 
 /**
 @brief Matrix with 4 columns and 3 rows
@@ -444,7 +454,9 @@ Convenience alternative to `RectangularMatrix<4, 3, T>`. See
 @ref RectangularMatrix for more information.
 @see @ref Magnum::Matrix4x3, @ref Magnum::Matrix4x3d
 */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class T> using Matrix4x3 = RectangularMatrix<4, 3, T>;
+#endif
 
 /** @relates RectangularMatrix
 @brief Multiply number with matrix

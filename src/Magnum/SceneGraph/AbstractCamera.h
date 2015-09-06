@@ -41,13 +41,17 @@ namespace Magnum { namespace SceneGraph {
  * @copybrief Camera
  * @deprecated Use @ref Camera instead.
  */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<UnsignedInt dimensions, class T> using AbstractCamera CORRADE_DEPRECATED_ALIAS("use Camera instead") = Camera<dimensions, T>;
+#endif
 
 /**
  * @copybrief BasicCamera2D
  * @deprecated Use @ref BasicCamera2D instead.
  */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class T> using AbstractBasicCamera2D CORRADE_DEPRECATED_ALIAS("use BasicCamera2D instead") = BasicCamera2D<T>;
+#endif
 
 /**
  * @copybrief Camera2D
@@ -59,7 +63,9 @@ CORRADE_DEPRECATED("use Camera2D instead") typedef Camera2D AbstractCamera2D;
  * @copybrief BasicCamera3D
  * @deprecated Use @ref BasicCamera3D instead.
  */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class T> using AbstractBasicCamera3D CORRADE_DEPRECATED_ALIAS("use BasicCamera3D instead") = BasicCamera3D<T>;
+#endif
 
 /**
  * @copybrief Camera3D

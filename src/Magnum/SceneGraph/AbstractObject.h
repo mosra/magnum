@@ -286,7 +286,9 @@ Convenience alternative to `AbstractObject<2, T>`. See
 @ref AbstractObject for more information.
 @see @ref AbstractObject2D, @ref AbstractBasicObject3D
 */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class T> using AbstractBasicObject2D = AbstractObject<2, T>;
+#endif
 
 /**
 @brief Base object for two-dimensional float scenes
@@ -302,7 +304,9 @@ Convenience alternative to `AbstractObject<3, T>`. See
 @ref AbstractObject for more information.
 @see @ref AbstractObject3D, @ref AbstractBasicObject2D
 */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class T> using AbstractBasicObject3D = AbstractObject<3, T>;
+#endif
 
 /**
 @brief Base object for three-dimensional float scenes

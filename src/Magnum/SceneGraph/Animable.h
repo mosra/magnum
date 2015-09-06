@@ -330,7 +330,9 @@ Convenience alternative to `Animable<2, T>`. See @ref Animable for more
 information.
 @see @ref Animable2D, @ref BasicAnimable3D
 */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class T> using BasicAnimable2D = Animable<2, T>;
+#endif
 
 /**
 @brief Animable for two-dimensional float scenes
@@ -346,7 +348,9 @@ Convenience alternative to `Animable<3, T>`. See @ref Animable for more
 information.
 @see @ref Animable3D, @ref BasicAnimable2D
 */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class T> using BasicAnimable3D = Animable<3, T>;
+#endif
 
 /**
 @brief Animable for three-dimensional float scenes

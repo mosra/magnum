@@ -211,7 +211,9 @@ template<UnsignedInt dimensions, class T> class Range {
 Convenience alternative to `Range<1, T>`. See @ref Range for more
 information.
 */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class T> using Range1D = Range<1, T>;
+#endif
 
 /**
 @brief Two-dimensional range

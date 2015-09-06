@@ -263,7 +263,9 @@ Convenience alternative to `Camera<2, T>`. See @ref Camera for more
 information.
 @see @ref Camera2D, @ref BasicCamera3D
 */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class T> using BasicCamera2D = Camera<2, T>;
+#endif
 
 /**
 @brief Camera for two-dimensional float scenes
@@ -279,7 +281,9 @@ Convenience alternative to `Camera<3, T>`. See @ref Camera for more
 information.
 @see @ref Camera3D, @ref BasicCamera2D
 */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class T> using BasicCamera3D = Camera<3, T>;
+#endif
 
 /**
 @brief Camera for three-dimensional float scenes
