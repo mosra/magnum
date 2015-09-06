@@ -372,7 +372,10 @@ void AbstractShaderProgramGLTest::uniformArray() {
     MAGNUM_VERIFY_NO_ERROR();
 
     /* Testing also implicit conversion to base type (Vector4[] -> Math::Vector<4, Float>[]) */
-    constexpr Vector4 values[] = {
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Causes ICE */
+    constexpr
+    #endif
+    const Vector4 values[] = {
         {0.5f, 1.0f, 0.4f, 0.0f},
         {0.0f, 0.1f, 0.7f, 0.3f},
         {0.9f, 0.8f, 0.3f, 0.1f}
