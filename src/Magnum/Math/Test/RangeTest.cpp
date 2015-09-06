@@ -215,7 +215,11 @@ void RangeTest::constructConversion() {
     constexpr Range2D b({1.3f, 2.7f}, {-15.0f, 7.0f});
     constexpr Range3D c({1.3f, 2.7f, -1.5f}, {-15.0f, 7.0f, 0.3f});
 
-    constexpr Range1Di d(a);
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY
+    /* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
+    constexpr
+    #endif
+    Range1Di d(a);
     CORRADE_COMPARE(d, Range1Di(1, -15));
 
     constexpr Range2Di e(b);

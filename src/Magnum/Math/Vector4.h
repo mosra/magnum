@@ -106,7 +106,14 @@ template<class T> class Vector4: public Vector<4, T> {
         constexpr /*implicit*/ Vector4(const Vector3<T>& xyz, T w): Vector<4, T>(xyz[0], xyz[1], xyz[2], w) {}
 
         /** @copydoc Vector::Vector(const Vector<size, U>&) */
-        template<class U> constexpr explicit Vector4(const Vector<4, U>& other): Vector<4, T>(other) {}
+        template<class U> constexpr explicit Vector4(const Vector<4, U>& other):
+            #ifndef CORRADE_MSVC2015_COMPATIBILITY
+            Vector<4, T>(other)
+            #else
+            /* Avoid using non-constexpr version */
+            Vector<4, T>(typename Implementation::GenerateSequence<4>::Type(), other)
+            #endif
+            {}
 
         /** @brief Construct vector from external representation */
         template<class U, class V = decltype(Implementation::VectorConverter<4, T, U>::from(std::declval<U>()))> constexpr explicit Vector4(const U& other): Vector<4, T>(Implementation::VectorConverter<4, T, U>::from(other)) {}

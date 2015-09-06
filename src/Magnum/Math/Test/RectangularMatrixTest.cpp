@@ -174,7 +174,11 @@ void RectangularMatrixTest::constructNoInit() {
 void RectangularMatrixTest::constructConversion() {
     constexpr Matrix2x2 a(Vector2(  1.3f, 2.7f),
                           Vector2(-15.0f, 7.0f));
-    constexpr Matrix2x2i b(a);
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY
+    /* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
+    constexpr
+    #endif
+    Matrix2x2i b(a);
 
     CORRADE_COMPARE(b, Matrix2x2i(Vector2i(  1, 2),
                                   Vector2i(-15, 7)));

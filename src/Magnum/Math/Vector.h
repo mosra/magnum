@@ -94,6 +94,13 @@ template<std::size_t size, class T> class Vector {
 
     template<std::size_t, class> friend class Vector;
 
+    #ifdef CORRADE_MSVC2015_COMPATIBILITY
+    /* Delegating constexpr constructor workarounds */
+    friend class Vector2<T>;
+    friend class Vector3<T>;
+    friend class Vector4<T>;
+    #endif
+
     public:
         typedef T Type;         /**< @brief Underlying data type */
 

@@ -223,7 +223,11 @@ void VectorTest::constructOneComponent() {
 
 void VectorTest::constructConversion() {
     constexpr Vector4 a(1.3f, 2.7f, -15.0f, 7.0f);
-    constexpr Vector4i b(a);
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY
+    /* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
+    constexpr
+    #endif
+    Vector4i b(a);
 
     CORRADE_COMPARE(b, Vector4i(1, 2, -15, 7));
 
