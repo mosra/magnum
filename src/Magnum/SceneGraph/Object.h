@@ -304,7 +304,13 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
          */
         /* `objects` passed by copy intentionally (to allow move from
            transformationMatrices() and avoid copy in the function itself) */
-        std::vector<typename Transformation::DataType> transformations(std::vector<std::reference_wrapper<Object<Transformation>>> objects, const typename Transformation::DataType& initialTransformation = typename Transformation::DataType()) const;
+        std::vector<typename Transformation::DataType> transformations(std::vector<std::reference_wrapper<Object<Transformation>>> objects, const typename Transformation::DataType& initialTransformation =
+            #ifndef CORRADE_MSVC2015_COMPATIBILITY /* I hate this inconsistency */
+            typename Transformation::DataType()
+            #else
+            Transformation::DataType()
+            #endif
+            ) const;
 
         /*@}*/
 
