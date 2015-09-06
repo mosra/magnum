@@ -120,8 +120,7 @@ void ObjImporter::doClose() { _file.reset(); }
 bool ObjImporter::doIsOpened() const { return !!_file; }
 
 void ObjImporter::doOpenFile(const std::string& filename) {
-    /* Open file in *text* mode (to avoid \r handling) */
-    std::unique_ptr<std::istream> in{new std::ifstream{filename}};
+    std::unique_ptr<std::istream> in{new std::ifstream{filename, std::ios::binary}};
     if(!in->good()) {
         Error() << "Trade::ObjImporter::openFile(): cannot open file" << filename;
         return;
@@ -133,7 +132,6 @@ void ObjImporter::doOpenFile(const std::string& filename) {
 }
 
 void ObjImporter::doOpenData(Containers::ArrayView<const char> data) {
-    /* Open file in *text* mode (to avoid \r handling) */
     _file.reset(new File);
     _file->in.reset(new std::istringstream{{data.begin(), data.size()}});
 
