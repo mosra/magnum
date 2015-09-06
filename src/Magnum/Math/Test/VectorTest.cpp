@@ -201,7 +201,11 @@ void VectorTest::constructNoInit() {
 }
 
 void VectorTest::constructOneValue() {
-    constexpr Vector4 a(7.25f);
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY
+    /* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
+    constexpr
+    #endif
+    Vector4 a(7.25f);
 
     CORRADE_COMPARE(a, Vector4(7.25f, 7.25f, 7.25f, 7.25f));
 

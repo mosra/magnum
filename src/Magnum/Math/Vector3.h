@@ -152,7 +152,14 @@ template<class T> class Vector3: public Vector<3, T> {
             {}
 
         /** @copydoc Vector::Vector(T) */
-        constexpr explicit Vector3(T value): Vector<3, T>(value) {}
+        constexpr explicit Vector3(T value):
+            #ifndef CORRADE_MSVC2015_COMPATIBILITY
+            Vector<3, T>(value)
+            #else
+            /* Avoid using non-constexpr version */
+            Vector<3, T>(value, value, value)
+            #endif
+            {}
 
         /**
          * @brief Constructor
