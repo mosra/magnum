@@ -270,7 +270,10 @@ class MAGNUM_EXPORT CompressedPixelStorage: public PixelStorage {
          * Sets all parameters to default values, i.e. all values set to
          * `false`/`0` except for alignment, which is `4`.
          */
-        constexpr /*implicit*/ CompressedPixelStorage() noexcept: _blockSize{0}, _blockDataSize{0} {}
+        #ifndef CORRADE_MSVC2015_COMPATIBILITY /* What am I doing wrong? */
+        constexpr
+        #endif
+        /*implicit*/ CompressedPixelStorage() noexcept: _blockSize{0}, _blockDataSize{0} {}
 
         /** @brief Compressed block size */
         constexpr Vector3i compressedBlockSize() const { return _blockSize; }
