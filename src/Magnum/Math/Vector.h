@@ -1400,7 +1400,7 @@ template<std::size_t size, class T> struct ConfigurationValue<Magnum::Math::Vect
     }
 };
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
+#if !defined(DOXYGEN_GENERATING_OUTPUT) && !defined(__MINGW32__)
 /* Vectors */
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<2, Magnum::Float>>;
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<3, Magnum::Float>>;

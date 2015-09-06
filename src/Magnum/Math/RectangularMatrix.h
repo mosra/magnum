@@ -736,7 +736,7 @@ template<std::size_t cols, std::size_t rows, class T> struct ConfigurationValue<
     }
 };
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
+#if !defined(DOXYGEN_GENERATING_OUTPUT) && !defined(__MINGW32__)
 /* Square matrices */
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<2, 2, Magnum::Float>>;
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<3, 3, Magnum::Float>>;
