@@ -159,7 +159,14 @@ template<class T> class Vector2: public Vector<2, T> {
             {}
 
         /** @brief Construct vector from external representation */
-        template<class U, class V = decltype(Implementation::VectorConverter<2, T, U>::from(std::declval<U>()))> constexpr explicit Vector2(const U& other): Vector<2, T>(Implementation::VectorConverter<2, T, U>::from(other)) {}
+        template<class U, class V =
+            #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Causes ICE */
+            decltype(Implementation::VectorConverter<2, T, U>::from(std::declval<U>()))
+            #else
+            decltype(Implementation::VectorConverter<2, T, U>())
+            #endif
+            >
+        constexpr explicit Vector2(const U& other): Vector<2, T>(Implementation::VectorConverter<2, T, U>::from(other)) {}
 
         /** @brief Copy constructor */
         constexpr Vector2(const Vector<2, T>& other): Vector<2, T>(other) {}

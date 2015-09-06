@@ -259,7 +259,14 @@ template<class T> class Range2D: public Range<2, T> {
          * @brief Construct range from external representation
          * @todoc Remove workaround when Doxygen no longer chokes on that line
          */
-        template<class U, class V = decltype(Implementation::RangeConverter<2, T, U>::from(std::declval<U>()))> constexpr explicit Range2D(const U& other)
+        template<class U, class V =
+            #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Causes ICE */
+            decltype(Implementation::RangeConverter<2, T, U>::from(std::declval<U>()))
+            #else
+            decltype(Implementation::RangeConverter<2, T, U>())
+            #endif
+            >
+        constexpr explicit Range2D(const U& other)
             #ifndef DOXYGEN_GENERATING_OUTPUT
             /* MSVC 2015 can't handle {} here */
             : Range<2, T>(Implementation::RangeConverter<2, T, U>::from(other))
