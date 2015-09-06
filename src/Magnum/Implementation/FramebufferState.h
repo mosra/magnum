@@ -30,6 +30,13 @@
 
 #include "Magnum/Framebuffer.h"
 
+#ifdef _MSC_VER
+/* Otherwise the member function pointers will have different size based on
+   whether the header was included or not. CAUSES SERIOUS MEMORY CORRUPTION AND
+   IS NOT CAUGHT BY ANY WARNING WHATSOEVER! AARGH! */
+#include "Magnum/Renderbuffer.h"
+#endif
+
 namespace Magnum { namespace Implementation {
 
 struct FramebufferState {

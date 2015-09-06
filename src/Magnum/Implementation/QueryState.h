@@ -27,7 +27,14 @@
 
 #include <vector>
 
+#include "Magnum/Magnum.h"
+
+#ifdef _MSC_VER
+/* Otherwise the member function pointers will have different size based on
+   whether the header was included or not. CAUSES SERIOUS MEMORY CORRUPTION AND
+   IS NOT CAUGHT BY ANY WARNING WHATSOEVER! AARGH! */
 #include "Magnum/AbstractQuery.h"
+#endif
 
 #if defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2)
 #error this header is not available in WebGL 1.0 build
