@@ -52,7 +52,7 @@ Platforms:
 
 *   **Linux** and embedded Linux (natively using GLX/EGL and Xlib or through
     SDL2 or GLUT toolkit)
-*   **Windows** (through SDL2 or GLUT toolkit)
+*   **Windows** (through SDL2 or GLUT toolkit) [![Build status](https://ci.appveyor.com/api/projects/status/5b477m034cfaskse/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum/branch/master)
 *   **OS X** (through SDL2 toolkit)
 *   **Android** 2.3 (API Level 9) and higher
 *   **Google Chrome** (through [Native Client](https://developers.google.com/native-client/),
@@ -85,10 +85,10 @@ comprehensive guide for building, packaging and crosscompiling.
 Minimal dependencies
 --------------------
 
-*   C++ compiler with good C++11 support. Currently there are two compilers
-    which are tested to have everything needed: **GCC** >= 4.7 and **Clang**
-    >= 3.1. On Windows you can use **MinGW**. GCC 4.6, 4.5, 4.4 and **MSVC**
-    2013 support involves some ugly workarounds and thus is available only in
+-   C++ compiler with good C++11 support. Compilers which are tested to have
+    everything needed are **GCC** >= 4.7, **Clang** >= 3.1 and **MSVC** 2015.
+    On Windows you can also use **MinGW**. GCC 4.6, 4.5, 4.4 and MSVC 2013
+    support involves some ugly workarounds and thus is available only in
     `compatibility` branch.
 *   **CMake** >= 2.8.9
 *   **Corrade** - Plugin management and utility library. You can get it at
