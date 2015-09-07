@@ -52,7 +52,7 @@ void AbstractImageConverterTest::exportToFile() {
         private:
             Features doFeatures() const override { return Feature::ConvertData; }
 
-            Containers::Array<char> doExportToData(const ImageView2D& image) const override {
+            Containers::Array<char> doExportToData(const ImageView2D& image) override {
                 return Containers::Array<char>::from(char(image.size().x()), char(image.size().y()));
             };
     };

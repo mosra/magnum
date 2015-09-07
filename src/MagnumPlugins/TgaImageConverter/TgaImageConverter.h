@@ -74,7 +74,7 @@ class MAGNUM_TGAIMAGECONVERTER_EXPORT TgaImageConverter: public AbstractImageCon
 
     private:
         Features MAGNUM_TGAIMAGECONVERTER_LOCAL doFeatures() const override;
-        Containers::Array<char> MAGNUM_TGAIMAGECONVERTER_LOCAL doExportToData(const ImageView2D& image) const override;
+        Containers::Array<char> MAGNUM_TGAIMAGECONVERTER_LOCAL doExportToData(const ImageView2D& image) override;
 };
 
 }}

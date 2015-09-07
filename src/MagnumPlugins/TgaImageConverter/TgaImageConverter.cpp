@@ -45,7 +45,7 @@ TgaImageConverter::TgaImageConverter(PluginManager::AbstractManager& manager, st
 
 auto TgaImageConverter::doFeatures() const -> Features { return Feature::ConvertData; }
 
-Containers::Array<char> TgaImageConverter::doExportToData(const ImageView2D& image) const {
+Containers::Array<char> TgaImageConverter::doExportToData(const ImageView2D& image) {
     #ifndef MAGNUM_TARGET_GLES
     if(image.storage().swapBytes()) {
         Error() << "Trade::TgaImageConverter::exportToData(): pixel byte swap is not supported";
