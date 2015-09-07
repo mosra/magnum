@@ -241,7 +241,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @see @fn_al{Sourcei} with @def_al{MAX_DISTANCE}
          */
         Source& setMaxDistance(Int distance) {
-            alSourcef(_id, AL_MAX_DISTANCE, distance);
+            alSourcei(_id, AL_MAX_DISTANCE, distance);
             return *this;
         }
 
