@@ -52,7 +52,19 @@ namespace Magnum { namespace Trade {
 @brief Any image importer plugin
 
 Detects file type based on file extension, loads corresponding plugin and then
-tries to open the file with it. Supported formats:
+tries to open the file with it.
+
+This plugin is built if `WITH_ANYIMAGEIMPORTER` is enabled when building
+Magnum Plugins. To use dynamic plugin, you need to load `AnyImageImporter`
+plugin from `MAGNUM_PLUGINS_IMPORTER_DIR`. To use static plugin, you need to
+request `AnyImageImporter` component of `MagnumPlugins` package in CMake and
+link to `${MAGNUMPLUGINS_ANYIMAGEIMPORTER_LIBRARIES}`. To use this as a
+dependency of another plugin, you additionally need to add
+`${MAGNUMPLUGINS_ANYIMAGEIMPORTER_INCLUDE_DIRS}` to include path. See
+@ref building-plugins, @ref cmake-plugins and @ref plugins for more
+information.
+
+Supported formats:
 
 -   BMP (`*.bmp`), loaded with any plugin that provides `BmpImporter`
 -   DDS (`*.dds`), loaded with @ref DdsImporter or any other plugin that
