@@ -29,7 +29,7 @@
  * @brief Class @ref Magnum::Audio::AbstractImporter
  */
 
-#include <Corrade/PluginManager/AbstractPlugin.h>
+#include <Corrade/PluginManager/AbstractManagingPlugin.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Audio/Buffer.h"
@@ -62,7 +62,7 @@ checked by the implementation:
 
 Plugin interface string is `"cz.mosra.magnum.Audio.AbstractImporter/0.1"`.
 */
-class MAGNUM_AUDIO_EXPORT AbstractImporter: public PluginManager::AbstractPlugin {
+class MAGNUM_AUDIO_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlugin<AbstractImporter> {
     CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Audio.AbstractImporter/0.1")
 
     public:
@@ -85,6 +85,9 @@ class MAGNUM_AUDIO_EXPORT AbstractImporter: public PluginManager::AbstractPlugin
 
         /** @brief Default constructor */
         explicit AbstractImporter();
+
+        /** @brief Constructor with access to plugin manager */
+        explicit AbstractImporter(PluginManager::Manager<AbstractImporter>& manager);
 
         /** @brief Plugin manager constructor */
         explicit AbstractImporter(PluginManager::AbstractManager& manager, std::string plugin);
