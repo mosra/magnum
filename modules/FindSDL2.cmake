@@ -37,7 +37,8 @@
 if(CORRADE_TARGET_EMSCRIPTEN)
     set(_SDL2_PATH_SUFFIXES SDL)
 else()
-    find_library(SDL2_LIBRARY SDL2)
+    find_library(SDL2_LIBRARY SDL2
+        PATH_SUFFIXES lib/x86 lib/x64)
     set(SDL2_LIBRARY_NEEDED SDL2_LIBRARY)
     set(_SDL2_PATH_SUFFIXES SDL2)
 endif()
