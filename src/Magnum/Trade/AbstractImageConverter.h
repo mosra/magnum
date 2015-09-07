@@ -29,7 +29,7 @@
  * @brief Class @ref Magnum::Trade::AbstractImageConverter
  */
 
-#include <Corrade/PluginManager/AbstractPlugin.h>
+#include <Corrade/PluginManager/AbstractManagingPlugin.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/visibility.h"
@@ -64,7 +64,7 @@ checked by the implementation:
 
 Plugin interface string is `"cz.mosra.magnum.Trade.AbstractImageConverter/0.2.1"`.
 */
-class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractPlugin {
+class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractManagingPlugin<AbstractImageConverter> {
     CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Trade.AbstractImageConverter/0.2.1")
 
     public:
@@ -109,6 +109,9 @@ class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractPlugin
 
         /** @brief Default constructor */
         explicit AbstractImageConverter();
+
+        /** @brief Constructor with access to plugin manager */
+        explicit AbstractImageConverter(PluginManager::Manager<AbstractImageConverter>& manager);
 
         /** @brief Plugin manager constructor */
         explicit AbstractImageConverter(PluginManager::AbstractManager& manager, std::string plugin);
