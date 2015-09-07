@@ -34,6 +34,7 @@ struct ImageViewTest: TestSuite::Tester {
     explicit ImageViewTest();
 
     void construct();
+    void constructNullptr();
     void constructCompressed();
 
     void setData();
@@ -42,6 +43,7 @@ struct ImageViewTest: TestSuite::Tester {
 
 ImageViewTest::ImageViewTest() {
     addTests({&ImageViewTest::construct,
+              &ImageViewTest::constructNullptr,
               &ImageViewTest::constructCompressed,
 
               &ImageViewTest::setData,
@@ -58,6 +60,13 @@ void ImageViewTest::construct() {
     CORRADE_COMPARE(a.type(), PixelType::UnsignedByte);
     CORRADE_COMPARE(a.size(), Vector2i(1, 3));
     CORRADE_COMPARE(a.data(), data);
+}
+
+void ImageViewTest::constructNullptr() {
+    /* Just verify that it won't assert when passing nullptr array -- useful
+       e.g. for old-style texture allocation using setImage() */
+    ImageView2D a{PixelFormat::RGBA, PixelType::UnsignedByte, {256, 128}, nullptr};
+    CORRADE_COMPARE(a.size(), (Vector2i{256, 128}));
 }
 
 void ImageViewTest::constructCompressed() {
