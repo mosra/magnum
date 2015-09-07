@@ -396,6 +396,9 @@ FloatShader::FloatShader(const std::string& type, const std::string& conversion)
 
     vert.addSource(
         #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
+        "#if !defined(GL_ES) && __VERSION__ == 120\n"
+        "#define mediump\n"
+        "#endif\n"
         "attribute mediump " + type + " value;\n"
         "varying mediump " + type + " valueInterpolated;\n"
         #else
@@ -408,7 +411,10 @@ FloatShader::FloatShader(const std::string& type, const std::string& conversion)
         "}\n");
 
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
-    frag.addSource("varying mediump " + type + " valueInterpolated;\n"
+    frag.addSource("#if !defined(GL_ES) && __VERSION__ == 120\n"
+                   "#define mediump\n"
+                   "#endif\n"
+                   "varying mediump " + type + " valueInterpolated;\n"
                    "void main() { gl_FragColor = " + conversion + "; }\n");
     #else
     frag.addSource("in mediump " + type + " valueInterpolated;\n"
@@ -1141,7 +1147,10 @@ MultipleShader::MultipleShader() {
     Shader frag(Version::GLES200, Shader::Type::Fragment);
     #endif
 
-    vert.addSource("attribute mediump vec4 position;\n"
+    vert.addSource("#if !defined(GL_ES) && __VERSION__ == 120\n"
+                   "#define mediump\n"
+                   "#endif\n"
+                   "attribute mediump vec4 position;\n"
                    "attribute mediump vec3 normal;\n"
                    "attribute mediump vec2 textureCoordinates;\n"
                    "varying mediump vec4 valueInterpolated;\n"

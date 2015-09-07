@@ -119,6 +119,9 @@ MyShader::MyShader() {
     #endif
 
     vert.addSource(
+        "#if !defined(GL_ES) && __VERSION__ == 120\n"
+        "#define lowp\n"
+        "#endif\n"
         "attribute lowp vec4 position;\n"
         "void main() {\n"
         "    gl_Position = position;\n"
