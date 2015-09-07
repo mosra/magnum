@@ -65,7 +65,7 @@ Arguments:
 -   `output` -- output image
 -   `-h`, `--help` -- display help message and exit
 -   `--importer IMPORTER` -- image importer plugin (default: @ref Trade::AnyImageImporter "AnyImageImporter")
--   `--converter CONVERTER` -- image converter plugin (default: @ref Trade::TgaImageConverter "TgaImageConverter")
+-   `--converter CONVERTER` -- image converter plugin (default: @ref Trade::AnyImageConverter "AnyImageConverter")
 -   `--plugin-dir DIR` -- base plugin dir (defaults to plugin directory in
     Magnum install location)
 -   `--output-size "X Y"` -- size of output image
@@ -80,11 +80,11 @@ the algorithm and parameters.
 
 @section magnum-distancefield-example Example usage
 
-    magnum-distancefieldconverter --importer PngImporter --output-size "256 256" --radius 24 logo.png logo.tga
+    magnum-distancefieldconverter --output-size "256 256" --radius 24 logo-src.png logo.png
 
-This will open binary `logo.png` image using @ref Trade::PngImporter "PngImporter"
-plugin and converts it to 256x256 distance field `logo.tga` using
-@ref Trade::TgaImageConverter "TgaImageConverter".
+This will open monochrome `logo-src.png` image using any plugin that can open
+PNG files and converts it to 256x256 distance field `logo.png` using any plugin
+that can write PNG files.
 
 */
 
@@ -104,7 +104,7 @@ DistanceFieldConverter::DistanceFieldConverter(const Arguments& arguments): Plat
     args.addArgument("input").setHelp("input", "input image")
         .addArgument("output").setHelp("output", "output image")
         .addOption("importer", "AnyImageImporter").setHelp("importer", "image importer plugin")
-        .addOption("converter", "TgaImageConverter").setHelp("converter", "image converter plugin")
+        .addOption("converter", "AnyImageConverter").setHelp("converter", "image converter plugin")
         .addOption("plugin-dir", MAGNUM_PLUGINS_DIR).setHelpKey("plugin-dir", "DIR").setHelp("plugin-dir", "base plugin dir")
         .addNamedArgument("output-size").setHelpKey("output-size", "\"X Y\"").setHelp("output-size", "size of output image")
         .addNamedArgument("radius").setHelpKey("radius", "N").setHelp("radius", "distance field computation radius")
