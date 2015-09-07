@@ -23,7 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "AnyImageImporter.h"
+#include "MagnumPlugins/AnyImageImporter/AnyImageImporter.h"
 
 CORRADE_PLUGIN_REGISTER(AnyImageImporter, Magnum::Trade::AnyImageImporter,
     "cz.mosra.magnum.Trade.AbstractImporter/0.3")

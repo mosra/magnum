@@ -23,7 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "AnySceneImporter.h"
+#include "MagnumPlugins/AnySceneImporter/AnySceneImporter.h"
 
 CORRADE_PLUGIN_REGISTER(AnySceneImporter, Magnum::Trade::AnySceneImporter,
     "cz.mosra.magnum.Trade.AbstractImporter/0.3")
