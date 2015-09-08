@@ -159,12 +159,13 @@ void AbstractObject::labelImplementationExt(const GLenum identifier, const GLuin
 std::string AbstractObject::getLabelImplementationNoOp(GLenum, GLuint) { return  {}; }
 
 std::string AbstractObject::getLabelImplementationKhr(const GLenum identifier, const GLuint name) {
-    /* Get label size (w/o null terminator) */
+    /* Get label size (w/o null terminator). Specifying 0 as size is not
+       allowed, thus we pass the maximum instead. */
     GLsizei size;
     #ifndef MAGNUM_TARGET_GLES
-    glGetObjectLabel(identifier, name, 0, &size, nullptr);
+    glGetObjectLabel(identifier, name, maxLabelLength(), &size, nullptr);
     #elif !defined(CORRADE_TARGET_NACL)
-    glGetObjectLabelKHR(identifier, name, 0, &size, nullptr);
+    glGetObjectLabelKHR(identifier, name, maxLabelLength(), &size, nullptr);
     #else
     static_cast<void>(identifier);
     static_cast<void>(name);
