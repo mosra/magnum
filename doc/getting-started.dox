@@ -158,7 +158,7 @@ of build dir:
     make
     ./src/MyApplication
 
-On Windows you can use either MinGW or MSVC 2013 compiler. It's then up to you
+On Windows you can use either MSVC or MinGW-w64 compiler. It's then up to you
 whether you will use QtCreator or Visual Studio. With Visual Studio the most
 straightforward way to create the project file is via the command-line:
 
