@@ -100,8 +100,17 @@ void MagnumFontGLTest::layout() {
 }
 
 void MagnumFontGLTest::createGlyphCache() {
-    /** @todo */
-    CORRADE_SKIP("Not yet implemented");
+    MagnumFont font;
+    CORRADE_VERIFY(font.openFile(Utility::Directory::join(MAGNUMFONT_TEST_DIR, "font.conf"), 0.0f));
+
+    /* Just testing that nothing crashes, asserts or errors */
+    std::unique_ptr<GlyphCache> cache = font.createGlyphCache();
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_VERIFY(cache);
+    CORRADE_COMPARE(cache->glyphCount(), 3);
+
+    /** @todo properly test contents */
 }
 
 }}}
