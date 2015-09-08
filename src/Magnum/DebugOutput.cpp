@@ -34,7 +34,7 @@
 #include "Magnum/Implementation/State.h"
 #include "Magnum/Implementation/DebugState.h"
 
-#if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(CORRADE_TARGET_ANDROID) || defined(__MINGW32__)
+#if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(CORRADE_TARGET_ANDROID)
 #include <sstream>
 #endif
 
@@ -106,13 +106,13 @@ void defaultCallback(const DebugOutput::Source source, const DebugOutput::Type t
     }
 
     /** @todo Remove when this is fixed everywhere (also the include above) */
-    #if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(CORRADE_TARGET_ANDROID) || defined(__MINGW32__)
+    #if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(CORRADE_TARGET_ANDROID)
     std::ostringstream converter;
     converter << id;
     #endif
 
     output << '(' +
-        #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID) && !defined(__MINGW32__)
+        #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID)
         std::to_string(id) +
         #else
         converter.str() +

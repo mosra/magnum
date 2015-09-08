@@ -39,7 +39,7 @@
 #include "Implementation/State.h"
 #include "Implementation/ShaderState.h"
 
-#if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(CORRADE_TARGET_ANDROID) || defined(__MINGW32__)
+#if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(CORRADE_TARGET_ANDROID)
 #include <sstream>
 #endif
 
@@ -779,7 +779,7 @@ std::vector<std::string> Shader::sources() const { return _sources; }
 Shader& Shader::addSource(std::string source) {
     if(!source.empty()) {
         /** @todo Remove when newlib has this fixed (also the include above) */
-        #if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(CORRADE_TARGET_ANDROID) || defined(__MINGW32__)
+        #if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(CORRADE_TARGET_ANDROID)
         std::ostringstream converter;
         converter << (_sources.size()+1)/2;
         #endif
@@ -787,7 +787,7 @@ Shader& Shader::addSource(std::string source) {
         /* Fix line numbers, so line 41 of third added file is marked as 3(41).
            Source 0 is the #version string added in constructor. */
         _sources.push_back("#line 1 " +
-            #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID) && !defined(__MINGW32__)
+            #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID)
             std::to_string((_sources.size()+1)/2) +
             #else
             converter.str() +
@@ -849,7 +849,7 @@ bool Shader::compile(std::initializer_list<std::reference_wrapper<Shader>> shade
         message.resize(std::max(logLength, 1)-1);
 
         /** @todo Remove when this is fixed everywhere (also the include above) */
-        #if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(CORRADE_TARGET_ANDROID) || defined(__MINGW32__)
+        #if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(CORRADE_TARGET_ANDROID)
         std::ostringstream converter;
         converter << i;
         #endif
@@ -862,7 +862,7 @@ bool Shader::compile(std::initializer_list<std::reference_wrapper<Shader>> shade
             out << "Shader::compile(): compilation of " << shaderName(shader._type)
                 << " shader";
             if(shaders.size() != 1) {
-                #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID) && !defined(__MINGW32__)
+                #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID)
                 out << " " << std::to_string(i);
                 #else
                 out << " " << converter.str();
@@ -879,7 +879,7 @@ bool Shader::compile(std::initializer_list<std::reference_wrapper<Shader>> shade
             out << "Shader::compile(): compilation of " << shaderName(shader._type)
                 << " shader";
             if(shaders.size() != 1) {
-                #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID) && !defined(__MINGW32__)
+                #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID)
                 out << " " << std::to_string(i);
                 #else
                 out << " " << converter.str();

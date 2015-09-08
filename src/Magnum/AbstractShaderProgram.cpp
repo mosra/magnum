@@ -38,7 +38,7 @@
 #include "Implementation/ShaderProgramState.h"
 #include "Implementation/State.h"
 
-#if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(CORRADE_TARGET_ANDROID) || defined(__MINGW32__)
+#if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(CORRADE_TARGET_ANDROID)
 #include <sstream>
 #endif
 
@@ -354,7 +354,7 @@ bool AbstractShaderProgram::link(std::initializer_list<std::reference_wrapper<Ab
         message.resize(std::max(logLength, 1)-1);
 
         /** @todo Remove when this is fixed everywhere (also the include above) */
-        #if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(CORRADE_TARGET_ANDROID) || defined(__MINGW32__)
+        #if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(CORRADE_TARGET_ANDROID)
         std::ostringstream converter;
         converter << i;
         #endif
@@ -366,7 +366,7 @@ bool AbstractShaderProgram::link(std::initializer_list<std::reference_wrapper<Ab
             out.setFlag(Debug::SpaceAfterEachValue, false);
             out << "AbstractShaderProgram::link(): linking";
             if(shaders.size() != 1) {
-                #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID) && !defined(__MINGW32__)
+                #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID)
                 out << " of shader " << std::to_string(i);
                 #else
                 out << " of shader " << converter.str();
@@ -382,7 +382,7 @@ bool AbstractShaderProgram::link(std::initializer_list<std::reference_wrapper<Ab
             out.setFlag(Debug::SpaceAfterEachValue, false);
             out << "AbstractShaderProgram::link(): linking";
             if(shaders.size() != 1) {
-                #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID) && !defined(__MINGW32__)
+                #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID)
                 out << " of shader " << std::to_string(i);
                 #else
                 out << " of shader " << converter.str();
