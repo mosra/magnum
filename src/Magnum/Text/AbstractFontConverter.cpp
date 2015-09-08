@@ -37,18 +37,10 @@ namespace Magnum { namespace Text {
 
 namespace {
 
-#ifndef __MINGW32__
 std::u32string uniqueUnicode(const std::string& characters)
-#else
-std::vector<char32_t> uniqueUnicode(const std::string& characters)
-#endif
 {
     /* Convert UTF-8 to UTF-32 */
-    #ifndef __MINGW32__
     std::u32string result = Utility::Unicode::utf32(characters);
-    #else
-    std::vector<char32_t> result = Utility::Unicode::utf32(characters);
-    #endif
 
     /* Remove duplicate glyphs */
     std::sort(result.begin(), result.end());
@@ -70,12 +62,7 @@ std::vector<std::pair<std::string, Containers::Array<char>>> AbstractFontConvert
     return doExportFontToData(font, cache, filename, uniqueUnicode(characters));
 }
 
-#ifndef __MINGW32__
-std::vector<std::pair<std::string, Containers::Array<char>>> AbstractFontConverter::doExportFontToData(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::u32string& characters) const
-#else
-std::vector<std::pair<std::string, Containers::Array<char>>> AbstractFontConverter::doExportFontToData(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::vector<char32_t>& characters) const
-#endif
-{
+std::vector<std::pair<std::string, Containers::Array<char>>> AbstractFontConverter::doExportFontToData(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::u32string& characters) const {
     CORRADE_ASSERT(!(features() & Feature::MultiFile),
         "Text::AbstractFontConverter::exportFontToData(): feature advertised but not implemented", {});
 
@@ -93,12 +80,7 @@ Containers::Array<char> AbstractFontConverter::exportFontToSingleData(AbstractFo
     return doExportFontToSingleData(font, cache, uniqueUnicode(characters));
 }
 
-#ifndef __MINGW32__
-Containers::Array<char> AbstractFontConverter::doExportFontToSingleData(AbstractFont&, GlyphCache&, const std::u32string&) const
-#else
-Containers::Array<char> AbstractFontConverter::doExportFontToSingleData(AbstractFont&, GlyphCache&, const std::vector<char32_t>&) const
-#endif
-{
+Containers::Array<char> AbstractFontConverter::doExportFontToSingleData(AbstractFont&, GlyphCache&, const std::u32string&) const {
     CORRADE_ASSERT(false,
         "Text::AbstractFontConverter::exportFontToSingleData(): feature advertised but not implemented", nullptr);
     return nullptr;
@@ -111,12 +93,7 @@ bool AbstractFontConverter::exportFontToFile(AbstractFont& font, GlyphCache& cac
     return doExportFontToFile(font, cache, filename, uniqueUnicode(characters));
 }
 
-#ifndef __MINGW32__
-bool AbstractFontConverter::doExportFontToFile(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::u32string& characters) const
-#else
-bool AbstractFontConverter::doExportFontToFile(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::vector<char32_t>& characters) const
-#endif
-{
+bool AbstractFontConverter::doExportFontToFile(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::u32string& characters) const {
     CORRADE_ASSERT(features() & Feature::ConvertData,
         "Text::AbstractFontConverter::exportFontToFile(): not implemented", false);
 

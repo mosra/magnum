@@ -272,28 +272,11 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          *
          * If the plugin doesn't have @ref Feature::MultiFile, default
          * implementation calls @ref doExportFontToSingleData().
-         * @note On MinGW uses `std::vector<char32_t>` instead of
-         *      `std::u32string`. See @ref Corrade::Utility::Unicode::utf32()
-         *      for more information.
          */
-        #ifndef __MINGW32__
         virtual std::vector<std::pair<std::string, Containers::Array<char>>> doExportFontToData(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::u32string& characters) const;
-        #else
-        virtual std::vector<std::pair<std::string, Containers::Array<char>>> doExportFontToData(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::vector<char32_t>& characters) const;
-        #endif
 
-        /**
-         * @brief Implementation for @ref exportFontToSingleData()
-         *
-         * @note On MinGW uses `std::vector<char32_t>` instead of
-         *      `std::u32string`. See @ref Corrade::Utility::Unicode::utf32()
-         *      for more information.
-         */
-        #ifndef __MINGW32__
+        /** @brief Implementation for @ref exportFontToSingleData() */
         virtual Containers::Array<char> doExportFontToSingleData(AbstractFont& font, GlyphCache& cache, const std::u32string& characters) const;
-        #else
-        virtual Containers::Array<char> doExportFontToSingleData(AbstractFont& font, GlyphCache& cache, const std::vector<char32_t>& characters) const;
-        #endif
 
         /**
          * @brief Implementation for @ref exportFontToFile()
@@ -301,15 +284,8 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * If @ref Feature::ConvertData is supported, default implementation
          * calls @ref doExportFontToData() and saves the result to given
          * file(s).
-         * @note On MinGW uses `std::vector<char32_t>` instead of
-         *      `std::u32string`. See @ref Corrade::Utility::Unicode::utf32()
-         *      for more information.
          */
-        #ifndef __MINGW32__
         virtual bool doExportFontToFile(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::u32string& characters) const;
-        #else
-        virtual bool doExportFontToFile(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::vector<char32_t>& characters) const;
-        #endif
 
         /**
          * @brief Implementation for @ref exportGlyphCacheToData()
