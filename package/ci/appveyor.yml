@@ -17,6 +17,8 @@ build_script:
 - 7z x openal-soft-1.16.0-bin.zip
 - ren openal-soft-1.16.0-bin openal
 - ren openal\bin\Win32\soft_oal.dll OpenAL32.dll
+- echo [General] > %APPDATA%/alsoft.ini
+- echo drivers=null >> %APPDATA%/alsoft.ini
 - appveyor DownloadFile http://www.libsdl.org/release/SDL2-devel-2.0.3-VC.zip
 - 7z x SDL2-devel-2.0.3-VC.zip
 - ren SDL2-2.0.3 SDL
