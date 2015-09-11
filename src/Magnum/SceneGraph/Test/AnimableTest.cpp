@@ -163,8 +163,8 @@ class OneShotAnimable: public SceneGraph::Animable3D {
         std::string stateChanges;
 
     protected:
-        void animationStep(Float time, Float) override {
-            this->time = time;
+        void animationStep(Float t, Float) override {
+            time = t;
         }
 
         void animationStarted() override {
@@ -184,9 +184,9 @@ void AnimableTest::step() {
             Float time, delta;
 
         protected:
-            void animationStep(Float time, Float delta) override {
-                this->time = time;
-                this->delta = delta;
+            void animationStep(Float t, Float d) override {
+                time = t;
+                delta = d;
             }
     };
 
@@ -247,8 +247,8 @@ void AnimableTest::repeat() {
             Float time;
 
         protected:
-            void animationStep(Float time, Float) override {
-                this->time = time;
+            void animationStep(Float t, Float) override {
+                time = t;
             }
     };
 
