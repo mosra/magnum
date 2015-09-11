@@ -234,7 +234,6 @@ void FunctionsTest::lerp() {
     CORRADE_COMPARE(Math::lerp(a, b, 0.25f), Vector3(0.0f, 1.0f, 5.0f));
 
     /* Integer vector */
-    typedef Math::Vector<3, Int> Vector3i;
     Vector3i c(0, 128, 64);
     Vector3i d(16, 0, 32);
     CORRADE_COMPARE(Math::lerp(c, d, 0.25f), Vector3i(4, 96, 56));
