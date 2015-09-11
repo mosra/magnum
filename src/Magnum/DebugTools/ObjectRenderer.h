@@ -103,10 +103,10 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ObjectRenderer: 
     private:
         void draw(const MatrixTypeFor<dimensions, Float>& transformationMatrix, SceneGraph::Camera<dimensions, Float>& camera) override;
 
-        Resource<ObjectRendererOptions> options;
-        Resource<AbstractShaderProgram, Shaders::VertexColor<dimensions>> shader;
-        Resource<Mesh> mesh;
-        Resource<Buffer> vertexBuffer, indexBuffer;
+        Resource<ObjectRendererOptions> _options;
+        Resource<AbstractShaderProgram, Shaders::VertexColor<dimensions>> _shader;
+        Resource<Mesh> _mesh;
+        Resource<Buffer> _vertexBuffer, _indexBuffer;
 };
 
 /** @brief Two-dimensional object renderer */

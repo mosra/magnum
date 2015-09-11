@@ -37,88 +37,88 @@ using namespace std::chrono;
 namespace Magnum { namespace DebugTools {
 
 Profiler::Section Profiler::addSection(const std::string& name) {
-    CORRADE_ASSERT(!enabled, "Profiler: cannot add section when profiling is enabled", 0);
-    sections.push_back(name);
-    return sections.size()-1;
+    CORRADE_ASSERT(!_enabled, "Profiler: cannot add section when profiling is enabled", 0);
+    _sections.push_back(name);
+    return _sections.size()-1;
 }
 
 void Profiler::setMeasureDuration(std::size_t frames) {
-    CORRADE_ASSERT(!enabled, "Profiler: cannot set measure duration when profiling is enabled", );
-    measureDuration = frames;
+    CORRADE_ASSERT(!_enabled, "Profiler: cannot set measure duration when profiling is enabled", );
+    _measureDuration = frames;
 }
 
 void Profiler::enable() {
-    enabled = true;
-    frameData.assign(measureDuration*sections.size(), high_resolution_clock::duration::zero());
-    totalData.assign(sections.size(), high_resolution_clock::duration::zero());
-    frameCount = 0;
+    _enabled = true;
+    _frameData.assign(_measureDuration*_sections.size(), high_resolution_clock::duration::zero());
+    _totalData.assign(_sections.size(), high_resolution_clock::duration::zero());
+    _frameCount = 0;
 }
 
 void Profiler::disable() {
-    enabled = false;
+    _enabled = false;
 }
 
 void Profiler::start(Section section) {
-    if(!enabled) return;
-    CORRADE_ASSERT(section < sections.size(), "Profiler: unknown section passed to start()", );
+    if(!_enabled) return;
+    CORRADE_ASSERT(section < _sections.size(), "Profiler: unknown section passed to start()", );
 
     save();
 
-    currentSection = section;
+    _currentSection = section;
 }
 
 void Profiler::stop() {
-    if(!enabled) return;
+    if(!_enabled) return;
 
     save();
 
-    previousTime = high_resolution_clock::time_point();
+    _previousTime = high_resolution_clock::time_point();
 }
 
 void Profiler::save() {
     auto now = high_resolution_clock::now();
 
     /* If the profiler is already running, add time to given section */
-    if(previousTime != high_resolution_clock::time_point())
-        frameData[currentFrame*sections.size()+currentSection] += now-previousTime;
+    if(_previousTime != high_resolution_clock::time_point())
+        _frameData[_currentFrame*_sections.size()+_currentSection] += now-_previousTime;
 
     /* Set current time as previous for next section */
-    previousTime = now;
+    _previousTime = now;
 }
 
 void Profiler::nextFrame() {
-    if(!enabled) return;
+    if(!_enabled) return;
 
     /* Next frame index */
-    std::size_t nextFrame = (currentFrame+1) % measureDuration;
+    std::size_t nextFrame = (_currentFrame+1) % _measureDuration;
 
     /* Add times of current frame to total */
-    for(std::size_t i = 0; i != sections.size(); ++i)
-        totalData[i] += frameData[currentFrame*sections.size()+i];
+    for(std::size_t i = 0; i != _sections.size(); ++i)
+        _totalData[i] += _frameData[_currentFrame*_sections.size()+i];
 
     /* Subtract times of next frame from total and erase them */
-    for(std::size_t i = 0; i != sections.size(); ++i) {
-        totalData[i] -= frameData[nextFrame*sections.size()+i];
-        frameData[nextFrame*sections.size()+i] = high_resolution_clock::duration::zero();
+    for(std::size_t i = 0; i != _sections.size(); ++i) {
+        _totalData[i] -= _frameData[nextFrame*_sections.size()+i];
+        _frameData[nextFrame*_sections.size()+i] = high_resolution_clock::duration::zero();
     }
 
     /* Advance to next frame */
-    currentFrame = nextFrame;
+    _currentFrame = nextFrame;
 
-    if(frameCount < measureDuration) ++frameCount;
+    if(_frameCount < _measureDuration) ++_frameCount;
 }
 
 void Profiler::printStatistics() {
-    if(!enabled) return;
+    if(!_enabled) return;
 
-    std::vector<std::size_t> totalSorted(sections.size());
+    std::vector<std::size_t> totalSorted(_sections.size());
     std::iota(totalSorted.begin(), totalSorted.end(), 0);
 
-    std::sort(totalSorted.begin(), totalSorted.end(), [this](std::size_t i, std::size_t j){return totalData[i] > totalData[j];});
+    std::sort(totalSorted.begin(), totalSorted.end(), [this](std::size_t i, std::size_t j){return _totalData[i] > _totalData[j];});
 
-    Debug() << "Statistics for last" << measureDuration << "frames:";
-    for(std::size_t i = 0; i != sections.size(); ++i)
-        Debug() << " " << sections[totalSorted[i]] << duration_cast<microseconds>(totalData[totalSorted[i]]).count()/frameCount << u8"µs";
+    Debug() << "Statistics for last" << _measureDuration << "frames:";
+    for(std::size_t i = 0; i != _sections.size(); ++i)
+        Debug() << " " << _sections[totalSorted[i]] << duration_cast<microseconds>(_totalData[totalSorted[i]]).count()/_frameCount << u8"µs";
 }
 
 }}
