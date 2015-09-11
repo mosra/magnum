@@ -82,7 +82,7 @@ template<class T> Containers::Array<T> compressIndicesAs(const std::vector<Unsig
 
     Containers::Array<T> buffer(indices.size());
     for(std::size_t i = 0; i != indices.size(); ++i)
-        buffer[i] = indices[i];
+        buffer[i] = T(indices[i]);
 
     return buffer;
 }
