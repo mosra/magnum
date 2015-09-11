@@ -125,9 +125,9 @@ template<std::size_t cols, std::size_t rows, class T> std::tuple<RectangularMatr
                 T s = T(0);
                 for(std::size_t k = i; k != rows; ++k)
                     s += m[i][k]*m[j][k];
-                const T f = s/h;
+                const T n = s/h;
                 for(std::size_t k = i; k != rows; ++k)
-                    m[j][k] += f*m[i][k];
+                    m[j][k] += n*m[i][k];
             }
         } else g = T(0);
 
@@ -243,10 +243,10 @@ template<std::size_t cols, std::size_t rows, class T> std::tuple<RectangularMatr
                     e[i] = c*e[i];
                     if(std::abs(f) <= epsilon) break;
 
-                    const T g = q[i];
-                    const T h = Implementation::pythagoras(f, g);
+                    const T j = q[i];
+                    const T h = Implementation::pythagoras(f, j);
                     q[i] = h;
-                    c = g/h;
+                    c = j/h;
                     s = -f/h;
 
                     const Vector<rows, T> a = m[l1];
