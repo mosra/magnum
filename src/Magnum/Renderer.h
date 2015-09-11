@@ -77,6 +77,18 @@ class MAGNUM_EXPORT Renderer {
          * @see @ref enable(), @ref disable(), @ref setFeature()
          */
         enum class Feature: GLenum {
+            #ifndef MAGNUM_TARGET_WEBGL
+            /**
+             * Coherent advanced blending. Enabled by default if desktop/ES
+             * extension @extension3{KHR,blend_equation_advanced_coherent,blend_equation_advanced}
+             * is available. See @ref blendBarrier() for more information.
+             * @requires_extension Extension @extension{KHR,blend_equation_advanced}
+             * @requires_es_extension Extension @es_extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_gles Advanced blend equations are not available in WebGL.
+             */
+            BlendAdvancedCoherent = GL_BLEND_ADVANCED_COHERENT_KHR,
+            #endif
+
             /**
              * Blending
              * @see @ref setBlendEquation(), @ref setBlendFunction(),
@@ -760,9 +772,191 @@ class MAGNUM_EXPORT Renderer {
              *      in WebGL 1.0.
              */
             #ifndef MAGNUM_TARGET_GLES2
-            Max = GL_MAX
+            Max = GL_MAX,
             #else
-            Max = GL_MAX_EXT
+            Max = GL_MAX_EXT,
+            #endif
+
+            #ifndef MAGNUM_TARGET_WEBGL
+            /**
+             * Multiply. Not accepted as separate parameters in
+             * @ref setBlendEquation(BlendEquation, BlendEquation), only in
+             * @ref setBlendEquation(BlendEquation).
+             * @see @ref blendBarrier()
+             * @requires_extension Extension @extension{KHR,blend_equation_advanced}
+             * @requires_es_extension Extension @es_extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_gles Advanced blend equations are not available in
+             *      WebGL.
+             */
+            Multiply = GL_MULTIPLY_KHR,
+
+            /**
+             * Screen. Not accepted as separate parameters in
+             * @ref setBlendEquation(BlendEquation, BlendEquation), only in
+             * @ref setBlendEquation(BlendEquation).
+             * @see @ref blendBarrier()
+             * @requires_extension Extension @extension{KHR,blend_equation_advanced}
+             * @requires_es_extension Extension @es_extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_gles Advanced blend equations are not available in
+             *      WebGL.
+             */
+            Screen = GL_SCREEN_KHR,
+
+            /**
+             * Overlay. Not accepted as separate parameters in
+             * @ref setBlendEquation(BlendEquation, BlendEquation), only in
+             * @ref setBlendEquation(BlendEquation).
+             * @see @ref blendBarrier()
+             * @requires_extension Extension @extension{KHR,blend_equation_advanced}
+             * @requires_es_extension Extension @es_extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_gles Advanced blend equations are not available in
+             *      WebGL.
+             */
+            Overlay = GL_OVERLAY_KHR,
+
+            /**
+             * Darken. Not accepted as separate parameters in
+             * @ref setBlendEquation(BlendEquation, BlendEquation), only in
+             * @ref setBlendEquation(BlendEquation).
+             * @see @ref blendBarrier()
+             * @requires_extension Extension @extension{KHR,blend_equation_advanced}
+             * @requires_es_extension Extension @es_extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_gles Advanced blend equations are not available in
+             *      WebGL.
+             */
+            Darken = GL_DARKEN_KHR,
+
+            /**
+             * Lighten. Not accepted as separate parameters in
+             * @ref setBlendEquation(BlendEquation, BlendEquation), only in
+             * @ref setBlendEquation(BlendEquation).
+             * @see @ref blendBarrier()
+             * @requires_extension Extension @extension{KHR,blend_equation_advanced}
+             * @requires_es_extension Extension @es_extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_gles Advanced blend equations are not available in
+             *      WebGL.
+             */
+            Lighten = GL_LIGHTEN_KHR,
+
+            /**
+             * Color dodge. Not accepted as separate parameters in
+             * @ref setBlendEquation(BlendEquation, BlendEquation), only in
+             * @ref setBlendEquation(BlendEquation).
+             * @see @ref blendBarrier()
+             * @requires_extension Extension @extension{KHR,blend_equation_advanced}
+             * @requires_es_extension Extension @es_extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_gles Advanced blend equations are not available in
+             *      WebGL.
+             */
+            ColorDodge = GL_COLORDODGE_KHR,
+
+            /**
+             * Color burn. Not accepted as separate parameters in
+             * @ref setBlendEquation(BlendEquation, BlendEquation), only in
+             * @ref setBlendEquation(BlendEquation).
+             * @see @ref blendBarrier()
+             * @requires_extension Extension @extension{KHR,blend_equation_advanced}
+             * @requires_es_extension Extension @es_extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_gles Advanced blend equations are not available in
+             *      WebGL.
+             */
+            ColorBurn = GL_COLORBURN_KHR,
+
+            /**
+             * Hard light. Not accepted as separate parameters in
+             * @ref setBlendEquation(BlendEquation, BlendEquation), only in
+             * @ref setBlendEquation(BlendEquation).
+             * @see @ref blendBarrier()
+             * @requires_extension Extension @extension{KHR,blend_equation_advanced}
+             * @requires_es_extension Extension @es_extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_gles Advanced blend equations are not available in
+             *      WebGL.
+             */
+            HardLight = GL_HARDLIGHT_KHR,
+
+            /**
+             * Soft light. Not accepted as separate parameters in
+             * @ref setBlendEquation(BlendEquation, BlendEquation), only in
+             * @ref setBlendEquation(BlendEquation).
+             * @see @ref blendBarrier()
+             * @requires_extension Extension @extension{KHR,blend_equation_advanced}
+             * @requires_es_extension Extension @es_extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_gles Advanced blend equations are not available in
+             *      WebGL.
+             */
+            SoftLight = GL_SOFTLIGHT_KHR,
+
+            /**
+             * Difference. Not accepted as separate parameters in
+             * @ref setBlendEquation(BlendEquation, BlendEquation), only in
+             * @ref setBlendEquation(BlendEquation).
+             * @see @ref blendBarrier()
+             * @requires_extension Extension @extension{KHR,blend_equation_advanced}
+             * @requires_es_extension Extension @es_extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_gles Advanced blend equations are not available in
+             *      WebGL.
+             */
+            Difference = GL_DIFFERENCE_KHR,
+
+            /**
+             * Exclusion. Not accepted as separate parameters in
+             * @ref setBlendEquation(BlendEquation, BlendEquation), only in
+             * @ref setBlendEquation(BlendEquation).
+             * @see @ref blendBarrier()
+             * @requires_extension Extension @extension{KHR,blend_equation_advanced}
+             * @requires_es_extension Extension @es_extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_gles Advanced blend equations are not available in
+             *      WebGL.
+             */
+            Exclusion = GL_EXCLUSION_KHR,
+
+            /**
+             * HSL hue. Not accepted as separate parameters in
+             * @ref setBlendEquation(BlendEquation, BlendEquation), only in
+             * @ref setBlendEquation(BlendEquation).
+             * @see @ref blendBarrier()
+             * @requires_extension Extension @extension{KHR,blend_equation_advanced}
+             * @requires_es_extension Extension @es_extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_gles Advanced blend equations are not available in
+             *      WebGL.
+             */
+            HslHue = GL_HSL_HUE_KHR,
+
+            /**
+             * HSL saturation. Not accepted as separate parameters in
+             * @ref setBlendEquation(BlendEquation, BlendEquation), only in
+             * @ref setBlendEquation(BlendEquation).
+             * @see @ref blendBarrier()
+             * @requires_extension Extension @extension{KHR,blend_equation_advanced}
+             * @requires_es_extension Extension @es_extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_gles Advanced blend equations are not available in
+             *      WebGL.
+             */
+            HslSaturation = GL_HSL_SATURATION_KHR,
+
+            /**
+             * HSL color. Not accepted as separate parameters in
+             * @ref setBlendEquation(BlendEquation, BlendEquation), only in
+             * @ref setBlendEquation(BlendEquation).
+             * @see @ref blendBarrier()
+             * @requires_extension Extension @extension{KHR,blend_equation_advanced}
+             * @requires_es_extension Extension @es_extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_gles Advanced blend equations are not available in
+             *      WebGL.
+             */
+            HslColor = GL_HSL_COLOR_KHR,
+
+            /**
+             * HSL luminosity. Not accepted as separate parameters in
+             * @ref setBlendEquation(BlendEquation, BlendEquation), only in
+             * @ref setBlendEquation(BlendEquation).
+             * @see @ref blendBarrier()
+             * @requires_extension Extension @extension{KHR,blend_equation_advanced}
+             * @requires_es_extension Extension @es_extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_gles Advanced blend equations are not available in
+             *      WebGL.
+             */
+            HslLuminosity = GL_HSL_LUMINOSITY_KHR
             #endif
         };
 
@@ -949,6 +1143,26 @@ class MAGNUM_EXPORT Renderer {
          *      @ref setBlendFunction(), @fn_gl{BlendColor}
          */
         static void setBlendColor(const Color4& color);
+
+        #ifndef MAGNUM_TARGET_WEBGL
+        /**
+         * @brief Blend barrier
+         *
+         * Specifies a boundary between passes when using advanced blend
+         * equations to ensure that each sample in the framebuffer is not
+         * touched more than once.
+         *
+         * This is needed either when desktop/ES extension
+         * @extension3{KHR,blend_equation_advanced_coherent,blend_equation_advanced}
+         * is not available or when @extension3{KHR,blend_equation_advanced_coherent,blend_equation_advanced}
+         * is available and @ref Feature::BlendAdvancedCoherent is turned off.
+         * @see @ref BlendEquation, @fn_gl_extension{BlendBarrier,KHR,blend_equation_advanced}
+         * @requires_extension Extension @extension{KHR,blend_equation_advanced}
+         * @requires_es_extension Extension @es_extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+         * @requires_gles Advanced blend equations are not available in WebGL.
+         */
+        static void blendBarrier() { glBlendBarrierKHR(); }
+        #endif
 
         /*@}*/
 

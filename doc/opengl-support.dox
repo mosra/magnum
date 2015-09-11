@@ -246,8 +246,8 @@ Extension                                   | Status
 @extension{ARB,pipeline_statistics_query}   | |
 @extension{ARB,sparse_buffer}               | |
 @extension{ARB,transform_feedback_overflow_query} | |
-@extension{KHR,blend_equation_advanced}     | |
-@extension3{KHR,blend_equation_advanced_coherent,blend_equation_advanced} | |
+@extension{KHR,blend_equation_advanced}     | done
+@extension3{KHR,blend_equation_advanced_coherent,blend_equation_advanced} | done
 
 @subsection opengl-support-extensions-vendor Vendor OpenGL extensions
 
@@ -375,8 +375,8 @@ Extension                                   | Status
 @es_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr} | done
 @es_extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr} | done
 @es_extension{KHR,debug}                    | see above
-@es_extension2{KHR,blend_equation_advanced,blend_equation_advanced}  | |
-@es_extension2{KHR,blend_equation_advanced_coherent,blend_equation_advanced} | |
+@es_extension2{KHR,blend_equation_advanced,blend_equation_advanced}  | done
+@es_extension2{KHR,blend_equation_advanced_coherent,blend_equation_advanced} | done
 @es_extension{KHR,robustness}               | |
 @es_extension{KHR,robust_buffer_access_behavior} | done (nothing to do)
 @es_extension{KHR,context_flush_control}    | |
