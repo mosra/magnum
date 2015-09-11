@@ -438,7 +438,7 @@ class Color4: public Vector4<T> {
             return Color4<T>(Implementation::fromHSV<T>(hsv), a);
         }
         /** @overload */
-        constexpr static Color4<T> fromHSV(Deg<FloatingPointType> hue, FloatingPointType saturation, FloatingPointType value, T alpha) {
+        constexpr static Color4<T> fromHSV(Deg<FloatingPointType> hue, FloatingPointType saturation, FloatingPointType value, T alpha = Implementation::fullChannel<T>()) {
             return fromHSV(std::make_tuple(hue, saturation, value), alpha);
         }
 
