@@ -81,7 +81,7 @@ Matrix4 transformationMatrix = Matrix4::translation(Vector3::zAxis(-5.0f));
 Matrix4 projectionMatrix = Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.001f, 100.0f);
 
 Shaders::Phong shader;
-shader.setDiffuseColor(Color3::fromHSV(216.0_degf, 0.85f, 1.0f))
+shader.setDiffuseColor(Color4::fromHSV(216.0_degf, 0.85f, 1.0f))
     .setShininess(200.0f)
     .setLightPosition({5.0f, 5.0f, 7.0f})
     .setTransformationMatrix(transformationMatrix)
@@ -126,6 +126,22 @@ shader.setTextures(nullptr, &diffuseTexture, &specularTexture)
     .setProjectionMatrix(projectionMatrix);
 
 mesh.draw(shader);
+@endcode
+
+### Alpha-masked drawing
+
+For general alpha-masked drawing you need to provide ambient texture with alpha
+channel and set alpha channel of diffuse/specular color to `0.0f` so only
+ambient alpha will be taken into account. If you have diffuse texture combined
+with the alpha mask, you can use that texture for both ambient and diffuse
+part and then separate the alpha like this:
+@code
+Shaders::Phong shader{Shaders::Phong::AmbientTexture|
+                      Shaders::Phong::DiffuseTexture};
+shader.setTextures(&diffuseAlphaTexture, &diffuseAlphaTexture, nullptr)
+    .setAmbientColor({0.0f, 0.0f, 0.0f, 1.0f})
+    .setDiffuseColor(Color4{diffuseRgb, 0.0f})
+    .setSpecularColor(Color4{specularRgb, 0.0f});
 @endcode
 
 @see @ref shaders
@@ -187,11 +203,11 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * @return Reference to self (for method chaining)
          *
          * If @ref Flag::AmbientTexture is set, default value is
-         * `{1.0f, 1.0f, 1.0f}` and the color will be multiplied with ambient
-         * texture, otherwise default value is `{0.0f, 0.0f, 0.0f}`.
+         * `{1.0f, 1.0f, 1.0f, 1.0f}` and the color will be multiplied with
+         * ambient texture, otherwise default value is `{0.0f, 0.0f, 0.0f, 1.0f}`.
          * @see @ref setAmbientTexture()
          */
-        Phong& setAmbientColor(const Color3& color) {
+        Phong& setAmbientColor(const Color4& color) {
             setUniform(ambientColorUniform, color);
             return *this;
         }
@@ -210,11 +226,11 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * @return Reference to self (for method chaining)
          *
          * If @ref Flag::DiffuseTexture is set, default value is
-         * `{1.0f, 1.0f, 1.0f}` and the color will be multiplied with diffuse
-         * texture.
+         * `{1.0f, 1.0f, 1.0f, 1.0f}` and the color will be multiplied with
+         * diffuse texture.
          * @see @ref setDiffuseTexture()
          */
-        Phong& setDiffuseColor(const Color3& color) {
+        Phong& setDiffuseColor(const Color4& color) {
             setUniform(diffuseColorUniform, color);
             return *this;
         }
@@ -232,11 +248,12 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * @brief Set specular color
          * @return Reference to self (for method chaining)
          *
-         * Default value is `{1.0f, 1.0f, 1.0f}`. Color will be multiplied with
-         * specular texture if @ref Flag::SpecularTexture is set.
+         * Default value is `{1.0f, 1.0f, 1.0f, 1.0f}`. Color will be
+         * multiplied with specular texture if @ref Flag::SpecularTexture is
+         * set.
          * @see @ref setSpecularTexture()
          */
-        Phong& setSpecularColor(const Color3& color) {
+        Phong& setSpecularColor(const Color4& color) {
             setUniform(specularColorUniform, color);
             return *this;
         }
@@ -317,9 +334,9 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * @brief Set light color
          * @return Reference to self (for method chaining)
          *
-         * If not set, default value is `{1.0f, 1.0f, 1.0f}`.
+         * If not set, default value is `{1.0f, 1.0f, 1.0f, 1.0f}`.
          */
-        Phong& setLightColor(const Color3& color) {
+        Phong& setLightColor(const Color4& color) {
             setUniform(lightColorUniform, color);
             return *this;
         }

@@ -36,9 +36,9 @@
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 7)
 #endif
-uniform lowp vec3 lightColor
+uniform lowp vec4 lightColor
     #ifndef GL_ES
-    = vec3(1.0, 1.0, 1.0)
+    = vec4(1.0)
     #endif
     ;
 
@@ -61,12 +61,12 @@ uniform lowp sampler2D ambientTexture;
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 5)
 #endif
-uniform lowp vec3 ambientColor
+uniform lowp vec4 ambientColor
     #ifndef GL_ES
     #ifndef AMBIENT_TEXTURE
-    = vec3(0.0)
+    = vec4(0.0, 0.0, 0.0, 1.0)
     #else
-    = vec3(1.0)
+    = vec4(1.0)
     #endif
     #endif
     ;
@@ -81,9 +81,9 @@ uniform lowp sampler2D diffuseTexture;
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 4)
 #endif
-uniform lowp vec3 diffuseColor
+uniform lowp vec4 diffuseColor
     #if !defined(GL_ES) && defined(DIFFUSE_TEXTURE)
-    = vec3(1.0)
+    = vec4(1.0)
     #endif
     ;
 
@@ -97,9 +97,9 @@ uniform lowp sampler2D specularTexture;
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 6)
 #endif
-uniform lowp vec3 specularColor
+uniform lowp vec4 specularColor
     #ifndef GL_ES
-    = vec3(1.0, 1.0, 1.0)
+    = vec4(1.0)
     #endif
     ;
 
@@ -116,39 +116,36 @@ out lowp vec4 color;
 #endif
 
 void main() {
-    lowp const vec3 finalAmbientColor =
+    lowp const vec4 finalAmbientColor =
         #ifdef AMBIENT_TEXTURE
-        texture(ambientTexture, interpolatedTextureCoords).xyz*
+        texture(ambientTexture, interpolatedTextureCoords)*
         #endif
         ambientColor;
-    lowp const vec3 finalDiffuseColor =
+    lowp const vec4 finalDiffuseColor =
         #ifdef DIFFUSE_TEXTURE
-        texture(diffuseTexture, interpolatedTextureCoords).xyz*
+        texture(diffuseTexture, interpolatedTextureCoords)*
         #endif
         diffuseColor;
-    lowp const vec3 finalSpecularColor =
+    lowp const vec4 finalSpecularColor =
         #ifdef SPECULAR_TEXTURE
-        texture(specularTexture, interpolatedTextureCoords).xyz*
+        texture(specularTexture, interpolatedTextureCoords)*
         #endif
         specularColor;
 
     /* Ambient color */
-    color.rgb = finalAmbientColor;
+    color = finalAmbientColor;
 
     mediump vec3 normalizedTransformedNormal = normalize(transformedNormal);
     highp vec3 normalizedLightDirection = normalize(lightDirection);
 
     /* Add diffuse color */
     lowp float intensity = max(0.0, dot(normalizedTransformedNormal, normalizedLightDirection));
-    color.rgb += finalDiffuseColor*lightColor*intensity;
+    color += finalDiffuseColor*lightColor*intensity;
 
     /* Add specular color, if needed */
     if(intensity > 0.001) {
         highp vec3 reflection = reflect(-normalizedLightDirection, normalizedTransformedNormal);
         mediump float specularity = pow(max(0.0, dot(normalize(cameraDirection), reflection)), shininess);
-        color.rgb += finalSpecularColor*specularity;
+        color += finalSpecularColor*specularity;
     }
-
-    /* Force alpha to 1 */
-    color.a = 1.0;
 }

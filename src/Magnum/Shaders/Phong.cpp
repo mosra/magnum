@@ -113,13 +113,13 @@ Phong::Phong(const Flags flags): transformationMatrixUniform(0), projectionMatri
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
     #ifdef MAGNUM_TARGET_GLES
     /* Default to fully opaque white so we can see the textures */
-    if(flags & Flag::AmbientTexture) setAmbientColor(Vector3{1.0f});
-    else setAmbientColor({});
+    if(flags & Flag::AmbientTexture) setAmbientColor(Color4{1.0f});
+    else setAmbientColor(Color4{0.0f, 1.0f});
 
-    if(flags & Flag::DiffuseTexture) setDiffuseColor(Vector3{1.0f});
+    if(flags & Flag::DiffuseTexture) setDiffuseColor(Color4{1.0f});
 
-    setSpecularColor(Vector3(1.0f));
-    setLightColor(Vector3(1.0f));
+    setSpecularColor(Color4{1.0f});
+    setLightColor(Color4{.0f});
     setShininess(80.0f);
     #endif
 }
