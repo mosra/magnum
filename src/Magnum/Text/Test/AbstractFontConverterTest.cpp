@@ -74,17 +74,17 @@ namespace {
 void AbstractFontConverterTest::convertGlyphs() {
     class GlyphExporter: public AbstractFontConverter {
         public:
-            GlyphExporter(std::u32string& characters): characters(characters) {}
+            GlyphExporter(std::u32string& characters): _characters{characters} {}
 
         private:
             Features doFeatures() const override { return Feature::ConvertData|Feature::ExportFont; }
 
             Containers::Array<char> doExportFontToSingleData(AbstractFont&, GlyphCache&, const std::u32string& characters) const override {
-                this->characters = characters;
+                _characters = characters;
                 return nullptr;
             }
 
-            std::u32string& characters;
+            std::u32string& _characters;
     };
 
     std::u32string characters;
