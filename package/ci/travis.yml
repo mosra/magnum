@@ -1,0 +1,49 @@
+# kate: indent-width 2;
+
+branches:
+  only:
+  - master
+
+os:
+- linux
+- osx
+
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    - kalakris-cmake
+    packages:
+    - g++-4.7
+    - cmake
+    - libopenal-dev
+
+cache:
+  directories:
+  - $HOME/sdl2
+
+install:
+- if [ "$TRAVIS_OS_NAME" == "linux" ]; then export CXX=g++-4.7; fi
+- if [ "$TRAVIS_OS_NAME" == "linux" ]; then export PLATFORM_GL_API=GLX; fi
+- if [ "$TRAVIS_OS_NAME" == "osx" ]; then export PLATFORM_GL_API=CGL; fi
+- printf "[General]\ndrivers=null" > ~/.alsoftrc
+
+# SDL (cached)
+- if [ ! -e "$HOME/sdl2/include" ]; then curl -O http://www.libsdl.org/release/SDL2-2.0.3.tar.gz && tar -xzvf SDL2-2.0.3.tar.gz && cd SDL2-2.0.3 && mkdir build && cd build && cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/sdl2 -DCMAKE_BUILD_TYPE=Release && cmake --build . --target install && cd ../..; fi
+
+# Corrade
+- git clone --depth 1 git://github.com/mosra/corrade.git
+- cd corrade
+- mkdir build
+- cd build
+- cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/deps -DCMAKE_INSTALL_RPATH=$HOME/deps/lib -DCMAKE_MACOSX_RPATH=ON -DCMAKE_BUILD_TYPE=Release
+- cmake --build .
+- cmake --build . --target install
+- cd ..
+- cd ..
+
+script:
+- mkdir build && cd build
+- cmake .. -DCMAKE_PREFIX_PATH="$HOME/sdl2;$HOME/deps" -DCMAKE_BUILD_TYPE=Release -DWITH_AUDIO=ON -DWITH_SDL2APPLICATION=ON -DWITH_WINDOWLESS${PLATFORM_GL_API}APPLICATION=ON -DWITH_${PLATFORM_GL_API}CONTEXT=ON -DWITH_MAGNUMFONT=ON -DWITH_MAGNUMFONTCONVERTER=ON -DWITH_OBJIMPORTER=ON -DWITH_TGAIMAGECONVERTER=ON -DWITH_TGAIMPORTER=ON -DWITH_WAVAUDIOIMPORTER=ON -DWITH_DISTANCEFIELDCONVERTER=ON -DWITH_FONTCONVERTER=ON -DWITH_MAGNUMINFO=ON -DBUILD_TESTS=ON
+- cmake --build .
+- ctest --output-on-failure
