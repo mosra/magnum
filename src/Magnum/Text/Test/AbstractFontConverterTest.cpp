@@ -74,7 +74,8 @@ namespace {
 void AbstractFontConverterTest::convertGlyphs() {
     class GlyphExporter: public AbstractFontConverter {
         public:
-            GlyphExporter(std::u32string& characters): _characters{characters} {}
+            /* GCC 4.7 apparently can't handle {} here */
+            GlyphExporter(std::u32string& characters): _characters(characters) {}
 
         private:
             Features doFeatures() const override { return Feature::ConvertData|Feature::ExportFont; }
