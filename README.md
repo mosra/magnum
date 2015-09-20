@@ -51,9 +51,9 @@ Graphics APIs:
 Platforms:
 
 *   **Linux** and embedded Linux (natively using GLX/EGL and Xlib or through
-    SDL2 or GLUT toolkit)
+    SDL2 or GLUT toolkit) [![Build Status](https://travis-ci.org/mosra/magnum.svg?branch=master)](https://travis-ci.org/mosra/magnum)
 *   **Windows** (through SDL2 or GLUT toolkit) [![Build status](https://ci.appveyor.com/api/projects/status/5b477m034cfaskse/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum/branch/master)
-*   **OS X** (through SDL2 toolkit)
+*   **OS X** (through SDL2 toolkit) [![Build Status](https://travis-ci.org/mosra/magnum.svg?branch=master)](https://travis-ci.org/mosra/magnum)
 *   **Android** 2.3 (API Level 9) and higher
 *   **Google Chrome** (through [Native Client](https://developers.google.com/native-client/),
     both `newlib` and `glibc` toolchains are supported)
