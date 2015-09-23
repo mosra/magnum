@@ -12,8 +12,6 @@ environment:
 install:
 - cinst ninja
 build_script:
-# https://github.com/appveyor/ci/issues/414
-- ren "C:\Program Files (x86)\Windows Kits\10\include\wdf" 00wdf
 - call "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/vcvarsall.bat"
 - appveyor DownloadFile http://kcat.strangesoft.net/openal-soft-1.16.0-bin.zip
 - 7z x openal-soft-1.16.0-bin.zip
