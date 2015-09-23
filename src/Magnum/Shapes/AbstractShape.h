@@ -55,7 +55,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT AbstractShape: publi
     friend const Implementation::AbstractShape<dimensions>& Implementation::getAbstractShape<>(const AbstractShape<dimensions>&);
     #else
     /* Otherwise it complains that this is not a function */
-    template<UnsignedInt _dimensions> friend const Implementation::AbstractShape<_dimensions>& Implementation::getAbstractShape(const Shapes::AbstractShape<_dimensions>&);
+    template<UnsignedInt dimensions_> friend const Implementation::AbstractShape<dimensions_>& Implementation::getAbstractShape(const Shapes::AbstractShape<dimensions_>&);
     #endif
 
     public:

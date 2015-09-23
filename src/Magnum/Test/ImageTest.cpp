@@ -42,8 +42,8 @@ struct ImageTest: TestSuite::Tester {
 
     void setData();
     void setDataCompressed();
-    void toReference();
-    void toReferenceCompressed();
+    void toView();
+    void toViewCompressed();
     void release();
     void releaseCompressed();
 };
@@ -58,8 +58,8 @@ ImageTest::ImageTest() {
 
               &ImageTest::setData,
               &ImageTest::setDataCompressed,
-              &ImageTest::toReference,
-              &ImageTest::toReferenceCompressed,
+              &ImageTest::toView,
+              &ImageTest::toViewCompressed,
               &ImageTest::release,
               &ImageTest::releaseCompressed});
 }
@@ -202,7 +202,7 @@ void ImageTest::setDataCompressed() {
     CORRADE_COMPARE(a.data().size(), 16);
 }
 
-void ImageTest::toReference() {
+void ImageTest::toView() {
     auto data = new char[3];
     const Image2D a{PixelStorage{}.setAlignment(1),
         PixelFormat::Red, PixelType::UnsignedByte, {1, 3}, Containers::Array<char>{data, 3}};
@@ -227,7 +227,7 @@ void ImageTest::toReference() {
     }
 }
 
-void ImageTest::toReferenceCompressed() {
+void ImageTest::toViewCompressed() {
     auto data = new char[8];
     const CompressedImage2D a{
         #ifndef MAGNUM_TARGET_GLES

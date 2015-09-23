@@ -40,8 +40,8 @@ class ImageDataTest: public TestSuite::Tester {
         void constructMove();
         void constructMoveCompressed();
 
-        void toReference();
-        void toReferenceCompressed();
+        void toView();
+        void toViewCompressed();
         void release();
         void releaseCompressed();
 };
@@ -53,8 +53,8 @@ ImageDataTest::ImageDataTest() {
               &ImageDataTest::constructMove,
               &ImageDataTest::constructMoveCompressed,
 
-              &ImageDataTest::toReference,
-              &ImageDataTest::toReferenceCompressed,
+              &ImageDataTest::toView,
+              &ImageDataTest::toViewCompressed,
               &ImageDataTest::release,
               &ImageDataTest::releaseCompressed});
 }
@@ -165,7 +165,7 @@ void ImageDataTest::constructMoveCompressed() {
     CORRADE_COMPARE(c.data().size(), 8);
 }
 
-void ImageDataTest::toReference() {
+void ImageDataTest::toView() {
     auto data = new char[4];
     const Trade::ImageData2D a{PixelFormat::Red, PixelType::UnsignedByte, {4, 1}, Containers::Array<char>{data, 4}};
     ImageView2D b = a;
@@ -188,7 +188,7 @@ void ImageDataTest::toReference() {
     }
 }
 
-void ImageDataTest::toReferenceCompressed() {
+void ImageDataTest::toViewCompressed() {
     auto data = new char[8];
     const Trade::ImageData2D a{CompressedPixelFormat::RGBAS3tcDxt1, {4, 4}, Containers::Array<char>{data, 8}};
     CompressedImageView2D b = a;

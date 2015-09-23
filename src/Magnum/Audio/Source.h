@@ -523,7 +523,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @brief Play more sources at once
          *
          * The operation is guaranteed to be done for all sources at the same
-         * time. `nullptr` is not allowed.
+         * time.
          * @see @ref play(), @ref pause(std::initializer_list<std::reference_wrapper<Source>>),
          *      @ref stop(std::initializer_list<std::reference_wrapper<Source>>),
          *      @ref rewind(std::initializer_list<std::reference_wrapper<Source>>),
