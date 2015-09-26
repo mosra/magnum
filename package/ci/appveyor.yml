@@ -1,28 +1,41 @@
+# kate: indent-width 2;
+
 version: '{branch}-{build}'
+
 branches:
   only:
   - master
 skip_tags: true
-os: Visual Studio 2015
 shallow_clone: true
 clone_depth: 1
+
+os: Visual Studio 2015
+
 environment:
   matrix:
   - BUILD_STATIC: OFF
+
 install:
-- cinst ninja
-build_script:
 - call "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/vcvarsall.bat"
+- set PATH=C:/Sys/bin;C:/tools/ninja;%APPVEYOR_BUILD_FOLDER%/openal/bin/Win32;%PATH%
+
+# Ninja
+- cinst ninja
+
+# OpenAL
 - appveyor DownloadFile http://kcat.strangesoft.net/openal-soft-1.16.0-bin.zip
 - 7z x openal-soft-1.16.0-bin.zip
 - ren openal-soft-1.16.0-bin openal
 - ren openal\bin\Win32\soft_oal.dll OpenAL32.dll
 - echo [General] > %APPDATA%/alsoft.ini
 - echo drivers=null >> %APPDATA%/alsoft.ini
+
+# SDL2
 - appveyor DownloadFile http://www.libsdl.org/release/SDL2-devel-2.0.3-VC.zip
 - 7z x SDL2-devel-2.0.3-VC.zip
 - ren SDL2-2.0.3 SDL
-- set PATH=C:/Sys/bin;C:/tools/ninja;%APPVEYOR_BUILD_FOLDER%/openal/bin/Win32;%PATH%
+
+# Corrade
 - git clone --depth 1 git://github.com/mosra/corrade.git
 - cd corrade
 - mkdir build
@@ -32,6 +45,8 @@ build_script:
 - cmake --build . --target install
 - cd ..
 - cd ..
+
+build_script:
 - mkdir build
 - cd build
 - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=C:/Sys -DCMAKE_PREFIX_PATH="%APPVEYOR_BUILD_FOLDER%/SDL;%APPVEYOR_BUILD_FOLDER%/openal" -DWITH_AUDIO=ON -DWITH_SDL2APPLICATION=ON -DWITH_WINDOWLESSWGLAPPLICATION=ON -DWITH_WGLCONTEXT=ON -DWITH_MAGNUMFONT=ON -DWITH_MAGNUMFONTCONVERTER=ON -DWITH_OBJIMPORTER=ON -DWITH_TGAIMAGECONVERTER=ON -DWITH_TGAIMPORTER=ON -DWITH_WAVAUDIOIMPORTER=ON -DWITH_DISTANCEFIELDCONVERTER=ON -DWITH_FONTCONVERTER=ON -DWITH_MAGNUMINFO=ON -DBUILD_STATIC=%BUILD_STATIC% -DBUILD_TESTS=ON -G Ninja
@@ -41,6 +56,7 @@ build_script:
 - cmake --build . --target install
 - cd ../Deploy
 - 7z a ../magnum.zip *
+
 test_script:
 - cd %APPVEYOR_BUILD_FOLDER%/build
 - SET fail=0
