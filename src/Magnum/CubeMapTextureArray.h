@@ -368,7 +368,7 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          * See @ref Texture::imageSize() for more information.
          */
         Vector3i imageSize(Int level) {
-            return DataHelper<3>::imageSize(*this, level);
+            return DataHelper<3>::imageSize(*this, _target, level);
         }
 
         #ifndef MAGNUM_TARGET_GLES
