@@ -163,6 +163,9 @@ void PrimitiveQueryGLTest::transformFeedbackPrimitivesWritten() {
                 "out mediump vec2 outputData;\n"
                 "void main() {\n"
                 "    outputData = vec2(1.0, -1.0);\n"
+                /* Mesa drivers complain that vertex shader doesn't write to
+                   gl_Position otherwise */
+                "    gl_Position = vec4(1.0);\n"
                 "}\n").compile());
             #ifndef MAGNUM_TARGET_GLES
             attachShader(vert);
