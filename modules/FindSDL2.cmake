@@ -37,7 +37,13 @@
 if(CORRADE_TARGET_EMSCRIPTEN)
     set(_SDL2_PATH_SUFFIXES SDL)
 else()
-    find_library(SDL2_LIBRARY SDL2
+    find_library(SDL2_LIBRARY
+        # Compiling SDL2 from scratch on OSX creates dead libSDL2.so symlink
+        # which CMake somehow prefers before the SDL2-2.0.dylib file. Making
+        # the dylib first so it is preferred.
+        NAMES SDL2-2.0 SDL2
+
+        # Precompiled libraries for Windows are in x86/x64 subdirectories
         PATH_SUFFIXES lib/x86 lib/x64)
     set(SDL2_LIBRARY_NEEDED SDL2_LIBRARY)
     set(_SDL2_PATH_SUFFIXES SDL2)
