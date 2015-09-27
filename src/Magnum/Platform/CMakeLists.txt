@@ -386,6 +386,8 @@ if(NEED_EGLCONTEXTHANDLER)
         message(FATAL_ERROR "EGL library, required by some window contexts, was not found. Set WITH_*EGL*APPLICATION to OFF to skip building them.")
     endif()
 
+    include_directories(${EGL_INCLUDE_DIR})
+
     set(MagnumEglContextHandler_SRCS
         Implementation/EglContextHandler.cpp
         Implementation/Egl.cpp)
@@ -441,6 +443,13 @@ endif()
 
 # EGL context
 if(NEED_EGLCONTEXT OR WITH_EGLCONTEXT)
+    find_package(EGL)
+    if(NOT EGL_FOUND)
+        message(FATAL_ERROR "EGL library, required by some window contexts, was not found. Set WITH_*APPLICATION and/or WITH_EGLCONTEXT to OFF to skip building them.")
+    endif()
+
+    include_directories(${EGL_INCLUDE_DIR})
+
     add_library(MagnumEglContextObjects OBJECT ${MagnumContext_SRCS})
     set_target_properties(MagnumEglContextObjects PROPERTIES COMPILE_DEFINITIONS "MAGNUM_PLATFORM_USE_EGL")
     if(BUILD_STATIC_PIC)
