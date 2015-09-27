@@ -78,8 +78,8 @@ Platforms:
 
 -   **Linux** and embedded Linux (natively using GLX/EGL and Xlib or through
     SDL2 or GLUT toolkit)
--   **Windows** (through SDL2 or GLUT toolkit)
--   **OS X** (through SDL2 toolkit, thanks to [Miguel Martin](https://github.com/miguelishawt))
+-   **Windows** natively or using ANGLE (through SDL2 or GLUT toolkit)
+-   **OS X** (through SDL2 toolkit)
 -   **Android** 2.3 (API Level 9) and higher
 -   **Google Chrome** (through [Native Client](https://developers.google.com/native-client/),
     both `newlib` and `glibc` toolchains are supported)
