@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Version.h"
@@ -35,12 +36,16 @@ struct VersionTest: TestSuite::Tester {
     void fromNumber();
     void toNumber();
     void compare();
+
+    void debug();
 };
 
 VersionTest::VersionTest() {
     addTests({&VersionTest::fromNumber,
               &VersionTest::toNumber,
-              &VersionTest::compare});
+              &VersionTest::compare,
+
+              &VersionTest::debug});
 }
 
 void VersionTest::fromNumber() {
@@ -64,6 +69,22 @@ void VersionTest::compare() {
     CORRADE_VERIFY(version(1, 1) < Version::GL210);
     #else
     CORRADE_VERIFY(version(1, 1) < Version::GLES200);
+    #endif
+}
+
+void VersionTest::debug() {
+    std::ostringstream out;
+
+    #ifndef MAGNUM_TARGET_GLES
+    Debug(&out) << Version::GL210;
+    #else
+    Debug(&out) << Version::GLES200;
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE(out.str(), "OpenGL 2.1\n");
+    #else
+    CORRADE_COMPARE(out.str(), "OpenGL ES 2.0\n");
     #endif
 }
 
