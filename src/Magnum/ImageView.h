@@ -241,7 +241,7 @@ template<UnsignedInt dimensions> class CompressedImageView {
          * Similar the above, but uses default @ref CompressedPixelStorage
          * parameters (or the hardcoded ones in OpenGL ES and WebGL).
          */
-        #ifndef CORRADE_MSVC2015_COMPATIBILITY
+        #if !defined(CORRADE_MSVC2015_COMPATIBILITY) || defined(MAGNUM_TARGET_GLES)
         /* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
         constexpr
         #endif
