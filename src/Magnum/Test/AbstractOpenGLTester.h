@@ -37,7 +37,11 @@
 #elif defined(CORRADE_TARGET_UNIX) && (!defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_DESKTOP_GLES))
 #include "Magnum/Platform/WindowlessGlxApplication.h"
 #elif defined(CORRADE_TARGET_WINDOWS)
+#if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_DESKTOP_GLES)
 #include "Magnum/Platform/WindowlessWglApplication.h"
+#else
+#include "Magnum/Platform/WindowlessWindowsEglApplication.h"
+#endif
 #else
 #error cannot run OpenGL tests on this platform
 #endif
@@ -101,7 +105,7 @@ std::optional<Platform::WindowlessApplication::Arguments> AbstractOpenGLTester::
     }                                                                       \
     int main(int argc, char** argv) {                                       \
         Magnum::Test::AbstractOpenGLTester::_windowlessApplicationArguments.emplace(argc, argv, nullptr); \
-        return Magnum::Platform::WindowlessWglApplication::create(windowProcedure); \
+        return Magnum::Platform::WindowlessApplication::create(windowProcedure); \
     }
 #endif
 
