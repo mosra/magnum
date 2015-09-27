@@ -28,7 +28,9 @@
 #include "Magnum/Image.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Texture.h"
+#ifndef MAGNUM_TARGET_GLES2
 #include "Magnum/TextureArray.h"
+#endif
 #include "Magnum/TextureFormat.h"
 #include "Magnum/Test/AbstractOpenGLTester.h"
 
