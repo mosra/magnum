@@ -63,7 +63,11 @@
 #elif defined(CORRADE_TARGET_UNIX)
 #include "Magnum/Platform/WindowlessGlxApplication.h"
 #elif defined(CORRADE_TARGET_WINDOWS)
+#if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_DESKTOP_GLES)
 #include "Magnum/Platform/WindowlessWglApplication.h"
+#else
+#include "Magnum/Platform/WindowlessWindowsEglApplication.h"
+#endif
 #else
 #error no windowless application available on this platform
 #endif
