@@ -164,7 +164,7 @@ available for desktop OpenGL only, see @ref requires-gl.
 
  - `TARGET_GLES` - Target OpenGL ES.
  - `TARGET_GLES2` - Target OpenGL ES 2.0. Currently enabled by default when
-   `TARGET_GLES` is set, as no customer OpenGL ES 3.0 platform exists yet.
+   `TARGET_GLES` is set.
  - `TARGET_DESKTOP_GLES` - Target OpenGL ES on desktop, i.e. use OpenGL ES
    emulation in desktop OpenGL library. Might not be supported in all drivers.
 
@@ -441,6 +441,9 @@ toolchain needs access to its platform file, so be sure to properly set **absolu
 path to `modules/` directory containing `Platform/Emscripten.cmake`. Also set
 `CMAKE_INSTALL_PREFIX` to path contained in `EMSCRIPTEN_TOOLCHAIN_PATH`.
 
+WebGL 1.0 (GLES 2.0 equivalent) is enabled by default, switch to 2.0 (GLES 3.0
+equivalent) by disabling `TARGET_GLES2`.
+
     mkdir build-emscripten && cd build-emscripten
     cmake .. \
         -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
@@ -478,9 +481,8 @@ path to `modules/` directory containing `Platform/Android.cmake`. Also set
 path where Corrade is installed in `CMAKE_PREFIX_PATH`.
 
 Note that `BUILD_STATIC` is implicitly enabled, because manually loading all
-depending shared libraries using JNI would be too inconvenient. Decision
-between OpenGL ES 2.0 and ES 3.0 is left up to the user (i.e. you need to set
-`TARGET_GLES2` to `ON` or `OFF`).
+depending shared libraries using JNI would be too inconvenient. The engine is
+built for OpenGL ES 2.0 by default, switch  to 3.0 by disabling `TARGET_GLES2`.
 
     mkdir build-android-arm && cd build-android-arm
     cmake .. \
@@ -489,7 +491,8 @@ between OpenGL ES 2.0 and ES 3.0 is left up to the user (i.e. you need to set
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_PREFIX_PATH=/opt/android-ndk/platforms/android-19/arch-arm/usr \
         -DCMAKE_INSTALL_PREFIX=/opt/android-ndk/platforms/android-19/arch-arm/usr \
-        -DTARGET_GLES=ON -DTARGET_GLES2=ON
+        -DTARGET_GLES=ON -DTARGET_GLES2=OFF \
+        -DWITH_ANDROIDAPPLICATION=ON
     cmake --build .
 
     mkdir build-android-x86 && cd build-android-x86
@@ -499,7 +502,8 @@ between OpenGL ES 2.0 and ES 3.0 is left up to the user (i.e. you need to set
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_PREFIX_PATH=/opt/android-ndk/platforms/android-19/arch-x86/usr \
         -DCMAKE_INSTALL_PREFIX=/opt/android-ndk/platforms/android-19/arch-x86/usr \
-        -DTARGET_GLES=ON -DTARGET_GLES2=ON
+        -DTARGET_GLES=ON -DTARGET_GLES2=OFF \
+        -DWITH_ANDROIDAPPLICATION=ON
     cmake --build .
 
 Then you can install the library using `cmake --build . --target install` to
