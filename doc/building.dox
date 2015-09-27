@@ -329,6 +329,23 @@ This will compile binary and development packages, which will then appear in
 parent directory. If you need to modify CMake flags (enabling/disabling some
 features, for example), modify the last entry in `debian/rules`.
 
+@section building-windows-angle Building for ANGLE on Windows
+
+Magnum is able to run on ANGLE OpenGL-to-D3D translator. Download the code from
+https://github.com/MSOpenTech/angle and use provided Visual Studio solution to
+build it. Put the resulting `libGLESv2`/`libEGL` libraries and
+`GLES2`/`GLES3`/`EGL` includes to a location where CMake can find them or set
+`CMAKE_PREFIX_PATH` accordingly. ANGLE supports only OpenGL ES, thus you need
+to enable `TARGET_GLES`. The engine is built for OpenGL ES 2.0 by default,
+switch to 3.0 by disabling `TARGET_GLES2`.
+
+    mkdir build-angle && cd build-angle
+    cmake .. \
+        -DCMAKE_PREFIX_PATH=<path-to-ANGLE-installation> \
+        -DTARGET_GLES=ON -DTARGEET_GLES2=OFF \
+        -DWITH_SDL2APPLICATION=ON
+    cmake --build .
+
 @section building-crosscompiling Crosscompiling
 
 For crosscompiling you need to have *both* target and native version of
