@@ -34,7 +34,7 @@ namespace Implementation {
 /* Used in Shader.cpp (duh) */
 bool isShaderCompilationLogEmpty(const std::string&);
 bool isShaderCompilationLogEmpty(const std::string& result) {
-    #ifdef CORRADE_TARGET_WINDOWS
+    #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_GLES)
     /* Intel Windows drivers are too chatty */
     if((Context::current()->detectedDriver() & Context::DetectedDriver::IntelWindows) && result == "No errors.\n")
         return true;
@@ -48,7 +48,7 @@ bool isShaderCompilationLogEmpty(const std::string& result) {
 /* Used in AbstractShaderProgram.cpp (duh) */
 bool isProgramLinkLogEmpty(const std::string&);
 bool isProgramLinkLogEmpty(const std::string& result) {
-    #ifdef CORRADE_TARGET_WINDOWS
+    #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_GLES)
     /* Intel Windows drivers are too chatty */
     if((Context::current()->detectedDriver() & Context::DetectedDriver::IntelWindows) && result == "No errors.\n")
         return true;
