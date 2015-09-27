@@ -210,6 +210,7 @@ platform best:
 -   `WITH_WINDOWLESSGLXAPPLICATION` - @ref Platform::WindowlessGlxApplication "WindowlessGlxApplication"
 -   `WITH_WINDOWLESSNACLAPPLICATION` - @ref Platform::WindowlessNaClApplication "WindowlessNaClApplication"
 -   `WITH_WINDOWLESSWGLAPPLICATION` - @ref Platform::WindowlessWglApplication "WindowlessWglApplication"
+-   `WITH_WINDOWLESSWINDOWSEGLAPPLICATION` - @ref Platform::WindowlessWindowsEglApplication "WindowlessWindowsEglApplication"
 
 None of the context libraries is built by default. You need them only if you
 choose to not use any application library (see @ref platform-custom for more

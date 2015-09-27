@@ -105,6 +105,7 @@ Platform namespace is split into more components:
 -   `WindowlessGlxApplication` -- @ref Platform::WindowlessGlxApplication "WindowlessGlxApplication"
 -   `WindowlessNaClApplication` -- @ref Platform::WindowlessNaClApplication "WindowlessNaClApplication"
 -   `WindowlessWglApplication` -- @ref Platform::WindowlessWglApplication "WindowlessWglApplication"
+-   `WindowlessWindowsEglApplication` -- @ref Platform::WindowlessWindowsEglApplication "WindowlessWindowsEglApplication"
 
 For manual context creation (without application wrappers) there are also
 platform-specific context libraries (see @ref platform-custom for more

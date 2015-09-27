@@ -27,7 +27,7 @@
 
 #include "Magnum/Magnum.h"
 
-#ifdef CORRADE_TARGET_WINDOWS
+#if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_PLATFORM_USE_EGL)
 #define WIN32_LEAN_AND_MEAN 1
 #include <windows.h>
 #endif
@@ -36,7 +36,7 @@ namespace Magnum { namespace Platform { namespace Implementation {
 
 class OpenGLFunctionLoader {
     public:
-        #ifndef CORRADE_TARGET_WINDOWS
+        #if !defined(CORRADE_TARGET_WINDOWS) || defined(MAGNUM_PLATFORM_USE_EGL)
         using FunctionPointer = void(*)();
         #else
         using FunctionPointer = PROC;
@@ -48,8 +48,11 @@ class OpenGLFunctionLoader {
         FunctionPointer load(const char* name);
 
     private:
+        /* EGL-specific handles (nothing needed) */
+        #ifdef MAGNUM_PLATFORM_USE_EGL
+
         /* CGL-specific handles */
-        #ifdef CORRADE_TARGET_APPLE
+        #elif defined(CORRADE_TARGET_APPLE)
         void* library;
 
         /* WGL-specific handles */
@@ -58,9 +61,6 @@ class OpenGLFunctionLoader {
 
         /* GLX-specific handles (nothing needed) */
         #elif defined(CORRADE_TARGET_UNIX) && defined(MAGNUM_PLATFORM_USE_GLX)
-
-        /* EGL-specific handles (nothing needed) */
-        #elif defined(MAGNUM_PLATFORM_USE_EGL)
 
         /* Otherwise unsupported */
         #else

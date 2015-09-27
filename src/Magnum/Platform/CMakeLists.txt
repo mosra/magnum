@@ -321,6 +321,37 @@ if(WITH_WINDOWLESSWGLAPPLICATION)
         ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 endif()
 
+# Windowless Windows/EGL application
+if(WITH_WINDOWLESSWINDOWSEGLAPPLICATION)
+    set(NEED_EGLCONTEXT 1)
+
+    set(MagnumWindowlessWindowsEglApplication_SRCS
+        WindowlessWindowsEglApplication.cpp
+        Implementation/Egl.cpp
+        $<TARGET_OBJECTS:MagnumEglContextObjects>)
+    set(MagnumWindowlessWindowsEglApplication_HEADERS
+        WindowlessWindowsEglApplication.h)
+    set(MagnumWindowlessWindowsEglApplication_PRIVATE_HEADERS
+        Implementation/Egl.h)
+
+    add_library(MagnumWindowlessWindowsEglApplication STATIC
+        ${MagnumWindowlessWindowsEglApplication_SRCS}
+        ${MagnumWindowlessWindowsEglApplication_HEADERS}
+        ${MagnumWindowlessWindowsEglApplication_PRIVATE_HEADERS})
+    set_target_properties(MagnumWindowlessWindowsEglApplication PROPERTIES
+        COMPILE_FLAGS "-DUNICODE"
+        DEBUG_POSTFIX "-d")
+    target_link_libraries(MagnumWindowlessWindowsEglApplication Magnum ${EGL_LIBRARY})
+    # Assuming that PIC is not needed because the Application lib is always
+    # linked to the executable and not to any intermediate shared lib
+
+    install(FILES ${MagnumWindowlessWindowsEglApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
+    install(TARGETS MagnumWindowlessWindowsEglApplication
+        RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+        LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+        ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+endif()
+
 # Windowless CGL application
 if(WITH_WINDOWLESSCGLAPPLICATION)
     set(NEED_CGLCONTEXT 1)

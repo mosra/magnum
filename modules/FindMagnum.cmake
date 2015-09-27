@@ -57,6 +57,7 @@
 #  WindowlessGlxApplication - Windowless GLX application
 #  WindowlessNaClApplication - Windowless NaCl application
 #  WindowlessWglApplication - Windowless WGL application
+#  WindowlessWindowsEglApplication - Windowless Windows/EGL application
 #  CglContext       - CGL context
 #  EglContext       - EGL context
 #  GlxContext       - GLX context
@@ -419,6 +420,15 @@ foreach(component ${Magnum_FIND_COMPONENTS})
 
         # Windowless CGL application has no additional dependencies
         # Windowless WGL application has no additional dependencies
+
+        # Windowless Windows/EGL application dependencies
+        elseif(${component} STREQUAL WindowlessWindowsEglApplication)
+            find_package(EGL)
+            if(EGL_FOUND)
+                set(_MAGNUM_${_COMPONENT}_LIBRARIES ${EGL_LIBRARY})
+            else()
+                unset(MAGNUM_${_COMPONENT}_LIBRARY)
+            endif()
 
         # X/EGL application dependencies
         elseif(${component} STREQUAL XEglApplication)

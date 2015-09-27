@@ -27,8 +27,12 @@
 
 #include <Corrade/Utility/Assert.h>
 
+/* EGL-specific includes */
+#ifdef MAGNUM_PLATFORM_USE_EGL
+#include <EGL/egl.h>
+
 /* CGL-specific includes */
-#if defined(CORRADE_TARGET_APPLE)
+#elif defined(CORRADE_TARGET_APPLE)
 #include <dlfcn.h>
 
 /* WGL-specific stuff */
@@ -42,10 +46,6 @@
 #elif defined(CORRADE_TARGET_UNIX) && defined(MAGNUM_PLATFORM_USE_GLX)
 #include <GL/glx.h>
 
-/* EGL-specific includes */
-#elif defined(MAGNUM_PLATFORM_USE_EGL)
-#include <EGL/egl.h>
-
 /* Otherwise unsupported */
 #else
 #error unsupported platform
@@ -53,8 +53,18 @@
 
 namespace Magnum { namespace Platform { namespace Implementation {
 
+/* EGL-specific implementation */
+#ifdef MAGNUM_PLATFORM_USE_EGL
+OpenGLFunctionLoader::OpenGLFunctionLoader() = default;
+
+OpenGLFunctionLoader::~OpenGLFunctionLoader() = default;
+
+auto OpenGLFunctionLoader::load(const char* const name) -> FunctionPointer {
+    return eglGetProcAddress(name);
+}
+
 /* CGL-specific implementation */
-#ifdef CORRADE_TARGET_APPLE
+#elif defined(CORRADE_TARGET_APPLE)
 OpenGLFunctionLoader::OpenGLFunctionLoader() {
     CORRADE_INTERNAL_ASSERT_OUTPUT(library = dlopen("/System/Library/Frameworks/OpenGL.framework/Versions/Current/OpenGL", RTLD_LAZY));
 }
@@ -94,16 +104,6 @@ OpenGLFunctionLoader::~OpenGLFunctionLoader() = default;
 
 auto OpenGLFunctionLoader::load(const char* const name) -> FunctionPointer {
     return glXGetProcAddressARB(reinterpret_cast<const GLubyte*>(name));
-}
-
-/* EGL-specific implementation */
-#elif defined(MAGNUM_PLATFORM_USE_EGL)
-OpenGLFunctionLoader::OpenGLFunctionLoader() = default;
-
-OpenGLFunctionLoader::~OpenGLFunctionLoader() = default;
-
-auto OpenGLFunctionLoader::load(const char* const name) -> FunctionPointer {
-    return eglGetProcAddress(name);
 }
 
 /* Otherwise unsupported */
