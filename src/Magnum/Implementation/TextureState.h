@@ -30,7 +30,7 @@
 
 #include "Magnum/CubeMapTexture.h"
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && !defined(MAGNUM_TARGET_GLES2)
 /* Otherwise the member function pointers will have different size based on
    whether the header was included or not. CAUSES SERIOUS MEMORY CORRUPTION AND
    IS NOT CAUGHT BY ANY WARNING WHATSOEVER! AARGH! */
