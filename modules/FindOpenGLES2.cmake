@@ -37,6 +37,7 @@
 if(NOT CORRADE_TARGET_EMSCRIPTEN)
     find_library(OPENGLES2_LIBRARY NAMES
         GLESv2
+        libGLESv2 # ANGLE (CMake doesn't search for lib prefix on Windows)
         ppapi_gles2) # NaCl
     set(OPENGLES2_LIBRARY_NEEDED OPENGLES2_LIBRARY)
 endif()

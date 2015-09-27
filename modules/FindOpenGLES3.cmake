@@ -40,7 +40,9 @@ if(NOT CORRADE_TARGET_EMSCRIPTEN)
 
         # On some platforms (e.g. desktop emulation with Mesa or NVidia) ES3
         # support is provided in ES2 lib
-        GLESv2)
+        GLESv2
+
+        libGLESv2) # ANGLE (CMake doesn't search for lib prefix on Windows)
     set(OPENGLES3_LIBRARY_NEEDED OPENGLES3_LIBRARY)
 endif()
 

@@ -33,7 +33,9 @@
 #
 
 # Library
-find_library(EGL_LIBRARY EGL)
+find_library(EGL_LIBRARY NAMES
+    EGL
+    libEGL) # ANGLE (CMake doesn't search for lib prefix on Windows)
 
 # Include dir
 find_path(EGL_INCLUDE_DIR
