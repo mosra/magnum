@@ -224,15 +224,12 @@ template<std::size_t size> class BoolVector {
 
 /** @debugoperator{Magnum::Math::BoolVector} */
 template<std::size_t size> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const BoolVector<size>& value) {
-    debug << "BoolVector(";
-    debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);
+    debug << "BoolVector(" << Corrade::Utility::Debug::nospace;
     for(std::size_t i = 0; i != size; ++i) {
-        if(i && !(i%8)) debug << " ";
+        if(!i || (i%8)) debug << Corrade::Utility::Debug::nospace;
         debug << (value[i] ? "1" : "0");
     }
-    debug << ")";
-    debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, true);
-    return debug;
+    return debug << Corrade::Utility::Debug::nospace << ")";
 }
 
 template<std::size_t size> inline bool BoolVector<size>::operator==(const BoolVector< size >& other) const {

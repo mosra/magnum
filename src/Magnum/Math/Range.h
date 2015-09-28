@@ -530,15 +530,14 @@ template<class T> class Range3D: public Range<3, T> {
 
 /** @debugoperator{Magnum::Math::Range} */
 template<UnsignedInt dimensions, class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Range<dimensions, T>& value) {
-    debug << "Range({";
-    debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);
-    debug << value.min()[0];
-    for(UnsignedInt i = 1; i != dimensions; ++i) debug << ", " << value.min()[i];
-    debug << "}, {" << value.max()[0];
-    for(UnsignedInt i = 1; i != dimensions; ++i) debug << ", " << value.max()[i];
-    debug << "})";
-    debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, true);
-    return debug;
+    debug << "Range({" << Corrade::Utility::Debug::nospace << value.min()[0];
+    for(UnsignedInt i = 1; i != dimensions; ++i)
+        debug << Corrade::Utility::Debug::nospace << "," << value.min()[i];
+    debug << Corrade::Utility::Debug::nospace << "}, {"
+          << Corrade::Utility::Debug::nospace << value.max()[0];
+    for(UnsignedInt i = 1; i != dimensions; ++i)
+        debug << Corrade::Utility::Debug::nospace << "," << value.max()[i];
+    return debug << Corrade::Utility::Debug::nospace << "})";
 }
 
 template<UnsignedInt dimensions, class T> Range<dimensions, T> Range<dimensions, T>::translated(const VectorType& vector) const {

@@ -533,11 +533,11 @@ template<class T> inline Quaternion<T> operator/(T scalar, const Quaternion<T>& 
 
 /** @debugoperator{Magnum::Math::Quaternion} */
 template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Quaternion<T>& value) {
-    debug << "Quaternion({";
-    debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);
-    debug << value.vector().x() << ", " << value.vector().y() << ", " << value.vector().z() << "}, " << value.scalar() << ")";
-    debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, true);
-    return debug;
+    return debug << "Quaternion({" << Corrade::Utility::Debug::nospace
+        << value.vector().x() << Corrade::Utility::Debug::nospace << ","
+        << value.vector().y() << Corrade::Utility::Debug::nospace << ","
+        << value.vector().z() << Corrade::Utility::Debug::nospace << "},"
+        << value.scalar() << Corrade::Utility::Debug::nospace << ")";
 }
 
 /* Explicit instantiation for commonly used types */

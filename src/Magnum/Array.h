@@ -205,15 +205,12 @@ template<class T> class Array3D: public Array<3, T> {
 
 /** @debugoperator{Magnum::Array} */
 template<UnsignedInt dimensions, class T> Debug& operator<<(Debug& debug, const Array<dimensions, T>& value) {
-    debug << "Array(";
-    debug.setFlag(Debug::SpaceAfterEachValue, false);
+    debug << "Array(" << Corrade::Utility::Debug::nospace;
     for(UnsignedInt i = 0; i != dimensions; ++i) {
-        if(i != 0) debug << ", ";
+        if(i != 0) debug << ",";
         debug << value[i];
     }
-    debug << ")";
-    debug.setFlag(Debug::SpaceAfterEachValue, true);
-    return debug;
+    return debug << Corrade::Utility::Debug::nospace << ")";
 }
 
 /** @debugoperator{Magnum::Array1D} */

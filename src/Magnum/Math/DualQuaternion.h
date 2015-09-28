@@ -359,14 +359,16 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
 
 /** @debugoperator{Magnum::Math::DualQuaternion} */
 template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const DualQuaternion<T>& value) {
-    debug << "DualQuaternion({{";
-    debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);
-    debug << value.real().vector().x() << ", " << value.real().vector().y() << ", " << value.real().vector().z()
-          << "}, " << value.real().scalar() << "}, {{"
-          << value.dual().vector().x() << ", " << value.dual().vector().y() << ", " << value.dual().vector().z()
-          << "}, " << value.dual().scalar() << "})";
-    debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, true);
-    return debug;
+    return debug << "DualQuaternion({{" << Corrade::Utility::Debug::nospace
+        << value.real().vector().x() << Corrade::Utility::Debug::nospace << ","
+        << value.real().vector().y() << Corrade::Utility::Debug::nospace << ","
+        << value.real().vector().z() << Corrade::Utility::Debug::nospace << "},"
+        << value.real().scalar() << Corrade::Utility::Debug::nospace << "}, {{"
+        << Corrade::Utility::Debug::nospace
+        << value.dual().vector().x() << Corrade::Utility::Debug::nospace << ","
+        << value.dual().vector().y() << Corrade::Utility::Debug::nospace << ","
+        << value.dual().vector().z() << Corrade::Utility::Debug::nospace << "},"
+        << value.dual().scalar() << Corrade::Utility::Debug::nospace << "})";
 }
 
 /* Explicit instantiation for commonly used types */

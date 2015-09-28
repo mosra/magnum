@@ -477,11 +477,9 @@ template<class T> inline Complex<T> operator/(T scalar, const Complex<T>& comple
 
 /** @debugoperator{Magnum::Math::Complex} */
 template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Complex<T>& value) {
-    debug << "Complex(";
-    debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);
-    debug << value.real() << ", " << value.imaginary() << ")";
-    debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, true);
-    return debug;
+    return debug << "Complex(" << Corrade::Utility::Debug::nospace
+        << value.real() << Corrade::Utility::Debug::nospace << ","
+        << value.imaginary() << Corrade::Utility::Debug::nospace << ")";
 }
 
 /* Explicit instantiation for commonly used types */

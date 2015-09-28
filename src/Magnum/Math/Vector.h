@@ -1070,15 +1070,12 @@ operator/(const Vector<size, Integral>& a, const Vector<size, FloatingPoint>& b)
 
 /** @debugoperator{Magnum::Math::Vector} */
 template<std::size_t size, class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Vector<size, T>& value) {
-    debug << "Vector(";
-    debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);
+    debug << "Vector(" << Corrade::Utility::Debug::nospace;
     for(std::size_t i = 0; i != size; ++i) {
-        if(i != 0) debug << ", ";
+        if(i != 0) debug << Corrade::Utility::Debug::nospace << ",";
         debug << value[i];
     }
-    debug << ")";
-    debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, true);
-    return debug;
+    return debug << Corrade::Utility::Debug::nospace << ")";
 }
 
 /* Explicit instantiation for types used in OpenGL */
