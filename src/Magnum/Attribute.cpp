@@ -139,7 +139,7 @@ UnsignedInt Attribute<Math::Vector<4, Float>>::size(GLint components, DataType d
     CORRADE_ASSERT_UNREACHABLE();
 }
 
-Debug operator<<(Debug debug, SizedAttribute<1, 1>::Components value) {
+Debug& operator<<(Debug& debug, SizedAttribute<1, 1>::Components value) {
     switch(value) {
         case SizedAttribute<1, 1>::Components::One:
             return debug << "Attribute::Components::One";
@@ -148,7 +148,7 @@ Debug operator<<(Debug debug, SizedAttribute<1, 1>::Components value) {
     return debug << "Attribute::Components::(invalid)";
 }
 
-Debug operator<<(Debug debug, SizedAttribute<1, 2>::Components value) {
+Debug& operator<<(Debug& debug, SizedAttribute<1, 2>::Components value) {
     switch(value) {
         case SizedAttribute<1, 2>::Components::One:
             return debug << "Attribute::Components::One";
@@ -159,7 +159,7 @@ Debug operator<<(Debug debug, SizedAttribute<1, 2>::Components value) {
     return debug << "Attribute::Components::(invalid)";
 }
 
-Debug operator<<(Debug debug, SizedAttribute<1, 3>::Components value) {
+Debug& operator<<(Debug& debug, SizedAttribute<1, 3>::Components value) {
     switch(value) {
         case SizedAttribute<1, 3>::Components::One:
             return debug << "Attribute::Components::One";
@@ -172,7 +172,7 @@ Debug operator<<(Debug debug, SizedAttribute<1, 3>::Components value) {
     return debug << "Attribute::Components::(invalid)";
 }
 
-Debug operator<<(Debug debug, SizedAttribute<1, 4>::Components value) {
+Debug& operator<<(Debug& debug, SizedAttribute<1, 4>::Components value) {
     switch(value) {
         case SizedAttribute<1, 4>::Components::One:
             return debug << "Attribute::Components::One";
@@ -187,7 +187,7 @@ Debug operator<<(Debug debug, SizedAttribute<1, 4>::Components value) {
     return debug << "Attribute::Components::(invalid)";
 }
 
-Debug operator<<(Debug debug, SizedMatrixAttribute<2>::Components value) {
+Debug& operator<<(Debug& debug, SizedMatrixAttribute<2>::Components value) {
     switch(value) {
         case SizedMatrixAttribute<2>::Components::Two:
             return debug << "Attribute::Components::Two";
@@ -196,7 +196,7 @@ Debug operator<<(Debug debug, SizedMatrixAttribute<2>::Components value) {
     return debug << "Attribute::Components::(invalid)";
 }
 
-Debug operator<<(Debug debug, SizedMatrixAttribute<3>::Components value) {
+Debug& operator<<(Debug& debug, SizedMatrixAttribute<3>::Components value) {
     switch(value) {
         case SizedMatrixAttribute<3>::Components::Three:
             return debug << "Attribute::Components::Three";
@@ -205,7 +205,7 @@ Debug operator<<(Debug debug, SizedMatrixAttribute<3>::Components value) {
     return debug << "Attribute::Components::(invalid)";
 }
 
-Debug operator<<(Debug debug, SizedMatrixAttribute<4>::Components value) {
+Debug& operator<<(Debug& debug, SizedMatrixAttribute<4>::Components value) {
     switch(value) {
         case SizedMatrixAttribute<4>::Components::Four:
             return debug << "Attribute::Components::Four";
@@ -214,7 +214,7 @@ Debug operator<<(Debug debug, SizedMatrixAttribute<4>::Components value) {
     return debug << "Attribute::Components::(invalid)";
 }
 
-Debug operator<<(Debug debug, Attribute<Math::Vector<4, Float>>::Components value) {
+Debug& operator<<(Debug& debug, Attribute<Math::Vector<4, Float>>::Components value) {
     switch(value) {
         case Attribute<Math::Vector<4, Float>>::Components::One:
             return debug << "Attribute::Components::One";
@@ -233,7 +233,7 @@ Debug operator<<(Debug debug, Attribute<Math::Vector<4, Float>>::Components valu
     return debug << "Attribute::Components::(invalid)";
 }
 
-Debug operator<<(Debug debug, FloatAttribute::DataType value) {
+Debug& operator<<(Debug& debug, FloatAttribute::DataType value) {
     switch(value) {
         #define _c(value) case FloatAttribute::DataType::value: return debug << "Attribute::DataType::" #value;
         _c(UnsignedByte)
@@ -254,7 +254,7 @@ Debug operator<<(Debug debug, FloatAttribute::DataType value) {
 }
 
 #ifndef MAGNUM_TARGET_GLES2
-Debug operator<<(Debug debug, IntAttribute::DataType value) {
+Debug& operator<<(Debug& debug, IntAttribute::DataType value) {
     switch(value) {
         #define _c(value) case IntAttribute::DataType::value: return debug << "Attribute::DataType::" #value;
         _c(UnsignedByte)
@@ -271,7 +271,7 @@ Debug operator<<(Debug debug, IntAttribute::DataType value) {
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-Debug operator<<(Debug debug, DoubleAttribute::DataType value) {
+Debug& operator<<(Debug& debug, DoubleAttribute::DataType value) {
     switch(value) {
         #define _c(value) case DoubleAttribute::DataType::value: return debug << "Attribute::DataType::" #value;
         _c(Double)
@@ -282,7 +282,7 @@ Debug operator<<(Debug debug, DoubleAttribute::DataType value) {
 }
 #endif
 
-Debug operator<<(Debug debug, Attribute<Math::Vector<3, Float>>::DataType value) {
+Debug& operator<<(Debug& debug, Attribute<Math::Vector<3, Float>>::DataType value) {
     switch(value) {
         #define _c(value) case Attribute<Math::Vector<3, Float>>::DataType::value: return debug << "Attribute::DataType::" #value;
         _c(UnsignedByte)
@@ -303,7 +303,7 @@ Debug operator<<(Debug debug, Attribute<Math::Vector<3, Float>>::DataType value)
     return debug << "Attribute::DataType::(invalid)";
 }
 
-Debug operator<<(Debug debug, Attribute<Math::Vector<4, Float>>::DataType value) {
+Debug& operator<<(Debug& debug, Attribute<Math::Vector<4, Float>>::DataType value) {
     switch(value) {
         #define _c(value) case Attribute<Math::Vector<4, Float>>::DataType::value: return debug << "Attribute::DataType::" #value;
         _c(UnsignedByte)

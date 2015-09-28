@@ -30,7 +30,7 @@
 namespace Magnum {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-Debug operator<<(Debug debug, const PixelFormat value) {
+Debug& operator<<(Debug& debug, const PixelFormat value) {
     switch(value) {
         #define _c(value) case PixelFormat::value: return debug << "PixelFormat::" #value;
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
@@ -82,7 +82,7 @@ Debug operator<<(Debug debug, const PixelFormat value) {
     return debug << "PixelFormat::(invalid)";
 }
 
-Debug operator<<(Debug debug, const PixelType value) {
+Debug& operator<<(Debug& debug, const PixelType value) {
     switch(value) {
         #define _c(value) case PixelType::value: return debug << "PixelType::" #value;
         _c(UnsignedByte)
@@ -137,7 +137,7 @@ Debug operator<<(Debug debug, const PixelType value) {
     return debug << "PixelType::(invalid)";
 }
 
-Debug operator<<(Debug debug, const CompressedPixelFormat value) {
+Debug& operator<<(Debug& debug, const CompressedPixelFormat value) {
     switch(value) {
         #define _c(value) case CompressedPixelFormat::value: return debug << "CompressedPixelFormat::" #value;
         #ifndef MAGNUM_TARGET_GLES

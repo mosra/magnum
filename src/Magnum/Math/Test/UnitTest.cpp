@@ -63,7 +63,7 @@ typedef Unit<Sec_, Float> Sec;
 typedef Unit<Sec_, Int> Seci;
 typedef Constants<Float> Constants;
 
-inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, Sec value) {
+inline Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, Sec value) {
     return debug << Float(value);
 }
 

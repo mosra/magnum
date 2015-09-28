@@ -121,7 +121,7 @@ class MAGNUM_EXPORT ObjectData2D {
 };
 
 /** @debugoperatorenum{Magnum::Trade::ObjectInstanceType2D} */
-Debug MAGNUM_EXPORT operator<<(Debug debug, ObjectInstanceType2D value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, ObjectInstanceType2D value);
 
 }}
 

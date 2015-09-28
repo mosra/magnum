@@ -204,7 +204,7 @@ template<class T> class Array3D: public Array<3, T> {
 };
 
 /** @debugoperator{Magnum::Array} */
-template<UnsignedInt dimensions, class T> Debug operator<<(Debug debug, const Array<dimensions, T>& value) {
+template<UnsignedInt dimensions, class T> Debug& operator<<(Debug& debug, const Array<dimensions, T>& value) {
     debug << "Array(";
     debug.setFlag(Debug::SpaceAfterEachValue, false);
     for(UnsignedInt i = 0; i != dimensions; ++i) {
@@ -217,17 +217,17 @@ template<UnsignedInt dimensions, class T> Debug operator<<(Debug debug, const Ar
 }
 
 /** @debugoperator{Magnum::Array1D} */
-template<class T> inline Debug operator<<(Debug debug, const Array1D<T>& value) {
+template<class T> inline Debug& operator<<(Debug& debug, const Array1D<T>& value) {
     return debug << static_cast<const Array<1, T>&>(value);
 }
 
 /** @debugoperator{Magnum::Array2D} */
-template<class T> inline Debug operator<<(Debug debug, const Array2D<T>& value) {
+template<class T> inline Debug& operator<<(Debug& debug, const Array2D<T>& value) {
     return debug << static_cast<const Array<2, T>&>(value);
 }
 
 /** @debugoperator{Magnum::Array3D} */
-template<class T> inline Debug operator<<(Debug debug, const Array3D<T>& value) {
+template<class T> inline Debug& operator<<(Debug& debug, const Array3D<T>& value) {
     return debug << static_cast<const Array<3, T>&>(value);
 }
 

@@ -476,7 +476,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
 extern DefaultFramebuffer MAGNUM_EXPORT defaultFramebuffer;
 
 /** @debugoperatorclassenum{Magnum::DefaultFramebuffer,Magnum::DefaultFramebuffer::Status} */
-Debug MAGNUM_EXPORT operator<<(Debug debug, DefaultFramebuffer::Status value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, DefaultFramebuffer::Status value);
 
 }
 

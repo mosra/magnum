@@ -30,7 +30,7 @@
 namespace Magnum {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-Debug operator<<(Debug debug, Version value) {
+Debug& operator<<(Debug& debug, Version value) {
     switch(value) {
         #define _c(value, string) case Version::value: return debug << string;
         _c(None, "None")

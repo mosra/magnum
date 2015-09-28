@@ -700,7 +700,7 @@ void Context::resetState(const States states) {
 
 #ifndef MAGNUM_TARGET_WEBGL
 #ifndef DOXYGEN_GENERATING_OUTPUT
-Debug operator<<(Debug debug, const Context::Flag value) {
+Debug& operator<<(Debug& debug, const Context::Flag value) {
     switch(value) {
         #define _c(value) case Context::Flag::value: return debug << "Context::Flag::" #value;
         _c(Debug)

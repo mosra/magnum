@@ -87,8 +87,8 @@ template<> struct ShapeDimensionTraits<3> {
     };
 };
 
-Debug MAGNUM_SHAPES_EXPORT operator<<(Debug debug, ShapeDimensionTraits<2>::Type value);
-Debug MAGNUM_SHAPES_EXPORT operator<<(Debug debug, ShapeDimensionTraits<3>::Type value);
+MAGNUM_SHAPES_EXPORT Debug& operator<<(Debug& debug, ShapeDimensionTraits<2>::Type value);
+MAGNUM_SHAPES_EXPORT Debug& operator<<(Debug& debug, ShapeDimensionTraits<3>::Type value);
 
 /* Enum value corresponding to given type */
 

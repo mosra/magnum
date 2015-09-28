@@ -297,10 +297,10 @@ template<UnsignedInt location, class T> class Attribute {
 
 #ifdef DOXYGEN_GENERATING_OUTPUT
 /** @debugoperatorclassenum{Magnum::Attribute,Magnum::Attribute::Components} */
-template<class T> Debug operator<<(Debug debug, Attribute<T>::Components);
+template<class T> Debug& operator<<(Debug& debug, Attribute<T>::Components);
 
 /** @debugoperatorclassenum{Magnum::Attribute,Magnum::Attribute::DataType} */
-template<class T> Debug operator<<(Debug debug, Attribute<T>::DataType);
+template<class T> Debug& operator<<(Debug& debug, Attribute<T>::DataType);
 #endif
 
 namespace Implementation {
@@ -328,10 +328,10 @@ template<> struct SizedAttribute<1, 4>: SizedVectorAttribute<1> {
     enum class Components: GLint { One = 1, Two = 2, Three = 3, Four = 4 };
     constexpr static Components DefaultComponents = Components::Four;
 };
-Debug MAGNUM_EXPORT operator<<(Debug debug, SizedAttribute<1, 1>::Components value);
-Debug MAGNUM_EXPORT operator<<(Debug debug, SizedAttribute<1, 2>::Components value);
-Debug MAGNUM_EXPORT operator<<(Debug debug, SizedAttribute<1, 3>::Components value);
-Debug MAGNUM_EXPORT operator<<(Debug debug, SizedAttribute<1, 4>::Components value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, SizedAttribute<1, 1>::Components value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, SizedAttribute<1, 2>::Components value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, SizedAttribute<1, 3>::Components value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, SizedAttribute<1, 4>::Components value);
 
 /* Matrix attribute sizes */
 template<std::size_t rows> struct SizedMatrixAttribute;
@@ -347,9 +347,9 @@ template<> struct SizedMatrixAttribute<4> {
     enum class Components: GLint { Four  = 4 };
     constexpr static Components DefaultComponents = Components::Four;
 };
-Debug MAGNUM_EXPORT operator<<(Debug debug, SizedMatrixAttribute<2>::Components value);
-Debug MAGNUM_EXPORT operator<<(Debug debug, SizedMatrixAttribute<3>::Components value);
-Debug MAGNUM_EXPORT operator<<(Debug debug, SizedMatrixAttribute<4>::Components value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, SizedMatrixAttribute<2>::Components value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, SizedMatrixAttribute<3>::Components value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, SizedMatrixAttribute<4>::Components value);
 template<> struct SizedAttribute<2, 2>: SizedVectorAttribute<2>, SizedMatrixAttribute<2> {};
 template<> struct SizedAttribute<3, 3>: SizedVectorAttribute<3>, SizedMatrixAttribute<3> {};
 template<> struct SizedAttribute<4, 4>: SizedVectorAttribute<4>, SizedMatrixAttribute<4> {};
@@ -400,7 +400,7 @@ struct FloatAttribute {
 
 CORRADE_ENUMSET_OPERATORS(FloatAttribute::DataOptions)
 
-Debug MAGNUM_EXPORT operator<<(Debug debug, FloatAttribute::DataType value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, FloatAttribute::DataType value);
 
 #ifndef MAGNUM_TARGET_GLES2
 /* Base for int attributes */
@@ -425,7 +425,7 @@ struct IntAttribute {
 
 CORRADE_ENUMSET_OPERATORS(IntAttribute::DataOptions)
 
-Debug MAGNUM_EXPORT operator<<(Debug debug, IntAttribute::DataType value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, IntAttribute::DataType value);
 
 /* Base for unsigned int attributes */
 struct UnsignedIntAttribute {
@@ -459,7 +459,7 @@ struct DoubleAttribute {
     static UnsignedInt MAGNUM_EXPORT size(GLint components, DataType dataType);
 };
 
-Debug MAGNUM_EXPORT operator<<(Debug debug, DoubleAttribute::DataType value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, DoubleAttribute::DataType value);
 #endif
 
 /* Floating-point three-component vector has additional data type compared to
@@ -495,7 +495,7 @@ template<> struct Attribute<Math::Vector<3, Float>>: SizedAttribute<1, 3> {
     static UnsignedInt MAGNUM_EXPORT size(GLint components, DataType dataType);
 };
 
-Debug MAGNUM_EXPORT operator<<(Debug debug, Attribute<Math::Vector<3, Float>>::DataType value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, Attribute<Math::Vector<3, Float>>::DataType value);
 
 /* Floating-point four-component vector is absolutely special case */
 template<> struct Attribute<Math::Vector<4, Float>> {
@@ -546,8 +546,8 @@ template<> struct Attribute<Math::Vector<4, Float>> {
     static UnsignedInt MAGNUM_EXPORT size(GLint components, DataType dataType);
 };
 
-Debug MAGNUM_EXPORT operator<<(Debug debug, Attribute<Math::Vector<4, Float>>::Components value);
-Debug MAGNUM_EXPORT operator<<(Debug debug, Attribute<Math::Vector<4, Float>>::DataType value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, Attribute<Math::Vector<4, Float>>::Components value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, Attribute<Math::Vector<4, Float>>::DataType value);
 
 /* Common float, int, unsigned int and double scalar attributes */
 template<> struct Attribute<Float>: FloatAttribute, SizedAttribute<1, 1> {};

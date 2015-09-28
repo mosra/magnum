@@ -29,7 +29,7 @@
 
 namespace Magnum { namespace SceneGraph {
 
-Debug operator<<(Debug debug, AnimationState value) {
+Debug& operator<<(Debug& debug, AnimationState value) {
     switch(value) {
         #define _c(value) case AnimationState::value: return debug << "SceneGraph::AnimationState::" #value;
         _c(Stopped)

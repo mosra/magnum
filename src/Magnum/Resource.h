@@ -69,7 +69,7 @@ enum class ResourceState: UnsignedByte {
 };
 
 /** @debugoperatorenum{Magnum::ResourceState} */
-Debug MAGNUM_EXPORT operator<<(Debug debug, ResourceState value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, ResourceState value);
 
 /**
 @brief Key for accessing resource
@@ -100,7 +100,7 @@ class ResourceKey: public Utility::MurmurHash2::Digest {
 };
 
 /** @debugoperator{Magnum::ResourceKey} */
-inline Debug operator<<(Debug debug, const ResourceKey& value) {
+inline Debug& operator<<(Debug& debug, const ResourceKey& value) {
     return debug << static_cast<const Utility::HashDigest<sizeof(std::size_t)>&>(value);
 }
 

@@ -418,13 +418,13 @@ class MAGNUM_EXPORT DebugOutput {
 };
 
 /** @debugoperatorclassenum{Magnum::DebugOutput,Magnum::DebugOutput::Source} */
-Debug MAGNUM_EXPORT operator<<(Debug debug, DebugOutput::Source value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, DebugOutput::Source value);
 
 /** @debugoperatorclassenum{Magnum::DebugOutput,Magnum::DebugOutput::Type} */
-Debug MAGNUM_EXPORT operator<<(Debug debug, DebugOutput::Type value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, DebugOutput::Type value);
 
 /** @debugoperatorclassenum{Magnum::DebugOutput,Magnum::DebugOutput::Severity} */
-Debug MAGNUM_EXPORT operator<<(Debug debug, DebugOutput::Severity value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, DebugOutput::Severity value);
 
 /**
 @brief Debug message
@@ -691,10 +691,10 @@ class MAGNUM_EXPORT DebugMessage {
 };
 
 /** @debugoperatorclassenum{Magnum::DebugMessage,Magnum::DebugMessage::Source} */
-Debug MAGNUM_EXPORT operator<<(Debug debug, DebugMessage::Source value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, DebugMessage::Source value);
 
 /** @debugoperatorclassenum{Magnum::DebugMessage,Magnum::DebugMessage::Type} */
-Debug MAGNUM_EXPORT operator<<(Debug debug, DebugMessage::Type value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, DebugMessage::Type value);
 
 /**
 @brief Debug group
@@ -904,7 +904,7 @@ class MAGNUM_EXPORT DebugGroup {
 };
 
 /** @debugoperatorclassenum{Magnum::DebugGroup,Magnum::DebugGroup::Source} */
-Debug MAGNUM_EXPORT operator<<(Debug debug, DebugGroup::Source value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, DebugGroup::Source value);
 
 }
 #else

@@ -1431,11 +1431,11 @@ CORRADE_ENUMSET_OPERATORS(Buffer::MapFlags)
 #endif
 
 /** @debugoperatorclassenum{Magnum::Buffer,Magnum::Buffer::TargetHint} */
-Debug MAGNUM_EXPORT operator<<(Debug debug, Buffer::TargetHint value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, Buffer::TargetHint value);
 
 #if !defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_BUILD_DEPRECATED)
 /** @debugoperatorclassenum{Magnum::Buffer,Magnum::Buffer::Target} */
-Debug MAGNUM_EXPORT operator<<(Debug debug, Buffer::Target value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, Buffer::Target value);
 #endif
 
 inline Buffer::Buffer(NoCreateT) noexcept: _id{0}, _targetHint{TargetHint::Array}, _flags{ObjectFlag::DeleteOnDestruction}

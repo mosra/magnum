@@ -1436,14 +1436,14 @@ class MAGNUM_EXPORT Renderer {
 };
 
 /** @debugoperatorclassenum{Magnum::Renderer,Magnum::Renderer::Error} */
-Debug MAGNUM_EXPORT operator<<(Debug debug, Renderer::Error value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, Renderer::Error value);
 
 #ifndef MAGNUM_TARGET_WEBGL
 /** @debugoperatorclassenum{Magnum::Renderer,Magnum::Renderer::ResetNotificationStrategy} */
-Debug MAGNUM_EXPORT operator<<(Debug debug, Renderer::ResetNotificationStrategy value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, Renderer::ResetNotificationStrategy value);
 
 /** @debugoperatorclassenum{Magnum::Renderer,Magnum::Renderer::GraphicsResetStatus} */
-Debug MAGNUM_EXPORT operator<<(Debug debug, Renderer::GraphicsResetStatus value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, Renderer::GraphicsResetStatus value);
 #endif
 
 }

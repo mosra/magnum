@@ -630,7 +630,7 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
 };
 
 /** @debugoperatorclassenum{Magnum::Shader,Magnum::Shader::Type} */
-Debug MAGNUM_EXPORT operator<<(Debug debug, Shader::Type value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, Shader::Type value);
 
 inline Shader::Shader(Shader&& other) noexcept: _type(other._type), _id(other._id), _sources(std::move(other._sources)) {
     other._id = 0;

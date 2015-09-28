@@ -260,10 +260,10 @@ class Renderer {
 };
 
 /** @debugoperatorclassenum{Magnum::Audio::Renderer,Magnum::Audio::Renderer::Error} */
-Debug MAGNUM_AUDIO_EXPORT operator<<(Debug debug, Renderer::Error value);
+MAGNUM_AUDIO_EXPORT Debug& operator<<(Debug& debug, Renderer::Error value);
 
 /** @debugoperatorclassenum{Magnum::Audio::Renderer,Magnum::Audio::Renderer::DistanceModel} */
-Debug MAGNUM_AUDIO_EXPORT operator<<(Debug debug, Renderer::DistanceModel value);
+MAGNUM_AUDIO_EXPORT Debug& operator<<(Debug& debug, Renderer::DistanceModel value);
 
 }}
 

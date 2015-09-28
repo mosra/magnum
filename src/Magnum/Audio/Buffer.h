@@ -105,7 +105,7 @@ class Buffer {
 };
 
 /** @debugoperatorclassenum{Magnum::Audio::Buffer,Magnum::Audio::Buffer::Format} */
-Debug MAGNUM_AUDIO_EXPORT operator<<(Debug debug, Buffer::Format value);
+MAGNUM_AUDIO_EXPORT Debug& operator<<(Debug& debug, Buffer::Format value);
 
 inline Buffer::Buffer(Buffer&& other): _id(other._id) {
     other._id = 0;

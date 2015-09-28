@@ -33,7 +33,7 @@ AbstractMaterialData::AbstractMaterialData(MaterialType type): _type(type) {}
 
 AbstractMaterialData::~AbstractMaterialData() {}
 
-Debug operator<<(Debug debug, const MaterialType value) {
+Debug& operator<<(Debug& debug, const MaterialType value) {
     switch(value) {
         #define _c(value) case MaterialType::value: return debug << "Trade::MaterialType::" #value;
         _c(Phong)

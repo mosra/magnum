@@ -898,7 +898,7 @@ bool Shader::compile(std::initializer_list<std::reference_wrapper<Shader>> shade
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-Debug operator<<(Debug debug, const Shader::Type value) {
+Debug& operator<<(Debug& debug, const Shader::Type value) {
     switch(value) {
         #define _c(value) case Shader::Type::value: return debug << "Shader::Type::" #value;
         _c(Vertex)

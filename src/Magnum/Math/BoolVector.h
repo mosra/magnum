@@ -223,7 +223,7 @@ template<std::size_t size> class BoolVector {
 };
 
 /** @debugoperator{Magnum::Math::BoolVector} */
-template<std::size_t size> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const BoolVector<size>& value) {
+template<std::size_t size> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const BoolVector<size>& value) {
     debug << "BoolVector(";
     debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);
     for(std::size_t i = 0; i != size; ++i) {

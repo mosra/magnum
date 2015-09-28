@@ -256,25 +256,25 @@ class MAGNUM_EXPORT Sampler {
 };
 
 /** @debugoperatorclassenum{Magnum::Sampler,Magnum::Sampler::Filter} */
-Debug MAGNUM_EXPORT operator<<(Debug debug, Sampler::Filter value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, Sampler::Filter value);
 
 /** @debugoperatorclassenum{Magnum::Sampler,Magnum::Sampler::Mipmap} */
-Debug MAGNUM_EXPORT operator<<(Debug debug, Sampler::Mipmap value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, Sampler::Mipmap value);
 
 /** @debugoperatorclassenum{Magnum::Sampler,Magnum::Sampler::Wrapping} */
-Debug MAGNUM_EXPORT operator<<(Debug debug, Sampler::Wrapping value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, Sampler::Wrapping value);
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 /** @debugoperatorclassenum{Magnum::Sampler,Magnum::Sampler::CompareMode} */
-Debug MAGNUM_EXPORT operator<<(Debug debug, Sampler::CompareMode value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, Sampler::CompareMode value);
 
 /** @debugoperatorclassenum{Magnum::Sampler,Magnum::Sampler::CompareFunction} */
-Debug MAGNUM_EXPORT operator<<(Debug debug, Sampler::CompareFunction value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, Sampler::CompareFunction value);
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
 /** @debugoperatorclassenum{Magnum::Sampler,Magnum::Sampler::DepthStencilMode} */
-Debug MAGNUM_EXPORT operator<<(Debug debug, Sampler::DepthStencilMode value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, Sampler::DepthStencilMode value);
 #endif
 
 }

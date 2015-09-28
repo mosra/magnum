@@ -209,7 +209,7 @@ template<class T> class Dual {
 #endif
 
 /** @debugoperator{Magnum::Math::Dual} */
-template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Dual<T>& value) {
+template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Dual<T>& value) {
     debug << "Dual(";
     debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);
     debug << value.real() << ", " << value.dual() << ")";

@@ -225,7 +225,7 @@ void DebugOutput::callbackImplementationKhr(const Callback callback, const void*
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-Debug operator<<(Debug debug, const DebugOutput::Source value) {
+Debug& operator<<(Debug& debug, const DebugOutput::Source value) {
     switch(value) {
         #define _c(value) case DebugOutput::Source::value: return debug << "DebugOutput::Source::" #value;
         _c(Api)
@@ -240,7 +240,7 @@ Debug operator<<(Debug debug, const DebugOutput::Source value) {
     return debug << "DebugOutput::Source::(invalid)";
 }
 
-Debug operator<<(Debug debug, const DebugOutput::Type value) {
+Debug& operator<<(Debug& debug, const DebugOutput::Type value) {
     switch(value) {
         #define _c(value) case DebugOutput::Type::value: return debug << "DebugOutput::Type::" #value;
         _c(Error)
@@ -258,7 +258,7 @@ Debug operator<<(Debug debug, const DebugOutput::Type value) {
     return debug << "DebugOutput::Type::(invalid)";
 }
 
-Debug operator<<(Debug debug, const DebugOutput::Severity value) {
+Debug& operator<<(Debug& debug, const DebugOutput::Severity value) {
     switch(value) {
         #define _c(value) case DebugOutput::Severity::value: return debug << "DebugOutput::Severity::" #value;
         _c(High)
@@ -312,7 +312,7 @@ void DebugMessage::insertImplementationGremedy(Source, Type, UnsignedInt, DebugO
 #endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-Debug operator<<(Debug debug, const DebugMessage::Source value) {
+Debug& operator<<(Debug& debug, const DebugMessage::Source value) {
     switch(value) {
         #define _c(value) case DebugMessage::Source::value: return debug << "DebugMessage::Source::" #value;
         _c(ThirdParty)
@@ -330,7 +330,7 @@ Debug operator<<(Debug debug, const DebugMessage::Source value) {
     return debug << "DebugMessage::Source::(invalid)";
 }
 
-Debug operator<<(Debug debug, const DebugMessage::Type value) {
+Debug& operator<<(Debug& debug, const DebugMessage::Type value) {
     switch(value) {
         #define _c(value) case DebugMessage::Type::value: return debug << "DebugMessage::Type::" #value;
         _c(Error)
@@ -424,7 +424,7 @@ void DebugGroup::popImplementationExt() {
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-Debug operator<<(Debug debug, const DebugGroup::Source value) {
+Debug& operator<<(Debug& debug, const DebugGroup::Source value) {
     switch(value) {
         #define _c(value) case DebugGroup::Source::value: return debug << "DebugGroup::Source::" #value;
         _c(ThirdParty)

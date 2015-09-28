@@ -349,7 +349,7 @@ void Framebuffer::textureLayerImplementationDSAEXT(BufferAttachment attachment, 
 #endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-Debug operator<<(Debug debug, const Framebuffer::Status value) {
+Debug& operator<<(Debug& debug, const Framebuffer::Status value) {
     switch(value) {
         #define _c(value) case Framebuffer::Status::value: return debug << "Framebuffer::Status::" #value;
         _c(Complete)

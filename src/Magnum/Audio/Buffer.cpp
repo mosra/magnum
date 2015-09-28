@@ -29,7 +29,7 @@
 
 namespace Magnum { namespace Audio {
 
-Debug operator<<(Debug debug, const Buffer::Format value) {
+Debug& operator<<(Debug& debug, const Buffer::Format value) {
     switch(value) {
         #define _c(value) case Buffer::Format::value: return debug << "Audio::Buffer::Format::" #value;
         _c(Mono8)

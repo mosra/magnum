@@ -534,12 +534,12 @@ MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(4, Color4)
 #endif
 
 /** @debugoperator{Magnum::Math::Color3} */
-template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Color3<T>& value) {
+template<class T> inline Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Color3<T>& value) {
     return debug << static_cast<const Vector3<T>&>(value);
 }
 
 /** @debugoperator{Magnum::Math::Color4} */
-template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Color4<T>& value) {
+template<class T> inline Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Color4<T>& value) {
     return debug << static_cast<const Vector4<T>&>(value);
 }
 

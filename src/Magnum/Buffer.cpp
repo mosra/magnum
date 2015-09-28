@@ -622,7 +622,7 @@ bool Buffer::unmapImplementationDSAEXT() {
 #endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-Debug operator<<(Debug debug, Buffer::TargetHint value) {
+Debug& operator<<(Debug& debug, Buffer::TargetHint value) {
     switch(value) {
         #define _c(value) case Buffer::TargetHint::value: return debug << "Buffer::TargetHint::" #value;
         _c(Array)
@@ -661,7 +661,7 @@ Debug operator<<(Debug debug, Buffer::TargetHint value) {
 
 #if !defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_BUILD_DEPRECATED)
 #ifndef DOXYGEN_GENERATING_OUTPUT
-Debug operator<<(Debug debug, Buffer::Target value) {
+Debug& operator<<(Debug& debug, Buffer::Target value) {
     switch(value) {
         #ifndef MAGNUM_TARGET_GLES2
         #define _c(value) case Buffer::Target::value: return debug << "Buffer::Target::" #value;

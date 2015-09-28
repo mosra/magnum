@@ -79,7 +79,7 @@ class MAGNUM_EXPORT AbstractMaterialData {
 };
 
 /** @debugoperatorenum{Magnum::Trade::MaterialType} */
-Debug MAGNUM_EXPORT operator<<(Debug debug, MaterialType value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, MaterialType value);
 
 }}
 

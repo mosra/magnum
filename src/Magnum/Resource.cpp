@@ -28,7 +28,7 @@
 namespace Magnum {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-Debug MAGNUM_EXPORT operator<<(Debug debug, ResourceState value) {
+Debug& operator<<(Debug& debug, const ResourceState value) {
     switch(value) {
         #define _c(value) case ResourceState::value: return debug << "ResourceState::" #value;
         _c(NotLoaded)

@@ -476,7 +476,7 @@ template<class T> inline Complex<T> operator/(T scalar, const Complex<T>& comple
 }
 
 /** @debugoperator{Magnum::Math::Complex} */
-template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Complex<T>& value) {
+template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Complex<T>& value) {
     debug << "Complex(";
     debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);
     debug << value.real() << ", " << value.imaginary() << ")";
@@ -486,9 +486,9 @@ template<class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug deb
 
 /* Explicit instantiation for commonly used types */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Complex<Float>&);
+extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Complex<Float>&);
 #ifndef MAGNUM_TARGET_GLES
-extern template Corrade::Utility::Debug MAGNUM_EXPORT operator<<(Corrade::Utility::Debug, const Complex<Double>&);
+extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Complex<Double>&);
 #endif
 #endif
 

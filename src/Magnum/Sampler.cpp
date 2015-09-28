@@ -61,7 +61,7 @@ Float Sampler::maxMaxAnisotropy() {
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-Debug operator<<(Debug debug, const Sampler::Filter value) {
+Debug& operator<<(Debug& debug, const Sampler::Filter value) {
     switch(value) {
         #define _c(value) case Sampler::Filter::value: return debug << "Sampler::Filter::" #value;
         _c(Nearest)
@@ -72,7 +72,7 @@ Debug operator<<(Debug debug, const Sampler::Filter value) {
     return debug << "Sampler::Filter::(invalid)";
 }
 
-Debug operator<<(Debug debug, const Sampler::Mipmap value) {
+Debug& operator<<(Debug& debug, const Sampler::Mipmap value) {
     switch(value) {
         #define _c(value) case Sampler::Mipmap::value: return debug << "Sampler::Mipmap::" #value;
         _c(Base)
@@ -84,7 +84,7 @@ Debug operator<<(Debug debug, const Sampler::Mipmap value) {
     return debug << "Sampler::Mipmap::(invalid)";
 }
 
-Debug operator<<(Debug debug, const Sampler::Wrapping value) {
+Debug& operator<<(Debug& debug, const Sampler::Wrapping value) {
     switch(value) {
         #define _c(value) case Sampler::Wrapping::value: return debug << "Sampler::Wrapping::" #value;
         _c(Repeat)
@@ -103,7 +103,7 @@ Debug operator<<(Debug debug, const Sampler::Wrapping value) {
 }
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-Debug operator<<(Debug debug, const Sampler::CompareMode value) {
+Debug& operator<<(Debug& debug, const Sampler::CompareMode value) {
     switch(value) {
         #define _c(value) case Sampler::CompareMode::value: return debug << "Sampler::CompareMode::" #value;
         _c(None)
@@ -114,7 +114,7 @@ Debug operator<<(Debug debug, const Sampler::CompareMode value) {
     return debug << "Sampler::CompareFunction::(invalid)";
 }
 
-Debug operator<<(Debug debug, const Sampler::CompareFunction value) {
+Debug& operator<<(Debug& debug, const Sampler::CompareFunction value) {
     switch(value) {
         #define _c(value) case Sampler::CompareFunction::value: return debug << "Sampler::CompareFunction::" #value;
         _c(Never)
@@ -133,7 +133,7 @@ Debug operator<<(Debug debug, const Sampler::CompareFunction value) {
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-Debug operator<<(Debug debug, const Sampler::DepthStencilMode value) {
+Debug& operator<<(Debug& debug, const Sampler::DepthStencilMode value) {
     switch(value) {
         #define _c(value) case Sampler::DepthStencilMode::value: return debug << "Sampler::DepthStencilMode::" #value;
         _c(DepthComponent)

@@ -267,7 +267,7 @@ MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(3, Vector3)
 #endif
 
 /** @debugoperator{Magnum::Math::Vector3} */
-template<class T> inline Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Vector3<T>& value) {
+template<class T> inline Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Vector3<T>& value) {
     return debug << static_cast<const Vector<3, T>&>(value);
 }
 

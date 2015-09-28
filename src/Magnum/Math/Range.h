@@ -529,7 +529,7 @@ template<class T> class Range3D: public Range<3, T> {
 };
 
 /** @debugoperator{Magnum::Math::Range} */
-template<UnsignedInt dimensions, class T> Corrade::Utility::Debug operator<<(Corrade::Utility::Debug debug, const Range<dimensions, T>& value) {
+template<UnsignedInt dimensions, class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Range<dimensions, T>& value) {
     debug << "Range({";
     debug.setFlag(Corrade::Utility::Debug::SpaceAfterEachValue, false);
     debug << value.min()[0];

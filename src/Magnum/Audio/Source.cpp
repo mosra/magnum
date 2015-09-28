@@ -96,7 +96,7 @@ void Source::rewind(const std::vector<std::reference_wrapper<Source>>& sources) 
     alSourceRewindv(ids.size(), ids);
 }
 
-Debug operator<<(Debug debug, const Source::State value) {
+Debug& operator<<(Debug& debug, const Source::State value) {
     switch(value) {
         #define _c(value) case Source::State::value: return debug << "Audio::Source::State::" #value;
         _c(Initial)

@@ -29,7 +29,7 @@
 
 namespace Magnum { namespace Shapes { namespace Implementation {
 
-Debug operator<<(Debug debug, ShapeDimensionTraits<2>::Type value) {
+Debug& operator<<(Debug& debug, ShapeDimensionTraits<2>::Type value) {
     switch(value) {
         #define _val(value) case ShapeDimensionTraits<2>::Type::value: return debug << "Shapes::Shape2D::Type::" #value;
         _val(Point)
@@ -48,7 +48,7 @@ Debug operator<<(Debug debug, ShapeDimensionTraits<2>::Type value) {
     return debug << "Shapes::Shape2D::Type::(unknown)";
 }
 
-Debug operator<<(Debug debug, ShapeDimensionTraits<3>::Type value) {
+Debug& operator<<(Debug& debug, ShapeDimensionTraits<3>::Type value) {
     switch(value) {
         #define _val(value) case ShapeDimensionTraits<3>::Type::value: return debug << "Shapes::Shape3D::Type::" #value;
         _val(Point)

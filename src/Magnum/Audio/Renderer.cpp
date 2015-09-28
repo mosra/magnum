@@ -29,7 +29,7 @@
 
 namespace Magnum { namespace Audio {
 
-Debug operator<<(Debug debug, const Renderer::Error value) {
+Debug& operator<<(Debug& debug, const Renderer::Error value) {
     switch(value) {
         #define _c(value) case Renderer::Error::value: return debug << "Audio::Renderer::Error::" #value;
         _c(NoError)
@@ -44,7 +44,7 @@ Debug operator<<(Debug debug, const Renderer::Error value) {
     return debug << "Audio::Renderer::Error::(invalid)";
 }
 
-Debug operator<<(Debug debug, const Renderer::DistanceModel value) {
+Debug& operator<<(Debug& debug, const Renderer::DistanceModel value) {
     switch(value) {
         #define _c(value) case Renderer::DistanceModel::value: return debug << "Audio::Renderer::DistanceModel::" #value;
         _c(None)

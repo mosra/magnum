@@ -485,7 +485,7 @@ class MAGNUM_EXPORT Context {
 
 #ifndef MAGNUM_TARGET_WEBGL
 /** @debugoperatorclassenum{Magnum::Context,Magnum::Context::Flag} */
-MAGNUM_EXPORT Debug operator<<(Debug debug, Context::Flag value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, Context::Flag value);
 #endif
 
 /** @hideinitializer

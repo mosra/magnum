@@ -785,7 +785,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
 };
 
 /** @debugoperatorclassenum{Magnum::Framebuffer,Magnum::Framebuffer::Status} */
-Debug MAGNUM_EXPORT operator<<(Debug debug, Framebuffer::Status value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, Framebuffer::Status value);
 
 inline Framebuffer::Framebuffer(Framebuffer&& other) noexcept {
     _id = other._id;

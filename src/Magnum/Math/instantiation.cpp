@@ -84,24 +84,24 @@ template struct ConfigurationValue<Magnum::Math::Range<3, Magnum::Double>>;
 namespace Magnum { namespace Math {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Complex<Float>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Complex<Float>&);
 #ifndef MAGNUM_TARGET_GLES
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Complex<Double>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Complex<Double>&);
 #endif
 
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const DualComplex<Float>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const DualComplex<Float>&);
 #ifndef MAGNUM_TARGET_GLES
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const DualComplex<Double>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const DualComplex<Double>&);
 #endif
 
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const DualQuaternion<Float>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const DualQuaternion<Float>&);
 #ifndef MAGNUM_TARGET_GLES
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const DualQuaternion<Double>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const DualQuaternion<Double>&);
 #endif
 
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Quaternion<Float>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Quaternion<Float>&);
 #ifndef MAGNUM_TARGET_GLES
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Quaternion<Double>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Quaternion<Double>&);
 #endif
 
 /* Check proper size of GL types */
@@ -144,50 +144,50 @@ static_assert(sizeof(RectangularMatrix<3, 4, Double>) == 96, "Improper size of 3
 static_assert(sizeof(RectangularMatrix<4, 3, Double>) == 96, "Improper size of 4x3 Double matrix");
 #endif
 
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const RectangularMatrix<2, 2, Float>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const RectangularMatrix<3, 3, Float>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const RectangularMatrix<4, 4, Float>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<2, 2, Float>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<3, 3, Float>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<4, 4, Float>&);
 #ifndef MAGNUM_TARGET_GLES
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const RectangularMatrix<2, 2, Double>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const RectangularMatrix<3, 3, Double>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const RectangularMatrix<4, 4, Double>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<2, 2, Double>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<3, 3, Double>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<4, 4, Double>&);
 #endif
 
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const RectangularMatrix<2, 3, Float>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const RectangularMatrix<3, 2, Float>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const RectangularMatrix<2, 4, Float>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const RectangularMatrix<4, 2, Float>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const RectangularMatrix<3, 4, Float>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const RectangularMatrix<4, 3, Float>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<2, 3, Float>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<3, 2, Float>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<2, 4, Float>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<4, 2, Float>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<3, 4, Float>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<4, 3, Float>&);
 #ifndef MAGNUM_TARGET_GLES
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const RectangularMatrix<2, 3, Double>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const RectangularMatrix<3, 2, Double>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const RectangularMatrix<2, 4, Double>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const RectangularMatrix<4, 2, Double>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const RectangularMatrix<3, 4, Double>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const RectangularMatrix<4, 3, Double>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<2, 3, Double>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<3, 2, Double>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<2, 4, Double>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<4, 2, Double>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<3, 4, Double>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<4, 3, Double>&);
 #endif
 
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Unit<Rad, Float>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Unit<Deg, Float>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Unit<Rad, Float>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Unit<Deg, Float>&);
 #ifndef MAGNUM_TARGET_GLES
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Unit<Rad, Double>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Unit<Deg, Double>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Unit<Rad, Double>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Unit<Deg, Double>&);
 #endif
 
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Vector<2, Float>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Vector<3, Float>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Vector<4, Float>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Vector<2, Int>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Vector<3, Int>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Vector<4, Int>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Vector<2, UnsignedInt>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Vector<3, UnsignedInt>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Vector<4, UnsignedInt>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<2, Float>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<3, Float>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<4, Float>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<2, Int>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<3, Int>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<4, Int>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<2, UnsignedInt>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<3, UnsignedInt>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<4, UnsignedInt>&);
 #ifndef MAGNUM_TARGET_GLES
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Vector<2, Double>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Vector<3, Double>&);
-template Corrade::Utility::Debug operator<<(Corrade::Utility::Debug, const Vector<4, Double>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<2, Double>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<3, Double>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<4, Double>&);
 #endif
 #endif
 

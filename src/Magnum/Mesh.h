@@ -1018,10 +1018,10 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
 };
 
 /** @debugoperatorenum{Magnum::MeshPrimitive} */
-Debug MAGNUM_EXPORT operator<<(Debug debug, MeshPrimitive value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, MeshPrimitive value);
 
 /** @debugoperatorclassenum{Magnum::Mesh,Magnum::Mesh::IndexType} */
-Debug MAGNUM_EXPORT operator<<(Debug debug, Mesh::IndexType value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, Mesh::IndexType value);
 
 inline GLuint Mesh::release() {
     const GLuint id = _id;

@@ -123,7 +123,7 @@ class MAGNUM_EXPORT ObjectData3D {
 };
 
 /** @debugoperatorenum{Magnum::Trade::ObjectInstanceType3D} */
-Debug MAGNUM_EXPORT operator<<(Debug debug, ObjectInstanceType3D value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, ObjectInstanceType3D value);
 
 }}
 

@@ -238,7 +238,7 @@ Renderer::GraphicsResetStatus Renderer::graphicsResetStatusImplementationRobustn
 #endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-Debug operator<<(Debug debug, const Renderer::Error value) {
+Debug& operator<<(Debug& debug, const Renderer::Error value) {
     switch(value) {
         #define _c(value) case Renderer::Error::value: return debug << "Renderer::Error::" #value;
         _c(NoError)
@@ -258,7 +258,7 @@ Debug operator<<(Debug debug, const Renderer::Error value) {
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
-Debug operator<<(Debug debug, const Renderer::ResetNotificationStrategy value) {
+Debug& operator<<(Debug& debug, const Renderer::ResetNotificationStrategy value) {
     switch(value) {
         #define _c(value) case Renderer::ResetNotificationStrategy::value: return debug << "Renderer::ResetNotificationStrategy::" #value;
         _c(NoResetNotification)
@@ -269,7 +269,7 @@ Debug operator<<(Debug debug, const Renderer::ResetNotificationStrategy value) {
     return debug << "Renderer::ResetNotificationStrategy::(invalid)";
 }
 
-Debug operator<<(Debug debug, const Renderer::GraphicsResetStatus value) {
+Debug& operator<<(Debug& debug, const Renderer::GraphicsResetStatus value) {
     switch(value) {
         #define _c(value) case Renderer::GraphicsResetStatus::value: return debug << "Renderer::GraphicsResetStatus::" #value;
         _c(NoError)

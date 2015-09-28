@@ -1193,13 +1193,13 @@ enum class CompressedPixelFormat: GLenum {
 };
 
 /** @debugoperatorenum{Magnum::PixelFormat} */
-Debug MAGNUM_EXPORT operator<<(Debug debug, PixelFormat value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, PixelFormat value);
 
 /** @debugoperatorenum{Magnum::PixelType} */
-Debug MAGNUM_EXPORT operator<<(Debug debug, PixelType value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, PixelType value);
 
 /** @debugoperatorenum{Magnum::CompressedPixelFormat} */
-Debug MAGNUM_EXPORT operator<<(Debug debug, CompressedPixelFormat value);
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, CompressedPixelFormat value);
 
 }
 
