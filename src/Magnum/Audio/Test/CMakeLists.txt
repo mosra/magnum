@@ -3,6 +3,7 @@
 #
 #   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
 #             Vladimír Vondruš <mosra@centrum.cz>
+#   Copyright © 2015 Jonathan Hale <squareys@googlemail.com>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -32,3 +33,7 @@ corrade_add_test(AudioAbstractImporterTest AbstractImporterTest.cpp LIBRARIES Ma
 corrade_add_test(AudioBufferTest BufferTest.cpp LIBRARIES MagnumAudio)
 corrade_add_test(AudioRendererTest RendererTest.cpp LIBRARIES MagnumAudio)
 corrade_add_test(AudioSourceTest SourceTest.cpp LIBRARIES MagnumAudio)
+
+if(WITH_SCENEGRAPH)
+    corrade_add_test(AudioListenerTest ListenerTest.cpp LIBRARIES MagnumSceneGraph MagnumAudio)
+endif()

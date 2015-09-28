@@ -29,6 +29,8 @@
  * @brief Forward declarations for @ref Magnum::Audio namespace
  */
 
+#include <Magnum/Magnum.h>
+
 namespace Magnum { namespace Audio {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -38,6 +40,14 @@ class Context;
 class Source;
 /* Renderer used only statically */
 #endif
+
+template<UnsignedInt> class Playable;
+using Playable2D = Playable<2>;
+using Playable3D = Playable<3>;
+
+template<UnsignedInt> class PlayableGroup;
+using PlayableGroup2D = PlayableGroup<2>;
+using PlayableGroup3D = PlayableGroup<3>;
 
 }}
 
