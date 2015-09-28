@@ -532,6 +532,11 @@ named `PKGBUILD-android-arm` and `PKGBUILD-android-x86`, see
 
 @section building-ci Continuous Integration
 
+@subsection building-ci-travis Travis
+
+In `package/ci/` there is `travis.yml` file with Linux GCC 4.7 and OSX Clang
+configuration. Online at https://travis-ci.org/mosra/magnum.
+
 @subsection building-ci-appveyor AppVeyor
 
 In `package/ci/` there is `appveyor.yml` file with Windows MSVC configuration.
