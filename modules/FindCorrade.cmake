@@ -43,6 +43,7 @@
 #   (Linux, BSD, OS X)
 #  CORRADE_TARGET_APPLE         - Defined if compiled for OS X
 #  CORRADE_TARGET_WINDOWS       - Defined if compiled for Windows
+#  CORRADE_TARGET_WINDOWS_RT    - Defined if compiled for Windows RT
 #  CORRADE_TARGET_NACL          - Defined if compiled for Google Chrome
 #   Native Client
 #  CORRADE_TARGET_NACL_NEWLIB   - Defined if compiled for Google Chrome
@@ -199,6 +200,7 @@ set(_corradeFlags
     TARGET_UNIX
     TARGET_APPLE
     TARGET_WINDOWS
+    TARGET_WINDOWS_RT
     TARGET_NACL
     TARGET_NACL_NEWLIB
     TARGET_NACL_GLIBC
