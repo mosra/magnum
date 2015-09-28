@@ -47,8 +47,12 @@ set(MagnumAudio_HEADERS
 
 if(WITH_SCENEGRAPH)
     list(APPEND MagnumAudio_HEADERS
+        Listener.h
         Playable.h
         PlayableGroup.h)
+
+    list(APPEND MagnumAudio_SRCS
+        Listener.cpp)
 endif()
 
 # Audio library

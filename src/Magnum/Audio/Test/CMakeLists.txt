@@ -36,4 +36,5 @@ corrade_add_test(AudioSourceTest SourceTest.cpp LIBRARIES MagnumAudio)
 
 if(WITH_SCENEGRAPH)
     corrade_add_test(AudioListenerTest ListenerTest.cpp LIBRARIES MagnumSceneGraph MagnumAudio)
+    corrade_add_test(AudioPlayableTest PlayableTest.cpp LIBRARIES MagnumSceneGraph MagnumAudio)
 endif()

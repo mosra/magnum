@@ -49,6 +49,10 @@ template<UnsignedInt> class PlayableGroup;
 using PlayableGroup2D = PlayableGroup<2>;
 using PlayableGroup3D = PlayableGroup<3>;
 
+template<UnsignedInt> class Listener;
+using Listener2D = Listener<2>;
+using Listener3D = Listener<3>;
+
 }}
 
 #endif
