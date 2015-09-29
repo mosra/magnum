@@ -117,10 +117,7 @@ template<UnsignedInt dimensions> class PlayableGroup: public SceneGraph::Feature
             return *this;
         }
 
-        /**
-         * @brief Gain
-         * @see @ref PlayableGroup::setGain()
-         */
+        /** @brief Gain */
         Float gain() const {
             return _gain;
         }
@@ -134,7 +131,6 @@ template<UnsignedInt dimensions> class PlayableGroup: public SceneGraph::Feature
          * `sourceGain = playableGain*groupGain`. Default of the groups gain
          * is `1.0f`.
          * @return Reference to self (for method chaining)
-         * @see @ref PlayableGroup::gain()
          */
         PlayableGroup& setGain(const Float gain) {
             _gain = gain;
@@ -144,10 +140,7 @@ template<UnsignedInt dimensions> class PlayableGroup: public SceneGraph::Feature
             return *this;
         }
 
-        /**
-         * @brief Sound transformation
-         * @see @ref PlayableGroup::setSoundTransformation()
-         */
+        /** @brief Sound transformation */
         const Matrix4& soundTransformation() const {
             return _soundTransform;
         }
@@ -155,7 +148,6 @@ template<UnsignedInt dimensions> class PlayableGroup: public SceneGraph::Feature
         /**
          * @brief Set transformation of the sounds in this group
          * @return Reference to self (for method chaining)
-         * @see @ref PlayableGroup::soundTransformation()
          */
         PlayableGroup& setSoundTransformation(const Matrix4& matrix);
 

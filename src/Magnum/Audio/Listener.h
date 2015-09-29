@@ -132,10 +132,7 @@ template <UnsignedInt dimensions> class Listener: public SceneGraph::AbstractFea
             SceneGraph::AbstractFeature<dimensions, Float>::setCachedTransformations(SceneGraph::CachedTransformation::Absolute);
         }
 
-        /**
-         * @brief Sound transformation
-         * @see @ref Listener::setSoundTransformation()
-         */
+        /** @brief Sound transformation */
         const Matrix4& soundTransformation() const {
             return _soundTransformation;
         }
@@ -145,7 +142,6 @@ template <UnsignedInt dimensions> class Listener: public SceneGraph::AbstractFea
          * @param soundTransformation Transformation for transforming from
          *        world to listener space
          * @return Reference to self (for method chaining)
-         * @see @ref Listener::soundTransformation()
          */
         Listener<dimensions>& setSoundTransformation(const Matrix4& soundTransformation) {
             _soundTransformation = soundTransformation;
@@ -164,10 +160,7 @@ template <UnsignedInt dimensions> class Listener: public SceneGraph::AbstractFea
          */
         void update(std::initializer_list<std::reference_wrapper<PlayableGroup<dimensions>>> groups);
 
-        /**
-         * @brief Listener gain
-         * @see @ref Listener::setGain()
-         */
+        /** @brief Listener gain */
         Float gain() const {
             return _gain;
         }
@@ -176,7 +169,6 @@ template <UnsignedInt dimensions> class Listener: public SceneGraph::AbstractFea
          * @brief Set listener gain
          * @param gain Gain
          * @return Reference to self (for method chaining)
-         * @see @ref Listener::gain()
          */
         Listener<dimensions>& setGain(Float gain) {
             _gain = gain;

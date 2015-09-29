@@ -107,10 +107,7 @@ template<UnsignedInt dimensions> class Playable: public SceneGraph::AbstractGrou
             return _source;
         }
 
-        /**
-         * @brief Gain
-         * @see @ref Playable::setGain()
-         */
+        /** @brief Gain */
         Float gain() const {
             return _gain;
         }
@@ -122,7 +119,6 @@ template<UnsignedInt dimensions> class Playable: public SceneGraph::AbstractGrou
          * The sources gain is computed as `sourceGain = playableGain*groupGain`.
          * Default for the playables gain is `1.0f`.
          * @see @ref PlayableGroup::setGain(), @ref Source::setGain()
-         * @see @ref Playable::gain()
          */
         Playable& setGain(const Float gain) {
             _gain = gain;

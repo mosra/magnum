@@ -85,7 +85,7 @@ class MAGNUM_AUDIO_EXPORT Source {
 
         /**
          * @brief Position
-         * @see @ref setPosition(), @fn_al{GetSourcefv} with @def_al{POSITION}
+         * @see @fn_al{GetSourcefv} with @def_al{POSITION}
          */
         Vector3 position() const {
             Vector3 v;
@@ -115,7 +115,7 @@ class MAGNUM_AUDIO_EXPORT Source {
 
         /**
          * @brief Velocity
-         * @see @ref setVelocity(), @fn_al{GetSourcefv} with @def_al{VELOCITY}
+         * @see @fn_al{GetSourcefv} with @def_al{VELOCITY}
          */
         Vector3 velocity() const {
             Vector3 v;
@@ -145,7 +145,7 @@ class MAGNUM_AUDIO_EXPORT Source {
 
         /**
          * @brief Whether the source is interpreted relative to the listener
-         * @see @ref setRelative(), @ref position(), @ref direction(), @ref velocity(),
+         * @see @ref position(), @ref direction(), @ref velocity(),
          *      @fn_al{GetSourcei} with @def_al{SOURCE_RELATIVE}
          */
         bool isRelative() const {
@@ -173,7 +173,7 @@ class MAGNUM_AUDIO_EXPORT Source {
 
         /**
          * @brief Gain
-         * @see @ref setGain(), @fn_al{GetSourcef} with @def_al{GAIN}
+         * @see @fn_al{GetSourcef} with @def_al{GAIN}
          */
         Float gain() const {
             Float gain;
@@ -197,7 +197,7 @@ class MAGNUM_AUDIO_EXPORT Source {
 
         /**
          * @brief Minimal gain to clamp to
-         * @see @ref setMinGain(), @ref setMaxGain(), @ref setGain(), @ref maxGain(),
+         * @see @ref setMaxGain(), @ref setGain(), @ref maxGain(),
          *      @ref gain(), @fn_al{GetSourcef} with @def_al{MIN_GAIN}
          */
         Float minGain() const {
@@ -213,7 +213,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * If effective gain is lower than min gain, min gain is used. Note
          * that this is done before listener gain is applied. Default is
          * `0.0f`.
-         * @see @ref setMinGain(), @ref setGain(), @fn_al{Sourcef} with
+         * @see @ref setMaxGain(), @ref setGain(), @fn_al{Sourcef} with
          *      @def_al{MIN_GAIN}
          */
         Source& setMinGain(Float gain) {
@@ -223,7 +223,7 @@ class MAGNUM_AUDIO_EXPORT Source {
 
         /**
          * @brief Maximal gain to clamp to
-         * @see @ref setMaxGain(), @ref setMinGain(), @ref setGain(), @ref maxGain(),
+         * @see @ref setMinGain(), @ref setGain(), @ref maxGain(),
          *      @ref gain(), @fn_al{GetSourcef} with @def_al{MAX_GAIN}
          */
         Float maxGain() const {
@@ -249,7 +249,7 @@ class MAGNUM_AUDIO_EXPORT Source {
 
         /**
          * @brief Reference distance
-         * @see @ref setReferenceDistance(), @fn_al{GetSourcef} with @def_al{REFERENCE_DISTANCE}
+         * @see @fn_al{GetSourcef} with @def_al{REFERENCE_DISTANCE}
          */
         Float referenceDistance() const {
             Float distance;
@@ -282,7 +282,7 @@ class MAGNUM_AUDIO_EXPORT Source {
 
         /**
          * @brief Rolloff factor
-         * @see @ref setRolloffFactor(), @fn_al{GetSourcef} with @def_al{ROLLOFF_FACTOR}
+         * @see @fn_al{GetSourcef} with @def_al{ROLLOFF_FACTOR}
          */
         Float rolloffFactor() const {
             Float factor;
@@ -343,7 +343,7 @@ class MAGNUM_AUDIO_EXPORT Source {
 
         /**
          * @brief Direction
-         * @see @ref setDirection(), @fn_al{GetSourcefv} with @def_al{DIRECTION}
+         * @see @fn_al{GetSourcefv} with @def_al{DIRECTION}
          */
         Vector3 direction() const {
             Vector3 direction;
@@ -375,7 +375,7 @@ class MAGNUM_AUDIO_EXPORT Source {
 
         /**
          * @brief Inner cone angle
-         * @see @ref setInnerConeAngle(), @fn_al{GetSourcef} with @def_al{CONE_INNER_ANGLE}
+         * @see @fn_al{GetSourcef} with @def_al{CONE_INNER_ANGLE}
          */
         Deg innerConeAngle() const {
             Float angle;
@@ -399,7 +399,7 @@ class MAGNUM_AUDIO_EXPORT Source {
 
         /**
          * @brief Outer cone angle
-         * @see @ref setOuterConeAngle(), @fn_al{GetSourcef} with @def_al{CONE_OUTER_ANGLE}
+         * @see @fn_al{GetSourcef} with @def_al{CONE_OUTER_ANGLE}
          */
         Deg outerConeAngle() const {
             Float angle;
@@ -424,7 +424,7 @@ class MAGNUM_AUDIO_EXPORT Source {
 
         /**
          * @brief Outer cone gain
-         * @see @ref setOuterConeGain(), @fn_al{GetSourcef} with @def_al{CONE_OUTER_GAIN}
+         * @see @fn_al{GetSourcef} with @def_al{CONE_OUTER_GAIN}
          */
         Float outerConeGain() const {
             Float gain;
@@ -448,7 +448,7 @@ class MAGNUM_AUDIO_EXPORT Source {
 
         /**
          * @brief Pitch
-         * @see @ref setPitch(), @fn_al{GetSourcef} with @def_al{PITCH}
+         * @see @fn_al{GetSourcef} with @def_al{PITCH}
          */
         Float pitch() const {
             Float pitch;
