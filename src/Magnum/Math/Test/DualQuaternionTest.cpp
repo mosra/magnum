@@ -86,6 +86,8 @@ struct DualQuaternionTest: Corrade::TestSuite::Tester {
     void transformPoint();
     void transformPointNormalized();
 
+    void sclerp();
+
     void debug();
 };
 
@@ -124,6 +126,8 @@ DualQuaternionTest::DualQuaternionTest() {
               &DualQuaternionTest::matrix,
               &DualQuaternionTest::transformPoint,
               &DualQuaternionTest::transformPointNormalized,
+
+              &DualQuaternionTest::sclerp,
 
               &DualQuaternionTest::debug});
 }
@@ -381,6 +385,27 @@ void DualQuaternionTest::debug() {
 
     Debug(&o) << DualQuaternion({{1.0f, 2.0f, 3.0f}, -4.0f}, {{0.5f, -3.1f, 3.3f}, 2.0f});
     CORRADE_COMPARE(o.str(), "DualQuaternion({{1, 2, 3}, -4}, {{0.5, -3.1, 3.3}, 2})\n");
+}
+
+void DualQuaternionTest::sclerp() {
+
+    const DualQuaternion from = DualQuaternion::translation(Vector3{20.0f, .0f, .0f})*DualQuaternion::rotation(180.0_degf, Vector3{.0f, 1.0f, .0f});
+    const DualQuaternion to = DualQuaternion::translation(Vector3{42.0f, 42.0f, 42.0f})*DualQuaternion::rotation(75.0_degf, Vector3{1.0f, .0f, .0f});
+
+    constexpr DualQuaternion expected1{Quaternion{{.23296291314453416f, .9238795325112867f, .0f}, .303603179340959f},
+                                       Quaternion{{2.235619101917766f, 2.8169719855488395f, 10.722240915237789f}, -10.287636336847847f}};
+    constexpr DualQuaternion expected2{Quaternion{{.4437679833315842f, .6845471059286887f, .0f}, .5783296955322937f},
+                                       Quaternion{{5.764394870292371f, 11.161306653193549f, 9.671267015501789f}, -17.634394590712066f}};
+    constexpr DualQuaternion expected3{Quaternion{{.5979785904506439f, .18738131458572468f, .0f}, .7793008714910992f},
+                                       Quaternion{{13.409627907069353f, 25.452124456683414f, 5.681581047706807f}, -16.409481115504978f}};
+
+    const DualQuaternion interp1 = Math::sclerp(from, to, 0.25f);
+    const DualQuaternion interp2 = Math::sclerp(from, to, 0.52f);
+    const DualQuaternion interp3 = Math::sclerp(from, to, 0.88f);
+
+    CORRADE_COMPARE(interp1, expected1);
+    CORRADE_COMPARE(interp2, expected2);
+    CORRADE_COMPARE(interp3, expected3);
 }
 
 }}}
