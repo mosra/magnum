@@ -135,13 +135,13 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
         /* First try to create core context. This is needed mainly on OS X and
            Mesa, as support for recent OpenGL versions isn't implemented in
            compatibility contexts (which are the default). At least GL 3.2 is
-           needed on OSX, at least GL 3.0 is needed on Mesa. Bite the bullet
-           and try 3.0 also elsewhere. */
+           needed on OSX, at least GL 3.1 is needed on Mesa. Bite the bullet
+           and try 3.1 also elsewhere. */
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
         #ifdef CORRADE_TARGET_APPLE
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
         #else
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
         #endif
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
