@@ -83,12 +83,29 @@ bool WindowlessGlxApplication::tryCreateContext(const Configuration&) {
         #endif
         GLX_CONTEXT_MINOR_VERSION_ARB, 0,
         GLX_CONTEXT_PROFILE_MASK_ARB, GLX_CONTEXT_ES2_PROFILE_BIT_EXT,
+        #else
+        /* Similarly to what's done in Sdl2Application, try to request core
+           context first */
+        GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
+        GLX_CONTEXT_MINOR_VERSION_ARB, 1,
+        GLX_CONTEXT_PROFILE_MASK_ARB, GLX_CONTEXT_CORE_PROFILE_BIT_ARB,
         #endif
         0
     };
 
     PFNGLXCREATECONTEXTATTRIBSARBPROC glXCreateContextAttribsARB = (PFNGLXCREATECONTEXTATTRIBSARBPROC) glXGetProcAddress((const GLubyte*)"glXCreateContextAttribsARB");
     _glContext = glXCreateContextAttribsARB(_display, configs[0], nullptr, True, contextAttributes);
+
+    #ifndef MAGNUM_TARGET_GLES
+    /* Fall back to (forward compatible) GL 2.1, if core context creation fails
+       and if version is not user-specified */
+    if(!_glContext) {
+        Warning() << "Platform::WindowlessGlxApplication::tryCreateContext(): cannot create core context, falling back to compatibility context";
+
+        _glContext = glXCreateContextAttribsARB(_display, configs[0], nullptr, True, contextAttributes);
+    }
+    #endif
+
     if(!_glContext) {
         Error() << "Platform::WindowlessGlxApplication::tryCreateContext(): cannot create context";
         return false;
