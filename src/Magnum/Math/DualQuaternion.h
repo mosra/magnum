@@ -69,26 +69,22 @@ template<class T> inline DualQuaternion<T> sclerp(const DualQuaternion<T>& from,
     /* Multiplying with -1.0f ensures shortest path when dot < 0. */
     const DualQuaternion<T> diff = from.quaternionConjugated()*((dotResult < .0) ? -to : to);
 
-    const Vector3<T> diffReal = diff.real().vector();
-    const Vector3<T> diffDual = diff.dual().vector();
+    const T angle = acos(diff.real().scalar())*t;
+    const T sinAngle = sin(angle);
+    const T cosAngle = cos(angle);
 
+    const Vector3<T>& diffReal = diff.real().vector();
     const T invr = 1/std::sqrt(diffReal.dot());
-
-    T angle = 2*acos(diff.real().scalar());
-    T pitch = -2*diff.dual().scalar()*invr;
     const Vector3<T> direction = diffReal*invr;
-    const Vector3<T> moment = (diffDual - (direction*(pitch*diff.real().scalar()*.5f)))*invr;
-
-    angle *= t;
-    pitch *= t;
-
-    const T sinAngle = sin(.5f*angle);
-    const T cosAngle = cos(.5f*angle);
 
     const Vector3<T> v = direction*sinAngle;
-    const Vector3<T> v2 = moment*sinAngle + direction*(pitch*.5f*cosAngle);
 
-    return from*DualQuaternion<T>{Quaternion<T>{v, cosAngle}, Quaternion<T>{v2, -pitch*.5f*sinAngle}};
+    T pitch = -diff.dual().scalar()*invr;
+    const Vector3<T> moment = (diff.dual().vector() - (direction*(pitch*diff.real().scalar())))*invr;
+    pitch *= t;
+    const Vector3<T> v2 = moment*sinAngle + direction*(pitch*cosAngle);
+
+    return from*DualQuaternion<T>{Quaternion<T>{v, cosAngle}, Quaternion<T>{v2, -pitch*sinAngle}};
 }
 
 /**
