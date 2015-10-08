@@ -67,21 +67,32 @@ template<class T> inline DualQuaternion<T> sclerp(const DualQuaternion<T>& from,
     const T dotResult = dot(from.real().vector(), to.real().vector());
 
     /* Multiplying with -1.0f ensures shortest path when dot < 0. */
+    /* diff = \hat d = p^*q */
     const DualQuaternion<T> diff = from.quaternionConjugated()*((dotResult < .0) ? -to : to);
 
+    /* angle = t \hat a_D */
     const T angle = acos(diff.real().scalar())*t;
+    /* precompute sin/cos for manifold use */
     const T sinAngle = sin(angle);
     const T cosAngle = cos(angle);
 
-    const Vector3<T>& diffReal = diff.real().vector();
-    const T invr = 1/std::sqrt(diffReal.dot());
-    const Vector3<T> direction = diffReal*invr;
+    /* merely a shortcut */
+    const Vector3<T>& m = diff.real().vector();
+    /* invr = \frac 1 {|l_V|} */
+    const T invr = 1/m.length();
+    /* direction = \hat {\boldsymbol n} = \hat l_V \frac 1 {|l_V|} */
+    const Vector3<T> direction = m*invr;
 
+    /* Vector of real part of q_{ScLERP}
+       = \hat {\boldsymbol n}_R \cdot sin \left( t \frac {\hat a_R} 2 \right)*/
     const Vector3<T> v = direction*sinAngle;
 
+    /* pitch = \frac {\hat a_D} 2 = m_S \frac 1 {|l_V|} */
     T pitch = -diff.dual().scalar()*invr;
+    /* moment = \hat {\boldsymbol n}_D */
     const Vector3<T> moment = (diff.dual().vector() - (direction*(pitch*diff.real().scalar())))*invr;
     pitch *= t;
+    /* Vector of dual part of q_{ScLERP} */
     const Vector3<T> v2 = moment*sinAngle + direction*(pitch*cosAngle);
 
     return from*DualQuaternion<T>{Quaternion<T>{v, cosAngle}, Quaternion<T>{v2, -pitch*sinAngle}};
