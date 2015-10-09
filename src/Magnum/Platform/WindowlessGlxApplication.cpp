@@ -135,6 +135,7 @@ WindowlessGlxApplication::~WindowlessGlxApplication() {
     _context.reset();
 
     glXMakeCurrent(_display, None, nullptr);
+    glXDestroyPbuffer(_display, _pbuffer);
     glXDestroyContext(_display, _glContext);
 }
 
