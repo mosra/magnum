@@ -25,6 +25,7 @@
 
 #include "WindowlessGlxApplication.h"
 
+#include <cstring>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
 
@@ -72,6 +73,14 @@ bool WindowlessGlxApplication::tryCreateContext(const Configuration&) {
         return false;
     }
 
+    /* Create pbuffer */
+    constexpr static const int pbufferAttributes[] = {
+        GLX_PBUFFER_WIDTH,  32,
+        GLX_PBUFFER_HEIGHT, 32,
+        None
+    };
+    _pbuffer = glXCreatePbuffer(_display, configs[0], pbufferAttributes);
+
     constexpr static const GLint contextAttributes[] = {
         #ifdef MAGNUM_TARGET_GLES
         #ifdef MAGNUM_TARGET_GLES3
@@ -89,6 +98,7 @@ bool WindowlessGlxApplication::tryCreateContext(const Configuration&) {
         GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
         GLX_CONTEXT_MINOR_VERSION_ARB, 1,
         GLX_CONTEXT_PROFILE_MASK_ARB, GLX_CONTEXT_CORE_PROFILE_BIT_ARB,
+        GLX_CONTEXT_FLAGS_ARB, GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
         #endif
         0
     };
@@ -97,29 +107,37 @@ bool WindowlessGlxApplication::tryCreateContext(const Configuration&) {
     _glContext = glXCreateContextAttribsARB(_display, configs[0], nullptr, True, contextAttributes);
 
     #ifndef MAGNUM_TARGET_GLES
-    /* Fall back to (forward compatible) GL 2.1, if core context creation fails
-       and if version is not user-specified */
-    if(!_glContext) {
-        Warning() << "Platform::WindowlessGlxApplication::tryCreateContext(): cannot create core context, falling back to compatibility context";
+    /* Fall back to (forward compatible) GL 2.1, if version is not
+       user-specified and either core context creation fails or we are on
+       binary NVidia drivers on Linux. NVidia, instead of creating
+       forward-compatible context with highest available version, forces the
+       version to the one specified, which is completely useless behavior. */
+    constexpr static const char nvidiaVendorString[] = "NVIDIA Corporation";
+    if(!_glContext
+        #ifndef CORRADE_TARGET_APPLE
+        /* We need to make the context current first, sorry about the ugly code */
+        || (glXMakeContextCurrent(_display, _pbuffer, _pbuffer, _glContext) && std::strncmp(reinterpret_cast<const char*>(glGetString(GL_VENDOR)), nvidiaVendorString, sizeof(nvidiaVendorString)) == 0)
+        #endif
+    ) {
+        /* Don't print any warning when doing the NV workaround, because the
+           bug will be there probably forever */
+        if(!_glContext) Warning()
+            << "Platform::WindowlessGlxApplication::tryCreateContext(): cannot create core context, falling back to compatibility context";
+        else {
+            glXMakeCurrent(_display, None, nullptr);
+            glXDestroyContext(_display, _glContext);
+        }
 
-        _glContext = glXCreateContextAttribsARB(_display, configs[0], nullptr, True, contextAttributes);
+        _glContext = glXCreateContextAttribsARB(_display, configs[0], nullptr, True, nullptr);
     }
     #endif
+
+    XFree(configs);
 
     if(!_glContext) {
         Error() << "Platform::WindowlessGlxApplication::tryCreateContext(): cannot create context";
         return false;
     }
-
-    /* Create pbuffer */
-    int pbufferAttributes[] = {
-        GLX_PBUFFER_WIDTH,  32,
-        GLX_PBUFFER_HEIGHT, 32,
-        None
-    };
-    _pbuffer = glXCreatePbuffer(_display, configs[0], pbufferAttributes);
-
-    XFree(configs);
 
     /* Set OpenGL context as current */
     if(!glXMakeContextCurrent(_display, _pbuffer, _pbuffer, _glContext)) {
