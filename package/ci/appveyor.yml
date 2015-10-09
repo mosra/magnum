@@ -15,6 +15,13 @@ environment:
   matrix:
   - BUILD_STATIC: OFF
 
+notifications:
+- provider: Webhook
+  url: https://webhooks.gitter.im/e/415ae90928ba0dbd3df4
+  on_build_success: false
+  on_build_failure: true
+  on_build_status_changed: true
+
 install:
 - call "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/vcvarsall.bat"
 - set PATH=C:/Sys/bin;C:/tools/ninja;%APPVEYOR_BUILD_FOLDER%/openal/bin/Win32;%PATH%
