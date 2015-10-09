@@ -191,6 +191,9 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
             Error() << "Platform::Sdl2Application::tryCreateContext(): cannot create window:" << SDL_GetError();
             return false;
         }
+
+        /* Create compatibility context */
+        _glContext = SDL_GL_CreateContext(_window);
     }
     #endif
 
