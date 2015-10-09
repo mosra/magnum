@@ -3,6 +3,8 @@ goal is to simplify low-level graphics development and interaction with OpenGL
 using recent C++11/C++14 features and to abstract away platform-specific
 issues.
 
+[![Join the chat at https://gitter.im/mosra/magnum](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mosra/magnum?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 DESIGN GOALS
 ============
 
