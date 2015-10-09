@@ -65,14 +65,14 @@ bool WindowlessGlxApplication::tryCreateContext(const Configuration&) {
 
     /* Choose config */
     int configCount = 0;
-    static const int fbAttributes[] = { None };
+    constexpr static const int fbAttributes[] = { None };
     GLXFBConfig* configs = glXChooseFBConfig(_display, DefaultScreen(_display), fbAttributes, &configCount);
     if(!configCount) {
         Error() << "Platform::WindowlessGlxApplication::tryCreateContext(): no supported framebuffer configuration found";
         return false;
     }
 
-    GLint contextAttributes[] = {
+    constexpr static const GLint contextAttributes[] = {
         #ifdef MAGNUM_TARGET_GLES
         #ifdef MAGNUM_TARGET_GLES3
         GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
@@ -93,7 +93,7 @@ bool WindowlessGlxApplication::tryCreateContext(const Configuration&) {
         0
     };
 
-    PFNGLXCREATECONTEXTATTRIBSARBPROC glXCreateContextAttribsARB = (PFNGLXCREATECONTEXTATTRIBSARBPROC) glXGetProcAddress((const GLubyte*)"glXCreateContextAttribsARB");
+    const PFNGLXCREATECONTEXTATTRIBSARBPROC glXCreateContextAttribsARB = (PFNGLXCREATECONTEXTATTRIBSARBPROC) glXGetProcAddress((const GLubyte*)"glXCreateContextAttribsARB");
     _glContext = glXCreateContextAttribsARB(_display, configs[0], nullptr, True, contextAttributes);
 
     #ifndef MAGNUM_TARGET_GLES
