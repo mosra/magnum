@@ -25,6 +25,7 @@
 
 #include "Sdl2Application.h"
 
+#include <cstring>
 #ifndef CORRADE_TARGET_EMSCRIPTEN
 #include <tuple>
 #else
@@ -135,16 +136,15 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
         /* First try to create core context. This is needed mainly on OS X and
            Mesa, as support for recent OpenGL versions isn't implemented in
            compatibility contexts (which are the default). At least GL 3.2 is
-           needed on OSX, at least GL 3.0 is needed on Mesa. Bite the bullet
-           and try 3.0 also elsewhere. */
+           needed on OSX, at least GL 3.1 is needed on Mesa. Bite the bullet
+           and try 3.1 also elsewhere. */
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
         #ifdef CORRADE_TARGET_APPLE
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
         #else
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
         #endif
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-
         #else
         /* For ES the major context version is compile-time constant */
         #ifdef MAGNUM_TARGET_GLES3
@@ -173,10 +173,24 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
     _glContext = SDL_GL_CreateContext(_window);
 
     #ifndef MAGNUM_TARGET_GLES
-    /* Fall back to (forward compatible) GL 2.1, if core context creation fails
-       and if version is not user-specified */
-    if(configuration.version() == Version::None && !_glContext) {
-        Warning() << "Platform::Sdl2Application::tryCreateContext(): cannot create core context:" << SDL_GetError() << "(falling back to compatibility context)";
+    /* Fall back to (forward compatible) GL 2.1, if version is not
+       user-specified and either core context creation fails or we are on
+       binary NVidia drivers on Linux/Windows. NVidia, instead of creating
+       forward-compatible context with highest available version, forces the
+       version to the one specified, which is completely useless behavior. */
+    constexpr static const char nvidiaVendorString[] = "NVIDIA Corporation";
+    if(configuration.version() == Version::None && (!_glContext
+        #ifndef CORRADE_TARGET_APPLE
+        || std::strncmp(reinterpret_cast<const char*>(glGetString(GL_VENDOR)), nvidiaVendorString, sizeof(nvidiaVendorString)) == 0
+        #endif
+    )) {
+        /* Don't print any warning when doing the NV workaround, because the
+           bug will be there probably forever */
+        if(!_glContext) Warning()
+            << "Platform::Sdl2Application::tryCreateContext(): cannot create core context:"
+            << SDL_GetError() << "(falling back to compatibility context)";
+        else SDL_GL_DeleteContext(_glContext);
+
         SDL_DestroyWindow(_window);
 
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
