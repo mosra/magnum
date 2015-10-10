@@ -65,7 +65,7 @@ template<UnsignedInt dimensions> void Listener<dimensions>::clean(const MatrixTy
 
     Renderer::setListenerGain(_gain);
 
-    // TODO: velocity
+    /** @todo velocity */
 }
 
 template<UnsignedInt dimensions> void Listener<dimensions>::update(std::initializer_list<std::reference_wrapper<PlayableGroup<dimensions>>> groups) {

@@ -149,7 +149,7 @@ template<UnsignedInt dimensions> class Playable: public SceneGraph::AbstractGrou
             _source.setPosition(position);
             _source.setDirection(Vector3::pad(absoluteTransformationMatrix.rotation()*_fwd));
 
-            // TODO: velocity
+            /** @todo velocity */
         }
 
         /* Update the gain of the underlying source to reflect changes in _group and/or _gain.
