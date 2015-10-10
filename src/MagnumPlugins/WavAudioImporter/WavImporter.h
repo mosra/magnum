@@ -57,8 +57,6 @@ class WavImporter: public AbstractImporter {
         /** @brief Plugin manager constructor */
         explicit WavImporter(PluginManager::AbstractManager& manager, std::string plugin);
 
-        ~WavImporter();
-
     private:
         Features doFeatures() const override;
         bool doIsOpened() const override;

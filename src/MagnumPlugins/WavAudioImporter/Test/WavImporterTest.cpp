@@ -26,6 +26,7 @@
 #include <sstream>
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/Directory.h>
 
 #include "MagnumPlugins/WavAudioImporter/WavImporter.h"
@@ -97,12 +98,9 @@ void WavImporterTest::mono16() {
 
     CORRADE_COMPARE(importer.format(), Buffer::Format::Mono16);
     CORRADE_COMPARE(importer.frequency(), 44000);
-    Containers::Array<char> data = importer.data();
-    CORRADE_COMPARE(data.size(), 4);
-    CORRADE_COMPARE(data[0], '\x1d');
-    CORRADE_COMPARE(data[1], '\x10');
-    CORRADE_COMPARE(data[2], '\x71');
-    CORRADE_COMPARE(data[3], '\xc5');
+    CORRADE_COMPARE_AS(importer.data(),
+        Containers::Array<char>::from('\x1d', '\x10', '\x71', '\xc5'),
+        TestSuite::Compare::Container);
 }
 
 void WavImporterTest::stereo8() {
@@ -111,12 +109,9 @@ void WavImporterTest::stereo8() {
 
     CORRADE_COMPARE(importer.format(), Buffer::Format::Stereo8);
     CORRADE_COMPARE(importer.frequency(), 96000);
-    Containers::Array<char> data = importer.data();
-    CORRADE_COMPARE(data.size(), 4);
-    CORRADE_COMPARE(data[0], '\xde');
-    CORRADE_COMPARE(data[1], '\xfe');
-    CORRADE_COMPARE(data[2], '\xca');
-    CORRADE_COMPARE(data[3], '\x7e');
+    CORRADE_COMPARE_AS(importer.data(),
+        Containers::Array<char>::from('\xde', '\xfe', '\xca', '\x7e'),
+        TestSuite::Compare::Container);
 }
 
 }}}
