@@ -30,3 +30,4 @@
 #endif
 
 #define WAV_FILE "${WAV_FILE}"
+#define OGG_FILE "${OGG_FILE}"

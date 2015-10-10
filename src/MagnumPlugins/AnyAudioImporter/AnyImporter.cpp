@@ -49,7 +49,9 @@ void AnyImporter::doOpenFile(const std::string& filename) {
 
     /* Detect type from extension */
     std::string plugin;
-    if(Utility::String::endsWith(filename, ".wav"))
+    if(Utility::String::endsWith(filename, ".ogg"))
+        plugin = "VorbisAudioImporter";
+    else if(Utility::String::endsWith(filename, ".wav"))
         plugin = "WavAudioImporter";
     else {
         Error() << "Audio::AnyImporter::openFile(): cannot determine type of file" << filename;

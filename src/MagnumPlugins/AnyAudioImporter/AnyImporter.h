@@ -52,6 +52,8 @@ information.
 
 Supported formats:
 
+-   OGG Vorbis (`*.ogg`), loaded with any plugin that provides
+    `VorbisAudioImporter`
 -   WAV (`*.wav`), loaded with @ref WavImporter "WavAudioImporter" or any other
     plugin that provides it
 
