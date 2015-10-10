@@ -96,8 +96,8 @@ bool WindowlessCglApplication::tryCreateContext(const Configuration&) {
         return false;
     }
 
-    _context.reset(new Platform::Context);
-    return true;
+    /* Return true if the initialization succeeds */
+    return !!(_context = Platform::Context::tryCreate());
 }
 
 WindowlessCglApplication::~WindowlessCglApplication() {

@@ -112,8 +112,8 @@ bool NaClApplication::tryCreateContext(const Configuration& configuration) {
     RequestInputEvents(PP_INPUTEVENT_CLASS_MOUSE|PP_INPUTEVENT_CLASS_WHEEL);
     RequestFilteringInputEvents(PP_INPUTEVENT_CLASS_KEYBOARD);
 
-    _context.reset(new Platform::Context);
-    return true;
+    /* Return true if the initialization succeeds */
+    return !!(_context = Platform::Context::tryCreate());
 }
 
 NaClApplication::~NaClApplication() = default;

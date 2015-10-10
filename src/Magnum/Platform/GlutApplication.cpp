@@ -96,8 +96,8 @@ bool GlutApplication::tryCreateContext(const Configuration& configuration) {
     glutMotionFunc(staticMouseMoveEvent);
     glutDisplayFunc(staticDrawEvent);
 
-    _context.reset(new Platform::Context);
-    return true;
+    /* Return true if the initialization succeeds */
+    return !!(_context = Platform::Context::tryCreate());
 }
 
 GlutApplication::~GlutApplication() = default;

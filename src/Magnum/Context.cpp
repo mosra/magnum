@@ -402,10 +402,19 @@ const std::vector<Extension>& Extension::extensions(Version version) {
 
 Context* Context::_current = nullptr;
 
-Context::Context(void functionLoader()) {
+Context::Context(NoCreateT, void functionLoader()) {
     /* Load GL function pointers */
     if(functionLoader) functionLoader();
 
+    /* Nothing else, waiting for create() to be called */
+}
+
+Context::Context(void functionLoader()): Context{NoCreateT{}, functionLoader} {
+    /* Hard exit if the context cannot be created */
+    if(!create()) std::exit(1);
+}
+
+bool Context::create() {
     GLint majorVersion, minorVersion;
 
     /* Get version on ES 3.0+/WebGL 2.0+ */
@@ -421,7 +430,7 @@ Context::Context(void functionLoader()) {
     const std::string version = versionString();
     if(version.find("WebGL 2") == std::string::npos) {
         Error() << "Context: unsupported version string:" << version;
-        std::exit(65);
+        return false;
     }
     majorVersion = 3;
     minorVersion = 0;
@@ -442,7 +451,7 @@ Context::Context(void functionLoader()) {
     {
         #ifndef MAGNUM_TARGET_GLES2
         CORRADE_ASSERT(versionNumberError == Renderer::Error::InvalidEnum,
-            "Context: cannot retrieve OpenGL version:" << versionNumberError, );
+            "Context: cannot retrieve OpenGL version:" << versionNumberError, false);
         #endif
 
         /* Allow ES2 context on driver that reports ES3 as supported */
@@ -467,7 +476,7 @@ Context::Context(void functionLoader()) {
             #endif
         } else {
             Error() << "Context: unsupported version string:" << version;
-            std::exit(65);
+            return false;
         }
     }
     #endif
@@ -479,7 +488,7 @@ Context::Context(void functionLoader()) {
     #ifndef CORRADE_NO_ASSERT
     const auto error = Renderer::error();
     CORRADE_ASSERT(error == Renderer::Error::NoError,
-        "Context: cannot retrieve OpenGL version:" << error, );
+        "Context: cannot retrieve OpenGL version:" << error, false);
     #endif
 
     /* Check that the version is supported (now it probably is, but be sure) */
@@ -496,7 +505,7 @@ Context::Context(void functionLoader()) {
         #else
         Error() << "Context: unsupported OpenGL ES version" << std::make_pair(majorVersion, minorVersion);
         #endif
-        std::exit(66);
+        return false;
     }
 
     /* Context flags are supported since GL 3.0 */
@@ -572,7 +581,7 @@ Context::Context(void functionLoader()) {
     setupDriverWorkarounds();
 
     /* Set this context as current */
-    CORRADE_ASSERT(!_current, "Context: Another context currently active", );
+    CORRADE_ASSERT(!_current, "Context: Another context currently active", false);
     _current = this;
 
     /* Print some info and initialize state tracker (which also prints some
@@ -585,6 +594,9 @@ Context::Context(void functionLoader()) {
     /** @todo Get rid of these */
     DefaultFramebuffer::initializeContextBasedFunctionality(*this);
     Renderer::initializeContextBasedFunctionality();
+
+    /* Everything okay */
+    return true;
 }
 
 Context::Context(Context&& other): _version{std::move(other._version)},

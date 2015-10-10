@@ -97,8 +97,8 @@ bool WindowlessNaClApplication::tryCreateContext(const Configuration&) {
 
     glSetCurrentContextPPAPI(graphics->pp_resource());
 
-    c = new Platform::Context;
-    return true;
+    /* Return true if the initialization succeeds */
+    return c = Platform::Context::tryCreate().release();
 }
 
 WindowlessNaClApplication::~WindowlessNaClApplication() {

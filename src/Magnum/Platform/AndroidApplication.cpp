@@ -136,8 +136,8 @@ bool AndroidApplication::tryCreateContext(const Configuration& configuration) {
     /* Make the context current */
     CORRADE_INTERNAL_ASSERT_OUTPUT(eglMakeCurrent(_display, _surface, _surface, _glContext));
 
-    _context.reset(new Platform::Context);
-    return true;
+    /* Return true if the initialization succeeds */
+    return !!(_context = Platform::Context::tryCreate());
 }
 
 void AndroidApplication::swapBuffers() {

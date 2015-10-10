@@ -37,6 +37,7 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/OpenGL.h"
+#include "Magnum/Tags.h"
 #include "Magnum/visibility.h"
 #include "MagnumExternal/Optional/optional.hpp"
 
@@ -464,7 +465,10 @@ class MAGNUM_EXPORT Context {
     private:
         static Context* _current;
 
+        explicit Context(NoCreateT, void functionLoader());
         explicit Context(void functionLoader());
+
+        bool create();
 
         /* Defined in Implementation/driverSpecific.cpp */
         MAGNUM_LOCAL void setupDriverWorkarounds();

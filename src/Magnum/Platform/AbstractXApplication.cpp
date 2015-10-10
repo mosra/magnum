@@ -95,8 +95,8 @@ bool AbstractXApplication::tryCreateContext(const Configuration& configuration) 
     /* Set OpenGL context as current */
     _contextHandler->makeCurrent();
 
-    _context.reset(new Platform::Context);
-    return true;
+    /* Return true if the initialization succeeds */
+    return !!(_context = Platform::Context::tryCreate());
 }
 
 AbstractXApplication::~AbstractXApplication() {

@@ -145,8 +145,8 @@ bool WindowlessGlxApplication::tryCreateContext(const Configuration&) {
         return false;
     }
 
-    _context.reset(new Platform::Context);
-    return true;
+    /* Return true if the initialization succeeds */
+    return !!(_context = Platform::Context::tryCreate());
 }
 
 WindowlessGlxApplication::~WindowlessGlxApplication() {

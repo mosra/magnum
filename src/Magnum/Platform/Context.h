@@ -42,11 +42,25 @@ information.
 class Context: public Magnum::Context {
     public:
         /**
+         * @brief Try to create the context
+         *
+         * Unline @ref Context(), this function returns `nullptr` on error
+         * instead of application exit and thus is usable for context creation
+         * fallbacks.
+         */
+        static std::unique_ptr<Context> tryCreate() {
+            std::unique_ptr<Context> c{new Context{NoCreate}};
+            return c->create() ? std::move(c) : nullptr;
+        }
+
+        /**
          * @brief Constructor
          *
          * Does initial setup, loads OpenGL function pointers using
          * platform-specific API, detects available features and enables them
-         * throughout the engine.
+         * throughout the engine. If detected version is unsupported or any
+         * other error occurs, a message is printed to output and the
+         * application exits. See @ref tryCreate() for an alternative.
          * @see @fn_gl{Get} with @def_gl{MAJOR_VERSION}, @def_gl{MINOR_VERSION},
          *      @def_gl{CONTEXT_FLAGS}, @def_gl{NUM_EXTENSIONS},
          *      @fn_gl{GetString} with @def_gl{EXTENSIONS}
@@ -56,6 +70,14 @@ class Context: public Magnum::Context {
             Magnum::Context{flextGLInit} {}
             #else
             Magnum::Context{nullptr} {}
+            #endif
+
+    private:
+        explicit Context(NoCreateT):
+            #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+            Magnum::Context{NoCreate, flextGLInit} {}
+            #else
+            Magnum::Context{NoCreate, nullptr} {}
             #endif
 };
 

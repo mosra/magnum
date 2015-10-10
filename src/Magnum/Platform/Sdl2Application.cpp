@@ -226,8 +226,8 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
     _glContext = SDL_SetVideoMode(configuration.size().x(), configuration.size().y(), 24, SDL_OPENGL|SDL_HWSURFACE|SDL_DOUBLEBUF);
     #endif
 
-    _context.reset(new Platform::Context);
-    return true;
+    /* Return true if the initialization succeeds */
+    return !!(_context = Platform::Context::tryCreate());
 }
 
 void Sdl2Application::swapBuffers() {
