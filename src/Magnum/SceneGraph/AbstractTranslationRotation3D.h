@@ -213,6 +213,9 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
         }
         #ifdef MAGNUM_BUILD_DEPRECATED
         CORRADE_DEPRECATED("use translate() or translateLocal() instead") AbstractBasicTranslationRotation3D<T>& translate(const Math::Vector3<T>& vector, TransformationType type) {
+            #ifdef _MSC_VER
+            #pragma warning(suppress: 4996)
+            #endif
             AbstractBasicTranslation3D<T>::translate(vector, type);
             return *this;
         }

@@ -95,6 +95,9 @@ template<class T> class AbstractBasicTranslationRotationScaling2D: public Abstra
         }
         #ifdef MAGNUM_BUILD_DEPRECATED
         CORRADE_DEPRECATED("use translate() or translateLocal() instead") AbstractBasicTranslationRotationScaling2D<T>& translate(const Math::Vector2<T>& vector, TransformationType type) {
+            #ifdef _MSC_VER
+            #pragma warning(suppress: 4996)
+            #endif
             AbstractBasicTranslationRotation2D<T>::translate(vector, type);
             return *this;
         }
@@ -109,6 +112,9 @@ template<class T> class AbstractBasicTranslationRotationScaling2D: public Abstra
         }
         #ifdef MAGNUM_BUILD_DEPRECATED
         CORRADE_DEPRECATED("use rotate() or rotateLocal() instead") AbstractBasicTranslationRotationScaling2D<T>& rotate(Math::Rad<T> angle, TransformationType type) {
+            #ifdef _MSC_VER
+            #pragma warning(suppress: 4996)
+            #endif
             AbstractBasicTranslationRotation2D<T>::rotate(angle, type);
             return *this;
         }

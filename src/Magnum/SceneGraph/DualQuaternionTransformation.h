@@ -196,6 +196,9 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
         }
         #ifdef MAGNUM_BUILD_DEPRECATED
         CORRADE_DEPRECATED("use rotateX() or rotateXLocal() instead") Object<BasicDualQuaternionTransformation<T>>& rotateX(Math::Rad<T> angle, TransformationType type) {
+            #ifdef _MSC_VER
+            #pragma warning(suppress: 4996)
+            #endif
             return rotate(angle, Math::Vector3<T>::xAxis(), type);
         }
         #endif
@@ -207,6 +210,9 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
         }
         #ifdef MAGNUM_BUILD_DEPRECATED
         CORRADE_DEPRECATED("use rotateY() or rotateYLocal() instead") Object<BasicDualQuaternionTransformation<T>>& rotateY(Math::Rad<T> angle, TransformationType type) {
+            #ifdef _MSC_VER
+            #pragma warning(suppress: 4996)
+            #endif
             return rotate(angle, Math::Vector3<T>::yAxis(), type);
         }
         #endif
@@ -218,6 +224,9 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
         }
         #ifdef MAGNUM_BUILD_DEPRECATED
         CORRADE_DEPRECATED("use rotateZ() or rotateZLocal() instead") Object<BasicDualQuaternionTransformation<T>>& rotateZ(Math::Rad<T> angle, TransformationType type) {
+            #ifdef _MSC_VER
+            #pragma warning(suppress: 4996)
+            #endif
             return rotate(angle, Math::Vector3<T>::zAxis(), type);
         }
         #endif
