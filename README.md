@@ -175,6 +175,7 @@ idea? Feel free to visit my website or contact me at:
 
 *   Website -- http://mosra.cz/blog/magnum.php
 *   GitHub -- https://github.com/mosra/magnum
+*   Gitter -- https://gitter.im/mosra/magnum
 *   IRC -- join `#magnum-engine` channel on freenode
 *   Google Groups -- https://groups.google.com/forum/#!forum/magnum-engine
 *   Twitter -- https://twitter.com/czmosra
