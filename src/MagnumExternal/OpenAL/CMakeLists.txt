@@ -3,6 +3,7 @@
 #
 #   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
 #             Vladimír Vondruš <mosra@centrum.cz>
+#   Copyright © 2015 Jonathan Hale <squareys@googlemail.com>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -23,6 +24,4 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-add_subdirectory(OpenAL)
-add_subdirectory(OpenGL)
-add_subdirectory(Optional)
+install(FILES extensions.h DESTINATION ${MAGNUM_EXTERNAL_INCLUDE_INSTALL_DIR}/OpenAL)
