@@ -42,16 +42,16 @@ class Source;
 #endif
 
 template<UnsignedInt> class Playable;
-using Playable2D = Playable<2>;
-using Playable3D = Playable<3>;
+typedef Playable<2> Playable2D;
+typedef Playable<3> Playable3D;
 
 template<UnsignedInt> class PlayableGroup;
-using PlayableGroup2D = PlayableGroup<2>;
-using PlayableGroup3D = PlayableGroup<3>;
+typedef PlayableGroup<2> PlayableGroup2D;
+typedef PlayableGroup<3> PlayableGroup3D;
 
 template<UnsignedInt> class Listener;
-using Listener2D = Listener<2>;
-using Listener3D = Listener<3>;
+typedef Listener<2> Listener2D;
+typedef Listener<3> Listener3D;
 
 }}
 

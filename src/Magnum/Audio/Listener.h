@@ -197,14 +197,14 @@ template <UnsignedInt dimensions> class Listener: public SceneGraph::AbstractFea
  *
  * @see @ref Listener3D
  */
-using Listener2D = Listener<2>;
+typedef Listener<2> Listener2D;
 
 /**
  * @brief Listener for three dimensional float scenes
  *
  * @see @ref Listener2D
  */
-using Listener3D = Listener<3>;
+typedef Listener<3> Listener3D;
 
 #if defined(CORRADE_TARGET_WINDOWS) && !defined(__MINGW32__)
 extern template class MAGNUM_AUDIO_EXPORT Listener<2>;

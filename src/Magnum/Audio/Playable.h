@@ -173,6 +173,7 @@ template<UnsignedInt dimensions> class Playable: public SceneGraph::AbstractGrou
  * @see @ref Playable3D
  */
 typedef Playable<2> Playable2D;
+
 /**
  * @brief Playable for three dimensional float scenes
  *

@@ -199,14 +199,14 @@ template<UnsignedInt dimensions> inline void PlayableGroup<dimensions>::setClean
  *
  * @see @ref PlayableGroup3D
  */
-using PlayableGroup2D = PlayableGroup<2>;
+typedef PlayableGroup<2> PlayableGroup2D;
 
 /**
  * @brief Playable group for three dimensional float scenes
  *
  * @see @ref PlayableGroup2D
  */
-using PlayableGroup3D = PlayableGroup<3>;
+typedef PlayableGroup<3> PlayableGroup3D;
 
 }}
 
