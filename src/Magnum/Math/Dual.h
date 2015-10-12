@@ -84,10 +84,12 @@ template<class T> class Dual {
         }
 
         /** @brief Real part */
-        constexpr T real() const { return _real; }
+        T& real() { return _real; }
+        constexpr T real() const { return _real; } /**< @overload */
 
         /** @brief Dual part */
-        constexpr T dual() const { return _dual; }
+        T& dual() { return _dual; }
+        constexpr T dual() const { return _dual; } /**< @overload */
 
         /**
          * @brief Add and assign dual number
