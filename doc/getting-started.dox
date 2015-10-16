@@ -224,9 +224,11 @@ experimenting on your own!
 -   @subpage building-plugins
 -   @subpage building-integration
 -   @subpage building-examples
+-   @subpage building-extras
 -   @subpage cmake
 -   @subpage cmake-plugins
 -   @subpage cmake-integration
+-   @subpage cmake-extras
 
 */
 }
