@@ -27,6 +27,7 @@
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Math/Dual.h"
+#include "Magnum/Math/Vector2.h"
 
 namespace Magnum { namespace Math { namespace Test {
 
@@ -43,6 +44,7 @@ struct DualTest: Corrade::TestSuite::Tester {
     void addSubtract();
     void negated();
     void multiplyDivide();
+    void multiplyDivideDifferentType();
 
     void conjugated();
     void sqrt();
@@ -51,6 +53,7 @@ struct DualTest: Corrade::TestSuite::Tester {
 };
 
 typedef Math::Dual<Float> Dual;
+typedef Math::Dual<Vector2<Float>> DualVector2;
 
 DualTest::DualTest() {
     addTests({&DualTest::construct,
@@ -63,6 +66,7 @@ DualTest::DualTest() {
               &DualTest::addSubtract,
               &DualTest::negated,
               &DualTest::multiplyDivide,
+              &DualTest::multiplyDivideDifferentType,
 
               &DualTest::conjugated,
               &DualTest::sqrt,
@@ -130,6 +134,18 @@ void DualTest::multiplyDivide() {
 
     CORRADE_COMPARE(a*b, c);
     CORRADE_COMPARE(c/b, a);
+}
+
+void DualTest::multiplyDivideDifferentType() {
+    DualVector2 a{{1.5f, 2.0f}, {-4.0f, 1.3f}};
+    Dual b{-2.0f, 0.5f};
+    DualVector2 c{{-3.0f, -4.0f}, {8.75f, -1.6f}};
+    DualVector2 d{{-2.0f/1.5f, -1.0f}, {-7.25f/2.25f, 3.6f/4.0f}};
+
+    CORRADE_COMPARE(a*b, c);
+    //CORRADE_COMPARE(b*a, c); does not compile yet
+    CORRADE_COMPARE(c/b, a);
+    //CORRADE_COMPARE(b/a, d); does not compile yet
 }
 
 void DualTest::conjugated() {

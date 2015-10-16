@@ -44,7 +44,7 @@ corrade_add_test(MathUnitTest UnitTest.cpp)
 corrade_add_test(MathAngleTest AngleTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathRangeTest RangeTest.cpp LIBRARIES MagnumMathTestLib)
 
-corrade_add_test(MathDualTest DualTest.cpp)
+corrade_add_test(MathDualTest DualTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathComplexTest ComplexTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathDualComplexTest DualComplexTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathQuaternionTest QuaternionTest.cpp LIBRARIES MagnumMathTestLib)
