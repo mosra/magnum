@@ -67,6 +67,12 @@ namespace Extensions {
         constexpr static const char* string() { return #prefix "_" #vendor "_" #extension; } \
     };
 
+#define _extension_rev(prefix, vendor, extension) \
+    struct extension {                                                      \
+        enum: std::size_t { Index = __LINE__-1 };                                \
+        constexpr static const char* string() { return #prefix "_" #extension "_" #vendor; } \
+    };
+
 /* IMPORTANT: don't forget to add new extensions also in Context.cpp */
 namespace AL {
     #line 1
@@ -75,6 +81,9 @@ namespace AL {
         _extension(AL,EXT,DOUBLE) // #???
     }
 } namespace ALC {
+    namespace EXT {
+        _extension_rev(ALC,EXT,ENUMERATION) // #???
+    }
     namespace SOFTX {
         _extension(ALC,SOFTX,HRTF) // #???
     }
