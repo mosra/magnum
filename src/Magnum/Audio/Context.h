@@ -140,7 +140,8 @@ class MAGNUM_AUDIO_EXPORT Context {
          * @ref supportedExtensions(), @ref Extension::extensions() or
          * @ref isExtensionSupported() for alternatives.
          * @see @fn_al{Get} with @def_al{NUM_EXTENSIONS}, @fn_al{GetString}
-         *      with @def_al{EXTENSIONS}
+         *      with @def_al{EXTENSIONS}, @fn_alc{GetString} with
+         *      @def_alc{EXTENSIONS}
          */
         std::vector<std::string> extensionStrings() const;
 

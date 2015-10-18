@@ -72,6 +72,9 @@ Context::Context(const Configuration& config) {
         std::exit(1);
     }
 
+    alcMakeContextCurrent(_context);
+    _current = this;
+
     /* Add all extensions to a map for faster lookup */
     std::unordered_map<std::string, Extension> extensionMap;
     for(const Extension& extension: Extension::extensions())
@@ -86,9 +89,6 @@ Context::Context(const Configuration& config) {
             _extensionStatus.set(found->second._index);
         }
     }
-
-    alcMakeContextCurrent(_context);
-    _current = this;
 
     /* Print some info */
     Debug() << "Audio Renderer:" << rendererString() << "by" << vendorString();
@@ -105,9 +105,16 @@ Context::~Context() {
 std::vector<std::string> Context::extensionStrings() const {
     std::vector<std::string> extensions;
 
-    /* Don't crash when glGetString() returns nullptr */
-    const char* e = reinterpret_cast<const char*>(alGetString(AL_EXTENSIONS));
-    if(e) extensions = Utility::String::splitWithoutEmptyParts(e, ' ');
+    /* Don't crash when alGetString() returns nullptr */
+    const char* alExts = reinterpret_cast<const char*>(alGetString(AL_EXTENSIONS));
+    if(alExts) extensions = Utility::String::splitWithoutEmptyParts(alExts, ' ');
+
+    /* Add ALC extensions aswell */
+    const char* alcExts = reinterpret_cast<const char*>(alcGetString(_device, ALC_EXTENSIONS));
+    if(alcExts) {
+        auto splitAlcExts = Utility::String::splitWithoutEmptyParts(alcExts, ' ');
+        extensions.insert(extensions.end(), splitAlcExts.begin(), splitAlcExts.end());
+    }
 
     return extensions;
 }
