@@ -89,6 +89,7 @@ namespace AL {
     }
 }
 #undef _extension
+#undef _extension_rev
 #endif
 
 }
