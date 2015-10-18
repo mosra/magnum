@@ -70,6 +70,20 @@ class Buffer {
              * @requires_al_extension extension @al_extension{EXT,float32}
              */
             StereoFloat32 = AL_FORMAT_STEREO_FLOAT32,
+
+            /**
+             * @brief 64-bit mono
+             *
+             * @requires_al_extension extension @al_extension{EXT,double}
+             */
+            MonoDouble = AL_FORMAT_MONO_DOUBLE_EXT,
+
+            /**
+             * @brief 64-bit interleaved stereo
+             *
+             * @requires_al_extension extension @al_extension{EXT,double}
+             */
+            StereoDouble = AL_FORMAT_STEREO_DOUBLE_EXT,
         };
 
         /**

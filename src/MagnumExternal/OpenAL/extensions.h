@@ -37,6 +37,13 @@ extern "C" {
 #define AL_FORMAT_STEREO_FLOAT32                 0x10011
 #endif
 
+/* AL_EXT_double */
+#ifndef AL_EXT_double
+#define AL_EXT_double 1
+#define AL_FORMAT_MONO_DOUBLE_EXT                0x10012
+#define AL_FORMAT_STEREO_DOUBLE_EXT              0x10013
+#endif
+
 /* ALC_SOFT_HRTF */
 #ifndef ALC_SOFT_HRTF
 #define ALC_SOFT_HRTF 1
