@@ -39,6 +39,7 @@
 #include <Magnum/SceneGraph/FeatureGroup.h>
 
 #include "Magnum/Audio/Audio.h"
+#include "Magnum/Audio/Playable.h"
 #include "Magnum/Audio/Source.h"
 #include "Magnum/Audio/visibility.h"
 
