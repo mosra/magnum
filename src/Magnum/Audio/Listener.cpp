@@ -88,7 +88,7 @@ template<UnsignedInt dimensions> void Listener<dimensions>::update(std::initiali
 
     objects.push_back(this->object());
     for(PlayableGroup<dimensions>& group : groups) {
-        for(UnsignedInt i = 0; i < groups.size(); ++i) {
+        for(UnsignedInt i = 0; i < group.size(); ++i) {
             objects.push_back(group[i].object());
         }
     }

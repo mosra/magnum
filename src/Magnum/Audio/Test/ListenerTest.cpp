@@ -89,6 +89,7 @@ void ListenerTest::testUpdateGroups() {
     Object3D sourceObject{&scene};
     Object3D object{&scene};
     PlayableGroup3D group;
+    PlayableGroup3D emptyGroup;
     Playable3D playable{sourceObject, &group};
     Listener3D listener{object};
 
@@ -97,7 +98,7 @@ void ListenerTest::testUpdateGroups() {
     object.translate(offset);
     sourceObject.translate(offset*13.0f);
 
-    listener.update({group});
+    listener.update({group, emptyGroup});
 
     CORRADE_COMPARE(Renderer::listenerPosition(), offset);
     constexpr Vector3 rotatedFwd{-1.0f, 0.0f, 0.0f};
