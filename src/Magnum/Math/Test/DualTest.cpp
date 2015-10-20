@@ -171,6 +171,7 @@ template<class T> class BasicDualVec2: public Math::Dual<Math::Vector2<T>> {
         template<class ...U> constexpr BasicDualVec2(U&&... args): Math::Dual<Math::Vector2<T>>(args...) {}
 
         MAGNUM_DUAL_SUBCLASS_IMPLEMENTATION(BasicDualVec2, Math::Vector2)
+        MAGNUM_DUAL_SUBCLASS_MULTIPLICATION_IMPLEMENTATION(BasicDualVec2, Math::Vector2)
 };
 
 typedef BasicDualVec2<Float> DualVec2;

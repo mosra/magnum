@@ -355,6 +355,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         }
 
         MAGNUM_DUAL_SUBCLASS_IMPLEMENTATION(DualQuaternion, Quaternion)
+        MAGNUM_DUAL_SUBCLASS_MULTIPLICATION_IMPLEMENTATION(DualQuaternion, Quaternion)
 };
 
 /** @debugoperator{Magnum::Math::DualQuaternion} */

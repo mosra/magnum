@@ -339,27 +339,9 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
             return Vector2<T>(((*this)*DualComplex<T>(vector)).dual());
         }
 
-        /* Verbatim copy of DUAL_SUBCLASS_IMPLEMENTATION(), as we need to hide
-           Dual's operator*() and operator/() */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        DualComplex<T> operator-() const {
-            return Dual<Complex<T>>::operator-();
-        }
-        DualComplex<T>& operator+=(const Dual<Complex<T>>& other) {
-            Dual<Complex<T>>::operator+=(other);
-            return *this;
-        }
-        DualComplex<T> operator+(const Dual<Complex<T>>& other) const {
-            return Dual<Complex<T>>::operator+(other);
-        }
-        DualComplex<T>& operator-=(const Dual<Complex<T>>& other) {
-            Dual<Complex<T>>::operator-=(other);
-            return *this;
-        }
-        DualComplex<T> operator-(const Dual<Complex<T>>& other) const {
-            return Dual<Complex<T>>::operator-(other);
-        }
-        #endif
+        MAGNUM_DUAL_SUBCLASS_IMPLEMENTATION(DualComplex, Vector2)
+        /* Not using MAGNUM_DUAL_SUBCLASS_MULTIPLICATION_IMPLEMENTATION(), as
+           we have special multiplication/division implementation */
 
     private:
         /* Just to be sure nobody uses this, as it wouldn't probably work with

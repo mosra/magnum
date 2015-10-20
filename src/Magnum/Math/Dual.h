@@ -201,7 +201,9 @@ template<class T> class Dual {
     }                                                                       \
     Type<T> operator-(const Math::Dual<Underlying<T>>& other) const {       \
         return Math::Dual<Underlying<T>>::operator-(other);                 \
-    }                                                                       \
+    }
+/* DualComplex needs its own special implementation of multiplication/division */
+#define MAGNUM_DUAL_SUBCLASS_MULTIPLICATION_IMPLEMENTATION(Type, Underlying) \
     template<class U> Type<T> operator*(const Math::Dual<U>& other) const { \
         return Math::Dual<Underlying<T>>::operator*(other);                 \
     }                                                                       \
