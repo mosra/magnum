@@ -153,7 +153,7 @@ template<class T> class Dual {
          *      \hat a \hat b = a_0 b_0 + \epsilon (a_0 b_\epsilon + a_\epsilon b_0)
          * @f]
          */
-        template<class U> Dual<T> operator*(const Dual<U>& other) const {
+        template<class U> auto operator*(const Dual<U>& other) const -> Dual<decltype(real()*other.real())> {
             return {_real*other._real, _real*other._dual + _dual*other._real};
         }
 
@@ -164,7 +164,7 @@ template<class T> class Dual {
          *      \frac{\hat a}{\hat b} = \frac{a_0}{b_0} + \epsilon \frac{a_\epsilon b_0 - a_0 b_\epsilon}{b_0^2}
          * @f]
          */
-        template<class U> Dual<T> operator/(const Dual<U>& other) const {
+        template<class U> auto operator/(const Dual<U>& other) const -> Dual<decltype(real()/other.real())> {
             return {_real/other._real, (_dual*other._real - _real*other._dual)/(other._real*other._real)};
         }
 
@@ -184,7 +184,7 @@ template<class T> class Dual {
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-#define MAGNUM_DUAL_SUBCLASS_IMPLEMENTATION(Type, Underlying)               \
+#define MAGNUM_DUAL_SUBCLASS_IMPLEMENTATION(Type, Underlying, Multiplicable) \
     Type<T> operator-() const {                                             \
         return Math::Dual<Underlying<T>>::operator-();                      \
     }                                                                       \
@@ -201,7 +201,14 @@ template<class T> class Dual {
     }                                                                       \
     Type<T> operator-(const Math::Dual<Underlying<T>>& other) const {       \
         return Math::Dual<Underlying<T>>::operator-(other);                 \
+    }                                                                       \
+    Type<T> operator*(const Math::Dual<Multiplicable>& other) const {       \
+        return Math::Dual<Underlying<T>>::operator*(other);                 \
+    }                                                                       \
+    Type<T> operator/(const Math::Dual<Multiplicable>& other) const {       \
+        return Math::Dual<Underlying<T>>::operator/(other);                 \
     }
+
 /* DualComplex needs its own special implementation of multiplication/division */
 #define MAGNUM_DUAL_SUBCLASS_MULTIPLICATION_IMPLEMENTATION(Type, Underlying) \
     template<class U> Type<T> operator*(const Math::Dual<U>& other) const { \
@@ -209,6 +216,20 @@ template<class T> class Dual {
     }                                                                       \
     template<class U> Type<T> operator/(const Math::Dual<U>& other) const { \
         return Math::Dual<Underlying<T>>::operator/(other);                 \
+    }                                                                       \
+    Type<T> operator*(const Math::Dual<Underlying<T>>& other) const {       \
+        return Math::Dual<Underlying<T>>::operator*(other);                 \
+    }                                                                       \
+    Type<T> operator/(const Math::Dual<Underlying<T>>& other) const {       \
+        return Math::Dual<Underlying<T>>::operator/(other);                 \
+    }
+
+#define MAGNUM_DUAL_OPERATOR_IMPLEMENTATION(Type, Underlying, Multiplicable) \
+    template<class T> inline Type<T> operator*(const Math::Dual<Multiplicable>& a, const Type<T>& b) { \
+        return a*static_cast<const Math::Dual<Underlying<T>>&>(b);          \
+    }                                                                       \
+    template<class T> inline Type<T> operator/(const Math::Dual<Multiplicable>& a, const Type<T>& b) { \
+        return a/static_cast<const Math::Dual<Underlying<T>>&>(b);          \
     }
 #endif
 

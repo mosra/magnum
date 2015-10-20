@@ -354,9 +354,11 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
             return ((*this)*DualQuaternion<T>(vector)*conjugated()).dual().vector();
         }
 
-        MAGNUM_DUAL_SUBCLASS_IMPLEMENTATION(DualQuaternion, Quaternion)
+        MAGNUM_DUAL_SUBCLASS_IMPLEMENTATION(DualQuaternion, Quaternion, T)
         MAGNUM_DUAL_SUBCLASS_MULTIPLICATION_IMPLEMENTATION(DualQuaternion, Quaternion)
 };
+
+MAGNUM_DUAL_OPERATOR_IMPLEMENTATION(DualQuaternion, Quaternion, T)
 
 /** @debugoperator{Magnum::Math::DualQuaternion} */
 template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const DualQuaternion<T>& value) {

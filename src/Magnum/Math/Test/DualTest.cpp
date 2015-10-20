@@ -150,9 +150,9 @@ void DualTest::multiplyDivideDifferentType() {
     DualVector2 d{{-2.0f/1.5f, -1.0f}, {-7.25f/2.25f, 3.6f/4.0f}};
 
     CORRADE_COMPARE(a*b, c);
-    //CORRADE_COMPARE(b*a, c); does not compile yet
+    CORRADE_COMPARE(b*a, c);
     CORRADE_COMPARE(c/b, a);
-    //CORRADE_COMPARE(b/a, d); does not compile yet
+    CORRADE_COMPARE(b/a, d);
 }
 
 void DualTest::conjugated() {
@@ -170,9 +170,11 @@ template<class T> class BasicDualVec2: public Math::Dual<Math::Vector2<T>> {
         /* MSVC 2015 can't handle {} here */
         template<class ...U> constexpr BasicDualVec2(U&&... args): Math::Dual<Math::Vector2<T>>(args...) {}
 
-        MAGNUM_DUAL_SUBCLASS_IMPLEMENTATION(BasicDualVec2, Math::Vector2)
+        MAGNUM_DUAL_SUBCLASS_IMPLEMENTATION(BasicDualVec2, Math::Vector2, T)
         MAGNUM_DUAL_SUBCLASS_MULTIPLICATION_IMPLEMENTATION(BasicDualVec2, Math::Vector2)
 };
+
+MAGNUM_DUAL_OPERATOR_IMPLEMENTATION(BasicDualVec2, Math::Vector2, T)
 
 typedef BasicDualVec2<Float> DualVec2;
 
@@ -192,9 +194,9 @@ void DualTest::subclassTypes() {
 
     const Dual c;
     CORRADE_VERIFY((std::is_same<decltype(a*c), DualVec2>::value));
-    //CORRADE_VERIFY((std::is_same<decltype(c*a), DualVec2>::value)); does not compile yet
+    CORRADE_VERIFY((std::is_same<decltype(c*a), DualVec2>::value));
     CORRADE_VERIFY((std::is_same<decltype(a/c), DualVec2>::value));
-    //CORRADE_VERIFY((std::is_same<decltype(c/a), DualVec2>::value)); does not compile yet
+    CORRADE_VERIFY((std::is_same<decltype(c/a), DualVec2>::value));
 }
 
 void DualTest::subclass() {
@@ -216,9 +218,9 @@ void DualTest::subclass() {
     const DualVec2 f{Vector2{-3.0f, -4.0f}, Vector2{8.75f, -1.6f}};
     const DualVec2 g{Vector2{-2.0f/1.5f, -1.0f}, Vector2{-7.25f/2.25f, 3.6f/4.0f}};
     CORRADE_COMPARE(a*e, f);
-    //CORRADE_COMPARE(e*a, f); does not compile yet
+    CORRADE_COMPARE(e*a, f);
     CORRADE_COMPARE(f/e, a);
-    //CORRADE_COMPARE(e/a, g); does not compile yet
+    CORRADE_COMPARE(e/a, g);
 }
 
 void DualTest::debug() {

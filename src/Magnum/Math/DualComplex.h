@@ -339,16 +339,12 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
             return Vector2<T>(((*this)*DualComplex<T>(vector)).dual());
         }
 
-        MAGNUM_DUAL_SUBCLASS_IMPLEMENTATION(DualComplex, Vector2)
+        MAGNUM_DUAL_SUBCLASS_IMPLEMENTATION(DualComplex, Vector2, T)
         /* Not using MAGNUM_DUAL_SUBCLASS_MULTIPLICATION_IMPLEMENTATION(), as
            we have special multiplication/division implementation */
-
-    private:
-        /* Just to be sure nobody uses this, as it wouldn't probably work with
-           our operator*() */
-        using Dual<Complex<T>>::operator*;
-        using Dual<Complex<T>>::operator/;
 };
+
+MAGNUM_DUAL_OPERATOR_IMPLEMENTATION(DualComplex, Vector2, T)
 
 /** @debugoperator{Magnum::Math::DualQuaternion} */
 template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const DualComplex<T>& value) {
