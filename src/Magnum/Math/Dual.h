@@ -153,7 +153,7 @@ template<class T> class Dual {
          *      \hat a \hat b = a_0 b_0 + \epsilon (a_0 b_\epsilon + a_\epsilon b_0)
          * @f]
          */
-        template<class U> auto operator*(const Dual<U>& other) const -> Dual<decltype(real()*other.real())> {
+        template<class U> auto operator*(const Dual<U>& other) const -> Dual<decltype(std::declval<T>()*std::declval<U>())> {
             return {_real*other._real, _real*other._dual + _dual*other._real};
         }
 
@@ -164,7 +164,7 @@ template<class T> class Dual {
          *      \frac{\hat a}{\hat b} = \frac{a_0}{b_0} + \epsilon \frac{a_\epsilon b_0 - a_0 b_\epsilon}{b_0^2}
          * @f]
          */
-        template<class U> auto operator/(const Dual<U>& other) const -> Dual<decltype(real()/other.real())> {
+        template<class U> auto operator/(const Dual<U>& other) const -> Dual<decltype(std::declval<T>()/std::declval<U>())> {
             return {_real/other._real, (_dual*other._real - _real*other._dual)/(other._real*other._real)};
         }
 
