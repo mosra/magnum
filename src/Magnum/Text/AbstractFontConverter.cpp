@@ -67,7 +67,7 @@ std::vector<std::pair<std::string, Containers::Array<char>>> AbstractFontConvert
         "Text::AbstractFontConverter::exportFontToData(): feature advertised but not implemented", {});
 
     std::vector<std::pair<std::string, Containers::Array<char>>> out;
-    out.emplace_back(filename, std::move(doExportFontToSingleData(font, cache, characters)));
+    out.emplace_back(filename, doExportFontToSingleData(font, cache, characters));
     return out;
 }
 
@@ -119,7 +119,7 @@ std::vector<std::pair<std::string, Containers::Array<char>>> AbstractFontConvert
         "Text::AbstractFontConverter::exportGlyphCacheToData(): feature advertised but not implemented", {});
 
     std::vector<std::pair<std::string, Containers::Array<char>>> out;
-    out.emplace_back(filename, std::move(doExportGlyphCacheToSingleData(cache)));
+    out.emplace_back(filename, doExportGlyphCacheToSingleData(cache));
     return out;
 }
 
