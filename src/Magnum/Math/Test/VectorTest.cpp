@@ -589,6 +589,7 @@ void VectorTest::subclass() {
     constexpr const Vec2 a{-2.0f, 5.0f};
     CORRADE_COMPARE(a[0], -2.0f);
 
+    CORRADE_COMPARE(-Vec2(-2.0f, 5.0f), Vec2(2.0f, -5.0f));
     CORRADE_COMPARE(Vec2(-2.0f, 5.0f) + Vec2(1.0f, -3.0f), Vec2(-1.0f, 2.0f));
     CORRADE_COMPARE(Vec2(-2.0f, 5.0f) - Vec2(1.0f, -3.0f), Vec2(-3.0f, 8.0f));
 
@@ -599,6 +600,9 @@ void VectorTest::subclass() {
 
     CORRADE_COMPARE(Vec2(-2.0f, 5.0f)*Vec2(1.5f, -2.0f), Vec2(-3.0f, -10.0f));
     CORRADE_COMPARE(Vec2(-2.0f, 5.0f)/Vec2(2.0f/3.0f, -0.5f), Vec2(-3.0f, -10.0f));
+
+    /* No need to test in-place operators as the other ones are implemented
+       using them */
 
     /* Modulo operations */
     CORRADE_COMPARE(Vec2i(4, 13) % 2, Vec2i(0, 1));

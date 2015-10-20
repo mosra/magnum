@@ -556,6 +556,9 @@ void RectangularMatrixTest::subclass() {
     CORRADE_COMPARE(d*2.0f, dExpected);
     CORRADE_COMPARE(2.0f*d, dExpected);
 
+    /* No need to test in-place operators as the other ones are implemented
+       using them */
+
     Mat2x2 e(Vector2(-2.0f, 5.0f),
              Vector2(5.0f, -2.0f));
     CORRADE_COMPARE(e/0.5f, dExpected);
