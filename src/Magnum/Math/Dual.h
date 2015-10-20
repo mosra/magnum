@@ -186,27 +186,27 @@ template<class T> class Dual {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #define MAGNUM_DUAL_SUBCLASS_IMPLEMENTATION(Type, Underlying)               \
     Type<T> operator-() const {                                             \
-        return Dual<Underlying<T>>::operator-();                            \
+        return Math::Dual<Underlying<T>>::operator-();                      \
     }                                                                       \
-    Type<T>& operator+=(const Dual<Underlying<T>>& other) {                 \
-        Dual<Underlying<T>>::operator+=(other);                             \
+    Type<T>& operator+=(const Math::Dual<Underlying<T>>& other) {           \
+        Math::Dual<Underlying<T>>::operator+=(other);                       \
         return *this;                                                       \
     }                                                                       \
-    Type<T> operator+(const Dual<Underlying<T>>& other) const {             \
-        return Dual<Underlying<T>>::operator+(other);                       \
+    Type<T> operator+(const Math::Dual<Underlying<T>>& other) const {       \
+        return Math::Dual<Underlying<T>>::operator+(other);                 \
     }                                                                       \
-    Type<T>& operator-=(const Dual<Underlying<T>>& other) {                 \
-        Dual<Underlying<T>>::operator-=(other);                             \
+    Type<T>& operator-=(const Math::Dual<Underlying<T>>& other) {           \
+        Math::Dual<Underlying<T>>::operator-=(other);                       \
         return *this;                                                       \
     }                                                                       \
-    Type<T> operator-(const Dual<Underlying<T>>& other) const {             \
-        return Dual<Underlying<T>>::operator-(other);                       \
+    Type<T> operator-(const Math::Dual<Underlying<T>>& other) const {       \
+        return Math::Dual<Underlying<T>>::operator-(other);                 \
     }                                                                       \
-    template<class U> Type<T> operator*(const Dual<U>& other) const {       \
-        return Dual<Underlying<T>>::operator*(other);                       \
+    template<class U> Type<T> operator*(const Math::Dual<U>& other) const { \
+        return Math::Dual<Underlying<T>>::operator*(other);                 \
     }                                                                       \
-    template<class U> Type<T> operator/(const Dual<U>& other) const {       \
-        return Dual<Underlying<T>>::operator/(other);                       \
+    template<class U> Type<T> operator/(const Math::Dual<U>& other) const { \
+        return Math::Dual<Underlying<T>>::operator/(other);                 \
     }
 #endif
 
