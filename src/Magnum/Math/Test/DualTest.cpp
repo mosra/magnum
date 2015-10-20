@@ -49,11 +49,15 @@ struct DualTest: Corrade::TestSuite::Tester {
     void conjugated();
     void sqrt();
 
+    void subclassTypes();
+    void subclass();
+
     void debug();
 };
 
 typedef Math::Dual<Float> Dual;
-typedef Math::Dual<Vector2<Float>> DualVector2;
+typedef Math::Vector2<Float> Vector2;
+typedef Math::Dual<Vector2> DualVector2;
 
 DualTest::DualTest() {
     addTests({&DualTest::construct,
@@ -70,6 +74,9 @@ DualTest::DualTest() {
 
               &DualTest::conjugated,
               &DualTest::sqrt,
+
+              &DualTest::subclassTypes,
+              &DualTest::subclass,
 
               &DualTest::debug});
 }
@@ -154,6 +161,63 @@ void DualTest::conjugated() {
 
 void DualTest::sqrt() {
     CORRADE_COMPARE(Math::sqrt(Dual(16.0f, 2.0f)), Dual(4.0f, 0.25f));
+}
+
+namespace {
+
+template<class T> class BasicDualVec2: public Math::Dual<Math::Vector2<T>> {
+    public:
+        /* MSVC 2015 can't handle {} here */
+        template<class ...U> constexpr BasicDualVec2(U&&... args): Math::Dual<Math::Vector2<T>>(args...) {}
+
+        MAGNUM_DUAL_SUBCLASS_IMPLEMENTATION(BasicDualVec2, Math::Vector2)
+};
+
+typedef BasicDualVec2<Float> DualVec2;
+
+}
+
+void DualTest::subclassTypes() {
+    const DualVec2 a;
+    CORRADE_VERIFY((std::is_same<decltype(-a), DualVec2>::value));
+    CORRADE_VERIFY((std::is_same<decltype(a + a), DualVec2>::value));
+    CORRADE_VERIFY((std::is_same<decltype(a - a), DualVec2>::value));
+    CORRADE_VERIFY((std::is_same<decltype(a*a), DualVec2>::value));
+    CORRADE_VERIFY((std::is_same<decltype(a/a), DualVec2>::value));
+
+    DualVec2 b;
+    CORRADE_VERIFY((std::is_same<decltype(b += a), DualVec2&>::value));
+    CORRADE_VERIFY((std::is_same<decltype(b -= a), DualVec2&>::value));
+
+    const Dual c;
+    CORRADE_VERIFY((std::is_same<decltype(a*c), DualVec2>::value));
+    //CORRADE_VERIFY((std::is_same<decltype(c*a), DualVec2>::value)); does not compile yet
+    CORRADE_VERIFY((std::is_same<decltype(a/c), DualVec2>::value));
+    //CORRADE_VERIFY((std::is_same<decltype(c/a), DualVec2>::value)); does not compile yet
+}
+
+void DualTest::subclass() {
+    const DualVec2 a{Vector2{1.5f,  2.0f}, Vector2{-4.0f,  1.3f}};
+    const DualVec2 b{Vector2{3.0f, -1.2f}, Vector2{ 0.2f, -1.0f}};
+    const DualVec2 c{Vector2{4.5f,  0.8f}, Vector2{-3.8f,  0.3f}};
+    const DualVec2 d{Vector2{4.5f, -2.4f}, Vector2{-11.7f, -3.56f}};
+
+    CORRADE_COMPARE(-a, (DualVec2{Vector2{-1.5f, -2.0f}, Vector2{4.0f, -1.3f}}));
+    CORRADE_COMPARE(a + b, c);
+    CORRADE_COMPARE(c - b, a);
+    CORRADE_COMPARE(a*b, d);
+    CORRADE_COMPARE(d/b, a);
+
+    /* No need to test in-place operators as the other ones are implemented
+       using them */
+
+    const Dual e{-2.0f, 0.5f};
+    const DualVec2 f{Vector2{-3.0f, -4.0f}, Vector2{8.75f, -1.6f}};
+    const DualVec2 g{Vector2{-2.0f/1.5f, -1.0f}, Vector2{-7.25f/2.25f, 3.6f/4.0f}};
+    CORRADE_COMPARE(a*e, f);
+    //CORRADE_COMPARE(e*a, f); does not compile yet
+    CORRADE_COMPARE(f/e, a);
+    //CORRADE_COMPARE(e/a, g); does not compile yet
 }
 
 void DualTest::debug() {
