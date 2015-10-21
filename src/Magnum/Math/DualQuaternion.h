@@ -29,6 +29,8 @@
  * @brief Class @ref Magnum::Math::DualQuaternion
  */
 
+#include <cmath>
+
 #include "Magnum/Math/Dual.h"
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Math/Quaternion.h"
@@ -37,6 +39,62 @@ namespace Magnum { namespace Math {
 
 namespace Implementation {
     template<class, class> struct DualQuaternionConverter;
+}
+
+/** @relatesalso Dual quaternion
+@brief Screw linear interpolation of two dual quaternions
+@param from   First quaternion
+@param to     Second quaternion
+@param t      Interpolation phase (from range @f$ [0; 1] @f$)
+
+Expects that the real parts of both dual quaternions are normalized. @f[
+\begin{array}{l}
+    {\hat q}_{ScLERP} = \hat p (\hat p^* \hat q)^t =
+        cos \left( t \frac {\hat a} 2 \right) + \hat {\boldsymbol n} \cdot sin \left( t \frac {\hat a} 2 \right) \\
+    \hat d = p^*q = [l, m] \\
+    \hat a = [\hat a_R, \hat a_D]; \hat a_R = 2 \cdot acos \left( l_S \right); \hat a_D = -2m_S \frac 1 {|l_V|} \\
+    \hat {\boldsymbol n} = [\hat l_V \frac 1 {|l_V|},
+        \left( m_V - \hat {\boldsymbol n}_R \frac {\hat a_D l_S} 2 \right)\frac 1 {|l_V|}]
+\end{array}
+@f]
+@see @ref Quaternion::isNormalized(), @ref slerp(const Quaternion<T>&, const Quaternion<T>&, T),
+    @ref lerp(const T&, const T&, U)
+*/
+template<class T> inline DualQuaternion<T> sclerp(const DualQuaternion<T>& from, const DualQuaternion<T>& to, const T t) {
+    CORRADE_ASSERT(from.real().isNormalized() && to.real().isNormalized(),
+        "Math::sclerp(): real parts of quaternions must be normalized", {});
+
+    const T dotResult = dot(from.real().vector(), to.real().vector());
+
+    /* Multiplying with -1 ensures shortest path when dot < 0 */
+    /* diff = d = p^*q */
+    const DualQuaternion<T> diff = from.quaternionConjugated()*((dotResult < T(0)) ? -to : to);
+
+    /* angle = t*a_D */
+    const T angle = std::acos(diff.real().scalar())*t;
+    /* Precompute sin/cos for manifold use */
+    const T sinAngle = std::sin(angle);
+    const T cosAngle = std::cos(angle);
+
+    /* Merely a shortcut */
+    const Vector3<T>& m = diff.real().vector();
+    /* invr = \frac 1 {|l_V|} */
+    const T invr = m.lengthInverted();
+    /* direction = n = l_V * 1/|l_V| */
+    const Vector3<T> direction = m*invr;
+
+    /* Vector of real part of q_{ScLERP} = n_R*sin(t*a_R/2)*/
+    const Vector3<T> v = direction*sinAngle;
+
+    /* pitch = a_D/2 = m_S*1/|l_V| */
+    const T pitch = -diff.dual().scalar()*invr;
+    /* moment = n_D */
+    const Vector3<T> moment = (diff.dual().vector() - (direction*(pitch*diff.real().scalar())))*invr;
+    const T pitchT = pitch*t;
+    /* Vector of dual part of q_{ScLERP} */
+    const Vector3<T> v2 = moment*sinAngle + direction*(pitchT*cosAngle);
+
+    return from*DualQuaternion<T>{Quaternion<T>{v, cosAngle}, Quaternion<T>{v2, -pitchT*sinAngle}};
 }
 
 /**

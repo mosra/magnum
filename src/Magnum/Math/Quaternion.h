@@ -89,7 +89,7 @@ Expects that both quaternions are normalized. @f[
 @f]
 @see @ref Quaternion::isNormalized(), @ref slerp(const Quaternion<T>&, const Quaternion<T>&, T),
     @ref lerp(const T&, const T&, U)
- */
+*/
 template<class T> inline Quaternion<T> lerp(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, T t) {
     CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
         "Math::lerp(): quaternions must be normalized", {});
