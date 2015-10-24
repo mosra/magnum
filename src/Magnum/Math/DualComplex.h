@@ -149,6 +149,18 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
         constexpr explicit DualComplex(const Vector2<T>& vector): Dual<Complex<T>>({}, Complex<T>(vector)) {}
         #endif
 
+        /**
+         * @brief Construct dual complex number from another of different type
+         *
+         * Performs only default casting on the values, no rounding or anything
+         * else.
+         */
+        template<class U> constexpr explicit DualComplex(const DualComplex<U>& other)
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            : Dual<Complex<T>>{other}
+            #endif
+            {}
+
         /** @brief Construct dual complex number from external representation */
         template<class U, class V = decltype(Implementation::DualComplexConverter<T, U>::from(std::declval<U>()))>
         #ifndef CORRADE_MSVC2015_COMPATIBILITY

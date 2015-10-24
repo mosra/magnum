@@ -125,6 +125,8 @@ Represents 3D rotation. See @ref transformations for brief introduction.
     @ref Matrix4
 */
 template<class T> class Quaternion {
+    template<class> friend class Quaternion;
+
     public:
         typedef T Type; /**< @brief Underlying data type */
 
@@ -223,6 +225,14 @@ template<class T> class Quaternion {
          * @see @ref transformVector(), @ref transformVectorNormalized()
          */
         constexpr explicit Quaternion(const Vector3<T>& vector): _vector(vector), _scalar(T(0)) {}
+
+        /**
+         * @brief Construct dual complex number from another of different type
+         *
+         * Performs only default casting on the values, no rounding or anything
+         * else.
+         */
+        template<class U> constexpr explicit Quaternion(const Quaternion<U>& other): _vector{other._vector}, _scalar{T(other._scalar)} {}
 
         /** @brief Construct quaternion from external representation */
         template<class U, class V = decltype(Implementation::QuaternionConverter<T, U>::from(std::declval<U>()))>

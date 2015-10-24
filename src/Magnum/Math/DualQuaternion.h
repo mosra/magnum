@@ -215,6 +215,14 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         constexpr explicit DualQuaternion(const Vector3<T>& vector): Dual<Quaternion<T>>({}, {vector, T(0)}) {}
         #endif
 
+        /**
+         * @brief Construct dual quaternion from another of different type
+         *
+         * Performs only default casting on the values, no rounding or anything
+         * else.
+         */
+        template<class U> constexpr explicit DualQuaternion(const DualQuaternion<U>& other): Dual<Quaternion<T>>(other) {}
+
         /** @brief Construct dual quaternion from external representation */
         template<class U, class V = decltype(Implementation::DualQuaternionConverter<T, U>::from(std::declval<U>()))>
         #ifndef CORRADE_MSVC2015_COMPATIBILITY

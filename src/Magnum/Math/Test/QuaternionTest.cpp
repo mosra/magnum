@@ -62,6 +62,7 @@ struct QuaternionTest: Corrade::TestSuite::Tester {
     void constructZero();
     void constructNoInit();
     void constructFromVector();
+    void constructConversion();
     void constructCopy();
     void convert();
 
@@ -107,6 +108,7 @@ QuaternionTest::QuaternionTest() {
               &QuaternionTest::constructZero,
               &QuaternionTest::constructNoInit,
               &QuaternionTest::constructFromVector,
+              &QuaternionTest::constructConversion,
               &QuaternionTest::constructCopy,
               &QuaternionTest::convert,
 
@@ -174,6 +176,18 @@ void QuaternionTest::constructFromVector() {
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Vector3, Quaternion>::value));
+}
+
+void QuaternionTest::constructConversion() {
+    typedef Math::Quaternion<Int> Quaternioni;
+
+    constexpr Quaternion a{{1.3f, 2.7f, -15.0f}, 7.0f};
+    constexpr Quaternioni b{a};
+
+    CORRADE_COMPARE(b, (Quaternioni{{1, 2, -15}, 7}));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Quaternion, Quaternioni>::value));
 }
 
 void QuaternionTest::constructCopy() {

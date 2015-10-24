@@ -62,6 +62,7 @@ struct DualComplexTest: Corrade::TestSuite::Tester {
     void constructZero();
     void constructNoInit();
     void constructFromVector();
+    void constructConversion();
     void constructCopy();
     void convert();
 
@@ -102,6 +103,7 @@ DualComplexTest::DualComplexTest() {
               &DualComplexTest::constructZero,
               &DualComplexTest::constructNoInit,
               &DualComplexTest::constructFromVector,
+              &DualComplexTest::constructConversion,
               &DualComplexTest::constructCopy,
               &DualComplexTest::convert,
 
@@ -167,6 +169,18 @@ void DualComplexTest::constructFromVector() {
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Vector2, DualComplex>::value));
+}
+
+void DualComplexTest::constructConversion() {
+    typedef Math::DualComplex<Int> DualComplexi;
+
+    constexpr DualComplex a{{1.3f, 2.7f}, {-15.0f, 7.0f}};
+    constexpr DualComplexi b{a};
+
+    CORRADE_COMPARE(b, (DualComplexi{{1, 2}, {-15, 7}}));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<DualComplex, DualComplexi>::value));
 }
 
 void DualComplexTest::constructCopy() {

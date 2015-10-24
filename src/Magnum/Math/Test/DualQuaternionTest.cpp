@@ -64,6 +64,7 @@ struct DualQuaternionTest: Corrade::TestSuite::Tester {
     void constructZero();
     void constructNoInit();
     void constructFromVector();
+    void constructConversion();
     void constructCopy();
     void convert();
 
@@ -105,6 +106,7 @@ DualQuaternionTest::DualQuaternionTest() {
               &DualQuaternionTest::constructZero,
               &DualQuaternionTest::constructNoInit,
               &DualQuaternionTest::constructFromVector,
+              &DualQuaternionTest::constructConversion,
               &DualQuaternionTest::constructCopy,
               &DualQuaternionTest::convert,
 
@@ -172,6 +174,18 @@ void DualQuaternionTest::constructFromVector() {
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Vector3, DualQuaternion>::value));
+}
+
+void DualQuaternionTest::constructConversion() {
+    typedef Math::DualQuaternion<Int> DualQuaternioni;
+
+    constexpr DualQuaternion a{{{1.3f, 2.7f, -15.0f}, 7.0f}, {{1.0f, -2.0f, 3.0f}, 0.0f}};
+    constexpr DualQuaternioni b{a};
+
+    CORRADE_COMPARE(b, (DualQuaternioni{{{1, 2, -15}, 7}, {{1, -2, 3}, 0}}));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<DualQuaternion, DualQuaternioni>::value));
 }
 
 void DualQuaternionTest::constructCopy() {

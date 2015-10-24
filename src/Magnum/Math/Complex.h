@@ -83,6 +83,8 @@ Represents 2D rotation. See @ref transformations for brief introduction.
 @see @ref Magnum::Complex, @ref Magnum::Complexd, @ref Matrix3
 */
 template<class T> class Complex {
+    template<class> friend class Complex;
+
     public:
         typedef T Type; /**< @brief Underlying data type */
 
@@ -166,6 +168,14 @@ template<class T> class Complex {
          * @see @ref operator Vector2<T>(), @ref transformVector()
          */
         constexpr explicit Complex(const Vector2<T>& vector): _real(vector.x()), _imaginary(vector.y()) {}
+
+        /**
+         * @brief Construct complex number from another of different type
+         *
+         * Performs only default casting on the values, no rounding or anything
+         * else.
+         */
+        template<class U> constexpr explicit Complex(const Complex<U>& other): _real{T(other._real)}, _imaginary{T(other._imaginary)} {}
 
         /** @brief Construct complex number from external representation */
         template<class U, class V = decltype(Implementation::ComplexConverter<T, U>::from(std::declval<U>()))>

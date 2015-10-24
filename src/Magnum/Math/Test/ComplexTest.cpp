@@ -62,6 +62,7 @@ struct ComplexTest: Corrade::TestSuite::Tester {
     void constructZero();
     void constructNoInit();
     void constructFromVector();
+    void constructConversion();
     void constructCopy();
     void convert();
 
@@ -96,6 +97,7 @@ ComplexTest::ComplexTest() {
               &ComplexTest::constructZero,
               &ComplexTest::constructNoInit,
               &ComplexTest::constructFromVector,
+              &ComplexTest::constructConversion,
               &ComplexTest::constructCopy,
               &ComplexTest::convert,
 
@@ -173,6 +175,18 @@ void ComplexTest::constructFromVector() {
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Vector2, Complex>::value));
     CORRADE_VERIFY(!(std::is_convertible<Complex, Vector2>::value));
+}
+
+void ComplexTest::constructConversion() {
+    typedef Math::Complex<Int> Complexi;
+
+    constexpr Complex a{1.3f, 2.7f};
+    constexpr Complexi b{a};
+
+    CORRADE_COMPARE(b, (Complexi{1, 2}));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Complex, Complexi>::value));
 }
 
 void ComplexTest::constructCopy() {

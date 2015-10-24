@@ -72,6 +72,19 @@ template<class T> class Dual {
          */
         constexpr /*implicit*/ Dual(const T& real, const T& dual = T()): _real(real), _dual(dual) {}
 
+        /**
+         * @brief Construct dual number from another of different type
+         *
+         * Performs only default casting on the values, no rounding or anything
+         * else. Example usage:
+         * @code
+         * Dual<Float> floatingPoint(1.3f, 2.7f);
+         * Dual<Byte> integral(floatingPoint);
+         * // integral == {1, 2}
+         * @endcode
+         */
+        template<class U> constexpr explicit Dual(const Dual<U>& other): _real{T(other._real)}, _dual{T(other._dual)} {}
+
         /** @brief Equality comparison */
         bool operator==(const Dual<T>& other) const {
             return TypeTraits<T>::equals(_real, other._real) &&

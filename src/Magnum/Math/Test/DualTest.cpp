@@ -37,6 +37,7 @@ struct DualTest: Corrade::TestSuite::Tester {
     void construct();
     void constructDefault();
     void constructNoInit();
+    void constructConversion();
     void constructCopy();
 
     void compare();
@@ -63,6 +64,7 @@ DualTest::DualTest() {
     addTests({&DualTest::construct,
               &DualTest::constructDefault,
               &DualTest::constructNoInit,
+              &DualTest::constructConversion,
               &DualTest::constructCopy,
 
               &DualTest::compare,
@@ -102,6 +104,18 @@ void DualTest::constructNoInit() {
     Dual a{2.0f, -7.5f};
     new(&a) Dual{NoInit};
     CORRADE_COMPARE(a, Dual(2.0f, -7.5f));
+}
+
+void DualTest::constructConversion() {
+    typedef Math::Dual<Int> Duali;
+
+    constexpr Dual a{1.3f, 2.7f};
+    constexpr Duali b{a};
+
+    CORRADE_COMPARE(b, (Duali{1, 2}));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Dual, Duali>::value));
 }
 
 void DualTest::constructCopy() {
