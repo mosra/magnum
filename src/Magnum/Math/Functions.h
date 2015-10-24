@@ -101,6 +101,9 @@ template<class Integral> std::pair<Integral, Integral> div(Integral x, Integral 
 
 /** @todo Can't trigonometric functions be done with only one overload? */
 
+/* The functions accept Unit instead of Rad to make them working with operator
+   products (e.g. 2*35.0_degf, which is of type Unit) */
+
 /** @brief Sine */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T> inline T sin(Rad<T> angle);
