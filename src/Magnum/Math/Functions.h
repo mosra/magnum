@@ -104,7 +104,11 @@ template<class Integral> std::pair<Integral, Integral> div(Integral x, Integral 
 /* The functions accept Unit instead of Rad to make them working with operator
    products (e.g. 2*35.0_degf, which is of type Unit) */
 
-/** @brief Sine */
+/**
+@brief Sine
+
+@see @ref sincos()
+*/
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T> inline T sin(Rad<T> angle);
 #else
@@ -112,12 +116,31 @@ template<class T> inline T sin(Unit<Rad, T> angle) { return std::sin(T(angle)); 
 template<class T> inline T sin(Unit<Deg, T> angle) { return sin(Rad<T>(angle)); }
 #endif
 
-/** @brief Cosine */
+/**
+@brief Cosine
+
+@see @ref sincos()
+*/
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T> inline T cos(Rad<T> angle);
 #else
 template<class T> inline T cos(Unit<Rad, T> angle) { return std::cos(T(angle)); }
 template<class T> inline T cos(Unit<Deg, T> angle) { return cos(Rad<T>(angle)); }
+#endif
+
+/**
+@brief Sine and cosine
+
+On some architectures might be faster than doing both computations separately.
+@see @ref sin(), @ref cos()
+*/
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T> inline std::pair<T, T> sincos(Rad<T> angle);
+#else
+template<class T> inline std::pair<T, T> sincos(Unit<Rad, T> angle) {
+    return {std::sin(T(angle)) ,std::cos(T(angle))};
+}
+template<class T> inline std::pair<T, T> sincos(Unit<Deg, T> angle) { return sincos(Rad<T>(angle)); }
 #endif
 
 /** @brief Tangent */
