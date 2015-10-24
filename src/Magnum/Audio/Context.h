@@ -5,6 +5,7 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015
               Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2015 Jonathan Hale <squareys@googlemail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -30,9 +31,18 @@
  */
 
 #include <string>
+#include <vector>
+#include <array>
+#include <bitset>
 #include <al.h>
 
+#include <Corrade/Containers/EnumSet.h>
+
+#include <Magnum/Magnum.h>
+
 #include "Magnum/Audio/visibility.h"
+#include "Magnum/Audio/Buffer.h"
+
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 typedef struct ALCdevice_struct ALCdevice;
@@ -40,6 +50,36 @@ typedef struct ALCcontext_struct ALCcontext;
 #endif
 
 namespace Magnum { namespace Audio {
+
+class Context;
+
+/**
+@brief Run-time information about OpenAL extension
+
+Encapsulates runtime information about OpenAL extension, such as name string,
+minimal required OpenAL version and version in which the extension was adopted
+to core.
+
+See also @ref Audio::Extensions namespace, which contain compile-time information
+about OpenAL extensions.
+*/
+class MAGNUM_AUDIO_EXPORT Extension {
+    friend Context;
+
+    public:
+        /** @brief All OpenAL extensions */
+        static const std::vector<Extension>& extensions();
+
+        /** @brief Extension string */
+        constexpr const char* string() const { return _string; }
+
+    private:
+        /* MSVC seems to have problems with const members */
+        std::size_t _index;
+        const char* _string;
+
+        constexpr Extension(std::size_t index, const char* string): _index(index), _string(string) {}
+};
 
 /**
 @brief OpenAL context
@@ -49,12 +89,19 @@ class MAGNUM_AUDIO_EXPORT Context {
         /** @brief Current context */
         static Context* current() { return _current; }
 
+        class Configuration;
+
         /**
          * @brief Constructor
          *
-         * Creates OpenAL context.
+         * Creates OpenAL context with given configuration.
          */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        explicit Context(const Configuration& configuration = Configuration());
+        #else
+        explicit Context(const Configuration& configuration);
         explicit Context();
+        #endif
 
         /**
          * @brief Destructor
@@ -84,12 +131,213 @@ class MAGNUM_AUDIO_EXPORT Context {
          */
         std::string versionString() const { return alGetString(AL_VERSION); }
 
+        /**
+         * @brief Extension strings
+         *
+         * The result is *not* cached, repeated queries will result in repeated
+         * OpenAL calls. Note that this function returns list of all extensions
+         * reported by the driver (even those not supported by Magnum), see
+         * @ref supportedExtensions(), @ref Extension::extensions() or
+         * @ref isExtensionSupported() for alternatives.
+         * @see @fn_al{Get} with @def_al{NUM_EXTENSIONS}, @fn_al{GetString}
+         *      with @def_al{EXTENSIONS}
+         */
+        std::vector<std::string> extensionStrings() const;
+
+        /**
+         * @brief Supported extensions
+         *
+         * The list contains only extensions from OpenAL versions newer than
+         * the current.
+         * @see @ref isExtensionSupported(), @ref Extension::extensions()
+         */
+        const std::vector<Extension>& supportedExtensions() const {
+            return _supportedExtensions;
+        }
+
+        /**
+         * @brief Whether given extension is supported
+         *
+         * Extensions usable with this function are listed in @ref Extensions
+         * namespace in header @ref Extensions.h. Example usage:
+         * @code
+         * if(Context::current()->isExtensionSupported<Extensions::ALC::SOFTX::HRTF>()) {
+         *     // amazing binaural audio
+         * } else {
+         *     // probably left/right stereo only
+         * }
+         * @endcode
+         *
+         * @see @ref isExtensionSupported(const Extension&) const,
+         *      @ref MAGNUM_AUDIO_ASSERT_EXTENSION_SUPPORTED()
+         */
+        template<class T> bool isExtensionSupported() const {
+            return _extensionStatus[T::Index];
+        }
+
+        /**
+         * @brief Whether given extension is supported
+         *
+         * Can be used e.g. for listing extensions available on current
+         * hardware, but for general usage prefer @ref isExtensionSupported() const,
+         * as it does most operations in compile time.
+         * @see @ref supportedExtensions(), @ref Extension::extensions(),
+         *      @ref MAGNUM_AUDIO_ASSERT_EXTENSION_SUPPORTED()
+         */
+        bool isExtensionSupported(const Extension& extension) const {
+            return _extensionStatus[extension._index];
+        }
+
     private:
         static Context* _current;
 
+        /* Create a context with given configuration. Returns `true` on success.
+         * @ref alcCreateContext(). */
+        bool tryCreateContext(const Configuration& config);
+
         ALCdevice* _device;
         ALCcontext* _context;
+
+        std::bitset<64> _extensionStatus;
+        std::vector<Extension> _supportedExtensions;
 };
+
+class MAGNUM_AUDIO_EXPORT Context::Configuration {
+    public:
+
+        /**
+         * @brief Enum for boolean values with a driver specific default
+         * value
+         */
+        enum class EnabledState: Byte {
+            Default = 0,
+            Enabled = 1,
+            Disabled = 2
+        };
+
+        /**
+         * @brief Constructor
+         */
+        explicit Configuration():
+            _frequency(44100),
+            _enableHrtf(),
+            _monoSources(-1),
+            _stereoSources(-1),
+            _refreshRate(-1)
+        {}
+
+        /** @brief Sampling rate in Hz */
+        Int frequency() const { return _frequency; }
+
+        /**
+         * @brief Set sampling rate (in Hz)
+         *
+         * Default is `44100`.
+         */
+        Configuration& setFrequency(Int freq) {
+            _frequency = freq;
+            return *this;
+        }
+
+        /** @brief Whether to use hrtfs */
+        EnabledState isHrtfEnabled() const { return _enableHrtf; }
+
+        /**
+         * @brief Set whether to use hrtfs
+         *
+         * Defaults to local OpenAL configuration or false.
+         */
+        Configuration& setHrtfEnabled(EnabledState hrtf) {
+            _enableHrtf = hrtf;
+            return *this;
+        }
+
+        /**
+         * @brief Hint for how mono sources to support
+         *
+         * Returns `-1`, if no hint was set.
+         */
+        Int monoSourcesCount() const { return _monoSources; }
+
+        /**
+         * @brief Set hint for how mono sources to support
+         *
+         * If not set, no hint will given to OpenAL.
+         */
+        Configuration& setMonoSourcesCount(Int sources) {
+            _monoSources = sources;
+            return *this;
+        }
+
+        /**
+         * @brief Hint for how stereo sources to support
+         *
+         * Returns `-1`, if no hint was set.
+         */
+        Int stereoSourcesCount() const { return _stereoSources; }
+
+        /**
+         * @brief Set hint for how stereo sources to support
+         *
+         * If not set, no hint will given to OpenAL.
+         */
+        Configuration& setStereoSourcesCount(Int sources) {
+            _stereoSources = sources;
+            return *this;
+        }
+
+        /** @brief Rate at which the OpenAL device is refreshed (in Hz) */
+        Int refreshRate() const { return _refreshRate; }
+
+        /**
+         * @brief Set rate at which the OpenAL device is refreshed (in Hz)
+         * @return Reference to self (for method chaining)
+         */
+        Configuration& setRefreshRate(Int rate) {
+            _refreshRate = rate;
+            return *this;
+        }
+
+    private:
+
+        Int _frequency;
+        EnabledState _enableHrtf;
+
+        Int _monoSources;
+        Int _stereoSources;
+
+        Int _refreshRate;
+};
+
+
+/** @hideinitializer
+@brief Assert that given OpenAL extension is supported
+@param extension    Extension name (from
+    @ref Magnum::Audio::Extensions "Audio::Extensions" namespace)
+
+Useful for initial checks on availability of required features.
+
+By default, if assertion fails, an message is printed to error output and the
+application aborts. If `CORRADE_NO_ASSERT` is defined, this macro does nothing.
+Example usage:
+@code
+MAGNUM_ASSERT_AUDIO_EXTENSION_SUPPORTED(Extensions::ALC::SOFTX::HRTF);
+@endcode
+
+@see @ref Magnum::Audio::Context::isExtensionSupported() "Audio::Context::isExtensionSupported()",
+    @ref CORRADE_ASSERT(), @ref CORRADE_INTERNAL_ASSERT()
+*/
+#ifdef CORRADE_NO_ASSERT
+#define MAGNUM_ASSERT_AUDIO_EXTENSION_SUPPORTED(extension) do {} while(0)
+#else
+#define MAGNUM_ASSERT_AUDIO_EXTENSION_SUPPORTED(extension)                        \
+    do {                                                                    \
+        if(!Magnum::Audio::Context::current()->isExtensionSupported<extension>()) { \
+            Corrade::Utility::Error() << "Magnum: required OpenAL extension" << extension::string() << "is not supported"; \
+            std::abort();                                                   \
+        }                                                                   \
+    } while(0)
+#endif
 
 }}
 
