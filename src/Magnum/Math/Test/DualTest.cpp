@@ -45,6 +45,7 @@ struct DualTest: Corrade::TestSuite::Tester {
     void addSubtract();
     void negated();
     void multiplyDivide();
+    void multiplyDivideScalar();
     void multiplyDivideDifferentType();
 
     void conjugated();
@@ -72,6 +73,7 @@ DualTest::DualTest() {
               &DualTest::addSubtract,
               &DualTest::negated,
               &DualTest::multiplyDivide,
+              &DualTest::multiplyDivideScalar,
               &DualTest::multiplyDivideDifferentType,
 
               &DualTest::conjugated,
@@ -157,6 +159,15 @@ void DualTest::multiplyDivide() {
     CORRADE_COMPARE(c/b, a);
 }
 
+void DualTest::multiplyDivideScalar() {
+    Dual a{1.5f, -4.0f};
+    Dual b{-3.0f, 8.0f};
+
+    CORRADE_COMPARE(a*-2.0f, b);
+    CORRADE_COMPARE(-2.0f*a, b);
+    CORRADE_COMPARE(b/-2.0f, a);
+}
+
 void DualTest::multiplyDivideDifferentType() {
     DualVector2 a{{1.5f, 2.0f}, {-4.0f, 1.3f}};
     Dual b{-2.0f, 0.5f};
@@ -211,6 +222,10 @@ void DualTest::subclassTypes() {
     CORRADE_VERIFY((std::is_same<decltype(c*a), DualVec2>::value));
     CORRADE_VERIFY((std::is_same<decltype(a/c), DualVec2>::value));
     CORRADE_VERIFY((std::is_same<decltype(c/a), DualVec2>::value));
+
+    CORRADE_VERIFY((std::is_same<decltype(a*5.0f), DualVec2>::value));
+    CORRADE_VERIFY((std::is_same<decltype(5.0f*a), DualVec2>::value));
+    CORRADE_VERIFY((std::is_same<decltype(a/5.0f), DualVec2>::value));
 }
 
 void DualTest::subclass() {
@@ -235,6 +250,11 @@ void DualTest::subclass() {
     CORRADE_COMPARE(e*a, f);
     CORRADE_COMPARE(f/e, a);
     CORRADE_COMPARE(e/a, g);
+
+    const DualVec2 h{Vector2{-3.0f, -4.0f}, Vector2{8.0f, -2.6f}};
+    CORRADE_COMPARE(a*-2.0f, h);
+    CORRADE_COMPARE(-2.0f*a, h);
+    CORRADE_COMPARE(h/-2.0f, a);
 }
 
 void DualTest::debug() {
