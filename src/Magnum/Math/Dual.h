@@ -32,6 +32,7 @@
 #include <cmath>
 #include <Corrade/Utility/Debug.h>
 
+#include "Magnum/Math/Angle.h"
 #include "Magnum/Math/Tags.h"
 #include "Magnum/Math/TypeTraits.h"
 
@@ -321,6 +322,32 @@ template<class T> Dual<T> sqrt(const Dual<T>& dual) {
     T sqrt0 = std::sqrt(dual.real());
     return {sqrt0, dual.dual()/(2*sqrt0)};
 }
+
+/** @relatesalso Dual
+@brief Sine and cosine of dual angle
+
+@f[
+\begin{array}{rcl}
+    sin(\hat a) & = & sin(a_0) + \epsilon a_\epsilon cos(a_0) \\
+    cos(\hat a) & = & cos(a_0) - \epsilon a_\epsilon sin(a_0)
+\end{array}
+@f]
+@see @ref sincos(Rad<T>)
+*/
+/* The function accepts Unit instead of Rad to make it working with operator
+   products (e.g. 2*35.0_degf, which is of type Unit) */
+template<class T> std::pair<Dual<T>, Dual<T>> sincos(const Dual<Rad<T>>& angle)
+{
+    /* Not using Math::sincos(), because I don't want to include Functions.h */
+    const T sin = std::sin(T(angle.real()));
+    const T cos = std::cos(T(angle.real()));
+    return {{sin, T(angle.dual())*cos}, {cos, -T(angle.dual())*sin}};
+}
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<class T> std::pair<Dual<T>, Dual<T>> sincos(const Dual<Deg<T>>& angle) { return sincos(Dual<Rad<T>>(angle)); }
+template<class T> std::pair<Dual<T>, Dual<T>> sincos(const Dual<Unit<Rad, T>>& angle) { return sincos(Dual<Rad<T>>(angle)); }
+template<class T> std::pair<Dual<T>, Dual<T>> sincos(const Dual<Unit<Deg, T>>& angle) { return sincos(Dual<Rad<T>>(angle)); }
+#endif
 
 }}
 

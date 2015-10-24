@@ -51,6 +51,9 @@ struct DualTest: Corrade::TestSuite::Tester {
     void conjugated();
     void sqrt();
 
+    void sincos();
+    void sincosWithBase();
+
     void subclassTypes();
     void subclass();
 
@@ -60,6 +63,9 @@ struct DualTest: Corrade::TestSuite::Tester {
 typedef Math::Dual<Float> Dual;
 typedef Math::Vector2<Float> Vector2;
 typedef Math::Dual<Vector2> DualVector2;
+typedef Math::Deg<Float> Deg;
+typedef Math::Rad<Float> Rad;
+typedef Math::Constants<Float> Constants;
 
 DualTest::DualTest() {
     addTests({&DualTest::construct,
@@ -78,6 +84,9 @@ DualTest::DualTest() {
 
               &DualTest::conjugated,
               &DualTest::sqrt,
+
+              &DualTest::sincos,
+              &DualTest::sincosWithBase,
 
               &DualTest::subclassTypes,
               &DualTest::subclass,
@@ -186,6 +195,26 @@ void DualTest::conjugated() {
 
 void DualTest::sqrt() {
     CORRADE_COMPARE(Math::sqrt(Dual(16.0f, 2.0f)), Dual(4.0f, 0.25f));
+}
+
+void DualTest::sincos() {
+    const auto result = std::make_pair(
+        Dual(0.5f, 0.8660254037844386f*Constants::pi()/2),
+        Dual(0.8660254037844386f, -0.5f*Constants::pi()/2));
+    CORRADE_COMPARE(Math::sincos(Math::Dual<Deg>(30.0_degf, 90.0_degf)), result);
+    CORRADE_COMPARE(Math::sincos(Math::Dual<Rad>(Rad(Constants::pi()/6), Rad(Constants::pi()/2))), result);
+}
+
+void DualTest::sincosWithBase() {
+    /* Verify that the functions can be called with Dual<Unit<Deg, T>> and Dual<Unit<Rad, T>> */
+    CORRADE_VERIFY((std::is_same<decltype(2*Math::Dual<Deg>{15.0_degf}), Math::Dual<Unit<Math::Deg, Float>>>::value));
+    CORRADE_VERIFY((std::is_same<decltype(2*Math::Dual<Rad>{Rad{Constants::pi()/12}}), Math::Dual<Unit<Math::Rad, Float>>>::value));
+
+    const auto result = std::make_pair(
+        Dual(0.5f, 0.8660254037844386f*Constants::pi()/2),
+        Dual(0.8660254037844386f, -0.5f*Constants::pi()/2));
+    CORRADE_COMPARE(Math::sincos(2*Math::Dual<Deg>(15.0_degf, 45.0_degf)), result);
+    CORRADE_COMPARE(Math::sincos(2*Math::Dual<Rad>(Rad(Constants::pi()/12), Rad(Constants::pi()/4))), result);
 }
 
 namespace {

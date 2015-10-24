@@ -132,7 +132,7 @@ template<class T> inline T cos(Unit<Deg, T> angle) { return cos(Rad<T>(angle)); 
 @brief Sine and cosine
 
 On some architectures might be faster than doing both computations separately.
-@see @ref sin(), @ref cos()
+@see @ref sin(), @ref cos(), @ref sincos(const Dual<Rad<T>>&)
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T> inline std::pair<T, T> sincos(Rad<T> angle);
