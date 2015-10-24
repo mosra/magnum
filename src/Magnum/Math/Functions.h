@@ -340,7 +340,7 @@ template<std::size_t size, class T> Vector<size, T> ceil(const Vector<size, T>& 
 /**
 @brief Square root
 
-@see @ref sqrtInverted(), @ref Vector::length()
+@see @ref sqrtInverted(), @ref Vector::length(), @ref sqrt(const Dual<T>&)
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T> inline T sqrt(const T& a);
@@ -419,7 +419,8 @@ template<std::size_t size, class T, class U> inline Vector<size, T> lerpInverted
 /**
 @brief Fused multiply-add
 
-Computes and returns @f$ ab + c @f$.
+Computes and returns @f$ ab + c @f$. On some architectures might be faster than
+doing the computation manually.
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T> inline T fma(const T& a, const T& b, const T& c);

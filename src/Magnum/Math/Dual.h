@@ -240,13 +240,13 @@ template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& d
         << value.dual() << Corrade::Utility::Debug::nospace << ")";
 }
 
-/** @relates Dual
+/** @relatesalso Dual
 @brief Square root of dual number
 
 @f[
     \sqrt{\hat a} = \sqrt{a_0} + \epsilon \frac{a_\epsilon}{2 \sqrt{a_0}}
 @f]
-@see @ref Math::sqrt(const T&)
+@see @ref sqrt(const T&)
 */
 template<class T> Dual<T> sqrt(const Dual<T>& dual) {
     T sqrt0 = std::sqrt(dual.real());
