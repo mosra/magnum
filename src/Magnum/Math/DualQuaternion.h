@@ -41,60 +41,51 @@ namespace Implementation {
     template<class, class> struct DualQuaternionConverter;
 }
 
-/** @relatesalso Dual quaternion
+/** @relatesalso DualQuaternion
 @brief Screw linear interpolation of two dual quaternions
-@param from   First quaternion
-@param to     Second quaternion
-@param t      Interpolation phase (from range @f$ [0; 1] @f$)
+@param normalizedA  First dual quaternion
+@param normalizedB  Second dual quaternion
+@param t            Interpolation phase (from range @f$ [0; 1] @f$)
 
-Expects that the real parts of both dual quaternions are normalized. @f[
-\begin{array}{l}
-    {\hat q}_{ScLERP} = \hat p (\hat p^* \hat q)^t =
-        cos \left( t \frac {\hat a} 2 \right) + \hat {\boldsymbol n} \cdot sin \left( t \frac {\hat a} 2 \right) \\
-    \hat d = p^*q = [l, m] \\
-    \hat a = [\hat a_R, \hat a_D]; \hat a_R = 2 \cdot acos \left( l_S \right); \hat a_D = -2m_S \frac 1 {|l_V|} \\
-    \hat {\boldsymbol n} = [\hat l_V \frac 1 {|l_V|},
-        \left( m_V - \hat {\boldsymbol n}_R \frac {\hat a_D l_S} 2 \right)\frac 1 {|l_V|}]
+Expects that both dual quaternions are normalized. @f[
+\begin{array}{rcl}
+    l + \epsilon m & = & \hat q_A^* \hat q_B \\
+    \frac{\hat a} 2 & = & acos \left( l_S \right) - \epsilon m_S \frac 1 {|l_V|} \\
+    \hat {\boldsymbol n} & = & \boldsymbol n_0 + \epsilon \boldsymbol n_\epsilon
+    ~~~~~~~~ \boldsymbol n_0 = l_V \frac 1 {|l_V|}
+    ~~~~~~~~ \boldsymbol n_\epsilon = \left( m_V - {\boldsymbol n}_0 \frac {a_\epsilon} 2 l_S \right)\frac 1 {|l_V|} \\
+    {\hat q}_{ScLERP} & = & \hat q_A (\hat q_A^* \hat q_B)^t =
+        \hat q_A \left[ \hat {\boldsymbol n} sin \left( t \frac {\hat a} 2 \right), cos \left( t \frac {\hat a} 2 \right) \right] \\
 \end{array}
 @f]
-@see @ref Quaternion::isNormalized(), @ref slerp(const Quaternion<T>&, const Quaternion<T>&, T),
+@see @ref DualQuaternion::isNormalized(),
+    @ref slerp(const Quaternion<T>&, const Quaternion<T>&, T),
     @ref lerp(const T&, const T&, U)
 */
-template<class T> inline DualQuaternion<T> sclerp(const DualQuaternion<T>& from, const DualQuaternion<T>& to, const T t) {
-    CORRADE_ASSERT(from.real().isNormalized() && to.real().isNormalized(),
-        "Math::sclerp(): real parts of quaternions must be normalized", {});
+template<class T> inline DualQuaternion<T> sclerp(const DualQuaternion<T>& normalizedA, const DualQuaternion<T>& normalizedB, const T t) {
+    CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
+        "Math::sclerp(): dual quaternions must be normalized", {});
+    const T dotResult = dot(normalizedA.real().vector(), normalizedB.real().vector());
 
-    const T dotResult = dot(from.real().vector(), to.real().vector());
+    /* l + εm = q_A^**q_B, multiplying with -1 ensures shortest path when dot < 0 */
+    const DualQuaternion<T> diff = normalizedA.quaternionConjugated()*(dotResult < T(0) ? -normalizedB : normalizedB);
+    const Quaternion<T>& l = diff.real();
+    const Quaternion<T>& m = diff.dual();
 
-    /* Multiplying with -1 ensures shortest path when dot < 0 */
-    /* diff = d = p^*q */
-    const DualQuaternion<T> diff = from.quaternionConjugated()*((dotResult < T(0)) ? -to : to);
+    /* a/2 = acos(l_S) - εm_S/|l_V| */
+    const T invr = l.vector().lengthInverted();
+    const Dual<T> aHalf{std::acos(l.scalar()), -m.scalar()*invr};
 
-    /* angle = t*a_D */
-    const T angle = std::acos(diff.real().scalar())*t;
-    /* Precompute sin/cos for manifold use */
-    const T sinAngle = std::sin(angle);
-    const T cosAngle = std::cos(angle);
+    /* direction = n_0 = l_V/|l_V|
+       moment = n_ε = (m_V - n_0*(a_ε/2)*l_S)/|l_V| */
+    const Vector3<T> direction = l.vector()*invr;
+    const Vector3<T> moment = (m.vector() - direction*(aHalf.dual()*l.scalar()))*invr;
+    const Dual<Vector3<T>> n{direction, moment};
 
-    /* Merely a shortcut */
-    const Vector3<T>& m = diff.real().vector();
-    /* invr = \frac 1 {|l_V|} */
-    const T invr = m.lengthInverted();
-    /* direction = n = l_V * 1/|l_V| */
-    const Vector3<T> direction = m*invr;
-
-    /* Vector of real part of q_{ScLERP} = n_R*sin(t*a_R/2)*/
-    const Vector3<T> v = direction*sinAngle;
-
-    /* pitch = a_D/2 = m_S*1/|l_V| */
-    const T pitch = -diff.dual().scalar()*invr;
-    /* moment = n_D */
-    const Vector3<T> moment = (diff.dual().vector() - (direction*(pitch*diff.real().scalar())))*invr;
-    const T pitchT = pitch*t;
-    /* Vector of dual part of q_{ScLERP} */
-    const Vector3<T> v2 = moment*sinAngle + direction*(pitchT*cosAngle);
-
-    return from*DualQuaternion<T>{Quaternion<T>{v, cosAngle}, Quaternion<T>{v2, -pitchT*sinAngle}};
+    /* q_ScLERP = q_A*(cos(t*a/2) + n*sin(t*a/2)) */
+    Dual<T> sin, cos;
+    std::tie(sin, cos) = Math::sincos(t*Dual<Rad<T>>(aHalf));
+    return normalizedA*DualQuaternion<T>{n*sin, cos};
 }
 
 /**
