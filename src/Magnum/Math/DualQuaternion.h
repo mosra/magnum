@@ -202,6 +202,19 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         constexpr /*implicit*/ DualQuaternion(const Quaternion<T>& real, const Quaternion<T>& dual = Quaternion<T>({}, T(0))): Dual<Quaternion<T>>(real, dual) {}
 
         /**
+         * @brief Construct dual quaternion from dual vector and scalar parts
+         *
+         * @f[
+         *      \hat q = [\hat{\boldsymbol v}, \hat s] = [\boldsymbol v_0, s_0] + \epsilon [\boldsymbol v_\epsilon, s_\epsilon]
+         * @f]
+         */
+        constexpr /*implicit*/ DualQuaternion(const Dual<Vector3<T>>& vector, const Dual<T>& scalar)
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            : Dual<Quaternion<T>>{{vector.real(), scalar.real()}, {vector.dual(), scalar.dual()}}
+            #endif
+            {}
+
+        /**
          * @brief Construct dual quaternion from vector
          *
          * To be used in transformations later. @f[
