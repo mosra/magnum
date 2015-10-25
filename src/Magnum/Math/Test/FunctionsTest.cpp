@@ -453,8 +453,10 @@ void FunctionsTest::trigonometric() {
     CORRADE_COMPARE(Math::cos(Rad(Constants::pi()/3)), 0.5f);
     CORRADE_COMPARE_AS(Math::acos(0.5f), Deg(60.0f), Deg);
 
-    CORRADE_COMPARE(Math::sincos(Deg(30.0f)), std::make_pair(0.5f, 0.8660254037844386f));
-    CORRADE_COMPARE(Math::sincos(Rad(Constants::pi()/6)), std::make_pair(0.5f, 0.8660254037844386f));
+    CORRADE_COMPARE(Math::sincos(Deg(30.0f)).first, 0.5f);
+    CORRADE_COMPARE(Math::sincos(Deg(30.0f)).second, 0.8660254037844386f);
+    CORRADE_COMPARE(Math::sincos(Rad(Constants::pi()/6)).first, 0.5f);
+    CORRADE_COMPARE(Math::sincos(Rad(Constants::pi()/6)).second, 0.8660254037844386f);
 
     CORRADE_COMPARE(Math::tan(Deg(45.0f)), 1.0f);
     CORRADE_COMPARE(Math::tan(Rad(Constants::pi()/4)), 1.0f);
@@ -472,8 +474,10 @@ void FunctionsTest::trigonometricWithBase() {
     CORRADE_COMPARE(Math::cos(2*Deg(30.0f)), 0.5f);
     CORRADE_COMPARE(Math::cos(2*Rad(Constants::pi()/6)), 0.5f);
 
-    CORRADE_COMPARE(Math::sincos(2*Deg(15.0f)), std::make_pair(0.5f, 0.8660254037844386f));
-    CORRADE_COMPARE(Math::sincos(2*Rad(Constants::pi()/12)), std::make_pair(0.5f, 0.8660254037844386f));
+    CORRADE_COMPARE(Math::sincos(2*Deg(15.0f)).first, 0.5f);
+    CORRADE_COMPARE(Math::sincos(2*Deg(15.0f)).second, 0.8660254037844386f);
+    CORRADE_COMPARE(Math::sincos(2*Rad(Constants::pi()/12)).first, 0.5f);
+    CORRADE_COMPARE(Math::sincos(2*Rad(Constants::pi()/12)).second, 0.8660254037844386f);
 
     CORRADE_COMPARE(Math::tan(2*Deg(22.5f)), 1.0f);
     CORRADE_COMPARE(Math::tan(2*Rad(Constants::pi()/8)), 1.0f);
