@@ -157,7 +157,8 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          */
         template<class U> constexpr explicit DualComplex(const DualComplex<U>& other)
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            : Dual<Complex<T>>{other}
+            /* MSVC 2015 can't handle {} here */
+            : Dual<Complex<T>>(other)
             #endif
             {}
 

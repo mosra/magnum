@@ -201,7 +201,8 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          */
         constexpr /*implicit*/ DualQuaternion(const Dual<Vector3<T>>& vector, const Dual<T>& scalar)
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            : Dual<Quaternion<T>>{{vector.real(), scalar.real()}, {vector.dual(), scalar.dual()}}
+            /* MSVC 2015 can't handle {} here */
+            : Dual<Quaternion<T>>({vector.real(), scalar.real()}, {vector.dual(), scalar.dual()})
             #endif
             {}
 
