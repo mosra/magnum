@@ -129,7 +129,8 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
         Renderbuffer(const Renderbuffer&) = delete;
 
         /** @brief Move constructor */
-        Renderbuffer(Renderbuffer&& other) noexcept;
+        /* MinGW complains loudly if the declaration doesn't also have inline */
+        inline Renderbuffer(Renderbuffer&& other) noexcept;
 
         /**
          * @brief Destructor
@@ -143,7 +144,8 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
         Renderbuffer& operator=(const Renderbuffer&) = delete;
 
         /** @brief Move assignment */
-        Renderbuffer& operator=(Renderbuffer&& other) noexcept;
+        /* MinGW complains loudly if the declaration doesn't also have inline */
+        inline Renderbuffer& operator=(Renderbuffer&& other) noexcept;
 
         /** @brief OpenGL renderbuffer ID */
         GLuint id() const { return _id; }
@@ -156,7 +158,8 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
          * equivalent to moved-from state.
          * @see @ref wrap()
          */
-        GLuint release();
+        /* MinGW complains loudly if the declaration doesn't also have inline */
+        inline GLuint release();
 
         #ifndef MAGNUM_TARGET_WEBGL
         /**
