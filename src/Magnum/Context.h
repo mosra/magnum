@@ -73,8 +73,6 @@ class MAGNUM_EXPORT Extension {
         constexpr const char* string() const { return _string; }
 
     private:
-        /* GCC 4.6 doesn't like const members, as std::vector doesn't have
-           proper move semantic yet */
         std::size_t _index;
         Version _requiredVersion;
         Version _coreVersion;
