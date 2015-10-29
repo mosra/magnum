@@ -127,7 +127,7 @@ DistanceFieldShader::DistanceFieldShader(): radiusUniform(0), scalingUniform(1) 
         scalingUniform = uniformLocation("scaling");
 
         #ifndef MAGNUM_TARGET_GLES
-        if(!Context::current()->isVersionSupported(Version::GL300))
+        if(!Context::current()->isVersionSupported(Version::GL320))
         #else
         if(!Context::current()->isVersionSupported(Version::GLES300))
         #endif
@@ -179,7 +179,7 @@ void distanceField(Texture2D& input, Texture2D& output, const Range2Di& rectangl
         .setTexture(input);
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isVersionSupported(Version::GL300))
+    if(!Context::current()->isVersionSupported(Version::GL320))
     #else
     if(!Context::current()->isVersionSupported(Version::GLES300))
     #endif
