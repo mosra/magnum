@@ -87,7 +87,7 @@ void main() {
     #ifdef TEXELFETCH_USABLE
     const mediump ivec2 position = ivec2(gl_FragCoord.xy*scaling);
     #else
-    const mediump vec2 position = gl_FragCoord.xy*scaling*imageSizeInverted;
+    const mediump vec2 position = (gl_FragCoord.xy - vec2(0.5))*scaling*imageSizeInverted;
     #endif
 
     /* If pixel at the position is inside (1), we are looking for nearest pixel
@@ -111,7 +111,7 @@ void main() {
             #ifdef TEXELFETCH_USABLE
             const lowp ivec2 offset = ivec2(-i+j, i);
             #else
-            const lowp vec2 pixelOffset = vec2(float(-i+j), float(i));
+            const lowp vec2 pixelOffset = vec2(float(-i+j), float(i)) + vec2(0.5);
             const lowp vec2 offset = pixelOffset*imageSizeInverted;
             #endif
 
