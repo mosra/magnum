@@ -107,7 +107,7 @@ void main() {
     /* Go in circles around the point and find nearest value */
     int radiusLimit = radius;
     for(int i = 1; i <= radiusLimit; ++i) {
-        for(int j = 0, jmax = i*2; j != jmax; ++j) {
+        for(int j = 0, jmax = i*2; j < jmax; ++j) {
             #ifdef TEXELFETCH_USABLE
             const lowp ivec2 offset = ivec2(-i+j, i);
             #else
