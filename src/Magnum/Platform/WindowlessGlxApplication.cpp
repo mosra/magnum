@@ -109,14 +109,22 @@ bool WindowlessGlxApplication::tryCreateContext(const Configuration&) {
     #ifndef MAGNUM_TARGET_GLES
     /* Fall back to (forward compatible) GL 2.1, if version is not
        user-specified and either core context creation fails or we are on
-       binary NVidia drivers on Linux. NVidia, instead of creating
-       forward-compatible context with highest available version, forces the
+       binary NVidia/AMD drivers on Linux/Windows. Instead of creating forward-
+       compatible context with highest available version, they force the
        version to the one specified, which is completely useless behavior. */
+    #ifndef CORRADE_TARGET_APPLE
     constexpr static const char nvidiaVendorString[] = "NVIDIA Corporation";
+    constexpr static const char amdVendorString[] = "ATI Technologies Inc.";
+    const char* vendorString;
+    #endif
     if(!_glContext
         #ifndef CORRADE_TARGET_APPLE
-        /* We need to make the context current first, sorry about the ugly code */
-        || (glXMakeContextCurrent(_display, _pbuffer, _pbuffer, _glContext) && std::strncmp(reinterpret_cast<const char*>(glGetString(GL_VENDOR)), nvidiaVendorString, sizeof(nvidiaVendorString)) == 0)
+        /* We need to make the context current first, sorry about the UGLY code
+           and HOPEFULLY THERE WON'T BE MORE WORKAROUNDS */
+        || (glXMakeContextCurrent(_display, _pbuffer, _pbuffer, _glContext) &&
+        (vendorString = reinterpret_cast<const char*>(glGetString(GL_VENDOR)),
+        (std::strncmp(vendorString, nvidiaVendorString, sizeof(nvidiaVendorString)) == 0 ||
+         std::strncmp(vendorString, amdVendorString, sizeof(amdVendorString)) == 0)))
         #endif
     ) {
         /* Don't print any warning when doing the NV workaround, because the
