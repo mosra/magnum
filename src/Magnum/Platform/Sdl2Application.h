@@ -255,7 +255,7 @@ class Sdl2Application {
          *
          * On desktop GL, if version is not specified in @p configuration, the
          * application first tries to create core context (OpenGL 3.2+ on OS X,
-         * OpenGL 3.0+ elsewhere) and if that fails, falls back to
+         * OpenGL 3.1+ elsewhere) and if that fails, falls back to
          * compatibility OpenGL 2.1 context.
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -469,8 +469,8 @@ CORRADE_ENUMSET_OPERATORS(Sdl2Application::Flags)
 /**
 @brief Configuration
 
-Centered non-resizable window with double-buffered OpenGL context and 24bit
-depth buffer.
+The created window is always centered with double-buffered OpenGL context and
+24bit depth buffer.
 @see @ref Sdl2Application(), @ref createContext(), @ref tryCreateContext()
 */
 class Sdl2Application::Configuration {
