@@ -26,6 +26,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <al.h>
+#include <alc.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -42,6 +45,12 @@ extern "C" {
 #define AL_EXT_double 1
 #define AL_FORMAT_MONO_DOUBLE_EXT                0x10012
 #define AL_FORMAT_STEREO_DOUBLE_EXT              0x10013
+#endif
+
+/* ALC_SOFTX_HRTF */
+#ifndef ALC_SOFTX_HRTF
+#define ALC_SOFTX_HRTF 1
+#define ALC_HRTF_SOFT                            0x1992
 #endif
 
 /* ALC_SOFT_HRTF */
@@ -63,6 +72,9 @@ extern "C" {
 #define ALC_HRTF_REQUIRED_SOFT                   0x0003
 #define ALC_HRTF_HEADPHONES_DETECTED_SOFT        0x0004
 #define ALC_HRTF_UNSUPPORTED_FORMAT_SOFT         0x0005
+
+typedef ALCchar* (AL_APIENTRY*LPALGETSTRINGISOFT)(ALCdevice*,ALCenum,ALCsizei);
+typedef ALCboolean (AL_APIENTRY*LPALRESETDEVICESOFT)(ALCdevice*,const ALCint*);
 #endif
 
 #ifdef __cplusplus
