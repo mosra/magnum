@@ -47,6 +47,7 @@ Extension                                   | Status
 Extension                                   | Status
 ------------------------------------------- | ------
 @alc_extension{SOFTX,HRTF}                  | done
+@alc_extension{SOFT,HRTF}                   | done
 
 
 */

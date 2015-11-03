@@ -240,13 +240,20 @@ class MAGNUM_AUDIO_EXPORT Context::Configuration {
             return *this;
         }
 
-        /** @brief Whether to use hrtfs */
+        /**
+         * @brief Whether to use hrtfs
+         * @requires_alc_extension for HRTFs, extension @alc_extension{SOFTX,HRTF}
+         *      or @alc_extension{SOFT,HRTF}
+         */
         EnabledState isHrtfEnabled() const { return _enableHrtf; }
 
         /**
          * @brief Set whether to use hrtfs
          *
          * Defaults to local OpenAL configuration or false.
+         * @requires_alc_extension for HRTFs otherwise setting will be ignored,
+         *      extension @alc_extension{SOFTX,HRTF} or
+         *      @alc_extension{SOFT,HRTF}
          */
         Configuration& setHrtfEnabled(EnabledState hrtf) {
             _enableHrtf = hrtf;

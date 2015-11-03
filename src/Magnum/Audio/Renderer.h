@@ -32,8 +32,11 @@
 #include <array>
 
 #include <al.h>
+#include <alc.h>
 
 #include "Magnum/Magnum.h"
+#include "Magnum/Audio/Context.h"
+#include "Magnum/Audio/Extensions.h"
 #include "Magnum/Audio/visibility.h"
 #include "Magnum/Math/Vector3.h"
 
@@ -56,6 +59,38 @@ class Renderer {
             InvalidValue = AL_INVALID_VALUE, /**< Invalid enum value parameter */
             InvalidOperation = AL_INVALID_OPERATION, /**< Illegal call */
             OutOfMemory = AL_OUT_OF_MEMORY  /**< Unable to allocate memory */
+        };
+
+        enum class HrtfStatus: Short {
+            Disabled = ALC_HRTF_DISABLED_SOFT,    /**< HRTF is disabled */
+            Enabled = ALC_HRTF_ENABLED_SOFT,      /**< HRTF is enabled */
+
+            /**
+             * HRTF is disabled because it is not allowed on the device. This
+             * may be caused by invalid resource permissions, or an other user
+             * configuration that disallows HRTF.
+             */
+            Denied = ALC_HRTF_DENIED_SOFT,
+
+            /**
+             * HRTF is enabled because it must be used on the device. This may
+             * be caused by a device that can only use HRTF, or other user
+             * configuration that forces HRTF to be used.
+             */
+            Required = ALC_HRTF_REQUIRED_SOFT,
+
+            /**
+             * HRTF is enabled automatically because the device reported
+             * headphones.
+             */
+            Detected = ALC_HRTF_HEADPHONES_DETECTED_SOFT,
+
+            /**
+             * The device does not support HRTF with the current format.
+             * Typically this is caused by non-stereo output or an incompatible
+             * output frequency.
+             */
+            UnsupportedFormat = ALC_HRTF_UNSUPPORTED_FORMAT_SOFT
         };
 
         /** @brief Error status */
@@ -256,6 +291,40 @@ class Renderer {
             alDistanceModel(ALenum(model));
         }
 
+        /**
+         * @brief Whether HRTFs (Head Related Transfer Functions) are enabled
+         *
+         * HRFTs may not be enabled/disabled in a running context. Instead
+         * create a new context with HRFTs enabled or disabled.
+         * @see @fn_al{GetIntegerv} with @def_alc{HRTF_SOFT},
+         *      Audio::Configuration::isHrtfEnabled(),
+         *      Audio::Configuration::setHrtfEnabled()
+         */
+        static bool isHrtfEnabled() {
+            Int enabled = ALC_FALSE;
+            alGetIntegerv(ALC_HRTF_SOFT, &enabled);
+            return enabled == ALC_TRUE;
+        }
+
+        /**
+         * @brief HRTF status
+         *
+         * @requires_alc_extension for only @ref HrtfStatus::Enabled and
+         *      @ref HrtfStatus::Disabled, extension @alc_extension{SOFTX,HRTF}
+         * @requires_alc_extension for any @ref HrtfStatus, @alc_extension{SOFT,HRTF}
+         * @see @fn_al{GetIntegerv} with @def_alc{HRTF_STATUS_SOFT},
+         *      @ref isHrtfEnabled()
+         */
+        static HrtfStatus hrtfStatus() {
+            if(!Context::current()->isExtensionSupported<Extensions::ALC::SOFT::HRTF>()) {
+                return (isHrtfEnabled()) ? HrtfStatus::Enabled : HrtfStatus::Disabled;
+            }
+
+            Int status = ALC_HRTF_DISABLED_SOFT;
+            alGetIntegerv(ALC_HRTF_STATUS_SOFT, &status);
+            return HrtfStatus(status);
+        }
+
         /*@}*/
 };
 
@@ -264,6 +333,9 @@ MAGNUM_AUDIO_EXPORT Debug& operator<<(Debug& debug, Renderer::Error value);
 
 /** @debugoperatorclassenum{Magnum::Audio::Renderer,Magnum::Audio::Renderer::DistanceModel} */
 MAGNUM_AUDIO_EXPORT Debug& operator<<(Debug& debug, Renderer::DistanceModel value);
+
+/** @debugoperatorclassenum{Magnum::Audio::Renderer,Magnum::Audio::Renderer::HrtfStatus} */
+MAGNUM_AUDIO_EXPORT Debug& operator<<(Debug& debug, Renderer::HrtfStatus value);
 
 }}
 

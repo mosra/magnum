@@ -87,6 +87,9 @@ namespace AL {
     namespace SOFTX {
         _extension(ALC,SOFTX,HRTF) // #???
     }
+    namespace SOFT {
+        _extension(ALC,SOFT,HRTF) // #???
+    }
 }
 #undef _extension
 #undef _extension_rev
