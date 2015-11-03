@@ -69,14 +69,14 @@ MyShader() {
     // Load shader sources
     Shader vert(Version::GL430, Shader::Type::Vertex);
     Shader frag(Version::GL430, Shader::Type::Fragment);
-    vert.addFile("PhongShader.vert");
-    frag.addFile("PhongShader.vert");
+    vert.addFile("MyShader.vert");
+    frag.addFile("MyShader.frag");
 
     // Invoke parallel compilation for best performance
     CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
 
     // Attach the shaders
-    attachShader({vert, frag});
+    attachShaders({vert, frag});
 
     // Link the program together
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
