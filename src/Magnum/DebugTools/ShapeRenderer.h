@@ -126,7 +126,7 @@ Visualizes collision shapes using wireframe primitives. See
 Example code:
 @code
 // Create some options
-DebugTools::ResourceManager::instance()->set("red",
+DebugTools::ResourceManager::instance().set("red",
     DebugTools::ShapeRendererOptions().setColor({1.0f, 0.0f, 0.0f}));
 
 // Create debug renderer for given shape, use "red" options for it

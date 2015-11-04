@@ -231,7 +231,7 @@ Resource<Mesh> cube{manager.get<Mesh>("cube")};
 if(!cube) {
     Mesh* mesh = new Mesh;
     // ...
-    manager->set(cube.key(), mesh, ResourceDataState::Final, ResourcePolicy::Resident);
+    manager.set(cube.key(), mesh, ResourceDataState::Final, ResourcePolicy::Resident);
 }
 @endcode
 -   Using the resource data.
