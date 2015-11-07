@@ -37,8 +37,8 @@ Debug& operator<<(Debug& debug, const Buffer::Format value) {
         _c(Stereo8)
         _c(Stereo16)
 
-        _c(MonoFloat32)
-        _c(StereoFloat32)
+        _c(MonoFloat)
+        _c(StereoFloat)
         _c(MonoDouble)
         _c(StereoDouble)
         #undef _c

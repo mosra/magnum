@@ -62,14 +62,14 @@ class Buffer {
              *
              * @requires_al_extension Extension @al_extension{EXT,float32}
              */
-            MonoFloat32 = AL_FORMAT_MONO_FLOAT32,
+            MonoFloat = AL_FORMAT_MONO_FLOAT32,
 
             /**
              * @brief 32-bit interleaved floating-point stereo
              *
              * @requires_al_extension Extension @al_extension{EXT,float32}
              */
-            StereoFloat32 = AL_FORMAT_STEREO_FLOAT32,
+            StereoFloat = AL_FORMAT_STEREO_FLOAT32,
 
             /**
              * @brief 64-bit floating-point mono
