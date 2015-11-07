@@ -134,7 +134,7 @@ bool Context::tryCreateContext(const Configuration& config) {
     };
 
     /* last valid index in the attributes array */
-    int last = 1;
+    Int last = 1;
 
     if(config.isHrtfEnabled() != Configuration::EnabledState::Default) {
         attributes[++last] = ALC_HRTF_SOFT;

@@ -58,32 +58,32 @@ class Buffer {
             Stereo16 = AL_FORMAT_STEREO16,   /**< 16-bit interleaved signed stereo */
 
             /**
-             * @brief 32-bit mono
+             * @brief 32-bit floating-point mono
              *
-             * @requires_al_extension extension @al_extension{EXT,float32}
+             * @requires_al_extension Extension @al_extension{EXT,float32}
              */
             MonoFloat32 = AL_FORMAT_MONO_FLOAT32,
 
             /**
-             * @brief 32-bit interleaved stereo
+             * @brief 32-bit interleaved floating-point stereo
              *
-             * @requires_al_extension extension @al_extension{EXT,float32}
+             * @requires_al_extension Extension @al_extension{EXT,float32}
              */
             StereoFloat32 = AL_FORMAT_STEREO_FLOAT32,
 
             /**
-             * @brief 64-bit mono
+             * @brief 64-bit floating-point mono
              *
-             * @requires_al_extension extension @al_extension{EXT,double}
+             * @requires_al_extension Extension @al_extension{EXT,double}
              */
             MonoDouble = AL_FORMAT_MONO_DOUBLE_EXT,
 
             /**
-             * @brief 64-bit interleaved stereo
+             * @brief 64-bit interleaved floating-point stereo
              *
-             * @requires_al_extension extension @al_extension{EXT,double}
+             * @requires_al_extension Extension @al_extension{EXT,double}
              */
-            StereoDouble = AL_FORMAT_STEREO_DOUBLE_EXT,
+            StereoDouble = AL_FORMAT_STEREO_DOUBLE_EXT
         };
 
         /**

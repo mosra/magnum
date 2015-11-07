@@ -61,14 +61,22 @@ class Renderer {
             OutOfMemory = AL_OUT_OF_MEMORY  /**< Unable to allocate memory */
         };
 
+        /**
+         * @brief HRTF status
+         *
+         * @see @ref hrtfStatus(), @ref isHrtfEnabled()
+         * @requires_al_extension Extension @alc_extension{SOFTX,HRTF} or
+         *      @alc_extension{SOFT,HRTF}
+         */
         enum class HrtfStatus: Short {
-            Disabled = ALC_HRTF_DISABLED_SOFT,    /**< HRTF is disabled */
-            Enabled = ALC_HRTF_ENABLED_SOFT,      /**< HRTF is enabled */
+            Disabled = ALC_HRTF_DISABLED_SOFT,  /**< HRTF is disabled */
+            Enabled = ALC_HRTF_ENABLED_SOFT,    /**< HRTF is enabled */
 
             /**
              * HRTF is disabled because it is not allowed on the device. This
              * may be caused by invalid resource permissions, or an other user
              * configuration that disallows HRTF.
+             * @requires_al_extension Extension @alc_extension{SOFT,HRTF}
              */
             Denied = ALC_HRTF_DENIED_SOFT,
 
@@ -76,12 +84,14 @@ class Renderer {
              * HRTF is enabled because it must be used on the device. This may
              * be caused by a device that can only use HRTF, or other user
              * configuration that forces HRTF to be used.
+             * @requires_al_extension Extension @alc_extension{SOFT,HRTF}
              */
             Required = ALC_HRTF_REQUIRED_SOFT,
 
             /**
              * HRTF is enabled automatically because the device reported
              * headphones.
+             * @requires_al_extension Extension @alc_extension{SOFT,HRTF}
              */
             Detected = ALC_HRTF_HEADPHONES_DETECTED_SOFT,
 
@@ -89,12 +99,46 @@ class Renderer {
              * The device does not support HRTF with the current format.
              * Typically this is caused by non-stereo output or an incompatible
              * output frequency.
+             * @requires_al_extension Extension @alc_extension{SOFT,HRTF}
              */
             UnsupportedFormat = ALC_HRTF_UNSUPPORTED_FORMAT_SOFT
         };
 
         /** @brief Error status */
         static Error error() { return Error(alGetError()); }
+
+        /**
+         * @brief Whether HRTFs (Head Related Transfer Functions) are enabled
+         *
+         * HRFTs may not be enabled/disabled in a running context. Instead
+         * create a new @ref Context with HRFTs enabled or disabled.
+         * @see @ref hrtfStatus(), @ref Audio::Context::Configuration::setHrtf(),
+         *      @fn_al{GetIntegerv} with @def_alc{HRTF_SOFT}
+         * @requires_al_extension Extension @alc_extension{SOFTX,HRTF} or
+         *      @alc_extension{SOFT,HRTF}
+         */
+        static bool isHrtfEnabled() {
+            Int enabled;
+            alGetIntegerv(ALC_HRTF_SOFT, &enabled);
+            return enabled == ALC_TRUE;
+        }
+
+        /**
+         * @brief HRTF status
+         *
+         * @see @ref isHrtfEnabled(), @fn_al{GetIntegerv} with
+         *      @def_alc{HRTF_STATUS_SOFT}
+         * @requires_al_extension Extension @alc_extension{SOFTX,HRTF} or
+         *      @alc_extension{SOFT,HRTF}
+         */
+        static HrtfStatus hrtfStatus() {
+            if(!Context::current()->isExtensionSupported<Extensions::ALC::SOFT::HRTF>())
+                return isHrtfEnabled() ? HrtfStatus::Enabled : HrtfStatus::Disabled;
+
+            Int status;
+            alGetIntegerv(ALC_HRTF_STATUS_SOFT, &status);
+            return HrtfStatus(status);
+        }
 
         /** @{ @name Listener positioning */
 
@@ -289,40 +333,6 @@ class Renderer {
          */
         static void setDistanceModel(DistanceModel model) {
             alDistanceModel(ALenum(model));
-        }
-
-        /**
-         * @brief Whether HRTFs (Head Related Transfer Functions) are enabled
-         *
-         * HRFTs may not be enabled/disabled in a running context. Instead
-         * create a new context with HRFTs enabled or disabled.
-         * @see @fn_al{GetIntegerv} with @def_alc{HRTF_SOFT},
-         *      Audio::Configuration::isHrtfEnabled(),
-         *      Audio::Configuration::setHrtfEnabled()
-         */
-        static bool isHrtfEnabled() {
-            Int enabled = ALC_FALSE;
-            alGetIntegerv(ALC_HRTF_SOFT, &enabled);
-            return enabled == ALC_TRUE;
-        }
-
-        /**
-         * @brief HRTF status
-         *
-         * @requires_alc_extension for only @ref HrtfStatus::Enabled and
-         *      @ref HrtfStatus::Disabled, extension @alc_extension{SOFTX,HRTF}
-         * @requires_alc_extension for any @ref HrtfStatus, @alc_extension{SOFT,HRTF}
-         * @see @fn_al{GetIntegerv} with @def_alc{HRTF_STATUS_SOFT},
-         *      @ref isHrtfEnabled()
-         */
-        static HrtfStatus hrtfStatus() {
-            if(!Context::current()->isExtensionSupported<Extensions::ALC::SOFT::HRTF>()) {
-                return (isHrtfEnabled()) ? HrtfStatus::Enabled : HrtfStatus::Disabled;
-            }
-
-            Int status = ALC_HRTF_DISABLED_SOFT;
-            alGetIntegerv(ALC_HRTF_STATUS_SOFT, &status);
-            return HrtfStatus(status);
         }
 
         /*@}*/

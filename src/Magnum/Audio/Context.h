@@ -38,11 +38,9 @@
 
 #include <Corrade/Containers/EnumSet.h>
 
-#include <Magnum/Magnum.h>
-
-#include "Magnum/Audio/visibility.h"
+#include "Magnum/Audio/Audio.h"
 #include "Magnum/Audio/Buffer.h"
-
+#include "Magnum/Audio/visibility.h"
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 typedef struct ALCdevice_struct ALCdevice;
@@ -50,8 +48,6 @@ typedef struct ALCcontext_struct ALCcontext;
 #endif
 
 namespace Magnum { namespace Audio {
-
-class Context;
 
 /**
 @brief Run-time information about OpenAL extension
@@ -170,7 +166,7 @@ class MAGNUM_AUDIO_EXPORT Context {
          * @endcode
          *
          * @see @ref isExtensionSupported(const Extension&) const,
-         *      @ref MAGNUM_AUDIO_ASSERT_EXTENSION_SUPPORTED()
+         *      @ref MAGNUM_ASSERT_AUDIO_EXTENSION_SUPPORTED()
          */
         template<class T> bool isExtensionSupported() const {
             return _extensionStatus[T::Index];
@@ -183,7 +179,7 @@ class MAGNUM_AUDIO_EXPORT Context {
          * hardware, but for general usage prefer @ref isExtensionSupported() const,
          * as it does most operations in compile time.
          * @see @ref supportedExtensions(), @ref Extension::extensions(),
-         *      @ref MAGNUM_AUDIO_ASSERT_EXTENSION_SUPPORTED()
+         *      @ref MAGNUM_ASSERT_AUDIO_EXTENSION_SUPPORTED()
          */
         bool isExtensionSupported(const Extension& extension) const {
             return _extensionStatus[extension._index];
@@ -203,9 +199,13 @@ class MAGNUM_AUDIO_EXPORT Context {
         std::vector<Extension> _supportedExtensions;
 };
 
+/**
+@brief OpenAL context configuration
+
+@see @ref Context()
+*/
 class MAGNUM_AUDIO_EXPORT Context::Configuration {
     public:
-
         /**
          * @brief Enum for boolean values with a driver specific default
          * value
@@ -216,9 +216,7 @@ class MAGNUM_AUDIO_EXPORT Context::Configuration {
             Disabled = 2
         };
 
-        /**
-         * @brief Constructor
-         */
+        /** @brief Constructor */
         explicit Configuration():
             _frequency(44100),
             _enableHrtf(),
@@ -232,6 +230,7 @@ class MAGNUM_AUDIO_EXPORT Context::Configuration {
 
         /**
          * @brief Set sampling rate (in Hz)
+         * @return Reference to self (for method chaining)
          *
          * Default is `44100`.
          */
@@ -269,8 +268,9 @@ class MAGNUM_AUDIO_EXPORT Context::Configuration {
 
         /**
          * @brief Set hint for how mono sources to support
+         * @return Reference to self (for method chaining)
          *
-         * If not set, no hint will given to OpenAL.
+         * If set to `-1` (the default), no hint will be given to OpenAL.
          */
         Configuration& setMonoSourcesCount(Int sources) {
             _monoSources = sources;
@@ -286,8 +286,9 @@ class MAGNUM_AUDIO_EXPORT Context::Configuration {
 
         /**
          * @brief Set hint for how stereo sources to support
+         * @return Reference to self (for method chaining)
          *
-         * If not set, no hint will given to OpenAL.
+         * If set to `-1` (the default), no hint will be given to OpenAL.
          */
         Configuration& setStereoSourcesCount(Int sources) {
             _stereoSources = sources;
@@ -307,7 +308,6 @@ class MAGNUM_AUDIO_EXPORT Context::Configuration {
         }
 
     private:
-
         Int _frequency;
         EnabledState _enableHrtf;
 

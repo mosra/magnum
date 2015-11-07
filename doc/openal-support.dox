@@ -34,7 +34,6 @@
 The extension implementation is considered complete if all its defined types,
 functions and enum values are exposed through the API.
 
-
 @subsection openal-extension-support Extensions
 
 Extension                                   | Status
@@ -42,7 +41,7 @@ Extension                                   | Status
 @al_extension{EXT,double}                   | done
 @al_extension{EXT,float32}                  | done
 
-@subsection openal-extension-support OpenAL Soft Extensions
+@subsection openal-extension-support-soft OpenAL Soft Extensions
 
 Extension                                   | Status
 ------------------------------------------- | ------
