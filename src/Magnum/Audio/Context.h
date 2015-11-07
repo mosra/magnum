@@ -207,19 +207,20 @@ class MAGNUM_AUDIO_EXPORT Context {
 class MAGNUM_AUDIO_EXPORT Context::Configuration {
     public:
         /**
-         * @brief Enum for boolean values with a driver specific default
-         * value
+         * @brief HRTF configuration
+         *
+         * @see @ref setHrtf()
          */
-        enum class EnabledState: Byte {
+        enum class Hrtf: Byte {
+            /** Default behavior depending on local OpenAL configuration */
             Default = 0,
-            Enabled = 1,
-            Disabled = 2
+            Enabled = 1,    /**< Eabled */
+            Disabled = 2    /**< Disabled */
         };
 
         /** @brief Constructor */
         explicit Configuration():
             _frequency(44100),
-            _enableHrtf(),
             _monoSources(-1),
             _stereoSources(-1),
             _refreshRate(-1)
@@ -229,87 +230,79 @@ class MAGNUM_AUDIO_EXPORT Context::Configuration {
         Int frequency() const { return _frequency; }
 
         /**
-         * @brief Set sampling rate (in Hz)
+         * @brief Set sampling rate
          * @return Reference to self (for method chaining)
          *
          * Default is `44100`.
          */
-        Configuration& setFrequency(Int freq) {
-            _frequency = freq;
+        Configuration& setFrequency(Int hz) {
+            _frequency = hz;
             return *this;
         }
 
-        /**
-         * @brief Whether to use hrtfs
-         * @requires_alc_extension for HRTFs, extension @alc_extension{SOFTX,HRTF}
-         *      or @alc_extension{SOFT,HRTF}
-         */
-        EnabledState isHrtfEnabled() const { return _enableHrtf; }
+        /** @brief HRTF configuration */
+        Hrtf hrtf() const { return _hrtf; }
 
         /**
-         * @brief Set whether to use hrtfs
+         * @brief Set HRTF configuration
+         * @return Reference to self (for method chaining)
          *
-         * Defaults to local OpenAL configuration or false.
-         * @requires_alc_extension for HRTFs otherwise setting will be ignored,
-         *      extension @alc_extension{SOFTX,HRTF} or
-         *      @alc_extension{SOFT,HRTF}
+         * If set to @ref Hrtf::Default (the default), system OpenAL
+         * configuration is used.
+         * @requires_al_extension Extension @alc_extension{SOFTX,HRTF} or
+         *      @alc_extension{SOFT,HRTF}, otherwise the setting will be simply
+         *      ignored
          */
-        Configuration& setHrtfEnabled(EnabledState hrtf) {
-            _enableHrtf = hrtf;
+        Configuration& setHrtf(Hrtf hrtf) {
+            _hrtf = hrtf;
             return *this;
         }
 
-        /**
-         * @brief Hint for how mono sources to support
-         *
-         * Returns `-1`, if no hint was set.
-         */
-        Int monoSourcesCount() const { return _monoSources; }
+        /** @brief Hint for how many mono sources to support */
+        Int monoSourceCount() const { return _monoSources; }
 
         /**
-         * @brief Set hint for how mono sources to support
+         * @brief Set hint for how many mono sources to support
          * @return Reference to self (for method chaining)
          *
          * If set to `-1` (the default), no hint will be given to OpenAL.
          */
-        Configuration& setMonoSourcesCount(Int sources) {
-            _monoSources = sources;
+        Configuration& setMonoSourceCount(Int count) {
+            _monoSources = count;
             return *this;
         }
 
-        /**
-         * @brief Hint for how stereo sources to support
-         *
-         * Returns `-1`, if no hint was set.
-         */
-        Int stereoSourcesCount() const { return _stereoSources; }
+        /** @brief Hint for how many stereo sources to support */
+        Int stereoSourceCount() const { return _stereoSources; }
 
         /**
-         * @brief Set hint for how stereo sources to support
+         * @brief Set hint for how many stereo sources to support
          * @return Reference to self (for method chaining)
          *
          * If set to `-1` (the default), no hint will be given to OpenAL.
          */
-        Configuration& setStereoSourcesCount(Int sources) {
-            _stereoSources = sources;
+        Configuration& setStereoSourceCount(Int count) {
+            _stereoSources = count;
             return *this;
         }
 
-        /** @brief Rate at which the OpenAL device is refreshed (in Hz) */
+        /** @brief Refresh rate in Hz */
         Int refreshRate() const { return _refreshRate; }
 
         /**
-         * @brief Set rate at which the OpenAL device is refreshed (in Hz)
+         * @brief Set refresh rate
          * @return Reference to self (for method chaining)
+         *
+         * If set to `-1` (the default), system OpenAL configuration is used.
          */
-        Configuration& setRefreshRate(Int rate) {
-            _refreshRate = rate;
+        Configuration& setRefreshRate(Int hz) {
+            _refreshRate = hz;
             return *this;
         }
 
     private:
         Int _frequency;
-        EnabledState _enableHrtf;
+        Hrtf _hrtf;
 
         Int _monoSources;
         Int _stereoSources;
