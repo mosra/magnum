@@ -125,7 +125,7 @@ bool Context::tryCreateContext(const Configuration& config) {
        Make sure to always add sufficient space at end of the attributes
        array.*/
     Int attributes[]{
-      ALC_FREQUENCY, config.frequency(),
+      0, 0,
       0, 0,
       0, 0,
       0, 0,
@@ -134,24 +134,28 @@ bool Context::tryCreateContext(const Configuration& config) {
     };
 
     /* last valid index in the attributes array */
-    Int last = 1;
+    Int last = 0;
 
+    if(config.frequency() != -1) {
+        attributes[last++] = ALC_FREQUENCY;
+        attributes[last++] = config.frequency();
+    }
     if(config.hrtf() != Configuration::Hrtf::Default) {
-        attributes[++last] = ALC_HRTF_SOFT;
-        attributes[++last] = (config.hrtf() == Configuration::Hrtf::Enabled)
+        attributes[last++] = ALC_HRTF_SOFT;
+        attributes[last++] = (config.hrtf() == Configuration::Hrtf::Enabled)
                              ? ALC_TRUE : ALC_FALSE;
     }
     if(config.monoSourceCount() != -1) {
-        attributes[++last] = ALC_MONO_SOURCES;
-        attributes[++last] = config.monoSourceCount();
+        attributes[last++] = ALC_MONO_SOURCES;
+        attributes[last++] = config.monoSourceCount();
     }
     if(config.stereoSourceCount() != -1) {
-        attributes[++last] = ALC_STEREO_SOURCES;
-        attributes[++last] = config.stereoSourceCount();
+        attributes[last++] = ALC_STEREO_SOURCES;
+        attributes[last++] = config.stereoSourceCount();
     }
     if(config.refreshRate() != -1) {
-        attributes[++last] = ALC_REFRESH;
-        attributes[++last] = config.refreshRate();
+        attributes[last++] = ALC_REFRESH;
+        attributes[last++] = config.refreshRate();
     }
 
     _context = alcCreateContext(_device, attributes);

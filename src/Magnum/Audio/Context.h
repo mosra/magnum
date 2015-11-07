@@ -220,7 +220,7 @@ class MAGNUM_AUDIO_EXPORT Context::Configuration {
 
         /** @brief Constructor */
         explicit Configuration():
-            _frequency(44100),
+            _frequency(-1),
             _monoSources(-1),
             _stereoSources(-1),
             _refreshRate(-1)
@@ -233,7 +233,7 @@ class MAGNUM_AUDIO_EXPORT Context::Configuration {
          * @brief Set sampling rate
          * @return Reference to self (for method chaining)
          *
-         * Default is `44100`.
+         * If set to `-1` (the default), system OpenAL configuration is used.
          */
         Configuration& setFrequency(Int hz) {
             _frequency = hz;
