@@ -414,7 +414,13 @@ void FunctionsTest::renormalizeSinged() {
 }
 
 void FunctionsTest::normalizeTypeDeduction() {
-    CORRADE_COMPARE(Math::normalize<Float>('\x7F'), 1.0f);
+    if(std::is_signed<char>::value)
+        CORRADE_COMPARE(Math::normalize<Float>('\x7F'), 1.0f);
+    else {
+        /* Raspberry Pi `char` is unsigned (huh) */
+        CORRADE_VERIFY(std::is_unsigned<char>::value);
+        CORRADE_COMPARE(Math::normalize<Float>('\x7F'), 0.498039f);
+    }
     CORRADE_COMPARE((Math::normalize<Float, Byte>('\x7F')), 1.0f);
 }
 
