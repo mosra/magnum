@@ -438,6 +438,9 @@ void QuaternionTest::slerp() {
 
     Quaternion slerp = Math::slerp(a, b, 0.35f);
     CORRADE_COMPARE(slerp, Quaternion({0.1191653f, 0.0491109f, 0.0491109f}, 0.9904423f));
+
+    CORRADE_COMPARE(Math::slerp(Quaternion(), Quaternion(), 0.25f), Quaternion());
+    CORRADE_COMPARE(Math::slerp(Quaternion(), -Quaternion(), 0.42f), Quaternion());
 }
 
 void QuaternionTest::transformVector() {
