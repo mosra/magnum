@@ -102,7 +102,8 @@ template<class T> inline Quaternion<T> lerp(const Quaternion<T>& normalizedA, co
 @param normalizedB  Second quaternion
 @param t            Interpolation phase (from range @f$ [0; 1] @f$)
 
-Expects that both quaternions are normalized. @f[
+Expects that both quaternions are normalized. If the quaternions are the same
+or one is a negation of the other, returns the first argument. @f[
     q_{SLERP} = \frac{sin((1 - t) \theta) q_A + sin(t \theta) q_B}{sin \theta}
     ~ ~ ~ ~ ~ ~ ~
     \theta = acos \left( \frac{q_A \cdot q_B}{|q_A| \cdot |q_B|} \right) = acos(q_A \cdot q_B)
@@ -113,11 +114,10 @@ template<class T> inline Quaternion<T> slerp(const Quaternion<T>& normalizedA, c
     CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
         "Math::slerp(): quaternions must be normalized", {});
     const T cosHalfAngle = dot(normalizedA, normalizedB);
-    if(std::abs(cosHalfAngle) >= T(1)) {
-        /* The angle `a` between the quaternions `A` and `B` is 0 and we cannot
-           divide by sin(a). This is the case for `A == B` or `A == -B`. */
-        return Quaternion<T>{normalizedA};
-    }
+
+    /* Avoid division by zero */
+    if(std::abs(cosHalfAngle) >= T(1)) return Quaternion<T>{normalizedA};
+
     const T a = std::acos(cosHalfAngle);
     return (std::sin((T(1) - t)*a)*normalizedA + std::sin(t*a)*normalizedB)/std::sin(a);
 }
