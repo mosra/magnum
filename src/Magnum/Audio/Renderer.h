@@ -68,7 +68,7 @@ class Renderer {
          * @requires_al_extension Extension @alc_extension{SOFTX,HRTF} or
          *      @alc_extension{SOFT,HRTF}
          */
-        enum class HrtfStatus: Short {
+        enum class HrtfStatus: ALenum {
             Disabled = ALC_HRTF_DISABLED_SOFT,  /**< HRTF is disabled */
             Enabled = ALC_HRTF_ENABLED_SOFT,    /**< HRTF is enabled */
 
