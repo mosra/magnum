@@ -52,6 +52,9 @@ namespace Implementation {
 
         template<class T> constexpr static T pow(T) { return 1; }
     };
+
+    template<class> struct IsBoolVector: std::false_type {};
+    template<std::size_t size> struct IsBoolVector<BoolVector<size>>: std::true_type {};
 }
 
 /**
@@ -409,13 +412,34 @@ The interpolation for vectors is done as in following, similarly for scalars: @f
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T, class U> inline T lerp(const T& a, const T& b, U t);
 #else
-template<class T, class U> inline T lerp(T a, T b, U t) {
+template<class T, class U> inline typename std::enable_if<!Implementation::IsBoolVector<U>::value, T>::type lerp(T a, T b, U t) {
     return T((U(1) - t)*a + t*b);
 }
-template<std::size_t size, class T, class U> inline Vector<size, T> lerp(const Vector<size, T>& a, const Vector<size, T>& b, U t) {
+template<std::size_t size, class T, class U> inline typename std::enable_if<!Implementation::IsBoolVector<U>::value, Vector<size, T>>::type lerp(const Vector<size, T>& a, const Vector<size, T>& b, U t) {
     return (U(1) - t)*a + t*b;
 }
 #endif
+
+/**
+@overload
+
+Similar to the above, but instead of multiplication and addition it just does
+component-wise selection from either @p a or @p b based on values in @p t.
+*/
+template<std::size_t size, class T> inline Vector<size, T> lerp(const Vector<size, T>& a, const Vector<size, T>& b, const BoolVector<size>& t) {
+    Vector<size, T> out{NoInit};
+    for(std::size_t i = 0; i != size; ++i)
+        out[i] = t[i] ? a[i] : b[i];
+    return out;
+}
+
+/** @overload */
+template<std::size_t size> inline BoolVector<size> lerp(const BoolVector<size>& a, const BoolVector<size>& b, const BoolVector<size>& t) {
+    BoolVector<size> out{NoInit};
+    for(std::size_t i = 0; i != size; ++i)
+        out.set(i, t[i] ? a[i] : b[i]);
+    return out;
+}
 
 /**
 @brief Inverse linear interpolation of two values

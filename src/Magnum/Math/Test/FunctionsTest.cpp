@@ -52,6 +52,7 @@ struct FunctionsTest: Corrade::TestSuite::Tester {
     void sqrt();
     void sqrtInverted();
     void lerp();
+    void lerpBool();
     void lerpInverted();
     void fma();
     void normalizeUnsigned();
@@ -99,6 +100,7 @@ FunctionsTest::FunctionsTest() {
               &FunctionsTest::sqrt,
               &FunctionsTest::sqrtInverted,
               &FunctionsTest::lerp,
+              &FunctionsTest::lerpBool,
               &FunctionsTest::lerpInverted,
               &FunctionsTest::fma,
               &FunctionsTest::normalizeUnsigned,
@@ -240,6 +242,11 @@ void FunctionsTest::lerp() {
 
     /* Vector as interpolation phase */
     CORRADE_COMPARE(Math::lerp(a, b, Vector3(0.25f, 0.5f, 0.75f)), Vector3(0.0f, 0.0f, 9.0f));
+}
+
+void FunctionsTest::lerpBool() {
+    CORRADE_COMPARE(Math::lerp(Vector3i{1, 2, 3}, Vector3i{5, 6, 7}, BoolVector<3>(5)), (Vector3i{1, 6, 3}));
+    CORRADE_COMPARE(Math::lerp(BoolVector<3>{false}, BoolVector<3>{true}, BoolVector<3>(5)), BoolVector<3>{2});
 }
 
 void FunctionsTest::lerpInverted() {
