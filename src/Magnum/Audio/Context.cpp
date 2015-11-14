@@ -53,6 +53,21 @@ const std::vector<Extension>& Extension::extensions() {
     return extensions;
 }
 
+Debug& operator<<(Debug& debug, const Context::HrtfStatus value) {
+    switch(value) {
+        #define _c(value) case Context::HrtfStatus::value: return debug << "Audio::Context::HrtfStatus::" #value;
+        _c(Disabled)
+        _c(Enabled)
+        _c(Denied)
+        _c(Required)
+        _c(Detected)
+        _c(UnsupportedFormat)
+        #undef _c
+    }
+
+    return debug << "Audio::Context::HrtfStatus::(invalid)";
+}
+
 Context* Context::_current = nullptr;
 
 Context::Context(): Context{Configuration{}} {}

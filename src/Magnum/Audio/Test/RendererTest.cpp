@@ -37,7 +37,6 @@ struct RendererTest: TestSuite::Tester {
 
     void debugError();
     void debugDistanceModel();
-    void hrtfStatus();
     void listenerOrientation();
     void listenerPosition();
     void listenerVelocity();
@@ -45,7 +44,6 @@ struct RendererTest: TestSuite::Tester {
     void speedOfSound();
     void dopplerFactor();
     void distanceModel();
-    void hrtfs();
 
     Context _context;
 };
@@ -53,15 +51,13 @@ struct RendererTest: TestSuite::Tester {
 RendererTest::RendererTest() {
     addTests({&RendererTest::debugError,
               &RendererTest::debugDistanceModel,
-              &RendererTest::hrtfStatus,
               &RendererTest::listenerOrientation,
               &RendererTest::listenerPosition,
               &RendererTest::listenerVelocity,
               &RendererTest::listenerGain,
               &RendererTest::speedOfSound,
               &RendererTest::dopplerFactor,
-              &RendererTest::distanceModel,
-              &RendererTest::hrtfs});
+              &RendererTest::distanceModel});
 }
 
 void RendererTest::debugError() {
@@ -74,12 +70,6 @@ void RendererTest::debugDistanceModel() {
     std::ostringstream out;
     Debug(&out) << Renderer::DistanceModel::Inverse;
     CORRADE_COMPARE(out.str(), "Audio::Renderer::DistanceModel::Inverse\n");
-}
-
-void RendererTest::hrtfStatus() {
-    std::ostringstream out;
-    Debug(&out) << Renderer::HrtfStatus::Denied;
-    CORRADE_COMPARE(out.str(), "Audio::Renderer::HrtfStatus::Denied\n");
 }
 
 void RendererTest::listenerOrientation() {
@@ -131,12 +121,6 @@ void RendererTest::distanceModel() {
     Renderer::setDistanceModel(model);
 
     CORRADE_COMPARE(Renderer::distanceModel(), model);
-}
-
-void RendererTest::hrtfs() {
-    /* At least test that the hrtf status is `Disabled` */
-    CORRADE_VERIFY(!Renderer::isHrtfEnabled());
-    CORRADE_COMPARE(Renderer::hrtfStatus(), Renderer::HrtfStatus::Disabled);
 }
 
 }}}

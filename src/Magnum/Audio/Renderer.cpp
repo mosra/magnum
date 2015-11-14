@@ -60,19 +60,4 @@ Debug& operator<<(Debug& debug, const Renderer::DistanceModel value) {
     return debug << "Audio::Renderer::DistanceModel::(invalid)";
 }
 
-Debug& operator<<(Debug& debug, const Renderer::HrtfStatus value) {
-    switch(value) {
-        #define _c(value) case Renderer::HrtfStatus::value: return debug << "Audio::Renderer::HrtfStatus::" #value;
-        _c(Disabled)
-        _c(Enabled)
-        _c(Denied)
-        _c(Required)
-        _c(Detected)
-        _c(UnsupportedFormat)
-        #undef _c
-    }
-
-    return debug << "Audio::Renderer::HrtfStatus::(invalid)";
-}
-
 }}

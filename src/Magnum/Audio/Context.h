@@ -40,6 +40,7 @@
 
 #include "Magnum/Audio/Audio.h"
 #include "Magnum/Audio/Buffer.h"
+#include "Magnum/Audio/Extensions.h"
 #include "Magnum/Audio/visibility.h"
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -82,6 +83,50 @@ class MAGNUM_AUDIO_EXPORT Extension {
  */
 class MAGNUM_AUDIO_EXPORT Context {
     public:
+
+        /**
+         * @brief HRTF status
+         *
+         * @see @ref hrtfStatus(), @ref isHrtfEnabled()
+         * @requires_al_extension Extension @alc_extension{SOFTX,HRTF} or
+         *      @alc_extension{SOFT,HRTF}
+         */
+        enum class HrtfStatus: ALenum {
+            Disabled = ALC_HRTF_DISABLED_SOFT,  /**< HRTF is disabled */
+            Enabled = ALC_HRTF_ENABLED_SOFT,    /**< HRTF is enabled */
+
+            /**
+             * HRTF is disabled because it is not allowed on the device. This
+             * may be caused by invalid resource permissions, or an other user
+             * configuration that disallows HRTF.
+             * @requires_al_extension Extension @alc_extension{SOFT,HRTF}
+             */
+            Denied = ALC_HRTF_DENIED_SOFT,
+
+            /**
+             * HRTF is enabled because it must be used on the device. This may
+             * be caused by a device that can only use HRTF, or other user
+             * configuration that forces HRTF to be used.
+             * @requires_al_extension Extension @alc_extension{SOFT,HRTF}
+             */
+            Required = ALC_HRTF_REQUIRED_SOFT,
+
+            /**
+             * HRTF is enabled automatically because the device reported
+             * headphones.
+             * @requires_al_extension Extension @alc_extension{SOFT,HRTF}
+             */
+            Detected = ALC_HRTF_HEADPHONES_DETECTED_SOFT,
+
+            /**
+             * The device does not support HRTF with the current format.
+             * Typically this is caused by non-stereo output or an incompatible
+             * output frequency.
+             * @requires_al_extension Extension @alc_extension{SOFT,HRTF}
+             */
+            UnsupportedFormat = ALC_HRTF_UNSUPPORTED_FORMAT_SOFT
+        };
+
         /** @brief Current context */
         static Context* current() { return _current; }
 
@@ -105,6 +150,28 @@ class MAGNUM_AUDIO_EXPORT Context {
          * Destroys OpenAL context.
          */
         ~Context();
+
+        /**
+         * @brief Whether HRTFs (Head Related Transfer Functions) are enabled
+         *
+         * HRFTs may not be enabled/disabled in a running context. Instead
+         * create a new @ref Context with HRFTs enabled or disabled.
+         * @see @ref hrtfStatus(), @ref Audio::Context::Configuration::setHrtf(),
+         *      @fn_alc{GetIntegerv} with @def_alc{HRTF_SOFT}
+         * @requires_al_extension Extension @alc_extension{SOFTX,HRTF} or
+         *      @alc_extension{SOFT,HRTF}
+         */
+        bool isHrtfEnabled() const;
+
+        /**
+         * @brief HRTF status
+         *
+         * @see @ref isHrtfEnabled(), @fn_alc{GetIntegerv} with
+         *      @def_alc{HRTF_STATUS_SOFT}
+         * @requires_al_extension Extension @alc_extension{SOFTX,HRTF} or
+         *      @alc_extension{SOFT,HRTF}
+         */
+        HrtfStatus hrtfStatus() const;
 
         /**
          * @brief Vendor string
@@ -339,6 +406,24 @@ MAGNUM_ASSERT_AUDIO_EXTENSION_SUPPORTED(Extensions::ALC::SOFTX::HRTF);
         }                                                                   \
     } while(0)
 #endif
+
+/** @debugoperatorclassenum{Magnum::Audio::Context,Magnum::Audio::Context::HrtfStatus} */
+MAGNUM_AUDIO_EXPORT Debug& operator<<(Debug& debug, Context::HrtfStatus value);
+
+inline bool Context::isHrtfEnabled() const {
+    Int enabled;
+    alcGetIntegerv(_device, ALC_HRTF_SOFT, 1, &enabled);
+    return enabled == ALC_TRUE;
+}
+
+inline Context::HrtfStatus Context::hrtfStatus() const {
+    if(!Context::current()->isExtensionSupported<Extensions::ALC::SOFT::HRTF>())
+        return isHrtfEnabled() ? HrtfStatus::Enabled : HrtfStatus::Disabled;
+
+    Int status;
+    alcGetIntegerv(_device, ALC_HRTF_STATUS_SOFT, 1, &status);
+    return Context::HrtfStatus(status);
+}
 
 }}
 
