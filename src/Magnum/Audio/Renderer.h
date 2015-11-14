@@ -118,7 +118,7 @@ class Renderer {
          *      @alc_extension{SOFT,HRTF}
          */
         static bool isHrtfEnabled() {
-            Int enabled;
+            Int enabled = ALC_FALSE;
             alGetIntegerv(ALC_HRTF_SOFT, &enabled);
             return enabled == ALC_TRUE;
         }
@@ -135,7 +135,7 @@ class Renderer {
             if(!Context::current()->isExtensionSupported<Extensions::ALC::SOFT::HRTF>())
                 return isHrtfEnabled() ? HrtfStatus::Enabled : HrtfStatus::Disabled;
 
-            Int status;
+            Int status = ALC_HRTF_DISABLED_SOFT;
             alGetIntegerv(ALC_HRTF_STATUS_SOFT, &status);
             return HrtfStatus(status);
         }
