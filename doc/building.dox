@@ -443,6 +443,9 @@ For ArchLinux there are also prepared package files in `package/archlinux`,
 named `PKGBUILD-nacl-glibc` and `PKGBUILD-nacl-newlib`, see
 @ref building-packages-arch "above" for more information.
 
+See @ref Platform::NaClApplication documentation for more information about
+building your projects for Google Chrome Native Client.
+
 @subsection building-cross-emscripten Crosscompiling for Emscripten
 
 You will need [Emscripten](https://github.com/kripken/emscripten/wiki/Tutorial)
@@ -480,6 +483,9 @@ If you have Node.js installed, you can also build and run unit tests using
 For ArchLinux there is also prepared package file in `package/archlinux`,
 named `PKGBUILD-emscripten`, see @ref building-packages-arch "above" for more
 information.
+
+See @ref Platform::Sdl2Application documentation for more information about
+building your projects for Emscripten.
 
 @subsection building-cross-android Crosscompiling for Android ARM and x86
 
@@ -529,6 +535,9 @@ make it available for depending projects.
 For ArchLinux there are also prepared package files in `package/archlinux`,
 named `PKGBUILD-android-arm` and `PKGBUILD-android-x86`, see
 @ref building-packages-arch "above" for more information.
+
+See @ref Platform::AndroidApplication documentation for more information about
+building your projects for Android.
 
 @section building-ci Continuous Integration
 
