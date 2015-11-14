@@ -43,6 +43,10 @@
 #include <SDL.h>
 #include <SDL_scancode.h>
 
+#ifdef CORRADE_TARGET_WINDOWS_RT
+#include <wrl.h> /* For the WinMain entrypoint */
+#endif
+
 namespace Magnum { namespace Platform {
 
 /** @nosubgrouping
@@ -105,6 +109,29 @@ webserver, e.g.  `/srv/http/emscripten`).
 
 You can then open `MyApplication.html` in Chrome or Firefox (through webserver,
 e.g. `http://localhost/emscripten/MyApplication.html`).
+
+## Bootstrap application for Windows RT
+
+Fully contained base application using @ref Sdl2Application for both desktop
+and Windows Phone / Windows Store build along with all required plumbing is
+available in `base-winrt` branch of [Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap)
+repository, download it as [zip](https://github.com/mosra/magnum-bootstrap/archive/base-winrt.zip)
+file. After extracting the downloaded archive, you can do the desktop build in
+the same way as above.
+
+For the Windows RT build you need to provide [your own `*.pfx` certificate file](https://msdn.microsoft.com/en-us/library/windows/desktop/jj835832.aspx) and
+pass it to CMake in a `SIGNING_CERTIFICATE` variable. The bootstrap application
+assumes that SDL2 and ANGLE is built as DLL and both Corrade and Magnum are
+built statically. Assuming the native Corrade installation is in `C:/Sys` and
+all WinRT dependencies are in `C:/Sys-winrt`, the build can be done similarly
+to the following:
+
+    mkdir build-winrt && cd build-winrt
+    cmake -DCORRADE_RC_EXECUTABLE="C:/Sys/bin/corrade-rc.exe" -DCMAKE_PREFIX_PATH="C:/Sys-winrt" -DCMAKE_SYSTEM_NAME=WindowsStore -DCMAKE_SYSTEM_VERSION=8.1 -G "Visual Studio 14 2015" -DSIGNING_CERTIFICATE=<path-to-your-pfx-file> ..
+    cmake --build .
+
+Change `WindowsStore` to `WindowsPhone` if you want to build for Windows Phone instead. The `build-winrt/src/AppPackages` directory will then contain the
+final package along with a PowerShell script for easy local installation.
 
 ## General usage
 
@@ -171,6 +198,46 @@ The CSS file contains rudimentary style to avoid eye bleeding.
 The application redirects all output (thus also @ref Corrade::Utility::Debug "Debug",
 @ref Corrade::Utility::Warning "Warning" and @ref Corrade::Utility::Error "Error")
 to JavaScript console.
+
+### Usage with Windows RT
+
+For Windows RT you need to provide logo images and splash screen, all
+referenced from the `*.appxmanifest` file. The file is slightly different for
+different targets, template for Windows Store and MSVC 2013 is below, others
+are in the bootstrap application.
+@code
+<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
+  <Identity Name="MyApplication" Publisher="CN=A Publisher" Version="1.1.0.0" />
+  <Properties>
+    <DisplayName>My Application</DisplayName>
+    <PublisherDisplayName>A Publisher</PublisherDisplayName>
+    <Logo>assets/logo-store.png</Logo>
+  </Properties>
+  <Resources>
+    <Resource Language="x-generate" />
+  </Resources>
+  <Applications>
+    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="MyApplication.App">
+      <m2:VisualElements
+        DisplayName="Magnum Windows Store Application"
+        Description="My Application"
+        BackgroundColor="#202020"
+        ForegroundText="light"
+        Square150x150Logo="assets/logo.png"
+        Square30x30Logo="assets/logo-small.png">
+        <m2:SplashScreen Image="assets/splash.png" />
+      </m2:VisualElements>
+    </Application>
+  </Applications>
+</Package>
+@endcode
+
+The assets are referenced also from the main `CMakeLists.txt` file. You have to
+mark all non-source files (except for the `*.pfx` key) with `VS_DEPLOYMENT_CONTENT`
+property and optionally set their location with `VS_DEPLOYMENT_LOCATION`. If
+you are using `*.resw` files, these need to have the `VS_TOOL_OVERRIDE`
+property set to `PRIResource`.
 */
 class Sdl2Application {
     public:
@@ -958,11 +1025,27 @@ int main(int argc, char** argv) {
 When no other application header is included this macro is also aliased to
 `MAGNUM_APPLICATION_MAIN()`.
 */
+#ifndef CORRADE_TARGET_WINDOWS_RT
 #define MAGNUM_SDL2APPLICATION_MAIN(className)                              \
     int main(int argc, char** argv) {                                       \
         className app({argc, argv});                                        \
         return app.exec();                                                  \
     }
+#else
+#define MAGNUM_SDL2APPLICATION_MAIN(className)                              \
+    int main(int argc, char** argv) {                                       \
+        className app({argc, argv});                                        \
+        return app.exec();                                                  \
+    }                                                                       \
+    __pragma(warning(push))                                                 \
+    __pragma(warning(disable: 4447))                                        \
+    int CALLBACK WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {                \
+        if(FAILED(Windows::Foundation::Initialize(RO_INIT_MULTITHREADED)))  \
+            return 1;                                                       \
+        return SDL_WinRTRunApp(main, nullptr);                              \
+    }                                                                       \
+    __pragma(warning(pop))
+#endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_APPLICATION_MAIN
