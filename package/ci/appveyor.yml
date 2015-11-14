@@ -30,9 +30,9 @@ install:
 - cinst ninja
 
 # OpenAL
-- appveyor DownloadFile http://kcat.strangesoft.net/openal-soft-1.16.0-bin.zip
-- 7z x openal-soft-1.16.0-bin.zip
-- ren openal-soft-1.16.0-bin openal
+- appveyor DownloadFile http://kcat.strangesoft.net/openal-binaries/openal-soft-1.17.0-bin.zip
+- 7z x openal-soft-1.17.0-bin.zip
+- ren openal-soft-1.17.0-bin openal
 - ren openal\bin\Win32\soft_oal.dll OpenAL32.dll
 - echo [General] > %APPDATA%/alsoft.ini
 - echo drivers=null >> %APPDATA%/alsoft.ini
