@@ -132,7 +132,7 @@ If no other application header is included, this class is also aliased to
 `Platform::Application` and the macro is aliased to `MAGNUM_APPLICATION_MAIN()`
 to simplify porting.
 
-### Usage with Emscripten
+## Usage with Emscripten
 
 If you are targetting Emscripten, you need to provide HTML markup for your
 application. Template one is below or in the bootstrap application, you can
@@ -167,8 +167,6 @@ least the `&lt;canvas&gt;` enclosed in listener `&lt;div&gt;`. The JavaScript
 file contains event listeners which print loading status on the page. The
 status displayed in the remaining two `&lt;div&gt;`s, if they are available.
 The CSS file contains rudimentary style to avoid eye bleeding.
-
-## Redirecting output to JavaScript console
 
 The application redirects all output (thus also @ref Corrade::Utility::Debug "Debug",
 @ref Corrade::Utility::Warning "Warning" and @ref Corrade::Utility::Error "Error")
