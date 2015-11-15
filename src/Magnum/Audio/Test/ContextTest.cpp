@@ -46,8 +46,7 @@ struct ContextTest: TestSuite::Tester {
 ContextTest::ContextTest() {
     addTests({&ContextTest::extensionsString,
               &ContextTest::isExtensionEnabled,
-              &ContextTest::hrtfStatus,
-              &ContextTest::hrtfs});
+              &ContextTest::hrtfStatus});
 }
 
 void ContextTest::extensionsString() {
@@ -64,12 +63,6 @@ void ContextTest::hrtfStatus() {
     std::ostringstream out;
     Debug(&out) << Context::HrtfStatus::Denied;
     CORRADE_COMPARE(out.str(), "Audio::Context::HrtfStatus::Denied\n");
-}
-
-void ContextTest::hrtfs() {
-    /* At least test that the hrtf status is `Disabled` */
-    CORRADE_VERIFY(!_context.isHrtfEnabled());
-    CORRADE_COMPARE(_context.hrtfStatus(), Context::HrtfStatus::Disabled);
 }
 
 }}}
