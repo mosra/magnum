@@ -119,7 +119,7 @@ repository, download it as [zip](https://github.com/mosra/magnum-bootstrap/archi
 file. After extracting the downloaded archive, you can do the desktop build in
 the same way as above.
 
-For the Windows RT build you need to provide [your own `*.pfx` certificate file](https://msdn.microsoft.com/en-us/library/windows/desktop/jj835832.aspx) and
+For the Windows RT build you need to provide [your own *.pfx certificate file](https://msdn.microsoft.com/en-us/library/windows/desktop/jj835832.aspx) and
 pass it to CMake in a `SIGNING_CERTIFICATE` variable. The bootstrap application
 assumes that SDL2 and ANGLE is built as DLL and both Corrade and Magnum are
 built statically. Assuming the native Corrade installation is in `C:/Sys` and
@@ -199,7 +199,7 @@ The application redirects all output (thus also @ref Corrade::Utility::Debug "De
 @ref Corrade::Utility::Warning "Warning" and @ref Corrade::Utility::Error "Error")
 to JavaScript console.
 
-### Usage with Windows RT
+## Usage with Windows RT
 
 For Windows RT you need to provide logo images and splash screen, all
 referenced from the `*.appxmanifest` file. The file is slightly different for
