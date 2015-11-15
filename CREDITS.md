@@ -31,5 +31,6 @@ Contributors to Magnum library
     fixes, feature improvements
 *   Jonathan Hale ([@Squareys](https://github.com/Squareys)) -- Audio library
     enhancements, bug reports, documentation improvements
+*   Gerhard de Clercq -- Windows RT (Store/Phone) port
 
 Big thanks to everyone involved!
