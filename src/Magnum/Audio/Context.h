@@ -190,7 +190,7 @@ class MAGNUM_AUDIO_EXPORT Context {
 
         /* Create a context with given configuration. Returns `true` on success.
          * @ref alcCreateContext(). */
-        bool tryCreateContext(const Configuration& config);
+        MAGNUM_AUDIO_LOCAL bool tryCreateContext(const Configuration& config);
 
         ALCdevice* _device;
         ALCcontext* _context;
