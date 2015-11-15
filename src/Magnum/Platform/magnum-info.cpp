@@ -141,6 +141,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     args.addBooleanOption("all-extensions")
         .setHelp("all-extensions", "show extensions also for fully supported versions")
         .addBooleanOption("limits")
+        .addSkippedPrefix("magnum", "engine-specific options")
         .setHelp("limits", "display also limits and implementation-defined values")
         .setHelp("Displays information about Magnum engine and OpenGL capabilities.");
 

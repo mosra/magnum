@@ -112,6 +112,7 @@ FontConverter::FontConverter(const Arguments& arguments): Platform::WindowlessAp
         .addOption("atlas-size", "2048 2048").setHelpKey("atlas-size", "\"X Y\"").setHelp("atlas-size", "glyph atlas size")
         .addOption("output-size", "256 256").setHelpKey("output-size", "\"X Y\"").setHelp("output-size", "output atlas size. If set to zero size, distance field computation will not be used.")
         .addOption("radius", "24").setHelpKey("radius", "N").setHelp("radius", "distance field computation radius")
+        .addSkippedPrefix("magnum", "engine-specific options")
         .setHelp("Converts font to raster one of given atlas size.")
         .parse(arguments.argc, arguments.argv);
 
