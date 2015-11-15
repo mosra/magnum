@@ -435,7 +435,7 @@ template<std::size_t size, class T> inline Vector<size, T> lerp(const Vector<siz
 
 /** @overload */
 template<std::size_t size> inline BoolVector<size> lerp(const BoolVector<size>& a, const BoolVector<size>& b, const BoolVector<size>& t) {
-    BoolVector<size> out{NoInit};
+    BoolVector<size> out;
     for(std::size_t i = 0; i != size; ++i)
         out.set(i, t[i] ? a[i] : b[i]);
     return out;
