@@ -43,7 +43,7 @@ GlutApplication::GlutApplication(const Arguments& arguments, const Configuration
     createContext(configuration);
 }
 
-GlutApplication::GlutApplication(const Arguments& arguments, std::nullptr_t) {
+GlutApplication::GlutApplication(const Arguments& arguments, std::nullptr_t): _context{new Context{NoCreate, arguments.argc, arguments.argv}} {
     /* Save global instance */
     _instance = this;
 
@@ -59,7 +59,7 @@ void GlutApplication::createContext(const Configuration& configuration) {
 }
 
 bool GlutApplication::tryCreateContext(const Configuration& configuration) {
-    CORRADE_ASSERT(!_context, "Platform::GlutApplication::tryCreateContext(): context already created", false);
+    CORRADE_ASSERT(_context->version() == Version::None, "Platform::GlutApplication::tryCreateContext(): context already created", false);
 
     unsigned int flags = GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL;
 
@@ -97,7 +97,7 @@ bool GlutApplication::tryCreateContext(const Configuration& configuration) {
     glutDisplayFunc(staticDrawEvent);
 
     /* Return true if the initialization succeeds */
-    return !!(_context = Platform::Context::tryCreate());
+    return _context->tryCreate();
 }
 
 GlutApplication::~GlutApplication() = default;

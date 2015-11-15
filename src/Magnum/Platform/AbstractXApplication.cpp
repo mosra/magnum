@@ -41,7 +41,7 @@ AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandle
     createContext(configuration);
 }
 
-AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandler<Configuration, Display*, VisualID, Window>* contextHandler, const Arguments&, std::nullptr_t): _contextHandler{contextHandler}, _flags{Flag::Redraw} {}
+AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandler<Configuration, Display*, VisualID, Window>* contextHandler, const Arguments& arguments, std::nullptr_t): _contextHandler{contextHandler}, _context{new Context{NoCreate, arguments.argc, arguments.argv}}, _flags{Flag::Redraw} {}
 
 void AbstractXApplication::createContext() { createContext({}); }
 
@@ -50,7 +50,7 @@ void AbstractXApplication::createContext(const Configuration& configuration) {
 }
 
 bool AbstractXApplication::tryCreateContext(const Configuration& configuration) {
-    CORRADE_ASSERT(!_context, "AbstractXApplication::tryCreateContext(): context already created", false);
+    CORRADE_ASSERT(_context->version() == Version::None, "Platform::AbstractXApplication::tryCreateContext(): context already created", false);
 
     _viewportSize = configuration.size();
 
@@ -96,7 +96,7 @@ bool AbstractXApplication::tryCreateContext(const Configuration& configuration) 
     _contextHandler->makeCurrent();
 
     /* Return true if the initialization succeeds */
-    return !!(_context = Platform::Context::tryCreate());
+    return _context->tryCreate();
 }
 
 AbstractXApplication::~AbstractXApplication() {

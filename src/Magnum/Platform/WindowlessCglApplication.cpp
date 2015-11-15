@@ -43,7 +43,7 @@ WindowlessCglApplication::WindowlessCglApplication(const Arguments& arguments, c
     createContext(configuration);
 }
 
-WindowlessCglApplication::WindowlessCglApplication(const Arguments&, std::nullptr_t) {}
+WindowlessCglApplication::WindowlessCglApplication(const Arguments& arguments, std::nullptr_t): _context{new Context{NoCreate, arguments.argc, arguments.argv}} {}
 
 void WindowlessCglApplication::createContext() { createContext({}); }
 
@@ -52,7 +52,7 @@ void WindowlessCglApplication::createContext(const Configuration& configuration)
 }
 
 bool WindowlessCglApplication::tryCreateContext(const Configuration&) {
-    CORRADE_ASSERT(!_context, "Platform::WindowlessCglApplication::tryCreateContext(): context already created", false);
+    CORRADE_ASSERT(_context->version() == Version::None, "Platform::WindowlessCglApplication::tryCreateContext(): context already created", false);
 
     int formatCount;
     CGLPixelFormatAttribute attributes32[] = {
@@ -97,7 +97,7 @@ bool WindowlessCglApplication::tryCreateContext(const Configuration&) {
     }
 
     /* Return true if the initialization succeeds */
-    return !!(_context = Platform::Context::tryCreate());
+    return _context->tryCreate();
 }
 
 WindowlessCglApplication::~WindowlessCglApplication() {

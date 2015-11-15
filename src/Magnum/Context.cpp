@@ -27,6 +27,7 @@
 
 #include <string>
 #include <unordered_map>
+#include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/Debug.h>
 #include <Corrade/Utility/String.h>
 
@@ -402,19 +403,44 @@ const std::vector<Extension>& Extension::extensions(Version version) {
 
 Context* Context::_current = nullptr;
 
-Context::Context(NoCreateT, void functionLoader()) {
-    /* Load GL function pointers */
-    if(functionLoader) functionLoader();
-
-    /* Nothing else, waiting for create() to be called */
+Context::Context(NoCreateT, Int argc, char** argv, void functionLoader()): _functionLoader{functionLoader}, _version{Version::None} {
+    /* Parse arguments */
+    Utility::Arguments args{"magnum"};
+    args.parse(argc, argv);
 }
 
-Context::Context(void functionLoader()): Context{NoCreate, functionLoader} {
+Context::Context(Context&& other): _version{std::move(other._version)},
+    #ifndef MAGNUM_TARGET_WEBGL
+    _flags{std::move(other._flags)},
+    #endif
+    _extensionRequiredVersion(std::move(other._extensionRequiredVersion)),
+    _extensionStatus{std::move(other._extensionStatus)},
+    _supportedExtensions{std::move(other._supportedExtensions)},
+    _state{std::move(other._state)},
+    _detectedDrivers{std::move(other._detectedDrivers)}
+{
+    other._state = nullptr;
+    if(_current == &other) _current = this;
+}
+
+Context::~Context() {
+    delete _state;
+
+    if(_current == this) _current = nullptr;
+}
+
+void Context::create() {
     /* Hard exit if the context cannot be created */
-    if(!create()) std::exit(1);
+    if(!tryCreate()) std::exit(1);
 }
 
-bool Context::create() {
+bool Context::tryCreate() {
+    CORRADE_ASSERT(_version == Version::None,
+        "Platform::Context::tryCreate(): context already created", false);
+
+    /* Load GL function pointers */
+    if(_functionLoader) _functionLoader();
+
     GLint majorVersion, minorVersion;
 
     /* Get version on ES 3.0+/WebGL 2.0+ */
@@ -505,6 +531,9 @@ bool Context::create() {
         #else
         Error() << "Context: unsupported OpenGL ES version" << std::make_pair(majorVersion, minorVersion);
         #endif
+
+        /* Reset the version so the context is not marked as successfully created */
+        _version = Version::None;
         return false;
     }
 
@@ -597,26 +626,6 @@ bool Context::create() {
 
     /* Everything okay */
     return true;
-}
-
-Context::Context(Context&& other): _version{std::move(other._version)},
-    #ifndef MAGNUM_TARGET_WEBGL
-    _flags{std::move(other._flags)},
-    #endif
-    _extensionRequiredVersion(std::move(other._extensionRequiredVersion)),
-    _extensionStatus{std::move(other._extensionStatus)},
-    _supportedExtensions{std::move(other._supportedExtensions)},
-    _state{std::move(other._state)},
-    _detectedDrivers{std::move(other._detectedDrivers)}
-{
-    other._state = nullptr;
-    if(_current == &other) _current = this;
-}
-
-Context::~Context() {
-    delete _state;
-
-    if(_current == this) _current = nullptr;
 }
 
 std::vector<std::string> Context::shadingLanguageVersionStrings() const {

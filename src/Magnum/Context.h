@@ -91,6 +91,22 @@ the instance is available during whole lifetime of `*Application` object. It's
 also possible to create the context without using any `*Application` class
 using @ref Platform::Context subclass, see @ref platform documentation for more
 information.
+
+## Command-line options
+
+The context is configurable through command-line options, that are passed
+either from the `Platform::*Application` classes or from the @ref Platform::Context
+class. The options are as following:
+
+```
+Usage:
+  <application> [--magnum-help] ...
+
+Arguments:
+  ...                         main application arguments
+                              (see -h or --help for details)
+  --magnum-help               display this help message and exit
+```
 */
 class MAGNUM_EXPORT Context {
     friend Platform::Context;
@@ -463,14 +479,15 @@ class MAGNUM_EXPORT Context {
     private:
         static Context* _current;
 
-        explicit Context(NoCreateT, void functionLoader());
-        explicit Context(void functionLoader());
+        explicit Context(NoCreateT, Int argc, char** argv, void functionLoader());
 
-        bool create();
+        bool tryCreate();
+        void create();
 
         /* Defined in Implementation/driverSpecific.cpp */
         MAGNUM_LOCAL void setupDriverWorkarounds();
 
+        void(*_functionLoader)();
         Version _version;
         #ifndef MAGNUM_TARGET_WEBGL
         Flags _flags;

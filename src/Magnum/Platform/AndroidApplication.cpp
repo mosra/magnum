@@ -28,6 +28,7 @@
 #include <Corrade/Utility/AndroidStreamBuffer.h>
 #include <Corrade/Utility/Debug.h>
 
+#include "Magnum/Version.h"
 #include "Magnum/Platform/Context.h"
 
 #include "Implementation/Egl.h"
@@ -60,7 +61,7 @@ AndroidApplication::AndroidApplication(const Arguments& arguments, const Configu
     createContext(configuration);
 }
 
-AndroidApplication::AndroidApplication(const Arguments& arguments, std::nullptr_t): _state(arguments) {
+AndroidApplication::AndroidApplication(const Arguments& arguments, std::nullptr_t): _state{arguments}, _context{new Context{NoCreate, 0, nullptr}} {
     /* Redirect debug output to Android log */
     _logOutput.reset(new LogOutput);
 }
@@ -79,6 +80,8 @@ void AndroidApplication::createContext(const Configuration& configuration) {
 }
 
 bool AndroidApplication::tryCreateContext(const Configuration& configuration) {
+    CORRADE_ASSERT(_context->version() == Version::None, "Platform::AndroidApplication::tryCreateContext(): context already created", false);
+
     /* Initialize EGL */
     _display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
     if(!eglInitialize(_display, nullptr, nullptr)) {
@@ -137,7 +140,7 @@ bool AndroidApplication::tryCreateContext(const Configuration& configuration) {
     CORRADE_INTERNAL_ASSERT_OUTPUT(eglMakeCurrent(_display, _surface, _surface, _glContext));
 
     /* Return true if the initialization succeeds */
-    return !!(_context = Platform::Context::tryCreate());
+    return _context->tryCreate();
 }
 
 void AndroidApplication::swapBuffers() {

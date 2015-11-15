@@ -42,43 +42,61 @@ information.
 class Context: public Magnum::Context {
     public:
         /**
-         * @brief Try to create the context
-         *
-         * Unline @ref Context(), this function returns `nullptr` on error
-         * instead of application exit and thus is usable for context creation
-         * fallbacks.
-         */
-        static std::unique_ptr<Context> tryCreate() {
-            std::unique_ptr<Context> c{new Context{NoCreate}};
-            return c->create() ? std::move(c) : nullptr;
-        }
-
-        /**
          * @brief Constructor
          *
-         * Does initial setup, loads OpenGL function pointers using
-         * platform-specific API, detects available features and enables them
-         * throughout the engine. If detected version is unsupported or any
-         * other error occurs, a message is printed to output and the
-         * application exits. See @ref tryCreate() for an alternative.
+         * Parses command-line arguments, loads OpenGL function pointers using
+         * platform-specific API, does initial setup, detects available
+         * features and enables them throughout the engine. If detected version
+         * is unsupported or any other error occurs, a message is printed to
+         * output and the application exits. See @ref Context(NoCreateT, Int, char**)
+         * and @ref tryCreate() for an alternative.
          * @see @fn_gl{Get} with @def_gl{MAJOR_VERSION}, @def_gl{MINOR_VERSION},
          *      @def_gl{CONTEXT_FLAGS}, @def_gl{NUM_EXTENSIONS},
          *      @fn_gl{GetString} with @def_gl{EXTENSIONS}
          */
-        explicit Context():
+        explicit Context(Int argc, char** argv): Context{NoCreate, argc, argv} { create(); }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @copybrief Context(Int, char**)
+         * @deprecated Use @ref Context(Int, char**) instead.
+         */
+        CORRADE_DEPRECATED("use Context(Int, char**) instead") explicit Context(): Context(0, nullptr) {}
+        #endif
+
+        /**
+         * @brief Construct the class without doing complete setup
+         *
+         * Unlike @ref Context(Int, char**) just parses command-line arguments
+         * and sets @ref version() to @ref Version::None, everything else is
+         * left in empty state. Use @ref create() or @ref tryCreate() to
+         * complete the setup.
+         */
+        explicit Context(NoCreateT, Int argc, char** argv):
             #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
-            Magnum::Context{flextGLInit} {}
+            Magnum::Context{NoCreate, argc, argv, flextGLInit} {}
             #else
-            Magnum::Context{nullptr} {}
+            Magnum::Context{NoCreate, argc, argv, nullptr} {}
             #endif
 
-    private:
-        explicit Context(NoCreateT):
-            #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
-            Magnum::Context{NoCreate, flextGLInit} {}
-            #else
-            Magnum::Context{NoCreate, nullptr} {}
-            #endif
+        /**
+         * @brief Complete the context setup and exit on failure
+         *
+         * Finalizes the setup after the class was created using
+         * @ref Context(NoCreateT, Int, char**). If detected version is
+         * unsupported or any other error occurs, a message is printed to error
+         * output and the application exits. See @ref Context(Int, char**) for
+         * more information and @ref tryCreate() for an alternative.
+         */
+        void create() { return Magnum::Context::create(); }
+
+        /**
+         * @brief Complete the context setup
+         *
+         * Unlike @ref create() just prints a message to error output and
+         * returns `false` on error.
+         */
+        bool tryCreate() { return Magnum::Context::tryCreate(); }
+
 };
 
 }}

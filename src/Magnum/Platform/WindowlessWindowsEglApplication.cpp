@@ -28,6 +28,7 @@
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
 
+#include "Magnum/Version.h"
 #include "Magnum/Platform/Context.h"
 
 #include "Implementation/Egl.h"
@@ -68,7 +69,7 @@ WindowlessWindowsEglApplication::WindowlessWindowsEglApplication(const Arguments
     createContext(configuration);
 }
 
-WindowlessWindowsEglApplication::WindowlessWindowsEglApplication(const Arguments& arguments, std::nullptr_t): _window(arguments.window) {}
+WindowlessWindowsEglApplication::WindowlessWindowsEglApplication(const Arguments& arguments, std::nullptr_t): _window(arguments.window), _context{new Context{NoCreate, arguments.argc, arguments.argv}} {}
 
 void WindowlessWindowsEglApplication::createContext() { createContext({}); }
 
@@ -77,7 +78,7 @@ void WindowlessWindowsEglApplication::createContext(const Configuration& configu
 }
 
 bool WindowlessWindowsEglApplication::tryCreateContext(const Configuration&) {
-    CORRADE_ASSERT(!_context, "Platform::WindowlessWindowsEglApplication::tryCreateContext(): context already created", false);
+    CORRADE_ASSERT(_context->version() == Version::None, "Platform::WindowlessWindowsEglApplication::tryCreateContext(): context already created", false);
 
     /* Initialize */
     _display = eglGetDisplay(GetDC(_window));
@@ -156,7 +157,7 @@ bool WindowlessWindowsEglApplication::tryCreateContext(const Configuration&) {
     }
 
     /* Return true if the initialization succeeds */
-    return !!(_context = Platform::Context::tryCreate());
+    return _context->tryCreate();
 }
 
 WindowlessWindowsEglApplication::~WindowlessWindowsEglApplication() {

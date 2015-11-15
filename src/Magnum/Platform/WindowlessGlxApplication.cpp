@@ -29,9 +29,11 @@
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
 
+#include "Magnum/Version.h"
 #include "Magnum/Platform/Context.h"
 
-#define None 0L // redef Xlib nonsense
+/* Saner way to define the None Xlib macro (anyway, FUCK YOU XLIB) */
+namespace { enum { None = 0L }; }
 
 namespace Magnum { namespace Platform {
 
@@ -43,7 +45,7 @@ WindowlessGlxApplication::WindowlessGlxApplication(const Arguments& arguments, c
     createContext(configuration);
 }
 
-WindowlessGlxApplication::WindowlessGlxApplication(const Arguments&, std::nullptr_t) {}
+WindowlessGlxApplication::WindowlessGlxApplication(const Arguments& arguments, std::nullptr_t): _context{new Context{NoCreate, arguments.argc, arguments.argv}} {}
 
 void WindowlessGlxApplication::createContext() { createContext({}); }
 
@@ -52,8 +54,7 @@ void WindowlessGlxApplication::createContext(const Configuration& configuration)
 }
 
 bool WindowlessGlxApplication::tryCreateContext(const Configuration&) {
-    CORRADE_ASSERT(!_context, "Platform::WindowlessGlxApplication::tryCreateContext(): context already created", false);
-
+    CORRADE_ASSERT(_context->version() == Version::None, "Platform::WindowlessGlxApplication::tryCreateContext(): context already created", false);
     _display = XOpenDisplay(nullptr);
 
     /* Check version */
@@ -154,7 +155,7 @@ bool WindowlessGlxApplication::tryCreateContext(const Configuration&) {
     }
 
     /* Return true if the initialization succeeds */
-    return !!(_context = Platform::Context::tryCreate());
+    return _context->tryCreate();
 }
 
 WindowlessGlxApplication::~WindowlessGlxApplication() {

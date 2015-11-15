@@ -71,11 +71,12 @@ Sdl2Application::Sdl2Application(const Arguments& arguments, const Configuration
     createContext(configuration);
 }
 
-Sdl2Application::Sdl2Application(const Arguments&, std::nullptr_t): _glContext{nullptr},
+Sdl2Application::Sdl2Application(const Arguments& arguments, std::nullptr_t): _glContext{nullptr},
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     _minimalLoopPeriod{0},
     #endif
-    _flags{Flag::Redraw} {
+    _context{new Context{NoCreate, arguments.argc, arguments.argv}}, _flags{Flag::Redraw}
+{
     #ifdef CORRADE_TARGET_EMSCRIPTEN
     CORRADE_ASSERT(!_instance, "Platform::Sdl2Application::Sdl2Application(): the instance is already created", );
     _instance = this;
@@ -94,7 +95,7 @@ void Sdl2Application::createContext(const Configuration& configuration) {
 }
 
 bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
-    CORRADE_ASSERT(!_glContext, "Platform::Sdl2Application::tryCreateContext(): context already created", false);
+    CORRADE_ASSERT(_context->version() == Version::None, "Platform::Sdl2Application::tryCreateContext(): context already created", false);
 
     /* Enable double buffering and 24bt depth buffer */
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
@@ -234,7 +235,7 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
     #endif
 
     /* Return true if the initialization succeeds */
-    return !!(_context = Platform::Context::tryCreate());
+    return _context->tryCreate();
 }
 
 void Sdl2Application::swapBuffers() {

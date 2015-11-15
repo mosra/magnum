@@ -28,6 +28,7 @@
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
 
+#include "Magnum/Version.h"
 #include "Magnum/Platform/Context.h"
 
 namespace Magnum { namespace Platform {
@@ -66,7 +67,7 @@ WindowlessWglApplication::WindowlessWglApplication(const Arguments& arguments, c
     createContext(configuration);
 }
 
-WindowlessWglApplication::WindowlessWglApplication(const Arguments& arguments, std::nullptr_t): _window(arguments.window) {}
+WindowlessWglApplication::WindowlessWglApplication(const Arguments& arguments, std::nullptr_t): _window(arguments.window), _context{new Context{NoCreate, arguments.argc, arguments.argv}} {}
 
 void WindowlessWglApplication::createContext() { createContext({}); }
 
@@ -75,7 +76,7 @@ void WindowlessWglApplication::createContext(const Configuration& configuration)
 }
 
 bool WindowlessWglApplication::tryCreateContext(const Configuration&) {
-    CORRADE_ASSERT(!_context, "Platform::WindowlessWglApplication::tryCreateContext(): context already created", false);
+    CORRADE_ASSERT(_context->version() == Version::None, "Platform::WindowlessWglApplication::tryCreateContext(): context already created", false);
 
     /* Get device context */
     _deviceContext = GetDC(_window);
@@ -117,7 +118,7 @@ bool WindowlessWglApplication::tryCreateContext(const Configuration&) {
     }
 
     /* Return true if the initialization succeeds */
-    return !!(_context = Platform::Context::tryCreate());
+    return _context->tryCreate();
 }
 
 WindowlessWglApplication::~WindowlessWglApplication() {
