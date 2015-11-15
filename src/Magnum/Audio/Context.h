@@ -174,6 +174,18 @@ class MAGNUM_AUDIO_EXPORT Context {
         HrtfStatus hrtfStatus() const;
 
         /**
+         * @brief Hrtf specifier
+         *
+         * Name of the hrtf being used.
+         *
+         * @see @fn_al{GetString} with @def_alc{HRTF_SPECIFIER_SOFT}
+         * @requires_al_extension @alc_extension{SOFT,HRTF}
+         */
+        std::string hrtfSpecifier() const {
+            return alcGetString(_device, ALC_HRTF_SPECIFIER_SOFT);
+        }
+
+        /**
          * @brief Vendor string
          *
          * @see @ref rendererString(), @fn_al{GetString} with @def_al{VENDOR}
