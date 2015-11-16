@@ -1,0 +1,10 @@
+magnum-dev.debhelper.log
+magnum-dev.substvars
+magnum-dev/
+magnum.debhelper.log
+magnum.postinst.debhelper
+magnum.postrm.debhelper
+magnum.substvars
+magnum/
+files
+tmp/

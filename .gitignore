@@ -1,4 +1,6 @@
 /build*
+/debian
+/obj-*
 pkg
 *.kdev4
 *~
