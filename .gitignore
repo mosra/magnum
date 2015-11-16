@@ -1,4 +1,4 @@
-build*/
+/build*
 pkg
 *.kdev4
 *~
