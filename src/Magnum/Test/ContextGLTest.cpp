@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <algorithm>
+
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
 #include "Magnum/Test/AbstractOpenGLTester.h"
@@ -88,9 +90,11 @@ void ContextGLTest::isExtensionSupported() {
         CORRADE_SKIP(Extensions::GL::ARB::explicit_attrib_location::string() + std::string(" extension should be supported, can't test"));
 
     /* Test that we have proper extension list parser */
-    std::string extensions(reinterpret_cast<const char*>(glGetString(GL_EXTENSIONS)));
-    CORRADE_VERIFY(extensions.find(Extensions::GL::EXT::texture_filter_anisotropic::string()) != std::string::npos);
-    CORRADE_VERIFY(extensions.find(Extensions::GL::GREMEDY::string_marker::string()) == std::string::npos);
+    std::vector<std::string> extensions = Context::current()->extensionStrings();
+    CORRADE_VERIFY(std::find(extensions.begin(), extensions.end(),
+        Extensions::GL::EXT::texture_filter_anisotropic::string()) != extensions.end());
+    CORRADE_VERIFY(std::find(extensions.begin(), extensions.end(),
+        Extensions::GL::GREMEDY::string_marker::string()) == extensions.end());
 
     /* This is disabled in GL < 3.2 to work around GLSL compiler bugs */
     CORRADE_VERIFY(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(Version::GL310));
