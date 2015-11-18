@@ -433,6 +433,17 @@ void DualQuaternionTest::sclerp() {
     CORRADE_COMPARE(interp1, expected1);
     CORRADE_COMPARE(interp2, expected2);
     CORRADE_COMPARE(interp3, expected3);
+
+    /* Edge cases: */
+
+    /* Dual quaternions with identical rotation */
+    CORRADE_COMPARE(Math::sclerp(from, from, 0.42f), from);
+    CORRADE_COMPARE(Math::sclerp(from, DualQuaternion(-from.real(), from.dual()), 0.42f), from);
+
+    /* No difference in rotation, but in translation */
+    const auto rotation = DualQuaternion::rotation(35.0_degf, Vector3{0.3f, 0.2f, 0.1f});
+    CORRADE_COMPARE(Math::sclerp(DualQuaternion::translation(Vector3{1.0f, 2.0f, 4.0f})*rotation, DualQuaternion::translation(Vector3{5, -6, 2})*rotation, 0.25f),
+                    DualQuaternion::translation(Vector3{2.0f, 0.0f, 3.5f})*rotation);
 }
 
 }}}

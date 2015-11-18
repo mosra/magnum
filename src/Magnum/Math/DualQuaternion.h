@@ -34,6 +34,7 @@
 #include "Magnum/Math/Dual.h"
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Math/Quaternion.h"
+#include "Magnum/Math/Functions.h"
 
 namespace Magnum { namespace Math {
 
@@ -66,6 +67,12 @@ template<class T> inline DualQuaternion<T> sclerp(const DualQuaternion<T>& norma
     CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
         "Math::sclerp(): dual quaternions must be normalized", {});
     const T dotResult = dot(normalizedA.real().vector(), normalizedB.real().vector());
+
+    /* Avoid division by zero */
+    const T cosHalfAngle = dotResult + normalizedA.real().scalar()*normalizedB.real().scalar();
+    if(std::abs(cosHalfAngle) >= T(1)) {
+        return DualQuaternion<T>{normalizedA.real(), Quaternion<T>{Math::lerp(normalizedA.dual().vector(), normalizedB.dual().vector(), t), T(0)}};
+    }
 
     /* l + εm = q_A^**q_B, multiplying with -1 ensures shortest path when dot < 0 */
     const DualQuaternion<T> diff = normalizedA.quaternionConjugated()*(dotResult < T(0) ? -normalizedB : normalizedB);
