@@ -409,7 +409,7 @@ Context::Context(NoCreateT, void functionLoader()) {
     /* Nothing else, waiting for create() to be called */
 }
 
-Context::Context(void functionLoader()): Context{NoCreateT{}, functionLoader} {
+Context::Context(void functionLoader()): Context{NoCreate, functionLoader} {
     /* Hard exit if the context cannot be created */
     if(!create()) std::exit(1);
 }
