@@ -47,7 +47,13 @@ typedef Corrade::Containers::NoInitT NoInitT;
 Used to distinguish construction with all elements set to zero.
 @see @ref ZeroInit
 */
-struct ZeroInitT {};
+/* Explicit constructor to avoid ambiguous calls when using {} */
+struct ZeroInitT {
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    struct Init{};
+    constexpr explicit ZeroInitT(Init) {}
+    #endif
+};
 
 /**
 @brief Identity initialization tag type
@@ -55,7 +61,13 @@ struct ZeroInitT {};
 Used to distinguish construction with transformation set to identity.
 @see @ref IdentityInit
 */
-struct IdentityInitT {};
+/* Explicit constructor to avoid ambiguous calls when using {} */
+struct IdentityInitT {
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    struct Init{};
+    constexpr explicit IdentityInitT(Init) {}
+    #endif
+};
 
 /**
 @brief No initialization tag
@@ -63,6 +75,7 @@ struct IdentityInitT {};
 Use for construction with no initialization at all.
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
+/* Explicit constructor to avoid ambiguous calls when using {} */
 constexpr NoInitT NoInit{};
 #else
 using Corrade::Containers::NoInit;
@@ -73,14 +86,14 @@ using Corrade::Containers::NoInit;
 
 Use for construction with all elements set to zero.
 */
-constexpr ZeroInitT ZeroInit{};
+constexpr ZeroInitT ZeroInit{ZeroInitT::Init{}};
 
 /**
 @brief Identity initialization tag
 
 Use for construction with transformation set to identity.
 */
-constexpr IdentityInitT IdentityInit{};
+constexpr IdentityInitT IdentityInit{IdentityInitT::Init{}};
 
 }}
 

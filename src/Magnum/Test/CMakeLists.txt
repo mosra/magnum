@@ -39,6 +39,7 @@ corrade_add_test(ResourceManagerTest ResourceManagerTest.cpp LIBRARIES Magnum)
 corrade_add_test(SamplerTest SamplerTest.cpp LIBRARIES Magnum)
 corrade_add_test(ShaderTest ShaderTest.cpp LIBRARIES Magnum)
 corrade_add_test(VersionTest VersionTest.cpp LIBRARIES Magnum)
+corrade_add_test(TagsTest TagsTest.cpp)
 
 add_library(ResourceManagerLocalInstanceTestLib ${SHARED_OR_STATIC} ResourceManagerLocalInstanceTestLib.cpp)
 target_link_libraries(ResourceManagerLocalInstanceTestLib Magnum)

@@ -1,5 +1,3 @@
-#ifndef Magnum_Tags_h
-#define Magnum_Tags_h
 /*
     This file is part of Magnum.
 
@@ -25,33 +23,26 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Tag type @ref Magnum::NoCreateT, tag @ref Magnum::NoCreate
- */
+#include "Magnum/Tags.h"
+#include "Magnum/Magnum.h"
+#include "Corrade/TestSuite/Tester.h"
 
-namespace Magnum {
+namespace Magnum { namespace Test {
 
-/**
-@brief No creation tag type
+struct TagsTest: TestSuite::Tester {
+    explicit TagsTest();
 
-Used to distinguish construction without creating the underlying OpenGL object.
-@see @ref NoCreate
-*/
-/* Explicit constructor to avoid ambiguous calls when using {} */
-struct NoCreateT {
-    #ifndef DOXYGEN_GENERATING_OUTPUT
-    struct Init{};
-    constexpr explicit NoCreateT(Init) {}
-    #endif
+    void noDefaultConstructor();
 };
 
-/**
-@brief No creation tag
-
-Use for construction without creating the underlying OpenGL object.
-*/
-constexpr NoCreateT NoCreate{NoCreateT::Init{}};
-
+TagsTest::TagsTest() {
+    addTests({&TagsTest::noDefaultConstructor});
 }
 
-#endif
+void TagsTest::noDefaultConstructor() {
+    CORRADE_VERIFY(!std::is_default_constructible<NoCreateT>::value);
+}
+
+}}
+
+CORRADE_TEST_MAIN(Magnum::Test::TagsTest)

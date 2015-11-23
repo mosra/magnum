@@ -400,7 +400,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
 
         /* Implementation for RectangularMatrix<cols, rows, T>::RectangularMatrix(ZeroInitT) and RectangularMatrix<cols, rows, T>::RectangularMatrix(NoInitT) */
         /* MSVC 2015 can't handle {} here */
-        template<class U, std::size_t ...sequence> constexpr explicit RectangularMatrix(Implementation::Sequence<sequence...>, U): _data{Vector<rows, T>((static_cast<void>(sequence), U{}))...} {}
+        template<class U, std::size_t ...sequence> constexpr explicit RectangularMatrix(Implementation::Sequence<sequence...>, U): _data{Vector<rows, T>((static_cast<void>(sequence), U{typename U::Init{}}))...} {}
 
         template<std::size_t ...sequence> constexpr Vector<DiagonalSize, T> diagonalInternal(Implementation::Sequence<sequence...>) const;
 

@@ -65,7 +65,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
         enum ZeroType { Zero };
         #else
         CORRADE_DEPRECATED("use Math::ZeroInitT instead") typedef ZeroInitT ZeroType;
-        CORRADE_DEPRECATED("use Math::ZeroInit instead") constexpr static ZeroInitT Zero{};
+        CORRADE_DEPRECATED("use Math::ZeroInit instead") constexpr static ZeroInitT Zero{ZeroInitT::Init{}};
         #endif
 
         /**
@@ -76,7 +76,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
         enum IdentityType { Identity };
         #else
         CORRADE_DEPRECATED("use Math::IdentityInitT instead") typedef IdentityInitT IdentityType;
-        CORRADE_DEPRECATED("use Math::IdentityInit instead") constexpr static IdentityInitT Identity{};
+        CORRADE_DEPRECATED("use Math::IdentityInit instead") constexpr static IdentityInitT Identity{IdentityInitT::Init{}};
         #endif
         #endif
         #endif
