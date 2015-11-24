@@ -130,17 +130,9 @@ template<UnsignedInt dimensions> class ImageData {
          * The image is expected to be uncompressed.
          * @see @ref isCompressed()
          */
-        /*implicit*/ operator ImageView<dimensions>()
-        #ifndef CORRADE_GCC47_COMPATIBILITY
-        const &;
-        #else
-        const;
-        #endif
-
-        #ifndef CORRADE_GCC47_COMPATIBILITY
-        /** @overload */
-        /*implicit*/ operator ImageView<dimensions>() const && = delete;
-        #endif
+        /* Not restricted to const&, because we might want to pass the view to
+           another function in an oneliner (e.g. saving screenshot) */
+        /*implicit*/ operator ImageView<dimensions>() const;
 
         /**
          * @brief Conversion to compressed view
@@ -148,17 +140,9 @@ template<UnsignedInt dimensions> class ImageData {
          * The image is expected to be compressed.
          * @see @ref isCompressed()
          */
-        /*implicit*/ operator CompressedImageView<dimensions>()
-        #ifndef CORRADE_GCC47_COMPATIBILITY
-        const &;
-        #else
-        const;
-        #endif
-
-        #ifndef CORRADE_GCC47_COMPATIBILITY
-        /** @overload */
-        /*implicit*/ operator CompressedImageView<dimensions>() const && = delete;
-        #endif
+        /* Not restricted to const&, because we might want to pass the view to
+           another function in an oneliner (e.g. saving screenshot) */
+        /*implicit*/ operator CompressedImageView<dimensions>() const;
 
         /**
          * @brief Storage of pixel data

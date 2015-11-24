@@ -107,17 +107,9 @@ template<UnsignedInt dimensions> class Image {
         Image<dimensions>& operator=(Image<dimensions>&& other) noexcept;
 
         /** @brief Conversion to view */
-        /*implicit*/ operator ImageView<dimensions>()
-        #ifndef CORRADE_GCC47_COMPATIBILITY
-        const &;
-        #else
-        const;
-        #endif
-
-        #ifndef CORRADE_GCC47_COMPATIBILITY
-        /** @overload */
-        /*implicit*/ operator ImageView<dimensions>() const && = delete;
-        #endif
+        /* Not restricted to const&, because we might want to pass the view to
+           another function in an oneliner (e.g. saving screenshot) */
+        /*implicit*/ operator ImageView<dimensions>() const;
 
         /** @brief Storage of pixel data */
         PixelStorage storage() const { return _storage; }
@@ -304,17 +296,7 @@ template<UnsignedInt dimensions> class CompressedImage {
         CompressedImage<dimensions>& operator=(CompressedImage<dimensions>&& other) noexcept;
 
         /** @brief Conversion to view */
-        /*implicit*/ operator CompressedImageView<dimensions>()
-        #ifndef CORRADE_GCC47_COMPATIBILITY
-        const &;
-        #else
-        const;
-        #endif
-
-        #ifndef CORRADE_GCC47_COMPATIBILITY
-        /** @overload */
-        /*implicit*/ operator CompressedImageView<dimensions>() const && = delete;
-        #endif
+        /*implicit*/ operator CompressedImageView<dimensions>() const;
 
         #ifndef MAGNUM_TARGET_GLES
         /**
@@ -458,22 +440,12 @@ template<UnsignedInt dimensions> inline CompressedImage<dimensions>& CompressedI
     return *this;
 }
 
-template<UnsignedInt dimensions> inline Image<dimensions>::operator ImageView<dimensions>()
-#ifndef CORRADE_GCC47_COMPATIBILITY
-const &
-#else
-const
-#endif
+template<UnsignedInt dimensions> inline Image<dimensions>::operator ImageView<dimensions>() const
 {
     return ImageView<dimensions>{_storage, _format, _type, _size, _data};
 }
 
-template<UnsignedInt dimensions> inline CompressedImage<dimensions>::operator CompressedImageView<dimensions>()
-#ifndef CORRADE_GCC47_COMPATIBILITY
-const &
-#else
-const
-#endif
+template<UnsignedInt dimensions> inline CompressedImage<dimensions>::operator CompressedImageView<dimensions>() const
 {
     return CompressedImageView<dimensions>{
         #ifndef MAGNUM_TARGET_GLES

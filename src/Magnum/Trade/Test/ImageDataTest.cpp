@@ -174,18 +174,6 @@ void ImageDataTest::toView() {
     CORRADE_COMPARE(b.type(), PixelType::UnsignedByte);
     CORRADE_COMPARE(b.size(), Vector2i(4, 1));
     CORRADE_COMPARE(b.data(), data);
-
-    CORRADE_VERIFY((std::is_convertible<const Trade::ImageData2D&, ImageView2D>::value));
-    {
-        #ifdef CORRADE_GCC47_COMPATIBILITY
-        CORRADE_EXPECT_FAIL("Rvalue references for *this are not supported in GCC < 4.8.1.");
-        #endif
-        #ifdef CORRADE_MSVC2015_COMPATIBILITY
-        CORRADE_EXPECT_FAIL("std::is_convertible is still buggy in MSVC 2015.");
-        #endif
-        CORRADE_VERIFY(!(std::is_convertible<const Trade::ImageData2D, ImageView2D>::value));
-        CORRADE_VERIFY(!(std::is_convertible<const Trade::ImageData2D&&, ImageView2D>::value));
-    }
 }
 
 void ImageDataTest::toViewCompressed() {
@@ -197,18 +185,6 @@ void ImageDataTest::toViewCompressed() {
     CORRADE_COMPARE(b.size(), Vector2i(4, 4));
     CORRADE_COMPARE(b.data(), data);
     CORRADE_COMPARE(b.data().size(), 8);
-
-    CORRADE_VERIFY((std::is_convertible<const Trade::ImageData2D&, CompressedImageView2D>::value));
-    {
-        #ifdef CORRADE_GCC47_COMPATIBILITY
-        CORRADE_EXPECT_FAIL("Rvalue references for *this are not supported in GCC < 4.8.1.");
-        #endif
-        #ifdef CORRADE_MSVC2015_COMPATIBILITY
-        CORRADE_EXPECT_FAIL("std::is_convertible is still buggy in MSVC 2015.");
-        #endif
-        CORRADE_VERIFY(!(std::is_convertible<const Trade::ImageData2D, CompressedImageView2D>::value));
-        CORRADE_VERIFY(!(std::is_convertible<const Trade::ImageData2D&&, CompressedImageView2D>::value));
-    }
 }
 
 void ImageDataTest::release() {

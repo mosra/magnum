@@ -68,23 +68,13 @@ template<UnsignedInt dimensions> std::tuple<std::size_t, VectorTypeFor<dimension
     return Implementation::imageDataProperties<dimensions>(*this);
 }
 
-template<UnsignedInt dimensions> ImageData<dimensions>::operator ImageView<dimensions>()
-#ifndef CORRADE_GCC47_COMPATIBILITY
-const &
-#else
-const
-#endif
+template<UnsignedInt dimensions> ImageData<dimensions>::operator ImageView<dimensions>() const
 {
     CORRADE_ASSERT(!_compressed, "Trade::ImageData::type(): the image is compressed", (ImageView<dimensions>{_storage, _format, _type, _size}));
     return ImageView<dimensions>{_storage, _format, _type, _size, _data};
 }
 
-template<UnsignedInt dimensions> ImageData<dimensions>::operator CompressedImageView<dimensions>()
-#ifndef CORRADE_GCC47_COMPATIBILITY
-const &
-#else
-const
-#endif
+template<UnsignedInt dimensions> ImageData<dimensions>::operator CompressedImageView<dimensions>() const
 {
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_ASSERT(_compressed, "Trade::ImageData::type(): the image is not compressed", (CompressedImageView<dimensions>{_compressedStorage, _compressedFormat, _size}));
