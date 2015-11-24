@@ -6,6 +6,8 @@ Not mentioning OpenGL API and platform-specific toolkits.
 *   Magnum internally uses code generated using **flextGL** extension loader
     generator -- https://github.com/ginkgo/flextGL. Copyright © 2011 Thomas
     Weber, licensed under [MIT license](https://raw.githubusercontent.com/ginkgo/flextGL/master/COPYING)
+*   The `Audio` namespace depends on the **OpenAL** API --
+    http://www.openal.org.
 *   The `Platform::GlutApplication` class uses **freeGLUT** library --
     http://freeglut.sourceforge.net/, licensed under MIT license.
 *   The `Platform::Sdl2Application` class uses **SDL2** library --
