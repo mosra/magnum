@@ -42,7 +42,7 @@
 #undef Status
 
 #include "Magnum/Magnum.h"
-#include "Magnum/Platform/Context.h"
+#include "Magnum/Platform/Platform.h"
 
 namespace Magnum { namespace Platform {
 

@@ -30,8 +30,8 @@
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
 
-#include "Magnum/Platform/Context.h"
 #include "Magnum/Version.h"
+#include "Magnum/Platform/Context.h"
 
 namespace Magnum { namespace Platform {
 
