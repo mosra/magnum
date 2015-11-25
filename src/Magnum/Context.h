@@ -100,12 +100,14 @@ class. The options are as following:
 
 ```
 Usage:
-  <application> [--magnum-help] ...
+  <application> [--magnum-help] [--magnum-disable-workarounds LIST] ...
 
 Arguments:
   ...                         main application arguments
                               (see -h or --help for details)
   --magnum-help               display this help message and exit
+  --magnum-disable-workarounds LIST driver workarounds to disable
+      (see src/Magnum/Implementation/driverSpecific.cpp for detailed info)
 ```
 */
 class MAGNUM_EXPORT Context {
@@ -473,6 +475,7 @@ class MAGNUM_EXPORT Context {
         DetectedDrivers detectedDriver();
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
+        bool isDriverWorkaroundDisabled(const std::string& workaround);
         Implementation::State& state() { return *_state; }
         #endif
 
@@ -483,6 +486,7 @@ class MAGNUM_EXPORT Context {
 
         bool tryCreate();
         void create();
+        void disableDriverWorkaround(const std::string& workaround);
 
         /* Defined in Implementation/driverSpecific.cpp */
         MAGNUM_LOCAL void setupDriverWorkarounds();
@@ -500,6 +504,9 @@ class MAGNUM_EXPORT Context {
         Implementation::State* _state;
 
         std::optional<DetectedDrivers> _detectedDrivers;
+
+        /* True means known and disabled, false means known */
+        std::vector<std::pair<std::string, bool>> _driverWorkarounds;
 };
 
 #ifndef MAGNUM_TARGET_WEBGL

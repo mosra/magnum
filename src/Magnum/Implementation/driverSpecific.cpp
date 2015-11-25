@@ -24,10 +24,19 @@
 */
 
 #include "Magnum/Context.h"
+
+#include <algorithm>
+
 #include "Magnum/Extensions.h"
 #include "Magnum/Math/Range.h"
 
 namespace Magnum {
+
+#ifndef CORRADE_NO_ASSERT
+namespace {
+    std::vector<std::string> KnownWorkarounds{};
+}
+#endif
 
 namespace Implementation {
 
@@ -95,6 +104,23 @@ auto Context::detectedDriver() -> DetectedDrivers {
     #endif
 
     return *_detectedDrivers;
+}
+
+void Context::disableDriverWorkaround(const std::string& workaround) {
+    /* Ignore unknown workarounds */
+    if(std::find(KnownWorkarounds.begin(), KnownWorkarounds.end(), workaround) == KnownWorkarounds.end()) return;
+    _driverWorkarounds.emplace_back(workaround, true);
+}
+
+bool Context::isDriverWorkaroundDisabled(const std::string& workaround) {
+    CORRADE_INTERNAL_ASSERT(std::find(KnownWorkarounds.begin(), KnownWorkarounds.end(), workaround) != KnownWorkarounds.end());
+
+    /* If the workaround was already asked for or disabled, return its state,
+       otherwise add it to the list as used one */
+    for(const auto& i: _driverWorkarounds)
+        if(i.first == workaround) return i.second;
+    _driverWorkarounds.emplace_back(workaround, false);
+    return false;
 }
 
 void Context::setupDriverWorkarounds() {

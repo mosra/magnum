@@ -406,7 +406,13 @@ Context* Context::_current = nullptr;
 Context::Context(NoCreateT, Int argc, char** argv, void functionLoader()): _functionLoader{functionLoader}, _version{Version::None} {
     /* Parse arguments */
     Utility::Arguments args{"magnum"};
-    args.parse(argc, argv);
+    args.addOption("disable-workarounds").setHelpKey("disable-workarounds", "LIST")
+        .setHelp("disable-workarounds", "driver workarounds to disable\n      (see src/Magnum/Implementation/driverSpecific.cpp for detailed info)")
+        .parse(argc, argv);
+
+    /* Disable driver workarounds */
+    for(auto&& workaround: Utility::String::splitWithoutEmptyParts(args.value("disable-workarounds")))
+        disableDriverWorkaround(workaround);
 }
 
 Context::Context(Context&& other): _version{std::move(other._version)},
@@ -618,6 +624,11 @@ bool Context::tryCreate() {
     Debug() << "Renderer:" << rendererString() << "by" << vendorString();
     Debug() << "OpenGL version:" << versionString();
     _state = new Implementation::State(*this);
+
+    /* Print a list of used workarounds */
+    Debug() << "Using driver workarounds:";
+    for(const auto& workaround: _driverWorkarounds)
+        if(!workaround.second) Debug() << "   " << workaround.first;
 
     /* Initialize functionality based on current OpenGL version and extensions */
     /** @todo Get rid of these */
