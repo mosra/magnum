@@ -105,11 +105,6 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, configuration.sampleCount() > 1 ? 1 : 0);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, configuration.sampleCount());
 
-    #ifndef CORRADE_TARGET_EMSCRIPTEN
-    /* Context flags */
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, int(configuration.flags()));
-    #endif
-
     /* Flags: if not hidden, set as shown */
     Uint32 windowFlags(configuration.windowFlags());
     if(!(configuration.windowFlags() & Configuration::WindowFlag::Hidden))
@@ -131,6 +126,8 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
         #endif
 
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, int(configuration.flags()));
+
     /* Request usable version otherwise */
     } else {
         #ifndef MAGNUM_TARGET_GLES
@@ -146,7 +143,7 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
         #endif
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, int(configuration.flags())|SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG);
         #else
         /* For ES the major context version is compile-time constant */
         #ifdef MAGNUM_TARGET_GLES3
@@ -206,7 +203,7 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, 0);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, int(configuration.flags()));
 
         if(!(_window = SDL_CreateWindow(configuration.title().data(),
             SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
