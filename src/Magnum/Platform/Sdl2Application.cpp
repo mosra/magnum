@@ -105,6 +105,11 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, configuration.sampleCount() > 1 ? 1 : 0);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, configuration.sampleCount());
 
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    /* sRGB */
+    SDL_GL_SetAttribute(SDL_GL_FRAMEBUFFER_SRGB_CAPABLE, configuration.isSRGBCapable());
+    #endif
+
     /* Flags: if not hidden, set as shown */
     Uint32 windowFlags(configuration.windowFlags());
     if(!(configuration.windowFlags() & Configuration::WindowFlag::Hidden))
@@ -413,7 +418,7 @@ Sdl2Application::Configuration::Configuration():
     #endif
     _size(800, 600), _windowFlags{}, _sampleCount(0)
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    , _version(Version::None)
+    , _version(Version::None), _sRGBCapable{false}
     #endif
     {}
 

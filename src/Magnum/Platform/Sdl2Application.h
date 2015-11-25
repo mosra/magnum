@@ -719,6 +719,27 @@ class Sdl2Application::Configuration {
             return *this;
         }
 
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        /**
+         * @brief sRGB-capable default framebuffer
+         *
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         */
+        bool isSRGBCapable() const { return _sRGBCapable; }
+
+        /**
+         * @brief Set sRGB-capable default framebuffer
+         * @return Reference to self (for method chaining)
+         *
+         * Default is `false`. See also @ref Renderer::Feature::FramebufferSRGB.
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         */
+        Configuration& setSRGBCapable(bool enabled) {
+            _sRGBCapable = enabled;
+            return *this;
+        }
+        #endif
+
     private:
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         std::string _title;
@@ -729,6 +750,7 @@ class Sdl2Application::Configuration {
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         Version _version;
         Flags _flags;
+        bool _sRGBCapable;
         #endif
 };
 
