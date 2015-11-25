@@ -189,9 +189,9 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
         #ifndef CORRADE_TARGET_APPLE
         /* Sorry about the UGLY code, HOPEFULLY THERE WON'T BE MORE WORKAROUNDS */
         || (vendorString = reinterpret_cast<const char*>(glGetString(GL_VENDOR)),
-        !_context->isDriverWorkaroundDisabled("amd-nv-no-forward-compatible-core-context") &&
         (std::strncmp(vendorString, nvidiaVendorString, sizeof(nvidiaVendorString)) == 0 ||
-         std::strncmp(vendorString, amdVendorString, sizeof(amdVendorString)) == 0))
+         std::strncmp(vendorString, amdVendorString, sizeof(amdVendorString)) == 0)
+         && !_context->isDriverWorkaroundDisabled("amd-nv-no-forward-compatible-core-context"))
         #endif
     )) {
         /* Don't print any warning when doing the NV workaround, because the
