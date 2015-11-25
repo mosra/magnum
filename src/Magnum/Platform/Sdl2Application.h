@@ -545,7 +545,7 @@ class Sdl2Application::Configuration {
          * @brief Context flag
          *
          * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
-         * @see @ref Flags, @ref setFlags()
+         * @see @ref Flags, @ref setFlags(), @ref Context::Flag
          * @todo re-enable when Emscripten has proper SDL2 support
          */
         enum class Flag: int {
@@ -562,7 +562,7 @@ class Sdl2Application::Configuration {
          * @brief Context flags
          *
          * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
-         * @see @ref setFlags()
+         * @see @ref setFlags(), @ref Context::Flags
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         typedef Containers::EnumSet<Flag, SDL_GL_CONTEXT_DEBUG_FLAG|
@@ -669,7 +669,7 @@ class Sdl2Application::Configuration {
          * @brief Set context flags
          * @return Reference to self (for method chaining)
          *
-         * Default is no flag.
+         * Default is no flag. See also @ref Context::flags().
          * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          */
         Configuration& setFlags(Flags flags) {
