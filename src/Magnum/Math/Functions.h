@@ -67,6 +67,14 @@ template<UnsignedInt exponent, class T> constexpr T pow(T base) {
 }
 
 /**
+@brief Power
+
+Returns power of @p base to the @p exponent.
+@see @ref pow(T), @ref exp()
+*/
+template<class T> T pow(T base, T exponent) { return std::pow(base, exponent); }
+
+/**
 @brief Integral logarithm
 
 Returns integral logarithm of given number with given base.
@@ -81,6 +89,22 @@ Returns integral logarithm of given number with base `2`.
 @see @ref log(UnsignedInt, UnsignedInt), @ref log(T)
 */
 UnsignedInt MAGNUM_EXPORT log2(UnsignedInt number);
+
+/**
+@brief Natural logarithm
+
+Returns natural (base @f$ e @f$) logarithm of given number.
+@see @ref Constants::e(), @ref log(UnsignedInt, UnsignedInt), @ref log2()
+*/
+template<class T> T log(T number) { return std::log(number); }
+
+/**
+@brief Natural exponential
+
+Returns @f$ e^x @f$.
+@see @ref Constants::e(), @ref pow(T, T)
+*/
+template<class T> T exp(T exponent) { return std::exp(exponent); }
 
 /**
 @brief Integer division with remainder

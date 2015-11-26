@@ -65,8 +65,11 @@ struct FunctionsTest: Corrade::TestSuite::Tester {
     void normalizeTypeDeduction();
 
     void powIntegral();
+    void pow();
     void logIntegral();
     void log2();
+    void log();
+    void exp();
     void div();
     void trigonometric();
     void trigonometricWithBase();
@@ -113,8 +116,11 @@ FunctionsTest::FunctionsTest() {
               &FunctionsTest::normalizeTypeDeduction,
 
               &FunctionsTest::powIntegral,
+              &FunctionsTest::pow,
               &FunctionsTest::logIntegral,
               &FunctionsTest::log2,
+              &FunctionsTest::log,
+              &FunctionsTest::exp,
               &FunctionsTest::div,
               &FunctionsTest::trigonometric,
               &FunctionsTest::trigonometricWithBase});
@@ -441,6 +447,10 @@ void FunctionsTest::powIntegral() {
     CORRADE_COMPARE(a, 125);
 }
 
+void FunctionsTest::pow() {
+    CORRADE_COMPARE(Math::pow(2.0f, 0.5f), 1.414213562f);
+}
+
 void FunctionsTest::logIntegral() {
     CORRADE_COMPARE(Math::log(2, 256), 8ul);
     CORRADE_COMPARE(Math::log(256, 2), 0ul);
@@ -448,6 +458,14 @@ void FunctionsTest::logIntegral() {
 
 void FunctionsTest::log2() {
     CORRADE_COMPARE(Math::log2(2153), 11);
+}
+
+void FunctionsTest::log() {
+    CORRADE_COMPARE(Math::log(2.0f), 0.693147f);
+}
+
+void FunctionsTest::exp() {
+    CORRADE_COMPARE(Math::exp(0.693147f), 2.0f);
 }
 
 void FunctionsTest::div() {
