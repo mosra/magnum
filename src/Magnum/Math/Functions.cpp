@@ -27,16 +27,16 @@
 
 namespace Magnum { namespace Math {
 
-UnsignedInt log2(UnsignedInt number) {
+UnsignedInt log(UnsignedInt base, UnsignedInt number) {
     UnsignedInt log = 0;
-    while(number >>= 1)
+    while(number /= base)
         ++log;
     return log;
 }
 
-UnsignedInt log(UnsignedInt base, UnsignedInt number) {
+UnsignedInt log2(UnsignedInt number) {
     UnsignedInt log = 0;
-    while(number /= base)
+    while(number >>= 1)
         ++log;
     return log;
 }

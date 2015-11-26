@@ -58,29 +58,29 @@ namespace Implementation {
 }
 
 /**
- * @brief Integral power
- *
- * Returns integral power of base to the exponent.
- */
+@brief Integral power
+
+Returns integral power of base to the exponent.
+*/
 template<UnsignedInt exponent, class T> constexpr T pow(T base) {
     return Implementation::Pow<exponent>::pow(base);
 }
 
 /**
- * @brief Base-2 integral logarithm
- *
- * Returns integral logarithm of given number with base `2`.
- * @see @ref log()
- */
-UnsignedInt MAGNUM_EXPORT log2(UnsignedInt number);
+@brief Integral logarithm
+
+Returns integral logarithm of given number with given base.
+@see @ref log2(), @ref log(T)
+*/
+UnsignedInt MAGNUM_EXPORT log(UnsignedInt base, UnsignedInt number);
 
 /**
- * @brief Integral logarithm
- *
- * Returns integral logarithm of given number with given base.
- * @see @ref log2()
- */
-UnsignedInt MAGNUM_EXPORT log(UnsignedInt base, UnsignedInt number);
+@brief Base-2 integral logarithm
+
+Returns integral logarithm of given number with base `2`.
+@see @ref log(UnsignedInt, UnsignedInt), @ref log(T)
+*/
+UnsignedInt MAGNUM_EXPORT log2(UnsignedInt number);
 
 /**
 @brief Integer division with remainder
