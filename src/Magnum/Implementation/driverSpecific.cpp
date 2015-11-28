@@ -32,7 +32,6 @@
 
 namespace Magnum {
 
-#ifndef CORRADE_NO_ASSERT
 namespace {
     std::vector<std::string> KnownWorkarounds{
         /* Creating core context with specific version on AMD and NV
@@ -41,7 +40,6 @@ namespace {
         "amd-nv-no-forward-compatible-core-context"
     };
 }
-#endif
 
 namespace Implementation {
 
