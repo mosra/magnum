@@ -166,12 +166,12 @@ parameters.
     contain the interleaved data.
 */
 template<class T, class ...U> void interleaveInto(Containers::ArrayView<char> buffer, const T& first, const U&... next) {
-    #if !defined(CORRADE_NO_ASSERT) || defined(CORRADE_GRACEFUL_ASSERT)
     /* Verify expected buffer size */
+    #if !defined(CORRADE_NO_ASSERT) || defined(CORRADE_GRACEFUL_ASSERT)
     const std::size_t attributeCount = Implementation::AttributeCount{}(first, next...);
+    #endif
     const std::size_t stride = Implementation::Stride{}(first, next...);
     CORRADE_ASSERT(attributeCount*stride <= buffer.size(), "MeshTools::interleaveInto(): the data buffer is too small, expected" << attributeCount*stride << "but got" << buffer.size(), );
-    #endif
 
     /* Write data */
     Implementation::writeInterleaved(stride, buffer.begin(), first, next...);
