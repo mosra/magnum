@@ -46,6 +46,9 @@ namespace Implementation {
 struct AttributeCount {
     template<class T, class ...U> typename std::enable_if<!std::is_convertible<T, std::size_t>::value, std::size_t>::type operator()(const T& first, const U&... next) const {
         CORRADE_ASSERT(sizeof...(next) == 0 || AttributeCount{}(next...) == first.size() || AttributeCount{}(next...) == ~std::size_t(0), "MeshTools::interleave(): attribute arrays don't have the same length, expected" << first.size() << "but got" << AttributeCount{}(next...), 0);
+        #if defined(CORRADE_NO_ASSERT) && !defined(CORRADE_GRACEFUL_ASSERT)
+        static_cast<void>(sizeof...(next));
+        #endif
 
         return first.size();
     }
@@ -163,10 +166,12 @@ parameters.
     contain the interleaved data.
 */
 template<class T, class ...U> void interleaveInto(Containers::ArrayView<char> buffer, const T& first, const U&... next) {
+    #if !defined(CORRADE_NO_ASSERT) || defined(CORRADE_GRACEFUL_ASSERT)
     /* Verify expected buffer size */
     const std::size_t attributeCount = Implementation::AttributeCount{}(first, next...);
     const std::size_t stride = Implementation::Stride{}(first, next...);
     CORRADE_ASSERT(attributeCount*stride <= buffer.size(), "MeshTools::interleaveInto(): the data buffer is too small, expected" << attributeCount*stride << "but got" << buffer.size(), );
+    #endif
 
     /* Write data */
     Implementation::writeInterleaved(stride, buffer.begin(), first, next...);
