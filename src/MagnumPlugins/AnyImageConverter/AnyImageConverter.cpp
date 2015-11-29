@@ -48,7 +48,9 @@ bool AnyImageConverter::doExportToFile(const ImageView2D& image, const std::stri
 
     /* Detect type from extension */
     std::string plugin;
-    if(Utility::String::endsWith(filename, ".png"))
+    if(Utility::String::endsWith(filename, ".exr"))
+        plugin = "OpenExrImageConverter";
+    else if(Utility::String::endsWith(filename, ".png"))
         plugin = "PngImageConverter";
     else if(Utility::String::endsWith(filename, ".tga"))
         plugin = "TgaImageConverter";
