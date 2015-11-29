@@ -474,10 +474,11 @@ class MAGNUM_EXPORT Context {
          */
         DetectedDrivers detectedDriver();
 
-        #ifndef DOXYGEN_GENERATING_OUTPUT
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    private:
+    #endif
         bool isDriverWorkaroundDisabled(const std::string& workaround);
         Implementation::State& state() { return *_state; }
-        #endif
 
     private:
         static Context* _current;
