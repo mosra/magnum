@@ -51,7 +51,7 @@ namespace Magnum { namespace Math {
 namespace Implementation {
     template<std::size_t, class, class> struct VectorConverter;
     /* Needed by DualQuaternion and Functions.h (to avoid dependency between them) */
-    template<class T> T lerp(const T& a, const T& b, U t) {
+    template<class T, class U> T lerp(const T& a, const T& b, U t) {
         return T((U(1) - t)*a + t*b);
     }
 }
