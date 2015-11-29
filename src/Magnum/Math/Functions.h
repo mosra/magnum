@@ -437,10 +437,10 @@ The interpolation for vectors is done as in following, similarly for scalars: @f
 template<class T, class U> inline T lerp(const T& a, const T& b, U t);
 #else
 template<class T, class U> inline typename std::enable_if<!Implementation::IsBoolVector<U>::value, T>::type lerp(T a, T b, U t) {
-    return T((U(1) - t)*a + t*b);
+    return T(Implementation::lerp(a, b, t));
 }
 template<std::size_t size, class T, class U> inline typename std::enable_if<!Implementation::IsBoolVector<U>::value, Vector<size, T>>::type lerp(const Vector<size, T>& a, const Vector<size, T>& b, U t) {
-    return (U(1) - t)*a + t*b;
+    return Implementation::lerp(a, b, t);
 }
 #endif
 
