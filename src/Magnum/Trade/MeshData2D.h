@@ -54,8 +54,9 @@ class MAGNUM_EXPORT MeshData2D {
          *      array should be present.
          * @param textureCoords2D   Two-dimensional texture coordinate arrays,
          *      if present
+         * @param importerState     Importer-specific state
          */
-        explicit MeshData2D(MeshPrimitive primitive, std::vector<UnsignedInt> indices, std::vector<std::vector<Vector2>> positions, std::vector<std::vector<Vector2>> textureCoords2D);
+        explicit MeshData2D(MeshPrimitive primitive, std::vector<UnsignedInt> indices, std::vector<std::vector<Vector2>> positions, std::vector<std::vector<Vector2>> textureCoords2D, const void* importerState = nullptr);
 
         /** @brief Copying is not allowed */
         MeshData2D(const MeshData2D&) = delete;
@@ -116,11 +117,19 @@ class MAGNUM_EXPORT MeshData2D {
         std::vector<Vector2>& textureCoords2D(UnsignedInt id);
         const std::vector<Vector2>& textureCoords2D(UnsignedInt id) const; /**< @overload */
 
+        /**
+         * @brief Importer-specific state
+         *
+         * See @ref AbstractImporter::importerState() for more information.
+         */
+        const void* importerState() const { return _importerState; }
+
     private:
         MeshPrimitive _primitive;
         std::vector<UnsignedInt> _indices;
         std::vector<std::vector<Vector2>> _positions;
         std::vector<std::vector<Vector2>> _textureCoords2D;
+        const void* _importerState;
 };
 
 }}

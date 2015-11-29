@@ -47,10 +47,11 @@ class MAGNUM_EXPORT MeshObjectData2D: public ObjectData2D {
          * @param transformation    Transformation (relative to parent)
          * @param instance          Instance ID
          * @param material          Material ID or `-1`
+         * @param importerState     Importer-specific state
          *
          * Creates object with mesh instance type.
          */
-        explicit MeshObjectData2D(std::vector<UnsignedInt> children, const Matrix3& transformation, UnsignedInt instance, Int material);
+        explicit MeshObjectData2D(std::vector<UnsignedInt> children, const Matrix3& transformation, UnsignedInt instance, Int material, const void* importerState = nullptr);
 
         /** @brief Copying is not allowed */
         MeshObjectData2D(const MeshObjectData2D&) = delete;

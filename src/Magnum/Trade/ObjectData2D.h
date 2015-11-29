@@ -67,15 +67,17 @@ class MAGNUM_EXPORT ObjectData2D {
          * @param transformation    Transformation (relative to parent)
          * @param instanceType      Instance type
          * @param instance          Instance ID
+         * @param importerState     Importer-specific state
          */
-        explicit ObjectData2D(std::vector<UnsignedInt> children, const Matrix3& transformation, ObjectInstanceType2D instanceType, UnsignedInt instance);
+        explicit ObjectData2D(std::vector<UnsignedInt> children, const Matrix3& transformation, ObjectInstanceType2D instanceType, UnsignedInt instance, const void* importerState = nullptr);
 
         /**
          * @brief Constructor for empty instance
          * @param children          Child objects
          * @param transformation    Transformation (relative to parent)
+         * @param importerState     Importer-specific state
          */
-        explicit ObjectData2D(std::vector<UnsignedInt> children, const Matrix3& transformation);
+        explicit ObjectData2D(std::vector<UnsignedInt> children, const Matrix3& transformation, const void* importerState = nullptr);
 
         /** @brief Copying is not allowed */
         ObjectData2D(const ObjectData2D&) = delete;
@@ -113,11 +115,19 @@ class MAGNUM_EXPORT ObjectData2D {
          */
         Int instance() const { return _instance; }
 
+        /**
+         * @brief Importer-specific state
+         *
+         * See @ref AbstractImporter::importerState() for more information.
+         */
+        const void* importerState() const { return _importerState; }
+
     private:
         std::vector<UnsignedInt> _children;
         Matrix3 _transformation;
         ObjectInstanceType2D _instanceType;
         Int _instance;
+        const void* _importerState;
 };
 
 /** @debugoperatorenum{Magnum::Trade::ObjectInstanceType2D} */

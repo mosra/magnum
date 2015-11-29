@@ -66,13 +66,14 @@ class MAGNUM_EXPORT PhongMaterialData: public AbstractMaterialData {
 
         /**
          * @brief Constructor
-         * @param flags         Material flags
-         * @param shininess     Shininess
+         * @param flags             Material flags
+         * @param shininess         Shininess
+         * @param importerState     Importer-specific state
          *
          * Colors and textures should be specified using member functions based
          * on what flags are set.
          */
-        explicit PhongMaterialData(Flags flags, Float shininess): AbstractMaterialData(MaterialType::Phong), _shininess(shininess), _flags(flags) {}
+        explicit PhongMaterialData(Flags flags, Float shininess, const void* importerState = nullptr): AbstractMaterialData{MaterialType::Phong, importerState}, _shininess{shininess}, _flags{flags} {}
 
         /** @brief Material flags */
         Flags flags() const { return _flags; }

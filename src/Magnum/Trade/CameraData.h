@@ -43,15 +43,16 @@ class CameraData {
     public:
         /**
          * @brief Constructor
-         * @param fov       Field-of-view angle
-         * @param near      Near clipping plane
-         * @param far       Far clipping plane
+         * @param fov               Field-of-view angle
+         * @param near              Near clipping plane
+         * @param far               Far clipping plane
+         * @param importerState     Importer-specific state
          *
          * If `NaN` is specified for any parameter, default value is used
          * instead, which is `35.0_degf` for @p fov, `0.01f` for @p near and
          * `100.0f` for @p far.
          */
-        explicit CameraData(Rad fov, Float near, Float far) noexcept;
+        explicit CameraData(Rad fov, Float near, Float far, const void* importerState = nullptr) noexcept;
 
         /** @brief Field-of-view angle */
         Rad fov() const { return _fov; }
@@ -62,15 +63,24 @@ class CameraData {
         /** @brief Far clipping plane */
         Float far() const { return _far; }
 
+        /**
+         * @brief Importer-specific state
+         *
+         * See @ref AbstractImporter::importerState() for more information.
+         */
+        const void* importerState() const { return _importerState; }
+
     private:
         Rad _fov;
         Float _near, _far;
+        const void* _importerState;
 };
 
-inline CameraData::CameraData(Rad fov, Float near, Float far) noexcept:
+inline CameraData::CameraData(const Rad fov, const Float near, const Float far, const void* const importerState) noexcept:
     _fov{fov != fov ? Rad{35.0_degf} : fov},
     _near{near != near ? 0.01f : near},
-    _far{far != far ? 100.0f : far} {}
+    _far{far != far ? 100.0f : far},
+    _importerState{importerState} {}
 
 }}
 

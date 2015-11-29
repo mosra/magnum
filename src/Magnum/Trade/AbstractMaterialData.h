@@ -52,9 +52,10 @@ class MAGNUM_EXPORT AbstractMaterialData {
     public:
         /**
          * @brief Constructor
-         * @param type      Material type
+         * @param type              Material type
+         * @param importerState     Importer-specific state
          */
-        explicit AbstractMaterialData(MaterialType type);
+        explicit AbstractMaterialData(MaterialType type, const void* importerState = nullptr);
 
         /** @brief Destructor */
         virtual ~AbstractMaterialData() = 0;
@@ -74,8 +75,16 @@ class MAGNUM_EXPORT AbstractMaterialData {
         /** @brief Material type */
         MaterialType type() const { return _type; }
 
+        /**
+         * @brief Importer-specific state
+         *
+         * See @ref AbstractImporter::importerState() for more information.
+         */
+        const void* importerState() const { return _importerState; }
+
     private:
         MaterialType _type;
+        const void* _importerState;
 };
 
 /** @debugoperatorenum{Magnum::Trade::MaterialType} */

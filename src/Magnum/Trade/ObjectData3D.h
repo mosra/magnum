@@ -69,15 +69,17 @@ class MAGNUM_EXPORT ObjectData3D {
          * @param transformation    Transformation (relative to parent)
          * @param instanceType      Instance type
          * @param instance          Instance ID
+         * @param importerState     Importer-specific state
          */
-        explicit ObjectData3D(std::vector<UnsignedInt> children, const Matrix4& transformation, ObjectInstanceType3D instanceType, UnsignedInt instance);
+        explicit ObjectData3D(std::vector<UnsignedInt> children, const Matrix4& transformation, ObjectInstanceType3D instanceType, UnsignedInt instance, const void* importerState = nullptr);
 
         /**
          * @brief Constructor for empty instance
          * @param children          Child objects
          * @param transformation    Transformation (relative to parent)
+         * @param importerState     Importer-specific state
          */
-        explicit ObjectData3D(std::vector<UnsignedInt> children, const Matrix4& transformation);
+        explicit ObjectData3D(std::vector<UnsignedInt> children, const Matrix4& transformation, const void* importerState = nullptr);
 
         /** @brief Copying is not allowed */
         ObjectData3D(const ObjectData3D&) = delete;
@@ -115,11 +117,19 @@ class MAGNUM_EXPORT ObjectData3D {
          */
         Int instance() const { return _instance; }
 
+        /**
+         * @brief Importer-specific state
+         *
+         * See @ref AbstractImporter::importerState() for more information.
+         */
+        const void* importerState() const { return _importerState; }
+
     private:
         std::vector<UnsignedInt> _children;
         Matrix4 _transformation;
         ObjectInstanceType3D _instanceType;
         Int _instance;
+        const void* _importerState;
 };
 
 /** @debugoperatorenum{Magnum::Trade::ObjectInstanceType3D} */

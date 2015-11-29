@@ -471,6 +471,21 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
 
         /*@}*/
 
+        /**
+         * @brief Plugin-specific access to internal importer state
+         *
+         * The importer might provide access to its internal data structures
+         * for currently opened document through this function. See
+         * documentation of particular plugin for more information about
+         * returned type and contents. Returns `nullptr` by default.
+         * @see @ref AbstractMaterialData::importerState(),
+         *      @ref CameraData::importerState(), @ref ImageData::importerState(),
+         *      @ref MeshData2D::importerState(), @ref MeshData3D::importerState(),
+         *      @ref ObjectData2D::importerState(), @ref ObjectData3D::importerState(),
+         *      @ref SceneData::importerState(), @ref TextureData::importerState()
+         */
+        const void* importerState() const;
+
     protected:
         /**
          * @brief Implementation for @ref openFile()
@@ -793,6 +808,9 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
 
         /** @brief Implementation for @ref image3D() */
         virtual std::optional<ImageData3D> doImage3D(UnsignedInt id);
+
+        /** @brief Implementation for @ref importerState() */
+        virtual const void* doImporterState() const;
 };
 
 CORRADE_ENUMSET_OPERATORS(AbstractImporter::Features)

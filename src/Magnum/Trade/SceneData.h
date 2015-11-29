@@ -44,10 +44,11 @@ class MAGNUM_EXPORT SceneData {
     public:
         /**
          * @brief Constructor
-         * @param children2D    Two-dimensional child objects
-         * @param children3D    Three-dimensional child objects
+         * @param children2D        Two-dimensional child objects
+         * @param children3D        Three-dimensional child objects
+         * @param importerState     Importer-specific state
          */
-        explicit SceneData(std::vector<UnsignedInt> children2D, std::vector<UnsignedInt> children3D);
+        explicit SceneData(std::vector<UnsignedInt> children2D, std::vector<UnsignedInt> children3D, const void* importerState = nullptr);
 
         /** @brief Copying is not allowed */
         SceneData(const SceneData&) = delete;
@@ -67,9 +68,17 @@ class MAGNUM_EXPORT SceneData {
         /** @brief Three-dimensional child objects */
         const std::vector<UnsignedInt>& children3D() const { return _children3D; }
 
+        /**
+         * @brief Importer-specific state
+         *
+         * See @ref AbstractImporter::importerState() for more information.
+         */
+        const void* importerState() const { return _importerState; }
+
     private:
         std::vector<UnsignedInt> _children2D,
             _children3D;
+        const void* _importerState;
 };
 
 }}

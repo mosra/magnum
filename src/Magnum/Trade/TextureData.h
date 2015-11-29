@@ -60,8 +60,9 @@ class TextureData {
          * @param mipmapFilter          Mipmap filter
          * @param wrapping              Wrapping
          * @param image                 Texture image ID
+         * @param importerState         Importer-specific state
          */
-        TextureData(Type type, Sampler::Filter minificationFilter, Sampler::Filter magnificationFilter, Sampler::Mipmap mipmapFilter, Array3D<Sampler::Wrapping> wrapping, UnsignedInt image): _type(type), _minificationFilter(minificationFilter), _magnificationFilter(magnificationFilter), _mipmapFilter(mipmapFilter), _wrapping(wrapping), _image(image) {}
+        TextureData(Type type, Sampler::Filter minificationFilter, Sampler::Filter magnificationFilter, Sampler::Mipmap mipmapFilter, Array3D<Sampler::Wrapping> wrapping, UnsignedInt image, const void* importerState = nullptr): _type{type}, _minificationFilter{minificationFilter}, _magnificationFilter{magnificationFilter}, _mipmapFilter{mipmapFilter}, _wrapping{wrapping}, _image{image}, _importerState{importerState} {}
 
         /** @brief Copying is not allowed */
         TextureData(const TextureData&) = delete;
@@ -101,12 +102,20 @@ class TextureData {
          */
         UnsignedInt image() const { return _image; }
 
+        /**
+         * @brief Importer-specific state
+         *
+         * See @ref AbstractImporter::importerState() for more information.
+         */
+        const void* importerState() const { return _importerState; }
+
     private:
         Type _type;
         Sampler::Filter _minificationFilter, _magnificationFilter;
         Sampler::Mipmap _mipmapFilter;
         Array3D<Sampler::Wrapping> _wrapping;
         UnsignedInt _image;
+        const void* _importerState;
 };
 
 /** @debugoperatorclassenum{Magnum::Trade::TextureData,Magnum::Trade::TextureData::Type} */

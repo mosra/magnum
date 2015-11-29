@@ -454,4 +454,11 @@ std::optional<ImageData3D> AbstractImporter::image3D(const UnsignedInt id) {
 
 std::optional<ImageData3D> AbstractImporter::doImage3D(UnsignedInt) { return std::nullopt; }
 
+const void* AbstractImporter::importerState() const {
+    CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::importerState(): no file opened", {});
+    return doImporterState();
+}
+
+const void* AbstractImporter::doImporterState() const { return nullptr; }
+
 }}
