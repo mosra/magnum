@@ -703,18 +703,23 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         Framebuffer& attachTextureLayer(BufferAttachment attachment, Texture2DArray& texture, Int level, Int layer);
         #endif
 
-        #ifndef MAGNUM_TARGET_GLES
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         /** @overload
          * @requires_gl40 Extension @extension{ARB,texture_cube_map_array}
-         * @requires_gl Cube map texture arrays are not available in OpenGL ES
-         *      or WebGL.
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
+         *      @es_extension{EXT,texture_cube_map_array}
+         * @requires_gles Cube map texture arrays are not available in WebGL.
          */
         Framebuffer& attachTextureLayer(BufferAttachment attachment, CubeMapTextureArray& texture, Int level, Int layer);
 
         /** @overload
          * @requires_gl32 Extension @extension{ARB,texture_multisample}
-         * @requires_gl Multisample array textures are not available in OpenGL
-         *      ES or WebGL.
+         * @requires_gles30 Multisample 2D array textures are not defined in
+         *      OpenGL ES 2.0.
+         * @requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
+         *      @es_extension{OES,texture_storage_multisample_2d_array}
+         * @requires_gles Multisample textures are not available in WebGL.
          */
         Framebuffer& attachTextureLayer(BufferAttachment attachment, MultisampleTexture2DArray& texture, Int layer);
         #endif

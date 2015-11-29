@@ -41,9 +41,10 @@
 #include "Magnum/MultisampleTexture.h"
 #include "Magnum/TextureArray.h"
 #endif
-
-#ifndef MAGNUM_TARGET_GLES
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 #include "Magnum/CubeMapTextureArray.h"
+#endif
+#ifndef MAGNUM_TARGET_GLES
 #include "Magnum/RectangleTexture.h"
 #endif
 
@@ -75,12 +76,14 @@ struct FramebufferGLTest: AbstractOpenGLTester {
     void attachTexture2DArray();
     void attachTexture2DMultisample();
     #endif
-    #ifndef MAGNUM_TARGET_GLES
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     void attachTexture2DMultisampleArray();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES
     void attachRectangleTexture();
     #endif
     void attachCubeMapTexture();
-    #ifndef MAGNUM_TARGET_GLES
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     void attachCubeMapTextureArray();
     #endif
     void detach();
@@ -128,12 +131,14 @@ FramebufferGLTest::FramebufferGLTest() {
               &FramebufferGLTest::attachTexture2DArray,
               &FramebufferGLTest::attachTexture2DMultisample,
               #endif
-              #ifndef MAGNUM_TARGET_GLES
+              #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
               &FramebufferGLTest::attachTexture2DMultisampleArray,
+              #endif
+              #ifndef MAGNUM_TARGET_GLES
               &FramebufferGLTest::attachRectangleTexture,
               #endif
               &FramebufferGLTest::attachCubeMapTexture,
-              #ifndef MAGNUM_TARGET_GLES
+              #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
               &FramebufferGLTest::attachCubeMapTextureArray,
               #endif
               &FramebufferGLTest::detach,
@@ -528,12 +533,17 @@ void FramebufferGLTest::attachTexture2DMultisample() {
 }
 #endif
 
-#ifndef MAGNUM_TARGET_GLES
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void FramebufferGLTest::attachTexture2DMultisampleArray() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
         CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not available."));
+    #else
+    if(!Context::current()->isExtensionSupported<Extensions::GL::OES::texture_storage_multisample_2d_array>())
+        CORRADE_SKIP(Extensions::GL::OES::texture_storage_multisample_2d_array::string() + std::string(" is not available."));
+    #endif
 
     MultisampleTexture2DArray color;
     color.setStorage(4, TextureFormat::RGBA8, {128, 128, 8});
@@ -549,7 +559,9 @@ void FramebufferGLTest::attachTexture2DMultisampleArray() {
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
+#endif
 
+#ifndef MAGNUM_TARGET_GLES
 void FramebufferGLTest::attachRectangleTexture() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
         CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
@@ -622,12 +634,17 @@ void FramebufferGLTest::attachCubeMapTexture() {
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
 
-#ifndef MAGNUM_TARGET_GLES
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void FramebufferGLTest::attachCubeMapTextureArray() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
         CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
     if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_cube_map_array::string() + std::string(" is not available."));
+    #else
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_cube_map_array>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_cube_map_array::string() + std::string(" is not available."));
+    #endif
 
     CubeMapTextureArray color;
     color.setStorage(1, TextureFormat::RGBA8, {128, 128, 18});

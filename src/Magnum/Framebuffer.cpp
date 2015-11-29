@@ -41,9 +41,10 @@
 #endif
 #include "Magnum/TextureArray.h"
 #endif
-
-#ifndef MAGNUM_TARGET_GLES
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 #include "Magnum/CubeMapTextureArray.h"
+#endif
+#ifndef MAGNUM_TARGET_GLES
 #include "Magnum/RectangleTexture.h"
 #endif
 
@@ -261,7 +262,7 @@ Framebuffer& Framebuffer::attachTextureLayer(const BufferAttachment attachment, 
 }
 #endif
 
-#ifndef MAGNUM_TARGET_GLES
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 Framebuffer& Framebuffer::attachTextureLayer(const BufferAttachment attachment, CubeMapTextureArray& texture, Int level, Int layer) {
     (this->*Context::current()->state().framebuffer->textureLayerImplementation)(attachment, texture.id(), level, layer);
     return *this;
