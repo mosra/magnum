@@ -146,10 +146,10 @@ OpenGL function                         | Matching API
 @fn_gl{FlushMappedBufferRange}, \n `glFlushMappedNamedBufferRange()`, \n @fn_gl_extension{FlushMappedNamedBufferRange,EXT,direct_state_access} | @ref Buffer::flushMappedRange()
 @fn_gl2{FramebufferParameter,FramebufferParameteri}, \n `glNamedFramebufferParameter()`, \n @fn_gl_extension{NamedFramebufferParameter,EXT,direct_state_access} | |
 @fn_gl{FramebufferRenderbuffer}, \n `glNamedFramebufferRenderbuffer()`, \n @fn_gl_extension{NamedFramebufferRenderbuffer,EXT,direct_state_access} | @ref Framebuffer::attachRenderbuffer(), \n @ref Framebuffer::detach()
-@fn_gl{FramebufferTexture}, \n `glNamedFramebufferTexture()`, \n @fn_gl_extension{NamedFramebufferTexture,EXT,direct_state_access} | not used, the functions below are used instead for compatibility reasons
-@fn_gl2{FramebufferTexture1D,FramebufferTexture}, \n @fn_gl_extension{NamedFramebufferTexture1D,EXT,direct_state_access}, \n `glFramebufferTexture2D()`, \n `glNamedFramebufferTexture2DEXT()` | @ref Framebuffer::attachTexture()
+@fn_gl{FramebufferTexture}, \n `glNamedFramebufferTexture()`, \n @fn_gl_extension{NamedFramebufferTexture,EXT,direct_state_access} | @ref Framebuffer::attachLayeredTexture()
+@fn_gl2{FramebufferTexture1D,FramebufferTexture}, \n @fn_gl_extension{NamedFramebufferTexture1D,EXT,direct_state_access}, \n `glFramebufferTexture2D()`, \n `glNamedFramebufferTexture2DEXT()` | @ref Framebuffer::attachTexture(), \n @ref Framebuffer::attachCubeMapTexture()
 @fn_gl2{FramebufferTexture3D,FramebufferTexture} | not used, @fn_gl{FramebufferTextureLayer} has more complete features
-@fn_gl{FramebufferTextureLayer}, \n `glNamedFramebufferTextureLayer()`, \n @fn_gl_extension{NamedFramebufferTextureLayer,EXT,direct_state_access} | @ref Framebuffer::attachTextureLayer()
+@fn_gl{FramebufferTextureLayer}, \n `glNamedFramebufferTextureLayer()`, \n @fn_gl_extension{NamedFramebufferTextureLayer,EXT,direct_state_access} | @ref Framebuffer::attachTextureLayer(), \n @ref Framebuffer::attachCubeMapTexture()
 @fn_gl{FrontFace}                       | @ref Renderer::setFrontFace()
 
 @subsection opengl-mapping-functions-g G

@@ -86,6 +86,16 @@ struct FramebufferGLTest: AbstractOpenGLTester {
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     void attachCubeMapTextureArray();
     #endif
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    void attachLayeredTexture3D();
+    #ifndef MAGNUM_TARGET_GLES
+    void attachLayeredTexture1DArray();
+    #endif
+    void attachLayeredTexture2DArray();
+    void attachLayeredCubeMapTexture();
+    void attachLayeredCubeMapTextureArray();
+    void attachLayeredTexture2DMultisampleArray();
+    #endif
     void detach();
 
     void multipleColorOutputs();
@@ -140,6 +150,16 @@ FramebufferGLTest::FramebufferGLTest() {
               &FramebufferGLTest::attachCubeMapTexture,
               #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
               &FramebufferGLTest::attachCubeMapTextureArray,
+              #endif
+              #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+              &FramebufferGLTest::attachLayeredTexture3D,
+              #ifndef MAGNUM_TARGET_GLES
+              &FramebufferGLTest::attachLayeredTexture1DArray,
+              #endif
+              &FramebufferGLTest::attachLayeredTexture2DArray,
+              &FramebufferGLTest::attachLayeredCubeMapTexture,
+              &FramebufferGLTest::attachLayeredCubeMapTextureArray,
+              &FramebufferGLTest::attachLayeredTexture2DMultisampleArray,
               #endif
               &FramebufferGLTest::detach,
 
@@ -655,6 +675,165 @@ void FramebufferGLTest::attachCubeMapTextureArray() {
     Framebuffer framebuffer({{}, Vector2i(128)});
     framebuffer.attachTextureLayer(Framebuffer::ColorAttachment(0), color, 0, 3)
                .attachTextureLayer(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 0, 3);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
+}
+#endif
+
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+void FramebufferGLTest::attachLayeredTexture3D() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::geometry_shader4>())
+        CORRADE_SKIP(Extensions::GL::ARB::geometry_shader4::string() + std::string(" is not available."));
+    #else
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::geometry_shader>())
+        CORRADE_SKIP(Extensions::GL::EXT::geometry_shader::string() + std::string(" is not available."));
+    #endif
+
+    Texture3D color;
+    color.setStorage(1, TextureFormat::RGBA8, Vector3i{128});
+
+    Framebuffer framebuffer{{{}, Vector2i{128}}};
+    framebuffer.attachLayeredTexture(Framebuffer::ColorAttachment{0}, color, 0);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void FramebufferGLTest::attachLayeredTexture1DArray() {
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::geometry_shader4>())
+        CORRADE_SKIP(Extensions::GL::ARB::geometry_shader4::string() + std::string(" is not available."));
+
+    Texture1DArray color;
+    color.setStorage(1, TextureFormat::RGBA8, {128, 8});
+
+    Texture1DArray depthStencil;
+    depthStencil.setStorage(1, TextureFormat::Depth24Stencil8, {128, 8});
+
+    Framebuffer framebuffer{{{}, {128, 1}}};
+    framebuffer.attachLayeredTexture(Framebuffer::ColorAttachment{0}, color, 0)
+               .attachLayeredTexture(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 0);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
+}
+#endif
+
+void FramebufferGLTest::attachLayeredTexture2DArray() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::geometry_shader4>())
+        CORRADE_SKIP(Extensions::GL::ARB::geometry_shader4::string() + std::string(" is not available."));
+    #else
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::geometry_shader>())
+        CORRADE_SKIP(Extensions::GL::EXT::geometry_shader::string() + std::string(" is not available."));
+    #endif
+
+    Texture2DArray color;
+    color.setStorage(1, TextureFormat::RGBA8, {128, 128, 8});
+
+    Texture2DArray depthStencil;
+    depthStencil.setStorage(1, TextureFormat::Depth24Stencil8, {128, 128, 8});
+
+    Framebuffer framebuffer{{{}, Vector2i{128}}};
+    framebuffer.attachLayeredTexture(Framebuffer::ColorAttachment{0}, color, 0)
+               .attachLayeredTexture(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 0);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
+}
+
+void FramebufferGLTest::attachLayeredCubeMapTexture() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::geometry_shader4>())
+        CORRADE_SKIP(Extensions::GL::ARB::geometry_shader4::string() + std::string(" is not available."));
+    #else
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::geometry_shader>())
+        CORRADE_SKIP(Extensions::GL::EXT::geometry_shader::string() + std::string(" is not available."));
+    #endif
+
+    CubeMapTexture color;
+    color.setStorage(1, TextureFormat::RGBA8, Vector2i{128});
+
+    CubeMapTexture depthStencil;
+    depthStencil.setStorage(1, TextureFormat::Depth24Stencil8, Vector2i{128});
+
+    Framebuffer framebuffer{{{}, Vector2i{128}}};
+    framebuffer.attachLayeredTexture(Framebuffer::ColorAttachment{0}, color, 0)
+               .attachLayeredTexture(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 0);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
+}
+
+void FramebufferGLTest::attachLayeredCubeMapTextureArray() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::geometry_shader4>())
+        CORRADE_SKIP(Extensions::GL::ARB::geometry_shader4::string() + std::string(" is not available."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_cube_map_array::string() + std::string(" is not available."));
+    #else
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::geometry_shader>())
+        CORRADE_SKIP(Extensions::GL::EXT::geometry_shader::string() + std::string(" is not available."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_cube_map_array>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_cube_map_array::string() + std::string(" is not available."));
+    #endif
+
+    CubeMapTextureArray color;
+    color.setStorage(1, TextureFormat::RGBA8, {128, 128, 18});
+
+    CubeMapTextureArray depthStencil;
+    depthStencil.setStorage(1, TextureFormat::Depth24Stencil8, {128, 128, 18});
+
+    Framebuffer framebuffer{{{}, Vector2i{128}}};
+    framebuffer.attachLayeredTexture(Framebuffer::ColorAttachment{0}, color, 0)
+               .attachLayeredTexture(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 0);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
+}
+
+void FramebufferGLTest::attachLayeredTexture2DMultisampleArray() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::geometry_shader4>())
+        CORRADE_SKIP(Extensions::GL::ARB::geometry_shader4::string() + std::string(" is not available."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not available."));
+    #else
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::geometry_shader>())
+        CORRADE_SKIP(Extensions::GL::EXT::geometry_shader::string() + std::string(" is not available."));
+    if(!Context::current()->isExtensionSupported<Extensions::GL::OES::texture_storage_multisample_2d_array>())
+        CORRADE_SKIP(Extensions::GL::OES::texture_storage_multisample_2d_array::string() + std::string(" is not available."));
+    #endif
+
+    MultisampleTexture2DArray color;
+    color.setStorage(4, TextureFormat::RGBA8, {128, 128, 8});
+
+    MultisampleTexture2DArray depthStencil;
+    depthStencil.setStorage(4, TextureFormat::Depth24Stencil8, {128, 128, 8});
+
+    Framebuffer framebuffer{{{}, Vector2i{128}}};
+    framebuffer.attachLayeredTexture(Framebuffer::ColorAttachment{0}, color)
+               .attachLayeredTexture(Framebuffer::BufferAttachment::DepthStencil, depthStencil);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);

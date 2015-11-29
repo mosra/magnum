@@ -724,6 +724,81 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         Framebuffer& attachTextureLayer(BufferAttachment attachment, MultisampleTexture2DArray& texture, Int layer);
         #endif
 
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        /**
+         * @brief Attach layered cube map texture to given buffer
+         * @param attachment        Buffer attachment
+         * @param texture           Texture
+         * @param level             Mip level
+         * @return Reference to self (for method chaining)
+         *
+         * Attaches whole texture with all layers addressable using `gl_Layer`
+         * in geometry shader. If neither @extension{ARB,direct_state_access}
+         * (part of OpenGL 4.5) nor @extension{EXT,direct_state_access} desktop
+         * extension is available, the framebuffer is bound before the
+         * operation (if not already).
+         * @see @ref detach(), @ref attachTexture(),
+         *      @fn_gl2{NamedFramebufferTexture,FramebufferTexture},
+         *      @fn_gl_extension{NamedFramebufferTexture,EXT,direct_state_access},
+         *      eventually @fn_gl{BindFramebuffer} and @fn_gl{FramebufferTexture}
+         * @requires_gl32 Extension @extension{ARB,geometry_shader4}
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
+         *      @es_extension{EXT,geometry_shader}
+         * @requires_gles Geometry shaders are not available in WebGL.
+         */
+        Framebuffer& attachLayeredTexture(BufferAttachment attachment, Texture3D& texture, Int level);
+
+        #ifndef MAGNUM_TARGET_GLES
+        /** @overload
+         * @requires_gl32 Extension @extension{ARB,geometry_shader4}
+         * @requires_gl Only 2D array textures are available in OpenGL ES and
+         *      WebGL.
+         */
+        Framebuffer& attachLayeredTexture(BufferAttachment attachment, Texture1DArray& texture, Int level);
+        #endif
+
+        /** @overload
+         * @requires_gl32 Extension @extension{ARB,geometry_shader4}
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
+         *      @es_extension{EXT,geometry_shader}
+         * @requires_gles Geometry shaders are not available in WebGL.
+         */
+        Framebuffer& attachLayeredTexture(BufferAttachment attachment, Texture2DArray& texture, Int level);
+
+        /**
+         * @overload
+         * @requires_gl32 Extension @extension{ARB,geometry_shader4}
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
+         *      @es_extension{EXT,geometry_shader}
+         * @requires_gles Geometry shaders are not available in WebGL.
+         */
+        Framebuffer& attachLayeredTexture(BufferAttachment attachment, CubeMapTexture& texture, Int level);
+
+        /** @overload
+         * @requires_gl40 Extension @extension{ARB,texture_cube_map_array}
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
+         *      @es_extension{EXT,geometry_shader} and
+         *      @es_extension{EXT,texture_cube_map_array}
+         * @requires_gles Geometry shaders are not available in WebGL.
+         */
+        Framebuffer& attachLayeredTexture(BufferAttachment attachment, CubeMapTextureArray& texture, Int level);
+
+        /** @overload
+         * @requires_gl32 Extension @extension{ARB,geometry_shader4} and
+         *      @extension{ARB,texture_multisample}
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
+         *      @es_extension{EXT,geometry_shader} and
+         *      @es_extension{OES,texture_storage_multisample_2d_array}
+         * @requires_gles Geometry shaders are not available in WebGL.
+         */
+        Framebuffer& attachLayeredTexture(BufferAttachment attachment, MultisampleTexture2DArray& texture);
+        #endif
+
         /**
          * @brief Detach any texture or renderbuffer bound to given buffer
          * @param attachment        Buffer attachment
@@ -773,7 +848,6 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
 
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL texture1DImplementationDefault(BufferAttachment attachment, GLuint textureId, GLint level);
-        void MAGNUM_LOCAL texture1DImplementationDSA(BufferAttachment attachment, GLuint textureId, GLint level);
         void MAGNUM_LOCAL texture1DImplementationDSAEXT(BufferAttachment attachment, GLuint textureId, GLint level);
         #endif
 
@@ -782,6 +856,14 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         void MAGNUM_LOCAL texture2DImplementationDSA(BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint level);
         void MAGNUM_LOCAL texture2DImplementationDSAEXT(BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint level);
         void MAGNUM_LOCAL textureCubeMapImplementationDSA(BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint level);
+        #endif
+
+        #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
+        void MAGNUM_LOCAL textureImplementationDefault(BufferAttachment attachment, GLuint textureId, GLint level);
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL textureImplementationDSA(BufferAttachment attachment, GLuint textureId, GLint level);
+        void MAGNUM_LOCAL textureImplementationDSAEXT(BufferAttachment attachment, GLuint textureId, GLint level);
         #endif
 
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))

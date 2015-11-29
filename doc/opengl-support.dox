@@ -90,7 +90,7 @@ GLSL 1.40                                   | done
 Extension                                   | Status
 ------------------------------------------- | ------
 GLSL 1.50                                   | done
-@extension{ARB,geometry_shader4}            | missing layered attachments and some limit queries
+@extension{ARB,geometry_shader4}            | missing some limit queries
 @extension{ARB,depth_clamp}                 | done
 @extension{ARB,draw_elements_base_vertex}   | done
 @extension{ARB,fragment_coord_conventions}  | done (shading language only)

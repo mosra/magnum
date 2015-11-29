@@ -78,6 +78,9 @@ struct FramebufferState {
     #endif
     void(Framebuffer::*texture2DImplementation)(Framebuffer::BufferAttachment, GLenum, GLuint, GLint);
     void(Framebuffer::*textureCubeMapImplementation)(Framebuffer::BufferAttachment, GLenum, GLuint, GLint);
+    #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
+    void(Framebuffer::*textureImplementation)(Framebuffer::BufferAttachment, GLuint, GLint);
+    #endif
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     void(Framebuffer::*textureLayerImplementation)(Framebuffer::BufferAttachment, GLuint, GLint, GLint);
     #endif

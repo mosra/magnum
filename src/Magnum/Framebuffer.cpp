@@ -274,6 +274,40 @@ Framebuffer& Framebuffer::attachTextureLayer(const BufferAttachment attachment, 
 }
 #endif
 
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+Framebuffer& Framebuffer::attachLayeredTexture(const BufferAttachment attachment, Texture3D& texture, const Int level) {
+    (this->*Context::current()->state().framebuffer->textureImplementation)(attachment, texture.id(), level);
+    return *this;
+}
+
+#ifndef MAGNUM_TARGET_GLES
+Framebuffer& Framebuffer::attachLayeredTexture(const BufferAttachment attachment, Texture1DArray& texture, const Int level) {
+    (this->*Context::current()->state().framebuffer->textureImplementation)(attachment, texture.id(), level);
+    return *this;
+}
+#endif
+
+Framebuffer& Framebuffer::attachLayeredTexture(const BufferAttachment attachment, Texture2DArray& texture, const Int level) {
+    (this->*Context::current()->state().framebuffer->textureImplementation)(attachment, texture.id(), level);
+    return *this;
+}
+
+Framebuffer& Framebuffer::attachLayeredTexture(const BufferAttachment attachment, CubeMapTexture& texture, const Int level) {
+    (this->*Context::current()->state().framebuffer->textureImplementation)(attachment, texture.id(), level);
+    return *this;
+}
+
+Framebuffer& Framebuffer::attachLayeredTexture(const BufferAttachment attachment, CubeMapTextureArray& texture, const Int level) {
+    (this->*Context::current()->state().framebuffer->textureImplementation)(attachment, texture.id(), level);
+    return *this;
+}
+
+Framebuffer& Framebuffer::attachLayeredTexture(const BufferAttachment attachment, MultisampleTexture2DArray& texture) {
+    (this->*Context::current()->state().framebuffer->textureImplementation)(attachment, texture.id(), 0);
+    return *this;
+}
+#endif
+
 Framebuffer& Framebuffer::detach(const BufferAttachment attachment) {
     (this->*Context::current()->state().framebuffer->renderbufferImplementation)(attachment, 0);
     return *this;
@@ -295,10 +329,6 @@ void Framebuffer::renderbufferImplementationDSAEXT(const BufferAttachment attach
 
 void Framebuffer::texture1DImplementationDefault(BufferAttachment attachment, GLuint textureId, GLint mipLevel) {
     glFramebufferTexture1D(GLenum(bindInternal()), GLenum(attachment), GL_TEXTURE_1D, textureId, mipLevel);
-}
-
-void Framebuffer::texture1DImplementationDSA(const BufferAttachment attachment, const GLuint textureId, const GLint mipLevel) {
-    glNamedFramebufferTexture(_id, GLenum(attachment), textureId, mipLevel);
 }
 
 void Framebuffer::texture1DImplementationDSAEXT(BufferAttachment attachment, GLuint textureId, GLint mipLevel) {
@@ -323,6 +353,27 @@ void Framebuffer::texture2DImplementationDSAEXT(BufferAttachment attachment, GLe
 
 void Framebuffer::textureCubeMapImplementationDSA(const BufferAttachment attachment, const GLenum textureTarget, const GLuint textureId, const GLint mipLevel) {
     glNamedFramebufferTextureLayer(_id, GLenum(attachment), textureId, mipLevel, textureTarget - GL_TEXTURE_CUBE_MAP_POSITIVE_X);
+}
+#endif
+
+#if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
+void Framebuffer::textureImplementationDefault(BufferAttachment attachment, GLuint textureId, GLint mipLevel) {
+    #ifndef MAGNUM_TARGET_GLES
+    glFramebufferTexture
+    #else
+    glFramebufferTextureEXT
+    #endif
+        (GLenum(bindInternal()), GLenum(attachment), textureId, mipLevel);
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+void Framebuffer::textureImplementationDSA(const BufferAttachment attachment, const GLuint textureId, const GLint mipLevel) {
+    glNamedFramebufferTexture(_id, GLenum(attachment), textureId, mipLevel);
+}
+
+void Framebuffer::textureImplementationDSAEXT(const BufferAttachment attachment, const GLuint textureId, const GLint mipLevel) {
+    glNamedFramebufferTextureEXT(_id, GLenum(attachment), textureId, mipLevel);
 }
 #endif
 

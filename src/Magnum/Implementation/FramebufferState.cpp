@@ -73,10 +73,12 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
         readBufferImplementation = &AbstractFramebuffer::readBufferImplementationDSA;
 
         renderbufferImplementation = &Framebuffer::renderbufferImplementationDSA;
-        texture1DImplementation = &Framebuffer::texture1DImplementationDSA;
+        /* The 1D implementation uses the same function as the layered attachment */
+        texture1DImplementation = &Framebuffer::textureImplementationDSA;
         /* DSA doesn't have texture target parameter so we need to use different
            function to specify cube map face */
         texture2DImplementation = &Framebuffer::texture2DImplementationDSA;
+        textureImplementation = &Framebuffer::textureImplementationDSA;
         textureCubeMapImplementation = &Framebuffer::textureCubeMapImplementationDSA;
         textureLayerImplementation = &Framebuffer::textureLayerImplementationDSA;
 
@@ -94,6 +96,7 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
         texture1DImplementation = &Framebuffer::texture1DImplementationDSAEXT;
         /* The EXT_DSA implementation is the same for both 2D and cube map textures */
         texture2DImplementation = &Framebuffer::texture2DImplementationDSAEXT;
+        textureImplementation = &Framebuffer::textureImplementationDSAEXT;
         textureCubeMapImplementation = &Framebuffer::texture2DImplementationDSAEXT;
         textureLayerImplementation = &Framebuffer::textureLayerImplementationDSAEXT;
 
@@ -118,6 +121,9 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
         #endif
         /* The default implementation is the same for both 2D and cube map textures */
         texture2DImplementation = &Framebuffer::texture2DImplementationDefault;
+        #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
+        textureImplementation = &Framebuffer::textureImplementationDefault;
+        #endif
         textureCubeMapImplementation = &Framebuffer::texture2DImplementationDefault;
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         textureLayerImplementation = &Framebuffer::textureLayerImplementationDefault;
