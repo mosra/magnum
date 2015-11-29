@@ -654,7 +654,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * available, the framebuffer is bound before the operation (if not
          * already).
          * @see @ref detach(), @ref attachTexture(),
-         *      @fn_gl2{NamedFramebufferTexture,FramebufferTexture},
+         *      @fn_gl2{NamedFramebufferTextureLayer,FramebufferTextureLayer},
          *      @fn_gl_extension{NamedFramebufferTexture2D,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and @fn_gl2{FramebufferTexture2D,FramebufferTexture}
          */
@@ -776,6 +776,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL texture2DImplementationDSA(BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint level);
         void MAGNUM_LOCAL texture2DImplementationDSAEXT(BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint level);
+        void MAGNUM_LOCAL textureCubeMapImplementationDSA(BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint level);
         #endif
 
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))

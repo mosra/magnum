@@ -236,7 +236,7 @@ Framebuffer& Framebuffer::attachTexture(const BufferAttachment attachment, Multi
 #endif
 
 Framebuffer& Framebuffer::attachCubeMapTexture(const BufferAttachment attachment, CubeMapTexture& texture, CubeMapTexture::Coordinate coordinate, const Int level) {
-    (this->*Context::current()->state().framebuffer->texture2DImplementation)(attachment, GLenum(coordinate), texture.id(), level);
+    (this->*Context::current()->state().framebuffer->textureCubeMapImplementation)(attachment, GLenum(coordinate), texture.id(), level);
     return *this;
 }
 
@@ -318,6 +318,10 @@ void Framebuffer::texture2DImplementationDSA(const BufferAttachment attachment, 
 void Framebuffer::texture2DImplementationDSAEXT(BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint mipLevel) {
     _flags |= ObjectFlag::Created;
     glNamedFramebufferTexture2DEXT(_id, GLenum(attachment), textureTarget, textureId, mipLevel);
+}
+
+void Framebuffer::textureCubeMapImplementationDSA(const BufferAttachment attachment, const GLenum textureTarget, const GLuint textureId, const GLint mipLevel) {
+    glNamedFramebufferTextureLayer(_id, GLenum(attachment), textureId, mipLevel, textureTarget - GL_TEXTURE_CUBE_MAP_POSITIVE_X);
 }
 #endif
 

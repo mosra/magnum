@@ -74,7 +74,10 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
 
         renderbufferImplementation = &Framebuffer::renderbufferImplementationDSA;
         texture1DImplementation = &Framebuffer::texture1DImplementationDSA;
+        /* DSA doesn't have texture target parameter so we need to use different
+           function to specify cube map face */
         texture2DImplementation = &Framebuffer::texture2DImplementationDSA;
+        textureCubeMapImplementation = &Framebuffer::textureCubeMapImplementationDSA;
         textureLayerImplementation = &Framebuffer::textureLayerImplementationDSA;
 
         renderbufferStorageImplementation = &Renderbuffer::storageImplementationDSA;
@@ -89,7 +92,9 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
 
         renderbufferImplementation = &Framebuffer::renderbufferImplementationDSAEXT;
         texture1DImplementation = &Framebuffer::texture1DImplementationDSAEXT;
+        /* The EXT_DSA implementation is the same for both 2D and cube map textures */
         texture2DImplementation = &Framebuffer::texture2DImplementationDSAEXT;
+        textureCubeMapImplementation = &Framebuffer::texture2DImplementationDSAEXT;
         textureLayerImplementation = &Framebuffer::textureLayerImplementationDSAEXT;
 
         renderbufferStorageImplementation = &Renderbuffer::storageImplementationDSAEXT;
@@ -111,7 +116,9 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
         #ifndef MAGNUM_TARGET_GLES
         texture1DImplementation = &Framebuffer::texture1DImplementationDefault;
         #endif
+        /* The default implementation is the same for both 2D and cube map textures */
         texture2DImplementation = &Framebuffer::texture2DImplementationDefault;
+        textureCubeMapImplementation = &Framebuffer::texture2DImplementationDefault;
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         textureLayerImplementation = &Framebuffer::textureLayerImplementationDefault;
         #endif
