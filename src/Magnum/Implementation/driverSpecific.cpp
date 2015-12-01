@@ -40,10 +40,6 @@ namespace {
            version instead of selecting latest available version */
         "amd-nv-no-forward-compatible-core-context",
 
-        /* Using ARB_explicit_uniform_location on AMD linux drivers 13.251
-           caused the GLSL compiler to crash */
-        "amd-explicit-uniform-location-crash",
-
         #ifdef CORRADE_TARGET_WINDOWS
         /* On Windows Intel drivers ARB_shading_language_420pack is exposed in
            GLSL even though the extension (e.g. binding keyword) is not
@@ -157,9 +153,6 @@ void Context::setupDriverWorkarounds() {
             _extensionRequiredVersion[Extensions::extension::Index] = Version::version
 
     #ifndef MAGNUM_TARGET_GLES
-    if((detectedDriver() & DetectedDriver::AMD) && !isDriverWorkaroundDisabled("amd-explicit-uniform-location-crash"))
-        _setRequiredVersion(GL::ARB::explicit_uniform_location, None);
-
     #ifdef CORRADE_TARGET_WINDOWS
     if((detectedDriver() & DetectedDriver::IntelWindows) && !isExtensionSupported<Extensions::GL::ARB::shading_language_420pack>() && !isDriverWorkaroundDisabled("intel-windows-glsl-exposes-unsupported-shading-language-420pack"))
         _setRequiredVersion(GL::ARB::shading_language_420pack, None);
