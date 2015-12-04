@@ -27,7 +27,7 @@ cmake_minimum_required(VERSION 2.8.9)
 project(Magnum)
 
 # Find Corrade first so we can check on the target
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/modules/")
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/modules/")
 find_package(Corrade REQUIRED)
 
 include(CMakeDependentOption)

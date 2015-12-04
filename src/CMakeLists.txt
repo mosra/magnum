@@ -47,7 +47,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CO
 # We can use both implicit include path (GLES2/gl2.h) where our headers can
 # be overriden with system ones or explicit (MagnumExternal/OpenGL/GLES2/gl2ext.h)
 # where only our headers will be used
-include_directories(${CMAKE_SOURCE_DIR}/src/MagnumExternal/OpenGL)
+include_directories(${PROJECT_SOURCE_DIR}/src/MagnumExternal/OpenGL)
 
 add_subdirectory(MagnumExternal)
 add_subdirectory(Magnum)
