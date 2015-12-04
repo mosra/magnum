@@ -180,17 +180,21 @@ endif()
 find_path(MAGNUM_INCLUDE_DIR
     NAMES Magnum/Magnum.h)
 
+# Configuration file
+find_file(_MAGNUM_CONFIGURE_FILE configure.h
+    HINTS ${MAGNUM_INCLUDE_DIR}/Magnum/)
+
 # We need to open configure.h file from MAGNUM_INCLUDE_DIR before we check for
 # the components. Bail out with proper error message if it wasn't found. The
 # complete check with all components is further below.
 if(NOT MAGNUM_INCLUDE_DIR)
     include(FindPackageHandleStandardArgs)
     find_package_handle_standard_args(Magnum
-        REQUIRED_VARS MAGNUM_LIBRARY MAGNUM_INCLUDE_DIR)
+        REQUIRED_VARS MAGNUM_LIBRARY MAGNUM_INCLUDE_DIR _MAGNUM_CONFIGURE_FILE)
 endif()
 
 # Configuration
-file(READ ${MAGNUM_INCLUDE_DIR}/Magnum/configure.h _magnumConfigure)
+file(READ ${_MAGNUM_CONFIGURE_FILE} _magnumConfigure)
 set(_magnumFlags
     BUILD_DEPRECATED
     BUILD_STATIC
@@ -222,6 +226,15 @@ elseif(MAGNUM_TARGET_GLES2)
 elseif(MAGNUM_TARGET_GLES3)
     find_package(OpenGLES3 REQUIRED)
     set(MAGNUM_LIBRARIES ${MAGNUM_LIBRARIES} ${OPENGLES3_LIBRARY})
+endif()
+
+# If the configure file is somewhere else than in root include dir (e.g. when
+# using CMake subproject), we need to include that dir too
+if(NOT ${MAGNUM_INCLUDE_DIR}/Magnum/configure.h STREQUAL ${_MAGNUM_CONFIGURE_FILE})
+    # Go two levels up
+    get_filename_component(_MAGNUM_CONFIGURE_FILE_INCLUDE_DIR ${_MAGNUM_CONFIGURE_FILE} DIRECTORY)
+    get_filename_component(_MAGNUM_CONFIGURE_FILE_INCLUDE_DIR ${_MAGNUM_CONFIGURE_FILE_INCLUDE_DIR} DIRECTORY)
+    list(APPEND MAGNUM_INCLUDE_DIRS ${_MAGNUM_CONFIGURE_FILE_INCLUDE_DIR})
 endif()
 
 # Emscripten needs special flag to use WebGL 2
@@ -623,7 +636,8 @@ mark_as_advanced(FORCE
     MAGNUM_PLUGINS_AUDIOIMPORTER_RELEASE_INSTALL_DIR
     MAGNUM_CMAKE_MODULE_INSTALL_DIR
     MAGNUM_INCLUDE_INSTALL_DIR
-    MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR)
+    MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR
+    _MAGNUM_CONFIGURE_FILE)
 
 # Get base plugin directory from main library location
 set(MAGNUM_PLUGINS_DEBUG_DIR ${_MAGNUM_LIBRARY_PATH}/magnum-d
