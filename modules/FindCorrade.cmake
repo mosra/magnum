@@ -4,7 +4,7 @@
 #  find_package(Corrade [REQUIRED])
 # This module tries to find Corrade library and then defines:
 #  CORRADE_FOUND                    - True if Corrade is found
-#  CORRADE_INCLUDE_DIR              - Root include dir
+#  CORRADE_INCLUDE_DIRS             - Corrade include directories
 #  CORRADE_INTERCONNECT_LIBRARIES   - Interconnect library and dependent
 #   libraries
 #  CORRADE_UTILITY_LIBRARIES        - Utility library and dependent
@@ -101,7 +101,14 @@
 # release plugins installed alongside each other.
 #
 #
+# Find corresponding DLLs for library files.
+#  corrade_find_dlls_for_libs(<VAR> libs...)
+# Available only on Windows, for all *.lib files tries to find corresponding
+# DLL file. Useful for bundling dependencies for e.g. WinRT packages.
+#
+#
 # Additionally these variables are defined for internal usage:
+#  CORRADE_INCLUDE_DIR              - Root include dir
 #  CORRADE_INTERCONNECT_LIBRARY     - Interconnect library (w/o
 #   dependencies)
 #  CORRADE_UTILITY_LIBRARY          - Utility library (w/o dependencies)
@@ -176,6 +183,10 @@ find_path(_CORRADE_MODULE_DIR
     NAMES UseCorrade.cmake CorradeLibSuffix.cmake
     PATH_SUFFIXES share/cmake/Corrade)
 
+# Configuration file
+find_file(_CORRADE_CONFIGURE_FILE configure.h
+    HINTS ${CORRADE_INCLUDE_DIR}/Corrade/)
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Corrade DEFAULT_MSG
     CORRADE_UTILITY_LIBRARY
@@ -184,14 +195,15 @@ find_package_handle_standard_args(Corrade DEFAULT_MSG
     CORRADE_TESTSUITE_LIBRARY
     CORRADE_INCLUDE_DIR
     CORRADE_RC_EXECUTABLE
-    _CORRADE_MODULE_DIR)
+    _CORRADE_MODULE_DIR
+    _CORRADE_CONFIGURE_FILE)
 
 if(NOT CORRADE_FOUND)
     return()
 endif()
 
 # Read flags from fonfiguration
-file(READ ${CORRADE_INCLUDE_DIR}/Corrade/configure.h _corradeConfigure)
+file(READ ${_CORRADE_CONFIGURE_FILE} _corradeConfigure)
 set(_corradeFlags
     GCC47_COMPATIBILITY
     MSVC2015_COMPATIBILITY
@@ -213,12 +225,22 @@ foreach(_corradeFlag ${_corradeFlags})
     endif()
 endforeach()
 
+set(CORRADE_INCLUDE_DIRS ${CORRADE_INCLUDE_DIR})
 set(CORRADE_UTILITY_LIBRARIES ${CORRADE_UTILITY_LIBRARY})
 set(CORRADE_INTERCONNECT_LIBRARIES ${CORRADE_INTERCONNECT_LIBRARY} ${CORRADE_UTILITY_LIBRARIES})
 set(CORRADE_PLUGINMANAGER_LIBRARIES ${CORRADE_PLUGINMANAGER_LIBRARY} ${CORRADE_UTILITY_LIBRARIES})
 set(CORRADE_TESTSUITE_LIBRARIES ${CORRADE_TESTSUITE_LIBRARY} ${CORRADE_UTILITY_LIBRARIES})
 set(CORRADE_USE_MODULE ${_CORRADE_MODULE_DIR}/UseCorrade.cmake)
 set(CORRADE_LIB_SUFFIX_MODULE ${_CORRADE_MODULE_DIR}/CorradeLibSuffix.cmake)
+
+# If the configure file is somewhere else than in root include dir (e.g. when
+# using CMake subproject), we need to include that dir too
+if(NOT ${CORRADE_INCLUDE_DIR}/Corrade/configure.h STREQUAL ${_CORRADE_CONFIGURE_FILE})
+    # Go two levels up
+    get_filename_component(_CORRADE_CONFIGURE_FILE_INCLUDE_DIR ${_CORRADE_CONFIGURE_FILE} DIRECTORY)
+    get_filename_component(_CORRADE_CONFIGURE_FILE_INCLUDE_DIR ${_CORRADE_CONFIGURE_FILE_INCLUDE_DIR} DIRECTORY)
+    list(APPEND CORRADE_INCLUDE_DIRS ${_CORRADE_CONFIGURE_FILE_INCLUDE_DIR})
+endif()
 
 # At least static build needs this
 if(CORRADE_TARGET_UNIX OR CORRADE_TARGET_NACL_GLIBC)
@@ -230,7 +252,7 @@ if(CORRADE_TARGET_ANDROID)
     set(CORRADE_UTILITY_LIBRARIES ${CORRADE_UTILITY_LIBRARIES} log)
 endif()
 
-mark_as_advanced(_CORRADE_MODULE_DIR)
+mark_as_advanced(_CORRADE_CONFIGURE_FILE _CORRADE_MODULE_DIR)
 
 # Finalize the finding process
 include(${CORRADE_USE_MODULE})
