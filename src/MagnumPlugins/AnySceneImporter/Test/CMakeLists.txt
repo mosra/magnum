@@ -25,8 +25,8 @@
 
 include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
 
-set(OBJ_FILE ${CMAKE_SOURCE_DIR}/src/MagnumPlugins/AnySceneImporter/Test/mesh.obj)
-set(PLY_FILE ${CMAKE_SOURCE_DIR}/src/MagnumPlugins/StanfordImporter/Test/common.ply)
+set(OBJ_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/AnySceneImporter/Test/mesh.obj)
+set(PLY_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/StanfordImporter/Test/common.ply)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)

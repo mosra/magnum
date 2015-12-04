@@ -25,9 +25,9 @@
 
 include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
 
-set(TGA_FILE ${CMAKE_SOURCE_DIR}/src/MagnumPlugins/ColladaImporter/Test/ColladaImporterTestFiles/image.tga)
-set(JPEG_FILE ${CMAKE_SOURCE_DIR}/src/MagnumPlugins/JpegImporter/Test/rgb.jpg)
-set(PNG_FILE ${CMAKE_SOURCE_DIR}/src/MagnumPlugins/PngImporter/Test/rgb.png)
+set(TGA_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/ColladaImporter/Test/ColladaImporterTestFiles/image.tga)
+set(JPEG_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/JpegImporter/Test/rgb.jpg)
+set(PNG_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/PngImporter/Test/rgb.png)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
