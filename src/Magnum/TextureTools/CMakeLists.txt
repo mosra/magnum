@@ -77,3 +77,6 @@ install(FILES ${MagnumTextureTools_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL
 if(BUILD_TESTS)
     add_subdirectory(Test)
 endif()
+
+# Magnum TextureTools library for superprojects
+set(MAGNUM_TEXTURETOOLS_LIBRARY MagnumTextureTools CACHE INTERNAL "")

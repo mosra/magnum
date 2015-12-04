@@ -80,3 +80,6 @@ install(FILES ${MagnumAudio_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/A
 if(BUILD_TESTS)
     add_subdirectory(Test)
 endif()
+
+# Magnum Audio library for superprojects
+set(MAGNUM_AUDIO_LIBRARY MagnumAudio CACHE INTERNAL "")

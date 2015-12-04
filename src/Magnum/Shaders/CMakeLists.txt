@@ -73,3 +73,6 @@ install(FILES ${MagnumShaders_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}
 if(BUILD_TESTS)
     add_subdirectory(Test)
 endif()
+
+# Magnum Shaders library for superprojects
+set(MAGNUM_SHADERS_LIBRARY MagnumShaders CACHE INTERNAL "")

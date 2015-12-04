@@ -70,3 +70,6 @@ if(BUILD_GL_TESTS)
 
     add_subdirectory(Test)
 endif()
+
+# Magnum MagnumFont library for superprojects
+set(MAGNUM_MAGNUMFONT_LIBRARY MagnumFont CACHE INTERNAL "")

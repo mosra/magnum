@@ -67,3 +67,6 @@ if(BUILD_TESTS)
 
     add_subdirectory(Test)
 endif()
+
+# Magnum TgaImageConverter library for superprojects
+set(MAGNUM_TGAIMAGECONVERTER_LIBRARY TgaImageConverter CACHE INTERNAL "")

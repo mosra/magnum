@@ -85,3 +85,6 @@ install(FILES ${MagnumShapes_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/
 if(BUILD_TESTS)
     add_subdirectory(Test)
 endif()
+
+# Magnum Shapes library for superprojects
+set(MAGNUM_SHAPES_LIBRARY MagnumShapes CACHE INTERNAL "")

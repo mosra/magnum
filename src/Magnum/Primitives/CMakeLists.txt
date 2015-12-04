@@ -78,3 +78,6 @@ install(FILES ${MagnumPrimitives_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_D
 if(BUILD_TESTS)
     add_subdirectory(Test)
 endif()
+
+# Magnum Primitives library for superprojects
+set(MAGNUM_PRIMITIVES_LIBRARY MagnumPrimitives CACHE INTERNAL "")

@@ -124,3 +124,6 @@ if(BUILD_TESTS)
 
     add_subdirectory(Test)
 endif()
+
+# Magnum SceneGraph library for superprojects
+set(MAGNUM_SCENEGRAPH_LIBRARY MagnumSceneGraph CACHE INTERNAL "")

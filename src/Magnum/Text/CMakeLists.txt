@@ -81,3 +81,6 @@ endif()
 if(BUILD_TESTS)
     add_subdirectory(Test)
 endif()
+
+# Magnum Text library for superprojects
+set(MAGNUM_TEXT_LIBRARY MagnumText CACHE INTERNAL "")

@@ -60,3 +60,6 @@ if(BUILD_TESTS)
     target_link_libraries(MagnumWavAudioImporterTestLib Magnum MagnumAudio)
     add_subdirectory(Test)
 endif()
+
+# Magnum WavAudioImporter library for superprojects
+set(MAGNUM_WAVAUDIOIMPORTER_LIBRARY WavAudioImporter CACHE INTERNAL "")

@@ -68,3 +68,6 @@ if(BUILD_TESTS)
 
     add_subdirectory(Test)
 endif()
+
+# Magnum TgaImporter library for superprojects
+set(MAGNUM_TGAIMPORTER_LIBRARY TgaImporter CACHE INTERNAL "")

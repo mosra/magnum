@@ -93,3 +93,6 @@ install(FILES ${MagnumDebugTools_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_D
 if(BUILD_TESTS)
     add_subdirectory(Test)
 endif()
+
+# Magnum DebugTools library for superprojects
+set(MAGNUM_DEBUGTOOLS_LIBRARY MagnumDebugTools CACHE INTERNAL "")

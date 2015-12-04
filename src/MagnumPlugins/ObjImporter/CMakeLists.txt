@@ -55,3 +55,6 @@ if(BUILD_TESTS)
     target_link_libraries(MagnumObjImporterTestLib Magnum MagnumMeshTools)
     add_subdirectory(Test)
 endif()
+
+# Magnum ObjImporter library for superprojects
+set(MAGNUM_OBJIMPORTER_LIBRARY ObjImporter CACHE INTERNAL "")

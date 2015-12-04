@@ -105,3 +105,6 @@ if(BUILD_TESTS)
 
     add_subdirectory(Test)
 endif()
+
+# Magnum MeshTools library for superprojects
+set(MAGNUM_MESHTOOLS_LIBRARY MagnumMeshTools CACHE INTERNAL "")
