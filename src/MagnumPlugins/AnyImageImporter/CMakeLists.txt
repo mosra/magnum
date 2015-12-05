@@ -64,3 +64,6 @@ if(BUILD_TESTS)
     target_link_libraries(MagnumAnyImageImporterTestLib ${MAGNUM_LIBRARIES})
     add_subdirectory(Test)
 endif()
+
+# Magnum AnyImageImporter library for superprojects
+set(MAGNUMPLUGINS_ANYIMAGEIMPORTER_LIBRARY AnyImageImporter CACHE INTERNAL "")

@@ -59,3 +59,6 @@ if(BUILD_TESTS)
     target_link_libraries(MagnumAnyAudioImporterTestLib ${MAGNUM_LIBRARIES} ${MAGNUM_AUDIO_LIBRARIES})
     add_subdirectory(Test)
 endif()
+
+# Magnum AnyAudioImporter library for superprojects
+set(MAGNUMPLUGINS_ANYAUDIOIMPORTER_LIBRARY AnyAudioImporter CACHE INTERNAL "")

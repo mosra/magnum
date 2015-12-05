@@ -56,3 +56,6 @@ if(BUILD_TESTS)
     target_link_libraries(MagnumAnySceneImporterTestLib ${MAGNUM_LIBRARIES})
     add_subdirectory(Test)
 endif()
+
+# Magnum AnySceneImporter library for superprojects
+set(MAGNUMPLUGINS_ANYSCENEIMPORTER_LIBRARY AnySceneImporter CACHE INTERNAL "")
