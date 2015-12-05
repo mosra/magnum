@@ -29,41 +29,64 @@ namespace Magnum {
 
 @tableofcontents
 
-@section getting-started-download Download, build and install Magnum
-
-Get latest version from GitHub and install it. Read full guide on
-@ref building "how to download, build and install Magnum" on platform of your
-choice. For our first project we will use SDL2 toolkit, don't forget to enable
-it for building using `WITH_SDL2APPLICATION` CMake parameter. On older Linux
-distributions which don't have SDL2 in the repositories you might want to use
-GLUT toolkit instead, it is enabled using `WITH_GLUTAPPLICATION` CMake
-parameter.
-
-@section getting-started-bootstrap Download bootstrap project
-
 Setting up a new project can be pretty gruesome and nobody likes repeating the
 same process every time. Magnum provides "bootstrap" project structures for
 many use cases, helping you get up and running in no time.
 
+@section getting-started-bootstrap Download bootstrap project
+
 The [bootstrap repository](https://github.com/mosra/magnum-bootstrap) is
 located on GitHub. The `master` branch contains just an README file and the
 actual bootstrap projects are in various other branches, each covering some
-particular use case. For your first project you would need the `base` branch,
-which contains only the essential files you need. Download the branch [as an
-archive](https://github.com/mosra/magnum-bootstrap/archive/base.zip) and
-extract it somewhere. Do it rather than cloning the full repository, as it's
-better to init your own repository from scratch to avoid having the history
-polluted.
+particular use case. For the first project you need the `base` branch, which
+contains only the essential files. Download the branch [as an archive](https://github.com/mosra/magnum-bootstrap/archive/base.zip)
+and extract it somewhere. Do it rather than cloning the full repository, as
+it's better to init your own repository from scratch with clean history.
 
-If you want to use GLUT instead of SDL2, download the `base-glut` branch
-[archive](https://github.com/mosra/magnum-bootstrap/archive/base-glut.zip).
-The code will be slightly different from what is presented below, but the
-changes are only minor (two modified lines and one additional file) and the
+If you want to (or have to) use GLUT instead of SDL2, download the `base-glut`
+branch [archive](https://github.com/mosra/magnum-bootstrap/archive/base-glut.zip)
+instead of `base` branch. The code will be slightly different from what is
+presented below, but the changes are only minor (two modified lines) and the
 main principles are the same.
 
-If you are using `compatibility` branch of Magnum and Corrade, replace
-`modules/FindCorrade.cmake` with [the one from `compatibility` branch](https://github.com/mosra/corrade/blob/compatibility/modules/FindCorrade.cmake)
+@section getting-started-download Download, build and install Corrade and Magnum
+
+Magnum libraries support both separate compilation/installation and CMake
+subprojects. We'll use the subproject approach now, because adding the
+dependencies means just cloning them into your project tree:
+
+    cd /path/to/the/extracted/bootstrap/project
+    git clone git://github.com/mosra/corrade.git
+    git clone git://github.com/mosra/magnum.git
+
+The `master` branch supports GCC 4.7+, Clang and MSVC 2015 compilers, for older
+versions you need to use `compatibility` branches, please see
+@ref building-corrade "Corrade" and @ref building "Magnum"  installation guides
+for detailed information. If you are using `compatibility` branch of Magnum and
+Corrade, replace `modules/FindCorrade.cmake` from the bootstrap project with
+[the one from compatibility branch](https://github.com/mosra/corrade/blob/compatibility/modules/FindCorrade.cmake)
 so the compatibility mode gets properly detected and used.
+
+Then open the `CMakeLists.txt` file in the root of bootstrap project and add
+these two new subdirectories using `add_subdirectory()` so the file looks like
+this:
+
+@code
+cmake_minimum_required(VERSION 2.8.9)
+project(MyApplication)
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/modules/")
+
+add_subdirectory(corrade)
+add_subdirectory(magnum)
+add_subdirectory(src)
+@endcode
+
+If you want to install Corrade and Magnum separately instead of cloning them
+into your project tree, just follow the installation guides mentioned above.
+Don't forget to enable `WITH_SDL2APPLICATION` (or `WITH_GLUTAPPLICATION`, if
+you are using GLUT) when building Magnum so the bootstrap project can use it
+later.
 
 @section getting-started-review Review project structure
 
@@ -76,20 +99,10 @@ CMake build system, see @ref cmake for more information.
     src/MyApplication.cpp
     src/CMakeLists.txt
     CMakeLists.txt
-    .gitignore
 
-In root there is pre-filled `.gitignore` for your Git project and also
-project-wide `CMakeLists.txt`. It just sets up project name, specifies module
-directory and delegates everything important to `CMakeLists.txt` in `src/`
-subdirectory.
-@code
-cmake_minimum_required(VERSION 2.8.9)
-project(MyApplication)
-
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/modules/")
-
-add_subdirectory(src)
-@endcode
+In root there is project-wide `CMakeLists.txt`, which you have seen above. It
+just sets up project name, specifies module directory and delegates everything
+important to `CMakeLists.txt` in `src/` subdirectory.
 
 Directory `modules/` contains CMake modules for finding the needed
 dependencies. Unlike modules for finding e.g. OpenGL, which are part of
@@ -113,7 +126,7 @@ class MyApplication: public Platform::Application {
         void drawEvent() override;
 };
 
-MyApplication::MyApplication(const Arguments& arguments): Platform::Application(arguments) {
+MyApplication::MyApplication(const Arguments& arguments): Platform::Application{arguments} {
     // TODO: Add your initialization code here
 }
 
@@ -130,8 +143,8 @@ MAGNUM_APPLICATION_MAIN(MyApplication)
 
 The application essentially does nothing, just clears screen framebuffer to
 default (dark gray) color and then does buffer swap to actually display it on
-the screen. `CMakeLists.txt` finds Magnum, sets up compiler flags, creates the
-executable and links it to all needed libraries:
+the screen. The `src/CMakeLists.txt` file finds Magnum, sets up compiler flags,
+creates the executable and links it to all needed libraries:
 @code
 find_package(Magnum REQUIRED Sdl2Application)
 
@@ -148,36 +161,39 @@ In the following tutorials the code will be explained more thoroughly.
 
 @section getting-started-build Build it and run
 
-In Linux (and other Unix-based OSs) you can build the example using the
-following three commands: create out-of-source build directory, run cmake in it
-and then run make. The application binary will then appear in src/ subdirectory
-of build dir:
+In Linux (and other Unix-based OSs) you can build the application along with
+the subprojects using the following three commands: create out-of-source build
+directory, run cmake, enable SDL2 application in the Magnum subproject and then
+build the everything. The compiled application binary will then appear in src/
+subdirectory of build dir:
 
     mkdir -p build && cd build
-    cmake ..
-    make
+    cmake .. -DWITH_SDL2APPLICATION=ON
+    cmake --build .
     ./src/MyApplication
 
 On Windows you can use either MSVC or MinGW-w64 compiler. It's then up to you
-whether you will use QtCreator or Visual Studio. With Visual Studio the most
-straightforward way to create the project file is via the command-line:
+whether you will use command-line, QtCreator or Visual Studio. With Visual
+Studio the most straightforward way to create the project file is via the
+command-line:
 
     mkdir build
     cd build
-    cmake -DCMAKE_PREFIX_PATH="C:/Sys" ..
+    cmake .. -DWITH_SDL2APPLICATION=ON
 
 You can also use CMake GUI. Then open the `MyApplication.sln` project file
 generated by CMake in the build directory.
 
 With QtCreator just open project's root `CMakeLists.txt` file. It then asks you
 where to create build directory, allows you to specify initial CMake parameters
-(e.g. `CMAKE_PREFIX_PATH`) and then you can just press *Configure* and
-everything is ready to be built.
+(e.g. the `-DWITH_SDL2APPLICATION=ON` parameter) and then you can just press *Configure*
+and everything is ready to be built.
 
-If CMake isn't able to find the dependencies on Windows, you might want to look
-at @ref building-windows. If CMake complains about `Sdl2Application` missing,
-you forgot to enable `WITH_SDL2APPLICATION` when building Magnum,
-@ref getting-started-download "go back and fix it".
+On Windows you may get errors about missing DLLs when running the application.
+The solution is either compiling everything as static (enable `BUILD_STATIC`
+CMake option) or installing the dependencies somewhere. To install them, change
+`CMAKE_INSTALL_PREFIX` to your liking and run the `install` target. Then run
+the application with `bin/` subdirectory of installation prefix as working dir.
 
 @image html getting-started.png
 @image latex getting-started.png
