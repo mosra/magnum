@@ -518,7 +518,7 @@ foreach(component ${Magnum_FIND_COMPONENTS})
     if(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES)
         find_path(_MAGNUM_${_COMPONENT}_INCLUDE_DIR
             NAMES ${_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES}
-            PATHS ${MAGNUM_INCLUDE_DIR}/${_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX})
+            HINTS ${MAGNUM_INCLUDE_DIR}/${_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX})
     endif()
 
     # Add inter-project dependencies, mark the component as not found if
