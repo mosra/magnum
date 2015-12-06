@@ -165,7 +165,7 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
 
     /* Create window */
     if(!(_window = SDL_CreateWindow(configuration.title().data(),
-        SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
         configuration.size().x(), configuration.size().y(),
         SDL_WINDOW_OPENGL|windowFlags)))
     {
@@ -211,7 +211,7 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, int(configuration.flags()));
 
         if(!(_window = SDL_CreateWindow(configuration.title().data(),
-            SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+            SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
             configuration.size().x(), configuration.size().y(),
             SDL_WINDOW_OPENGL|windowFlags)))
         {

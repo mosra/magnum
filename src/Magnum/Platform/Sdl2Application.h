@@ -534,8 +534,8 @@ CORRADE_ENUMSET_OPERATORS(Sdl2Application::Flags)
 /**
 @brief Configuration
 
-The created window is always centered with double-buffered OpenGL context and
-24bit depth buffer.
+The created window is always with double-buffered OpenGL context and 24bit
+depth buffer.
 @see @ref Sdl2Application(), @ref createContext(), @ref tryCreateContext()
 */
 class Sdl2Application::Configuration {
