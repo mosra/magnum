@@ -529,8 +529,6 @@ class Sdl2Application {
         Flags _flags;
 };
 
-CORRADE_ENUMSET_OPERATORS(Sdl2Application::Flags)
-
 /**
 @brief Configuration
 
@@ -753,11 +751,6 @@ class Sdl2Application::Configuration {
         bool _sRGBCapable;
         #endif
 };
-
-#ifndef CORRADE_TARGET_EMSCRIPTEN
-CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::Flags)
-#endif
-CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::WindowFlags)
 
 /**
 @brief Base for input events
@@ -1080,6 +1073,11 @@ typedef BasicScreenedApplication<Sdl2Application> ScreenedApplication;
 #endif
 #endif
 
+CORRADE_ENUMSET_OPERATORS(Sdl2Application::Flags)
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::Flags)
+#endif
+CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::WindowFlags)
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::InputEvent::Modifiers)
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::MouseMoveEvent::Buttons)
 
