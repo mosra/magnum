@@ -44,7 +44,7 @@ install:
 - cd corrade
 - mkdir build
 - cd build
-- cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/deps -DCMAKE_INSTALL_RPATH=$HOME/deps/lib -DCMAKE_MACOSX_RPATH=ON -DCMAKE_BUILD_TYPE=Release
+- cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/deps -DCMAKE_INSTALL_RPATH=$HOME/deps/lib -DCMAKE_BUILD_TYPE=Release
 - cmake --build .
 - cmake --build . --target install
 - cd ..
