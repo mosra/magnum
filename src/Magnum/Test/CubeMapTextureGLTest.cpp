@@ -717,6 +717,16 @@ void CubeMapTextureGLTest::subImage() {
     CubeMapTexture texture;
     texture.setImage(CubeMapTexture::Coordinate::PositiveX, 0, TextureFormat::RGBA8,
         ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero));
+    texture.setImage(CubeMapTexture::Coordinate::NegativeX, 0, TextureFormat::RGBA8,
+        ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero));
+    texture.setImage(CubeMapTexture::Coordinate::PositiveY, 0, TextureFormat::RGBA8,
+        ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero));
+    texture.setImage(CubeMapTexture::Coordinate::NegativeY, 0, TextureFormat::RGBA8,
+        ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero));
+    texture.setImage(CubeMapTexture::Coordinate::PositiveZ, 0, TextureFormat::RGBA8,
+        ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero));
+    texture.setImage(CubeMapTexture::Coordinate::NegativeZ, 0, TextureFormat::RGBA8,
+        ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero));
     texture.setSubImage(CubeMapTexture::Coordinate::PositiveX, 0, Vector2i(1), ImageView2D{
         _dataStorage, PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), unsafeSuffix(Data, _dataOffset)});
 
@@ -747,6 +757,16 @@ void CubeMapTextureGLTest::compressedSubImage() {
     CubeMapTexture texture;
     texture.setCompressedImage(CubeMapTexture::Coordinate::PositiveX, 0,
         CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+    texture.setCompressedImage(CubeMapTexture::Coordinate::NegativeX, 0,
+        CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+    texture.setCompressedImage(CubeMapTexture::Coordinate::PositiveY, 0,
+        CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+    texture.setCompressedImage(CubeMapTexture::Coordinate::NegativeY, 0,
+        CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+    texture.setCompressedImage(CubeMapTexture::Coordinate::PositiveZ, 0,
+        CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+    texture.setCompressedImage(CubeMapTexture::Coordinate::NegativeZ, 0,
+        CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
     texture.setCompressedSubImage(CubeMapTexture::Coordinate::PositiveX, 0, Vector2i{4}, CompressedImageView2D{
         #ifndef MAGNUM_TARGET_GLES
         _compressedDataStorage,
@@ -771,6 +791,16 @@ void CubeMapTextureGLTest::compressedSubImage() {
 void CubeMapTextureGLTest::subImageBuffer() {
     CubeMapTexture texture;
     texture.setImage(CubeMapTexture::Coordinate::PositiveX, 0, TextureFormat::RGBA8,
+        ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero));
+    texture.setImage(CubeMapTexture::Coordinate::NegativeX, 0, TextureFormat::RGBA8,
+        ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero));
+    texture.setImage(CubeMapTexture::Coordinate::PositiveY, 0, TextureFormat::RGBA8,
+        ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero));
+    texture.setImage(CubeMapTexture::Coordinate::NegativeY, 0, TextureFormat::RGBA8,
+        ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero));
+    texture.setImage(CubeMapTexture::Coordinate::PositiveZ, 0, TextureFormat::RGBA8,
+        ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero));
+    texture.setImage(CubeMapTexture::Coordinate::NegativeZ, 0, TextureFormat::RGBA8,
         ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero));
     texture.setSubImage(CubeMapTexture::Coordinate::PositiveX, 0, Vector2i(1), BufferImage2D{
         _dataStorage, PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), unsafeSuffix(Data, _dataOffset), BufferUsage::StaticDraw});
@@ -800,6 +830,16 @@ void CubeMapTextureGLTest::compressedSubImageBuffer() {
 
     CubeMapTexture texture;
     texture.setCompressedImage(CubeMapTexture::Coordinate::PositiveX, 0,
+        CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+    texture.setCompressedImage(CubeMapTexture::Coordinate::NegativeX, 0,
+        CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+    texture.setCompressedImage(CubeMapTexture::Coordinate::PositiveY, 0,
+        CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+    texture.setCompressedImage(CubeMapTexture::Coordinate::NegativeY, 0,
+        CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+    texture.setCompressedImage(CubeMapTexture::Coordinate::PositiveZ, 0,
+        CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+    texture.setCompressedImage(CubeMapTexture::Coordinate::NegativeZ, 0,
         CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
     texture.setCompressedSubImage(CubeMapTexture::Coordinate::PositiveX, 0, Vector2i{4}, CompressedBufferImage2D{
         #ifndef MAGNUM_TARGET_GLES
