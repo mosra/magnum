@@ -197,7 +197,6 @@ class WindowlessWglApplication::Configuration {
         #else
         typedef Containers::EnumSet<Flag> Flags;
         #endif
-        #endif
 
         constexpr /*implicit*/ Configuration() {}
         ~Configuration();
