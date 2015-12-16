@@ -234,12 +234,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         template<class U> constexpr explicit DualQuaternion(const DualQuaternion<U>& other): Dual<Quaternion<T>>(other) {}
 
         /** @brief Construct dual quaternion from external representation */
-        template<class U, class V = decltype(Implementation::DualQuaternionConverter<T, U>::from(std::declval<U>()))>
-        #ifndef CORRADE_MSVC2015_COMPATIBILITY
-        /* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-        constexpr
-        #endif
-        explicit DualQuaternion(const U& other): DualQuaternion{Implementation::DualQuaternionConverter<T, U>::from(other)} {}
+        template<class U, class V = decltype(Implementation::DualQuaternionConverter<T, U>::from(std::declval<U>()))> constexpr explicit DualQuaternion(const U& other): DualQuaternion{Implementation::DualQuaternionConverter<T, U>::from(other)} {}
 
         /** @brief Copy constructor */
         constexpr DualQuaternion(const Dual<Quaternion<T>>& other): Dual<Quaternion<T>>(other) {}

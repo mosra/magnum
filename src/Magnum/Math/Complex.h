@@ -178,12 +178,7 @@ template<class T> class Complex {
         template<class U> constexpr explicit Complex(const Complex<U>& other): _real{T(other._real)}, _imaginary{T(other._imaginary)} {}
 
         /** @brief Construct complex number from external representation */
-        template<class U, class V = decltype(Implementation::ComplexConverter<T, U>::from(std::declval<U>()))>
-        #ifndef CORRADE_MSVC2015_COMPATIBILITY
-        /* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-        constexpr
-        #endif
-        explicit Complex(const U& other): Complex{Implementation::ComplexConverter<T, U>::from(other)} {}
+        template<class U, class V = decltype(Implementation::ComplexConverter<T, U>::from(std::declval<U>()))> constexpr explicit Complex(const U& other): Complex{Implementation::ComplexConverter<T, U>::from(other)} {}
 
         /** @brief Convert complex number to external representation */
         template<class U, class V = decltype(Implementation::ComplexConverter<T, U>::to(std::declval<Complex<T>>()))> constexpr explicit operator U() const {

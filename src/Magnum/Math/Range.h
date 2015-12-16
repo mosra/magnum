@@ -99,12 +99,7 @@ template<UnsignedInt dimensions, class T> class Range {
         template<class U> constexpr explicit Range(const Range<dimensions, U>& other): _min(other._min), _max(other._max) {}
 
         /** @brief Construct range from external representation */
-        template<class U, class V = decltype(Implementation::RangeConverter<dimensions, T, U>::from(std::declval<U>()))>
-        #ifndef CORRADE_MSVC2015_COMPATIBILITY
-        /* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-        constexpr
-        #endif
-        explicit Range(const U& other): Range{Implementation::RangeConverter<dimensions, T, U>::from(other)} {}
+        template<class U, class V = decltype(Implementation::RangeConverter<dimensions, T, U>::from(std::declval<U>()))> constexpr explicit Range(const U& other): Range{Implementation::RangeConverter<dimensions, T, U>::from(other)} {}
 
         /** @brief Convert range to external representation */
         template<class U, class V = decltype(Implementation::RangeConverter<dimensions, T, U>::to(std::declval<Range<dimensions, T>>()))> constexpr explicit operator U() const {

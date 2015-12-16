@@ -163,12 +163,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
             {}
 
         /** @brief Construct dual complex number from external representation */
-        template<class U, class V = decltype(Implementation::DualComplexConverter<T, U>::from(std::declval<U>()))>
-        #ifndef CORRADE_MSVC2015_COMPATIBILITY
-        /* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-        constexpr
-        #endif
-        explicit DualComplex(const U& other): DualComplex{Implementation::DualComplexConverter<T, U>::from(other)} {}
+        template<class U, class V = decltype(Implementation::DualComplexConverter<T, U>::from(std::declval<U>()))> constexpr explicit DualComplex(const U& other): DualComplex{Implementation::DualComplexConverter<T, U>::from(other)} {}
 
         /** @brief Copy constructor */
         constexpr DualComplex(const Dual<Complex<T>>& other): Dual<Complex<T>>(other) {}

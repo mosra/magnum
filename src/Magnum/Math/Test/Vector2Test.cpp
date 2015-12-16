@@ -152,10 +152,7 @@ void Vector2Test::convert() {
     constexpr Vector2 c(a);
     CORRADE_COMPARE(c, b);
 
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why can't be conversion constexpr? */
-    constexpr
-    #endif
-    Vec2 d(b);
+    constexpr Vec2 d(b);
     CORRADE_COMPARE(d.x, a.x);
     CORRADE_COMPARE(d.y, a.y);
 

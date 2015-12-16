@@ -258,16 +258,8 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         constexpr /*implicit*/ Matrix4(IdentityInitT = IdentityInit, T value = T{1})
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            #ifndef CORRADE_MSVC2015_COMPATIBILITY
-            : Matrix4x4<T>{IdentityInit, value}
-            #else
-            /* Avoid using non-constexpr version, also MSVC 2015 can't handle
-               {} here */
-            : Matrix4x4<T>(Vector<4, T>{value, T(0), T(0), T(0)},
-                           Vector<4, T>{T(0), value, T(0), T(0)},
-                           Vector<4, T>{T(0), T(0), value, T(0)},
-                           Vector<4, T>{T(0), T(0), T(0), value})
-            #endif
+            /* MSVC 2015 can't handle {} here */
+            : Matrix4x4<T>(IdentityInit, value)
             #endif
             {}
 
@@ -275,16 +267,8 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         constexpr explicit Matrix4(ZeroInitT)
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            #ifndef CORRADE_MSVC2015_COMPATIBILITY
+            /* MSVC 2015 can't handle {} here */
             : Matrix4x4<T>(ZeroInit)
-            #else
-            /* Avoid using non-constexpr version, also MSVC 2015 can't handle
-               {} here */
-            : Matrix4x4<T>(Vector<4, T>{T(0), T(0), T(0), T(0)},
-                           Vector<4, T>{T(0), T(0), T(0), T(0)},
-                           Vector<4, T>{T(0), T(0), T(0), T(0)},
-                           Vector<4, T>{T(0), T(0), T(0), T(0)})
-            #endif
             #endif
             {}
 

@@ -201,11 +201,7 @@ void VectorTest::constructNoInit() {
 }
 
 void VectorTest::constructOneValue() {
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY
-    /* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-    constexpr
-    #endif
-    Vector4 a(7.25f);
+    constexpr Vector4 a(7.25f);
 
     CORRADE_COMPARE(a, Vector4(7.25f, 7.25f, 7.25f, 7.25f));
 
@@ -223,11 +219,7 @@ void VectorTest::constructOneComponent() {
 
 void VectorTest::constructConversion() {
     constexpr Vector4 a(1.3f, 2.7f, -15.0f, 7.0f);
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY
-    /* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-    constexpr
-    #endif
-    Vector4i b(a);
+    constexpr Vector4i b(a);
 
     CORRADE_COMPARE(b, Vector4i(1, 2, -15, 7));
 
@@ -247,19 +239,14 @@ void VectorTest::convert() {
 
     /* GCC 5.1 fills the result with zeros instead of properly calling
        delegated copy constructor if using constexpr. Reported here:
-       https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66450
-       MSVC 2015: Can't use delegating constructors with constexpr:
-       https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-    #if (!defined(__GNUC__) || defined(__clang__)) && !defined(CORRADE_MSVC2015_COMPATIBILITY)
+       https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66450 */
+    #if !defined(__GNUC__) || defined(__clang__)
     constexpr
     #endif
     Vector3 c{a};
     CORRADE_COMPARE(c, b);
 
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why can't be conversion constexpr? */
-    constexpr
-    #endif
-    Vec3 d(b);
+    constexpr Vec3 d(b);
     CORRADE_COMPARE(d.x, a.x);
     CORRADE_COMPARE(d.y, a.y);
     CORRADE_COMPARE(d.z, a.z);

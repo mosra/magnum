@@ -98,13 +98,6 @@ template<std::size_t size, class T> class Vector {
 
     template<std::size_t, class> friend class Vector;
 
-    #ifdef CORRADE_MSVC2015_COMPATIBILITY
-    /* Delegating constexpr constructor workarounds */
-    friend class Vector2<T>;
-    friend class Vector3<T>;
-    friend class Vector4<T>;
-    #endif
-
     public:
         typedef T Type;         /**< @brief Underlying data type */
 
@@ -188,12 +181,7 @@ template<std::size_t size, class T> class Vector {
         #ifdef DOXYGEN_GENERATING_OUTPUT
         constexpr explicit Vector(T value);
         #else
-        template<class U, class V = typename std::enable_if<std::is_same<T, U>::value && size != 1, T>::type>
-        #ifndef CORRADE_MSVC2015_COMPATIBILITY
-        /* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-        constexpr
-        #endif
-        explicit Vector(U value): Vector(typename Implementation::GenerateSequence<size>::Type(), value) {}
+        template<class U, class V = typename std::enable_if<std::is_same<T, U>::value && size != 1, T>::type> constexpr explicit Vector(U value): Vector(typename Implementation::GenerateSequence<size>::Type(), value) {}
         #endif
 
         /**
@@ -207,20 +195,10 @@ template<std::size_t size, class T> class Vector {
          * // integral == {1, 2, -15, 7}
          * @endcode
          */
-        template<class U>
-        #ifndef CORRADE_MSVC2015_COMPATIBILITY
-        /* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-        constexpr
-        #endif
-        explicit Vector(const Vector<size, U>& other): Vector(typename Implementation::GenerateSequence<size>::Type(), other) {}
+        template<class U> constexpr explicit Vector(const Vector<size, U>& other): Vector(typename Implementation::GenerateSequence<size>::Type(), other) {}
 
         /** @brief Construct vector from external representation */
-        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::from(std::declval<U>()))>
-        #ifndef CORRADE_MSVC2015_COMPATIBILITY
-        /* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-        constexpr
-        #endif
-        explicit Vector(const U& other): Vector(Implementation::VectorConverter<size, T, U>::from(other)) {}
+        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::from(std::declval<U>()))> constexpr explicit Vector(const U& other): Vector(Implementation::VectorConverter<size, T, U>::from(other)) {}
 
         /** @brief Copy constructor */
         constexpr Vector(const Vector<size, T>&) = default;

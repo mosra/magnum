@@ -216,19 +216,14 @@ void DualQuaternionTest::convert() {
 
     /* GCC 5.1 fills the result with zeros instead of properly calling
        delegated copy constructor if using constexpr. Reported here:
-       https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66450
-       MSVC 2015: Can't use delegating constructors with constexpr:
-       https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-    #if (!defined(__GNUC__) || defined(__clang__)) && !defined(CORRADE_MSVC2015_COMPATIBILITY)
+       https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66450 */
+    #if !defined(__GNUC__) || defined(__clang__)
     constexpr
     #endif
     DualQuaternion c{a};
     CORRADE_COMPARE(c, b);
 
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why can't be conversion constexpr? */
-    constexpr
-    #endif
-    DualQuat d(b);
+    constexpr DualQuat d(b);
     CORRADE_COMPARE(d.re.x, a.re.x);
     CORRADE_COMPARE(d.re.y, a.re.y);
     CORRADE_COMPARE(d.re.z, a.re.z);

@@ -215,11 +215,7 @@ void RangeTest::constructConversion() {
     constexpr Range2D b({1.3f, 2.7f}, {-15.0f, 7.0f});
     constexpr Range3D c({1.3f, 2.7f, -1.5f}, {-15.0f, 7.0f, 0.3f});
 
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY
-    /* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-    constexpr
-    #endif
-    Range1Di d(a);
+    constexpr Range1Di d(a);
     CORRADE_COMPARE(d, Range1Di(1, -15));
 
     constexpr Range2Di e(b);
@@ -260,14 +256,12 @@ void RangeTest::convert() {
 
     /* GCC 5.1 fills the result with zeros instead of properly calling
        delegated copy constructor if using constexpr. Reported here:
-       https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66450
-       MSVC 2015: Can't use delegating constructors with constexpr:
-       https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-    #if (!defined(__GNUC__) || defined(__clang__)) && !defined(CORRADE_MSVC2015_COMPATIBILITY)
+       https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66450 */
+    #if !defined(__GNUC__) || defined(__clang__)
     constexpr
     #endif
     Range<2, Float> g{b};
-    #if (!defined(__GNUC__) || defined(__clang__)) && !defined(CORRADE_MSVC2015_COMPATIBILITY)
+    #if !defined(__GNUC__) || defined(__clang__)
     constexpr
     #endif
     Range1D h{a};
@@ -284,26 +278,17 @@ void RangeTest::convert() {
     CORRADE_COMPARE(i, e);
     CORRADE_COMPARE(j, f);
 
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why can't be conversion constexpr? */
-    constexpr
-    #endif
-    Dim k(d);
+    constexpr Dim k(d);
     CORRADE_COMPARE(k.offset, a.offset);
     CORRADE_COMPARE(k.size, a.size);
 
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why can't be conversion constexpr? */
-    constexpr
-    #endif
-    Rect l(e);
+    constexpr Rect l(e);
     CORRADE_COMPARE(l.x, b.x);
     CORRADE_COMPARE(l.y, b.y);
     CORRADE_COMPARE(l.w, b.w);
     CORRADE_COMPARE(l.h, b.h);
 
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why can't be conversion constexpr? */
-    constexpr
-    #endif
-    Box m(f);
+    constexpr Box m(f);
     CORRADE_COMPARE(m.x, c.x);
     CORRADE_COMPARE(m.y, c.y);
     CORRADE_COMPARE(m.z, c.z);

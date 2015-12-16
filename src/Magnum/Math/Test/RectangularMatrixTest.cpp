@@ -149,16 +149,8 @@ void RectangularMatrixTest::construct() {
 }
 
 void RectangularMatrixTest::constructDefault() {
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY
-    /* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-    constexpr
-    #endif
-    Matrix4x3 a;
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY
-    /* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-    constexpr
-    #endif
-    Matrix4x3 b{ZeroInit};
+    constexpr Matrix4x3 a;
+    constexpr Matrix4x3 b{ZeroInit};
     CORRADE_COMPARE(a, Matrix4x3(Vector3(0.0f, 0.0f, 0.0f),
                                  Vector3(0.0f, 0.0f, 0.0f),
                                  Vector3(0.0f, 0.0f, 0.0f),
@@ -182,11 +174,7 @@ void RectangularMatrixTest::constructNoInit() {
 void RectangularMatrixTest::constructConversion() {
     constexpr Matrix2x2 a(Vector2(  1.3f, 2.7f),
                           Vector2(-15.0f, 7.0f));
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY
-    /* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-    constexpr
-    #endif
-    Matrix2x2i b(a);
+    constexpr Matrix2x2i b(a);
 
     CORRADE_COMPARE(b, Matrix2x2i(Vector2i(  1, 2),
                                   Vector2i(-15, 7)));
@@ -245,19 +233,14 @@ void RectangularMatrixTest::convert() {
 
     /* GCC 5.1 fills the result with zeros instead of properly calling
        delegated copy constructor if using constexpr. Reported here:
-       https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66450
-       MSVC 2015: Can't use delegating constructors with constexpr:
-       https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-    #if (!defined(__GNUC__) || defined(__clang__)) && !defined(CORRADE_MSVC2015_COMPATIBILITY)
+       https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66450 */
+    #if !defined(__GNUC__) || defined(__clang__)
     constexpr
     #endif
     Matrix2x3 c{a};
     CORRADE_COMPARE(c, b);
 
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why can't be conversion constexpr? */
-    constexpr
-    #endif
-    Mat2x3 d(b);
+    constexpr Mat2x3 d(b);
     for(std::size_t i = 0; i != 5; ++i)
         CORRADE_COMPARE(d.a[i], a.a[i]);
 

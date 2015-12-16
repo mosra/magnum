@@ -108,11 +108,7 @@ template<UnsignedInt dimensions> class ImageView {
         /** @overload
          * Similar to the above, but uses default @ref PixelStorage parameters.
          */
-        #ifndef CORRADE_MSVC2015_COMPATIBILITY
-        /* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-        constexpr
-        #endif
-        explicit ImageView(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size) noexcept: ImageView{{}, format, type, size} {}
+        constexpr explicit ImageView(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size) noexcept: ImageView{{}, format, type, size} {}
 
         /** @brief Storage of pixel data */
         PixelStorage storage() const { return _storage; }
@@ -241,11 +237,7 @@ template<UnsignedInt dimensions> class CompressedImageView {
          * Similar the above, but uses default @ref CompressedPixelStorage
          * parameters (or the hardcoded ones in OpenGL ES and WebGL).
          */
-        #if !defined(CORRADE_MSVC2015_COMPATIBILITY) || defined(MAGNUM_TARGET_GLES)
-        /* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-        constexpr
-        #endif
-        explicit CompressedImageView(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data) noexcept;
+        constexpr explicit CompressedImageView(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data) noexcept;
 
         #ifndef MAGNUM_TARGET_GLES
         /**
@@ -364,12 +356,7 @@ template<UnsignedInt dimensions> constexpr CompressedImageView<dimensions>::Comp
     _format{format}, _size{size} {}
 
 #ifndef MAGNUM_TARGET_GLES
-template<UnsignedInt dimensions>
-#ifndef CORRADE_MSVC2015_COMPATIBILITY
-/* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-constexpr
-#endif
-CompressedImageView<dimensions>::CompressedImageView(const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<const void> data) noexcept: CompressedImageView{{}, format, size, data} {}
+template<UnsignedInt dimensions> constexpr CompressedImageView<dimensions>::CompressedImageView(const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<const void> data) noexcept: CompressedImageView{{}, format, size, data} {}
 
 template<UnsignedInt dimensions> constexpr CompressedImageView<dimensions>::CompressedImageView(const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size) noexcept: CompressedImageView{{}, format, size} {}
 #endif

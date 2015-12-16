@@ -162,15 +162,8 @@ template<class T> class Matrix3: public Matrix3x3<T> {
         constexpr /*implicit*/ Matrix3(IdentityInitT = IdentityInit, T value = T{1})
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            #ifndef CORRADE_MSVC2015_COMPATIBILITY
-            : Matrix3x3<T>{IdentityInit, value}
-            #else
-            /* Avoid using non-constexpr version, also MSVC 2015 can't handle
-               {} here */
-            : Matrix3x3<T>(Vector<3, T>{value, T(0), T(0)},
-                           Vector<3, T>{T(0), value, T(0)},
-                           Vector<3, T>{T(0), T(0), value})
-            #endif
+            /* MSVC 2015 can't handle {} here */
+            : Matrix3x3<T>(IdentityInit, value)
             #endif
             {}
 
@@ -178,15 +171,8 @@ template<class T> class Matrix3: public Matrix3x3<T> {
         constexpr explicit Matrix3(ZeroInitT)
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            #ifndef CORRADE_MSVC2015_COMPATIBILITY
+            /* MSVC 2015 can't handle {} here */
             : Matrix3x3<T>(ZeroInit)
-            #else
-            /* Avoid using non-constexpr version, also MSVC 2015 can't handle
-               {} here */
-            : Matrix3x3<T>(Vector<3, T>{T(0), T(0), T(0)},
-                           Vector<3, T>{T(0), T(0), T(0)},
-                           Vector<3, T>{T(0), T(0), T(0)})
-            #endif
             #endif
             {}
 
