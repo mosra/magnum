@@ -871,13 +871,13 @@ void MeshGLTest::addVertexBufferUnsignedIntWithUnsignedShort() {
 
     typedef Attribute<0, UnsignedInt> Attribute;
 
-    constexpr UnsignedShort data[] = { 0, 49563, 16583 };
+    constexpr UnsignedShort data[] = { 0, 49563, 2128, 3821, 16583 };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
     mesh.setBaseVertex(1)
-        .addVertexBuffer(buffer, 2, Attribute(Attribute::DataType::UnsignedShort));
+        .addVertexBuffer(buffer, 2, 2, Attribute(Attribute::DataType::UnsignedShort));
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -896,13 +896,13 @@ void MeshGLTest::addVertexBufferUnsignedIntWithShort() {
 
     typedef Attribute<0, UnsignedInt> Attribute;
 
-    constexpr Short data[] = { 0, 24563, 16583 };
+    constexpr Short data[] = { 0, 24563, 2128, 3821, 16583 };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
     mesh.setBaseVertex(1)
-        .addVertexBuffer(buffer, 2, Attribute(Attribute::DataType::Short));
+        .addVertexBuffer(buffer, 2, 2, Attribute(Attribute::DataType::Short));
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -921,13 +921,13 @@ void MeshGLTest::addVertexBufferIntWithUnsignedShort() {
 
     typedef Attribute<0, Int> Attribute;
 
-    constexpr UnsignedShort data[] = { 0, 49563, 16583 };
+    constexpr UnsignedShort data[] = { 0, 49563, 2128, 3821, 16583 };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
     mesh.setBaseVertex(1)
-        .addVertexBuffer(buffer, 2, Attribute(Attribute::DataType::UnsignedShort));
+        .addVertexBuffer(buffer, 2, 2, Attribute(Attribute::DataType::UnsignedShort));
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -946,13 +946,13 @@ void MeshGLTest::addVertexBufferIntWithShort() {
 
     typedef Attribute<0, Int> Attribute;
 
-    constexpr Short data[] = { 0, 24563, -16583 };
+    constexpr Short data[] = { 0, 24563, 2128, 3821, -16583 };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
     mesh.setBaseVertex(1)
-        .addVertexBuffer(buffer, 2, Attribute(Attribute::DataType::Short));
+        .addVertexBuffer(buffer, 2, 2, Attribute(Attribute::DataType::Short));
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -1098,13 +1098,13 @@ void MeshGLTest::addVertexBufferLessVectorComponents() {
 void MeshGLTest::addVertexBufferNormalized() {
     typedef Attribute<0, Vector3> Attribute;
 
-    constexpr Color3ub data[] = { {}, {0, 128, 64}, {32, 156, 228} };
+    constexpr Color4ub data[] = { {}, {0, 128, 64}, {32, 156, 228} };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
     mesh.setBaseVertex(1)
-        .addVertexBuffer(buffer, 3, Attribute(Attribute::DataType::UnsignedByte, Attribute::DataOption::Normalized));
+        .addVertexBuffer(buffer, 4, Attribute(Attribute::DataType::UnsignedByte, Attribute::DataOption::Normalized), 1);
 
     MAGNUM_VERIFY_NO_ERROR();
 
