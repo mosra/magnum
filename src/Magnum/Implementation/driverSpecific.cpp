@@ -132,7 +132,10 @@ auto Context::detectedDriver() -> DetectedDrivers {
 
 void Context::disableDriverWorkaround(const std::string& workaround) {
     /* Ignore unknown workarounds */
-    if(std::find(KnownWorkarounds.begin(), KnownWorkarounds.end(), workaround) == KnownWorkarounds.end()) return;
+    if(std::find(KnownWorkarounds.begin(), KnownWorkarounds.end(), workaround) == KnownWorkarounds.end()) {
+        Warning() << "Unknown workaround" << workaround;
+        return;
+    }
     _driverWorkarounds.emplace_back(workaround, true);
 }
 
