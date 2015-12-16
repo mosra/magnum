@@ -654,9 +654,11 @@ bool Context::tryCreate() {
     _state = new Implementation::State(*this);
 
     /* Print a list of used workarounds */
-    Debug() << "Using driver workarounds:";
-    for(const auto& workaround: _driverWorkarounds)
-        if(!workaround.second) Debug() << "   " << workaround.first;
+    if(!_driverWorkarounds.empty()) {
+        Debug() << "Using driver workarounds:";
+        for(const auto& workaround: _driverWorkarounds)
+            if(!workaround.second) Debug() << "   " << workaround.first;
+    }
 
     /* Initialize functionality based on current OpenGL version and extensions */
     /** @todo Get rid of these */
