@@ -57,12 +57,25 @@ class AbstractOpenGLTester: public TestSuite::Tester {
 
     private:
         struct WindowlessApplication: Platform::WindowlessApplication {
-            explicit WindowlessApplication(const Arguments& arguments): Platform::WindowlessApplication{arguments} {}
+            explicit WindowlessApplication(const Arguments& arguments): Platform::WindowlessApplication{arguments, nullptr} {}
             int exec() override final { return 0; }
+
+            using Platform::WindowlessApplication::tryCreateContext;
+            using Platform::WindowlessApplication::createContext;
+
         } _windowlessApplication;
 };
 
 AbstractOpenGLTester::AbstractOpenGLTester(): _windowlessApplication{*_windowlessApplicationArguments} {
+    /* Try to create debug context, fallback to normal one if not possible. No
+       such thing on OSX. */
+    #ifndef CORRADE_TARGET_APPLE
+    if(!_windowlessApplication.tryCreateContext(Platform::WindowlessApplication::Configuration{}.setFlags(Platform::WindowlessApplication::Configuration::Flag::Debug)))
+        _windowlessApplication.createContext();
+    #else
+    _windowlessApplication.createContext();
+    #endif
+
     if(Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>()) {
         Renderer::enable(Renderer::Feature::DebugOutput);
         Renderer::enable(Renderer::Feature::DebugOutputSynchronous);
