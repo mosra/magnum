@@ -79,53 +79,53 @@ namespace Magnum {
 
 @section magnum-info-usage Usage
 
-    magnum-info [-h|--help] [--all-extensions] [--limits]
+    magnum-info [--magnum-...] [-h|--help] [-s|--short] [--all-extensions] [--limits]
 
 Arguments:
-
--   ` -h`, `--help` -- display this help message and exit
--   `--all-extensions` -- show extensions also for fully supported versions
+-   `-h`, `--help` -- display this help message and exit
+-   `-s`, `--short` -- display just essential info and exit
+-   `--all-extensions` -- display extensions also for fully supported versions
 -   `--limits` -- display also limits and implementation-defined values
+-   `--magnum-...` -- engine-specific options (see @ref Context for details)
 
 @section magnum-info-example Example output
 
-      +---------------------------------------------------------+
-      | Information about Magnum engine and OpenGL capabilities |
-      +---------------------------------------------------------+
+```
+  +---------------------------------------------------------+
+  | Information about Magnum engine and OpenGL capabilities |
+  +---------------------------------------------------------+
 
-    Used application: Platform::WindowlessGlxApplication
-    Compilation flags:
-        CORRADE_BUILD_DEPRECATED
-        MAGNUM_BUILD_DEPRECATED
+Used application: Platform::WindowlessGlxApplication
+Compilation flags:
+    CORRADE_BUILD_DEPRECATED
+    CORRADE_TARGET_UNIX
+    MAGNUM_BUILD_DEPRECATED
 
-    Vendor: NVIDIA Corporation
-    Renderer: GeForce GT 740M/PCIe/SSE2
-    OpenGL version: OpenGL 4.4 (4.4.0 NVIDIA 337.25)
-    Context flags:
-    Supported GLSL versions:
-        440 core
-        430 core
-        420 core
-        410 core
-        400 core
-        330 core
-        310 es
-        300 es
-        100
+Renderer: AMD Radeon R7 M260 Series by ATI Technologies Inc.
+OpenGL version: 4.5.13399 Compatibility Profile Context 15.201.1151
+Using optional features:
+    GL_ARB_ES2_compatibility
+    GL_ARB_direct_state_access
+    GL_ARB_get_texture_sub_image
+    GL_ARB_invalidate_subdata
+    ...
+Using driver workarounds:
+    amd-nv-no-forward-compatible-core-context
+    no-layout-qualifiers-on-old-glsl
+Context flags:
+Supported GLSL versions:
+    430 core
+    430 compatibility
+    420 core
+    ...
 
-    Vendor extension support:
-        GL_AMD_vertex_shader_layer                                        -
-        GL_AMD_shader_trinary_minmax                                      -
-        GL_ARB_robustness                                             SUPPORTED
-        GL_ATI_texture_mirror_once                                    SUPPORTED
-        GL_EXT_texture_filter_anisotropic                             SUPPORTED
-        GL_EXT_texture_mirror_clamp                                   SUPPORTED
-        GL_EXT_direct_state_access                                    SUPPORTED
-        GL_EXT_texture_sRGB_decode                                    SUPPORTED
-        GL_EXT_shader_integer_mix                                     SUPPORTED
-        GL_EXT_debug_label                                                -
-        GL_EXT_debug_marker                                               -
-        GL_GREMEDY_string_marker                                          -
+Vendor extension support:
+    GL_AMD_vertex_shader_layer                                    SUPPORTED
+    GL_AMD_shader_trinary_minmax                                  SUPPORTED
+    GL_ARB_robustness                                                 -
+    GL_ARB_robustness_isolation                                       -
+    ...
+```
 
 */
 
@@ -138,11 +138,13 @@ class MagnumInfo: public Platform::WindowlessApplication {
 
 MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplication(arguments, nullptr) {
     Utility::Arguments args;
-    args.addBooleanOption("all-extensions")
-        .setHelp("all-extensions", "show extensions also for fully supported versions")
+    args.addBooleanOption('s', "short")
+        .setHelp("short", "display just essential info and exit")
+        .addBooleanOption("all-extensions")
+        .setHelp("all-extensions", "display extensions also for fully supported versions")
         .addBooleanOption("limits")
-        .addSkippedPrefix("magnum", "engine-specific options")
         .setHelp("limits", "display also limits and implementation-defined values")
+        .addSkippedPrefix("magnum", "engine-specific options")
         .setHelp("Displays information about Magnum engine and OpenGL capabilities.");
 
     /**
@@ -248,6 +250,8 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     const std::vector<std::string> shadingLanguageVersions = c->shadingLanguageVersionStrings();
     for(const auto& version: shadingLanguageVersions)
         Debug() << "   " << version;
+
+    if(args.isSet("short")) return;
 
     Debug() << "";
 
