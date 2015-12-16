@@ -75,7 +75,7 @@ void WindowlessWglApplication::createContext(const Configuration& configuration)
     if(!tryCreateContext(configuration)) std::exit(1);
 }
 
-bool WindowlessWglApplication::tryCreateContext(const Configuration&) {
+bool WindowlessWglApplication::tryCreateContext(const Configuration& configuration) {
     CORRADE_ASSERT(_context->version() == Version::None, "Platform::WindowlessWglApplication::tryCreateContext(): context already created", false);
 
     /* Get device context */
@@ -104,8 +104,14 @@ bool WindowlessWglApplication::tryCreateContext(const Configuration&) {
     const int pixelFormat = ChoosePixelFormat(_deviceContext, &pfd);
     SetPixelFormat(_deviceContext, pixelFormat, &pfd);
 
+    const int attributes = {
+        WGL_CONTEXT_FLAGS_ARB, int(configuration.flags()),
+        0
+    };
+
     /* Create context and make it current */
-    _renderingContext = wglCreateContext(_deviceContext);
+    const PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = reinterpret_cast<PFNWGLCREATECONTEXTATTRIBSARBPROC>( wglGetProcAddress(reinterpret_cast<LPCSTR>("glXCreateContextAttribsARB")));
+    _renderingContext = wglCreateContextAttribsARB(_deviceContext, 0, attributes);
     if(!_renderingContext) {
         Error() << "Platform::WindowlessWglApplication::tryCreateContext(): cannot create context:" << GetLastError();
         return false;

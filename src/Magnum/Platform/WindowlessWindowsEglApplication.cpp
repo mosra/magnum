@@ -77,7 +77,7 @@ void WindowlessWindowsEglApplication::createContext(const Configuration& configu
     if(!tryCreateContext(configuration)) std::exit(1);
 }
 
-bool WindowlessWindowsEglApplication::tryCreateContext(const Configuration&) {
+bool WindowlessWindowsEglApplication::tryCreateContext(const Configuration& configuration) {
     CORRADE_ASSERT(_context->version() == Version::None, "Platform::WindowlessWindowsEglApplication::tryCreateContext(): context already created", false);
 
     /* Initialize */
@@ -127,7 +127,7 @@ bool WindowlessWindowsEglApplication::tryCreateContext(const Configuration&) {
         return false;
     }
 
-    static const EGLint attributes[] = {
+    const EGLint attributes[] = {
         #ifdef MAGNUM_TARGET_GLES
         EGL_CONTEXT_CLIENT_VERSION,
             #ifdef MAGNUM_TARGET_GLES3
@@ -138,7 +138,7 @@ bool WindowlessWindowsEglApplication::tryCreateContext(const Configuration&) {
             #error unsupported OpenGL ES version
             #endif
         #endif
-
+        EGL_CONTEXT_FLAGS_KHR, EGLint(configuration.flags()),
         EGL_NONE
     };
 

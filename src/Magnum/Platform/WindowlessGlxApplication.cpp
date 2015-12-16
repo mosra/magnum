@@ -53,7 +53,7 @@ void WindowlessGlxApplication::createContext(const Configuration& configuration)
     if(!tryCreateContext(configuration)) std::exit(1);
 }
 
-bool WindowlessGlxApplication::tryCreateContext(const Configuration&) {
+bool WindowlessGlxApplication::tryCreateContext(const Configuration& configuration) {
     CORRADE_ASSERT(_context->version() == Version::None, "Platform::WindowlessGlxApplication::tryCreateContext(): context already created", false);
     _display = XOpenDisplay(nullptr);
 
@@ -82,7 +82,7 @@ bool WindowlessGlxApplication::tryCreateContext(const Configuration&) {
     };
     _pbuffer = glXCreatePbuffer(_display, configs[0], pbufferAttributes);
 
-    constexpr static const GLint contextAttributes[] = {
+    const GLint contextAttributes[] = {
         #ifdef MAGNUM_TARGET_GLES
         #ifdef MAGNUM_TARGET_GLES3
         GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
@@ -99,7 +99,7 @@ bool WindowlessGlxApplication::tryCreateContext(const Configuration&) {
         GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
         GLX_CONTEXT_MINOR_VERSION_ARB, 1,
         GLX_CONTEXT_PROFILE_MASK_ARB, GLX_CONTEXT_CORE_PROFILE_BIT_ARB,
-        GLX_CONTEXT_FLAGS_ARB, GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
+        GLX_CONTEXT_FLAGS_ARB, GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB|GLint(configuration.flags()),
         #endif
         0
     };
@@ -138,7 +138,12 @@ bool WindowlessGlxApplication::tryCreateContext(const Configuration&) {
             glXDestroyContext(_display, _glContext);
         }
 
-        _glContext = glXCreateContextAttribsARB(_display, configs[0], nullptr, True, nullptr);
+        const GLint fallbackContextAttributes[] = {
+            GLX_CONTEXT_FLAGS_ARB, GLint(configuration.flags()),
+            0
+        };
+
+        _glContext = glXCreateContextAttribsARB(_display, configs[0], nullptr, True, fallbackContextAttributes);
     }
     #endif
 

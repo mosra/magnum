@@ -35,6 +35,7 @@
 #define VC_EXTRALEAN
 #endif
 #include <windows.h>
+#include <Corrade/Containers/EnumSet.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/OpenGL.h"
@@ -177,7 +178,46 @@ class WindowlessWglApplication {
 */
 class WindowlessWglApplication::Configuration {
     public:
+        /**
+         * @brief Context flag
+         *
+         * @see @ref Flags, @ref setFlags(), @ref Context::Flag
+         */
+        enum class Flag: int {
+            Debug = WGL_CONTEXT_DEBUG_BIT_ARB   /**< Create debug context */
+        };
+
+        /**
+         * @brief Context flags
+         *
+         * @see @ref setFlags(), @ref Context::Flags
+         */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        typedef Containers::EnumSet<Flag, WGL_CONTEXT_DEBUG_BIT_ARB> Flags;
+        #else
+        typedef Containers::EnumSet<Flag> Flags;
+        #endif
+        #endif
+
         constexpr /*implicit*/ Configuration() {}
+        ~Configuration();
+
+        /** @brief Context flags */
+        Flags flags() const { return _flags; }
+
+        /**
+         * @brief Set context flags
+         * @return Reference to self (for method chaining)
+         *
+         * Default is no flag. See also @ref Context::flags().
+         */
+        Configuration& setFlags(Flags flags) {
+            _flags = flags;
+            return *this;
+        }
+
+    private:
+        Flags _flags;
 };
 
 /** @hideinitializer

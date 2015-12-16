@@ -36,6 +36,8 @@
 #endif
 #include <windows.h>
 #include <EGL/egl.h>
+#include <EGL/eglext.h>
+#include <Corrade/Containers/EnumSet.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/OpenGL.h"
@@ -180,7 +182,44 @@ class WindowlessWindowsEglApplication {
 */
 class WindowlessWindowsEglApplication::Configuration {
     public:
+        /**
+         * @brief Context flag
+         *
+         * @see @ref Flags, @ref setFlags(), @ref Context::Flag
+         */
+        enum class Flag: int {
+            Debug = EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR    /**< Create debug context */
+        };
+
+        /**
+         * @brief Context flags
+         *
+         * @see @ref setFlags(), @ref Context::Flags
+         */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        typedef Containers::EnumSet<Flag, EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR> Flags;
+        #else
+        typedef Containers::EnumSet<Flag> Flags;
+        #endif
+
         constexpr /*implicit*/ Configuration() {}
+
+        /** @brief Context flags */
+        Flags flags() const { return _flags; }
+
+        /**
+         * @brief Set context flags
+         * @return Reference to self (for method chaining)
+         *
+         * Default is no flag. See also @ref Context::flags().
+         */
+        Configuration& setFlags(Flags flags) {
+            _flags = flags;
+            return *this;
+        }
+
+    private:
+        Flags _flags;
 };
 
 /** @hideinitializer
