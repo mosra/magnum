@@ -753,7 +753,10 @@ void MeshGLTest::addVertexBufferMatrixNxNd() {
     const Matrix3x3d data[] = {
         {},
         Matrix3x3d::fromDiagonal({0.0, -0.9, 1.0}),
-        Matrix3x3d::fromDiagonal(Math::normalize<Vector3d>(Math::Vector3<UnsignedShort>(315, 65201, 2576)))
+        Matrix3x3d::fromVector(Math::normalize<Math::Vector<9, Double>>(Math::Vector<9, UnsignedShort>{
+            UnsignedShort(315), UnsignedShort(   10), UnsignedShort(  20),
+            UnsignedShort( 40), UnsignedShort(65201), UnsignedShort(  50),
+            UnsignedShort( 70), UnsignedShort(   80), UnsignedShort(2576)}))
     };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
@@ -773,9 +776,16 @@ void MeshGLTest::addVertexBufferMatrixNxNd() {
     {
         CORRADE_EXPECT_FAIL("Somehow only first two values are extracted");
         CORRADE_COMPARE(value, Math::Vector3<UnsignedShort>(315, 65201, 2576));
+    } {
+        /* This is wrong, but check if it's still the right wrong */
+        CORRADE_EXPECT_FAIL_IF(!!(Context::current()->detectedDriver() & Context::DetectedDriver::AMD),
+            "AMD cards take value[2][2] instead of value[1][1].");
+        CORRADE_COMPARE(value, Math::Vector3<UnsignedShort>(315, 65201, 0));
     }
-    /* This is wrong, but check if it's still the right wrong */
-    CORRADE_COMPARE(value, Math::Vector3<UnsignedShort>(315, 65201, 0));
+
+    /* Also check that AMD is consistently wrong */
+    if(Context::current()->detectedDriver() & Context::DetectedDriver::AMD)
+        CORRADE_COMPARE(value, Math::Vector3<UnsignedShort>(315, 80, 0));
 }
 #endif
 
@@ -816,7 +826,10 @@ void MeshGLTest::addVertexBufferMatrixMxNd() {
     const Matrix3x4d data[] = {
         {},
         Matrix3x4d::fromDiagonal({0.0f, -0.9f, 1.0f}),
-        Matrix3x4d::fromDiagonal(Math::normalize<Vector3d>(Math::Vector3<UnsignedShort>(315, 65201, 2576)))
+        Matrix3x4d::fromVector(Math::normalize<Math::Vector<12, Double>>(Math::Vector<12, UnsignedShort>{
+            UnsignedShort(315), UnsignedShort(   10), UnsignedShort(  20), UnsignedShort(30),
+            UnsignedShort( 40), UnsignedShort(65201), UnsignedShort(  50), UnsignedShort(60),
+            UnsignedShort( 70), UnsignedShort(   80), UnsignedShort(2576), UnsignedShort(90)}))
     };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
@@ -829,16 +842,23 @@ void MeshGLTest::addVertexBufferMatrixMxNd() {
 
     const auto value = Checker(DoubleShader("dmat3x4", "vec4",
         "vec4(value[0][0], value[1][1], value[2][2], 0.0)"),
-        RenderbufferFormat::RGBA16, mesh).get<Math::Vector3<UnsignedShort>>(PixelFormat::RGB, PixelType::UnsignedShort);
+        RenderbufferFormat::RGBA16, mesh).get<Math::Vector3<UnsignedShort>>(PixelFormat::RGBA, PixelType::UnsignedShort);
 
     MAGNUM_VERIFY_NO_ERROR();
 
     {
-        CORRADE_EXPECT_FAIL("Somehow only first two values are extracted");
+        CORRADE_EXPECT_FAIL("Somehow only first two values are extracted.");
         CORRADE_COMPARE(value, Math::Vector3<UnsignedShort>(315, 65201, 2576));
+    } {
+        /* This is wrong, but check if it's still the right wrong */
+        CORRADE_EXPECT_FAIL_IF(!!(Context::current()->detectedDriver() & Context::DetectedDriver::AMD),
+            "AMD cards take value[2][2] instead of value[1][1].");
+        CORRADE_COMPARE(value, Math::Vector3<UnsignedShort>(315, 65201, 0));
     }
-    /* This is wrong, but check if it's still the right wrong */
-    CORRADE_COMPARE(value, Math::Vector3<UnsignedShort>(315, 65201, 0));
+
+    /* Also check that AMD is consistently wrong */
+    if(Context::current()->detectedDriver() & Context::DetectedDriver::AMD)
+        CORRADE_COMPARE(value, Math::Vector3<UnsignedShort>(315, 80, 0));
 }
 #endif
 
