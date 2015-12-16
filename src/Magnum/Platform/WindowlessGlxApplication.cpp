@@ -104,7 +104,7 @@ bool WindowlessGlxApplication::tryCreateContext(const Configuration& configurati
         0
     };
 
-    const PFNGLXCREATECONTEXTATTRIBSARBPROC glXCreateContextAttribsARB = (PFNGLXCREATECONTEXTATTRIBSARBPROC) glXGetProcAddress((const GLubyte*)"glXCreateContextAttribsARB");
+    const PFNGLXCREATECONTEXTATTRIBSARBPROC glXCreateContextAttribsARB = reinterpret_cast<PFNGLXCREATECONTEXTATTRIBSARBPROC>(glXGetProcAddress(reinterpret_cast<const GLubyte*>("glXCreateContextAttribsARB")));
     _glContext = glXCreateContextAttribsARB(_display, configs[0], nullptr, True, contextAttributes);
 
     #ifndef MAGNUM_TARGET_GLES
