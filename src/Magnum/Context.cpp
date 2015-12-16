@@ -408,11 +408,16 @@ Context::Context(NoCreateT, Int argc, char** argv, void functionLoader()): _func
     Utility::Arguments args{"magnum"};
     args.addOption("disable-workarounds").setHelpKey("disable-workarounds", "LIST")
         .setHelp("disable-workarounds", "driver workarounds to disable\n      (see src/Magnum/Implementation/driverSpecific.cpp for detailed info)")
+        .addOption("disable-extensions").setHelpKey("disable-extensions", "LIST").setHelp("disable-extensions", "OpenGL extensions to disable")
         .parse(argc, argv);
 
     /* Disable driver workarounds */
     for(auto&& workaround: Utility::String::splitWithoutEmptyParts(args.value("disable-workarounds")))
         disableDriverWorkaround(workaround);
+
+    /* Disable extensions */
+    for(auto&& extension: Utility::String::splitWithoutEmptyParts(args.value("disable-extensions")))
+        _disabledExtensions.push_back(extension);
 }
 
 Context::Context(Context&& other): _version{std::move(other._version)},
@@ -623,6 +628,29 @@ bool Context::tryCreate() {
        more info) */
     Debug() << "Renderer:" << rendererString() << "by" << vendorString();
     Debug() << "OpenGL version:" << versionString();
+
+    /* Disable extensions as requested by the user */
+    if(!_disabledExtensions.empty()) {
+        Debug() << "Disabling extensions:";
+
+        /* Put remaining extensions into the hashmap for faster lookup */
+        std::unordered_map<std::string, Extension> allExtensions{std::move(futureExtensions)};
+        for(std::size_t i = 0; i != future; ++i)
+            for(const Extension& extension: Extension::extensions(versions[i]))
+                allExtensions.emplace(extension._string, extension);
+
+        /* Disable extensions that are known and supported and print a message
+           for each */
+        for(auto&& extension: _disabledExtensions) {
+            auto found = allExtensions.find(extension);
+            /** @todo Error message here? I should not clutter the output at this point */
+            if(found == allExtensions.end()) continue;
+
+            _extensionRequiredVersion[found->second._index] = Version::None;
+            Debug() << "   " << extension;
+        }
+    }
+
     _state = new Implementation::State(*this);
 
     /* Print a list of used workarounds */

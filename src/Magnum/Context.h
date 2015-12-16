@@ -100,7 +100,7 @@ class. The options are as following:
 
 ```
 Usage:
-  <application> [--magnum-help] [--magnum-disable-workarounds LIST] ...
+  <application> [--magnum-help] [--magnum-disable-workarounds LIST] [--magnum-disable-extensions LIST] ...
 
 Arguments:
   ...                         main application arguments
@@ -108,6 +108,7 @@ Arguments:
   --magnum-help               display this help message and exit
   --magnum-disable-workarounds LIST driver workarounds to disable
       (see src/Magnum/Implementation/driverSpecific.cpp for detailed info)
+  --magnum-disable-extensions LIST OpenGL extensions to disable
 ```
 */
 class MAGNUM_EXPORT Context {
@@ -508,6 +509,7 @@ class MAGNUM_EXPORT Context {
 
         /* True means known and disabled, false means known */
         std::vector<std::pair<std::string, bool>> _driverWorkarounds;
+        std::vector<std::string> _disabledExtensions;
 };
 
 #ifndef MAGNUM_TARGET_WEBGL
