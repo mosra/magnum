@@ -104,14 +104,29 @@ bool WindowlessWglApplication::tryCreateContext(const Configuration& configurati
     const int pixelFormat = ChoosePixelFormat(_deviceContext, &pfd);
     SetPixelFormat(_deviceContext, pixelFormat, &pfd);
 
-    const int attributes = {
+    const int attributes[] = {
         WGL_CONTEXT_FLAGS_ARB, int(configuration.flags()),
         0
     };
 
-    /* Create context and make it current */
-    const PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = reinterpret_cast<PFNWGLCREATECONTEXTATTRIBSARBPROC>( wglGetProcAddress(reinterpret_cast<LPCSTR>("glXCreateContextAttribsARB")));
+    /* Create temporary context so we are able to get the pointer to
+       wglCreateContextAttribsARB() */
+    HGLRC temporaryContext = wglCreateContext(_deviceContext);
+    if(!wglMakeCurrent(_deviceContext, temporaryContext)) {
+        Error() << "Platform::WindowlessWglApplication::tryCreateContext(): cannot make temporary context current:" << GetLastError();
+        return false;
+    }
+
+    /* Get pointer to proper context creation function and create real context
+       with it */
+    typedef HGLRC(WINAPI*PFNWGLCREATECONTEXTATTRIBSARBPROC)(HDC, HGLRC, const int*);
+    const PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = reinterpret_cast<PFNWGLCREATECONTEXTATTRIBSARBPROC>( wglGetProcAddress(reinterpret_cast<LPCSTR>("wglCreateContextAttribsARB")));
     _renderingContext = wglCreateContextAttribsARB(_deviceContext, 0, attributes);
+
+    /* Delete the temporary context */
+    wglMakeCurrent(_deviceContext, nullptr);
+    wglDeleteContext(temporaryContext);
+
     if(!_renderingContext) {
         Error() << "Platform::WindowlessWglApplication::tryCreateContext(): cannot create context:" << GetLastError();
         return false;
