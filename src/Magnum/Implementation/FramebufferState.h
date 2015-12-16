@@ -40,12 +40,7 @@
 namespace Magnum { namespace Implementation {
 
 struct FramebufferState {
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY
-    /* MSVC complains that in-class initialization is not yet implemented */
     constexpr static const Range2Di DisengagedViewport{{}, {-1, -1}};
-    #else
-    static const Range2Di DisengagedViewport;
-    #endif
 
     explicit FramebufferState(Context& context, std::vector<std::string>& extensions);
 

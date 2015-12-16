@@ -33,11 +33,7 @@
 
 namespace Magnum { namespace Implementation {
 
-#ifndef CORRADE_MSVC2015_COMPATIBILITY
 constexpr const Range2Di FramebufferState::DisengagedViewport;
-#else
-const Range2Di FramebufferState::DisengagedViewport{{}, {-1, -1}};
-#endif
 
 FramebufferState::FramebufferState(Context& context, std::vector<std::string>& extensions): readBinding{0}, drawBinding{0}, renderbufferBinding{0}, maxDrawBuffers{0}, maxColorAttachments{0}, maxRenderbufferSize{0},
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))

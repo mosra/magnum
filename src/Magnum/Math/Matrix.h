@@ -54,9 +54,6 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
         };
 
         #ifdef MAGNUM_BUILD_DEPRECATED
-        /* Sorry, MSVC complains that in-class initialization is not yet
-           implemented and it is not worth fixing */
-        #ifndef CORRADE_MSVC2015_COMPATIBILITY
         /**
          * @brief Pass to constructor to create zero-filled matrix
          * @deprecated Use @ref ZeroInitT and @ref ZeroInit instead.
@@ -77,7 +74,6 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
         #else
         CORRADE_DEPRECATED("use Math::IdentityInitT instead") typedef IdentityInitT IdentityType;
         CORRADE_DEPRECATED("use Math::IdentityInit instead") constexpr static IdentityInitT Identity{IdentityInitT::Init{}};
-        #endif
         #endif
         #endif
 
