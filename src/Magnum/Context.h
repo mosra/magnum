@@ -96,20 +96,18 @@ information.
 
 The context is configurable through command-line options, that are passed
 either from the `Platform::*Application` classes or from the @ref Platform::Context
-class. The options are as following:
+class. Usage:
 
-```
-Usage:
-  <application> [--magnum-help] [--magnum-disable-workarounds LIST] [--magnum-disable-extensions LIST] ...
+    <application> [--magnum-help] [--magnum-disable-workarounds LIST] [--magnum-disable-extensions LIST] ...
 
 Arguments:
-  ...                         main application arguments
-                              (see -h or --help for details)
-  --magnum-help               display this help message and exit
-  --magnum-disable-workarounds LIST driver workarounds to disable
-      (see src/Magnum/Implementation/driverSpecific.cpp for detailed info)
-  --magnum-disable-extensions LIST OpenGL extensions to disable
-```
+
+-   `...` -- main application arguments (see `-h` or `--help` for details)
+-   `--magnum-help` -- display this help message and exit
+-   `--magnum-disable-workarounds LIST` -- driver workarounds to disable (see
+    `src/Magnum/Implementation/driverSpecific.cpp` for detailed info)
+-   `--magnum-disable-extensions LIST` -- OpenGL extensions to disable
+
 */
 class MAGNUM_EXPORT Context {
     friend Platform::Context;
