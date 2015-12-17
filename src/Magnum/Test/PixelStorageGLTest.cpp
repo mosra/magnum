@@ -119,7 +119,10 @@ void PixelStorageGLTest::unpack2D() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    Image2D actual{PixelFormat::RGB, PixelType::UnsignedByte};
+    /* Read into zero-initialized array to avoid comparing random memory in
+       padding bytes (confirmed on NVidia 355.11, AMD 15.300.1025.0) */
+    Image2D actual{PixelFormat::RGB, PixelType::UnsignedByte, {},
+        Containers::Array<char>{Containers::ValueInit, sizeof(ActualData)}};
 
     #ifndef MAGNUM_TARGET_GLES
     texture.image(0, actual);
@@ -130,11 +133,6 @@ void PixelStorageGLTest::unpack2D() {
     #endif
 
     MAGNUM_VERIFY_NO_ERROR();
-
-    /* Clear padding in the last row (the driver might leave them untouched,
-       confirmed on NVidia 355.11) */
-    CORRADE_VERIFY(actual.data().size() == Containers::ArrayView<const char>{ActualData}.size());
-    *(actual.data().end() - 1) = *(actual.data().end() - 2) = 0;
 
     CORRADE_COMPARE_AS(actual.data(), Containers::ArrayView<const char>{ActualData},
         TestSuite::Compare::Container);
@@ -217,7 +215,12 @@ void PixelStorageGLTest::unpack3D() {
     /* Testing mainly image height here, which is not available as pack
        parameter in ES */
     #ifndef MAGNUM_TARGET_GLES
-    Image3D actual = texture.image(0, {PixelFormat::RGB, PixelType::UnsignedByte});
+    /* Read into zero-initialized array to avoid comparing random memory in
+       padding bytes (confirmed on AMD 15.300.1025.0) */
+    Image3D actual{PixelFormat::RGB, PixelType::UnsignedByte, {},
+        Containers::Array<char>{Containers::ValueInit, sizeof(ActualData)}};
+
+    texture.image(0, actual);
 
     MAGNUM_VERIFY_NO_ERROR();
 
