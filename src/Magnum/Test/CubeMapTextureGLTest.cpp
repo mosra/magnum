@@ -195,6 +195,7 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
         _compressedDataStorage = {};
         #endif
         _compressedDataOffset = 0;
+        _compressedFullDataOffset = 0;
     }
 }
 
