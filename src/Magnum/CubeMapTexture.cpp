@@ -403,7 +403,7 @@ void CubeMapTexture::subImageImplementationDSAEXT(const Coordinate coordinate, c
 
 void CubeMapTexture::compressedSubImageImplementationDSAEXT(const Coordinate coordinate, const GLint level, const Vector2i& offset, const Vector2i& size, const CompressedPixelFormat format, const GLvoid* const data, const GLsizei dataSize) {
     _flags |= ObjectFlag::Created;
-    glTextureSubImage2DEXT(_id, GLenum(coordinate), level, offset.x(), offset.y(), size.x(), size.y(), GLenum(format), dataSize, data);
+    glCompressedTextureSubImage2DEXT(_id, GLenum(coordinate), level, offset.x(), offset.y(), size.x(), size.y(), GLenum(format), dataSize, data);
 }
 #endif
 
