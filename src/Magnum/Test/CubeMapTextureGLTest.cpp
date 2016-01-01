@@ -460,12 +460,19 @@ void CubeMapTextureGLTest::compressedImage() {
         CORRADE_SKIP(Extensions::GL::WEBGL::compressed_texture_s3tc::string() + std::string(" is not supported."));
     #endif
 
-    CubeMapTexture texture;
-    texture.setCompressedImage(CubeMapTexture::Coordinate::PositiveX, 0, CompressedImageView2D{
+    const CompressedImageView2D view{
         #ifndef MAGNUM_TARGET_GLES
         _compressedDataStorage,
         #endif
-        CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4}, unsafeSuffix(CompressedData, _compressedDataOffset)});
+        CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4}, unsafeSuffix(CompressedData, _compressedDataOffset)};
+
+    CubeMapTexture texture;
+    texture.setCompressedImage(CubeMapTexture::Coordinate::PositiveX, 0, view)
+           .setCompressedImage(CubeMapTexture::Coordinate::NegativeX, 0, view)
+           .setCompressedImage(CubeMapTexture::Coordinate::PositiveY, 0, view)
+           .setCompressedImage(CubeMapTexture::Coordinate::NegativeY, 0, view)
+           .setCompressedImage(CubeMapTexture::Coordinate::PositiveZ, 0, view)
+           .setCompressedImage(CubeMapTexture::Coordinate::NegativeZ, 0, view);
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -512,12 +519,19 @@ void CubeMapTextureGLTest::compressedImageBuffer() {
         CORRADE_SKIP(Extensions::GL::WEBGL::compressed_texture_s3tc::string() + std::string(" is not supported."));
     #endif
 
-    CubeMapTexture texture;
-    texture.setCompressedImage(CubeMapTexture::Coordinate::PositiveX, 0, CompressedBufferImage2D{
+    CompressedBufferImage2D buffer{
         #ifndef MAGNUM_TARGET_GLES
         _compressedDataStorage,
         #endif
-        CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4}, unsafeSuffix(CompressedData, _compressedDataOffset), BufferUsage::StaticDraw});
+        CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4}, unsafeSuffix(CompressedData, _compressedDataOffset), BufferUsage::StaticDraw};
+
+    CubeMapTexture texture;
+    texture.setCompressedImage(CubeMapTexture::Coordinate::PositiveX, 0, buffer)
+           .setCompressedImage(CubeMapTexture::Coordinate::NegativeX, 0, buffer)
+           .setCompressedImage(CubeMapTexture::Coordinate::PositiveY, 0, buffer)
+           .setCompressedImage(CubeMapTexture::Coordinate::NegativeY, 0, buffer)
+           .setCompressedImage(CubeMapTexture::Coordinate::PositiveZ, 0, buffer)
+           .setCompressedImage(CubeMapTexture::Coordinate::NegativeZ, 0, buffer);
 
     MAGNUM_VERIFY_NO_ERROR();
 
