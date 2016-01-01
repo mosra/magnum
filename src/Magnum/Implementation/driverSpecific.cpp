@@ -113,6 +113,11 @@ auto Context::detectedDriver() -> DetectedDrivers {
     #endif
     #endif
 
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(vendor.find("NVIDIA Corporation") != std::string::npos)
+        return *_detectedDrivers |= DetectedDriver::NVidia;
+    #endif
+
     /** @todo there is also D3D9/D3D11 distinction on webglreport.com, is it useful? */
     #ifdef MAGNUM_TARGET_GLES
     /* OpenGL ES implementation using ANGLE. Taken from these sources:

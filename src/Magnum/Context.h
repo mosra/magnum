@@ -209,6 +209,11 @@ class MAGNUM_EXPORT Context {
             IntelWindows = 1 << 1,
             #endif
 
+            #ifndef MAGNUM_TARGET_WEBGL
+            /** Binary NVidia drivers */
+            NVidia = 1 << 2,
+            #endif
+
             #ifdef MAGNUM_TARGET_GLES
             /**
              * OpenGL ES implementation by ANGLE (translated to D3D), used by
@@ -216,7 +221,7 @@ class MAGNUM_EXPORT Context {
              * specification explicitly disallows exposing driver information
              * to the application, this check cannot be done reliably.
              */
-            ProbablyAngle = 1 << 2
+            ProbablyAngle = 1 << 3
             #endif
         };
 
