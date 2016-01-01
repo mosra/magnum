@@ -275,7 +275,7 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
          *
          * See @ref Texture::imageSize() for more information.
          */
-        Vector2i imageSize() { return DataHelper<2>::imageSize(*this, _target, 0); }
+        Vector2i imageSize() { return DataHelper<2>::imageSize(*this, 0); }
 
         /**
          * @brief Read texture to image

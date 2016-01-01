@@ -61,7 +61,7 @@ struct TextureState {
     #endif
     void(AbstractTexture::*setMaxAnisotropyImplementation)(GLfloat);
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    void(AbstractTexture::*getLevelParameterivImplementation)(GLenum, GLint, GLenum, GLint*);
+    void(AbstractTexture::*getLevelParameterivImplementation)(GLint, GLenum, GLint*);
     #endif
     void(AbstractTexture::*mipmapImplementation)();
     #ifndef MAGNUM_TARGET_GLES
@@ -97,6 +97,9 @@ struct TextureState {
     void(BufferTexture::*setBufferRangeImplementation)(BufferTextureFormat, Buffer&, GLintptr, GLsizeiptr);
     #endif
 
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    void(CubeMapTexture::*getCubeLevelParameterivImplementation)(GLint, GLenum, GLint*);
+    #endif
     #ifndef MAGNUM_TARGET_GLES
     void(CubeMapTexture::*getCubeImageImplementation)(CubeMapTexture::Coordinate, GLint, const Vector2i&, PixelFormat, PixelType, std::size_t, GLvoid*);
     void(CubeMapTexture::*getCompressedCubeImageImplementation)(CubeMapTexture::Coordinate, GLint, const Vector2i&, std::size_t, GLvoid*);

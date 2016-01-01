@@ -463,10 +463,10 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         void MAGNUM_LOCAL setMaxAnisotropyImplementationExt(GLfloat anisotropy);
 
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        void MAGNUM_LOCAL getLevelParameterImplementationDefault(GLenum target, GLint level, GLenum parameter, GLint* values);
+        void MAGNUM_LOCAL getLevelParameterImplementationDefault(GLint level, GLenum parameter, GLint* values);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL getLevelParameterImplementationDSA(GLenum, GLint level, GLenum parameter, GLint* values);
-        void MAGNUM_LOCAL getLevelParameterImplementationDSAEXT(GLenum target, GLint level, GLenum parameter, GLint* values);
+        void MAGNUM_LOCAL getLevelParameterImplementationDSA(GLint level, GLenum parameter, GLint* values);
+        void MAGNUM_LOCAL getLevelParameterImplementationDSAEXT(GLint level, GLenum parameter, GLint* values);
         #endif
         #endif
 
@@ -584,7 +584,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_TARGET_GLES
 template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<1> {
-    static Math::Vector<1, GLint> imageSize(AbstractTexture& texture, GLenum, GLint level);
+    static Math::Vector<1, GLint> imageSize(AbstractTexture& texture, GLint level);
 
     static void setWrapping(AbstractTexture& texture, const Array1D<Sampler::Wrapping>& wrapping);
 
@@ -605,7 +605,7 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<1> {
 #endif
 template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    static Vector2i imageSize(AbstractTexture& texture, GLenum target, GLint level);
+    static Vector2i imageSize(AbstractTexture& texture, GLint level);
     #endif
 
     static void setWrapping(AbstractTexture& texture, const Array2D<Sampler::Wrapping>& wrapping);
@@ -647,7 +647,7 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
 template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     #ifndef MAGNUM_TARGET_GLES2
-    static Vector3i imageSize(AbstractTexture& texture, GLenum, GLint level);
+    static Vector3i imageSize(AbstractTexture& texture, GLint level);
     #endif
 
     static void setWrapping(AbstractTexture& texture, const Array3D<Sampler::Wrapping>& wrapping);

@@ -421,9 +421,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * @requires_gles Texture image size queries are not available in
          *      WebGL.
          */
-        Vector2i imageSize(Int level) {
-            return DataHelper<2>::imageSize(*this, GL_TEXTURE_CUBE_MAP_POSITIVE_X, level);
-        }
+        Vector2i imageSize(Int level);
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
@@ -945,6 +943,14 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
 
     private:
         explicit CubeMapTexture(GLuint id, ObjectFlags flags) noexcept: AbstractTexture{id, GL_TEXTURE_CUBE_MAP, flags} {}
+
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        void MAGNUM_LOCAL getLevelParameterImplementationDefault(GLint level, GLenum parameter, GLint* values);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL getLevelParameterImplementationDSA(GLint level, GLenum parameter, GLint* values);
+        void MAGNUM_LOCAL getLevelParameterImplementationDSAEXT(GLint level, GLenum parameter, GLint* values);
+        #endif
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL getImageImplementationDefault(Coordinate coordinate, GLint level, const Vector2i& size, PixelFormat format, PixelType type, std::size_t dataSize, GLvoid* data);

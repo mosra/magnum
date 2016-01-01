@@ -1094,19 +1094,19 @@ void AbstractTexture::setMaxAnisotropyImplementationExt(GLfloat anisotropy) {
 }
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-void AbstractTexture::getLevelParameterImplementationDefault(const GLenum target, const GLint level, const GLenum parameter, GLint* const values) {
+void AbstractTexture::getLevelParameterImplementationDefault(const GLint level, const GLenum parameter, GLint* const values) {
     bindInternal();
-    glGetTexLevelParameteriv(target, level, parameter, values);
+    glGetTexLevelParameteriv(_target, level, parameter, values);
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractTexture::getLevelParameterImplementationDSA(GLenum, const GLint level, const GLenum parameter, GLint* const values) {
+void AbstractTexture::getLevelParameterImplementationDSA(const GLint level, const GLenum parameter, GLint* const values) {
     glGetTextureLevelParameteriv(_id, level, parameter, values);
 }
 
-void AbstractTexture::getLevelParameterImplementationDSAEXT(const GLenum target, const GLint level, const GLenum parameter, GLint* const values) {
+void AbstractTexture::getLevelParameterImplementationDSAEXT(const GLint level, const GLenum parameter, GLint* const values) {
     _flags |= ObjectFlag::Created;
-    glGetTextureLevelParameterivEXT(_id, target, level, parameter, values);
+    glGetTextureLevelParameterivEXT(_id, _target, level, parameter, values);
 }
 #endif
 #endif
@@ -1493,7 +1493,7 @@ void AbstractTexture::invalidateSubImageImplementationARB(GLint level, const Vec
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_TARGET_GLES
 template<UnsignedInt dimensions> void AbstractTexture::image(GLint level, Image<dimensions>& image) {
-    const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, _target, level);
+    const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, level);
     const std::size_t dataSize = Implementation::imageDataSizeFor(image, size);
 
     /* Reallocate only if needed */
@@ -1512,7 +1512,7 @@ template void MAGNUM_EXPORT AbstractTexture::image<2>(GLint, Image<2>&);
 template void MAGNUM_EXPORT AbstractTexture::image<3>(GLint, Image<3>&);
 
 template<UnsignedInt dimensions> void AbstractTexture::image(GLint level, BufferImage<dimensions>& image, BufferUsage usage) {
-    const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, _target, level);
+    const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, level);
     const std::size_t dataSize = Implementation::imageDataSizeFor(image, size);
 
     /* Reallocate only if needed */
@@ -1531,12 +1531,12 @@ template void MAGNUM_EXPORT AbstractTexture::image<2>(GLint, BufferImage<2>&, Bu
 template void MAGNUM_EXPORT AbstractTexture::image<3>(GLint, BufferImage<3>&, BufferUsage);
 
 template<UnsignedInt dimensions> void AbstractTexture::compressedImage(const GLint level, CompressedImage<dimensions>& image) {
-    const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, _target, level);
+    const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, level);
     GLint textureDataSize;
-    (this->*Context::current()->state().texture->getLevelParameterivImplementation)(_target, level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &textureDataSize);
+    (this->*Context::current()->state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &textureDataSize);
     const std::size_t dataSize = Implementation::compressedImageDataSizeFor(image, size, textureDataSize);
     GLint format;
-    (this->*Context::current()->state().texture->getLevelParameterivImplementation)(_target, level, GL_TEXTURE_INTERNAL_FORMAT, &format);
+    (this->*Context::current()->state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
 
     /* Reallocate only if needed */
     Containers::Array<char> data{image.release()};
@@ -1554,12 +1554,12 @@ template void MAGNUM_EXPORT AbstractTexture::compressedImage<2>(GLint, Compresse
 template void MAGNUM_EXPORT AbstractTexture::compressedImage<3>(GLint, CompressedImage<3>&);
 
 template<UnsignedInt dimensions> void AbstractTexture::compressedImage(const GLint level, CompressedBufferImage<dimensions>& image, BufferUsage usage) {
-    const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, _target, level);
+    const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, level);
     GLint textureDataSize;
-    (this->*Context::current()->state().texture->getLevelParameterivImplementation)(_target, level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &textureDataSize);
+    (this->*Context::current()->state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &textureDataSize);
     const std::size_t dataSize = Implementation::compressedImageDataSizeFor(image, size, textureDataSize);
     GLint format;
-    (this->*Context::current()->state().texture->getLevelParameterivImplementation)(_target, level, GL_TEXTURE_INTERNAL_FORMAT, &format);
+    (this->*Context::current()->state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
 
     /* Reallocate only if needed */
     if(image.dataSize() < dataSize)
@@ -1626,30 +1626,30 @@ template void MAGNUM_EXPORT AbstractTexture::subImage<3>(GLint, const Range3Di&,
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_TARGET_GLES
-Math::Vector<1, GLint> AbstractTexture::DataHelper<1>::imageSize(AbstractTexture& texture, GLenum, const GLint level) {
+Math::Vector<1, GLint> AbstractTexture::DataHelper<1>::imageSize(AbstractTexture& texture, const GLint level) {
     Math::Vector<1, GLint> value;
-    (texture.*Context::current()->state().texture->getLevelParameterivImplementation)(texture._target, level, GL_TEXTURE_WIDTH, &value[0]);
+    (texture.*Context::current()->state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_WIDTH, &value[0]);
     return value;
 }
 #endif
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-Vector2i AbstractTexture::DataHelper<2>::imageSize(AbstractTexture& texture, const GLenum target, const GLint level) {
+Vector2i AbstractTexture::DataHelper<2>::imageSize(AbstractTexture& texture, const GLint level) {
     const Implementation::TextureState& state = *Context::current()->state().texture;
 
     Vector2i value;
-    (texture.*state.getLevelParameterivImplementation)(target, level, GL_TEXTURE_WIDTH, &value[0]);
-    (texture.*state.getLevelParameterivImplementation)(target, level, GL_TEXTURE_HEIGHT, &value[1]);
+    (texture.*state.getLevelParameterivImplementation)(level, GL_TEXTURE_WIDTH, &value[0]);
+    (texture.*state.getLevelParameterivImplementation)(level, GL_TEXTURE_HEIGHT, &value[1]);
     return value;
 }
 
-Vector3i AbstractTexture::DataHelper<3>::imageSize(AbstractTexture& texture, GLenum, const GLint level) {
+Vector3i AbstractTexture::DataHelper<3>::imageSize(AbstractTexture& texture, const GLint level) {
     const Implementation::TextureState& state = *Context::current()->state().texture;
 
     Vector3i value;
-    (texture.*state.getLevelParameterivImplementation)(texture._target, level, GL_TEXTURE_WIDTH, &value[0]);
-    (texture.*state.getLevelParameterivImplementation)(texture._target, level, GL_TEXTURE_HEIGHT, &value[1]);
-    (texture.*state.getLevelParameterivImplementation)(texture._target, level, GL_TEXTURE_DEPTH, &value[2]);
+    (texture.*state.getLevelParameterivImplementation)(level, GL_TEXTURE_WIDTH, &value[0]);
+    (texture.*state.getLevelParameterivImplementation)(level, GL_TEXTURE_HEIGHT, &value[1]);
+    (texture.*state.getLevelParameterivImplementation)(level, GL_TEXTURE_DEPTH, &value[2]);
     return value;
 }
 #endif

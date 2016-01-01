@@ -388,7 +388,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *      WebGL.
          */
         VectorTypeFor<dimensions+1, Int> imageSize(Int level) {
-            return DataHelper<dimensions+1>::imageSize(*this, _target, level);
+            return DataHelper<dimensions+1>::imageSize(*this, level);
         }
         #endif
 

@@ -210,7 +210,7 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
          *      OpenGL ES 3.0 and older.
          */
         VectorTypeFor<dimensions, Int> imageSize() {
-            return DataHelper<dimensions>::imageSize(*this, _target, 0);
+            return DataHelper<dimensions>::imageSize(*this, 0);
         }
 
         /**
