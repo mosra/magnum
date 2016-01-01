@@ -224,6 +224,11 @@ void PixelStorageGLTest::unpack3D() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
+    /* Clear padding in the last row (the driver might leave them untouched,
+       confirmed on NVidia 358.16) */
+    CORRADE_VERIFY(actual.data().size() == Containers::ArrayView<const char>{ActualData}.size());
+    *(actual.data().end() - 1) = *(actual.data().end() - 2) = 0;
+
     CORRADE_COMPARE_AS(actual.data(), Containers::ArrayView<const char>{ActualData},
         TestSuite::Compare::Container);
     #endif
