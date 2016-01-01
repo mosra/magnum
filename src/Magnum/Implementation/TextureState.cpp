@@ -136,7 +136,6 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         setBufferRangeImplementation = &BufferTexture::setBufferRangeImplementationDSA;
 
         getCubeLevelParameterivImplementation = &CubeMapTexture::getLevelParameterImplementationDSA;
-        getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDSA;
         cubeSubImageImplementation = &CubeMapTexture::subImageImplementationDSA;
         cubeCompressedSubImageImplementation = &CubeMapTexture::compressedSubImageImplementationDSA;
 
@@ -162,7 +161,6 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         setBufferRangeImplementation = &BufferTexture::setBufferRangeImplementationDSAEXT;
 
         getCubeLevelParameterivImplementation = &CubeMapTexture::getLevelParameterImplementationDSAEXT;
-        getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDSAEXT;
         cubeSubImageImplementation = &CubeMapTexture::subImageImplementationDSAEXT;
         cubeCompressedSubImageImplementation = &CubeMapTexture::compressedSubImageImplementationDSAEXT;
 
@@ -201,7 +199,6 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
 
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         getCubeLevelParameterivImplementation = &CubeMapTexture::getLevelParameterImplementationDefault;
-        getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDefault;
         #endif
         cubeSubImageImplementation = &CubeMapTexture::subImageImplementationDefault;
         cubeCompressedSubImageImplementation = &CubeMapTexture::compressedSubImageImplementationDefault;
@@ -222,6 +219,23 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     }
 
     #ifndef MAGNUM_TARGET_GLES
+    /* Compressed cubemap image size query implementation (extensions added
+       above) */
+    if((context.detectedDriver() & Context::DetectedDriver::NVidia) &&
+        !context.isDriverWorkaroundDisabled("nv-cubemap-inconsistent-compressed-image-size")) {
+        if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>())
+            getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDSANonImmutableWorkaround;
+        else if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>())
+            getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDSAEXTImmutableWorkaround;
+        else getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDefaultImmutableWorkaround;
+    } else {
+        if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>())
+            getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDSA;
+        else if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>())
+            getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDSAEXT;
+        else getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDefault;
+    }
+
     /* Image retrieval implementation */
     if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
         /* Extension name added above */

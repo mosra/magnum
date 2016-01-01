@@ -99,9 +99,9 @@ struct TextureState {
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     void(CubeMapTexture::*getCubeLevelParameterivImplementation)(GLint, GLenum, GLint*);
-    GLint(CubeMapTexture::*getCubeLevelCompressedImageSizeImplementation)(GLint);
     #endif
     #ifndef MAGNUM_TARGET_GLES
+    GLint(CubeMapTexture::*getCubeLevelCompressedImageSizeImplementation)(GLint);
     void(CubeMapTexture::*getCubeImageImplementation)(CubeMapTexture::Coordinate, GLint, const Vector2i&, PixelFormat, PixelType, std::size_t, GLvoid*);
     void(CubeMapTexture::*getCompressedCubeImageImplementation)(CubeMapTexture::Coordinate, GLint, const Vector2i&, std::size_t, GLvoid*);
     #endif

@@ -51,6 +51,12 @@ namespace {
            1.30 on NVidia and 1.40 on Mac OS X. Everything is fine when using
            newer GLSL version. */
         "no-layout-qualifiers-on-old-glsl",
+
+        /* NVidia drivers (358.16) report different compressed image size for
+           cubemaps based on whether the texture is immutable or not and not
+           based on whether I'm querying all faces (ARB_DSA) or a single face
+           (non-DSA, EXT_DSA) */
+        "nv-cubemap-inconsistent-compressed-image-size",
         #endif
 
         #ifdef CORRADE_TARGET_NACL

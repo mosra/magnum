@@ -362,7 +362,7 @@ void CubeMapTexture::getLevelParameterImplementationDSAEXT(const GLint level, co
 #endif
 #endif
 
-#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+#ifndef MAGNUM_TARGET_GLES
 GLint CubeMapTexture::getLevelCompressedImageSizeImplementationDefault(const GLint level) {
     bindInternal();
     /* Using only parameters of +X in pre-DSA code path and assuming that all
@@ -374,11 +374,26 @@ GLint CubeMapTexture::getLevelCompressedImageSizeImplementationDefault(const GLi
     return value*6;
 }
 
-#ifndef MAGNUM_TARGET_GLES
+GLint CubeMapTexture::getLevelCompressedImageSizeImplementationDefaultImmutableWorkaround(const GLint level) {
+    const GLint value = getLevelCompressedImageSizeImplementationDefault(level);
+
+    GLint immutable;
+    glGetTexParameteriv(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_IMMUTABLE_LEVELS, &immutable);
+    return immutable ? value/6 : value;
+}
+
 GLint CubeMapTexture::getLevelCompressedImageSizeImplementationDSA(const GLint level) {
     GLint value;
     glGetTextureLevelParameteriv(_id, level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &value);
     return value;
+}
+
+GLint CubeMapTexture::getLevelCompressedImageSizeImplementationDSANonImmutableWorkaround(const GLint level) {
+    const GLint value = getLevelCompressedImageSizeImplementationDSA(level);
+
+    GLint immutable;
+    glGetTextureParameteriv(_id, GL_TEXTURE_IMMUTABLE_LEVELS, &immutable);
+    return immutable ? value : value*6;
 }
 
 GLint CubeMapTexture::getLevelCompressedImageSizeImplementationDSAEXT(const GLint level) {
@@ -391,7 +406,14 @@ GLint CubeMapTexture::getLevelCompressedImageSizeImplementationDSAEXT(const GLin
     /* Size of all six faces */
     return value*6;
 }
-#endif
+
+GLint CubeMapTexture::getLevelCompressedImageSizeImplementationDSAEXTImmutableWorkaround(const GLint level) {
+    const GLint value = getLevelCompressedImageSizeImplementationDSAEXT(level);
+
+    GLint immutable;
+    glGetTextureParameterivEXT(_id, GL_TEXTURE_CUBE_MAP, GL_TEXTURE_IMMUTABLE_LEVELS, &immutable);
+    return immutable ? value/6 : value;
+}
 #endif
 
 #ifndef MAGNUM_TARGET_GLES

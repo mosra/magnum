@@ -952,12 +952,13 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         #endif
         #endif
 
-        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        GLint MAGNUM_LOCAL getLevelCompressedImageSizeImplementationDefault(GLint level);
         #ifndef MAGNUM_TARGET_GLES
+        GLint MAGNUM_LOCAL getLevelCompressedImageSizeImplementationDefault(GLint level);
+        GLint MAGNUM_LOCAL getLevelCompressedImageSizeImplementationDefaultImmutableWorkaround(GLint level);
         GLint MAGNUM_LOCAL getLevelCompressedImageSizeImplementationDSA(GLint level);
+        GLint MAGNUM_LOCAL getLevelCompressedImageSizeImplementationDSANonImmutableWorkaround(GLint level);
         GLint MAGNUM_LOCAL getLevelCompressedImageSizeImplementationDSAEXT(GLint level);
-        #endif
+        GLint MAGNUM_LOCAL getLevelCompressedImageSizeImplementationDSAEXTImmutableWorkaround(GLint level);
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
