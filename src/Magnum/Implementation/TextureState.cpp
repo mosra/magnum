@@ -136,6 +136,7 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         setBufferRangeImplementation = &BufferTexture::setBufferRangeImplementationDSA;
 
         getCubeLevelParameterivImplementation = &CubeMapTexture::getLevelParameterImplementationDSA;
+        getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDSA;
         cubeSubImageImplementation = &CubeMapTexture::subImageImplementationDSA;
         cubeCompressedSubImageImplementation = &CubeMapTexture::compressedSubImageImplementationDSA;
 
@@ -161,6 +162,7 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         setBufferRangeImplementation = &BufferTexture::setBufferRangeImplementationDSAEXT;
 
         getCubeLevelParameterivImplementation = &CubeMapTexture::getLevelParameterImplementationDSAEXT;
+        getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDSAEXT;
         cubeSubImageImplementation = &CubeMapTexture::subImageImplementationDSAEXT;
         cubeCompressedSubImageImplementation = &CubeMapTexture::compressedSubImageImplementationDSAEXT;
 
@@ -199,6 +201,7 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
 
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         getCubeLevelParameterivImplementation = &CubeMapTexture::getLevelParameterImplementationDefault;
+        getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDefault;
         #endif
         cubeSubImageImplementation = &CubeMapTexture::subImageImplementationDefault;
         cubeCompressedSubImageImplementation = &CubeMapTexture::compressedSubImageImplementationDefault;
