@@ -74,6 +74,7 @@ struct CubeMapTextureGLTest: AbstractOpenGLTester {
     void imageBuffer();
     void compressedImageBuffer();
     #endif
+    void immutableCompressedImage();
     #ifndef MAGNUM_TARGET_GLES
     void fullImageQuery();
     void compressedFullImageQuery();
@@ -140,6 +141,7 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
               &CubeMapTextureGLTest::imageBuffer,
               &CubeMapTextureGLTest::compressedImageBuffer,
               #endif
+              &CubeMapTextureGLTest::immutableCompressedImage,
               #ifndef MAGNUM_TARGET_GLES
               &CubeMapTextureGLTest::fullImageQuery,
               &CubeMapTextureGLTest::compressedFullImageQuery,
@@ -548,6 +550,53 @@ void CubeMapTextureGLTest::compressedImageBuffer() {
     #endif
 }
 #endif
+
+void CubeMapTextureGLTest::immutableCompressedImage() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_storage>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_storage::string() + std::string(" is not supported."));
+    #elif defined(MAGNUM_TARGET_GLES2)
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_storage>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_storage::string() + std::string(" is not supported."));
+    #endif
+    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_compression_s3tc>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
+
+    /* Testing that GL_TEXTURE_COMPRESSED_IMAGE_SIZE is consistent and returns
+       the same value regardless whether the texture is immutable or not. (Not
+       the case, at least on NVidia 358.16, compare with compressedImage() test
+       case that just calls setImage() six times instead of setStorage() and
+       gets value that's six times smaller. I couldn't find anything in the
+       specs so I suspect it's a bug). */
+
+    const CompressedImageView2D view{
+        #ifndef MAGNUM_TARGET_GLES
+        _compressedDataStorage,
+        #endif
+        CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4}, unsafeSuffix(CompressedData, _compressedDataOffset)};
+
+    CubeMapTexture texture;
+    texture.setStorage(1, TextureFormat::CompressedRGBAS3tcDxt3, Vector2i{4})
+           .setCompressedSubImage(CubeMapTexture::Coordinate::PositiveX, 0, {}, view)
+           .setCompressedSubImage(CubeMapTexture::Coordinate::NegativeX, 0, {}, view)
+           .setCompressedSubImage(CubeMapTexture::Coordinate::PositiveY, 0, {}, view)
+           .setCompressedSubImage(CubeMapTexture::Coordinate::NegativeY, 0, {}, view)
+           .setCompressedSubImage(CubeMapTexture::Coordinate::PositiveZ, 0, {}, view)
+           .setCompressedSubImage(CubeMapTexture::Coordinate::NegativeZ, 0, {}, view);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    #ifndef MAGNUM_TARGET_GLES
+    CompressedImage2D image = texture.compressedImage(CubeMapTexture::Coordinate::NegativeY, 0, {});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(image.size(), Vector2i{4});
+    CORRADE_COMPARE_AS(
+        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}),
+        Containers::ArrayView<const UnsignedByte>{CompressedData}, TestSuite::Compare::Container);
+    #endif
+}
 
 #ifndef MAGNUM_TARGET_GLES
 namespace {
