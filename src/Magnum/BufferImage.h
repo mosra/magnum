@@ -247,7 +247,6 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
          * @param data              Image data
          * @param usage             Image buffer usage
          *
-         * The data are *not* deleted after filling the buffer.
          * @todo Make it more flexible (usable with
          *      @extension{ARB,buffer_storage}, avoiding relocations...)
          *
