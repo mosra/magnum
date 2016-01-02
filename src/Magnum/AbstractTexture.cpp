@@ -199,9 +199,18 @@ void AbstractTexture::bindImplementationMulti(const GLint firstTextureUnit, Cont
 
 #ifndef MAGNUM_TARGET_GLES
 Int AbstractTexture::compressedBlockDataSize(const GLenum target, const TextureFormat format) {
+    return (Context::current()->state().texture->compressedBlockDataSizeImplementation)(target, format);
+}
+
+Int AbstractTexture::compressedBlockDataSizeImplementationDefault(const GLenum target, const TextureFormat format) {
     GLint value;
     glGetInternalformativ(target, GLenum(format), GL_TEXTURE_COMPRESSED_BLOCK_SIZE, 1, &value);
     return value;
+}
+
+Int AbstractTexture::compressedBlockDataSizeImplementationBitsWorkaround(const GLenum target, const TextureFormat format) {
+    /* NVidia (358.16) reports the value in bits instead of bytes */
+    return compressedBlockDataSizeImplementationDefault(target, format)/8;
 }
 #endif
 

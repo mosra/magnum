@@ -52,6 +52,10 @@ namespace {
            newer GLSL version. */
         "no-layout-qualifiers-on-old-glsl",
 
+        /* NVidia drivers (358.16) report compressed block size from internal
+           format query in bits instead of bytes */
+        "nv-compressed-block-size-in-bits",
+
         /* NVidia drivers (358.16) report different compressed image size for
            cubemaps based on whether the texture is immutable or not and not
            based on whether I'm querying all faces (ARB_DSA) or a single face

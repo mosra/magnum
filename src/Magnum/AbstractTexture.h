@@ -416,6 +416,11 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         GLenum _target;
 
     private:
+        #ifndef MAGNUM_TARGET_GLES
+        static Int MAGNUM_LOCAL compressedBlockDataSizeImplementationDefault(GLenum target, TextureFormat format);
+        static Int MAGNUM_LOCAL compressedBlockDataSizeImplementationBitsWorkaround(GLenum target, TextureFormat format);
+        #endif
+
         static void MAGNUM_LOCAL unbindImplementationDefault(GLint textureUnit);
         #ifndef MAGNUM_TARGET_GLES
         static void MAGNUM_LOCAL unbindImplementationMulti(GLint textureUnit);

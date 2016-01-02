@@ -45,6 +45,7 @@ struct TextureState {
 
     void reset();
 
+    Int(*compressedBlockDataSizeImplementation)(GLenum, TextureFormat);
     void(*unbindImplementation)(GLint);
     void(*bindMultiImplementation)(GLint, Containers::ArrayView<AbstractTexture* const>);
     void(AbstractTexture::*createImplementation)();

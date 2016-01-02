@@ -374,6 +374,15 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         setMaxAnisotropyImplementation = &AbstractTexture::setMaxAnisotropyImplementationExt;
     } else setMaxAnisotropyImplementation = &AbstractTexture::setMaxAnisotropyImplementationNoOp;
 
+    #ifndef MAGNUM_TARGET_GLES
+    /* NVidia workaround for compressed block data size implementation */
+    if((context.detectedDriver() & Context::DetectedDriver::NVidia) &&
+        !context.isDriverWorkaroundDisabled("nv-compressed-block-size-in-bits"))
+        compressedBlockDataSizeImplementation = &AbstractTexture::compressedBlockDataSizeImplementationBitsWorkaround;
+    else
+        compressedBlockDataSizeImplementation = &AbstractTexture::compressedBlockDataSizeImplementationDefault;
+    #endif
+
     /* Resize bindings array to hold all possible texture units */
     glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxTextureUnits);
     CORRADE_INTERNAL_ASSERT(maxTextureUnits > 0);
