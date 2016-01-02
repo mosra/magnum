@@ -70,6 +70,13 @@ Debug& operator<<(Debug& debug, const Context::HrtfStatus value) {
 
 Context* Context::_current = nullptr;
 
+bool Context::hasCurrent() { return _current; }
+
+Context& Context::current() {
+    CORRADE_ASSERT(_current, "Audio::Context::current(): no current context", *_current);
+    return *_current;
+}
+
 Context::Context(): Context{Configuration{}} {}
 
 Context::Context(const Configuration& config) {

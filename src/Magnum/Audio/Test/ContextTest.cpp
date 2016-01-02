@@ -56,7 +56,7 @@ void ContextTest::extensionsString() {
 }
 
 void ContextTest::isExtensionEnabled() {
-    CORRADE_VERIFY(Context::current()->isExtensionSupported<Extensions::ALC::EXT::ENUMERATION>());
+    CORRADE_VERIFY(Context::current().isExtensionSupported<Extensions::ALC::EXT::ENUMERATION>());
 }
 
 void ContextTest::hrtfStatus() {

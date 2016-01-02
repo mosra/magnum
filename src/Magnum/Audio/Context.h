@@ -127,8 +127,20 @@ class MAGNUM_AUDIO_EXPORT Context {
             UnsupportedFormat = ALC_HRTF_UNSUPPORTED_FORMAT_SOFT
         };
 
-        /** @brief Current context */
-        static Context* current() { return _current; }
+        /**
+         * @brief Whether there is any current context
+         *
+         * @see @ref current()
+         */
+        static bool hasCurrent();
+
+        /**
+         * @brief Current context
+         *
+         * Expect that there is current context.
+         * @see @ref hasCurrent()
+         */
+        static Context& current();
 
         class Configuration;
 
@@ -150,6 +162,11 @@ class MAGNUM_AUDIO_EXPORT Context {
          * Destroys OpenAL context.
          */
         ~Context();
+
+        #if defined(MAGNUM_BUILD_DEPRECATED) && !defined(DOXYGEN_GENERATING_OUTPUT)
+        CORRADE_DEPRECATED("Audio::Context::current() returns reference now") Context* operator->() { return this; }
+        CORRADE_DEPRECATED("Audio::Context::current() returns reference now") operator Context*() { return this; }
+        #endif
 
         /**
          * @brief Whether HRTFs (Head Related Transfer Functions) are enabled
@@ -265,7 +282,7 @@ class MAGNUM_AUDIO_EXPORT Context {
         }
 
     private:
-        static Context* _current;
+        MAGNUM_AUDIO_LOCAL static Context* _current;
 
         /* Create a context with given configuration. Returns `true` on success.
          * @ref alcCreateContext(). */
@@ -410,9 +427,9 @@ MAGNUM_ASSERT_AUDIO_EXTENSION_SUPPORTED(Extensions::ALC::SOFTX::HRTF);
 #ifdef CORRADE_NO_ASSERT
 #define MAGNUM_ASSERT_AUDIO_EXTENSION_SUPPORTED(extension) do {} while(0)
 #else
-#define MAGNUM_ASSERT_AUDIO_EXTENSION_SUPPORTED(extension)                        \
+#define MAGNUM_ASSERT_AUDIO_EXTENSION_SUPPORTED(extension)                  \
     do {                                                                    \
-        if(!Magnum::Audio::Context::current()->isExtensionSupported<extension>()) { \
+        if(!Magnum::Audio::Context::current().isExtensionSupported<extension>()) { \
             Corrade::Utility::Error() << "Magnum: required OpenAL extension" << extension::string() << "is not supported"; \
             std::abort();                                                   \
         }                                                                   \
@@ -429,7 +446,7 @@ inline bool Context::isHrtfEnabled() const {
 }
 
 inline Context::HrtfStatus Context::hrtfStatus() const {
-    if(!Context::current()->isExtensionSupported<Extensions::ALC::SOFT::HRTF>())
+    if(!Context::current().isExtensionSupported<Extensions::ALC::SOFT::HRTF>())
         return isHrtfEnabled() ? HrtfStatus::Enabled : HrtfStatus::Disabled;
 
     Int status;
