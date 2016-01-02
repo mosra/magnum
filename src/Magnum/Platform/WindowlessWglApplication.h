@@ -41,10 +41,12 @@
 #include "Magnum/OpenGL.h"
 #include "Magnum/Platform/Platform.h"
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 /* Define stuff that we need because I can't be bothered with creating a new
    header just for two defines */
 #define WGL_CONTEXT_FLAGS_ARB 0x2094
 #define WGL_CONTEXT_DEBUG_BIT_ARB 0x0001
+#endif
 
 namespace Magnum { namespace Platform {
 
