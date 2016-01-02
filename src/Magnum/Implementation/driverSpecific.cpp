@@ -83,7 +83,7 @@ bool isShaderCompilationLogEmpty(const std::string&);
 bool isShaderCompilationLogEmpty(const std::string& result) {
     #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_GLES)
     /* Intel Windows drivers are too chatty */
-    if((Context::current()detectedDriver() & Context::DetectedDriver::IntelWindows) && result == "No errors.\n")
+    if((Context::current().detectedDriver() & Context::DetectedDriver::IntelWindows) && result == "No errors.\n")
         return true;
     #else
     static_cast<void>(result);
@@ -97,7 +97,7 @@ bool isProgramLinkLogEmpty(const std::string&);
 bool isProgramLinkLogEmpty(const std::string& result) {
     #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_GLES)
     /* Intel Windows drivers are too chatty */
-    if((Context::current()detectedDriver() & Context::DetectedDriver::IntelWindows) && result == "No errors.\n")
+    if((Context::current().detectedDriver() & Context::DetectedDriver::IntelWindows) && result == "No errors.\n")
         return true;
     #else
     static_cast<void>(result);
