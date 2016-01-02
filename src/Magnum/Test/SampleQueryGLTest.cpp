@@ -168,6 +168,8 @@ void SampleQueryGLTest::querySamplesPassed() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
+    framebuffer.bind();
+
     #ifndef MAGNUM_TARGET_GLES
     SampleQuery q{SampleQuery::Target::SamplesPassed};
     #else
@@ -175,7 +177,6 @@ void SampleQueryGLTest::querySamplesPassed() {
     #endif
     q.begin();
 
-    framebuffer.bind();
     mesh.draw(shader);
 
     q.end();
