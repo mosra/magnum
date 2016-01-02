@@ -62,7 +62,7 @@ void Renderer::setClearDepth(const Double depth) {
 #endif
 
 void Renderer::setClearDepth(Float depth) {
-    Context::current()->state().renderer->clearDepthfImplementation(depth);
+    Context::current().state().renderer->clearDepthfImplementation(depth);
 }
 
 void Renderer::setClearStencil(const Int stencil) {
@@ -182,13 +182,13 @@ void Renderer::setLogicOperation(const LogicOperation operation) {
 #ifndef MAGNUM_TARGET_WEBGL
 Renderer::ResetNotificationStrategy Renderer::resetNotificationStrategy() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::robustness>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::robustness>())
     #else
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::robustness>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::robustness>())
     #endif
         return ResetNotificationStrategy::NoResetNotification;
 
-    ResetNotificationStrategy& strategy = Context::current()->state().renderer->resetNotificationStrategy;
+    ResetNotificationStrategy& strategy = Context::current().state().renderer->resetNotificationStrategy;
 
     if(strategy == ResetNotificationStrategy()) {
         #ifndef MAGNUM_TARGET_GLES
@@ -202,7 +202,7 @@ Renderer::ResetNotificationStrategy Renderer::resetNotificationStrategy() {
 }
 
 Renderer::GraphicsResetStatus Renderer::graphicsResetStatus() {
-    return Context::current()->state().renderer->graphicsResetStatusImplementation();
+    return Context::current().state().renderer->graphicsResetStatusImplementation();
 }
 #endif
 

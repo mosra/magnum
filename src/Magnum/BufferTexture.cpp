@@ -37,14 +37,14 @@ namespace Magnum {
 
 Int BufferTexture::maxSize() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_buffer_object>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_buffer_object>())
         return 0;
     #else
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_buffer>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_buffer>())
         return 0;
     #endif
 
-    GLint& value = Context::current()->state().texture->maxBufferSize;
+    GLint& value = Context::current().state().texture->maxBufferSize;
 
     /* Get the value, if not already cached */
     if(value == 0) glGetIntegerv(
@@ -60,14 +60,14 @@ Int BufferTexture::maxSize() {
 
 Int BufferTexture::offsetAlignment() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_buffer_range>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_buffer_range>())
         return 1;
     #else
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_buffer>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_buffer>())
         return 0;
     #endif
 
-    GLint& value = Context::current()->state().texture->bufferOffsetAlignment;
+    GLint& value = Context::current().state().texture->bufferOffsetAlignment;
 
     /* Get the value, if not already cached */
     if(value == 0) glGetIntegerv(
@@ -82,12 +82,12 @@ Int BufferTexture::offsetAlignment() {
 }
 
 BufferTexture& BufferTexture::setBuffer(const BufferTextureFormat internalFormat, Buffer& buffer) {
-    (this->*Context::current()->state().texture->setBufferImplementation)(internalFormat, buffer);
+    (this->*Context::current().state().texture->setBufferImplementation)(internalFormat, buffer);
     return *this;
 }
 
 BufferTexture& BufferTexture::setBuffer(const BufferTextureFormat internalFormat, Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
-    (this->*Context::current()->state().texture->setBufferRangeImplementation)(internalFormat, buffer, offset, size);
+    (this->*Context::current().state().texture->setBufferRangeImplementation)(internalFormat, buffer, offset, size);
     return *this;
 }
 

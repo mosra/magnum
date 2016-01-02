@@ -62,7 +62,7 @@ RenderbufferGLTest::RenderbufferGLTest() {
 
 void RenderbufferGLTest::construct() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
         CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
     #endif
 
@@ -94,7 +94,7 @@ void RenderbufferGLTest::constructCopy() {
 
 void RenderbufferGLTest::constructMove() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
         CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
     #endif
 
@@ -121,7 +121,7 @@ void RenderbufferGLTest::constructMove() {
 
 void RenderbufferGLTest::wrap() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
         CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
     #endif
 
@@ -141,11 +141,11 @@ void RenderbufferGLTest::wrap() {
 
 void RenderbufferGLTest::label() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
         CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
     #endif
-    if(!Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>() &&
-       !Context::current()->isExtensionSupported<Extensions::GL::EXT::debug_label>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::KHR::debug>() &&
+       !Context::current().isExtensionSupported<Extensions::GL::EXT::debug_label>())
         CORRADE_SKIP("Required extension is not available");
 
     Renderbuffer renderbuffer;
@@ -161,7 +161,7 @@ void RenderbufferGLTest::label() {
 
 void RenderbufferGLTest::setStorage() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
         CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
     #endif
 
@@ -178,11 +178,11 @@ void RenderbufferGLTest::setStorage() {
 
 void RenderbufferGLTest::setStorageMultisample() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
         CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
     #elif defined(MAGNUM_TARGET_GLES2)
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ANGLE::framebuffer_multisample>() &&
-       !Context::current()->isExtensionSupported<Extensions::GL::NV::framebuffer_multisample>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ANGLE::framebuffer_multisample>() &&
+       !Context::current().isExtensionSupported<Extensions::GL::NV::framebuffer_multisample>())
         CORRADE_SKIP("Required extension is not available.");
     #endif
 

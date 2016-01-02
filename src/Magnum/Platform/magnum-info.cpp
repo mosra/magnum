@@ -236,7 +236,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     /* Create context here, so the context creation info is displayed at proper
        place */
     createContext();
-    Context* c = Context::current();
+    Context& c = Context::current();
 
     Debug() << "Context flags:";
     #ifndef MAGNUM_TARGET_GLES
@@ -244,10 +244,10 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #else
     for(const auto flag: {Context::Flag::Debug})
     #endif
-        if(c->flags() & flag) Debug() << "   " << flag;
+        if(c.flags() & flag) Debug() << "   " << flag;
 
     Debug() << "Supported GLSL versions:";
-    const std::vector<std::string> shadingLanguageVersions = c->shadingLanguageVersionStrings();
+    const std::vector<std::string> shadingLanguageVersions = c.shadingLanguageVersionStrings();
     for(const auto& version: shadingLanguageVersions)
         Debug() << "   " << version;
 
@@ -279,7 +279,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     std::size_t future = 0;
 
     if(!args.isSet("all-extensions"))
-        while(versions[future] != Version::None && c->isVersionSupported(versions[future]))
+        while(versions[future] != Version::None && c.isVersionSupported(versions[future]))
             ++future;
 
     /* Display supported OpenGL extensions from unsupported versions */
@@ -292,11 +292,11 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
             std::string extensionName = extension.string();
             Debug d;
             d << "   " << extensionName << std::string(60-extensionName.size(), ' ');
-            if(c->isExtensionSupported(extension))
+            if(c.isExtensionSupported(extension))
                 d << "SUPPORTED";
-            else if(c->isExtensionDisabled(extension))
+            else if(c.isExtensionDisabled(extension))
                 d << " removed";
-            else if(c->isVersionSupported(extension.requiredVersion()))
+            else if(c.isVersionSupported(extension.requiredVersion()))
                 d << "    -";
             else
                 d << "   n/a";
@@ -356,7 +356,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     _lvec(CubeMapTexture::maxSize())
 
     #ifndef MAGNUM_TARGET_GLES
-    if(c->isExtensionSupported<Extensions::GL::ARB::blend_func_extended>()) {
+    if(c.isExtensionSupported<Extensions::GL::ARB::blend_func_extended>()) {
         _h(ARB::blend_func_extended)
 
         _l(AbstractFramebuffer::maxDualSourceDrawBuffers())
@@ -365,7 +365,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
 
     #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_GLES
-    if(c->isExtensionSupported<Extensions::GL::ARB::compute_shader>())
+    if(c.isExtensionSupported<Extensions::GL::ARB::compute_shader>())
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
@@ -377,7 +377,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     }
 
     #ifndef MAGNUM_TARGET_GLES
-    if(c->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>())
+    if(c.isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>())
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
@@ -390,7 +390,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
 
     #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_GLES
-    if(c->isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>())
+    if(c.isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>())
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
@@ -416,7 +416,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     }
 
     #ifndef MAGNUM_TARGET_GLES
-    if(c->isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())
+    if(c.isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
@@ -438,7 +438,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     }
 
     #ifndef MAGNUM_TARGET_GLES
-    if(c->isExtensionSupported<Extensions::GL::ARB::shader_storage_buffer_object>())
+    if(c.isExtensionSupported<Extensions::GL::ARB::shader_storage_buffer_object>())
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
@@ -459,7 +459,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
 
     #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_GLES
-    if(c->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
+    if(c.isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
@@ -475,7 +475,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
-    if(c->isExtensionSupported<Extensions::GL::ARB::texture_rectangle>()) {
+    if(c.isExtensionSupported<Extensions::GL::ARB::texture_rectangle>()) {
         _h(ARB::texture_rectangle)
 
         _lvec(RectangleTexture::maxSize())
@@ -484,7 +484,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
 
     #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_GLES
-    if(c->isExtensionSupported<Extensions::GL::ARB::uniform_buffer_object>())
+    if(c.isExtensionSupported<Extensions::GL::ARB::uniform_buffer_object>())
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
@@ -509,7 +509,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     }
 
     #ifndef MAGNUM_TARGET_GLES
-    if(c->isExtensionSupported<Extensions::GL::EXT::gpu_shader4>())
+    if(c.isExtensionSupported<Extensions::GL::EXT::gpu_shader4>())
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
@@ -522,7 +522,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     }
 
     #ifndef MAGNUM_TARGET_GLES
-    if(c->isExtensionSupported<Extensions::GL::EXT::texture_array>())
+    if(c.isExtensionSupported<Extensions::GL::EXT::texture_array>())
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
@@ -538,7 +538,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
 
     #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_GLES
-    if(c->isExtensionSupported<Extensions::GL::EXT::transform_feedback>())
+    if(c.isExtensionSupported<Extensions::GL::EXT::transform_feedback>())
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
@@ -552,7 +552,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
-    if(c->isExtensionSupported<Extensions::GL::ARB::transform_feedback3>()) {
+    if(c.isExtensionSupported<Extensions::GL::ARB::transform_feedback3>()) {
         _h(ARB::transform_feedback3)
 
         _l(TransformFeedback::maxBuffers())
@@ -561,9 +561,9 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     #ifndef MAGNUM_TARGET_GLES
-    if(c->isExtensionSupported<Extensions::GL::ARB::geometry_shader4>())
+    if(c.isExtensionSupported<Extensions::GL::ARB::geometry_shader4>())
     #else
-    if(c->isExtensionSupported<Extensions::GL::EXT::geometry_shader>())
+    if(c.isExtensionSupported<Extensions::GL::EXT::geometry_shader>())
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
@@ -580,9 +580,9 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     #ifndef MAGNUM_TARGET_GLES
-    if(c->isExtensionSupported<Extensions::GL::ARB::tessellation_shader>())
+    if(c.isExtensionSupported<Extensions::GL::ARB::tessellation_shader>())
     #else
-    if(c->isExtensionSupported<Extensions::GL::EXT::tessellation_shader>())
+    if(c.isExtensionSupported<Extensions::GL::EXT::tessellation_shader>())
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
@@ -603,9 +603,9 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     #ifndef MAGNUM_TARGET_GLES
-    if(c->isExtensionSupported<Extensions::GL::ARB::texture_buffer_object>())
+    if(c.isExtensionSupported<Extensions::GL::ARB::texture_buffer_object>())
     #else
-    if(c->isExtensionSupported<Extensions::GL::EXT::texture_buffer>())
+    if(c.isExtensionSupported<Extensions::GL::EXT::texture_buffer>())
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
@@ -618,9 +618,9 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     }
 
     #ifndef MAGNUM_TARGET_GLES
-    if(c->isExtensionSupported<Extensions::GL::ARB::texture_buffer_range>())
+    if(c.isExtensionSupported<Extensions::GL::ARB::texture_buffer_range>())
     #else
-    if(c->isExtensionSupported<Extensions::GL::EXT::texture_buffer>())
+    if(c.isExtensionSupported<Extensions::GL::EXT::texture_buffer>())
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
@@ -633,9 +633,9 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     }
 
     #ifndef MAGNUM_TARGET_GLES
-    if(c->isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>())
+    if(c.isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>())
     #else
-    if(c->isExtensionSupported<Extensions::GL::EXT::texture_cube_map_array>())
+    if(c.isExtensionSupported<Extensions::GL::EXT::texture_cube_map_array>())
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
@@ -648,13 +648,13 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     }
     #endif
 
-    if(c->isExtensionSupported<Extensions::GL::EXT::texture_filter_anisotropic>()) {
+    if(c.isExtensionSupported<Extensions::GL::EXT::texture_filter_anisotropic>()) {
         _h(EXT::texture_filter_anisotropic)
 
         _l(Sampler::maxMaxAnisotropy())
     }
 
-    if(c->isExtensionSupported<Extensions::GL::KHR::debug>()) {
+    if(c.isExtensionSupported<Extensions::GL::KHR::debug>()) {
         _h(KHR::debug)
 
         _l(AbstractObject::maxLabelLength())
@@ -664,7 +664,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     }
 
     #ifdef MAGNUM_TARGET_GLES2
-    if(c->isExtensionSupported<Extensions::GL::OES::texture_3D>()) {
+    if(c.isExtensionSupported<Extensions::GL::OES::texture_3D>()) {
         _h(OES::texture_3D)
 
         _lvec(Texture3D::maxSize())

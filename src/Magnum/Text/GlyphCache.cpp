@@ -51,8 +51,8 @@ GlyphCache::GlyphCache(const Vector2i& originalSize, const Vector2i& size, const
     const TextureFormat internalFormat = TextureFormat::R8;
     #elif !defined(MAGNUM_TARGET_WEBGL)
     TextureFormat internalFormat;
-    if(Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_rg>()) {
-        internalFormat = Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_storage>() ?
+    if(Context::current().isExtensionSupported<Extensions::GL::EXT::texture_rg>()) {
+        internalFormat = Context::current().isExtensionSupported<Extensions::GL::EXT::texture_storage>() ?
             TextureFormat::R8 : TextureFormat::Red;
     } else internalFormat = TextureFormat::Luminance;
     #else

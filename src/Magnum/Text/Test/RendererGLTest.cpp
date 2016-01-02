@@ -258,13 +258,13 @@ void RendererGLTest::renderMeshIndexType() {
 
 void RendererGLTest::mutableText() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::map_buffer_range>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::map_buffer_range>())
         CORRADE_SKIP(Extensions::GL::ARB::map_buffer_range::string() + std::string(" is not supported"));
     #elif defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_EMSCRIPTEN)
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::map_buffer_range>() &&
-       !Context::current()->isExtensionSupported<Extensions::GL::OES::mapbuffer>()
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::map_buffer_range>() &&
+       !Context::current().isExtensionSupported<Extensions::GL::OES::mapbuffer>()
        #ifdef CORRADE_TARGET_NACL
-       && !Context::current()->isExtensionSupported<Extensions::GL::CHROMIUM::map_sub>()
+       && !Context::current().isExtensionSupported<Extensions::GL::CHROMIUM::map_sub>()
        #endif
     ) {
         CORRADE_SKIP("No required extension is supported");

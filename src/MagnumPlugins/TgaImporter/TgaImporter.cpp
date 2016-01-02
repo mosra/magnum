@@ -100,7 +100,7 @@ std::optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt) {
     /* Grayscale */
     } else if(header.imageType == 3) {
         #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        format = Context::current() && Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_rg>() ?
+        format = Context::current() && Context::current().isExtensionSupported<Extensions::GL::EXT::texture_rg>() ?
             PixelFormat::Red : PixelFormat::Luminance;
         #elif !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         format = PixelFormat::Red;

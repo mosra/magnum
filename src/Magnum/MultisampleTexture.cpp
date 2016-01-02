@@ -35,9 +35,9 @@ namespace Magnum { namespace Implementation {
 
 template<> Vector2i MAGNUM_EXPORT maxMultisampleTextureSize<2>() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
     #else
-    if(!Context::current()->isVersionSupported(Version::GLES310))
+    if(!Context::current().isVersionSupported(Version::GLES310))
     #endif
         return Vector2i{0};
 
@@ -46,10 +46,10 @@ template<> Vector2i MAGNUM_EXPORT maxMultisampleTextureSize<2>() {
 
 template<> Vector3i MAGNUM_EXPORT maxMultisampleTextureSize<3>() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
         return Vector3i{0};
     #else
-    if(!Context::current()->isExtensionSupported<Extensions::GL::OES::texture_storage_multisample_2d_array>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::OES::texture_storage_multisample_2d_array>())
         return Vector3i{0};
     #endif
 

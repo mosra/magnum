@@ -234,6 +234,21 @@ class MAGNUM_EXPORT Context {
          */
         typedef Containers::EnumSet<DetectedDriver> DetectedDrivers;
 
+        /**
+         * @brief Whether there is any current context
+         *
+         * @see @ref current()
+         */
+        static bool hasCurrent();
+
+        /**
+         * @brief Current context
+         *
+         * Expect that there is current context.
+         * @see @ref hasCurrent()
+         */
+        static Context& current();
+
         /** @brief Copying is not allowed */
         Context(const Context&) = delete;
 
@@ -248,8 +263,10 @@ class MAGNUM_EXPORT Context {
         /** @brief Move assignment is not allowed */
         Context& operator=(Context&&) = delete;
 
-        /** @brief Current context */
-        static Context* current() { return _current; }
+        #if defined(MAGNUM_BUILD_DEPRECATED) && !defined(DOXYGEN_GENERATING_OUTPUT)
+        CORRADE_DEPRECATED("Context::current() returns reference now") Context* operator->() { return this; }
+        CORRADE_DEPRECATED("Context::current() returns reference now") operator Context*() { return this; }
+        #endif
 
         /**
          * @brief OpenGL version
@@ -380,7 +397,7 @@ class MAGNUM_EXPORT Context {
          * Extensions usable with this function are listed in @ref Extensions
          * namespace in header @ref Extensions.h. Example usage:
          * @code
-         * if(Context::current()->isExtensionSupported<Extensions::GL::ARB::tessellation_shader>()) {
+         * if(Context::current().isExtensionSupported<Extensions::GL::ARB::tessellation_shader>()) {
          *     // draw fancy detailed model
          * } else {
          *     // texture fallback
@@ -403,8 +420,8 @@ class MAGNUM_EXPORT Context {
          * @p version. Useful mainly in shader compilation when the decisions
          * depend on selected GLSL version, for example:
          * @code
-         * const Version version = Context::current()->supportedVersion({Version::GL320, Version::GL300, Version::GL210});
-         * if(Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(version)) {
+         * const Version version = Context::current()supportedVersion({Version::GL320, Version::GL300, Version::GL210});
+         * if(Context::current().isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(version)) {
          *     // Called only if ARB_explicit_attrib_location is supported
          *     // *and* version is higher than GL 3.1
          * }
@@ -487,7 +504,7 @@ class MAGNUM_EXPORT Context {
         Implementation::State& state() { return *_state; }
 
     private:
-        static Context* _current;
+        MAGNUM_LOCAL static Context* _current;
 
         explicit Context(NoCreateT, Int argc, char** argv, void functionLoader());
 
@@ -544,7 +561,7 @@ MAGNUM_ASSERT_VERSION_SUPPORTED(Version::GL330);
 #else
 #define MAGNUM_ASSERT_VERSION_SUPPORTED(version)                            \
     do {                                                                    \
-        if(!Magnum::Context::current()->isVersionSupported(version)) {      \
+        if(!Magnum::Context::current().isVersionSupported(version)) {       \
             Corrade::Utility::Error() << "Magnum: required version" << version << "is not supported"; \
             std::abort();                                                   \
         }                                                                   \
@@ -574,7 +591,7 @@ MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::geometry_shader4);
 #else
 #define MAGNUM_ASSERT_EXTENSION_SUPPORTED(extension)                        \
     do {                                                                    \
-        if(!Magnum::Context::current()->isExtensionSupported<extension>()) { \
+        if(!Magnum::Context::current().isExtensionSupported<extension>()) { \
             Corrade::Utility::Error() << "Magnum: required extension" << extension::string() << "is not supported"; \
             std::abort();                                                   \
         }                                                                   \

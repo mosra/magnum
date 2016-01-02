@@ -237,7 +237,7 @@ class MAGNUM_AUDIO_EXPORT Context {
          * Extensions usable with this function are listed in @ref Extensions
          * namespace in header @ref Extensions.h. Example usage:
          * @code
-         * if(Context::current()->isExtensionSupported<Extensions::ALC::SOFTX::HRTF>()) {
+         * if(Context::current().isExtensionSupported<Extensions::ALC::SOFTX::HRTF>()) {
          *     // amazing binaural audio
          * } else {
          *     // probably left/right stereo only

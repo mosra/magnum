@@ -72,7 +72,7 @@ void PrimitiveQueryGLTest::constructNoCreate() {
 
 void PrimitiveQueryGLTest::wrap() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
         CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not available."));
     #endif
 
@@ -92,7 +92,7 @@ void PrimitiveQueryGLTest::wrap() {
 
 #ifndef MAGNUM_TARGET_GLES
 void PrimitiveQueryGLTest::primitivesGenerated() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::transform_feedback>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::transform_feedback>())
         CORRADE_SKIP(Extensions::GL::EXT::transform_feedback::string() + std::string(" is not available."));
 
     struct MyShader: AbstractShaderProgram {
@@ -146,7 +146,7 @@ void PrimitiveQueryGLTest::primitivesGenerated() {
 
 void PrimitiveQueryGLTest::transformFeedbackPrimitivesWritten() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
         CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not available."));
     #endif
 

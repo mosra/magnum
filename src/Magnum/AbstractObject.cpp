@@ -113,10 +113,10 @@ namespace {
 #endif
 
 Int AbstractObject::maxLabelLength() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::KHR::debug>())
         return 0;
 
-    GLint& value = Context::current()->state().debug->maxLabelLength;
+    GLint& value = Context::current().state().debug->maxLabelLength;
 
     if(value == 0) {
         #ifndef MAGNUM_TARGET_GLES

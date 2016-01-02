@@ -59,10 +59,10 @@ void TimeQueryGLTest::constructNoCreate() {
 
 void TimeQueryGLTest::wrap() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::timer_query>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::timer_query>())
         CORRADE_SKIP(Extensions::GL::ARB::timer_query::string() + std::string(" is not available"));
     #else
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::disjoint_timer_query>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::disjoint_timer_query>())
         CORRADE_SKIP(Extensions::GL::EXT::disjoint_timer_query::string() + std::string(" is not available"));
     #endif
 
@@ -90,10 +90,10 @@ void TimeQueryGLTest::wrap() {
 
 void TimeQueryGLTest::queryTime() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::timer_query>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::timer_query>())
         CORRADE_SKIP(Extensions::GL::ARB::timer_query::string() + std::string(" is not available"));
     #else
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::disjoint_timer_query>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::disjoint_timer_query>())
         CORRADE_SKIP(Extensions::GL::EXT::disjoint_timer_query::string() + std::string(" is not available"));
     #endif
 
@@ -117,7 +117,7 @@ void TimeQueryGLTest::queryTime() {
 
 void TimeQueryGLTest::queryTimestamp() {
     #ifdef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::disjoint_timer_query>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::disjoint_timer_query>())
         CORRADE_SKIP(Extensions::GL::EXT::disjoint_timer_query::string() + std::string(" is not available"));
     #endif
 

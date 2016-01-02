@@ -137,8 +137,8 @@ void ShaderGLTest::constructMove() {
 
 void ShaderGLTest::label() {
     /* No-Op version is tested in AbstractObjectGLTest */
-    if(!Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>() &&
-       !Context::current()->isExtensionSupported<Extensions::GL::EXT::debug_label>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::KHR::debug>() &&
+       !Context::current().isExtensionSupported<Extensions::GL::EXT::debug_label>())
         CORRADE_SKIP("Required extension is not available");
 
     #ifndef MAGNUM_TARGET_GLES

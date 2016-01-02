@@ -62,7 +62,7 @@ std::pair<std::unique_ptr<Buffer>, Mesh> fullScreenTriangle(Version version) {
 }
 
 std::pair<std::unique_ptr<Buffer>, Mesh> fullScreenTriangle() {
-    return fullScreenTriangle(Context::current()->version());
+    return fullScreenTriangle(Context::current().version());
 }
 
 }}

@@ -52,7 +52,7 @@ void MeshView::draw(AbstractShaderProgram& shader, std::initializer_list<std::re
     #ifndef MAGNUM_TARGET_GLES
     multiDrawImplementationDefault(meshes);
     #else
-    Context::current()->state().mesh->multiDrawImplementation(meshes);
+    Context::current().state().mesh->multiDrawImplementation(meshes);
     #endif
 }
 
@@ -60,7 +60,7 @@ void MeshView::draw(AbstractShaderProgram& shader, std::initializer_list<std::re
 void MeshView::multiDrawImplementationDefault(std::initializer_list<std::reference_wrapper<MeshView>> meshes) {
     CORRADE_INTERNAL_ASSERT(meshes.size());
 
-    const Implementation::MeshState& state = *Context::current()->state().mesh;
+    const Implementation::MeshState& state = *Context::current().state().mesh;
 
     Mesh& original = meshes.begin()->get()._original;
     Containers::Array<GLsizei> count{meshes.size()};

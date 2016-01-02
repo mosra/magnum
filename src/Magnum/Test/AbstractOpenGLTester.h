@@ -76,7 +76,7 @@ AbstractOpenGLTester::AbstractOpenGLTester(): _windowlessApplication{*_windowles
     _windowlessApplication.createContext();
     #endif
 
-    if(Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>()) {
+    if(Context::current().isExtensionSupported<Extensions::GL::KHR::debug>()) {
         Renderer::enable(Renderer::Feature::DebugOutput);
         Renderer::enable(Renderer::Feature::DebugOutputSynchronous);
         DebugOutput::setDefaultCallback();

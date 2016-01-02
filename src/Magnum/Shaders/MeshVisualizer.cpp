@@ -59,13 +59,13 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
     Utility::Resource rs("MagnumShaders");
 
     #ifndef MAGNUM_TARGET_GLES
-    const Version version = Context::current()->supportedVersion({Version::GL320, Version::GL310, Version::GL300, Version::GL210});
+    const Version version = Context::current().supportedVersion({Version::GL320, Version::GL310, Version::GL300, Version::GL210});
     CORRADE_INTERNAL_ASSERT(!flags || flags & Flag::NoGeometryShader || version >= Version::GL320);
     #elif !defined(MAGNUM_TARGET_WEBGL)
-    const Version version = Context::current()->supportedVersion({Version::GLES310, Version::GLES300, Version::GLES200});
+    const Version version = Context::current().supportedVersion({Version::GLES310, Version::GLES300, Version::GLES200});
     CORRADE_INTERNAL_ASSERT(!flags || flags & Flag::NoGeometryShader || version >= Version::GLES310);
     #else
-    const Version version = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
+    const Version version = Context::current().supportedVersion({Version::GLES300, Version::GLES200});
     #endif
 
     Shader vert = Implementation::createCompatibilityShader(rs, version, Shader::Type::Vertex);
@@ -76,7 +76,7 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
         #ifdef MAGNUM_TARGET_WEBGL
         .addSource("#define SUBSCRIPTING_WORKAROUND\n")
         #elif defined(MAGNUM_TARGET_GLES2)
-        .addSource(Context::current()->detectedDriver() & Context::DetectedDriver::ProbablyAngle ?
+        .addSource(Context::current()detectedDriver() & Context::DetectedDriver::ProbablyAngle ?
             "#define SUBSCRIPTING_WORKAROUND\n" : "")
         #endif
         .addSource(rs.get("generic.glsl"))
@@ -105,16 +105,16 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(version))
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(version))
     #else
-    if(!Context::current()->isVersionSupported(Version::GLES300))
+    if(!Context::current().isVersionSupported(Version::GLES300))
     #endif
     {
         bindAttributeLocation(Position::Location, "position");
 
         #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
         #ifndef MAGNUM_TARGET_GLES
-        if(!Context::current()->isVersionSupported(Version::GL310))
+        if(!Context::current().isVersionSupported(Version::GL310))
         #endif
         {
             bindAttributeLocation(VertexIndex::Location, "vertexIndex");
@@ -125,7 +125,7 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>(version))
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>(version))
     #endif
     {
         transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");

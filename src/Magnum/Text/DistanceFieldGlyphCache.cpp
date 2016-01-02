@@ -41,7 +41,7 @@ DistanceFieldGlyphCache::DistanceFieldGlyphCache(const Vector2i& originalSize, c
     GlyphCache(TextureFormat::R8, originalSize, size, Vector2i(radius)),
     #elif !defined(MAGNUM_TARGET_WEBGL)
     /* Luminance is not renderable in most cases */
-    GlyphCache(Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_rg>() ?
+    GlyphCache(Context::current().isExtensionSupported<Extensions::GL::EXT::texture_rg>() ?
         TextureFormat::Red : TextureFormat::RGB, originalSize, size, Vector2i(radius)),
     #else
     GlyphCache(TextureFormat::RGB, originalSize, size, Vector2i(radius)),
@@ -54,7 +54,7 @@ DistanceFieldGlyphCache::DistanceFieldGlyphCache(const Vector2i& originalSize, c
 
     #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     /* Luminance is not renderable in most cases */
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_rg>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_rg>())
         Warning() << "Text::DistanceFieldGlyphCache:" << Extensions::GL::EXT::texture_rg::string() << "not supported, using inefficient RGB format for glyph cache texture";
     #endif
 }
@@ -67,7 +67,7 @@ void DistanceFieldGlyphCache::setImage(const Vector2i& offset, const ImageView2D
     #else
     TextureFormat internalFormat;
     #ifndef MAGNUM_TARGET_WEBGL
-    if(Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_rg>()) {
+    if(Context::current().isExtensionSupported<Extensions::GL::EXT::texture_rg>()) {
         internalFormat = TextureFormat::Red;
         CORRADE_ASSERT(image.format() == PixelFormat::Red,
             "Text::DistanceFieldGlyphCache::setImage(): expected" << PixelFormat::Red << "but got" << image.format(), );
@@ -96,7 +96,7 @@ void DistanceFieldGlyphCache::setDistanceFieldImage(const Vector2i& offset, cons
         "Text::DistanceFieldGlyphCache::setDistanceFieldImage(): expected" << PixelFormat::Red << "but got" << image.format(), );
     #else
     #ifndef MAGNUM_TARGET_WEBGL
-    if(Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_rg>())
+    if(Context::current().isExtensionSupported<Extensions::GL::EXT::texture_rg>())
         CORRADE_ASSERT(image.format() == PixelFormat::Red,
             "Text::DistanceFieldGlyphCache::setDistanceFieldImage(): expected" << PixelFormat::Red << "but got" << image.format(), );
     else

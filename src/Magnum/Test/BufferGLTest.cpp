@@ -158,8 +158,8 @@ void BufferGLTest::wrap() {
 
 void BufferGLTest::label() {
     /* No-Op version is tested in AbstractObjectGLTest */
-    if(!Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>() &&
-       !Context::current()->isExtensionSupported<Extensions::GL::EXT::debug_label>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::KHR::debug>() &&
+       !Context::current().isExtensionSupported<Extensions::GL::EXT::debug_label>())
         CORRADE_SKIP("Required extension is not available");
 
     Buffer buffer;
@@ -176,7 +176,7 @@ void BufferGLTest::label() {
 #ifndef MAGNUM_TARGET_GLES2
 void BufferGLTest::bindBase() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::uniform_buffer_object>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::uniform_buffer_object>())
         CORRADE_SKIP(Extensions::GL::ARB::uniform_buffer_object::string() + std::string{" is not supported."});
     #endif
 
@@ -200,7 +200,7 @@ void BufferGLTest::bindBase() {
 
 void BufferGLTest::bindRange() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::uniform_buffer_object>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::uniform_buffer_object>())
         CORRADE_SKIP(Extensions::GL::ARB::uniform_buffer_object::string() + std::string{" is not supported."});
     #endif
 
@@ -286,7 +286,7 @@ void BufferGLTest::data() {
 
 void BufferGLTest::map() {
     #ifdef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::OES::mapbuffer>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::OES::mapbuffer>())
         CORRADE_SKIP(Extensions::GL::OES::mapbuffer::string() + std::string(" is not supported"));
     #endif
     Buffer buffer;
@@ -320,7 +320,7 @@ void BufferGLTest::map() {
 
 #ifdef CORRADE_TARGET_NACL
 void BufferGLTest::mapSub() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::CHROMIUM::map_sub>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::CHROMIUM::map_sub>())
         CORRADE_SKIP(Extensions::GL::CHROMIUM::map_sub::string() + std::string(" is not supported"));
 
     Buffer buffer;
@@ -343,10 +343,10 @@ void BufferGLTest::mapSub() {
 
 void BufferGLTest::mapRange() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::map_buffer_range>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::map_buffer_range>())
         CORRADE_SKIP(Extensions::GL::ARB::map_buffer_range::string() + std::string(" is not supported"));
     #elif defined(MAGNUM_TARGET_GLES2)
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::map_buffer_range>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::map_buffer_range>())
         CORRADE_SKIP(Extensions::GL::EXT::map_buffer_range::string() + std::string(" is not supported"));
     #endif
 
@@ -374,10 +374,10 @@ void BufferGLTest::mapRange() {
 
 void BufferGLTest::mapRangeExplicitFlush() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::map_buffer_range>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::map_buffer_range>())
         CORRADE_SKIP(Extensions::GL::ARB::map_buffer_range::string() + std::string(" is not supported"));
     #elif defined(MAGNUM_TARGET_GLES2)
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::map_buffer_range>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::map_buffer_range>())
         CORRADE_SKIP(Extensions::GL::EXT::map_buffer_range::string() + std::string(" is not supported"));
     #endif
 

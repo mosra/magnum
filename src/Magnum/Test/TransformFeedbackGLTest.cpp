@@ -76,7 +76,7 @@ TransformFeedbackGLTest::TransformFeedbackGLTest() {
 
 void TransformFeedbackGLTest::construct() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
         CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not supported."));
     #endif
 
@@ -108,7 +108,7 @@ void TransformFeedbackGLTest::constructCopy() {
 
 void TransformFeedbackGLTest::constructMove() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
         CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not supported."));
     #endif
 
@@ -135,7 +135,7 @@ void TransformFeedbackGLTest::constructMove() {
 
 void TransformFeedbackGLTest::wrap() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
         CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not supported."));
     #endif
 
@@ -156,11 +156,11 @@ void TransformFeedbackGLTest::wrap() {
 void TransformFeedbackGLTest::label() {
     /* No-Op version is tested in AbstractObjectGLTest */
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
         CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not supported."));
     #endif
-    if(!Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>() &&
-       !Context::current()->isExtensionSupported<Extensions::GL::EXT::debug_label>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::KHR::debug>() &&
+       !Context::current().isExtensionSupported<Extensions::GL::EXT::debug_label>())
         CORRADE_SKIP("Required extension is not available");
 
     TransformFeedback feedback;
@@ -219,7 +219,7 @@ XfbShader::XfbShader() {
 
 void TransformFeedbackGLTest::attachBase() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
         CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not supported."));
     #endif
 
@@ -255,7 +255,7 @@ void TransformFeedbackGLTest::attachBase() {
 
 void TransformFeedbackGLTest::attachRange() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
         CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not supported."));
     #endif
 
@@ -331,7 +331,7 @@ XfbMultiShader::XfbMultiShader() {
 
 void TransformFeedbackGLTest::attachBases() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
         CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not supported."));
     #endif
 
@@ -373,7 +373,7 @@ void TransformFeedbackGLTest::attachBases() {
 
 void TransformFeedbackGLTest::attachRanges() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
         CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not supported."));
     #endif
 
@@ -419,7 +419,7 @@ void TransformFeedbackGLTest::attachRanges() {
 #ifndef MAGNUM_TARGET_GLES
 void TransformFeedbackGLTest::interleaved() {
     /* ARB_transform_feedback3 needed for gl_SkipComponents1 */
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::transform_feedback3>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback3>())
         CORRADE_SKIP(Extensions::GL::ARB::transform_feedback3::string() + std::string(" is not supported."));
 
     struct XfbInterleavedShader: AbstractShaderProgram {

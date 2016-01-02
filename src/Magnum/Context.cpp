@@ -403,6 +403,13 @@ const std::vector<Extension>& Extension::extensions(Version version) {
 
 Context* Context::_current = nullptr;
 
+bool Context::hasCurrent() { return _current; }
+
+Context& Context::current() {
+    CORRADE_ASSERT(_current, "Context::current(): no current context", *_current);
+    return *_current;
+}
+
 Context::Context(NoCreateT, Int argc, char** argv, void functionLoader()): _functionLoader{functionLoader}, _version{Version::None} {
     /* Parse arguments */
     Utility::Arguments args{"magnum"};

@@ -306,11 +306,11 @@ AbstractRenderer::AbstractRenderer(AbstractFont& font, const GlyphCache& cache, 
     #ifndef MAGNUM_TARGET_GLES
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::map_buffer_range);
     #elif defined(MAGNUM_TARGET_GLES2) && !defined(CORRADE_TARGET_EMSCRIPTEN)
-    if(Context::current()->isExtensionSupported<Extensions::GL::EXT::map_buffer_range>()) {
+    if(Context::current().isExtensionSupported<Extensions::GL::EXT::map_buffer_range>()) {
         bufferMapImplementation = &AbstractRenderer::bufferMapImplementationRange;
     }
     #ifdef CORRADE_TARGET_NACL
-    else if(Context::current()->isExtensionSupported<Extensions::GL::CHROMIUM::map_sub>()) {
+    else if(Context::current().isExtensionSupported<Extensions::GL::CHROMIUM::map_sub>()) {
         bufferMapImplementation = &AbstractRenderer::bufferMapImplementationSub;
         bufferUnmapImplementation = &AbstractRenderer::bufferUnmapImplementationSub;
     }

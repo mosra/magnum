@@ -194,8 +194,8 @@ std::tuple<std::size_t, Math::Vector3<std::size_t>, std::size_t> CompressedPixel
 
 void PixelStorage::applyInternal(const bool isUnpack) {
     Implementation::RendererState::PixelStorage& state = isUnpack ?
-        Context::current()->state().renderer->unpackPixelStorage :
-        Context::current()->state().renderer->packPixelStorage;
+        Context::current().state().renderer->unpackPixelStorage :
+        Context::current().state().renderer->packPixelStorage;
 
     #ifndef MAGNUM_TARGET_GLES
     /* Byte swap */
@@ -256,7 +256,7 @@ void PixelStorage::applyUnpack() {
     applyInternal(true);
 
     #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
-    Implementation::RendererState::PixelStorage& state = Context::current()->state().renderer->unpackPixelStorage;
+    Implementation::RendererState::PixelStorage& state = Context::current().state().renderer->unpackPixelStorage;
 
     /* Image height (on ES for unpack only) */
     if(state.imageHeight == Implementation::RendererState::PixelStorage::DisengagedValue || state.imageHeight != _imageHeight)
@@ -273,8 +273,8 @@ void CompressedPixelStorage::applyInternal(const bool isUnpack) {
     PixelStorage::applyInternal(isUnpack);
 
     Implementation::RendererState::PixelStorage& state = isUnpack ?
-        Context::current()->state().renderer->unpackPixelStorage :
-        Context::current()->state().renderer->packPixelStorage;
+        Context::current().state().renderer->unpackPixelStorage :
+        Context::current().state().renderer->packPixelStorage;
 
     /* Compressed block width */
     if(state.compressedBlockSize.x() == Implementation::RendererState::PixelStorage::DisengagedValue || state.compressedBlockSize.x() != _blockSize.x())

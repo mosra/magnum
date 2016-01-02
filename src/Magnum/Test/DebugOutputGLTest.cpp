@@ -61,7 +61,7 @@ DebugOutputGLTest::DebugOutputGLTest() {
 }
 
 void DebugOutputGLTest::setCallback() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::KHR::debug>())
         CORRADE_SKIP(Extensions::GL::KHR::debug::string() + std::string(" is not supported"));
 
     /* Need to be careful, because the test runner is using debug output too */
@@ -71,7 +71,7 @@ void DebugOutputGLTest::setCallback() {
 }
 
 void DebugOutputGLTest::setEnabled() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::KHR::debug>())
         CORRADE_SKIP(Extensions::GL::KHR::debug::string() + std::string(" is not supported"));
 
     /* Try at least some combinations */
@@ -83,10 +83,10 @@ void DebugOutputGLTest::setEnabled() {
 }
 
 void DebugOutputGLTest::messageNoOp() {
-    if(Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>() ||
-       Context::current()->isExtensionSupported<Extensions::GL::EXT::debug_marker>()
+    if(Context::current().isExtensionSupported<Extensions::GL::KHR::debug>() ||
+       Context::current().isExtensionSupported<Extensions::GL::EXT::debug_marker>()
        #ifndef MAGNUM_TARGET_GLES
-       || Context::current()->isExtensionSupported<Extensions::GL::GREMEDY::string_marker>()
+       || Context::current().isExtensionSupported<Extensions::GL::GREMEDY::string_marker>()
        #endif
     )
         CORRADE_SKIP("The extensions are supported, cannot test.");
@@ -98,7 +98,7 @@ void DebugOutputGLTest::messageNoOp() {
 }
 
 void DebugOutputGLTest::message() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::KHR::debug>())
         CORRADE_SKIP(Extensions::GL::KHR::debug::string() + std::string(" is not supported"));
 
     /* Need to be careful, because the test runner is using debug output too */
@@ -113,10 +113,10 @@ void DebugOutputGLTest::message() {
 }
 
 void DebugOutputGLTest::messageFallback() {
-    if(Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>() ||
-     (!Context::current()->isExtensionSupported<Extensions::GL::EXT::debug_marker>()
+    if(Context::current().isExtensionSupported<Extensions::GL::KHR::debug>() ||
+     (!Context::current().isExtensionSupported<Extensions::GL::EXT::debug_marker>()
    #ifndef MAGNUM_TARGET_GLES
-   && !Context::current()->isExtensionSupported<Extensions::GL::GREMEDY::string_marker>()
+   && !Context::current().isExtensionSupported<Extensions::GL::GREMEDY::string_marker>()
    #endif
     ))
         CORRADE_SKIP("No proper extension is supported");
@@ -128,8 +128,8 @@ void DebugOutputGLTest::messageFallback() {
 }
 
 void DebugOutputGLTest::groupNoOp() {
-    if(Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>() ||
-       Context::current()->isExtensionSupported<Extensions::GL::EXT::debug_marker>())
+    if(Context::current().isExtensionSupported<Extensions::GL::KHR::debug>() ||
+       Context::current().isExtensionSupported<Extensions::GL::EXT::debug_marker>())
         CORRADE_SKIP("The extensions are supported, cannot test.");
 
     {
@@ -140,7 +140,7 @@ void DebugOutputGLTest::groupNoOp() {
 }
 
 void DebugOutputGLTest::group() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::KHR::debug>())
         CORRADE_SKIP(Extensions::GL::KHR::debug::string() + std::string(" is not supported"));
 
     /* Need to be careful, because the test runner is using debug output too */
@@ -162,8 +162,8 @@ void DebugOutputGLTest::group() {
 }
 
 void DebugOutputGLTest::groupFallback() {
-    if(Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>() ||
-     !Context::current()->isExtensionSupported<Extensions::GL::EXT::debug_marker>())
+    if(Context::current().isExtensionSupported<Extensions::GL::KHR::debug>() ||
+      !Context::current().isExtensionSupported<Extensions::GL::EXT::debug_marker>())
         CORRADE_SKIP("No proper extension is supported");
 
     {

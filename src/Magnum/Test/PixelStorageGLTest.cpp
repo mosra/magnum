@@ -102,7 +102,7 @@ namespace {
 
 void PixelStorageGLTest::unpack2D() {
     #ifdef MAGNUM_TARGET_GLES2
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::unpack_subimage>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::unpack_subimage>())
         CORRADE_SKIP(Extensions::GL::EXT::unpack_subimage::string() + std::string(" is not supported."));
     #endif
 
@@ -140,7 +140,7 @@ void PixelStorageGLTest::unpack2D() {
 
 void PixelStorageGLTest::pack2D() {
     #ifdef MAGNUM_TARGET_GLES2
-    if(!Context::current()->isExtensionSupported<Extensions::GL::NV::pack_subimage>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::NV::pack_subimage>())
         CORRADE_SKIP(Extensions::GL::NV::pack_subimage::string() + std::string(" is not supported."));
     #endif
 
@@ -288,7 +288,7 @@ namespace {
 }
 
 void PixelStorageGLTest::unpackCompressed2D() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>())
         CORRADE_SKIP(Extensions::GL::ARB::compressed_texture_pixel_storage::string() + std::string(" is not supported."));
 
     CompressedPixelStorage storage;
@@ -315,7 +315,7 @@ void PixelStorageGLTest::unpackCompressed2D() {
 }
 
 void PixelStorageGLTest::packCompressed2D() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>())
         CORRADE_SKIP(Extensions::GL::ARB::compressed_texture_pixel_storage::string() + std::string(" is not supported."));
 
     CompressedImageView2D actual{CompressedPixelFormat::RGBAS3tcDxt3, {4, 4}, ActualCompressedData};
@@ -396,7 +396,7 @@ namespace {
 }
 
 void PixelStorageGLTest::unpackCompressed3D() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>())
         CORRADE_SKIP(Extensions::GL::ARB::compressed_texture_pixel_storage::string() + std::string(" is not supported."));
 
     CompressedPixelStorage storage;
@@ -424,7 +424,7 @@ void PixelStorageGLTest::unpackCompressed3D() {
 }
 
 void PixelStorageGLTest::packCompressed3D() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>())
         CORRADE_SKIP(Extensions::GL::ARB::compressed_texture_pixel_storage::string() + std::string(" is not supported."));
 
     CompressedImageView3D actual{CompressedPixelFormat::RGBAS3tcDxt3, {4, 4, 1}, ActualCompressedData};

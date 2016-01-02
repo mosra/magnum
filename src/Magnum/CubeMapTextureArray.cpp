@@ -37,10 +37,10 @@ namespace Magnum {
 
 Vector3i CubeMapTextureArray::maxSize() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>())
         return {};
     #else
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_cube_map_array>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_cube_map_array>())
         return {};
     #endif
 

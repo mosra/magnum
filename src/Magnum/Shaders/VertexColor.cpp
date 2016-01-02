@@ -50,9 +50,9 @@ template<UnsignedInt dimensions> VertexColor<dimensions>::VertexColor(): transfo
     Utility::Resource rs("MagnumShaders");
 
     #ifndef MAGNUM_TARGET_GLES
-    const Version version = Context::current()->supportedVersion({Version::GL320, Version::GL310, Version::GL300, Version::GL210});
+    const Version version = Context::current().supportedVersion({Version::GL320, Version::GL310, Version::GL300, Version::GL210});
     #else
-    const Version version = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
+    const Version version = Context::current().supportedVersion({Version::GLES300, Version::GLES200});
     #endif
 
     Shader vert = Implementation::createCompatibilityShader(rs, version, Shader::Type::Vertex);
@@ -67,9 +67,9 @@ template<UnsignedInt dimensions> VertexColor<dimensions>::VertexColor(): transfo
     attachShaders({vert, frag});
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(version))
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(version))
     #else
-    if(!Context::current()->isVersionSupported(Version::GLES300))
+    if(!Context::current().isVersionSupported(Version::GLES300))
     #endif
     {
         bindAttributeLocation(Position::Location, "position");
@@ -79,7 +79,7 @@ template<UnsignedInt dimensions> VertexColor<dimensions>::VertexColor(): transfo
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>(version))
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>(version))
     #endif
     {
         transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
