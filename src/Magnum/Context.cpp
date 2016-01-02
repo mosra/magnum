@@ -406,9 +406,11 @@ Context* Context::_current = nullptr;
 Context::Context(NoCreateT, Int argc, char** argv, void functionLoader()): _functionLoader{functionLoader}, _version{Version::None} {
     /* Parse arguments */
     Utility::Arguments args{"magnum"};
-    args.addOption("disable-workarounds").setHelpKey("disable-workarounds", "LIST")
-        .setHelp("disable-workarounds", "driver workarounds to disable\n      (see src/Magnum/Implementation/driverSpecific.cpp for detailed info)")
-        .addOption("disable-extensions").setHelpKey("disable-extensions", "LIST").setHelp("disable-extensions", "OpenGL extensions to disable")
+    args.addOption("disable-workarounds")
+        .setHelp("disable-workarounds", "driver workarounds to disable\n      (see src/Magnum/Implementation/driverSpecific.cpp for detailed info)", "LIST")
+        .addOption("disable-extensions").setHelp("disable-extensions", "OpenGL extensions to disable", "LIST")
+        .setFromEnvironment("disable-workarounds")
+        .setFromEnvironment("disable-extensions")
         .parse(argc, argv);
 
     /* Disable driver workarounds */

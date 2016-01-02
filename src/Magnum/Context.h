@@ -106,7 +106,9 @@ Arguments:
 -   `--magnum-help` -- display this help message and exit
 -   `--magnum-disable-workarounds LIST` -- driver workarounds to disable (see
     `src/Magnum/Implementation/driverSpecific.cpp` for detailed info)
+    (environment: `MAGNUM_DISABLE_WORKAROUNDS`)
 -   `--magnum-disable-extensions LIST` -- OpenGL extensions to disable
+    (environment: `MAGNUM_DISABLE_EXTENSIONS`)
 
 */
 class MAGNUM_EXPORT Context {
