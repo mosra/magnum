@@ -76,7 +76,7 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
         #ifdef MAGNUM_TARGET_WEBGL
         .addSource("#define SUBSCRIPTING_WORKAROUND\n")
         #elif defined(MAGNUM_TARGET_GLES2)
-        .addSource(Context::current()detectedDriver() & Context::DetectedDriver::ProbablyAngle ?
+        .addSource(Context::current().detectedDriver() & Context::DetectedDriver::ProbablyAngle ?
             "#define SUBSCRIPTING_WORKAROUND\n" : "")
         #endif
         .addSource(rs.get("generic.glsl"))
