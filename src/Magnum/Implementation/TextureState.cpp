@@ -277,6 +277,15 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         getCubeImageImplementation = &CubeMapTexture::getImageImplementationDefault;
         getCompressedCubeImageImplementation = &CubeMapTexture::getCompressedImageImplementationDefault;
     }
+
+    /* Full compressed cubemap image query implementation (extensions added
+       above) */
+    if((context.detectedDriver() & Context::DetectedDriver::NVidia) &&
+        context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>() &&
+        !context.isDriverWorkaroundDisabled("nv-cubemap-broken-full-compressed-image-query"))
+        getFullCompressedCubeImageImplementation = &CubeMapTexture::getCompressedImageImplementationDSASingleSliceWorkaround;
+    else
+        getFullCompressedCubeImageImplementation = &CubeMapTexture::getCompressedImageImplementationDSA;
     #endif
 
     /* Texture storage implementation for desktop and ES */

@@ -57,6 +57,10 @@ namespace {
            based on whether I'm querying all faces (ARB_DSA) or a single face
            (non-DSA, EXT_DSA) */
         "nv-cubemap-inconsistent-compressed-image-size",
+
+        /* NVidia drivers (358.16) return only the first slice of compressed
+           cube map image when querying all six slice using ARB_DSA API */
+        "nv-cubemap-broken-full-compressed-image-query",
         #endif
 
         #ifdef CORRADE_TARGET_NACL

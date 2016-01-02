@@ -110,18 +110,19 @@ void CubeMapTexture::compressedImage(const Int level, CompressedImage3D& image) 
 
     const Vector3i size{imageSize(level), 6};
     const GLint textureDataSize = (this->*Context::current()->state().texture->getCubeLevelCompressedImageSizeImplementation)(level);
-    const std::size_t dataSize = Implementation::compressedImageDataSizeFor(image, size, textureDataSize);
+    std::size_t dataOffset, dataSize;
+    std::tie(dataOffset, dataSize) = Implementation::compressedImageDataOffsetSizeFor(image, size, textureDataSize);
     GLint format;
     (this->*Context::current()->state().texture->getCubeLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
 
     /* Reallocate only if needed */
     Containers::Array<char> data{image.release()};
-    if(data.size() < dataSize)
-        data = Containers::Array<char>{dataSize};
+    if(data.size() < dataOffset + dataSize)
+        data = Containers::Array<char>{dataOffset + dataSize};
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     image.storage().applyPack();
-    glGetCompressedTextureImage(_id, level, data.size(), data);
+    (this->*Context::current()->state().texture->getFullCompressedCubeImageImplementation)(level, size.xy(), dataOffset, dataSize, data);
     image.setData(image.storage(), CompressedPixelFormat(format), size, std::move(data));
 }
 
@@ -135,19 +136,20 @@ void CubeMapTexture::compressedImage(const Int level, CompressedBufferImage3D& i
 
     const Vector3i size{imageSize(level), 6};
     const GLint textureDataSize = (this->*Context::current()->state().texture->getCubeLevelCompressedImageSizeImplementation)(level);
-    const std::size_t dataSize = Implementation::compressedImageDataSizeFor(image, size, textureDataSize);
+    std::size_t dataOffset, dataSize;
+    std::tie(dataOffset, dataSize) = Implementation::compressedImageDataOffsetSizeFor(image, size, textureDataSize);
     GLint format;
     (this->*Context::current()->state().texture->getCubeLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
 
     /* Reallocate only if needed */
-    if(image.dataSize() < dataSize)
-        image.setData(image.storage(), CompressedPixelFormat(format), size, {nullptr, dataSize}, usage);
+    if(image.dataSize() < dataOffset + dataSize)
+        image.setData(image.storage(), CompressedPixelFormat(format), size, {nullptr, dataOffset + dataSize}, usage);
     else
         image.setData(image.storage(), CompressedPixelFormat(format), size, nullptr, usage);
 
     image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
     image.storage().applyPack();
-    glGetCompressedTextureImage(_id, level, dataSize, nullptr);
+    (this->*Context::current()->state().texture->getFullCompressedCubeImageImplementation)(level, size.xy(), dataOffset, dataSize, nullptr);
 }
 
 CompressedBufferImage3D CubeMapTexture::compressedImage(const Int level, CompressedBufferImage3D&& image, const BufferUsage usage) {
@@ -417,6 +419,17 @@ GLint CubeMapTexture::getLevelCompressedImageSizeImplementationDSAEXTImmutableWo
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
+void CubeMapTexture::getCompressedImageImplementationDSA(const GLint level, const Vector2i&, const std::size_t dataOffset, const std::size_t dataSize, GLvoid* const data) {
+    glGetCompressedTextureImage(_id, level, dataOffset + dataSize, data);
+}
+
+void CubeMapTexture::getCompressedImageImplementationDSASingleSliceWorkaround(const GLint level, const Vector2i& size, const std::size_t dataOffset, const std::size_t dataSize, GLvoid* const data) {
+    /* On NVidia (358.16) calling glGetCompressedTextureImage() extracts only
+       the first face */
+    for(Int face = 0; face != 6; ++face)
+        glGetCompressedTextureSubImage(_id, level, 0, 0, face, size.x(), size.y(), 1, dataOffset + dataSize/6, static_cast<char*>(data) + dataSize*face/6);
+}
+
 void CubeMapTexture::getImageImplementationDefault(const Coordinate coordinate, const GLint level, const Vector2i&, const PixelFormat format, const PixelType type, std::size_t, GLvoid* const data) {
     bindInternal();
     glGetTexImage(GLenum(coordinate), level, GLenum(format), GLenum(type), data);
