@@ -1129,8 +1129,14 @@ void TextureArrayGLTest::compressedSubImage2D() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), (Vector3i{12, 4, 4}));
-    CORRADE_COMPARE_AS(
-        Containers::ArrayView<const UnsignedByte>(image.data<UnsignedByte>(), image.data().size()), Containers::ArrayView<const UnsignedByte>{CompressedSubData2DComplete}, TestSuite::Compare::Container);
+
+    {
+        CORRADE_EXPECT_FAIL_IF(Context::current()->isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>() && (Context::current()->detectedDriver() & Context::DetectedDriver::NVidia),
+            "Non-default compressed pixel storage for array textures behaves weirdly on NVidia");
+
+        CORRADE_COMPARE_AS(
+            Containers::ArrayView<const UnsignedByte>(image.data<UnsignedByte>(), image.data().size()), Containers::ArrayView<const UnsignedByte>{CompressedSubData2DComplete}, TestSuite::Compare::Container);
+    }
     #endif
 }
 
@@ -1213,7 +1219,13 @@ void TextureArrayGLTest::compressedSubImage2DBuffer() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), (Vector3i{12, 4, 4}));
-    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedByte>{CompressedSubData2DComplete}, TestSuite::Compare::Container);
+
+    {
+        CORRADE_EXPECT_FAIL_IF(Context::current()->isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>() && (Context::current()->detectedDriver() & Context::DetectedDriver::NVidia),
+            "Non-default compressed pixel storage for array textures behaves weirdly on NVidia");
+
+        CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedByte>{CompressedSubData2DComplete}, TestSuite::Compare::Container);
+    }
     #endif
 }
 
