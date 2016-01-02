@@ -1719,9 +1719,15 @@ void TextureGLTest::compressedSubImage3D() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), (Vector3i{12, 4, 4}));
-    CORRADE_COMPARE_AS(
-        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}),
-        Containers::ArrayView<const UnsignedByte>{CompressedSubData3DComplete}, TestSuite::Compare::Container);
+
+    {
+        CORRADE_EXPECT_FAIL_IF(!Context::current().isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>() && (Context::current().detectedDriver() & Context::DetectedDriver::NVidia),
+            "Default compressed pixel storage behaves weirdly with BPTC compression on NVidia");
+
+        CORRADE_COMPARE_AS(
+            (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}),
+            Containers::ArrayView<const UnsignedByte>{CompressedSubData3DComplete}, TestSuite::Compare::Container);
+    }
     #endif
 }
 
@@ -1769,7 +1775,13 @@ void TextureGLTest::compressedSubImage3DBuffer() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), (Vector3i{12, 4, 4}));
-    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedByte>{CompressedSubData3DComplete}, TestSuite::Compare::Container);
+
+    {
+        CORRADE_EXPECT_FAIL_IF(!Context::current().isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>() && (Context::current().detectedDriver() & Context::DetectedDriver::NVidia),
+            "Default compressed pixel storage behaves weirdly with BPTC compression on NVidia");
+
+        CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedByte>{CompressedSubData3DComplete}, TestSuite::Compare::Container);
+    }
     #endif
 }
 #endif
@@ -1829,9 +1841,15 @@ void TextureGLTest::compressedSubImage3DQuery() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), (Vector3i{4}));
-    CORRADE_COMPARE_AS(
-        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}.suffix(_compressedDataOffset3D)),
-        Containers::ArrayView<const UnsignedByte>{CompressedData3D}, TestSuite::Compare::Container);
+
+    {
+        CORRADE_EXPECT_FAIL_IF(!Context::current().isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>() && (Context::current().detectedDriver() & Context::DetectedDriver::NVidia),
+            "Default compressed pixel storage behaves weirdly with BPTC compression on NVidia");
+
+        CORRADE_COMPARE_AS(
+            (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}.suffix(_compressedDataOffset3D)),
+            Containers::ArrayView<const UnsignedByte>{CompressedData3D}, TestSuite::Compare::Container);
+    }
 }
 
 void TextureGLTest::subImage3DQueryBuffer() {
@@ -1889,7 +1907,13 @@ void TextureGLTest::compressedSubImage3DQueryBuffer() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i{4});
-    CORRADE_COMPARE_AS(imageData.suffix(_compressedDataOffset3D), Containers::ArrayView<const UnsignedByte>{CompressedData3D}, TestSuite::Compare::Container);
+
+    {
+        CORRADE_EXPECT_FAIL_IF(!Context::current().isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>() && (Context::current().detectedDriver() & Context::DetectedDriver::NVidia),
+            "Default compressed pixel storage behaves weirdly with BPTC compression on NVidia");
+
+        CORRADE_COMPARE_AS(imageData.suffix(_compressedDataOffset3D), Containers::ArrayView<const UnsignedByte>{CompressedData3D}, TestSuite::Compare::Container);
+    }
 }
 
 void TextureGLTest::generateMipmap1D() {
