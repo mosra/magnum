@@ -463,7 +463,7 @@ OpenGL function                         | Matching API
 @def_gl_extension{MAX_SPARSE_3D_TEXTURE_SIZE,ARB,sparse_texture} | |
 @def_gl_extension{MAX_SPARSE_ARRAY_TEXTURE_LAYERS,ARB,sparse_texture} | |
 @def_gl{MAX_TESS_GEN_LEVEL}             | |
-@def_gl{MAX_TESS_PATCH_COMPONENTS}
+@def_gl{MAX_TESS_PATCH_COMPONENTS}      | |
 @def_gl{MAX_TEXTURE_BUFFER_SIZE}        | @ref BufferTexture::maxSize()
 @def_gl_extension{MAX_TEXTURE_MAX_ANISOTROPY,EXT,texture_filter_anisotropic} | @ref Sampler::maxMaxAnisotropy()
 @def_gl{MAX_TEXTURE_LOD_BIAS}           | @ref AbstractTexture::maxLodBias()
@@ -483,6 +483,7 @@ OpenGL function                         | Matching API
 @def_gl{MIN_FRAGMENT_INTERPOLATION_OFFSET}, \n @def_gl{MAX_FRAGMENT_INTERPOLATION_OFFSET} | |
 @def_gl{MIN_MAP_BUFFER_ALIGNMENT}       | @ref Buffer::minMapAlignment()
 @def_gl{MIN_PROGRAM_TEXEL_OFFSET}, \n @def_gl{MAX_PROGRAM_TEXEL_OFFSET} | @ref AbstractShaderProgram::minTexelOffset(), \n @ref AbstractShaderProgram::maxTexelOffset()
+@def_gl{MIN_PROGRAM_TEXTURE_GATHER_OFFSET}, \n @def_gl{MAX_PROGRAM_TEXTURE_GATHER_OFFSET} | |
 @def_gl{MIN_SAMPLE_SHADING_VALUE}       | |
 @def_gl{NUM_EXTENSIONS}                 | @ref Context::supportedExtensions()
 @def_gl{NUM_PROGRAM_BINARY_FORMATS}, \n @def_gl{PROGRAM_BINARY_FORMATS} | |
