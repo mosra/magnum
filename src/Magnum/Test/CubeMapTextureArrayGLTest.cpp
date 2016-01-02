@@ -701,6 +701,29 @@ void CubeMapTextureArrayGLTest::compressedSubImage() {
     if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_compression_s3tc>())
         CORRADE_SKIP(Extensions::GL::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
 
+    #ifndef MAGNUM_TARGET_GLES
+    /* Compressed pixel storage for array textures is underspecified. If the
+       extension is supported, first test with default values to ensure we are
+       not that far off, then continue as usual */
+    if(Context::current()->isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>()) {
+        CubeMapTextureArray texture;
+        texture.setCompressedImage(0, CompressedImageView3D{CompressedPixelFormat::RGBAS3tcDxt3,
+            {12, 12, 6}, CompressedZero});
+        texture.setCompressedSubImage(0, {4, 4, 1}, CompressedImageView3D{CompressedPixelFormat::RGBAS3tcDxt3, Vector3i{4}, CompressedSubData});
+
+        MAGNUM_VERIFY_NO_ERROR();
+
+        CompressedImage3D image = texture.compressedImage(0, {});
+
+        MAGNUM_VERIFY_NO_ERROR();
+
+        CORRADE_COMPARE(image.size(), (Vector3i{12, 12, 6}));
+        CORRADE_COMPARE_AS(
+            (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}),
+            Containers::ArrayView<const UnsignedByte>{CompressedSubDataComplete}, TestSuite::Compare::Container);
+    }
+    #endif
+
     CubeMapTextureArray texture;
     texture.setCompressedImage(0, CompressedImageView3D{CompressedPixelFormat::RGBAS3tcDxt3,
         {12, 12, 6}, CompressedZero});
