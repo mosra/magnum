@@ -93,6 +93,7 @@ bool WindowlessGlxApplication::tryCreateContext(const Configuration& configurati
         #endif
         GLX_CONTEXT_MINOR_VERSION_ARB, 0,
         GLX_CONTEXT_PROFILE_MASK_ARB, GLX_CONTEXT_ES2_PROFILE_BIT_EXT,
+        GLX_CONTEXT_FLAGS_ARB, GLint(configuration.flags()),
         #else
         /* Similarly to what's done in Sdl2Application, try to request core
            context first */
