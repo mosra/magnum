@@ -885,8 +885,8 @@ void CubeMapTextureGLTest::compressedSubImage() {
     CORRADE_COMPARE(image.size(), Vector2i{12});
 
     {
-        CORRADE_EXPECT_FAIL_IF(Context::current()->isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>() && (Context::current()->detectedDriver() & Context::DetectedDriver::NVidia),
-            "Non-default compressed pixel storage for cube map textures behaves weirdly on NVidia for client-memory images");
+        CORRADE_EXPECT_FAIL_IF(Context::current()->isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>() && Context::current()->isExtensionSupported<Extensions::GL::ARB::direct_state_access>() && (Context::current()->detectedDriver() & Context::DetectedDriver::NVidia),
+            "Non-default compressed pixel storage for cube map textures behaves weirdly on NVidia for client-memory images when using ARB_direct_state_access");
 
         CORRADE_COMPARE_AS(
             (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}),
