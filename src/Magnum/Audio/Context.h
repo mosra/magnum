@@ -446,7 +446,7 @@ inline bool Context::isHrtfEnabled() const {
 }
 
 inline Context::HrtfStatus Context::hrtfStatus() const {
-    if(!Context::current().isExtensionSupported<Extensions::ALC::SOFT::HRTF>())
+    if(!isExtensionSupported<Extensions::ALC::SOFT::HRTF>())
         return isHrtfEnabled() ? HrtfStatus::Enabled : HrtfStatus::Disabled;
 
     Int status;
