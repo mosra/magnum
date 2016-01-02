@@ -44,11 +44,12 @@ namespace Implementation {
    resolution (the functions would otherwise need to be de-inlined to break
    cyclic dependencies) */
 struct AttributeCount {
-    template<class T, class ...U> typename std::enable_if<!std::is_convertible<T, std::size_t>::value, std::size_t>::type operator()(const T& first, const U&... next) const {
-        CORRADE_ASSERT(sizeof...(next) == 0 || AttributeCount{}(next...) == first.size() || AttributeCount{}(next...) == ~std::size_t(0), "MeshTools::interleave(): attribute arrays don't have the same length, expected" << first.size() << "but got" << AttributeCount{}(next...), 0);
-        #if defined(CORRADE_NO_ASSERT) && !defined(CORRADE_GRACEFUL_ASSERT)
-        static_cast<void>(sizeof...(next));
+    template<class T, class ...U> typename std::enable_if<!std::is_convertible<T, std::size_t>::value, std::size_t>::type operator()(const T& first, const U&...
+        #if !defined(CORRADE_NO_ASSERT) || defined(CORRADE_GRACEFUL_ASSERT)
+        next
         #endif
+    ) const {
+        CORRADE_ASSERT(sizeof...(next) == 0 || AttributeCount{}(next...) == first.size() || AttributeCount{}(next...) == ~std::size_t(0), "MeshTools::interleave(): attribute arrays don't have the same length, expected" << first.size() << "but got" << AttributeCount{}(next...), 0);
 
         return first.size();
     }

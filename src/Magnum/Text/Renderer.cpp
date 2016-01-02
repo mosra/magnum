@@ -93,13 +93,12 @@ std::tuple<std::vector<Vertex>, Range2D> renderVerticesInternal(AbstractFont& fo
 
         /* Layout the line */
         const auto layouter = font.layout(cache, size, line);
-        const UnsignedInt vertexCount = layouter->glyphCount()*4;
 
         /* Verify that we don't reallocate anything. The only problem might
            arise when the layouter decides to compose one character from more
            than one glyph (i.e. accents). Will remove the assert when this
            issue arises. */
-        CORRADE_INTERNAL_ASSERT(vertices.size()+vertexCount <= vertices.capacity());
+        CORRADE_INTERNAL_ASSERT(vertices.size() + layouter->glyphCount()*4 <= vertices.capacity());
 
         /* Bounds of rendered line */
         Range2D lineRectangle;

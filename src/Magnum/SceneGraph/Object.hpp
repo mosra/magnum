@@ -212,8 +212,10 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
     }
     std::vector<std::reference_wrapper<Object<Transformation>>> jointObjects(objects);
 
+    #if !defined(CORRADE_NO_ASSERT) || defined(CORRADE_GRACEFUL_ASSERT)
     /* Scene object */
     const Scene<Transformation>* scene = this->scene();
+    #endif
 
     /* Nearest common ancestor not yet implemented - assert this is done on scene */
     CORRADE_ASSERT(scene == this, "SceneGraph::Object::transformationMatrices(): currently implemented only for Scene", {});
