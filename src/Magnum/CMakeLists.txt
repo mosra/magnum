@@ -310,7 +310,8 @@ endif()
 if(BUILD_TESTS)
     # Library with graceful assert for testing
     add_library(MagnumMathTestLib ${SHARED_OR_STATIC}
-        $<TARGET_OBJECTS:MagnumMathObjects>)
+        $<TARGET_OBJECTS:MagnumMathObjects>
+        Math/dummy.cpp) # XCode workaround, see file comment for details
     set_target_properties(MagnumMathTestLib PROPERTIES
         COMPILE_FLAGS "-DCORRADE_GRACEFUL_ASSERT"
         DEBUG_POSTFIX "-d")
