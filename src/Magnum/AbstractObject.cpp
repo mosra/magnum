@@ -205,7 +205,7 @@ std::string AbstractObject::getLabelImplementationExt(const GLenum identifier, c
     std::string label;
     label.resize(size+1);
     #ifndef CORRADE_TARGET_NACL
-    glGetObjectLabelEXT(identifier, name, size+1, nullptr, &label[0]);
+    glGetObjectLabelEXT(type, name, size+1, nullptr, &label[0]);
     #else
     CORRADE_ASSERT_UNREACHABLE();
     #endif
