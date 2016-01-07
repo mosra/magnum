@@ -847,6 +847,8 @@ void CubeMapTextureArrayGLTest::subImageQuery() {
 void CubeMapTextureArrayGLTest::compressedSubImageQuery() {
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>())
+        CORRADE_SKIP(Extensions::GL::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
     if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_compression_s3tc>())
         CORRADE_SKIP(Extensions::GL::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
 
@@ -905,6 +907,8 @@ void CubeMapTextureArrayGLTest::subImageQueryBuffer() {
 void CubeMapTextureArrayGLTest::compressedSubImageQueryBuffer() {
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>())
+        CORRADE_SKIP(Extensions::GL::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
     if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_compression_s3tc>())
         CORRADE_SKIP(Extensions::GL::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
 
