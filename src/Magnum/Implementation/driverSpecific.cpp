@@ -115,6 +115,8 @@ auto Context::detectedDriver() -> DetectedDrivers {
 
     const std::string vendor = vendorString();
 
+    /* Apple has its own drivers */
+    #ifndef CORRADE_TARGET_APPLE
     #ifndef MAGNUM_TARGET_GLES
     /* AMD binary desktop drivers */
     if(vendor.find("ATI Technologies Inc.") != std::string::npos)
@@ -130,6 +132,7 @@ auto Context::detectedDriver() -> DetectedDrivers {
     #ifndef MAGNUM_TARGET_WEBGL
     if(vendor.find("NVIDIA Corporation") != std::string::npos)
         return *_detectedDrivers |= DetectedDriver::NVidia;
+    #endif
     #endif
 
     /** @todo there is also D3D9/D3D11 distinction on webglreport.com, is it useful? */

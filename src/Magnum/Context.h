@@ -212,7 +212,7 @@ class MAGNUM_EXPORT Context {
             #endif
 
             #ifndef MAGNUM_TARGET_WEBGL
-            /** Binary NVidia drivers */
+            /** Binary NVidia drivers on Windows and Linux */
             NVidia = 1 << 2,
             #endif
 
