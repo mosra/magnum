@@ -111,8 +111,20 @@ namespace {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 MyShader::MyShader() {
     #ifndef MAGNUM_TARGET_GLES
-    Shader vert(Version::GL210, Shader::Type::Vertex);
-    Shader frag(Version::GL210, Shader::Type::Fragment);
+    Shader vert(
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL210
+        #else
+        Version::GL310
+        #endif
+        , Shader::Type::Vertex);
+    Shader frag(
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL210
+        #else
+        Version::GL310
+        #endif
+        , Shader::Type::Fragment);
     #else
     Shader vert(Version::GLES200, Shader::Type::Vertex);
     Shader frag(Version::GLES200, Shader::Type::Fragment);
@@ -122,13 +134,21 @@ MyShader::MyShader() {
         "#if !defined(GL_ES) && __VERSION__ == 120\n"
         "#define lowp\n"
         "#endif\n"
-        "attribute lowp vec4 position;\n"
+        "#if defined(GL_ES) || __VERSION__ == 120\n"
+        "#define in attribute\n"
+        "#endif\n"
+        "in lowp vec4 position;\n"
         "void main() {\n"
         "    gl_Position = position;\n"
         "}\n");
     frag.addSource(
+        "#if !defined(GL_ES) && __VERSION__ >= 130\n"
+        "out vec4 color;\n"
+        "#else\n"
+        "#define color gl_FragColor\n"
+        "#endif\n"
         "void main() {\n"
-        "    gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n"
+        "    color = vec4(1.0, 1.0, 1.0, 1.0);\n"
         "}\n");
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));

@@ -384,8 +384,20 @@ FloatShader::FloatShader(const std::string& type, const std::string& conversion)
     /* We need special version for ES3, because GLSL in ES2 doesn't support
        rectangle matrices */
     #ifndef MAGNUM_TARGET_GLES
-    Shader vert(Version::GL210, Shader::Type::Vertex);
-    Shader frag(Version::GL210, Shader::Type::Fragment);
+    Shader vert(
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL210
+        #else
+        Version::GL310
+        #endif
+        , Shader::Type::Vertex);
+    Shader frag(
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL210
+        #else
+        Version::GL310
+        #endif
+        , Shader::Type::Fragment);
     #elif defined(MAGNUM_TARGET_GLES2)
     Shader vert(Version::GLES200, Shader::Type::Vertex);
     Shader frag(Version::GLES200, Shader::Type::Fragment);
@@ -395,32 +407,32 @@ FloatShader::FloatShader(const std::string& type, const std::string& conversion)
     #endif
 
     vert.addSource(
-        #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
         "#if !defined(GL_ES) && __VERSION__ == 120\n"
         "#define mediump\n"
         "#endif\n"
-        "attribute mediump " + type + " value;\n"
-        "varying mediump " + type + " valueInterpolated;\n"
-        #else
+        "#if defined(GL_ES) || __VERSION__ == 120\n"
+        "#define in attribute\n"
+        "#define out varying\n"
+        "#endif\n"
         "in mediump " + type + " value;\n"
         "out mediump " + type + " valueInterpolated;\n"
-        #endif
         "void main() {\n"
         "    valueInterpolated = value;\n"
         "    gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n"
         "}\n");
-
-    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
-    frag.addSource("#if !defined(GL_ES) && __VERSION__ == 120\n"
-                   "#define mediump\n"
-                   "#endif\n"
-                   "varying mediump " + type + " valueInterpolated;\n"
-                   "void main() { gl_FragColor = " + conversion + "; }\n");
-    #else
-    frag.addSource("in mediump " + type + " valueInterpolated;\n"
-                   "out mediump vec4 result;\n"
-                   "void main() { result = " + conversion + "; }\n");
-    #endif
+    frag.addSource(
+        "#if !defined(GL_ES) && __VERSION__ == 120\n"
+        "#define mediump\n"
+        "#endif\n"
+        "#if defined(GL_ES) || __VERSION__ == 120\n"
+        "#define in varying\n"
+        "#define result gl_FragColor\n"
+        "#endif\n"
+        "in mediump " + type + " valueInterpolated;\n"
+        "#if !defined(GL_ES) && __VERSION__ >= 130\n"
+        "out mediump vec4 result;\n"
+        "#endif\n"
+        "void main() { result = " + conversion + "; }\n");
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
 
@@ -434,8 +446,20 @@ FloatShader::FloatShader(const std::string& type, const std::string& conversion)
 #ifndef MAGNUM_TARGET_GLES2
 IntegerShader::IntegerShader(const std::string& type) {
     #ifndef MAGNUM_TARGET_GLES
-    Shader vert(Version::GL300, Shader::Type::Vertex);
-    Shader frag(Version::GL300, Shader::Type::Fragment);
+    Shader vert(
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL300
+        #else
+        Version::GL310
+        #endif
+        , Shader::Type::Vertex);
+    Shader frag(
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL300
+        #else
+        Version::GL310
+        #endif
+        , Shader::Type::Fragment);
     #else
     Shader vert(Version::GLES300, Shader::Type::Vertex);
     Shader frag(Version::GLES300, Shader::Type::Fragment);
@@ -1144,29 +1168,54 @@ namespace {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 MultipleShader::MultipleShader() {
     #ifndef MAGNUM_TARGET_GLES
-    Shader vert(Version::GL210, Shader::Type::Vertex);
-    Shader frag(Version::GL210, Shader::Type::Fragment);
+    Shader vert(
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL210
+        #else
+        Version::GL310
+        #endif
+        , Shader::Type::Vertex);
+    Shader frag(
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL210
+        #else
+        Version::GL310
+        #endif
+        , Shader::Type::Fragment);
     #else
     Shader vert(Version::GLES200, Shader::Type::Vertex);
     Shader frag(Version::GLES200, Shader::Type::Fragment);
     #endif
 
-    vert.addSource("#if !defined(GL_ES) && __VERSION__ == 120\n"
-                   "#define mediump\n"
-                   "#endif\n"
-                   "attribute mediump vec4 position;\n"
-                   "attribute mediump vec3 normal;\n"
-                   "attribute mediump vec2 textureCoordinates;\n"
-                   "varying mediump vec4 valueInterpolated;\n"
-                   "void main() {\n"
-                   "    valueInterpolated = position + vec4(normal, 0.0) + vec4(textureCoordinates, 0.0, 0.0);\n"
-                   "    gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n"
-                   "}\n");
-    frag.addSource("#if !defined(GL_ES) && __VERSION__ == 120\n"
-                   "#define mediump\n"
-                   "#endif\n"
-                   "varying mediump vec4 valueInterpolated;\n"
-                   "void main() { gl_FragColor = valueInterpolated; }\n");
+    vert.addSource(
+        "#if !defined(GL_ES) && __VERSION__ == 120\n"
+        "#define mediump\n"
+        "#endif\n"
+        "#if defined(GL_ES) || __VERSION__ == 120\n"
+        "#define in attribute\n"
+        "#define out varying\n"
+        "#endif\n"
+        "in mediump vec4 position;\n"
+        "in mediump vec3 normal;\n"
+        "in mediump vec2 textureCoordinates;\n"
+        "out mediump vec4 valueInterpolated;\n"
+        "void main() {\n"
+        "    valueInterpolated = position + vec4(normal, 0.0) + vec4(textureCoordinates, 0.0, 0.0);\n"
+        "    gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n"
+        "}\n");
+    frag.addSource(
+        "#if !defined(GL_ES) && __VERSION__ == 120\n"
+        "#define mediump\n"
+        "#endif\n"
+        "#if defined(GL_ES) || __VERSION__ == 120\n"
+        "#define in varying\n"
+        "#define result gl_FragColor\n"
+        "#endif\n"
+        "in mediump vec4 valueInterpolated;\n"
+        "#if !defined(GL_ES) && __VERSION__ >= 130\n"
+        "out mediump vec4 result;\n"
+        "#endif\n"
+        "void main() { result = valueInterpolated; }\n");
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
 

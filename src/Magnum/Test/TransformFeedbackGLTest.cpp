@@ -189,7 +189,13 @@ struct XfbShader: AbstractShaderProgram {
 
 XfbShader::XfbShader() {
     #ifndef MAGNUM_TARGET_GLES
-    Shader vert(Version::GL300, Shader::Type::Vertex);
+    Shader vert(
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL300
+        #else
+        Version::GL310
+        #endif
+        , Shader::Type::Vertex);
     #else
     Shader vert(Version::GLES300, Shader::Type::Vertex);
     Shader frag(Version::GLES300, Shader::Type::Fragment);
@@ -299,7 +305,13 @@ struct XfbMultiShader: AbstractShaderProgram {
 
 XfbMultiShader::XfbMultiShader() {
     #ifndef MAGNUM_TARGET_GLES
-    Shader vert(Version::GL300, Shader::Type::Vertex);
+    Shader vert(
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL300
+        #else
+        Version::GL310
+        #endif
+        , Shader::Type::Vertex);
     #else
     Shader vert(Version::GLES300, Shader::Type::Vertex);
     Shader frag(Version::GLES300, Shader::Type::Fragment);
@@ -426,7 +438,13 @@ void TransformFeedbackGLTest::interleaved() {
         typedef Attribute<0, Vector2> Input;
 
         explicit XfbInterleavedShader() {
-            Shader vert(Version::GL300, Shader::Type::Vertex);
+            Shader vert(
+                #ifndef CORRADE_TARGET_APPLE
+                Version::GL300
+                #else
+                Version::GL310
+                #endif
+                , Shader::Type::Vertex);
             CORRADE_INTERNAL_ASSERT_OUTPUT(vert.addSource(
                 "in mediump vec2 inputData;\n"
                 "out mediump vec2 output1;\n"

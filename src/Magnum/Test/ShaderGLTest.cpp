@@ -209,7 +209,13 @@ void ShaderGLTest::addFile() {
 
 void ShaderGLTest::compile() {
     #ifndef MAGNUM_TARGET_GLES
-    constexpr Version v = Version::GL210;
+    constexpr Version v =
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL210
+        #else
+        Version::GL310
+        #endif
+        ;
     #else
     constexpr Version v = Version::GLES200;
     #endif

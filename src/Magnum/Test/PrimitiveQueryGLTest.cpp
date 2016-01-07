@@ -99,13 +99,19 @@ void PrimitiveQueryGLTest::primitivesGenerated() {
         typedef Attribute<0, Vector2> Position;
 
         explicit MyShader() {
-            Shader vert(Version::GL210, Shader::Type::Vertex);
+            Shader vert(
+                #ifndef CORRADE_TARGET_APPLE
+                Version::GL210
+                #else
+                Version::GL310
+                #endif
+                , Shader::Type::Vertex);
 
             CORRADE_INTERNAL_ASSERT_OUTPUT(vert.addSource(
-                "#if !defined(GL_ES) && __VERSION__ == 120\n"
-                "#define lowp\n"
+                "#if __VERSION__ >= 130\n"
+                "#define attribute in\n"
                 "#endif\n"
-                "attribute lowp vec4 position;\n"
+                "attribute vec4 position;\n"
                 "void main() {\n"
                 "    gl_Position = position;\n"
                 "}\n").compile());
@@ -153,7 +159,13 @@ void PrimitiveQueryGLTest::transformFeedbackPrimitivesWritten() {
     struct MyShader: AbstractShaderProgram {
         explicit MyShader() {
             #ifndef MAGNUM_TARGET_GLES
-            Shader vert(Version::GL300, Shader::Type::Vertex);
+            Shader vert(
+                #ifndef CORRADE_TARGET_APPLE
+                Version::GL300
+                #else
+                Version::GL310
+                #endif
+                , Shader::Type::Vertex);
             #else
             Shader vert(Version::GLES300, Shader::Type::Vertex);
             Shader frag(Version::GLES300, Shader::Type::Fragment);
