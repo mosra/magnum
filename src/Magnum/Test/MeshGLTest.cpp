@@ -795,13 +795,14 @@ void MeshGLTest::addVertexBufferMatrixNxNd() {
     MAGNUM_VERIFY_NO_ERROR();
 
     {
-        CORRADE_EXPECT_FAIL("Somehow only first two values are extracted");
+        CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & (Context::DetectedDriver::AMD|Context::DetectedDriver::NVidia), "Somehow only first two values are extracted");
         CORRADE_COMPARE(value, Math::Vector3<UnsignedShort>(315, 65201, 2576));
     }
 
     /* This is wrong, but check if it's still the right wrong. Fails on AMD
        15.201.1151 but seems to be fixed in 15.300.1025.0 */
-    CORRADE_COMPARE(value, Math::Vector3<UnsignedShort>(315, 65201, 0));
+    if(Context::current().detectedDriver() & (Context::DetectedDriver::AMD|Context::DetectedDriver::NVidia))
+        CORRADE_COMPARE(value, Math::Vector3<UnsignedShort>(315, 65201, 0));
 }
 #endif
 
@@ -860,13 +861,14 @@ void MeshGLTest::addVertexBufferMatrixMxNd() {
     MAGNUM_VERIFY_NO_ERROR();
 
     {
-        CORRADE_EXPECT_FAIL("Somehow only first two values are extracted");
+        CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & (Context::DetectedDriver::AMD|Context::DetectedDriver::NVidia), "Somehow only first two values are extracted");
         CORRADE_COMPARE(value, Math::Vector3<UnsignedShort>(315, 65201, 2576));
     }
 
     /* This is wrong, but check if it's still the right wrong. Fails on AMD
        15.201.1151 but seems to be fixed in 15.300.1025.0 */
-    CORRADE_COMPARE(value, Math::Vector3<UnsignedShort>(315, 65201, 0));
+    if(Context::current().detectedDriver() & (Context::DetectedDriver::AMD|Context::DetectedDriver::NVidia))
+        CORRADE_COMPARE(value, Math::Vector3<UnsignedShort>(315, 65201, 0));
 }
 #endif
 
