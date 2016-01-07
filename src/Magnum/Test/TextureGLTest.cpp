@@ -1828,7 +1828,7 @@ void TextureGLTest::compressedSubImage3DQuery() {
 
         CORRADE_COMPARE(image.size(), (Vector3i{4}));
 
-        CORRADE_EXPECT_FAIL_IF(!!(Context::current().detectedDriver() & Context::DetectedDriver::NVidia),
+        CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & Context::DetectedDriver::NVidia,
             "Default compressed pixel storage behaves weirdly with BPTC compression on NVidia");
 
         CORRADE_COMPARE_AS(
@@ -1895,7 +1895,7 @@ void TextureGLTest::compressedSubImage3DQueryBuffer() {
 
         CORRADE_COMPARE(image.size(), Vector3i{4});
 
-        CORRADE_EXPECT_FAIL_IF(!!(Context::current().detectedDriver() & Context::DetectedDriver::NVidia),
+        CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & Context::DetectedDriver::NVidia,
             "Default compressed pixel storage behaves weirdly with BPTC compression on NVidia");
 
         CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedByte>{CompressedData3D}, TestSuite::Compare::Container);
