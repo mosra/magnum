@@ -50,7 +50,12 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
 
 void MeshVisualizerGLTest::compile() {
     Shaders::MeshVisualizer shader;
-    CORRADE_VERIFY(shader.validate().first);
+    {
+        #ifdef CORRADE_TARGET_APPLE
+        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
 }
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
@@ -69,13 +74,23 @@ void MeshVisualizerGLTest::compileWireframeGeometryShader() {
     #endif
 
     Shaders::MeshVisualizer shader(Shaders::MeshVisualizer::Flag::Wireframe);
-    CORRADE_VERIFY(shader.validate().first);
+    {
+        #ifdef CORRADE_TARGET_APPLE
+        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
 }
 #endif
 
 void MeshVisualizerGLTest::compileWireframeNoGeometryShader() {
     Shaders::MeshVisualizer shader(Shaders::MeshVisualizer::Flag::Wireframe|Shaders::MeshVisualizer::Flag::NoGeometryShader);
-    CORRADE_VERIFY(shader.validate().first);
+    {
+        #ifdef CORRADE_TARGET_APPLE
+        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
 }
 
 }}}

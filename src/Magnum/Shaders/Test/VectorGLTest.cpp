@@ -42,12 +42,22 @@ VectorGLTest::VectorGLTest() {
 
 void VectorGLTest::compile2D() {
     Shaders::Vector2D shader;
-    CORRADE_VERIFY(shader.validate().first);
+    {
+        #ifdef CORRADE_TARGET_APPLE
+        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
 }
 
 void VectorGLTest::compile3D() {
     Shaders::Vector3D shader;
-    CORRADE_VERIFY(shader.validate().first);
+    {
+        #ifdef CORRADE_TARGET_APPLE
+        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
 }
 
 }}}

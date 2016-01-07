@@ -197,7 +197,12 @@ void AbstractShaderProgramGLTest::create() {
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_VERIFY(linked);
-    CORRADE_VERIFY(valid);
+    {
+        #ifdef CORRADE_TARGET_APPLE
+        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(valid);
+    }
 
     const Int matrixUniform = program.uniformLocation("matrix");
     const Int multiplierUniform = program.uniformLocation("multiplier");
@@ -252,7 +257,12 @@ void AbstractShaderProgramGLTest::createMultipleOutputs() {
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_VERIFY(linked);
-    CORRADE_VERIFY(valid);
+    {
+        #ifdef CORRADE_TARGET_APPLE
+        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(valid);
+    }
     #elif !defined(MAGNUM_TARGET_GLES2)
     CORRADE_SKIP("Only explicit location specification supported in ES 3.0.");
     #else
@@ -301,7 +311,12 @@ void AbstractShaderProgramGLTest::createMultipleOutputsIndexed() {
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_VERIFY(linked);
-    CORRADE_VERIFY(valid);
+    {
+        #ifdef CORRADE_TARGET_APPLE
+        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(valid);
+    }
 }
 #endif
 
