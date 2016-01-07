@@ -28,8 +28,11 @@
 
 #include "Magnum/AbstractShaderProgram.h"
 #include "Magnum/Buffer.h"
+#include "Magnum/Framebuffer.h"
 #include "Magnum/Mesh.h"
 #include "Magnum/PrimitiveQuery.h"
+#include "Magnum/Renderbuffer.h"
+#include "Magnum/RenderbufferFormat.h"
 #include "Magnum/Shader.h"
 #include "Magnum/TransformFeedback.h"
 #include "Magnum/Math/Vector2.h"
@@ -95,6 +98,13 @@ void PrimitiveQueryGLTest::primitivesGenerated() {
     if(!Context::current().isExtensionSupported<Extensions::GL::EXT::transform_feedback>())
         CORRADE_SKIP(Extensions::GL::EXT::transform_feedback::string() + std::string(" is not available."));
 
+    /* Bind some FB to avoid errors on contexts w/o default FB */
+    Renderbuffer color;
+    color.setStorage(RenderbufferFormat::RGBA8, Vector2i{32});
+    Framebuffer fb{{{}, Vector2i{32}}};
+    fb.attachRenderbuffer(Framebuffer::ColorAttachment{0}, color)
+      .bind();
+
     struct MyShader: AbstractShaderProgram {
         typedef Attribute<0, Vector2> Position;
 
@@ -155,6 +165,13 @@ void PrimitiveQueryGLTest::transformFeedbackPrimitivesWritten() {
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
         CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not available."));
     #endif
+
+    /* Bind some FB to avoid errors on contexts w/o default FB */
+    Renderbuffer color;
+    color.setStorage(RenderbufferFormat::RGBA8, Vector2i{32});
+    Framebuffer fb{{{}, Vector2i{32}}};
+    fb.attachRenderbuffer(Framebuffer::ColorAttachment{0}, color)
+      .bind();
 
     struct MyShader: AbstractShaderProgram {
         explicit MyShader() {
