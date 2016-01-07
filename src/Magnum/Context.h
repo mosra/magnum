@@ -534,6 +534,8 @@ class MAGNUM_EXPORT Context {
         std::vector<std::string> _disabledExtensions;
 };
 
+CORRADE_ENUMSET_OPERATORS(Context::DetectedDrivers)
+
 #ifndef MAGNUM_TARGET_WEBGL
 /** @debugoperatorclassenum{Magnum::Context,Magnum::Context::Flag} */
 MAGNUM_EXPORT Debug& operator<<(Debug& debug, Context::Flag value);
