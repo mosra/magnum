@@ -136,8 +136,8 @@ The preferred workflow is to specify attribute location for vertex shader input
 attributes and fragment shader output attributes explicitly in the shader code,
 e.g.:
 @code
-// GLSL 3.30, or
-#extension GL_ARB_explicit_attrib_location: enable
+// GLSL 3.30, GLSL ES 3.00 or
+#extension GL_ARB_explicit_attrib_location: require
 layout(location = 0) in vec4 position;
 layout(location = 1) in vec3 normal;
 layout(location = 2) in vec2 textureCoordinates;
@@ -151,8 +151,8 @@ layout(location = 0, index = 0) out vec4 color;
 layout(location = 1, index = 1) out vec3 normal;
 @endcode
 
-If you don't have the required extension, declare the attributes without
-`layout()` qualifier and use functions @ref bindAttributeLocation() and
+If you don't have the required version/extension, declare the attributes
+without `layout()` qualifier and use functions @ref bindAttributeLocation() and
 @ref bindFragmentDataLocation() / @ref bindFragmentDataLocationIndexed() between
 attaching the shaders and linking the program. Note that additional syntax
 changes may be needed for GLSL 1.20 and GLSL ES.
@@ -178,7 +178,7 @@ bindFragmentDataLocationIndexed(NormalOutput, 1, "normal");
 // Link...
 @endcode
 
-@see @ref Mesh::maxVertexAttributes(), @ref AbstractFramebuffer::maxDrawBuffers()
+@see @ref maxVertexAttributes(), @ref AbstractFramebuffer::maxDrawBuffers()
 @requires_gl30 Extension @extension{EXT,gpu_shader4} for using
     @ref bindFragmentDataLocation().
 @requires_gl33 Extension @extension{ARB,blend_func_extended} for using
@@ -208,15 +208,15 @@ bindFragmentDataLocationIndexed(NormalOutput, 1, "normal");
 The preferred workflow is to specify uniform locations directly in the shader
 code, e.g.:
 @code
-// GLSL 4.30, or
-#extension GL_ARB_explicit_uniform_location: enable
+// GLSL 4.30, GLSL ES 3.10 or
+#extension GL_ARB_explicit_uniform_location: require
 layout(location = 0) uniform mat4 projectionMatrix;
 layout(location = 1) uniform mat4 transformationMatrix;
 layout(location = 2) uniform mat3 normalMatrix;
 @endcode
 
-If you don't have the required extension, declare the uniforms without the
-`layout()` qualifier, get uniform location using @ref uniformLocation() *after*
+If you don't have the required version/extension, declare the uniforms without
+the `layout()` qualifier, get uniform location using @ref uniformLocation() *after*
 linking stage and then use the queried location in uniform setting functions.
 Note that additional syntax changes may be needed for GLSL 1.20 and GLSL ES.
 @code
@@ -244,16 +244,16 @@ Int normalMatrixUniform = uniformLocation("normalMatrix");
 The preferred workflow is to specify texture binding unit directly in the
 shader code, e.g.:
 @code
-// GLSL 4.20, or
-#extension GL_ARB_shading_language_420pack: enable
+// GLSL 4.20, GLSL ES 3.10 or
+#extension GL_ARB_shading_language_420pack: require
 layout(binding = 0) uniform sampler2D diffuseTexture;
 layout(binding = 1) uniform sampler2D specularTexture;
 @endcode
 
-If you don't have the required extension, declare the uniforms without the
-`binding` qualifier and set the texture binding unit using
+If you don't have the required version/extension, declare the uniforms without
+the `binding` qualifier and set the texture binding unit using
 @ref setUniform(Int, const T&) "setUniform(Int, Int)". Note that additional
-syntax changes may be needed for GLSL 1.20 and GLSL ES 1.0.
+syntax changes may be needed for GLSL ES.
 @code
 uniform sampler2D diffuseTexture;
 uniform sampler2D specularTexture;
@@ -280,7 +280,7 @@ The preferred workflow is to specify output binding points directly in the
 shader code, e.g.:
 @code
 // GLSL 4.40, or
-#extension GL_ARB_enhanced_layouts: enable
+#extension GL_ARB_enhanced_layouts: require
 layout(xfb_buffer = 0, xfb_stride = 32) out block {
     layout(xfb_offset = 0) vec3 position;
     layout(xfb_offset = 16) vec3 normal;
@@ -288,8 +288,8 @@ layout(xfb_buffer = 0, xfb_stride = 32) out block {
 layout(xfb_buffer = 1) out vec3 velocity;
 @endcode
 
-If you don't have the required extension, declare the uniforms without the
-`xfb_*` qualifier and set the binding points using @ref setTransformFeedbackOutputs().
+If you don't have the required version/extension, declare the uniforms without
+the `xfb_*` qualifier and set the binding points using @ref setTransformFeedbackOutputs().
 Equivalent setup for the previous code would be the following:
 @code
 out block {
@@ -310,14 +310,17 @@ setTransformFeedbackOutputs({
 @see @ref TransformFeedback::maxInterleavedComponents(),
     @ref TransformFeedback::maxSeparateAttributes(),
     @ref TransformFeedback::maxSeparateComponents()
+@requires_gl40 Extension @extension{ARB,transform_feedback2}
 @requires_gl40 Extension @extension{ARB,transform_feedback3} for using
     `gl_NextBuffer` or `gl_SkipComponents#` names in
     @ref setTransformFeedbackOutputs() function.
 @requires_gl44 Extension @extension{ARB,enhanced_layouts} for explicit
     transform feedback output specification instead of using
     @ref setTransformFeedbackOutputs().
+@requires_gles30 Transform feedback is not available in OpenGL ES 2.0.
 @requires_gl Explicit transform feedback output specification is not available
     in OpenGL ES or WebGL.
+@requires_webgl20 Transform feedback is not available in WebGL 1.0.
 
 @anchor AbstractShaderProgram-rendering-workflow
 ## Rendering workflow
@@ -858,7 +861,9 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * @brief Get uniform location
          * @param name          Uniform name
          *
-         * @see @fn_gl{GetUniformLocation}
+         * If given uniform is not found in the linked shader, a warning is
+         * printed and `-1` is returned.
+         * @see @ref setUniform(), @fn_gl{GetUniformLocation}
          * @deprecated_gl Preferred usage is to specify uniform location
          *      explicitly in the shader instead of using this function. See
          *      @ref AbstractShaderProgram-uniform-location "class documentation"
@@ -881,6 +886,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * Convenience alternative for setting one value, see
          * @ref setUniform(Int, Containers::ArrayView<const Float>) for more
          * information.
+         * @see @ref uniformLocation()
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         template<class T> inline void setUniform(Int location, const T& value);
@@ -919,8 +925,9 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * @es_extension{EXT,separate_shader_objects} OpenGL ES extension nor
          * OpenGL ES 3.1 is available, the shader is marked for use before the
          * operation.
-         * @see @ref setUniform(Int, const T&), @fn_gl{UseProgram}, @fn_gl{Uniform}
-         *      or @fn_gl{ProgramUniform}/@fn_gl_extension{ProgramUniform,EXT,direct_state_access}.
+         * @see @ref setUniform(Int, const T&), @ref uniformLocation(),
+         *      @fn_gl{UseProgram}, @fn_gl{Uniform} or @fn_gl{ProgramUniform}/
+         *      @fn_gl_extension{ProgramUniform,EXT,direct_state_access}.
          */
         void setUniform(Int location, Containers::ArrayView<const Float> values);
         void setUniform(Int location, Containers::ArrayView<const Math::Vector<2, Float>> values); /**< @overload */
