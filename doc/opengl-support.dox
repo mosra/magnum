@@ -224,7 +224,7 @@ GLSL 4.50                                   | done
 @extension{ARB,direct_state_access}         | done for implemented functionality (except VAOs)
 @extension{ARB,get_texture_sub_image}       | done
 @extension{ARB,shader_texture_image_samples} | done (shading language only)
-@extension{ARB,texture_barrier}             | |
+@extension{ARB,texture_barrier}             | done
 @extension{KHR,context_flush_control}       | |
 @extension{KHR,robustness}                  | |
 

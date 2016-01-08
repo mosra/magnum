@@ -1337,6 +1337,22 @@ class MAGNUM_EXPORT Renderer {
         }
         #endif
 
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Set texture barrier
+         *
+         * Calling the function ensures that texel fetches in drawing
+         * operations after the barrier will reflect texel writes before the
+         * barrier.
+         * @see @fn_gl{TextureBarrier}
+         * @requires_gl45 Extension @extension{ARB,texture_barrier}
+         * @requires_gl Texture barrier is not available in OpenGL ES or WebGL.
+         */
+        void setTextureBarrier() {
+            glTextureBarrier();
+        }
+        #endif
+
         /*@}*/
 
         /** @{ @name Renderer management */
