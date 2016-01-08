@@ -51,7 +51,7 @@ struct AbstractShaderProgramGLTest: AbstractOpenGLTester {
     void createMultipleOutputsIndexed();
     #endif
 
-    void uniformLocationOptimizedOut();
+    void uniformNotFound();
     void uniform();
     void uniformVector();
     void uniformMatrix();
@@ -71,7 +71,7 @@ AbstractShaderProgramGLTest::AbstractShaderProgramGLTest() {
               &AbstractShaderProgramGLTest::createMultipleOutputsIndexed,
               #endif
 
-              &AbstractShaderProgramGLTest::uniformLocationOptimizedOut,
+              &AbstractShaderProgramGLTest::uniformNotFound,
               &AbstractShaderProgramGLTest::uniform,
               &AbstractShaderProgramGLTest::uniformVector,
               &AbstractShaderProgramGLTest::uniformMatrix,
@@ -320,7 +320,7 @@ void AbstractShaderProgramGLTest::createMultipleOutputsIndexed() {
 }
 #endif
 
-void AbstractShaderProgramGLTest::uniformLocationOptimizedOut() {
+void AbstractShaderProgramGLTest::uniformNotFound() {
     MyPublicShader program;
 
     #ifndef MAGNUM_TARGET_GLES
@@ -361,8 +361,8 @@ void AbstractShaderProgramGLTest::uniformLocationOptimizedOut() {
     program.uniformLocation("nonexistent");
     program.uniformLocation(std::string{"another"});
     CORRADE_COMPARE(out.str(),
-        "AbstractShaderProgram: location of uniform 'nonexistent' cannot be retrieved!\n"
-        "AbstractShaderProgram: location of uniform 'another' cannot be retrieved!\n");
+        "AbstractShaderProgram: location of uniform 'nonexistent' cannot be retrieved\n"
+        "AbstractShaderProgram: location of uniform 'another' cannot be retrieved\n");
 }
 
 namespace {

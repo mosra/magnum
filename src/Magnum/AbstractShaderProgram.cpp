@@ -395,9 +395,9 @@ bool AbstractShaderProgram::link(std::initializer_list<std::reference_wrapper<Ab
 }
 
 Int AbstractShaderProgram::uniformLocationInternal(const Containers::ArrayView<const char> name) {
-    GLint location = glGetUniformLocation(_id, name);
+    const GLint location = glGetUniformLocation(_id, name);
     if(location == -1)
-        Warning() << "AbstractShaderProgram: location of uniform \'" + std::string{name, name.size()} + "\' cannot be retrieved!";
+        Warning() << "AbstractShaderProgram: location of uniform \'" << Debug::nospace << std::string{name, name.size()} << Debug::nospace << "\' cannot be retrieved";
     return location;
 }
 
