@@ -401,6 +401,15 @@ Int AbstractShaderProgram::uniformLocationInternal(const Containers::ArrayView<c
     return location;
 }
 
+#ifndef MAGNUM_TARGET_GLES2
+UnsignedInt AbstractShaderProgram::uniformBlockIndexInternal(const Containers::ArrayView<const char> name) {
+    const GLuint index = glGetUniformBlockIndex(_id, name);
+    if(index == GL_INVALID_INDEX)
+        Warning() << "AbstractShaderProgram: index of uniform block \'" << Debug::nospace << std::string{name, name.size()} << Debug::nospace << "\' cannot be retrieved";
+    return index;
+}
+#endif
+
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Float> values) {
     (this->*Context::current().state().shaderProgram->uniform1fvImplementation)(location, values.size(), values);
 }

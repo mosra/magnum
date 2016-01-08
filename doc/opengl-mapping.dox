@@ -219,7 +219,7 @@ OpenGL function                         | Matching API
 @fn_gl{GetTransformFeedback}            | not queryable, @ref TransformFeedback::attachBuffer() and @ref TransformFeedback::attachBuffers() setters only
 @fn_gl{GetTransformFeedbackVarying}     | not queryable, @ref AbstractShaderProgram::setTransformFeedbackOutputs() setter only
 @fn_gl{GetUniform}, \n `glGetnUniform()`, \n @fn_gl_extension{GetnUniform,ARB,robustness} | not queryable, @ref AbstractShaderProgram::setUniform() setter only
-@fn_gl{GetUniformBlockIndex}            | |
+@fn_gl{GetUniformBlockIndex}            | @ref AbstractShaderProgram::uniformBlockIndex()
 @fn_gl{GetUniformIndices}               | |
 @fn_gl{GetUniformLocation}              | @ref AbstractShaderProgram::uniformLocation()
 @fn_gl{GetUniformSubroutine}            | |
@@ -350,7 +350,7 @@ OpenGL function                         | Matching API
 --------------------------------------- | ------------
 @fn_gl{Uniform}, \n @fn_gl{ProgramUniform}, \n @fn_gl_extension{ProgramUniform,EXT,direct_state_access} | @ref AbstractShaderProgram::setUniform()
 @fn_gl_extension{UniformHandle,ARB,bindless_texture}, \n @fn_gl_extension{ProgramUniformHandle,ARB,bindless_texture} | |
-@fn_gl{UniformBlockBinding}             | |
+@fn_gl{UniformBlockBinding}             | @ref AbstractShaderProgram::setUniformBlockBinding()
 @fn_gl{UniformSubroutines}              | |
 @fn_gl{UseProgram}                      | @ref Mesh::draw(), @ref MeshView::draw()
 @fn_gl{UseProgramStages}                | |

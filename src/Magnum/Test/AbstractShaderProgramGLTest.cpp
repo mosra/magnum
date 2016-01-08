@@ -56,6 +56,12 @@ struct AbstractShaderProgramGLTest: AbstractOpenGLTester {
     void uniformVector();
     void uniformMatrix();
     void uniformArray();
+
+    #ifndef MAGNUM_TARGET_GLES2
+    void createUniformBlocks();
+    void uniformBlockIndexNotFound();
+    void uniformBlock();
+    #endif
 };
 
 AbstractShaderProgramGLTest::AbstractShaderProgramGLTest() {
@@ -75,7 +81,14 @@ AbstractShaderProgramGLTest::AbstractShaderProgramGLTest() {
               &AbstractShaderProgramGLTest::uniform,
               &AbstractShaderProgramGLTest::uniformVector,
               &AbstractShaderProgramGLTest::uniformMatrix,
-              &AbstractShaderProgramGLTest::uniformArray});
+              &AbstractShaderProgramGLTest::uniformArray,
+
+              #ifndef MAGNUM_TARGET_GLES2
+              &AbstractShaderProgramGLTest::createUniformBlocks,
+              &AbstractShaderProgramGLTest::uniformBlockIndexNotFound,
+              &AbstractShaderProgramGLTest::uniformBlock
+              #endif
+              });
 }
 
 namespace {
@@ -148,6 +161,9 @@ namespace {
         #endif
         using AbstractShaderProgram::link;
         using AbstractShaderProgram::uniformLocation;
+        #ifndef MAGNUM_TARGET_GLES2
+        using AbstractShaderProgram::uniformBlockIndex;
+        #endif
     };
 }
 
@@ -472,6 +488,147 @@ void AbstractShaderProgramGLTest::uniformArray() {
 
     MAGNUM_VERIFY_NO_ERROR();
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+void AbstractShaderProgramGLTest::createUniformBlocks() {
+    Utility::Resource rs("AbstractShaderProgramGLTest");
+
+    Shader vert(
+        #ifndef MAGNUM_TARGET_GLES
+        Version::GL310
+        #else
+        Version::GLES300
+        #endif
+        , Shader::Type::Vertex);
+    vert.addSource(rs.get("UniformBlockShader.vert"));
+    const bool vertCompiled = vert.compile();
+
+    Shader frag(
+        #ifndef MAGNUM_TARGET_GLES
+        Version::GL310
+        #else
+        Version::GLES300
+        #endif
+        , Shader::Type::Fragment);
+    frag.addSource(rs.get("UniformBlockShader.frag"));
+    const bool fragCompiled = frag.compile();
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_VERIFY(vertCompiled);
+    CORRADE_VERIFY(fragCompiled);
+
+    MyPublicShader program;
+    program.attachShaders({vert, frag});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    const bool linked = program.link();
+    const bool valid = program.validate().first;
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_VERIFY(linked);
+    {
+        #ifdef CORRADE_TARGET_APPLE
+        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(valid);
+    }
+
+    const Int matricesUniformBlock = program.uniformBlockIndex("matrices");
+    const Int materialUniformBlock = program.uniformBlockIndex("material");
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_VERIFY(matricesUniformBlock >= 0);
+    CORRADE_VERIFY(materialUniformBlock >= 0);
+}
+
+void AbstractShaderProgramGLTest::uniformBlockIndexNotFound() {
+    MyPublicShader program;
+
+    Shader vert(
+        #ifndef MAGNUM_TARGET_GLES
+        Version::GL310
+        #else
+        Version::GLES200
+        #endif
+        , Shader::Type::Vertex);
+    Shader frag(
+        #ifndef MAGNUM_TARGET_GLES
+        Version::GL310
+        #else
+        Version::GLES200
+        #endif
+        , Shader::Type::Fragment);
+    vert.addSource("void main() { gl_Position = vec4(0.0); }");
+    frag.addSource("out vec4 color;\n"
+                   "void main() { color = vec4(1.0); }");
+
+    CORRADE_VERIFY(Shader::compile({vert, frag}));
+    program.attachShaders({vert, frag});
+    CORRADE_VERIFY(program.link());
+
+    std::ostringstream out;
+    Warning::setOutput(&out);
+    program.uniformBlockIndex("nonexistent");
+    program.uniformBlockIndex(std::string{"another"});
+    CORRADE_COMPARE(out.str(),
+        "AbstractShaderProgram: index of uniform block 'nonexistent' cannot be retrieved\n"
+        "AbstractShaderProgram: index of uniform block 'another' cannot be retrieved\n");
+}
+
+namespace {
+    struct UniformBlockShader: AbstractShaderProgram {
+        explicit UniformBlockShader();
+
+        using AbstractShaderProgram::setUniformBlockBinding;
+
+        Int matricesUniformBlock,
+            materialUniformBlock;
+    };
+}
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+UniformBlockShader::UniformBlockShader() {
+    Utility::Resource rs("AbstractShaderProgramGLTest");
+
+    Shader vert(
+        #ifndef MAGNUM_TARGET_GLES
+        Version::GL310
+        #else
+        Version::GLES300
+        #endif
+        , Shader::Type::Vertex);
+    Shader frag(
+        #ifndef MAGNUM_TARGET_GLES
+        Version::GL310
+        #else
+        Version::GLES300
+        #endif
+        , Shader::Type::Fragment);
+    vert.addSource(rs.get("UniformBlockShader.vert"));
+    frag.addSource(rs.get("UniformBlockShader.frag"));
+
+    Shader::compile({vert, frag});
+    attachShaders({vert, frag});
+
+    link();
+
+    matricesUniformBlock = uniformBlockIndex("matrices");
+    materialUniformBlock = uniformBlockIndex("material");
+}
+#endif
+
+void AbstractShaderProgramGLTest::uniformBlock() {
+    UniformBlockShader shader;
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    shader.setUniformBlockBinding(shader.matricesUniformBlock, 0);
+    shader.setUniformBlockBinding(shader.materialUniformBlock, 1);
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+#endif
 
 }}
 

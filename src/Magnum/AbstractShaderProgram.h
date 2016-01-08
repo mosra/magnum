@@ -238,6 +238,57 @@ Int normalMatrixUniform = uniformLocation("normalMatrix");
 @requires_gles Explicit uniform location is not supported in WebGL. Use
     @ref uniformLocation() instead.
 
+@anchor AbstractShaderProgram-uniform-block-binding
+### Uniform block bindings
+
+The preferred workflow is to specify uniform block binding directly in the
+shader code, e.g.:
+@code
+// GLSL 4.20, GLSL ES 3.10 or
+#extension GL_ARB_shading_language_420pack: require
+layout(std140, binding = 0) uniform matrices {
+    mat4 projectionMatrix;
+    mat4 transformationMatrix;
+};
+layout(std140, binding = 1) uniform material {
+    vec4 diffuse;
+    vec4 specular;
+};
+@endcode
+
+If you don't have the required version/extension, declare the uniform blocks
+without the `layout()` qualifier, get uniform block index using
+@ref uniformBlockIndex() and then map it to the uniform buffer binding using
+@ref setUniformBlockBinding(). Note that additional syntax changes may be
+needed for GLSL ES.
+@code
+layout(std140) uniform matrices {
+    mat4 projectionMatrix;
+    mat4 transformationMatrix;
+};
+layout(std140) uniform material {
+    vec4 diffuse;
+    vec4 specular;
+};
+@endcode
+@code
+setUniformBlockBinding(uniformBlockIndex("matrices"), 0);
+setUniformBlockBinding(uniformBlockIndex("material"), 1);
+@endcode
+
+@see @ref Buffer::maxUniformBindings()
+@requires_gl31 Extension @extension{ARB,uniform_buffer_object}
+@requires_gl42 Extension @extension{ARB,shading_language_420pack} for explicit
+    uniform block binding instead of using @ref uniformBlockIndex() and
+    @ref setUniformBlockBinding().
+@requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
+@requires_gles31 Explicit uniform block binding is not supported in OpenGL ES
+    3.0 and older. Use @ref uniformBlockIndex() and @ref setUniformBlockBinding()
+    instead.
+@requires_webgl20 Uniform buffers are not available in WebGL 1.0.
+@requires_gles Explicit uniform block binding is not supported in WebGL. Use
+    @ref uniformBlockIndex() and @ref setUniformBlockBinding() instead.
+
 @anchor AbstractShaderProgram-texture-units
 ### Specifying texture binding units
 
@@ -878,6 +929,32 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
             return uniformLocationInternal({name, size - 1});
         }
 
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Get uniform block index
+         * @param name          Uniform block name
+         *
+         * If given uniform block name is not found in the linked shader, a
+         * warning is printed and `0xffffffffu` is returned.
+         * @see @ref setUniformBlockBinding(), @fn_gl{GetUniformBlockIndex}
+         * @requires_gl31 Extension @extension{ARB,uniform_buffer_object}
+         * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
+         * @deprecated_gl Preferred usage is to specify uniform block binding
+         *      explicitly in the shader instead of using this function. See
+         *      @ref AbstractShaderProgram-uniform-block-binding "class documentation"
+         *      for more information.
+         */
+        UnsignedInt uniformBlockIndex(const std::string& name) {
+            return uniformBlockIndexInternal({name.data(), name.size()});
+        }
+
+        /** @overload */
+        template<std::size_t size> UnsignedInt uniformBlockIndex(const char(&name)[size]) {
+            return uniformBlockIndexInternal({name, size - 1});
+        }
+        #endif
+
         /**
          * @brief Set uniform value
          * @param location      Uniform location
@@ -1012,6 +1089,27 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         }
         #endif
 
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Set uniform block binding
+         * @param index     Uniform block index
+         * @param binding   Uniform block binding
+         *
+         * @see @ref uniformBlockIndex(), @ref Buffer::maxUniformBindings(),
+         *      @fn_gl{UniformBlockBinding}
+         * @requires_gl31 Extension @extension{ARB,uniform_buffer_object}
+         * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
+         * @deprecated_gl Preferred usage is to specify uniform block binding
+         *      explicitly in the shader instead of using this function. See
+         *      @ref AbstractShaderProgram-uniform-block-binding "class documentation"
+         *      for more information.
+         */
+        void setUniformBlockBinding(UnsignedInt index, UnsignedInt binding) {
+            glUniformBlockBinding(_id, index, binding);
+        }
+        #endif
+
     private:
         #ifndef MAGNUM_TARGET_WEBGL
         AbstractShaderProgram& setLabelInternal(Containers::ArrayView<const char> label);
@@ -1021,6 +1119,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         void bindFragmentDataLocationIndexedInternal(UnsignedInt location, UnsignedInt index, Containers::ArrayView<const char> name);
         void bindFragmentDataLocationInternal(UnsignedInt location, Containers::ArrayView<const char> name);
         Int uniformLocationInternal(Containers::ArrayView<const char> name);
+        UnsignedInt uniformBlockIndexInternal(Containers::ArrayView<const char> name);
 
         #ifndef MAGNUM_BUILD_DEPRECATED
         void use();
