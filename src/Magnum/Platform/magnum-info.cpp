@@ -492,6 +492,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         #endif
 
         _l(Buffer::uniformOffsetAlignment())
+        _l(Buffer::maxUniformBindings())
         _l(Shader::maxUniformBlocks(Shader::Type::Vertex))
         _l(Shader::maxUniformBlocks(Shader::Type::TessellationControl))
         _l(Shader::maxUniformBlocks(Shader::Type::TessellationEvaluation))
@@ -516,7 +517,6 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         _h(EXT::gpu_shader4)
         #endif
 
-        _l(Buffer::maxUniformBindings())
         _l(AbstractShaderProgram::minTexelOffset())
         _l(AbstractShaderProgram::maxTexelOffset())
     }
