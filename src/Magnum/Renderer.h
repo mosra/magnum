@@ -1309,7 +1309,7 @@ class MAGNUM_EXPORT Renderer {
          * @requires_gles Shader load/store is not available in WebGL.
          */
         void setMemoryBarrier(MemoryBarriers barriers) {
-            glMemoryBarrier(barriers);
+            glMemoryBarrier(GLbitfield(barriers));
         }
 
         /**
@@ -1333,7 +1333,7 @@ class MAGNUM_EXPORT Renderer {
          * @requires_gles Shader load/store is not available in WebGL.
          */
         void setMemoryBarrierByRegion(MemoryBarriers barriers) {
-            glMemoryBarrierByRegion(barriers);
+            glMemoryBarrierByRegion(GLbitfield(barriers));
         }
         #endif
 
