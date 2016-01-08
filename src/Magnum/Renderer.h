@@ -1207,7 +1207,7 @@ class MAGNUM_EXPORT Renderer {
         /*@}*/
         #endif
 
-        /** @{ @name Renderer management */
+        /** @{ @name Renderer synchronization */
 
         /**
          * @brief Flush the pipeline
@@ -1223,6 +1223,123 @@ class MAGNUM_EXPORT Renderer {
          * @see @ref flush(), @fn_gl{Finish}
          */
         static void finish() { glFinish(); }
+
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        /**
+         * @brief Memory barrier
+         *
+         * @see @ref MemoryBarriers, @ref setMemoryBarrier(),
+         *      @ref setMemoryBarrierByRegion()
+         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
+         * @requires_gles31 Shader image load/store is not available in OpenGL
+         *      ES 3.0 and older.
+         * @requires_gles Shader image load/store is not available in WebGL.
+         */
+        enum class MemoryBarrier: GLbitfield {
+            /** Vertex data */
+            VertexAttributeArray = GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT,
+
+            /** Vertex indices */
+            ElementArray = GL_ELEMENT_ARRAY_BARRIER_BIT,
+
+            /** Uniforms */
+            Uniform = GL_UNIFORM_BARRIER_BIT,
+
+            /** Texture fetches */
+            TextureFetch = GL_TEXTURE_FETCH_BARRIER_BIT,
+
+            /** Shader image access */
+            ShaderImageAccess = GL_SHADER_IMAGE_ACCESS_BARRIER_BIT,
+
+            /** Indirect command data */
+            Command = GL_COMMAND_BARRIER_BIT,
+
+            /** Pixel buffer data */
+            PixelBuffer = GL_PIXEL_BUFFER_BARRIER_BIT,
+
+            /** Texture updates */
+            TextureUpdate = GL_TEXTURE_UPDATE_BARRIER_BIT,
+
+            /** Buffer updates */
+            BufferUpdate = GL_BUFFER_UPDATE_BARRIER_BIT,
+
+            /** Framebuffer operations */
+            Framebuffer = GL_FRAMEBUFFER_BARRIER_BIT,
+
+            /** Transform feedback data */
+            TransformFeedback = GL_TRANSFORM_FEEDBACK_BARRIER_BIT,
+
+            /** Atomic counters */
+            AtomicCounter = GL_ATOMIC_COUNTER_BARRIER_BIT,
+
+            /**
+             * Shader storage data
+             * @requires_gl43 Extension @extension{ARB,shader_storage_buffer_object}
+             * @requires_gles31 Shader storage is not available in OpenGL ES
+             *      3.0 and older.
+             * @requires_gles Shader storage is not available in WebGL.
+             */
+            ShaderStorage = GL_ATOMIC_COUNTER_BARRIER_BIT
+        };
+
+        /**
+         * @brief Memory barriers
+         *
+         * @see @ref setMemoryBarrier(), @ref setMemoryBarrierByRegion()
+         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
+         * @requires_gles31 Shader image load/store is not available in OpenGL
+         *      ES 3.0 and older.
+         * @requires_gles Shader image load/store is not available in WebGL.
+         */
+        typedef Containers::EnumSet<MemoryBarrier
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            , GL_VERTEX_ATTRIB_ARRAY_BARRIER_BIT|GL_ELEMENT_ARRAY_BARRIER_BIT|GL_UNIFORM_BARRIER_BIT|GL_TEXTURE_FETCH_BARRIER_BIT|GL_SHADER_IMAGE_ACCESS_BARRIER_BIT|GL_COMMAND_BARRIER_BIT|GL_PIXEL_BUFFER_BARRIER_BIT|GL_TEXTURE_UPDATE_BARRIER_BIT|GL_BUFFER_UPDATE_BARRIER_BIT|GL_FRAMEBUFFER_BARRIER_BIT|GL_TRANSFORM_FEEDBACK_BARRIER_BIT|GL_ATOMIC_COUNTER_BARRIER_BIT|GL_ATOMIC_COUNTER_BARRIER_BIT
+            #endif
+            > MemoryBarriers;
+
+        /**
+         * @brief Set memory barrier
+         *
+         * Calling the function ensures that operations on particular data
+         * after the barrier will reflect all data modifications before the
+         * barrier.
+         * @see @ref setMemoryBarrierByRegion(), @fn_gl{MemoryBarrier}
+         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
+         * @requires_gles31 Shader load/store is not available in OpenGL ES 3.0 and older.
+         * @requires_gles Shader load/store is not available in WebGL.
+         */
+        void setMemoryBarrier(MemoryBarriers barriers) {
+            glMemoryBarrier(barriers);
+        }
+
+        /**
+         * @brief Set memory barrier by region
+         *
+         * Behaves as @ref setMemoryBarrier(), except that the region is
+         * narrowed around area affected by particular fragment shader, thus
+         * only the fragment shader-related barries are supported:
+         *
+         * - @ref MemoryBarrier::AtomicCounter
+         * - @ref MemoryBarrier::Framebuffer
+         * - @ref MemoryBarrier::ShaderImageAccess
+         * - @ref MemoryBarrier::ShaderStorage
+         * - @ref MemoryBarrier::TextureFetch
+         * - @ref MemoryBarrier::Uniform
+         *
+         * @see @fn_gl{MemoryBarrierByRegion}
+         * @requires_gl45 Extension @extension{ARB,ES3_1_compatibility}
+         * @requires_gles31 Shader load/store is not available in OpenGL ES 3.0
+         *      and older.
+         * @requires_gles Shader load/store is not available in WebGL.
+         */
+        void setMemoryBarrierByRegion(MemoryBarriers barriers) {
+            glMemoryBarrierByRegion(barriers);
+        }
+        #endif
+
+        /*@}*/
+
+        /** @{ @name Renderer management */
 
         /**
          * @brief Error status

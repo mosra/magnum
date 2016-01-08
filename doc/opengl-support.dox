@@ -216,7 +216,7 @@ GLSL 4.40                                   | done
 Extension                                   | Status
 ------------------------------------------- | ------
 GLSL 4.50                                   | done
-@extension{ARB,ES3_1_compatibility}         | |
+@extension{ARB,ES3_1_compatibility}         | done
 @extension{ARB,clip_control}                | |
 @extension{ARB,conditional_render_inverted} | done
 @extension{ARB,cull_distance}               | |
