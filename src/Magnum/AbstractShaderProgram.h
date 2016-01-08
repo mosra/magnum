@@ -289,6 +289,27 @@ setUniformBlockBinding(uniformBlockIndex("material"), 1);
 @requires_gles Explicit uniform block binding is not supported in WebGL. Use
     @ref uniformBlockIndex() and @ref setUniformBlockBinding() instead.
 
+@anchor AbstractShaderProgram-shader-storage-block-binding
+### Shader storage block bindings
+
+The workflow is to specify shader storage block binding directly in the shader
+code, e.g.:
+@code
+// GLSL 4.30 or GLSL ES 3.10
+layout(std430, binding = 0) buffer vertices {
+    vec3 position;
+    vec3 color;
+};
+layout(std430, binding = 1) buffer normals {
+    vec3 normal;
+};
+@endcode
+
+@see @ref Buffer::maxShaderStorageBindings()
+@requires_gl43 Extension @extension{ARB,shader_storage_buffer_object}
+@requires_gles31 Shader storage is not available in OpenGL ES 3.0 and older.
+@requires_gles Shader storage is not available in WebGL.
+
 @anchor AbstractShaderProgram-texture-units
 ### Specifying texture binding units
 

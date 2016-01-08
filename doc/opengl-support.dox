@@ -185,7 +185,7 @@ GLSL 4.30                                   | done
 @extension{ARB,program_interface_query}     | |
 @extension{ARB,robust_buffer_access_behavior} | done (nothing to do)
 @extension{ARB,shader_image_size}           | done (shading language only)
-@extension{ARB,shader_storage_buffer_object} | only limit queries
+@extension{ARB,shader_storage_buffer_object} | missing (unneeded) block binding
 @extension{ARB,stencil_texturing}           | done
 @extension{ARB,texture_buffer_range}        | done
 @extension{ARB,texture_query_levels}        | done (shading language only)
