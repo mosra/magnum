@@ -154,31 +154,31 @@ namespace {
 void AbstractShaderProgramGLTest::create() {
     Utility::Resource rs("AbstractShaderProgramGLTest");
 
-    #ifndef MAGNUM_TARGET_GLES
     Shader vert(
+        #ifndef MAGNUM_TARGET_GLES
         #ifndef CORRADE_TARGET_APPLE
         Version::GL210
         #else
         Version::GL310
         #endif
+        #else
+        Version::GLES200
+        #endif
         , Shader::Type::Vertex);
-    #else
-    Shader vert(Version::GLES200, Shader::Type::Vertex);
-    #endif
     vert.addSource(rs.get("MyShader.vert"));
     const bool vertCompiled = vert.compile();
 
-    #ifndef MAGNUM_TARGET_GLES
     Shader frag(
+        #ifndef MAGNUM_TARGET_GLES
         #ifndef CORRADE_TARGET_APPLE
         Version::GL210
         #else
         Version::GL310
         #endif
+        #else
+        Version::GLES200
+        #endif
         , Shader::Type::Fragment);
-    #else
-    Shader frag(Version::GLES200, Shader::Type::Fragment);
-    #endif
     frag.addSource(rs.get("MyShader.frag"));
     const bool fragCompiled = frag.compile();
 
@@ -323,25 +323,28 @@ void AbstractShaderProgramGLTest::createMultipleOutputsIndexed() {
 void AbstractShaderProgramGLTest::uniformNotFound() {
     MyPublicShader program;
 
-    #ifndef MAGNUM_TARGET_GLES
     Shader vert(
+        #ifndef MAGNUM_TARGET_GLES
         #ifndef CORRADE_TARGET_APPLE
         Version::GL210
         #else
         Version::GL310
+        #endif
+        #else
+        Version::GLES200
         #endif
         , Shader::Type::Vertex);
     Shader frag(
+        #ifndef MAGNUM_TARGET_GLES
         #ifndef CORRADE_TARGET_APPLE
         Version::GL210
         #else
         Version::GL310
         #endif
+        #else
+        Version::GLES200
+        #endif
         , Shader::Type::Fragment);
-    #else
-    Shader vert(Version::GLES200, Shader::Type::Vertex);
-    Shader frag(Version::GLES200, Shader::Type::Fragment);
-    #endif
     vert.addSource("void main() { gl_Position = vec4(0.0); }");
     frag.addSource(
         #ifndef CORRADE_TARGET_APPLE
@@ -382,25 +385,28 @@ namespace {
 MyShader::MyShader() {
     Utility::Resource rs("AbstractShaderProgramGLTest");
 
-    #ifndef MAGNUM_TARGET_GLES
     Shader vert(
+        #ifndef MAGNUM_TARGET_GLES
         #ifndef CORRADE_TARGET_APPLE
         Version::GL210
         #else
         Version::GL310
+        #endif
+        #else
+        Version::GLES200
         #endif
         , Shader::Type::Vertex);
     Shader frag(
+        #ifndef MAGNUM_TARGET_GLES
         #ifndef CORRADE_TARGET_APPLE
         Version::GL210
         #else
         Version::GL310
         #endif
+        #else
+        Version::GLES200
+        #endif
         , Shader::Type::Fragment);
-    #else
-    Shader vert(Version::GLES200, Shader::Type::Vertex);
-    Shader frag(Version::GLES200, Shader::Type::Fragment);
-    #endif
     vert.addSource(rs.get("MyShader.vert"));
     frag.addSource(rs.get("MyShader.frag"));
 
