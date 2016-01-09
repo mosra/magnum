@@ -30,6 +30,7 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/OpenGL.h"
+#include "Magnum/Math/Vector3.h"
 
 #ifdef _MSC_VER
 /* Otherwise the member function pointers will have different size based on
@@ -101,6 +102,8 @@ struct ShaderProgramState {
         maxImageUnits,
         maxCombinedShaderOutputResources,
         maxUniformLocations;
+    Vector3i maxComputeWorkGroupCount,
+        maxComputeWorkGroupSize;
     #endif
     GLint minTexelOffset,
         maxTexelOffset,

@@ -108,6 +108,44 @@ Int AbstractShaderProgram::maxComputeWorkGroupInvocations() {
     return value;
 }
 
+Vector3i AbstractShaderProgram::maxComputeWorkGroupCount() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::compute_shader>())
+    #else
+    if(!Context::current().isVersionSupported(Version::GLES310))
+    #endif
+        return {};
+
+    Vector3i& value = Context::current().state().shaderProgram->maxComputeWorkGroupCount;
+
+    if(value.isZero()) {
+        glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 0, &value.x());
+        glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 1, &value.y());
+        glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 2, &value.z());
+    }
+
+    return value;
+}
+
+Vector3i AbstractShaderProgram::maxComputeWorkGroupSize() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::compute_shader>())
+    #else
+    if(!Context::current().isVersionSupported(Version::GLES310))
+    #endif
+        return {};
+
+    Vector3i& value = Context::current().state().shaderProgram->maxComputeWorkGroupSize;
+
+    if(value.isZero()) {
+        glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 0, &value.x());
+        glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 1, &value.y());
+        glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 2, &value.z());
+    }
+
+    return value;
+}
+
 Int AbstractShaderProgram::maxImageUnits() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())

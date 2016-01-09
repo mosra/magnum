@@ -431,9 +431,9 @@ OpenGL function                         | Matching API
 @def_gl{MAX_COMPUTE_SHARED_MEMORY_SIZE} | @ref AbstractShaderProgram::maxComputeSharedMemorySize()
 @def_gl_extension{MAX_COMPUTE_VARIABLE_GROUP_INVOCATIONS,ARB,compute_variable_group_size} | |
 @def_gl_extension{MAX_COMPUTE_VARIABLE_GROUP_SIZE,ARB,compute_variable_group_size} | |
-@def_gl{MAX_COMPUTE_WORK_GROUP_COUNT}   | |
+@def_gl{MAX_COMPUTE_WORK_GROUP_COUNT}   | @ref AbstractShaderProgram::maxComputeWorkGroupCount()
 @def_gl{MAX_COMPUTE_WORK_GROUP_INVOCATIONS} | @ref AbstractShaderProgram::maxComputeWorkGroupInvocations()
-@def_gl{MAX_COMPUTE_WORK_GROUP_SIZE}    | |
+@def_gl{MAX_COMPUTE_WORK_GROUP_SIZE}    | @ref AbstractShaderProgram::maxComputeWorkGroupSize()
 @def_gl{MAX_CULL_DISTANCES}             | |
 @def_gl{MAX_DEBUG_LOGGED_MESSAGES}      | @ref DebugOutput::maxLoggedMessages()
 @def_gl{MAX_DEBUG_MESSAGE_LENGTH}       | @ref DebugOutput::maxMessageLength()

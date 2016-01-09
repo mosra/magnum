@@ -310,7 +310,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     /* Limits and implementation-defined values */
     #define _h(val) Debug() << "\n " << Extensions::GL::val::string() + std::string(":");
     #define _l(val) Debug() << "   " << #val << (sizeof(#val) > 64 ? "\n" + std::string(68, ' ') : std::string(64 - sizeof(#val), ' ')) << val;
-    #define _lvec(val) Debug() << "   " << #val << (sizeof(#val) > 48 ? "\n" + std::string(52, ' ') : std::string(48 - sizeof(#val), ' ')) << val;
+    #define _lvec(val) Debug() << "   " << #val << (sizeof(#val) > 42 ? "\n" + std::string(46, ' ') : std::string(42 - sizeof(#val), ' ')) << val;
 
     Debug() << "Limits and implementation-defined values:";
     _lvec(AbstractFramebuffer::maxViewportSize())
@@ -374,6 +374,8 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
 
         _l(AbstractShaderProgram::maxComputeSharedMemorySize())
         _l(AbstractShaderProgram::maxComputeWorkGroupInvocations())
+        _lvec(AbstractShaderProgram::maxComputeWorkGroupCount())
+        _lvec(AbstractShaderProgram::maxComputeWorkGroupSize())
     }
 
     #ifndef MAGNUM_TARGET_GLES

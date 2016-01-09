@@ -539,7 +539,31 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          */
         static Int maxComputeWorkGroupInvocations();
 
-        /** @todo MAX_COMPUTE_WORK_GROUP_COUNT, MAX_COMPUTE_WORK_GROUP_SIZE */
+        /**
+         * @brief Max supported compute work group count
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If neither extension @extension{ARB,compute_shader}
+         * (part of OpenGL 4.3) nor OpenGL ES 3.1 is available, returns zero
+         * vector.
+         * @see @fn_gl{Get} with @def_gl{MAX_COMPUTE_WORK_GROUP_COUNT}
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_gles Compute shaders are not available in WebGL.
+         */
+        static Vector3i maxComputeWorkGroupCount();
+
+        /**
+         * @brief Max supported compute work group size
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If neither extension @extension{ARB,compute_shader}
+         * (part of OpenGL 4.3) nor OpenGL ES 3.1 is available, returns zero
+         * vector.
+         * @see @fn_gl{Get} with @def_gl{MAX_COMPUTE_WORK_GROUP_SIZE}
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_gles Compute shaders are not available in WebGL.
+         */
+        static Vector3i maxComputeWorkGroupSize();
 
         /**
          * @brief Max supported image unit count
