@@ -445,6 +445,8 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         _h(ARB::shader_storage_buffer_object)
         #endif
 
+        _l(Buffer::shaderStorageOffsetAlignment())
+        _l(Buffer::maxShaderStorageBindings())
         _l(Shader::maxShaderStorageBlocks(Shader::Type::Vertex))
         _l(Shader::maxShaderStorageBlocks(Shader::Type::TessellationControl))
         _l(Shader::maxShaderStorageBlocks(Shader::Type::TessellationEvaluation))
@@ -591,8 +593,6 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         _h(EXT::tessellation_shader)
         #endif
 
-        _l(Buffer::shaderStorageOffsetAlignment())
-        _l(Buffer::maxShaderStorageBindings())
         _l(Shader::maxTessellationControlInputComponents())
         _l(Shader::maxTessellationControlOutputComponents())
         _l(Shader::maxTessellationControlTotalOutputComponents())
