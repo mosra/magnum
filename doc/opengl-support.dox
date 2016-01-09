@@ -80,7 +80,7 @@ GLSL 1.40                                   | done
 @extension{ARB,texture_rectangle}           | done
 @extension{ARB,draw_instanced}              | done
 @extension{ARB,texture_buffer_object}       | done
-@extension{ARB,uniform_buffer_object}       | done
+@extension{ARB,uniform_buffer_object}       | done except for data layout queries
 @extension{ARB,copy_buffer}                 | done
 @extension{EXT,texture_snorm}               | done
 @extension{NV,primitive_restart}            | |
