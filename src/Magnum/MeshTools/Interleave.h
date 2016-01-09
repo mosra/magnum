@@ -133,11 +133,8 @@ would be 21 bytes, causing possible performance loss.
     will be `std::vector` or `std::array`.
 
 @see @ref interleaveInto()
-@todo remove `std::enable_if` when deprecated overloads are removed
 */
-/* enable_if to avoid clash with overloaded function below */
-template<class T, class ...U> typename std::enable_if<!std::is_same<T, Mesh>::value, Containers::Array<char>>::type
-    interleave(const T& first, const U&... next)
+template<class T, class ...U> Containers::Array<char> interleave(const T& first, const U&... next)
 {
     /* Compute buffer size and stride */
     const std::size_t attributeCount = Implementation::AttributeCount{}(first, next...);
