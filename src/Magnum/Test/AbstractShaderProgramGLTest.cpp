@@ -560,18 +560,18 @@ void AbstractShaderProgramGLTest::uniformBlockIndexNotFound() {
         #ifndef MAGNUM_TARGET_GLES
         Version::GL310
         #else
-        Version::GLES200
+        Version::GLES300
         #endif
         , Shader::Type::Vertex);
     Shader frag(
         #ifndef MAGNUM_TARGET_GLES
         Version::GL310
         #else
-        Version::GLES200
+        Version::GLES300
         #endif
         , Shader::Type::Fragment);
     vert.addSource("void main() { gl_Position = vec4(0.0); }");
-    frag.addSource("out vec4 color;\n"
+    frag.addSource("out lowp vec4 color;\n"
                    "void main() { color = vec4(1.0); }");
 
     CORRADE_VERIFY(Shader::compile({vert, frag}));
