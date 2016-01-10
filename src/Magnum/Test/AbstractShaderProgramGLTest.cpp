@@ -29,9 +29,16 @@
 #include "Magnum/AbstractShaderProgram.h"
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
+#include "Magnum/Image.h"
+#include "Magnum/ImageView.h"
+#include "Magnum/ImageFormat.h"
+#include "Magnum/PixelFormat.h"
 #include "Magnum/Shader.h"
+#include "Magnum/Texture.h"
+#include "Magnum/TextureFormat.h"
 #include "Magnum/Math/Matrix.h"
 #include "Magnum/Math/Vector4.h"
+#include "Magnum/Math/Color.h"
 #include "Magnum/Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Test {
@@ -62,6 +69,8 @@ struct AbstractShaderProgramGLTest: AbstractOpenGLTester {
     void uniformBlockIndexNotFound();
     void uniformBlock();
     #endif
+
+    void compute();
 };
 
 AbstractShaderProgramGLTest::AbstractShaderProgramGLTest() {
@@ -86,7 +95,9 @@ AbstractShaderProgramGLTest::AbstractShaderProgramGLTest() {
               #ifndef MAGNUM_TARGET_GLES2
               &AbstractShaderProgramGLTest::createUniformBlocks,
               &AbstractShaderProgramGLTest::uniformBlockIndexNotFound,
-              &AbstractShaderProgramGLTest::uniformBlock
+              &AbstractShaderProgramGLTest::uniformBlock,
+
+              &AbstractShaderProgramGLTest::compute
               #endif
               });
 }
@@ -627,6 +638,84 @@ void AbstractShaderProgramGLTest::uniformBlock() {
     shader.setUniformBlockBinding(shader.materialUniformBlock, 1);
 
     MAGNUM_VERIFY_NO_ERROR();
+}
+
+void AbstractShaderProgramGLTest::compute() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::compute_shader>())
+        CORRADE_SKIP(Extensions::GL::ARB::compute_shader::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current().isVersionSupported(Version::GLES310))
+        CORRADE_SKIP("OpenGL ES 3.1 is not supported.");
+    #endif
+
+    struct ComputeShader: AbstractShaderProgram {
+        explicit ComputeShader() {
+            Utility::Resource rs("AbstractShaderProgramGLTest");
+
+            Shader compute(
+                #ifndef MAGNUM_TARGET_GLES
+                Version::GL430,
+                #else
+                Version::GLES310,
+                #endif
+                Shader::Type::Compute);
+            compute.addSource(rs.get("ComputeShader.comp"));
+            CORRADE_INTERNAL_ASSERT(compute.compile());
+
+            attachShader(compute);
+            link();
+        }
+
+        ComputeShader& setImages(Texture2D& input, Texture2D& output) {
+            input.bindImage(0, 0, ImageAccess::ReadOnly, ImageFormat::RGBA8UI);
+            output.bindImage(1, 0, ImageAccess::WriteOnly, ImageFormat::RGBA8UI);
+            return *this;
+        }
+    } shader;
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    const Color4ub inData[] = {
+        { 10,  20,  30,  40},
+        { 50,  60,  70,  80},
+        { 90, 100, 110, 120},
+        {130, 140, 150, 160}
+    };
+
+    #ifndef MAGNUM_TARGET_GLES
+    const Color4ub outData[] = {
+        { 15,  30,  45,  60},
+        { 75,  90, 105, 120},
+        {135, 150, 165, 180},
+        {195, 210, 225, 240}
+    };
+    #endif
+
+    Texture2D in;
+    in.setStorage(1, TextureFormat::RGBA8UI, {2, 2})
+        .setSubImage(0, {}, ImageView2D{PixelFormat::RGBAInteger, PixelType::UnsignedByte, {2, 2}, inData});
+
+    Texture2D out;
+    out.setStorage(1, TextureFormat::RGBA8UI, {2, 2});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    shader.setImages(in, out)
+        .dispatchCompute({1, 1, 1});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    /** @todo Test on ES */
+    #ifndef MAGNUM_TARGET_GLES
+    const auto data = out.image(0, {PixelFormat::RGBAInteger, PixelType::UnsignedByte}).data();
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(
+        (Corrade::Containers::ArrayView<const Color4ub>{reinterpret_cast<const Color4ub*>(data.data()), 4}),
+        (Corrade::Containers::ArrayView<const Color4ub>{outData}));
+    #endif
 }
 #endif
 

@@ -332,6 +332,13 @@ std::pair<bool, std::string> AbstractShaderProgram::validate() {
     return {success, std::move(message)};
 }
 
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+void AbstractShaderProgram::dispatchCompute(const Vector3ui& workgroupCount) {
+    use();
+    glDispatchCompute(workgroupCount.x(), workgroupCount.y(), workgroupCount.z());
+}
+#endif
+
 void AbstractShaderProgram::use() {
     /* Use only if the program isn't already in use */
     GLuint& current = Context::current().state().shaderProgram->current;

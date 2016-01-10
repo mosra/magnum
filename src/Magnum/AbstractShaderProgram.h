@@ -413,6 +413,13 @@ shader.setTransformation(transformation)
 mesh.draw(shader);
 @endcode
 
+@anchor AbstractShaderProgram-compute-workflow
+## Compute workflow
+
+Add just the @ref Shader::Type::Compute shader and implement uniform/texture
+setting functions as needed. After setting up required parameters call
+@ref dispatchCompute().
+
 @anchor AbstractShaderProgram-types
 ## Mapping between GLSL and Magnum types
 
@@ -755,6 +762,21 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          *      @fn_gl{GetProgramInfoLog}
          */
         std::pair<bool, std::string> validate();
+
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        /**
+         * @brief Dispatch compute
+         * @param workgroupCount    Workgroup count in given dimension
+         *
+         * Valid only on programs with compute shader attached.
+         * @see @fn_gl{DispatchCompute}
+         * @requires_gl43 Extension @extension{ARB,compute_shader}
+         * @requires_gles31 Compute shaders are not available in OpenGL ES 3.0
+         *      and older.
+         * @requires_gles Compute shaders are not available in WebGL.
+         */
+        void dispatchCompute(const Vector3ui& workgroupCount);
+        #endif
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**

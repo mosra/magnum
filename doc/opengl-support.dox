@@ -173,7 +173,7 @@ GLSL 4.30                                   | done
 @extension{ARB,arrays_of_arrays}            | done (shading language only)
 @extension{ARB,ES3_compatibility}           | only conservative sample query and compression formats
 @extension{ARB,clear_buffer_object}         | |
-@extension{ARB,compute_shader}              | |
+@extension{ARB,compute_shader}              | done except for indirect dispatch
 @extension{ARB,copy_image}                  | |
 @extension{KHR,debug}                       | missing log retrieval, sync, pipeline and sampler label
 @extension{ARB,explicit_uniform_location}   | done

@@ -1,0 +1,7 @@
+layout(local_size_x = 2, local_size_y = 2) in;
+layout(binding = 0, rgba8ui) uniform mediump uimage2D inData;
+layout(binding = 1, rgba8ui) uniform mediump uimage2D outData;
+
+void main() {
+    imageStore(outData, ivec2(gl_GlobalInvocationID.xy), imageLoad(inData, ivec2(gl_GlobalInvocationID.xy))*3u/2u);
+}

@@ -121,7 +121,7 @@ OpenGL function                         | Matching API
 @fn_gl{DepthRangeArray}                 | |
 @fn_gl{DepthRangeIndexed}               | |
 @fn_gl{DetachShader}                    | |
-@fn_gl{DispatchCompute}                 | |
+@fn_gl{DispatchCompute}                 | @ref AbstractShaderProgram::DispatchCompute()
 @fn_gl_extension{DispatchComputeGroupSize,ARB,compute_variable_group_size} | |
 @fn_gl{DispatchComputeIndirect}         | |
 @fn_gl{DrawArrays}, \n @fn_gl{DrawArraysInstanced}, \n @fn_gl{DrawArraysInstancedBaseInstance}, \n @fn_gl{DrawElements}, \n @fn_gl{DrawRangeElements}, \n @fn_gl{DrawElementsBaseVertex}, \n @fn_gl{DrawRangeElementsBaseVertex}, \n @fn_gl{DrawElementsInstanced}, \n @fn_gl{DrawElementsInstancedBaseInstance}, \n @fn_gl{DrawElementsInstancedBaseVertex}, \n @fn_gl{DrawElementsInstancedBaseVertexBaseInstance} | @ref Mesh::draw(), \n @ref MeshView::draw()
