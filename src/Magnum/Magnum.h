@@ -486,6 +486,11 @@ class CubeMapTextureArray;
 class Extension;
 class Framebuffer;
 
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+enum class ImageFormat: GLenum;
+enum class ImageAccess: GLenum;
+#endif
+
 template<UnsignedInt> class Image;
 typedef Image<1> Image1D;
 typedef Image<2> Image2D;

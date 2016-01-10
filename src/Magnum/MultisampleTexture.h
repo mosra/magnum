@@ -161,6 +161,82 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
         explicit MultisampleTexture(NoCreateT) noexcept: AbstractTexture{NoCreate, Implementation::multisampleTextureTarget<dimensions>()} {}
 
         /**
+         * @brief Bind texture to given image unit
+         * @param imageUnit Image unit
+         * @param access    Image access
+         * @param format    Image format
+         *
+         * Available only on 2D multisample textures.
+         * @note This function is meant to be used only internally from
+         *      @ref AbstractShaderProgram subclasses. See its documentation
+         *      for more information.
+         * @see @ref bindImages(Int, std::initializer_list<AbstractTexture*>),
+         *      @ref bindImageLayered(), @ref unbindImage(), @ref unbindImages(),
+         *      @ref AbstractShaderProgram::maxImageUnits(),
+         *      @fn_gl{BindImageTexture}
+         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
+         */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        template<UnsignedInt d = dimensions, class = typename std::enable_if<d == 2>::type>
+        #endif
+        void bindImage(Int imageUnit, ImageAccess access, ImageFormat format) {
+            bindImageInternal(imageUnit, 0, false, 0, access, format);
+        }
+
+        /**
+         * @brief Bind texture layer to given image unit
+         * @param imageUnit Image unit
+         * @param layer     Texture layer
+         * @param access    Image access
+         * @param format    Image format
+         *
+         * Available only on 2D multisample texture arrays.
+         * @note This function is meant to be used only internally from
+         *      @ref AbstractShaderProgram subclasses. See its documentation
+         *      for more information.
+         * @see @ref bindImages(Int, std::initializer_list<AbstractTexture*>),
+         *      @ref bindImageLayered(), @ref unbindImage(), @ref unbindImages(),
+         *      @ref AbstractShaderProgram::maxImageUnits(),
+         *      @fn_gl{BindImageTexture}
+         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
+         * @requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
+         *      @es_extension{OES,texture_storage_multisample_2d_array} for
+         *      multisample 2D array textures.
+         */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        template<UnsignedInt d = dimensions, class = typename std::enable_if<d == 3>::type>
+        #endif
+        void bindImage(Int imageUnit, Int layer, ImageAccess access, ImageFormat format) {
+            bindImageInternal(imageUnit, 0, false, layer, access, format);
+        }
+
+        /**
+         * @brief Bind layered texture to given image unit
+         * @param imageUnit Image unit
+         * @param access    Image access
+         * @param format    Image format
+         *
+         * Available only on 2D multisample texture arrays.
+         * @note This function is meant to be used only internally from
+         *      @ref AbstractShaderProgram subclasses. See its documentation
+         *      for more information.
+         * @see @ref bindImages(Int, std::initializer_list<AbstractTexture*>),
+         *      @ref bindImage(), @ref unbindImages(), @ref unbindImage(),
+         *      @ref AbstractShaderProgram::maxImageUnits(),
+         *      @fn_gl{BindImageTexture}
+         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
+         * @requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
+         *      @es_extension{OES,texture_storage_multisample_2d_array} for
+         *      multisample 2D array textures.
+         */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        template<UnsignedInt d = dimensions, class = typename std::enable_if<d == 3>::type>
+        #endif
+        void bindImageLayered(Int imageUnit, ImageAccess access, ImageFormat format) {
+            bindImageInternal(imageUnit, 0, true, 0, access, format);
+        }
+
+        /**
          * @brief Set storage
          * @param samples           Sample count
          * @param internalFormat    Internal format

@@ -26,6 +26,7 @@
 #include <Corrade/TestSuite/Compare/Container.h>
 
 #include "Magnum/MultisampleTexture.h"
+#include "Magnum/ImageFormat.h"
 #include "Magnum/TextureFormat.h"
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Test/AbstractOpenGLTester.h"
@@ -46,6 +47,9 @@ struct MultisampleTextureGLTest: AbstractOpenGLTester {
 
     void bind2D();
     void bind2DArray();
+
+    void bindImage2D();
+    void bindImage2DArray();
 
     void storage2D();
     void storage2DArray();
@@ -69,6 +73,9 @@ MultisampleTextureGLTest::MultisampleTextureGLTest() {
 
               &MultisampleTextureGLTest::bind2D,
               &MultisampleTextureGLTest::bind2DArray,
+
+              &MultisampleTextureGLTest::bindImage2D,
+              &MultisampleTextureGLTest::bindImage2DArray,
 
               &MultisampleTextureGLTest::storage2D,
               &MultisampleTextureGLTest::storage2DArray,
@@ -238,6 +245,77 @@ void MultisampleTextureGLTest::bind2DArray() {
     AbstractTexture::unbind(7, 3);
 
     MAGNUM_VERIFY_NO_ERROR();
+}
+
+void MultisampleTextureGLTest::bindImage2D() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())
+        CORRADE_SKIP(Extensions::GL::ARB::shader_image_load_store::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::GL::OES::texture_storage_multisample_2d_array>())
+        CORRADE_SKIP(Extensions::GL::OES::texture_storage_multisample_2d_array::string() + std::string(" is not supported."));
+    if(!Context::current().isVersionSupported(Version::GLES310))
+        CORRADE_SKIP("OpenGL ES 3.1 is not supported.");
+    #endif
+
+    MultisampleTexture2D texture;
+    texture.setStorage(4, TextureFormat::RGBA8, Vector2i{32})
+        .bindImage(2, ImageAccess::ReadWrite, ImageFormat::RGBA8);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbindImage(2);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    #ifndef MAGNUM_TARGET_GLES
+    AbstractTexture::bindImages(1, {&texture, nullptr, &texture});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbindImages(1, 3);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    #endif
+}
+
+void MultisampleTextureGLTest::bindImage2DArray() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())
+        CORRADE_SKIP(Extensions::GL::ARB::shader_image_load_store::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::GL::OES::texture_storage_multisample_2d_array>())
+        CORRADE_SKIP(Extensions::GL::OES::texture_storage_multisample_2d_array::string() + std::string(" is not supported."));
+    if(!Context::current().isVersionSupported(Version::GLES310))
+        CORRADE_SKIP("OpenGL ES 3.1 is not supported.");
+    #endif
+
+    MultisampleTexture2DArray texture;
+    texture.setStorage(4, TextureFormat::RGBA8, {32, 32, 4})
+        .bindImage(2, 1, ImageAccess::ReadWrite, ImageFormat::RGBA8);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    texture.bindImageLayered(3, ImageAccess::ReadWrite, ImageFormat::RGBA8);
+
+    AbstractTexture::unbindImage(2);
+    AbstractTexture::unbindImage(3);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    #ifndef MAGNUM_TARGET_GLES
+    AbstractTexture::bindImages(1, {&texture, nullptr, &texture});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbindImages(1, 3);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    #endif
 }
 
 void MultisampleTextureGLTest::storage2D() {

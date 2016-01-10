@@ -28,6 +28,7 @@
 #include "Magnum/Buffer.h"
 #include "Magnum/BufferTexture.h"
 #include "Magnum/BufferTextureFormat.h"
+#include "Magnum/ImageFormat.h"
 #include "Magnum/Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Test {
@@ -40,6 +41,8 @@ struct BufferTextureGLTest: AbstractOpenGLTester {
     void wrap();
 
     void bind();
+    void bindImage();
+
     void setBuffer();
     void setBufferOffset();
 };
@@ -50,6 +53,8 @@ BufferTextureGLTest::BufferTextureGLTest() {
               &BufferTextureGLTest::wrap,
 
               &BufferTextureGLTest::bind,
+              &BufferTextureGLTest::bindImage,
+
               &BufferTextureGLTest::setBuffer,
               &BufferTextureGLTest::setBufferOffset});
 }
@@ -132,6 +137,43 @@ void BufferTextureGLTest::bind() {
     AbstractTexture::unbind(7, 3);
 
     MAGNUM_VERIFY_NO_ERROR();
+}
+
+void BufferTextureGLTest::bindImage() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_buffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_buffer_object::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())
+        CORRADE_SKIP(Extensions::GL::ARB::shader_image_load_store::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_buffer>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_buffer::string() + std::string(" is not supported."));
+    if(!Context::current().isVersionSupported(Version::GLES310))
+        CORRADE_SKIP("OpenGL ES 3.1 is not supported.");
+    #endif
+
+    Buffer buffer;
+    buffer.setData({nullptr, 32}, BufferUsage::StaticDraw);
+
+    BufferTexture texture;
+    texture.setBuffer(BufferTextureFormat::RGBA8, buffer)
+        .bindImage(2, ImageAccess::ReadWrite, ImageFormat::RGBA8);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbindImage(2);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    #ifndef MAGNUM_TARGET_GLES
+    AbstractTexture::bindImages(1, {&texture, nullptr, &texture});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbindImages(1, 3);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    #endif
 }
 
 void BufferTextureGLTest::setBuffer() {

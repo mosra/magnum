@@ -31,6 +31,9 @@
 #endif
 #include "Magnum/CubeMapTexture.h"
 #include "Magnum/Image.h"
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+#include "Magnum/ImageFormat.h"
+#endif
 #include "Magnum/PixelFormat.h"
 #include "Magnum/TextureFormat.h"
 #include "Magnum/Math/Color.h"
@@ -47,6 +50,9 @@ struct CubeMapTextureGLTest: AbstractOpenGLTester {
     void wrap();
 
     void bind();
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    void bindImage();
+    #endif
 
     void sampling();
     void samplingSRGBDecode();
@@ -116,6 +122,9 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
               &CubeMapTextureGLTest::wrap,
 
               &CubeMapTextureGLTest::bind,
+              #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+              &CubeMapTextureGLTest::bindImage,
+              #endif
 
               &CubeMapTextureGLTest::sampling,
               &CubeMapTextureGLTest::samplingSRGBDecode,
@@ -267,6 +276,41 @@ void CubeMapTextureGLTest::bind() {
 
     MAGNUM_VERIFY_NO_ERROR();
 }
+
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+void CubeMapTextureGLTest::bindImage() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())
+        CORRADE_SKIP(Extensions::GL::ARB::shader_image_load_store::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current().isVersionSupported(Version::GLES310))
+        CORRADE_SKIP("OpenGL ES 3.1 is not supported.");
+    #endif
+
+    CubeMapTexture texture;
+    texture.setStorage(1, TextureFormat::RGBA8, Vector2i{32})
+        .bindImage(2, 0, CubeMapTexture::Coordinate::NegativeX, ImageAccess::ReadWrite, ImageFormat::RGBA8);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    texture.bindImageLayered(3, 0, ImageAccess::ReadWrite, ImageFormat::RGBA8);
+
+    AbstractTexture::unbindImage(2);
+    AbstractTexture::unbindImage(3);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    #ifndef MAGNUM_TARGET_GLES
+    AbstractTexture::bindImages(1, {&texture, nullptr, &texture});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbindImages(1, 3);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    #endif
+}
+#endif
 
 void CubeMapTextureGLTest::sampling() {
     CubeMapTexture texture;

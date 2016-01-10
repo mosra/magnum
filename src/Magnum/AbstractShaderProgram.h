@@ -99,9 +99,10 @@ MyShader& setNormalMatrix(const Matrix3x3& matrix) {
     return *this;
 }
 @endcode
--   **Texture setting functions** in which you bind the textures
-    to particular texture units using @ref Texture::bind() "*Texture::bind()"
-    and equivalents, for example:
+-   **Texture and texture image setting functions** in which you bind the
+    textures/images to particular texture/image units using
+    @ref Texture::bind() "*Texture::bind()" /
+    @ref Texture::bindImage() "*Texture::bindImage()" and similar, for example:
 @code
 MyShader& setDiffuseTexture(Texture2D& texture) {
     texture.bind(0);
@@ -311,9 +312,9 @@ layout(std430, binding = 1) buffer normals {
 @requires_gles Shader storage is not available in WebGL.
 
 @anchor AbstractShaderProgram-texture-units
-### Specifying texture binding units
+### Specifying texture and image binding units
 
-The preferred workflow is to specify texture binding unit directly in the
+The preferred workflow is to specify texture/image binding unit directly in the
 shader code, e.g.:
 @code
 // GLSL 4.20, GLSL ES 3.10 or
@@ -335,7 +336,7 @@ setUniform(uniformLocation("diffuseTexture"), 0);
 setUniform(uniformLocation("specularTexture"), 1);
 @endcode
 
-@see @ref Shader::maxTextureImageUnits()
+@see @ref Shader::maxTextureImageUnits(), @ref maxImageUnits()
 @requires_gl42 Extension @extension{ARB,shading_language_420pack} for explicit
     texture binding unit instead of using
     @ref setUniform(Int, const T&) "setUniform(Int, Int)".

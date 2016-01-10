@@ -27,6 +27,7 @@
 
 #include <string>
 #include <vector>
+#include <Corrade/Containers/Array.h>
 
 #include "Magnum/CubeMapTexture.h"
 
@@ -140,6 +141,9 @@ struct TextureState {
     #endif
 
     Containers::Array<std::pair<GLenum, GLuint>> bindings;
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    Containers::Array<std::tuple<GLuint, GLint, GLboolean, GLint, GLenum>> imageBindings;
+    #endif
 };
 
 }}

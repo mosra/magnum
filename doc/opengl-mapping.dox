@@ -60,7 +60,7 @@ OpenGL function                         | Matching API
 @fn_gl{BindFragDataLocation}            | @ref AbstractShaderProgram::bindFragmentDataLocation()
 @fn_gl{BindFragDataLocationIndexed}     | @ref AbstractShaderProgram::bindFragmentDataLocationIndexed()
 @fn_gl{BindFramebuffer}                 | @ref Framebuffer::bind()
-@fn_gl{BindImageTexture}, \n @fn_gl{BindImageTextures} | |
+@fn_gl{BindImageTexture}, \n @fn_gl{BindImageTextures} | @ref AbstractTexture::unbindImage(), \n @ref AbstractTexture::unbindImages(), \n @ref AbstractTexture::bindImages(), \n @ref Texture::bindImage(), \n @ref Texture::bindImageLayered(), \n @ref TextureArray::bindImage(), \n @ref TextureArray::bindImageLayered(), \n @ref CubeMapTexture::bindImage(), \n @ref CubeMapTexture::bindImageLayered(), \n @ref CubeMapTextureArray::bindImage(), \n @ref CubeMapTextureArray::bindImageLayered(), \n @ref MultisampleTexture::bindImage(), \n @ref MultisampleTexture::bindImageLayered(), \n @ref RectangleTexture::bindImage(), \n @ref BufferTexture::bindImage()
 @fn_gl{BindProgramPipeline}             | |
 @fn_gl{BindRenderbuffer}                | not needed, handled internally in @ref Renderbuffer
 @fn_gl{BindSampler}, \n @fn_gl{BindSamplers} | |

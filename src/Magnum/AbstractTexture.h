@@ -69,13 +69,13 @@ documentation for details.
 @anchor AbstractTexture-performance-optimization
 ## Performance optimizations and security
 
-The engine tracks currently bound textures in all available texture units to
-avoid unnecessary calls to @fn_gl{ActiveTexture} and @fn_gl{BindTexture}.
-Texture configuration functions use dedicated highest available texture unit
-to not affect active bindings in user units. Texture limits and
-implementation-defined values (such as @ref maxColorSamples()) are cached, so
-repeated queries don't result in repeated @fn_gl{Get} calls. See also
-@ref Context::resetState() and @ref Context::State::Textures.
+The engine tracks currently bound textures and images in all available texture
+units to avoid unnecessary calls to @fn_gl{ActiveTexture}, @fn_gl{BindTexture}
+and @fn_gl{BindImageTexture}. Texture configuration functions use dedicated
+highest available texture unit to not affect active bindings in user units.
+Texture limits and implementation-defined values (such as @ref maxColorSamples())
+are cached, so repeated queries don't result in repeated @fn_gl{Get} calls. See
+also @ref Context::resetState() and @ref Context::State::Textures.
 
 If @extension{ARB,direct_state_access} (part of OpenGL 4.5) is available,
 @ref bind(Int) and @ref unbind(Int) use @fn_gl{BindTextureUnit}. Otherwise, if
@@ -209,13 +209,14 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         /**
          * @brief Unbind textures in given range of texture units
          *
-         * Unbinds all texture in the range @f$ [ firstTextureUnit ; firstTextureUnit + count ) @f$.
+         * Unbinds all textures in the range @f$ [ firstTextureUnit ; firstTextureUnit + count ) @f$.
          * If @extension{ARB,multi_bind} (part of OpenGL 4.4) is not available,
          * the feature is emulated with sequence of @ref unbind(Int) calls.
          * @note This function is meant to be used only internally from
          *      @ref AbstractShaderProgram subclasses. See its documentation
          *      for more information.
-         * @see @ref Shader::maxCombinedTextureImageUnits(), @fn_gl{BindTextures}
+         * @see @ref bind(), @ref Shader::maxCombinedTextureImageUnits(),
+         *      @fn_gl{BindTextures}
          */
         static void unbind(Int firstTextureUnit, std::size_t count);
 
@@ -233,6 +234,71 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          * @see @ref Shader::maxCombinedTextureImageUnits(), @fn_gl{BindTextures}
          */
         static void bind(Int firstTextureUnit, std::initializer_list<AbstractTexture*> textures);
+
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        /**
+         * @brief Unbind any image from given image unit
+         *
+         * @note This function is meant to be used only internally from
+         *      @ref AbstractShaderProgram subclasses. See its documentation
+         *      for more information.
+         * @see @ref Texture::bindImage() "*Texture::bindImage()",
+         *      @ref Texture::bindImageLayered() "*Texture::bindImageLayered()",
+         *      @ref unbindImages(), @ref bindImages(),
+         *      @ref AbstractShaderProgram::maxImageUnits(),
+         *      @fn_gl{BindImageTexture}
+         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
+         * @requires_gles31 Shader image load/store is not available in OpenGL
+         *      ES 3.0 and older.
+         * @requires_gles Shader image load/store is not available in WebGL.
+         */
+        static void unbindImage(Int imageUnit);
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Unbind images in given range of image units
+         *
+         * Unbinds all texture in the range @f$ [ firstImageUnit ; firstImageUnit + count ) @f$.
+         * @note This function is meant to be used only internally from
+         *      @ref AbstractShaderProgram subclasses. See its documentation
+         *      for more information.
+         * @see @ref Texture::bindImage() "*Texture::bindImage()",
+         *      @ref Texture::bindImageLayered() "*Texture::bindImageLayered()",
+         *      @ref unbindImage(), @ref bindImages(),
+         *      @ref AbstractShaderProgram::maxImageUnits(),
+         *      @fn_gl{BindImageTextures}
+         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
+         * @requires_gl44 Extension @extension{ARB,multi_bind}
+         * @requires_gl Multi bind is not available in OpenGL ES and WebGL.
+         */
+        static void unbindImages(Int firstImageUnit, std::size_t count) {
+            bindImagesInternal(firstImageUnit, {nullptr, count});
+        }
+
+        /**
+         * @brief Bind textures to given range of texture units
+         *
+         * Binds first level of given texture in the list to @p firstImageUnit,
+         * second to `firstTextureUnit + 1` etc. 3D, cube map and array
+         * textures are bound as layered targets. If any texture is `nullptr`,
+         * given image unit is unbound.
+         * @note This function is meant to be used only internally from
+         *      @ref AbstractShaderProgram subclasses. See its documentation
+         *      for more information.
+         * @see @ref Texture::bindImage() "*Texture::bindImage()",
+         *      @ref Texture::bindImageLayered() "*Texture::bindImageLayered()",
+         *      @ref unbindImages(), @ref unbindImage(),
+         *      @ref AbstractShaderProgram::maxImageUnits(),
+         *      @fn_gl{BindImageTextures}
+         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
+         * @requires_gl44 Extension @extension{ARB,multi_bind}
+         * @requires_gl Multi bind is not available in OpenGL ES and WebGL.
+         */
+        static void bindImages(Int firstImageUnit, std::initializer_list<AbstractTexture*> textures) {
+            bindImagesInternal(firstImageUnit, {textures.begin(), textures.size()});
+        }
+        #endif
 
         /** @brief Copying is not allowed */
         AbstractTexture(const AbstractTexture&) = delete;
@@ -342,6 +408,10 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         static Int compressedBlockDataSize(GLenum target, TextureFormat format);
         #endif
 
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        static void bindImagesInternal(Int firstImageUnit, Containers::ArrayView<AbstractTexture* const> textures);
+        #endif
+
         explicit AbstractTexture(GLenum target);
         explicit AbstractTexture(NoCreateT, GLenum target) noexcept: _target{target}, _id{0}, _flags{ObjectFlag::DeleteOnDestruction} {}
         explicit AbstractTexture(GLuint id, GLenum target, ObjectFlags flags) noexcept: _target{target}, _id{id}, _flags{flags} {}
@@ -351,6 +421,10 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         #endif
 
         void MAGNUM_LOCAL createIfNotAlready();
+
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        void bindImageInternal(Int imageUnit, Int level, bool layered, Int layer, ImageAccess access, ImageFormat format);
+        #endif
 
         /* Unlike bind() this also sets the texture binding unit as active */
         void MAGNUM_LOCAL bindInternal();

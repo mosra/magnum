@@ -269,6 +269,62 @@ AbstractTexture& AbstractTexture::setLabelInternal(const Containers::ArrayView<c
 }
 #endif
 
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+void AbstractTexture::unbindImage(const Int imageUnit) {
+    Implementation::TextureState& textureState = *Context::current().state().texture;
+
+    /* If already unbound in given image unit, nothing to do */
+    if(std::get<0>(textureState.imageBindings[imageUnit]) == 0) return;
+
+    /* Update state tracker, bind the texture to the unit */
+    std::get<0>(textureState.imageBindings[imageUnit]) = 0;
+    glBindImageTexture(imageUnit, 0, 0, false, 0, GL_READ_ONLY, GL_R8);
+}
+
+#ifndef MAGNUM_TARGET_GLES
+/** @todoc const Containers::ArrayView makes Doxygen grumpy */
+void AbstractTexture::bindImagesInternal(const Int firstImageUnit, Containers::ArrayView<AbstractTexture* const> textures) {
+    Implementation::TextureState& textureState = *Context::current().state().texture;
+
+    /* Create array of IDs and also update bindings in state tracker */
+    Containers::Array<GLuint> ids{textures ? textures.size() : 0};
+    bool different = false;
+    for(std::size_t i = 0; i != textures.size(); ++i) {
+        const std::tuple<GLuint, GLint, GLboolean, GLint, GLenum> state = textures && textures[i] ?
+            std::tuple<GLuint, GLint, GLboolean, GLint, GLenum>(textures[i]->_id, 0, true, 0, GL_READ_WRITE) :
+            std::tuple<GLuint, GLint, GLboolean, GLint, GLenum>(0, 0, false, 0, GL_READ_ONLY);
+
+        if(textures) {
+            if(textures[i]) {
+                textures[i]->createIfNotAlready();
+            }
+            ids[i] = std::get<0>(state);
+        }
+
+        if(textureState.imageBindings[firstImageUnit + i] != state) {
+            different = true;
+            textureState.imageBindings[firstImageUnit + i] = state;
+        }
+    }
+
+    /* Avoid doing the binding if there is nothing different */
+    if(different) glBindImageTextures(firstImageUnit, textures.size(), ids);
+}
+#endif
+
+void AbstractTexture::bindImageInternal(const Int imageUnit, const Int level, const bool layered, const Int layer, const ImageAccess access, const ImageFormat format) {
+    Implementation::TextureState& textureState = *Context::current().state().texture;
+    const std::tuple<GLuint, GLint, GLboolean, GLint, GLenum> state{_id, level, layered, layer, GLenum(access)};
+
+    /* If already bound in given texture unit, nothing to do */
+    if(textureState.imageBindings[imageUnit] == state) return;
+
+    /* Update state tracker, bind the texture to the unit */
+    textureState.imageBindings[imageUnit] = state;
+    glBindImageTexture(imageUnit, _id, level, layered, layer, GLenum(access), GLenum(format));
+}
+#endif
+
 void AbstractTexture::bind(Int textureUnit) {
     Implementation::TextureState& textureState = *Context::current().state().texture;
 

@@ -166,6 +166,55 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          */
         explicit CubeMapTexture(NoCreateT) noexcept: AbstractTexture{NoCreate, GL_TEXTURE_CUBE_MAP} {}
 
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        /**
+         * @brief Bind level of given cube map texture coordinate to given image unit
+         * @param imageUnit     Image unit
+         * @param level         Texture level
+         * @param coordinate    Cube map coordinate
+         * @param access        Image access
+         * @param format        Image format
+         *
+         * @note This function is meant to be used only internally from
+         *      @ref AbstractShaderProgram subclasses. See its documentation
+         *      for more information.
+         * @see @ref bindImages(Int, std::initializer_list<AbstractTexture*>),
+         *      @ref bindImageLayered(), @ref unbindImage(), @ref unbindImages(),
+         *      @ref AbstractShaderProgram::maxImageUnits(),
+         *      @fn_gl{BindImageTexture}
+         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
+         * @requires_gles31 Shader image load/store is not available in OpenGL
+         *      ES 3.0 and older.
+         * @requires_gles Shader image load/store is not available in WebGL.
+         */
+        void bindImage(Int imageUnit, Int level, Coordinate coordinate, ImageAccess access, ImageFormat format) {
+            bindImageInternal(imageUnit, level, false, GLenum(coordinate) - GL_TEXTURE_CUBE_MAP_POSITIVE_X, access, format);
+        }
+
+        /**
+         * @brief Bind level of layered cube map texture to given image unit
+         * @param imageUnit Image unit
+         * @param level     Texture level
+         * @param access    Image access
+         * @param format    Image format
+         *
+         * @note This function is meant to be used only internally from
+         *      @ref AbstractShaderProgram subclasses. See its documentation
+         *      for more information.
+         * @see @ref bindImages(Int, std::initializer_list<AbstractTexture*>),
+         *      @ref bindImage(), @ref unbindImage(), @ref unbindImages(),
+         *      @ref AbstractShaderProgram::maxImageUnits(),
+         *      @fn_gl{BindImageTexture}
+         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
+         * @requires_gles31 Shader image load/store is not available in OpenGL
+         *      ES 3.0 and older.
+         * @requires_gles Shader image load/store is not available in WebGL.
+         */
+        void bindImageLayered(Int imageUnit, Int level, ImageAccess access, ImageFormat format) {
+            bindImageInternal(imageUnit, level, true, 0, access, format);
+        }
+        #endif
+
         #ifndef MAGNUM_TARGET_GLES2
         /**
          * @copybrief Texture::setBaseLevel()

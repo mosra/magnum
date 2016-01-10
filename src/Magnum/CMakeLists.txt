@@ -187,6 +187,7 @@ if(NOT TARGET_WEBGL)
             BufferTexture.h
             BufferTextureFormat.h
             CubeMapTextureArray.h
+            ImageFormat.h
             MultisampleTexture.h)
     endif()
 

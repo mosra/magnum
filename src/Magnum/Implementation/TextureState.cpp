@@ -387,12 +387,29 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxTextureUnits);
     CORRADE_INTERNAL_ASSERT(maxTextureUnits > 0);
     bindings = Containers::Array<std::pair<GLenum, GLuint>>{Containers::ValueInit, std::size_t(maxTextureUnits)};
+
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    /* Allocate image bindings array to hold all possible image units */
+    #ifndef MAGNUM_TARGET_GLES
+    if(context.isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())
+    #else
+    if(context.isVersionSupported(Version::GLES310))
+    #endif
+    {
+        GLint maxImageUnits;
+        glGetIntegerv(GL_MAX_IMAGE_UNITS, &maxImageUnits);
+        imageBindings = Containers::Array<std::tuple<GLuint, GLint, GLboolean, GLint, GLenum>>{Containers::ValueInit, std::size_t(maxImageUnits)};
+    }
+    #endif
 }
 
 TextureState::~TextureState() = default;
 
 void TextureState::reset() {
     std::fill_n(bindings.begin(), bindings.size(), std::pair<GLenum, GLuint>{{}, State::DisengagedBinding});
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    std::fill_n(imageBindings.begin(), imageBindings.size(), std::tuple<GLuint, GLint, GLboolean, GLint, GLenum>{State::DisengagedBinding, 0, false, 0, 0});
+    #endif
 }
 
 }}

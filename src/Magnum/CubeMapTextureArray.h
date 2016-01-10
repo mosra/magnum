@@ -174,6 +174,53 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
             #endif
 
         /**
+         * @brief Bind level of given texture layer to given image unit
+         * @param imageUnit Image unit
+         * @param level     Texture level
+         * @param layer     Texture layer
+         * @param access    Image access
+         * @param format    Image format
+         *
+         * Layer is equivalent to layer * 6 + number of texture face, i.e. +X
+         * is `0` and so on, in order of (+X, -X, +Y, -Y, +Z, -Z).
+         * @note This function is meant to be used only internally from
+         *      @ref AbstractShaderProgram subclasses. See its documentation
+         *      for more information.
+         * @see @ref bindImages(Int, std::initializer_list<AbstractTexture*>),
+         *      @ref bindImageLayered(), @ref unbindImage(), @ref unbindImages(),
+         *      @ref AbstractShaderProgram::maxImageUnits(),
+         *      @fn_gl{BindImageTexture}
+         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
+         * @requires_gles31 Shader image load/store is not available in OpenGL
+         *      ES 3.0 and older.
+         */
+        void bindImage(Int imageUnit, Int level, Int layer, ImageAccess access, ImageFormat format) {
+            bindImageInternal(imageUnit, level, false, layer, access, format);
+        }
+
+        /**
+         * @brief Bind level of layered texture to given image unit
+         * @param imageUnit Image unit
+         * @param level     Texture level
+         * @param access    Image access
+         * @param format    Image format
+         *
+         * @note This function is meant to be used only internally from
+         *      @ref AbstractShaderProgram subclasses. See its documentation
+         *      for more information.
+         * @see @ref bindImages(Int, std::initializer_list<AbstractTexture*>),
+         *      @ref bindImage(), @ref unbindImage(), @ref unbindImages(),
+         *      @ref AbstractShaderProgram::maxImageUnits(),
+         *      @fn_gl{BindImageTexture}
+         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
+         * @requires_gles31 Shader image load/store is not available in OpenGL
+         *      ES 3.0 and older.
+         */
+        void bindImageLayered(Int imageUnit, Int level, ImageAccess access, ImageFormat format) {
+            bindImageInternal(imageUnit, level, true, 0, access, format);
+        }
+
+        /**
          * @copybrief Texture::setBaseLevel()
          * @return Reference to self (for method chaining)
          *

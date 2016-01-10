@@ -29,6 +29,7 @@
 #include "Magnum/configure.h"
 #include "Magnum/BufferImage.h"
 #include "Magnum/Image.h"
+#include "Magnum/ImageFormat.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/RectangleTexture.h"
 #include "Magnum/TextureFormat.h"
@@ -46,6 +47,7 @@ struct RectangleTextureGLTest: AbstractOpenGLTester {
     void wrap();
 
     void bind();
+    void bindImage();
 
     void sampling();
     void samplingSRGBDecode();
@@ -78,6 +80,7 @@ RectangleTextureGLTest::RectangleTextureGLTest() {
               &RectangleTextureGLTest::wrap,
 
               &RectangleTextureGLTest::bind,
+              &RectangleTextureGLTest::bindImage,
 
               &RectangleTextureGLTest::sampling,
               &RectangleTextureGLTest::samplingSRGBDecode,
@@ -173,6 +176,31 @@ void RectangleTextureGLTest::bind() {
     MAGNUM_VERIFY_NO_ERROR();
 
     AbstractTexture::unbind(7, 3);
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void RectangleTextureGLTest::bindImage() {
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())
+        CORRADE_SKIP(Extensions::GL::ARB::shader_image_load_store::string() + std::string(" is not supported."));
+
+    RectangleTexture texture;
+    texture.setStorage(TextureFormat::RGBA8, Vector2i{32})
+        .bindImage(2, ImageAccess::ReadWrite, ImageFormat::RGBA8);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbindImage(2);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::bindImages(1, {&texture, nullptr, &texture});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbindImages(1, 3);
 
     MAGNUM_VERIFY_NO_ERROR();
 }

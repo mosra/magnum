@@ -161,7 +161,7 @@ GLSL 4.20                                   | done
 @extension{ARB,internalformat_query}        | |
 @extension{ARB,map_buffer_alignment}        | done
 @extension{ARB,shader_atomic_counters}      | done
-@extension{ARB,shader_image_load_store}     | |
+@extension{ARB,shader_image_load_store}     | done
 @extension{ARB,shading_language_packing}    | done (shading language only)
 @extension{ARB,texture_storage}             | done
 
@@ -205,7 +205,7 @@ GLSL 4.40                                   | done
 @extension{ARB,buffer_storage}              | |
 @extension{ARB,clear_texture}               | |
 @extension{ARB,enhanced_layouts}            | done (shading language only)
-@extension{ARB,multi_bind}                  | only texture and buffer binding
+@extension{ARB,multi_bind}                  | missing sampler and vertex buffer binding
 @extension{ARB,query_buffer_object}         | |
 @extension{ARB,texture_mirror_clamp_to_edge} | done
 @extension{ARB,texture_stencil8}            | done

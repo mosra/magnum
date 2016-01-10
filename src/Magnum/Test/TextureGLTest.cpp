@@ -30,6 +30,9 @@
 #include "Magnum/BufferImage.h"
 #endif
 #include "Magnum/Image.h"
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+#include "Magnum/ImageFormat.h"
+#endif
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Texture.h"
 #include "Magnum/TextureFormat.h"
@@ -62,6 +65,14 @@ struct TextureGLTest: AbstractOpenGLTester {
     #endif
     void bind2D();
     void bind3D();
+
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    #ifndef MAGNUM_TARGET_GLES
+    void bindImage1D();
+    #endif
+    void bindImage2D();
+    void bindImage3D();
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES
     void sampling1D();
@@ -217,6 +228,14 @@ TextureGLTest::TextureGLTest() {
         #endif
         &TextureGLTest::bind2D,
         &TextureGLTest::bind3D,
+
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        #ifndef MAGNUM_TARGET_GLES
+        &TextureGLTest::bindImage1D,
+        #endif
+        &TextureGLTest::bindImage2D,
+        &TextureGLTest::bindImage3D,
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES
         &TextureGLTest::sampling1D,
@@ -572,6 +591,96 @@ void TextureGLTest::bind3D() {
 
     MAGNUM_VERIFY_NO_ERROR();
 }
+
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+#ifndef MAGNUM_TARGET_GLES
+void TextureGLTest::bindImage1D() {
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())
+        CORRADE_SKIP(Extensions::GL::ARB::shader_image_load_store::string() + std::string(" is not supported."));
+
+    Texture1D texture;
+    texture.setStorage(1, TextureFormat::RGBA8, 32)
+        .bindImage(2, 0, ImageAccess::ReadWrite, ImageFormat::RGBA8);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbindImage(2);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::bindImages(1, {&texture, nullptr, &texture});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbindImages(1, 3);
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+#endif
+
+void TextureGLTest::bindImage2D() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())
+        CORRADE_SKIP(Extensions::GL::ARB::shader_image_load_store::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current().isVersionSupported(Version::GLES310))
+        CORRADE_SKIP("OpenGL ES 3.1 is not supported.");
+    #endif
+
+    Texture2D texture;
+    texture.setStorage(1, TextureFormat::RGBA8, Vector2i{32})
+        .bindImage(2, 0, ImageAccess::ReadWrite, ImageFormat::RGBA8);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbindImage(2);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    #ifndef MAGNUM_TARGET_GLES
+    AbstractTexture::bindImages(1, {&texture, nullptr, &texture});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbindImages(1, 3);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    #endif
+}
+
+void TextureGLTest::bindImage3D() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())
+        CORRADE_SKIP(Extensions::GL::ARB::shader_image_load_store::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current().isVersionSupported(Version::GLES310))
+        CORRADE_SKIP("OpenGL ES 3.1 is not supported.");
+    #endif
+
+    Texture3D texture;
+    texture.setStorage(1, TextureFormat::RGBA8, {32, 32, 4})
+        .bindImage(2, 0, 1, ImageAccess::ReadWrite, ImageFormat::RGBA8);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    texture.bindImageLayered(3, 0, ImageAccess::ReadWrite, ImageFormat::RGBA8);
+
+    AbstractTexture::unbindImage(2);
+    AbstractTexture::unbindImage(3);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    #ifndef MAGNUM_TARGET_GLES
+    AbstractTexture::bindImages(1, {&texture, nullptr, &texture});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbindImages(1, 3);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    #endif
+}
+#endif
 
 #ifndef MAGNUM_TARGET_GLES
 void TextureGLTest::sampling1D() {

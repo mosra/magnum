@@ -28,6 +28,7 @@
 #include "Magnum/BufferImage.h"
 #include "Magnum/CubeMapTextureArray.h"
 #include "Magnum/Image.h"
+#include "Magnum/ImageFormat.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/TextureFormat.h"
 #include "Magnum/Math/Color.h"
@@ -44,6 +45,7 @@ struct CubeMapTextureArrayGLTest: AbstractOpenGLTester {
     void wrap();
 
     void bind();
+    void bindImage();
 
     void sampling();
     void samplingSRGBDecode();
@@ -89,6 +91,7 @@ CubeMapTextureArrayGLTest::CubeMapTextureArrayGLTest() {
               &CubeMapTextureArrayGLTest::wrap,
 
               &CubeMapTextureArrayGLTest::bind,
+              &CubeMapTextureArrayGLTest::bindImage,
 
               &CubeMapTextureArrayGLTest::sampling,
               &CubeMapTextureArrayGLTest::samplingSRGBDecode,
@@ -224,6 +227,43 @@ void CubeMapTextureArrayGLTest::bind() {
     AbstractTexture::unbind(7, 3);
 
     MAGNUM_VERIFY_NO_ERROR();
+}
+
+void CubeMapTextureArrayGLTest::bindImage() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())
+        CORRADE_SKIP(Extensions::GL::ARB::shader_image_load_store::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_cube_map_array>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_cube_map_array::string() + std::string(" is not supported."));
+    if(!Context::current().isVersionSupported(Version::GLES310))
+        CORRADE_SKIP("OpenGL ES 3.1 is not supported.");
+    #endif
+
+    CubeMapTextureArray texture;
+    texture.setStorage(1, TextureFormat::RGBA8, {32, 32, 12})
+        .bindImage(2, 0, 1, ImageAccess::ReadWrite, ImageFormat::RGBA8);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    texture.bindImageLayered(3, 0, ImageAccess::ReadWrite, ImageFormat::RGBA8);
+
+    AbstractTexture::unbindImage(2);
+    AbstractTexture::unbindImage(3);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    #ifndef MAGNUM_TARGET_GLES
+    AbstractTexture::bindImages(1, {&texture, nullptr, &texture});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbindImages(1, 3);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    #endif
 }
 
 void CubeMapTextureArrayGLTest::sampling() {
