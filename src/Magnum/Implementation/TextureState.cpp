@@ -383,10 +383,10 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         compressedBlockDataSizeImplementation = &AbstractTexture::compressedBlockDataSizeImplementationDefault;
     #endif
 
-    /* Resize bindings array to hold all possible texture units */
+    /* Allocate texture bindings array to hold all possible texture units */
     glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxTextureUnits);
     CORRADE_INTERNAL_ASSERT(maxTextureUnits > 0);
-    bindings.resize(maxTextureUnits);
+    bindings = Containers::Array<std::pair<GLenum, GLuint>>{Containers::ValueInit, std::size_t(maxTextureUnits)};
 }
 
 TextureState::~TextureState() = default;
