@@ -1308,7 +1308,7 @@ class MAGNUM_EXPORT Renderer {
          * @requires_gles31 Shader load/store is not available in OpenGL ES 3.0 and older.
          * @requires_gles Shader load/store is not available in WebGL.
          */
-        void setMemoryBarrier(MemoryBarriers barriers) {
+        static void setMemoryBarrier(MemoryBarriers barriers) {
             glMemoryBarrier(GLbitfield(barriers));
         }
 
@@ -1332,7 +1332,7 @@ class MAGNUM_EXPORT Renderer {
          *      and older.
          * @requires_gles Shader load/store is not available in WebGL.
          */
-        void setMemoryBarrierByRegion(MemoryBarriers barriers) {
+        static void setMemoryBarrierByRegion(MemoryBarriers barriers) {
             glMemoryBarrierByRegion(GLbitfield(barriers));
         }
         #endif
@@ -1348,7 +1348,7 @@ class MAGNUM_EXPORT Renderer {
          * @requires_gl45 Extension @extension{ARB,texture_barrier}
          * @requires_gl Texture barrier is not available in OpenGL ES or WebGL.
          */
-        void setTextureBarrier() {
+        static void setTextureBarrier() {
             glTextureBarrier();
         }
         #endif
@@ -1567,6 +1567,8 @@ class MAGNUM_EXPORT Renderer {
         static GraphicsResetStatus MAGNUM_LOCAL graphicsResetStatusImplementationRobustness();
         #endif
 };
+
+CORRADE_ENUMSET_OPERATORS(Renderer::MemoryBarriers)
 
 /** @debugoperatorclassenum{Magnum::Renderer,Magnum::Renderer::Error} */
 MAGNUM_EXPORT Debug& operator<<(Debug& debug, Renderer::Error value);
