@@ -387,7 +387,7 @@ void AbstractShaderProgramGLTest::uniformNotFound() {
     CORRADE_VERIFY(program.link());
 
     std::ostringstream out;
-    Warning::setOutput(&out);
+    Warning redirectWarning{&out};
     program.uniformLocation("nonexistent");
     program.uniformLocation(std::string{"another"});
     CORRADE_COMPARE(out.str(),
@@ -579,7 +579,7 @@ void AbstractShaderProgramGLTest::uniformBlockIndexNotFound() {
     CORRADE_VERIFY(program.link());
 
     std::ostringstream out;
-    Warning::setOutput(&out);
+    Warning redirectWarning{&out};
     program.uniformBlockIndex("nonexistent");
     program.uniformBlockIndex(std::string{"another"});
     CORRADE_COMPARE(out.str(),

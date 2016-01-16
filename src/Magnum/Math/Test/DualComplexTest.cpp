@@ -274,7 +274,7 @@ void DualComplexTest::invertedNormalized() {
     DualComplex b({-0.316228f, -0.9486831f}, {3.320391f, 2.05548f});
 
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
     DualComplex({-1.0f, -2.5f}, {}).invertedNormalized();
     CORRADE_COMPARE(o.str(), "Math::Complex::invertedNormalized(): complex number must be normalized\n");
 
@@ -322,7 +322,7 @@ void DualComplexTest::matrix() {
     CORRADE_COMPARE(a.toMatrix(), m);
 
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
     DualComplex::fromMatrix(m*2);
     CORRADE_COMPARE(o.str(), "Math::DualComplex::fromMatrix(): the matrix doesn't represent rigid transformation\n");
 

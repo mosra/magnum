@@ -120,7 +120,7 @@ void CompressIndicesTest::compressAsShort() {
         TestSuite::Compare::Container);
 
     std::ostringstream out;
-    Error::setOutput(&out);
+    Error redirectError{&out};
     MeshTools::compressIndicesAs<UnsignedShort>({65536});
     CORRADE_COMPARE(out.str(), "MeshTools::compressIndicesAs(): type too small to represent value 65536\n");
 }

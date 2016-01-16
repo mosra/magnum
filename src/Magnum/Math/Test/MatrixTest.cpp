@@ -283,7 +283,7 @@ void MatrixTest::inverted() {
 
 void MatrixTest::invertedOrthogonal() {
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
 
     Matrix3x3 a(Vector3(Constants::sqrt3()/2.0f, 0.5f, 0.0f),
                 Vector3(-0.5f, Constants::sqrt3()/2.0f, 0.0f),

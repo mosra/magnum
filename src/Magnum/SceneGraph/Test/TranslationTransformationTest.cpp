@@ -67,7 +67,7 @@ TranslationTransformationTest::TranslationTransformationTest() {
 
 void TranslationTransformationTest::fromMatrix() {
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
     Implementation::Transformation<TranslationTransformation2D>::fromMatrix(Matrix3::scaling(Vector2(4.0f)));
     CORRADE_COMPARE(o.str(), "SceneGraph::TranslationTransformation: the matrix doesn't represent pure translation\n");
 

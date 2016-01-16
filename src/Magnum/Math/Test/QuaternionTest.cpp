@@ -300,7 +300,7 @@ void QuaternionTest::invertedNormalized() {
     Quaternion a = Quaternion({1.0f, 3.0f, -2.0f}, -4.0f);
 
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
     a.invertedNormalized();
     CORRADE_COMPARE(o.str(), "Math::Quaternion::invertedNormalized(): quaternion must be normalized\n");
 
@@ -313,7 +313,7 @@ void QuaternionTest::invertedNormalized() {
 
 void QuaternionTest::rotation() {
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
 
     Vector3 axis(1.0f/Constants<Float>::sqrt3());
 
@@ -340,7 +340,7 @@ void QuaternionTest::rotation() {
 
 void QuaternionTest::angle() {
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
     Math::angle(Quaternion({1.0f, 2.0f, -3.0f}, -4.0f).normalized(), {{4.0f, -3.0f, 2.0f}, -1.0f});
     CORRADE_COMPARE(o.str(), "Math::angle(): quaternions must be normalized\n");
 
@@ -367,7 +367,7 @@ void QuaternionTest::matrix() {
     CORRADE_COMPARE((-q).toMatrix(), m);
 
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
     Quaternion::fromMatrix(m*2);
     CORRADE_COMPARE(o.str(), "Math::Quaternion::fromMatrix(): the matrix is not orthogonal\n");
 
@@ -404,7 +404,7 @@ void QuaternionTest::lerp() {
     Quaternion b = Quaternion::rotation(Deg(23.0f), Vector3::xAxis());
 
     std::ostringstream o;
-    Corrade::Utility::Error::setOutput(&o);
+    Error redirectError{&o};
 
     Math::lerp(a*3.0f, b, 0.35f);
     CORRADE_COMPARE(o.str(), "Math::lerp(): quaternions must be normalized\n");
@@ -422,7 +422,7 @@ void QuaternionTest::slerp() {
     Quaternion b = Quaternion::rotation(Deg(23.0f), Vector3::xAxis());
 
     std::ostringstream o;
-    Corrade::Utility::Error::setOutput(&o);
+    Error redirectError{&o};
 
     Math::slerp(a*3.0f, b, 0.35f);
     CORRADE_COMPARE(o.str(), "Math::slerp(): quaternions must be normalized\n");
@@ -455,7 +455,7 @@ void QuaternionTest::transformVectorNormalized() {
     Vector3 v(5.0f, -3.6f, 0.7f);
 
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
     (a*2).transformVectorNormalized(v);
     CORRADE_COMPARE(o.str(), "Math::Quaternion::transformVectorNormalized(): quaternion must be normalized\n");
 

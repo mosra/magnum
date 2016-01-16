@@ -172,7 +172,7 @@ void ObjectTest::setParentKeepTransformation() {
 
     /* Old parent and new parent must share the same scene */
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
     Scene3D scene;
     childOne->setParentKeepTransformation(&scene);
     CORRADE_COMPARE(o.str(), "SceneGraph::Object::setParentKeepTransformation(): both parents must be in the same scene\n");
@@ -278,7 +278,7 @@ void ObjectTest::transformationsRelative() {
 
 void ObjectTest::transformationsOrphan() {
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
 
     /* Transformation of objects not part of the same scene */
     Scene3D s;

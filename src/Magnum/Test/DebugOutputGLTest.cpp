@@ -103,7 +103,7 @@ void DebugOutputGLTest::message() {
 
     /* Need to be careful, because the test runner is using debug output too */
     std::ostringstream out;
-    Debug::setOutput(&out);
+    Debug redirectDebug{&out};
     DebugMessage::insert(DebugMessage::Source::Application, DebugMessage::Type::Marker,
         1337, DebugOutput::Severity::High, "Hello from OpenGL command stream!");
 
@@ -145,7 +145,7 @@ void DebugOutputGLTest::group() {
 
     /* Need to be careful, because the test runner is using debug output too */
     std::ostringstream out;
-    Debug::setOutput(&out);
+    Debug redirectDebug{&out};
     {
         DebugGroup g1{DebugGroup::Source::Application, 42, "Automatic debug group"};
         DebugGroup g2;

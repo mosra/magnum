@@ -68,7 +68,7 @@ RigidMatrixTransformation3DTest::RigidMatrixTransformation3DTest() {
 
 void RigidMatrixTransformation3DTest::fromMatrix() {
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
     Implementation::Transformation<RigidMatrixTransformation3D>::fromMatrix(Matrix4::scaling(Vector3(4.0f)));
     CORRADE_COMPARE(o.str(), "SceneGraph::RigidMatrixTransformation3D: the matrix doesn't represent rigid transformation\n");
 
@@ -97,7 +97,7 @@ void RigidMatrixTransformation3DTest::setTransformation() {
 
     /* Can't transform with non-rigid transformation */
     std::ostringstream out;
-    Error::setOutput(&out);
+    Error redirectError{&out};
     o.setTransformation(Matrix4::scaling(Vector3(3.0f)));
     CORRADE_COMPARE(out.str(), "SceneGraph::RigidMatrixTransformation3D::setTransformation(): the matrix doesn't represent rigid transformation\n");
 
@@ -130,7 +130,7 @@ void RigidMatrixTransformation3DTest::transform() {
         /* Can't transform with non-rigid transformation */
         Object3D o;
         std::ostringstream out;
-        Error::setOutput(&out);
+        Error redirectError{&out};
         o.transform(Matrix4::scaling(Vector3(3.0f)));
         CORRADE_COMPARE(out.str(), "SceneGraph::RigidMatrixTransformation3D::transform(): the matrix doesn't represent rigid transformation\n");
     } {

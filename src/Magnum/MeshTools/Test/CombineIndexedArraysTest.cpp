@@ -48,7 +48,7 @@ CombineIndexedArraysTest::CombineIndexedArraysTest() {
 
 void CombineIndexedArraysTest::wrongIndexCount() {
     std::stringstream ss;
-    Error::setOutput(&ss);
+    Error redirectError{&ss};
     std::vector<UnsignedInt> a{0, 1, 0};
     std::vector<UnsignedInt> b{3, 4};
     std::vector<UnsignedInt> result = MeshTools::combineIndexArrays({a, b});

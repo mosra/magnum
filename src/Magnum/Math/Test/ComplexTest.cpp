@@ -302,7 +302,7 @@ void ComplexTest::inverted() {
 
 void ComplexTest::invertedNormalized() {
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
 
     Complex a(-0.6f, 0.8f);
     Complex b(-0.6f, -0.8f);
@@ -318,7 +318,7 @@ void ComplexTest::invertedNormalized() {
 
 void ComplexTest::angle() {
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
     Math::angle(Complex(1.5f, -2.0f).normalized(), {-4.0f, 3.5f});
     CORRADE_COMPARE(o.str(), "Math::angle(): complex numbers must be normalized\n");
 
@@ -356,7 +356,7 @@ void ComplexTest::matrix() {
     CORRADE_COMPARE(a.toMatrix(), m);
 
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
     Complex::fromMatrix(m*2);
     CORRADE_COMPARE(o.str(), "Math::Complex::fromMatrix(): the matrix is not orthogonal\n");
 

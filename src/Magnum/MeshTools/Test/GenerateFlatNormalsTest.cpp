@@ -45,7 +45,7 @@ GenerateFlatNormalsTest::GenerateFlatNormalsTest() {
 
 void GenerateFlatNormalsTest::wrongIndexCount() {
     std::stringstream ss;
-    Error::setOutput(&ss);
+    Error redirectError{&ss};
     std::vector<UnsignedInt> indices;
     std::vector<Vector3> normals;
     std::tie(indices, normals) = MeshTools::generateFlatNormals({

@@ -126,7 +126,7 @@ void ResourceManagerTest::stateDisallowed() {
     ResourceManager rm;
 
     std::ostringstream out;
-    Error::setOutput(&out);
+    Error redirectError{&out};
 
     rm.set("data", Data(), ResourceDataState::Loading, ResourcePolicy::Resident);
     CORRADE_COMPARE(out.str(), "ResourceManager::set(): data should be null if and only if state is NotFound or Loading\n");
@@ -156,7 +156,7 @@ void ResourceManagerTest::basic() {
 
     /* Cannot change already final resource */
     std::ostringstream out;
-    Error::setOutput(&out);
+    Error redirectError{&out};
     rm.set(answerKey, 43, ResourceDataState::Mutable, ResourcePolicy::Resident);
     CORRADE_COMPARE(*theAnswer, 42);
     CORRADE_COMPARE(out.str(), "ResourceManager::set(): cannot change already final resource " + answerKey.hexString() + '\n');
@@ -256,7 +256,7 @@ void ResourceManagerTest::clearWhileReferenced() {
     /* Should cover also the destruction case */
 
     std::ostringstream out;
-    Error::setOutput(&out);
+    Error redirectError{&out};
 
     ResourceManager rm;
     rm.set("blah", Int());

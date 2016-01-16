@@ -92,7 +92,7 @@ void DualComplexTransformationTest::setTransformation() {
 
     /* Can't transform with non-rigid transformation */
     std::ostringstream out;
-    Error::setOutput(&out);
+    Error redirectError{&out};
     o.setTransformation(DualComplex({1.0f, 2.0f}, {}));
     CORRADE_COMPARE(out.str(), "SceneGraph::DualComplexTransformation::setTransformation(): the dual complex number is not normalized\n");
 
@@ -124,7 +124,7 @@ void DualComplexTransformationTest::transform() {
         /* Can't transform with non-rigid transformation */
         Object2D o;
         std::ostringstream out;
-        Error::setOutput(&out);
+        Error redirectError{&out};
         o.transform(DualComplex({1.0f, 2.0f}, {}));
         CORRADE_COMPARE(out.str(), "SceneGraph::DualComplexTransformation::transform(): the dual complex number is not normalized\n");
     } {

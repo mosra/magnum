@@ -53,7 +53,7 @@ SubdivideTest::SubdivideTest() {
 
 void SubdivideTest::wrongIndexCount() {
     std::stringstream ss;
-    Error::setOutput(&ss);
+    Error redirectError{&ss};
 
     std::vector<Vector1> positions;
     std::vector<UnsignedInt> indices{0, 1};

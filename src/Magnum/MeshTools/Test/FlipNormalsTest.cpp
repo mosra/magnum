@@ -47,7 +47,7 @@ FlipNormalsTest::FlipNormalsTest() {
 
 void FlipNormalsTest::wrongIndexCount() {
     std::stringstream ss;
-    Error::setOutput(&ss);
+    Error redirectError{&ss};
 
     std::vector<UnsignedInt> indices{0, 1};
     MeshTools::flipFaceWinding(indices);

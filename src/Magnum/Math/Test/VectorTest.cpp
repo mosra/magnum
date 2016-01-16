@@ -441,7 +441,7 @@ void VectorTest::projected() {
 
 void VectorTest::projectedOntoNormalized() {
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
 
     Vector3 vector(1.0f, 2.0f, 3.0f);
     Vector3 line(1.0f, -1.0f, 0.5f);
@@ -456,7 +456,7 @@ void VectorTest::projectedOntoNormalized() {
 
 void VectorTest::angle() {
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
     Math::angle(Vector3(2.0f, 3.0f, 4.0f).normalized(), {1.0f, -2.0f, 3.0f});
     CORRADE_COMPARE(o.str(), "Math::angle(): vectors must be normalized\n");
 

@@ -82,7 +82,7 @@ void AtlasTest::createEmpty() {
 
 void AtlasTest::createTooSmall() {
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
 
     std::vector<Range2Di> atlas = TextureTools::atlas({64, 32}, {
         {8, 16},

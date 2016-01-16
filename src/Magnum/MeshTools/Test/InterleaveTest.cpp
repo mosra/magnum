@@ -58,7 +58,7 @@ InterleaveTest::InterleaveTest() {
 
 void InterleaveTest::attributeCount() {
     std::stringstream ss;
-    Error::setOutput(&ss);
+    Error redirectError{&ss};
     CORRADE_COMPARE((Implementation::AttributeCount{}(std::vector<Byte>{0, 1, 2},
         std::vector<Byte>{0, 1, 2, 3, 4, 5})), std::size_t(0));
     CORRADE_COMPARE(ss.str(), "MeshTools::interleave(): attribute arrays don't have the same length, expected 3 but got 6\n");
