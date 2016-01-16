@@ -79,7 +79,7 @@ void AnyImageConverterTest::png() {
 
 void AnyImageConverterTest::unknown() {
     std::ostringstream output;
-    Error::setOutput(&output);
+    Error redirectError{&output};
 
     AnyImageConverter converter{_manager};
     CORRADE_VERIFY(!converter.exportToFile(Image, "image.xcf"));

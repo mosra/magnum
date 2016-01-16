@@ -97,7 +97,7 @@ void AnyImageImporterTest::png() {
 
 void AnyImageImporterTest::unknown() {
     std::ostringstream output;
-    Error::setOutput(&output);
+    Error redirectError{&output};
 
     AnyImageImporter importer{_manager};
     CORRADE_VERIFY(!importer.openFile("image.xcf"));

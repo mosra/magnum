@@ -80,7 +80,7 @@ void AnyImporterTest::ogg() {
 
 void AnyImporterTest::unknown() {
     std::ostringstream output;
-    Error::setOutput(&output);
+    Error redirectError{&output};
 
     AnyImporter importer{_manager};
     CORRADE_VERIFY(!importer.openFile("sound.mid"));

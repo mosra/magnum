@@ -82,7 +82,7 @@ void AnySceneImporterTest::ply() {
 
 void AnySceneImporterTest::unknown() {
     std::ostringstream output;
-    Error::setOutput(&output);
+    Error redirectError{&output};
 
     AnySceneImporter importer{_manager};
     CORRADE_VERIFY(!importer.openFile("mesh.stl"));
