@@ -66,7 +66,7 @@ class AbstractOpenGLTester: public TestSuite::Tester {
         } _windowlessApplication;
 };
 
-AbstractOpenGLTester::AbstractOpenGLTester(): _windowlessApplication{*_windowlessApplicationArguments} {
+AbstractOpenGLTester::AbstractOpenGLTester(): TestSuite::Tester{TestSuite::Tester::TesterConfiguration{}.setSkippedArgumentPrefixes({"magnum"})}, _windowlessApplication{*_windowlessApplicationArguments} {
     /* Try to create debug context, fallback to normal one if not possible. No
        such thing on OSX. */
     #ifndef CORRADE_TARGET_APPLE
@@ -96,7 +96,7 @@ std::optional<Platform::WindowlessApplication::Arguments> AbstractOpenGLTester::
         Magnum::Test::AbstractOpenGLTester::_windowlessApplicationArguments.emplace(argc, argv); \
         Class t;                                                            \
         t.registerTest(__FILE__, #Class);                                   \
-        return t.exec();                                                    \
+        return t.exec(argc, argv);                                          \
     }
 #else
 #define MAGNUM_GL_TEST_MAIN(Class)                                          \
@@ -109,7 +109,9 @@ std::optional<Platform::WindowlessApplication::Arguments> AbstractOpenGLTester::
                     Magnum::Test::AbstractOpenGLTester::_windowlessApplicationArguments->window = hWnd; \
                     Class t;                                                \
                     t.registerTest(__FILE__, #Class);                       \
-                    PostQuitMessage(ret = t.exec());                        \
+                    PostQuitMessage(ret = t.exec(                           \
+                        Magnum::Test::AbstractOpenGLTester::_windowlessApplicationArguments->argc, \
+                        Magnum::Test::AbstractOpenGLTester::_windowlessApplicationArguments->argv)); \
                 }                                                           \
                 break;                                                      \
             default: return DefWindowProc(hWnd, message, wParam, lParam);   \

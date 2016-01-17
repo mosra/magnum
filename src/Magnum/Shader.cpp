@@ -856,7 +856,7 @@ bool Shader::compile(std::initializer_list<std::reference_wrapper<Shader>> shade
 
         /* Show error log */
         if(!success) {
-            auto out = Error::noNewlineAtTheEnd();
+            Error out{Debug::Flag::NoNewlineAtTheEnd};
             out << "Shader::compile(): compilation of" << shaderName(shader._type) << "shader";
             if(shaders.size() != 1) {
                 #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID)
@@ -869,7 +869,7 @@ bool Shader::compile(std::initializer_list<std::reference_wrapper<Shader>> shade
 
         /* Or just warnings, if any */
         } else if(!message.empty() && !Implementation::isShaderCompilationLogEmpty(message)) {
-            auto out = Warning::noNewlineAtTheEnd();
+            Warning out{Debug::Flag::NoNewlineAtTheEnd};
             out << "Shader::compile(): compilation of" << shaderName(shader._type) << "shader";
             if(shaders.size() != 1) {
                 #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID)

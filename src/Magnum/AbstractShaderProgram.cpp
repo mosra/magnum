@@ -406,7 +406,7 @@ bool AbstractShaderProgram::link(std::initializer_list<std::reference_wrapper<Ab
 
         /* Show error log */
         if(!success) {
-            auto out = Error::noNewlineAtTheEnd();
+            Error out{Debug::Flag::NoNewlineAtTheEnd};
             out << "AbstractShaderProgram::link(): linking";
             if(shaders.size() != 1) {
                 #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID)
@@ -419,7 +419,7 @@ bool AbstractShaderProgram::link(std::initializer_list<std::reference_wrapper<Ab
 
         /* Or just warnings, if any */
         } else if(!message.empty() && !Implementation::isProgramLinkLogEmpty(message)) {
-            auto out = Warning::noNewlineAtTheEnd();
+            Warning out{Debug::Flag::NoNewlineAtTheEnd};
             out << "AbstractShaderProgram::link(): linking";
             if(shaders.size() != 1) {
                 #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID)
