@@ -1568,7 +1568,9 @@ class MAGNUM_EXPORT Renderer {
         #endif
 };
 
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 CORRADE_ENUMSET_OPERATORS(Renderer::MemoryBarriers)
+#endif
 
 /** @debugoperatorclassenum{Magnum::Renderer,Magnum::Renderer::Error} */
 MAGNUM_EXPORT Debug& operator<<(Debug& debug, Renderer::Error value);
