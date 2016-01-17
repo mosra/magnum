@@ -40,18 +40,18 @@ struct AndroidApplication::LogOutput {
 
     Utility::AndroidLogStreamBuffer debugBuffer, warningBuffer, errorBuffer;
     std::ostream debugStream, warningStream, errorStream;
+    Debug redirectDebug;
+    Warning redirectWarning;
+    Error redirectError;
 };
 
 AndroidApplication::LogOutput::LogOutput():
     debugBuffer(Utility::AndroidLogStreamBuffer::LogPriority::Info, "magnum"),
     warningBuffer(Utility::AndroidLogStreamBuffer::LogPriority::Warning, "magnum"),
     errorBuffer(Utility::AndroidLogStreamBuffer::LogPriority::Error, "magnum"),
-    debugStream(&debugBuffer), warningStream(&warningBuffer), errorStream(&errorBuffer)
-{
-    Debug::setOutput(&debugStream);
-    Warning::setOutput(&warningStream);
-    Error::setOutput(&errorStream);
-}
+    debugStream(&debugBuffer), warningStream(&warningBuffer), errorStream(&errorBuffer),
+    redirectDebug{&debugStream}, redirectWarning{&warningStream}, redirectError{&errorStream}
+{}
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 AndroidApplication::AndroidApplication(const Arguments& arguments): AndroidApplication{arguments, Configuration{}} {}
