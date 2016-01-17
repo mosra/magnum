@@ -25,6 +25,7 @@
 
 #include <sstream>
 #include <Corrade/Utility/Resource.h>
+#include <Corrade/TestSuite/Compare/Container.h>
 
 #include "Magnum/AbstractShaderProgram.h"
 #include "Magnum/Context.h"
@@ -712,9 +713,10 @@ void AbstractShaderProgramGLTest::compute() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    CORRADE_COMPARE(
+    CORRADE_COMPARE_AS(
         (Corrade::Containers::ArrayView<const Color4ub>{reinterpret_cast<const Color4ub*>(data.data()), 4}),
-        (Corrade::Containers::ArrayView<const Color4ub>{outData}));
+        (Corrade::Containers::ArrayView<const Color4ub>{outData}),
+        TestSuite::Compare::Container);
     #endif
 }
 #endif
