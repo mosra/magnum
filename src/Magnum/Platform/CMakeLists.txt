@@ -396,7 +396,7 @@ if(WITH_WINDOWLESSCGLAPPLICATION)
     # Assuming that PIC is not needed because the Application lib is always
     # linked to the executable and not to any intermediate shared lib
 
-    install(FILES ${MagnumWindowlessGlxApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
+    install(FILES ${MagnumWindowlessCglApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumWindowlessCglApplication
         RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
         LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
