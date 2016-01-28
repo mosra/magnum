@@ -330,6 +330,13 @@ This will compile binary and development packages, which will then appear in
 parent directory. If you need to modify CMake flags (enabling/disabling some
 features, for example), modify the last entry in `debian/rules`.
 
+@subsection building-packages-brew Homebrew formulas
+
+OS X Homebrew formulas are in `package/homebrew` directory. Download the `*.rb`
+file and install it using the following command:
+
+    brew install --HEAD magnum.rb
+
 @section building-windows-angle Building for ANGLE on Windows
 
 Magnum is able to run on ANGLE OpenGL-to-D3D translator. Download the code from
