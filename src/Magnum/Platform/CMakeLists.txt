@@ -127,7 +127,7 @@ if(WITH_SDL2APPLICATION)
         message(FATAL_ERROR "SDL2 library, required by Sdl2Application, was not found. Set WITH_SDL2APPLICATION to OFF to skip building it.")
     endif()
 
-    include_directories(${SDL2_INCLUDE_DIR})
+    include_directories(${SDL2_INCLUDE_DIRS})
 
     set(MagnumSdl2Application_SRCS
         Sdl2Application.cpp

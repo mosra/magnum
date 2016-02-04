@@ -3,8 +3,12 @@
 # This module defines:
 #
 #  SDL2_FOUND               - True if SDL2 library is found
-#  SDL2_LIBRARY             - SDL2 dynamic library
-#  SDL2_INCLUDE_DIR         - Include dir
+#  SDL2_LIBRARIES           - SDL2 library and dependent libraries
+#  SDL2_INCLUDE_DIRS        - Root include dir and include dirs of dependencies
+#
+# Additionally these variables are defined for internal usage:
+#  SDL2_INCLUDE_DIR         - Root include dir (w/o dependencies)
+#  SDL2_LIBRARY             - SDL2 library (w/o dependencies)
 #
 
 #
@@ -61,7 +65,29 @@ find_path(SDL2_INCLUDE_DIR
     NAMES SDL_scancode.h
     PATH_SUFFIXES ${_SDL2_PATH_SUFFIXES})
 
+# iOS dependencies
+if(CORRADE_TARGET_IOS)
+    set(_SDL2_FRAMEWORKS
+        AudioToolbox
+        CoreGraphics
+        CoreMotion
+        Foundation
+        GameController
+        QuartzCore
+        UIKit)
+    set(_SDL2_FRAMEWORK_LIBRARIES )
+    foreach(framework ${_SDL2_FRAMEWORKS})
+        find_library(_SDL2_${framework}_LIBRARY ${framework})
+        list(APPEND _SDL2_FRAMEWORK_LIBRARIES ${_SDL2_${framework}_LIBRARY})
+        list(APPEND _SDL2_FRAMEWORK_LIBRARY_NAMES _SDL2_${framework}_LIBRARY)
+    endforeach()
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args("SDL2" DEFAULT_MSG
     ${SDL2_LIBRARY_NEEDED}
+    ${_SDL2_FRAMEWORK_LIBRARY_NAMES}
     SDL2_INCLUDE_DIR)
+
+set(SDL2_INCLUDE_DIRS ${SDL2_INCLUDE_DIR})
+set(SDL2_LIBRARIES ${SDL2_LIBRARY} ${_SDL2_FRAMEWORK_LIBRARIES})
