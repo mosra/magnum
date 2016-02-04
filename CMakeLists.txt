@@ -37,9 +37,9 @@ find_package(Corrade REQUIRED)
 
 include(CMakeDependentOption)
 
-# If targeting Android, NaCl, Emscripten or Windows RT, set explicit OpenGL ES
-# support
-if(NOT CORRADE_TARGET_ANDROID AND NOT CORRADE_TARGET_EMSCRIPTEN AND NOT CORRADE_TARGET_NACL AND NOT CORRADE_TARGET_WINDOWS_RT)
+# If targeting iOS, Android, NaCl, Emscripten or Windows RT, set explicit
+# OpenGL ES support
+if(NOT CORRADE_TARGET_IOS AND NOT CORRADE_TARGET_ANDROID AND NOT CORRADE_TARGET_EMSCRIPTEN AND NOT CORRADE_TARGET_NACL AND NOT CORRADE_TARGET_WINDOWS_RT)
     option(TARGET_GLES "Build for OpenGL ES / WebGL" OFF)
 else()
     set(TARGET_GLES ON)
