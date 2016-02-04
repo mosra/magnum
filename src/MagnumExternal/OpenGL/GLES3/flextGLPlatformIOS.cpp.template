@@ -1,0 +1,27 @@
+@require(passthru, functions, enums, options, version, extensions)
+#include "flextGL.h"
+
+@for category,funcs in functions:
+@if funcs and category not in ['ES_VERSION_2_0', 'ES_VERSION_3_0']:
+@for f in funcs:
+#undef gl@f.name
+@end
+@end
+@end
+
+#include <ES3/glext.h>
+
+void flextGLInit() {
+    @for category,funcs in functions:
+    @if funcs and category not in ['ES_VERSION_2_0', 'ES_VERSION_3_0']:
+
+    /* GL_@category */
+    #if GL_@category
+    @for f in funcs:
+    flextgl@f.name = reinterpret_cast<@f.returntype\
+(APIENTRY*)(@f.param_type_list_string())>(gl@f.name);
+    @end
+    #endif
+    @end
+    @end
+}
