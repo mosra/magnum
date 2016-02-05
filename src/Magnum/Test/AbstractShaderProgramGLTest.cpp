@@ -32,7 +32,9 @@
 #include "Magnum/Extensions.h"
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
+#ifndef MAGNUM_TARGET_GLES2
 #include "Magnum/ImageFormat.h"
+#endif
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Shader.h"
 #include "Magnum/Texture.h"
