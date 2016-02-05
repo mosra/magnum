@@ -680,6 +680,22 @@ bool Context::tryCreate() {
     return true;
 }
 
+std::string Context::vendorString() const {
+    return Utility::String::fromArray(reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
+}
+
+std::string Context::rendererString() const {
+    return Utility::String::fromArray(reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
+}
+
+std::string Context::versionString() const {
+    return Utility::String::fromArray(reinterpret_cast<const char*>(glGetString(GL_VERSION)));
+}
+
+std::string Context::shadingLanguageVersionString() const {
+    return Utility::String::fromArray(reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
+}
+
 std::vector<std::string> Context::shadingLanguageVersionStrings() const {
     #ifndef MAGNUM_TARGET_GLES
     GLint versionCount = 0;

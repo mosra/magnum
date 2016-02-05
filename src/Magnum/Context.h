@@ -282,9 +282,7 @@ class MAGNUM_EXPORT Context {
          * OpenGL calls.
          * @see @ref rendererString(), @fn_gl{GetString} with @def_gl{VENDOR}
          */
-        std::string vendorString() const {
-            return reinterpret_cast<const char*>(glGetString(GL_VENDOR));
-        }
+        std::string vendorString() const;
 
         /**
          * @brief Renderer string
@@ -293,9 +291,7 @@ class MAGNUM_EXPORT Context {
          * OpenGL calls.
          * @see @ref vendorString(), @fn_gl{GetString} with @def_gl{RENDERER}
          */
-        std::string rendererString() const {
-            return reinterpret_cast<const char*>(glGetString(GL_RENDERER));
-        }
+        std::string rendererString() const;
 
         /**
          * @brief Version string
@@ -305,9 +301,7 @@ class MAGNUM_EXPORT Context {
          * @see @ref shadingLanguageVersionString(), @ref version(),
          *      @fn_gl{GetString} with @def_gl{VERSION}
          */
-        std::string versionString() const {
-            return reinterpret_cast<const char*>(glGetString(GL_VERSION));
-        }
+        std::string versionString() const;
 
         /**
          * @brief Shading language version string
@@ -317,9 +311,7 @@ class MAGNUM_EXPORT Context {
          * @see @ref versionString(), @ref version(), @fn_gl{GetString} with
          *      @def_gl{SHADING_LANGUAGE_VERSION}
          */
-        std::string shadingLanguageVersionString() const {
-            return reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION));
-        }
+        std::string shadingLanguageVersionString() const;
 
         /**
          * @brief Shading language version strings
