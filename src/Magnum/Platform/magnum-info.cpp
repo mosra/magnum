@@ -197,8 +197,14 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #ifdef CORRADE_TARGET_APPLE
     Debug() << "    CORRADE_TARGET_APPLE";
     #endif
+    #ifdef CORRADE_TARGET_IOS
+    Debug() << "    CORRADE_TARGET_IOS";
+    #endif
     #ifdef CORRADE_TARGET_WINDOWS
     Debug() << "    CORRADE_TARGET_WINDOWS";
+    #endif
+    #ifdef CORRADE_TARGET_WINDOWS_RT
+    Debug() << "    CORRADE_TARGET_WINDOWS_RT";
     #endif
     #ifdef CORRADE_TARGET_NACL
     Debug() << "    CORRADE_TARGET_NACL";
