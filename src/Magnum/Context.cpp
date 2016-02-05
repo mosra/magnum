@@ -461,7 +461,9 @@ bool Context::tryCreate() {
     /* Load GL function pointers */
     if(_functionLoader) _functionLoader();
 
-    GLint majorVersion, minorVersion;
+    /* Initialize to something predictable to avoid crashes on improperly
+       created contexts */
+    GLint majorVersion = 0, minorVersion = 0;
 
     /* Get version on ES 3.0+/WebGL 2.0+ */
     #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
