@@ -167,6 +167,11 @@ available for desktop OpenGL only, see @ref requires-gl.
     `TARGET_GLES` is set.
 -   `TARGET_DESKTOP_GLES` -- Target OpenGL ES on desktop, i.e. use OpenGL ES
     emulation in desktop OpenGL library. Might not be supported in all drivers.
+-   `TARGET_HEADLESS` -- Build command-line utilities for use on a headless
+    machine. Basically it means that EGL with no display attachment is being
+    used everywhere instead of platform-specific toolkits like CGL, GLX or WGL.
+    Supported mainly on OpenGL ES drivers, for desktop OpenGL the only driver
+    that supports this configuration is NVidia >= 355.
 
 The features used can be conveniently detected in depending projects both in
 CMake and C++ sources, see @ref cmake and @ref Magnum/Magnum.h for more

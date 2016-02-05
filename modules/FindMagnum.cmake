@@ -109,6 +109,7 @@
 #  MAGNUM_TARGET_DESKTOP_GLES   - Defined if compiled with OpenGL ES
 #   emulation on desktop OpenGL
 #  MAGNUM_TARGET_WEBGL          - Defined if compiled for WebGL
+#  MAGNUM_TARGET_HEADLESS       - Defined if compiled for headless machines
 #
 # Additionally these variables are defined for internal usage:
 #
@@ -207,7 +208,8 @@ set(_magnumFlags
     TARGET_GLES2
     TARGET_GLES3
     TARGET_DESKTOP_GLES
-    TARGET_WEBGL)
+    TARGET_WEBGL
+    TARGET_HEADLESS)
 foreach(_magnumFlag ${_magnumFlags})
     string(FIND "${_magnumConfigure}" "#define MAGNUM_${_magnumFlag}" _magnum_${_magnumFlag})
     if(NOT _magnum_${_magnumFlag} EQUAL -1)

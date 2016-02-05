@@ -32,7 +32,9 @@
 #include "Magnum/DebugOutput.h"
 #include "Magnum/Renderer.h"
 
-#if defined(CORRADE_TARGET_APPLE)
+#ifdef MAGNUM_TARGET_HEADLESS
+#include "Magnum/Platform/WindowlessEglApplication.h"
+#elif defined(CORRADE_TARGET_APPLE)
 #include "Magnum/Platform/WindowlessCglApplication.h"
 #elif defined(CORRADE_TARGET_UNIX) && (!defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_DESKTOP_GLES))
 #include "Magnum/Platform/WindowlessGlxApplication.h"

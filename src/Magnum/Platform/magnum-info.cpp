@@ -56,7 +56,9 @@
 #include "Magnum/TransformFeedback.h"
 #endif
 
-#ifdef CORRADE_TARGET_NACL
+#ifdef MAGNUM_TARGET_HEADLESS
+#include "Magnum/Platform/WindowlessEglApplication.h"
+#elif defined(CORRADE_TARGET_NACL)
 #include "Magnum/Platform/WindowlessNaClApplication.h"
 #elif defined(CORRADE_TARGET_APPLE)
 #include "Magnum/Platform/WindowlessCglApplication.h"
@@ -168,7 +170,9 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     Debug() << "  +---------------------------------------------------------+";
     Debug() << "";
 
-    #ifdef MAGNUM_WINDOWLESSNACLAPPLICATION_MAIN
+    #ifdef MAGNUM_WINDOWLESSEGLAPPLICATION_MAIN
+    Debug() << "Used application: Platform::WindowlessEglApplication";
+    #elif defined(MAGNUM_WINDOWLESSNACLAPPLICATION_MAIN)
     Debug() << "Used application: Platform::WindowlessNaClApplication";
     #elif defined(MAGNUM_WINDOWLESSCGLAPPLICATION_MAIN)
     Debug() << "Used application: Platform::WindowlessCglApplication";
@@ -244,6 +248,9 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #endif
     #ifdef MAGNUM_TARGET_WEBGL
     Debug() << "    MAGNUM_TARGET_WEBGL";
+    #endif
+    #ifdef MAGNUM_TARGET_HEADLESS
+    Debug() << "    MAGNUM_TARGET_HEADLESS";
     #endif
     Debug() << "";
 

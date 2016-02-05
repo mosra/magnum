@@ -183,7 +183,9 @@ are also available as preprocessor variables if including
 -   `MAGNUM_TARGET_GLES3` -- Defined if compiled for OpenGL ES 3.0
 -   `MAGNUM_TARGET_DESKTOP_GLES` -- Defined if compiled with OpenGL ES
     emulation on desktop OpenGL
--   `MAGNUM_TARGET_WEBGL` --- Defined if compiled for WebGL
+-   `MAGNUM_TARGET_WEBGL` -- Defined if compiled for WebGL
+-   `MAGNUM_TARGET_HEADLESS` -- Defined if compiled for headless machines. See
+    @ref MAGNUM_TARGET_HEADLESS documentation for more information.
 
 Workflows without imported targets are deprecated and the following variables
 are included just for backwards compatibility and only if
