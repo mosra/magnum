@@ -46,7 +46,8 @@ namespace Magnum { namespace Platform {
 /**
 @brief Windowless CGL application
 
-Application for offscreen rendering using pure CGL.
+Application for offscreen rendering using pure CGL. Does not have any default
+framebuffer.
 
 This application library is available on desktop OpenGL on OS X. It
 is built if `WITH_WINDOWLESSCGLAPPLICATION` is enabled in CMake.
