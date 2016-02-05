@@ -83,9 +83,11 @@ cmake_dependent_option(WITH_SHADERS "Build Shaders library" ON "NOT WITH_DEBUGTO
 cmake_dependent_option(WITH_TEXT "Build Text library" ON "NOT WITH_MAGNUMFONT;NOT WITH_MAGNUMFONTCONVERTER" ON)
 cmake_dependent_option(WITH_TEXTURETOOLS "Build TextureTools library" ON "NOT WITH_TEXT;NOT WITH_DISTANCEFIELDCONVERTER" ON)
 
-# EGL context, available everywhere except on platforms which don't support extension loading
+# EGL context and windowless EGL application, available everywhere except on
+# platforms which don't support extension loading
 if(NOT CORRADE_TARGET_EMSCRIPTEN AND NOT CORRADE_TARGET_NACL)
     option(WITH_EGLCONTEXT "Build EglContext library" OFF)
+    option(WITH_WINDOWLESSEGLAPPLICATION "Build WindowlessEglApplication library" OFF)
 endif()
 
 # NaCl-specific application libraries

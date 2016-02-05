@@ -207,6 +207,7 @@ platform best:
 -   `WITH_SDL2APPLICATION` - @ref Platform::Sdl2Application "Sdl2Application"
 -   `WITH_XEGLAPPLICATION` - @ref Platform::XEglApplication "XEglApplication"
 -   `WITH_WINDOWLESSCGLAPPLICATION` - @ref Platform::WindowlessCglApplication "WindowlessCglApplication"
+-   `WITH_WINDOWLESSEGLAPPLICATION` - @ref Platform::WindowlessEglApplication "WindowlessEglApplication"
 -   `WITH_WINDOWLESSGLXAPPLICATION` - @ref Platform::WindowlessGlxApplication "WindowlessGlxApplication"
 -   `WITH_WINDOWLESSNACLAPPLICATION` - @ref Platform::WindowlessNaClApplication "WindowlessNaClApplication"
 -   `WITH_WINDOWLESSWGLAPPLICATION` - @ref Platform::WindowlessWglApplication "WindowlessWglApplication"

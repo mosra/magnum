@@ -53,6 +53,7 @@
 #  Sdl2Application              - SDL2 application
 #  XEglApplication              - X/EGL application
 #  WindowlessCglApplication     - Windowless CGL application
+#  WindowlessEglApplication     - Windowless EGL application
 #  WindowlessGlxApplication     - Windowless GLX application
 #  WindowlessNaClApplication    - Windowless NaCl application
 #  WindowlessWglApplication     - Windowless WGL application
@@ -334,7 +335,7 @@ endif()
 
 # Component distinction (listing them explicitly to avoid mistakes with finding
 # components from other repositories)
-set(_MAGNUM_LIBRARY_COMPONENTS "^(Audio|DebugTools|MeshTools|Primitives|SceneGraph|Shaders|Shapes|Text|TextureTools|GlutApplication|GlxApplication|NaClApplication|Sdl2Application|XEglApplication|WindowlessCglApplication|WindowlessGlxApplication|WindowlessNaClApplication|WindowlessWglApplication|WindowlessWindowsEglApplication|CglContext|EglContext|GlxContext|WglContext)$")
+set(_MAGNUM_LIBRARY_COMPONENTS "^(Audio|DebugTools|MeshTools|Primitives|SceneGraph|Shaders|Shapes|Text|TextureTools|GlutApplication|GlxApplication|NaClApplication|Sdl2Application|XEglApplication|WindowlessCglApplication|WindowlessEglApplication|WindowlessGlxApplication|WindowlessNaClApplication|WindowlessWglApplication|WindowlessWindowsEglApplication|CglContext|EglContext|GlxContext|WglContext)$")
 set(_MAGNUM_PLUGIN_COMPONENTS "^(MagnumFont|MagnumFontConverter|ObjImporter|TgaImageConverter|TgaImporter|WavAudioImporter)$")
 set(_MAGNUM_EXECUTABLE_COMPONENTS "^(distancefieldconverter|fontconverter|info)$")
 
@@ -490,6 +491,14 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                     INTERFACE_LINK_LIBRARIES ${X11_LIBRARIES})
 
             # Windowless CGL application has no additional dependencies
+
+            # Windowless EGL application dependencies
+            elseif(_component STREQUAL WindowlessEglApplication)
+                find_package(EGL)
+                set_property(TARGET Magnum::${_component} APPEND PROPERTY
+                    INTERFACE_LINK_LIBRARIES EGL::EGL)
+            endif()
+
             # Windowless WGL application has no additional dependencies
 
             # Windowless Windows/EGL application dependencies

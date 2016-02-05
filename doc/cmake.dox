@@ -100,6 +100,7 @@ Platform namespace is split into more components:
 -   `Sdl2Application` -- @ref Platform::Sdl2Application "Sdl2Application"
 -   `XEglApplication` -- @ref Platform::XEglApplication "XEglApplication"
 -   `WindowlessCglApplication` -- @ref Platform::WindowlessCglApplication "WindowlessCglApplication"
+-   `WindowlessEglApplication` -- @ref Platform::WindowlessEglApplication "WindowlessEglApplication"
 -   `WindowlessGlxApplication` -- @ref Platform::WindowlessGlxApplication "WindowlessGlxApplication"
 -   `WindowlessNaClApplication` -- @ref Platform::WindowlessNaClApplication "WindowlessNaClApplication"
 -   `WindowlessWglApplication` -- @ref Platform::WindowlessWglApplication "WindowlessWglApplication"
