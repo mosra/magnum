@@ -126,7 +126,7 @@
 #
 #   This file is part of Corrade.
 #
-#   Copyright © 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015
+#   Copyright © 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
