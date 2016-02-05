@@ -162,11 +162,11 @@ By default the engine is built for desktop OpenGL. Using `TARGET_*` CMake
 parameters you can target other platforms. Note that some features are
 available for desktop OpenGL only, see @ref requires-gl.
 
- - `TARGET_GLES` - Target OpenGL ES.
- - `TARGET_GLES2` - Target OpenGL ES 2.0. Currently enabled by default when
-   `TARGET_GLES` is set.
- - `TARGET_DESKTOP_GLES` - Target OpenGL ES on desktop, i.e. use OpenGL ES
-   emulation in desktop OpenGL library. Might not be supported in all drivers.
+-   `TARGET_GLES` -- Target OpenGL ES.
+-   `TARGET_GLES2` -- Target OpenGL ES 2.0. Currently enabled by default when
+    `TARGET_GLES` is set.
+-   `TARGET_DESKTOP_GLES` -- Target OpenGL ES on desktop, i.e. use OpenGL ES
+    emulation in desktop OpenGL library. Might not be supported in all drivers.
 
 The features used can be conveniently detected in depending projects both in
 CMake and C++ sources, see @ref cmake and @ref Magnum/Magnum.h for more

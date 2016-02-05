@@ -223,7 +223,7 @@ class WindowlessWindowsEglApplication::Configuration {
 };
 
 /** @hideinitializer
-@brief Entry point for windowless WGL application
+@brief Entry point for windowless Windows/EGL application
 @param className Class name
 
 See @ref Magnum::Platform::WindowlessWindowsEglApplication "Platform::WindowlessWindowsEglApplication"
