@@ -168,14 +168,16 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     Debug() << "  +---------------------------------------------------------+";
     Debug() << "";
 
-    #ifdef CORRADE_TARGET_NACL
+    #ifdef MAGNUM_WINDOWLESSNACLAPPLICATION_MAIN
     Debug() << "Used application: Platform::WindowlessNaClApplication";
-    #elif defined(CORRADE_TARGET_APPLE)
+    #elif defined(MAGNUM_WINDOWLESSCGLAPPLICATION_MAIN)
     Debug() << "Used application: Platform::WindowlessCglApplication";
-    #elif defined(CORRADE_TARGET_UNIX)
+    #elif defined(MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN)
     Debug() << "Used application: Platform::WindowlessGlxApplication";
-    #elif defined(CORRADE_TARGET_WINDOWS)
+    #elif defined(MAGNUM_WINDOWLESSWGLAPPLICATION_MAIN)
     Debug() << "Used application: Platform::WindowlessWglApplication";
+    #elif defined(MAGNUM_WINDOWLESSWINDOWSEGLAPPLICATION_MAIN)
+    Debug() << "Used application: Platform::WindowlessWindowsEglApplication";
     #else
     #error no windowless application available on this platform
     #endif
