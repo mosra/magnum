@@ -117,19 +117,19 @@ enum class FramebufferTarget: GLenum {
     /** Frambebuffer reading target */
     #ifndef MAGNUM_TARGET_GLES2
     Read = GL_READ_FRAMEBUFFER,
-    #elif !defined(MAGNUM_TARGET_WEBGL)
+    #elif defined(CORRADE_TARGET_APPLE)
     Read = GL_READ_FRAMEBUFFER_APPLE,
     #else
-    Read,
+    Read = GL_FRAMEBUFFER,
     #endif
 
     /** Framebuffer drawing target */
     #ifndef MAGNUM_TARGET_GLES2
     Draw = GL_DRAW_FRAMEBUFFER,
-    #elif !defined(MAGNUM_TARGET_WEBGL)
+    #elif defined(CORRADE_TARGET_APPLE)
     Draw = GL_DRAW_FRAMEBUFFER_APPLE,
     #else
-    Draw,
+    Draw = GL_FRAMEBUFFER,
     #endif
 
     #ifdef MAGNUM_BUILD_DEPRECATED
@@ -140,10 +140,10 @@ enum class FramebufferTarget: GLenum {
     ReadDraw CORRADE_DEPRECATED_ENUM("use FramebufferTarget::Draw instead") =
         #ifndef MAGNUM_TARGET_GLES2
         GL_DRAW_FRAMEBUFFER
-        #elif !defined(MAGNUM_TARGET_WEBGL)
+        #elif defined(MAGNUM_TARGET_APPLE)
         GL_DRAW_FRAMEBUFFER_APPLE
         #else
-        1
+        GL_FRAMEBUFFER
         #endif
     #endif
 };
