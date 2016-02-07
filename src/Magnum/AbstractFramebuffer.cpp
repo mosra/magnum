@@ -105,8 +105,12 @@ void AbstractFramebuffer::bind() {
 }
 
 void AbstractFramebuffer::bindInternal(FramebufferTarget target) {
-    #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    #if defined(MAGNUM_TARGET_GLES2)
+    #if !defined(MAGNUM_TARGET_WEBGL)
     (this->*Context::current().state().framebuffer->bindImplementation)(target);
+    #else
+    bindImplementationSingle();
+    #endif
     #else
     bindImplementationDefault(target);
     #endif
@@ -122,7 +126,7 @@ void AbstractFramebuffer::bindImplementationSingle(FramebufferTarget) {
 
     /* Binding the framebuffer finally creates it */
     _flags |= ObjectFlag::Created;
-    glBindFramebuffer(GL_FRAMEBUFFER, _id);
+    glBindFramebuffer(GLenum(FramebufferTarget::Draw), _id);
 }
 #endif
 
@@ -146,8 +150,12 @@ void AbstractFramebuffer::bindImplementationDefault(FramebufferTarget target) {
 }
 
 FramebufferTarget AbstractFramebuffer::bindInternal() {
-    #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    #if defined(MAGNUM_TARGET_GLES2)
+    #if !defined(MAGNUM_TARGET_WEBGL)
     return (this->*Context::current().state().framebuffer->bindInternalImplementation)();
+    #else
+    return bindImplementationSingle();
+    #endif
     #else
     return bindImplementationDefault();
     #endif
@@ -164,10 +172,10 @@ FramebufferTarget AbstractFramebuffer::bindImplementationSingle() {
 
         /* Binding the framebuffer finally creates it */
         _flags |= ObjectFlag::Created;
-        glBindFramebuffer(GL_FRAMEBUFFER, _id);
+        glBindFramebuffer(GLenum(FramebufferTarget::Draw), _id);
     }
 
-    return FramebufferTarget{};
+    return FramebufferTarget::Draw;
 }
 #endif
 
@@ -367,8 +375,8 @@ GLenum AbstractFramebuffer::checkStatusImplementationDefault(const FramebufferTa
 
 #ifdef MAGNUM_TARGET_GLES2
 GLenum AbstractFramebuffer::checkStatusImplementationSingle(FramebufferTarget) {
-    bindInternal(FramebufferTarget{});
-    return glCheckFramebufferStatus(GL_FRAMEBUFFER);
+    bindInternal(FramebufferTarget::Draw);
+    return glCheckFramebufferStatus(GLenum(FramebufferTarget::Draw));
 }
 #endif
 
