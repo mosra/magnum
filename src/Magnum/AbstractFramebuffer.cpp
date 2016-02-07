@@ -105,10 +105,12 @@ void AbstractFramebuffer::bind() {
 }
 
 void AbstractFramebuffer::bindInternal(FramebufferTarget target) {
-    #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    (this->*Context::current().state().framebuffer->bindImplementation)(target);
-    #else
+    #ifndef MAGNUM_TARGET_GLES2
     bindImplementationDefault(target);
+    #elif defined(MAGNUM_TARGET_WEBGL)
+    bindImplementationSingle();
+    #else
+    (this->*Context::current().state().framebuffer->bindImplementation)(target);
     #endif
 }
 
@@ -146,10 +148,12 @@ void AbstractFramebuffer::bindImplementationDefault(FramebufferTarget target) {
 }
 
 FramebufferTarget AbstractFramebuffer::bindInternal() {
-    #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    return (this->*Context::current().state().framebuffer->bindInternalImplementation)();
-    #else
+    #ifndef MAGNUM_TARGET_GLES2
     return bindImplementationDefault();
+    #elif defined(MAGNUM_TARGET_WEBGL)
+    return bindImplementationSingle();
+    #else
+    return (this->*Context::current().state().framebuffer->bindInternalImplementation)();
     #endif
 }
 
