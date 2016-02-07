@@ -108,6 +108,7 @@ void AbstractFramebuffer::bindInternal(FramebufferTarget target) {
     #ifndef MAGNUM_TARGET_GLES2
     bindImplementationDefault(target);
     #elif defined(MAGNUM_TARGET_WEBGL)
+    static_cast<void>(target);
     bindImplementationSingle();
     #else
     (this->*Context::current().state().framebuffer->bindImplementation)(target);
