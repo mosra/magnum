@@ -398,6 +398,14 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     }
     #endif
 
+    #ifndef MAGNUM_TARGET_GLES
+    if(c.isExtensionSupported<Extensions::GL::ARB::map_buffer_alignment>()) {
+        _h(ARB::map_buffer_alignment)
+
+        _l(Buffer::minMapAlignment())
+    }
+    #endif
+
     #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_GLES
     if(c.isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>())
