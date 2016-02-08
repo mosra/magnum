@@ -63,7 +63,7 @@ template<UnsignedInt dimensions, class T> class Range {
         typedef typename Implementation::RangeTraits<dimensions, T>::Type VectorType;
 
         /**
-         * Create range from minimal coordinates and size
+         * @brief Create range from minimal coordinates and size
          * @param min   Minimal coordinates
          * @param size  Range size
          */
