@@ -211,6 +211,11 @@ template<std::size_t size, class T> class Vector {
             return Implementation::VectorConverter<size, T, U>::to(*this);
         }
 
+        /** @brief Convert single-component vector to scalar value */
+        template<class U, std::size_t s = size, class = typename std::enable_if<s == 1>::type> constexpr /*implicit*/ operator U() const {
+            return *_data;
+        }
+
         /**
          * @brief Raw data
          * @return One-dimensional array of `size` length.
