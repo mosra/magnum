@@ -29,6 +29,7 @@
  * @brief Class @ref Magnum::Math::Range, @ref Magnum::Math::Range2D, @ref Magnum::Math::Range3D, alias @ref Magnum::Math::Range1D
  */
 
+#include "Magnum/Math/Functions.h"
 #include "Magnum/Math/Vector3.h"
 
 namespace Magnum { namespace Math {
@@ -522,6 +523,19 @@ template<class T> class Range3D: public Range<3, T> {
 
         MAGNUM_RANGE_SUBCLASS_IMPLEMENTATION(3, Range3D, Vector3)
 };
+
+/** @relates Range
+@brief Join two ranges
+
+Returns a range that contains both input ranges. If one of the ranges is empty,
+only the other is returned. Results are undefined if any range has negative
+size.
+*/
+template<UnsignedInt dimensions, class T> inline Range<dimensions, T> join(const Range<dimensions, T>& a, const Range<dimensions, T>& b) {
+    if(a.min() == a.max()) return b;
+    if(b.min() == b.max()) return a;
+    return {min(a.min(), b.min()), max(a.max(), b.max())};
+}
 
 /** @debugoperator{Magnum::Math::Range} */
 template<UnsignedInt dimensions, class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Range<dimensions, T>& value) {

@@ -123,6 +123,8 @@ struct RangeTest: Corrade::TestSuite::Tester {
     void padded();
     void scaled();
 
+    void join();
+
     void subclassTypes();
     void subclass();
 
@@ -156,6 +158,8 @@ RangeTest::RangeTest() {
               &RangeTest::translated,
               &RangeTest::padded,
               &RangeTest::scaled,
+
+              &RangeTest::join,
 
               &RangeTest::subclassTypes,
               &RangeTest::subclass,
@@ -444,6 +448,18 @@ void RangeTest::scaled() {
     Range2Di b({68, -69}, {94, -90});
 
     CORRADE_COMPARE(a.scaled({2, -3}), b);
+}
+
+void RangeTest::join() {
+    Range2Di a{{12, 20}, {15, 35}};
+    Range2Di b{{10, 25}, {17, 105}};
+    Range2Di c{{130, -15}, {130, -15}};
+    Range2Di d{{10, 20}, {17, 105}};
+
+    CORRADE_COMPARE(Math::join(a, b), d);
+    CORRADE_COMPARE(Math::join(b, a), d);
+    CORRADE_COMPARE(Math::join(a, c), a);
+    CORRADE_COMPARE(Math::join(c, a), a);
 }
 
 template<class T> class BasicRect: public Math::Range<2, T> {
