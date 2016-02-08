@@ -54,7 +54,7 @@ build() {
 
 check() {
     cd "$_rootdir/build-clang-libc++"
-    ctest --output-on-failure -j5
+    CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5
 }
 
 package() {

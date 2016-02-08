@@ -71,10 +71,10 @@ build() {
 
 check() {
     cd "$_rootdir/build"
-    ctest --output-on-failure -j5
+    CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5
 
     cd "$_rootdir/build-release"
-    ctest --output-on-failure -j5
+    CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5
 }
 
 package() {

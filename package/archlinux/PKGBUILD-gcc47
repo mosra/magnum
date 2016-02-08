@@ -56,7 +56,7 @@ build() {
 
 check() {
     cd "$_rootdir/build-gcc47"
-    ctest --output-on-failure -j5
+    CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5
 }
 
 package() {
