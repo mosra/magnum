@@ -232,6 +232,16 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
         return false;
     }
 
+    #ifdef CORRADE_TARGET_IOS
+    /* iOS has zero initial GL_VIEWPORT size, get drawable size and put it back
+       in so all other code can assume that the viewport is set to sane values.
+       Fortunately on iOS we also don't have to load any function pointers so
+       it's safe to do the glViewport() call as it is linked statically. */
+    Vector2i drawableSize;
+    SDL_GL_GetDrawableSize(_window, &drawableSize.x(), &drawableSize.y());
+    glViewport(0, 0, drawableSize.x(), drawableSize.y());
+    #endif
+
     #else
     /* Emscripten-specific initialization */
     _glContext = SDL_SetVideoMode(configuration.size().x(), configuration.size().y(), 24, SDL_OPENGL|SDL_HWSURFACE|SDL_DOUBLEBUF);
