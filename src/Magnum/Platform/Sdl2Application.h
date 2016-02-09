@@ -578,6 +578,18 @@ class Sdl2Application::Configuration {
         enum class WindowFlag: Uint32 {
             Resizable = SDL_WINDOW_RESIZABLE,       /**< Resizable window */
             Fullscreen = SDL_WINDOW_FULLSCREEN,     /**< Fullscreen window */
+
+            /** No window decoration. On iOS this hides the menu bar. */
+            Borderless = SDL_WINDOW_BORDERLESS,
+
+            #ifndef CORRADE_TARGET_EMSCRIPTEN
+            /**
+             * Allow high DPI.
+             * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+             */
+            AllowHighDpi = SDL_WINDOW_ALLOW_HIGHDPI,
+            #endif
+
             Hidden = SDL_WINDOW_HIDDEN,             /**< Hidden window */
             Maximized = SDL_WINDOW_MAXIMIZED,       /**< Maximized window */
             Minimized = SDL_WINDOW_MINIMIZED,       /**< Minimized window */
