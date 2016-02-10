@@ -186,6 +186,11 @@ template<UnsignedInt dimensions, class T> class Range {
          */
         Range<dimensions, T> scaled(const VectorType& scaling) const;
 
+        /** @brief Whether given point is contained inside the range */
+        constexpr bool contains(const VectorType& a) const {
+            return (a >= _min).all() && (a < _max).all();
+        }
+
     private:
         VectorType _min, _max;
 };

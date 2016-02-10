@@ -123,6 +123,7 @@ struct RangeTest: Corrade::TestSuite::Tester {
     void padded();
     void scaled();
 
+    void contains();
     void join();
 
     void subclassTypes();
@@ -159,6 +160,7 @@ RangeTest::RangeTest() {
               &RangeTest::padded,
               &RangeTest::scaled,
 
+              &RangeTest::contains,
               &RangeTest::join,
 
               &RangeTest::subclassTypes,
@@ -448,6 +450,14 @@ void RangeTest::scaled() {
     Range2Di b({68, -69}, {94, -90});
 
     CORRADE_COMPARE(a.scaled({2, -3}), b);
+}
+
+void RangeTest::contains() {
+    Range2Di a({34, 23}, {47, 30});
+
+    CORRADE_VERIFY(a.contains({40, 23}));
+    CORRADE_VERIFY(!a.contains({33, 23}));
+    CORRADE_VERIFY(!a.contains({40, 30}));
 }
 
 void RangeTest::join() {
