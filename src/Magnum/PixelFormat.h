@@ -598,8 +598,8 @@ enum class CompressedPixelFormat: GLenum {
      * RGTC compressed red channel, normalized unsigned. **Available only for
      * 2D, 2D array, cube map and cube map array textures.**
      * @requires_gl30 Extension @extension{EXT,texture_compression_rgtc}
-     * @requires_gl Generic texture compression is not available in OpenGL ES
-     *      or WebGL.
+     * @requires_gl RGTC texture compression is not available in OpenGL ES or
+     *      WebGL.
      */
     RedRgtc1 = GL_COMPRESSED_RED_RGTC1,
 
