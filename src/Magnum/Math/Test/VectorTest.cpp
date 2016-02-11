@@ -214,11 +214,7 @@ void VectorTest::constructOneComponent() {
 
     /* Implicit constructor must work */
     constexpr Vector1 vec = 1.0f;
-    CORRADE_COMPARE(vec, Vector1{1.0f});
-
-    /* Conversion back must also work */
-    Float value = vec;
-    CORRADE_COMPARE(value, 1.0f);
+    CORRADE_COMPARE(vec, Vector1(1));
 }
 
 void VectorTest::constructConversion() {
