@@ -110,6 +110,37 @@ webserver, e.g.  `/srv/http/emscripten`).
 You can then open `MyApplication.html` in Chrome or Firefox (through webserver,
 e.g. `http://localhost/emscripten/MyApplication.html`).
 
+## Bootstrap application for iOS
+
+Fully contained base application using @ref Sdl2Application for both desktop
+and iOS build along with pre-filled `*.plist` is available in `base-ios` branch
+of [Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap) repository,
+download it as [tar.gz](https://github.com/mosra/magnum-bootstrap/archive/base-ios.tar.gz)
+or [zip](https://github.com/mosra/magnum-bootstrap/archive/base-ios.zip) file.
+After extracting the downloaded archive, you can do the desktop build in
+the same way as above. For the iOS build you also need to put the contents of
+toolchains repository from https://github.com/mosra/toolchains in `toolchains/`
+subdirectory.
+
+Then create build directory and run `cmake` to generate the Xcode project. Set
+`CMAKE_OSX_ROOT` to SDK you want to target and enable all desired architectures
+in `CMAKE_OSX_ARCHITECTURES`. The toolchain needs access to its platform file,
+so be sure to properly set **absolute** path to `toolchains/modules/` directory
+containing `Platform/iOS.cmake`. Set `CMAKE_PREFIX_PATH` to the directory where
+you have all the dependencies.
+
+    mkdir build-ios && cd build-ios
+    cmake .. \
+        -DCMAKE_MODULE_PATH=/absolute/path/to/toolchains/modules/ \
+        -DCMAKE_TOOLCHAIN_FILE=../toolchains/generic/iOS.cmake \
+        -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk \
+        -DCMAKE_OSX_ARCHITECTURES="arm64;armv7;armv7s" \
+        -DCMAKE_PREFIX_PATH=~/ios-libs \
+        -G Xcode
+
+You can then open the generated project file in Xcode and build/deploy it from
+there.
+
 ## Bootstrap application for Windows RT
 
 Fully contained base application using @ref Sdl2Application for both desktop
@@ -198,6 +229,53 @@ The CSS file contains rudimentary style to avoid eye bleeding.
 The application redirects all output (thus also @ref Corrade::Utility::Debug "Debug",
 @ref Corrade::Utility::Warning "Warning" and @ref Corrade::Utility::Error "Error")
 to JavaScript console.
+
+## Usage with iOS
+
+A lot of options for iOS build (such as HiDPI/Retina support, supported display
+orientation, icons, splash screen...) is specified through the `*.plist` file.
+CMake uses its own template that can be configured using various `MACOSX_BUNDLE_*`
+variables, but many options are missing from there and you are much better off
+rolling your own template and passing **abosolute** path to it to CMake using
+the `MACOSX_BUNDLE_INFO_PLIST` property. Below are contents of the `*.plist`
+file used in the bootstrap application, requesting OpenGL ES 2.0 and
+advertising Retina support:
+@code
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>en-US</string>
+    <key>CFBundleExecutable</key>
+    <string>${MACOSX_BUNDLE_EXECUTABLE_NAME}</string>
+    <key>CFBundleIdentifier</key>
+    <string>cz.mosra.magnum.MyApplication</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>My Application</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+
+    <key>UIRequiredDeviceCapabilities</key>
+    <array>
+        <string>opengles-2</string>
+    </array>
+    <key>NSHighResolutionCapable</key>
+    <true/>
+</dict>
+</plist>
+@endcode
+
+Some other options can be configured from runtime when creating the SDL2
+application window, see documentation of particular value for details:
+
+-   @ref Configuration::WindowFlag::AllowHighDpi allows creating HiDPI/Retina
+    drawable
+-   @ref Configuration::WindowFlag::Borderless hides the menu bar
+-   @ref Configuration::WindowFlag::Resizable makes the application respond to
+    device orientation changes
 
 ## Usage with Windows RT
 
@@ -590,7 +668,9 @@ class Sdl2Application::Configuration {
 
             #ifndef CORRADE_TARGET_EMSCRIPTEN
             /**
-             * Allow high DPI.
+             * Allow high DPI. On iOS you also have to set the
+             * `NSHighResolutionCapable` entry in the `*.plist` file to make
+             * it working.
              * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
              */
             AllowHighDpi = SDL_WINDOW_ALLOW_HIGHDPI,
