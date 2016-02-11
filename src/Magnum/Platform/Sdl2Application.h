@@ -576,7 +576,12 @@ class Sdl2Application::Configuration {
          * @see @ref WindowFlags, @ref setWindowFlags()
          */
         enum class WindowFlag: Uint32 {
-            Resizable = SDL_WINDOW_RESIZABLE,       /**< Resizable window */
+            /**
+             * Resizable window. On iOS this allows the application to respond
+             * to display orientation changes.
+             */
+            Resizable = SDL_WINDOW_RESIZABLE,
+
             Fullscreen = SDL_WINDOW_FULLSCREEN,     /**< Fullscreen window */
 
             /** No window decoration. On iOS this hides the menu bar. */

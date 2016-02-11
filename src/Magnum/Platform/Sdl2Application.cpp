@@ -321,10 +321,18 @@ void Sdl2Application::mainLoop() {
         switch(event.type) {
             case SDL_WINDOWEVENT:
                 switch(event.window.event) {
-                    case SDL_WINDOWEVENT_RESIZED:
+                    case SDL_WINDOWEVENT_RESIZED: {
+                        #ifndef CORRADE_TARGET_IOS
                         viewportEvent({event.window.data1, event.window.data2});
+                        #else
+                        /* On iOS the window event is in points and not pixels,
+                           but we need pixels to call glViewport() properly */
+                        Vector2i drawableSize;
+                        SDL_GL_GetDrawableSize(_window, &drawableSize.x(), &drawableSize.y());
+                        viewportEvent(drawableSize);
+                        #endif
                         _flags |= Flag::Redraw;
-                        break;
+                    } break;
                     case SDL_WINDOWEVENT_EXPOSED:
                         _flags |= Flag::Redraw;
                         break;
