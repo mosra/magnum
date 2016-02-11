@@ -164,7 +164,12 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
     }
 
     /* Create window */
-    if(!(_window = SDL_CreateWindow(configuration.title().data(),
+    if(!(_window = SDL_CreateWindow(
+        #ifndef CORRADE_TARGET_IOS
+        configuration.title().data(),
+        #else
+        nullptr,
+        #endif
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
         configuration.size().x(), configuration.size().y(),
         SDL_WINDOW_OPENGL|windowFlags)))
@@ -431,7 +436,7 @@ void Sdl2Application::mouseReleaseEvent(MouseEvent&) {}
 void Sdl2Application::mouseMoveEvent(MouseMoveEvent&) {}
 
 Sdl2Application::Configuration::Configuration():
-    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_IOS)
     _title("Magnum SDL2 Application"),
     #endif
     _size(800, 600), _windowFlags{}, _sampleCount(0)

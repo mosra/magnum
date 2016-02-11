@@ -617,11 +617,12 @@ class Sdl2Application::Configuration {
         /*implicit*/ Configuration();
         ~Configuration();
 
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_IOS)
         /**
          * @brief Window title
          *
-         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"
+         *      and @ref CORRADE_TARGET_IOS "iOS".
          */
         std::string title() const { return _title; }
         #endif
@@ -631,11 +632,12 @@ class Sdl2Application::Configuration {
          * @return Reference to self (for method chaining)
          *
          * Default is `"Magnum SDL2 Application"`.
-         * @note In @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" this function
-         *      does nothing and is included only for compatibility. You need
-         *      to set the title separately in application's HTML markup.
+         * @note In @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" and
+         *      @ref CORRADE_TARGET_IOS "iOS" this function does nothing and is
+         *      included only for compatibility. You need to set the title
+         *      separately in platform-specific configuration file.
          */
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_IOS)
         Configuration& setTitle(std::string title) {
             _title = std::move(title);
             return *this;
@@ -756,7 +758,7 @@ class Sdl2Application::Configuration {
         #endif
 
     private:
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_IOS)
         std::string _title;
         #endif
         Vector2i _size;
