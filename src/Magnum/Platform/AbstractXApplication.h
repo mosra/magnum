@@ -227,7 +227,12 @@ class AbstractXApplication::Configuration {
         /** @copydoc Sdl2Application::Configuration::size() */
         Vector2i size() const { return _size; }
 
-        /** @copydoc Sdl2Application::Configuration::setSize() */
+        /**
+         * @brief Set window size
+         * @return Reference to self (for method chaining)
+         *
+         * Default is `{800, 600}`.
+         */
         Configuration& setSize(const Vector2i& size) {
             _size = size;
             return *this;
