@@ -94,8 +94,8 @@ variable in `toolchains/generic/Emscripten.cmake` to path where Emscripten is
 installed. Default is `/usr/emscripten`.
 
 Then create build directory and run `cmake` and build/install commands in it.
-The toolchain needs access to its platform file, so be sure to properly set
-**absolute** path to `toolchains/modules/` directory containing `Platform/Emscripten.cmake`.
+The toolchain needs access to its platform file, so be sure to properly set **absolute**
+path to `toolchains/modules/` directory containing `Platform/Emscripten.cmake`.
 Set `CMAKE_INSTALL_PREFIX` to have the files installed in proper location (a
 webserver, e.g.  `/srv/http/emscripten`).
 
@@ -578,7 +578,8 @@ class Sdl2Application::Configuration {
         enum class WindowFlag: Uint32 {
             /**
              * Resizable window. On iOS this allows the application to respond
-             * to display orientation changes.
+             * to display orientation changes. Implement @ref viewportEvent()
+             * to react to the resizing events.
              */
             Resizable = SDL_WINDOW_RESIZABLE,
 
