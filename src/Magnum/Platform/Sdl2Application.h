@@ -653,7 +653,10 @@ class Sdl2Application::Configuration {
          * @brief Set window size
          * @return Reference to self (for method chaining)
          *
-         * Default is `{800, 600}`.
+         * Default is `{800, 600}`. On iOS it defaults to a "reasonable" size
+         * based on whether HiDPI support is enabled using
+         * @ref WindowFlag::AllowHighDpi, but not necessarily native display
+         * resolution (you have to set it explicitly).
          */
         Configuration& setSize(const Vector2i& size) {
             _size = size;
