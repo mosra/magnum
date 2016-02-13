@@ -65,7 +65,7 @@ DebugTools::ResourceManager manager;
 SceneGraph::DrawableGroup3D debugDrawables;
 
 // Create renderer options which will be referenced later by "my" resource key
-DebugTools::ResourceManager::instance()->set("my",
+DebugTools::ResourceManager::instance().set("my",
     DebugTools::ObjectRendererOptions().setSize(0.3f));
 
 // Create debug renderer for given object, use "my" options for it. The
