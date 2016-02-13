@@ -75,7 +75,7 @@ Visualizes object position, rotation and scale using colored axes. See
 Example code:
 @code
 // Create some options
-DebugTools::ResourceManager::instance()->set("my", DebugTools::ObjectRendererOptions().setSize(0.3f));
+DebugTools::ResourceManager::instance().set("my", DebugTools::ObjectRendererOptions().setSize(0.3f));
 
 // Create debug renderer for given object, use "my" options for it
 Object3D* object;

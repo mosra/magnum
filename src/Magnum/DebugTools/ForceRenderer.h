@@ -90,7 +90,7 @@ See @ref debug-tools-renderers for more information.
 
 Example code:
 @code
-DebugTools::ResourceManager::instance()->set("my", DebugTools::ForceRendererOptions()
+DebugTools::ResourceManager::instance().set("my", DebugTools::ForceRendererOptions()
     .setScale(5.0f)
     .setColor(Color3::fromHSV(120.0_degf, 1.0f, 0.7f));
 
