@@ -244,7 +244,10 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
 
     #else
     /* Emscripten-specific initialization */
-    _glContext = SDL_SetVideoMode(configuration.size().x(), configuration.size().y(), 24, SDL_OPENGL|SDL_HWSURFACE|SDL_DOUBLEBUF);
+    if(!(_glContext = SDL_SetVideoMode(configuration.size().x(), configuration.size().y(), 24, SDL_OPENGL|SDL_HWSURFACE|SDL_DOUBLEBUF))) {
+        Error() << "Platform::Sdl2Application::tryCreateContext(): cannot create context:" << SDL_GetError();
+        return false;
+    }
     #endif
 
     /* Return true if the initialization succeeds */
