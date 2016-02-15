@@ -91,11 +91,3 @@ if(BUILD_GL_TESTS)
 endif()
 
 set_target_properties(ResourceManagerTest PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
-
-set(MagnumGLTests_HEADERS AbstractOpenGLTester.h)
-
-# Add the header to project list of IDEs
-add_custom_target(MagnumGLTests SOURCES ${MagnumGLTests_HEADERS})
-
-# Install bootstrap header for GL tests to be used in dependent projects
-install(FILES ${MagnumGLTests_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Test)

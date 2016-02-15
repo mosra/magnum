@@ -117,6 +117,9 @@ set(Magnum_HEADERS
 
     visibility.h)
 
+set(MagnumTest_HEADERS
+    Test/AbstractOpenGLTester.h)
+
 # Header files to display in project view of IDEs only
 set(Magnum_PRIVATE_HEADERS
     Implementation/BufferState.h
@@ -241,6 +244,7 @@ add_library(Magnum ${SHARED_OR_STATIC}
     ${Magnum_SRCS}
     ${Magnum_HEADERS}
     ${Magnum_PRIVATE_HEADERS}
+    ${MagnumTest_HEADERS}
     $<TARGET_OBJECTS:MagnumMathObjects>)
 set_target_properties(Magnum PROPERTIES DEBUG_POSTFIX "-d")
 if(NOT BUILD_STATIC)
@@ -266,6 +270,7 @@ install(TARGETS Magnum
     LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
     ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${Magnum_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR})
+install(FILES ${MagnumTest_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Test)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configure.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR})
 
 add_subdirectory(Math)
