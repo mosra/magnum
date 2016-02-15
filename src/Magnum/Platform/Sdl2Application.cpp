@@ -110,11 +110,6 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
     SDL_GL_SetAttribute(SDL_GL_FRAMEBUFFER_SRGB_CAPABLE, configuration.isSRGBCapable());
     #endif
 
-    /* Flags: if not hidden, set as shown */
-    Uint32 windowFlags(configuration.windowFlags());
-    if(!(configuration.windowFlags() & Configuration::WindowFlag::Hidden))
-        windowFlags |= SDL_WINDOW_SHOWN;
-
     /** @todo Remove when Emscripten has proper SDL2 support */
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     /* Set context version, if user-specified */
@@ -172,7 +167,7 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
         #endif
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
         configuration.size().x(), configuration.size().y(),
-        SDL_WINDOW_OPENGL|windowFlags)))
+        SDL_WINDOW_OPENGL|Uint32(configuration.windowFlags()))))
     {
         Error() << "Platform::Sdl2Application::tryCreateContext(): cannot create window:" << SDL_GetError();
         return false;
@@ -218,7 +213,7 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
         if(!(_window = SDL_CreateWindow(configuration.title().data(),
             SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
             configuration.size().x(), configuration.size().y(),
-            SDL_WINDOW_OPENGL|windowFlags)))
+            SDL_WINDOW_OPENGL|Uint32(configuration.windowFlags()))))
         {
             Error() << "Platform::Sdl2Application::tryCreateContext(): cannot create window:" << SDL_GetError();
             return false;
