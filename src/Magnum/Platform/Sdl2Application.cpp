@@ -158,7 +158,8 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
         #endif
     }
 
-    /* Create window */
+    /* Create window. Hide it by default so we don't have distracting window
+       blinking in case we have to destroy it again right away */
     if(!(_window = SDL_CreateWindow(
         #ifndef CORRADE_TARGET_IOS
         configuration.title().data(),
@@ -167,7 +168,7 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
         #endif
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
         configuration.size().x(), configuration.size().y(),
-        SDL_WINDOW_OPENGL|Uint32(configuration.windowFlags()))))
+        SDL_WINDOW_OPENGL|SDL_WINDOW_HIDDEN|Uint32(configuration.windowFlags()))))
     {
         Error() << "Platform::Sdl2Application::tryCreateContext(): cannot create window:" << SDL_GetError();
         return false;
@@ -213,7 +214,7 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
         if(!(_window = SDL_CreateWindow(configuration.title().data(),
             SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
             configuration.size().x(), configuration.size().y(),
-            SDL_WINDOW_OPENGL|Uint32(configuration.windowFlags()))))
+            SDL_WINDOW_OPENGL|SDL_WINDOW_HIDDEN|Uint32(configuration.windowFlags()))))
         {
             Error() << "Platform::Sdl2Application::tryCreateContext(): cannot create window:" << SDL_GetError();
             return false;
@@ -251,7 +252,15 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
     #endif
 
     /* Return true if the initialization succeeds */
-    return _context->tryCreate();
+    const bool created = _context->tryCreate();
+
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    /* Show the window once we are sure that everything is okay */
+    if(created && !(configuration.windowFlags() & Configuration::WindowFlag::Hidden))
+        SDL_ShowWindow(_window);
+    #endif
+
+    return created;
 }
 
 void Sdl2Application::swapBuffers() {
