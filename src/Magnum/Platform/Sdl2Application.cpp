@@ -242,7 +242,6 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
     SDL_GL_GetDrawableSize(_window, &drawableSize.x(), &drawableSize.y());
     glViewport(0, 0, drawableSize.x(), drawableSize.y());
     #endif
-
     #else
     /* Emscripten-specific initialization */
     if(!(_glContext = SDL_SetVideoMode(configuration.size().x(), configuration.size().y(), 24, SDL_OPENGL|SDL_HWSURFACE|SDL_DOUBLEBUF))) {
@@ -251,16 +250,22 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
     }
     #endif
 
-    /* Return true if the initialization succeeds */
-    const bool created = _context->tryCreate();
+    /* Destroy everything also when the Magnum context creation fails */
+    if(!_context->tryCreate()) {
+        SDL_GL_DeleteContext(_glContext);
+        SDL_DestroyWindow(_window);
+        _window = nullptr;
+        return false;
+    }
 
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     /* Show the window once we are sure that everything is okay */
-    if(created && !(configuration.windowFlags() & Configuration::WindowFlag::Hidden))
+    if(!(configuration.windowFlags() & Configuration::WindowFlag::Hidden))
         SDL_ShowWindow(_window);
     #endif
 
-    return created;
+    /* Return true if the initialization succeeds */
+    return true;
 }
 
 void Sdl2Application::swapBuffers() {
