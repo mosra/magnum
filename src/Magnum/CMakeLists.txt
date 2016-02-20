@@ -321,7 +321,7 @@ if(BUILD_TESTS)
     set_target_properties(MagnumMathTestLib PROPERTIES
         COMPILE_FLAGS "-DCORRADE_GRACEFUL_ASSERT"
         DEBUG_POSTFIX "-d")
-    target_link_libraries(MagnumMathTestLib ${CORRADE_UTILITY_LIBRARY})
+    target_link_libraries(MagnumMathTestLib ${CORRADE_UTILITY_LIBRARIES})
 
     # On Windows we need to install first and then run the tests to avoid "DLL
     # not found" hell, thus we need to install this too
