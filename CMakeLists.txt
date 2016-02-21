@@ -31,9 +31,10 @@ if(POLICY CMP0042)
     cmake_policy(SET CMP0042 NEW)
 endif()
 
-# Find Corrade first so we can check on the target
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/modules/")
-find_package(Corrade REQUIRED)
+
+# Find Corrade first so we can check on the target
+find_package(Corrade REQUIRED PluginManager Utility)
 
 include(CMakeDependentOption)
 
@@ -131,6 +132,7 @@ option(BUILD_PLUGINS_STATIC "Build static plugins (default are dynamic)" OFF)
 option(BUILD_TESTS "Build unit tests" OFF)
 cmake_dependent_option(BUILD_GL_TESTS "Build unit tests for OpenGL code" OFF "BUILD_TESTS" OFF)
 if(BUILD_TESTS)
+    find_package(Corrade REQUIRED TestSuite)
     enable_testing()
 endif()
 

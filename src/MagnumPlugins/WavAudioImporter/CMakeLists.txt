@@ -23,10 +23,6 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-find_package(OpenAL REQUIRED)
-
-include_directories(${OPENAL_INCLUDE_DIR})
-
 set(WavAudioImporter_SRCS
     WavImporter.cpp)
 
@@ -38,6 +34,9 @@ set(WavAudioImporter_HEADERS
 add_library(WavAudioImporterObjects OBJECT
     ${WavAudioImporter_SRCS}
     ${WavAudioImporter_HEADERS})
+target_include_directories(WavAudioImporterObjects PUBLIC
+    $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>
+    $<TARGET_PROPERTY:MagnumAudio,INTERFACE_INCLUDE_DIRECTORIES>)
 if(NOT BUILD_PLUGINS_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(WavAudioImporterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
@@ -50,7 +49,6 @@ add_plugin(WavAudioImporter ${MAGNUM_PLUGINS_AUDIOIMPORTER_DEBUG_INSTALL_DIR} ${
 if(BUILD_STATIC_PIC)
     set_target_properties(WavAudioImporter PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-
 target_link_libraries(WavAudioImporter Magnum MagnumAudio)
 
 install(FILES ${WavAudioImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/WavAudioImporter)
@@ -61,5 +59,5 @@ if(BUILD_TESTS)
     add_subdirectory(Test)
 endif()
 
-# Magnum WavAudioImporter library for superprojects
-set(MAGNUM_WAVAUDIOIMPORTER_LIBRARY WavAudioImporter CACHE INTERNAL "")
+# Magnum WavAudioImporter target alias for superprojects
+add_library(Magnum::WavAudioImporter ALIAS WavAudioImporter)

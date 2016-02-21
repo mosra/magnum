@@ -72,13 +72,11 @@ See @ref cmake for more information.
 
 ## General usage
 
-In CMake you need to request `WindowlessWindowsEglApplication` component, add
-`${MAGNUM_WINDOWLESSWINDOWSEGLAPPLICATION_INCLUDE_DIRS}` to include path and
-link to `${MAGNUM_WINDOWLESSWINDOWSEGLAPPLICATION_LIBRARIES}`. If no other
-windowless application is requested, you can also use generic
-`${MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS}` and
-`${MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES}` aliases to simplify porting. Again,
-see @ref building and @ref cmake for more information.
+In CMake you need to request `WindowlessWindowsEglApplication` component of
+`Magnum` package and link to `Magnum::WindowlessWindowsEglApplication` target.
+If no other windowless application is requested, you can also use generic
+`Magnum::WindowlessApplication` alias to simplify porting. Again, see
+@ref building and @ref cmake for more information.
 
 Place your code into @ref exec(). The subclass can be then used in main
 function using @ref MAGNUM_WINDOWLESSWINDOWSEGLAPPLICATION_MAIN() macro. See

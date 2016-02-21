@@ -113,5 +113,5 @@ if(BUILD_TESTS)
     add_subdirectory(Test)
 endif()
 
-# Magnum DebugTools library for superprojects
-set(MAGNUM_DEBUGTOOLS_LIBRARY MagnumDebugTools CACHE INTERNAL "")
+# Magnum DebugTools target alias for superprojects
+add_library(Magnum::DebugTools ALIAS MagnumDebugTools)

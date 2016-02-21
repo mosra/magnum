@@ -76,13 +76,11 @@ See @ref cmake for more information.
 
 ## General usage
 
-In CMake you need to request `WindowlessGlxApplication` component, add
-`${MAGNUM_WINDOWLESSGLXAPPLICATION_INCLUDE_DIRS}` to include path and link to
-`${MAGNUM_WINDOWLESSGLXAPPLICATION_LIBRARIES}`. If no other windowless
-application is requested, you can also use generic
-`${MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS}` and
-`${MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES}` aliases to simplify porting. Again,
-see @ref building and @ref cmake for more information.
+In CMake you need to request `WindowlessGlxApplication` component of `Magnum`
+package and link to `Magnum::WindowlessGlxApplication` target. If no other
+windowless application is requested, you can also use generic
+`Magnum::WindowlessApplication` alias to simplify porting. Again, see
+@ref building and @ref cmake for more information.
 
 Place your code into @ref exec(). The subclass can be then used directly in
 `main()` -- see convenience macro @ref MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN().

@@ -182,7 +182,7 @@ and @ref cmake-plugins for additional information.
 find_package(Magnum REQUIRED TgaImporter)
 
 add_executable(MyApp ...)
-target_link_libraries(MyApp ... ${MAGNUM_TGAIMPORTER_LIBRARIES})
+target_link_libraries(MyApp ... Magnum::TgaImporter)
 @endcode
 
 The only user-visible behavioral change will be that

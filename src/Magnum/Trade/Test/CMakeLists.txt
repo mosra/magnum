@@ -26,10 +26,10 @@
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
-
 corrade_add_test(TradeAbstractImageConverterTest AbstractImageConverterTest.cpp LIBRARIES Magnum)
+target_include_directories(TradeAbstractImageConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 corrade_add_test(TradeAbstractImporterTest AbstractImporterTest.cpp LIBRARIES Magnum)
+target_include_directories(TradeAbstractImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 corrade_add_test(TradeAbstractMaterialDataTest AbstractMaterialDataTest.cpp LIBRARIES Magnum)
 corrade_add_test(TradeImageDataTest ImageDataTest.cpp LIBRARIES Magnum)
 corrade_add_test(TradeObjectData2DTest ObjectData2DTest.cpp LIBRARIES Magnum)

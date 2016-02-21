@@ -169,10 +169,9 @@ final package along with a PowerShell script for easy local installation.
 For CMake you need to copy `FindSDL2.cmake` from `modules/` directory in
 Magnum source to `modules/` dir in your project (so it is able to find SDL2).
 In case of Emscripten you need also `FindOpenGLES2.cmake`. Request
-`Sdl2Application` component, add `${MAGNUM_SDL2APPLICATION_INCLUDE_DIRS}`
-to include path and link to `${MAGNUM_SDL2APPLICATION_LIBRARIES}`. If no other
-application is requested, you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}`
-and `${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting. Again, see
+`Sdl2Application` component of `Magnum` package and link to
+`Magnum::Sdl2Application` target. If no other application is requested, you can
+also use generic `Magnum::Application` alias to simplify porting. Again, see
 @ref building and @ref cmake for more information.
 
 In C++ code you need to implement at least @ref drawEvent() to be able to draw on the

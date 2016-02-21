@@ -58,9 +58,8 @@ but these structs are better suited for compile-time decisions rather than
 @ref Extension instances. See @ref Context::isExtensionSupported() for example
 usage.
 
-This namespace is built by default. To use it, you need to add `${MAGNUM_INCLUDE_DIRS}`
-to include path and link to `${MAGNUM_LIBRARIES}`. See @ref building and
-@ref cmake for more information.
+This namespace is built by default. To use it, you need to link to
+`Magnum::Magnum` target. See @ref building and @ref cmake for more information.
 @see @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED()
 @todo Manual indices for extensions, this has gaps
 */

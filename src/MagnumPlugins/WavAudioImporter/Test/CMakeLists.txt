@@ -26,6 +26,5 @@
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
-
 corrade_add_test(WavAudioImporterTest WavImporterTest.cpp LIBRARIES MagnumWavAudioImporterTestLib)
+target_include_directories(WavAudioImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})

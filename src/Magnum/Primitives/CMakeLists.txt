@@ -66,7 +66,6 @@ set_target_properties(MagnumPrimitives PROPERTIES DEBUG_POSTFIX "-d")
 if(BUILD_STATIC_PIC)
     set_target_properties(MagnumPrimitives PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-
 target_link_libraries(MagnumPrimitives Magnum)
 
 install(TARGETS MagnumPrimitives
@@ -79,5 +78,5 @@ if(BUILD_TESTS)
     add_subdirectory(Test)
 endif()
 
-# Magnum Primitives library for superprojects
-set(MAGNUM_PRIMITIVES_LIBRARY MagnumPrimitives CACHE INTERNAL "")
+# Magnum Primitives target alias for superprojects
+add_library(Magnum::Primitives ALIAS MagnumPrimitives)

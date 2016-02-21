@@ -112,13 +112,11 @@ can be then installed directly on the device or emulator using `adb install`.
 For CMake you need to copy `FindEGL.cmake` and `FindOpenGLES2.cmake` (or
 `FindOpenGLES3.cmake`) from `modules/` directory in Magnum source to `modules/`
 dir in your project (so it is able to find EGL and OpenGL ES libraries).
-Request `AndroidApplication` component, add
-`${MAGNUM_ANDROIDAPPLICATION_INCLUDE_DIRS}` to include path and link to
-`${MAGNUM_ANDROIDAPPLICATION_LIBRARIES}`. If no other application is requested,
-you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}` and
-`${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting. Again, see
-@ref building and @ref cmake for more information. Note that unlike on other
-platforms you need to create *shared library* instead of executable. The
+Request `AndroidApplication` component of `Magnum` package and link to
+`Magnum::AndroidApplication` target. If no other application is requested, you
+can also use generic `Magnum::Application` alias to simplify porting. Again,
+see @ref building and @ref cmake for more information. Note that unlike on
+other platforms you need to create *shared library* instead of executable. The
 resulting binary then needs to be copied to `lib/armeabi-v7a` and `lib/x86`,
 you can do that automatically in CMake using the following commands:
 

@@ -56,8 +56,9 @@ set(MagnumMeshTools_HEADERS
 add_library(MagnumMeshToolsObjects OBJECT
     ${MagnumMeshTools_SRCS}
     ${MagnumMeshTools_HEADERS})
+target_include_directories(MagnumMeshToolsObjects PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
 if(NOT BUILD_STATIC)
-    set_target_properties(MagnumMeshToolsObjects PROPERTIES COMPILE_FLAGS "-DMagnumMeshToolsObjects_EXPORTS")
+    target_compile_definitions(MagnumMeshToolsObjects PRIVATE "MagnumMeshToolsObjects_EXPORTS")
 endif()
 if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(MagnumMeshToolsObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
@@ -85,13 +86,12 @@ if(BUILD_TESTS)
     add_library(MagnumMeshToolsTestLib ${SHARED_OR_STATIC}
         $<TARGET_OBJECTS:MagnumMeshToolsObjects>
         ${MagnumMeshTools_GracefulAssert_SRCS})
-    set_target_properties(MagnumMeshToolsTestLib PROPERTIES
-        COMPILE_FLAGS "-DCORRADE_GRACEFUL_ASSERT -DMagnumMeshTools_EXPORTS"
-        DEBUG_POSTFIX "-d")
+    set_target_properties(MagnumMeshToolsTestLib PROPERTIES DEBUG_POSTFIX "-d")
+    target_compile_definitions(MagnumMeshToolsTestLib PRIVATE
+        "CORRADE_GRACEFUL_ASSERT" "MagnumMeshTools_EXPORTS")
     if(BUILD_STATIC_PIC)
         set_target_properties(MagnumMeshToolsTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()
-
     target_link_libraries(MagnumMeshToolsTestLib Magnum)
 
     # On Windows we need to install first and then run the tests to avoid "DLL
@@ -106,5 +106,5 @@ if(BUILD_TESTS)
     add_subdirectory(Test)
 endif()
 
-# Magnum MeshTools library for superprojects
-set(MAGNUM_MESHTOOLS_LIBRARY MagnumMeshTools CACHE INTERNAL "")
+# Magnum MeshTools target alias for superprojects
+add_library(Magnum::MeshTools ALIAS MagnumMeshTools)

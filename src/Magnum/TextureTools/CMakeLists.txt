@@ -44,28 +44,29 @@ set_target_properties(MagnumTextureTools PROPERTIES DEBUG_POSTFIX "-d")
 if(BUILD_STATIC_PIC)
     set_target_properties(MagnumTextureTools PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-
 target_link_libraries(MagnumTextureTools Magnum)
 
 if(WITH_DISTANCEFIELDCONVERTER)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/distancefieldconverterConfigure.h.cmake
                    ${CMAKE_CURRENT_BINARY_DIR}/distancefieldconverterConfigure.h)
 
-    include_directories(${CMAKE_CURRENT_BINARY_DIR})
-
     add_executable(magnum-distancefieldconverter distancefieldconverter.cpp)
-
+    target_include_directories(magnum-distancefieldconverter PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    target_link_libraries(magnum-distancefieldconverter Magnum MagnumTextureTools)
     if(CORRADE_TARGET_APPLE)
-        target_link_libraries(magnum-distancefieldconverter MagnumTextureTools MagnumWindowlessCglApplication)
+        target_link_libraries(magnum-distancefieldconverter MagnumWindowlessCglApplication)
     elseif(CORRADE_TARGET_UNIX AND NOT TARGET_GLES)
-        target_link_libraries(magnum-distancefieldconverter MagnumTextureTools Magnum MagnumWindowlessGlxApplication)
+        target_link_libraries(magnum-distancefieldconverter MagnumWindowlessGlxApplication)
     elseif(CORRADE_TARGET_WINDOWS AND NOT TARGET_GLES)
-        target_link_libraries(magnum-distancefieldconverter MagnumTextureTools MagnumWindowlessWglApplication)
+        target_link_libraries(magnum-distancefieldconverter MagnumWindowlessWglApplication)
     else()
         message(FATAL_ERROR "magnum-distancefieldconverter is not available on this platform. Set WITH_DISTANCEFIELDCONVERTER to OFF to suppress this warning.")
     endif()
 
     install(TARGETS magnum-distancefieldconverter DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+
+    # Magnum distancefieldconverter target alias for superprojects
+    add_executable(Magnum::distancefieldconverter ALIAS magnum-distancefieldconverter)
 endif()
 
 install(TARGETS MagnumTextureTools
@@ -78,5 +79,5 @@ if(BUILD_TESTS)
     add_subdirectory(Test)
 endif()
 
-# Magnum TextureTools library for superprojects
-set(MAGNUM_TEXTURETOOLS_LIBRARY MagnumTextureTools CACHE INTERNAL "")
+# Magnum TextureTools target alias for superprojects
+add_library(Magnum::TextureTools ALIAS MagnumTextureTools)

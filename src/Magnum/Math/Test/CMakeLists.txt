@@ -23,11 +23,11 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-corrade_add_test(MathBoolVectorTest BoolVectorTest.cpp)
-corrade_add_test(MathConstantsTest ConstantsTest.cpp)
+corrade_add_test(MathBoolVectorTest BoolVectorTest.cpp LIBRARIES MagnumMathTestLib)
+corrade_add_test(MathConstantsTest ConstantsTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathFunctionsTest FunctionsTest.cpp LIBRARIES MagnumMathTestLib)
-corrade_add_test(MathTagsTest TagsTest.cpp)
-corrade_add_test(MathTypeTraitsTest TypeTraitsTest.cpp)
+corrade_add_test(MathTagsTest TagsTest.cpp LIBRARIES MagnumMathTestLib)
+corrade_add_test(MathTypeTraitsTest TypeTraitsTest.cpp LIBRARIES MagnumMathTestLib)
 
 corrade_add_test(MathVectorTest VectorTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathVector2Test Vector2Test.cpp LIBRARIES MagnumMathTestLib)
@@ -41,7 +41,7 @@ corrade_add_test(MathMatrix3Test Matrix3Test.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathMatrix4Test Matrix4Test.cpp LIBRARIES MagnumMathTestLib)
 
 corrade_add_test(MathSwizzleTest SwizzleTest.cpp LIBRARIES MagnumMathTestLib)
-corrade_add_test(MathUnitTest UnitTest.cpp)
+corrade_add_test(MathUnitTest UnitTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathAngleTest AngleTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathRangeTest RangeTest.cpp LIBRARIES MagnumMathTestLib)
 
@@ -51,7 +51,7 @@ corrade_add_test(MathDualComplexTest DualComplexTest.cpp LIBRARIES MagnumMathTes
 corrade_add_test(MathQuaternionTest QuaternionTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathDualQuaternionTest DualQuaternionTest.cpp LIBRARIES MagnumMathTestLib)
 
-set_target_properties(
+set_property(TARGET
     MathVectorTest
     MathMatrixTest
     MathMatrix3Test
@@ -60,4 +60,4 @@ set_target_properties(
     MathDualComplexTest
     MathQuaternionTest
     MathDualQuaternionTest
-    PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
+    APPEND PROPERTY COMPILE_DEFINITIONS "CORRADE_GRACEFUL_ASSERT")

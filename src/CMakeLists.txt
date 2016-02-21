@@ -27,7 +27,7 @@
 # without any warning, only in release build, any attempt to add debug print
 # results in issue disappearing. Not an issue on Clang or GCC < 4.8.
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.8.0")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-strict-aliasing")
+    add_compile_options("-fno-strict-aliasing")
 endif()
 
 # On MSVC remove /W3, as we are replacing it with /W4
@@ -37,17 +37,13 @@ endif()
 
 # Emscripten needs special flag to use WebGL 2
 if(CORRADE_TARGET_EMSCRIPTEN AND NOT TARGET_GLES2)
+    # TODO: give me INTERFACE_LINK_OPTIONS or something, please
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s USE_WEBGL2=1")
 endif()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
-
-include_directories(${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${CORRADE_INCLUDE_DIRS})
-
-# We can use both implicit include path (GLES2/gl2.h) where our headers can
-# be overriden with system ones or explicit (MagnumExternal/OpenGL/GLES2/gl2ext.h)
-# where only our headers will be used
-include_directories(${PROJECT_SOURCE_DIR}/src/MagnumExternal/OpenGL)
+set_directory_properties(PROPERTIES
+    CORRADE_CXX_STANDARD 11
+    CORRADE_USE_PEDANTIC_FLAGS ON)
 
 add_subdirectory(MagnumExternal)
 add_subdirectory(Magnum)

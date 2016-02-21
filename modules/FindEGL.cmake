@@ -1,8 +1,14 @@
-# - Find EGL
+#.rst:
+# Find EGL
+# --------
 #
-# This module defines:
+# Finds the EGL library. This module defines:
 #
 #  EGL_FOUND            - True if EGL library is found
+#  EGL::EGL             - EGL imported target
+#
+# Additionally these variables are defined for internal usage:
+#
 #  EGL_LIBRARY          - EGL library
 #  EGL_INCLUDE_DIR      - Include dir
 #
@@ -50,6 +56,13 @@ find_path(EGL_INCLUDE_DIR NAMES
     EAGL.h)
 
 include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args("EGL" DEFAULT_MSG
+find_package_handle_standard_args(EGL DEFAULT_MSG
     EGL_LIBRARY
     EGL_INCLUDE_DIR)
+
+if(NOT TARGET EGL::EGL)
+    add_library(EGL::EGL UNKNOWN IMPORTED)
+    set_target_properties(EGL::EGL PROPERTIES
+        IMPORTED_LOCATION ${EGL_LIBRARY}
+        INTERFACE_INCLUDE_DIRECTORIES ${EGL_INCLUDE_DIR})
+endif()

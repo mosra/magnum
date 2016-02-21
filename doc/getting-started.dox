@@ -143,18 +143,17 @@ MAGNUM_APPLICATION_MAIN(MyApplication)
 
 The application essentially does nothing, just clears screen framebuffer to
 default (dark gray) color and then does buffer swap to actually display it on
-the screen. The `src/CMakeLists.txt` file finds Magnum, sets up compiler flags,
-creates the executable and links it to all needed libraries:
+the screen. The `src/CMakeLists.txt` file finds Magnum, creates the executable
+and links it to all needed libraries:
 @code
 find_package(Magnum REQUIRED Sdl2Application)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
-include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS})
+set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
 add_executable(MyApplication MyApplication.cpp)
 target_link_libraries(MyApplication
-    ${MAGNUM_LIBRARIES}
-    ${MAGNUM_APPLICATION_LIBRARIES})
+    Magnum::Magnum
+    Magnum::Application)
 @endcode
 
 In the following tutorials the code will be explained more thoroughly.

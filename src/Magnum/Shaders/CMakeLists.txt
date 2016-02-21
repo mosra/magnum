@@ -61,7 +61,6 @@ set_target_properties(MagnumShaders PROPERTIES DEBUG_POSTFIX "-d")
 if(BUILD_STATIC_PIC)
     set_target_properties(MagnumShaders PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-
 target_link_libraries(MagnumShaders Magnum)
 
 install(TARGETS MagnumShaders
@@ -75,4 +74,4 @@ if(BUILD_TESTS)
 endif()
 
 # Magnum Shaders library for superprojects
-set(MAGNUM_SHADERS_LIBRARY MagnumShaders CACHE INTERNAL "")
+add_library(Magnum::Shaders ALIAS MagnumShaders)

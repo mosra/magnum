@@ -42,8 +42,8 @@ built if `WITH_MAGNUMFONT` is enabled when building Magnum. To use dynamic
 plugin, you need to load `MagnumFont` plugin from `MAGNUM_PLUGINS_FONT_DIR`.
 To use static plugin or use this as a dependency of another plugin, you need to
 request `MagnumFont` component of `Magnum` package in CMake and link to
-`${MAGNUM_MAGNUMFONT_LIBRARIES}`. See @ref building, @ref cmake and
-@ref plugins for more information.
+`Magnum::MagnumFont` target. See @ref building, @ref cmake and @ref plugins for
+more information.
 
 The font consists of two files, one text file containing character and glyph
 info and one TGA file containing the glyphs in distance field format. The font

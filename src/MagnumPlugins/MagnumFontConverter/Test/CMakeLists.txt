@@ -26,17 +26,16 @@
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
-
 corrade_add_test(MagnumFontConverterGLTest MagnumFontConverterGLTest.cpp LIBRARIES
     MagnumMagnumFontConverterTestLib
     MagnumTgaImporterTestLib
     ${GL_TEST_LIBRARIES})
+target_include_directories(MagnumFontConverterGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 # On Win32 we need to avoid dllimporting TgaImporter symbols, because it would
 # search for the symbols in some DLL even though they were linked statically.
 # However it apparently doesn't matter that they were dllexported when building
 # the static library. EH.
 if(WIN32)
-    set_target_properties(MagnumFontConverterGLTest PROPERTIES COMPILE_FLAGS "-DMAGNUM_TGAIMPORTER_BUILD_STATIC")
+    target_compile_definitions(MagnumFontConverterGLTest PRIVATE "MAGNUM_TGAIMPORTER_BUILD_STATIC")
 endif()

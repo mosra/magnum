@@ -25,8 +25,6 @@
 
 find_package(OpenAL REQUIRED)
 
-include_directories(${OPENAL_INCLUDE_DIR})
-
 set(MagnumAudio_SRCS
     AbstractImporter.cpp
     Audio.cpp
@@ -60,13 +58,12 @@ endif()
 add_library(MagnumAudio ${SHARED_OR_STATIC}
     ${MagnumAudio_SRCS}
     ${MagnumAudio_HEADERS})
+target_include_directories(MagnumAudio PUBLIC ${OPENAL_INCLUDE_DIR})
 set_target_properties(MagnumAudio PROPERTIES DEBUG_POSTFIX "-d")
 if(BUILD_STATIC_PIC)
     set_target_properties(MagnumAudio PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-
-target_link_libraries(MagnumAudio Magnum ${CORRADE_PLUGINMANAGER_LIBRARIES} ${OPENAL_LIBRARY})
-
+target_link_libraries(MagnumAudio Magnum Corrade::PluginManager ${OPENAL_LIBRARY})
 if(WITH_SCENEGRAPH)
     target_link_libraries(MagnumAudio MagnumSceneGraph)
 endif()
@@ -81,5 +78,5 @@ if(BUILD_TESTS)
     add_subdirectory(Test)
 endif()
 
-# Magnum Audio library for superprojects
-set(MAGNUM_AUDIO_LIBRARY MagnumAudio CACHE INTERNAL "")
+# Magnum Audio target alias for superprojects
+add_library(Magnum::Audio ALIAS MagnumAudio)

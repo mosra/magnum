@@ -26,10 +26,10 @@
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
-
 corrade_add_test(TextAbstractFontTest AbstractFontTest.cpp LIBRARIES Magnum MagnumText)
+target_include_directories(TextAbstractFontTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 corrade_add_test(TextAbstractFontConverterTest AbstractFontConverterTest.cpp LIBRARIES Magnum MagnumText)
+target_include_directories(TextAbstractFontConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 corrade_add_test(TextAbstractLayouterTest AbstractLayouterTest.cpp LIBRARIES Magnum MagnumText)
 
 if(BUILD_GL_TESTS)

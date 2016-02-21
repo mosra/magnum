@@ -119,11 +119,9 @@ You can then open `MyApplication` through your webserver in Chrome (e.g.
 
 For CMake you need to copy `FindOpenGLES2.cmake` from `modules/` directory in
 Magnum source to `modules/` dir in your project (so it is able to find OpenGL
-ES). Request `NaClApplication` component, add
-`${MAGNUM_NACLAPPLICATION_INCLUDE_DIRS}` to include path and link to
-`${MAGNUM_NACLAPPLICATION_LIBRARIES}`. If no other application is requested,
-you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}` and
-`${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting. Again, see
+ES). Request `NaClApplication` component of `Magnum` package and link to
+`Magnum::NaClApplication` target. If no other application is requested, you can
+also use generic `Magnum::Application` alias to simplify porting. Again, see
 @ref building and @ref cmake for more information.
 
 In C++ code you need to implement at least @ref drawEvent() to be able to draw

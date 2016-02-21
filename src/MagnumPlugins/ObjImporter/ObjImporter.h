@@ -48,8 +48,8 @@ This plugin is built if `WITH_OBJIMPORTER` is enabled when building Magnum. To
 use dynamic plugin, you need to load `ObjImporter` plugin from
 `MAGNUM_PLUGINS_IMPORTER_DIR`. To use static plugin or use this as a dependency
 of another plugin, you need to request `ObjImporter` component of `Magnum`
-package in CMake and link to `${MAGNUM_OBJIMPORTER_LIBRARIES}`. See
-@ref building, @ref cmake and @ref plugins for more information.
+package in CMake and link to `Magnum::ObjImporter` target. See @ref building,
+@ref cmake and @ref plugins for more information.
 */
 class ObjImporter: public AbstractImporter {
     public:

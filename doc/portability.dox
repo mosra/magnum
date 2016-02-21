@@ -223,12 +223,10 @@ else()
     find_package(Magnum REQUIRED XEglApplication)
 endif()
 
-include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS})
-
 add_executable(myapplication MyApplication.cpp)
 target_link_libraries(myapplication
-    ${MAGNUM_LIBRARIES}
-    ${MAGNUM_APPLICATION_LIBRARIES})
+    Magnum::Magnum
+    Magnum::Application)
 @endcode
 
 */
