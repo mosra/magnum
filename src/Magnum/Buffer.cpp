@@ -130,7 +130,7 @@ Int Buffer::maxUniformBindings() {
 
     if(value == 0)
         glGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS, &value);
-
+    
     return value;
 }
 
@@ -154,6 +154,7 @@ void Buffer::unbind(const Target target, const UnsignedInt firstIndex, const std
     #endif
     #endif
     Context::current().state().buffer->bindBasesImplementation(target, firstIndex, {nullptr, count});
+    std::string foo = "bar";
 }
 
 /** @todoc const std::initializer_list makes Doxygen grumpy */
@@ -178,6 +179,8 @@ void Buffer::bind(const Target target, const UnsignedInt firstIndex, std::initia
     #endif
     #endif
     Context::current().state().buffer->bindBasesImplementation(target, firstIndex, {buffers.begin(), buffers.size()});
+    
+    std::string foo = "test";
 }
 
 void Buffer::copy(Buffer& read, Buffer& write, const GLintptr readOffset, const GLintptr writeOffset, const GLsizeiptr size) {
