@@ -12,7 +12,7 @@ addons:
   apt:
     sources:
     - ubuntu-toolchain-r-test
-    - kalakris-cmake
+    - kubuntu-backports
     packages:
     - g++-4.7
     - cmake
