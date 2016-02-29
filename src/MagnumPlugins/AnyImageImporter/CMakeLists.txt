@@ -40,7 +40,11 @@ set(AnyImageImporter_HEADERS
 add_library(AnyImageImporterObjects OBJECT
     ${AnyImageImporter_SRCS}
     ${AnyImageImporter_HEADERS})
-set_target_properties(AnyImageImporterObjects PROPERTIES COMPILE_FLAGS "-DAnyImageImporterObjects_EXPORTS")
+target_include_directories(AnyImageImporterObjects PUBLIC
+    $<TARGET_PROPERTY:Magnum::Magnum,INTERFACE_INCLUDE_DIRECTORIES>
+    ${PROJECT_SOURCE_DIR}/src
+    ${PROJECT_BINARY_DIR}/src)
+target_compile_definitions(AnyImageImporterObjects PRIVATE "AnyImageImporterObjects_EXPORTS")
 if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(AnyImageImporterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
@@ -53,17 +57,22 @@ add_plugin(AnyImageImporter ${MAGNUM_PLUGINS_IMPORTER_DEBUG_INSTALL_DIR} ${MAGNU
 if(BUILD_STATIC_PIC)
     set_target_properties(AnyImageImporter PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-
-target_link_libraries(AnyImageImporter ${MAGNUM_LIBRARIES})
+target_include_directories(AnyImageImporter PUBLIC
+    ${PROJECT_SOURCE_DIR}/src
+    ${PROJECT_BINARY_DIR}/src)
+target_link_libraries(AnyImageImporter Magnum::Magnum)
 
 install(FILES ${AnyImageImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/AnyImageImporter)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configure.h DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/AnyImageImporter)
 
 if(BUILD_TESTS)
     add_library(MagnumAnyImageImporterTestLib STATIC $<TARGET_OBJECTS:AnyImageImporterObjects>)
-    target_link_libraries(MagnumAnyImageImporterTestLib ${MAGNUM_LIBRARIES})
+    target_include_directories(MagnumAnyImageImporterTestLib PUBLIC
+        ${PROJECT_SOURCE_DIR}/src
+        ${PROJECT_BINARY_DIR}/src)
+    target_link_libraries(MagnumAnyImageImporterTestLib Magnum::Magnum)
     add_subdirectory(Test)
 endif()
 
-# Magnum AnyImageImporter library for superprojects
-set(MAGNUMPLUGINS_ANYIMAGEIMPORTER_LIBRARY AnyImageImporter CACHE INTERNAL "")
+# MagnumPlugins AnyImageImporter target alias for superprojects
+add_library(MagnumPlugins::AnyImageImporter ALIAS AnyImageImporter)

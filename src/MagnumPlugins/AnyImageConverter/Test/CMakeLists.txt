@@ -23,11 +23,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
-
 set(PNG_OUTPUT_FILE ${CMAKE_CURRENT_BINARY_DIR}/output.png)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
 corrade_add_test(AnyImageConverterTest Test.cpp LIBRARIES MagnumAnyImageConverterTestLib)
+target_include_directories(AnyImageConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})

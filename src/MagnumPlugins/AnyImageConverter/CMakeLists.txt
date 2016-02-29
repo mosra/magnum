@@ -33,6 +33,9 @@ set(AnyImageConverter_HEADERS
 add_library(AnyImageConverterObjects OBJECT
     ${AnyImageConverter_SRCS}
     ${AnyImageConverter_HEADERS})
+target_include_directories(AnyImageConverterObjects PUBLIC
+    $<TARGET_PROPERTY:Magnum::Magnum,INTERFACE_INCLUDE_DIRECTORIES>
+    ${PROJECT_SOURCE_DIR}/src)
 if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(AnyImageConverterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
@@ -45,16 +48,17 @@ add_plugin(AnyImageConverter ${MAGNUM_PLUGINS_IMAGECONVERTER_DEBUG_INSTALL_DIR} 
 if(BUILD_STATIC_PIC)
     set_target_properties(AnyImageConverter PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-
-target_link_libraries(AnyImageConverter ${MAGNUM_LIBRARIES})
+target_include_directories(AnyImageConverter PUBLIC ${PROJECT_SOURCE_DIR}/src)
+target_link_libraries(AnyImageConverter Magnum::Magnum)
 
 install(FILES ${AnyImageConverter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/AnyImageConverter)
 
 if(BUILD_TESTS)
     add_library(MagnumAnyImageConverterTestLib STATIC $<TARGET_OBJECTS:AnyImageConverterObjects>)
-    target_link_libraries(MagnumAnyImageConverterTestLib ${MAGNUM_LIBRARIES})
+    target_include_directories(MagnumAnyImageConverterTestLib PUBLIC ${PROJECT_SOURCE_DIR}/src)
+    target_link_libraries(MagnumAnyImageConverterTestLib Magnum::Magnum)
     add_subdirectory(Test)
 endif()
 
-# Magnum AnyImageConverter library for superprojects
-set(MAGNUMPLUGINS_ANYIMAGECONVERTER_LIBRARY AnyImageConverter CACHE INTERNAL "")
+# MagnumPlugins AnyImageConverter target alias for superprojects
+add_library(MagnumPlugins::AnyImageConverter ALIAS AnyImageConverter)

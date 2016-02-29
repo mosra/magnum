@@ -25,8 +25,6 @@
 
 find_package(Magnum REQUIRED Audio)
 
-include_directories(${MAGNUM_AUDIO_INCLUDE_DIRS})
-
 set(AnyAudioImporter_SRCS
     AnyImporter.cpp)
 
@@ -37,6 +35,9 @@ set(AnyAudioImporter_HEADERS
 add_library(AnyAudioImporterObjects OBJECT
     ${AnyAudioImporter_SRCS}
     ${AnyAudioImporter_HEADERS})
+target_include_directories(AnyAudioImporterObjects PUBLIC
+    $<TARGET_PROPERTY:Magnum::Audio,INTERFACE_INCLUDE_DIRECTORIES>
+    ${PROJECT_SOURCE_DIR}/src)
 if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(AnyAudioImporterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
@@ -49,16 +50,17 @@ add_plugin(AnyAudioImporter ${MAGNUM_PLUGINS_AUDIOIMPORTER_DEBUG_INSTALL_DIR} ${
 if(BUILD_STATIC_PIC)
     set_target_properties(AnyAudioImporter PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-
-target_link_libraries(AnyAudioImporter ${MAGNUM_LIBRARIES} ${MAGNUM_AUDIO_LIBRARIES})
+target_include_directories(AnyAudioImporter PUBLIC ${PROJECT_SOURCE_DIR}/src)
+target_link_libraries(AnyAudioImporter Magnum::Magnum Magnum::Audio)
 
 install(FILES ${AnyAudioImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/AnyAudioImporter)
 
 if(BUILD_TESTS)
     add_library(MagnumAnyAudioImporterTestLib STATIC $<TARGET_OBJECTS:AnyAudioImporterObjects>)
-    target_link_libraries(MagnumAnyAudioImporterTestLib ${MAGNUM_LIBRARIES} ${MAGNUM_AUDIO_LIBRARIES})
+    target_include_directories(MagnumAnyAudioImporterTestLib PUBLIC ${PROJECT_SOURCE_DIR}/src)
+    target_link_libraries(MagnumAnyAudioImporterTestLib Magnum::Magnum Magnum::Audio)
     add_subdirectory(Test)
 endif()
 
-# Magnum AnyAudioImporter library for superprojects
-set(MAGNUMPLUGINS_ANYAUDIOIMPORTER_LIBRARY AnyAudioImporter CACHE INTERNAL "")
+# MagnumPlugins AnyAudioImporter target alias for superprojects
+add_library(MagnumPlugins::AnyAudioImporter ALIAS AnyAudioImporter)

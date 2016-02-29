@@ -23,8 +23,6 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
-
 set(WAV_FILE ${CMAKE_CURRENT_SOURCE_DIR}/stereo8.wav)
 set(OGG_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/StbVorbisAudioImporter/Test/mono16.ogg)
 
@@ -32,3 +30,4 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
 corrade_add_test(AnyAudioImporterTest Test.cpp LIBRARIES MagnumAnyAudioImporterTestLib)
+target_include_directories(AnyAudioImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})

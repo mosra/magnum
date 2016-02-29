@@ -23,8 +23,6 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
-
 set(OBJ_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/AnySceneImporter/Test/mesh.obj)
 set(PLY_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/StanfordImporter/Test/common.ply)
 
@@ -32,3 +30,4 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
 corrade_add_test(AnySceneImporterTest Test.cpp LIBRARIES MagnumAnySceneImporterTestLib)
+target_include_directories(AnySceneImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})

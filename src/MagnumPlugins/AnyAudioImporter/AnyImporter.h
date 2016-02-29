@@ -44,11 +44,8 @@ This plugin is built if `WITH_ANYAUDIOIMPORTER` is enabled when building
 Magnum Plugins. To use dynamic plugin, you need to load `AnyAudioImporter`
 plugin from `MAGNUM_PLUGINS_IMPORTER_DIR`. To use static plugin, you need to
 request `AnyAudioImporter` component of `MagnumPlugins` package in CMake and
-link to `${MAGNUMPLUGINS_ANYAUDIOIMPORTER_LIBRARIES}`. To use this as a
-dependency of another plugin, you additionally need to add
-`${MAGNUMPLUGINS_ANYAUDIOIMPORTER_INCLUDE_DIRS}` to include path. See
-@ref building-plugins, @ref cmake-plugins and @ref plugins for more
-information.
+link to `MagnumPlugins::AnyAudioImporter` target. See @ref building-plugins,
+@ref cmake-plugins and @ref plugins for more information.
 
 Supported formats:
 
