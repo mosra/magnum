@@ -597,7 +597,7 @@ if(NEED_WGLCONTEXT OR WITH_WGLCONTEXT)
     endif()
 
     # Also create proper static library, if requested
-    if(WITH_GLXCONTEXT)
+    if(WITH_WGLCONTEXT)
         add_library(MagnumWglContext STATIC $<TARGET_OBJECTS:MagnumWglContextObjects>)
         set_target_properties(MagnumWglContext PROPERTIES DEBUG_POSTFIX "-d")
         if(BUILD_STATIC_PIC)
