@@ -121,7 +121,7 @@ bool WindowlessWglApplication::tryCreateContext(const Configuration& configurati
        with it */
     typedef HGLRC(WINAPI*PFNWGLCREATECONTEXTATTRIBSARBPROC)(HDC, HGLRC, const int*);
     const PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = reinterpret_cast<PFNWGLCREATECONTEXTATTRIBSARBPROC>( wglGetProcAddress(reinterpret_cast<LPCSTR>("wglCreateContextAttribsARB")));
-    _renderingContext = wglCreateContextAttribsARB(_deviceContext, 0, attributes);
+    _renderingContext = wglCreateContextAttribsARB(_deviceContext, nullptr, attributes);
 
     /* Delete the temporary context */
     wglMakeCurrent(_deviceContext, nullptr);
