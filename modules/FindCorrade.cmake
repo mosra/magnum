@@ -20,12 +20,10 @@
 # chosen based on actual build configuration of the project (i.e. Debug build
 # is linked to debug libraries, Release build to release libraries).
 #
-# On multi-configuration build systems (such as Visual Studio or XCode) the
-# preprocessor variable CORRADE_IS_DEBUG_BUILD is defined if given build
-# configuration is Debug (not Corrade itself, but build configuration of the
-# project using it). Useful e.g. for selecting proper plugin directory. On
-# single-configuration build systems (such as Makefiles) this information is
-# not needed and thus the variable is not defined in any case.
+# Corrade conditionally defines CORRADE_IS_DEBUG_BUILD preprocessor variable in
+# case build configuration is Debug (not Corrade itself, but build
+# configuration of the project using it). Useful e.g. for selecting proper
+# plugin directory.
 #
 # Corrade configures the compiler to use C++11 standard (if it is not already
 # configured to do so). Additionally you can use CORRADE_CXX_FLAGS to enable
@@ -121,6 +119,7 @@
 #                                     found
 #  CORRADE_USE_MODULE               - Path to UseCorrade.cmake module (included
 #                                     automatically)
+#  CORRADE_TESTSUITE_XCTEST_RUNNER  - Path to XCTestRunner.mm.in file
 #
 
 #
@@ -188,19 +187,13 @@ find_path(_CORRADE_MODULE_DIR
 find_file(_CORRADE_CONFIGURE_FILE configure.h
     HINTS ${CORRADE_INCLUDE_DIR}/Corrade/)
 
-include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(Corrade DEFAULT_MSG
-    CORRADE_UTILITY_LIBRARY
-    CORRADE_INTERCONNECT_LIBRARY
-    CORRADE_PLUGINMANAGER_LIBRARY
-    CORRADE_TESTSUITE_LIBRARY
-    CORRADE_INCLUDE_DIR
-    CORRADE_RC_EXECUTABLE
-    _CORRADE_MODULE_DIR
-    _CORRADE_CONFIGURE_FILE)
-
-if(NOT CORRADE_FOUND)
-    return()
+# We need to open configure.h file from CORRADE_INCLUDE_DIR before we check for
+# the components. Bail out with proper error message if it wasn't found. The
+# complete check with all components is further below.
+if(NOT CORRADE_INCLUDE_DIR)
+    include(FindPackageHandleStandardArgs)
+    find_package_handle_standard_args(Corrade
+        REQUIRED_VARS CORRADE_INCLUDE_DIR _CORRADE_CONFIGURE_FILE)
 endif()
 
 # Read flags from fonfiguration
@@ -219,13 +212,33 @@ set(_corradeFlags
     TARGET_NACL_NEWLIB
     TARGET_NACL_GLIBC
     TARGET_EMSCRIPTEN
-    TARGET_ANDROID)
+    TARGET_ANDROID
+    TESTSUITE_TARGET_XCTEST)
 foreach(_corradeFlag ${_corradeFlags})
     string(FIND "${_corradeConfigure}" "#define CORRADE_${_corradeFlag}" _corrade_${_corradeFlag})
     if(NOT _corrade_${_corradeFlag} EQUAL -1)
         set(CORRADE_${_corradeFlag} 1)
     endif()
 endforeach()
+
+# XCTest runner file
+if(CORRADE_TESTSUITE_TARGET_XCTEST)
+    find_file(CORRADE_TESTSUITE_XCTEST_RUNNER XCTestRunner.mm.in
+        PATH_SUFFIXES share/corrade/TestSuite)
+    set(CORRADE_TESTSUITE_XCTEST_RUNNER_NEEDED CORRADE_TESTSUITE_XCTEST_RUNNER)
+endif()
+
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(Corrade DEFAULT_MSG
+    CORRADE_UTILITY_LIBRARY
+    CORRADE_INTERCONNECT_LIBRARY
+    CORRADE_PLUGINMANAGER_LIBRARY
+    CORRADE_TESTSUITE_LIBRARY
+    CORRADE_INCLUDE_DIR
+    CORRADE_RC_EXECUTABLE
+    _CORRADE_MODULE_DIR
+    _CORRADE_CONFIGURE_FILE
+    ${CORRADE_TESTSUITE_XCTEST_RUNNER_NEEDED})
 
 set(CORRADE_INCLUDE_DIRS ${CORRADE_INCLUDE_DIR})
 set(CORRADE_UTILITY_LIBRARIES ${CORRADE_UTILITY_LIBRARY})
