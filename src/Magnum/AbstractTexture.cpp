@@ -240,6 +240,12 @@ AbstractTexture::~AbstractTexture() {
         if(binding.second == _id) binding = {};
     }
 
+    /* Remove all image bindings */
+    for(auto& binding: Context::current().state().texture->imageBindings) {
+        /* MSVC 2015 needs the parentheses around */
+        if(std::get<0>(binding) == _id) binding = {};
+    }
+
     glDeleteTextures(1, &_id);
 }
 
