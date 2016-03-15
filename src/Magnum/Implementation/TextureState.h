@@ -142,6 +142,7 @@ struct TextureState {
 
     Containers::Array<std::pair<GLenum, GLuint>> bindings;
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    /* Texture object ID, level, layered, layer, access */
     Containers::Array<std::tuple<GLuint, GLint, GLboolean, GLint, GLenum>> imageBindings;
     #endif
 };

@@ -235,8 +235,7 @@ AbstractTexture::~AbstractTexture() {
     if(!_id || !(_flags & ObjectFlag::DeleteOnDestruction)) return;
 
     /* Remove all bindings */
-    for(auto& binding: Context::current().state().texture->bindings)
-    {
+    for(auto& binding: Context::current().state().texture->bindings) {
         /* MSVC 2015 needs the parentheses around */
         if(binding.second == _id) binding = {};
     }
