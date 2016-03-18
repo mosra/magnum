@@ -94,7 +94,14 @@ find_package_handle_standard_args("SDL2" DEFAULT_MSG
 if(NOT TARGET SDL2::SDL2)
     if(SDL2_LIBRARY_NEEDED)
         add_library(SDL2::SDL2 UNKNOWN IMPORTED)
-        set_property(TARGET SDL2::SDL2 PROPERTY IMPORTED_LOCATION ${SDL2_LIBRARY})
+
+        # Work around BUGGY framework support on OSX
+        # https://cmake.org/Bug/view.php?id=13765
+        if(CORRADE_TARGET_APPLE AND ${SDL2_LIBRARY} MATCHES "\\.framework$")
+            set_property(TARGET SDL2::SDL2 PROPERTY IMPORTED_LOCATION ${SDL2_LIBRARY}/SDL2)
+        else()
+            set_property(TARGET SDL2::SDL2 PROPERTY IMPORTED_LOCATION ${SDL2_LIBRARY})
+        endif()
 
         # Link frameworks on iOS
         if(CORRADE_TARGET_IOS)
