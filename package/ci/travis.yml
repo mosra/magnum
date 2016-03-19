@@ -38,7 +38,7 @@ install:
 
 # SDL (cached)
 - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install sdl2; fi
-- if [ "$TRAVIS_OS_NAME" == "linux" ] && [ ! -e "$HOME/sdl2/include" ]; then curl -O http://www.libsdl.org/release/SDL2-2.0.3.tar.gz && tar -xzvf SDL2-2.0.3.tar.gz && cd SDL2-2.0.3 && mkdir build && cd build && cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/deps -DCMAKE_BUILD_TYPE=Release && cmake --build . --target install && cd ../..; fi
+- if [ "$TRAVIS_OS_NAME" == "linux" ] && [ ! -e "$HOME/deps/include/SDL2" ]; then curl -O http://www.libsdl.org/release/SDL2-2.0.4.tar.gz && tar -xzvf SDL2-2.0.4.tar.gz && cd SDL2-2.0.4 && mkdir build && cd build && cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/deps -DCMAKE_BUILD_TYPE=Release && cmake --build . --target install && cd ../..; fi
 
 # Corrade
 - git clone --depth 1 git://github.com/mosra/corrade.git
