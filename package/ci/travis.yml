@@ -37,7 +37,8 @@ install:
 - printf "[General]\ndrivers=null" > ~/.alsoftrc
 
 # SDL (cached)
-- if [ ! -e "$HOME/sdl2/include" ]; then curl -O http://www.libsdl.org/release/SDL2-2.0.3.tar.gz && tar -xzvf SDL2-2.0.3.tar.gz && cd SDL2-2.0.3 && mkdir build && cd build && cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/sdl2 -DCMAKE_BUILD_TYPE=Release && cmake --build . --target install && cd ../..; fi
+- if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install sdl2; fi
+- if [ "$TRAVIS_OS_NAME" == "linux" ] && [ ! -e "$HOME/sdl2/include" ]; then curl -O http://www.libsdl.org/release/SDL2-2.0.3.tar.gz && tar -xzvf SDL2-2.0.3.tar.gz && cd SDL2-2.0.3 && mkdir build && cd build && cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/deps -DCMAKE_BUILD_TYPE=Release && cmake --build . --target install && cd ../..; fi
 
 # Corrade
 - git clone --depth 1 git://github.com/mosra/corrade.git
@@ -52,6 +53,6 @@ install:
 
 script:
 - mkdir build && cd build
-- cmake .. -DCMAKE_PREFIX_PATH="$HOME/sdl2;$HOME/deps" -DCMAKE_BUILD_TYPE=Release -DWITH_AUDIO=ON -DWITH_SDL2APPLICATION=ON -DWITH_WINDOWLESS${PLATFORM_GL_API}APPLICATION=ON -DWITH_${PLATFORM_GL_API}CONTEXT=ON -DWITH_MAGNUMFONT=ON -DWITH_MAGNUMFONTCONVERTER=ON -DWITH_OBJIMPORTER=ON -DWITH_TGAIMAGECONVERTER=ON -DWITH_TGAIMPORTER=ON -DWITH_WAVAUDIOIMPORTER=ON -DWITH_DISTANCEFIELDCONVERTER=ON -DWITH_FONTCONVERTER=ON -DWITH_MAGNUMINFO=ON -DBUILD_TESTS=ON -DBUILD_GL_TESTS=ON
+- cmake .. -DCMAKE_PREFIX_PATH=$HOME/deps -DCMAKE_BUILD_TYPE=Release -DWITH_AUDIO=ON -DWITH_SDL2APPLICATION=ON -DWITH_WINDOWLESS${PLATFORM_GL_API}APPLICATION=ON -DWITH_${PLATFORM_GL_API}CONTEXT=ON -DWITH_MAGNUMFONT=ON -DWITH_MAGNUMFONTCONVERTER=ON -DWITH_OBJIMPORTER=ON -DWITH_TGAIMAGECONVERTER=ON -DWITH_TGAIMPORTER=ON -DWITH_WAVAUDIOIMPORTER=ON -DWITH_DISTANCEFIELDCONVERTER=ON -DWITH_FONTCONVERTER=ON -DWITH_MAGNUMINFO=ON -DBUILD_TESTS=ON -DBUILD_GL_TESTS=ON
 - cmake --build .
 - ctest --output-on-failure -E GLTest
