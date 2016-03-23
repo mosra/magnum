@@ -341,6 +341,6 @@ if(BUILD_TESTS)
     add_subdirectory(Test)
 endif()
 
-# Magnum library and configure file for superprojects
-set(MAGNUM_LIBRARY Magnum CACHE INTERNAL "")
+# Magnum library target alias and configure file for superprojects
+add_library(Magnum::Magnum ALIAS Magnum)
 set(_MAGNUM_CONFIGURE_FILE ${CMAKE_CURRENT_BINARY_DIR}/configure.h CACHE INTERNAL "")
