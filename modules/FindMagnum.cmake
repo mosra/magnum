@@ -285,6 +285,8 @@ if(NOT TARGET Magnum::Magnum)
         # TODO: give me INTERFACE_LINK_OPTIONS or something, please
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s USE_WEBGL2=1")
     endif()
+else()
+    set(MAGNUM_LIBRARY Magnum::Magnum)
 endif()
 
 # Ensure that all inter-component dependencies are specified as well
@@ -608,7 +610,7 @@ endforeach()
 # Complete the check with also all components
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Magnum
-    REQUIRED_VARS MAGNUM_LIBRARY MAGNUM_INCLUDE_DIR
+    REQUIRED_VARS MAGNUM_INCLUDE_DIR MAGNUM_LIBRARY
     HANDLE_COMPONENTS)
 
 # Create Windowless*Application, *Application and *Context aliases
