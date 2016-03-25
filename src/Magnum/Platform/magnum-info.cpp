@@ -221,6 +221,12 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #ifdef CORRADE_TARGET_ANDROID
     Debug() << "    CORRADE_TARGET_ANDROID";
     #endif
+    #ifdef CORRADE_TESTSUITE_TARGET_XCTEST
+    Debug() << "    CORRADE_TESTSUITE_TARGET_XCTEST";
+    #endif
+    #ifdef CORRADE_UTILITY_USE_ANSI_COLORS
+    Debug() << "    CORRADE_UTILITY_USE_ANSI_COLORS";
+    #endif
     #ifdef MAGNUM_BUILD_DEPRECATED
     Debug() << "    MAGNUM_BUILD_DEPRECATED";
     #endif
