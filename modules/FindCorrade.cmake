@@ -86,6 +86,8 @@
 #  CORRADE_TARGET_ANDROID       - Defined if compiled for Android
 #  CORRADE_TESTSUITE_TARGET_XCTEST - Defined if TestSuite is targetting Xcode
 #   XCTest
+#  CORRADE_UTILITY_USE_ANSI_COLORS - Defined if ANSI escape sequences are used
+#   for colored output with Utility::Debug on Windows
 #
 # Additionally these variables are defined for internal usage:
 #
