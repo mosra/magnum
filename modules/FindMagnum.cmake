@@ -499,7 +499,6 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                 find_package(EGL)
                 set_property(TARGET Magnum::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES EGL::EGL)
-            endif()
 
             # Windowless WGL application has no additional dependencies
 
