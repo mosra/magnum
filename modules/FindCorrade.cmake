@@ -84,6 +84,8 @@
 #   Client with `glibc` toolchain
 #  CORRADE_TARGET_EMSCRIPTEN    - Defined if compiled for Emscripten
 #  CORRADE_TARGET_ANDROID       - Defined if compiled for Android
+#  CORRADE_TESTSUITE_TARGET_XCTEST - Defined if TestSuite is targetting Xcode
+#   XCTest
 #
 # Additionally these variables are defined for internal usage:
 #
@@ -246,7 +248,8 @@ set(_corradeFlags
     TARGET_NACL_GLIBC
     TARGET_EMSCRIPTEN
     TARGET_ANDROID
-    TESTSUITE_TARGET_XCTEST)
+    TESTSUITE_TARGET_XCTEST
+    UTILITY_USE_ANSI_COLORS)
 foreach(_corradeFlag ${_corradeFlags})
     string(FIND "${_corradeConfigure}" "#define CORRADE_${_corradeFlag}" _corrade_${_corradeFlag})
     if(NOT _corrade_${_corradeFlag} EQUAL -1)
@@ -284,6 +287,13 @@ foreach(_component ${Corrade_FIND_COMPONENTS})
         set(_CORRADE_${_COMPONENT}_DEPENDENCIES Utility)
     elseif(_component STREQUAL Utility)
         set(_CORRADE_${_COMPONENT}_DEPENDENCIES Containers rc)
+    endif()
+
+    # Mark the dependencies as required if the component is also required
+    if(Corrade_FIND_REQUIRED_${_component})
+        foreach(_dependency ${_CORRADE_${_COMPONENT}_DEPENDENCIES})
+            set(Corrade_FIND_REQUIRED_${_dependency} TRUE)
+        endforeach()
     endif()
 
     list(APPEND _CORRADE_ADDITIONAL_COMPONENTS ${_CORRADE_${_COMPONENT}_DEPENDENCIES})
