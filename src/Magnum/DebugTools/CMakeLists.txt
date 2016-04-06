@@ -25,12 +25,14 @@
 
 set(MagnumDebugTools_SRCS
     Profiler.cpp
-    ResourceManager.cpp)
+    ResourceManager.cpp
+    TextureImage.cpp)
 
 set(MagnumDebugTools_HEADERS
     DebugTools.h
     Profiler.h
     ResourceManager.h
+    TextureImage.h
     visibility.h)
 
 # Header files to display in project view of IDEs only

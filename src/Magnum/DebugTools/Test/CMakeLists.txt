@@ -30,4 +30,5 @@ corrade_add_test(DebugToolsLineSegmentRendererTest LineSegmentRendererTest.cpp L
 
 if(BUILD_GL_TESTS)
     corrade_add_test(DebugToolsBufferDataGLTest BufferDataGLTest.cpp LIBRARIES MagnumDebugTools ${GL_TEST_LIBRARIES})
+    corrade_add_test(DebugToolsTextureImageGLTest TextureImageGLTest.cpp LIBRARIES MagnumDebugTools ${GL_TEST_LIBRARIES})
 endif()
