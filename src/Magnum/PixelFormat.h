@@ -355,10 +355,10 @@ enum class PixelType: GLenum {
 
     /**
      * Each component unsigned int.
-     * @requires_gles30 For texture data only, extension @es_extension{OES,depth_texture}
-     *      or @es_extension{ANGLE,depth_texture} in OpenGL ES 2.0.
-     * @requires_webgl20 For texture data only, extension
-     *      @webgl_extension{WEBGL,depth_texture} in WebGL 1.0.
+     * @requires_gles30 In OpenGL ES 2.0 for texture data only, using extension
+     *      @es_extension{OES,depth_texture} or @es_extension{ANGLE,depth_texture}
+     * @requires_webgl20 In WebGL 1.0 for texture data only, using extension
+     *      @webgl_extension{WEBGL,depth_texture}
      */
     UnsignedInt = GL_UNSIGNED_INT,
 
