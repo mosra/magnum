@@ -376,6 +376,10 @@ contents in `toolchains/` subdirectory.
     git submodule init
     git submodule update
 
+Note that CMake for some reason treats `CMAKE_PREFIX_PATH` and
+`CMAKE_INSTALL_PREFIX` differently while crosscompiling and you may need to set
+also `CMAKE_FIND_ROOT_PATH` to make it able to find the dependencies.
+
 @subsection building-cross-winrt Crosscompiling for Windows RT
 
 As said above, you need native build of `corrade-rc` executable. The below
