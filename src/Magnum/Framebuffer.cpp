@@ -28,6 +28,7 @@
 #include <Corrade/Containers/Array.h>
 
 #include "Magnum/Context.h"
+#include "Magnum/CubeMapTexture.h"
 #include "Magnum/DefaultFramebuffer.h"
 #include "Magnum/Extensions.h"
 #include "Magnum/Image.h"
@@ -236,7 +237,7 @@ Framebuffer& Framebuffer::attachTexture(const BufferAttachment attachment, Multi
 }
 #endif
 
-Framebuffer& Framebuffer::attachCubeMapTexture(const BufferAttachment attachment, CubeMapTexture& texture, CubeMapTexture::Coordinate coordinate, const Int level) {
+Framebuffer& Framebuffer::attachCubeMapTexture(const BufferAttachment attachment, CubeMapTexture& texture, CubeMapCoordinate coordinate, const Int level) {
     (this->*Context::current().state().framebuffer->textureCubeMapImplementation)(attachment, GLenum(coordinate), texture.id(), level);
     return *this;
 }

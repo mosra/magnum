@@ -487,6 +487,7 @@ template<class T> using BasicColor4 CORRADE_DEPRECATED_ALIAS("use Math::Color4 i
 class Context;
 
 class CubeMapTexture;
+enum class CubeMapCoordinate: GLenum;
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 class CubeMapTextureArray;
 #endif

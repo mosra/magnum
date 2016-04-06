@@ -35,6 +35,7 @@
 #include "Magnum/BufferTexture.h"
 #endif
 #include "Magnum/Context.h"
+#include "Magnum/CubeMapTexture.h"
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 #include "Magnum/CubeMapTextureArray.h"
 #endif

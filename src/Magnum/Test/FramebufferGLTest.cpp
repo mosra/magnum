@@ -25,6 +25,7 @@
 
 #include "Magnum/configure.h"
 #include "Magnum/Context.h"
+#include "Magnum/CubeMapTexture.h"
 #include "Magnum/Extensions.h"
 #include "Magnum/Framebuffer.h"
 #include "Magnum/Image.h"
@@ -618,7 +619,7 @@ void FramebufferGLTest::attachCubeMapTexture() {
     #else
     color.setStorage(1, rgbaFormatES2, Vector2i(128));
     #endif
-    framebuffer.attachCubeMapTexture(Framebuffer::ColorAttachment(0), color, CubeMapTexture::Coordinate::NegativeZ, 0);
+    framebuffer.attachCubeMapTexture(Framebuffer::ColorAttachment(0), color, CubeMapCoordinate::NegativeZ, 0);
 
     CubeMapTexture depthStencil;
 
@@ -632,11 +633,11 @@ void FramebufferGLTest::attachCubeMapTexture() {
 
         #ifndef MAGNUM_TARGET_GLES2
         depthStencil.setStorage(1, TextureFormat::Depth24Stencil8, Vector2i(128));
-        framebuffer.attachCubeMapTexture(Framebuffer::BufferAttachment::DepthStencil, depthStencil, CubeMapTexture::Coordinate::NegativeZ, 0);
+        framebuffer.attachCubeMapTexture(Framebuffer::BufferAttachment::DepthStencil, depthStencil, CubeMapCoordinate::NegativeZ, 0);
         #else
         depthStencil.setStorage(1, depthStencilFormatES2, Vector2i(128));
-        framebuffer.attachCubeMapTexture(Framebuffer::BufferAttachment::Depth, depthStencil, CubeMapTexture::Coordinate::NegativeZ, 0)
-                   .attachCubeMapTexture(Framebuffer::BufferAttachment::Stencil, depthStencil, CubeMapTexture::Coordinate::NegativeZ, 0);
+        framebuffer.attachCubeMapTexture(Framebuffer::BufferAttachment::Depth, depthStencil, CubeMapCoordinate::NegativeZ, 0)
+                   .attachCubeMapTexture(Framebuffer::BufferAttachment::Stencil, depthStencil, CubeMapCoordinate::NegativeZ, 0);
         #endif
     }
 
@@ -645,7 +646,7 @@ void FramebufferGLTest::attachCubeMapTexture() {
         Debug() << "Using" << Extensions::GL::OES::depth_texture::string();
 
         depthStencil.setStorage(1, TextureFormat::DepthComponent16, Vector2i(128));
-        framebuffer.attachCubeMapTexture(Framebuffer::BufferAttachment::Depth, depthStencil, CubeMapTexture::Coordinate::NegativeZ, 0);
+        framebuffer.attachCubeMapTexture(Framebuffer::BufferAttachment::Depth, depthStencil, CubeMapCoordinate::NegativeZ, 0);
     }
     #endif
 

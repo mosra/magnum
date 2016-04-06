@@ -28,6 +28,7 @@
 #include <Corrade/Utility/Assert.h>
 
 #include "Magnum/AbstractTexture.h"
+#include "Magnum/CubeMapTexture.h"
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 #include "Magnum/BufferTexture.h"
 #endif
