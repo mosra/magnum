@@ -27,3 +27,7 @@ corrade_add_test(DebugToolsCapsuleRendererTest CapsuleRendererTest.cpp LIBRARIES
 corrade_add_test(DebugToolsCylinderRendererTest CylinderRendererTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(DebugToolsForceRendererTest ForceRendererTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(DebugToolsLineSegmentRendererTest LineSegmentRendererTest.cpp LIBRARIES MagnumMathTestLib)
+
+if(BUILD_GL_TESTS)
+    corrade_add_test(DebugToolsBufferDataGLTest BufferDataGLTest.cpp LIBRARIES MagnumDebugTools ${GL_TEST_LIBRARIES})
+endif()

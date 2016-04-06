@@ -36,6 +36,14 @@ set(MagnumDebugTools_HEADERS
 # Header files to display in project view of IDEs only
 set(MagnumDebugTools_PRIVATE_HEADERS )
 
+if(NOT MAGNUM_TARGET_WEBGL)
+    list(APPEND MagnumDebugTools_SRCS
+        BufferData.cpp)
+
+    list(APPEND MagnumDebugTools_HEADERS
+        BufferData.h)
+endif()
+
 if(WITH_SCENEGRAPH)
     list(APPEND MagnumDebugTools_SRCS
         ForceRenderer.cpp
