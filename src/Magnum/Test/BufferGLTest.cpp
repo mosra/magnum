@@ -26,6 +26,7 @@
 #include <array>
 #include <vector>
 #include <Corrade/Containers/Array.h>
+#include <Corrade/TestSuite/Compare/Container.h>
 
 #include "Magnum/Buffer.h"
 #include "Magnum/Context.h"
@@ -247,12 +248,9 @@ void BufferGLTest::data() {
     #ifndef MAGNUM_TARGET_GLES
     const Containers::Array<Int> contents = buffer.data<Int>();
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(contents.size(), 5);
-    CORRADE_COMPARE(contents[0], 2);
-    CORRADE_COMPARE(contents[1], 7);
-    CORRADE_COMPARE(contents[2], 5);
-    CORRADE_COMPARE(contents[3], 13);
-    CORRADE_COMPARE(contents[4], 25);
+    CORRADE_COMPARE_AS(contents,
+        Containers::ArrayView<const Int>{data},
+        TestSuite::Compare::Container);
     #endif
 
     /* Plain array */
@@ -277,10 +275,9 @@ void BufferGLTest::data() {
     #ifndef MAGNUM_TARGET_GLES
     const Containers::Array<Int> subContents = buffer.subData<Int>(4, 3);
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE(subContents.size(), 3);
-    CORRADE_COMPARE(subContents[0], 125);
-    CORRADE_COMPARE(subContents[1], 3);
-    CORRADE_COMPARE(subContents[2], 15);
+    CORRADE_COMPARE_AS(subContents,
+        Containers::ArrayView<const Int>{subData},
+        TestSuite::Compare::Container);
     #endif
 }
 
@@ -427,10 +424,9 @@ void BufferGLTest::copy() {
     /** @todo How to verify the contents in ES? */
     #ifndef MAGNUM_TARGET_GLES
     const Containers::Array<char> subContents = buffer2.subData<char>(2, 3);
-    CORRADE_COMPARE(subContents.size(), 3);
-    CORRADE_COMPARE(subContents[0], 7);
-    CORRADE_COMPARE(subContents[1], 5);
-    CORRADE_COMPARE(subContents[2], 13);
+    CORRADE_COMPARE_AS(subContents,
+        Containers::ArrayView<const char>{data}.slice(1, 4),
+        TestSuite::Compare::Container);
     #endif
 }
 #endif
