@@ -26,5 +26,5 @@
 /* XCode-generated project files have a limitation that you can't create a
    library target from OBJECT sources only and you have to provide at least one
    file. Otherwise the generated library gets replaced with self-pointing
-   symlink and the build then obviously fails with "File not found" error. That
-   affected the MagnumMathTestLib library and this file should fix it. */
+   symlink and the build then obviously fails with "File not found" error.
+   Related: http://public.kitware.com/pipermail/cmake/2016-April/063178.html */
