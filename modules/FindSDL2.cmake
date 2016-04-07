@@ -111,6 +111,7 @@ if(NOT TARGET SDL2::SDL2)
 
         # Link also EGL library, if on ES (and not on WebGL)
         if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_DESKTOP_GLES AND NOT MAGNUM_TARGET_WEBGL)
+            find_package(EGL REQUIRED)
             set_property(TARGET SDL2::SDL2 APPEND PROPERTY
                 INTERFACE_LINK_LIBRARIES EGL::EGL)
         endif()
