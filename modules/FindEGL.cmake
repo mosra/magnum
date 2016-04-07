@@ -62,7 +62,19 @@ find_package_handle_standard_args(EGL DEFAULT_MSG
 
 if(NOT TARGET EGL::EGL)
     add_library(EGL::EGL UNKNOWN IMPORTED)
+
+    # Work around BUGGY framework support on OSX
+    # http://public.kitware.com/pipermail/cmake/2016-April/063179.html
+    if(APPLE AND ${EGL_LIBRARY} MATCHES "\\.framework$")
+        add_library(EGL::EGL INTERFACE IMPORTED)
+        set_property(TARGET EGL::EGL APPEND PROPERTY
+            INTERFACE_LINK_LIBRARIES ${EGL_LIBRARY})
+    else()
+        add_library(EGL::EGL UNKNOWN IMPORTED)
+        set_property(TARGET EGL::EGL PROPERTY
+            IMPORTED_LOCATION ${EGL_LIBRARY})
+    endif()
+
     set_target_properties(EGL::EGL PROPERTIES
-        IMPORTED_LOCATION ${EGL_LIBRARY}
         INTERFACE_INCLUDE_DIRECTORIES ${EGL_INCLUDE_DIR})
 endif()

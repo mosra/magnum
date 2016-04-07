@@ -70,9 +70,17 @@ find_package_handle_standard_args("OpenGLES3" DEFAULT_MSG
 
 if(NOT TARGET OpenGLES3::OpenGLES3)
     if(OPENGLES3_LIBRARY_NEEDED)
-        add_library(OpenGLES3::OpenGLES3 UNKNOWN IMPORTED)
-        set_property(TARGET OpenGLES3::OpenGLES3 PROPERTY
-            IMPORTED_LOCATION ${OPENGLES3_LIBRARY})
+        # Work around BUGGY framework support on OSX
+        # http://public.kitware.com/pipermail/cmake/2016-April/063179.html
+        if(CORRADE_TARGET_APPLE AND ${OPENGLES3_LIBRARY} MATCHES "\\.framework$")
+            add_library(OpenGLES3::OpenGLES3 INTERFACE IMPORTED)
+            set_property(TARGET OpenGLES3::OpenGLES3 APPEND PROPERTY
+                INTERFACE_LINK_LIBRARIES ${OPENGLES3_LIBRARY})
+        else()
+            add_library(OpenGLES3::OpenGLES3 UNKNOWN IMPORTED)
+            set_property(TARGET OpenGLES3::OpenGLES3 PROPERTY
+                IMPORTED_LOCATION ${OPENGLES3_LIBRARY})
+        endif()
     else()
         # This won't work in CMake 2.8.12, but that affects Emscripten only so
         # I assume people building for that are not on that crap old Ubuntu
