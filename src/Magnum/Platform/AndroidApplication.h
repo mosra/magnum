@@ -87,15 +87,11 @@ properly set **absolute** path to `toolchains/modules/` directory containing
 `Platform/Android.cmake`.
 
     mkdir build-android-arm && cd build-android-arm
-    cmake .. \
-        -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
-        -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Android-ARM.cmake"
+    cmake .. -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Android-ARM.cmake"
     cmake --build .
 
     mkdir build-android-x86 && cd build-android-x86
-    cmake .. \
-        -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
-        -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Android-x86.cmake"
+    cmake .. -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Android-x86.cmake"
     cmake --build .
 
 See @ref cmake for more information.

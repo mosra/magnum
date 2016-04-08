@@ -462,7 +462,6 @@ in `CMAKE_PREFIX_PATH`.
 
     mkdir build-nacl-x86-32 && cd build-nacl-x86-32
     cmake .. \
-        -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
         -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/NaCl-newlib-x86-32.cmake" \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_PREFIX_PATH=/usr/nacl \
@@ -473,7 +472,6 @@ in `CMAKE_PREFIX_PATH`.
 
     mkdir build-nacl-x86-64 && cd build-nacl-x86-64
     cmake .. \
-        -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
         -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/NaCl-newlib-x86-64.cmake" \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_PREFIX_PATH=/usr/nacl \
@@ -512,7 +510,6 @@ equivalent) by disabling `TARGET_GLES2`.
 
     mkdir build-emscripten && cd build-emscripten
     cmake .. \
-        -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
         -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Emscripten.cmake" \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_PREFIX_PATH=/usr/lib/emscripten/system \
@@ -551,7 +548,6 @@ enabled by default, switch to 3.0 by disabling `TARGET_GLES2`.
 
     mkdir build-ios && cd build-ios
     cmake .. \
-        -DCMAKE_MODULE_PATH=/absolute/path/to/toolchains/modules/ \
         -DCMAKE_TOOLCHAIN_FILE=../toolchains/generic/iOS.cmake \
         -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk \
         -DCMAKE_OSX_ARCHITECTURES="arm64;armv7;armv7s" \
@@ -590,7 +586,6 @@ built for OpenGL ES 2.0 by default, switch  to 3.0 by disabling `TARGET_GLES2`.
 
     mkdir build-android-arm && cd build-android-arm
     cmake .. \
-        -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
         -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Android-ARM.cmake" \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_PREFIX_PATH=/opt/android-ndk/platforms/android-19/arch-arm/usr \
@@ -601,7 +596,6 @@ built for OpenGL ES 2.0 by default, switch  to 3.0 by disabling `TARGET_GLES2`.
 
     mkdir build-android-x86 && cd build-android-x86
     cmake .. \
-        -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
         -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Android-x86.cmake" \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_PREFIX_PATH=/opt/android-ndk/platforms/android-19/arch-x86/usr \

@@ -85,7 +85,6 @@ cd build-android-${gl}-${toolchain}-${compatibility}
 
 cmake .. \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_MODULE_PATH="${WORKSPACE}/toolchains/modules" \
     -DCMAKE_TOOLCHAIN_FILE=../toolchains/generic/Android-${toolchain}.cmake \
     -DCMAKE_FIND_ROOT_PATH=${JENKINS_HOME}/filesystem/android-${toolchain}-${compatibility} \
     -DCMAKE_PREFIX_PATH=${JENKINS_HOME}/filesystem/android-${toolchain}-${compatibility} \

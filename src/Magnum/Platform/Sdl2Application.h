@@ -101,7 +101,6 @@ webserver, e.g.  `/srv/http/emscripten`).
 
     mkdir build-emscripten && cd build-emscripten
     cmake .. \
-        -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
         -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Emscripten.cmake"
         -DCMAKE_INSTALL_PREFIX=/srv/http/emscripten
     cmake --build .
@@ -131,7 +130,6 @@ you have all the dependencies.
 
     mkdir build-ios && cd build-ios
     cmake .. \
-        -DCMAKE_MODULE_PATH=/absolute/path/to/toolchains/modules/ \
         -DCMAKE_TOOLCHAIN_FILE=../toolchains/generic/iOS.cmake \
         -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk \
         -DCMAKE_OSX_ARCHITECTURES="arm64;armv7;armv7s" \

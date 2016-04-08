@@ -96,7 +96,6 @@ location of your webserver to have the files installed in proper location (e.g.
 
     mkdir build-nacl-x86-32 && cd build-nacl-x86-32
     cmake .. \
-        -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
         -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/NaCl-newlib-x86-32.cmake" \
         -DCMAKE_INSTALL_PREFIX=/srv/http/nacl
     cmake --build .
@@ -104,7 +103,6 @@ location of your webserver to have the files installed in proper location (e.g.
 
     mkdir build-nacl-x86-64 && cd build-nacl-x86-64
     cmake .. \
-        -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
         -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/NaCl-newlib-x86-64.cmake" \
         -DCMAKE_INSTALL_PREFIX=/srv/http/nacl
     cmake --build .
