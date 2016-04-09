@@ -50,6 +50,11 @@ struct TextureImageGLTest: Magnum::Test::AbstractOpenGLTester {
     #ifndef MAGNUM_TARGET_GLES2
     void subImageCubeBuffer();
     #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
+    void subImage2DUInt();
+    void subImage2DFloat();
+    #endif
 };
 
 TextureImageGLTest::TextureImageGLTest() {
@@ -60,7 +65,12 @@ TextureImageGLTest::TextureImageGLTest() {
 
               &TextureImageGLTest::subImageCube,
               #ifndef MAGNUM_TARGET_GLES2
-              &TextureImageGLTest::subImageCubeBuffer
+              &TextureImageGLTest::subImageCubeBuffer,
+              #endif
+
+              #ifndef MAGNUM_TARGET_GLES2
+              &TextureImageGLTest::subImage2DUInt,
+              &TextureImageGLTest::subImage2DFloat,
               #endif
               });
 }
@@ -141,6 +151,47 @@ void TextureImageGLTest::subImageCubeBuffer() {
         TestSuite::Compare::Container);
 }
 #endif
+
+namespace {
+    constexpr UnsignedInt Data2DUInt[] = { 0xcafebabe,
+                                           0xdeadbeef,
+                                           0xbadf00d,
+                                           0xdeadbabe };
+}
+
+void TextureImageGLTest::subImage2DUInt() {
+    Texture2D texture;
+    texture.setImage(0, TextureFormat::R32UI, ImageView2D{PixelFormat::RedInteger, PixelType::UnsignedInt, Vector2i{2}, Data2DUInt});
+
+    Image2D image = textureSubImage(texture, 0, {{}, Vector2i{2}}, {PixelFormat::RedInteger, PixelType::UnsignedInt});
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(image.size(), Vector2i{2});
+    CORRADE_COMPARE_AS(
+        (Containers::ArrayView<const UnsignedInt>{image.data<UnsignedInt>(), image.data().size()/4}),
+        Containers::ArrayView<const UnsignedInt>{Data2DUInt},
+        TestSuite::Compare::Container);
+}
+
+namespace {
+    constexpr Float Data2DFloat[] = { 1.0f,
+                                      0.14159f,
+                                      0.71828f,
+                                      0.41421f };
+}
+
+void TextureImageGLTest::subImage2DFloat() {
+    Texture2D texture;
+    texture.setStorage(1, TextureFormat::R32F, Vector2i{2})
+        .setSubImage(0, {}, ImageView2D{PixelFormat::Red, PixelType::Float, Vector2i{2}, Data2DFloat});
+
+    Image2D image = textureSubImage(texture, 0, {{}, Vector2i{2}}, {PixelFormat::Red, PixelType::Float});
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(image.size(), Vector2i{2});
+    CORRADE_COMPARE_AS(
+        (Containers::ArrayView<const Float>{image.data<Float>(), image.data().size()/4}),
+        Containers::ArrayView<const Float>{Data2DFloat},
+        TestSuite::Compare::Container);
+}
 
 }}}
 

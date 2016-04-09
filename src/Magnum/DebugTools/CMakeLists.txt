@@ -38,6 +38,11 @@ set(MagnumDebugTools_HEADERS
 # Header files to display in project view of IDEs only
 set(MagnumDebugTools_PRIVATE_HEADERS )
 
+if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_GLES2)
+    corrade_add_resource(MagnumDebugTools_RESOURCES resources.conf)
+    list(APPEND MagnumDebugTools_SRCS ${MagnumDebugTools_RESOURCES})
+endif()
+
 if(NOT MAGNUM_TARGET_WEBGL)
     list(APPEND MagnumDebugTools_SRCS
         BufferData.cpp)

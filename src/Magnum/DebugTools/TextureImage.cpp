@@ -27,12 +27,131 @@
 
 #include "Magnum/BufferImage.h"
 #include "Magnum/Framebuffer.h"
-#include "Magnum/Texture.h"
 #include "Magnum/Image.h"
+#include "Magnum/Texture.h"
+
+#if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
+#include <Corrade/Utility/Resource.h>
+
+#include "Magnum/AbstractShaderProgram.h"
+#include "Magnum/Mesh.h"
+#include "Magnum/PixelFormat.h"
+#include "Magnum/Shader.h"
+#include "Magnum/TextureFormat.h"
+#include "Magnum/Version.h"
+
+#ifdef MAGNUM_BUILD_STATIC
+static void importDebugToolsResources() {
+    CORRADE_RESOURCE_INITIALIZE(MagnumDebugTools_RESOURCES)
+}
+#endif
+#endif
 
 namespace Magnum { namespace DebugTools {
 
+#if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
+namespace {
+
+class FloatReinterpretShader: public AbstractShaderProgram {
+    public:
+        explicit FloatReinterpretShader();
+
+        FloatReinterpretShader& setTexture(Texture2D& texture, Int level) {
+            texture.bind(0);
+            setUniform(levelUniform, level);
+            return *this;
+        }
+
+    private:
+        Int levelUniform;
+};
+
+FloatReinterpretShader::FloatReinterpretShader() {
+    #ifdef MAGNUM_BUILD_STATIC
+    /* Import resources on static build, if not already */
+    if(!Utility::Resource::hasGroup("MagnumDebugTools"))
+        importShaderResources();
+    #endif
+    Utility::Resource rs{"MagnumDebugTools"};
+
+    Shader vert{Version::GLES300, Shader::Type::Vertex};
+    Shader frag{Version::GLES300, Shader::Type::Fragment};
+    vert.addSource(rs.get("TextureImage.vert"));
+    frag.addSource(rs.get("TextureImage.frag"));
+
+    CORRADE_INTERNAL_ASSERT(Shader::compile({vert, frag}));
+    attachShaders({vert, frag});
+
+    CORRADE_INTERNAL_ASSERT(link());
+
+    levelUniform = uniformLocation("level");
+    setUniform(uniformLocation("textureData"), 0);
+}
+
+}
+#endif
+
 void textureSubImage(Texture2D& texture, const Int level, const Range2Di& range, Image2D& image) {
+    #ifdef MAGNUM_TARGET_GLES
+    if(image.type() == PixelType::Float) {
+        const PixelFormat imageFormat = image.format();
+        TextureFormat textureFormat;
+        PixelFormat reinterpretFormat;
+        switch(imageFormat) {
+            case PixelFormat::Red:
+                textureFormat = TextureFormat::R32UI;
+                reinterpretFormat = PixelFormat::RedInteger;
+                break;
+            case PixelFormat::RG:
+                textureFormat = TextureFormat::RG32UI;
+                reinterpretFormat = PixelFormat::RGInteger;
+                break;
+            case PixelFormat::RGB:
+                textureFormat = TextureFormat::RGB32UI;
+                reinterpretFormat = PixelFormat::RGBInteger;
+                break;
+            case PixelFormat::RGBA:
+                textureFormat = TextureFormat::RGBA32UI;
+                reinterpretFormat = PixelFormat::RGBAInteger;
+                break;
+            default:
+                CORRADE_ASSERT(false, "DebugTools::textureSubImage(): unsupported pixel format" << image.format(), );
+        }
+
+        Texture2D output;
+        output.setStorage(1, textureFormat, range.max());
+
+        Framebuffer fb{range};
+        fb.attachTexture(Framebuffer::ColorAttachment{0}, output, 0)
+          .bind();
+
+        CORRADE_INTERNAL_ASSERT(fb.checkStatus(FramebufferTarget::Draw) == Framebuffer::Status::Complete);
+        CORRADE_INTERNAL_ASSERT(fb.checkStatus(FramebufferTarget::Read) == Framebuffer::Status::Complete);
+
+        FloatReinterpretShader shader;
+        shader.setTexture(texture, level);
+
+        Mesh mesh;
+        mesh.setCount(3)
+            .draw(shader);
+
+        /* release() needs to be called after querying the size to avoid zeroing it out */
+        {
+            Vector2i imageSize = image.size();
+            image.setData(image.storage(), reinterpretFormat, PixelType::UnsignedInt, imageSize, image.release());
+        }
+
+        fb.read(range, image);
+
+        /* release() needs to be called after querying the size to avoid zeroing it out */
+        {
+            Vector2i imageSize = image.size();
+            image.setData(image.storage(), imageFormat, PixelType::Float, imageSize, image.release());
+        }
+        return;
+    }
+    #endif
+
     Framebuffer fb{range};
     fb.attachTexture(Framebuffer::ColorAttachment{0}, texture, level)
       .read(range, image);
