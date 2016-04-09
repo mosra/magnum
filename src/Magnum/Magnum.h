@@ -151,7 +151,8 @@ Defined if the engine is built for use on a headless machine (without any
 graphical desktop environment). Basically it means that EGL with no display
 attachment is being used everywhere instead of platform-specific toolkits like
 CGL, GLX or WGL. Note that this might not be supported on all platforms, see
-@ref Platform::WindowlessEglApplication for more information.
+@ref Magnum::Platform::WindowlessEglApplication "Platform::WindowlessEglApplication"
+for more information.
 */
 #define MAGNUM_TARGET_HEADLESS
 #undef MAGNUM_TARGET_HEADLESS

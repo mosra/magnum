@@ -41,12 +41,12 @@ Emulates @ref Texture::subImage() "*Texture::subImage()" call on platforms that
 don't support it (such as OpenGL ES) by creating a framebuffer object and using
 @ref Framebuffer::read().
 
-Note that only @ref PixelFormat and @ref PixelType values that are marked as
-framebuffer readable are supported. In addition, on OpenGL ES 3.0, images with
-@ref PixelType::Float are supported -- they are reinterpreted as
-@ref PixelType::UnsignedInt using additional shader and `floatBitsToUint()`
-GLSL function and then reinterpreted back to @ref PixelType::Float when read to
-client memory.
+Note that only @ref Magnum::PixelFormat "PixelFormat" and @ref PixelType values
+that are marked as framebuffer readable are supported. In addition, on OpenGL
+ES 3.0, images with @ref PixelType::Float are supported -- they are
+reinterpreted as @ref PixelType::UnsignedInt using additional shader and
+`floatBitsToUint()` GLSL function and then reinterpreted back to
+@ref PixelType::Float when read to client memory.
 */
 MAGNUM_DEBUGTOOLS_EXPORT void textureSubImage(Texture2D& texture, Int level, const Range2Di& range, Image2D& image);
 
@@ -74,8 +74,8 @@ Emulates @ref Texture::subImage() "*Texture::subImage()" call on platforms that
 don't support it (such as OpenGL ES) by creating a framebuffer object and using
 @ref Framebuffer::read().
 
-Note that only @ref PixelFormat and @ref PixelType values that are marked as
-framebuffer readable are supported.
+Note that only @ref Magnum::PixelFormat "PixelFormat" and @ref PixelType values
+that are marked as framebuffer readable are supported.
 @requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
 @requires_webgl20 Pixel buffer objects are not available in WebGL 1.0.
 */
