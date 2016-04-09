@@ -174,9 +174,9 @@ void TextureImageGLTest::subImage2DUInt() {
 
 namespace {
     constexpr Float Data2DFloat[] = { 1.0f,
-                                      0.14159f,
-                                      0.71828f,
-                                      0.41421f };
+                                      3.14159f,
+                                      2.71828f,
+                                      1.41421f };
 }
 
 void TextureImageGLTest::subImage2DFloat() {
