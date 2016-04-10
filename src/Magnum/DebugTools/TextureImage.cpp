@@ -70,7 +70,7 @@ FloatReinterpretShader::FloatReinterpretShader() {
     #ifdef MAGNUM_BUILD_STATIC
     /* Import resources on static build, if not already */
     if(!Utility::Resource::hasGroup("MagnumDebugTools"))
-        importShaderResources();
+        importDebugToolsResources();
     #endif
     Utility::Resource rs{"MagnumDebugTools"};
 
