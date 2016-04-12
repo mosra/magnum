@@ -141,12 +141,10 @@ class MagnumInfo: public Platform::WindowlessApplication {
 
 MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplication(arguments, nullptr) {
     Utility::Arguments args;
-    args.addBooleanOption('s', "short")
-        .setHelp("short", "display just essential info and exit")
-        .addBooleanOption("all-extensions")
-        .setHelp("all-extensions", "display extensions also for fully supported versions")
-        .addBooleanOption("limits")
-        .setHelp("limits", "display also limits and implementation-defined values")
+    args.addBooleanOption('s', "short").setHelp("short", "display just essential info and exit")
+        .addBooleanOption("extension-strings").setHelp("extension-strings", "list all extension strings provided by the driver (implies --short)")
+        .addBooleanOption("all-extensions").setHelp("all-extensions", "display extensions also for fully supported versions")
+        .addBooleanOption("limits").setHelp("limits", "display also limits and implementation-defined values")
         .addSkippedPrefix("magnum", "engine-specific options")
         .setHelp("Displays information about Magnum engine and OpenGL capabilities.");
 
@@ -272,6 +270,12 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     const std::vector<std::string> shadingLanguageVersions = c.shadingLanguageVersionStrings();
     for(const auto& version: shadingLanguageVersions)
         Debug() << "   " << version;
+
+    if(args.isSet("extension-strings")) {
+        Debug() << "Extension strings:" << Debug::newline
+            << c.extensionStrings();
+        return;
+    }
 
     if(args.isSet("short")) return;
 
