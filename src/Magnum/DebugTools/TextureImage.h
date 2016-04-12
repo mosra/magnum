@@ -39,7 +39,8 @@ namespace Magnum { namespace DebugTools {
 
 Emulates @ref Texture::subImage() "*Texture::subImage()" call on platforms that
 don't support it (such as OpenGL ES) by creating a framebuffer object and using
-@ref Framebuffer::read().
+@ref Framebuffer::read(). On desktop OpenGL, if @extension{ARB,get_texture_sub_image}
+is available, it's just an alias to @ref Texture::subImage() "*Texture::subImage()".
 
 Note that only @ref Magnum::PixelFormat "PixelFormat" and @ref PixelType values
 that are marked as framebuffer readable are supported. In addition, on OpenGL

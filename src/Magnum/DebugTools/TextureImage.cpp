@@ -26,6 +26,8 @@
 #include "TextureImage.h"
 
 #include "Magnum/BufferImage.h"
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
 #include "Magnum/Framebuffer.h"
 #include "Magnum/Image.h"
 #include "Magnum/Texture.h"
@@ -92,6 +94,13 @@ FloatReinterpretShader::FloatReinterpretShader() {
 #endif
 
 void textureSubImage(Texture2D& texture, const Int level, const Range2Di& range, Image2D& image) {
+    #ifndef MAGNUM_TARGET_GLES
+    if(Context::current().isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>()) {
+        texture.subImage(level, range, image);
+        return;
+    }
+    #endif
+
     #ifdef MAGNUM_TARGET_GLES
     if(image.type() == PixelType::Float) {
         const PixelFormat imageFormat = image.format();
@@ -165,6 +174,13 @@ void textureSubImage(CubeMapTexture& texture, const CubeMapCoordinate coordinate
 
 #ifndef MAGNUM_TARGET_GLES2
 void textureSubImage(Texture2D& texture, const Int level, const Range2Di& range, BufferImage2D& image, const BufferUsage usage) {
+    #ifndef MAGNUM_TARGET_GLES
+    if(Context::current().isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>()) {
+        texture.subImage(level, range, image, usage);
+        return;
+    }
+    #endif
+
     Framebuffer fb{range};
     fb.attachTexture(Framebuffer::ColorAttachment{0}, texture, level)
       .read(range, image, usage);
