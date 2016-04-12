@@ -119,7 +119,11 @@ constexpr Version version(Int major, Int minor) {
 @see @ref isVersionES()
 */
 inline std::pair<Int, Int> version(Version version) {
-    const Int v = Int(version) & ~Implementation::VersionESMask;
+    const Int v = Int(version)
+        #ifndef MAGNUM_TARGET_GLES
+        & ~Implementation::VersionESMask
+        #endif
+        ;
     return {v/100, (v%100)/10};
 }
 
