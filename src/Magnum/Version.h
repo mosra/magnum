@@ -100,12 +100,11 @@ enum class Version: Int {
 };
 
 /** @brief Enum value from major and minor version number */
-inline Version version(Int major, Int minor) {
+constexpr Version version(Int major, Int minor) {
     return Version(major*100 + minor*10);
 }
 
-/** @brief Major and minor version number from enum value */
-inline std::pair<Int, Int> version(Version version) {
+constexpr std::pair<Int, Int> version(Version version) {
     return {Int(version)/100, (Int(version)%100)/10};
 }
 

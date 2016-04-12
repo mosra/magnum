@@ -50,17 +50,21 @@ VersionTest::VersionTest() {
 
 void VersionTest::fromNumber() {
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE(version(4, 3), Version::GL430);
+    constexpr const Version v = version(4, 3);
+    CORRADE_COMPARE(v, Version::GL430);
     #else
-    CORRADE_COMPARE(version(3, 0), Version::GLES300);
+    constexpr const Version v = version(3, 0);
+    CORRADE_COMPARE(v, Version::GLES300);
     #endif
 }
 
 void VersionTest::toNumber() {
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE(version(Version::GL430), std::make_pair(4, 3));
+    constexpr const auto v = version(Version::GL430);
+    CORRADE_COMPARE(v, std::make_pair(4, 3));
     #else
-    CORRADE_COMPARE(version(Version::GLES300), std::make_pair(3, 0));
+    constexpr const auto v = version(Version::GLES300);
+    CORRADE_COMPARE(v, std::make_pair(3, 0));
     #endif
 }
 
