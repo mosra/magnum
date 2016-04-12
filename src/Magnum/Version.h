@@ -36,6 +36,12 @@
 
 namespace Magnum {
 
+#ifndef MAGNUM_TARGET_GLES
+namespace Implementation {
+    enum: Int { VersionESMask = 0x10000 };
+}
+#endif
+
 /**
 @brief OpenGL version
 
@@ -60,12 +66,13 @@ enum class Version: Int {
     /**
      * @brief OpenGL ES 2.0 or WebGL 1.0, GLSL ES 1.00
      *
-     * All the functionality is present in OpenGL 4.2 (extension
-     * @extension{ARB,ES2_compatibility}), so on desktop OpenGL this is
-     * equivalent to @ref Version::GL410.
+     * On desktop OpenGL, all related functionality is present in extension
+     * @extension{ARB,ES2_compatibility} (OpenGL 4.1), so testing for this
+     * version using @ref Context::isVersionSupported() is equivalent to
+     * testing for availability of that extension.
      */
     #ifndef MAGNUM_TARGET_GLES
-    GLES200 = 410,
+    GLES200 = Implementation::VersionESMask|200,
     #else
     GLES200 = 200,
     #endif
@@ -73,12 +80,13 @@ enum class Version: Int {
     /**
      * @brief OpenGL ES 3.0 or WebGL 2.0, GLSL ES 3.00
      *
-     * All the functionality is present in OpenGL 4.3 (extension
-     * @extension{ARB,ES3_compatibility}), so on desktop OpenGL this is the
-     * equivalent to @ref Version::GL430.
+     * On desktop OpenGL, all related functionality is present in extension
+     * @extension{ARB,ES3_compatibility} (OpenGL 4.3), so testing for this
+     * version using @ref Context::isVersionSupported() is equivalent to
+     * testing for availability of that extension.
      */
     #ifndef MAGNUM_TARGET_GLES
-    GLES300 = 430,
+    GLES300 = Implementation::VersionESMask|300,
     #else
     GLES300 = 300,
     #endif
@@ -87,12 +95,13 @@ enum class Version: Int {
     /**
      * @brief OpenGL ES 3.1, GLSL ES 3.10
      *
-     * All the functionality is present in OpenGL 4.5 (extension
-     * @extension{ARB,ES3_1_compatibility}), so on desktop OpenGL this is the
-     * equivalent to @ref Version::GL450.
+     * On desktop OpenGL, all related functionality is present in extension
+     * @extension{ARB,ES3_1_compatibility} (OpenGL 4.5), so testing for this
+     * version using @ref Context::isVersionSupported() is equivalent to
+     * testing for availability of that extension.
      */
     #ifndef MAGNUM_TARGET_GLES
-    GLES310 = 450
+    GLES310 = Implementation::VersionESMask|310,
     #else
     GLES310 = 310
     #endif
@@ -104,8 +113,27 @@ constexpr Version version(Int major, Int minor) {
     return Version(major*100 + minor*10);
 }
 
+/**
+@brief Major and minor version number from enum value
+
+@see @ref isVersionES()
+*/
 constexpr std::pair<Int, Int> version(Version version) {
-    return {Int(version)/100, (Int(version)%100)/10};
+    return {(Int(version) & ~Implementation::VersionESMask)/100,
+           ((Int(version) & ~Implementation::VersionESMask)%100)/10};
+}
+
+/**
+@brief Whether given version is OpenGL ES or WebGL
+
+Always `true` on @ref MAGNUM_TARGET_GLES "OpenGL ES" and WebGL build.
+*/
+constexpr bool isVersionES(Version version) {
+    #ifndef MAGNUM_TARGET_GLES
+    return Int(version) & Implementation::VersionESMask;
+    #else
+    return true;
+    #endif
 }
 
 /** @debugoperatorenum{Magnum::Version} */

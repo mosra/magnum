@@ -37,6 +37,9 @@ struct ContextGLTest: AbstractOpenGLTester {
     void constructCopyMove();
 
     void isVersionSupported();
+    #ifndef MAGNUM_TARGET_GLES
+    void isVersionSupportedES();
+    #endif
     void supportedVersion();
     void isExtensionSupported();
     void isExtensionDisabled();
@@ -46,6 +49,9 @@ ContextGLTest::ContextGLTest() {
     addTests({&ContextGLTest::constructCopyMove,
 
               &ContextGLTest::isVersionSupported,
+              #ifndef MAGNUM_TARGET_GLES
+              &ContextGLTest::isVersionSupportedES,
+              #endif
               &ContextGLTest::supportedVersion,
               &ContextGLTest::isExtensionSupported,
               &ContextGLTest::isExtensionDisabled});
@@ -69,6 +75,16 @@ void ContextGLTest::isVersionSupported() {
     MAGNUM_ASSERT_VERSION_SUPPORTED(v);
     MAGNUM_ASSERT_VERSION_SUPPORTED(Version(Int(v)-1));
 }
+
+#ifndef MAGNUM_TARGET_GLES
+void ContextGLTest::isVersionSupportedES() {
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::ES2_compatibility>())
+        CORRADE_SKIP(Extensions::GL::ARB::ES2_compatibility::string() + std::string(" extension should not be supported, can't test"));
+
+    /* No assertions should be fired */
+    CORRADE_VERIFY(Context::current().isVersionSupported(Version::GLES200));
+}
+#endif
 
 void ContextGLTest::supportedVersion() {
     const Version v = Context::current().version();

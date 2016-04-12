@@ -362,9 +362,7 @@ class MAGNUM_EXPORT Context {
          *
          * @see @ref supportedVersion(), @ref MAGNUM_ASSERT_VERSION_SUPPORTED()
          */
-        bool isVersionSupported(Version version) const {
-            return _version >= version;
-        }
+        bool isVersionSupported(Version version) const;
 
         /**
          * @brief Get supported OpenGL version

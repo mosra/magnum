@@ -377,13 +377,14 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         case Version::GL320: return extensions320;
         case Version::GL330: return extensions330;
         case Version::GL400: return extensions400;
-        /* case Version::GLES200: */
         case Version::GL410: return extensions410;
         case Version::GL420: return extensions420;
-        /* case Version::GLES300: */
         case Version::GL430: return extensions430;
         case Version::GL440: return extensions440;
         case Version::GL450: return extensions450;
+        case Version::GLES200:
+        case Version::GLES300:
+        case Version::GLES310: return empty;
         #else
         case Version::GLES200: return empty;
         case Version::GLES300:
@@ -746,6 +747,19 @@ std::vector<std::string> Context::extensionStrings() const {
     #endif
 
     return extensions;
+}
+
+bool Context::isVersionSupported(Version version) const {
+    #ifndef MAGNUM_TARGET_GLES
+    if(version == Version::GLES200)
+        return isExtensionSupported<Extensions::GL::ARB::ES2_compatibility>();
+    if(version == Version::GLES300)
+        return isExtensionSupported<Extensions::GL::ARB::ES3_compatibility>();
+    if(version == Version::GLES310)
+        return isExtensionSupported<Extensions::GL::ARB::ES3_1_compatibility>();
+    #endif
+
+    return _version >= version;
 }
 
 Version Context::supportedVersion(std::initializer_list<Version> versions) const {
