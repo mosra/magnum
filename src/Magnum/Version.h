@@ -118,9 +118,9 @@ constexpr Version version(Int major, Int minor) {
 
 @see @ref isVersionES()
 */
-constexpr std::pair<Int, Int> version(Version version) {
-    return {(Int(version) & ~Implementation::VersionESMask)/100,
-           ((Int(version) & ~Implementation::VersionESMask)%100)/10};
+inline std::pair<Int, Int> version(Version version) {
+    const Int v = Int(version) & ~Implementation::VersionESMask;
+    return {v/100, (v%100)/10};
 }
 
 /**

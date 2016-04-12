@@ -75,11 +75,9 @@ void VersionTest::fromNumber() {
 
 void VersionTest::toNumber() {
     #ifndef MAGNUM_TARGET_GLES
-    constexpr const auto v = version(Version::GL430);
-    CORRADE_COMPARE(v, std::make_pair(4, 3));
+    CORRADE_COMPARE(version(Version::GL430), std::make_pair(4, 3));
     #else
-    constexpr const auto v = version(Version::GLES300);
-    CORRADE_COMPARE(v, std::make_pair(3, 0));
+    CORRADE_COMPARE(version(Version::GLES300), std::make_pair(3, 0));
     #endif
 }
 
