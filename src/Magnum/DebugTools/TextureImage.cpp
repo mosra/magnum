@@ -166,10 +166,9 @@ void textureSubImage(Texture2D& texture, const Int level, const Range2Di& range,
       .read(range, image);
 }
 
-void textureSubImage(CubeMapTexture& texture, const CubeMapCoordinate coordinate, const Int level, const Range2Di& range, Image2D& image) {
-    Framebuffer fb{range};
-    fb.attachCubeMapTexture(Framebuffer::ColorAttachment{0}, texture, coordinate, level)
-      .read(range, image);
+Image2D textureSubImage(Texture2D& texture, const Int level, const Range2Di& range, Image2D&& image) {
+    textureSubImage(texture, level, range, image);
+    return std::move(image);
 }
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -186,16 +185,16 @@ void textureSubImage(Texture2D& texture, const Int level, const Range2Di& range,
       .read(range, image, usage);
 }
 
-void textureSubImage(CubeMapTexture& texture, const CubeMapCoordinate coordinate, const Int level, const Range2Di& range, BufferImage2D& image, const BufferUsage usage) {
-    Framebuffer fb{range};
-    fb.attachCubeMapTexture(Framebuffer::ColorAttachment{0}, texture, coordinate, level)
-      .read(range, image, usage);
+BufferImage2D textureSubImage(Texture2D& texture, const Int level, const Range2Di& range, BufferImage2D&& image, const BufferUsage usage) {
+    textureSubImage(texture, level, range, image, usage);
+    return std::move(image);
 }
 #endif
 
-Image2D textureSubImage(Texture2D& texture, const Int level, const Range2Di& range, Image2D&& image) {
-    textureSubImage(texture, level, range, image);
-    return std::move(image);
+void textureSubImage(CubeMapTexture& texture, const CubeMapCoordinate coordinate, const Int level, const Range2Di& range, Image2D& image) {
+    Framebuffer fb{range};
+    fb.attachCubeMapTexture(Framebuffer::ColorAttachment{0}, texture, coordinate, level)
+      .read(range, image);
 }
 
 Image2D textureSubImage(CubeMapTexture& texture, const CubeMapCoordinate coordinate, const Int level, const Range2Di& range, Image2D&& image) {
@@ -204,9 +203,10 @@ Image2D textureSubImage(CubeMapTexture& texture, const CubeMapCoordinate coordin
 }
 
 #ifndef MAGNUM_TARGET_GLES2
-BufferImage2D textureSubImage(Texture2D& texture, const Int level, const Range2Di& range, BufferImage2D&& image, const BufferUsage usage) {
-    textureSubImage(texture, level, range, image, usage);
-    return std::move(image);
+void textureSubImage(CubeMapTexture& texture, const CubeMapCoordinate coordinate, const Int level, const Range2Di& range, BufferImage2D& image, const BufferUsage usage) {
+    Framebuffer fb{range};
+    fb.attachCubeMapTexture(Framebuffer::ColorAttachment{0}, texture, coordinate, level)
+      .read(range, image, usage);
 }
 
 BufferImage2D textureSubImage(CubeMapTexture& texture, const CubeMapCoordinate coordinate, const Int level, const Range2Di& range, BufferImage2D&& image, const BufferUsage usage) {

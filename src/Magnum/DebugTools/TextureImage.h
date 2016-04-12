@@ -37,10 +37,10 @@ namespace Magnum { namespace DebugTools {
 /**
 @brief Read range of given texture mip level to image
 
-Emulates @ref Texture::subImage() "*Texture::subImage()" call on platforms that
-don't support it (such as OpenGL ES) by creating a framebuffer object and using
+Emulates @ref Texture2D::subImage() call on platforms that don't support it
+(such as OpenGL ES) by creating a framebuffer object and using
 @ref Framebuffer::read(). On desktop OpenGL, if @extension{ARB,get_texture_sub_image}
-is available, it's just an alias to @ref Texture::subImage() "*Texture::subImage()".
+is available, it's just an alias to @ref Texture2D::subImage().
 
 Note that only @ref Magnum::PixelFormat "PixelFormat" and @ref PixelType values
 that are marked as framebuffer readable are supported. In addition, on OpenGL
@@ -50,9 +50,6 @@ reinterpreted as @ref PixelType::UnsignedInt using additional shader and
 @ref PixelType::Float when read to client memory.
 */
 MAGNUM_DEBUGTOOLS_EXPORT void textureSubImage(Texture2D& texture, Int level, const Range2Di& range, Image2D& image);
-
-/** @overload */
-MAGNUM_DEBUGTOOLS_EXPORT void textureSubImage(CubeMapTexture& texture, CubeMapCoordinate coordinate, Int level, const Range2Di& range, Image2D& image);
 
 /**
 @brief Read range of given texture mip level to image
@@ -64,16 +61,36 @@ Image2D image = DebugTools::textureSubImage(texture, 0, rect, {PixelFormat::RGBA
 */
 MAGNUM_DEBUGTOOLS_EXPORT Image2D textureSubImage(Texture2D& texture, Int level, const Range2Di& range, Image2D&& image);
 
-/** @overload */
+/**
+@brief Read range of given cube map texture coordinate mip level to image
+
+Emulates @ref CubeMapTexture::subImage() call on platforms that don't support
+it (such as OpenGL ES) by creating a framebuffer object and using
+@ref Framebuffer::read().
+
+Note that only @ref Magnum::PixelFormat "PixelFormat" and @ref PixelType values
+that are marked as framebuffer readable are supported.
+*/
+MAGNUM_DEBUGTOOLS_EXPORT void textureSubImage(CubeMapTexture& texture, CubeMapCoordinate coordinate, Int level, const Range2Di& range, Image2D& image);
+
+/**
+@brief Read range of given cube map texture coordinate mip level to image
+
+Convenience alternative to the above, example usage:
+@code
+Image2D image = DebugTools::textureSubImage(texture, CubeMapCoordinate::PositiveX, 0, rect, {PixelFormat::RGBA, PixelType::UnsignedByte});
+@endcode
+*/
 MAGNUM_DEBUGTOOLS_EXPORT Image2D textureSubImage(CubeMapTexture& texture, CubeMapCoordinate coordinate, Int level, const Range2Di& range, Image2D&& image);
 
 #ifndef MAGNUM_TARGET_GLES2
 /**
 @brief Read range of given texture mip level to buffer image
 
-Emulates @ref Texture::subImage() "*Texture::subImage()" call on platforms that
-don't support it (such as OpenGL ES) by creating a framebuffer object and using
-@ref Framebuffer::read().
+Emulates @ref Texture2D::subImage() call on platforms that don't support it
+(such as OpenGL ES) by creating a framebuffer object and using
+@ref Framebuffer::read(). On desktop OpenGL, if @extension{ARB,get_texture_sub_image}
+is available, it's just an alias to @ref Texture2D::subImage().
 
 Note that only @ref Magnum::PixelFormat "PixelFormat" and @ref PixelType values
 that are marked as framebuffer readable are supported.
@@ -81,9 +98,6 @@ that are marked as framebuffer readable are supported.
 @requires_webgl20 Pixel buffer objects are not available in WebGL 1.0.
 */
 MAGNUM_DEBUGTOOLS_EXPORT void textureSubImage(Texture2D& texture, Int level, const Range2Di& range, BufferImage2D& image, BufferUsage usage);
-
-/** @overload */
-MAGNUM_DEBUGTOOLS_EXPORT void textureSubImage(CubeMapTexture& texture, CubeMapCoordinate coordinate, Int level, const Range2Di& range, BufferImage2D& image, BufferUsage usage);
 
 /**
 @brief Read range of given texture mip level to buffer image
@@ -95,7 +109,28 @@ BufferImage2D image = DebugTools::textureSubImage(texture, 0, rect, {PixelFormat
 */
 MAGNUM_DEBUGTOOLS_EXPORT BufferImage2D textureSubImage(Texture2D& texture, Int level, const Range2Di& range, BufferImage2D&& image, BufferUsage usage);
 
-/** @overload */
+/**
+@brief Read range of given cube map texture coordinate mip level to buffer image
+
+Emulates @ref CubeMapTexture::subImage() call on platforms that don't support
+it (such as OpenGL ES) by creating a framebuffer object and using
+@ref Framebuffer::read().
+
+Note that only @ref Magnum::PixelFormat "PixelFormat" and @ref PixelType values
+that are marked as framebuffer readable are supported.
+@requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
+@requires_webgl20 Pixel buffer objects are not available in WebGL 1.0.
+*/
+MAGNUM_DEBUGTOOLS_EXPORT void textureSubImage(CubeMapTexture& texture, CubeMapCoordinate coordinate, Int level, const Range2Di& range, BufferImage2D& image, BufferUsage usage);
+
+/**
+@brief Read range of given cube map texture coordinate mip level to buffer image
+
+Convenience alternative to the above, example usage:
+@code
+BufferImage2D image = DebugTools::textureSubImage(texture, CubeMapCoordinate::PositiveX, 0, rect, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
+@endcode
+*/
 MAGNUM_DEBUGTOOLS_EXPORT BufferImage2D textureSubImage(CubeMapTexture& texture, CubeMapCoordinate coordinate, Int level, const Range2Di& range, BufferImage2D&& image, BufferUsage usage);
 #endif
 
