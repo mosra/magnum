@@ -530,10 +530,9 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                     INTERFACE_INCLUDE_DIRECTORIES ${X11_INCLUDE_DIR})
                 set_property(TARGET Magnum::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES ${X11_LIBRARIES})
-            endif()
 
             # EGL context dependencies
-            if(_component STREQUAL EglContext)
+            elseif(_component STREQUAL EglContext)
                 find_package(EGL)
                 set_property(TARGET Magnum::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES EGL::EGL)
