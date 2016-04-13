@@ -34,6 +34,8 @@
 
 #ifdef MAGNUM_TARGET_HEADLESS
 #include "Magnum/Platform/WindowlessEglApplication.h"
+#elif defined(CORRADE_TARGET_IOS)
+#include "Magnum/Platform/WindowlessIosApplication.h"
 #elif defined(CORRADE_TARGET_APPLE)
 #include "Magnum/Platform/WindowlessCglApplication.h"
 #elif defined(CORRADE_TARGET_UNIX) && (!defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_DESKTOP_GLES))
@@ -70,7 +72,7 @@ class AbstractOpenGLTester: public TestSuite::Tester {
 
 AbstractOpenGLTester::AbstractOpenGLTester(): TestSuite::Tester{TestSuite::Tester::TesterConfiguration{}.setSkippedArgumentPrefixes({"magnum"})}, _windowlessApplication{*_windowlessApplicationArguments} {
     /* Try to create debug context, fallback to normal one if not possible. No
-       such thing on OSX. */
+       such thing on OSX or iOS. */
     #ifndef CORRADE_TARGET_APPLE
     if(!_windowlessApplication.tryCreateContext(Platform::WindowlessApplication::Configuration{}.setFlags(Platform::WindowlessApplication::Configuration::Flag::Debug)))
         _windowlessApplication.createContext();
@@ -115,6 +117,14 @@ std::optional<Platform::WindowlessApplication::Arguments> AbstractOpenGLTester::
     int main(int argc, char** argv) {                                       \
         Magnum::Test::AbstractOpenGLTester::_windowlessApplicationArguments.emplace(argc, argv, nullptr); \
         return Magnum::Platform::WindowlessApplication::create(windowProcedure); \
+    }
+#elif defined(CORRADE_TESTSUITE_TARGET_XCTEST)
+#define MAGNUM_GL_TEST_MAIN(Class)                                          \
+    int CORRADE_VISIBILITY_EXPORT corradeTestMain(int argc, char** argv) {  \
+        Magnum::Test::AbstractOpenGLTester::_windowlessApplicationArguments.emplace(argc, argv); \
+        Class t;                                                            \
+        t.registerTest(__FILE__, #Class);                                   \
+        return t.exec(argc, argv);                                          \
     }
 #else
 #define MAGNUM_GL_TEST_MAIN(Class)                                          \
