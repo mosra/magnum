@@ -214,6 +214,7 @@ platform best:
 -   `WITH_WINDOWLESSCGLAPPLICATION` - @ref Platform::WindowlessCglApplication "WindowlessCglApplication"
 -   `WITH_WINDOWLESSEGLAPPLICATION` - @ref Platform::WindowlessEglApplication "WindowlessEglApplication"
 -   `WITH_WINDOWLESSGLXAPPLICATION` - @ref Platform::WindowlessGlxApplication "WindowlessGlxApplication"
+-   `WITH_WINDOWLESSIOSAPPLICATION` - @ref Platform::WindowlessIosApplication "WindowlessIosApplication"
 -   `WITH_WINDOWLESSNACLAPPLICATION` - @ref Platform::WindowlessNaClApplication "WindowlessNaClApplication"
 -   `WITH_WINDOWLESSWGLAPPLICATION` - @ref Platform::WindowlessWglApplication "WindowlessWglApplication"
 -   `WITH_WINDOWLESSWINDOWSEGLAPPLICATION` - @ref Platform::WindowlessWindowsEglApplication "WindowlessWindowsEglApplication"

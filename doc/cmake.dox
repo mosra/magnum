@@ -102,6 +102,7 @@ Platform namespace is split into more components:
 -   `WindowlessCglApplication` -- @ref Platform::WindowlessCglApplication "WindowlessCglApplication"
 -   `WindowlessEglApplication` -- @ref Platform::WindowlessEglApplication "WindowlessEglApplication"
 -   `WindowlessGlxApplication` -- @ref Platform::WindowlessGlxApplication "WindowlessGlxApplication"
+-   `WindowlessIosApplication` -- @ref Platform::WindowlessIosApplication "WindowlessIosApplication"
 -   `WindowlessNaClApplication` -- @ref Platform::WindowlessNaClApplication "WindowlessNaClApplication"
 -   `WindowlessWglApplication` -- @ref Platform::WindowlessWglApplication "WindowlessWglApplication"
 -   `WindowlessWindowsEglApplication` -- @ref Platform::WindowlessWindowsEglApplication "WindowlessWindowsEglApplication"

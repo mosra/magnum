@@ -357,6 +357,41 @@ if(WITH_WINDOWLESSGLXAPPLICATION)
     add_library(Magnum::WindowlessGlxApplication ALIAS MagnumWindowlessGlxApplication)
 endif()
 
+# Windowless iOS application
+if(WITH_WINDOWLESSIOSAPPLICATION)
+    set(NEED_EGLCONTEXT 1)
+
+    # We need to link to Foundation framework to use ObjC
+    find_library(_MAGNUM_IOS_FOUNDATION_FRAMEWORK_LIBRARY Foundation)
+    mark_as_advanced(_MAGNUM_IOS_FOUNDATION_FRAMEWORK_LIBRARY)
+
+    set(MagnumWindowlessIosApplication_SRCS
+        WindowlessIosApplication.mm
+        $<TARGET_OBJECTS:MagnumEglContextObjects>)
+    set(MagnumWindowlessIosApplication_HEADERS
+        WindowlessIosApplication.h)
+
+    add_library(MagnumWindowlessIosApplication STATIC
+        ${MagnumWindowlessIosApplication_SRCS}
+        ${MagnumWindowlessIosApplication_HEADERS})
+    set_target_properties(MagnumWindowlessIosApplication PROPERTIES DEBUG_POSTFIX "-d")
+    target_link_libraries(MagnumWindowlessIosApplication
+        Magnum
+        EGL::EGL
+        ${_MAGNUM_IOS_FOUNDATION_FRAMEWORK_LIBRARY})
+    # Assuming that PIC is not needed because the Application lib is always
+    # linked to the executable and not to any intermediate shared lib
+
+    install(FILES ${MagnumWindowlessIosApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
+    install(TARGETS MagnumWindowlessIosApplication
+        RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+        LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+        ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+
+    # Magnum WindowlessIosApplication target alias for superprojects
+    add_library(Magnum::WindowlessIosApplication ALIAS MagnumWindowlessIosApplication)
+endif()
+
 # Windowless WGL application
 if(WITH_WINDOWLESSWGLAPPLICATION)
     set(NEED_WGLCONTEXT 1)
