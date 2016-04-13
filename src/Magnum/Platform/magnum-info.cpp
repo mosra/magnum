@@ -61,6 +61,8 @@
 #include "Magnum/Platform/WindowlessEglApplication.h"
 #elif defined(CORRADE_TARGET_NACL)
 #include "Magnum/Platform/WindowlessNaClApplication.h"
+#elif defined(CORRADE_TARGET_IOS)
+#include "Magnum/Platform/WindowlessIosApplication.h"
 #elif defined(CORRADE_TARGET_APPLE)
 #include "Magnum/Platform/WindowlessCglApplication.h"
 #elif defined(CORRADE_TARGET_UNIX)
