@@ -92,15 +92,7 @@ std::optional<Platform::WindowlessApplication::Arguments> AbstractOpenGLTester::
 
 #define MAGNUM_VERIFY_NO_ERROR() CORRADE_COMPARE(Magnum::Renderer::error(), Magnum::Renderer::Error::NoError)
 
-#ifndef CORRADE_TARGET_WINDOWS
-#define MAGNUM_GL_TEST_MAIN(Class)                                          \
-    int main(int argc, char** argv) {                                       \
-        Magnum::Test::AbstractOpenGLTester::_windowlessApplicationArguments.emplace(argc, argv); \
-        Class t;                                                            \
-        t.registerTest(__FILE__, #Class);                                   \
-        return t.exec(argc, argv);                                          \
-    }
-#else
+#ifdef CORRADE_TARGET_WINDOWS
 #define MAGNUM_GL_TEST_MAIN(Class)                                          \
     LRESULT CALLBACK windowProcedure(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam); \
     LRESULT CALLBACK windowProcedure(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) { \
@@ -123,6 +115,14 @@ std::optional<Platform::WindowlessApplication::Arguments> AbstractOpenGLTester::
     int main(int argc, char** argv) {                                       \
         Magnum::Test::AbstractOpenGLTester::_windowlessApplicationArguments.emplace(argc, argv, nullptr); \
         return Magnum::Platform::WindowlessApplication::create(windowProcedure); \
+    }
+#else
+#define MAGNUM_GL_TEST_MAIN(Class)                                          \
+    int main(int argc, char** argv) {                                       \
+        Magnum::Test::AbstractOpenGLTester::_windowlessApplicationArguments.emplace(argc, argv); \
+        Class t;                                                            \
+        t.registerTest(__FILE__, #Class);                                   \
+        return t.exec(argc, argv);                                          \
     }
 #endif
 
