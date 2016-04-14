@@ -719,6 +719,11 @@ if(WITH_MAGNUMINFO)
         install(FILES magnum-info-nacl.html DESTINATION ${MAGNUM_DATA_INSTALL_DIR} RENAME magnum-info.html)
         install(FILES magnum-info-nacl.nmf DESTINATION ${MAGNUM_DATA_INSTALL_DIR} RENAME magnum-info.nmf)
         list(APPEND MagnumPlatform_FILES magnum-info-nacl.html magnum-info-nacl.nmf)
+    elseif(CORRADE_TARGET_IOS)
+        set_target_properties(magnum-info PROPERTIES
+            MACOSX_BUNDLE ON
+            MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/MacOSXBundleInfo.plist.in
+            XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED "YES")
     endif()
 
     # Magnum info target alias for superprojects

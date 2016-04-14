@@ -154,7 +154,13 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
      * @todo Make this work in NaCl, somehow the arguments aren't passed to
      *      constructor but to Init() or whatnot
      */
-    #ifndef CORRADE_TARGET_NACL
+    #ifdef CORRADE_TARGET_IOS
+    {
+        static_cast<void>(arguments);
+        const char* iosArguments[] = { "", "--limits" };
+        args.parse(2, iosArguments);
+    }
+    #elif !defined(CORRADE_TARGET_NACL)
     args.parse(arguments.argc, arguments.argv);
     #endif
 
@@ -175,6 +181,8 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     Debug() << "Used application: Platform::WindowlessEglApplication";
     #elif defined(MAGNUM_WINDOWLESSNACLAPPLICATION_MAIN)
     Debug() << "Used application: Platform::WindowlessNaClApplication";
+    #elif defined(MAGNUM_WINDOWLESSIOSAPPLICATION_MAIN)
+    Debug() << "Used application: Platform::WindowlessIosApplication";
     #elif defined(MAGNUM_WINDOWLESSCGLAPPLICATION_MAIN)
     Debug() << "Used application: Platform::WindowlessCglApplication";
     #elif defined(MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN)
