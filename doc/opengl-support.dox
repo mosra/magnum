@@ -248,6 +248,7 @@ Extension                                   | Status
 @extension{ARB,transform_feedback_overflow_query} | |
 @extension{KHR,blend_equation_advanced}     | done
 @extension3{KHR,blend_equation_advanced_coherent,blend_equation_advanced} | done
+@extension{KHR,no_error}                    | |
 
 @subsection opengl-support-extensions-vendor Vendor OpenGL extensions
 
@@ -380,6 +381,7 @@ Extension                                   | Status
 @es_extension{KHR,robustness}               | |
 @es_extension{KHR,robust_buffer_access_behavior} | done (nothing to do)
 @es_extension{KHR,context_flush_control}    | |
+@es_extension2{KHR,no_error,no_error}       | |
 @es_extension2{NV,read_buffer_front,NV_read_buffer} | done
 @es_extension2{NV,read_depth,NV_read_depth_stencil} | done
 @es_extension2{NV,read_stencil,NV_read_depth_stencil} | done

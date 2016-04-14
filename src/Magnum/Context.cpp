@@ -93,7 +93,8 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,KHR,texture_compression_astc_ldr),
         _extension(GL,KHR,texture_compression_astc_hdr),
         _extension(GL,KHR,blend_equation_advanced),
-        _extension(GL,KHR,blend_equation_advanced_coherent)};
+        _extension(GL,KHR,blend_equation_advanced_coherent),
+        _extension(GL,KHR,no_error)};
     static const std::vector<Extension> extensions300{
         _extension(GL,ARB,map_buffer_range),
         _extension(GL,ARB,color_buffer_float),
@@ -291,6 +292,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,KHR,robustness),
         _extension(GL,KHR,robust_buffer_access_behavior),
         _extension(GL,KHR,context_flush_control),
+        _extension(GL,KHR,no_error),
         _extension(GL,NV,read_buffer_front),
         _extension(GL,NV,read_depth),
         _extension(GL,NV,read_stencil),

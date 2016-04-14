@@ -232,6 +232,7 @@ namespace GL {
         _extension(GL,KHR,robustness,                   GL320, GL450) // #170
         _extension(GL,KHR,blend_equation_advanced,      GL210,  None) // #174
         _extension(GL,KHR,blend_equation_advanced_coherent, GL210, None) // #174
+        _extension(GL,KHR,no_error,                     GL210,  None) // #175
     } namespace NV {
         _extension(GL,NV,primitive_restart,             GL210, GL310) // #285
         _extension(GL,NV,depth_buffer_float,            GL210, GL300) // #334
@@ -371,6 +372,7 @@ namespace GL {
         _extension(GL,KHR,robustness,               GLES200,    None) // #170
         _extension(GL,KHR,robust_buffer_access_behavior, GLES200, None) // #189
         _extension(GL,KHR,context_flush_control,    GLES200,    None) // #191
+        _extension(GL,KHR,no_error,                 GLES200,    None) // #243
     } namespace NV {
         #ifdef MAGNUM_TARGET_GLES2
         _extension(GL,NV,draw_buffers,              GLES200, GLES300) // #91
