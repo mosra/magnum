@@ -251,6 +251,8 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,ANDROID,extension_pack_es31a),
         #endif
         _extension(GL,APPLE,texture_format_BGRA8888),
+        _extension(GL,ARM,shader_framebuffer_fetch),
+        _extension(GL,ARM,shader_framebuffer_fetch_depth_stencil),
         #ifdef CORRADE_TARGET_NACL
         _extension(GL,CHROMIUM,map_sub),
         #endif
@@ -260,6 +262,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,EXT,multi_draw_arrays),
         _extension(GL,EXT,debug_label),
         _extension(GL,EXT,debug_marker),
+        _extension(GL,EXT,shader_framebuffer_fetch),
         _extension(GL,EXT,disjoint_timer_query),
         _extension(GL,EXT,texture_sRGB_decode),
         _extension(GL,EXT,sRGB_write_control),

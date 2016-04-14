@@ -298,6 +298,8 @@ namespace GL {
         #ifdef MAGNUM_TARGET_GLES2
         _extension(GL,ARM,rgba8,                    GLES200, GLES300) // #82
         #endif
+        _extension(GL,ARM,shader_framebuffer_fetch, GLES200,    None) // #165
+        _extension(GL,ARM,shader_framebuffer_fetch_depth_stencil, GLES200, None) // #166
     } namespace CHROMIUM {
         #ifdef CORRADE_TARGET_NACL
         _extension(GL,CHROMIUM,map_sub,             GLES200,    None)
@@ -335,6 +337,7 @@ namespace GL {
         _extension(GL,EXT,texture_storage,          GLES200, GLES300) // #108
         _extension(GL,EXT,map_buffer_range,         GLES200, GLES300) // #121
         #endif
+        _extension(GL,EXT,shader_framebuffer_fetch, GLES200,    None) // #122
         _extension(GL,EXT,disjoint_timer_query,     GLES200,    None) // #150
         #ifdef MAGNUM_TARGET_GLES2
         _extension(GL,EXT,draw_buffers,             GLES200, GLES300) // #151
