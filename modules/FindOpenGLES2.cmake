@@ -69,9 +69,17 @@ find_package_handle_standard_args(OpenGLES2 DEFAULT_MSG
 
 if(NOT TARGET OpenGLES2::OpenGLES2)
     if(OPENGLES2_LIBRARY_NEEDED)
-        add_library(OpenGLES2::OpenGLES2 UNKNOWN IMPORTED)
-        set_property(TARGET OpenGLES2::OpenGLES2 PROPERTY
-            IMPORTED_LOCATION ${OPENGLES2_LIBRARY})
+        # Work around BUGGY framework support on OSX
+        # http://public.kitware.com/pipermail/cmake/2016-April/063179.html
+        if(CORRADE_TARGET_APPLE AND ${OPENGLES2_LIBRARY} MATCHES "\\.framework$")
+            add_library(OpenGLES2::OpenGLES2 INTERFACE IMPORTED)
+            set_property(TARGET OpenGLES2::OpenGLES2 APPEND PROPERTY
+                INTERFACE_LINK_LIBRARIES ${OPENGLES2_LIBRARY})
+        else()
+            add_library(OpenGLES2::OpenGLES2 UNKNOWN IMPORTED)
+            set_property(TARGET OpenGLES2::OpenGLES2 PROPERTY
+                IMPORTED_LOCATION ${OPENGLES2_LIBRARY})
+        endif()
     else()
         # This won't work in CMake 2.8.12, but that affects Emscripten only so
         # I assume people building for that are not on that crap old Ubuntu
