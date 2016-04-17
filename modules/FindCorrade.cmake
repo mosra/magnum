@@ -124,8 +124,13 @@
 #
 # Test name is also executable name. You can also specify libraries to link
 # with instead of using :command:`target_link_libraries()`.
-# ``Corrade::TestSuite`` library is linked automatically to each test. Note
+# ``Corrade::TestSuite`` target is linked automatically to each test. Note
 # that the :command:`enable_testing()` function must be called explicitly.
+#
+# Unless :variable:`CORRADE_TESTSUITE_TARGET_XCTEST` is set, test cases on iOS
+# targets are created as bundles with bundle identifier set to CMake project
+# name by default. Use the cache variable :variable:`CORRADE_TESTSUITE_BUNDLE_IDENTIFIER_PREFIX`
+# to change it to something else.
 #
 # .. command:: corrade_add_resource
 #
