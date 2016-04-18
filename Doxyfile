@@ -282,7 +282,8 @@ ALIASES                = \
     "def_alc{1}=`ALC_\1`" \
     "requires_al_extension=@xrefitem requires-al-extension \"Requires OpenAL extension\" \"Functionality requiring specific OpenAL extension\"" \
     "al_extension{2}=<a href=\"http://icculus.org/alextreg/index.php?operation=op_showext&extname=AL_\1_\2\"><tt>AL_\1_\2</tt></a>" \
-    "alc_extension{2}=<a href=\"http://icculus.org/alextreg/index.php?operation=op_showext&extname=ALC_\1_\2\"><tt>ALC_\1_\2</tt></a>"
+    "alc_extension{2}=<a href=\"http://icculus.org/alextreg/index.php?operation=op_showext&extname=ALC_\1_\2\"><tt>ALC_\1_\2</tt></a>" \
+    "experimental=@note This functionality is still experimental and may change in the future without keeping full backwards compatibility."
 
 # This tag can be used to specify a number of word-keyword mappings (TCL only).
 # A mapping has the form "name=value". For example adding "class=itcl::class"
