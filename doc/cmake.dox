@@ -94,6 +94,7 @@ The optional components are:
 
 Platform namespace is split into more components:
 
+-   `GlfwApplication` -- @ref Platform::GlfwApplication "GlfwApplication"
 -   `GlutApplication` -- @ref Platform::GlutApplication "GlutApplication"
 -   `GlxApplication` -- @ref Platform::GlxApplication "GlxApplication"
 -   `NaClApplication` -- @ref Platform::NaClApplication "NaClApplication"
