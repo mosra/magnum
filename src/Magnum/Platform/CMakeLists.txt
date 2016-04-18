@@ -37,7 +37,7 @@ set(MagnumPlatform_FILES )
 install(FILES ${MagnumPlatform_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
 
 # Decide about platform-specific context for cross-platform toolkits
-if(WITH_GLUTAPPLICATION OR WITH_SDL2APPLICATION)
+if(WITH_GLFWAPPLICATION OR WITH_GLUTAPPLICATION OR WITH_SDL2APPLICATION)
     if(CORRADE_TARGET_APPLE AND NOT MAGNUM_TARGET_GLES)
         set(NEED_CGLCONTEXT 1)
         set(MagnumSomeContext_OBJECTS $<TARGET_OBJECTS:MagnumCglContextObjects>)
@@ -89,6 +89,36 @@ if(WITH_ANDROIDAPPLICATION)
 
     # Magnum AndroidApplication target alias for superprojects
     add_library(Magnum::AndroidApplication ALIAS MagnumAndroidApplication)
+endif()
+
+# GLFW application
+if(WITH_GLFWAPPLICATION)
+    find_package(GLFW)
+    if(NOT GLFW_FOUND)
+        message(FATAL_ERROR "GLFW library, required by GlfwApplication, was not found. Set WITH_GLFWAPPLICATION to OFF to skip building it.")
+    endif()
+
+    set(MagnumGlfwApplication_SRCS
+        GlfwApplication.cpp
+        ${MagnumSomeContext_OBJECTS})
+    set(MagnumGlfwApplication_HEADERS GlfwApplication.h)
+
+    add_library(MagnumGlfwApplication STATIC
+        ${MagnumGlfwApplication_SRCS}
+        ${MagnumGlfwApplication_HEADERS})
+    set_target_properties(MagnumGlfwApplication PROPERTIES DEBUG_POSTFIX "-d")
+    # Assuming that PIC is not needed because the Application lib is always
+    # linked to the executable and not to any intermediate shared lib
+    target_link_libraries(MagnumGlfwApplication Magnum GLFW::GLFW)
+
+    install(FILES ${MagnumGlfwApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
+    install(TARGETS MagnumGlfwApplication
+        RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+        LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+        ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+
+    # Magnum GlfwApplication target alias for superprojects
+    add_library(Magnum::GlfwApplication ALIAS MagnumGlfwApplication)
 endif()
 
 # GLUT application
