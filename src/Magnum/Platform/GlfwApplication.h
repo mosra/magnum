@@ -665,6 +665,9 @@ class GlfwApplication::MouseEvent: public GlfwApplication::InputEvent {
             Button6 = GLFW_MOUSE_BUTTON_6,        /**< Mouse button 6 */
             Button7 = GLFW_MOUSE_BUTTON_7,        /**< Mouse button 7 */
             Button8 = GLFW_MOUSE_BUTTON_8,        /**< Mouse button 8 */
+
+            WheelUp = GLFW_MOUSE_BUTTON_LAST + 1,   /**< Mouse wheel up */
+            WheelDown = GLFW_MOUSE_BUTTON_LAST + 2, /**< Mouse wheel down */
         };
 
         /** @brief Button */

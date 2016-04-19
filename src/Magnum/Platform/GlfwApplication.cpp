@@ -178,6 +178,12 @@ void GlfwApplication::staticMouseEvent(GLFWwindow*, int button, int action, int)
 void GlfwApplication::staticMouseScrollEvent(GLFWwindow*, double xoffset, double yoffset) {
     MouseScrollEvent e(Vector2d{xoffset, yoffset});
     _instance->mouseScrollEvent(e);
+
+    if(yoffset != 0.0) {
+        MouseEvent e1((yoffset > 0.0) ? MouseEvent::Button::WheelUp : MouseEvent::Button::WheelDown);
+        _instance->mousePressEvent(e);
+        _instance->mousePressEvent(e1);
+    }
 }
 
 void GlfwApplication::staticErrorCallback(int, const char* description) {
