@@ -106,6 +106,13 @@ if(WITH_GLFWAPPLICATION)
         message(FATAL_ERROR "GLFW library, required by GlfwApplication, was not found. Set WITH_GLFWAPPLICATION to OFF to skip building it.")
     endif()
 
+    if(TARGET_VULKAN)
+        find_package(Vulkan)
+        if(NOT GLFW_FOUND)
+            message(FATAL_ERROR "Vulakn SDK was not found. Set TARGET_VULKAN to OFF to turn off Vulkan support.")
+        endif()
+    endif()
+
     set(MagnumGlfwApplication_SRCS
         GlfwApplication.cpp
         ${MagnumSomeContext_OBJECTS})
@@ -118,6 +125,10 @@ if(WITH_GLFWAPPLICATION)
     # Assuming that PIC is not needed because the Application lib is always
     # linked to the executable and not to any intermediate shared lib
     target_link_libraries(MagnumGlfwApplication Magnum GLFW::GLFW)
+
+    if(TARGET_VULKAN)
+        target_link_libraries(MagnumGlfwApplication Magnum Vulkan::Vulkan)
+    endif()
 
     install(FILES ${MagnumGlfwApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumGlfwApplication
