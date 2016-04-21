@@ -477,6 +477,27 @@ CORRADE_ENUMSET_OPERATORS(GlfwApplication::Configuration::WindowFlags)
 */
 class GlfwApplication::InputEvent {
     public:
+        /**
+         * @brief Modifier
+         *
+         * @see @ref Modifiers, @ref KeyEvent::modifiers(),
+         *      @ref MouseEvent::modifiers()
+         */
+        enum class Modifier: Int {
+            Shift = GLFW_MOD_SHIFT,         /**< Shift */
+            Ctrl = GLFW_MOD_CONTROL,        /**< Ctrl */
+            Alt = GLFW_MOD_ALT,             /**< Alt */
+            AltGr = GLFW_MOD_SUPER,         /**< AltGr */
+        };
+
+        /**
+         * @brief Set of modifiers
+         *
+         * @see @ref KeyEvent::modifiers(), @ref MouseEvent::modifiers(),
+         *      @ref MouseMoveEvent::modifiers()
+         */
+        typedef Containers::EnumSet<Modifier> Modifiers;
+
         /** @brief Copying is not allowed */
         InputEvent(const InputEvent&) = delete;
 
@@ -503,6 +524,8 @@ class GlfwApplication::InputEvent {
     private:
         bool _accepted;
 };
+
+CORRADE_ENUMSET_OPERATORS(GlfwApplication::InputEvent::Modifiers)
 
 /**
 @brief Key event
@@ -633,10 +656,16 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
         /** @brief Key */
         constexpr Key key() const { return _key; }
 
+        /** @brief Modifiers */
+        constexpr Modifiers modifiers() const { return _modifiers; }
+
     private:
-        constexpr KeyEvent(Key key): _key(key) {}
+        static Modifiers getCurrentGlfwModifiers(GLFWwindow* window);
+
+        constexpr KeyEvent(Key key, Modifiers modifiers): _key(key), _modifiers(modifiers) {}
 
         const Key _key;
+        const Modifiers _modifiers;
 };
 
 /**
@@ -673,10 +702,14 @@ class GlfwApplication::MouseEvent: public GlfwApplication::InputEvent {
         /** @brief Button */
         constexpr Button button() const { return _button; }
 
+        /** @brief Modifiers */
+        constexpr Modifiers modifiers() const { return _modifiers; }
+
     private:
-        constexpr MouseEvent(Button button): _button(button) {}
+        constexpr MouseEvent(Button button, Modifiers modifiers): _button(button), _modifiers(modifiers) {}
 
         const Button _button;
+        const Modifiers _modifiers;
 };
 
 /**
@@ -692,10 +725,14 @@ class GlfwApplication::MouseMoveEvent: public GlfwApplication::InputEvent {
         /** @brief Position */
         constexpr Vector2i position() const { return _position; }
 
+        /** @brief Modifiers */
+        constexpr Modifiers modifiers() const { return _modifiers; }
+
     private:
-        constexpr MouseMoveEvent(const Vector2i& position): _position(position) {}
+        constexpr MouseMoveEvent(const Vector2i& position, Modifiers modifiers): _position(position), _modifiers(modifiers) {}
 
         const Vector2i _position;
+        const Modifiers _modifiers;
 };
 
 /**
@@ -711,10 +748,14 @@ class GlfwApplication::MouseScrollEvent: public GlfwApplication::InputEvent {
         /** @brief Scroll offset */
         constexpr Vector2d offset() const { return _offset; }
 
+        /** @brief Modifiers */
+        constexpr Modifiers modifiers() const { return _modifiers; }
+
     private:
-        constexpr MouseScrollEvent(const Vector2d& offset): _offset(offset) {}
+        constexpr MouseScrollEvent(const Vector2d& offset, Modifiers modifiers): _offset(offset), _modifiers(modifiers) {}
 
         const Vector2d _offset;
+        const Modifiers _modifiers;
 };
 
 /** @hideinitializer

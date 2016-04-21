@@ -150,8 +150,8 @@ int GlfwApplication::exec() {
     return 0;
 }
 
-void GlfwApplication::staticKeyEvent(GLFWwindow*, int key, int, int action, int) {
-    KeyEvent e(static_cast<KeyEvent::Key>(key));
+void GlfwApplication::staticKeyEvent(GLFWwindow*, int key, int, int action, int mods) {
+    KeyEvent e(static_cast<KeyEvent::Key>(key), {static_cast<InputEvent::Modifier>(mods)});
 
     if(action == GLFW_PRESS) {
         _instance->keyPressEvent(e);
@@ -160,13 +160,13 @@ void GlfwApplication::staticKeyEvent(GLFWwindow*, int key, int, int action, int)
     } /* we don't handle GLFW_REPEAT */
 }
 
-void GlfwApplication::staticMouseMoveEvent(GLFWwindow*, double x, double y) {
-    MouseMoveEvent e{Vector2i{Int(x), Int(y)}};
+void GlfwApplication::staticMouseMoveEvent(GLFWwindow* window, double x, double y) {
+    MouseMoveEvent e{Vector2i{Int(x), Int(y)}, KeyEvent::getCurrentGlfwModifiers(window)};
     _instance->mouseMoveEvent(e);
 }
 
-void GlfwApplication::staticMouseEvent(GLFWwindow*, int button, int action, int) {
-    MouseEvent e(static_cast<MouseEvent::Button>(button));
+void GlfwApplication::staticMouseEvent(GLFWwindow*, int button, int action, int mods) {
+    MouseEvent e(static_cast<MouseEvent::Button>(button), {static_cast<InputEvent::Modifier>(mods)});
 
     if(action == GLFW_PRESS) {
         _instance->mousePressEvent(e);
@@ -175,19 +175,36 @@ void GlfwApplication::staticMouseEvent(GLFWwindow*, int button, int action, int)
     } /* we don't handle GLFW_REPEAT */
 }
 
-void GlfwApplication::staticMouseScrollEvent(GLFWwindow*, double xoffset, double yoffset) {
-    MouseScrollEvent e(Vector2d{xoffset, yoffset});
+void GlfwApplication::staticMouseScrollEvent(GLFWwindow* window, double xoffset, double yoffset) {
+    MouseScrollEvent e(Vector2d{xoffset, yoffset}, KeyEvent::getCurrentGlfwModifiers(window));
     _instance->mouseScrollEvent(e);
 
     if(yoffset != 0.0) {
-        MouseEvent e1((yoffset > 0.0) ? MouseEvent::Button::WheelUp : MouseEvent::Button::WheelDown);
-        _instance->mousePressEvent(e);
+        MouseEvent e1((yoffset > 0.0) ? MouseEvent::Button::WheelUp : MouseEvent::Button::WheelDown, KeyEvent::getCurrentGlfwModifiers(window));
         _instance->mousePressEvent(e1);
     }
 }
 
 void GlfwApplication::staticErrorCallback(int, const char* description) {
     Error() << description;
+}
+
+GlfwApplication::InputEvent::Modifiers GlfwApplication::KeyEvent::getCurrentGlfwModifiers(GLFWwindow* window) {
+    static_assert(GLFW_PRESS == true && GLFW_RELEASE == false, "GLFW press and release constants do not correspond to bool values.");
+
+    Modifiers mods = (glfwGetKey(window, Int(Key::LeftShift)) || glfwGetKey(window, Int(Key::RightShift)))
+                     ? Modifiers{Modifier::Shift} : Modifiers{};
+    if(glfwGetKey(window, Int(Key::LeftAlt)) || glfwGetKey(window, Int(Key::RightAlt))) {
+        mods |= Modifier::Alt;
+    }
+    if(glfwGetKey(window, Int(Key::LeftCtrl)) || glfwGetKey(window, Int(Key::RightCtrl))) {
+        mods |= Modifier::Ctrl;
+    }
+    if(glfwGetKey(window, Int(Key::RightSuper))) {
+        mods |= Modifier::AltGr;
+    }
+
+    return mods;
 }
 
 void GlfwApplication::viewportEvent(const Vector2i&) {}
