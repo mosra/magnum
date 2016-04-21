@@ -33,6 +33,10 @@
 #include "Magnum/Platform/Context.h"
 #include "Magnum/Platform/ScreenedApplication.hpp"
 
+#ifdef MAGNUM_TARGET_VULKAN
+#include "Magnum/Vk/Context.h"
+#endif
+
 namespace Magnum { namespace Platform {
 
 GlfwApplication* GlfwApplication::_instance = nullptr;
@@ -236,6 +240,19 @@ void GlfwApplication::mousePressEvent(MouseEvent&) {}
 void GlfwApplication::mouseReleaseEvent(MouseEvent&) {}
 void GlfwApplication::mouseMoveEvent(MouseMoveEvent&) {}
 void GlfwApplication::mouseScrollEvent(MouseScrollEvent&) {}
+
+#ifdef MAGNUM_TARGET_VULKAN
+VkSurfaceKHR GlfwApplication::createVkSurface() {
+    VkSurfaceKHR surface;
+
+    VkResult res = glfwCreateWindowSurface(Magnum::Vk::Context::current().vkInstance(), _window, nullptr, &surface);
+    if(res != VK_SUCCESS) {
+        Error() << "Vulkan Surface creation failed.";
+    }
+
+    return surface;
+}
+#endif
 
 GlfwApplication::Configuration::Configuration():
     _title{"Magnum GLFW Application"},

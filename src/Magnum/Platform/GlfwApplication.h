@@ -40,6 +40,10 @@
 /* We must include our own GL headers first to avoid conflicts */
 #include "Magnum/OpenGL.h"
 
+#ifdef MAGNUM_TARGET_VULKAN
+#include "vulkan.h"
+#endif
+
 #include <glfw3.h>
 
 namespace Magnum { namespace Platform {
@@ -239,6 +243,10 @@ class GlfwApplication {
         virtual void mouseScrollEvent(MouseScrollEvent& event);
 
         /*@}*/
+
+        #ifdef MAGNUM_TARGET_VULKAN
+        VkSurfaceKHR createVkSurface();
+        #endif
 
     private:
         static void staticViewportEvent(GLFWwindow*, int w, int h) {
