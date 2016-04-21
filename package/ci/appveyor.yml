@@ -27,7 +27,7 @@ install:
 - cinst ninja
 
 # OpenAL
-- appveyor DownloadFile http://kcat.strangesoft.net/openal-binaries/openal-soft-1.17.0-bin.zip
+- appveyor DownloadFile http://kcat.strangesoft.net/openal-binaries/openal-soft-1.17.2-bin.zip
 - 7z x openal-soft-1.17.0-bin.zip
 - ren openal-soft-1.17.0-bin openal
 - ren openal\bin\Win32\soft_oal.dll OpenAL32.dll
