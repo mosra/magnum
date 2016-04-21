@@ -215,7 +215,6 @@ endif()
 if(TARGET_VULKAN)
     set(MAGNUM_TARGET_VULKAN 1)
 endif()
-
 if(CORRADE_TARGET_EMSCRIPTEN)
     include(UseEmscripten)
 endif()
