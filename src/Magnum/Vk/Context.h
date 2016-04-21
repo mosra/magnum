@@ -47,7 +47,7 @@ namespace Magnum { namespace Vk {
 
 enum class Version: UnsignedInt {
     None = 0, /**< No version */
-    Vulkan_1_0 = VK_VERSION_1_0, /**< Vulkan 1.0 */
+    Vulkan_1_0 = VK_API_VERSION, /**< Vulkan 1.0 */
 };
 
 /**

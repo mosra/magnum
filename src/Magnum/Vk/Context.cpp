@@ -144,7 +144,7 @@ bool Context::tryCreate() {
 
         VkDebugReportCallbackCreateInfoEXT dbgCreateInfo = {};
         dbgCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT;
-        dbgCreateInfo.pfnCallback = (PFN_vkDebugReportCallbackEXT)messageCallback;
+        dbgCreateInfo.pfnCallback = PFN_vkDebugReportCallbackEXT(messageCallback);
         dbgCreateInfo.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT;
 
         VkResult err = CreateDebugReportCallback(
