@@ -132,13 +132,13 @@ inline std::pair<Int, Int> version(Version version) {
 
 Always `true` on @ref MAGNUM_TARGET_GLES "OpenGL ES" and WebGL build.
 */
+#ifndef MAGNUM_TARGET_GLES
 constexpr bool isVersionES(Version version) {
-    #ifndef MAGNUM_TARGET_GLES
     return Int(version) & Implementation::VersionESMask;
-    #else
-    return true;
-    #endif
 }
+#else
+constexpr bool isVersionES(Version) { return true; }
+#endif
 
 /** @debugoperatorenum{Magnum::Version} */
 MAGNUM_EXPORT Debug& operator<<(Debug& debug, Version value);
