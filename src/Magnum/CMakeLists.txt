@@ -323,6 +323,11 @@ if(WITH_TEXTURETOOLS)
     add_subdirectory(TextureTools)
 endif()
 
+# Vulkan stuff
+if(TARGET_VULKAN)
+    add_subdirectory(Vk)
+endif()
+
 if(BUILD_TESTS)
     # Library with graceful assert for testing
     add_library(MagnumMathTestLib ${SHARED_OR_STATIC}
