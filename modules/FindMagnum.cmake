@@ -364,7 +364,7 @@ endif()
 
 # Component distinction (listing them explicitly to avoid mistakes with finding
 # components from other repositories)
-set(_MAGNUM_LIBRARY_COMPONENTS "^(Audio|DebugTools|MeshTools|Primitives|SceneGraph|Shaders|Shapes|Text|TextureTools|AndroidApplication|GlfwApplication|GlutApplication|GlxApplication|NaClApplication|Sdl2Application|XEglApplication|WindowlessCglApplication|WindowlessEglApplication|WindowlessGlxApplication|WindowlessIosApplication|WindowlessNaClApplication|WindowlessWglApplication|WindowlessWindowsEglApplication|CglContext|EglContext|GlxContext|WglContext)$")
+set(_MAGNUM_LIBRARY_COMPONENTS "^(Audio|DebugTools|MeshTools|Primitives|SceneGraph|Shaders|Shapes|Text|TextureTools|Vk|AndroidApplication|GlfwApplication|GlutApplication|GlxApplication|NaClApplication|Sdl2Application|XEglApplication|WindowlessCglApplication|WindowlessEglApplication|WindowlessGlxApplication|WindowlessIosApplication|WindowlessNaClApplication|WindowlessWglApplication|WindowlessWindowsEglApplication|CglContext|EglContext|GlxContext|WglContext)$")
 set(_MAGNUM_PLUGIN_COMPONENTS "^(MagnumFont|MagnumFontConverter|ObjImporter|TgaImageConverter|TgaImporter|WavAudioImporter)$")
 set(_MAGNUM_EXECUTABLE_COMPONENTS "^(distancefieldconverter|fontconverter|imageconverter|info|al-info)$")
 
@@ -609,6 +609,12 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
         # TextureTools library
         elseif(_component STREQUAL TextureTools)
             set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Atlas.h)
+
+        elseif(_component STREQUAL Vk)
+            find_package(Vulkan)
+            set_property(TARGET Magnum::${_component} APPEND PROPERTY
+                    INTERFACE_LINK_LIBRARIES Vulkan::Vulkan)
+            set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Context.h)
         endif()
 
         # Find library/plugin includes
