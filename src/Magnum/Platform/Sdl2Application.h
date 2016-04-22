@@ -31,6 +31,7 @@
 
 #include <memory>
 #include <Corrade/Corrade.h>
+#include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/EnumSet.h>
 
 #include "Magnum/Magnum.h"
@@ -1230,7 +1231,7 @@ class Sdl2Application::TextInputEvent {
         constexpr Containers::ArrayView<const char> text() const { return _text; }
 
     private:
-        constexpr TextInputEvent(Containers::ArrayView<const char> text): _text{text} {}
+        constexpr TextInputEvent(Containers::ArrayView<const char> text): _text{text}, _accepted{false} {}
 
         Containers::ArrayView<const char> _text;
         bool _accepted;
@@ -1281,7 +1282,7 @@ class Sdl2Application::TextEditingEvent {
         constexpr Int length() const { return _length; }
 
     private:
-        constexpr TextEditingEvent(Containers::ArrayView<const char> text, Int start, Int length): _text{text}, _start{start}, _length{length} {}
+        constexpr TextEditingEvent(Containers::ArrayView<const char> text, Int start, Int length): _text{text}, _start{start}, _length{length}, _accepted{false} {}
 
         Containers::ArrayView<const char> _text;
         Int _start, _length;

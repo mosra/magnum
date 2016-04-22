@@ -386,12 +386,12 @@ void Sdl2Application::mainLoop() {
 
             #ifndef CORRADE_TARGET_EMSCRIPTEN
             case SDL_TEXTINPUT: {
-                TextInputEvent e{event.text.text};
+                TextInputEvent e{{event.text.text, std::strlen(event.text.text)}};
                 textInputEvent(e);
             } break;
 
             case SDL_TEXTEDITING: {
-                TextEditingEvent e{event.edit.text, event.edit.start, event.edit.length};
+                TextEditingEvent e{{event.edit.text, std::strlen(event.text.text)}, event.edit.start, event.edit.length};
                 textEditingEvent(e);
             } break;
             #endif
