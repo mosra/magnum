@@ -136,7 +136,6 @@ bool GlfwApplication::tryCreateContext(const Configuration& configuration) {
     glfwSetScrollCallback(_window, staticMouseScrollEvent);
 
     glfwMakeContextCurrent(_window);
-    glfwSwapInterval(1);
 
     /* Return true if the initialization succeeds */
     return _context->tryCreate();
@@ -145,6 +144,10 @@ bool GlfwApplication::tryCreateContext(const Configuration& configuration) {
 GlfwApplication::~GlfwApplication() {
     glfwDestroyWindow(_window);
     glfwTerminate();
+}
+
+void GlfwApplication::setSwapInterval(const Int interval) {
+    glfwSwapInterval(interval);
 }
 
 int GlfwApplication::exec() {

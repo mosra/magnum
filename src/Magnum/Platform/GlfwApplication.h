@@ -173,6 +173,14 @@ class GlfwApplication {
          */
         void swapBuffers() { glfwSwapBuffers(_window); }
 
+        /**
+         * @brief Set swap interval
+         *
+         * Set `0` for no VSync, `1` for enabled VSync. Some platforms support
+         * `-1` for late swap tearing. Default is driver-dependent.
+         */
+        void setSwapInterval(Int interval);
+
         /** @copydoc Sdl2Application::redraw() */
         void redraw() { _needsRedraw = true; }
 
