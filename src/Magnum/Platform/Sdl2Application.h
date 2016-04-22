@@ -1004,6 +1004,8 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
          * @see @ref key()
          */
         enum class Key: SDL_Keycode {
+            Unknown = SDLK_UNKNOWN,     /**< Unknown key */
+
             Enter = SDLK_RETURN,        /**< Enter */
             Esc = SDLK_ESCAPE,          /**< Escape */
 
@@ -1011,6 +1013,14 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
             Down = SDLK_DOWN,           /**< Down arrow */
             Left = SDLK_LEFT,           /**< Left arrow */
             Right = SDLK_RIGHT,         /**< Right arrow */
+            Home = SDLK_HOME,           /**< Home */
+            End = SDLK_END,             /**< End */
+            PageUp = SDLK_PAGEUP,       /**< Page up */
+            PageDown = SDLK_PAGEDOWN,   /**< Page down */
+            Backspace = SDLK_BACKSPACE, /**< Backspace */
+            Insert = SDLK_INSERT,       /**< Insert */
+            Delete = SDLK_DELETE,       /**< Delete */
+
             F1 = SDLK_F1,               /**< F1 */
             F2 = SDLK_F2,               /**< F2 */
             F3 = SDLK_F3,               /**< F3 */
@@ -1023,18 +1033,16 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
             F10 = SDLK_F10,             /**< F10 */
             F11 = SDLK_F11,             /**< F11 */
             F12 = SDLK_F12,             /**< F12 */
-            Home = SDLK_HOME,           /**< Home */
-            End = SDLK_END,             /**< End */
-            PageUp = SDLK_PAGEUP,       /**< Page up */
-            PageDown = SDLK_PAGEDOWN,   /**< Page down */
 
             Space = SDLK_SPACE,         /**< Space */
+            Tab = SDLK_TAB,             /**< Tab */
             Comma = SDLK_COMMA,         /**< Comma */
             Period = SDLK_PERIOD,       /**< Period */
             Minus = SDLK_MINUS,         /**< Minus */
             Plus = SDLK_PLUS,           /**< Plus */
             Slash = SDLK_SLASH,         /**< Slash */
             Percent = SDLK_PERCENT,     /**< Percent */
+            Semicolon = SDLK_SEMICOLON, /**< Semicolon */
             Equal = SDLK_EQUALS,        /**< Equal */
 
             Zero = SDLK_0,              /**< Zero */

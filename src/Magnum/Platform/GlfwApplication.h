@@ -577,10 +577,21 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
         enum class Key: Int {
             Unknown = GLFW_KEY_UNKNOWN, /**< Unknown key */
 
+            Enter = GLFW_KEY_ENTER,     /**< Enter */
+            Esc = GLFW_KEY_ESCAPE,      /**< Escape */
+
             Up = GLFW_KEY_UP,           /**< Up arrow */
             Down = GLFW_KEY_DOWN,       /**< Down arrow */
             Left = GLFW_KEY_LEFT,       /**< Left arrow */
             Right = GLFW_KEY_RIGHT,     /**< Right arrow */
+            Home = GLFW_KEY_HOME,       /**< Home */
+            End = GLFW_KEY_END,         /**< End */
+            PageUp = GLFW_KEY_PAGE_UP,  /**< Page up */
+            PageDown = GLFW_KEY_PAGE_DOWN, /**< Page down */
+            Backspace = GLFW_KEY_BACKSPACE, /**< Backspace */
+            Insert = GLFW_KEY_INSERT,   /**< Insert */
+            Delete = GLFW_KEY_DELETE,   /**< Delete */
+
             F1 = GLFW_KEY_F1,           /**< F1 */
             F2 = GLFW_KEY_F2,           /**< F2 */
             F3 = GLFW_KEY_F3,           /**< F3 */
@@ -593,12 +604,9 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
             F10 = GLFW_KEY_F10,         /**< F10 */
             F11 = GLFW_KEY_F11,         /**< F11 */
             F12 = GLFW_KEY_F12,         /**< F12 */
-            Home = GLFW_KEY_HOME,       /**< Home */
-            End = GLFW_KEY_END,         /**< End */
-            PageUp = GLFW_KEY_PAGE_UP,  /**< Page up */
-            PageDown = GLFW_KEY_PAGE_DOWN, /**< Page down */
 
             Space = ' ',                /**< Space */
+            Tab = '\t',                 /**< Tab */
             Comma = ',',                /**< Comma */
             Period = '.',               /**< Period */
             Minus = '-',                /**< Minus */
@@ -647,12 +655,6 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
             Z = 'z',                    /**< Letter Z */
 
             /* Function keys */
-            Esc = GLFW_KEY_ESCAPE,              /**< Escape */
-            Enter = GLFW_KEY_ENTER,             /**< Enter */
-            Tab = GLFW_KEY_TAB,                 /**< Tab */
-            Backspace = GLFW_KEY_BACKSPACE,     /**< Backspace */
-            Insert = GLFW_KEY_INSERT,           /**< Insert */
-            Delete = GLFW_KEY_DELETE,           /**< Delete */
             CapsLock = GLFW_KEY_CAPS_LOCK,      /**< Caps lock */
             ScrollLock = GLFW_KEY_SCROLL_LOCK,  /**< Scroll lock */
             NumLock = GLFW_KEY_NUM_LOCK,        /**< Num lock */
