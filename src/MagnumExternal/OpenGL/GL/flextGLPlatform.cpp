@@ -841,7 +841,7 @@ void flextGLInit() {
     flextglCheckNamedFramebufferStatus = reinterpret_cast<GLenum(APIENTRY*)(GLuint, GLenum)>(loader.load("glCheckNamedFramebufferStatus"));
     flextglClearNamedBufferData = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum, GLenum, GLenum, const void *)>(loader.load("glClearNamedBufferData"));
     flextglClearNamedBufferSubData = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum, GLintptr, GLsizeiptr, GLenum, GLenum, const void *)>(loader.load("glClearNamedBufferSubData"));
-    flextglClearNamedFramebufferfi = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum, const GLfloat, GLint)>(loader.load("glClearNamedFramebufferfi"));
+    flextglClearNamedFramebufferfi = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum, GLint, GLfloat, GLint)>(loader.load("glClearNamedFramebufferfi"));
     flextglClearNamedFramebufferfv = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum, GLint, const GLfloat *)>(loader.load("glClearNamedFramebufferfv"));
     flextglClearNamedFramebufferiv = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum, GLint, const GLint *)>(loader.load("glClearNamedFramebufferiv"));
     flextglClearNamedFramebufferuiv = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum, GLint, const GLuint *)>(loader.load("glClearNamedFramebufferuiv"));

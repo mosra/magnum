@@ -3458,7 +3458,7 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglClearNamedBufferData)(GLuint, GLenum,
 #define glClearNamedBufferData flextglClearNamedBufferData
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglClearNamedBufferSubData)(GLuint, GLenum, GLintptr, GLsizeiptr, GLenum, GLenum, const void *);
 #define glClearNamedBufferSubData flextglClearNamedBufferSubData
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglClearNamedFramebufferfi)(GLuint, GLenum, const GLfloat, GLint);
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglClearNamedFramebufferfi)(GLuint, GLenum, GLint, GLfloat, GLint);
 #define glClearNamedFramebufferfi flextglClearNamedFramebufferfi
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglClearNamedFramebufferfv)(GLuint, GLenum, GLint, const GLfloat *);
 #define glClearNamedFramebufferfv flextglClearNamedFramebufferfv
