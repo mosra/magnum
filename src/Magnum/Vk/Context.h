@@ -46,8 +46,35 @@
 namespace Magnum { namespace Vk {
 
 enum class Version: UnsignedInt {
-    None = 0, /**< No version */
-    Vulkan_1_0 = VK_API_VERSION, /**< Vulkan 1.0 */
+    None, /**< No version */
+    Vulkan_1_0 = VK_API_VERSION_1_0, /**< Vulkan 1.0 */
+};
+
+enum class Result: Int {
+    Success = VK_SUCCESS,           /**< Success */
+    NotReady = VK_NOT_READY,        /**< Not ready */
+    Timeout = VK_TIMEOUT,           /**< Timeout */
+    EventSet = VK_EVENT_SET,        /**< Event set */
+    EventReset = VK_EVENT_RESET,    /**< Event reset */
+    Incomplete = VK_INCOMPLETE,     /**< Incomplete */
+    ErrorOutOfHostMemory = VK_ERROR_OUT_OF_HOST_MEMORY,             /**< Out of host memory */
+    ErrorOutOfDevieMemory = VK_ERROR_OUT_OF_DEVICE_MEMORY,          /**< Out of device memory */
+    ErrorInitializationFailed = VK_ERROR_INITIALIZATION_FAILED,     /**< Initialization failed */
+    ErrorDeviceLost = VK_ERROR_DEVICE_LOST,                         /**< Device lost */
+    ErrorMemoryMapFailed = VK_ERROR_MEMORY_MAP_FAILED,              /**< Memory map failed */
+    ErrorLayerNotPresent = VK_ERROR_LAYER_NOT_PRESENT,              /**< Layer not present */
+    ErrorExtensionNotPresent = VK_ERROR_EXTENSION_NOT_PRESENT,      /**< Extension not present */
+    ErrorFeatureNotPresent = VK_ERROR_FEATURE_NOT_PRESENT,          /**< Feature not present */
+    ErrorIncompatibleDriver = VK_ERROR_INCOMPATIBLE_DRIVER,         /**< Incompatible driver */
+    ErrorTooManyObjects = VK_ERROR_TOO_MANY_OBJECTS,                /**< Too many objects */
+    ErrorFormatNotSupported = VK_ERROR_FORMAT_NOT_SUPPORTED,        /**< Format not supported */
+    ErrorSurfaceLost = VK_ERROR_SURFACE_LOST_KHR,                   /**< Surface lost */
+    ErrorNativeWindowInUse = VK_ERROR_NATIVE_WINDOW_IN_USE_KHR,     /**< Native window in use */
+    Suboptimal = VK_SUBOPTIMAL_KHR,                                 /**< Suboptimal */
+    ErrorOutOfDate = VK_ERROR_OUT_OF_DATE_KHR,                      /**< Out of date */
+    ErrorIncompatibleDisplay = VK_ERROR_INCOMPATIBLE_DISPLAY_KHR,   /**< Incompatible display */
+    ErrorValidationFailed = VK_ERROR_VALIDATION_FAILED_EXT,         /**< Validation failed */
+    ErrorInvalidShader = VK_ERROR_INVALID_SHADER_NV                 /**< Invalid shader */
 };
 
 /**
@@ -83,7 +110,7 @@ class MAGNUM_VK_EXPORT Context {
          *      @ref Platform::Sdl2Application::Configuration::setFlags() "Platform::*Application::Configuration::setFlags()"
          */
         enum class Flag: Int {
-            EnableValidation = 1, /**< Enable validation layer */
+            EnableValidation, /**< Enable validation layer */
         };
 
         /**
@@ -155,6 +182,9 @@ class MAGNUM_VK_EXPORT Context {
 
         VkInstance _instance;
 };
+
+MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, Result value);
+MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, Context::Flag value);
 
 }}
 

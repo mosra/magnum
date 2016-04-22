@@ -123,14 +123,14 @@ bool Context::tryCreate() {
         instanceCreateInfo.enabledLayerCount = 1;
         instanceCreateInfo.ppEnabledLayerNames = validationLayerNames;
     }
-    if (enabledExtensions.size() > 0) {
+    if (!enabledExtensions.empty()) {
         instanceCreateInfo.enabledExtensionCount = enabledExtensions.size();
         instanceCreateInfo.ppEnabledExtensionNames = enabledExtensions.data();
     }
 
     VkResult ret = vkCreateInstance(&instanceCreateInfo, nullptr, &_instance);
     if(ret != VK_SUCCESS) {
-        Error() << "Vulkan Instance creation failed with error" << ret;
+        Error() << "Vulkan instance creation failed with error" << ret;
         return false;
     }
 
@@ -138,9 +138,9 @@ bool Context::tryCreate() {
 
     /* setup debugging */
     if (_flags >= Flag::EnableValidation) {
-        CreateDebugReportCallback = (PFN_vkCreateDebugReportCallbackEXT)vkGetInstanceProcAddr(_instance, "vkCreateDebugReportCallbackEXT");
-        DestroyDebugReportCallback = (PFN_vkDestroyDebugReportCallbackEXT)vkGetInstanceProcAddr(_instance, "vkDestroyDebugReportCallbackEXT");
-        dbgBreakCallback = (PFN_vkDebugReportMessageEXT)vkGetInstanceProcAddr(_instance, "vkDebugReportMessageEXT");
+        CreateDebugReportCallback = PFN_vkCreateDebugReportCallbackEXT(vkGetInstanceProcAddr(_instance, "vkCreateDebugReportCallbackEXT"));
+        DestroyDebugReportCallback = PFN_vkDestroyDebugReportCallbackEXT(vkGetInstanceProcAddr(_instance, "vkDestroyDebugReportCallbackEXT"));
+        dbgBreakCallback = PFN_vkDebugReportMessageEXT(vkGetInstanceProcAddr(_instance, "vkDebugReportMessageEXT"));
 
         VkDebugReportCallbackCreateInfoEXT dbgCreateInfo = {};
         dbgCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT;
@@ -159,6 +159,49 @@ bool Context::tryCreate() {
 
 bool Context::isVersionSupported(Version) const {
     return true;
+}
+
+Debug& operator<<(Debug& debug, Result value) {
+    switch(value) {
+        #define _c(value) case Result::value: return debug << "Vk::Result::" #value;
+        _c(Success)
+        _c(NotReady)
+        _c(Timeout)
+        _c(EventSet)
+        _c(EventReset)
+        _c(Incomplete)
+        _c(ErrorOutOfHostMemory)
+        _c(ErrorOutOfDevieMemory)
+        _c(ErrorInitializationFailed)
+        _c(ErrorDeviceLost)
+        _c(ErrorMemoryMapFailed)
+        _c(ErrorLayerNotPresent)
+        _c(ErrorExtensionNotPresent)
+        _c(ErrorFeatureNotPresent)
+        _c(ErrorIncompatibleDriver)
+        _c(ErrorTooManyObjects)
+        _c(ErrorFormatNotSupported)
+        _c(ErrorSurfaceLost)
+        _c(ErrorNativeWindowInUse)
+        _c(Suboptimal)
+        _c(ErrorOutOfDate)
+        _c(ErrorIncompatibleDisplay)
+        _c(ErrorValidationFailed)
+        _c(ErrorInvalidShader)
+        #undef _c
+    }
+
+    return debug << "Vk::Result::(invalid)";
+}
+
+Debug& operator<<(Debug& debug, Context::Flag value) {
+    switch(value) {
+        #define _c(value) case Context::Flag::value: return debug << "Context::Flag::" #value;
+        _c(EnableValidation)
+        #undef _c
+    }
+
+    return debug << "Context::Flag::(invalid)";
 }
 
 }}
