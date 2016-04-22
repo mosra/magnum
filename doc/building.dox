@@ -645,8 +645,8 @@ replace `localhost:8080` with your server name, replace `update-job` with
     java -jar ~/jenkins-cli.jar -s http://localhost:8080 update-job Magnum-GLTests < package/ci/jenkins-gltests.xml
 
 Build is done using **Ninja** build system and everything possible is enabled,
-thus you need also **SDL2**, **GLUT** and **OpenAL** libraries. It expects
-that **GCC** >= 4.9, 4.8, 4.7 and **Clang** are installed and there
+thus you need also **SDL2**, **GLFW**, **GLUT** and **OpenAL** libraries. It
+expects that **GCC** >= 4.9, 4.8, 4.7 and **Clang** are installed and there
 are **OpenGL**, **OpenGL ES 2.0** and **OpenGL ES 3.0** librares as it tries to
 compile the library with every combination of them. You can add/remove the axes
 in `axes/hudson.matrix.TextAxis` or via the web interface later.
