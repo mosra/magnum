@@ -897,6 +897,9 @@ class Sdl2Application::InputEvent {
         /** @brief Moving is not allowed */
         InputEvent& operator=(InputEvent&&) = delete;
 
+        /** @brief Whether the event is accepted */
+        constexpr bool isAccepted() const { return _accepted; }
+
         /**
          * @brief Set event as accepted
          *
@@ -906,9 +909,6 @@ class Sdl2Application::InputEvent {
          * each event ignored and thus propagated.
          */
         void setAccepted(bool accepted = true) { _accepted = accepted; }
-
-        /** @brief Whether the event is accepted */
-        constexpr bool isAccepted() const { return _accepted; }
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
     protected:
