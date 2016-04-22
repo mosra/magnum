@@ -330,6 +330,10 @@ class Sdl2Application {
         class KeyEvent;
         class MouseEvent;
         class MouseMoveEvent;
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        class TextInputEvent;
+        class TextEditingEvent;
+        #endif
 
         /**
          * @brief Default constructor
@@ -570,6 +574,69 @@ class Sdl2Application {
         virtual void mouseMoveEvent(MouseMoveEvent& event);
 
         /*@}*/
+
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        /** @{ @name Text input handling */
+    public:
+        /**
+         * @brief Whether text input is active
+         *
+         * If text input is active, text input events go to @ref textInputEvent()
+         * and @ref textEditingEvent().
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         * @see @ref startTextInput(), @ref stopTextInput()
+         */
+        bool isTextInputActive() { return SDL_IsTextInputActive(); }
+
+        /**
+         * @brief Start text input
+         *
+         * Starts text input that will go to @ref textInputEvent() and
+         * @ref textEditingEvent(). The @p rect defines an area where the text
+         * is being displayed, for example to hint the system where to place
+         * on-screen keyboard. Ignored if empty.
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         * @see @ref stopTextInput(), @ref isTextInputActive(),
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        void startTextInput(const Range2Di& rect = {});
+        #else
+        /* To avoid including the type in header */
+        void startTextInput(const Range2Di& rect);
+        void startTextInput();
+        #endif
+
+        /**
+         * @brief Stop text input
+         *
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         * @see @ref startTextInput(), @ref isTextInputActive(), @ref textInputEvent()
+         *      @ref textEditingEvent()
+         */
+        void stopTextInput() { SDL_StopTextInput(); }
+
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    protected:
+    #else
+    private:
+    #endif
+        /**
+         * @brief Text input event
+         *
+         * Called when text input is active and the text is being input.
+         * @see @ref isTextInputActive()
+         */
+        virtual void textInputEvent(TextInputEvent& event);
+
+        /**
+         * @brief Text editing event
+         *
+         * Called when text input is active and the text is being edited.
+         */
+        virtual void textEditingEvent(TextEditingEvent& event);
+
+        /*@}*/
+        #endif
 
     private:
         enum class Flag: UnsignedByte {
@@ -1122,6 +1189,105 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
         Buttons _buttons;
         Modifiers _modifiers;
 };
+
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+/**
+@brief Text input event
+
+@note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+@see @ref TextEditingEvent, @ref textInputEvent()
+*/
+class Sdl2Application::TextInputEvent {
+    friend Sdl2Application;
+
+    public:
+        /** @brief Copying is not allowed */
+        TextInputEvent(const TextInputEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        TextInputEvent(TextInputEvent&&) = delete;
+
+        /** @brief Copying is not allowed */
+        TextInputEvent& operator=(const TextInputEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        TextInputEvent& operator=(TextInputEvent&&) = delete;
+
+        /** @brief Whether the event is accepted */
+        constexpr bool isAccepted() const { return _accepted; }
+
+        /**
+         * @brief Set event as accepted
+         *
+         * If the event is ignored (i.e., not set as accepted), it might be
+         * propagated elsewhere, for example to another screen when using
+         * @ref BasicScreenedApplication "ScreenedApplication". By default is
+         * each event ignored and thus propagated.
+         */
+        void setAccepted(bool accepted = true) { _accepted = accepted; }
+
+        /** @brief Input text in UTF-8 */
+        constexpr Containers::ArrayView<const char> text() const { return _text; }
+
+    private:
+        constexpr TextInputEvent(Containers::ArrayView<const char> text): _text{text} {}
+
+        Containers::ArrayView<const char> _text;
+        bool _accepted;
+};
+
+/**
+@brief Text editing event
+
+@note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+@see @ref textEditingEvent()
+*/
+class Sdl2Application::TextEditingEvent {
+    friend Sdl2Application;
+
+    public:
+        /** @brief Copying is not allowed */
+        TextEditingEvent(const TextEditingEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        TextEditingEvent(TextEditingEvent&&) = delete;
+
+        /** @brief Copying is not allowed */
+        TextEditingEvent& operator=(const TextEditingEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        TextEditingEvent& operator=(TextEditingEvent&&) = delete;
+
+        /** @brief Whether the event is accepted */
+        constexpr bool isAccepted() const { return _accepted; }
+
+        /**
+         * @brief Set event as accepted
+         *
+         * If the event is ignored (i.e., not set as accepted), it might be
+         * propagated elsewhere, for example to another screen when using
+         * @ref BasicScreenedApplication "ScreenedApplication". By default is
+         * each event ignored and thus propagated.
+         */
+        void setAccepted(bool accepted = true) { _accepted = accepted; }
+
+        /** @brief Input text in UTF-8 */
+        constexpr Containers::ArrayView<const char> text() const { return _text; }
+
+        /** @brief Location to begin editing from */
+        constexpr Int start() const { return _start; }
+
+        /** @brief Number of characters to edit from the start point */
+        constexpr Int length() const { return _length; }
+
+    private:
+        constexpr TextEditingEvent(Containers::ArrayView<const char> text, Int start, Int length): _text{text}, _start{start}, _length{length} {}
+
+        Containers::ArrayView<const char> _text;
+        Int _start, _length;
+        bool _accepted;
+};
+#endif
 
 /** @hideinitializer
 @brief Entry point for SDL2-based applications

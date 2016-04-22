@@ -33,6 +33,7 @@
 #endif
 
 #include "Magnum/Version.h"
+#include "Magnum/Math/Range.h"
 #include "Magnum/Platform/Context.h"
 #include "Magnum/Platform/ScreenedApplication.hpp"
 
@@ -383,6 +384,18 @@ void Sdl2Application::mainLoop() {
                 break;
             }
 
+            #ifndef CORRADE_TARGET_EMSCRIPTEN
+            case SDL_TEXTINPUT: {
+                TextInputEvent e{event.text.text};
+                textInputEvent(e);
+            } break;
+
+            case SDL_TEXTEDITING: {
+                TextEditingEvent e{event.edit.text, event.edit.start, event.edit.length};
+                textEditingEvent(e);
+            } break;
+            #endif
+
             case SDL_QUIT:
                 #ifndef CORRADE_TARGET_EMSCRIPTEN
                 _flags |= Flag::Exit;
@@ -438,6 +451,20 @@ void Sdl2Application::setMouseLocked(bool enabled) {
     #endif
 }
 
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+void Sdl2Application::startTextInput(const Range2Di& rect) {
+    SDL_StartTextInput();
+    if(!rect.size().isZero()) {
+        SDL_Rect r{rect.min().x(), rect.min().y(), rect.sizeX(), rect.sizeY()};
+        SDL_SetTextInputRect(&r);
+    }
+}
+
+void Sdl2Application::startTextInput() {
+    startTextInput({});
+}
+#endif
+
 void Sdl2Application::tickEvent() {
     /* If this got called, the tick event is not implemented by user and thus
        we don't need to call it ever again */
@@ -450,6 +477,11 @@ void Sdl2Application::keyReleaseEvent(KeyEvent&) {}
 void Sdl2Application::mousePressEvent(MouseEvent&) {}
 void Sdl2Application::mouseReleaseEvent(MouseEvent&) {}
 void Sdl2Application::mouseMoveEvent(MouseMoveEvent&) {}
+
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+void Sdl2Application::textInputEvent(TextInputEvent&) {}
+void Sdl2Application::textEditingEvent(TextEditingEvent&) {}
+#endif
 
 Sdl2Application::Configuration::Configuration():
     #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_IOS)
