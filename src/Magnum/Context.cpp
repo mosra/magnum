@@ -812,6 +812,7 @@ Debug& operator<<(Debug& debug, const Context::Flag value) {
     switch(value) {
         #define _c(value) case Context::Flag::value: return debug << "Context::Flag::" #value;
         _c(Debug)
+        _c(NoError)
         #ifndef MAGNUM_TARGET_GLES
         _c(RobustAccess)
         #endif

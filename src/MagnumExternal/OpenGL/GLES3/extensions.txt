@@ -36,6 +36,7 @@ extension KHR_blend_equation_advanced_coherent      optional
 extension KHR_robustness                            optional
 extension KHR_robust_buffer_access_behavior         optional
 extension KHR_context_flush_control                 optional
+extension KHR_no_error                              optional
 extension NV_read_buffer_front                      optional
 extension NV_read_depth                             optional
 extension NV_read_stencil                           optional

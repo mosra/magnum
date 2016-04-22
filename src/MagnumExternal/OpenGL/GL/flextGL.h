@@ -1749,6 +1749,10 @@ typedef void (APIENTRY *GLDEBUGPROC)(GLenum source,GLenum type,GLuint id,GLenum 
 
 #define GL_BLEND_ADVANCED_COHERENT_KHR 0x9285
 
+/* GL_KHR_no_error */
+
+#define GL_CONTEXT_FLAG_NO_ERROR_BIT_KHR 0x00000008
+
 /* Function prototypes */
 
 /* GL_ARB_bindless_texture */

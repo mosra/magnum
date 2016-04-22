@@ -136,6 +136,13 @@ class MAGNUM_EXPORT Context {
             Debug = GL_CONTEXT_FLAG_DEBUG_BIT_KHR,
             #endif
 
+            /**
+             * Context without error reporting
+             * @requires_extension Extension @extension{KHR,no_error}
+             * @requires_es_extension Extension @es_extension2{KHR,no_error,no_error}
+             */
+            NoError = GL_CONTEXT_FLAG_NO_ERROR_BIT_KHR,
+
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Context with robust access

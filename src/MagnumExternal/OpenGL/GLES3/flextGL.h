@@ -1280,6 +1280,10 @@ typedef khronos_ssize_t GLsizeiptr;
 #define GL_CONTEXT_RELEASE_BEHAVIOR_FLUSH_KHR 0x82FC
 #define GL_NONE 0
 
+/* GL_KHR_no_error */
+
+#define GL_CONTEXT_FLAG_NO_ERROR_BIT_KHR 0x00000008
+
 /* GL_NV_texture_border_clamp */
 
 #define GL_TEXTURE_BORDER_COLOR_NV 0x1004

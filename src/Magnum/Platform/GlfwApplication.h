@@ -290,7 +290,7 @@ class GlfwApplication::Configuration {
         /**
          * @brief Context flag
          *
-         * @see @ref Flags, @ref setFlags()
+         * @see @ref Flags, @ref setFlags(), @ref Context::Flag
          */
         enum class Flag: Int {
             #ifdef GLFW_CONTEXT_NO_ERROR
