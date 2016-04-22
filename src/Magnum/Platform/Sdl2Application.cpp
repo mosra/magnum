@@ -252,9 +252,13 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
 
     /* Destroy everything also when the Magnum context creation fails */
     if(!_context->tryCreate()) {
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
         SDL_GL_DeleteContext(_glContext);
         SDL_DestroyWindow(_window);
         _window = nullptr;
+        #else
+        SDL_FreeSurface(_glContext);
+        #endif
         return false;
     }
 
