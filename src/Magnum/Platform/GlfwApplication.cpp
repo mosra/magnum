@@ -35,6 +35,11 @@ namespace Magnum { namespace Platform {
 
 GlfwApplication* GlfwApplication::_instance = nullptr;
 
+#ifdef GLFW_TRUE
+/* The docs say that it's the same, verify that just in case */
+static_assert(GLFW_TRUE == true && GLFW_FALSE == false, "GLFW does not have sane bool values");
+#endif
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 GlfwApplication::GlfwApplication(const Arguments& arguments): GlfwApplication{arguments, Configuration{}} {}
 #endif
@@ -68,8 +73,6 @@ void GlfwApplication::createContext(const Configuration& configuration) {
 bool GlfwApplication::tryCreateContext(const Configuration& configuration) {
     CORRADE_ASSERT(_context->version() == Version::None, "Platform::GlfwApplication::tryCreateContext(): context already created", false);
 
-    static_assert(GLFW_TRUE == true && GLFW_FALSE == false, "GLFW does not have sane bool values.");
-
     /* Window flags */
     GLFWmonitor* monitor = nullptr; /* Needed for setting fullscreen */
     if (configuration.windowFlags() >= Configuration::WindowFlag::Fullscreen) {
@@ -79,7 +82,9 @@ bool GlfwApplication::tryCreateContext(const Configuration& configuration) {
         const Configuration::WindowFlags& flags = configuration.windowFlags();
         glfwWindowHint(GLFW_RESIZABLE, flags >= Configuration::WindowFlag::Resizeable);
         glfwWindowHint(GLFW_VISIBLE, !(flags >= Configuration::WindowFlag::Hidden));
+        #ifdef GLFW_MAXIMIZED
         glfwWindowHint(GLFW_MAXIMIZED, flags >= Configuration::WindowFlag::Maximized);
+        #endif
         glfwWindowHint(GLFW_ICONIFIED, flags >= Configuration::WindowFlag::Minimized);
         glfwWindowHint(GLFW_FLOATING, flags >= Configuration::WindowFlag::Floating);
     }
@@ -90,7 +95,9 @@ bool GlfwApplication::tryCreateContext(const Configuration& configuration) {
     glfwWindowHint(GLFW_SRGB_CAPABLE, configuration.isSRGBCapable());
 
     const Configuration::Flags& flags = configuration.flags();
+    #ifdef GLFW_CONTEXT_NO_ERROR
     glfwWindowHint(GLFW_CONTEXT_NO_ERROR, flags >= Configuration::Flag::NoError);
+    #endif
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, flags >= Configuration::Flag::Debug);
     glfwWindowHint(GLFW_STEREO, flags >= Configuration::Flag::Stereo);
 
@@ -105,7 +112,7 @@ bool GlfwApplication::tryCreateContext(const Configuration& configuration) {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor);
         #ifndef MAGNUM_TARGET_GLES
         if(configuration.version() >= Version::GL310) {
-            glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+            glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, true);
             glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         }
         #else
