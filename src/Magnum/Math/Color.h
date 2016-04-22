@@ -445,10 +445,9 @@ class Color4: public Vector4<T> {
         /**
          * @brief Default constructor
          *
-         * RGB components are set to zero, A component is set to `1.0` for
-         * floating-point types and maximum positive value for integral types.
+         * All components are set to zero.
          */
-        constexpr /*implicit*/ Color4(): Vector4<T>(T(0), T(0), T(0), Implementation::fullChannel<T>()) {}
+        constexpr /*implicit*/ Color4(): Vector4<T>(T(0), T(0), T(0), T(0)) {}
 
         /** @copydoc Vector::Vector(ZeroInitT) */
         constexpr explicit Color4(ZeroInitT)

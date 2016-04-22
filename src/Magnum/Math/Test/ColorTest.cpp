@@ -125,7 +125,7 @@ void ColorTest::constructDefault() {
 
     constexpr Color4 b;
     constexpr Color4ub c;
-    CORRADE_COMPARE(b, Color4(0.0f, 0.0f, 0.0f, 1.0f));
+    CORRADE_COMPARE(b, Color4(0.0f, 0.0f, 0.0f, 0.0f));
     CORRADE_COMPARE(c, Color4ub(0, 0, 0, 255));
 }
 
