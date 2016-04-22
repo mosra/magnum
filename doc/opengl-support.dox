@@ -348,8 +348,8 @@ Extension                                   | Status
 ------------------------------------------- | ------
 @es_extension{ANDROID,extension_pack_es31a} | done (nothing to do)
 @es_extension{APPLE,texture_format_BGRA8888} | done
-@es_extension{ARM,shader_framebuffer_fetch} | |
-@es_extension{ARM,shader_framebuffer_fetch_depth_stencil} | |
+@es_extension{ARM,shader_framebuffer_fetch} | missing renderer setup and limit query
+@es_extension{ARM,shader_framebuffer_fetch_depth_stencil} | done (shading language only)
 @es_extension{CHROMIUM,map_sub} (NaCl only) | only buffer mapping
 @es_extension{EXT,texture_filter_anisotropic} | done
 @es_extension{EXT,texture_format_BGRA8888}  | done
@@ -360,7 +360,7 @@ Extension                                   | Status
 @es_extension{EXT,separate_shader_objects}  | only direct uniform binding
 @es_extension{EXT,multisampled_render_to_texture} | only renderbuffer storage
 @es_extension{EXT,robustness}               | done
-@es_extension{EXT,shader_framebuffer_fetch} | |
+@es_extension{EXT,shader_framebuffer_fetch} | missing limit query
 @es_extension{EXT,disjoint_timer_query}     | only time elapsed query
 @es_extension{EXT,texture_sRGB_decode}      | done
 @es_extension{EXT,sRGB_write_control}       | done
