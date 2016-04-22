@@ -353,10 +353,16 @@ class GlfwApplication::Configuration {
          */
         typedef Containers::EnumSet<WindowFlag> WindowFlags;
 
+        /** @brief Cursor mode */
         enum class CursorMode: Int {
-            Normal = GLFW_CURSOR_NORMAL,  /**< Visible unconstrained cursor */
-            Hidden = GLFW_CURSOR_HIDDEN,  /**< Hidden cursor */
-            Diabled = GLFW_CURSOR_DISABLED /**< Cursor hidden and locked window */
+            /** Visible unconstrained cursor */
+            Normal = GLFW_CURSOR_NORMAL,
+
+            /** Hidden cursor */
+            Hidden = GLFW_CURSOR_HIDDEN,
+
+            /** Cursor hidden and locked window */
+            Disabled = GLFW_CURSOR_DISABLED
         };
 
         /*implicit*/ Configuration();
@@ -426,7 +432,7 @@ class GlfwApplication::Configuration {
         }
 
         /**
-         * @brief Set cursor flags
+         * @brief Set cursor mode
          * @return  Reference to self (for method chaining)
          *
          * Default is @ref CursorMode::Normal.
