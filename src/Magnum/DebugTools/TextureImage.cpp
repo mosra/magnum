@@ -25,7 +25,9 @@
 
 #include "TextureImage.h"
 
+#ifndef MAGNUM_TARGET_GLES2
 #include "Magnum/BufferImage.h"
+#endif
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
 #include "Magnum/Framebuffer.h"
@@ -101,7 +103,7 @@ void textureSubImage(Texture2D& texture, const Int level, const Range2Di& range,
     }
     #endif
 
-    #ifdef MAGNUM_TARGET_GLES
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
     if(image.type() == PixelType::Float) {
         const PixelFormat imageFormat = image.format();
         TextureFormat textureFormat;

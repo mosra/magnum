@@ -25,7 +25,6 @@
 
 #include <Corrade/TestSuite/Compare/Container.h>
 
-#include "Magnum/BufferImage.h"
 #include "Magnum/CubeMapTexture.h"
 #include "Magnum/Image.h"
 #include "Magnum/PixelFormat.h"
@@ -35,6 +34,10 @@
 #include "Magnum/DebugTools/TextureImage.h"
 #include "Magnum/Math/Range.h"
 #include "Magnum/Test/AbstractOpenGLTester.h"
+
+#ifndef MAGNUM_TARGET_GLES2
+#include "Magnum/BufferImage.h"
+#endif
 
 namespace Magnum { namespace DebugTools { namespace Test {
 
@@ -152,6 +155,7 @@ void TextureImageGLTest::subImageCubeBuffer() {
 }
 #endif
 
+#ifndef MAGNUM_TARGET_GLES2
 namespace {
     constexpr UnsignedInt Data2DUInt[] = { 0xcafebabe,
                                            0xdeadbeef,
@@ -192,6 +196,7 @@ void TextureImageGLTest::subImage2DFloat() {
         Containers::ArrayView<const Float>{Data2DFloat},
         TestSuite::Compare::Container);
 }
+#endif
 
 }}}
 
