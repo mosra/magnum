@@ -28,8 +28,8 @@ install:
 
 # OpenAL
 - appveyor DownloadFile http://kcat.strangesoft.net/openal-binaries/openal-soft-1.17.2-bin.zip
-- 7z x openal-soft-1.17.0-bin.zip
-- ren openal-soft-1.17.0-bin openal
+- 7z x openal-soft-1.17.2-bin.zip
+- ren openal-soft-1.17.2-bin openal
 - ren openal\bin\Win32\soft_oal.dll OpenAL32.dll
 - echo [General] > %APPDATA%/alsoft.ini
 - echo drivers=null >> %APPDATA%/alsoft.ini
