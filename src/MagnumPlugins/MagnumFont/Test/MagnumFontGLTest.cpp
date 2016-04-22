@@ -52,6 +52,8 @@ void MagnumFontGLTest::properties() {
     MagnumFont font;
     CORRADE_VERIFY(font.openFile(Utility::Directory::join(MAGNUMFONT_TEST_DIR, "font.conf"), 0.0f));
     CORRADE_COMPARE(font.size(), 16.0f);
+    CORRADE_COMPARE(font.ascent(), 25.0f);
+    CORRADE_COMPARE(font.descent(), -10.0f);
     CORRADE_COMPARE(font.lineHeight(), 39.7333f);
     CORRADE_COMPARE(font.glyphAdvance(font.glyphId(U'W')), Vector2(23.0f, 0.0f));
 }

@@ -56,7 +56,7 @@ class SingleDataFont: public Text::AbstractFont {
         bool doIsOpened() const override { return opened; }
         void doClose() override {}
 
-        std::pair<Float, Float> doOpenSingleData(const Containers::ArrayView<const char> data, Float) override {
+        Metrics doOpenSingleData(const Containers::ArrayView<const char> data, Float) override {
             opened = (data.size() == 1 && data[0] == '\xa5');
             return {};
         }

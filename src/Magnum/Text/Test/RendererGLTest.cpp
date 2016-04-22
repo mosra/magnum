@@ -344,9 +344,9 @@ void RendererGLTest::multiline() {
             bool doIsOpened() const override { return _opened; }
             void doClose() override { _opened = false; }
 
-            std::pair<Float, Float> doOpenFile(const std::string&, Float) override {
+            Metrics doOpenFile(const std::string&, Float) override {
                 _opened = true;
-                return {0.5f, 0.75f};
+                return {0.5f, 0.45f, -0.25f, 0.75f};
             }
 
             UnsignedInt doGlyphId(char32_t) override { return 0; }
@@ -370,6 +370,8 @@ void RendererGLTest::multiline() {
     /* We're rendering text at 2.0f size and the font is scaled to 0.3f, so the
        line advance should be 0.75f*2.0f/0.5f = 3.0f */
     CORRADE_COMPARE(font.size(), 0.5f);
+    CORRADE_COMPARE(font.ascent(), 0.45f);
+    CORRADE_COMPARE(font.descent(), -0.25f);
     CORRADE_COMPARE(font.lineHeight(), 0.75f);
 
     /* Bounds */
