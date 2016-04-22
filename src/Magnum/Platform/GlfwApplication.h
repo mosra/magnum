@@ -49,14 +49,14 @@ namespace Magnum { namespace Platform {
 Application using GLFW toolkit. Supports keyboard and mouse handling with
 support for changing cursor and mouse tracking and warping.
 
-This application library is available only on desktop OpenGL (Linux, Windows,
-OS X). It depends on **GLFW** library and is built if `WITH_GLFWAPPLICATION` is
-enabled in CMake.
+This application library is available on all platforms where GLFW is ported. It
+depends on **GLFW** library and is built if `WITH_GLFWAPPLICATION` is enabled
+in CMake.
 
 ## Bootstrap application
 
-Fully contained base application using @ref GlfwApplication along with
-CMake setup is available in `base-glfw` branch of
+Fully contained base application using @ref GlfwApplication along with CMake
+setup is available in `base-glfw` branch of
 [Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap) repository,
 download it as [tar.gz](https://github.com/mosra/magnum-bootstrap/archive/base-glfw.tar.gz)
 or [zip](https://github.com/mosra/magnum-bootstrap/archive/base-glfw.zip) file.
@@ -266,9 +266,7 @@ class GlfwApplication {
         static GlfwApplication* _instance;
 
         GLFWwindow* _window;
-
         std::unique_ptr<Platform::Context> _context;
-
         bool _needsRedraw;
 };
 
@@ -297,8 +295,8 @@ class GlfwApplication::Configuration {
             NoError = GLFW_CONTEXT_NO_ERROR,
             #endif
 
-            Debug = GLFW_OPENGL_DEBUG_CONTEXT, /**< Debug context */
-            Stereo = GLFW_STEREO,   /**< Stereo rendering */
+            Debug = GLFW_OPENGL_DEBUG_CONTEXT,  /**< Debug context */
+            Stereo = GLFW_STEREO,               /**< Stereo rendering */
         };
 
         /**
@@ -329,8 +327,14 @@ class GlfwApplication::Configuration {
 
             Minimized = 1 << 4,    /**< Minimized window */
             Floating = 1 << 5,     /**< Window floating above others, top-most */
-            AutoIconify = 1 << 6,  /**< Automatically iconify (minimize) if fullscreen window loses input focus */
-            Focused = 1 << 7,      /**< Window has input focus */
+
+            /**
+             * Automatically iconify (minimize) if fullscreen window loses
+             * input focus
+             */
+            AutoIconify = 1 << 6,
+
+            Focused = 1 << 7       /**< Window has input focus */
         };
 
         /**
@@ -343,7 +347,7 @@ class GlfwApplication::Configuration {
         enum class CursorMode: Int {
             Normal = GLFW_CURSOR_NORMAL,  /**< Visible unconstrained cursor */
             Hidden = GLFW_CURSOR_HIDDEN,  /**< Hidden cursor */
-            Diabled = GLFW_CURSOR_DISABLED, /**< Cursor hidden and locked window */
+            Diabled = GLFW_CURSOR_DISABLED /**< Cursor hidden and locked window */
         };
 
         /*implicit*/ Configuration();
@@ -501,7 +505,7 @@ class GlfwApplication::InputEvent {
             Shift = GLFW_MOD_SHIFT,         /**< Shift */
             Ctrl = GLFW_MOD_CONTROL,        /**< Ctrl */
             Alt = GLFW_MOD_ALT,             /**< Alt */
-            AltGr = GLFW_MOD_SUPER,         /**< AltGr */
+            AltGr = GLFW_MOD_SUPER          /**< AltGr */
         };
 
         /**
@@ -558,25 +562,25 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
         enum class Key: Int {
             Unknown = GLFW_KEY_UNKNOWN, /**< Unknown key */
 
-            Up = GLFW_KEY_UP,     /**< Up arrow */
-            Down = GLFW_KEY_DOWN, /**< Down arrow */
-            Left = GLFW_KEY_LEFT, /**< Left arrow */
-            Right = GLFW_KEY_RIGHT, /**< Right arrow */
-            F1 = GLFW_KEY_F1,     /**< F1 */
-            F2 = GLFW_KEY_F2,     /**< F2 */
-            F3 = GLFW_KEY_F3,     /**< F3 */
-            F4 = GLFW_KEY_F4,     /**< F4 */
-            F5 = GLFW_KEY_F5,     /**< F5 */
-            F6 = GLFW_KEY_F6,     /**< F6 */
-            F7 = GLFW_KEY_F7,     /**< F7 */
-            F8 = GLFW_KEY_F8,     /**< F8 */
-            F9 = GLFW_KEY_F9,     /**< F9 */
-            F10 = GLFW_KEY_F10,   /**< F10 */
-            F11 = GLFW_KEY_F11,   /**< F11 */
-            F12 = GLFW_KEY_F12,   /**< F12 */
-            Home = GLFW_KEY_HOME, /**< Home */
-            End = GLFW_KEY_END,   /**< End */
-            PageUp = GLFW_KEY_PAGE_UP, /**< Page up */
+            Up = GLFW_KEY_UP,           /**< Up arrow */
+            Down = GLFW_KEY_DOWN,       /**< Down arrow */
+            Left = GLFW_KEY_LEFT,       /**< Left arrow */
+            Right = GLFW_KEY_RIGHT,     /**< Right arrow */
+            F1 = GLFW_KEY_F1,           /**< F1 */
+            F2 = GLFW_KEY_F2,           /**< F2 */
+            F3 = GLFW_KEY_F3,           /**< F3 */
+            F4 = GLFW_KEY_F4,           /**< F4 */
+            F5 = GLFW_KEY_F5,           /**< F5 */
+            F6 = GLFW_KEY_F6,           /**< F6 */
+            F7 = GLFW_KEY_F7,           /**< F7 */
+            F8 = GLFW_KEY_F8,           /**< F8 */
+            F9 = GLFW_KEY_F9,           /**< F9 */
+            F10 = GLFW_KEY_F10,         /**< F10 */
+            F11 = GLFW_KEY_F11,         /**< F11 */
+            F12 = GLFW_KEY_F12,         /**< F12 */
+            Home = GLFW_KEY_HOME,       /**< Home */
+            End = GLFW_KEY_END,         /**< End */
+            PageUp = GLFW_KEY_PAGE_UP,  /**< Page up */
             PageDown = GLFW_KEY_PAGE_DOWN, /**< Page down */
 
             Space = ' ',                /**< Space */
@@ -664,7 +668,7 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
             RightCtrl = GLFW_KEY_RIGHT_CONTROL, /**< Right control */
             RightAlt = GLFW_KEY_RIGHT_ALT,      /**< Right alt */
             RightSuper = GLFW_KEY_RIGHT_SUPER,  /**< Right super */
-            Menu = GLFW_KEY_MENU,   /**< Menu */
+            Menu = GLFW_KEY_MENU                /**< Menu */
         };
 
         /** @brief Key */
@@ -710,7 +714,7 @@ class GlfwApplication::MouseEvent: public GlfwApplication::InputEvent {
             Button8 = GLFW_MOUSE_BUTTON_8,        /**< Mouse button 8 */
 
             WheelUp = GLFW_MOUSE_BUTTON_LAST + 1,   /**< Mouse wheel up */
-            WheelDown = GLFW_MOUSE_BUTTON_LAST + 2, /**< Mouse wheel down */
+            WheelDown = GLFW_MOUSE_BUTTON_LAST + 2  /**< Mouse wheel down */
         };
 
         /** @brief Button */
@@ -735,7 +739,6 @@ class GlfwApplication::MouseMoveEvent: public GlfwApplication::InputEvent {
     friend GlfwApplication;
 
     public:
-
         /** @brief Position */
         constexpr Vector2i position() const { return _position; }
 
@@ -758,7 +761,6 @@ class GlfwApplication::MouseScrollEvent: public GlfwApplication::InputEvent {
     friend GlfwApplication;
 
     public:
-
         /** @brief Scroll offset */
         constexpr Vector2d offset() const { return _offset; }
 

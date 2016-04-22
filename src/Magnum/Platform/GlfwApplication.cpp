@@ -48,9 +48,9 @@ GlfwApplication::GlfwApplication(const Arguments& arguments, const Configuration
     createContext(configuration);
 }
 
-GlfwApplication::GlfwApplication(const Arguments& arguments, std::nullptr_t)
-    : _context{new Context{NoCreate, arguments.argc, arguments.argv}},
-      _needsRedraw(true)
+GlfwApplication::GlfwApplication(const Arguments& arguments, std::nullptr_t):
+    _context{new Context{NoCreate, arguments.argc, arguments.argv}},
+    _needsRedraw(true)
 {
     /* Save global instance */
     _instance = this;
@@ -196,20 +196,19 @@ void GlfwApplication::staticErrorCallback(int, const char* description) {
     Error() << description;
 }
 
-GlfwApplication::InputEvent::Modifiers GlfwApplication::KeyEvent::getCurrentGlfwModifiers(GLFWwindow* window) {
-    static_assert(GLFW_PRESS == true && GLFW_RELEASE == false, "GLFW press and release constants do not correspond to bool values.");
+auto GlfwApplication::KeyEvent::getCurrentGlfwModifiers(GLFWwindow* window) -> Modifiers {
+    static_assert(GLFW_PRESS == true && GLFW_RELEASE == false,
+        "GLFW press and release constants do not correspond to bool values");
 
-    Modifiers mods = (glfwGetKey(window, Int(Key::LeftShift)) || glfwGetKey(window, Int(Key::RightShift)))
-                     ? Modifiers{Modifier::Shift} : Modifiers{};
-    if(glfwGetKey(window, Int(Key::LeftAlt)) || glfwGetKey(window, Int(Key::RightAlt))) {
+    Modifiers mods;
+    if(glfwGetKey(window, Int(Key::LeftShift)) || glfwGetKey(window, Int(Key::RightShift)))
+        mods |= Modifier::Shift;
+    if(glfwGetKey(window, Int(Key::LeftAlt)) || glfwGetKey(window, Int(Key::RightAlt)))
         mods |= Modifier::Alt;
-    }
-    if(glfwGetKey(window, Int(Key::LeftCtrl)) || glfwGetKey(window, Int(Key::RightCtrl))) {
+    if(glfwGetKey(window, Int(Key::LeftCtrl)) || glfwGetKey(window, Int(Key::RightCtrl)))
         mods |= Modifier::Ctrl;
-    }
-    if(glfwGetKey(window, Int(Key::RightSuper))) {
+    if(glfwGetKey(window, Int(Key::RightSuper)))
         mods |= Modifier::AltGr;
-    }
 
     return mods;
 }
@@ -222,13 +221,12 @@ void GlfwApplication::mouseReleaseEvent(MouseEvent&) {}
 void GlfwApplication::mouseMoveEvent(MouseMoveEvent&) {}
 void GlfwApplication::mouseScrollEvent(MouseScrollEvent&) {}
 
-GlfwApplication::Configuration::Configuration()
-    : _title("Magnum GLFW Application"),
-      _size(800, 600), _sampleCount(0),
-      _version(Version::None),
-      _windowFlags(WindowFlag::Focused),
-      _cursorMode(CursorMode::Normal)
-{}
+GlfwApplication::Configuration::Configuration():
+    _title{"Magnum GLFW Application"},
+    _size{800, 600}, _sampleCount{0},
+    _version{Version::None},
+    _windowFlags{WindowFlag::Focused},
+    _cursorMode{CursorMode::Normal} {}
 
 GlfwApplication::Configuration::~Configuration() = default;
 
