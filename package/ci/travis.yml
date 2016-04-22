@@ -1,9 +1,5 @@
 # kate: indent-width 2;
 
-branches:
-  only:
-  - master
-
 os:
 - linux
 - osx
