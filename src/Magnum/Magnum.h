@@ -48,12 +48,16 @@ namespace Math {
     #ifndef DOXYGEN_GENERATING_OUTPUT
     template<class> struct Constants;
 
-    #ifndef MAGNUM_TARGET_GLES
-    constexpr Rad<Double> operator "" _rad(long double);
-    constexpr Deg<Double> operator "" _deg(long double);
-    #endif
-    constexpr Rad<Float> operator "" _radf(long double);
-    constexpr Deg<Float> operator "" _degf(long double);
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    namespace Literals {
+        #ifndef MAGNUM_TARGET_GLES
+        constexpr Rad<Double> operator "" _rad(long double);
+        constexpr Deg<Double> operator "" _deg(long double);
+        #endif
+        constexpr Rad<Float> operator "" _radf(long double);
+        constexpr Deg<Float> operator "" _degf(long double);
+        #endif
+    }
     #endif
 }
 
@@ -434,13 +438,14 @@ typedef Math::Range3D<Double> Range3Dd;
 /*@}*/
 #endif
 
-/* Using angle literals from Math namespace */
+#ifdef MAGNUM_BUILD_DEPRECATED
 #ifndef MAGNUM_TARGET_GLES
-using Math::operator "" _deg;
-using Math::operator "" _rad;
+using Math::Literals::operator "" _deg;
+using Math::Literals::operator "" _rad;
 #endif
-using Math::operator "" _degf;
-using Math::operator "" _radf;
+using Math::Literals::operator "" _degf;
+using Math::Literals::operator "" _radf;
+#endif
 
 /* Forward declarations for all types in root namespace */
 

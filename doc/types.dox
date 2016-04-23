@@ -117,8 +117,11 @@ usability impact in practice.
 
 These classes are *not* implicitly constructible or convertible from/to
 @ref Float or @ref Double, you have to either construct/convert them explicitly
-or use custom `_degf`/`_deg` and `_radf`/`_rad` literals:
+or use custom `_degf`/`_deg` and `_radf`/`_rad` literals that are provided in
+the @ref Math::Literals namespace:
 @code
+using namespace Math::Literals;
+
 //Deg a = 60.0f         // error, no implicit conversion from Float
 Deg a = 60.0_degf;      // okay
 

@@ -144,6 +144,8 @@ void SourceTest::minGain() {
 }
 
 void SourceTest::coneAnglesAndGain() {
+    using namespace Math::Literals;
+
     Source source;
     constexpr auto outerAngle = 12.0_degf;
     constexpr auto innerAngle = 21.0_degf;

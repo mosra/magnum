@@ -101,6 +101,8 @@ typedef Math::DualQuaternion<Float> DualQuaternion;
 typedef Math::Quaternion<Float> Quaternion;
 typedef Math::Vector3<Float> Vector3;
 
+using namespace Literals;
+
 DualQuaternionTest::DualQuaternionTest() {
     addTests({&DualQuaternionTest::construct,
               &DualQuaternionTest::constructVectorScalar,

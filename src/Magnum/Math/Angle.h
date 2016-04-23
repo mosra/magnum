@@ -49,6 +49,8 @@ conversion less error-prone.
 
 You can enter the value either by using literal:
 @code
+using namespace Literals;
+
 auto degrees = 60.0_degf;       // type is Deg<Float>
 auto radians = 1.047_rad;       // type is Rad<Double>
 @endcode
@@ -151,8 +153,10 @@ template<class T> class Deg: public Unit<Deg, T> {
         constexpr /*implicit*/ Deg(Unit<Rad, T> value);
 };
 
+namespace Literals {
+
 #ifndef MAGNUM_TARGET_GLES
-/** @relatesalso Deg
+/** @relatesalso Magnum::Math::Deg
 @brief Double-precision degree value literal
 
 Example usage:
@@ -166,7 +170,7 @@ Double cosine = Math::cos(1.047_rad); // cosine = 0.5
 constexpr Deg<Double> operator "" _deg(long double value) { return Deg<Double>(Double(value)); }
 #endif
 
-/** @relatesalso Deg
+/** @relatesalso Magnum::Math::Deg
 @brief Single-precision degree value literal
 
 Example usage:
@@ -177,6 +181,8 @@ Float tangent = Math::tan(1.047_radf); // tangent = 1.732f
 @see @link operator""_deg() @endlink, @link operator""_radf() @endlink
 */
 constexpr Deg<Float> operator "" _degf(long double value) { return Deg<Float>(Float(value)); }
+
+}
 
 /**
 @brief Angle in radians
@@ -214,8 +220,10 @@ template<class T> class Rad: public Unit<Rad, T> {
         constexpr /*implicit*/ Rad(Unit<Deg, T> value);
 };
 
+namespace Literals {
+
 #ifndef MAGNUM_TARGET_GLES
-/** @relatesalso Rad
+/** @relatesalso Magnum::Math::Rad
 @brief Double-precision radian value literal
 
 See @link operator""_deg() @endlink for more information.
@@ -225,13 +233,15 @@ See @link operator""_deg() @endlink for more information.
 constexpr Rad<Double> operator "" _rad(long double value) { return Rad<Double>(Double(value)); }
 #endif
 
-/** @relatesalso Rad
+/** @relatesalso Magnum::Math::Rad
 @brief Single-precision radian value literal
 
 See @link operator""_degf() @endlink for more information.
 @see @link operator""_rad() @endlink
 */
 constexpr Rad<Float> operator "" _radf(long double value) { return Rad<Float>(Float(value)); }
+
+}
 
 template<class T> constexpr Deg<T>::Deg(Unit<Rad, T> value): Unit<Math::Deg, T>(T(180)*T(value)/Math::Constants<T>::pi()) {}
 template<class T> constexpr Rad<T>::Rad(Unit<Deg, T> value): Unit<Math::Rad, T>(T(value)*Math::Constants<T>::pi()/T(180)) {}

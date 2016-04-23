@@ -54,7 +54,7 @@ information.
 */
 
 /** @dir Magnum/Math
- * @brief Namespace @ref Magnum::Math
+ * @brief Namespace @ref Magnum::Math, @ref Magnum::Math::Literals
  */
 /** @namespace Magnum::Math
 @brief Math library
@@ -64,6 +64,15 @@ Template classes for matrix and vector calculations.
 This library is built as part of Magnum by default. To use it, you need to
 find `Magnum` package and link to `Magnum::Magnum` target. See @ref building,
 @ref cmake, @ref matrix-vector and @ref transformations for more information.
+*/
+/** @namespace Magnum::Math::Literals
+@brief Math literals
+
+Literals for easy construction of angle and color values.
+
+This library is built as part of Magnum by default. To use it, you need to
+find `Magnum` package and link to `Magnum::Magnum` target. See @ref building
+and @ref cmake for more information.
 */
 
 /** @dir Magnum/Math/Algorithms

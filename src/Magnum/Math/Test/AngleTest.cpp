@@ -121,6 +121,8 @@ void AngleTest::constructNoInit() {
 }
 
 void AngleTest::literals() {
+    using namespace Literals;
+
     #ifndef MAGNUM_TARGET_GLES
     constexpr auto a = 25.0_deg;
     CORRADE_VERIFY((std::is_same<decltype(a), const Degd>::value));

@@ -67,6 +67,8 @@ typedef Math::Deg<Float> Deg;
 typedef Math::Rad<Float> Rad;
 typedef Math::Constants<Float> Constants;
 
+using namespace Literals;
+
 DualTest::DualTest() {
     addTests({&DualTest::construct,
               &DualTest::constructDefault,

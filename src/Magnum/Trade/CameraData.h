@@ -77,7 +77,7 @@ class CameraData {
 };
 
 inline CameraData::CameraData(const Rad fov, const Float near, const Float far, const void* const importerState) noexcept:
-    _fov{fov != fov ? Rad{35.0_degf} : fov},
+    _fov{fov != fov ? Rad{Deg{35.0f}} : fov},
     _near{near != near ? 0.01f : near},
     _far{far != far ? 100.0f : far},
     _importerState{importerState} {}
