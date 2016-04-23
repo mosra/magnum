@@ -410,7 +410,6 @@ void DualQuaternionTest::debug() {
 }
 
 void DualQuaternionTest::sclerp() {
-
     const DualQuaternion from = DualQuaternion::translation(Vector3{20.0f, .0f, .0f})*DualQuaternion::rotation(180.0_degf, Vector3{.0f, 1.0f, .0f});
     const DualQuaternion to = DualQuaternion::translation(Vector3{42.0f, 42.0f, 42.0f})*DualQuaternion::rotation(75.0_degf, Vector3{1.0f, .0f, .0f});
 
