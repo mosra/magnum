@@ -56,29 +56,26 @@ most specialized type known to make subsequent operations more convenient --
 columns of RectangularMatrix are returned as Vector, but when accessing
 columns of e.g. Matrix3, they are returned as Vector3.
 
-There are also even more specialized subclasses, e.g. @ref Color3 and
-@ref Color4 for color handling and conversion.
+There are also even more specialized subclasses, e.g. @ref Math::Color3 and
+@ref Math::Color4 for color handling and conversion.
 
 Commonly used types have convenience aliases in @ref Magnum namespace, so you
-can write e.g. `Vector3i` instead of `Math::Vector3<Int>`. See @ref types and
-namespace documentation for more information.
+can write e.g. @ref Vector3i instead of @ref Math::Vector3 "Math::Vector3<Int>".
+See @ref types and namespace documentation for more information.
 
 @section matrix-vector-construction Constructing matrices and vectors
 
 Default constructors of @ref Math::RectangularMatrix and @ref Math::Vector (and
-@ref Math::Vector2, @ref Math::Vector3, @ref Math::Vector4, @ref Color3) create
-zero-filled objects. @ref Math::Matrix (and @ref Math::Matrix3, @ref Math::Matrix4)
-is by default constructed as identity matrix. @ref Color4 has alpha value set
-to opaque.
+@ref Math::Vector2, @ref Math::Vector3, @ref Math::Vector4, @ref Math::Color3,
+@ref Math::Color4) create zero-filled objects. @ref Math::Matrix (and
+@ref Math::Matrix3, @ref Math::Matrix4) is by default constructed as identity
+matrix.
 @code
 Matrix2x3 a; // zero-filled
 Vector3i b;  // zero-filled
 
 Matrix3 identity;           // diagonal set to 1
 Matrix3 zero(Matrix::Zero); // zero-filled
-
-Color4 black1;      // {0.0f, 0.0f, 0.0f, 1.0f}
-Color4ub black2;    // {0, 0, 0, 255}
 @endcode
 
 Most common and most efficient way to create vector is to pass all values to

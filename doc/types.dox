@@ -87,7 +87,8 @@ underlying type.
 | @ref Matrix4x3 or @ref Matrix4x3d                                | `mat4x3` or `dmat4x3`                |
 
 Any super- or sub-class of the same size and underlying type can be used
-equivalently (e.g. @ref Math::Vector or @ref Color3 instead of @ref Vector3).
+equivalently (e.g. @ref Math::Vector "Math::Vector<Float>" or @ref Color3
+instead of @ref Vector3).
 
 @section types-binary Binary representation
 
