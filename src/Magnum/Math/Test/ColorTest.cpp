@@ -233,8 +233,8 @@ void ColorTest::literals() {
     CORRADE_COMPARE(b, (Color4ub{0x33, 0xb2, 0x7f, 0xcc}));
 
     /* Not constexpr yet */
-    CORRADE_COMPARE(0x33b27f_rgbf, (Color3{0.2f, 0.7f, 0.5f}));
-    CORRADE_COMPARE(0x33b27fcc_rgbaf, (Color4{0.2f, 0.7f, 0.5f, 0.8f}));
+    CORRADE_COMPARE(0x33b27f_rgbf, (Color3{0.2, 0.698039f, 0.498039f}));
+    CORRADE_COMPARE(0x33b27fcc_rgbaf, (Color4{0.2, 0.698039f, 0.498039f, 0.8f}));
 }
 
 void ColorTest::colors() {
