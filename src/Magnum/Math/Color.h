@@ -151,7 +151,8 @@ Conversion from and to HSV is done always using floating-point types, so hue
 is always in range in range @f$ [0.0, 360.0] @f$, saturation and value in
 range @f$ [0.0, 1.0] @f$.
 
-@see @ref Color4, @ref Magnum::Color3, @ref Magnum::Color3ub
+@see @link operator""_rgb() @endlink, @link operator""_rgbf() @endlink,
+    @ref Color4, @ref Magnum::Color3, @ref Magnum::Color3ub
 */
 /* Not using template specialization because some internal functions are
    impossible to explicitly instantiate */
@@ -352,7 +353,8 @@ MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(3, Color3)
 @brief Four-component (RGBA) color
 
 See @ref Color3 for more information.
-@see @ref Magnum::Color4, @ref Magnum::Color4ub
+@see @link operator""_rgba() @endlink, @link operator""_rgbaf() @endlink,
+    @ref Magnum::Color4, @ref Magnum::Color4ub
 */
 /* Not using template specialization because some internal functions are
    impossible to explicitly instantiate */
@@ -531,6 +533,62 @@ class Color4: public Vector4<T> {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(4, Color4)
 #endif
+
+namespace Literals {
+
+/** @relatesalso Magnum::Math::Color3
+@brief 8bit-per-channel RGB literal
+
+Example usage:
+@code
+Color3ub a = 0x33b27f_rgb;   // {0x33, 0xb2, 0x7f}
+@endcode
+@see @link operator""_rgba() @endlink, @link operator""_rgbf() @endlink
+*/
+constexpr Color3<UnsignedByte> operator "" _rgb(unsigned long long value) {
+    return {UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)};
+}
+
+/** @relatesalso Magnum::Math::Color4
+@brief 8bit-per-channel RGBA literal
+
+Example usage:
+@code
+Color4ub a = 0x33b27fcc_rgba;   // {0x33, 0xb2, 0x7f, 0xcc}
+@endcode
+@see @link operator""_rgb() @endlink, @link operator""_rgbaf() @endlink
+*/
+constexpr Color4<UnsignedByte> operator "" _rgba(unsigned long long value) {
+    return {UnsignedByte(value >> 24), UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)};
+}
+
+/** @relatesalso Magnum::Math::Color3
+@brief Float RGB literal
+
+Example usage:
+@code
+Color3 a = 0x33b27f_rgbf;   // {0.2f, 0.7f, 0.5f}
+@endcode
+@see @link operator""_rgbaf() @endlink, @link operator""_rgb() @endlink
+*/
+inline Color3<Float> operator "" _rgbf(unsigned long long value) {
+    return Math::normalize<Color3<Float>>(Color3<UnsignedByte>{UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)});
+}
+
+/** @relatesalso Magnum::Math::Color4
+@brief Float RGBA literal
+
+Example usage:
+@code
+Color4 a = 0x33b27fcc_rgbaf;   // {0.2f, 0.7f, 0.5f, 0.8f}
+@endcode
+@see @link operator""_rgbf() @endlink, @link operator""_rgbaf() @endlink
+*/
+inline Color4<Float> operator "" _rgbaf(unsigned long long value) {
+    return Math::normalize<Color4<Float>>(Color4<UnsignedByte>{UnsignedByte(value >> 24), UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)});
+}
+
+}
 
 /** @debugoperator{Magnum::Math::Color3} */
 template<class T> inline Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Color3<T>& value) {

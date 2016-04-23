@@ -98,6 +98,14 @@ Vector3i fill(10);                     // {10, 10, 10}
 auto diag2 = Matrix3::fromDiagonal({3.0f, 2.0f, 1.0f});
 @endcode
 
+There are also shortcuts to create a vector with all but one component set to
+zero or one, useful for transformations:
+@code
+auto x = Vector3::xAxis();      // {1.0f, 0.0f, 0.0f}
+auto y = Vector2::yAxis(3.0f);  // {0.0f, 3.0f}
+auto z = Vector3::zScale(3.0f); // {1.0f, 1.0f, 3.0f}
+@endcode
+
 It is possible to create matrices from other matrices and vectors with the same
 row count; vectors from vector and scalar:
 @code
@@ -120,6 +128,30 @@ Math::Matrix2x3<Int>::from(mat) *= 2; // mat == { 4, 8, 12, 2, 6, 10 }
 
 Note that, unlike constructors, this function has no way to check whether the
 array is long enough to contain all elements, so use with caution.
+
+To make handling of colors easier, their behavior is a bit different with a
+richer feature set. Implicit construction of @ref Color4 from @ref Color3 will
+set the alpha to full value (thus `1.0f` for @ref Color4 and `255` for
+@ref Color4ub):
+@code
+Color4 a = Color3{0.2f, 0.7f, 0.5f};     // {0.2f, 0.7f, 0.5f, 1.0f}
+Color4ub b = Color3ub{0x33, 0xb2, 0x7f}; // {0x33, 0xb2, 0x7f, 0xff}
+@endcode
+
+Similarly to axes in vectors, you can create single color shades too, or create
+a RGB color from HSV representation:
+@code
+auto green = Color3::green();          // {0.0f, 1.0f, 0.0f}
+auto cyan = Color4::cyan(0.5f, 0.95f); // {0.5f, 1.0f, 1.0f, 0.95f}
+auto fadedRed = Color3::fromHSV(219.0_degf, 0.50f, 0.57f)
+@endcode
+
+Lastly, namespace @ref Math::Literals provides convenient `_rgb`/`_rgbf` and
+`_rgba`/`_rgbaf` literals for entering colors in hex representation:
+@code
+Color3ub a = 0x33b27f_rgb;   // {0x33, 0xb2, 0x7f}
+Color4 b = 0x33b27fcc_rgbaf; // {0.2f, 0.7f, 0.5f, 0.8f}
+@endcode
 
 @section matrix-vector-component-access Accessing matrix and vector components
 
