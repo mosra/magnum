@@ -56,8 +56,8 @@ namespace Math {
         #endif
         constexpr Rad<Float> operator "" _radf(long double);
         constexpr Deg<Float> operator "" _degf(long double);
-        #endif
     }
+    #endif
     #endif
 }
 
