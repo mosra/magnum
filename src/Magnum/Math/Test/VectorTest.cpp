@@ -68,7 +68,8 @@ struct VectorTest: Corrade::TestSuite::Tester {
     void constructCopy();
     void convert();
 
-    void isZero();
+    void isZeroFloat();
+    void isZeroInteger();
     void isNormalized();
 
     void data();
@@ -125,7 +126,8 @@ VectorTest::VectorTest() {
               &VectorTest::constructCopy,
               &VectorTest::convert,
 
-              &VectorTest::isZero,
+              &VectorTest::isZeroFloat,
+              &VectorTest::isZeroInteger,
               &VectorTest::isNormalized,
 
               &VectorTest::data,
@@ -256,9 +258,15 @@ void VectorTest::convert() {
     CORRADE_VERIFY(!(std::is_convertible<Vector3, Vec3>::value));
 }
 
-void VectorTest::isZero() {
+void VectorTest::isZeroFloat() {
     CORRADE_VERIFY(!Vector3(0.01f, 0.0f, 0.0f).isZero());
+    CORRADE_VERIFY(Vector3(0.0f, Math::TypeTraits<float>::epsilon()/2.0f, 0.0f).isZero());
     CORRADE_VERIFY(Vector3(0.0f, 0.0f, 0.0f).isZero());
+}
+
+void VectorTest::isZeroInteger() {
+    CORRADE_VERIFY(!(Math::Vector<3, Int>{0, 1, 0}.isZero()));
+    CORRADE_VERIFY((Math::Vector<3, Int>{0, 0, 0}.isZero()));
 }
 
 void VectorTest::isNormalized() {

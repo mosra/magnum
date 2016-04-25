@@ -198,12 +198,6 @@ template<> struct TypeTraits<long double>: Implementation::TypeTraitsFloatingPoi
 
 namespace Implementation {
 
-/* Proper comparison should be with epsilon^2, but the value is not
-   representable in given precision. Comparing to epsilon instead. */
-template<class T> inline bool isZeroSquared(T lengthSquared) {
-    return std::abs(lengthSquared) < TypeTraits<T>::epsilon();
-}
-
 /* Comparing squared length to 1 is not sufficient to compare within range
    [1 - epsilon, 1 + epsilon], as e.g. Quaternion with dot() = 1 + 1e-7 when
    converted to matrix has column vectors with dot() = 1 + 1e-6, which is just

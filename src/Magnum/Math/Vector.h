@@ -54,6 +54,20 @@ namespace Implementation {
     template<class T, class U> T lerp(const T& a, const T& b, U t) {
         return T((U(1) - t)*a + t*b);
     }
+
+    template<bool integral> struct IsZero;
+    template<> struct IsZero<false> {
+        template<std::size_t size, class T> bool operator()(const Vector<size, T>& vec) const {
+            /* Proper comparison should be with epsilon^2, but the value is not
+               representable in given precision. Comparing to epsilon instead. */
+            return std::abs(vec.dot()) < TypeTraits<T>::epsilon();
+        }
+    };
+    template<> struct IsZero<true> {
+        template<std::size_t size, class T> bool operator()(const Vector<size, T>& vec) const {
+            return vec == Vector<size, T>{};
+        }
+    };
 }
 
 /** @relatesalso Vector
@@ -262,7 +276,7 @@ template<std::size_t size, class T> class Vector {
          * @see @ref dot(), @ref normalized()
          */
         bool isZero() const {
-            return Implementation::isZeroSquared(dot());
+            return Implementation::IsZero<std::is_integral<T>::value>{}(*this);
         }
 
         /**
