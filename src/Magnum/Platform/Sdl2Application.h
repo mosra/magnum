@@ -593,19 +593,12 @@ class Sdl2Application {
          * @brief Start text input
          *
          * Starts text input that will go to @ref textInputEvent() and
-         * @ref textEditingEvent(). The @p rect defines an area where the text
-         * is being displayed, for example to hint the system where to place
-         * on-screen keyboard. Ignored if empty.
+         * @ref textEditingEvent().
          * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          * @see @ref stopTextInput(), @ref isTextInputActive(),
+         *      @ref setTextInputRect()
          */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        void startTextInput(const Range2Di& rect = {});
-        #else
-        /* To avoid including the type in header */
-        void startTextInput(const Range2Di& rect);
-        void startTextInput();
-        #endif
+        void startTextInput() { SDL_StartTextInput(); }
 
         /**
          * @brief Stop text input
@@ -615,6 +608,14 @@ class Sdl2Application {
          *      @ref textEditingEvent()
          */
         void stopTextInput() { SDL_StopTextInput(); }
+
+        /**
+         * @brief Set text input rectangle
+         *
+         * The @p rect defines an area where the text is being displayed, for
+         * example to hint the system where to place on-screen keyboard.
+         */
+        void setTextInputRect(const Range2Di& rect);
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     protected:

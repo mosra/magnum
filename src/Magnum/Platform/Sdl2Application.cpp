@@ -452,16 +452,9 @@ void Sdl2Application::setMouseLocked(bool enabled) {
 }
 
 #ifndef CORRADE_TARGET_EMSCRIPTEN
-void Sdl2Application::startTextInput(const Range2Di& rect) {
-    SDL_StartTextInput();
-    if(!rect.size().isZero()) {
-        SDL_Rect r{rect.min().x(), rect.min().y(), rect.sizeX(), rect.sizeY()};
-        SDL_SetTextInputRect(&r);
-    }
-}
-
-void Sdl2Application::startTextInput() {
-    startTextInput({});
+void Sdl2Application::setTextInputRect(const Range2Di& rect) {
+    SDL_Rect r{rect.min().x(), rect.min().y(), rect.sizeX(), rect.sizeY()};
+    SDL_SetTextInputRect(&r);
 }
 #endif
 
