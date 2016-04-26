@@ -185,6 +185,7 @@ class MAGNUM_VK_EXPORT Context {
 
 MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, Result value);
 MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, Context::Flag value);
+MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, Version value);
 
 }}
 

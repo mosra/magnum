@@ -102,11 +102,13 @@ VkBool32 messageCallback(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT
 }
 
 bool Context::tryCreate() {
+    _version = Version::Vulkan_1_0;
+
     VkApplicationInfo appInfo = {};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     appInfo.pApplicationName = "Vulkan Example";
     appInfo.pEngineName = "Magnum";
-    appInfo.apiVersion = UnsignedInt(Version::Vulkan_1_0);
+    appInfo.apiVersion = UnsignedInt(_version);
 
     std::vector<const char*> enabledExtensions = { VK_KHR_SURFACE_EXTENSION_NAME };
 
@@ -202,6 +204,17 @@ Debug& operator<<(Debug& debug, Context::Flag value) {
     }
 
     return debug << "Context::Flag::(invalid)";
+}
+
+Debug& operator<<(Debug& debug, Version value) {
+    switch(value) {
+        #define _c(value) case Version::value: return debug << "Vk::Version::" #value;
+        _c(None)
+        _c(Vulkan_1_0)
+        #undef _c
+    }
+
+    return debug << "Vk::Version::(invalid)";
 }
 
 }}

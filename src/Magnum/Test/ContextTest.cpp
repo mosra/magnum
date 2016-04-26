@@ -3,6 +3,7 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2016 Jonathan Hale <squareys@googlemail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -33,21 +34,26 @@ namespace Magnum { namespace Test {
 struct ContextTest: TestSuite::Tester {
     explicit ContextTest();
 
-    void debugFlag();
+    void createAndDestroy();
+    void flag();
+    void result();
 };
 
 ContextTest::ContextTest() {
-    addTests({&ContextTest::debugFlag});
+    addTests({&ContextTest::createAndDestroy,
+              &ContextTest::flag,
+              &ContextTest::result});
 }
 
-void ContextTest::debugFlag() {
-    #ifdef MAGNUM_TARGET_WEBGL
-    CORRADE_SKIP("No context flags on Emscripten yet.");
-    #else
+void ContextTest::createAndDestroy() {
+    Vk::Context c{{}};
+    CORRADE_COMPARE(c.version(), Vk::Version::Vulkan_1_0);
+}
+
+void ContextTest::flag() {
     std::ostringstream out;
     Debug(&out) << Context::Flag::Debug << Context::Flag(0xdead);
     CORRADE_COMPARE(out.str(), "Context::Flag::Debug Context::Flag(0xdead)\n");
-    #endif
 }
 
 }}
