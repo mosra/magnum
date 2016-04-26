@@ -220,6 +220,11 @@ class GlfwApplication {
             glfwSetCursorPos(_window, Double(position.x()), Double(position.y()));
         }
 
+
+        #ifdef MAGNUM_TARGET_VULKAN
+        VkSurfaceKHR createVkSurface();
+        #endif
+
     #ifdef DOXYGEN_GENERATING_OUTPUT
     protected:
     #else
@@ -243,10 +248,6 @@ class GlfwApplication {
         virtual void mouseScrollEvent(MouseScrollEvent& event);
 
         /*@}*/
-
-        #ifdef MAGNUM_TARGET_VULKAN
-        VkSurfaceKHR createVkSurface();
-        #endif
 
     private:
         static void staticViewportEvent(GLFWwindow*, int w, int h) {

@@ -3,6 +3,7 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2016 Jonathan Hale <squareys@googlemail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -33,13 +34,20 @@ namespace Magnum { namespace Test {
 struct ContextTest: TestSuite::Tester {
     explicit ContextTest();
 
+    void createAndDestroy();
     void flag();
     void result();
 };
 
 ContextTest::ContextTest() {
-    addTests({&ContextTest::flag,
+    addTests({&ContextTest::createAndDestroy,
+              &ContextTest::flag,
               &ContextTest::result});
+}
+
+void ContextTest::createAndDestroy() {
+    Vk::Context c{{}};
+    CORRADE_COMPARE(c.version(), Vk::Version::Vulkan_1_0);
 }
 
 void ContextTest::flag() {
