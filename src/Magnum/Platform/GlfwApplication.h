@@ -229,7 +229,6 @@ class GlfwApplication {
         HWND getPlatformWindow() {
             return glfwGetWin32Window(_window);
         }
-
         #endif
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
