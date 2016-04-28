@@ -273,6 +273,12 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
     return true;
 }
 
+Vector2i Sdl2Application::windowSize() {
+    Vector2i size;
+    SDL_GetWindowSize(_window, &size.x(), &size.y());
+    return size;
+}
+
 void Sdl2Application::swapBuffers() {
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     SDL_GL_SwapWindow(_window);
