@@ -110,10 +110,10 @@ bool Context::tryCreate() {
     appInfo.pEngineName = "Magnum";
     appInfo.apiVersion = UnsignedInt(_version);
 
-    std::vector<const char*> enabledExtensions = { VK_KHR_SURFACE_EXTENSION_NAME };
+    std::vector<const char*> enabledExtensions = { VK_KHR_SURFACE_EXTENSION_NAME, "VK_KHR_win32_surface" };
 
     // Enable surface extensions depending on os
-    //enabledExtensions.push_back(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
+    // enabledExtensions.push_back(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
 
     VkInstanceCreateInfo instanceCreateInfo = {};
     instanceCreateInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -190,6 +190,8 @@ Debug& operator<<(Debug& debug, Result value) {
         _c(ErrorIncompatibleDisplay)
         _c(ErrorValidationFailed)
         _c(ErrorInvalidShader)
+        _c(ErrorInvalidParameter)
+        _c(ErrorInvalidAlignment)
         #undef _c
     }
 

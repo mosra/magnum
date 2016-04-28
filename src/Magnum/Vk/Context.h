@@ -50,6 +50,9 @@ enum class Version: UnsignedInt {
     Vulkan_1_0 = VK_API_VERSION_1_0, /**< Vulkan 1.0 */
 };
 
+#define VK_ERROR_INVALID_PARAMETER_NV -1000013000
+#define VK_ERROR_INVALID_ALIGNMENT_NV -1000013001
+
 enum class Result: Int {
     Success = VK_SUCCESS,           /**< Success */
     NotReady = VK_NOT_READY,        /**< Not ready */
@@ -74,7 +77,9 @@ enum class Result: Int {
     ErrorOutOfDate = VK_ERROR_OUT_OF_DATE_KHR,                      /**< Out of date */
     ErrorIncompatibleDisplay = VK_ERROR_INCOMPATIBLE_DISPLAY_KHR,   /**< Incompatible display */
     ErrorValidationFailed = VK_ERROR_VALIDATION_FAILED_EXT,         /**< Validation failed */
-    ErrorInvalidShader = VK_ERROR_INVALID_SHADER_NV                 /**< Invalid shader */
+    ErrorInvalidShader = VK_ERROR_INVALID_SHADER_NV,                /**< Invalid shader */
+    ErrorInvalidParameter = VK_ERROR_INVALID_PARAMETER_NV,          /**< Invalid Parameter, only on Nvidia */
+    ErrorInvalidAlignment = VK_ERROR_INVALID_ALIGNMENT_NV,          /**< Invalid Alignment, only on Nvidia */
 };
 
 /**
