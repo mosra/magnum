@@ -115,7 +115,7 @@ class MAGNUM_VK_EXPORT Context {
          *      @ref Platform::Sdl2Application::Configuration::setFlags() "Platform::*Application::Configuration::setFlags()"
          */
         enum class Flag: Int {
-            EnableValidation, /**< Enable validation layer */
+            EnableValidation = 1, /**< Enable validation layer */
         };
 
         /**
