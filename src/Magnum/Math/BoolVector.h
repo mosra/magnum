@@ -227,7 +227,7 @@ template<std::size_t size> Corrade::Utility::Debug& operator<<(Corrade::Utility:
     return debug << Corrade::Utility::Debug::nospace << ")";
 }
 
-template<std::size_t size> inline bool BoolVector<size>::operator==(const BoolVector< size >& other) const {
+template<std::size_t size> inline bool BoolVector<size>::operator==(const BoolVector<size>& other) const {
     for(std::size_t i = 0; i != size/8; ++i)
         if(_data[i] != other._data[i]) return false;
 
