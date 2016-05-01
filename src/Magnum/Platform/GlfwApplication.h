@@ -45,6 +45,8 @@
 #endif
 
 #include <glfw3.h>
+#define GLFW_EXPOSE_NATIVE_WIN32
+#include <glfw3native.h>
 
 namespace Magnum { namespace Platform {
 
@@ -223,6 +225,11 @@ class GlfwApplication {
 
         #ifdef MAGNUM_TARGET_VULKAN
         VkSurfaceKHR createVkSurface();
+
+        HWND getPlatformWindow() {
+            return glfwGetWin32Window(_window);
+        }
+
         #endif
 
     #ifdef DOXYGEN_GENERATING_OUTPUT

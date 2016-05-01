@@ -30,20 +30,16 @@
 #include <Corrade/Utility/String.h>
 #include "vulkan.h"
 
-PFN_vkCreateDebugReportCallbackEXT CreateDebugReportCallback;
-PFN_vkDestroyDebugReportCallbackEXT DestroyDebugReportCallback;
-PFN_vkDebugReportMessageEXT dbgBreakCallback;
-
-VkDebugReportCallbackEXT msgCallback;
-
 namespace Magnum { namespace Vk {
 
+unsigned int layerCount = 2;
 const char *validationLayerNames[] =
 {
     // This is a meta layer that enables all of the standard
     // validation layers in the correct order :
     // threading, parameter_validation, device_limits, object_tracker, image, core_validation, swapchain, and unique_objects
-    "VK_LAYER_LUNARG_standard_validation"
+    "VK_LAYER_LUNARG_standard_validation",
+    "VK_LAYER_LUNARG_api_dump"
 };
 
 Context* Context::_current = nullptr;
@@ -79,7 +75,7 @@ Context::~Context() {
     }
 
     if (_flags >= Flag::EnableValidation) {
-        DestroyDebugReportCallback(_instance, msgCallback, nullptr);
+        //DestroyDebugReportCallback(_instance, msgCallback, nullptr);
     }
     vkDestroyInstance(_instance, nullptr);
 }
@@ -89,16 +85,18 @@ void Context::create() {
     if(!tryCreate()) std::exit(1);
 }
 
-VkBool32 messageCallback(VkDebugReportFlagsEXT flags, VkDebugReportObjectTypeEXT objType,
-    uint64_t srcObject,  size_t location, int32_t msgCode, const char* pLayerPrefix, const char* pMsg, void* pUserData) {
-
-    if (flags & VK_DEBUG_REPORT_ERROR_BIT_EXT) {
-        Error() << "[" << pLayerPrefix << "] Code" << msgCode << ":" << pMsg;
-    } else if (flags & VK_DEBUG_REPORT_WARNING_BIT_EXT) {
-        Warning() << "[" << pLayerPrefix << "] Code" << msgCode << ":" << pMsg;
-    }
-
-    return false;
+VKAPI_ATTR VkBool32 VKAPI_CALL MyDebugReportCallback(
+    VkDebugReportFlagsEXT       flags,
+    VkDebugReportObjectTypeEXT  objectType,
+    uint64_t                    object,
+    size_t                      location,
+    int32_t                     messageCode,
+    const char*                 pLayerPrefix,
+    const char*                 pMessage,
+    void*                       pUserData)
+{
+    Error() << pMessage;
+    return VK_FALSE;
 }
 
 bool Context::tryCreate() {
@@ -108,9 +106,9 @@ bool Context::tryCreate() {
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     appInfo.pApplicationName = "Vulkan Example";
     appInfo.pEngineName = "Magnum";
-    appInfo.apiVersion = UnsignedInt(_version);
+    appInfo.apiVersion = VK_API_VERSION_1_0;
 
-    std::vector<const char*> enabledExtensions = { VK_KHR_SURFACE_EXTENSION_NAME, "VK_KHR_win32_surface" };
+    std::vector<const char*> enabledExtensions = {VK_KHR_SURFACE_EXTENSION_NAME, "VK_KHR_win32_surface"};
 
     // Enable surface extensions depending on os
     // enabledExtensions.push_back(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
@@ -120,11 +118,13 @@ bool Context::tryCreate() {
     instanceCreateInfo.pNext = nullptr;
     instanceCreateInfo.pApplicationInfo = &appInfo;
     if (_flags >= Flag::EnableValidation) {
+        Debug() << "Enabling Validation";
         enabledExtensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
 
-        instanceCreateInfo.enabledLayerCount = 1;
+        instanceCreateInfo.enabledLayerCount = layerCount;
         instanceCreateInfo.ppEnabledLayerNames = validationLayerNames;
     }
+
     if (!enabledExtensions.empty()) {
         instanceCreateInfo.enabledExtensionCount = enabledExtensions.size();
         instanceCreateInfo.ppEnabledExtensionNames = enabledExtensions.data();
@@ -140,21 +140,33 @@ bool Context::tryCreate() {
 
     /* setup debugging */
     if (_flags >= Flag::EnableValidation) {
-        CreateDebugReportCallback = PFN_vkCreateDebugReportCallbackEXT(vkGetInstanceProcAddr(_instance, "vkCreateDebugReportCallbackEXT"));
-        DestroyDebugReportCallback = PFN_vkDestroyDebugReportCallbackEXT(vkGetInstanceProcAddr(_instance, "vkDestroyDebugReportCallbackEXT"));
-        dbgBreakCallback = PFN_vkDebugReportMessageEXT(vkGetInstanceProcAddr(_instance, "vkDebugReportMessageEXT"));
+        /* Load VK_EXT_debug_report entry points in debug builds */
+        PFN_vkCreateDebugReportCallbackEXT vkCreateDebugReportCallbackEXT =
+            reinterpret_cast<PFN_vkCreateDebugReportCallbackEXT>
+                (vkGetInstanceProcAddr(_instance, "vkCreateDebugReportCallbackEXT"));
+        PFN_vkDebugReportMessageEXT vkDebugReportMessageEXT =
+            reinterpret_cast<PFN_vkDebugReportMessageEXT>
+                (vkGetInstanceProcAddr(_instance, "vkDebugReportMessageEXT"));
+        PFN_vkDestroyDebugReportCallbackEXT vkDestroyDebugReportCallbackEXT =
+            reinterpret_cast<PFN_vkDestroyDebugReportCallbackEXT>
+                (vkGetInstanceProcAddr(_instance, "vkDestroyDebugReportCallbackEXT"));
 
-        VkDebugReportCallbackCreateInfoEXT dbgCreateInfo = {};
-        dbgCreateInfo.sType = VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT;
-        dbgCreateInfo.pfnCallback = PFN_vkDebugReportCallbackEXT(messageCallback);
-        dbgCreateInfo.flags = VK_DEBUG_REPORT_ERROR_BIT_EXT | VK_DEBUG_REPORT_WARNING_BIT_EXT;
+        /* Setup callback creation information */
+        VkDebugReportCallbackCreateInfoEXT callbackCreateInfo;
+        callbackCreateInfo.sType       = VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT;
+        callbackCreateInfo.pNext       = nullptr;
+        callbackCreateInfo.flags       = VK_DEBUG_REPORT_ERROR_BIT_EXT |
+                                         VK_DEBUG_REPORT_WARNING_BIT_EXT |
+                                         VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT;
+        callbackCreateInfo.pfnCallback = &MyDebugReportCallback;
+        callbackCreateInfo.pUserData   = nullptr;
 
-        VkResult err = CreateDebugReportCallback(
-            _instance,
-            &dbgCreateInfo,
-            nullptr,
-            &msgCallback);
-        assert(!err);
+        /* Register the callback */
+        VkDebugReportCallbackEXT callback;
+        VkResult err = vkCreateDebugReportCallbackEXT(_instance, &callbackCreateInfo, nullptr, &callback);
+        if (err != VK_SUCCESS) {
+            Error() << "Could not setup Debug callback";
+        }
     }
     return true;
 }

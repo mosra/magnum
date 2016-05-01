@@ -94,6 +94,7 @@ bool GlfwApplication::tryCreateContext(const Configuration& configuration) {
         glfwWindowHint(GLFW_ICONIFIED, flags >= Configuration::WindowFlag::Minimized);
         glfwWindowHint(GLFW_FLOATING, flags >= Configuration::WindowFlag::Floating);
     }
+
     glfwWindowHint(GLFW_FOCUSED, configuration.windowFlags() >= Configuration::WindowFlag::Focused);
 
     /* Context window hints */
@@ -125,6 +126,7 @@ bool GlfwApplication::tryCreateContext(const Configuration& configuration) {
         glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
         #endif
     }
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
     /* Set context flags */
     _window = glfwCreateWindow(configuration.size().x(), configuration.size().y(), configuration.title().c_str(), monitor, nullptr);
@@ -144,7 +146,7 @@ bool GlfwApplication::tryCreateContext(const Configuration& configuration) {
     glfwMakeContextCurrent(_window);
 
     /* Return true if the initialization succeeds */
-    return _context->tryCreate();
+    return true; //_context->tryCreate();
 }
 
 GlfwApplication::~GlfwApplication() {

@@ -28,10 +28,42 @@
 find_package(Vulkan REQUIRED)
 
 set(MagnumVk_SRCS
-    Context.cpp)
+    Buffer.cpp
+    CommandBuffer.cpp
+    CommandPool.cpp
+    Context.cpp
+    Device.cpp
+    DeviceMemory.cpp
+    Framebuffer.cpp
+    Image.cpp
+    ImageView.cpp
+    PhysicalDevice.cpp
+    Pipeline.cpp
+    Queue.cpp
+    RenderPass.cpp
+    Semaphore.cpp
+    Shader.cpp
+    Swapchain.cpp)
 
 set(MagnumVk_HEADERS
+    Buffer.h
+    Command.h
+    CommandBuffer.h
+    CommandPool.h
     Context.h
+    Device.h
+    DeviceMemory.h
+    Framebuffer.h
+    Image.h
+    ImageView.h
+    Math.h
+    PhysicalDevice.h
+    Pipeline.h
+    Queue.h
+    RenderPass.h
+    Semaphore.h
+    Shader.h
+    Swapchain.h
 
     visibility.h)
 
@@ -45,6 +77,8 @@ set(MagnumVk_PRIVATE_HEADERS "")
 add_library(MagnumVk ${SHARED_OR_STATIC}
     ${MagnumVk_SRCS}
     ${MagnumVk_HEADERS}
+
+    ${MagnumVkTest_HEADERS}
     ${MagnumVk_PRIVATE_HEADERS})
 set_target_properties(MagnumVk PROPERTIES DEBUG_POSTFIX "-d")
 if(BUILD_STATIC_PIC)
@@ -52,13 +86,21 @@ if(BUILD_STATIC_PIC)
 endif()
 target_link_libraries(MagnumVk Magnum Vulkan::Vulkan)
 
+set_target_properties(MagnumVk PROPERTIES
+    CORRADE_CXX_STANDARD 14
+    INTERFACE_CORRADE_CXX_STANDARD 14)
+
+
 install(TARGETS MagnumVk
     RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
     LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
     ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+
+install(FILES ${MagnumVkTest_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Vk/Test)
 install(FILES ${MagnumVk_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Vk)
 
 if(BUILD_TESTS)
+    set(VK_TEST_LIBRARIES MagnumVk)
     add_subdirectory(Test)
 endif()
 

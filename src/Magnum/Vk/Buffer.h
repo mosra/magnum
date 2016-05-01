@@ -1,0 +1,143 @@
+#ifndef Magnum_Vk_Buffer_h
+#define Magnum_Vk_Buffer_h
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
+              Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2016 Jonathan Hale <squareys@googlemail.com>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+/** @file
+ * @brief Class @ref Magnum::Vk::Buffer
+ */
+
+#include <Corrade/Containers/EnumSet.h>
+
+#include "Magnum/Magnum.h"
+#include "Magnum/Vk/CommandBuffer.h"
+#include "Magnum/Vk/Device.h"
+#include "Magnum/Vk/DeviceMemory.h"
+#include "Magnum/Vk/visibility.h"
+
+#include "vulkan.h"
+
+namespace Magnum { namespace Vk {
+
+enum class BufferUsage: UnsignedInt {
+    TransferSrc = VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
+    TransferDst = VK_BUFFER_USAGE_TRANSFER_DST_BIT,
+    UniformTexelBuffer = VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT,
+    StorageTexelBuffer = VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT,
+    UniformBuffer = VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT,
+    StorageBuffer = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT,
+    IndexBuffer = VK_BUFFER_USAGE_INDEX_BUFFER_BIT,
+    VertexBuffer = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT,
+    IndirectBuffer = VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT,
+};
+
+typedef Containers::EnumSet<BufferUsage> BufferUsageFlags;
+
+CORRADE_ENUMSET_OPERATORS(BufferUsageFlags)
+
+class MAGNUM_VK_EXPORT Buffer {
+    public:
+
+        Buffer(Device& device, UnsignedInt size, BufferUsageFlags usage):
+            _device{device},
+            _size{size}
+        {
+            VkBufferCreateInfo bufferInfo = {};
+            bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+            bufferInfo.pNext = nullptr;
+            bufferInfo.size = size;
+            bufferInfo.usage = VkBufferUsageFlags(usage);
+
+            VkResult err = vkCreateBuffer(_device, &bufferInfo, nullptr, &_buffer);
+            MAGNUM_VK_ASSERT_ERROR(err);
+        }
+
+        /** @brief Copying is not allowed */
+        Buffer(const Buffer&) = delete;
+
+        /** @brief Move constructor */
+        Buffer(Buffer&& other);
+
+        /**
+         * @brief Destructor
+         *
+         * @see @fn_vk{DestroyBuffer}
+         */
+        ~Buffer();
+
+        /** @brief Copying is not allowed */
+        Buffer& operator=(const Buffer&) = delete;
+
+        /** @brief Move assignment is not allowed */
+        Buffer& operator=(Buffer&&) = delete;
+
+        operator VkBuffer() const {
+            return _buffer;
+        }
+
+        VkMemoryRequirements getMemoryRequirements() const {
+            VkMemoryRequirements memReqs;
+            vkGetBufferMemoryRequirements(_device, _buffer, &memReqs);
+
+            return memReqs;
+        }
+
+        UnsignedInt size() const {
+            return _size;
+        }
+
+        Buffer& bindBufferMemory(const DeviceMemory& deviceMemory, UnsignedLong offset=0) {
+            VkResult err = vkBindBufferMemory(_device, _buffer, deviceMemory, offset);
+            MAGNUM_VK_ASSERT_ERROR(err);
+
+            return *this;
+        }
+
+        auto cmdCopyTo(Buffer& dest, std::initializer_list<VkBufferCopy> regions) {
+            const VkBuffer source = _buffer;
+            return [source, &dest, &regions](VkCommandBuffer cmdBuffer){
+                vkCmdCopyBuffer(cmdBuffer, source, dest, regions.size(), std::vector<VkBufferCopy>(regions).data());
+            };
+        }
+
+        auto cmdFullCopyTo(Buffer& dest) {
+            const VkBuffer source = _buffer;
+            const UnsignedInt size = _size;
+            return [source, &dest, size](VkCommandBuffer cmdBuffer){
+                VkBufferCopy bufferCopy = {0, 0, size};
+                vkCmdCopyBuffer(cmdBuffer, source, dest, 1, &bufferCopy);
+            };
+        }
+
+    private:
+        Device& _device;
+        VkBuffer _buffer;
+        UnsignedInt _size;
+};
+
+}}
+
+#endif
