@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -44,6 +44,8 @@ struct ColorTest: Corrade::TestSuite::Tester {
     void constructNormalization();
     void constructCopy();
 
+    void literals();
+
     void colors();
 
     void fromHue();
@@ -73,6 +75,8 @@ typedef Math::Color4<UnsignedByte> Color4ub;
 
 typedef Math::Deg<Float> Deg;
 
+using namespace Literals;
+
 ColorTest::ColorTest() {
     addTests({&ColorTest::construct,
               &ColorTest::constructDefault,
@@ -83,6 +87,8 @@ ColorTest::ColorTest() {
               &ColorTest::constructConversion,
               &ColorTest::constructNormalization,
               &ColorTest::constructCopy,
+
+              &ColorTest::literals,
 
               &ColorTest::colors,
 
@@ -125,8 +131,8 @@ void ColorTest::constructDefault() {
 
     constexpr Color4 b;
     constexpr Color4ub c;
-    CORRADE_COMPARE(b, Color4(0.0f, 0.0f, 0.0f, 1.0f));
-    CORRADE_COMPARE(c, Color4ub(0, 0, 0, 255));
+    CORRADE_COMPARE(b, Color4(0.0f, 0.0f, 0.0f, 0.0f));
+    CORRADE_COMPARE(c, Color4ub(0, 0, 0, 0));
 }
 
 void ColorTest::constructZero() {
@@ -215,6 +221,20 @@ void ColorTest::constructCopy() {
     #endif
     Color4 d(c);
     CORRADE_COMPARE(d, Color4(1.0f, 0.5f, 0.75f, 0.25f));
+}
+
+void ColorTest::literals() {
+    using namespace Literals;
+
+    constexpr Color3ub a = 0x33b27f_rgb;
+    CORRADE_COMPARE(a, (Color3ub{0x33, 0xb2, 0x7f}));
+
+    constexpr Color4ub b = 0x33b27fcc_rgba;
+    CORRADE_COMPARE(b, (Color4ub{0x33, 0xb2, 0x7f, 0xcc}));
+
+    /* Not constexpr yet */
+    CORRADE_COMPARE(0x33b27f_rgbf, (Color3{0.2, 0.698039f, 0.498039f}));
+    CORRADE_COMPARE(0x33b27fcc_rgbaf, (Color4{0.2, 0.698039f, 0.498039f, 0.8f}));
 }
 
 void ColorTest::colors() {

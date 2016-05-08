@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -67,7 +67,7 @@ TranslationTransformationTest::TranslationTransformationTest() {
 
 void TranslationTransformationTest::fromMatrix() {
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
     Implementation::Transformation<TranslationTransformation2D>::fromMatrix(Matrix3::scaling(Vector2(4.0f)));
     CORRADE_COMPARE(o.str(), "SceneGraph::TranslationTransformation: the matrix doesn't represent pure translation\n");
 

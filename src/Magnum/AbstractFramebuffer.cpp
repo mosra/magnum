@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -38,7 +38,7 @@
 namespace Magnum {
 
 Vector2i AbstractFramebuffer::maxViewportSize() {
-    Vector2i& value = Context::current()->state().framebuffer->maxViewportSize;
+    Vector2i& value = Context::current().state().framebuffer->maxViewportSize;
 
     /* Get the value, if not already cached */
     if(value == Vector2i())
@@ -50,16 +50,16 @@ Vector2i AbstractFramebuffer::maxViewportSize() {
 Int AbstractFramebuffer::maxDrawBuffers() {
     #ifdef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_WEBGL
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::draw_buffers>() &&
-       !Context::current()->isExtensionSupported<Extensions::GL::NV::draw_buffers>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::draw_buffers>() &&
+       !Context::current().isExtensionSupported<Extensions::GL::NV::draw_buffers>())
         return 0;
     #else
-    if(!Context::current()->isExtensionSupported<Extensions::GL::WEBGL::draw_buffers>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::WEBGL::draw_buffers>())
         return 0;
     #endif
     #endif
 
-    GLint& value = Context::current()->state().framebuffer->maxDrawBuffers;
+    GLint& value = Context::current().state().framebuffer->maxDrawBuffers;
 
     /* Get the value, if not already cached */
     if(value == 0) {
@@ -75,10 +75,10 @@ Int AbstractFramebuffer::maxDrawBuffers() {
 
 #ifndef MAGNUM_TARGET_GLES
 Int AbstractFramebuffer::maxDualSourceDrawBuffers() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::blend_func_extended>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::blend_func_extended>())
         return 0;
 
-    GLint& value = Context::current()->state().framebuffer->maxDualSourceDrawBuffers;
+    GLint& value = Context::current().state().framebuffer->maxDualSourceDrawBuffers;
 
     /* Get the value, if not already cached */
     if(value == 0)
@@ -105,16 +105,19 @@ void AbstractFramebuffer::bind() {
 }
 
 void AbstractFramebuffer::bindInternal(FramebufferTarget target) {
-    #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    (this->*Context::current()->state().framebuffer->bindImplementation)(target);
-    #else
+    #ifndef MAGNUM_TARGET_GLES2
     bindImplementationDefault(target);
+    #elif defined(MAGNUM_TARGET_WEBGL)
+    static_cast<void>(target);
+    bindImplementationSingle();
+    #else
+    (this->*Context::current().state().framebuffer->bindImplementation)(target);
     #endif
 }
 
 #ifdef MAGNUM_TARGET_GLES2
 void AbstractFramebuffer::bindImplementationSingle(FramebufferTarget) {
-    Implementation::FramebufferState& state = *Context::current()->state().framebuffer;
+    Implementation::FramebufferState& state = *Context::current().state().framebuffer;
     CORRADE_INTERNAL_ASSERT(state.readBinding == state.drawBinding);
     if(state.readBinding == _id) return;
 
@@ -130,7 +133,7 @@ void AbstractFramebuffer::bindImplementationSingle(FramebufferTarget) {
 inline
 #endif
 void AbstractFramebuffer::bindImplementationDefault(FramebufferTarget target) {
-    Implementation::FramebufferState& state = *Context::current()->state().framebuffer;
+    Implementation::FramebufferState& state = *Context::current().state().framebuffer;
 
     if(target == FramebufferTarget::Read) {
         if(state.readBinding == _id) return;
@@ -146,16 +149,18 @@ void AbstractFramebuffer::bindImplementationDefault(FramebufferTarget target) {
 }
 
 FramebufferTarget AbstractFramebuffer::bindInternal() {
-    #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    return (this->*Context::current()->state().framebuffer->bindInternalImplementation)();
-    #else
+    #ifndef MAGNUM_TARGET_GLES2
     return bindImplementationDefault();
+    #elif defined(MAGNUM_TARGET_WEBGL)
+    return bindImplementationSingle();
+    #else
+    return (this->*Context::current().state().framebuffer->bindInternalImplementation)();
     #endif
 }
 
 #ifdef MAGNUM_TARGET_GLES2
 FramebufferTarget AbstractFramebuffer::bindImplementationSingle() {
-    Implementation::FramebufferState& state = *Context::current()->state().framebuffer;
+    Implementation::FramebufferState& state = *Context::current().state().framebuffer;
     CORRADE_INTERNAL_ASSERT(state.readBinding == state.drawBinding);
 
     /* Bind the framebuffer, if not already */
@@ -175,7 +180,7 @@ FramebufferTarget AbstractFramebuffer::bindImplementationSingle() {
 inline
 #endif
 FramebufferTarget AbstractFramebuffer::bindImplementationDefault() {
-    Implementation::FramebufferState& state = *Context::current()->state().framebuffer;
+    Implementation::FramebufferState& state = *Context::current().state().framebuffer;
 
     /* Return target to which the framebuffer is already bound */
     if(state.readBinding == _id)
@@ -194,7 +199,7 @@ FramebufferTarget AbstractFramebuffer::bindImplementationDefault() {
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 void AbstractFramebuffer::blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, const FramebufferBlitMask mask, const FramebufferBlitFilter filter) {
-    Context::current()->state().framebuffer->blitImplementation(source, destination, sourceRectangle, destinationRectangle, mask, filter);
+    Context::current().state().framebuffer->blitImplementation(source, destination, sourceRectangle, destinationRectangle, mask, filter);
 }
 #endif
 
@@ -250,14 +255,14 @@ AbstractFramebuffer& AbstractFramebuffer::setViewport(const Range2Di& rectangle)
     _viewport = rectangle;
 
     /* Update the viewport if the framebuffer is currently bound */
-    if(Context::current()->state().framebuffer->drawBinding == _id)
+    if(Context::current().state().framebuffer->drawBinding == _id)
         setViewportInternal();
 
     return *this;
 }
 
 void AbstractFramebuffer::setViewportInternal() {
-    Implementation::FramebufferState& state = *Context::current()->state().framebuffer;
+    Implementation::FramebufferState& state = *Context::current().state().framebuffer;
 
     CORRADE_INTERNAL_ASSERT(_viewport != Implementation::FramebufferState::DisengagedViewport);
     CORRADE_INTERNAL_ASSERT(state.drawBinding == _id);
@@ -291,7 +296,7 @@ void AbstractFramebuffer::read(const Range2Di& rectangle, Image2D& image) {
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     #endif
     image.storage().applyPack();
-    (Context::current()->state().framebuffer->readImplementation)(rectangle, image.format(), image.type(), data.size(), data
+    (Context::current().state().framebuffer->readImplementation)(rectangle, image.format(), image.type(), data.size(), data
         #ifdef MAGNUM_TARGET_GLES2
         + Implementation::pixelStorageSkipOffsetFor(image, rectangle.size())
         #endif
@@ -317,7 +322,7 @@ void AbstractFramebuffer::read(const Range2Di& rectangle, BufferImage2D& image, 
 
     image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
     image.storage().applyPack();
-    (Context::current()->state().framebuffer->readImplementation)(rectangle, image.format(), image.type(), dataSize, nullptr);
+    (Context::current().state().framebuffer->readImplementation)(rectangle, image.format(), image.type(), dataSize, nullptr);
 }
 
 BufferImage2D AbstractFramebuffer::read(const Range2Di& rectangle, BufferImage2D&& image, BufferUsage usage) {

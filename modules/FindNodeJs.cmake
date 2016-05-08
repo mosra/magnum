@@ -1,15 +1,17 @@
-# - Find Node.js
+#.rst:
+# Find Node.js
+# ------------
 #
-# This module defines:
+# Finds the Node.js executable. This module defines:
 #
 #  NODEJS_FOUND         - True if Node.js executable is found
-#  NODEJS_EXECUTABLE    - Node.js executable
+#  NodeJs::NodeJs       - Node.js executable imported target
 #
 
 #
 #   This file is part of Corrade.
 #
-#   Copyright © 2007, 2008, 2009, 2010, 2011, 2012, 2013
+#   Copyright © 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -35,3 +37,8 @@ find_program(NODEJS_EXECUTABLE node)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args("NodeJs" DEFAULT_MSG NODEJS_EXECUTABLE)
+
+if(NOT TARGET NodeJs::NodeJs)
+    add_executable(NodeJs::NodeJs IMPORTED)
+    set_property(TARGET NodeJs::NodeJs PROPERTY IMPORTED_LOCATION ${NODEJS_EXECUTABLE})
+endif()

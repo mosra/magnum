@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -54,9 +54,6 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
         };
 
         #ifdef MAGNUM_BUILD_DEPRECATED
-        /* Sorry, MSVC complains that in-class initialization is not yet
-           implemented and it is not worth fixing */
-        #ifndef CORRADE_MSVC2015_COMPATIBILITY
         /**
          * @brief Pass to constructor to create zero-filled matrix
          * @deprecated Use @ref ZeroInitT and @ref ZeroInit instead.
@@ -77,7 +74,6 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
         #else
         CORRADE_DEPRECATED("use Math::IdentityInitT instead") typedef IdentityInitT IdentityType;
         CORRADE_DEPRECATED("use Math::IdentityInit instead") constexpr static IdentityInitT Identity{IdentityInitT::Init{}};
-        #endif
         #endif
         #endif
 
@@ -132,14 +128,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          * // integral == {{1, 2}, {-15, 7}}
          * @endcode
          */
-        template<class U> constexpr explicit Matrix(const RectangularMatrix<size, size, U>& other):
-            #ifndef CORRADE_MSVC2015_COMPATIBILITY
-            RectangularMatrix<size, size, T>(other)
-            #else
-            /* Avoid using non-constexpr version */
-            RectangularMatrix<size, size, T>(typename Implementation::GenerateSequence<size>::Type(), other)
-            #endif
-        {}
+        template<class U> constexpr explicit Matrix(const RectangularMatrix<size, size, U>& other): RectangularMatrix<size, size, T>(other) {}
 
         /** @brief Construct matrix from external representation */
         template<class U, class V = decltype(Implementation::RectangularMatrixConverter<size, size, T, U>::from(std::declval<U>()))> constexpr explicit Matrix(const U& other): RectangularMatrix<size, size, T>(Implementation::RectangularMatrixConverter<size, size, T, U>::from(other)) {}

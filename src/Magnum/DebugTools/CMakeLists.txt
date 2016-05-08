@@ -1,7 +1,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -24,47 +24,77 @@
 #
 
 set(MagnumDebugTools_SRCS
-    ForceRenderer.cpp
-    ObjectRenderer.cpp
     Profiler.cpp
     ResourceManager.cpp
-    ShapeRenderer.cpp
-
-    Implementation/AbstractBoxRenderer.cpp
-    Implementation/AbstractShapeRenderer.cpp
-    Implementation/AxisAlignedBoxRenderer.cpp
-    Implementation/BoxRenderer.cpp
-    Implementation/CapsuleRenderer.cpp
-    Implementation/CylinderRenderer.cpp
-    Implementation/LineSegmentRenderer.cpp
-    Implementation/PointRenderer.cpp
-    Implementation/SphereRenderer.cpp)
+    TextureImage.cpp)
 
 set(MagnumDebugTools_HEADERS
-    ForceRenderer.h
     DebugTools.h
-    ObjectRenderer.h
     Profiler.h
     ResourceManager.h
-    ShapeRenderer.h
-
+    TextureImage.h
     visibility.h)
 
 # Header files to display in project view of IDEs only
-set(MagnumDebugTools_PRIVATE_HEADERS
-    Implementation/AbstractBoxRenderer.h
-    Implementation/AbstractShapeRenderer.h
-    Implementation/AxisAlignedBoxRenderer.h
-    Implementation/BoxRenderer.h
-    Implementation/CapsuleRenderer.h
-    Implementation/CapsuleRendererTransformation.h
-    Implementation/CylinderRenderer.h
-    Implementation/CylinderRendererTransformation.h
-    Implementation/ForceRendererTransformation.h
-    Implementation/LineSegmentRenderer.h
-    Implementation/LineSegmentRendererTransformation.h
-    Implementation/PointRenderer.h
-    Implementation/SphereRenderer.h)
+set(MagnumDebugTools_PRIVATE_HEADERS )
+
+if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_GLES2)
+    corrade_add_resource(MagnumDebugTools_RESOURCES resources.conf)
+    list(APPEND MagnumDebugTools_SRCS ${MagnumDebugTools_RESOURCES})
+endif()
+
+if(NOT MAGNUM_TARGET_WEBGL)
+    list(APPEND MagnumDebugTools_SRCS
+        BufferData.cpp)
+
+    list(APPEND MagnumDebugTools_HEADERS
+        BufferData.h)
+endif()
+
+if(WITH_SCENEGRAPH)
+    list(APPEND MagnumDebugTools_SRCS
+        ForceRenderer.cpp
+        ObjectRenderer.cpp)
+
+    list(APPEND MagnumDebugTools_HEADERS
+        ForceRenderer.h
+        ObjectRenderer.h)
+
+    list(APPEND MagnumDebugTools_PRIVATE_HEADERS
+        Implementation/ForceRendererTransformation.h)
+endif()
+
+if(WITH_SHAPES)
+    list(APPEND MagnumDebugTools_SRCS
+        ShapeRenderer.cpp
+
+        Implementation/AbstractBoxRenderer.cpp
+        Implementation/AbstractShapeRenderer.cpp
+        Implementation/AxisAlignedBoxRenderer.cpp
+        Implementation/BoxRenderer.cpp
+        Implementation/CapsuleRenderer.cpp
+        Implementation/CylinderRenderer.cpp
+        Implementation/LineSegmentRenderer.cpp
+        Implementation/PointRenderer.cpp
+        Implementation/SphereRenderer.cpp)
+
+    list(APPEND MagnumDebugTools_HEADERS
+        ShapeRenderer.h)
+
+    list(APPEND MagnumDebugTools_PRIVATE_HEADERS
+        Implementation/AbstractBoxRenderer.h
+        Implementation/AbstractShapeRenderer.h
+        Implementation/AxisAlignedBoxRenderer.h
+        Implementation/BoxRenderer.h
+        Implementation/CapsuleRenderer.h
+        Implementation/CapsuleRendererTransformation.h
+        Implementation/CylinderRenderer.h
+        Implementation/CylinderRendererTransformation.h
+        Implementation/LineSegmentRenderer.h
+        Implementation/LineSegmentRendererTransformation.h
+        Implementation/PointRenderer.h
+        Implementation/SphereRenderer.h)
+endif()
 
 # DebugTools library
 add_library(MagnumDebugTools ${SHARED_OR_STATIC}
@@ -80,9 +110,13 @@ target_link_libraries(MagnumDebugTools
     Magnum
     MagnumMeshTools
     MagnumPrimitives
-    MagnumSceneGraph
-    MagnumShaders
-    MagnumShapes)
+    MagnumShaders)
+if(WITH_SCENEGRAPH)
+    target_link_libraries(MagnumDebugTools MagnumSceneGraph)
+endif()
+if(WITH_SHAPES)
+    target_link_libraries(MagnumDebugTools MagnumShapes)
+endif()
 
 install(TARGETS MagnumDebugTools
     RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
@@ -94,5 +128,5 @@ if(BUILD_TESTS)
     add_subdirectory(Test)
 endif()
 
-# Magnum DebugTools library for superprojects
-set(MAGNUM_DEBUGTOOLS_LIBRARY MagnumDebugTools CACHE INTERNAL "")
+# Magnum DebugTools target alias for superprojects
+add_library(Magnum::DebugTools ALIAS MagnumDebugTools)

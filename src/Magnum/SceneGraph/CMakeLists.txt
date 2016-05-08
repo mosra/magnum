@@ -1,7 +1,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -79,8 +79,9 @@ endif()
 add_library(MagnumSceneGraphObjects OBJECT
     ${MagnumSceneGraph_SRCS}
     ${MagnumSceneGraph_HEADERS})
+target_include_directories(MagnumSceneGraphObjects PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
 if(NOT BUILD_STATIC)
-    set_target_properties(MagnumSceneGraphObjects PROPERTIES COMPILE_FLAGS "-DMagnumSceneGraphObjects_EXPORTS")
+    target_compile_definitions(MagnumSceneGraphObjects PRIVATE "MagnumSceneGraphObjects_EXPORTS")
 endif()
 if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(MagnumSceneGraphObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
@@ -94,7 +95,6 @@ set_target_properties(MagnumSceneGraph PROPERTIES DEBUG_POSTFIX "-d")
 if(BUILD_STATIC_PIC)
     set_target_properties(MagnumSceneGraph PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-
 target_link_libraries(MagnumSceneGraph Magnum)
 
 install(TARGETS MagnumSceneGraph
@@ -108,9 +108,9 @@ if(BUILD_TESTS)
     add_library(MagnumSceneGraphTestLib ${SHARED_OR_STATIC}
         $<TARGET_OBJECTS:MagnumSceneGraphObjects>
         ${MagnumSceneGraph_GracefulAssert_SRCS})
-    set_target_properties(MagnumSceneGraphTestLib PROPERTIES
-        COMPILE_FLAGS "-DCORRADE_GRACEFUL_ASSERT -DMagnumSceneGraph_EXPORTS"
-        DEBUG_POSTFIX "-d")
+    set_target_properties(MagnumSceneGraphTestLib PROPERTIES DEBUG_POSTFIX "-d")
+    target_compile_definitions(MagnumSceneGraphTestLib PRIVATE
+        "CORRADE_GRACEFUL_ASSERT" "MagnumSceneGraph_EXPORTS")
     target_link_libraries(MagnumSceneGraphTestLib MagnumMathTestLib)
 
     # On Windows we need to install first and then run the tests to avoid "DLL
@@ -125,5 +125,5 @@ if(BUILD_TESTS)
     add_subdirectory(Test)
 endif()
 
-# Magnum SceneGraph library for superprojects
-set(MAGNUM_SCENEGRAPH_LIBRARY MagnumSceneGraph CACHE INTERNAL "")
+# Magnum SceneGraph target alias for superprojects
+add_library(Magnum::SceneGraph ALIAS MagnumSceneGraph)

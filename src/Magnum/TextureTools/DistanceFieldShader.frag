@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -52,7 +52,9 @@ uniform lowp sampler2D textureData;
 #endif
 
 #ifdef TEXELFETCH_USABLE
+#ifndef GL_ES
 layout(pixel_center_integer) in mediump vec4 gl_FragCoord;
+#endif
 #else
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 2) uniform vec2 imageSizeInverted;
@@ -85,7 +87,11 @@ bool hasValue(const mediump vec2 position, const mediump vec2 offset) {
 
 void main() {
     #ifdef TEXELFETCH_USABLE
+    #ifndef GL_ES
     const mediump ivec2 position = ivec2(gl_FragCoord.xy*scaling);
+    #else
+    const mediump ivec2 position = ivec2((gl_FragCoord.xy - vec2(0.5))*scaling);
+    #endif
     #else
     const mediump vec2 position = (gl_FragCoord.xy - vec2(0.5))*scaling*imageSizeInverted;
     #endif

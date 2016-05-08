@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -172,7 +172,7 @@ void ObjectTest::setParentKeepTransformation() {
 
     /* Old parent and new parent must share the same scene */
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
     Scene3D scene;
     childOne->setParentKeepTransformation(&scene);
     CORRADE_COMPARE(o.str(), "SceneGraph::Object::setParentKeepTransformation(): both parents must be in the same scene\n");
@@ -278,7 +278,7 @@ void ObjectTest::transformationsRelative() {
 
 void ObjectTest::transformationsOrphan() {
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
 
     /* Transformation of objects not part of the same scene */
     Scene3D s;

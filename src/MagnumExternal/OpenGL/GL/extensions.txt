@@ -33,3 +33,4 @@ extension KHR_texture_compression_astc_ldr      optional
 extension KHR_texture_compression_astc_hdr      optional
 extension KHR_blend_equation_advanced           optional
 extension KHR_blend_equation_advanced_coherent  optional
+extension KHR_no_error                          optional

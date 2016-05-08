@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -72,10 +72,10 @@ checked by the implementation:
 -   All `do*()` implementations working on opened file are called only if
     there is any file opened.
 
-Plugin interface string is `"cz.mosra.magnum.Text.AbstractFont/0.2.3"`.
+Plugin interface string is `"cz.mosra.magnum.Text.AbstractFont/0.2.4"`.
 */
 class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
-    CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Text.AbstractFont/0.2.3")
+    CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Text.AbstractFont/0.2.4")
 
     public:
         /**
@@ -158,16 +158,33 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         /**
          * @brief Font size
          *
-         * Returns scale in which @ref lineHeight() and @ref glyphAdvance() is
-         * returned.
+         * Returns scale in which @ref lineHeight(), @ref ascent(),
+         * @ref descent() and @ref glyphAdvance() is returned.
          */
         Float size() const { return _size; }
+
+        /**
+         * @brief Font ascent
+         *
+         * Distance from baseline to top, scaled to font size. Positive value.
+         * @see @ref size(), @ref descent(), @ref lineHeight()
+         */
+        Float ascent() const { return _ascent; }
+
+        /**
+         * @brief Font descent
+         *
+         * Distance from baseline to bottom, scalled to font size. Negative
+         * value.
+         * @see @ref size(), @ref ascent(), @ref lineHeight()
+         */
+        Float descent() const { return _descent; }
 
         /**
          * @brief Line height
          *
          * Returns line height scaled to font size.
-         * @see @ref size()
+         * @see @ref size(), @ref ascent(), @ref descent()
          */
         Float lineHeight() const { return _lineHeight; }
 
@@ -225,6 +242,38 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          */
         std::unique_ptr<AbstractLayouter> layout(const GlyphCache& cache, Float size, const std::string& text);
 
+    protected:
+        /**
+         * @brief Font metrics
+         *
+         * @see @ref doOpenFile(), @ref doOpenData(), @ref doOpenSingleData()
+         */
+        struct Metrics {
+            /**
+             * Font size
+             * @see @ref size()
+             */
+            Float size;
+
+            /**
+             * Font ascent
+             * @see @ref ascent()
+             */
+            Float ascent;
+
+            /**
+             * Font descent
+             * @see @ref descent()
+             */
+            Float descent;
+
+            /**
+             * Line height
+             * @see @ref lineHeight()
+             */
+            Float lineHeight;
+        };
+
     #ifdef DOXYGEN_GENERATING_OUTPUT
     protected:
     #else
@@ -239,29 +288,29 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         /**
          * @brief Implementation for @ref openData()
          *
-         * Return size and line height of opened font on successful opening,
-         * zeros otherwise. If the plugin doesn't have @ref Feature::MultiFile,
+         * Return metrics of opened font on successful opening, zeros
+         * otherwise. If the plugin doesn't have @ref Feature::MultiFile,
          * default implementation calls @ref doOpenSingleData().
          */
-        virtual std::pair<Float, Float> doOpenData(const std::vector<std::pair<std::string, Containers::ArrayView<const char>>>& data, Float size);
+        virtual Metrics doOpenData(const std::vector<std::pair<std::string, Containers::ArrayView<const char>>>& data, Float size);
 
         /**
          * @brief Implementation for @ref openSingleData()
          *
-         * Return size and line height of opened font on successful opening,
-         * zeros otherwise.
+         * Return metrics of opened font on successful opening, zeros
+         * otherwise.
          */
-        virtual std::pair<Float, Float> doOpenSingleData(Containers::ArrayView<const char> data, Float size);
+        virtual Metrics doOpenSingleData(Containers::ArrayView<const char> data, Float size);
 
         /**
          * @brief Implementation for @ref openFile()
          *
-         * Return size and line height of opened font on successful opening,
-         * zeros otherwise. If @ref Feature::OpenData is supported and the
-         * plugin doesn't have @ref Feature::MultiFile, default implementation
-         * opens the file and calls @ref doOpenSingleData() with its contents.
+         * Return metrics of opened font on successful opening, zeros
+         * otherwise. If @ref Feature::OpenData is supported and the plugin
+         * doesn't have @ref Feature::MultiFile, default implementation opens
+         * the file and calls @ref doOpenSingleData() with its contents.
          */
-        virtual std::pair<Float, Float> doOpenFile(const std::string& filename, Float size);
+        virtual Metrics doOpenFile(const std::string& filename, Float size);
 
         /** @brief Implementation for @ref close() */
         virtual void doClose() = 0;
@@ -289,7 +338,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:
     #endif
-        Float _size, _lineHeight;
+        Float _size, _ascent, _descent, _lineHeight;
 };
 
 CORRADE_ENUMSET_OPERATORS(AbstractFont::Features)

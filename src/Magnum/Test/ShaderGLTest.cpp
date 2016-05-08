@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -137,8 +137,8 @@ void ShaderGLTest::constructMove() {
 
 void ShaderGLTest::label() {
     /* No-Op version is tested in AbstractObjectGLTest */
-    if(!Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>() &&
-       !Context::current()->isExtensionSupported<Extensions::GL::EXT::debug_label>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::KHR::debug>() &&
+       !Context::current().isExtensionSupported<Extensions::GL::EXT::debug_label>())
         CORRADE_SKIP("Required extension is not available");
 
     #ifndef MAGNUM_TARGET_GLES
@@ -209,7 +209,13 @@ void ShaderGLTest::addFile() {
 
 void ShaderGLTest::compile() {
     #ifndef MAGNUM_TARGET_GLES
-    constexpr Version v = Version::GL210;
+    constexpr Version v =
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL210
+        #else
+        Version::GL310
+        #endif
+        ;
     #else
     constexpr Version v = Version::GLES200;
     #endif

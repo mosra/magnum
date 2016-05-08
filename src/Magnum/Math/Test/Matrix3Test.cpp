@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -258,7 +258,7 @@ void Matrix3Test::rotation() {
 
 void Matrix3Test::reflection() {
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
 
     Vector2 normal(-1.0f, 2.0f);
 
@@ -332,7 +332,7 @@ void Matrix3Test::rotationScalingPart() {
 
 void Matrix3Test::rotationNormalizedPart() {
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
 
     Matrix3 a({1.0f,  0.0f, 8.0f},
               {1.0f,  0.1f, 7.0f},
@@ -368,7 +368,7 @@ void Matrix3Test::rotationPart() {
 
     /* Fails on non-uniform scaling */
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
     Matrix2x2 rotationScaling2 = (rotation*Matrix3::scaling(Vector2::yScale(3.5f))).rotation();
     CORRADE_COMPARE(o.str(), "Math::Matrix3::rotation(): the matrix doesn't have uniform scaling\n");
     CORRADE_COMPARE(rotationScaling2, Matrix2x2());
@@ -382,7 +382,7 @@ void Matrix3Test::uniformScalingPart() {
 
     /* Fails on non-uniform scaling */
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
     const Float nonUniformScaling = (rotation*Matrix3::scaling(Vector2::yScale(3.0f))).uniformScaling();
     CORRADE_COMPARE(o.str(), "Math::Matrix3::uniformScaling(): the matrix doesn't have uniform scaling\n");
     CORRADE_COMPARE(nonUniformScaling, 0.0f);
@@ -419,7 +419,7 @@ void Matrix3Test::invertedRigid() {
                        Matrix3::rotation(Deg(74.0f));
 
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
     (2*actual).invertedRigid();
     CORRADE_COMPARE(o.str(), "Math::Matrix3::invertedRigid(): the matrix doesn't represent rigid transformation\n");
 

@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
     Copyright © 2015 Jonathan Hale <squareys@googlemail.com>
 
@@ -56,7 +56,7 @@ void ContextTest::extensionsString() {
 }
 
 void ContextTest::isExtensionEnabled() {
-    CORRADE_VERIFY(Context::current()->isExtensionSupported<Extensions::ALC::EXT::ENUMERATION>());
+    CORRADE_VERIFY(Context::current().isExtensionSupported<Extensions::ALC::EXT::ENUMERATION>());
 }
 
 void ContextTest::hrtfStatus() {

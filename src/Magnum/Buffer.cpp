@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -41,10 +41,10 @@ namespace Magnum {
 
 #ifndef MAGNUM_TARGET_GLES
 Int Buffer::minMapAlignment() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::map_buffer_alignment>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::map_buffer_alignment>())
         return 1;
 
-    GLint& value = Context::current()->state().buffer->minMapAlignment;
+    GLint& value = Context::current().state().buffer->minMapAlignment;
 
     if(value == 0)
         glGetIntegerv(GL_MIN_MAP_BUFFER_ALIGNMENT, &value);
@@ -57,13 +57,13 @@ Int Buffer::minMapAlignment() {
 #ifndef MAGNUM_TARGET_WEBGL
 Int Buffer::maxAtomicCounterBindings() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>())
     #else
-    if(!Context::current()->isVersionSupported(Version::GLES310))
+    if(!Context::current().isVersionSupported(Version::GLES310))
     #endif
         return 0;
 
-    GLint& value = Context::current()->state().buffer->maxAtomicCounterBindings;
+    GLint& value = Context::current().state().buffer->maxAtomicCounterBindings;
 
     if(value == 0)
         glGetIntegerv(GL_MAX_ATOMIC_COUNTER_BUFFER_BINDINGS, &value);
@@ -73,13 +73,13 @@ Int Buffer::maxAtomicCounterBindings() {
 
 Int Buffer::maxShaderStorageBindings() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_storage_buffer_object>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::shader_storage_buffer_object>())
     #else
-    if(!Context::current()->isVersionSupported(Version::GLES310))
+    if(!Context::current().isVersionSupported(Version::GLES310))
     #endif
         return 0;
 
-    GLint& value = Context::current()->state().buffer->maxShaderStorageBindings;
+    GLint& value = Context::current().state().buffer->maxShaderStorageBindings;
 
     if(value == 0)
         glGetIntegerv(GL_MAX_SHADER_STORAGE_BUFFER_BINDINGS, &value);
@@ -90,11 +90,11 @@ Int Buffer::maxShaderStorageBindings() {
 
 Int Buffer::uniformOffsetAlignment() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::uniform_buffer_object>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::uniform_buffer_object>())
         return 1;
     #endif
 
-    GLint& value = Context::current()->state().buffer->uniformOffsetAlignment;
+    GLint& value = Context::current().state().buffer->uniformOffsetAlignment;
 
     if(value == 0)
         glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, &value);
@@ -105,13 +105,13 @@ Int Buffer::uniformOffsetAlignment() {
 #ifndef MAGNUM_TARGET_WEBGL
 Int Buffer::shaderStorageOffsetAlignment() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_storage_buffer_object>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::shader_storage_buffer_object>())
     #else
-    if(!Context::current()->isVersionSupported(Version::GLES310))
+    if(!Context::current().isVersionSupported(Version::GLES310))
     #endif
         return 1;
 
-    GLint& value = Context::current()->state().buffer->shaderStorageOffsetAlignment;
+    GLint& value = Context::current().state().buffer->shaderStorageOffsetAlignment;
 
     if(value == 0)
         glGetIntegerv(GL_SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT, &value);
@@ -122,11 +122,11 @@ Int Buffer::shaderStorageOffsetAlignment() {
 
 Int Buffer::maxUniformBindings() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::uniform_buffer_object>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::uniform_buffer_object>())
         return 0;
     #endif
 
-    GLint& value = Context::current()->state().buffer->maxUniformBindings;
+    GLint& value = Context::current().state().buffer->maxUniformBindings;
 
     if(value == 0)
         glGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS, &value);
@@ -153,7 +153,7 @@ void Buffer::unbind(const Target target, const UnsignedInt firstIndex, const std
     CORRADE_INTERNAL_ASSERT(target == Target::Uniform);
     #endif
     #endif
-    Context::current()->state().buffer->bindBasesImplementation(target, firstIndex, {nullptr, count});
+    Context::current().state().buffer->bindBasesImplementation(target, firstIndex, {nullptr, count});
 }
 
 /** @todoc const std::initializer_list makes Doxygen grumpy */
@@ -165,7 +165,7 @@ void Buffer::bind(const Target target, const UnsignedInt firstIndex, std::initia
     CORRADE_INTERNAL_ASSERT(target == Target::Uniform || GLenum(target) == GL_TRANSFORM_FEEDBACK_BUFFER);
     #endif
     #endif
-    Context::current()->state().buffer->bindRangesImplementation(target, firstIndex, {buffers.begin(), buffers.size()});
+    Context::current().state().buffer->bindRangesImplementation(target, firstIndex, {buffers.begin(), buffers.size()});
 }
 
 /** @todoc const std::initializer_list makes Doxygen grumpy */
@@ -177,11 +177,11 @@ void Buffer::bind(const Target target, const UnsignedInt firstIndex, std::initia
     CORRADE_INTERNAL_ASSERT(target == Target::Uniform || GLenum(target) == GL_TRANSFORM_FEEDBACK_BUFFER);
     #endif
     #endif
-    Context::current()->state().buffer->bindBasesImplementation(target, firstIndex, {buffers.begin(), buffers.size()});
+    Context::current().state().buffer->bindBasesImplementation(target, firstIndex, {buffers.begin(), buffers.size()});
 }
 
 void Buffer::copy(Buffer& read, Buffer& write, const GLintptr readOffset, const GLintptr writeOffset, const GLsizeiptr size) {
-    Context::current()->state().buffer->copyImplementation(read, write, readOffset, writeOffset, size);
+    Context::current().state().buffer->copyImplementation(read, write, readOffset, writeOffset, size);
 }
 #endif
 
@@ -190,7 +190,7 @@ Buffer::Buffer(const TargetHint targetHint): _targetHint{targetHint}, _flags{Obj
     , _mappedBuffer{nullptr}
     #endif
 {
-    (this->*Context::current()->state().buffer->createImplementation)();
+    (this->*Context::current().state().buffer->createImplementation)();
     CORRADE_INTERNAL_ASSERT(_id != Implementation::State::DisengagedBinding);
 }
 
@@ -209,7 +209,7 @@ Buffer::~Buffer() {
     /* Moved out or not deleting on destruction, nothing to do */
     if(!_id || !(_flags & ObjectFlag::DeleteOnDestruction)) return;
 
-    GLuint* bindings = Context::current()->state().buffer->bindings;
+    GLuint* bindings = Context::current().state().buffer->bindings;
 
     /* Remove all current bindings from the state */
     for(std::size_t i = 1; i != Implementation::BufferState::TargetCount; ++i)
@@ -234,18 +234,18 @@ inline void Buffer::createIfNotAlready() {
 std::string Buffer::label() {
     createIfNotAlready();
     #ifndef MAGNUM_TARGET_GLES
-    return Context::current()->state().debug->getLabelImplementation(GL_BUFFER, _id);
+    return Context::current().state().debug->getLabelImplementation(GL_BUFFER, _id);
     #else
-    return Context::current()->state().debug->getLabelImplementation(GL_BUFFER_KHR, _id);
+    return Context::current().state().debug->getLabelImplementation(GL_BUFFER_KHR, _id);
     #endif
 }
 
 Buffer& Buffer::setLabelInternal(const Containers::ArrayView<const char> label) {
     createIfNotAlready();
     #ifndef MAGNUM_TARGET_GLES
-    Context::current()->state().debug->labelImplementation(GL_BUFFER, _id, label);
+    Context::current().state().debug->labelImplementation(GL_BUFFER, _id, label);
     #else
-    Context::current()->state().debug->labelImplementation(GL_BUFFER_KHR, _id, label);
+    Context::current().state().debug->labelImplementation(GL_BUFFER_KHR, _id, label);
     #endif
     return *this;
 }
@@ -253,7 +253,7 @@ Buffer& Buffer::setLabelInternal(const Containers::ArrayView<const char> label) 
 
 void Buffer::bindInternal(const TargetHint target, Buffer* const buffer) {
     const GLuint id = buffer ? buffer->_id : 0;
-    GLuint& bound = Context::current()->state().buffer->bindings[Implementation::BufferState::indexForTarget(target)];
+    GLuint& bound = Context::current().state().buffer->bindings[Implementation::BufferState::indexForTarget(target)];
 
     /* Already bound, nothing to do */
     if(bound == id) return;
@@ -265,7 +265,7 @@ void Buffer::bindInternal(const TargetHint target, Buffer* const buffer) {
 }
 
 auto Buffer::bindSomewhereInternal(const TargetHint hint) -> TargetHint {
-    GLuint* bindings = Context::current()->state().buffer->bindings;
+    GLuint* bindings = Context::current().state().buffer->bindings;
     GLuint& hintBinding = bindings[Implementation::BufferState::indexForTarget(hint)];
 
     /* Shortcut - if already bound to hint, return */
@@ -315,33 +315,33 @@ Int Buffer::size() {
      *      couldn't find any matching extension, though)
      */
     GLint size;
-    (this->*Context::current()->state().buffer->getParameterImplementation)(GL_BUFFER_SIZE, &size);
+    (this->*Context::current().state().buffer->getParameterImplementation)(GL_BUFFER_SIZE, &size);
     return size;
 }
 
 Buffer& Buffer::setData(const Containers::ArrayView<const void> data, const BufferUsage usage) {
-    (this->*Context::current()->state().buffer->dataImplementation)(data.size(), data, usage);
+    (this->*Context::current().state().buffer->dataImplementation)(data.size(), data, usage);
     return *this;
 }
 
 Buffer& Buffer::setSubData(const GLintptr offset, const Containers::ArrayView<const void> data) {
-    (this->*Context::current()->state().buffer->subDataImplementation)(offset, data.size(), data);
+    (this->*Context::current().state().buffer->subDataImplementation)(offset, data.size(), data);
     return *this;
 }
 
 Buffer& Buffer::invalidateData() {
-    (this->*Context::current()->state().buffer->invalidateImplementation)();
+    (this->*Context::current().state().buffer->invalidateImplementation)();
     return *this;
 }
 
 Buffer& Buffer::invalidateSubData(const GLintptr offset, const GLsizeiptr length) {
-    (this->*Context::current()->state().buffer->invalidateSubImplementation)(offset, length);
+    (this->*Context::current().state().buffer->invalidateSubImplementation)(offset, length);
     return *this;
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
 void* Buffer::map(const MapAccess access) {
-    return (this->*Context::current()->state().buffer->mapImplementation)(access);
+    return (this->*Context::current().state().buffer->mapImplementation)(access);
 }
 
 #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_NACL)
@@ -352,15 +352,15 @@ void* Buffer::mapSub(const GLintptr offset, const GLsizeiptr length, const MapAc
 #endif
 
 void* Buffer::map(const GLintptr offset, const GLsizeiptr length, const MapFlags flags) {
-    return (this->*Context::current()->state().buffer->mapRangeImplementation)(offset, length, flags);
+    return (this->*Context::current().state().buffer->mapRangeImplementation)(offset, length, flags);
 }
 
 Buffer& Buffer::flushMappedRange(const GLintptr offset, const GLsizeiptr length) {
-    (this->*Context::current()->state().buffer->flushMappedRangeImplementation)(offset, length);
+    (this->*Context::current().state().buffer->flushMappedRangeImplementation)(offset, length);
     return *this;
 }
 
-bool Buffer::unmap() { return (this->*Context::current()->state().buffer->unmapImplementation)(); }
+bool Buffer::unmap() { return (this->*Context::current().state().buffer->unmapImplementation)(); }
 
 #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_NACL)
 void Buffer::unmapSub() {
@@ -373,7 +373,7 @@ void Buffer::unmapSub() {
 
 #ifndef MAGNUM_TARGET_GLES
 void Buffer::subDataInternal(GLintptr offset, GLsizeiptr size, GLvoid* data) {
-    (this->*Context::current()->state().buffer->getSubDataImplementation)(offset, size, data);
+    (this->*Context::current().state().buffer->getSubDataImplementation)(offset, size, data);
 }
 #endif
 

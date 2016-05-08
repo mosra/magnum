@@ -141,6 +141,7 @@ cmake .. \
     ${static_build_flag} \
     ${gl_flags} \
     -DWITH_AUDIO=ON \
+    -DWITH_GLFWAPPLICATION=ON \
     -DWITH_GLUTAPPLICATION=ON \
     -DWITH_GLXAPPLICATION=ON \
     -DWITH_SDL2APPLICATION=ON \

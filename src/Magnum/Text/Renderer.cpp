@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -93,13 +93,12 @@ std::tuple<std::vector<Vertex>, Range2D> renderVerticesInternal(AbstractFont& fo
 
         /* Layout the line */
         const auto layouter = font.layout(cache, size, line);
-        const UnsignedInt vertexCount = layouter->glyphCount()*4;
 
         /* Verify that we don't reallocate anything. The only problem might
            arise when the layouter decides to compose one character from more
            than one glyph (i.e. accents). Will remove the assert when this
            issue arises. */
-        CORRADE_INTERNAL_ASSERT(vertices.size()+vertexCount <= vertices.capacity());
+        CORRADE_INTERNAL_ASSERT(vertices.size() + layouter->glyphCount()*4 <= vertices.capacity());
 
         /* Bounds of rendered line */
         Range2D lineRectangle;
@@ -307,11 +306,11 @@ AbstractRenderer::AbstractRenderer(AbstractFont& font, const GlyphCache& cache, 
     #ifndef MAGNUM_TARGET_GLES
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::map_buffer_range);
     #elif defined(MAGNUM_TARGET_GLES2) && !defined(CORRADE_TARGET_EMSCRIPTEN)
-    if(Context::current()->isExtensionSupported<Extensions::GL::EXT::map_buffer_range>()) {
+    if(Context::current().isExtensionSupported<Extensions::GL::EXT::map_buffer_range>()) {
         bufferMapImplementation = &AbstractRenderer::bufferMapImplementationRange;
     }
     #ifdef CORRADE_TARGET_NACL
-    else if(Context::current()->isExtensionSupported<Extensions::GL::CHROMIUM::map_sub>()) {
+    else if(Context::current().isExtensionSupported<Extensions::GL::CHROMIUM::map_sub>()) {
         bufferMapImplementation = &AbstractRenderer::bufferMapImplementationSub;
         bufferUnmapImplementation = &AbstractRenderer::bufferUnmapImplementationSub;
     }

@@ -837,7 +837,7 @@ FLEXTGL_EXPORT void(APIENTRY *flextglBlitNamedFramebuffer)(GLuint, GLuint, GLint
 FLEXTGL_EXPORT GLenum(APIENTRY *flextglCheckNamedFramebufferStatus)(GLuint, GLenum) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglClearNamedBufferData)(GLuint, GLenum, GLenum, GLenum, const void *) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglClearNamedBufferSubData)(GLuint, GLenum, GLintptr, GLsizeiptr, GLenum, GLenum, const void *) = nullptr;
-FLEXTGL_EXPORT void(APIENTRY *flextglClearNamedFramebufferfi)(GLuint, GLenum, const GLfloat, GLint) = nullptr;
+FLEXTGL_EXPORT void(APIENTRY *flextglClearNamedFramebufferfi)(GLuint, GLenum, GLint, GLfloat, GLint) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglClearNamedFramebufferfv)(GLuint, GLenum, GLint, const GLfloat *) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglClearNamedFramebufferiv)(GLuint, GLenum, GLint, const GLint *) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglClearNamedFramebufferuiv)(GLuint, GLenum, GLint, const GLuint *) = nullptr;

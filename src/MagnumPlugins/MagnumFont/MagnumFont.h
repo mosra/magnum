@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -42,8 +42,8 @@ built if `WITH_MAGNUMFONT` is enabled when building Magnum. To use dynamic
 plugin, you need to load `MagnumFont` plugin from `MAGNUM_PLUGINS_FONT_DIR`.
 To use static plugin or use this as a dependency of another plugin, you need to
 request `MagnumFont` component of `Magnum` package in CMake and link to
-`${MAGNUM_MAGNUMFONT_LIBRARIES}`. See @ref building, @ref cmake and
-@ref plugins for more information.
+`Magnum::MagnumFont` target. See @ref building, @ref cmake and @ref plugins for
+more information.
 
 The font consists of two files, one text file containing character and glyph
 info and one TGA file containing the glyphs in distance field format. The font
@@ -120,9 +120,9 @@ class MagnumFont: public AbstractFont {
 
         bool doIsOpened() const override;
 
-        std::pair<Float, Float> doOpenData(const std::vector<std::pair<std::string, Containers::ArrayView<const char>>>& data, Float) override;
+        Metrics doOpenData(const std::vector<std::pair<std::string, Containers::ArrayView<const char>>>& data, Float) override;
 
-        std::pair<Float, Float> doOpenFile(const std::string& filename, Float) override;
+        Metrics doOpenFile(const std::string& filename, Float) override;
 
         void doClose() override;
 
@@ -134,7 +134,7 @@ class MagnumFont: public AbstractFont {
 
         std::unique_ptr<AbstractLayouter> doLayout(const GlyphCache& cache, Float size, const std::string& text) override;
 
-        std::pair<Float, Float> openInternal(Utility::Configuration&& conf, Trade::ImageData2D&& image);
+        Metrics openInternal(Utility::Configuration&& conf, Trade::ImageData2D&& image);
 
         Data* _opened;
 };

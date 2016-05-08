@@ -1,7 +1,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -40,8 +40,9 @@ set(TgaImageConverter_HEADERS
 add_library(TgaImageConverterObjects OBJECT
     ${TgaImageConverter_SRCS}
     ${TgaImageConverter_HEADERS})
+target_include_directories(TgaImageConverterObjects PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
 if(NOT BUILD_PLUGINS_STATIC)
-    set_target_properties(TgaImageConverterObjects PROPERTIES COMPILE_FLAGS "-DTgaImageConverterObjects_EXPORTS")
+    target_compile_definitions(TgaImageConverterObjects PRIVATE "TgaImageConverterObjects_EXPORTS")
 endif()
 if(NOT BUILD_PLUGINS_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(TgaImageConverterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
@@ -55,7 +56,6 @@ add_plugin(TgaImageConverter ${MAGNUM_PLUGINS_IMAGECONVERTER_DEBUG_INSTALL_DIR} 
 if(BUILD_STATIC_PIC)
     set_target_properties(TgaImageConverter PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-
 target_link_libraries(TgaImageConverter Magnum)
 
 install(FILES ${TgaImageConverter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/TgaImageConverter)
@@ -68,5 +68,5 @@ if(BUILD_TESTS)
     add_subdirectory(Test)
 endif()
 
-# Magnum TgaImageConverter library for superprojects
-set(MAGNUM_TGAIMAGECONVERTER_LIBRARY TgaImageConverter CACHE INTERNAL "")
+# Magnum TgaImageConverter target alias for superprojects
+add_library(Magnum::TgaImageConverter ALIAS TgaImageConverter)

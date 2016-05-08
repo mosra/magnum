@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -197,12 +197,6 @@ template<> struct TypeTraits<long double>: Implementation::TypeTraitsFloatingPoi
 };
 
 namespace Implementation {
-
-/* Proper comparison should be with epsilon^2, but the value is not
-   representable in given precision. Comparing to epsilon instead. */
-template<class T> inline bool isZeroSquared(T lengthSquared) {
-    return std::abs(lengthSquared) < TypeTraits<T>::epsilon();
-}
 
 /* Comparing squared length to 1 is not sufficient to compare within range
    [1 - epsilon, 1 + epsilon], as e.g. Quaternion with dot() = 1 + 1e-7 when

@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -65,9 +65,9 @@ void MagnumFontConverterGLTest::exportFont() {
         private:
             void doClose() { _opened = false; }
             bool doIsOpened() const { return _opened; }
-            std::pair<Float, Float> doOpenFile(const std::string&, Float) {
+            Metrics doOpenFile(const std::string&, Float) {
                 _opened = true;
-                return {16.0f, 39.7333f};
+                return {16.0f, 25.0f, -10.0f, 39.7333f};
             }
             Features doFeatures() const { return {}; }
             std::unique_ptr<AbstractLayouter> doLayout(const GlyphCache&, Float, const std::string&) { return nullptr; }

@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -46,7 +46,8 @@ Debug& operator<<(Debug& debug, Version value) {
         _c(GL430, "OpenGL 4.3")
         _c(GL440, "OpenGL 4.4")
         _c(GL450, "OpenGL 4.5")
-        #elif defined(MAGNUM_TARGET_WEBGL)
+        #endif
+        #ifdef MAGNUM_TARGET_WEBGL
         _c(GLES200, "WebGL 1.0")
         _c(GLES300, "WebGL 2.0")
         #else

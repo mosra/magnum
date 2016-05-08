@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -87,15 +87,11 @@ properly set **absolute** path to `toolchains/modules/` directory containing
 `Platform/Android.cmake`.
 
     mkdir build-android-arm && cd build-android-arm
-    cmake .. \
-        -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
-        -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Android-ARM.cmake"
+    cmake .. -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Android-ARM.cmake"
     cmake --build .
 
     mkdir build-android-x86 && cd build-android-x86
-    cmake .. \
-        -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
-        -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Android-x86.cmake"
+    cmake .. -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Android-x86.cmake"
     cmake --build .
 
 See @ref cmake for more information.
@@ -112,13 +108,11 @@ can be then installed directly on the device or emulator using `adb install`.
 For CMake you need to copy `FindEGL.cmake` and `FindOpenGLES2.cmake` (or
 `FindOpenGLES3.cmake`) from `modules/` directory in Magnum source to `modules/`
 dir in your project (so it is able to find EGL and OpenGL ES libraries).
-Request `AndroidApplication` component, add
-`${MAGNUM_ANDROIDAPPLICATION_INCLUDE_DIRS}` to include path and link to
-`${MAGNUM_ANDROIDAPPLICATION_LIBRARIES}`. If no other application is requested,
-you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}` and
-`${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting. Again, see
-@ref building and @ref cmake for more information. Note that unlike on other
-platforms you need to create *shared library* instead of executable. The
+Request `AndroidApplication` component of `Magnum` package and link to
+`Magnum::AndroidApplication` target. If no other application is requested, you
+can also use generic `Magnum::Application` alias to simplify porting. Again,
+see @ref building and @ref cmake for more information. Note that unlike on
+other platforms you need to create *shared library* instead of executable. The
 resulting binary then needs to be copied to `lib/armeabi-v7a` and `lib/x86`,
 you can do that automatically in CMake using the following commands:
 

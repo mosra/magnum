@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -33,11 +33,7 @@
 
 namespace Magnum { namespace Implementation {
 
-#ifndef CORRADE_MSVC2015_COMPATIBILITY
 constexpr const Range2Di FramebufferState::DisengagedViewport;
-#else
-const Range2Di FramebufferState::DisengagedViewport{{}, {-1, -1}};
-#endif
 
 FramebufferState::FramebufferState(Context& context, std::vector<std::string>& extensions): readBinding{0}, drawBinding{0}, renderbufferBinding{0}, maxDrawBuffers{0}, maxColorAttachments{0}, maxRenderbufferSize{0},
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))

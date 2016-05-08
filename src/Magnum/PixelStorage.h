@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -414,25 +414,10 @@ namespace Implementation {
     }
     #endif
 
-    /* Use in compressed image upload functions */
     #ifndef MAGNUM_TARGET_GLES
-    template<class T> std::size_t occupiedCompressedImageDataSize(const T& image, std::size_t dataSize) {
+    template<std::size_t dimensions, class T> std::pair<std::size_t, std::size_t> compressedImageDataOffsetSizeFor(const T& image, const Math::Vector<dimensions, Int>& size, std::size_t dataSize) {
         if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize())
-            return dataSize;
-
-        return ((Vector3i::pad(image.size(), 1) + image.storage().compressedBlockSize() - Vector3i{1})/image.storage().compressedBlockSize()).product()*image.storage().compressedBlockDataSize();
-    }
-    #else
-    template<class T> std::size_t occupiedCompressedImageDataSize(const T&, std::size_t dataSize) {
-        return dataSize;
-    }
-    #endif
-
-    #ifndef MAGNUM_TARGET_GLES
-    /* Used in image query functions */
-    template<std::size_t dimensions, class T> std::size_t compressedImageDataSizeFor(const T& image, const Math::Vector<dimensions, Int>& size, std::size_t dataSize) {
-        if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize())
-            return dataSize;
+            return {0, dataSize};
 
         std::size_t offset;
         Math::Vector3<std::size_t> blockCount;
@@ -441,7 +426,22 @@ namespace Implementation {
 
         const auto realBlockCount = Math::Vector3<std::size_t>{(Vector3i::pad(size, 1) + image.storage().compressedBlockSize() - Vector3i{1})/image.storage().compressedBlockSize()};
 
-        return offset + (blockCount.product() - (blockCount.x() - realBlockCount.x()) - (blockCount.y() - realBlockCount.y())*blockCount.x())*blockDataSize;
+        return {offset, (blockCount.product() - (blockCount.x() - realBlockCount.x()) - (blockCount.y() - realBlockCount.y())*blockCount.x())*blockDataSize};
+    }
+
+    /* Used in image query functions */
+    template<std::size_t dimensions, class T> std::size_t compressedImageDataSizeFor(const T& image, const Math::Vector<dimensions, Int>& size, std::size_t dataSize) {
+        auto r = compressedImageDataOffsetSizeFor(image, size, dataSize);
+        return r.first + r.second;
+    }
+
+    /* Use in compressed image upload functions */
+    template<class T> std::size_t occupiedCompressedImageDataSize(const T& image, std::size_t dataSize) {
+        return compressedImageDataOffsetSizeFor(image, image.size(), dataSize).second;
+    }
+    #else
+    template<class T> std::size_t occupiedCompressedImageDataSize(const T&, std::size_t dataSize) {
+        return dataSize;
     }
     #endif
 

@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -46,22 +46,42 @@ FlatGLTest::FlatGLTest() {
 
 void FlatGLTest::compile2D() {
     Shaders::Flat2D shader;
-    CORRADE_VERIFY(shader.validate().first);
+    {
+        #ifdef CORRADE_TARGET_APPLE
+        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
 }
 
 void FlatGLTest::compile3D() {
     Shaders::Flat3D shader;
-    CORRADE_VERIFY(shader.validate().first);
+    {
+        #ifdef CORRADE_TARGET_APPLE
+        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
 }
 
 void FlatGLTest::compile2DTextured() {
     Shaders::Flat2D shader(Shaders::Flat2D::Flag::Textured);
-    CORRADE_VERIFY(shader.validate().first);
+    {
+        #ifdef CORRADE_TARGET_APPLE
+        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
 }
 
 void FlatGLTest::compile3DTextured() {
     Shaders::Flat3D shader(Shaders::Flat3D::Flag::Textured);
-    CORRADE_VERIFY(shader.validate().first);
+    {
+        #ifdef CORRADE_TARGET_APPLE
+        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
 }
 
 }}}

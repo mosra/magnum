@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -30,6 +30,7 @@
  */
 
 #include <memory>
+#include <Corrade/Containers/EnumSet.h>
 
 #include "Magnum/OpenGL.h"
 #include <GL/glx.h>
@@ -75,13 +76,11 @@ See @ref cmake for more information.
 
 ## General usage
 
-In CMake you need to request `WindowlessGlxApplication` component, add
-`${MAGNUM_WINDOWLESSGLXAPPLICATION_INCLUDE_DIRS}` to include path and link to
-`${MAGNUM_WINDOWLESSGLXAPPLICATION_LIBRARIES}`. If no other windowless
-application is requested, you can also use generic
-`${MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS}` and
-`${MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES}` aliases to simplify porting. Again,
-see @ref building and @ref cmake for more information.
+In CMake you need to request `WindowlessGlxApplication` component of `Magnum`
+package and link to `Magnum::WindowlessGlxApplication` target. If no other
+windowless application is requested, you can also use generic
+`Magnum::WindowlessApplication` alias to simplify porting. Again, see
+@ref building and @ref cmake for more information.
 
 Place your code into @ref exec(). The subclass can be then used directly in
 `main()` -- see convenience macro @ref MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN().
@@ -176,7 +175,44 @@ class WindowlessGlxApplication {
 */
 class WindowlessGlxApplication::Configuration {
     public:
+        /**
+         * @brief Context flag
+         *
+         * @see @ref Flags, @ref setFlags(), @ref Context::Flag
+         */
+        enum class Flag: int {
+            Debug = GLX_CONTEXT_DEBUG_BIT_ARB   /**< Create debug context */
+        };
+
+        /**
+         * @brief Context flags
+         *
+         * @see @ref setFlags(), @ref Context::Flags
+         */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        typedef Containers::EnumSet<Flag, GLX_CONTEXT_DEBUG_BIT_ARB> Flags;
+        #else
+        typedef Containers::EnumSet<Flag> Flags;
+        #endif
+
         constexpr /*implicit*/ Configuration() {}
+
+        /** @brief Context flags */
+        Flags flags() const { return _flags; }
+
+        /**
+         * @brief Set context flags
+         * @return Reference to self (for method chaining)
+         *
+         * Default is no flag. See also @ref Context::flags().
+         */
+        Configuration& setFlags(Flags flags) {
+            _flags = flags;
+            return *this;
+        }
+
+    private:
+        Flags _flags;
 };
 
 /** @hideinitializer

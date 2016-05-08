@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -77,7 +77,7 @@ void WindowlessWindowsEglApplication::createContext(const Configuration& configu
     if(!tryCreateContext(configuration)) std::exit(1);
 }
 
-bool WindowlessWindowsEglApplication::tryCreateContext(const Configuration&) {
+bool WindowlessWindowsEglApplication::tryCreateContext(const Configuration& configuration) {
     CORRADE_ASSERT(_context->version() == Version::None, "Platform::WindowlessWindowsEglApplication::tryCreateContext(): context already created", false);
 
     /* Initialize */
@@ -127,7 +127,7 @@ bool WindowlessWindowsEglApplication::tryCreateContext(const Configuration&) {
         return false;
     }
 
-    static const EGLint attributes[] = {
+    const EGLint attributes[] = {
         #ifdef MAGNUM_TARGET_GLES
         EGL_CONTEXT_CLIENT_VERSION,
             #ifdef MAGNUM_TARGET_GLES3
@@ -138,7 +138,7 @@ bool WindowlessWindowsEglApplication::tryCreateContext(const Configuration&) {
             #error unsupported OpenGL ES version
             #endif
         #endif
-
+        EGL_CONTEXT_FLAGS_KHR, EGLint(configuration.flags()),
         EGL_NONE
     };
 

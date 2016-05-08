@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -51,8 +51,8 @@ GlyphCache::GlyphCache(const Vector2i& originalSize, const Vector2i& size, const
     const TextureFormat internalFormat = TextureFormat::R8;
     #elif !defined(MAGNUM_TARGET_WEBGL)
     TextureFormat internalFormat;
-    if(Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_rg>()) {
-        internalFormat = Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_storage>() ?
+    if(Context::current().isExtensionSupported<Extensions::GL::EXT::texture_rg>()) {
+        internalFormat = Context::current().isExtensionSupported<Extensions::GL::EXT::texture_storage>() ?
             TextureFormat::R8 : TextureFormat::Red;
     } else internalFormat = TextureFormat::Luminance;
     #else

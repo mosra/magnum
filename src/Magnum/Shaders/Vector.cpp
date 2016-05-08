@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -50,9 +50,9 @@ template<UnsignedInt dimensions> Vector<dimensions>::Vector(): transformationPro
     Utility::Resource rs("MagnumShaders");
 
     #ifndef MAGNUM_TARGET_GLES
-    const Version version = Context::current()->supportedVersion({Version::GL320, Version::GL310, Version::GL300, Version::GL210});
+    const Version version = Context::current().supportedVersion({Version::GL320, Version::GL310, Version::GL300, Version::GL210});
     #else
-    const Version version = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
+    const Version version = Context::current().supportedVersion({Version::GLES300, Version::GLES200});
     #endif
 
     Shader vert = Implementation::createCompatibilityShader(rs, version, Shader::Type::Vertex);
@@ -67,9 +67,9 @@ template<UnsignedInt dimensions> Vector<dimensions>::Vector(): transformationPro
     AbstractShaderProgram::attachShaders({vert,  frag});
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(version))
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(version))
     #else
-    if(!Context::current()->isVersionSupported(Version::GLES300))
+    if(!Context::current().isVersionSupported(Version::GLES300))
     #endif
     {
         AbstractShaderProgram::bindAttributeLocation(AbstractVector<dimensions>::Position::Location, "position");
@@ -79,7 +79,7 @@ template<UnsignedInt dimensions> Vector<dimensions>::Vector(): transformationPro
     CORRADE_INTERNAL_ASSERT_OUTPUT(AbstractShaderProgram::link());
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>(version))
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>(version))
     #endif
     {
         transformationProjectionMatrixUniform = AbstractShaderProgram::uniformLocation("transformationProjectionMatrix");
@@ -88,7 +88,7 @@ template<UnsignedInt dimensions> Vector<dimensions>::Vector(): transformationPro
     }
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shading_language_420pack>(version))
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::shading_language_420pack>(version))
     #endif
     {
         AbstractShaderProgram::setUniform(AbstractShaderProgram::uniformLocation("vectorTexture"), AbstractVector<dimensions>::VectorTextureLayer);

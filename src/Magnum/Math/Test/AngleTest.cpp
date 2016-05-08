@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -121,6 +121,8 @@ void AngleTest::constructNoInit() {
 }
 
 void AngleTest::literals() {
+    using namespace Literals;
+
     #ifndef MAGNUM_TARGET_GLES
     constexpr auto a = 25.0_deg;
     CORRADE_VERIFY((std::is_same<decltype(a), const Degd>::value));

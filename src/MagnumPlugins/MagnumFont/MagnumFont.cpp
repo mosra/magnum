@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -68,7 +68,7 @@ auto MagnumFont::doFeatures() const -> Features { return Feature::OpenData|Featu
 
 bool MagnumFont::doIsOpened() const { return _opened; }
 
-std::pair<Float, Float> MagnumFont::doOpenData(const std::vector<std::pair<std::string, Containers::ArrayView<const char>>>& data, const Float) {
+auto MagnumFont::doOpenData(const std::vector<std::pair<std::string, Containers::ArrayView<const char>>>& data, const Float) -> Metrics {
     /* We need just the configuration file and image file */
     if(data.size() != 2) {
         Error() << "Text::MagnumFont::openData(): wanted two files, got" << data.size();
@@ -112,7 +112,7 @@ std::pair<Float, Float> MagnumFont::doOpenData(const std::vector<std::pair<std::
     return openInternal(std::move(conf), std::move(*image));
 }
 
-std::pair<Float, Float> MagnumFont::doOpenFile(const std::string& filename, Float) {
+auto MagnumFont::doOpenFile(const std::string& filename, Float) -> Metrics {
     /* Open the configuration file */
     Utility::Configuration conf(filename, Utility::Configuration::Flag::ReadOnly|Utility::Configuration::Flag::SkipComments);
     if(!conf.isValid() || conf.isEmpty()) {
@@ -143,7 +143,7 @@ std::pair<Float, Float> MagnumFont::doOpenFile(const std::string& filename, Floa
     return openInternal(std::move(conf), std::move(*image));
 }
 
-std::pair<Float, Float> MagnumFont::openInternal(Utility::Configuration&& conf, Trade::ImageData2D&& image) {
+auto MagnumFont::openInternal(Utility::Configuration&& conf, Trade::ImageData2D&& image) -> Metrics {
     /* Everything okay, save the data internally */
     _opened = new Data{std::move(conf), std::move(image), std::unordered_map<char32_t, UnsignedInt>{}, {}};
 
@@ -161,7 +161,10 @@ std::pair<Float, Float> MagnumFont::openInternal(Utility::Configuration&& conf, 
         _opened->glyphId.emplace(c->value<char32_t>("unicode"), glyphId);
     }
 
-    return {_opened->conf.value<Float>("fontSize"), _opened->conf.value<Float>("lineHeight")};
+    return {_opened->conf.value<Float>("fontSize"),
+            _opened->conf.value<Float>("ascent"),
+            _opened->conf.value<Float>("descent"),
+            _opened->conf.value<Float>("lineHeight")};
 }
 
 void MagnumFont::doClose() {

@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -49,7 +49,7 @@ namespace Magnum {
 
 #ifndef MAGNUM_TARGET_GLES2
 Float AbstractTexture::maxLodBias() {
-    GLfloat& value = Context::current()->state().texture->maxLodBias;
+    GLfloat& value = Context::current().state().texture->maxLodBias;
 
     /* Get the value, if not already cached */
     if(value == 0.0f)
@@ -62,13 +62,13 @@ Float AbstractTexture::maxLodBias() {
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 Int AbstractTexture::maxColorSamples() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
     #else
-    if(!Context::current()->isVersionSupported(Version::GLES310))
+    if(!Context::current().isVersionSupported(Version::GLES310))
     #endif
         return 0;
 
-    GLint& value = Context::current()->state().texture->maxColorSamples;
+    GLint& value = Context::current().state().texture->maxColorSamples;
 
     /* Get the value, if not already cached */
     if(value == 0)
@@ -79,13 +79,13 @@ Int AbstractTexture::maxColorSamples() {
 
 Int AbstractTexture::maxDepthSamples() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
     #else
-    if(!Context::current()->isVersionSupported(Version::GLES310))
+    if(!Context::current().isVersionSupported(Version::GLES310))
     #endif
         return 0;
 
-    GLint& value = Context::current()->state().texture->maxDepthSamples;
+    GLint& value = Context::current().state().texture->maxDepthSamples;
 
     /* Get the value, if not already cached */
     if(value == 0)
@@ -96,13 +96,13 @@ Int AbstractTexture::maxDepthSamples() {
 
 Int AbstractTexture::maxIntegerSamples() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
     #else
-    if(!Context::current()->isVersionSupported(Version::GLES310))
+    if(!Context::current().isVersionSupported(Version::GLES310))
     #endif
         return 0;
 
-    GLint& value = Context::current()->state().texture->maxIntegerSamples;
+    GLint& value = Context::current().state().texture->maxIntegerSamples;
 
     /* Get the value, if not already cached */
     if(value == 0)
@@ -113,18 +113,18 @@ Int AbstractTexture::maxIntegerSamples() {
 #endif
 
 void AbstractTexture::unbind(const Int textureUnit) {
-    Implementation::TextureState& textureState = *Context::current()->state().texture;
+    Implementation::TextureState& textureState = *Context::current().state().texture;
 
     /* If given texture unit is already unbound, nothing to do */
     if(textureState.bindings[textureUnit].second == 0) return;
 
     /* Unbind the texture, reset state tracker */
-    Context::current()->state().texture->unbindImplementation(textureUnit);
+    Context::current().state().texture->unbindImplementation(textureUnit);
     textureState.bindings[textureUnit] = {};
 }
 
 void AbstractTexture::unbindImplementationDefault(const GLint textureUnit) {
-    Implementation::TextureState& textureState = *Context::current()->state().texture;
+    Implementation::TextureState& textureState = *Context::current().state().texture;
 
     /* Activate given texture unit if not already active, update state tracker */
     if(textureState.currentTextureUnit != textureUnit)
@@ -141,12 +141,12 @@ void AbstractTexture::unbindImplementationMulti(const GLint textureUnit) {
 }
 
 void AbstractTexture::unbindImplementationDSA(const GLint textureUnit) {
-    CORRADE_INTERNAL_ASSERT(Context::current()->state().texture->bindings[textureUnit].first != 0);
+    CORRADE_INTERNAL_ASSERT(Context::current().state().texture->bindings[textureUnit].first != 0);
     glBindTextureUnit(textureUnit, 0);
 }
 
 void AbstractTexture::unbindImplementationDSAEXT(const GLint textureUnit) {
-    Implementation::TextureState& textureState = *Context::current()->state().texture;
+    Implementation::TextureState& textureState = *Context::current().state().texture;
 
     CORRADE_INTERNAL_ASSERT(textureState.bindings[textureUnit].first != 0);
     glBindMultiTextureEXT(GL_TEXTURE0 + textureUnit, textureState.bindings[textureUnit].first, 0);
@@ -155,13 +155,13 @@ void AbstractTexture::unbindImplementationDSAEXT(const GLint textureUnit) {
 
 void AbstractTexture::unbind(const Int firstTextureUnit, const std::size_t count) {
     /* State tracker is updated in the implementations */
-    Context::current()->state().texture->bindMultiImplementation(firstTextureUnit, {nullptr, count});
+    Context::current().state().texture->bindMultiImplementation(firstTextureUnit, {nullptr, count});
 }
 
 /** @todoc const std::initializer_list makes Doxygen grumpy */
 void AbstractTexture::bind(const Int firstTextureUnit, std::initializer_list<AbstractTexture*> textures) {
     /* State tracker is updated in the implementations */
-    Context::current()->state().texture->bindMultiImplementation(firstTextureUnit, {textures.begin(), textures.size()});
+    Context::current().state().texture->bindMultiImplementation(firstTextureUnit, {textures.begin(), textures.size()});
 }
 
 void AbstractTexture::bindImplementationFallback(const GLint firstTextureUnit, const Containers::ArrayView<AbstractTexture* const> textures) {
@@ -172,7 +172,7 @@ void AbstractTexture::bindImplementationFallback(const GLint firstTextureUnit, c
 #ifndef MAGNUM_TARGET_GLES
 /** @todoc const Containers::ArrayView makes Doxygen grumpy */
 void AbstractTexture::bindImplementationMulti(const GLint firstTextureUnit, Containers::ArrayView<AbstractTexture* const> textures) {
-    Implementation::TextureState& textureState = *Context::current()->state().texture;
+    Implementation::TextureState& textureState = *Context::current().state().texture;
 
     /* Create array of IDs and also update bindings in state tracker */
     /** @todo VLAs */
@@ -197,8 +197,25 @@ void AbstractTexture::bindImplementationMulti(const GLint firstTextureUnit, Cont
 }
 #endif
 
+#ifndef MAGNUM_TARGET_GLES
+Int AbstractTexture::compressedBlockDataSize(const GLenum target, const TextureFormat format) {
+    return (Context::current().state().texture->compressedBlockDataSizeImplementation)(target, format);
+}
+
+Int AbstractTexture::compressedBlockDataSizeImplementationDefault(const GLenum target, const TextureFormat format) {
+    GLint value;
+    glGetInternalformativ(target, GLenum(format), GL_TEXTURE_COMPRESSED_BLOCK_SIZE, 1, &value);
+    return value;
+}
+
+Int AbstractTexture::compressedBlockDataSizeImplementationBitsWorkaround(const GLenum target, const TextureFormat format) {
+    /* NVidia (358.16) reports the value in bits instead of bytes */
+    return compressedBlockDataSizeImplementationDefault(target, format)/8;
+}
+#endif
+
 AbstractTexture::AbstractTexture(GLenum target): _target{target}, _flags{ObjectFlag::DeleteOnDestruction} {
-    (this->*Context::current()->state().texture->createImplementation)();
+    (this->*Context::current().state().texture->createImplementation)();
     CORRADE_INTERNAL_ASSERT(_id != Implementation::State::DisengagedBinding);
 }
 
@@ -218,11 +235,18 @@ AbstractTexture::~AbstractTexture() {
     if(!_id || !(_flags & ObjectFlag::DeleteOnDestruction)) return;
 
     /* Remove all bindings */
-    for(auto& binding: Context::current()->state().texture->bindings)
-    {
+    for(auto& binding: Context::current().state().texture->bindings) {
         /* MSVC 2015 needs the parentheses around */
         if(binding.second == _id) binding = {};
     }
+
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    /* Remove all image bindings */
+    for(auto& binding: Context::current().state().texture->imageBindings) {
+        /* MSVC 2015 needs the parentheses around */
+        if(std::get<0>(binding) == _id) binding = {};
+    }
+    #endif
 
     glDeleteTextures(1, &_id);
 }
@@ -242,18 +266,74 @@ void AbstractTexture::createIfNotAlready() {
 #ifndef MAGNUM_TARGET_WEBGL
 std::string AbstractTexture::label() {
     createIfNotAlready();
-    return Context::current()->state().debug->getLabelImplementation(GL_TEXTURE, _id);
+    return Context::current().state().debug->getLabelImplementation(GL_TEXTURE, _id);
 }
 
 AbstractTexture& AbstractTexture::setLabelInternal(const Containers::ArrayView<const char> label) {
     createIfNotAlready();
-    Context::current()->state().debug->labelImplementation(GL_TEXTURE, _id, label);
+    Context::current().state().debug->labelImplementation(GL_TEXTURE, _id, label);
     return *this;
 }
 #endif
 
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+void AbstractTexture::unbindImage(const Int imageUnit) {
+    Implementation::TextureState& textureState = *Context::current().state().texture;
+
+    /* If already unbound in given image unit, nothing to do */
+    if(std::get<0>(textureState.imageBindings[imageUnit]) == 0) return;
+
+    /* Update state tracker, bind the texture to the unit */
+    std::get<0>(textureState.imageBindings[imageUnit]) = 0;
+    glBindImageTexture(imageUnit, 0, 0, false, 0, GL_READ_ONLY, GL_R8);
+}
+
+#ifndef MAGNUM_TARGET_GLES
+/** @todoc const Containers::ArrayView makes Doxygen grumpy */
+void AbstractTexture::bindImagesInternal(const Int firstImageUnit, Containers::ArrayView<AbstractTexture* const> textures) {
+    Implementation::TextureState& textureState = *Context::current().state().texture;
+
+    /* Create array of IDs and also update bindings in state tracker */
+    Containers::Array<GLuint> ids{textures ? textures.size() : 0};
+    bool different = false;
+    for(std::size_t i = 0; i != textures.size(); ++i) {
+        const std::tuple<GLuint, GLint, GLboolean, GLint, GLenum> state = textures && textures[i] ?
+            std::tuple<GLuint, GLint, GLboolean, GLint, GLenum>(textures[i]->_id, 0, true, 0, GL_READ_WRITE) :
+            std::tuple<GLuint, GLint, GLboolean, GLint, GLenum>(0, 0, false, 0, GL_READ_ONLY);
+
+        if(textures) {
+            if(textures[i]) {
+                textures[i]->createIfNotAlready();
+            }
+            ids[i] = std::get<0>(state);
+        }
+
+        if(textureState.imageBindings[firstImageUnit + i] != state) {
+            different = true;
+            textureState.imageBindings[firstImageUnit + i] = state;
+        }
+    }
+
+    /* Avoid doing the binding if there is nothing different */
+    if(different) glBindImageTextures(firstImageUnit, textures.size(), ids);
+}
+#endif
+
+void AbstractTexture::bindImageInternal(const Int imageUnit, const Int level, const bool layered, const Int layer, const ImageAccess access, const ImageFormat format) {
+    Implementation::TextureState& textureState = *Context::current().state().texture;
+    const std::tuple<GLuint, GLint, GLboolean, GLint, GLenum> state{_id, level, layered, layer, GLenum(access)};
+
+    /* If already bound in given texture unit, nothing to do */
+    if(textureState.imageBindings[imageUnit] == state) return;
+
+    /* Update state tracker, bind the texture to the unit */
+    textureState.imageBindings[imageUnit] = state;
+    glBindImageTexture(imageUnit, _id, level, layered, layer, GLenum(access), GLenum(format));
+}
+#endif
+
 void AbstractTexture::bind(Int textureUnit) {
-    Implementation::TextureState& textureState = *Context::current()->state().texture;
+    Implementation::TextureState& textureState = *Context::current().state().texture;
 
     /* If already bound in given texture unit, nothing to do */
     if(textureState.bindings[textureUnit].second == _id) return;
@@ -264,7 +344,7 @@ void AbstractTexture::bind(Int textureUnit) {
 }
 
 void AbstractTexture::bindImplementationDefault(GLint textureUnit) {
-    Implementation::TextureState& textureState = *Context::current()->state().texture;
+    Implementation::TextureState& textureState = *Context::current().state().texture;
 
     /* Activate given texture unit if not already active, update state tracker */
     if(textureState.currentTextureUnit != textureUnit)
@@ -293,13 +373,13 @@ void AbstractTexture::bindImplementationDSAEXT(GLint textureUnit) {
 
 #ifndef MAGNUM_TARGET_GLES2
 void AbstractTexture::setBaseLevel(Int level) {
-    (this->*Context::current()->state().texture->parameteriImplementation)(GL_TEXTURE_BASE_LEVEL, level);
+    (this->*Context::current().state().texture->parameteriImplementation)(GL_TEXTURE_BASE_LEVEL, level);
 }
 #endif
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 void AbstractTexture::setMaxLevel(Int level) {
-    (this->*Context::current()->state().texture->parameteriImplementation)(
+    (this->*Context::current().state().texture->parameteriImplementation)(
         #ifndef MAGNUM_TARGET_GLES2
         GL_TEXTURE_MAX_LEVEL
         #else
@@ -310,32 +390,32 @@ void AbstractTexture::setMaxLevel(Int level) {
 #endif
 
 void AbstractTexture::setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap) {
-    (this->*Context::current()->state().texture->parameteriImplementation)(GL_TEXTURE_MIN_FILTER, GLint(filter)|GLint(mipmap));
+    (this->*Context::current().state().texture->parameteriImplementation)(GL_TEXTURE_MIN_FILTER, GLint(filter)|GLint(mipmap));
 }
 
 void AbstractTexture::setMagnificationFilter(const Sampler::Filter filter) {
-    (this->*Context::current()->state().texture->parameteriImplementation)(GL_TEXTURE_MAG_FILTER, GLint(filter));
+    (this->*Context::current().state().texture->parameteriImplementation)(GL_TEXTURE_MAG_FILTER, GLint(filter));
 }
 
 #ifndef MAGNUM_TARGET_GLES2
 void AbstractTexture::setMinLod(const Float lod) {
-    (this->*Context::current()->state().texture->parameterfImplementation)(GL_TEXTURE_MIN_LOD, lod);
+    (this->*Context::current().state().texture->parameterfImplementation)(GL_TEXTURE_MIN_LOD, lod);
 }
 
 void AbstractTexture::setMaxLod(const Float lod) {
-    (this->*Context::current()->state().texture->parameterfImplementation)(GL_TEXTURE_MAX_LOD, lod);
+    (this->*Context::current().state().texture->parameterfImplementation)(GL_TEXTURE_MAX_LOD, lod);
 }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::setLodBias(const Float bias) {
-    (this->*Context::current()->state().texture->parameterfImplementation)(GL_TEXTURE_LOD_BIAS, bias);
+    (this->*Context::current().state().texture->parameterfImplementation)(GL_TEXTURE_LOD_BIAS, bias);
 }
 #endif
 
 #ifndef MAGNUM_TARGET_WEBGL
 void AbstractTexture::setBorderColor(const Color4& color) {
-    (this->*Context::current()->state().texture->parameterfvImplementation)(
+    (this->*Context::current().state().texture->parameterfvImplementation)(
         #ifndef MAGNUM_TARGET_GLES
         GL_TEXTURE_BORDER_COLOR,
         #else
@@ -346,7 +426,7 @@ void AbstractTexture::setBorderColor(const Color4& color) {
 
 #ifndef MAGNUM_TARGET_GLES2
 void AbstractTexture::setBorderColor(const Vector4ui& color) {
-    (this->*Context::current()->state().texture->parameterIuivImplementation)(
+    (this->*Context::current().state().texture->parameterIuivImplementation)(
         #ifndef MAGNUM_TARGET_GLES
         GL_TEXTURE_BORDER_COLOR,
         #else
@@ -356,7 +436,7 @@ void AbstractTexture::setBorderColor(const Vector4ui& color) {
 }
 
 void AbstractTexture::setBorderColor(const Vector4i& color) {
-    (this->*Context::current()->state().texture->parameterIivImplementation)(
+    (this->*Context::current().state().texture->parameterIivImplementation)(
         #ifndef MAGNUM_TARGET_GLES
         GL_TEXTURE_BORDER_COLOR,
         #else
@@ -368,12 +448,12 @@ void AbstractTexture::setBorderColor(const Vector4i& color) {
 #endif
 
 void AbstractTexture::setMaxAnisotropy(const Float anisotropy) {
-    (this->*Context::current()->state().texture->setMaxAnisotropyImplementation)(anisotropy);
+    (this->*Context::current().state().texture->setMaxAnisotropyImplementation)(anisotropy);
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
 void AbstractTexture::setSRGBDecode(bool decode) {
-    (this->*Context::current()->state().texture->parameteriImplementation)(GL_TEXTURE_SRGB_DECODE_EXT,
+    (this->*Context::current().state().texture->parameteriImplementation)(GL_TEXTURE_SRGB_DECODE_EXT,
         decode ? GL_DECODE_EXT : GL_SKIP_DECODE_EXT);
 }
 #endif
@@ -382,19 +462,19 @@ void AbstractTexture::setSRGBDecode(bool decode) {
 void AbstractTexture::setSwizzleInternal(const GLint r, const GLint g, const GLint b, const GLint a) {
     #ifndef MAGNUM_TARGET_GLES
     const GLint rgba[] = {r, g, b, a};
-    (this->*Context::current()->state().texture->parameterivImplementation)(GL_TEXTURE_SWIZZLE_RGBA, rgba);
+    (this->*Context::current().state().texture->parameterivImplementation)(GL_TEXTURE_SWIZZLE_RGBA, rgba);
     #else
-    (this->*Context::current()->state().texture->parameteriImplementation)(GL_TEXTURE_SWIZZLE_R, r);
-    (this->*Context::current()->state().texture->parameteriImplementation)(GL_TEXTURE_SWIZZLE_G, g);
-    (this->*Context::current()->state().texture->parameteriImplementation)(GL_TEXTURE_SWIZZLE_B, b);
-    (this->*Context::current()->state().texture->parameteriImplementation)(GL_TEXTURE_SWIZZLE_A, a);
+    (this->*Context::current().state().texture->parameteriImplementation)(GL_TEXTURE_SWIZZLE_R, r);
+    (this->*Context::current().state().texture->parameteriImplementation)(GL_TEXTURE_SWIZZLE_G, g);
+    (this->*Context::current().state().texture->parameteriImplementation)(GL_TEXTURE_SWIZZLE_B, b);
+    (this->*Context::current().state().texture->parameteriImplementation)(GL_TEXTURE_SWIZZLE_A, a);
     #endif
 }
 #endif
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 void AbstractTexture::setCompareMode(const Sampler::CompareMode mode) {
-    (this->*Context::current()->state().texture->parameteriImplementation)(
+    (this->*Context::current().state().texture->parameteriImplementation)(
         #ifndef MAGNUM_TARGET_GLES2
         GL_TEXTURE_COMPARE_MODE
         #else
@@ -404,7 +484,7 @@ void AbstractTexture::setCompareMode(const Sampler::CompareMode mode) {
 }
 
 void AbstractTexture::setCompareFunction(const Sampler::CompareFunction function) {
-    (this->*Context::current()->state().texture->parameteriImplementation)(
+    (this->*Context::current().state().texture->parameteriImplementation)(
         #ifndef MAGNUM_TARGET_GLES2
         GL_TEXTURE_COMPARE_FUNC
         #else
@@ -416,16 +496,16 @@ void AbstractTexture::setCompareFunction(const Sampler::CompareFunction function
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void AbstractTexture::setDepthStencilMode(const Sampler::DepthStencilMode mode) {
-    (this->*Context::current()->state().texture->parameteriImplementation)(GL_DEPTH_STENCIL_TEXTURE_MODE, GLenum(mode));
+    (this->*Context::current().state().texture->parameteriImplementation)(GL_DEPTH_STENCIL_TEXTURE_MODE, GLenum(mode));
 }
 #endif
 
 void AbstractTexture::invalidateImage(const Int level) {
-    (this->*Context::current()->state().texture->invalidateImageImplementation)(level);
+    (this->*Context::current().state().texture->invalidateImageImplementation)(level);
 }
 
 void AbstractTexture::generateMipmap() {
-    (this->*Context::current()->state().texture->mipmapImplementation)();
+    (this->*Context::current().state().texture->mipmapImplementation)();
 }
 
 void AbstractTexture::mipmapImplementationDefault() {
@@ -449,7 +529,7 @@ void AbstractTexture::bindInternal() {
        functions need to have the texture bound in *currently active* unit,
        so we would need to call glActiveTexture() afterwards anyway. */
 
-    Implementation::TextureState& textureState = *Context::current()->state().texture;
+    Implementation::TextureState& textureState = *Context::current().state().texture;
 
     /* If the texture is already bound in current unit, nothing to do */
     if(textureState.bindings[textureState.currentTextureUnit].second == _id)
@@ -1090,23 +1170,23 @@ void AbstractTexture::parameterIImplementationDSAEXT(GLenum parameter, const GLi
 void AbstractTexture::setMaxAnisotropyImplementationNoOp(GLfloat) {}
 
 void AbstractTexture::setMaxAnisotropyImplementationExt(GLfloat anisotropy) {
-    (this->*Context::current()->state().texture->parameterfImplementation)(GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy);
+    (this->*Context::current().state().texture->parameterfImplementation)(GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy);
 }
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-void AbstractTexture::getLevelParameterImplementationDefault(const GLenum target, const GLint level, const GLenum parameter, GLint* const values) {
+void AbstractTexture::getLevelParameterImplementationDefault(const GLint level, const GLenum parameter, GLint* const values) {
     bindInternal();
-    glGetTexLevelParameteriv(target, level, parameter, values);
+    glGetTexLevelParameteriv(_target, level, parameter, values);
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractTexture::getLevelParameterImplementationDSA(GLenum, const GLint level, const GLenum parameter, GLint* const values) {
+void AbstractTexture::getLevelParameterImplementationDSA(const GLint level, const GLenum parameter, GLint* const values) {
     glGetTextureLevelParameteriv(_id, level, parameter, values);
 }
 
-void AbstractTexture::getLevelParameterImplementationDSAEXT(const GLenum target, const GLint level, const GLenum parameter, GLint* const values) {
+void AbstractTexture::getLevelParameterImplementationDSAEXT(const GLint level, const GLenum parameter, GLint* const values) {
     _flags |= ObjectFlag::Created;
-    glGetTextureLevelParameterivEXT(_id, target, level, parameter, values);
+    glGetTextureLevelParameterivEXT(_id, _target, level, parameter, values);
 }
 #endif
 #endif
@@ -1493,7 +1573,7 @@ void AbstractTexture::invalidateSubImageImplementationARB(GLint level, const Vec
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_TARGET_GLES
 template<UnsignedInt dimensions> void AbstractTexture::image(GLint level, Image<dimensions>& image) {
-    const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, _target, level);
+    const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, level);
     const std::size_t dataSize = Implementation::imageDataSizeFor(image, size);
 
     /* Reallocate only if needed */
@@ -1503,7 +1583,7 @@ template<UnsignedInt dimensions> void AbstractTexture::image(GLint level, Image<
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     image.storage().applyPack();
-    (this->*Context::current()->state().texture->getImageImplementation)(level, image.format(), image.type(), data.size(), data);
+    (this->*Context::current().state().texture->getImageImplementation)(level, image.format(), image.type(), data.size(), data);
     image.setData(image.storage(), image.format(), image.type(), size, std::move(data));
 }
 
@@ -1512,7 +1592,7 @@ template void MAGNUM_EXPORT AbstractTexture::image<2>(GLint, Image<2>&);
 template void MAGNUM_EXPORT AbstractTexture::image<3>(GLint, Image<3>&);
 
 template<UnsignedInt dimensions> void AbstractTexture::image(GLint level, BufferImage<dimensions>& image, BufferUsage usage) {
-    const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, _target, level);
+    const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, level);
     const std::size_t dataSize = Implementation::imageDataSizeFor(image, size);
 
     /* Reallocate only if needed */
@@ -1523,7 +1603,7 @@ template<UnsignedInt dimensions> void AbstractTexture::image(GLint level, Buffer
 
     image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
     image.storage().applyPack();
-    (this->*Context::current()->state().texture->getImageImplementation)(level, image.format(), image.type(), dataSize, nullptr);
+    (this->*Context::current().state().texture->getImageImplementation)(level, image.format(), image.type(), dataSize, nullptr);
 }
 
 template void MAGNUM_EXPORT AbstractTexture::image<1>(GLint, BufferImage<1>&, BufferUsage);
@@ -1531,12 +1611,12 @@ template void MAGNUM_EXPORT AbstractTexture::image<2>(GLint, BufferImage<2>&, Bu
 template void MAGNUM_EXPORT AbstractTexture::image<3>(GLint, BufferImage<3>&, BufferUsage);
 
 template<UnsignedInt dimensions> void AbstractTexture::compressedImage(const GLint level, CompressedImage<dimensions>& image) {
-    const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, _target, level);
+    const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, level);
     GLint textureDataSize;
-    (this->*Context::current()->state().texture->getLevelParameterivImplementation)(_target, level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &textureDataSize);
+    (this->*Context::current().state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &textureDataSize);
     const std::size_t dataSize = Implementation::compressedImageDataSizeFor(image, size, textureDataSize);
     GLint format;
-    (this->*Context::current()->state().texture->getLevelParameterivImplementation)(_target, level, GL_TEXTURE_INTERNAL_FORMAT, &format);
+    (this->*Context::current().state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
 
     /* Reallocate only if needed */
     Containers::Array<char> data{image.release()};
@@ -1545,7 +1625,7 @@ template<UnsignedInt dimensions> void AbstractTexture::compressedImage(const GLi
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     image.storage().applyPack();
-    (this->*Context::current()->state().texture->getCompressedImageImplementation)(level, data.size(), data);
+    (this->*Context::current().state().texture->getCompressedImageImplementation)(level, data.size(), data);
     image.setData(image.storage(), CompressedPixelFormat(format), size, std::move(data));
 }
 
@@ -1554,12 +1634,12 @@ template void MAGNUM_EXPORT AbstractTexture::compressedImage<2>(GLint, Compresse
 template void MAGNUM_EXPORT AbstractTexture::compressedImage<3>(GLint, CompressedImage<3>&);
 
 template<UnsignedInt dimensions> void AbstractTexture::compressedImage(const GLint level, CompressedBufferImage<dimensions>& image, BufferUsage usage) {
-    const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, _target, level);
+    const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, level);
     GLint textureDataSize;
-    (this->*Context::current()->state().texture->getLevelParameterivImplementation)(_target, level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &textureDataSize);
+    (this->*Context::current().state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &textureDataSize);
     const std::size_t dataSize = Implementation::compressedImageDataSizeFor(image, size, textureDataSize);
     GLint format;
-    (this->*Context::current()->state().texture->getLevelParameterivImplementation)(_target, level, GL_TEXTURE_INTERNAL_FORMAT, &format);
+    (this->*Context::current().state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
 
     /* Reallocate only if needed */
     if(image.dataSize() < dataSize)
@@ -1569,7 +1649,7 @@ template<UnsignedInt dimensions> void AbstractTexture::compressedImage(const GLi
 
     image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
     image.storage().applyPack();
-    (this->*Context::current()->state().texture->getCompressedImageImplementation)(level, dataSize, nullptr);
+    (this->*Context::current().state().texture->getCompressedImageImplementation)(level, dataSize, nullptr);
 }
 
 template void MAGNUM_EXPORT AbstractTexture::compressedImage<1>(GLint, CompressedBufferImage<1>&, BufferUsage);
@@ -1621,62 +1701,140 @@ template<UnsignedInt dimensions> void AbstractTexture::subImage(const GLint leve
 template void MAGNUM_EXPORT AbstractTexture::subImage<1>(GLint, const Range1Di&, BufferImage<1>&, BufferUsage);
 template void MAGNUM_EXPORT AbstractTexture::subImage<2>(GLint, const Range2Di&, BufferImage<2>&, BufferUsage);
 template void MAGNUM_EXPORT AbstractTexture::subImage<3>(GLint, const Range3Di&, BufferImage<3>&, BufferUsage);
+
+template<UnsignedInt dimensions> std::size_t AbstractTexture::compressedSubImageSize(TextureFormat format, const Math::Vector<dimensions, Int>& size) {
+    /* Amount of blocks in given range (rounded up) multiplied by block
+       data size. The user is responsible for proper block-aligned size. */
+    const Math::Vector<dimensions, Int> blockSize = DataHelper<dimensions>::compressedBlockSize(_target, format);
+    return ((size + blockSize - Math::Vector<dimensions, Int>{1})/blockSize).product()*
+        compressedBlockDataSize(_target, format);
+}
+
+template<UnsignedInt dimensions> void AbstractTexture::compressedSubImage(const GLint level, const RangeTypeFor<dimensions, Int>& range, CompressedImage<dimensions>& image) {
+    createIfNotAlready();
+
+    const Math::Vector<dimensions, Int> size = range.size();
+    const Vector3i paddedOffset = Vector3i::pad(range.min());
+    const Vector3i paddedSize = Vector3i::pad(size, 1);
+    GLint format;
+    (this->*Context::current().state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
+    const std::size_t dataSize = Implementation::compressedImageDataSizeFor(image, size, compressedSubImageSize<dimensions>(TextureFormat(format), size));
+
+    /* Reallocate only if needed */
+    Containers::Array<char> data{image.release()};
+    if(data.size() < dataSize)
+        data = Containers::Array<char>{dataSize};
+
+    Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
+    image.storage().applyPack();
+    glGetCompressedTextureSubImage(_id, level, paddedOffset.x(), paddedOffset.y(), paddedOffset.z(), paddedSize.x(), paddedSize.y(), paddedSize.z(), data.size(), data);
+    image.setData(CompressedPixelFormat(format), size, std::move(data));
+}
+
+template void MAGNUM_EXPORT AbstractTexture::compressedSubImage<1>(GLint, const Range1Di&, CompressedImage<1>&);
+template void MAGNUM_EXPORT AbstractTexture::compressedSubImage<2>(GLint, const Range2Di&, CompressedImage<2>&);
+template void MAGNUM_EXPORT AbstractTexture::compressedSubImage<3>(GLint, const Range3Di&, CompressedImage<3>&);
+
+template<UnsignedInt dimensions> void AbstractTexture::compressedSubImage(const GLint level, const RangeTypeFor<dimensions, Int>& range, CompressedBufferImage<dimensions>& image, const BufferUsage usage) {
+    createIfNotAlready();
+
+    const Math::Vector<dimensions, Int> size = range.size();
+    const Vector3i paddedOffset = Vector3i::pad(range.min());
+    const Vector3i paddedSize = Vector3i::pad(size, 1);
+    GLint format;
+    (this->*Context::current().state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
+    const std::size_t dataSize = Implementation::compressedImageDataSizeFor(image, size, compressedSubImageSize<dimensions>(TextureFormat(format), size));
+
+    /* Reallocate only if needed */
+    if(image.dataSize() < dataSize)
+        image.setData(image.storage(), CompressedPixelFormat(format), size, {nullptr, dataSize}, usage);
+    else
+        image.setData(image.storage(), CompressedPixelFormat(format), size, nullptr, usage);
+
+    image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
+    image.storage().applyPack();
+    glGetCompressedTextureSubImage(_id, level, paddedOffset.x(), paddedOffset.y(), paddedOffset.z(), paddedSize.x(), paddedSize.y(), paddedSize.z(), dataSize, nullptr);
+}
+
+template void MAGNUM_EXPORT AbstractTexture::compressedSubImage<1>(GLint, const Range1Di&, CompressedBufferImage<1>&, BufferUsage);
+template void MAGNUM_EXPORT AbstractTexture::compressedSubImage<2>(GLint, const Range2Di&, CompressedBufferImage<2>&, BufferUsage);
+template void MAGNUM_EXPORT AbstractTexture::compressedSubImage<3>(GLint, const Range3Di&, CompressedBufferImage<3>&, BufferUsage);
 #endif
 #endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_TARGET_GLES
-Math::Vector<1, GLint> AbstractTexture::DataHelper<1>::imageSize(AbstractTexture& texture, GLenum, const GLint level) {
+Math::Vector<1, GLint> AbstractTexture::DataHelper<1>::compressedBlockSize(const GLenum target, const TextureFormat format) {
+    GLint value;
+    glGetInternalformativ(target, GLenum(format), GL_TEXTURE_COMPRESSED_BLOCK_WIDTH, 1, &value);
+    return value;
+}
+
+Vector2i AbstractTexture::DataHelper<2>::compressedBlockSize(const GLenum target, const TextureFormat format) {
+    Vector2i value{Math::NoInit};
+    glGetInternalformativ(target, GLenum(format), GL_TEXTURE_COMPRESSED_BLOCK_WIDTH, 1, &value.x());
+    glGetInternalformativ(target, GLenum(format), GL_TEXTURE_COMPRESSED_BLOCK_HEIGHT, 1, &value.y());
+    return value;
+}
+
+Vector3i AbstractTexture::DataHelper<3>::compressedBlockSize(const GLenum target, const TextureFormat format) {
+    /** @todo use real value when OpenGL has proper queries for 3D compression formats */
+    return Vector3i{DataHelper<2>::compressedBlockSize(target, format), 1};
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+Math::Vector<1, GLint> AbstractTexture::DataHelper<1>::imageSize(AbstractTexture& texture, const GLint level) {
     Math::Vector<1, GLint> value;
-    (texture.*Context::current()->state().texture->getLevelParameterivImplementation)(texture._target, level, GL_TEXTURE_WIDTH, &value[0]);
+    (texture.*Context::current().state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_WIDTH, &value[0]);
     return value;
 }
 #endif
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-Vector2i AbstractTexture::DataHelper<2>::imageSize(AbstractTexture& texture, const GLenum target, const GLint level) {
-    const Implementation::TextureState& state = *Context::current()->state().texture;
+Vector2i AbstractTexture::DataHelper<2>::imageSize(AbstractTexture& texture, const GLint level) {
+    const Implementation::TextureState& state = *Context::current().state().texture;
 
     Vector2i value;
-    (texture.*state.getLevelParameterivImplementation)(target, level, GL_TEXTURE_WIDTH, &value[0]);
-    (texture.*state.getLevelParameterivImplementation)(target, level, GL_TEXTURE_HEIGHT, &value[1]);
+    (texture.*state.getLevelParameterivImplementation)(level, GL_TEXTURE_WIDTH, &value[0]);
+    (texture.*state.getLevelParameterivImplementation)(level, GL_TEXTURE_HEIGHT, &value[1]);
     return value;
 }
 
-Vector3i AbstractTexture::DataHelper<3>::imageSize(AbstractTexture& texture, GLenum, const GLint level) {
-    const Implementation::TextureState& state = *Context::current()->state().texture;
+Vector3i AbstractTexture::DataHelper<3>::imageSize(AbstractTexture& texture, const GLint level) {
+    const Implementation::TextureState& state = *Context::current().state().texture;
 
     Vector3i value;
-    (texture.*state.getLevelParameterivImplementation)(texture._target, level, GL_TEXTURE_WIDTH, &value[0]);
-    (texture.*state.getLevelParameterivImplementation)(texture._target, level, GL_TEXTURE_HEIGHT, &value[1]);
-    (texture.*state.getLevelParameterivImplementation)(texture._target, level, GL_TEXTURE_DEPTH, &value[2]);
+    (texture.*state.getLevelParameterivImplementation)(level, GL_TEXTURE_WIDTH, &value[0]);
+    (texture.*state.getLevelParameterivImplementation)(level, GL_TEXTURE_HEIGHT, &value[1]);
+    (texture.*state.getLevelParameterivImplementation)(level, GL_TEXTURE_DEPTH, &value[2]);
     return value;
 }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::DataHelper<1>::setStorage(AbstractTexture& texture, const GLsizei levels, const TextureFormat internalFormat, const Math::Vector< 1, GLsizei >& size) {
-    (texture.*Context::current()->state().texture->storage1DImplementation)(levels, internalFormat, size);
+    (texture.*Context::current().state().texture->storage1DImplementation)(levels, internalFormat, size);
 }
 #endif
 
 void AbstractTexture::DataHelper<2>::setStorage(AbstractTexture& texture, const GLsizei levels, const TextureFormat internalFormat, const Vector2i& size) {
-    (texture.*Context::current()->state().texture->storage2DImplementation)(levels, internalFormat, size);
+    (texture.*Context::current().state().texture->storage2DImplementation)(levels, internalFormat, size);
 }
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 void AbstractTexture::DataHelper<3>::setStorage(AbstractTexture& texture, const GLsizei levels, const TextureFormat internalFormat, const Vector3i& size) {
-    (texture.*Context::current()->state().texture->storage3DImplementation)(levels, internalFormat, size);
+    (texture.*Context::current().state().texture->storage3DImplementation)(levels, internalFormat, size);
 }
 #endif
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void AbstractTexture::DataHelper<2>::setStorageMultisample(AbstractTexture& texture, const GLsizei samples, const TextureFormat internalFormat, const Vector2i& size, const GLboolean fixedSampleLocations) {
-    (texture.*Context::current()->state().texture->storage2DMultisampleImplementation)(samples, internalFormat, size, fixedSampleLocations);
+    (texture.*Context::current().state().texture->storage2DMultisampleImplementation)(samples, internalFormat, size, fixedSampleLocations);
 }
 
 void AbstractTexture::DataHelper<3>::setStorageMultisample(AbstractTexture& texture, const GLsizei samples, const TextureFormat internalFormat, const Vector3i& size, const GLboolean fixedSampleLocations) {
-    (texture.*Context::current()->state().texture->storage3DMultisampleImplementation)(samples, internalFormat, size, fixedSampleLocations);
+    (texture.*Context::current().state().texture->storage3DMultisampleImplementation)(samples, internalFormat, size, fixedSampleLocations);
 }
 #endif
 
@@ -1712,25 +1870,25 @@ void AbstractTexture::DataHelper<1>::setCompressedImage(AbstractTexture& texture
 void AbstractTexture::DataHelper<1>::setSubImage(AbstractTexture& texture, const GLint level, const Math::Vector<1, GLint>& offset, const ImageView1D& image) {
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
     image.storage().applyUnpack();
-    (texture.*Context::current()->state().texture->subImage1DImplementation)(level, offset, image.size(), image.format(), image.type(), image.data());
+    (texture.*Context::current().state().texture->subImage1DImplementation)(level, offset, image.size(), image.format(), image.type(), image.data());
 }
 
 void AbstractTexture::DataHelper<1>::setCompressedSubImage(AbstractTexture& texture, const GLint level, const Math::Vector<1, GLint>& offset, const CompressedImageView1D& image) {
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
     image.storage().applyUnpack();
-    (texture.*Context::current()->state().texture->compressedSubImage1DImplementation)(level, offset, image.size(), image.format(), image.data(), Implementation::occupiedCompressedImageDataSize(image, image.data().size()));
+    (texture.*Context::current().state().texture->compressedSubImage1DImplementation)(level, offset, image.size(), image.format(), image.data(), Implementation::occupiedCompressedImageDataSize(image, image.data().size()));
 }
 
 void AbstractTexture::DataHelper<1>::setSubImage(AbstractTexture& texture, const GLint level, const Math::Vector<1, GLint>& offset, BufferImage1D& image) {
     image.buffer().bindInternal(Buffer::TargetHint::PixelUnpack);
     image.storage().applyUnpack();
-    (texture.*Context::current()->state().texture->subImage1DImplementation)(level, offset, image.size(), image.format(), image.type(), nullptr);
+    (texture.*Context::current().state().texture->subImage1DImplementation)(level, offset, image.size(), image.format(), image.type(), nullptr);
 }
 
 void AbstractTexture::DataHelper<1>::setCompressedSubImage(AbstractTexture& texture, const GLint level, const Math::Vector<1, GLint>& offset, CompressedBufferImage1D& image) {
     image.buffer().bindInternal(Buffer::TargetHint::PixelUnpack);
     image.storage().applyUnpack();
-    (texture.*Context::current()->state().texture->compressedSubImage1DImplementation)(level, offset, image.size(), image.format(), nullptr, Implementation::occupiedCompressedImageDataSize(image, image.dataSize()));
+    (texture.*Context::current().state().texture->compressedSubImage1DImplementation)(level, offset, image.size(), image.format(), nullptr, Implementation::occupiedCompressedImageDataSize(image, image.dataSize()));
 }
 #endif
 
@@ -1785,7 +1943,7 @@ void AbstractTexture::DataHelper<2>::setSubImage(AbstractTexture& texture, const
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
     #endif
     image.storage().applyUnpack();
-    (texture.*Context::current()->state().texture->subImage2DImplementation)(level, offset, image.size(), image.format(), image.type(), image.data()
+    (texture.*Context::current().state().texture->subImage2DImplementation)(level, offset, image.size(), image.format(), image.type(), image.data()
         #ifdef MAGNUM_TARGET_GLES2
         + Implementation::pixelStorageSkipOffset(image)
         #endif
@@ -1801,14 +1959,14 @@ void AbstractTexture::DataHelper<2>::setCompressedSubImage(AbstractTexture& text
        to reset anything */
     image.storage().applyUnpack();
     #endif
-    (texture.*Context::current()->state().texture->compressedSubImage2DImplementation)(level, offset, image.size(), image.format(), image.data(), Implementation::occupiedCompressedImageDataSize(image, image.data().size()));
+    (texture.*Context::current().state().texture->compressedSubImage2DImplementation)(level, offset, image.size(), image.format(), image.data(), Implementation::occupiedCompressedImageDataSize(image, image.data().size()));
 }
 
 #ifndef MAGNUM_TARGET_GLES2
 void AbstractTexture::DataHelper<2>::setSubImage(AbstractTexture& texture, const GLint level, const Vector2i& offset, BufferImage2D& image) {
     image.buffer().bindInternal(Buffer::TargetHint::PixelUnpack);
     image.storage().applyUnpack();
-    (texture.*Context::current()->state().texture->subImage2DImplementation)(level, offset, image.size(), image.format(), image.type(), nullptr);
+    (texture.*Context::current().state().texture->subImage2DImplementation)(level, offset, image.size(), image.format(), image.type(), nullptr);
 }
 
 void AbstractTexture::DataHelper<2>::setCompressedSubImage(AbstractTexture& texture, const GLint level, const Vector2i& offset, CompressedBufferImage2D& image) {
@@ -1818,7 +1976,7 @@ void AbstractTexture::DataHelper<2>::setCompressedSubImage(AbstractTexture& text
        to reset anything */
     image.storage().applyUnpack();
     #endif
-    (texture.*Context::current()->state().texture->compressedSubImage2DImplementation)(level, offset, image.size(), image.format(), nullptr, Implementation::occupiedCompressedImageDataSize(image, image.dataSize()));
+    (texture.*Context::current().state().texture->compressedSubImage2DImplementation)(level, offset, image.size(), image.format(), nullptr, Implementation::occupiedCompressedImageDataSize(image, image.dataSize()));
 }
 #endif
 
@@ -1889,7 +2047,7 @@ void AbstractTexture::DataHelper<3>::setSubImage(AbstractTexture& texture, const
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
     #endif
     image.storage().applyUnpack();
-    (texture.*Context::current()->state().texture->subImage3DImplementation)(level, offset, image.size(), image.format(), image.type(), image.data()
+    (texture.*Context::current().state().texture->subImage3DImplementation)(level, offset, image.size(), image.format(), image.type(), image.data()
         #ifdef MAGNUM_TARGET_GLES2
         + Implementation::pixelStorageSkipOffset(image)
         #endif
@@ -1905,7 +2063,7 @@ void AbstractTexture::DataHelper<3>::setCompressedSubImage(AbstractTexture& text
        to reset anything */
     image.storage().applyUnpack();
     #endif
-    (texture.*Context::current()->state().texture->compressedSubImage3DImplementation)(level, offset, image.size(), image.format(), image.data(), Implementation::occupiedCompressedImageDataSize(image, image.data().size()));
+    (texture.*Context::current().state().texture->compressedSubImage3DImplementation)(level, offset, image.size(), image.format(), image.data(), Implementation::occupiedCompressedImageDataSize(image, image.data().size()));
 }
 #endif
 
@@ -1913,7 +2071,7 @@ void AbstractTexture::DataHelper<3>::setCompressedSubImage(AbstractTexture& text
 void AbstractTexture::DataHelper<3>::setSubImage(AbstractTexture& texture, const GLint level, const Vector3i& offset, BufferImage3D& image) {
     image.buffer().bindInternal(Buffer::TargetHint::PixelUnpack);
     image.storage().applyUnpack();
-    (texture.*Context::current()->state().texture->subImage3DImplementation)(level, offset, image.size(), image.format(), image.type(), nullptr);
+    (texture.*Context::current().state().texture->subImage3DImplementation)(level, offset, image.size(), image.format(), image.type(), nullptr);
 }
 
 void AbstractTexture::DataHelper<3>::setCompressedSubImage(AbstractTexture& texture, const GLint level, const Vector3i& offset, CompressedBufferImage3D& image) {
@@ -1923,32 +2081,32 @@ void AbstractTexture::DataHelper<3>::setCompressedSubImage(AbstractTexture& text
        to reset anything */
     image.storage().applyUnpack();
     #endif
-    (texture.*Context::current()->state().texture->compressedSubImage3DImplementation)(level, offset, image.size(), image.format(), nullptr, Implementation::occupiedCompressedImageDataSize(image, image.dataSize()));
+    (texture.*Context::current().state().texture->compressedSubImage3DImplementation)(level, offset, image.size(), image.format(), nullptr, Implementation::occupiedCompressedImageDataSize(image, image.dataSize()));
 }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::DataHelper<1>::invalidateSubImage(AbstractTexture& texture, const GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLint>& size) {
-    (texture.*Context::current()->state().texture->invalidateSubImageImplementation)(level, {offset[0], 0, 0}, {size[0], 1, 1});
+    (texture.*Context::current().state().texture->invalidateSubImageImplementation)(level, {offset[0], 0, 0}, {size[0], 1, 1});
 }
 #endif
 
 void AbstractTexture::DataHelper<2>::invalidateSubImage(AbstractTexture& texture, const GLint level, const Vector2i& offset, const Vector2i& size) {
-    (texture.*Context::current()->state().texture->invalidateSubImageImplementation)(level, {offset, 0}, {size, 1});
+    (texture.*Context::current().state().texture->invalidateSubImageImplementation)(level, {offset, 0}, {size, 1});
 }
 
 void AbstractTexture::DataHelper<3>::invalidateSubImage(AbstractTexture& texture, const GLint level, const Vector3i& offset, const Vector3i& size) {
-    (texture.*Context::current()->state().texture->invalidateSubImageImplementation)(level, offset, size);
+    (texture.*Context::current().state().texture->invalidateSubImageImplementation)(level, offset, size);
 }
 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::DataHelper<1>::setWrapping(AbstractTexture& texture, const Array1D<Sampler::Wrapping>& wrapping) {
-    (texture.*Context::current()->state().texture->parameteriImplementation)(GL_TEXTURE_WRAP_S, GLint(wrapping.x()));
+    (texture.*Context::current().state().texture->parameteriImplementation)(GL_TEXTURE_WRAP_S, GLint(wrapping.x()));
 }
 #endif
 
 void AbstractTexture::DataHelper<2>::setWrapping(AbstractTexture& texture, const Array2D<Sampler::Wrapping>& wrapping) {
-    const Implementation::TextureState& state = *Context::current()->state().texture;
+    const Implementation::TextureState& state = *Context::current().state().texture;
 
     (texture.*state.parameteriImplementation)(GL_TEXTURE_WRAP_S, GLint(wrapping.x()));
     (texture.*state.parameteriImplementation)(GL_TEXTURE_WRAP_T, GLint(wrapping.y()));
@@ -1956,7 +2114,7 @@ void AbstractTexture::DataHelper<2>::setWrapping(AbstractTexture& texture, const
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 void AbstractTexture::DataHelper<3>::setWrapping(AbstractTexture& texture, const Array3D<Sampler::Wrapping>& wrapping) {
-    const Implementation::TextureState& state = *Context::current()->state().texture;
+    const Implementation::TextureState& state = *Context::current().state().texture;
 
     (texture.*state.parameteriImplementation)(GL_TEXTURE_WRAP_S, GLint(wrapping.x()));
     (texture.*state.parameteriImplementation)(GL_TEXTURE_WRAP_T, GLint(wrapping.y()));

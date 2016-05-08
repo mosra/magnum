@@ -1,7 +1,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -41,8 +41,9 @@ set(TgaImporter_HEADERS
 add_library(TgaImporterObjects OBJECT
     ${TgaImporter_SRCS}
     ${TgaImporter_HEADERS})
+target_include_directories(TgaImporterObjects PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
 if(NOT BUILD_PLUGINS_STATIC)
-    set_target_properties(TgaImporterObjects PROPERTIES COMPILE_FLAGS "-DTgaImporterObjects_EXPORTS")
+    target_compile_definitions(TgaImporterObjects PRIVATE "TgaImporterObjects_EXPORTS")
 endif()
 if(NOT BUILD_PLUGINS_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(TgaImporterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
@@ -56,7 +57,6 @@ add_plugin(TgaImporter ${MAGNUM_PLUGINS_IMPORTER_DEBUG_INSTALL_DIR} ${MAGNUM_PLU
 if(BUILD_STATIC_PIC)
     set_target_properties(TgaImporter PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-
 target_link_libraries(TgaImporter Magnum)
 
 install(FILES ${TgaImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/TgaImporter)
@@ -69,5 +69,5 @@ if(BUILD_TESTS)
     add_subdirectory(Test)
 endif()
 
-# Magnum TgaImporter library for superprojects
-set(MAGNUM_TGAIMPORTER_LIBRARY TgaImporter CACHE INTERNAL "")
+# Magnum TgaImporter target alias for superprojects
+add_library(Magnum::TgaImporter ALIAS TgaImporter)

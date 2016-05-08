@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -29,6 +29,7 @@
  * @brief Class @ref Magnum::Math::Range, @ref Magnum::Math::Range2D, @ref Magnum::Math::Range3D, alias @ref Magnum::Math::Range1D
  */
 
+#include "Magnum/Math/Functions.h"
 #include "Magnum/Math/Vector3.h"
 
 namespace Magnum { namespace Math {
@@ -62,7 +63,7 @@ template<UnsignedInt dimensions, class T> class Range {
         typedef typename Implementation::RangeTraits<dimensions, T>::Type VectorType;
 
         /**
-         * Create range from minimal coordinates and size
+         * @brief Create range from minimal coordinates and size
          * @param min   Minimal coordinates
          * @param size  Range size
          */
@@ -99,12 +100,7 @@ template<UnsignedInt dimensions, class T> class Range {
         template<class U> constexpr explicit Range(const Range<dimensions, U>& other): _min(other._min), _max(other._max) {}
 
         /** @brief Construct range from external representation */
-        template<class U, class V = decltype(Implementation::RangeConverter<dimensions, T, U>::from(std::declval<U>()))>
-        #ifndef CORRADE_MSVC2015_COMPATIBILITY
-        /* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-        constexpr
-        #endif
-        explicit Range(const U& other): Range{Implementation::RangeConverter<dimensions, T, U>::from(other)} {}
+        template<class U, class V = decltype(Implementation::RangeConverter<dimensions, T, U>::from(std::declval<U>()))> constexpr explicit Range(const U& other): Range{Implementation::RangeConverter<dimensions, T, U>::from(other)} {}
 
         /** @brief Convert range to external representation */
         template<class U, class V = decltype(Implementation::RangeConverter<dimensions, T, U>::to(std::declval<Range<dimensions, T>>()))> constexpr explicit operator U() const {
@@ -189,6 +185,11 @@ template<UnsignedInt dimensions, class T> class Range {
          * @see @ref padded()
          */
         Range<dimensions, T> scaled(const VectorType& scaling) const;
+
+        /** @brief Whether given point is contained inside the range */
+        constexpr bool contains(const VectorType& a) const {
+            return (a >= _min).all() && (a < _max).all();
+        }
 
     private:
         VectorType _min, _max;
@@ -527,6 +528,19 @@ template<class T> class Range3D: public Range<3, T> {
 
         MAGNUM_RANGE_SUBCLASS_IMPLEMENTATION(3, Range3D, Vector3)
 };
+
+/** @relates Range
+@brief Join two ranges
+
+Returns a range that contains both input ranges. If one of the ranges is empty,
+only the other is returned. Results are undefined if any range has negative
+size.
+*/
+template<UnsignedInt dimensions, class T> inline Range<dimensions, T> join(const Range<dimensions, T>& a, const Range<dimensions, T>& b) {
+    if(a.min() == a.max()) return b;
+    if(b.min() == b.max()) return a;
+    return {min(a.min(), b.min()), max(a.max(), b.max())};
+}
 
 /** @debugoperator{Magnum::Math::Range} */
 template<UnsignedInt dimensions, class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Range<dimensions, T>& value) {

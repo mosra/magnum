@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -25,7 +25,10 @@
 
 #include "Magnum/AbstractShaderProgram.h"
 #include "Magnum/Buffer.h"
+#include "Magnum/Framebuffer.h"
 #include "Magnum/Mesh.h"
+#include "Magnum/Renderbuffer.h"
+#include "Magnum/RenderbufferFormat.h"
 #include "Magnum/Shader.h"
 #include "Magnum/TransformFeedback.h"
 #include "Magnum/Math/Vector2.h"
@@ -76,7 +79,7 @@ TransformFeedbackGLTest::TransformFeedbackGLTest() {
 
 void TransformFeedbackGLTest::construct() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
         CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not supported."));
     #endif
 
@@ -108,7 +111,7 @@ void TransformFeedbackGLTest::constructCopy() {
 
 void TransformFeedbackGLTest::constructMove() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
         CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not supported."));
     #endif
 
@@ -135,7 +138,7 @@ void TransformFeedbackGLTest::constructMove() {
 
 void TransformFeedbackGLTest::wrap() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
         CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not supported."));
     #endif
 
@@ -156,11 +159,11 @@ void TransformFeedbackGLTest::wrap() {
 void TransformFeedbackGLTest::label() {
     /* No-Op version is tested in AbstractObjectGLTest */
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
         CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not supported."));
     #endif
-    if(!Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>() &&
-       !Context::current()->isExtensionSupported<Extensions::GL::EXT::debug_label>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::KHR::debug>() &&
+       !Context::current().isExtensionSupported<Extensions::GL::EXT::debug_label>())
         CORRADE_SKIP("Required extension is not available");
 
     TransformFeedback feedback;
@@ -189,7 +192,13 @@ struct XfbShader: AbstractShaderProgram {
 
 XfbShader::XfbShader() {
     #ifndef MAGNUM_TARGET_GLES
-    Shader vert(Version::GL300, Shader::Type::Vertex);
+    Shader vert(
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL300
+        #else
+        Version::GL310
+        #endif
+        , Shader::Type::Vertex);
     #else
     Shader vert(Version::GLES300, Shader::Type::Vertex);
     Shader frag(Version::GLES300, Shader::Type::Fragment);
@@ -219,9 +228,16 @@ XfbShader::XfbShader() {
 
 void TransformFeedbackGLTest::attachBase() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
         CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not supported."));
     #endif
+
+    /* Bind some FB to avoid errors on contexts w/o default FB */
+    Renderbuffer color;
+    color.setStorage(RenderbufferFormat::RGBA8, Vector2i{32});
+    Framebuffer fb{{{}, Vector2i{32}}};
+    fb.attachRenderbuffer(Framebuffer::ColorAttachment{0}, color)
+      .bind();
 
     XfbShader shader;
 
@@ -255,9 +271,16 @@ void TransformFeedbackGLTest::attachBase() {
 
 void TransformFeedbackGLTest::attachRange() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
         CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not supported."));
     #endif
+
+    /* Bind some FB to avoid errors on contexts w/o default FB */
+    Renderbuffer color;
+    color.setStorage(RenderbufferFormat::RGBA8, Vector2i{32});
+    Framebuffer fb{{{}, Vector2i{32}}};
+    fb.attachRenderbuffer(Framebuffer::ColorAttachment{0}, color)
+      .bind();
 
     XfbShader shader;
 
@@ -299,7 +322,13 @@ struct XfbMultiShader: AbstractShaderProgram {
 
 XfbMultiShader::XfbMultiShader() {
     #ifndef MAGNUM_TARGET_GLES
-    Shader vert(Version::GL300, Shader::Type::Vertex);
+    Shader vert(
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL300
+        #else
+        Version::GL310
+        #endif
+        , Shader::Type::Vertex);
     #else
     Shader vert(Version::GLES300, Shader::Type::Vertex);
     Shader frag(Version::GLES300, Shader::Type::Fragment);
@@ -331,9 +360,16 @@ XfbMultiShader::XfbMultiShader() {
 
 void TransformFeedbackGLTest::attachBases() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
         CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not supported."));
     #endif
+
+    /* Bind some FB to avoid errors on contexts w/o default FB */
+    Renderbuffer color;
+    color.setStorage(RenderbufferFormat::RGBA8, Vector2i{32});
+    Framebuffer fb{{{}, Vector2i{32}}};
+    fb.attachRenderbuffer(Framebuffer::ColorAttachment{0}, color)
+      .bind();
 
     XfbMultiShader shader;
 
@@ -373,9 +409,16 @@ void TransformFeedbackGLTest::attachBases() {
 
 void TransformFeedbackGLTest::attachRanges() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
         CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not supported."));
     #endif
+
+    /* Bind some FB to avoid errors on contexts w/o default FB */
+    Renderbuffer color;
+    color.setStorage(RenderbufferFormat::RGBA8, Vector2i{32});
+    Framebuffer fb{{{}, Vector2i{32}}};
+    fb.attachRenderbuffer(Framebuffer::ColorAttachment{0}, color)
+      .bind();
 
     Buffer input;
     input.setData(inputData, BufferUsage::StaticDraw);
@@ -419,14 +462,27 @@ void TransformFeedbackGLTest::attachRanges() {
 #ifndef MAGNUM_TARGET_GLES
 void TransformFeedbackGLTest::interleaved() {
     /* ARB_transform_feedback3 needed for gl_SkipComponents1 */
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::transform_feedback3>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback3>())
         CORRADE_SKIP(Extensions::GL::ARB::transform_feedback3::string() + std::string(" is not supported."));
+
+    /* Bind some FB to avoid errors on contexts w/o default FB */
+    Renderbuffer color;
+    color.setStorage(RenderbufferFormat::RGBA8, Vector2i{32});
+    Framebuffer fb{{{}, Vector2i{32}}};
+    fb.attachRenderbuffer(Framebuffer::ColorAttachment{0}, color)
+      .bind();
 
     struct XfbInterleavedShader: AbstractShaderProgram {
         typedef Attribute<0, Vector2> Input;
 
         explicit XfbInterleavedShader() {
-            Shader vert(Version::GL300, Shader::Type::Vertex);
+            Shader vert(
+                #ifndef CORRADE_TARGET_APPLE
+                Version::GL300
+                #else
+                Version::GL310
+                #endif
+                , Shader::Type::Vertex);
             CORRADE_INTERNAL_ASSERT_OUTPUT(vert.addSource(
                 "in mediump vec2 inputData;\n"
                 "out mediump vec2 output1;\n"

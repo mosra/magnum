@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -75,7 +75,7 @@ void WindowlessWglApplication::createContext(const Configuration& configuration)
     if(!tryCreateContext(configuration)) std::exit(1);
 }
 
-bool WindowlessWglApplication::tryCreateContext(const Configuration&) {
+bool WindowlessWglApplication::tryCreateContext(const Configuration& configuration) {
     CORRADE_ASSERT(_context->version() == Version::None, "Platform::WindowlessWglApplication::tryCreateContext(): context already created", false);
 
     /* Get device context */
@@ -104,8 +104,29 @@ bool WindowlessWglApplication::tryCreateContext(const Configuration&) {
     const int pixelFormat = ChoosePixelFormat(_deviceContext, &pfd);
     SetPixelFormat(_deviceContext, pixelFormat, &pfd);
 
-    /* Create context and make it current */
-    _renderingContext = wglCreateContext(_deviceContext);
+    const int attributes[] = {
+        WGL_CONTEXT_FLAGS_ARB, int(configuration.flags()),
+        0
+    };
+
+    /* Create temporary context so we are able to get the pointer to
+       wglCreateContextAttribsARB() */
+    HGLRC temporaryContext = wglCreateContext(_deviceContext);
+    if(!wglMakeCurrent(_deviceContext, temporaryContext)) {
+        Error() << "Platform::WindowlessWglApplication::tryCreateContext(): cannot make temporary context current:" << GetLastError();
+        return false;
+    }
+
+    /* Get pointer to proper context creation function and create real context
+       with it */
+    typedef HGLRC(WINAPI*PFNWGLCREATECONTEXTATTRIBSARBPROC)(HDC, HGLRC, const int*);
+    const PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = reinterpret_cast<PFNWGLCREATECONTEXTATTRIBSARBPROC>( wglGetProcAddress(reinterpret_cast<LPCSTR>("wglCreateContextAttribsARB")));
+    _renderingContext = wglCreateContextAttribsARB(_deviceContext, nullptr, attributes);
+
+    /* Delete the temporary context */
+    wglMakeCurrent(_deviceContext, nullptr);
+    wglDeleteContext(temporaryContext);
+
     if(!_renderingContext) {
         Error() << "Platform::WindowlessWglApplication::tryCreateContext(): cannot create context:" << GetLastError();
         return false;

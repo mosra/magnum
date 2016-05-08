@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -68,7 +68,8 @@ struct VectorTest: Corrade::TestSuite::Tester {
     void constructCopy();
     void convert();
 
-    void isZero();
+    void isZeroFloat();
+    void isZeroInteger();
     void isNormalized();
 
     void data();
@@ -125,7 +126,8 @@ VectorTest::VectorTest() {
               &VectorTest::constructCopy,
               &VectorTest::convert,
 
-              &VectorTest::isZero,
+              &VectorTest::isZeroFloat,
+              &VectorTest::isZeroInteger,
               &VectorTest::isNormalized,
 
               &VectorTest::data,
@@ -201,11 +203,7 @@ void VectorTest::constructNoInit() {
 }
 
 void VectorTest::constructOneValue() {
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY
-    /* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-    constexpr
-    #endif
-    Vector4 a(7.25f);
+    constexpr Vector4 a(7.25f);
 
     CORRADE_COMPARE(a, Vector4(7.25f, 7.25f, 7.25f, 7.25f));
 
@@ -223,11 +221,7 @@ void VectorTest::constructOneComponent() {
 
 void VectorTest::constructConversion() {
     constexpr Vector4 a(1.3f, 2.7f, -15.0f, 7.0f);
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY
-    /* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-    constexpr
-    #endif
-    Vector4i b(a);
+    constexpr Vector4i b(a);
 
     CORRADE_COMPARE(b, Vector4i(1, 2, -15, 7));
 
@@ -247,19 +241,14 @@ void VectorTest::convert() {
 
     /* GCC 5.1 fills the result with zeros instead of properly calling
        delegated copy constructor if using constexpr. Reported here:
-       https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66450
-       MSVC 2015: Can't use delegating constructors with constexpr:
-       https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-    #if (!defined(__GNUC__) || defined(__clang__)) && !defined(CORRADE_MSVC2015_COMPATIBILITY)
+       https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66450 */
+    #if !defined(__GNUC__) || defined(__clang__)
     constexpr
     #endif
     Vector3 c{a};
     CORRADE_COMPARE(c, b);
 
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why can't be conversion constexpr? */
-    constexpr
-    #endif
-    Vec3 d(b);
+    constexpr Vec3 d(b);
     CORRADE_COMPARE(d.x, a.x);
     CORRADE_COMPARE(d.y, a.y);
     CORRADE_COMPARE(d.z, a.z);
@@ -269,9 +258,15 @@ void VectorTest::convert() {
     CORRADE_VERIFY(!(std::is_convertible<Vector3, Vec3>::value));
 }
 
-void VectorTest::isZero() {
+void VectorTest::isZeroFloat() {
     CORRADE_VERIFY(!Vector3(0.01f, 0.0f, 0.0f).isZero());
+    CORRADE_VERIFY(Vector3(0.0f, Math::TypeTraits<float>::epsilon()/2.0f, 0.0f).isZero());
     CORRADE_VERIFY(Vector3(0.0f, 0.0f, 0.0f).isZero());
+}
+
+void VectorTest::isZeroInteger() {
+    CORRADE_VERIFY(!(Math::Vector<3, Int>{0, 1, 0}.isZero()));
+    CORRADE_VERIFY((Math::Vector<3, Int>{0, 0, 0}.isZero()));
 }
 
 void VectorTest::isNormalized() {
@@ -454,7 +449,7 @@ void VectorTest::projected() {
 
 void VectorTest::projectedOntoNormalized() {
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
 
     Vector3 vector(1.0f, 2.0f, 3.0f);
     Vector3 line(1.0f, -1.0f, 0.5f);
@@ -469,7 +464,7 @@ void VectorTest::projectedOntoNormalized() {
 
 void VectorTest::angle() {
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
     Math::angle(Vector3(2.0f, 3.0f, 4.0f).normalized(), {1.0f, -2.0f, 3.0f});
     CORRADE_COMPARE(o.str(), "Math::angle(): vectors must be normalized\n");
 

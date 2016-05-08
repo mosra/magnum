@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -91,9 +91,9 @@ DistanceFieldShader::DistanceFieldShader(): radiusUniform(0), scalingUniform(1) 
     Utility::Resource rs("MagnumTextureTools");
 
     #ifndef MAGNUM_TARGET_GLES
-    const Version v = Context::current()->supportedVersion({Version::GL320, Version::GL300, Version::GL210});
+    const Version v = Context::current().supportedVersion({Version::GL320, Version::GL300, Version::GL210});
     #else
-    const Version v = Context::current()->supportedVersion({Version::GLES300, Version::GLES200});
+    const Version v = Context::current().supportedVersion({Version::GLES300, Version::GLES200});
     #endif
 
     Shader vert = Shaders::Implementation::createCompatibilityShader(rs, v, Shader::Type::Vertex);
@@ -109,9 +109,9 @@ DistanceFieldShader::DistanceFieldShader(): radiusUniform(0), scalingUniform(1) 
 
     /* Older GLSL doesn't have gl_VertexID, vertices must be supplied explicitly */
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isVersionSupported(Version::GL300))
+    if(!Context::current().isVersionSupported(Version::GL300))
     #else
-    if(!Context::current()->isVersionSupported(Version::GLES300))
+    if(!Context::current().isVersionSupported(Version::GLES300))
     #endif
     {
         bindAttributeLocation(Position::Location, "position");
@@ -120,16 +120,16 @@ DistanceFieldShader::DistanceFieldShader(): radiusUniform(0), scalingUniform(1) 
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>())
     #endif
     {
         radiusUniform = uniformLocation("radius");
         scalingUniform = uniformLocation("scaling");
 
         #ifndef MAGNUM_TARGET_GLES
-        if(!Context::current()->isVersionSupported(Version::GL320))
+        if(!Context::current().isVersionSupported(Version::GL320))
         #else
-        if(!Context::current()->isVersionSupported(Version::GLES300))
+        if(!Context::current().isVersionSupported(Version::GLES300))
         #endif
         {
             imageSizeInvertedUniform = uniformLocation("imageSizeInverted");
@@ -137,7 +137,7 @@ DistanceFieldShader::DistanceFieldShader(): radiusUniform(0), scalingUniform(1) 
     }
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shading_language_420pack>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::shading_language_420pack>())
     #endif
     {
         setUniform(uniformLocation("textureData"), TextureUnit);
@@ -179,9 +179,9 @@ void distanceField(Texture2D& input, Texture2D& output, const Range2Di& rectangl
         .setTexture(input);
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isVersionSupported(Version::GL320))
+    if(!Context::current().isVersionSupported(Version::GL320))
     #else
-    if(!Context::current()->isVersionSupported(Version::GLES300))
+    if(!Context::current().isVersionSupported(Version::GLES300))
     #endif
     {
         shader.setImageSizeInverted(1.0f/Vector2(imageSize));
@@ -194,9 +194,9 @@ void distanceField(Texture2D& input, Texture2D& output, const Range2Di& rectangl
     /* Older GLSL doesn't have gl_VertexID, vertices must be supplied explicitly */
     Buffer buffer;
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isVersionSupported(Version::GL300))
+    if(!Context::current().isVersionSupported(Version::GL300))
     #else
-    if(!Context::current()->isVersionSupported(Version::GLES300))
+    if(!Context::current().isVersionSupported(Version::GLES300))
     #endif
     {
         constexpr Vector2 triangle[] = {

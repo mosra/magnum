@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -89,26 +89,26 @@ UnsignedInt typeToIndex(const Shader::Type type) {
 
 #ifndef MAGNUM_TARGET_GLES
 bool isTypeSupported(const Shader::Type type) {
-    if(type == Shader::Type::Geometry && !Context::current()->isExtensionSupported<Extensions::GL::ARB::geometry_shader4>())
+    if(type == Shader::Type::Geometry && !Context::current().isExtensionSupported<Extensions::GL::ARB::geometry_shader4>())
         return false;
 
-    if((type == Shader::Type::TessellationControl || type == Shader::Type::TessellationEvaluation) && !Context::current()->isExtensionSupported<Extensions::GL::ARB::tessellation_shader>())
+    if((type == Shader::Type::TessellationControl || type == Shader::Type::TessellationEvaluation) && !Context::current().isExtensionSupported<Extensions::GL::ARB::tessellation_shader>())
         return false;
 
-    if(type == Shader::Type::Compute && !Context::current()->isExtensionSupported<Extensions::GL::ARB::compute_shader>())
+    if(type == Shader::Type::Compute && !Context::current().isExtensionSupported<Extensions::GL::ARB::compute_shader>())
         return false;
 
     return true;
 }
 #elif !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 bool isTypeSupported(const Shader::Type type) {
-    if(type == Shader::Type::Geometry && !Context::current()->isExtensionSupported<Extensions::GL::EXT::geometry_shader>())
+    if(type == Shader::Type::Geometry && !Context::current().isExtensionSupported<Extensions::GL::EXT::geometry_shader>())
         return false;
 
-    if((type == Shader::Type::TessellationControl || type == Shader::Type::TessellationEvaluation) && !Context::current()->isExtensionSupported<Extensions::GL::EXT::tessellation_shader>())
+    if((type == Shader::Type::TessellationControl || type == Shader::Type::TessellationEvaluation) && !Context::current().isExtensionSupported<Extensions::GL::EXT::tessellation_shader>())
         return false;
 
-    if(type == Shader::Type::Compute && !Context::current()->isVersionSupported(Version::GLES310))
+    if(type == Shader::Type::Compute && !Context::current().isVersionSupported(Version::GLES310))
         return false;
 
     return true;
@@ -120,12 +120,12 @@ constexpr bool isTypeSupported(Shader::Type) { return true; }
 }
 
 Int Shader::maxVertexOutputComponents() {
-    GLint& value = Context::current()->state().shader->maxVertexOutputComponents;
+    GLint& value = Context::current().state().shader->maxVertexOutputComponents;
 
     /* Get the value, if not already cached */
     if(value == 0) {
         #ifndef MAGNUM_TARGET_GLES
-        if(Context::current()->isVersionSupported(Version::GL320))
+        if(Context::current().isVersionSupported(Version::GL320))
             glGetIntegerv(GL_MAX_VERTEX_OUTPUT_COMPONENTS, &value);
         else
             glGetIntegerv(GL_MAX_VARYING_COMPONENTS, &value);
@@ -143,14 +143,14 @@ Int Shader::maxVertexOutputComponents() {
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 Int Shader::maxTessellationControlInputComponents() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::tessellation_shader>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::tessellation_shader>())
         return 0;
     #else
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::tessellation_shader>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::tessellation_shader>())
         return 0;
     #endif
 
-    GLint& value = Context::current()->state().shader->maxTessellationControlInputComponents;
+    GLint& value = Context::current().state().shader->maxTessellationControlInputComponents;
 
     /* Get the value, if not already cached */
     if(value == 0) glGetIntegerv(
@@ -166,14 +166,14 @@ Int Shader::maxTessellationControlInputComponents() {
 
 Int Shader::maxTessellationControlOutputComponents() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::tessellation_shader>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::tessellation_shader>())
         return 0;
     #else
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::tessellation_shader>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::tessellation_shader>())
         return 0;
     #endif
 
-    GLint& value = Context::current()->state().shader->maxTessellationControlOutputComponents;
+    GLint& value = Context::current().state().shader->maxTessellationControlOutputComponents;
 
     /* Get the value, if not already cached */
     if(value == 0) glGetIntegerv(
@@ -189,14 +189,14 @@ Int Shader::maxTessellationControlOutputComponents() {
 
 Int Shader::maxTessellationControlTotalOutputComponents() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::tessellation_shader>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::tessellation_shader>())
         return 0;
     #else
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::tessellation_shader>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::tessellation_shader>())
         return 0;
     #endif
 
-    GLint& value = Context::current()->state().shader->maxTessellationControlTotalOutputComponents;
+    GLint& value = Context::current().state().shader->maxTessellationControlTotalOutputComponents;
 
     /* Get the value, if not already cached */
     if(value == 0) glGetIntegerv(
@@ -212,14 +212,14 @@ Int Shader::maxTessellationControlTotalOutputComponents() {
 
 Int Shader::maxTessellationEvaluationInputComponents() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::tessellation_shader>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::tessellation_shader>())
         return 0;
     #else
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::tessellation_shader>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::tessellation_shader>())
         return 0;
     #endif
 
-    GLint& value = Context::current()->state().shader->maxTessellationEvaluationInputComponents;
+    GLint& value = Context::current().state().shader->maxTessellationEvaluationInputComponents;
 
     /* Get the value, if not already cached */
     if(value == 0) glGetIntegerv(
@@ -235,14 +235,14 @@ Int Shader::maxTessellationEvaluationInputComponents() {
 
 Int Shader::maxTessellationEvaluationOutputComponents() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::tessellation_shader>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::tessellation_shader>())
         return 0;
     #else
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::tessellation_shader>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::tessellation_shader>())
         return 0;
     #endif
 
-    GLint& value = Context::current()->state().shader->maxTessellationEvaluationOutputComponents;
+    GLint& value = Context::current().state().shader->maxTessellationEvaluationOutputComponents;
 
     /* Get the value, if not already cached */
     if(value == 0) glGetIntegerv(
@@ -258,14 +258,14 @@ Int Shader::maxTessellationEvaluationOutputComponents() {
 
 Int Shader::maxGeometryInputComponents() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::geometry_shader4>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::geometry_shader4>())
         return 0;
     #else
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::geometry_shader>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::geometry_shader>())
         return 0;
     #endif
 
-    GLint& value = Context::current()->state().shader->maxGeometryInputComponents;
+    GLint& value = Context::current().state().shader->maxGeometryInputComponents;
 
     /* Get the value, if not already cached */
     /** @todo The extension has only `GL_MAX_GEOMETRY_VARYING_COMPONENTS_ARB`, this is supported since GL 3.2 (wtf?) */
@@ -282,14 +282,14 @@ Int Shader::maxGeometryInputComponents() {
 
 Int Shader::maxGeometryOutputComponents() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::geometry_shader4>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::geometry_shader4>())
         return 0;
     #else
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::geometry_shader>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::geometry_shader>())
         return 0;
     #endif
 
-    GLint& value = Context::current()->state().shader->maxGeometryOutputComponents;
+    GLint& value = Context::current().state().shader->maxGeometryOutputComponents;
 
     /* Get the value, if not already cached */
     /** @todo The extension has only `GL_MAX_GEOMETRY_OUTPUT_VERTICES_ARB`, this is supported since GL 3.2 (wtf?) */
@@ -306,14 +306,14 @@ Int Shader::maxGeometryOutputComponents() {
 
 Int Shader::maxGeometryTotalOutputComponents() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::geometry_shader4>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::geometry_shader4>())
         return 0;
     #else
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::geometry_shader>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::geometry_shader>())
         return 0;
     #endif
 
-    GLint& value = Context::current()->state().shader->maxGeometryTotalOutputComponents;
+    GLint& value = Context::current().state().shader->maxGeometryTotalOutputComponents;
 
     /* Get the value, if not already cached */
     if(value == 0) glGetIntegerv(
@@ -329,12 +329,12 @@ Int Shader::maxGeometryTotalOutputComponents() {
 #endif
 
 Int Shader::maxFragmentInputComponents() {
-    GLint& value = Context::current()->state().shader->maxFragmentInputComponents;
+    GLint& value = Context::current().state().shader->maxFragmentInputComponents;
 
     /* Get the value, if not already cached */
     if(value == 0) {
         #ifndef MAGNUM_TARGET_GLES
-        if(Context::current()->isVersionSupported(Version::GL320))
+        if(Context::current().isVersionSupported(Version::GL320))
             glGetIntegerv(GL_MAX_FRAGMENT_INPUT_COMPONENTS, &value);
         else
             glGetIntegerv(GL_MAX_VARYING_COMPONENTS, &value);
@@ -353,9 +353,9 @@ Int Shader::maxFragmentInputComponents() {
 Int Shader::maxAtomicCounterBuffers(const Type type) {
     if(
         #ifndef MAGNUM_TARGET_GLES
-        !Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>() ||
+        !Context::current().isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>() ||
         #else
-        !Context::current()->isVersionSupported(Version::GLES310) ||
+        !Context::current().isVersionSupported(Version::GLES310) ||
         #endif
         !isTypeSupported(type))
     {
@@ -363,7 +363,7 @@ Int Shader::maxAtomicCounterBuffers(const Type type) {
     }
 
     const UnsignedInt index = typeToIndex(type);
-    GLint& value = Context::current()->state().shader->maxAtomicCounterBuffers[index];
+    GLint& value = Context::current().state().shader->maxAtomicCounterBuffers[index];
 
     /* Get the value, if not already cached */
     constexpr static GLenum what[] = {
@@ -386,13 +386,13 @@ Int Shader::maxAtomicCounterBuffers(const Type type) {
 
 Int Shader::maxCombinedAtomicCounterBuffers() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>())
     #else
-    if(!Context::current()->isVersionSupported(Version::GLES310))
+    if(!Context::current().isVersionSupported(Version::GLES310))
     #endif
         return 0;
 
-    GLint& value = Context::current()->state().shader->maxCombinedAtomicCounterBuffers;
+    GLint& value = Context::current().state().shader->maxCombinedAtomicCounterBuffers;
 
     /* Get the value, if not already cached */
     if(value == 0)
@@ -404,9 +404,9 @@ Int Shader::maxCombinedAtomicCounterBuffers() {
 Int Shader::maxAtomicCounters(const Type type) {
     if(
         #ifndef MAGNUM_TARGET_GLES
-        !Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>() ||
+        !Context::current().isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>() ||
         #else
-        !Context::current()->isVersionSupported(Version::GLES310) ||
+        !Context::current().isVersionSupported(Version::GLES310) ||
         #endif
         !isTypeSupported(type))
     {
@@ -414,7 +414,7 @@ Int Shader::maxAtomicCounters(const Type type) {
     }
 
     const UnsignedInt index = typeToIndex(type);
-    GLint& value = Context::current()->state().shader->maxAtomicCounters[index];
+    GLint& value = Context::current().state().shader->maxAtomicCounters[index];
 
     /* Get the value, if not already cached */
     constexpr static GLenum what[] = {
@@ -437,13 +437,13 @@ Int Shader::maxAtomicCounters(const Type type) {
 
 Int Shader::maxCombinedAtomicCounters() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>())
     #else
-    if(!Context::current()->isVersionSupported(Version::GLES310))
+    if(!Context::current().isVersionSupported(Version::GLES310))
     #endif
         return 0;
 
-    GLint& value = Context::current()->state().shader->maxCombinedAtomicCounters;
+    GLint& value = Context::current().state().shader->maxCombinedAtomicCounters;
 
     /* Get the value, if not already cached */
     if(value == 0)
@@ -455,9 +455,9 @@ Int Shader::maxCombinedAtomicCounters() {
 Int Shader::maxImageUniforms(const Type type) {
     if(
         #ifndef MAGNUM_TARGET_GLES
-        !Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>() ||
+        !Context::current().isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>() ||
         #else
-        !Context::current()->isVersionSupported(Version::GLES310) ||
+        !Context::current().isVersionSupported(Version::GLES310) ||
         #endif
         !isTypeSupported(type))
     {
@@ -465,7 +465,7 @@ Int Shader::maxImageUniforms(const Type type) {
     }
 
     const UnsignedInt index = typeToIndex(type);
-    GLint& value = Context::current()->state().shader->maxImageUniforms[index];
+    GLint& value = Context::current().state().shader->maxImageUniforms[index];
 
     /* Get the value, if not already cached */
     constexpr static GLenum what[] = {
@@ -488,13 +488,13 @@ Int Shader::maxImageUniforms(const Type type) {
 
 Int Shader::maxCombinedImageUniforms() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())
     #else
-    if(!Context::current()->isVersionSupported(Version::GLES310))
+    if(!Context::current().isVersionSupported(Version::GLES310))
     #endif
         return 0;
 
-    GLint& value = Context::current()->state().shader->maxCombinedImageUniforms;
+    GLint& value = Context::current().state().shader->maxCombinedImageUniforms;
 
     /* Get the value, if not already cached */
     if(value == 0)
@@ -506,9 +506,9 @@ Int Shader::maxCombinedImageUniforms() {
 Int Shader::maxShaderStorageBlocks(const Type type) {
     if(
         #ifndef MAGNUM_TARGET_GLES
-        !Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_storage_buffer_object>() ||
+        !Context::current().isExtensionSupported<Extensions::GL::ARB::shader_storage_buffer_object>() ||
         #else
-        !Context::current()->isVersionSupported(Version::GLES310) ||
+        !Context::current().isVersionSupported(Version::GLES310) ||
         #endif
         !isTypeSupported(type))
     {
@@ -516,7 +516,7 @@ Int Shader::maxShaderStorageBlocks(const Type type) {
     }
 
     const UnsignedInt index = typeToIndex(type);
-    GLint& value = Context::current()->state().shader->maxShaderStorageBlocks[index];
+    GLint& value = Context::current().state().shader->maxShaderStorageBlocks[index];
 
     /* Get the value, if not already cached */
     constexpr static GLenum what[] = {
@@ -539,13 +539,13 @@ Int Shader::maxShaderStorageBlocks(const Type type) {
 
 Int Shader::maxCombinedShaderStorageBlocks() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>())
     #else
-    if(!Context::current()->isVersionSupported(Version::GLES310))
+    if(!Context::current().isVersionSupported(Version::GLES310))
     #endif
         return 0;
 
-    GLint& value = Context::current()->state().shader->maxCombinedShaderStorageBlocks;
+    GLint& value = Context::current().state().shader->maxCombinedShaderStorageBlocks;
 
     /* Get the value, if not already cached */
     if(value == 0)
@@ -560,7 +560,7 @@ Int Shader::maxTextureImageUnits(const Type type) {
         return 0;
 
     const UnsignedInt index = typeToIndex(type);
-    GLint& value = Context::current()->state().shader->maxTextureImageUnits[index];
+    GLint& value = Context::current().state().shader->maxTextureImageUnits[index];
 
     /* Get the value, if not already cached */
     constexpr static GLenum what[] = {
@@ -584,7 +584,7 @@ Int Shader::maxTextureImageUnits(const Type type) {
 }
 
 Int Shader::maxCombinedTextureImageUnits() {
-    GLint& value = Context::current()->state().shader->maxTextureImageUnitsCombined;
+    GLint& value = Context::current().state().shader->maxTextureImageUnitsCombined;
 
     /* Get the value, if not already cached */
     if(value == 0)
@@ -596,14 +596,14 @@ Int Shader::maxCombinedTextureImageUnits() {
 #ifndef MAGNUM_TARGET_GLES2
 Int Shader::maxUniformBlocks(const Type type) {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::uniform_buffer_object>() || !isTypeSupported(type))
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::uniform_buffer_object>() || !isTypeSupported(type))
     #else
     if(!isTypeSupported(type))
     #endif
         return 0;
 
     const UnsignedInt index = typeToIndex(type);
-    GLint& value = Context::current()->state().shader->maxUniformBlocks[index];
+    GLint& value = Context::current().state().shader->maxUniformBlocks[index];
 
     /* Get the value, if not already cached */
     constexpr static GLenum what[] = {
@@ -628,11 +628,11 @@ Int Shader::maxUniformBlocks(const Type type) {
 
 Int Shader::maxCombinedUniformBlocks() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::uniform_buffer_object>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::uniform_buffer_object>())
         return 0;
     #endif
 
-    GLint& value = Context::current()->state().shader->maxCombinedUniformBlocks;
+    GLint& value = Context::current().state().shader->maxCombinedUniformBlocks;
 
     /* Get the value, if not already cached */
     if(value == 0)
@@ -647,7 +647,7 @@ Int Shader::maxUniformComponents(const Type type) {
         return 0;
 
     const UnsignedInt index = typeToIndex(type);
-    GLint& value = Context::current()->state().shader->maxUniformComponents[index];
+    GLint& value = Context::current().state().shader->maxUniformComponents[index];
 
     /* Get the value, if not already cached */
     #ifndef MAGNUM_TARGET_GLES2
@@ -686,14 +686,14 @@ Int Shader::maxUniformComponents(const Type type) {
 #ifndef MAGNUM_TARGET_GLES2
 Int Shader::maxCombinedUniformComponents(const Type type) {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::uniform_buffer_object>() || !isTypeSupported(type))
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::uniform_buffer_object>() || !isTypeSupported(type))
     #else
     if(!isTypeSupported(type))
     #endif
         return 0;
 
     const UnsignedInt index = typeToIndex(type);
-    GLint& value = Context::current()->state().shader->maxCombinedUniformComponents[index];
+    GLint& value = Context::current().state().shader->maxCombinedUniformComponents[index];
 
     /* Get the value, if not already cached */
     constexpr static GLenum what[] = {
@@ -733,12 +733,12 @@ Shader::Shader(const Version version, const Type type): _type(type), _id(0) {
         case Version::GL430: _sources.push_back("#version 430\n"); return;
         case Version::GL440: _sources.push_back("#version 440\n"); return;
         case Version::GL450: _sources.push_back("#version 450\n"); return;
-        #else
+        #endif
+        /* `#version 100` really is GLSL ES 1.00 and *not* GLSL 1.00. What a mess. */
         case Version::GLES200: _sources.push_back("#version 100\n"); return;
         case Version::GLES300: _sources.push_back("#version 300 es\n"); return;
         #ifndef MAGNUM_TARGET_WEBGL
         case Version::GLES310: _sources.push_back("#version 310 es\n"); return;
-        #endif
         #endif
 
         /* The user is responsible for (not) adding #version directive */
@@ -758,17 +758,17 @@ Shader::~Shader() {
 #ifndef MAGNUM_TARGET_WEBGL
 std::string Shader::label() const {
     #ifndef MAGNUM_TARGET_GLES
-    return Context::current()->state().debug->getLabelImplementation(GL_SHADER, _id);
+    return Context::current().state().debug->getLabelImplementation(GL_SHADER, _id);
     #else
-    return Context::current()->state().debug->getLabelImplementation(GL_SHADER_KHR, _id);
+    return Context::current().state().debug->getLabelImplementation(GL_SHADER_KHR, _id);
     #endif
 }
 
 Shader& Shader::setLabelInternal(const Containers::ArrayView<const char> label) {
     #ifndef MAGNUM_TARGET_GLES
-    Context::current()->state().debug->labelImplementation(GL_SHADER, _id, label);
+    Context::current().state().debug->labelImplementation(GL_SHADER, _id, label);
     #else
-    Context::current()->state().debug->labelImplementation(GL_SHADER_KHR, _id, label);
+    Context::current().state().debug->labelImplementation(GL_SHADER_KHR, _id, label);
     #endif
     return *this;
 }
@@ -856,7 +856,7 @@ bool Shader::compile(std::initializer_list<std::reference_wrapper<Shader>> shade
 
         /* Show error log */
         if(!success) {
-            auto out = Error::noNewlineAtTheEnd();
+            Error out{Debug::Flag::NoNewlineAtTheEnd};
             out << "Shader::compile(): compilation of" << shaderName(shader._type) << "shader";
             if(shaders.size() != 1) {
                 #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID)
@@ -869,7 +869,7 @@ bool Shader::compile(std::initializer_list<std::reference_wrapper<Shader>> shade
 
         /* Or just warnings, if any */
         } else if(!message.empty() && !Implementation::isShaderCompilationLogEmpty(message)) {
-            auto out = Warning::noNewlineAtTheEnd();
+            Warning out{Debug::Flag::NoNewlineAtTheEnd};
             out << "Shader::compile(): compilation of" << shaderName(shader._type) << "shader";
             if(shaders.size() != 1) {
                 #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID)

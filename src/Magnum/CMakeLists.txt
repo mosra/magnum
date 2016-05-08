@@ -1,7 +1,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -117,6 +117,9 @@ set(Magnum_HEADERS
 
     visibility.h)
 
+set(MagnumTest_HEADERS
+    Test/AbstractOpenGLTester.h)
+
 # Header files to display in project view of IDEs only
 set(Magnum_PRIVATE_HEADERS
     Implementation/BufferState.h
@@ -187,6 +190,7 @@ if(NOT TARGET_WEBGL)
             BufferTexture.h
             BufferTextureFormat.h
             CubeMapTextureArray.h
+            ImageFormat.h
             MultisampleTexture.h)
     endif()
 
@@ -228,8 +232,9 @@ set(MagnumMath_SRCS
 
 # Objects shared between main and test library
 add_library(MagnumMathObjects OBJECT ${MagnumMath_SRCS})
+target_include_directories(MagnumMathObjects PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
 if(NOT BUILD_STATIC)
-    set_target_properties(MagnumMathObjects PROPERTIES COMPILE_FLAGS "-DMagnumMathObjects_EXPORTS")
+    target_compile_definitions(MagnumMathObjects PRIVATE "MagnumMathObjects_EXPORTS")
 endif()
 if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(MagnumMathObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
@@ -240,31 +245,38 @@ add_library(Magnum ${SHARED_OR_STATIC}
     ${Magnum_SRCS}
     ${Magnum_HEADERS}
     ${Magnum_PRIVATE_HEADERS}
+    ${MagnumTest_HEADERS}
     $<TARGET_OBJECTS:MagnumMathObjects>)
 set_target_properties(Magnum PROPERTIES DEBUG_POSTFIX "-d")
 if(NOT BUILD_STATIC)
-    set_target_properties(Magnum PROPERTIES COMPILE_FLAGS "-DFlextGL_EXPORTS")
+    target_compile_definitions(Magnum PRIVATE "FlextGL_EXPORTS")
 elseif(BUILD_STATIC_PIC)
     set_target_properties(Magnum PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-
-set(Magnum_LIBS
-    ${CORRADE_UTILITY_LIBRARIES}
-    ${CORRADE_PLUGINMANAGER_LIBRARIES})
+# We can use both implicit include path (GLES2/gl2.h) where our headers can
+# be overriden with system ones or explicit (MagnumExternal/OpenGL/GLES2/gl2ext.h)
+# where only our headers will be used
+target_include_directories(Magnum PUBLIC
+    ${PROJECT_SOURCE_DIR}/src
+    ${PROJECT_BINARY_DIR}/src
+    ${PROJECT_SOURCE_DIR}/src/MagnumExternal/OpenGL)
+target_link_libraries(Magnum
+    Corrade::Utility
+    Corrade::PluginManager)
 if(NOT TARGET_GLES OR TARGET_DESKTOP_GLES)
-    set(Magnum_LIBS ${Magnum_LIBS} ${OPENGL_gl_LIBRARY})
+    target_link_libraries(Magnum ${OPENGL_gl_LIBRARY})
 elseif(TARGET_GLES2)
-    set(Magnum_LIBS ${Magnum_LIBS} ${OPENGLES2_LIBRARY})
+    target_link_libraries(Magnum OpenGLES2::OpenGLES2)
 else()
-    set(Magnum_LIBS ${Magnum_LIBS} ${OPENGLES3_LIBRARY})
+    target_link_libraries(Magnum OpenGLES3::OpenGLES3)
 endif()
-target_link_libraries(Magnum ${Magnum_LIBS})
 
 install(TARGETS Magnum
     RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
     LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
     ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${Magnum_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR})
+install(FILES ${MagnumTest_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Test)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configure.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR})
 
 add_subdirectory(Math)
@@ -310,11 +322,12 @@ endif()
 if(BUILD_TESTS)
     # Library with graceful assert for testing
     add_library(MagnumMathTestLib ${SHARED_OR_STATIC}
-        $<TARGET_OBJECTS:MagnumMathObjects>)
-    set_target_properties(MagnumMathTestLib PROPERTIES
-        COMPILE_FLAGS "-DCORRADE_GRACEFUL_ASSERT"
-        DEBUG_POSTFIX "-d")
-    target_link_libraries(MagnumMathTestLib ${CORRADE_UTILITY_LIBRARY})
+        $<TARGET_OBJECTS:MagnumMathObjects>
+        dummy.cpp) # XCode workaround, see file comment for details
+    target_include_directories(MagnumMathTestLib PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
+    target_compile_definitions(MagnumMathTestLib PRIVATE "CORRADE_GRACEFUL_ASSERT")
+    set_target_properties(MagnumMathTestLib PROPERTIES DEBUG_POSTFIX "-d")
+    target_link_libraries(MagnumMathTestLib Corrade::Utility)
 
     # On Windows we need to install first and then run the tests to avoid "DLL
     # not found" hell, thus we need to install this too
@@ -328,6 +341,6 @@ if(BUILD_TESTS)
     add_subdirectory(Test)
 endif()
 
-# Magnum library and configure file for superprojects
-set(MAGNUM_LIBRARY Magnum CACHE INTERNAL "")
+# Magnum library target alias and configure file for superprojects
+add_library(Magnum::Magnum ALIAS Magnum)
 set(_MAGNUM_CONFIGURE_FILE ${CMAKE_CURRENT_BINARY_DIR}/configure.h CACHE INTERNAL "")

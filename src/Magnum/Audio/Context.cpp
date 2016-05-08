@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
     Copyright © 2015 Jonathan Hale <squareys@googlemail.com>
 
@@ -69,6 +69,13 @@ Debug& operator<<(Debug& debug, const Context::HrtfStatus value) {
 }
 
 Context* Context::_current = nullptr;
+
+bool Context::hasCurrent() { return _current; }
+
+Context& Context::current() {
+    CORRADE_ASSERT(_current, "Audio::Context::current(): no current context", *_current);
+    return *_current;
+}
 
 Context::Context(): Context{Configuration{}} {}
 

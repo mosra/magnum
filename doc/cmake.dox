@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -50,12 +50,10 @@ Basic usage is:
 
     find_package(Magnum REQUIRED)
 
-This command tries to find base Magnum library and then defines these
-variables:
+This module tries to find base Magnum library and then defines:
 
--   `MAGNUM_FOUND` -- Whether the library was found
--   `MAGNUM_LIBRARIES` -- Magnum library and dependent libraries
--   `MAGNUM_INCLUDE_DIRS` -- Root include dir and include dirs of dependencies
+-   `Magnum_FOUND` -- Whether the library was found
+-   `Magnum::Magnum` -- Base library imported target
 -   `MAGNUM_PLUGINS_DEBUG_DIR` -- Base directory with dynamic plugins for debug
     builds, defaults to `magnum-d/` subdirectory of dir where Magnum library
     was found
@@ -96,13 +94,16 @@ The optional components are:
 
 Platform namespace is split into more components:
 
+-   `GlfwApplication` -- @ref Platform::GlfwApplication "GlfwApplication"
 -   `GlutApplication` -- @ref Platform::GlutApplication "GlutApplication"
 -   `GlxApplication` -- @ref Platform::GlxApplication "GlxApplication"
 -   `NaClApplication` -- @ref Platform::NaClApplication "NaClApplication"
 -   `Sdl2Application` -- @ref Platform::Sdl2Application "Sdl2Application"
 -   `XEglApplication` -- @ref Platform::XEglApplication "XEglApplication"
 -   `WindowlessCglApplication` -- @ref Platform::WindowlessCglApplication "WindowlessCglApplication"
+-   `WindowlessEglApplication` -- @ref Platform::WindowlessEglApplication "WindowlessEglApplication"
 -   `WindowlessGlxApplication` -- @ref Platform::WindowlessGlxApplication "WindowlessGlxApplication"
+-   `WindowlessIosApplication` -- @ref Platform::WindowlessIosApplication "WindowlessIosApplication"
 -   `WindowlessNaClApplication` -- @ref Platform::WindowlessNaClApplication "WindowlessNaClApplication"
 -   `WindowlessWglApplication` -- @ref Platform::WindowlessWglApplication "WindowlessWglApplication"
 -   `WindowlessWindowsEglApplication` -- @ref Platform::WindowlessWindowsEglApplication "WindowlessWindowsEglApplication"
@@ -135,6 +136,12 @@ dependencies, you need to find the dependency and then link to it.
 -   `TgaImporter` -- @ref Trade::TgaImporter "TgaImporter" plugin
 -   `WavAudioImporter` -- @ref Audio::WavImporter "WavAudioImporter" plugin
 
+Lastly, a few utility executables are available:
+
+-   `distancefieldconverter` -- @ref magnum-distancefieldconverter executable
+-   `fontconverter` -- @ref magnum-fontconverter executable
+-   `info` -- @ref magnum-info executable
+
 Note that [each namespace](namespaces.html), all @ref Platform libraries and
 each plugin class contain more detailed information about dependencies,
 availability on particular platform and also guide how to enable given library
@@ -146,18 +153,14 @@ Example usage with specifying additional components is:
 
 For each component is then defined:
 
--   `MAGNUM_*_FOUND` -- Whether the component was found
--   `MAGNUM_*_LIBRARIES` -- Component library and dependent libraries
--   `MAGNUM_*_INCLUDE_DIRS` -- Include dirs of module dependencies
+-   `Magnum_*_FOUND` -- Whether the component was found
+-   `Magnum::*` -- Component imported target
 
 If exactly one `*Application` or exactly one `Windowless*Application` component
-is requested and found, its libraries and include dirs are available in
-convenience aliases `MAGNUM_APPLICATION_LIBRARIES` /
-`MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES` and `MAGNUM_APPLICATION_INCLUDE_DIRS`
-/ `MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS` to simplify porting. Similarly,
-if exactly one `*Context` component is requested and found, its libraries and
-include dirs are available in convenience aliases `MAGNUM_CONTEXT_LIBRARIES`
-and `MAGNUM_CONTEXT_INCLUDE_DIRS`.
+is requested and found, its target is available in convenience alias
+`Magnum::Application` / `Magnum::WindowlessApplication` to simplify porting.
+Similarly, if exactly one `*Context` component is requested and found, its
+target is available in convenience alias `Magnum::Context`.
 
 The package is found if either debug or release version of each requested
 library (or plugin) is found. If both debug and release libraries (or plugins)
@@ -182,12 +185,29 @@ are also available as preprocessor variables if including
 -   `MAGNUM_TARGET_GLES3` -- Defined if compiled for OpenGL ES 3.0
 -   `MAGNUM_TARGET_DESKTOP_GLES` -- Defined if compiled with OpenGL ES
     emulation on desktop OpenGL
--   `MAGNUM_TARGET_WEBGL` --- Defined if compiled for WebGL
+-   `MAGNUM_TARGET_WEBGL` -- Defined if compiled for WebGL
+-   `MAGNUM_TARGET_HEADLESS` -- Defined if compiled for headless machines. See
+    @ref MAGNUM_TARGET_HEADLESS documentation for more information.
+
+Workflows without imported targets are deprecated and the following variables
+are included just for backwards compatibility and only if
+@ref MAGNUM_BUILD_DEPRECATED is enabled:
+
+-   `MAGNUM_LIBRARIES` -- Expands to `Magnum::Magnum` target. Use `Magnum::Magnum`
+    target directly instead.
+-   `MAGNUM_*_LIBRARIES` -- Expands to `Magnum::*` target. Use `Magnum::*`
+    target directly instead.
+-   `MAGNUM_APPLICATION_LIBRARIES` / `MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES`
+    -- Expands to `Magnum::Application` / `Magnum::WindowlessApplication`
+    target. Use `Magnum::Application` / `Magnum::WindowlessApplication` target
+    directly instead.
+-   `MAGNUM_CONTEXT_LIBRARIES` -- Expands to `Magnum::Context` target. Use
+    `Magnum::Context` target directly instead.
 
 Corrade library provides also its own set of CMake macros and variables, see
 @ref corrade-cmake "its documentation" for more information.
-@ref cmake-plugins "Plugins repository" and @ref cmake-integration "Integration library"
-have also their own CMake modules.
+@ref cmake-plugins "Plugins repository", @ref cmake-integration "Integration repository"
+and @ref cmake-extras "Extras repository" have also their own CMake modules.
 
 */
 }

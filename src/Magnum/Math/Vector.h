@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -54,6 +54,20 @@ namespace Implementation {
     template<class T, class U> T lerp(const T& a, const T& b, U t) {
         return T((U(1) - t)*a + t*b);
     }
+
+    template<bool integral> struct IsZero;
+    template<> struct IsZero<false> {
+        template<std::size_t size, class T> bool operator()(const Vector<size, T>& vec) const {
+            /* Proper comparison should be with epsilon^2, but the value is not
+               representable in given precision. Comparing to epsilon instead. */
+            return std::abs(vec.dot()) < TypeTraits<T>::epsilon();
+        }
+    };
+    template<> struct IsZero<true> {
+        template<std::size_t size, class T> bool operator()(const Vector<size, T>& vec) const {
+            return vec == Vector<size, T>{};
+        }
+    };
 }
 
 /** @relatesalso Vector
@@ -97,13 +111,6 @@ template<std::size_t size, class T> class Vector {
     static_assert(size != 0, "Vector cannot have zero elements");
 
     template<std::size_t, class> friend class Vector;
-
-    #ifdef CORRADE_MSVC2015_COMPATIBILITY
-    /* Delegating constexpr constructor workarounds */
-    friend class Vector2<T>;
-    friend class Vector3<T>;
-    friend class Vector4<T>;
-    #endif
 
     public:
         typedef T Type;         /**< @brief Underlying data type */
@@ -188,12 +195,7 @@ template<std::size_t size, class T> class Vector {
         #ifdef DOXYGEN_GENERATING_OUTPUT
         constexpr explicit Vector(T value);
         #else
-        template<class U, class V = typename std::enable_if<std::is_same<T, U>::value && size != 1, T>::type>
-        #ifndef CORRADE_MSVC2015_COMPATIBILITY
-        /* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-        constexpr
-        #endif
-        explicit Vector(U value): Vector(typename Implementation::GenerateSequence<size>::Type(), value) {}
+        template<class U, class V = typename std::enable_if<std::is_same<T, U>::value && size != 1, T>::type> constexpr explicit Vector(U value): Vector(typename Implementation::GenerateSequence<size>::Type(), value) {}
         #endif
 
         /**
@@ -207,20 +209,10 @@ template<std::size_t size, class T> class Vector {
          * // integral == {1, 2, -15, 7}
          * @endcode
          */
-        template<class U>
-        #ifndef CORRADE_MSVC2015_COMPATIBILITY
-        /* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-        constexpr
-        #endif
-        explicit Vector(const Vector<size, U>& other): Vector(typename Implementation::GenerateSequence<size>::Type(), other) {}
+        template<class U> constexpr explicit Vector(const Vector<size, U>& other): Vector(typename Implementation::GenerateSequence<size>::Type(), other) {}
 
         /** @brief Construct vector from external representation */
-        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::from(std::declval<U>()))>
-        #ifndef CORRADE_MSVC2015_COMPATIBILITY
-        /* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-        constexpr
-        #endif
-        explicit Vector(const U& other): Vector(Implementation::VectorConverter<size, T, U>::from(other)) {}
+        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::from(std::declval<U>()))> constexpr explicit Vector(const U& other): Vector(Implementation::VectorConverter<size, T, U>::from(other)) {}
 
         /** @brief Copy constructor */
         constexpr Vector(const Vector<size, T>&) = default;
@@ -284,7 +276,7 @@ template<std::size_t size, class T> class Vector {
          * @see @ref dot(), @ref normalized()
          */
         bool isZero() const {
-            return Implementation::isZeroSquared(dot());
+            return Implementation::IsZero<std::is_integral<T>::value>{}(*this);
         }
 
         /**

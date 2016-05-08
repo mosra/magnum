@@ -82,6 +82,18 @@ cd build-${compiler}-${libraries}-${compatibility}-${gl}
 ninja
 
 ctest --output-on-failure -R GLTest -j5 || true
+if [ ${gl} = "desktop" ] ; then
+    MAGNUM_DISABLE_EXTENSIONS="GL_ARB_direct_state_access" ctest --output-on-failure -R GLTest -j5 || true
+    MAGNUM_DISABLE_EXTENSIONS="GL_ARB_direct_state_access GL_EXT_direct_state_access" ctest --output-on-failure -R GLTest -j5 || true
+    MAGNUM_DISABLE_EXTENSIONS="GL_ARB_direct_state_access GL_EXT_direct_state_access GL_ARB_get_texture_sub_image" ctest --output-on-failure -R GLTest -j5 || true
+    MAGNUM_DISABLE_EXTENSIONS="GL_ARB_direct_state_access GL_EXT_direct_state_access GL_ARB_get_texture_sub_image GL_ARB_multi_bind" ctest --output-on-failure -R GLTest -j5 || true
+    MAGNUM_DISABLE_EXTENSIONS="GL_ARB_direct_state_access GL_EXT_direct_state_access GL_ARB_get_texture_sub_image GL_ARB_multi_bind GL_ARB_robustness" ctest --output-on-failure -R GLTest -j5 || true
+    MAGNUM_DISABLE_EXTENSIONS="GL_ARB_direct_state_access GL_EXT_direct_state_access GL_ARB_get_texture_sub_image GL_ARB_multi_bind GL_ARB_robustness GL_ARB_separate_shader_objects" ctest --output-on-failure -R GLTest -j5 || true
+    MAGNUM_DISABLE_EXTENSIONS="GL_ARB_direct_state_access GL_EXT_direct_state_access GL_ARB_get_texture_sub_image GL_ARB_multi_bind GL_ARB_robustness GL_ARB_separate_shader_objects GL_ARB_texture_storage" ctest --output-on-failure -R GLTest -j5 || true
+    MAGNUM_DISABLE_EXTENSIONS="GL_ARB_direct_state_access GL_EXT_direct_state_access GL_ARB_get_texture_sub_image GL_ARB_multi_bind GL_ARB_robustness GL_ARB_separate_shader_objects GL_ARB_texture_storage GL_ARB_texture_storage_multisample" ctest --output-on-failure -R GLTest -j5 || true
+    MAGNUM_DISABLE_EXTENSIONS="GL_ARB_direct_state_access GL_EXT_direct_state_access GL_ARB_get_texture_sub_image GL_ARB_multi_bind GL_ARB_robustness GL_ARB_separate_shader_objects GL_ARB_texture_storage GL_ARB_texture_storage_multisample GL_KHR_debug" ctest --output-on-failure -R GLTest -j5 || true
+    MAGNUM_DISABLE_EXTENSIONS="GL_ARB_direct_state_access GL_EXT_direct_state_access GL_ARB_get_texture_sub_image GL_ARB_multi_bind GL_ARB_robustness GL_ARB_separate_shader_objects GL_ARB_texture_storage GL_ARB_texture_storage_multisample GL_KHR_debug GL_ARB_compressed_texture_pixel_storage" ctest --output-on-failure -R GLTest -j5 || true
+fi
 ]]>
     </command>
     </hudson.tasks.Shell>

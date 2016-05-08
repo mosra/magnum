@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -48,12 +48,16 @@ namespace Math {
     #ifndef DOXYGEN_GENERATING_OUTPUT
     template<class> struct Constants;
 
-    #ifndef MAGNUM_TARGET_GLES
-    constexpr Rad<Double> operator "" _rad(long double);
-    constexpr Deg<Double> operator "" _deg(long double);
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    namespace Literals {
+        #ifndef MAGNUM_TARGET_GLES
+        constexpr Rad<Double> operator "" _rad(long double);
+        constexpr Deg<Double> operator "" _deg(long double);
+        #endif
+        constexpr Rad<Float> operator "" _radf(long double);
+        constexpr Deg<Float> operator "" _degf(long double);
+    }
     #endif
-    constexpr Rad<Float> operator "" _radf(long double);
-    constexpr Deg<Float> operator "" _degf(long double);
     #endif
 }
 
@@ -143,6 +147,19 @@ which you might want to be aware of. Implies also @ref MAGNUM_TARGET_GLES and
 */
 #define MAGNUM_TARGET_WEBGL
 #undef MAGNUM_TARGET_WEBGL
+
+/**
+@brief Headless target
+
+Defined if the engine is built for use on a headless machine (without any
+graphical desktop environment). Basically it means that EGL with no display
+attachment is being used everywhere instead of platform-specific toolkits like
+CGL, GLX or WGL. Note that this might not be supported on all platforms, see
+@ref Magnum::Platform::WindowlessEglApplication "Platform::WindowlessEglApplication"
+for more information.
+*/
+#define MAGNUM_TARGET_HEADLESS
+#undef MAGNUM_TARGET_HEADLESS
 #endif
 
 /** @{ @name Basic type definitions
@@ -421,13 +438,14 @@ typedef Math::Range3D<Double> Range3Dd;
 /*@}*/
 #endif
 
-/* Using angle literals from Math namespace */
+#ifdef MAGNUM_BUILD_DEPRECATED
 #ifndef MAGNUM_TARGET_GLES
-using Math::operator "" _deg;
-using Math::operator "" _rad;
+using Math::Literals::operator "" _deg;
+using Math::Literals::operator "" _rad;
 #endif
-using Math::operator "" _degf;
-using Math::operator "" _radf;
+using Math::Literals::operator "" _degf;
+using Math::Literals::operator "" _radf;
+#endif
 
 /* Forward declarations for all types in root namespace */
 
@@ -475,6 +493,7 @@ template<class T> using BasicColor4 CORRADE_DEPRECATED_ALIAS("use Math::Color4 i
 class Context;
 
 class CubeMapTexture;
+enum class CubeMapCoordinate: GLenum;
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 class CubeMapTextureArray;
 #endif
@@ -485,6 +504,11 @@ class CubeMapTextureArray;
 
 class Extension;
 class Framebuffer;
+
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+enum class ImageFormat: GLenum;
+enum class ImageAccess: GLenum;
+#endif
 
 template<UnsignedInt> class Image;
 typedef Image<1> Image1D;

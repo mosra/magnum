@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -51,6 +51,20 @@ namespace {
            1.30 on NVidia and 1.40 on Mac OS X. Everything is fine when using
            newer GLSL version. */
         "no-layout-qualifiers-on-old-glsl",
+
+        /* NVidia drivers (358.16) report compressed block size from internal
+           format query in bits instead of bytes */
+        "nv-compressed-block-size-in-bits",
+
+        /* NVidia drivers (358.16) report different compressed image size for
+           cubemaps based on whether the texture is immutable or not and not
+           based on whether I'm querying all faces (ARB_DSA) or a single face
+           (non-DSA, EXT_DSA) */
+        "nv-cubemap-inconsistent-compressed-image-size",
+
+        /* NVidia drivers (358.16) return only the first slice of compressed
+           cube map image when querying all six slice using ARB_DSA API */
+        "nv-cubemap-broken-full-compressed-image-query",
         #endif
 
         #ifdef CORRADE_TARGET_NACL
@@ -69,7 +83,7 @@ bool isShaderCompilationLogEmpty(const std::string&);
 bool isShaderCompilationLogEmpty(const std::string& result) {
     #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_GLES)
     /* Intel Windows drivers are too chatty */
-    if((Context::current()->detectedDriver() & Context::DetectedDriver::IntelWindows) && result == "No errors.\n")
+    if((Context::current().detectedDriver() & Context::DetectedDriver::IntelWindows) && result == "No errors.\n")
         return true;
     #else
     static_cast<void>(result);
@@ -83,7 +97,7 @@ bool isProgramLinkLogEmpty(const std::string&);
 bool isProgramLinkLogEmpty(const std::string& result) {
     #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_GLES)
     /* Intel Windows drivers are too chatty */
-    if((Context::current()->detectedDriver() & Context::DetectedDriver::IntelWindows) && result == "No errors.\n")
+    if((Context::current().detectedDriver() & Context::DetectedDriver::IntelWindows) && result == "No errors.\n")
         return true;
     #else
     static_cast<void>(result);
@@ -101,6 +115,8 @@ auto Context::detectedDriver() -> DetectedDrivers {
 
     const std::string vendor = vendorString();
 
+    /* Apple has its own drivers */
+    #ifndef CORRADE_TARGET_APPLE
     #ifndef MAGNUM_TARGET_GLES
     /* AMD binary desktop drivers */
     if(vendor.find("ATI Technologies Inc.") != std::string::npos)
@@ -110,6 +126,12 @@ auto Context::detectedDriver() -> DetectedDrivers {
     /* Intel Windows drivers */
     if(vendor.find("Intel") != std::string::npos)
         return *_detectedDrivers |= DetectedDriver::IntelWindows;
+    #endif
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(vendor.find("NVIDIA Corporation") != std::string::npos)
+        return *_detectedDrivers |= DetectedDriver::NVidia;
     #endif
     #endif
 
@@ -132,7 +154,10 @@ auto Context::detectedDriver() -> DetectedDrivers {
 
 void Context::disableDriverWorkaround(const std::string& workaround) {
     /* Ignore unknown workarounds */
-    if(std::find(KnownWorkarounds.begin(), KnownWorkarounds.end(), workaround) == KnownWorkarounds.end()) return;
+    if(std::find(KnownWorkarounds.begin(), KnownWorkarounds.end(), workaround) == KnownWorkarounds.end()) {
+        Warning() << "Unknown workaround" << workaround;
+        return;
+    }
     _driverWorkarounds.emplace_back(workaround, true);
 }
 

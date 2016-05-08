@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -96,7 +96,6 @@ location of your webserver to have the files installed in proper location (e.g.
 
     mkdir build-nacl-x86-32 && cd build-nacl-x86-32
     cmake .. \
-        -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
         -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/NaCl-newlib-x86-32.cmake" \
         -DCMAKE_INSTALL_PREFIX=/srv/http/nacl
     cmake --build .
@@ -104,7 +103,6 @@ location of your webserver to have the files installed in proper location (e.g.
 
     mkdir build-nacl-x86-64 && cd build-nacl-x86-64
     cmake .. \
-        -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
         -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/NaCl-newlib-x86-64.cmake" \
         -DCMAKE_INSTALL_PREFIX=/srv/http/nacl
     cmake --build .
@@ -119,11 +117,9 @@ You can then open `MyApplication` through your webserver in Chrome (e.g.
 
 For CMake you need to copy `FindOpenGLES2.cmake` from `modules/` directory in
 Magnum source to `modules/` dir in your project (so it is able to find OpenGL
-ES). Request `NaClApplication` component, add
-`${MAGNUM_NACLAPPLICATION_INCLUDE_DIRS}` to include path and link to
-`${MAGNUM_NACLAPPLICATION_LIBRARIES}`. If no other application is requested,
-you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}` and
-`${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting. Again, see
+ES). Request `NaClApplication` component of `Magnum` package and link to
+`Magnum::NaClApplication` target. If no other application is requested, you can
+also use generic `Magnum::Application` alias to simplify porting. Again, see
 @ref building and @ref cmake for more information.
 
 In C++ code you need to implement at least @ref drawEvent() to be able to draw

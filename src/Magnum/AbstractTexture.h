@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -69,13 +69,13 @@ documentation for details.
 @anchor AbstractTexture-performance-optimization
 ## Performance optimizations and security
 
-The engine tracks currently bound textures in all available texture units to
-avoid unnecessary calls to @fn_gl{ActiveTexture} and @fn_gl{BindTexture}.
-Texture configuration functions use dedicated highest available texture unit
-to not affect active bindings in user units. Texture limits and
-implementation-defined values (such as @ref maxColorSamples()) are cached, so
-repeated queries don't result in repeated @fn_gl{Get} calls. See also
-@ref Context::resetState() and @ref Context::State::Textures.
+The engine tracks currently bound textures and images in all available texture
+units to avoid unnecessary calls to @fn_gl{ActiveTexture}, @fn_gl{BindTexture}
+and @fn_gl{BindImageTexture}. Texture configuration functions use dedicated
+highest available texture unit to not affect active bindings in user units.
+Texture limits and implementation-defined values (such as @ref maxColorSamples())
+are cached, so repeated queries don't result in repeated @fn_gl{Get} calls. See
+also @ref Context::resetState() and @ref Context::State::Textures.
 
 If @extension{ARB,direct_state_access} (part of OpenGL 4.5) is available,
 @ref bind(Int) and @ref unbind(Int) use @fn_gl{BindTextureUnit}. Otherwise, if
@@ -209,13 +209,14 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         /**
          * @brief Unbind textures in given range of texture units
          *
-         * Unbinds all texture in the range @f$ [ firstTextureUnit ; firstTextureUnit + count ) @f$.
+         * Unbinds all textures in the range @f$ [ firstTextureUnit ; firstTextureUnit + count ) @f$.
          * If @extension{ARB,multi_bind} (part of OpenGL 4.4) is not available,
          * the feature is emulated with sequence of @ref unbind(Int) calls.
          * @note This function is meant to be used only internally from
          *      @ref AbstractShaderProgram subclasses. See its documentation
          *      for more information.
-         * @see @ref Shader::maxCombinedTextureImageUnits(), @fn_gl{BindTextures}
+         * @see @ref bind(), @ref Shader::maxCombinedTextureImageUnits(),
+         *      @fn_gl{BindTextures}
          */
         static void unbind(Int firstTextureUnit, std::size_t count);
 
@@ -233,6 +234,71 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          * @see @ref Shader::maxCombinedTextureImageUnits(), @fn_gl{BindTextures}
          */
         static void bind(Int firstTextureUnit, std::initializer_list<AbstractTexture*> textures);
+
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        /**
+         * @brief Unbind any image from given image unit
+         *
+         * @note This function is meant to be used only internally from
+         *      @ref AbstractShaderProgram subclasses. See its documentation
+         *      for more information.
+         * @see @ref Texture::bindImage() "*Texture::bindImage()",
+         *      @ref Texture::bindImageLayered() "*Texture::bindImageLayered()",
+         *      @ref unbindImages(), @ref bindImages(),
+         *      @ref AbstractShaderProgram::maxImageUnits(),
+         *      @fn_gl{BindImageTexture}
+         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
+         * @requires_gles31 Shader image load/store is not available in OpenGL
+         *      ES 3.0 and older.
+         * @requires_gles Shader image load/store is not available in WebGL.
+         */
+        static void unbindImage(Int imageUnit);
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Unbind images in given range of image units
+         *
+         * Unbinds all texture in the range @f$ [ firstImageUnit ; firstImageUnit + count ) @f$.
+         * @note This function is meant to be used only internally from
+         *      @ref AbstractShaderProgram subclasses. See its documentation
+         *      for more information.
+         * @see @ref Texture::bindImage() "*Texture::bindImage()",
+         *      @ref Texture::bindImageLayered() "*Texture::bindImageLayered()",
+         *      @ref unbindImage(), @ref bindImages(),
+         *      @ref AbstractShaderProgram::maxImageUnits(),
+         *      @fn_gl{BindImageTextures}
+         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
+         * @requires_gl44 Extension @extension{ARB,multi_bind}
+         * @requires_gl Multi bind is not available in OpenGL ES and WebGL.
+         */
+        static void unbindImages(Int firstImageUnit, std::size_t count) {
+            bindImagesInternal(firstImageUnit, {nullptr, count});
+        }
+
+        /**
+         * @brief Bind textures to given range of texture units
+         *
+         * Binds first level of given texture in the list to @p firstImageUnit,
+         * second to `firstTextureUnit + 1` etc. 3D, cube map and array
+         * textures are bound as layered targets. If any texture is `nullptr`,
+         * given image unit is unbound.
+         * @note This function is meant to be used only internally from
+         *      @ref AbstractShaderProgram subclasses. See its documentation
+         *      for more information.
+         * @see @ref Texture::bindImage() "*Texture::bindImage()",
+         *      @ref Texture::bindImageLayered() "*Texture::bindImageLayered()",
+         *      @ref unbindImages(), @ref unbindImage(),
+         *      @ref AbstractShaderProgram::maxImageUnits(),
+         *      @fn_gl{BindImageTextures}
+         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
+         * @requires_gl44 Extension @extension{ARB,multi_bind}
+         * @requires_gl Multi bind is not available in OpenGL ES and WebGL.
+         */
+        static void bindImages(Int firstImageUnit, std::initializer_list<AbstractTexture*> textures) {
+            bindImagesInternal(firstImageUnit, {textures.begin(), textures.size()});
+        }
+        #endif
 
         /** @brief Copying is not allowed */
         AbstractTexture(const AbstractTexture&) = delete;
@@ -338,6 +404,14 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
     #endif
         template<UnsignedInt textureDimensions> struct DataHelper {};
 
+        #ifndef MAGNUM_TARGET_GLES
+        static Int compressedBlockDataSize(GLenum target, TextureFormat format);
+        #endif
+
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        static void bindImagesInternal(Int firstImageUnit, Containers::ArrayView<AbstractTexture* const> textures);
+        #endif
+
         explicit AbstractTexture(GLenum target);
         explicit AbstractTexture(NoCreateT, GLenum target) noexcept: _target{target}, _id{0}, _flags{ObjectFlag::DeleteOnDestruction} {}
         explicit AbstractTexture(GLuint id, GLenum target, ObjectFlags flags) noexcept: _target{target}, _id{id}, _flags{flags} {}
@@ -347,6 +421,10 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         #endif
 
         void MAGNUM_LOCAL createIfNotAlready();
+
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        void bindImageInternal(Int imageUnit, Int level, bool layered, Int layer, ImageAccess access, ImageFormat format);
+        #endif
 
         /* Unlike bind() this also sets the texture binding unit as active */
         void MAGNUM_LOCAL bindInternal();
@@ -405,11 +483,18 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         template<UnsignedInt dimensions> void compressedImage(GLint level, CompressedBufferImage<dimensions>& image, BufferUsage usage);
         template<UnsignedInt dimensions> void subImage(GLint level, const RangeTypeFor<dimensions, Int>& range, Image<dimensions>& image);
         template<UnsignedInt dimensions> void subImage(GLint level, const RangeTypeFor<dimensions, Int>& range, BufferImage<dimensions>& image, BufferUsage usage);
+        template<UnsignedInt dimensions> void compressedSubImage(GLint level, const RangeTypeFor<dimensions, Int>& range, CompressedImage<dimensions>& image);
+        template<UnsignedInt dimensions> void compressedSubImage(GLint level, const RangeTypeFor<dimensions, Int>& range, CompressedBufferImage<dimensions>& image, BufferUsage usage);
         #endif
 
         GLenum _target;
 
     private:
+        #ifndef MAGNUM_TARGET_GLES
+        static Int MAGNUM_LOCAL compressedBlockDataSizeImplementationDefault(GLenum target, TextureFormat format);
+        static Int MAGNUM_LOCAL compressedBlockDataSizeImplementationBitsWorkaround(GLenum target, TextureFormat format);
+        #endif
+
         static void MAGNUM_LOCAL unbindImplementationDefault(GLint textureUnit);
         #ifndef MAGNUM_TARGET_GLES
         static void MAGNUM_LOCAL unbindImplementationMulti(GLint textureUnit);
@@ -425,6 +510,10 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         void MAGNUM_LOCAL createImplementationDefault();
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL createImplementationDSA();
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES
+        template<UnsignedInt dimensions> std::size_t MAGNUM_LOCAL compressedSubImageSize(TextureFormat format, const Math::Vector<dimensions, Int>& size);
         #endif
 
         void MAGNUM_LOCAL bindImplementationDefault(GLint textureUnit);
@@ -463,10 +552,10 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         void MAGNUM_LOCAL setMaxAnisotropyImplementationExt(GLfloat anisotropy);
 
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        void MAGNUM_LOCAL getLevelParameterImplementationDefault(GLenum target, GLint level, GLenum parameter, GLint* values);
+        void MAGNUM_LOCAL getLevelParameterImplementationDefault(GLint level, GLenum parameter, GLint* values);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL getLevelParameterImplementationDSA(GLenum, GLint level, GLenum parameter, GLint* values);
-        void MAGNUM_LOCAL getLevelParameterImplementationDSAEXT(GLenum target, GLint level, GLenum parameter, GLint* values);
+        void MAGNUM_LOCAL getLevelParameterImplementationDSA(GLint level, GLenum parameter, GLint* values);
+        void MAGNUM_LOCAL getLevelParameterImplementationDSAEXT(GLint level, GLenum parameter, GLint* values);
         #endif
         #endif
 
@@ -584,7 +673,8 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_TARGET_GLES
 template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<1> {
-    static Math::Vector<1, GLint> imageSize(AbstractTexture& texture, GLenum, GLint level);
+    static Math::Vector<1, GLint> compressedBlockSize(GLenum target, TextureFormat format);
+    static Math::Vector<1, GLint> imageSize(AbstractTexture& texture, GLint level);
 
     static void setWrapping(AbstractTexture& texture, const Array1D<Sampler::Wrapping>& wrapping);
 
@@ -604,8 +694,11 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<1> {
 };
 #endif
 template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
+    #ifndef MAGNUM_TARGET_GLES
+    static Vector2i compressedBlockSize(GLenum target, TextureFormat format);
+    #endif
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    static Vector2i imageSize(AbstractTexture& texture, GLenum target, GLint level);
+    static Vector2i imageSize(AbstractTexture& texture, GLint level);
     #endif
 
     static void setWrapping(AbstractTexture& texture, const Array2D<Sampler::Wrapping>& wrapping);
@@ -646,8 +739,11 @@ template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<2> {
 };
 template<> struct MAGNUM_EXPORT AbstractTexture::DataHelper<3> {
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+    #ifndef MAGNUM_TARGET_GLES
+    static Vector3i compressedBlockSize(GLenum target, TextureFormat format);
+    #endif
     #ifndef MAGNUM_TARGET_GLES2
-    static Vector3i imageSize(AbstractTexture& texture, GLenum, GLint level);
+    static Vector3i imageSize(AbstractTexture& texture, GLint level);
     #endif
 
     static void setWrapping(AbstractTexture& texture, const Array3D<Sampler::Wrapping>& wrapping);

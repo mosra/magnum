@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -35,24 +35,41 @@ struct VersionTest: TestSuite::Tester {
 
     void fromNumber();
     void toNumber();
+    #ifndef MAGNUM_TARGET_GLES
+    void toNumberES();
+    #endif
+    void isES();
     void compare();
 
     void debug();
+    #ifndef MAGNUM_TARGET_GLES
+    void debugES();
+    #endif
 };
 
 VersionTest::VersionTest() {
     addTests({&VersionTest::fromNumber,
               &VersionTest::toNumber,
+              #ifndef MAGNUM_TARGET_GLES
+              &VersionTest::toNumberES,
+              #endif
+              &VersionTest::isES,
               &VersionTest::compare,
 
-              &VersionTest::debug});
+              &VersionTest::debug,
+              #ifndef MAGNUM_TARGET_GLES
+              &VersionTest::debugES
+              #endif
+              });
 }
 
 void VersionTest::fromNumber() {
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE(version(4, 3), Version::GL430);
+    constexpr const Version v = version(4, 3);
+    CORRADE_COMPARE(v, Version::GL430);
     #else
-    CORRADE_COMPARE(version(3, 0), Version::GLES300);
+    constexpr const Version v = version(3, 0);
+    CORRADE_COMPARE(v, Version::GLES300);
     #endif
 }
 
@@ -62,6 +79,16 @@ void VersionTest::toNumber() {
     #else
     CORRADE_COMPARE(version(Version::GLES300), std::make_pair(3, 0));
     #endif
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void VersionTest::toNumberES() {
+    CORRADE_COMPARE(version(Version::GLES310), std::make_pair(3, 1));
+}
+#endif
+
+void VersionTest::isES() {
+    CORRADE_VERIFY(isVersionES(Version::GLES200));
 }
 
 void VersionTest::compare() {
@@ -87,6 +114,15 @@ void VersionTest::debug() {
     CORRADE_COMPARE(out.str(), "OpenGL ES 2.0\n");
     #endif
 }
+
+#ifndef MAGNUM_TARGET_GLES
+void VersionTest::debugES() {
+    std::ostringstream out;
+
+    Debug{&out} << Version::GLES310;
+    CORRADE_COMPARE(out.str(), "OpenGL ES 3.1\n");
+}
+#endif
 
 }}
 

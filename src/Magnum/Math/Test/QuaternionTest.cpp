@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -202,19 +202,14 @@ void QuaternionTest::convert() {
 
     /* GCC 5.1 fills the result with zeros instead of properly calling
        delegated copy constructor if using constexpr. Reported here:
-       https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66450
-       MSVC 2015: Can't use delegating constructors with constexpr:
-       https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-    #if (!defined(__GNUC__) || defined(__clang__)) && !defined(CORRADE_MSVC2015_COMPATIBILITY)
+       https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66450 */
+    #if !defined(__GNUC__) || defined(__clang__)
     constexpr
     #endif
     Quaternion c{a};
     CORRADE_COMPARE(c, b);
 
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why can't be conversion constexpr? */
-    constexpr
-    #endif
-    Quat d(b);
+    constexpr Quat d(b);
     CORRADE_COMPARE(d.x, a.x);
     CORRADE_COMPARE(d.y, a.y);
     CORRADE_COMPARE(d.z, a.z);
@@ -305,7 +300,7 @@ void QuaternionTest::invertedNormalized() {
     Quaternion a = Quaternion({1.0f, 3.0f, -2.0f}, -4.0f);
 
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
     a.invertedNormalized();
     CORRADE_COMPARE(o.str(), "Math::Quaternion::invertedNormalized(): quaternion must be normalized\n");
 
@@ -318,7 +313,7 @@ void QuaternionTest::invertedNormalized() {
 
 void QuaternionTest::rotation() {
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
 
     Vector3 axis(1.0f/Constants<Float>::sqrt3());
 
@@ -345,7 +340,7 @@ void QuaternionTest::rotation() {
 
 void QuaternionTest::angle() {
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
     Math::angle(Quaternion({1.0f, 2.0f, -3.0f}, -4.0f).normalized(), {{4.0f, -3.0f, 2.0f}, -1.0f});
     CORRADE_COMPARE(o.str(), "Math::angle(): quaternions must be normalized\n");
 
@@ -372,7 +367,7 @@ void QuaternionTest::matrix() {
     CORRADE_COMPARE((-q).toMatrix(), m);
 
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
     Quaternion::fromMatrix(m*2);
     CORRADE_COMPARE(o.str(), "Math::Quaternion::fromMatrix(): the matrix is not orthogonal\n");
 
@@ -409,7 +404,7 @@ void QuaternionTest::lerp() {
     Quaternion b = Quaternion::rotation(Deg(23.0f), Vector3::xAxis());
 
     std::ostringstream o;
-    Corrade::Utility::Error::setOutput(&o);
+    Error redirectError{&o};
 
     Math::lerp(a*3.0f, b, 0.35f);
     CORRADE_COMPARE(o.str(), "Math::lerp(): quaternions must be normalized\n");
@@ -427,7 +422,7 @@ void QuaternionTest::slerp() {
     Quaternion b = Quaternion::rotation(Deg(23.0f), Vector3::xAxis());
 
     std::ostringstream o;
-    Corrade::Utility::Error::setOutput(&o);
+    Error redirectError{&o};
 
     Math::slerp(a*3.0f, b, 0.35f);
     CORRADE_COMPARE(o.str(), "Math::slerp(): quaternions must be normalized\n");
@@ -460,7 +455,7 @@ void QuaternionTest::transformVectorNormalized() {
     Vector3 v(5.0f, -3.6f, 0.7f);
 
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
     (a*2).transformVectorNormalized(v);
     CORRADE_COMPARE(o.str(), "Math::Quaternion::transformVectorNormalized(): quaternion must be normalized\n");
 

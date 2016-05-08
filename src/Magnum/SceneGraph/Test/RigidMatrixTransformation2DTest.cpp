@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -68,7 +68,7 @@ RigidMatrixTransformation2DTest::RigidMatrixTransformation2DTest() {
 
 void RigidMatrixTransformation2DTest::fromMatrix() {
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
     Implementation::Transformation<RigidMatrixTransformation2D>::fromMatrix(Matrix3::scaling(Vector2(4.0f)));
     CORRADE_COMPARE(o.str(), "SceneGraph::RigidMatrixTransformation2D: the matrix doesn't represent rigid transformation\n");
 
@@ -97,7 +97,7 @@ void RigidMatrixTransformation2DTest::setTransformation() {
 
     /* Can't transform with non-rigid transformation */
     std::ostringstream out;
-    Error::setOutput(&out);
+    Error redirectError{&out};
     o.setTransformation(Matrix3::scaling(Vector2(3.0f)));
     CORRADE_COMPARE(out.str(), "SceneGraph::RigidMatrixTransformation2D::setTransformation(): the matrix doesn't represent rigid transformation\n");
 
@@ -129,7 +129,7 @@ void RigidMatrixTransformation2DTest::transform() {
         /* Can't transform with non-rigid transformation */
         Object2D o;
         std::ostringstream out;
-        Error::setOutput(&out);
+        Error redirectError{&out};
         o.transform(Matrix3::scaling(Vector2(3.0f)));
         CORRADE_COMPARE(out.str(), "SceneGraph::RigidMatrixTransformation2D::transform(): the matrix doesn't represent rigid transformation\n");
     } {

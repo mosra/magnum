@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -58,7 +58,7 @@ WavImporterTest::WavImporterTest() {
 
 void WavImporterTest::wrongSize() {
     std::ostringstream out;
-    Error::setOutput(&out);
+    Error redirectError{&out};
 
     WavImporter importer;
     CORRADE_VERIFY(!importer.openData(Containers::Array<char>(43)));
@@ -67,7 +67,7 @@ void WavImporterTest::wrongSize() {
 
 void WavImporterTest::wrongSignature() {
     std::ostringstream out;
-    Error::setOutput(&out);
+    Error redirectError{&out};
 
     WavImporter importer;
     CORRADE_VERIFY(!importer.openFile(Utility::Directory::join(WAVAUDIOIMPORTER_TEST_DIR, "wrongSignature.wav")));
@@ -76,7 +76,7 @@ void WavImporterTest::wrongSignature() {
 
 void WavImporterTest::unsupportedFormat() {
     std::ostringstream out;
-    Error::setOutput(&out);
+    Error redirectError{&out};
 
     WavImporter importer;
     CORRADE_VERIFY(!importer.openFile(Utility::Directory::join(WAVAUDIOIMPORTER_TEST_DIR, "unsupportedFormat.wav")));
@@ -85,7 +85,7 @@ void WavImporterTest::unsupportedFormat() {
 
 void WavImporterTest::unsupportedChannelCount() {
     std::ostringstream out;
-    Error::setOutput(&out);
+    Error redirectError{&out};
 
     WavImporter importer;
     CORRADE_VERIFY(!importer.openFile(Utility::Directory::join(WAVAUDIOIMPORTER_TEST_DIR, "unsupportedChannelCount.wav")));

@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -100,6 +100,8 @@ typedef Math::Matrix4<Float> Matrix4;
 typedef Math::DualQuaternion<Float> DualQuaternion;
 typedef Math::Quaternion<Float> Quaternion;
 typedef Math::Vector3<Float> Vector3;
+
+using namespace Literals;
 
 DualQuaternionTest::DualQuaternionTest() {
     addTests({&DualQuaternionTest::construct,
@@ -216,19 +218,14 @@ void DualQuaternionTest::convert() {
 
     /* GCC 5.1 fills the result with zeros instead of properly calling
        delegated copy constructor if using constexpr. Reported here:
-       https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66450
-       MSVC 2015: Can't use delegating constructors with constexpr:
-       https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-    #if (!defined(__GNUC__) || defined(__clang__)) && !defined(CORRADE_MSVC2015_COMPATIBILITY)
+       https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66450 */
+    #if !defined(__GNUC__) || defined(__clang__)
     constexpr
     #endif
     DualQuaternion c{a};
     CORRADE_COMPARE(c, b);
 
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why can't be conversion constexpr? */
-    constexpr
-    #endif
-    DualQuat d(b);
+    constexpr DualQuat d(b);
     CORRADE_COMPARE(d.re.x, a.re.x);
     CORRADE_COMPARE(d.re.y, a.re.y);
     CORRADE_COMPARE(d.re.z, a.re.z);
@@ -299,7 +296,7 @@ void DualQuaternionTest::invertedNormalized() {
     DualQuaternion b({{-1.0f, -2.0f, -3.0f}, -4.0f}, {{-2.5f,  3.1f, -3.3f}, 2.0f});
 
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
     CORRADE_COMPARE(a.invertedNormalized(), DualQuaternion());
     CORRADE_COMPARE(o.str(), "Math::DualQuaternion::invertedNormalized(): dual quaternion must be normalized\n");
 
@@ -312,7 +309,7 @@ void DualQuaternionTest::invertedNormalized() {
 
 void DualQuaternionTest::rotation() {
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
 
     Vector3 axis(1.0f/Constants<Float>::sqrt3());
 
@@ -362,7 +359,7 @@ void DualQuaternionTest::matrix() {
     CORRADE_COMPARE((-q).toMatrix(), m);
 
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
     DualQuaternion::fromMatrix(m*2);
     CORRADE_COMPARE(o.str(), "Math::DualQuaternion::fromMatrix(): the matrix doesn't represent rigid transformation\n");
 
@@ -394,7 +391,7 @@ void DualQuaternionTest::transformPointNormalized() {
     Vector3 v(0.0f, -3.6f, 0.7f);
 
     std::ostringstream o;
-    Corrade::Utility::Error::setOutput(&o);
+    Error redirectError{&o};
     (a*Dual(2)).transformPointNormalized(v);
     CORRADE_COMPARE(o.str(), "Math::DualQuaternion::transformPointNormalized(): dual quaternion must be normalized\n");
 
@@ -415,7 +412,6 @@ void DualQuaternionTest::debug() {
 }
 
 void DualQuaternionTest::sclerp() {
-
     const DualQuaternion from = DualQuaternion::translation(Vector3{20.0f, .0f, .0f})*DualQuaternion::rotation(180.0_degf, Vector3{.0f, 1.0f, .0f});
     const DualQuaternion to = DualQuaternion::translation(Vector3{42.0f, 42.0f, 42.0f})*DualQuaternion::rotation(75.0_degf, Vector3{1.0f, .0f, .0f});
 

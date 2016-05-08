@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -81,6 +81,28 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
         static Vector2i maxSize();
 
         /**
+         * @copybrief Texture::compressedBlockSize()
+         *
+         * See @ref Texture::compressedBlockSize() for more information.
+         * @requires_gl43 Extension @extension{ARB,internalformat_query2}
+         */
+        static Vector2i compressedBlockSize(TextureFormat format) {
+            return DataHelper<2>::compressedBlockSize(GL_TEXTURE_RECTANGLE, format);
+        }
+
+        /**
+         * @copybrief Texture::compressedBlockDataSize()
+         *
+         * See @ref Texture::compressedBlockDataSize() for more information.
+         * @requires_gl43 Extension @extension{ARB,internalformat_query2}
+         * @see @ref compressedBlockSize(), @fn_gl{Getinternalformat} with
+         *      @def_gl{TEXTURE_COMPRESSED_BLOCK_SIZE}
+         */
+        static Int compressedBlockDataSize(TextureFormat format) {
+            return AbstractTexture::compressedBlockDataSize(GL_TEXTURE_RECTANGLE, format);
+        }
+
+        /**
          * @brief Wrap existing OpenGL rectangle texture object
          * @param id            OpenGL rectangle texture ID
          * @param flags         Object creation flags
@@ -116,6 +138,25 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
          * @see @ref RectangleTexture(), @ref wrap()
          */
         explicit RectangleTexture(NoCreateT) noexcept: AbstractTexture{NoCreate, GL_TEXTURE_RECTANGLE} {}
+
+        /**
+         * @brief Bind texture to given image unit
+         * @param imageUnit Image unit
+         * @param access    Image access
+         * @param format    Image format
+         *
+         * @note This function is meant to be used only internally from
+         *      @ref AbstractShaderProgram subclasses. See its documentation
+         *      for more information.
+         * @see @ref bindImages(Int, std::initializer_list<AbstractTexture*>),
+         *      @ref unbindImage(), @ref unbindImages(),
+         *      @ref AbstractShaderProgram::maxImageUnits(),
+         *      @fn_gl{BindImageTexture}
+         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
+         */
+        void bindImage(Int imageUnit, ImageAccess access, ImageFormat format) {
+            bindImageInternal(imageUnit, 0, false, 0, access, format);
+        }
 
         /**
          * @copybrief Texture::setMinificationFilter()
@@ -275,7 +316,7 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
          *
          * See @ref Texture::imageSize() for more information.
          */
-        Vector2i imageSize() { return DataHelper<2>::imageSize(*this, _target, 0); }
+        Vector2i imageSize() { return DataHelper<2>::imageSize(*this, 0); }
 
         /**
          * @brief Read texture to image
@@ -391,6 +432,46 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
          * @endcode
          */
         BufferImage2D subImage(const Range2Di& range, BufferImage2D&& image, BufferUsage usage);
+
+        /**
+         * @copybrief Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage&)
+         *
+         * See @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage&)
+         * for more information.
+         * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         */
+        void compressedSubImage(const Range2Di& range, CompressedImage2D& image) {
+            AbstractTexture::compressedSubImage<2>(0, range, image);
+        }
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * CompressedImage2D image = texture.compressedSubImage(range, {});
+         * @endcode
+         */
+        CompressedImage2D compressedSubImage(const Range2Di& range, CompressedImage2D&& image);
+
+        /**
+         * @copybrief Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedBufferImage&, BufferUsage)
+         *
+         * See @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedBufferImage&, BufferUsage)
+         * for more information.
+         * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         */
+        void compressedSubImage(const Range2Di& range, CompressedBufferImage2D& image, BufferUsage usage) {
+            AbstractTexture::compressedSubImage<2>(0, range, image, usage);
+        }
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * CompressedBufferImage2D image = texture.compressedSubImage(range, {}, BufferUsage::StaticRead);
+         * @endcode
+         */
+        CompressedBufferImage2D compressedSubImage(const Range2Di& range, CompressedBufferImage2D&& image, BufferUsage usage);
 
         /**
          * @copybrief Texture::setImage()

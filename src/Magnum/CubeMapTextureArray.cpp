@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -37,10 +37,10 @@ namespace Magnum {
 
 Vector3i CubeMapTextureArray::maxSize() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>())
         return {};
     #else
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_cube_map_array>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_cube_map_array>())
         return {};
     #endif
 
@@ -76,6 +76,16 @@ Image3D CubeMapTextureArray::subImage(const Int level, const Range3Di& range, Im
 
 BufferImage3D CubeMapTextureArray::subImage(const Int level, const Range3Di& range, BufferImage3D&& image, const BufferUsage usage) {
     this->subImage(level, range, image, usage);
+    return std::move(image);
+}
+
+CompressedImage3D CubeMapTextureArray::compressedSubImage(const Int level, const Range3Di& range, CompressedImage3D&& image) {
+    compressedSubImage(level, range, image);
+    return std::move(image);
+}
+
+CompressedBufferImage3D CubeMapTextureArray::compressedSubImage(const Int level, const Range3Di& range, CompressedBufferImage3D&& image, const BufferUsage usage) {
+    compressedSubImage(level, range, image, usage);
     return std::move(image);
 }
 #endif

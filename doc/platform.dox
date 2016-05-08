@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -182,15 +182,12 @@ MAGNUM_WINDOWLESSAPPLICATION_MAIN(MyApplication)
 
 @section platform-compilation Compilation with CMake
 
-Barebone compilation consists just of finding Magnum library with required
-`*Application` component, adding Magnum's `${MAGNUM_INCLUDE_DIRS}` and
-application-specific `${MAGNUM_SDL2APPLICATION_INCLUDE_DIRS}` to include path,
-compilation of the executable and linking `${MAGNUM_LIBRARIES}` and
-`${MAGNUM_SDL2APPLICATION_LIBRARIES}` to it.
+Barebone compilation consists just of finding Magnum library with, for example,
+`Sdl2Application` component, compilation of the executable and linking
+`Magnum::Magnum` and `Magnum::Sdl2Application` to it.
 
-Again, to simplify porting, you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}`
-and `${MAGNUM_APPLICATION_LIBRARIES}` aliases (or `${MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS}`,
-`${MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES}` for windowless applications), but
+Again, to simplify porting, you can also use generic `Magnum::Application`
+aliases (or `Magnum::WindowlessApplication` for windowless applications), but
 only if only one application (windowless application) component is requested to
 avoid ambiguity. Changing the build script to use different toolkit is then
 matter of replacing only the requested `*Application` component (and one
@@ -199,12 +196,10 @@ matter of replacing only the requested `*Application` component (and one
 @code
 find_package(Magnum REQUIRED Sdl2Application)
 
-include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_APPLICATION_INCLUDE_DIRS})
-
 add_executable(myapplication MyApplication.cpp)
 target_link_libraries(myapplication
-    ${MAGNUM_LIBRARIES}
-    ${MAGNUM_APPLICATION_LIBRARIES})
+    Magnum::Magnum
+    Magnum::Application)
 @endcode
 
 @section platform-configuration Specifying configuration
@@ -311,20 +306,17 @@ Systems not listed here (such as Emscripten or NaCl) don't need any `Context`
 library, because dynamic function pointer loading is not available on these.
 
 For example, when you create the OpenGL context using GLX, you need to find
-`GlxContext` component, include `${MAGNUM_GLXCONTEXT_INCLUDE_DIRS}` and link to
-`${MAGNUM_GLXCONTEXT_LIBRARIES}`. Similarly to application libraries, you can
-also use generic `${MAGNUM_CONTEXT_INCLUDE_DIRS}` and `${MAGNUM_CONTEXT_LIBRARIES}`,
+`GlxContext` component, and link to `Magnum::GlxContext` target. Similarly to
+application libraries, you can also use generic `Magnum::Context` target,
 providing you requested only one `*Context` component in the `find_package()`
 call. Complete example:
 @code
 find_package(Magnum REQUIRED GlxContext)
 
-include_directories(${MAGNUM_INCLUDE_DIRS} ${MAGNUM_CONTEXT_INCLUDE_DIRS})
-
 add_executable(myapplication MyCustomApplication.cpp)
 target_link_libraries(myapplication
-    ${MAGNUM_LIBRARIES}
-    ${MAGNUM_CONTEXT_LIBRARIES})
+    Magnum::Magnum
+    Magnum::Context)
 @endcode
 
 -   Next page: @ref types

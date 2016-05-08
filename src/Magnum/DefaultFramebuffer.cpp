@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -42,7 +42,7 @@ DefaultFramebuffer::DefaultFramebuffer() {
 }
 
 DefaultFramebuffer::Status DefaultFramebuffer::checkStatus(const FramebufferTarget target) {
-    return Status((this->*Context::current()->state().framebuffer->checkStatusImplementation)(target));
+    return Status((this->*Context::current().state().framebuffer->checkStatusImplementation)(target));
 }
 
 DefaultFramebuffer& DefaultFramebuffer::mapForDraw(std::initializer_list<std::pair<UnsignedInt, DrawAttachment>> attachments) {
@@ -58,22 +58,22 @@ DefaultFramebuffer& DefaultFramebuffer::mapForDraw(std::initializer_list<std::pa
     for(const auto& attachment: attachments)
         _attachments[attachment.first] = GLenum(attachment.second);
 
-    (this->*Context::current()->state().framebuffer->drawBuffersImplementation)(max+1, _attachments);
+    (this->*Context::current().state().framebuffer->drawBuffersImplementation)(max+1, _attachments);
     return *this;
 }
 
 DefaultFramebuffer& DefaultFramebuffer::mapForDraw(const DrawAttachment attachment) {
     #ifndef MAGNUM_TARGET_GLES
-    (this->*Context::current()->state().framebuffer->drawBufferImplementation)(GLenum(attachment));
+    (this->*Context::current().state().framebuffer->drawBufferImplementation)(GLenum(attachment));
     #else
-    (this->*Context::current()->state().framebuffer->drawBuffersImplementation)(1, reinterpret_cast<const GLenum*>(&attachment));
+    (this->*Context::current().state().framebuffer->drawBuffersImplementation)(1, reinterpret_cast<const GLenum*>(&attachment));
     #endif
     return *this;
 }
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 DefaultFramebuffer& DefaultFramebuffer::mapForRead(const ReadAttachment attachment) {
-    (this->*Context::current()->state().framebuffer->readBufferImplementation)(GLenum(attachment));
+    (this->*Context::current().state().framebuffer->readBufferImplementation)(GLenum(attachment));
     return *this;
 }
 
@@ -83,7 +83,7 @@ void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment
     for(std::size_t i = 0; i != attachments.size(); ++i)
         _attachments[i] = GLenum(*(attachments.begin()+i));
 
-    (this->*Context::current()->state().framebuffer->invalidateImplementation)(attachments.size(), _attachments);
+    (this->*Context::current().state().framebuffer->invalidateImplementation)(attachments.size(), _attachments);
 }
 #endif
 
@@ -94,7 +94,7 @@ void DefaultFramebuffer::invalidate(std::initializer_list<InvalidationAttachment
     for(std::size_t i = 0; i != attachments.size(); ++i)
         _attachments[i] = GLenum(*(attachments.begin()+i));
 
-    (this->*Context::current()->state().framebuffer->invalidateSubImplementation)(attachments.size(), _attachments, rectangle);
+    (this->*Context::current().state().framebuffer->invalidateSubImplementation)(attachments.size(), _attachments, rectangle);
 }
 #endif
 

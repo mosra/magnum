@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -96,19 +96,20 @@ information.
 
 The context is configurable through command-line options, that are passed
 either from the `Platform::*Application` classes or from the @ref Platform::Context
-class. The options are as following:
+class. Usage:
 
-```
-Usage:
-  <application> [--magnum-help] [--magnum-disable-workarounds LIST] ...
+    <application> [--magnum-help] [--magnum-disable-workarounds LIST] [--magnum-disable-extensions LIST] ...
 
 Arguments:
-  ...                         main application arguments
-                              (see -h or --help for details)
-  --magnum-help               display this help message and exit
-  --magnum-disable-workarounds LIST driver workarounds to disable
-      (see src/Magnum/Implementation/driverSpecific.cpp for detailed info)
-```
+
+-   `...` -- main application arguments (see `-h` or `--help` for details)
+-   `--magnum-help` -- display this help message and exit
+-   `--magnum-disable-workarounds LIST` -- driver workarounds to disable (see
+    `src/Magnum/Implementation/driverSpecific.cpp` for detailed info)
+    (environment: `MAGNUM_DISABLE_WORKAROUNDS`)
+-   `--magnum-disable-extensions LIST` -- OpenGL extensions to disable
+    (environment: `MAGNUM_DISABLE_EXTENSIONS`)
+
 */
 class MAGNUM_EXPORT Context {
     friend Platform::Context;
@@ -134,6 +135,13 @@ class MAGNUM_EXPORT Context {
             #else
             Debug = GL_CONTEXT_FLAG_DEBUG_BIT_KHR,
             #endif
+
+            /**
+             * Context without error reporting
+             * @requires_extension Extension @extension{KHR,no_error}
+             * @requires_es_extension Extension @es_extension2{KHR,no_error,no_error}
+             */
+            NoError = GL_CONTEXT_FLAG_NO_ERROR_BIT_KHR,
 
             #ifndef MAGNUM_TARGET_GLES
             /**
@@ -210,6 +218,11 @@ class MAGNUM_EXPORT Context {
             IntelWindows = 1 << 1,
             #endif
 
+            #ifndef MAGNUM_TARGET_WEBGL
+            /** Binary NVidia drivers on Windows and Linux */
+            NVidia = 1 << 2,
+            #endif
+
             #ifdef MAGNUM_TARGET_GLES
             /**
              * OpenGL ES implementation by ANGLE (translated to D3D), used by
@@ -217,7 +230,7 @@ class MAGNUM_EXPORT Context {
              * specification explicitly disallows exposing driver information
              * to the application, this check cannot be done reliably.
              */
-            ProbablyAngle = 1 << 2
+            ProbablyAngle = 1 << 3
             #endif
         };
 
@@ -227,6 +240,21 @@ class MAGNUM_EXPORT Context {
          * @see @ref detectedDriver()
          */
         typedef Containers::EnumSet<DetectedDriver> DetectedDrivers;
+
+        /**
+         * @brief Whether there is any current context
+         *
+         * @see @ref current()
+         */
+        static bool hasCurrent();
+
+        /**
+         * @brief Current context
+         *
+         * Expect that there is current context.
+         * @see @ref hasCurrent()
+         */
+        static Context& current();
 
         /** @brief Copying is not allowed */
         Context(const Context&) = delete;
@@ -242,8 +270,10 @@ class MAGNUM_EXPORT Context {
         /** @brief Move assignment is not allowed */
         Context& operator=(Context&&) = delete;
 
-        /** @brief Current context */
-        static Context* current() { return _current; }
+        #if defined(MAGNUM_BUILD_DEPRECATED) && !defined(DOXYGEN_GENERATING_OUTPUT)
+        CORRADE_DEPRECATED("Context::current() returns reference now") Context* operator->() { return this; }
+        CORRADE_DEPRECATED("Context::current() returns reference now") operator Context*() { return this; }
+        #endif
 
         /**
          * @brief OpenGL version
@@ -259,9 +289,7 @@ class MAGNUM_EXPORT Context {
          * OpenGL calls.
          * @see @ref rendererString(), @fn_gl{GetString} with @def_gl{VENDOR}
          */
-        std::string vendorString() const {
-            return reinterpret_cast<const char*>(glGetString(GL_VENDOR));
-        }
+        std::string vendorString() const;
 
         /**
          * @brief Renderer string
@@ -270,9 +298,7 @@ class MAGNUM_EXPORT Context {
          * OpenGL calls.
          * @see @ref vendorString(), @fn_gl{GetString} with @def_gl{RENDERER}
          */
-        std::string rendererString() const {
-            return reinterpret_cast<const char*>(glGetString(GL_RENDERER));
-        }
+        std::string rendererString() const;
 
         /**
          * @brief Version string
@@ -282,9 +308,7 @@ class MAGNUM_EXPORT Context {
          * @see @ref shadingLanguageVersionString(), @ref version(),
          *      @fn_gl{GetString} with @def_gl{VERSION}
          */
-        std::string versionString() const {
-            return reinterpret_cast<const char*>(glGetString(GL_VERSION));
-        }
+        std::string versionString() const;
 
         /**
          * @brief Shading language version string
@@ -294,9 +318,7 @@ class MAGNUM_EXPORT Context {
          * @see @ref versionString(), @ref version(), @fn_gl{GetString} with
          *      @def_gl{SHADING_LANGUAGE_VERSION}
          */
-        std::string shadingLanguageVersionString() const {
-            return reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION));
-        }
+        std::string shadingLanguageVersionString() const;
 
         /**
          * @brief Shading language version strings
@@ -347,9 +369,7 @@ class MAGNUM_EXPORT Context {
          *
          * @see @ref supportedVersion(), @ref MAGNUM_ASSERT_VERSION_SUPPORTED()
          */
-        bool isVersionSupported(Version version) const {
-            return _version >= version;
-        }
+        bool isVersionSupported(Version version) const;
 
         /**
          * @brief Get supported OpenGL version
@@ -374,7 +394,7 @@ class MAGNUM_EXPORT Context {
          * Extensions usable with this function are listed in @ref Extensions
          * namespace in header @ref Extensions.h. Example usage:
          * @code
-         * if(Context::current()->isExtensionSupported<Extensions::GL::ARB::tessellation_shader>()) {
+         * if(Context::current().isExtensionSupported<Extensions::GL::ARB::tessellation_shader>()) {
          *     // draw fancy detailed model
          * } else {
          *     // texture fallback
@@ -397,8 +417,8 @@ class MAGNUM_EXPORT Context {
          * @p version. Useful mainly in shader compilation when the decisions
          * depend on selected GLSL version, for example:
          * @code
-         * const Version version = Context::current()->supportedVersion({Version::GL320, Version::GL300, Version::GL210});
-         * if(Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(version)) {
+         * const Version version = Context::current()supportedVersion({Version::GL320, Version::GL300, Version::GL210});
+         * if(Context::current().isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(version)) {
          *     // Called only if ARB_explicit_attrib_location is supported
          *     // *and* version is higher than GL 3.1
          * }
@@ -481,7 +501,7 @@ class MAGNUM_EXPORT Context {
         Implementation::State& state() { return *_state; }
 
     private:
-        static Context* _current;
+        MAGNUM_LOCAL static Context* _current;
 
         explicit Context(NoCreateT, Int argc, char** argv, void functionLoader());
 
@@ -508,7 +528,10 @@ class MAGNUM_EXPORT Context {
 
         /* True means known and disabled, false means known */
         std::vector<std::pair<std::string, bool>> _driverWorkarounds;
+        std::vector<std::string> _disabledExtensions;
 };
+
+CORRADE_ENUMSET_OPERATORS(Context::DetectedDrivers)
 
 #ifndef MAGNUM_TARGET_WEBGL
 /** @debugoperatorclassenum{Magnum::Context,Magnum::Context::Flag} */
@@ -537,7 +560,7 @@ MAGNUM_ASSERT_VERSION_SUPPORTED(Version::GL330);
 #else
 #define MAGNUM_ASSERT_VERSION_SUPPORTED(version)                            \
     do {                                                                    \
-        if(!Magnum::Context::current()->isVersionSupported(version)) {      \
+        if(!Magnum::Context::current().isVersionSupported(version)) {       \
             Corrade::Utility::Error() << "Magnum: required version" << version << "is not supported"; \
             std::abort();                                                   \
         }                                                                   \
@@ -567,7 +590,7 @@ MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::geometry_shader4);
 #else
 #define MAGNUM_ASSERT_EXTENSION_SUPPORTED(extension)                        \
     do {                                                                    \
-        if(!Magnum::Context::current()->isExtensionSupported<extension>()) { \
+        if(!Magnum::Context::current().isExtensionSupported<extension>()) { \
             Corrade::Utility::Error() << "Magnum: required extension" << extension::string() << "is not supported"; \
             std::abort();                                                   \
         }                                                                   \

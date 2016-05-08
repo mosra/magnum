@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -355,10 +355,10 @@ enum class PixelType: GLenum {
 
     /**
      * Each component unsigned int.
-     * @requires_gles30 For texture data only, extension @es_extension{OES,depth_texture}
-     *      or @es_extension{ANGLE,depth_texture} in OpenGL ES 2.0.
-     * @requires_webgl20 For texture data only, extension
-     *      @webgl_extension{WEBGL,depth_texture} in WebGL 1.0.
+     * @requires_gles30 In OpenGL ES 2.0 for texture data only, using extension
+     *      @es_extension{OES,depth_texture} or @es_extension{ANGLE,depth_texture}
+     * @requires_webgl20 In WebGL 1.0 for texture data only, using extension
+     *      @webgl_extension{WEBGL,depth_texture}
      */
     UnsignedInt = GL_UNSIGNED_INT,
 
@@ -598,8 +598,8 @@ enum class CompressedPixelFormat: GLenum {
      * RGTC compressed red channel, normalized unsigned. **Available only for
      * 2D, 2D array, cube map and cube map array textures.**
      * @requires_gl30 Extension @extension{EXT,texture_compression_rgtc}
-     * @requires_gl Generic texture compression is not available in OpenGL ES
-     *      or WebGL.
+     * @requires_gl RGTC texture compression is not available in OpenGL ES or
+     *      WebGL.
      */
     RedRgtc1 = GL_COMPRESSED_RED_RGTC1,
 

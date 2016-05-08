@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -66,6 +66,8 @@ typedef Math::Dual<Vector2> DualVector2;
 typedef Math::Deg<Float> Deg;
 typedef Math::Rad<Float> Rad;
 typedef Math::Constants<Float> Constants;
+
+using namespace Literals;
 
 DualTest::DualTest() {
     addTests({&DualTest::construct,

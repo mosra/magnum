@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -227,7 +227,12 @@ class AbstractXApplication::Configuration {
         /** @copydoc Sdl2Application::Configuration::size() */
         Vector2i size() const { return _size; }
 
-        /** @copydoc Sdl2Application::Configuration::setSize() */
+        /**
+         * @brief Set window size
+         * @return Reference to self (for method chaining)
+         *
+         * Default is `{800, 600}`.
+         */
         Configuration& setSize(const Vector2i& size) {
             _size = size;
             return *this;

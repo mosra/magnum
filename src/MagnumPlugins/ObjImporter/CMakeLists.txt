@@ -1,7 +1,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -33,6 +33,7 @@ set(ObjImporter_HEADERS
 add_library(ObjImporterObjects OBJECT
     ${ObjImporter_SRCS}
     ${ObjImporter_HEADERS})
+target_include_directories(ObjImporterObjects PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
 if(NOT BUILD_PLUGINS_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(ObjImporterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
@@ -45,7 +46,6 @@ add_plugin(ObjImporter ${MAGNUM_PLUGINS_IMPORTER_DEBUG_INSTALL_DIR} ${MAGNUM_PLU
 if(BUILD_STATIC_PIC)
     set_target_properties(ObjImporter PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-
 target_link_libraries(ObjImporter Magnum MagnumMeshTools)
 
 install(FILES ${ObjImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/ObjImporter)
@@ -57,4 +57,4 @@ if(BUILD_TESTS)
 endif()
 
 # Magnum ObjImporter library for superprojects
-set(MAGNUM_OBJIMPORTER_LIBRARY ObjImporter CACHE INTERNAL "")
+add_library(Magnum:::ObjImporter ALIAS ObjImporter)

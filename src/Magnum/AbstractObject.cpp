@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -113,10 +113,10 @@ namespace {
 #endif
 
 Int AbstractObject::maxLabelLength() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::KHR::debug>())
         return 0;
 
-    GLint& value = Context::current()->state().debug->maxLabelLength;
+    GLint& value = Context::current().state().debug->maxLabelLength;
 
     if(value == 0) {
         #ifndef MAGNUM_TARGET_GLES
@@ -161,7 +161,7 @@ std::string AbstractObject::getLabelImplementationNoOp(GLenum, GLuint) { return 
 std::string AbstractObject::getLabelImplementationKhr(const GLenum identifier, const GLuint name) {
     /* Get label size (w/o null terminator). Specifying 0 as size is not
        allowed, thus we pass the maximum instead. */
-    GLsizei size;
+    GLsizei size = 0;
     #ifndef MAGNUM_TARGET_GLES
     glGetObjectLabel(identifier, name, maxLabelLength(), &size, nullptr);
     #elif !defined(CORRADE_TARGET_NACL)
@@ -189,7 +189,7 @@ std::string AbstractObject::getLabelImplementationKhr(const GLenum identifier, c
 }
 
 std::string AbstractObject::getLabelImplementationExt(const GLenum identifier, const GLuint name) {
-    GLsizei size;
+    GLsizei size = 0;
 
     /* Get label size (w/o null terminator) */
     #ifndef CORRADE_TARGET_NACL
@@ -205,7 +205,7 @@ std::string AbstractObject::getLabelImplementationExt(const GLenum identifier, c
     std::string label;
     label.resize(size+1);
     #ifndef CORRADE_TARGET_NACL
-    glGetObjectLabelEXT(identifier, name, size+1, nullptr, &label[0]);
+    glGetObjectLabelEXT(type, name, size+1, nullptr, &label[0]);
     #else
     CORRADE_ASSERT_UNREACHABLE();
     #endif

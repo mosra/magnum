@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -33,102 +33,71 @@ namespace Magnum { namespace Math { namespace Test {
 struct TypeTraitsTest: Corrade::TestSuite::Tester {
     explicit TypeTraitsTest();
 
-    void equalsIntegral();
-    void equalsFloatingPoint0();
-    void equalsFloatingPoint1();
-    void equalsFloatingPointLarge();
-    void equalsFloatingPointInfinity();
-    void equalsFloatingPointNaN();
-
-    private:
-        template<class> void _equalsIntegral();
-        template<class> void _equalsFloatingPoint0();
-        template<class> void _equalsFloatingPoint1();
-        template<class> void _equalsFloatingPointLarge();
-        template<class> void _equalsFloatingPointInfinity();
-        template<class> void _equalsFloatingPointNaN();
+    template<class T> void equalsIntegral();
+    template<class T> void equalsFloatingPoint0();
+    template<class T> void equalsFloatingPoint1();
+    template<class T> void equalsFloatingPointLarge();
+    template<class T> void equalsFloatingPointInfinity();
+    template<class T> void equalsFloatingPointNaN();
 };
 
 TypeTraitsTest::TypeTraitsTest() {
-    addTests({&TypeTraitsTest::equalsIntegral,
-              &TypeTraitsTest::equalsFloatingPoint0,
-              &TypeTraitsTest::equalsFloatingPoint1,
-              &TypeTraitsTest::equalsFloatingPointLarge,
-              &TypeTraitsTest::equalsFloatingPointInfinity,
-              &TypeTraitsTest::equalsFloatingPointNaN});
+    addTests<TypeTraitsTest>({&TypeTraitsTest::equalsIntegral<UnsignedByte>,
+              &TypeTraitsTest::equalsIntegral<Byte>,
+              &TypeTraitsTest::equalsIntegral<UnsignedShort>,
+              &TypeTraitsTest::equalsIntegral<Short>,
+              &TypeTraitsTest::equalsIntegral<UnsignedInt>,
+              &TypeTraitsTest::equalsIntegral<Int>,
+              &TypeTraitsTest::equalsIntegral<UnsignedLong>,
+              &TypeTraitsTest::equalsIntegral<Long>,
+              &TypeTraitsTest::equalsFloatingPoint0<Float>,
+              #ifndef MAGNUM_TARGET_GLES
+              &TypeTraitsTest::equalsFloatingPoint0<Double>,
+              #endif
+              &TypeTraitsTest::equalsFloatingPoint1<Float>,
+              #ifndef MAGNUM_TARGET_GLES
+              &TypeTraitsTest::equalsFloatingPoint1<Double>,
+              #endif
+              &TypeTraitsTest::equalsFloatingPointLarge<Float>,
+              #ifndef MAGNUM_TARGET_GLES
+              &TypeTraitsTest::equalsFloatingPointLarge<Double>,
+              #endif
+              &TypeTraitsTest::equalsFloatingPointInfinity<Float>,
+              #ifndef MAGNUM_TARGET_GLES
+              &TypeTraitsTest::equalsFloatingPointInfinity<Double>,
+              #endif
+              &TypeTraitsTest::equalsFloatingPointNaN<Float>,
+              #ifndef MAGNUM_TARGET_GLES
+              &TypeTraitsTest::equalsFloatingPointNaN<Double>
+              #endif
+              });
 }
 
-void TypeTraitsTest::equalsIntegral() {
-    _equalsIntegral<UnsignedByte>();
-    _equalsIntegral<Byte>();
-    _equalsIntegral<UnsignedShort>();
-    _equalsIntegral<Short>();
-    _equalsIntegral<UnsignedInt>();
-    _equalsIntegral<Int>();
-    _equalsIntegral<UnsignedLong>();
-    _equalsIntegral<Long>();
-}
-
-template<class T> void TypeTraitsTest::_equalsIntegral() {
+template<class T> void TypeTraitsTest::equalsIntegral() {
     CORRADE_VERIFY(!TypeTraits<T>::equals(1, 1+TypeTraits<T>::epsilon()));
 }
 
-void TypeTraitsTest::equalsFloatingPoint0() {
-    _equalsFloatingPoint0<Float>();
-    #ifndef MAGNUM_TARGET_GLES
-    _equalsFloatingPoint0<Double>();
-    #endif
-}
-
-template<class T> void TypeTraitsTest::_equalsFloatingPoint0() {
+template<class T> void TypeTraitsTest::equalsFloatingPoint0() {
     CORRADE_VERIFY(TypeTraits<T>::equals(T(0)+TypeTraits<T>::epsilon()/T(2), T(0)));
     CORRADE_VERIFY(!TypeTraits<T>::equals(T(0)+TypeTraits<T>::epsilon()*T(2), T(0)));
 }
 
-void TypeTraitsTest::equalsFloatingPoint1() {
-    _equalsFloatingPoint1<Float>();
-    #ifndef MAGNUM_TARGET_GLES
-    _equalsFloatingPoint1<Double>();
-    #endif
-}
-
-template<class T> void TypeTraitsTest::_equalsFloatingPoint1() {
+template<class T> void TypeTraitsTest::equalsFloatingPoint1() {
     CORRADE_VERIFY(TypeTraits<T>::equals(T(1)+TypeTraits<T>::epsilon()/T(2), T(1)));
     CORRADE_VERIFY(!TypeTraits<T>::equals(T(1)+TypeTraits<T>::epsilon()*T(3), T(1)));
 }
 
-void TypeTraitsTest::equalsFloatingPointLarge() {
-    _equalsFloatingPointLarge<Float>();
-    #ifndef MAGNUM_TARGET_GLES
-    _equalsFloatingPointLarge<Double>();
-    #endif
-}
-
-template<class T> void TypeTraitsTest::_equalsFloatingPointLarge() {
+template<class T> void TypeTraitsTest::equalsFloatingPointLarge() {
     CORRADE_VERIFY(TypeTraits<T>::equals(T(25)+TypeTraits<T>::epsilon()*T(2), T(25)));
     CORRADE_VERIFY(!TypeTraits<T>::equals(T(25)+TypeTraits<T>::epsilon()*T(75), T(25)));
 }
 
-void TypeTraitsTest::equalsFloatingPointInfinity() {
-    _equalsFloatingPointInfinity<Float>();
-    #ifndef MAGNUM_TARGET_GLES
-    _equalsFloatingPointInfinity<Double>();
-    #endif
-}
-
-template<class T> void TypeTraitsTest::_equalsFloatingPointInfinity() {
+template<class T> void TypeTraitsTest::equalsFloatingPointInfinity() {
     CORRADE_VERIFY(TypeTraits<T>::equals(Constants<T>::inf(),
                                          Constants<T>::inf()));
 }
 
-void TypeTraitsTest::equalsFloatingPointNaN() {
-    _equalsFloatingPointNaN<Float>();
-    #ifndef MAGNUM_TARGET_GLES
-    _equalsFloatingPointNaN<Double>();
-    #endif
-}
-
-template<class T> void TypeTraitsTest::_equalsFloatingPointNaN() {
+template<class T> void TypeTraitsTest::equalsFloatingPointNaN() {
     CORRADE_VERIFY(!TypeTraits<T>::equals(Constants<T>::nan(),
                                           Constants<T>::nan()));
 }

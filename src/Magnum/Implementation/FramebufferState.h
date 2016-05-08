@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -40,12 +40,7 @@
 namespace Magnum { namespace Implementation {
 
 struct FramebufferState {
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY
-    /* MSVC complains that in-class initialization is not yet implemented */
     constexpr static const Range2Di DisengagedViewport{{}, {-1, -1}};
-    #else
-    static const Range2Di DisengagedViewport;
-    #endif
 
     explicit FramebufferState(Context& context, std::vector<std::string>& extensions);
 

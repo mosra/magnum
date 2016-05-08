@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -60,9 +60,8 @@ This plugin is built if `WITH_TGAIMAGECONVERTER` is enabled when building
 Magnum. To use dynamic plugin, you need to load `TgaImageConverter` plugin
 from `MAGNUM_PLUGINS_IMAGECONVERTER_DIR`. To use static plugin or use this as a
 dependency of another plugin, you need to request `TgaImageConverter`
-component of `Magnum` package in CMake and link to
-`${MAGNUM_TGAIMAGECONVERTER_LIBRARIES}`. See @ref building, @ref cmake and
-@ref plugins for more information.
+component of `Magnum` package in CMake and link to `Magnum::TgaImageConverter`
+target. See @ref building, @ref cmake and @ref plugins for more information.
 */
 class MAGNUM_TGAIMAGECONVERTER_EXPORT TgaImageConverter: public AbstractImageConverter {
     public:

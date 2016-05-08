@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -99,9 +99,10 @@ MyShader& setNormalMatrix(const Matrix3x3& matrix) {
     return *this;
 }
 @endcode
--   **Texture setting functions** in which you bind the textures
-    to particular texture units using @ref Texture::bind() "*Texture::bind()"
-    and equivalents, for example:
+-   **Texture and texture image setting functions** in which you bind the
+    textures/images to particular texture/image units using
+    @ref Texture::bind() "*Texture::bind()" /
+    @ref Texture::bindImage() "*Texture::bindImage()" and similar, for example:
 @code
 MyShader& setDiffuseTexture(Texture2D& texture) {
     texture.bind(0);
@@ -136,8 +137,8 @@ The preferred workflow is to specify attribute location for vertex shader input
 attributes and fragment shader output attributes explicitly in the shader code,
 e.g.:
 @code
-// GLSL 3.30, or
-#extension GL_ARB_explicit_attrib_location: enable
+// GLSL 3.30, GLSL ES 3.00 or
+#extension GL_ARB_explicit_attrib_location: require
 layout(location = 0) in vec4 position;
 layout(location = 1) in vec3 normal;
 layout(location = 2) in vec2 textureCoordinates;
@@ -151,8 +152,8 @@ layout(location = 0, index = 0) out vec4 color;
 layout(location = 1, index = 1) out vec3 normal;
 @endcode
 
-If you don't have the required extension, declare the attributes without
-`layout()` qualifier and use functions @ref bindAttributeLocation() and
+If you don't have the required version/extension, declare the attributes
+without `layout()` qualifier and use functions @ref bindAttributeLocation() and
 @ref bindFragmentDataLocation() / @ref bindFragmentDataLocationIndexed() between
 attaching the shaders and linking the program. Note that additional syntax
 changes may be needed for GLSL 1.20 and GLSL ES.
@@ -178,7 +179,7 @@ bindFragmentDataLocationIndexed(NormalOutput, 1, "normal");
 // Link...
 @endcode
 
-@see @ref Mesh::maxVertexAttributes(), @ref AbstractFramebuffer::maxDrawBuffers()
+@see @ref maxVertexAttributes(), @ref AbstractFramebuffer::maxDrawBuffers()
 @requires_gl30 Extension @extension{EXT,gpu_shader4} for using
     @ref bindFragmentDataLocation().
 @requires_gl33 Extension @extension{ARB,blend_func_extended} for using
@@ -208,15 +209,15 @@ bindFragmentDataLocationIndexed(NormalOutput, 1, "normal");
 The preferred workflow is to specify uniform locations directly in the shader
 code, e.g.:
 @code
-// GLSL 4.30, or
-#extension GL_ARB_explicit_uniform_location: enable
+// GLSL 4.30, GLSL ES 3.10 or
+#extension GL_ARB_explicit_uniform_location: require
 layout(location = 0) uniform mat4 projectionMatrix;
 layout(location = 1) uniform mat4 transformationMatrix;
 layout(location = 2) uniform mat3 normalMatrix;
 @endcode
 
-If you don't have the required extension, declare the uniforms without the
-`layout()` qualifier, get uniform location using @ref uniformLocation() *after*
+If you don't have the required version/extension, declare the uniforms without
+the `layout()` qualifier, get uniform location using @ref uniformLocation() *after*
 linking stage and then use the queried location in uniform setting functions.
 Note that additional syntax changes may be needed for GLSL 1.20 and GLSL ES.
 @code
@@ -238,22 +239,94 @@ Int normalMatrixUniform = uniformLocation("normalMatrix");
 @requires_gles Explicit uniform location is not supported in WebGL. Use
     @ref uniformLocation() instead.
 
-@anchor AbstractShaderProgram-texture-units
-### Specifying texture binding units
+@anchor AbstractShaderProgram-uniform-block-binding
+### Uniform block bindings
 
-The preferred workflow is to specify texture binding unit directly in the
+The preferred workflow is to specify uniform block binding directly in the
 shader code, e.g.:
 @code
-// GLSL 4.20, or
-#extension GL_ARB_shading_language_420pack: enable
+// GLSL 4.20, GLSL ES 3.10 or
+#extension GL_ARB_shading_language_420pack: require
+layout(std140, binding = 0) uniform matrices {
+    mat4 projectionMatrix;
+    mat4 transformationMatrix;
+};
+layout(std140, binding = 1) uniform material {
+    vec4 diffuse;
+    vec4 specular;
+};
+@endcode
+
+If you don't have the required version/extension, declare the uniform blocks
+without the `layout()` qualifier, get uniform block index using
+@ref uniformBlockIndex() and then map it to the uniform buffer binding using
+@ref setUniformBlockBinding(). Note that additional syntax changes may be
+needed for GLSL ES.
+@code
+layout(std140) uniform matrices {
+    mat4 projectionMatrix;
+    mat4 transformationMatrix;
+};
+layout(std140) uniform material {
+    vec4 diffuse;
+    vec4 specular;
+};
+@endcode
+@code
+setUniformBlockBinding(uniformBlockIndex("matrices"), 0);
+setUniformBlockBinding(uniformBlockIndex("material"), 1);
+@endcode
+
+@see @ref Buffer::maxUniformBindings()
+@requires_gl31 Extension @extension{ARB,uniform_buffer_object}
+@requires_gl42 Extension @extension{ARB,shading_language_420pack} for explicit
+    uniform block binding instead of using @ref uniformBlockIndex() and
+    @ref setUniformBlockBinding().
+@requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
+@requires_gles31 Explicit uniform block binding is not supported in OpenGL ES
+    3.0 and older. Use @ref uniformBlockIndex() and @ref setUniformBlockBinding()
+    instead.
+@requires_webgl20 Uniform buffers are not available in WebGL 1.0.
+@requires_gles Explicit uniform block binding is not supported in WebGL. Use
+    @ref uniformBlockIndex() and @ref setUniformBlockBinding() instead.
+
+@anchor AbstractShaderProgram-shader-storage-block-binding
+### Shader storage block bindings
+
+The workflow is to specify shader storage block binding directly in the shader
+code, e.g.:
+@code
+// GLSL 4.30 or GLSL ES 3.10
+layout(std430, binding = 0) buffer vertices {
+    vec3 position;
+    vec3 color;
+};
+layout(std430, binding = 1) buffer normals {
+    vec3 normal;
+};
+@endcode
+
+@see @ref Buffer::maxShaderStorageBindings()
+@requires_gl43 Extension @extension{ARB,shader_storage_buffer_object}
+@requires_gles31 Shader storage is not available in OpenGL ES 3.0 and older.
+@requires_gles Shader storage is not available in WebGL.
+
+@anchor AbstractShaderProgram-texture-units
+### Specifying texture and image binding units
+
+The preferred workflow is to specify texture/image binding unit directly in the
+shader code, e.g.:
+@code
+// GLSL 4.20, GLSL ES 3.10 or
+#extension GL_ARB_shading_language_420pack: require
 layout(binding = 0) uniform sampler2D diffuseTexture;
 layout(binding = 1) uniform sampler2D specularTexture;
 @endcode
 
-If you don't have the required extension, declare the uniforms without the
-`binding` qualifier and set the texture binding unit using
+If you don't have the required version/extension, declare the uniforms without
+the `binding` qualifier and set the texture binding unit using
 @ref setUniform(Int, const T&) "setUniform(Int, Int)". Note that additional
-syntax changes may be needed for GLSL 1.20 and GLSL ES 1.0.
+syntax changes may be needed for GLSL ES.
 @code
 uniform sampler2D diffuseTexture;
 uniform sampler2D specularTexture;
@@ -263,7 +336,7 @@ setUniform(uniformLocation("diffuseTexture"), 0);
 setUniform(uniformLocation("specularTexture"), 1);
 @endcode
 
-@see @ref Shader::maxTextureImageUnits()
+@see @ref Shader::maxTextureImageUnits(), @ref maxImageUnits()
 @requires_gl42 Extension @extension{ARB,shading_language_420pack} for explicit
     texture binding unit instead of using
     @ref setUniform(Int, const T&) "setUniform(Int, Int)".
@@ -280,7 +353,7 @@ The preferred workflow is to specify output binding points directly in the
 shader code, e.g.:
 @code
 // GLSL 4.40, or
-#extension GL_ARB_enhanced_layouts: enable
+#extension GL_ARB_enhanced_layouts: require
 layout(xfb_buffer = 0, xfb_stride = 32) out block {
     layout(xfb_offset = 0) vec3 position;
     layout(xfb_offset = 16) vec3 normal;
@@ -288,8 +361,8 @@ layout(xfb_buffer = 0, xfb_stride = 32) out block {
 layout(xfb_buffer = 1) out vec3 velocity;
 @endcode
 
-If you don't have the required extension, declare the uniforms without the
-`xfb_*` qualifier and set the binding points using @ref setTransformFeedbackOutputs().
+If you don't have the required version/extension, declare the uniforms without
+the `xfb_*` qualifier and set the binding points using @ref setTransformFeedbackOutputs().
 Equivalent setup for the previous code would be the following:
 @code
 out block {
@@ -310,14 +383,17 @@ setTransformFeedbackOutputs({
 @see @ref TransformFeedback::maxInterleavedComponents(),
     @ref TransformFeedback::maxSeparateAttributes(),
     @ref TransformFeedback::maxSeparateComponents()
+@requires_gl40 Extension @extension{ARB,transform_feedback2}
 @requires_gl40 Extension @extension{ARB,transform_feedback3} for using
     `gl_NextBuffer` or `gl_SkipComponents#` names in
     @ref setTransformFeedbackOutputs() function.
 @requires_gl44 Extension @extension{ARB,enhanced_layouts} for explicit
     transform feedback output specification instead of using
     @ref setTransformFeedbackOutputs().
+@requires_gles30 Transform feedback is not available in OpenGL ES 2.0.
 @requires_gl Explicit transform feedback output specification is not available
     in OpenGL ES or WebGL.
+@requires_webgl20 Transform feedback is not available in WebGL 1.0.
 
 @anchor AbstractShaderProgram-rendering-workflow
 ## Rendering workflow
@@ -336,6 +412,13 @@ shader.setTransformation(transformation)
 
 mesh.draw(shader);
 @endcode
+
+@anchor AbstractShaderProgram-compute-workflow
+## Compute workflow
+
+Add just the @ref Shader::Type::Compute shader and implement uniform/texture
+setting functions as needed. After setting up required parameters call
+@ref dispatchCompute().
 
 @anchor AbstractShaderProgram-types
 ## Mapping between GLSL and Magnum types
@@ -464,7 +547,31 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          */
         static Int maxComputeWorkGroupInvocations();
 
-        /** @todo MAX_COMPUTE_WORK_GROUP_COUNT, MAX_COMPUTE_WORK_GROUP_SIZE */
+        /**
+         * @brief Max supported compute work group count
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If neither extension @extension{ARB,compute_shader}
+         * (part of OpenGL 4.3) nor OpenGL ES 3.1 is available, returns zero
+         * vector.
+         * @see @fn_gl{Get} with @def_gl{MAX_COMPUTE_WORK_GROUP_COUNT}
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_gles Compute shaders are not available in WebGL.
+         */
+        static Vector3i maxComputeWorkGroupCount();
+
+        /**
+         * @brief Max supported compute work group size
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If neither extension @extension{ARB,compute_shader}
+         * (part of OpenGL 4.3) nor OpenGL ES 3.1 is available, returns zero
+         * vector.
+         * @see @fn_gl{Get} with @def_gl{MAX_COMPUTE_WORK_GROUP_SIZE}
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_gles Compute shaders are not available in WebGL.
+         */
+        static Vector3i maxComputeWorkGroupSize();
 
         /**
          * @brief Max supported image unit count
@@ -655,6 +762,21 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          *      @fn_gl{GetProgramInfoLog}
          */
         std::pair<bool, std::string> validate();
+
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        /**
+         * @brief Dispatch compute
+         * @param workgroupCount    Workgroup count in given dimension
+         *
+         * Valid only on programs with compute shader attached.
+         * @see @fn_gl{DispatchCompute}
+         * @requires_gl43 Extension @extension{ARB,compute_shader}
+         * @requires_gles31 Compute shaders are not available in OpenGL ES 3.0
+         *      and older.
+         * @requires_gles Compute shaders are not available in WebGL.
+         */
+        void dispatchCompute(const Vector3ui& workgroupCount);
+        #endif
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
@@ -858,7 +980,9 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * @brief Get uniform location
          * @param name          Uniform name
          *
-         * @see @fn_gl{GetUniformLocation}
+         * If given uniform is not found in the linked shader, a warning is
+         * printed and `-1` is returned.
+         * @see @ref setUniform(), @fn_gl{GetUniformLocation}
          * @deprecated_gl Preferred usage is to specify uniform location
          *      explicitly in the shader instead of using this function. See
          *      @ref AbstractShaderProgram-uniform-location "class documentation"
@@ -873,6 +997,32 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
             return uniformLocationInternal({name, size - 1});
         }
 
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Get uniform block index
+         * @param name          Uniform block name
+         *
+         * If given uniform block name is not found in the linked shader, a
+         * warning is printed and `0xffffffffu` is returned.
+         * @see @ref setUniformBlockBinding(), @fn_gl{GetUniformBlockIndex}
+         * @requires_gl31 Extension @extension{ARB,uniform_buffer_object}
+         * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
+         * @deprecated_gl Preferred usage is to specify uniform block binding
+         *      explicitly in the shader instead of using this function. See
+         *      @ref AbstractShaderProgram-uniform-block-binding "class documentation"
+         *      for more information.
+         */
+        UnsignedInt uniformBlockIndex(const std::string& name) {
+            return uniformBlockIndexInternal({name.data(), name.size()});
+        }
+
+        /** @overload */
+        template<std::size_t size> UnsignedInt uniformBlockIndex(const char(&name)[size]) {
+            return uniformBlockIndexInternal({name, size - 1});
+        }
+        #endif
+
         /**
          * @brief Set uniform value
          * @param location      Uniform location
@@ -881,6 +1031,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * Convenience alternative for setting one value, see
          * @ref setUniform(Int, Containers::ArrayView<const Float>) for more
          * information.
+         * @see @ref uniformLocation()
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         template<class T> inline void setUniform(Int location, const T& value);
@@ -919,8 +1070,9 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * @es_extension{EXT,separate_shader_objects} OpenGL ES extension nor
          * OpenGL ES 3.1 is available, the shader is marked for use before the
          * operation.
-         * @see @ref setUniform(Int, const T&), @fn_gl{UseProgram}, @fn_gl{Uniform}
-         *      or @fn_gl{ProgramUniform}/@fn_gl_extension{ProgramUniform,EXT,direct_state_access}.
+         * @see @ref setUniform(Int, const T&), @ref uniformLocation(),
+         *      @fn_gl{UseProgram}, @fn_gl{Uniform} or @fn_gl{ProgramUniform}/
+         *      @fn_gl_extension{ProgramUniform,EXT,direct_state_access}.
          */
         void setUniform(Int location, Containers::ArrayView<const Float> values);
         void setUniform(Int location, Containers::ArrayView<const Math::Vector<2, Float>> values); /**< @overload */
@@ -1005,6 +1157,27 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         }
         #endif
 
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Set uniform block binding
+         * @param index     Uniform block index
+         * @param binding   Uniform block binding
+         *
+         * @see @ref uniformBlockIndex(), @ref Buffer::maxUniformBindings(),
+         *      @fn_gl{UniformBlockBinding}
+         * @requires_gl31 Extension @extension{ARB,uniform_buffer_object}
+         * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
+         * @deprecated_gl Preferred usage is to specify uniform block binding
+         *      explicitly in the shader instead of using this function. See
+         *      @ref AbstractShaderProgram-uniform-block-binding "class documentation"
+         *      for more information.
+         */
+        void setUniformBlockBinding(UnsignedInt index, UnsignedInt binding) {
+            glUniformBlockBinding(_id, index, binding);
+        }
+        #endif
+
     private:
         #ifndef MAGNUM_TARGET_WEBGL
         AbstractShaderProgram& setLabelInternal(Containers::ArrayView<const char> label);
@@ -1014,6 +1187,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         void bindFragmentDataLocationIndexedInternal(UnsignedInt location, UnsignedInt index, Containers::ArrayView<const char> name);
         void bindFragmentDataLocationInternal(UnsignedInt location, Containers::ArrayView<const char> name);
         Int uniformLocationInternal(Containers::ArrayView<const char> name);
+        UnsignedInt uniformBlockIndexInternal(Containers::ArrayView<const char> name);
 
         #ifndef MAGNUM_BUILD_DEPRECATED
         void use();

@@ -18,7 +18,6 @@ build() {
         cd "$_rootdir/build-android-x86"
 
         cmake .. \
-            -DCMAKE_MODULE_PATH="$_rootdir/toolchains/modules" \
             -DCMAKE_TOOLCHAIN_FILE="$_rootdir/toolchains/generic/Android-x86.cmake" \
             -DTARGET_GLES=ON \
             -DTARGET_GLES2=ON \

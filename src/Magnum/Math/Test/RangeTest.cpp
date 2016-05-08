@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -123,6 +123,9 @@ struct RangeTest: Corrade::TestSuite::Tester {
     void padded();
     void scaled();
 
+    void contains();
+    void join();
+
     void subclassTypes();
     void subclass();
 
@@ -156,6 +159,9 @@ RangeTest::RangeTest() {
               &RangeTest::translated,
               &RangeTest::padded,
               &RangeTest::scaled,
+
+              &RangeTest::contains,
+              &RangeTest::join,
 
               &RangeTest::subclassTypes,
               &RangeTest::subclass,
@@ -215,11 +221,7 @@ void RangeTest::constructConversion() {
     constexpr Range2D b({1.3f, 2.7f}, {-15.0f, 7.0f});
     constexpr Range3D c({1.3f, 2.7f, -1.5f}, {-15.0f, 7.0f, 0.3f});
 
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY
-    /* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-    constexpr
-    #endif
-    Range1Di d(a);
+    constexpr Range1Di d(a);
     CORRADE_COMPARE(d, Range1Di(1, -15));
 
     constexpr Range2Di e(b);
@@ -260,14 +262,12 @@ void RangeTest::convert() {
 
     /* GCC 5.1 fills the result with zeros instead of properly calling
        delegated copy constructor if using constexpr. Reported here:
-       https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66450
-       MSVC 2015: Can't use delegating constructors with constexpr:
-       https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-    #if (!defined(__GNUC__) || defined(__clang__)) && !defined(CORRADE_MSVC2015_COMPATIBILITY)
+       https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66450 */
+    #if !defined(__GNUC__) || defined(__clang__)
     constexpr
     #endif
     Range<2, Float> g{b};
-    #if (!defined(__GNUC__) || defined(__clang__)) && !defined(CORRADE_MSVC2015_COMPATIBILITY)
+    #if !defined(__GNUC__) || defined(__clang__)
     constexpr
     #endif
     Range1D h{a};
@@ -284,26 +284,17 @@ void RangeTest::convert() {
     CORRADE_COMPARE(i, e);
     CORRADE_COMPARE(j, f);
 
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why can't be conversion constexpr? */
-    constexpr
-    #endif
-    Dim k(d);
+    constexpr Dim k(d);
     CORRADE_COMPARE(k.offset, a.offset);
     CORRADE_COMPARE(k.size, a.size);
 
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why can't be conversion constexpr? */
-    constexpr
-    #endif
-    Rect l(e);
+    constexpr Rect l(e);
     CORRADE_COMPARE(l.x, b.x);
     CORRADE_COMPARE(l.y, b.y);
     CORRADE_COMPARE(l.w, b.w);
     CORRADE_COMPARE(l.h, b.h);
 
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why can't be conversion constexpr? */
-    constexpr
-    #endif
-    Box m(f);
+    constexpr Box m(f);
     CORRADE_COMPARE(m.x, c.x);
     CORRADE_COMPARE(m.y, c.y);
     CORRADE_COMPARE(m.z, c.z);
@@ -459,6 +450,26 @@ void RangeTest::scaled() {
     Range2Di b({68, -69}, {94, -90});
 
     CORRADE_COMPARE(a.scaled({2, -3}), b);
+}
+
+void RangeTest::contains() {
+    Range2Di a({34, 23}, {47, 30});
+
+    CORRADE_VERIFY(a.contains({40, 23}));
+    CORRADE_VERIFY(!a.contains({33, 23}));
+    CORRADE_VERIFY(!a.contains({40, 30}));
+}
+
+void RangeTest::join() {
+    Range2Di a{{12, 20}, {15, 35}};
+    Range2Di b{{10, 25}, {17, 105}};
+    Range2Di c{{130, -15}, {130, -15}};
+    Range2Di d{{10, 20}, {17, 105}};
+
+    CORRADE_COMPARE(Math::join(a, b), d);
+    CORRADE_COMPARE(Math::join(b, a), d);
+    CORRADE_COMPARE(Math::join(a, c), a);
+    CORRADE_COMPARE(Math::join(c, a), a);
 }
 
 template<class T> class BasicRect: public Math::Range<2, T> {

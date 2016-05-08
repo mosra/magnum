@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -1066,7 +1066,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      @fn_gl_extension{GetNamedBufferSubData,EXT,direct_state_access},
          *      eventually @fn_gl{GetBufferSubData}
          * @requires_gl Buffer data queries are not available in OpenGL ES and
-         *      WebGL. Use @ref map() in OpenGL ES instead.
+         *      WebGL. Use @ref map() or @ref DebugTools::bufferData() in
+         *      OpenGL ES instead.
          */
         /* MinGW complains loudly if the declaration doesn't also have inline */
         template<class T = char> inline Containers::Array<T> data();
@@ -1085,7 +1086,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      @fn_gl_extension{GetNamedBufferSubData,EXT,direct_state_access},
          *      eventually @fn_gl{BindBuffer} and @fn_gl{GetBufferSubData}
          * @requires_gl Buffer data queries are not available in OpenGL ES and
-         *      WebGL. Use @ref map() in OpenGL ES instead.
+         *      WebGL. Use @ref map() or @ref DebugTools::bufferData() in
+         *      OpenGL ES instead.
          */
         /* MinGW complains loudly if the declaration doesn't also have inline */
         template<class T = char> inline Containers::Array<T> subData(GLintptr offset, GLsizeiptr size);

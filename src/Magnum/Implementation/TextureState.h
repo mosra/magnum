@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -27,14 +27,17 @@
 
 #include <string>
 #include <vector>
+#include <Corrade/Containers/Array.h>
 
-#include "Magnum/CubeMapTexture.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/OpenGL.h"
 
 #if defined(_MSC_VER) && !defined(MAGNUM_TARGET_GLES2)
 /* Otherwise the member function pointers will have different size based on
    whether the header was included or not. CAUSES SERIOUS MEMORY CORRUPTION AND
    IS NOT CAUGHT BY ANY WARNING WHATSOEVER! AARGH! */
 #include "Magnum/BufferTexture.h"
+#include "Magnum/CubeMapTexture.h"
 #endif
 
 namespace Magnum { namespace Implementation {
@@ -45,6 +48,7 @@ struct TextureState {
 
     void reset();
 
+    Int(*compressedBlockDataSizeImplementation)(GLenum, TextureFormat);
     void(*unbindImplementation)(GLint);
     void(*bindMultiImplementation)(GLint, Containers::ArrayView<AbstractTexture* const>);
     void(AbstractTexture::*createImplementation)();
@@ -61,7 +65,7 @@ struct TextureState {
     #endif
     void(AbstractTexture::*setMaxAnisotropyImplementation)(GLfloat);
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    void(AbstractTexture::*getLevelParameterivImplementation)(GLenum, GLint, GLenum, GLint*);
+    void(AbstractTexture::*getLevelParameterivImplementation)(GLint, GLenum, GLint*);
     #endif
     void(AbstractTexture::*mipmapImplementation)();
     #ifndef MAGNUM_TARGET_GLES
@@ -97,12 +101,17 @@ struct TextureState {
     void(BufferTexture::*setBufferRangeImplementation)(BufferTextureFormat, Buffer&, GLintptr, GLsizeiptr);
     #endif
 
-    #ifndef MAGNUM_TARGET_GLES
-    void(CubeMapTexture::*getCubeImageImplementation)(CubeMapTexture::Coordinate, GLint, const Vector2i&, PixelFormat, PixelType, std::size_t, GLvoid*);
-    void(CubeMapTexture::*getCompressedCubeImageImplementation)(CubeMapTexture::Coordinate, GLint, const Vector2i&, std::size_t, GLvoid*);
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    void(CubeMapTexture::*getCubeLevelParameterivImplementation)(GLint, GLenum, GLint*);
     #endif
-    void(CubeMapTexture::*cubeSubImageImplementation)(CubeMapTexture::Coordinate, GLint, const Vector2i&, const Vector2i&, PixelFormat, PixelType, const GLvoid*);
-    void(CubeMapTexture::*cubeCompressedSubImageImplementation)(CubeMapTexture::Coordinate, GLint, const Vector2i&, const Vector2i&, CompressedPixelFormat, const GLvoid*, GLsizei);
+    #ifndef MAGNUM_TARGET_GLES
+    GLint(CubeMapTexture::*getCubeLevelCompressedImageSizeImplementation)(GLint);
+    void(CubeMapTexture::*getCubeImageImplementation)(CubeMapCoordinate, GLint, const Vector2i&, PixelFormat, PixelType, std::size_t, GLvoid*);
+    void(CubeMapTexture::*getFullCompressedCubeImageImplementation)(GLint, const Vector2i&, std::size_t, std::size_t, GLvoid*);
+    void(CubeMapTexture::*getCompressedCubeImageImplementation)(CubeMapCoordinate, GLint, const Vector2i&, std::size_t, GLvoid*);
+    #endif
+    void(CubeMapTexture::*cubeSubImageImplementation)(CubeMapCoordinate, GLint, const Vector2i&, const Vector2i&, PixelFormat, PixelType, const GLvoid*);
+    void(CubeMapTexture::*cubeCompressedSubImageImplementation)(CubeMapCoordinate, GLint, const Vector2i&, const Vector2i&, CompressedPixelFormat, const GLvoid*, GLsizei);
 
     GLint maxSize,
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
@@ -133,7 +142,11 @@ struct TextureState {
     GLint bufferOffsetAlignment;
     #endif
 
-    std::vector<std::pair<GLenum, GLuint>> bindings;
+    Containers::Array<std::pair<GLenum, GLuint>> bindings;
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    /* Texture object ID, level, layered, layer, access */
+    Containers::Array<std::tuple<GLuint, GLint, GLboolean, GLint, GLenum>> imageBindings;
+    #endif
 };
 
 }}

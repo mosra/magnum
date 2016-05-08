@@ -18,7 +18,6 @@ build() {
     cd "$_rootdir/build-nacl-glibc-x86-32"
 
     cmake .. \
-        -DCMAKE_MODULE_PATH="$_rootdir/toolchains/modules" \
         -DCMAKE_TOOLCHAIN_FILE="$_rootdir/toolchains/generic/NaCl-glibc-x86-32.cmake" \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr/nacl \
@@ -39,7 +38,6 @@ build() {
     cd "$_rootdir/build-nacl-glibc-x86-64"
 
     cmake .. \
-        -DCMAKE_MODULE_PATH="$_rootdir/toolchains/modules" \
         -DCMAKE_TOOLCHAIN_FILE="$_rootdir/toolchains/generic/NaCl-glibc-x86-64.cmake" \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr/nacl \

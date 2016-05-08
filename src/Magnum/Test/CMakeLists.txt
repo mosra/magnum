@@ -1,7 +1,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -24,7 +24,7 @@
 #
 
 corrade_add_test(AbstractShaderProgramTest AbstractShaderProgramTest.cpp LIBRARIES Magnum)
-corrade_add_test(ArrayTest ArrayTest.cpp)
+corrade_add_test(ArrayTest ArrayTest.cpp LIBRARIES Magnum)
 corrade_add_test(FormatTest FormatTest.cpp LIBRARIES Magnum)
 corrade_add_test(ContextTest ContextTest.cpp LIBRARIES Magnum)
 corrade_add_test(DebugOutputTest DebugOutputTest.cpp LIBRARIES Magnum)
@@ -36,15 +36,16 @@ corrade_add_test(MeshTest MeshTest.cpp LIBRARIES Magnum)
 corrade_add_test(PixelStorageTest PixelStorageTest.cpp LIBRARIES Magnum)
 corrade_add_test(RendererTest RendererTest.cpp LIBRARIES Magnum)
 corrade_add_test(ResourceManagerTest ResourceManagerTest.cpp LIBRARIES Magnum)
+target_compile_definitions(ResourceManagerTest PRIVATE "CORRADE_GRACEFUL_ASSERT")
 corrade_add_test(SamplerTest SamplerTest.cpp LIBRARIES Magnum)
 corrade_add_test(ShaderTest ShaderTest.cpp LIBRARIES Magnum)
 corrade_add_test(VersionTest VersionTest.cpp LIBRARIES Magnum)
-corrade_add_test(TagsTest TagsTest.cpp)
+corrade_add_test(TagsTest TagsTest.cpp LIBRARIES Magnum)
 
 add_library(ResourceManagerLocalInstanceTestLib ${SHARED_OR_STATIC} ResourceManagerLocalInstanceTestLib.cpp)
 target_link_libraries(ResourceManagerLocalInstanceTestLib Magnum)
 if(NOT BUILD_STATIC)
-    set_target_properties(ResourceManagerLocalInstanceTestLib PROPERTIES COMPILE_FLAGS "-DResourceManagerLocalInstanceTestLib_EXPORTS")
+    target_compile_definitions(ResourceManagerLocalInstanceTestLib PRIVATE "ResourceManagerLocalInstanceTestLib_EXPORTS")
 endif()
 corrade_add_test(ResourceManagerLocalInstanceTest ResourceManagerLocalInstanceTest.cpp LIBRARIES Magnum ResourceManagerLocalInstanceTestLib)
 
@@ -72,8 +73,8 @@ if(BUILD_GL_TESTS)
 
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                    ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
-    include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
     corrade_add_test(ShaderGLTest ShaderGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
+    target_include_directories(ShaderGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
     if(NOT MAGNUM_TARGET_GLES2)
         corrade_add_test(BufferImageGLTest BufferImageGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
@@ -89,13 +90,3 @@ if(BUILD_GL_TESTS)
         corrade_add_test(RectangleTextureGLTest RectangleTextureGLTest.cpp LIBRARIES ${GL_TEST_LIBRARIES})
     endif()
 endif()
-
-set_target_properties(ResourceManagerTest PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
-
-set(MagnumGLTests_HEADERS AbstractOpenGLTester.h)
-
-# Add the header to project list of IDEs
-add_custom_target(MagnumGLTests SOURCES ${MagnumGLTests_HEADERS})
-
-# Install bootstrap header for GL tests to be used in dependent projects
-install(FILES ${MagnumGLTests_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Test)

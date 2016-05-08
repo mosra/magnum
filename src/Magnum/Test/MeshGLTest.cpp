@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -237,9 +237,9 @@ void MeshGLTest::construct() {
         MAGNUM_VERIFY_NO_ERROR();
 
         #ifndef MAGNUM_TARGET_GLES
-        if(Context::current()->isExtensionSupported<Extensions::GL::ARB::vertex_array_object>())
+        if(Context::current().isExtensionSupported<Extensions::GL::ARB::vertex_array_object>())
         #elif defined(MAGNUM_TARGET_GLES2)
-        if(Context::current()->isExtensionSupported<Extensions::GL::OES::vertex_array_object>())
+        if(Context::current().isExtensionSupported<Extensions::GL::OES::vertex_array_object>())
         #endif
         {
             CORRADE_VERIFY(mesh.id() > 0);
@@ -272,9 +272,9 @@ void MeshGLTest::constructMove() {
     MAGNUM_VERIFY_NO_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
-    if(Context::current()->isExtensionSupported<Extensions::GL::ARB::vertex_array_object>())
+    if(Context::current().isExtensionSupported<Extensions::GL::ARB::vertex_array_object>())
     #elif defined(MAGNUM_TARGET_GLES2)
-    if(Context::current()->isExtensionSupported<Extensions::GL::OES::vertex_array_object>())
+    if(Context::current().isExtensionSupported<Extensions::GL::OES::vertex_array_object>())
     #endif
     {
         CORRADE_VERIFY(id > 0);
@@ -292,9 +292,9 @@ void MeshGLTest::constructMove() {
     MAGNUM_VERIFY_NO_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
-    if(Context::current()->isExtensionSupported<Extensions::GL::ARB::vertex_array_object>())
+    if(Context::current().isExtensionSupported<Extensions::GL::ARB::vertex_array_object>())
     #elif defined(MAGNUM_TARGET_GLES2)
-    if(Context::current()->isExtensionSupported<Extensions::GL::OES::vertex_array_object>())
+    if(Context::current().isExtensionSupported<Extensions::GL::OES::vertex_array_object>())
     #endif
     {
         CORRADE_VERIFY(cId > 0);
@@ -306,10 +306,10 @@ void MeshGLTest::constructMove() {
 
 void MeshGLTest::wrap() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::vertex_array_object>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::vertex_array_object>())
         CORRADE_SKIP(Extensions::GL::ARB::vertex_array_object::string() + std::string{" is not supported."});
     #elif defined(MAGNUM_TARGET_GLES2)
-    if(!Context::current()->isExtensionSupported<Extensions::GL::OES::vertex_array_object>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::OES::vertex_array_object>())
         CORRADE_SKIP(Extensions::GL::OES::vertex_array_object::string() + std::string{" is not supported."});
     #endif
 
@@ -337,8 +337,8 @@ void MeshGLTest::wrap() {
 
 void MeshGLTest::label() {
     /* No-Op version is tested in AbstractObjectGLTest */
-    if(!Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>() &&
-       !Context::current()->isExtensionSupported<Extensions::GL::EXT::debug_label>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::KHR::debug>() &&
+       !Context::current().isExtensionSupported<Extensions::GL::EXT::debug_label>())
         CORRADE_SKIP("Required extension is not available");
 
     Mesh mesh;
@@ -384,8 +384,20 @@ FloatShader::FloatShader(const std::string& type, const std::string& conversion)
     /* We need special version for ES3, because GLSL in ES2 doesn't support
        rectangle matrices */
     #ifndef MAGNUM_TARGET_GLES
-    Shader vert(Version::GL210, Shader::Type::Vertex);
-    Shader frag(Version::GL210, Shader::Type::Fragment);
+    Shader vert(
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL210
+        #else
+        Version::GL310
+        #endif
+        , Shader::Type::Vertex);
+    Shader frag(
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL210
+        #else
+        Version::GL310
+        #endif
+        , Shader::Type::Fragment);
     #elif defined(MAGNUM_TARGET_GLES2)
     Shader vert(Version::GLES200, Shader::Type::Vertex);
     Shader frag(Version::GLES200, Shader::Type::Fragment);
@@ -395,32 +407,32 @@ FloatShader::FloatShader(const std::string& type, const std::string& conversion)
     #endif
 
     vert.addSource(
-        #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
         "#if !defined(GL_ES) && __VERSION__ == 120\n"
         "#define mediump\n"
         "#endif\n"
-        "attribute mediump " + type + " value;\n"
-        "varying mediump " + type + " valueInterpolated;\n"
-        #else
+        "#if defined(GL_ES) || __VERSION__ == 120\n"
+        "#define in attribute\n"
+        "#define out varying\n"
+        "#endif\n"
         "in mediump " + type + " value;\n"
         "out mediump " + type + " valueInterpolated;\n"
-        #endif
         "void main() {\n"
         "    valueInterpolated = value;\n"
         "    gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n"
         "}\n");
-
-    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
-    frag.addSource("#if !defined(GL_ES) && __VERSION__ == 120\n"
-                   "#define mediump\n"
-                   "#endif\n"
-                   "varying mediump " + type + " valueInterpolated;\n"
-                   "void main() { gl_FragColor = " + conversion + "; }\n");
-    #else
-    frag.addSource("in mediump " + type + " valueInterpolated;\n"
-                   "out mediump vec4 result;\n"
-                   "void main() { result = " + conversion + "; }\n");
-    #endif
+    frag.addSource(
+        "#if !defined(GL_ES) && __VERSION__ == 120\n"
+        "#define mediump\n"
+        "#endif\n"
+        "#if defined(GL_ES) || __VERSION__ == 120\n"
+        "#define in varying\n"
+        "#define result gl_FragColor\n"
+        "#endif\n"
+        "in mediump " + type + " valueInterpolated;\n"
+        "#if !defined(GL_ES) && __VERSION__ >= 130\n"
+        "out mediump vec4 result;\n"
+        "#endif\n"
+        "void main() { result = " + conversion + "; }\n");
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
 
@@ -434,8 +446,20 @@ FloatShader::FloatShader(const std::string& type, const std::string& conversion)
 #ifndef MAGNUM_TARGET_GLES2
 IntegerShader::IntegerShader(const std::string& type) {
     #ifndef MAGNUM_TARGET_GLES
-    Shader vert(Version::GL300, Shader::Type::Vertex);
-    Shader frag(Version::GL300, Shader::Type::Fragment);
+    Shader vert(
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL300
+        #else
+        Version::GL310
+        #endif
+        , Shader::Type::Vertex);
+    Shader frag(
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL300
+        #else
+        Version::GL310
+        #endif
+        , Shader::Type::Fragment);
     #else
     Shader vert(Version::GLES300, Shader::Type::Vertex);
     Shader frag(Version::GLES300, Shader::Type::Fragment);
@@ -514,7 +538,7 @@ template<class T> T Checker::get(PixelFormat format, PixelType type) {
 #ifndef MAGNUM_TARGET_GLES2
 void MeshGLTest::addVertexBufferUnsignedInt() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::gpu_shader4>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::gpu_shader4>())
         CORRADE_SKIP(Extensions::GL::EXT::gpu_shader4::string() + std::string(" is not available."));
     #endif
 
@@ -539,7 +563,7 @@ void MeshGLTest::addVertexBufferUnsignedInt() {
 
 void MeshGLTest::addVertexBufferInt() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::gpu_shader4>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::gpu_shader4>())
         CORRADE_SKIP(Extensions::GL::EXT::gpu_shader4::string() + std::string(" is not available."));
     #endif
 
@@ -590,7 +614,7 @@ void MeshGLTest::addVertexBufferFloat() {
 
 #ifndef MAGNUM_TARGET_GLES
 void MeshGLTest::addVertexBufferDouble() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::vertex_attrib_64bit>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::vertex_attrib_64bit>())
         CORRADE_SKIP(Extensions::GL::ARB::vertex_attrib_64bit::string() + std::string(" is not available."));
 
     typedef Attribute<0, Double> Attribute;
@@ -616,7 +640,7 @@ void MeshGLTest::addVertexBufferDouble() {
 #ifndef MAGNUM_TARGET_GLES2
 void MeshGLTest::addVertexBufferVectorNui() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::gpu_shader4>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::gpu_shader4>())
         CORRADE_SKIP(Extensions::GL::EXT::gpu_shader4::string() + std::string(" is not available."));
     #endif
 
@@ -641,7 +665,7 @@ void MeshGLTest::addVertexBufferVectorNui() {
 
 void MeshGLTest::addVertexBufferVectorNi() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::gpu_shader4>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::gpu_shader4>())
         CORRADE_SKIP(Extensions::GL::EXT::gpu_shader4::string() + std::string(" is not available."));
     #endif
 
@@ -692,7 +716,7 @@ void MeshGLTest::addVertexBufferVectorN() {
 
 #ifndef MAGNUM_TARGET_GLES
 void MeshGLTest::addVertexBufferVectorNd() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::vertex_attrib_64bit>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::vertex_attrib_64bit>())
         CORRADE_SKIP(Extensions::GL::ARB::vertex_attrib_64bit::string() + std::string(" is not available."));
 
     typedef Attribute<0, Vector4d> Attribute;
@@ -745,7 +769,7 @@ void MeshGLTest::addVertexBufferMatrixNxN() {
 
 #ifndef MAGNUM_TARGET_GLES
 void MeshGLTest::addVertexBufferMatrixNxNd() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::vertex_attrib_64bit>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::vertex_attrib_64bit>())
         CORRADE_SKIP(Extensions::GL::ARB::vertex_attrib_64bit::string() + std::string(" is not available."));
 
     typedef Attribute<0, Matrix3x3d> Attribute;
@@ -771,11 +795,14 @@ void MeshGLTest::addVertexBufferMatrixNxNd() {
     MAGNUM_VERIFY_NO_ERROR();
 
     {
-        CORRADE_EXPECT_FAIL("Somehow only first two values are extracted");
+        CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & (Context::DetectedDriver::AMD|Context::DetectedDriver::NVidia), "Somehow only first two values are extracted");
         CORRADE_COMPARE(value, Math::Vector3<UnsignedShort>(315, 65201, 2576));
     }
-    /* This is wrong, but check if it's still the right wrong */
-    CORRADE_COMPARE(value, Math::Vector3<UnsignedShort>(315, 65201, 0));
+
+    /* This is wrong, but check if it's still the right wrong. Fails on AMD
+       15.201.1151 but seems to be fixed in 15.300.1025.0 */
+    if(Context::current().detectedDriver() & (Context::DetectedDriver::AMD|Context::DetectedDriver::NVidia))
+        CORRADE_COMPARE(value, Math::Vector3<UnsignedShort>(315, 65201, 0));
 }
 #endif
 
@@ -808,7 +835,7 @@ void MeshGLTest::addVertexBufferMatrixMxN() {
 
 #ifndef MAGNUM_TARGET_GLES
 void MeshGLTest::addVertexBufferMatrixMxNd() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::vertex_attrib_64bit>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::vertex_attrib_64bit>())
         CORRADE_SKIP(Extensions::GL::ARB::vertex_attrib_64bit::string() + std::string(" is not available."));
 
     typedef Attribute<0, Matrix3x4d> Attribute;
@@ -834,30 +861,33 @@ void MeshGLTest::addVertexBufferMatrixMxNd() {
     MAGNUM_VERIFY_NO_ERROR();
 
     {
-        CORRADE_EXPECT_FAIL("Somehow only first two values are extracted");
+        CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & (Context::DetectedDriver::AMD|Context::DetectedDriver::NVidia), "Somehow only first two values are extracted");
         CORRADE_COMPARE(value, Math::Vector3<UnsignedShort>(315, 65201, 2576));
     }
-    /* This is wrong, but check if it's still the right wrong */
-    CORRADE_COMPARE(value, Math::Vector3<UnsignedShort>(315, 65201, 0));
+
+    /* This is wrong, but check if it's still the right wrong. Fails on AMD
+       15.201.1151 but seems to be fixed in 15.300.1025.0 */
+    if(Context::current().detectedDriver() & (Context::DetectedDriver::AMD|Context::DetectedDriver::NVidia))
+        CORRADE_COMPARE(value, Math::Vector3<UnsignedShort>(315, 65201, 0));
 }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
 void MeshGLTest::addVertexBufferUnsignedIntWithUnsignedShort() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::gpu_shader4>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::gpu_shader4>())
         CORRADE_SKIP(Extensions::GL::EXT::gpu_shader4::string() + std::string(" is not available."));
     #endif
 
     typedef Attribute<0, UnsignedInt> Attribute;
 
-    constexpr UnsignedShort data[] = { 0, 49563, 16583 };
+    constexpr UnsignedShort data[] = { 0, 49563, 2128, 3821, 16583 };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
     mesh.setBaseVertex(1)
-        .addVertexBuffer(buffer, 2, Attribute(Attribute::DataType::UnsignedShort));
+        .addVertexBuffer(buffer, 2, 2, Attribute(Attribute::DataType::UnsignedShort));
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -870,19 +900,19 @@ void MeshGLTest::addVertexBufferUnsignedIntWithUnsignedShort() {
 
 void MeshGLTest::addVertexBufferUnsignedIntWithShort() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::gpu_shader4>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::gpu_shader4>())
         CORRADE_SKIP(Extensions::GL::EXT::gpu_shader4::string() + std::string(" is not available."));
     #endif
 
     typedef Attribute<0, UnsignedInt> Attribute;
 
-    constexpr Short data[] = { 0, 24563, 16583 };
+    constexpr Short data[] = { 0, 24563, 2128, 3821, 16583 };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
     mesh.setBaseVertex(1)
-        .addVertexBuffer(buffer, 2, Attribute(Attribute::DataType::Short));
+        .addVertexBuffer(buffer, 2, 2, Attribute(Attribute::DataType::Short));
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -895,19 +925,19 @@ void MeshGLTest::addVertexBufferUnsignedIntWithShort() {
 
 void MeshGLTest::addVertexBufferIntWithUnsignedShort() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::gpu_shader4>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::gpu_shader4>())
         CORRADE_SKIP(Extensions::GL::EXT::gpu_shader4::string() + std::string(" is not available."));
     #endif
 
     typedef Attribute<0, Int> Attribute;
 
-    constexpr UnsignedShort data[] = { 0, 49563, 16583 };
+    constexpr UnsignedShort data[] = { 0, 49563, 2128, 3821, 16583 };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
     mesh.setBaseVertex(1)
-        .addVertexBuffer(buffer, 2, Attribute(Attribute::DataType::UnsignedShort));
+        .addVertexBuffer(buffer, 2, 2, Attribute(Attribute::DataType::UnsignedShort));
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -920,19 +950,19 @@ void MeshGLTest::addVertexBufferIntWithUnsignedShort() {
 
 void MeshGLTest::addVertexBufferIntWithShort() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::gpu_shader4>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::gpu_shader4>())
         CORRADE_SKIP(Extensions::GL::EXT::gpu_shader4::string() + std::string(" is not available."));
     #endif
 
     typedef Attribute<0, Int> Attribute;
 
-    constexpr Short data[] = { 0, 24563, -16583 };
+    constexpr Short data[] = { 0, 24563, 2128, 3821, -16583 };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
     mesh.setBaseVertex(1)
-        .addVertexBuffer(buffer, 2, Attribute(Attribute::DataType::Short));
+        .addVertexBuffer(buffer, 2, 2, Attribute(Attribute::DataType::Short));
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -946,10 +976,10 @@ void MeshGLTest::addVertexBufferIntWithShort() {
 
 void MeshGLTest::addVertexBufferFloatWithHalfFloat() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::half_float_vertex>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::half_float_vertex>())
         CORRADE_SKIP(Extensions::GL::ARB::half_float_vertex::string() + std::string(" is not supported."));
     #elif defined(MAGNUM_TARGET_GLES2)
-    if(!Context::current()->isExtensionSupported<Extensions::GL::OES::vertex_half_float>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::OES::vertex_half_float>())
         CORRADE_SKIP(Extensions::GL::OES::vertex_half_float::string() + std::string(" is not supported."));
     #endif
 
@@ -989,7 +1019,7 @@ void MeshGLTest::addVertexBufferFloatWithDouble() {
 
 void MeshGLTest::addVertexBufferVector3WithUnsignedInt10f11f11fRev() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::vertex_type_10f_11f_11f_rev>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::vertex_type_10f_11f_11f_rev>())
         CORRADE_SKIP(Extensions::GL::ARB::vertex_type_10f_11f_11f_rev::string() + std::string(" is not available."));
     #endif
 
@@ -1010,7 +1040,7 @@ void MeshGLTest::addVertexBufferVector3WithUnsignedInt10f11f11fRev() {
 #ifndef MAGNUM_TARGET_GLES2
 void MeshGLTest::addVertexBufferVector4WithUnsignedInt2101010Rev() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::vertex_type_2_10_10_10_rev>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::vertex_type_2_10_10_10_rev>())
         CORRADE_SKIP(Extensions::GL::ARB::vertex_type_2_10_10_10_rev::string() + std::string(" is not available."));
     #endif
 
@@ -1029,7 +1059,7 @@ void MeshGLTest::addVertexBufferVector4WithUnsignedInt2101010Rev() {
 
 void MeshGLTest::addVertexBufferVector4WithInt2101010Rev() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::vertex_type_2_10_10_10_rev>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::vertex_type_2_10_10_10_rev>())
         CORRADE_SKIP(Extensions::GL::ARB::vertex_type_2_10_10_10_rev::string() + std::string(" is not available."));
     #endif
 
@@ -1078,13 +1108,13 @@ void MeshGLTest::addVertexBufferLessVectorComponents() {
 void MeshGLTest::addVertexBufferNormalized() {
     typedef Attribute<0, Vector3> Attribute;
 
-    constexpr Color3ub data[] = { {}, {0, 128, 64}, {32, 156, 228} };
+    constexpr Color4ub data[] = { {}, {0, 128, 64}, {32, 156, 228} };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
     mesh.setBaseVertex(1)
-        .addVertexBuffer(buffer, 3, Attribute(Attribute::DataType::UnsignedByte, Attribute::DataOption::Normalized));
+        .addVertexBuffer(buffer, 4, Attribute(Attribute::DataType::UnsignedByte, Attribute::DataOption::Normalized), 1);
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -1103,7 +1133,7 @@ void MeshGLTest::addVertexBufferNormalized() {
 #ifndef MAGNUM_TARGET_GLES
 void MeshGLTest::addVertexBufferBGRA() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::vertex_array_bgra>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::vertex_array_bgra>())
         CORRADE_SKIP(Extensions::GL::ARB::vertex_array_bgra::string() + std::string(" is not available."));
     #endif
 
@@ -1140,29 +1170,54 @@ namespace {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 MultipleShader::MultipleShader() {
     #ifndef MAGNUM_TARGET_GLES
-    Shader vert(Version::GL210, Shader::Type::Vertex);
-    Shader frag(Version::GL210, Shader::Type::Fragment);
+    Shader vert(
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL210
+        #else
+        Version::GL310
+        #endif
+        , Shader::Type::Vertex);
+    Shader frag(
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL210
+        #else
+        Version::GL310
+        #endif
+        , Shader::Type::Fragment);
     #else
     Shader vert(Version::GLES200, Shader::Type::Vertex);
     Shader frag(Version::GLES200, Shader::Type::Fragment);
     #endif
 
-    vert.addSource("#if !defined(GL_ES) && __VERSION__ == 120\n"
-                   "#define mediump\n"
-                   "#endif\n"
-                   "attribute mediump vec4 position;\n"
-                   "attribute mediump vec3 normal;\n"
-                   "attribute mediump vec2 textureCoordinates;\n"
-                   "varying mediump vec4 valueInterpolated;\n"
-                   "void main() {\n"
-                   "    valueInterpolated = position + vec4(normal, 0.0) + vec4(textureCoordinates, 0.0, 0.0);\n"
-                   "    gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n"
-                   "}\n");
-    frag.addSource("#if !defined(GL_ES) && __VERSION__ == 120\n"
-                   "#define mediump\n"
-                   "#endif\n"
-                   "varying mediump vec4 valueInterpolated;\n"
-                   "void main() { gl_FragColor = valueInterpolated; }\n");
+    vert.addSource(
+        "#if !defined(GL_ES) && __VERSION__ == 120\n"
+        "#define mediump\n"
+        "#endif\n"
+        "#if defined(GL_ES) || __VERSION__ == 120\n"
+        "#define in attribute\n"
+        "#define out varying\n"
+        "#endif\n"
+        "in mediump vec4 position;\n"
+        "in mediump vec3 normal;\n"
+        "in mediump vec2 textureCoordinates;\n"
+        "out mediump vec4 valueInterpolated;\n"
+        "void main() {\n"
+        "    valueInterpolated = position + vec4(normal, 0.0) + vec4(textureCoordinates, 0.0, 0.0);\n"
+        "    gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n"
+        "}\n");
+    frag.addSource(
+        "#if !defined(GL_ES) && __VERSION__ == 120\n"
+        "#define mediump\n"
+        "#endif\n"
+        "#if defined(GL_ES) || __VERSION__ == 120\n"
+        "#define in varying\n"
+        "#define result gl_FragColor\n"
+        "#endif\n"
+        "in mediump vec4 valueInterpolated;\n"
+        "#if !defined(GL_ES) && __VERSION__ >= 130\n"
+        "out mediump vec4 result;\n"
+        "#endif\n"
+        "void main() { result = valueInterpolated; }\n");
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
 
@@ -1371,7 +1426,7 @@ void MeshGLTest::setIndexBufferRange() {
 
 void MeshGLTest::setIndexBufferUnsignedInt() {
     #ifdef MAGNUM_TARGET_GLES2
-    if(!Context::current()->isExtensionSupported<Extensions::GL::OES::element_index_uint>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::OES::element_index_uint>())
         CORRADE_SKIP(Extensions::GL::OES::element_index_uint::string() + std::string(" is not available."));
     #endif
 
@@ -1403,7 +1458,7 @@ void MeshGLTest::setIndexBufferUnsignedInt() {
 
 #ifndef MAGNUM_TARGET_GLES
 void MeshGLTest::setBaseVertex() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::draw_elements_base_vertex>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::draw_elements_base_vertex>())
         CORRADE_SKIP(Extensions::GL::ARB::draw_elements_base_vertex::string() + std::string(" is not available."));
 
     Buffer vertices;
@@ -1436,10 +1491,12 @@ void MeshGLTest::setInstanceCount() {
        it didn't generate any error and rendered something */
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::draw_instanced>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::draw_instanced>())
         CORRADE_SKIP(Extensions::GL::ARB::draw_instanced::string() + std::string(" is not available."));
     #elif defined(MAGNUM_TARGET_GLES2)
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ANGLE::instanced_arrays>() && !Context::current()->isExtensionSupported<Extensions::GL::EXT::draw_instanced>() && !Context::current()->isExtensionSupported<Extensions::GL::NV::draw_instanced>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ANGLE::instanced_arrays>() &&
+       !Context::current().isExtensionSupported<Extensions::GL::EXT::draw_instanced>() &&
+       !Context::current().isExtensionSupported<Extensions::GL::NV::draw_instanced>())
         CORRADE_SKIP("Required extension is not available.");
     #endif
 
@@ -1475,10 +1532,12 @@ void MeshGLTest::setInstanceCountIndexed() {
        it didn't generate any error and rendered something */
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::draw_instanced>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::draw_instanced>())
         CORRADE_SKIP(Extensions::GL::ARB::draw_instanced::string() + std::string(" is not available."));
     #elif defined(MAGNUM_TARGET_GLES2)
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ANGLE::instanced_arrays>() && !Context::current()->isExtensionSupported<Extensions::GL::EXT::draw_instanced>() && !Context::current()->isExtensionSupported<Extensions::GL::NV::draw_instanced>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ANGLE::instanced_arrays>() &&
+       !Context::current().isExtensionSupported<Extensions::GL::EXT::draw_instanced>() &&
+       !Context::current().isExtensionSupported<Extensions::GL::NV::draw_instanced>())
         CORRADE_SKIP("Required extension is not available.");
     #endif
 
@@ -1516,9 +1575,9 @@ void MeshGLTest::setInstanceCountBaseInstance() {
        value. I'm too lazy to invent proper test case, so I'll just check that
        it didn't generate any error and rendered something */
 
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::draw_instanced>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::draw_instanced>())
         CORRADE_SKIP(Extensions::GL::ARB::draw_instanced::string() + std::string(" is not available."));
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::base_instance>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::base_instance>())
         CORRADE_SKIP(Extensions::GL::ARB::base_instance::string() + std::string(" is not available."));
 
     typedef Attribute<0, Float> Attribute;
@@ -1549,9 +1608,9 @@ void MeshGLTest::setInstanceCountBaseInstanceIndexed() {
        same value. I'm too lazy to invent proper test case, so I'll just check
        that it didn't generate any error and rendered something */
 
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::draw_instanced>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::draw_instanced>())
         CORRADE_SKIP(Extensions::GL::ARB::draw_instanced::string() + std::string(" is not available."));
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::base_instance>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::base_instance>())
         CORRADE_SKIP(Extensions::GL::ARB::base_instance::string() + std::string(" is not available."));
 
     Buffer vertices;
@@ -1583,9 +1642,9 @@ void MeshGLTest::setInstanceCountBaseVertex() {
        value. I'm too lazy to invent proper test case, so I'll just check
        that it didn't generate any error and rendered something */
 
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::draw_instanced>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::draw_instanced>())
         CORRADE_SKIP(Extensions::GL::ARB::draw_instanced::string() + std::string(" is not available."));
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::draw_elements_base_vertex>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::draw_elements_base_vertex>())
         CORRADE_SKIP(Extensions::GL::ARB::draw_elements_base_vertex::string() + std::string(" is not available."));
 
     Buffer vertices;
@@ -1617,11 +1676,11 @@ void MeshGLTest::setInstanceCountBaseVertexBaseInstance() {
        value. I'm too lazy to invent proper test case, so I'll just check
        that it didn't generate any error and rendered something */
 
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::draw_instanced>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::draw_instanced>())
         CORRADE_SKIP(Extensions::GL::ARB::draw_instanced::string() + std::string(" is not available."));
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::draw_elements_base_vertex>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::draw_elements_base_vertex>())
         CORRADE_SKIP(Extensions::GL::ARB::draw_elements_base_vertex::string() + std::string(" is not available."));
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::base_instance>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::base_instance>())
         CORRADE_SKIP(Extensions::GL::ARB::base_instance::string() + std::string(" is not available."));
 
     Buffer vertices;
@@ -1651,14 +1710,18 @@ void MeshGLTest::setInstanceCountBaseVertexBaseInstance() {
 
 void MeshGLTest::addVertexBufferInstancedFloat() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::draw_instanced>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::draw_instanced>())
         CORRADE_SKIP(Extensions::GL::ARB::draw_instanced::string() + std::string(" is not available."));
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::instanced_arrays>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::instanced_arrays>())
         CORRADE_SKIP(Extensions::GL::ARB::instanced_arrays::string() + std::string(" is not available."));
     #elif defined(MAGNUM_TARGET_GLES2)
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ANGLE::instanced_arrays>() && !Context::current()->isExtensionSupported<Extensions::GL::EXT::instanced_arrays>() && !Context::current()->isExtensionSupported<Extensions::GL::NV::instanced_arrays>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ANGLE::instanced_arrays>() &&
+       !Context::current().isExtensionSupported<Extensions::GL::EXT::instanced_arrays>() &&
+       !Context::current().isExtensionSupported<Extensions::GL::NV::instanced_arrays>())
         CORRADE_SKIP("Required instancing extension is not available.");
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ANGLE::instanced_arrays>() && !Context::current()->isExtensionSupported<Extensions::GL::EXT::draw_instanced>() && !Context::current()->isExtensionSupported<Extensions::GL::NV::draw_instanced>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ANGLE::instanced_arrays>() &&
+       !Context::current().isExtensionSupported<Extensions::GL::EXT::draw_instanced>() &&
+       !Context::current().isExtensionSupported<Extensions::GL::NV::draw_instanced>())
         CORRADE_SKIP("Required drawing extension is not available.");
     #endif
 
@@ -1695,11 +1758,11 @@ void MeshGLTest::addVertexBufferInstancedFloat() {
 #ifndef MAGNUM_TARGET_GLES2
 void MeshGLTest::addVertexBufferInstancedInteger() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::draw_instanced>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::draw_instanced>())
         CORRADE_SKIP(Extensions::GL::ARB::draw_instanced::string() + std::string(" is not available."));
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::instanced_arrays>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::instanced_arrays>())
         CORRADE_SKIP(Extensions::GL::ARB::instanced_arrays::string() + std::string(" is not available."));
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::gpu_shader4>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::gpu_shader4>())
         CORRADE_SKIP(Extensions::GL::EXT::gpu_shader4::string() + std::string(" is not available."));
     #endif
 
@@ -1731,11 +1794,11 @@ void MeshGLTest::addVertexBufferInstancedInteger() {
 
 #ifndef MAGNUM_TARGET_GLES
 void MeshGLTest::addVertexBufferInstancedDouble() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::draw_instanced>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::draw_instanced>())
         CORRADE_SKIP(Extensions::GL::ARB::draw_instanced::string() + std::string(" is not available."));
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::instanced_arrays>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::instanced_arrays>())
         CORRADE_SKIP(Extensions::GL::ARB::instanced_arrays::string() + std::string(" is not available."));
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::vertex_attrib_64bit>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::vertex_attrib_64bit>())
         CORRADE_SKIP(Extensions::GL::ARB::vertex_attrib_64bit::string() + std::string(" is not available."));
 
     typedef Attribute<0, Double> Attribute;
@@ -1812,7 +1875,7 @@ template<class T> T MultiChecker::get(PixelFormat format, PixelType type) {
 
 void MeshGLTest::multiDraw() {
     #ifdef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::multi_draw_arrays>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::multi_draw_arrays>())
         Debug() << Extensions::GL::EXT::multi_draw_arrays::string() << "not supported, using fallback implementation";
     #endif
 
@@ -1836,7 +1899,7 @@ void MeshGLTest::multiDraw() {
 
 void MeshGLTest::multiDrawIndexed() {
     #ifdef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::multi_draw_arrays>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::multi_draw_arrays>())
         Debug() << Extensions::GL::EXT::multi_draw_arrays::string() << "not supported, using fallback implementation";
     #endif
 
@@ -1862,7 +1925,7 @@ void MeshGLTest::multiDrawIndexed() {
 
 #ifndef MAGNUM_TARGET_GLES
 void MeshGLTest::multiDrawBaseVertex() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::draw_elements_base_vertex>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::draw_elements_base_vertex>())
         CORRADE_SKIP(Extensions::GL::ARB::draw_elements_base_vertex::string() + std::string(" is not available."));
 
     Buffer vertices;

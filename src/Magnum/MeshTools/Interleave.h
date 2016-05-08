@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -44,11 +44,12 @@ namespace Implementation {
    resolution (the functions would otherwise need to be de-inlined to break
    cyclic dependencies) */
 struct AttributeCount {
-    template<class T, class ...U> typename std::enable_if<!std::is_convertible<T, std::size_t>::value, std::size_t>::type operator()(const T& first, const U&... next) const {
-        CORRADE_ASSERT(sizeof...(next) == 0 || AttributeCount{}(next...) == first.size() || AttributeCount{}(next...) == ~std::size_t(0), "MeshTools::interleave(): attribute arrays don't have the same length, expected" << first.size() << "but got" << AttributeCount{}(next...), 0);
-        #if defined(CORRADE_NO_ASSERT) && !defined(CORRADE_GRACEFUL_ASSERT)
-        static_cast<void>(sizeof...(next));
+    template<class T, class ...U> typename std::enable_if<!std::is_convertible<T, std::size_t>::value, std::size_t>::type operator()(const T& first, const U&...
+        #if !defined(CORRADE_NO_ASSERT) || defined(CORRADE_GRACEFUL_ASSERT)
+        next
         #endif
+    ) const {
+        CORRADE_ASSERT(sizeof...(next) == 0 || AttributeCount{}(next...) == first.size() || AttributeCount{}(next...) == ~std::size_t(0), "MeshTools::interleave(): attribute arrays don't have the same length, expected" << first.size() << "but got" << AttributeCount{}(next...), 0);
 
         return first.size();
     }
@@ -132,11 +133,8 @@ would be 21 bytes, causing possible performance loss.
     will be `std::vector` or `std::array`.
 
 @see @ref interleaveInto()
-@todo remove `std::enable_if` when deprecated overloads are removed
 */
-/* enable_if to avoid clash with overloaded function below */
-template<class T, class ...U> typename std::enable_if<!std::is_same<T, Mesh>::value, Containers::Array<char>>::type
-    interleave(const T& first, const U&... next)
+template<class T, class ...U> Containers::Array<char> interleave(const T& first, const U&... next)
 {
     /* Compute buffer size and stride */
     const std::size_t attributeCount = Implementation::AttributeCount{}(first, next...);

@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -93,7 +93,8 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,KHR,texture_compression_astc_ldr),
         _extension(GL,KHR,texture_compression_astc_hdr),
         _extension(GL,KHR,blend_equation_advanced),
-        _extension(GL,KHR,blend_equation_advanced_coherent)};
+        _extension(GL,KHR,blend_equation_advanced_coherent),
+        _extension(GL,KHR,no_error)};
     static const std::vector<Extension> extensions300{
         _extension(GL,ARB,map_buffer_range),
         _extension(GL,ARB,color_buffer_float),
@@ -250,6 +251,8 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,ANDROID,extension_pack_es31a),
         #endif
         _extension(GL,APPLE,texture_format_BGRA8888),
+        _extension(GL,ARM,shader_framebuffer_fetch),
+        _extension(GL,ARM,shader_framebuffer_fetch_depth_stencil),
         #ifdef CORRADE_TARGET_NACL
         _extension(GL,CHROMIUM,map_sub),
         #endif
@@ -259,6 +262,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,EXT,multi_draw_arrays),
         _extension(GL,EXT,debug_label),
         _extension(GL,EXT,debug_marker),
+        _extension(GL,EXT,shader_framebuffer_fetch),
         _extension(GL,EXT,disjoint_timer_query),
         _extension(GL,EXT,texture_sRGB_decode),
         _extension(GL,EXT,sRGB_write_control),
@@ -291,6 +295,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,KHR,robustness),
         _extension(GL,KHR,robust_buffer_access_behavior),
         _extension(GL,KHR,context_flush_control),
+        _extension(GL,KHR,no_error),
         _extension(GL,NV,read_buffer_front),
         _extension(GL,NV,read_depth),
         _extension(GL,NV,read_stencil),
@@ -377,13 +382,14 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         case Version::GL320: return extensions320;
         case Version::GL330: return extensions330;
         case Version::GL400: return extensions400;
-        /* case Version::GLES200: */
         case Version::GL410: return extensions410;
         case Version::GL420: return extensions420;
-        /* case Version::GLES300: */
         case Version::GL430: return extensions430;
         case Version::GL440: return extensions440;
         case Version::GL450: return extensions450;
+        case Version::GLES200:
+        case Version::GLES300:
+        case Version::GLES310: return empty;
         #else
         case Version::GLES200: return empty;
         case Version::GLES300:
@@ -403,16 +409,30 @@ const std::vector<Extension>& Extension::extensions(Version version) {
 
 Context* Context::_current = nullptr;
 
+bool Context::hasCurrent() { return _current; }
+
+Context& Context::current() {
+    CORRADE_ASSERT(_current, "Context::current(): no current context", *_current);
+    return *_current;
+}
+
 Context::Context(NoCreateT, Int argc, char** argv, void functionLoader()): _functionLoader{functionLoader}, _version{Version::None} {
     /* Parse arguments */
     Utility::Arguments args{"magnum"};
-    args.addOption("disable-workarounds").setHelpKey("disable-workarounds", "LIST")
-        .setHelp("disable-workarounds", "driver workarounds to disable\n      (see src/Magnum/Implementation/driverSpecific.cpp for detailed info)")
+    args.addOption("disable-workarounds")
+        .setHelp("disable-workarounds", "driver workarounds to disable\n      (see src/Magnum/Implementation/driverSpecific.cpp for detailed info)", "LIST")
+        .addOption("disable-extensions").setHelp("disable-extensions", "OpenGL extensions to disable", "LIST")
+        .setFromEnvironment("disable-workarounds")
+        .setFromEnvironment("disable-extensions")
         .parse(argc, argv);
 
     /* Disable driver workarounds */
     for(auto&& workaround: Utility::String::splitWithoutEmptyParts(args.value("disable-workarounds")))
         disableDriverWorkaround(workaround);
+
+    /* Disable extensions */
+    for(auto&& extension: Utility::String::splitWithoutEmptyParts(args.value("disable-extensions")))
+        _disabledExtensions.push_back(extension);
 }
 
 Context::Context(Context&& other): _version{std::move(other._version)},
@@ -447,7 +467,9 @@ bool Context::tryCreate() {
     /* Load GL function pointers */
     if(_functionLoader) _functionLoader();
 
-    GLint majorVersion, minorVersion;
+    /* Initialize to something predictable to avoid crashes on improperly
+       created contexts */
+    GLint majorVersion = 0, minorVersion = 0;
 
     /* Get version on ES 3.0+/WebGL 2.0+ */
     #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
@@ -623,12 +645,37 @@ bool Context::tryCreate() {
        more info) */
     Debug() << "Renderer:" << rendererString() << "by" << vendorString();
     Debug() << "OpenGL version:" << versionString();
+
+    /* Disable extensions as requested by the user */
+    if(!_disabledExtensions.empty()) {
+        Debug() << "Disabling extensions:";
+
+        /* Put remaining extensions into the hashmap for faster lookup */
+        std::unordered_map<std::string, Extension> allExtensions{std::move(futureExtensions)};
+        for(std::size_t i = 0; i != future; ++i)
+            for(const Extension& extension: Extension::extensions(versions[i]))
+                allExtensions.emplace(extension._string, extension);
+
+        /* Disable extensions that are known and supported and print a message
+           for each */
+        for(auto&& extension: _disabledExtensions) {
+            auto found = allExtensions.find(extension);
+            /** @todo Error message here? I should not clutter the output at this point */
+            if(found == allExtensions.end()) continue;
+
+            _extensionRequiredVersion[found->second._index] = Version::None;
+            Debug() << "   " << extension;
+        }
+    }
+
     _state = new Implementation::State(*this);
 
     /* Print a list of used workarounds */
-    Debug() << "Using driver workarounds:";
-    for(const auto& workaround: _driverWorkarounds)
-        if(!workaround.second) Debug() << "   " << workaround.first;
+    if(!_driverWorkarounds.empty()) {
+        Debug() << "Using driver workarounds:";
+        for(const auto& workaround: _driverWorkarounds)
+            if(!workaround.second) Debug() << "   " << workaround.first;
+    }
 
     /* Initialize functionality based on current OpenGL version and extensions */
     /** @todo Get rid of these */
@@ -637,6 +684,22 @@ bool Context::tryCreate() {
 
     /* Everything okay */
     return true;
+}
+
+std::string Context::vendorString() const {
+    return Utility::String::fromArray(reinterpret_cast<const char*>(glGetString(GL_VENDOR)));
+}
+
+std::string Context::rendererString() const {
+    return Utility::String::fromArray(reinterpret_cast<const char*>(glGetString(GL_RENDERER)));
+}
+
+std::string Context::versionString() const {
+    return Utility::String::fromArray(reinterpret_cast<const char*>(glGetString(GL_VERSION)));
+}
+
+std::string Context::shadingLanguageVersionString() const {
+    return Utility::String::fromArray(reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
 }
 
 std::vector<std::string> Context::shadingLanguageVersionStrings() const {
@@ -691,6 +754,19 @@ std::vector<std::string> Context::extensionStrings() const {
     return extensions;
 }
 
+bool Context::isVersionSupported(Version version) const {
+    #ifndef MAGNUM_TARGET_GLES
+    if(version == Version::GLES200)
+        return isExtensionSupported<Extensions::GL::ARB::ES2_compatibility>();
+    if(version == Version::GLES300)
+        return isExtensionSupported<Extensions::GL::ARB::ES3_compatibility>();
+    if(version == Version::GLES310)
+        return isExtensionSupported<Extensions::GL::ARB::ES3_1_compatibility>();
+    #endif
+
+    return _version >= version;
+}
+
 Version Context::supportedVersion(std::initializer_list<Version> versions) const {
     for(auto version: versions)
         if(isVersionSupported(version)) return version;
@@ -736,6 +812,7 @@ Debug& operator<<(Debug& debug, const Context::Flag value) {
     switch(value) {
         #define _c(value) case Context::Flag::value: return debug << "Context::Flag::" #value;
         _c(Debug)
+        _c(NoError)
         #ifndef MAGNUM_TARGET_GLES
         _c(RobustAccess)
         #endif

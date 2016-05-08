@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -53,7 +53,7 @@ template MAGNUM_EXPORT Vector2i maxTextureSize<2>();
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 template<> MAGNUM_EXPORT Vector3i maxTextureSize<3>() {
     #ifdef MAGNUM_TARGET_GLES2
-    if(!Context::current()->isExtensionSupported<Extensions::GL::OES::texture_3D>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::OES::texture_3D>())
         return {};
     #endif
     return {Vector2i(Implementation::maxTextureSideSize()), Implementation::max3DTextureDepth()};
@@ -90,6 +90,16 @@ template<UnsignedInt dimensions> Image<dimensions> Texture<dimensions>::subImage
 
 template<UnsignedInt dimensions> BufferImage<dimensions> Texture<dimensions>::subImage(const Int level, const RangeTypeFor<dimensions, Int>& range, BufferImage<dimensions>&& image, const BufferUsage usage) {
     this->subImage(level, range, image, usage);
+    return std::move(image);
+}
+
+template<UnsignedInt dimensions> CompressedImage<dimensions> Texture<dimensions>::compressedSubImage(const Int level, const RangeTypeFor<dimensions, Int>& range, CompressedImage<dimensions>&& image) {
+    compressedSubImage(level, range, image);
+    return std::move(image);
+}
+
+template<UnsignedInt dimensions> CompressedBufferImage<dimensions> Texture<dimensions>::compressedSubImage(const Int level, const RangeTypeFor<dimensions, Int>& range, CompressedBufferImage<dimensions>&& image, const BufferUsage usage) {
+    compressedSubImage(level, range, image, usage);
     return std::move(image);
 }
 

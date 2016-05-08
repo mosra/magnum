@@ -32,7 +32,8 @@ Contributors to Magnum library
 *   [@wivlaro](https://github.com/wivlaro) -- numerous bug reports, Mac OS X
     fixes, feature improvements
 *   Jonathan Hale ([@Squareys](https://github.com/Squareys)) -- Audio library
-    enhancements, bug reports, documentation improvements
+    enhancements, GlfwApplication implementation, bug reports, documentation
+    improvements
 *   Gerhard de Clercq -- Windows RT (Store/Phone) port
 
 Big thanks to everyone involved!

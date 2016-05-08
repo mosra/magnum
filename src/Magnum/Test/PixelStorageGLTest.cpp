@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -102,7 +102,7 @@ namespace {
 
 void PixelStorageGLTest::unpack2D() {
     #ifdef MAGNUM_TARGET_GLES2
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::unpack_subimage>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::unpack_subimage>())
         CORRADE_SKIP(Extensions::GL::EXT::unpack_subimage::string() + std::string(" is not supported."));
     #endif
 
@@ -119,7 +119,10 @@ void PixelStorageGLTest::unpack2D() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    Image2D actual{PixelFormat::RGB, PixelType::UnsignedByte};
+    /* Read into zero-initialized array to avoid comparing random memory in
+       padding bytes (confirmed on NVidia 355.11, AMD 15.300.1025.0) */
+    Image2D actual{PixelFormat::RGB, PixelType::UnsignedByte, {},
+        Containers::Array<char>{Containers::ValueInit, sizeof(ActualData)}};
 
     #ifndef MAGNUM_TARGET_GLES
     texture.image(0, actual);
@@ -131,18 +134,13 @@ void PixelStorageGLTest::unpack2D() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    /* Clear padding in the last row (the driver might leave them untouched,
-       confirmed on NVidia 355.11) */
-    CORRADE_VERIFY(actual.data().size() == Containers::ArrayView<const char>{ActualData}.size());
-    *(actual.data().end() - 1) = *(actual.data().end() - 2) = 0;
-
     CORRADE_COMPARE_AS(actual.data(), Containers::ArrayView<const char>{ActualData},
         TestSuite::Compare::Container);
 }
 
 void PixelStorageGLTest::pack2D() {
     #ifdef MAGNUM_TARGET_GLES2
-    if(!Context::current()->isExtensionSupported<Extensions::GL::NV::pack_subimage>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::NV::pack_subimage>())
         CORRADE_SKIP(Extensions::GL::NV::pack_subimage::string() + std::string(" is not supported."));
     #endif
 
@@ -217,9 +215,19 @@ void PixelStorageGLTest::unpack3D() {
     /* Testing mainly image height here, which is not available as pack
        parameter in ES */
     #ifndef MAGNUM_TARGET_GLES
-    Image3D actual = texture.image(0, {PixelFormat::RGB, PixelType::UnsignedByte});
+    /* Read into zero-initialized array to avoid comparing random memory in
+       padding bytes (confirmed on AMD 15.300.1025.0) */
+    Image3D actual{PixelFormat::RGB, PixelType::UnsignedByte, {},
+        Containers::Array<char>{Containers::ValueInit, sizeof(ActualData)}};
+
+    texture.image(0, actual);
 
     MAGNUM_VERIFY_NO_ERROR();
+
+    /* Clear padding in the last row (the driver might leave them untouched,
+       confirmed on NVidia 358.16) */
+    CORRADE_VERIFY(actual.data().size() == Containers::ArrayView<const char>{ActualData}.size());
+    *(actual.data().end() - 1) = *(actual.data().end() - 2) = 0;
 
     CORRADE_COMPARE_AS(actual.data(), Containers::ArrayView<const char>{ActualData},
         TestSuite::Compare::Container);
@@ -280,7 +288,7 @@ namespace {
 }
 
 void PixelStorageGLTest::unpackCompressed2D() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>())
         CORRADE_SKIP(Extensions::GL::ARB::compressed_texture_pixel_storage::string() + std::string(" is not supported."));
 
     CompressedPixelStorage storage;
@@ -307,7 +315,7 @@ void PixelStorageGLTest::unpackCompressed2D() {
 }
 
 void PixelStorageGLTest::packCompressed2D() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>())
         CORRADE_SKIP(Extensions::GL::ARB::compressed_texture_pixel_storage::string() + std::string(" is not supported."));
 
     CompressedImageView2D actual{CompressedPixelFormat::RGBAS3tcDxt3, {4, 4}, ActualCompressedData};
@@ -388,7 +396,7 @@ namespace {
 }
 
 void PixelStorageGLTest::unpackCompressed3D() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>())
         CORRADE_SKIP(Extensions::GL::ARB::compressed_texture_pixel_storage::string() + std::string(" is not supported."));
 
     CompressedPixelStorage storage;
@@ -416,7 +424,7 @@ void PixelStorageGLTest::unpackCompressed3D() {
 }
 
 void PixelStorageGLTest::packCompressed3D() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>())
         CORRADE_SKIP(Extensions::GL::ARB::compressed_texture_pixel_storage::string() + std::string(" is not supported."));
 
     CompressedImageView3D actual{CompressedPixelFormat::RGBAS3tcDxt3, {4, 4, 1}, ActualCompressedData};

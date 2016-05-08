@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
     Copyright © 2013 <https://github.com/ArEnSc>
     Copyright © 2014 Travis Watkins <https://github.com/amaranth>
@@ -46,7 +46,8 @@ namespace Magnum { namespace Platform {
 /**
 @brief Windowless CGL application
 
-Application for offscreen rendering using pure CGL.
+Application for offscreen rendering using pure CGL. Does not have any default
+framebuffer.
 
 This application library is available on desktop OpenGL on OS X. It
 is built if `WITH_WINDOWLESSCGLAPPLICATION` is enabled in CMake.

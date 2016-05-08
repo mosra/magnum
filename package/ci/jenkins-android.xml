@@ -40,6 +40,13 @@
   <customWorkspace>Magnum</customWorkspace>
   <axes>
     <hudson.matrix.TextAxis>
+      <name>gl</name>
+      <values>
+        <string>es2</string>
+        <string>es3</string>
+      </values>
+    </hudson.matrix.TextAxis>
+    <hudson.matrix.TextAxis>
       <name>toolchain</name>
       <values>
         <string>ARM</string>
@@ -61,22 +68,29 @@
 git submodule init
 git submodule update
 
+if [ ${gl} = "es2" ] ; then
+    gl_flags="-DTARGET_GLES=ON -DTARGET_GLES2=ON"
+elif [ ${gl} = "es3" ] ; then
+    gl_flags="-DTARGET_GLES=ON -DTARGET_GLES2=OFF"
+fi
+
 if [ "${compatibility}" = "deprecated" ] ; then
     deprecated_build_flag=ON
 else
     deprecated_build_flag=OFF
 fi
 
-mkdir -p build-android-${toolchain}-${compatibility}
-cd build-android-${toolchain}-${compatibility}
+mkdir -p build-android-${gl}-${toolchain}-${compatibility}
+cd build-android-${gl}-${toolchain}-${compatibility}
 
 cmake .. \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_MODULE_PATH="${WORKSPACE}/toolchains/modules" \
     -DCMAKE_TOOLCHAIN_FILE=../toolchains/generic/Android-${toolchain}.cmake \
     -DCMAKE_FIND_ROOT_PATH=${JENKINS_HOME}/filesystem/android-${toolchain}-${compatibility} \
-    -DCMAKE_INSTALL_PREFIX=${JENKINS_HOME}/filesystem/android-${toolchain}-${compatibility} \
+    -DCMAKE_PREFIX_PATH=${JENKINS_HOME}/filesystem/android-${toolchain}-${compatibility} \
+    -DCMAKE_INSTALL_PREFIX=${JENKINS_HOME}/filesystem/android-${gl}-${toolchain}-${compatibility} \
     -DBUILD_DEPRECATED=${deprecated_build_flag} \
+    ${gl_flags} \
   `#-DWITH_AUDIO=ON` \
     -DWITH_ANDROIDAPPLICATION=ON \
     -DWITH_EGLCONTEXT=ON \
@@ -108,7 +122,7 @@ ninja install/strip
     <runSequentially>true</runSequentially>
     <touchStoneCombinationFilter>
 <![CDATA[
-toolchain == "ARM" && compatibility == "deprecated"
+gl == "es2" && toolchain == "ARM" && compatibility == "deprecated"
 ]]>
     </touchStoneCombinationFilter>
     <touchStoneResultCondition>

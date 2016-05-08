@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -123,6 +123,39 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
             return Implementation::maxTextureSize<dimensions>();
         }
 
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Compressed block size
+         *
+         * If @p format is compressed, returns compressed block size (in
+         * pixels). For uncompressed formats returns zero vector.
+         * @see @ref compressedBlockDataSize(), @fn_gl{Getinternalformat} with
+         *      @def_gl{TEXTURE_COMPRESSED_BLOCK_WIDTH},
+         *      @def_gl{TEXTURE_COMPRESSED_BLOCK_HEIGHT}
+         * @requires_gl43 Extension @extension{ARB,internalformat_query2}
+         * @requires_gl Compressed texture queries are not available in OpenGL
+         *      ES.
+         */
+        static VectorTypeFor<dimensions, Int> compressedBlockSize(TextureFormat format) {
+            return DataHelper<dimensions>::compressedBlockSize(Implementation::textureTarget<dimensions>(), format);
+        }
+
+        /**
+         * @brief Compressed block data size
+         *
+         * If @p format is compressed, returns compressed block data size (in
+         * bytes). For uncompressed formats returns zero.
+         * @see @ref compressedBlockSize(), @fn_gl{Getinternalformat} with
+         *      @def_gl{TEXTURE_COMPRESSED_BLOCK_SIZE}
+         * @requires_gl43 Extension @extension{ARB,internalformat_query2}
+         * @requires_gl Compressed texture queries are not available in OpenGL
+         *      ES.
+         */
+        static Int compressedBlockDataSize(TextureFormat format) {
+            return AbstractTexture::compressedBlockDataSize(Implementation::textureTarget<dimensions>(), format);
+        }
+        #endif
+
         /**
          * @brief Wrap existing OpenGL texture object
          * @param id            OpenGL texture ID
@@ -160,6 +193,90 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @see @ref Texture(), @ref wrap()
          */
         explicit Texture(NoCreateT) noexcept: AbstractTexture{NoCreate, Implementation::textureTarget<dimensions>()} {}
+
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        /**
+         * @brief Bind level of texture to given image unit
+         * @param imageUnit Image unit
+         * @param level     Texture level
+         * @param access    Image access
+         * @param format    Image format
+         *
+         * Available only on 1D and 2D textures.
+         * @note This function is meant to be used only internally from
+         *      @ref AbstractShaderProgram subclasses. See its documentation
+         *      for more information.
+         * @see @ref bindImages(Int, std::initializer_list<AbstractTexture*>),
+         *      @ref bindImageLayered(), @ref unbindImage(), @ref unbindImages(),
+         *      @ref AbstractShaderProgram::maxImageUnits(),
+         *      @fn_gl{BindImageTexture}
+         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
+         * @requires_gles31 Shader image load/store is not available in OpenGL
+         *      ES 3.0 and older.
+         * @requires_gles Shader image load/store is not available in WebGL.
+         */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        template<UnsignedInt d = dimensions, class = typename std::enable_if<d == 1 || d == 2>::type>
+        #endif
+        void bindImage(Int imageUnit, Int level, ImageAccess access, ImageFormat format) {
+            bindImageInternal(imageUnit, level, false, 0, access, format);
+        }
+
+        /**
+         * @brief Bind level of given texture layer to given image unit
+         * @param imageUnit Image unit
+         * @param level     Texture level
+         * @param layer     Texture layer
+         * @param access    Image access
+         * @param format    Image format
+         *
+         * Available only on 3D textures.
+         * @note This function is meant to be used only internally from
+         *      @ref AbstractShaderProgram subclasses. See its documentation
+         *      for more information.
+         * @see @ref bindImages(Int, std::initializer_list<AbstractTexture*>),
+         *      @ref bindImageLayered(), @ref unbindImage(), @ref unbindImages(),
+         *      @ref AbstractShaderProgram::maxImageUnits(),
+         *      @fn_gl{BindImageTexture}
+         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
+         * @requires_gles31 Shader image load/store is not available in OpenGL
+         *      ES 3.0 and older.
+         * @requires_gles Shader image load/store is not available in WebGL.
+         */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        template<UnsignedInt d = dimensions, class = typename std::enable_if<d == 3>::type>
+        #endif
+        void bindImage(Int imageUnit, Int level, Int layer, ImageAccess access, ImageFormat format) {
+            bindImageInternal(imageUnit, level, false, layer, access, format);
+        }
+
+        /**
+         * @brief Bind level of layered texture to given image unit
+         * @param imageUnit Image unit
+         * @param level     Texture level
+         * @param access    Image access
+         * @param format    Image format
+         *
+         * Available only on 3D textures.
+         * @note This function is meant to be used only internally from
+         *      @ref AbstractShaderProgram subclasses. See its documentation
+         *      for more information.
+         * @see @ref bindImages(Int, std::initializer_list<AbstractTexture*>),
+         *      @ref bindImage(), @ref unbindImage(), @ref unbindImages(),
+         *      @ref AbstractShaderProgram::maxImageUnits(),
+         *      @fn_gl{BindImageTexture}
+         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
+         * @requires_gles31 Shader image load/store is not available in OpenGL
+         *      ES 3.0 and older.
+         * @requires_gles Shader image load/store is not available in WebGL.
+         */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        template<UnsignedInt d = dimensions, class = typename std::enable_if<d == 3>::type>
+        #endif
+        void bindImageLayered(Int imageUnit, Int level, ImageAccess access, ImageFormat format) {
+            bindImageInternal(imageUnit, level, true, 0, access, format);
+        }
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
@@ -625,7 +742,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      WebGL.
          */
         VectorTypeFor<dimensions, Int> imageSize(Int level) {
-            return DataHelper<dimensions>::imageSize(*this, _target, level);
+            return DataHelper<dimensions>::imageSize(*this, level);
         }
         #endif
 
@@ -827,6 +944,61 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @endcode
          */
         BufferImage<dimensions> subImage(Int level, const RangeTypeFor<dimensions, Int>& range, BufferImage<dimensions>&& image, BufferUsage usage);
+
+        /**
+         * @brief Read range of given compressed texture mip level to image
+         * @param level             Mip level
+         * @param range             Range to read
+         * @param image             Image where to put the compressed data
+         *
+         * Compression format and data size are taken from the texture.
+         * @see @fn_gl2{GetTextureLevelParameter,GetTexLevelParameter},
+         *      @fn_gl_extension{GetTextureLevelParameter,EXT,direct_state_access},
+         *      eventually @fn_gl{GetTexLevelParameter} with
+         *      @def_gl{TEXTURE_COMPRESSED_IMAGE_SIZE}, @def_gl{TEXTURE_INTERNAL_FORMAT},
+         *      then @fn_gl{GetCompressedTextureSubImage}
+         * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         * @requires_gl Texture image queries are not available in OpenGL ES or
+         *      WebGL. See @ref Framebuffer::read() for possible workaround.
+         */
+        void compressedSubImage(Int level, const RangeTypeFor<dimensions, Int>& range, CompressedImage<dimensions>& image) {
+            AbstractTexture::compressedSubImage<dimensions>(level, range, image);
+        }
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * CompressedImage2D image = texture.compressedSubImage(0, rect, {});
+         * @endcode
+         */
+        CompressedImage<dimensions> compressedSubImage(Int level, const RangeTypeFor<dimensions, Int>& range, CompressedImage<dimensions>&& image);
+
+        /**
+         * @brief Read range of given compressed texture mip level to buffer image
+         * @param level             Mip level
+         * @param range             Range to read
+         * @param image             Buffer image where to put the compressed data
+         * @param usage             Buffer usage
+         *
+         * See @ref compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedBufferImage&, BufferUsage)
+         * for more information.
+         * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         * @requires_gl Texture image queries are not available in OpenGL ES or
+         *      WebGL. See @ref Framebuffer::read() for possible workaround.
+         */
+        void compressedSubImage(Int level, const RangeTypeFor<dimensions, Int>& range, CompressedBufferImage<dimensions>& image, BufferUsage usage) {
+            AbstractTexture::compressedSubImage<dimensions>(level, range, image, usage);
+        }
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * CompressedBufferImage2D image = texture.compressedSubImage(0, rect, {}, BufferUsage::StaticRead);
+         * @endcode
+         */
+        CompressedBufferImage<dimensions> compressedSubImage(Int level, const RangeTypeFor<dimensions, Int>& range, CompressedBufferImage<dimensions>&& image, BufferUsage usage);
         #endif
 
         /**

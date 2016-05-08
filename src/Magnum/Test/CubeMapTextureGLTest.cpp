@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -31,6 +31,9 @@
 #endif
 #include "Magnum/CubeMapTexture.h"
 #include "Magnum/Image.h"
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+#include "Magnum/ImageFormat.h"
+#endif
 #include "Magnum/PixelFormat.h"
 #include "Magnum/TextureFormat.h"
 #include "Magnum/Math/Color.h"
@@ -47,6 +50,9 @@ struct CubeMapTextureGLTest: AbstractOpenGLTester {
     void wrap();
 
     void bind();
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    void bindImage();
+    #endif
 
     void sampling();
     void samplingSRGBDecode();
@@ -74,6 +80,7 @@ struct CubeMapTextureGLTest: AbstractOpenGLTester {
     void imageBuffer();
     void compressedImageBuffer();
     #endif
+    void immutableCompressedImage();
     #ifndef MAGNUM_TARGET_GLES
     void fullImageQuery();
     void compressedFullImageQuery();
@@ -89,7 +96,9 @@ struct CubeMapTextureGLTest: AbstractOpenGLTester {
     #endif
     #ifndef MAGNUM_TARGET_GLES
     void subImageQuery();
+    void compressedSubImageQuery();
     void subImageQueryBuffer();
+    void compressedSubImageQueryBuffer();
     #endif
 
     void generateMipmap();
@@ -113,6 +122,9 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
               &CubeMapTextureGLTest::wrap,
 
               &CubeMapTextureGLTest::bind,
+              #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+              &CubeMapTextureGLTest::bindImage,
+              #endif
 
               &CubeMapTextureGLTest::sampling,
               &CubeMapTextureGLTest::samplingSRGBDecode,
@@ -140,6 +152,7 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
               &CubeMapTextureGLTest::imageBuffer,
               &CubeMapTextureGLTest::compressedImageBuffer,
               #endif
+              &CubeMapTextureGLTest::immutableCompressedImage,
               #ifndef MAGNUM_TARGET_GLES
               &CubeMapTextureGLTest::fullImageQuery,
               &CubeMapTextureGLTest::compressedFullImageQuery,
@@ -155,7 +168,9 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
               #endif
               #ifndef MAGNUM_TARGET_GLES
               &CubeMapTextureGLTest::subImageQuery,
+              &CubeMapTextureGLTest::compressedSubImageQuery,
               &CubeMapTextureGLTest::subImageQueryBuffer,
+              &CubeMapTextureGLTest::compressedSubImageQueryBuffer,
               #endif
 
               &CubeMapTextureGLTest::generateMipmap,
@@ -167,7 +182,7 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
     _dataOffset = 8;
     #ifdef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_WEBGL
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::unpack_subimage>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::unpack_subimage>())
     #endif
     {
         _dataStorage = {};
@@ -176,7 +191,7 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
-    if(Context::current()->isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>())
+    if(Context::current().isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>())
     {
         _compressedDataStorage = CompressedPixelStorage{}
             .setCompressedBlockSize({4, 4, 1})
@@ -195,6 +210,7 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
         _compressedDataStorage = {};
         #endif
         _compressedDataOffset = 0;
+        _compressedFullDataOffset = 0;
     }
 }
 
@@ -261,6 +277,41 @@ void CubeMapTextureGLTest::bind() {
     MAGNUM_VERIFY_NO_ERROR();
 }
 
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+void CubeMapTextureGLTest::bindImage() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())
+        CORRADE_SKIP(Extensions::GL::ARB::shader_image_load_store::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current().isVersionSupported(Version::GLES310))
+        CORRADE_SKIP("OpenGL ES 3.1 is not supported.");
+    #endif
+
+    CubeMapTexture texture;
+    texture.setStorage(1, TextureFormat::RGBA8, Vector2i{32})
+        .bindImage(2, 0, CubeMapCoordinate::NegativeX, ImageAccess::ReadWrite, ImageFormat::RGBA8);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    texture.bindImageLayered(3, 0, ImageAccess::ReadWrite, ImageFormat::RGBA8);
+
+    AbstractTexture::unbindImage(2);
+    AbstractTexture::unbindImage(3);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    #ifndef MAGNUM_TARGET_GLES
+    AbstractTexture::bindImages(1, {&texture, nullptr, &texture});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    AbstractTexture::unbindImages(1, 3);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    #endif
+}
+#endif
+
 void CubeMapTextureGLTest::sampling() {
     CubeMapTexture texture;
     texture.setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
@@ -292,10 +343,10 @@ void CubeMapTextureGLTest::sampling() {
 
 void CubeMapTextureGLTest::samplingSRGBDecode() {
     #ifdef MAGNUM_TARGET_GLES2
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::sRGB>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::sRGB>())
         CORRADE_SKIP(Extensions::GL::EXT::sRGB::string() + std::string(" is not supported."));
     #endif
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_sRGB_decode>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_sRGB_decode>())
         CORRADE_SKIP(Extensions::GL::EXT::texture_sRGB_decode::string() + std::string(" is not supported."));
 
     CubeMapTexture texture;
@@ -307,7 +358,7 @@ void CubeMapTextureGLTest::samplingSRGBDecode() {
 #ifndef MAGNUM_TARGET_GLES2
 void CubeMapTextureGLTest::samplingSwizzle() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_swizzle>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_swizzle>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_swizzle::string() + std::string(" is not supported."));
     #endif
 
@@ -318,7 +369,7 @@ void CubeMapTextureGLTest::samplingSwizzle() {
 }
 #else
 void CubeMapTextureGLTest::samplingMaxLevel() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::APPLE::texture_max_level>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::APPLE::texture_max_level>())
         CORRADE_SKIP(Extensions::GL::APPLE::texture_max_level::string() + std::string(" is not supported."));
 
     CubeMapTexture texture;
@@ -328,8 +379,8 @@ void CubeMapTextureGLTest::samplingMaxLevel() {
 }
 
 void CubeMapTextureGLTest::samplingCompare() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::shadow_samplers>() ||
-       !Context::current()->isExtensionSupported<Extensions::GL::NV::shadow_samplers_cube>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::shadow_samplers>() ||
+       !Context::current().isExtensionSupported<Extensions::GL::NV::shadow_samplers_cube>())
         CORRADE_SKIP(Extensions::GL::NV::shadow_samplers_cube::string() + std::string(" is not supported."));
 
     CubeMapTexture texture;
@@ -343,10 +394,10 @@ void CubeMapTextureGLTest::samplingCompare() {
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void CubeMapTextureGLTest::samplingBorderInteger() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_integer>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_integer>())
         CORRADE_SKIP(Extensions::GL::EXT::texture_integer::string() + std::string(" is not supported."));
     #else
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_border_clamp>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_border_clamp>())
         CORRADE_SKIP(Extensions::GL::EXT::texture_border_clamp::string() + std::string(" is not supported."));
     #endif
 
@@ -364,10 +415,10 @@ void CubeMapTextureGLTest::samplingBorderInteger() {
 #ifndef MAGNUM_TARGET_GLES2
 void CubeMapTextureGLTest::samplingDepthStencilMode() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::stencil_texturing>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::stencil_texturing>())
         CORRADE_SKIP(Extensions::GL::ARB::stencil_texturing::string() + std::string(" is not supported."));
     #else
-    if(!Context::current()->isVersionSupported(Version::GLES310))
+    if(!Context::current().isVersionSupported(Version::GLES310))
         CORRADE_SKIP("OpenGL ES 3.1 not supported.");
     #endif
 
@@ -380,8 +431,8 @@ void CubeMapTextureGLTest::samplingDepthStencilMode() {
 
 #ifdef MAGNUM_TARGET_GLES
 void CubeMapTextureGLTest::samplingBorder() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::NV::texture_border_clamp>() &&
-       !Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_border_clamp>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::NV::texture_border_clamp>() &&
+       !Context::current().isExtensionSupported<Extensions::GL::EXT::texture_border_clamp>())
         CORRADE_SKIP("No required extension is supported.");
 
     CubeMapTexture texture;
@@ -400,7 +451,7 @@ void CubeMapTextureGLTest::storage() {
 
     #ifndef MAGNUM_TARGET_GLES2
     #ifdef MAGNUM_TARGET_GLES
-    if(!Context::current()->isVersionSupported(Version::GLES310))
+    if(!Context::current().isVersionSupported(Version::GLES310))
         CORRADE_SKIP("OpenGL ES 3.1 not supported, skipping image size testing");
     #endif
 
@@ -431,14 +482,14 @@ namespace {
 
 void CubeMapTextureGLTest::image() {
     CubeMapTexture texture;
-    texture.setImage(CubeMapTexture::Coordinate::PositiveX, 0, TextureFormat::RGBA8,
+    texture.setImage(CubeMapCoordinate::PositiveX, 0, TextureFormat::RGBA8,
         ImageView2D{_dataStorage, PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), unsafeSuffix(Data, _dataOffset)});
 
     MAGNUM_VERIFY_NO_ERROR();
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
-    Image2D image = texture.image(CubeMapTexture::Coordinate::PositiveX, 0,
+    Image2D image = texture.image(CubeMapCoordinate::PositiveX, 0,
         {_dataStorage, PixelFormat::RGBA, PixelType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -452,24 +503,31 @@ void CubeMapTextureGLTest::image() {
 
 void CubeMapTextureGLTest::compressedImage() {
     #ifndef MAGNUM_TARGET_WEBGL
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_compression_s3tc>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_compression_s3tc>())
         CORRADE_SKIP(Extensions::GL::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
     #else
-    if(!Context::current()->isExtensionSupported<Extensions::GL::WEBGL::compressed_texture_s3tc>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::WEBGL::compressed_texture_s3tc>())
         CORRADE_SKIP(Extensions::GL::WEBGL::compressed_texture_s3tc::string() + std::string(" is not supported."));
     #endif
 
-    CubeMapTexture texture;
-    texture.setCompressedImage(CubeMapTexture::Coordinate::PositiveX, 0, CompressedImageView2D{
+    const CompressedImageView2D view{
         #ifndef MAGNUM_TARGET_GLES
         _compressedDataStorage,
         #endif
-        CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4}, unsafeSuffix(CompressedData, _compressedDataOffset)});
+        CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4}, unsafeSuffix(CompressedData, _compressedDataOffset)};
+
+    CubeMapTexture texture;
+    texture.setCompressedImage(CubeMapCoordinate::PositiveX, 0, view)
+           .setCompressedImage(CubeMapCoordinate::NegativeX, 0, view)
+           .setCompressedImage(CubeMapCoordinate::PositiveY, 0, view)
+           .setCompressedImage(CubeMapCoordinate::NegativeY, 0, view)
+           .setCompressedImage(CubeMapCoordinate::PositiveZ, 0, view)
+           .setCompressedImage(CubeMapCoordinate::NegativeZ, 0, view);
 
     MAGNUM_VERIFY_NO_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
-    CompressedImage2D image = texture.compressedImage(CubeMapTexture::Coordinate::PositiveX, 0, {_compressedDataStorage});
+    CompressedImage2D image = texture.compressedImage(CubeMapCoordinate::PositiveX, 0, {_compressedDataStorage});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -483,14 +541,14 @@ void CubeMapTextureGLTest::compressedImage() {
 #ifndef MAGNUM_TARGET_GLES2
 void CubeMapTextureGLTest::imageBuffer() {
     CubeMapTexture texture;
-    texture.setImage(CubeMapTexture::Coordinate::PositiveX, 0, TextureFormat::RGBA8, BufferImage2D{
+    texture.setImage(CubeMapCoordinate::PositiveX, 0, TextureFormat::RGBA8, BufferImage2D{
         _dataStorage, PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), unsafeSuffix(Data, _dataOffset), BufferUsage::StaticDraw});
 
     MAGNUM_VERIFY_NO_ERROR();
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
-    BufferImage2D image = texture.image(CubeMapTexture::Coordinate::PositiveX, 0,
+    BufferImage2D image = texture.image(CubeMapCoordinate::PositiveX, 0,
         {_dataStorage, PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
@@ -504,24 +562,31 @@ void CubeMapTextureGLTest::imageBuffer() {
 
 void CubeMapTextureGLTest::compressedImageBuffer() {
     #ifndef MAGNUM_TARGET_WEBGL
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_compression_s3tc>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_compression_s3tc>())
         CORRADE_SKIP(Extensions::GL::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
     #else
-    if(!Context::current()->isExtensionSupported<Extensions::GL::WEBGL::compressed_texture_s3tc>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::WEBGL::compressed_texture_s3tc>())
         CORRADE_SKIP(Extensions::GL::WEBGL::compressed_texture_s3tc::string() + std::string(" is not supported."));
     #endif
 
-    CubeMapTexture texture;
-    texture.setCompressedImage(CubeMapTexture::Coordinate::PositiveX, 0, CompressedBufferImage2D{
+    CompressedBufferImage2D buffer{
         #ifndef MAGNUM_TARGET_GLES
         _compressedDataStorage,
         #endif
-        CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4}, unsafeSuffix(CompressedData, _compressedDataOffset), BufferUsage::StaticDraw});
+        CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4}, unsafeSuffix(CompressedData, _compressedDataOffset), BufferUsage::StaticDraw};
+
+    CubeMapTexture texture;
+    texture.setCompressedImage(CubeMapCoordinate::PositiveX, 0, buffer)
+           .setCompressedImage(CubeMapCoordinate::NegativeX, 0, buffer)
+           .setCompressedImage(CubeMapCoordinate::PositiveY, 0, buffer)
+           .setCompressedImage(CubeMapCoordinate::NegativeY, 0, buffer)
+           .setCompressedImage(CubeMapCoordinate::PositiveZ, 0, buffer)
+           .setCompressedImage(CubeMapCoordinate::NegativeZ, 0, buffer);
 
     MAGNUM_VERIFY_NO_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
-    CompressedBufferImage2D image = texture.compressedImage(CubeMapTexture::Coordinate::PositiveX, 0,
+    CompressedBufferImage2D image = texture.compressedImage(CubeMapCoordinate::PositiveX, 0,
         {_compressedDataStorage}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
@@ -533,6 +598,53 @@ void CubeMapTextureGLTest::compressedImageBuffer() {
     #endif
 }
 #endif
+
+void CubeMapTextureGLTest::immutableCompressedImage() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_storage>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_storage::string() + std::string(" is not supported."));
+    #elif defined(MAGNUM_TARGET_GLES2)
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_storage>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_storage::string() + std::string(" is not supported."));
+    #endif
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_compression_s3tc>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
+
+    /* Testing that GL_TEXTURE_COMPRESSED_IMAGE_SIZE is consistent and returns
+       the same value regardless whether the texture is immutable or not. (Not
+       the case, at least on NVidia 358.16, compare with compressedImage() test
+       case that just calls setImage() six times instead of setStorage() and
+       gets value that's six times smaller. I couldn't find anything in the
+       specs so I suspect it's a bug). */
+
+    const CompressedImageView2D view{
+        #ifndef MAGNUM_TARGET_GLES
+        _compressedDataStorage,
+        #endif
+        CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4}, unsafeSuffix(CompressedData, _compressedDataOffset)};
+
+    CubeMapTexture texture;
+    texture.setStorage(1, TextureFormat::CompressedRGBAS3tcDxt3, Vector2i{4})
+           .setCompressedSubImage(CubeMapCoordinate::PositiveX, 0, {}, view)
+           .setCompressedSubImage(CubeMapCoordinate::NegativeX, 0, {}, view)
+           .setCompressedSubImage(CubeMapCoordinate::PositiveY, 0, {}, view)
+           .setCompressedSubImage(CubeMapCoordinate::NegativeY, 0, {}, view)
+           .setCompressedSubImage(CubeMapCoordinate::PositiveZ, 0, {}, view)
+           .setCompressedSubImage(CubeMapCoordinate::NegativeZ, 0, {}, view);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    #ifndef MAGNUM_TARGET_GLES
+    CompressedImage2D image = texture.compressedImage(CubeMapCoordinate::NegativeY, 0, {});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(image.size(), Vector2i{4});
+    CORRADE_COMPARE_AS(
+        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}),
+        Containers::ArrayView<const UnsignedByte>{CompressedData}, TestSuite::Compare::Container);
+    #endif
+}
 
 #ifndef MAGNUM_TARGET_GLES
 namespace {
@@ -589,7 +701,7 @@ namespace {
 }
 
 void CubeMapTextureGLTest::fullImageQuery() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::direct_state_access>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::direct_state_access>())
         CORRADE_SKIP(Extensions::GL::ARB::direct_state_access::string() + std::string(" is not supported."));
 
     CubeMapTexture texture;
@@ -610,9 +722,9 @@ void CubeMapTextureGLTest::fullImageQuery() {
 }
 
 void CubeMapTextureGLTest::compressedFullImageQuery() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::direct_state_access>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::direct_state_access>())
         CORRADE_SKIP(Extensions::GL::ARB::direct_state_access::string() + std::string(" is not supported."));
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_compression_s3tc>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_compression_s3tc>())
         CORRADE_SKIP(Extensions::GL::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
 
     CubeMapTexture texture;
@@ -632,7 +744,7 @@ void CubeMapTextureGLTest::compressedFullImageQuery() {
 }
 
 void CubeMapTextureGLTest::fullImageQueryBuffer() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::direct_state_access>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::direct_state_access>())
         CORRADE_SKIP(Extensions::GL::ARB::direct_state_access::string() + std::string(" is not supported."));
 
     CubeMapTexture texture;
@@ -653,9 +765,9 @@ void CubeMapTextureGLTest::fullImageQueryBuffer() {
 }
 
 void CubeMapTextureGLTest::compressedFullImageQueryBuffer() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::direct_state_access>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::direct_state_access>())
         CORRADE_SKIP(Extensions::GL::ARB::direct_state_access::string() + std::string(" is not supported."));
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_compression_s3tc>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_compression_s3tc>())
         CORRADE_SKIP(Extensions::GL::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
 
     CubeMapTexture texture;
@@ -715,16 +827,26 @@ namespace {
 
 void CubeMapTextureGLTest::subImage() {
     CubeMapTexture texture;
-    texture.setImage(CubeMapTexture::Coordinate::PositiveX, 0, TextureFormat::RGBA8,
+    texture.setImage(CubeMapCoordinate::PositiveX, 0, TextureFormat::RGBA8,
         ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero));
-    texture.setSubImage(CubeMapTexture::Coordinate::PositiveX, 0, Vector2i(1), ImageView2D{
+    texture.setImage(CubeMapCoordinate::NegativeX, 0, TextureFormat::RGBA8,
+        ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero));
+    texture.setImage(CubeMapCoordinate::PositiveY, 0, TextureFormat::RGBA8,
+        ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero));
+    texture.setImage(CubeMapCoordinate::NegativeY, 0, TextureFormat::RGBA8,
+        ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero));
+    texture.setImage(CubeMapCoordinate::PositiveZ, 0, TextureFormat::RGBA8,
+        ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero));
+    texture.setImage(CubeMapCoordinate::NegativeZ, 0, TextureFormat::RGBA8,
+        ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero));
+    texture.setSubImage(CubeMapCoordinate::PositiveX, 0, Vector2i(1), ImageView2D{
         _dataStorage, PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), unsafeSuffix(Data, _dataOffset)});
 
     MAGNUM_VERIFY_NO_ERROR();
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
-    Image2D image = texture.image(CubeMapTexture::Coordinate::PositiveX, 0, {PixelFormat::RGBA, PixelType::UnsignedByte});
+    Image2D image = texture.image(CubeMapCoordinate::PositiveX, 0, {PixelFormat::RGBA, PixelType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -737,17 +859,61 @@ void CubeMapTextureGLTest::subImage() {
 
 void CubeMapTextureGLTest::compressedSubImage() {
     #ifndef MAGNUM_TARGET_WEBGL
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_compression_s3tc>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_compression_s3tc>())
         CORRADE_SKIP(Extensions::GL::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
     #else
-    if(!Context::current()->isExtensionSupported<Extensions::GL::WEBGL::compressed_texture_s3tc>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::WEBGL::compressed_texture_s3tc>())
         CORRADE_SKIP(Extensions::GL::WEBGL::compressed_texture_s3tc::string() + std::string(" is not supported."));
     #endif
 
+    #ifndef MAGNUM_TARGET_GLES
+    /* Compressed pixel storage for array textures is underspecified. If the
+       extension is supported, first test with default values to ensure we are
+       not that far off, then continue as usual */
+    if(Context::current().isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>()) {
+        CubeMapTexture texture;
+        texture.setCompressedImage(CubeMapCoordinate::PositiveX, 0,
+            CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+        texture.setCompressedImage(CubeMapCoordinate::NegativeX, 0,
+            CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+        texture.setCompressedImage(CubeMapCoordinate::PositiveY, 0,
+            CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+        texture.setCompressedImage(CubeMapCoordinate::NegativeY, 0,
+            CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+        texture.setCompressedImage(CubeMapCoordinate::PositiveZ, 0,
+            CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+        texture.setCompressedImage(CubeMapCoordinate::NegativeZ, 0,
+            CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+        texture.setCompressedSubImage(CubeMapCoordinate::PositiveX, 0, Vector2i{4}, CompressedImageView2D{
+            CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{4}, CompressedData});
+
+        MAGNUM_VERIFY_NO_ERROR();
+
+        CompressedImage2D image = texture.compressedImage(CubeMapCoordinate::PositiveX, 0, {});
+
+        MAGNUM_VERIFY_NO_ERROR();
+
+        CORRADE_COMPARE(image.size(), Vector2i{12});
+        CORRADE_COMPARE_AS(
+            (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}),
+            Containers::ArrayView<const UnsignedByte>{CompressedSubDataComplete}, TestSuite::Compare::Container);
+    }
+    #endif
+
     CubeMapTexture texture;
-    texture.setCompressedImage(CubeMapTexture::Coordinate::PositiveX, 0,
+    texture.setCompressedImage(CubeMapCoordinate::PositiveX, 0,
         CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
-    texture.setCompressedSubImage(CubeMapTexture::Coordinate::PositiveX, 0, Vector2i{4}, CompressedImageView2D{
+    texture.setCompressedImage(CubeMapCoordinate::NegativeX, 0,
+        CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+    texture.setCompressedImage(CubeMapCoordinate::PositiveY, 0,
+        CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+    texture.setCompressedImage(CubeMapCoordinate::NegativeY, 0,
+        CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+    texture.setCompressedImage(CubeMapCoordinate::PositiveZ, 0,
+        CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+    texture.setCompressedImage(CubeMapCoordinate::NegativeZ, 0,
+        CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+    texture.setCompressedSubImage(CubeMapCoordinate::PositiveX, 0, Vector2i{4}, CompressedImageView2D{
         #ifndef MAGNUM_TARGET_GLES
         _compressedDataStorage,
         #endif
@@ -756,30 +922,46 @@ void CubeMapTextureGLTest::compressedSubImage() {
     MAGNUM_VERIFY_NO_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
-    CompressedImage2D image = texture.compressedImage(CubeMapTexture::Coordinate::PositiveX, 0, {});
+    CompressedImage2D image = texture.compressedImage(CubeMapCoordinate::PositiveX, 0, {});
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i{12});
-    CORRADE_COMPARE_AS(
-        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}),
-        Containers::ArrayView<const UnsignedByte>{CompressedSubDataComplete}, TestSuite::Compare::Container);
+
+    {
+        CORRADE_EXPECT_FAIL_IF(Context::current().isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>() && Context::current().isExtensionSupported<Extensions::GL::ARB::direct_state_access>() && (Context::current().detectedDriver() & Context::DetectedDriver::NVidia),
+            "Non-default compressed pixel storage for cube map textures behaves weirdly on NVidia for client-memory images when using ARB_direct_state_access");
+
+        CORRADE_COMPARE_AS(
+            (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}),
+            Containers::ArrayView<const UnsignedByte>{CompressedSubDataComplete}, TestSuite::Compare::Container);
+    }
     #endif
 }
 
 #ifndef MAGNUM_TARGET_GLES2
 void CubeMapTextureGLTest::subImageBuffer() {
     CubeMapTexture texture;
-    texture.setImage(CubeMapTexture::Coordinate::PositiveX, 0, TextureFormat::RGBA8,
+    texture.setImage(CubeMapCoordinate::PositiveX, 0, TextureFormat::RGBA8,
         ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero));
-    texture.setSubImage(CubeMapTexture::Coordinate::PositiveX, 0, Vector2i(1), BufferImage2D{
+    texture.setImage(CubeMapCoordinate::NegativeX, 0, TextureFormat::RGBA8,
+        ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero));
+    texture.setImage(CubeMapCoordinate::PositiveY, 0, TextureFormat::RGBA8,
+        ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero));
+    texture.setImage(CubeMapCoordinate::NegativeY, 0, TextureFormat::RGBA8,
+        ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero));
+    texture.setImage(CubeMapCoordinate::PositiveZ, 0, TextureFormat::RGBA8,
+        ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero));
+    texture.setImage(CubeMapCoordinate::NegativeZ, 0, TextureFormat::RGBA8,
+        ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero));
+    texture.setSubImage(CubeMapCoordinate::PositiveX, 0, Vector2i(1), BufferImage2D{
         _dataStorage, PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), unsafeSuffix(Data, _dataOffset), BufferUsage::StaticDraw});
 
     MAGNUM_VERIFY_NO_ERROR();
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
-    BufferImage2D image = texture.image(CubeMapTexture::Coordinate::PositiveX, 0, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
+    BufferImage2D image = texture.image(CubeMapCoordinate::PositiveX, 0, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -791,17 +973,27 @@ void CubeMapTextureGLTest::subImageBuffer() {
 
 void CubeMapTextureGLTest::compressedSubImageBuffer() {
     #ifndef MAGNUM_TARGET_WEBGL
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::texture_compression_s3tc>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_compression_s3tc>())
         CORRADE_SKIP(Extensions::GL::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
     #else
-    if(!Context::current()->isExtensionSupported<Extensions::GL::WEBGL::compressed_texture_s3tc>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::WEBGL::compressed_texture_s3tc>())
         CORRADE_SKIP(Extensions::GL::WEBGL::compressed_texture_s3tc::string() + std::string(" is not supported."));
     #endif
 
     CubeMapTexture texture;
-    texture.setCompressedImage(CubeMapTexture::Coordinate::PositiveX, 0,
+    texture.setCompressedImage(CubeMapCoordinate::PositiveX, 0,
         CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
-    texture.setCompressedSubImage(CubeMapTexture::Coordinate::PositiveX, 0, Vector2i{4}, CompressedBufferImage2D{
+    texture.setCompressedImage(CubeMapCoordinate::NegativeX, 0,
+        CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+    texture.setCompressedImage(CubeMapCoordinate::PositiveY, 0,
+        CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+    texture.setCompressedImage(CubeMapCoordinate::NegativeY, 0,
+        CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+    texture.setCompressedImage(CubeMapCoordinate::PositiveZ, 0,
+        CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+    texture.setCompressedImage(CubeMapCoordinate::NegativeZ, 0,
+        CompressedImageView2D{CompressedPixelFormat::RGBAS3tcDxt3, Vector2i{12}, CompressedZero});
+    texture.setCompressedSubImage(CubeMapCoordinate::PositiveX, 0, Vector2i{4}, CompressedBufferImage2D{
         #ifndef MAGNUM_TARGET_GLES
         _compressedDataStorage,
         #endif
@@ -810,7 +1002,7 @@ void CubeMapTextureGLTest::compressedSubImageBuffer() {
     MAGNUM_VERIFY_NO_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
-    CompressedBufferImage2D image = texture.compressedImage(CubeMapTexture::Coordinate::PositiveX, 0,
+    CompressedBufferImage2D image = texture.compressedImage(CubeMapCoordinate::PositiveX, 0,
         {}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data<UnsignedByte>();
 
@@ -824,10 +1016,10 @@ void CubeMapTextureGLTest::compressedSubImageBuffer() {
 
 #ifndef MAGNUM_TARGET_GLES
 void CubeMapTextureGLTest::subImageQuery() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>())
         CORRADE_SKIP(Extensions::GL::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
     /* I'm too lazy to call setSubImage() six times */
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::direct_state_access>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::direct_state_access>())
         CORRADE_SKIP(Extensions::GL::ARB::direct_state_access::string() + std::string(" is not supported."));
 
     CubeMapTexture texture;
@@ -847,11 +1039,49 @@ void CubeMapTextureGLTest::subImageQuery() {
         Containers::ArrayView<const UnsignedByte>{Data}, TestSuite::Compare::Container);
 }
 
-void CubeMapTextureGLTest::subImageQueryBuffer() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>())
+void CubeMapTextureGLTest::compressedSubImageQuery() {
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>())
         CORRADE_SKIP(Extensions::GL::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
     /* I'm too lazy to call setSubImage() six times */
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::direct_state_access>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::direct_state_access>())
+        CORRADE_SKIP(Extensions::GL::ARB::direct_state_access::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_compression_s3tc>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
+
+    CubeMapTexture texture;
+    texture.setStorage(1, TextureFormat::CompressedRGBAS3tcDxt3, Vector2i{12})
+        .setCompressedSubImage(0, {}, CompressedImageView3D{CompressedPixelFormat::RGBAS3tcDxt3, {12, 12, 1}, CompressedSubDataComplete});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    /* Test also without compressed pixel storage to ensure that both size
+       computations work */
+    if(Context::current().isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>()) {
+        CompressedImage3D image = texture.compressedSubImage(0, Range3Di::fromSize({4, 4, 0}, {4, 4, 1}), {});
+
+        MAGNUM_VERIFY_NO_ERROR();
+
+        CORRADE_COMPARE(image.size(), (Vector3i{4, 4, 1}));
+        CORRADE_COMPARE_AS(
+            (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}),
+            Containers::ArrayView<const UnsignedByte>{CompressedData}, TestSuite::Compare::Container);
+    }
+
+    CompressedImage3D image = texture.compressedSubImage(0, Range3Di::fromSize({4, 4, 0}, {4, 4, 1}), {_compressedDataStorage});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(image.size(), (Vector3i{4, 4, 1}));
+    CORRADE_COMPARE_AS(
+        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}.suffix(_compressedDataOffset)),
+        Containers::ArrayView<const UnsignedByte>{CompressedData}, TestSuite::Compare::Container);
+}
+
+void CubeMapTextureGLTest::subImageQueryBuffer() {
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>())
+        CORRADE_SKIP(Extensions::GL::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
+    /* I'm too lazy to call setSubImage() six times */
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::direct_state_access>())
         CORRADE_SKIP(Extensions::GL::ARB::direct_state_access::string() + std::string(" is not supported."));
 
     CubeMapTexture texture;
@@ -869,21 +1099,57 @@ void CubeMapTextureGLTest::subImageQueryBuffer() {
     CORRADE_COMPARE(image.size(), Vector3i(2, 2, 1));
     CORRADE_COMPARE_AS(imageData.suffix(_dataOffset), Containers::ArrayView<const UnsignedByte>{Data}, TestSuite::Compare::Container);
 }
+
+void CubeMapTextureGLTest::compressedSubImageQueryBuffer() {
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>())
+        CORRADE_SKIP(Extensions::GL::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
+    /* I'm too lazy to call setSubImage() six times */
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::direct_state_access>())
+        CORRADE_SKIP(Extensions::GL::ARB::direct_state_access::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_compression_s3tc>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
+
+    CubeMapTexture texture;
+    texture.setStorage(1, TextureFormat::CompressedRGBAS3tcDxt3, Vector2i{12})
+           .setCompressedSubImage(0, {}, CompressedImageView3D{CompressedPixelFormat::RGBAS3tcDxt3, {12, 12, 1}, CompressedSubDataComplete});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    /* Test also without compressed pixel storage to ensure that both size
+       computations work */
+    if(Context::current().isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>()) {
+        CompressedBufferImage3D image = texture.compressedSubImage(0, Range3Di::fromSize({4, 4, 0}, {4, 4, 1}), {}, BufferUsage::StaticRead);
+        const auto imageData = image.buffer().data<UnsignedByte>();
+
+        MAGNUM_VERIFY_NO_ERROR();
+
+        CORRADE_COMPARE(image.size(), (Vector3i{4, 4, 1}));
+        CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedByte>{CompressedData}, TestSuite::Compare::Container);
+    }
+
+    CompressedBufferImage3D image = texture.compressedSubImage(0, Range3Di::fromSize({4, 4, 0}, {4, 4, 1}), {_compressedDataStorage}, BufferUsage::StaticRead);
+    const auto imageData = image.buffer().data<UnsignedByte>();
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(image.size(), (Vector3i{4, 4, 1}));
+    CORRADE_COMPARE_AS(imageData.suffix(_compressedDataOffset), Containers::ArrayView<const UnsignedByte>{CompressedData}, TestSuite::Compare::Container);
+}
 #endif
 
 void CubeMapTextureGLTest::generateMipmap() {
     CubeMapTexture texture;
-    texture.setImage(CubeMapTexture::Coordinate::PositiveX, 0, TextureFormat::RGBA8,
+    texture.setImage(CubeMapCoordinate::PositiveX, 0, TextureFormat::RGBA8,
         ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(32)));
-    texture.setImage(CubeMapTexture::Coordinate::PositiveY, 0, TextureFormat::RGBA8,
+    texture.setImage(CubeMapCoordinate::PositiveY, 0, TextureFormat::RGBA8,
         ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(32)));
-    texture.setImage(CubeMapTexture::Coordinate::PositiveZ, 0, TextureFormat::RGBA8,
+    texture.setImage(CubeMapCoordinate::PositiveZ, 0, TextureFormat::RGBA8,
         ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(32)));
-    texture.setImage(CubeMapTexture::Coordinate::NegativeX, 0, TextureFormat::RGBA8,
+    texture.setImage(CubeMapCoordinate::NegativeX, 0, TextureFormat::RGBA8,
         ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(32)));
-    texture.setImage(CubeMapTexture::Coordinate::NegativeY, 0, TextureFormat::RGBA8,
+    texture.setImage(CubeMapCoordinate::NegativeY, 0, TextureFormat::RGBA8,
         ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(32)));
-    texture.setImage(CubeMapTexture::Coordinate::NegativeZ, 0, TextureFormat::RGBA8,
+    texture.setImage(CubeMapCoordinate::NegativeZ, 0, TextureFormat::RGBA8,
         ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(32)));
 
     /** @todo How to test this on ES? */

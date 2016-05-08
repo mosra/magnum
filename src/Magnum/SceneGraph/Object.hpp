@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -212,8 +212,10 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
     }
     std::vector<std::reference_wrapper<Object<Transformation>>> jointObjects(objects);
 
+    #if !defined(CORRADE_NO_ASSERT) || defined(CORRADE_GRACEFUL_ASSERT)
     /* Scene object */
     const Scene<Transformation>* scene = this->scene();
+    #endif
 
     /* Nearest common ancestor not yet implemented - assert this is done on scene */
     CORRADE_ASSERT(scene == this, "SceneGraph::Object::transformationMatrices(): currently implemented only for Scene", {});

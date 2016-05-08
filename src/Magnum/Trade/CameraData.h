@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -77,7 +77,7 @@ class CameraData {
 };
 
 inline CameraData::CameraData(const Rad fov, const Float near, const Float far, const void* const importerState) noexcept:
-    _fov{fov != fov ? Rad{35.0_degf} : fov},
+    _fov{fov != fov ? Rad{Deg{35.0f}} : fov},
     _near{near != near ? 0.01f : near},
     _far{far != far ? 100.0f : far},
     _importerState{importerState} {}

@@ -900,6 +900,11 @@ typedef khronos_ssize_t GLsizeiptr;
 #define GL_BGRA_EXT 0x80E1
 #define GL_BGRA8_EXT 0x93A1
 
+/* GL_ARM_shader_framebuffer_fetch */
+
+#define GL_FETCH_PER_SAMPLE_ARM 0x8F65
+#define GL_FRAGMENT_SHADER_FRAMEBUFFER_FETCH_MRT_ARM 0x8F66
+
 /* GL_EXT_texture_filter_anisotropic */
 
 #define GL_TEXTURE_MAX_ANISOTROPY_EXT 0x84FE
@@ -925,6 +930,10 @@ typedef khronos_ssize_t GLsizeiptr;
 #define GL_VERTEX_ARRAY_OBJECT_EXT 0x9154
 #define GL_SAMPLER 0x82E6
 #define GL_TRANSFORM_FEEDBACK 0x8E22
+
+/* GL_EXT_shader_framebuffer_fetch */
+
+#define GL_FRAGMENT_SHADER_DISCARDS_SAMPLES_EXT 0x8A52
 
 /* GL_EXT_disjoint_timer_query */
 
@@ -1279,6 +1288,10 @@ typedef khronos_ssize_t GLsizeiptr;
 #define GL_CONTEXT_RELEASE_BEHAVIOR_KHR 0x82FB
 #define GL_CONTEXT_RELEASE_BEHAVIOR_FLUSH_KHR 0x82FC
 #define GL_NONE 0
+
+/* GL_KHR_no_error */
+
+#define GL_CONTEXT_FLAG_NO_ERROR_BIT_KHR 0x00000008
 
 /* GL_NV_texture_border_clamp */
 

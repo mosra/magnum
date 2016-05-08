@@ -1,7 +1,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -33,6 +33,7 @@ set(MagnumFont_HEADERS
 add_library(MagnumFontObjects OBJECT
     ${MagnumFont_SRCS}
     ${MagnumFont_HEADERS})
+target_include_directories(MagnumFontObjects PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
 if(NOT BUILD_PLUGINS_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(MagnumFontObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
@@ -62,7 +63,7 @@ if(BUILD_GL_TESTS)
         add_library(MagnumMagnumFontTestLib STATIC
             ${MagnumFont_SRCS}
             ${MagnumFont_HEADERS})
-        set_target_properties(MagnumMagnumFontTestLib PROPERTIES COMPILE_FLAGS "-DMAGNUM_TGAIMPORTER_BUILD_STATIC")
+        target_compile_definitions(MagnumMagnumFontTestLib PRIVATE "MAGNUM_TGAIMPORTER_BUILD_STATIC")
     else()
         add_library(MagnumMagnumFontTestLib STATIC $<TARGET_OBJECTS:MagnumFontObjects>)
     endif()
@@ -71,5 +72,5 @@ if(BUILD_GL_TESTS)
     add_subdirectory(Test)
 endif()
 
-# Magnum MagnumFont library for superprojects
-set(MAGNUM_MAGNUMFONT_LIBRARY MagnumFont CACHE INTERNAL "")
+# Magnum MagnumFont target alias for superprojects
+add_library(Magnum::MagnumFont ALIAS MagnumFont)

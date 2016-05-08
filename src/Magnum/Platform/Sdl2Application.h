@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -31,6 +31,7 @@
 
 #include <memory>
 #include <Corrade/Corrade.h>
+#include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/EnumSet.h>
 
 #include "Magnum/Magnum.h"
@@ -94,14 +95,13 @@ variable in `toolchains/generic/Emscripten.cmake` to path where Emscripten is
 installed. Default is `/usr/emscripten`.
 
 Then create build directory and run `cmake` and build/install commands in it.
-The toolchain needs access to its platform file, so be sure to properly set
-**absolute** path to `toolchains/modules/` directory containing `Platform/Emscripten.cmake`.
+The toolchain needs access to its platform file, so be sure to properly set **absolute**
+path to `toolchains/modules/` directory containing `Platform/Emscripten.cmake`.
 Set `CMAKE_INSTALL_PREFIX` to have the files installed in proper location (a
 webserver, e.g.  `/srv/http/emscripten`).
 
     mkdir build-emscripten && cd build-emscripten
     cmake .. \
-        -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
         -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Emscripten.cmake"
         -DCMAKE_INSTALL_PREFIX=/srv/http/emscripten
     cmake --build .
@@ -109,6 +109,36 @@ webserver, e.g.  `/srv/http/emscripten`).
 
 You can then open `MyApplication.html` in Chrome or Firefox (through webserver,
 e.g. `http://localhost/emscripten/MyApplication.html`).
+
+## Bootstrap application for iOS
+
+Fully contained base application using @ref Sdl2Application for both desktop
+and iOS build along with pre-filled `*.plist` is available in `base-ios` branch
+of [Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap) repository,
+download it as [tar.gz](https://github.com/mosra/magnum-bootstrap/archive/base-ios.tar.gz)
+or [zip](https://github.com/mosra/magnum-bootstrap/archive/base-ios.zip) file.
+After extracting the downloaded archive, you can do the desktop build in
+the same way as above. For the iOS build you also need to put the contents of
+toolchains repository from https://github.com/mosra/toolchains in `toolchains/`
+subdirectory.
+
+Then create build directory and run `cmake` to generate the Xcode project. Set
+`CMAKE_OSX_ROOT` to SDK you want to target and enable all desired architectures
+in `CMAKE_OSX_ARCHITECTURES`. The toolchain needs access to its platform file,
+so be sure to properly set **absolute** path to `toolchains/modules/` directory
+containing `Platform/iOS.cmake`. Set `CMAKE_PREFIX_PATH` to the directory where
+you have all the dependencies.
+
+    mkdir build-ios && cd build-ios
+    cmake .. \
+        -DCMAKE_TOOLCHAIN_FILE=../toolchains/generic/iOS.cmake \
+        -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk \
+        -DCMAKE_OSX_ARCHITECTURES="arm64;armv7;armv7s" \
+        -DCMAKE_PREFIX_PATH=~/ios-libs \
+        -G Xcode
+
+You can then open the generated project file in Xcode and build/deploy it from
+there.
 
 ## Bootstrap application for Windows RT
 
@@ -138,10 +168,9 @@ final package along with a PowerShell script for easy local installation.
 For CMake you need to copy `FindSDL2.cmake` from `modules/` directory in
 Magnum source to `modules/` dir in your project (so it is able to find SDL2).
 In case of Emscripten you need also `FindOpenGLES2.cmake`. Request
-`Sdl2Application` component, add `${MAGNUM_SDL2APPLICATION_INCLUDE_DIRS}`
-to include path and link to `${MAGNUM_SDL2APPLICATION_LIBRARIES}`. If no other
-application is requested, you can also use generic `${MAGNUM_APPLICATION_INCLUDE_DIRS}`
-and `${MAGNUM_APPLICATION_LIBRARIES}` aliases to simplify porting. Again, see
+`Sdl2Application` component of `Magnum` package and link to
+`Magnum::Sdl2Application` target. If no other application is requested, you can
+also use generic `Magnum::Application` alias to simplify porting. Again, see
 @ref building and @ref cmake for more information.
 
 In C++ code you need to implement at least @ref drawEvent() to be able to draw on the
@@ -199,6 +228,53 @@ The application redirects all output (thus also @ref Corrade::Utility::Debug "De
 @ref Corrade::Utility::Warning "Warning" and @ref Corrade::Utility::Error "Error")
 to JavaScript console.
 
+## Usage with iOS
+
+A lot of options for iOS build (such as HiDPI/Retina support, supported display
+orientation, icons, splash screen...) is specified through the `*.plist` file.
+CMake uses its own template that can be configured using various `MACOSX_BUNDLE_*`
+variables, but many options are missing from there and you are much better off
+rolling your own template and passing **abosolute** path to it to CMake using
+the `MACOSX_BUNDLE_INFO_PLIST` property. Below are contents of the `*.plist`
+file used in the bootstrap application, requesting OpenGL ES 2.0 and
+advertising Retina support:
+@code
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>en-US</string>
+    <key>CFBundleExecutable</key>
+    <string>${MACOSX_BUNDLE_EXECUTABLE_NAME}</string>
+    <key>CFBundleIdentifier</key>
+    <string>cz.mosra.magnum.MyApplication</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>My Application</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+
+    <key>UIRequiredDeviceCapabilities</key>
+    <array>
+        <string>opengles-2</string>
+    </array>
+    <key>NSHighResolutionCapable</key>
+    <true/>
+</dict>
+</plist>
+@endcode
+
+Some other options can be configured from runtime when creating the SDL2
+application window, see documentation of particular value for details:
+
+-   @ref Configuration::WindowFlag::AllowHighDpi allows creating HiDPI/Retina
+    drawable
+-   @ref Configuration::WindowFlag::Borderless hides the menu bar
+-   @ref Configuration::WindowFlag::Resizable makes the application respond to
+    device orientation changes
+
 ## Usage with Windows RT
 
 For Windows RT you need to provide logo images and splash screen, all
@@ -255,6 +331,10 @@ class Sdl2Application {
         class KeyEvent;
         class MouseEvent;
         class MouseMoveEvent;
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        class TextInputEvent;
+        class TextEditingEvent;
+        #endif
 
         /**
          * @brief Default constructor
@@ -340,6 +420,15 @@ class Sdl2Application {
         bool tryCreateContext(const Configuration& configuration);
 
         /** @{ @name Screen handling */
+
+        /**
+         * @brief Window size
+         *
+         * Window size to which all input event coordinates can be related.
+         * Note that especially on HiDPI systems the reported window size might
+         * not be the same as framebuffer size.
+         */
+        Vector2i windowSize();
 
         /**
          * @brief Swap buffers
@@ -496,6 +585,70 @@ class Sdl2Application {
 
         /*@}*/
 
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        /** @{ @name Text input handling */
+    public:
+        /**
+         * @brief Whether text input is active
+         *
+         * If text input is active, text input events go to @ref textInputEvent()
+         * and @ref textEditingEvent().
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         * @see @ref startTextInput(), @ref stopTextInput()
+         */
+        bool isTextInputActive() { return SDL_IsTextInputActive(); }
+
+        /**
+         * @brief Start text input
+         *
+         * Starts text input that will go to @ref textInputEvent() and
+         * @ref textEditingEvent().
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         * @see @ref stopTextInput(), @ref isTextInputActive(),
+         *      @ref setTextInputRect()
+         */
+        void startTextInput() { SDL_StartTextInput(); }
+
+        /**
+         * @brief Stop text input
+         *
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         * @see @ref startTextInput(), @ref isTextInputActive(), @ref textInputEvent()
+         *      @ref textEditingEvent()
+         */
+        void stopTextInput() { SDL_StopTextInput(); }
+
+        /**
+         * @brief Set text input rectangle
+         *
+         * The @p rect defines an area where the text is being displayed, for
+         * example to hint the system where to place on-screen keyboard.
+         */
+        void setTextInputRect(const Range2Di& rect);
+
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    protected:
+    #else
+    private:
+    #endif
+        /**
+         * @brief Text input event
+         *
+         * Called when text input is active and the text is being input.
+         * @see @ref isTextInputActive()
+         */
+        virtual void textInputEvent(TextInputEvent& event);
+
+        /**
+         * @brief Text editing event
+         *
+         * Called when text input is active and the text is being edited.
+         */
+        virtual void textEditingEvent(TextEditingEvent& event);
+
+        /*@}*/
+        #endif
+
     private:
         enum class Flag: UnsignedByte {
             Redraw = 1 << 0,
@@ -529,13 +682,11 @@ class Sdl2Application {
         Flags _flags;
 };
 
-CORRADE_ENUMSET_OPERATORS(Sdl2Application::Flags)
-
 /**
 @brief Configuration
 
-The created window is always centered with double-buffered OpenGL context and
-24bit depth buffer.
+The created window is always with double-buffered OpenGL context and 24bit
+depth buffer.
 @see @ref Sdl2Application(), @ref createContext(), @ref tryCreateContext()
 */
 class Sdl2Application::Configuration {
@@ -578,8 +729,28 @@ class Sdl2Application::Configuration {
          * @see @ref WindowFlags, @ref setWindowFlags()
          */
         enum class WindowFlag: Uint32 {
-            Resizable = SDL_WINDOW_RESIZABLE,       /**< Resizable window */
+            /**
+             * Resizable window. On iOS this allows the application to respond
+             * to display orientation changes. Implement @ref viewportEvent()
+             * to react to the resizing events.
+             */
+            Resizable = SDL_WINDOW_RESIZABLE,
+
             Fullscreen = SDL_WINDOW_FULLSCREEN,     /**< Fullscreen window */
+
+            /** No window decoration. On iOS this hides the menu bar. */
+            Borderless = SDL_WINDOW_BORDERLESS,
+
+            #ifndef CORRADE_TARGET_EMSCRIPTEN
+            /**
+             * Allow high DPI. On iOS you also have to set the
+             * `NSHighResolutionCapable` entry in the `*.plist` file to make
+             * it working.
+             * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+             */
+            AllowHighDpi = SDL_WINDOW_ALLOW_HIGHDPI,
+            #endif
+
             Hidden = SDL_WINDOW_HIDDEN,             /**< Hidden window */
             Maximized = SDL_WINDOW_MAXIMIZED,       /**< Maximized window */
             Minimized = SDL_WINDOW_MINIMIZED,       /**< Minimized window */
@@ -602,11 +773,12 @@ class Sdl2Application::Configuration {
         /*implicit*/ Configuration();
         ~Configuration();
 
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_IOS)
         /**
          * @brief Window title
          *
-         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"
+         *      and @ref CORRADE_TARGET_IOS "iOS".
          */
         std::string title() const { return _title; }
         #endif
@@ -616,11 +788,12 @@ class Sdl2Application::Configuration {
          * @return Reference to self (for method chaining)
          *
          * Default is `"Magnum SDL2 Application"`.
-         * @note In @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" this function
-         *      does nothing and is included only for compatibility. You need
-         *      to set the title separately in application's HTML markup.
+         * @note In @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" and
+         *      @ref CORRADE_TARGET_IOS "iOS" this function does nothing and is
+         *      included only for compatibility. You need to set the title
+         *      separately in platform-specific configuration file.
          */
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_IOS)
         Configuration& setTitle(std::string title) {
             _title = std::move(title);
             return *this;
@@ -636,7 +809,10 @@ class Sdl2Application::Configuration {
          * @brief Set window size
          * @return Reference to self (for method chaining)
          *
-         * Default is `{800, 600}`.
+         * Default is `{800, 600}`. On iOS it defaults to a "reasonable" size
+         * based on whether HiDPI support is enabled using
+         * @ref WindowFlag::AllowHighDpi, but not necessarily native display
+         * resolution (you have to set it explicitly).
          */
         Configuration& setSize(const Vector2i& size) {
             _size = size;
@@ -741,7 +917,7 @@ class Sdl2Application::Configuration {
         #endif
 
     private:
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_IOS)
         std::string _title;
         #endif
         Vector2i _size;
@@ -753,11 +929,6 @@ class Sdl2Application::Configuration {
         bool _sRGBCapable;
         #endif
 };
-
-#ifndef CORRADE_TARGET_EMSCRIPTEN
-CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::Flags)
-#endif
-CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::WindowFlags)
 
 /**
 @brief Base for input events
@@ -804,6 +975,9 @@ class Sdl2Application::InputEvent {
         /** @brief Moving is not allowed */
         InputEvent& operator=(InputEvent&&) = delete;
 
+        /** @brief Whether the event is accepted */
+        constexpr bool isAccepted() const { return _accepted; }
+
         /**
          * @brief Set event as accepted
          *
@@ -813,9 +987,6 @@ class Sdl2Application::InputEvent {
          * each event ignored and thus propagated.
          */
         void setAccepted(bool accepted = true) { _accepted = accepted; }
-
-        /** @brief Whether the event is accepted */
-        constexpr bool isAccepted() const { return _accepted; }
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
     protected:
@@ -843,6 +1014,8 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
          * @see @ref key()
          */
         enum class Key: SDL_Keycode {
+            Unknown = SDLK_UNKNOWN,     /**< Unknown key */
+
             Enter = SDLK_RETURN,        /**< Enter */
             Esc = SDLK_ESCAPE,          /**< Escape */
 
@@ -850,6 +1023,14 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
             Down = SDLK_DOWN,           /**< Down arrow */
             Left = SDLK_LEFT,           /**< Left arrow */
             Right = SDLK_RIGHT,         /**< Right arrow */
+            Home = SDLK_HOME,           /**< Home */
+            End = SDLK_END,             /**< End */
+            PageUp = SDLK_PAGEUP,       /**< Page up */
+            PageDown = SDLK_PAGEDOWN,   /**< Page down */
+            Backspace = SDLK_BACKSPACE, /**< Backspace */
+            Insert = SDLK_INSERT,       /**< Insert */
+            Delete = SDLK_DELETE,       /**< Delete */
+
             F1 = SDLK_F1,               /**< F1 */
             F2 = SDLK_F2,               /**< F2 */
             F3 = SDLK_F3,               /**< F3 */
@@ -862,18 +1043,16 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
             F10 = SDLK_F10,             /**< F10 */
             F11 = SDLK_F11,             /**< F11 */
             F12 = SDLK_F12,             /**< F12 */
-            Home = SDLK_HOME,           /**< Home */
-            End = SDLK_END,             /**< End */
-            PageUp = SDLK_PAGEUP,       /**< Page up */
-            PageDown = SDLK_PAGEDOWN,   /**< Page down */
 
             Space = SDLK_SPACE,         /**< Space */
+            Tab = SDLK_TAB,             /**< Tab */
             Comma = SDLK_COMMA,         /**< Comma */
             Period = SDLK_PERIOD,       /**< Period */
             Minus = SDLK_MINUS,         /**< Minus */
             Plus = SDLK_PLUS,           /**< Plus */
             Slash = SDLK_SLASH,         /**< Slash */
             Percent = SDLK_PERCENT,     /**< Percent */
+            Semicolon = SDLK_SEMICOLON, /**< Semicolon */
             Equal = SDLK_EQUALS,        /**< Equal */
 
             Zero = SDLK_0,              /**< Zero */
@@ -1030,6 +1209,105 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
         Modifiers _modifiers;
 };
 
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+/**
+@brief Text input event
+
+@note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+@see @ref TextEditingEvent, @ref textInputEvent()
+*/
+class Sdl2Application::TextInputEvent {
+    friend Sdl2Application;
+
+    public:
+        /** @brief Copying is not allowed */
+        TextInputEvent(const TextInputEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        TextInputEvent(TextInputEvent&&) = delete;
+
+        /** @brief Copying is not allowed */
+        TextInputEvent& operator=(const TextInputEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        TextInputEvent& operator=(TextInputEvent&&) = delete;
+
+        /** @brief Whether the event is accepted */
+        constexpr bool isAccepted() const { return _accepted; }
+
+        /**
+         * @brief Set event as accepted
+         *
+         * If the event is ignored (i.e., not set as accepted), it might be
+         * propagated elsewhere, for example to another screen when using
+         * @ref BasicScreenedApplication "ScreenedApplication". By default is
+         * each event ignored and thus propagated.
+         */
+        void setAccepted(bool accepted = true) { _accepted = accepted; }
+
+        /** @brief Input text in UTF-8 */
+        constexpr Containers::ArrayView<const char> text() const { return _text; }
+
+    private:
+        constexpr TextInputEvent(Containers::ArrayView<const char> text): _text{text}, _accepted{false} {}
+
+        Containers::ArrayView<const char> _text;
+        bool _accepted;
+};
+
+/**
+@brief Text editing event
+
+@note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+@see @ref textEditingEvent()
+*/
+class Sdl2Application::TextEditingEvent {
+    friend Sdl2Application;
+
+    public:
+        /** @brief Copying is not allowed */
+        TextEditingEvent(const TextEditingEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        TextEditingEvent(TextEditingEvent&&) = delete;
+
+        /** @brief Copying is not allowed */
+        TextEditingEvent& operator=(const TextEditingEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        TextEditingEvent& operator=(TextEditingEvent&&) = delete;
+
+        /** @brief Whether the event is accepted */
+        constexpr bool isAccepted() const { return _accepted; }
+
+        /**
+         * @brief Set event as accepted
+         *
+         * If the event is ignored (i.e., not set as accepted), it might be
+         * propagated elsewhere, for example to another screen when using
+         * @ref BasicScreenedApplication "ScreenedApplication". By default is
+         * each event ignored and thus propagated.
+         */
+        void setAccepted(bool accepted = true) { _accepted = accepted; }
+
+        /** @brief Input text in UTF-8 */
+        constexpr Containers::ArrayView<const char> text() const { return _text; }
+
+        /** @brief Location to begin editing from */
+        constexpr Int start() const { return _start; }
+
+        /** @brief Number of characters to edit from the start point */
+        constexpr Int length() const { return _length; }
+
+    private:
+        constexpr TextEditingEvent(Containers::ArrayView<const char> text, Int start, Int length): _text{text}, _start{start}, _length{length}, _accepted{false} {}
+
+        Containers::ArrayView<const char> _text;
+        Int _start, _length;
+        bool _accepted;
+};
+#endif
+
 /** @hideinitializer
 @brief Entry point for SDL2-based applications
 @param className Class name
@@ -1080,6 +1358,11 @@ typedef BasicScreenedApplication<Sdl2Application> ScreenedApplication;
 #endif
 #endif
 
+CORRADE_ENUMSET_OPERATORS(Sdl2Application::Flags)
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::Flags)
+#endif
+CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::WindowFlags)
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::InputEvent::Modifiers)
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::MouseMoveEvent::Buttons)
 

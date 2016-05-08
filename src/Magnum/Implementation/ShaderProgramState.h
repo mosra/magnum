@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -30,6 +30,7 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/OpenGL.h"
+#include "Magnum/Math/Vector3.h"
 
 #ifdef _MSC_VER
 /* Otherwise the member function pointers will have different size based on
@@ -101,6 +102,8 @@ struct ShaderProgramState {
         maxImageUnits,
         maxCombinedShaderOutputResources,
         maxUniformLocations;
+    Vector3i maxComputeWorkGroupCount,
+        maxComputeWorkGroupSize;
     #endif
     GLint minTexelOffset,
         maxTexelOffset,

@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -36,6 +36,8 @@
 #endif
 #include <windows.h>
 #include <EGL/egl.h>
+#include <EGL/eglext.h>
+#include <Corrade/Containers/EnumSet.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/OpenGL.h"
@@ -70,13 +72,11 @@ See @ref cmake for more information.
 
 ## General usage
 
-In CMake you need to request `WindowlessWindowsEglApplication` component, add
-`${MAGNUM_WINDOWLESSWINDOWSEGLAPPLICATION_INCLUDE_DIRS}` to include path and
-link to `${MAGNUM_WINDOWLESSWINDOWSEGLAPPLICATION_LIBRARIES}`. If no other
-windowless application is requested, you can also use generic
-`${MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS}` and
-`${MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES}` aliases to simplify porting. Again,
-see @ref building and @ref cmake for more information.
+In CMake you need to request `WindowlessWindowsEglApplication` component of
+`Magnum` package and link to `Magnum::WindowlessWindowsEglApplication` target.
+If no other windowless application is requested, you can also use generic
+`Magnum::WindowlessApplication` alias to simplify porting. Again, see
+@ref building and @ref cmake for more information.
 
 Place your code into @ref exec(). The subclass can be then used in main
 function using @ref MAGNUM_WINDOWLESSWINDOWSEGLAPPLICATION_MAIN() macro. See
@@ -180,11 +180,48 @@ class WindowlessWindowsEglApplication {
 */
 class WindowlessWindowsEglApplication::Configuration {
     public:
+        /**
+         * @brief Context flag
+         *
+         * @see @ref Flags, @ref setFlags(), @ref Context::Flag
+         */
+        enum class Flag: int {
+            Debug = EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR    /**< Create debug context */
+        };
+
+        /**
+         * @brief Context flags
+         *
+         * @see @ref setFlags(), @ref Context::Flags
+         */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        typedef Containers::EnumSet<Flag, EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR> Flags;
+        #else
+        typedef Containers::EnumSet<Flag> Flags;
+        #endif
+
         constexpr /*implicit*/ Configuration() {}
+
+        /** @brief Context flags */
+        Flags flags() const { return _flags; }
+
+        /**
+         * @brief Set context flags
+         * @return Reference to self (for method chaining)
+         *
+         * Default is no flag. See also @ref Context::flags().
+         */
+        Configuration& setFlags(Flags flags) {
+            _flags = flags;
+            return *this;
+        }
+
+    private:
+        Flags _flags;
 };
 
 /** @hideinitializer
-@brief Entry point for windowless WGL application
+@brief Entry point for windowless Windows/EGL application
 @param className Class name
 
 See @ref Magnum::Platform::WindowlessWindowsEglApplication "Platform::WindowlessWindowsEglApplication"

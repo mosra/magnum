@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -33,6 +33,14 @@
 
 namespace Magnum {
 
+/* Standard Android build system thinks that it's okay to define unmangled
+   unprefixed macros. I think that whoever did that needs to be punished,
+   becuase I am then not able to use that identifier for extension names.
+   Use CORRADE_TARGET_ANDROID here instead. */
+#ifdef ANDROID
+#undef ANDROID
+#endif
+
 /**
 @brief Compile-time information about OpenGL extensions
 
@@ -50,9 +58,8 @@ but these structs are better suited for compile-time decisions rather than
 @ref Extension instances. See @ref Context::isExtensionSupported() for example
 usage.
 
-This namespace is built by default. To use it, you need to add `${MAGNUM_INCLUDE_DIRS}`
-to include path and link to `${MAGNUM_LIBRARIES}`. See @ref building and
-@ref cmake for more information.
+This namespace is built by default. To use it, you need to link to
+`Magnum::Magnum` target. See @ref building and @ref cmake for more information.
 @see @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED()
 @todo Manual indices for extensions, this has gaps
 */
@@ -225,6 +232,7 @@ namespace GL {
         _extension(GL,KHR,robustness,                   GL320, GL450) // #170
         _extension(GL,KHR,blend_equation_advanced,      GL210,  None) // #174
         _extension(GL,KHR,blend_equation_advanced_coherent, GL210, None) // #174
+        _extension(GL,KHR,no_error,                     GL210,  None) // #175
     } namespace NV {
         _extension(GL,NV,primitive_restart,             GL210, GL310) // #285
         _extension(GL,NV,depth_buffer_float,            GL210, GL300) // #334
@@ -290,6 +298,8 @@ namespace GL {
         #ifdef MAGNUM_TARGET_GLES2
         _extension(GL,ARM,rgba8,                    GLES200, GLES300) // #82
         #endif
+        _extension(GL,ARM,shader_framebuffer_fetch, GLES200,    None) // #165
+        _extension(GL,ARM,shader_framebuffer_fetch_depth_stencil, GLES200, None) // #166
     } namespace CHROMIUM {
         #ifdef CORRADE_TARGET_NACL
         _extension(GL,CHROMIUM,map_sub,             GLES200,    None)
@@ -327,6 +337,7 @@ namespace GL {
         _extension(GL,EXT,texture_storage,          GLES200, GLES300) // #108
         _extension(GL,EXT,map_buffer_range,         GLES200, GLES300) // #121
         #endif
+        _extension(GL,EXT,shader_framebuffer_fetch, GLES200,    None) // #122
         _extension(GL,EXT,disjoint_timer_query,     GLES200,    None) // #150
         #ifdef MAGNUM_TARGET_GLES2
         _extension(GL,EXT,draw_buffers,             GLES200, GLES300) // #151
@@ -364,6 +375,7 @@ namespace GL {
         _extension(GL,KHR,robustness,               GLES200,    None) // #170
         _extension(GL,KHR,robust_buffer_access_behavior, GLES200, None) // #189
         _extension(GL,KHR,context_flush_control,    GLES200,    None) // #191
+        _extension(GL,KHR,no_error,                 GLES200,    None) // #243
     } namespace NV {
         #ifdef MAGNUM_TARGET_GLES2
         _extension(GL,NV,draw_buffers,              GLES200, GLES300) // #91

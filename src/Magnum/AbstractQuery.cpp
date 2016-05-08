@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -37,7 +37,7 @@
 namespace Magnum {
 
 AbstractQuery::AbstractQuery(GLenum target): _target{target}, _flags{ObjectFlag::DeleteOnDestruction} {
-    (this->*Context::current()->state().query->createImplementation)();
+    (this->*Context::current().state().query->createImplementation)();
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -79,17 +79,17 @@ void AbstractQuery::createImplementationDSA() {
 #ifndef MAGNUM_TARGET_WEBGL
 std::string AbstractQuery::label() const {
     #ifndef MAGNUM_TARGET_GLES
-    return Context::current()->state().debug->getLabelImplementation(GL_QUERY, _id);
+    return Context::current().state().debug->getLabelImplementation(GL_QUERY, _id);
     #else
-    return Context::current()->state().debug->getLabelImplementation(GL_QUERY_KHR, _id);
+    return Context::current().state().debug->getLabelImplementation(GL_QUERY_KHR, _id);
     #endif
 }
 
 AbstractQuery& AbstractQuery::setLabelInternal(const Containers::ArrayView<const char> label) {
     #ifndef MAGNUM_TARGET_GLES
-    Context::current()->state().debug->labelImplementation(GL_QUERY, _id, label);
+    Context::current().state().debug->labelImplementation(GL_QUERY, _id, label);
     #else
-    Context::current()->state().debug->labelImplementation(GL_QUERY_KHR, _id, label);
+    Context::current().state().debug->labelImplementation(GL_QUERY_KHR, _id, label);
     #endif
     return *this;
 }

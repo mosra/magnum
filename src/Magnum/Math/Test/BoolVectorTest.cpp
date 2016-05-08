@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -99,18 +99,10 @@ void BoolVectorTest::constructNoInit() {
 }
 
 void BoolVectorTest::constructOneValue() {
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY
-    /* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-    constexpr
-    #endif
-    BoolVector19 a(false);
+    constexpr BoolVector19 a(false);
     CORRADE_COMPARE(a, BoolVector19(0x00, 0x00, 0x00));
 
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY
-    /* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-    constexpr
-    #endif
-    BoolVector19 b(true);
+    constexpr BoolVector19 b(true);
     CORRADE_COMPARE(b, BoolVector19(0xff, 0xff, 0x07));
 
     CORRADE_VERIFY(!(std::is_convertible<bool, BoolVector19>::value));

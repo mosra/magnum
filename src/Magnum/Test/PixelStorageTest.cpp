@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -50,7 +50,7 @@ struct PixelStorageTest: TestSuite::Tester {
     void dataPropertiesCompressedRowLength();
     void dataPropertiesCompressedImageHeight();
 
-    void dataSizeCompressed();
+    void dataOffsetSizeCompressed();
     #endif
 };
 
@@ -73,7 +73,7 @@ PixelStorageTest::PixelStorageTest() {
               &PixelStorageTest::dataPropertiesCompressedRowLength,
               &PixelStorageTest::dataPropertiesCompressedImageHeight,
 
-              &PixelStorageTest::dataSizeCompressed
+              &PixelStorageTest::dataOffsetSizeCompressed
               #endif
               });
 }
@@ -207,11 +207,11 @@ void PixelStorageTest::dataPropertiesCompressedImageHeight() {
         (std::tuple<std::size_t, Vector3st, std::size_t>{(2 + 2 + 9)*16, {1, 3, 3}, 16}));
 }
 
-void PixelStorageTest::dataSizeCompressed() {
-    /* Tf the storage doesn't contain any info about block sizes (the default,
+void PixelStorageTest::dataOffsetSizeCompressed() {
+    /* Tf the storage doesn't contain any info about block sizes (the default),
        using the provided value */
-    CORRADE_COMPARE(Implementation::compressedImageDataSizeFor(CompressedImage3D{},
-        Vector2i{37, 35}, 1579), 1579);
+    CORRADE_COMPARE(Implementation::compressedImageDataOffsetSizeFor(CompressedImage3D{},
+        Vector2i{37, 35}, 1579), (std::pair<std::size_t, std::size_t>{0, 1579}));
 
     /* The same parameters as in PixelStorageGLTest 3D case */
     const CompressedImage3D image{CompressedPixelStorage{}
@@ -220,8 +220,8 @@ void PixelStorageTest::dataSizeCompressed() {
         .setRowLength(8)
         .setImageHeight(8)
         .setSkip({4, 4, 4})};
-    CORRADE_COMPARE(Implementation::compressedImageDataSizeFor(image, Vector3i{4, 4, 1}, 1579),
-        16*4*4 + 16*4);
+    CORRADE_COMPARE(Implementation::compressedImageDataOffsetSizeFor(image, Vector3i{4, 4, 1}, 1579),
+        (std::pair<std::size_t, std::size_t>{16*4*4 + 16*2 + 16, 16}));
 }
 #endif
 

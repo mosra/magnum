@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -56,29 +56,26 @@ most specialized type known to make subsequent operations more convenient --
 columns of RectangularMatrix are returned as Vector, but when accessing
 columns of e.g. Matrix3, they are returned as Vector3.
 
-There are also even more specialized subclasses, e.g. @ref Color3 and
-@ref Color4 for color handling and conversion.
+There are also even more specialized subclasses, e.g. @ref Math::Color3 and
+@ref Math::Color4 for color handling and conversion.
 
 Commonly used types have convenience aliases in @ref Magnum namespace, so you
-can write e.g. `Vector3i` instead of `Math::Vector3<Int>`. See @ref types and
-namespace documentation for more information.
+can write e.g. @ref Vector3i instead of @ref Math::Vector3 "Math::Vector3<Int>".
+See @ref types and namespace documentation for more information.
 
 @section matrix-vector-construction Constructing matrices and vectors
 
 Default constructors of @ref Math::RectangularMatrix and @ref Math::Vector (and
-@ref Math::Vector2, @ref Math::Vector3, @ref Math::Vector4, @ref Color3) create
-zero-filled objects. @ref Math::Matrix (and @ref Math::Matrix3, @ref Math::Matrix4)
-is by default constructed as identity matrix. @ref Color4 has alpha value set
-to opaque.
+@ref Math::Vector2, @ref Math::Vector3, @ref Math::Vector4, @ref Math::Color3,
+@ref Math::Color4) create zero-filled objects. @ref Math::Matrix (and
+@ref Math::Matrix3, @ref Math::Matrix4) is by default constructed as identity
+matrix.
 @code
 Matrix2x3 a; // zero-filled
 Vector3i b;  // zero-filled
 
 Matrix3 identity;           // diagonal set to 1
 Matrix3 zero(Matrix::Zero); // zero-filled
-
-Color4 black1;      // {0.0f, 0.0f, 0.0f, 1.0f}
-Color4ub black2;    // {0, 0, 0, 255}
 @endcode
 
 Most common and most efficient way to create vector is to pass all values to
@@ -99,6 +96,14 @@ with single value or create diagonal matrix from vector:
 Matrix3 diag(Matrix3::Identity, 2.0f); // diagonal set to 2.0f, zeros elsewhere
 Vector3i fill(10);                     // {10, 10, 10}
 auto diag2 = Matrix3::fromDiagonal({3.0f, 2.0f, 1.0f});
+@endcode
+
+There are also shortcuts to create a vector with all but one component set to
+zero or one, useful for transformations:
+@code
+auto x = Vector3::xAxis();      // {1.0f, 0.0f, 0.0f}
+auto y = Vector2::yAxis(3.0f);  // {0.0f, 3.0f}
+auto z = Vector3::zScale(3.0f); // {1.0f, 1.0f, 3.0f}
 @endcode
 
 It is possible to create matrices from other matrices and vectors with the same
@@ -123,6 +128,30 @@ Math::Matrix2x3<Int>::from(mat) *= 2; // mat == { 4, 8, 12, 2, 6, 10 }
 
 Note that, unlike constructors, this function has no way to check whether the
 array is long enough to contain all elements, so use with caution.
+
+To make handling of colors easier, their behavior is a bit different with a
+richer feature set. Implicit construction of @ref Color4 from @ref Color3 will
+set the alpha to full value (thus `1.0f` for @ref Color4 and `255` for
+@ref Color4ub):
+@code
+Color4 a = Color3{0.2f, 0.7f, 0.5f};     // {0.2f, 0.7f, 0.5f, 1.0f}
+Color4ub b = Color3ub{0x33, 0xb2, 0x7f}; // {0x33, 0xb2, 0x7f, 0xff}
+@endcode
+
+Similarly to axes in vectors, you can create single color shades too, or create
+a RGB color from HSV representation:
+@code
+auto green = Color3::green();          // {0.0f, 1.0f, 0.0f}
+auto cyan = Color4::cyan(0.5f, 0.95f); // {0.5f, 1.0f, 1.0f, 0.95f}
+auto fadedRed = Color3::fromHSV(219.0_degf, 0.50f, 0.57f)
+@endcode
+
+Lastly, namespace @ref Math::Literals provides convenient `_rgb`/`_rgbf` and
+`_rgba`/`_rgbaf` literals for entering colors in hex representation:
+@code
+Color3ub a = 0x33b27f_rgb;   // {0x33, 0xb2, 0x7f}
+Color4 b = 0x33b27fcc_rgbaf; // {0.2f, 0.7f, 0.5f, 0.8f}
+@endcode
 
 @section matrix-vector-component-access Accessing matrix and vector components
 

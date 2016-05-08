@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -75,7 +75,7 @@ Visualizes object position, rotation and scale using colored axes. See
 Example code:
 @code
 // Create some options
-DebugTools::ResourceManager::instance()->set("my", DebugTools::ObjectRendererOptions().setSize(0.3f));
+DebugTools::ResourceManager::instance().set("my", DebugTools::ObjectRendererOptions().setSize(0.3f));
 
 // Create debug renderer for given object, use "my" options for it
 Object3D* object;

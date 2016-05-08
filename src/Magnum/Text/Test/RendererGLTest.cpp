@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -258,13 +258,13 @@ void RendererGLTest::renderMeshIndexType() {
 
 void RendererGLTest::mutableText() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::map_buffer_range>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::map_buffer_range>())
         CORRADE_SKIP(Extensions::GL::ARB::map_buffer_range::string() + std::string(" is not supported"));
     #elif defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_EMSCRIPTEN)
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::map_buffer_range>() &&
-       !Context::current()->isExtensionSupported<Extensions::GL::OES::mapbuffer>()
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::map_buffer_range>() &&
+       !Context::current().isExtensionSupported<Extensions::GL::OES::mapbuffer>()
        #ifdef CORRADE_TARGET_NACL
-       && !Context::current()->isExtensionSupported<Extensions::GL::CHROMIUM::map_sub>()
+       && !Context::current().isExtensionSupported<Extensions::GL::CHROMIUM::map_sub>()
        #endif
     ) {
         CORRADE_SKIP("No required extension is supported");
@@ -344,9 +344,9 @@ void RendererGLTest::multiline() {
             bool doIsOpened() const override { return _opened; }
             void doClose() override { _opened = false; }
 
-            std::pair<Float, Float> doOpenFile(const std::string&, Float) override {
+            Metrics doOpenFile(const std::string&, Float) override {
                 _opened = true;
-                return {0.5f, 0.75f};
+                return {0.5f, 0.45f, -0.25f, 0.75f};
             }
 
             UnsignedInt doGlyphId(char32_t) override { return 0; }
@@ -370,6 +370,8 @@ void RendererGLTest::multiline() {
     /* We're rendering text at 2.0f size and the font is scaled to 0.3f, so the
        line advance should be 0.75f*2.0f/0.5f = 3.0f */
     CORRADE_COMPARE(font.size(), 0.5f);
+    CORRADE_COMPARE(font.ascent(), 0.45f);
+    CORRADE_COMPARE(font.descent(), -0.25f);
     CORRADE_COMPARE(font.lineHeight(), 0.75f);
 
     /* Bounds */

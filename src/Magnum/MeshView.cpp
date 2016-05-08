@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -52,7 +52,7 @@ void MeshView::draw(AbstractShaderProgram& shader, std::initializer_list<std::re
     #ifndef MAGNUM_TARGET_GLES
     multiDrawImplementationDefault(meshes);
     #else
-    Context::current()->state().mesh->multiDrawImplementation(meshes);
+    Context::current().state().mesh->multiDrawImplementation(meshes);
     #endif
 }
 
@@ -60,7 +60,7 @@ void MeshView::draw(AbstractShaderProgram& shader, std::initializer_list<std::re
 void MeshView::multiDrawImplementationDefault(std::initializer_list<std::reference_wrapper<MeshView>> meshes) {
     CORRADE_INTERNAL_ASSERT(meshes.size());
 
-    const Implementation::MeshState& state = *Context::current()->state().mesh;
+    const Implementation::MeshState& state = *Context::current().state().mesh;
 
     Mesh& original = meshes.begin()->get()._original;
     Containers::Array<GLsizei> count{meshes.size()};

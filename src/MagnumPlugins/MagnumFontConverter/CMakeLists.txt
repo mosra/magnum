@@ -1,7 +1,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -33,6 +33,7 @@ set(MagnumFontConverter_HEADERS
 add_library(MagnumFontConverterObjects OBJECT
     ${MagnumFontConverter_SRCS}
     ${MagnumFontConverter_HEADERS})
+target_include_directories(MagnumFontConverterObjects PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
 if(NOT BUILD_PLUGINS_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(MagnumFontConverterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
@@ -62,7 +63,7 @@ if(BUILD_GL_TESTS)
         add_library(MagnumMagnumFontConverterTestLib STATIC
             ${MagnumFontConverter_SRCS}
             ${MagnumFontConverter_HEADERS})
-        set_target_properties(MagnumMagnumFontConverterTestLib PROPERTIES COMPILE_FLAGS "-DMAGNUM_TGAIMAGECONVERTER_BUILD_STATIC")
+        target_compile_definitions(MagnumMagnumFontConverterTestLib PRIVATE "MAGNUM_TGAIMAGECONVERTER_BUILD_STATIC")
     else()
         add_library(MagnumMagnumFontConverterTestLib STATIC $<TARGET_OBJECTS:MagnumFontConverterObjects>)
     endif()
@@ -71,5 +72,5 @@ if(BUILD_GL_TESTS)
     add_subdirectory(Test)
 endif()
 
-# Magnum MagnumFontConverter library for superprojects
-set(MAGNUM_MAGNUMFONTCONVERTER_LIBRARY MagnumFontConverter CACHE INTERNAL "")
+# Magnum MagnumFontConverter target alias for superprojects
+add_library(Magnum::MagnumFontConverter ALIAS MagnumFontConverter)

@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -54,42 +54,82 @@ PhongGLTest::PhongGLTest() {
 
 void PhongGLTest::compile() {
     Shaders::Phong shader;
-    CORRADE_VERIFY(shader.validate().first);
+    {
+        #ifdef CORRADE_TARGET_APPLE
+        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
 }
 
 void PhongGLTest::compileAmbientTexture() {
     Shaders::Phong shader(Shaders::Phong::Flag::AmbientTexture);
-    CORRADE_VERIFY(shader.validate().first);
+    {
+        #ifdef CORRADE_TARGET_APPLE
+        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
 }
 
 void PhongGLTest::compileDiffuseTexture() {
     Shaders::Phong shader(Shaders::Phong::Flag::DiffuseTexture);
-    CORRADE_VERIFY(shader.validate().first);
+    {
+        #ifdef CORRADE_TARGET_APPLE
+        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
 }
 
 void PhongGLTest::compileSpecularTexture() {
     Shaders::Phong shader(Shaders::Phong::Flag::SpecularTexture);
-    CORRADE_VERIFY(shader.validate().first);
+    {
+        #ifdef CORRADE_TARGET_APPLE
+        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
 }
 
 void PhongGLTest::compileAmbientDiffuseTexture() {
     Shaders::Phong shader(Shaders::Phong::Flag::AmbientTexture|Shaders::Phong::Flag::DiffuseTexture);
-    CORRADE_VERIFY(shader.validate().first);
+    {
+        #ifdef CORRADE_TARGET_APPLE
+        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
 }
 
 void PhongGLTest::compileAmbientSpecularTexture() {
     Shaders::Phong shader(Shaders::Phong::Flag::AmbientTexture|Shaders::Phong::Flag::SpecularTexture);
-    CORRADE_VERIFY(shader.validate().first);
+    {
+        #ifdef CORRADE_TARGET_APPLE
+        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
 }
 
 void PhongGLTest::compileDiffuseSpecularTexture() {
     Shaders::Phong shader(Shaders::Phong::Flag::DiffuseTexture|Shaders::Phong::Flag::SpecularTexture);
-    CORRADE_VERIFY(shader.validate().first);
+    {
+        #ifdef CORRADE_TARGET_APPLE
+        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
 }
 
 void PhongGLTest::compileAmbientDiffuseSpecularTexture() {
     Shaders::Phong shader(Shaders::Phong::Flag::AmbientTexture|Shaders::Phong::Flag::DiffuseTexture|Shaders::Phong::Flag::SpecularTexture);
-    CORRADE_VERIFY(shader.validate().first);
+    {
+        #ifdef CORRADE_TARGET_APPLE
+        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
 }
 
 }}}

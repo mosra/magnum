@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -77,7 +77,7 @@ void TgaImporterTest::openShort() {
     CORRADE_VERIFY(importer.openData(data));
 
     std::ostringstream debug;
-    Error::setOutput(&debug);
+    Error redirectError{&debug};
     CORRADE_VERIFY(!importer.image2D(0));
     CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::image2D(): the file is too short: 17 bytes\n");
 }
@@ -88,7 +88,7 @@ void TgaImporterTest::paletted() {
     CORRADE_VERIFY(importer.openData(data));
 
     std::ostringstream debug;
-    Error::setOutput(&debug);
+    Error redirectError{&debug};
     CORRADE_VERIFY(!importer.image2D(0));
     CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::image2D(): paletted files are not supported\n");
 }
@@ -99,7 +99,7 @@ void TgaImporterTest::compressed() {
     CORRADE_VERIFY(importer.openData(data));
 
     std::ostringstream debug;
-    Error::setOutput(&debug);
+    Error redirectError{&debug};
     CORRADE_VERIFY(!importer.image2D(0));
     CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::image2D(): unsupported (compressed?) image type: 9\n");
 }
@@ -110,7 +110,7 @@ void TgaImporterTest::colorBits16() {
     CORRADE_VERIFY(importer.openData(data));
 
     std::ostringstream debug;
-    Error::setOutput(&debug);
+    Error redirectError{&debug};
     CORRADE_VERIFY(!importer.image2D(0));
     CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::image2D(): unsupported color bits-per-pixel: 16\n");
 }
@@ -195,7 +195,7 @@ void TgaImporterTest::grayscaleBits16() {
     CORRADE_VERIFY(importer.openData(data));
 
     std::ostringstream debug;
-    Error::setOutput(&debug);
+    Error redirectError{&debug};
     CORRADE_VERIFY(!importer.image2D(0));
     CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::image2D(): unsupported grayscale bits-per-pixel: 16\n");
 }

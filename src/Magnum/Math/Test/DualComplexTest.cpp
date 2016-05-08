@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -198,19 +198,14 @@ void DualComplexTest::convert() {
 
     /* GCC 5.1 fills the result with zeros instead of properly calling
        delegated copy constructor if using constexpr. Reported here:
-       https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66450
-       MSVC 2015: Can't use delegating constructors with constexpr:
-       https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-    #if (!defined(__GNUC__) || defined(__clang__)) && !defined(CORRADE_MSVC2015_COMPATIBILITY)
+       https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66450 */
+    #if !defined(__GNUC__) || defined(__clang__)
     constexpr
     #endif
     DualComplex c{a};
     CORRADE_COMPARE(c, b);
 
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why can't be conversion constexpr? */
-    constexpr
-    #endif
-    DualCmpl d(b);
+    constexpr DualCmpl d(b);
     CORRADE_COMPARE(d.re, a.re);
     CORRADE_COMPARE(d.im, a.im);
     CORRADE_COMPARE(d.x, a.x);
@@ -279,7 +274,7 @@ void DualComplexTest::invertedNormalized() {
     DualComplex b({-0.316228f, -0.9486831f}, {3.320391f, 2.05548f});
 
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
     DualComplex({-1.0f, -2.5f}, {}).invertedNormalized();
     CORRADE_COMPARE(o.str(), "Math::Complex::invertedNormalized(): complex number must be normalized\n");
 
@@ -327,7 +322,7 @@ void DualComplexTest::matrix() {
     CORRADE_COMPARE(a.toMatrix(), m);
 
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
     DualComplex::fromMatrix(m*2);
     CORRADE_COMPARE(o.str(), "Math::DualComplex::fromMatrix(): the matrix doesn't represent rigid transformation\n");
 

@@ -18,7 +18,6 @@ build() {
         cd "$_rootdir/build-emscripten-webgl2"
 
         cmake .. \
-            -DCMAKE_MODULE_PATH="$_rootdir/toolchains/modules" \
             -DCMAKE_TOOLCHAIN_FILE="$_rootdir/toolchains/generic/Emscripten.cmake" \
             -DCMAKE_PREFIX_PATH=/usr/lib/emscripten/system
     fi

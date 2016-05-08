@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -80,7 +80,7 @@ GLSL 1.40                                   | done
 @extension{ARB,texture_rectangle}           | done
 @extension{ARB,draw_instanced}              | done
 @extension{ARB,texture_buffer_object}       | done
-@extension{ARB,uniform_buffer_object}       | missing uniform block binding
+@extension{ARB,uniform_buffer_object}       | done except for data layout queries
 @extension{ARB,copy_buffer}                 | done
 @extension{EXT,texture_snorm}               | done
 @extension{NV,primitive_restart}            | |
@@ -161,7 +161,7 @@ GLSL 4.20                                   | done
 @extension{ARB,internalformat_query}        | |
 @extension{ARB,map_buffer_alignment}        | done
 @extension{ARB,shader_atomic_counters}      | done
-@extension{ARB,shader_image_load_store}     | |
+@extension{ARB,shader_image_load_store}     | done
 @extension{ARB,shading_language_packing}    | done (shading language only)
 @extension{ARB,texture_storage}             | done
 
@@ -173,19 +173,19 @@ GLSL 4.30                                   | done
 @extension{ARB,arrays_of_arrays}            | done (shading language only)
 @extension{ARB,ES3_compatibility}           | only conservative sample query and compression formats
 @extension{ARB,clear_buffer_object}         | |
-@extension{ARB,compute_shader}              | |
+@extension{ARB,compute_shader}              | done except for indirect dispatch
 @extension{ARB,copy_image}                  | |
 @extension{KHR,debug}                       | missing log retrieval, sync, pipeline and sampler label
 @extension{ARB,explicit_uniform_location}   | done
 @extension{ARB,fragment_layer_viewport}     | done (shading language only)
 @extension{ARB,framebuffer_no_attachments}  | |
-@extension{ARB,internalformat_query2}       | |
+@extension{ARB,internalformat_query2}       | only compressed texture block queries
 @extension{ARB,invalidate_subdata}          | done
 @extension{ARB,multi_draw_indirect}         | |
 @extension{ARB,program_interface_query}     | |
 @extension{ARB,robust_buffer_access_behavior} | done (nothing to do)
 @extension{ARB,shader_image_size}           | done (shading language only)
-@extension{ARB,shader_storage_buffer_object} | only limit queries
+@extension{ARB,shader_storage_buffer_object} | missing (unneeded) block binding
 @extension{ARB,stencil_texturing}           | done
 @extension{ARB,texture_buffer_range}        | done
 @extension{ARB,texture_query_levels}        | done (shading language only)
@@ -205,7 +205,7 @@ GLSL 4.40                                   | done
 @extension{ARB,buffer_storage}              | |
 @extension{ARB,clear_texture}               | |
 @extension{ARB,enhanced_layouts}            | done (shading language only)
-@extension{ARB,multi_bind}                  | only texture and buffer binding
+@extension{ARB,multi_bind}                  | missing sampler and vertex buffer binding
 @extension{ARB,query_buffer_object}         | |
 @extension{ARB,texture_mirror_clamp_to_edge} | done
 @extension{ARB,texture_stencil8}            | done
@@ -216,15 +216,15 @@ GLSL 4.40                                   | done
 Extension                                   | Status
 ------------------------------------------- | ------
 GLSL 4.50                                   | done
-@extension{ARB,ES3_1_compatibility}         | |
+@extension{ARB,ES3_1_compatibility}         | done
 @extension{ARB,clip_control}                | |
 @extension{ARB,conditional_render_inverted} | done
 @extension{ARB,cull_distance}               | |
 @extension{ARB,derivative_control}          | done (shading language only)
 @extension{ARB,direct_state_access}         | done for implemented functionality (except VAOs)
-@extension{ARB,get_texture_sub_image}       | missing compressed texture queries
+@extension{ARB,get_texture_sub_image}       | done
 @extension{ARB,shader_texture_image_samples} | done (shading language only)
-@extension{ARB,texture_barrier}             | |
+@extension{ARB,texture_barrier}             | done
 @extension{KHR,context_flush_control}       | |
 @extension{KHR,robustness}                  | |
 
@@ -248,6 +248,7 @@ Extension                                   | Status
 @extension{ARB,transform_feedback_overflow_query} | |
 @extension{KHR,blend_equation_advanced}     | done
 @extension3{KHR,blend_equation_advanced_coherent,blend_equation_advanced} | done
+@extension{KHR,no_error}                    | done
 
 @subsection opengl-support-extensions-vendor Vendor OpenGL extensions
 
@@ -337,7 +338,7 @@ Extension                                   | Status
 @es_extension{OES,required_internalformat}  | done (desktop-compatible subset)
 @es_extension{OES,surfaceless_context}      | done
 
-@subsection opengl-support-es-extensions OpenGL ES extensions to match desktop functionality
+@subsection opengl-support-es-extensions OpenGL ES extensions
 
 @todo @es_extension{NV,non_square_matrices}
 @todo Support also IMG_multisampled_render_to_texture? It has different enum
@@ -347,6 +348,8 @@ Extension                                   | Status
 ------------------------------------------- | ------
 @es_extension{ANDROID,extension_pack_es31a} | done (nothing to do)
 @es_extension{APPLE,texture_format_BGRA8888} | done
+@es_extension{ARM,shader_framebuffer_fetch} | missing renderer setup and limit query
+@es_extension{ARM,shader_framebuffer_fetch_depth_stencil} | done (shading language only)
 @es_extension{CHROMIUM,map_sub} (NaCl only) | only buffer mapping
 @es_extension{EXT,texture_filter_anisotropic} | done
 @es_extension{EXT,texture_format_BGRA8888}  | done
@@ -357,6 +360,7 @@ Extension                                   | Status
 @es_extension{EXT,separate_shader_objects}  | only direct uniform binding
 @es_extension{EXT,multisampled_render_to_texture} | only renderbuffer storage
 @es_extension{EXT,robustness}               | done
+@es_extension{EXT,shader_framebuffer_fetch} | missing limit query
 @es_extension{EXT,disjoint_timer_query}     | only time elapsed query
 @es_extension{EXT,texture_sRGB_decode}      | done
 @es_extension{EXT,sRGB_write_control}       | done
@@ -380,6 +384,7 @@ Extension                                   | Status
 @es_extension{KHR,robustness}               | |
 @es_extension{KHR,robust_buffer_access_behavior} | done (nothing to do)
 @es_extension{KHR,context_flush_control}    | |
+@es_extension2{KHR,no_error,no_error}       | done
 @es_extension2{NV,read_buffer_front,NV_read_buffer} | done
 @es_extension2{NV,read_depth,NV_read_depth_stencil} | done
 @es_extension2{NV,read_stencil,NV_read_depth_stencil} | done

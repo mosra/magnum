@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -68,10 +68,10 @@ checked by the implementation:
 -   Function `doImport*FromData()` is called only if there is at least one data
     array passed.
 
-Plugin interface string is `"cz.mosra.magnum.Text.AbstractFontConverter/0.1.1"`.
+Plugin interface string is `"cz.mosra.magnum.Text.AbstractFontConverter/0.1.2"`.
 */
 class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPlugin {
-    CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Text.AbstractFontConverter/0.1.1")
+    CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Text.AbstractFontConverter/0.1.2")
 
     public:
         /**

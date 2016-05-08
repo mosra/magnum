@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -92,7 +92,7 @@ void DualComplexTransformationTest::setTransformation() {
 
     /* Can't transform with non-rigid transformation */
     std::ostringstream out;
-    Error::setOutput(&out);
+    Error redirectError{&out};
     o.setTransformation(DualComplex({1.0f, 2.0f}, {}));
     CORRADE_COMPARE(out.str(), "SceneGraph::DualComplexTransformation::setTransformation(): the dual complex number is not normalized\n");
 
@@ -124,7 +124,7 @@ void DualComplexTransformationTest::transform() {
         /* Can't transform with non-rigid transformation */
         Object2D o;
         std::ostringstream out;
-        Error::setOutput(&out);
+        Error redirectError{&out};
         o.transform(DualComplex({1.0f, 2.0f}, {}));
         CORRADE_COMPARE(out.str(), "SceneGraph::DualComplexTransformation::transform(): the dual complex number is not normalized\n");
     } {

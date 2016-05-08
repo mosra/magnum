@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -48,7 +48,7 @@ AbstractQueryGLTest::AbstractQueryGLTest() {
 
 void AbstractQueryGLTest::construct() {
     #ifdef MAGNUM_TARGET_GLES2
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::occlusion_query_boolean>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::occlusion_query_boolean>())
         CORRADE_SKIP(Extensions::GL::EXT::occlusion_query_boolean::string() + std::string(" is not supported."));
     #endif
 
@@ -73,7 +73,7 @@ void AbstractQueryGLTest::constructCopy() {
 
 void AbstractQueryGLTest::constructMove() {
     #ifdef MAGNUM_TARGET_GLES2
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::occlusion_query_boolean>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::occlusion_query_boolean>())
         CORRADE_SKIP(Extensions::GL::EXT::occlusion_query_boolean::string() + std::string(" is not supported."));
     #endif
 
@@ -108,13 +108,13 @@ void AbstractQueryGLTest::constructMove() {
 
 void AbstractQueryGLTest::label() {
     #ifdef MAGNUM_TARGET_GLES2
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::occlusion_query_boolean>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::occlusion_query_boolean>())
         CORRADE_SKIP(Extensions::GL::EXT::occlusion_query_boolean::string() + std::string(" is not supported."));
     #endif
 
     /* No-Op version is tested in AbstractObjectGLTest */
-    if(!Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>() &&
-       !Context::current()->isExtensionSupported<Extensions::GL::EXT::debug_label>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::KHR::debug>() &&
+       !Context::current().isExtensionSupported<Extensions::GL::EXT::debug_label>())
         CORRADE_SKIP("Required extension is not available");
 
     #ifndef MAGNUM_TARGET_GLES
@@ -124,7 +124,7 @@ void AbstractQueryGLTest::label() {
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::direct_state_access>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::direct_state_access>())
     #endif
     {
         query.begin(); query.end();

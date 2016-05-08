@@ -72,7 +72,6 @@ cd build-nacl-${toolchain}-${compatibility}
 
 cmake .. \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_MODULE_PATH="${WORKSPACE}/toolchains/modules" \
     -DCMAKE_TOOLCHAIN_FILE=../toolchains/generic/NaCl-${toolchain}.cmake \
     -DCMAKE_FIND_ROOT_PATH=${JENKINS_HOME}/filesystem/nacl-${toolchain}-${compatibility} \
     -DCMAKE_INSTALL_PREFIX=${JENKINS_HOME}/filesystem/nacl-${toolchain}-${compatibility} \

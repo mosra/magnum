@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -45,11 +45,11 @@ inline Shader createCompatibilityShader(const Utility::Resource& rs, Version ver
     Shader shader(version, type);
 
     #ifndef MAGNUM_TARGET_GLES
-    if(Context::current()->isExtensionDisabled<Extensions::GL::ARB::explicit_attrib_location>(version))
+    if(Context::current().isExtensionDisabled<Extensions::GL::ARB::explicit_attrib_location>(version))
         shader.addSource("#define DISABLE_GL_ARB_explicit_attrib_location\n");
-    if(Context::current()->isExtensionDisabled<Extensions::GL::ARB::shading_language_420pack>(version))
+    if(Context::current().isExtensionDisabled<Extensions::GL::ARB::shading_language_420pack>(version))
         shader.addSource("#define DISABLE_GL_ARB_shading_language_420pack\n");
-    if(Context::current()->isExtensionDisabled<Extensions::GL::ARB::explicit_uniform_location>(version))
+    if(Context::current().isExtensionDisabled<Extensions::GL::ARB::explicit_uniform_location>(version))
         shader.addSource("#define DISABLE_GL_ARB_explicit_uniform_location\n");
     #endif
 

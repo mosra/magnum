@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -28,8 +28,11 @@
 
 #include "Magnum/AbstractShaderProgram.h"
 #include "Magnum/Buffer.h"
+#include "Magnum/Framebuffer.h"
 #include "Magnum/Mesh.h"
 #include "Magnum/PrimitiveQuery.h"
+#include "Magnum/Renderbuffer.h"
+#include "Magnum/RenderbufferFormat.h"
 #include "Magnum/Shader.h"
 #include "Magnum/TransformFeedback.h"
 #include "Magnum/Math/Vector2.h"
@@ -72,7 +75,7 @@ void PrimitiveQueryGLTest::constructNoCreate() {
 
 void PrimitiveQueryGLTest::wrap() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
         CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not available."));
     #endif
 
@@ -92,20 +95,33 @@ void PrimitiveQueryGLTest::wrap() {
 
 #ifndef MAGNUM_TARGET_GLES
 void PrimitiveQueryGLTest::primitivesGenerated() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::transform_feedback>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::transform_feedback>())
         CORRADE_SKIP(Extensions::GL::EXT::transform_feedback::string() + std::string(" is not available."));
+
+    /* Bind some FB to avoid errors on contexts w/o default FB */
+    Renderbuffer color;
+    color.setStorage(RenderbufferFormat::RGBA8, Vector2i{32});
+    Framebuffer fb{{{}, Vector2i{32}}};
+    fb.attachRenderbuffer(Framebuffer::ColorAttachment{0}, color)
+      .bind();
 
     struct MyShader: AbstractShaderProgram {
         typedef Attribute<0, Vector2> Position;
 
         explicit MyShader() {
-            Shader vert(Version::GL210, Shader::Type::Vertex);
+            Shader vert(
+                #ifndef CORRADE_TARGET_APPLE
+                Version::GL210
+                #else
+                Version::GL310
+                #endif
+                , Shader::Type::Vertex);
 
             CORRADE_INTERNAL_ASSERT_OUTPUT(vert.addSource(
-                "#if !defined(GL_ES) && __VERSION__ == 120\n"
-                "#define lowp\n"
+                "#if __VERSION__ >= 130\n"
+                "#define attribute in\n"
                 "#endif\n"
-                "attribute lowp vec4 position;\n"
+                "attribute vec4 position;\n"
                 "void main() {\n"
                 "    gl_Position = position;\n"
                 "}\n").compile());
@@ -146,14 +162,27 @@ void PrimitiveQueryGLTest::primitivesGenerated() {
 
 void PrimitiveQueryGLTest::transformFeedbackPrimitivesWritten() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
         CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not available."));
     #endif
+
+    /* Bind some FB to avoid errors on contexts w/o default FB */
+    Renderbuffer color;
+    color.setStorage(RenderbufferFormat::RGBA8, Vector2i{32});
+    Framebuffer fb{{{}, Vector2i{32}}};
+    fb.attachRenderbuffer(Framebuffer::ColorAttachment{0}, color)
+      .bind();
 
     struct MyShader: AbstractShaderProgram {
         explicit MyShader() {
             #ifndef MAGNUM_TARGET_GLES
-            Shader vert(Version::GL300, Shader::Type::Vertex);
+            Shader vert(
+                #ifndef CORRADE_TARGET_APPLE
+                Version::GL300
+                #else
+                Version::GL310
+                #endif
+                , Shader::Type::Vertex);
             #else
             Shader vert(Version::GLES300, Shader::Type::Vertex);
             Shader frag(Version::GLES300, Shader::Type::Fragment);

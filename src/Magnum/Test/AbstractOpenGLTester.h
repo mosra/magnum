@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -32,7 +32,11 @@
 #include "Magnum/DebugOutput.h"
 #include "Magnum/Renderer.h"
 
-#if defined(CORRADE_TARGET_APPLE)
+#ifdef MAGNUM_TARGET_HEADLESS
+#include "Magnum/Platform/WindowlessEglApplication.h"
+#elif defined(CORRADE_TARGET_IOS)
+#include "Magnum/Platform/WindowlessIosApplication.h"
+#elif defined(CORRADE_TARGET_APPLE)
 #include "Magnum/Platform/WindowlessCglApplication.h"
 #elif defined(CORRADE_TARGET_UNIX) && (!defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_DESKTOP_GLES))
 #include "Magnum/Platform/WindowlessGlxApplication.h"
@@ -57,13 +61,26 @@ class AbstractOpenGLTester: public TestSuite::Tester {
 
     private:
         struct WindowlessApplication: Platform::WindowlessApplication {
-            explicit WindowlessApplication(const Arguments& arguments): Platform::WindowlessApplication{arguments} {}
+            explicit WindowlessApplication(const Arguments& arguments): Platform::WindowlessApplication{arguments, nullptr} {}
             int exec() override final { return 0; }
+
+            using Platform::WindowlessApplication::tryCreateContext;
+            using Platform::WindowlessApplication::createContext;
+
         } _windowlessApplication;
 };
 
-AbstractOpenGLTester::AbstractOpenGLTester(): _windowlessApplication{*_windowlessApplicationArguments} {
-    if(Context::current()->isExtensionSupported<Extensions::GL::KHR::debug>()) {
+AbstractOpenGLTester::AbstractOpenGLTester(): TestSuite::Tester{TestSuite::Tester::TesterConfiguration{}.setSkippedArgumentPrefixes({"magnum"})}, _windowlessApplication{*_windowlessApplicationArguments} {
+    /* Try to create debug context, fallback to normal one if not possible. No
+       such thing on OSX or iOS. */
+    #ifndef CORRADE_TARGET_APPLE
+    if(!_windowlessApplication.tryCreateContext(Platform::WindowlessApplication::Configuration{}.setFlags(Platform::WindowlessApplication::Configuration::Flag::Debug)))
+        _windowlessApplication.createContext();
+    #else
+    _windowlessApplication.createContext();
+    #endif
+
+    if(Context::current().isExtensionSupported<Extensions::GL::KHR::debug>()) {
         Renderer::enable(Renderer::Feature::DebugOutput);
         Renderer::enable(Renderer::Feature::DebugOutputSynchronous);
         DebugOutput::setDefaultCallback();
@@ -77,15 +94,7 @@ std::optional<Platform::WindowlessApplication::Arguments> AbstractOpenGLTester::
 
 #define MAGNUM_VERIFY_NO_ERROR() CORRADE_COMPARE(Magnum::Renderer::error(), Magnum::Renderer::Error::NoError)
 
-#ifndef CORRADE_TARGET_WINDOWS
-#define MAGNUM_GL_TEST_MAIN(Class)                                          \
-    int main(int argc, char** argv) {                                       \
-        Magnum::Test::AbstractOpenGLTester::_windowlessApplicationArguments.emplace(argc, argv); \
-        Class t;                                                            \
-        t.registerTest(__FILE__, #Class);                                   \
-        return t.exec();                                                    \
-    }
-#else
+#ifdef CORRADE_TARGET_WINDOWS
 #define MAGNUM_GL_TEST_MAIN(Class)                                          \
     LRESULT CALLBACK windowProcedure(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam); \
     LRESULT CALLBACK windowProcedure(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) { \
@@ -96,7 +105,9 @@ std::optional<Platform::WindowlessApplication::Arguments> AbstractOpenGLTester::
                     Magnum::Test::AbstractOpenGLTester::_windowlessApplicationArguments->window = hWnd; \
                     Class t;                                                \
                     t.registerTest(__FILE__, #Class);                       \
-                    PostQuitMessage(ret = t.exec());                        \
+                    PostQuitMessage(ret = t.exec(                           \
+                        Magnum::Test::AbstractOpenGLTester::_windowlessApplicationArguments->argc, \
+                        Magnum::Test::AbstractOpenGLTester::_windowlessApplicationArguments->argv)); \
                 }                                                           \
                 break;                                                      \
             default: return DefWindowProc(hWnd, message, wParam, lParam);   \
@@ -106,6 +117,22 @@ std::optional<Platform::WindowlessApplication::Arguments> AbstractOpenGLTester::
     int main(int argc, char** argv) {                                       \
         Magnum::Test::AbstractOpenGLTester::_windowlessApplicationArguments.emplace(argc, argv, nullptr); \
         return Magnum::Platform::WindowlessApplication::create(windowProcedure); \
+    }
+#elif defined(CORRADE_TESTSUITE_TARGET_XCTEST)
+#define MAGNUM_GL_TEST_MAIN(Class)                                          \
+    int CORRADE_VISIBILITY_EXPORT corradeTestMain(int argc, char** argv) {  \
+        Magnum::Test::AbstractOpenGLTester::_windowlessApplicationArguments.emplace(argc, argv); \
+        Class t;                                                            \
+        t.registerTest(__FILE__, #Class);                                   \
+        return t.exec(argc, argv);                                          \
+    }
+#else
+#define MAGNUM_GL_TEST_MAIN(Class)                                          \
+    int main(int argc, char** argv) {                                       \
+        Magnum::Test::AbstractOpenGLTester::_windowlessApplicationArguments.emplace(argc, argv); \
+        Class t;                                                            \
+        t.registerTest(__FILE__, #Class);                                   \
+        return t.exec(argc, argv);                                          \
     }
 #endif
 

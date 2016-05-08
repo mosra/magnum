@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -78,7 +78,7 @@ typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 
 class AnimableObject: public Object3D, SceneGraph::Animable3D {
     public:
-        AnimableObject(Object3D* parent = nullptr, SceneGraph::DrawableGroup3D* group = nullptr): Object3D{parent}, SceneGraph::Animable3D{*this, group} {
+        AnimableObject(Object3D* parent = nullptr, SceneGraph::AnimableGroup3D* group = nullptr): Object3D{parent}, SceneGraph::Animable3D{*this, group} {
             setDuration(10.0f);
             // ...
         }

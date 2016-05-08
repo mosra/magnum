@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -28,6 +28,7 @@
 #include <Corrade/Utility/Assert.h>
 
 #include "Magnum/AbstractTexture.h"
+#include "Magnum/CubeMapTexture.h"
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 #include "Magnum/BufferTexture.h"
 #endif
@@ -135,6 +136,7 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         setBufferImplementation = &BufferTexture::setBufferImplementationDSA;
         setBufferRangeImplementation = &BufferTexture::setBufferRangeImplementationDSA;
 
+        getCubeLevelParameterivImplementation = &CubeMapTexture::getLevelParameterImplementationDSA;
         cubeSubImageImplementation = &CubeMapTexture::subImageImplementationDSA;
         cubeCompressedSubImageImplementation = &CubeMapTexture::compressedSubImageImplementationDSA;
 
@@ -159,6 +161,7 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         setBufferImplementation = &BufferTexture::setBufferImplementationDSAEXT;
         setBufferRangeImplementation = &BufferTexture::setBufferRangeImplementationDSAEXT;
 
+        getCubeLevelParameterivImplementation = &CubeMapTexture::getLevelParameterImplementationDSAEXT;
         cubeSubImageImplementation = &CubeMapTexture::subImageImplementationDSAEXT;
         cubeCompressedSubImageImplementation = &CubeMapTexture::compressedSubImageImplementationDSAEXT;
 
@@ -195,6 +198,9 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         setBufferRangeImplementation = &BufferTexture::setBufferRangeImplementationDefault;
         #endif
 
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        getCubeLevelParameterivImplementation = &CubeMapTexture::getLevelParameterImplementationDefault;
+        #endif
         cubeSubImageImplementation = &CubeMapTexture::subImageImplementationDefault;
         cubeCompressedSubImageImplementation = &CubeMapTexture::compressedSubImageImplementationDefault;
     }
@@ -214,6 +220,23 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     }
 
     #ifndef MAGNUM_TARGET_GLES
+    /* Compressed cubemap image size query implementation (extensions added
+       above) */
+    if((context.detectedDriver() & Context::DetectedDriver::NVidia) &&
+        !context.isDriverWorkaroundDisabled("nv-cubemap-inconsistent-compressed-image-size")) {
+        if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>())
+            getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDSANonImmutableWorkaround;
+        else if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>())
+            getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDSAEXTImmutableWorkaround;
+        else getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDefaultImmutableWorkaround;
+    } else {
+        if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>())
+            getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDSA;
+        else if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>())
+            getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDSAEXT;
+        else getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDefault;
+    }
+
     /* Image retrieval implementation */
     if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
         /* Extension name added above */
@@ -255,6 +278,15 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         getCubeImageImplementation = &CubeMapTexture::getImageImplementationDefault;
         getCompressedCubeImageImplementation = &CubeMapTexture::getCompressedImageImplementationDefault;
     }
+
+    /* Full compressed cubemap image query implementation (extensions added
+       above) */
+    if((context.detectedDriver() & Context::DetectedDriver::NVidia) &&
+        context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>() &&
+        !context.isDriverWorkaroundDisabled("nv-cubemap-broken-full-compressed-image-query"))
+        getFullCompressedCubeImageImplementation = &CubeMapTexture::getCompressedImageImplementationDSASingleSliceWorkaround;
+    else
+        getFullCompressedCubeImageImplementation = &CubeMapTexture::getCompressedImageImplementationDSA;
     #endif
 
     /* Texture storage implementation for desktop and ES */
@@ -343,16 +375,42 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         setMaxAnisotropyImplementation = &AbstractTexture::setMaxAnisotropyImplementationExt;
     } else setMaxAnisotropyImplementation = &AbstractTexture::setMaxAnisotropyImplementationNoOp;
 
-    /* Resize bindings array to hold all possible texture units */
+    #ifndef MAGNUM_TARGET_GLES
+    /* NVidia workaround for compressed block data size implementation */
+    if((context.detectedDriver() & Context::DetectedDriver::NVidia) &&
+        !context.isDriverWorkaroundDisabled("nv-compressed-block-size-in-bits"))
+        compressedBlockDataSizeImplementation = &AbstractTexture::compressedBlockDataSizeImplementationBitsWorkaround;
+    else
+        compressedBlockDataSizeImplementation = &AbstractTexture::compressedBlockDataSizeImplementationDefault;
+    #endif
+
+    /* Allocate texture bindings array to hold all possible texture units */
     glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxTextureUnits);
     CORRADE_INTERNAL_ASSERT(maxTextureUnits > 0);
-    bindings.resize(maxTextureUnits);
+    bindings = Containers::Array<std::pair<GLenum, GLuint>>{Containers::ValueInit, std::size_t(maxTextureUnits)};
+
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    /* Allocate image bindings array to hold all possible image units */
+    #ifndef MAGNUM_TARGET_GLES
+    if(context.isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())
+    #else
+    if(context.isVersionSupported(Version::GLES310))
+    #endif
+    {
+        GLint maxImageUnits;
+        glGetIntegerv(GL_MAX_IMAGE_UNITS, &maxImageUnits);
+        imageBindings = Containers::Array<std::tuple<GLuint, GLint, GLboolean, GLint, GLenum>>{Containers::ValueInit, std::size_t(maxImageUnits)};
+    }
+    #endif
 }
 
 TextureState::~TextureState() = default;
 
 void TextureState::reset() {
     std::fill_n(bindings.begin(), bindings.size(), std::pair<GLenum, GLuint>{{}, State::DisengagedBinding});
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    std::fill_n(imageBindings.begin(), imageBindings.size(), std::tuple<GLuint, GLint, GLboolean, GLint, GLenum>{State::DisengagedBinding, 0, false, 0, 0});
+    #endif
 }
 
 }}

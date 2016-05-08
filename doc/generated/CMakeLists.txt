@@ -1,7 +1,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -34,6 +34,8 @@ find_package(Magnum REQUIRED
     Shaders
     Sdl2Application)
 
+set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
+
 if(CORRADE_TARGET_APPLE)
     find_package(Magnum REQUIRED WindowlessCglApplication)
 elseif(CORRADE_TARGET_UNIX)
@@ -46,22 +48,17 @@ endif()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
-
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CORRADE_CXX_FLAGS}")
-include_directories(${MAGNUM_INCLUDE_DIRS}
-    ${MAGNUM_APPLICATION_INCLUDE_DIRS}
-    ${MAGNUM_WINDOWLESSAPPLICATION_INCLUDE_DIRS})
 
 add_executable(hello hello.cpp)
 target_link_libraries(hello
-    ${MAGNUM_LIBRARIES}
-    ${MAGNUM_APPLICATION_LIBRARIES})
+    Magnum::Magnum
+    Magnum::Application)
 
 add_executable(shaders shaders.cpp)
+target_include_directories(shaders PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(shaders
-    ${MAGNUM_LIBRARIES}
-    ${MAGNUM_MESHTOOLS_LIBRARIES}
-    ${MAGNUM_PRIMITIVES_LIBRARIES}
-    ${MAGNUM_SHADERS_LIBRARIES}
-    ${MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES})
+    Magnum::Magnum
+    Magnum::MeshTools
+    Magnum::Primitives
+    Magnum::Shaders
+    Magnum::WindowlessApplication)

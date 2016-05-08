@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -156,6 +156,28 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
             #else
             AbstractTexture{NoCreate, GL_TEXTURE_BUFFER_EXT} {}
             #endif
+
+        /**
+         * @brief Bind texture to given image unit
+         * @param imageUnit Image unit
+         * @param access    Image access
+         * @param format    Image format
+         *
+         * @note This function is meant to be used only internally from
+         *      @ref AbstractShaderProgram subclasses. See its documentation
+         *      for more information.
+         * @see @ref bindImages(Int, std::initializer_list<AbstractTexture*>),
+         *      @ref unbindImage(), @ref unbindImages(),
+         *      @ref AbstractShaderProgram::maxImageUnits(),
+         *      @fn_gl{BindImageTexture}
+         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
+         * @requires_gles31 Shader image load/store is not available in OpenGL
+         *      ES 3.0 and older.
+         * @requires_gles Shader image load/store is not available in WebGL.
+         */
+        void bindImage(Int imageUnit, ImageAccess access, ImageFormat format) {
+            bindImageInternal(imageUnit, 0, false, 0, access, format);
+        }
 
         /**
          * @brief Set texture buffer

@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -37,10 +37,10 @@
 namespace Magnum {
 
 Vector2i RectangleTexture::maxSize() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
         return {};
 
-    GLint& value = Context::current()->state().texture->maxRectangleSize;
+    GLint& value = Context::current().state().texture->maxRectangleSize;
 
     if(value == 0)
         glGetIntegerv(GL_MAX_RECTANGLE_TEXTURE_SIZE, &value);
@@ -75,6 +75,16 @@ Image2D RectangleTexture::subImage(const Range2Di& range, Image2D&& image) {
 
 BufferImage2D RectangleTexture::subImage(const Range2Di& range, BufferImage2D&& image, const BufferUsage usage) {
     this->subImage(range, image, usage);
+    return std::move(image);
+}
+
+CompressedImage2D RectangleTexture::compressedSubImage(const Range2Di& range, CompressedImage2D&& image) {
+    compressedSubImage(range, image);
+    return std::move(image);
+}
+
+CompressedBufferImage2D RectangleTexture::compressedSubImage(const Range2Di& range, CompressedBufferImage2D&& image, const BufferUsage usage) {
+    compressedSubImage(range, image, usage);
     return std::move(image);
 }
 

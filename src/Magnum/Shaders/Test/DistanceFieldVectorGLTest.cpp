@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -42,12 +42,22 @@ DistanceFieldVectorGLTest::DistanceFieldVectorGLTest() {
 
 void DistanceFieldVectorGLTest::compile2D() {
     Shaders::DistanceFieldVector2D shader;
-    CORRADE_VERIFY(shader.validate().first);
+    {
+        #ifdef CORRADE_TARGET_APPLE
+        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
 }
 
 void DistanceFieldVectorGLTest::compile3D() {
     Shaders::DistanceFieldVector3D shader;
-    CORRADE_VERIFY(shader.validate().first);
+    {
+        #ifdef CORRADE_TARGET_APPLE
+        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
 }
 
 }}}

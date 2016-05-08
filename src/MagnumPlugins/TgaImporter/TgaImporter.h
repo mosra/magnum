@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -60,8 +60,8 @@ This plugin is built if `WITH_TGAIMPORTER` is enabled when building Magnum. To
 use dynamic plugin, you need to load `TgaImporter` plugin from
 `MAGNUM_PLUGINS_IMPORTER_DIR`. To use static plugin or use this as a dependency
 of another plugin, you need to request `TgaImporter` component of `Magnum`
-package in CMake and link to `${MAGNUM_TGAIMPORTER_LIBRARIES}`. See
-@ref building, @ref cmake and @ref plugins for more information.
+package in CMake and link to `Magnum::TgaImporter` target. See @ref building,
+@ref cmake and @ref plugins for more information.
 
 The images are imported with @ref PixelType::UnsignedByte and @ref PixelFormat::RGB,
 @ref PixelFormat::RGBA or @ref PixelFormat::Red, respectively. Grayscale images

@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -37,7 +37,7 @@ Minimal set of tools and libraries required for building is:
     On Windows you can also use **MinGW-w64**. GCC 4.6, 4.5, 4.4 and MSVC 2013
     support involves some ugly workarounds and thus is available only in
     `compatibility` branch.
--   **CMake** >= 2.8.9
+-   **CMake** >= 2.8.12
 -   **Corrade** - Plugin management and utility library. See
     @ref building-corrade "Corrade download and installation guide" for more
     information.
@@ -162,11 +162,16 @@ By default the engine is built for desktop OpenGL. Using `TARGET_*` CMake
 parameters you can target other platforms. Note that some features are
 available for desktop OpenGL only, see @ref requires-gl.
 
- - `TARGET_GLES` - Target OpenGL ES.
- - `TARGET_GLES2` - Target OpenGL ES 2.0. Currently enabled by default when
-   `TARGET_GLES` is set.
- - `TARGET_DESKTOP_GLES` - Target OpenGL ES on desktop, i.e. use OpenGL ES
-   emulation in desktop OpenGL library. Might not be supported in all drivers.
+-   `TARGET_GLES` -- Target OpenGL ES.
+-   `TARGET_GLES2` -- Target OpenGL ES 2.0. Currently enabled by default when
+    `TARGET_GLES` is set.
+-   `TARGET_DESKTOP_GLES` -- Target OpenGL ES on desktop, i.e. use OpenGL ES
+    emulation in desktop OpenGL library. Might not be supported in all drivers.
+-   `TARGET_HEADLESS` -- Build command-line utilities for use on a headless
+    machine. Basically it means that EGL with no display attachment is being
+    used everywhere instead of platform-specific toolkits like CGL, GLX or WGL.
+    Supported mainly on OpenGL ES drivers, for desktop OpenGL the only driver
+    that supports this configuration is NVidia >= 355.
 
 The features used can be conveniently detected in depending projects both in
 CMake and C++ sources, see @ref cmake and @ref Magnum/Magnum.h for more
@@ -201,13 +206,16 @@ need at least one). Choose the one which suits your requirements and your
 platform best:
 
 -   `WITH_ANDROIDAPPLICATION` - @ref Platform::AndroidApplication "AndroidApplication"
+-   `WITH_GLFWAPPLICATION` - @ref Platform::GlfwApplication "GlfwApplication"
 -   `WITH_GLUTAPPLICATION` - @ref Platform::GlutApplication "GlutApplication"
 -   `WITH_GLXAPPLICATION` - @ref Platform::GlxApplication "GlxApplication"
 -   `WITH_NACLAPPLICATION` - @ref Platform::NaClApplication "NaClApplication"
 -   `WITH_SDL2APPLICATION` - @ref Platform::Sdl2Application "Sdl2Application"
 -   `WITH_XEGLAPPLICATION` - @ref Platform::XEglApplication "XEglApplication"
 -   `WITH_WINDOWLESSCGLAPPLICATION` - @ref Platform::WindowlessCglApplication "WindowlessCglApplication"
+-   `WITH_WINDOWLESSEGLAPPLICATION` - @ref Platform::WindowlessEglApplication "WindowlessEglApplication"
 -   `WITH_WINDOWLESSGLXAPPLICATION` - @ref Platform::WindowlessGlxApplication "WindowlessGlxApplication"
+-   `WITH_WINDOWLESSIOSAPPLICATION` - @ref Platform::WindowlessIosApplication "WindowlessIosApplication"
 -   `WITH_WINDOWLESSNACLAPPLICATION` - @ref Platform::WindowlessNaClApplication "WindowlessNaClApplication"
 -   `WITH_WINDOWLESSWGLAPPLICATION` - @ref Platform::WindowlessWglApplication "WindowlessWglApplication"
 -   `WITH_WINDOWLESSWINDOWSEGLAPPLICATION` - @ref Platform::WindowlessWindowsEglApplication "WindowlessWindowsEglApplication"
@@ -330,6 +338,13 @@ This will compile binary and development packages, which will then appear in
 parent directory. If you need to modify CMake flags (enabling/disabling some
 features, for example), modify the last entry in `debian/rules`.
 
+@subsection building-packages-brew Homebrew formulas
+
+OS X Homebrew formulas are in `package/homebrew` directory. Either use the
+`*.rb` files directly or use the tap at https://github.com/mosra/homebrew-magnum:
+
+    brew install --HEAD mosra/magnum/magnum
+
 @section building-windows-angle Building for ANGLE on Windows
 
 Magnum is able to run on ANGLE OpenGL-to-D3D translator. Download the code from
@@ -361,6 +376,10 @@ contents in `toolchains/` subdirectory.
 
     git submodule init
     git submodule update
+
+Note that CMake for some reason treats `CMAKE_PREFIX_PATH` and
+`CMAKE_INSTALL_PREFIX` differently while crosscompiling and you may need to set
+also `CMAKE_FIND_ROOT_PATH` to make it able to find the dependencies.
 
 @subsection building-cross-winrt Crosscompiling for Windows RT
 
@@ -444,7 +463,6 @@ in `CMAKE_PREFIX_PATH`.
 
     mkdir build-nacl-x86-32 && cd build-nacl-x86-32
     cmake .. \
-        -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
         -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/NaCl-newlib-x86-32.cmake" \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_PREFIX_PATH=/usr/nacl \
@@ -455,7 +473,6 @@ in `CMAKE_PREFIX_PATH`.
 
     mkdir build-nacl-x86-64 && cd build-nacl-x86-64
     cmake .. \
-        -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
         -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/NaCl-newlib-x86-64.cmake" \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_PREFIX_PATH=/usr/nacl \
@@ -494,7 +511,6 @@ equivalent) by disabling `TARGET_GLES2`.
 
     mkdir build-emscripten && cd build-emscripten
     cmake .. \
-        -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
         -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Emscripten.cmake" \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_PREFIX_PATH=/usr/lib/emscripten/system \
@@ -514,6 +530,40 @@ information.
 
 See @ref Platform::Sdl2Application documentation for more information about
 building your projects for Emscripten.
+
+@subsection building-cross-ios Crosscompiling for iOS
+
+You will need OSX and Xcode installed.
+
+Set `CMAKE_OSX_ROOT` to SDK you want to target and enable all desired
+architectures in `CMAKE_OSX_ARCHITECTURES`. The toolchain needs access to its
+platform file, so be sure to properly set **absolute** path to `modules/`
+directory containing `Platform/iOS.cmake`. Set `CMAKE_INSTALL_PREFIX` to prefix
+where you store other iOS dependencies such as Corrade or SDL2.
+
+As every application is in its own sandbox, it doesn't make sense to build
+shared libraries (although it is supported). Enable `BUILD_STATIC` to build
+static libraries. You might also have problems using dynamic plugins, enable
+`BUILD_PLUGINS_STATIC` to build also plugins as static. OpenGL ES 2.0 is
+enabled by default, switch to 3.0 by disabling `TARGET_GLES2`.
+
+    mkdir build-ios && cd build-ios
+    cmake .. \
+        -DCMAKE_TOOLCHAIN_FILE=../toolchains/generic/iOS.cmake \
+        -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk \
+        -DCMAKE_OSX_ARCHITECTURES="arm64;armv7;armv7s" \
+        -DCMAKE_INSTALL_PREFIX=~/ios-libs \
+        -DBUILD_STATIC=ON -DBUILD_PLUGINS_STATIC=ON \
+        -DTARGET_GLES2=OFF \
+        -DWITH_SDL2APPLICATION=ON \
+        -G Xcode
+    cmake --build .
+
+Then you can install the library using `cmake --build . --target install` to
+make it available for depending projects.
+
+See @ref Platform::Sdl2Application documentation for more information about
+building your projects for iOS.
 
 @subsection building-cross-android Crosscompiling for Android ARM and x86
 
@@ -537,7 +587,6 @@ built for OpenGL ES 2.0 by default, switch  to 3.0 by disabling `TARGET_GLES2`.
 
     mkdir build-android-arm && cd build-android-arm
     cmake .. \
-        -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
         -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Android-ARM.cmake" \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_PREFIX_PATH=/opt/android-ndk/platforms/android-19/arch-arm/usr \
@@ -548,7 +597,6 @@ built for OpenGL ES 2.0 by default, switch  to 3.0 by disabling `TARGET_GLES2`.
 
     mkdir build-android-x86 && cd build-android-x86
     cmake .. \
-        -DCMAKE_MODULE_PATH="/absolute/path/to/toolchains/modules" \
         -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Android-x86.cmake" \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_PREFIX_PATH=/opt/android-ndk/platforms/android-19/arch-x86/usr \
@@ -597,8 +645,8 @@ replace `localhost:8080` with your server name, replace `update-job` with
     java -jar ~/jenkins-cli.jar -s http://localhost:8080 update-job Magnum-GLTests < package/ci/jenkins-gltests.xml
 
 Build is done using **Ninja** build system and everything possible is enabled,
-thus you need also **SDL2**, **GLUT** and **OpenAL** libraries. It expects
-that **GCC** >= 4.9, 4.8, 4.7 and **Clang** are installed and there
+thus you need also **SDL2**, **GLFW**, **GLUT** and **OpenAL** libraries. It
+expects that **GCC** >= 4.9, 4.8, 4.7 and **Clang** are installed and there
 are **OpenGL**, **OpenGL ES 2.0** and **OpenGL ES 3.0** librares as it tries to
 compile the library with every combination of them. You can add/remove the axes
 in `axes/hudson.matrix.TextAxis` or via the web interface later.

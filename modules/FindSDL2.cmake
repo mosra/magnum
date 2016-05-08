@@ -1,16 +1,22 @@
-# - Find SDL2
+#.rst:
+# Find SDL2
+# ---------
 #
-# This module defines:
+# Finds the SDL2 library. This module defines:
 #
 #  SDL2_FOUND               - True if SDL2 library is found
-#  SDL2_LIBRARY             - SDL2 dynamic library
-#  SDL2_INCLUDE_DIR         - Include dir
+#  SDL2::SDL2               - SDL2 imported target
+#
+# Additionally these variables are defined for internal usage:
+#
+#  SDL2_LIBRARY             - SDL2 library
+#  SDL2_INCLUDE_DIR         - Root include dir
 #
 
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -61,7 +67,61 @@ find_path(SDL2_INCLUDE_DIR
     NAMES SDL_scancode.h
     PATH_SUFFIXES ${_SDL2_PATH_SUFFIXES})
 
+# iOS dependencies
+if(CORRADE_TARGET_IOS)
+    set(_SDL2_FRAMEWORKS
+        AudioToolbox
+        CoreGraphics
+        CoreMotion
+        Foundation
+        GameController
+        QuartzCore
+        UIKit)
+    set(_SDL2_FRAMEWORK_LIBRARIES )
+    foreach(framework ${_SDL2_FRAMEWORKS})
+        find_library(_SDL2_${framework}_LIBRARY ${framework})
+        list(APPEND _SDL2_FRAMEWORK_LIBRARIES ${_SDL2_${framework}_LIBRARY})
+        list(APPEND _SDL2_FRAMEWORK_LIBRARY_NAMES _SDL2_${framework}_LIBRARY)
+    endforeach()
+endif()
+
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args("SDL2" DEFAULT_MSG
     ${SDL2_LIBRARY_NEEDED}
+    ${_SDL2_FRAMEWORK_LIBRARY_NAMES}
     SDL2_INCLUDE_DIR)
+
+if(NOT TARGET SDL2::SDL2)
+    if(SDL2_LIBRARY_NEEDED)
+        add_library(SDL2::SDL2 UNKNOWN IMPORTED)
+
+        # Work around BUGGY framework support on OSX
+        # https://cmake.org/Bug/view.php?id=14105
+        if(CORRADE_TARGET_APPLE AND ${SDL2_LIBRARY} MATCHES "\\.framework$")
+            set_property(TARGET SDL2::SDL2 PROPERTY IMPORTED_LOCATION ${SDL2_LIBRARY}/SDL2)
+        else()
+            set_property(TARGET SDL2::SDL2 PROPERTY IMPORTED_LOCATION ${SDL2_LIBRARY})
+        endif()
+
+        # Link frameworks on iOS
+        if(CORRADE_TARGET_IOS)
+            set_property(TARGET SDL2::SDL2 APPEND PROPERTY
+                INTERFACE_LINK_LIBRARIES ${_SDL2_FRAMEWORK_LIBRARIES})
+        endif()
+
+        # Link also EGL library, if on ES (and not on WebGL)
+        if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_DESKTOP_GLES AND NOT MAGNUM_TARGET_WEBGL)
+            find_package(EGL REQUIRED)
+            set_property(TARGET SDL2::SDL2 APPEND PROPERTY
+                INTERFACE_LINK_LIBRARIES EGL::EGL)
+        endif()
+    else()
+        # This won't work in CMake 2.8.12, but that affects Emscripten only so
+        # I assume people building for that are not on that crap old Ubuntu
+        # 14.04 LTS
+        add_library(SDL2::SDL2 INTERFACE IMPORTED)
+    endif()
+
+    set_property(TARGET SDL2::SDL2 PROPERTY
+        INTERFACE_INCLUDE_DIRECTORIES ${SDL2_INCLUDE_DIR})
+endif()

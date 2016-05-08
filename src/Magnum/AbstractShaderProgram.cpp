@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -50,7 +50,7 @@ namespace Implementation {
 }
 
 Int AbstractShaderProgram::maxVertexAttributes() {
-    GLint& value = Context::current()->state().shaderProgram->maxVertexAttributes;
+    GLint& value = Context::current().state().shaderProgram->maxVertexAttributes;
 
     /* Get the value, if not already cached */
     if(value == 0)
@@ -62,13 +62,13 @@ Int AbstractShaderProgram::maxVertexAttributes() {
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 Int AbstractShaderProgram::maxAtomicCounterBufferSize() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>())
     #else
-    if(!Context::current()->isVersionSupported(Version::GLES310))
+    if(!Context::current().isVersionSupported(Version::GLES310))
     #endif
         return 0;
 
-    GLint& value = Context::current()->state().shaderProgram->maxAtomicCounterBufferSize;
+    GLint& value = Context::current().state().shaderProgram->maxAtomicCounterBufferSize;
 
     if(value == 0)
         glGetIntegerv(GL_MAX_ATOMIC_COUNTER_BUFFER_SIZE, &value);
@@ -78,13 +78,13 @@ Int AbstractShaderProgram::maxAtomicCounterBufferSize() {
 
 Int AbstractShaderProgram::maxComputeSharedMemorySize() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::compute_shader>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::compute_shader>())
     #else
-    if(!Context::current()->isVersionSupported(Version::GLES310))
+    if(!Context::current().isVersionSupported(Version::GLES310))
     #endif
         return 0;
 
-    GLint& value = Context::current()->state().shaderProgram->maxComputeSharedMemorySize;
+    GLint& value = Context::current().state().shaderProgram->maxComputeSharedMemorySize;
 
     if(value == 0)
         glGetIntegerv(GL_MAX_COMPUTE_SHARED_MEMORY_SIZE, &value);
@@ -94,13 +94,13 @@ Int AbstractShaderProgram::maxComputeSharedMemorySize() {
 
 Int AbstractShaderProgram::maxComputeWorkGroupInvocations() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::compute_shader>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::compute_shader>())
     #else
-    if(!Context::current()->isVersionSupported(Version::GLES310))
+    if(!Context::current().isVersionSupported(Version::GLES310))
     #endif
         return 0;
 
-    GLint& value = Context::current()->state().shaderProgram->maxComputeWorkGroupInvocations;
+    GLint& value = Context::current().state().shaderProgram->maxComputeWorkGroupInvocations;
 
     if(value == 0)
         glGetIntegerv(GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, &value);
@@ -108,15 +108,53 @@ Int AbstractShaderProgram::maxComputeWorkGroupInvocations() {
     return value;
 }
 
+Vector3i AbstractShaderProgram::maxComputeWorkGroupCount() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::compute_shader>())
+    #else
+    if(!Context::current().isVersionSupported(Version::GLES310))
+    #endif
+        return {};
+
+    Vector3i& value = Context::current().state().shaderProgram->maxComputeWorkGroupCount;
+
+    if(value.isZero()) {
+        glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 0, &value.x());
+        glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 1, &value.y());
+        glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 2, &value.z());
+    }
+
+    return value;
+}
+
+Vector3i AbstractShaderProgram::maxComputeWorkGroupSize() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::compute_shader>())
+    #else
+    if(!Context::current().isVersionSupported(Version::GLES310))
+    #endif
+        return {};
+
+    Vector3i& value = Context::current().state().shaderProgram->maxComputeWorkGroupSize;
+
+    if(value.isZero()) {
+        glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 0, &value.x());
+        glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 1, &value.y());
+        glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 2, &value.z());
+    }
+
+    return value;
+}
+
 Int AbstractShaderProgram::maxImageUnits() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())
     #else
-    if(!Context::current()->isVersionSupported(Version::GLES310))
+    if(!Context::current().isVersionSupported(Version::GLES310))
     #endif
         return 0;
 
-    GLint& value = Context::current()->state().shaderProgram->maxImageUnits;
+    GLint& value = Context::current().state().shaderProgram->maxImageUnits;
 
     if(value == 0)
         glGetIntegerv(GL_MAX_IMAGE_UNITS, &value);
@@ -127,10 +165,10 @@ Int AbstractShaderProgram::maxImageUnits() {
 
 #ifndef MAGNUM_TARGET_GLES
 Int AbstractShaderProgram::maxImageSamples() {
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())
         return 0;
 
-    GLint& value = Context::current()->state().shaderProgram->maxImageSamples;
+    GLint& value = Context::current().state().shaderProgram->maxImageSamples;
 
     if(value == 0)
         glGetIntegerv(GL_MAX_IMAGE_SAMPLES, &value);
@@ -143,13 +181,13 @@ Int AbstractShaderProgram::maxImageSamples() {
 #ifndef MAGNUM_TARGET_WEBGL
 Int AbstractShaderProgram::maxCombinedShaderOutputResources() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_storage_buffer_object>() || !Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::shader_storage_buffer_object>() || !Context::current().isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())
     #else
-    if(!Context::current()->isVersionSupported(Version::GLES310))
+    if(!Context::current().isVersionSupported(Version::GLES310))
     #endif
         return 0;
 
-    GLint& value = Context::current()->state().shaderProgram->maxCombinedShaderOutputResources;
+    GLint& value = Context::current().state().shaderProgram->maxCombinedShaderOutputResources;
 
     if(value == 0)
         glGetIntegerv(GL_MAX_COMBINED_SHADER_OUTPUT_RESOURCES, &value);
@@ -159,13 +197,13 @@ Int AbstractShaderProgram::maxCombinedShaderOutputResources() {
 
 Long AbstractShaderProgram::maxShaderStorageBlockSize() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::shader_storage_buffer_object>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::shader_storage_buffer_object>())
     #else
-    if(!Context::current()->isVersionSupported(Version::GLES310))
+    if(!Context::current().isVersionSupported(Version::GLES310))
     #endif
         return 0;
 
-    GLint64& value = Context::current()->state().shaderProgram->maxShaderStorageBlockSize;
+    GLint64& value = Context::current().state().shaderProgram->maxShaderStorageBlockSize;
 
     if(value == 0)
         glGetInteger64v(GL_MAX_SHADER_STORAGE_BLOCK_SIZE, &value);
@@ -176,11 +214,11 @@ Long AbstractShaderProgram::maxShaderStorageBlockSize() {
 
 Int AbstractShaderProgram::maxUniformBlockSize() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::uniform_buffer_object>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::uniform_buffer_object>())
         return 0;
     #endif
 
-    GLint& value = Context::current()->state().shaderProgram->maxUniformBlockSize;
+    GLint& value = Context::current().state().shaderProgram->maxUniformBlockSize;
 
     if(value == 0)
         glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE, &value);
@@ -191,13 +229,13 @@ Int AbstractShaderProgram::maxUniformBlockSize() {
 #ifndef MAGNUM_TARGET_WEBGL
 Int AbstractShaderProgram::maxUniformLocations() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>())
     #else
-    if(!Context::current()->isVersionSupported(Version::GLES310))
+    if(!Context::current().isVersionSupported(Version::GLES310))
     #endif
         return 0;
 
-    GLint& value = Context::current()->state().shaderProgram->maxUniformLocations;
+    GLint& value = Context::current().state().shaderProgram->maxUniformLocations;
 
     if(value == 0)
         glGetIntegerv(GL_MAX_UNIFORM_LOCATIONS, &value);
@@ -208,11 +246,11 @@ Int AbstractShaderProgram::maxUniformLocations() {
 
 Int AbstractShaderProgram::minTexelOffset() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::gpu_shader4>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::gpu_shader4>())
         return 0;
     #endif
 
-    GLint& value = Context::current()->state().shaderProgram->minTexelOffset;
+    GLint& value = Context::current().state().shaderProgram->minTexelOffset;
 
     if(value == 0)
         glGetIntegerv(GL_MIN_PROGRAM_TEXEL_OFFSET, &value);
@@ -222,11 +260,11 @@ Int AbstractShaderProgram::minTexelOffset() {
 
 Int AbstractShaderProgram::maxTexelOffset() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::gpu_shader4>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::gpu_shader4>())
         return 0;
     #endif
 
-    GLint& value = Context::current()->state().shaderProgram->maxTexelOffset;
+    GLint& value = Context::current().state().shaderProgram->maxTexelOffset;
 
     if(value == 0)
         glGetIntegerv(GL_MAX_PROGRAM_TEXEL_OFFSET, &value);
@@ -245,7 +283,7 @@ AbstractShaderProgram::AbstractShaderProgram(AbstractShaderProgram&& other) noex
 
 AbstractShaderProgram::~AbstractShaderProgram() {
     /* Remove current usage from the state */
-    GLuint& current = Context::current()->state().shaderProgram->current;
+    GLuint& current = Context::current().state().shaderProgram->current;
     if(current == _id) current = 0;
 
     if(_id) glDeleteProgram(_id);
@@ -260,17 +298,17 @@ AbstractShaderProgram& AbstractShaderProgram::operator=(AbstractShaderProgram&& 
 #ifndef MAGNUM_TARGET_WEBGL
 std::string AbstractShaderProgram::label() const {
     #ifndef MAGNUM_TARGET_GLES
-    return Context::current()->state().debug->getLabelImplementation(GL_PROGRAM, _id);
+    return Context::current().state().debug->getLabelImplementation(GL_PROGRAM, _id);
     #else
-    return Context::current()->state().debug->getLabelImplementation(GL_PROGRAM_KHR, _id);
+    return Context::current().state().debug->getLabelImplementation(GL_PROGRAM_KHR, _id);
     #endif
 }
 
 AbstractShaderProgram& AbstractShaderProgram::setLabelInternal(const Containers::ArrayView<const char> label) {
     #ifndef MAGNUM_TARGET_GLES
-    Context::current()->state().debug->labelImplementation(GL_PROGRAM, _id, label);
+    Context::current().state().debug->labelImplementation(GL_PROGRAM, _id, label);
     #else
-    Context::current()->state().debug->labelImplementation(GL_PROGRAM_KHR, _id, label);
+    Context::current().state().debug->labelImplementation(GL_PROGRAM_KHR, _id, label);
     #endif
     return *this;
 }
@@ -294,9 +332,16 @@ std::pair<bool, std::string> AbstractShaderProgram::validate() {
     return {success, std::move(message)};
 }
 
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+void AbstractShaderProgram::dispatchCompute(const Vector3ui& workgroupCount) {
+    use();
+    glDispatchCompute(workgroupCount.x(), workgroupCount.y(), workgroupCount.z());
+}
+#endif
+
 void AbstractShaderProgram::use() {
     /* Use only if the program isn't already in use */
-    GLuint& current = Context::current()->state().shaderProgram->current;
+    GLuint& current = Context::current().state().shaderProgram->current;
     if(current != _id) glUseProgram(current = _id);
 }
 
@@ -361,7 +406,7 @@ bool AbstractShaderProgram::link(std::initializer_list<std::reference_wrapper<Ab
 
         /* Show error log */
         if(!success) {
-            auto out = Error::noNewlineAtTheEnd();
+            Error out{Debug::Flag::NoNewlineAtTheEnd};
             out << "AbstractShaderProgram::link(): linking";
             if(shaders.size() != 1) {
                 #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID)
@@ -374,7 +419,7 @@ bool AbstractShaderProgram::link(std::initializer_list<std::reference_wrapper<Ab
 
         /* Or just warnings, if any */
         } else if(!message.empty() && !Implementation::isProgramLinkLogEmpty(message)) {
-            auto out = Warning::noNewlineAtTheEnd();
+            Warning out{Debug::Flag::NoNewlineAtTheEnd};
             out << "AbstractShaderProgram::link(): linking";
             if(shaders.size() != 1) {
                 #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID)
@@ -395,14 +440,23 @@ bool AbstractShaderProgram::link(std::initializer_list<std::reference_wrapper<Ab
 }
 
 Int AbstractShaderProgram::uniformLocationInternal(const Containers::ArrayView<const char> name) {
-    GLint location = glGetUniformLocation(_id, name);
+    const GLint location = glGetUniformLocation(_id, name);
     if(location == -1)
-        Warning() << "AbstractShaderProgram: location of uniform \'" + std::string{name, name.size()} + "\' cannot be retrieved!";
+        Warning() << "AbstractShaderProgram: location of uniform \'" << Debug::nospace << std::string{name, name.size()} << Debug::nospace << "\' cannot be retrieved";
     return location;
 }
 
+#ifndef MAGNUM_TARGET_GLES2
+UnsignedInt AbstractShaderProgram::uniformBlockIndexInternal(const Containers::ArrayView<const char> name) {
+    const GLuint index = glGetUniformBlockIndex(_id, name);
+    if(index == GL_INVALID_INDEX)
+        Warning() << "AbstractShaderProgram: index of uniform block \'" << Debug::nospace << std::string{name, name.size()} << Debug::nospace << "\' cannot be retrieved";
+    return index;
+}
+#endif
+
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Float> values) {
-    (this->*Context::current()->state().shaderProgram->uniform1fvImplementation)(location, values.size(), values);
+    (this->*Context::current().state().shaderProgram->uniform1fvImplementation)(location, values.size(), values);
 }
 
 void AbstractShaderProgram::uniformImplementationDefault(const GLint location, const GLsizei count, const GLfloat* const values) {
@@ -430,7 +484,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint locat
 #endif
 
 void AbstractShaderProgram::setUniform(const Int location,  const Containers::ArrayView<const Math::Vector<2, Float>> values) {
-    (this->*Context::current()->state().shaderProgram->uniform2fvImplementation)(location, values.size(), values);
+    (this->*Context::current().state().shaderProgram->uniform2fvImplementation)(location, values.size(), values);
 }
 
 void AbstractShaderProgram::uniformImplementationDefault(const GLint location, const GLsizei count, const Math::Vector<2, GLfloat>* const values) {
@@ -458,7 +512,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint locat
 #endif
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::Vector<3, Float>> values) {
-    (this->*Context::current()->state().shaderProgram->uniform3fvImplementation)(location, values.size(), values);
+    (this->*Context::current().state().shaderProgram->uniform3fvImplementation)(location, values.size(), values);
 }
 
 void AbstractShaderProgram::uniformImplementationDefault(const GLint location, const GLsizei count, const Math::Vector<3, GLfloat>* const values) {
@@ -486,7 +540,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint locat
 #endif
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::Vector<4, Float>> values) {
-    (this->*Context::current()->state().shaderProgram->uniform4fvImplementation)(location, values.size(), values);
+    (this->*Context::current().state().shaderProgram->uniform4fvImplementation)(location, values.size(), values);
 }
 
 void AbstractShaderProgram::uniformImplementationDefault(const GLint location, const GLsizei count, const Math::Vector<4, GLfloat>* const values) {
@@ -514,7 +568,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint locat
 #endif
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Int> values) {
-    (this->*Context::current()->state().shaderProgram->uniform1ivImplementation)(location, values.size(), values);
+    (this->*Context::current().state().shaderProgram->uniform1ivImplementation)(location, values.size(), values);
 }
 
 void AbstractShaderProgram::uniformImplementationDefault(const GLint location, const GLsizei count, const GLint* values) {
@@ -542,7 +596,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint locat
 #endif
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::Vector<2, Int>> values) {
-    (this->*Context::current()->state().shaderProgram->uniform2ivImplementation)(location, values.size(), values);
+    (this->*Context::current().state().shaderProgram->uniform2ivImplementation)(location, values.size(), values);
 }
 
 void AbstractShaderProgram::uniformImplementationDefault(const GLint location, const GLsizei count, const Math::Vector<2, GLint>* const values) {
@@ -570,7 +624,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint locat
 #endif
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::Vector<3, Int>> values) {
-    (this->*Context::current()->state().shaderProgram->uniform3ivImplementation)(location, values.size(), values);
+    (this->*Context::current().state().shaderProgram->uniform3ivImplementation)(location, values.size(), values);
 }
 
 void AbstractShaderProgram::uniformImplementationDefault(const GLint location, const GLsizei count, const Math::Vector<3, GLint>* const values) {
@@ -598,7 +652,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint locat
 #endif
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::Vector<4, Int>> values) {
-    (this->*Context::current()->state().shaderProgram->uniform4ivImplementation)(location, values.size(), values);
+    (this->*Context::current().state().shaderProgram->uniform4ivImplementation)(location, values.size(), values);
 }
 
 void AbstractShaderProgram::uniformImplementationDefault(const GLint location, const GLsizei count, const Math::Vector<4, GLint>* const values) {
@@ -627,7 +681,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint locat
 
 #ifndef MAGNUM_TARGET_GLES2
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const UnsignedInt> values) {
-    (this->*Context::current()->state().shaderProgram->uniform1uivImplementation)(location, values.size(), values);
+    (this->*Context::current().state().shaderProgram->uniform1uivImplementation)(location, values.size(), values);
 }
 
 void AbstractShaderProgram::uniformImplementationDefault(const GLint location, const GLsizei count, const GLuint* const values) {
@@ -646,7 +700,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint locat
 #endif
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::Vector<2, UnsignedInt>> values) {
-    (this->*Context::current()->state().shaderProgram->uniform2uivImplementation)(location, values.size(), values);
+    (this->*Context::current().state().shaderProgram->uniform2uivImplementation)(location, values.size(), values);
 }
 
 void AbstractShaderProgram::uniformImplementationDefault(const GLint location, const GLsizei count, const Math::Vector<2, GLuint>* const values) {
@@ -665,7 +719,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint locat
 #endif
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::Vector<3, UnsignedInt>> values) {
-    (this->*Context::current()->state().shaderProgram->uniform3uivImplementation)(location, values.size(), values);
+    (this->*Context::current().state().shaderProgram->uniform3uivImplementation)(location, values.size(), values);
 }
 
 void AbstractShaderProgram::uniformImplementationDefault(const GLint location, const GLsizei count, const Math::Vector<3, GLuint>* const values) {
@@ -684,7 +738,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint locat
 #endif
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::Vector<4, UnsignedInt>> values) {
-    (this->*Context::current()->state().shaderProgram->uniform4uivImplementation)(location, values.size(), values);
+    (this->*Context::current().state().shaderProgram->uniform4uivImplementation)(location, values.size(), values);
 }
 
 void AbstractShaderProgram::uniformImplementationDefault(const GLint location, const GLsizei count, const Math::Vector<4, GLuint>* const values) {
@@ -705,7 +759,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint locat
 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Double> values) {
-    (this->*Context::current()->state().shaderProgram->uniform1dvImplementation)(location, values.size(), values);
+    (this->*Context::current().state().shaderProgram->uniform1dvImplementation)(location, values.size(), values);
 }
 
 void AbstractShaderProgram::uniformImplementationDefault(const GLint location, const GLsizei count, const GLdouble* const values) {
@@ -722,7 +776,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT(const GLint location, co
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::Vector<2, Double>> values) {
-    (this->*Context::current()->state().shaderProgram->uniform2dvImplementation)(location, values.size(), values);
+    (this->*Context::current().state().shaderProgram->uniform2dvImplementation)(location, values.size(), values);
 }
 
 void AbstractShaderProgram::uniformImplementationDefault(const GLint location, const GLsizei count, const Math::Vector<2, GLdouble>* const values) {
@@ -739,7 +793,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT(const GLint location, co
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::Vector<3, Double>> values) {
-    (this->*Context::current()->state().shaderProgram->uniform3dvImplementation)(location, values.size(), values);
+    (this->*Context::current().state().shaderProgram->uniform3dvImplementation)(location, values.size(), values);
 }
 
 void AbstractShaderProgram::uniformImplementationDefault(const GLint location, const GLsizei count, const Math::Vector<3, GLdouble>* const values) {
@@ -756,7 +810,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT(const GLint location, co
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::Vector<4, Double>> values) {
-    (this->*Context::current()->state().shaderProgram->uniform4dvImplementation)(location, values.size(), values);
+    (this->*Context::current().state().shaderProgram->uniform4dvImplementation)(location, values.size(), values);
 }
 
 void AbstractShaderProgram::uniformImplementationDefault(const GLint location, const GLsizei count, const Math::Vector<4, GLdouble>* const values) {
@@ -774,7 +828,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT(const GLint location, co
 #endif
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::RectangularMatrix<2, 2, Float>> values) {
-    (this->*Context::current()->state().shaderProgram->uniformMatrix2fvImplementation)(location, values.size(), values);
+    (this->*Context::current().state().shaderProgram->uniformMatrix2fvImplementation)(location, values.size(), values);
 }
 
 void AbstractShaderProgram::uniformImplementationDefault(const GLint location, const GLsizei count, const Math::RectangularMatrix<2, 2, GLfloat>* const values) {
@@ -802,7 +856,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint locat
 #endif
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::RectangularMatrix<3, 3, Float>> values) {
-    (this->*Context::current()->state().shaderProgram->uniformMatrix3fvImplementation)(location, values.size(), values);
+    (this->*Context::current().state().shaderProgram->uniformMatrix3fvImplementation)(location, values.size(), values);
 }
 
 void AbstractShaderProgram::uniformImplementationDefault(const GLint location, const GLsizei count, const Math::RectangularMatrix<3, 3, GLfloat>* const values) {
@@ -830,7 +884,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint locat
 #endif
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::RectangularMatrix<4, 4, Float>> values) {
-    (this->*Context::current()->state().shaderProgram->uniformMatrix4fvImplementation)(location, values.size(), values);
+    (this->*Context::current().state().shaderProgram->uniformMatrix4fvImplementation)(location, values.size(), values);
 }
 
 void AbstractShaderProgram::uniformImplementationDefault(const GLint location, const GLsizei count, const Math::RectangularMatrix<4, 4, GLfloat>* const values) {
@@ -859,7 +913,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint locat
 
 #ifndef MAGNUM_TARGET_GLES2
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::RectangularMatrix<2, 3, Float>> values) {
-    (this->*Context::current()->state().shaderProgram->uniformMatrix2x3fvImplementation)(location, values.size(), values);
+    (this->*Context::current().state().shaderProgram->uniformMatrix2x3fvImplementation)(location, values.size(), values);
 }
 
 void AbstractShaderProgram::uniformImplementationDefault(const GLint location, const GLsizei count, const Math::RectangularMatrix<2, 3, GLfloat>* const values) {
@@ -878,7 +932,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint locat
 #endif
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::RectangularMatrix<3, 2, Float>> values) {
-    (this->*Context::current()->state().shaderProgram->uniformMatrix3x2fvImplementation)(location, values.size(), values);
+    (this->*Context::current().state().shaderProgram->uniformMatrix3x2fvImplementation)(location, values.size(), values);
 }
 
 void AbstractShaderProgram::uniformImplementationDefault(const GLint location, const GLsizei count, const Math::RectangularMatrix<3, 2, GLfloat>* const values) {
@@ -897,7 +951,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint locat
 #endif
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::RectangularMatrix<2, 4, Float>> values) {
-    (this->*Context::current()->state().shaderProgram->uniformMatrix2x4fvImplementation)(location, values.size(), values);
+    (this->*Context::current().state().shaderProgram->uniformMatrix2x4fvImplementation)(location, values.size(), values);
 }
 
 void AbstractShaderProgram::uniformImplementationDefault(const GLint location, const GLsizei count, const Math::RectangularMatrix<2, 4, GLfloat>* const values) {
@@ -916,7 +970,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint locat
 #endif
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::RectangularMatrix<4, 2, Float>> values) {
-    (this->*Context::current()->state().shaderProgram->uniformMatrix4x2fvImplementation)(location, values.size(), values);
+    (this->*Context::current().state().shaderProgram->uniformMatrix4x2fvImplementation)(location, values.size(), values);
 }
 
 void AbstractShaderProgram::uniformImplementationDefault(const GLint location, const GLsizei count, const Math::RectangularMatrix<4, 2, GLfloat>* const values) {
@@ -935,7 +989,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint locat
 #endif
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::RectangularMatrix<3, 4, Float>> values) {
-    (this->*Context::current()->state().shaderProgram->uniformMatrix3x4fvImplementation)(location, values.size(), values);
+    (this->*Context::current().state().shaderProgram->uniformMatrix3x4fvImplementation)(location, values.size(), values);
 }
 
 void AbstractShaderProgram::uniformImplementationDefault(const GLint location, const GLsizei count, const Math::RectangularMatrix<3, 4, GLfloat>* const values) {
@@ -954,7 +1008,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint locat
 #endif
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::RectangularMatrix<4, 3, Float>> values) {
-    (this->*Context::current()->state().shaderProgram->uniformMatrix4x3fvImplementation)(location, values.size(), values);
+    (this->*Context::current().state().shaderProgram->uniformMatrix4x3fvImplementation)(location, values.size(), values);
 }
 
 void AbstractShaderProgram::uniformImplementationDefault(const GLint location, const GLsizei count, const Math::RectangularMatrix<4, 3, GLfloat>* const values) {
@@ -975,7 +1029,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint locat
 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::RectangularMatrix<2, 2, Double>> values) {
-    (this->*Context::current()->state().shaderProgram->uniformMatrix2dvImplementation)(location, values.size(), values);
+    (this->*Context::current().state().shaderProgram->uniformMatrix2dvImplementation)(location, values.size(), values);
 }
 
 void AbstractShaderProgram::uniformImplementationDefault(const GLint location, const GLsizei count, const Math::RectangularMatrix<2, 2, GLdouble>* const values) {
@@ -992,7 +1046,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT(const GLint location, co
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::RectangularMatrix<3, 3, Double>> values) {
-    (this->*Context::current()->state().shaderProgram->uniformMatrix3dvImplementation)(location, values.size(), values);
+    (this->*Context::current().state().shaderProgram->uniformMatrix3dvImplementation)(location, values.size(), values);
 }
 
 void AbstractShaderProgram::uniformImplementationDefault(const GLint location, const GLsizei count, const Math::RectangularMatrix<3, 3, GLdouble>* const values) {
@@ -1009,7 +1063,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT(const GLint location, co
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::RectangularMatrix<4, 4, Double>> values) {
-    (this->*Context::current()->state().shaderProgram->uniformMatrix4dvImplementation)(location, values.size(), values);
+    (this->*Context::current().state().shaderProgram->uniformMatrix4dvImplementation)(location, values.size(), values);
 }
 
 void AbstractShaderProgram::uniformImplementationDefault(const GLint location, const GLsizei count, const Math::RectangularMatrix<4, 4, GLdouble>* const values) {
@@ -1026,7 +1080,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT(const GLint location, co
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::RectangularMatrix<2, 3, Double>> values) {
-    (this->*Context::current()->state().shaderProgram->uniformMatrix2x3dvImplementation)(location, values.size(), values);
+    (this->*Context::current().state().shaderProgram->uniformMatrix2x3dvImplementation)(location, values.size(), values);
 }
 
 void AbstractShaderProgram::uniformImplementationDefault(const GLint location, const GLsizei count, const Math::RectangularMatrix<2, 3, GLdouble>* const values) {
@@ -1043,7 +1097,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT(const GLint location, co
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::RectangularMatrix<3, 2, Double>> values) {
-    (this->*Context::current()->state().shaderProgram->uniformMatrix3x2dvImplementation)(location, values.size(), values);
+    (this->*Context::current().state().shaderProgram->uniformMatrix3x2dvImplementation)(location, values.size(), values);
 }
 
 void AbstractShaderProgram::uniformImplementationDefault(const GLint location, const GLsizei count, const Math::RectangularMatrix<3, 2, GLdouble>* const values) {
@@ -1060,7 +1114,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT(const GLint location, co
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::RectangularMatrix<2, 4, Double>> values) {
-    (this->*Context::current()->state().shaderProgram->uniformMatrix2x4dvImplementation)(location, values.size(), values);
+    (this->*Context::current().state().shaderProgram->uniformMatrix2x4dvImplementation)(location, values.size(), values);
 }
 
 void AbstractShaderProgram::uniformImplementationDefault(const GLint location, const GLsizei count, const Math::RectangularMatrix<2, 4, GLdouble>* const values) {
@@ -1077,7 +1131,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT(const GLint location, co
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::RectangularMatrix<4, 2, Double>> values) {
-    (this->*Context::current()->state().shaderProgram->uniformMatrix4x2dvImplementation)(location, values.size(), values);
+    (this->*Context::current().state().shaderProgram->uniformMatrix4x2dvImplementation)(location, values.size(), values);
 }
 
 void AbstractShaderProgram::uniformImplementationDefault(const GLint location, const GLsizei count, const Math::RectangularMatrix<4, 2, GLdouble>* const values) {
@@ -1094,7 +1148,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT(const GLint location, co
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::RectangularMatrix<3, 4, Double>> values) {
-    (this->*Context::current()->state().shaderProgram->uniformMatrix3x4dvImplementation)(location, values.size(), values);
+    (this->*Context::current().state().shaderProgram->uniformMatrix3x4dvImplementation)(location, values.size(), values);
 }
 
 void AbstractShaderProgram::uniformImplementationDefault(const GLint location, const GLsizei count, const Math::RectangularMatrix<3, 4, GLdouble>* const values) {
@@ -1111,7 +1165,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT(const GLint location, co
 }
 
 void AbstractShaderProgram::setUniform(const Int location, const Containers::ArrayView<const Math::RectangularMatrix<4, 3, Double>> values) {
-    (this->*Context::current()->state().shaderProgram->uniformMatrix4x3dvImplementation)(location, values.size(), values);
+    (this->*Context::current().state().shaderProgram->uniformMatrix4x3dvImplementation)(location, values.size(), values);
 }
 
 void AbstractShaderProgram::uniformImplementationDefault(const GLint location, const GLsizei count, const Math::RectangularMatrix<4, 3, GLdouble>* const values) {

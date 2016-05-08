@@ -1,7 +1,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -25,18 +25,19 @@
 
 corrade_add_test(MeshToolsCombineIndexedArraysTest CombineIndexedArraysTest.cpp LIBRARIES MagnumMeshToolsTestLib)
 corrade_add_test(MeshToolsCompressIndicesTest CompressIndicesTest.cpp LIBRARIES MagnumMeshToolsTestLib)
-corrade_add_test(MeshToolsDuplicateTest DuplicateTest.cpp)
+corrade_add_test(MeshToolsDuplicateTest DuplicateTest.cpp LIBRARIES Magnum)
 corrade_add_test(MeshToolsFlipNormalsTest FlipNormalsTest.cpp LIBRARIES MagnumMeshToolsTestLib)
 corrade_add_test(MeshToolsGenerateFlatNormalsTest GenerateFlatNormalsTest.cpp LIBRARIES MagnumMeshToolsTestLib)
-corrade_add_test(MeshToolsInterleaveTest InterleaveTest.cpp)
+corrade_add_test(MeshToolsInterleaveTest InterleaveTest.cpp LIBRARIES Magnum)
 corrade_add_test(MeshToolsRemoveDuplicatesTest RemoveDuplicatesTest.cpp LIBRARIES Magnum)
-corrade_add_test(MeshToolsSubdivideTest SubdivideTest.cpp)
+corrade_add_test(MeshToolsSubdivideTest SubdivideTest.cpp LIBRARIES Magnum)
 # corrade_add_test(MeshToolsSubdivideRemoveDuplicatesBenchmark SubdivideRemoveDuplicatesBenchmark.h SubdivideRemoveDuplicatesBenchmark.cpp MagnumPrimitives)
 corrade_add_test(MeshToolsTipsifyTest TipsifyTest.cpp LIBRARIES MagnumMeshTools)
 corrade_add_test(MeshToolsTransformTest TransformTest.cpp LIBRARIES MagnumMeshTools)
 
 # Graceful assert for testing
-set_target_properties(MeshToolsCombineIndexedArraysTest
+set_property(TARGET
+    MeshToolsCombineIndexedArraysTest
     MeshToolsInterleaveTest
     MeshToolsSubdivideTest
-    PROPERTIES COMPILE_FLAGS -DCORRADE_GRACEFUL_ASSERT)
+    APPEND PROPERTY COMPILE_DEFINITIONS "CORRADE_GRACEFUL_ASSERT")

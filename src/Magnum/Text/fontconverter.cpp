@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -32,7 +32,9 @@
 #include "Magnum/Text/DistanceFieldGlyphCache.h"
 #include "Magnum/Trade/AbstractImageConverter.h"
 
-#ifdef CORRADE_TARGET_APPLE
+#ifdef MAGNUM_TARGET_HEADLESS
+#include "Magnum/Platform/WindowlessEglApplication.h"
+#elif defined(CORRADE_TARGET_APPLE)
 #include "Magnum/Platform/WindowlessCglApplication.h"
 #elif defined(CORRADE_TARGET_UNIX)
 #include "Magnum/Platform/WindowlessGlxApplication.h"
@@ -104,14 +106,14 @@ FontConverter::FontConverter(const Arguments& arguments): Platform::WindowlessAp
         .addArgument("output").setHelp("output", "output filename prefix")
         .addNamedArgument("font").setHelp("font", "font plugin")
         .addNamedArgument("converter").setHelp("converter", "font converter plugin")
-        .addOption("plugin-dir", MAGNUM_PLUGINS_DIR).setHelpKey("plugin-dir", "DIR").setHelp("plugin-dir", "base plugin dir")
+        .addOption("plugin-dir", MAGNUM_PLUGINS_DIR).setHelp("plugin-dir", "base plugin dir", "DIR")
         .addOption("characters", "abcdefghijklmnopqrstuvwxyz"
                                  "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                                  "0123456789?!:;,. ").setHelp("characters", "characters to include in the output")
-        .addOption("font-size", "128").setHelpKey("font-size", "N").setHelp("font-size", "input font size")
-        .addOption("atlas-size", "2048 2048").setHelpKey("atlas-size", "\"X Y\"").setHelp("atlas-size", "glyph atlas size")
-        .addOption("output-size", "256 256").setHelpKey("output-size", "\"X Y\"").setHelp("output-size", "output atlas size. If set to zero size, distance field computation will not be used.")
-        .addOption("radius", "24").setHelpKey("radius", "N").setHelp("radius", "distance field computation radius")
+        .addOption("font-size", "128").setHelp("font-size", "input font size", "N")
+        .addOption("atlas-size", "2048 2048").setHelp("atlas-size", "glyph atlas size", "\"X Y\"")
+        .addOption("output-size", "256 256").setHelp("output-size", "output atlas size. If set to zero size, distance field computation will not be used.", "\"X Y\"")
+        .addOption("radius", "24").setHelp("radius", "distance field computation radius", "N")
         .addSkippedPrefix("magnum", "engine-specific options")
         .setHelp("Converts font to raster one of given atlas size.")
         .parse(arguments.argc, arguments.argv);

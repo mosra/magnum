@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -50,32 +50,47 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
 
 void MeshVisualizerGLTest::compile() {
     Shaders::MeshVisualizer shader;
-    CORRADE_VERIFY(shader.validate().first);
+    {
+        #ifdef CORRADE_TARGET_APPLE
+        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
 }
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void MeshVisualizerGLTest::compileWireframeGeometryShader() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current()->isExtensionSupported<Extensions::GL::ARB::geometry_shader4>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::geometry_shader4>())
         CORRADE_SKIP(Extensions::GL::ARB::geometry_shader4::string() + std::string(" is not supported"));
     #else
-    if(!Context::current()->isExtensionSupported<Extensions::GL::EXT::geometry_shader>())
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::geometry_shader>())
         CORRADE_SKIP(Extensions::GL::EXT::geometry_shader::string() + std::string(" is not supported"));
     #endif
 
     #ifdef MAGNUM_TARGET_GLES
-    if(Context::current()->isExtensionSupported<Extensions::GL::NV::shader_noperspective_interpolation>())
+    if(Context::current().isExtensionSupported<Extensions::GL::NV::shader_noperspective_interpolation>())
         Debug() << "Using" << Extensions::GL::NV::shader_noperspective_interpolation::string();
     #endif
 
     Shaders::MeshVisualizer shader(Shaders::MeshVisualizer::Flag::Wireframe);
-    CORRADE_VERIFY(shader.validate().first);
+    {
+        #ifdef CORRADE_TARGET_APPLE
+        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
 }
 #endif
 
 void MeshVisualizerGLTest::compileWireframeNoGeometryShader() {
     Shaders::MeshVisualizer shader(Shaders::MeshVisualizer::Flag::Wireframe|Shaders::MeshVisualizer::Flag::NoGeometryShader);
-    CORRADE_VERIFY(shader.validate().first);
+    {
+        #ifdef CORRADE_TARGET_APPLE
+        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        #endif
+        CORRADE_VERIFY(shader.validate().first);
+    }
 }
 
 }}}

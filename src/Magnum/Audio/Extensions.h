@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
     Copyright © 2015 Jonathan Hale <squareys@googlemail.com>
 
@@ -50,11 +50,11 @@ usage.
 
 This namespace is not built by default. It is built if `WITH_AUDIO` is
 enabled when building Magnum. To use this library, you need to request
-`Audio` component of `Magnum` package in CMake, add `${MAGNUM_AUDIO_INCLUDE_DIRS}`
-to include path and link to `${MAGNUM_AUDIO_LIBRARIES}`. See @ref building and
-@ref cmake for more information. Additional plugins are enabled separately, see
-particular `*Importer` class documentation, @ref building-plugins,
-@ref cmake-plugins and @ref plugins for more information.
+`Audio` component of `Magnum` package in CMake and link to `Magnum::Audio`
+target. See @ref building and @ref cmake for more information. Additional
+plugins are enabled separately, see particular `*Importer` class documentation,
+@ref building-plugins, @ref cmake-plugins and @ref plugins for more
+information.
 @see @ref MAGNUM_ASSERT_AUDIO_EXTENSION_SUPPORTED()
 @todo Manual indices for extensions, this has gaps
 */

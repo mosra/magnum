@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -126,21 +126,9 @@ void MatrixTest::construct() {
 }
 
 void MatrixTest::constructIdentity() {
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY
-    /* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-    constexpr
-    #endif
-    Matrix4x4 identity;
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY
-    /* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-    constexpr
-    #endif
-    Matrix4x4 identity2{IdentityInit};
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY
-    /* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-    constexpr
-    #endif
-    Matrix4x4 identity3{IdentityInit, 4.0f};
+    constexpr Matrix4x4 identity;
+    constexpr Matrix4x4 identity2{IdentityInit};
+    constexpr Matrix4x4 identity3{IdentityInit, 4.0f};
 
     Matrix4x4 identityExpected(Vector4(1.0f, 0.0f, 0.0f, 0.0f),
                                Vector4(0.0f, 1.0f, 0.0f, 0.0f),
@@ -158,11 +146,7 @@ void MatrixTest::constructIdentity() {
 }
 
 void MatrixTest::constructZero() {
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY
-    /* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-    constexpr
-    #endif
-    Matrix4x4 a{ZeroInit};
+    constexpr Matrix4x4 a{ZeroInit};
     CORRADE_COMPARE(a, Matrix4x4(Vector4(0.0f, 0.0f, 0.0f, 0.0f),
                                  Vector4(0.0f, 0.0f, 0.0f, 0.0f),
                                  Vector4(0.0f, 0.0f, 0.0f, 0.0f),
@@ -222,10 +206,7 @@ void MatrixTest::convert() {
     constexpr Matrix3x3 c(b);
     CORRADE_COMPARE(c, b);
 
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why can't be conversion constexpr? */
-    constexpr
-    #endif
-    Mat3 d(b);
+    constexpr Mat3 d(b);
     for(std::size_t i = 0; i != 9; ++i)
         CORRADE_COMPARE(d.a[i], a.a[i]);
 
@@ -302,7 +283,7 @@ void MatrixTest::inverted() {
 
 void MatrixTest::invertedOrthogonal() {
     std::ostringstream o;
-    Error::setOutput(&o);
+    Error redirectError{&o};
 
     Matrix3x3 a(Vector3(Constants::sqrt3()/2.0f, 0.5f, 0.0f),
                 Vector3(-0.5f, Constants::sqrt3()/2.0f, 0.0f),

@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -90,7 +90,7 @@ See @ref debug-tools-renderers for more information.
 
 Example code:
 @code
-DebugTools::ResourceManager::instance()->set("my", DebugTools::ForceRendererOptions()
+DebugTools::ResourceManager::instance().set("my", DebugTools::ForceRendererOptions()
     .setScale(5.0f)
     .setColor(Color3::fromHSV(120.0_degf, 1.0f, 0.7f));
 

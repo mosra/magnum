@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -152,14 +152,7 @@ template<class T> class Vector3: public Vector<3, T> {
             {}
 
         /** @copydoc Vector::Vector(T) */
-        constexpr explicit Vector3(T value):
-            #ifndef CORRADE_MSVC2015_COMPATIBILITY
-            Vector<3, T>(value)
-            #else
-            /* Avoid using non-constexpr version */
-            Vector<3, T>(value, value, value)
-            #endif
-            {}
+        constexpr explicit Vector3(T value): Vector<3, T>(value) {}
 
         /**
          * @brief Constructor
@@ -180,14 +173,7 @@ template<class T> class Vector3: public Vector<3, T> {
         constexpr /*implicit*/ Vector3(const Vector2<T>& xy, T z): Vector<3, T>(xy[0], xy[1], z) {}
 
         /** @copydoc Vector::Vector(const Vector<size, U>&) */
-        template<class U> constexpr explicit Vector3(const Vector<3, U>& other):
-            #ifndef CORRADE_MSVC2015_COMPATIBILITY
-            Vector<3, T>(other)
-            #else
-            /* Avoid using non-constexpr version */
-            Vector<3, T>(typename Implementation::GenerateSequence<3>::Type(), other)
-            #endif
-            {}
+        template<class U> constexpr explicit Vector3(const Vector<3, U>& other): Vector<3, T>(other) {}
 
         /** @brief Construct vector from external representation */
         template<class U, class V =

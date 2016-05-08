@@ -9,7 +9,6 @@ override_dh_auto_configure:
 		-DWITH_GLXAPPLICATION=ON \
 		-DWITH_SDL2APPLICATION=ON \
 		-DWITH_WINDOWLESSGLXAPPLICATION=ON \
-		-DWITH_EGLCONTEXT=ON \
 		-DWITH_GLXCONTEXT=ON \
 		-DWITH_MAGNUMFONT=ON \
 		-DWITH_MAGNUMFONTCONVERTER=ON \
@@ -20,3 +19,9 @@ override_dh_auto_configure:
 		-DWITH_DISTANCEFIELDCONVERTER=ON \
 		-DWITH_FONTCONVERTER=ON \
 		-DWITH_MAGNUMINFO=ON
+
+# Extraordinarily coarse way to suppress error about libGL not being in
+# dependencies when the user has installed NVidia binary drivers which are not
+# in the repositories. Can't I just IGNORE A SIGNLE FILE DAMMIT?!
+override_dh_shlibdeps:
+		dh_shlibdeps --dpkg-shlibdeps-params=--ignore-missing-info

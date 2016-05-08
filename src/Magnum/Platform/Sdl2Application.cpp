@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -32,8 +32,9 @@
 #include <emscripten/emscripten.h>
 #endif
 
-#include "Magnum/Platform/Context.h"
 #include "Magnum/Version.h"
+#include "Magnum/Math/Range.h"
+#include "Magnum/Platform/Context.h"
 #include "Magnum/Platform/ScreenedApplication.hpp"
 
 namespace Magnum { namespace Platform {
@@ -110,11 +111,6 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
     SDL_GL_SetAttribute(SDL_GL_FRAMEBUFFER_SRGB_CAPABLE, configuration.isSRGBCapable());
     #endif
 
-    /* Flags: if not hidden, set as shown */
-    Uint32 windowFlags(configuration.windowFlags());
-    if(!(configuration.windowFlags() & Configuration::WindowFlag::Hidden))
-        windowFlags |= SDL_WINDOW_SHOWN;
-
     /** @todo Remove when Emscripten has proper SDL2 support */
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     /* Set context version, if user-specified */
@@ -163,11 +159,17 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
         #endif
     }
 
-    /* Create window */
-    if(!(_window = SDL_CreateWindow(configuration.title().data(),
-        SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+    /* Create window. Hide it by default so we don't have distracting window
+       blinking in case we have to destroy it again right away */
+    if(!(_window = SDL_CreateWindow(
+        #ifndef CORRADE_TARGET_IOS
+        configuration.title().data(),
+        #else
+        nullptr,
+        #endif
+        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
         configuration.size().x(), configuration.size().y(),
-        SDL_WINDOW_OPENGL|windowFlags)))
+        SDL_WINDOW_OPENGL|SDL_WINDOW_HIDDEN|Uint32(configuration.windowFlags()))))
     {
         Error() << "Platform::Sdl2Application::tryCreateContext(): cannot create window:" << SDL_GetError();
         return false;
@@ -211,9 +213,9 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, int(configuration.flags()));
 
         if(!(_window = SDL_CreateWindow(configuration.title().data(),
-            SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+            SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
             configuration.size().x(), configuration.size().y(),
-            SDL_WINDOW_OPENGL|windowFlags)))
+            SDL_WINDOW_OPENGL|SDL_WINDOW_HIDDEN|Uint32(configuration.windowFlags()))))
         {
             Error() << "Platform::Sdl2Application::tryCreateContext(): cannot create window:" << SDL_GetError();
             return false;
@@ -232,13 +234,49 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
         return false;
     }
 
+    #ifdef CORRADE_TARGET_IOS
+    /* iOS has zero initial GL_VIEWPORT size, get drawable size and put it back
+       in so all other code can assume that the viewport is set to sane values.
+       Fortunately on iOS we also don't have to load any function pointers so
+       it's safe to do the glViewport() call as it is linked statically. */
+    Vector2i drawableSize;
+    SDL_GL_GetDrawableSize(_window, &drawableSize.x(), &drawableSize.y());
+    glViewport(0, 0, drawableSize.x(), drawableSize.y());
+    #endif
     #else
     /* Emscripten-specific initialization */
-    _glContext = SDL_SetVideoMode(configuration.size().x(), configuration.size().y(), 24, SDL_OPENGL|SDL_HWSURFACE|SDL_DOUBLEBUF);
+    if(!(_glContext = SDL_SetVideoMode(configuration.size().x(), configuration.size().y(), 24, SDL_OPENGL|SDL_HWSURFACE|SDL_DOUBLEBUF))) {
+        Error() << "Platform::Sdl2Application::tryCreateContext(): cannot create context:" << SDL_GetError();
+        return false;
+    }
+    #endif
+
+    /* Destroy everything also when the Magnum context creation fails */
+    if(!_context->tryCreate()) {
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        SDL_GL_DeleteContext(_glContext);
+        SDL_DestroyWindow(_window);
+        _window = nullptr;
+        #else
+        SDL_FreeSurface(_glContext);
+        #endif
+        return false;
+    }
+
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    /* Show the window once we are sure that everything is okay */
+    if(!(configuration.windowFlags() & Configuration::WindowFlag::Hidden))
+        SDL_ShowWindow(_window);
     #endif
 
     /* Return true if the initialization succeeds */
-    return _context->tryCreate();
+    return true;
+}
+
+Vector2i Sdl2Application::windowSize() {
+    Vector2i size;
+    SDL_GetWindowSize(_window, &size.x(), &size.y());
+    return size;
 }
 
 void Sdl2Application::swapBuffers() {
@@ -311,10 +349,18 @@ void Sdl2Application::mainLoop() {
         switch(event.type) {
             case SDL_WINDOWEVENT:
                 switch(event.window.event) {
-                    case SDL_WINDOWEVENT_RESIZED:
+                    case SDL_WINDOWEVENT_RESIZED: {
+                        #ifndef CORRADE_TARGET_IOS
                         viewportEvent({event.window.data1, event.window.data2});
+                        #else
+                        /* On iOS the window event is in points and not pixels,
+                           but we need pixels to call glViewport() properly */
+                        Vector2i drawableSize;
+                        SDL_GL_GetDrawableSize(_window, &drawableSize.x(), &drawableSize.y());
+                        viewportEvent(drawableSize);
+                        #endif
                         _flags |= Flag::Redraw;
-                        break;
+                    } break;
                     case SDL_WINDOWEVENT_EXPOSED:
                         _flags |= Flag::Redraw;
                         break;
@@ -343,6 +389,18 @@ void Sdl2Application::mainLoop() {
                 mouseMoveEvent(e);
                 break;
             }
+
+            #ifndef CORRADE_TARGET_EMSCRIPTEN
+            case SDL_TEXTINPUT: {
+                TextInputEvent e{{event.text.text, std::strlen(event.text.text)}};
+                textInputEvent(e);
+            } break;
+
+            case SDL_TEXTEDITING: {
+                TextEditingEvent e{{event.edit.text, std::strlen(event.text.text)}, event.edit.start, event.edit.length};
+                textEditingEvent(e);
+            } break;
+            #endif
 
             case SDL_QUIT:
                 #ifndef CORRADE_TARGET_EMSCRIPTEN
@@ -399,6 +457,13 @@ void Sdl2Application::setMouseLocked(bool enabled) {
     #endif
 }
 
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+void Sdl2Application::setTextInputRect(const Range2Di& rect) {
+    SDL_Rect r{rect.min().x(), rect.min().y(), rect.sizeX(), rect.sizeY()};
+    SDL_SetTextInputRect(&r);
+}
+#endif
+
 void Sdl2Application::tickEvent() {
     /* If this got called, the tick event is not implemented by user and thus
        we don't need to call it ever again */
@@ -412,11 +477,21 @@ void Sdl2Application::mousePressEvent(MouseEvent&) {}
 void Sdl2Application::mouseReleaseEvent(MouseEvent&) {}
 void Sdl2Application::mouseMoveEvent(MouseMoveEvent&) {}
 
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+void Sdl2Application::textInputEvent(TextInputEvent&) {}
+void Sdl2Application::textEditingEvent(TextEditingEvent&) {}
+#endif
+
 Sdl2Application::Configuration::Configuration():
-    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_IOS)
     _title("Magnum SDL2 Application"),
     #endif
-    _size(800, 600), _windowFlags{}, _sampleCount(0)
+    #ifndef CORRADE_TARGET_IOS
+    _size{800, 600},
+    #else
+    _size{}, /* SDL2 detects someting for us */
+    #endif
+    _windowFlags{}, _sampleCount(0)
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     , _version(Version::None), _sRGBCapable{false}
     #endif

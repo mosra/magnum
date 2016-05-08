@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -45,12 +45,16 @@ bool AbstractFont::openData(const std::vector<std::pair<std::string, Containers:
         "Text::AbstractFont::openData(): no data passed", false);
 
     close();
-    std::tie(_size, _lineHeight) = doOpenData(data, size);
-    CORRADE_INTERNAL_ASSERT(isOpened() || (_size == 0.0f && _lineHeight == 0.0f));
+    const Metrics metrics = doOpenData(data, size);
+    _size = metrics.size;
+    _ascent = metrics.ascent;
+    _descent = metrics.descent;
+    _lineHeight = metrics.lineHeight;
+    CORRADE_INTERNAL_ASSERT(isOpened() || (!_size && !_ascent && !_descent && !_lineHeight));
     return isOpened();
 }
 
-std::pair<Float, Float> AbstractFont::doOpenData(const std::vector<std::pair<std::string, Containers::ArrayView<const char>>>& data, const Float size) {
+auto AbstractFont::doOpenData(const std::vector<std::pair<std::string, Containers::ArrayView<const char>>>& data, const Float size) -> Metrics {
     CORRADE_ASSERT(!(features() & Feature::MultiFile),
         "Text::AbstractFont::openData(): feature advertised but not implemented", {});
     CORRADE_ASSERT(data.size() == 1,
@@ -67,24 +71,32 @@ bool AbstractFont::openSingleData(const Containers::ArrayView<const char> data, 
         "Text::AbstractFont::openSingleData(): the format is not single-file", false);
 
     close();
-    std::tie(_size, _lineHeight) = doOpenSingleData(data, size);
-    CORRADE_INTERNAL_ASSERT(isOpened() || (_size == 0.0f && _lineHeight == 0.0f));
+    const Metrics metrics = doOpenSingleData(data, size);
+    _size = metrics.size;
+    _ascent = metrics.ascent;
+    _descent = metrics.descent;
+    _lineHeight = metrics.lineHeight;
+    CORRADE_INTERNAL_ASSERT(isOpened() || (!_size && !_ascent && !_descent && !_lineHeight));
     return isOpened();
 }
 
-std::pair<Float, Float> AbstractFont::doOpenSingleData(Containers::ArrayView<const char>, Float) {
+auto AbstractFont::doOpenSingleData(Containers::ArrayView<const char>, Float) -> Metrics {
     CORRADE_ASSERT(false, "Text::AbstractFont::openSingleData(): feature advertised but not implemented", {});
     return {};
 }
 
 bool AbstractFont::openFile(const std::string& filename, const Float size) {
     close();
-    std::tie(_size, _lineHeight) = doOpenFile(filename, size);
-    CORRADE_INTERNAL_ASSERT(isOpened() || (_size == 0.0f && _lineHeight == 0.0f));
+    const Metrics metrics = doOpenFile(filename, size);
+    _size = metrics.size;
+    _ascent = metrics.ascent;
+    _descent = metrics.descent;
+    _lineHeight = metrics.lineHeight;
+    CORRADE_INTERNAL_ASSERT(isOpened() || (!_size && !_ascent && !_descent && !_lineHeight));
     return isOpened();
 }
 
-std::pair<Float, Float> AbstractFont::doOpenFile(const std::string& filename, const Float size) {
+auto AbstractFont::doOpenFile(const std::string& filename, const Float size) -> Metrics {
     CORRADE_ASSERT(features() & Feature::OpenData && !(features() & Feature::MultiFile),
         "Text::AbstractFont::openFile(): not implemented", {});
 

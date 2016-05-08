@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -93,12 +93,7 @@ template<std::size_t size> class BoolVector {
         #ifdef DOXYGEN_GENERATING_OUTPUT
         inline explicit BoolVector(T value);
         #else
-        template<class T, class U = typename std::enable_if<std::is_same<bool, T>::value && size != 1, bool>::type>
-        #ifndef CORRADE_MSVC2015_COMPATIBILITY
-        /* Can't use delegating constructors with constexpr -- https://connect.microsoft.com/VisualStudio/feedback/details/1579279/c-constexpr-does-not-work-with-delegating-constructors */
-        constexpr
-        #endif
-        explicit BoolVector(T value): BoolVector(typename Implementation::GenerateSequence<DataSize>::Type(), value ? FullSegmentMask : 0) {}
+        template<class T, class U = typename std::enable_if<std::is_same<bool, T>::value && size != 1, bool>::type> constexpr explicit BoolVector(T value): BoolVector(typename Implementation::GenerateSequence<DataSize>::Type(), value ? FullSegmentMask : 0) {}
         #endif
 
         /** @brief Copy constructor */
@@ -232,7 +227,7 @@ template<std::size_t size> Corrade::Utility::Debug& operator<<(Corrade::Utility:
     return debug << Corrade::Utility::Debug::nospace << ")";
 }
 
-template<std::size_t size> inline bool BoolVector<size>::operator==(const BoolVector< size >& other) const {
+template<std::size_t size> inline bool BoolVector<size>::operator==(const BoolVector<size>& other) const {
     for(std::size_t i = 0; i != size/8; ++i)
         if(_data[i] != other._data[i]) return false;
 

@@ -1749,6 +1749,10 @@ typedef void (APIENTRY *GLDEBUGPROC)(GLenum source,GLenum type,GLuint id,GLenum 
 
 #define GL_BLEND_ADVANCED_COHERENT_KHR 0x9285
 
+/* GL_KHR_no_error */
+
+#define GL_CONTEXT_FLAG_NO_ERROR_BIT_KHR 0x00000008
+
 /* Function prototypes */
 
 /* GL_ARB_bindless_texture */
@@ -3458,7 +3462,7 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglClearNamedBufferData)(GLuint, GLenum,
 #define glClearNamedBufferData flextglClearNamedBufferData
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglClearNamedBufferSubData)(GLuint, GLenum, GLintptr, GLsizeiptr, GLenum, GLenum, const void *);
 #define glClearNamedBufferSubData flextglClearNamedBufferSubData
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglClearNamedFramebufferfi)(GLuint, GLenum, const GLfloat, GLint);
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglClearNamedFramebufferfi)(GLuint, GLenum, GLint, GLfloat, GLint);
 #define glClearNamedFramebufferfi flextglClearNamedFramebufferfi
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglClearNamedFramebufferfv)(GLuint, GLenum, GLint, const GLfloat *);
 #define glClearNamedFramebufferfv flextglClearNamedFramebufferfv

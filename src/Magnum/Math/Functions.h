@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -453,7 +453,7 @@ component-wise selection from either @p a or @p b based on values in @p t.
 template<std::size_t size, class T> inline Vector<size, T> lerp(const Vector<size, T>& a, const Vector<size, T>& b, const BoolVector<size>& t) {
     Vector<size, T> out{NoInit};
     for(std::size_t i = 0; i != size; ++i)
-        out[i] = t[i] ? a[i] : b[i];
+        out[i] = t[i] ? b[i] : a[i];
     return out;
 }
 
@@ -461,7 +461,7 @@ template<std::size_t size, class T> inline Vector<size, T> lerp(const Vector<siz
 template<std::size_t size> inline BoolVector<size> lerp(const BoolVector<size>& a, const BoolVector<size>& b, const BoolVector<size>& t) {
     BoolVector<size> out;
     for(std::size_t i = 0; i != size; ++i)
-        out.set(i, t[i] ? a[i] : b[i]);
+        out.set(i, t[i] ? b[i] : a[i]);
     return out;
 }
 

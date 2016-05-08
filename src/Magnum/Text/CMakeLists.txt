@@ -1,7 +1,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
 #             Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
@@ -48,7 +48,6 @@ set_target_properties(MagnumText PROPERTIES DEBUG_POSTFIX "-d")
 if(BUILD_STATIC_PIC)
     set_target_properties(MagnumText PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-
 target_link_libraries(MagnumText Magnum MagnumTextureTools)
 
 install(TARGETS MagnumText
@@ -61,26 +60,30 @@ if(WITH_FONTCONVERTER)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/fontconverterConfigure.h.cmake
                    ${CMAKE_CURRENT_BINARY_DIR}/fontconverterConfigure.h)
 
-    include_directories(${CMAKE_CURRENT_BINARY_DIR})
-
     add_executable(magnum-fontconverter fontconverter.cpp)
-
-    if(CORRADE_TARGET_APPLE)
-        target_link_libraries(magnum-fontconverter MagnumText MagnumWindowlessCglApplication)
+    target_include_directories(magnum-fontconverter PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    target_link_libraries(magnum-fontconverter Magnum MagnumText)
+    if(MAGNUM_TARGET_HEADLESS)
+        target_link_libraries(magnum-fontconverter MagnumWindowlessEglApplication)
+    elseif(CORRADE_TARGET_APPLE)
+        target_link_libraries(magnum-fontconverter MagnumWindowlessCglApplication)
     elseif(CORRADE_TARGET_UNIX AND NOT TARGET_GLES)
-        target_link_libraries(magnum-fontconverter MagnumText MagnumWindowlessGlxApplication)
+        target_link_libraries(magnum-fontconverter MagnumWindowlessGlxApplication)
     elseif(CORRADE_TARGET_WINDOWS AND NOT TARGET_GLES)
-        target_link_libraries(magnum-fontconverter MagnumText MagnumWindowlessWglApplication)
+        target_link_libraries(magnum-fontconverter MagnumWindowlessWglApplication)
     else()
         message(FATAL_ERROR "magnum-fontconverter is not available on this platform. Set WITH_FONTCONVERTER to OFF to suppress this warning.")
     endif()
 
     install(TARGETS magnum-fontconverter DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+
+    # Magnum fontconverter target alias for superprojects
+    add_executable(Magnum::fontconverter ALIAS magnum-fontconverter)
 endif()
 
 if(BUILD_TESTS)
     add_subdirectory(Test)
 endif()
 
-# Magnum Text library for superprojects
-set(MAGNUM_TEXT_LIBRARY MagnumText CACHE INTERNAL "")
+# Magnum Text target alias for superprojects
+add_library(Magnum::Text ALIAS MagnumText)

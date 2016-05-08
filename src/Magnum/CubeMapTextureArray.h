@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -98,6 +98,34 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          */
         static Vector3i maxSize();
 
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @copybrief Texture::compressedBlockSize()
+         *
+         * See @ref Texture::compressedBlockSize() for more information.
+         * @requires_gl43 Extension @extension{ARB,internalformat_query2}
+         * @requires_gl Compressed texture queries are not available in OpenGL
+         *      ES.
+         */
+        static Vector2i compressedBlockSize(TextureFormat format) {
+            return DataHelper<2>::compressedBlockSize(GL_TEXTURE_CUBE_MAP_ARRAY, format);
+        }
+
+        /**
+         * @copybrief Texture::compressedBlockDataSize()
+         *
+         * See @ref Texture::compressedBlockDataSize() for more information.
+         * @requires_gl43 Extension @extension{ARB,internalformat_query2}
+         * @requires_gl Compressed texture queries are not available in OpenGL
+         *      ES.
+         * @see @ref compressedBlockSize(), @fn_gl{Getinternalformat} with
+         *      @def_gl{TEXTURE_COMPRESSED_BLOCK_SIZE}
+         */
+        static Int compressedBlockDataSize(TextureFormat format) {
+            return AbstractTexture::compressedBlockDataSize(GL_TEXTURE_CUBE_MAP_ARRAY, format);
+        }
+        #endif
+
         /**
          * @brief Wrap existing OpenGL cube map array texture object
          * @param id            OpenGL cube map array texture ID
@@ -144,6 +172,53 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
             #else
             AbstractTexture{NoCreate, GL_TEXTURE_CUBE_MAP_ARRAY_EXT} {}
             #endif
+
+        /**
+         * @brief Bind level of given texture layer to given image unit
+         * @param imageUnit Image unit
+         * @param level     Texture level
+         * @param layer     Texture layer
+         * @param access    Image access
+         * @param format    Image format
+         *
+         * Layer is equivalent to layer * 6 + number of texture face, i.e. +X
+         * is `0` and so on, in order of (+X, -X, +Y, -Y, +Z, -Z).
+         * @note This function is meant to be used only internally from
+         *      @ref AbstractShaderProgram subclasses. See its documentation
+         *      for more information.
+         * @see @ref bindImages(Int, std::initializer_list<AbstractTexture*>),
+         *      @ref bindImageLayered(), @ref unbindImage(), @ref unbindImages(),
+         *      @ref AbstractShaderProgram::maxImageUnits(),
+         *      @fn_gl{BindImageTexture}
+         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
+         * @requires_gles31 Shader image load/store is not available in OpenGL
+         *      ES 3.0 and older.
+         */
+        void bindImage(Int imageUnit, Int level, Int layer, ImageAccess access, ImageFormat format) {
+            bindImageInternal(imageUnit, level, false, layer, access, format);
+        }
+
+        /**
+         * @brief Bind level of layered texture to given image unit
+         * @param imageUnit Image unit
+         * @param level     Texture level
+         * @param access    Image access
+         * @param format    Image format
+         *
+         * @note This function is meant to be used only internally from
+         *      @ref AbstractShaderProgram subclasses. See its documentation
+         *      for more information.
+         * @see @ref bindImages(Int, std::initializer_list<AbstractTexture*>),
+         *      @ref bindImage(), @ref unbindImage(), @ref unbindImages(),
+         *      @ref AbstractShaderProgram::maxImageUnits(),
+         *      @fn_gl{BindImageTexture}
+         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
+         * @requires_gles31 Shader image load/store is not available in OpenGL
+         *      ES 3.0 and older.
+         */
+        void bindImageLayered(Int imageUnit, Int level, ImageAccess access, ImageFormat format) {
+            bindImageInternal(imageUnit, level, true, 0, access, format);
+        }
 
         /**
          * @copybrief Texture::setBaseLevel()
@@ -368,7 +443,7 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          * See @ref Texture::imageSize() for more information.
          */
         Vector3i imageSize(Int level) {
-            return DataHelper<3>::imageSize(*this, _target, level);
+            return DataHelper<3>::imageSize(*this, level);
         }
 
         #ifndef MAGNUM_TARGET_GLES
@@ -498,6 +573,50 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          * @endcode
          */
         BufferImage3D subImage(Int level, const Range3Di& range, BufferImage3D&& image, BufferUsage usage);
+
+        /**
+         * @copybrief Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage&)
+         *
+         * See @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage&)
+         * for more information.
+         * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         * @requires_gl Texture image queries are not available in OpenGL ES.
+         *      See @ref Framebuffer::read() for possible workaround.
+         */
+        void compressedSubImage(Int level, const Range3Di& range, CompressedImage3D& image) {
+            AbstractTexture::compressedSubImage<3>(level, range, image);
+        }
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * CompressedImage3D image = texture.compressedSubImage(0, range, {});
+         * @endcode
+         */
+        CompressedImage3D compressedSubImage(Int level, const Range3Di& range, CompressedImage3D&& image);
+
+        /**
+         * @copybrief Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedBufferImage&, BufferUsage)
+         *
+         * See @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedBufferImage&, BufferUsage)
+         * for more information.
+         * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         * @requires_gl Texture image queries are not available in OpenGL ES.
+         *      See @ref Framebuffer::read() for possible workaround.
+         */
+        void compressedSubImage(Int level, const Range3Di& range, CompressedBufferImage3D& image, BufferUsage usage) {
+            AbstractTexture::compressedSubImage<3>(level, range, image, usage);
+        }
+
+        /** @overload
+         *
+         * Convenience alternative to the above, example usage:
+         * @code
+         * CompressedBufferImage3D image = texture.compressedSubImage(0, range, {}, BufferUsage::StaticRead);
+         * @endcode
+         */
+        CompressedBufferImage3D compressedSubImage(Int level, const Range3Di& range, CompressedBufferImage3D&& image, BufferUsage usage);
         #endif
 
         /**

@@ -1,7 +1,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -24,7 +24,7 @@
 */
 
 /** @dir magnum/src/Magnum
- * @brief Namespace @ref Magnum (part of @ref building "Magnum library")
+ * @brief Namespace @ref Magnum (part of @ref building "Magnum library"), @ref Magnum::Extensions
  */
 /** @namespace Magnum
 @brief Root namespace
@@ -32,9 +32,8 @@
 Contains classes for interacting with OpenGL.
 
 This library is built as part of Magnum by default. To use it, you need to
-find `Magnum` package, add `${MAGNUM_INCLUDE_DIRS}` to include path and link
-to `${MAGNUM_LIBRARIES}`. See @ref building and @ref cmake for more
-information.
+find `Magnum` package and link to `Magnum::Magnum` target. See @ref building
+and @ref cmake for more information.
 */
 
 /** @dir Magnum/Platform
@@ -48,15 +47,14 @@ Base classes for creating applications with various toolkits.
 Parts of this namespace are built if `WITH_*APPLICATION` is enabled when
 building Magnum, with each library having specific toolkit dependencies and
 platform requirements. To use particular application library, you need to
-request given `*Application` component of `Magnum` package in CMake, add
-`${MAGNUM_*APPLICATION_INCLUDE_DIRS}` to include path and link to
-`${MAGNUM_*APPLICATION_LIBRARIES}`. See particular `*Application` class
+request given `*Application` component of `Magnum` package in CMake and link to
+`Magnum::*Application` target. See particular `*Application` class
 documentation, @ref building, @ref cmake and @ref platform for more
 information.
 */
 
 /** @dir Magnum/Math
- * @brief Namespace @ref Magnum::Math
+ * @brief Namespace @ref Magnum::Math, @ref Magnum::Math::Literals
  */
 /** @namespace Magnum::Math
 @brief Math library
@@ -64,9 +62,17 @@ information.
 Template classes for matrix and vector calculations.
 
 This library is built as part of Magnum by default. To use it, you need to
-find `Magnum` package, add `${MAGNUM_INCLUDE_DIRS}` to include path and link
-to `${MAGNUM_LIBRARIES}`. See @ref building, @ref cmake, @ref matrix-vector and
-@ref transformations for more information.
+find `Magnum` package and link to `Magnum::Magnum` target. See @ref building,
+@ref cmake, @ref matrix-vector and @ref transformations for more information.
+*/
+/** @namespace Magnum::Math::Literals
+@brief Math literals
+
+Literals for easy construction of angle and color values.
+
+This library is built as part of Magnum by default. To use it, you need to
+find `Magnum` package and link to `Magnum::Magnum` target. See @ref building
+and @ref cmake for more information.
 */
 
 /** @dir Magnum/Math/Algorithms
@@ -78,9 +84,8 @@ to `${MAGNUM_LIBRARIES}`. See @ref building, @ref cmake, @ref matrix-vector and
 Various matrix and vector algorithms.
 
 This library is built as part of Magnum by default. To use it, you need to
-find `Magnum` package, add `${MAGNUM_INCLUDE_DIRS}` to include path and link
-to `${MAGNUM_LIBRARIES}`. See @ref building and @ref cmake for more
-information.
+find `Magnum` package and link to `Magnum::Magnum` target. See @ref building
+and @ref cmake for more information.
 */
 
 /** @dir Magnum/Math/Geometry
@@ -92,9 +97,8 @@ information.
 Functions for computing intersections, distances, areas and volumes.
 
 This library is built as part of Magnum by default. To use it, you need to
-find `Magnum` package, add `${MAGNUM_INCLUDE_DIRS}` to include path and link
-to `${MAGNUM_LIBRARIES}`. See @ref building and @ref cmake for more
-information.
+find `Magnum` package and link to `Magnum::Magnum` target. See @ref building
+and @ref cmake for more information.
 */
 
 /** @dir Magnum/Audio
@@ -107,11 +111,11 @@ Audio import, playback and integration with @ref SceneGraph.
 
 This library depends on **OpenAL** library. It is built if `WITH_AUDIO` is
 enabled when building Magnum. To use this library, you need to request
-`Audio` component of `Magnum` package in CMake, add `${MAGNUM_AUDIO_INCLUDE_DIRS}`
-to include path and link to `${MAGNUM_AUDIO_LIBRARIES}`. See @ref building and
-@ref cmake for more information. Additional plugins are enabled separately, see
-particular `*Importer` class documentation, @ref building-plugins,
-@ref cmake-plugins and @ref plugins for more information.
+`Audio` component of `Magnum` package in CMake and link to
+`Magnum::Audio` target. See @ref building and @ref cmake for more information.
+Additional plugins are enabled separately, see particular `Audio::*Importer`
+class documentation, @ref building-plugins, @ref cmake-plugins and @ref plugins
+for more information.
 */
 
 /** @dir Magnum/DebugTools
@@ -124,8 +128,8 @@ Debugging helpers, renderers and profilers.
 
 This library is built if `WITH_DEBUGTOOLS` is enabled when building Magnum. To
 use this library, you need to request `DebugTools` component of `Magnum`
-package in CMake and link to `${MAGNUM_DEBUGTOOLS_LIBRARIES}`. See
-@ref building, @ref cmake and @ref debug-tools for more information.
+package in CMake and link to `Magnum::DebugTools` target. See @ref building,
+@ref cmake and @ref debug-tools for more information.
 */
 
 /** @dir Magnum/MeshTools
@@ -138,8 +142,8 @@ Tools for generating, optimizing and cleaning meshes.
 
 This library is built if `WITH_MESHTOOLS` is enabled when building Magnum. To
 use this library, you need to request `MeshTools` component of `Magnum`
-package in CMake and link to `${MAGNUM_MESHTOOLS_LIBRARIES}`. See @ref building
-and @ref cmake for more information.
+package in CMake and link to `Magnum::MeshTools` target. See @ref building and
+@ref cmake for more information.
 */
 
 /** @dir Magnum/Primitives
@@ -152,8 +156,8 @@ Basic primitives for testing purposes.
 
 This library is built if `WITH_PRIMITIVES` is enabled when building Magnum. To
 use this library, you need to request `Primitives` component of `Magnum`
-package in CMake and link to `${MAGNUM_PRIMITIVES_LIBRARIES}`. See
-@ref building and @ref cmake for more information.
+package in CMake and link to `Magnum::Primitives` target. See @ref building and
+@ref cmake for more information.
 */
 
 /** @dir Magnum/SceneGraph
@@ -166,8 +170,8 @@ Managing object hierarchy, transformations and interactions.
 
 This library is built if `WITH_SCENEGRAPH` is enabled when building Magnum. To
 use this library, you need to request `SceneGraph` component of `Magnum`
-package in CMake and link to `${MAGNUM_SCENEGRAPH_LIBRARIES}`. See
-@ref building, @ref cmake and @ref scenegraph for more information.
+package in CMake and link to `Magnum::SceneGraph` target. See @ref building,
+@ref cmake and @ref scenegraph for more information.
 */
 
 /** @dir Magnum/Shaders
@@ -180,8 +184,8 @@ Collection of shaders for easy prototyping and basic usage.
 
 This library is built if `WITH_SHADERS` is enabled when building Magnum. To
 use this library, you need to request `Shaders` component of `Magnum` package
-in CMake and link to `${MAGNUM_MESHTOOLS_SHADERS}`. See @ref building and
-@ref cmake and @ref shaders for more information.
+in CMake and link to `Magnum::Shaders` target. See @ref building, @ref cmake
+and @ref shaders for more information.
 */
 
 /** @dir Magnum/Shapes
@@ -194,8 +198,8 @@ Collision detection system.
 
 This library is built if `WITH_SHAPES` is enabled when building Magnum. To use
 this library, you need to request `Shapes` component of `Magnum` package in
-CMake and link to `${MAGNUM_SHAPES_LIBRARIES}`. See @ref building, @ref cmake
-and @ref shapes for more information.
+CMake and link to `Magnum::Shapes` target. See @ref building, @ref cmake and
+@ref shapes for more information.
 */
 
 /** @dir Magnum/Text
@@ -208,8 +212,8 @@ Font texture creation and text layouting.
 
 This library is built if `WITH_TEXT` is enabled when building Magnum. To use
 this library, you need to request `Text` component of `Magnum` package in
-CMake and link to `${MAGNUM_TEXT_LIBRARIES}`. See @ref building and @ref cmake
-for more information. Additional plugins are enabled separately, see particular
+CMake and link to `Magnum::Text` target. See @ref building and @ref cmake for
+more information. Additional plugins are enabled separately, see particular
 `*Font` and `*FontConverter` class documentation, @ref building-plugins,
 @ref cmake-plugins and @ref plugins for more information.
 */
@@ -224,8 +228,8 @@ Tools for generating, compressing and optimizing textures.
 
 This library is built if `WITH_TEXTURETOOLS` is enabled when building Magnum.
 To use this library, you need to request `TextureTools` component of `Magnum`
-package in CMake and link to `${MAGNUM_TEXTURETOOLS_LIBRARIES}`. See
-@ref building and @ref cmake for more information.
+package in CMake and link to `Magnum::TextureTools`. See @ref building and
+@ref cmake for more information.
 */
 
 /** @dir Magnum/Trade
@@ -238,11 +242,11 @@ Contains plugin interfaces for importing data of various formats and classes
 for direct access to the data.
 
 This library is built as part of Magnum by default. To use it, you need to
-find `Magnum` package, add `${MAGNUM_INCLUDE_DIRS}` to include path and link
-to `${MAGNUM_LIBRARIES}`. See @ref building and @ref cmake for more
-information. Additional plugins are enabled separately, see particular
-`*Importer` and `*ImageConverter` class documentation, @ref building-plugins,
-@ref cmake-plugins and @ref plugins for more information.
+find `Magnum` package and link to `Magnum::Magnum` target. See @ref building
+and @ref cmake for more information. Additional plugins are enabled separately,
+see particular `Trade::*Importer` and `*ImageConverter` class documentation,
+@ref building-plugins, @ref cmake-plugins and @ref plugins for more
+information.
 */
 
 /** @dir magnum/src/MagnumPlugins
