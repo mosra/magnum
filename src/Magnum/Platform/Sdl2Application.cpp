@@ -476,11 +476,8 @@ void Sdl2Application::keyReleaseEvent(KeyEvent&) {}
 void Sdl2Application::mousePressEvent(MouseEvent&) {}
 void Sdl2Application::mouseReleaseEvent(MouseEvent&) {}
 void Sdl2Application::mouseMoveEvent(MouseMoveEvent&) {}
-
-#ifndef CORRADE_TARGET_EMSCRIPTEN
 void Sdl2Application::textInputEvent(TextInputEvent&) {}
 void Sdl2Application::textEditingEvent(TextEditingEvent&) {}
-#endif
 
 Sdl2Application::Configuration::Configuration():
     #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_IOS)

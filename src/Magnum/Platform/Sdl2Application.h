@@ -331,10 +331,8 @@ class Sdl2Application {
         class KeyEvent;
         class MouseEvent;
         class MouseMoveEvent;
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
         class TextInputEvent;
         class TextEditingEvent;
-        #endif
 
         /**
          * @brief Default constructor
@@ -585,7 +583,6 @@ class Sdl2Application {
 
         /*@}*/
 
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
         /** @{ @name Text input handling */
     public:
         /**
@@ -593,7 +590,6 @@ class Sdl2Application {
          *
          * If text input is active, text input events go to @ref textInputEvent()
          * and @ref textEditingEvent().
-         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          * @see @ref startTextInput(), @ref stopTextInput()
          */
         bool isTextInputActive() { return SDL_IsTextInputActive(); }
@@ -603,7 +599,6 @@ class Sdl2Application {
          *
          * Starts text input that will go to @ref textInputEvent() and
          * @ref textEditingEvent().
-         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          * @see @ref stopTextInput(), @ref isTextInputActive(),
          *      @ref setTextInputRect()
          */
@@ -612,7 +607,6 @@ class Sdl2Application {
         /**
          * @brief Stop text input
          *
-         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          * @see @ref startTextInput(), @ref isTextInputActive(), @ref textInputEvent()
          *      @ref textEditingEvent()
          */
@@ -647,7 +641,6 @@ class Sdl2Application {
         virtual void textEditingEvent(TextEditingEvent& event);
 
         /*@}*/
-        #endif
 
     private:
         enum class Flag: UnsignedByte {
@@ -1217,11 +1210,9 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
         Modifiers _modifiers;
 };
 
-#ifndef CORRADE_TARGET_EMSCRIPTEN
 /**
 @brief Text input event
 
-@note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
 @see @ref TextEditingEvent, @ref textInputEvent()
 */
 class Sdl2Application::TextInputEvent {
@@ -1266,7 +1257,6 @@ class Sdl2Application::TextInputEvent {
 /**
 @brief Text editing event
 
-@note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
 @see @ref textEditingEvent()
 */
 class Sdl2Application::TextEditingEvent {
@@ -1314,7 +1304,6 @@ class Sdl2Application::TextEditingEvent {
         Int _start, _length;
         bool _accepted;
 };
-#endif
 
 /** @hideinitializer
 @brief Entry point for SDL2-based applications
