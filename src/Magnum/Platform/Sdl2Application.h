@@ -331,6 +331,7 @@ class Sdl2Application {
         class KeyEvent;
         class MouseEvent;
         class MouseMoveEvent;
+        class MultiGestureEvent;
         class TextInputEvent;
         class TextEditingEvent;
 
@@ -580,6 +581,19 @@ class Sdl2Application {
          * Called when mouse is moved. Default implementation does nothing.
          */
         virtual void mouseMoveEvent(MouseMoveEvent& event);
+
+        /*@}*/
+
+        /** @{ @name Touch gesture handling */
+
+        /**
+         * @brief Multi gesture event
+         *
+         * Called when the user performs a gesture using multiple fingers.
+         * Default implementation does nothing.
+         * @experimental
+         */
+        virtual void multiGestureEvent(MultiGestureEvent& event);
 
         /*@}*/
 
@@ -1208,6 +1222,75 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
         const Buttons _buttons;
         bool _modifiersLoaded;
         Modifiers _modifiers;
+};
+
+/**
+@brief Multi gesture event
+
+@experimental
+@see @ref multiGestureEvent()
+*/
+class Sdl2Application::MultiGestureEvent {
+    friend Sdl2Application;
+
+    public:
+        /** @brief Copying is not allowed */
+        MultiGestureEvent(const MultiGestureEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        MultiGestureEvent(MultiGestureEvent&&) = delete;
+
+        /** @brief Copying is not allowed */
+        MultiGestureEvent& operator=(const MultiGestureEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        MultiGestureEvent& operator=(MultiGestureEvent&&) = delete;
+
+        /** @brief Whether the event is accepted */
+        constexpr bool isAccepted() const { return _accepted; }
+
+        /**
+         * @brief Set event as accepted
+         *
+         * If the event is ignored (i.e., not set as accepted), it might be
+         * propagated elsewhere, for example to another screen when using
+         * @ref BasicScreenedApplication "ScreenedApplication". By default is
+         * each event ignored and thus propagated.
+         */
+        void setAccepted(bool accepted = true) { _accepted = accepted; }
+
+        /** @brief Gesture center */
+        Vector2 center() const { return _center; }
+
+        /**
+         * @brief Relative rotation
+         *
+         * Rotation relative to previous event.
+         */
+        Float relativeRotation() const { return _relativeRotation; }
+
+        /**
+         * @brief Relative distance
+         *
+         * Distance of the fingers relative to previous event.
+         */
+        Float relativeDistance() const { return _relativeDistance; }
+
+        /**
+         * @brief Finger count
+         *
+         * Count of fingers performing the gesture.
+         */
+        Int fingerCount() const { return _fingerCount; }
+
+    private:
+        constexpr MultiGestureEvent(const Vector2& center, Float relativeRotation, Float relativeDistance, Int fingerCount): _center{center}, _relativeRotation{relativeRotation}, _relativeDistance{relativeDistance}, _fingerCount{fingerCount}, _accepted{false} {}
+
+        Vector2 _center;
+        Float _relativeRotation,
+            _relativeDistance;
+        Int _fingerCount;
+        bool _accepted;
 };
 
 /**

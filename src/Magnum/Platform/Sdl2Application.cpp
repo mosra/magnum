@@ -390,6 +390,12 @@ void Sdl2Application::mainLoop() {
                 break;
             }
 
+            case SDL_MULTIGESTURE: {
+                MultiGestureEvent e({event.mgesture.x, event.mgesture.y}, event.mgesture.dTheta, event.mgesture.dDist, event.mgesture.numFingers);
+                multiGestureEvent(e);
+                break;
+            }
+
             #ifndef CORRADE_TARGET_EMSCRIPTEN
             case SDL_TEXTINPUT: {
                 TextInputEvent e{{event.text.text, std::strlen(event.text.text)}};
@@ -476,6 +482,7 @@ void Sdl2Application::keyReleaseEvent(KeyEvent&) {}
 void Sdl2Application::mousePressEvent(MouseEvent&) {}
 void Sdl2Application::mouseReleaseEvent(MouseEvent&) {}
 void Sdl2Application::mouseMoveEvent(MouseMoveEvent&) {}
+void Sdl2Application::multiGestureEvent(MultiGestureEvent&) {}
 void Sdl2Application::textInputEvent(TextInputEvent&) {}
 void Sdl2Application::textEditingEvent(TextEditingEvent&) {}
 
