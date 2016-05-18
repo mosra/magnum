@@ -1143,11 +1143,11 @@ class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
         Modifiers modifiers();
 
     private:
-        constexpr MouseEvent(Button button, const Vector2i& position): _button(button), _position(position), modifiersLoaded(false) {}
+        constexpr MouseEvent(Button button, const Vector2i& position): _button{button}, _position{position}, _modifiersLoaded{false} {}
 
         const Button _button;
         const Vector2i _position;
-        bool modifiersLoaded;
+        bool _modifiersLoaded;
         Modifiers _modifiers;
 };
 
@@ -1201,11 +1201,11 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
         Modifiers modifiers();
 
     private:
-        constexpr MouseMoveEvent(const Vector2i& position, const Vector2i& relativePosition, Buttons buttons): _position(position), _relativePosition(relativePosition), modifiersLoaded(false), _buttons(buttons) {}
+        constexpr MouseMoveEvent(const Vector2i& position, const Vector2i& relativePosition, Buttons buttons): _position{position}, _relativePosition{relativePosition}, _buttons{buttons}, _modifiersLoaded{false} {}
 
         const Vector2i _position, _relativePosition;
-        bool modifiersLoaded;
-        Buttons _buttons;
+        const Buttons _buttons;
+        bool _modifiersLoaded;
         Modifiers _modifiers;
 };
 
