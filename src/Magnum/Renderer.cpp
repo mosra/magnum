@@ -208,7 +208,8 @@ Renderer::GraphicsResetStatus Renderer::graphicsResetStatus() {
 
 void Renderer::initializeContextBasedFunctionality() {
     /* Set some "corporate identity" */
-    setClearColor(Color3(0.125f));
+    using namespace Magnum::Math::Literals;
+    setClearColor(0x1f1f1f_rgbf);
 }
 
 #ifndef MAGNUM_TARGET_GLES
