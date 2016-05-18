@@ -1136,6 +1136,13 @@ class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
         constexpr Vector2i position() const { return _position; }
 
         /**
+         * @brief Click count
+         *
+         * Ignored for wheel events.
+         */
+        constexpr Int clickCount() const { return _clickCount; }
+
+        /**
          * @brief Modifiers
          *
          * Lazily populated on first request.
@@ -1143,10 +1150,11 @@ class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
         Modifiers modifiers();
 
     private:
-        constexpr MouseEvent(Button button, const Vector2i& position): _button{button}, _position{position}, _modifiersLoaded{false} {}
+        constexpr MouseEvent(Button button, const Vector2i& position, Int clickCount): _button{button}, _position{position}, _clickCount{clickCount}, _modifiersLoaded{false} {}
 
         const Button _button;
         const Vector2i _position;
+        const Int _clickCount;
         bool _modifiersLoaded;
         Modifiers _modifiers;
 };

@@ -374,13 +374,13 @@ void Sdl2Application::mainLoop() {
 
             case SDL_MOUSEBUTTONDOWN:
             case SDL_MOUSEBUTTONUP: {
-                MouseEvent e(static_cast<MouseEvent::Button>(event.button.button), {event.button.x, event.button.y});
+                MouseEvent e(static_cast<MouseEvent::Button>(event.button.button), {event.button.x, event.button.y}, event.button.clicks);
                 event.type == SDL_MOUSEBUTTONDOWN ? mousePressEvent(e) : mouseReleaseEvent(e);
             } break;
 
             case SDL_MOUSEWHEEL:
                 if(event.wheel.y != 0) {
-                    MouseEvent e(event.wheel.y > 0 ? MouseEvent::Button::WheelUp : MouseEvent::Button::WheelDown, {event.wheel.x, event.wheel.y});
+                    MouseEvent e(event.wheel.y > 0 ? MouseEvent::Button::WheelUp : MouseEvent::Button::WheelDown, {event.wheel.x, event.wheel.y}, 0);
                     mousePressEvent(e);
                 } break;
 
