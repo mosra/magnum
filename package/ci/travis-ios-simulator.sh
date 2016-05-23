@@ -1,0 +1,70 @@
+#!/bin/bash
+set -ev
+
+git submodule update --init
+
+# Corrade
+git clone --depth 1 git://github.com/mosra/corrade.git
+cd corrade
+
+# Build native corrade-rc
+mkdir build && cd build
+cmake .. \
+    -DCMAKE_INSTALL_PREFIX=$HOME/deps \
+    -DCMAKE_INSTALL_RPATH=$HOME/deps/lib \
+    -DWITH_INTERCONNECT=OFF \
+    -DWITH_PLUGINMANAGER=OFF \
+    -DWITH_TESTSUITE=OFF \
+    -DCMAKE_BUILD_TYPE=Release
+make -j install
+cd ..
+
+# Crosscompile Corrade
+mkdir build-ios && cd build-ios
+cmake .. \
+    -DCMAKE_TOOLCHAIN_FILE=../../toolchains/generic/iOS.cmake \
+    -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk \
+    -DCMAKE_OSX_ARCHITECTURES="x86_64" \
+    -DCORRADE_RC_EXECUTABLE=$HOME/deps/bin/corrade-rc \
+    -DCMAKE_INSTALL_PREFIX=$HOME/deps-ios \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DBUILD_STATIC=ON \
+    -DTESTSUITE_TARGET_XCTEST=ON \
+    -DWITH_INTERCONNECT=OFF \
+    -G Xcode
+cmake --build . --config Release --target install | xcpretty
+cd ../..
+
+ls -lR $TRAVIS_BUILD_DIR/sdl2
+
+# Crosscompile Magnum
+mkdir build-ios && cd build-ios
+cmake .. \
+    -DCMAKE_TOOLCHAIN_FILE=../toolchains/generic/iOS.cmake \
+    -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk \
+    -DCMAKE_OSX_ARCHITECTURES="x86_64" \
+    -DCORRADE_RC_EXECUTABLE=$HOME/deps/bin/corrade-rc \
+    -DCMAKE_PREFIX_PATH="$HOME/deps-ios;$TRAVIS_BUILD_DIR/sdl2" \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DTARGET_GLES2=$TARGET_GLES2 \
+    -DWITH_AUDIO=ON \
+    -DWITH_SDL2APPLICATION=ON \
+    -DWITH_WINDOWLESSIOSAPPLICATION=ON \
+    -DWITH_EGLCONTEXT=ON \
+    -DWITH_MAGNUMFONT=ON \
+    -DWITH_MAGNUMFONTCONVERTER=ON \
+    -DWITH_OBJIMPORTER=ON \
+    -DWITH_TGAIMAGECONVERTER=ON \
+    -DWITH_TGAIMPORTER=ON \
+    -DWITH_WAVAUDIOIMPORTER=ON \
+    -DWITH_DISTANCEFIELDCONVERTER=ON \
+    -DWITH_FONTCONVERTER=ON \
+    -DWITH_MAGNUMINFO=ON \
+    -DBUILD_STATIC=ON \
+    -DBUILD_PLUGINS_STATIC=ON \
+    -DBUILD_TESTS=ON \
+    -DBUILD_GL_TESTS=ON \
+    -G Xcode
+cmake --build . --config Release | xcpretty
+cmake --build . --config Release --target install | xcpretty
+CORRADE_TEST_COLOR=ON ctest -V -C Release -E GLTest

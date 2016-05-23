@@ -1,8 +1,26 @@
 # kate: indent-width 2;
 
-os:
-- linux
-- osx
+language: cpp
+
+matrix:
+  include:
+  - os: linux
+    compiler: gcc
+    env:
+    - TARGET=desktop
+    # Otherwise the job gets killed (probably because using too much memory)
+    - JOBS_LIMIT=4
+  - os: osx
+    compiler: clang
+    env: TARGET=desktop
+  - os: osx
+    env:
+    - TARGET=ios-simulator
+    - TARGET_GLES2=ON
+  - os: osx
+    env:
+    - TARGET=ios-simulator
+    - TARGET_GLES2=OFF
 
 addons:
   apt:
@@ -32,29 +50,22 @@ install:
 - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export CXX=g++-4.7; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export PLATFORM_GL_API=GLX; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ]; then export PLATFORM_GL_API=CGL; fi
-- printf "[General]\ndrivers=null" > ~/.alsoftrc
+- if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "ios-simulator" ]; then gem install xcpretty; fi
+- if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "ios-simulator" ]; then brew upgrade cmake; fi
+- if [ "$TARGET" == "desktop" ]; then printf "[General]\ndrivers=null" > ~/.alsoftrc; fi
 
 # SDL (cached)
-- if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install sdl2; fi
+- if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop" ]; then brew install sdl2; fi
+- if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "ios-simulator" ]; then curl -O https://www.libsdl.org/release/SDL2-2.0.4.tar.gz && tar -xzvf SDL2-2.0.4.tar.gz && cd SDL2-2.0.4/Xcode-iOS/SDL && xcodebuild -sdk iphonesimulator8.1 | xcpretty && mkdir -p ../../../sdl2/lib && cp build/Release-iphonesimulator/libSDL2.a ../../../sdl2/lib && mkdir -p ../../../sdl2/include/SDL2 && cp -R ../../include/* ../../../sdl2/include/SDL2 && cd ../../..; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ ! -e "$HOME/sdl2/include" ]; then curl -O http://www.libsdl.org/release/SDL2-2.0.4.tar.gz && tar -xzvf SDL2-2.0.4.tar.gz && cd SDL2-2.0.4 && mkdir build && cd build && cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/sdl2 -DCMAKE_BUILD_TYPE=Release && cmake --build . --target install && cd ../..; fi
 
 # GLFW (cached)
-- if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew install homebrew/versions/glfw3; fi
+- if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop" ]; then brew install homebrew/versions/glfw3; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ ! -e "$HOME/glfw/include" ]; then wget https://github.com/glfw/glfw/releases/download/3.1.2/glfw-3.1.2.zip && unzip glfw-3.1.2.zip && cd glfw-3.1.2 && mkdir build && cd build && cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/glfw -DCMAKE_BUILD_TYPE=Release -DGLFW_BUILD_EXAMPLES=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_DOCS=OFF && cmake --build . --target install && cd ../..; fi
 
-# Corrade
-- git clone --depth 1 git://github.com/mosra/corrade.git
-- cd corrade
-- mkdir build
-- cd build
-- cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/deps -DCMAKE_INSTALL_RPATH=$HOME/deps/lib -DCMAKE_BUILD_TYPE=Release
-- cmake --build .
-- cmake --build . --target install
-- cd ..
-- cd ..
-
 script:
-- mkdir build && cd build
-- cmake .. -DCMAKE_PREFIX_PATH="$HOME/deps;$HOME/sdl2;$HOME/glfw" -DCMAKE_BUILD_TYPE=Release -DWITH_AUDIO=ON -DWITH_GLFWAPPLICATION=ON -DWITH_SDL2APPLICATION=ON -DWITH_WINDOWLESS${PLATFORM_GL_API}APPLICATION=ON -DWITH_${PLATFORM_GL_API}CONTEXT=ON -DWITH_MAGNUMFONT=ON -DWITH_MAGNUMFONTCONVERTER=ON -DWITH_OBJIMPORTER=ON -DWITH_TGAIMAGECONVERTER=ON -DWITH_TGAIMPORTER=ON -DWITH_WAVAUDIOIMPORTER=ON -DWITH_DISTANCEFIELDCONVERTER=ON -DWITH_FONTCONVERTER=ON -DWITH_MAGNUMINFO=ON -DBUILD_TESTS=ON -DBUILD_GL_TESTS=ON
-- cmake --build .
-- ctest --output-on-failure -E GLTest
+- if [ "$TRAVIS_OS_NAME" == "linux" ]; then ./package/ci/travis-desktop.sh; fi
+- if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop" ]; then ./package/ci/travis-desktop.sh; fi
+- if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "ios-simulator" ]; then ./package/ci/travis-ios-simulator.sh; fi
+# Travis somehow is not able to gather all output, try to force it using this
+- sync
