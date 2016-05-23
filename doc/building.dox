@@ -455,9 +455,7 @@ to find the compiler. NaCl currently supports only OpenGL ES 2, thus
 `TARGET_GLES` and `TARGET_GLES2` is always enabled.
 
 Then create build directories for x86-32 and x86-64 and run cmake and build
-command in them. The toolchains need access to the platform file, so be sure to
-properly set **absolute** path to `modules/` directory containing
-`Platform/NaCl.cmake`. Also adapt `CMAKE_INSTALL_PREFIX` to the same value as
+command in them. Be sure to adapt `CMAKE_INSTALL_PREFIX` to the same value as
 in `NACL_PREFIX` in toolchain file and specify path where Corrade is installed
 in `CMAKE_PREFIX_PATH`.
 
@@ -501,10 +499,8 @@ to path where Emscripten is installed. Default is `/usr/lib/emscripten`.
 Emscripten supports dynamic libraries only to simplify porting and they are
 generally slower, thus `BUILD_STATIC` is implicitly enabled.
 
-Then create build directory and run cmake and build command in it. The
-toolchain needs access to its platform file, so be sure to properly set **absolute**
-path to `modules/` directory containing `Platform/Emscripten.cmake`. Also set
-`CMAKE_INSTALL_PREFIX` to path contained in `EMSCRIPTEN_TOOLCHAIN_PATH`.
+Then create build directory and run cmake and build command in it. Be sure to
+set `CMAKE_INSTALL_PREFIX` to path contained in `EMSCRIPTEN_TOOLCHAIN_PATH`.
 
 WebGL 1.0 (GLES 2.0 equivalent) is enabled by default, switch to 2.0 (GLES 3.0
 equivalent) by disabling `TARGET_GLES2`.
@@ -536,10 +532,8 @@ building your projects for Emscripten.
 You will need OSX and Xcode installed.
 
 Set `CMAKE_OSX_ROOT` to SDK you want to target and enable all desired
-architectures in `CMAKE_OSX_ARCHITECTURES`. The toolchain needs access to its
-platform file, so be sure to properly set **absolute** path to `modules/`
-directory containing `Platform/iOS.cmake`. Set `CMAKE_INSTALL_PREFIX` to prefix
-where you store other iOS dependencies such as Corrade or SDL2.
+architectures in `CMAKE_OSX_ARCHITECTURES`. Be sure to set `CMAKE_INSTALL_PREFIX`
+to prefix where you store other iOS dependencies such as Corrade or SDL2.
 
 As every application is in its own sandbox, it doesn't make sense to build
 shared libraries (although it is supported). Enable `BUILD_STATIC` to build
@@ -575,11 +569,9 @@ where NDK is installed. Default is `/opt/android-ndk`. Adapt also
 `ANDROID_SYSROOT` to your preferred API level. You might also need to update
 `ANDROID_TOOLCHAIN_PREFIX` and `ANDROID_TOOLCHAIN_ROOT` to fit your system.
 
-Then create build directory and run cmake and build command in it. The
-toolchain needs access to its platform file, so be sure to properly set **absolute**
-path to `modules/` directory containing `Platform/Android.cmake`. Also set
-`CMAKE_INSTALL_PREFIX` to `/usr` subdirectory of `ANDROID_SYSROOT` and specify
-path where Corrade is installed in `CMAKE_PREFIX_PATH`.
+Then create build directory and run cmake and build command in it. Be sure to
+set `CMAKE_INSTALL_PREFIX` to `/usr` subdirectory of `ANDROID_SYSROOT` and
+specify path where Corrade is installed in `CMAKE_PREFIX_PATH`.
 
 Note that `BUILD_STATIC` is implicitly enabled, because manually loading all
 depending shared libraries using JNI would be too inconvenient. The engine is
