@@ -62,7 +62,9 @@ install(FILES ${TgaImageConverter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configure.h DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/TgaImageConverter)
 
 if(BUILD_TESTS)
-    add_library(MagnumTgaImageConverterTestLib STATIC $<TARGET_OBJECTS:TgaImageConverterObjects>)
+    add_library(MagnumTgaImageConverterTestLib STATIC
+        $<TARGET_OBJECTS:TgaImageConverterObjects>
+        ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details
     target_link_libraries(MagnumTgaImageConverterTestLib Magnum)
 
     add_subdirectory(Test)

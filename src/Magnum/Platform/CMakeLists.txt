@@ -645,7 +645,7 @@ if(NEED_EGLCONTEXT OR WITH_EGLCONTEXT)
     if(WITH_EGLCONTEXT)
         add_library(MagnumEglContext STATIC
             $<TARGET_OBJECTS:MagnumEglContextObjects>
-            ../dummy.cpp) # XCode workaround, see file comment for details
+            ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details
         set_target_properties(MagnumEglContext PROPERTIES DEBUG_POSTFIX "-d")
         if(BUILD_STATIC_PIC)
             set_target_properties(MagnumEglContext PROPERTIES POSITION_INDEPENDENT_CODE ON)

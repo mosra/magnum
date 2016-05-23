@@ -65,7 +65,9 @@ if(BUILD_GL_TESTS)
             ${MagnumFont_HEADERS})
         target_compile_definitions(MagnumMagnumFontTestLib PRIVATE "MAGNUM_TGAIMPORTER_BUILD_STATIC")
     else()
-        add_library(MagnumMagnumFontTestLib STATIC $<TARGET_OBJECTS:MagnumFontObjects>)
+        add_library(MagnumMagnumFontTestLib STATIC
+            $<TARGET_OBJECTS:MagnumFontObjects>
+            ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details
     endif()
     target_link_libraries(MagnumMagnumFontTestLib Magnum MagnumText MagnumTgaImporterTestLib)
 

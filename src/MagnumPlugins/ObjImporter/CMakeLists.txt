@@ -51,7 +51,9 @@ target_link_libraries(ObjImporter Magnum MagnumMeshTools)
 install(FILES ${ObjImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/ObjImporter)
 
 if(BUILD_TESTS)
-    add_library(MagnumObjImporterTestLib STATIC $<TARGET_OBJECTS:ObjImporterObjects>)
+    add_library(MagnumObjImporterTestLib STATIC
+        $<TARGET_OBJECTS:ObjImporterObjects>
+        ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details
     target_link_libraries(MagnumObjImporterTestLib Magnum MagnumMeshTools)
     add_subdirectory(Test)
 endif()

@@ -54,7 +54,9 @@ target_link_libraries(WavAudioImporter Magnum MagnumAudio)
 install(FILES ${WavAudioImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/WavAudioImporter)
 
 if(BUILD_TESTS)
-    add_library(MagnumWavAudioImporterTestLib STATIC $<TARGET_OBJECTS:WavAudioImporterObjects>)
+    add_library(MagnumWavAudioImporterTestLib STATIC
+        $<TARGET_OBJECTS:WavAudioImporterObjects>
+        ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details
     target_link_libraries(MagnumWavAudioImporterTestLib Magnum MagnumAudio)
     add_subdirectory(Test)
 endif()
