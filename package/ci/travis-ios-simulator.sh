@@ -67,4 +67,7 @@ cmake .. \
     -G Xcode
 cmake --build . --config Release | xcpretty
 cmake --build . --config Release --target install | xcpretty
-CORRADE_TEST_COLOR=ON ctest -V -C Release -E GLTest
+# TODO: find a better way to avoid
+# Library not loaded: /System/Library/Frameworks/OpenGLES.framework/OpenGLES
+# error
+DYLD_FALLBACK_LIBRARY_PATH=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk/System/Library/Frameworks/OpenGLES.framework/ DYLD_FALLBACK_FRAMEWORK_PATH=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk/System/Library/Frameworks CORRADE_TEST_COLOR=ON ctest -V -C Release -E GLTest
