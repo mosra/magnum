@@ -1896,6 +1896,11 @@ GL_APICALL void GL_APIENTRY GLES2ReadBufferNV(GLenum);
 #define GL_OES_element_index_uint 1
 #endif
 
+/* GL_OES_fbo_render_mipmap */
+#ifndef GL_OES_fbo_render_mipmap
+#define GL_OES_fbo_render_mipmap 1
+#endif
+
 /* GL_OES_mapbuffer */
 #ifndef GL_OES_mapbuffer
 #define GL_OES_mapbuffer 1

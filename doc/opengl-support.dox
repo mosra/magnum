@@ -323,6 +323,7 @@ Extension                                   | Status
 @es_extension{NV,shadow_samplers_cube}      | done (shading language only)
 @es_extension{OES,depth24}                  | done
 @es_extension{OES,element_index_uint}       | done
+@es_extension{OES,fbo_render_mipmap}        | done
 @es_extension{OES,rgb8_rgba8}               | done (desktop-compatible subset)
 @es_extension{OES,texture_3D}               | done
 @es_extension2{OES,texture_half_float_linear,OES_texture_float_linear} | done
@@ -427,6 +428,7 @@ Extension                                   | Status
 @webgl_extension{OES,element_index_uint}    | done
 @webgl_extension{OES,texture_float_linear}  | done
 @webgl_extension{OES,texture_half_float_linear} | done
+@webgl_extension{OES,fbo_render_mipmap}     | done
 @webgl_extension{WEBGL,depth_texture}       | done
 @webgl_extension{WEBGL,draw_buffers}        | done
 

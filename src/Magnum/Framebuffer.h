@@ -621,6 +621,10 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          *      @fn_gl_extension{NamedFramebufferTexture2D,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and
          *      @fn_gl2{FramebufferTexture2D,FramebufferTexture}
+         * @requires_gles30 Extension @es_extension{OES,fbo_render_mipmap} to
+         *      render to @p level different than `0` in OpenGL ES 2.0.
+         * @requires_webgl20 Extension @webgl_extension{OES,fbo_render_mipmap}
+         *      to render to @p level different than `0` in WebGL 1.0.
          */
         Framebuffer& attachTexture(BufferAttachment attachment, Texture2D& texture, Int level);
 
@@ -659,6 +663,10 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          *      @fn_gl2{NamedFramebufferTextureLayer,FramebufferTextureLayer},
          *      @fn_gl_extension{NamedFramebufferTexture2D,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and @fn_gl2{FramebufferTexture2D,FramebufferTexture}
+         * @requires_gles30 Extension @es_extension{OES,fbo_render_mipmap} to
+         *      render to @p level different than `0` in OpenGL ES 2.0.
+         * @requires_webgl20 Extension @webgl_extension{OES,fbo_render_mipmap}
+         *      to render to @p level different than `0` in WebGL 1.0.
          */
         Framebuffer& attachCubeMapTexture(BufferAttachment attachment, CubeMapTexture& texture, CubeMapCoordinate coordinate, Int level);
 
@@ -682,6 +690,8 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          *      OpenGL ES 2.0
          * @requires_gles30 Extension @es_extension{OES,texture_3D} in OpenGL
          *      ES 2.0.
+         * @requires_gles30 Extension @es_extension{OES,fbo_render_mipmap} to
+         *      render to @p level different than `0` in OpenGL ES 2.0.
          * @requires_webgl20 Only 2D textures are available in WebGL 1.0.
          */
         Framebuffer& attachTextureLayer(BufferAttachment attachment, Texture3D& texture, Int level, Int layer);

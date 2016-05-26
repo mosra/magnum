@@ -241,6 +241,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,OES,element_index_uint),
         _extension(GL,OES,texture_float_linear),
         _extension(GL,OES,texture_half_float_linear),
+        _extension(GL,OES,fbo_render_mipmap),
         _extension(GL,WEBGL,compressed_texture_s3tc),
         _extension(GL,WEBGL,depth_texture),
         _extension(GL,WEBGL,draw_buffers)};
@@ -355,6 +356,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,NV,shadow_samplers_cube),
         _extension(GL,OES,depth24),
         _extension(GL,OES,element_index_uint),
+        _extension(GL,OES,fbo_render_mipmap),
         _extension(GL,OES,rgb8_rgba8),
         _extension(GL,OES,texture_3D),
         _extension(GL,OES,texture_half_float_linear),
