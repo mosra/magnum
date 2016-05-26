@@ -695,6 +695,11 @@ typedef khronos_ssize_t GLsizeiptr;
 #define GL_BGRA_EXT 0x80E1
 #define GL_BGRA8_EXT 0x93A1
 
+/* GL_ARM_shader_framebuffer_fetch */
+
+#define GL_FETCH_PER_SAMPLE_ARM 0x8F65
+#define GL_FRAGMENT_SHADER_FRAMEBUFFER_FETCH_MRT_ARM 0x8F66
+
 /* GL_EXT_texture_filter_anisotropic */
 
 #define GL_TEXTURE_MAX_ANISOTROPY_EXT 0x84FE
@@ -720,6 +725,10 @@ typedef khronos_ssize_t GLsizeiptr;
 #define GL_VERTEX_ARRAY_OBJECT_EXT 0x9154
 #define GL_SAMPLER 0x82E6
 #define GL_TRANSFORM_FEEDBACK 0x8E22
+
+/* GL_EXT_shader_framebuffer_fetch */
+
+#define GL_FRAGMENT_SHADER_DISCARDS_SAMPLES_EXT 0x8A52
 
 /* GL_EXT_disjoint_timer_query */
 
@@ -956,6 +965,10 @@ typedef khronos_ssize_t GLsizeiptr;
 #define GL_CONTEXT_RELEASE_BEHAVIOR_FLUSH_KHR 0x82FC
 #define GL_NONE 0
 
+/* GL_KHR_no_error */
+
+#define GL_CONTEXT_FLAG_NO_ERROR_BIT_KHR 0x00000008
+
 /* GL_NV_texture_border_clamp */
 
 #define GL_TEXTURE_BORDER_COLOR_NV 0x1004
@@ -1048,6 +1061,16 @@ GL_APICALL void GL_APIENTRY GLES2ResolveMultisampleFramebufferAPPLE(void);
 /* GL_ARM_rgba8 */
 #ifndef GL_ARM_rgba8
 #define GL_ARM_rgba8 1
+#endif
+
+/* GL_ARM_shader_framebuffer_fetch */
+#ifndef GL_ARM_shader_framebuffer_fetch
+#define GL_ARM_shader_framebuffer_fetch 1
+#endif
+
+/* GL_ARM_shader_framebuffer_fetch_depth_stencil */
+#ifndef GL_ARM_shader_framebuffer_fetch_depth_stencil
+#define GL_ARM_shader_framebuffer_fetch_depth_stencil 1
 #endif
 
 /* GL_ES_VERSION_2_0 */
@@ -1595,6 +1618,11 @@ GL_APICALL void GL_APIENTRY GLES2ValidateProgramPipelineEXT(GLuint);
 #define glValidateProgramPipelineEXT GLES2ValidateProgramPipelineEXT
 #endif
 
+/* GL_EXT_shader_framebuffer_fetch */
+#ifndef GL_EXT_shader_framebuffer_fetch
+#define GL_EXT_shader_framebuffer_fetch 1
+#endif
+
 /* GL_EXT_shader_texture_lod */
 #ifndef GL_EXT_shader_texture_lod
 #define GL_EXT_shader_texture_lod 1
@@ -1720,6 +1748,11 @@ GL_APICALL void GL_APIENTRY GLES2PopDebugGroupKHR(void);
 #define glPopDebugGroupKHR GLES2PopDebugGroupKHR
 GL_APICALL void GL_APIENTRY GLES2PushDebugGroupKHR(GLenum, GLuint, GLsizei, const GLchar *);
 #define glPushDebugGroupKHR GLES2PushDebugGroupKHR
+#endif
+
+/* GL_KHR_no_error */
+#ifndef GL_KHR_no_error
+#define GL_KHR_no_error 1
 #endif
 
 /* GL_KHR_robust_buffer_access_behavior */
