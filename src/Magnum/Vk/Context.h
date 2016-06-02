@@ -37,6 +37,7 @@
 #include <bitset>
 #include <vector>
 #include <Corrade/Containers/EnumSet.h>
+#include <Corrade/Utility/Debug.h>
 
 #include "Magnum/Tags.h"
 #include "Magnum/Magnum.h"
@@ -49,6 +50,16 @@ enum class Version: UnsignedInt {
     None, /**< No version */
     Vulkan_1_0 = VK_API_VERSION_1_0, /**< Vulkan 1.0 */
 };
+
+#define MAGNUM_VK_ASSERT_ERROR(err) \
+    do {                                                   \
+        const VkResult r = err;                            \
+        if(r != VK_SUCCESS) {                              \
+            Error() << "(File:" << __FILE__                \
+                    << ", Line:" << __LINE__               \
+                    << ") Vulkan error:" << Vk::Result(r); \
+        }                                                  \
+    } while(false)
 
 #define VK_ERROR_INVALID_PARAMETER_NV -1000013000
 #define VK_ERROR_INVALID_ALIGNMENT_NV -1000013001
@@ -140,6 +151,12 @@ class MAGNUM_VK_EXPORT Context {
          */
         static Context& current();
 
+        /** @brief Constructor */
+        Context();
+
+        /**
+         * @brief Constructor with flags
+         */
         Context(Flags flags);
 
         /** @brief Copying is not allowed */
@@ -148,6 +165,11 @@ class MAGNUM_VK_EXPORT Context {
         /** @brief Move constructor */
         Context(Context&& other);
 
+        /**
+         * @brief Destructor
+         *
+         * @see @fn_vk{DestroyInstance}
+         */
         ~Context();
 
         /** @brief Copying is not allowed */
@@ -186,6 +208,7 @@ class MAGNUM_VK_EXPORT Context {
         Flags _flags;
 
         VkInstance _instance;
+        VkDebugReportCallbackEXT _callback;
 };
 
 MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, Result value);

@@ -28,6 +28,7 @@ corrade_add_test(VkContextTest ContextTest.cpp LIBRARIES MagnumVk)
 
 if(BUILD_VK_TESTS)
     corrade_add_test(ContextVkTest ContextVkTest.cpp LIBRARIES ${VK_TEST_LIBRARIES})
+    corrade_add_test(CommandTest CommandTest.cpp LIBRARIES ${VK_TEST_LIBRARIES})
 
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                    ${CMAKE_CURRENT_BINARY_DIR}/configure.h)

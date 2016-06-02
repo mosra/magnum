@@ -30,7 +30,12 @@
 #include <Corrade/Utility/String.h>
 #include "vulkan.h"
 
+
 namespace Magnum { namespace Vk {
+
+PFN_vkCreateDebugReportCallbackEXT vkCreateDebugReportCallbackEXT;
+PFN_vkDebugReportMessageEXT vkDebugReportMessageEXT;
+PFN_vkDestroyDebugReportCallbackEXT vkDestroyDebugReportCallbackEXT;
 
 unsigned int layerCount = 2;
 const char *validationLayerNames[] =
@@ -51,10 +56,8 @@ Context& Context::current() {
     return *_current;
 }
 
-Context::Context(NoCreateT, Int argc, char** argv, void functionLoader()): _functionLoader{functionLoader}, _version{Version::None} {
-    Utility::Arguments args{"magnum"};
-    args.parse(argc, argv);
-}
+
+Context::Context(): Context{Flags{}} {}
 
 Context::Context(Flags flags): _functionLoader{nullptr}, _version{Version::None}, _flags(flags) {
     create();
@@ -75,7 +78,7 @@ Context::~Context() {
     }
 
     if (_flags >= Flag::EnableValidation) {
-        //DestroyDebugReportCallback(_instance, msgCallback, nullptr);
+        vkDestroyDebugReportCallbackEXT(_instance, _callback, nullptr);
     }
     vkDestroyInstance(_instance, nullptr);
 }
@@ -95,7 +98,16 @@ VKAPI_ATTR VkBool32 VKAPI_CALL MyDebugReportCallback(
     const char*                 pMessage,
     void*                       pUserData)
 {
-    Error() << pMessage;
+    if(flags & VK_DEBUG_REPORT_DEBUG_BIT_EXT != 0) {
+        Debug() << "[Debug][" << pLayerPrefix << "]" << pMessage;
+    } else if(flags & VK_DEBUG_REPORT_ERROR_BIT_EXT) {
+        Error() << "[Error][" << pLayerPrefix << "]" << pMessage;
+    } else if(flags & VK_DEBUG_REPORT_WARNING_BIT_EXT) {
+        Warning() << "[Warning][" << pLayerPrefix << "]" << pMessage;
+    } else if(flags & VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT) {
+        Warning() << "[Perf Warning][" << pLayerPrefix << "]" << pMessage;
+    }
+    
     return VK_FALSE;
 }
 
@@ -141,13 +153,13 @@ bool Context::tryCreate() {
     /* setup debugging */
     if (_flags >= Flag::EnableValidation) {
         /* Load VK_EXT_debug_report entry points in debug builds */
-        PFN_vkCreateDebugReportCallbackEXT vkCreateDebugReportCallbackEXT =
+        vkCreateDebugReportCallbackEXT =
             reinterpret_cast<PFN_vkCreateDebugReportCallbackEXT>
                 (vkGetInstanceProcAddr(_instance, "vkCreateDebugReportCallbackEXT"));
-        PFN_vkDebugReportMessageEXT vkDebugReportMessageEXT =
+        vkDebugReportMessageEXT =
             reinterpret_cast<PFN_vkDebugReportMessageEXT>
                 (vkGetInstanceProcAddr(_instance, "vkDebugReportMessageEXT"));
-        PFN_vkDestroyDebugReportCallbackEXT vkDestroyDebugReportCallbackEXT =
+        vkDestroyDebugReportCallbackEXT =
             reinterpret_cast<PFN_vkDestroyDebugReportCallbackEXT>
                 (vkGetInstanceProcAddr(_instance, "vkDestroyDebugReportCallbackEXT"));
 
@@ -162,8 +174,8 @@ bool Context::tryCreate() {
         callbackCreateInfo.pUserData   = nullptr;
 
         /* Register the callback */
-        VkDebugReportCallbackEXT callback;
-        VkResult err = vkCreateDebugReportCallbackEXT(_instance, &callbackCreateInfo, nullptr, &callback);
+        VkResult err = vkCreateDebugReportCallbackEXT(_instance, &callbackCreateInfo, nullptr, &_callback);
+        
         if (err != VK_SUCCESS) {
             Error() << "Could not setup Debug callback";
         }

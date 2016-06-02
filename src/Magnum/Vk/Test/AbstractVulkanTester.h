@@ -28,7 +28,9 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-namespace Magnum { namespace Test {
+using namespace Corrade;
+
+namespace Magnum { namespace Vk { namespace Test {
 
 class AbstractVulkanTester: public TestSuite::Tester {
     public:
@@ -60,6 +62,7 @@ AbstractVulkanTester::AbstractVulkanTester(): TestSuite::Tester{TestSuite::Teste
     }
 #endif
 
-}}
+
+}}}
 
 #endif
