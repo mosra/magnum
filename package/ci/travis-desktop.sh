@@ -9,7 +9,7 @@ cmake .. \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_INSTALL_RPATH=$HOME/deps/lib \
     -DCMAKE_BUILD_TYPE=Release \
-    -DWITH_INTERCONNECT=OFF \
+    -DWITH_INTERCONNECT=OFF
 make -j install
 cd ../..
 
