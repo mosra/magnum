@@ -406,6 +406,7 @@ void QuaternionTest::matrix() {
 #if defined(CORRADE_TARGET_ANDROID) && __GNUC__*100 + __GNUC_MINOR__*10 + __GNUC_PATCHLEVEL__ == 490
 #pragma GCC push_options
 #pragma GCC optimize("O0")
+#endif
 void QuaternionTest::lerp() {
     Quaternion a = Quaternion::rotation(Deg(15.0f), Vector3(1.0f/Constants<Float>::sqrt3()));
     Quaternion b = Quaternion::rotation(Deg(23.0f), Vector3::xAxis());
@@ -423,6 +424,7 @@ void QuaternionTest::lerp() {
     Quaternion lerp = Math::lerp(a, b, 0.35f);
     CORRADE_COMPARE(lerp, Quaternion({0.119127f, 0.049134f, 0.049134f}, 0.990445f));
 }
+#if defined(CORRADE_TARGET_ANDROID) && __GNUC__*100 + __GNUC_MINOR__*10 + __GNUC_PATCHLEVEL__ == 490
 #pragma GCC pop_options
 #endif
 
