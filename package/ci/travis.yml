@@ -1,16 +1,16 @@
 # kate: indent-width 2;
 
-language: cpp
-
 matrix:
   include:
-  - os: linux
+  - language: cpp
+    os: linux
     compiler: gcc
     env:
     - TARGET=desktop
     # Otherwise the job gets killed (probably because using too much memory)
     - JOBS_LIMIT=4
-  - os: linux
+  - language: cpp
+    os: linux
     compiler: gcc
     env:
     - TARGET=desktop-gles
@@ -18,35 +18,65 @@ matrix:
     - JOBS_LIMIT=4
   # Disabled because the Ubuntu 12.04 drivers are missing some ES3 entrypoints
   # Should be enabled after moving to 14.04
-  #- os: linux
+  #- language: cpp
+    #os: linux
     #compiler: gcc
     #env:
     #- TARGET=desktop-gles
     #- TARGET_GLES2=OFF
     #- JOBS_LIMIT=4
-  - os: osx
+  - language: cpp
+    os: osx
     compiler: clang
     env: TARGET=desktop
-  - os: osx
+  - language: cpp
+    os: osx
     osx_image: xcode7.3
     env:
     - TARGET=ios-simulator
     - TARGET_GLES2=ON
-  - os: osx
+  - language: cpp
+    os: osx
     osx_image: xcode7.3
     env:
     - TARGET=ios-simulator
     - TARGET_GLES2=OFF
-  - os: osx
+  - language: cpp
+    os: osx
     osx_image: xcode7.3
     env:
     - TARGET=emscripten
     - TARGET_GLES2=ON
-  - os: osx
+  - language: cpp
+    os: osx
     osx_image: xcode7.3
     env:
     - TARGET=emscripten
     - TARGET_GLES2=OFF
+  - language: android
+    os: linux
+    env:
+    - TARGET=android
+    - TARGET_GLES2=ON
+    # Otherwise the job gets killed (probably because using too much memory)
+    - JOBS_LIMIT=4
+    android:
+      components:
+      - build-tools-19.0.0
+      - android-19
+      - sys-img-armeabi-v7a-android-19
+  - language: android
+    os: linux
+    env:
+    - TARGET=android
+    - TARGET_GLES2=OFF
+    # Otherwise the job gets killed (probably because using too much memory)
+    - JOBS_LIMIT=4
+    android:
+      components:
+      - build-tools-19.0.0
+      - android-19
+      - sys-img-armeabi-v7a-android-19
 
 addons:
   apt:
@@ -76,6 +106,7 @@ install:
 
 - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export CXX=g++-4.7; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export PLATFORM_GL_API=GLX; fi
+- if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "android" ]; then wget -nc http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86_64.bin && chmod +x android-*.bin && ./android-*.bin -y | grep -v Extracting; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop" ]; then export PLATFORM_GL_API=CGL; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "ios-simulator" ]; then gem install xcpretty; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "emscripten" ]; then brew install emscripten && export LLVM=/usr/local/opt/emscripten/libexec/llvm/bin && emcc; fi
@@ -93,6 +124,7 @@ install:
 script:
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "desktop" ]; then ./package/ci/travis-desktop.sh; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "desktop-gles" ]; then ./package/ci/travis-desktop-gles.sh; fi
+- if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "android" ]; then ./package/ci/travis-android-arm.sh; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop" ]; then ./package/ci/travis-desktop.sh; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "ios-simulator" ]; then ./package/ci/travis-ios-simulator.sh; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "emscripten" ]; then ./package/ci/travis-emscripten.sh; fi
