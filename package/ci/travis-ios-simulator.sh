@@ -57,16 +57,12 @@ cmake .. \
     -DWITH_TGAIMAGECONVERTER=ON \
     -DWITH_TGAIMPORTER=ON \
     -DWITH_WAVAUDIOIMPORTER=ON \
-    -DWITH_DISTANCEFIELDCONVERTER=ON \
-    -DWITH_FONTCONVERTER=ON \
-    -DWITH_MAGNUMINFO=ON \
     -DBUILD_STATIC=ON \
     -DBUILD_PLUGINS_STATIC=ON \
     -DBUILD_TESTS=ON \
     -DBUILD_GL_TESTS=ON \
     -G Xcode
 cmake --build . --config Release | xcpretty
-cmake --build . --config Release --target install | xcpretty
 # TODO: find a better way to avoid
 # Library not loaded: /System/Library/Frameworks/OpenGLES.framework/OpenGLES
 # error
