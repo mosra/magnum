@@ -10,8 +10,8 @@ cd corrade
 # Build native corrade-rc
 mkdir build && cd build
 cmake .. \
-    -DCMAKE_INSTALL_PREFIX=$HOME/deps \
-    -DCMAKE_INSTALL_RPATH=$HOME/deps/lib \
+    -DCMAKE_INSTALL_PREFIX=$HOME/deps-native \
+    -DCMAKE_INSTALL_RPATH=$HOME/deps-native/lib \
     -DWITH_INTERCONNECT=OFF \
     -DWITH_PLUGINMANAGER=OFF \
     -DWITH_TESTSUITE=OFF \
@@ -25,8 +25,8 @@ cmake .. \
     -DCMAKE_TOOLCHAIN_FILE=../../toolchains/generic/iOS.cmake \
     -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk \
     -DCMAKE_OSX_ARCHITECTURES="x86_64" \
-    -DCORRADE_RC_EXECUTABLE=$HOME/deps/bin/corrade-rc \
-    -DCMAKE_INSTALL_PREFIX=$HOME/deps-ios \
+    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
+    -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_BUILD_TYPE=Release \
     -DBUILD_STATIC=ON \
     -DTESTSUITE_TARGET_XCTEST=ON \
@@ -43,8 +43,8 @@ cmake .. \
     -DCMAKE_TOOLCHAIN_FILE=../toolchains/generic/iOS.cmake \
     -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk \
     -DCMAKE_OSX_ARCHITECTURES="x86_64" \
-    -DCORRADE_RC_EXECUTABLE=$HOME/deps/bin/corrade-rc \
-    -DCMAKE_PREFIX_PATH="$HOME/deps-ios;$TRAVIS_BUILD_DIR/sdl2" \
+    -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
+    -DCMAKE_PREFIX_PATH="$HOME/deps;$TRAVIS_BUILD_DIR/sdl2" \
     -DCMAKE_BUILD_TYPE=Release \
     -DTARGET_GLES2=$TARGET_GLES2 \
     -DWITH_AUDIO=ON \
