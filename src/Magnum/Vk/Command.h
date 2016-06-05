@@ -77,18 +77,18 @@ auto pipelineBarrier(PipelineStageFlags srcStageMask,
                      const std::vector<VkMemoryBarrier>& memoryBarriers,
                      const std::vector<VkBufferMemoryBarrier>& bufferMemoryBarriers,
                      const std::vector<ImageMemoryBarrier>& imageMemoryBarriers) {
-    return [&memoryBarriers, &bufferMemoryBarriers, &imageMemoryBarriers](VkCommandBuffer cmdBuffer){
+    return [srcStageMask, dstStageMask, &memoryBarriers, &bufferMemoryBarriers, &imageMemoryBarriers](VkCommandBuffer cmdBuffer){
         vkCmdPipelineBarrier(cmdBuffer,
-                             VkPipelineStageFlags(srcStageFlags), VkPipelineStageFlags(dstStageMask),
+                             VkPipelineStageFlags(srcStageMask), VkPipelineStageFlags(dstStageMask),
                              0, memoryBarriers.size(),
-                             Containers::StaticArrayView<VkMemoryBarrier>(memoryBarriers),
+                             memoryBarriers.data(),
                              bufferMemoryBarriers.size(),
-                             Containers::StaticArrayView<VkBufferMemoryBarrier>(bufferMemoryBarriers),
+                             bufferMemoryBarriers.data(),
                              imageMemoryBarriers.size(),
-                             Containers::StaticArrayView<VkImageMemoryBarrier>(imageMemoryBarriers)
+                             reinterpret_cast<const VkImageMemoryBarrier*>(imageMemoryBarriers.data())
 
         );
-    }
+    };
 }
 
 }}}

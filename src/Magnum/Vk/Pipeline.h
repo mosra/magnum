@@ -104,6 +104,8 @@ enum class PipelineStage: UnsignedInt {
 
 typedef Containers::EnumSet<PipelineStage> PipelineStageFlags;
 
+CORRADE_ENUMSET_OPERATORS(PipelineStageFlags)
+
 enum class BindPoint: UnsignedInt {
     Graphics = VK_PIPELINE_BIND_POINT_GRAPHICS,
     Compute = VK_PIPELINE_BIND_POINT_COMPUTE,

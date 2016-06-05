@@ -33,6 +33,8 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Range.h"
 #include "Magnum/Vk/Context.h"
+#include "Magnum/Vk/RenderPass.h"
+#include "Magnum/Vk/Framebuffer.h"
 #include "Magnum/Vk/visibility.h"
 
 #include "vulkan.h"
@@ -98,8 +100,8 @@ class MAGNUM_VK_EXPORT CommandBuffer {
             return *this;
         }
 
-        CommandBuffer& beginRenderPass(SubpassContents subpassContents, VkRenderPass renderPass,
-                                       VkFramebuffer framebuffer, Range2Di renderArea,
+        CommandBuffer& beginRenderPass(SubpassContents subpassContents, RenderPass& renderPass,
+                                       Vk::Framebuffer& framebuffer, Range2Di renderArea,
                                        const std::vector<VkClearValue>& clearValues) {
             VkRenderPassBeginInfo renderPassBeginInfo {
                 VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO,
