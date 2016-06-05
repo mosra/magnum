@@ -34,6 +34,7 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Vk/Device.h"
+#include "Magnum/Vk/DeviceMemory.h"
 #include "Magnum/Vk/Math.h"
 #include "Magnum/Vk/visibility.h"
 
@@ -94,15 +95,27 @@ enum class ImageLayout: UnsignedInt {
     PresentSrc = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
 };
 
+enum class ObjectFlag: UnsignedByte {
+    /** Delete the object on destruction. */
+    DeleteOnDestruction = 1 << 1
+};
+
+typedef Containers::EnumSet<ObjectFlag> ObjectFlags;
+
+CORRADE_ENUMSET_OPERATORS(ObjectFlags)
+
 class MAGNUM_VK_EXPORT Image {
     public:
 
         Image(Device& device, VkImage vkImage):
             _device{device},
-            _image{vkImage}
+            _image{vkImage},
+            _flags{}
         {}
 
-        Image(Device& device, Vector3ui extent, VkFormat format, ImageUsageFlags usage): _device{device} {
+        Image(Device& device, Vector3ui extent, VkFormat format, ImageUsageFlags usage):
+            _device{device}, _flags{ObjectFlag::DeleteOnDestruction}
+        {
             VkImageCreateInfo image = {};
             image.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
             image.flags = 0;
@@ -150,9 +163,17 @@ class MAGNUM_VK_EXPORT Image {
             return memReqs;
         }
 
+        Image& bindImageMemory(DeviceMemory& memory, UnsignedLong memoryOffset=0) {
+            VkResult err = vkBindImageMemory(_device, _image, memory, memoryOffset);
+            MAGNUM_VK_ASSERT_ERROR(err);
+
+            return *this;
+        }
+
     private:
         Device& _device;
         VkImage _image;
+        ObjectFlags _flags;
 };
 
 struct ImageMemoryBarrier {

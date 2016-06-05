@@ -36,6 +36,7 @@
 #include "Magnum/Vk/Device.h"
 #include "Magnum/Vk/RenderPass.h"
 #include "Magnum/Vk/Shader.h"
+#include "Magnum/Vk/DescriptorSet.h"
 
 #include "Magnum/Math/Vector3.h" // TEMPORARY!!!
 
@@ -45,16 +46,7 @@
 
 namespace Magnum { namespace Vk {
 
-enum class ShaderStage: UnsignedInt {
-    Vertex = VK_SHADER_STAGE_VERTEX_BIT,
-    TesslationControl = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT,
-    TesslationEvaluation = VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT,
-    Geometry = VK_SHADER_STAGE_GEOMETRY_BIT,
-    Fragment = VK_SHADER_STAGE_FRAGMENT_BIT,
-    Compute = VK_SHADER_STAGE_COMPUTE_BIT,
-    AllGraphics = VK_SHADER_STAGE_ALL_GRAPHICS,
-    All = VK_SHADER_STAGE_ALL,
-};
+class DescriptorSetLayout;
 
 enum class DynamicState: UnsignedInt {
     Viewport = VK_DYNAMIC_STATE_VIEWPORT,
@@ -147,13 +139,30 @@ class MAGNUM_VK_EXPORT Pipeline {
             return _layout;
         }
 
-        auto bind(BindPoint bindPoint, std::initializer_list<VkDescriptorSet> descriptorSets) {
+        auto bind(BindPoint bindPoint) {
+            const VkPipeline pipeline = _pipeline;
+            return [bindPoint, pipeline](VkCommandBuffer cmdBuffer){
+                vkCmdBindPipeline(cmdBuffer,
+                                VkPipelineBindPoint(bindPoint),
+                                pipeline);
+            };
+        }
+
+        auto bindDescriptorSets(BindPoint bindPoint, std::initializer_list<std::reference_wrapper<DescriptorSet>> descriptorSets) {
             const VkPipelineLayout pl = _layout;
             return [bindPoint, &descriptorSets, pl](VkCommandBuffer cmdBuffer){
+
+                std::vector<VkDescriptorSet> vkDescriptorSets{};
+                vkDescriptorSets.reserve(descriptorSets.size());
+
+                for (auto& ds : descriptorSets) {
+                    vkDescriptorSets.push_back(VkDescriptorSet(ds.get()));
+                }
+
                 vkCmdBindDescriptorSets(cmdBuffer,
                                         VkPipelineBindPoint(bindPoint),
                                         pl, 0,
-                                        descriptorSets.size(), std::vector<VkDescriptorSet>(descriptorSets).data(),
+                                        descriptorSets.size(), vkDescriptorSets.data(),
                                         0, nullptr);
             };
         }
@@ -333,7 +342,7 @@ class MAGNUM_VK_EXPORT GraphicsPipelineFactory {
             return *this;
         }
 
-        GraphicsPipelineFactory& addDescriptorSetLayout(const VkDescriptorSetLayout& layout) {
+        GraphicsPipelineFactory& addDescriptorSetLayout(const DescriptorSetLayout& layout) {
             _setLayouts.push_back(layout);
             return *this;
         }

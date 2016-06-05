@@ -32,6 +32,8 @@ set(MagnumVk_SRCS
     CommandBuffer.cpp
     CommandPool.cpp
     Context.cpp
+    DescriptorPool.cpp
+    DescriptorSet.cpp
     Device.cpp
     DeviceMemory.cpp
     Framebuffer.cpp
@@ -51,6 +53,8 @@ set(MagnumVk_HEADERS
     CommandBuffer.h
     CommandPool.h
     Context.h
+    DescriptorPool.h
+    DescriptorSet.h
     Device.h
     DeviceMemory.h
     Framebuffer.h
@@ -63,6 +67,7 @@ set(MagnumVk_HEADERS
     RenderPass.h
     Semaphore.h
     Shader.h
+    ShaderStage.h
     Swapchain.h
 
     visibility.h)

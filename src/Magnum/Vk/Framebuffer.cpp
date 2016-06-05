@@ -30,6 +30,10 @@
 namespace Magnum { namespace Vk {
 
 Framebuffer::~Framebuffer() {
+    // TODO: The spec allowes VK_NULL_HANDLE for _framebuffer, but validation failes?
+    if (_framebuffer == VK_NULL_HANDLE) {
+        return;
+    }
     vkDestroyFramebuffer(_device, _framebuffer, nullptr);
 }
 

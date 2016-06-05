@@ -43,33 +43,39 @@ namespace Magnum { namespace Vk {
 class MAGNUM_VK_EXPORT Framebuffer {
     public:
 
-        Framebuffer(Device& device, RenderPass& renderPass, Vector2ui size, std::initializer_list<Vk::ImageView>& attachments):
+        Framebuffer(Device& device, RenderPass& renderPass, const Vector3ui& size,
+                    const std::initializer_list<std::reference_wrapper<const Vk::ImageView>>& attachments):
             _device{device}
         {
             std::vector<VkImageView> vkAttachments;
             vkAttachments.reserve(attachments.size());
             for (auto& imageView : attachments) {
-                vkAttachments.push_back(imageView);
+                vkAttachments.push_back(imageView.get());
             }
 
-            VkFramebufferCreateInfo createInfo = {};
-            createInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-            createInfo.pNext = nullptr;
-            createInfo.renderPass = renderPass;
-            createInfo.attachmentCount = attachments.size();
-            createInfo.pAttachments = vkAttachments.data();
-            createInfo.width = size.x();
-            createInfo.height = size.y();
-            createInfo.layers = 1;
+            VkFramebufferCreateInfo createInfo = {
+                VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
+                nullptr, 0,
+                renderPass,
+                vkAttachments.size(),
+                vkAttachments.data(),
+                size.x(), size.y(), size.z()
+            };
 
-            vkCreateFramebuffer(_device, &createInfo, nullptr, &_framebuffer);
+            VkResult err = vkCreateFramebuffer(_device, &createInfo, nullptr, &_framebuffer);
+            MAGNUM_VK_ASSERT_ERROR(err);
         }
 
         /** @brief Copying is not allowed */
         Framebuffer(const Framebuffer&) = delete;
 
         /** @brief Move constructor */
-        Framebuffer(Framebuffer&& other);
+        Framebuffer(Framebuffer&& other):
+            _device{other._device},
+            _framebuffer{other._framebuffer}
+        {
+            other._framebuffer = VK_NULL_HANDLE;
+        }
 
         /**
          * @brief Destructor

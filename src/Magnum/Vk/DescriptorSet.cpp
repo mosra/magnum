@@ -24,15 +24,15 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Image.h"
+#include "DescriptorSet.h"
+
+#include "Magnum/Vk/DescriptorPool.h"
 
 
 namespace Magnum { namespace Vk {
 
-Image::~Image() {
-    if(_flags >= ObjectFlag::DeleteOnDestruction) {
-        vkDestroyImage(_device, _image, nullptr);
-    }
+DescriptorSet::~DescriptorSet() {
+    vkFreeDescriptorSets(_device, _pool, 1, &_descriptorSet);
 }
 
 }}

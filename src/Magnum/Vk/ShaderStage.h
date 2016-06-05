@@ -1,4 +1,6 @@
-﻿/*
+#ifndef Magnum_Vk_ShaderStage_h
+#define Magnum_Vk_ShaderStage_h
+/*
     This file is part of Magnum.
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
@@ -24,15 +26,42 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Image.h"
+/** @file
+ * @brief Class @ref Magnum::Vk::ShaderStage
+ */
 
+#include "Magnum/Magnum.h"
+#include "Magnum/Vk/visibility.h"
+
+#include "Magnum/Vk/Device.h"
+#include "Magnum/Vk/RenderPass.h"
+#include "Magnum/Vk/Shader.h"
+#include "Magnum/Vk/DescriptorSet.h"
+
+#include "Magnum/Math/Vector3.h" // TEMPORARY!!!
+
+#include <Corrade/Containers/Array.h>
+
+#include "vulkan.h"
 
 namespace Magnum { namespace Vk {
 
-Image::~Image() {
-    if(_flags >= ObjectFlag::DeleteOnDestruction) {
-        vkDestroyImage(_device, _image, nullptr);
-    }
-}
+
+enum class ShaderStage: UnsignedInt {
+    Vertex = VK_SHADER_STAGE_VERTEX_BIT,
+    TesslationControl = VK_SHADER_STAGE_TESSELLATION_CONTROL_BIT,
+    TesslationEvaluation = VK_SHADER_STAGE_TESSELLATION_EVALUATION_BIT,
+    Geometry = VK_SHADER_STAGE_GEOMETRY_BIT,
+    Fragment = VK_SHADER_STAGE_FRAGMENT_BIT,
+    Compute = VK_SHADER_STAGE_COMPUTE_BIT,
+    AllGraphics = VK_SHADER_STAGE_ALL_GRAPHICS,
+    All = VK_SHADER_STAGE_ALL,
+};
+
+typedef Containers::EnumSet<ShaderStage> ShaderStageFlags;
+
+CORRADE_ENUMSET_OPERATORS(ShaderStageFlags)
 
 }}
+
+#endif
