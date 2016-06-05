@@ -614,6 +614,8 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
             find_package(Vulkan)
             set_property(TARGET Magnum::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES Vulkan::Vulkan)
+            set_target_properties(Magnum::${_component} PROPERTIES
+                    INTERFACE_CORRADE_CXX_STANDARD 14)
             set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Context.h)
         endif()
 
