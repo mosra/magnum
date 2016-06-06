@@ -1356,7 +1356,7 @@ template<std::size_t size, class T> inline T Vector<size, T>::max() const {
 
 namespace Corrade { namespace Utility {
 
-/** @configurationvalue{Magnum::Math::RectangularMatrix} */
+/** @configurationvalue{Magnum::Math::Vector} */
 template<std::size_t size, class T> struct ConfigurationValue<Magnum::Math::Vector<size, T>> {
     ConfigurationValue() = delete;
 
