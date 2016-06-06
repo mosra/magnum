@@ -268,4 +268,38 @@ extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utili
 
 }}
 
+namespace Corrade { namespace Utility {
+
+/** @configurationvalue{Magnum::Math::Deg} */
+template<class T> struct ConfigurationValue<Magnum::Math::Deg<T>> {
+    ConfigurationValue() = delete;
+
+    /** @brief Writes degrees as a number */
+    static std::string toString(const Magnum::Math::Deg<T>& value, ConfigurationValueFlags flags) {
+        return ConfigurationValue<T>::toString(T(value), flags);
+    }
+
+    /** @brief Reads degrees as a number */
+    static Magnum::Math::Deg<T> fromString(const std::string& stringValue, ConfigurationValueFlags flags) {
+        return Magnum::Math::Deg<T>(ConfigurationValue<T>::fromString(stringValue, flags));
+    }
+};
+
+/** @configurationvalue{Magnum::Math::Rad} */
+template<class T> struct ConfigurationValue<Magnum::Math::Rad<T>> {
+    ConfigurationValue() = delete;
+
+    /** @brief Writes degrees as a number */
+    static std::string toString(const Magnum::Math::Rad<T>& value, ConfigurationValueFlags flags) {
+        return ConfigurationValue<T>::toString(T(value), flags);
+    }
+
+    /** @brief Reads degrees as a number */
+    static Magnum::Math::Rad<T> fromString(const std::string& stringValue, ConfigurationValueFlags flags) {
+        return Magnum::Math::Rad<T>(ConfigurationValue<T>::fromString(stringValue, flags));
+    }
+};
+
+}}
+
 #endif
