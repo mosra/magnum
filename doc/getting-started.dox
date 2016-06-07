@@ -163,8 +163,8 @@ In the following tutorials the code will be explained more thoroughly.
 In Linux (and other Unix-based OSs) you can build the application along with
 the subprojects using the following three commands: create out-of-source build
 directory, run cmake, enable SDL2 application in the Magnum subproject and then
-build the everything. The compiled application binary will then appear in src/
-subdirectory of build dir:
+build everything. The compiled application binary will then appear in `src/`
+subdirectory of the build dir:
 
     mkdir -p build && cd build
     cmake .. -DWITH_SDL2APPLICATION=ON
@@ -176,8 +176,7 @@ whether you will use command-line, QtCreator or Visual Studio. With Visual
 Studio the most straightforward way to create the project file is via the
 command-line:
 
-    mkdir build
-    cd build
+    mkdir build && cd build
     cmake .. -DWITH_SDL2APPLICATION=ON
 
 You can also use CMake GUI. Then open the `MyApplication.sln` project file
@@ -199,7 +198,8 @@ On Windows you may get errors about missing DLLs when running the application.
 The solution is either compiling everything as static (enable `BUILD_STATIC`
 CMake option) or installing the dependencies somewhere. To install them, change
 `CMAKE_INSTALL_PREFIX` to your liking and run the `install` target. Then run
-the application with `bin/` subdirectory of installation prefix as working dir.
+the application with `bin/` subdirectory of installation prefix as working dir
+or add the `bin/` subdirectory to `PATH`.
 
 @image html getting-started.png
 @image latex getting-started.png
