@@ -342,7 +342,8 @@ class Sdl2Application {
          *
          * Creates application with default or user-specified configuration.
          * See @ref Configuration for more information. The program exits if
-         * the context cannot be created, see below for an alternative.
+         * the context cannot be created, see @ref tryCreateContext() for an
+         * alternative.
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         explicit Sdl2Application(const Arguments& arguments, const Configuration& configuration = Configuration());

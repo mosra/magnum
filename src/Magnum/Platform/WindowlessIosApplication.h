@@ -102,7 +102,16 @@ class WindowlessIosApplication {
 
         class Configuration;
 
-        /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, const Configuration&) */
+        /**
+         * @brief Default constructor
+         * @param arguments     Application arguments
+         * @param configuration Configuration
+         *
+         * Creates application with default or user-specified configuration.
+         * See @ref Configuration for more information. The program exits if
+         * the context cannot be created, see @ref tryCreateContext() for an
+         * alternative.
+         */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         explicit WindowlessIosApplication(const Arguments& arguments, const Configuration& configuration = Configuration());
         #else
@@ -111,7 +120,13 @@ class WindowlessIosApplication {
         explicit WindowlessIosApplication(const Arguments& arguments);
         #endif
 
-        /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, std::nullptr_t) */
+        /**
+         * @brief Constructor
+         * @param arguments     Application arguments
+         *
+         * Unlike above, the context is not created and must be created later
+         * with @ref createContext() or @ref tryCreateContext().
+         */
         explicit WindowlessIosApplication(const Arguments& arguments, std::nullptr_t);
 
         /** @brief Copying is not allowed */
@@ -140,7 +155,14 @@ class WindowlessIosApplication {
            thus this is faster than public pure virtual destructor */
         ~WindowlessIosApplication();
 
-        /** @copydoc Sdl2Application::createContext() */
+        /**
+         * @brief Create context with given configuration
+         *
+         * Must be called if and only if the context wasn't created by the
+         * constructor itself. Error message is printed and the program exits
+         * if the context cannot be created, see @ref tryCreateContext() for an
+         * alternative.
+         */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         void createContext(const Configuration& configuration = Configuration());
         #else
@@ -149,7 +171,12 @@ class WindowlessIosApplication {
         void createContext();
         #endif
 
-        /** @copydoc Sdl2Application::tryCreateContext() */
+        /**
+         * @brief Try to create context with given configuration
+         *
+         * Unlike @ref createContext() returns `false` if the context cannot be
+         * created, `true` otherwise.
+         */
         bool tryCreateContext(const Configuration& configuration);
 
     private:
