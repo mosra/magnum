@@ -211,10 +211,12 @@ First include the needed headers:
 And in the constructor (which is currently empty) change the clear color and
 print something to debug output:
 @code
+using namespace Magnum::Math::Literals;
+
 Renderer::setClearColor(Color3::fromHSV(216.0_degf, 0.85f, 1.0f));
 
-Debug() << "Hello! This application is running on" << Context::current()->version()
-        << "using" << Context::current()->rendererString();
+Debug() << "Hello! This application is running on" << Context::current().version()
+        << "using" << Context::current().rendererString();
 @endcode
 
 After rebuilding and starting the application, the clear color changes to
