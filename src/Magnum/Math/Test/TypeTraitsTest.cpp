@@ -48,8 +48,10 @@ TypeTraitsTest::TypeTraitsTest() {
               &TypeTraitsTest::equalsIntegral<Short>,
               &TypeTraitsTest::equalsIntegral<UnsignedInt>,
               &TypeTraitsTest::equalsIntegral<Int>,
+              #ifndef CORRADE_TARGET_EMSCRIPTEN
               &TypeTraitsTest::equalsIntegral<UnsignedLong>,
               &TypeTraitsTest::equalsIntegral<Long>,
+              #endif
               &TypeTraitsTest::equalsFloatingPoint0<Float>,
               #ifndef MAGNUM_TARGET_GLES
               &TypeTraitsTest::equalsFloatingPoint0<Double>,

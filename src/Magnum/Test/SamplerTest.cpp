@@ -36,8 +36,10 @@ struct SamplerTest: TestSuite::Tester {
     void debugFilter();
     void debugMipmap();
     void debugWrapping();
+    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     void debugCompareMode();
     void debugCompareFunction();
+    #endif
     #ifndef MAGNUM_TARGET_GLES
     void debugDepthStencilMode();
     #endif
@@ -47,8 +49,10 @@ SamplerTest::SamplerTest() {
     addTests({&SamplerTest::debugFilter,
               &SamplerTest::debugMipmap,
               &SamplerTest::debugWrapping,
+              #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
               &SamplerTest::debugCompareMode,
               &SamplerTest::debugCompareFunction,
+              #endif
               #ifndef MAGNUM_TARGET_GLES
               &SamplerTest::debugDepthStencilMode
               #endif
@@ -76,6 +80,7 @@ void SamplerTest::debugWrapping() {
     CORRADE_COMPARE(out.str(), "Sampler::Wrapping::ClampToEdge\n");
 }
 
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 void SamplerTest::debugCompareMode() {
     std::ostringstream out;
 
@@ -89,6 +94,7 @@ void SamplerTest::debugCompareFunction() {
     Debug(&out) << Sampler::CompareFunction::GreaterOrEqual;
     CORRADE_COMPARE(out.str(), "Sampler::CompareFunction::GreaterOrEqual\n");
 }
+#endif
 
 #ifndef MAGNUM_TARGET_GLES
 void SamplerTest::debugDepthStencilMode() {

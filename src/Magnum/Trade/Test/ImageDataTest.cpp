@@ -60,13 +60,13 @@ ImageDataTest::ImageDataTest() {
 }
 
 void ImageDataTest::construct() {
-    auto data = new char[3];
+    auto data = new char[3*3];
     Trade::ImageData2D a{PixelStorage{}.setAlignment(1),
-        PixelFormat::Red, PixelType::UnsignedByte, {1, 3}, Containers::Array<char>{data, 3}};
+        PixelFormat::RGB, PixelType::UnsignedByte, {1, 3}, Containers::Array<char>{data, 3*3}};
 
     CORRADE_VERIFY(!a.isCompressed());
     CORRADE_COMPARE(a.storage().alignment(), 1);
-    CORRADE_COMPARE(a.format(), PixelFormat::Red);
+    CORRADE_COMPARE(a.format(), PixelFormat::RGB);
     CORRADE_COMPARE(a.type(), PixelType::UnsignedByte);
     CORRADE_COMPARE(a.size(), Vector2i(1, 3));
     CORRADE_COMPARE(a.data(), data);
@@ -96,9 +96,9 @@ void ImageDataTest::constructCopy() {
 }
 
 void ImageDataTest::constructMove() {
-    auto data = new char[3];
+    auto data = new char[3*3];
     Trade::ImageData2D a{PixelStorage{}.setAlignment(1),
-        PixelFormat::Red, PixelType::UnsignedByte, {1, 3}, Containers::Array<char>{data, 3}};
+        PixelFormat::RGB, PixelType::UnsignedByte, {1, 3}, Containers::Array<char>{data, 3*3}};
     Trade::ImageData2D b(std::move(a));
 
     CORRADE_COMPARE(a.data(), nullptr);
@@ -106,7 +106,7 @@ void ImageDataTest::constructMove() {
 
     CORRADE_VERIFY(!b.isCompressed());
     CORRADE_COMPARE(b.storage().alignment(), 1);
-    CORRADE_COMPARE(b.format(), PixelFormat::Red);
+    CORRADE_COMPARE(b.format(), PixelFormat::RGB);
     CORRADE_COMPARE(b.type(), PixelType::UnsignedByte);
     CORRADE_COMPARE(b.size(), Vector2i(1, 3));
     CORRADE_COMPARE(b.data(), data);
@@ -120,7 +120,7 @@ void ImageDataTest::constructMove() {
 
     CORRADE_VERIFY(!c.isCompressed());
     CORRADE_COMPARE(c.storage().alignment(), 1);
-    CORRADE_COMPARE(c.format(), PixelFormat::Red);
+    CORRADE_COMPARE(c.format(), PixelFormat::RGB);
     CORRADE_COMPARE(c.type(), PixelType::UnsignedByte);
     CORRADE_COMPARE(c.size(), Vector2i(1, 3));
     CORRADE_COMPARE(c.data(), data);
@@ -166,13 +166,15 @@ void ImageDataTest::constructMoveCompressed() {
 }
 
 void ImageDataTest::toView() {
-    auto data = new char[4];
-    const Trade::ImageData2D a{PixelFormat::Red, PixelType::UnsignedByte, {4, 1}, Containers::Array<char>{data, 4}};
+    auto data = new char[3*3];
+    const Trade::ImageData2D a{PixelStorage{}.setAlignment(1),
+        PixelFormat::RGB, PixelType::UnsignedByte, {1, 3}, Containers::Array<char>{data, 3*3}};
     ImageView2D b = a;
 
-    CORRADE_COMPARE(b.format(), PixelFormat::Red);
+    CORRADE_COMPARE(b.storage().alignment(), 1);
+    CORRADE_COMPARE(b.format(), PixelFormat::RGB);
     CORRADE_COMPARE(b.type(), PixelType::UnsignedByte);
-    CORRADE_COMPARE(b.size(), Vector2i(4, 1));
+    CORRADE_COMPARE(b.size(), Vector2i(1, 3));
     CORRADE_COMPARE(b.data(), data);
 }
 
@@ -189,7 +191,7 @@ void ImageDataTest::toViewCompressed() {
 
 void ImageDataTest::release() {
     char data[] = {'b', 'e', 'e', 'r'};
-    Trade::ImageData2D a{PixelFormat::Red, PixelType::UnsignedByte, {4, 1}, Containers::Array<char>{data, 4}};
+    Trade::ImageData2D a{PixelFormat::RGBA, PixelType::UnsignedByte, {1, 1}, Containers::Array<char>{data, 4}};
     const char* const pointer = a.release().release();
 
     CORRADE_COMPARE(pointer, data);

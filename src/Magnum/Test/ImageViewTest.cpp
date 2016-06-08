@@ -51,12 +51,12 @@ ImageViewTest::ImageViewTest() {
 }
 
 void ImageViewTest::construct() {
-    const char data[3]{};
+    const char data[3*3]{};
     ImageView2D a{PixelStorage{}.setAlignment(1),
-        PixelFormat::Red, PixelType::UnsignedByte, {1, 3}, data};
+        PixelFormat::RGB, PixelType::UnsignedByte, {1, 3}, data};
 
     CORRADE_COMPARE(a.storage().alignment(), 1);
-    CORRADE_COMPARE(a.format(), PixelFormat::Red);
+    CORRADE_COMPARE(a.format(), PixelFormat::RGB);
     CORRADE_COMPARE(a.type(), PixelType::UnsignedByte);
     CORRADE_COMPARE(a.size(), Vector2i(1, 3));
     CORRADE_COMPARE(a.data(), data);
@@ -86,14 +86,14 @@ void ImageViewTest::constructCompressed() {
 }
 
 void ImageViewTest::setData() {
-    const char data[3]{};
+    const char data[3*3]{};
     ImageView2D a{PixelStorage{}.setAlignment(1),
-        PixelFormat::Red, PixelType::UnsignedByte, {1, 3}, data};
-    const char data2[3]{};
+        PixelFormat::RGB, PixelType::UnsignedByte, {1, 3}, data};
+    const char data2[3*3]{};
     a.setData(data2);
 
     CORRADE_COMPARE(a.storage().alignment(), 1);
-    CORRADE_COMPARE(a.format(), PixelFormat::Red);
+    CORRADE_COMPARE(a.format(), PixelFormat::RGB);
     CORRADE_COMPARE(a.type(), PixelType::UnsignedByte);
     CORRADE_COMPARE(a.size(), Vector2i(1, 3));
     CORRADE_COMPARE(a.data(), data2);

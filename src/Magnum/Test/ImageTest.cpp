@@ -65,12 +65,12 @@ ImageTest::ImageTest() {
 }
 
 void ImageTest::construct() {
-    auto data = new char[3];
+    auto data = new char[3*4];
     Image2D a{PixelStorage{}.setAlignment(1),
-        PixelFormat::Red, PixelType::UnsignedByte, {1, 3}, Containers::Array<char>{data, 3}};
+        PixelFormat::RGBA, PixelType::UnsignedByte, {1, 3}, Containers::Array<char>{data, 3*4}};
 
     CORRADE_COMPARE(a.storage().alignment(), 1);
-    CORRADE_COMPARE(a.format(), PixelFormat::Red);
+    CORRADE_COMPARE(a.format(), PixelFormat::RGBA);
     CORRADE_COMPARE(a.type(), PixelType::UnsignedByte);
     CORRADE_COMPARE(a.size(), Vector2i(1, 3));
     CORRADE_COMPARE(a.data(), data);
@@ -104,16 +104,16 @@ void ImageTest::constructCopyCompressed() {
 }
 
 void ImageTest::constructMove() {
-    auto data = new char[3];
+    auto data = new char[3*3];
     Image2D a{PixelStorage{}.setAlignment(1),
-        PixelFormat::Red, PixelType::UnsignedByte, {1, 3}, Containers::Array<char>{data, 3}};
+        PixelFormat::RGB, PixelType::UnsignedByte, {1, 3}, Containers::Array<char>{data, 3*3}};
     Image2D b(std::move(a));
 
     CORRADE_COMPARE(a.data(), nullptr);
     CORRADE_COMPARE(a.size(), Vector2i());
 
     CORRADE_COMPARE(b.storage().alignment(), 1);
-    CORRADE_COMPARE(b.format(), PixelFormat::Red);
+    CORRADE_COMPARE(b.format(), PixelFormat::RGB);
     CORRADE_COMPARE(b.type(), PixelType::UnsignedByte);
     CORRADE_COMPARE(b.size(), Vector2i(1, 3));
     CORRADE_COMPARE(b.data(), data);
@@ -126,7 +126,7 @@ void ImageTest::constructMove() {
     CORRADE_COMPARE(b.size(), Vector2i(2, 6));
 
     CORRADE_COMPARE(c.storage().alignment(), 1);
-    CORRADE_COMPARE(c.format(), PixelFormat::Red);
+    CORRADE_COMPARE(c.format(), PixelFormat::RGB);
     CORRADE_COMPARE(c.type(), PixelType::UnsignedByte);
     CORRADE_COMPARE(c.size(), Vector2i(1, 3));
     CORRADE_COMPARE(c.data(), data);
@@ -170,9 +170,9 @@ void ImageTest::constructMoveCompressed() {
 }
 
 void ImageTest::setData() {
-    auto data = new char[3];
+    auto data = new char[3*3];
     Image2D a{PixelStorage{}.setAlignment(1),
-        PixelFormat::Red, PixelType::UnsignedByte, {1, 3}, Containers::Array<char>{data, 3}};
+        PixelFormat::RGB, PixelType::UnsignedByte, {1, 3}, Containers::Array<char>{data, 3*3}};
     auto data2 = new char[2*2*4];
     a.setData(PixelFormat::RGBA, PixelType::UnsignedShort, {2, 1}, Containers::Array<char>{data2, 2*2*4});
 
@@ -203,13 +203,13 @@ void ImageTest::setDataCompressed() {
 }
 
 void ImageTest::toView() {
-    auto data = new char[3];
+    auto data = new char[3*3];
     const Image2D a{PixelStorage{}.setAlignment(1),
-        PixelFormat::Red, PixelType::UnsignedByte, {1, 3}, Containers::Array<char>{data, 3}};
+        PixelFormat::RGB, PixelType::UnsignedByte, {1, 3}, Containers::Array<char>{data, 3*3}};
     ImageView2D b = a;
 
     CORRADE_COMPARE(b.storage().alignment(), 1);
-    CORRADE_COMPARE(b.format(), PixelFormat::Red);
+    CORRADE_COMPARE(b.format(), PixelFormat::RGB);
     CORRADE_COMPARE(b.type(), PixelType::UnsignedByte);
     CORRADE_COMPARE(b.size(), Vector2i(1, 3));
     CORRADE_COMPARE(b.data(), data);
@@ -235,7 +235,7 @@ void ImageTest::toViewCompressed() {
 
 void ImageTest::release() {
     char data[] = {'c', 'a', 'f', 'e'};
-    Image2D a(PixelFormat::Red, PixelType::UnsignedByte, {4, 1}, Containers::Array<char>{data, 4});
+    Image2D a(PixelFormat::RGBA, PixelType::UnsignedByte, {1, 1}, Containers::Array<char>{data, 4});
     const char* const pointer = a.release().release();
 
     CORRADE_COMPARE(pointer, data);

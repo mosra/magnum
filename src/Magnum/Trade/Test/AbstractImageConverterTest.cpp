@@ -45,6 +45,9 @@ class AbstractImageConverterTest: public TestSuite::Tester {
 
 AbstractImageConverterTest::AbstractImageConverterTest() {
     addTests({&AbstractImageConverterTest::exportToFile});
+
+    /* Create testing dir */
+    Utility::Directory::mkpath(TRADE_TEST_OUTPUT_DIR);
 }
 
 void AbstractImageConverterTest::exportToFile() {

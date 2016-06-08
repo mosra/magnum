@@ -34,12 +34,19 @@ struct RendererTest: TestSuite::Tester {
     explicit RendererTest();
 
     void debugError();
+    #ifndef MAGNUM_TARGET_WEBGL
     void debugResetNotificationStrategy();
     void debugGraphicsResetStatus();
+    #endif
 };
 
 RendererTest::RendererTest() {
-    addTests({&RendererTest::debugError});
+    addTests({&RendererTest::debugError,
+              #ifndef MAGNUM_TARGET_WEBGL
+              &RendererTest::debugResetNotificationStrategy,
+              &RendererTest::debugGraphicsResetStatus
+              #endif
+              });
 }
 
 void RendererTest::debugError() {
@@ -49,6 +56,7 @@ void RendererTest::debugError() {
     CORRADE_COMPARE(out.str(), "Renderer::Error::InvalidOperation\n");
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
 void RendererTest::debugResetNotificationStrategy() {
     std::ostringstream out;
 
@@ -62,6 +70,7 @@ void RendererTest::debugGraphicsResetStatus() {
     Debug(&out) << Renderer::GraphicsResetStatus::GuiltyContextReset;
     CORRADE_COMPARE(out.str(), "Renderer::GraphicsResetStatus::GuiltyContextReset\n");
 }
+#endif
 
 }}
 

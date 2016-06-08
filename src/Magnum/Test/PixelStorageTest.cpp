@@ -38,7 +38,9 @@ struct PixelStorageTest: TestSuite::Tester {
 
     void dataProperties();
     void dataPropertiesAlignment();
+    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     void dataPropertiesRowLength();
+    #endif
     #ifndef MAGNUM_TARGET_GLES2
     void dataPropertiesImageHeight();
     #endif
@@ -61,7 +63,9 @@ PixelStorageTest::PixelStorageTest() {
 
               &PixelStorageTest::dataProperties,
               &PixelStorageTest::dataPropertiesAlignment,
+              #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
               &PixelStorageTest::dataPropertiesRowLength,
+              #endif
               #ifndef MAGNUM_TARGET_GLES2
               &PixelStorageTest::dataPropertiesImageHeight,
               #endif
@@ -81,7 +85,9 @@ PixelStorageTest::PixelStorageTest() {
 void PixelStorageTest::pixelSize() {
     CORRADE_COMPARE(PixelStorage::pixelSize(PixelFormat::RGBA, PixelType::UnsignedInt), 4*4);
     CORRADE_COMPARE(PixelStorage::pixelSize(PixelFormat::DepthComponent, PixelType::UnsignedShort), 2);
+    #ifndef MAGNUM_TARGET_WEBGL
     CORRADE_COMPARE(PixelStorage::pixelSize(PixelFormat::StencilIndex, PixelType::UnsignedByte), 1);
+    #endif
     CORRADE_COMPARE(PixelStorage::pixelSize(PixelFormat::DepthStencil, PixelType::UnsignedInt248), 4);
 }
 
@@ -93,12 +99,14 @@ void PixelStorageTest::dataProperties() {
         (std::tuple<std::size_t, Vector3st, std::size_t>{0, {0, 0, 0}, 4}));
     CORRADE_COMPARE(storage.dataProperties(PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i{1}),
         (std::tuple<std::size_t, Vector3st, std::size_t>{0, {4, 1, 1}, 4}));
+    #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
     CORRADE_COMPARE(storage.dataProperties(PixelFormat::Red, PixelType::UnsignedByte, {8, 2, 1}),
         (std::tuple<std::size_t, Vector3st, std::size_t>{0, {8, 2, 1}, 1}));
     CORRADE_COMPARE(storage.dataProperties(PixelFormat::Red, PixelType::UnsignedByte, {2, 4, 1}),
         (std::tuple<std::size_t, Vector3st, std::size_t>{0, {2, 4, 1}, 1}));
     CORRADE_COMPARE(storage.dataProperties(PixelFormat::Red, PixelType::UnsignedByte, {2, 4, 6}),
         (std::tuple<std::size_t, Vector3st, std::size_t>{0, {2, 4, 6}, 1}));
+    #endif
 }
 
 void PixelStorageTest::dataPropertiesAlignment() {
@@ -110,14 +118,17 @@ void PixelStorageTest::dataPropertiesAlignment() {
         (std::tuple<std::size_t, Vector3st, std::size_t>{3*4, {0, 0, 0}, 4}));
     CORRADE_COMPARE(storage.dataProperties(PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i{1}),
         (std::tuple<std::size_t, Vector3st, std::size_t>{8 + 16 + 3*4, {8, 1, 1}, 4}));
+    #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
     CORRADE_COMPARE(storage.dataProperties(PixelFormat::Red, PixelType::UnsignedByte, {8, 2, 1}),
         (std::tuple<std::size_t, Vector3st, std::size_t>{16 + 16 + 3, {8, 2, 1}, 1}));
     CORRADE_COMPARE(storage.dataProperties(PixelFormat::Red, PixelType::UnsignedByte, {2, 4, 1}),
         (std::tuple<std::size_t, Vector3st, std::size_t>{32 + 16 + 3, {8, 4, 1}, 1}));
     CORRADE_COMPARE(storage.dataProperties(PixelFormat::Red, PixelType::UnsignedByte, {2, 4, 6}),
         (std::tuple<std::size_t, Vector3st, std::size_t>{32 + 16 + 3, {8, 4, 6}, 1}));
+    #endif
 }
 
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 void PixelStorageTest::dataPropertiesRowLength() {
     PixelStorage storage;
     storage.setAlignment(4)
@@ -135,6 +146,7 @@ void PixelStorageTest::dataPropertiesRowLength() {
     CORRADE_COMPARE(storage.dataProperties(PixelFormat::Red, PixelType::UnsignedByte, {2, 4, 6}),
         (std::tuple<std::size_t, Vector3st, std::size_t>{3 + 7*16, {16, 4, 6}, 1}));
 }
+#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 void PixelStorageTest::dataPropertiesImageHeight() {
@@ -159,19 +171,24 @@ void PixelStorageTest::dataPropertiesImageHeight() {
 void PixelStorageTest::dataSize() {
     /* The same parameters as in PixelStorageGLTest 3D case */
     const Image2D image{PixelStorage{}.setAlignment(2)
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         .setRowLength(3)
+        #endif
         #ifndef MAGNUM_TARGET_GLES2
         .setImageHeight(5)
         #endif
         .setSkip({2, 3, 1}),
         PixelFormat::RGB, PixelType::UnsignedByte};
 
-    #ifndef MAGNUM_TARGET_GLES2
+    #if defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2)
     CORRADE_COMPARE(Implementation::imageDataSizeFor(image, Vector2i{2, 3}),
-        5*10 + 3*10 + 6 + 3*10);
-    #else
+        3*6 + 3*6 + 6 + 3*6);
+    #elif defined(MAGNUM_TARGET_GLES2)
     CORRADE_COMPARE(Implementation::imageDataSizeFor(image, Vector2i{2, 3}),
         3*10 + 3*10 + 6 + 3*10);
+    #else
+    CORRADE_COMPARE(Implementation::imageDataSizeFor(image, Vector2i{2, 3}),
+        5*10 + 3*10 + 6 + 3*10);
     #endif
 }
 

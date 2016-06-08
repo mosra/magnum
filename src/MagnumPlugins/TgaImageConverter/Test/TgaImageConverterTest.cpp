@@ -87,18 +87,34 @@ TgaImageConverterTest::TgaImageConverterTest() {
 }
 
 void TgaImageConverterTest::wrongFormat() {
-    ImageView2D image(PixelFormat::RG, PixelType::UnsignedByte, {}, nullptr);
+    ImageView2D image{
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+        PixelFormat::RG,
+        #else
+        PixelFormat::LuminanceAlpha,
+        #endif
+        PixelType::UnsignedByte, {}, nullptr};
 
     std::ostringstream out;
     Error redirectError{&out};
 
     const auto data = TgaImageConverter().exportToData(image);
     CORRADE_VERIFY(!data);
+    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::exportToData(): unsupported color format PixelFormat::RG\n");
+    #else
+    CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::exportToData(): unsupported color format PixelFormat::LuminanceAlpha\n");
+    #endif
 }
 
 void TgaImageConverterTest::wrongType() {
-    ImageView2D image(PixelFormat::Red, PixelType::Float, {}, nullptr);
+    ImageView2D image{
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+        PixelFormat::Red,
+        #else
+        PixelFormat::Luminance,
+        #endif
+        PixelType::Float, {}, nullptr};
 
     std::ostringstream out;
     Error redirectError{&out};

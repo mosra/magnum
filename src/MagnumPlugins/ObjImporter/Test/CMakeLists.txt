@@ -23,8 +23,18 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+if(CORRADE_TARGET_EMSCRIPTEN)
+    set(OBJIMPORTER_TEST_DIR "")
+else()
+    set(OBJIMPORTER_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+endif()
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
 corrade_add_test(ObjImporterTest Test.cpp LIBRARIES MagnumObjImporterTestLib)
 target_include_directories(ObjImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+
+if(CORRADE_TARGET_EMSCRIPTEN)
+    emscripten_embed_file(ObjImporterTest "" "/")
+endif()
