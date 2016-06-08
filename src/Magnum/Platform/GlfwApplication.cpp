@@ -89,7 +89,7 @@ bool GlfwApplication::tryCreateContext(const Configuration& configuration) {
         glfwWindowHint(GLFW_ICONIFIED, flags >= Configuration::WindowFlag::Minimized);
         glfwWindowHint(GLFW_FLOATING, flags >= Configuration::WindowFlag::Floating);
     }
-    glfwWindowHint(GLFW_FLOATING, configuration.windowFlags() >= Configuration::WindowFlag::Focused);
+    glfwWindowHint(GLFW_FOCUSED, configuration.windowFlags() >= Configuration::WindowFlag::Focused);
 
     /* Context window hints */
     glfwWindowHint(GLFW_SAMPLES, configuration.sampleCount());
