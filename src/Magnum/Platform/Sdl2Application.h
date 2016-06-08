@@ -1152,12 +1152,15 @@ class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
          */
         constexpr Vector2i position() const { return _position; }
 
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
         /**
          * @brief Click count
          *
          * Ignored for wheel events.
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          */
         constexpr Int clickCount() const { return _clickCount; }
+        #endif
 
         /**
          * @brief Modifiers
@@ -1167,11 +1170,21 @@ class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
         Modifiers modifiers();
 
     private:
-        constexpr MouseEvent(Button button, const Vector2i& position, Int clickCount): _button{button}, _position{position}, _clickCount{clickCount}, _modifiersLoaded{false} {}
+        constexpr MouseEvent(Button button, const Vector2i& position
+            #ifndef CORRADE_TARGET_EMSCRIPTEN
+            , Int clickCount
+            #endif
+            ): _button{button}, _position{position},
+            #ifndef CORRADE_TARGET_EMSCRIPTEN
+            _clickCount{clickCount},
+            #endif
+            _modifiersLoaded{false} {}
 
         const Button _button;
         const Vector2i _position;
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
         const Int _clickCount;
+        #endif
         bool _modifiersLoaded;
         Modifiers _modifiers;
 };
