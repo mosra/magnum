@@ -188,6 +188,13 @@ where to create build directory, allows you to specify initial CMake parameters
 (e.g. the `-DWITH_SDL2APPLICATION=ON` parameter) and then you can just press *Configure*
 and everything is ready to be built.
 
+If you have SDL2 in a non-standard location and CMake can't find it, you need
+to specify where SDL `include/` and `lib/` directories are through
+`CMAKE_PREFIX_PATH`. So, for example, on Windows, the full CMake invocation
+might look like this:
+
+    cmake .. -DCMAKE_PREFIX_PATH="C:/Users/you/Downloads/SDL2-2.0.4" -DWITH_SDL2APPLICATION=ON
+
 On Windows you may get errors about missing DLLs when running the application.
 The solution is either compiling everything as static (enable `BUILD_STATIC`
 CMake option) or installing the dependencies somewhere. To install them, change
