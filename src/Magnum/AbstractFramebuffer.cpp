@@ -467,7 +467,7 @@ void AbstractFramebuffer::readBufferImplementationDefault(GLenum buffer) {
 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractFramebuffer::readBufferImplementationDSA(const GLenum buffer) {
-    glFramebufferReadBufferEXT(_id, buffer);
+    glNamedFramebufferReadBuffer(_id, buffer);
 }
 
 void AbstractFramebuffer::readBufferImplementationDSAEXT(GLenum buffer) {
