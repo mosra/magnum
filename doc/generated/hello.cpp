@@ -31,6 +31,7 @@
 #include <Magnum/Platform/Sdl2Application.h>
 
 using namespace Magnum;
+using namespace Magnum::Math::Literals;
 
 class Hello: public Platform::Application {
 public:
