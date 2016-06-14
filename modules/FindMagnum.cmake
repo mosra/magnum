@@ -422,7 +422,7 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                 MAGNUM_${_COMPONENT}_LIBRARY_RELEASE)
 
             # Reset back
-            set(CMAKE_FIND_LIBRARY_PREFIXES ${_tmp_prefixes})
+            set(CMAKE_FIND_LIBRARY_PREFIXES "${_tmp_prefixes}")
         endif()
 
         # Library location for libraries/plugins
