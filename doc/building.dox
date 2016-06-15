@@ -378,8 +378,9 @@ contents in `toolchains/` subdirectory.
     git submodule update
 
 Note that CMake for some reason treats `CMAKE_PREFIX_PATH` and
-`CMAKE_INSTALL_PREFIX` differently while crosscompiling and you may need to set
-also `CMAKE_FIND_ROOT_PATH` to make it able to find the dependencies.
+`CMAKE_INSTALL_PREFIX` differently while crosscompiling and you may need to add
+dependency paths to both `CMAKE_PREFIX_PATH` and `CMAKE_FIND_ROOT_PATH` to make
+it able to find the dependencies.
 
 @subsection building-cross-winrt Crosscompiling for Windows RT
 
