@@ -31,8 +31,14 @@ build() {
         -DWITH_MAGNUMFONT=ON \
         -DWITH_OBJIMPORTER=ON \
         -DWITH_TGAIMAGECONVERTER=ON \
-        -DWITH_TGAIMPORTER=ON
-    make
+        -DWITH_TGAIMPORTER=ON \
+        -DBUILD_TESTS=ON
+    make -j4
+}
+
+check() {
+    cd "$_rootdir/build-emscripten"
+    CORRADE_TEST_COLOR=ON ctest --output-on-failure
 }
 
 package() {
