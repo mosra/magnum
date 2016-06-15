@@ -250,8 +250,8 @@ class GlfwApplication {
         /**
          * @brief Mouse scroll event
          *
-         * Called when a scrolling device is used (mouse wheel or scrolling area
-         * on touchpad). Default implementation does nothing.
+         * Called when a scrolling device is used (mouse wheel or scrolling
+         * area on touchpad). Default implementation does nothing.
          */
         virtual void mouseScrollEvent(MouseScrollEvent& event);
 

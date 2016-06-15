@@ -1140,7 +1140,12 @@ class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
         /** @brief Button */
         constexpr Button button() const { return _button; }
 
-        /** @brief Position */
+        /**
+         * @brief Position
+         *
+         * For whell events this contains the horizontal and vertical scroll
+         * amount.
+         */
         constexpr Vector2i position() const { return _position; }
 
         /**
