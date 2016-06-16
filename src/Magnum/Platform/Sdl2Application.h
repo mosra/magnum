@@ -893,7 +893,8 @@ class Sdl2Application::Configuration {
          * backwards-compatible with requested one. Default is
          * @ref Version::None, i.e. any provided version is used.
          * @note In @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" this function
-         *      does nothing (@ref Version::GLES200 is always used).
+         *      does nothing (@ref Version::GLES200 or @ref Version::GLES300 is
+         *      used implicitly based on the target).
          */
         Configuration& setVersion(Version version) {
             #ifndef CORRADE_TARGET_EMSCRIPTEN
