@@ -284,8 +284,6 @@ int main(int argc, char** argv) {
     }
 
     // Delete OpenGL context ...
-
-    return 0;
 }
 @endcode
 
@@ -317,6 +315,74 @@ add_executable(myapplication MyCustomApplication.cpp)
 target_link_libraries(myapplication
     Magnum::Magnum
     Magnum::Context)
+@endcode
+
+@section platform-windowless-contexts Manually managing windowless contexts
+
+In case you need to manage windowless OpenGL contexts manually (for example
+to use Magnum for data processing in a thread or when having more than one
+OpenGL context), there is a possibility to directly use the context wrappers
+from windowless applications. Each @ref WindowlessEglApplication "Windowless*Application"
+is accompanied by a @ref WindowlessEglContext "Windowless*Context" class that
+manages just GL context creation, making it current and destruction. Similarly
+to using custom platform toolkits above, the workflow is to first create a GL
+context instance, then making it current and finally instantiating the
+@ref Platform::Context instance to initialize Magnum.
+
+Similarly as with the applications, to simplify the porting, the library
+provides `Platform::WindowlessGLContext` typedef, but only if just one
+windowless application header is included.
+
+@attention With this approach it is possible to switch between different GL
+    contexts, but make sure that Magnum is used only with its OpenGL context.
+
+@code
+int main(int argc, char** argv) {
+    Platform::WindowlessGLContext glContext{{}};
+    glContext.makeCurrent();
+    Platform::Context context{argc, argv};
+
+    // Your GL code ...
+
+    // Make another context current
+    eglMakeCurrent();
+
+    // Someone else's code ...
+
+    // Make Magnum context current again
+    glContext.makeCurrent();
+
+    // Your GL code again ...
+
+    // Magnum context gets destroyed
+    // Windowless GL context gets destroyed
+}
+@endcode
+
+The main purpose of windowless contexts is threaded OpenGL, used for example
+for background data processing. The workflow is to create the windowless
+context on the main thread, but make it current in the worker thread. This way
+the main thread state isn't affected so it can have any other GL context
+current (for example for the main application rendering).
+
+@note Context creation is not thread safe on all platforms, that's why it still
+    has to be done on the main thread.
+
+@code
+int main() {
+    Platform::WindowlessGLContext glContext{{}};
+
+    std::thread worker{[&glContext]{
+        glContext.makeCurrent();
+        Platform::Context context{0, nullptr};
+
+        // Use Magnum here ...
+    }};
+
+    // Independent main application code here ...
+
+    worker.join();
+}
 @endcode
 
 -   Next page: @ref types

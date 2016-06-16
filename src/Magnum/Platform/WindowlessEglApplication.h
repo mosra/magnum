@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Platform::WindowlessEglApplication, macro @ref MAGNUM_WINDOWLESSEGLAPPLICATION_MAIN()
+ * @brief Class @ref Magnum::Platform::WindowlessEglApplication, @ref Magnum::Platform::WindowlessEglContext, macro @ref MAGNUM_WINDOWLESSEGLAPPLICATION_MAIN()
  */
 
 #include <memory>
@@ -41,17 +41,138 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/OpenGL.h"
+#include "Magnum/Tags.h"
 #include "Magnum/Platform/Platform.h"
 
 namespace Magnum { namespace Platform {
 
 /**
+@brief Windowless EGL context
+
+GL context using EGL without any windowing system, used in
+@ref WindowlessEglApplication. Does not have any default framebuffer. It is
+built if `WITH_WINDOWLESSEGLAPPLICATION` is enabled in CMake.
+
+Meant to be used when there is a need to manage (multiple) GL contexts
+manually. See @ref platform-windowless-contexts for more information. If no
+other application header is included, this class is also aliased to
+`Platform::WindowlessGLContext`.
+*/
+class WindowlessEglContext {
+    public:
+        class Configuration;
+
+        /**
+         * @brief Constructor
+         * @param configuration Context configuration
+         * @param context       Optional Magnum context instance constructed
+         *      using @ref NoCreate to manage driver workarounds
+         *
+         * Once the context is created, make it current using @ref makeCurrent()
+         * and create @ref Platform::Context instance to be able to use Magnum.
+         * @see @ref isCreated()
+         */
+        explicit WindowlessEglContext(const Configuration& configuration, const Context* context = nullptr);
+
+        /**
+         * @brief Construct without creating the context
+         *
+         * Move a instance with created context over to make it usable.
+         */
+        explicit WindowlessEglContext(NoCreateT) {}
+
+        /** @brief Copying is not allowed */
+        WindowlessEglContext(const WindowlessEglContext&) = delete;
+
+        /** @brief Move constructor */
+        WindowlessEglContext(WindowlessEglContext&& other);
+
+        /** @brief Copying is not allowed */
+        WindowlessEglContext& operator=(const WindowlessEglContext&) = delete;
+
+        /** @brief Move assignment */
+        WindowlessEglContext& operator=(WindowlessEglContext&& other);
+
+        /**
+         * @brief Destructor
+         *
+         * Destroys the context, if any.
+         */
+        ~WindowlessEglContext();
+
+        /** @brief Whether the context is created */
+        bool isCreated() const { return _context; }
+
+        /**
+         * @brief Make the context current
+         *
+         * Prints error message and returns `false` on failure, otherwise
+         * returns `true`.
+         */
+        bool makeCurrent();
+
+    private:
+        EGLDisplay _display{};
+        EGLContext _context{};
+};
+
+/**
+@brief Configuration
+
+@see @ref WindowlessEglContext(),
+    @ref WindowlessEglApplication::WindowlessEglApplication(),
+    @ref WindowlessEglApplication::createContext(),
+    @ref WindowlessEglApplication::tryCreateContext()
+*/
+class WindowlessEglContext::Configuration {
+    public:
+        /**
+         * @brief Context flag
+         *
+         * @see @ref Flags, @ref setFlags(), @ref Context::Flag
+         */
+        enum class Flag: int {
+            Debug = EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR    /**< Create debug context */
+        };
+
+        /**
+         * @brief Context flags
+         *
+         * @see @ref setFlags(), @ref Context::Flags
+         */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        typedef Containers::EnumSet<Flag, EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR> Flags;
+        #else
+        typedef Containers::EnumSet<Flag> Flags;
+        #endif
+
+        constexpr /*implicit*/ Configuration() {}
+
+        /** @brief Context flags */
+        Flags flags() const { return _flags; }
+
+        /**
+         * @brief Set context flags
+         * @return Reference to self (for method chaining)
+         *
+         * Default is no flag. See also @ref Context::flags().
+         */
+        Configuration& setFlags(Flags flags) {
+            _flags = flags;
+            return *this;
+        }
+
+    private:
+        Flags _flags;
+};
+
+/**
 @brief Windowless EGL application
 
-Application for offscreen rendering using EGL without any windowing system.
-Does not have any default framebuffer. Supported mainly on OpenGL ES drivers,
-for desktop OpenGL the only driver that supports this configuration is
-NVidia >= 355. See other `Windowless*Application` classes for an alternative.
+Application for offscreen rendering using @ref WindowlessEglContext. Supported
+mainly on OpenGL ES drivers, for desktop OpenGL the only driver that supports
+this configuration is NVidia >= 355. See other `Windowless*Application` classes
+for an alternative.
 
 It is built if `WITH_WINDOWLESSEGLAPPLICATION` is enabled in CMake.
 
@@ -104,7 +225,13 @@ class WindowlessEglApplication {
             char** argv;    /**< @brief Argument values */
         };
 
-        class Configuration;
+        /**
+         * @brief Configuration
+         *
+         * @see @ref WindowlessEglApplication(), @ref createContext(),
+         *      @ref tryCreateContext()
+         */
+        typedef WindowlessEglContext::Configuration Configuration;
 
         /**
          * @brief Default constructor
@@ -115,6 +242,7 @@ class WindowlessEglApplication {
          * See @ref Configuration for more information. The program exits if
          * the context cannot be created, see @ref tryCreateContext() for an
          * alternative.
+         * @see @ref WindowlessEglContext
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         explicit WindowlessEglApplication(const Arguments& arguments, const Configuration& configuration = Configuration());
@@ -131,7 +259,15 @@ class WindowlessEglApplication {
          * Unlike above, the context is not created and must be created later
          * with @ref createContext() or @ref tryCreateContext().
          */
-        explicit WindowlessEglApplication(const Arguments& arguments, std::nullptr_t);
+        explicit WindowlessEglApplication(const Arguments& arguments, NoCreateT);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief WindowlessEglApplication(const Arguments&, NoCreateT)
+         * @deprecated Use @ref WindowlessEglApplication(const Arguments&, NoCreateT) instead.
+         */
+        CORRADE_DEPRECATED("use WindowlessEglApplication(const Arguments&, NoCreateT) instead") explicit WindowlessEglApplication(const Arguments& arguments, std::nullptr_t): WindowlessEglApplication{arguments, NoCreate} {}
+        #endif
 
         /** @brief Copying is not allowed */
         WindowlessEglApplication(const WindowlessEglApplication&) = delete;
@@ -166,6 +302,7 @@ class WindowlessEglApplication {
          * constructor itself. Error message is printed and the program exits
          * if the context cannot be created, see @ref tryCreateContext() for an
          * alternative.
+         * @see @ref WindowlessEglContext
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         void createContext(const Configuration& configuration = Configuration());
@@ -184,59 +321,8 @@ class WindowlessEglApplication {
         bool tryCreateContext(const Configuration& configuration);
 
     private:
-        EGLDisplay _display;
-        EGLConfig _config;
-        EGLContext _glContext;
-
+        WindowlessEglContext _glContext;
         std::unique_ptr<Platform::Context> _context;
-};
-
-/**
-@brief Configuration
-
-@see @ref WindowlessEglApplication(), @ref createContext(),
-    @ref tryCreateContext()
-*/
-class WindowlessEglApplication::Configuration {
-    public:
-        /**
-         * @brief Context flag
-         *
-         * @see @ref Flags, @ref setFlags(), @ref Context::Flag
-         */
-        enum class Flag: int {
-            Debug = EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR    /**< Create debug context */
-        };
-
-        /**
-         * @brief Context flags
-         *
-         * @see @ref setFlags(), @ref Context::Flags
-         */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        typedef Containers::EnumSet<Flag, EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR> Flags;
-        #else
-        typedef Containers::EnumSet<Flag> Flags;
-        #endif
-
-        constexpr /*implicit*/ Configuration() {}
-
-        /** @brief Context flags */
-        Flags flags() const { return _flags; }
-
-        /**
-         * @brief Set context flags
-         * @return Reference to self (for method chaining)
-         *
-         * Default is no flag. See also @ref Context::flags().
-         */
-        Configuration& setFlags(Flags flags) {
-            _flags = flags;
-            return *this;
-        }
-
-    private:
-        Flags _flags;
 };
 
 /** @hideinitializer
@@ -258,6 +344,7 @@ windowless application header is included this macro is also aliased to
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_WINDOWLESSAPPLICATION_MAIN
 typedef WindowlessEglApplication WindowlessApplication;
+typedef WindowlessEglContext WindowlessGLContext;
 #define MAGNUM_WINDOWLESSAPPLICATION_MAIN(className) MAGNUM_WINDOWLESSEGLAPPLICATION_MAIN(className)
 #else
 #undef MAGNUM_WINDOWLESSAPPLICATION_MAIN

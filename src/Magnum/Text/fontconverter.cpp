@@ -101,7 +101,7 @@ class FontConverter: public Platform::WindowlessApplication {
         Utility::Arguments args;
 };
 
-FontConverter::FontConverter(const Arguments& arguments): Platform::WindowlessApplication(arguments, nullptr) {
+FontConverter::FontConverter(const Arguments& arguments): Platform::WindowlessApplication{arguments, NoCreate} {
     args.addArgument("input").setHelp("input", "input font")
         .addArgument("output").setHelp("output", "output filename prefix")
         .addNamedArgument("font").setHelp("font", "font plugin")

@@ -34,6 +34,40 @@
 
 namespace Magnum { namespace Platform {
 
+WindowlessNaClContext::WindowlessNaClContext(pp::Instance& instance, const Configuration&, Context*) {
+    const std::int32_t attributes[] = {
+        PP_GRAPHICS3DATTRIB_ALPHA_SIZE, 8,
+        PP_GRAPHICS3DATTRIB_DEPTH_SIZE, 24,
+        PP_GRAPHICS3DATTRIB_STENCIL_SIZE, 8,
+        PP_GRAPHICS3DATTRIB_WIDTH, 1,
+        PP_GRAPHICS3DATTRIB_HEIGHT, 1,
+        PP_GRAPHICS3DATTRIB_NONE
+    };
+
+    std::unique_ptr<pp::Graphics3D> context{new pp::Graphics3D{*instance, attributes}};
+    if(context->is_null())
+        Error() << "Platform::WindowlessNaClContext: cannot create context";
+
+    if(!BindGraphics(*context))
+        Error() << "Platform::WindowlessNaClContext: cannot bind graphics";
+
+    /* All went well, save the context */
+    _context = std::move(context);
+}
+
+WindowlessNaClContext::WindowlessNaClContext(WindowlessNaClContext&&) = default;
+
+WindowlessNaClContext::~WindowlessEglContext() = default;
+
+WindowlessNaClContext& WindowlessNaClContext::operator=(WindowlessNaClContext&&) = default;
+
+bool WindowlessNaClContext::makeCurrent() {
+    if(!_context) return false;
+
+    glSetCurrentContextPPAPI(_context->pp_resource());
+    return true;
+}
+
 struct WindowlessNaClApplication::ConsoleDebugOutput {
     explicit ConsoleDebugOutput(pp::Instance* instance);
 
@@ -55,13 +89,11 @@ WindowlessNaClApplication::WindowlessNaClApplication(const Arguments& arguments)
 #endif
 
 WindowlessNaClApplication::WindowlessNaClApplication(const Arguments& arguments, const Configuration& configuration):
-WindowlessNaClApplication{arguments, nullptr} {
+WindowlessNaClApplication{arguments, NoCreate} {
     createContext(configuration);
 }
 
-WindowlessNaClApplication::WindowlessNaClApplication(const Arguments& arguments, std::nullptr_t): Instance(arguments), Graphics3DClient(this), graphics(nullptr), c(nullptr) {
-    debugOutput = new ConsoleDebugOutput(this);
-}
+WindowlessNaClApplication::WindowlessNaClApplication(const Arguments& arguments, NoCreate): Instance(arguments), Graphics3DClient(this), _glContext{NoCreate}, _debugOutput{new ConsoleDebugOutput{this}} {}
 
 void WindowlessNaClApplication::createContext() { createContext({}); }
 
@@ -69,43 +101,18 @@ void WindowlessNaClApplication::createContext(const Configuration& configuration
     if(!tryCreateContext(configuration)) std::exit(1);
 }
 
-bool WindowlessNaClApplication::tryCreateContext(const Configuration&) {
-    CORRADE_ASSERT(!c, "Platform::WindowlessNaClApplication::tryCreateContext(): context already created", false);
+bool WindowlessNaClApplication::tryCreateContext(const Configuration& configuration) {
+    CORRADE_ASSERT(_context->version() == Version::None, "Platform::WindowlessNaClApplication::tryCreateContext(): context already created", false);
 
-    const std::int32_t attributes[] = {
-        PP_GRAPHICS3DATTRIB_ALPHA_SIZE, 8,
-        PP_GRAPHICS3DATTRIB_DEPTH_SIZE, 24,
-        PP_GRAPHICS3DATTRIB_STENCIL_SIZE, 8,
-        PP_GRAPHICS3DATTRIB_WIDTH, 1,
-        PP_GRAPHICS3DATTRIB_HEIGHT, 1,
-        PP_GRAPHICS3DATTRIB_NONE
-    };
-
-    graphics = new pp::Graphics3D(this, attributes);
-    if(graphics->is_null()) {
-        Error() << "Platform::WindowlessNaClApplication::tryCreateContext(): cannot create context";
-        delete graphics;
-        graphics = nullptr;
+    WindowlessNaClContext glContext{*this, configuration, _context.get()};
+    if(!glContext.isCreated() || !glContext.makeCurrent() || !_context->tryCreate())
         return false;
-    }
-    if(!BindGraphics(*graphics)) {
-        Error() << "Platform::WindowlessNaClApplication::tryCreateContext(): cannot bind graphics";
-        delete graphics;
-        graphics = nullptr;
-        return false;
-    }
 
-    glSetCurrentContextPPAPI(graphics->pp_resource());
-
-    /* Return true if the initialization succeeds */
-    return c = Platform::Context::tryCreate().release();
+    _glContext = std::move(glContext);
+    return true;
 }
 
-WindowlessNaClApplication::~WindowlessNaClApplication() {
-    delete c;
-    delete graphics;
-    delete debugOutput;
-}
+WindowlessNaClApplication::~WindowlessNaClApplication() = default;
 
 bool WindowlessNaClApplication::Init(uint32_t , const char* , const char*) {
     return exec() == 0;

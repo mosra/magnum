@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Platform::WindowlessGlxApplication, macro @ref MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN()
+ * @brief Class @ref Magnum::Platform::WindowlessGlxApplication, @ref Magnum::Platform::WindowlessGlxContext, macro @ref MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN()
  */
 
 #include <memory>
@@ -43,16 +43,147 @@
 #undef Status
 
 #include "Magnum/Magnum.h"
+#include "Magnum/Tags.h"
 #include "Magnum/Platform/Platform.h"
 
 namespace Magnum { namespace Platform {
 
 /**
+@brief Windowless GLX context
+
+GL context using pure X11 and GLX, used in @ref WindowlessGlxApplication. Does
+not have any default framebuffer. It is built if `WITH_WINDOWLESSGLXAPPLICATION`
+is enabled in CMake.
+
+Meant to be used when there is a need to manage (multiple) GL contexts
+manually. See @ref platform-windowless-contexts for more information. If no
+other application header is included, this class is also aliased to
+`Platform::WindowlessGLContext`.
+*/
+class WindowlessGlxContext {
+    public:
+        class Configuration;
+
+        /**
+         * @brief Constructor
+         * @param configuration Context configuration
+         * @param context       Optional Magnum context instance constructed
+         *      using @ref NoCreate to manage driver workarounds
+         *
+         * On desktop GL, if version is not specified in @p configuration, the
+         * application first tries to create core context (OpenGL 3.1+) and if
+         * that fails, falls back to compatibility OpenGL 2.1 context. However,
+         * on binary AMD and NVidia drivers, creating core context does not use
+         * the largest available version. If the application detects such case
+         * (and given workaround is not disabled in optionally passed
+         * @ref context instance), the core context is destroyed and
+         * compatibility OpenGL 2.1 context is created instead to make the
+         * driver use the latest available version.
+         *
+         * Once the context is created, make it current using @ref makeCurrent()
+         * and create @ref Platform::Context instance to be able to use Magnum.
+         * @see @ref isCreated()
+         */
+        explicit WindowlessGlxContext(const Configuration& configuration, Context* context = nullptr);
+
+        /**
+         * @brief Construct without creating the context
+         *
+         * Move a instance with created context over to make it usable.
+         */
+        explicit WindowlessGlxContext(NoCreateT) {}
+
+        /** @brief Copying is not allowed */
+        WindowlessGlxContext(const WindowlessGlxContext&) = delete;
+
+        /** @brief Move constructor */
+        WindowlessGlxContext(WindowlessGlxContext&& other);
+
+        /** @brief Copying is not allowed */
+        WindowlessGlxContext& operator=(const WindowlessGlxContext&) = delete;
+
+        /** @brief Move assignment */
+        WindowlessGlxContext& operator=(WindowlessGlxContext&& other);
+
+        /**
+         * @brief Destructor
+         *
+         * Destroys the context, if any.
+         */
+        ~WindowlessGlxContext();
+
+        /** @brief Whether the context is created */
+        bool isCreated() const { return _context; }
+
+        /**
+         * @brief Make the context current
+         *
+         * Prints error message and returns `false` on failure, otherwise
+         * returns `true`.
+         */
+        bool makeCurrent();
+
+    private:
+        Display* _display{};
+        GLXPbuffer _pbuffer{};
+        GLXContext _context{};
+};
+
+/**
+@brief Configuration
+
+@see @ref WindowlessGlxContext(),
+    @ref WindowlessGlxApplication::WindowlessGlxApplication(),
+    @ref WindowlessGlxApplication::createContext(),
+    @ref WindowlessGlxApplication::tryCreateContext()
+*/
+class WindowlessGlxContext::Configuration {
+    public:
+        /**
+         * @brief Context flag
+         *
+         * @see @ref Flags, @ref setFlags(), @ref Context::Flag
+         */
+        enum class Flag: int {
+            Debug = GLX_CONTEXT_DEBUG_BIT_ARB   /**< Create debug context */
+        };
+
+        /**
+         * @brief Context flags
+         *
+         * @see @ref setFlags(), @ref Context::Flags
+         */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        typedef Containers::EnumSet<Flag, GLX_CONTEXT_DEBUG_BIT_ARB> Flags;
+        #else
+        typedef Containers::EnumSet<Flag> Flags;
+        #endif
+
+        constexpr /*implicit*/ Configuration() {}
+
+        /** @brief Context flags */
+        Flags flags() const { return _flags; }
+
+        /**
+         * @brief Set context flags
+         * @return Reference to self (for method chaining)
+         *
+         * Default is no flag. See also @ref Context::flags().
+         */
+        Configuration& setFlags(Flags flags) {
+            _flags = flags;
+            return *this;
+        }
+
+    private:
+        Flags _flags;
+};
+
+/**
 @brief Windowless GLX application
 
-Application for offscreen rendering using pure X11 and GLX.
-
-This application library is available on desktop OpenGL and
+Application for offscreen rendering using @ref WindowlessGlxContext. This
+application library is available on desktop OpenGL and
 @ref MAGNUM_TARGET_DESKTOP_GLES "OpenGL ES emulation on desktop" on Linux. It
 depends on **X11** library and is built if `WITH_WINDOWLESSGLXAPPLICATION` is
 enabled in CMake.
@@ -107,7 +238,13 @@ class WindowlessGlxApplication {
             char** argv;    /**< @brief Argument values */
         };
 
-        class Configuration;
+        /**
+         * @brief Configuration
+         *
+         * @see @ref WindowlessGlxApplication(), @ref createContext(),
+         *      @ref tryCreateContext()
+         */
+        typedef WindowlessGlxContext::Configuration Configuration;
 
         /**
          * @brief Default constructor
@@ -118,6 +255,7 @@ class WindowlessGlxApplication {
          * See @ref Configuration for more information. The program exits if
          * the context cannot be created, see @ref tryCreateContext() for an
          * alternative.
+         * @see @ref WindowlessGlxContext
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         explicit WindowlessGlxApplication(const Arguments& arguments, const Configuration& configuration = Configuration());
@@ -134,7 +272,15 @@ class WindowlessGlxApplication {
          * Unlike above, the context is not created and must be created later
          * with @ref createContext() or @ref tryCreateContext().
          */
-        explicit WindowlessGlxApplication(const Arguments& arguments, std::nullptr_t);
+        explicit WindowlessGlxApplication(const Arguments& arguments, NoCreateT);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief WindowlessGlxApplication(const Arguments&, NoCreateT)
+         * @deprecated Use @ref WindowlessGlxApplication(const Arguments&, NoCreateT) instead.
+         */
+        CORRADE_DEPRECATED("use WindowlessGlxApplication(const Arguments&, NoCreateT) instead") explicit WindowlessGlxApplication(const Arguments& arguments, std::nullptr_t): WindowlessGlxApplication{arguments, NoCreate} {}
+        #endif
 
         /** @brief Copying is not allowed */
         WindowlessGlxApplication(const WindowlessGlxApplication&) = delete;
@@ -169,15 +315,7 @@ class WindowlessGlxApplication {
          * constructor itself. Error message is printed and the program exits
          * if the context cannot be created, see @ref tryCreateContext() for an
          * alternative.
-         *
-         * On desktop GL, if version is not specified in @p configuration, the
-         * application first tries to create core context (OpenGL 3.1+) and if
-         * that fails, falls back to compatibility OpenGL 2.1 context. However,
-         * on binary AMD and NVidia drivers, creating core context does not use
-         * the largest available version. If the application detects such case,
-         * the core context is destroyed and compatibility OpenGL 2.1 context
-         * is created instead to make the driver use the latest available
-         * version.
+         * @see @ref WindowlessGlxContext
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         void createContext(const Configuration& configuration = Configuration());
@@ -196,59 +334,8 @@ class WindowlessGlxApplication {
         bool tryCreateContext(const Configuration& configuration);
 
     private:
-        Display* _display;
-        GLXContext _glContext;
-        GLXPbuffer _pbuffer;
-
+        WindowlessGlxContext _glContext;
         std::unique_ptr<Platform::Context> _context;
-};
-
-/**
-@brief Configuration
-
-@see @ref WindowlessGlxApplication(), @ref createContext(),
-    @ref tryCreateContext()
-*/
-class WindowlessGlxApplication::Configuration {
-    public:
-        /**
-         * @brief Context flag
-         *
-         * @see @ref Flags, @ref setFlags(), @ref Context::Flag
-         */
-        enum class Flag: int {
-            Debug = GLX_CONTEXT_DEBUG_BIT_ARB   /**< Create debug context */
-        };
-
-        /**
-         * @brief Context flags
-         *
-         * @see @ref setFlags(), @ref Context::Flags
-         */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        typedef Containers::EnumSet<Flag, GLX_CONTEXT_DEBUG_BIT_ARB> Flags;
-        #else
-        typedef Containers::EnumSet<Flag> Flags;
-        #endif
-
-        constexpr /*implicit*/ Configuration() {}
-
-        /** @brief Context flags */
-        Flags flags() const { return _flags; }
-
-        /**
-         * @brief Set context flags
-         * @return Reference to self (for method chaining)
-         *
-         * Default is no flag. See also @ref Context::flags().
-         */
-        Configuration& setFlags(Flags flags) {
-            _flags = flags;
-            return *this;
-        }
-
-    private:
-        Flags _flags;
 };
 
 /** @hideinitializer
@@ -277,6 +364,7 @@ aliased to `MAGNUM_WINDOWLESSAPPLICATION_MAIN()`.
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_WINDOWLESSAPPLICATION_MAIN
 typedef WindowlessGlxApplication WindowlessApplication;
+typedef WindowlessGlxContext WindowlessGLContext;
 #define MAGNUM_WINDOWLESSAPPLICATION_MAIN(className) MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN(className)
 #else
 #undef MAGNUM_WINDOWLESSAPPLICATION_MAIN

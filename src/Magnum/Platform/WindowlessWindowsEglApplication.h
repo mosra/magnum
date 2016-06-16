@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Platform::WindowlessWindowsEglApplication, macro @ref MAGNUM_WINDOWLESSWINDOWSEGLAPPLICATION_MAIN()
+ * @brief Class @ref Magnum::Platform::WindowlessWindowsEglApplication, @ref Magnum::Platform::WindowlessWindowsEglContext, macro @ref MAGNUM_WINDOWLESSWINDOWSEGLAPPLICATION_MAIN()
  */
 
 #include <memory>
@@ -41,15 +41,136 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/OpenGL.h"
+#include "Magnum/Tags.h"
 #include "Magnum/Platform/Platform.h"
 
 namespace Magnum { namespace Platform {
 
 /**
+@brief Windowless Windows/EGL context
+
+GL context using pure WINAPI and EGL, used in @ref WindowlessWindowsEglApplication.
+It is built if `WITH_WINDOWLESSWINDOWSEGLAPPLICATION` is enabled in CMake.
+
+Meant to be used when there is a need to manage (multiple) GL contexts
+manually. See @ref platform-windowless-contexts for more information. If no
+other application header is included, this class is also aliased to
+`Platform::WindowlessGLContext`.
+*/
+class WindowlessWindowsEglContext {
+    public:
+        class Configuration;
+
+        /**
+         * @brief Constructor
+         * @param configuration Context configuration
+         * @param context       Optional Magnum context instance constructed
+         *      using @ref NoCreate to manage driver workarounds
+         *
+         * Once the context is created, make it current using @ref makeCurrent()
+         * and create @ref Platform::Context instance to be able to use Magnum.
+         * @see @ref isCreated()
+         */
+        explicit WindowlessWindowsEglContext(const Configuration& configuration, Context* context = nullptr);
+
+        /**
+         * @brief Construct without creating the context
+         *
+         * Move a instance with created context over to make it usable.
+         */
+        explicit WindowlessWindowsEglContext(NoCreateT) {}
+
+        /** @brief Copying is not allowed */
+        WindowlessWindowsEglContext(const WindowlessWindowsEglContext&) = delete;
+
+        /** @brief Move constructor */
+        WindowlessWindowsEglContext(WindowlessWindowsEglContext&& other);
+
+        /** @brief Copying is not allowed */
+        WindowlessWindowsEglContext& operator=(const WindowlessWindowsEglContext&) = delete;
+
+        /** @brief Move assignment */
+        WindowlessWindowsEglContext& operator=(WindowlessWindowsEglContext&& other);
+
+        /**
+         * @brief Destructor
+         *
+         * Destroys the context, if any.
+         */
+        ~WindowlessWindowsEglContext();
+
+        /** @brief Whether the context is created */
+        bool isCreated() const { return _context; }
+
+        /**
+         * @brief Make the context current
+         *
+         * Prints error message and returns `false` on failure, otherwise
+         * returns `true`.
+         */
+        bool makeCurrent();
+
+    private:
+        HWND _window{};
+        EGLDisplay _display{};
+        EGLSurface _surface{};
+        EGLContext _context{};
+};
+
+/**
+@brief Configuration
+
+@see @ref WindowlessWindowsEglContext(),
+    @ref WindowlessWindowsEglApplication::WindowlessWindowsEglApplication(),
+    @ref WindowlessWindowsEglApplication::createContext(),
+    @ref WindowlessWindowsEglApplication::tryCreateContext()
+*/
+class WindowlessWindowsEglContext::Configuration {
+    public:
+        /**
+         * @brief Context flag
+         *
+         * @see @ref Flags, @ref setFlags(), @ref Context::Flag
+         */
+        enum class Flag: int {
+            Debug = EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR    /**< Create debug context */
+        };
+
+        /**
+         * @brief Context flags
+         *
+         * @see @ref setFlags(), @ref Context::Flags
+         */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        typedef Containers::EnumSet<Flag, EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR> Flags;
+        #else
+        typedef Containers::EnumSet<Flag> Flags;
+        #endif
+
+        constexpr /*implicit*/ Configuration() {}
+
+        /** @brief Context flags */
+        Flags flags() const { return _flags; }
+
+        /**
+         * @brief Set context flags
+         * @return Reference to self (for method chaining)
+         *
+         * Default is no flag. See also @ref Context::flags().
+         */
+        Configuration& setFlags(Flags flags) {
+            _flags = flags;
+            return *this;
+        }
+
+    private:
+        Flags _flags;
+};
+
+/**
 @brief Windowless Windows/EGL application
 
-Application for offscreen rendering using pure WINAPI and EGL.
-
+Application for offscreen rendering using @ref WindowlessWindowsEglContext.
 This application library is available on OpenGL ES (also ANGLE) on Windows. It
 is built if `WITH_WINDOWLESSWINDOWSEGLAPPLICATION` is enabled in CMake.
 
@@ -97,20 +218,19 @@ class WindowlessWindowsEglApplication {
         /** @brief Application arguments */
         struct Arguments {
             /** @brief Constructor */
-            /*implicit*/ constexpr Arguments(int& argc, char** argv, HWND window) noexcept: argc{argc}, argv{argv}, window{window} {}
+            /*implicit*/ constexpr Arguments(int& argc, char** argv) noexcept: argc{argc}, argv{argv} {}
 
             int& argc;      /**< @brief Argument count */
             char** argv;    /**< @brief Argument values */
-            #ifndef DOXYGEN_GENERATING_OUTPUT
-            HWND window;
-            #endif
         };
 
-        class Configuration;
-
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        static int create(LRESULT(CALLBACK windowProcedure)(HWND, UINT, WPARAM, LPARAM));
-        #endif
+        /**
+         * @brief Configuration
+         *
+         * @see @ref WindowlessWindowsEglApplication(), @ref createContext(),
+         *      @ref tryCreateContext()
+         */
+        typedef WindowlessWindowsEglContext::Configuration Configuration;
 
         /**
          * @brief Default constructor
@@ -137,7 +257,15 @@ class WindowlessWindowsEglApplication {
          * Unlike above, the context is not created and must be created later
          * with @ref createContext() or @ref tryCreateContext().
          */
-        explicit WindowlessWindowsEglApplication(const Arguments& arguments, std::nullptr_t);
+        explicit WindowlessWindowsEglApplication(const Arguments& arguments, NoCreateT);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief WindowlessWindowsEglApplication(const Arguments&, NoCreateT)
+         * @deprecated Use @ref WindowlessWindowsEglApplication(const Arguments&, NoCreateT) instead.
+         */
+        CORRADE_DEPRECATED("use WindowlessWindowsEglApplication(const Arguments&, NoCreateT) instead") explicit WindowlessWindowsEglApplication(const Arguments& arguments, std::nullptr_t): WindowlessWindowsEglApplication{arguments, NoCreate} {}
+        #endif
 
         /** @brief Copying is not allowed */
         WindowlessWindowsEglApplication(const WindowlessWindowsEglApplication&) = delete;
@@ -190,61 +318,8 @@ class WindowlessWindowsEglApplication {
         bool tryCreateContext(const Configuration& configuration);
 
     private:
-        HWND _window;
-        EGLDisplay _display;
-        EGLConfig _config;
-        EGLSurface _surface;
-        EGLContext _glContext;
-
+        WindowlessWindowsEglContext _glContext;
         std::unique_ptr<Platform::Context> _context;
-};
-
-/**
-@brief Configuration
-
-@see @ref WindowlessWindowsEglApplication(), @ref createContext(),
-    @ref tryCreateContext()
-*/
-class WindowlessWindowsEglApplication::Configuration {
-    public:
-        /**
-         * @brief Context flag
-         *
-         * @see @ref Flags, @ref setFlags(), @ref Context::Flag
-         */
-        enum class Flag: int {
-            Debug = EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR    /**< Create debug context */
-        };
-
-        /**
-         * @brief Context flags
-         *
-         * @see @ref setFlags(), @ref Context::Flags
-         */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        typedef Containers::EnumSet<Flag, EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR> Flags;
-        #else
-        typedef Containers::EnumSet<Flag> Flags;
-        #endif
-
-        constexpr /*implicit*/ Configuration() {}
-
-        /** @brief Context flags */
-        Flags flags() const { return _flags; }
-
-        /**
-         * @brief Set context flags
-         * @return Reference to self (for method chaining)
-         *
-         * Default is no flag. See also @ref Context::flags().
-         */
-        Configuration& setFlags(Flags flags) {
-            _flags = flags;
-            return *this;
-        }
-
-    private:
-        Flags _flags;
 };
 
 /** @hideinitializer
@@ -257,30 +332,16 @@ code, see @ref portability-applications for more information. When no other
 windowless application header is included this macro is also aliased to
 `MAGNUM_WINDOWLESSAPPLICATION_MAIN()`.
 */
-#define MAGNUM_WINDOWLESSWINDOWSEGLAPPLICATION_MAIN(className)                     \
-    int globalArgc; char** globalArgv;                                      \
-    LRESULT CALLBACK windowProcedure(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam); \
-    LRESULT CALLBACK windowProcedure(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) { \
-        switch(message) {                                                   \
-            case WM_CREATE:                                                 \
-                {                                                           \
-                    className app({globalArgc, globalArgv, hWnd});          \
-                    PostQuitMessage(app.exec());                            \
-                }                                                           \
-                break;                                                      \
-            default: return DefWindowProc(hWnd, message, wParam, lParam);   \
-        }                                                                   \
-        return 0;                                                           \
-    }                                                                       \
+#define MAGNUM_WINDOWLESSWINDOWSEGLAPPLICATION_MAIN(className)              \
     int main(int argc, char** argv) {                                       \
-        globalArgc = argc;                                                  \
-        globalArgv = argv;                                                  \
-        return Magnum::Platform::WindowlessWindowsEglApplication::create(windowProcedure); \
+        className app({argc, argv});                                        \
+        return app.exec();                                                  \
     }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_WINDOWLESSAPPLICATION_MAIN
 typedef WindowlessWindowsEglApplication WindowlessApplication;
+typedef WindowlessWindowsEglContext WindowlessGLContext;
 #define MAGNUM_WINDOWLESSAPPLICATION_MAIN(className) MAGNUM_WINDOWLESSWINDOWSEGLAPPLICATION_MAIN(className)
 #else
 #undef MAGNUM_WINDOWLESSAPPLICATION_MAIN

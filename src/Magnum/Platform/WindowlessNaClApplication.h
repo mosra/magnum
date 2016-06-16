@@ -26,9 +26,10 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Platform::WindowlessNaClApplication, macro @ref MAGNUM_WINDOWLESSNACLAPPLICATION_MAIN()
+ * @brief Class @ref Magnum::Platform::WindowlessNaClApplication, @ref Magnum::Platform::WindowlessNaClContext, macro @ref MAGNUM_WINDOWLESSNACLAPPLICATION_MAIN()
  */
 
+#include <memory>
 #include <string>
 #include <Corrade/Containers/EnumSet.h>
 
@@ -41,6 +42,7 @@
 #include <ppapi/gles2/gl2ext_ppapi.h>
 
 #include "Magnum/Magnum.h"
+#include "Magnum/Tags.h"
 #include "Magnum/Platform/Platform.h"
 
 namespace pp {
@@ -50,13 +52,94 @@ namespace pp {
 
 namespace Magnum { namespace Platform {
 
+/**
+@brief Windowless NaCl context
+
+GL context running in [Google Chrome Native Client](https://developers.google.com/native-client/),
+used in @ref WindowlessNaClApplication. Does not have any default framebuffer.
+It is built if `WITH_WINDOWLESSNACLAPPLICATION` is enabled in CMake.
+
+Meant to be used when there is a need to manage (multiple) GL contexts
+manually. See @ref platform-windowless-contexts for more information. If no
+other application header is included, this class is also aliased to
+`Platform::WindowlessGLContext`.
+*/
+class WindowlessNaClContext {
+    public:
+        class Configuration;
+
+        /**
+         * @brief Constructor
+         * @param instance      Pepper instance handle
+         * @param configuration Context configuration
+         * @param context       Optional Magnum context instance constructed
+         *      using @ref NoCreate to manage driver workarounds
+         *
+         * Once the context is created, make it current using @ref makeCurrent()
+         * and create @ref Platform::Context instance to be able to use Magnum.
+         * @see @ref isCreated()
+         */
+        explicit WindowlessNaClContext(pp::Instance& instance, const Configuration& configuration, const Context* context = nullptr);
+
+        /**
+         * @brief Construct without creating the context
+         *
+         * Move a instance with created context over to make it usable.
+         */
+        explicit WindowlessNaClContext(NoCreateT) {}
+
+        /** @brief Copying is not allowed */
+        WindowlessNaClContext(const WindowlessNaClContext&) = delete;
+
+        /** @brief Move constructor */
+        WindowlessNaClContext(WindowlessNaClContext&&);
+
+        /** @brief Copying is not allowed */
+        WindowlessNaClContext& operator=(const WindowlessNaClContext&) = delete;
+
+        /** @brief Move assignment */
+        WindowlessNaClContext& operator=(WindowlessNaClContext&&);
+
+        /**
+         * @brief Destructor
+         *
+         * Destroys the context, if any.
+         */
+        ~WindowlessNaClContext();
+
+        /** @brief Whether the context is created */
+        bool isCreated() const { return _context; }
+
+        /**
+         * @brief Make the context current
+         *
+         * Prints error message and returns `false` on failure, otherwise
+         * returns `true`.
+         */
+        bool makeCurrent();
+
+    private:
+        std::unique_ptr<pp::Graphics3D> _context;
+};
+
+/**
+@brief Configuration
+
+@see @ref WindowlessNaClContext(),
+    @ref WindowlessNaClApplication::WindowlessCglApplication(),
+    @ref WindowlessNaClApplication::createContext(),
+    @ref WindowlessNaClApplication::tryCreateContext()
+*/
+class WindowlessNaClContext::Configuration {
+    public:
+        constexpr /*implicit*/ Configuration() {}
+};
+
 /** @nosubgrouping
 @brief Windowless NaCl application
 
-Application for offscreen rendering running in
-[Google Chrome Native Client](https://developers.google.com/native-client/).
-
-This application library is available only in @ref CORRADE_TARGET_NACL "Native Client",
+Application for offscreen rendering using @ref WindowlessNaClContext. This
+application library is available only in @ref CORRADE_TARGET_NACL "Native Client",
 see respective sections in @ref building-corrade-cross-nacl "Corrade's" and
 @ref building-cross-nacl "Magnum's" building documentation. It is built if
 `WITH_WINDOWLESSNACLAPPLICATION` is enabled in CMake.
@@ -111,7 +194,13 @@ class WindowlessNaClApplication: public pp::Instance, public pp::Graphics3DClien
         /** @brief Application arguments */
         typedef PP_Instance Arguments;
 
-        class Configuration;
+        /**
+         * @brief Configuration
+         *
+         * @see @ref WindowlessNaClApplication(), @ref createContext(),
+         *      @ref tryCreateContext()
+         */
+        typedef WindowlessNaClContext::Configuration Configuration;
 
         /**
          * @brief Default constructor
@@ -122,6 +211,7 @@ class WindowlessNaClApplication: public pp::Instance, public pp::Graphics3DClien
          * See @ref Configuration for more information. The program exits if
          * the context cannot be created, see @ref tryCreateContext() for an
          * alternative.
+         * @see @ref WindowlessNaClContext
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         explicit WindowlessNaClApplication(const Arguments& arguments, const Configuration& configuration = Configuration());
@@ -138,7 +228,15 @@ class WindowlessNaClApplication: public pp::Instance, public pp::Graphics3DClien
          * Unlike above, the context is not created and must be created later
          * with @ref createContext() or @ref tryCreateContext().
          */
-        explicit WindowlessNaClApplication(const Arguments& arguments, std::nullptr_t);
+        explicit WindowlessNaClApplication(const Arguments& arguments, NoCreateT);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief WindowlessNaClApplication(const Arguments&, NoCreateT)
+         * @deprecated Use @ref WindowlessNaClApplication(const Arguments&, NoCreateT) instead.
+         */
+        CORRADE_DEPRECATED("use WindowlessNaClApplication(const Arguments&, NoCreateT) instead") explicit WindowlessNaClApplication(const Arguments& arguments, std::nullptr_t): WindowlessNaClApplication{arguments, NoCreate} {}
+        #endif
 
         /** @brief Copying is not allowed */
         WindowlessNaClApplication(const WindowlessNaClApplication&) = delete;
@@ -178,6 +276,7 @@ class WindowlessNaClApplication: public pp::Instance, public pp::Graphics3DClien
          * constructor itself. Error message is printed and the program exits
          * if the context cannot be created, see @ref tryCreateContext() for an
          * alternative.
+         * @see @ref WindowlessNaClContext
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         void createContext(const Configuration& configuration = Configuration());
@@ -202,20 +301,9 @@ class WindowlessNaClApplication: public pp::Instance, public pp::Graphics3DClien
 
         bool Init(std::uint32_t, const char*, const char*) override;
 
-        pp::Graphics3D* graphics;
-        Platform::Context* c;
-        ConsoleDebugOutput* debugOutput;
-};
-
-/**
-@brief Configuration
-
-@see @ref WindowlessNaClApplication(), @ref createContext(),
-    @ref tryCreateContext()
-*/
-class WindowlessNaClApplication::Configuration {
-    public:
-        constexpr /*implicit*/ Configuration() {}
+        WindowlessNaClContext _glContext;
+        std::unique_ptr<Platform::Context> _context;
+        std::unique_ptr<ConsoleDebugOutput> _debugOutput;
 };
 
 namespace Implementation {
@@ -256,6 +344,7 @@ application header is included this macro is also aliased to
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_WINDOWLESSAPPLICATION_MAIN
 typedef WindowlessNaClApplication WindowlessApplication;
+typedef WindowlessNaClContext WindowlessGLContext;
 #define MAGNUM_WINDOWLESSAPPLICATION_MAIN(className) MAGNUM_WINDOWLESSNACLAPPLICATION_MAIN(className)
 #else
 #undef MAGNUM_WINDOWLESSAPPLICATION_MAIN

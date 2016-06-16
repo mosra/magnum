@@ -25,19 +25,31 @@
 
 #include "WindowlessWglApplication.h"
 
+#include <cstring>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
 
 #include "Magnum/Version.h"
 #include "Magnum/Platform/Context.h"
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+/* Define stuff that we need because I can't be bothered with creating a new
+   header just for a few defines */
+#define WGL_CONTEXT_MAJOR_VERSION_ARB 0x2091
+#define WGL_CONTEXT_MINOR_VERSION_ARB 0x2092
+#define WGL_CONTEXT_FLAGS_ARB 0x2094
+#define WGL_CONTEXT_PROFILE_MASK_ARB 0x9126
+#define WGL_CONTEXT_CORE_PROFILE_BIT_ARB 0x00000001
+#define WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB 0x0002
+#endif
+
 namespace Magnum { namespace Platform {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-int WindowlessWglApplication::create(LRESULT(CALLBACK windowProcedure)(HWND, UINT, WPARAM, LPARAM)) {
+WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, Context* const magnumContext) {
+    /* Create the window */
     const WNDCLASS wc{
         0,
-        windowProcedure,
+        DefWindowProc,
         0,
         0,
         GetModuleHandle(nullptr),
@@ -47,36 +59,9 @@ int WindowlessWglApplication::create(LRESULT(CALLBACK windowProcedure)(HWND, UIN
         nullptr,
         L"Magnum Windowless Application"
     };
-    if(!RegisterClass(&wc)) return 1;
-
-    CreateWindowW(wc.lpszClassName, L"Magnum Windowless Application",
+    if(!RegisterClass(&wc)) return;
+    _window = CreateWindowW(wc.lpszClassName, L"Magnum Windowless Application",
         WS_OVERLAPPEDWINDOW, 0, 0, 32, 32, 0, 0, wc.hInstance, 0);
-
-    /* Hammer the return code out of the messaging thingy */
-    MSG msg;
-    do {} while(GetMessageW(&msg, nullptr, 0, 0) != 0);
-    return msg.wParam;
-}
-#endif
-
-#ifndef DOXYGEN_GENERATING_OUTPUT
-WindowlessWglApplication::WindowlessWglApplication(const Arguments& arguments): WindowlessWglApplication{arguments, Configuration{}} {}
-#endif
-
-WindowlessWglApplication::WindowlessWglApplication(const Arguments& arguments, const Configuration& configuration): WindowlessWglApplication{arguments, nullptr} {
-    createContext(configuration);
-}
-
-WindowlessWglApplication::WindowlessWglApplication(const Arguments& arguments, std::nullptr_t): _window(arguments.window), _context{new Context{NoCreate, arguments.argc, arguments.argv}} {}
-
-void WindowlessWglApplication::createContext() { createContext({}); }
-
-void WindowlessWglApplication::createContext(const Configuration& configuration) {
-    if(!tryCreateContext(configuration)) std::exit(1);
-}
-
-bool WindowlessWglApplication::tryCreateContext(const Configuration& configuration) {
-    CORRADE_ASSERT(_context->version() == Version::None, "Platform::WindowlessWglApplication::tryCreateContext(): context already created", false);
 
     /* Get device context */
     _deviceContext = GetDC(_window);
@@ -104,49 +89,160 @@ bool WindowlessWglApplication::tryCreateContext(const Configuration& configurati
     const int pixelFormat = ChoosePixelFormat(_deviceContext, &pfd);
     SetPixelFormat(_deviceContext, pixelFormat, &pfd);
 
-    const int attributes[] = {
-        WGL_CONTEXT_FLAGS_ARB, int(configuration.flags()),
-        0
-    };
-
     /* Create temporary context so we are able to get the pointer to
-       wglCreateContextAttribsARB() */
-    HGLRC temporaryContext = wglCreateContext(_deviceContext);
+       wglCreateContextAttribsARB(). To avoid messing up the app state we need
+       to save the old active context and then restore it later. */
+    const HGLRC currentContext = wglGetCurrentContext();
+    const HGLRC temporaryContext = wglCreateContext(_deviceContext);
     if(!wglMakeCurrent(_deviceContext, temporaryContext)) {
-        Error() << "Platform::WindowlessWglApplication::tryCreateContext(): cannot make temporary context current:" << GetLastError();
-        return false;
+        Error() << "Platform::WindowlessWglContext: cannot make temporary context current:" << GetLastError();
+        wglDeleteContext(temporaryContext);
+        return;
     }
 
-    /* Get pointer to proper context creation function and create real context
-       with it */
+    /* Get pointer to proper context creation function */
     typedef HGLRC(WINAPI*PFNWGLCREATECONTEXTATTRIBSARBPROC)(HDC, HGLRC, const int*);
     const PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = reinterpret_cast<PFNWGLCREATECONTEXTATTRIBSARBPROC>( wglGetProcAddress(reinterpret_cast<LPCSTR>("wglCreateContextAttribsARB")));
-    _renderingContext = wglCreateContextAttribsARB(_deviceContext, nullptr, attributes);
 
-    /* Delete the temporary context */
-    wglMakeCurrent(_deviceContext, nullptr);
+    /* Optimistically choose core context first */
+    const GLint contextAttributes[] = {
+        #ifdef MAGNUM_TARGET_GLES
+        #ifdef MAGNUM_TARGET_GLES3
+        WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
+        #elif defined(MAGNUM_TARGET_GLES2)
+        WGL_CONTEXT_MAJOR_VERSION_ARB, 2,
+        #else
+        #error unsupported OpenGL ES version
+        #endif
+        WGL_CONTEXT_MINOR_VERSION_ARB, 0,
+        WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_ES2_PROFILE_BIT_EXT,
+        WGL_CONTEXT_FLAGS_ARB, GLint(configuration.flags()),
+        #else
+        WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
+        WGL_CONTEXT_MINOR_VERSION_ARB, 1,
+        WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
+        WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB|GLint(configuration.flags()),
+        #endif
+        0
+    };
+    _context = wglCreateContextAttribsARB(_deviceContext, nullptr, contextAttributes);
+
+    #ifndef MAGNUM_TARGET_GLES
+    /* Fall back to (forward compatible) GL 2.1 if core context creation fails */
+    if(!_context) {
+        Warning() << "Platform::WindowlessWglContext: cannot create core context, falling back to compatibility context:" << GetLastError();
+
+        const int fallbackContextAttributes[] = {
+            WGL_CONTEXT_FLAGS_ARB, int(configuration.flags()),
+            0
+        };
+        _context = wglCreateContextAttribsARB(_deviceContext, nullptr, fallbackContextAttributes);
+
+    /* Fall back to (forward compatible) GL 2.1 if we are on binary NVidia/AMD
+       drivers on Linux/Windows. Instead of creating forward-compatible context
+       with highest available version, they force the version to the one
+       specified, which is completely useless behavior. */
+    } else {
+        /* We need to make the context current to read out vendor string */
+        if(!wglMakeCurrent(_deviceContext, _context)) {
+            Error() << "Platform::WindowlessWglContext: cannot make context current:" << GetLastError();
+
+            /* Everything failed, at least try to delete the dangling contexts
+               and revert to the previous context to regain some sanity */
+            wglMakeCurrent(_deviceContext, currentContext);
+            wglDeleteContext(temporaryContext);
+            return;
+        }
+
+        /* The workaround check is the last so it doesn't appear in workaround
+           list on unrelated drivers */
+        constexpr static const char nvidiaVendorString[] = "NVIDIA Corporation";
+        constexpr static const char amdVendorString[] = "ATI Technologies Inc.";
+        const char* const vendorString = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
+        if((std::strncmp(vendorString, nvidiaVendorString, sizeof(nvidiaVendorString)) == 0 ||
+            std::strncmp(vendorString, amdVendorString, sizeof(amdVendorString)) == 0) &&
+            (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("amd-nv-no-forward-compatible-core-context")))
+        {
+            /* Destroy the core context and create a compatibility one */
+            wglDeleteContext(_context);
+            const int fallbackContextAttributes[] = {
+                WGL_CONTEXT_FLAGS_ARB, int(configuration.flags()),
+                0
+            };
+            _context = wglCreateContextAttribsARB(_deviceContext, nullptr, fallbackContextAttributes);
+        }
+    }
+    #endif
+
+    /* Make the previous context active and delete the temporary context */
+    if(!wglMakeCurrent(_deviceContext, currentContext)) {
+        Error() << "Platform::WindowlessWglContext: cannot make the previous context current:" << GetLastError();
+
+        /* Everything is fucked up, but try to delete the temporary context
+           anyway */
+        wglDeleteContext(temporaryContext);
+        return;
+    }
     wglDeleteContext(temporaryContext);
 
-    if(!_renderingContext) {
-        Error() << "Platform::WindowlessWglApplication::tryCreateContext(): cannot create context:" << GetLastError();
-        return false;
-    }
-
-    /* Set OpenGL context as current */
-    if(!wglMakeCurrent(_deviceContext, _renderingContext)) {
-        Error() << "Platform::WindowlessWglApplication::tryCreateContext(): cannot make context current:" << GetLastError();
-        return false;
-    }
-
-    /* Return true if the initialization succeeds */
-    return _context->tryCreate();
+    if(!_context)
+        Error() << "Platform::WindowlessWglContext: cannot create context:" << GetLastError();
 }
 
-WindowlessWglApplication::~WindowlessWglApplication() {
-    _context.reset();
-
-    wglMakeCurrent(_deviceContext, nullptr);
-    wglDeleteContext(_renderingContext);
+WindowlessWglContext::WindowlessWglContext(WindowlessWglContext&& other): _window{other._window}, _deviceContext{other._deviceContext}, _context{other._context} {
+    other._window = {};
+    other._deviceContext = {};
+    other._context = {};
 }
+
+WindowlessWglContext::~WindowlessWglContext() {
+    if(_context) wglDeleteContext(_context);
+    if(_window) DestroyWindow(_window);
+}
+
+WindowlessWglContext& WindowlessWglContext::operator=(WindowlessWglContext&& other) {
+    using std::swap;
+    swap(other._window, _window);
+    swap(other._deviceContext, _deviceContext);
+    swap(other._context, _context);
+    return *this;
+}
+
+bool WindowlessWglContext::makeCurrent() {
+    if(wglMakeCurrent(_deviceContext, _context))
+        return true;
+
+    Error() << "Platform::WindowlessWglContext::makeCurrent(): cannot make context current:" << GetLastError();
+    return false;
+}
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+WindowlessWglApplication::WindowlessWglApplication(const Arguments& arguments): WindowlessWglApplication{arguments, Configuration{}} {}
+#endif
+
+WindowlessWglApplication::WindowlessWglApplication(const Arguments& arguments, const Configuration& configuration): WindowlessWglApplication{arguments, NoCreate} {
+    createContext(configuration);
+}
+
+WindowlessWglApplication::WindowlessWglApplication(const Arguments& arguments, NoCreateT): _glContext{NoCreate}, _context{new Context{NoCreate, arguments.argc, arguments.argv}} {}
+
+void WindowlessWglApplication::createContext() { createContext({}); }
+
+void WindowlessWglApplication::createContext(const Configuration& configuration) {
+    if(!tryCreateContext(configuration)) std::exit(1);
+}
+
+bool WindowlessWglApplication::tryCreateContext(const Configuration& configuration) {
+    CORRADE_ASSERT(_context->version() == Version::None, "Platform::WindowlessWglApplication::tryCreateContext(): context already created", false);
+
+    WindowlessWglContext glContext{configuration, _context.get()};
+    if(!glContext.isCreated() || !glContext.makeCurrent() || !_context->tryCreate())
+        return false;
+
+    _glContext = std::move(glContext);
+    return true;
+}
+
+WindowlessWglApplication::~WindowlessWglApplication() = default;
 
 }}

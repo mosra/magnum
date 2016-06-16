@@ -102,7 +102,7 @@ class DistanceFieldConverter: public Platform::WindowlessApplication {
         Utility::Arguments args;
 };
 
-DistanceFieldConverter::DistanceFieldConverter(const Arguments& arguments): Platform::WindowlessApplication(arguments, nullptr) {
+DistanceFieldConverter::DistanceFieldConverter(const Arguments& arguments): Platform::WindowlessApplication{arguments, NoCreate} {
     args.addArgument("input").setHelp("input", "input image")
         .addArgument("output").setHelp("output", "output image")
         .addOption("importer", "AnyImageImporter").setHelp("importer", "image importer plugin")

@@ -35,25 +35,7 @@
 
 namespace Magnum { namespace Platform {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-WindowlessCglApplication::WindowlessCglApplication(const Arguments& arguments): WindowlessCglApplication{arguments, Configuration{}} {}
-#endif
-
-WindowlessCglApplication::WindowlessCglApplication(const Arguments& arguments, const Configuration& configuration): WindowlessCglApplication{arguments, nullptr} {
-    createContext(configuration);
-}
-
-WindowlessCglApplication::WindowlessCglApplication(const Arguments& arguments, std::nullptr_t): _context{new Context{NoCreate, arguments.argc, arguments.argv}} {}
-
-void WindowlessCglApplication::createContext() { createContext({}); }
-
-void WindowlessCglApplication::createContext(const Configuration& configuration) {
-    if(!tryCreateContext(configuration)) std::exit(1);
-}
-
-bool WindowlessCglApplication::tryCreateContext(const Configuration&) {
-    CORRADE_ASSERT(_context->version() == Version::None, "Platform::WindowlessCglApplication::tryCreateContext(): context already created", false);
-
+WindowlessCglContext::WindowlessCglContext(const Configuration&, Context*) {
     int formatCount;
     CGLPixelFormatAttribute attributes32[] = {
         kCGLPFAAccelerated,
@@ -62,7 +44,7 @@ bool WindowlessCglApplication::tryCreateContext(const Configuration&) {
         CGLPixelFormatAttribute(0)
     };
     if(CGLChoosePixelFormat(attributes32, &_pixelFormat, &formatCount) != kCGLNoError) {
-        Error() << "Platform::WindowlessCglApplication::tryCreateContext(): cannot choose pixel format for GL 3.2, falling back to 3.0";
+        Warning() << "Platform::WindowlessCglContext: cannot choose pixel format for GL 3.2, falling back to 3.0";
 
         CGLPixelFormatAttribute attributes30[] = {
             kCGLPFAAccelerated,
@@ -71,7 +53,7 @@ bool WindowlessCglApplication::tryCreateContext(const Configuration&) {
             CGLPixelFormatAttribute(0)
         };
         if(CGLChoosePixelFormat(attributes30, &_pixelFormat, &formatCount) != kCGLNoError) {
-            Error() << "Platform::WindowlessCglApplication::tryCreateContext(): cannot choose pixel format for GL 3.0, falling back to 2.1";
+            Warning() << "Platform::WindowlessCglContext: cannot choose pixel format for GL 3.0, falling back to 2.1";
 
             CGLPixelFormatAttribute attributes21[] = {
                 kCGLPFAAccelerated,
@@ -80,31 +62,68 @@ bool WindowlessCglApplication::tryCreateContext(const Configuration&) {
                 CGLPixelFormatAttribute(0)
             };
             if(CGLChoosePixelFormat(attributes21, &_pixelFormat, &formatCount) != kCGLNoError) {
-                Error() << "Platform::WindowlessCglApplication::tryCreateContext(): cannot choose pixel format";
-                return false;
+                Error() << "Platform::WindowlessCglContext: cannot choose pixel format";
+                return;
             }
         }
     }
 
-    if(CGLCreateContext(_pixelFormat, nullptr, &_glContext) != kCGLNoError) {
-        Error() << "Platform::WindowlessCglApplication::tryCreateContext(): cannot create context";
-        return false;
-    }
-
-    if(CGLSetCurrentContext(_glContext) != kCGLNoError) {
-        Error() << "Platform::WindowlessCglApplication::tryCreateContext(): cannot make context current";
-        return false;
-    }
-
-    /* Return true if the initialization succeeds */
-    return _context->tryCreate();
+    if(CGLCreateContext(_pixelFormat, nullptr, &_context) != kCGLNoError)
+        Error() << "Platform::WindowlessCglContext: cannot create context";
 }
 
-WindowlessCglApplication::~WindowlessCglApplication() {
-    _context.reset();
+WindowlessCglContext::WindowlessCglContext(WindowlessCglContext&& other): _pixelFormat{other._pixelFormat}, _context{other._context} {
+    other._pixelFormat = {};
+    other._context = {};
+}
 
-    CGLDestroyContext(_glContext);
-    CGLDestroyPixelFormat(_pixelFormat);
+WindowlessCglContext::~WindowlessCglContext() {
+    if(_context) CGLDestroyContext(_context);
+    if(_pixelFormat) CGLDestroyPixelFormat(_pixelFormat);
+}
+
+WindowlessCglContext& WindowlessCglContext::operator=(WindowlessCglContext&& other) {
+    using std::swap;
+    swap(other._pixelFormat, _pixelFormat);
+    swap(other._context, _context);
+    return *this;
+}
+
+bool WindowlessCglContext::makeCurrent() {
+    if(CGLSetCurrentContext(_context) == kCGLNoError)
+        return true;
+
+    Error() << "Platform::WindowlessCglContext::makeCurrent(): cannot make context current";
+    return false;
+}
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+WindowlessCglApplication::WindowlessCglApplication(const Arguments& arguments): WindowlessCglApplication{arguments, Configuration{}} {}
+#endif
+
+WindowlessCglApplication::WindowlessCglApplication(const Arguments& arguments, const Configuration& configuration): WindowlessCglApplication{arguments, NoCreate} {
+    createContext(configuration);
+}
+
+WindowlessCglApplication::WindowlessCglApplication(const Arguments& arguments, NoCreateT): _glContext{NoCreate}, _context{new Context{NoCreate, arguments.argc, arguments.argv}} {}
+
+WindowlessCglApplication::~WindowlessCglApplication() = default;
+
+void WindowlessCglApplication::createContext() { createContext({}); }
+
+void WindowlessCglApplication::createContext(const Configuration& configuration) {
+    if(!tryCreateContext(configuration)) std::exit(1);
+}
+
+bool WindowlessCglApplication::tryCreateContext(const Configuration& configuration) {
+    CORRADE_ASSERT(_context->version() == Version::None, "Platform::WindowlessCglApplication::tryCreateContext(): context already created", false);
+
+    WindowlessCglContext glContext{configuration, _context.get()};
+    if(!glContext.isCreated() || !glContext.makeCurrent() || !_context->tryCreate())
+        return false;
+
+    _glContext = std::move(glContext);
+    return true;
 }
 
 }}
