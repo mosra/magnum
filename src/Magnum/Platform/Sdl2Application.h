@@ -605,9 +605,12 @@ class Sdl2Application {
          *
          * If text input is active, text input events go to @ref textInputEvent()
          * and @ref textEditingEvent().
+         * @note Note that in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" the
+         *      value is emulated and might not reflect external events like
+         *      closing on-screen keyboard.
          * @see @ref startTextInput(), @ref stopTextInput()
          */
-        bool isTextInputActive() { return SDL_IsTextInputActive(); }
+        bool isTextInputActive();
 
         /**
          * @brief Start text input
@@ -617,7 +620,7 @@ class Sdl2Application {
          * @see @ref stopTextInput(), @ref isTextInputActive(),
          *      @ref setTextInputRect()
          */
-        void startTextInput() { SDL_StartTextInput(); }
+        void startTextInput();
 
         /**
          * @brief Stop text input
@@ -625,7 +628,7 @@ class Sdl2Application {
          * @see @ref startTextInput(), @ref isTextInputActive(), @ref textInputEvent()
          *      @ref textEditingEvent()
          */
-        void stopTextInput() { SDL_StopTextInput(); }
+        void stopTextInput();
 
         /**
          * @brief Set text input rectangle
@@ -683,6 +686,7 @@ class Sdl2Application {
         UnsignedInt _minimalLoopPeriod;
         #else
         SDL_Surface* _glContext;
+        bool _isTextInputActive = false;
         #endif
 
         std::unique_ptr<Platform::Context> _context;
