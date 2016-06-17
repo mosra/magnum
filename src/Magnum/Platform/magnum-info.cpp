@@ -246,6 +246,9 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #ifdef MAGNUM_BUILD_STATIC
     Debug() << "    MAGNUM_BUILD_STATIC";
     #endif
+    #ifdef MAGNUM_BUILD_MULTITHREADED
+    Debug() << "    MAGNUM_BUILD_MULTITHREADED";
+    #endif
     #ifdef MAGNUM_TARGET_GLES
     Debug() << "    MAGNUM_TARGET_GLES";
     #endif

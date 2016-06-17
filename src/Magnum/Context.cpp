@@ -409,13 +409,22 @@ const std::vector<Extension>& Extension::extensions(Version version) {
     CORRADE_ASSERT_UNREACHABLE();
 }
 
-Context* Context::_current = nullptr;
+namespace {
+    #ifdef MAGNUM_BUILD_MULTITHREADED
+    #if !defined(CORRADE_GCC47_COMPATIBILITY) && !defined(CORRADE_TARGET_APPLE)
+    thread_local
+    #else
+    __thread
+    #endif
+    #endif
+    Context* currentContext = nullptr;
+}
 
-bool Context::hasCurrent() { return _current; }
+bool Context::hasCurrent() { return currentContext; }
 
 Context& Context::current() {
-    CORRADE_ASSERT(_current, "Context::current(): no current context", *_current);
-    return *_current;
+    CORRADE_ASSERT(currentContext, "Context::current(): no current context", *currentContext);
+    return *currentContext;
 }
 
 Context::Context(NoCreateT, Int argc, char** argv, void functionLoader()): _functionLoader{functionLoader}, _version{Version::None} {
@@ -448,13 +457,13 @@ Context::Context(Context&& other): _version{std::move(other._version)},
     _detectedDrivers{std::move(other._detectedDrivers)}
 {
     other._state = nullptr;
-    if(_current == &other) _current = this;
+    if(currentContext == &other) currentContext = this;
 }
 
 Context::~Context() {
     delete _state;
 
-    if(_current == this) _current = nullptr;
+    if(currentContext == this) currentContext = nullptr;
 }
 
 void Context::create() {
@@ -640,8 +649,8 @@ bool Context::tryCreate() {
     setupDriverWorkarounds();
 
     /* Set this context as current */
-    CORRADE_ASSERT(!_current, "Context: Another context currently active", false);
-    _current = this;
+    CORRADE_ASSERT(!currentContext, "Context: Another context currently active", false);
+    currentContext = this;
 
     /* Print some info and initialize state tracker (which also prints some
        more info) */

@@ -138,6 +138,11 @@ if(BUILD_DEPRECATED)
     set(MAGNUM_BUILD_DEPRECATED 1)
 endif()
 
+option(BUILD_MULTITHREADED "Build in a way that makes it possible to use multiple thread-local Magnum contexts" ON)
+if(BUILD_MULTITHREADED)
+    set(MAGNUM_BUILD_MULTITHREADED 1)
+endif()
+
 option(BUILD_STATIC "Build static libraries (default are shared)" OFF)
 option(BUILD_STATIC_PIC "Build static libraries and plugins with position-independent code" ON)
 option(BUILD_PLUGINS_STATIC "Build static plugins (default are dynamic)" OFF)

@@ -92,6 +92,16 @@ Defined if built as static libraries. Default are shared libraries.
 #undef MAGNUM_BUILD_STATIC
 
 /**
+@brief Multi-threaded build
+
+Defined if the library is built in a way that allows multiple thread-local
+Magnum contexts. Enabled by default.
+@see @ref building, @ref cmake, @ref Context::current()
+*/
+#define MAGNUM_BUILD_MULTITHREADED
+#undef MAGNUM_BUILD_MULTITHREADED
+
+/**
 @brief OpenGL ES target
 
 Defined if the engine is built for OpenGL ES 3.0 or OpenGL ES 2.0.
