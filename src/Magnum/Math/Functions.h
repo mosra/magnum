@@ -498,7 +498,10 @@ template<class T> inline T fma(const T& a, const T& b, const T& c);
 #else
 template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type fma(T a, T b, T c) {
     /** @todo Remove when newlib has this fixed */
-    #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID)
+    /* On Emscripten it works with -O2 but not with -O1 (function not defined).
+       I guess that's only because -O2 optimizes it out, so disabling it there
+       also */
+    #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID) && !defined(CORRADE_TARGET_EMSCRIPTEN)
     return std::fma(a, b, c);
     #else
     return a*b + c;
