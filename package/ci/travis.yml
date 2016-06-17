@@ -21,6 +21,14 @@ matrix:
     env:
     - TARGET=ios-simulator
     - TARGET_GLES2=OFF
+  - os: osx
+    env:
+    - TARGET=emscripten
+    - TARGET_GLES2=ON
+  - os: osx
+    env:
+    - TARGET=emscripten
+    - TARGET_GLES2=OFF
 
 addons:
   apt:
@@ -52,6 +60,7 @@ install:
 - if [ "$TRAVIS_OS_NAME" == "osx" ]; then export PLATFORM_GL_API=CGL; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "ios-simulator" ]; then gem install xcpretty; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "ios-simulator" ]; then brew upgrade cmake; fi
+- if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "emscripten" ]; then brew install emscripten && export LLVM=/usr/local/opt/emscripten/libexec/llvm/bin && emcc; fi
 - if [ "$TARGET" == "desktop" ]; then printf "[General]\ndrivers=null" > ~/.alsoftrc; fi
 
 # SDL (cached)
@@ -67,5 +76,6 @@ script:
 - if [ "$TRAVIS_OS_NAME" == "linux" ]; then ./package/ci/travis-desktop.sh; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop" ]; then ./package/ci/travis-desktop.sh; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "ios-simulator" ]; then ./package/ci/travis-ios-simulator.sh; fi
+- if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "emscripten" ]; then ./package/ci/travis-emscripten.sh; fi
 # Travis somehow is not able to gather all output, try to force it using this
 - sync
