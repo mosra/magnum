@@ -100,7 +100,12 @@ void ForceRendererTest::arbitrary3D() {
 
     /* All vectors are orthogonal */
     CORRADE_COMPARE(Math::dot(m.right(), m.up()),       0.0f);
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
     CORRADE_COMPARE(Math::dot(m.right(), m.backward()), 0.0f);
+    #else
+    /* Emscripten -O1 has slightly lower precision. -O2 works fine. */
+    CORRADE_VERIFY(Math::abs(Math::dot(m.right(), m.backward())) < Math::TypeTraits<Float>::epsilon());
+    #endif
     /** @todo This shouldn't be too different */
     CORRADE_VERIFY(Math::abs(Math::dot(m.up(), m.backward())) < Math::TypeTraits<Float>::epsilon());
 }
