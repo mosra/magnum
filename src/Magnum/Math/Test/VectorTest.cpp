@@ -615,11 +615,23 @@ void VectorTest::subclass() {
     /* Integral multiplication/division */
     CORRADE_COMPARE(Vec2i(2, 4)*1.5f, Vec2i(3, 6));
     CORRADE_COMPARE(1.5f*Vec2i(2, 4), Vec2i(3, 6));
-    CORRADE_COMPARE(Vec2i(2, 4)/(2.0f/3.0f), Vec2i(3, 6));
+    {
+        #ifdef CORRADE_TARGET_EMSCRIPTEN
+        CORRADE_EXPECT_FAIL_IF(Vec2i(2, 4)/(2.0f/3.0f) == Vec2i(2, 5),
+            "Emscripten -O1 misoptimizes the following (-O2 works).");
+        #endif
+        CORRADE_COMPARE(Vec2i(2, 4)/(2.0f/3.0f), Vec2i(3, 6));
+    }
 
     CORRADE_COMPARE(Vec2i(2, 4)*Vec2(-1.5f, 0.5f), Vec2i(-3, 2));
     CORRADE_COMPARE(Vec2(-1.5f, 0.5f)*Vec2i(2, 4), Vec2i(-3, 2));
-    CORRADE_COMPARE(Vec2i(2, 4)/Vec2(-2.0f/3.0f, 2.0f), Vec2i(-3, 2));
+    {
+        #ifdef CORRADE_TARGET_EMSCRIPTEN
+        CORRADE_EXPECT_FAIL_IF(Vec2i(2, 4)/Vec2(-2.0f/3.0f, 2.0f) == Vec2i(-2, 2),
+            "Emscripten -O1 misoptimizes the following (-O2 works).");
+        #endif
+        CORRADE_COMPARE(Vec2i(2, 4)/Vec2(-2.0f/3.0f, 2.0f), Vec2i(-3, 2));
+    }
 
     /* Functions */
     CORRADE_COMPARE(Vec2(3.0f, 0.0f).normalized(), Vec2(1.0f, 0.0f));
