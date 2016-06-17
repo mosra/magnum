@@ -396,15 +396,23 @@ installation path for WinRT dependencies is in `C:/Sys-winrt`.
 You need at least Windows 8.1, Visual Studio 2013 and Windows 8.1 Store/Phone
 SDK installed. Windows RT applications support OpenGL only through ANGLE, which
 is currently limited to OpenGL ES. Download and build ANGLE @ref building-windows-angle "according to instructions above",
-but use project files from the `winrt/` directory instead. Upcoming version
-2.0.4 of SDL has support for WinRT applications, download the source from
-https://www.libsdl.org/hg.php and use project files from the `VisualC-WinRT`
-directory. Because WinRT applications run in a sandbox, it's recommended to
-build the library as static so you don't have to bundle all the DLLs. Example:
+but use project files from the `winrt/` directory instead. Version 2.0.4 of SDL
+has support for WinRT applications, download the source from
+https://www.libsdl.org/download-2.0.php and use project files from the
+`VisualC-WinRT` directory. Because WinRT applications run in a sandbox, it's
+recommended to build the library as static so you don't have to bundle all the
+DLLs. Example:
 
     mkdir build-winrt
     cd build-winrt
-    cmake -DCORRADE_RC_EXECUTABLE="C:/Sys/bin/corrade-rc.exe" -DCMAKE_INSTALL_PREFIX="C:/Sys-winrt" -DBUILD_STATIC=ON -DWITH_SDL2APPLICATION=ON -DCMAKE_SYSTEM_NAME=WindowsStore -DCMAKE_SYSTEM_VERSION=8.1 -G "Visual Studio 14 2015" ..
+    cmake .. ^
+        -DCMAKE_SYSTEM_NAME=WindowsStore ^
+        -DCMAKE_SYSTEM_VERSION=10 ^
+        -DCORRADE_RC_EXECUTABLE="C:/Sys/bin/corrade-rc.exe" ^
+        -DCMAKE_INSTALL_PREFIX="C:/Sys-winrt" ^
+        -DBUILD_STATIC=ON ^
+        -DWITH_SDL2APPLICATION=ON ^
+        -G "Visual Studio 14 2015" ..
     cmake --build .
 
 Change `WindowsStore` to `WindowsPhone` if you want to build for Windows Phone
