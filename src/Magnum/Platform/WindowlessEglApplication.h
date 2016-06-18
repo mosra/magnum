@@ -72,7 +72,7 @@ class WindowlessEglContext {
          * and create @ref Platform::Context instance to be able to use Magnum.
          * @see @ref isCreated()
          */
-        explicit WindowlessEglContext(const Configuration& configuration, const Context* context = nullptr);
+        explicit WindowlessEglContext(const Configuration& configuration, Context* context = nullptr);
 
         /**
          * @brief Construct without creating the context
