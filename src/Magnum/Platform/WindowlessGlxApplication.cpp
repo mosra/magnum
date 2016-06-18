@@ -142,6 +142,8 @@ WindowlessGlxContext::WindowlessGlxContext(const WindowlessGlxContext::Configura
             return;
         }
     }
+    #else
+    static_cast<void>(magnumContext);
     #endif
 
     XFree(configs);
