@@ -95,6 +95,10 @@ class TranslationTransformation: public AbstractTranslation<dimensions, T, Trans
         }
 
         #ifdef MAGNUM_BUILD_DEPRECATED
+        #ifdef __GNUC__
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #endif
         /**
          * @copybrief transform()
          * @deprecated Use @ref transform() instead.
@@ -102,6 +106,9 @@ class TranslationTransformation: public AbstractTranslation<dimensions, T, Trans
         CORRADE_DEPRECATED("use transform() instead") Object<TranslationTransformation<dimensions, T, TranslationType>>& transform(const VectorTypeFor<dimensions, TranslationType>& transformation, TransformationType) {
             return transform(transformation);
         }
+        #ifdef __GNUC__
+        #pragma GCC diagnostic pop
+        #endif
         #endif
 
         /**
@@ -119,6 +126,10 @@ class TranslationTransformation: public AbstractTranslation<dimensions, T, Trans
         }
 
         #ifdef MAGNUM_BUILD_DEPRECATED
+        #ifdef __GNUC__
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #endif
         /**
          * @copybrief translate()
          * @deprecated Use @ref translate() instead.
@@ -126,6 +137,9 @@ class TranslationTransformation: public AbstractTranslation<dimensions, T, Trans
         CORRADE_DEPRECATED("use translate() instead") Object<TranslationTransformation<dimensions, T, TranslationType>>& translate(const VectorTypeFor<dimensions, TranslationType>& vector, TransformationType) {
             return translate(vector);
         }
+        #ifdef __GNUC__
+        #pragma GCC diagnostic pop
+        #endif
         #endif
 
     protected:

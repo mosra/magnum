@@ -82,6 +82,10 @@ class AbstractTranslation: public AbstractTransformation<dimensions, T> {
         }
 
         #ifdef MAGNUM_BUILD_DEPRECATED
+        #ifdef __GNUC__
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #endif
         /**
          * @copybrief translate()
          * @deprecated Use @ref translate() or @ref translateLocal() instead.
@@ -89,6 +93,9 @@ class AbstractTranslation: public AbstractTransformation<dimensions, T> {
         CORRADE_DEPRECATED("use translate() or translateLocal() instead") AbstractTranslation<dimensions, T, TranslationType>& translate(const VectorTypeFor<dimensions, TranslationType>& vector, TransformationType type) {
             return type == TransformationType::Global ? translate(vector) : translateLocal(vector);
         }
+        #ifdef __GNUC__
+        #pragma GCC diagnostic pop
+        #endif
         #endif
 
         /* Overloads to remove WTF-factor from method chaining order */
