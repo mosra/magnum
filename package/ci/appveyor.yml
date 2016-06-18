@@ -1,12 +1,19 @@
 # kate: indent-width 2;
 
-version: '{branch}-{build}'
-
-skip_tags: true
-shallow_clone: true
 clone_depth: 1
 
 os: Visual Studio 2015
+
+environment:
+  matrix:
+  - TARGET: desktop
+    COMPILER: msvc
+  - TARGET: desktop
+    COMPILER: mingw
+  - TARGET: rt
+    TARGET_GLES2: ON
+  - TARGET: rt
+    TARGET_GLES2: OFF
 
 notifications:
 - provider: Webhook
@@ -16,55 +23,28 @@ notifications:
   on_build_status_changed: true
 
 install:
-- call "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/vcvarsall.bat"
-- set PATH=C:/Sys/bin;C:/tools/ninja;%APPVEYOR_BUILD_FOLDER%/openal/bin/Win32;%PATH%
-
-# Ninja
 - cinst ninja
+- set PATH=C:/tools/ninja;%PATH%
+- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" cinst mingw /f >nul
 
 # OpenAL
-- IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\openal-soft-1.17.2-bin.zip appveyor DownloadFile http://kcat.strangesoft.net/openal-binaries/openal-soft-1.17.2-bin.zip
-- 7z x openal-soft-1.17.2-bin.zip
-- ren openal-soft-1.17.2-bin openal
-- ren openal\bin\Win32\soft_oal.dll OpenAL32.dll
-- echo [General] > %APPDATA%/alsoft.ini
-- echo drivers=null >> %APPDATA%/alsoft.ini
+- IF NOT "%TARGET%" == "rt" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\openal-soft-1.17.2-bin.zip appveyor DownloadFile http://kcat.strangesoft.net/openal-binaries/openal-soft-1.17.2-bin.zip
+- IF NOT "%TARGET%" == "rt" 7z x openal-soft-1.17.2-bin.zip && ren openal-soft-1.17.2-bin openal && echo [General] > %APPDATA%/alsoft.ini & echo drivers=null >> %APPDATA%/alsoft.ini
+- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" ren openal\bin\Win32\soft_oal.dll OpenAL32.dll
+- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" ren openal\bin\Win64\soft_oal.dll OpenAL32.dll
 
 # SDL2
-- IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\SDL2-devel-2.0.3-VC.zip appveyor DownloadFile http://www.libsdl.org/release/SDL2-devel-2.0.3-VC.zip
-- 7z x SDL2-devel-2.0.3-VC.zip
-- ren SDL2-2.0.3 SDL
-
-# Corrade
-- git clone --depth 1 git://github.com/mosra/corrade.git
-- cd corrade
-- mkdir build
-- cd build
-- cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=C:/Sys -G Ninja
-- cmake --build .
-- cmake --build . --target install
-- cd ..
-- cd ..
-
-cache:
-- SDL2-devel-2.0.3-VC.zip
-- openal-soft-1.17.2-bin.zip
+- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\SDL2-devel-2.0.4-VC.zip appveyor DownloadFile http://www.libsdl.org/release/SDL2-devel-2.0.4-VC.zip
+- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" 7z x SDL2-devel-2.0.4-VC.zip && ren SDL2-2.0.4 SDL
+- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\SDL2-devel-2.0.4-mingw.tar.gz appveyor DownloadFile http://libsdl.org/release/SDL2-devel-2.0.4-mingw.tar.gz
+- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" 7z x SDL2-devel-2.0.4-mingw.tar.gz & 7z x SDL2-devel-2.0.4-mingw.tar & ren SDL2-2.0.4 SDL
 
 build_script:
-- mkdir build
-- cd build
-- cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=C:/Sys -DCMAKE_PREFIX_PATH="%APPVEYOR_BUILD_FOLDER%/SDL;%APPVEYOR_BUILD_FOLDER%/openal" -DWITH_AUDIO=ON -DWITH_SDL2APPLICATION=ON -DWITH_WINDOWLESSWGLAPPLICATION=ON -DWITH_WGLCONTEXT=ON -DWITH_MAGNUMFONT=ON -DWITH_MAGNUMFONTCONVERTER=ON -DWITH_OBJIMPORTER=ON -DWITH_TGAIMAGECONVERTER=ON -DWITH_TGAIMPORTER=ON -DWITH_WAVAUDIOIMPORTER=ON -DWITH_DISTANCEFIELDCONVERTER=ON -DWITH_FONTCONVERTER=ON -DWITH_MAGNUMINFO=ON -DBUILD_TESTS=ON -DBUILD_GL_TESTS=ON -G Ninja
-- cmake --build .
-- cmake --build . --target install
-- cmake . -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/Deploy -DBUILD_TESTS=OFF
-- cmake --build . --target install
-- cd ../Deploy
-- 7z a ../magnum.zip *
+- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" call package\ci\appveyor-desktop.bat
+- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" call package\ci\appveyor-desktop-mingw.bat
+- IF "%TARGET%" == "rt" call package\ci\appveyor-rt.bat
 
-test_script:
-- cd %APPVEYOR_BUILD_FOLDER%/build
-- SET fail=0
-- ctest --output-on-failure -E GLTest || SET fail=1 & ver > nul
-- cd %APPVEYOR_BUILD_FOLDER%
-- appveyor PushArtifact magnum.zip
-- exit %fail%
+cache:
+- SDL2-devel-2.0.4-VC.zip
+- SDL2-devel-2.0.4-mingw.zip
+- openal-soft-1.17.2-bin.zip
