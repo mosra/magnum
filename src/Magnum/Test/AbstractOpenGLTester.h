@@ -38,8 +38,12 @@
 #include "Magnum/Platform/WindowlessIosApplication.h"
 #elif defined(CORRADE_TARGET_APPLE)
 #include "Magnum/Platform/WindowlessCglApplication.h"
-#elif defined(CORRADE_TARGET_UNIX) && (!defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_DESKTOP_GLES))
+#elif defined(CORRADE_TARGET_UNIX)
+#if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_DESKTOP_GLES)
+#include "Magnum/Platform/WindowlessEglApplication.h"
+#else
 #include "Magnum/Platform/WindowlessGlxApplication.h"
+#endif
 #elif defined(CORRADE_TARGET_WINDOWS)
 #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_DESKTOP_GLES)
 #include "Magnum/Platform/WindowlessWglApplication.h"
