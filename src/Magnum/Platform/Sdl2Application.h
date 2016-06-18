@@ -331,6 +331,7 @@ class Sdl2Application {
         class KeyEvent;
         class MouseEvent;
         class MouseMoveEvent;
+        class MouseScrollEvent;
         class MultiGestureEvent;
         class TextInputEvent;
         class TextEditingEvent;
@@ -585,6 +586,14 @@ class Sdl2Application {
          * Called when mouse is moved. Default implementation does nothing.
          */
         virtual void mouseMoveEvent(MouseMoveEvent& event);
+
+        /**
+         * @brief Mouse scroll event
+         *
+         * Called when a scrolling device is used (mouse wheel or scrolling
+         * area on a touchpad). Default implementation does nothing.
+         */
+        virtual void mouseScrollEvent(MouseScrollEvent& event);
 
         /*@}*/
 
@@ -1125,7 +1134,8 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
 /**
 @brief Mouse event
 
-@see @ref MouseMoveEvent, @ref mousePressEvent(), @ref mouseReleaseEvent()
+@see @ref MouseMoveEvent, @ref MouseScrollEvent, @ref mousePressEvent(),
+    @ref mouseReleaseEvent()
 */
 class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
     friend Sdl2Application;
@@ -1140,26 +1150,38 @@ class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
             Left = SDL_BUTTON_LEFT,         /**< Left button */
             Middle = SDL_BUTTON_MIDDLE,     /**< Middle button */
             Right = SDL_BUTTON_RIGHT,       /**< Right button */
-            WheelUp = SDL_BUTTON_X1,        /**< Wheel up */
-            WheelDown = SDL_BUTTON_X2       /**< Wheel down */
+
+            /** First extra button (e.g. wheel left) */
+            X1 = SDL_BUTTON_X1,
+
+            /** Second extra button (e.g. wheel right) */
+            X2 = SDL_BUTTON_X2,
+
+            #ifdef MAGNUM_BUILD_DEPRECATED
+            /**
+             * Wheel up
+             * @deprecated Use @ref MouseScrollEvent and @ref mouseScrollEvent() instead.
+             */
+            WheelUp CORRADE_DEPRECATED_ENUM("use mouseScrollEvent() and MouseScrollEvent instead") = SDL_BUTTON_X2 + 1,
+
+            /**
+             * Wheel down
+             * @deprecated Use @ref MouseScrollEvent and @ref mouseScrollEvent() instead.
+             */
+            WheelDown CORRADE_DEPRECATED_ENUM("use mouseScrollEvent() and MouseScrollEvent instead") = SDL_BUTTON_X2 + 2
+            #endif
         };
 
         /** @brief Button */
         constexpr Button button() const { return _button; }
 
-        /**
-         * @brief Position
-         *
-         * For whell events this contains the horizontal and vertical scroll
-         * amount.
-         */
+        /** @brief Position */
         constexpr Vector2i position() const { return _position; }
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         /**
          * @brief Click count
          *
-         * Ignored for wheel events.
          * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          */
         constexpr Int clickCount() const { return _clickCount; }
@@ -1195,7 +1217,7 @@ class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
 /**
 @brief Mouse move event
 
-@see @ref MouseEvent, @ref mouseMoveEvent()
+@see @ref MouseEvent, @ref MouseScrollEvent, @ref mouseMoveEvent()
 */
 class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
     friend Sdl2Application;
@@ -1210,8 +1232,12 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
             Left = SDL_BUTTON_LMASK,        /**< Left button */
             Middle = SDL_BUTTON_MMASK,      /**< Middle button */
             Right = SDL_BUTTON_RMASK,       /**< Right button */
-            WheelUp = SDL_BUTTON_X1MASK,    /**< Wheel up */
-            WheelDown = SDL_BUTTON_X2MASK   /**< Wheel down */
+
+            /** First extra button (e.g. wheel left) */
+            X1 = SDL_BUTTON_X1MASK,
+
+            /** Second extra button (e.g. wheel right) */
+            X2 = SDL_BUTTON_X2MASK
         };
 
         /**
@@ -1246,6 +1272,33 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
 
         const Vector2i _position, _relativePosition;
         const Buttons _buttons;
+        bool _modifiersLoaded;
+        Modifiers _modifiers;
+};
+
+/**
+@brief Mouse scroll event
+
+@see @ref MouseEvent, @ref MouseMoveEvent, @ref mouseScrollEvent()
+*/
+class Sdl2Application::MouseScrollEvent: public Sdl2Application::InputEvent {
+    friend Sdl2Application;
+
+    public:
+        /** @brief Scroll offset */
+        constexpr Vector2 offset() const { return _offset; }
+
+        /**
+         * @brief Modifiers
+         *
+         * Lazily populated on first request.
+         */
+        Modifiers modifiers();
+
+    private:
+        constexpr MouseScrollEvent(const Vector2& offset): _offset{offset}, _modifiersLoaded{false} {}
+
+        const Vector2 _offset;
         bool _modifiersLoaded;
         Modifiers _modifiers;
 };

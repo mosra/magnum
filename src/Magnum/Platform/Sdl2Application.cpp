@@ -384,15 +384,28 @@ void Sdl2Application::mainLoop() {
                 event.type == SDL_MOUSEBUTTONDOWN ? mousePressEvent(e) : mouseReleaseEvent(e);
             } break;
 
-            case SDL_MOUSEWHEEL:
+            case SDL_MOUSEWHEEL: {
+                MouseScrollEvent e{{Float(event.wheel.x), Float(event.wheel.y)}};
+                mouseScrollEvent(e);
+
+                #ifdef MAGNUM_BUILD_DEPRECATED
                 if(event.wheel.y != 0) {
+                    #ifdef __GNUC__
+                    #pragma GCC diagnostic push
+                    #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+                    #endif
                     MouseEvent e(event.wheel.y > 0 ? MouseEvent::Button::WheelUp : MouseEvent::Button::WheelDown, {event.wheel.x, event.wheel.y}
                         #ifndef CORRADE_TARGET_EMSCRIPTEN
                         , 0
                         #endif
                         );
+                    #ifdef __GNUC__
+                    #pragma GCC diagnostic pop
+                    #endif
                     mousePressEvent(e);
-                } break;
+                }
+                #endif
+            } break;
 
             case SDL_MOUSEMOTION: {
                 MouseMoveEvent e({event.motion.x, event.motion.y}, {event.motion.xrel, event.motion.yrel}, static_cast<MouseMoveEvent::Button>(event.motion.state));
@@ -510,6 +523,7 @@ void Sdl2Application::keyReleaseEvent(KeyEvent&) {}
 void Sdl2Application::mousePressEvent(MouseEvent&) {}
 void Sdl2Application::mouseReleaseEvent(MouseEvent&) {}
 void Sdl2Application::mouseMoveEvent(MouseMoveEvent&) {}
+void Sdl2Application::mouseScrollEvent(MouseScrollEvent&) {}
 void Sdl2Application::multiGestureEvent(MultiGestureEvent&) {}
 void Sdl2Application::textInputEvent(TextInputEvent&) {}
 void Sdl2Application::textEditingEvent(TextEditingEvent&) {}
@@ -538,6 +552,12 @@ Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseEvent::modifiers() 
 }
 
 Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseMoveEvent::modifiers() {
+    if(_modifiersLoaded) return _modifiers;
+    _modifiersLoaded = true;
+    return _modifiers = fixedModifiers(Uint16(SDL_GetModState()));
+}
+
+Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseScrollEvent::modifiers() {
     if(_modifiersLoaded) return _modifiers;
     _modifiersLoaded = true;
     return _modifiers = fixedModifiers(Uint16(SDL_GetModState()));

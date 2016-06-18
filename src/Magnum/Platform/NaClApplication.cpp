@@ -192,10 +192,17 @@ bool NaClApplication::HandleInputEvent(const pp::InputEvent& event) {
 
         case PP_INPUTEVENT_TYPE_WHEEL: {
             pp::WheelInputEvent wheelEvent(event);
-            if(Math::TypeTraits<Float>::equals(wheelEvent.GetDelta().y(), 0.0f)) return false;
-            MouseEvent e(wheelEvent.GetDelta().y() > 0 ? MouseEvent::Button::WheelUp : MouseEvent::Button::WheelDown, {}, static_cast<InputEvent::Modifier>(wheelEvent.GetModifiers()));
-            mousePressEvent(e);
+            MouseScrollEvent e{{wheelEvent.GetDelta().x(), wheelEvent.GetDelta().y()}, static_cast<InputEvent::Modifier>(wheelEvent.GetModifiers())};
+            mouseScrollEvent(e);
+            #ifdef MAGNUM_BUILD_DEPRECATED
+            if(!Math::TypeTraits<Float>::equals(wheelEvent.GetDelta().y(), 0.0f)) {
+                MouseEvent e2(wheelEvent.GetDelta().y() > 0 ? MouseEvent::Button::WheelUp : MouseEvent::Button::WheelDown, {}, static_cast<InputEvent::Modifier>(wheelEvent.GetModifiers()));
+                mousePressEvent(e2);
+                if(!e.isAccepted() && !e2.isAccepted()) return false;
+            } else if(!e.isAccepted()) return false;
+            #else
             if(!e.isAccepted()) return false;
+            #endif
             break;
         }
 
@@ -261,6 +268,7 @@ void NaClApplication::keyReleaseEvent(KeyEvent&) {}
 void NaClApplication::mousePressEvent(MouseEvent&) {}
 void NaClApplication::mouseReleaseEvent(MouseEvent&) {}
 void NaClApplication::mouseMoveEvent(MouseMoveEvent&) {}
+void NaClApplication::mouseScrollEvent(MouseScrollEvent&) {}
 
 template class BasicScreen<NaClApplication>;
 template class BasicScreenedApplication<NaClApplication>;

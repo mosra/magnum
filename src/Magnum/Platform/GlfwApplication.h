@@ -247,12 +247,7 @@ class GlfwApplication {
          */
         virtual void mouseMoveEvent(MouseMoveEvent& event);
 
-        /**
-         * @brief Mouse scroll event
-         *
-         * Called when a scrolling device is used (mouse wheel or scrolling
-         * area on touchpad). Default implementation does nothing.
-         */
+        /** @copydoc Sdl2Application::mouseScrollEvent() */
         virtual void mouseScrollEvent(MouseScrollEvent& event);
 
         /*@}*/
@@ -706,7 +701,8 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
 /**
 @brief Mouse event
 
-@see @ref MouseMoveEvent, @ref MouseScrollEvent, @ref mousePressEvent(), @ref mouseReleaseEvent()
+@see @ref MouseMoveEvent, @ref MouseScrollEvent, @ref mousePressEvent(),
+    @ref mouseReleaseEvent()
 */
 class GlfwApplication::MouseEvent: public GlfwApplication::InputEvent {
     friend GlfwApplication;
@@ -730,8 +726,19 @@ class GlfwApplication::MouseEvent: public GlfwApplication::InputEvent {
             Button7 = GLFW_MOUSE_BUTTON_7,        /**< Mouse button 7 */
             Button8 = GLFW_MOUSE_BUTTON_8,        /**< Mouse button 8 */
 
-            WheelUp = GLFW_MOUSE_BUTTON_LAST + 1,   /**< Mouse wheel up */
-            WheelDown = GLFW_MOUSE_BUTTON_LAST + 2  /**< Mouse wheel down */
+            #ifdef MAGNUM_BUILD_DEPRECATED
+            /**
+             * Wheel up
+             * @deprecated Use @ref MouseScrollEvent and @ref mouseScrollEvent() instead.
+             */
+            WheelUp CORRADE_DEPRECATED_ENUM("use mouseScrollEvent() and MouseScrollEvent instead") = GLFW_MOUSE_BUTTON_LAST + 1,
+
+            /**
+             * Wheel down
+             * @deprecated Use @ref MouseScrollEvent and @ref mouseScrollEvent() instead.
+             */
+            WheelDown CORRADE_DEPRECATED_ENUM("use mouseScrollEvent() and MouseScrollEvent instead") = GLFW_MOUSE_BUTTON_LAST + 2
+            #endif
         };
 
         /** @brief Button */
@@ -779,15 +786,15 @@ class GlfwApplication::MouseScrollEvent: public GlfwApplication::InputEvent {
 
     public:
         /** @brief Scroll offset */
-        constexpr Vector2d offset() const { return _offset; }
+        constexpr Vector2 offset() const { return _offset; }
 
         /** @brief Modifiers */
         constexpr Modifiers modifiers() const { return _modifiers; }
 
     private:
-        constexpr MouseScrollEvent(const Vector2d& offset, Modifiers modifiers): _offset(offset), _modifiers(modifiers) {}
+        constexpr MouseScrollEvent(const Vector2& offset, Modifiers modifiers): _offset(offset), _modifiers(modifiers) {}
 
-        const Vector2d _offset;
+        const Vector2 _offset;
         const Modifiers _modifiers;
 };
 

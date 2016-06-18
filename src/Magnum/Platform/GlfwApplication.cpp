@@ -187,13 +187,22 @@ void GlfwApplication::staticMouseEvent(GLFWwindow*, int button, int action, int 
 }
 
 void GlfwApplication::staticMouseScrollEvent(GLFWwindow* window, double xoffset, double yoffset) {
-    MouseScrollEvent e(Vector2d{xoffset, yoffset}, KeyEvent::getCurrentGlfwModifiers(window));
+    MouseScrollEvent e(Vector2{Float(xoffset), Float(yoffset)}, KeyEvent::getCurrentGlfwModifiers(window));
     _instance->mouseScrollEvent(e);
 
+    #ifdef MAGNUM_BUILD_DEPRECATED
     if(yoffset != 0.0) {
+        #ifdef __GNUC__
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #endif
         MouseEvent e1((yoffset > 0.0) ? MouseEvent::Button::WheelUp : MouseEvent::Button::WheelDown, KeyEvent::getCurrentGlfwModifiers(window));
+        #ifdef __GNUC__
+        #pragma GCC diagnostic pop
+        #endif
         _instance->mousePressEvent(e1);
     }
+    #endif
 }
 
 void GlfwApplication::staticErrorCallback(int, const char* description) {
