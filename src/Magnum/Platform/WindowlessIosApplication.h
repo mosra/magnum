@@ -118,7 +118,7 @@ class WindowlessIosContext {
 @brief Configuration
 
 @see @ref WindowlessIosContext(),
-    @ref WindowlessIosApplication::WindowlessCglApplication(),
+    @ref WindowlessIosApplication::WindowlessIosApplication(),
     @ref WindowlessIosApplication::createContext(),
     @ref WindowlessIosApplication::tryCreateContext()
 */

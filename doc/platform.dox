@@ -322,12 +322,12 @@ target_link_libraries(myapplication
 In case you need to manage windowless OpenGL contexts manually (for example
 to use Magnum for data processing in a thread or when having more than one
 OpenGL context), there is a possibility to directly use the context wrappers
-from windowless applications. Each @ref WindowlessEglApplication "Windowless*Application"
-is accompanied by a @ref WindowlessEglContext "Windowless*Context" class that
-manages just GL context creation, making it current and destruction. Similarly
-to using custom platform toolkits above, the workflow is to first create a GL
-context instance, then making it current and finally instantiating the
-@ref Platform::Context instance to initialize Magnum.
+from windowless applications. Each @ref Platform::WindowlessEglApplication "Platform::Windowless*Application"
+is accompanied by a @ref Platform::WindowlessEglContext "Platform::Windowless*Context"
+class that manages just GL context creation, making it current and destruction.
+Similarly to using custom platform toolkits above, the workflow is to first
+create a GL context instance, then making it current and finally instantiating
+the @ref Platform::Context instance to initialize Magnum.
 
 Similarly as with the applications, to simplify the porting, the library
 provides `Platform::WindowlessGLContext` typedef, but only if just one

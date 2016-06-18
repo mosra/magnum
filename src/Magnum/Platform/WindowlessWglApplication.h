@@ -77,7 +77,7 @@ class WindowlessWglContext {
          * on binary AMD and NVidia drivers, creating core context does not use
          * the largest available version. If the application detects such case
          * (and given workaround is not disabled in optionally passed
-         * @ref context instance), the core context is destroyed and
+         * @p context instance), the core context is destroyed and
          * compatibility OpenGL 2.1 context is created instead to make the
          * driver use the latest available version.
          *
