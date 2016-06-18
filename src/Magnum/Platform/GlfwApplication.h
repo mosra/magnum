@@ -211,17 +211,6 @@ class GlfwApplication {
         /** @{ @name Mouse handling */
 
     public:
-        /**
-         * @brief Mouse cursor
-         *
-         * @see @ref setMouseCursor()
-         */
-        enum class MouseCursor: int {
-            Default = GLFW_CURSOR_NORMAL,  /**< Default cursor provided by parent window */
-            Hidden = GLFW_CURSOR_HIDDEN,   /**< Hidden cursor */
-            None = GLFW_CURSOR_DISABLED    /**< No cursor */
-        };
-
         /** @brief Warp mouse cursor to given coordinates */
         void warpCursor(const Vector2i& position) {
             glfwSetCursorPos(_window, Double(position.x()), Double(position.y()));
@@ -243,7 +232,6 @@ class GlfwApplication {
          *
          * Called when any mouse button is pressed and mouse is moved. Default
          * implementation does nothing.
-         * @see @ref setMouseTracking()
          */
         virtual void mouseMoveEvent(MouseMoveEvent& event);
 
