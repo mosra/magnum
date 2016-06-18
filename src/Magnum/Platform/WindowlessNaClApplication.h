@@ -79,7 +79,7 @@ class WindowlessNaClContext {
          * and create @ref Platform::Context instance to be able to use Magnum.
          * @see @ref isCreated()
          */
-        explicit WindowlessNaClContext(pp::Instance& instance, const Configuration& configuration, const Context* context = nullptr);
+        explicit WindowlessNaClContext(pp::Instance& instance, const Configuration& configuration, Context* context = nullptr);
 
         /**
          * @brief Construct without creating the context
@@ -126,7 +126,7 @@ class WindowlessNaClContext {
 @brief Configuration
 
 @see @ref WindowlessNaClContext(),
-    @ref WindowlessNaClApplication::WindowlessCglApplication(),
+    @ref WindowlessNaClApplication::WindowlessNaClApplication(),
     @ref WindowlessNaClApplication::createContext(),
     @ref WindowlessNaClApplication::tryCreateContext()
 */

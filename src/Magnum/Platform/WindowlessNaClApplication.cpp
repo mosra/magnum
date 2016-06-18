@@ -57,7 +57,7 @@ WindowlessNaClContext::WindowlessNaClContext(pp::Instance& instance, const Confi
 
 WindowlessNaClContext::WindowlessNaClContext(WindowlessNaClContext&&) = default;
 
-WindowlessNaClContext::~WindowlessEglContext() = default;
+WindowlessNaClContext::~WindowlessNaClContext() = default;
 
 WindowlessNaClContext& WindowlessNaClContext::operator=(WindowlessNaClContext&&) = default;
 
@@ -93,7 +93,7 @@ WindowlessNaClApplication{arguments, NoCreate} {
     createContext(configuration);
 }
 
-WindowlessNaClApplication::WindowlessNaClApplication(const Arguments& arguments, NoCreate): Instance(arguments), Graphics3DClient(this), _glContext{NoCreate}, _debugOutput{new ConsoleDebugOutput{this}} {}
+WindowlessNaClApplication::WindowlessNaClApplication(const Arguments& arguments, NoCreateT): Instance(arguments), Graphics3DClient(this), _glContext{NoCreate}, _debugOutput{new ConsoleDebugOutput{this}} {}
 
 void WindowlessNaClApplication::createContext() { createContext({}); }
 
