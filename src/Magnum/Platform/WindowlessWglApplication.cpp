@@ -138,10 +138,10 @@ WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, C
         };
         _context = wglCreateContextAttribsARB(_deviceContext, nullptr, fallbackContextAttributes);
 
-    /* Fall back to (forward compatible) GL 2.1 if we are on binary NVidia/AMD
-       drivers on Linux/Windows. Instead of creating forward-compatible context
-       with highest available version, they force the version to the one
-       specified, which is completely useless behavior. */
+    /* Fall back to (forward compatible) GL 2.1 if we are on binary
+       NVidia/AMD/Intel drivers on Windows. Instead of creating forward-compatible
+       context with highest available version, they force the version to the
+       one specified, which is completely useless behavior. */
     } else {
         /* We need to make the context current to read out vendor string */
         if(!wglMakeCurrent(_deviceContext, _context)) {
@@ -157,11 +157,13 @@ WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, C
         /* The workaround check is the last so it doesn't appear in workaround
            list on unrelated drivers */
         constexpr static const char nvidiaVendorString[] = "NVIDIA Corporation";
+        constexpr static const char intelVendorString[] = "Intel";
         constexpr static const char amdVendorString[] = "ATI Technologies Inc.";
         const char* const vendorString = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
         if((std::strncmp(vendorString, nvidiaVendorString, sizeof(nvidiaVendorString)) == 0 ||
+            std::strncmp(vendorString, intelVendorString, sizeof(intelVendorString)) == 0 ||
             std::strncmp(vendorString, amdVendorString, sizeof(amdVendorString)) == 0) &&
-            (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("amd-nv-no-forward-compatible-core-context")))
+            (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("no-forward-compatible-core-context")))
         {
             /* Destroy the core context and create a compatibility one */
             wglDeleteContext(_context);

@@ -115,7 +115,7 @@ Using optional features:
     GL_ARB_invalidate_subdata
     ...
 Using driver workarounds:
-    amd-nv-no-forward-compatible-core-context
+    no-forward-compatible-core-context
     no-layout-qualifiers-on-old-glsl
 Context flags:
 Supported GLSL versions:

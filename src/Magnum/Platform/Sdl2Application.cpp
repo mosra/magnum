@@ -186,6 +186,9 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
        version to the one specified, which is completely useless behavior. */
     #ifndef CORRADE_TARGET_APPLE
     constexpr static const char nvidiaVendorString[] = "NVIDIA Corporation";
+    #ifdef CORRADE_TARGET_WINDOWS
+    constexpr static const char intelVendorString[] = "Intel";
+    #endif
     constexpr static const char amdVendorString[] = "ATI Technologies Inc.";
     const char* vendorString;
     #endif
@@ -194,8 +197,11 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
         /* Sorry about the UGLY code, HOPEFULLY THERE WON'T BE MORE WORKAROUNDS */
         || (vendorString = reinterpret_cast<const char*>(glGetString(GL_VENDOR)),
         (std::strncmp(vendorString, nvidiaVendorString, sizeof(nvidiaVendorString)) == 0 ||
+         #ifdef CORRADE_TARGET_WINDOWS
+         std::strncmp(vendorString, intelVendorString, sizeof(intelVendorString)) == 0 ||
+         #endif
          std::strncmp(vendorString, amdVendorString, sizeof(amdVendorString)) == 0)
-         && !_context->isDriverWorkaroundDisabled("amd-nv-no-forward-compatible-core-context"))
+         && !_context->isDriverWorkaroundDisabled("no-forward-compatible-core-context"))
         #endif
     )) {
         /* Don't print any warning when doing the NV workaround, because the

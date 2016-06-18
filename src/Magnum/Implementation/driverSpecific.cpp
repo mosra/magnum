@@ -35,10 +35,13 @@ namespace Magnum {
 namespace {
     std::vector<std::string> KnownWorkarounds{
         #ifndef MAGNUM_TARGET_GLES
+        #ifndef CORRADE_TARGET_APPLE
         /* Creating core context with specific version on AMD and NV
-           proprietary drivers causes the context to be forced to given
-           version instead of selecting latest available version */
-        "amd-nv-no-forward-compatible-core-context",
+           proprietary drivers on Linux/Windows and Intel drivers on Windows
+           causes the context to be forced to given version instead of
+           selecting latest available version */
+        "no-forward-compatible-core-context",
+        #endif
 
         #ifdef CORRADE_TARGET_WINDOWS
         /* On Windows Intel drivers ARB_shading_language_420pack is exposed in
