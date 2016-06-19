@@ -29,8 +29,19 @@
 #include "Magnum/BufferImage.h"
 #endif
 #include "Magnum/Context.h"
+#include "Magnum/CubeMapTexture.h"
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+#include "Magnum/CubeMapTextureArray.h"
+#endif
 #include "Magnum/Extensions.h"
 #include "Magnum/Image.h"
+#ifndef MAGNUM_TARGET_GLES
+#include "Magnum/RectangleTexture.h"
+#endif
+#include "Magnum/Texture.h"
+#ifndef MAGNUM_TARGET_GLES2
+#include "Magnum/TextureArray.h"
+#endif
 
 #include "Implementation/FramebufferState.h"
 #include "Implementation/State.h"
@@ -331,6 +342,96 @@ BufferImage2D AbstractFramebuffer::read(const Range2Di& rectangle, BufferImage2D
 }
 #endif
 
+#ifndef MAGNUM_TARGET_GLES
+void AbstractFramebuffer::copyImage(const Range2Di& rectangle, Texture1D& texture, const Int level, const TextureFormat internalFormat) {
+    CORRADE_ASSERT(rectangle.sizeY() == 1, "AbstractFramebuffer::copyImage(): height must be 1 for 1D textures", );
+    bindInternal(FramebufferTarget::Read);
+    texture.bindInternal();
+    glCopyTexImage1D(GL_TEXTURE_1D, level, GLenum(internalFormat), rectangle.min().x(), rectangle.min().y(), rectangle.sizeX(), 0);
+}
+#endif
+
+void AbstractFramebuffer::copyImage(const Range2Di& rectangle, Texture2D& texture, const Int level, const TextureFormat internalFormat) {
+    bindInternal(FramebufferTarget::Read);
+    texture.bindInternal();
+    glCopyTexImage2D(GL_TEXTURE_2D, level, GLenum(internalFormat), rectangle.min().x(), rectangle.min().y(), rectangle.sizeX(), rectangle.sizeY(), 0);
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractFramebuffer::copyImage(const Range2Di& rectangle, RectangleTexture& texture, const TextureFormat internalFormat) {
+    bindInternal(FramebufferTarget::Read);
+    texture.bindInternal();
+    glCopyTexImage2D(GL_TEXTURE_RECTANGLE, 0, GLenum(internalFormat), rectangle.min().x(), rectangle.min().y(), rectangle.sizeX(), rectangle.sizeY(), 0);
+}
+#endif
+
+void AbstractFramebuffer::copyImage(const Range2Di& rectangle, CubeMapTexture& texture, const CubeMapCoordinate coordinate, const Int level, const TextureFormat internalFormat) {
+    bindInternal(FramebufferTarget::Read);
+    texture.bindInternal();
+    glCopyTexImage2D(GLenum(coordinate), level, GLenum(internalFormat), rectangle.min().x(), rectangle.min().y(), rectangle.sizeX(), rectangle.sizeY(), 0);
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractFramebuffer::copyImage(const Range2Di& rectangle, Texture1DArray& texture, const Int level, const TextureFormat internalFormat) {
+    bindInternal(FramebufferTarget::Read);
+    texture.bindInternal();
+    glCopyTexImage2D(GL_TEXTURE_1D_ARRAY, level, GLenum(internalFormat), rectangle.min().x(), rectangle.min().y(), rectangle.sizeX(), rectangle.sizeY(), 0);
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractFramebuffer::copySubImage(const Range2Di& rectangle, Texture1D& texture, const Int level, const Int offset) {
+    CORRADE_ASSERT(rectangle.sizeY() == 1, "AbstractFramebuffer::copyImage(): height must be 1 for 1D textures", );
+    bindInternal(FramebufferTarget::Read);
+    Context::current().state().framebuffer->copySub1DImplementation(rectangle, texture, level, offset);
+}
+#endif
+
+void AbstractFramebuffer::copySubImage(const Range2Di& rectangle, Texture2D& texture, const Int level, const Vector2i& offset) {
+    bindInternal(FramebufferTarget::Read);
+    Context::current().state().framebuffer->copySub2DImplementation(rectangle, texture, GL_TEXTURE_2D, level, offset);
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractFramebuffer::copySubImage(const Range2Di& rectangle, RectangleTexture& texture, const Vector2i& offset) {
+    bindInternal(FramebufferTarget::Read);
+    Context::current().state().framebuffer->copySub2DImplementation(rectangle, texture, GL_TEXTURE_RECTANGLE, 0, offset);
+}
+#endif
+
+void AbstractFramebuffer::copySubImage(const Range2Di& rectangle, CubeMapTexture& texture, const Int level, const Vector3i& offset) {
+    bindInternal(FramebufferTarget::Read);
+    Context::current().state().framebuffer->copySubCubeMapImplementation(rectangle, texture, GL_TEXTURE_CUBE_MAP_POSITIVE_X + offset.z(), level, offset.xy());
+}
+
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+void AbstractFramebuffer::copySubImage(const Range2Di& rectangle, Texture3D& texture, const Int level, const Vector3i& offset) {
+    bindInternal(FramebufferTarget::Read);
+    Context::current().state().framebuffer->copySub3DImplementation(rectangle, texture, level, offset);
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractFramebuffer::copySubImage(const Range2Di& rectangle, Texture1DArray& texture, const Int level, const Vector2i& offset) {
+    bindInternal(FramebufferTarget::Read);
+    Context::current().state().framebuffer->copySub2DImplementation(rectangle, texture, GL_TEXTURE_1D_ARRAY, level, offset);
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+void AbstractFramebuffer::copySubImage(const Range2Di& rectangle, Texture2DArray& texture, const Int level, const Vector3i& offset) {
+    bindInternal(FramebufferTarget::Read);
+    Context::current().state().framebuffer->copySub3DImplementation(rectangle, texture, level, offset);
+}
+#endif
+
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+void AbstractFramebuffer::copySubImage(const Range2Di& rectangle, CubeMapTextureArray& texture, const Int level, const Vector3i& offset) {
+    bindInternal(FramebufferTarget::Read);
+    Context::current().state().framebuffer->copySub3DImplementation(rectangle, texture, level, offset);
+}
+#endif
+
 void AbstractFramebuffer::invalidateImplementationNoOp(GLsizei, const GLenum* const) {}
 
 void AbstractFramebuffer::invalidateImplementationDefault(const GLsizei count, const GLenum* const attachments) {
@@ -494,6 +595,65 @@ void AbstractFramebuffer::readImplementationRobustness(const Range2Di& rectangle
     static_cast<void>(data);
     CORRADE_ASSERT_UNREACHABLE();
     #endif
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractFramebuffer::copySub1DImplementationDefault(const Range2Di& rectangle, AbstractTexture& texture, const Int level, const Int offset) {
+    texture.bindInternal();
+    glCopyTexSubImage1D(texture._target, level, offset, rectangle.min().x(), rectangle.min().y(), rectangle.sizeX());
+}
+
+void AbstractFramebuffer::copySub1DImplementationDSA(const Range2Di& rectangle, AbstractTexture& texture, const Int level, const Int offset) {
+    glCopyTextureSubImage1D(texture._id, level, offset, rectangle.min().x(), rectangle.min().y(), rectangle.sizeX());
+}
+
+void AbstractFramebuffer::copySub1DImplementationDSAEXT(const Range2Di& rectangle, AbstractTexture& texture, const Int level, const Int offset) {
+    texture._flags |= ObjectFlag::Created;
+    glCopyTextureSubImage1DEXT(texture._id, texture._target, level, offset, rectangle.min().x(), rectangle.min().y(), rectangle.sizeX());
+}
+#endif
+
+void AbstractFramebuffer::copySub2DImplementationDefault(const Range2Di& rectangle, AbstractTexture& texture, const GLenum target, const Int level, const Vector2i& offset) {
+    texture.bindInternal();
+    glCopyTexSubImage2D(target, level, offset.x(), offset.y(), rectangle.min().x(), rectangle.min().y(), rectangle.sizeX(), rectangle.sizeY());
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractFramebuffer::copySub2DImplementationDSA(const Range2Di& rectangle, AbstractTexture& texture, const GLenum, const Int level, const Vector2i& offset) {
+    glCopyTextureSubImage2D(texture._id, level, offset.x(), offset.y(), rectangle.min().x(), rectangle.min().y(), rectangle.sizeX(), rectangle.sizeY());
+}
+
+void AbstractFramebuffer::copySubCubeMapImplementationDSA(const Range2Di& rectangle, AbstractTexture& texture, const GLenum target, const Int level, const Vector2i& offset) {
+    glCopyTextureSubImage3D(texture._id, level, offset.x(), offset.y(), target - GL_TEXTURE_CUBE_MAP_POSITIVE_X, rectangle.min().x(), rectangle.min().y(), rectangle.sizeX(), rectangle.sizeY());
+}
+
+void AbstractFramebuffer::copySub2DImplementationDSAEXT(const Range2Di& rectangle, AbstractTexture& texture, const GLenum target, const Int level, const Vector2i& offset) {
+    texture._flags |= ObjectFlag::Created;
+    glCopyTextureSubImage2DEXT(texture._id, target, level, offset.x(), offset.y(), rectangle.min().x(), rectangle.min().y(), rectangle.sizeX(), rectangle.sizeY());
+}
+#endif
+
+#if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+void AbstractFramebuffer::copySub3DImplementationDefault(const Range2Di& rectangle, AbstractTexture& texture, const Int level, const Vector3i& offset) {
+    texture.bindInternal();
+    #ifndef MAGNUM_TARGET_GLES2
+    glCopyTexSubImage3D
+    #else
+    glCopyTexSubImage3DOES
+    #endif
+        (texture._target, level, offset.x(), offset.y(), offset.z(), rectangle.min().x(), rectangle.min().y(), rectangle.sizeX(), rectangle.sizeY());
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractFramebuffer::copySub3DImplementationDSA(const Range2Di& rectangle, AbstractTexture& texture, const Int level, const Vector3i& offset) {
+    glCopyTextureSubImage3D(texture._id, level, offset.x(), offset.y(), offset.z(), rectangle.min().x(), rectangle.min().y(), rectangle.sizeX(), rectangle.sizeY());
+}
+
+void AbstractFramebuffer::copySub3DImplementationDSAEXT(const Range2Di& rectangle, AbstractTexture& texture, const Int level, const Vector3i& offset) {
+    texture._flags |= ObjectFlag::Created;
+    glCopyTextureSubImage3DEXT(texture._id, texture._target, level, offset.x(), offset.y(), offset.z(), rectangle.min().x(), rectangle.min().y(), rectangle.sizeX(), rectangle.sizeY());
 }
 #endif
 

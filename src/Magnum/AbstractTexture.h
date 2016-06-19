@@ -133,6 +133,7 @@ functions do nothing.
 */
 class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
     friend Implementation::TextureState;
+    friend AbstractFramebuffer;
     friend CubeMapTexture;
 
     public:

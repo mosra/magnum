@@ -40,7 +40,6 @@ The core subset of OpenGL 2.1 should be fully implemented, except for the
 following:
 
 -   Proxy textures
--   Copying framebuffer to texture (@fn_gl{CopyTexImage2D} etc.)
 -   Some forgotten limit queries
 
 @subsection opengl-support-30 OpenGL 3.0

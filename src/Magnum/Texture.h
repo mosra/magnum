@@ -1014,9 +1014,9 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * and has better performance characteristics. This call also has no
          * equivalent in @extension{ARB,direct_state_access}, thus the texture
          * needs to be bound to some texture unit before the operation.
-         * @see @ref maxSize(), @fn_gl{PixelStore}, then @fn_gl{ActiveTexture},
-         *      @fn_gl{BindTexture} and @fn_gl{TexImage1D} / @fn_gl{TexImage2D}
-         *      / @fn_gl{TexImage3D}
+         * @see @ref maxSize(), @ref Framebuffer::copyImage(), @fn_gl{PixelStore},
+         *      then @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexImage1D}
+         *      / @fn_gl{TexImage2D} / @fn_gl{TexImage3D}
          * @deprecated_gl Prefer to use @ref setStorage() and @ref setSubImage()
          *      instead.
          */
@@ -1115,7 +1115,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * nor @extension{EXT,direct_state_access} desktop extension is
          * available, the texture is bound before the operation (if not
          * already).
-         * @see @ref setStorage(), @fn_gl{PixelStore}, @fn_gl2{TextureSubImage1D,TexSubImage1D} /
+         * @see @ref setStorage(), @ref Framebuffer::copySubImage(),
+         *      @fn_gl{PixelStore}, @fn_gl2{TextureSubImage1D,TexSubImage1D} /
          *      @fn_gl2{TextureSubImage2D,TexSubImage2D} / @fn_gl2{TextureSubImage3D,TexSubImage3D},
          *      @fn_gl_extension{TextureSubImage1D,EXT,direct_state_access} /
          *      @fn_gl_extension{TextureSubImage2D,EXT,direct_state_access} /
