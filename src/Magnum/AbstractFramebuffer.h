@@ -319,8 +319,8 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          *
          * If @extension{ARB,robustness} is available, the operation is
          * protected from buffer overflow.
-         * @see @fn_gl{BindFramebuffer}, @fn_gl{ReadPixels} or
-         *      @fn_gl_extension{ReadnPixels,ARB,robustness}
+         * @see @fn_gl{BindFramebuffer}, then @fn_gl{PixelStore} and
+         *      @fn_gl{ReadPixels} or @fn_gl_extension{ReadnPixels,ARB,robustness}
          */
         void read(const Range2Di& rectangle, Image2D& image);
 
