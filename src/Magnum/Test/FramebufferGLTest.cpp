@@ -484,6 +484,8 @@ void FramebufferGLTest::attachTexture3D() {
 void FramebufferGLTest::attachTexture1DArray() {
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
         CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not available."));
 
     Texture1DArray color;
     color.setStorage(1, TextureFormat::RGBA8, {128, 8});
