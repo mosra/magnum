@@ -33,6 +33,8 @@
 
 #include "MagnumPlugins/ObjImporter/configure.h"
 
+#include <Corrade/Containers/Array.h>
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_OBJIMPORTER_BUILD_STATIC
     #if defined(ObjImporter_EXPORTS) || defined(ObjImporterObjects_EXPORTS)
@@ -100,7 +102,8 @@ class MAGNUM_OBJIMPORTER_EXPORT ObjImporter: public AbstractImporter {
 
         MAGNUM_OBJIMPORTER_LOCAL void parseMeshNames();
 
-        std::unique_ptr<File> _file;
+        Containers::Array<char> _in;
+        std::unique_ptr<struct ImporterState> _state;
 };
 
 }}

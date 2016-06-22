@@ -28,6 +28,7 @@
 #include <fstream>
 #include <limits>
 #include <sstream>
+#include <tuple>
 #include <unordered_map>
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Utility/String.h>
@@ -38,42 +39,76 @@
 #include "Magnum/Math/Color.h"
 #include "Magnum/Trade/MeshData3D.h"
 
+#if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(CORRADE_TARGET_ANDROID)
+#include <sstream>
+#endif
+
+using namespace Corrade::Containers;
+
 namespace Magnum { namespace Trade {
 
-struct ObjImporter::File {
+struct ImporterState {
     std::unordered_map<std::string, UnsignedInt> meshesForName;
     std::vector<std::string> meshNames;
     std::vector<std::tuple<std::streampos, std::streampos, UnsignedInt, UnsignedInt, UnsignedInt>> meshes;
-    std::unique_ptr<std::istream> in;
+
+    std::optional<MeshPrimitive> primitive;
+    std::vector<Vector3> positions;
+    std::vector<std::vector<Vector2>> textureCoordinates;
+    std::vector<std::vector<Vector3>> normals;
+    std::vector<UnsignedInt> positionIndices;
+    std::vector<UnsignedInt> textureCoordinateIndices;
+    std::vector<UnsignedInt> normalIndices;
 };
 
 namespace {
 
-void ignoreLine(std::istream& in) {
-    in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+int findNext(const ArrayView<char>& pos, char c) {
+    for(int i = 0; i < pos.size(); ++i) {
+        if(pos[i] == c) {
+            return i;
+        }
+    }
+    return -1;
 }
 
-template<std::size_t size> Math::Vector<size, Float> extractFloatData(const std::string& str, Float* extra = nullptr) {
-    std::vector<std::string> data = Utility::String::splitWithoutEmptyParts(str, ' ');
-    if(data.size() < size || data.size() > size + (extra ? 1 : 0)) {
-        Error() << "Trade::ObjImporter::mesh3D(): invalid float array size";
-        throw 0;
+ArrayView<char> skipWhitespaces(const ArrayView<char>& pos) {
+    for(int i = 0; i < pos.size(); ++i) {
+        if(pos[i] != ' ' && pos[i] != '\t') {
+            return pos.suffix(i);
+        }
     }
+    return ArrayView<char>{};
+}
 
-    Math::Vector<size, Float> output;
+ArrayView<char> ignoreLine(const ArrayView<char>& pos) {
+    return pos.suffix(findNext(pos, '\n'));
+}
 
-    for(std::size_t i = 0; i != size; ++i)
-        output[i] = std::stof(data[i]);
-
-    if(data.size() == size+1) {
-        /* This should be obvious from the first if, but add this just to make
-           Clang Analyzer happy */
-        CORRADE_INTERNAL_ASSERT(extra);
-
-        *extra = std::stof(data.back());
+std::tuple<std::string, ArrayView<char>> nextLine(const ArrayView<char>& pos) {
+    int i = 0;
+    for(; i < pos.size(); ++i) {
+        if(pos[i] == '\n') {
+            break;
+        }
     }
+    std::string str = pos.prefix(i).data();
+    return std::make_tuple(str, pos.suffix(i+1));
+}
 
-    return output;
+std::tuple<std::string, ArrayView<char>> nextWord(const ArrayView<char>& pos) {
+    int i = 0;
+    for(; i < pos.size(); ++i) {
+        if(pos[i] == ' ') {
+            break;
+        }
+    }
+    std::string str = pos.prefix(i).data();
+    return std::make_tuple(str, pos.suffix(i+1));
+}
+
+std::tuple<float, ArrayView<char>> asFloat(const ArrayView<char>& pos) {
+
 }
 
 template<class T> void reindex(const std::vector<UnsignedInt>& indices, std::vector<T>& data) {
@@ -96,26 +131,14 @@ ObjImporter::~ObjImporter() = default;
 
 auto ObjImporter::doFeatures() const -> Features { return Feature::OpenData; }
 
-void ObjImporter::doClose() { _file.reset(); }
+bool ObjImporter::doIsOpened() const { return _in; }
 
-bool ObjImporter::doIsOpened() const { return !!_file; }
-
-void ObjImporter::doOpenFile(const std::string& filename) {
-    std::unique_ptr<std::istream> in{new std::ifstream{filename, std::ios::binary}};
-    if(!in->good()) {
-        Error() << "Trade::ObjImporter::openFile(): cannot open file" << filename;
-        return;
-    }
-
-    _file.reset(new File);
-    _file->in = std::move(in);
-    parseMeshNames();
-}
+void ObjImporter::doClose() { _in = nullptr; }
 
 void ObjImporter::doOpenData(Containers::ArrayView<const char> data) {
-    _file.reset(new File);
-    _file->in.reset(new std::istringstream{{data.begin(), data.size()}});
-
+    _in = Containers::Array<char>{data.size()};
+    std::copy(data.begin(), data.end(), _in.begin());
+    _state.reset(new ImporterState);
     parseMeshNames();
 }
 
@@ -125,144 +148,33 @@ void ObjImporter::parseMeshNames() {
     UnsignedInt positionIndexOffset = 1;
     UnsignedInt normalIndexOffset = 1;
     UnsignedInt textureCoordinateIndexOffset = 1;
-    _file->meshes.emplace_back(0, 0, positionIndexOffset, normalIndexOffset, textureCoordinateIndexOffset);
+    _state->meshes.emplace_back(0, 0, positionIndexOffset, normalIndexOffset, textureCoordinateIndexOffset);
 
-    /* The first mesh doesn't have name by default but we might find it later,
-       so we need to track whether there are any data before first name */
-    bool thisIsFirstMeshAndItHasNoData = true;
-    _file->meshNames.emplace_back();
+    _state->meshNames.emplace_back();
 
-    while(_file->in->good()) {
-        /* The previous object might end at the beginning of this line */
-        const std::streampos end = _file->in->tellg();
+    ArrayView<char> pos = _in;
+    while(!pos.empty()) {
 
         /* Comment line */
-        if(_file->in->peek() == '#') {
-            ignoreLine(*_file->in);
+        if(pos[0] == '#') {
+            pos = ignoreLine(pos);
             continue;
         }
 
         /* Parse the keyword */
         std::string keyword;
-        *_file->in >> keyword;
+        std::tie(keyword, pos) = nextWord(pos);
 
         /* Mesh name */
         if(keyword == "o") {
-            std::string name;
-            std::getline(*_file->in, name);
-            name = Utility::String::trim(name);
-
-            /* This is the name of first mesh */
-            if(thisIsFirstMeshAndItHasNoData) {
-                thisIsFirstMeshAndItHasNoData = false;
-
-                /* Update its name and add it to name map */
-                if(!name.empty())
-                    _file->meshesForName.emplace(name, _file->meshes.size() - 1);
-                _file->meshNames.back() = std::move(name);
-
-                /* Update its begin offset to be more precise */
-                std::get<0>(_file->meshes.back()) = _file->in->tellg();
-
-            /* Otherwise this is a name of new mesh */
-            } else {
-                /* Set end of the previous one */
-                std::get<1>(_file->meshes.back()) = end;
-
-                /* Save name and offset of the new one. The end offset will be
-                   updated later. */
-                if(!name.empty())
-                    _file->meshesForName.emplace(name, _file->meshes.size());
-                _file->meshNames.emplace_back(std::move(name));
-                _file->meshes.emplace_back(_file->in->tellg(), 0, positionIndexOffset, textureCoordinateIndexOffset, normalIndexOffset);
-            }
-
-            continue;
-
-        /* If there are any data/indices before the first name, it means that
-           the first object is unnamed. We need to check for them. */
-
-        /* Vertex data, update index offset for the following meshes */
-        } else if(keyword == "v") {
-            ++positionIndexOffset;
-            thisIsFirstMeshAndItHasNoData = false;
-        } else if(keyword == "vt") {
-            ++textureCoordinateIndexOffset;
-            thisIsFirstMeshAndItHasNoData = false;
-        } else if(keyword == "vn") {
-            ++normalIndexOffset;
-            thisIsFirstMeshAndItHasNoData = false;
-
-        /* Index data, just mark that we found something for first unnamed
-           object */
-        } else if(thisIsFirstMeshAndItHasNoData) for(const std::string& data: {"p", "l", "f"}) {
-            if(keyword == data) {
-                thisIsFirstMeshAndItHasNoData = false;
-                break;
-            }
-        }
-
-        /* Ignore the rest of the line */
-        ignoreLine(*_file->in);
-    }
-
-    /* Set end of the last object */
-    _file->in->clear();
-    _file->in->seekg(0, std::ios::end);
-    std::get<1>(_file->meshes.back()) = _file->in->tellg();
-}
-
-UnsignedInt ObjImporter::doMesh3DCount() const { return _file->meshes.size(); }
-
-Int ObjImporter::doMesh3DForName(const std::string& name) {
-    const auto it = _file->meshesForName.find(name);
-    return it == _file->meshesForName.end() ? -1 : it->second;
-}
-
-std::string ObjImporter::doMesh3DName(UnsignedInt id) {
-    return _file->meshNames[id];
-}
-
-Containers::Optional<MeshData3D> ObjImporter::doMesh3D(UnsignedInt id) {
-    /* Seek the file, set mesh parsing parameters */
-    std::streampos begin, end;
-    UnsignedInt positionIndexOffset, textureCoordinateIndexOffset, normalIndexOffset;
-    std::tie(begin, end, positionIndexOffset, textureCoordinateIndexOffset, normalIndexOffset) = _file->meshes[id];
-    _file->in->seekg(begin);
-
-    Containers::Optional<MeshPrimitive> primitive;
-    std::vector<Vector3> positions;
-    std::vector<std::vector<Vector2>> textureCoordinates;
-    std::vector<std::vector<Vector3>> normals;
-    std::vector<UnsignedInt> positionIndices;
-    std::vector<UnsignedInt> textureCoordinateIndices;
-    std::vector<UnsignedInt> normalIndices;
-
-    try { while(_file->in->good() && _file->in->tellg() < end) {
-        /* Ignore comments */
-        if(_file->in->peek() == '#') {
-            ignoreLine(*_file->in);
+            // TODO
             continue;
         }
-
-        /* Get the line */
-        std::string line;
-        std::getline(*_file->in, line);
-        line = Utility::String::trim(line);
-
-        /* Ignore empty lines */
-        if(line.empty()) continue;
-
-        /* Split the line into keyword and contents */
-        const std::size_t keywordEnd = line.find(' ');
-        const std::string keyword = line.substr(0, keywordEnd);
-        const std::string contents = keywordEnd != std::string::npos ?
-            Utility::String::ltrim(line.substr(keywordEnd+1)) : "";
 
         /* Vertex position */
         if(keyword == "v") {
             Float extra{1.0f};
-            const Vector3 data = extractFloatData<3>(contents, &extra);
+            const Vector3 data = extractFloatData<3>(pos, &extra);
             if(!Math::TypeTraits<Float>::equals(extra, 1.0f)) {
                 Error() << "Trade::ObjImporter::mesh3D(): homogeneous coordinates are not supported";
                 return Containers::NullOpt;
@@ -374,13 +286,27 @@ Containers::Optional<MeshData3D> ObjImporter::doMesh3D(UnsignedInt id) {
             return Containers::NullOpt;
         }
 
-    }} catch(std::exception) {
-        Error() << "Trade::ObjImporter::mesh3D(): error while converting numeric data";
-        return Containers::NullOpt;
-    } catch(...) {
-        /* Error message already printed */
-        return Containers::NullOpt;
+        /* Ignore the rest of the line */
+        pos = ignoreLine(pos);
     }
+}
+
+UnsignedInt ObjImporter::doMesh3DCount() const { return _state->meshes.size(); }
+
+Int ObjImporter::doMesh3DForName(const std::string& name) {
+    const auto it = _state->meshesForName.find(name);
+    return it == _state->meshesForName.end() ? -1 : it->second;
+}
+
+std::string ObjImporter::doMesh3DName(UnsignedInt id) {
+    return _state->meshNames[id];
+}
+
+std::optional<MeshData3D> ObjImporter::doMesh3D(UnsignedInt id) {
+    /* Seek the file, set mesh parsing parameters */
+    std::streampos begin, end;
+    UnsignedInt positionIndexOffset, textureCoordinateIndexOffset, normalIndexOffset;
+    std::tie(begin, end, positionIndexOffset, textureCoordinateIndexOffset, normalIndexOffset) = _state->meshes[id];
 
     /* There should be at least indexed position data */
     if(positions.empty() || positionIndices.empty()) {
