@@ -83,6 +83,8 @@ struct ObjImporterTest: TestSuite::Tester {
     void missingNormalIndices();
     void missingTextureCoordinateIndices();
 
+    void multiMaterialObject();
+
     void wrongTextureCoordinateIndexCount();
     void wrongNormalIndexCount();
 
@@ -133,6 +135,8 @@ ObjImporterTest::ObjImporterTest() {
               &ObjImporterTest::missingPositionIndices,
               &ObjImporterTest::missingNormalIndices,
               &ObjImporterTest::missingTextureCoordinateIndices,
+
+              &ObjImporterTest::multiMaterialObject,
 
               &ObjImporterTest::wrongTextureCoordinateIndexCount,
               &ObjImporterTest::wrongNormalIndexCount,
@@ -700,6 +704,31 @@ void ObjImporterTest::wrongTextureCoordinateIndexCount() {
     Error redirectError{&out};
     CORRADE_VERIFY(!importer.mesh3D(id));
     CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh3D(): some texture coordinate indices are missing\n");
+}
+
+void ObjImporterTest::multiMaterialObject() {
+    ObjImporter importer;
+    CORRADE_VERIFY(importer.openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "multiMaterial.obj")));
+    CORRADE_VERIFY(importer.mesh3DCount() == 2);
+    CORRADE_VERIFY(importer.materialCount() == 2);
+
+    /* Everything should be parsed properly */
+    std::optional<MeshData3D> data = importer.mesh3D(0);
+    CORRADE_VERIFY(data);
+    CORRADE_COMPARE(data->primitive(), MeshPrimitive::Triangles);
+    CORRADE_COMPARE(data->positionArrayCount(), 1);
+    CORRADE_COMPARE(data->positions(0), (std::vector<Vector3>{
+        {Vector3(1.72414, 18.9233, -3.20162),
+         Vector3(2.74428, -0.499733, -3.50576),
+         Vector3(-1.92235, -0.846268, 2.9722),
+         Vector3(1.72414, 18.9233, -3.20162),
+         Vector3(-1.92235, -0.846268, 2.9722),
+         Vector3(2.43556, 18.8755, 2.23745)}
+    }));
+
+    data = importer.mesh3D(1);
+    CORRADE_VERIFY(data);
+    CORRADE_COMPARE(data->primitive(), MeshPrimitive::Triangles);
 }
 
 void ObjImporterTest::unsupportedKeyword() {

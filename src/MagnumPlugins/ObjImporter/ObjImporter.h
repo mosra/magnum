@@ -100,10 +100,18 @@ class MAGNUM_OBJIMPORTER_EXPORT ObjImporter: public AbstractImporter {
         MAGNUM_OBJIMPORTER_LOCAL std::string doMesh3DName(UnsignedInt id) override;
         MAGNUM_OBJIMPORTER_LOCAL Containers::Optional<MeshData3D> doMesh3D(UnsignedInt id) override;
 
-        MAGNUM_OBJIMPORTER_LOCAL void parseMeshNames();
+        MAGNUM_OBJIMPORTER_LOCAL UnsignedInt doMaterialCount() const override;
+        MAGNUM_OBJIMPORTER_LOCAL std::unique_ptr<AbstractMaterialData> doMaterial(UnsignedInt id) override;
+
+        MAGNUM_OBJIMPORTER_LOCAL UnsignedInt doImage2DCount() const;
+        MAGNUM_OBJIMPORTER_LOCAL std::optional<ImageData2D> doImage2D(UnsignedInt id);
+
+        MAGNUM_OBJIMPORTER_LOCAL void parse();
+        MAGNUM_OBJIMPORTER_LOCAL void parseMaterialLibrary(std::string libname);
 
         Containers::Array<char> _in;
         std::unique_ptr<struct ImporterState> _state;
+        std::string _fileRoot;
 };
 
 }}
