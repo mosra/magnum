@@ -221,7 +221,7 @@ auto GlfwApplication::KeyEvent::getCurrentGlfwModifiers(GLFWwindow* window) -> M
     if(glfwGetKey(window, Int(Key::LeftCtrl)) || glfwGetKey(window, Int(Key::RightCtrl)))
         mods |= Modifier::Ctrl;
     if(glfwGetKey(window, Int(Key::RightSuper)))
-        mods |= Modifier::AltGr;
+        mods |= Modifier::Super;
 
     return mods;
 }
