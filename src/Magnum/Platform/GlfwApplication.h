@@ -503,7 +503,7 @@ class GlfwApplication::InputEvent {
             Shift = GLFW_MOD_SHIFT,         /**< Shift */
             Ctrl = GLFW_MOD_CONTROL,        /**< Ctrl */
             Alt = GLFW_MOD_ALT,             /**< Alt */
-            AltGr = GLFW_MOD_SUPER          /**< AltGr */
+            Super = GLFW_MOD_SUPER          /**< Super key (Windows/⌘) */
         };
 
         /**
