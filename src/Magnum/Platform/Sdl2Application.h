@@ -974,6 +974,7 @@ class Sdl2Application::InputEvent {
             Shift = KMOD_SHIFT,         /**< Shift */
             Ctrl = KMOD_CTRL,           /**< Ctrl */
             Alt = KMOD_ALT,             /**< Alt */
+            Super = KMOD_GUI,           /**< Super key (Windows/⌘) */
             AltGr = KMOD_MODE,          /**< AltGr */
 
             CapsLock = KMOD_CAPS,       /**< Caps lock */
