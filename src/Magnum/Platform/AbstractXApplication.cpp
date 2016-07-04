@@ -25,7 +25,7 @@
 
 #include "AbstractXApplication.h"
 
-#include <Corrade/Utility/utilities.h>
+#include <Corrade/Utility/System.h>
 
 #include "Magnum/Platform/Context.h"
 #include "Magnum/Version.h"
@@ -162,7 +162,7 @@ int AbstractXApplication::exec() {
         if(_flags & Flag::Redraw) {
             _flags &= ~Flag::Redraw;
             drawEvent();
-        } else Utility::sleep(5);
+        } else Utility::System::sleep(5);
     }
 
     return 0;
