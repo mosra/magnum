@@ -530,8 +530,6 @@ std::optional<MeshData3D> ObjImporter::doMesh3D(UnsignedInt id) {
     std::vector<Vector3> positions, normals;
     std::vector<Vector2> textureCoords;
 
-    Debug() << "Have" << mesh.indices.size() << "vertices"; //
-
     // resolve indices... probably use combineIndexArrays instead?
     positions.reserve(mesh.indices.size());
     normals.reserve(mesh.indices.size());
@@ -601,8 +599,6 @@ std::optional<ImageData2D> ObjImporter::doImage2D(UnsignedInt id) {
     if(!imageImporter->openFile(_fileRoot + _state->textures[id])) {
         return std::nullopt;
     }
-
-    Debug() << "Loading image2D" << _fileRoot + _state->textures[id];
 
     return imageImporter->image2D(0);
 }
