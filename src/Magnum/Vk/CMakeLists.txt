@@ -46,7 +46,8 @@ set(MagnumVk_SRCS
     RenderPass.cpp
     Semaphore.cpp
     Shader.cpp
-    Swapchain.cpp)
+    Swapchain.cpp
+    Texture.cpp)
 
 set(MagnumVk_HEADERS
     Buffer.h
@@ -62,6 +63,7 @@ set(MagnumVk_HEADERS
     Image.h
     ImageView.h
     Math.h
+    Mesh.h
     PhysicalDevice.h
     Pipeline.h
     Queue.h
@@ -70,6 +72,7 @@ set(MagnumVk_HEADERS
     Shader.h
     ShaderStage.h
     Swapchain.h
+    Texture.h
 
     visibility.h)
 
