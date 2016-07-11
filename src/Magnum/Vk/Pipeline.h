@@ -174,10 +174,10 @@ class MAGNUM_VK_EXPORT Pipeline {
         VkPipelineLayout _layout;
 };
 
-class MAGNUM_VK_EXPORT GraphicsPipelineFactory {
+class MAGNUM_VK_EXPORT GraphicsPipelineBuilder {
     public:
 
-        GraphicsPipelineFactory(Device& device):
+        GraphicsPipelineBuilder(Device& device):
             _device{device} {
 
             _inputAssemblyState = {
@@ -291,27 +291,27 @@ class MAGNUM_VK_EXPORT GraphicsPipelineFactory {
             };
         }
 
-        /** @brief Copying is not allowed */
-        GraphicsPipelineFactory(const GraphicsPipelineFactory&) = delete;
+        /** @brief Copying is not allowed */ // TODO(squareys) probably should be, though
+        GraphicsPipelineBuilder(const GraphicsPipelineBuilder&) = delete;
 
         /** @brief Move constructor */
-        GraphicsPipelineFactory(GraphicsPipelineFactory&& other);
+        GraphicsPipelineBuilder(GraphicsPipelineBuilder&& other);
 
         /**
          * @brief Destructor
          *
          * @see @fn_vk{DestroyPipeline}
          */
-        ~GraphicsPipelineFactory() {
+        ~GraphicsPipelineBuilder() {
         }
 
         /** @brief Copying is not allowed */
-        GraphicsPipelineFactory& operator=(const GraphicsPipelineFactory&) = delete;
+        GraphicsPipelineBuilder& operator=(const GraphicsPipelineBuilder&) = delete;
 
         /** @brief Move assignment is not allowed */
-        GraphicsPipelineFactory& operator=(GraphicsPipelineFactory&&) = delete;
+        GraphicsPipelineBuilder& operator=(GraphicsPipelineBuilder&&) = delete;
 
-        GraphicsPipelineFactory& addShader(ShaderStage stage, Shader& shader) {
+        GraphicsPipelineBuilder& addShader(ShaderStage stage, Shader& shader) {
             VkPipelineShaderStageCreateInfo shaderStage = {
                 VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO,
                 nullptr,
@@ -325,24 +325,24 @@ class MAGNUM_VK_EXPORT GraphicsPipelineFactory {
             return *this;
         }
 
-        std::unique_ptr<Pipeline> create();
+        std::unique_ptr<Pipeline> build();
 
-        GraphicsPipelineFactory& setRenderPass(RenderPass& renderPass) {
+        GraphicsPipelineBuilder& setRenderPass(RenderPass& renderPass) {
             _renderPass = &renderPass;
             return *this;
         }
 
-        GraphicsPipelineFactory& setTopology(Topology topology) {
+        GraphicsPipelineBuilder& setTopology(Topology topology) {
             _inputAssemblyState.topology = VkPrimitiveTopology(topology);
             return *this;
         }
 
-        GraphicsPipelineFactory& setDynamicStates(std::initializer_list<DynamicState> states) {
+        GraphicsPipelineBuilder& setDynamicStates(std::initializer_list<DynamicState> states) {
             _dynamicStates = std::vector<DynamicState>(states);
             return *this;
         }
 
-        GraphicsPipelineFactory& addDescriptorSetLayout(const DescriptorSetLayout& layout) {
+        GraphicsPipelineBuilder& addDescriptorSetLayout(const DescriptorSetLayout& layout) {
             _setLayouts.push_back(layout);
             return *this;
         }

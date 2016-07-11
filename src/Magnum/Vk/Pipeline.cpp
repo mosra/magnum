@@ -35,7 +35,7 @@ Pipeline::~Pipeline() {
     vkDestroyPipelineCache(_device, _cache, nullptr);
 }
 
-std::unique_ptr<Pipeline> GraphicsPipelineFactory::create() {
+std::unique_ptr<Pipeline> GraphicsPipelineBuilder::build() {
     VkPipeline pipeline;
     VkPipelineCache cache;
     VkPipelineLayout layout;
