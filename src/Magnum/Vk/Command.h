@@ -53,6 +53,18 @@ CommandBuffer& operator << (CommandBuffer& cmdBuffer, const Lambda& lambda) {
 
 namespace Cmd {
 
+auto begin() {
+    return [](CommandBuffer& cmdBuffer){
+        cmdBuffer.begin();
+    };
+}
+
+auto end() {
+    return [](CommandBuffer& cmdBuffer){
+        cmdBuffer.end();
+    };
+}
+
 auto setScissor(UnsignedInt firstScissor, const std::initializer_list<Range2Di>& ranges) {
     return [firstScissor, &ranges](VkCommandBuffer cmdBuffer){
         Corrade::Containers::Array<VkRect2D> vkRects(ranges.size());
