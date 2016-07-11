@@ -39,6 +39,7 @@ set(MagnumVk_SRCS
     Framebuffer.cpp
     Image.cpp
     ImageView.cpp
+    Mesh.cpp
     PhysicalDevice.cpp
     Pipeline.cpp
     Queue.cpp
