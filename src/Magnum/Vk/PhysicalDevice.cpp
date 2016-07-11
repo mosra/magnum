@@ -83,6 +83,10 @@ UnsignedInt PhysicalDevice::getQueueFamilyIndex(QueueFamily family) {
 }
 
 UnsignedInt PhysicalDevice::getMemoryType(UnsignedInt typeBits, VkFlags properties) {
+    if(_deviceMemoryProperties.memoryHeapCount == 0 && _deviceMemoryProperties.memoryTypeCount == 0) {
+        vkGetPhysicalDeviceMemoryProperties(_physicalDevice, &_deviceMemoryProperties);
+    }
+
     for (uint32_t i = 0; i < 32; i++) {
         if((typeBits & 1) != 0) {
             if((_deviceMemoryProperties.memoryTypes[i].propertyFlags & properties) == properties) {

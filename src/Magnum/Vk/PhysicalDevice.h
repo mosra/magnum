@@ -64,8 +64,8 @@ class MAGNUM_VK_EXPORT PhysicalDevice {
         PhysicalDevice(const VkPhysicalDevice& device):
             _physicalDevice(device)
         {
-            // Gather physical device memory properties
-            vkGetPhysicalDeviceMemoryProperties(_physicalDevice, &_deviceMemoryProperties);
+            _deviceMemoryProperties.memoryHeapCount = 0;
+            _deviceMemoryProperties.memoryTypeCount = 0;
         }
 
         /** @brief Destructor */
