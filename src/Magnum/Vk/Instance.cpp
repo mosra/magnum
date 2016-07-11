@@ -23,13 +23,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Context.h"
+#include "Instance.h"
 
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/String.h>
-#include "vulkan.h"
-
+#include <Corrade/Containers/Array.h>
 
 namespace Magnum { namespace Vk {
 
@@ -47,29 +46,29 @@ const char *validationLayerNames[] =
     "VK_LAYER_LUNARG_api_dump"
 };
 
-Context* Context::_current = nullptr;
+Instance* Instance::_current = nullptr;
 
-bool Context::hasCurrent() { return _current; }
+bool Instance::hasCurrent() { return _current; }
 
-Context& Context::current() {
-    CORRADE_ASSERT(_current, "Context::current(): no current context", *_current);
+Instance& Instance::current() {
+    CORRADE_ASSERT(_current, "Instance::current(): no current Instance", *_current);
     return *_current;
 }
 
 
-Context::Context(): Context{Flags{}} {}
+Instance::Instance(): Instance{Flags{}} {}
 
-Context::Context(Flags flags): _functionLoader{nullptr}, _version{Version::None}, _flags(flags) {
+Instance::Instance(Flags flags): _functionLoader{nullptr}, _version{Version::None}, _flags(flags) {
     create();
 }
 
-Context::Context(Context&& other): _version{std::move(other._version)},
+Instance::Instance(Instance&& other): _version{std::move(other._version)},
     _flags{std::move(other._flags)}
 {
     if(_current == &other) _current = this;
 }
 
-Context::~Context() {
+Instance::~Instance() {
     if(_current == this) _current = nullptr;
 
     if(_instance == nullptr) {
@@ -83,8 +82,8 @@ Context::~Context() {
     vkDestroyInstance(_instance, nullptr);
 }
 
-void Context::create() {
-    /* Hard exit if the context cannot be created */
+void Instance::create() {
+    /* Hard exit if the Instance cannot be created */
     if(!tryCreate()) std::exit(1);
 }
 
@@ -111,7 +110,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL MyDebugReportCallback(
     return VK_FALSE;
 }
 
-bool Context::tryCreate() {
+bool Instance::tryCreate() {
     _version = Version::Vulkan_1_0;
 
     VkApplicationInfo appInfo = {};
@@ -183,8 +182,32 @@ bool Context::tryCreate() {
     return true;
 }
 
-bool Context::isVersionSupported(Version) const {
+bool Instance::isVersionSupported(Version) const {
     return true;
+}
+
+Containers::Array<PhysicalDevice> Instance::enumeratePhysicalDevices() {
+    // Physical device
+    UnsignedInt gpuCount = 0;
+    // Get number of available physical devices
+    VkResult err = vkEnumeratePhysicalDevices(*this, &gpuCount, nullptr);
+    MAGNUM_VK_ASSERT_ERROR(err);
+
+    if(gpuCount <= 0) {
+        Error() << "No GPU with Vulkan support found.";
+        return {};
+    }
+
+    std::vector<VkPhysicalDevice> physicalDevicesVk(gpuCount);
+    err = vkEnumeratePhysicalDevices(*this, &gpuCount, physicalDevicesVk.data());
+    MAGNUM_VK_ASSERT_ERROR(err);
+
+    Containers::Array<PhysicalDevice> physicalDevices{Containers::NoInit, physicalDevicesVk.size()};
+    for(int i = 0; i < physicalDevices.size(); ++i) {
+        new(&physicalDevices[i]) PhysicalDevice{physicalDevicesVk[i]};
+    }
+
+    return physicalDevices;
 }
 
 Debug& operator<<(Debug& debug, Result value) {
@@ -222,14 +245,14 @@ Debug& operator<<(Debug& debug, Result value) {
     return debug << "Vk::Result::(invalid)";
 }
 
-Debug& operator<<(Debug& debug, Context::Flag value) {
+Debug& operator<<(Debug& debug, Instance::Flag value) {
     switch(value) {
-        #define _c(value) case Context::Flag::value: return debug << "Context::Flag::" #value;
+        #define _c(value) case Instance::Flag::value: return debug << "Instance::Flag::" #value;
         _c(EnableValidation)
         #undef _c
     }
 
-    return debug << "Context::Flag::(invalid)";
+    return debug << "Instance::Flag::(invalid)";
 }
 
 Debug& operator<<(Debug& debug, Version value) {

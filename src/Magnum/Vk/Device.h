@@ -33,7 +33,7 @@
 #include <memory>
 
 #include "Magnum/Magnum.h"
-#include "Magnum/Vk/Context.h"
+#include "Magnum/Vk/Instance.h"
 #include "Magnum/Vk/PhysicalDevice.h"
 #include "Magnum/Vk/visibility.h"
 

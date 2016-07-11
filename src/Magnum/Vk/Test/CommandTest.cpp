@@ -29,7 +29,7 @@
 #include <algorithm>
 
 #include "Magnum/Vk/Command.h"
-#include "Magnum/Vk/Context.h"
+#include "Magnum/Vk/Instance.h"
 #include "Magnum/Vk/Device.h"
 #include "Magnum/Vk/PhysicalDevice.h"
 #include "AbstractVulkanTester.h"
@@ -48,7 +48,7 @@ CommandVkTest::CommandVkTest() {
 }
 
 void CommandVkTest::doTheLambdasWork() {
-    Vk::Context context{};
+    Vk::Instance instance{};
 
     //CommandBuffer buffer;
     //buffer << Cmd::setScissor(0, {Range2Di{{0, 0}, {0, 0}});

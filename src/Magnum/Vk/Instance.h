@@ -1,5 +1,5 @@
-#ifndef Magnum_Vk_Context_h
-#define Magnum_Vk_Context_h
+#ifndef Magnum_Vk_Instance_h
+#define Magnum_Vk_Instance_h
 /*
     This file is part of Magnum.
 
@@ -27,7 +27,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Vk::Context
+ * @brief Class @ref Magnum::Vk::Instance
  */
 
 #include "vulkan.h"
@@ -41,6 +41,7 @@
 
 #include "Magnum/Tags.h"
 #include "Magnum/Magnum.h"
+#include "Magnum/Vk/PhysicalDevice.h"
 #include "Magnum/Vk/visibility.h"
 #include "MagnumExternal/Optional/optional.hpp"
 
@@ -94,20 +95,20 @@ enum class Result: Int {
 };
 
 /**
-@brief Magnum context
+@brief Magnum Instance
 
 Provides access to version and extension information. Instance available
-through @ref Context::current() is automatically created during construction of
+through @ref Instance::current() is automatically created during construction of
 `*Application` classes in @ref Platform namespace. You can safely assume that
 the instance is available during whole lifetime of `*Application` object. It's
-also possible to create the context without using any `*Application` class
-using @ref Platform::Context subclass, see @ref platform documentation for more
+also possible to create the Instance without using any `*Application` class
+using @ref Platform::Instance subclass, see @ref platform documentation for more
 information.
 
 ## Command-line options
 
-The context is configurable through command-line options, that are passed
-either from the `Platform::*Application` classes or from the @ref Platform::Context
+The Instance is configurable through command-line options, that are passed
+either from the `Platform::*Application` classes or from the @ref Platform::Instance
 class. Usage:
 
     <application> [--magnum-help] ...
@@ -117,10 +118,10 @@ Arguments:
 -   `...` -- main application arguments (see `-h` or `--help` for details)
 -   `--magnum-help` -- display this help message and exit
 */
-class MAGNUM_VK_EXPORT Context {
+class MAGNUM_VK_EXPORT Instance {
     public:
         /**
-         * @brief Context flag
+         * @brief Instance flag
          *
          * @see @ref Flags, @ref flags(),
          *      @ref Platform::Sdl2Application::Configuration::setFlags() "Platform::*Application::Configuration::setFlags()"
@@ -130,58 +131,58 @@ class MAGNUM_VK_EXPORT Context {
         };
 
         /**
-         * @brief Context flags
+         * @brief Instance flags
          *
          * @see @ref flags()
          */
         typedef Containers::EnumSet<Flag> Flags;
 
         /**
-         * @brief Whether there is any current context
+         * @brief Whether there is any current Instance
          *
          * @see @ref current()
          */
         static bool hasCurrent();
 
         /**
-         * @brief Current context
+         * @brief Current Instance
          *
-         * Expect that there is current context.
+         * Expect that there is current Instance.
          * @see @ref hasCurrent()
          */
-        static Context& current();
+        static Instance& current();
 
         /** @brief Constructor */
-        Context();
+        Instance();
 
         /**
          * @brief Constructor with flags
          */
-        Context(Flags flags);
+        Instance(Flags flags);
 
         /** @brief Copying is not allowed */
-        Context(const Context&) = delete;
+        Instance(const Instance&) = delete;
 
         /** @brief Move constructor */
-        Context(Context&& other);
+        Instance(Instance&& other);
 
         /**
          * @brief Destructor
          *
          * @see @fn_vk{DestroyInstance}
          */
-        ~Context();
+        ~Instance();
 
         /** @brief Copying is not allowed */
-        Context& operator=(const Context&) = delete;
+        Instance& operator=(const Instance&) = delete;
 
         /** @brief Move assignment is not allowed */
-        Context& operator=(Context&&) = delete;
+        Instance& operator=(Instance&&) = delete;
 
         /** @brief Vulkan version */
         Version version() const { return _version; }
 
-        /** @brief Context flags */
+        /** @brief Instance flags */
         Flags flags() const { return _flags; }
 
         /**
@@ -191,14 +192,16 @@ class MAGNUM_VK_EXPORT Context {
          */
         bool isVersionSupported(Version version) const;
 
-        VkInstance vkInstance() {
+        operator VkInstance() {
             return _instance;
         }
 
-    private:
-        MAGNUM_VK_LOCAL static Context* _current;
+        Containers::Array<PhysicalDevice> enumeratePhysicalDevices();
 
-        explicit Context(NoCreateT, Int argc, char** argv, void functionLoader());
+    private:
+        MAGNUM_VK_LOCAL static Instance* _current;
+
+        explicit Instance(NoCreateT, Int argc, char** argv, void functionLoader());
 
         bool tryCreate();
         void create();
@@ -212,7 +215,7 @@ class MAGNUM_VK_EXPORT Context {
 };
 
 MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, Result value);
-MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, Context::Flag value);
+MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, Instance::Flag value);
 MAGNUM_VK_EXPORT Debug& operator<<(Debug& debug, Version value);
 
 }}

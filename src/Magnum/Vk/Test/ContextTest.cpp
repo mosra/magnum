@@ -27,36 +27,36 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/Vk/Context.h"
+#include "Magnum/Vk/Instance.h"
 
 namespace Magnum { namespace Test {
 
-struct ContextTest: TestSuite::Tester {
-    explicit ContextTest();
+struct InstanceTest: TestSuite::Tester {
+    explicit InstanceTest();
 
     void createAndDestroy();
     void flag();
     void result();
 };
 
-ContextTest::ContextTest() {
-    addTests({&ContextTest::createAndDestroy,
-              &ContextTest::flag,
-              &ContextTest::result});
+InstanceTest::InstanceTest() {
+    addTests({&InstanceTest::createAndDestroy,
+              &InstanceTest::flag,
+              &InstanceTest::result});
 }
 
-void ContextTest::createAndDestroy() {
-    Vk::Context c{{}};
+void InstanceTest::createAndDestroy() {
+    Vk::Instance c{{}};
     CORRADE_COMPARE(c.version(), Vk::Version::Vulkan_1_0);
 }
 
-void ContextTest::flag() {
+void InstanceTest::flag() {
     std::ostringstream out;
-    Debug(&out) << Vk::Context::Flag::EnableValidation;
-    CORRADE_COMPARE(out.str(), "Context::Flag::EnableValidation\n");
+    Debug(&out) << Vk::Instance::Flag::EnableValidation;
+    CORRADE_COMPARE(out.str(), "Instance::Flag::EnableValidation\n");
 }
 
-void ContextTest::result() {
+void InstanceTest::result() {
     std::ostringstream out;
     Debug(&out) << Vk::Result::ErrorLayerNotPresent;
     CORRADE_COMPARE(out.str(), "Vk::Result::ErrorLayerNotPresent\n");
@@ -64,4 +64,4 @@ void ContextTest::result() {
 
 }}
 
-CORRADE_TEST_MAIN(Magnum::Test::ContextTest)
+CORRADE_TEST_MAIN(Magnum::Test::InstanceTest)

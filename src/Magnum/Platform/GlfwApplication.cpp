@@ -34,7 +34,7 @@
 #include "Magnum/Platform/ScreenedApplication.hpp"
 
 #ifdef MAGNUM_TARGET_VULKAN
-#include "Magnum/Vk/Context.h"
+#include "Magnum/Vk/Instance.h"
 #endif
 
 namespace Magnum { namespace Platform {
@@ -247,7 +247,7 @@ void GlfwApplication::mouseScrollEvent(MouseScrollEvent&) {}
 VkSurfaceKHR GlfwApplication::createVkSurface() {
     VkSurfaceKHR surface;
 
-    VkResult res = glfwCreateWindowSurface(Magnum::Vk::Context::current().vkInstance(), _window, nullptr, &surface);
+    VkResult res = glfwCreateWindowSurface(Magnum::Vk::Instance::current(), _window, nullptr, &surface);
     if(res != VK_SUCCESS) {
         Error() << "Vulkan Surface creation failed.";
     }

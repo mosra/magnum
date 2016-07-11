@@ -32,7 +32,7 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Vk/CommandBuffer.h"
-#include "Magnum/Vk/Context.h"
+#include "Magnum/Vk/Instance.h"
 #include "Magnum/Vk/Device.h"
 #include "Magnum/Vk/Semaphore.h"
 #include "Magnum/Vk/visibility.h"
@@ -44,7 +44,7 @@ class MAGNUM_VK_EXPORT Queue {
     public:
 
         /** @brief Copying is not allowed */
-        Queue(const Context&) = delete;
+        Queue(const Queue&) = delete;
 
         /** @brief Move constructor */
         Queue(Queue&& other);

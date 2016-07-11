@@ -31,7 +31,7 @@ set(MagnumVk_SRCS
     Buffer.cpp
     CommandBuffer.cpp
     CommandPool.cpp
-    Context.cpp
+    Instance.cpp
     DescriptorPool.cpp
     DescriptorSet.cpp
     Device.cpp
@@ -52,7 +52,7 @@ set(MagnumVk_HEADERS
     Command.h
     CommandBuffer.h
     CommandPool.h
-    Context.h
+    Instance.h
     DescriptorPool.h
     DescriptorSet.h
     Device.h

@@ -32,7 +32,7 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Range.h"
-#include "Magnum/Vk/Context.h"
+#include "Magnum/Vk/Instance.h"
 #include "Magnum/Vk/RenderPass.h"
 #include "Magnum/Vk/Framebuffer.h"
 #include "Magnum/Vk/visibility.h"

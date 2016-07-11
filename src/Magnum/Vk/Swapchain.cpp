@@ -42,7 +42,7 @@ Swapchain::Swapchain(Device& device, CommandBuffer& cb, VkSurfaceKHR surface):
     VkDevice vkDevice = _device.vkDevice();
     VkPhysicalDevice vkPhysicalDevice = _device.physicalDevice().vkPhysicalDevice();
 
-    #define GET_INSTANCE_PROC_ADDR(entrypoint) vk##entrypoint = PFN_vk##entrypoint(vkGetInstanceProcAddr(Vk::Context::current().vkInstance(), "vk"#entrypoint)); do{if(vk##entrypoint == nullptr) { Error() << "Failed to get function pointer.";} }while(false)
+    #define GET_INSTANCE_PROC_ADDR(entrypoint) vk##entrypoint = PFN_vk##entrypoint(vkGetInstanceProcAddr(Vk::Instance::current(), "vk"#entrypoint)); do{if(vk##entrypoint == nullptr) { Error() << "Failed to get function pointer.";} }while(false)
     #define GET_DEVICE_PROC_ADDR(entrypoint) vk##entrypoint = PFN_vk##entrypoint(vkGetDeviceProcAddr(vkDevice, "vk"#entrypoint)); do{ if(vk##entrypoint == nullptr) { Error() << "Failed to get function pointer.";} }while(false)
 
     GET_INSTANCE_PROC_ADDR(GetPhysicalDeviceSurfaceSupportKHR);
@@ -281,7 +281,7 @@ Swapchain::Swapchain(Device& device, CommandBuffer& cb, VkSurfaceKHR surface):
 
 Swapchain::~Swapchain() {
     vkDestroySwapchainKHR(_device, _swapchain, nullptr);
-    vkDestroySurfaceKHR(Vk::Context::current().vkInstance(), _surface, nullptr);
+    vkDestroySurfaceKHR(Vk::Instance::current(), _surface, nullptr);
 }
 
 Swapchain& Swapchain::queuePresent(VkQueue queue, UnsignedInt currentBuffer) {

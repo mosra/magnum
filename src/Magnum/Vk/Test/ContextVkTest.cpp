@@ -28,14 +28,14 @@
 #include <sstream>
 #include <algorithm>
 
-#include "Magnum/Vk/Context.h"
+#include "Magnum/Vk/Instance.h"
 #include "AbstractVulkanTester.h"
 
 
 namespace Magnum { namespace Vk { namespace Test {
 
-struct ContextVkTest: AbstractVulkanTester {
-    explicit ContextVkTest();
+struct InstanceVkTest: AbstractVulkanTester {
+    explicit InstanceVkTest();
 
     void constructCopyMove();
 
@@ -43,34 +43,34 @@ struct ContextVkTest: AbstractVulkanTester {
     void createWithValidation();
 };
 
-ContextVkTest::ContextVkTest() {
-    addTests({&ContextVkTest::constructCopyMove,
-              &ContextVkTest::createInstance,
-              &ContextVkTest::createWithValidation});
+InstanceVkTest::InstanceVkTest() {
+    addTests({&InstanceVkTest::constructCopyMove,
+              &InstanceVkTest::createInstance,
+              &InstanceVkTest::createWithValidation});
 }
 
-void ContextVkTest::constructCopyMove() {
+void InstanceVkTest::constructCopyMove() {
     /* Only move-construction allowed */
-    CORRADE_VERIFY(!(std::is_constructible<Context, const Context&>{}));
-    CORRADE_VERIFY((std::is_constructible<Context, Context&&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Context, const Context&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Context, Context&&>{}));
+    CORRADE_VERIFY(!(std::is_constructible<Instance, const Instance&>{}));
+    CORRADE_VERIFY((std::is_constructible<Instance, Instance&&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<Instance, const Instance&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<Instance, Instance&&>{}));
 }
 
-void ContextVkTest::createInstance() {
-    Vk::Context context;
+void InstanceVkTest::createInstance() {
+    Vk::Instance Instance;
 
-    CORRADE_VERIFY(&Vk::Context::current() != nullptr);
-    CORRADE_VERIFY(Vk::Context::hasCurrent());
-    CORRADE_COMPARE(context.version(), Vk::Version::Vulkan_1_0);
+    CORRADE_VERIFY(&Vk::Instance::current() != nullptr);
+    CORRADE_VERIFY(Vk::Instance::hasCurrent());
+    CORRADE_COMPARE(Instance.version(), Vk::Version::Vulkan_1_0);
 }
 
-void ContextVkTest::createWithValidation() {
-    Vk::Context context{Vk::Context::Flag::EnableValidation};
-    CORRADE_VERIFY(Vk::Context::hasCurrent());
-    CORRADE_COMPARE(context.version(), Vk::Version::Vulkan_1_0);
+void InstanceVkTest::createWithValidation() {
+    Vk::Instance Instance{Vk::Instance::Flag::EnableValidation};
+    CORRADE_VERIFY(Vk::Instance::hasCurrent());
+    CORRADE_COMPARE(Instance.version(), Vk::Version::Vulkan_1_0);
 }
 
 }}}
 
-MAGNUM_VK_TEST_MAIN(Magnum::Vk::Test::ContextVkTest)
+MAGNUM_VK_TEST_MAIN(Magnum::Vk::Test::InstanceVkTest)

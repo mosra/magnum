@@ -32,7 +32,7 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Vk/CommandBuffer.h"
-#include "Magnum/Vk/Context.h"
+#include "Magnum/Vk/Instance.h"
 #include "Magnum/Vk/Device.h"
 #include "Magnum/Vk/ImageView.h"
 #include "Magnum/Vk/Semaphore.h"
