@@ -33,9 +33,13 @@
 #include <Magnum/Magnum.h>
 #include <Magnum/Math/Range.h>
 #include <Magnum/Math/Vector.h>
+#include <Magnum/Math/Matrix4.h>
+
 #include "vulkan.h"
 
-namespace Magnum { namespace Math { namespace Implementation {
+namespace Magnum { namespace Math {
+
+namespace Implementation {
 
 /* VkExtent3D */
 template<> struct VectorConverter<3, UnsignedInt, VkExtent3D> {
@@ -48,6 +52,42 @@ template<> struct VectorConverter<3, UnsignedInt, VkExtent3D> {
     }
 };
 
-}}}
+}
+
+
+/**
+ * @brief 3D perspective projection matrix with clipping range [0.0, 1.0]
+ * @param size      Size of near clipping plane
+ * @param near      Near clipping plane
+ * @param far       Far clipping plane
+ *
+ * @see @ref orthographicProjection(), @ref Matrix3::projection()
+ */
+template<class T> Matrix4<T> perspectiveProjectionZeroToOne(const Vector2<T>& size, const T near, const T far) {
+    Vector2<T> xyScale = 2*near/size;
+    T zScale = T(1.0)/(near-far);
+
+    return {{xyScale.x(),        T(0),            T(0),  T(0)},
+            {       T(0), xyScale.y(),            T(0),  T(0)},
+            {       T(0),        T(0),      far*zScale, T(-1)}, // difference in [2][2]
+            {       T(0),        T(0), far*near*zScale,  T(0)}};// difference in [3][2]
+}
+
+/**
+ * @brief 3D perspective projection matrix with clipping range [0.0, 1.0]
+ * @param fov           Field of view angle (horizontal)
+ * @param aspectRatio   Aspect ratio
+ * @param near          Near clipping plane
+ * @param far           Far clipping plane
+ *
+ * @see @ref orthographicProjection(), @ref Matrix3::projection()
+ */
+template<class T> Matrix4<T> perspectiveProjectionZeroToOne(Rad<T> fov, T aspectRatio, T near, T far) {
+    const T xyScale = 2*std::tan(T(fov)/2)*near;
+    return perspectiveProjectionZeroToOne(Vector2<T>(xyScale, xyScale/aspectRatio), near, far);
+}
+
+
+}}
 
 #endif
