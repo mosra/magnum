@@ -971,11 +971,40 @@ class Sdl2Application::InputEvent {
          *      @ref MouseEvent::modifiers(), @ref MouseMoveEvent::modifiers()
          */
         enum class Modifier: Uint16 {
-            Shift = KMOD_SHIFT,         /**< Shift */
-            Ctrl = KMOD_CTRL,           /**< Ctrl */
-            Alt = KMOD_ALT,             /**< Alt */
-            Super = KMOD_GUI,           /**< Super key (Windows/⌘) */
-            AltGr = KMOD_MODE,          /**< AltGr */
+            /**
+             * Shift
+             *
+             * @see @ref KeyEvent::Key::LeftShift, @ref KeyEvent::Key::RightShift
+             */
+            Shift = KMOD_SHIFT,
+
+            /**
+             * Ctrl
+             *
+             * @see @ref KeyEvent::Key::LeftCtrl, @ref KeyEvent::Key::RightCtrl
+             */
+            Ctrl = KMOD_CTRL,
+
+            /**
+             * Alt
+             *
+             * @see @ref KeyEvent::Key::LeftAlt, @ref KeyEvent::Key::RightAlt
+             */
+            Alt = KMOD_ALT,
+
+            /**
+             * Super key (Windows/⌘)
+             *
+             * @see @ref KeyEvent::Key::LeftSuper, @ref KeyEvent::Key::RightSuper
+             */
+            Super = KMOD_GUI,
+
+            /**
+             * AltGr
+             *
+             * @see @ref KeyEvent::Key::AltGr
+             */
+            AltGr = KMOD_MODE,
 
             CapsLock = KMOD_CAPS,       /**< Caps lock */
             NumLock = KMOD_NUM          /**< Num lock */
@@ -1041,6 +1070,69 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
          */
         enum class Key: SDL_Keycode {
             Unknown = SDLK_UNKNOWN,     /**< Unknown key */
+
+            /**
+             * Left Shift
+             *
+             * @see @ref InputEvent::Modifier::Shift
+             */
+            LeftShift = SDLK_LSHIFT,
+
+            /**
+             * Right Shift
+             *
+             * @see @ref InputEvent::Modifier::Shift
+             */
+            RightShift = SDLK_RSHIFT,
+
+            /**
+             * Left Ctrl
+             *
+             * @see @ref InputEvent::Modifier::Ctrl
+             */
+            LeftCtrl = SDLK_LCTRL,
+
+            /**
+             * Right Ctrl
+             *
+             * @see @ref InputEvent::Modifier::Ctrl
+             */
+            RightCtrl = SDLK_RCTRL,
+
+            /**
+             * Left Alt
+             *
+             * @see @ref InputEvent::Modifier::Alt
+             */
+            LeftAlt = SDLK_LALT,
+
+            /**
+             * Right Alt
+             *
+             * @see @ref InputEvent::Modifier::Alt
+             */
+            RightAlt = SDLK_RALT,
+
+            /**
+             * Left Super key (Windows/⌘)
+             *
+             * @see @ref InputEvent::Modifier::Super
+             */
+            LeftSuper = SDLK_LGUI,
+
+            /**
+             * Right Super key (Windows/⌘)
+             *
+             * @see @ref InputEvent::Modifier::Super
+             */
+            RightSuper = SDLK_RGUI,
+
+            /**
+             * AltGr
+             *
+             * @see @ref InputEvent::Modifier::AltGr
+             */
+            AltGr = SDLK_MODE,
 
             Enter = SDLK_RETURN,        /**< Enter */
             Esc = SDLK_ESCAPE,          /**< Escape */

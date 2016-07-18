@@ -500,10 +500,33 @@ class GlfwApplication::InputEvent {
          *      @ref MouseEvent::modifiers()
          */
         enum class Modifier: Int {
-            Shift = GLFW_MOD_SHIFT,         /**< Shift */
-            Ctrl = GLFW_MOD_CONTROL,        /**< Ctrl */
-            Alt = GLFW_MOD_ALT,             /**< Alt */
-            Super = GLFW_MOD_SUPER          /**< Super key (Windows/⌘) */
+            /**
+             * Shift
+             *
+             * @see @ref KeyEvent::Key::LeftShift, @ref KeyEvent::Key::RightShift
+             */
+            Shift = GLFW_MOD_SHIFT,
+
+            /**
+             * Ctrl
+             *
+             * @see @ref KeyEvent::Key::LeftCtrl, @ref KeyEvent::Key::RightCtrl
+             */
+            Ctrl = GLFW_MOD_CONTROL,
+
+            /**
+             * Alt
+             *
+             * @see @ref KeyEvent::Key::LeftAlt, @ref KeyEvent::Key::RightAlt
+             */
+            Alt = GLFW_MOD_ALT,
+
+            /**
+             * Super key (Windows/⌘)
+             *
+             * @see @ref KeyEvent::Key::LeftSuper, @ref KeyEvent::Key::RightSuper
+             */
+            Super = GLFW_MOD_SUPER
         };
 
         /**
@@ -559,6 +582,62 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
          */
         enum class Key: Int {
             Unknown = GLFW_KEY_UNKNOWN,         /**< Unknown key */
+
+            /**
+             * Left Shift
+             *
+             * @see @ref InputEvent::Modifier::Shift
+             */
+            LeftShift = GLFW_KEY_LEFT_SHIFT,
+
+            /**
+             * Right Shift
+             *
+             * @see @ref InputEvent::Modifier::Shift
+             */
+            RightShift = GLFW_KEY_RIGHT_SHIFT,
+
+            /**
+             * Left Ctrl
+             *
+             * @see @ref InputEvent::Modifier::Ctrl
+             */
+            LeftCtrl = GLFW_KEY_LEFT_CONTROL,
+
+            /**
+             * Right Ctrl
+             *
+             * @see @ref InputEvent::Modifier::Ctrl
+             */
+            RightCtrl = GLFW_KEY_RIGHT_CONTROL,
+
+            /**
+             * Left Alt
+             *
+             * @see @ref InputEvent::Modifier::Alt
+             */
+            LeftAlt = GLFW_KEY_LEFT_ALT,
+
+            /**
+             * Right Alt
+             *
+             * @see @ref InputEvent::Modifier::Alt
+             */
+            RightAlt = GLFW_KEY_RIGHT_ALT,
+
+            /**
+             * Left Super key (Windows/⌘)
+             *
+             * @see @ref InputEvent::Modifier::Super
+             */
+            LeftSuper = GLFW_KEY_LEFT_SUPER,
+
+            /**
+             * Right Super key (Windows/⌘)
+             *
+             * @see @ref InputEvent::Modifier::Super
+             */
+            RightSuper = GLFW_KEY_RIGHT_SUPER,
 
             Enter = GLFW_KEY_ENTER,             /**< Enter */
             Esc = GLFW_KEY_ESCAPE,              /**< Escape */
@@ -662,14 +741,6 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
             NumAdd = GLFW_KEY_KP_ADD,           /**< Numpad add */
             NumEnter = GLFW_KEY_KP_ENTER,       /**< Numpad enter */
             NumEqual = GLFW_KEY_KP_EQUAL,       /**< Numpad equal */
-            LeftShift = GLFW_KEY_LEFT_SHIFT,    /**< Left shift */
-            LeftCtrl = GLFW_KEY_LEFT_CONTROL,   /**< Left control */
-            LeftAlt = GLFW_KEY_LEFT_ALT,        /**< Left alt */
-            LeftSuper = GLFW_KEY_LEFT_SUPER,    /**< Left super */
-            RightShift = GLFW_KEY_RIGHT_SHIFT,  /**< Right shift */
-            RightCtrl = GLFW_KEY_RIGHT_CONTROL, /**< Right control */
-            RightAlt = GLFW_KEY_RIGHT_ALT,      /**< Right alt */
-            RightSuper = GLFW_KEY_RIGHT_SUPER,  /**< Right super */
             Menu = GLFW_KEY_MENU                /**< Menu */
         };
 
