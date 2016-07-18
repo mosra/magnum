@@ -193,8 +193,8 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         /**
          * @brief 3D orthographic projection matrix
          * @param size      Size of the view
-         * @param near      Near clipping plane
-         * @param far       Far clipping plane
+         * @param near      Distance to near clipping plane, positive is ahead
+         * @param far       Distance to far clipping plane, positive is ahead
          *
          * @see @ref perspectiveProjection(), @ref Matrix3::projection()
          */
@@ -203,8 +203,8 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         /**
          * @brief 3D perspective projection matrix
          * @param size      Size of near clipping plane
-         * @param near      Near clipping plane
-         * @param far       Far clipping plane
+         * @param near      Distance to near clipping plane, positive is ahead
+         * @param far       Distance to far clipping plane, positive is ahead
          *
          * @see @ref orthographicProjection(), @ref Matrix3::projection()
          */

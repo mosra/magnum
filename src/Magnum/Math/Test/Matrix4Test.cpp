@@ -384,7 +384,12 @@ void Matrix4Test::orthographicProjection() {
                      {0.0f, 0.5f,   0.0f, 0.0f},
                      {0.0f, 0.0f, -0.25f, 0.0f},
                      {0.0f, 0.0f, -1.25f, 1.0f});
-    CORRADE_COMPARE(Matrix4::orthographicProjection({5.0f, 4.0f}, 1, 9), expected);
+    Matrix4 actual = Matrix4::orthographicProjection({5.0f, 4.0f}, 1.0f, 9.0f);
+    CORRADE_COMPARE(actual, expected);
+
+    /* NDC is left-handed, so point on near plane should be -1, far +1 */
+    CORRADE_COMPARE(actual.transformPoint({0.0f, 0.0f, -1.0f}), Vector3(0.0f, 0.0f, -1.0f));
+    CORRADE_COMPARE(actual.transformPoint({0.0f, 0.0f, -9.0f}), Vector3(0.0f, 0.0f, +1.0f));
 }
 
 void Matrix4Test::perspectiveProjection() {
@@ -392,7 +397,12 @@ void Matrix4Test::perspectiveProjection() {
                      {0.0f, 7.111111f,         0.0f,  0.0f},
                      {0.0f,      0.0f,  -1.9411764f, -1.0f},
                      {0.0f,      0.0f, -94.1176452f,  0.0f});
-    CORRADE_COMPARE(Matrix4::perspectiveProjection({16.0f, 9.0f}, 32.0f, 100), expected);
+    Matrix4 actual = Matrix4::perspectiveProjection({16.0f, 9.0f}, 32.0f, 100.0f);
+    CORRADE_COMPARE(actual, expected);
+
+    /* NDC is left-handed, so point on near plane should be -1, far +1 */
+    CORRADE_COMPARE(actual.transformPoint({0.0f, 0.0f, -32.0f}), Vector3(0.0f, 0.0f, -1.0f));
+    CORRADE_COMPARE(actual.transformPoint({0.0f, 0.0f, -100.0f}), Vector3(0.0f, 0.0f, +1.0f));
 }
 
 void Matrix4Test::perspectiveProjectionFov() {
