@@ -95,6 +95,7 @@ struct Matrix4Test: Corrade::TestSuite::Tester {
     void vectorParts();
     void invertedRigid();
     void transform();
+    void transformProjection();
 
     void debug();
     void configuration();
@@ -143,6 +144,7 @@ Matrix4Test::Matrix4Test() {
               &Matrix4Test::vectorParts,
               &Matrix4Test::invertedRigid,
               &Matrix4Test::transform,
+              &Matrix4Test::transformProjection,
 
               &Matrix4Test::debug,
               &Matrix4Test::configuration});
@@ -544,6 +546,14 @@ void Matrix4Test::transform() {
 
     CORRADE_COMPARE(a.transformVector(v), Vector3(2.0f, 1.0f, 5.5f));
     CORRADE_COMPARE(a.transformPoint(v), Vector3(3.0f, -4.0f, 9.0f));
+}
+
+void Matrix4Test::transformProjection() {
+    Matrix4 a = Matrix4::perspectiveProjection({2.0f, 2.0f}, 1.0f, 100.0f);
+    Vector3 v{0.0f, 0.0f, -100.0f};
+
+    CORRADE_COMPARE(a.transformVector(v), Vector3(0.0f, 0.0f, 0.0f));
+    CORRADE_COMPARE(a.transformPoint(v), Vector3(0.0f, 0.0f, 1.0f));
 }
 
 void Matrix4Test::lookAt() {

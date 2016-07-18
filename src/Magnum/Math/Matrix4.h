@@ -447,13 +447,14 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *
          * Unlike in @ref transformVector(), translation is also involved in
          * the transformation. @f[
-         *      \boldsymbol v' = \boldsymbol M \begin{pmatrix} v_x \\ v_y \\ v_z \\ 1 \end{pmatrix}
+         *      \boldsymbol v' = v''_{xyz} / v''_w ~~~~~~~~~~ \boldsymbol v'' = \begin{pmatrix} v''_x \\ v''_y \\ v''_z \\ v''_w \end{pmatrix} = \boldsymbol M \begin{pmatrix} v_x \\ v_y \\ v_z \\ 1 \end{pmatrix} \\
          * @f]
          * @see @ref DualQuaternion::transformPoint(),
          *      @ref Matrix3::transformPoint()
          */
         Vector3<T> transformPoint(const Vector3<T>& vector) const {
-            return ((*this)*Vector4<T>(vector, T(1))).xyz();
+            const Vector4<T> transformed{(*this)*Vector4<T>(vector, T(1))};
+            return transformed.xyz()/transformed.w();
         }
 
         MAGNUM_RECTANGULARMATRIX_SUBCLASS_IMPLEMENTATION(4, 4, Matrix4<T>)
