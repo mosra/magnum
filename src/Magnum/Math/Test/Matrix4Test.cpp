@@ -562,7 +562,6 @@ void Matrix4Test::transformProjection() {
     Matrix4 a = Matrix4::perspectiveProjection({2.0f, 2.0f}, 1.0f, 100.0f);
     Vector3 v{0.0f, 0.0f, -100.0f};
 
-    CORRADE_COMPARE(a.transformVector(v), Vector3(0.0f, 0.0f, 0.0f));
     CORRADE_COMPARE(a.transformPoint(v), Vector3(0.0f, 0.0f, 1.0f));
 }
 
