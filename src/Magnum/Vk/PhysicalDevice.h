@@ -52,8 +52,12 @@ enum class QueueFlag: UnsignedInt {
 class MAGNUM_VK_EXPORT PhysicalDevice {
     public:
 
-        /** @brief Copying is not allowed */
-        PhysicalDevice(const PhysicalDevice&) = delete;
+        PhysicalDevice(): _physicalDevice{} {
+        }
+
+        PhysicalDevice(const PhysicalDevice& d):
+            PhysicalDevice(d._physicalDevice) {
+        }
 
         /** @brief Move constructor */
         PhysicalDevice(PhysicalDevice&& other);
@@ -72,7 +76,14 @@ class MAGNUM_VK_EXPORT PhysicalDevice {
         ~PhysicalDevice();
 
         /** @brief Copying is not allowed */
-        PhysicalDevice& operator=(const PhysicalDevice&) = delete;
+        PhysicalDevice& operator=(const PhysicalDevice& device){
+            _physicalDevice = device._physicalDevice;
+
+            _deviceMemoryProperties.memoryHeapCount = 0;
+            _deviceMemoryProperties.memoryTypeCount = 0;
+
+            return *this;
+        }
 
         /** @brief Move assignment is not allowed */
         PhysicalDevice& operator=(PhysicalDevice&&) = delete;
