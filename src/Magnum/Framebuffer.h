@@ -149,7 +149,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @requires_webgl20 Extension @webgl_extension{WEBGL,draw_buffers} in
          *      WebGL 1.0.
          */
-        class DrawAttachment {
+        class MAGNUM_EXPORT DrawAttachment {
             public:
                 /** @brief No attachment */
                 static const DrawAttachment None;
