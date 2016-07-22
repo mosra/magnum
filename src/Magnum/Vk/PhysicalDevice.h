@@ -33,10 +33,23 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/Vk/visibility.h"
 
+#include <Corrade/Containers/EnumSet.h>
+
 #include "vulkan.h"
 
 
 namespace Magnum { namespace Vk {
+
+enum class MemoryProperty: UnsignedInt {
+    DeviceLocal = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
+    HostVisible = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
+    Coherent = VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+    HostCached = VK_MEMORY_PROPERTY_HOST_CACHED_BIT,
+    LazilyAllocated = VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT,
+};
+
+typedef Corrade::Containers::EnumSet<MemoryProperty> MemoryProperties;
+CORRADE_ENUMSET_OPERATORS(MemoryProperties)
 
 enum class QueueFamily: UnsignedInt {
     Graphics = VK_QUEUE_GRAPHICS_BIT,
@@ -106,7 +119,15 @@ class MAGNUM_VK_EXPORT PhysicalDevice {
             return deviceProperties;
         }
 
-        UnsignedInt getMemoryType(UnsignedInt typeBits, VkFlags properties);
+        /**
+         * @brief Get the index of the memory type with properties
+         * @param supportedTypeBits A bit set with a bit for every memory type index. A
+         *                  bit at index i should be set if the memory type at index i
+         *                  is supported by the resource for which to get the memory type.
+         * @param properties Properties required by the memory type
+         * @return Index of the memory type for this device
+         */
+        UnsignedInt getMemoryType(UnsignedInt supportedTypeBits, MemoryProperties properties);
 
     private:
         VkPhysicalDevice _physicalDevice;

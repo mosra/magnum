@@ -82,18 +82,21 @@ UnsignedInt PhysicalDevice::getQueueFamilyIndex(QueueFamily family) {
     CORRADE_ASSERT(false, "The device does not support the given queue family.", -1);  // TODO
 }
 
-UnsignedInt PhysicalDevice::getMemoryType(UnsignedInt typeBits, VkFlags properties) {
+UnsignedInt PhysicalDevice::getMemoryType(UnsignedInt supportedTypeBits, MemoryProperties properties) {
     if(_deviceMemoryProperties.memoryHeapCount == 0 && _deviceMemoryProperties.memoryTypeCount == 0) {
+        /* first query for physical device memory properties */
         vkGetPhysicalDeviceMemoryProperties(_physicalDevice, &_deviceMemoryProperties);
     }
 
-    for (uint32_t i = 0; i < 32; i++) {
-        if((typeBits & 1) != 0) {
-            if((_deviceMemoryProperties.memoryTypes[i].propertyFlags & properties) == properties) {
-                return i;
-            }
+    const UnsignedInt p = UnsignedInt(properties);
+    for (UnsignedInt i = 0; i < 32; ++i) {
+        /* check whether the memory type at index i is supported */
+        const UnsignedInt memoryTypeSupported = (supportedTypeBits >> i) & 1;
+        if(memoryTypeSupported != 0 &&
+                (_deviceMemoryProperties.memoryTypes[i].propertyFlags & p) == p) {
+            /* memory type and properties match */
+            return i;
         }
-        typeBits >>= 1;
     }
 
     CORRADE_ASSERT(false, "Physical devices does not support memory with given properties.", -1);  // TODO
