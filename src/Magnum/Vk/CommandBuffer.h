@@ -43,19 +43,37 @@ namespace Magnum { namespace Vk {
 
 class CommandPool;
 
+/**
+ * Command buffer
+ * 
+ * Wraps @st_vk{CommandBuffer}.
+ *
+ */
 class MAGNUM_VK_EXPORT CommandBuffer {
     public:
 
+        /**
+         * Command buffer level
+         */
         enum class Level: Int {
             Primary = VK_COMMAND_BUFFER_LEVEL_PRIMARY,
             Secondary = VK_COMMAND_BUFFER_LEVEL_SECONDARY
         };
 
+        /**
+         * Subpass contents
+         */
         enum class SubpassContents: UnsignedInt {
             Inline = VK_SUBPASS_CONTENTS_INLINE,
             SecondaryCommandBuffers = VK_SUBPASS_CONTENTS_SECONDARY_COMMAND_BUFFERS,
         };
 
+        /**
+         * Constructor
+         *
+         * @param buffer @st_vk{CommandBuffer} to wrap
+         * @param commandPool pool this command buffer was allocated from
+         */
         CommandBuffer(VkCommandBuffer buffer, CommandPool& commandPool):
             _cmdBuffer{buffer},
             _pool{commandPool}
@@ -85,6 +103,11 @@ class MAGNUM_VK_EXPORT CommandBuffer {
             return _cmdBuffer;
         }
 
+        /**
+         * Begin recording to this command buffer.
+         * 
+         * @return Reference to self (for method chaining)
+         */
         CommandBuffer& begin() {
             VkCommandBufferBeginInfo cmdBufInfo = {};
             cmdBufInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -93,6 +116,11 @@ class MAGNUM_VK_EXPORT CommandBuffer {
             return *this;
         }
 
+        /**
+         * End recording to this command buffer.
+         *
+         * @return Reference to self (for method chaining)
+         */
         CommandBuffer& end() {
             VkResult err = vkEndCommandBuffer(_cmdBuffer);
             MAGNUM_VK_ASSERT_ERROR(err);
@@ -100,6 +128,11 @@ class MAGNUM_VK_EXPORT CommandBuffer {
             return *this;
         }
 
+        /**
+         * Begin a render pass on this command buffer.
+         *
+         * @return Reference to self (for method chaining)
+         */
         CommandBuffer& beginRenderPass(SubpassContents subpassContents, RenderPass& renderPass,
                                        Vk::Framebuffer& framebuffer, Range2Di renderArea,
                                        const std::vector<VkClearValue>& clearValues) {
@@ -117,6 +150,11 @@ class MAGNUM_VK_EXPORT CommandBuffer {
             return *this;
         }
 
+        /**
+         * End a render pass on this command buffer.
+         *
+         * @return Reference to self (for method chaining)
+         */
         CommandBuffer& endRenderPass() {
             vkCmdEndRenderPass(_cmdBuffer);
             return *this;
