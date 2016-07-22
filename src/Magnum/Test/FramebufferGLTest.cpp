@@ -949,7 +949,8 @@ void FramebufferGLTest::multipleColorOutputs() {
                .attachTexture(Framebuffer::ColorAttachment(1), color2, 0)
                .attachRenderbuffer(Framebuffer::BufferAttachment::Depth, depth)
                .mapForDraw({{0, Framebuffer::ColorAttachment(1)},
-                            {1, Framebuffer::ColorAttachment(0)}});
+                            {1, Framebuffer::ColorAttachment(0)},
+                            {2, Framebuffer::DrawAttachment::None}});
 
     #ifdef MAGNUM_TARGET_GLES2
     if(Context::current().isExtensionSupported<Extensions::GL::NV::read_buffer>())
