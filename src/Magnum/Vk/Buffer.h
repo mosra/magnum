@@ -132,6 +132,15 @@ class MAGNUM_VK_EXPORT Buffer {
             };
         }
 
+        VkDescriptorBufferInfo getDescriptor() {
+            VkDescriptorBufferInfo descriptor;
+            descriptor.buffer = _buffer;
+            descriptor.offset = 0;
+            descriptor.range = _size;
+
+            return descriptor;
+        }
+
     private:
         Device& _device;
         VkBuffer _buffer;

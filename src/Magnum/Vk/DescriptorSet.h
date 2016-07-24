@@ -89,6 +89,7 @@ class MAGNUM_VK_EXPORT DescriptorSetLayout {
             };
 
             VkResult err = vkCreateDescriptorSetLayout(_device, &descLayout, nullptr, &_layout);
+            MAGNUM_VK_ASSERT_ERROR(err);
         }
 
         /** @brief Copying is not allowed */
