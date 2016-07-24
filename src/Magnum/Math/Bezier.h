@@ -30,7 +30,7 @@
  * @brief Class @ref Magnum::Math::Bezier
  */
 
-#include <vector>
+#include <array>
 #include "Vector.h"
 
 namespace Magnum { namespace Math {
@@ -87,9 +87,9 @@ namespace Magnum { namespace Math {
              * @param t The interpolation factor
              *
              */
-            std::vector<std::vector<Vector<dimensions, T>>> calculateIntermediatePoints(Float t) const {
+            std::array<std::array<Vector<dimensions,T>, order + 1>, order + 1> calculateIntermediatePoints(Float t) const {
                 const auto n = order + 1;
-                std::vector<std::vector<Vector<dimensions,T>>> i_points(n,std::vector<Vector<dimensions,T>>(n));
+                std::array<std::array<Vector<dimensions,T>, n>, n> i_points;
                 for (UnsignedInt i = 0; i < n; ++i) {
                     i_points[i][0] = _points[i];
                 }
@@ -115,3 +115,4 @@ namespace Magnum { namespace Math {
 
 }
 #endif //Magnum_Math_Bezier_h
+

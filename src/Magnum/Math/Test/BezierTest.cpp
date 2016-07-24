@@ -24,6 +24,7 @@
 */
 
 #include <Corrade/TestSuite/Tester.h>
+#include <array>
 #include "Magnum/Math/Bezier.h"
 
 namespace Magnum { namespace Math { namespace Test {
