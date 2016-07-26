@@ -64,6 +64,7 @@ WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, C
         WS_OVERLAPPEDWINDOW, 0, 0, 32, 32, 0, 0, wc.hInstance, 0);
 
     /* Get device context */
+    const HDC currentDeviceContext = wglGetCurrentDC();
     _deviceContext = GetDC(_window);
 
     /* Use first provided pixel format  */
@@ -177,7 +178,7 @@ WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, C
     #endif
 
     /* Make the previous context active and delete the temporary context */
-    if(!wglMakeCurrent(_deviceContext, currentContext)) {
+    if(!wglMakeCurrent(currentDeviceContext, currentContext)) {
         Error() << "Platform::WindowlessWglContext: cannot make the previous context current:" << GetLastError();
 
         /* Everything is fucked up, but try to delete the temporary context
