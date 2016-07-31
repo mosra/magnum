@@ -55,8 +55,8 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
         explicit Bezier(NoInitT) {}
 
         /** @brief Construct Bezier curve with the given array of control points */
-        template<typename... U> constexpr Bezier(U... u):_points{u...} {
-            static_assert(sizeof...(U) == order + 1, "Wrong number of arguments");
+        template<typename... U> constexpr Bezier(Vector<dimensions, T> first, U... next):_points{first, next...} {
+            static_assert(sizeof...(U) + 1 == order + 1, "Bezier : Wrong number of arguments");
         }
 
         /**
