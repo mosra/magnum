@@ -3,6 +3,7 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2016 Ashwin Ravichandran <ashwinravichandran24@gmail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -24,58 +25,59 @@
 */
 
 #include <Corrade/TestSuite/Tester.h>
-#include <array>
 #include "Magnum/Math/Bezier.h"
+#include "Magnum/Math/Functions.h"
+
 
 namespace Magnum { namespace Math { namespace Test {
 
-            struct BezierTest: Corrade::TestSuite::Tester {
-                explicit BezierTest();
+typedef Math::Vector<2, Float> Vector2;
 
-                void testQuadratic();
+struct BezierTest : Corrade::TestSuite::Tester {
+    explicit BezierTest();
 
-                void testCubic();
+    void implicitConstructor();
 
-            };
+    void quadratic();
 
-            BezierTest::BezierTest() {
-                addTests({&BezierTest::testQuadratic});
-                addTests({&BezierTest::testCubic});
-            }
+    void cubic();
+};
 
-            template <class T>
-            inline T sqr(T t){ return t*t; }
+BezierTest::BezierTest() {
+    addTests({&BezierTest::implicitConstructor,
+              &BezierTest::quadratic,
+              &BezierTest::cubic});
+}
 
-            template <class T>
-            inline T cube(T t){ return t*t*t; }
+void BezierTest::implicitConstructor() {
+    QuadraticBezier2D<Float> bezier;
+    Vector2 zero;
+    for(int i = 0; i < 3; ++i) {
+        CORRADE_COMPARE(bezier[i], zero);
+    }
+}
 
+void BezierTest::quadratic() {
+    Vector2 p0(0.0f, 0.0f), p1(10.0f, 15.0f), p2(20.0f, 4.0f);
+    QuadraticBezier2D<Float> bezier(p0, p1, p2);
+    for(Float t = 0.0; t <= 1.0f; t += 0.01f) {
+        Vector2 expected = Math::pow<2>(1 - t)*p0 + 2*(1 - t)*t*p1 + Math::pow<2>(t)*p2;
+        CORRADE_COMPARE(bezier.lerp(t), expected);
+    }
+}
 
-            void BezierTest::testQuadratic() {
-                typedef Math::Vector<2, Float> Vector2;
-                Vector2 p0(0.0f, 0.0f), p1(10.0f, 15.0f), p2(20.0f, 4.0f);
-                std::array<Vector2, 3> points = {p0, p1, p2};
-                QuadraticBezier2D<Float> bezier(points);
-                for(Float t = 0.0; t <= 1.0f; t += 0.01f) {
-                    Vector2 expected = sqr(1-t)*p0 + 2*(1-t)*t*p1 + sqr(t) *p2;
-                    CORRADE_COMPARE(bezier.lerp(t), expected);
-                }
-            }
+void BezierTest::cubic() {
+    Vector2 p0(0.0f, 0.0f), p1(10.0f, 15.0f), p2(20.0f, 4.0f), p3(5.0f, -20.0f);
+    CubicBezier2D<Float> bezier(p0, p1, p2, p3);
+    for(Float t = 0.0; t <= 1.0f; t += 0.01f) {
+        Vector2 expected = Math::pow<3>(1 - t)*p0
+                           + 3*Math::pow<2>(1 - t)*t*p1
+                           + 3*(1 - t)*Math::pow<2>(t)*p2
+                           + Math::pow<3>(t)*p3;
+        CORRADE_COMPARE(bezier.lerp(t), expected);
+    }
+}
 
-            void BezierTest::testCubic() {
-                typedef Math::Vector<2, Float> Vector2;
-                Vector2 p0(0.0f, 0.0f), p1(10.0f, 15.0f), p2(20.0f, 4.0f), p3(5.0f, -20.0f);
-                std::array<Vector2, 4> points = {p0, p1, p2, p3};
-                CubicBezier2D<Float> bezier(points);
-                for(Float t = 0.0; t <= 1.0f; t += 0.01f) {
-                    Vector2 expected = cube(1-t)*p0
-                                       + 3*sqr(1-t)*t*p1
-                                       + 3*(1-t)*sqr(t) *p2
-                                       + cube(t)*p3;
-                    CORRADE_COMPARE(bezier.lerp(t), expected);
-                }
-            }
-
-
-        }}}
+}}}
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::BezierTest)
