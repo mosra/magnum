@@ -15,6 +15,7 @@ cd ../..
 
 mkdir build && cd build
 cmake .. \
+    -DCMAKE_CXX_FLAGS=$COVERAGE \
     -DCMAKE_PREFIX_PATH="$HOME/deps;$HOME/sdl2;$HOME/glfw" \
     -DCMAKE_BUILD_TYPE=Release \
     -DWITH_AUDIO=ON \

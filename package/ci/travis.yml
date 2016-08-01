@@ -57,8 +57,10 @@ cache:
 install:
 - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update; fi
 
+- if [ "$TRAVIS_OS_NAME" == "linux" ]; then pip install --user cpp-coveralls; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export CXX=g++-4.7; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export PLATFORM_GL_API=GLX; fi
+- if [ "$TRAVIS_OS_NAME" == "linux" ]; then export COVERAGE="--coverage"; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop" ]; then export PLATFORM_GL_API=CGL; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "ios-simulator" ]; then gem install xcpretty; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "emscripten" ]; then brew install emscripten && export LLVM=/usr/local/opt/emscripten/libexec/llvm/bin && emcc; fi
@@ -80,3 +82,6 @@ script:
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "emscripten" ]; then ./package/ci/travis-emscripten.sh; fi
 # Travis somehow is not able to gather all output, try to force it using this
 - sync
+
+after_success:
+- if [ "$TRAVIS_OS_NAME" == "linux" ]; then coveralls --gcov /usr/bin/gcov-4.7 -E ".*/(Test|magnum/build)/.*" --gcov-options '\-lp'; fi
