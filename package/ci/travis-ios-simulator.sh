@@ -35,8 +35,6 @@ cmake .. \
 cmake --build . --config Release --target install | xcpretty
 cd ../..
 
-ls -lR $TRAVIS_BUILD_DIR/sdl2
-
 # Crosscompile Magnum
 mkdir build-ios && cd build-ios
 cmake .. \
