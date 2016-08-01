@@ -31,6 +31,7 @@ namespace Magnum { namespace Audio {
 
 Debug& operator<<(Debug& debug, const Buffer::Format value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case Buffer::Format::value: return debug << "Audio::Buffer::Format::" #value;
         _c(Mono8)
         _c(Mono16)
@@ -42,6 +43,7 @@ Debug& operator<<(Debug& debug, const Buffer::Format value) {
         _c(MonoDouble)
         _c(StereoDouble)
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
     return debug << "Audio::Buffer::Format::(invalid)";

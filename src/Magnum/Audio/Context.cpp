@@ -55,6 +55,7 @@ const std::vector<Extension>& Extension::extensions() {
 
 Debug& operator<<(Debug& debug, const Context::HrtfStatus value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case Context::HrtfStatus::value: return debug << "Audio::Context::HrtfStatus::" #value;
         _c(Disabled)
         _c(Enabled)
@@ -63,6 +64,7 @@ Debug& operator<<(Debug& debug, const Context::HrtfStatus value) {
         _c(Detected)
         _c(UnsupportedFormat)
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
     return debug << "Audio::Context::HrtfStatus::(invalid)";

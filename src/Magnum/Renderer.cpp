@@ -241,6 +241,7 @@ Renderer::GraphicsResetStatus Renderer::graphicsResetStatusImplementationRobustn
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const Renderer::Error value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case Renderer::Error::value: return debug << "Renderer::Error::" #value;
         _c(NoError)
         _c(InvalidEnum)
@@ -253,6 +254,7 @@ Debug& operator<<(Debug& debug, const Renderer::Error value) {
         _c(StackOverflow)
         #endif
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
     return debug << "Renderer::Error::(invalid)";
@@ -261,10 +263,12 @@ Debug& operator<<(Debug& debug, const Renderer::Error value) {
 #ifndef MAGNUM_TARGET_WEBGL
 Debug& operator<<(Debug& debug, const Renderer::ResetNotificationStrategy value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case Renderer::ResetNotificationStrategy::value: return debug << "Renderer::ResetNotificationStrategy::" #value;
         _c(NoResetNotification)
         _c(LoseContextOnReset)
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
     return debug << "Renderer::ResetNotificationStrategy::(invalid)";
@@ -272,12 +276,14 @@ Debug& operator<<(Debug& debug, const Renderer::ResetNotificationStrategy value)
 
 Debug& operator<<(Debug& debug, const Renderer::GraphicsResetStatus value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case Renderer::GraphicsResetStatus::value: return debug << "Renderer::GraphicsResetStatus::" #value;
         _c(NoError)
         _c(GuiltyContextReset)
         _c(InnocentContextReset)
         _c(UnknownContextReset)
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
     return debug << "Renderer::ResetNotificationStrategy::(invalid)";

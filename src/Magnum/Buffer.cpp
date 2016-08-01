@@ -624,6 +624,7 @@ bool Buffer::unmapImplementationDSAEXT() {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, Buffer::TargetHint value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case Buffer::TargetHint::value: return debug << "Buffer::TargetHint::" #value;
         _c(Array)
         #ifndef MAGNUM_TARGET_GLES2
@@ -653,6 +654,7 @@ Debug& operator<<(Debug& debug, Buffer::TargetHint value) {
         _c(Uniform)
         #endif
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
     return debug << "Buffer::TargetHint::(invalid)";

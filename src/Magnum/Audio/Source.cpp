@@ -98,12 +98,14 @@ void Source::rewind(const std::vector<std::reference_wrapper<Source>>& sources) 
 
 Debug& operator<<(Debug& debug, const Source::State value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case Source::State::value: return debug << "Audio::Source::State::" #value;
         _c(Initial)
         _c(Playing)
         _c(Paused)
         _c(Stopped)
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
     return debug << "Audio::Source::State::(invalid)";

@@ -637,6 +637,7 @@ void Mesh::drawElementsInstancedImplementationNV(const GLsizei count, const GLin
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, MeshPrimitive value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case MeshPrimitive::value: return debug << "MeshPrimitive::" #value;
         _c(Points)
         _c(LineStrip)
@@ -655,6 +656,7 @@ Debug& operator<<(Debug& debug, MeshPrimitive value) {
         _c(Patches)
         #endif
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
     return debug << "MeshPrimitive::(invalid)";
@@ -662,11 +664,13 @@ Debug& operator<<(Debug& debug, MeshPrimitive value) {
 
 Debug& operator<<(Debug& debug, Mesh::IndexType value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case Mesh::IndexType::value: return debug << "Mesh::IndexType::" #value;
         _c(UnsignedByte)
         _c(UnsignedShort)
         _c(UnsignedInt)
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
     return debug << "Mesh::IndexType::(invalid)";

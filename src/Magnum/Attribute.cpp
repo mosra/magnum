@@ -141,8 +141,10 @@ UnsignedInt Attribute<Math::Vector<4, Float>>::size(GLint components, DataType d
 
 Debug& operator<<(Debug& debug, SizedAttribute<1, 1>::Components value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         case SizedAttribute<1, 1>::Components::One:
             return debug << "Attribute::Components::One";
+        /* LCOV_EXCL_STOP */
     }
 
     return debug << "Attribute::Components::(invalid)";
@@ -150,10 +152,12 @@ Debug& operator<<(Debug& debug, SizedAttribute<1, 1>::Components value) {
 
 Debug& operator<<(Debug& debug, SizedAttribute<1, 2>::Components value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         case SizedAttribute<1, 2>::Components::One:
             return debug << "Attribute::Components::One";
         case SizedAttribute<1, 2>::Components::Two:
             return debug << "Attribute::Components::Two";
+        /* LCOV_EXCL_STOP */
     }
 
     return debug << "Attribute::Components::(invalid)";
@@ -161,12 +165,14 @@ Debug& operator<<(Debug& debug, SizedAttribute<1, 2>::Components value) {
 
 Debug& operator<<(Debug& debug, SizedAttribute<1, 3>::Components value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         case SizedAttribute<1, 3>::Components::One:
             return debug << "Attribute::Components::One";
         case SizedAttribute<1, 3>::Components::Two:
             return debug << "Attribute::Components::Two";
         case SizedAttribute<1, 3>::Components::Three:
             return debug << "Attribute::Components::Three";
+        /* LCOV_EXCL_STOP */
     }
 
     return debug << "Attribute::Components::(invalid)";
@@ -174,6 +180,7 @@ Debug& operator<<(Debug& debug, SizedAttribute<1, 3>::Components value) {
 
 Debug& operator<<(Debug& debug, SizedAttribute<1, 4>::Components value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         case SizedAttribute<1, 4>::Components::One:
             return debug << "Attribute::Components::One";
         case SizedAttribute<1, 4>::Components::Two:
@@ -182,6 +189,7 @@ Debug& operator<<(Debug& debug, SizedAttribute<1, 4>::Components value) {
             return debug << "Attribute::Components::Three";
         case SizedAttribute<1, 4>::Components::Four:
             return debug << "Attribute::Components::Four";
+        /* LCOV_EXCL_STOP */
     }
 
     return debug << "Attribute::Components::(invalid)";
@@ -189,8 +197,10 @@ Debug& operator<<(Debug& debug, SizedAttribute<1, 4>::Components value) {
 
 Debug& operator<<(Debug& debug, SizedMatrixAttribute<2>::Components value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         case SizedMatrixAttribute<2>::Components::Two:
             return debug << "Attribute::Components::Two";
+        /* LCOV_EXCL_STOP */
     }
 
     return debug << "Attribute::Components::(invalid)";
@@ -198,8 +208,10 @@ Debug& operator<<(Debug& debug, SizedMatrixAttribute<2>::Components value) {
 
 Debug& operator<<(Debug& debug, SizedMatrixAttribute<3>::Components value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         case SizedMatrixAttribute<3>::Components::Three:
             return debug << "Attribute::Components::Three";
+        /* LCOV_EXCL_STOP */
     }
 
     return debug << "Attribute::Components::(invalid)";
@@ -207,8 +219,10 @@ Debug& operator<<(Debug& debug, SizedMatrixAttribute<3>::Components value) {
 
 Debug& operator<<(Debug& debug, SizedMatrixAttribute<4>::Components value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         case SizedMatrixAttribute<4>::Components::Four:
             return debug << "Attribute::Components::Four";
+        /* LCOV_EXCL_STOP */
     }
 
     return debug << "Attribute::Components::(invalid)";
@@ -216,6 +230,7 @@ Debug& operator<<(Debug& debug, SizedMatrixAttribute<4>::Components value) {
 
 Debug& operator<<(Debug& debug, Attribute<Math::Vector<4, Float>>::Components value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         case Attribute<Math::Vector<4, Float>>::Components::One:
             return debug << "Attribute::Components::One";
         case Attribute<Math::Vector<4, Float>>::Components::Two:
@@ -228,6 +243,7 @@ Debug& operator<<(Debug& debug, Attribute<Math::Vector<4, Float>>::Components va
         case Attribute<Math::Vector<4, Float>>::Components::BGRA:
             return debug << "Attribute::Components::BGRA";
         #endif
+        /* LCOV_EXCL_STOP */
     }
 
     return debug << "Attribute::Components::(invalid)";
@@ -235,6 +251,7 @@ Debug& operator<<(Debug& debug, Attribute<Math::Vector<4, Float>>::Components va
 
 Debug& operator<<(Debug& debug, FloatAttribute::DataType value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case FloatAttribute::DataType::value: return debug << "Attribute::DataType::" #value;
         _c(UnsignedByte)
         _c(Byte)
@@ -248,6 +265,7 @@ Debug& operator<<(Debug& debug, FloatAttribute::DataType value) {
         _c(Double)
         #endif
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
     return debug << "Attribute::DataType::(invalid)";
@@ -256,6 +274,7 @@ Debug& operator<<(Debug& debug, FloatAttribute::DataType value) {
 #ifndef MAGNUM_TARGET_GLES2
 Debug& operator<<(Debug& debug, IntAttribute::DataType value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case IntAttribute::DataType::value: return debug << "Attribute::DataType::" #value;
         _c(UnsignedByte)
         _c(Byte)
@@ -264,6 +283,7 @@ Debug& operator<<(Debug& debug, IntAttribute::DataType value) {
         _c(UnsignedInt)
         _c(Int)
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
     return debug << "Attribute::DataType::(invalid)";
@@ -273,9 +293,11 @@ Debug& operator<<(Debug& debug, IntAttribute::DataType value) {
 #ifndef MAGNUM_TARGET_GLES
 Debug& operator<<(Debug& debug, DoubleAttribute::DataType value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case DoubleAttribute::DataType::value: return debug << "Attribute::DataType::" #value;
         _c(Double)
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
     return debug << "Attribute::DataType::(invalid)";
@@ -284,6 +306,7 @@ Debug& operator<<(Debug& debug, DoubleAttribute::DataType value) {
 
 Debug& operator<<(Debug& debug, Attribute<Math::Vector<3, Float>>::DataType value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case Attribute<Math::Vector<3, Float>>::DataType::value: return debug << "Attribute::DataType::" #value;
         _c(UnsignedByte)
         _c(Byte)
@@ -298,6 +321,7 @@ Debug& operator<<(Debug& debug, Attribute<Math::Vector<3, Float>>::DataType valu
         _c(UnsignedInt10f11f11fRev)
         #endif
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
     return debug << "Attribute::DataType::(invalid)";
@@ -305,6 +329,7 @@ Debug& operator<<(Debug& debug, Attribute<Math::Vector<3, Float>>::DataType valu
 
 Debug& operator<<(Debug& debug, Attribute<Math::Vector<4, Float>>::DataType value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case Attribute<Math::Vector<4, Float>>::DataType::value: return debug << "Attribute::DataType::" #value;
         _c(UnsignedByte)
         _c(Byte)
@@ -322,6 +347,7 @@ Debug& operator<<(Debug& debug, Attribute<Math::Vector<4, Float>>::DataType valu
         _c(Int2101010Rev)
         #endif
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
     return debug << "Attribute::DataType::(invalid)";

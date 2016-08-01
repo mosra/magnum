@@ -35,9 +35,11 @@ AbstractMaterialData::~AbstractMaterialData() {}
 
 Debug& operator<<(Debug& debug, const MaterialType value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case MaterialType::value: return debug << "Trade::MaterialType::" #value;
         _c(Phong)
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
     return debug << "Trade::MaterialType::(unknown)";

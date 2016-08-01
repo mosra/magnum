@@ -31,6 +31,7 @@ namespace Magnum { namespace Audio {
 
 Debug& operator<<(Debug& debug, const Renderer::Error value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case Renderer::Error::value: return debug << "Audio::Renderer::Error::" #value;
         _c(NoError)
         _c(InvalidName)
@@ -39,6 +40,7 @@ Debug& operator<<(Debug& debug, const Renderer::Error value) {
         _c(InvalidOperation)
         _c(OutOfMemory)
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
     return debug << "Audio::Renderer::Error::(invalid)";
@@ -46,6 +48,7 @@ Debug& operator<<(Debug& debug, const Renderer::Error value) {
 
 Debug& operator<<(Debug& debug, const Renderer::DistanceModel value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case Renderer::DistanceModel::value: return debug << "Audio::Renderer::DistanceModel::" #value;
         _c(None)
         _c(Inverse)
@@ -55,6 +58,7 @@ Debug& operator<<(Debug& debug, const Renderer::DistanceModel value) {
         _c(Exponent)
         _c(ExponentClamped)
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
     return debug << "Audio::Renderer::DistanceModel::(invalid)";

@@ -40,12 +40,14 @@ ObjectData3D& ObjectData3D::operator=(ObjectData3D&&) = default;
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, ObjectInstanceType3D value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case ObjectInstanceType3D::value: return debug << "Trade::ObjectInstanceType3D::" #value;
         _c(Camera)
         _c(Light)
         _c(Mesh)
         _c(Empty)
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
     return debug << "Trade::ObjectInstanceType3D::(invalid)";

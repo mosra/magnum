@@ -892,6 +892,7 @@ bool Shader::compile(std::initializer_list<std::reference_wrapper<Shader>> shade
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const Shader::Type value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case Shader::Type::value: return debug << "Shader::Type::" #value;
         _c(Vertex)
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
@@ -902,6 +903,7 @@ Debug& operator<<(Debug& debug, const Shader::Type value) {
         #endif
         _c(Fragment)
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
     return debug << "Shader::Type::(invalid)";

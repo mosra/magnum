@@ -227,6 +227,7 @@ void DebugOutput::callbackImplementationKhr(const Callback callback, const void*
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const DebugOutput::Source value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case DebugOutput::Source::value: return debug << "DebugOutput::Source::" #value;
         _c(Api)
         _c(WindowSystem)
@@ -235,6 +236,7 @@ Debug& operator<<(Debug& debug, const DebugOutput::Source value) {
         _c(Application)
         _c(Other)
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
     return debug << "DebugOutput::Source::(invalid)";
@@ -242,6 +244,7 @@ Debug& operator<<(Debug& debug, const DebugOutput::Source value) {
 
 Debug& operator<<(Debug& debug, const DebugOutput::Type value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case DebugOutput::Type::value: return debug << "DebugOutput::Type::" #value;
         _c(Error)
         _c(DeprecatedBehavior)
@@ -253,6 +256,7 @@ Debug& operator<<(Debug& debug, const DebugOutput::Type value) {
         _c(PopGroup)
         _c(Other)
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
     return debug << "DebugOutput::Type::(invalid)";
@@ -314,6 +318,7 @@ void DebugMessage::insertImplementationGremedy(Source, Type, UnsignedInt, DebugO
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const DebugMessage::Source value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case DebugMessage::Source::value: return debug << "DebugMessage::Source::" #value;
         _c(ThirdParty)
         _c(Application)
@@ -325,6 +330,7 @@ Debug& operator<<(Debug& debug, const DebugMessage::Source value) {
         case DebugMessage::Source::Other:
             return debug << DebugOutput::Source(value);
         #endif
+        /* LCOV_EXCL_STOP */
     }
 
     return debug << "DebugMessage::Source::(invalid)";
@@ -426,10 +432,12 @@ void DebugGroup::popImplementationExt() {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const DebugGroup::Source value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case DebugGroup::Source::value: return debug << "DebugGroup::Source::" #value;
         _c(ThirdParty)
         _c(Application)
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
     return debug << "DebugGroup::Source::(invalid)";

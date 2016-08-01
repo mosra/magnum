@@ -408,6 +408,7 @@ void Framebuffer::textureLayerImplementationDSAEXT(BufferAttachment attachment, 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const Framebuffer::Status value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case Framebuffer::Status::value: return debug << "Framebuffer::Status::" #value;
         _c(Complete)
         _c(IncompleteAttachment)
@@ -424,6 +425,7 @@ Debug& operator<<(Debug& debug, const Framebuffer::Status value) {
         _c(IncompleteLayerTargets)
         #endif
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
     return debug << "Framebuffer::Status::(invalid)";
