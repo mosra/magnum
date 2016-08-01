@@ -3,11 +3,12 @@ set -ev
 
 git submodule update --init
 
+# Corrade
 git clone --depth 1 git://github.com/mosra/corrade.git
 cd corrade
 
 # Build native corrade-rc
-mkdir build && cd build || exit /b
+mkdir build && cd build
 cmake .. \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps-native \
