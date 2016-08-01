@@ -127,25 +127,17 @@ template<> struct TypeTraits<Short>: Implementation::TypeTraitsIntegral<Short> {
     typedef Float FloatingPointType;
 };
 template<> struct TypeTraits<UnsignedInt>: Implementation::TypeTraitsIntegral<UnsignedInt> {
-    #ifndef MAGNUM_TARGET_GLES
     typedef Double FloatingPointType;
-    #endif
 };
 template<> struct TypeTraits<Int>: Implementation::TypeTraitsIntegral<Int> {
-    #ifndef MAGNUM_TARGET_GLES
     typedef Double FloatingPointType;
-    #endif
 };
 #ifndef MAGNUM_TARGET_WEBGL
 template<> struct TypeTraits<UnsignedLong>: Implementation::TypeTraitsIntegral<UnsignedLong> {
-    #ifndef MAGNUM_TARGET_GLES
     typedef long double FloatingPointType;
-    #endif
 };
 template<> struct TypeTraits<Long>: Implementation::TypeTraitsIntegral<Long> {
-    #ifndef MAGNUM_TARGET_GLES
     typedef long double FloatingPointType;
-    #endif
 };
 #endif
 
@@ -183,13 +175,11 @@ template<> struct TypeTraits<Float>: Implementation::TypeTraitsFloatingPoint<Flo
 
     constexpr static Float epsilon() { return FLOAT_EQUALITY_PRECISION; }
 };
-#ifndef MAGNUM_TARGET_GLES
 template<> struct TypeTraits<Double>: Implementation::TypeTraitsFloatingPoint<Double> {
     typedef Double FloatingPointType;
 
     constexpr static Double epsilon() { return DOUBLE_EQUALITY_PRECISION; }
 };
-#endif
 template<> struct TypeTraits<long double>: Implementation::TypeTraitsFloatingPoint<long double> {
     typedef long double FloatingPointType;
 

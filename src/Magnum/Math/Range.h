@@ -598,10 +598,8 @@ extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Range<2, M
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Range<2, Magnum::Int>>;
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Range<3, Magnum::Float>>;
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Range<3, Magnum::Int>>;
-#ifndef MAGNUM_TARGET_GLES
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Range<2, Magnum::Double>>;
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Range<3, Magnum::Double>>;
-#endif
 #endif
 
 }}

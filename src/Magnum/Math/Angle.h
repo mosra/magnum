@@ -155,7 +155,6 @@ template<class T> class Deg: public Unit<Deg, T> {
 
 namespace Literals {
 
-#ifndef MAGNUM_TARGET_GLES
 /** @relatesalso Magnum::Math::Deg
 @brief Double-precision degree value literal
 
@@ -165,10 +164,8 @@ Double cosine = Math::cos(60.0_deg);  // cosine = 0.5
 Double cosine = Math::cos(1.047_rad); // cosine = 0.5
 @endcode
 @see @link operator""_degf() @endlink, @link operator""_rad() @endlink
-@requires_gl Only single-precision types are available in OpenGL ES and WebGL.
 */
 constexpr Deg<Double> operator "" _deg(long double value) { return Deg<Double>(Double(value)); }
-#endif
 
 /** @relatesalso Magnum::Math::Deg
 @brief Single-precision degree value literal
@@ -222,16 +219,13 @@ template<class T> class Rad: public Unit<Rad, T> {
 
 namespace Literals {
 
-#ifndef MAGNUM_TARGET_GLES
 /** @relatesalso Magnum::Math::Rad
 @brief Double-precision radian value literal
 
 See @link operator""_deg() @endlink for more information.
 @see @link operator""_radf() @endlink
-@requires_gl Only single-precision types are available in OpenGL ES and WebGL.
 */
 constexpr Rad<Double> operator "" _rad(long double value) { return Rad<Double>(Double(value)); }
-#endif
 
 /** @relatesalso Magnum::Math::Rad
 @brief Single-precision radian value literal
@@ -260,10 +254,8 @@ template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& d
 #ifndef DOXYGEN_GENERATING_OUTPUT
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Unit<Rad, Float>&);
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Unit<Deg, Float>&);
-#ifndef MAGNUM_TARGET_GLES
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Unit<Rad, Double>&);
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Unit<Deg, Double>&);
-#endif
 #endif
 
 }}

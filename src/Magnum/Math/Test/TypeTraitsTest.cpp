@@ -53,26 +53,15 @@ TypeTraitsTest::TypeTraitsTest() {
               &TypeTraitsTest::equalsIntegral<Long>,
               #endif
               &TypeTraitsTest::equalsFloatingPoint0<Float>,
-              #ifndef MAGNUM_TARGET_GLES
               &TypeTraitsTest::equalsFloatingPoint0<Double>,
-              #endif
               &TypeTraitsTest::equalsFloatingPoint1<Float>,
-              #ifndef MAGNUM_TARGET_GLES
               &TypeTraitsTest::equalsFloatingPoint1<Double>,
-              #endif
               &TypeTraitsTest::equalsFloatingPointLarge<Float>,
-              #ifndef MAGNUM_TARGET_GLES
               &TypeTraitsTest::equalsFloatingPointLarge<Double>,
-              #endif
               &TypeTraitsTest::equalsFloatingPointInfinity<Float>,
-              #ifndef MAGNUM_TARGET_GLES
               &TypeTraitsTest::equalsFloatingPointInfinity<Double>,
-              #endif
               &TypeTraitsTest::equalsFloatingPointNaN<Float>,
-              #ifndef MAGNUM_TARGET_GLES
-              &TypeTraitsTest::equalsFloatingPointNaN<Double>
-              #endif
-              });
+              &TypeTraitsTest::equalsFloatingPointNaN<Double>});
 }
 
 template<class T> void TypeTraitsTest::equalsIntegral() {

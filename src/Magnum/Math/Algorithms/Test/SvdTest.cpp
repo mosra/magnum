@@ -36,13 +36,11 @@ struct SvdTest: Corrade::TestSuite::Tester {
     void testFloat();
 };
 
-#ifndef MAGNUM_TARGET_GLES
 typedef RectangularMatrix<5, 8, Double> Matrix5x8d;
 typedef Matrix<8, Double> Matrix8d;
 typedef Matrix<5, Double> Matrix5d;
 typedef Vector<8, Double> Vector8d;
 typedef Vector<5, Double> Vector5d;
-#endif
 
 typedef RectangularMatrix<5, 8, Float> Matrix5x8f;
 typedef Matrix<8, Float> Matrix8f;
@@ -50,7 +48,6 @@ typedef Matrix<5, Float> Matrix5f;
 typedef Vector<8, Float> Vector8f;
 typedef Vector<5, Float> Vector5f;
 
-#ifndef MAGNUM_TARGET_GLES
 constexpr static Matrix5x8d ad(
     Vector8d(22.0, 14.0,  -1.0, -3.0,  9.0,  9.0,  2.0,  4.0),
     Vector8d(10.0,  7.0,  13.0, -2.0,  8.0,  1.0, -6.0,  5.0),
@@ -59,7 +56,6 @@ constexpr static Matrix5x8d ad(
     Vector8d( 7.0,  8.0,   3.0,  4.0,  4.0, -1.0,  1.0,  2.0)
 );
 static const Vector5d expectedd(std::sqrt(1248.0), 0.0, 20.0, std::sqrt(384.0), 0.0);
-#endif
 
 constexpr static Matrix5x8f af(
     Vector8f(22.0f, 14.0f,  -1.0f, -3.0f,  9.0f,  9.0f,  2.0f,  4.0f),
@@ -76,7 +72,6 @@ SvdTest::SvdTest() {
 }
 
 void SvdTest::testDouble() {
-    #ifndef MAGNUM_TARGET_GLES
     Matrix5x8d u;
     Vector5d w;
     Matrix5d v;
@@ -93,9 +88,6 @@ void SvdTest::testDouble() {
 
     /* Test W */
     CORRADE_COMPARE(w, expectedd);
-    #else
-    CORRADE_SKIP("Double precision is not supported when targeting OpenGL ES.");
-    #endif
 }
 
 void SvdTest::testFloat() {

@@ -50,10 +50,8 @@ namespace Math {
 
     #ifdef MAGNUM_BUILD_DEPRECATED
     namespace Literals {
-        #ifndef MAGNUM_TARGET_GLES
         constexpr Rad<Double> operator "" _rad(long double);
         constexpr Deg<Double> operator "" _deg(long double);
-        #endif
         constexpr Rad<Float> operator "" _radf(long double);
         constexpr Deg<Float> operator "" _degf(long double);
     }
@@ -345,11 +343,9 @@ typedef Math::Range3D<Int> Range3Di;
 
 /*@}*/
 
-#ifndef MAGNUM_TARGET_GLES
 /** @{ @name Double-precision types
 
 See @ref types for more information.
-@requires_gl Only single-precision types are available in OpenGL ES and WebGL.
 */
 
 /** @brief Double (64bit) */
@@ -446,13 +442,10 @@ typedef Math::Range2D<Double> Range2Dd;
 typedef Math::Range3D<Double> Range3Dd;
 
 /*@}*/
-#endif
 
 #ifdef MAGNUM_BUILD_DEPRECATED
-#ifndef MAGNUM_TARGET_GLES
 using Math::Literals::operator "" _deg;
 using Math::Literals::operator "" _rad;
-#endif
 using Math::Literals::operator "" _degf;
 using Math::Literals::operator "" _radf;
 #endif

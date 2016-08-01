@@ -49,16 +49,12 @@ ConstantsTest::ConstantsTest() {
 
 void ConstantsTest::constants() {
     _constants<Float>();
-    #ifndef MAGNUM_TARGET_GLES
     _constants<Double>();
-    #endif
 }
 
 void ConstantsTest::specials() {
     _specials<Float>();
-    #ifndef MAGNUM_TARGET_GLES
     _specials<Double>();
-    #endif
 }
 
 template<class T> void ConstantsTest::_constants() {

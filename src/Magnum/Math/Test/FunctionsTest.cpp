@@ -277,10 +277,10 @@ void FunctionsTest::normalizeUnsigned() {
     CORRADE_COMPARE((Math::normalize<Float, UnsignedByte>(0)), 0.0f);
     CORRADE_COMPARE((Math::normalize<Float, UnsignedByte>(255)), 1.0f);
 
-    #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE((Math::normalize<Double, UnsignedInt>(0)), 0.0);
     CORRADE_COMPARE((Math::normalize<Double, UnsignedInt>(std::numeric_limits<UnsignedInt>::max())), 1.0);
 
+    #ifndef MAGNUM_TARGET_WEBGL
     CORRADE_COMPARE((Math::normalize<long double, UnsignedLong>(0)), 0.0);
     CORRADE_COMPARE((Math::normalize<long double, UnsignedLong>(std::numeric_limits<UnsignedLong>::max())), 1.0);
     #endif
@@ -303,11 +303,11 @@ void FunctionsTest::normalizeSigned() {
     CORRADE_COMPARE((Math::normalize<Float, Short>(0)), 0.0f);
     CORRADE_COMPARE((Math::normalize<Float, Short>(std::numeric_limits<Short>::max())), 1.0f);
 
-    #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE((Math::normalize<Double, Int>(std::numeric_limits<Int>::min())), -1.0);
     CORRADE_COMPARE((Math::normalize<Double, Int>(0)), 0.0);
     CORRADE_COMPARE((Math::normalize<Double, Int>(std::numeric_limits<Int>::max())), 1.0);
 
+    #ifndef MAGNUM_TARGET_WEBGL
     CORRADE_COMPARE((Math::normalize<long double, Long>(std::numeric_limits<Long>::min())), -1.0);
     CORRADE_COMPARE((Math::normalize<long double, Long>(0)), 0.0);
     CORRADE_COMPARE((Math::normalize<long double, Long>(std::numeric_limits<Long>::max())), 1.0);
@@ -326,10 +326,10 @@ void FunctionsTest::denormalizeUnsigned() {
     CORRADE_COMPARE(Math::denormalize<UnsignedShort>(0.0f), 0);
     CORRADE_COMPARE(Math::denormalize<UnsignedShort>(1.0f), std::numeric_limits<UnsignedShort>::max());
 
-    #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(Math::denormalize<UnsignedInt>(0.0), 0);
     CORRADE_COMPARE(Math::denormalize<UnsignedInt>(1.0), std::numeric_limits<UnsignedInt>::max());
 
+    #ifndef MAGNUM_TARGET_WEBGL
     CORRADE_COMPARE(Math::denormalize<UnsignedLong>(0.0l), 0);
     {
         #ifdef CORRADE_MSVC2015_COMPATIBILITY
@@ -387,10 +387,10 @@ void FunctionsTest::renormalizeUnsinged() {
     CORRADE_COMPARE(Math::normalize<Float>(Math::denormalize<UnsignedShort>(0.0f)), 0.0f);
     CORRADE_COMPARE(Math::normalize<Float>(Math::denormalize<UnsignedShort>(1.0f)), 1.0f);
 
-    #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(Math::normalize<Double>(Math::denormalize<UnsignedInt>(0.0)), 0.0);
     CORRADE_COMPARE(Math::normalize<Double>(Math::denormalize<UnsignedInt>(1.0)), 1.0);
 
+    #ifndef MAGNUM_TARGET_WEBGL
     CORRADE_COMPARE(Math::normalize<long double>(Math::denormalize<UnsignedLong>(0.0l)), 0.0l);
     {
         #ifdef CORRADE_MSVC2015_COMPATIBILITY
@@ -410,11 +410,11 @@ void FunctionsTest::renormalizeSinged() {
     CORRADE_COMPARE(Math::normalize<Float>(Math::denormalize<Short>(0.0f)), 0.0f);
     CORRADE_COMPARE(Math::normalize<Float>(Math::denormalize<Short>(1.0f)), 1.0f);
 
-    #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(Math::normalize<Double>(Math::denormalize<Int>(-1.0)), -1.0);
     CORRADE_COMPARE(Math::normalize<Double>(Math::denormalize<Int>(0.0)), 0.0);
     CORRADE_COMPARE(Math::normalize<Double>(Math::denormalize<Int>(1.0)), 1.0);
 
+    #ifndef MAGNUM_TARGET_WEBGL
     CORRADE_COMPARE(Math::normalize<long double>(Math::denormalize<Long>(-1.0l)), -1.0l);
     CORRADE_COMPARE(Math::normalize<long double>(Math::denormalize<Long>(0.0l)), 0.0l);
     {

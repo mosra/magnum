@@ -42,9 +42,7 @@ static_assert(std::is_same<ALuint, UnsignedInt>::value, "ALuint is not the same 
 static_assert(std::is_same<ALint, Int>::value, "ALint is not the same as Int");
 static_assert(std::is_same<ALsizei, Int>::value, "ALsizei is not the same as Int");
 static_assert(std::is_same<ALfloat, Float>::value, "ALfloat is not the same as Float");
-#ifndef MAGNUM_TARGET_GLES
 static_assert(std::is_same<ALdouble, Double>::value, "ALdouble is not the same as Double");
-#endif
 
 /* Verify boolean values */
 static_assert(AL_FALSE == false, "AL_FALSE is not the same as false");
