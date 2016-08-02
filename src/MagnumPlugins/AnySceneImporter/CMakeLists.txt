@@ -55,7 +55,9 @@ target_link_libraries(AnySceneImporter Magnum::Magnum)
 install(FILES ${AnySceneImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/AnySceneImporter)
 
 if(BUILD_TESTS)
-    add_library(MagnumAnySceneImporterTestLib STATIC $<TARGET_OBJECTS:AnySceneImporterObjects>)
+    add_library(MagnumAnySceneImporterTestLib STATIC
+        $<TARGET_OBJECTS:AnySceneImporterObjects>
+        ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details
     target_include_directories(MagnumAnySceneImporterTestLib PUBLIC ${PROJECT_SOURCE_DIR}/src)
     target_link_libraries(MagnumAnySceneImporterTestLib Magnum::Magnum)
     add_subdirectory(Test)

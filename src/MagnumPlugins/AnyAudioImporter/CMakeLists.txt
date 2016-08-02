@@ -56,7 +56,9 @@ target_link_libraries(AnyAudioImporter Magnum::Magnum Magnum::Audio)
 install(FILES ${AnyAudioImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/AnyAudioImporter)
 
 if(BUILD_TESTS)
-    add_library(MagnumAnyAudioImporterTestLib STATIC $<TARGET_OBJECTS:AnyAudioImporterObjects>)
+    add_library(MagnumAnyAudioImporterTestLib STATIC
+        $<TARGET_OBJECTS:AnyAudioImporterObjects>
+        ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details
     target_include_directories(MagnumAnyAudioImporterTestLib PUBLIC ${PROJECT_SOURCE_DIR}/src)
     target_link_libraries(MagnumAnyAudioImporterTestLib Magnum::Magnum Magnum::Audio)
     add_subdirectory(Test)

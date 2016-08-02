@@ -66,7 +66,9 @@ install(FILES ${AnyImageImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_I
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configure.h DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/AnyImageImporter)
 
 if(BUILD_TESTS)
-    add_library(MagnumAnyImageImporterTestLib STATIC $<TARGET_OBJECTS:AnyImageImporterObjects>)
+    add_library(MagnumAnyImageImporterTestLib STATIC
+        $<TARGET_OBJECTS:AnyImageImporterObjects>
+        ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details
     target_include_directories(MagnumAnyImageImporterTestLib PUBLIC
         ${PROJECT_SOURCE_DIR}/src
         ${PROJECT_BINARY_DIR}/src)
