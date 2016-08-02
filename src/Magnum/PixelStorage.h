@@ -203,14 +203,14 @@ class MAGNUM_EXPORT PixelStorage {
         /**
          * @brief Data properties for given parameters
          *
-         * Returns byte offset, (row length, row count, layer count) and pixel
-         * size for image of given @p size with current pixel storage
-         * parameters, @p format and @p type. The offset reflects the @ref skip()
-         * parameter. Adding byte offset and product of the vector gives
-         * minimal byte count to store given data.
+         * Returns byte offset in each direction, (row length, row count, layer
+         * count) and pixel size for image of given @p size with current pixel
+         * storage parameters, @p format and @p type. The offset reflects the
+         * @ref skip() parameter. Adding byte offset and product of the vector
+         * gives minimal byte count to store given data.
          * @see @ref pixelSize()
          */
-        std::tuple<std::size_t, Math::Vector3<std::size_t>, std::size_t> dataProperties(PixelFormat format, PixelType type, const Vector3i& size) const;
+        std::tuple<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>, std::size_t> dataProperties(PixelFormat format, PixelType type, const Vector3i& size) const;
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
     protected:
@@ -306,15 +306,16 @@ class MAGNUM_EXPORT CompressedPixelStorage: public PixelStorage {
         /**
          * @brief Data properties for given parameters
          *
-         * Returns byte offset, count of blocks in each dimension and block
-         * data size for image of given @p size with current pixel storage
-         * parameters. Adding byte offset and product of the vector multiplied
-         * with block data size gives minimal byte count to store given data.
+         * Returns byte offset in each dimension, count of blocks in each
+         * dimension and block data size for image of given @p size with
+         * current pixel storage parameters. Adding byte offset and product of
+         * the vector multiplied with block data size gives minimal byte count
+         * to store given data.
          *
          * Expects @ref compressedBlockSize() and @ref compressedBlockDataSize()
          * to be non-zero.
          */
-        std::tuple<std::size_t, Math::Vector3<std::size_t>, std::size_t> dataProperties(const Vector3i& size) const;
+        std::tuple<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>, std::size_t> dataProperties(const Vector3i& size) const;
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -369,37 +370,38 @@ constexpr PixelStorage::PixelStorage() noexcept:
 
 namespace Implementation {
     /* Used in *Image::dataProperties() */
-    template<std::size_t dimensions, class T> std::tuple<std::size_t, Math::Vector<dimensions, std::size_t>, std::size_t> imageDataProperties(const T& image) {
-        std::size_t offset;
-        Math::Vector3<std::size_t> dataSize;
+    template<std::size_t dimensions, class T> std::tuple<Math::Vector<dimensions, std::size_t>, Math::Vector<dimensions, std::size_t>, std::size_t> imageDataProperties(const T& image) {
+        Math::Vector3<std::size_t> offset, dataSize;
         std::size_t pixelSize;
         std::tie(offset, dataSize, pixelSize) = image.storage().dataProperties(image.format(), image.type(), Vector3i::pad(image.size(), 1));
-        return std::make_tuple(offset, Math::Vector<dimensions, std::size_t>::pad(dataSize), pixelSize);
+        return std::make_tuple(Math::Vector<dimensions, std::size_t>::pad(offset), Math::Vector<dimensions, std::size_t>::pad(dataSize), pixelSize);
     }
 
     #ifndef MAGNUM_TARGET_GLES2
     /* Used in Compressed*Image::dataProperties() */
-    template<std::size_t dimensions, class T> std::tuple<std::size_t, Math::Vector<dimensions, std::size_t>, std::size_t> compressedImageDataProperties(const T& image) {
-        std::size_t offset;
-        Math::Vector3<std::size_t> blockCount;
+    template<std::size_t dimensions, class T> std::tuple<Math::Vector<dimensions, std::size_t>, Math::Vector<dimensions, std::size_t>, std::size_t> compressedImageDataProperties(const T& image) {
+        Math::Vector3<std::size_t> offset, blockCount;
         std::size_t blockSize;
         std::tie(offset, blockCount, blockSize) = image.storage().dataProperties(Vector3i::pad(image.size(), 1));
-        return std::make_tuple(offset, Math::Vector<dimensions, std::size_t>::pad(blockCount), blockSize);
+        return std::make_tuple(Math::Vector<dimensions, std::size_t>::pad(offset), Math::Vector<dimensions, std::size_t>::pad(blockCount), blockSize);
     }
     #endif
 
     /* Used in image query functions */
     template<std::size_t dimensions, class T> std::size_t imageDataSizeFor(const T& image, const Math::Vector<dimensions, Int>& size) {
-        const auto paddedSize = Vector3i::pad(size, 1);
-
-        std::size_t offset;
-        Math::Vector3<std::size_t> dataSize;
+        Math::Vector3<std::size_t> offset, dataSize;
         std::size_t pixelSize;
-        std::tie(offset, dataSize, pixelSize) = image.storage().dataProperties(image.format(), image.type(), paddedSize);
+        std::tie(offset, dataSize, pixelSize) = image.storage().dataProperties(image.format(), image.type(), Vector3i::pad(size, 1));
 
-        /* I would subtract also (dataSize.x() - pixelSize*paddedSize.x()) but NVidia
-           then complains that the buffer is too small */
-        return offset + dataSize.product() - (dataSize.y() - paddedSize.y())*dataSize.x();
+        /* Smallest line/rectangle/cube that covers the area */
+        std::size_t dataOffset = 0;
+        if(offset.z())
+            dataOffset += offset.z();
+        else if(offset.y())
+            dataOffset += offset.y();
+        else if(offset.x())
+            dataOffset += offset.x();
+        return dataOffset + dataSize.product();
     }
 
     /* Used in data size assertions */
@@ -419,14 +421,13 @@ namespace Implementation {
         if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize())
             return {0, dataSize};
 
-        std::size_t offset;
-        Math::Vector3<std::size_t> blockCount;
+        Math::Vector3<std::size_t> offset, blockCount;
         std::size_t blockDataSize;
         std::tie(offset, blockCount, blockDataSize) = image.storage().dataProperties(Vector3i::pad(size, 1));
 
         const auto realBlockCount = Math::Vector3<std::size_t>{(Vector3i::pad(size, 1) + image.storage().compressedBlockSize() - Vector3i{1})/image.storage().compressedBlockSize()};
 
-        return {offset, (blockCount.product() - (blockCount.x() - realBlockCount.x()) - (blockCount.y() - realBlockCount.y())*blockCount.x())*blockDataSize};
+        return {offset.sum(), (blockCount.product() - (blockCount.x() - realBlockCount.x()) - (blockCount.y() - realBlockCount.y())*blockCount.x())*blockDataSize};
     }
 
     /* Used in image query functions */

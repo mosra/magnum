@@ -135,7 +135,7 @@ template<UnsignedInt dimensions> class Image {
          *
          * See @ref PixelStorage::dataProperties() for more information.
          */
-        std::tuple<std::size_t, VectorTypeFor<dimensions, std::size_t>, std::size_t> dataProperties() const {
+        std::tuple<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>, std::size_t> dataProperties() const {
             return Implementation::imageDataProperties<dimensions>(*this);
         }
 
@@ -339,7 +339,7 @@ template<UnsignedInt dimensions> class CompressedImage {
          * @requires_gl Compressed pixel storage is hardcoded in OpenGL ES and
          *      WebGL.
          */
-        std::tuple<std::size_t, VectorTypeFor<dimensions, std::size_t>, std::size_t> dataProperties() const {
+        std::tuple<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>, std::size_t> dataProperties() const {
             return Implementation::compressedImageDataProperties<dimensions>(*this);
         }
         #endif

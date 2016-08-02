@@ -45,7 +45,9 @@ struct PixelStorageTest: TestSuite::Tester {
     void dataPropertiesImageHeight();
     #endif
 
-    void dataSize();
+    void dataSize1D();
+    void dataSize2D();
+    void dataSize3D();
 
     #ifndef MAGNUM_TARGET_GLES
     void dataPropertiesCompressed();
@@ -70,7 +72,9 @@ PixelStorageTest::PixelStorageTest() {
               &PixelStorageTest::dataPropertiesImageHeight,
               #endif
 
-              &PixelStorageTest::dataSize,
+              &PixelStorageTest::dataSize1D,
+              &PixelStorageTest::dataSize2D,
+              &PixelStorageTest::dataSize3D,
 
               #ifndef MAGNUM_TARGET_GLES
               &PixelStorageTest::dataPropertiesCompressed,
@@ -96,16 +100,16 @@ void PixelStorageTest::dataProperties() {
     storage.setAlignment(1);
 
     CORRADE_COMPARE(storage.dataProperties(PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i{0}),
-        (std::tuple<std::size_t, Vector3st, std::size_t>{0, {0, 0, 0}, 4}));
+        (std::tuple<Vector3st, Vector3st, std::size_t>{{}, {0, 0, 0}, 4}));
     CORRADE_COMPARE(storage.dataProperties(PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i{1}),
-        (std::tuple<std::size_t, Vector3st, std::size_t>{0, {4, 1, 1}, 4}));
+        (std::tuple<Vector3st, Vector3st, std::size_t>{{}, {4, 1, 1}, 4}));
     #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
     CORRADE_COMPARE(storage.dataProperties(PixelFormat::Red, PixelType::UnsignedByte, {8, 2, 1}),
-        (std::tuple<std::size_t, Vector3st, std::size_t>{0, {8, 2, 1}, 1}));
+        (std::tuple<Vector3st, Vector3st, std::size_t>{{}, {8, 2, 1}, 1}));
     CORRADE_COMPARE(storage.dataProperties(PixelFormat::Red, PixelType::UnsignedByte, {2, 4, 1}),
-        (std::tuple<std::size_t, Vector3st, std::size_t>{0, {2, 4, 1}, 1}));
+        (std::tuple<Vector3st, Vector3st, std::size_t>{{}, {2, 4, 1}, 1}));
     CORRADE_COMPARE(storage.dataProperties(PixelFormat::Red, PixelType::UnsignedByte, {2, 4, 6}),
-        (std::tuple<std::size_t, Vector3st, std::size_t>{0, {2, 4, 6}, 1}));
+        (std::tuple<Vector3st, Vector3st, std::size_t>{{}, {2, 4, 6}, 1}));
     #endif
 }
 
@@ -115,16 +119,16 @@ void PixelStorageTest::dataPropertiesAlignment() {
         .setSkip({3, 2, 1});
 
     CORRADE_COMPARE(storage.dataProperties(PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i{0}),
-        (std::tuple<std::size_t, Vector3st, std::size_t>{3*4, {0, 0, 0}, 4}));
+        (std::tuple<Vector3st, Vector3st, std::size_t>{{3*4, 0, 0}, {0, 0, 0}, 4}));
     CORRADE_COMPARE(storage.dataProperties(PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i{1}),
-        (std::tuple<std::size_t, Vector3st, std::size_t>{8 + 16 + 3*4, {8, 1, 1}, 4}));
+        (std::tuple<Vector3st, Vector3st, std::size_t>{{12, 16, 8}, {8, 1, 1}, 4}));
     #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
     CORRADE_COMPARE(storage.dataProperties(PixelFormat::Red, PixelType::UnsignedByte, {8, 2, 1}),
-        (std::tuple<std::size_t, Vector3st, std::size_t>{16 + 16 + 3, {8, 2, 1}, 1}));
+        (std::tuple<Vector3st, Vector3st, std::size_t>{{3, 16, 16}, {8, 2, 1}, 1}));
     CORRADE_COMPARE(storage.dataProperties(PixelFormat::Red, PixelType::UnsignedByte, {2, 4, 1}),
-        (std::tuple<std::size_t, Vector3st, std::size_t>{32 + 16 + 3, {8, 4, 1}, 1}));
+        (std::tuple<Vector3st, Vector3st, std::size_t>{{3, 16, 32}, {8, 4, 1}, 1}));
     CORRADE_COMPARE(storage.dataProperties(PixelFormat::Red, PixelType::UnsignedByte, {2, 4, 6}),
-        (std::tuple<std::size_t, Vector3st, std::size_t>{32 + 16 + 3, {8, 4, 6}, 1}));
+        (std::tuple<Vector3st, Vector3st, std::size_t>{{3, 16, 32}, {8, 4, 6}, 1}));
     #endif
 }
 
@@ -136,15 +140,15 @@ void PixelStorageTest::dataPropertiesRowLength() {
         .setSkip({3, 7, 0});
 
     CORRADE_COMPARE(storage.dataProperties(PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i{0}),
-        (std::tuple<std::size_t, Vector3st, std::size_t>{3*4 + 7*15*4, {0, 0, 0}, 4}));
+        (std::tuple<Vector3st, Vector3st, std::size_t>{{3*4, 7*15*4, 0}, {0, 0, 0}, 4}));
     CORRADE_COMPARE(storage.dataProperties(PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i{1}),
-        (std::tuple<std::size_t, Vector3st, std::size_t>{3*4 + 7*15*4, {60, 1, 1}, 4}));
+        (std::tuple<Vector3st, Vector3st, std::size_t>{{3*4, 7*15*4, 0}, {60, 1, 1}, 4}));
     CORRADE_COMPARE(storage.dataProperties(PixelFormat::Red, PixelType::UnsignedByte, {4, 2, 1}),
-        (std::tuple<std::size_t, Vector3st, std::size_t>{3 + 7*16, {16, 2, 1}, 1}));
+        (std::tuple<Vector3st, Vector3st, std::size_t>{{3, 7*16, 0}, {16, 2, 1}, 1}));
     CORRADE_COMPARE(storage.dataProperties(PixelFormat::Red, PixelType::UnsignedByte, {2, 4, 1}),
-        (std::tuple<std::size_t, Vector3st, std::size_t>{3 + 7*16, {16, 4, 1}, 1}));
+        (std::tuple<Vector3st, Vector3st, std::size_t>{{3, 7*16, 0}, {16, 4, 1}, 1}));
     CORRADE_COMPARE(storage.dataProperties(PixelFormat::Red, PixelType::UnsignedByte, {2, 4, 6}),
-        (std::tuple<std::size_t, Vector3st, std::size_t>{3 + 7*16, {16, 4, 6}, 1}));
+        (std::tuple<Vector3st, Vector3st, std::size_t>{{3, 7*16, 0}, {16, 4, 6}, 1}));
 }
 #endif
 
@@ -156,39 +160,66 @@ void PixelStorageTest::dataPropertiesImageHeight() {
         .setSkip({3, 7, 2});
 
     CORRADE_COMPARE(storage.dataProperties(PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i{0}),
-        (std::tuple<std::size_t, Vector3st, std::size_t>{3*4, {0, 0, 0}, 4}));
+        (std::tuple<Vector3st, Vector3st, std::size_t>{{3*4, 0, 0}, {0, 0, 0}, 4}));
     CORRADE_COMPARE(storage.dataProperties(PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i{1}),
-        (std::tuple<std::size_t, Vector3st, std::size_t>{3*4 + 7*1*4 + 2*128*1*4, {4, 128, 1}, 4}));
+        (std::tuple<Vector3st, Vector3st, std::size_t>{{3*4, 7*1*4, 2*128*1*4}, {4, 128, 1}, 4}));
     CORRADE_COMPARE(storage.dataProperties(PixelFormat::Red, PixelType::UnsignedByte, {4, 2, 1}),
-        (std::tuple<std::size_t, Vector3st, std::size_t>{3 + 7*1*4 + 2*128*4, {4, 128, 1}, 1}));
+        (std::tuple<Vector3st, Vector3st, std::size_t>{{3, 7*1*4, 2*128*4}, {4, 128, 1}, 1}));
     CORRADE_COMPARE(storage.dataProperties(PixelFormat::Red, PixelType::UnsignedByte, {2, 4, 1}),
-        (std::tuple<std::size_t, Vector3st, std::size_t>{3 + 7*1*2 + 2*128*2, {2, 128, 1}, 1}));
+        (std::tuple<Vector3st, Vector3st, std::size_t>{{3, 7*1*2, 2*128*2}, {2, 128, 1}, 1}));
     CORRADE_COMPARE(storage.dataProperties(PixelFormat::Red, PixelType::UnsignedByte, {2, 4, 6}),
-        (std::tuple<std::size_t, Vector3st, std::size_t>{3 + 7*1*2 + 2*128*2, {2, 128, 6}, 1}));
+        (std::tuple<Vector3st, Vector3st, std::size_t>{{3, 7*1*2, 2*128*2}, {2, 128, 6}, 1}));
 }
 #endif
 
-void PixelStorageTest::dataSize() {
+void PixelStorageTest::dataSize1D() {
+    const Image1D image{PixelStorage{}.setAlignment(2)
+        .setSkip({2, 0, 0}),
+        PixelFormat::RGB, PixelType::UnsignedByte};
+
+    CORRADE_COMPARE(Implementation::imageDataSizeFor(image, Math::Vector<1, Int>{3}),
+        16);
+}
+
+void PixelStorageTest::dataSize2D() {
     /* The same parameters as in PixelStorageGLTest 3D case */
     const Image2D image{PixelStorage{}.setAlignment(2)
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        .setRowLength(3)
+        .setRowLength(7)
+        #endif
+        .setSkip({2, 3, 0}),
+        PixelFormat::RGB, PixelType::UnsignedByte};
+
+    #if defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2)
+    CORRADE_COMPARE(Implementation::imageDataSizeFor(image, Vector2i{5, 9}),
+        (3 + 9)*15);
+    #else
+    CORRADE_COMPARE(Implementation::imageDataSizeFor(image, Vector2i{5, 9}),
+        (3 + 9)*22);
+    #endif
+}
+
+void PixelStorageTest::dataSize3D() {
+    /* The same parameters as in PixelStorageGLTest 3D case */
+    const Image3D image{PixelStorage{}.setAlignment(2)
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+        .setRowLength(7)
         #endif
         #ifndef MAGNUM_TARGET_GLES2
-        .setImageHeight(5)
+        .setImageHeight(10)
         #endif
         .setSkip({2, 3, 1}),
         PixelFormat::RGB, PixelType::UnsignedByte};
 
     #if defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2)
-    CORRADE_COMPARE(Implementation::imageDataSizeFor(image, Vector2i{2, 3}),
-        3*6 + 3*6 + 6 + 3*6);
+    CORRADE_COMPARE(Implementation::imageDataSizeFor(image, Vector3i{5, 9, 3}),
+        (1 + 3)*9*15);
     #elif defined(MAGNUM_TARGET_GLES2)
-    CORRADE_COMPARE(Implementation::imageDataSizeFor(image, Vector2i{2, 3}),
-        3*10 + 3*10 + 6 + 3*10);
+    CORRADE_COMPARE(Implementation::imageDataSizeFor(image, Vector3i{5, 9, 3}),
+        (1 + 3)*9*22);
     #else
-    CORRADE_COMPARE(Implementation::imageDataSizeFor(image, Vector2i{2, 3}),
-        5*10 + 3*10 + 6 + 3*10);
+    CORRADE_COMPARE(Implementation::imageDataSizeFor(image, Vector3i{5, 9, 3}),
+        (1 + 3)*10*22);
     #endif
 }
 
@@ -199,7 +230,7 @@ void PixelStorageTest::dataPropertiesCompressed() {
         .setCompressedBlockDataSize(16);
 
     CORRADE_COMPARE(storage.dataProperties({2, 8, 11}),
-        (std::tuple<std::size_t, Vector3st, std::size_t>{0, {1, 2, 3}, 16}));
+        (std::tuple<Vector3st, Vector3st, std::size_t>{{}, {1, 2, 3}, 16}));
 }
 
 void PixelStorageTest::dataPropertiesCompressedRowLength() {
@@ -210,7 +241,7 @@ void PixelStorageTest::dataPropertiesCompressedRowLength() {
         .setSkip({5, 8, 0});
 
     CORRADE_COMPARE(storage.dataProperties({2, 8, 11}),
-        (std::tuple<std::size_t, Vector3st, std::size_t>{(2 + 8)*9, {4, 2, 3}, 9}));
+        (std::tuple<Vector3st, Vector3st, std::size_t>{{2*9, 8*9, 0}, {4, 2, 3}, 9}));
 }
 
 void PixelStorageTest::dataPropertiesCompressedImageHeight() {
@@ -221,7 +252,7 @@ void PixelStorageTest::dataPropertiesCompressedImageHeight() {
         .setSkip({5, 8, 11});
 
     CORRADE_COMPARE(storage.dataProperties({2, 8, 11}),
-        (std::tuple<std::size_t, Vector3st, std::size_t>{(2 + 2 + 9)*16, {1, 3, 3}, 16}));
+        (std::tuple<Vector3st, Vector3st, std::size_t>{{2*16, 2*16, 9*16}, {1, 3, 3}, 16}));
 }
 
 void PixelStorageTest::dataOffsetSizeCompressed() {

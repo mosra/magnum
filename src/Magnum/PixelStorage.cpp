@@ -156,7 +156,7 @@ std::size_t PixelStorage::pixelSize(PixelFormat format, PixelType type) {
     CORRADE_ASSERT_UNREACHABLE();
 }
 
-std::tuple<std::size_t, Math::Vector3<std::size_t>, std::size_t> PixelStorage::dataProperties(const PixelFormat format, const PixelType type, const Vector3i& size) const {
+std::tuple<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>, std::size_t> PixelStorage::dataProperties(const PixelFormat format, const PixelType type, const Vector3i& size) const {
     const std::size_t pixelSize = PixelStorage::pixelSize(format, type);
     const Math::Vector3<std::size_t> dataSize{
         std::size_t((((
@@ -170,13 +170,13 @@ std::tuple<std::size_t, Math::Vector3<std::size_t>, std::size_t> PixelStorage::d
         std::size_t(size.y()),
         #endif
         std::size_t(size.z())};
-    const std::size_t offset = (Math::Vector3<std::size_t>{pixelSize, dataSize.x(), dataSize.xy().product()}*Math::Vector3<std::size_t>{_skip}).sum();
 
-    return std::make_tuple(offset, size.product() ? dataSize : Math::Vector3<std::size_t>{}, pixelSize);
+    return std::make_tuple(Math::Vector3<std::size_t>{pixelSize, dataSize.x(), dataSize.xy().product()}*Math::Vector3<std::size_t>{_skip},
+        size.product() ? dataSize : Math::Vector3<std::size_t>{}, pixelSize);
 }
 
 #ifndef MAGNUM_TARGET_GLES
-std::tuple<std::size_t, Math::Vector3<std::size_t>, std::size_t> CompressedPixelStorage::dataProperties(const Vector3i& size) const {
+std::tuple<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>, std::size_t> CompressedPixelStorage::dataProperties(const Vector3i& size) const {
     CORRADE_ASSERT(_blockDataSize && _blockSize.product(), "CompressedPixelStorage::dataProperties(): expected non-zero storage parameters", {});
 
     const Vector3i blockCount = (size + _blockSize - Vector3i{1})/_blockSize;
@@ -186,7 +186,7 @@ std::tuple<std::size_t, Math::Vector3<std::size_t>, std::size_t> CompressedPixel
         std::size_t(blockCount.z())};
 
     const Vector3i skipBlockCount = (_skip + _blockSize - Vector3i{1})/_blockSize;
-    const std::size_t offset = (Math::Vector3<std::size_t>{1, dataSize.x(), dataSize.xy().product()}*Math::Vector3<std::size_t>{skipBlockCount}).sum()*_blockDataSize;
+    const Math::Vector3<std::size_t> offset = (Math::Vector3<std::size_t>{1, dataSize.x(), dataSize.xy().product()}*Math::Vector3<std::size_t>{skipBlockCount})*_blockDataSize;
 
     return std::make_tuple(offset, size.product() ? dataSize : Math::Vector3<std::size_t>{}, _blockDataSize);
 }

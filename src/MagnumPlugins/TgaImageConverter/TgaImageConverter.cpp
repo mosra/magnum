@@ -98,7 +98,7 @@ Containers::Array<char> TgaImageConverter::doExportToData(const ImageView2D& ima
     header->height = UnsignedShort(Utility::Endianness::littleEndian(image.size().y()));
 
     /* Image data pointer including skip */
-    const char* imageData = image.data() + std::get<0>(image.dataProperties());
+    const char* imageData = image.data() + std::get<0>(image.dataProperties()).sum();
 
     /* Fill data or copy them row by row if we need to drop the padding */
     const std::size_t rowSize = image.size().x()*pixelSize;
