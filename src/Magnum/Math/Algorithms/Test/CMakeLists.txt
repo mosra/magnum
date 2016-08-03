@@ -25,4 +25,5 @@
 
 corrade_add_test(MathAlgorithmsGaussJordanTest GaussJordanTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathAlgorithmsGramSchmidtTest GramSchmidtTest.cpp LIBRARIES MagnumMathTestLib)
+corrade_add_test(MathAlgorithmsQrTest QrTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathAlgorithmsSvdTest SvdTest.cpp LIBRARIES MagnumMathTestLib)

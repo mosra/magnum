@@ -26,6 +26,7 @@
 set(MagnumMathAlgorithms_HEADERS
     GaussJordan.h
     GramSchmidt.h
+    Qr.h
     Svd.h)
 
 # Force IDEs to display all header files in project view
