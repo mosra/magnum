@@ -49,8 +49,8 @@ template<UnsignedInt dimensions, class T> MatrixTypeFor<dimensions, T> aspectRat
        Clip on smaller side = scale smaller side up */
     return MatrixTypeFor<dimensions, T>::scaling(Math::Vector<dimensions, T>::pad(
         (relativeAspectRatio.x() > relativeAspectRatio.y()) == (aspectRatioPolicy == AspectRatioPolicy::Extend) ?
-        Vector2(relativeAspectRatio.y()/relativeAspectRatio.x(), T(1)) :
-        Vector2(T(1), relativeAspectRatio.x()/relativeAspectRatio.y()), T(1)));
+        Math::Vector2<T>(relativeAspectRatio.y()/relativeAspectRatio.x(), T(1)) :
+        Math::Vector2<T>(T(1), relativeAspectRatio.x()/relativeAspectRatio.y()), T(1)));
 }
 
 }
