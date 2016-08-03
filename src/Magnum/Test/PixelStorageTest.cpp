@@ -192,7 +192,7 @@ void PixelStorageTest::dataSize2D() {
 
     #if defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2)
     CORRADE_COMPARE(Implementation::imageDataSizeFor(image, Vector2i{5, 9}),
-        (3 + 9)*15);
+        (3 + 9)*16);
     #else
     CORRADE_COMPARE(Implementation::imageDataSizeFor(image, Vector2i{5, 9}),
         (3 + 9)*22);
@@ -213,7 +213,7 @@ void PixelStorageTest::dataSize3D() {
 
     #if defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2)
     CORRADE_COMPARE(Implementation::imageDataSizeFor(image, Vector3i{5, 9, 3}),
-        (1 + 3)*9*15);
+        (1 + 3)*9*16);
     #elif defined(MAGNUM_TARGET_GLES2)
     CORRADE_COMPARE(Implementation::imageDataSizeFor(image, Vector3i{5, 9, 3}),
         (1 + 3)*9*22);
