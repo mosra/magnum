@@ -54,13 +54,19 @@ class Context: public Magnum::Context {
          *      @def_gl{CONTEXT_FLAGS}, @def_gl{NUM_EXTENSIONS},
          *      @fn_gl{GetString} with @def_gl{EXTENSIONS}
          */
-        explicit Context(Int argc, char** argv): Context{NoCreate, argc, argv} { create(); }
+        explicit Context(Int argc, const char** argv): Context{NoCreate, argc, argv} { create(); }
+
+        /** @overload */
+        explicit Context(Int argc, char** argv): Context{argc, const_cast<const char**>(argv)} {}
+
+        /** @overload */
+        explicit Context(Int argc, std::nullptr_t argv): Context{argc, static_cast<const char**>(argv)} {}
 
         #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @copybrief Context(Int, char**)
-         * @deprecated Use @ref Context(Int, char**) instead.
+        /** @copybrief Context(Int, const char**)
+         * @deprecated Use @ref Context(Int, const char**) instead.
          */
-        CORRADE_DEPRECATED("use Context(Int, char**) instead") explicit Context(): Context(0, nullptr) {}
+        CORRADE_DEPRECATED("use Context(Int, const char**) instead") explicit Context(): Context(0, nullptr) {}
         #endif
 
         /**
@@ -71,12 +77,18 @@ class Context: public Magnum::Context {
          * left in empty state. Use @ref create() or @ref tryCreate() to
          * complete the setup.
          */
-        explicit Context(NoCreateT, Int argc, char** argv):
+        explicit Context(NoCreateT, Int argc, const char** argv):
             #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
             Magnum::Context{NoCreate, argc, argv, flextGLInit} {}
             #else
             Magnum::Context{NoCreate, argc, argv, nullptr} {}
             #endif
+
+        /** @overload */
+        explicit Context(NoCreateT, Int argc, char** argv): Context{NoCreate, argc, const_cast<const char**>(argv)} {}
+
+        /** @overload */
+        explicit Context(NoCreateT, Int argc, std::nullptr_t argv): Context{NoCreate, argc, static_cast<const char**>(argv)} {}
 
         /**
          * @brief Complete the context setup and exit on failure

@@ -427,7 +427,7 @@ Context& Context::current() {
     return *currentContext;
 }
 
-Context::Context(NoCreateT, Int argc, char** argv, void functionLoader()): _functionLoader{functionLoader}, _version{Version::None} {
+Context::Context(NoCreateT, Int argc, const char** argv, void functionLoader()): _functionLoader{functionLoader}, _version{Version::None} {
     /* Parse arguments */
     Utility::Arguments args{"magnum"};
     args.addOption("disable-workarounds")

@@ -505,7 +505,7 @@ class MAGNUM_EXPORT Context {
         Implementation::State& state() { return *_state; }
 
     private:
-        explicit Context(NoCreateT, Int argc, char** argv, void functionLoader());
+        explicit Context(NoCreateT, Int argc, const char** argv, void functionLoader());
 
         bool tryCreate();
         void create();
