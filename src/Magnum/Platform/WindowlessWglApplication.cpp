@@ -72,9 +72,14 @@ WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, C
     _window = CreateWindowW(wc.lpszClassName, L"Magnum Windowless Application",
         WS_OVERLAPPEDWINDOW, 0, 0, 32, 32, 0, 0, wc.hInstance, 0);
 
-    /* Get device context */
-    const HDC currentDeviceContext = wglGetCurrentDC();
+    /* Get device context from the newly created window and save the previous
+       one. In case the previous one is null, wglMakeCurrent(null, ...) would
+       fail and thus we need to pass at least something there. As a commenter
+       on https://github.com/glfw/glfw/issues/245#issuecomment-43475120 said:
+       the Windows API is horrible. HORRIBLE. */
+    HDC currentDeviceContext = wglGetCurrentDC();
     _deviceContext = GetDC(_window);
+    if(!currentDeviceContext) currentDeviceContext = _deviceContext;
 
     /* Use first provided pixel format  */
     constexpr static const PIXELFORMATDESCRIPTOR pfd = {
