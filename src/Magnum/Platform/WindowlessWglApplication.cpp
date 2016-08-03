@@ -46,20 +46,29 @@
 namespace Magnum { namespace Platform {
 
 WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, Context* const magnumContext) {
+    /* Register the window class (if not yet done) */
+    WNDCLASSW wc;
+    if(!GetClassInfoW(GetModuleHandleW(nullptr), L"Magnum Windowless Application", &wc)) {
+        wc = WNDCLASSW{
+            0,
+            DefWindowProcW,
+            0,
+            0,
+            GetModuleHandleW(nullptr),
+            nullptr,
+            nullptr,
+            HBRUSH(COLOR_BACKGROUND),
+            nullptr,
+            L"Magnum Windowless Application"
+        };
+
+        if(!RegisterClassW(&wc)) {
+            Error() << "Platform::WindowlessWglContext: cannot create window class:" << GetLastError();
+            return;
+        }
+    }
+
     /* Create the window */
-    const WNDCLASS wc{
-        0,
-        DefWindowProc,
-        0,
-        0,
-        GetModuleHandle(nullptr),
-        nullptr,
-        nullptr,
-        HBRUSH(COLOR_BACKGROUND),
-        nullptr,
-        L"Magnum Windowless Application"
-    };
-    if(!RegisterClass(&wc)) return;
     _window = CreateWindowW(wc.lpszClassName, L"Magnum Windowless Application",
         WS_OVERLAPPEDWINDOW, 0, 0, 32, 32, 0, 0, wc.hInstance, 0);
 
