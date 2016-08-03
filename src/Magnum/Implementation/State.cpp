@@ -49,7 +49,7 @@
 
 namespace Magnum { namespace Implementation {
 
-State::State(Context& context) {
+State::State(Context& context, std::ostream* const out) {
     /* List of extensions used in current context. Guesstimate count to avoid
        unnecessary reallocations. */
     std::vector<std::string> extensions;
@@ -80,8 +80,8 @@ State::State(Context& context) {
     std::sort(extensions.begin(), extensions.end());
     extensions.erase(std::unique(extensions.begin(), extensions.end()), extensions.end());
 
-    Debug() << "Using optional features:";
-    for(const auto& ext: extensions) Debug() << "   " << ext;
+    Debug{out} << "Using optional features:";
+    for(const auto& ext: extensions) Debug{out} << "   " << ext;
 }
 
 State::~State() = default;

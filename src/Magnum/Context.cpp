@@ -25,6 +25,7 @@
 
 #include "Context.h"
 
+#include <iostream> /* for initialization log redirection */
 #include <string>
 #include <unordered_map>
 #include <Corrade/Utility/Arguments.h>
@@ -433,9 +434,14 @@ Context::Context(NoCreateT, Int argc, const char** argv, void functionLoader()):
     args.addOption("disable-workarounds")
         .setHelp("disable-workarounds", "driver workarounds to disable\n      (see src/Magnum/Implementation/driverSpecific.cpp for detailed info)", "LIST")
         .addOption("disable-extensions").setHelp("disable-extensions", "OpenGL extensions to disable", "LIST")
+        .addOption("log", "default").setHelp("log", "Console logging", "default|quiet")
         .setFromEnvironment("disable-workarounds")
         .setFromEnvironment("disable-extensions")
+        .setFromEnvironment("log")
         .parse(argc, argv);
+
+    /* Decide whether to display initialization log */
+    _displayInitializationLog = !(args.value("log") == "quiet" || args.value("log") == "QUIET");
 
     /* Disable driver workarounds */
     for(auto&& workaround: Utility::String::splitWithoutEmptyParts(args.value("disable-workarounds")))
@@ -652,14 +658,17 @@ bool Context::tryCreate() {
     CORRADE_ASSERT(!currentContext, "Context: Another context currently active", false);
     currentContext = this;
 
+    /* Decide whether to print the initialization output or not */
+    std::ostream* output = _displayInitializationLog ? &std::cout : nullptr;
+
     /* Print some info and initialize state tracker (which also prints some
        more info) */
-    Debug() << "Renderer:" << rendererString() << "by" << vendorString();
-    Debug() << "OpenGL version:" << versionString();
+    Debug{output} << "Renderer:" << rendererString() << "by" << vendorString();
+    Debug{output} << "OpenGL version:" << versionString();
 
     /* Disable extensions as requested by the user */
     if(!_disabledExtensions.empty()) {
-        Debug() << "Disabling extensions:";
+        Debug{output} << "Disabling extensions:";
 
         /* Put remaining extensions into the hashmap for faster lookup */
         std::unordered_map<std::string, Extension> allExtensions{std::move(futureExtensions)};
@@ -675,17 +684,17 @@ bool Context::tryCreate() {
             if(found == allExtensions.end()) continue;
 
             _extensionRequiredVersion[found->second._index] = Version::None;
-            Debug() << "   " << extension;
+            Debug{output} << "   " << extension;
         }
     }
 
-    _state = new Implementation::State(*this);
+    _state = new Implementation::State{*this, output};
 
     /* Print a list of used workarounds */
     if(!_driverWorkarounds.empty()) {
-        Debug() << "Using driver workarounds:";
+        Debug{output} << "Using driver workarounds:";
         for(const auto& workaround: _driverWorkarounds)
-            if(!workaround.second) Debug() << "   " << workaround.first;
+            if(!workaround.second) Debug{output} << "   " << workaround.first;
     }
 
     /* Initialize functionality based on current OpenGL version and extensions */

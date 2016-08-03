@@ -51,7 +51,7 @@ struct TransformFeedbackState;
 
 struct State {
     /* Initializes context-based functionality */
-    explicit State(Context& context);
+    explicit State(Context& context, std::ostream* out);
 
     ~State();
 

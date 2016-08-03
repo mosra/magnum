@@ -531,6 +531,7 @@ class MAGNUM_EXPORT Context {
         /* True means known and disabled, false means known */
         std::vector<std::pair<std::string, bool>> _driverWorkarounds;
         std::vector<std::string> _disabledExtensions;
+        bool _displayInitializationLog;
 };
 
 CORRADE_ENUMSET_OPERATORS(Context::DetectedDrivers)
