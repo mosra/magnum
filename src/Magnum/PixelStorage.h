@@ -448,7 +448,7 @@ namespace Implementation {
 
     #ifdef MAGNUM_TARGET_GLES2
     template<std::size_t dimensions, class T> std::ptrdiff_t pixelStorageSkipOffsetFor(const T& image, const Math::Vector<dimensions, Int>& size) {
-        return std::get<0>(image.storage().dataProperties(image.format(), image.type(), Vector3i::pad(size, 1)));
+        return std::get<0>(image.storage().dataProperties(image.format(), image.type(), Vector3i::pad(size, 1))).sum();
     }
     template<class T> std::ptrdiff_t pixelStorageSkipOffset(const T& image) {
         return pixelStorageSkipOffsetFor(image, image.size());
