@@ -100,6 +100,8 @@ struct VectorTest: Corrade::TestSuite::Tester {
 
     void projected();
     void projectedOntoNormalized();
+    void flipped();
+
     void angle();
 
     void subclassTypes();
@@ -158,6 +160,8 @@ VectorTest::VectorTest() {
 
               &VectorTest::projected,
               &VectorTest::projectedOntoNormalized,
+              &VectorTest::flipped,
+
               &VectorTest::angle,
 
               &VectorTest::subclassTypes,
@@ -462,6 +466,12 @@ void VectorTest::projectedOntoNormalized() {
     CORRADE_COMPARE(projected, vector.projected(line));
 }
 
+void VectorTest::flipped() {
+    constexpr Vector4 vector{1.0f, -3.5f, 2.1f, 0.5f};
+    constexpr Vector4 flipped = vector.flipped();
+    CORRADE_COMPARE(flipped, (Vector4{0.5f, 2.1f, -3.5f, 1.0f}));
+}
+
 void VectorTest::angle() {
     std::ostringstream o;
     Error redirectError{&o};
@@ -557,6 +567,7 @@ void VectorTest::subclassTypes() {
     CORRADE_VERIFY((std::is_same<decltype(c.resized(1.0f)), Vec2>::value));
     CORRADE_VERIFY((std::is_same<decltype(c.projected(c2)), Vec2>::value));
     CORRADE_VERIFY((std::is_same<decltype(c.projectedOntoNormalized(c2)), Vec2>::value));
+    CORRADE_VERIFY((std::is_same<decltype(c.flipped()), Vec2>::value));
 }
 
 void VectorTest::subclass() {
@@ -638,6 +649,8 @@ void VectorTest::subclass() {
     CORRADE_COMPARE(Vec2(3.0f, 0.0f).resized(6.0f), Vec2(6.0f, 0.0f));
     CORRADE_COMPARE(Vec2(1.0f, 1.0f).projected({0.0f, 2.0f}), Vec2(0.0f, 1.0f));
     CORRADE_COMPARE(Vec2(1.0f, 1.0f).projectedOntoNormalized({0.0f, 1.0f}), Vec2(0.0f, 1.0f));
+    constexpr Vec2 flipped = Vec2{1.0f, 0.4f}.flipped();
+    CORRADE_COMPARE(flipped, (Vec2{0.4f, 1.0f}));
 }
 
 void VectorTest::debug() {

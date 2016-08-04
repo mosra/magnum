@@ -49,6 +49,13 @@ namespace Implementation {
     template<std::size_t ...sequence> struct GenerateSequence<0, sequence...> {
         typedef Sequence<sequence...> Type;
     };
+
+    template<std::size_t N, std::size_t ...sequence> struct GenerateReverseSequence:
+        GenerateReverseSequence<N-1, sequence..., N-1> {};
+
+    template<std::size_t ...sequence> struct GenerateReverseSequence<0, sequence...> {
+        typedef Sequence<sequence...> Type;
+    };
     #endif
 
     template<class T> constexpr T repeat(T value, std::size_t) { return value; }

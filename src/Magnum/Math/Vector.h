@@ -537,6 +537,15 @@ template<std::size_t size, class T> class Vector {
         Vector<size, T> projectedOntoNormalized(const Vector<size, T>& line) const;
 
         /**
+         * @brief Flipped vector
+         *
+         * Returns the vector with components in reverse order.
+         */
+        constexpr Vector<size, T> flipped() const {
+            return flippedInternal(typename Implementation::GenerateReverseSequence<size>::Type{});
+        }
+
+        /**
          * @brief Sum of values in the vector
          *
          * @see @ref operator+()
@@ -573,6 +582,10 @@ template<std::size_t size, class T> class Vector {
 
         template<std::size_t otherSize, std::size_t ...sequence> constexpr static Vector<size, T> padInternal(Implementation::Sequence<sequence...>, const Vector<otherSize, T>& a, T value) {
             return {sequence < otherSize ? a[sequence] : value...};
+        }
+
+        template<std::size_t ...sequence> constexpr Vector<size, T> flippedInternal(Implementation::Sequence<sequence...>) const {
+            return {(*this)[sequence]...};
         }
 
         T _data[size];
@@ -1164,6 +1177,9 @@ extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utili
     }                                                                       \
     Type<T> projectedOntoNormalized(const Math::Vector<size, T>& other) const { \
         return Math::Vector<size, T>::projectedOntoNormalized(other);       \
+    }                                                                       \
+    constexpr Type<T> flipped() const {                                     \
+        return Math::Vector<size, T>::flipped();                            \
     }
 
 #define MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(size, Type)                  \
