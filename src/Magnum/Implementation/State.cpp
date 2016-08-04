@@ -81,7 +81,7 @@ State::State(Context& context, std::ostream* const out) {
     extensions.erase(std::unique(extensions.begin(), extensions.end()), extensions.end());
 
     Debug{out} << "Using optional features:";
-    for(const auto& ext: extensions) Debug{out} << "   " << ext;
+    for(const auto& ext: extensions) Debug(out) << "   " << ext;
 }
 
 State::~State() = default;
