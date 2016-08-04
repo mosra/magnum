@@ -342,9 +342,29 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         /**
          * @brief Transposed matrix
          *
-         * @see @ref row()
+         * @see @ref row(), @ref flippedCols(), @ref flippedRows()
          */
         RectangularMatrix<rows, cols, T> transposed() const;
+
+        /**
+         * @brief Matrix with flipped cols
+         *
+         * The order of columns is reversed.
+         * @see @ref transposed(), @ref flippedRows(), @ref Vector::flipped()
+         */
+        constexpr RectangularMatrix<cols, rows, T> flippedCols() const {
+            return flippedColsInternal(typename Implementation::GenerateReverseSequence<cols>::Type{});
+        }
+
+        /**
+         * @brief Matrix with flipped rows
+         *
+         * The order of rows is reversed.
+         * @see @ref transposed(), @ref flippedCols(), @ref Vector::flipped()
+         */
+        constexpr RectangularMatrix<cols, rows, T> flippedRows() const {
+            return flippedRowsInternal(typename Implementation::GenerateSequence<cols>::Type{});
+        }
 
         /**
          * @brief Values on diagonal
@@ -381,6 +401,14 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         /* Implementation for RectangularMatrix<cols, rows, T>::RectangularMatrix(ZeroInitT) and RectangularMatrix<cols, rows, T>::RectangularMatrix(NoInitT) */
         /* MSVC 2015 can't handle {} here */
         template<class U, std::size_t ...sequence> constexpr explicit RectangularMatrix(Implementation::Sequence<sequence...>, U): _data{Vector<rows, T>((static_cast<void>(sequence), U{typename U::Init{}}))...} {}
+
+        template<std::size_t ...sequence> constexpr RectangularMatrix<cols, rows, T> flippedColsInternal(Implementation::Sequence<sequence...>) const {
+            return {(*this)[sequence]...};
+        }
+
+        template<std::size_t ...sequence> constexpr RectangularMatrix<cols, rows, T> flippedRowsInternal(Implementation::Sequence<sequence...>) const {
+            return {(*this)[sequence].flipped()...};
+        }
 
         template<std::size_t ...sequence> constexpr Vector<DiagonalSize, T> diagonalInternal(Implementation::Sequence<sequence...>) const;
 
@@ -583,7 +611,13 @@ extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utili
     }                                                                       \
     __VA_ARGS__ operator/(T number) const {                                 \
         return Math::RectangularMatrix<cols, rows, T>::operator/(number);   \
-    }
+    }                                                                       \
+    constexpr __VA_ARGS__ flippedCols() const {                             \
+        return Math::RectangularMatrix<cols, rows, T>::flippedCols();       \
+    }                                                                       \
+    constexpr __VA_ARGS__ flippedRows() const {                             \
+        return Math::RectangularMatrix<cols, rows, T>::flippedRows();       \
+    }                                                                       \
 
 #define MAGNUM_MATRIX_OPERATOR_IMPLEMENTATION(...)                          \
     template<std::size_t size, class T> inline __VA_ARGS__ operator*(typename std::common_type<T>::type number, const __VA_ARGS__& matrix) { \

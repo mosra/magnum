@@ -540,6 +540,8 @@ template<std::size_t size, class T> class Vector {
          * @brief Flipped vector
          *
          * Returns the vector with components in reverse order.
+         * @see @ref RectangularMatrix::flippedCols(),
+         *      @ref RectangularMatrix::flippedRows()
          */
         constexpr Vector<size, T> flipped() const {
             return flippedInternal(typename Implementation::GenerateReverseSequence<size>::Type{});

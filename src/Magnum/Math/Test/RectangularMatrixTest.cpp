@@ -81,6 +81,8 @@ struct RectangularMatrixTest: Corrade::TestSuite::Tester {
     void multiplyVector();
 
     void transposed();
+    void flippedCols();
+    void flippedRows();
     void diagonal();
 
     void vector();
@@ -128,6 +130,8 @@ RectangularMatrixTest::RectangularMatrixTest() {
               &RectangularMatrixTest::multiplyVector,
 
               &RectangularMatrixTest::transposed,
+              &RectangularMatrixTest::flippedCols,
+              &RectangularMatrixTest::flippedRows,
               &RectangularMatrixTest::diagonal,
 
               &RectangularMatrixTest::vector,
@@ -409,6 +413,36 @@ void RectangularMatrixTest::transposed() {
     CORRADE_COMPARE(original.transposed(), transposed);
 }
 
+void RectangularMatrixTest::flippedCols() {
+    constexpr Matrix4x3 original{Vector3{ 0.0f,  1.0f,  3.0f},
+                                 Vector3{ 4.0f,  5.0f,  7.0f},
+                                 Vector3{ 8.0f,  9.0f, 11.0f},
+                                 Vector3{12.0f, 13.0f, 15.0f}};
+    constexpr Matrix4x3 flipped = original.flippedCols();
+
+    Matrix4x3 expectedFlipped{Vector3{12.0f, 13.0f, 15.0f},
+                              Vector3{ 8.0f,  9.0f, 11.0f},
+                              Vector3{ 4.0f,  5.0f,  7.0f},
+                              Vector3{ 0.0f,  1.0f,  3.0f}};
+
+    CORRADE_COMPARE(flipped, expectedFlipped);
+}
+
+void RectangularMatrixTest::flippedRows() {
+    constexpr Matrix4x3 original{Vector3{ 0.0f,  1.0f,  3.0f},
+                                 Vector3{ 4.0f,  5.0f,  7.0f},
+                                 Vector3{ 8.0f,  9.0f, 11.0f},
+                                 Vector3{12.0f, 13.0f, 15.0f}};
+    constexpr Matrix4x3 flipped = original.flippedRows();
+
+    Matrix4x3 expectedFlipped{Vector3{ 3.0f,  1.0f,  0.0f},
+                              Vector3{ 7.0f,  5.0f,  4.0f},
+                              Vector3{11.0f,  9.0f,  8.0f},
+                              Vector3{15.0f, 13.0f, 12.0f}};
+
+    CORRADE_COMPARE(flipped, expectedFlipped);
+}
+
 void RectangularMatrixTest::diagonal() {
     Vector3 diagonal(-1.0f, 5.0f, 11.0f);
 
@@ -500,6 +534,10 @@ void RectangularMatrixTest::subclassTypes() {
     CORRADE_VERIFY((std::is_same<decltype(1.0f*c2), BasicMat<3, Float>>::value));
     CORRADE_VERIFY((std::is_same<decltype(1.0f/c2), BasicMat<3, Float>>::value));
     CORRADE_VERIFY((std::is_same<decltype(Vector3()*Math::RectangularMatrix<3, 1, Float>()), BasicMat<3, Float>>::value));
+
+    /* Functions */
+    CORRADE_VERIFY((std::is_same<decltype(a.flippedCols()), Mat2x2>::value));
+    CORRADE_VERIFY((std::is_same<decltype(a.flippedRows()), Mat2x2>::value));
 }
 
 void RectangularMatrixTest::subclass() {
@@ -560,6 +598,16 @@ void RectangularMatrixTest::subclass() {
     const Math::Vector<1, Float> i(2.0f);
     const Math::RectangularMatrix<1, 1, Float> j(3.0f);
     CORRADE_COMPARE(i*j, (BasicMat<1, Float>(6.0f)));
+
+    /* Functions */
+    constexpr Mat2x2 flippedCols = Mat2x2{Vector2{-1.0f,  5.0f},
+                                          Vector2{ 7.0f, -2.0f}}.flippedCols();
+    CORRADE_COMPARE(flippedCols, (Mat2x2{Vector2{ 7.0f, -2.0f},
+                                         Vector2{-1.0f,  5.0f}}));
+    constexpr Mat2x2 flippedRows = Mat2x2{Vector2{-1.0f,  5.0f},
+                                          Vector2{ 7.0f, -2.0f}}.flippedRows();
+    CORRADE_COMPARE(flippedRows, (Mat2x2{Vector2{ 5.0f, -1.0f},
+                                         Vector2{-2.0f,  7.0f}}));
 }
 
 void RectangularMatrixTest::debug() {
