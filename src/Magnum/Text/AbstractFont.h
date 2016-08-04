@@ -362,7 +362,7 @@ class MAGNUM_TEXT_EXPORT AbstractLayouter {
         /** @brief Moving is not allowed */
         AbstractLayouter(AbstractLayouter&&) = delete;
 
-        ~AbstractLayouter();
+        virtual ~AbstractLayouter();
 
         /** @brief Copying is not allowed */
         AbstractLayouter& operator=(const AbstractLayouter&) = delete;
