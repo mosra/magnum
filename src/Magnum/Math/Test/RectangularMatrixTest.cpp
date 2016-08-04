@@ -600,12 +600,18 @@ void RectangularMatrixTest::subclass() {
     CORRADE_COMPARE(i*j, (BasicMat<1, Float>(6.0f)));
 
     /* Functions */
-    constexpr Mat2x2 flippedCols = Mat2x2{Vector2{-1.0f,  5.0f},
-                                          Vector2{ 7.0f, -2.0f}}.flippedCols();
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Probably because copy is not constexpr */
+    constexpr
+    #endif
+    Mat2x2 flippedCols = Mat2x2{Vector2{-1.0f,  5.0f},
+                                Vector2{ 7.0f, -2.0f}}.flippedCols();
     CORRADE_COMPARE(flippedCols, (Mat2x2{Vector2{ 7.0f, -2.0f},
                                          Vector2{-1.0f,  5.0f}}));
-    constexpr Mat2x2 flippedRows = Mat2x2{Vector2{-1.0f,  5.0f},
-                                          Vector2{ 7.0f, -2.0f}}.flippedRows();
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Probably because copy is not constexpr */
+    constexpr
+    #endif
+    Mat2x2 flippedRows = Mat2x2{Vector2{-1.0f,  5.0f},
+                                Vector2{ 7.0f, -2.0f}}.flippedRows();
     CORRADE_COMPARE(flippedRows, (Mat2x2{Vector2{ 5.0f, -1.0f},
                                          Vector2{-2.0f,  7.0f}}));
 }

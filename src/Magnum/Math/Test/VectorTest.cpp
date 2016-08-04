@@ -649,7 +649,10 @@ void VectorTest::subclass() {
     CORRADE_COMPARE(Vec2(3.0f, 0.0f).resized(6.0f), Vec2(6.0f, 0.0f));
     CORRADE_COMPARE(Vec2(1.0f, 1.0f).projected({0.0f, 2.0f}), Vec2(0.0f, 1.0f));
     CORRADE_COMPARE(Vec2(1.0f, 1.0f).projectedOntoNormalized({0.0f, 1.0f}), Vec2(0.0f, 1.0f));
-    constexpr Vec2 flipped = Vec2{1.0f, 0.4f}.flipped();
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Probably because copy is not constexpr */
+    constexpr
+    #endif
+    Vec2 flipped = Vec2{1.0f, 0.4f}.flipped();
     CORRADE_COMPARE(flipped, (Vec2{0.4f, 1.0f}));
 }
 
