@@ -94,18 +94,16 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
          *
          * @see @ref operator[]()
          */
-        Vector<dimensions, T>*points() {return _points;}
-
-        constexpr const Vector<dimensions, T>*points() const {return _points;} /**< @overload */
+        Vector<dimensions, T>* points() { return _points; }
+        constexpr const Vector<dimensions, T>* points() const { return _points; } /**< @overload */
 
         /**
          * @brief Value at given position
          *
          * @see @ref points()
          */
-        Vector<dimensions, T>&operator[](std::size_t pos) {return _points[pos];}
-
-        constexpr Vector<dimensions, T> operator[](std::size_t pos) const {return _points[pos];} /**< @overload */
+        Vector<dimensions, T>& operator[](std::size_t pos) { return _points[pos]; }
+        constexpr Vector<dimensions, T> operator[](std::size_t pos) const { return _points[pos]; } /**< @overload */
 
     private:
 
