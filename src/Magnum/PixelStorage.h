@@ -397,10 +397,21 @@ namespace Implementation {
         std::size_t dataOffset = 0;
         if(offset.z())
             dataOffset += offset.z();
-        else if(offset.y())
-            dataOffset += offset.y();
-        else if(offset.x())
-            dataOffset += offset.x();
+        else if(offset.y()) {
+            #ifndef MAGNUM_TARGET_GLES2
+            if(!image.storage().imageHeight())
+            #endif
+            {
+                dataOffset += offset.y();
+            }
+        } else if(offset.x()) {
+            #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+            if(!image.storage().rowLength())
+            #endif
+            {
+                dataOffset += offset.x();
+            }
+        }
         return dataOffset + dataSize.product();
     }
 
