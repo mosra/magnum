@@ -182,7 +182,6 @@ void PixelStorageTest::dataSize1D() {
 }
 
 void PixelStorageTest::dataSize2D() {
-    /* The same parameters as in PixelStorageGLTest 3D case */
     const Image2D image{PixelStorage{}.setAlignment(2)
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         .setRowLength(7)
@@ -197,10 +196,25 @@ void PixelStorageTest::dataSize2D() {
     CORRADE_COMPARE(Implementation::imageDataSizeFor(image, Vector2i{5, 9}),
         (3 + 9)*22);
     #endif
+
+    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+    /* This shouldn't overflow the 128x128 rectangle */
+    const Image2D image2{PixelStorage{}.setSkip({64, 0, 0})
+        .setRowLength(128),
+        PixelFormat::RGBA, PixelType::UnsignedByte};
+
+    CORRADE_COMPARE(Implementation::imageDataSizeFor(image2, Vector2i{64, 128}), 65536);
+
+    /* This shouldn't overflow the 128x128 rectangle */
+    const Image2D image3{PixelStorage{}.setSkip({64, 64, 0})
+        .setRowLength(128),
+        PixelFormat::RGBA, PixelType::UnsignedByte};
+
+    CORRADE_COMPARE(Implementation::imageDataSizeFor(image3, Vector2i{64, 64}), 65536);
+    #endif
 }
 
 void PixelStorageTest::dataSize3D() {
-    /* The same parameters as in PixelStorageGLTest 3D case */
     const Image3D image{PixelStorage{}.setAlignment(2)
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         .setRowLength(7)
@@ -220,6 +234,24 @@ void PixelStorageTest::dataSize3D() {
     #else
     CORRADE_COMPARE(Implementation::imageDataSizeFor(image, Vector3i{5, 9, 3}),
         (1 + 3)*10*22);
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
+    /* This shouldn't overflow the 128x128x128 cube */
+    const Image3D image2{PixelStorage{}.setSkip({64, 64, 0})
+        .setRowLength(128)
+        .setImageHeight(128),
+        PixelFormat::RGBA, PixelType::UnsignedByte};
+
+    CORRADE_COMPARE(Implementation::imageDataSizeFor(image2, Vector3i{64, 64, 128}), 8388608);
+
+    /* This shouldn't overflow the 128x128x128 cube */
+    const Image3D image3{PixelStorage{}.setSkip({64, 64, 64})
+        .setRowLength(128)
+        .setImageHeight(128),
+        PixelFormat::RGBA, PixelType::UnsignedByte};
+
+    CORRADE_COMPARE(Implementation::imageDataSizeFor(image3, Vector3i{64, 64, 64}), 8388608);
     #endif
 }
 
