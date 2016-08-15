@@ -34,30 +34,20 @@ namespace Magnum { namespace Math { namespace Test {
 struct ConstantsTest: Corrade::TestSuite::Tester {
     explicit ConstantsTest();
 
-    void constants();
-    void specials();
-
-    private:
-        template<class> void _constants();
-        template<class> void _specials();
+    template<class T> void constants();
+    template<class T> void specials();
 };
 
 ConstantsTest::ConstantsTest() {
-    addTests({&ConstantsTest::constants,
-              &ConstantsTest::specials});
+    addTests<ConstantsTest>({&ConstantsTest::constants<Float>,
+                             &ConstantsTest::constants<Double>,
+                             &ConstantsTest::specials<Float>,
+                             &ConstantsTest::specials<Double>});
 }
 
-void ConstantsTest::constants() {
-    _constants<Float>();
-    _constants<Double>();
-}
+template<class T> void ConstantsTest::constants() {
+    setTestCaseName(std::is_same<T, Double>::value ? "constants<Double>" : "constants<Float>");
 
-void ConstantsTest::specials() {
-    _specials<Float>();
-    _specials<Double>();
-}
-
-template<class T> void ConstantsTest::_constants() {
     constexpr T a = Constants<T>::sqrt2();
     constexpr T b = Constants<T>::sqrt3();
     CORRADE_COMPARE(Math::pow<2>(a), T(2));
@@ -73,7 +63,9 @@ template<class T> void ConstantsTest::_constants() {
     CORRADE_COMPARE(std::log(f), T(1));
 }
 
-template<class T> void ConstantsTest::_specials() {
+template<class T> void ConstantsTest::specials() {
+    setTestCaseName(std::is_same<T, Double>::value ? "specials<Double>" : "specials<Float>");
+
     #ifndef CORRADE_MSVC2015_COMPATIBILITY /* NaN is not constexpr */
     constexpr
     #endif
