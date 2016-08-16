@@ -55,7 +55,7 @@ class Buffer {
             Mono8 = AL_FORMAT_MONO8,        /**< 8-bit unsigned mono */
             Mono16 = AL_FORMAT_MONO16,      /**< 16-bit signed mono */
             Stereo8 = AL_FORMAT_STEREO8,    /**< 8-bit interleaved unsigned stereo */
-            Stereo16 = AL_FORMAT_STEREO16,   /**< 16-bit interleaved signed stereo */
+            Stereo16 = AL_FORMAT_STEREO16,  /**< 16-bit interleaved signed stereo */
 
             /**
              * @brief 32-bit floating-point mono
