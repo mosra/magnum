@@ -168,7 +168,9 @@ void GlfwApplication::staticKeyEvent(GLFWwindow*, int key, int, int action, int 
         _instance->keyPressEvent(e);
     } else if(action == GLFW_RELEASE) {
         _instance->keyReleaseEvent(e);
-    } /* we don't handle GLFW_REPEAT */
+    } else if(action == GLFW_REPEAT) {
+        _instance->keyPressEvent(e);
+    }
 }
 
 void GlfwApplication::staticMouseMoveEvent(GLFWwindow* window, double x, double y) {
