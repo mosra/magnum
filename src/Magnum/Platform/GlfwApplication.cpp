@@ -162,7 +162,7 @@ int GlfwApplication::exec() {
 }
 
 void GlfwApplication::staticKeyEvent(GLFWwindow*, int key, int, int action, int mods) {
-    KeyEvent e(static_cast<KeyEvent::Key>(key), {static_cast<InputEvent::Modifier>(mods)});
+    KeyEvent e(static_cast<KeyEvent::Key>(key), {static_cast<InputEvent::Modifier>(mods)}, action == GLFW_REPEAT);
 
     if(action == GLFW_PRESS) {
         _instance->keyPressEvent(e);

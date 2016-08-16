@@ -1218,11 +1218,20 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
         /** @brief Modifiers */
         constexpr Modifiers modifiers() const { return _modifiers; }
 
+        /**
+         * @brief Whether the key press is repeated
+         *
+         * Returns `true` if the key press event is repeated, `false` if not or
+         * if this was key release event.
+         */
+        constexpr bool isRepeated() const { return _repeated; }
+
     private:
-        constexpr KeyEvent(Key key, Modifiers modifiers): _key(key), _modifiers(modifiers) {}
+        constexpr KeyEvent(Key key, Modifiers modifiers, bool repeated): _key{key}, _modifiers{modifiers}, _repeated{repeated} {}
 
         const Key _key;
         const Modifiers _modifiers;
+        const bool _repeated;
 };
 
 /**

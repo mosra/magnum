@@ -377,7 +377,7 @@ void Sdl2Application::mainLoop() {
 
             case SDL_KEYDOWN:
             case SDL_KEYUP: {
-                KeyEvent e(static_cast<KeyEvent::Key>(event.key.keysym.sym), fixedModifiers(event.key.keysym.mod));
+                KeyEvent e(static_cast<KeyEvent::Key>(event.key.keysym.sym), fixedModifiers(event.key.keysym.mod), event.key.repeat != 0);
                 event.type == SDL_KEYDOWN ? keyPressEvent(e) : keyReleaseEvent(e);
             } break;
 
