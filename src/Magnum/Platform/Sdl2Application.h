@@ -1212,8 +1212,33 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
             Z = SDLK_z                  /**< Letter Z */
         };
 
-        /** @brief Key */
+        /**
+         * @brief Name for given key
+         *
+         * Human-readable localized UTF-8 name for given @p key, intended for
+         * displaying to the user in e.g. key binding configuration. If there
+         * is no name for given key, empty string is returned.
+         * @see @ref keyName(Key)
+         */
+        static std::string keyName(Key key);
+
+        /**
+         * @brief Key
+         *
+         * @see @ref keyName()
+         */
         constexpr Key key() const { return _key; }
+
+        /**
+         * @brief Key name
+         *
+         * Human-readable localized UTF-8 name for the key returned by
+         * @ref key(), intended for displaying to the user in e.g.
+         * key binding configuration. If there is no name for that key, empty
+         * string is returned.
+         * @see @ref keyName(Key)
+         */
+        std::string keyName() const;
 
         /** @brief Modifiers */
         constexpr Modifiers modifiers() const { return _modifiers; }

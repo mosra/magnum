@@ -27,6 +27,7 @@
 #include "GlfwApplication.h"
 
 #include <tuple>
+#include <Corrade/Utility/String.h>
 
 #include "Magnum/Version.h"
 #include "Magnum/Platform/Context.h"
@@ -244,6 +245,15 @@ GlfwApplication::Configuration::Configuration():
     _cursorMode{CursorMode::Normal} {}
 
 GlfwApplication::Configuration::~Configuration() = default;
+
+std::string GlfwApplication::KeyEvent::keyName(const Key key) {
+    /* It can return null, so beware */
+    return Utility::String::fromArray(glfwGetKeyName(int(key), 0));
+}
+
+std::string GlfwApplication::KeyEvent::keyName() const {
+    return keyName(_key);
+}
 
 template class BasicScreen<GlfwApplication>;
 template class BasicScreenedApplication<GlfwApplication>;

@@ -552,6 +552,14 @@ Sdl2Application::Configuration::Configuration():
 
 Sdl2Application::Configuration::~Configuration() = default;
 
+std::string Sdl2Application::KeyEvent::keyName(const Key key) {
+    return SDL_GetKeyName(SDL_Keycode(key));
+}
+
+std::string Sdl2Application::KeyEvent::keyName() const {
+    return keyName(_key);
+}
+
 Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseEvent::modifiers() {
     if(_modifiersLoaded) return _modifiers;
     _modifiersLoaded = true;

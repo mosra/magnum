@@ -744,8 +744,14 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
             Menu = GLFW_KEY_MENU                /**< Menu */
         };
 
-        /** @brief Key */
+        /** @copydoc Sdl2Application::KeyEvent::keyName(Key) */
+        static std::string keyName(Key key);
+
+        /** @copydoc Sdl2Application::KeyEvent::key() */
         constexpr Key key() const { return _key; }
+
+        /** @copydoc Sdl2Application::KeyEvent::keyName() const */
+        std::string keyName() const;
 
         /** @brief Modifiers */
         constexpr Modifiers modifiers() const { return _modifiers; }
