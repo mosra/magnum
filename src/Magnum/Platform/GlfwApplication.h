@@ -569,7 +569,7 @@ CORRADE_ENUMSET_OPERATORS(GlfwApplication::InputEvent::Modifiers)
 /**
 @brief Key event
 
-@see @ref keyPressEvent()
+@see @ref keyPressEvent(), @ref keyReleaseEvent()
 */
 class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
     friend GlfwApplication;
@@ -756,12 +756,7 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
         /** @brief Modifiers */
         constexpr Modifiers modifiers() const { return _modifiers; }
 
-        /**
-         * @brief Whether the key press is repeated
-         *
-         * Returns `true` if the key press event is repeated, `false` if not or
-         * if this was key release event.
-         */
+        /** @copydoc Sdl2Application::KeyEvent::isRepeated() */
         constexpr bool isRepeated() const { return _repeated; }
 
     private:
