@@ -744,14 +744,35 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
             Menu = GLFW_KEY_MENU                /**< Menu */
         };
 
-        /** @copydoc Sdl2Application::KeyEvent::keyName(Key) */
+        #if defined(DOXYGEN_GENERATING_OUTPUT) || GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302
+        /**
+         * @brief Name for given key
+         *
+         * Human-readable localized UTF-8 name for given @p key, intended for
+         * displaying to the user in e.g. key binding configuration. If there
+         * is no name for given key, empty string is returned.
+         * @see @ref keyName(Key)
+         * @note Supported since GLFW 3.2.
+         */
         static std::string keyName(Key key);
+        #endif
 
         /** @copydoc Sdl2Application::KeyEvent::key() */
         constexpr Key key() const { return _key; }
 
-        /** @copydoc Sdl2Application::KeyEvent::keyName() const */
+        #if defined(DOXYGEN_GENERATING_OUTPUT) || GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302
+        /**
+         * @brief Key name
+         *
+         * Human-readable localized UTF-8 name for the key returned by
+         * @ref key(), intended for displaying to the user in e.g.
+         * key binding configuration. If there is no name for that key, empty
+         * string is returned.
+         * @see @ref keyName(Key)
+         * @note Supported since GLFW 3.2.
+         */
         std::string keyName() const;
+        #endif
 
         /** @brief Modifiers */
         constexpr Modifiers modifiers() const { return _modifiers; }

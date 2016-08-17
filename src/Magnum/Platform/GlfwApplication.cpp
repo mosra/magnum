@@ -246,6 +246,7 @@ GlfwApplication::Configuration::Configuration():
 
 GlfwApplication::Configuration::~Configuration() = default;
 
+#if defined(DOXYGEN_GENERATING_OUTPUT) || GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302
 std::string GlfwApplication::KeyEvent::keyName(const Key key) {
     /* It can return null, so beware */
     return Utility::String::fromArray(glfwGetKeyName(int(key), 0));
@@ -254,6 +255,7 @@ std::string GlfwApplication::KeyEvent::keyName(const Key key) {
 std::string GlfwApplication::KeyEvent::keyName() const {
     return keyName(_key);
 }
+#endif
 
 template class BasicScreen<GlfwApplication>;
 template class BasicScreenedApplication<GlfwApplication>;
