@@ -61,6 +61,11 @@ checked by the implementation:
     there is any file opened.
 
 Plugin interface string is `"cz.mosra.magnum.Audio.AbstractImporter/0.1"`.
+
+@attention @ref Containers::Array instances returned from the plugin should
+    *not* use anything else than the default deleter, otherwise this can cause
+    dangling function pointer call on array destruction if the plugin gets
+    unloaded before the array is destroyed.
 */
 class MAGNUM_AUDIO_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlugin<AbstractImporter> {
     CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Audio.AbstractImporter/0.1")

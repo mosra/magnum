@@ -69,6 +69,11 @@ checked by the implementation:
     array passed.
 
 Plugin interface string is `"cz.mosra.magnum.Text.AbstractFontConverter/0.1.2"`.
+
+@attention @ref Containers::Array instances returned from the plugin should
+    *not* use anything else than the default deleter, otherwise this can cause
+    dangling function pointer call on array destruction if the plugin gets
+    unloaded before the array is destroyed.
 */
 class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPlugin {
     CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Text.AbstractFontConverter/0.1.2")
