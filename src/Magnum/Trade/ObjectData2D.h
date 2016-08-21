@@ -110,8 +110,10 @@ class MAGNUM_EXPORT ObjectData2D {
 
         /**
          * @brief Instance ID
-         * @return ID of given camera / light / mesh etc., specified by
-         *      @ref instanceType()
+         *
+         * Returns ID of given camera / light / mesh etc., specified by
+         * @ref instanceType(). If @ref instanceType() is
+         * @ref ObjectInstanceType2D::Empty, this function returns `-1`.
          */
         Int instance() const { return _instance; }
 

@@ -40,7 +40,7 @@ namespace Magnum { namespace Trade {
 @see @ref AbstractMaterialData::type()
 */
 enum class MaterialType: UnsignedByte {
-    Phong       /**< Phong shading */
+    Phong       /**< Phong shading (see @ref PhongMaterialData) */
 };
 
 /**

@@ -42,8 +42,8 @@ namespace Magnum { namespace Trade {
 @see @ref ObjectData3D::instanceType()
 */
 enum class ObjectInstanceType3D: UnsignedByte {
-    Camera,     /**< Camera instance (see CameraData) */
-    Light,      /**< Light instance (see LightData) */
+    Camera,     /**< Camera instance (see @ref CameraData) */
+    Light,      /**< Light instance (see @ref LightData) */
 
     /**
      * Mesh instance. The data can be cast to @ref MeshObjectData3D to provide
@@ -53,7 +53,6 @@ enum class ObjectInstanceType3D: UnsignedByte {
 
     Empty       /**< Empty */
 };
-
 
 /**
 @brief Three-dimensional object data
