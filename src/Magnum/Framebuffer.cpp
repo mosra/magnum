@@ -428,7 +428,7 @@ Debug& operator<<(Debug& debug, const Framebuffer::Status value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Framebuffer::Status::(invalid)";
+    return debug << "Framebuffer::Status(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 

@@ -44,7 +44,7 @@ Debug& operator<<(Debug& debug, const ResourceState value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "ResourceState::(invalid)";
+    return debug << "ResourceState(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 #endif
 

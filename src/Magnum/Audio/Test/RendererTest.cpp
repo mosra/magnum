@@ -34,9 +34,6 @@ namespace Magnum { namespace Audio { namespace Test {
 
 struct RendererTest: TestSuite::Tester {
     explicit RendererTest();
-
-    void debugError();
-    void debugDistanceModel();
     void listenerOrientation();
     void listenerPosition();
     void listenerVelocity();
@@ -45,31 +42,23 @@ struct RendererTest: TestSuite::Tester {
     void dopplerFactor();
     void distanceModel();
 
+    void debugError();
+    void debugDistanceModel();
+
     Context _context;
 };
 
 RendererTest::RendererTest() {
-    addTests({&RendererTest::debugError,
-              &RendererTest::debugDistanceModel,
-              &RendererTest::listenerOrientation,
+    addTests({&RendererTest::listenerOrientation,
               &RendererTest::listenerPosition,
               &RendererTest::listenerVelocity,
               &RendererTest::listenerGain,
               &RendererTest::speedOfSound,
               &RendererTest::dopplerFactor,
-              &RendererTest::distanceModel});
-}
+              &RendererTest::distanceModel,
 
-void RendererTest::debugError() {
-    std::ostringstream out;
-    Debug(&out) << Renderer::Error::InvalidOperation;
-    CORRADE_COMPARE(out.str(), "Audio::Renderer::Error::InvalidOperation\n");
-}
-
-void RendererTest::debugDistanceModel() {
-    std::ostringstream out;
-    Debug(&out) << Renderer::DistanceModel::Inverse;
-    CORRADE_COMPARE(out.str(), "Audio::Renderer::DistanceModel::Inverse\n");
+              &RendererTest::debugError,
+              &RendererTest::debugDistanceModel});
 }
 
 void RendererTest::listenerOrientation() {
@@ -121,6 +110,18 @@ void RendererTest::distanceModel() {
     Renderer::setDistanceModel(model);
 
     CORRADE_COMPARE(Renderer::distanceModel(), model);
+}
+
+void RendererTest::debugError() {
+    std::ostringstream out;
+    Debug(&out) << Renderer::Error::InvalidOperation << Renderer::Error(0xdead);
+    CORRADE_COMPARE(out.str(), "Audio::Renderer::Error::InvalidOperation Audio::Renderer::Error(0xdead)\n");
+}
+
+void RendererTest::debugDistanceModel() {
+    std::ostringstream out;
+    Debug(&out) << Renderer::DistanceModel::Inverse << Renderer::DistanceModel(0xdead);
+    CORRADE_COMPARE(out.str(), "Audio::Renderer::DistanceModel::Inverse Audio::Renderer::DistanceModel(0xdead)\n");
 }
 
 }}}

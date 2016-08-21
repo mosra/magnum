@@ -67,7 +67,7 @@ Debug& operator<<(Debug& debug, const Context::HrtfStatus value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Audio::Context::HrtfStatus::(invalid)";
+    return debug << "Audio::Context::HrtfStatus(" << Debug::nospace << reinterpret_cast<void*>(ALenum(value)) << Debug::nospace << ")";
 }
 
 Context* Context::_current = nullptr;

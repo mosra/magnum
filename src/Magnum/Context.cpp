@@ -841,7 +841,7 @@ Debug& operator<<(Debug& debug, const Context::Flag value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Context::Flag::(invalid)";
+    return debug << "Context::Flag(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 #endif
 #endif

@@ -147,7 +147,7 @@ Debug& operator<<(Debug& debug, SizedAttribute<1, 1>::Components value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Attribute::Components::(invalid)";
+    return debug << "Attribute::Components(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, SizedAttribute<1, 2>::Components value) {
@@ -160,7 +160,7 @@ Debug& operator<<(Debug& debug, SizedAttribute<1, 2>::Components value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Attribute::Components::(invalid)";
+    return debug << "Attribute::Components(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, SizedAttribute<1, 3>::Components value) {
@@ -175,7 +175,7 @@ Debug& operator<<(Debug& debug, SizedAttribute<1, 3>::Components value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Attribute::Components::(invalid)";
+    return debug << "Attribute::Components(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, SizedAttribute<1, 4>::Components value) {
@@ -192,7 +192,7 @@ Debug& operator<<(Debug& debug, SizedAttribute<1, 4>::Components value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Attribute::Components::(invalid)";
+    return debug << "Attribute::Components(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, SizedMatrixAttribute<2>::Components value) {
@@ -203,7 +203,7 @@ Debug& operator<<(Debug& debug, SizedMatrixAttribute<2>::Components value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Attribute::Components::(invalid)";
+    return debug << "Attribute::Components(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, SizedMatrixAttribute<3>::Components value) {
@@ -214,7 +214,7 @@ Debug& operator<<(Debug& debug, SizedMatrixAttribute<3>::Components value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Attribute::Components::(invalid)";
+    return debug << "Attribute::Components(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, SizedMatrixAttribute<4>::Components value) {
@@ -225,7 +225,7 @@ Debug& operator<<(Debug& debug, SizedMatrixAttribute<4>::Components value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Attribute::Components::(invalid)";
+    return debug << "Attribute::Components(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, Attribute<Math::Vector<4, Float>>::Components value) {
@@ -246,7 +246,7 @@ Debug& operator<<(Debug& debug, Attribute<Math::Vector<4, Float>>::Components va
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Attribute::Components::(invalid)";
+    return debug << "Attribute::Components(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, FloatAttribute::DataType value) {
@@ -268,7 +268,7 @@ Debug& operator<<(Debug& debug, FloatAttribute::DataType value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Attribute::DataType::(invalid)";
+    return debug << "Attribute::DataType(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -286,7 +286,7 @@ Debug& operator<<(Debug& debug, IntAttribute::DataType value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Attribute::DataType::(invalid)";
+    return debug << "Attribute::DataType(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 
@@ -300,7 +300,7 @@ Debug& operator<<(Debug& debug, DoubleAttribute::DataType value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Attribute::DataType::(invalid)";
+    return debug << "Attribute::DataType(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 
@@ -324,7 +324,7 @@ Debug& operator<<(Debug& debug, Attribute<Math::Vector<3, Float>>::DataType valu
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Attribute::DataType::(invalid)";
+    return debug << "Attribute::DataType(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, Attribute<Math::Vector<4, Float>>::DataType value) {
@@ -350,7 +350,7 @@ Debug& operator<<(Debug& debug, Attribute<Math::Vector<4, Float>>::DataType valu
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Attribute::DataType::(invalid)";
+    return debug << "Attribute::DataType(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 }}

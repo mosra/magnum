@@ -34,7 +34,6 @@ namespace Magnum { namespace Audio { namespace Test {
 struct SourceTest: TestSuite::Tester {
     explicit SourceTest();
 
-    void debugState();
     void position();
     void direction();
     void velocity();
@@ -47,12 +46,13 @@ struct SourceTest: TestSuite::Tester {
     void coneAnglesAndGain();
     void rolloffFactor();
 
+    void debugState();
+
     Context _context;
 };
 
 SourceTest::SourceTest() {
-    addTests({&SourceTest::debugState,
-              &SourceTest::position,
+    addTests({&SourceTest::position,
               &SourceTest::direction,
               &SourceTest::velocity,
               &SourceTest::gain,
@@ -62,13 +62,9 @@ SourceTest::SourceTest() {
               &SourceTest::maxGain,
               &SourceTest::minGain,
               &SourceTest::coneAnglesAndGain,
-              &SourceTest::rolloffFactor});
-}
+              &SourceTest::rolloffFactor,
 
-void SourceTest::debugState() {
-    std::ostringstream out;
-    Debug(&out) << Source::State::Playing;
-    CORRADE_COMPARE(out.str(), "Audio::Source::State::Playing\n");
+              &SourceTest::debugState});
 }
 
 void SourceTest::position() {
@@ -168,6 +164,11 @@ void SourceTest::rolloffFactor() {
     CORRADE_COMPARE(source.rolloffFactor(), fact);
 }
 
+void SourceTest::debugState() {
+    std::ostringstream out;
+    Debug(&out) << Source::State::Playing << Source::State(0xdead);
+    CORRADE_COMPARE(out.str(), "Audio::Source::State::Playing Audio::Source::State(0xdead)\n");
+}
 
 }}}
 

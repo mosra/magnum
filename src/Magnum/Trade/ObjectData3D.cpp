@@ -50,7 +50,7 @@ Debug& operator<<(Debug& debug, ObjectInstanceType3D value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Trade::ObjectInstanceType3D::(invalid)";
+    return debug << "Trade::ObjectInstanceType3D(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 #endif
 

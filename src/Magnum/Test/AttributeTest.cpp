@@ -23,14 +23,15 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/AbstractShaderProgram.h"
 
 namespace Magnum { namespace Test {
 
-struct AbstractShaderProgramTest: TestSuite::Tester {
-    explicit AbstractShaderProgramTest();
+struct AttributeTest: TestSuite::Tester {
+    explicit AttributeTest();
 
     void attributeScalar();
     void attributeScalarInt();
@@ -50,30 +51,70 @@ struct AbstractShaderProgramTest: TestSuite::Tester {
     #endif
     void attributeMatrixNxNd();
     void attributeMatrixMxNd();
+
+    void debugComponents1();
+    void debugComponents2();
+    void debugComponents3();
+    #ifndef MAGNUM_TARGET_GLES2
+    void debugComponents4();
+    #endif
+    void debugComponentsMatrix2();
+    void debugComponentsMatrix3();
+    void debugComponentsMatrix4();
+    void debugComponentsVector4();
+    void debugDataTypeFloat();
+    #ifndef MAGNUM_TARGET_GLES2
+    void debugDataTypeInt();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES
+    void debugDataTypeDouble();
+    #endif
+    void debugDataTypeVector3();
+    void debugDataTypeVector4();
 };
 
-AbstractShaderProgramTest::AbstractShaderProgramTest() {
-    addTests({&AbstractShaderProgramTest::attributeScalar,
-              &AbstractShaderProgramTest::attributeScalarInt,
-              &AbstractShaderProgramTest::attributeScalarUnsignedInt,
-              &AbstractShaderProgramTest::attributeScalarDouble,
+AttributeTest::AttributeTest() {
+    addTests({&AttributeTest::attributeScalar,
+              &AttributeTest::attributeScalarInt,
+              &AttributeTest::attributeScalarUnsignedInt,
+              &AttributeTest::attributeScalarDouble,
 
-              &AbstractShaderProgramTest::attributeVector,
-              &AbstractShaderProgramTest::attributeVectorInt,
-              &AbstractShaderProgramTest::attributeVectorUnsignedInt,
-              &AbstractShaderProgramTest::attributeVectorDouble,
-              &AbstractShaderProgramTest::attributeVector4,
-              &AbstractShaderProgramTest::attributeVectorBGRA,
+              &AttributeTest::attributeVector,
+              &AttributeTest::attributeVectorInt,
+              &AttributeTest::attributeVectorUnsignedInt,
+              &AttributeTest::attributeVectorDouble,
+              &AttributeTest::attributeVector4,
+              &AttributeTest::attributeVectorBGRA,
 
-              &AbstractShaderProgramTest::attributeMatrixNxN,
+              &AttributeTest::attributeMatrixNxN,
               #ifndef MAGNUM_TARGET_GLES2
-              &AbstractShaderProgramTest::attributeMatrixMxN,
+              &AttributeTest::attributeMatrixMxN,
               #endif
-              &AbstractShaderProgramTest::attributeMatrixNxNd,
-              &AbstractShaderProgramTest::attributeMatrixMxNd});
+              &AttributeTest::attributeMatrixNxNd,
+              &AttributeTest::attributeMatrixMxNd,
+
+              &AttributeTest::debugComponents1,
+              &AttributeTest::debugComponents2,
+              &AttributeTest::debugComponents3,
+              #ifndef MAGNUM_TARGET_GLES2
+              &AttributeTest::debugComponents4,
+              #endif
+              &AttributeTest::debugComponentsMatrix2,
+              &AttributeTest::debugComponentsMatrix3,
+              &AttributeTest::debugComponentsMatrix4,
+              &AttributeTest::debugComponentsVector4,
+              &AttributeTest::debugDataTypeFloat,
+              #ifndef MAGNUM_TARGET_GLES
+              &AttributeTest::debugDataTypeInt,
+              #endif
+              #ifndef MAGNUM_TARGET_GLES
+              &AttributeTest::debugDataTypeDouble,
+              #endif
+              &AttributeTest::debugDataTypeVector3,
+              &AttributeTest::debugDataTypeVector4});
 }
 
-void AbstractShaderProgramTest::attributeScalar() {
+void AttributeTest::attributeScalar() {
     typedef Attribute<3, Float> Attribute;
     CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Float>{}));
     CORRADE_COMPARE(Attribute::Location, 3);
@@ -92,7 +133,7 @@ void AbstractShaderProgramTest::attributeScalar() {
     CORRADE_VERIFY(b.dataOptions() <= Attribute::DataOption::Normalized);
 }
 
-void AbstractShaderProgramTest::attributeScalarInt() {
+void AttributeTest::attributeScalarInt() {
     #ifndef MAGNUM_TARGET_GLES2
     typedef Attribute<3, Int> Attribute;
     CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Int>{}));
@@ -110,7 +151,7 @@ void AbstractShaderProgramTest::attributeScalarInt() {
     #endif
 }
 
-void AbstractShaderProgramTest::attributeScalarUnsignedInt() {
+void AttributeTest::attributeScalarUnsignedInt() {
     #ifndef MAGNUM_TARGET_GLES2
     typedef Attribute<3, UnsignedInt> Attribute;
     CORRADE_VERIFY((std::is_same<Attribute::ScalarType, UnsignedInt>{}));
@@ -128,7 +169,7 @@ void AbstractShaderProgramTest::attributeScalarUnsignedInt() {
     #endif
 }
 
-void AbstractShaderProgramTest::attributeScalarDouble() {
+void AttributeTest::attributeScalarDouble() {
     #ifndef MAGNUM_TARGET_GLES
     typedef Attribute<3, Double> Attribute;
     CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Double>{}));
@@ -142,7 +183,7 @@ void AbstractShaderProgramTest::attributeScalarDouble() {
     #endif
 }
 
-void AbstractShaderProgramTest::attributeVector() {
+void AttributeTest::attributeVector() {
     typedef Attribute<3, Vector3> Attribute;
     CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Float>{}));
     CORRADE_COMPARE(Attribute::VectorCount, 1);
@@ -165,7 +206,7 @@ void AbstractShaderProgramTest::attributeVector() {
     #endif
 }
 
-void AbstractShaderProgramTest::attributeVectorInt() {
+void AttributeTest::attributeVectorInt() {
     #ifndef MAGNUM_TARGET_GLES2
     typedef Attribute<3, Vector2i> Attribute;
     CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Int>{}));
@@ -185,7 +226,7 @@ void AbstractShaderProgramTest::attributeVectorInt() {
     #endif
 }
 
-void AbstractShaderProgramTest::attributeVectorUnsignedInt() {
+void AttributeTest::attributeVectorUnsignedInt() {
     #ifndef MAGNUM_TARGET_GLES2
     typedef Attribute<3, Vector4ui> Attribute;
     CORRADE_VERIFY((std::is_same<Attribute::ScalarType, UnsignedInt>{}));
@@ -205,7 +246,7 @@ void AbstractShaderProgramTest::attributeVectorUnsignedInt() {
     #endif
 }
 
-void AbstractShaderProgramTest::attributeVectorDouble() {
+void AttributeTest::attributeVectorDouble() {
     #ifndef MAGNUM_TARGET_GLES
     typedef Attribute<3, Vector2d> Attribute;
     CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Double>{}));
@@ -225,7 +266,7 @@ void AbstractShaderProgramTest::attributeVectorDouble() {
     #endif
 }
 
-void AbstractShaderProgramTest::attributeVector4() {
+void AttributeTest::attributeVector4() {
     typedef Attribute<3, Vector4> Attribute;
     CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Float>{}));
     CORRADE_COMPARE(Attribute::VectorCount, 1);
@@ -240,7 +281,7 @@ void AbstractShaderProgramTest::attributeVector4() {
     #endif
 }
 
-void AbstractShaderProgramTest::attributeVectorBGRA() {
+void AttributeTest::attributeVectorBGRA() {
     #ifndef MAGNUM_TARGET_GLES
     typedef Attribute<3, Vector4> Attribute;
     CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Float>{}));
@@ -254,7 +295,7 @@ void AbstractShaderProgramTest::attributeVectorBGRA() {
     #endif
 }
 
-void AbstractShaderProgramTest::attributeMatrixNxN() {
+void AttributeTest::attributeMatrixNxN() {
     typedef Attribute<3, Matrix3> Attribute;
     CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Float>{}));
     CORRADE_COMPARE(Attribute::VectorCount, 3);
@@ -267,7 +308,7 @@ void AbstractShaderProgramTest::attributeMatrixNxN() {
 }
 
 #ifndef MAGNUM_TARGET_GLES2
-void AbstractShaderProgramTest::attributeMatrixMxN() {
+void AttributeTest::attributeMatrixMxN() {
     typedef Attribute<3, Matrix3x4> Attribute;
     CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Float>{}));
     CORRADE_COMPARE(Attribute::VectorCount, 3);
@@ -280,7 +321,7 @@ void AbstractShaderProgramTest::attributeMatrixMxN() {
 }
 #endif
 
-void AbstractShaderProgramTest::attributeMatrixNxNd() {
+void AttributeTest::attributeMatrixNxNd() {
     #ifndef MAGNUM_TARGET_GLES
     typedef Attribute<3, Matrix4d> Attribute;
     CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Double>{}));
@@ -296,7 +337,7 @@ void AbstractShaderProgramTest::attributeMatrixNxNd() {
     #endif
 }
 
-void AbstractShaderProgramTest::attributeMatrixMxNd() {
+void AttributeTest::attributeMatrixMxNd() {
     #ifndef MAGNUM_TARGET_GLES
     typedef Attribute<3, Matrix4x2d> Attribute;
     CORRADE_VERIFY((std::is_same<Attribute::ScalarType, Double>{}));
@@ -312,6 +353,116 @@ void AbstractShaderProgramTest::attributeMatrixMxNd() {
     #endif
 }
 
+void AttributeTest::debugComponents1() {
+    typedef Attribute<3, Float> Attribute;
+
+    std::ostringstream out;
+    Debug{&out} << Attribute::Components::One << Attribute::Components(0xdead);
+    CORRADE_COMPARE(out.str(), "Attribute::Components::One Attribute::Components(0xdead)\n");
+}
+
+void AttributeTest::debugComponents2() {
+    typedef Attribute<3, Vector2> Attribute;
+
+    std::ostringstream out;
+    Debug{&out} << Attribute::Components::Two << Attribute::Components(0xdead);
+    CORRADE_COMPARE(out.str(), "Attribute::Components::Two Attribute::Components(0xdead)\n");
+}
+
+void AttributeTest::debugComponents3() {
+    typedef Attribute<3, Vector3> Attribute;
+
+    std::ostringstream out;
+    Debug{&out} << Attribute::Components::Three << Attribute::Components(0xdead);
+    CORRADE_COMPARE(out.str(), "Attribute::Components::Three Attribute::Components(0xdead)\n");
+}
+
+#ifndef MAGNUM_TARGET_GLES2
+void AttributeTest::debugComponents4() {
+    typedef Attribute<3, Vector4i> Attribute;
+
+    std::ostringstream out;
+    Debug{&out} << Attribute::Components::Four << Attribute::Components(0xdead);
+    CORRADE_COMPARE(out.str(), "Attribute::Components::Four Attribute::Components(0xdead)\n");
+}
+#endif
+
+void AttributeTest::debugComponentsMatrix2() {
+    typedef Attribute<3, Matrix2x2> Attribute;
+
+    std::ostringstream out;
+    Debug{&out} << Attribute::Components::Two << Attribute::Components(0xdead);
+    CORRADE_COMPARE(out.str(), "Attribute::Components::Two Attribute::Components(0xdead)\n");
+}
+
+void AttributeTest::debugComponentsMatrix3() {
+    typedef Attribute<3, Matrix3> Attribute;
+
+    std::ostringstream out;
+    Debug{&out} << Attribute::Components::Three << Attribute::Components(0xdead);
+    CORRADE_COMPARE(out.str(), "Attribute::Components::Three Attribute::Components(0xdead)\n");
+}
+
+void AttributeTest::debugComponentsMatrix4() {
+    typedef Attribute<3, Matrix4> Attribute;
+
+    std::ostringstream out;
+    Debug{&out} << Attribute::Components::Four << Attribute::Components(0xdead);
+    CORRADE_COMPARE(out.str(), "Attribute::Components::Four Attribute::Components(0xdead)\n");
+}
+
+void AttributeTest::debugComponentsVector4() {
+    typedef Attribute<3, Vector4> Attribute;
+
+    std::ostringstream out;
+    Debug{&out} << Attribute::Components::Three << Attribute::Components(0xdead);
+    CORRADE_COMPARE(out.str(), "Attribute::Components::Three Attribute::Components(0xdead)\n");
+}
+
+void AttributeTest::debugDataTypeFloat() {
+    typedef Attribute<3, Float> Attribute;
+
+    std::ostringstream out;
+    Debug{&out} << Attribute::DataType::HalfFloat << Attribute::DataType(0xdead);
+    CORRADE_COMPARE(out.str(), "Attribute::DataType::HalfFloat Attribute::DataType(0xdead)\n");
+}
+
+#ifndef MAGNUM_TARGET_GLES2
+void AttributeTest::debugDataTypeInt() {
+    typedef Attribute<3, Int> Attribute;
+
+    std::ostringstream out;
+    Debug{&out} << Attribute::DataType::Short << Attribute::DataType(0xdead);
+    CORRADE_COMPARE(out.str(), "Attribute::DataType::Short Attribute::DataType(0xdead)\n");
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+void AttributeTest::debugDataTypeDouble() {
+    typedef Attribute<3, Double> Attribute;
+
+    std::ostringstream out;
+    Debug{&out} << Attribute::DataType::Double << Attribute::DataType(0xdead);
+    CORRADE_COMPARE(out.str(), "Attribute::DataType::Double Attribute::DataType(0xdead)\n");
+}
+#endif
+
+void AttributeTest::debugDataTypeVector3() {
+    typedef Attribute<3, Vector3> Attribute;
+
+    std::ostringstream out;
+    Debug{&out} << Attribute::DataType::HalfFloat << Attribute::DataType(0xdead);
+    CORRADE_COMPARE(out.str(), "Attribute::DataType::HalfFloat Attribute::DataType(0xdead)\n");
+}
+
+void AttributeTest::debugDataTypeVector4() {
+    typedef Attribute<3, Vector4> Attribute;
+
+    std::ostringstream out;
+    Debug{&out} << Attribute::DataType::HalfFloat << Attribute::DataType(0xdead);
+    CORRADE_COMPARE(out.str(), "Attribute::DataType::HalfFloat Attribute::DataType(0xdead)\n");
+}
+
 }}
 
-CORRADE_TEST_MAIN(Magnum::Test::AbstractShaderProgramTest)
+CORRADE_TEST_MAIN(Magnum::Test::AttributeTest)

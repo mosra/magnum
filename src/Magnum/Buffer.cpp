@@ -657,7 +657,7 @@ Debug& operator<<(Debug& debug, Buffer::TargetHint value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Buffer::TargetHint::(invalid)";
+    return debug << "Buffer::TargetHint(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 
@@ -700,7 +700,7 @@ Debug& operator<<(Debug& debug, Buffer::Target value) {
         #endif
     }
 
-    return debug << "Buffer::Target::(invalid)";
+    return debug << "Buffer::Target(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 #endif

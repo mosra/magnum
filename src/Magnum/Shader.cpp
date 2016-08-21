@@ -906,7 +906,7 @@ Debug& operator<<(Debug& debug, const Shader::Type value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Shader::Type::(invalid)";
+    return debug << "Shader::Type(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 

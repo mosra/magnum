@@ -332,8 +332,8 @@ void ResourceManagerTest::loader() {
 
 void ResourceManagerTest::debugResourceState() {
     std::ostringstream out;
-    Debug{&out} << ResourceState::Loading;
-    CORRADE_COMPARE(out.str(), "ResourceState::Loading\n");
+    Debug{&out} << ResourceState::Loading << ResourceState(0xbe);
+    CORRADE_COMPARE(out.str(), "ResourceState::Loading ResourceState(0xbe)\n");
 }
 
 }}

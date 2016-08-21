@@ -44,8 +44,8 @@ TextureDataTest::TextureDataTest() {
 void TextureDataTest::debug() {
     std::ostringstream out;
 
-    Debug(&out) << TextureData::Type::Texture3D;
-    CORRADE_COMPARE(out.str(), "Trade::TextureData::Type::Texture3D\n");
+    Debug(&out) << TextureData::Type::Texture3D << TextureData::Type(0xbe);
+    CORRADE_COMPARE(out.str(), "Trade::TextureData::Type::Texture3D Trade::TextureData::Type(0xbe)\n");
 }
 
 }}}

@@ -49,7 +49,7 @@ Debug& operator<<(Debug& debug, ObjectInstanceType2D value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Trade::ObjectInstanceType2D::(invalid)";
+    return debug << "Trade::ObjectInstanceType2D(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 #endif
 

@@ -239,7 +239,7 @@ Debug& operator<<(Debug& debug, const DebugOutput::Source value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "DebugOutput::Source::(invalid)";
+    return debug << "DebugOutput::Source(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const DebugOutput::Type value) {
@@ -259,7 +259,7 @@ Debug& operator<<(Debug& debug, const DebugOutput::Type value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "DebugOutput::Type::(invalid)";
+    return debug << "DebugOutput::Type(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const DebugOutput::Severity value) {
@@ -272,7 +272,7 @@ Debug& operator<<(Debug& debug, const DebugOutput::Severity value) {
         #undef _c
     }
 
-    return debug << "DebugOutput::Severity::(invalid)";
+    return debug << "DebugOutput::Severity(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 
@@ -333,7 +333,7 @@ Debug& operator<<(Debug& debug, const DebugMessage::Source value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "DebugMessage::Source::(invalid)";
+    return debug << "DebugMessage::Source(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const DebugMessage::Type value) {
@@ -349,7 +349,7 @@ Debug& operator<<(Debug& debug, const DebugMessage::Type value) {
         #undef _c
     }
 
-    return debug << "DebugMessage::Type::(invalid)";
+    return debug << "DebugMessage::Type(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 
@@ -440,7 +440,7 @@ Debug& operator<<(Debug& debug, const DebugGroup::Source value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "DebugGroup::Source::(invalid)";
+    return debug << "DebugGroup::Source(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 

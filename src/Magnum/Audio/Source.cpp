@@ -108,7 +108,7 @@ Debug& operator<<(Debug& debug, const Source::State value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Audio::Source::State::(invalid)";
+    return debug << "Audio::Source::State(" << Debug::nospace << reinterpret_cast<void*>(ALint(value)) << Debug::nospace << ")";
 }
 
 }}

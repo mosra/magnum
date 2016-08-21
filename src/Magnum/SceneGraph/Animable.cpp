@@ -40,7 +40,7 @@ Debug& operator<<(Debug& debug, AnimationState value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "SceneGraph::AnimationState::(invalid)";
+    return debug << "SceneGraph::AnimationState(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
 }}

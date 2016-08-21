@@ -26,28 +26,28 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/Trade/AbstractMaterialData.h"
+#include "Magnum/Trade/PhongMaterialData.h"
 
 namespace Magnum { namespace Trade { namespace Test {
 
-class AbstractMaterialDataTest: public TestSuite::Tester {
+class MaterialDataTest: public TestSuite::Tester {
     public:
-        explicit AbstractMaterialDataTest();
+        explicit MaterialDataTest();
 
-        void debug();
+        void debugType();
 };
 
-AbstractMaterialDataTest::AbstractMaterialDataTest() {
-    addTests({&AbstractMaterialDataTest::debug});
+MaterialDataTest::MaterialDataTest() {
+    addTests({&MaterialDataTest::debugType});
 }
 
-void AbstractMaterialDataTest::debug() {
+void MaterialDataTest::debugType() {
     std::ostringstream out;
 
-    Debug(&out) << MaterialType::Phong;
-    CORRADE_COMPARE(out.str(), "Trade::MaterialType::Phong\n");
+    Debug(&out) << MaterialType::Phong << MaterialType(0xbe);
+    CORRADE_COMPARE(out.str(), "Trade::MaterialType::Phong Trade::MaterialType(0xbe)\n");
 }
 
 }}}
 
-CORRADE_TEST_MAIN(Magnum::Trade::Test::AbstractMaterialDataTest)
+CORRADE_TEST_MAIN(Magnum::Trade::Test::MaterialDataTest)

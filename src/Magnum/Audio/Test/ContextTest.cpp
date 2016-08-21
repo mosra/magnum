@@ -37,8 +37,8 @@ struct ContextTest: TestSuite::Tester {
 
     void extensionsString();
     void isExtensionEnabled();
-    void hrtfStatus();
-    void hrtfs();
+
+    void debugHrtfStatus();
 
     Context _context;
 };
@@ -46,7 +46,8 @@ struct ContextTest: TestSuite::Tester {
 ContextTest::ContextTest() {
     addTests({&ContextTest::extensionsString,
               &ContextTest::isExtensionEnabled,
-              &ContextTest::hrtfStatus});
+
+              &ContextTest::debugHrtfStatus});
 }
 
 void ContextTest::extensionsString() {
@@ -59,10 +60,10 @@ void ContextTest::isExtensionEnabled() {
     CORRADE_VERIFY(Context::current().isExtensionSupported<Extensions::ALC::EXT::ENUMERATION>());
 }
 
-void ContextTest::hrtfStatus() {
+void ContextTest::debugHrtfStatus() {
     std::ostringstream out;
-    Debug(&out) << Context::HrtfStatus::Denied;
-    CORRADE_COMPARE(out.str(), "Audio::Context::HrtfStatus::Denied\n");
+    Debug(&out) << Context::HrtfStatus::Denied << Context::HrtfStatus(0xdead);
+    CORRADE_COMPARE(out.str(), "Audio::Context::HrtfStatus::Denied Audio::Context::HrtfStatus(0xdead)\n");
 }
 
 }}}

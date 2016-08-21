@@ -71,7 +71,7 @@ Debug& operator<<(Debug& debug, const Sampler::Filter value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Sampler::Filter::(invalid)";
+    return debug << "Sampler::Filter(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const Sampler::Mipmap value) {
@@ -85,7 +85,7 @@ Debug& operator<<(Debug& debug, const Sampler::Mipmap value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Sampler::Mipmap::(invalid)";
+    return debug << "Sampler::Mipmap(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const Sampler::Wrapping value) {
@@ -105,7 +105,7 @@ Debug& operator<<(Debug& debug, const Sampler::Wrapping value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Sampler::Wrapping::(invalid)";
+    return debug << "Sampler::Wrapping(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
@@ -119,7 +119,7 @@ Debug& operator<<(Debug& debug, const Sampler::CompareMode value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Sampler::CompareFunction::(invalid)";
+    return debug << "Sampler::CompareMode(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const Sampler::CompareFunction value) {
@@ -138,7 +138,7 @@ Debug& operator<<(Debug& debug, const Sampler::CompareFunction value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Sampler::CompareFunction::(invalid)";
+    return debug << "Sampler::CompareFunction(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 
@@ -153,7 +153,7 @@ Debug& operator<<(Debug& debug, const Sampler::DepthStencilMode value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Sampler::DepthStencilMode::(invalid)";
+    return debug << "Sampler::DepthStencilMode(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 #endif

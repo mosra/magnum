@@ -81,7 +81,7 @@ Debug& operator<<(Debug& debug, const PixelFormat value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "PixelFormat::(invalid)";
+    return debug << "PixelFormat(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const PixelType value) {
@@ -138,7 +138,7 @@ Debug& operator<<(Debug& debug, const PixelType value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "PixelType::(invalid)";
+    return debug << "PixelType(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const CompressedPixelFormat value) {
@@ -209,7 +209,7 @@ Debug& operator<<(Debug& debug, const CompressedPixelFormat value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "CompressedPixelFormat::(invalid)";
+    return debug << "CompressedPixelFormat(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 

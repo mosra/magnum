@@ -40,7 +40,7 @@ Debug& operator<<(Debug& debug, const TextureData::Type value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Trade::TextureData::Type::(unknown)";
+    return debug << "Trade::TextureData::Type(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 #endif
 

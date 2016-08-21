@@ -659,7 +659,7 @@ Debug& operator<<(Debug& debug, MeshPrimitive value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "MeshPrimitive::(invalid)";
+    return debug << "MeshPrimitive(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, Mesh::IndexType value) {
@@ -673,7 +673,7 @@ Debug& operator<<(Debug& debug, Mesh::IndexType value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Mesh::IndexType::(invalid)";
+    return debug << "Mesh::IndexType(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 

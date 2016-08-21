@@ -46,7 +46,7 @@ Debug& operator<<(Debug& debug, const Buffer::Format value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Audio::Buffer::Format::(invalid)";
+    return debug << "Audio::Buffer::Format(" << Debug::nospace << reinterpret_cast<void*>(ALenum(value)) << Debug::nospace << ")";
 }
 
 }}

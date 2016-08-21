@@ -52,8 +52,8 @@ void BufferTest::construct() {
 
 void BufferTest::debugFormat() {
     std::ostringstream out;
-    Debug(&out) << Buffer::Format::Stereo16;
-    CORRADE_COMPARE(out.str(), "Audio::Buffer::Format::Stereo16\n");
+    Debug(&out) << Buffer::Format::Stereo16 << Buffer::Format(0xdead);
+    CORRADE_COMPARE(out.str(), "Audio::Buffer::Format::Stereo16 Audio::Buffer::Format(0xdead)\n");
 }
 
 }}}

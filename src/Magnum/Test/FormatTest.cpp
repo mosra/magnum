@@ -47,15 +47,15 @@ FormatTest::FormatTest() {
 void FormatTest::debugPixelFormat() {
     std::ostringstream out;
 
-    Debug(&out) << PixelFormat::RGBA;
-    CORRADE_COMPARE(out.str(), "PixelFormat::RGBA\n");
+    Debug(&out) << PixelFormat::RGBA << PixelFormat(0xdead);
+    CORRADE_COMPARE(out.str(), "PixelFormat::RGBA PixelFormat(0xdead)\n");
 }
 
 void FormatTest::debugPixelType() {
     std::ostringstream out;
 
-    Debug(&out) << PixelType::UnsignedByte;
-    CORRADE_COMPARE(out.str(), "PixelType::UnsignedByte\n");
+    Debug(&out) << PixelType::UnsignedByte << PixelType(0xdead);
+    CORRADE_COMPARE(out.str(), "PixelType::UnsignedByte PixelType(0xdead)\n");
 }
 
 void FormatTest::debugCompressedPixelFormat() {
@@ -64,8 +64,8 @@ void FormatTest::debugCompressedPixelFormat() {
     #else
     std::ostringstream out;
 
-    Debug(&out) << CompressedPixelFormat::RGBBptcUnsignedFloat;
-    CORRADE_COMPARE(out.str(), "CompressedPixelFormat::RGBBptcUnsignedFloat\n");
+    Debug(&out) << CompressedPixelFormat::RGBBptcUnsignedFloat << CompressedPixelFormat(0xdead);
+    CORRADE_COMPARE(out.str(), "CompressedPixelFormat::RGBBptcUnsignedFloat CompressedPixelFormat(0xdead)\n");
     #endif
 }
 

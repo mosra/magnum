@@ -43,7 +43,7 @@ Debug& operator<<(Debug& debug, const Renderer::Error value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Audio::Renderer::Error::(invalid)";
+    return debug << "Audio::Renderer::Error(" << Debug::nospace << reinterpret_cast<void*>(ALenum(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const Renderer::DistanceModel value) {
@@ -61,7 +61,7 @@ Debug& operator<<(Debug& debug, const Renderer::DistanceModel value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Audio::Renderer::DistanceModel::(invalid)";
+    return debug << "Audio::Renderer::DistanceModel(" << Debug::nospace << reinterpret_cast<void*>(ALenum(value)) << Debug::nospace << ")";
 }
 
 }}

@@ -47,7 +47,7 @@ Debug& operator<<(Debug& debug, ShapeDimensionTraits<2>::Type value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Shapes::Shape2D::Type::(unknown)";
+    return debug << "Shapes::Shape2D::Type(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, ShapeDimensionTraits<3>::Type value) {
@@ -69,7 +69,7 @@ Debug& operator<<(Debug& debug, ShapeDimensionTraits<3>::Type value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Shapes::Shape3D::Type::(unknown)";
+    return debug << "Shapes::Shape3D::Type(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
 template<UnsignedInt dimensions> AbstractShape<dimensions>::~AbstractShape() = default;
