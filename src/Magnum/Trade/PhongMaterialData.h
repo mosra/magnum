@@ -73,7 +73,7 @@ class MAGNUM_EXPORT PhongMaterialData: public AbstractMaterialData {
          * Colors and textures should be specified using member functions based
          * on what flags are set.
          */
-        explicit PhongMaterialData(Flags flags, Float shininess, const void* importerState = nullptr): AbstractMaterialData{MaterialType::Phong, importerState}, _shininess{shininess}, _flags{flags} {}
+        explicit PhongMaterialData(Flags flags, Float shininess, const void* importerState = nullptr) noexcept: AbstractMaterialData{MaterialType::Phong, importerState}, _flags{flags}, _shininess{shininess} {}
 
         /** @brief Material flags */
         Flags flags() const { return _flags; }
@@ -139,15 +139,15 @@ class MAGNUM_EXPORT PhongMaterialData: public AbstractMaterialData {
         union Source {
             Source() {}
 
-            Vector3 color;
+            Color3 color;
             UnsignedInt texture;
         };
 
+        Flags _flags;
+        Float _shininess;
         Source _ambient,
             _diffuse,
             _specular;
-        Float _shininess;
-        Flags _flags;
 };
 
 CORRADE_ENUMSET_OPERATORS(PhongMaterialData::Flags)

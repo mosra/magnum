@@ -62,19 +62,19 @@ class TextureData {
          * @param image                 Texture image ID
          * @param importerState         Importer-specific state
          */
-        TextureData(Type type, Sampler::Filter minificationFilter, Sampler::Filter magnificationFilter, Sampler::Mipmap mipmapFilter, Array3D<Sampler::Wrapping> wrapping, UnsignedInt image, const void* importerState = nullptr): _type{type}, _minificationFilter{minificationFilter}, _magnificationFilter{magnificationFilter}, _mipmapFilter{mipmapFilter}, _wrapping{wrapping}, _image{image}, _importerState{importerState} {}
+        TextureData(Type type, Sampler::Filter minificationFilter, Sampler::Filter magnificationFilter, Sampler::Mipmap mipmapFilter, Array3D<Sampler::Wrapping> wrapping, UnsignedInt image, const void* importerState = nullptr) noexcept: _type{type}, _minificationFilter{minificationFilter}, _magnificationFilter{magnificationFilter}, _mipmapFilter{mipmapFilter}, _wrapping{wrapping}, _image{image}, _importerState{importerState} {}
 
         /** @brief Copying is not allowed */
         TextureData(const TextureData&) = delete;
 
         /** @brief Move constructor */
-        TextureData(TextureData&&) = default;
+        TextureData(TextureData&&) noexcept = default;
 
         /** @brief Copying is not allowed */
         TextureData& operator=(const TextureData&) = delete;
 
         /** @brief Move assignment */
-        TextureData& operator=(TextureData&&) = default;
+        TextureData& operator=(TextureData&&) noexcept = default;
 
         /** @brief Texture type */
         Type type() const { return _type; }

@@ -85,7 +85,7 @@ class MAGNUM_EXPORT ObjectData3D {
         ObjectData3D(const ObjectData3D&) = delete;
 
         /** @brief Move constructor */
-        ObjectData3D(ObjectData3D&&);
+        ObjectData3D(ObjectData3D&&) noexcept;
 
         /** @brief Destructor */
         virtual ~ObjectData3D();
@@ -94,7 +94,7 @@ class MAGNUM_EXPORT ObjectData3D {
         ObjectData3D& operator=(const ObjectData3D&) = delete;
 
         /** @brief Move assignment */
-        ObjectData3D& operator=(ObjectData3D&&);
+        ObjectData3D& operator=(ObjectData3D&&) noexcept;
 
         /** @brief Child objects */
         std::vector<UnsignedInt>& children() { return _children; }

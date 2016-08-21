@@ -31,11 +31,11 @@ ObjectData3D::ObjectData3D(std::vector<UnsignedInt> children, const Matrix4& tra
 
 ObjectData3D::ObjectData3D(std::vector<UnsignedInt> children, const Matrix4& transformation, const void* const importerState): _children{std::move(children)}, _transformation{transformation}, _instanceType{ObjectInstanceType3D::Empty}, _instance{-1}, _importerState{importerState} {}
 
-ObjectData3D::ObjectData3D(ObjectData3D&&) = default;
+ObjectData3D::ObjectData3D(ObjectData3D&&) noexcept = default;
 
 ObjectData3D::~ObjectData3D() = default;
 
-ObjectData3D& ObjectData3D::operator=(ObjectData3D&&) = default;
+ObjectData3D& ObjectData3D::operator=(ObjectData3D&&) noexcept = default;
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, ObjectInstanceType3D value) {

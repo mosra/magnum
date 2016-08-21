@@ -33,11 +33,11 @@ MeshData3D::MeshData3D(const MeshPrimitive primitive, std::vector<UnsignedInt> i
     CORRADE_ASSERT(!_positions.empty(), "Trade::MeshData3D: no position array specified", );
 }
 
-MeshData3D::MeshData3D(MeshData3D&&) = default;
+MeshData3D::MeshData3D(MeshData3D&&) noexcept = default;
 
 MeshData3D::~MeshData3D() = default;
 
-MeshData3D& MeshData3D::operator=(MeshData3D&&) = default;
+MeshData3D& MeshData3D::operator=(MeshData3D&&) noexcept = default;
 
 std::vector<UnsignedInt>& MeshData3D::indices() {
     CORRADE_ASSERT(isIndexed(), "Trade::MeshData3D::indices(): the mesh is not indexed", _indices);

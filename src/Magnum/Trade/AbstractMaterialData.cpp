@@ -29,7 +29,7 @@
 
 namespace Magnum { namespace Trade {
 
-AbstractMaterialData::AbstractMaterialData(const MaterialType type, const void* const importerState): _type{type}, _importerState{importerState} {}
+AbstractMaterialData::AbstractMaterialData(const MaterialType type, const void* const importerState) noexcept: _type{type}, _importerState{importerState} {}
 
 AbstractMaterialData::~AbstractMaterialData() {}
 

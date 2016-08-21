@@ -59,19 +59,19 @@ template<UnsignedInt dimensions> class Image {
          * The data are expected to be of proper size for given @p storage
          * parameters.
          */
-        explicit Image(PixelStorage storage, PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data);
+        explicit Image(PixelStorage storage, PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) noexcept;
 
         /** @overload
          * Similar to the above, but uses default @ref PixelStorage parameters.
          */
-        explicit Image(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data): Image{{}, format, type, size, std::move(data)} {}
+        explicit Image(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) noexcept: Image{{}, format, type, size, std::move(data)} {}
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /** @copybrief Image(PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&)
          * @deprecated Use @ref Image(PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&)
          *      instead.
          */
-        explicit CORRADE_DEPRECATED("use Image(PixelFormat, PixelType, const VectorTypeFor&, Containers::Array&&) instead") Image(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, void* data): Image{{}, format, type, size, Containers::Array<char>{reinterpret_cast<char*>(data), Implementation::imageDataSizeFor(format, type, size)}} {}
+        explicit CORRADE_DEPRECATED("use Image(PixelFormat, PixelType, const VectorTypeFor&, Containers::Array&&) instead") Image(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, void* data) noexcept: Image{{}, format, type, size, Containers::Array<char>{reinterpret_cast<char*>(data), Implementation::imageDataSizeFor(format, type, size)}} {}
         #endif
 
         /**
@@ -87,12 +87,12 @@ template<UnsignedInt dimensions> class Image {
          * @ref AbstractFramebuffer::read() "*Framebuffer::read()" to fill the
          * image with data using @p storage settings.
          */
-        /*implicit*/ Image(PixelStorage storage, PixelFormat format, PixelType type): _storage{storage}, _format{format}, _type{type}, _data{} {}
+        /*implicit*/ Image(PixelStorage storage, PixelFormat format, PixelType type) noexcept: _storage{storage}, _format{format}, _type{type}, _data{} {}
 
         /** @overload
          * Similar to the above, but uses default @ref PixelStorage parameters.
          */
-        /*implicit*/ Image(PixelFormat format, PixelType type): Image{{}, format, type} {}
+        /*implicit*/ Image(PixelFormat format, PixelType type) noexcept: Image{{}, format, type} {}
 
         /** @brief Copying is not allowed */
         Image(const Image<dimensions>&) = delete;

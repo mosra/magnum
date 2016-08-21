@@ -57,13 +57,13 @@ class MAGNUM_EXPORT MeshObjectData2D: public ObjectData2D {
         MeshObjectData2D(const MeshObjectData2D&) = delete;
 
         /** @brief Move constructor */
-        MeshObjectData2D(MeshObjectData2D&&) = default;
+        MeshObjectData2D(MeshObjectData2D&&) noexcept = default;
 
         /** @brief Copying is not allowed */
         MeshObjectData2D& operator=(const MeshObjectData2D&) = delete;
 
         /** @brief Move assignment */
-        MeshObjectData2D& operator=(MeshObjectData2D&&) = default;
+        MeshObjectData2D& operator=(MeshObjectData2D&&) noexcept = default;
 
         /**
          * @brief Material ID

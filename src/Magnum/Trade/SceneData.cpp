@@ -29,8 +29,8 @@ namespace Magnum { namespace Trade {
 
 SceneData::SceneData(std::vector<UnsignedInt> children2D, std::vector<UnsignedInt> children3D, const void* const importerState): _children2D{std::move(children2D)}, _children3D{std::move(children3D)}, _importerState{importerState} {}
 
-SceneData::SceneData(SceneData&&) = default;
+SceneData::SceneData(SceneData&&) noexcept = default;
 
-SceneData& SceneData::operator=(SceneData&&) = default;
+SceneData& SceneData::operator=(SceneData&&) noexcept = default;
 
 }}

@@ -54,13 +54,13 @@ class MAGNUM_EXPORT SceneData {
         SceneData(const SceneData&) = delete;
 
         /** @brief Move constructor */
-        SceneData(SceneData&&);
+        SceneData(SceneData&&) noexcept;
 
         /** @brief Copying is not allowed */
         SceneData& operator=(const SceneData&) = delete;
 
         /** @brief Move assignment */
-        SceneData& operator=(SceneData&&);
+        SceneData& operator=(SceneData&&) noexcept;
 
         /** @brief Two-dimensional child objects */
         const std::vector<UnsignedInt>& children2D() const { return _children2D; }

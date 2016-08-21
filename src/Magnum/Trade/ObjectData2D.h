@@ -83,7 +83,7 @@ class MAGNUM_EXPORT ObjectData2D {
         ObjectData2D(const ObjectData2D&) = delete;
 
         /** @brief Move constructor */
-        ObjectData2D(ObjectData2D&&);
+        ObjectData2D(ObjectData2D&&) noexcept;
 
         /** @brief Destructor */
         virtual ~ObjectData2D();
@@ -92,7 +92,7 @@ class MAGNUM_EXPORT ObjectData2D {
         ObjectData2D& operator=(const ObjectData2D&) = delete;
 
         /** @brief Move assignment */
-        ObjectData2D& operator=(ObjectData2D&&);
+        ObjectData2D& operator=(ObjectData2D&&) noexcept;
 
         /** @brief Child objects */
         std::vector<UnsignedInt>& children() { return _children; }
