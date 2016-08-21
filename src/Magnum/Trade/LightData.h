@@ -29,14 +29,84 @@
  * @brief Class @ref Magnum::Trade::LightData
  */
 
-#include <string>
+#include "Magnum/Magnum.h"
+#include "Magnum/Math/Color.h"
 
 namespace Magnum { namespace Trade {
 
 /**
 @brief Light data
 */
-class LightData {};
+class LightData {
+    public:
+        /**
+         * @brief Light type
+         *
+         * @see @ref type()
+         */
+        enum class Type: UnsignedByte {
+            /**
+             * Light at position that is infinitely far away so its rays are
+             * parallel. The light rays point in a direction of negative Z
+             * axis.
+             */
+            Infinite,
+
+            /** Point light, radiating in all directions */
+            Point,
+
+            /**
+             * Spot light, radiating in a limited range of direction. The
+             * primary direction is negative Z axis.
+             */
+            Spot
+        };
+
+        /**
+         * @brief Constructor
+         * @param color             Light color
+         * @param intensity         Light intensity
+         * @param importerState     Importer-specific state
+         */
+        constexpr explicit LightData(Type type, const Color3& color, Float intensity, const void* importerState = nullptr) noexcept: _type{type}, _color{color}, _intensity{intensity}, _importerState{importerState} {}
+
+        /** @brief Copying is not allowed */
+        LightData(const LightData&) = delete;
+
+        /** @brief Move constructor */
+        LightData(LightData&&) noexcept = default;
+
+        /** @brief Copying is not allowed */
+        LightData& operator=(const LightData&) = delete;
+
+        /** @brief Move assignment */
+        LightData& operator=(LightData&&) noexcept = default;
+
+        /** @brief Light type */
+        constexpr Type type() const { return _type; }
+
+        /** @brief Light color */
+        constexpr Color3 color() const { return _color; }
+
+        /** @brief Light intensity */
+        constexpr Float intensity() const { return _intensity; }
+
+        /**
+         * @brief Importer-specific state
+         *
+         * See @ref AbstractImporter::importerState() for more information.
+         */
+        const void* importerState() const { return _importerState; }
+
+    private:
+        Type _type;
+        Vector3 _color;
+        Float _intensity;
+        const void* _importerState;
+};
+
+/** @debugoperatorenum{Magnum::Trade::LightData::Type} */
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, LightData::Type value);
 
 }}
 

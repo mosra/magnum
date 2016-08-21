@@ -67,6 +67,7 @@ set(Magnum_SRCS
     Trade/AbstractImporter.cpp
     Trade/AbstractMaterialData.cpp
     Trade/ImageData.cpp
+    Trade/LightData.cpp
     Trade/MeshData2D.cpp
     Trade/MeshData3D.cpp
     Trade/MeshObjectData2D.cpp

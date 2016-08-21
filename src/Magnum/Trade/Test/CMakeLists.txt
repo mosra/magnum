@@ -40,6 +40,7 @@ corrade_add_test(TradeAbstractImporterTest AbstractImporterTest.cpp LIBRARIES Ma
 target_include_directories(TradeAbstractImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 corrade_add_test(TradeCameraDataTest CameraDataTest.cpp LIBRARIES Magnum)
 corrade_add_test(TradeImageDataTest ImageDataTest.cpp LIBRARIES Magnum)
+corrade_add_test(TradeLightDataTest LightDataTest.cpp LIBRARIES Magnum)
 corrade_add_test(TradeMaterialDataTest MaterialDataTest.cpp LIBRARIES Magnum)
 corrade_add_test(TradeMeshData2DTest MeshData2DTest.cpp LIBRARIES Magnum)
 corrade_add_test(TradeMeshData3DTest MeshData3DTest.cpp LIBRARIES Magnum)
