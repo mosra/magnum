@@ -217,9 +217,6 @@ template<std::size_t size, class T> class Vector {
         /** @brief Copy constructor */
         constexpr Vector(const Vector<size, T>&) = default;
 
-        /** @brief Assignment operator */
-        Vector<size, T>& operator=(const Vector<size, T>&) = default;
-
         /** @brief Convert vector to external representation */
         template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::to(std::declval<Vector<size, T>>()))> constexpr explicit operator U() const {
             return Implementation::VectorConverter<size, T, U>::to(*this);
@@ -1115,11 +1112,6 @@ extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utili
     }                                                                       \
     template<std::size_t otherSize> constexpr static Type<T> pad(const Math::Vector<otherSize, T>& a, T value = T(0)) { \
         return Math::Vector<size, T>::pad(a, value);                        \
-    }                                                                       \
-                                                                            \
-    Type<T>& operator=(const Type<T>& other) {                              \
-        Math::Vector<size, T>::operator=(other);                            \
-        return *this;                                                       \
     }                                                                       \
                                                                             \
     Type<T> operator-() const {                                             \

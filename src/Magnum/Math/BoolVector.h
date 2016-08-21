@@ -106,9 +106,6 @@ template<std::size_t size> class BoolVector {
         /** @brief Copy constructor */
         constexpr BoolVector(const BoolVector<size>&) = default;
 
-        /** @brief Copy assignment */
-        BoolVector<size>& operator=(const BoolVector<size>&) = default;
-
         /**
          * @brief Raw data
          * @return Array of DataSize length

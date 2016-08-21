@@ -155,9 +155,6 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         /** @brief Copy constructor */
         constexpr RectangularMatrix(const RectangularMatrix<cols, rows, T>&) = default;
 
-        /** @brief Assignment operator */
-        RectangularMatrix<cols, rows, T>& operator=(const RectangularMatrix<cols, rows, T>&) = default;
-
         /** @brief Convert matrix to external representation */
         template<class U, class V = decltype(Implementation::RectangularMatrixConverter<cols, rows, T, U>::to(std::declval<RectangularMatrix<cols, rows, T>>()))> constexpr explicit operator U() const {
             return Implementation::RectangularMatrixConverter<cols, rows, T, U>::to(*this);
