@@ -55,12 +55,11 @@ cache:
   - $HOME/sdl2
 
 install:
+- if [ "$TRAVIS_OS_NAME" == "linux" ]; then pip install --user cpp-coveralls && export COVERAGE="--coverage"; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update; fi
 
-- if [ "$TRAVIS_OS_NAME" == "linux" ]; then pip install --user cpp-coveralls; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export CXX=g++-4.7; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export PLATFORM_GL_API=GLX; fi
-- if [ "$TRAVIS_OS_NAME" == "linux" ]; then export COVERAGE="--coverage"; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop" ]; then export PLATFORM_GL_API=CGL; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "ios-simulator" ]; then gem install xcpretty; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "emscripten" ]; then brew install emscripten && export LLVM=/usr/local/opt/emscripten/libexec/llvm/bin && emcc; fi
@@ -85,4 +84,4 @@ script:
 
 after_success:
 # Ignoring all stuff that needs GL context and thus can't be run on Travis
-- if [ "$TRAVIS_OS_NAME" == "linux" ]; then coveralls --gcov /usr/bin/gcov-4.7 -E "(.*/(Test|magnum/build|MagnumExternal|Shaders|Platform)/.*|.*/src/Magnum/(AbstractFramebuffer|AbstractObject|AbstractQuery|AbstractShaderProgram|AbstractTexture|Buffer|BufferImage|BufferTexture|Context|CubeMapTexture|CubeMapTextureArray|DebugOutput|DefaultFramebuffer|Framebuffer|Mesh|MeshView|MultisampleTexture|OpenGL|PixelStorage|PrimitiveQuery|RectangleTexture|Renderbuffer|Renderer|SampleQuery|Sampler|Shader|Texture|TextureArray|TimeQuery|TransformFeedback|Implementation/BufferState|Implementation/DebugState|Implementation/driverSpecific|Implementation/FramebufferState|Implementation/maxTextureSize|Implementation/MeshState|Implementation/QueryState|Implementation/RendererState|Implementation/ShaderProgramState|Implementation/ShaderState|Implementation/State|Implementation/TextureState|Implementation/TransformFeedbackState)\\.(cpp|h))" --gcov-options '\-lp'; fi
+- if [ "$TRAVIS_OS_NAME" == "linux" ]; then coveralls --gcov /usr/bin/gcov-4.7 -E "(.*/(Test|corrade/build|magnum/build|MagnumExternal|Shaders|Platform)/.*|.*/src/Magnum/(AbstractFramebuffer|AbstractObject|AbstractQuery|AbstractShaderProgram|AbstractTexture|Buffer|BufferImage|BufferTexture|Context|CubeMapTexture|CubeMapTextureArray|DebugOutput|DefaultFramebuffer|Framebuffer|Mesh|MeshView|MultisampleTexture|OpenGL|PixelStorage|PrimitiveQuery|RectangleTexture|Renderbuffer|Renderer|SampleQuery|Sampler|Shader|Texture|TextureArray|TimeQuery|TransformFeedback|Implementation/BufferState|Implementation/DebugState|Implementation/driverSpecific|Implementation/FramebufferState|Implementation/maxTextureSize|Implementation/MeshState|Implementation/QueryState|Implementation/RendererState|Implementation/ShaderProgramState|Implementation/ShaderState|Implementation/State|Implementation/TextureState|Implementation/TransformFeedbackState)\\.(cpp|h))" --gcov-options '\-lp'; fi
