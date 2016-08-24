@@ -63,10 +63,22 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
          *
          * Construct the curve with all control points being zero vectors.
          */
-        constexpr /*implicit*/ Bezier(ZeroInitT = ZeroInit) noexcept: _data{} {}
+        constexpr /*implicit*/ Bezier(ZeroInitT = ZeroInit) noexcept
+            /** @todoc remove workaround when doxygen is sane */
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            /* MSVC 2015 can't handle {} here */
+            : Bezier<order, dimensions, T>(typename Implementation::GenerateSequence<order + 1>::Type{}, ZeroInit)
+            #endif
+            {}
 
         /** @brief Construct Bézier without initializing the contents */
-        explicit Bezier(NoInitT) noexcept {}
+        explicit Bezier(NoInitT) noexcept
+            /** @todoc remove workaround when doxygen is sane */
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            /* MSVC 2015 can't handle {} here */
+            : Bezier<order, dimensions, T>(typename Implementation::GenerateSequence<order + 1>::Type{}, NoInit)
+            #endif
+            {}
 
         /** @brief Construct Bézier curve with given array of control points */
         template<typename... U> constexpr Bezier(const Vector<dimensions, T>& first, U... next) noexcept: _data{first, next...} {
@@ -125,6 +137,10 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
         }
 
     private:
+        /* Implementation for Bezier<order, dimensions, T>::Bezier(ZeroInitT) and Bezier<order, dimensions, T>::Bezier(NoInitT) */
+        /* MSVC 2015 can't handle {} here */
+        template<class U, std::size_t ...sequence> constexpr explicit Bezier(Implementation::Sequence<sequence...>, U): _data{Vector<dimensions, T>((static_cast<void>(sequence), U{typename U::Init{}}))...} {}
+
         /* Calculates and returns all intermediate points generated when using De Casteljau's algorithm */
         std::array<Bezier<order, dimensions, T>, order + 1> calculateIntermediatePoints(Float t) const {
             std::array<Bezier<order, dimensions, T>, order + 1> iPoints;
