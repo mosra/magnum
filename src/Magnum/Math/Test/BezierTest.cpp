@@ -24,6 +24,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Math/Bezier.h"
@@ -43,13 +44,17 @@ struct BezierTest : Corrade::TestSuite::Tester {
 
     void lerpQuadratic();
     void lerpCubic();
+
+    void debug();
 };
 
 BezierTest::BezierTest() {
     addTests({&BezierTest::implicitConstructor,
 
               &BezierTest::lerpQuadratic,
-              &BezierTest::lerpCubic});
+              &BezierTest::lerpCubic,
+
+              &BezierTest::debug});
 }
 
 void BezierTest::implicitConstructor() {
@@ -78,6 +83,12 @@ void BezierTest::lerpCubic() {
                            Math::pow<3>(t)*p3;
         CORRADE_COMPARE(bezier.lerp(t), expected);
     }
+}
+
+void BezierTest::debug() {
+    std::ostringstream out;
+    Debug(&out) << CubicBezier2D{Vector2{0.0f, 1.0f}, Vector2{1.5f, -0.3f}, Vector2{2.1f, 0.5f}, Vector2{0.0f, 2.0f}};
+    CORRADE_COMPARE(out.str(), "Bezier({0, 1}, {1.5, -0.3}, {2.1, 0.5}, {0, 2})\n");
 }
 
 }}}

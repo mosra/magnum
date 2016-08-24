@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include "Magnum/Math/Bezier.h"
 #include "Magnum/Math/DualComplex.h"
 #include "Magnum/Math/DualQuaternion.h"
 #include "Magnum/Math/Range.h"
@@ -76,6 +77,15 @@ template struct ConfigurationValue<Magnum::Math::Range<3, Magnum::Double>>;
 namespace Magnum { namespace Math {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Bezier<2, 2, Float>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Bezier<2, 3, Float>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Bezier<3, 2, Float>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Bezier<3, 3, Float>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Bezier<2, 2, Double>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Bezier<2, 3, Double>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Bezier<3, 2, Double>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Bezier<3, 3, Double>&);
+
 template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Complex<Float>&);
 template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Complex<Double>&);
 

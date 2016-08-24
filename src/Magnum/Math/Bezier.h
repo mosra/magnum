@@ -198,6 +198,30 @@ and @ref Bezier for more information.
 template<class T> using CubicBezier3D = CubicBezier<3, T>;
 #endif
 
+/** @debugoperator{Magnum::Math::Bezier} */
+template<UnsignedInt order, UnsignedInt dimensions, class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Bezier<order, dimensions, T>& value) {
+    debug << "Bezier(" << Corrade::Utility::Debug::nospace;
+    for(UnsignedInt o = 0; o != order + 1; ++o) {
+        debug << (o ? ", {" : "{") << Corrade::Utility::Debug::nospace << value[o][0] << Corrade::Utility::Debug::nospace;
+        for(UnsignedInt i = 1; i != dimensions; ++i)
+            debug << "," << value[o][i] << Corrade::Utility::Debug::nospace;
+        debug << "}" << Corrade::Utility::Debug::nospace;
+    }
+    return debug << ")";
+}
+
+/* Explicit instantiation for types used in OpenGL */
+#ifndef DOXYGEN_GENERATING_OUTPUT
+extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Bezier<2, 2, Float>&);
+extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Bezier<2, 3, Float>&);
+extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Bezier<3, 2, Float>&);
+extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Bezier<3, 3, Float>&);
+extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Bezier<2, 2, Double>&);
+extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Bezier<2, 3, Double>&);
+extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Bezier<3, 2, Double>&);
+extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Bezier<3, 3, Double>&);
+#endif
+
 }}
 
 #endif
