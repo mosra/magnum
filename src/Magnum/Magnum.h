@@ -302,6 +302,18 @@ typedef Math::Matrix3x4<Float> Matrix3x4;
 /** @brief Float matrix with 4 columns and 3 rows */
 typedef Math::Matrix4x3<Float> Matrix4x3;
 
+/** @brief Float two-dimensional quadratic Bézier curve */
+typedef Math::QuadraticBezier2D<Float> QuadraticBezier2D;
+
+/** @brief Float three-dimensional quadratic Bézier curve */
+typedef Math::QuadraticBezier3D<Float> QuadraticBezier3D;
+
+/** @brief Float two-dimensional cubic Bézier curve */
+typedef Math::CubicBezier2D<Float> CubicBezier2D;
+
+/** @brief Float three-dimensional cubic Bézier curve */
+typedef Math::CubicBezier3D<Float> CubicBezier3D;
+
 /** @brief Float complex number */
 typedef Math::Complex<Float> Complex;
 
@@ -410,6 +422,18 @@ typedef Math::Matrix3x4<Double> Matrix3x4d;
 
 /** @brief Double matrix with 4 columns and 3 rows */
 typedef Math::Matrix4x3<Double> Matrix4x3d;
+
+/** @brief Double two-dimensional quadratic Bézier curve */
+typedef Math::QuadraticBezier2D<Float> QuadraticBezier2Dd;
+
+/** @brief Double three-dimensional quadratic Bézier curve */
+typedef Math::QuadraticBezier3D<Float> QuadraticBezier3Dd;
+
+/** @brief Double two-dimensional cubic Bézier curve */
+typedef Math::CubicBezier2D<Float> CubicBezier2Dd;
+
+/** @brief Double three-dimensional cubic Bézier curve */
+typedef Math::CubicBezier3D<Float> CubicBezier3Dd;
 
 /** @brief Double complex number */
 typedef Math::Complex<Double> Complexd;

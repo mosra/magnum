@@ -157,6 +157,10 @@ Complex b = Complex::rotation(60.0_degf);
 
 Other types, which don't have their GLSL equivalent, are:
 
+-   @ref QuadraticBezier2D or @ref QuadraticBezier2Dd, @ref QuadraticBezier3D
+    or @ref QuadraticBezier3Dd
+-   @ref CubicBezier2D or @ref CubicBezier2Dd, @ref CubicBezier3D
+    or @ref CubicBezier3Dd
 -   @ref Complex or @ref Complexd, @ref DualComplex or @ref DualComplexd
 -   @ref Quaternion or @ref Quaterniond, @ref DualQuaternion or
     @ref DualQuaterniond

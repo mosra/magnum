@@ -144,7 +144,8 @@ template<UnsignedInt dimensions, class T> using QuadraticBezier = Bezier<2, dime
 
 Convenience alternative to `QuadraticBezier<2, T>`. See @ref QuadraticBezier
 and @ref Bezier for more information.
-@see @ref QuadraticBezier3D
+@see @ref QuadraticBezier3D, @ref Magnum::QuadraticBezier2D,
+    @ref Magnum::QuadraticBezier2Dd
 */
 #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class T> using QuadraticBezier2D = QuadraticBezier<2, T>;
@@ -155,7 +156,8 @@ template<class T> using QuadraticBezier2D = QuadraticBezier<2, T>;
 
 Convenience alternative to `QuadraticBezier<3, T>`. See @ref QuadraticBezier
 and @ref Bezier for more information.
-@see @ref QuadraticBezier2D
+@see @ref QuadraticBezier2D, @ref Magnum::QuadraticBezier3D,
+    @ref Magnum::QuadraticBezier3Dd
 */
 #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class T> using QuadraticBezier3D = QuadraticBezier<3, T>;
@@ -177,7 +179,8 @@ template<UnsignedInt dimensions, class T> using CubicBezier = Bezier<3, dimensio
 
 Convenience alternative to `CubicBezier<2, T>`. See @ref CubicBezier
 and @ref Bezier for more information.
-@see @ref CubicBezier3D
+@see @ref CubicBezier3D, @ref Magnum::CubicBezier2D,
+    @ref Magnum::CubicBezier2Dd
 */
 #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class T> using CubicBezier2D = CubicBezier<2, T>;
@@ -188,7 +191,8 @@ template<class T> using CubicBezier2D = CubicBezier<2, T>;
 
 Convenience alternative to `CubicBezier<3, T>`. See @ref CubicBezier
 and @ref Bezier for more information.
-@see @ref CubicBezier2D
+@see @ref CubicBezier2D, @ref Magnum::CubicBezier3D,
+    @ref Magnum::CubicBezier3Dd
 */
 #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class T> using CubicBezier3D = CubicBezier<3, T>;
