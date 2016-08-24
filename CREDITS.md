@@ -35,5 +35,7 @@ Contributors to Magnum library
     enhancements, GlfwApplication implementation, bug reports, documentation
     improvements
 *   Gerhard de Clercq -- Windows RT (Store/Phone) port
+*   Ashwin Ravichandran ([@](ashrko619)[https://github.com/ashrko619]) --
+    Bézier curve implementation
 
 Big thanks to everyone involved!
