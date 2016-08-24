@@ -41,6 +41,14 @@ namespace Magnum { namespace Math {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 /* Class Constants used only statically */
 
+template<UnsignedInt, UnsignedInt, class> class Bezier;
+template<UnsignedInt dimensions, class T> using QuadraticBezier = Bezier<2, dimensions, T>;
+template<UnsignedInt dimensions, class T> using CubicBezier = Bezier<3, dimensions, T>;
+template<class T> using QuadraticBezier2D = QuadraticBezier<2, T>;
+template<class T> using QuadraticBezier3D = QuadraticBezier<3, T>;
+template<class T> using CubicBezier2D = CubicBezier<2, T>;
+template<class T> using CubicBezier3D = CubicBezier<3, T>;
+
 template<class> class Complex;
 template<class> class Dual;
 template<class> class DualComplex;
