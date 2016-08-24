@@ -25,6 +25,7 @@
 
 set(MagnumMath_HEADERS
     Angle.h
+    Bezier.h
     BoolVector.h
     Color.h
     Complex.h
