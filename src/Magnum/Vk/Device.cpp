@@ -32,24 +32,26 @@
 
 namespace Magnum { namespace Vk {
 
-Device::Device(PhysicalDevice& physicalDevice, VkDeviceQueueCreateInfo& requestedQueues):
+Device::Device(PhysicalDevice& physicalDevice, const std::vector<VkDeviceQueueCreateInfo>& requestedQueues,
+               const std::vector<const char*>& extensions, const std::vector<const char*>& validationLayers):
     _physicalDevice(physicalDevice)
 {
-    constexpr const char* enabledExtensions[]{VK_KHR_SWAPCHAIN_EXTENSION_NAME};
-    constexpr const char* validationLayerNames[] = {"VK_LAYER_LUNARG_standard_validation"};
-
-    // TODO: Allow disabling validation layers
-
     VkDeviceCreateInfo deviceCreateInfo = {
         VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
         nullptr,
         0, /* flags */
-        1, &requestedQueues,
-        1, validationLayerNames,
-        1, enabledExtensions,
+        requestedQueues.size(), requestedQueues.data(),
+        validationLayers.size(), validationLayers.data(),
+        extensions.size(), extensions.data(),
         nullptr};
 
     vkCreateDevice(physicalDevice.vkPhysicalDevice(), &deviceCreateInfo, nullptr, &_device);
+
+    for(const VkDeviceQueueCreateInfo& info : requestedQueues) {
+        for(UnsignedInt i = 0; i < info.queueCount; ++i) {
+            _queues.emplace_back(new Queue{*this, info.queueFamilyIndex, i});
+        }
+    }
 }
 
 Device::~Device() {

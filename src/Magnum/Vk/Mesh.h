@@ -42,14 +42,13 @@ namespace Magnum { namespace Vk {
 class MAGNUM_VK_EXPORT Mesh {
     public:
 
-        Mesh() {
-        }
-
         /** @brief Copying is not allowed */
         Mesh(const Mesh&) = delete;
 
         /** @brief Move constructor */
         Mesh(Mesh&& other);
+
+        Mesh(): _count(0), _drawIndexed(false) {};
 
         /**
          * @brief Destructor
@@ -68,15 +67,21 @@ class MAGNUM_VK_EXPORT Mesh {
             const VkBuffer* vertexBuffers = _vertexBuffers.data();
             const VkBuffer indexBuffer = _indexBuffer;
 
-            const int numVertexBuffers = _vertexBuffers.size();
-            const int numIndices = _numIndices;
-            return [vertexBuffers, indexBuffer, numVertexBuffers, numIndices](VkCommandBuffer cmdBuffer){
+            const UnsignedInt numVertexBuffers = _vertexBuffers.size();
+            const UnsignedInt count = _count;
+            const bool drawIndexed = _drawIndexed;
+            return [vertexBuffers, indexBuffer, numVertexBuffers, count, drawIndexed](VkCommandBuffer cmdBuffer){
                 VkDeviceSize offset = 0;
 
                 vkCmdBindVertexBuffers(cmdBuffer, 0, numVertexBuffers, vertexBuffers, &offset);
-                vkCmdBindIndexBuffer(cmdBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
 
-                vkCmdDrawIndexed(cmdBuffer, numIndices, 1, 0, 0, 1);
+                if(drawIndexed) {
+                    vkCmdBindIndexBuffer(cmdBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
+
+                    vkCmdDrawIndexed(cmdBuffer, count, 1, 0, 0, 1);
+                } else {
+                    vkCmdDraw(cmdBuffer, count, 1, 0, 0);
+                }
             };
         }
 
@@ -87,7 +92,18 @@ class MAGNUM_VK_EXPORT Mesh {
 
         Mesh& setIndexBuffer(const Buffer& buffer) {
             _indexBuffer = buffer;
-            _numIndices = buffer.size();
+            _count = buffer.size();
+            _drawIndexed = true;
+            return *this;
+        }
+
+        Mesh& setCount(UnsignedInt count) {
+            _count = count;
+            return *this;
+        }
+
+        Mesh& setDrawIndexed(bool indexed) {
+            _drawIndexed = indexed;
             return *this;
         }
 
@@ -95,7 +111,9 @@ class MAGNUM_VK_EXPORT Mesh {
         std::vector<VkBuffer> _vertexBuffers;
         VkBuffer _indexBuffer;
 
-        int _numIndices;
+        bool _drawIndexed;
+
+        UnsignedInt _count;
 };
 
 }}

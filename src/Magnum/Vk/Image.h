@@ -170,6 +170,13 @@ class MAGNUM_VK_EXPORT Image {
             return *this;
         }
 
+        /**
+         * @brief The device this image was created for.
+         */
+        Device& device() {
+            return _device;
+        }
+
     private:
         Device& _device;
         VkImage _image;

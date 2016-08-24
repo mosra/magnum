@@ -46,6 +46,8 @@
 
 namespace Magnum { namespace Vk {
 
+enum class Format: UnsignedInt;
+
 class DescriptorSetLayout;
 
 enum class DynamicState: UnsignedInt {
@@ -60,7 +62,7 @@ enum class DynamicState: UnsignedInt {
     StencilReference = VK_DYNAMIC_STATE_STENCIL_REFERENCE,
 };
 
-enum class Topology: UnsignedInt {
+enum class PrimitiveTopology: UnsignedInt {
     PointList = VK_PRIMITIVE_TOPOLOGY_POINT_LIST,
     LineList = VK_PRIMITIVE_TOPOLOGY_LINE_LIST,
     LineStrip = VK_PRIMITIVE_TOPOLOGY_LINE_STRIP,
@@ -167,6 +169,13 @@ class MAGNUM_VK_EXPORT Pipeline {
             };
         }
 
+        /**
+         * @brief The device this pipeline was created for.
+         */
+        Device& device() {
+            return _device;
+        }
+
     private:
         Device& _device;
         VkPipeline _pipeline;
@@ -178,15 +187,8 @@ class MAGNUM_VK_EXPORT GraphicsPipelineBuilder {
     public:
 
         GraphicsPipelineBuilder(Device& device):
-            _device{device} {
-
-            _inputAssemblyState = {
-                VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
-                nullptr,
-                0,
-                VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,
-                0 /* primitive restart enable */
-            };
+            _device{device},
+            _primitiveTopology{PrimitiveTopology::TriangleList} {
 
             _multisampleState = {
                 VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO, nullptr, 0,
@@ -257,38 +259,6 @@ class MAGNUM_VK_EXPORT GraphicsPipelineBuilder {
                 nullptr
             };
 
-            VkVertexInputBindingDescription bindingDesc;
-            bindingDesc.binding = 0;
-            bindingDesc.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-            bindingDesc.stride = sizeof(Vector3)*2;
-
-            _vertexInputBindings.push_back(bindingDesc);
-
-            VkVertexInputAttributeDescription attributeDesc[2];
-            attributeDesc[0].binding = 0;
-            attributeDesc[0].location = 0;
-            attributeDesc[0].format = VK_FORMAT_R32G32B32_SFLOAT;
-            attributeDesc[0].offset = 0;
-
-            _vertexInputAttrbutes.push_back(attributeDesc[0]);
-
-            // Color
-            attributeDesc[1].binding = 0;
-            attributeDesc[1].location = 1;
-            attributeDesc[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-            attributeDesc[1].offset = sizeof(Vector3);
-
-            _vertexInputAttrbutes.push_back(attributeDesc[1]);
-
-            _vertexInputState = {
-                VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
-                nullptr,
-                0,
-                _vertexInputBindings.size(),
-                _vertexInputBindings.data(),
-                _vertexInputAttrbutes.size(),
-                _vertexInputAttrbutes.data(),
-            };
         }
 
         /** @brief Copying is not allowed */ // TODO(squareys) probably should be, though
@@ -332,7 +302,7 @@ class MAGNUM_VK_EXPORT GraphicsPipelineBuilder {
             return *this;
         }
 
-        GraphicsPipelineBuilder& setTopology(Topology topology) {
+        GraphicsPipelineBuilder& setTopology(PrimitiveTopology topology) {
             _inputAssemblyState.topology = VkPrimitiveTopology(topology);
             return *this;
         }
@@ -347,12 +317,39 @@ class MAGNUM_VK_EXPORT GraphicsPipelineBuilder {
             return *this;
         }
 
+        GraphicsPipelineBuilder& addVertexInputBinding(UnsignedInt binding, UnsignedInt stride) {
+            VkVertexInputBindingDescription bindingDesc;
+            bindingDesc.binding = binding;
+            bindingDesc.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+            bindingDesc.stride = stride;
+
+            _vertexInputBindings.push_back(bindingDesc);
+
+            return *this;
+        }
+
+        GraphicsPipelineBuilder& addVertexAttributeDescription(UnsignedInt binding, UnsignedInt location, Format format, UnsignedInt offset = 0) {
+            VkVertexInputAttributeDescription attributeDesc;
+            attributeDesc.binding = binding;
+            attributeDesc.location = location;
+            attributeDesc.format = VkFormat(format);
+            attributeDesc.offset = offset;
+
+            _vertexInputAttrbutes.push_back(attributeDesc);
+
+            return *this;
+        }
+
+        GraphicsPipelineBuilder& setPrimitiveTopology(PrimitiveTopology topology) {
+            _primitiveTopology = topology;
+            return *this;
+        }
+
     private:
         Device& _device;
         VkGraphicsPipelineCreateInfo _createInfo;
 
         VkPipelineInputAssemblyStateCreateInfo _inputAssemblyState;
-        VkPipelineVertexInputStateCreateInfo _vertexInputState;
         VkPipelineRasterizationStateCreateInfo _rasterizationState;
         VkPipelineColorBlendStateCreateInfo _colorBlendState;
         VkPipelineMultisampleStateCreateInfo _multisampleState;
@@ -366,6 +363,7 @@ class MAGNUM_VK_EXPORT GraphicsPipelineBuilder {
         std::vector<VkVertexInputAttributeDescription> _vertexInputAttrbutes;
         std::vector<VkPushConstantRange> _pushConstantRanges;
 
+        PrimitiveTopology _primitiveTopology;
         RenderPass* _renderPass;
         std::vector<VkPipelineShaderStageCreateInfo> _shaderStages;
 };

@@ -53,7 +53,10 @@ class MAGNUM_VK_EXPORT Device {
         /** @brief Move constructor */
         Device(Device&& other);
 
-        Device(PhysicalDevice& physicalDevice, VkDeviceQueueCreateInfo& requestedQueues);
+        Device(PhysicalDevice& physicalDevice,
+               const std::vector<VkDeviceQueueCreateInfo>& requestedQueues,
+               const std::vector<const char*>& extensions,
+               const std::vector<const char*>& validationLayers);
 
         /**
          * @brief Destructor
@@ -96,9 +99,18 @@ class MAGNUM_VK_EXPORT Device {
             return _device;
         }
 
+        /**
+         * @brief Get a requested queue
+         * @param index Index of the queue in order requested
+         */
+        Queue& getQueue(UnsignedInt index) {
+            return *_queues[index];
+        }
+
     private:
         VkDevice _device;
         PhysicalDevice& _physicalDevice;
+        std::vector<std::unique_ptr<Queue>> _queues;
 };
 
 }}

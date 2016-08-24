@@ -31,7 +31,6 @@ set(MagnumVk_SRCS
     Buffer.cpp
     CommandBuffer.cpp
     CommandPool.cpp
-    Instance.cpp
     DescriptorPool.cpp
     DescriptorSet.cpp
     Device.cpp
@@ -39,6 +38,7 @@ set(MagnumVk_SRCS
     Framebuffer.cpp
     Image.cpp
     ImageView.cpp
+    Instance.cpp
     Mesh.cpp
     PhysicalDevice.cpp
     Pipeline.cpp
@@ -54,14 +54,15 @@ set(MagnumVk_HEADERS
     Command.h
     CommandBuffer.h
     CommandPool.h
-    Instance.h
     DescriptorPool.h
     DescriptorSet.h
     Device.h
     DeviceMemory.h
+    Format.h
     Framebuffer.h
     Image.h
     ImageView.h
+    Instance.h
     Math.h
     Mesh.h
     PhysicalDevice.h

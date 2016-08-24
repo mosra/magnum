@@ -80,6 +80,13 @@ class MAGNUM_VK_EXPORT Queue {
         Queue& submit(const CommandBuffer& cmdBuffer);
         Queue& submit(const CommandBuffer& cmdBuffer, std::vector<std::reference_wrapper<Semaphore>> waitSemaphores, std::vector<std::reference_wrapper<Semaphore>> signalSemaphores);
 
+        /**
+         * @brief The device this queue was created for.
+         */
+        Device& device() {
+            return _device;
+        }
+
     private:
         VkQueue _queue;
         Device& _device;

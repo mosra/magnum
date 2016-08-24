@@ -63,8 +63,27 @@ std::unique_ptr<Pipeline> GraphicsPipelineBuilder::build() {
         nullptr /* initial data */
     };
 
+
     err = vkCreatePipelineCache(_device, &pipelineCacheCreateInfo, nullptr, &cache);
     MAGNUM_VK_ASSERT_ERROR(err);
+
+    VkPipelineInputAssemblyStateCreateInfo inputAssemblyState = {
+        VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO,
+        nullptr,
+        0,
+        VkPrimitiveTopology(_primitiveTopology),
+        0 /* primitive restart enable */
+    };
+
+    VkPipelineVertexInputStateCreateInfo vertexInputState = {
+        VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
+        nullptr,
+        0,
+        _vertexInputBindings.size(),
+        _vertexInputBindings.data(),
+        _vertexInputAttrbutes.size(),
+        _vertexInputAttrbutes.data(),
+    };
 
     /* create pipeline itself */
     VkPipelineDynamicStateCreateInfo dynamicState = {
@@ -80,8 +99,8 @@ std::unique_ptr<Pipeline> GraphicsPipelineBuilder::build() {
     pipelineInfo.pNext = nullptr;
     pipelineInfo.layout = layout;
     pipelineInfo.renderPass = *_renderPass;
-    pipelineInfo.pInputAssemblyState = &_inputAssemblyState;
-    pipelineInfo.pVertexInputState = &_vertexInputState;
+    pipelineInfo.pInputAssemblyState = &inputAssemblyState;
+    pipelineInfo.pVertexInputState = &vertexInputState;
     pipelineInfo.pRasterizationState = &_rasterizationState;
     pipelineInfo.pColorBlendState = &_colorBlendState;
     pipelineInfo.pMultisampleState = &_multisampleState;

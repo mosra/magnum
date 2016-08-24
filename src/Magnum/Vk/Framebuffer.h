@@ -94,6 +94,13 @@ class MAGNUM_VK_EXPORT Framebuffer {
             return _framebuffer;
         }
 
+        /**
+         * @brief The device this framebuffer was created for.
+         */
+        Device& device() {
+            return _device;
+        }
+
     private:
         Device& _device;
         VkFramebuffer _framebuffer;
