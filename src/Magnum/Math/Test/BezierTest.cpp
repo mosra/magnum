@@ -36,6 +36,7 @@ namespace Magnum { namespace Math { namespace Test {
 
 typedef Math::Vector2<Float> Vector2;
 typedef Math::Vector2<Double> Vector2d;
+typedef Math::Bezier<1, 2, Float> LinearBezier2D;
 typedef Math::QuadraticBezier2D<Float> QuadraticBezier2D;
 typedef Math::QuadraticBezier2D<Double> QuadraticBezier2Dd;
 typedef Math::CubicBezier2D<Float> CubicBezier2D;
@@ -53,8 +54,9 @@ struct BezierTest : Corrade::TestSuite::Tester {
 
     void compare();
 
-    void lerpQuadratic();
-    void lerpCubic();
+    void valueLinear();
+    void valueQuadratic();
+    void valueCubic();
 
     void debug();
     void configuration();
@@ -71,8 +73,9 @@ BezierTest::BezierTest() {
 
               &BezierTest::compare,
 
-              &BezierTest::lerpQuadratic,
-              &BezierTest::lerpCubic,
+              &BezierTest::valueLinear,
+              &BezierTest::valueQuadratic,
+              &BezierTest::valueCubic,
 
               &BezierTest::debug,
               &BezierTest::configuration});
@@ -144,25 +147,29 @@ void BezierTest::compare() {
     CORRADE_VERIFY((QuadraticBezier2D{Vector2{0.5f, 1.1f}, Vector2{1.1f, 0.3f}, Vector2{0.1f, 1.0f + TypeTraits<Float>::epsilon()*2}} != QuadraticBezier2D{Vector2{0.5f, 1.1f}, Vector2{1.1f, 0.3f}, Vector2{0.1f, 1.0f}}));
 }
 
-void BezierTest::lerpQuadratic() {
-    Vector2 p0(0.0f, 0.0f), p1(10.0f, 15.0f), p2(20.0f, 4.0f);
-    QuadraticBezier2D bezier(p0, p1, p2);
-    for(Float t = 0.0; t <= 1.0f; t += 0.01f) {
-        Vector2 expected = Math::pow<2>(1 - t)*p0 + 2*(1 - t)*t*p1 + Math::pow<2>(t)*p2;
-        CORRADE_COMPARE(bezier.lerp(t), expected);
-    }
+void BezierTest::valueLinear() {
+    LinearBezier2D bezier{Vector2{0.0f, 0.0f}, Vector2{20.0f, 4.0f}};
+
+    CORRADE_COMPARE(bezier.value(0.2f), (Vector2{4.0f, 0.8f}));
+    CORRADE_COMPARE(bezier.value(0.5f), (Vector2{10.0f, 2.0f}));
+    CORRADE_COMPARE(bezier.value(0.2f), Math::lerp(bezier[0], bezier[1], 0.2f));
 }
 
-void BezierTest::lerpCubic() {
+void BezierTest::valueQuadratic() {
+    QuadraticBezier2D bezier{Vector2{0.0f, 0.0f}, Vector2{10.0f, 15.0f}, Vector2{20.0f, 4.0f}};
+
+    CORRADE_COMPARE(bezier.value(0.2f), (Vector2{4.0f, 4.96f}));
+    CORRADE_COMPARE(bezier.value(0.5f), (Vector2{10.0f, 8.5f}));
+    CORRADE_VERIFY(bezier.value(0.2f) != Math::lerp(bezier[0], bezier[2], 0.2f));
+}
+
+void BezierTest::valueCubic() {
     Vector2 p0(0.0f, 0.0f), p1(10.0f, 15.0f), p2(20.0f, 4.0f), p3(5.0f, -20.0f);
-    CubicBezier2D bezier(p0, p1, p2, p3);
-    for(Float t = 0.0; t <= 1.0f; t += 0.01f) {
-        Vector2 expected = Math::pow<3>(1 - t)*p0 +
-                           3*Math::pow<2>(1 - t)*t*p1 +
-                           3*(1 - t)*Math::pow<2>(t)*p2 +
-                           Math::pow<3>(t)*p3;
-        CORRADE_COMPARE(bezier.lerp(t), expected);
-    }
+    CubicBezier2D bezier{Vector2{0.0f, 0.0f}, Vector2{10.0f, 15.0f}, Vector2{20.0f, 4.0f}, Vector2{5.0f, -20.0f}};
+
+    CORRADE_COMPARE(bezier.value(0.2f), (Vector2{5.8f, 5.984f}));
+    CORRADE_COMPARE(bezier.value(0.5f), (Vector2{11.875f, 4.625f}));
+    CORRADE_VERIFY(bezier.value(0.2f) != Math::lerp(bezier[0], bezier[3], 0.2f));
 }
 
 void BezierTest::debug() {

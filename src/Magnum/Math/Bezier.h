@@ -115,15 +115,14 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
         }
 
         /**
-         * @brief Interpolate the curve
-         * @param t The interpolation factor
+         * @brief Interpolate the curve at given position
          *
-         * Finds the point in the curve for a given interpolation factor. Uses
+         * Returns point on the curve for given interpolation factor. Uses
          * the [De Casteljau's algorithm](https://en.wikipedia.org/wiki/De_Casteljau%27s_algorithm).
+         * @see @ref subdivide()
          */
-        Vector<dimensions, T> lerp(Float t) const {
-            const auto iPoints = calculateIntermediatePoints(t);
-            return iPoints[0][order];
+        Vector<dimensions, T> value(Float t) const {
+            return calculateIntermediatePoints(t)[0][order];
         }
 
         /**
