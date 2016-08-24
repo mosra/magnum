@@ -95,6 +95,37 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
          */
         template<class U> constexpr explicit Bezier(const Bezier<order, dimensions, U>& other) noexcept: Bezier{typename Implementation::GenerateSequence<order + 1>::Type(), other} {}
 
+        /** @brief Equality comparison */
+        bool operator==(const Bezier<order, dimensions, T>& other) const {
+            for(std::size_t i = 0; i != order + 1; ++i)
+                if((*this)[i] != other[i]) return false;
+            return true;
+        }
+
+        /** @brief Non-equality comparison */
+        bool operator!=(const Bezier<order, dimensions, T>& other) const {
+            return !operator==(other);
+        }
+
+        /**
+         * @brief Control point access
+         *
+         * @p i should not be larger than @ref Order.
+         */
+        Vector<dimensions, T>& operator[](std::size_t i) { return _data[i]; }
+        constexpr Vector<dimensions, T> operator[](std::size_t i) const { return _data[i]; } /**< @overload */
+
+        /**
+         * @brief Interpolate the curve at given position
+         *
+         * Returns point on the curve for given interpolation factor. Uses
+         * the [De Casteljau's algorithm](https://en.wikipedia.org/wiki/De_Casteljau%27s_algorithm).
+         * @see @ref subdivide()
+         */
+        Vector<dimensions, T> value(Float t) const {
+            return calculateIntermediatePoints(t)[0][order];
+        }
+
         /**
          * @brief Subdivide the curve at given position
          *
@@ -110,37 +141,6 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
             for(std::size_t i = 0, j = order; i <= order; --j, ++i)
                 right[i] = iPoints[i][j];
             return {left, right};
-        }
-
-        /**
-         * @brief Interpolate the curve at given position
-         *
-         * Returns point on the curve for given interpolation factor. Uses
-         * the [De Casteljau's algorithm](https://en.wikipedia.org/wiki/De_Casteljau%27s_algorithm).
-         * @see @ref subdivide()
-         */
-        Vector<dimensions, T> value(Float t) const {
-            return calculateIntermediatePoints(t)[0][order];
-        }
-
-        /**
-         * @brief Control point access
-         *
-         * @p i should not be larger than @ref Order.
-         */
-        Vector<dimensions, T>& operator[](std::size_t i) { return _data[i]; }
-        constexpr Vector<dimensions, T> operator[](std::size_t i) const { return _data[i]; } /**< @overload */
-
-        /** @brief Equality comparison */
-        bool operator==(const Bezier<order, dimensions, T>& other) const {
-            for(std::size_t i = 0; i != order + 1; ++i)
-                if((*this)[i] != other[i]) return false;
-            return true;
-        }
-
-        /** @brief Non-equality comparison */
-        bool operator!=(const Bezier<order, dimensions, T>& other) const {
-            return !operator==(other);
         }
 
     private:
