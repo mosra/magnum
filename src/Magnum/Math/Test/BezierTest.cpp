@@ -25,55 +25,57 @@
 */
 
 #include <Corrade/TestSuite/Tester.h>
-#include "Magnum/Math/Bezier.h"
-#include "Magnum/Math/Functions.h"
 
+#include "Magnum/Math/Bezier.h"
+#include "Magnum/Math/Vector2.h"
+#include "Magnum/Math/Functions.h"
 
 namespace Magnum { namespace Math { namespace Test {
 
-typedef Math::Vector<2, Float> Vector2;
+typedef Math::Vector2<Float> Vector2;
+typedef Math::QuadraticBezier2D<Float> QuadraticBezier2D;
+typedef Math::CubicBezier2D<Float> CubicBezier2D;
 
 struct BezierTest : Corrade::TestSuite::Tester {
     explicit BezierTest();
 
     void implicitConstructor();
 
-    void quadratic();
-
-    void cubic();
+    void lerpQuadratic();
+    void lerpCubic();
 };
 
 BezierTest::BezierTest() {
     addTests({&BezierTest::implicitConstructor,
-              &BezierTest::quadratic,
-              &BezierTest::cubic});
+
+              &BezierTest::lerpQuadratic,
+              &BezierTest::lerpCubic});
 }
 
 void BezierTest::implicitConstructor() {
-    QuadraticBezier2D<Float> bezier;
-    Vector2 zero;
+    QuadraticBezier2D bezier;
     for(int i = 0; i < 3; ++i) {
-        CORRADE_COMPARE(bezier[i], zero);
+        CORRADE_COMPARE(bezier[i], Vector2{});
     }
 }
 
-void BezierTest::quadratic() {
+void BezierTest::lerpQuadratic() {
     Vector2 p0(0.0f, 0.0f), p1(10.0f, 15.0f), p2(20.0f, 4.0f);
-    QuadraticBezier2D<Float> bezier(p0, p1, p2);
+    QuadraticBezier2D bezier(p0, p1, p2);
     for(Float t = 0.0; t <= 1.0f; t += 0.01f) {
         Vector2 expected = Math::pow<2>(1 - t)*p0 + 2*(1 - t)*t*p1 + Math::pow<2>(t)*p2;
         CORRADE_COMPARE(bezier.lerp(t), expected);
     }
 }
 
-void BezierTest::cubic() {
+void BezierTest::lerpCubic() {
     Vector2 p0(0.0f, 0.0f), p1(10.0f, 15.0f), p2(20.0f, 4.0f), p3(5.0f, -20.0f);
-    CubicBezier2D<Float> bezier(p0, p1, p2, p3);
+    CubicBezier2D bezier(p0, p1, p2, p3);
     for(Float t = 0.0; t <= 1.0f; t += 0.01f) {
-        Vector2 expected = Math::pow<3>(1 - t)*p0
-                           + 3*Math::pow<2>(1 - t)*t*p1
-                           + 3*(1 - t)*Math::pow<2>(t)*p2
-                           + Math::pow<3>(t)*p3;
+        Vector2 expected = Math::pow<3>(1 - t)*p0 +
+                           3*Math::pow<2>(1 - t)*t*p1 +
+                           3*(1 - t)*Math::pow<2>(t)*p2 +
+                           Math::pow<3>(t)*p3;
         CORRADE_COMPARE(bezier.lerp(t), expected);
     }
 }

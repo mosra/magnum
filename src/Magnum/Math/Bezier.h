@@ -1,6 +1,5 @@
 #ifndef Magnum_Math_Bezier_h
 #define Magnum_Math_Bezier_h
-
 /*
     This file is part of Magnum.
 
@@ -28,46 +27,59 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Math::Bezier
+ * @brief Class @ref Magnum::Math::Bezier, alias @ref Magnum::Math::QuadraticBezier, @ref Magnum::Math::QuadraticBezier2D, @ref Magnum::Math::QuadraticBezier3D, @ref Magnum::Math::CubicBezier, @ref Magnum::Math::CubicBezier2D, @ref Magnum::Math::CubicBezier3D
  */
 
 #include <array>
-#include "Vector.h"
 
+#include "Magnum/Math/Vector.h"
 
 namespace Magnum { namespace Math {
+
 /**
-@brief Bezier
-@tparam order       Order of Bezier curve
-@tparam dimensions  Dimensions of the control points
+@brief Bézier curve
+@tparam order       Order of Bézier curve
+@tparam dimensions  Dimensions of control points
 @tparam T           Underlying data type
 
-See <a href="https://en.wikipedia.org/wiki/B%C3%A9zier_curve">Bezier Curve</a>.
+Implementation of M-order N-dimensional
+[Bézier Curve](https://en.wikipedia.org/wiki/B%C3%A9zier_curve).
+@see @ref QuadraticBezier, @ref CubicBezier, @ref QuadraticBezier2D,
+    @ref QuadraticBezier3D, @ref CubicBezier2D, @ref CubicBezier3D
 */
 template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
-
     public:
+        typedef T Type;             /**< @brief Underlying data type */
 
-        /** @brief Default constructor */
-        constexpr /*implicit*/ Bezier(ZeroInitT = ZeroInit): _points{} {}
+        enum: UnsignedInt {
+            Order = order,          /**< Order of Bézier curve */
+            Dimensions = dimensions /**< Dimensions of control points */
+        };
 
-        /** @brief Construct Bezier without initializing the contents */
-        explicit Bezier(NoInitT) {}
+        /**
+         * @brief Default constructor
+         *
+         * Construct the curve with all control points being zero vectors.
+         */
+        constexpr /*implicit*/ Bezier(ZeroInitT = ZeroInit) noexcept: _data{} {}
 
-        /** @brief Construct Bezier curve with the given array of control points */
-        template<typename... U> constexpr Bezier(Vector<dimensions, T> first, U... next):_points{first, next...} {
-            static_assert(sizeof...(U) + 1 == order + 1, "Bezier : Wrong number of arguments");
+        /** @brief Construct Bézier without initializing the contents */
+        explicit Bezier(NoInitT) noexcept {}
+
+        /** @brief Construct Bézier curve with given array of control points */
+        template<typename... U> constexpr Bezier(const Vector<dimensions, T>& first, U... next) noexcept: _data{first, next...} {
+            static_assert(sizeof...(U) + 1 == order + 1, "Wrong number of arguments");
         }
 
         /**
-         * @brief Divides a Bezier curve into two curves of same order having their own control points.
-         *        De Casteljau's algorithm is used.
+         * @brief Subdivide the curve
          * @param t The interpolation factor
          *
-         * @return Array of two Bezier curves of the same order
+         * Divides the curve into two Bézier curves of same order having their
+         * own control points. Uses the [De Casteljau's algorithm](https://en.wikipedia.org/wiki/De_Casteljau%27s_algorithm).
          */
         std::array<Bezier<order, dimensions, T>, 2> subdivide(Float t) const {
-            auto iPoints = calculateIntermediatePoints(t);
+            const auto iPoints = calculateIntermediatePoints(t);
             Bezier<order, dimensions, T> left, right;
             for(std::size_t i = 0; i <= order; ++i) {
                 left[i] = iPoints[0][i];
@@ -79,43 +91,31 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
         }
 
         /**
-         * @brief Finds the point in the curve for a given interpolation factor
-         *        De Casteljau's algorithm is used.
+         * @brief Interpolate the curve
          * @param t The interpolation factor
+         *
+         * Finds the point in the curve for a given interpolation factor. Uses
+         * the [De Casteljau's algorithm](https://en.wikipedia.org/wiki/De_Casteljau%27s_algorithm).
          */
         Vector<dimensions, T> lerp(Float t) const {
-            auto iPoints = calculateIntermediatePoints(t);
+            const auto iPoints = calculateIntermediatePoints(t);
             return iPoints[0][order];
         }
 
         /**
-         * @brief Control points of Bezier
-         * @return One-dimensional array of `size` length.
+         * @brief Control point access
          *
-         * @see @ref operator[]()
+         * @p i should not be larger than @ref Order.
          */
-        Vector<dimensions, T>* points() { return _points; }
-        constexpr const Vector<dimensions, T>* points() const { return _points; } /**< @overload */
-
-        /**
-         * @brief Value at given position
-         *
-         * @see @ref points()
-         */
-        Vector<dimensions, T>& operator[](std::size_t pos) { return _points[pos]; }
-        constexpr Vector<dimensions, T> operator[](std::size_t pos) const { return _points[pos]; } /**< @overload */
+        Vector<dimensions, T>& operator[](std::size_t i) { return _data[i]; }
+        constexpr Vector<dimensions, T> operator[](std::size_t i) const { return _data[i]; } /**< @overload */
 
     private:
-
-        /**
-         * @brief Calculates and returns all intermediate points generated when using De Casteljau's algorithm
-         * @param t The interpolation factor
-         *
-         */
+        /* Calculates and returns all intermediate points generated when using De Casteljau's algorithm */
         std::array<Bezier<order, dimensions, T>, order + 1> calculateIntermediatePoints(Float t) const {
             std::array<Bezier<order, dimensions, T>, order + 1> iPoints;
             for(std::size_t i = 0; i <= order; ++i) {
-                iPoints[i][0] = _points[i];
+                iPoints[i][0] = _data[i];
             }
             for(std::size_t r = 1; r <= order; ++r) {
                 for(std::size_t i = 0; i <= order - r; ++i) {
@@ -125,16 +125,64 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
             return iPoints;
         }
 
-        Vector<dimensions, T> _points[order + 1];
+        Vector<dimensions, T> _data[order + 1];
 };
 
+/**
+@brief Quadratic Bézier curve
+
+Convenience alternative to `Bezier<2, dimensions, T>`. See @ref Bezier for more
+information.
+@see @ref QuadraticBezier2D, @ref QuadraticBezier3D
+*/
 template<UnsignedInt dimensions, class T> using QuadraticBezier = Bezier<2, dimensions, T>;
-template<UnsignedInt dimensions, class T> using CubicBezier = Bezier<3, dimensions, T>;
+
+/**
+@brief Two-dimensional quadratic Bézier curve
+
+Convenience alternative to `QuadraticBezier<2, T>`. See @ref QuadraticBezier
+and @ref Bezier for more information.
+@see @ref QuadraticBezier3D
+*/
 template<class T> using QuadraticBezier2D = QuadraticBezier<2, T>;
+
+/**
+@brief Three-dimensional quadratic Bézier curve
+
+Convenience alternative to `QuadraticBezier<3, T>`. See @ref QuadraticBezier
+and @ref Bezier for more information.
+@see @ref QuadraticBezier2D
+*/
 template<class T> using QuadraticBezier3D = QuadraticBezier<3, T>;
+
+/**
+@brief Cubic Bézier curve
+
+Convenience alternative to `Bezier<3, dimensions, T>`. See @ref Bezier for more
+information.
+@see @ref CubicBezier2D, @ref CubicBezier3D
+*/
+template<UnsignedInt dimensions, class T> using CubicBezier = Bezier<3, dimensions, T>;
+
+/**
+@brief Two-dimensional cubic Bézier curve
+
+Convenience alternative to `CubicBezier<2, T>`. See @ref CubicBezier
+and @ref Bezier for more information.
+@see @ref CubicBezier3D
+*/
 template<class T> using CubicBezier2D = CubicBezier<2, T>;
+
+/**
+@brief Three-dimensional cubic Bézier curve
+
+Convenience alternative to `CubicBezier<3, T>`. See @ref CubicBezier
+and @ref Bezier for more information.
+@see @ref CubicBezier2D
+*/
 template<class T> using CubicBezier3D = CubicBezier<3, T>;
 
 }}
+
 #endif
 

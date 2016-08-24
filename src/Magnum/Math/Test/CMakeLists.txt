@@ -43,7 +43,6 @@ corrade_add_test(MathMatrix4Test Matrix4Test.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathSwizzleTest SwizzleTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathUnitTest UnitTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathAngleTest AngleTest.cpp LIBRARIES MagnumMathTestLib)
-corrade_add_test(MathBezierTest BezierTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathRangeTest RangeTest.cpp LIBRARIES MagnumMathTestLib)
 
 corrade_add_test(MathDualTest DualTest.cpp LIBRARIES MagnumMathTestLib)
@@ -51,6 +50,8 @@ corrade_add_test(MathComplexTest ComplexTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathDualComplexTest DualComplexTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathQuaternionTest QuaternionTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathDualQuaternionTest DualQuaternionTest.cpp LIBRARIES MagnumMathTestLib)
+
+corrade_add_test(MathBezierTest BezierTest.cpp LIBRARIES MagnumMathTestLib)
 
 set_property(TARGET
     MathVectorTest
