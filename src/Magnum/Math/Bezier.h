@@ -110,6 +110,18 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
         Vector<dimensions, T>& operator[](std::size_t i) { return _data[i]; }
         constexpr Vector<dimensions, T> operator[](std::size_t i) const { return _data[i]; } /**< @overload */
 
+        /** @brief Equality comparison */
+        bool operator==(const Bezier<order, dimensions, T>& other) const {
+            for(std::size_t i = 0; i != order + 1; ++i)
+                if((*this)[i] != other[i]) return false;
+            return true;
+        }
+
+        /** @brief Non-equality comparison */
+        bool operator!=(const Bezier<order, dimensions, T>& other) const {
+            return !operator==(other);
+        }
+
     private:
         /* Calculates and returns all intermediate points generated when using De Casteljau's algorithm */
         std::array<Bezier<order, dimensions, T>, order + 1> calculateIntermediatePoints(Float t) const {

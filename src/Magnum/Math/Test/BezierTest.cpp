@@ -41,7 +41,14 @@ typedef Math::CubicBezier2D<Float> CubicBezier2D;
 struct BezierTest : Corrade::TestSuite::Tester {
     explicit BezierTest();
 
-    void implicitConstructor();
+    void construct();
+    void constructDefault();
+    void constructNoInit();
+    void constructCopy();
+
+    void data();
+
+    void compare();
 
     void lerpQuadratic();
     void lerpCubic();
@@ -51,7 +58,14 @@ struct BezierTest : Corrade::TestSuite::Tester {
 };
 
 BezierTest::BezierTest() {
-    addTests({&BezierTest::implicitConstructor,
+    addTests({&BezierTest::construct,
+              &BezierTest::constructDefault,
+              &BezierTest::constructNoInit,
+              &BezierTest::constructCopy,
+
+              &BezierTest::data,
+
+              &BezierTest::compare,
 
               &BezierTest::lerpQuadratic,
               &BezierTest::lerpCubic,
@@ -60,11 +74,58 @@ BezierTest::BezierTest() {
               &BezierTest::configuration});
 }
 
-void BezierTest::implicitConstructor() {
-    QuadraticBezier2D bezier;
-    for(int i = 0; i < 3; ++i) {
-        CORRADE_COMPARE(bezier[i], Vector2{});
-    }
+void BezierTest::construct() {
+    /* The constructor should be implicit */
+    constexpr QuadraticBezier2D a = {Vector2{0.5f, 1.0f}, Vector2{1.1f, 0.3f}, Vector2{0.1f, 1.2f}};
+    CORRADE_COMPARE(a, (QuadraticBezier2D{Vector2{0.5f, 1.0f}, Vector2{1.1f, 0.3f}, Vector2{0.1f, 1.2f}}));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<QuadraticBezier2D, Vector2, Vector2, Vector2>::value));
+}
+
+void BezierTest::constructDefault() {
+    constexpr QuadraticBezier2D a;
+    constexpr QuadraticBezier2D b{ZeroInit};
+    CORRADE_COMPARE(a, (QuadraticBezier2D{Vector2{}, Vector2{}, Vector2{}}));
+    CORRADE_COMPARE(b, (QuadraticBezier2D{Vector2{}, Vector2{}, Vector2{}}));
+
+    CORRADE_VERIFY(std::is_nothrow_default_constructible<QuadraticBezier2D>::value);
+    CORRADE_VERIFY((std::is_nothrow_constructible<QuadraticBezier2D, ZeroInitT>::value));
+}
+
+void BezierTest::constructNoInit() {
+    QuadraticBezier2D a{Vector2{0.5f, 1.0f}, Vector2{1.1f, 0.3f}, Vector2{0.1f, 1.2f}};
+    new(&a) QuadraticBezier2D{NoInit};
+    CORRADE_COMPARE(a, (QuadraticBezier2D{Vector2{0.5f, 1.0f}, Vector2{1.1f, 0.3f}, Vector2{0.1f, 1.2f}}));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<QuadraticBezier2D, NoInitT>::value));
+}
+
+void BezierTest::constructCopy() {
+    constexpr QuadraticBezier2D a{Vector2{0.5f, 1.0f}, Vector2{1.1f, 0.3f}, Vector2{0.1f, 1.2f}};
+    constexpr QuadraticBezier2D b{a};
+    CORRADE_COMPARE(b, (QuadraticBezier2D{Vector2{0.5f, 1.0f}, Vector2{1.1f, 0.3f}, Vector2{0.1f, 1.2f}}));
+
+    CORRADE_VERIFY(std::is_nothrow_copy_constructible<QuadraticBezier2D>::value);
+    CORRADE_VERIFY(std::is_nothrow_copy_assignable<QuadraticBezier2D>::value);
+}
+
+void BezierTest::data() {
+    QuadraticBezier2D a{Vector2{0.5f, 1.0f}, Vector2{1.1f, 0.3f}, Vector2{0.1f, 1.2f}};
+    a[0] = {};
+    a[2] = {0.7f, 20.3f};
+
+    CORRADE_COMPARE(a[0], (Vector2{0.0f, 0.0f}));
+    CORRADE_COMPARE(a[2], (Vector2{0.7f, 20.3f}));
+    CORRADE_COMPARE(a, (QuadraticBezier2D{Vector2{0.0f, 0.0f}, Vector2{1.1f, 0.3f}, Vector2{0.7f, 20.3f}}));
+
+    constexpr QuadraticBezier2D b{Vector2{3.5f, 0.1f}, Vector2{1.3f, 10.3f}, Vector2{0.0f, -1.2f}};
+    constexpr Vector2 c = b[2];
+    CORRADE_COMPARE(c, (Vector2{0.0f, -1.2f}));
+}
+
+void BezierTest::compare() {
+    CORRADE_VERIFY((QuadraticBezier2D{Vector2{0.5f, 1.0f + TypeTraits<Float>::epsilon()/2}, Vector2{1.1f, 0.3f}, Vector2{0.1f, 1.2f}} == QuadraticBezier2D{Vector2{0.5f, 1.0f}, Vector2{1.1f, 0.3f}, Vector2{0.1f, 1.2f}}));
+    CORRADE_VERIFY((QuadraticBezier2D{Vector2{0.5f, 1.1f}, Vector2{1.1f, 0.3f}, Vector2{0.1f, 1.0f + TypeTraits<Float>::epsilon()*2}} != QuadraticBezier2D{Vector2{0.5f, 1.1f}, Vector2{1.1f, 0.3f}, Vector2{0.1f, 1.0f}}));
 }
 
 void BezierTest::lerpQuadratic() {
