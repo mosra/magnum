@@ -144,7 +144,10 @@ void BezierTest::data() {
     CORRADE_COMPARE(a, (QuadraticBezier2D{Vector2{0.0f, 0.0f}, Vector2{1.1f, 0.3f}, Vector2{0.7f, 20.3f}}));
 
     constexpr QuadraticBezier2D b{Vector2{3.5f, 0.1f}, Vector2{1.3f, 10.3f}, Vector2{0.0f, -1.2f}};
-    constexpr Vector2 c = b[2];
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Why? */
+    constexpr
+    #endif
+    Vector2 c = b[2];
     CORRADE_COMPARE(c, (Vector2{0.0f, -1.2f}));
 }
 
