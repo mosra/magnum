@@ -48,6 +48,8 @@ Implementation of M-order N-dimensional
     @ref QuadraticBezier3D, @ref CubicBezier2D, @ref CubicBezier3D
 */
 template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
+    static_assert(order != 0, "Bezier cannot have zero order");
+
     public:
         typedef T Type;             /**< @brief Underlying data type */
 
