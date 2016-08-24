@@ -96,21 +96,19 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
         template<class U> constexpr explicit Bezier(const Bezier<order, dimensions, U>& other) noexcept: Bezier{typename Implementation::GenerateSequence<order + 1>::Type(), other} {}
 
         /**
-         * @brief Subdivide the curve
-         * @param t The interpolation factor
+         * @brief Subdivide the curve at given position
          *
-         * Divides the curve into two Bézier curves of same order having their
-         * own control points. Uses the [De Casteljau's algorithm](https://en.wikipedia.org/wiki/De_Casteljau%27s_algorithm).
+         * Returns two Bézier curves following the original curve, split at
+         * given interpolation factor. Uses the [De Casteljau's algorithm](https://en.wikipedia.org/wiki/De_Casteljau%27s_algorithm).
+         * @see @ref value()
          */
-        std::array<Bezier<order, dimensions, T>, 2> subdivide(Float t) const {
+        std::pair<Bezier<order, dimensions, T>, Bezier<order, dimensions, T>> subdivide(Float t) const {
             const auto iPoints = calculateIntermediatePoints(t);
             Bezier<order, dimensions, T> left, right;
-            for(std::size_t i = 0; i <= order; ++i) {
+            for(std::size_t i = 0; i <= order; ++i)
                 left[i] = iPoints[0][i];
-            }
-            for(std::size_t i = 0, j = order; i <= order; --j, ++i) {
+            for(std::size_t i = 0, j = order; i <= order; --j, ++i)
                 right[i] = iPoints[i][j];
-            }
             return {left, right};
         }
 
