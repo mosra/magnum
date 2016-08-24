@@ -31,6 +31,15 @@
 namespace Corrade { namespace Utility {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
+template struct ConfigurationValue<Magnum::Math::Bezier<2, 2, Magnum::Float>>;
+template struct ConfigurationValue<Magnum::Math::Bezier<2, 3, Magnum::Float>>;
+template struct ConfigurationValue<Magnum::Math::Bezier<3, 2, Magnum::Float>>;
+template struct ConfigurationValue<Magnum::Math::Bezier<3, 3, Magnum::Float>>;
+template struct ConfigurationValue<Magnum::Math::Bezier<2, 2, Magnum::Double>>;
+template struct ConfigurationValue<Magnum::Math::Bezier<2, 3, Magnum::Double>>;
+template struct ConfigurationValue<Magnum::Math::Bezier<3, 2, Magnum::Double>>;
+template struct ConfigurationValue<Magnum::Math::Bezier<3, 3, Magnum::Double>>;
+
 template struct ConfigurationValue<Magnum::Math::RectangularMatrix<2, 2, Magnum::Float>>;
 template struct ConfigurationValue<Magnum::Math::RectangularMatrix<3, 3, Magnum::Float>>;
 template struct ConfigurationValue<Magnum::Math::RectangularMatrix<4, 4, Magnum::Float>>;

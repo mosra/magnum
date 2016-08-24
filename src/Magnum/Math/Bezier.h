@@ -224,5 +224,59 @@ extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utili
 
 }}
 
+namespace Corrade { namespace Utility {
+
+/** @configurationvalue{Magnum::Math::Bezier} */
+template<Magnum::UnsignedInt order, Magnum::UnsignedInt dimensions, class T> struct ConfigurationValue<Magnum::Math::Bezier<order, dimensions, T>> {
+    ConfigurationValue() = delete;
+
+    /** @brief Writes elements separated with spaces */
+    static std::string toString(const Magnum::Math::Bezier<order, dimensions, T>& value, ConfigurationValueFlags flags) {
+        std::string output;
+
+        for(std::size_t o = 0; o != order + 1; ++o) {
+            for(std::size_t i = 0; i != dimensions; ++i) {
+                if(!output.empty()) output += ' ';
+                output += ConfigurationValue<T>::toString(value[o][i], flags);
+            }
+        }
+
+        return output;
+    }
+
+    /** @brief Reads elements separated with whitespace */
+    static Magnum::Math::Bezier<order, dimensions, T> fromString(const std::string& stringValue, ConfigurationValueFlags flags) {
+        Magnum::Math::Bezier<order, dimensions, T> result;
+
+        std::size_t oldpos = 0, pos = std::string::npos, i = 0;
+        do {
+            pos = stringValue.find(' ', oldpos);
+            std::string part = stringValue.substr(oldpos, pos-oldpos);
+
+            if(!part.empty()) {
+                result[i/dimensions][i%dimensions] = ConfigurationValue<T>::fromString(part, flags);
+                ++i;
+            }
+
+            oldpos = pos+1;
+        } while(pos != std::string::npos);
+
+        return result;
+    }
+};
+
+#if !defined(DOXYGEN_GENERATING_OUTPUT) && !defined(__MINGW32__)
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Bezier<2, 2, Magnum::Float>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Bezier<2, 3, Magnum::Float>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Bezier<3, 2, Magnum::Float>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Bezier<3, 3, Magnum::Float>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Bezier<2, 2, Magnum::Double>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Bezier<2, 3, Magnum::Double>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Bezier<3, 2, Magnum::Double>>;
+extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Bezier<3, 3, Magnum::Double>>;
+#endif
+
+}}
+
 #endif
 
