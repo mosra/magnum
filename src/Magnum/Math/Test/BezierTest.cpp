@@ -35,7 +35,9 @@
 namespace Magnum { namespace Math { namespace Test {
 
 typedef Math::Vector2<Float> Vector2;
+typedef Math::Vector2<Double> Vector2d;
 typedef Math::QuadraticBezier2D<Float> QuadraticBezier2D;
+typedef Math::QuadraticBezier2D<Double> QuadraticBezier2Dd;
 typedef Math::CubicBezier2D<Float> CubicBezier2D;
 
 struct BezierTest : Corrade::TestSuite::Tester {
@@ -44,6 +46,7 @@ struct BezierTest : Corrade::TestSuite::Tester {
     void construct();
     void constructDefault();
     void constructNoInit();
+    void constructConversion();
     void constructCopy();
 
     void data();
@@ -61,6 +64,7 @@ BezierTest::BezierTest() {
     addTests({&BezierTest::construct,
               &BezierTest::constructDefault,
               &BezierTest::constructNoInit,
+              &BezierTest::constructConversion,
               &BezierTest::constructCopy,
 
               &BezierTest::data,
@@ -98,6 +102,18 @@ void BezierTest::constructNoInit() {
     CORRADE_COMPARE(a, (QuadraticBezier2D{Vector2{0.5f, 1.0f}, Vector2{1.1f, 0.3f}, Vector2{0.1f, 1.2f}}));
 
     CORRADE_VERIFY((std::is_nothrow_constructible<QuadraticBezier2D, NoInitT>::value));
+}
+
+void BezierTest::constructConversion() {
+    constexpr QuadraticBezier2Dd a{Vector2d{0.5, 1.0}, Vector2d{1.1, 0.3}, Vector2d{0.1, 1.2}};
+    constexpr QuadraticBezier2D b{a};
+
+    CORRADE_COMPARE(b, (QuadraticBezier2D{Vector2{0.5f, 1.0f}, Vector2{1.1f, 0.3f}, Vector2{0.1f, 1.2f}}));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<QuadraticBezier2Dd, QuadraticBezier2D>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<QuadraticBezier2D, QuadraticBezier2Dd>::value));
 }
 
 void BezierTest::constructCopy() {

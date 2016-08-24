@@ -50,6 +50,8 @@ Implementation of M-order N-dimensional
 template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
     static_assert(order != 0, "Bezier cannot have zero order");
 
+    template<UnsignedInt, UnsignedInt, class> friend class Bezier;
+
     public:
         typedef T Type;             /**< @brief Underlying data type */
 
@@ -84,6 +86,14 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
         template<typename... U> constexpr Bezier(const Vector<dimensions, T>& first, U... next) noexcept: _data{first, next...} {
             static_assert(sizeof...(U) + 1 == order + 1, "Wrong number of arguments");
         }
+
+        /**
+         * @brief Construct Bézier curve from another of different type
+         *
+         * Performs only default casting on the values, no rounding or
+         * anything else.
+         */
+        template<class U> constexpr explicit Bezier(const Bezier<order, dimensions, U>& other) noexcept: Bezier{typename Implementation::GenerateSequence<order + 1>::Type(), other} {}
 
         /**
          * @brief Subdivide the curve
@@ -137,6 +147,9 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
         }
 
     private:
+        /* Implementation for Bezier<order, dimensions, T>::Bezier(const Bezier<order, dimensions, U>&) */
+        template<class U, std::size_t ...sequence> constexpr explicit Bezier(Implementation::Sequence<sequence...>, const Bezier<order, dimensions, U>& other) noexcept: _data{Vector<dimensions, T>(other._data[sequence])...} {}
+
         /* Implementation for Bezier<order, dimensions, T>::Bezier(ZeroInitT) and Bezier<order, dimensions, T>::Bezier(NoInitT) */
         /* MSVC 2015 can't handle {} here */
         template<class U, std::size_t ...sequence> constexpr explicit Bezier(Implementation::Sequence<sequence...>, U): _data{Vector<dimensions, T>((static_cast<void>(sequence), U{typename U::Init{}}))...} {}
