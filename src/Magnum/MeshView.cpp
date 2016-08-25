@@ -99,7 +99,7 @@ void MeshView::multiDrawImplementationDefault(std::initializer_list<std::referen
         #elif !defined(CORRADE_TARGET_NACL)
         glMultiDrawArraysEXT(GLenum(original._primitive), baseVertex, count, meshes.size());
         #else
-        CORRADE_ASSERT_UNREACHABLE();
+        CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
         #endif
 
     /* Indexed meshes */
@@ -118,7 +118,7 @@ void MeshView::multiDrawImplementationDefault(std::initializer_list<std::referen
             #elif !defined(CORRADE_TARGET_NACL)
             glMultiDrawElementsEXT(GLenum(original._primitive), count, GLenum(original._indexType), indices, meshes.size());
             #else
-            CORRADE_ASSERT_UNREACHABLE();
+            CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
             #endif
         }
     }

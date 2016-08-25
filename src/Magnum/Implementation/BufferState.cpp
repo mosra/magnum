@@ -79,7 +79,7 @@ std::size_t BufferState::indexForTarget(Buffer::TargetHint target) {
         #endif
     }
 
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
 BufferState::BufferState(Context& context, std::vector<std::string>& extensions): bindings()

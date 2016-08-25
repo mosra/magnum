@@ -91,7 +91,7 @@ Containers::Array<char> TgaImageConverter::doExportToData(const ImageView2D& ima
         #endif
             header->imageType = 3;
             break;
-        default: CORRADE_ASSERT_UNREACHABLE();
+        default: CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     }
     header->bpp = pixelSize*8;
     header->width = UnsignedShort(Utility::Endianness::littleEndian(image.size().x()));

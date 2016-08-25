@@ -69,7 +69,7 @@ std::string shaderName(const Shader::Type type) {
         case Shader::Type::Fragment:                return "fragment";
     }
 
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
 UnsignedInt typeToIndex(const Shader::Type type) {
@@ -84,7 +84,7 @@ UnsignedInt typeToIndex(const Shader::Type type) {
         #endif
     }
 
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
 #ifndef MAGNUM_TARGET_GLES

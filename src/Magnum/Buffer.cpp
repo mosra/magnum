@@ -537,7 +537,7 @@ void* Buffer::mapImplementationDefault(MapAccess access) {
     return glMapBufferOES(GLenum(bindSomewhereInternal(_targetHint)), GLenum(access));
     #else
     static_cast<void>(access);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
@@ -561,7 +561,7 @@ void* Buffer::mapRangeImplementationDefault(GLintptr offset, GLsizeiptr length, 
     static_cast<void>(offset);
     static_cast<void>(length);
     static_cast<void>(access);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
@@ -584,7 +584,7 @@ void Buffer::flushMappedRangeImplementationDefault(GLintptr offset, GLsizeiptr l
     #else
     static_cast<void>(offset);
     static_cast<void>(length);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
@@ -605,7 +605,7 @@ bool Buffer::unmapImplementationDefault() {
     #elif !defined(CORRADE_TARGET_NACL)
     return glUnmapBufferOES(GLenum(bindSomewhereInternal(_targetHint)));
     #else
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 

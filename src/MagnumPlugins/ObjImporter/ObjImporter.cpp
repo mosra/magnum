@@ -361,7 +361,7 @@ std::optional<MeshData3D> ObjImporter::doMesh3D(UnsignedInt id) {
 
                 primitive = MeshPrimitive::Triangles;
 
-            } else CORRADE_ASSERT_UNREACHABLE();
+            } else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 
             for(const std::string& indexTuple: indexTuples) {
                 std::vector<std::string> indices = Utility::String::split(indexTuple, '/');

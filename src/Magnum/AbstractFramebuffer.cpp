@@ -152,7 +152,7 @@ void AbstractFramebuffer::bindImplementationDefault(FramebufferTarget target) {
     } else if(target == FramebufferTarget::Draw) {
         if(state.drawBinding == _id) return;
         state.drawBinding = _id;
-    } else CORRADE_ASSERT_UNREACHABLE();
+    } else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 
     /* Binding the framebuffer finally creates it */
     _flags |= ObjectFlag::Created;
@@ -240,7 +240,7 @@ void AbstractFramebuffer::blitImplementationANGLE(AbstractFramebuffer& source, A
     static_cast<void>(destinationRectangle);
     static_cast<void>(mask);
     static_cast<void>(filter);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
@@ -256,7 +256,7 @@ void AbstractFramebuffer::blitImplementationNV(AbstractFramebuffer& source, Abst
     static_cast<void>(destinationRectangle);
     static_cast<void>(mask);
     static_cast<void>(filter);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 #endif
@@ -442,7 +442,7 @@ void AbstractFramebuffer::invalidateImplementationDefault(const GLsizei count, c
     #else
     static_cast<void>(count);
     static_cast<void>(attachments);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
@@ -515,7 +515,7 @@ void AbstractFramebuffer::drawBuffersImplementationEXT(GLsizei count, const GLen
     #else
     static_cast<void>(count);
     static_cast<void>(buffers);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
@@ -528,7 +528,7 @@ void AbstractFramebuffer::drawBuffersImplementationNV(GLsizei count, const GLenu
     #else
     static_cast<void>(count);
     static_cast<void>(buffers);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 #endif
@@ -561,7 +561,7 @@ void AbstractFramebuffer::readBufferImplementationDefault(GLenum buffer) {
     glReadBufferNV(buffer);
     #else
     static_cast<void>(buffer);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 #endif
@@ -593,7 +593,7 @@ void AbstractFramebuffer::readImplementationRobustness(const Range2Di& rectangle
     static_cast<void>(type);
     static_cast<void>(dataSize);
     static_cast<void>(data);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 #endif

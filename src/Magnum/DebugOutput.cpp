@@ -184,7 +184,7 @@ void DebugOutput::controlImplementationKhr(const GLenum source, const GLenum typ
     static_cast<void>(severity);
     static_cast<void>(ids);
     static_cast<void>(enabled);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
@@ -206,7 +206,7 @@ void DebugOutput::callbackImplementationKhr(const Callback callback, const void*
             (callbackWrapper, userParam);
         #else
         static_cast<void>(userParam);
-        CORRADE_ASSERT_UNREACHABLE();
+        CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
         #endif
 
     /* Deleting callback */
@@ -219,7 +219,7 @@ void DebugOutput::callbackImplementationKhr(const Callback callback, const void*
         #endif
             (nullptr, nullptr);
         #else
-        CORRADE_ASSERT_UNREACHABLE();
+        CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
         #endif
     }
 }
@@ -296,7 +296,7 @@ void DebugMessage::insertImplementationKhr(const Source source, const Type type,
     static_cast<void>(id);
     static_cast<void>(severity);
     static_cast<void>(string);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
@@ -305,7 +305,7 @@ void DebugMessage::insertImplementationExt(Source, Type, UnsignedInt, DebugOutpu
     glInsertEventMarkerEXT(string.size(), string.data());
     #else
     static_cast<void>(string);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
@@ -396,7 +396,7 @@ void DebugGroup::pushImplementationKhr(const Source source, const UnsignedInt id
     static_cast<void>(source);
     static_cast<void>(id);
     static_cast<void>(message);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
@@ -405,7 +405,7 @@ void DebugGroup::pushImplementationExt(Source, UnsignedInt, const Containers::Ar
     glPushGroupMarkerEXT(message.size(), message.data());
     #else
     static_cast<void>(message);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
@@ -417,7 +417,7 @@ void DebugGroup::popImplementationKhr() {
     #elif !defined(CORRADE_TARGET_NACL)
     glPopDebugGroupKHR();
     #else
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
@@ -425,7 +425,7 @@ void DebugGroup::popImplementationExt() {
     #ifndef CORRADE_TARGET_NACL
     glPopGroupMarkerEXT();
     #else
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 

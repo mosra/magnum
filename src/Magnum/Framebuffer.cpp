@@ -389,7 +389,7 @@ void Framebuffer::textureLayerImplementationDefault(BufferAttachment attachment,
     static_cast<void>(textureId);
     static_cast<void>(mipLevel);
     static_cast<void>(layer);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 #endif

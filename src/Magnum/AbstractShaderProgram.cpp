@@ -478,7 +478,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint locat
     static_cast<void>(location);
     static_cast<void>(count);
     static_cast<void>(values);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 #endif
@@ -506,7 +506,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint locat
     static_cast<void>(location);
     static_cast<void>(count);
     static_cast<void>(values);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 #endif
@@ -534,7 +534,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint locat
     static_cast<void>(location);
     static_cast<void>(count);
     static_cast<void>(values);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 #endif
@@ -562,7 +562,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint locat
     static_cast<void>(location);
     static_cast<void>(count);
     static_cast<void>(values);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 #endif
@@ -590,7 +590,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint locat
     static_cast<void>(location);
     static_cast<void>(count);
     static_cast<void>(values);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 #endif
@@ -618,7 +618,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint locat
     static_cast<void>(location);
     static_cast<void>(count);
     static_cast<void>(values);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 #endif
@@ -646,7 +646,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint locat
     static_cast<void>(location);
     static_cast<void>(count);
     static_cast<void>(values);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 #endif
@@ -674,7 +674,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint locat
     static_cast<void>(location);
     static_cast<void>(count);
     static_cast<void>(values);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 #endif
@@ -850,7 +850,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint locat
     static_cast<void>(location);
     static_cast<void>(count);
     static_cast<void>(values);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 #endif
@@ -878,7 +878,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint locat
     static_cast<void>(location);
     static_cast<void>(count);
     static_cast<void>(values);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 #endif
@@ -906,7 +906,7 @@ void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint locat
     static_cast<void>(location);
     static_cast<void>(count);
     static_cast<void>(values);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 #endif

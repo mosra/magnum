@@ -49,7 +49,7 @@ UnsignedInt FloatAttribute::size(GLint components, DataType dataType) {
         #endif
     }
 
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -66,7 +66,7 @@ UnsignedInt IntAttribute::size(GLint components, DataType dataType) {
             return 4*components;
     }
 
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 #endif
 
@@ -77,7 +77,7 @@ UnsignedInt DoubleAttribute::size(GLint components, DataType dataType) {
             return 8*components;
     }
 
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 #endif
 
@@ -103,7 +103,7 @@ UnsignedInt Attribute<Math::Vector<3, Float>>::size(GLint components, DataType d
         #endif
     }
 
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
 UnsignedInt Attribute<Math::Vector<4, Float>>::size(GLint components, DataType dataType) {
@@ -136,7 +136,7 @@ UnsignedInt Attribute<Math::Vector<4, Float>>::size(GLint components, DataType d
         #endif
     }
 
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
 Debug& operator<<(Debug& debug, SizedAttribute<1, 1>::Components value) {

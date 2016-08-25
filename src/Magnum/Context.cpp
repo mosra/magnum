@@ -407,7 +407,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         #endif
     }
 
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
 namespace {

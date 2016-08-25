@@ -55,7 +55,7 @@ AbstractQuery::~AbstractQuery() {
     #elif !defined(CORRADE_TARGET_EMSCRIPTEN)
     glDeleteQueriesEXT(1, &_id);
     #else
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
     _flags |= ObjectFlag::Created;
 }
@@ -66,7 +66,7 @@ void AbstractQuery::createImplementationDefault() {
     #elif !defined(CORRADE_TARGET_EMSCRIPTEN)
     glGenQueriesEXT(1, &_id);
     #else
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
@@ -126,7 +126,7 @@ template<> Int AbstractQuery::result<Int>() {
     #elif !defined(CORRADE_TARGET_NACL)
     glGetQueryObjectivEXT(_id, GL_QUERY_RESULT_EXT, &result);
     #else
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
     return result;
 }
@@ -138,7 +138,7 @@ template<> UnsignedLong AbstractQuery::result<UnsignedLong>() {
     #elif !defined(CORRADE_TARGET_NACL)
     glGetQueryObjectui64vEXT(_id, GL_QUERY_RESULT_EXT, &result);
     #else
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
     return result;
 }
@@ -150,7 +150,7 @@ template<> Long AbstractQuery::result<Long>() {
     #elif !defined(CORRADE_TARGET_NACL)
     glGetQueryObjecti64vEXT(_id, GL_QUERY_RESULT_EXT, &result);
     #else
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
     return result;
 }

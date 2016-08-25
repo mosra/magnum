@@ -94,7 +94,7 @@ void Renderer::setPolygonMode(const PolygonMode mode) {
         (GL_FRONT_AND_BACK, GLenum(mode));
     #else
     static_cast<void>(mode);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 #endif
@@ -233,7 +233,7 @@ Renderer::GraphicsResetStatus Renderer::graphicsResetStatusImplementationRobustn
     #elif !defined(CORRADE_TARGET_NACL)
     return GraphicsResetStatus(glGetGraphicsResetStatusEXT());
     #else
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 #endif

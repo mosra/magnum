@@ -152,7 +152,7 @@ class TimeQuery: public AbstractQuery {
             #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
             glQueryCounterEXT(id(), GL_TIMESTAMP_EXT);
             #else
-            CORRADE_ASSERT_UNREACHABLE();
+            CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
             #endif
         }
 

@@ -119,7 +119,7 @@ std::size_t Mesh::indexSize(IndexType type) {
         case IndexType::UnsignedInt: return 4;
     }
 
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
 Mesh::Mesh(const MeshPrimitive primitive): _primitive{primitive}, _flags{ObjectFlag::DeleteOnDestruction}, _count{0}, _baseVertex{0}, _instanceCount{1},
@@ -373,7 +373,7 @@ void Mesh::bindVAO() {
         #elif !defined(CORRADE_TARGET_NACL)
         glBindVertexArrayOES(current = _id);
         #else
-        CORRADE_ASSERT_UNREACHABLE();
+        CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
         #endif
     }
 }
@@ -389,7 +389,7 @@ void Mesh::createImplementationVAO() {
     #elif !defined(CORRADE_TARGET_NACL)
     glGenVertexArraysOES(1, &_id);
     #else
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
     CORRADE_INTERNAL_ASSERT(_id != Implementation::State::DisengagedBinding);
 }
@@ -409,7 +409,7 @@ void Mesh::destroyImplementationVAO() {
     #elif !defined(CORRADE_TARGET_NACL)
     glDeleteVertexArraysOES(1, &_id);
     #else
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
@@ -505,7 +505,7 @@ void Mesh::vertexAttribDivisorImplementationANGLE(const GLuint index, const GLui
     #else
     static_cast<void>(index);
     static_cast<void>(divisor);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 #ifndef MAGNUM_TARGET_WEBGL
@@ -515,7 +515,7 @@ void Mesh::vertexAttribDivisorImplementationEXT(const GLuint index, const GLuint
     #else
     static_cast<void>(index);
     static_cast<void>(divisor);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 void Mesh::vertexAttribDivisorImplementationNV(const GLuint index, const GLuint divisor) {
@@ -524,7 +524,7 @@ void Mesh::vertexAttribDivisorImplementationNV(const GLuint index, const GLuint 
     #else
     static_cast<void>(index);
     static_cast<void>(divisor);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 #endif
@@ -570,7 +570,7 @@ void Mesh::drawArraysInstancedImplementationANGLE(const GLint baseVertex, const 
     static_cast<void>(baseVertex);
     static_cast<void>(count);
     static_cast<void>(instanceCount);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
@@ -582,7 +582,7 @@ void Mesh::drawArraysInstancedImplementationEXT(const GLint baseVertex, const GL
     static_cast<void>(baseVertex);
     static_cast<void>(count);
     static_cast<void>(instanceCount);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
@@ -593,7 +593,7 @@ void Mesh::drawArraysInstancedImplementationNV(const GLint baseVertex, const GLs
     static_cast<void>(baseVertex);
     static_cast<void>(count);
     static_cast<void>(instanceCount);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 #endif
@@ -605,7 +605,7 @@ void Mesh::drawElementsInstancedImplementationANGLE(const GLsizei count, const G
     static_cast<void>(count);
     static_cast<void>(indexOffset);
     static_cast<void>(instanceCount);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
@@ -617,7 +617,7 @@ void Mesh::drawElementsInstancedImplementationEXT(const GLsizei count, const GLi
     static_cast<void>(count);
     static_cast<void>(indexOffset);
     static_cast<void>(instanceCount);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
@@ -628,7 +628,7 @@ void Mesh::drawElementsInstancedImplementationNV(const GLsizei count, const GLin
     static_cast<void>(count);
     static_cast<void>(indexOffset);
     static_cast<void>(instanceCount);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 #endif
