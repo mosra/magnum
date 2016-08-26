@@ -62,7 +62,7 @@ class MAGNUM_VK_EXPORT Buffer {
     public:
 
         Buffer(Device& device, UnsignedInt size, BufferUsageFlags usage):
-            _device{device},
+            _device{&device},
             _size{size}
         {
             VkBufferCreateInfo bufferInfo = {};
@@ -71,8 +71,11 @@ class MAGNUM_VK_EXPORT Buffer {
             bufferInfo.size = size;
             bufferInfo.usage = VkBufferUsageFlags(usage);
 
-            VkResult err = vkCreateBuffer(_device, &bufferInfo, nullptr, &_buffer);
+            VkResult err = vkCreateBuffer(*_device, &bufferInfo, nullptr, &_buffer);
             MAGNUM_VK_ASSERT_ERROR(err);
+        }
+
+        Buffer(NoCreateT): _device{nullptr} {
         }
 
         /** @brief Copying is not allowed */
@@ -92,7 +95,13 @@ class MAGNUM_VK_EXPORT Buffer {
         Buffer& operator=(const Buffer&) = delete;
 
         /** @brief Move assignment is not allowed */
-        Buffer& operator=(Buffer&&) = delete;
+        Buffer& operator=(Buffer&& other) {
+            std::swap(_device, other._device);
+            std::swap(_buffer, other._buffer);
+            std::swap(_size, other._size);
+
+            return *this;
+        }
 
         operator VkBuffer() const {
             return _buffer;
@@ -100,7 +109,7 @@ class MAGNUM_VK_EXPORT Buffer {
 
         VkMemoryRequirements getMemoryRequirements() const {
             VkMemoryRequirements memReqs;
-            vkGetBufferMemoryRequirements(_device, _buffer, &memReqs);
+            vkGetBufferMemoryRequirements(*_device, _buffer, &memReqs);
 
             return memReqs;
         }
@@ -110,7 +119,7 @@ class MAGNUM_VK_EXPORT Buffer {
         }
 
         Buffer& bindBufferMemory(const DeviceMemory& deviceMemory, UnsignedLong offset=0) {
-            VkResult err = vkBindBufferMemory(_device, _buffer, deviceMemory, offset);
+            VkResult err = vkBindBufferMemory(*_device, _buffer, deviceMemory, offset);
             MAGNUM_VK_ASSERT_ERROR(err);
 
             return *this;
@@ -141,8 +150,27 @@ class MAGNUM_VK_EXPORT Buffer {
             return descriptor;
         }
 
+        /**
+         * @brief Update contents of device memory.
+         * @return Reference to self (for method chaining)
+         *
+         * Will involve mapping and unmapping memory and possibly creating intermediate
+         * staging buffers if the memory is not visible by the host.
+         *
+         * At the end of the method, the queue will be waited for so that temporary buffers
+         * can be cleaned up.
+         */
+        Buffer& update(Queue& queue, CommandPool& pool, const void* sourceData, UnsignedLong size, UnsignedLong destOffset=0);
+
+        /**
+         * @brief Allocate memory matching requirements of this buffer and bind it
+         * @param memProperty property for the allocated memory
+         * @return the allocated and bound memory
+         */
+        std::unique_ptr<DeviceMemory> allocateDeviceMemory(Vk::MemoryProperty memProperty);
+
     private:
-        Device& _device;
+        Device* _device;
         VkBuffer _buffer;
         UnsignedInt _size;
 };

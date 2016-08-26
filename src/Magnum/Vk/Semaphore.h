@@ -75,12 +75,11 @@ class MAGNUM_VK_EXPORT Semaphore {
         }
 
         /** @brief Move constructor */
-        Semaphore(Semaphore&& sem): _semaphore{sem.vkSemaphore()}, _device{sem._device} {
+        Semaphore(Semaphore&& sem): _semaphore{sem}, _device{sem._device} {
             sem._semaphore = VK_NULL_HANDLE;
         }
 
-        /** @brief Get the underlying VkSemaphore handle */
-        VkSemaphore& vkSemaphore() {
+        operator VkSemaphore() const {
             return _semaphore;
         }
 

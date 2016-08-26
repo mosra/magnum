@@ -43,7 +43,8 @@ namespace Magnum { namespace Vk {
 class MAGNUM_VK_EXPORT Shader {
     public:
 
-        Shader(Device& device, const Containers::Array<char>& shaderCode): _device{device} {
+        Shader(Device& device, const Containers::Array<char>& shaderCode):
+            _device{&device} {
             VkShaderModuleCreateInfo moduleCreateInfo;
             moduleCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
             moduleCreateInfo.pNext = nullptr;
@@ -51,8 +52,11 @@ class MAGNUM_VK_EXPORT Shader {
             moduleCreateInfo.pCode = reinterpret_cast<const uint32_t*>(shaderCode.data());
             moduleCreateInfo.flags = 0;
 
-            const VkResult err = vkCreateShaderModule(device.vkDevice(), &moduleCreateInfo, nullptr, &_shaderModule);
+            const VkResult err = vkCreateShaderModule(*_device, &moduleCreateInfo, nullptr, &_shaderModule);
             MAGNUM_VK_ASSERT_ERROR(err);
+        }
+
+        Shader(NoCreateT): _device{nullptr} {
         }
 
         /** @brief Copying is not allowed */
@@ -72,15 +76,20 @@ class MAGNUM_VK_EXPORT Shader {
         Shader& operator=(const Shader&) = delete;
 
         /** @brief Move assignment is not allowed */
-        Shader& operator=(Shader&&) = delete;
+        Shader& operator=(Shader&& other) {
+            std::swap(_device, other._device);
+            std::swap(_shaderModule, other._shaderModule);
+
+            return *this;
+        }
 
         VkShaderModule vkShaderModule() {
             return _shaderModule;
         }
 
     private:
+        Device* _device;
         VkShaderModule _shaderModule;
-        Device& _device;
 };
 
 }}

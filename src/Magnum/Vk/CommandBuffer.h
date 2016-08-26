@@ -76,7 +76,13 @@ class MAGNUM_VK_EXPORT CommandBuffer {
          */
         CommandBuffer(VkCommandBuffer buffer, CommandPool& commandPool):
             _cmdBuffer{buffer},
-            _pool{commandPool}
+            _pool{&commandPool}
+        {
+        }
+
+        CommandBuffer(NoCreateT):
+            _cmdBuffer{VK_NULL_HANDLE},
+            _pool{nullptr}
         {
         }
 
@@ -97,7 +103,11 @@ class MAGNUM_VK_EXPORT CommandBuffer {
         CommandBuffer& operator=(const CommandBuffer&) = delete;
 
         /** @brief Move assignment is not allowed */
-        CommandBuffer& operator=(CommandBuffer&&) = delete;
+        CommandBuffer& operator=(CommandBuffer&& other) {
+            std::swap(_cmdBuffer, other._cmdBuffer);
+            std::swap(_pool, other._pool);
+            return *this;
+        }
 
         operator VkCommandBuffer() const {
             return _cmdBuffer;
@@ -162,7 +172,7 @@ class MAGNUM_VK_EXPORT CommandBuffer {
 
     private:
         VkCommandBuffer _cmdBuffer;
-        CommandPool& _pool;
+        CommandPool* _pool;
 };
 
 }}

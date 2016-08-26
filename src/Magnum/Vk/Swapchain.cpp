@@ -298,7 +298,7 @@ Swapchain& Swapchain::queuePresent(VkQueue queue, UnsignedInt currentBuffer) {
 }
 
 Swapchain& Swapchain::queuePresent(Queue& queue, UnsignedInt currentBuffer, Semaphore& waitSemaphore) {
-    VkSemaphore sem = waitSemaphore.vkSemaphore();
+    VkSemaphore sem = waitSemaphore;
     VkPresentInfoKHR presentInfo = {};
     presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
     presentInfo.pNext = nullptr;

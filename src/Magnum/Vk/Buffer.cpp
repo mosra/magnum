@@ -24,13 +24,53 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <cstring>
+
 #include "Buffer.h"
+
+#include "Magnum/Vk/Command.h"
+#include "Magnum/Vk/CommandPool.h"
+#include "Magnum/Vk/Queue.h"
 
 
 namespace Magnum { namespace Vk {
 
 Buffer::~Buffer() {
-    vkDestroyBuffer(_device, _buffer, nullptr);
+    if(_device != nullptr) {
+        vkDestroyBuffer(*_device, _buffer, nullptr);
+    }
+}
+
+Buffer& Buffer::update(Queue& queue, CommandPool& pool, const void* sourceData, UnsignedLong size, UnsignedLong destOffset) {
+    // TODO: Do not use staging if the memory bound to this buffer is host visible.
+
+    /* command buffer needs to be destroyed before memory */
+    std::unique_ptr<Vk::CommandBuffer> copyToDeviceCmds = pool.allocateCommandBuffer(Vk::CommandBuffer::Level::Primary);
+
+    /* plane vertices */
+    Buffer stagingBuffer{*_device, size, Vk::BufferUsage::TransferSrc};
+    std::unique_ptr<DeviceMemory> stagingMemory = stagingBuffer.allocateDeviceMemory(Vk::MemoryProperty::HostVisible);
+
+    Containers::ArrayView<char> data = stagingMemory->map(destOffset, size);
+    std::memcpy(data, sourceData, stagingBuffer.size());
+    stagingMemory->unmap();
+
+    *copyToDeviceCmds << Vk::Cmd::begin()
+                      << stagingBuffer.cmdFullCopyTo(*this)
+                      << Vk::Cmd::end();
+    queue.submit(*copyToDeviceCmds).waitIdle();
+
+    return *this;
+}
+
+std::unique_ptr<DeviceMemory> Buffer::allocateDeviceMemory(Vk::MemoryProperty memProperty) {
+    VkMemoryRequirements memReqs = getMemoryRequirements();
+    UnsignedInt memoryTypeIndex = _device->physicalDevice().getMemoryType(memReqs.memoryTypeBits, memProperty);
+
+    std::unique_ptr<DeviceMemory> memory(new Vk::DeviceMemory{*_device, memReqs.size, memoryTypeIndex});
+    bindBufferMemory(*memory);
+
+    return memory;
 }
 
 }}

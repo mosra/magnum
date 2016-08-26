@@ -33,7 +33,8 @@
 namespace Magnum { namespace Vk {
 
 Device::Device(PhysicalDevice& physicalDevice, const std::vector<VkDeviceQueueCreateInfo>& requestedQueues,
-               const std::vector<const char*>& extensions, const std::vector<const char*>& validationLayers):
+               const std::vector<const char*>& extensions, const std::vector<const char*>& validationLayers,
+               const VkPhysicalDeviceFeatures& features):
     _physicalDevice(physicalDevice)
 {
     VkDeviceCreateInfo deviceCreateInfo = {
@@ -43,7 +44,7 @@ Device::Device(PhysicalDevice& physicalDevice, const std::vector<VkDeviceQueueCr
         requestedQueues.size(), requestedQueues.data(),
         validationLayers.size(), validationLayers.data(),
         extensions.size(), extensions.data(),
-        nullptr};
+        &features};
 
     vkCreateDevice(physicalDevice.vkPhysicalDevice(), &deviceCreateInfo, nullptr, &_device);
 

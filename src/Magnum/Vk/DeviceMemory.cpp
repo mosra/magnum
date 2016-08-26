@@ -26,6 +26,10 @@
 
 #include "DeviceMemory.h"
 
+#include "Magnum/Vk/Buffer.h"
+#include "Magnum/Vk/CommandBuffer.h"
+#include "Magnum/Vk/CommandPool.h"
+
 
 namespace Magnum { namespace Vk {
 

@@ -47,8 +47,8 @@ Queue& Queue::submit(const CommandBuffer& cmdBuffer) {
 }
 
 Queue& Queue::submit(const CommandBuffer& cmdBuffer,
-              std::vector<std::reference_wrapper<Semaphore>> waitSemaphores,
-              std::vector<std::reference_wrapper<Semaphore>> signalSemaphores) {
+              Containers::ArrayView<const std::reference_wrapper<Semaphore>> waitSemaphores,
+              Containers::ArrayView<const std::reference_wrapper<Semaphore>> signalSemaphores) {
     const VkCommandBuffer cb = cmdBuffer;
 
     VkPipelineStageFlags pipelineDstStage = VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT; // TODO: Expose
@@ -58,16 +58,18 @@ Queue& Queue::submit(const CommandBuffer& cmdBuffer,
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers = &cb;
 
-    std::vector<VkSemaphore> waitSems;
-    waitSems.reserve(waitSemaphores.size());
+    Containers::Array<VkSemaphore> waitSems(Containers::NoInit, waitSemaphores.size());
+    int i = 0;
     for(Semaphore& sem : waitSemaphores) {
-        waitSems.push_back(sem.vkSemaphore());
+        waitSems[i] = sem;
+        ++i;
     }
 
-    std::vector<VkSemaphore> sigSems;
-    sigSems.reserve(waitSemaphores.size());
+    Containers::Array<VkSemaphore> sigSems(Containers::NoInit, signalSemaphores.size());
+    i = 0;
     for(Semaphore& sem : signalSemaphores) {
-        sigSems.push_back(sem.vkSemaphore());
+        sigSems[i] = sem;
+        ++i;
     }
     submitInfo.waitSemaphoreCount = waitSemaphores.size();
     submitInfo.pWaitSemaphores = waitSems.data();

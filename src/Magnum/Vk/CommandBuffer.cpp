@@ -32,7 +32,9 @@
 namespace Magnum { namespace Vk {
 
 CommandBuffer::~CommandBuffer() {
-    _pool.freeCommandBuffer(this);
+    if(_cmdBuffer != VK_NULL_HANDLE) {
+        _pool->freeCommandBuffer(this);
+    }
 }
 
 }}

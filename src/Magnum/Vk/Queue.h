@@ -77,8 +77,21 @@ class MAGNUM_VK_EXPORT Queue {
             return *this;
         }
 
+        typedef std::reference_wrapper<Semaphore> SemaphoreRef;
+
         Queue& submit(const CommandBuffer& cmdBuffer);
-        Queue& submit(const CommandBuffer& cmdBuffer, std::vector<std::reference_wrapper<Semaphore>> waitSemaphores, std::vector<std::reference_wrapper<Semaphore>> signalSemaphores);
+        Queue& submit(const CommandBuffer& cmdBuffer,
+                      const std::initializer_list<const SemaphoreRef> waitSemaphores,
+                      const std::initializer_list<const SemaphoreRef> signalSemaphores) {
+            submit(cmdBuffer,
+                   Containers::ArrayView<const SemaphoreRef>(waitSemaphores.begin(), waitSemaphores.size()),
+                   Containers::ArrayView<const SemaphoreRef>(signalSemaphores.begin(), signalSemaphores.size()));
+            return *this;
+        }
+
+        Queue& submit(const CommandBuffer& cmdBuffer,
+                      Containers::ArrayView<const SemaphoreRef> waitSemaphores,
+                      Containers::ArrayView<const SemaphoreRef> signalSemaphores);
 
         /**
          * @brief The device this queue was created for.

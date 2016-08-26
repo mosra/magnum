@@ -80,17 +80,17 @@ class MAGNUM_VK_EXPORT DeviceMemory {
             return _deviceMemory;
         }
 
-        Containers::Array<char> map() {
+        Containers::ArrayView<char> map() {
             return map(0, _memAlloc.allocationSize);
         }
 
-        Containers::Array<char> map(UnsignedInt offset, UnsignedInt size) {
+        Containers::ArrayView<char> map(UnsignedInt offset, UnsignedInt size) {
             // TODO: Memory map flags (== 0)
             void* data;
             VkResult err = vkMapMemory(_device, _deviceMemory, offset, size, 0, &data);
             MAGNUM_VK_ASSERT_ERROR(err);
 
-            return Containers::Array<char>(static_cast<char*>(data), size);
+            return Containers::ArrayView<char>(static_cast<char*>(data), size);
         }
 
         DeviceMemory& unmap() {

@@ -56,7 +56,8 @@ class MAGNUM_VK_EXPORT Device {
         Device(PhysicalDevice& physicalDevice,
                const std::vector<VkDeviceQueueCreateInfo>& requestedQueues,
                const std::vector<const char*>& extensions,
-               const std::vector<const char*>& validationLayers);
+               const std::vector<const char*>& validationLayers,
+               const VkPhysicalDeviceFeatures& features);
 
         /**
          * @brief Destructor

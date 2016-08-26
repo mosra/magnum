@@ -30,7 +30,9 @@
 namespace Magnum { namespace Vk {
 
 Shader::~Shader() {
-    vkDestroyShaderModule(_device, _shaderModule, nullptr);
+    if(_device != nullptr) {
+        vkDestroyShaderModule(*_device, _shaderModule, nullptr);
+    }
 }
 
 }}

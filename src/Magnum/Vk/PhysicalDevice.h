@@ -129,6 +129,12 @@ class MAGNUM_VK_EXPORT PhysicalDevice {
          */
         UnsignedInt getMemoryType(UnsignedInt supportedTypeBits, MemoryProperties properties);
 
+        VkPhysicalDeviceFeatures getFeatures() const {
+            VkPhysicalDeviceFeatures features;
+            vkGetPhysicalDeviceFeatures(_physicalDevice, &features);
+            return features;
+        }
+
     private:
         VkPhysicalDevice _physicalDevice;
         VkPhysicalDeviceMemoryProperties _deviceMemoryProperties;

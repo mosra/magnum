@@ -53,19 +53,19 @@ CommandBuffer& operator << (CommandBuffer& cmdBuffer, const Lambda& lambda) {
 
 namespace Cmd {
 
-auto begin() {
+inline auto begin() {
     return [](CommandBuffer& cmdBuffer){
         cmdBuffer.begin();
     };
 }
 
-auto end() {
+inline auto end() {
     return [](CommandBuffer& cmdBuffer){
         cmdBuffer.end();
     };
 }
 
-auto setScissor(UnsignedInt firstScissor, const std::initializer_list<Range2Di>& ranges) {
+inline auto setScissor(UnsignedInt firstScissor, const std::initializer_list<Range2Di>& ranges) {
     return [firstScissor, &ranges](VkCommandBuffer cmdBuffer){
         Corrade::Containers::Array<VkRect2D> vkRects(ranges.size());
 
@@ -78,13 +78,13 @@ auto setScissor(UnsignedInt firstScissor, const std::initializer_list<Range2Di>&
     };
 }
 
-auto setViewport(UnsignedInt firstViewport, const std::vector<VkViewport>& viewports) {
+inline auto setViewport(UnsignedInt firstViewport, const std::vector<VkViewport>& viewports) {
     return [firstViewport, &viewports](VkCommandBuffer cmdBuffer){
         vkCmdSetViewport(cmdBuffer, firstViewport, viewports.size(), viewports.data());
     };
 }
 
-auto pipelineBarrier(PipelineStageFlags srcStageMask,
+inline auto pipelineBarrier(PipelineStageFlags srcStageMask,
                      PipelineStageFlags dstStageMask,
                      const std::vector<VkMemoryBarrier>& memoryBarriers,
                      const std::vector<VkBufferMemoryBarrier>& bufferMemoryBarriers,
