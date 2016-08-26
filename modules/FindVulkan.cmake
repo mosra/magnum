@@ -55,9 +55,9 @@ if (WIN32)
     endif()
 else()
     find_path(VULKAN_INCLUDE_DIR NAMES vulkan.h HINTS
-        "$ENV{VULKAN_SDK}/include" PATH_SUFFIXES vulkan)
+        "$ENV{VULKAN_SDK}/Include" PATH_SUFFIXES vulkan)
     find_library(VULKAN_LIBRARY NAMES vulkan HINTS
-        "$ENV{VULKAN_SDK}/lib")
+        "$ENV{VULKAN_SDK}/Bin")
 endif()
 
 include(FindPackageHandleStandardArgs)
