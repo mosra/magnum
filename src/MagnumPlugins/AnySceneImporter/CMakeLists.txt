@@ -23,6 +23,13 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+if(BUILD_STATIC)
+    set(MAGNUM_ANYSCENEIMPORTER_BUILD_STATIC 1)
+endif()
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+
 set(AnySceneImporter_SRCS
     AnySceneImporter.cpp)
 
@@ -35,7 +42,8 @@ add_library(AnySceneImporterObjects OBJECT
     ${AnySceneImporter_HEADERS})
 target_include_directories(AnySceneImporterObjects PUBLIC
     $<TARGET_PROPERTY:Magnum::Magnum,INTERFACE_INCLUDE_DIRECTORIES>
-    ${PROJECT_SOURCE_DIR}/src)
+    ${PROJECT_SOURCE_DIR}/src
+    ${PROJECT_BINARY_DIR}/src)
 target_compile_definitions(AnySceneImporterObjects PRIVATE "AnySceneImporterObjects_EXPORTS")
 if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(AnySceneImporterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
@@ -49,16 +57,21 @@ add_plugin(AnySceneImporter ${MAGNUM_PLUGINS_IMPORTER_DEBUG_INSTALL_DIR} ${MAGNU
 if(BUILD_STATIC_PIC)
     set_target_properties(AnySceneImporter PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-target_include_directories(AnySceneImporter PUBLIC ${PROJECT_SOURCE_DIR}/src)
+target_include_directories(AnySceneImporter PUBLIC
+    ${PROJECT_SOURCE_DIR}/src
+    ${PROJECT_BINARY_DIR}/src)
 target_link_libraries(AnySceneImporter Magnum::Magnum)
 
 install(FILES ${AnySceneImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/AnySceneImporter)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configure.h DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/AnySceneImporter)
 
 if(BUILD_TESTS)
     add_library(MagnumAnySceneImporterTestLib STATIC
         $<TARGET_OBJECTS:AnySceneImporterObjects>
         ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details
-    target_include_directories(MagnumAnySceneImporterTestLib PUBLIC ${PROJECT_SOURCE_DIR}/src)
+    target_include_directories(MagnumAnySceneImporterTestLib PUBLIC
+        ${PROJECT_SOURCE_DIR}/src
+        ${PROJECT_BINARY_DIR}/src)
     target_link_libraries(MagnumAnySceneImporterTestLib Magnum::Magnum)
     add_subdirectory(Test)
 endif()

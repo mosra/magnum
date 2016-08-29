@@ -31,3 +31,10 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
 
 corrade_add_test(AnyAudioImporterTest Test.cpp LIBRARIES MagnumAnyAudioImporterTestLib)
 target_include_directories(AnyAudioImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+# On Win32 we need to avoid dllimporting AnyAudioImporter symbols, because it
+# would search for the symbols in some DLL even when they were linked
+# statically. However it apparently doesn't matter that they were dllexported
+# when building the static library. EH.
+if(WIN32)
+    target_compile_definitions(AnyAudioImporterTest PRIVATE "MAGNUM_ANYAUDIOIMPORTER_BUILD_STATIC")
+endif()

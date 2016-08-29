@@ -23,6 +23,13 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+if(BUILD_STATIC)
+    set(MAGNUM_ANYIMAGECONVERTER_BUILD_STATIC 1)
+endif()
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+
 set(AnyImageConverter_SRCS
     AnyImageConverter.cpp)
 
@@ -35,7 +42,9 @@ add_library(AnyImageConverterObjects OBJECT
     ${AnyImageConverter_HEADERS})
 target_include_directories(AnyImageConverterObjects PUBLIC
     $<TARGET_PROPERTY:Magnum::Magnum,INTERFACE_INCLUDE_DIRECTORIES>
-    ${PROJECT_SOURCE_DIR}/src)
+    ${PROJECT_SOURCE_DIR}/src
+    ${PROJECT_BINARY_DIR}/src)
+target_compile_definitions(AnyImageConverterObjects PRIVATE "AnyImageConverterObjects_EXPORTS")
 if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(AnyImageConverterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
@@ -48,16 +57,21 @@ add_plugin(AnyImageConverter ${MAGNUM_PLUGINS_IMAGECONVERTER_DEBUG_INSTALL_DIR} 
 if(BUILD_STATIC_PIC)
     set_target_properties(AnyImageConverter PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-target_include_directories(AnyImageConverter PUBLIC ${PROJECT_SOURCE_DIR}/src)
+target_include_directories(AnyImageConverter PUBLIC
+    ${PROJECT_SOURCE_DIR}/src
+    ${PROJECT_BINARY_DIR}/src)
 target_link_libraries(AnyImageConverter Magnum::Magnum)
 
 install(FILES ${AnyImageConverter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/AnyImageConverter)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configure.h DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/AnyImageConverter)
 
 if(BUILD_TESTS)
     add_library(MagnumAnyImageConverterTestLib STATIC
         $<TARGET_OBJECTS:AnyImageConverterObjects>
         ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details
-    target_include_directories(MagnumAnyImageConverterTestLib PUBLIC ${PROJECT_SOURCE_DIR}/src)
+    target_include_directories(MagnumAnyImageConverterTestLib PUBLIC
+        ${PROJECT_SOURCE_DIR}/src
+        ${PROJECT_BINARY_DIR}/src)
     target_link_libraries(MagnumAnyImageConverterTestLib Magnum::Magnum)
     add_subdirectory(Test)
 endif()

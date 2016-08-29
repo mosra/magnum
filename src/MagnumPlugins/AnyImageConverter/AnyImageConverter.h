@@ -31,6 +31,21 @@
 
 #include <Magnum/Trade/AbstractImageConverter.h>
 
+#include "MagnumPlugins/AnyImageConverter/configure.h"
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+#ifndef MAGNUM_ANYIMAGECONVERTER_BUILD_STATIC
+    #if defined(AnyImageConverter_EXPORTS) || defined(AnyImageConverterObjects_EXPORTS)
+        #define MAGNUM_ANYIMAGECONVERTER_EXPORT CORRADE_VISIBILITY_EXPORT
+    #else
+        #define MAGNUM_ANYIMAGECONVERTER_EXPORT CORRADE_VISIBILITY_IMPORT
+    #endif
+#else
+    #define MAGNUM_ANYIMAGECONVERTER_EXPORT CORRADE_VISIBILITY_STATIC
+#endif
+#define MAGNUM_ANYIMAGECONVERTER_LOCAL CORRADE_VISIBILITY_LOCAL
+#endif
+
 namespace Magnum { namespace Trade {
 
 /**
@@ -59,7 +74,7 @@ No supported formats for compressed data yet.
 
 Only exporting to files is supported.
 */
-class AnyImageConverter: public AbstractImageConverter {
+class MAGNUM_ANYIMAGECONVERTER_EXPORT AnyImageConverter: public AbstractImageConverter {
     public:
         /** @brief Constructor with access to plugin manager */
         explicit AnyImageConverter(PluginManager::Manager<AbstractImageConverter>& manager);
@@ -70,9 +85,9 @@ class AnyImageConverter: public AbstractImageConverter {
         ~AnyImageConverter();
 
     private:
-        Features doFeatures() const override;
-        bool doExportToFile(const ImageView2D& image, const std::string& filename) override;
-        bool doExportToFile(const CompressedImageView2D& image, const std::string& filename) override;
+        MAGNUM_ANYIMAGECONVERTER_LOCAL Features doFeatures() const override;
+        MAGNUM_ANYIMAGECONVERTER_LOCAL bool doExportToFile(const ImageView2D& image, const std::string& filename) override;
+        MAGNUM_ANYIMAGECONVERTER_LOCAL bool doExportToFile(const CompressedImageView2D& image, const std::string& filename) override;
 };
 
 }}

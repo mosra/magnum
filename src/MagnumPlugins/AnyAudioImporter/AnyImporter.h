@@ -32,6 +32,21 @@
 #include <memory>
 #include <Magnum/Audio/AbstractImporter.h>
 
+#include "MagnumPlugins/AnyAudioImporter/configure.h"
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+#ifndef MAGNUM_ANYAUDIOIMPORTER_BUILD_STATIC
+    #if defined(AnyAudioImporter_EXPORTS) || defined(AnyAudioImporterObjects_EXPORTS)
+        #define MAGNUM_ANYAUDIOIMPORTER_EXPORT CORRADE_VISIBILITY_EXPORT
+    #else
+        #define MAGNUM_ANYAUDIOIMPORTER_EXPORT CORRADE_VISIBILITY_IMPORT
+    #endif
+#else
+    #define MAGNUM_ANYAUDIOIMPORTER_EXPORT CORRADE_VISIBILITY_STATIC
+#endif
+#define MAGNUM_ANYAUDIOIMPORTER_LOCAL CORRADE_VISIBILITY_LOCAL
+#endif
+
 namespace Magnum { namespace Audio {
 
 /**
@@ -56,7 +71,7 @@ Supported formats:
 
 Only loading from files is supported.
 */
-class AnyImporter: public AbstractImporter {
+class MAGNUM_ANYAUDIOIMPORTER_EXPORT AnyImporter: public AbstractImporter {
     public:
         /** @brief Constructor with access to plugin manager */
         explicit AnyImporter(PluginManager::Manager<AbstractImporter>& manager);
@@ -67,14 +82,14 @@ class AnyImporter: public AbstractImporter {
         ~AnyImporter();
 
     private:
-        Features doFeatures() const override;
-        bool doIsOpened() const override;
-        void doClose() override;
-        void doOpenFile(const std::string& filename) override;
+        MAGNUM_ANYAUDIOIMPORTER_LOCAL Features doFeatures() const override;
+        MAGNUM_ANYAUDIOIMPORTER_LOCAL bool doIsOpened() const override;
+        MAGNUM_ANYAUDIOIMPORTER_LOCAL void doClose() override;
+        MAGNUM_ANYAUDIOIMPORTER_LOCAL void doOpenFile(const std::string& filename) override;
 
-        Buffer::Format doFormat() const override;
-        UnsignedInt doFrequency() const override;
-        Containers::Array<char> doData() override;
+        MAGNUM_ANYAUDIOIMPORTER_LOCAL Buffer::Format doFormat() const override;
+        MAGNUM_ANYAUDIOIMPORTER_LOCAL UnsignedInt doFrequency() const override;
+        MAGNUM_ANYAUDIOIMPORTER_LOCAL Containers::Array<char> doData() override;
 
         std::unique_ptr<AbstractImporter> _in;
 };

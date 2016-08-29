@@ -31,3 +31,10 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
 
 corrade_add_test(AnySceneImporterTest Test.cpp LIBRARIES MagnumAnySceneImporterTestLib)
 target_include_directories(AnySceneImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+# On Win32 we need to avoid dllimporting AnySceneImporter symbols, because it
+# would search for the symbols in some DLL even when they were linked
+# statically. However it apparently doesn't matter that they were dllexported
+# when building the static library. EH.
+if(WIN32)
+    target_compile_definitions(AnySceneImporterTest PRIVATE "MAGNUM_ANYSCENEIMPORTER_BUILD_STATIC")
+endif()

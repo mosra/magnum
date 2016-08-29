@@ -25,6 +25,13 @@
 
 find_package(Magnum REQUIRED Audio)
 
+if(BUILD_STATIC)
+    set(MAGNUM_ANYAUDIOIMPORTER_BUILD_STATIC 1)
+endif()
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+
 set(AnyAudioImporter_SRCS
     AnyImporter.cpp)
 
@@ -37,7 +44,9 @@ add_library(AnyAudioImporterObjects OBJECT
     ${AnyAudioImporter_HEADERS})
 target_include_directories(AnyAudioImporterObjects PUBLIC
     $<TARGET_PROPERTY:Magnum::Audio,INTERFACE_INCLUDE_DIRECTORIES>
-    ${PROJECT_SOURCE_DIR}/src)
+    ${PROJECT_SOURCE_DIR}/src
+    ${PROJECT_BINARY_DIR}/src)
+target_compile_definitions(AnyAudioImporterObjects PRIVATE "AnyAudioImporterObjects_EXPORTS")
 if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(AnyAudioImporterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
@@ -50,16 +59,21 @@ add_plugin(AnyAudioImporter ${MAGNUM_PLUGINS_AUDIOIMPORTER_DEBUG_INSTALL_DIR} ${
 if(BUILD_STATIC_PIC)
     set_target_properties(AnyAudioImporter PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-target_include_directories(AnyAudioImporter PUBLIC ${PROJECT_SOURCE_DIR}/src)
+target_include_directories(AnyAudioImporter PUBLIC
+    ${PROJECT_SOURCE_DIR}/src
+    ${PROJECT_BINARY_DIR}/src)
 target_link_libraries(AnyAudioImporter Magnum::Magnum Magnum::Audio)
 
 install(FILES ${AnyAudioImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/AnyAudioImporter)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configure.h DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/AnyAudioImporter)
 
 if(BUILD_TESTS)
     add_library(MagnumAnyAudioImporterTestLib STATIC
         $<TARGET_OBJECTS:AnyAudioImporterObjects>
         ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details
-    target_include_directories(MagnumAnyAudioImporterTestLib PUBLIC ${PROJECT_SOURCE_DIR}/src)
+    target_include_directories(MagnumAnyAudioImporterTestLib PUBLIC
+        ${PROJECT_SOURCE_DIR}/src
+        ${PROJECT_BINARY_DIR}/src)
     target_link_libraries(MagnumAnyAudioImporterTestLib Magnum::Magnum Magnum::Audio)
     add_subdirectory(Test)
 endif()

@@ -31,6 +31,21 @@
 
 #include <Magnum/Trade/AbstractImporter.h>
 
+#include "MagnumPlugins/AnySceneImporter/configure.h"
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+#ifndef MAGNUM_ANYSCENEIMPORTER_BUILD_STATIC
+    #if defined(AnySceneImporter_EXPORTS) || defined(AnySceneImporterObjects_EXPORTS)
+        #define MAGNUM_ANYSCENEIMPORTER_EXPORT CORRADE_VISIBILITY_EXPORT
+    #else
+        #define MAGNUM_ANYSCENEIMPORTER_EXPORT CORRADE_VISIBILITY_IMPORT
+    #endif
+#else
+    #define MAGNUM_ANYSCENEIMPORTER_EXPORT CORRADE_VISIBILITY_STATIC
+#endif
+#define MAGNUM_ANYSCENEIMPORTER_LOCAL CORRADE_VISIBILITY_LOCAL
+#endif
+
 namespace Magnum { namespace Trade {
 
 /**
@@ -59,7 +74,7 @@ Supported formats:
 
 Only loading from files is supported.
 */
-class AnySceneImporter: public AbstractImporter {
+class MAGNUM_ANYSCENEIMPORTER_EXPORT AnySceneImporter: public AbstractImporter {
     public:
         /** @brief Constructor with access to plugin manager */
         explicit AnySceneImporter(PluginManager::Manager<AbstractImporter>& manager);
@@ -70,74 +85,73 @@ class AnySceneImporter: public AbstractImporter {
         ~AnySceneImporter();
 
     private:
-        Features doFeatures() const override;
-        bool doIsOpened() const override;
-        void doClose() override;
-        void doOpenFile(const std::string& filename) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL Features doFeatures() const override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL bool doIsOpened() const override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL void doClose() override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL void doOpenFile(const std::string& filename) override;
 
-        Int doDefaultScene() override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL Int doDefaultScene() override;
 
-        UnsignedInt doSceneCount() const override;
-        Int doSceneForName(const std::string& name) override;
-        std::string doSceneName(UnsignedInt id) override;
-        std::optional<SceneData> doScene(UnsignedInt id) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL UnsignedInt doSceneCount() const override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL Int doSceneForName(const std::string& name) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL std::string doSceneName(UnsignedInt id) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL std::optional<SceneData> doScene(UnsignedInt id) override;
 
-        UnsignedInt doLightCount() const override;
-        Int doLightForName(const std::string& name) override;
-        std::string doLightName(UnsignedInt id) override;
-        std::optional<LightData> doLight(UnsignedInt id) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL UnsignedInt doLightCount() const override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL Int doLightForName(const std::string& name) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL std::string doLightName(UnsignedInt id) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL std::optional<LightData> doLight(UnsignedInt id) override;
 
-        UnsignedInt doCameraCount() const override;
-        Int doCameraForName(const std::string& name) override;
-        std::string doCameraName(UnsignedInt id) override;
-        std::optional<CameraData> doCamera(UnsignedInt id) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL UnsignedInt doCameraCount() const override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL Int doCameraForName(const std::string& name) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL std::string doCameraName(UnsignedInt id) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL std::optional<CameraData> doCamera(UnsignedInt id) override;
 
-        UnsignedInt doObject2DCount() const override;
-        Int doObject2DForName(const std::string& name) override;
-        std::string doObject2DName(UnsignedInt id) override;
-        std::unique_ptr<ObjectData2D> doObject2D(UnsignedInt id) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL UnsignedInt doObject2DCount() const override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL Int doObject2DForName(const std::string& name) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL std::string doObject2DName(UnsignedInt id) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL std::unique_ptr<ObjectData2D> doObject2D(UnsignedInt id) override;
 
-        UnsignedInt doObject3DCount() const override;
-        Int doObject3DForName(const std::string& name) override;
-        std::string doObject3DName(UnsignedInt id) override;
-        std::unique_ptr<ObjectData3D> doObject3D(UnsignedInt id) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL UnsignedInt doObject3DCount() const override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL Int doObject3DForName(const std::string& name) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL std::string doObject3DName(UnsignedInt id) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL std::unique_ptr<ObjectData3D> doObject3D(UnsignedInt id) override;
 
-        UnsignedInt doMesh2DCount() const override;
-        Int doMesh2DForName(const std::string& name) override;
-        std::string doMesh2DName(UnsignedInt id) override;
-        std::optional<MeshData2D> doMesh2D(UnsignedInt id) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL UnsignedInt doMesh2DCount() const override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL Int doMesh2DForName(const std::string& name) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL std::string doMesh2DName(UnsignedInt id) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL std::optional<MeshData2D> doMesh2D(UnsignedInt id) override;
 
-        UnsignedInt doMesh3DCount() const override;
-        Int doMesh3DForName(const std::string& name) override;
-        std::string doMesh3DName(UnsignedInt id) override;
-        std::optional<MeshData3D> doMesh3D(UnsignedInt id) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL UnsignedInt doMesh3DCount() const override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL Int doMesh3DForName(const std::string& name) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL std::string doMesh3DName(UnsignedInt id) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL std::optional<MeshData3D> doMesh3D(UnsignedInt id) override;
 
-        UnsignedInt doMaterialCount() const override;
-        Int doMaterialForName(const std::string& name) override;
-        std::string doMaterialName(UnsignedInt id) override;
-        std::unique_ptr<AbstractMaterialData> doMaterial(UnsignedInt id) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL UnsignedInt doMaterialCount() const override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL Int doMaterialForName(const std::string& name) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL std::string doMaterialName(UnsignedInt id) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL std::unique_ptr<AbstractMaterialData> doMaterial(UnsignedInt id) override;
 
-        UnsignedInt doTextureCount() const override;
-        Int doTextureForName(const std::string& name) override;
-        std::string doTextureName(UnsignedInt id) override;
-        std::optional<TextureData> doTexture(UnsignedInt id) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL UnsignedInt doTextureCount() const override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL Int doTextureForName(const std::string& name) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL std::string doTextureName(UnsignedInt id) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL std::optional<TextureData> doTexture(UnsignedInt id) override;
 
-        UnsignedInt doImage1DCount() const override;
-        Int doImage1DForName(const std::string& name) override;
-        std::string doImage1DName(UnsignedInt id) override;
-        std::optional<ImageData1D> doImage1D(UnsignedInt id) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL UnsignedInt doImage1DCount() const override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL Int doImage1DForName(const std::string& name) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL std::string doImage1DName(UnsignedInt id) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL std::optional<ImageData1D> doImage1D(UnsignedInt id) override;
 
-        UnsignedInt doImage2DCount() const override;
-        Int doImage2DForName(const std::string& name) override;
-        std::string doImage2DName(UnsignedInt id) override;
-        std::optional<ImageData2D> doImage2D(UnsignedInt id) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL UnsignedInt doImage2DCount() const override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL Int doImage2DForName(const std::string& name) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL std::string doImage2DName(UnsignedInt id) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL std::optional<ImageData2D> doImage2D(UnsignedInt id) override;
 
-        UnsignedInt doImage3DCount() const override;
-        Int doImage3DForName(const std::string& name) override;
-        std::string doImage3DName(UnsignedInt id) override;
-        std::optional<ImageData3D> doImage3D(UnsignedInt id) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL UnsignedInt doImage3DCount() const override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL Int doImage3DForName(const std::string& name) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL std::string doImage3DName(UnsignedInt id) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL std::optional<ImageData3D> doImage3D(UnsignedInt id) override;
 
-    private:
         std::unique_ptr<AbstractImporter> _in;
 };
 
