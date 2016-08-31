@@ -36,7 +36,6 @@ struct ColorTest: Corrade::TestSuite::Tester {
 
     void construct();
     void constructDefault();
-    void constructZero();
     void constructNoInit();
     void constructOneValue();
     void constructParts();
@@ -80,7 +79,6 @@ using namespace Literals;
 ColorTest::ColorTest() {
     addTests({&ColorTest::construct,
               &ColorTest::constructDefault,
-              &ColorTest::constructZero,
               &ColorTest::constructNoInit,
               &ColorTest::constructOneValue,
               &ColorTest::constructParts,
@@ -129,17 +127,13 @@ void ColorTest::constructDefault() {
     CORRADE_COMPARE(a1, Color3(0.0f, 0.0f, 0.0f));
     CORRADE_COMPARE(a2, Color3(0.0f, 0.0f, 0.0f));
 
-    constexpr Color4 b;
-    constexpr Color4ub c;
-    CORRADE_COMPARE(b, Color4(0.0f, 0.0f, 0.0f, 0.0f));
-    CORRADE_COMPARE(c, Color4ub(0, 0, 0, 0));
-}
+    constexpr Color4 b1;
+    constexpr Color4 b2{Math::ZeroInit};
+    CORRADE_COMPARE(b1, Color4(0.0f, 0.0f, 0.0f, 0.0f));
+    CORRADE_COMPARE(b2, Color4(0.0f, 0.0f, 0.0f, 0.0f));
 
-void ColorTest::constructZero() {
-    constexpr Color3 a{Math::ZeroInit};
-    constexpr Color4 b{Math::ZeroInit};
-    CORRADE_COMPARE(a, Color3(0.0f, 0.0f, 0.0f));
-    CORRADE_COMPARE(b, Color4(0.0f, 0.0f, 0.0f, 0.0f));
+    constexpr Color4ub c;
+    CORRADE_COMPARE(c, Color4ub(0, 0, 0, 0));
 }
 
 void ColorTest::constructNoInit() {
