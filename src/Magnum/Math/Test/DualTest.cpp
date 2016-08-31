@@ -37,6 +37,7 @@ struct DualTest: Corrade::TestSuite::Tester {
 
     void construct();
     void constructDefault();
+    void constructZero();
     void constructNoInit();
     void constructConversion();
     void constructCopy();
@@ -73,6 +74,7 @@ using namespace Literals;
 DualTest::DualTest() {
     addTests({&DualTest::construct,
               &DualTest::constructDefault,
+              &DualTest::constructZero,
               &DualTest::constructNoInit,
               &DualTest::constructConversion,
               &DualTest::constructCopy,
@@ -118,6 +120,16 @@ void DualTest::constructDefault() {
     CORRADE_COMPARE(b, Math::Dual<Math::Quaternion<Float>>({{0.0f, 0.0f, 0.0f}, 1.0f}, {{0.0f, 0.0f, 0.0f}, 1.0f}));
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<Dual>::value);
+}
+
+void DualTest::constructZero() {
+    constexpr Dual a{ZeroInit};
+    constexpr Math::Dual<Math::Quaternion<Float>> b{ZeroInit};
+    CORRADE_COMPARE(a, Dual(0.0f, 0.0f));
+    CORRADE_COMPARE(b, Math::Dual<Math::Quaternion<Float>>({{0.0f, 0.0f, 0.0f}, 0.0f}, {{0.0f, 0.0f, 0.0f}, 0.0f}));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Dual, ZeroInitT>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<Math::Dual<Math::Quaternion<Float>>, ZeroInitT>::value));
 }
 
 void DualTest::constructNoInit() {

@@ -59,6 +59,15 @@ template<class T> class Dual {
          */
         constexpr /*implicit*/ Dual() noexcept: _real{}, _dual{} {}
 
+        /** @brief Construct zero-initialized dual number */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        constexpr /*implicit*/ Dual(ZeroInitT) noexcept;
+        #else
+        /* MSVC 2015 can't handle {} instead of ::value */
+        template<class U = T, class = typename std::enable_if<std::is_pod<U>::value>::type> constexpr /*implicit*/ Dual(ZeroInitT) noexcept: _real{}, _dual{} {}
+        template<class U = T, class V = T, class = typename std::enable_if<std::is_constructible<U, ZeroInitT>::value>::type> constexpr /*implicit*/ Dual(ZeroInitT) noexcept: _real{ZeroInit}, _dual{ZeroInit} {}
+        #endif
+
         /** @brief Construct without initializing the contents */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         explicit Dual(NoInitT) noexcept;
