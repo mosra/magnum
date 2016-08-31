@@ -200,6 +200,7 @@ template<UnsignedInt dimensions, class T> class Range {
     static Type<T> fromSize(const VectorType<T>& min, const VectorType<T>& size) { \
         return Range<dimensions, T>::fromSize(min, size);                   \
     }                                                                       \
+                                                                            \
     Type<T> translated(const VectorType<T>& vector) const {                 \
         return Range<dimensions, T>::translated(vector);                    \
     }                                                                       \
