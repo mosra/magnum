@@ -79,10 +79,13 @@ void UnitTest::construct() {
 }
 
 void UnitTest::constructDefault() {
-    constexpr Sec b;
+    constexpr Sec a;
+    constexpr Sec b{ZeroInit};
+    CORRADE_COMPARE(a, Sec(0.0f));
     CORRADE_COMPARE(b, Sec(0.0f));
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<Sec>::value);
+    CORRADE_VERIFY((std::is_nothrow_constructible<Sec, ZeroInitT>::value));
 }
 
 void UnitTest::constructNoInit() {
