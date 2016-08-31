@@ -35,7 +35,11 @@ struct AngleTest: Corrade::TestSuite::Tester {
     explicit AngleTest();
 
     void construct();
+    void constructDefault();
     void constructNoInit();
+    void constructConversion();
+    void constructCopy();
+
     void literals();
     void conversion();
 
@@ -52,7 +56,11 @@ typedef Math::Rad<Double> Radd;
 
 AngleTest::AngleTest() {
     addTests({&AngleTest::construct,
+              &AngleTest::constructDefault,
               &AngleTest::constructNoInit,
+              &AngleTest::constructConversion,
+              &AngleTest::constructCopy,
+
               &AngleTest::literals,
               &AngleTest::conversion,
 
@@ -63,7 +71,17 @@ AngleTest::AngleTest() {
 }
 
 void AngleTest::construct() {
-    /* Default constructor */
+    constexpr Deg b(25.0);
+    CORRADE_COMPARE(Float(b), 25.0f);
+    constexpr Radd n(3.14);
+    CORRADE_COMPARE(Double(n), 3.14);
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Float, Rad>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Double, Degd>::value));
+}
+
+void AngleTest::constructDefault() {
     constexpr Deg m1;
     constexpr Deg m2{ZeroInit};
     CORRADE_COMPARE(Float(m1), 0.0f);
@@ -72,24 +90,6 @@ void AngleTest::construct() {
     constexpr Radd a2{ZeroInit};
     CORRADE_COMPARE(Double(a1), 0.0);
     CORRADE_COMPARE(Double(a2), 0.0);
-
-    /* Value constructor */
-    constexpr Deg b(25.0);
-    CORRADE_COMPARE(Float(b), 25.0f);
-    constexpr Radd n(3.14);
-    CORRADE_COMPARE(Double(n), 3.14);
-
-    /* Copy constructor */
-    constexpr Deg c(b);
-    CORRADE_COMPARE(c, b);
-    constexpr Radd o(n);
-    CORRADE_COMPARE(o, n);
-
-    /* Conversion operator */
-    constexpr Rad p(n);
-    CORRADE_COMPARE(Float(p), 3.14f);
-    constexpr Degd d(b);
-    CORRADE_COMPARE(Double(d), 25.0);
 }
 
 void AngleTest::constructNoInit() {
@@ -99,6 +99,30 @@ void AngleTest::constructNoInit() {
     new(&b) Rad{NoInit};
     CORRADE_COMPARE(Float(a), 25.0f);
     CORRADE_COMPARE(Float(b), 3.14f);
+}
+
+void AngleTest::constructConversion() {
+    constexpr Deg a(25.0);
+    constexpr Radd b(3.14);
+
+    constexpr Rad c(b);
+    CORRADE_COMPARE(Float(c), 3.14f);
+    constexpr Degd d(a);
+    CORRADE_COMPARE(Double(d), 25.0);
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Degd, Deg>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Rad, Radd>::value));
+}
+
+void AngleTest::constructCopy() {
+    constexpr Deg a(25.0);
+    constexpr Radd b(3.14);
+
+    constexpr Deg c(a);
+    CORRADE_COMPARE(c, a);
+    constexpr Radd d(b);
+    CORRADE_COMPARE(d, b);
 }
 
 void AngleTest::literals() {
