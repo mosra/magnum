@@ -83,7 +83,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          * Creates identity matrix. @p value allows you to specify value on
          * diagonal.
          */
-        constexpr /*implicit*/ Matrix(IdentityInitT = IdentityInit, T value = T(1))
+        constexpr /*implicit*/ Matrix(IdentityInitT = IdentityInit, T value = T(1)) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             /* MSVC 2015 can't handle {} here */
@@ -92,7 +92,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
             {}
 
         /** @copydoc RectangularMatrix::RectangularMatrix(ZeroInitT) */
-        constexpr explicit Matrix(ZeroInitT)
+        constexpr explicit Matrix(ZeroInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             /* MSVC 2015 can't handle {} here */
@@ -101,7 +101,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
             {}
 
         /** @copydoc RectangularMatrix::RectangularMatrix(NoInitT) */
-        constexpr explicit Matrix(NoInitT)
+        constexpr explicit Matrix(NoInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             /* MSVC 2015 can't handle {} here */
@@ -114,7 +114,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          * @param first First column vector
          * @param next  Next column vectors
          */
-        template<class ...U> constexpr /*implicit*/ Matrix(const Vector<size, T>& first, const U&... next): RectangularMatrix<size, size, T>(first, next...) {}
+        template<class ...U> constexpr /*implicit*/ Matrix(const Vector<size, T>& first, const U&... next) noexcept: RectangularMatrix<size, size, T>(first, next...) {}
 
         /**
          * @brief Construct matrix from another of different type
@@ -128,13 +128,13 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          * // integral == {{1, 2}, {-15, 7}}
          * @endcode
          */
-        template<class U> constexpr explicit Matrix(const RectangularMatrix<size, size, U>& other): RectangularMatrix<size, size, T>(other) {}
+        template<class U> constexpr explicit Matrix(const RectangularMatrix<size, size, U>& other) noexcept: RectangularMatrix<size, size, T>(other) {}
 
         /** @brief Construct matrix from external representation */
         template<class U, class V = decltype(Implementation::RectangularMatrixConverter<size, size, T, U>::from(std::declval<U>()))> constexpr explicit Matrix(const U& other): RectangularMatrix<size, size, T>(Implementation::RectangularMatrixConverter<size, size, T, U>::from(other)) {}
 
         /** @brief Copy constructor */
-        constexpr Matrix(const RectangularMatrix<size, size, T>& other): RectangularMatrix<size, size, T>(other) {}
+        constexpr /*implicit*/ Matrix(const RectangularMatrix<size, size, T>& other) noexcept: RectangularMatrix<size, size, T>(other) {}
 
         /**
          * @brief Whether the matrix is orthogonal

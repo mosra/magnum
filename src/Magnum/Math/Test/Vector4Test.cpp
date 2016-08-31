@@ -101,6 +101,8 @@ Vector4Test::Vector4Test() {
 void Vector4Test::construct() {
     constexpr Vector4 a = {1.0f, -2.5f, 3.0f, 4.1f};
     CORRADE_COMPARE(a, (Vector<4, Float>(1.0f, -2.5f, 3.0f, 4.1f)));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Vector4, Float, Float, Float, Float>::value));
 }
 
 void Vector4Test::constructPad() {
@@ -124,12 +126,17 @@ void Vector4Test::constructDefault() {
     constexpr Vector4 b{ZeroInit};
     CORRADE_COMPARE(a, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
     CORRADE_COMPARE(b, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
+
+    CORRADE_VERIFY(std::is_nothrow_default_constructible<Vector4>::value);
+    CORRADE_VERIFY((std::is_nothrow_constructible<Vector4, ZeroInitT>::value));
 }
 
 void Vector4Test::constructNoInit() {
     Vector4 a{1.0f, -2.5f, 3.0f, 4.1f};
     new(&a) Vector4{NoInit};
     CORRADE_COMPARE(a, (Vector4{1.0f, -2.5f, 3.0f, 4.1f}));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Vector4, NoInitT>::value));
 }
 
 void Vector4Test::constructOneValue() {
@@ -138,12 +145,16 @@ void Vector4Test::constructOneValue() {
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Float, Vector4>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Vector4, Float>::value));
 }
 
 void Vector4Test::constructParts() {
     constexpr Vector3 a(1.0f, 2.0f, 3.0f);
     constexpr Vector4 b = {a, 4.0f};
     CORRADE_COMPARE(b, Vector4(1.0f, 2.0f, 3.0f, 4.0f));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Vector4, Vector3, Float>::value));
 }
 
 void Vector4Test::constructConversion() {
@@ -153,6 +164,8 @@ void Vector4Test::constructConversion() {
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Vector4, Vector4i>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Vector4, Vector4i>::value));
 }
 
 void Vector4Test::constructCopy() {
@@ -162,6 +175,9 @@ void Vector4Test::constructCopy() {
     #endif
     Vector4 b(a);
     CORRADE_COMPARE(b, Vector4(1.0f, -2.5f, 3.0f, 4.1f));
+
+    CORRADE_VERIFY(std::is_nothrow_copy_constructible<Vector4>::value);
+    CORRADE_VERIFY(std::is_nothrow_copy_assignable<Vector4>::value);
 }
 
 void Vector4Test::convert() {

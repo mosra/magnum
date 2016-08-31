@@ -79,6 +79,9 @@ void AngleTest::construct() {
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Float, Rad>::value));
     CORRADE_VERIFY(!(std::is_convertible<Double, Degd>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Deg, Float>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<Rad, Float>::value));
 }
 
 void AngleTest::constructDefault() {
@@ -90,6 +93,11 @@ void AngleTest::constructDefault() {
     constexpr Radd a2{ZeroInit};
     CORRADE_COMPARE(Double(a1), 0.0);
     CORRADE_COMPARE(Double(a2), 0.0);
+
+    CORRADE_VERIFY(std::is_nothrow_default_constructible<Deg>::value);
+    CORRADE_VERIFY(std::is_nothrow_default_constructible<Rad>::value);
+    CORRADE_VERIFY((std::is_nothrow_constructible<Deg, ZeroInitT>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<Rad, ZeroInitT>::value));
 }
 
 void AngleTest::constructNoInit() {
@@ -99,6 +107,9 @@ void AngleTest::constructNoInit() {
     new(&b) Rad{NoInit};
     CORRADE_COMPARE(Float(a), 25.0f);
     CORRADE_COMPARE(Float(b), 3.14f);
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Deg, NoInitT>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<Rad, NoInitT>::value));
 }
 
 void AngleTest::constructConversion() {
@@ -113,6 +124,9 @@ void AngleTest::constructConversion() {
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Degd, Deg>::value));
     CORRADE_VERIFY(!(std::is_convertible<Rad, Radd>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Deg, Degd>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<Radd, Rad>::value));
 }
 
 void AngleTest::constructCopy() {
@@ -123,6 +137,11 @@ void AngleTest::constructCopy() {
     CORRADE_COMPARE(c, a);
     constexpr Radd d(b);
     CORRADE_COMPARE(d, b);
+
+    CORRADE_VERIFY(std::is_nothrow_copy_constructible<Deg>::value);
+    CORRADE_VERIFY(std::is_nothrow_copy_constructible<Rad>::value);
+    CORRADE_VERIFY(std::is_nothrow_copy_assignable<Deg>::value);
+    CORRADE_VERIFY(std::is_nothrow_copy_assignable<Rad>::value);
 }
 
 void AngleTest::literals() {

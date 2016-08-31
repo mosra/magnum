@@ -127,20 +127,20 @@ template<class T> class Deg: public Unit<Deg, T> {
     public:
         /** @brief Construct zero angle */
         /* MSVC 2015 can't handle {} here */
-        constexpr /*implicit*/ Deg(ZeroInitT = ZeroInit): Unit<Math::Deg, T>(ZeroInit) {}
+        constexpr /*implicit*/ Deg(ZeroInitT = ZeroInit) noexcept: Unit<Math::Deg, T>(ZeroInit) {}
 
         /** @brief Construct without initializing the contents */
         /* MSVC 2015 can't handle {} here */
-        explicit Deg(NoInitT): Unit<Math::Deg, T>(NoInit) {}
+        explicit Deg(NoInitT) noexcept: Unit<Math::Deg, T>(NoInit) {}
 
         /** @brief Explicit constructor from unitless type */
-        constexpr explicit Deg(T value): Unit<Math::Deg, T>(value) {}
-
-        /** @brief Copy constructor */
-        constexpr /*implicit*/ Deg(Unit<Math::Deg, T> value): Unit<Math::Deg, T>(value) {}
+        constexpr explicit Deg(T value) noexcept: Unit<Math::Deg, T>(value) {}
 
         /** @brief Construct from another underlying type */
-        template<class U> constexpr explicit Deg(Unit<Math::Deg, U> value): Unit<Math::Deg, T>(value) {}
+        template<class U> constexpr explicit Deg(Unit<Math::Deg, U> value) noexcept: Unit<Math::Deg, T>(value) {}
+
+        /** @brief Copy constructor */
+        constexpr /*implicit*/ Deg(Unit<Math::Deg, T> other) noexcept: Unit<Math::Deg, T>(other) {}
 
         /**
          * @brief Construct degrees from radians
@@ -191,20 +191,20 @@ template<class T> class Rad: public Unit<Rad, T> {
     public:
         /** @brief Default constructor */
         /* MSVC 2015 can't handle {} here */
-        constexpr /*implicit*/ Rad(ZeroInitT = ZeroInit): Unit<Math::Rad, T>(ZeroInit) {}
+        constexpr /*implicit*/ Rad(ZeroInitT = ZeroInit) noexcept: Unit<Math::Rad, T>(ZeroInit) {}
 
         /** @brief Construct without initializing the contents */
         /* MSVC 2015 can't handle {} here */
-        explicit Rad(NoInitT): Unit<Math::Rad, T>(NoInit) {}
+        explicit Rad(NoInitT) noexcept: Unit<Math::Rad, T>(NoInit) {}
 
         /** @brief Construct from unitless type */
-        constexpr explicit Rad(T value): Unit<Math::Rad, T>(value) {}
-
-        /** @brief Copy constructor */
-        constexpr /*implicit*/ Rad(Unit<Math::Rad, T> value): Unit<Math::Rad, T>(value) {}
+        constexpr explicit Rad(T value) noexcept: Unit<Math::Rad, T>(value) {}
 
         /** @brief Construct from another underlying type */
-        template<class U> constexpr explicit Rad(Unit<Math::Rad, U> value): Unit<Math::Rad, T>(value) {}
+        template<class U> constexpr explicit Rad(Unit<Math::Rad, U> value) noexcept: Unit<Math::Rad, T>(value) {}
+
+        /** @brief Copy constructor */
+        constexpr /*implicit*/ Rad(Unit<Math::Rad, T> value) noexcept: Unit<Math::Rad, T>(value) {}
 
         /**
          * @brief Construct radians from degrees

@@ -150,6 +150,8 @@ void DualQuaternionTest::construct() {
 
     constexpr DualQuaternion d({{1.0f, 2.0f, 3.0f}, -4.0f});
     CORRADE_COMPARE(d, DualQuaternion({{1.0f, 2.0f, 3.0f}, -4.0f}, {{0.0f, 0.0f, 0.0f}, 0.0f}));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<DualQuaternion, Quaternion, Quaternion>::value));
 }
 
 void DualQuaternionTest::constructVectorScalar() {
@@ -161,6 +163,8 @@ void DualQuaternionTest::constructVectorScalar() {
 
     constexpr Quaternion c = a.dual();
     CORRADE_COMPARE(c, Quaternion({0.5f, -3.1f, 3.3f}, 2.0f));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<DualQuaternion, Math::Dual<Vector3>, Math::Dual<Float>>::value));
 }
 
 void DualQuaternionTest::constructIdentity() {
@@ -170,17 +174,24 @@ void DualQuaternionTest::constructIdentity() {
     CORRADE_COMPARE(b, DualQuaternion({{0.0f, 0.0f, 0.0f}, 1.0f}, {{0.0f, 0.0f, 0.0f}, 0.0f}));
     CORRADE_COMPARE(a.length(), 1.0f);
     CORRADE_COMPARE(b.length(), 1.0f);
+
+    CORRADE_VERIFY(std::is_nothrow_default_constructible<DualQuaternion>::value);
+    CORRADE_VERIFY((std::is_nothrow_constructible<DualQuaternion, IdentityInitT>::value));
 }
 
 void DualQuaternionTest::constructZero() {
     constexpr DualQuaternion a{ZeroInit};
     CORRADE_COMPARE(a, DualQuaternion({{0.0f, 0.0f, 0.0f}, 0.0f}, {{0.0f, 0.0f, 0.0f}, 0.0f}));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<DualQuaternion, ZeroInitT>::value));
 }
 
 void DualQuaternionTest::constructNoInit() {
     DualQuaternion a{{{1.0f, 2.0f, 3.0f}, -4.0f}, {{0.5f, -3.1f, 3.3f}, 2.0f}};
     new(&a) DualQuaternion{NoInit};
     CORRADE_COMPARE(a, DualQuaternion({{1.0f, 2.0f, 3.0f}, -4.0f}, {{0.5f, -3.1f, 3.3f}, 2.0f}));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<DualQuaternion, NoInitT>::value));
 }
 
 void DualQuaternionTest::constructFromVector() {
@@ -189,6 +200,8 @@ void DualQuaternionTest::constructFromVector() {
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Vector3, DualQuaternion>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<DualQuaternion, Vector3>::value));
 }
 
 void DualQuaternionTest::constructConversion() {
@@ -201,6 +214,8 @@ void DualQuaternionTest::constructConversion() {
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<DualQuaternion, DualQuaternioni>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<DualQuaternion, DualQuaternioni>::value));
 }
 
 void DualQuaternionTest::constructCopy() {
@@ -210,6 +225,9 @@ void DualQuaternionTest::constructCopy() {
     #endif
     DualQuaternion b(a);
     CORRADE_COMPARE(b, DualQuaternion({{1.0f, 2.0f, -3.0f}, -3.5f}, {{4.5f, -7.0f, 2.0f}, 1.0f}));
+
+    CORRADE_VERIFY(std::is_nothrow_copy_constructible<DualQuaternion>::value);
+    CORRADE_VERIFY(std::is_nothrow_copy_assignable<DualQuaternion>::value);
 }
 
 void DualQuaternionTest::convert() {

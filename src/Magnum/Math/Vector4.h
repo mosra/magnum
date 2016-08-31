@@ -60,7 +60,7 @@ template<class T> class Vector4: public Vector<4, T> {
         }
 
         /** @copydoc Vector::Vector(ZeroInitT) */
-        constexpr /*implicit*/ Vector4(ZeroInitT = ZeroInit)
+        constexpr /*implicit*/ Vector4(ZeroInitT = ZeroInit) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             /* MSVC 2015 can't handle {} here */
@@ -69,7 +69,7 @@ template<class T> class Vector4: public Vector<4, T> {
             {}
 
         /** @copydoc Vector::Vector(NoInitT) */
-        explicit Vector4(NoInitT)
+        explicit Vector4(NoInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             /* MSVC 2015 can't handle {} here */
@@ -78,7 +78,7 @@ template<class T> class Vector4: public Vector<4, T> {
             {}
 
         /** @copydoc Vector::Vector(T) */
-        constexpr explicit Vector4(T value): Vector<4, T>(value) {}
+        constexpr explicit Vector4(T value) noexcept: Vector<4, T>(value) {}
 
         /**
          * @brief Constructor
@@ -87,7 +87,7 @@ template<class T> class Vector4: public Vector<4, T> {
          *      \boldsymbol v = \begin{pmatrix} x \\ y \\ z \\ w \end{pmatrix}
          * @f]
          */
-        constexpr /*implicit*/ Vector4(T x, T y, T z, T w): Vector<4, T>(x, y, z, w) {}
+        constexpr /*implicit*/ Vector4(T x, T y, T z, T w) noexcept: Vector<4, T>(x, y, z, w) {}
 
         /**
          * @brief Constructor
@@ -96,16 +96,16 @@ template<class T> class Vector4: public Vector<4, T> {
          *      \boldsymbol v = \begin{pmatrix} v_x \\ v_y \\ v_z \\ w \end{pmatrix}
          * @f]
          */
-        constexpr /*implicit*/ Vector4(const Vector3<T>& xyz, T w): Vector<4, T>(xyz[0], xyz[1], xyz[2], w) {}
+        constexpr /*implicit*/ Vector4(const Vector3<T>& xyz, T w) noexcept: Vector<4, T>(xyz[0], xyz[1], xyz[2], w) {}
 
         /** @copydoc Vector::Vector(const Vector<size, U>&) */
-        template<class U> constexpr explicit Vector4(const Vector<4, U>& other): Vector<4, T>(other) {}
+        template<class U> constexpr explicit Vector4(const Vector<4, U>& other) noexcept: Vector<4, T>(other) {}
 
         /** @brief Construct vector from external representation */
         template<class U, class V = decltype(Implementation::VectorConverter<4, T, U>::from(std::declval<U>()))> constexpr explicit Vector4(const U& other): Vector<4, T>(Implementation::VectorConverter<4, T, U>::from(other)) {}
 
         /** @brief Copy constructor */
-        constexpr Vector4(const Vector<4, T>& other): Vector<4, T>(other) {}
+        constexpr /*implicit*/ Vector4(const Vector<4, T>& other) noexcept: Vector<4, T>(other) {}
 
         /**
          * @brief X component

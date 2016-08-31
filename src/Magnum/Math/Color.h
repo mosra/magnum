@@ -254,7 +254,7 @@ template<class T> class Color3: public Vector3<T> {
          *
          * All components are set to zero.
          */
-        constexpr /*implicit*/ Color3(ZeroInitT = ZeroInit)
+        constexpr /*implicit*/ Color3(ZeroInitT = ZeroInit) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             /* MSVC 2015 can't handle {} here */
@@ -263,7 +263,7 @@ template<class T> class Color3: public Vector3<T> {
             {}
 
         /** @copydoc Vector::Vector(NoInitT) */
-        explicit Color3(NoInitT)
+        explicit Color3(NoInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             /* MSVC 2015 can't handle {} here */
@@ -275,7 +275,7 @@ template<class T> class Color3: public Vector3<T> {
          * @brief Gray constructor
          * @param rgb   RGB value
          */
-        constexpr explicit Color3(T rgb): Vector3<T>(rgb) {}
+        constexpr explicit Color3(T rgb) noexcept: Vector3<T>(rgb) {}
 
         /**
          * @brief Constructor
@@ -283,7 +283,7 @@ template<class T> class Color3: public Vector3<T> {
          * @param g     G value
          * @param b     B value
          */
-        constexpr /*implicit*/ Color3(T r, T g, T b): Vector3<T>(r, g, b) {}
+        constexpr /*implicit*/ Color3(T r, T g, T b) noexcept: Vector3<T>(r, g, b) {}
 
         /**
          * @copydoc Vector::Vector(const Vector<size, U>&)
@@ -292,10 +292,10 @@ template<class T> class Color3: public Vector3<T> {
          *      @ref normalize() and @ref denormalize() instead.
          *      See class documentation for more information.
          */
-        template<class U> constexpr explicit Color3(const Vector<3, U>& other): Vector3<T>(other) {}
+        template<class U> constexpr explicit Color3(const Vector<3, U>& other) noexcept: Vector3<T>(other) {}
 
         /** @brief Copy constructor */
-        constexpr Color3(const Vector<3, T>& other): Vector3<T>(other) {}
+        constexpr /*implicit*/ Color3(const Vector<3, T>& other) noexcept: Vector3<T>(other) {}
 
         /**
          * @brief Convert to HSV
@@ -449,10 +449,10 @@ class Color4: public Vector4<T> {
          *
          * All components are set to zero.
          */
-        constexpr /*implicit*/ Color4(): Vector4<T>(T(0), T(0), T(0), T(0)) {}
+        constexpr /*implicit*/ Color4() noexcept: Vector4<T>(T(0), T(0), T(0), T(0)) {}
 
         /** @copydoc Vector::Vector(ZeroInitT) */
-        constexpr explicit Color4(ZeroInitT)
+        constexpr explicit Color4(ZeroInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             /* MSVC 2015 can't handle {} here */
@@ -461,7 +461,7 @@ class Color4: public Vector4<T> {
             {}
 
         /** @copydoc Vector::Vector(NoInitT) */
-        explicit Color4(NoInitT)
+        explicit Color4(NoInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             /* MSVC 2015 can't handle {} here */
@@ -474,7 +474,7 @@ class Color4: public Vector4<T> {
          * @param alpha Alpha value, defaults to `1.0` for floating-point types
          *      and maximum positive value for integral types.
          */
-        constexpr explicit Color4(T rgb, T alpha = Implementation::fullChannel<T>()): Vector4<T>(rgb, rgb, rgb, alpha) {}
+        constexpr explicit Color4(T rgb, T alpha = Implementation::fullChannel<T>()) noexcept: Vector4<T>(rgb, rgb, rgb, alpha) {}
 
         /**
          * @brief Constructor
@@ -484,7 +484,7 @@ class Color4: public Vector4<T> {
          * @param a     A value, defaults to `1.0` for floating-point types and
          *      maximum positive value for integral types.
          */
-        constexpr /*implicit*/ Color4(T r, T g, T b, T a = Implementation::fullChannel<T>()): Vector4<T>(r, g, b, a) {}
+        constexpr /*implicit*/ Color4(T r, T g, T b, T a = Implementation::fullChannel<T>()) noexcept: Vector4<T>(r, g, b, a) {}
 
         /**
          * @brief Constructor
@@ -493,7 +493,7 @@ class Color4: public Vector4<T> {
          */
         /* Not marked as explicit, because conversion from Color3 to Color4
            is fairly common, nearly always with A set to 1 */
-        constexpr /*implicit*/ Color4(const Vector3<T>& rgb, T a = Implementation::fullChannel<T>()): Vector4<T>(rgb[0], rgb[1], rgb[2], a) {}
+        constexpr /*implicit*/ Color4(const Vector3<T>& rgb, T a = Implementation::fullChannel<T>()) noexcept: Vector4<T>(rgb[0], rgb[1], rgb[2], a) {}
 
         /**
          * @copydoc Vector::Vector(const Vector<size, U>&)
@@ -502,10 +502,10 @@ class Color4: public Vector4<T> {
          *      @ref normalize() and @ref denormalize() instead.
          *      See @ref Color3 class documentation for more information.
          */
-        template<class U> constexpr explicit Color4(const Vector<4, U>& other): Vector4<T>(other) {}
+        template<class U> constexpr explicit Color4(const Vector<4, U>& other) noexcept: Vector4<T>(other) {}
 
         /** @brief Copy constructor */
-        constexpr Color4(const Vector<4, T>& other): Vector4<T>(other) {}
+        constexpr /*implicit*/ Color4(const Vector<4, T>& other) noexcept: Vector4<T>(other) {}
 
         /** @copydoc Color3::toHSV() */
         constexpr HSV toHSV() const {

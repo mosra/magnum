@@ -141,6 +141,8 @@ void DualComplexTest::construct() {
 
     constexpr DualComplex d(Complex(-1.0f, 2.5f));
     CORRADE_COMPARE(d, DualComplex({-1.0f, 2.5f}, {0.0f, 0.0f}));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<DualComplex, Complex, Complex>::value));
 }
 
 void DualComplexTest::constructIdentity() {
@@ -150,17 +152,24 @@ void DualComplexTest::constructIdentity() {
     CORRADE_COMPARE(b, DualComplex({1.0f, 0.0f}, {0.0f, 0.0f}));
     CORRADE_COMPARE(a.length(), 1.0f);
     CORRADE_COMPARE(b.length(), 1.0f);
+
+    CORRADE_VERIFY(std::is_nothrow_default_constructible<DualComplex>::value);
+    CORRADE_VERIFY((std::is_nothrow_constructible<DualComplex, IdentityInitT>::value));
 }
 
 void DualComplexTest::constructZero() {
     constexpr DualComplex a{ZeroInit};
     CORRADE_COMPARE(a, DualComplex({0.0f, 0.0f}, {0.0f, 0.0f}));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<DualComplex, ZeroInitT>::value));
 }
 
 void DualComplexTest::constructNoInit() {
     DualComplex a{{-1.0f, 2.5f}, {3.0f, -7.5f}};
     new(&a) DualComplex{NoInit};
     CORRADE_COMPARE(a, DualComplex({-1.0f, 2.5f}, {3.0f, -7.5f}));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<DualComplex, NoInitT>::value));
 }
 
 void DualComplexTest::constructFromVector() {
@@ -169,6 +178,8 @@ void DualComplexTest::constructFromVector() {
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Vector2, DualComplex>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<DualComplex, Vector2>::value));
 }
 
 void DualComplexTest::constructConversion() {
@@ -181,6 +192,8 @@ void DualComplexTest::constructConversion() {
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<DualComplex, DualComplexi>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<DualComplex, DualComplexi>::value));
 }
 
 void DualComplexTest::constructCopy() {
@@ -190,6 +203,9 @@ void DualComplexTest::constructCopy() {
     #endif
     DualComplex b(a);
     CORRADE_COMPARE(b, DualComplex({-1.0f, 2.5f}, {3.0f, -7.5f}));
+
+    CORRADE_VERIFY(std::is_nothrow_copy_constructible<DualComplex>::value);
+    CORRADE_VERIFY(std::is_nothrow_copy_assignable<DualComplex>::value);
 }
 
 void DualComplexTest::convert() {

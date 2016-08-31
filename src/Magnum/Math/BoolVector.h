@@ -80,10 +80,10 @@ template<std::size_t size> class BoolVector {
         };
 
         /** @brief Construct zero-filled boolean vector */
-        constexpr /*implicit*/ BoolVector(ZeroInitT = ZeroInit): _data{} {}
+        constexpr /*implicit*/ BoolVector(ZeroInitT = ZeroInit) noexcept: _data{} {}
 
         /** @brief Construct without initializing the contents */
-        explicit BoolVector(NoInitT) {}
+        explicit BoolVector(NoInitT) noexcept {}
 
         /**
          * @brief Construct boolean vector from segment values
@@ -91,20 +91,20 @@ template<std::size_t size> class BoolVector {
          * @param next  Values for next Bbit segments
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        template<class ...T> constexpr /*implicit*/ BoolVector(UnsignedByte first, T... next);
+        template<class ...T> constexpr /*implicit*/ BoolVector(UnsignedByte first, T... next) noexcept;
         #else
-        template<class ...T, class U = typename std::enable_if<sizeof...(T)+1 == DataSize, bool>::type> constexpr /*implicit*/ BoolVector(UnsignedByte first, T... next): _data{first, UnsignedByte(next)...} {}
+        template<class ...T, class U = typename std::enable_if<sizeof...(T)+1 == DataSize, bool>::type> constexpr /*implicit*/ BoolVector(UnsignedByte first, T... next) noexcept: _data{first, UnsignedByte(next)...} {}
         #endif
 
         /** @brief Construct boolean vector with one value for all fields */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        inline explicit BoolVector(T value);
+        explicit BoolVector(T value) noexcept;
         #else
-        template<class T, class U = typename std::enable_if<std::is_same<bool, T>::value && size != 1, bool>::type> constexpr explicit BoolVector(T value): BoolVector(typename Implementation::GenerateSequence<DataSize>::Type(), value ? FullSegmentMask : 0) {}
+        template<class T, class U = typename std::enable_if<std::is_same<bool, T>::value && size != 1, bool>::type> constexpr explicit BoolVector(T value) noexcept: BoolVector(typename Implementation::GenerateSequence<DataSize>::Type(), value ? FullSegmentMask : 0) {}
         #endif
 
         /** @brief Copy constructor */
-        constexpr BoolVector(const BoolVector<size>&) = default;
+        constexpr /*implicit*/ BoolVector(const BoolVector<size>&) noexcept = default;
 
         /**
          * @brief Raw data

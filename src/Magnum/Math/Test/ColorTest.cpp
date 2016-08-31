@@ -119,6 +119,9 @@ void ColorTest::construct() {
     constexpr Color4ub d = {10, 25, 176};
     CORRADE_COMPARE(c, Vector4(1.0f, 0.5f, 0.75f, 1.0f));
     CORRADE_COMPARE(d, Math::Vector4<UnsignedByte>(10, 25, 176, 255));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Color3, Float, Float, Float>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<Color4, Float, Float, Float, Float>::value));
 }
 
 void ColorTest::constructDefault() {
@@ -134,6 +137,11 @@ void ColorTest::constructDefault() {
 
     constexpr Color4ub c;
     CORRADE_COMPARE(c, Color4ub(0, 0, 0, 0));
+
+    CORRADE_VERIFY(std::is_nothrow_default_constructible<Color3>::value);
+    CORRADE_VERIFY(std::is_nothrow_default_constructible<Color4>::value);
+    CORRADE_VERIFY((std::is_nothrow_constructible<Color3, ZeroInitT>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<Color4, ZeroInitT>::value));
 }
 
 void ColorTest::constructNoInit() {
@@ -143,6 +151,9 @@ void ColorTest::constructNoInit() {
     new(&b) Color4{Math::NoInit};
     CORRADE_COMPARE(a, (Color3{1.0f, 0.5f, 0.75f}));
     CORRADE_COMPARE(b, (Color4{1.0f, 0.5f, 0.75f, 0.5f}));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Color3, NoInitT>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<Color4, NoInitT>::value));
 }
 
 void ColorTest::constructOneValue() {
@@ -161,6 +172,9 @@ void ColorTest::constructOneValue() {
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Float, Color3>::value));
     CORRADE_VERIFY(!(std::is_convertible<Float, Color4>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Color3, Float>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<Color4, Float, Float>::value));
 }
 
 void ColorTest::constructParts() {
@@ -175,6 +189,8 @@ void ColorTest::constructParts() {
     constexpr Color4ub e = c;
     CORRADE_COMPARE(d, Color4(1.0f, 0.5f, 0.75f, 1.0f));
     CORRADE_COMPARE(e, Color4ub(10, 25, 176, 255));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Color4, Color3, Float>::value));
 }
 
 void ColorTest::constructConversion() {
@@ -189,6 +205,9 @@ void ColorTest::constructConversion() {
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Color3, Color3ub>::value));
     CORRADE_VERIFY(!(std::is_convertible<Color4, Color4ub>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Color3ub, Color3>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<Color4, Color4ub>::value));
 }
 
 void ColorTest::constructNormalization() {
@@ -215,6 +234,11 @@ void ColorTest::constructCopy() {
     #endif
     Color4 d(c);
     CORRADE_COMPARE(d, Color4(1.0f, 0.5f, 0.75f, 0.25f));
+
+    CORRADE_VERIFY(std::is_nothrow_copy_constructible<Color3>::value);
+    CORRADE_VERIFY(std::is_nothrow_copy_constructible<Color4>::value);
+    CORRADE_VERIFY(std::is_nothrow_copy_assignable<Color3>::value);
+    CORRADE_VERIFY(std::is_nothrow_copy_assignable<Color4>::value);
 }
 
 void ColorTest::literals() {

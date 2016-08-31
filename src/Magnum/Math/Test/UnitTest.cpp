@@ -74,17 +74,23 @@ void UnitTest::construct() {
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Float, Sec>::value));
     CORRADE_VERIFY(!(std::is_convertible<Sec, Float>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Sec, Float>::value));
 }
 
 void UnitTest::constructDefault() {
     constexpr Sec b;
     CORRADE_COMPARE(b, Sec(0.0f));
+
+    CORRADE_VERIFY(std::is_nothrow_default_constructible<Sec>::value);
 }
 
 void UnitTest::constructNoInit() {
     Sec a{25.0f};
     new(&a) Sec{NoInit};
     CORRADE_COMPARE(a, Sec{25.0f});
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Sec, NoInitT>::value));
 }
 
 void UnitTest::constructConversion() {
@@ -94,6 +100,8 @@ void UnitTest::constructConversion() {
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Sec, Seci>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Sec, Seci>::value));
 }
 
 void UnitTest::compare() {

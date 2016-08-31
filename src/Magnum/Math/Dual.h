@@ -57,15 +57,15 @@ template<class T> class Dual {
          *
          * Both parts are default-constructed.
          */
-        constexpr /*implicit*/ Dual(): _real(), _dual() {}
+        constexpr /*implicit*/ Dual() noexcept: _real{}, _dual{} {}
 
         /** @brief Construct without initializing the contents */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        explicit Dual(NoInitT);
+        explicit Dual(NoInitT) noexcept;
         #else
         /* MSVC 2015 can't handle {} instead of ::value */
-        template<class U = T, class = typename std::enable_if<std::is_pod<U>::value>::type> Dual(NoInitT) {}
-        template<class U = T, class V = T, class = typename std::enable_if<std::is_constructible<U, NoInitT>::value>::type> Dual(NoInitT): _real{NoInit}, _dual{NoInit} {}
+        template<class U = T, class = typename std::enable_if<std::is_pod<U>::value>::type> explicit Dual(NoInitT) noexcept {}
+        template<class U = T, class V = T, class = typename std::enable_if<std::is_constructible<U, NoInitT>::value>::type> explicit Dual(NoInitT) noexcept: _real{NoInit}, _dual{NoInit} {}
         #endif
 
         /**
@@ -75,7 +75,7 @@ template<class T> class Dual {
          *      \hat a = a_0 + \epsilon a_\epsilon
          * @f]
          */
-        constexpr /*implicit*/ Dual(const T& real, const T& dual = T()): _real(real), _dual(dual) {}
+        constexpr /*implicit*/ Dual(const T& real, const T& dual = T()) noexcept: _real(real), _dual(dual) {}
 
         /**
          * @brief Construct dual number from another of different type
@@ -88,7 +88,10 @@ template<class T> class Dual {
          * // integral == {1, 2}
          * @endcode
          */
-        template<class U> constexpr explicit Dual(const Dual<U>& other): _real{T(other._real)}, _dual{T(other._dual)} {}
+        template<class U> constexpr explicit Dual(const Dual<U>& other) noexcept: _real{T(other._real)}, _dual{T(other._dual)} {}
+
+        /** @brief Copy constructor */
+        constexpr /*implicit*/ Dual(const Dual<T>&) noexcept = default;
 
         /** @brief Equality comparison */
         bool operator==(const Dual<T>& other) const {

@@ -255,7 +255,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * Creates identity matrix. @p value allows you to specify value on
          * diagonal.
          */
-        constexpr /*implicit*/ Matrix4(IdentityInitT = IdentityInit, T value = T{1})
+        constexpr /*implicit*/ Matrix4(IdentityInitT = IdentityInit, T value = T{1}) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             /* MSVC 2015 can't handle {} here */
@@ -264,7 +264,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
             {}
 
         /** @copydoc Matrix::Matrix(ZeroInitT) */
-        constexpr explicit Matrix4(ZeroInitT)
+        constexpr explicit Matrix4(ZeroInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             /* MSVC 2015 can't handle {} here */
@@ -273,7 +273,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
             {}
 
         /** @copydoc Matrix::Matrix(NoInitT) */
-        constexpr explicit Matrix4(NoInitT)
+        constexpr explicit Matrix4(NoInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             /* MSVC 2015 can't handle {} here */
@@ -282,16 +282,16 @@ template<class T> class Matrix4: public Matrix4x4<T> {
             {}
 
         /** @brief Matrix from column vectors */
-        constexpr /*implicit*/ Matrix4(const Vector4<T>& first, const Vector4<T>& second, const Vector4<T>& third, const Vector4<T>& fourth): Matrix4x4<T>(first, second, third, fourth) {}
+        constexpr /*implicit*/ Matrix4(const Vector4<T>& first, const Vector4<T>& second, const Vector4<T>& third, const Vector4<T>& fourth) noexcept: Matrix4x4<T>(first, second, third, fourth) {}
 
         /** @copydoc Matrix::Matrix(const RectangularMatrix<size, size, U>&) */
-        template<class U> constexpr explicit Matrix4(const RectangularMatrix<4, 4, U>& other): Matrix4x4<T>(other) {}
+        template<class U> constexpr explicit Matrix4(const RectangularMatrix<4, 4, U>& other) noexcept: Matrix4x4<T>(other) {}
 
         /** @brief Construct matrix from external representation */
         template<class U, class V = decltype(Implementation::RectangularMatrixConverter<4, 4, T, U>::from(std::declval<U>()))> constexpr explicit Matrix4(const U& other): Matrix4x4<T>(Implementation::RectangularMatrixConverter<4, 4, T, U>::from(other)) {}
 
         /** @brief Copy constructor */
-        constexpr Matrix4(const RectangularMatrix<4, 4, T>& other): Matrix4x4<T>(other) {}
+        constexpr /*implicit*/ Matrix4(const RectangularMatrix<4, 4, T>& other) noexcept: Matrix4x4<T>(other) {}
 
         /**
          * @brief Check whether the matrix represents rigid transformation

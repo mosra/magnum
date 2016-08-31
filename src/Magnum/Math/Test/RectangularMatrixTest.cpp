@@ -150,6 +150,8 @@ void RectangularMatrixTest::construct() {
     CORRADE_COMPARE(a, Matrix3x4(Vector4(1.0f,  2.0f,  3.0f,  4.0f),
                                  Vector4(5.0f,  6.0f,  7.0f,  8.0f),
                                  Vector4(9.0f, 10.0f, 11.0f, 12.0f)));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix3x4, Vector4, Vector4, Vector4>::value));
 }
 
 void RectangularMatrixTest::constructDefault() {
@@ -163,6 +165,9 @@ void RectangularMatrixTest::constructDefault() {
                                  Vector3(0.0f, 0.0f, 0.0f),
                                  Vector3(0.0f, 0.0f, 0.0f),
                                  Vector3(0.0f, 0.0f, 0.0f)));
+
+    CORRADE_VERIFY(std::is_nothrow_default_constructible<Matrix4x3>::value);
+    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix4x3, ZeroInitT>::value));
 }
 
 void RectangularMatrixTest::constructNoInit() {
@@ -173,6 +178,8 @@ void RectangularMatrixTest::constructNoInit() {
     CORRADE_COMPARE(a, Matrix3x4(Vector4(1.0f,  2.0f,  3.0f,  4.0f),
                                  Vector4(5.0f,  6.0f,  7.0f,  8.0f),
                                  Vector4(9.0f, 10.0f, 11.0f, 12.0f)));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix3x4, NoInitT>::value));
 }
 
 void RectangularMatrixTest::constructConversion() {
@@ -185,6 +192,8 @@ void RectangularMatrixTest::constructConversion() {
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Matrix2x2, Matrix2x2i>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix2x2, Matrix2x2i>::value));
 }
 
 void RectangularMatrixTest::constructFromData() {
@@ -226,6 +235,9 @@ void RectangularMatrixTest::constructCopy() {
     CORRADE_COMPARE(b, Matrix3x4(Vector4(1.0f,  2.0f,  3.0f,  4.0f),
                                  Vector4(5.0f,  6.0f,  7.0f,  8.0f),
                                  Vector4(9.0f, 10.0f, 11.0f, 12.0f)));
+
+    CORRADE_VERIFY(std::is_nothrow_copy_constructible<Matrix3x4>::value);
+    CORRADE_VERIFY(std::is_nothrow_copy_assignable<Matrix3x4>::value);
 }
 
 void RectangularMatrixTest::convert() {

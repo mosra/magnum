@@ -159,7 +159,7 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          * Creates identity matrix. @p value allows you to specify value on
          * diagonal.
          */
-        constexpr /*implicit*/ Matrix3(IdentityInitT = IdentityInit, T value = T{1})
+        constexpr /*implicit*/ Matrix3(IdentityInitT = IdentityInit, T value = T{1}) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             /* MSVC 2015 can't handle {} here */
@@ -168,7 +168,7 @@ template<class T> class Matrix3: public Matrix3x3<T> {
             {}
 
         /** @copydoc Matrix::Matrix(ZeroInitT) */
-        constexpr explicit Matrix3(ZeroInitT)
+        constexpr explicit Matrix3(ZeroInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             /* MSVC 2015 can't handle {} here */
@@ -177,7 +177,7 @@ template<class T> class Matrix3: public Matrix3x3<T> {
             {}
 
         /** @copydoc Matrix::Matrix(NoInitT) */
-        constexpr explicit Matrix3(NoInitT)
+        constexpr explicit Matrix3(NoInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             /* MSVC 2015 can't handle {} here */
@@ -186,16 +186,16 @@ template<class T> class Matrix3: public Matrix3x3<T> {
             {}
 
         /** @brief Matrix from column vectors */
-        constexpr /*implicit*/ Matrix3(const Vector3<T>& first, const Vector3<T>& second, const Vector3<T>& third): Matrix3x3<T>(first, second, third) {}
+        constexpr /*implicit*/ Matrix3(const Vector3<T>& first, const Vector3<T>& second, const Vector3<T>& third) noexcept: Matrix3x3<T>(first, second, third) {}
 
         /** @copydoc Matrix::Matrix(const RectangularMatrix<size, size, U>&) */
-        template<class U> constexpr explicit Matrix3(const RectangularMatrix<3, 3, U>& other): Matrix3x3<T>(other) {}
+        template<class U> constexpr explicit Matrix3(const RectangularMatrix<3, 3, U>& other) noexcept: Matrix3x3<T>(other) {}
 
         /** @brief Construct matrix from external representation */
-        template<class U, class V = decltype(Implementation::RectangularMatrixConverter<3, 3, T, U>::from(std::declval<U>()))> constexpr explicit Matrix3(const U& other): Matrix3x3<T>(Implementation::RectangularMatrixConverter<3, 3, T, U>::from(other)) {}
+        template<class U, class V = decltype(Implementation::RectangularMatrixConverter<3, 3, T, U>::from(std::declval<U>()))> constexpr explicit Matrix3(const U& other) noexcept: Matrix3x3<T>(Implementation::RectangularMatrixConverter<3, 3, T, U>::from(other)) {}
 
         /** @brief Copy constructor */
-        constexpr Matrix3(const RectangularMatrix<3, 3, T>& other): Matrix3x3<T>(other) {}
+        constexpr /*implicit*/ Matrix3(const RectangularMatrix<3, 3, T>& other) noexcept: Matrix3x3<T>(other) {}
 
         /**
          * @brief Check whether the matrix represents rigid transformation

@@ -112,7 +112,7 @@ template<class T> class Vector2: public Vector<2, T> {
         #endif
 
         /** @copydoc Vector::Vector(ZeroInitT) */
-        constexpr /*implicit*/ Vector2(ZeroInitT = ZeroInit)
+        constexpr /*implicit*/ Vector2(ZeroInitT = ZeroInit) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             /* MSVC 2015 can't handle {} here */
@@ -121,7 +121,7 @@ template<class T> class Vector2: public Vector<2, T> {
             {}
 
         /** @copydoc Vector::Vector(NoInitT) */
-        explicit Vector2(NoInitT)
+        explicit Vector2(NoInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             /* MSVC 2015 can't handle {} here */
@@ -130,7 +130,7 @@ template<class T> class Vector2: public Vector<2, T> {
             {}
 
         /** @copydoc Vector::Vector(T) */
-        constexpr explicit Vector2(T value): Vector<2, T>(value) {}
+        constexpr explicit Vector2(T value) noexcept: Vector<2, T>(value) {}
 
         /**
          * @brief Constructor
@@ -139,10 +139,10 @@ template<class T> class Vector2: public Vector<2, T> {
          *      \boldsymbol v = \begin{pmatrix} x \\ y \end{pmatrix}
          * @f]
          */
-        constexpr /*implicit*/ Vector2(T x, T y): Vector<2, T>(x, y) {}
+        constexpr /*implicit*/ Vector2(T x, T y) noexcept: Vector<2, T>(x, y) {}
 
         /** @copydoc Vector::Vector(const Vector<size, U>&) */
-        template<class U> constexpr explicit Vector2(const Vector<2, U>& other): Vector<2, T>(other) {}
+        template<class U> constexpr explicit Vector2(const Vector<2, U>& other) noexcept: Vector<2, T>(other) {}
 
         /** @brief Construct vector from external representation */
         template<class U, class V =
@@ -155,7 +155,7 @@ template<class T> class Vector2: public Vector<2, T> {
         constexpr explicit Vector2(const U& other): Vector<2, T>(Implementation::VectorConverter<2, T, U>::from(other)) {}
 
         /** @brief Copy constructor */
-        constexpr Vector2(const Vector<2, T>& other): Vector<2, T>(other) {}
+        constexpr /*implicit*/ Vector2(const Vector<2, T>& other) noexcept: Vector<2, T>(other) {}
 
         T& x() { return (*this)[0]; }                   /**< @brief X component */
         constexpr T x() const { return (*this)[0]; }    /**< @overload */

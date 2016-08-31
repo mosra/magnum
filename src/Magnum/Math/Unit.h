@@ -47,16 +47,19 @@ template<template<class> class Derived, class T> class Unit {
         typedef T Type;             /**< @brief Underlying data type */
 
         /** @brief Construct zero value */
-        constexpr /*implicit*/ Unit(ZeroInitT = ZeroInit): _value(T(0)) {}
+        constexpr /*implicit*/ Unit(ZeroInitT = ZeroInit) noexcept: _value(T(0)) {}
 
         /** @brief Construct without initializing the contents */
-        explicit Unit(NoInitT) {}
+        explicit Unit(NoInitT) noexcept {}
 
         /** @brief Explicit conversion from unitless type */
-        constexpr explicit Unit(T value): _value(value) {}
+        constexpr explicit Unit(T value) noexcept: _value(value) {}
 
         /** @brief Construct from another underlying type */
-        template<class U> constexpr explicit Unit(Unit<Derived, U> value): _value(T(value._value)) {}
+        template<class U> constexpr explicit Unit(Unit<Derived, U> value) noexcept: _value(T(value._value)) {}
+
+        /** @brief Copy constructor */
+        constexpr /*implicit*/ Unit(const Unit<Derived, T>& other) noexcept = default;
 
         /** @brief Explicit conversion to underlying type */
         constexpr explicit operator T() const { return _value; }

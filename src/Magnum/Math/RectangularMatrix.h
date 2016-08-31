@@ -103,12 +103,12 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          *
          * @see @ref diagonal()
          */
-        constexpr static RectangularMatrix<cols, rows, T> fromDiagonal(const Vector<DiagonalSize, T>& diagonal) {
+        constexpr static RectangularMatrix<cols, rows, T> fromDiagonal(const Vector<DiagonalSize, T>& diagonal) noexcept {
             return RectangularMatrix(typename Implementation::GenerateSequence<cols>::Type(), diagonal);
         }
 
         /** @brief Construct zero-filled matrix */
-        constexpr /*implicit*/ RectangularMatrix(ZeroInitT = ZeroInit)
+        constexpr /*implicit*/ RectangularMatrix(ZeroInitT = ZeroInit) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             /* MSVC 2015 can't handle {} here */
@@ -117,7 +117,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
             {}
 
         /** @brief Construct matrix without initializing the contents */
-        explicit RectangularMatrix(NoInitT)
+        explicit RectangularMatrix(NoInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             /* MSVC 2015 can't handle {} here */
@@ -132,7 +132,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          *
          * @todo Creating matrix from arbitrary combination of matrices with n rows
          */
-        template<class ...U> constexpr /*implicit*/ RectangularMatrix(const Vector<rows, T>& first, const U&... next): _data{first, next...} {
+        template<class ...U> constexpr /*implicit*/ RectangularMatrix(const Vector<rows, T>& first, const U&... next) noexcept: _data{first, next...} {
             static_assert(sizeof...(next)+1 == cols, "Improper number of arguments passed to RectangularMatrix constructor");
         }
 
@@ -147,13 +147,13 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * // integral == {1, 2, -15, 7}
          * @endcode
          */
-        template<class U> constexpr explicit RectangularMatrix(const RectangularMatrix<cols, rows, U>& other): RectangularMatrix(typename Implementation::GenerateSequence<cols>::Type(), other) {}
+        template<class U> constexpr explicit RectangularMatrix(const RectangularMatrix<cols, rows, U>& other) noexcept: RectangularMatrix(typename Implementation::GenerateSequence<cols>::Type(), other) {}
 
         /** @brief Construct matrix from external representation */
         template<class U, class V = decltype(Implementation::RectangularMatrixConverter<cols, rows, T, U>::from(std::declval<U>()))> constexpr explicit RectangularMatrix(const U& other): RectangularMatrix(Implementation::RectangularMatrixConverter<cols, rows, T, U>::from(other)) {}
 
         /** @brief Copy constructor */
-        constexpr RectangularMatrix(const RectangularMatrix<cols, rows, T>&) = default;
+        constexpr /*implicit*/ RectangularMatrix(const RectangularMatrix<cols, rows, T>&) noexcept = default;
 
         /** @brief Convert matrix to external representation */
         template<class U, class V = decltype(Implementation::RectangularMatrixConverter<cols, rows, T, U>::to(std::declval<RectangularMatrix<cols, rows, T>>()))> constexpr explicit operator U() const {
@@ -393,11 +393,11 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
 
     private:
         /* Implementation for RectangularMatrix<cols, rows, T>::RectangularMatrix(const RectangularMatrix<cols, rows, U>&) */
-        template<class U, std::size_t ...sequence> constexpr explicit RectangularMatrix(Implementation::Sequence<sequence...>, const RectangularMatrix<cols, rows, U>& matrix): _data{Vector<rows, T>(matrix[sequence])...} {}
+        template<class U, std::size_t ...sequence> constexpr explicit RectangularMatrix(Implementation::Sequence<sequence...>, const RectangularMatrix<cols, rows, U>& matrix) noexcept: _data{Vector<rows, T>(matrix[sequence])...} {}
 
         /* Implementation for RectangularMatrix<cols, rows, T>::RectangularMatrix(ZeroInitT) and RectangularMatrix<cols, rows, T>::RectangularMatrix(NoInitT) */
         /* MSVC 2015 can't handle {} here */
-        template<class U, std::size_t ...sequence> constexpr explicit RectangularMatrix(Implementation::Sequence<sequence...>, U): _data{Vector<rows, T>((static_cast<void>(sequence), U{typename U::Init{}}))...} {}
+        template<class U, std::size_t ...sequence> constexpr explicit RectangularMatrix(Implementation::Sequence<sequence...>, U) noexcept: _data{Vector<rows, T>((static_cast<void>(sequence), U{typename U::Init{}}))...} {}
 
         template<std::size_t ...sequence> constexpr RectangularMatrix<cols, rows, T> flippedColsInternal(Implementation::Sequence<sequence...>) const {
             return {(*this)[sequence]...};

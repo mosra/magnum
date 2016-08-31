@@ -163,7 +163,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          *      \hat q = [\boldsymbol 0, 1] + \epsilon [\boldsymbol 0, 0]
          * @f]
          */
-        constexpr /*implicit*/ DualQuaternion(IdentityInitT = IdentityInit)
+        constexpr /*implicit*/ DualQuaternion(IdentityInitT = IdentityInit) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             : Dual<Quaternion<T>>({}, {{}, T(0)})
@@ -171,7 +171,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
             {}
 
         /** @brief Construct zero-initialized dual quaternion */
-        constexpr explicit DualQuaternion(ZeroInitT)
+        constexpr explicit DualQuaternion(ZeroInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             /* MSVC 2015 can't handle {} here */
@@ -180,7 +180,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
             {}
 
         /** @brief Construct without initializing the contents */
-        explicit DualQuaternion(NoInitT)
+        explicit DualQuaternion(NoInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             /* MSVC 2015 can't handle {} here */
@@ -195,7 +195,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          *      \hat q = q_0 + \epsilon q_\epsilon
          * @f]
          */
-        constexpr /*implicit*/ DualQuaternion(const Quaternion<T>& real, const Quaternion<T>& dual = Quaternion<T>({}, T(0))): Dual<Quaternion<T>>(real, dual) {}
+        constexpr /*implicit*/ DualQuaternion(const Quaternion<T>& real, const Quaternion<T>& dual = Quaternion<T>({}, T(0))) noexcept: Dual<Quaternion<T>>(real, dual) {}
 
         /**
          * @brief Construct dual quaternion from dual vector and scalar parts
@@ -204,7 +204,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          *      \hat q = [\hat{\boldsymbol v}, \hat s] = [\boldsymbol v_0, s_0] + \epsilon [\boldsymbol v_\epsilon, s_\epsilon]
          * @f]
          */
-        constexpr /*implicit*/ DualQuaternion(const Dual<Vector3<T>>& vector, const Dual<T>& scalar)
+        constexpr /*implicit*/ DualQuaternion(const Dual<Vector3<T>>& vector, const Dual<T>& scalar) noexcept
             #ifndef DOXYGEN_GENERATING_OUTPUT
             /* MSVC 2015 can't handle {} here */
             : Dual<Quaternion<T>>({vector.real(), scalar.real()}, {vector.dual(), scalar.dual()})
@@ -220,9 +220,9 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @see @ref transformPointNormalized()
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        constexpr explicit DualQuaternion(const Vector3<T>& vector);
+        constexpr explicit DualQuaternion(const Vector3<T>& vector) noexcept;
         #else
-        constexpr explicit DualQuaternion(const Vector3<T>& vector): Dual<Quaternion<T>>({}, {vector, T(0)}) {}
+        constexpr explicit DualQuaternion(const Vector3<T>& vector) noexcept: Dual<Quaternion<T>>({}, {vector, T(0)}) {}
         #endif
 
         /**
@@ -231,13 +231,13 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * Performs only default casting on the values, no rounding or anything
          * else.
          */
-        template<class U> constexpr explicit DualQuaternion(const DualQuaternion<U>& other): Dual<Quaternion<T>>(other) {}
+        template<class U> constexpr explicit DualQuaternion(const DualQuaternion<U>& other) noexcept: Dual<Quaternion<T>>(other) {}
 
         /** @brief Construct dual quaternion from external representation */
         template<class U, class V = decltype(Implementation::DualQuaternionConverter<T, U>::from(std::declval<U>()))> constexpr explicit DualQuaternion(const U& other): DualQuaternion{Implementation::DualQuaternionConverter<T, U>::from(other)} {}
 
         /** @brief Copy constructor */
-        constexpr DualQuaternion(const Dual<Quaternion<T>>& other): Dual<Quaternion<T>>(other) {}
+        constexpr /*implicit*/ DualQuaternion(const Dual<Quaternion<T>>& other) noexcept: Dual<Quaternion<T>>(other) {}
 
         /** @brief Convert dual quaternion to external representation */
         template<class U, class V = decltype(Implementation::DualQuaternionConverter<T, U>::to(std::declval<DualQuaternion<T>>()))> constexpr explicit operator U() const {

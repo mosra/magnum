@@ -148,6 +148,8 @@ void QuaternionTest::construct() {
     constexpr Float c = a.scalar();
     CORRADE_COMPARE(b, Vector3(1.0f, 2.0f, 3.0f));
     CORRADE_COMPARE(c, -4.0f);
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Quaternion, Vector3, Float>::value));
 }
 
 void QuaternionTest::constructIdentity() {
@@ -157,17 +159,24 @@ void QuaternionTest::constructIdentity() {
     CORRADE_COMPARE(b, Quaternion({0.0f, 0.0f, 0.0f}, 1.0f));
     CORRADE_COMPARE(a.length(), 1.0f);
     CORRADE_COMPARE(b.length(), 1.0f);
+
+    CORRADE_VERIFY(std::is_nothrow_default_constructible<Quaternion>::value);
+    CORRADE_VERIFY((std::is_nothrow_constructible<Quaternion, IdentityInitT>::value));
 }
 
 void QuaternionTest::constructZero() {
     constexpr Quaternion a{ZeroInit};
     CORRADE_COMPARE(a, Quaternion({0.0f, 0.0f, 0.0f}, 0.0f));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Quaternion, ZeroInitT>::value));
 }
 
 void QuaternionTest::constructNoInit() {
     Quaternion a{{1.0f, 2.0f, 3.0f}, -4.0f};
     new(&a) Quaternion{NoInit};
     CORRADE_COMPARE(a, Quaternion({1.0f, 2.0f, 3.0f}, -4.0f));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Quaternion, NoInitT>::value));
 }
 
 void QuaternionTest::constructFromVector() {
@@ -176,6 +185,8 @@ void QuaternionTest::constructFromVector() {
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Vector3, Quaternion>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Quaternion, Vector3>::value));
 }
 
 void QuaternionTest::constructConversion() {
@@ -188,12 +199,17 @@ void QuaternionTest::constructConversion() {
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Quaternion, Quaternioni>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Quaternion, Quaternioni>::value));
 }
 
 void QuaternionTest::constructCopy() {
     constexpr Quaternion a({1.0f, -3.0f, 7.0f}, 2.5f);
     constexpr Quaternion b(a);
     CORRADE_COMPARE(b, Quaternion({1.0f, -3.0f, 7.0f}, 2.5f));
+
+    CORRADE_VERIFY(std::is_nothrow_copy_constructible<Quaternion>::value);
+    CORRADE_VERIFY(std::is_nothrow_copy_assignable<Quaternion>::value);
 }
 
 void QuaternionTest::convert() {

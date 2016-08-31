@@ -107,6 +107,7 @@ typedef Math::Matrix4<Float> Matrix4;
 typedef Math::Matrix4<Int> Matrix4i;
 typedef Math::Matrix<3, Float> Matrix3x3;
 typedef Math::Vector3<Float> Vector3;
+typedef Math::Vector4<Float> Vector4;
 typedef Math::Constants<Float> Constants;
 
 Matrix4Test::Matrix4Test() {
@@ -159,6 +160,8 @@ void Matrix4Test::construct() {
                                {4.5f,  4.0f, 7.0f,  2.0f},
                                {1.0f,  2.0f, 3.0f, -1.0f},
                                {7.9f, -1.0f, 8.0f, -1.5f}));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix4, Vector4, Vector4, Vector4, Vector4>::value));
 }
 
 void Matrix4Test::constructIdentity() {
@@ -179,6 +182,9 @@ void Matrix4Test::constructIdentity() {
     CORRADE_COMPARE(identity, identityExpected);
     CORRADE_COMPARE(identity2, identityExpected);
     CORRADE_COMPARE(identity3, identity3Expected);
+
+    CORRADE_VERIFY(std::is_nothrow_default_constructible<Matrix4>::value);
+    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix4, IdentityInitT>::value));
 }
 
 void Matrix4Test::constructZero() {
@@ -187,6 +193,8 @@ void Matrix4Test::constructZero() {
                                {0.0f, 0.0f, 0.0f, 0.0f},
                                {0.0f, 0.0f, 0.0f, 0.0f},
                                {0.0f, 0.0f, 0.0f, 0.0f}));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix4, ZeroInitT>::value));
 }
 
 void Matrix4Test::constructNoInit() {
@@ -199,6 +207,8 @@ void Matrix4Test::constructNoInit() {
                                {4.5f,  4.0f, 7.0f,  2.0f},
                                {1.0f,  2.0f, 3.0f, -1.0f},
                                {7.9f, -1.0f, 8.0f, -1.5f}));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix4, NoInitT>::value));
 }
 
 void Matrix4Test::constructConversion() {
@@ -214,6 +224,8 @@ void Matrix4Test::constructConversion() {
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Matrix4, Matrix4i>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix4, Matrix4i>::value));
 }
 
 void Matrix4Test::constructCopy() {
@@ -229,6 +241,9 @@ void Matrix4Test::constructCopy() {
                                {4.5f,  4.0f, 7.0f,  2.0f},
                                {1.0f,  2.0f, 3.0f, -1.0f},
                                {7.9f, -1.0f, 8.0f, -1.5f}));
+
+    CORRADE_VERIFY(std::is_nothrow_copy_constructible<Matrix4>::value);
+    CORRADE_VERIFY(std::is_nothrow_copy_assignable<Matrix4>::value);
 }
 
 void Matrix4Test::convert() {

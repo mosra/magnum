@@ -173,10 +173,10 @@ template<std::size_t size, class T> class Vector {
          *      \boldsymbol v = \boldsymbol 0
          * @f]
          */
-        constexpr /*implicit*/ Vector(ZeroInitT = ZeroInit): _data{} {}
+        constexpr /*implicit*/ Vector(ZeroInitT = ZeroInit) noexcept: _data{} {}
 
         /** @brief Construct vector without initializing the contents */
-        explicit Vector(NoInitT) {}
+        explicit Vector(NoInitT) noexcept {}
 
         /** @todo Creating Vector from combination of vector and scalar types */
 
@@ -186,16 +186,16 @@ template<std::size_t size, class T> class Vector {
          * @param next  Next values
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        template<class ...U> constexpr /*implicit*/ Vector(T first, U... next);
+        template<class ...U> constexpr /*implicit*/ Vector(T first, U... next) noexcept;
         #else
-        template<class ...U, class V = typename std::enable_if<sizeof...(U)+1 == size, T>::type> constexpr /*implicit*/ Vector(T first, U... next): _data{first, next...} {}
+        template<class ...U, class V = typename std::enable_if<sizeof...(U)+1 == size, T>::type> constexpr /*implicit*/ Vector(T first, U... next) noexcept: _data{first, next...} {}
         #endif
 
         /** @brief Construct vector with one value for all fields */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        constexpr explicit Vector(T value);
+        constexpr explicit Vector(T value) noexcept;
         #else
-        template<class U, class V = typename std::enable_if<std::is_same<T, U>::value && size != 1, T>::type> constexpr explicit Vector(U value): Vector(typename Implementation::GenerateSequence<size>::Type(), value) {}
+        template<class U, class V = typename std::enable_if<std::is_same<T, U>::value && size != 1, T>::type> constexpr explicit Vector(U value) noexcept: Vector(typename Implementation::GenerateSequence<size>::Type(), value) {}
         #endif
 
         /**
@@ -209,13 +209,13 @@ template<std::size_t size, class T> class Vector {
          * // integral == {1, 2, -15, 7}
          * @endcode
          */
-        template<class U> constexpr explicit Vector(const Vector<size, U>& other): Vector(typename Implementation::GenerateSequence<size>::Type(), other) {}
+        template<class U> constexpr explicit Vector(const Vector<size, U>& other) noexcept: Vector(typename Implementation::GenerateSequence<size>::Type(), other) {}
 
         /** @brief Construct vector from external representation */
-        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::from(std::declval<U>()))> constexpr explicit Vector(const U& other): Vector(Implementation::VectorConverter<size, T, U>::from(other)) {}
+        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::from(std::declval<U>()))> constexpr explicit Vector(const U& other) noexcept: Vector(Implementation::VectorConverter<size, T, U>::from(other)) {}
 
         /** @brief Copy constructor */
-        constexpr Vector(const Vector<size, T>&) = default;
+        constexpr /*implicit*/ Vector(const Vector<size, T>&) noexcept = default;
 
         /** @brief Convert vector to external representation */
         template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::to(std::declval<Vector<size, T>>()))> constexpr explicit operator U() const {
@@ -574,10 +574,10 @@ template<std::size_t size, class T> class Vector {
 
     private:
         /* Implementation for Vector<size, T>::Vector(const Vector<size, U>&) */
-        template<class U, std::size_t ...sequence> constexpr explicit Vector(Implementation::Sequence<sequence...>, const Vector<size, U>& vector): _data{T(vector._data[sequence])...} {}
+        template<class U, std::size_t ...sequence> constexpr explicit Vector(Implementation::Sequence<sequence...>, const Vector<size, U>& vector) noexcept: _data{T(vector._data[sequence])...} {}
 
         /* Implementation for Vector<size, T>::Vector(U) */
-        template<std::size_t ...sequence> constexpr explicit Vector(Implementation::Sequence<sequence...>, T value): _data{Implementation::repeat(value, sequence)...} {}
+        template<std::size_t ...sequence> constexpr explicit Vector(Implementation::Sequence<sequence...>, T value) noexcept: _data{Implementation::repeat(value, sequence)...} {}
 
         template<std::size_t otherSize, std::size_t ...sequence> constexpr static Vector<size, T> padInternal(Implementation::Sequence<sequence...>, const Vector<otherSize, T>& a, T value) {
             return {sequence < otherSize ? a[sequence] : value...};

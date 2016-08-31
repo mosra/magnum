@@ -141,6 +141,8 @@ void ComplexTest::construct() {
     constexpr Float c = a.imaginary();
     CORRADE_COMPARE(b, 0.5f);
     CORRADE_COMPARE(c, -3.7f);
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Complex, Float, Float>::value));
 }
 
 void ComplexTest::constructIdentity() {
@@ -150,17 +152,24 @@ void ComplexTest::constructIdentity() {
     CORRADE_COMPARE(b, Complex(1.0f, 0.0f));
     CORRADE_COMPARE(a.length(), 1.0f);
     CORRADE_COMPARE(b.length(), 1.0f);
+
+    CORRADE_VERIFY(std::is_nothrow_default_constructible<Complex>::value);
+    CORRADE_VERIFY((std::is_nothrow_constructible<Complex, IdentityInitT>::value));
 }
 
 void ComplexTest::constructZero() {
     constexpr Complex a{ZeroInit};
     CORRADE_COMPARE(a, Complex(0.0f, 0.0f));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Complex, ZeroInitT>::value));
 }
 
 void ComplexTest::constructNoInit() {
     Complex a{0.5f, -3.7f};
     new(&a) Complex{NoInit};
     CORRADE_COMPARE(a, Complex(0.5f, -3.7f));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Complex, NoInitT>::value));
 }
 
 void ComplexTest::constructFromVector() {
@@ -175,6 +184,8 @@ void ComplexTest::constructFromVector() {
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Vector2, Complex>::value));
     CORRADE_VERIFY(!(std::is_convertible<Complex, Vector2>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Complex, Vector2>::value));
 }
 
 void ComplexTest::constructConversion() {
@@ -187,12 +198,17 @@ void ComplexTest::constructConversion() {
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Complex, Complexi>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Complex, Complexi>::value));
 }
 
 void ComplexTest::constructCopy() {
     constexpr Complex a(2.5f, -5.0f);
     constexpr Complex b(a);
     CORRADE_COMPARE(b, Complex(2.5f, -5.0f));
+
+    CORRADE_VERIFY(std::is_nothrow_copy_constructible<Complex>::value);
+    CORRADE_VERIFY(std::is_nothrow_copy_assignable<Complex>::value);
 }
 
 void ComplexTest::convert() {
