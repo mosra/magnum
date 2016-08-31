@@ -136,6 +136,9 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          */
         constexpr /*implicit*/ DualComplex(const Complex<T>& real, const Complex<T>& dual = Complex<T>(T(0), T(0))) noexcept: Dual<Complex<T>>(real, dual) {}
 
+        /* No constructor from a pair of Dual values because that would be
+           ambiguous with the above */
+
         /**
          * @brief Construct dual complex number from vector
          *
