@@ -88,6 +88,14 @@ template<class T> struct TypeTraits: Implementation::TypeTraitsDefault<T> {
     typedef U FloatingPointType;
 
     /**
+     * @brief Type name
+     *
+     * Returns a string representation of type name, such as `"UnsignedInt"`
+     * for @ref UnsignedInt.
+     */
+    constexpr static const char* name();
+
+    /**
      * @brief Epsilon value for fuzzy compare
      *
      * Returns minimal difference between numbers to be considered
@@ -108,7 +116,26 @@ template<class T> struct TypeTraits: Implementation::TypeTraitsDefault<T> {
 
 /* Integral scalar types */
 namespace Implementation {
-    template<class T> struct TypeTraitsIntegral: TypeTraitsDefault<T> {
+    template<class> struct TypeTraitsName;
+    #define _c(type) template<> struct TypeTraitsName<type> { \
+        constexpr static const char* name() { return #type; } \
+    };
+    _c(UnsignedByte)
+    _c(Byte)
+    _c(UnsignedShort)
+    _c(Short)
+    _c(UnsignedInt)
+    _c(Int)
+    #ifndef MAGNUM_TARGET_WEBGL
+    _c(UnsignedLong)
+    _c(Long)
+    #endif
+    _c(Float)
+    _c(Double)
+    _c(long double)
+    #undef _c
+
+    template<class T> struct TypeTraitsIntegral: TypeTraitsDefault<T>, TypeTraitsName<T> {
         constexpr static T epsilon() { return T(1); }
     };
 }
@@ -144,7 +171,7 @@ template<> struct TypeTraits<Long>: Implementation::TypeTraitsIntegral<Long> {
 /* Floating-point scalar types */
 namespace Implementation {
 
-template<class T> struct TypeTraitsFloatingPoint {
+template<class T> struct TypeTraitsFloatingPoint: TypeTraitsName<T> {
     TypeTraitsFloatingPoint() = delete;
 
     static bool equals(T a, T b);

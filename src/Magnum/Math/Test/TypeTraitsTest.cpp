@@ -33,6 +33,8 @@ namespace Magnum { namespace Math { namespace Test {
 struct TypeTraitsTest: Corrade::TestSuite::Tester {
     explicit TypeTraitsTest();
 
+    void name();
+
     template<class T> void equalsIntegral();
     template<class T> void equalsFloatingPoint0();
     template<class T> void equalsFloatingPoint1();
@@ -42,53 +44,74 @@ struct TypeTraitsTest: Corrade::TestSuite::Tester {
 };
 
 TypeTraitsTest::TypeTraitsTest() {
-    addTests<TypeTraitsTest>({&TypeTraitsTest::equalsIntegral<UnsignedByte>,
-              &TypeTraitsTest::equalsIntegral<Byte>,
-              &TypeTraitsTest::equalsIntegral<UnsignedShort>,
-              &TypeTraitsTest::equalsIntegral<Short>,
-              &TypeTraitsTest::equalsIntegral<UnsignedInt>,
-              &TypeTraitsTest::equalsIntegral<Int>,
-              #ifndef CORRADE_TARGET_EMSCRIPTEN
-              &TypeTraitsTest::equalsIntegral<UnsignedLong>,
-              &TypeTraitsTest::equalsIntegral<Long>,
-              #endif
-              &TypeTraitsTest::equalsFloatingPoint0<Float>,
-              &TypeTraitsTest::equalsFloatingPoint0<Double>,
-              &TypeTraitsTest::equalsFloatingPoint1<Float>,
-              &TypeTraitsTest::equalsFloatingPoint1<Double>,
-              &TypeTraitsTest::equalsFloatingPointLarge<Float>,
-              &TypeTraitsTest::equalsFloatingPointLarge<Double>,
-              &TypeTraitsTest::equalsFloatingPointInfinity<Float>,
-              &TypeTraitsTest::equalsFloatingPointInfinity<Double>,
-              &TypeTraitsTest::equalsFloatingPointNaN<Float>,
-              &TypeTraitsTest::equalsFloatingPointNaN<Double>});
+    addTests<TypeTraitsTest>({
+        &TypeTraitsTest::name,
+
+        &TypeTraitsTest::equalsIntegral<UnsignedByte>,
+        &TypeTraitsTest::equalsIntegral<Byte>,
+        &TypeTraitsTest::equalsIntegral<UnsignedShort>,
+        &TypeTraitsTest::equalsIntegral<Short>,
+        &TypeTraitsTest::equalsIntegral<UnsignedInt>,
+        &TypeTraitsTest::equalsIntegral<Int>,
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        &TypeTraitsTest::equalsIntegral<UnsignedLong>,
+        &TypeTraitsTest::equalsIntegral<Long>,
+        #endif
+
+        &TypeTraitsTest::equalsFloatingPoint0<Float>,
+        &TypeTraitsTest::equalsFloatingPoint0<Double>,
+        &TypeTraitsTest::equalsFloatingPoint1<Float>,
+        &TypeTraitsTest::equalsFloatingPoint1<Double>,
+        &TypeTraitsTest::equalsFloatingPointLarge<Float>,
+        &TypeTraitsTest::equalsFloatingPointLarge<Double>,
+        &TypeTraitsTest::equalsFloatingPointInfinity<Float>,
+        &TypeTraitsTest::equalsFloatingPointInfinity<Double>,
+        &TypeTraitsTest::equalsFloatingPointNaN<Float>,
+        &TypeTraitsTest::equalsFloatingPointNaN<Double>});
+}
+
+void TypeTraitsTest::name() {
+    CORRADE_COMPARE(TypeTraits<UnsignedShort>::name(), "UnsignedShort");
+    CORRADE_COMPARE(TypeTraits<Float>::name(), "Float");
 }
 
 template<class T> void TypeTraitsTest::equalsIntegral() {
+    setTestCaseName(std::string{"equalsIntegral<"} + TypeTraits<T>::name() + ">");
+
     CORRADE_VERIFY(!TypeTraits<T>::equals(1, 1+TypeTraits<T>::epsilon()));
 }
 
 template<class T> void TypeTraitsTest::equalsFloatingPoint0() {
+    setTestCaseName(std::string{"equalsFloatingPoint0<"} + TypeTraits<T>::name() + ">");
+
     CORRADE_VERIFY(TypeTraits<T>::equals(T(0)+TypeTraits<T>::epsilon()/T(2), T(0)));
     CORRADE_VERIFY(!TypeTraits<T>::equals(T(0)+TypeTraits<T>::epsilon()*T(2), T(0)));
 }
 
 template<class T> void TypeTraitsTest::equalsFloatingPoint1() {
+    setTestCaseName(std::string{"equalsFloatingPoint1<"} + TypeTraits<T>::name() + ">");
+
     CORRADE_VERIFY(TypeTraits<T>::equals(T(1)+TypeTraits<T>::epsilon()/T(2), T(1)));
     CORRADE_VERIFY(!TypeTraits<T>::equals(T(1)+TypeTraits<T>::epsilon()*T(3), T(1)));
 }
 
 template<class T> void TypeTraitsTest::equalsFloatingPointLarge() {
+    setTestCaseName(std::string{"equalsFloatingPointLarge<"} + TypeTraits<T>::name() + ">");
+
     CORRADE_VERIFY(TypeTraits<T>::equals(T(25)+TypeTraits<T>::epsilon()*T(2), T(25)));
     CORRADE_VERIFY(!TypeTraits<T>::equals(T(25)+TypeTraits<T>::epsilon()*T(75), T(25)));
 }
 
 template<class T> void TypeTraitsTest::equalsFloatingPointInfinity() {
+    setTestCaseName(std::string{"equalsFloatingPointInfinity<"} + TypeTraits<T>::name() + ">");
+
     CORRADE_VERIFY(TypeTraits<T>::equals(Constants<T>::inf(),
                                          Constants<T>::inf()));
 }
 
 template<class T> void TypeTraitsTest::equalsFloatingPointNaN() {
+    setTestCaseName(std::string{"equalsFloatingPointNaN<"} + TypeTraits<T>::name() + ">");
+
     CORRADE_VERIFY(!TypeTraits<T>::equals(Constants<T>::nan(),
                                           Constants<T>::nan()));
 }
