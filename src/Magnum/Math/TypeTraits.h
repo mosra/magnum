@@ -33,22 +33,34 @@
 
 #include "Magnum/Types.h"
 
-/** @brief Precision when testing floats for equality */
+/**
+@brief Precision when testing floats for equality
+
+They have "at least" 6 significant digits of precision, taking one digit less
+for more headroom.
+*/
 #ifndef FLOAT_EQUALITY_PRECISION
 #define FLOAT_EQUALITY_PRECISION 1.0e-5f
 #endif
 
-/** @brief Precision when testing doubles for equality */
+/**
+@brief Precision when testing doubles for equality
+
+They have "at least" 15 significant digits of precision, taking one digit less
+for more headroom.
+*/
 #ifndef DOUBLE_EQUALITY_PRECISION
-#define DOUBLE_EQUALITY_PRECISION 1.0e-12
+#define DOUBLE_EQUALITY_PRECISION 1.0e-14
 #endif
 
 /**
 @brief Precision when testing long doubles for equality
-@todo some proper value please
+
+They have "at least" 18 significant digits of precision, taking one digit less
+for more headroom.
 */
 #ifndef LONG_DOUBLE_EQUALITY_PRECISION
-#define LONG_DOUBLE_EQUALITY_PRECISION 1.0e-18l
+#define LONG_DOUBLE_EQUALITY_PRECISION 1.0e-17l
 #endif
 
 namespace Magnum { namespace Math {
