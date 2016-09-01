@@ -23,8 +23,22 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+if(CORRADE_TARGET_EMSCRIPTEN)
+    set(WAVAUDIOIMPORTER_TEST_DIR "")
+else()
+    set(WAVAUDIOIMPORTER_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+endif()
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
 corrade_add_test(WavAudioImporterTest WavImporterTest.cpp LIBRARIES MagnumWavAudioImporterTestLib)
 target_include_directories(WavAudioImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+
+if(CORRADE_TARGET_EMSCRIPTEN)
+    emscripten_embed_file(WavAudioImporterTest mono16.wav "/mono16.wav")
+    emscripten_embed_file(WavAudioImporterTest stereo8.wav "/stereo8.wav")
+    emscripten_embed_file(WavAudioImporterTest unsupportedChannelCount.wav "/unsupportedChannelCount.wav")
+    emscripten_embed_file(WavAudioImporterTest unsupportedFormat.wav "/unsupportedFormat.wav")
+    emscripten_embed_file(WavAudioImporterTest wrongSignature.wav "/wrongSignature.wav")
+endif()
