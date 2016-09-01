@@ -24,6 +24,9 @@
 */
 
 #include <Corrade/TestSuite/Tester.h>
+#ifdef _MSC_VER
+#include <algorithm> /* std::max() */
+#endif
 
 #include "Magnum/Math/TypeTraits.h"
 #include "Magnum/Math/Constants.h"
