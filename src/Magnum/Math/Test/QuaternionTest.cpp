@@ -79,6 +79,7 @@ struct QuaternionTest: Corrade::TestSuite::Tester {
     void dotSelf();
     void length();
     void normalized();
+    template<class T> void normalizedIterative();
 
     void conjugated();
     void inverted();
@@ -126,9 +127,13 @@ QuaternionTest::QuaternionTest() {
               &QuaternionTest::dot,
               &QuaternionTest::dotSelf,
               &QuaternionTest::length,
-              &QuaternionTest::normalized,
+              &QuaternionTest::normalized});
 
-              &QuaternionTest::conjugated,
+    addRepeatedTests<QuaternionTest>({
+        &QuaternionTest::normalizedIterative<Float>,
+        &QuaternionTest::normalizedIterative<Double>}, 1000);
+
+    addTests({&QuaternionTest::conjugated,
               &QuaternionTest::inverted,
               &QuaternionTest::invertedNormalized,
 
@@ -306,6 +311,19 @@ void QuaternionTest::normalized() {
     Quaternion normalized = Quaternion({1.0f, 3.0f, -2.0f}, -4.0f).normalized();
     CORRADE_COMPARE(normalized.length(), 1.0f);
     CORRADE_COMPARE(normalized, Quaternion({1.0f, 3.0f, -2.0f}, -4.0f)/std::sqrt(30.0f));
+}
+
+template<class T> void QuaternionTest::normalizedIterative() {
+    setTestCaseName(std::string{"normalizedIterative<"} + TypeTraits<T>::name() + ">");
+
+    const auto axis = Math::Vector3<T>{T(0.5), T(7.9), T(0.1)}.normalized();
+    auto a = Math::Quaternion<T>::rotation(Math::Deg<T>{T(36.7)}, Math::Vector3<T>{T(0.25), T(7.3), T(-1.1)}.normalized());
+    for(std::size_t i = 0; i != testCaseRepeatId(); ++i) {
+        a = Math::Quaternion<T>::rotation(Math::Deg<T>{T(87.1)}, axis)*a;
+        a = a.normalized();
+    }
+
+    CORRADE_VERIFY(a.isNormalized());
 }
 
 void QuaternionTest::conjugated() {

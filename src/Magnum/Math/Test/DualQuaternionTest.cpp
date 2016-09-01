@@ -76,6 +76,7 @@ struct DualQuaternionTest: Corrade::TestSuite::Tester {
     void lengthSquared();
     void length();
     void normalized();
+    template<class T> void normalizedIterative();
 
     void quaternionConjugated();
     void dualConjugated();
@@ -124,9 +125,13 @@ DualQuaternionTest::DualQuaternionTest() {
 
               &DualQuaternionTest::lengthSquared,
               &DualQuaternionTest::length,
-              &DualQuaternionTest::normalized,
+              &DualQuaternionTest::normalized});
 
-              &DualQuaternionTest::quaternionConjugated,
+    addRepeatedTests<DualQuaternionTest>({
+        &DualQuaternionTest::normalizedIterative<Float>,
+        &DualQuaternionTest::normalizedIterative<Double>}, 1000);
+
+    addTests({&DualQuaternionTest::quaternionConjugated,
               &DualQuaternionTest::dualConjugated,
               &DualQuaternionTest::conjugated,
               &DualQuaternionTest::inverted,
@@ -302,6 +307,29 @@ void DualQuaternionTest::normalized() {
     DualQuaternion b({{0.182574f, 0.365148f, 0.547723f}, -0.730297f}, {{0.118673f, -0.49295f, 0.629881f}, 0.255604f});
     CORRADE_COMPARE(a.normalized().length(), 1.0f);
     CORRADE_COMPARE(a.normalized(), b);
+}
+
+namespace {
+    template<class> struct NormalizedIterativeData;
+    template<> struct NormalizedIterativeData<Float> {
+        static Math::Vector3<Float> translation() { return {10000.0f, -50.0f, 20000.0f}; }
+    };
+    template<> struct NormalizedIterativeData<Double> {
+        static Math::Vector3<Double> translation() { return {10000000000000.0, -500.0, 20000000000000.0}; }
+    };
+}
+
+template<class T> void DualQuaternionTest::normalizedIterative() {
+    setTestCaseName(std::string{"normalizedIterative<"} + TypeTraits<T>::name() + ">");
+
+    const auto axis = Math::Vector3<T>{T(0.5), T(7.9), T(0.1)}.normalized();
+    auto a = Math::DualQuaternion<T>::rotation(Math::Deg<T>{T(36.7)}, Math::Vector3<T>{T(0.25), T(7.3), T(-1.1)}.normalized())*Math::DualQuaternion<T>::translation(NormalizedIterativeData<T>::translation());
+    for(std::size_t i = 0; i != testCaseRepeatId(); ++i) {
+        a = Math::DualQuaternion<T>::rotation(Math::Deg<T>{T(87.1)}, axis)*a;
+        a = a.normalized();
+    }
+
+    CORRADE_VERIFY(a.isNormalized());
 }
 
 void DualQuaternionTest::quaternionConjugated() {

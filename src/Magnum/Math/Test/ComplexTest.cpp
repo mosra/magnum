@@ -79,6 +79,7 @@ struct ComplexTest: Corrade::TestSuite::Tester {
     void dotSelf();
     void length();
     void normalized();
+    template<class T> void normalizedIterative();
 
     void conjugated();
     void inverted();
@@ -115,9 +116,13 @@ ComplexTest::ComplexTest() {
               &ComplexTest::dot,
               &ComplexTest::dotSelf,
               &ComplexTest::length,
-              &ComplexTest::normalized,
+              &ComplexTest::normalized});
 
-              &ComplexTest::conjugated,
+    addRepeatedTests<ComplexTest>({
+        &ComplexTest::normalizedIterative<Float>,
+        &ComplexTest::normalizedIterative<Double>}, 1000);
+
+    addTests({&ComplexTest::conjugated,
               &ComplexTest::inverted,
               &ComplexTest::invertedNormalized,
 
@@ -310,6 +315,18 @@ void ComplexTest::normalized() {
 
     CORRADE_COMPARE(a.normalized(), b);
     CORRADE_COMPARE(a.normalized().length(), 1.0f);
+}
+
+template<class T> void ComplexTest::normalizedIterative() {
+    setTestCaseName(std::string{"normalizedIterative<"} + TypeTraits<T>::name() + ">");
+
+    auto a = Math::Complex<T>::rotation(Math::Deg<T>{T(36.7)});
+    for(std::size_t i = 0; i != testCaseRepeatId(); ++i) {
+        a = Math::Complex<T>::rotation(Math::Deg<T>{T(87.1)})*a;
+        a = a.normalized();
+    }
+
+    CORRADE_VERIFY(a.isNormalized());
 }
 
 void ComplexTest::conjugated() {

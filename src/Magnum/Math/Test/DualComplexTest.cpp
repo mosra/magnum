@@ -75,6 +75,7 @@ struct DualComplexTest: Corrade::TestSuite::Tester {
     void lengthSquared();
     void length();
     void normalized();
+    template<class T> void normalizedIterative();
 
     void complexConjugated();
     void dualConjugated();
@@ -119,9 +120,13 @@ DualComplexTest::DualComplexTest() {
 
               &DualComplexTest::lengthSquared,
               &DualComplexTest::length,
-              &DualComplexTest::normalized,
+              &DualComplexTest::normalized});
 
-              &DualComplexTest::complexConjugated,
+    addRepeatedTests<DualComplexTest>({
+        &DualComplexTest::normalizedIterative<Float>,
+        &DualComplexTest::normalizedIterative<Double>}, 1000);
+
+    addTests({&DualComplexTest::complexConjugated,
               &DualComplexTest::dualConjugated,
               &DualComplexTest::conjugated,
               &DualComplexTest::inverted,
@@ -279,6 +284,28 @@ void DualComplexTest::normalized() {
     DualComplex b({-0.316228f, 0.948683f}, {0.5f, -2.0f});
     CORRADE_COMPARE(a.normalized().length(), 1.0f);
     CORRADE_COMPARE(a.normalized(), b);
+}
+
+namespace {
+    template<class> struct NormalizedIterativeData;
+    template<> struct NormalizedIterativeData<Float> {
+        static Math::Vector2<Float> translation() { return {10000.0f, -50.0f}; }
+    };
+    template<> struct NormalizedIterativeData<Double> {
+        static Math::Vector2<Double> translation() { return {10000000.0, -500.0}; }
+    };
+}
+
+template<class T> void DualComplexTest::normalizedIterative() {
+    setTestCaseName(std::string{"normalizedIterative<"} + TypeTraits<T>::name() + ">");
+
+    auto a = Math::DualComplex<T>::rotation(Math::Deg<T>{T(36.7)})*Math::DualComplex<T>::translation(NormalizedIterativeData<T>::translation());
+    for(std::size_t i = 0; i != testCaseRepeatId(); ++i) {
+        a = Math::DualComplex<T>::rotation(Math::Deg<T>{T(87.1)})*a;
+        a = a.normalized();
+    }
+
+    CORRADE_VERIFY(a.isNormalized());
 }
 
 void DualComplexTest::complexConjugated() {
