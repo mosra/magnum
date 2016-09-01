@@ -33,6 +33,11 @@
 extern "C" {
 #endif
 
+/* For compatibility with Emscripten that does not define this macro */
+#ifndef AL_APIENTRY
+#define AL_APIENTRY
+#endif
+
 /* AL_EXT_float32 */
 #ifndef AL_EXT_float32
 #define AL_EXT_float32 1
