@@ -32,6 +32,7 @@
 #include <cmath>
 
 #include "Magnum/Math/Dual.h"
+#include "Magnum/Math/Functions.h"
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Math/Quaternion.h"
 
@@ -254,11 +255,11 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @todoc Improve the equation as in Quaternion::isNormalized()
          */
         bool isNormalized() const {
-            /* Comparing dual part classically, as comparing sqrt() of it would
-               lead to overly strict precision */
+            /* Comparing dual part to zero considering the magnitude of the
+               translation -- the epsilon be much larger for large values. */
             Dual<T> a = lengthSquared();
             return Implementation::isNormalizedSquared(a.real()) &&
-                   TypeTraits<T>::equals(a.dual(), T(0));
+                   TypeTraits<T>::equalsZero(a.dual(), Math::max(Math::abs(Math::Dual<Quaternion<T>>::dual().vector()).max(), Math::abs(Math::Dual<Quaternion<T>>::dual().scalar())));
         }
 
         /**
