@@ -68,6 +68,7 @@ struct QuaternionTest: Corrade::TestSuite::Tester {
 
     void compare();
     void isNormalized();
+    template<class T> void isNormalizedEpsilon();
 
     void addSubtract();
     void negated();
@@ -114,6 +115,8 @@ QuaternionTest::QuaternionTest() {
 
               &QuaternionTest::compare,
               &QuaternionTest::isNormalized,
+              &QuaternionTest::isNormalizedEpsilon<Float>,
+              &QuaternionTest::isNormalizedEpsilon<Double>,
 
               &QuaternionTest::addSubtract,
               &QuaternionTest::negated,
@@ -246,6 +249,13 @@ void QuaternionTest::compare() {
 void QuaternionTest::isNormalized() {
     CORRADE_VERIFY(!Quaternion({1.0f, 2.0f, 3.0f}, 4.0f).isNormalized());
     CORRADE_VERIFY(Quaternion::rotation(Deg(23.0f), Vector3::xAxis()).isNormalized());
+}
+
+template<class T> void QuaternionTest::isNormalizedEpsilon() {
+    setTestCaseName(std::string{"isNormalizedEpsilon<"} + TypeTraits<T>::name() + ">");
+
+    CORRADE_VERIFY((Math::Quaternion<T>{{T(0.0106550719778129), T(0.311128101752138), T(-0.0468823167023769)}, T(0.949151106053128) + TypeTraits<T>::epsilon()/T(2.0)}.isNormalized()));
+    CORRADE_VERIFY(!(Math::Quaternion<T>{{T(0.0106550719778129), T(0.311128101752138), T(-0.0468823167023769)}, T(0.949151106053128) + TypeTraits<T>::epsilon()*T(2.0)}.isNormalized()));
 }
 
 void QuaternionTest::addSubtract() {

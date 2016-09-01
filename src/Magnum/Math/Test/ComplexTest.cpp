@@ -68,6 +68,7 @@ struct ComplexTest: Corrade::TestSuite::Tester {
 
     void compare();
     void isNormalized();
+    template<class T> void isNormalizedEpsilon();
 
     void addSubtract();
     void negated();
@@ -103,6 +104,8 @@ ComplexTest::ComplexTest() {
 
               &ComplexTest::compare,
               &ComplexTest::isNormalized,
+              &ComplexTest::isNormalizedEpsilon<Float>,
+              &ComplexTest::isNormalizedEpsilon<Double>,
 
               &ComplexTest::addSubtract,
               &ComplexTest::negated,
@@ -243,6 +246,13 @@ void ComplexTest::compare() {
 void ComplexTest::isNormalized() {
     CORRADE_VERIFY(!Complex(2.5f, -3.7f).isNormalized());
     CORRADE_VERIFY(Complex::rotation(Deg(23.0f)).isNormalized());
+}
+
+template<class T> void ComplexTest::isNormalizedEpsilon() {
+    setTestCaseName(std::string{"isNormalizedEpsilon<"} + TypeTraits<T>::name() + ">");
+
+    CORRADE_VERIFY((Math::Complex<T>{T(0.801775644243754) + TypeTraits<T>::epsilon()/T(2.0), T(0.597625146975521)}.isNormalized()));
+    CORRADE_VERIFY(!(Math::Complex<T>{T(0.801775644243754) + TypeTraits<T>::epsilon()*T(2.0), T(0.597625146975521)}.isNormalized()));
 }
 
 void ComplexTest::addSubtract() {

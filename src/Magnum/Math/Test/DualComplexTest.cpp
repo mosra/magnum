@@ -67,6 +67,8 @@ struct DualComplexTest: Corrade::TestSuite::Tester {
     void convert();
 
     void isNormalized();
+    template<class T> void isNormalizedEpsilonRotation();
+    template<class T> void isNormalizedEpsilonTranslation();
 
     void multiply();
 
@@ -108,6 +110,10 @@ DualComplexTest::DualComplexTest() {
               &DualComplexTest::convert,
 
               &DualComplexTest::isNormalized,
+              &DualComplexTest::isNormalizedEpsilonRotation<Float>,
+              &DualComplexTest::isNormalizedEpsilonRotation<Double>,
+              &DualComplexTest::isNormalizedEpsilonTranslation<Float>,
+              &DualComplexTest::isNormalizedEpsilonTranslation<Double>,
 
               &DualComplexTest::multiply,
 
@@ -235,6 +241,21 @@ void DualComplexTest::convert() {
 void DualComplexTest::isNormalized() {
     CORRADE_VERIFY(!DualComplex({2.0f, 1.0f}, {}).isNormalized());
     CORRADE_VERIFY((DualComplex::rotation(Deg(23.0f))*DualComplex::translation({6.0f, 3.0f})).isNormalized());
+}
+
+template<class T> void DualComplexTest::isNormalizedEpsilonRotation() {
+    setTestCaseName(std::string{"isNormalizedEpsilonRotation<"} + TypeTraits<T>::name() + ">");
+
+    CORRADE_VERIFY((Math::DualComplex<T>{{T(0.801775644243754) + TypeTraits<T>::epsilon()/T(2.0), T(0.597625146975521)}, {T(8018055.25501103), T(5975850.58193309)}}.isNormalized()));
+    CORRADE_VERIFY(!(Math::DualComplex<T>{{T(0.801775644243754) + TypeTraits<T>::epsilon()*T(2.0), T(0.597625146975521)}, {T(8018055.25501103), T(5975850.58193309)}}.isNormalized()));
+}
+
+template<class T> void DualComplexTest::isNormalizedEpsilonTranslation() {
+    setTestCaseName(std::string{"isNormalizedEpsilonTranslation<"} + TypeTraits<T>::name() + ">");
+
+    /* Translation does not affect normalization */
+    CORRADE_VERIFY((Math::DualComplex<T>{{T(0.801775644243754), T(0.597625146975521)}, {T(8018055.25501103), T(20.5)}}.isNormalized()));
+    CORRADE_VERIFY((Math::DualComplex<T>{{T(0.801775644243754), T(0.597625146975521)}, {T(8018055.25501103), T(-200000000.0)}}.isNormalized()));
 }
 
 void DualComplexTest::multiply() {

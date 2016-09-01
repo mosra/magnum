@@ -70,6 +70,8 @@ struct DualQuaternionTest: Corrade::TestSuite::Tester {
     void convert();
 
     void isNormalized();
+    template<class T> void isNormalizedEpsilonRotation();
+    template<class T> void isNormalizedEpsilonTranslation();
 
     void lengthSquared();
     void length();
@@ -115,6 +117,10 @@ DualQuaternionTest::DualQuaternionTest() {
               &DualQuaternionTest::convert,
 
               &DualQuaternionTest::isNormalized,
+              &DualQuaternionTest::isNormalizedEpsilonRotation<Float>,
+              &DualQuaternionTest::isNormalizedEpsilonRotation<Double>,
+              &DualQuaternionTest::isNormalizedEpsilonTranslation<Float>,
+              &DualQuaternionTest::isNormalizedEpsilonTranslation<Double>,
 
               &DualQuaternionTest::lengthSquared,
               &DualQuaternionTest::length,
@@ -260,7 +266,25 @@ void DualQuaternionTest::convert() {
 
 void DualQuaternionTest::isNormalized() {
     CORRADE_VERIFY(!DualQuaternion({{1.0f, 2.0f, 3.0f}, 4.0f}, {}).isNormalized());
-    CORRADE_VERIFY((DualQuaternion::rotation(Deg(23.0f), Vector3::xAxis())*DualQuaternion::translation({3.0f, 1.0f, -0.5f})).isNormalized());
+    CORRADE_VERIFY((DualQuaternion::rotation(Deg(23.0f), Vector3::xAxis())*DualQuaternion::translation({0.9f, -1.0f, -0.5f})).isNormalized());
+}
+
+template<class T> void DualQuaternionTest::isNormalizedEpsilonRotation() {
+    setTestCaseName(std::string{"isNormalizedEpsilonRotation<"} + TypeTraits<T>::name() + ">");
+
+    CORRADE_VERIFY((Math::DualQuaternion<T>{{{T(0.199367934417197) + TypeTraits<T>::epsilon()/T(2.0), T(0.0), T(0.0)}, T(0.97992470462083)}, {{T(0.440966117079373), T(-0.440120368706115), T(-0.344665143363806)}, T(-0.0897155704877387)}}.isNormalized()));
+    CORRADE_VERIFY(!(Math::DualQuaternion<T>{{{T(0.199367934417197), T(0.0), T(0.0)}, T(0.97992470462083) + TypeTraits<T>::epsilon()*T(2.0)}, {{T(0.440966117079373), T(-0.440120368706115), T(-0.344665143363806)}, T(-0.0897155704877387)}}.isNormalized()));
+}
+
+template<class T> void DualQuaternionTest::isNormalizedEpsilonTranslation() {
+    setTestCaseName(std::string{"isNormalizedEpsilonTranslation<"} + TypeTraits<T>::name() + ">");
+
+    CORRADE_VERIFY((Math::DualQuaternion<T>{{{T(0.199367934417197), T(0.0), T(0.0)}, T(0.97992470462083)}, {{T(0.440966117079373), T(-0.440120368706115) + TypeTraits<T>::epsilon()*T(2.0), T(-0.344665143363806)}, T(-0.0897155704877387)}}.isNormalized()));
+    CORRADE_VERIFY(!(Math::DualQuaternion<T>{{{T(0.199367934417197), T(0.0), T(0.0)}, T(0.97992470462083)}, {{T(0.440966117079373) + TypeTraits<T>::epsilon()*T(4.0), T(-0.440120368706115), T(-0.344665143363806)}, T(-0.0897155704877387)}}.isNormalized()));
+
+    /* Large translation -- large epsilon */
+    CORRADE_VERIFY((Math::DualQuaternion<T>{{{T(0.0106550719778129), T(0.311128101752138), T(-0.0468823167023769)}, T(0.949151106053128)}, {{T(5056871.9114386), T(-245303.943266211) + TypeTraits<T>::epsilon()*T(10000000.0), T(-606492.066475555)}, T(-6315.26116124973)}}.isNormalized()));
+    CORRADE_VERIFY(!(Math::DualQuaternion<T>{{{T(0.0106550719778129), T(0.311128101752138), T(-0.0468823167023769)}, T(0.949151106053128)}, {{T(5056871.9114386), T(-245303.943266211) + TypeTraits<T>::epsilon()*T(20000000.0), T(-606492.066475555)}, T(-6315.26116124973)}}.isNormalized()));
 }
 
 void DualQuaternionTest::lengthSquared() {
