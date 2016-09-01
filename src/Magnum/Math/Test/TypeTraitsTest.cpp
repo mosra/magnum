@@ -41,7 +41,36 @@ struct TypeTraitsTest: Corrade::TestSuite::Tester {
     template<class T> void equalsFloatingPointLarge();
     template<class T> void equalsFloatingPointInfinity();
     template<class T> void equalsFloatingPointNaN();
+
+    template<class T> void equalsZeroIntegral();
+    template<class T> void equalsZeroFloatingPoint();
+    template<class T> void equalsZeroFloatingPointSmall();
+    template<class T> void equalsZeroFloatingPointLarge();
 };
+
+namespace {
+
+enum: std::size_t { EqualsZeroDataCount = 3 };
+
+struct {
+    const char* name;
+    Float a, aStep;
+    Double b, bStep;
+    long double c, cStep;
+
+    Float get(Float) const { return a; }
+    Float getStep(Float) const { return aStep; }
+    Double get(Double) const { return b; }
+    Double getStep(Double) const { return bStep; }
+    long double get(long double) const { return c; }
+    long double getStep(long double) const { return cStep; }
+} EqualsZeroData[EqualsZeroDataCount] = {
+    {"", -3.141592653589793f, 5.0e-5f, -3.141592653589793, 5.0e-14, -3.141592653589793l, 5.0e-17l},
+    {"small", 1.0e-6f, 5.0e-6f, -1.0e-15, 5.0e-15, 1.0e-18l, 5.0e-18l},
+    {"large", 12345.0f, 0.2f, 12345678901234.0, 0.2, -12345678901234567.0l, 0.2l},
+};
+
+}
 
 TypeTraitsTest::TypeTraitsTest() {
     addTests<TypeTraitsTest>({
@@ -76,7 +105,27 @@ TypeTraitsTest::TypeTraitsTest() {
         &TypeTraitsTest::equalsFloatingPointInfinity<Float>,
         &TypeTraitsTest::equalsFloatingPointInfinity<Double>,
         &TypeTraitsTest::equalsFloatingPointNaN<Float>,
-        &TypeTraitsTest::equalsFloatingPointNaN<Double>});
+        &TypeTraitsTest::equalsFloatingPointNaN<Double>,
+
+        &TypeTraitsTest::equalsZeroIntegral<UnsignedByte>,
+        &TypeTraitsTest::equalsZeroIntegral<Byte>,
+        &TypeTraitsTest::equalsZeroIntegral<UnsignedShort>,
+        &TypeTraitsTest::equalsZeroIntegral<Short>,
+        &TypeTraitsTest::equalsZeroIntegral<UnsignedInt>,
+        &TypeTraitsTest::equalsZeroIntegral<Int>,
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        &TypeTraitsTest::equalsZeroIntegral<UnsignedLong>,
+        &TypeTraitsTest::equalsZeroIntegral<Long>,
+        #endif
+        });
+
+    addInstancedTests<TypeTraitsTest>({
+        &TypeTraitsTest::equalsZeroFloatingPoint<Float>,
+        &TypeTraitsTest::equalsZeroFloatingPoint<Double>,
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        &TypeTraitsTest::equalsZeroFloatingPoint<long double>
+        #endif
+        }, EqualsZeroDataCount);
 }
 
 void TypeTraitsTest::name() {
@@ -125,6 +174,44 @@ template<class T> void TypeTraitsTest::equalsFloatingPointNaN() {
 
     CORRADE_VERIFY(!TypeTraits<T>::equals(Constants<T>::nan(),
                                           Constants<T>::nan()));
+}
+
+namespace {
+    /* Argh! Why there is no standard std::abs() for unsigned types? */
+    template<class T, class U = typename std::enable_if<std::is_unsigned<T>::value>::type> T abs(T value) {
+        return value;
+    }
+    template<class T, class U = T, class V = typename std::enable_if<!std::is_unsigned<T>::value>::type> T abs(T value) {
+        return std::abs(value);
+    }
+}
+
+template<class T> void TypeTraitsTest::equalsZeroIntegral() {
+    setTestCaseName(std::string{"equalsZeroIntegral<"} + TypeTraits<T>::name() + ">");
+
+    const T a(-123);
+    const T b(-123);
+    const T magnitude = std::max(abs(a), abs(b));
+
+    CORRADE_VERIFY(TypeTraits<T>::equals(a, b));
+    CORRADE_VERIFY(TypeTraits<T>::equalsZero(a - b, magnitude));
+    CORRADE_VERIFY(!TypeTraits<T>::equalsZero(a - b + TypeTraits<T>::epsilon(), magnitude));
+}
+
+template<class T> void TypeTraitsTest::equalsZeroFloatingPoint() {
+    setTestCaseName(std::string{"equalsZeroFloatingPoint<"} + TypeTraits<T>::name() + ">");
+    setTestCaseDescription(EqualsZeroData[testCaseInstanceId()].name);
+
+    const T a = EqualsZeroData[testCaseInstanceId()].get(T{});
+    const T b = EqualsZeroData[testCaseInstanceId()].get(T{});
+    const T step = EqualsZeroData[testCaseInstanceId()].getStep(T{});
+    const T magnitude = std::max(abs(a), abs(b));
+
+    CORRADE_VERIFY(TypeTraits<T>::equals(a + step/T(2.0), b));
+    CORRADE_VERIFY(TypeTraits<T>::equalsZero(a + step/T(2.0) - b, magnitude));
+
+    CORRADE_VERIFY(!TypeTraits<T>::equals(a - step*T(2.0), b));
+    CORRADE_VERIFY(!TypeTraits<T>::equalsZero(a - step*T(2.0) - b, magnitude));
 }
 
 }}}

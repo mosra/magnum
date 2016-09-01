@@ -72,6 +72,10 @@ namespace Implementation {
         constexpr static bool equals(T a, T b) {
             return a == b;
         }
+
+        constexpr static bool equalsZero(T a, T) {
+            return !a;
+        }
     };
 }
 
@@ -123,6 +127,22 @@ template<class T> struct TypeTraits: Implementation::TypeTraitsDefault<T> {
      * value), pure equality comparison everywhere else.
      */
     static bool equals(T a, T b);
+
+    /**
+     * @brief Fuzzy compare to zero with magnitude
+     *
+     * Uses fuzzy compare for floating-point types (using @ref epsilon()
+     * value), pure equality comparison everywhere else. Use this function when
+     * comparing e.g. a calculated nearly-zero difference with zero, knowing
+     * the magnitude of original values so the epsilon can be properly scaled.
+     * In other words, the following lines are equivalent:
+     * @code
+     * Float a, b;
+     * Math::TypeTraits<Float>::equals(a, b);
+     * Math::TypeTraits<Float>::equalsZero(a - b, Math::max(Math::abs(a), Math::abs(b)));
+     * @endcode
+     */
+    static bool equalsZero(T a, T magnitude);
     #endif
 };
 
@@ -187,6 +207,7 @@ template<class T> struct TypeTraitsFloatingPoint: TypeTraitsName<T> {
     TypeTraitsFloatingPoint() = delete;
 
     static bool equals(T a, T b);
+    static bool equalsZero(T a, T epsilon);
 };
 
 /* Adapted from http://floating-point-gui.de/errors/comparison/ */
@@ -205,6 +226,20 @@ template<class T> bool TypeTraitsFloatingPoint<T>::equals(const T a, const T b) 
 
     /* Relative error */
     return difference/(absA + absB) < TypeTraits<T>::epsilon();
+}
+
+template<class T> bool TypeTraitsFloatingPoint<T>::equalsZero(const T a, const T magnitude) {
+    /* Shortcut for binary equality */
+    if(a == T(0.0)) return true;
+
+    const T absA = std::abs(a);
+
+    /* The value is extremely close to zero, relative error is meaningless */
+    if(absA < TypeTraits<T>::epsilon())
+        return absA < TypeTraits<T>::epsilon();
+
+    /* Relative error */
+    return absA*T(0.5)/magnitude < TypeTraits<T>::epsilon();
 }
 
 }
