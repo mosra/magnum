@@ -15,17 +15,39 @@
 # module.
 
 #=============================================================================
-# Copyright 2005-2009 Kitware, Inc.
+# CMake - Cross Platform Makefile Generator
+# Copyright 2000-2016 Kitware, Inc.
+# Copyright 2000-2011 Insight Software Consortium
+# All rights reserved.
 #
-# Distributed under the OSI-approved BSD License (the "License");
-# see accompanying file Copyright.txt for details.
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
 #
-# This software is distributed WITHOUT ANY WARRANTY; without even the
-# implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-# See the License for more information.
+# * Redistributions of source code must retain the above copyright
+#   notice, this list of conditions and the following disclaimer.
+#
+# * Redistributions in binary form must reproduce the above copyright
+#   notice, this list of conditions and the following disclaimer in the
+#   documentation and/or other materials provided with the distribution.
+#
+# * Neither the names of Kitware, Inc., the Insight Software Consortium,
+#   nor the names of their contributors may be used to endorse or promote
+#   products derived from this software without specific prior written
+#   permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+# LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+# A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+# HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+# SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+# LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+# THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #=============================================================================
-# (To distribute this file outside of CMake, substitute the full
-#  License text for the above reference.)
 
 # This makes the presumption that you are include al.h like
 # #include "al.h"
@@ -68,7 +90,9 @@
 find_path(OPENAL_INCLUDE_DIR al.h
   HINTS
     ENV OPENALDIR
-  PATH_SUFFIXES include/AL include/OpenAL include
+  # The AL was added in order to make the module working for Emscripten on OSX.
+  # Not sure why include/AL wasn't enough.
+  PATH_SUFFIXES include/AL include/OpenAL include AL
   PATHS
   ~/Library/Frameworks
   /Library/Frameworks
@@ -85,26 +109,29 @@ else()
   set(_OpenAL_ARCH_DIR libs/Win32)
 endif()
 
-find_library(OPENAL_LIBRARY
-  NAMES OpenAL al openal OpenAL32
-  HINTS
-    ENV OPENALDIR
-  PATH_SUFFIXES lib64 lib libs64 libs ${_OpenAL_ARCH_DIR}
-  PATHS
-  ~/Library/Frameworks
-  /Library/Frameworks
-  /sw
-  /opt/local
-  /opt/csw
-  /opt
-  [HKEY_LOCAL_MACHINE\\SOFTWARE\\Creative\ Labs\\OpenAL\ 1.1\ Software\ Development\ Kit\\1.00.0000;InstallDir]
-)
+if(NOT CORRADE_TARGET_EMSCRIPTEN)
+  find_library(OPENAL_LIBRARY
+    NAMES OpenAL al openal OpenAL32
+    HINTS
+      ENV OPENALDIR
+    PATH_SUFFIXES lib64 lib libs64 libs ${_OpenAL_ARCH_DIR}
+    PATHS
+    ~/Library/Frameworks
+    /Library/Frameworks
+    /sw
+    /opt/local
+    /opt/csw
+    /opt
+    [HKEY_LOCAL_MACHINE\\SOFTWARE\\Creative\ Labs\\OpenAL\ 1.1\ Software\ Development\ Kit\\1.00.0000;InstallDir]
+  )
+  set(OPENAL_LIBRARY_NEEDED OPENAL_LIBRARY)
+endif()
 
 unset(_OpenAL_ARCH_DIR)
 
 # handle the QUIETLY and REQUIRED arguments and set OPENAL_FOUND to TRUE if
 # all listed variables are TRUE
-include(${CMAKE_CURRENT_LIST_DIR}/FindPackageHandleStandardArgs.cmake)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(OpenAL  DEFAULT_MSG  OPENAL_LIBRARY OPENAL_INCLUDE_DIR)
+include(FindPackageHandleStandardArgs)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(OpenAL  DEFAULT_MSG  ${OPENAL_LIBRARY_NEEDED} OPENAL_INCLUDE_DIR)
 
 mark_as_advanced(OPENAL_LIBRARY OPENAL_INCLUDE_DIR)

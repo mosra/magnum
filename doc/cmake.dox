@@ -217,6 +217,10 @@ and @ref cmake-extras "Extras repository" have also their own CMake modules.
 
 The `modules/` directory contains more useful CMake modules:
 
+-   `FindOpenAL.cmake` -- CMake module for finding OpenAL. This is a forked
+    version of the upstream module that works properly with
+    @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten". Copy this to your module
+    directory if you want to use the @ref Audio library on Emscripten.
 -   `FindGLFW.cmake` -- CMake module for finding GLFW. Copy this to your module
     directory if you want to use @ref Platform::GlfwApplication.
 -   `FindEGL.cmake` -- CMake module for finding EGL. Copy this to your
