@@ -60,10 +60,19 @@ TypeTraitsTest::TypeTraitsTest() {
 
         &TypeTraitsTest::equalsFloatingPoint0<Float>,
         &TypeTraitsTest::equalsFloatingPoint0<Double>,
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        &TypeTraitsTest::equalsFloatingPoint0<long double>,
+        #endif
         &TypeTraitsTest::equalsFloatingPoint1<Float>,
         &TypeTraitsTest::equalsFloatingPoint1<Double>,
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        &TypeTraitsTest::equalsFloatingPoint1<long double>,
+        #endif
         &TypeTraitsTest::equalsFloatingPointLarge<Float>,
         &TypeTraitsTest::equalsFloatingPointLarge<Double>,
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        &TypeTraitsTest::equalsFloatingPointLarge<long double>,
+        #endif
         &TypeTraitsTest::equalsFloatingPointInfinity<Float>,
         &TypeTraitsTest::equalsFloatingPointInfinity<Double>,
         &TypeTraitsTest::equalsFloatingPointNaN<Float>,
@@ -78,6 +87,8 @@ void TypeTraitsTest::name() {
 template<class T> void TypeTraitsTest::equalsIntegral() {
     setTestCaseName(std::string{"equalsIntegral<"} + TypeTraits<T>::name() + ">");
 
+    CORRADE_VERIFY(TypeTraits<T>::equals(1, 1));
+    CORRADE_VERIFY(!TypeTraits<T>::equals(1, -1));
     CORRADE_VERIFY(!TypeTraits<T>::equals(1, 1+TypeTraits<T>::epsilon()));
 }
 
