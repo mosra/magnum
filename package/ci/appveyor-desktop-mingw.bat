@@ -37,8 +37,8 @@ cmake .. ^
     -DBUILD_TESTS=ON ^
     -DBUILD_GL_TESTS=ON ^
     -G "MinGW Makefiles" || exit /b
-cmake --build . || exit /b
-cmake --build . --target install || exit /b
+cmake --build . -- -j || exit /b
+cmake --build . --target install -- -j || exit /b
 
 rem Test
 ctest -V -E GLTest || exit /b
