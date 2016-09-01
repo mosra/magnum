@@ -68,9 +68,27 @@ struct {
     long double get(long double) const { return c; }
     long double getStep(long double) const { return cStep; }
 } EqualsZeroData[EqualsZeroDataCount] = {
-    {"", -3.141592653589793f, 5.0e-5f, -3.141592653589793, 5.0e-14, -3.141592653589793l, 5.0e-17l},
-    {"small", 1.0e-6f, 5.0e-6f, -1.0e-15, 5.0e-15, 1.0e-18l, 5.0e-18l},
-    {"large", 12345.0f, 0.2f, 12345678901234.0, 0.2, -12345678901234567.0l, 0.2l},
+    {"", -3.141592653589793f, 5.0e-5f, -3.141592653589793, 5.0e-14, -3.141592653589793l,
+        #ifndef _MSC_VER
+        5.0e-17l
+        #else
+        5.0e-14
+        #endif
+    },
+    {"small", 1.0e-6f, 5.0e-6f, -1.0e-15, 5.0e-15, 1.0e-18l,
+        #ifndef _MSC_VER
+        5.0e-18l
+        #else
+        5.0e-15
+        #endif
+    },
+    {"large", 12345.0f, 0.2f, 12345678901234.0, 0.2,
+        #ifndef _MSC_VER
+        -12345678901234567.0l,
+        #else
+        -12345678901234.0l,
+        #endif
+        0.2l},
 };
 
 }
