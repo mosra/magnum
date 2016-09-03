@@ -291,7 +291,6 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
 
         /**
          * @copybrief Texture::invalidateImage()
-         * @return Reference to self (for method chaining)
          *
          * See @ref Texture::invalidateImage() for more information.
          */
@@ -299,7 +298,6 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
 
         /**
          * @copybrief Texture::invalidateSubImage()
-         * @return Reference to self (for method chaining)
          *
          * See @ref Texture::invalidateSubImage() for more information.
          */

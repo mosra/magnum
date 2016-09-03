@@ -472,7 +472,6 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         #ifndef MAGNUM_TARGET_GLES
         /**
          * @copybrief Texture::image(Int, Image&)
-         * @return Reference to self (for method chaining)
          *
          * See @ref Texture::image(Int, Image&) for more information.
          * @requires_gl Texture image queries are not available in OpenGL ES or
@@ -493,7 +492,6 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
 
         /**
          * @copybrief Texture::image(Int, BufferImage&, BufferUsage)
-         * @return Reference to self (for method chaining)
          *
          * See @ref Texture::image(Int, BufferImage&, BufferUsage) for more
          * information.
@@ -515,7 +513,6 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
 
         /**
          * @copybrief Texture::compressedImage(Int, CompressedImage&)
-         * @return Reference to self (for method chaining)
          *
          * See @ref Texture::compressedImage(Int, CompressedImage&) for more
          * information.
@@ -537,7 +534,6 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
 
         /**
          * @copybrief Texture::compressedImage(Int, CompressedBufferImage&, BufferUsage)
-         * @return Reference to self (for method chaining)
          *
          * See @ref Texture::compressedImage(Int, CompressedBufferImage&, BufferUsage)
          * for more information.
@@ -794,7 +790,6 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
 
         /**
          * @copybrief Texture::invalidateImage()
-         * @return Reference to self (for method chaining)
          *
          * See @ref Texture::invalidateImage() for more information.
          */
@@ -802,7 +797,6 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
 
         /**
          * @copybrief Texture::invalidateSubImage()
-         * @return Reference to self (for method chaining)
          *
          * See @ref Texture::invalidateSubImage() for more information.
          */
