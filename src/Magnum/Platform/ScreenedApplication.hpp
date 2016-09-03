@@ -1,3 +1,5 @@
+#ifndef Magnum_Platform_ScreenedApplication_hpp
+#define Magnum_Platform_ScreenedApplication_hpp
 /*
     This file is part of Magnum.
 
@@ -141,3 +143,5 @@ template<class Application> void BasicScreenedApplication<Application>::mouseMov
 }
 
 }}
+
+#endif
