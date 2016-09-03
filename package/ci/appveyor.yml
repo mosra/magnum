@@ -30,8 +30,7 @@ install:
 # OpenAL
 - IF NOT "%TARGET%" == "rt" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\openal-soft-1.17.2-bin.zip appveyor DownloadFile http://kcat.strangesoft.net/openal-binaries/openal-soft-1.17.2-bin.zip
 - IF NOT "%TARGET%" == "rt" 7z x openal-soft-1.17.2-bin.zip && ren openal-soft-1.17.2-bin openal && echo [General] > %APPDATA%/alsoft.ini & echo drivers=null >> %APPDATA%/alsoft.ini
-- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" ren openal\bin\Win32\soft_oal.dll OpenAL32.dll
-- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" ren openal\bin\Win64\soft_oal.dll OpenAL32.dll
+- IF "%TARGET%" == "desktop" ren openal\bin\Win64\soft_oal.dll OpenAL32.dll
 
 # SDL2
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\SDL2-devel-2.0.4-VC.zip appveyor DownloadFile http://www.libsdl.org/release/SDL2-devel-2.0.4-VC.zip

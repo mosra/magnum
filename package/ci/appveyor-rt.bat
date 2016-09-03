@@ -1,4 +1,4 @@
-call "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/vcvarsall.bat" || exit /b
+call "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/vcvarsall.bat" x64 || exit /b
 set PATH=%APPVEYOR_BUILD_FOLDER%\deps-native\bin;%PATH%
 
 rem Build ANGLE
@@ -39,7 +39,7 @@ cmake .. ^
     -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/deps ^
     -DWITH_INTERCONNECT=OFF ^
     -DBUILD_STATIC=ON ^
-    -G "Visual Studio 14 2015" || exit /b
+    -G "Visual Studio 14 2015" -A x64 || exit /b
 cmake --build . --config Release --target install -- /m /v:m || exit /b
 cd .. || exit /b
 
@@ -52,13 +52,13 @@ cmake .. ^
     -DCMAKE_SYSTEM_VERSION=10.0 ^
     -DCORRADE_RC_EXECUTABLE=%APPVEYOR_BUILD_FOLDER%/deps-native/bin/corrade-rc.exe ^
     -DCMAKE_PREFIX_PATH=%APPVEYOR_BUILD_FOLDER%/deps ^
-    -DEGL_LIBRARY=%APPVEYOR_BUILD_FOLDER%/angle/winrt/10/src/Release_Win32/lib/libEGL.lib ^
+    -DEGL_LIBRARY=%APPVEYOR_BUILD_FOLDER%/angle/winrt/10/src/Release_x64/lib/libEGL.lib ^
     -DEGL_INCLUDE_DIR=%APPVEYOR_BUILD_FOLDER%/angle/include ^
-    -DOPENGLES2_LIBRARY=%APPVEYOR_BUILD_FOLDER%/angle/winrt/10/src/Release_Win32/lib/libGLESv2.lib ^
+    -DOPENGLES2_LIBRARY=%APPVEYOR_BUILD_FOLDER%/angle/winrt/10/src/Release_x64/lib/libGLESv2.lib ^
     -DOPENGLES2_INCLUDE_DIR=%APPVEYOR_BUILD_FOLDER%/angle/include ^
-    -DOPENGLES3_LIBRARY=%APPVEYOR_BUILD_FOLDER%/angle/winrt/10/src/Release_Win32/lib/libGLESv2.lib ^
+    -DOPENGLES3_LIBRARY=%APPVEYOR_BUILD_FOLDER%/angle/winrt/10/src/Release_x64/lib/libGLESv2.lib ^
     -DOPENGLES3_INCLUDE_DIR=%APPVEYOR_BUILD_FOLDER%/angle/include ^
-    -DSDL2_LIBRARY=%APPVEYOR_BUILD_FOLDER%/SDL/VisualC-WinRT/UWP_VS2015/Release/SDL-UWP/SDL2.lib ^
+    -DSDL2_LIBRARY=%APPVEYOR_BUILD_FOLDER%/SDL/VisualC-WinRT/UWP_VS2015/X64/Release/SDL-UWP/SDL2.lib ^
     -DSDL2_INCLUDE_DIR=%APPVEYOR_BUILD_FOLDER%/SDL/include ^
     -DWITH_AUDIO=OFF ^
     -DWITH_SDL2APPLICATION=ON ^
@@ -72,5 +72,5 @@ cmake .. ^
     -DBUILD_TESTS=ON ^
     -DBUILD_STATIC=ON ^
     -DBUILD_PLUGINS_STATIC=ON ^
-    -G "Visual Studio 14 2015" || exit /b
+    -G "Visual Studio 14 2015" -A x64 || exit /b
 cmake --build . --config Release -- /m /v:m || exit /b

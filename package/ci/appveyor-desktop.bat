@@ -1,5 +1,5 @@
-call "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/vcvarsall.bat" || exit /b
-set PATH=%APPVEYOR_BUILD_FOLDER%/openal/bin/Win32;%APPVEYOR_BUILD_FOLDER%\deps\bin;%PATH%
+call "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/vcvarsall.bat" x64 || exit /b
+set PATH=%APPVEYOR_BUILD_FOLDER%/openal/bin/Win64;%APPVEYOR_BUILD_FOLDER%\deps\bin;%PATH%
 
 rem Build Corrade
 git clone --depth 1 git://github.com/mosra/corrade.git || exit /b
