@@ -282,9 +282,15 @@ in build directory. On Windows the tests require the library to be installed
 with DLLs accessible through `PATH`. See
 @ref building-windows "above Windows documentation" for more information.
 
-Platforms which have windowless context creation implemented (currently only
-desktop Linux) can build also tests for OpenGL functionality. You can enable
-them with `BUILD_GL_TESTS`.
+Platforms which have windowless GL context creation implemented (currently all
+platforms except @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten",
+@ref CORRADE_TARGET_NACL "NaCl", @ref CORRADE_TARGET_WINDOWS_RT "Windows RT"
+and @ref CORRADE_TARGET_ANDROID "Android")  can build also tests for OpenGL
+functionality. You can enable them with `BUILD_GL_TESTS`. All GL tests are
+suffixed with `GLTest` so they can be also selectively included/excluded when
+running CTest, e.g.:
+
+    ctest -R GLTest # run only tests requiring OpenGL context
 
 @subsection building-doc Building documentation
 
