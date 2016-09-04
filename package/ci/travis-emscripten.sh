@@ -59,4 +59,4 @@ cmake .. \
 make -j4
 
 # Test
-CORRADE_TEST_COLOR=ON ctest -V
+CORRADE_TEST_COLOR=ON ctest -V -E ALTest

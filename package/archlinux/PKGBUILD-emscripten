@@ -40,7 +40,7 @@ build() {
 
 check() {
     cd "$_rootdir/build-emscripten"
-    CORRADE_TEST_COLOR=ON ctest --output-on-failure
+    CORRADE_TEST_COLOR=ON ctest --output-on-failure -E ALTest
 }
 
 package() {
