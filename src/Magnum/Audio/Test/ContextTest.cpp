@@ -27,7 +27,6 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/Audio/Extensions.h"
 #include "Magnum/Audio/Context.h"
 
 namespace Magnum { namespace Audio { namespace Test {
@@ -35,29 +34,11 @@ namespace Magnum { namespace Audio { namespace Test {
 struct ContextTest: TestSuite::Tester {
     explicit ContextTest();
 
-    void extensionsString();
-    void isExtensionEnabled();
-
     void debugHrtfStatus();
-
-    Context _context;
 };
 
 ContextTest::ContextTest() {
-    addTests({&ContextTest::extensionsString,
-              &ContextTest::isExtensionEnabled,
-
-              &ContextTest::debugHrtfStatus});
-}
-
-void ContextTest::extensionsString() {
-    std::vector<std::string> extensions = _context.extensionStrings();
-
-    CORRADE_VERIFY(extensions.size() > 0);
-}
-
-void ContextTest::isExtensionEnabled() {
-    CORRADE_VERIFY(Context::current().isExtensionSupported<Extensions::ALC::EXT::ENUMERATION>());
+    addTests({&ContextTest::debugHrtfStatus});
 }
 
 void ContextTest::debugHrtfStatus() {

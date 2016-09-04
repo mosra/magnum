@@ -26,33 +26,32 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include <Magnum/SceneGraph/Scene.h>
-#include <Magnum/SceneGraph/Object.h>
-#include <Magnum/SceneGraph/MatrixTransformation3D.h>
-
 #include "Magnum/Audio/Context.h"
 #include "Magnum/Audio/Playable.h"
+#include "Magnum/SceneGraph/Scene.h"
+#include "Magnum/SceneGraph/Object.h"
+#include "Magnum/SceneGraph/MatrixTransformation3D.h"
 
 namespace Magnum { namespace Audio { namespace Test {
 
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 
-struct PlayableTest: TestSuite::Tester {
-    explicit PlayableTest();
+struct PlayableALTest: TestSuite::Tester {
+    explicit PlayableALTest();
 
-    void testFeature();
-    void testGroup();
+    void feature();
+    void group();
 
     Context _context;
 };
 
-PlayableTest::PlayableTest() {
-    addTests({&PlayableTest::testFeature,
-              &PlayableTest::testGroup});
+PlayableALTest::PlayableALTest() {
+    addTests({&PlayableALTest::feature,
+              &PlayableALTest::group});
 }
 
-void PlayableTest::testFeature() {
+void PlayableALTest::feature() {
     Scene3D scene;
     Object3D object{&scene};
     Source source;
@@ -65,7 +64,7 @@ void PlayableTest::testFeature() {
     CORRADE_COMPARE(playable.source().position(), offset);
 }
 
-void PlayableTest::testGroup() {
+void PlayableALTest::group() {
     Scene3D scene;
     Object3D object{&scene};
     Source source;
@@ -94,4 +93,4 @@ void PlayableTest::testGroup() {
 
 }}}
 
-CORRADE_TEST_MAIN(Magnum::Audio::Test::PlayableTest)
+CORRADE_TEST_MAIN(Magnum::Audio::Test::PlayableALTest)

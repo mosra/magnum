@@ -27,27 +27,17 @@
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Audio/Buffer.h"
-#include "Magnum/Audio/Context.h"
 
 namespace Magnum { namespace Audio { namespace Test {
 
 struct BufferTest: TestSuite::Tester {
     explicit BufferTest();
 
-    void construct();
     void debugFormat();
-
-    Context _context;
 };
 
 BufferTest::BufferTest() {
-    addTests({&BufferTest::construct,
-              &BufferTest::debugFormat});
-}
-
-void BufferTest::construct() {
-    Buffer buf;
-    CORRADE_VERIFY(buf.id() != 0);
+    addTests({&BufferTest::debugFormat});
 }
 
 void BufferTest::debugFormat() {

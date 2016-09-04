@@ -23,29 +23,30 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/Audio/Source.h"
+#include "Magnum/Audio/Buffer.h"
+#include "Magnum/Audio/Context.h"
 
 namespace Magnum { namespace Audio { namespace Test {
 
-struct SourceTest: TestSuite::Tester {
-    explicit SourceTest();
+struct BufferALTest: TestSuite::Tester {
+    explicit BufferALTest();
 
-    void debugState();
+    void construct();
+
+    Context _context;
 };
 
-SourceTest::SourceTest() {
-    addTests({&SourceTest::debugState});
+BufferALTest::BufferALTest() {
+    addTests({&BufferALTest::construct});
 }
 
-void SourceTest::debugState() {
-    std::ostringstream out;
-    Debug(&out) << Source::State::Playing << Source::State(0xdead);
-    CORRADE_COMPARE(out.str(), "Audio::Source::State::Playing Audio::Source::State(0xdead)\n");
+void BufferALTest::construct() {
+    Buffer buf;
+    CORRADE_VERIFY(buf.id() != 0);
 }
 
 }}}
 
-CORRADE_TEST_MAIN(Magnum::Audio::Test::SourceTest)
+CORRADE_TEST_MAIN(Magnum::Audio::Test::BufferALTest)
