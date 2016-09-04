@@ -27,6 +27,8 @@ namespace Magnum {
 /** @page cmake Usage with CMake
 @brief Guide how to find and use Magnum with CMake build system
 
+@tableofcontents
+
 Magnum uses CMake build system for both building and integration into your
 projects. The logic is in module `FindMagnum.cmake` distributed with the engine
 in `modules/` directory, you are encouraged to copy it along with
@@ -210,6 +212,28 @@ Corrade library provides also its own set of CMake macros and variables, see
 @ref corrade-cmake "its documentation" for more information.
 @ref cmake-plugins "Plugins repository", @ref cmake-integration "Integration repository"
 and @ref cmake-extras "Extras repository" have also their own CMake modules.
+
+@section cmake-modules Other CMake modules
+
+The `modules/` directory contains more useful CMake modules:
+
+-   `FindGLFW.cmake` -- CMake module for finding GLFW. Copy this to your module
+    directory if you want to use @ref Platform::GlfwApplication.
+-   `FindEGL.cmake` -- CMake module for finding EGL. Copy this to your
+    module directory if you want to target embedded platforms such as
+    @ref CORRADE_TARGET_IOS "iOS", @ref CORRADE_TARGET_ANDROID "Android",
+    @ref CORRADE_TARGET_WINDOWS_RT "Windows RT" or
+    @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" or if you want to use EGL
+    instead of GLX/WGL/CGL on a desktop platform.
+-   `FindOpenGLES2.cmake`, `FindOpenGLES3.cmake` -- CMake module for finding
+    OpenGL ES 2.0 / 3.0 library. Copy this to your module directory if you want
+    to target @ref MAGNUM_TARGET_GLES "OpenGL ES".
+-   `FindSDL2.cmake` -- CMake module for finding SDL 2. Copy this to your
+    module directory if you want to use @ref Platform::Sdl2Application.
+
+See also relevant section for @ref corrade-cmake-modules "Corrade",
+@ref cmake-plugins-modules "Plugins", @ref cmake-integration-modules "Integration"
+and @ref cmake-extras-modules "Extras" projects.
 
 */
 }
