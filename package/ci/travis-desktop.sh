@@ -8,7 +8,7 @@ mkdir build && cd build
 cmake .. \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_INSTALL_RPATH=$HOME/deps/lib \
-    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_BUILD_TYPE=Debug \
     -DWITH_INTERCONNECT=OFF
 make -j install
 cd ../..
@@ -17,7 +17,7 @@ mkdir build && cd build
 cmake .. \
     -DCMAKE_CXX_FLAGS=$COVERAGE \
     -DCMAKE_PREFIX_PATH="$HOME/deps;$HOME/sdl2;$HOME/glfw" \
-    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_BUILD_TYPE=Debug \
     -DWITH_AUDIO=ON \
     -DWITH_GLFWAPPLICATION=ON \
     -DWITH_SDL2APPLICATION=ON \
