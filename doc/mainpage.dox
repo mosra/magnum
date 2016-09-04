@@ -77,9 +77,9 @@ Graphics APIs:
 Platforms:
 
 -   **Linux** and embedded Linux (natively using GLX/EGL and Xlib or through
-    SDL2 or GLUT toolkit)
--   **Windows** natively or using ANGLE (through SDL2 or GLUT toolkit)
--   **OS X**, **iOS** (through SDL2 toolkit)
+    SDL2, GLFW or GLUT toolkit)
+-   **Windows** using both MSVC and MinGW, natively or using ANGLE (through SDL2, GLFW or GLUT toolkit)
+-   **OS X**, **iOS** (through SDL2 or GLFW toolkit)
 -   **Android** 2.3 (API Level 9) and higher
 -   **Windows RT** (Store/Phone) using ANGLE (through SDL2 toolkit)
 -   **Google Chrome** (through [Native Client](https://developers.google.com/native-client/),
