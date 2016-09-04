@@ -324,11 +324,18 @@ Debug& operator<<(Debug& debug, const DebugMessage::Source value) {
         _c(Application)
         #undef _c
         #ifdef MAGNUM_BUILD_DEPRECATED
+        #ifdef __GNUC__
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #endif
         case DebugMessage::Source::Api:
         case DebugMessage::Source::WindowSystem:
         case DebugMessage::Source::ShaderCompiler:
         case DebugMessage::Source::Other:
             return debug << DebugOutput::Source(value);
+        #ifdef __GNUC__
+        #pragma GCC diagnostic pop
+        #endif
         #endif
         /* LCOV_EXCL_STOP */
     }

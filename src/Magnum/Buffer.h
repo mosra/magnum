@@ -370,7 +370,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
              * @deprecated For @ref setTargetHint() only, use
              *      @ref TargetHint::Array instead.
              */
-            Array = GL_ARRAY_BUFFER,
+            Array CORRADE_DEPRECATED_ENUM("use Buffer::TargetHint::Array instead") = GL_ARRAY_BUFFER,
             #endif
 
             #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
@@ -391,14 +391,14 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
              * @deprecated For @ref setTargetHint() only, use
              *      @ref TargetHint::CopyRead instead.
              */
-            CopyRead = GL_COPY_READ_BUFFER,
+            CopyRead CORRADE_DEPRECATED_ENUM("use Buffer::TargetHint::CopyRead instead") = GL_COPY_READ_BUFFER,
 
             /**
              * @copydoc TargetHint::CopyWrite
              * @deprecated For @ref setTargetHint() only, use
              *      @ref TargetHint::CopyWrite instead.
              */
-            CopyWrite = GL_COPY_WRITE_BUFFER,
+            CopyWrite CORRADE_DEPRECATED_ENUM("use Buffer::TargetHint::CopyWrite instead") = GL_COPY_WRITE_BUFFER,
             #endif
 
             #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
@@ -407,14 +407,14 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
              * @deprecated For @ref setTargetHint() only, use
              *      @ref TargetHint::DispatchIndirect instead.
              */
-            DispatchIndirect = GL_DISPATCH_INDIRECT_BUFFER,
+            DispatchIndirect CORRADE_DEPRECATED_ENUM("use Buffer::TargetHint::DispatchIndirect instead") = GL_DISPATCH_INDIRECT_BUFFER,
 
             /**
              * @copydoc TargetHint::DrawIndirect
              * @deprecated For @ref setTargetHint() only, use
              *      @ref TargetHint::DrawIndirect instead.
              */
-            DrawIndirect = GL_DRAW_INDIRECT_BUFFER,
+            DrawIndirect CORRADE_DEPRECATED_ENUM("use Buffer::TargetHint::DrawIndirect instead") = GL_DRAW_INDIRECT_BUFFER,
             #endif
 
             /**
@@ -422,7 +422,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
              * @deprecated For @ref setTargetHint() only, use
              *      @ref TargetHint::ElementArray instead.
              */
-            ElementArray = GL_ELEMENT_ARRAY_BUFFER,
+            ElementArray CORRADE_DEPRECATED_ENUM("use Buffer::TargetHint::ElementArray instead") = GL_ELEMENT_ARRAY_BUFFER,
 
             #ifndef MAGNUM_TARGET_GLES2
             /**
@@ -430,14 +430,14 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
              * @deprecated For @ref setTargetHint() only, use
              *      @ref TargetHint::PixelPack instead.
              */
-            PixelPack = GL_PIXEL_PACK_BUFFER,
+            PixelPack CORRADE_DEPRECATED_ENUM("use Buffer::TargetHint::PixelPack instead") = GL_PIXEL_PACK_BUFFER,
 
             /**
              * @copydoc TargetHint::PixelUnpack
              * @deprecated For @ref setTargetHint() only, use
              *      @ref TargetHint::PixelUnpack instead.
              */
-            PixelUnpack = GL_PIXEL_UNPACK_BUFFER,
+            PixelUnpack CORRADE_DEPRECATED_ENUM("use Buffer::TargetHint::PixelUnpack instead") = GL_PIXEL_UNPACK_BUFFER,
             #endif
             #endif
 
@@ -458,7 +458,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
              * @deprecated For @ref setTargetHint() only, use
              *      @ref TargetHint::Texture instead.
              */
-            Texture = GL_TEXTURE_BUFFER,
+            Texture CORRADE_DEPRECATED_ENUM("use Buffer::TargetHint::Texture instead") = GL_TEXTURE_BUFFER,
             #endif
 
             #if defined(MAGNUM_BUILD_DEPRECATED) && !defined(MAGNUM_TARGET_GLES2)
@@ -467,7 +467,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
              * @deprecated For @ref setTargetHint() only, use
              *      @ref TargetHint::TransformFeedback instead.
              */
-            TransformFeedback = GL_TRANSFORM_FEEDBACK_BUFFER,
+            TransformFeedback CORRADE_DEPRECATED_ENUM("use Buffer::TargetHint::TransformFeedback instead") = GL_TRANSFORM_FEEDBACK_BUFFER,
             #endif
 
             #ifndef MAGNUM_TARGET_GLES2

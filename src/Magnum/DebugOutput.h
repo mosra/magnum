@@ -635,7 +635,7 @@ class MAGNUM_EXPORT DebugMessage {
         /** @copybrief DebugOutput::setCallback()
          * @deprecated Use @ref DebugOutput::setCallback() instead.
          */
-        CORRADE_DEPRECATED("use DebugOutput::setCallback() instead") static void setCallback(Callback callback, const void* userParam = nullptr) {
+        CORRADE_DEPRECATED("use DebugOutput::setCallback() instead") static void setCallback(DebugOutput::Callback callback, const void* userParam = nullptr) {
             DebugOutput::setCallback(reinterpret_cast<DebugOutput::Callback>(callback), userParam);
         }
 

@@ -676,6 +676,10 @@ Debug& operator<<(Debug& debug, Buffer::Target value) {
         #endif
 
         #ifdef MAGNUM_BUILD_DEPRECATED
+        #ifdef __GNUC__
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #endif
         case Buffer::Target::Array:
         #ifndef MAGNUM_TARGET_GLES2
         case Buffer::Target::CopyRead:
@@ -695,6 +699,9 @@ Debug& operator<<(Debug& debug, Buffer::Target value) {
         #endif
         #ifndef MAGNUM_TARGET_GLES2
         case Buffer::Target::TransformFeedback:
+        #ifdef __GNUC__
+        #pragma GCC diagnostic pop
+        #endif
         #endif
             return debug << static_cast<Buffer::TargetHint>(value);
         #endif
