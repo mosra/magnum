@@ -68,6 +68,7 @@ Supported formats:
     `VorbisAudioImporter`
 -   WAV (`*.wav`), loaded with @ref WavImporter "WavAudioImporter" or any other
     plugin that provides it
+-   FLAC (`*.flac`), loaded with any plugin that provides `FlacAudioImporter`
 
 Only loading from files is supported.
 */
