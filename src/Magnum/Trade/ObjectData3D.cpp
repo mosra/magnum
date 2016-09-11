@@ -31,11 +31,19 @@ ObjectData3D::ObjectData3D(std::vector<UnsignedInt> children, const Matrix4& tra
 
 ObjectData3D::ObjectData3D(std::vector<UnsignedInt> children, const Matrix4& transformation, const void* const importerState): _children{std::move(children)}, _transformation{transformation}, _instanceType{ObjectInstanceType3D::Empty}, _instance{-1}, _importerState{importerState} {}
 
-ObjectData3D::ObjectData3D(ObjectData3D&&) noexcept = default;
+ObjectData3D::ObjectData3D(ObjectData3D&&)
+    #if !defined(__GNUC__) || __GNUC__*100 + __GNUC_MINOR__ != 409
+    noexcept
+    #endif
+    = default;
 
 ObjectData3D::~ObjectData3D() = default;
 
-ObjectData3D& ObjectData3D::operator=(ObjectData3D&&) noexcept = default;
+ObjectData3D& ObjectData3D::operator=(ObjectData3D&&)
+    #if !defined(__GNUC__) || __GNUC__*100 + __GNUC_MINOR__ != 409
+    noexcept
+    #endif
+    = default;
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, ObjectInstanceType3D value) {

@@ -57,13 +57,27 @@ class MAGNUM_EXPORT MeshObjectData3D: public ObjectData3D {
         MeshObjectData3D(const MeshObjectData3D&) = delete;
 
         /** @brief Move constructor */
-        MeshObjectData3D(MeshObjectData3D&&) noexcept = default;
+        MeshObjectData3D(MeshObjectData3D&&)
+            /* GCC 4.9.0 (the one from Android NDK) thinks this does not match
+               the implicit signature so it can't be defaulted. Works on 4.7,
+               5.0 and everywhere else, so I don't bother. */
+            #if !defined(__GNUC__) || __GNUC__*100 + __GNUC_MINOR__ != 409
+            noexcept
+            #endif
+            = default;
 
         /** @brief Copying is not allowed */
         MeshObjectData3D& operator=(const MeshObjectData3D&) = delete;
 
         /** @brief Move assignment */
-        MeshObjectData3D& operator=(MeshObjectData3D&&) noexcept = default;
+        MeshObjectData3D& operator=(MeshObjectData3D&&)
+            /* GCC 4.9.0 (the one from Android NDK) thinks this does not match
+               the implicit signature so it can't be defaulted. Works on 4.7,
+               5.0 and everywhere else, so I don't bother. */
+            #if !defined(__GNUC__) || __GNUC__*100 + __GNUC_MINOR__ != 409
+            noexcept
+            #endif
+            = default;
 
         /**
          * @brief Material ID
