@@ -23,9 +23,9 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-if(CORRADE_TARGET_EMSCRIPTEN)
-    set(TRADE_TEST_DIR "")
-    set(TRADE_TEST_OUTPUT_DIR "/write")
+if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
+    set(TRADE_TEST_DIR ".")
+    set(TRADE_TEST_OUTPUT_DIR "./write")
 else()
     set(TRADE_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
     set(TRADE_TEST_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
@@ -36,7 +36,9 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
 
 corrade_add_test(TradeAbstractImageConverterTest AbstractImageConverterTest.cpp LIBRARIES Magnum)
 target_include_directories(TradeAbstractImageConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-corrade_add_test(TradeAbstractImporterTest AbstractImporterTest.cpp LIBRARIES Magnum)
+corrade_add_test(TradeAbstractImporterTest AbstractImporterTest.cpp
+    LIBRARIES Magnum
+    FILES file.bin)
 target_include_directories(TradeAbstractImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 corrade_add_test(TradeCameraDataTest CameraDataTest.cpp LIBRARIES Magnum)
 corrade_add_test(TradeImageDataTest ImageDataTest.cpp LIBRARIES Magnum)
@@ -48,7 +50,3 @@ corrade_add_test(TradeObjectData2DTest ObjectData2DTest.cpp LIBRARIES Magnum)
 corrade_add_test(TradeObjectData3DTest ObjectData3DTest.cpp LIBRARIES Magnum)
 corrade_add_test(TradeSceneDataTest SceneDataTest.cpp LIBRARIES Magnum)
 corrade_add_test(TradeTextureDataTest TextureDataTest.cpp LIBRARIES Magnum)
-
-if(CORRADE_TARGET_EMSCRIPTEN)
-    emscripten_embed_file(TradeAbstractImporterTest file.bin "/file.bin")
-endif()

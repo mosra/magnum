@@ -23,8 +23,8 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-if(CORRADE_TARGET_EMSCRIPTEN)
-    set(TGAIMPORTER_TEST_DIR "")
+if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
+    set(TGAIMPORTER_TEST_DIR ".")
 else()
     set(TGAIMPORTER_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
@@ -32,7 +32,9 @@ endif()
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-corrade_add_test(TgaImporterTest TgaImporterTest.cpp LIBRARIES MagnumTgaImporterTestLib)
+corrade_add_test(TgaImporterTest TgaImporterTest.cpp
+    LIBRARIES MagnumTgaImporterTestLib
+    FILES file.tga)
 target_include_directories(TgaImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 # On Win32 we need to avoid dllimporting TgaImporter symbols, because it would
 # search for the symbols in some DLL even though they were linked statically.
@@ -40,8 +42,4 @@ target_include_directories(TgaImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 # the static library. EH.
 if(WIN32)
     target_compile_definitions(TgaImporterTest PRIVATE "MAGNUM_TGAIMPORTER_BUILD_STATIC")
-endif()
-
-if(CORRADE_TARGET_EMSCRIPTEN)
-    emscripten_embed_file(TgaImporterTest file.tga "/file.tga")
 endif()

@@ -23,9 +23,9 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-if(CORRADE_TARGET_EMSCRIPTEN)
-    set(TEXT_TEST_DIR "")
-    set(TEXT_TEST_OUTPUT_DIR "/write")
+if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
+    set(TEXT_TEST_DIR ".")
+    set(TEXT_TEST_OUTPUT_DIR "./write")
 else()
     set(TEXT_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
     set(TEXT_TEST_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
@@ -34,16 +34,15 @@ endif()
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-corrade_add_test(TextAbstractFontTest AbstractFontTest.cpp LIBRARIES Magnum MagnumText)
+corrade_add_test(TextAbstractFontTest AbstractFontTest.cpp
+    LIBRARIES Magnum MagnumText
+    FILES data.bin)
 target_include_directories(TextAbstractFontTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-corrade_add_test(TextAbstractFontConverterTest AbstractFontConverterTest.cpp LIBRARIES Magnum MagnumText)
+corrade_add_test(TextAbstractFontConverterTest AbstractFontConverterTest.cpp
+    LIBRARIES Magnum MagnumText
+    FILES data.bin)
 target_include_directories(TextAbstractFontConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 corrade_add_test(TextAbstractLayouterTest AbstractLayouterTest.cpp LIBRARIES Magnum MagnumText)
-
-if(CORRADE_TARGET_EMSCRIPTEN)
-    emscripten_embed_file(TextAbstractFontTest data.bin "/data.bin")
-    emscripten_embed_file(TextAbstractFontConverterTest data.bin "/data.bin")
-endif()
 
 if(BUILD_GL_TESTS)
     corrade_add_test(TextGlyphCacheGLTest GlyphCacheGLTest.cpp LIBRARIES MagnumText ${GL_TEST_LIBRARIES})

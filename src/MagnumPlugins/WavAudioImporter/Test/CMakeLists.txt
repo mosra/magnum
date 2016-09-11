@@ -23,8 +23,8 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-if(CORRADE_TARGET_EMSCRIPTEN)
-    set(WAVAUDIOIMPORTER_TEST_DIR "")
+if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
+    set(WAVAUDIOIMPORTER_TEST_DIR ".")
 else()
     set(WAVAUDIOIMPORTER_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
@@ -32,7 +32,41 @@ endif()
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-corrade_add_test(WavAudioImporterTest WavImporterTest.cpp LIBRARIES MagnumWavAudioImporterTestLib)
+corrade_add_test(WavAudioImporterTest WavImporterTest.cpp
+    LIBRARIES MagnumWavAudioImporterTestLib
+    FILES
+        unsupportedChannelCount.wav
+        unsupportedFormat.wav
+        wrongSignature.wav
+
+        invalidPadding.wav
+        invalidLength.wav
+        invalidDataChunk.wav
+        invalidFactChunk.wav
+
+        mono4.wav
+        mono8.wav
+        mono8junk.wav
+        mono8ALaw.wav
+        mono8MuLaw.wav
+        mono16.wav
+        mono24.wav
+
+        stereo4.wav
+        stereo8.wav
+        stereo8ALaw.wav
+        stereo8MuLaw.wav
+        stereo12.wav
+        stereo16.wav
+        stereo24.wav
+        stereo32.wav
+
+        mono32f.wav
+        stereo32f.wav
+        stereo64f.wav
+
+        surround51Channel16.wav
+        surround71Channel24.wav)
 target_include_directories(WavAudioImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 # On Win32 we need to avoid dllimporting WavAudioImporter symbols, because it
 # would search for the symbols in some DLL even though they were linked
@@ -40,39 +74,4 @@ target_include_directories(WavAudioImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_D
 # when building the static library. EH.
 if(WIN32)
     target_compile_definitions(WavAudioImporterTest PRIVATE "MAGNUM_WAVAUDIOIMPORTER_BUILD_STATIC")
-endif()
-
-if(CORRADE_TARGET_EMSCRIPTEN)
-    emscripten_embed_file(WavAudioImporterTest unsupportedChannelCount.wav "/unsupportedChannelCount.wav")
-    emscripten_embed_file(WavAudioImporterTest unsupportedFormat.wav "/unsupportedFormat.wav")
-    emscripten_embed_file(WavAudioImporterTest wrongSignature.wav "/wrongSignature.wav")
-
-    emscripten_embed_file(WavAudioImporterTest invalidPadding.wav "/invalidPadding.wav")
-    emscripten_embed_file(WavAudioImporterTest invalidLength.wav "/invalidLength.wav")
-    emscripten_embed_file(WavAudioImporterTest invalidDataChunk.wav "/invalidDataChunk.wav")
-    emscripten_embed_file(WavAudioImporterTest invalidFactChunk.wav "/invalidFactChunk.wav")
-
-    emscripten_embed_file(WavAudioImporterTest mono4.wav "/mono4.wav")
-    emscripten_embed_file(WavAudioImporterTest mono8.wav "/mono8.wav")
-    emscripten_embed_file(WavAudioImporterTest mono8junk.wav "/mono8junk.wav")
-    emscripten_embed_file(WavAudioImporterTest mono8ALaw.wav "/mono8ALaw.wav")
-    emscripten_embed_file(WavAudioImporterTest mono8MuLaw.wav "/mono8MuLaw.wav")
-    emscripten_embed_file(WavAudioImporterTest mono16.wav "/mono16.wav")
-    emscripten_embed_file(WavAudioImporterTest mono24.wav "/mono24.wav")
-
-    emscripten_embed_file(WavAudioImporterTest stereo4.wav "/stereo4.wav")
-    emscripten_embed_file(WavAudioImporterTest stereo8.wav "/stereo8.wav")
-    emscripten_embed_file(WavAudioImporterTest stereo8ALaw.wav "/stereo8ALaw.wav")
-    emscripten_embed_file(WavAudioImporterTest stereo8MuLaw.wav "/stereo8MuLaw.wav")
-    emscripten_embed_file(WavAudioImporterTest stereo12.wav "/stereo12.wav")
-    emscripten_embed_file(WavAudioImporterTest stereo16.wav "/stereo16.wav")
-    emscripten_embed_file(WavAudioImporterTest stereo24.wav "/stereo24.wav")
-    emscripten_embed_file(WavAudioImporterTest stereo32.wav "/stereo32.wav")
-
-    emscripten_embed_file(WavAudioImporterTest mono32f.wav "/mono32f.wav")
-    emscripten_embed_file(WavAudioImporterTest stereo32f.wav "/stereo32f.wav")
-    emscripten_embed_file(WavAudioImporterTest stereo64f.wav "/stereo64f.wav")
-
-    emscripten_embed_file(WavAudioImporterTest surround51Channel16.wav "/surround51Channel16.wav")
-    emscripten_embed_file(WavAudioImporterTest surround71Channel24.wav "/surround71Channel24.wav")
 endif()
