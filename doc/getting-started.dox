@@ -110,6 +110,12 @@ standard CMake installation, these aren't part of it and thus must be
 distributed with the project. These files are just verbatim copied from Magnum
 repository.
 
+@note These modules are just the bare minimum you need for starting. If you
+    plan to use additional functionality not part of the core library or target
+    specific platforms, you may need to copy additional modules. See @ref cmake,
+    @ref cmake-plugins, @ref cmake-integration and @ref cmake-extras for more
+    information.
+
 Directory `src/` contains the actual project. To keep things simple, the
 project consists of just one source file with the most minimal code possible:
 @code
