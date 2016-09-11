@@ -70,15 +70,19 @@ if(WITH_ANDROIDAPPLICATION)
     set(MagnumAndroidApplication_PRIVATE_HEADERS
         Implementation/Egl.h)
 
+    add_library(MagnumAndroidApplicationGlue OBJECT
+        ${ANDROID_NATIVE_APP_GLUE_SRC})
+    set_target_properties(MagnumAndroidApplicationGlue PROPERTIES CORRADE_USE_PEDANTIC_FLAGS OFF)
+    target_compile_options(MagnumAndroidApplicationGlue PRIVATE "-fvisibility=default")
+
     add_library(MagnumAndroidApplication STATIC
         ${MagnumAndroidApplication_SRCS}
         ${MagnumAndroidApplication_HEADERS}
         ${MagnumAndroidApplication_PRIVATE_HEADERS}
-        ${ANDROID_NATIVE_APP_GLUE_SRC})
+        $<TARGET_OBJECTS:MagnumAndroidApplicationGlue>)
     # They just don't care, so of course the ANativeActivity_onCreate()
     # function is not exported and thus the app startup fails if I don't
     # disable hidden visibility for the file.
-    set_source_files_properties(${ANDROID_NATIVE_APP_GLUE_SRC} PROPERTIES COMPILE_FLAGS "-fvisibility=default")
     target_include_directories(MagnumAndroidApplication PUBLIC ${ANDROID_NATIVE_APP_GLUE_INCLUDE_DIR})
     set_target_properties(MagnumAndroidApplication PROPERTIES DEBUG_POSTFIX "-d")
     # Assuming that PIC is not needed because the Application lib is always
