@@ -179,10 +179,10 @@ usage is basically the same as above, but you need to explicitly find the
 plugin and link it into the executable in your `CMakeLists.txt`. See @ref cmake
 and @ref cmake-plugins for additional information.
 @code
-find_package(Magnum REQUIRED TgaImporter)
+find_package(MagnumPlugins REQUIRED PngImporter)
 
 add_executable(MyApp ...)
-target_link_libraries(MyApp ... Magnum::TgaImporter)
+target_link_libraries(MyApp ... MagnumPlugins::PngImporter)
 @endcode
 
 The only user-visible behavioral change will be that
