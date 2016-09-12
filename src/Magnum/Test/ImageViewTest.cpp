@@ -36,8 +36,16 @@ struct ImageViewTest: TestSuite::Tester {
     void construct();
     void constructNullptr();
     void constructCompressed();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void constructDeprecatedArrayView();
+    void constructDeprecatedArray();
+    #endif
 
     void setData();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void setDataDeprecatedArrayView();
+    void setDataDeprecatedArray();
+    #endif
     void setDataCompressed();
 };
 
@@ -45,8 +53,16 @@ ImageViewTest::ImageViewTest() {
     addTests({&ImageViewTest::construct,
               &ImageViewTest::constructNullptr,
               &ImageViewTest::constructCompressed,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &ImageViewTest::constructDeprecatedArrayView,
+              &ImageViewTest::constructDeprecatedArray,
+              #endif
 
               &ImageViewTest::setData,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &ImageViewTest::setDataDeprecatedArrayView,
+              &ImageViewTest::setDataDeprecatedArray,
+              #endif
               &ImageViewTest::setDataCompressed});
 }
 
@@ -85,6 +101,23 @@ void ImageViewTest::constructCompressed() {
     CORRADE_COMPARE(a.data(), data);
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+void ImageViewTest::constructDeprecatedArrayView() {
+    const char data[12]{};
+    Containers::ArrayView<const char> view{data};
+    ImageView2D a{PixelFormat::RGB, PixelType::UnsignedByte, {1, 3}, view};
+
+    CORRADE_COMPARE(a.data(), data);
+}
+
+void ImageViewTest::constructDeprecatedArray() {
+    Containers::Array<char> data{12};
+    ImageView2D a{PixelFormat::RGB, PixelType::UnsignedByte, {1, 3}, data};
+
+    CORRADE_COMPARE(a.data(), data);
+}
+#endif
+
 void ImageViewTest::setData() {
     const char data[3*3]{};
     ImageView2D a{PixelStorage{}.setAlignment(1),
@@ -98,6 +131,25 @@ void ImageViewTest::setData() {
     CORRADE_COMPARE(a.size(), Vector2i(1, 3));
     CORRADE_COMPARE(a.data(), data2);
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void ImageViewTest::setDataDeprecatedArrayView() {
+    ImageView2D a{PixelFormat::RGB, PixelType::UnsignedByte, {1, 3}, nullptr};
+
+    const char data[12]{};
+    Containers::ArrayView<const char> view{data};
+    a.setData(view);
+    CORRADE_COMPARE(a.data(), data);
+}
+
+void ImageViewTest::setDataDeprecatedArray() {
+    ImageView2D a{PixelFormat::RGB, PixelType::UnsignedByte, {1, 3}, nullptr};
+
+    Containers::Array<char> data{12};
+    a.setData(data);
+    CORRADE_COMPARE(a.data(), data);
+}
+#endif
 
 void ImageViewTest::setDataCompressed() {
     const char data[8]{};
