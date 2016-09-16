@@ -29,48 +29,37 @@
 #include <algorithm>
 
 #include "Magnum/Vk/Instance.h"
-#include "AbstractVulkanTester.h"
+#include "Magnum/Vk/Test/AbstractVulkanTester.h"
 
+
+using namespace Corrade;
 
 namespace Magnum { namespace Vk { namespace Test {
 
-struct InstanceVkTest: AbstractVulkanTester {
-    explicit InstanceVkTest();
+struct BufferTest: AbstractVulkanTester {
+    explicit BufferTest();
 
     void constructCopyMove();
-
-    void createInstance();
-    void createWithValidation();
+    void staging();
 };
 
-InstanceVkTest::InstanceVkTest() {
-    addTests({&InstanceVkTest::constructCopyMove,
-              &InstanceVkTest::createInstance,
-              &InstanceVkTest::createWithValidation});
+BufferTest::BufferTest() {
+    addTests({&BufferTest::constructCopyMove,
+              &BufferTest::staging});
 }
 
-void InstanceVkTest::constructCopyMove() {
+void BufferTest::constructCopyMove() {
     /* Only move-construction allowed */
-    CORRADE_VERIFY(!(std::is_constructible<Instance, const Instance&>{}));
-    CORRADE_VERIFY((std::is_constructible<Instance, Instance&&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Instance, const Instance&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Instance, Instance&&>{}));
+    CORRADE_VERIFY(!(std::is_constructible<Buffer, const Buffer&>{}));
+    CORRADE_VERIFY((std::is_constructible<Buffer, Buffer&&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<Buffer, const Buffer&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<Buffer, Buffer&&>{}));
 }
 
-void InstanceVkTest::createInstance() {
-    Vk::Instance Instance;
-
-    CORRADE_VERIFY(&Vk::Instance::current() != nullptr);
-    CORRADE_VERIFY(Vk::Instance::hasCurrent());
-    CORRADE_COMPARE(Instance.version(), Vk::Version::Vulkan_1_0);
-}
-
-void InstanceVkTest::createWithValidation() {
-    Vk::Instance Instance{Vk::Instance::Flag::EnableValidation};
-    CORRADE_VERIFY(Vk::Instance::hasCurrent());
-    CORRADE_COMPARE(Instance.version(), Vk::Version::Vulkan_1_0);
+void BufferTest::staging() {
+    MAGNUM_VK_VERIFY_NO_ERROR();
 }
 
 }}}
 
-MAGNUM_VK_TEST_MAIN(Magnum::Vk::Test::InstanceVkTest)
+MAGNUM_VK_TEST_MAIN(Magnum::Vk::Test::BufferTest)
