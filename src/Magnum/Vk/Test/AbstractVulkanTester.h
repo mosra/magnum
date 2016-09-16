@@ -27,6 +27,7 @@
 */
 
 #include <Corrade/TestSuite/Tester.h>
+#include <Magnum/Vk/Instance.h>
 
 using namespace Corrade;
 
@@ -36,15 +37,20 @@ class AbstractVulkanTester: public TestSuite::Tester {
     public:
         explicit AbstractVulkanTester();
 
+        Vk::Instance& instance() {
+            return _instance;
+        }
+
     private:
 
+        Vk::Instance _instance;
 };
 
 AbstractVulkanTester::AbstractVulkanTester(): TestSuite::Tester{TestSuite::Tester::TesterConfiguration{}.setSkippedArgumentPrefixes({"magnum"})} {
 
 }
 
-#define MAGNUM_VERIFY_NO_ERROR() CORRADE_COMPARE(Magnum::Renderer::error(), Magnum::Renderer::Error::NoError)
+#define MAGNUM_VK_VERIFY_NO_ERROR() CORRADE_COMPARE(Magnum::Vk::Instance::current().error(), Magnum::Vk::Result::Success)
 
 #if defined(CORRADE_TESTSUITE_TARGET_XCTEST)
 #define MAGNUM_VK_TEST_MAIN(Class)                                          \
