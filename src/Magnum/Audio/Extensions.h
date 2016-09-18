@@ -79,6 +79,9 @@ namespace AL {
     namespace EXT {
         _extension(AL,EXT,FLOAT32) // #???
         _extension(AL,EXT,DOUBLE) // #???
+        _extension(AL,EXT,ALAW) // #???
+        _extension(AL,EXT,MULAW) // #???
+        _extension(AL,EXT,MCFORMATS) // #???
     }
 } namespace ALC {
     namespace EXT {
