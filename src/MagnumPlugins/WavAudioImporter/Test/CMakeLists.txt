@@ -36,8 +36,20 @@ corrade_add_test(WavAudioImporterTest WavImporterTest.cpp LIBRARIES MagnumWavAud
 target_include_directories(WavAudioImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 if(CORRADE_TARGET_EMSCRIPTEN)
+
+    emscripten_embed_file(WavAudioImporterTest mono8.wav "/mono8.wav")
+    emscripten_embed_file(WavAudioImporterTest mono8ALaw.wav "/mono8ALaw.wav")
+    emscripten_embed_file(WavAudioImporterTest mono8MuLaw.wav "/mono8MuLaw.wav")
     emscripten_embed_file(WavAudioImporterTest mono16.wav "/mono16.wav")
+
     emscripten_embed_file(WavAudioImporterTest stereo8.wav "/stereo8.wav")
+    emscripten_embed_file(WavAudioImporterTest stereo8ALaw.wav "/stereo8ALaw.wav")
+    emscripten_embed_file(WavAudioImporterTest stereo8ALaw.wav "/stereo8MuLaw.wav")
+    emscripten_embed_file(WavAudioImporterTest stereo16.wav "/stereo16.wav")
+
+    emscripten_embed_file(WavAudioImporterTest mono32f.wav "/mono32f.wav")
+    emscripten_embed_file(WavAudioImporterTest stereo32f.wav "/stereo32f.wav")
+
     emscripten_embed_file(WavAudioImporterTest unsupportedChannelCount.wav "/unsupportedChannelCount.wav")
     emscripten_embed_file(WavAudioImporterTest unsupportedFormat.wav "/unsupportedFormat.wav")
     emscripten_embed_file(WavAudioImporterTest wrongSignature.wav "/wrongSignature.wav")

@@ -57,6 +57,12 @@ class Buffer {
             Stereo8 = AL_FORMAT_STEREO8,    /**< 8-bit interleaved unsigned stereo */
             Stereo16 = AL_FORMAT_STEREO16,  /**< 16-bit interleaved signed stereo */
 
+            MonoALaw = AL_FORMAT_MONO_ALAW_EXT,
+            StereoALaw = AL_FORMAT_STEREO_ALAW_EXT,
+
+            MonoMuLaw = AL_FORMAT_MONO_MULAW_EXT,
+            StereoMuLaw = AL_FORMAT_STEREO_MULAW_EXT,
+
             /**
              * @brief 32-bit floating-point mono
              *
@@ -83,7 +89,27 @@ class Buffer {
              *
              * @requires_al_extension Extension @al_extension{EXT,double}
              */
-            StereoDouble = AL_FORMAT_STEREO_DOUBLE_EXT
+            StereoDouble = AL_FORMAT_STEREO_DOUBLE_EXT,
+
+            Quad8 = AL_FORMAT_QUAD8,
+            Quad16 = AL_FORMAT_QUAD16,
+            Quad32 = AL_FORMAT_QUAD32,
+
+            Rear8 = AL_FORMAT_REAR8,
+            Rear16 = AL_FORMAT_REAR16,
+            Rear32 = AL_FORMAT_REAR32,
+
+            Five_1Chnl8 = AL_FORMAT_51CHN8,
+            Five_1Chnl16 = AL_FORMAT_51CHN16,
+            Five_1Chnl32 = AL_FORMAT_51CHN32,
+
+            Six_1Chnl8 = AL_FORMAT_61CHN8,
+            Six_1Chnl16 = AL_FORMAT_61CHN16,
+            Six_1Chnl32 = AL_FORMAT_61CHN32,
+
+            Seven_1Chnl8 = AL_FORMAT_71CHN8,
+            Seven_1Chnl16 = AL_FORMAT_71CHN16,
+            Seven_1Chnl32 = AL_FORMAT_71CHN32
         };
 
         /**
