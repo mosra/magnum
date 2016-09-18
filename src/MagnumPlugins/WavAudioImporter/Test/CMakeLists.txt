@@ -50,6 +50,8 @@ if(CORRADE_TARGET_EMSCRIPTEN)
     emscripten_embed_file(WavAudioImporterTest mono32f.wav "/mono32f.wav")
     emscripten_embed_file(WavAudioImporterTest stereo32f.wav "/stereo32f.wav")
 
+    emscripten_embed_file(WavAudioImporterTest surround616.wav "/surround616.wav")
+
     emscripten_embed_file(WavAudioImporterTest unsupportedChannelCount.wav "/unsupportedChannelCount.wav")
     emscripten_embed_file(WavAudioImporterTest unsupportedFormat.wav "/unsupportedFormat.wav")
     emscripten_embed_file(WavAudioImporterTest wrongSignature.wav "/wrongSignature.wav")

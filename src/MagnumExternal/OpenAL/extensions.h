@@ -33,6 +33,11 @@
 extern "C" {
 #endif
 
+/* For compatibility with Emscripten that does not define this macro */
+#ifndef AL_APIENTRY
+#define AL_APIENTRY
+#endif
+
 /* AL_EXT_float32 */
 #ifndef AL_EXT_float32
 #define AL_EXT_float32 1
@@ -106,8 +111,8 @@ extern "C" {
 #define ALC_HRTF_HEADPHONES_DETECTED_SOFT        0x0004
 #define ALC_HRTF_UNSUPPORTED_FORMAT_SOFT         0x0005
 
-//typedef ALCchar* (AL_APIENTRY*LPALGETSTRINGISOFT)(ALCdevice*,ALCenum,ALCsizei);
-//typedef ALCboolean (AL_APIENTRY*LPALRESETDEVICESOFT)(ALCdevice*,const ALCint*);
+typedef ALCchar* (AL_APIENTRY*LPALGETSTRINGISOFT)(ALCdevice*,ALCenum,ALCsizei);
+typedef ALCboolean (AL_APIENTRY*LPALRESETDEVICESOFT)(ALCdevice*,const ALCint*);
 #endif
 
 #ifdef __cplusplus
