@@ -44,11 +44,13 @@ if(CORRADE_TARGET_EMSCRIPTEN)
 
     emscripten_embed_file(WavAudioImporterTest stereo8.wav "/stereo8.wav")
     emscripten_embed_file(WavAudioImporterTest stereo8ALaw.wav "/stereo8ALaw.wav")
-    emscripten_embed_file(WavAudioImporterTest stereo8ALaw.wav "/stereo8MuLaw.wav")
+    emscripten_embed_file(WavAudioImporterTest stereo8MuLaw.wav "/stereo8MuLaw.wav")
     emscripten_embed_file(WavAudioImporterTest stereo16.wav "/stereo16.wav")
 
     emscripten_embed_file(WavAudioImporterTest mono32f.wav "/mono32f.wav")
     emscripten_embed_file(WavAudioImporterTest stereo32f.wav "/stereo32f.wav")
+
+    emscripten_embed_file(WavAudioImporterTest stereo64f.wav "/stereo64f.wav")
 
     emscripten_embed_file(WavAudioImporterTest surround616.wav "/surround616.wav")
 
