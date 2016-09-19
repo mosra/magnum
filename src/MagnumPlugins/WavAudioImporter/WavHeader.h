@@ -42,8 +42,8 @@ namespace Magnum { namespace Audio {
 #pragma pack(1)
 /** @brief RIFF chunk */
 struct RiffChunk {
-    char chunkId[4];            /**< @brief chunk name (4 characters)
-    UnsignedInt chunkSize;      /**< @brief size of chunk (does not include chunk header)
+    char chunkId[4];            /**< @brief chunk name (4 characters) */
+    UnsignedInt chunkSize;      /**< @brief size of chunk (does not include chunk header) */
 };
 #pragma pack()
 
