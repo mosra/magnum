@@ -99,9 +99,8 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
                     << "bits per sample";
             return;
         }
-    }
     /* Check IEEE Float format */
-    else if(formatChunk.audioFormat == WAVE_FORMAT_IEEE_FLOAT) {
+    } else if(formatChunk.audioFormat == WAVE_FORMAT_IEEE_FLOAT) {
         if(formatChunk.numChannels == 1 && formatChunk.bitsPerSample == 32)
             _format = Buffer::Format::MonoFloat;
         else if(formatChunk.numChannels == 2 && formatChunk.bitsPerSample == 32)
@@ -116,8 +115,8 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
                     << "bits per sample";
             return;
         }
-    }
-    else if(formatChunk.audioFormat == WAVE_FORMAT_ALAW) {
+    /* Check ALAW format */
+    } else if(formatChunk.audioFormat == WAVE_FORMAT_ALAW) {
         if(formatChunk.numChannels == 1)
             _format = Buffer::Format::MonoALaw;
         else if(formatChunk.numChannels == 2)
@@ -128,8 +127,8 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
                     << "bits per sample";
             return;
         }
-    }
-    else if(formatChunk.audioFormat == WAVE_FORMAT_MULAW) {
+    /* Check MULAW format */
+    } else if(formatChunk.audioFormat == WAVE_FORMAT_MULAW) {
         if(formatChunk.numChannels == 1)
             _format = Buffer::Format::MonoMuLaw;
         else if(formatChunk.numChannels == 2)
@@ -140,12 +139,12 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
                     << "bits per sample";
             return;
         }
-    }
-    else if(formatChunk.audioFormat == WAVE_FORMAT_EXTENSIBLE) {
+    /* We do not currently support EXTENSIBLE formats */
+    } else if(formatChunk.audioFormat == WAVE_FORMAT_EXTENSIBLE) {
         Error() << "Audio::WavImporter::openData(): unsupported audio format: extensible not implememented" << formatChunk.audioFormat;
         return;
-    }
-    else {
+    /* Unknown format */
+    } else {
         Error() << "Audio::WavImporter::openData(): unsupported audio format" << formatChunk.audioFormat;
         return;
     }
@@ -195,7 +194,7 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
     CORRADE_INTERNAL_ASSERT(!Utility::Endianness::isBigEndian());
 
     /* Copy the data */
-    const char* dataChunkPtr = reinterpret_cast<const char*>(++dataChunk);
+    const char* dataChunkPtr = reinterpret_cast<const char*>(dataChunk + 1);
     _data = Containers::Array<char>(dataChunkSize);
     std::copy(dataChunkPtr, dataChunkPtr+dataChunkSize, _data.begin());
     return;

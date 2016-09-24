@@ -45,6 +45,7 @@ class WavImporterTest: public TestSuite::Tester {
         void unsupportedChannelCount();
 
         void mono8();
+        void mono8junk();
         void mono8ALaw();
         void mono8MuLaw();
         void mono16();
@@ -67,6 +68,7 @@ WavImporterTest::WavImporterTest() {
               &WavImporterTest::unsupportedFormat,
               &WavImporterTest::unsupportedChannelCount,
               &WavImporterTest::mono8,
+//              &WavImporterTest::mono8junk,
               &WavImporterTest::mono8ALaw,
               &WavImporterTest::mono8MuLaw,
               &WavImporterTest::mono16,
@@ -119,6 +121,14 @@ void WavImporterTest::unsupportedChannelCount() {
 void WavImporterTest::mono8() {
     WavImporter importer;
     CORRADE_VERIFY(importer.openFile(Utility::Directory::join(WAVAUDIOIMPORTER_TEST_DIR, "mono8.wav")));
+
+    CORRADE_COMPARE(importer.format(), Buffer::Format::Mono8);
+    CORRADE_COMPARE(importer.frequency(), 22050);
+}
+
+void WavImporterTest::mono8junk() {
+    WavImporter importer;
+    CORRADE_VERIFY(importer.openFile(Utility::Directory::join(WAVAUDIOIMPORTER_TEST_DIR, "mono8junk.wav")));
 
     CORRADE_COMPARE(importer.format(), Buffer::Format::Mono8);
     CORRADE_COMPARE(importer.frequency(), 22050);

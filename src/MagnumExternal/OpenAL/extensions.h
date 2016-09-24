@@ -66,6 +66,7 @@ extern "C" {
 #define AL_FORMAT_STEREO_ALAW_EXT                0x10017
 #endif
 
+/* AL_EXT_MCFORMATS */
 #ifndef AL_EXT_MCFORMATS
 #define AL_EXT_MCFORMATS 1
 #define AL_FORMAT_QUAD8                          0x1204

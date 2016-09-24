@@ -38,6 +38,8 @@ target_include_directories(WavAudioImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_D
 if(CORRADE_TARGET_EMSCRIPTEN)
 
     emscripten_embed_file(WavAudioImporterTest mono8.wav "/mono8.wav")
+    emscripten_embed_file(WavAudioImporterTest mono8.wav "/mono8junk.wav")
+
     emscripten_embed_file(WavAudioImporterTest mono8ALaw.wav "/mono8ALaw.wav")
     emscripten_embed_file(WavAudioImporterTest mono8MuLaw.wav "/mono8MuLaw.wav")
     emscripten_embed_file(WavAudioImporterTest mono16.wav "/mono16.wav")
