@@ -57,17 +57,17 @@ Debug& operator<<(Debug& debug, const Buffer::Format value) {
          _c(Rear16)
          _c(Rear32)
 
-         _c(Five_1Chnl8)
-         _c(Five_1Chnl16)
-         _c(Five_1Chnl32)
+         _c(Surround51Channel8)
+         _c(Surround51Channel16)
+         _c(Surround51Channel32)
 
-         _c(Six_1Chnl8)
-         _c(Six_1Chnl16)
-         _c(Six_1Chnl32)
+         _c(Surround61Channel8)
+         _c(Surround61Channel16)
+         _c(Surround61Channel32)
 
-         _c(Seven_1Chnl8)
-         _c(Seven_1Chnl16)
-         _c(Seven_1Chnl32)
+         _c(Surround71Channel8)
+         _c(Surround71Channel16)
+         _c(Surround71Channel32)
 
         #undef _c
         /* LCOV_EXCL_STOP */
