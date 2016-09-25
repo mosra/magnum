@@ -30,6 +30,7 @@
 
 #include <al.h>
 #include <alc.h>
+#include <cstring>
 
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
@@ -75,6 +76,15 @@ Debug& operator<<(Debug& debug, const Context::HrtfStatus value) {
 
 Context* Context::_current = nullptr;
 
+std::vector<std::string> Context::deviceSpecifierStrings() {
+    std::vector<std::string> list;
+    const char* const devices = alcGetString(nullptr, ALC_DEVICE_SPECIFIER);
+    for(const char* device = devices; *device; device += std::strlen(device) + 1)
+        list.push_back(device);
+
+    return list;
+}
+
 bool Context::hasCurrent() { return _current; }
 
 Context& Context::current() {
@@ -87,11 +97,10 @@ Context::Context(): Context{Configuration{}} {}
 Context::Context(const Configuration& config) {
     CORRADE_ASSERT(!_current, "Audio::Context: context already created", );
 
-    /* Open default device */
-    const ALCchar* const defaultDevice = alcGetString(nullptr, ALC_DEFAULT_DEVICE_SPECIFIER);
-    _device = alcOpenDevice(defaultDevice);
-    if(!_device) {
-        Error() << "Audio::Context: cannot open sound device" << defaultDevice;
+    /* Open the device */
+    const ALCchar* const deviceSpecifier = config.deviceSpecifier().empty() ? alcGetString(nullptr, ALC_DEFAULT_DEVICE_SPECIFIER) : config.deviceSpecifier().data();
+    if(!(_device = alcOpenDevice(deviceSpecifier))) {
+        Error() << "Audio::Context: cannot open sound device" << deviceSpecifier;
         std::exit(1);
     }
 
@@ -187,6 +196,19 @@ bool Context::tryCreateContext(const Configuration& config) {
 
     _context = alcCreateContext(_device, attributes);
     return !!_context;
+}
+
+Context::Configuration::Configuration() = default;
+Context::Configuration::~Configuration() = default;
+
+Context::Configuration& Context::Configuration::setDeviceSpecifier(const std::string& specifier) {
+    _deviceSpecifier = specifier;
+    return *this;
+}
+
+Context::Configuration& Context::Configuration::setDeviceSpecifier(std::string&& specifier) {
+    _deviceSpecifier = std::move(specifier);
+    return *this;
 }
 
 }}

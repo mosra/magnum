@@ -88,6 +88,10 @@ int main(const int argc, const char** const argv) {
     Debug() << "";
 
     Audio::Context c;
+    Debug() << "Available devices:";
+    for(const auto& device: Audio::Context::deviceSpecifierStrings())
+        Debug() << "   " << device;
+    Debug() << "Current device:" << c.deviceSpecifierString();
 
     if(args.isSet("extension-strings")) {
         Debug() << "Extension strings:" << Debug::newline
