@@ -67,107 +67,32 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
         return;
     }
 
-    /* Get the WAV format header */
-    WavFormatChunk formatChunk(*reinterpret_cast<const WavFormatChunk*>(data.begin() + sizeof(WavHeaderChunk)));
-
-    /* Check is the format header is directly below WAV header */
-    if(std::strncmp(formatChunk.chunk.chunkId, "fmt ", 4) != 0) {
-        Error() << "Audio::WavImporter::openData(): the file signature is invalid";
-        return;
-    }
-
-    /* Fix endianness on Format chunk */
-    Utility::Endianness::littleEndianInPlace(
-        formatChunk.chunk.chunkSize, formatChunk.audioFormat, formatChunk.numChannels,
-        formatChunk.sampleRate, formatChunk.byteRate, formatChunk.blockAlign,
-        formatChunk.bitsPerSample);
-
-    /* Check PCM format */
-    if(formatChunk.audioFormat == WAVE_FORMAT_PCM) {
-        /* Decide about format */
-        if(formatChunk.numChannels == 1 && formatChunk.bitsPerSample == 8)
-            _format = Buffer::Format::Mono8;
-        else if(formatChunk.numChannels == 1 && formatChunk.bitsPerSample == 16)
-            _format = Buffer::Format::Mono16;
-        else if(formatChunk.numChannels == 2 && formatChunk.bitsPerSample == 8)
-            _format = Buffer::Format::Stereo8;
-        else if(formatChunk.numChannels == 2 && formatChunk.bitsPerSample == 16)
-             _format = Buffer::Format::Stereo16;
-        else {
-            Error() << "Audio::WavImporter::openData(): unsupported channel count"
-                    << formatChunk.numChannels << "with" << formatChunk.bitsPerSample
-                    << "bits per sample";
-            return;
-        }
-    /* Check IEEE Float format */
-    } else if(formatChunk.audioFormat == WAVE_FORMAT_IEEE_FLOAT) {
-        if(formatChunk.numChannels == 1 && formatChunk.bitsPerSample == 32)
-            _format = Buffer::Format::MonoFloat;
-        else if(formatChunk.numChannels == 2 && formatChunk.bitsPerSample == 32)
-            _format = Buffer::Format::StereoFloat;
-        else if(formatChunk.numChannels == 1 && formatChunk.bitsPerSample == 64)
-            _format = Buffer::Format::MonoDouble;
-        else if(formatChunk.numChannels == 2 && formatChunk.bitsPerSample == 64)
-            _format = Buffer::Format::StereoDouble;
-        else {
-            Error() << "Audio::WavImporter::openData(): unsupported channel count"
-                    << formatChunk.numChannels << "with" << formatChunk.bitsPerSample
-                    << "bits per sample";
-            return;
-        }
-    /* Check ALAW format */
-    } else if(formatChunk.audioFormat == WAVE_FORMAT_ALAW) {
-        if(formatChunk.numChannels == 1)
-            _format = Buffer::Format::MonoALaw;
-        else if(formatChunk.numChannels == 2)
-            _format = Buffer::Format::StereoALaw;
-        else {
-            Error() << "Audio::WavImporter::openData(): unsupported channel count"
-                    << formatChunk.numChannels << "with" << formatChunk.bitsPerSample
-                    << "bits per sample";
-            return;
-        }
-    /* Check MULAW format */
-    } else if(formatChunk.audioFormat == WAVE_FORMAT_MULAW) {
-        if(formatChunk.numChannels == 1)
-            _format = Buffer::Format::MonoMuLaw;
-        else if(formatChunk.numChannels == 2)
-            _format = Buffer::Format::StereoMuLaw;
-        else {
-            Error() << "Audio::WavImporter::openData(): unsupported channel count"
-                    << formatChunk.numChannels << "with" << formatChunk.bitsPerSample
-                    << "bits per sample";
-            return;
-        }
-    /* We do not currently support EXTENSIBLE formats */
-    } else if(formatChunk.audioFormat == WAVE_FORMAT_EXTENSIBLE) {
-        Error() << "Audio::WavImporter::openData(): unsupported audio format: extensible not implememented" << formatChunk.audioFormat;
-        return;
-    /* Unknown format */
-    } else {
-        Error() << "Audio::WavImporter::openData(): unsupported audio format" << formatChunk.audioFormat;
-        return;
-    }
-
-    /* Format sanity checks */
-    if(formatChunk.blockAlign != formatChunk.numChannels * formatChunk.bitsPerSample / 8 ||
-       formatChunk.byteRate != formatChunk.sampleRate * formatChunk.blockAlign) {
-        Error() << "Audio::WavImporter::openData(): the file is corrupted";
-        return;
-    }
-
     const RiffChunk* dataChunk = nullptr;
+    const WavFormatChunk* formatChunk = nullptr;
     UnsignedInt dataChunkSize = 0;
 
-    const UnsignedInt headerSize = sizeof(WavHeaderChunk) + sizeof(RiffChunk) + formatChunk.chunk.chunkSize;
+    const UnsignedInt headerSize = sizeof(WavHeaderChunk);
     UnsignedInt offset = 0;
 
-    /* Skip any chunks that aren't the data chunk */
+    /* Skip any chunks that aren't the format or data chunk */
     while(headerSize + offset <= header.chunk.chunkSize) {
         const RiffChunk* currChunk = reinterpret_cast<const RiffChunk*>(data.begin() + headerSize + offset);
         offset += Utility::Endianness::littleEndian(currChunk->chunkSize) + sizeof(RiffChunk);
 
-        if(std::strncmp(currChunk->chunkId, "data", 4) == 0) {
+        if(std::strncmp(currChunk->chunkId, "fmt ", 4) == 0) {
+            if(formatChunk != nullptr) {
+                Error() << "Audio::WavImporter::openData(): the file contains too many format chunks";
+                return;
+            }
+
+            formatChunk = reinterpret_cast<const WavFormatChunk*>(currChunk);
+
+        } else if(std::strncmp(currChunk->chunkId, "data", 4) == 0) {
+            if(dataChunk != nullptr) {
+                Error() << "Audio::WavImporter::openData(): the file contains too many data chunks";
+                return;
+            }
+
             dataChunk = currChunk;
             dataChunkSize = Utility::Endianness::littleEndian(currChunk->chunkSize);
 
@@ -175,9 +100,88 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
         }
     }
 
+    /* Make sure we actually got a format chunk */
+    if(formatChunk == nullptr) {
+        Error() << "Audio::WavImporter::openData(): the file contains no format chunk";
+        return;
+    }
+
     /* Make sure we actually got a data chunk */
     if(dataChunk == nullptr) {
         Error() << "Audio::WavImporter::openData(): the file contains no data chunk";
+        return;
+    }
+
+    /* Fix endianness on Format chunk */
+    Utility::Endianness::littleEndianInPlace(
+        formatChunk->chunk.chunkSize, formatChunk->audioFormat, formatChunk->numChannels,
+        formatChunk->sampleRate, formatChunk->byteRate, formatChunk->blockAlign,
+        formatChunk->bitsPerSample);
+
+    /* Check PCM format */
+    if(formatChunk->audioFormat == WAVE_FORMAT_PCM) {
+        /* Decide about format */
+        if(formatChunk->numChannels == 1 && formatChunk->bitsPerSample == 8)
+            _format = Buffer::Format::Mono8;
+        else if(formatChunk->numChannels == 1 && formatChunk->bitsPerSample == 16)
+            _format = Buffer::Format::Mono16;
+        else if(formatChunk->numChannels == 2 && formatChunk->bitsPerSample == 8)
+            _format = Buffer::Format::Stereo8;
+        else if(formatChunk->numChannels == 2 && formatChunk->bitsPerSample == 16)
+             _format = Buffer::Format::Stereo16;
+        else {
+            Error() << "Audio::WavImporter::openData(): unsupported channel count"
+                    << formatChunk->numChannels << "with" << formatChunk->bitsPerSample
+                    << "bits per sample";
+            return;
+        }
+    /* Check IEEE Float format */
+    } else if(formatChunk->audioFormat == WAVE_FORMAT_IEEE_FLOAT) {
+        if(formatChunk->numChannels == 1 && formatChunk->bitsPerSample == 32)
+            _format = Buffer::Format::MonoFloat;
+        else if(formatChunk->numChannels == 2 && formatChunk->bitsPerSample == 32)
+            _format = Buffer::Format::StereoFloat;
+        else if(formatChunk->numChannels == 1 && formatChunk->bitsPerSample == 64)
+            _format = Buffer::Format::MonoDouble;
+        else if(formatChunk->numChannels == 2 && formatChunk->bitsPerSample == 64)
+            _format = Buffer::Format::StereoDouble;
+        else {
+            Error() << "Audio::WavImporter::openData(): unsupported channel count"
+                    << formatChunk->numChannels << "with" << formatChunk->bitsPerSample
+                    << "bits per sample";
+            return;
+        }
+    /* Check ALAW format */
+    } else if(formatChunk->audioFormat == WAVE_FORMAT_ALAW) {
+        if(formatChunk->numChannels == 1)
+            _format = Buffer::Format::MonoALaw;
+        else if(formatChunk->numChannels == 2)
+            _format = Buffer::Format::StereoALaw;
+        else {
+            Error() << "Audio::WavImporter::openData(): unsupported channel count"
+                    << formatChunk->numChannels << "with" << formatChunk->bitsPerSample
+                    << "bits per sample";
+            return;
+        }
+    /* Check MULAW format */
+    } else if(formatChunk->audioFormat == WAVE_FORMAT_MULAW) {
+        if(formatChunk->numChannels == 1)
+            _format = Buffer::Format::MonoMuLaw;
+        else if(formatChunk->numChannels == 2)
+            _format = Buffer::Format::StereoMuLaw;
+        else {
+            Error() << "Audio::WavImporter::openData(): unsupported channel count"
+                    << formatChunk->numChannels << "with" << formatChunk->bitsPerSample
+                    << "bits per sample";
+            return;
+        }
+    /* We do not currently support EXTENSIBLE formats */
+    } else if(formatChunk->audioFormat == WAVE_FORMAT_EXTENSIBLE) {
+        Error() << "Audio::WavImporter::openData(): unsupported audio format: extensible not implememented" << formatChunk->audioFormat;
+        return;
+    /* Unknown format */
+    } else {
+        Error() << "Audio::WavImporter::openData(): unsupported audio format" << formatChunk->audioFormat;
         return;
     }
 
@@ -187,8 +191,17 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
         return;
     }
 
+    /* Format sanity checks */
+    if(formatChunk->blockAlign != formatChunk->numChannels * formatChunk->bitsPerSample / 8 ||
+       formatChunk->byteRate != formatChunk->sampleRate * formatChunk->blockAlign) {
+        Error() << "Audio::WavImporter::openData(): the file is corrupted";
+        return;
+    }
+
+
+
     /* Save frequency */
-    _frequency = formatChunk.sampleRate;
+    _frequency = formatChunk->sampleRate;
 
     /** @todo Convert the data from little endian too */
     CORRADE_INTERNAL_ASSERT(!Utility::Endianness::isBigEndian());
