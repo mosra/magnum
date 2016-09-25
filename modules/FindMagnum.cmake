@@ -73,6 +73,7 @@
 #  distancefieldconverter       - magnum-distancefieldconverter executable
 #  fontconverter                - magnum-fontconverter executable
 #  info                         - magnum-info executable
+#  al-info                      - magnum-al-info executable
 #
 # Example usage with specifying additional components is::
 #
@@ -344,7 +345,7 @@ endif()
 # components from other repositories)
 set(_MAGNUM_LIBRARY_COMPONENTS "^(Audio|DebugTools|MeshTools|Primitives|SceneGraph|Shaders|Shapes|Text|TextureTools|AndroidApplication|GlfwApplication|GlutApplication|GlxApplication|NaClApplication|Sdl2Application|XEglApplication|WindowlessCglApplication|WindowlessEglApplication|WindowlessGlxApplication|WindowlessIosApplication|WindowlessNaClApplication|WindowlessWglApplication|WindowlessWindowsEglApplication|CglContext|EglContext|GlxContext|WglContext)$")
 set(_MAGNUM_PLUGIN_COMPONENTS "^(MagnumFont|MagnumFontConverter|ObjImporter|TgaImageConverter|TgaImporter|WavAudioImporter)$")
-set(_MAGNUM_EXECUTABLE_COMPONENTS "^(distancefieldconverter|fontconverter|info)$")
+set(_MAGNUM_EXECUTABLE_COMPONENTS "^(distancefieldconverter|fontconverter|info|al-info)$")
 
 # Find all components
 foreach(_component ${Magnum_FIND_COMPONENTS})

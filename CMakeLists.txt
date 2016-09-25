@@ -59,7 +59,7 @@ if(CORRADE_TARGET_UNIX OR CORRADE_TARGET_NACL OR CORRADE_TARGET_WINDOWS)
     option(WITH_MAGNUMINFO "Build magnum-info utility" OFF)
 endif()
 
-# Utilities (currently only using GLX, CGL or WGL)
+# Desktop-only utilities
 if(CORRADE_TARGET_UNIX OR CORRADE_TARGET_WINDOWS)
     cmake_dependent_option(WITH_FONTCONVERTER "Build magnum-fontconverter utility" OFF "NOT TARGET_GLES" OFF)
     cmake_dependent_option(WITH_DISTANCEFIELDCONVERTER "Build magnum-distancefieldconverter utility" OFF "NOT TARGET_GLES" OFF)
@@ -83,6 +83,9 @@ cmake_dependent_option(WITH_SCENEGRAPH "Build SceneGraph library" ON "NOT WITH_S
 cmake_dependent_option(WITH_SHADERS "Build Shaders library" ON "NOT WITH_DEBUGTOOLS" ON)
 cmake_dependent_option(WITH_TEXT "Build Text library" ON "NOT WITH_MAGNUMFONT;NOT WITH_MAGNUMFONTCONVERTER" ON)
 cmake_dependent_option(WITH_TEXTURETOOLS "Build TextureTools library" ON "NOT WITH_TEXT;NOT WITH_DISTANCEFIELDCONVERTER" ON)
+
+# Magnum AL Info
+cmake_dependent_option(WITH_AL_INFO "Build magnum-al-info utility" OFF "WITH_AUDIO" OFF)
 
 # EGL context and windowless EGL application, available everywhere except on
 # platforms which don't support extension loading

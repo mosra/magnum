@@ -239,6 +239,8 @@ on Linux, Mac OS X and Windows, also disabled by default:
 
 -   `WITH_MAGNUMINFO` - @ref magnum-info "magnum-info" executable, provides
     information about the engine and OpenGL capabilities.
+-   `WITH_AL_INFO` -- @ref magnum-al-info "magnum-al-info" executable, provides
+    information about OpenAL capabilities.
 -   `WITH_DISTANCEFIELDCONVERTER` - @ref magnum-distancefieldconverter "magnum-distancefieldconverter"
     executable for converting black&white images to distance field textures.
     Enables also building of TextureTools library.

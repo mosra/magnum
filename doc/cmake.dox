@@ -143,6 +143,7 @@ Lastly, a few utility executables are available:
 -   `distancefieldconverter` -- @ref magnum-distancefieldconverter executable
 -   `fontconverter` -- @ref magnum-fontconverter executable
 -   `info` -- @ref magnum-info executable
+-   `al-info` -- @ref magnum-al-info executable
 
 Note that [each namespace](namespaces.html), all @ref Platform libraries and
 each plugin class contain more detailed information about dependencies,
