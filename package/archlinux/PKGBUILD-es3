@@ -32,6 +32,7 @@ build() {
         -DWITH_TGAIMPORTER=ON \
         -DWITH_WAVAUDIOIMPORTER=ON \
         -DWITH_MAGNUMINFO=ON \
+        -DWITH_AL_INFO=ON \
         -DBUILD_TESTS=ON \
         -DBUILD_GL_TESTS=ON \
         -G Ninja

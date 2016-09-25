@@ -42,6 +42,7 @@ src_configure() {
 		-DWITH_DISTANCEFIELDCONVERTER=ON
 		-DWITH_FONTCONVERTER=ON
 		-DWITH_MAGNUMINFO=ON
+		-DWITH_AL_INFO=ON
 	)
 	cmake-utils_src_configure
 }
