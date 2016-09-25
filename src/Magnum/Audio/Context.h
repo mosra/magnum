@@ -315,12 +315,7 @@ class MAGNUM_AUDIO_EXPORT Context::Configuration {
         };
 
         /** @brief Constructor */
-        explicit Configuration():
-            _frequency(-1),
-            _monoSources(-1),
-            _stereoSources(-1),
-            _refreshRate(-1)
-        {}
+        explicit Configuration() {}
 
         /** @brief Sampling rate in Hz */
         Int frequency() const { return _frequency; }
@@ -397,13 +392,13 @@ class MAGNUM_AUDIO_EXPORT Context::Configuration {
         }
 
     private:
-        Int _frequency;
-        Hrtf _hrtf;
+        Int _frequency{-1};
+        Hrtf _hrtf{};
 
-        Int _monoSources;
-        Int _stereoSources;
+        Int _monoSources{-1};
+        Int _stereoSources{-1};
 
-        Int _refreshRate;
+        Int _refreshRate{-1};
 };
 
 
