@@ -24,6 +24,7 @@
 #
 
 set(WavAudioImporter_SRCS
+    WavHeader.cpp
     WavImporter.cpp)
 
 set(WavAudioImporter_HEADERS

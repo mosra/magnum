@@ -141,6 +141,7 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
                     << "bits per sample";
             return;
         }
+
     /* Check IEEE Float format */
     } else if(formatChunk->audioFormat == WAVE_FORMAT_IEEE_FLOAT) {
         if(formatChunk->numChannels == 1 && formatChunk->bitsPerSample == 32)
@@ -157,6 +158,7 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
                     << "bits per sample";
             return;
         }
+
     /* Check ALAW format */
     } else if(formatChunk->audioFormat == WAVE_FORMAT_ALAW) {
         if(formatChunk->numChannels == 1)
@@ -169,6 +171,7 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
                     << "bits per sample";
             return;
         }
+
     /* Check MULAW format */
     } else if(formatChunk->audioFormat == WAVE_FORMAT_MULAW) {
         if(formatChunk->numChannels == 1)
@@ -203,8 +206,6 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
         Error() << "Audio::WavImporter::openData(): the file is corrupted";
         return;
     }
-
-
 
     /* Save frequency */
     _frequency = formatChunk->sampleRate;

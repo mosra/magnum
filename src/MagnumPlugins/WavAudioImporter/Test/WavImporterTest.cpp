@@ -63,21 +63,22 @@ class WavImporterTest: public TestSuite::Tester {
 };
 
 WavImporterTest::WavImporterTest() {
-    addTests({
-
-              &WavImporterTest::wrongSize,
+    addTests({&WavImporterTest::wrongSize,
               &WavImporterTest::wrongSignature,
               &WavImporterTest::unsupportedFormat,
               &WavImporterTest::unsupportedChannelCount,
+
               &WavImporterTest::mono8,
               &WavImporterTest::mono8junk,
               &WavImporterTest::mono8ALaw,
               &WavImporterTest::mono8MuLaw,
               &WavImporterTest::mono16,
+
               &WavImporterTest::stereo8,
               &WavImporterTest::stereo8ALaw,
               &WavImporterTest::stereo8MuLaw,
               &WavImporterTest::stereo16,
+
               &WavImporterTest::mono32f,
               &WavImporterTest::stereo32f,
               &WavImporterTest::stereo64f,

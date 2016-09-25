@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Struct @ref Magnum::Audio::WavHeader
+ * @brief Struct @ref Magnum::Audio::RiffChunk, @ref Magnum::Audio::WavHeaderChunk, @ref Magnum::Audio::WavFormatChunk, enum @ref Magnum::Audio::WavAudioFormat
  */
 
 #include "Magnum/Types.h"
@@ -61,8 +61,6 @@ struct WavFormatChunk {
     UnsignedShort bitsPerSample;    /**< @brief Bits per sample (one channel) */
 };
 #pragma pack()
-
-static_assert(sizeof(WavHeaderChunk) + sizeof(WavFormatChunk) + sizeof(RiffChunk) == 44, "WavHeader size is not 44 bytes");
 
 }}
 

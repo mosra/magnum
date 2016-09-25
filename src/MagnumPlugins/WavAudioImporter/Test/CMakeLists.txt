@@ -36,7 +36,6 @@ corrade_add_test(WavAudioImporterTest WavImporterTest.cpp LIBRARIES MagnumWavAud
 target_include_directories(WavAudioImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 if(CORRADE_TARGET_EMSCRIPTEN)
-
     emscripten_embed_file(WavAudioImporterTest mono8.wav "/mono8.wav")
     emscripten_embed_file(WavAudioImporterTest mono8.wav "/mono8junk.wav")
 
