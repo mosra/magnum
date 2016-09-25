@@ -35,4 +35,20 @@ static_assert(sizeof(RiffChunk) == 8, "RiffChunk size is not 8 bytes");
 static_assert(sizeof(WavHeaderChunk) == 12, "WavHeaderChunk size is not 12 bytes");
 static_assert(sizeof(WavFormatChunk) == 24, "WavFormatChunk size is not 18 bytes");
 
+Debug& operator<<(Debug& debug, const WavAudioFormat value) {
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case WavAudioFormat::value: return debug << "Audio::WavAudioFormat::" #value;
+        _c(Pcm)
+        _c(IeeeFloat)
+        _c(ALaw)
+        _c(MuLaw)
+        _c(Extensible)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "Audio::WavAudioFormat(" << Debug::nospace << reinterpret_cast<void*>(UnsignedShort(value)) << Debug::nospace << ")";
+}
+
 }}

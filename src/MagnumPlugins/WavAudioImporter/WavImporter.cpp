@@ -31,12 +31,6 @@
 
 #include "MagnumPlugins/WavAudioImporter/WavHeader.h"
 
-#define WAVE_FORMAT_PCM 0x0001
-#define WAVE_FORMAT_IEEE_FLOAT 0x0003
-#define WAVE_FORMAT_ALAW 0x0006
-#define WAVE_FORMAT_MULAW 0x0007
-#define WAVE_FORMAT_EXTENSIBLE 0xFFFE
-
 namespace Magnum { namespace Audio {
 
 WavImporter::WavImporter() = default;
@@ -125,7 +119,7 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
         formatChunk->bitsPerSample);
 
     /* Check PCM format */
-    if(formatChunk->audioFormat == WAVE_FORMAT_PCM) {
+    if(formatChunk->audioFormat == WavAudioFormat::Pcm) {
         /* Decide about format */
         if(formatChunk->numChannels == 1 && formatChunk->bitsPerSample == 8)
             _format = Buffer::Format::Mono8;
@@ -143,7 +137,7 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
         }
 
     /* Check IEEE Float format */
-    } else if(formatChunk->audioFormat == WAVE_FORMAT_IEEE_FLOAT) {
+    } else if(formatChunk->audioFormat == WavAudioFormat::IeeeFloat) {
         if(formatChunk->numChannels == 1 && formatChunk->bitsPerSample == 32)
             _format = Buffer::Format::MonoFloat;
         else if(formatChunk->numChannels == 2 && formatChunk->bitsPerSample == 32)
@@ -160,7 +154,7 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
         }
 
     /* Check ALAW format */
-    } else if(formatChunk->audioFormat == WAVE_FORMAT_ALAW) {
+    } else if(formatChunk->audioFormat == WavAudioFormat::ALaw) {
         if(formatChunk->numChannels == 1)
             _format = Buffer::Format::MonoALaw;
         else if(formatChunk->numChannels == 2)
@@ -173,7 +167,7 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
         }
 
     /* Check MULAW format */
-    } else if(formatChunk->audioFormat == WAVE_FORMAT_MULAW) {
+    } else if(formatChunk->audioFormat == WavAudioFormat::MuLaw) {
         if(formatChunk->numChannels == 1)
             _format = Buffer::Format::MonoMuLaw;
         else if(formatChunk->numChannels == 2)
@@ -184,13 +178,10 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
                     << "bits per sample";
             return;
         }
-    /* We do not currently support EXTENSIBLE formats */
-    } else if(formatChunk->audioFormat == WAVE_FORMAT_EXTENSIBLE) {
-        Error() << "Audio::WavImporter::openData(): unsupported audio format: extensible not implememented" << formatChunk->audioFormat;
-        return;
-    /* Unknown format */
+
+    /* Unknown/unimplemented format */
     } else {
-        Error() << "Audio::WavImporter::openData(): unsupported audio format" << formatChunk->audioFormat;
+        Error() << "Audio::WavImporter::openData(): unsupported format" << formatChunk->audioFormat;
         return;
     }
 

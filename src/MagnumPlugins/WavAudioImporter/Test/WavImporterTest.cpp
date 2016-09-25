@@ -30,6 +30,7 @@
 #include <Corrade/Utility/Directory.h>
 
 #include "MagnumPlugins/WavAudioImporter/WavImporter.h"
+#include "MagnumPlugins/WavAudioImporter/WavHeader.h"
 
 #include "configure.h"
 
@@ -60,6 +61,8 @@ class WavImporterTest: public TestSuite::Tester {
         void stereo64f();
 
         void surround616();
+
+        void debugAudioFormat();
 };
 
 WavImporterTest::WavImporterTest() {
@@ -82,7 +85,9 @@ WavImporterTest::WavImporterTest() {
               &WavImporterTest::mono32f,
               &WavImporterTest::stereo32f,
               &WavImporterTest::stereo64f,
-              &WavImporterTest::surround616});
+              &WavImporterTest::surround616,
+
+              &WavImporterTest::debugAudioFormat});
 }
 
 void WavImporterTest::wrongSize() {
@@ -109,7 +114,7 @@ void WavImporterTest::unsupportedFormat() {
 
     WavImporter importer;
     CORRADE_VERIFY(!importer.openFile(Utility::Directory::join(WAVAUDIOIMPORTER_TEST_DIR, "unsupportedFormat.wav")));
-    CORRADE_COMPARE(out.str(), "Audio::WavImporter::openData(): unsupported audio format 2\n");
+    CORRADE_COMPARE(out.str(), "Audio::WavImporter::openData(): unsupported format Audio::WavAudioFormat(0x2)\n");
 }
 
 void WavImporterTest::unsupportedChannelCount() {
@@ -231,7 +236,14 @@ void WavImporterTest::surround616() {
     WavImporter importer;
 
     CORRADE_VERIFY(!importer.openFile(Utility::Directory::join(WAVAUDIOIMPORTER_TEST_DIR, "surround616.wav")));
-    CORRADE_COMPARE(out.str(), "Audio::WavImporter::openData(): unsupported audio format: extensible not implememented 65534\n");
+    CORRADE_COMPARE(out.str(), "Audio::WavImporter::openData(): unsupported format Audio::WavAudioFormat::Extensible\n");
+}
+
+void WavImporterTest::debugAudioFormat() {
+    std::ostringstream out;
+
+    Debug{&out} << WavAudioFormat::IeeeFloat << WavAudioFormat(0xdead);
+    CORRADE_COMPARE(out.str(), "Audio::WavAudioFormat::IeeeFloat Audio::WavAudioFormat(0xdead)\n");
 }
 
 }}}
