@@ -45,6 +45,10 @@ class WavImporterTest: public TestSuite::Tester {
         void wrongSignature();
         void unsupportedFormat();
         void unsupportedChannelCount();
+        void invalidPadding();
+        void invalidLength();
+        void invalidDataChunk();
+        void invalidFactChunk();
 
         void mono8();
         void mono8junk();
@@ -55,7 +59,9 @@ class WavImporterTest: public TestSuite::Tester {
         void stereo8();
         void stereo8ALaw();
         void stereo8MuLaw();
+        void stereo12();
         void stereo16();
+        void stereo24();
 
         void mono32f();
         void stereo32f();
@@ -71,6 +77,10 @@ WavImporterTest::WavImporterTest() {
               &WavImporterTest::wrongSignature,
               &WavImporterTest::unsupportedFormat,
               &WavImporterTest::unsupportedChannelCount,
+              &WavImporterTest::invalidPadding,
+              &WavImporterTest::invalidLength,
+              &WavImporterTest::invalidDataChunk,
+              &WavImporterTest::invalidFactChunk,
 
               &WavImporterTest::mono8,
               &WavImporterTest::mono8junk,
@@ -81,7 +91,9 @@ WavImporterTest::WavImporterTest() {
               &WavImporterTest::stereo8,
               &WavImporterTest::stereo8ALaw,
               &WavImporterTest::stereo8MuLaw,
+              &WavImporterTest::stereo12,
               &WavImporterTest::stereo16,
+              &WavImporterTest::stereo24,
 
               &WavImporterTest::mono32f,
               &WavImporterTest::stereo32f,
@@ -125,6 +137,41 @@ void WavImporterTest::unsupportedChannelCount() {
     WavImporter importer;
     CORRADE_VERIFY(!importer.openFile(Utility::Directory::join(WAVAUDIOIMPORTER_TEST_DIR, "unsupportedChannelCount.wav")));
     CORRADE_COMPARE(out.str(), "Audio::WavImporter::openData(): unsupported channel count 6 with 8 bits per sample\n");
+}
+
+void WavImporterTest::invalidPadding() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    WavImporter importer;
+    CORRADE_VERIFY(!importer.openFile(Utility::Directory::join(WAVAUDIOIMPORTER_TEST_DIR, "invalidPadding.wav")));
+    CORRADE_COMPARE(out.str(), "Audio::WavImporter::openData(): the file has improper size, expected 66 but got 73\n");
+}
+
+void WavImporterTest::invalidLength() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    WavImporter importer;
+    CORRADE_VERIFY(!importer.openFile(Utility::Directory::join(WAVAUDIOIMPORTER_TEST_DIR, "invalidLength.wav")));
+    CORRADE_COMPARE(out.str(), "Audio::WavImporter::openData(): the file has improper size, expected 160844 but got 80444\n");
+}
+
+void WavImporterTest::invalidDataChunk() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    WavImporter importer;
+    CORRADE_VERIFY(!importer.openFile(Utility::Directory::join(WAVAUDIOIMPORTER_TEST_DIR, "invalidDataChunk.wav")));
+    CORRADE_COMPARE(out.str(), "Audio::WavImporter::openData(): the file contains no data chunk\n");
+}
+
+void WavImporterTest::invalidFactChunk() {
+    WavImporter importer;
+    CORRADE_VERIFY(importer.openFile(Utility::Directory::join(WAVAUDIOIMPORTER_TEST_DIR, "invalidFactChunk.wav")));
+
+    CORRADE_COMPARE(importer.format(), Buffer::Format::Mono16);
+    CORRADE_COMPARE(importer.frequency(), 22050);
 }
 
 void WavImporterTest::mono8() {
@@ -197,6 +244,15 @@ void WavImporterTest::stereo8MuLaw() {
     CORRADE_COMPARE(importer.frequency(), 8000);
 }
 
+void WavImporterTest::stereo12() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    WavImporter importer;
+
+    CORRADE_VERIFY(!importer.openFile(Utility::Directory::join(WAVAUDIOIMPORTER_TEST_DIR, "stereo12.wav")));
+    CORRADE_COMPARE(out.str(), "Audio::WavImporter::openData(): unsupported channel count 2 with 12 bits per sample\n");
+}
 
 void WavImporterTest::stereo16() {
     WavImporter importer;
@@ -204,6 +260,16 @@ void WavImporterTest::stereo16() {
 
     CORRADE_COMPARE(importer.format(), Buffer::Format::Stereo16);
     CORRADE_COMPARE(importer.frequency(), 44100);
+}
+
+void WavImporterTest::stereo24() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    WavImporter importer;
+
+    CORRADE_VERIFY(!importer.openFile(Utility::Directory::join(WAVAUDIOIMPORTER_TEST_DIR, "stereo24.wav")));
+    CORRADE_COMPARE(out.str(), "Audio::WavImporter::openData(): unsupported channel count 2 with 24 bits per sample\n");
 }
 
 void WavImporterTest::mono32f() {

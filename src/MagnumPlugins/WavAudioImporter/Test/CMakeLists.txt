@@ -43,6 +43,15 @@ if(WIN32)
 endif()
 
 if(CORRADE_TARGET_EMSCRIPTEN)
+    emscripten_embed_file(WavAudioImporterTest unsupportedChannelCount.wav "/unsupportedChannelCount.wav")
+    emscripten_embed_file(WavAudioImporterTest unsupportedFormat.wav "/unsupportedFormat.wav")
+    emscripten_embed_file(WavAudioImporterTest wrongSignature.wav "/wrongSignature.wav")
+
+    emscripten_embed_file(WavAudioImporterTest invalidPadding.wav "/invalidPadding.wav")
+    emscripten_embed_file(WavAudioImporterTest invalidLength.wav "/invalidLength.wav")
+    emscripten_embed_file(WavAudioImporterTest invalidDataChunk.wav "/invalidDataChunk.wav")
+    emscripten_embed_file(WavAudioImporterTest invalidFactChunk.wav "/invalidFactChunk.wav")
+
     emscripten_embed_file(WavAudioImporterTest mono8.wav "/mono8.wav")
     emscripten_embed_file(WavAudioImporterTest mono8.wav "/mono8junk.wav")
 
@@ -53,7 +62,9 @@ if(CORRADE_TARGET_EMSCRIPTEN)
     emscripten_embed_file(WavAudioImporterTest stereo8.wav "/stereo8.wav")
     emscripten_embed_file(WavAudioImporterTest stereo8ALaw.wav "/stereo8ALaw.wav")
     emscripten_embed_file(WavAudioImporterTest stereo8MuLaw.wav "/stereo8MuLaw.wav")
+    emscripten_embed_file(WavAudioImporterTest stereo12.wav "/stereo12.wav")
     emscripten_embed_file(WavAudioImporterTest stereo16.wav "/stereo16.wav")
+    emscripten_embed_file(WavAudioImporterTest stereo24.wav "/stereo24.wav")
 
     emscripten_embed_file(WavAudioImporterTest mono32f.wav "/mono32f.wav")
     emscripten_embed_file(WavAudioImporterTest stereo32f.wav "/stereo32f.wav")
@@ -61,8 +72,4 @@ if(CORRADE_TARGET_EMSCRIPTEN)
     emscripten_embed_file(WavAudioImporterTest stereo64f.wav "/stereo64f.wav")
 
     emscripten_embed_file(WavAudioImporterTest surround616.wav "/surround616.wav")
-
-    emscripten_embed_file(WavAudioImporterTest unsupportedChannelCount.wav "/unsupportedChannelCount.wav")
-    emscripten_embed_file(WavAudioImporterTest unsupportedFormat.wav "/unsupportedFormat.wav")
-    emscripten_embed_file(WavAudioImporterTest wrongSignature.wav "/wrongSignature.wav")
 endif()
