@@ -32,6 +32,21 @@
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Trade/Trade.h"
 
+#include "MagnumPlugins/MagnumFont/configure.h"
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+#ifndef MAGNUM_MAGNUMFONT_BUILD_STATIC
+    #if defined(MagnumFont_EXPORTS) || defined(MagnumFontObjects_EXPORTS)
+        #define MAGNUM_MAGNUMFONT_EXPORT CORRADE_VISIBILITY_EXPORT
+    #else
+        #define MAGNUM_MAGNUMFONT_EXPORT CORRADE_VISIBILITY_IMPORT
+    #endif
+#else
+    #define MAGNUM_MAGNUMFONT_EXPORT CORRADE_VISIBILITY_STATIC
+#endif
+#define MAGNUM_MAGNUMFONT_LOCAL CORRADE_VISIBILITY_LOCAL
+#endif
+
 namespace Magnum { namespace Text {
 
 /**
@@ -101,9 +116,9 @@ The file syntax is as in following:
 
     # ...
 
-@see Trade::TgaImporter
+@see @ref Trade::TgaImporter
 */
-class MagnumFont: public AbstractFont {
+class MAGNUM_MAGNUMFONT_EXPORT MagnumFont: public AbstractFont {
     public:
         /** @brief Default constructor */
         explicit MagnumFont();
@@ -116,25 +131,18 @@ class MagnumFont: public AbstractFont {
     private:
         struct Data;
 
-        Features doFeatures() const override;
+        MAGNUM_MAGNUMFONT_LOCAL Features doFeatures() const override;
+        MAGNUM_MAGNUMFONT_LOCAL bool doIsOpened() const override;
+        MAGNUM_MAGNUMFONT_LOCAL Metrics doOpenData(const std::vector<std::pair<std::string, Containers::ArrayView<const char>>>& data, Float) override;
+        MAGNUM_MAGNUMFONT_LOCAL Metrics doOpenFile(const std::string& filename, Float) override;
+        MAGNUM_MAGNUMFONT_LOCAL void doClose() override;
 
-        bool doIsOpened() const override;
+        MAGNUM_MAGNUMFONT_LOCAL UnsignedInt doGlyphId(char32_t character) override;
+        MAGNUM_MAGNUMFONT_LOCAL Vector2 doGlyphAdvance(UnsignedInt glyph) override;
+        MAGNUM_MAGNUMFONT_LOCAL std::unique_ptr<GlyphCache> doCreateGlyphCache() override;
+        MAGNUM_MAGNUMFONT_LOCAL std::unique_ptr<AbstractLayouter> doLayout(const GlyphCache& cache, Float size, const std::string& text) override;
 
-        Metrics doOpenData(const std::vector<std::pair<std::string, Containers::ArrayView<const char>>>& data, Float) override;
-
-        Metrics doOpenFile(const std::string& filename, Float) override;
-
-        void doClose() override;
-
-        UnsignedInt doGlyphId(char32_t character) override;
-
-        Vector2 doGlyphAdvance(UnsignedInt glyph) override;
-
-        std::unique_ptr<GlyphCache> doCreateGlyphCache() override;
-
-        std::unique_ptr<AbstractLayouter> doLayout(const GlyphCache& cache, Float size, const std::string& text) override;
-
-        Metrics openInternal(Utility::Configuration&& conf, Trade::ImageData2D&& image);
+        MAGNUM_MAGNUMFONT_LOCAL Metrics openInternal(Utility::Configuration&& conf, Trade::ImageData2D&& image);
 
         Data* _opened;
 };

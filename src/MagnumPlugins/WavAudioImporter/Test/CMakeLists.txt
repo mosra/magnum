@@ -34,6 +34,13 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
 
 corrade_add_test(WavAudioImporterTest WavImporterTest.cpp LIBRARIES MagnumWavAudioImporterTestLib)
 target_include_directories(WavAudioImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+# On Win32 we need to avoid dllimporting WavAudioImporter symbols, because it
+# would search for the symbols in some DLL even though they were linked
+# statically. However it apparently doesn't matter that they were dllexported
+# when building the static library. EH.
+if(WIN32)
+    target_compile_definitions(WavAudioImporterTest PRIVATE "MAGNUM_WAVAUDIOIMPORTER_BUILD_STATIC")
+endif()
 
 if(CORRADE_TARGET_EMSCRIPTEN)
     emscripten_embed_file(WavAudioImporterTest mono8.wav "/mono8.wav")

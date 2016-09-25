@@ -33,6 +33,21 @@
 
 #include "Magnum/Audio/AbstractImporter.h"
 
+#include "MagnumPlugins/WavAudioImporter/configure.h"
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+#ifndef MAGNUM_WAVAUDIOIMPORTER_BUILD_STATIC
+    #if defined(WavAudioImporter_EXPORTS) || defined(WavAudioImporterObjects_EXPORTS)
+        #define MAGNUM_WAVAUDIOIMPORTER_EXPORT CORRADE_VISIBILITY_EXPORT
+    #else
+        #define MAGNUM_WAVAUDIOIMPORTER_EXPORT CORRADE_VISIBILITY_IMPORT
+    #endif
+#else
+    #define MAGNUM_WAVAUDIOIMPORTER_EXPORT CORRADE_VISIBILITY_STATIC
+#endif
+#define MAGNUM_WAVAUDIOIMPORTER_LOCAL CORRADE_VISIBILITY_LOCAL
+#endif
+
 namespace Magnum { namespace Audio {
 
 /**
@@ -49,7 +64,7 @@ dependency of another plugin, you need to request `WavAudioImporter` component
 of `Magnum` package in CMake and link to `Magnum::WavAudioImporter` target. See
 @ref building, @ref cmake and @ref plugins for more information.
 */
-class WavImporter: public AbstractImporter {
+class MAGNUM_WAVAUDIOIMPORTER_EXPORT WavImporter: public AbstractImporter {
     public:
         /** @brief Default constructor */
         explicit WavImporter();
@@ -58,14 +73,14 @@ class WavImporter: public AbstractImporter {
         explicit WavImporter(PluginManager::AbstractManager& manager, std::string plugin);
 
     private:
-        Features doFeatures() const override;
-        bool doIsOpened() const override;
-        void doOpenData(Containers::ArrayView<const char> data) override;
-        void doClose() override;
+        MAGNUM_WAVAUDIOIMPORTER_LOCAL Features doFeatures() const override;
+        MAGNUM_WAVAUDIOIMPORTER_LOCAL bool doIsOpened() const override;
+        MAGNUM_WAVAUDIOIMPORTER_LOCAL void doOpenData(Containers::ArrayView<const char> data) override;
+        MAGNUM_WAVAUDIOIMPORTER_LOCAL void doClose() override;
 
-        Buffer::Format doFormat() const override;
-        UnsignedInt doFrequency() const override;
-        Containers::Array<char> doData() override;
+        MAGNUM_WAVAUDIOIMPORTER_LOCAL Buffer::Format doFormat() const override;
+        MAGNUM_WAVAUDIOIMPORTER_LOCAL UnsignedInt doFrequency() const override;
+        MAGNUM_WAVAUDIOIMPORTER_LOCAL Containers::Array<char> doData() override;
 
         Containers::Array<char> _data;
         Buffer::Format _format;

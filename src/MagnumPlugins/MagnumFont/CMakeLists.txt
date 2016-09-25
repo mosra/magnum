@@ -23,6 +23,13 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+if(BUILD_PLUGINS_STATIC)
+    set(MAGNUM_MAGNUMFONT_BUILD_STATIC 1)
+endif()
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+
 set(MagnumFont_SRCS
     MagnumFont.cpp)
 
@@ -34,6 +41,9 @@ add_library(MagnumFontObjects OBJECT
     ${MagnumFont_SRCS}
     ${MagnumFont_HEADERS})
 target_include_directories(MagnumFontObjects PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
+if(NOT BUILD_PLUGINS_STATIC)
+    target_compile_definitions(MagnumFontObjects PRIVATE "MagnumFontObjects_EXPORTS")
+endif()
 if(NOT BUILD_PLUGINS_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(MagnumFontObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
@@ -53,6 +63,7 @@ if(CORRADE_TARGET_WINDOWS)
 endif()
 
 install(FILES ${MagnumFont_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/MagnumFont)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configure.h DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/MagnumFont)
 
 if(BUILD_GL_TESTS)
     # On Win32 we need to avoid dllimporting TgaImporter symbols, because it
@@ -63,7 +74,9 @@ if(BUILD_GL_TESTS)
         add_library(MagnumMagnumFontTestLib STATIC
             ${MagnumFont_SRCS}
             ${MagnumFont_HEADERS})
-        target_compile_definitions(MagnumMagnumFontTestLib PRIVATE "MAGNUM_TGAIMPORTER_BUILD_STATIC")
+        target_compile_definitions(MagnumMagnumFontTestLib
+            PRIVATE "MAGNUM_TGAIMPORTER_BUILD_STATIC"
+            PUBLIC "MAGNUM_MAGNUMFONT_BUILD_STATIC")
     else()
         add_library(MagnumMagnumFontTestLib STATIC
             $<TARGET_OBJECTS:MagnumFontObjects>
