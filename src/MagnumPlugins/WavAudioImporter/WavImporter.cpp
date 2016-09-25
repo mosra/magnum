@@ -153,7 +153,7 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
             return;
         }
 
-    /* Check ALAW format */
+    /* Check A-Law format */
     } else if(formatChunk->audioFormat == WavAudioFormat::ALaw) {
         if(formatChunk->numChannels == 1)
             _format = Buffer::Format::MonoALaw;
@@ -166,7 +166,7 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
             return;
         }
 
-    /* Check MULAW format */
+    /* Check μ-Law format */
     } else if(formatChunk->audioFormat == WavAudioFormat::MuLaw) {
         if(formatChunk->numChannels == 1)
             _format = Buffer::Format::MonoMuLaw;

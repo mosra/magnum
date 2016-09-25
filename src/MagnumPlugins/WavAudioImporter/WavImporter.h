@@ -53,9 +53,16 @@ namespace Magnum { namespace Audio {
 /**
 @brief WAV importer plugin
 
-Supports mono and stereo PCM files with 8 or 16 bits per channel. The files are
-imported with @ref Buffer::Format::Mono8, @ref Buffer::Format::Mono16,
-@ref Buffer::Format::Stereo8 or @ref Buffer::Format::Stereo16, respectively.
+Supports mono and stereo files of the following formats:
+
+-   8 bit per channel PCM, imported as @ref Buffer::Format::Mono8 and @ref Buffer::Format::Stereo8
+-   16 bit per channel PCM, imported as @ref Buffer::Format::Mono16 and @ref Buffer::Format::Stereo16
+-   32-bit IEEE Float, imported as @ref Buffer::Format::MonoFloat / @ref Buffer::Format::StereoFloat
+-   64-bit IEEE Float, imported as @ref Buffer::Format::MonoDouble / @ref Buffer::Format::StereoDouble
+-   A-Law, imported as @ref Buffer::Format::MonoALaw / @ref Buffer::Format::StereoALaw
+-   μ-Law, imported as @ref Buffer::Format::MonoMuLaw / @ref Buffer::Format::StereoMuLaw
+
+Multi-channel formats are not supported.
 
 This plugin is built if `WITH_WAVAUDIOIMPORTER` is enabled when building
 Magnum. To use dynamic plugin, you need to load `WavAudioImporter` plugin
