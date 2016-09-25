@@ -50,7 +50,7 @@ struct RiffChunk {
 #pragma pack(1)
 /** @brief WAV file header */
 struct WavHeaderChunk {
-    RiffChunk chunk;
+    RiffChunk chunk;                /**< @brief Starting RIFF chunk */
     char format[4];                 /**< @brief `WAVE` characters */
 };
 #pragma pack()
@@ -58,28 +58,13 @@ struct WavHeaderChunk {
 #pragma pack(1)
 /** @brief WAV 'fmt' header */
 struct WavFormatChunk {
-    RiffChunk chunk;
+    RiffChunk chunk;                /**< @brief Starting RIFF chunk */
     UnsignedShort audioFormat;      /**< @brief 1 = PCM */
     UnsignedShort numChannels;      /**< @brief 1 = Mono, 2 = Stereo */
     UnsignedInt sampleRate;         /**< @brief Sample rate in Hz */
     UnsignedInt byteRate;           /**< @brief Bytes per second */
     UnsignedShort blockAlign;       /**< @brief Bytes per sample (all channels) */
     UnsignedShort bitsPerSample;    /**< @brief Bits per sample (one channel) */
-};
-#pragma pack()
-
-#pragma pack(1)
-/** @brief WAV 'fact' header */
-struct WavFactChunk {
-    RiffChunk chunk;
-    UnsignedInt dwSampleLength;     /**< @brief sample length */
-};
-#pragma pack()
-
-#pragma pack(1)
-/** @brief WAV 'data' header */
-struct WavDataChunk {
-    RiffChunk chunk;
 };
 #pragma pack()
 
