@@ -38,10 +38,37 @@ Debug& operator<<(Debug& debug, const Buffer::Format value) {
         _c(Stereo8)
         _c(Stereo16)
 
+        _c(MonoALaw)
+        _c(StereoALaw)
+
+        _c(MonoMuLaw)
+        _c(StereoMuLaw)
+
         _c(MonoFloat)
         _c(StereoFloat)
         _c(MonoDouble)
         _c(StereoDouble)
+
+         _c(Quad8)
+         _c(Quad16)
+         _c(Quad32)
+
+         _c(Rear8)
+         _c(Rear16)
+         _c(Rear32)
+
+         _c(Surround51Channel8)
+         _c(Surround51Channel16)
+         _c(Surround51Channel32)
+
+         _c(Surround61Channel8)
+         _c(Surround61Channel16)
+         _c(Surround61Channel32)
+
+         _c(Surround71Channel8)
+         _c(Surround71Channel16)
+         _c(Surround71Channel32)
+
         #undef _c
         /* LCOV_EXCL_STOP */
     }

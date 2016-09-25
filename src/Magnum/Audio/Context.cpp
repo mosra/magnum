@@ -44,6 +44,9 @@ const std::vector<Extension>& Extension::extensions() {
     static const std::vector<Extension> extensions{
         _extension(AL,EXT,FLOAT32),
         _extension(AL,EXT,DOUBLE),
+        _extension(AL,EXT,ALAW),
+        _extension(AL,EXT,MULAW),
+        _extension(AL,EXT,MCFORMATS),
         _extension(ALC,EXT,ENUMERATION),
         _extension(ALC,SOFTX,HRTF),
         _extension(ALC,SOFT,HRTF)
