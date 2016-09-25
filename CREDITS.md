@@ -37,5 +37,8 @@ Contributors to Magnum library
 *   Gerhard de Clercq -- Windows RT (Store/Phone) port
 *   Ashwin Ravichandran ([@](ashrko619)[https://github.com/ashrko619]) --
     Bézier curve implementation
+*   Alice Margatroid ([@Alicemargatroid](https://github.com/Alicemargatroid)) --
+    Multi-channel support in Audio library, standard conformance, float,
+    double, A-Law and μ-Law format support in `WavAudioImporter` plugin
 
 Big thanks to everyone involved!
