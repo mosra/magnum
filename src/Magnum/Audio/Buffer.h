@@ -58,28 +58,28 @@ class Buffer {
             Stereo16 = AL_FORMAT_STEREO16,  /**< 16-bit interleaved signed stereo */
 
             /**
-             * @brief 8-bit unsigned mono A-Law Compressed Sound Format
+             * @brief 8-bit unsigned mono [A-Law Compressed Sound Format](https://en.wikipedia.org/wiki/A-law_algorithm)
              *
              * @requires_al_extension Extension @al_extension{EXT,ALAW}
              */
             MonoALaw = AL_FORMAT_MONO_ALAW_EXT,
 
             /**
-             * @brief 16-bit signed stereo A-Law Compressed Sound Format
+             * @brief 16-bit signed stereo [A-Law Compressed Sound Format](https://en.wikipedia.org/wiki/A-law_algorithm)
              *
              * @requires_al_extension Extension @al_extension{EXT,ALAW}
              */
             StereoALaw = AL_FORMAT_STEREO_ALAW_EXT,
 
             /**
-             * @brief 8-bit unsigned mono Mu-Law Compressed Sound Format
+             * @brief 8-bit unsigned mono [μ-Law Compressed Sound Format](https://en.wikipedia.org/wiki/Μ-law_algorithm)
              *
              * @requires_al_extension Extension @al_extension{EXT,MULAW}
              */
             MonoMuLaw = AL_FORMAT_MONO_MULAW_EXT,
 
             /**
-             * @brief 16-bit signed Mu-Law Compressed Sound Format
+             * @brief 16-bit signed [μ-Law Compressed Sound Format](https://en.wikipedia.org/wiki/Μ-law_algorithm)
              *
              * @requires_al_extension Extension @al_extension{EXT,MULAW}
              */
@@ -134,8 +134,25 @@ class Buffer {
              */
             Quad32 = AL_FORMAT_QUAD32,
 
+            /**
+             * @brief 8-bit unsigned rear
+             *
+             * @requires_al_extension Extension @al_extension{EXT,MCFORMATS}
+             */
             Rear8 = AL_FORMAT_REAR8,
+
+            /**
+             * @brief 16-bit signed rear
+             *
+             * @requires_al_extension Extension @al_extension{EXT,MCFORMATS}
+             */
             Rear16 = AL_FORMAT_REAR16,
+
+            /**
+             * @brief 32-bit interleaved floating-point rear
+             *
+             * @requires_al_extension Extension @al_extension{EXT,MCFORMATS}
+             */
             Rear32 = AL_FORMAT_REAR32,
 
             /**
