@@ -64,6 +64,7 @@ class LightData {
 
         /**
          * @brief Constructor
+         * @param type              Light type
          * @param color             Light color
          * @param intensity         Light intensity
          * @param importerState     Importer-specific state

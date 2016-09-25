@@ -64,10 +64,10 @@ checked by the implementation:
 
 Plugin interface string is `"cz.mosra.magnum.Trade.AbstractImageConverter/0.2.1"`.
 
-@attention @ref Containers::Array instances returned from the plugin should
-    *not* use anything else than the default deleter, otherwise this can cause
-    dangling function pointer call on array destruction if the plugin gets
-    unloaded before the array is destroyed.
+@attention @ref Corrade::Containers::Array instances returned from the plugin
+    should *not* use anything else than the default deleter, otherwise this can
+    cause dangling function pointer call on array destruction if the plugin
+    gets unloaded before the array is destroyed.
 */
 class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractManagingPlugin<AbstractImageConverter> {
     CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Trade.AbstractImageConverter/0.2.1")

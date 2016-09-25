@@ -115,7 +115,7 @@ template<class T> struct TypeTraits: Implementation::TypeTraitsDefault<T> {
      * @brief Type name
      *
      * Returns a string representation of type name, such as `"UnsignedInt"`
-     * for @ref UnsignedInt.
+     * for @ref Magnum::UnsignedInt "UnsignedInt".
      */
     constexpr static const char* name();
 
@@ -157,6 +157,7 @@ template<class T> struct TypeTraits: Implementation::TypeTraitsDefault<T> {
 /* Integral scalar types */
 namespace Implementation {
     template<class> struct TypeTraitsName;
+    #ifndef DOXYGEN_GENERATING_OUTPUT
     #define _c(type) template<> struct TypeTraitsName<type> { \
         constexpr static const char* name() { return #type; } \
     };
@@ -174,6 +175,7 @@ namespace Implementation {
     _c(Double)
     _c(long double)
     #undef _c
+    #endif
 
     template<class T> struct TypeTraitsIntegral: TypeTraitsDefault<T>, TypeTraitsName<T> {
         constexpr static T epsilon() { return T(1); }

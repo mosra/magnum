@@ -74,10 +74,10 @@ checked by the implementation:
 
 Plugin interface string is `"cz.mosra.magnum.Trade.AbstractImporter/0.3"`.
 
-@attention @ref Containers::Array instances returned from the plugin should
-    *not* use anything else than the default deleter, otherwise this can cause
-    dangling function pointer call on array destruction if the plugin gets
-    unloaded before the array is destroyed.
+@attention @ref Corrade::Containers::Array instances returned from the plugin
+    should *not* use anything else than the default deleter, otherwise this can
+    cause dangling function pointer call on array destruction if the plugin
+    gets unloaded before the array is destroyed.
 
 @todo How to handle casting from std::unique_ptr<> in more convenient way?
 */
