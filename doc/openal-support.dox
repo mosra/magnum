@@ -38,8 +38,12 @@ functions and enum values are exposed through the API.
 
 Extension                                   | Status
 ------------------------------------------- | ------
+@alc_extension{ENUMERATION,EXT}             | |
 @al_extension{EXT,double}                   | done
 @al_extension{EXT,float32}                  | done
+@al_extension{EXT,ALAW}                     | done
+@al_extension{EXT,MULAW}                    | done
+@al_extension{EXT,MCFORMATS}                | done
 
 @subsection openal-extension-support-soft OpenAL Soft Extensions
 
