@@ -31,12 +31,6 @@
 
 #include "Magnum/Types.h"
 
-#define WAVE_FORMAT_PCM 0x0001
-#define WAVE_FORMAT_IEEE_FLOAT 0x0003
-#define WAVE_FORMAT_ALAW 0x0006
-#define WAVE_FORMAT_MULAW 0x0007
-#define WAVE_FORMAT_EXTENSIBLE 0xFFFE
-
 namespace Magnum { namespace Audio {
 
 #pragma pack(1)
@@ -68,7 +62,7 @@ struct WavFormatChunk {
 };
 #pragma pack()
 
-static_assert(sizeof(WavHeaderChunk) + sizeof(WavFormatChunk) + sizeof(WavDataChunk) == 44, "WavHeader size is not 44 bytes");
+static_assert(sizeof(WavHeaderChunk) + sizeof(WavFormatChunk) + sizeof(RiffChunk) == 44, "WavHeader size is not 44 bytes");
 
 }}
 

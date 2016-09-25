@@ -31,6 +31,12 @@
 
 #include "MagnumPlugins/WavAudioImporter/WavHeader.h"
 
+#define WAVE_FORMAT_PCM 0x0001
+#define WAVE_FORMAT_IEEE_FLOAT 0x0003
+#define WAVE_FORMAT_ALAW 0x0006
+#define WAVE_FORMAT_MULAW 0x0007
+#define WAVE_FORMAT_EXTENSIBLE 0xFFFE
+
 namespace Magnum { namespace Audio {
 
 WavImporter::WavImporter() = default;
@@ -43,7 +49,7 @@ bool WavImporter::doIsOpened() const { return _data; }
 
 void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
     /* Check file size */
-    if(data.size() < sizeof(WavHeaderChunk) + sizeof(WavFormatChunk) + sizeof(WavDataChunk)) {
+    if(data.size() < sizeof(WavHeaderChunk) + sizeof(WavFormatChunk) + sizeof(RiffChunk)) {
         Error() << "Audio::WavImporter::openData(): the file is too short:" << data.size() << "bytes";
         return;
     }
