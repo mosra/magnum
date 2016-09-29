@@ -234,7 +234,7 @@ class MAGNUM_VK_EXPORT GraphicsPipelineBuilder {
                 VK_BLEND_OP_ADD,
                 VK_BLEND_FACTOR_ZERO, VK_BLEND_FACTOR_ZERO,
                 VK_BLEND_OP_ADD,
-                0xf
+                UnsignedInt(0xf)
             };
             _blendAttachments.push_back(blendAttachmentState);
 
@@ -244,7 +244,7 @@ class MAGNUM_VK_EXPORT GraphicsPipelineBuilder {
                 0,
                 VK_FALSE,
                 VK_LOGIC_OP_CLEAR,
-                _blendAttachments.size(),
+                UnsignedInt(_blendAttachments.size()),
                 _blendAttachments.data(),
                 {0.0f, 0.0f, 0.0f, 0.0f}
             };

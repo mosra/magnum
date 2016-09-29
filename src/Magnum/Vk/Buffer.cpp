@@ -48,7 +48,7 @@ Buffer& Buffer::update(Queue& queue, CommandPool& pool, const void* sourceData, 
     std::unique_ptr<Vk::CommandBuffer> copyToDeviceCmds = pool.allocateCommandBuffer(Vk::CommandBuffer::Level::Primary);
 
     /* plane vertices */
-    Buffer stagingBuffer{*_device, size, Vk::BufferUsage::TransferSrc};
+    Buffer stagingBuffer{*_device, UnsignedInt(size), Vk::BufferUsage::TransferSrc};
     std::unique_ptr<DeviceMemory> stagingMemory = stagingBuffer.allocateDeviceMemory(Vk::MemoryProperty::HostVisible);
 
     Containers::ArrayView<char> data = stagingMemory->map(destOffset, size);

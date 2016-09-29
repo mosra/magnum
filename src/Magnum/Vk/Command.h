@@ -71,7 +71,7 @@ inline auto setScissor(UnsignedInt firstScissor, const std::initializer_list<Ran
 
         UnsignedInt i = 0;
         for(auto& range: ranges) {
-            vkRects[i] = {{range.left(), range.bottom()}, {range.sizeX(), range.sizeY()}};
+            vkRects[i] = {{range.left(), range.bottom()}, {UnsignedInt(range.sizeX()), UnsignedInt(range.sizeY())}};
             ++i;
         }
         vkCmdSetScissor(cmdBuffer, firstScissor, vkRects.size(), vkRects.data());

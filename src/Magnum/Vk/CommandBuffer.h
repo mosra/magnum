@@ -151,7 +151,7 @@ class MAGNUM_VK_EXPORT CommandBuffer {
                 nullptr,
                 renderPass,
                 framebuffer,
-                VkRect2D{{renderArea.left(), renderArea.bottom()}, {renderArea.sizeX(), renderArea.sizeY()}},
+                VkRect2D{{renderArea.left(), renderArea.bottom()}, {UnsignedInt(renderArea.sizeX()), UnsignedInt(renderArea.sizeY())}},
                 clearValues.size(),
                 clearValues.data()};
 
