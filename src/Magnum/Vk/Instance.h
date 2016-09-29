@@ -30,7 +30,7 @@
  * @brief Class @ref Magnum::Vk::Instance
  */
 
-#include "vulkan.h"
+#include <vulkan.h>
 
 #include <cstdlib>
 #include <array>

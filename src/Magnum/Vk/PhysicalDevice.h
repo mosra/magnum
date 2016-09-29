@@ -104,7 +104,7 @@ class MAGNUM_VK_EXPORT PhysicalDevice {
         /**
          * @brief Get the underlying VkPhysicalDevice handle
          */
-        VkPhysicalDevice vkPhysicalDevice() {
+        operator VkPhysicalDevice() const {
             return _physicalDevice;
         }
 
@@ -112,7 +112,7 @@ class MAGNUM_VK_EXPORT PhysicalDevice {
 
         UnsignedInt getQueueFamilyIndex(QueueFamily family);
 
-        VkPhysicalDeviceProperties getProperties() {
+        VkPhysicalDeviceProperties getProperties() const {
             VkPhysicalDeviceProperties deviceProperties;
             vkGetPhysicalDeviceProperties(_physicalDevice, &deviceProperties);
 

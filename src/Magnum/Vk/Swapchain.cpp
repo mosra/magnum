@@ -39,8 +39,7 @@ Swapchain::Swapchain(Device& device, CommandBuffer& cb, VkSurfaceKHR surface):
     _swapchain{VK_NULL_HANDLE},
     _currentIndex{0}
 {
-    VkDevice vkDevice = _device.vkDevice();
-    VkPhysicalDevice vkPhysicalDevice = _device.physicalDevice().vkPhysicalDevice();
+    VkDevice vkDevice = _device;
 
     #define GET_INSTANCE_PROC_ADDR(entrypoint) vk##entrypoint = PFN_vk##entrypoint(vkGetInstanceProcAddr(Vk::Instance::current(), "vk"#entrypoint)); do{if(vk##entrypoint == nullptr) { Error() << "Failed to get function pointer.";} }while(false)
     #define GET_DEVICE_PROC_ADDR(entrypoint) vk##entrypoint = PFN_vk##entrypoint(vkGetDeviceProcAddr(vkDevice, "vk"#entrypoint)); do{ if(vk##entrypoint == nullptr) { Error() << "Failed to get function pointer.";} }while(false)
@@ -59,26 +58,28 @@ Swapchain::Swapchain(Device& device, CommandBuffer& cb, VkSurfaceKHR surface):
     #undef GET_INSTANCE_PROC_ADDR
     #undef GET_DEVICE_PROC_ADDR
 
+    VkPhysicalDevice vkPhysicalDevice = _device.physicalDevice();
     VkResult err;
 
-    // Get available queue family properties
+    // Get available queue family properties TODO(squareys): Move to PhysicalDevice
     uint32_t queueCount;
     vkGetPhysicalDeviceQueueFamilyProperties(vkPhysicalDevice,
                                              &queueCount, nullptr);
     assert(queueCount >= 1);
 
+    // TODO(squareys): Move to PhysicalDevice
     std::vector<VkQueueFamilyProperties> queueProps(queueCount);
     vkGetPhysicalDeviceQueueFamilyProperties(vkPhysicalDevice,
                                              &queueCount, queueProps.data());
 
+    // TODO(squareys): Move to Device/PhysicalDevice instead
     std::vector<VkBool32> supportsPresent(queueCount);
     for (uint32_t i = 0; i < queueCount; i++) {
-        vkGetPhysicalDeviceSurfaceSupportKHR(vkPhysicalDevice,
-                                             i, surface, &supportsPresent[i]);
+        vkGetPhysicalDeviceSurfaceSupportKHR(vkPhysicalDevice, i, surface, &supportsPresent[i]);
     }
 
     // Search for a graphics and a present queue in the array of queue
-    // families, try to find one that supports both
+    // families, try to find one that supports both TODO(squareys): Move to PhysicalDevice
     uint32_t graphicsQueueNodeIndex = UINT32_MAX;
     uint32_t presentQueueNodeIndex = UINT32_MAX;
     for (uint32_t i = 0; i < queueCount; i++) {
@@ -96,6 +97,7 @@ Swapchain::Swapchain(Device& device, CommandBuffer& cb, VkSurfaceKHR surface):
             }
         }
     }
+
     if (presentQueueNodeIndex == UINT32_MAX) {
         // If there's no queue that supports both present and graphics
         // try to find a separate present queue
@@ -108,24 +110,15 @@ Swapchain::Swapchain(Device& device, CommandBuffer& cb, VkSurfaceKHR surface):
     }
 
     // Exit if either a graphics or a presenting queue hasn't been found
-    if (graphicsQueueNodeIndex == UINT32_MAX || presentQueueNodeIndex == UINT32_MAX) {
-        return; // fatal
-    }
+    CORRADE_ASSERT(graphicsQueueNodeIndex != UINT32_MAX, "No graphics queue found.", );
+    CORRADE_ASSERT(presentQueueNodeIndex != UINT32_MAX, "No present queue found.", );
+    CORRADE_ASSERT(graphicsQueueNodeIndex == presentQueueNodeIndex, "Separate graphics and present queues are not supported (yet)", );
 
-    // todo : Add support for separate graphics and presenting queue
-    if (graphicsQueueNodeIndex != presentQueueNodeIndex) {
-        Error() << "I am unsure about this error in Swapchain.cpp#L" << __LINE__;
-        return; // fatal
-    }
-
-    // Get list of supported surface formats
+    // Get list of supported surface formats TODO(squareys): Move to PhysicalDevice
     UnsignedInt formatCount;
     err = vkGetPhysicalDeviceSurfaceFormatsKHR(vkPhysicalDevice, surface, &formatCount, nullptr);
     MAGNUM_VK_ASSERT_ERROR(err);
-    if(formatCount < 1) {
-        Error() << "The device does not support any surface formats."; // TODO: Can this even happen?
-        return;
-    }
+    CORRADE_ASSERT(formatCount > 0, "The device does not support any surface formats.", );
 
     std::vector<VkSurfaceFormatKHR> surfaceFormats(formatCount);
     err = vkGetPhysicalDeviceSurfaceFormatsKHR(vkPhysicalDevice,
@@ -266,15 +259,10 @@ Swapchain::Swapchain(Device& device, CommandBuffer& cb, VkSurfaceKHR surface):
             1, &imageMemoryBarrier);
 
         _buffers[i].view.reset(
-                    new Vk::ImageView(_device, *_buffers[i].image, colorFormat,
-                                      VK_IMAGE_VIEW_TYPE_2D, ImageAspect::Color,
-                                      VkComponentMapping{
-                                          VK_COMPONENT_SWIZZLE_R,
-                                          VK_COMPONENT_SWIZZLE_G,
-                                          VK_COMPONENT_SWIZZLE_B,
-                                          VK_COMPONENT_SWIZZLE_A
-                                      }
-                    )
+            new Vk::ImageView(_device, *_buffers[i].image, colorFormat,
+                              VK_IMAGE_VIEW_TYPE_2D, ImageAspect::Color,
+                              VkComponentMapping{VK_COMPONENT_SWIZZLE_R, VK_COMPONENT_SWIZZLE_G, VK_COMPONENT_SWIZZLE_B, VK_COMPONENT_SWIZZLE_A}
+            )
         );
     }
 }

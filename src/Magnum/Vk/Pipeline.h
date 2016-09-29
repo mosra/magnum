@@ -50,6 +50,11 @@ enum class Format: UnsignedInt;
 
 class DescriptorSetLayout;
 
+/**
+@brief Dynamic state enum
+
+States which can be set changable using commands.
+*/
 enum class DynamicState: UnsignedInt {
     Viewport = VK_DYNAMIC_STATE_VIEWPORT,
     Scissor = VK_DYNAMIC_STATE_SCISSOR,
@@ -62,6 +67,9 @@ enum class DynamicState: UnsignedInt {
     StencilReference = VK_DYNAMIC_STATE_STENCIL_REFERENCE,
 };
 
+/**
+@brief Primitive topology enum
+*/
 enum class PrimitiveTopology: UnsignedInt {
     PointList = VK_PRIMITIVE_TOPOLOGY_POINT_LIST,
     LineList = VK_PRIMITIVE_TOPOLOGY_LINE_LIST,
@@ -76,6 +84,11 @@ enum class PrimitiveTopology: UnsignedInt {
     PatchList = VK_PRIMITIVE_TOPOLOGY_PATCH_LIST,
 };
 
+/**
+@brief Pipeline state enum
+
+Describes pipeline stages.
+*/
 enum class PipelineStage: UnsignedInt {
     TopOfThePipe = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
     DrawIndirect = VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT,
@@ -105,6 +118,13 @@ enum class BindPoint: UnsignedInt {
     Compute = VK_PIPELINE_BIND_POINT_COMPUTE,
 };
 
+/**
+@brief Pipeline class
+
+Contains state of a graphics or compute pipeline to be bound during a renderpass.
+
+@see GraphicsPipelineBuilder
+*/
 class MAGNUM_VK_EXPORT Pipeline {
     public:
         Pipeline(Device& device, VkPipeline pipeline, VkPipelineCache cache, VkPipelineLayout layout):
@@ -183,6 +203,12 @@ class MAGNUM_VK_EXPORT Pipeline {
         VkPipelineLayout _layout;
 };
 
+/**
+@brief Graphics pipeline builder
+
+Contains properties to create a @ref Pipeline. While the pipeline cannot be changed after it is created, 
+the pipeline builder can be used to create another one.
+*/
 class MAGNUM_VK_EXPORT GraphicsPipelineBuilder {
     public:
 
@@ -201,9 +227,7 @@ class MAGNUM_VK_EXPORT GraphicsPipelineBuilder {
             };
 
            _depthStencilState = {
-                VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO,
-                nullptr,
-                0,
+                VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO, nullptr, 0,
                 VK_TRUE, /* depth test enable */
                 VK_TRUE, /* depth write enable */
                 VK_COMPARE_OP_LESS_OR_EQUAL, /* depth compare op */
@@ -215,9 +239,7 @@ class MAGNUM_VK_EXPORT GraphicsPipelineBuilder {
             };
 
             _rasterizationState = {
-                VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO,
-                nullptr,
-                0,
+                VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO, nullptr, 0,
                 VK_FALSE, /* depth clamp enable */
                 VK_FALSE, /* rasterizer discard enable */
                 VK_POLYGON_MODE_FILL, /* poygon mode */
@@ -239,9 +261,7 @@ class MAGNUM_VK_EXPORT GraphicsPipelineBuilder {
             _blendAttachments.push_back(blendAttachmentState);
 
             _colorBlendState = {
-                VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO,
-                nullptr,
-                0,
+                VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO, nullptr, 0,
                 VK_FALSE,
                 VK_LOGIC_OP_CLEAR,
                 UnsignedInt(_blendAttachments.size()),
@@ -250,18 +270,16 @@ class MAGNUM_VK_EXPORT GraphicsPipelineBuilder {
             };
 
             _viewportState = {
-                VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO,
-                nullptr,
-                0,
+                VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO, nullptr, 0,
                 1,
-                nullptr,  // TODO currently expecting dynamic state here...
+                nullptr,  // TODO currently allways expecting dynamic state here...
                 1,
                 nullptr
             };
 
         }
 
-        /** @brief Copying is not allowed */ // TODO(squareys) probably should be, though
+        /** @brief Copying is not allowed */
         GraphicsPipelineBuilder(const GraphicsPipelineBuilder&) = delete;
 
         /** @brief Move constructor */
@@ -272,8 +290,7 @@ class MAGNUM_VK_EXPORT GraphicsPipelineBuilder {
          *
          * @see @fn_vk{DestroyPipeline}
          */
-        ~GraphicsPipelineBuilder() {
-        }
+        ~GraphicsPipelineBuilder() = default;
 
         /** @brief Copying is not allowed */
         GraphicsPipelineBuilder& operator=(const GraphicsPipelineBuilder&) = delete;
@@ -295,7 +312,11 @@ class MAGNUM_VK_EXPORT GraphicsPipelineBuilder {
             return *this;
         }
 
+        /**
+         * @brief Create a pipeline with currently set properties
+         */
         std::unique_ptr<Pipeline> build();
+
 
         GraphicsPipelineBuilder& setRenderPass(RenderPass& renderPass) {
             _renderPass = &renderPass;
