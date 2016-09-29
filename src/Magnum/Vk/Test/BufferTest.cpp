@@ -30,6 +30,7 @@
 
 #include "Magnum/Vk/Instance.h"
 #include "Magnum/Vk/Test/AbstractVulkanTester.h"
+#include "Magnum/Vk/Buffer.h"
 
 
 using namespace Corrade;
@@ -40,12 +41,12 @@ struct BufferTest: AbstractVulkanTester {
     explicit BufferTest();
 
     void constructCopyMove();
-    void staging();
+    void allocate();
 };
 
-BufferTest::BufferTest() {
+BufferTest::BufferTest(): AbstractVulkanTester({{QueueFamily::Graphics, {0.0f}}}, {DeviceFeature::RobustBufferAccess}, {}, {}) { // TODO(squareys): Just an example
     addTests({&BufferTest::constructCopyMove,
-              &BufferTest::staging});
+              &BufferTest::allocate });
 }
 
 void BufferTest::constructCopyMove() {
@@ -56,8 +57,10 @@ void BufferTest::constructCopyMove() {
     CORRADE_VERIFY(!(std::is_assignable<Buffer, Buffer&&>{}));
 }
 
-void BufferTest::staging() {
-    MAGNUM_VK_VERIFY_NO_ERROR();
+void BufferTest::allocate() {
+    Buffer buffer{device(), 1, BufferUsage::IndexBuffer};
+    std::unique_ptr<DeviceMemory> mem = buffer.allocateDeviceMemory(MemoryProperty::DeviceLocal);
+    
 }
 
 }}}

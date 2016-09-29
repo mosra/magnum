@@ -26,12 +26,9 @@
 
 corrade_add_test(VkInstanceTest InstanceTest.cpp LIBRARIES MagnumVk)
 
-if(BUILD_VK_TESTS)
-    corrade_add_test(VkInstanceVkTest InstanceVkTest.cpp LIBRARIES ${VK_TEST_LIBRARIES})
-    corrade_add_test(VkCommandTest CommandTest.cpp LIBRARIES ${VK_TEST_LIBRARIES})
-    corrade_add_test(VkBufferTest BufferTest.cpp LIBRARIES ${VK_TEST_LIBRARIES})
+corrade_add_test(VkInstanceVkTest InstanceVkTest.cpp LIBRARIES ${VK_TEST_LIBRARIES})
+corrade_add_test(VkCommandTest CommandTest.cpp LIBRARIES ${VK_TEST_LIBRARIES})
+corrade_add_test(VkBufferTest BufferTest.cpp LIBRARIES ${VK_TEST_LIBRARIES})
 
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
-                   ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
-
-endif()
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)

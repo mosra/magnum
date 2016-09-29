@@ -27,30 +27,75 @@
 */
 
 #include <Corrade/TestSuite/Tester.h>
-#include <Magnum/Vk/Instance.h>
+
+#include "Magnum/Vk/Instance.h"
+#include "Magnum/Vk/Device.h"
 
 using namespace Corrade;
 
 namespace Magnum { namespace Vk { namespace Test {
 
+struct QueueRequest {
+
+    QueueRequest(QueueFamily family, const std::initializer_list<Float>& priorities):
+        _family{family}, _priorities{priorities}
+    {}
+
+    QueueFamily family() const {
+        return _family;
+    }
+    
+    const std::vector<Float>& priorities() const {
+        return _priorities;
+    }
+
+private:
+    QueueFamily _family;
+    const std::vector<Float> _priorities;
+};
+
 class AbstractVulkanTester: public TestSuite::Tester {
     public:
-        explicit AbstractVulkanTester();
+        explicit AbstractVulkanTester(
+            const std::vector<QueueRequest>& requestedQueues,
+            const DeviceFeatures& features,
+            const std::vector<const char*>& extensionNames,
+            const std::vector<const char*>& validationLayerNames);
 
         Vk::Instance& instance() {
             return _instance;
         }
 
+        Vk::Device& device() {
+            return _device;
+        }
+
     private:
 
+        static std::vector<DeviceQueueCreateInfo> createQueueInfos(const std::vector<QueueRequest>& requests, PhysicalDevice& device);
+
         Vk::Instance _instance;
+        Vk::Device _device;
 };
 
-AbstractVulkanTester::AbstractVulkanTester(): TestSuite::Tester{TestSuite::Tester::TesterConfiguration{}.setSkippedArgumentPrefixes({"magnum"})} {
-
+AbstractVulkanTester::AbstractVulkanTester(
+    const std::vector<QueueRequest>& requestedQueues,
+    const DeviceFeatures& features,
+    const std::vector<const char*>& extensions,
+    const std::vector<const char*>& validationLayers): TestSuite::Tester{TestSuite::Tester::TesterConfiguration{}.setSkippedArgumentPrefixes({"magnum"})},
+    _device{_instance.enumeratePhysicalDevices().data()[0], createQueueInfos(requestedQueues, _instance.enumeratePhysicalDevices().data()[0]), extensions, validationLayers, features} { // TODO: Choose appropriate device, not first
+    
 }
 
-#define MAGNUM_VK_VERIFY_NO_ERROR() CORRADE_COMPARE(Magnum::Vk::Instance::current().error(), Magnum::Vk::Result::Success)
+std::vector<DeviceQueueCreateInfo> AbstractVulkanTester::createQueueInfos(const std::vector<QueueRequest>& requests, PhysicalDevice& device) {
+    std::vector<DeviceQueueCreateInfo> result;
+
+    for(auto& request : requests) {
+        result.push_back(DeviceQueueCreateInfo(device.getQueueFamilyIndex(request.family()), request.priorities()));
+    }
+
+    return result;
+}
 
 #if defined(CORRADE_TESTSUITE_TARGET_XCTEST)
 #define MAGNUM_VK_TEST_MAIN(Class)                                          \

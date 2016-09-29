@@ -43,7 +43,7 @@ struct CommandVkTest: AbstractVulkanTester {
     void doTheLambdasWork();
 };
 
-CommandVkTest::CommandVkTest() {
+CommandVkTest::CommandVkTest(): AbstractVulkanTester({{QueueFamily::Graphics, {0.0f}}}, {}, {}, {}) {
     addTests({&CommandVkTest::doTheLambdasWork});
 }
 
