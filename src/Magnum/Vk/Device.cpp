@@ -32,25 +32,25 @@
 
 namespace Magnum { namespace Vk {
 
-Device::Device(PhysicalDevice& physicalDevice, const std::vector<VkDeviceQueueCreateInfo>& requestedQueues,
-               const std::vector<const char*>& extensions, const std::vector<const char*>& validationLayers,
-               const VkPhysicalDeviceFeatures& features):
+Device::Device(PhysicalDevice& physicalDevice,
+    const std::vector<DeviceQueueCreateInfo>& requestedQueues,
+    const std::vector<const char*>& extensions,
+    const std::vector<const char*>& validationLayers,
+    const DeviceFeatures& features):
     _physicalDevice(physicalDevice)
 {
     VkDeviceCreateInfo deviceCreateInfo = {
-        VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO,
-        nullptr,
-        0, /* flags */
-        requestedQueues.size(), requestedQueues.data(),
+        VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO, nullptr, 0,
+        requestedQueues.size(), reinterpret_cast<const VkDeviceQueueCreateInfo*>(requestedQueues.data()),
         validationLayers.size(), validationLayers.data(),
         extensions.size(), extensions.data(),
-        &features};
+        &VkPhysicalDeviceFeatures(features)};
 
-    vkCreateDevice(physicalDevice.vkPhysicalDevice(), &deviceCreateInfo, nullptr, &_device);
+    vkCreateDevice(physicalDevice, &deviceCreateInfo, nullptr, &_device);
 
-    for(const VkDeviceQueueCreateInfo& info : requestedQueues) {
-        for(UnsignedInt i = 0; i < info.queueCount; ++i) {
-            _queues.emplace_back(new Queue{*this, info.queueFamilyIndex, i});
+    for(const DeviceQueueCreateInfo& info : requestedQueues) {
+        for(UnsignedInt i = 0; i < info.queueCount(); ++i) {
+            _queues.emplace_back(new Queue{*this, info.queueFamilyIndex(), i});
         }
     }
 }

@@ -32,6 +32,8 @@
 
 #include <memory>
 
+#include <Corrade/Containers/Array.h>
+
 #include "Magnum/Magnum.h"
 #include "Magnum/Vk/Instance.h"
 #include "Magnum/Vk/PhysicalDevice.h"
@@ -40,6 +42,127 @@
 #include "vulkan.h"
 
 namespace Magnum { namespace Vk {
+
+constexpr UnsignedInt deviceFeaturesCount = sizeof(VkPhysicalDeviceFeatures) / 4;
+
+/** @todoc */
+enum class DeviceFeature : UnsignedInt {
+    RobustBufferAccess = 0,
+    FullDrawIndexUint32,
+    ImageCubeArray,
+    IndependentBlend,
+    GeometryShader,
+    TessellationShader,
+    SampleRateShading,
+    DualSrcBlend,
+    LogicOp,
+    MultiDrawIndirect,
+    DrawIndirectFirstInstance,
+    DepthClamp,
+    DepthBiasClamp,
+    FillModeNonSolid,
+    DepthBounds,
+    WideLines,
+    LargePoints,
+    AlphaToOne,
+    MultiViewport,
+    SamplerAnisotropy,
+    TextureCompressionETC2,
+    TextureCompressionASTC_LDR,
+    TextureCompressionBC,
+    OcclusionQueryPrecise,
+    PipelineStatisticsQuery,
+    VertexPipelineStoresAndAtomics,
+    FragmentStoresAndAtomics,
+    ShaderTessellationAndGeometryPointSize,
+    ShaderImageGatherExtended,
+    ShaderStorageImageExtendedFormats,
+    ShaderStorageImageMultisample,
+    ShaderStorageImageReadWithoutFormat,
+    ShaderStorageImageWriteWithoutFormat,
+    ShaderUniformBufferArrayDynamicIndexing,
+    ShaderSampledImageArrayDynamicIndexing,
+    ShaderStorageBufferArrayDynamicIndexing,
+    ShaderStorageImageArrayDynamicIndexing,
+    ShaderClipDistance,
+    ShaderCullDistance,
+    ShaderFloat64,
+    ShaderInt64,
+    ShaderInt16,
+    ShaderResourceResidency,
+    ShaderResourceMinLod,
+    SparseBinding,
+    SparseResidencyBuffer,
+    SparseResidencyImage2D,
+    SparseResidencyImage3D,
+    SparseResidency2Samples,
+    SparseResidency4Samples,
+    SparseResidency8Samples,
+    SparseResidency16Samples,
+    SparseResidencyAliased,
+    VariableMultisampleRate,
+    InheritedQueries,
+};
+
+/**
+@brief Device features class
+
+Container for physical device features.
+*/
+class DeviceFeatures : Containers::Array<DeviceFeature> {
+public:
+
+    DeviceFeatures(const std::initializer_list<DeviceFeature>& features):
+        Containers::Array<DeviceFeature>(Containers::Array<DeviceFeature>::zeroInitialized(deviceFeaturesCount))
+    {
+        std::copy(features.begin(), features.end(), this->end());
+    }
+
+    operator const VkPhysicalDeviceFeatures&() const {
+        return *reinterpret_cast<const VkPhysicalDeviceFeatures*>(this->data());
+    }
+};
+
+struct DeviceQueueCreateInfo {
+
+    DeviceQueueCreateInfo(UnsignedInt queueFamilyIndex, std::initializer_list<Float> priorities) :
+        _queueFamilyIndex{ queueFamilyIndex },
+        _queueCount{UnsignedInt(priorities.size())},
+        _queuePriorities{new float[priorities.size()]}
+    {
+        std::copy(priorities.begin(), priorities.end(), _queuePriorities);
+    }
+
+    DeviceQueueCreateInfo(UnsignedInt queueFamilyIndex, const std::vector<Float>& priorities) :
+        _queueFamilyIndex{ queueFamilyIndex },
+        _queueCount{ UnsignedInt(priorities.size()) },
+        _queuePriorities{ new float[priorities.size()] }
+    {
+        std::copy(priorities.begin(), priorities.end(), _queuePriorities);
+    }
+
+    ~DeviceQueueCreateInfo() {
+        delete _queuePriorities;
+    }
+
+    UnsignedInt queueCount() const {
+        return _queueCount;
+    }
+
+    UnsignedInt queueFamilyIndex() const {
+        return _queueFamilyIndex;
+    }
+
+private:
+    const VkStructureType _type = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+    const void* _next = nullptr;
+    const VkDeviceQueueCreateFlags _flags = 0;
+    UnsignedInt _queueFamilyIndex;
+    UnsignedInt _queueCount;
+    float* _queuePriorities;
+};
+
+static_assert(sizeof(DeviceQueueCreateInfo) == sizeof(VkDeviceQueueCreateInfo), "DeviceQueueCreateInfo and VkDeviceQueueCreateInfo are required to be of same size.");
 
 class CommandPool;
 class Queue;
@@ -54,10 +177,10 @@ class MAGNUM_VK_EXPORT Device {
         Device(Device&& other);
 
         Device(PhysicalDevice& physicalDevice,
-               const std::vector<VkDeviceQueueCreateInfo>& requestedQueues,
+               const std::vector<DeviceQueueCreateInfo>& requestedQueues,
                const std::vector<const char*>& extensions,
                const std::vector<const char*>& validationLayers,
-               const VkPhysicalDeviceFeatures& features);
+               const DeviceFeatures& features);
 
         /**
          * @brief Destructor
@@ -110,7 +233,7 @@ class MAGNUM_VK_EXPORT Device {
 
     private:
         VkDevice _device;
-        PhysicalDevice& _physicalDevice;
+        PhysicalDevice _physicalDevice;
         std::vector<std::unique_ptr<Queue>> _queues;
 };
 
