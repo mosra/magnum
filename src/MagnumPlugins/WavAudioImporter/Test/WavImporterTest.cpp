@@ -173,8 +173,8 @@ void WavImporterTest::invalidFactChunk() {
     CORRADE_COMPARE(importer.format(), Buffer::Format::Mono16);
     CORRADE_COMPARE(importer.frequency(), 22050);
 
-    CORRADE_COMPARE_AS(importer.data().slice(0, 8),
-        Containers::Array<char>::from(-27, -11, -1, -9, 24, -6, 127, -5).slice(0, 8),
+    CORRADE_COMPARE_AS(importer.data().prefix(8),
+        Containers::Array<char>::from(-27, -11, -1, -9, 24, -6, 127, -5).prefix(8),
         TestSuite::Compare::Container);
 }
 
@@ -185,8 +185,8 @@ void WavImporterTest::mono8() {
     CORRADE_COMPARE(importer.format(), Buffer::Format::Mono8);
     CORRADE_COMPARE(importer.frequency(), 22050);
 
-    CORRADE_COMPARE_AS(importer.data().slice(0, 4),
-        Containers::Array<char>::from(127, 127, 127, 127).slice(0, 4),
+    CORRADE_COMPARE_AS(importer.data().prefix(4),
+        Containers::Array<char>::from(127, 127, 127, 127).prefix(4),
         TestSuite::Compare::Container);
 }
 
@@ -197,8 +197,8 @@ void WavImporterTest::mono8junk() {
     CORRADE_COMPARE(importer.format(), Buffer::Format::Mono8);
     CORRADE_COMPARE(importer.frequency(), 22050);
 
-    CORRADE_COMPARE_AS(importer.data().slice(0, 4),
-        Containers::Array<char>::from(127, 127, 127, 127).slice(0, 4),
+    CORRADE_COMPARE_AS(importer.data().prefix(4),
+        Containers::Array<char>::from(127, 127, 127, 127).prefix(4),
         TestSuite::Compare::Container);
 }
 
@@ -209,8 +209,8 @@ void WavImporterTest::mono8ALaw() {
     CORRADE_COMPARE(importer.format(), Buffer::Format::MonoALaw);
     CORRADE_COMPARE(importer.frequency(), 8000);
 
-    CORRADE_COMPARE_AS(importer.data().slice(0, 8),
-        Containers::Array<char>::from(87, 84, 85, 85, 85, -43, -43, -43).slice(0, 8),
+    CORRADE_COMPARE_AS(importer.data().prefix(8),
+        Containers::Array<char>::from(87, 84, 85, 85, 85, -43, -43, -43).prefix(8),
         TestSuite::Compare::Container);
 }
 
@@ -221,8 +221,8 @@ void WavImporterTest::mono8MuLaw() {
     CORRADE_COMPARE(importer.format(), Buffer::Format::MonoMuLaw);
     CORRADE_COMPARE(importer.frequency(), 8000);
 
-    CORRADE_COMPARE_AS(importer.data().slice(0, 8),
-        Containers::Array<char>::from(-5, -3, -1, -2, -1, 127, 127, 126).slice(0, 8),
+    CORRADE_COMPARE_AS(importer.data().prefix(8),
+        Containers::Array<char>::from(-5, -3, -1, -2, -1, 127, 127, 126).prefix(8),
         TestSuite::Compare::Container);
 }
 
@@ -257,8 +257,8 @@ void WavImporterTest::stereo8ALaw() {
     CORRADE_COMPARE(importer.format(), Buffer::Format::StereoALaw);
     CORRADE_COMPARE(importer.frequency(), 8000);
 
-    CORRADE_COMPARE_AS(importer.data().slice(0, 8),
-        Containers::Array<char>::from(-43, -43, -43, -43, -43, -43, 85, -43).slice(0, 8),
+    CORRADE_COMPARE_AS(importer.data().prefix(8),
+        Containers::Array<char>::from(-43, -43, -43, -43, -43, -43, 85, -43).prefix(8),
         TestSuite::Compare::Container);
 }
 
@@ -269,8 +269,8 @@ void WavImporterTest::stereo8MuLaw() {
     CORRADE_COMPARE(importer.format(), Buffer::Format::StereoMuLaw);
     CORRADE_COMPARE(importer.frequency(), 8000);
 
-    CORRADE_COMPARE_AS(importer.data().slice(0, 8),
-        Containers::Array<char>::from(-1, -1, -1, -1, -1, -1, 127, -1).slice(0, 8),
+    CORRADE_COMPARE_AS(importer.data().prefix(8),
+        Containers::Array<char>::from(-1, -1, -1, -1, -1, -1, 127, -1).prefix(8),
         TestSuite::Compare::Container);
 }
 
@@ -313,8 +313,8 @@ void WavImporterTest::mono32f() {
     CORRADE_COMPARE(importer.format(), Buffer::Format::MonoFloat);
     CORRADE_COMPARE(importer.frequency(), 48000);
 
-    CORRADE_COMPARE_AS(importer.data().slice(0, 16),
-        Containers::Array<char>::from(0, 0, 0, 0, 108, 57, -103, 59, 3, 63, 42, 60, -33, -81, -120, 60).slice(0, 16),
+    CORRADE_COMPARE_AS(importer.data().prefix(16),
+        Containers::Array<char>::from(0, 0, 0, 0, 108, 57, -103, 59, 3, 63, 42, 60, -33, -81, -120, 60).prefix(16),
         TestSuite::Compare::Container);
 }
 
@@ -325,8 +325,8 @@ void WavImporterTest::stereo32f() {
     CORRADE_COMPARE(importer.format(), Buffer::Format::StereoFloat);
     CORRADE_COMPARE(importer.frequency(), 44100);
 
-    CORRADE_COMPARE_AS(importer.data().slice(0, 8),
-        Containers::Array<char>::from(17, -77, -103, 56, 5, 50, 72, 56).slice(0, 8),
+    CORRADE_COMPARE_AS(importer.data().prefix(8),
+        Containers::Array<char>::from(17, -77, -103, 56, 5, 50, 72, 56).prefix(8),
         TestSuite::Compare::Container);
 }
 
@@ -337,7 +337,7 @@ void WavImporterTest::stereo64f() {
     CORRADE_COMPARE(importer.format(), Buffer::Format::StereoDouble);
     CORRADE_COMPARE(importer.frequency(), 8000);
 
-    CORRADE_COMPARE_AS(importer.data().slice(0, 64),
+    CORRADE_COMPARE_AS(importer.data().prefix(64),
         Containers::Array<char>::from(0, 0, 0, 0, 0, 0, 0, 0,
                                       0, 0, 0, 0, 0, 0, 0, 0,
                                       0, 0, 0, 0, 0, 0, 0, 0,
@@ -345,7 +345,7 @@ void WavImporterTest::stereo64f() {
                                       0, 0, 0, 0, 0, 0, 0, 63,
                                       0, 0, 0, 0, 0, 0, 16, 63,
                                       0, 0, 0, 0, 0, 0, 24, -65,
-                                      0, 0, 0, 0, 0, 0, 0, 0).slice(0, 64),
+                                      0, 0, 0, 0, 0, 0, 0, 0).prefix(64),
                                       TestSuite::Compare::Container);
 }
 
