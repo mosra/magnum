@@ -58,28 +58,28 @@ class Buffer {
             Stereo16 = AL_FORMAT_STEREO16,  /**< 16-bit interleaved signed stereo */
 
             /**
-             * @brief 8-bit unsigned mono [A-Law Compressed Sound Format](https://en.wikipedia.org/wiki/A-law_algorithm)
+             * @brief 8-bit mono [A-Law Compressed Sound Format](https://en.wikipedia.org/wiki/A-law_algorithm)
              *
              * @requires_al_extension Extension @al_extension{EXT,ALAW}
              */
             MonoALaw = AL_FORMAT_MONO_ALAW_EXT,
 
             /**
-             * @brief 16-bit signed stereo [A-Law Compressed Sound Format](https://en.wikipedia.org/wiki/A-law_algorithm)
+             * @brief 8-bit interleaved stereo [A-Law Compressed Sound Format](https://en.wikipedia.org/wiki/A-law_algorithm)
              *
              * @requires_al_extension Extension @al_extension{EXT,ALAW}
              */
             StereoALaw = AL_FORMAT_STEREO_ALAW_EXT,
 
             /**
-             * @brief 8-bit unsigned mono [μ-Law Compressed Sound Format](https://en.wikipedia.org/wiki/Μ-law_algorithm)
+             * @brief 8-bit mono [μ-Law Compressed Sound Format](https://en.wikipedia.org/wiki/Μ-law_algorithm)
              *
              * @requires_al_extension Extension @al_extension{EXT,MULAW}
              */
             MonoMuLaw = AL_FORMAT_MONO_MULAW_EXT,
 
             /**
-             * @brief 16-bit signed [μ-Law Compressed Sound Format](https://en.wikipedia.org/wiki/Μ-law_algorithm)
+             * @brief 8-bit interleaved [μ-Law Compressed Sound Format](https://en.wikipedia.org/wiki/Μ-law_algorithm)
              *
              * @requires_al_extension Extension @al_extension{EXT,MULAW}
              */
