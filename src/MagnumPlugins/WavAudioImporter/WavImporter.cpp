@@ -131,7 +131,7 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
         else if(formatChunk->numChannels == 2 && formatChunk->bitsPerSample == 16)
              _format = Buffer::Format::Stereo16;
         else {
-            Error() << "Audio::WavImporter::openData(): unsupported channel count"
+            Error() << "Audio::WavImporter::openData(): PCM with unsupported channel count"
                     << formatChunk->numChannels << "with" << formatChunk->bitsPerSample
                     << "bits per sample";
             return;
@@ -148,7 +148,7 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
         else if(formatChunk->numChannels == 2 && formatChunk->bitsPerSample == 64)
             _format = Buffer::Format::StereoDouble;
         else {
-            Error() << "Audio::WavImporter::openData(): unsupported channel count"
+            Error() << "Audio::WavImporter::openData(): IEEE with unsupported channel count"
                     << formatChunk->numChannels << "with" << formatChunk->bitsPerSample
                     << "bits per sample";
             return;
@@ -161,7 +161,7 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
         else if(formatChunk->numChannels == 2)
             _format = Buffer::Format::StereoALaw;
         else {
-            Error() << "Audio::WavImporter::openData(): unsupported channel count"
+            Error() << "Audio::WavImporter::openData(): ALaw with unsupported channel count"
                     << formatChunk->numChannels << "with" << formatChunk->bitsPerSample
                     << "bits per sample";
             return;
@@ -174,7 +174,7 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
         else if(formatChunk->numChannels == 2)
             _format = Buffer::Format::StereoMuLaw;
         else {
-            Error() << "Audio::WavImporter::openData(): unsupported channel count"
+            Error() << "Audio::WavImporter::openData(): ULaw with unsupported channel count"
                     << formatChunk->numChannels << "with" << formatChunk->bitsPerSample
                     << "bits per sample";
             return;
