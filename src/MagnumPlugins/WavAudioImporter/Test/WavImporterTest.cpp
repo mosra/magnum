@@ -45,29 +45,34 @@ class WavImporterTest: public TestSuite::Tester {
         void wrongSignature();
         void unsupportedFormat();
         void unsupportedChannelCount();
+
         void invalidPadding();
         void invalidLength();
         void invalidDataChunk();
         void invalidFactChunk();
 
+        void mono4();
         void mono8();
         void mono8junk();
         void mono8ALaw();
         void mono8MuLaw();
         void mono16();
 
+        void stereo4();
         void stereo8();
         void stereo8ALaw();
         void stereo8MuLaw();
         void stereo12();
         void stereo16();
         void stereo24();
+        void stereo32();
 
         void mono32f();
         void stereo32f();
         void stereo64f();
 
         void surround51Channel16();
+        void surround71Channel24();
 
         void debugAudioFormat();
 };
@@ -77,28 +82,34 @@ WavImporterTest::WavImporterTest() {
               &WavImporterTest::wrongSignature,
               &WavImporterTest::unsupportedFormat,
               &WavImporterTest::unsupportedChannelCount,
+
               &WavImporterTest::invalidPadding,
               &WavImporterTest::invalidLength,
               &WavImporterTest::invalidDataChunk,
               &WavImporterTest::invalidFactChunk,
 
+              &WavImporterTest::mono4,
               &WavImporterTest::mono8,
               &WavImporterTest::mono8junk,
               &WavImporterTest::mono8ALaw,
               &WavImporterTest::mono8MuLaw,
               &WavImporterTest::mono16,
 
+              &WavImporterTest::stereo4,
               &WavImporterTest::stereo8,
               &WavImporterTest::stereo8ALaw,
               &WavImporterTest::stereo8MuLaw,
               &WavImporterTest::stereo12,
               &WavImporterTest::stereo16,
               &WavImporterTest::stereo24,
+              &WavImporterTest::stereo32,
 
               &WavImporterTest::mono32f,
               &WavImporterTest::stereo32f,
               &WavImporterTest::stereo64f,
+
               &WavImporterTest::surround51Channel16,
+              &WavImporterTest::surround71Channel24,
 
               &WavImporterTest::debugAudioFormat});
 }
@@ -178,6 +189,15 @@ void WavImporterTest::invalidFactChunk() {
         TestSuite::Compare::Container);
 }
 
+void WavImporterTest::mono4() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    WavImporter importer;
+    CORRADE_VERIFY(!importer.openFile(Utility::Directory::join(WAVAUDIOIMPORTER_TEST_DIR, "mono4.wav")));
+    CORRADE_COMPARE(out.str(), "Audio::WavImporter::openData(): unsupported format Audio::WavAudioFormat(0x2)\n");
+}
+
 void WavImporterTest::mono8() {
     WavImporter importer;
     CORRADE_VERIFY(importer.openFile(Utility::Directory::join(WAVAUDIOIMPORTER_TEST_DIR, "mono8.wav")));
@@ -236,6 +256,15 @@ void WavImporterTest::mono16() {
     CORRADE_COMPARE_AS(importer.data(),
         Containers::Array<char>::from('\x1d', '\x10', '\x71', '\xc5'),
         TestSuite::Compare::Container);
+}
+
+void WavImporterTest::stereo4() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    WavImporter importer;
+    CORRADE_VERIFY(!importer.openFile(Utility::Directory::join(WAVAUDIOIMPORTER_TEST_DIR, "stereo4.wav")));
+    CORRADE_COMPARE(out.str(), "Audio::WavImporter::openData(): unsupported format Audio::WavAudioFormat(0x2)\n");
 }
 
 void WavImporterTest::stereo8() {
@@ -306,6 +335,16 @@ void WavImporterTest::stereo24() {
     CORRADE_COMPARE(out.str(), "Audio::WavImporter::openData(): PCM with unsupported channel count 2 with 24 bits per sample\n");
 }
 
+void WavImporterTest::stereo32() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    WavImporter importer;
+
+    CORRADE_VERIFY(!importer.openFile(Utility::Directory::join(WAVAUDIOIMPORTER_TEST_DIR, "stereo32.wav")));
+    CORRADE_COMPARE(out.str(), "Audio::WavImporter::openData(): PCM with unsupported channel count 2 with 32 bits per sample\n");
+}
+
 void WavImporterTest::mono32f() {
     WavImporter importer;
     CORRADE_VERIFY(importer.openFile(Utility::Directory::join(WAVAUDIOIMPORTER_TEST_DIR, "mono32f.wav")));
@@ -356,6 +395,16 @@ void WavImporterTest::surround51Channel16() {
     WavImporter importer;
 
     CORRADE_VERIFY(!importer.openFile(Utility::Directory::join(WAVAUDIOIMPORTER_TEST_DIR, "surround51Channel16.wav")));
+    CORRADE_COMPARE(out.str(), "Audio::WavImporter::openData(): unsupported format Audio::WavAudioFormat::Extensible\n");
+}
+
+void WavImporterTest::surround71Channel24() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    WavImporter importer;
+
+    CORRADE_VERIFY(!importer.openFile(Utility::Directory::join(WAVAUDIOIMPORTER_TEST_DIR, "surround71Channel24.wav")));
     CORRADE_COMPARE(out.str(), "Audio::WavImporter::openData(): unsupported format Audio::WavAudioFormat::Extensible\n");
 }
 
