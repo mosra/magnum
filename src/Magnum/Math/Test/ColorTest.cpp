@@ -29,7 +29,41 @@
 
 #include "Magnum/Math/Color.h"
 
-namespace Magnum { namespace Math { namespace Test {
+struct Vec3 {
+    float x, y, z;
+};
+
+struct Vec4 {
+    float x, y, z, w;
+};
+
+namespace Magnum { namespace Math {
+
+namespace Implementation {
+
+template<> struct VectorConverter<3, float, Vec3> {
+    constexpr static Vector<3, Float> from(const Vec3& other) {
+        return {other.x, other.y, other.z};
+    }
+
+    constexpr static Vec3 to(const Vector<3, Float>& other) {
+        return {other[0], other[1], other[2]};
+    }
+};
+
+template<> struct VectorConverter<4, float, Vec4> {
+    constexpr static Vector<4, Float> from(const Vec4& other) {
+        return {other.x, other.y, other.z, other.w};
+    }
+
+    constexpr static Vec4 to(const Vector<4, Float>& other) {
+        return {other[0], other[1], other[2], other[3]};
+    }
+};
+
+}
+
+namespace Test {
 
 struct ColorTest: Corrade::TestSuite::Tester {
     explicit ColorTest();
@@ -42,6 +76,7 @@ struct ColorTest: Corrade::TestSuite::Tester {
     void constructConversion();
     void constructNormalization();
     void constructCopy();
+    void convert();
 
     void literals();
 
@@ -85,6 +120,7 @@ ColorTest::ColorTest() {
               &ColorTest::constructConversion,
               &ColorTest::constructNormalization,
               &ColorTest::constructCopy,
+              &ColorTest::convert,
 
               &ColorTest::literals,
 
@@ -239,6 +275,37 @@ void ColorTest::constructCopy() {
     CORRADE_VERIFY(std::is_nothrow_copy_constructible<Color4>::value);
     CORRADE_VERIFY(std::is_nothrow_copy_assignable<Color3>::value);
     CORRADE_VERIFY(std::is_nothrow_copy_assignable<Color4>::value);
+}
+
+void ColorTest::convert() {
+    constexpr Vec3 a3{1.5f, 2.0f, -3.5f};
+    constexpr Color3 b3{1.5f, 2.0f, -3.5f};
+
+    constexpr Color3 c3(a3);
+    CORRADE_COMPARE(c3, b3);
+
+    constexpr Vec3 d3(b3);
+    CORRADE_COMPARE(d3.x, a3.x);
+    CORRADE_COMPARE(d3.y, a3.y);
+    CORRADE_COMPARE(d3.z, a3.z);
+
+    constexpr Vec4 a4{1.5f, 2.0f, -3.5f, -0.5f};
+    constexpr Color4 b4{1.5f, 2.0f, -3.5f, -0.5f};
+
+    constexpr Vector4 c4(a4);
+    CORRADE_COMPARE(c4, b4);
+
+    constexpr Vec4 d4(b4);
+    CORRADE_COMPARE(d4.x, a4.x);
+    CORRADE_COMPARE(d4.y, a4.y);
+    CORRADE_COMPARE(d4.z, a4.z);
+    CORRADE_COMPARE(d4.w, a4.w);
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Vec3, Color3>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Vec4, Color4>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Color3, Vec3>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Color4, Vec4>::value));
 }
 
 void ColorTest::literals() {

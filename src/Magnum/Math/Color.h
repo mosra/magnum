@@ -294,6 +294,16 @@ template<class T> class Color3: public Vector3<T> {
          */
         template<class U> constexpr explicit Color3(const Vector<3, U>& other) noexcept: Vector3<T>(other) {}
 
+        /** @brief Construct color from external representation */
+        template<class U, class V =
+            #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Causes ICE */
+            decltype(Implementation::VectorConverter<3, T, U>::from(std::declval<U>()))
+            #else
+            decltype(Implementation::VectorConverter<3, T, U>())
+            #endif
+            >
+        constexpr explicit Color3(const U& other): Vector3<T>(Implementation::VectorConverter<3, T, U>::from(other)) {}
+
         /** @brief Copy constructor */
         constexpr /*implicit*/ Color3(const Vector<3, T>& other) noexcept: Vector3<T>(other) {}
 
@@ -503,6 +513,16 @@ class Color4: public Vector4<T> {
          *      See @ref Color3 class documentation for more information.
          */
         template<class U> constexpr explicit Color4(const Vector<4, U>& other) noexcept: Vector4<T>(other) {}
+
+        /** @brief Construct color from external representation */
+        template<class U, class V =
+            #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Causes ICE */
+            decltype(Implementation::VectorConverter<4, T, U>::from(std::declval<U>()))
+            #else
+            decltype(Implementation::VectorConverter<4, T, U>())
+            #endif
+            >
+        constexpr explicit Color4(const U& other): Vector4<T>(Implementation::VectorConverter<4, T, U>::from(other)) {}
 
         /** @brief Copy constructor */
         constexpr /*implicit*/ Color4(const Vector<4, T>& other) noexcept: Vector4<T>(other) {}
