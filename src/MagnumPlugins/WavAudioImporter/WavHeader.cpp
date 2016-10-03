@@ -39,7 +39,9 @@ Debug& operator<<(Debug& debug, const WavAudioFormat value) {
     switch(value) {
         /* LCOV_EXCL_START */
         #define _c(value) case WavAudioFormat::value: return debug << "Audio::WavAudioFormat::" #value;
+        _c(Unknown)
         _c(Pcm)
+        _c(AdPcm)
         _c(IeeeFloat)
         _c(ALaw)
         _c(MuLaw)

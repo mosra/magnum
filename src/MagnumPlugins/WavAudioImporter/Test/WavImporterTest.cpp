@@ -138,7 +138,7 @@ void WavImporterTest::unsupportedFormat() {
 
     WavImporter importer;
     CORRADE_VERIFY(!importer.openFile(Utility::Directory::join(WAVAUDIOIMPORTER_TEST_DIR, "unsupportedFormat.wav")));
-    CORRADE_COMPARE(out.str(), "Audio::WavImporter::openData(): unsupported format Audio::WavAudioFormat(0x2)\n");
+    CORRADE_COMPARE(out.str(), "Audio::WavImporter::openData(): unsupported format Audio::WavAudioFormat::AdPcm\n");
 }
 
 void WavImporterTest::unsupportedChannelCount() {
@@ -195,7 +195,7 @@ void WavImporterTest::mono4() {
 
     WavImporter importer;
     CORRADE_VERIFY(!importer.openFile(Utility::Directory::join(WAVAUDIOIMPORTER_TEST_DIR, "mono4.wav")));
-    CORRADE_COMPARE(out.str(), "Audio::WavImporter::openData(): unsupported format Audio::WavAudioFormat(0x2)\n");
+    CORRADE_COMPARE(out.str(), "Audio::WavImporter::openData(): unsupported format Audio::WavAudioFormat::AdPcm\n");
 }
 
 void WavImporterTest::mono8() {
@@ -264,7 +264,7 @@ void WavImporterTest::stereo4() {
 
     WavImporter importer;
     CORRADE_VERIFY(!importer.openFile(Utility::Directory::join(WAVAUDIOIMPORTER_TEST_DIR, "stereo4.wav")));
-    CORRADE_COMPARE(out.str(), "Audio::WavImporter::openData(): unsupported format Audio::WavAudioFormat(0x2)\n");
+    CORRADE_COMPARE(out.str(), "Audio::WavImporter::openData(): unsupported format Audio::WavAudioFormat::AdPcm\n");
 }
 
 void WavImporterTest::stereo8() {

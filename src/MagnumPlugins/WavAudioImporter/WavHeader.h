@@ -38,7 +38,7 @@ namespace Magnum { namespace Audio {
 enum class WavAudioFormat: UnsignedShort {
     Unknown = 0x0000,       /**< Unknown */
     Pcm = 0x0001,           /**< PCM */
-    Adpcm = 0x0002,         /**< Adaptive Differential PCM */
+    AdPcm = 0x0002,         /**< Adaptive Differential PCM */
     IeeeFloat = 0x0003,     /**< IEEE Float */
     ALaw = 0x0006,          /**< A-Law */
     MuLaw = 0x0007,         /**< μ-Law */
