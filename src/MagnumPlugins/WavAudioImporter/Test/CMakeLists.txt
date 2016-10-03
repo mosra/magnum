@@ -52,7 +52,7 @@ if(CORRADE_TARGET_EMSCRIPTEN)
     emscripten_embed_file(WavAudioImporterTest invalidDataChunk.wav "/invalidDataChunk.wav")
     emscripten_embed_file(WavAudioImporterTest invalidFactChunk.wav "/invalidFactChunk.wav")
 
-    emscripten_embed_file(WavAudioImporterTest mono8.wav "/mono8.wav")
+    emscripten_embed_file(WavAudioImporterTest mono4.wav "/mono4.wav")
     emscripten_embed_file(WavAudioImporterTest mono8.wav "/mono8.wav")
     emscripten_embed_file(WavAudioImporterTest mono8junk.wav "/mono8junk.wav")
     emscripten_embed_file(WavAudioImporterTest mono8ALaw.wav "/mono8ALaw.wav")
