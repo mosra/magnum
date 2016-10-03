@@ -281,7 +281,10 @@ void ColorTest::convert() {
     constexpr Vec3 a3{1.5f, 2.0f, -3.5f};
     constexpr Color3 b3{1.5f, 2.0f, -3.5f};
 
-    constexpr Color3 c3(a3);
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY
+    constexpr /* No idea what's wrong. For Vector3 it "just works" */
+    #endif
+    Color3 c3(a3);
     CORRADE_COMPARE(c3, b3);
 
     constexpr Vec3 d3(b3);
@@ -292,7 +295,10 @@ void ColorTest::convert() {
     constexpr Vec4 a4{1.5f, 2.0f, -3.5f, -0.5f};
     constexpr Color4 b4{1.5f, 2.0f, -3.5f, -0.5f};
 
-    constexpr Vector4 c4(a4);
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY
+    constexpr /* No idea what's wrong. For Vector4 it "just works" */
+    #endif
+    Color4 c4(a4);
     CORRADE_COMPARE(c4, b4);
 
     constexpr Vec4 d4(b4);
