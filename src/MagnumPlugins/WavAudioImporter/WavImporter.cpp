@@ -174,7 +174,7 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
         else if(formatChunk->numChannels == 2)
             _format = Buffer::Format::StereoMuLaw;
         else {
-            Error() << "Audio::WavImporter::openData(): ULaw with unsupported channel count"
+            Error() << "Audio::WavImporter::openData(): MuLaw with unsupported channel count"
                     << formatChunk->numChannels << "with" << formatChunk->bitsPerSample
                     << "bits per sample";
             return;
