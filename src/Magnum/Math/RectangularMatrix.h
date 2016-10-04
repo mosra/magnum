@@ -339,6 +339,9 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         /**
          * @brief Transposed matrix
          *
+         * @f[
+         *      \boldsymbol{A}^T_ij = \boldsymbol{A}_ji
+         * @f]
          * @see @ref row(), @ref flippedCols(), @ref flippedRows()
          */
         RectangularMatrix<rows, cols, T> transposed() const;

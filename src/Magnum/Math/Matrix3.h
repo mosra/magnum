@@ -49,6 +49,13 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          * @brief 2D translation matrix
          * @param vector    Translation vector
          *
+         * @f[
+         *      \boldsymbol{A} = \begin{pmatrix}
+         *          1 & 0 & v_x \\
+         *          0 & 1 & v_y \\
+         *          0 & 0 &   1
+         *      \end{pmatrix}
+         * @f]
          * @see @ref translation() const, @ref DualComplex::translation(),
          *      @ref Matrix4::translation(const Vector3<T>&),
          *      @ref Vector2::xAxis(), @ref Vector2::yAxis()
@@ -63,6 +70,13 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          * @brief 2D scaling matrix
          * @param vector    Scaling vector
          *
+         * @f[
+         *      \boldsymbol{A} = \begin{pmatrix}
+         *          v_x &   0 & 0 \\
+         *            0 & v_y & 0 \\
+         *            0 &   0 & 1
+         *      \end{pmatrix}
+         * @f]
          * @see @ref rotationScaling(),
          *      @ref Matrix4::scaling(const Vector3<T>&),
          *      @ref Vector2::xScale(), @ref Vector2::yScale()
@@ -77,6 +91,13 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          * @brief 2D rotation matrix
          * @param angle     Rotation angle (counterclockwise)
          *
+         * @f[
+         *      \boldsymbol{A} = \begin{pmatrix}
+         *          \cos\theta & -\sin\theta & 0 \\
+         *          \sin\theta &  \cos\theta & 0 \\
+         *                   0 &           0 & 1
+         *      \end{pmatrix}
+         * @f]
          * @see @ref rotation() const, @ref Complex::rotation(),
          *      @ref DualComplex::rotation(),
          *      @ref Matrix4::rotation(Rad, const Vector3<T>&)
@@ -90,7 +111,9 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          * Expects that the normal is normalized. Reflection along axes can be
          * done in a slightly simpler way also using @ref scaling(), e.g.
          * `Matrix3::reflection(Vector2::yAxis())` is equivalent to
-         * `Matrix3::scaling(Vector2::yScale(-1.0f))`.
+         * `Matrix3::scaling(Vector2::yScale(-1.0f))`. @f[
+         *      \boldsymbol{A} = \boldsymbol{I} - 2 \boldsymbol{NN}^T ~~~~~ \boldsymbol{N} = \begin{pmatrix} n_x \\ n_y \end{pmatrix}
+         * @f]
          * @see @ref Matrix4::reflection(), @ref Vector::isNormalized()
          */
         static Matrix3<T> reflection(const Vector2<T>& normal) {
@@ -103,7 +126,13 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          * @brief 2D shearing matrix along X axis
          * @param amount    Shearing amount
          *
-         * Y axis remains unchanged.
+         * Y axis remains unchanged. @f[
+         *      \boldsymbol{A} = \begin{pmatrix}
+         *          1 & v_x & 0 \\
+         *          0 &   1 & 0 \\
+         *          0 &   0 & 1
+         *      \end{pmatrix}
+         * @f]
          * @see @ref shearingY(), @ref Matrix4::shearingXY(),
          *      @ref Matrix4::shearingXZ(), @ref Matrix4::shearingYZ()
          */
@@ -117,7 +146,13 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          * @brief 2D shearing matrix along Y axis
          * @param amount    Shearing amount
          *
-         * X axis remains unchanged.
+         * X axis remains unchanged. @f[
+         *      \boldsymbol{A} = \begin{pmatrix}
+         *            1 & 0 & 0 \\
+         *          v_y & 1 & 0 \\
+         *            0 & 0 & 1
+         *      \end{pmatrix}
+         * @f]
          * @see @ref shearingX(), @ref Matrix4::shearingXY(),
          *      @ref Matrix4::shearingXZ(), @ref Matrix4::shearingYZ()
          */
@@ -131,6 +166,13 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          * @brief 2D projection matrix
          * @param size      Size of the view
          *
+         * @f[
+         *      \boldsymbol{A} = \begin{pmatrix}
+         *          \frac{2}{s_x} & 0 & 0 \\
+         *          0 & \frac{2}{s_y} & 0 \\
+         *          0 & 0 & 1
+         *      \end{pmatrix}
+         * @f]
          * @see @ref Matrix4::orthographicProjection(),
          *      @ref Matrix4::perspectiveProjection()
          */

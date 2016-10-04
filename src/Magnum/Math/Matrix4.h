@@ -51,9 +51,17 @@ See @ref matrix-vector and @ref transformations for brief introduction.
 template<class T> class Matrix4: public Matrix4x4<T> {
     public:
         /**
-         * @brief 3D translation
+         * @brief 3D translation matrix
          * @param vector    Translation vector
          *
+         * @f[
+         *      \boldsymbol{A} = \begin{pmatrix}
+         *          1 & 0 & 0 & v_x \\
+         *          0 & 1 & 0 & v_y \\
+         *          0 & 0 & 1 & v_z \\
+         *          0 & 0 & 0 &   1
+         *      \end{pmatrix}
+         * @f]
          * @see @ref translation(), @ref DualQuaternion::translation(),
          *      @ref Matrix3::translation(const Vector2<T>&),
          *      @ref Vector3::xAxis(), @ref Vector3::yAxis(),
@@ -67,9 +75,17 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         }
 
         /**
-         * @brief 3D scaling
+         * @brief 3D scaling matrix
          * @param vector    Scaling vector
          *
+         * @f[
+         *      \boldsymbol{A} = \begin{pmatrix}
+         *          v_x &   0 &   0 & 0 \\
+         *            0 & v_y &   0 & 0 \\
+         *            0 &   0 & v_z & 0 \\
+         *            0 &   0 &   0 & 1
+         *      \end{pmatrix}
+         * @f]
          * @see @ref rotationScaling(),
          *      @ref Matrix3::scaling(const Vector2<T>&),
          *      @ref Vector3::xScale(), @ref Vector3::yScale(),
@@ -83,13 +99,20 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         }
 
         /**
-         * @brief 3D rotation around arbitrary axis
+         * @brief 3D rotation matrix around arbitrary axis
          * @param angle             Rotation angle (counterclockwise)
          * @param normalizedAxis    Normalized rotation axis
          *
          * Expects that the rotation axis is normalized. If possible, use
          * faster alternatives like @ref rotationX(), @ref rotationY() and
-         * @ref rotationZ().
+         * @ref rotationZ(). @f[
+         *      \boldsymbol{A} = \begin{pmatrix}
+         *          v_{x}v_{x}(1 - \cos\theta) + \cos\theta & v_{y}v_{x}(1 - \cos\theta) - v_{z}\sin \theta & v_{z}v_{x}(1 - \cos\theta) + v_{y}\sin\theta & 0 \\
+         *          v_{x}v_{y}(1 - \cos\theta) + v_{z}\sin\theta & v_{y}v_{y}(1 - \cos\theta) + \cos\theta & v_{z}v_{y}(1 - \cos\theta) - v_{x}\sin\theta & 0 \\
+         *          v_{x}v_{z}(1 - \cos\theta) - v_{y}\sin\theta & v_{y}v_{z}(1 - \cos\theta)+v_{x}\sin\theta & v_{z}v_{z}(1 - \cos\theta) + \cos\theta & 0 \\
+         *          0 & 0 & 0 & 1
+         *      \end{pmatrix}
+         * @f]
          * @see @ref rotation() const, @ref Quaternion::rotation(),
          *      @ref DualQuaternion::rotation(), @ref Matrix3::rotation(Rad),
          *      @ref Vector3::xAxis(), @ref Vector3::yAxis(),
@@ -98,10 +121,17 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         static Matrix4<T> rotation(Rad<T> angle, const Vector3<T>& normalizedAxis);
 
         /**
-         * @brief 3D rotation around X axis
+         * @brief 3D rotation matrix around X axis
          * @param angle Rotation angle (counterclockwise)
          *
-         * Faster than calling `Matrix4::rotation(angle, Vector3::xAxis())`.
+         * Faster than calling `Matrix4::rotation(angle, Vector3::xAxis())`. @f[
+         *      \boldsymbol{A} = \begin{pmatrix}
+         *          1 &          0 &           0 & 0 \\
+         *          0 & \cos\theta & -\sin\theta & 0 \\
+         *          0 & \sin\theta &  \cos\theta & 0 \\
+         *          0 &          0 &           0 & 1
+         *      \end{pmatrix}
+         * @f]
          * @see @ref rotation(Rad, const Vector3<T>&), @ref rotationY(),
          *      @ref rotationZ(), @ref rotation() const,
          *      @ref Quaternion::rotation(), @ref Matrix3::rotation(Rad)
@@ -109,10 +139,17 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         static Matrix4<T> rotationX(Rad<T> angle);
 
         /**
-         * @brief 3D rotation around Y axis
+         * @brief 3D rotation matrix around Y axis
          * @param angle Rotation angle (counterclockwise)
          *
-         * Faster than calling `Matrix4::rotation(angle, Vector3::yAxis())`.
+         * Faster than calling `Matrix4::rotation(angle, Vector3::yAxis())`. @f[
+         *      \boldsymbol{A} = \begin{pmatrix}
+         *           \cos\theta & 0 & \sin\theta & 0 \\
+         *                    0 & 1 &          0 & 0 \\
+         *          -\sin\theta & 0 & \cos\theta & 0 \\
+         *                    0 & 0 &          0 & 1
+         *      \end{pmatrix}
+         * @f]
          * @see @ref rotation(Rad, const Vector3<T>&), @ref rotationX(),
          *      @ref rotationZ(), @ref rotation() const,
          *      @ref Quaternion::rotation(), @ref Matrix3::rotation(Rad)
@@ -123,7 +160,14 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * @brief 3D rotation matrix around Z axis
          * @param angle Rotation angle (counterclockwise)
          *
-         * Faster than calling `Matrix4::rotation(angle, Vector3::zAxis())`.
+         * Faster than calling `Matrix4::rotation(angle, Vector3::zAxis())`. @f[
+         *      \boldsymbol{A} = \begin{pmatrix}
+         *          \cos\theta & -\sin\theta & 0 & 0 \\
+         *          \sin\theta &  \cos\theta & 0 & 0 \\
+         *                   0 &           0 & 1 & 0 \\
+         *                   0 &           0 & 0 & 1
+         *      \end{pmatrix}
+         * @f]
          * @see @ref rotation(Rad, const Vector3<T>&), @ref rotationX(),
          *      @ref rotationY(), @ref rotation() const,
          *      @ref Quaternion::rotation(), @ref Matrix3::rotation(Rad)
@@ -137,17 +181,26 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * Expects that the normal is normalized. Reflection along axes can be
          * done in a slightly simpler way also using @ref scaling(), e.g.
          * `Matrix4::reflection(Vector3::yAxis())` is equivalent to
-         * `Matrix4::scaling(Vector3::yScale(-1.0f))`.
+         * `Matrix4::scaling(Vector3::yScale(-1.0f))`. @f[
+         *      \boldsymbol{A} = \boldsymbol{I} - 2 \boldsymbol{NN}^T ~~~~~ \boldsymbol{N} = \begin{pmatrix} n_x \\ n_y \\ n_z \end{pmatrix}
+         * @f]
          * @see @ref Matrix3::reflection(), @ref Vector::isNormalized()
          */
         static Matrix4<T> reflection(const Vector3<T>& normal);
 
         /**
-         * @brief 3D shearing along XY plane
+         * @brief 3D shearing matrix along XY plane
          * @param amountX   Amount of shearing along X axis
          * @param amountY   Amount of shearing along Y axis
          *
-         * Z axis remains unchanged.
+         * Z axis remains unchanged. @f[
+         *      \boldsymbol{A} = \begin{pmatrix}
+         *          1 & 0 & v_x & 0 \\
+         *          0 & 1 & v_y & 0 \\
+         *          0 & 0 &   1 & 0 \\
+         *          0 & 0 &   0 & 1
+         *      \end{pmatrix}
+         * @f]
          * @see @ref shearingXZ(), @ref shearingYZ(), @ref Matrix3::shearingX(),
          *      @ref Matrix3::shearingY()
          */
@@ -159,11 +212,18 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         }
 
         /**
-         * @brief 3D shearing along XZ plane
+         * @brief 3D shearing matrix along XZ plane
          * @param amountX   Amount of shearing along X axis
          * @param amountZ   Amount of shearing along Z axis
          *
-         * Y axis remains unchanged.
+         * Y axis remains unchanged. @f[
+         *      \boldsymbol{A} = \begin{pmatrix}
+         *          1 & v_x & 0 & 0 \\
+         *          0 &   1 & 0 & 0 \\
+         *          0 & v_z & 1 & 0 \\
+         *          0 &   0 & 0 & 1
+         *      \end{pmatrix}
+         * @f]
          * @see @ref shearingXY(), @ref shearingYZ(), @ref Matrix3::shearingX(),
          *      @ref Matrix3::shearingY()
          */
@@ -175,11 +235,18 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         }
 
         /**
-         * @brief 3D shearing along YZ plane
+         * @brief 3D shearing matrix along YZ plane
          * @param amountY   Amount of shearing along Y axis
          * @param amountZ   Amount of shearing along Z axis
          *
-         * X axis remains unchanged.
+         * X axis remains unchanged. @f[
+         *      \boldsymbol{A} = \begin{pmatrix}
+         *            1 & 0 & 0 & 0 \\
+         *          v_y & 1 & 0 & 0 \\
+         *          v_z & 0 & 1 & 0 \\
+         *            0 & 0 & 0 & 1
+         *      \end{pmatrix}
+         * @f]
          * @see @ref shearingXY(), @ref shearingXZ(), @ref Matrix3::shearingX(),
          *      @ref Matrix3::shearingY()
          */
@@ -196,6 +263,14 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * @param near      Distance to near clipping plane, positive is ahead
          * @param far       Distance to far clipping plane, positive is ahead
          *
+         * @f[
+         *      \boldsymbol{A} = \begin{pmatrix}
+         *          \frac{2}{s_x} & 0 & 0 & 0 \\
+         *          0 & \frac{2}{s_y} & 0 & 0 \\
+         *          0 & 0 & \frac{2}{n - f} & \frac{2n}{n - f} - 1 \\
+         *          0 & 0 & 0 & 1
+         *      \end{pmatrix}
+         * @f]
          * @see @ref perspectiveProjection(), @ref Matrix3::projection()
          */
         static Matrix4<T> orthographicProjection(const Vector2<T>& size, T near, T far);
@@ -206,6 +281,14 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * @param near      Distance to near clipping plane, positive is ahead
          * @param far       Distance to far clipping plane, positive is ahead
          *
+         * @f[
+         *      \boldsymbol{A} = \begin{pmatrix}
+         *          \frac{2n}{s_x} & 0 & 0 & 0 \\
+         *          0 & \frac{2n}{s_y} & 0 & 0 \\
+         *          0 & 0 & \frac{n + f}{n - f} & \frac{2nf}{n - f} \\
+         *          0 & 0 & -1 & 0
+         *      \end{pmatrix}
+         * @f]
          * @see @ref orthographicProjection(), @ref Matrix3::projection()
          */
         static Matrix4<T> perspectiveProjection(const Vector2<T>& size, T near, T far);
@@ -217,6 +300,14 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * @param near          Near clipping plane
          * @param far           Far clipping plane
          *
+         * @f[
+         *      \boldsymbol{A} = \begin{pmatrix}
+         *          \frac{1}{\tan{\frac{\theta}{2}}} & 0 & 0 & 0 \\
+         *          0 & \frac{a}{\tan{\frac{\theta}{2}}} & 0 & 0 \\
+         *          0 & 0 & \frac{n + f}{n - f} & \frac{2nf}{n - f} \\
+         *          0 & 0 & -1 & 0
+         *      \end{pmatrix}
+         * @f]
          * @see @ref orthographicProjection(), @ref Matrix3::projection()
          */
         static Matrix4<T> perspectiveProjection(Rad<T> fov, T aspectRatio, T near, T far) {
@@ -447,7 +538,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *
          * Unlike in @ref transformVector(), translation is also involved in
          * the transformation. @f[
-         *      \boldsymbol v' = v''_{xyz} / v''_w ~~~~~~~~~~ \boldsymbol v'' = \begin{pmatrix} v''_x \\ v''_y \\ v''_z \\ v''_w \end{pmatrix} = \boldsymbol M \begin{pmatrix} v_x \\ v_y \\ v_z \\ 1 \end{pmatrix} \\
+         *      \boldsymbol v' = \boldsymbol v''_{xyz} / v''_w ~~~~~~~~~~ \boldsymbol v'' = \begin{pmatrix} v''_x \\ v''_y \\ v''_z \\ v''_w \end{pmatrix} = \boldsymbol M \begin{pmatrix} v_x \\ v_y \\ v_z \\ 1 \end{pmatrix} \\
          * @f]
          * @see @ref DualQuaternion::transformPoint(),
          *      @ref Matrix3::transformPoint()
