@@ -191,9 +191,19 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * Consider using @ref transposed() when accessing rows frequently, as
          * this is slower than accessing columns due to the way the matrix is
          * stored.
-         * @see @ref operator[]()
+         * @see @ref setRow(), @ref operator[]()
          */
         Vector<cols, T> row(std::size_t row) const;
+
+        /**
+         * @brief Set matrix row
+         *
+         * Consider using @ref transposed() when accessing rows frequently, as
+         * this is slower than accessing columns due to the way the matrix is
+         * stored.
+         * @see @ref row(), @ref operator()[]
+         */
+        void setRow(std::size_t row, const Vector<cols, T>& data);
 
         /** @brief Equality comparison */
         bool operator==(const RectangularMatrix<cols, rows, T>& other) const {
@@ -660,6 +670,11 @@ template<std::size_t cols, std::size_t rows, class T> inline Vector<cols, T> Rec
         out[i] = _data[i][row];
 
     return out;
+}
+
+template<std::size_t cols, std::size_t rows, class T> inline void RectangularMatrix<cols, rows, T>::setRow(std::size_t row, const Vector<cols, T>& data) {
+    for(std::size_t i = 0; i != cols; ++i)
+        _data[i][row] = data[i];
 }
 
 template<std::size_t cols, std::size_t rows, class T> inline RectangularMatrix<cols, rows, T> RectangularMatrix<cols, rows, T>::operator-() const {

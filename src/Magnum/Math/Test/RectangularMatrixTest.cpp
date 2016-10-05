@@ -300,11 +300,16 @@ void RectangularMatrixTest::data() {
 }
 
 void RectangularMatrixTest::row() {
-    const Matrix3x4 a(Vector4(1.0f,  2.0f,  3.0f,  4.0f),
-                      Vector4(5.0f,  6.0f,  7.0f,  8.0f),
-                      Vector4(9.0f, 10.0f, 11.0f, 12.0f));
+    Matrix3x4 a(Vector4(1.0f,  2.0f,  3.0f,  4.0f),
+                Vector4(5.0f,  6.0f,  7.0f,  8.0f),
+                Vector4(9.0f, 10.0f, 11.0f, 12.0f));
 
     CORRADE_COMPARE(a.row(1), Vector3(2.0f, 6.0f, 10.0f));
+
+    a.setRow(1, {-2.1f, -6.1f, -10.1f});
+    CORRADE_COMPARE(a, (Matrix3x4{Vector4{1.0f,  -2.1f,  3.0f,  4.0f},
+                                  Vector4{5.0f,  -6.1f,  7.0f,  8.0f},
+                                  Vector4{9.0f, -10.1f, 11.0f, 12.0f}}));
 }
 
 void RectangularMatrixTest::compare() {
