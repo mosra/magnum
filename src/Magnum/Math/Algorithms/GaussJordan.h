@@ -26,10 +26,10 @@
 */
 
 /** @file
- * @brief Function @ref Magnum::Math::Algorithms::gaussJordanInPlaceTransposed(), @ref Magnum::Math::Algorithms::gaussJordanInPlace()
+ * @brief Function @ref Magnum::Math::Algorithms::gaussJordanInPlaceTransposed(), @ref Magnum::Math::Algorithms::gaussJordanInPlace(), @ref Magnum::Math::Algorithms::gaussJordanInverted()
  */
 
-#include "Magnum/Math/RectangularMatrix.h"
+#include "Magnum/Math/Matrix.h"
 
 namespace Magnum { namespace Math { namespace Algorithms {
 
@@ -109,6 +109,20 @@ template<std::size_t size, std::size_t cols, class T> bool gaussJordanInPlace(Re
     t = tTransposed.transposed();
 
     return ret;
+}
+
+/**
+@brief Gauss-Jordan matrix inversion
+
+Since @f$ (\boldsymbol{A}^{-1})^T = (\boldsymbol{A}^T)^{-1} @f$, passes @p a
+and an identity matrix to @ref gaussJordanInPlaceTransposed() and returns the
+inverted matrix. Expects that the matrix is invertible.
+@see @ref Matrix::inverted()
+*/
+template<std::size_t size, class T> Matrix<size, T> gaussJordanInverted(Matrix<size, T> matrix) {
+    Matrix<size, T> inverted{Math::IdentityInit};
+    CORRADE_INTERNAL_ASSERT_OUTPUT(gaussJordanInPlaceTransposed(matrix, inverted));
+    return inverted;
 }
 
 }}}

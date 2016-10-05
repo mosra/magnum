@@ -32,16 +32,38 @@ namespace Magnum { namespace Math { namespace Algorithms { namespace Test {
 struct GaussJordanTest: Corrade::TestSuite::Tester {
     explicit GaussJordanTest();
 
+    void test();
     void singular();
-    void invert();
+    void inverted();
 };
 
-typedef RectangularMatrix<4, 4, Float> Matrix4x4;
+typedef Matrix<4, Float> Matrix4x4;
 typedef Vector<4, Float> Vector4;
 
 GaussJordanTest::GaussJordanTest() {
-    addTests({&GaussJordanTest::singular,
-              &GaussJordanTest::invert});
+    addTests({&GaussJordanTest::test,
+              &GaussJordanTest::singular,
+              &GaussJordanTest::inverted});
+}
+
+void GaussJordanTest::test() {
+    /* Basic matrix inversion */
+    const Matrix4x4 m{Vector4{3.0f,  5.0f, 8.0f, 4.0f},
+                      Vector4{4.0f,  4.0f, 7.0f, 3.0f},
+                      Vector4{7.0f, -1.0f, 8.0f, 0.0f},
+                      Vector4{9.0f,  4.0f, 5.0f, 9.0f}};
+
+    const Matrix4x4 expected{Vector4{-60/103.0f,   71/103.0f,  -4/103.0f,  3/103.0f},
+                             Vector4{-66/103.0f,  109/103.0f, -25/103.0f, -7/103.0f},
+                             Vector4{177/412.0f,  -97/206.0f,  53/412.0f, -7/206.0f},
+                             Vector4{259/412.0f, -185/206.0f,  31/412.0f, 27/206.0f}};
+
+    Matrix4x4 a2{m};
+    Matrix4x4 inverse{Math::IdentityInit};
+    CORRADE_VERIFY(gaussJordanInPlace(a2, inverse));
+
+    CORRADE_COMPARE(inverse, expected);
+    CORRADE_COMPARE(m*inverse, Matrix4x4{});
 }
 
 void GaussJordanTest::singular() {
@@ -54,23 +76,20 @@ void GaussJordanTest::singular() {
     CORRADE_VERIFY(!gaussJordanInPlaceTransposed(a, t));
 }
 
-void GaussJordanTest::invert() {
-    Matrix4x4 a(Vector4(3.0f,  5.0f, 8.0f, 4.0f),
-                Vector4(4.0f,  4.0f, 7.0f, 3.0f),
-                Vector4(7.0f, -1.0f, 8.0f, 0.0f),
-                Vector4(9.0f,  4.0f, 5.0f, 9.0f));
+void GaussJordanTest::inverted() {
+    const Matrix4x4 m{Vector4{3.0f,  5.0f, 8.0f, 4.0f},
+                      Vector4{4.0f,  4.0f, 7.0f, 3.0f},
+                      Vector4{7.0f, -1.0f, 8.0f, 0.0f},
+                      Vector4{9.0f,  4.0f, 5.0f, 9.0f}};
 
-    Matrix4x4 expectedInverse(Vector4(-60/103.0f,   71/103.0f,  -4/103.0f,  3/103.0f),
-                              Vector4(-66/103.0f,  109/103.0f, -25/103.0f, -7/103.0f),
-                              Vector4(177/412.0f,  -97/206.0f,  53/412.0f, -7/206.0f),
-                              Vector4(259/412.0f, -185/206.0f,  31/412.0f, 27/206.0f));
+    const Matrix4x4 expected{Vector4{-60/103.0f,   71/103.0f,  -4/103.0f,  3/103.0f},
+                             Vector4{-66/103.0f,  109/103.0f, -25/103.0f, -7/103.0f},
+                             Vector4{177/412.0f,  -97/206.0f,  53/412.0f, -7/206.0f},
+                             Vector4{259/412.0f, -185/206.0f,  31/412.0f, 27/206.0f}};
 
-    Matrix4x4 a2(a);
-    Matrix4x4 inverse = Matrix4x4::fromDiagonal(Vector4(1.0f));
-    CORRADE_VERIFY(gaussJordanInPlace(a2, inverse));
-
-    CORRADE_COMPARE(inverse, expectedInverse);
-    CORRADE_COMPARE(a*inverse, Matrix4x4::fromDiagonal(Vector4(1.0f)));
+    const Matrix4x4 inverse = gaussJordanInverted(m);
+    CORRADE_COMPARE(inverse, expected);
+    CORRADE_COMPARE(inverse*m, Matrix4x4{});
 }
 
 }}}}
