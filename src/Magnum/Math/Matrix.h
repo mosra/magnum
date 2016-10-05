@@ -333,7 +333,7 @@ template<std::size_t size, class T> bool Matrix<size, T>::isOrthogonal() const {
 }
 
 template<std::size_t size, class T> Matrix<size-1, T> Matrix<size, T>::ij(const std::size_t skipCol, const std::size_t skipRow) const {
-    Matrix<size-1, T> out{ZeroInit};
+    Matrix<size-1, T> out{NoInit};
 
     for(std::size_t col = 0; col != size-1; ++col)
         for(std::size_t row = 0; row != size-1; ++row)
@@ -344,7 +344,7 @@ template<std::size_t size, class T> Matrix<size-1, T> Matrix<size, T>::ij(const 
 }
 
 template<std::size_t size, class T> Matrix<size, T> Matrix<size, T>::inverted() const {
-    Matrix<size, T> out{ZeroInit};
+    Matrix<size, T> out{NoInit};
 
     const T _determinant = determinant();
 

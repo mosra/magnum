@@ -523,7 +523,7 @@ template<std::size_t cols, std::size_t rows, class T> inline RectangularMatrix<c
     #endif
     number, const RectangularMatrix<cols, rows, T>& matrix)
 {
-    RectangularMatrix<cols, rows, T> out;
+    RectangularMatrix<cols, rows, T> out{NoInit};
 
     for(std::size_t i = 0; i != cols; ++i)
         out[i] = number/matrix[i];
@@ -687,7 +687,7 @@ template<std::size_t cols, std::size_t rows, class T> inline RectangularMatrix<c
 }
 
 template<std::size_t cols, std::size_t rows, class T> template<std::size_t size> inline RectangularMatrix<size, rows, T> RectangularMatrix<cols, rows, T>::operator*(const RectangularMatrix<size, cols, T>& other) const {
-    RectangularMatrix<size, rows, T> out;
+    RectangularMatrix<size, rows, T> out{ZeroInit};
 
     for(std::size_t col = 0; col != size; ++col)
         for(std::size_t row = 0; row != rows; ++row)
@@ -698,7 +698,7 @@ template<std::size_t cols, std::size_t rows, class T> template<std::size_t size>
 }
 
 template<std::size_t cols, std::size_t rows, class T> inline RectangularMatrix<rows, cols, T> RectangularMatrix<cols, rows, T>::transposed() const {
-    RectangularMatrix<rows, cols, T> out;
+    RectangularMatrix<rows, cols, T> out{NoInit};
 
     for(std::size_t col = 0; col != cols; ++col)
         for(std::size_t row = 0; row != rows; ++row)
