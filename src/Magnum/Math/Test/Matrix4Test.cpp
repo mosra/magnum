@@ -84,7 +84,9 @@ struct Matrix4Test: Corrade::TestSuite::Tester {
     void shearingYZ();
     void orthographicProjection();
     void perspectiveProjection();
+    void perspectiveProjectionInfiniteFar();
     void perspectiveProjectionFov();
+    void perspectiveProjectionFovInfiniteFar();
     void lookAt();
 
     void fromParts();
@@ -134,7 +136,9 @@ Matrix4Test::Matrix4Test() {
               &Matrix4Test::shearingYZ,
               &Matrix4Test::orthographicProjection,
               &Matrix4Test::perspectiveProjection,
+              &Matrix4Test::perspectiveProjectionInfiniteFar,
               &Matrix4Test::perspectiveProjectionFov,
+              &Matrix4Test::perspectiveProjectionFovInfiniteFar,
               &Matrix4Test::lookAt,
 
               &Matrix4Test::fromParts,
@@ -420,12 +424,34 @@ void Matrix4Test::perspectiveProjection() {
     CORRADE_COMPARE(actual.transformPoint({0.0f, 0.0f, -100.0f}), Vector3(0.0f, 0.0f, +1.0f));
 }
 
+void Matrix4Test::perspectiveProjectionInfiniteFar() {
+    Matrix4 expected({4.0f,      0.0f,   0.0f,  0.0f},
+                     {0.0f, 7.111111f,   0.0f,  0.0f},
+                     {0.0f,      0.0f,  -1.0f, -1.0f},
+                     {0.0f,      0.0f, -64.0f,  0.0f});
+    Matrix4 actual = Matrix4::perspectiveProjection({16.0f, 9.0f}, 32.0f, Constants::inf());
+    CORRADE_COMPARE(actual, expected);
+
+    /* NDC is left-handed, so point on near plane should be -1 and a *vector*
+       in direction of far plane +1 */
+    CORRADE_COMPARE(actual.transformPoint({0.0f, 0.0f, -32.0f}), Vector3(0.0f, 0.0f, -1.0f));
+    CORRADE_COMPARE(actual.transformVector({0.0f, 0.0f, -1.0f}), Vector3(0.0f, 0.0f, +1.0f));
+}
+
 void Matrix4Test::perspectiveProjectionFov() {
     Matrix4 expected({4.1652994f,      0.0f,         0.0f,  0.0f},
                      {      0.0f, 9.788454f,         0.0f,  0.0f},
                      {      0.0f,      0.0f,  -1.9411764f, -1.0f},
                      {      0.0f,      0.0f, -94.1176452f,  0.0f});
-    CORRADE_COMPARE(Matrix4::perspectiveProjection(Deg(27.0f), 2.35f, 32.0f, 100), expected);
+    CORRADE_COMPARE(Matrix4::perspectiveProjection(Deg(27.0f), 2.35f, 32.0f, 100.0f), expected);
+}
+
+void Matrix4Test::perspectiveProjectionFovInfiniteFar() {
+    Matrix4 expected({4.1652994f,      0.0f,   0.0f,  0.0f},
+                     {      0.0f, 9.788454f,   0.0f,  0.0f},
+                     {      0.0f,      0.0f,  -1.0f, -1.0f},
+                     {      0.0f,      0.0f, -64.0f,  0.0f});
+    CORRADE_COMPARE(Matrix4::perspectiveProjection(Deg(27.0f), 2.35f, 32.0f, Constants::inf()), expected);
 }
 
 void Matrix4Test::fromParts() {

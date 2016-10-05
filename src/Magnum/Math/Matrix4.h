@@ -281,7 +281,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * @param near      Distance to near clipping plane, positive is ahead
          * @param far       Distance to far clipping plane, positive is ahead
          *
-         * @f[
+         * If @p far is finite, the result is: @f[
          *      \boldsymbol{A} = \begin{pmatrix}
          *          \frac{2n}{s_x} & 0 & 0 & 0 \\
          *          0 & \frac{2n}{s_y} & 0 & 0 \\
@@ -289,7 +289,17 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *          0 & 0 & -1 & 0
          *      \end{pmatrix}
          * @f]
-         * @see @ref orthographicProjection(), @ref Matrix3::projection()
+         *
+         * For infinite @p far, the result is: @f[
+         *      \boldsymbol{A} = \begin{pmatrix}
+         *          \frac{2n}{s_x} & 0 & 0 & 0 \\
+         *          0 & \frac{2n}{s_y} & 0 & 0 \\
+         *          0 & 0 & -1 & -2n \\
+         *          0 & 0 & -1 & 0
+         *      \end{pmatrix}
+         * @f]
+         * @see @ref orthographicProjection(), @ref Matrix3::projection(),
+         *      @ref Constants::inf()
          */
         static Matrix4<T> perspectiveProjection(const Vector2<T>& size, T near, T far);
 
@@ -300,7 +310,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * @param near          Near clipping plane
          * @param far           Far clipping plane
          *
-         * @f[
+         * If @p far is finite, the result is: @f[
          *      \boldsymbol{A} = \begin{pmatrix}
          *          \frac{1}{\tan{\frac{\theta}{2}}} & 0 & 0 & 0 \\
          *          0 & \frac{a}{\tan{\frac{\theta}{2}}} & 0 & 0 \\
@@ -308,7 +318,17 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *          0 & 0 & -1 & 0
          *      \end{pmatrix}
          * @f]
-         * @see @ref orthographicProjection(), @ref Matrix3::projection()
+         *
+         * For infinite @p far, the result is: @f[
+         *      \boldsymbol{A} = \begin{pmatrix}
+         *          \frac{1}{\tan{\frac{\theta}{2}}} & 0 & 0 & 0 \\
+         *          0 & \frac{a}{\tan{\frac{\theta}{2}}} & 0 & 0 \\
+         *          0 & 0 & -1 & -2n \\
+         *          0 & 0 & -1 & 0
+         *      \end{pmatrix}
+         * @f]
+         * @see @ref orthographicProjection(), @ref Matrix3::projection(),
+         *      @ref Constants::inf()
          */
         static Matrix4<T> perspectiveProjection(Rad<T> fov, T aspectRatio, T near, T far) {
             const T xyScale = 2*std::tan(T(fov)/2)*near;
@@ -640,13 +660,20 @@ template<class T> Matrix4<T> Matrix4<T>::orthographicProjection(const Vector2<T>
 }
 
 template<class T> Matrix4<T> Matrix4<T>::perspectiveProjection(const Vector2<T>& size, const T near, const T far) {
-    Vector2<T> xyScale = 2*near/size;
-    T zScale = T(1.0)/(near-far);
+    const Vector2<T> xyScale = 2*near/size;
 
-    return {{xyScale.x(),        T(0),                 T(0),  T(0)},
-            {       T(0), xyScale.y(),                 T(0),  T(0)},
-            {       T(0),        T(0),    (far+near)*zScale, T(-1)},
-            {       T(0),        T(0), T(2)*far*near*zScale,  T(0)}};
+    if(far == Constants<T>::inf()) {
+        return {{xyScale.x(),        T(0),                 T(0),  T(0)},
+                {       T(0), xyScale.y(),                 T(0),  T(0)},
+                {       T(0),        T(0),                T(-1), T(-1)},
+                {       T(0),        T(0),           T(-2)*near,  T(0)}};
+    } else {
+        const T zScale = T(1.0)/(near-far);
+        return {{xyScale.x(),        T(0),                 T(0),  T(0)},
+                {       T(0), xyScale.y(),                 T(0),  T(0)},
+                {       T(0),        T(0),    (far+near)*zScale, T(-1)},
+                {       T(0),        T(0), T(2)*far*near*zScale,  T(0)}};
+    }
 }
 
 template<class T> Matrix4<T> Matrix4<T>::lookAt(const Vector3<T>& eye, const Vector3<T>& target, const Vector3<T>& up) {
