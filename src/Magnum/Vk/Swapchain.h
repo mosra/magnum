@@ -77,7 +77,7 @@ class MAGNUM_VK_EXPORT Swapchain {
             VkResult err = vkAcquireNextImageKHR(_device.vkDevice(),
                                          _swapchain, UINT64_MAX,
                                          presentCompleteSemaphore,
-                                         VkFence(nullptr), &_currentIndex);
+                                         VK_NULL_HANDLE, &_currentIndex);
             MAGNUM_VK_ASSERT_ERROR(err);
 
             return *this;
