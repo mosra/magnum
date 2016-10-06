@@ -48,6 +48,14 @@ namespace {
            GLSL even though the extension (e.g. binding keyword) is not
            supported */
         "intel-windows-glsl-exposes-unsupported-shading-language-420pack",
+
+        /* On Windows NVidia drivers the glTransformFeedbackVaryings() does not
+           make a copy of its char* arguments so it fails at link time when the
+           original char arrays are not in scope anymore. Enabling
+           *synchronous* debug output circumvents this bug. Can be triggered by
+           running TransformFeedbackGLTest with GL_KHR_debug extension
+           disabled. */
+        "nv-windows-dangling-transform-feedback-varying-names",
         #endif
 
         /* Layout qualifier causes compiler error with GLSL 1.20 on Mesa, GLSL

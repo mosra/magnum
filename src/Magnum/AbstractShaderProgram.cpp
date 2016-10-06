@@ -368,6 +368,10 @@ void AbstractShaderProgram::bindFragmentDataLocationIndexedInternal(const Unsign
 
 #ifndef MAGNUM_TARGET_GLES2
 void AbstractShaderProgram::setTransformFeedbackOutputs(const std::initializer_list<std::string> outputs, const TransformFeedbackBufferMode bufferMode) {
+    (this->*Context::current().state().shaderProgram->transformFeedbackVaryingsImplementation)({outputs.begin(), outputs.size()}, bufferMode);
+}
+
+void AbstractShaderProgram::transformFeedbackVaryingsImplementationDefault(const Containers::ArrayView<const std::string> outputs, const TransformFeedbackBufferMode bufferMode) {
     /** @todo VLAs */
     Containers::Array<const char*> names{outputs.size()};
 
@@ -376,6 +380,19 @@ void AbstractShaderProgram::setTransformFeedbackOutputs(const std::initializer_l
 
     glTransformFeedbackVaryings(_id, outputs.size(), names, GLenum(bufferMode));
 }
+
+#ifdef CORRADE_TARGET_WINDOWS
+void AbstractShaderProgram::transformFeedbackVaryingsImplementationDanglingWorkaround(const Containers::ArrayView<const std::string> outputs, const TransformFeedbackBufferMode bufferMode) {
+    /* NVidia on Windows doesn't copy the names when calling
+       glTransformFeedbackVaryings() so it then fails at link time because the
+       char* are dangling. We have to do the copy on the engine side and keep
+       the values until link time (which can happen any time and multiple
+       times, so basically for the remaining lifetime of the shader program) */
+    _transformFeedbackVaryingNames.assign(outputs.begin(), outputs.end());
+
+    transformFeedbackVaryingsImplementationDefault({_transformFeedbackVaryingNames.data(), _transformFeedbackVaryingNames.size()}, bufferMode);
+}
+#endif
 #endif
 
 bool AbstractShaderProgram::link(std::initializer_list<std::reference_wrapper<AbstractShaderProgram>> shaders) {
