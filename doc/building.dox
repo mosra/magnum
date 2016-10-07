@@ -166,7 +166,8 @@ available for desktop OpenGL only, see @ref requires-gl.
 -   `TARGET_GLES2` -- Target OpenGL ES 2.0. Currently enabled by default when
     `TARGET_GLES` is set.
 -   `TARGET_DESKTOP_GLES` -- Target OpenGL ES on desktop, i.e. use OpenGL ES
-    emulation in desktop OpenGL library. Might not be supported in all drivers.
+    emulation in desktop OpenGL library. Available on Linux and Windows, though
+    might not be supported by all drivers.
 -   `TARGET_HEADLESS` -- Build command-line utilities for use on a headless
     machine. Basically it means that EGL with no display attachment is being
     used everywhere instead of platform-specific toolkits like CGL, GLX or WGL.

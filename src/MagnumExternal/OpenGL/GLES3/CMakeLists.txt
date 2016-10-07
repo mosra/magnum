@@ -23,21 +23,35 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-# flextGLPlatform.cpp is compiled as part of Magnum*Context libraries in Platform
-add_library(MagnumFlextGLObjects OBJECT flextGL.cpp)
-target_include_directories(MagnumFlextGLObjects PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
+# Desktop GLES on Windows still links to opengl32.dll so we have a special
+# function loading code that queries everything above OpenGL 1.1
+if(CORRADE_TARGET_WINDOWS AND MAGNUM_TARGET_DESKTOP_GLES)
+    set(MagnumOpenGL_HEADERS flextGLWindowsDesktop.h)
+    set(MagnumOpenGL_SRCS flextGLWindowsDesktop.cpp)
 
-if(NOT BUILD_STATIC)
-    target_compile_definitions(MagnumFlextGLObjects PRIVATE "FlextGL_EXPORTS")
-endif()
-if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
-    set_target_properties(MagnumFlextGLObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
-endif()
-
-if(CORRADE_TARGET_EMSCRIPTEN)
+# Emscripten is special, provide only some extensions for it (and no extension
+# loading)
+elseif(CORRADE_TARGET_EMSCRIPTEN)
     set(MagnumOpenGL_HEADERS flextGLEmscripten.h)
+
+# The common sane case
 else()
     set(MagnumOpenGL_HEADERS flextGL.h)
+    set(MagnumOpenGL_SRCS flextGL.cpp)
+endif()
+
+# Emscripten doesn't have the ability to load function pointers manually
+if(NOT CORRADE_TARGET_NACL AND NOT CORRADE_TARGET_EMSCRIPTEN)
+    # flextGLPlatform*.cpp is compiled as part of Magnum*Context libraries in Platform
+    add_library(MagnumFlextGLObjects OBJECT ${MagnumOpenGL_SRCS})
+    target_include_directories(MagnumFlextGLObjects PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
+
+    if(NOT BUILD_STATIC)
+        target_compile_definitions(MagnumFlextGLObjects PRIVATE "FlextGL_EXPORTS")
+    endif()
+    if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+        set_target_properties(MagnumFlextGLObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    endif()
 endif()
 
 install(FILES ${MagnumOpenGL_HEADERS} DESTINATION ${MAGNUM_EXTERNAL_INCLUDE_INSTALL_DIR}/OpenGL/GLES3)

@@ -1,0 +1,22 @@
+@require(passthru, functions, enums, options, version, extensions)
+#include "flextGLWindowsDesktop.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+@for category,funcs in functions:
+@if funcs:
+
+/* GL_@category */
+@for f in funcs:
+    @if f.name not in ['BlendFunc', 'Clear', 'ClearColor', 'ClearDepth', 'ClearStencil', 'ColorMask', 'CullFace', 'DepthFunc', 'DepthMask', 'DepthRange', 'Disable', 'DrawBuffer', 'Enable', 'Finish', 'Flush', 'FrontFace', 'GetBooleanv', 'GetDoublev', 'GetError', 'GetFloatv', 'GetIntegerv', 'GetString', 'GetTexImage', 'GetTexLevelParameterfv', 'GetTexLevelParameteriv', 'GetTexParameterfv', 'GetTexParameteriv', 'Hint', 'IsEnabled', 'LineWidth', 'LogicOp', 'PixelStoref', 'PixelStorei', 'PointSize', 'PolygonMode', 'ReadBuffer', 'ReadPixels', 'Scissor', 'StencilFunc', 'StencilMask', 'StencilOp', 'TexImage1D', 'TexImage2D', 'TexParameterf', 'TexParameterfv', 'TexParameteri', 'TexParameteriv', 'Viewport', 'BindTexture', 'CopyTexImage1D', 'CopyTexImage2D', 'CopyTexSubImage1D', 'CopyTexSubImage2D', 'DeleteTextures', 'DrawArrays', 'DrawElements', 'GenTextures', 'IsTexture', 'PolygonOffset', 'TexSubImage1D', 'TexSubImage2D']:
+FLEXTGL_EXPORT @f.returntype\
+(APIENTRY *flextgl@f.name)(@f.param_type_list_string()) = nullptr;
+    @end
+@end
+@end
+@end
+
+#ifdef __cplusplus
+}
+#endif

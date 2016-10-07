@@ -1,0 +1,90 @@
+@require(passthru, functions, enums, options, version, extensions)
+#ifndef _flextgl_h_
+#define _flextgl_h_
+
+#include <Corrade/Utility/VisibilityMacros.h>
+
+#include "Magnum/configure.h"
+
+/* Defensive include guards */
+
+#if defined(__gl_h_) || defined(__gl2_h_)
+#error Attempt to include auto-generated header after including gl2.h
+#endif
+#if defined(__gl2ext_h_)
+#error Attempt to include auto-generated header after including gl2ext.h
+#endif
+#if defined(__gl2platform_h_)
+#error Attempt to include auto-generated header after including gl2platform.h
+#endif
+
+#define __gl_h_
+#define __gl2_h_
+#define __gl2ext_h_
+#define __gl2platform_h_
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void flextGLInit();
+
+/* Function declaration macros */
+
+#ifndef MAGNUM_BUILD_STATIC
+    #ifdef FlextGL_EXPORTS
+        #define FLEXTGL_EXPORT CORRADE_VISIBILITY_EXPORT
+    #else
+        #define FLEXTGL_EXPORT CORRADE_VISIBILITY_IMPORT
+    #endif
+#else
+    #define FLEXTGL_EXPORT CORRADE_VISIBILITY_STATIC
+#endif
+
+#if defined(_WIN32) && !defined(APIENTRY) && !defined(__CYGWIN__) && !defined(__SCITECH_SNAP__)
+#define WIN32_LEAN_AND_MEAN 1
+#ifndef WINAPI
+#define WINAPI __stdcall
+#endif
+#define APIENTRY WINAPI
+#endif
+
+#ifndef APIENTRY
+#define APIENTRY
+#endif
+#ifndef GLAPI
+#define GLAPI extern
+#endif
+
+/* Data types */
+
+@passthru
+
+/* Enums */
+
+@enums
+
+/* Function prototypes */
+@for cat,funcs in functions:
+@if funcs:
+
+/* GL_@cat */
+
+    @for f in funcs:
+        @if f.name in ['BlendFunc', 'Clear', 'ClearColor', 'ClearDepth', 'ClearStencil', 'ColorMask', 'CullFace', 'DepthFunc', 'DepthMask', 'DepthRange', 'Disable', 'DrawBuffer', 'Enable', 'Finish', 'Flush', 'FrontFace', 'GetBooleanv', 'GetDoublev', 'GetError', 'GetFloatv', 'GetIntegerv', 'GetString', 'GetTexImage', 'GetTexLevelParameterfv', 'GetTexLevelParameteriv', 'GetTexParameterfv', 'GetTexParameteriv', 'Hint', 'IsEnabled', 'LineWidth', 'LogicOp', 'PixelStoref', 'PixelStorei', 'PointSize', 'PolygonMode', 'ReadBuffer', 'ReadPixels', 'Scissor', 'StencilFunc', 'StencilMask', 'StencilOp', 'TexImage1D', 'TexImage2D', 'TexParameterf', 'TexParameterfv', 'TexParameteri', 'TexParameteriv', 'Viewport', 'BindTexture', 'CopyTexImage1D', 'CopyTexImage2D', 'CopyTexSubImage1D', 'CopyTexSubImage2D', 'DeleteTextures', 'DrawArrays', 'DrawElements', 'GenTextures', 'IsTexture', 'PolygonOffset', 'TexSubImage1D', 'TexSubImage2D']:
+GLAPI FLEXTGL_EXPORT @f.returntype APIENTRY gl@f.name\
+(@f.param_type_list_string());
+        @else:
+GLAPI FLEXTGL_EXPORT @f.returntype\
+(APIENTRY *flextgl@f.name)(@f.param_type_list_string());
+#define gl@f.name flextgl@f.name
+        @end
+    @end
+@end
+@end
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif

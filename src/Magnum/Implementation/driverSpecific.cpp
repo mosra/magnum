@@ -34,8 +34,7 @@ namespace Magnum {
 
 namespace {
     std::vector<std::string> KnownWorkarounds{
-        #ifndef MAGNUM_TARGET_GLES
-        #ifndef CORRADE_TARGET_APPLE
+        #if !defined(MAGNUM_TARGET_GLES) && !defined(CORRADE_TARGET_APPLE)
         /* Creating core context with specific version on AMD and NV
            proprietary drivers on Linux/Windows and Intel drivers on Windows
            causes the context to be forced to given version instead of
@@ -43,12 +42,14 @@ namespace {
         "no-forward-compatible-core-context",
         #endif
 
-        #ifdef CORRADE_TARGET_WINDOWS
+        #if !defined(MAGNUM_TARGET_GLES) && defined(CORRADE_TARGET_WINDOWS)
         /* On Windows Intel drivers ARB_shading_language_420pack is exposed in
            GLSL even though the extension (e.g. binding keyword) is not
            supported */
         "intel-windows-glsl-exposes-unsupported-shading-language-420pack",
+        #endif
 
+        #if !defined(MAGNUM_TARGET_GLES2) && defined(CORRADE_TARGET_WINDOWS)
         /* On Windows NVidia drivers the glTransformFeedbackVaryings() does not
            make a copy of its char* arguments so it fails at link time when the
            original char arrays are not in scope anymore. Enabling
@@ -58,6 +59,7 @@ namespace {
         "nv-windows-dangling-transform-feedback-varying-names",
         #endif
 
+        #if !defined(MAGNUM_TARGET_GLES)
         /* Layout qualifier causes compiler error with GLSL 1.20 on Mesa, GLSL
            1.30 on NVidia and 1.40 on Mac OS X. Everything is fine when using
            newer GLSL version. */
