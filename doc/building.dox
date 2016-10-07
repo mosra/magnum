@@ -244,10 +244,10 @@ on Linux, Mac OS X and Windows, also disabled by default:
     information about OpenAL capabilities.
 -   `WITH_DISTANCEFIELDCONVERTER` - @ref magnum-distancefieldconverter "magnum-distancefieldconverter"
     executable for converting black&white images to distance field textures.
-    Enables also building of TextureTools library.
+    Enables also building of @ref TextureTools library.
 -   `WITH_FONTCONVERTER` - @ref magnum-fontconverter "magnum-fontconverter"
     executable for converting fonts to raster ones. Enables also building of
-    Text library.
+    @ref Text library.
 
 Magnum also contains a set of dependency-less plugins for importing essential
 file formats. Additional plugins are provided in separate plugin repository,
