@@ -201,7 +201,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * Consider using @ref transposed() when accessing rows frequently, as
          * this is slower than accessing columns due to the way the matrix is
          * stored.
-         * @see @ref row(), @ref operator()[]
+         * @see @ref row(), @ref operator[]()
          */
         void setRow(std::size_t row, const Vector<cols, T>& data);
 
