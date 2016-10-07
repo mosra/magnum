@@ -235,19 +235,21 @@ information):
 -   `WITH_GLXCONTEXT` -- GLX context
 -   `WITH_WGLCONTEXT` -- WGL context
 
-There are also a few command-line utilities. They are currently available only
-on Linux, Mac OS X and Windows, also disabled by default:
+There are also a few command-line utilities, also disabled by default:
 
 -   `WITH_MAGNUMINFO` - @ref magnum-info "magnum-info" executable, provides
-    information about the engine and OpenGL capabilities.
+    information about the engine and OpenGL capabilities. Depends on some
+    windowless application library.
 -   `WITH_AL_INFO` -- @ref magnum-al-info "magnum-al-info" executable, provides
     information about OpenAL capabilities.
 -   `WITH_DISTANCEFIELDCONVERTER` - @ref magnum-distancefieldconverter "magnum-distancefieldconverter"
     executable for converting black&white images to distance field textures.
-    Enables also building of @ref TextureTools library.
+    Enables also building of @ref TextureTools library. Available only on
+    desktop GL, depends on some windowless application library.
 -   `WITH_FONTCONVERTER` - @ref magnum-fontconverter "magnum-fontconverter"
     executable for converting fonts to raster ones. Enables also building of
-    @ref Text library.
+    @ref Text library. Available only on desktop GL, depends on some windowless
+    application library.
 
 Magnum also contains a set of dependency-less plugins for importing essential
 file formats. Additional plugins are provided in separate plugin repository,

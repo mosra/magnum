@@ -50,8 +50,6 @@ Arguments:
   | Information about Magnum engine and OpenAL capabilities |
   +---------------------------------------------------------+
 
-connect(2) call to /dev/shm/jack-1000/default/jack_0 failed (err=No such file or directory)
-attempt to connect to server failed
 Audio Renderer: OpenAL Soft by OpenAL Community
 OpenAL version: 1.1 ALSOFT 1.17.2
 Available devices:

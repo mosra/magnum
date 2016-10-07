@@ -40,6 +40,10 @@
 
 #ifdef MAGNUM_TARGET_HEADLESS
 #include "Magnum/Platform/WindowlessEglApplication.h"
+#elif defined(CORRADE_TARGET_NACL)
+#include "Magnum/Platform/WindowlessNaClApplication.h"
+#elif defined(CORRADE_TARGET_IOS)
+#include "Magnum/Platform/WindowlessIosApplication.h"
 #elif defined(CORRADE_TARGET_APPLE)
 #include "Magnum/Platform/WindowlessCglApplication.h"
 #elif defined(CORRADE_TARGET_UNIX)
@@ -49,7 +53,11 @@
 #include "Magnum/Platform/WindowlessGlxApplication.h"
 #endif
 #elif defined(CORRADE_TARGET_WINDOWS)
+#if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_DESKTOP_GLES)
 #include "Magnum/Platform/WindowlessWglApplication.h"
+#else
+#include "Magnum/Platform/WindowlessWindowsEglApplication.h"
+#endif
 #else
 #error no windowless application available on this platform
 #endif
@@ -63,7 +71,7 @@ namespace Magnum {
 
 @section magnum-distancefieldconverter-usage Usage
 
-    magnum-distancefieldconverter [-h|--help] [--importer IMPORTER] [--converter CONVERTER] [--plugin-dir DIR] --output-size "X Y" --radius N [--] input output
+    magnum-distancefieldconverter [--magnum-...] [-h|--help] [--importer IMPORTER] [--converter CONVERTER] [--plugin-dir DIR] --output-size "X Y" --radius N [--] input output
 
 Arguments:
 
@@ -76,6 +84,7 @@ Arguments:
     Magnum install location)
 -   `--output-size "X Y"` -- size of output image
 -   `--radius N` -- distance field computation radius
+-   `--magnum-...` -- engine-specific options (see @ref Context for details)
 
 Images with @ref PixelFormat::Red, @ref PixelFormat::RGB or @ref PixelFormat::RGBA
 are accepted on input.
