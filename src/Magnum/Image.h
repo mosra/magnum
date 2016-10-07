@@ -72,6 +72,11 @@ template<UnsignedInt dimensions> class Image {
          *      instead.
          */
         explicit CORRADE_DEPRECATED("use Image(PixelFormat, PixelType, const VectorTypeFor&, Containers::Array&&) instead") Image(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, void* data) noexcept: Image{{}, format, type, size, Containers::Array<char>{reinterpret_cast<char*>(data), Implementation::imageDataSizeFor(format, type, size)}} {}
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        /* To avoid decay of nullptr to const void* and unwanted use of
+           deprecated function */
+        explicit Image(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, std::nullptr_t) noexcept: Image{{}, format, type, size, nullptr} {}
+        #endif
         #endif
 
         /**

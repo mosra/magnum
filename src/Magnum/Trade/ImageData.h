@@ -80,6 +80,11 @@ template<UnsignedInt dimensions> class ImageData {
          * @deprecated Use @ref ImageData(PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*) instead.
          */
         explicit CORRADE_DEPRECATED("use ImageData(PixelFormat, PixelType, const VectorTypeFor&, Containers::Array&&) instead") ImageData(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, void* data) noexcept: ImageData{format, type, size, Containers::Array<char>{reinterpret_cast<char*>(data), Magnum::Implementation::imageDataSizeFor(format, type, size)}} {}
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        /* To avoid decay of nullptr to const void* and unwanted use of
+           deprecated function */
+        explicit ImageData(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, std::nullptr_t) noexcept: ImageData{{}, format, type, size, nullptr} {}
+        #endif
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
