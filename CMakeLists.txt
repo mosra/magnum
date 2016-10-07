@@ -121,7 +121,7 @@ elseif(CORRADE_TARGET_UNIX)
 
 # Windows-specific application libraries
 elseif(CORRADE_TARGET_WINDOWS)
-    if(NOT TARGET_GLES)
+    if(NOT TARGET_GLES OR TARGET_DESKTOP_GLES)
         cmake_dependent_option(WITH_WINDOWLESSWGLAPPLICATION "Build WindowlessWglApplication library" OFF "NOT WITH_MAGNUMINFO;NOT WITH_FONTCONVERTER;NOT WITH_DISTANCEFIELDCONVERTER" ON)
         option(WITH_WGLCONTEXT "Build WglContext library" OFF)
     else()
