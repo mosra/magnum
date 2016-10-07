@@ -33,6 +33,7 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/visibility.h"
+#include "Magnum/Trade/Trade.h"
 #include "MagnumExternal/Optional/optional.hpp"
 
 namespace Magnum { namespace Trade {
@@ -163,6 +164,16 @@ class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractManagi
         Containers::Array<char> exportToData(const CompressedImageView2D& image);
 
         /**
+         * @brief Export image to raw data
+         *
+         * Based on whether the image is compressed or not, calls either
+         * @ref exportToData(const ImageView2D&) or
+         * @ref exportToData(const CompressedImageView2D&). See documentation
+         * of those two functions for details.
+         */
+        Containers::Array<char> exportToData(const ImageData2D& image);
+
+        /**
          * @brief Export image to file
          *
          * Available only if @ref Feature::ConvertFile or
@@ -183,6 +194,16 @@ class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractManagi
          *      @ref exportToData(const CompressedImageView2D&)
          */
         bool exportToFile(const CompressedImageView2D& image, const std::string& filename);
+
+        /**
+         * @brief Export image to file
+         *
+         * Based on whether the image is compressed or not, calls either
+         * @ref exportToFile(const ImageView2D&, const std::string&) or
+         * @ref exportToFile(const CompressedImageView2D&, const std::string&).
+         * See documentation of those two functions for details.
+         */
+        bool exportToFile(const ImageData2D& image, const std::string& filename);
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
     private:
