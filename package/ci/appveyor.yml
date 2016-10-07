@@ -10,6 +10,10 @@ environment:
     COMPILER: msvc
   - TARGET: desktop
     COMPILER: mingw
+  - TARGET: desktop-gles
+    TARGET_GLES2: ON
+  - TARGET: desktop-gles
+    TARGET_GLES2: OFF
   - TARGET: rt
     TARGET_GLES2: ON
   - TARGET: rt
@@ -31,6 +35,7 @@ install:
 - IF NOT "%TARGET%" == "rt" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\openal-soft-1.17.2-bin.zip appveyor DownloadFile http://kcat.strangesoft.net/openal-binaries/openal-soft-1.17.2-bin.zip
 - IF NOT "%TARGET%" == "rt" 7z x openal-soft-1.17.2-bin.zip && ren openal-soft-1.17.2-bin openal && echo [General] > %APPDATA%/alsoft.ini & echo drivers=null >> %APPDATA%/alsoft.ini
 - IF "%TARGET%" == "desktop" ren openal\bin\Win64\soft_oal.dll OpenAL32.dll
+- IF "%TARGET%" == "desktop-gles" ren openal\bin\Win64\soft_oal.dll OpenAL32.dll
 
 # SDL2
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\SDL2-devel-2.0.4-VC.zip appveyor DownloadFile http://www.libsdl.org/release/SDL2-devel-2.0.4-VC.zip
@@ -41,6 +46,7 @@ install:
 build_script:
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" call package\ci\appveyor-desktop.bat
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" call package\ci\appveyor-desktop-mingw.bat
+- IF "%TARGET%" == "desktop-gles" call package\ci\appveyor-desktop-gles.bat
 - IF "%TARGET%" == "rt" call package\ci\appveyor-rt.bat
 
 cache:
