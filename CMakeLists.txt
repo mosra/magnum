@@ -151,7 +151,7 @@ option(BUILD_STATIC_PIC "Build static libraries and plugins with position-indepe
 option(BUILD_PLUGINS_STATIC "Build static plugins (default are dynamic)" OFF)
 option(BUILD_TESTS "Build unit tests" OFF)
 cmake_dependent_option(BUILD_GL_TESTS "Build unit tests for OpenGL code" OFF "BUILD_TESTS" OFF)
-cmake_dependent_option(BUILD_AL_TESTS "Build unit tests for OpenAL code" ON "BUILD_TESTS" OFF)
+cmake_dependent_option(BUILD_AL_TESTS "Build unit tests for OpenAL code" ON "BUILD_TESTS;WITH_AUDIO" OFF)
 if(BUILD_TESTS)
     find_package(Corrade REQUIRED TestSuite)
     if(CORRADE_TARGET_IOS)
