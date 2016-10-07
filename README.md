@@ -89,11 +89,9 @@ comprehensive guide for building, packaging and crosscompiling.
 Minimal dependencies
 --------------------
 
--   C++ compiler with good C++11 support. Compilers which are tested to have
-    everything needed are **GCC** >= 4.7, **Clang** >= 3.1 and **MSVC** 2015.
-    On Windows you can also use **MinGW-w64**. GCC 4.6, 4.5, 4.4 and MSVC 2013
-    support involves some ugly workarounds and thus is available only in
-    `compatibility` branch.
+*   C++ compiler with good C++11 support. Compilers which are tested to have
+    everything needed are **GCC** >= 4.7, **Clang** >= 3.1 and **MSVC** >=
+    2015. On Windows you can also use **MinGW-w64**.
 *   **CMake** >= 2.8.12
 *   **Corrade** - Plugin management and utility library. You can get it at
     https://github.com/mosra/corrade.

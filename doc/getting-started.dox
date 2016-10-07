@@ -59,14 +59,6 @@ dependencies means just cloning them into your project tree:
     git clone git://github.com/mosra/corrade.git
     git clone git://github.com/mosra/magnum.git
 
-The `master` branch supports GCC 4.7+, Clang and MSVC 2015 compilers, for older
-versions you need to use `compatibility` branches, please see
-@ref building-corrade "Corrade" and @ref building "Magnum"  installation guides
-for detailed information. If you are using `compatibility` branch of Magnum and
-Corrade, replace `modules/FindCorrade.cmake` from the bootstrap project with
-[the one from compatibility branch](https://github.com/mosra/corrade/blob/compatibility/modules/FindCorrade.cmake)
-so the compatibility mode gets properly detected and used.
-
 Then open the `CMakeLists.txt` file in the root of bootstrap project and add
 these two new subdirectories using `add_subdirectory()` so the file looks like
 this:

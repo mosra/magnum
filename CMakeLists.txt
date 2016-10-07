@@ -163,15 +163,6 @@ if(BUILD_TESTS)
     enable_testing()
 endif()
 
-# Check compiler compatibility
-if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.7.0")
-    message(FATAL_ERROR "Compatibility branch of Magnum is needed for use with GCC < 4.7. See the documentation for more information.")
-elseif(MSVC)
-    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "19.0")
-        message(FATAL_ERROR "Compatibility branch of Magnum is needed for use with MSVC < 2015. See the documentation for more information.")
-    endif()
-endif()
-
 # If targeting NaCl, set explicit OpenGL ES 2.0 support. For Android and
 # Emscripten the decision between ES 2.0 / WebGL 1.0 and ES 3.0 / WebGL 2.0
 # must be done by the user.

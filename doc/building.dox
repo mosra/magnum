@@ -33,10 +33,8 @@ namespace Magnum {
 Minimal set of tools and libraries required for building is:
 
 -   C++ compiler with good C++11 support. Compilers which are tested to have
-    everything needed are **GCC** >= 4.7, **Clang** >= 3.1 and **MSVC** 2015.
-    On Windows you can also use **MinGW-w64**. GCC 4.6, 4.5, 4.4 and MSVC 2013
-    support involves some ugly workarounds and thus is available only in
-    `compatibility` branch.
+    everything needed are **GCC** >= 4.7, **Clang** >= 3.1 and **MSVC** >=
+    2015. On Windows you can also use **MinGW-w64**.
 -   **CMake** >= 2.8.12
 -   **Corrade** - Plugin management and utility library. See
     @ref building-corrade "Corrade download and installation guide" for more
@@ -51,12 +49,6 @@ repository with your favorite IDE or Git GUI, download currrent snapshot as
 compressed archive or use the command line:
 
     git clone git://github.com/mosra/magnum.git
-
-If you need to use the `compatibility` branch, check it out as following from
-the cloned repository or download the particular archive from
-https://github.com/mosra/magnum/tree/compatibility.
-
-    git checkout compatibility
 
 @section building-compilation Compilation, installation
 
@@ -103,8 +95,7 @@ value to that directory (e.g. `-DCMAKE_INSTALL_PREFIX=C:/Sys`).
 
 @subsubsection building-windows-msvc Using Visual Studio
 
-On Windows CMake by default creates Visual Studio project files. You need to
-use `compatibility` branch to compile with MSVC 2013, as said above.
+On Windows CMake by default creates Visual Studio project files.
 
 The most straightforward way to build and install the library is again via the
 command-line. The bonus point is that you don't even need to wait for Visual
