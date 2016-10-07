@@ -23,15 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-namespace Magnum {
-/** @page utilities Utilities
-@brief Command-line utilities for system information and data conversion
-
--   @subpage magnum-info -- @copybrief magnum-info
--   @subpage magnum-al-info -- @copybrief magnum-al-info
--   @subpage magnum-distancefieldconverter -- @copybrief magnum-distancefieldconverter
--   @subpage magnum-fontconverter -- @copybrief magnum-fontconverter
--   @subpage magnum-imageconverter -- @copybrief magnum-imageconverter
-
-*/
-}
+#ifdef CORRADE_IS_DEBUG_BUILD
+#define MAGNUM_PLUGINS_DIR "${MAGNUM_PLUGINS_DEBUG_INSTALL_DIR}"
+#else
+#define MAGNUM_PLUGINS_DIR "${MAGNUM_PLUGINS_INSTALL_DIR}"
+#endif

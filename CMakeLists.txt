@@ -65,6 +65,9 @@ if(CORRADE_TARGET_UNIX OR CORRADE_TARGET_WINDOWS)
     cmake_dependent_option(WITH_DISTANCEFIELDCONVERTER "Build magnum-distancefieldconverter utility" OFF "NOT TARGET_GLES" OFF)
 endif()
 
+# API-independent utilities
+option(WITH_IMAGECONVERTER "Build magnum-imageconverter utility" OFF)
+
 # Plugins
 option(WITH_WAVAUDIOIMPORTER "Build WavAudioImporter plugin" OFF)
 option(WITH_MAGNUMFONT "Build MagnumFont plugin" OFF)

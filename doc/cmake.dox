@@ -142,6 +142,7 @@ Lastly, a few utility executables are available:
 
 -   `distancefieldconverter` -- @ref magnum-distancefieldconverter executable
 -   `fontconverter` -- @ref magnum-fontconverter executable
+-   `imageconverter` -- @ref magnum-imageconverter executable
 -   `info` -- @ref magnum-info executable
 -   `al-info` -- @ref magnum-al-info executable
 

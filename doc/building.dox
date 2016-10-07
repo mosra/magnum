@@ -250,6 +250,8 @@ There are also a few command-line utilities, also disabled by default:
     executable for converting fonts to raster ones. Enables also building of
     @ref Text library. Available only on desktop GL, depends on some windowless
     application library.
+-   `WITH_IMAGECONVERTER` - @ref magnum-imageconverter "magnum-imageconverter"
+    executable for converting images of different formats.
 
 Magnum also contains a set of dependency-less plugins for importing essential
 file formats. Additional plugins are provided in separate plugin repository,
