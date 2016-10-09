@@ -125,8 +125,9 @@ bool GlfwApplication::tryCreateContext(const Configuration& configuration) {
         #else
         glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
         #endif
+    } else {
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     }
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
     /* Set context flags */
     _window = glfwCreateWindow(configuration.size().x(), configuration.size().y(), configuration.title().c_str(), monitor, nullptr);
@@ -146,7 +147,11 @@ bool GlfwApplication::tryCreateContext(const Configuration& configuration) {
     glfwMakeContextCurrent(_window);
 
     /* Return true if the initialization succeeds */
-    return true; //_context->tryCreate();
+    if(configuration.version() != Version::None) {
+        return _context->tryCreate();
+    } else {
+        return true;
+    }
 }
 
 GlfwApplication::~GlfwApplication() {
