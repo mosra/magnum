@@ -478,6 +478,7 @@ OpenGL function                         | Matching API
 @def_gl{MAX_VERTEX_ATTRIB_STRIDE}       | |
 @def_gl{MAX_VERTEX_ATTRIB_BINDINGS}     | |
 @def_gl{MAX_VERTEX_ATTRIB_RELATIVE_OFFSET} | |
+@def_gl{MAX_VERTEX_STREAMS}             | @ref TransformFeedback::maxVertexStreams()
 @def_gl{MAX_VIEWPORTS}                  | |
 @def_gl{MAX_VIEWPORT_DIMS}              | @ref AbstractFramebuffer::maxViewportSize()
 @def_gl{MIN_FRAGMENT_INTERPOLATION_OFFSET}, \n @def_gl{MAX_FRAGMENT_INTERPOLATION_OFFSET} | |

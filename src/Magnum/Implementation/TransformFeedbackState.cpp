@@ -10,7 +10,7 @@ namespace Magnum { namespace Implementation {
 
 TransformFeedbackState::TransformFeedbackState(Context& context, std::vector<std::string>& extensions): maxInterleavedComponents{0}, maxSeparateAttributes{0}, maxSeparateComponents{0}
     #ifndef MAGNUM_TARGET_GLES
-    , maxBuffers{0}
+    , maxBuffers{0}, maxVertexStreams{0}
     #endif
 {
     #ifndef MAGNUM_TARGET_GLES

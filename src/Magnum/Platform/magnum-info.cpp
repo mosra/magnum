@@ -612,6 +612,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         _h(ARB::transform_feedback3)
 
         _l(TransformFeedback::maxBuffers())
+        _l(TransformFeedback::maxVertexStreams())
     }
     #endif
 

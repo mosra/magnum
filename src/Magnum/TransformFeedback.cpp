@@ -94,6 +94,18 @@ Int TransformFeedback::maxBuffers() {
 
     return value;
 }
+
+Int TransformFeedback::maxVertexStreams() {
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback3>())
+        return 1;
+
+    GLint& value = Context::current().state().transformFeedback->maxVertexStreams;
+
+    if(value == 0)
+        glGetIntegerv(GL_MAX_VERTEX_STREAMS, &value);
+
+    return value;
+}
 #endif
 
 TransformFeedback::TransformFeedback(): _flags{ObjectFlag::DeleteOnDestruction} {
