@@ -84,7 +84,7 @@ class MAGNUM_VK_EXPORT DeviceMemory {
             return map(0, _memAlloc.allocationSize);
         }
 
-        Containers::ArrayView<char> map(UnsignedInt offset, UnsignedInt size) {
+        Containers::ArrayView<char> map(VkDeviceSize offset, VkDeviceSize size) {
             // TODO: Memory map flags (== 0)
             void* data;
             VkResult err = vkMapMemory(_device, _deviceMemory, offset, size, 0, &data);

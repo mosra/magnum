@@ -1,4 +1,4 @@
-﻿/*
+/*
     This file is part of Magnum.
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
@@ -32,19 +32,24 @@
 
 namespace Magnum { namespace Vk {
 
-Device::Device(PhysicalDevice& physicalDevice,
-    const std::vector<DeviceQueueCreateInfo>& requestedQueues,
-    const std::vector<const char*>& extensions,
-    const std::vector<const char*>& validationLayers,
+Device::Device(const PhysicalDevice& physicalDevice,
+    std::initializer_list<DeviceQueueCreateInfo> requestedQueues,
+    std::initializer_list<const char*> extensions,
+    std::initializer_list<const char*> validationLayers,
     const DeviceFeatures& features):
     _physicalDevice(physicalDevice)
 {
+    VkPhysicalDeviceFeatures vkPhysicalDevice = features;
+    std::vector<DeviceQueueCreateInfo> qci{requestedQueues};
+    std::vector<const char*> exts{extensions};
+    std::vector<const char*> val{validationLayers};
+
     VkDeviceCreateInfo deviceCreateInfo = {
         VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO, nullptr, 0,
-        requestedQueues.size(), reinterpret_cast<const VkDeviceQueueCreateInfo*>(requestedQueues.data()),
-        validationLayers.size(), validationLayers.data(),
-        extensions.size(), extensions.data(),
-        &VkPhysicalDeviceFeatures(features)};
+        UnsignedInt(qci.size()), reinterpret_cast<const VkDeviceQueueCreateInfo*>(qci.data()),
+        UnsignedInt(val.size()), val.data(),
+        UnsignedInt(exts.size()), exts.data(),
+        &vkPhysicalDevice};
 
     vkCreateDevice(physicalDevice, &deviceCreateInfo, nullptr, &_device);
 
@@ -54,6 +59,7 @@ Device::Device(PhysicalDevice& physicalDevice,
         }
     }
 }
+
 
 Device::~Device() {
     vkDestroyDevice(_device, nullptr);

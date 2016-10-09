@@ -84,7 +84,7 @@ class MAGNUM_VK_EXPORT DescriptorSetLayout {
             VkDescriptorSetLayoutCreateInfo descLayout = {
                 VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO,
                 nullptr, 0,
-                bndgs.size(),
+                UnsignedInt(bndgs.size()),
                 reinterpret_cast<const VkDescriptorSetLayoutBinding*>(bndgs.data())
             };
 

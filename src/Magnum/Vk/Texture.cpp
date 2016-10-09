@@ -29,5 +29,4 @@
 
 namespace Magnum { namespace Vk {
 
-
 }}

@@ -57,7 +57,7 @@ class MAGNUM_VK_EXPORT Framebuffer {
                 VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO,
                 nullptr, 0,
                 renderPass,
-                vkAttachments.size(),
+                UnsignedInt(vkAttachments.size()),
                 vkAttachments.data(),
                 size.x(), size.y(), size.z()
             };

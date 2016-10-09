@@ -184,7 +184,7 @@ class MAGNUM_VK_EXPORT Pipeline {
                 vkCmdBindDescriptorSets(cmdBuffer,
                                         VkPipelineBindPoint(bindPoint),
                                         pl, 0,
-                                        descriptorSets.size(), vkDescriptorSets.data(),
+                                        UnsignedInt(descriptorSets.size()), vkDescriptorSets.data(),
                                         0, nullptr);
             };
         }

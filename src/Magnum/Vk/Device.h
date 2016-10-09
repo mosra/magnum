@@ -109,41 +109,48 @@ enum class DeviceFeature : UnsignedInt {
 
 Container for physical device features.
 */
-class DeviceFeatures : Containers::Array<DeviceFeature> {
+class DeviceFeatures {
 public:
 
-    DeviceFeatures(const std::initializer_list<DeviceFeature>& features):
-        Containers::Array<DeviceFeature>(Containers::Array<DeviceFeature>::zeroInitialized(deviceFeaturesCount))
-    {
-        std::copy(features.begin(), features.end(), this->end());
+    DeviceFeatures(const std::initializer_list<DeviceFeature>& features) {
+        VkBool32* enabled = reinterpret_cast<VkBool32*>(&_features);
+        for(DeviceFeature f : features) {
+            enabled[UnsignedInt(f)] = VK_TRUE;
+        }
     }
 
-    operator const VkPhysicalDeviceFeatures&() const {
-        return *reinterpret_cast<const VkPhysicalDeviceFeatures*>(this->data());
+    operator VkPhysicalDeviceFeatures() const {
+        return _features;
     }
+
+    operator VkPhysicalDeviceFeatures&() {
+        return _features;
+    }
+
+private:
+    VkPhysicalDeviceFeatures _features;
 };
 
 struct DeviceQueueCreateInfo {
 
-    DeviceQueueCreateInfo(UnsignedInt queueFamilyIndex, std::initializer_list<Float> priorities) :
-        _queueFamilyIndex{ queueFamilyIndex },
-        _queueCount{UnsignedInt(priorities.size())},
+    DeviceQueueCreateInfo(UnsignedInt queueFamilyIndex, const std::vector<Float> priorities) :
+        _queueFamilyIndex{queueFamilyIndex},
+        _queueCount{1},
         _queuePriorities{new float[priorities.size()]}
     {
-        std::copy(priorities.begin(), priorities.end(), _queuePriorities);
+        std::copy(priorities.begin(), priorities.end(), _queuePriorities.get());
     }
 
-    DeviceQueueCreateInfo(UnsignedInt queueFamilyIndex, const std::vector<Float>& priorities) :
-        _queueFamilyIndex{ queueFamilyIndex },
-        _queueCount{ UnsignedInt(priorities.size()) },
-        _queuePriorities{ new float[priorities.size()] }
+    DeviceQueueCreateInfo(const DeviceQueueCreateInfo& other):
+        _queueFamilyIndex{other._queueFamilyIndex},
+        _queueCount{other._queueCount},
+        _queuePriorities{new float[_queueCount]}
     {
-        std::copy(priorities.begin(), priorities.end(), _queuePriorities);
+            std::copy(other._queuePriorities.get(), other._queuePriorities.get() + _queueCount,
+                      _queuePriorities.get());
     }
 
-    ~DeviceQueueCreateInfo() {
-        delete _queuePriorities;
-    }
+    ~DeviceQueueCreateInfo() = default;
 
     UnsignedInt queueCount() const {
         return _queueCount;
@@ -159,7 +166,7 @@ private:
     const VkDeviceQueueCreateFlags _flags = 0;
     UnsignedInt _queueFamilyIndex;
     UnsignedInt _queueCount;
-    float* _queuePriorities;
+    std::unique_ptr<Float> _queuePriorities;
 };
 
 static_assert(sizeof(DeviceQueueCreateInfo) == sizeof(VkDeviceQueueCreateInfo), "DeviceQueueCreateInfo and VkDeviceQueueCreateInfo are required to be of same size.");
@@ -176,11 +183,12 @@ class MAGNUM_VK_EXPORT Device {
         /** @brief Move constructor */
         Device(Device&& other);
 
-        Device(PhysicalDevice& physicalDevice,
-               const std::vector<DeviceQueueCreateInfo>& requestedQueues,
-               const std::vector<const char*>& extensions,
-               const std::vector<const char*>& validationLayers,
-               const DeviceFeatures& features);
+    public:
+        Device::Device(const PhysicalDevice& physicalDevice,
+            std::initializer_list<DeviceQueueCreateInfo> requestedQueues,
+            std::initializer_list<const char*> extensions,
+            std::initializer_list<const char*> validationLayers,
+            const DeviceFeatures& features);
 
         /**
          * @brief Destructor

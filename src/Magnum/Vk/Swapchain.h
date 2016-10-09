@@ -100,7 +100,7 @@ class MAGNUM_VK_EXPORT Swapchain {
          * @brief Number of images in the swapchain
          */
         UnsignedInt imageCount() const {
-            return _buffers.size();
+            return UnsignedInt(_buffers.size());
         }
 
         /**

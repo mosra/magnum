@@ -128,7 +128,7 @@ class MAGNUM_VK_EXPORT Buffer {
         auto cmdCopyTo(Buffer& dest, std::initializer_list<VkBufferCopy> regions) {
             const VkBuffer source = _buffer;
             return [source, &dest, &regions](VkCommandBuffer cmdBuffer){
-                vkCmdCopyBuffer(cmdBuffer, source, dest, regions.size(), std::vector<VkBufferCopy>(regions).data());
+                vkCmdCopyBuffer(cmdBuffer, source, dest, UnsignedInt(regions.size()), std::vector<VkBufferCopy>(regions).data());
             };
         }
 

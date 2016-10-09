@@ -29,7 +29,6 @@
 /** @file
  * @brief Namespace @ref Magnum::Vk::Cmd
  */
-
 #include "vulkan.h"
 
 #include <Corrade/Containers/Array.h>
@@ -74,13 +73,13 @@ inline auto setScissor(UnsignedInt firstScissor, const std::initializer_list<Ran
             vkRects[i] = {{range.left(), range.bottom()}, {UnsignedInt(range.sizeX()), UnsignedInt(range.sizeY())}};
             ++i;
         }
-        vkCmdSetScissor(cmdBuffer, firstScissor, vkRects.size(), vkRects.data());
+        vkCmdSetScissor(cmdBuffer, firstScissor, UnsignedInt(vkRects.size()), vkRects.data());
     };
 }
 
 inline auto setViewport(UnsignedInt firstViewport, const std::vector<VkViewport>& viewports) {
     return [firstViewport, &viewports](VkCommandBuffer cmdBuffer){
-        vkCmdSetViewport(cmdBuffer, firstViewport, viewports.size(), viewports.data());
+        vkCmdSetViewport(cmdBuffer, firstViewport, UnsignedInt(viewports.size()), viewports.data());
     };
 }
 
@@ -92,12 +91,10 @@ inline auto pipelineBarrier(PipelineStageFlags srcStageMask,
     return [srcStageMask, dstStageMask, &memoryBarriers, &bufferMemoryBarriers, &imageMemoryBarriers](VkCommandBuffer cmdBuffer){
         vkCmdPipelineBarrier(cmdBuffer,
                              VkPipelineStageFlags(srcStageMask), VkPipelineStageFlags(dstStageMask),
-                             0, memoryBarriers.size(),
-                             memoryBarriers.data(),
-                             bufferMemoryBarriers.size(),
-                             bufferMemoryBarriers.data(),
-                             imageMemoryBarriers.size(),
-                             reinterpret_cast<const VkImageMemoryBarrier*>(imageMemoryBarriers.data())
+                             0,
+                             UnsignedInt(memoryBarriers.size()), memoryBarriers.data(),
+                             UnsignedInt(bufferMemoryBarriers.size()), bufferMemoryBarriers.data(),
+                             UnsignedInt(imageMemoryBarriers.size()), reinterpret_cast<const VkImageMemoryBarrier*>(imageMemoryBarriers.data())
 
         );
     };

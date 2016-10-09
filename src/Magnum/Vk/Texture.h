@@ -40,7 +40,6 @@
 
 namespace Magnum { namespace Vk {
 
-template<UnsignedInt dimensions>
 class MAGNUM_VK_EXPORT Texture {
     public:
 
@@ -86,26 +85,13 @@ class MAGNUM_VK_EXPORT Texture {
         /** @brief Move assignment is not allowed */
         Texture& operator=(Texture&&) = delete;
 
-        Math::Vector<dimensions, UnsignedInt> size() const {
-            return _size;
-        }
-
     private:
-
         Device& _device;
 
         VkSampler _sampler;
-        Vk::Image _image;
         VkImageLayout _imageLayout;
-        Vk::DeviceMemory _deviceMemory;
-        Vk::ImageView _view;
-        Math::Vector<dimensions, UnsignedInt> _size;
         UnsignedInt _mipLevels;
 };
-
-typedef Texture<1> Texture1D;
-typedef Texture<2> Texture2D;
-typedef Texture<3> Texture3D;
 
 }}
 

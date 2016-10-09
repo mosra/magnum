@@ -64,13 +64,13 @@ private:
 class MAGNUM_VK_EXPORT DescriptorPool {
     public:
 
-        DescriptorPool(Device& device, UnsignedLong maxSets, const DescriptorPoolCreateInfo& ci):
+        DescriptorPool(Device& device, UnsignedInt maxSets, const DescriptorPoolCreateInfo& ci):
                      _device{device}
         {
             VkDescriptorPoolCreateInfo createInfo = {
                 VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO, nullptr, VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT,
                 maxSets,
-                ci._poolSizes.size(), ci._poolSizes.data()
+                UnsignedInt(ci._poolSizes.size()), ci._poolSizes.data()
             };
 
             VkResult err = vkCreateDescriptorPool(_device, &createInfo, nullptr, &_descriptorPool);

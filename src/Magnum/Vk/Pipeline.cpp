@@ -45,9 +45,9 @@ std::unique_ptr<Pipeline> GraphicsPipelineBuilder::build() {
         VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO,
         nullptr,
         0,
-        _setLayouts.size(),
+        UnsignedInt(_setLayouts.size()),
         _setLayouts.data(),
-        _pushConstantRanges.size(),
+        UnsignedInt(_pushConstantRanges.size()),
         _pushConstantRanges.data()
     };
 
@@ -79,9 +79,9 @@ std::unique_ptr<Pipeline> GraphicsPipelineBuilder::build() {
         VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO,
         nullptr,
         0,
-        _vertexInputBindings.size(),
+        UnsignedInt(_vertexInputBindings.size()),
         _vertexInputBindings.data(),
-        _vertexInputAttrbutes.size(),
+        UnsignedInt(_vertexInputAttrbutes.size()),
         _vertexInputAttrbutes.data(),
     };
 
@@ -90,7 +90,7 @@ std::unique_ptr<Pipeline> GraphicsPipelineBuilder::build() {
         VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO,
         nullptr,
         0,
-        _dynamicStates.size(),
+        UnsignedInt(_dynamicStates.size()),
         reinterpret_cast<VkDynamicState*>(_dynamicStates.data())
     };
 
@@ -106,7 +106,7 @@ std::unique_ptr<Pipeline> GraphicsPipelineBuilder::build() {
     pipelineInfo.pMultisampleState = &_multisampleState;
     pipelineInfo.pViewportState = &_viewportState;
     pipelineInfo.pDepthStencilState = &_depthStencilState;
-    pipelineInfo.stageCount = _shaderStages.size();
+    pipelineInfo.stageCount = UnsignedInt(_shaderStages.size());
     pipelineInfo.pStages = _shaderStages.data();
     pipelineInfo.pDynamicState = &dynamicState;
 

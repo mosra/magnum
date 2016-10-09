@@ -115,7 +115,7 @@ class MAGNUM_VK_EXPORT CommandBuffer {
 
         /**
          * Begin recording to this command buffer.
-         * 
+         *
          * @return Reference to self (for method chaining)
          */
         CommandBuffer& begin() {
@@ -152,7 +152,7 @@ class MAGNUM_VK_EXPORT CommandBuffer {
                 renderPass,
                 framebuffer,
                 VkRect2D{{renderArea.left(), renderArea.bottom()}, {UnsignedInt(renderArea.sizeX()), UnsignedInt(renderArea.sizeY())}},
-                clearValues.size(),
+                UnsignedInt(clearValues.size()),
                 clearValues.data()};
 
             vkCmdBeginRenderPass(_cmdBuffer, &renderPassBeginInfo, VkSubpassContents(subpassContents));

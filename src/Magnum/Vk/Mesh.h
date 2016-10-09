@@ -67,7 +67,7 @@ class MAGNUM_VK_EXPORT Mesh {
             const VkBuffer* vertexBuffers = _vertexBuffers.data();
             const VkBuffer indexBuffer = _indexBuffer;
 
-            const UnsignedInt numVertexBuffers = _vertexBuffers.size();
+            const UnsignedInt numVertexBuffers = UnsignedInt(_vertexBuffers.size());
             const UnsignedInt count = _count;
             const bool drawIndexed = _drawIndexed;
             return [vertexBuffers, indexBuffer, numVertexBuffers, count, drawIndexed](VkCommandBuffer cmdBuffer){

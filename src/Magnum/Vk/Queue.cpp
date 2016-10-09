@@ -1,4 +1,4 @@
-﻿/*
+/*
     This file is part of Magnum.
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
@@ -71,9 +71,9 @@ Queue& Queue::submit(const CommandBuffer& cmdBuffer,
         sigSems[i] = sem;
         ++i;
     }
-    submitInfo.waitSemaphoreCount = waitSemaphores.size();
+    submitInfo.waitSemaphoreCount = UnsignedInt(waitSemaphores.size());
     submitInfo.pWaitSemaphores = waitSems.data();
-    submitInfo.signalSemaphoreCount = signalSemaphores.size();
+    submitInfo.signalSemaphoreCount = UnsignedInt(signalSemaphores.size());
     submitInfo.pSignalSemaphores = sigSems.data();
 
     VkResult err = vkQueueSubmit(_queue, 1, &submitInfo, VK_NULL_HANDLE);
