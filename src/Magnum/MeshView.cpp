@@ -133,10 +133,12 @@ void MeshView::multiDrawImplementationFallback(std::initializer_list<std::refere
         /* Nothing to draw in this mesh */
         if(!mesh._count) continue;
 
+        CORRADE_ASSERT(mesh._instanceCount == 1, "MeshView::draw(): cannot draw multiple instanced meshes", );
+
         #ifndef MAGNUM_TARGET_GLES2
-        mesh._original.get().drawInternal(mesh._count, mesh._baseVertex, mesh._instanceCount, mesh._indexOffset, mesh._indexStart, mesh._indexEnd);
+        mesh._original.get().drawInternal(mesh._count, mesh._baseVertex, 1, mesh._indexOffset, mesh._indexStart, mesh._indexEnd);
         #else
-        mesh._original.get().drawInternal(mesh._count, mesh._baseVertex, mesh._instanceCount, mesh._indexOffset);
+        mesh._original.get().drawInternal(mesh._count, mesh._baseVertex, 1, mesh._indexOffset);
         #endif
     }
 }
