@@ -63,7 +63,6 @@ UnsignedInt primitiveCount = q.result<UnsignedInt>();
 @requires_gl30 Extension @extension{EXT,transform_feedback}
 @requires_gles30 Only sample queries are available in OpenGL ES 2.0.
 @requires_webgl20 Queries are not available in WebGL 1.0.
-@todo @extension{ARB,transform_feedback_overflow_query}
 */
 class MAGNUM_EXPORT PrimitiveQuery: public AbstractQuery {
     public:
@@ -95,7 +94,30 @@ class MAGNUM_EXPORT PrimitiveQuery: public AbstractQuery {
              * @ref result<UnsignedInt>() or @ref result<Int>() to retrieve the
              * result.
              */
-            TransformFeedbackPrimitivesWritten = GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN
+            TransformFeedbackPrimitivesWritten = GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN,
+
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * Transform feedback overflow. When used with @ref begin(UnsignedInt),
+             * the index must be `0`. Use @ref result<bool>() to retrieve the
+             * result.
+             * @requires_extension Extension @extension{ARB,transform_feedback_overflow_query}
+             * @requires_gl Transform feedback overflow query is not available
+             *      in OpenGL ES or WebGL.
+             */
+            TransformFeedbackOverflow = GL_TRANSFORM_FEEDBACK_OVERFLOW_ARB,
+
+            /**
+             * Transform feedback stream overflow. When used with
+             * @ref begin(UnsignedInt), the index must be lower than
+             * @ref TransformFeedback::maxVertexStreams(). Use @ref result<bool>()
+             * to retrieve the result.
+             * @requires_extension Extension @extension{ARB,transform_feedback_overflow_query}
+             * @requires_gl Transform feedback overflow query is not available
+             *      in OpenGL ES or WebGL.
+             */
+            TransformFeedbackStreamOverflow = GL_TRANSFORM_FEEDBACK_STREAM_OVERFLOW_ARB
+            #endif
         };
 
         /**

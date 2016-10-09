@@ -244,7 +244,7 @@ Extension                                   | Status
 @extension{ARB,sparse_texture}              | |
 @extension{ARB,pipeline_statistics_query}   | |
 @extension{ARB,sparse_buffer}               | |
-@extension{ARB,transform_feedback_overflow_query} | |
+@extension{ARB,transform_feedback_overflow_query} | done
 @extension{KHR,blend_equation_advanced}     | done
 @extension3{KHR,blend_equation_advanced_coherent,blend_equation_advanced} | done
 @extension{KHR,no_error}                    | done

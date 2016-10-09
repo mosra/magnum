@@ -51,6 +51,9 @@ struct PrimitiveQueryGLTest: AbstractOpenGLTester {
     void primitivesGeneratedIndexed();
     #endif
     void transformFeedbackPrimitivesWritten();
+    #ifndef MAGNUM_TARGET_GLES
+    void transformFeedbackOverflow();
+    #endif
 };
 
 PrimitiveQueryGLTest::PrimitiveQueryGLTest() {
@@ -61,7 +64,11 @@ PrimitiveQueryGLTest::PrimitiveQueryGLTest() {
               &PrimitiveQueryGLTest::primitivesGenerated,
               &PrimitiveQueryGLTest::primitivesGeneratedIndexed,
               #endif
-              &PrimitiveQueryGLTest::transformFeedbackPrimitivesWritten});
+              &PrimitiveQueryGLTest::transformFeedbackPrimitivesWritten,
+              #ifndef MAGNUM_TARGET_GLES
+              &PrimitiveQueryGLTest::transformFeedbackOverflow
+              #endif
+              });
 }
 
 void PrimitiveQueryGLTest::constructNoCreate() {
@@ -300,6 +307,91 @@ void PrimitiveQueryGLTest::transformFeedbackPrimitivesWritten() {
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(count, 3); /* Three triangles (9 vertices) */
 }
+
+#ifndef MAGNUM_TARGET_GLES
+void PrimitiveQueryGLTest::transformFeedbackOverflow() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback_overflow_query>())
+        CORRADE_SKIP(Extensions::GL::ARB::transform_feedback_overflow_query::string() + std::string(" is not available."));
+    #endif
+
+    /* Bind some FB to avoid errors on contexts w/o default FB */
+    Renderbuffer color;
+    color.setStorage(RenderbufferFormat::RGBA8, Vector2i{32});
+    Framebuffer fb{{{}, Vector2i{32}}};
+    fb.attachRenderbuffer(Framebuffer::ColorAttachment{0}, color)
+      .bind();
+
+    struct MyShader: AbstractShaderProgram {
+        explicit MyShader() {
+            #ifndef MAGNUM_TARGET_GLES
+            Shader vert(
+                #ifndef CORRADE_TARGET_APPLE
+                Version::GL300
+                #else
+                Version::GL310
+                #endif
+                , Shader::Type::Vertex);
+            #else
+            Shader vert(Version::GLES300, Shader::Type::Vertex);
+            Shader frag(Version::GLES300, Shader::Type::Fragment);
+            #endif
+
+            CORRADE_INTERNAL_ASSERT_OUTPUT(vert.addSource(
+                "out mediump vec2 outputData;\n"
+                "void main() {\n"
+                "    outputData = vec2(1.0, -1.0);\n"
+                /* Mesa drivers complain that vertex shader doesn't write to
+                   gl_Position otherwise */
+                "    gl_Position = vec4(1.0);\n"
+                "}\n").compile());
+            #ifndef MAGNUM_TARGET_GLES
+            attachShader(vert);
+            #else
+            /* ES for some reason needs both vertex and fragment shader */
+            CORRADE_INTERNAL_ASSERT_OUTPUT(frag.addSource("void main() {}\n").compile());
+            attachShaders({vert, frag});
+            #endif
+
+            setTransformFeedbackOutputs({"outputData"}, TransformFeedbackBufferMode::SeparateAttributes);
+            CORRADE_INTERNAL_ASSERT_OUTPUT(link());
+        }
+    } shader;
+
+    Buffer output;
+    output.setData({nullptr, 18*sizeof(Vector2)}, BufferUsage::StaticDraw);
+
+    Mesh mesh;
+    mesh.setPrimitive(MeshPrimitive::Triangles)
+        .setCount(9);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    TransformFeedback feedback;
+    /* Deliberately one vertex smaller to not fit two of them */
+    feedback.attachBuffer(0, output, 0, 17*sizeof(Vector2));
+
+    Renderer::enable(Renderer::Feature::RasterizerDiscard);
+
+    feedback.begin(shader, TransformFeedback::PrimitiveMode::Triangles);
+    PrimitiveQuery q1{PrimitiveQuery::Target::TransformFeedbackOverflow},
+        q2{PrimitiveQuery::Target::TransformFeedbackOverflow};
+    q1.begin();
+    mesh.draw(shader);
+    q1.end();
+    q2.begin();
+    mesh.draw(shader);
+    q2.end();
+    feedback.end();
+
+    const bool overflown1 = q1.result<bool>();
+    const bool overflown2 = q2.result<bool>();
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_VERIFY(!overflown1);
+    CORRADE_VERIFY(overflown2); /* Got space for only 17 vertices instead of 2*9 */
+}
+#endif
 
 }}
 
