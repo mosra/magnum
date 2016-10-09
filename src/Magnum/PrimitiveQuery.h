@@ -68,7 +68,7 @@ class MAGNUM_EXPORT PrimitiveQuery: public AbstractQuery {
     public:
         /** @brief Query target */
         enum class Target: GLenum {
-            #ifndef MAGNUM_TARGET_GLES2
+            #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
             /**
              * Count of primitives generated from vertex shader or geometry
              * shader. When used with @ref begin(UnsignedInt), the index must
