@@ -65,6 +65,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
     static const std::vector<Extension> empty;
     #ifndef MAGNUM_TARGET_GLES
     static const std::vector<Extension> extensions{
+        _extension(GL,AMD,transform_feedback3_lines_triangles),
         _extension(GL,AMD,vertex_shader_layer),
         _extension(GL,AMD,shader_trinary_minmax),
         _extension(GL,ARB,robustness),

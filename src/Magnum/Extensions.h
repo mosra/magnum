@@ -80,6 +80,7 @@ namespace GL {
     #ifndef MAGNUM_TARGET_GLES
     #line 1
     namespace AMD {
+        _extension(GL,AMD,transform_feedback3_lines_triangles, GL210, None) // #397
         _extension(GL,AMD,vertex_shader_layer,          GL210,  None) // #417
         _extension(GL,AMD,shader_trinary_minmax,        GL210,  None) // #428
     } namespace ARB {

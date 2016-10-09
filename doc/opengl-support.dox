@@ -257,6 +257,7 @@ Extension                                   | Status
 
 Extension                                   | Status
 ------------------------------------------- | ------
+@extension{AMD,transform_feedback3_lines_triangles} | done (nothing to do)
 @extension{AMD,vertex_shader_layer}         | done (shading language only)
 @extension{AMD,shader_trinary_minmax}       | done (shading language only)
 @extension{ATI,texture_mirror_once}         | done (GL 4.4 subset)
