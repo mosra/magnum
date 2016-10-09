@@ -563,7 +563,7 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
         # Context libraries
         elseif(_component MATCHES ".+Context")
             set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX Magnum/Platform)
-            set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Context.h)
+            set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Instance.h)
 
             # GLX context dependencies
             if(_component STREQUAL GlxContext)
