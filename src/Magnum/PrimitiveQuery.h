@@ -70,14 +70,20 @@ class PrimitiveQuery: public AbstractQuery {
     public:
         /** @brief Query target */
         enum class Target: GLenum {
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             /**
              * Count of primitives generated from vertex shader or geometry
              * shader.
-             * @requires_gl Only transform feedback query is available in
-             *      OpenGL ES and WebGL.
+             * @requires_gles30 Not defined in OpenGL ES 2.0.
+             * @requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
+             *      @es_extension{EXT,geometry_shader}
+             * @requires_gles Geometry shaders are not available in WebGL.
              */
+            #ifndef MAGNUM_TARGET_GLES
             PrimitivesGenerated = GL_PRIMITIVES_GENERATED,
+            #else
+            PrimitivesGenerated = GL_PRIMITIVES_GENERATED_EXT,
+            #endif
             #endif
 
             /** Count of primitives written to transform feedback buffer. */
