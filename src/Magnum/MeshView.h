@@ -210,6 +210,20 @@ class MAGNUM_EXPORT MeshView {
          *
          * See @ref Mesh::draw() for more information.
          * @see @ref draw(AbstractShaderProgram&, std::initializer_list<std::reference_wrapper<MeshView>>)
+         * @requires_gl32 Extension @extension{ARB,draw_elements_base_vertex}
+         *      if the mesh is indexed and @ref baseVertex() is not `0`.
+         * @requires_gl33 Extension @extension{ARB,instanced_arrays} if
+         *      @ref instanceCount() is more than `1`.
+         * @requires_gl42 Extension @extension{ARB,base_instance} if
+         *      @ref baseInstance() is not `0`.
+         * @requires_gles30 Extension @es_extension{ANGLE,instanced_arrays},
+         *      @es_extension{EXT,instanced_arrays} or
+         *      @es_extension{NV,instanced_arrays} in OpenGL ES 2.0 if
+         *      @ref instanceCount() is more than `1`.
+         * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
+         *      in WebGL 1.0 if @ref instanceCount() is more than `1`.
+         * @requires_gl Specifying base vertex for indexed meshes is not
+         *      available in OpenGL ES or WebGL.
          */
         void draw(AbstractShaderProgram& shader);
         void draw(AbstractShaderProgram&& shader) { draw(shader); } /**< @overload */
