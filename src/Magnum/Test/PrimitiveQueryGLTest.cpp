@@ -280,7 +280,7 @@ void PrimitiveQueryGLTest::transformFeedbackPrimitivesWritten() {
     } shader;
 
     Buffer output;
-    output.setData({nullptr, 18*sizeof(Vector2)}, BufferUsage::StaticDraw);
+    output.setData({nullptr, 9*sizeof(Vector2)}, BufferUsage::StaticDraw);
 
     Mesh mesh;
     mesh.setPrimitive(MeshPrimitive::Triangles)
