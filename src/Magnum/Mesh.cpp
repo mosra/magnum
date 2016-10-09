@@ -31,6 +31,9 @@
 #include "Magnum/Buffer.h"
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
+#ifndef MAGNUM_TARGET_GLES
+#include "Magnum/TransformFeedback.h"
+#endif
 
 #ifndef MAGNUM_TARGET_WEBGL
 #include "Implementation/DebugState.h"
@@ -362,6 +365,42 @@ void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr i
 
     (this->*state.unbindImplementation)();
 }
+
+#ifndef MAGNUM_TARGET_GLES
+void Mesh::drawInternal(TransformFeedback& xfb, const UnsignedInt stream, const Int instanceCount) {
+    const Implementation::MeshState& state = *Context::current().state().mesh;
+
+    (this->*state.bindImplementation)();
+
+    /* Default stream */
+    if(stream == 0) {
+        /* Non-instanced mesh */
+        if(instanceCount == 1) glDrawTransformFeedback(GLenum(_primitive), xfb.id());
+
+        /* Instanced mesh */
+        else glDrawTransformFeedbackInstanced(GLenum(_primitive), xfb.id(), instanceCount);
+
+    /* Specific stream */
+    } else {
+        /* Non-instanced mesh */
+        if(instanceCount == 1) glDrawTransformFeedbackStream(GLenum(_primitive), xfb.id(), stream);
+
+        /* Instanced mesh */
+        else glDrawTransformFeedbackStreamInstanced(GLenum(_primitive), xfb.id(), stream, instanceCount);
+    }
+
+    (this->*state.unbindImplementation)();
+}
+
+void Mesh::draw(AbstractShaderProgram& shader, TransformFeedback& xfb, UnsignedInt stream) {
+    /* Nothing to draw, exit without touching any state */
+    if(!_instanceCount) return;
+
+    shader.use();
+
+    drawInternal(xfb, stream, _instanceCount);
+}
+#endif
 
 void Mesh::bindVAO() {
     GLuint& current = Context::current().state().mesh->currentVAO;

@@ -164,4 +164,15 @@ void MeshView::draw(AbstractShaderProgram& shader) {
     #endif
 }
 
+#ifndef MAGNUM_TARGET_GLES
+void MeshView::draw(AbstractShaderProgram& shader, TransformFeedback& xfb, UnsignedInt stream) {
+    /* Nothing to draw, exit without touching any state */
+    if(!_instanceCount) return;
+
+    shader.use();
+
+    _original.get().drawInternal(xfb, stream, _instanceCount);
+}
+#endif
+
 }

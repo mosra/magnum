@@ -131,7 +131,7 @@ GLSL 4.00                                   | done
 @extension{ARB,shader_subroutine}           | |
 @extension{ARB,tessellation_shader}         | missing some limit queries and patch parameter specification function
 @extension{ARB,texture_buffer_object_rgb32} | done
-@extension{ARB,transform_feedback2}         | missing transform feedback draw
+@extension{ARB,transform_feedback2}         | done
 @extension{ARB,transform_feedback3}         | missing indexed properties query
 
 @subsection opengl-support-41 OpenGL 4.1
@@ -154,7 +154,7 @@ GLSL 4.20                                   | done
 @extension{ARB,texture_compression_bptc}    | done
 @extension{ARB,base_instance}               | done
 @extension{ARB,shading_language_420pack}    | done (shading language only)
-@extension{ARB,transform_feedback_instanced} | |
+@extension{ARB,transform_feedback_instanced} | done
 @extension{ARB,compressed_texture_pixel_storage} | done
 @extension{ARB,conservative_depth}          | done (shading language only)
 @extension{ARB,internalformat_query}        | |

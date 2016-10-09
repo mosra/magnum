@@ -124,10 +124,10 @@ OpenGL function                         | Matching API
 @fn_gl{DispatchCompute}                 | @ref AbstractShaderProgram::dispatchCompute()
 @fn_gl_extension{DispatchComputeGroupSize,ARB,compute_variable_group_size} | |
 @fn_gl{DispatchComputeIndirect}         | |
-@fn_gl{DrawArrays}, \n @fn_gl{DrawArraysInstanced}, \n @fn_gl{DrawArraysInstancedBaseInstance}, \n @fn_gl{DrawElements}, \n @fn_gl{DrawRangeElements}, \n @fn_gl{DrawElementsBaseVertex}, \n @fn_gl{DrawRangeElementsBaseVertex}, \n @fn_gl{DrawElementsInstanced}, \n @fn_gl{DrawElementsInstancedBaseInstance}, \n @fn_gl{DrawElementsInstancedBaseVertex}, \n @fn_gl{DrawElementsInstancedBaseVertexBaseInstance} | @ref Mesh::draw(), \n @ref MeshView::draw()
+@fn_gl{DrawArrays}, \n @fn_gl{DrawArraysInstanced}, \n @fn_gl{DrawArraysInstancedBaseInstance}, \n @fn_gl{DrawElements}, \n @fn_gl{DrawRangeElements}, \n @fn_gl{DrawElementsBaseVertex}, \n @fn_gl{DrawRangeElementsBaseVertex}, \n @fn_gl{DrawElementsInstanced}, \n @fn_gl{DrawElementsInstancedBaseInstance}, \n @fn_gl{DrawElementsInstancedBaseVertex}, \n @fn_gl{DrawElementsInstancedBaseVertexBaseInstance} | @ref Mesh::draw(AbstractShaderProgram&), \n @ref MeshView::draw(AbstractShaderProgram&)
 @fn_gl{DrawArraysIndirect}, \n @fn_gl{DrawElementsIndirect}, \n @fn_gl{MultiDrawArraysIndirect}, \n @fn_gl{MultiDrawElementsIndirect} | |
 @fn_gl{DrawBuffer}, \n `glNamedFramebufferDrawBuffer()`, \n @fn_gl_extension{FramebufferDrawBuffer,EXT,direct_state_access}, \n @fn_gl{DrawBuffers}, \n `glNamedFramebufferDrawBuffers()`, \n @fn_gl_extension{FramebufferDrawBuffers,EXT,direct_state_access} | @ref DefaultFramebuffer::mapForDraw(), \n @ref Framebuffer::mapForDraw()
-@fn_gl{DrawTransformFeedback}, \n @fn_gl{DrawTransformFeedbackInstanced}, \n @fn_gl{DrawTransformFeedbackStream}, \n @fn_gl{DrawTransformFeedbackStreamInstanced} | |
+@fn_gl{DrawTransformFeedback}, \n @fn_gl{DrawTransformFeedbackInstanced}, \n @fn_gl{DrawTransformFeedbackStream}, \n @fn_gl{DrawTransformFeedbackStreamInstanced} | @ref Mesh::draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt), \n @ref MeshView::draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt)
 
 @subsection opengl-mapping-functions-e E
 
