@@ -151,6 +151,7 @@ endif()
 if(NOT TARGET_GLES2)
     list(APPEND Magnum_SRCS
         BufferImage.cpp
+        PrimitiveQuery.cpp
         TextureArray.cpp
         TransformFeedback.cpp
 

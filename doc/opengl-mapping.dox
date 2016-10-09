@@ -52,7 +52,7 @@ OpenGL function                         | Matching API
 --------------------------------------- | ------------
 @fn_gl{BeginConditionalRender}, `glEndConditionalRender()` | @ref SampleQuery::beginConditionalRender(), \n @ref SampleQuery::endConditionalRender()
 @fn_gl{BeginQuery}, `glEndQuery()`      | @ref PrimitiveQuery::begin(), \n @ref SampleQuery::begin(), \n @ref TimeQuery::begin(), \n @ref AbstractQuery::end()
-@fn_gl{BeginQueryIndexed}, `glEndQueryIndexed()` | |
+@fn_gl{BeginQueryIndexed}, `glEndQueryIndexed()` | @ref PrimitiveQuery::begin(UnsignedInt), \n @ref PrimitiveQuery::end()
 @fn_gl{BeginTransformFeedback}, `glEndTransformFeedback()` | @ref TransformFeedback::begin(), @ref TransformFeedback::end()
 @fn_gl{BindAttribLocation}              | @ref AbstractShaderProgram::bindAttributeLocation()
 @fn_gl{BindBuffer}                      | not needed, handled internally in @ref Buffer and elsewhere

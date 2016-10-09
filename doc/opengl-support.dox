@@ -132,7 +132,7 @@ GLSL 4.00                                   | done
 @extension{ARB,tessellation_shader}         | missing some limit queries and patch parameter specification function
 @extension{ARB,texture_buffer_object_rgb32} | done
 @extension{ARB,transform_feedback2}         | missing transform feedback draw
-@extension{ARB,transform_feedback3}         | only advanced interleaving
+@extension{ARB,transform_feedback3}         | missing indexed properties query
 
 @subsection opengl-support-41 OpenGL 4.1
 

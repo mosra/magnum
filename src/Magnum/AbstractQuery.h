@@ -183,6 +183,9 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
         void begin(GLenum target);
         #endif
 
+        GLuint _id;
+        GLenum _target;
+
     private:
         #ifndef MAGNUM_TARGET_WEBGL
         AbstractQuery& setLabelInternal(Containers::ArrayView<const char> label);
@@ -193,8 +196,6 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
         void MAGNUM_LOCAL createImplementationDSA();
         #endif
 
-        GLuint _id;
-        GLenum _target;
         ObjectFlags _flags;
 };
 

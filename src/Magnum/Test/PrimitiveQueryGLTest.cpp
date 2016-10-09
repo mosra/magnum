@@ -48,6 +48,7 @@ struct PrimitiveQueryGLTest: AbstractOpenGLTester {
 
     #ifndef MAGNUM_TARGET_GLES
     void primitivesGenerated();
+    void primitivesGeneratedIndexed();
     #endif
     void transformFeedbackPrimitivesWritten();
 };
@@ -58,6 +59,7 @@ PrimitiveQueryGLTest::PrimitiveQueryGLTest() {
 
               #ifndef MAGNUM_TARGET_GLES
               &PrimitiveQueryGLTest::primitivesGenerated,
+              &PrimitiveQueryGLTest::primitivesGeneratedIndexed,
               #endif
               &PrimitiveQueryGLTest::transformFeedbackPrimitivesWritten});
 }
@@ -156,6 +158,67 @@ void PrimitiveQueryGLTest::primitivesGenerated() {
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_VERIFY(!availableBefore);
     CORRADE_VERIFY(availableAfter);
+    CORRADE_COMPARE(count, 3);
+}
+
+void PrimitiveQueryGLTest::primitivesGeneratedIndexed() {
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback3>())
+        CORRADE_SKIP(Extensions::GL::ARB::transform_feedback3::string() + std::string(" is not available."));
+
+    /* Bind some FB to avoid errors on contexts w/o default FB */
+    Renderbuffer color;
+    color.setStorage(RenderbufferFormat::RGBA8, Vector2i{32});
+    Framebuffer fb{{{}, Vector2i{32}}};
+    fb.attachRenderbuffer(Framebuffer::ColorAttachment{0}, color)
+      .bind();
+
+    struct MyShader: AbstractShaderProgram {
+        typedef Attribute<0, Vector2> Position;
+
+        explicit MyShader() {
+            Shader vert(
+                #ifndef CORRADE_TARGET_APPLE
+                Version::GL210
+                #else
+                Version::GL310
+                #endif
+                , Shader::Type::Vertex);
+
+            CORRADE_INTERNAL_ASSERT_OUTPUT(vert.addSource(
+                "#if __VERSION__ >= 130\n"
+                "#define attribute in\n"
+                "#endif\n"
+                "attribute vec4 position;\n"
+                "void main() {\n"
+                "    gl_Position = position;\n"
+                "}\n").compile());
+
+            attachShader(vert);
+            bindAttributeLocation(Position::Location, "position");
+            CORRADE_INTERNAL_ASSERT_OUTPUT(link());
+        }
+    } shader;
+
+    Buffer vertices;
+    vertices.setData({nullptr, 9*sizeof(Vector2)}, BufferUsage::StaticDraw);
+
+    Mesh mesh;
+    mesh.setPrimitive(MeshPrimitive::Triangles)
+        .setCount(9)
+        .addVertexBuffer(vertices, 0, MyShader::Position());
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    PrimitiveQuery q{PrimitiveQuery::Target::PrimitivesGenerated};
+    q.begin(0);
+
+    Renderer::enable(Renderer::Feature::RasterizerDiscard);
+    mesh.draw(shader);
+
+    q.end();
+    const UnsignedInt count = q.result<UnsignedInt>();
+
+    MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(count, 3);
 }
 #endif
