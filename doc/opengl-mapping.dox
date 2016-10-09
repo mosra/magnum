@@ -489,7 +489,7 @@ OpenGL function                         | Matching API
 @def_gl{NUM_EXTENSIONS}                 | @ref Context::supportedExtensions()
 @def_gl{NUM_PROGRAM_BINARY_FORMATS}, \n @def_gl{PROGRAM_BINARY_FORMATS} | |
 @def_gl{NUM_SHADER_BINARY_FORMATS}, \n @def_gl{SHADER_BINARY_FORMATS} | |
-@def_gl{PACK_ALIGNMENT}, \n @def_gl{PACK_IMAGE_HEIGHT}, \n @def_gl{PACK_LSB_FIRST}, \n @def_gl{PACK_ROW_LENGTH}, \n @def_gl{PACK_SKIP_IMAGES}, \n @def_gl{PACK_SKIP_PIXELS}, \n @def_gl{PACK_SKIP_ROWS}, \n @def_gl{PACK_SWAP_BYTES}, \n @def_gl{UNPACK_ALIGNMENT}, \n @def_gl{UNPACK_IMAGE_HEIGHT}, \n @def_gl{UNPACK_LSB_FIRST}, \n @def_gl{UNPACK_ROW_LENGTH}, \n @def_gl{UNPACK_SKIP_IMAGES}, \n @def_gl{UNPACK_SKIP_PIXELS}, \n @def_gl{UNPACK_SKIP_ROWS}, \n @def_gl{UNPACK_SWAP_BYTES} | not queryable
+@def_gl{PACK_ALIGNMENT}, \n @def_gl{PACK_IMAGE_HEIGHT}, \n @def_gl{PACK_ROW_LENGTH}, \n @def_gl{PACK_SKIP_IMAGES}, \n @def_gl{PACK_SKIP_PIXELS}, \n @def_gl{PACK_SKIP_ROWS}, \n @def_gl{PACK_SWAP_BYTES}, \n @def_gl{UNPACK_ALIGNMENT}, \n @def_gl{UNPACK_IMAGE_HEIGHT}, \n @def_gl{UNPACK_ROW_LENGTH}, \n @def_gl{UNPACK_SKIP_IMAGES}, \n @def_gl{UNPACK_SKIP_PIXELS}, \n @def_gl{UNPACK_SKIP_ROWS}, \n @def_gl{UNPACK_SWAP_BYTES} | not queryable, @ref PixelStorage setters only
 @def_gl{POINT_FADE_THRESHOLD_SIZE}      | |
 @def_gl{POINT_SIZE_GRANULARITY}, \n @def_gl{POINT_SIZE_RANGE} | |
 @def_gl{POINT_SIZE}                     | not queryable, @ref Renderer::setPointSize() setter only
