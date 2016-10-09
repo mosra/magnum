@@ -105,6 +105,9 @@ class MAGNUM_EXPORT MeshView {
         /** @brief Movement is not allowed */
         MeshView& operator=(MeshView&& other) = delete;
 
+        /** @brief Vertex/index count */
+        Int count() const { return _count; }
+
         /**
          * @brief Set vertex/index count
          * @return Reference to self (for method chaining)
@@ -115,6 +118,9 @@ class MAGNUM_EXPORT MeshView {
             _count = count;
             return *this;
         }
+
+        /** @brief Base vertex */
+        Int baseVertex() const { return _baseVertex; }
 
         /**
          * @brief Set base vertex
