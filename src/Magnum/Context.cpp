@@ -468,7 +468,10 @@ Context::Context(Context&& other): _version{std::move(other._version)},
 }
 
 Context::~Context() {
-    delete _state;
+    if(_version != Version::None) {
+        /* Context was not created */
+        delete _state;
+    }
 
     if(currentContext == this) currentContext = nullptr;
 }
