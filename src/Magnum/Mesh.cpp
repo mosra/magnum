@@ -245,6 +245,9 @@ Mesh& Mesh::setIndexBuffer(Buffer& buffer, GLintptr offset, IndexType type, Unsi
 }
 
 void Mesh::draw(AbstractShaderProgram& shader) {
+    /* Nothing to draw, exit without touching any state */
+    if(!_count || !_instanceCount) return;
+
     shader.use();
 
     #ifndef MAGNUM_TARGET_GLES
@@ -265,9 +268,6 @@ void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr i
 #endif
 {
     const Implementation::MeshState& state = *Context::current().state().mesh;
-
-    /* Nothing to draw */
-    if(!count || !instanceCount) return;
 
     (this->*state.bindImplementation)();
 

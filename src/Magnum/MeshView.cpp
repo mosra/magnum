@@ -130,6 +130,9 @@ void MeshView::multiDrawImplementationDefault(std::initializer_list<std::referen
 #ifdef MAGNUM_TARGET_GLES
 void MeshView::multiDrawImplementationFallback(std::initializer_list<std::reference_wrapper<MeshView>> meshes) {
     for(MeshView& mesh: meshes) {
+        /* Nothing to draw in this mesh */
+        if(!mesh._count) continue;
+
         #ifndef MAGNUM_TARGET_GLES2
         mesh._original.get().drawInternal(mesh._count, mesh._baseVertex, mesh._instanceCount, mesh._indexOffset, mesh._indexStart, mesh._indexEnd);
         #else
@@ -145,6 +148,9 @@ MeshView& MeshView::setIndexRange(Int first) {
 }
 
 void MeshView::draw(AbstractShaderProgram& shader) {
+    /* Nothing to draw, exit without touching any state */
+    if(!_count || !_instanceCount) return;
+
     shader.use();
 
     #ifndef MAGNUM_TARGET_GLES

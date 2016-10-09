@@ -1853,19 +1853,23 @@ MultiChecker::MultiChecker(AbstractShaderProgram&& shader, Mesh& mesh): framebuf
     mesh.setPrimitive(MeshPrimitive::Points)
         .setCount(2);
 
+    /* Set zero count so we test mesh skipping */
+    MeshView a{mesh};
+    a.setCount(0);
+
     /* Skip first vertex so we test also offsets */
-    MeshView a(mesh);
-    a.setCount(1)
+    MeshView b{mesh};
+    b.setCount(1)
      .setBaseVertex(mesh.baseVertex());
 
-    MeshView b(mesh);
-    b.setCount(1);
+    MeshView c{mesh};
+    c.setCount(1);
     if(mesh.isIndexed()) {
-        b.setBaseVertex(mesh.baseVertex())
+        c.setBaseVertex(mesh.baseVertex())
          .setIndexRange(1);
-    } else b.setBaseVertex(1);
+    } else c.setBaseVertex(1);
 
-    MeshView::draw(shader, {a, b});
+    MeshView::draw(shader, {a, b, c});
 }
 
 template<class T> T MultiChecker::get(PixelFormat format, PixelType type) {
