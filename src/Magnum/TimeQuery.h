@@ -81,14 +81,22 @@ class TimeQuery: public AbstractQuery {
     public:
         /** @brief Query target */
         enum class Target: GLenum {
-            /** Elapsed time */
+            /**
+             * Elapsed time. Use @ref result<UnsignedLong>() or @ref result<Long>()
+             * to retrieve the result.
+             * @see @ref timestamp()
+             */
             #ifndef MAGNUM_TARGET_GLES
             TimeElapsed = GL_TIME_ELAPSED,
             #else
             TimeElapsed = GL_TIME_ELAPSED_EXT,
             #endif
 
-            /** Timestamp (for use with @ref timestamp() only) */
+            /**
+             * Timestamp. For use with @ref timestamp() only, use
+             * @ref result<UnsignedLong>() or @ref result<Long>() to retrieve
+             * the result.
+             */
             #ifndef MAGNUM_TARGET_GLES
             Timestamp = GL_TIMESTAMP
             #else
@@ -144,6 +152,8 @@ class TimeQuery: public AbstractQuery {
         /**
          * @brief Query timestamp
          *
+         * Use @ref result<UnsignedLong>() or @ref result<Long>() to retrieve
+         * the result.
          * @see @fn_gl{QueryCounter} with @def_gl{TIMESTAMP}
          */
         void timestamp() {

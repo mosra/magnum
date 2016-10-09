@@ -73,7 +73,8 @@ class PrimitiveQuery: public AbstractQuery {
             #ifndef MAGNUM_TARGET_GLES2
             /**
              * Count of primitives generated from vertex shader or geometry
-             * shader.
+             * shader. Use @ref result<UnsignedInt>() or @ref result<Int>() to
+             * retrieve the result.
              * @requires_gles30 Not defined in OpenGL ES 2.0.
              * @requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
              *      @es_extension{EXT,geometry_shader}
@@ -86,7 +87,11 @@ class PrimitiveQuery: public AbstractQuery {
             #endif
             #endif
 
-            /** Count of primitives written to transform feedback buffer. */
+            /**
+             * Count of primitives written to transform feedback buffer. Use
+             * @ref result<UnsignedInt>() or @ref result<Int>() to retrieve the
+             * result.
+             */
             TransformFeedbackPrimitivesWritten = GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN
         };
 
