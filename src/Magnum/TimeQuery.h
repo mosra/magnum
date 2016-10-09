@@ -149,6 +149,18 @@ class TimeQuery: public AbstractQuery {
          */
         explicit TimeQuery(NoCreateT) noexcept: AbstractQuery{NoCreate, GLenum(Target::TimeElapsed)} {}
 
+        /* Overloads to remove WTF-factor from method chaining order */
+        #if !defined(DOXYGEN_GENERATING_OUTPUT) && !defined(MAGNUM_TARGET_WEBGL)
+        TimeQuery& setLabel(const std::string& label) {
+            AbstractQuery::setLabel(label);
+            return *this;
+        }
+        template<std::size_t size> TimeQuery& setLabel(const char(&label)[size]) {
+            AbstractQuery::setLabel<size>(label);
+            return *this;
+        }
+        #endif
+
         /**
          * @brief Query timestamp
          *
@@ -176,18 +188,6 @@ class TimeQuery: public AbstractQuery {
         }
 
         using AbstractQuery::begin;
-        #endif
-
-        /* Overloads to remove WTF-factor from method chaining order */
-        #if !defined(DOXYGEN_GENERATING_OUTPUT) && !defined(MAGNUM_TARGET_WEBGL)
-        TimeQuery& setLabel(const std::string& label) {
-            AbstractQuery::setLabel(label);
-            return *this;
-        }
-        template<std::size_t size> TimeQuery& setLabel(const char(&label)[size]) {
-            AbstractQuery::setLabel<size>(label);
-            return *this;
-        }
         #endif
 
     private:
