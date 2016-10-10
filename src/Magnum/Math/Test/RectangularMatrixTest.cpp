@@ -175,9 +175,14 @@ void RectangularMatrixTest::constructNoInit() {
                 Vector4(5.0f,  6.0f,  7.0f,  8.0f),
                 Vector4(9.0f, 10.0f, 11.0f, 12.0f)};
     new(&a) Matrix3x4{NoInit};
-    CORRADE_COMPARE(a, Matrix3x4(Vector4(1.0f,  2.0f,  3.0f,  4.0f),
-                                 Vector4(5.0f,  6.0f,  7.0f,  8.0f),
-                                 Vector4(9.0f, 10.0f, 11.0f, 12.0f)));
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a, Matrix3x4(Vector4(1.0f,  2.0f,  3.0f,  4.0f),
+                                     Vector4(5.0f,  6.0f,  7.0f,  8.0f),
+                                     Vector4(9.0f, 10.0f, 11.0f, 12.0f)));
+    }
 
     CORRADE_VERIFY((std::is_nothrow_constructible<Matrix3x4, NoInitT>::value));
 }

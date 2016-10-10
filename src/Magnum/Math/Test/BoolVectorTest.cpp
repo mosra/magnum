@@ -100,7 +100,12 @@ void BoolVectorTest::constructDefault() {
 void BoolVectorTest::constructNoInit() {
     BoolVector19 a{0xa5, 0x5f, 0x07};
     new(&a) BoolVector19{NoInit};
-    CORRADE_COMPARE(a, BoolVector19(0xa5, 0x5f, 0x07));
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a, BoolVector19(0xa5, 0x5f, 0x07));
+    }
 
     CORRADE_VERIFY((std::is_nothrow_constructible<BoolVector19, NoInitT>::value));
 }

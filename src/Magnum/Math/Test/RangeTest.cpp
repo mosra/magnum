@@ -216,9 +216,14 @@ void RangeTest::constructNoInit() {
     new(&b) Range2Di{NoInit};
     new(&c) Range3Di{NoInit};
 
-    CORRADE_COMPARE(a, (Range1Di{3, 23}));
-    CORRADE_COMPARE(b, (Range2Di{{3, 5}, {23, 78}}));
-    CORRADE_COMPARE(c, (Range3Di{{3, 5, -7}, {23, 78, 2}}));
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a, (Range1Di{3, 23}));
+        CORRADE_COMPARE(b, (Range2Di{{3, 5}, {23, 78}}));
+        CORRADE_COMPARE(c, (Range3Di{{3, 5, -7}, {23, 78, 2}}));
+    }
 
     CORRADE_VERIFY((std::is_nothrow_constructible<Range1Di, NoInitT>::value));
     CORRADE_VERIFY((std::is_nothrow_constructible<Range2Di, NoInitT>::value));

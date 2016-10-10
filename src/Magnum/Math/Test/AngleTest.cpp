@@ -105,8 +105,21 @@ void AngleTest::constructNoInit() {
     Rad b{3.14f};
     new(&a) Deg{NoInit};
     new(&b) Rad{NoInit};
-    CORRADE_COMPARE(Float(a), 25.0f);
-    CORRADE_COMPARE(Float(b), 3.14f);
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601
+        /* The warning is reported for both debug and release build */
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+        #ifdef __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        #endif
+        CORRADE_COMPARE(Float(a), 25.0f);
+        CORRADE_COMPARE(Float(b), 3.14f);
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601
+        #pragma GCC diagnostic pop
+        #endif
+    }
 
     CORRADE_VERIFY((std::is_nothrow_constructible<Deg, NoInitT>::value));
     CORRADE_VERIFY((std::is_nothrow_constructible<Rad, NoInitT>::value));

@@ -207,10 +207,15 @@ void Matrix4Test::constructNoInit() {
                  {1.0f,  2.0f, 3.0f, -1.0f},
                  {7.9f, -1.0f, 8.0f, -1.5f}};
     new(&a) Matrix4{NoInit};
-    CORRADE_COMPARE(a, Matrix4({3.0f,  5.0f, 8.0f, -3.0f},
-                               {4.5f,  4.0f, 7.0f,  2.0f},
-                               {1.0f,  2.0f, 3.0f, -1.0f},
-                               {7.9f, -1.0f, 8.0f, -1.5f}));
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a, Matrix4({3.0f,  5.0f, 8.0f, -3.0f},
+                                   {4.5f,  4.0f, 7.0f,  2.0f},
+                                   {1.0f,  2.0f, 3.0f, -1.0f},
+                                   {7.9f, -1.0f, 8.0f, -1.5f}));
+    }
 
     CORRADE_VERIFY((std::is_nothrow_constructible<Matrix4, NoInitT>::value));
 }

@@ -137,8 +137,13 @@ void DualTest::constructNoInit() {
     Math::Dual<Math::Quaternion<Float>> b{{{3.0f, 0.1f, 1.0f}, 1.0f}, {{0.1f, 0.0f, 1.0f}, 0.3f}};
     new(&a) Dual{NoInit};
     new(&b) Math::Dual<Math::Quaternion<Float>>{NoInit};
-    CORRADE_COMPARE(a, Dual(2.0f, -7.5f));
-    CORRADE_COMPARE(b, (Math::Dual<Math::Quaternion<Float>>{{{3.0f, 0.1f, 1.0f}, 1.0f}, {{0.1f, 0.0f, 1.0f}, 0.3f}}));
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a, Dual(2.0f, -7.5f));
+        CORRADE_COMPARE(b, (Math::Dual<Math::Quaternion<Float>>{{{3.0f, 0.1f, 1.0f}, 1.0f}, {{0.1f, 0.0f, 1.0f}, 0.3f}}));
+    }
 
     CORRADE_VERIFY((std::is_nothrow_constructible<Dual, NoInitT>::value));
     CORRADE_VERIFY((std::is_nothrow_constructible<Math::Dual<Math::Quaternion<Float>>, NoInitT>::value));

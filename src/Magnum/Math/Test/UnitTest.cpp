@@ -91,7 +91,12 @@ void UnitTest::constructDefault() {
 void UnitTest::constructNoInit() {
     Sec a{25.0f};
     new(&a) Sec{NoInit};
-    CORRADE_COMPARE(a, Sec{25.0f});
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a, Sec{25.0f});
+    }
 
     CORRADE_VERIFY((std::is_nothrow_constructible<Sec, NoInitT>::value));
 }

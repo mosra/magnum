@@ -121,7 +121,12 @@ void Vector2Test::constructDefault() {
 void Vector2Test::constructNoInit() {
     Vector2 a{1.5f, 2.5f};
     new(&a) Vector2{NoInit};
-    CORRADE_COMPARE(a, (Vector2{1.5f, 2.5f}));
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a, (Vector2{1.5f, 2.5f}));
+    }
 
     CORRADE_VERIFY((std::is_nothrow_constructible<Vector2, NoInitT>::value));
 }

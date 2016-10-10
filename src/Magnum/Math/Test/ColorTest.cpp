@@ -185,8 +185,13 @@ void ColorTest::constructNoInit() {
     Color4 b{1.0f, 0.5f, 0.75f, 0.5f};
     new(&a) Color3{Math::NoInit};
     new(&b) Color4{Math::NoInit};
-    CORRADE_COMPARE(a, (Color3{1.0f, 0.5f, 0.75f}));
-    CORRADE_COMPARE(b, (Color4{1.0f, 0.5f, 0.75f, 0.5f}));
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a, (Color3{1.0f, 0.5f, 0.75f}));
+        CORRADE_COMPARE(b, (Color4{1.0f, 0.5f, 0.75f, 0.5f}));
+    }
 
     CORRADE_VERIFY((std::is_nothrow_constructible<Color3, NoInitT>::value));
     CORRADE_VERIFY((std::is_nothrow_constructible<Color4, NoInitT>::value));

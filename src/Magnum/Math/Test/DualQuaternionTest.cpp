@@ -200,7 +200,12 @@ void DualQuaternionTest::constructZero() {
 void DualQuaternionTest::constructNoInit() {
     DualQuaternion a{{{1.0f, 2.0f, 3.0f}, -4.0f}, {{0.5f, -3.1f, 3.3f}, 2.0f}};
     new(&a) DualQuaternion{NoInit};
-    CORRADE_COMPARE(a, DualQuaternion({{1.0f, 2.0f, 3.0f}, -4.0f}, {{0.5f, -3.1f, 3.3f}, 2.0f}));
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a, DualQuaternion({{1.0f, 2.0f, 3.0f}, -4.0f}, {{0.5f, -3.1f, 3.3f}, 2.0f}));
+    }
 
     CORRADE_VERIFY((std::is_nothrow_constructible<DualQuaternion, NoInitT>::value));
 }
