@@ -119,7 +119,7 @@ Phong::Phong(const Flags flags): transformationMatrixUniform(0), projectionMatri
     if(flags & Flag::DiffuseTexture) setDiffuseColor(Color4{1.0f});
 
     setSpecularColor(Color4{1.0f});
-    setLightColor(Color4{.0f});
+    setLightColor(Color4{1.0f});
     setShininess(80.0f);
     #endif
 }
