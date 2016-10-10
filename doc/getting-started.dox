@@ -64,7 +64,7 @@ these two new subdirectories using `add_subdirectory()` so the file looks like
 this:
 
 @code
-cmake_minimum_required(VERSION 2.8.9)
+cmake_minimum_required(VERSION 2.8.12)
 project(MyApplication)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/modules/")
@@ -75,7 +75,7 @@ add_subdirectory(src)
 @endcode
 
 If you want to install Corrade and Magnum separately instead of cloning them
-into your project tree, just follow the installation guides mentioned above.
+into your project tree, just follow @ref building "the full installation guide".
 Don't forget to enable `WITH_SDL2APPLICATION` (or `WITH_GLUTAPPLICATION`, if
 you are using GLUT) when building Magnum so the bootstrap project can use it
 later.
