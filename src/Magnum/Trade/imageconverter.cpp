@@ -74,7 +74,7 @@ int main(int argc, char** argv) {
         .addArgument("output").setHelp("output", "output image")
         .addOption("importer", "AnyImageImporter").setHelp("importer", "image importer plugin")
         .addOption("converter", "AnyImageConverter").setHelp("converter", "image converter plugin")
-        .addOption("plugin-dir", MAGNUM_PLUGINS_DIR).setHelp("plugin-dir", "base plugin dir", "DIR")
+        .addOption("plugin-dir", Utility::Directory::join(Utility::Directory::path(Utility::Directory::executableLocation()), MAGNUM_PLUGINS_DIR)).setHelp("plugin-dir", "base plugin dir", "DIR")
         .setHelp("Converts images of different formats.")
         .parse(argc, argv);
 

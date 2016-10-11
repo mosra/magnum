@@ -120,7 +120,7 @@ DistanceFieldConverter::DistanceFieldConverter(const Arguments& arguments): Plat
         .addArgument("output").setHelp("output", "output image")
         .addOption("importer", "AnyImageImporter").setHelp("importer", "image importer plugin")
         .addOption("converter", "AnyImageConverter").setHelp("converter", "image converter plugin")
-        .addOption("plugin-dir", MAGNUM_PLUGINS_DIR).setHelp("plugin-dir", "base plugin dir", "DIR")
+        .addOption("plugin-dir", Utility::Directory::join(Utility::Directory::path(Utility::Directory::executableLocation()), MAGNUM_PLUGINS_DIR)).setHelp("plugin-dir", "base plugin dir", "DIR")
         .addNamedArgument("output-size").setHelp("output-size", "size of output image", "\"X Y\"")
         .addNamedArgument("radius").setHelp("radius", "distance field computation radius", "N")
         .addSkippedPrefix("magnum", "engine-specific options")

@@ -119,7 +119,7 @@ FontConverter::FontConverter(const Arguments& arguments): Platform::WindowlessAp
         .addArgument("output").setHelp("output", "output filename prefix")
         .addNamedArgument("font").setHelp("font", "font plugin")
         .addNamedArgument("converter").setHelp("converter", "font converter plugin")
-        .addOption("plugin-dir", MAGNUM_PLUGINS_DIR).setHelp("plugin-dir", "base plugin dir", "DIR")
+        .addOption("plugin-dir", Utility::Directory::join(Utility::Directory::path(Utility::Directory::executableLocation()), MAGNUM_PLUGINS_DIR)).setHelp("plugin-dir", "base plugin dir", "DIR")
         .addOption("characters", "abcdefghijklmnopqrstuvwxyz"
                                  "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                                  "0123456789?!:;,. ").setHelp("characters", "characters to include in the output")

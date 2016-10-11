@@ -244,6 +244,14 @@ There are also a few command-line utilities, also disabled by default:
 -   `WITH_IMAGECONVERTER` - @ref magnum-imageconverter "magnum-imageconverter"
     executable for converting images of different formats.
 
+Some of these utilities operate with plugins and they search for them in the
+default plugin locations. You can override those locations using
+`MAGNUM_PLUGINS_DIR` and `MAGNUM_PLUGINS_[DEBUG|RELEASE]_DIR` variables, much
+like when using Magnum from dependent projects -- see @ref cmake for more
+information. In particular, if you specify them as relative paths, the path
+will be taken relative to executable location, which is useful for making
+relocatable installations.
+
 Magnum also contains a set of dependency-less plugins for importing essential
 file formats. Additional plugins are provided in separate plugin repository,
 see @ref building-plugins for more information. None of the plugins is built by
