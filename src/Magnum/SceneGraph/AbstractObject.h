@@ -170,6 +170,12 @@ template<UnsignedInt dimensions, class T> class AbstractObject
         /** @overload */
         const AbstractObject<dimensions, T>* scene() const { return doScene(); }
 
+        /** @brief Parent object or `nullptr`, if this is root object */
+        AbstractObject<dimensions, T>* parent() { return doParent(); }
+
+        /** @overload */
+        const AbstractObject<dimensions, T>* parent() const { return doParent(); }
+
         /** @{ @name Object transformation */
 
         /**
@@ -268,6 +274,9 @@ template<UnsignedInt dimensions, class T> class AbstractObject
     private:
         virtual AbstractObject<dimensions, T>* doScene() = 0;
         virtual const AbstractObject<dimensions, T>* doScene() const = 0;
+
+        virtual AbstractObject<dimensions, T>* doParent() = 0;
+        virtual const AbstractObject<dimensions, T>* doParent() const = 0;
 
         virtual MatrixType doTransformationMatrix() const = 0;
         virtual MatrixType doAbsoluteTransformationMatrix() const = 0;

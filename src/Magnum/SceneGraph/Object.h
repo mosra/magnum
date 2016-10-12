@@ -363,6 +363,9 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
         Object<Transformation>* doScene() override final;
         const Object<Transformation>* doScene() const override final;
 
+        Object<Transformation>* doParent() override final;
+        const Object<Transformation>* doParent() const override final;
+
         MatrixType MAGNUM_SCENEGRAPH_LOCAL doTransformationMatrix() const override final {
             return transformationMatrix();
         }

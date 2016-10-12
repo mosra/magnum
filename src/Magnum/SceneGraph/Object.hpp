@@ -69,6 +69,14 @@ template<class Transformation> const Object<Transformation>* Object<Transformati
     return scene();
 }
 
+template<class Transformation> Object<Transformation>* Object<Transformation>::doParent() {
+    return parent();
+}
+
+template<class Transformation> const Object<Transformation>* Object<Transformation>::doParent() const {
+    return parent();
+}
+
 template<class Transformation> Object<Transformation>& Object<Transformation>::setParent(Object<Transformation>* parent) {
     /* Skip if parent is already parent or this is scene (which cannot have parent) */
     /** @todo Assert for setting parent to scene */
