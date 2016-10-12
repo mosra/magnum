@@ -303,13 +303,16 @@ else()
     set(MAGNUM_PLUGINS_DIR_INIT ${MAGNUM_PLUGINS_RELEASE_DIR_INIT})
 endif()
 
-# Make these paths configurable from outside
+# Make these paths configurable from outside. This is *not* PATH, because CMake
+# always converts the path to an absolute location internally, making it
+# impossible to specify relative paths there. Sorry in advance for not having
+# the dir selection button in CMake GUI.
 set(MAGNUM_PLUGINS_DEBUG_DIR ${MAGNUM_PLUGINS_DEBUG_DIR_INIT}
-    CACHE PATH "Base directory where to look for Magnum plugins for debug builds")
+    CACHE STRING "Base directory where to look for Magnum plugins for debug builds")
 set(MAGNUM_PLUGINS_RELEASE_DIR ${MAGNUM_PLUGINS_RELEASE_DIR_INIT}
-    CACHE PATH "Base directory where to look for Magnum plugins for release builds")
+    CACHE STRING "Base directory where to look for Magnum plugins for release builds")
 set(MAGNUM_PLUGINS_DIR ${MAGNUM_PLUGINS_DIR_INIT}
-    CACHE PATH "Base directory where to look for Magnum plugins")
+    CACHE STRING "Base directory where to look for Magnum plugins")
 
 add_subdirectory(modules)
 add_subdirectory(src)

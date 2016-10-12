@@ -794,13 +794,16 @@ set(MAGNUM_PLUGINS_AUDIOIMPORTER_RELEASE_LIBRARY_INSTALL_DIR ${MAGNUM_PLUGINS_RE
 set(MAGNUM_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/Magnum)
 set(MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/include/MagnumPlugins)
 
-# Get base plugin directory from main library location
+# Get base plugin directory from main library location. This is *not* PATH,
+# because CMake always converts the path to an absolute location internally,
+# making it impossible to specify relative paths there. Sorry in advance for
+# not having the dir selection button in CMake GUI.
 set(MAGNUM_PLUGINS_DEBUG_DIR ${_MAGNUM_PLUGINS_DIR_PREFIX}/magnum-d
-    CACHE PATH "Base directory where to look for Magnum plugins for debug builds")
+    CACHE STRING "Base directory where to look for Magnum plugins for debug builds")
 set(MAGNUM_PLUGINS_RELEASE_DIR ${_MAGNUM_PLUGINS_DIR_PREFIX}/magnum
-    CACHE PATH "Base directory where to look for Magnum plugins for release builds")
+    CACHE STRING "Base directory where to look for Magnum plugins for release builds")
 set(MAGNUM_PLUGINS_DIR ${_MAGNUM_PLUGINS_DIR_PREFIX}/magnum${_MAGNUM_PLUGINS_DIR_SUFFIX}
-    CACHE PATH "Base directory where to look for Magnum plugins")
+    CACHE STRING "Base directory where to look for Magnum plugins")
 
 # Plugin directories
 set(MAGNUM_PLUGINS_FONT_DIR ${MAGNUM_PLUGINS_DIR}/fonts)
