@@ -33,6 +33,7 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/Vk/visibility.h"
 #include "Magnum/Vk/Image.h"
+#include "Magnum/Vk/Format.h"
 
 #include "vulkan.h"
 
@@ -52,7 +53,7 @@ CORRADE_ENUMSET_OPERATORS(ImageAspects)
 class MAGNUM_VK_EXPORT ImageView {
     public:
 
-    ImageView(Device& device, Image& image, VkFormat format,
+    ImageView(Device& device, Image& image, Vk::Format format,
               VkImageViewType type, ImageAspects aspects,
               VkComponentMapping components = {}):
             _device{device}
@@ -62,7 +63,7 @@ class MAGNUM_VK_EXPORT ImageView {
             createInfo.pNext = nullptr;
             createInfo.flags = 0;
             createInfo.viewType = type;
-            createInfo.format = format;
+            createInfo.format = VkFormat(format);
             createInfo.subresourceRange = {
                 VkImageAspectFlags(aspects),
                 0, /* base mip level */

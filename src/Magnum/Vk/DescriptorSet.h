@@ -30,12 +30,16 @@
  * @brief Class @ref Magnum::Vk::DescriptorSet
  */
 
+#include <vector>
+
 #include <Corrade/Containers/Array.h>
 
 #include "Magnum/Magnum.h"
+#include "Magnum/Vk/Buffer.h"
 #include "Magnum/Vk/Device.h"
 #include "Magnum/Vk/visibility.h"
 #include "Magnum/Vk/ShaderStage.h"
+#include "Magnum/Vk/Texture.h"
 
 #include "vulkan.h"
 
@@ -124,7 +128,6 @@ class MAGNUM_VK_EXPORT DescriptorSetLayout {
 
 class MAGNUM_VK_EXPORT DescriptorSet {
     public:
-
         DescriptorSet(Device& device, DescriptorPool& pool, VkDescriptorSet vkDescriptorSet):
                      _device{device},
                      _pool{pool},
@@ -159,6 +162,45 @@ class MAGNUM_VK_EXPORT DescriptorSet {
         Device& _device;
         DescriptorPool& _pool;
         VkDescriptorSet _descriptorSet;
+};
+
+class MAGNUM_VK_EXPORT DescriptorSetUpdate {
+    public:
+        void run(Device& device) {
+            if(_writes.empty()) {
+                return;
+            }
+            // TODO: Error check?
+            vkUpdateDescriptorSets(device, UnsignedInt(_writes.size()), _writes.data(), 0, NULL);
+        }
+
+        DescriptorSetUpdate& useDescriptorSet(DescriptorSet& ds) {
+            _descriptorSet = &ds;
+            return *this;
+        }
+
+        DescriptorSetUpdate& bindUniformBuffer(Buffer& buffer, UnsignedInt dstBinding, UnsignedInt dstArrayElement=0) {
+            _buffers.push_back(buffer.getDescriptor());
+            _writes.push_back(VkWriteDescriptorSet{VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, *_descriptorSet,
+                              dstBinding, dstArrayElement, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, nullptr, &_buffers.back(), nullptr});
+            return *this;
+        }
+
+        DescriptorSetUpdate& bindTexture(Vk::Texture& texture, UnsignedInt dstBinding, UnsignedInt dstArrayElement=0) {
+            _images.push_back(texture.getDescriptor());
+            _writes.push_back(VkWriteDescriptorSet{VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, *_descriptorSet,
+                              dstBinding, dstArrayElement, 1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, &_images.back(), nullptr, nullptr});
+            return *this;
+        }
+
+    private:
+        std::vector<VkDescriptorImageInfo> _images;
+        std::vector<VkDescriptorBufferInfo> _buffers;
+        std::vector<VkBufferView> _bufferViews;
+
+        std::vector<VkWriteDescriptorSet> _writes;
+        // TODO copies
+        DescriptorSet* _descriptorSet;
 };
 
 }}

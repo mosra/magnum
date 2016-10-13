@@ -33,6 +33,7 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/Vk/Device.h"
 #include "Magnum/Vk/visibility.h"
+#include "Magnum/Vk/Format.h"
 
 #include "vulkan.h"
 
@@ -44,7 +45,7 @@ class MAGNUM_VK_EXPORT RenderPass {
         RenderPass(NoCreateT) noexcept: _device{nullptr} {
         }
 
-        RenderPass(Device& device, VkFormat depthFormat): _device{&device} {
+        RenderPass(Device& device, Vk::Format depthFormat): _device{&device} {
             VkSampleCountFlagBits sampleCount = VK_SAMPLE_COUNT_1_BIT;
 
             VkAttachmentDescription attachments[2];
@@ -57,7 +58,7 @@ class MAGNUM_VK_EXPORT RenderPass {
             attachments[0].initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
             attachments[0].finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-            attachments[1].format = depthFormat;
+            attachments[1].format = VkFormat(depthFormat);
             attachments[1].samples = sampleCount;
             attachments[1].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
             attachments[1].storeOp = VK_ATTACHMENT_STORE_OP_STORE;

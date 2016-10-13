@@ -114,6 +114,7 @@ public:
 
     DeviceFeatures(const std::initializer_list<DeviceFeature>& features) {
         VkBool32* enabled = reinterpret_cast<VkBool32*>(&_features);
+        std::memset(enabled, 0, sizeof(VkPhysicalDeviceFeatures));
         for(DeviceFeature f : features) {
             enabled[UnsignedInt(f)] = VK_TRUE;
         }

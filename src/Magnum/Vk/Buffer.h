@@ -132,12 +132,33 @@ class MAGNUM_VK_EXPORT Buffer {
             };
         }
 
+        auto cmdCopyTo(Image& dest, std::initializer_list<VkBufferImageCopy> regions) {
+            const VkBuffer source = _buffer;
+            return [source, &dest, &regions](VkCommandBuffer cmdBuffer){
+                vkCmdCopyBufferToImage(cmdBuffer, source, dest, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, UnsignedInt(regions.size()), std::vector<VkBufferImageCopy>(regions).data());
+            };
+        }
+
         auto cmdFullCopyTo(Buffer& dest) {
             const VkBuffer source = _buffer;
             const UnsignedInt size = _size;
             return [source, &dest, size](VkCommandBuffer cmdBuffer){
                 VkBufferCopy bufferCopy = {0, 0, size};
                 vkCmdCopyBuffer(cmdBuffer, source, dest, 1, &bufferCopy);
+            };
+        }
+
+        auto cmdFullCopyTo(Image& dest) {
+            const VkBuffer source = _buffer;
+            const UnsignedInt size = _size;
+            return [source, &dest, size](VkCommandBuffer cmdBuffer){
+                VkBufferImageCopy copy;
+                copy.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+                copy.imageSubresource.mipLevel = 0;
+                copy.imageSubresource.baseArrayLayer = 0;
+                copy.imageSubresource.layerCount = 1;
+                copy.imageExtent = VkExtent3D(dest.extent());
+                vkCmdCopyBufferToImage(cmdBuffer, source, dest, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &copy);
             };
         }
 

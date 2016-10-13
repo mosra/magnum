@@ -34,6 +34,7 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Vk/Device.h"
+#include "Magnum/Vk/Format.h"
 #include "Magnum/Vk/DeviceMemory.h"
 #include "Magnum/Vk/Math.h"
 #include "Magnum/Vk/visibility.h"
@@ -108,28 +109,29 @@ class MAGNUM_VK_EXPORT Image {
     public:
 
         Image(Device& device, VkImage vkImage):
-            _device{device},
+            _device{&device},
             _image{vkImage},
             _flags{}
         {}
 
-        Image(Device& device, Vector3ui extent, VkFormat format, ImageUsageFlags usage):
-            _device{device}, _flags{ObjectFlag::DeleteOnDestruction}
+        Image(Device& device, const Vector3ui& extent, Vk::Format format, ImageUsageFlags usage):
+            _device{&device}, _flags{ObjectFlag::DeleteOnDestruction}, _extent(extent)
         {
             VkImageCreateInfo image = {};
             image.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
             image.flags = 0;
             image.pNext = nullptr;
             image.imageType = VK_IMAGE_TYPE_2D;
-            image.format = format;
+            image.format = VkFormat(format);
             image.extent = VkExtent3D(extent);
             image.samples = VK_SAMPLE_COUNT_1_BIT;
             image.mipLevels = 1;
             image.arrayLayers = 1;
             image.tiling = VK_IMAGE_TILING_OPTIMAL;
             image.usage = UnsignedInt(usage);
+            image.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-            VkResult err = vkCreateImage(_device, &image, nullptr, &_image);
+            VkResult err = vkCreateImage(*_device, &image, nullptr, &_image);
             MAGNUM_VK_ASSERT_ERROR(err);
         }
 
@@ -158,29 +160,53 @@ class MAGNUM_VK_EXPORT Image {
 
         VkMemoryRequirements getMemoryRequirements() {
             VkMemoryRequirements memReqs;
-            vkGetImageMemoryRequirements(_device, _image, &memReqs);
+            vkGetImageMemoryRequirements(*_device, _image, &memReqs);
 
             return memReqs;
         }
 
         Image& bindImageMemory(DeviceMemory& memory, UnsignedLong memoryOffset=0) {
-            VkResult err = vkBindImageMemory(_device, _image, memory, memoryOffset);
+            VkResult err = vkBindImageMemory(*_device, _image, memory, memoryOffset);
             MAGNUM_VK_ASSERT_ERROR(err);
 
             return *this;
         }
 
         /**
+         * @brief Update contents of device memory.
+         * @return Reference to self (for method chaining)
+         *
+         * Will involve mapping and unmapping memory and possibly creating intermediate
+         * staging buffers if the memory is not visible by the host.
+         *
+         * At the end of the method, the queue will be waited for so that temporary buffers
+         * can be cleaned up.
+         */
+        Image& update(Queue& queue, CommandPool& pool, const void* sourceData, UnsignedLong size, UnsignedLong destOffset=0);
+
+        /**
+         * @brief Allocate memory matching requirements of this buffer and bind it
+         * @param memProperty property for the allocated memory
+         * @return the allocated and bound memory
+         */
+        std::unique_ptr<DeviceMemory> allocateDeviceMemory(Vk::MemoryProperty memProperty);
+
+        Vector3ui extent() const {
+            return _extent;
+        }
+
+        /**
          * @brief The device this image was created for.
          */
         Device& device() {
-            return _device;
+            return *_device;
         }
 
     private:
-        Device& _device;
+        Device* _device;
         VkImage _image;
         ObjectFlags _flags;
+        Vector3ui _extent;
 };
 
 struct ImageMemoryBarrier {

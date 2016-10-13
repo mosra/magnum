@@ -40,10 +40,20 @@
 
 namespace Magnum { namespace Vk {
 
+/**
+ @brief Texture
+
+ A Sampler combined with an Image.
+*/
 class MAGNUM_VK_EXPORT Texture {
     public:
 
-        Texture(Device& device): _device{device} {
+        Texture(Device& device, std::unique_ptr<ImageView>&& imageView, ImageLayout layout, Int numMipLevels):
+            _device{device},
+            _imageView{std::move(imageView)},
+            _imageLayout{VkImageLayout(layout)},
+            _mipLevels{numMipLevels}
+        {
             int mipLevels = 0;
             VkSamplerCreateInfo sampler{VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO, nullptr, 0};
             sampler.magFilter = VK_FILTER_LINEAR;
@@ -85,12 +95,33 @@ class MAGNUM_VK_EXPORT Texture {
         /** @brief Move assignment is not allowed */
         Texture& operator=(Texture&&) = delete;
 
+        ImageView& imageView() {
+            return *_imageView;
+        }
+
+        operator VkSampler() const {
+            return _sampler;
+        }
+
+        UnsignedInt mipLevels() const {
+            return _mipLevels;
+        }
+
+        VkImageLayout imageLayout() const {
+            return _imageLayout;
+        }
+
+        VkDescriptorImageInfo getDescriptor() const {
+            return VkDescriptorImageInfo{_sampler, *_imageView, _imageLayout};
+        }
+
     private:
         Device& _device;
 
         VkSampler _sampler;
+        std::unique_ptr<Vk::ImageView> _imageView;
         VkImageLayout _imageLayout;
-        UnsignedInt _mipLevels;
+        Int _mipLevels;
 };
 
 }}

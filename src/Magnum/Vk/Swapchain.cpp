@@ -27,7 +27,7 @@
 #include "Swapchain.h"
 
 #include "Magnum/Vk/Queue.h"
-
+#include "Magnum/Vk/Format.h"
 #include "Magnum/Vk/ImageView.h"
 
 namespace Magnum { namespace Vk {
@@ -127,16 +127,16 @@ Swapchain::Swapchain(Device& device, CommandBuffer& cb, VkSurfaceKHR surface):
     MAGNUM_VK_ASSERT_ERROR(err);
 
     VkColorSpaceKHR colorSpace = surfaceFormats[0].colorSpace;
-    VkFormat colorFormat = VK_FORMAT_B8G8R8A8_UNORM;
+    Format colorFormat = Vk::Format(VK_FORMAT_R8G8B8A8_UNORM);
     if ((formatCount == 1) && (surfaceFormats[0].format == VK_FORMAT_UNDEFINED)) {
         /* no preferred format */
-        colorFormat = VK_FORMAT_B8G8R8A8_UNORM;
+        colorFormat = Vk::Format(VK_FORMAT_R8G8B8A8_UNORM);
     } else {
         // Always select the first available color format
         // If you need a specific format (e.g. SRGB) you'd need to
         // iterate over the list of available surface format and
         // check for it's presence
-        colorFormat = surfaceFormats[0].format;
+        colorFormat = Format(surfaceFormats[0].format);
     }
 
     // Get physical device surface properties and formats
@@ -197,7 +197,7 @@ Swapchain::Swapchain(Device& device, CommandBuffer& cb, VkSurfaceKHR surface):
     swapchainCI.flags = 0;
 
     swapchainCI.surface = _surface;
-    swapchainCI.imageFormat = colorFormat;
+    swapchainCI.imageFormat = VkFormat(colorFormat);
     swapchainCI.imageColorSpace = colorSpace;
     swapchainCI.imageExtent = swapchainExtent;
     swapchainCI.minImageCount = desiredNumberOfSwapchainImages;
