@@ -8,7 +8,7 @@ mkdir build && cd build
 cmake .. \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_INSTALL_RPATH=$HOME/deps/lib \
-    -DCMAKE_BUILD_TYPE=Debug \
+    -DCMAKE_BUILD_TYPE=Release \
     -DWITH_INTERCONNECT=OFF
 make -j install
 cd ../..
@@ -17,7 +17,7 @@ mkdir build && cd build
 cmake .. \
     -DCMAKE_CXX_FLAGS=$COVERAGE \
     -DCMAKE_PREFIX_PATH="$HOME/deps" \
-    -DCMAKE_BUILD_TYPE=Debug \
+    -DCMAKE_BUILD_TYPE=Release \
     -DTARGET_GLES=ON \
     -DTARGET_GLES2=$TARGET_GLES2 \
     -DTARGET_DESKTOP_GLES=ON \
