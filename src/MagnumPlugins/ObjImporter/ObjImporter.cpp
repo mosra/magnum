@@ -38,10 +38,6 @@
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Trade/MeshData3D.h"
 
-#if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(CORRADE_TARGET_ANDROID)
-#include <sstream>
-#endif
-
 namespace Magnum { namespace Trade {
 
 struct ObjImporter::File {
@@ -66,16 +62,16 @@ template<std::size_t size> Math::Vector<size, Float> extractFloatData(std::strin
 
     Math::Vector<size, Float> output;
 
-    #if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(CORRADE_TARGET_ANDROID)
-    std::istringstream in;
-    #endif
-
     for(std::size_t i = 0; i != size; ++i) {
-        #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID)
+        #ifndef CORRADE_TARGET_ANDROID
         output[i] = std::stof(data[i]);
         #else
-        in.str(data[i]);
-        in >> output[i];
+        /* CRAPPY ANDROID GODDAMIT! It's also not exposed in std:: namespace,
+           unlike std::strtoul() and others. WTF! */
+        char* end{};
+        output[i] = strtof(data[i].data(), &end);
+        if(end == data[i].data() || output[i] == HUGE_VALF)
+            throw std::exception{};
         #endif
     }
 
@@ -84,11 +80,15 @@ template<std::size_t size> Math::Vector<size, Float> extractFloatData(std::strin
            Clang Analyzer happy */
         CORRADE_INTERNAL_ASSERT(extra);
 
-        #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID)
+        #ifndef CORRADE_TARGET_ANDROID
         *extra = std::stof(data.back());
         #else
-        in.str(data.back());
-        in >> *extra;
+        /* CRAPPY ANDROID GODDAMIT! It's also not exposed in std:: namespace,
+           unlike std::strtoul() and others. WTF! */
+        char* end{};
+        *extra = strtof(data.back().data(), &end);
+        if(end == data.back().data() || *extra == HUGE_VALF)
+            throw std::exception{};
         #endif
     }
 
@@ -370,35 +370,50 @@ std::optional<MeshData3D> ObjImporter::doMesh3D(UnsignedInt id) {
                     return std::nullopt;
                 }
 
+                #ifdef CORRADE_TARGET_ANDROID
+                char* end{};
+                #endif
+
                 /* Position indices */
-                #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID)
-                positionIndices.push_back(std::stoul(indices[0]) - positionIndexOffset);
-                #else
-                std::istringstream in(indices[0]);
-                UnsignedInt index;
-                in >> index;
-                positionIndices.push_back(index - positionIndexOffset);
+                positionIndices.push_back(
+                    #ifndef CORRADE_TARGET_ANDROID
+                    std::stoul(indices[0])
+                    #else
+                    std::strtoul(indices[0].data(), &end, 10)
+                    #endif
+                    - positionIndexOffset);
+
+                #ifdef CORRADE_TARGET_ANDROID
+                if(end == indices[0].data()) throw std::exception{};
                 #endif
 
                 /* Texture coordinates */
                 if(indices.size() == 2 || (indices.size() == 3 && !indices[1].empty())) {
-                    #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID)
-                    textureCoordinateIndices.push_back(std::stoul(indices[1]) - textureCoordinateIndexOffset);
-                    #else
-                    in.str(indices[1]);
-                    in >> index;
-                    textureCoordinateIndices.push_back(index - textureCoordinateIndexOffset);
+                    textureCoordinateIndices.push_back(
+                        #ifndef CORRADE_TARGET_ANDROID
+                        std::stoul(indices[1])
+                        #else
+                        std::strtoul(indices[1].data(), &end, 10)
+                        #endif
+                        - textureCoordinateIndexOffset);
+
+                    #ifdef CORRADE_TARGET_ANDROID
+                    if(end == indices[1].data()) throw std::exception{};
                     #endif
                 }
 
                 /* Normal indices */
                 if(indices.size() == 3) {
-                    #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID)
-                    normalIndices.push_back(std::stoul(indices[2]) - normalIndexOffset);
-                    #else
-                    in.str(indices[2]);
-                    in >> index;
-                    normalIndices.push_back(index - normalIndexOffset);
+                    normalIndices.push_back(
+                        #ifndef CORRADE_TARGET_ANDROID
+                        std::stoul(indices[2])
+                        #else
+                        std::strtoul(indices[2].data(), &end, 10)
+                        #endif
+                        - normalIndexOffset);
+
+                    #ifdef CORRADE_TARGET_ANDROID
+                    if(end == indices[2].data()) throw std::exception{};
                     #endif
                 }
             }
