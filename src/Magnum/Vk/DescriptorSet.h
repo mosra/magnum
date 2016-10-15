@@ -166,6 +166,12 @@ class MAGNUM_VK_EXPORT DescriptorSet {
 
 class MAGNUM_VK_EXPORT DescriptorSetUpdate {
     public:
+        DescriptorSetUpdate() {
+            _buffers.reserve(4);
+            _images.reserve(4);
+            _writes.reserve(8);
+        }
+
         void run(Device& device) {
             if(_writes.empty()) {
                 return;
@@ -180,14 +186,16 @@ class MAGNUM_VK_EXPORT DescriptorSetUpdate {
         }
 
         DescriptorSetUpdate& bindUniformBuffer(Buffer& buffer, UnsignedInt dstBinding, UnsignedInt dstArrayElement=0) {
-            _buffers.push_back(buffer.getDescriptor());
+            const VkDescriptorBufferInfo descriptor = buffer.getDescriptor();
+            _buffers.push_back(descriptor);
             _writes.push_back(VkWriteDescriptorSet{VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, *_descriptorSet,
                               dstBinding, dstArrayElement, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, nullptr, &_buffers.back(), nullptr});
             return *this;
         }
 
         DescriptorSetUpdate& bindTexture(Vk::Texture& texture, UnsignedInt dstBinding, UnsignedInt dstArrayElement=0) {
-            _images.push_back(texture.getDescriptor());
+            const VkDescriptorImageInfo descriptor = texture.getDescriptor();
+            _images.push_back(descriptor);
             _writes.push_back(VkWriteDescriptorSet{VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, *_descriptorSet,
                               dstBinding, dstArrayElement, 1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, &_images.back(), nullptr, nullptr});
             return *this;

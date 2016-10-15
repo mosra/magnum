@@ -51,7 +51,7 @@ class MAGNUM_VK_EXPORT Texture {
         Texture(Device& device, std::unique_ptr<ImageView>&& imageView, ImageLayout layout, Int numMipLevels):
             _device{device},
             _imageView{std::move(imageView)},
-            _imageLayout{VkImageLayout(layout)},
+            _imageLayout{layout},
             _mipLevels{numMipLevels}
         {
             int mipLevels = 0;
@@ -107,12 +107,12 @@ class MAGNUM_VK_EXPORT Texture {
             return _mipLevels;
         }
 
-        VkImageLayout imageLayout() const {
+        ImageLayout imageLayout() const {
             return _imageLayout;
         }
 
         VkDescriptorImageInfo getDescriptor() const {
-            return VkDescriptorImageInfo{_sampler, *_imageView, _imageLayout};
+            return VkDescriptorImageInfo{_sampler, *_imageView, VkImageLayout(_imageLayout)};
         }
 
     private:
@@ -120,7 +120,7 @@ class MAGNUM_VK_EXPORT Texture {
 
         VkSampler _sampler;
         std::unique_ptr<Vk::ImageView> _imageView;
-        VkImageLayout _imageLayout;
+        ImageLayout _imageLayout;
         Int _mipLevels;
 };
 

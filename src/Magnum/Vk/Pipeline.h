@@ -90,7 +90,7 @@ enum class PrimitiveTopology: UnsignedInt {
 Describes pipeline stages.
 */
 enum class PipelineStage: UnsignedInt {
-    TopOfThePipe = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+    TopOfPipe = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
     DrawIndirect = VK_PIPELINE_STAGE_DRAW_INDIRECT_BIT,
     VertexInput = VK_PIPELINE_STAGE_VERTEX_INPUT_BIT,
     VertexShader = VK_PIPELINE_STAGE_VERTEX_SHADER_BIT,

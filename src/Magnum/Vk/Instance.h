@@ -59,6 +59,7 @@ enum class Version: UnsignedInt {
             Error() << "(File:" << __FILE__                \
                     << ", Line:" << __LINE__               \
                     << ") Vulkan error:" << Vk::Result(r); \
+            abort();                                       \
         }                                                  \
     } while(false)
 

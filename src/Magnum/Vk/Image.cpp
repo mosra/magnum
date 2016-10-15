@@ -30,6 +30,7 @@
 #include "Magnum/Vk/CommandBuffer.h"
 #include "Magnum/Vk/CommandPool.h"
 #include "Magnum/Vk/DeviceMemory.h"
+#include "Magnum/Vk/Pipeline.h"
 #include "Magnum/Vk/Queue.h"
 
 namespace Magnum { namespace Vk {
@@ -64,9 +65,18 @@ Image& Image::update(Queue& queue, CommandPool& pool, const void* sourceData, Un
     std::memcpy(data, sourceData, stagingBuffer.size());
     stagingMemory->unmap();
 
+    VkImageSubresourceRange range{};
+    range.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    range.levelCount = 1;
+    range.baseArrayLayer = 0;
+    range.layerCount = 1;
+    ImageMemoryBarrier transferBarrier{*this, ImageLayout::Undefined, ImageLayout::TransferDstOptimal, range, {}, {Access::TransferWrite}};
+    ImageMemoryBarrier endBarrier{*this, ImageLayout::TransferDstOptimal, ImageLayout::ShaderReadOnlyOptimal, range, {Access::TransferWrite}, {Access::ShaderRead}};
+
     *copyToDeviceCmds << Vk::Cmd::begin()
-                      << Vk::Cmd::imageMemoryk
+                      << Vk::Cmd::pipelineBarrier(PipelineStage::TopOfPipe, PipelineStage::TopOfPipe, {}, {}, {transferBarrier})
                       << stagingBuffer.cmdFullCopyTo(*this)
+                      << Vk::Cmd::pipelineBarrier(PipelineStage::TopOfPipe, PipelineStage::TopOfPipe, {}, {}, {endBarrier})
                       << Vk::Cmd::end();
     queue.submit(*copyToDeviceCmds).waitIdle();
 

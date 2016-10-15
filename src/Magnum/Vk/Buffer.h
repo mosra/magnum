@@ -82,7 +82,12 @@ class MAGNUM_VK_EXPORT Buffer {
         Buffer(const Buffer&) = delete;
 
         /** @brief Move constructor */
-        Buffer(Buffer&& other);
+        Buffer(Buffer&& other) {
+            _device = other._device;
+            other._device = nullptr;
+            std::swap(_buffer, other._buffer);
+            std::swap(_size, other._size);
+        }
 
         /**
          * @brief Destructor
@@ -152,7 +157,7 @@ class MAGNUM_VK_EXPORT Buffer {
             const VkBuffer source = _buffer;
             const UnsignedInt size = _size;
             return [source, &dest, size](VkCommandBuffer cmdBuffer){
-                VkBufferImageCopy copy;
+                VkBufferImageCopy copy{};
                 copy.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
                 copy.imageSubresource.mipLevel = 0;
                 copy.imageSubresource.baseArrayLayer = 0;
