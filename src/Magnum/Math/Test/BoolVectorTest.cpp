@@ -43,6 +43,7 @@ struct BoolVectorTest: Corrade::TestSuite::Tester {
 
     void compare();
     void compareUndefined();
+    void convertBool();
     void all();
     void none();
     void any();
@@ -70,6 +71,7 @@ BoolVectorTest::BoolVectorTest() {
 
               &BoolVectorTest::compare,
               &BoolVectorTest::compareUndefined,
+              &BoolVectorTest::convertBool,
               &BoolVectorTest::all,
               &BoolVectorTest::none,
               &BoolVectorTest::any,
@@ -191,6 +193,15 @@ void BoolVectorTest::compareUndefined() {
     /* Change in used part of last segment */
     BoolVector19 c(0xa5, 0x5f, 0x03);
     CORRADE_VERIFY(a != c);
+}
+
+void BoolVectorTest::convertBool() {
+    /* The ! operation should *just work* using the bool conversion operator */
+    CORRADE_VERIFY(BoolVector19(0xff, 0xff, 0x07));
+    CORRADE_VERIFY(!BoolVector19(0xff, 0xff, 0x04));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<BoolVector19, bool>::value));
 }
 
 void BoolVectorTest::all() {

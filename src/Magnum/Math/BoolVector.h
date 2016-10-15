@@ -134,13 +134,33 @@ template<std::size_t size> class BoolVector {
             return !operator==(other);
         }
 
-        /** @brief Whether all bits are set */
+        /**
+         * @brief Boolean conversion
+         *
+         * Equivalent to @ref all().
+         * @see @ref any(), @ref none()
+         */
+        explicit operator bool() const { return all(); }
+
+        /**
+         * @brief Whether all bits are set
+         *
+         * @see @ref none(), @ref any(), @ref operator bool()
+         */
         bool all() const;
 
-        /** @brief Whether no bits are set */
+        /**
+         * @brief Whether no bits are set
+         *
+         * @see @ref all(), @ref any(), @ref operator bool()
+         */
         bool none() const;
 
-        /** @brief Whether any bit is set */
+        /**
+         * @brief Whether any bit is set
+         *
+         * @see @ref all(), @ref none(), @ref operator bool()
+         */
         bool any() const { return !none(); }
 
         /** @brief Bitwise inversion */
