@@ -612,41 +612,27 @@ void Matrix4Test::transformProjection() {
 }
 
 void Matrix4Test::lookAt() {
-    Matrix4 a = Matrix4::lookAt({0.0f, 0.0f, 0.0f},
-                                {0.0f, 1.0f, 0.0f},
-                                {0.0f, 0.0f, 1.0f});
+    Vector3 translation{5.3f, -8.9f, -10.0f};
+    Vector3 target{19.0f, 29.3f, 0.0f};
+    Matrix4 a = Matrix4::lookAt(translation, target, Vector3::xAxis());
+
+    /* It's just a translation and rotation */
     CORRADE_VERIFY(a.isRigidTransformation());
-    CORRADE_COMPARE(a, Matrix4({1.0f,  0.0f, 0.0f, 0.0f},
-                               {0.0f,  0.0f, 1.0f, 0.0f},
-                               {0.0f, -1.0f, 0.0f, 0.0f},
-                               {0.0f,  0.0f, 0.0f, 1.0f}));
 
-    Matrix4 b = Matrix4::lookAt({100.0f, 200.0f, 300.0f},
-                                {  0.0f,   0.0f,   0.0f},
-                                {  0.0f,   1.0f,   0.0f});
-    CORRADE_VERIFY(b.isRigidTransformation());
-    CORRADE_COMPARE(b, Matrix4({ 0.948683f,      0.0f, -0.316228f, 0.0f},
-                               {-0.169031f, 0.845154f, -0.507093f, 0.0f},
-                               { 0.267261f, 0.534522f,  0.801784f, 0.0f},
-                               {    100.0f,    200.0f,     300.0f, 1.0f}));
+    /* The matrix should translate to the position */
+    CORRADE_COMPARE(a.translation(), translation);
 
-    Matrix4 c = Matrix4::lookAt({3.0f, 0.0f, 0.0f},
-                                {0.0f, 4.0f, 5.0f},
-                                {0.0f, 0.0f, 1.0f});
-    CORRADE_VERIFY(c.isRigidTransformation());
-    CORRADE_COMPARE(c, Matrix4({     0.8f,       0.6f,       0.0f, 0.0f},
-                               {0.424264f, -0.565685f,  0.707107f, 0.0f},
-                               {0.424264f, -0.565685f, -0.707107f, 0.0f},
-                               {     3.0f,       0.0f,       0.0f, 1.0f}));
+    /* Forward vector should point in direction of the target */
+    CORRADE_COMPARE(dot(-a.backward(), (target - translation).normalized()), 1.0f);
 
-    Matrix4 d = Matrix4::lookAt({ 0.0f, 3.0f,  0.0f},
-                                {-5.0f, 0.0f, -4.0f},
-                                { 0.0f, 1.0f,  0.0f});
-    CORRADE_VERIFY(d.isRigidTransformation());
-    CORRADE_COMPARE(d, Matrix4({ 0.624695f,      0.0f, -0.780869f, 0.0f},
-                               {-0.331295f, 0.905539f, -0.265036f, 0.0f},
-                               { 0.707107f, 0.424264f,  0.565685f, 0.0f},
-                               {      0.0f,      3.0f,       0.0f, 1.0f}));
+    /* Up vector should be in the same direction as X axis */
+    CORRADE_VERIFY(dot(Vector3::xAxis(), a.up()) > 0.0f);
+
+    /* Just to be sure */
+    CORRADE_COMPARE(a, Matrix4({     0.0f,  0.253247f,  -0.967402f, 0.0f},
+                               {0.944754f, -0.317095f, -0.0830092f, 0.0f},
+                               {-0.32778f, -0.913957f,  -0.239256f, 0.0f},
+                               {     5.3f,      -8.9f,      -10.0f, 1.0f}));
 }
 
 void Matrix4Test::debug() {
