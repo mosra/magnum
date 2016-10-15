@@ -603,7 +603,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * If the mesh is indexed, the value is treated as index count,
          * otherwise the value is vertex count. If set to `0`, no draw commands
          * are issued when calling @ref draw(AbstractShaderProgram&). Ignored
-         * when calling @ref draw(AbstractShaderProgram, TransformFeedback&, UsingnedInt).
+         * when calling @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
          * Default is `0`.
          * @see @ref isIndexed(), @ref setBaseVertex(), @ref setInstanceCount()
          */
@@ -621,7 +621,8 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *
          * Sets number of vertices of which the vertex buffer will be offset
          * when drawing. Ignored when calling
-         * @ref draw(AbstractShaderProgram, TransformFeedback&) Default is `0`.
+         * @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
+         * Default is `0`.
          * @see @ref setCount(), @ref setBaseInstance()
          * @requires_gl32 Extension @extension{ARB,draw_elements_base_vertex}
          *      for indexed meshes
@@ -642,14 +643,15 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *
          * If set to `1`, non-instanced draw commands are issued when calling
          * @ref draw(AbstractShaderProgram&) or
-         * @ref draw(AbstractShaderProgram&, TransformFeedback&). If set to
-         * `0`, no draw commands are issued altogether. Default is `1`.
+         * @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
+         * If set to `0`, no draw commands are issued altogether. Default is
+         * `1`.
          * @see @ref setBaseInstance(), @ref setCount(),
          *      @ref addVertexBufferInstanced()
          * @requires_gl31 Extension @extension{ARB,draw_instanced} if using
          *      @ref draw(AbstractShaderProgram&)
          * @requires_gl42 Extension @extension{ARB,transform_feedback_instanced}
-         *      @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt)
+         *      if using @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt)
          * @requires_gles30 Extension @es_extension{ANGLE,instanced_arrays},
          *      @es_extension2{EXT,draw_instanced,draw_instanced} or
          *      @es_extension{NV,draw_instanced} in OpenGL ES 2.0.
@@ -669,7 +671,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @brief Set base instance
          * @return Reference to self (for method chaining)
          *
-         * Ignored when calling @ref draw(AbstractShaderProgram, TransformFeedback&, UnsignedInt).
+         * Ignored when calling @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
          * Default is `0`.
          * @see @ref setInstanceCount(), @ref setBaseVertex()
          * @requires_gl42 Extension @extension{ARB,base_instance}
@@ -848,6 +850,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * WebGL 1.0 is available, the associated vertex array object is bound
          * instead of setting up the mesh from scratch.
          * @see @ref setCount(), @ref setInstanceCount(),
+         *      @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt),
          *      @ref MeshView::draw(AbstractShaderProgram&),
          *      @ref MeshView::draw(AbstractShaderProgram&, std::initializer_list<std::reference_wrapper<MeshView>>),
          *      @fn_gl{UseProgram}, @fn_gl{EnableVertexAttribArray},
@@ -894,8 +897,8 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * command is used. If @extension{ARB,vertex_array_object} (part of
          * OpenGL 3.0) is available, the associated vertex array object is
          * bound instead of setting up the mesh from scratch.
-         * @see @ref setInstanceCount(),
-         *      @ref MeshView::draw(AbstractShaderProgram, TransformFeedback& xfb, UnsignedInt),
+         * @see @ref setInstanceCount(), @ref draw(AbstractShaderProgram&),
+         *      @ref MeshView::draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt),
          *      @fn_gl{UseProgram}, @fn_gl{EnableVertexAttribArray},
          *      @fn_gl{BindBuffer}, @fn_gl{VertexAttribPointer},
          *      @fn_gl{DisableVertexAttribArray} or @fn_gl{BindVertexArray},

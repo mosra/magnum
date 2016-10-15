@@ -116,7 +116,7 @@ class MAGNUM_EXPORT MeshView {
          * @brief Set vertex/index count
          * @return Reference to self (for method chaining)
          *
-         * Ignored when calling @ref draw(AbstractShaderProgram, TransformFeedback&, UnsignedInt).
+         * Ignored when calling @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
          * Default is `0`.
          */
         MeshView& setCount(Int count) {
@@ -132,7 +132,7 @@ class MAGNUM_EXPORT MeshView {
          * @return Reference to self (for method chaining)
          *
          * Sets number of vertices of which the vertex buffer will be offset
-         * when drawing. Ignored when calling @ref draw(AbstractShaderProgram, TransformFeedback&, UnsignedInt).
+         * when drawing. Ignored when calling @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
          * Default is `0`.
          * @requires_gl32 Extension @extension{ARB,draw_elements_base_vertex}
          *      for indexed meshes
@@ -156,7 +156,7 @@ class MAGNUM_EXPORT MeshView {
          * acccessed. On OpenGL ES 2.0 this function behaves the same as
          * @ref setIndexRange(Int), as index range functionality is not
          * available there. Ignored when calling
-         * @ref draw(AbstractShaderProgram, TransformFeedback&, UnsignedInt).
+         * @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
          * @see @ref setCount()
          */
         /* MinGW/MSVC needs inline also here to avoid linkage conflicts */
@@ -169,7 +169,7 @@ class MAGNUM_EXPORT MeshView {
          *
          * Prefer to use @ref setIndexRange(Int, UnsignedInt, UnsignedInt) for
          * better performance. Ignored when calling
-         * @ref draw(AbstractShaderProgram, TransformFeedback&, UnsignedInt).
+         * @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
          * @see @ref setCount()
          */
         MeshView& setIndexRange(Int first);
@@ -182,7 +182,10 @@ class MAGNUM_EXPORT MeshView {
          * @return Reference to self (for method chaining)
          *
          * Default is `1`.
-         * @requires_gl31 Extension @extension{ARB,draw_instanced}
+         * @requires_gl31 Extension @extension{ARB,draw_instanced} if using
+         *      @ref draw(AbstractShaderProgram&)
+         * @requires_gl42 Extension @extension{ARB,transform_feedback_instanced}
+         *      if using @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt)
          * @requires_gles30 Extension @es_extension{ANGLE,instanced_arrays},
          *      @es_extension2{EXT,draw_instanced,draw_instanced} or
          *      @es_extension{NV,draw_instanced} in OpenGL ES 2.0.
@@ -202,7 +205,7 @@ class MAGNUM_EXPORT MeshView {
          * @brief Set base instance
          * @return Reference to self (for method chaining)
          *
-         * Ignored when calling @ref draw(AbstractShaderProgram, TransformFeedback&, UnsignedInt).
+         * Ignored when calling @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
          * Default is `0`.
          * @requires_gl42 Extension @extension{ARB,base_instance}
          * @requires_gl Base instance cannot be specified in OpenGL ES or
@@ -218,7 +221,8 @@ class MAGNUM_EXPORT MeshView {
          * @brief Draw the mesh
          *
          * See @ref Mesh::draw(AbstractShaderProgram&) for more information.
-         * @see @ref draw(AbstractShaderProgram&, std::initializer_list<std::reference_wrapper<MeshView>>)
+         * @see @ref draw(AbstractShaderProgram&, std::initializer_list<std::reference_wrapper<MeshView>>),
+         *      @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt)
          * @requires_gl32 Extension @extension{ARB,draw_elements_base_vertex}
          *      if the mesh is indexed and @ref baseVertex() is not `0`.
          * @requires_gl33 Extension @extension{ARB,instanced_arrays} if
@@ -247,6 +251,7 @@ class MAGNUM_EXPORT MeshView {
          * taken from the @p xfb object. See
          * @ref Mesh::draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt)
          * for more information.
+         * @see @ref draw(AbstractShaderProgram&)
          * @requires_gl40 Extension @extension{ARB,transform_feedback2}
          * @requires_gl40 Extension @extension{ARB,transform_feedback3} if
          *      @p stream is not `0`
