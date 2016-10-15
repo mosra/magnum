@@ -36,6 +36,7 @@ namespace Magnum { namespace Math { namespace Test {
 struct TypeTraitsTest: Corrade::TestSuite::Tester {
     explicit TypeTraitsTest();
 
+    void sizeOfLongDouble();
     void name();
 
     template<class T> void equalsIntegral();
@@ -94,7 +95,8 @@ struct {
 }
 
 TypeTraitsTest::TypeTraitsTest() {
-    addTests({&TypeTraitsTest::name,
+    addTests({&TypeTraitsTest::sizeOfLongDouble,
+              &TypeTraitsTest::name,
 
               &TypeTraitsTest::equalsIntegral<UnsignedByte>,
               &TypeTraitsTest::equalsIntegral<Byte>,
@@ -146,6 +148,20 @@ TypeTraitsTest::TypeTraitsTest() {
         &TypeTraitsTest::equalsZeroFloatingPoint<long double>
         #endif
         }, EqualsZeroDataCount);
+}
+
+void TypeTraitsTest::sizeOfLongDouble() {
+    #ifdef CORRADE_TARGET_EMSCRIPTEN
+    CORRADE_SKIP("Not defined in Emscripten.");
+    #else
+    #ifdef _MSC_VER
+    CORRADE_COMPARE(sizeof(long double), 8);
+    CORRADE_EXPECT_FAIL("long double is equivalent to double on MSVC.");
+    #endif
+
+    /* It's 80 bit, but has to be aligned somehow, so 128 bits / 16 bytes */
+    CORRADE_COMPARE(sizeof(long double), 16);
+    #endif
 }
 
 void TypeTraitsTest::name() {
