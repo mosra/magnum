@@ -94,51 +94,50 @@ struct {
 }
 
 TypeTraitsTest::TypeTraitsTest() {
-    addTests<TypeTraitsTest>({
-        &TypeTraitsTest::name,
+    addTests({&TypeTraitsTest::name,
 
-        &TypeTraitsTest::equalsIntegral<UnsignedByte>,
-        &TypeTraitsTest::equalsIntegral<Byte>,
-        &TypeTraitsTest::equalsIntegral<UnsignedShort>,
-        &TypeTraitsTest::equalsIntegral<Short>,
-        &TypeTraitsTest::equalsIntegral<UnsignedInt>,
-        &TypeTraitsTest::equalsIntegral<Int>,
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
-        &TypeTraitsTest::equalsIntegral<UnsignedLong>,
-        &TypeTraitsTest::equalsIntegral<Long>,
-        #endif
+              &TypeTraitsTest::equalsIntegral<UnsignedByte>,
+              &TypeTraitsTest::equalsIntegral<Byte>,
+              &TypeTraitsTest::equalsIntegral<UnsignedShort>,
+              &TypeTraitsTest::equalsIntegral<Short>,
+              &TypeTraitsTest::equalsIntegral<UnsignedInt>,
+              &TypeTraitsTest::equalsIntegral<Int>,
+              #ifndef CORRADE_TARGET_EMSCRIPTEN
+              &TypeTraitsTest::equalsIntegral<UnsignedLong>,
+              &TypeTraitsTest::equalsIntegral<Long>,
+              #endif
 
-        &TypeTraitsTest::equalsFloatingPoint0<Float>,
-        &TypeTraitsTest::equalsFloatingPoint0<Double>,
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
-        &TypeTraitsTest::equalsFloatingPoint0<long double>,
-        #endif
-        &TypeTraitsTest::equalsFloatingPoint1<Float>,
-        &TypeTraitsTest::equalsFloatingPoint1<Double>,
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
-        &TypeTraitsTest::equalsFloatingPoint1<long double>,
-        #endif
-        &TypeTraitsTest::equalsFloatingPointLarge<Float>,
-        &TypeTraitsTest::equalsFloatingPointLarge<Double>,
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
-        &TypeTraitsTest::equalsFloatingPointLarge<long double>,
-        #endif
-        &TypeTraitsTest::equalsFloatingPointInfinity<Float>,
-        &TypeTraitsTest::equalsFloatingPointInfinity<Double>,
-        &TypeTraitsTest::equalsFloatingPointNaN<Float>,
-        &TypeTraitsTest::equalsFloatingPointNaN<Double>,
+              &TypeTraitsTest::equalsFloatingPoint0<Float>,
+              &TypeTraitsTest::equalsFloatingPoint0<Double>,
+              #ifndef CORRADE_TARGET_EMSCRIPTEN
+              &TypeTraitsTest::equalsFloatingPoint0<long double>,
+              #endif
+              &TypeTraitsTest::equalsFloatingPoint1<Float>,
+              &TypeTraitsTest::equalsFloatingPoint1<Double>,
+              #ifndef CORRADE_TARGET_EMSCRIPTEN
+              &TypeTraitsTest::equalsFloatingPoint1<long double>,
+              #endif
+              &TypeTraitsTest::equalsFloatingPointLarge<Float>,
+              &TypeTraitsTest::equalsFloatingPointLarge<Double>,
+              #ifndef CORRADE_TARGET_EMSCRIPTEN
+              &TypeTraitsTest::equalsFloatingPointLarge<long double>,
+              #endif
+              &TypeTraitsTest::equalsFloatingPointInfinity<Float>,
+              &TypeTraitsTest::equalsFloatingPointInfinity<Double>,
+              &TypeTraitsTest::equalsFloatingPointNaN<Float>,
+              &TypeTraitsTest::equalsFloatingPointNaN<Double>,
 
-        &TypeTraitsTest::equalsZeroIntegral<UnsignedByte>,
-        &TypeTraitsTest::equalsZeroIntegral<Byte>,
-        &TypeTraitsTest::equalsZeroIntegral<UnsignedShort>,
-        &TypeTraitsTest::equalsZeroIntegral<Short>,
-        &TypeTraitsTest::equalsZeroIntegral<UnsignedInt>,
-        &TypeTraitsTest::equalsZeroIntegral<Int>,
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
-        &TypeTraitsTest::equalsZeroIntegral<UnsignedLong>,
-        &TypeTraitsTest::equalsZeroIntegral<Long>,
-        #endif
-        });
+              &TypeTraitsTest::equalsZeroIntegral<UnsignedByte>,
+              &TypeTraitsTest::equalsZeroIntegral<Byte>,
+              &TypeTraitsTest::equalsZeroIntegral<UnsignedShort>,
+              &TypeTraitsTest::equalsZeroIntegral<Short>,
+              &TypeTraitsTest::equalsZeroIntegral<UnsignedInt>,
+              &TypeTraitsTest::equalsZeroIntegral<Int>,
+              #ifndef CORRADE_TARGET_EMSCRIPTEN
+              &TypeTraitsTest::equalsZeroIntegral<UnsignedLong>,
+              &TypeTraitsTest::equalsZeroIntegral<Long>,
+              #endif
+              });
 
     addInstancedTests<TypeTraitsTest>({
         &TypeTraitsTest::equalsZeroFloatingPoint<Float>,
