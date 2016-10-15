@@ -7,7 +7,7 @@ arch=('any')
 url="http://mosra.cz/blog/magnum.php"
 license=('MIT')
 depends=('emscripten-corrade')
-makedepends=('cmake' 'emscripten' 'corrade')
+makedepends=('cmake' 'emscripten' 'corrade' 'ninja')
 options=('!strip' '!buildflags')
 
 _rootdir=$startdir/../../
@@ -19,7 +19,8 @@ build() {
 
         cmake .. \
             -DCMAKE_TOOLCHAIN_FILE="$_rootdir/toolchains/generic/Emscripten.cmake" \
-            -DCMAKE_PREFIX_PATH=/usr/lib/emscripten/system
+            -DCMAKE_PREFIX_PATH=/usr/lib/emscripten/system \
+            -G Ninja
     fi
 
     cd "$_rootdir/build-emscripten-webgl2"
@@ -36,7 +37,7 @@ build() {
         -DWITH_TGAIMPORTER=ON \
         -DWITH_WAVAUDIOIMPORTER=ON \
         -DBUILD_TESTS=ON
-    make -j4
+    ninja
 }
 
 check() {
@@ -46,5 +47,5 @@ check() {
 
 package() {
     cd "$_rootdir/build-emscripten-webgl2"
-    DESTDIR="$pkgdir/" make install
+    DESTDIR="$pkgdir/" ninja install
 }
