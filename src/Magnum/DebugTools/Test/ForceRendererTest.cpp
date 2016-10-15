@@ -24,6 +24,7 @@
 */
 
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/Numeric.h>
 
 #include "../Implementation/ForceRendererTransformation.h"
 
@@ -104,10 +105,14 @@ void ForceRendererTest::arbitrary3D() {
     CORRADE_COMPARE(Math::dot(m.right(), m.backward()), 0.0f);
     #else
     /* Emscripten -O1 has slightly lower precision. -O2 works fine. */
-    CORRADE_VERIFY(Math::abs(Math::dot(m.right(), m.backward())) < Math::TypeTraits<Float>::epsilon());
+    CORRADE_COMPARE_AS(Math::abs(Math::dot(m.right(), m.backward())),
+        Math::TypeTraits<Float>::epsilon(),
+        TestSuite::Compare::Less);
     #endif
     /** @todo This shouldn't be too different */
-    CORRADE_VERIFY(Math::abs(Math::dot(m.up(), m.backward())) < Math::TypeTraits<Float>::epsilon());
+    CORRADE_COMPARE_AS(Math::abs(Math::dot(m.up(), m.backward())),
+        Math::TypeTraits<Float>::epsilon(),
+        TestSuite::Compare::Less);
 }
 
 }}}}

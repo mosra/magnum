@@ -48,7 +48,7 @@ ContextALTest::ContextALTest() {
 void ContextALTest::extensionsString() {
     std::vector<std::string> extensions = _context.extensionStrings();
 
-    CORRADE_VERIFY(extensions.size() > 0);
+    CORRADE_VERIFY(!extensions.empty());
 }
 
 void ContextALTest::isExtensionEnabled() {

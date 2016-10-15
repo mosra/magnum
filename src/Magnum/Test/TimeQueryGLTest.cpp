@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/TestSuite/Compare/Numeric.h>
+
 #include "Magnum/TimeQuery.h"
 #include "Magnum/Test/AbstractOpenGLTester.h"
 
@@ -112,7 +114,7 @@ void TimeQueryGLTest::queryTime() {
     const auto result2 = q2.result<UnsignedInt>();
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_VERIFY(result2 >= result1);
+    CORRADE_COMPARE_AS(result2, result1, TestSuite::Compare::GreaterOrEqual);
 }
 
 void TimeQueryGLTest::queryTimestamp() {
@@ -139,8 +141,8 @@ void TimeQueryGLTest::queryTimestamp() {
     const auto result2 = q2.result<UnsignedLong>();
 
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_VERIFY(result2 >= result1);
-    CORRADE_VERIFY(result2-result1 >= result);
+    CORRADE_COMPARE_AS(result2, result1, TestSuite::Compare::GreaterOrEqual);
+    CORRADE_COMPARE_AS(result2 - result1, result, TestSuite::Compare::GreaterOrEqual);
 }
 
 }}

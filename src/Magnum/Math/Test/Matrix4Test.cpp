@@ -25,6 +25,7 @@
 
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/Configuration.h>
 
 #include "Magnum/Math/Matrix4.h"
@@ -626,7 +627,7 @@ void Matrix4Test::lookAt() {
     CORRADE_COMPARE(dot(-a.backward(), (target - translation).normalized()), 1.0f);
 
     /* Up vector should be in the same direction as X axis */
-    CORRADE_VERIFY(dot(Vector3::xAxis(), a.up()) > 0.0f);
+    CORRADE_COMPARE_AS(dot(Vector3::xAxis(), a.up()), 0.0f, Corrade::TestSuite::Compare::Greater);
 
     /* Just to be sure */
     CORRADE_COMPARE(a, Matrix4({     0.0f,  0.253247f,  -0.967402f, 0.0f},

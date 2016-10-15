@@ -25,6 +25,7 @@
 
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/Numeric.h>
 
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Math/Quaternion.h"
@@ -421,30 +422,36 @@ void QuaternionTest::matrix() {
     CORRADE_COMPARE(o.str(), "Math::Quaternion::fromMatrix(): the matrix is not orthogonal\n");
 
     /* Trace > 0 */
-    CORRADE_VERIFY(m.trace() > 0.0f);
+    CORRADE_COMPARE_AS(m.trace(), 0.0f, Corrade::TestSuite::Compare::Greater);
     CORRADE_COMPARE(Quaternion::fromMatrix(m), q);
 
     /* Trace < 0, max is diagonal[2] */
     Matrix3x3 m2 = Matrix4::rotation(Deg(130.0f), axis).rotationScaling();
     Quaternion q2 = Quaternion::rotation(Deg(130.0f), axis);
-    CORRADE_VERIFY(m2.trace() < 0.0f);
-    CORRADE_VERIFY(m2.diagonal()[2] > std::max(m2.diagonal()[0], m2.diagonal()[1]));
+    CORRADE_COMPARE_AS(m2.trace(), 0.0f, Corrade::TestSuite::Compare::Less);
+    CORRADE_COMPARE_AS(m2.diagonal()[2],
+        std::max(m2.diagonal()[0], m2.diagonal()[1]),
+        Corrade::TestSuite::Compare::Greater);
     CORRADE_COMPARE(Quaternion::fromMatrix(m2), q2);
 
     /* Trace < 0, max is diagonal[1] */
     Vector3 axis2 = Vector3(-3.0f, 5.0f, 1.0f).normalized();
     Matrix3x3 m3 = Matrix4::rotation(Deg(130.0f), axis2).rotationScaling();
     Quaternion q3 = Quaternion::rotation(Deg(130.0f), axis2);
-    CORRADE_VERIFY(m3.trace() < 0.0f);
-    CORRADE_VERIFY(m3.diagonal()[1] > std::max(m3.diagonal()[0], m3.diagonal()[2]));
+    CORRADE_COMPARE_AS(m3.trace(), 0.0f, Corrade::TestSuite::Compare::Less);
+    CORRADE_COMPARE_AS(m3.diagonal()[1],
+        std::max(m3.diagonal()[0], m3.diagonal()[2]),
+        Corrade::TestSuite::Compare::Greater);
     CORRADE_COMPARE(Quaternion::fromMatrix(m3), q3);
 
     /* Trace < 0, max is diagonal[0] */
     Vector3 axis3 = Vector3(5.0f, -3.0f, 1.0f).normalized();
     Matrix3x3 m4 = Matrix4::rotation(Deg(130.0f), axis3).rotationScaling();
     Quaternion q4 = Quaternion::rotation(Deg(130.0f), axis3);
-    CORRADE_VERIFY(m4.trace() < 0.0f);
-    CORRADE_VERIFY(m4.diagonal()[0] > std::max(m4.diagonal()[1], m4.diagonal()[2]));
+    CORRADE_COMPARE_AS(m4.trace(), 0.0f, Corrade::TestSuite::Compare::Less);
+    CORRADE_COMPARE_AS(m4.diagonal()[0],
+        std::max(m4.diagonal()[1], m4.diagonal()[2]),
+        Corrade::TestSuite::Compare::Greater);
     CORRADE_COMPARE(Quaternion::fromMatrix(m4), q4);
 }
 
