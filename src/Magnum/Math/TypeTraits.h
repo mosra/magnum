@@ -59,12 +59,13 @@ for more headroom.
 They have "at least" 18 significant digits of precision, taking one digit less
 for more headroom.
 
-@attention On MSVC the precision is the same as for doubles, because
-    they are internally the same type. Source:
-    https://msdn.microsoft.com/en-us/library/9cx8xs15.aspx
+@attention On MSVC the precision is the same as for doubles, because they are
+    internally the same type (source: https://msdn.microsoft.com/en-us/library/9cx8xs15.aspx).
+    The same is apparently for @ref CORRADE_TARGET_ANDROID "Android", but I
+    couldn't find any source for that.
 */
 #ifndef LONG_DOUBLE_EQUALITY_PRECISION
-#ifndef _MSC_VER
+#if !defined(_MSC_VER) && !defined(CORRADE_TARGET_ANDROID)
 #define LONG_DOUBLE_EQUALITY_PRECISION 1.0e-17l
 #else
 #define LONG_DOUBLE_EQUALITY_PRECISION 1.0e-14l
