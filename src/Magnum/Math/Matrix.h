@@ -163,7 +163,8 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
         /**
          * @brief Determinant
          *
-         * Computed recursively using Laplace's formula: @f[
+         * Returns `0` if the matrix is noninvertible and `1` if the matrix is
+         * orthogonal. Computed recursively using Laplace's formula: @f[
          *      \det(A) = \sum_{j=1}^n (-1)^{i+j} a_{i,j} \det(A^{i,j})
          * @f] @f$ A^{i, j} @f$ is matrix without i-th row and j-th column, see
          * @ref ij(). The formula is expanded down to 2x2 matrix, where the

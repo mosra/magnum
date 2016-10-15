@@ -73,8 +73,10 @@ namespace Implementation {
 /** @relatesalso Vector
 @brief Dot product of two vectors
 
-Returns `0` when two vectors are perpendicular, `1` when two *normalized*
-vectors are parallel and `-1` when two *normalized* vectors are antiparallel. @f[
+Returns `0` when two vectors are perpendicular, `> 0` when two vectors are in
+the same general direction, `1` when two *normalized* vectors are parallel,
+`< 0` when two vectors are in opposite general direction and `-1` when two
+*normalized* vectors are antiparallel. @f[
     \boldsymbol a \cdot \boldsymbol b = \sum_{i=0}^{n-1} \boldsymbol a_i \boldsymbol b_i
 @f]
 @see @ref Vector::dot() const, @ref Vector::operator-(), @ref Vector2::perpendicular()
