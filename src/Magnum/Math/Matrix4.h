@@ -680,11 +680,7 @@ template<class T> Matrix4<T> Matrix4<T>::lookAt(const Vector3<T>& eye, const Vec
     const Vector3<T> backward = (eye - target).normalized();
     const Vector3<T> right = cross(up, backward).normalized();
     const Vector3<T> realUp = cross(backward, right);
-
-    return {{   right, T(0)},
-            {  realUp, T(0)},
-            {backward, T(0)},
-            {     eye, T(1)}};
+    return from({right, realUp, backward}, eye);
 }
 
 template<class T> inline Matrix3x3<T> Matrix4<T>::rotation() const {
