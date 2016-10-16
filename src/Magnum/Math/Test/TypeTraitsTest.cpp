@@ -165,8 +165,8 @@ void TypeTraitsTest::sizeOfLongDouble() {
 }
 
 void TypeTraitsTest::name() {
-    CORRADE_COMPARE(TypeTraits<UnsignedShort>::name(), "UnsignedShort");
-    CORRADE_COMPARE(TypeTraits<Float>::name(), "Float");
+    CORRADE_COMPARE(TypeTraits<UnsignedShort>::name(), std::string{"UnsignedShort"});
+    CORRADE_COMPARE(TypeTraits<Float>::name(), std::string{"Float"});
 }
 
 template<class T> void TypeTraitsTest::equalsIntegral() {
