@@ -155,8 +155,7 @@ class MAGNUM_VK_EXPORT Buffer {
 
         auto cmdFullCopyTo(Image& dest) {
             const VkBuffer source = _buffer;
-            const UnsignedInt size = _size;
-            return [source, &dest, size](VkCommandBuffer cmdBuffer){
+            return [source, &dest](VkCommandBuffer cmdBuffer){
                 VkBufferImageCopy copy{};
                 copy.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
                 copy.imageSubresource.mipLevel = 0;

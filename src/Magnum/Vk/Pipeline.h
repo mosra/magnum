@@ -206,7 +206,7 @@ class MAGNUM_VK_EXPORT Pipeline {
 /**
 @brief Graphics pipeline builder
 
-Contains properties to create a @ref Pipeline. While the pipeline cannot be changed after it is created, 
+Contains properties to create a @ref Pipeline. While the pipeline cannot be changed after it is created,
 the pipeline builder can be used to create another one.
 */
 class MAGNUM_VK_EXPORT GraphicsPipelineBuilder {
@@ -246,7 +246,7 @@ class MAGNUM_VK_EXPORT GraphicsPipelineBuilder {
                 VK_CULL_MODE_NONE, /* cull mode */
                 VK_FRONT_FACE_COUNTER_CLOCKWISE, /* front face */
                 VK_FALSE, /* depth bias enable */
-                0.0f, 0.0f, 0.0f, 0.0f
+                0.0f, 0.0f, 0.0f, 1.0f
            };
 
             VkPipelineColorBlendAttachmentState blendAttachmentState = {
@@ -325,6 +325,16 @@ class MAGNUM_VK_EXPORT GraphicsPipelineBuilder {
 
         GraphicsPipelineBuilder& setTopology(PrimitiveTopology topology) {
             _inputAssemblyState.topology = VkPrimitiveTopology(topology);
+            return *this;
+        }
+
+        GraphicsPipelineBuilder& enableRasterizerDiscard(bool b) {
+            _rasterizationState.rasterizerDiscardEnable = b;
+            return *this;
+        }
+
+        GraphicsPipelineBuilder& setCullMode(VkCullModeFlags mode) {
+            _rasterizationState.cullMode = mode;
             return *this;
         }
 

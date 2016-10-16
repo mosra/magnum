@@ -166,49 +166,42 @@ class MAGNUM_VK_EXPORT DescriptorSet {
 
 class MAGNUM_VK_EXPORT DescriptorSetUpdate {
     public:
-        DescriptorSetUpdate() {
-            _buffers.reserve(4);
-            _images.reserve(4);
-            _writes.reserve(8);
-        }
+        DescriptorSetUpdate(Device& device, DescriptorSet& descriptorSet,
+                            std::initializer_list<std::pair<UnsignedInt, std::reference_wrapper<Buffer>>> buffers,
+                            std::initializer_list<std::pair<UnsignedInt, std::reference_wrapper<Texture>>> images):
+            _images{Containers::NoInit, images.size()},
+            _buffers{Containers::NoInit, buffers.size()},
+            _writes{Containers::NoInit, images.size() + buffers.size()}
+        {
 
-        void run(Device& device) {
-            if(_writes.empty()) {
-                return;
+            UnsignedInt dstArrayElement = 0;
+            Int i = 0; /* Image index */
+            Int b = 0; /* Buffer index */
+            Int w = 0; /* Write index */
+            for(auto& buf : buffers) {
+                 _buffers[b] = buf.second.get().getDescriptor();
+                 _writes[w] = VkWriteDescriptorSet{
+                     VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, descriptorSet, buf.first, dstArrayElement, 1,
+                     VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, nullptr, &_buffers[b], nullptr};
+                 ++b, ++w;
             }
-            // TODO: Error check?
-            vkUpdateDescriptorSets(device, UnsignedInt(_writes.size()), _writes.data(), 0, NULL);
-        }
 
-        DescriptorSetUpdate& useDescriptorSet(DescriptorSet& ds) {
-            _descriptorSet = &ds;
-            return *this;
-        }
+            for(auto& tex : images) {
+                 _images[i] = tex.second.get().getDescriptor();
+                 _writes[w] = VkWriteDescriptorSet{
+                     VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, descriptorSet, tex.first, dstArrayElement, 1,
+                     VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, &_images[i], nullptr, nullptr};
+                 ++i, ++w;
+            }
 
-        DescriptorSetUpdate& bindUniformBuffer(Buffer& buffer, UnsignedInt dstBinding, UnsignedInt dstArrayElement=0) {
-            const VkDescriptorBufferInfo descriptor = buffer.getDescriptor();
-            _buffers.push_back(descriptor);
-            _writes.push_back(VkWriteDescriptorSet{VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, *_descriptorSet,
-                              dstBinding, dstArrayElement, 1, VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, nullptr, &_buffers.back(), nullptr});
-            return *this;
-        }
-
-        DescriptorSetUpdate& bindTexture(Vk::Texture& texture, UnsignedInt dstBinding, UnsignedInt dstArrayElement=0) {
-            const VkDescriptorImageInfo descriptor = texture.getDescriptor();
-            _images.push_back(descriptor);
-            _writes.push_back(VkWriteDescriptorSet{VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET, nullptr, *_descriptorSet,
-                              dstBinding, dstArrayElement, 1, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, &_images.back(), nullptr, nullptr});
-            return *this;
+            vkUpdateDescriptorSets(device, UnsignedInt(_writes.size()), _writes.data(), 0, nullptr);
         }
 
     private:
-        std::vector<VkDescriptorImageInfo> _images;
-        std::vector<VkDescriptorBufferInfo> _buffers;
-        std::vector<VkBufferView> _bufferViews;
+        Containers::Array<VkDescriptorImageInfo> _images;
+        Containers::Array<VkDescriptorBufferInfo> _buffers;
 
-        std::vector<VkWriteDescriptorSet> _writes;
-        // TODO copies
-        DescriptorSet* _descriptorSet;
+        Containers::Array<VkWriteDescriptorSet> _writes;
 };
 
 }}

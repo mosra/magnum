@@ -49,6 +49,7 @@ class MAGNUM_VK_EXPORT RenderPass {
             VkSampleCountFlagBits sampleCount = VK_SAMPLE_COUNT_1_BIT;
 
             VkAttachmentDescription attachments[2];
+            attachments[0].flags = 0;
             attachments[0].format = VK_FORMAT_B8G8R8A8_UNORM;
             attachments[0].samples = sampleCount;
             attachments[0].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
@@ -58,6 +59,7 @@ class MAGNUM_VK_EXPORT RenderPass {
             attachments[0].initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
             attachments[0].finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
+            attachments[1].flags = 0;
             attachments[1].format = VkFormat(depthFormat);
             attachments[1].samples = sampleCount;
             attachments[1].loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;

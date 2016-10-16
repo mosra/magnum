@@ -127,6 +127,7 @@ class MAGNUM_VK_EXPORT Image {
             image.samples = VK_SAMPLE_COUNT_1_BIT;
             image.mipLevels = 1;
             image.arrayLayers = 1;
+            image.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
             image.tiling = VK_IMAGE_TILING_OPTIMAL;
             image.usage = UnsignedInt(usage);
             image.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
