@@ -36,8 +36,6 @@
 #include "MagnumPlugins/TgaImageConverter/TgaImageConverter.h"
 #include "MagnumPlugins/TgaImporter/TgaImporter.h"
 
-#include "configure.h"
-
 namespace Magnum { namespace Trade { namespace Test {
 
 class TgaImageConverterTest: public TestSuite::Tester {
