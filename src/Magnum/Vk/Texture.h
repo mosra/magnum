@@ -69,6 +69,7 @@ class MAGNUM_VK_EXPORT Texture {
             sampler.maxAnisotropy = 8;
             sampler.anisotropyEnable = VK_TRUE;
             sampler.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
+            sampler.unnormalizedCoordinates = VK_FALSE;
 
             VkResult err = vkCreateSampler(device, &sampler, nullptr, &_sampler);
             MAGNUM_VK_ASSERT_ERROR(err);
