@@ -48,7 +48,7 @@ std::unique_ptr<DeviceMemory> Image::allocateDeviceMemory(Vk::MemoryProperty mem
     std::unique_ptr<DeviceMemory> memory(new Vk::DeviceMemory{*_device, memReqs.size, memoryTypeIndex});
     bindImageMemory(*memory);
 
-    return std::unique_ptr<DeviceMemory>{};
+    return memory;
 }
 
 Image& Image::update(Queue& queue, CommandPool& pool, const void* sourceData, UnsignedLong size, UnsignedLong destOffset) {
