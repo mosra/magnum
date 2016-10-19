@@ -341,6 +341,12 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * @param target    Location towards which the matrix is oriented
          * @param up        Vector as a guide of which way is up (should not be
          *      the same direction as `target - eye`)
+         *
+         * @attention This function transforms an object so it's at @p eye
+         *      position and oriented towards @p target, it does *not* produce
+         *      a camera matrix. If you want to get the same what equivalent
+         *      call to the well-known `gluLookAt()` would produce, invert the
+         *      result using @ref invertedRigid().
          */
         static Matrix4<T> lookAt(const Vector3<T>& eye, const Vector3<T>& target, const Vector3<T>& up);
 
