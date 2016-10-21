@@ -45,6 +45,7 @@ struct ShaderGLTest: AbstractOpenGLTester {
     void label();
 
     void addSource();
+    void addSourceNoVersion();
     void addFile();
     void compile();
 };
@@ -58,6 +59,7 @@ ShaderGLTest::ShaderGLTest() {
               &ShaderGLTest::label,
 
               &ShaderGLTest::addSource,
+              &ShaderGLTest::addSourceNoVersion,
               &ShaderGLTest::addFile,
               &ShaderGLTest::compile});
 }
@@ -161,6 +163,36 @@ void ShaderGLTest::addSource() {
     Shader shader(Version::GLES200, Shader::Type::Fragment);
     #endif
 
+    shader.addSource("#define FOO BAR\n")
+          .addSource("void main() {}\n");
+
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE(shader.sources(), (std::vector<std::string>{
+        "#version 120\n",
+        "#line 1 1\n",
+        "#define FOO BAR\n",
+        "#line 1 2\n",
+        "void main() {}\n"
+    }));
+    #else
+    CORRADE_COMPARE(shader.sources(), (std::vector<std::string>{
+        "#version 100\n",
+        "#line 1 1\n",
+        "#define FOO BAR\n",
+        "#line 1 2\n",
+        "void main() {}\n"
+    }));
+    #endif
+}
+
+void ShaderGLTest::addSourceNoVersion() {
+    Shader shader(Version::None, Shader::Type::Fragment);
+
+    #ifndef MAGNUM_TARGET_GLES
+    shader.addSource("#version 120\n");
+    #else
+    shader.addSource("#version 100\n");
+    #endif
     shader.addSource("#define FOO BAR\n")
           .addSource("void main() {}\n");
 
