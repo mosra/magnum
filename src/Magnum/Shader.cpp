@@ -786,13 +786,15 @@ Shader& Shader::addSource(std::string source) {
 
         /* Fix line numbers, so line 41 of third added file is marked as 3(41)
            in case shader version was not Version::None, because then source 0
-           is the #version directive added in constructur.
+           is the #version directive added in constructor.
 
            If version was Version::None, line 41 of third added file is marked
            as 2(41). We apparently can't add even the #line directive before
            the potential `#version` directive -- in that case the first source
-           file is not marked with any file number, but that's equivalent to
-           the default where first file is marked as 0. */
+           file is not marked with any file number, thus having number 0. In
+           order to avoid complex logic in compile() where we assert for at
+           least some user-provided source, an empty string is added here
+           instead. */
         if(!_sources.empty()) _sources.push_back("#line 1 " +
             #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID)
             std::to_string((_sources.size()+1)/2) +
@@ -800,6 +802,8 @@ Shader& Shader::addSource(std::string source) {
             converter.str() +
             #endif
             '\n');
+        else _sources.emplace_back();
+
         _sources.push_back(std::move(source));
     }
 

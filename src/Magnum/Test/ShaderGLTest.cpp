@@ -200,6 +200,7 @@ void ShaderGLTest::addSourceNoVersion() {
 
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(shader.sources(), (std::vector<std::string>{
+        "",
         "#version 120\n",
         "#line 1 1\n",
         "#define FOO BAR\n",
@@ -208,6 +209,7 @@ void ShaderGLTest::addSourceNoVersion() {
     }));
     #else
     CORRADE_COMPARE(shader.sources(), (std::vector<std::string>{
+        "",
         "#version 100\n",
         "#line 1 1\n",
         "#define FOO BAR\n",
