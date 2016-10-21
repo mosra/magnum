@@ -48,6 +48,7 @@ struct ShaderGLTest: AbstractOpenGLTester {
     void addSourceNoVersion();
     void addFile();
     void compile();
+    void compileNoVersion();
 };
 
 ShaderGLTest::ShaderGLTest() {
@@ -61,7 +62,8 @@ ShaderGLTest::ShaderGLTest() {
               &ShaderGLTest::addSource,
               &ShaderGLTest::addSourceNoVersion,
               &ShaderGLTest::addFile,
-              &ShaderGLTest::compile});
+              &ShaderGLTest::compile,
+              &ShaderGLTest::compileNoVersion});
 }
 
 void ShaderGLTest::construct() {
@@ -259,6 +261,16 @@ void ShaderGLTest::compile() {
     Shader shader2(v, Shader::Type::Fragment);
     shader2.addSource("[fu] bleh error #:! stuff\n");
     CORRADE_VERIFY(!shader2.compile());
+}
+
+void ShaderGLTest::compileNoVersion() {
+    Shader shader(Version::None, Shader::Type::Fragment);
+    #ifndef MAGNUM_TARGET_GLES
+    shader.addSource("#version 120\nvoid main() {}\n");
+    #else
+    shader.addSource("#version 100\nvoid main() {}\n");
+    #endif
+    CORRADE_VERIFY(shader.compile());
 }
 
 }}
