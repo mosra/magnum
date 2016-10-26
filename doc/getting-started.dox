@@ -169,10 +169,11 @@ subdirectory of the build dir:
     cmake --build .
     ./src/MyApplication
 
-On Windows you can use either MSVC or MinGW-w64 compiler. It's then up to you
-whether you will use command-line, QtCreator or Visual Studio. With Visual
-Studio the most straightforward way to create the project file is via the
-command-line:
+On Windows you can use either MSVC or MinGW-w64 compiler and prebuilt SDL2
+binaries can be downloaded at https://libsdl.org/download-2.0.php. It's then up
+to you whether you will use command-line, QtCreator or Visual Studio. With
+Visual Studio the most straightforward way to create the project file is via
+the command-line:
 
     mkdir build && cd build
     cmake .. -DWITH_SDL2APPLICATION=ON
