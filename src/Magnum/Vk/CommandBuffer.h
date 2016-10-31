@@ -90,7 +90,10 @@ class MAGNUM_VK_EXPORT CommandBuffer {
         CommandBuffer(const CommandBuffer&) = delete;
 
         /** @brief Move constructor */
-        CommandBuffer(CommandBuffer&& other);
+        CommandBuffer(CommandBuffer&& other) {
+            std::swap(_cmdBuffer, other._cmdBuffer);
+            std::swap(_pool, other._pool);
+        }
 
         /**
          * @brief Destructor

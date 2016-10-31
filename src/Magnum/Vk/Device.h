@@ -41,7 +41,49 @@
 
 #include "vulkan.h"
 
-namespace Magnum { namespace Vk {
+namespace Magnum { namespace Extensions {
+/*
+#ifndef DOXYGEN_GENERATING_OUTPUT
+#define _extension(vendor, extension, _requiredVersion, _coreVersion) \
+    struct extension {                                                      \
+        enum: std::size_t { Index = __LINE__-1 };                                \
+        constexpr static Version requiredVersion() { return Version::_requiredVersion; } \
+        constexpr static Version coreVersion() { return Version::_coreVersion; } \
+        constexpr static const char* string() { return "VK_" #vendor "_" #extension; } \
+    };
+
+    // TODO: Encode Device/Instance level into extension structure
+namespace Device { namespace Vk {
+    namespace AMD {
+        _extension(AMD,negative_viewport_height, Vulkan_1_0, None)
+    } namespace EXT {
+        _extension(EXT,debug_marker,             Vulkan_1_0, None)
+        _extension(EXT,debug_reporter,           Vulkan_1_0, None)
+    } namespace KHR {
+        _extension(KHR,android_surface,          Vulkan_1_0, None)
+        _extension(KHR,display,                  Vulkan_1_0, None)
+        _extension(KHR,display_swapchain,        Vulkan_1_0, None)
+        _extension(KHR,mir_surface,              Vulkan_1_0, None)
+        _extension(KHR,sampler_mirror_clamp_to_edge, Vulkan_1_0, None)
+        _extension(KHR,swapchain,                Vulkan_1_0, None)
+        _extension(KHR,wayland_surface,          Vulkan_1_0, None)
+        _extension(KHR,win32_surface,            Vulkan_1_0, None)
+        _extension(KHR,xcb_surface,              Vulkan_1_0, None)
+        _extension(KHR,xlib_surface,             Vulkan_1_0, None)
+    } namespace NV {
+        _extension(NV,dedicated_allocation,      Vulkan_1_0, None)
+        _extension(NV,glsl_shader,               Vulkan_1_0, None)
+    }
+}}
+
+namespace Instance { namespace Vk {
+    namespace KHR {
+        _extension(KHR,surface,                  Vulkan_1_0, None)
+    }
+}}
+*/
+}
+namespace Vk {
 
 constexpr UnsignedInt deviceFeaturesCount = sizeof(VkPhysicalDeviceFeatures) / 4;
 

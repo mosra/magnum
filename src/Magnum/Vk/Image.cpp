@@ -41,14 +41,21 @@ Image::~Image() {
     }
 }
 
-std::unique_ptr<DeviceMemory> Image::allocateDeviceMemory(Vk::MemoryProperty memProperty) {
+std::unique_ptr<DeviceMemory> Image::allocateDeviceMemory(Vk::MemoryProperties memProperty) {
     VkMemoryRequirements memReqs = getMemoryRequirements();
     UnsignedInt memoryTypeIndex = _device->physicalDevice().getMemoryType(memReqs.memoryTypeBits, memProperty);
 
-    std::unique_ptr<DeviceMemory> memory(new Vk::DeviceMemory{*_device, memReqs.size, memoryTypeIndex});
+    std::unique_ptr<DeviceMemory> memory(new Vk::DeviceMemory{*_device, memReqs.size, memoryTypeIndex, *this});
     bindImageMemory(*memory);
 
     return memory;
+}
+
+Image& Image::bindImageMemory(const DeviceMemory& memory, const UnsignedLong memoryOffset) {
+    VkResult err = vkBindImageMemory(*_device, _image, memory, memoryOffset);
+    MAGNUM_VK_ASSERT_ERROR(err);
+
+    return *this;
 }
 
 Image& Image::update(Queue& queue, CommandPool& pool, const void* sourceData, UnsignedLong size, UnsignedLong destOffset) {

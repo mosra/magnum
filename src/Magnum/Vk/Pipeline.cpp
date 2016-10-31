@@ -37,8 +37,8 @@ Pipeline::~Pipeline() {
 
 std::unique_ptr<Pipeline> GraphicsPipelineBuilder::build() {
     VkPipeline pipeline;
-    VkPipelineCache cache;
     VkPipelineLayout layout;
+    VkPipelineCache cache;
 
     /* create pipeline layout */
     VkPipelineLayoutCreateInfo plInfo = {
@@ -93,6 +93,13 @@ std::unique_ptr<Pipeline> GraphicsPipelineBuilder::build() {
         UnsignedInt(_dynamicStates.size()),
         reinterpret_cast<VkDynamicState*>(_dynamicStates.data())
     };
+    VkPipelineViewportStateCreateInfo viewportState{
+        VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO, nullptr, 0,
+        UnsignedInt(_viewports.size()),
+        _viewports.data(),
+        UnsignedInt(_scissors.size()),
+        _scissors.data()
+    };
 
     VkGraphicsPipelineCreateInfo pipelineInfo = {};
     pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -104,7 +111,7 @@ std::unique_ptr<Pipeline> GraphicsPipelineBuilder::build() {
     pipelineInfo.pRasterizationState = &_rasterizationState;
     pipelineInfo.pColorBlendState = &_colorBlendState;
     pipelineInfo.pMultisampleState = &_multisampleState;
-    pipelineInfo.pViewportState = &_viewportState;
+    pipelineInfo.pViewportState = &viewportState;
     pipelineInfo.pDepthStencilState = &_depthStencilState;
     pipelineInfo.stageCount = UnsignedInt(_shaderStages.size());
     pipelineInfo.pStages = _shaderStages.data();

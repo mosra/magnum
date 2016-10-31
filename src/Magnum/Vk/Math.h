@@ -68,7 +68,7 @@ template<class T> Matrix4<T> perspectiveProjectionZeroToOne(const Vector2<T>& si
     T zScale = T(1.0)/(near-far);
 
     return {{xyScale.x(),        T(0),            T(0),  T(0)},
-            {       T(0), xyScale.y(),            T(0),  T(0)},
+            {       T(0),-xyScale.y(),            T(0),  T(0)},
             {       T(0),        T(0),      far*zScale, T(-1)}, // difference in [2][2]
             {       T(0),        T(0), far*near*zScale,  T(0)}};// difference in [3][2]
 }

@@ -33,7 +33,9 @@
 #include <Corrade/Containers/Array.h>
 
 #include "Magnum/Magnum.h"
+#include "Magnum/Vk/Buffer.h"
 #include "Magnum/Vk/Device.h"
+#include "Magnum/Vk/Image.h"
 #include "Magnum/Vk/visibility.h"
 
 #include "vulkan.h"
@@ -57,6 +59,41 @@ class MAGNUM_VK_EXPORT DeviceMemory {
             MAGNUM_VK_ASSERT_ERROR(err);
         }
 
+        DeviceMemory(Device& device, UnsignedLong size, UnsignedInt memoryTypeIndex, Vk::Buffer& buffer):
+                     _device{device}
+        {
+            VkDedicatedAllocationMemoryAllocateInfoNV dedicatedInfo{
+                VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_MEMORY_ALLOCATE_INFO_NV,
+                    nullptr, VK_NULL_HANDLE, buffer
+            };
+            _memAlloc = {
+                VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+                &dedicatedInfo,
+                size,
+                memoryTypeIndex
+            };
+
+            VkResult err = vkAllocateMemory(_device, &_memAlloc, nullptr, &_deviceMemory);
+            MAGNUM_VK_ASSERT_ERROR(err);
+        }
+
+        DeviceMemory(Device& device, UnsignedLong size, UnsignedInt memoryTypeIndex, Vk::Image& image):
+                     _device{device}
+        {
+            VkDedicatedAllocationMemoryAllocateInfoNV dedicatedInfo{
+                VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_MEMORY_ALLOCATE_INFO_NV,
+                    nullptr, image, VK_NULL_HANDLE
+            };
+            _memAlloc = {
+                VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO,
+                &dedicatedInfo,
+                size,
+                memoryTypeIndex
+            };
+
+            VkResult err = vkAllocateMemory(_device, &_memAlloc, nullptr, &_deviceMemory);
+            MAGNUM_VK_ASSERT_ERROR(err);
+        }
         /** @brief Copying is not allowed */
         DeviceMemory(const DeviceMemory&) = delete;
 

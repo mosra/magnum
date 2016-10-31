@@ -40,6 +40,15 @@
 
 namespace Magnum { namespace Vk {
 
+enum class SamplerAddressMode: UnsignedInt {
+    Repeat = VK_SAMPLER_ADDRESS_MODE_REPEAT,
+    MirroredRepeat = VK_SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT,
+    ClampToEdge = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,
+    ClampToBorder = VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER,
+    MirrorClampToEdge = VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE,
+};
+
+
 /**
  @brief Texture
 
@@ -48,7 +57,7 @@ namespace Magnum { namespace Vk {
 class MAGNUM_VK_EXPORT Texture {
     public:
 
-        Texture(Device& device, std::unique_ptr<ImageView>&& imageView, ImageLayout layout, Int numMipLevels):
+        Texture(Device& device, std::unique_ptr<ImageView>&& imageView, ImageLayout layout, Int numMipLevels, SamplerAddressMode samplerAddressMode = SamplerAddressMode::Repeat):
             _device{device},
             _imageView{std::move(imageView)},
             _imageLayout{layout},
@@ -58,16 +67,17 @@ class MAGNUM_VK_EXPORT Texture {
             VkSamplerCreateInfo sampler{VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO, nullptr, 0};
             sampler.magFilter = VK_FILTER_LINEAR;
             sampler.minFilter = VK_FILTER_LINEAR;
-            sampler.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
-            sampler.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-            sampler.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-            sampler.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+            sampler.mipmapMode = VK_SAMPLER_MIPMAP_MODE_NEAREST;
+            sampler.addressModeU = VkSamplerAddressMode(samplerAddressMode);
+            sampler.addressModeV = VkSamplerAddressMode(samplerAddressMode);
+            sampler.addressModeW = VkSamplerAddressMode(samplerAddressMode);
             sampler.mipLodBias = 0.0f;
+            sampler.compareEnable = VK_FALSE;
             sampler.compareOp = VK_COMPARE_OP_NEVER;
             sampler.minLod = 0.0f;
             sampler.maxLod = float(mipLevels);
-            sampler.maxAnisotropy = 8;
-            sampler.anisotropyEnable = VK_TRUE;
+            sampler.maxAnisotropy = 1;
+            sampler.anisotropyEnable = VK_FALSE;
             sampler.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;
             sampler.unnormalizedCoordinates = VK_FALSE;
 

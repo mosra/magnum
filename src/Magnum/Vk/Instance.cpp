@@ -106,7 +106,7 @@ VKAPI_ATTR VkBool32 VKAPI_CALL MyDebugReportCallback(
     } else if(flags & VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT) {
         Warning() << "[Perf Warning][" << pLayerPrefix << "]" << pMessage;
     }
-    
+
     return VK_FALSE;
 }
 
@@ -128,9 +128,10 @@ bool Instance::tryCreate() {
     instanceCreateInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     instanceCreateInfo.pNext = nullptr;
     instanceCreateInfo.pApplicationInfo = &appInfo;
+    enabledExtensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
+
     if (_flags >= Flag::EnableValidation) {
         Debug() << "Enabling Validation";
-        enabledExtensions.push_back(VK_EXT_DEBUG_REPORT_EXTENSION_NAME);
 
         instanceCreateInfo.enabledLayerCount = layerCount;
         instanceCreateInfo.ppEnabledLayerNames = validationLayerNames;
@@ -150,34 +151,32 @@ bool Instance::tryCreate() {
     _current = this;
 
     /* setup debugging */
-    if (_flags >= Flag::EnableValidation) {
-        /* Load VK_EXT_debug_report entry points in debug builds */
-        vkCreateDebugReportCallbackEXT =
-            reinterpret_cast<PFN_vkCreateDebugReportCallbackEXT>
-                (vkGetInstanceProcAddr(_instance, "vkCreateDebugReportCallbackEXT"));
-        vkDebugReportMessageEXT =
-            reinterpret_cast<PFN_vkDebugReportMessageEXT>
-                (vkGetInstanceProcAddr(_instance, "vkDebugReportMessageEXT"));
-        vkDestroyDebugReportCallbackEXT =
-            reinterpret_cast<PFN_vkDestroyDebugReportCallbackEXT>
-                (vkGetInstanceProcAddr(_instance, "vkDestroyDebugReportCallbackEXT"));
+    /* Load VK_EXT_debug_report entry points in debug builds */
+    vkCreateDebugReportCallbackEXT =
+        reinterpret_cast<PFN_vkCreateDebugReportCallbackEXT>
+            (vkGetInstanceProcAddr(_instance, "vkCreateDebugReportCallbackEXT"));
+    vkDebugReportMessageEXT =
+        reinterpret_cast<PFN_vkDebugReportMessageEXT>
+            (vkGetInstanceProcAddr(_instance, "vkDebugReportMessageEXT"));
+    vkDestroyDebugReportCallbackEXT =
+        reinterpret_cast<PFN_vkDestroyDebugReportCallbackEXT>
+            (vkGetInstanceProcAddr(_instance, "vkDestroyDebugReportCallbackEXT"));
 
-        /* Setup callback creation information */
-        VkDebugReportCallbackCreateInfoEXT callbackCreateInfo;
-        callbackCreateInfo.sType       = VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT;
-        callbackCreateInfo.pNext       = nullptr;
-        callbackCreateInfo.flags       = VK_DEBUG_REPORT_ERROR_BIT_EXT |
-                                         VK_DEBUG_REPORT_WARNING_BIT_EXT |
-                                         VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT;
-        callbackCreateInfo.pfnCallback = &MyDebugReportCallback;
-        callbackCreateInfo.pUserData   = nullptr;
+    /* Setup callback creation information */
+    VkDebugReportCallbackCreateInfoEXT callbackCreateInfo;
+    callbackCreateInfo.sType       = VK_STRUCTURE_TYPE_DEBUG_REPORT_CREATE_INFO_EXT;
+    callbackCreateInfo.pNext       = nullptr;
+    callbackCreateInfo.flags       = VK_DEBUG_REPORT_ERROR_BIT_EXT |
+                                        VK_DEBUG_REPORT_WARNING_BIT_EXT |
+                                        VK_DEBUG_REPORT_PERFORMANCE_WARNING_BIT_EXT;
+    callbackCreateInfo.pfnCallback = &MyDebugReportCallback;
+    callbackCreateInfo.pUserData   = nullptr;
 
-        /* Register the callback */
-        VkResult err = vkCreateDebugReportCallbackEXT(_instance, &callbackCreateInfo, nullptr, &_callback);
-        
-        if (err != VK_SUCCESS) {
-            Error() << "Could not setup Debug callback";
-        }
+    /* Register the callback */
+    VkResult err = vkCreateDebugReportCallbackEXT(_instance, &callbackCreateInfo, nullptr, &_callback);
+
+    if (err != VK_SUCCESS) {
+        Error() << "Could not setup Debug callback";
     }
     return true;
 }

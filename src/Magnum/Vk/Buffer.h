@@ -35,12 +35,13 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/Vk/CommandBuffer.h"
 #include "Magnum/Vk/Device.h"
-#include "Magnum/Vk/DeviceMemory.h"
 #include "Magnum/Vk/visibility.h"
 
 #include "vulkan.h"
 
 namespace Magnum { namespace Vk {
+
+class DeviceMemory;
 
 enum class BufferUsage: UnsignedInt {
     TransferSrc = VK_BUFFER_USAGE_TRANSFER_SRC_BIT,
@@ -65,9 +66,14 @@ class MAGNUM_VK_EXPORT Buffer {
             _device{&device},
             _size{size}
         {
+            VkDedicatedAllocationImageCreateInfoNV dedicatedInfo{
+                VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_IMAGE_CREATE_INFO_NV,
+                    nullptr, VK_TRUE
+            };
+
             VkBufferCreateInfo bufferInfo = {};
             bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-            bufferInfo.pNext = nullptr;
+            bufferInfo.pNext = &dedicatedInfo;
             bufferInfo.size = size;
             bufferInfo.usage = VkBufferUsageFlags(usage);
 
@@ -123,12 +129,7 @@ class MAGNUM_VK_EXPORT Buffer {
             return _size;
         }
 
-        Buffer& bindBufferMemory(const DeviceMemory& deviceMemory, UnsignedLong offset=0) {
-            VkResult err = vkBindBufferMemory(*_device, _buffer, deviceMemory, offset);
-            MAGNUM_VK_ASSERT_ERROR(err);
-
-            return *this;
-        }
+        Buffer& bindBufferMemory(DeviceMemory& deviceMemory, UnsignedLong offset=0);
 
         auto cmdCopyTo(Buffer& dest, std::initializer_list<VkBufferCopy> regions) {
             const VkBuffer source = _buffer;
@@ -192,7 +193,7 @@ class MAGNUM_VK_EXPORT Buffer {
          * @param memProperty property for the allocated memory
          * @return the allocated and bound memory
          */
-        std::unique_ptr<DeviceMemory> allocateDeviceMemory(Vk::MemoryProperty memProperty);
+        std::unique_ptr<DeviceMemory> allocateDeviceMemory(Vk::MemoryProperties memProperty);
 
     private:
         Device* _device;

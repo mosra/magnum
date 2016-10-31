@@ -32,6 +32,7 @@
 #include "vulkan.h"
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Utility/Debug.h>
 
 #include "Magnum/Tags.h"
@@ -97,6 +98,12 @@ inline auto pipelineBarrier(PipelineStageFlags srcStageMask,
                              UnsignedInt(imageMemoryBarriers.size()), reinterpret_cast<const VkImageMemoryBarrier*>(imageMemoryBarriers.data())
 
         );
+    };
+}
+
+inline auto pushConstants(VkPipelineLayout layout, ShaderStage shaderStage, Containers::ArrayView<char> data, UnsignedInt offset = 0) {
+    return [shaderStage, data, offset, layout](VkCommandBuffer cmdBuffer){
+        vkCmdPushConstants(cmdBuffer, layout, VkShaderStageFlagBits(shaderStage), offset, data.size(), data.data());
     };
 }
 

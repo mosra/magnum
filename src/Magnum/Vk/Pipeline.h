@@ -269,14 +269,6 @@ class MAGNUM_VK_EXPORT GraphicsPipelineBuilder {
                 {0.0f, 0.0f, 0.0f, 0.0f}
             };
 
-            _viewportState = {
-                VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO, nullptr, 0,
-                1,
-                nullptr,  // TODO currently allways expecting dynamic state here...
-                1,
-                nullptr
-            };
-
         }
 
         /** @brief Copying is not allowed */
@@ -371,8 +363,43 @@ class MAGNUM_VK_EXPORT GraphicsPipelineBuilder {
             return *this;
         }
 
+        GraphicsPipelineBuilder& addPushConstantRange(ShaderStage stage, UnsignedInt size, UnsignedInt offset = 0) {
+            VkPushConstantRange range{VkShaderStageFlags(stage), offset, size};
+            _pushConstantRanges.push_back(range);
+            return *this;
+        }
+
         GraphicsPipelineBuilder& setPrimitiveTopology(PrimitiveTopology topology) {
             _primitiveTopology = topology;
+            return *this;
+        }
+
+        GraphicsPipelineBuilder& addViewport(const Range2D& viewport) {
+            VkViewport vp{
+                viewport.min().x(), viewport.min().y(),
+                viewport.size().x(), viewport.size().y(),
+                0.0f, 1.0f
+            };
+            _viewports.push_back(vp);
+            return *this;
+        }
+
+        GraphicsPipelineBuilder& addScissor(const Range2Di& sc) {
+            VkRect2D scissor{
+                VkOffset2D{sc.min().x(), sc.min().y()},
+                VkExtent2D{UnsignedInt(sc.size().x()), UnsignedInt(sc.size().y())}
+            };
+            _scissors.push_back(scissor);
+            return *this;
+        }
+
+        GraphicsPipelineBuilder& clear() {
+            _vertexInputAttrbutes.clear();
+            _dynamicStates.clear();
+            _setLayouts.clear();
+            _vertexInputBindings.clear();
+            _pushConstantRanges.clear();
+            // do not clear _blendAttachments
             return *this;
         }
 
@@ -384,7 +411,6 @@ class MAGNUM_VK_EXPORT GraphicsPipelineBuilder {
         VkPipelineRasterizationStateCreateInfo _rasterizationState;
         VkPipelineColorBlendStateCreateInfo _colorBlendState;
         VkPipelineMultisampleStateCreateInfo _multisampleState;
-        VkPipelineViewportStateCreateInfo _viewportState;
         VkPipelineDepthStencilStateCreateInfo _depthStencilState;
 
         std::vector<DynamicState> _dynamicStates;
@@ -393,6 +419,8 @@ class MAGNUM_VK_EXPORT GraphicsPipelineBuilder {
         std::vector<VkVertexInputBindingDescription> _vertexInputBindings;
         std::vector<VkVertexInputAttributeDescription> _vertexInputAttrbutes;
         std::vector<VkPushConstantRange> _pushConstantRanges;
+        std::vector<VkViewport> _viewports;
+        std::vector<VkRect2D> _scissors;
 
         PrimitiveTopology _primitiveTopology;
         RenderPass* _renderPass;

@@ -30,6 +30,7 @@
 
 #include "Magnum/Vk/Command.h"
 #include "Magnum/Vk/CommandPool.h"
+#include "Magnum/Vk/DeviceMemory.h"
 #include "Magnum/Vk/Queue.h"
 
 
@@ -39,6 +40,13 @@ Buffer::~Buffer() {
     if(_device != nullptr) {
         vkDestroyBuffer(*_device, _buffer, nullptr);
     }
+}
+
+Buffer& Buffer::bindBufferMemory(DeviceMemory& deviceMemory, const UnsignedLong offset) {
+    VkResult err = vkBindBufferMemory(*_device, _buffer, deviceMemory, offset);
+    MAGNUM_VK_ASSERT_ERROR(err);
+
+    return *this;
 }
 
 Buffer& Buffer::update(Queue& queue, CommandPool& pool, const void* sourceData, UnsignedLong size, UnsignedLong destOffset) {
@@ -63,11 +71,11 @@ Buffer& Buffer::update(Queue& queue, CommandPool& pool, const void* sourceData, 
     return *this;
 }
 
-std::unique_ptr<DeviceMemory> Buffer::allocateDeviceMemory(Vk::MemoryProperty memProperty) {
+std::unique_ptr<DeviceMemory> Buffer::allocateDeviceMemory(Vk::MemoryProperties memProperty) {
     VkMemoryRequirements memReqs = getMemoryRequirements();
     UnsignedInt memoryTypeIndex = _device->physicalDevice().getMemoryType(memReqs.memoryTypeBits, memProperty);
 
-    std::unique_ptr<DeviceMemory> memory(new Vk::DeviceMemory{*_device, memReqs.size, memoryTypeIndex});
+    std::unique_ptr<DeviceMemory> memory(new Vk::DeviceMemory{*_device, memReqs.size, memoryTypeIndex, *this});
     bindBufferMemory(*memory);
 
     return memory;

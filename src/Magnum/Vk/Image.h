@@ -35,7 +35,6 @@
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Vk/Device.h"
 #include "Magnum/Vk/Format.h"
-#include "Magnum/Vk/DeviceMemory.h"
 #include "Magnum/Vk/Math.h"
 #include "Magnum/Vk/visibility.h"
 
@@ -44,6 +43,7 @@
 namespace Magnum { namespace Vk {
 
 class Image;
+class DeviceMemory;
 
 enum class ImageUsageFlag: UnsignedInt {
     TransferSrc = VK_IMAGE_USAGE_TRANSFER_SRC_BIT,
@@ -117,10 +117,19 @@ class MAGNUM_VK_EXPORT Image {
         Image(Device& device, const Vector3ui& extent, Vk::Format format, ImageUsageFlags usage):
             _device{&device}, _flags{ObjectFlag::DeleteOnDestruction}, _extent(extent)
         {
+            VkDedicatedAllocationImageCreateInfoNV dedicatedInfo{
+                VK_STRUCTURE_TYPE_DEDICATED_ALLOCATION_IMAGE_CREATE_INFO_NV,
+                    nullptr, VK_TRUE
+            };
+
             VkImageCreateInfo image = {};
             image.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
             image.flags = 0;
-            image.pNext = nullptr;
+            if(true) { // FIXME: If VK_NV_dedicated_allocation is enabled
+                image.pNext = &dedicatedInfo;
+            } else {
+                image.pNext = nullptr;
+            }
             image.imageType = VK_IMAGE_TYPE_2D;
             image.format = VkFormat(format);
             image.extent = VkExtent3D(extent);
@@ -166,12 +175,7 @@ class MAGNUM_VK_EXPORT Image {
             return memReqs;
         }
 
-        Image& bindImageMemory(DeviceMemory& memory, UnsignedLong memoryOffset=0) {
-            VkResult err = vkBindImageMemory(*_device, _image, memory, memoryOffset);
-            MAGNUM_VK_ASSERT_ERROR(err);
-
-            return *this;
-        }
+        Image& bindImageMemory(const DeviceMemory& memory, UnsignedLong memoryOffset=0);
 
         /**
          * @brief Update contents of device memory.
@@ -190,7 +194,7 @@ class MAGNUM_VK_EXPORT Image {
          * @param memProperty property for the allocated memory
          * @return the allocated and bound memory
          */
-        std::unique_ptr<DeviceMemory> allocateDeviceMemory(Vk::MemoryProperty memProperty);
+        std::unique_ptr<DeviceMemory> allocateDeviceMemory(Vk::MemoryProperties memProperty);
 
         Vector3ui extent() const {
             return _extent;

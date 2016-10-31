@@ -43,7 +43,7 @@ namespace Magnum { namespace Vk {
 enum class MemoryProperty: UnsignedInt {
     DeviceLocal = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT,
     HostVisible = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT,
-    Coherent = VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
+    HostCoherent = VK_MEMORY_PROPERTY_HOST_COHERENT_BIT,
     HostCached = VK_MEMORY_PROPERTY_HOST_CACHED_BIT,
     LazilyAllocated = VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT,
 };
