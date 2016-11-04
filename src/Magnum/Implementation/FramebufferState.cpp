@@ -68,6 +68,11 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
         drawBufferImplementation = &AbstractFramebuffer::drawBufferImplementationDSA;
         readBufferImplementation = &AbstractFramebuffer::readBufferImplementationDSA;
 
+        copySub1DImplementation = &AbstractFramebuffer::copySub1DImplementationDSA;
+        copySub2DImplementation = &AbstractFramebuffer::copySub2DImplementationDSA;
+        copySubCubeMapImplementation = &AbstractFramebuffer::copySubCubeMapImplementationDSA;
+        copySub3DImplementation = &AbstractFramebuffer::copySub3DImplementationDSA;
+
         renderbufferImplementation = &Framebuffer::renderbufferImplementationDSA;
         /* The 1D implementation uses the same function as the layered attachment */
         texture1DImplementation = &Framebuffer::textureImplementationDSA;
@@ -87,6 +92,11 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
         drawBuffersImplementation = &AbstractFramebuffer::drawBuffersImplementationDSAEXT;
         drawBufferImplementation = &AbstractFramebuffer::drawBufferImplementationDSAEXT;
         readBufferImplementation = &AbstractFramebuffer::readBufferImplementationDSAEXT;
+
+        copySub1DImplementation = &AbstractFramebuffer::copySub1DImplementationDSAEXT;
+        copySub2DImplementation = &AbstractFramebuffer::copySub2DImplementationDSAEXT;
+        copySubCubeMapImplementation = &AbstractFramebuffer::copySub2DImplementationDSAEXT;
+        copySub3DImplementation = &AbstractFramebuffer::copySub3DImplementationDSAEXT;
 
         renderbufferImplementation = &Framebuffer::renderbufferImplementationDSAEXT;
         texture1DImplementation = &Framebuffer::texture1DImplementationDSAEXT;
@@ -109,6 +119,15 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
         #endif
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         readBufferImplementation = &AbstractFramebuffer::readBufferImplementationDefault;
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES
+        copySub1DImplementation = &AbstractFramebuffer::copySub1DImplementationDefault;
+        #endif
+        copySub2DImplementation = &AbstractFramebuffer::copySub2DImplementationDefault;
+        copySubCubeMapImplementation = &AbstractFramebuffer::copySub2DImplementationDefault;
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+        copySub3DImplementation = &AbstractFramebuffer::copySub3DImplementationDefault;
         #endif
 
         renderbufferImplementation = &Framebuffer::renderbufferImplementationDefault;

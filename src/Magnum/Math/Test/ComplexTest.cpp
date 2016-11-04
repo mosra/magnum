@@ -68,6 +68,7 @@ struct ComplexTest: Corrade::TestSuite::Tester {
 
     void compare();
     void isNormalized();
+    template<class T> void isNormalizedEpsilon();
 
     void addSubtract();
     void negated();
@@ -78,6 +79,7 @@ struct ComplexTest: Corrade::TestSuite::Tester {
     void dotSelf();
     void length();
     void normalized();
+    template<class T> void normalizedIterative();
 
     void conjugated();
     void inverted();
@@ -103,6 +105,8 @@ ComplexTest::ComplexTest() {
 
               &ComplexTest::compare,
               &ComplexTest::isNormalized,
+              &ComplexTest::isNormalizedEpsilon<Float>,
+              &ComplexTest::isNormalizedEpsilon<Double>,
 
               &ComplexTest::addSubtract,
               &ComplexTest::negated,
@@ -112,9 +116,13 @@ ComplexTest::ComplexTest() {
               &ComplexTest::dot,
               &ComplexTest::dotSelf,
               &ComplexTest::length,
-              &ComplexTest::normalized,
+              &ComplexTest::normalized});
 
-              &ComplexTest::conjugated,
+    addRepeatedTests<ComplexTest>({
+        &ComplexTest::normalizedIterative<Float>,
+        &ComplexTest::normalizedIterative<Double>}, 1000);
+
+    addTests({&ComplexTest::conjugated,
               &ComplexTest::inverted,
               &ComplexTest::invertedNormalized,
 
@@ -141,6 +149,8 @@ void ComplexTest::construct() {
     constexpr Float c = a.imaginary();
     CORRADE_COMPARE(b, 0.5f);
     CORRADE_COMPARE(c, -3.7f);
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Complex, Float, Float>::value));
 }
 
 void ComplexTest::constructIdentity() {
@@ -150,17 +160,29 @@ void ComplexTest::constructIdentity() {
     CORRADE_COMPARE(b, Complex(1.0f, 0.0f));
     CORRADE_COMPARE(a.length(), 1.0f);
     CORRADE_COMPARE(b.length(), 1.0f);
+
+    CORRADE_VERIFY(std::is_nothrow_default_constructible<Complex>::value);
+    CORRADE_VERIFY((std::is_nothrow_constructible<Complex, IdentityInitT>::value));
 }
 
 void ComplexTest::constructZero() {
     constexpr Complex a{ZeroInit};
     CORRADE_COMPARE(a, Complex(0.0f, 0.0f));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Complex, ZeroInitT>::value));
 }
 
 void ComplexTest::constructNoInit() {
     Complex a{0.5f, -3.7f};
     new(&a) Complex{NoInit};
-    CORRADE_COMPARE(a, Complex(0.5f, -3.7f));
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a, Complex(0.5f, -3.7f));
+    }
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Complex, NoInitT>::value));
 }
 
 void ComplexTest::constructFromVector() {
@@ -175,6 +197,8 @@ void ComplexTest::constructFromVector() {
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Vector2, Complex>::value));
     CORRADE_VERIFY(!(std::is_convertible<Complex, Vector2>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Complex, Vector2>::value));
 }
 
 void ComplexTest::constructConversion() {
@@ -187,12 +211,17 @@ void ComplexTest::constructConversion() {
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Complex, Complexi>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Complex, Complexi>::value));
 }
 
 void ComplexTest::constructCopy() {
     constexpr Complex a(2.5f, -5.0f);
     constexpr Complex b(a);
     CORRADE_COMPARE(b, Complex(2.5f, -5.0f));
+
+    CORRADE_VERIFY(std::is_nothrow_copy_constructible<Complex>::value);
+    CORRADE_VERIFY(std::is_nothrow_copy_assignable<Complex>::value);
 }
 
 void ComplexTest::convert() {
@@ -227,6 +256,13 @@ void ComplexTest::compare() {
 void ComplexTest::isNormalized() {
     CORRADE_VERIFY(!Complex(2.5f, -3.7f).isNormalized());
     CORRADE_VERIFY(Complex::rotation(Deg(23.0f)).isNormalized());
+}
+
+template<class T> void ComplexTest::isNormalizedEpsilon() {
+    setTestCaseName(std::string{"isNormalizedEpsilon<"} + TypeTraits<T>::name() + ">");
+
+    CORRADE_VERIFY((Math::Complex<T>{T(0.801775644243754) + TypeTraits<T>::epsilon()/T(2.0), T(0.597625146975521)}.isNormalized()));
+    CORRADE_VERIFY(!(Math::Complex<T>{T(0.801775644243754) + TypeTraits<T>::epsilon()*T(2.0), T(0.597625146975521)}.isNormalized()));
 }
 
 void ComplexTest::addSubtract() {
@@ -284,6 +320,18 @@ void ComplexTest::normalized() {
 
     CORRADE_COMPARE(a.normalized(), b);
     CORRADE_COMPARE(a.normalized().length(), 1.0f);
+}
+
+template<class T> void ComplexTest::normalizedIterative() {
+    setTestCaseName(std::string{"normalizedIterative<"} + TypeTraits<T>::name() + ">");
+
+    auto a = Math::Complex<T>::rotation(Math::Deg<T>{T(36.7)});
+    for(std::size_t i = 0; i != testCaseRepeatId(); ++i) {
+        a = Math::Complex<T>::rotation(Math::Deg<T>{T(87.1)})*a;
+        a = a.normalized();
+    }
+
+    CORRADE_VERIFY(a.isNormalized());
 }
 
 void ComplexTest::conjugated() {

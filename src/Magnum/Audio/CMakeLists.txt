@@ -74,9 +74,25 @@ install(TARGETS MagnumAudio
     ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${MagnumAudio_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Audio)
 
+# Magnum Audio target alias for superprojects
+add_library(Magnum::Audio ALIAS MagnumAudio)
+
+if(WITH_AL_INFO)
+    add_executable(magnum-al-info magnum-al-info.cpp)
+    target_link_libraries(magnum-al-info MagnumAudio)
+    install(TARGETS magnum-al-info DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+
+    if(CORRADE_TARGET_IOS)
+        set_target_properties(magnum-al-info PROPERTIES
+            MACOSX_BUNDLE ON
+            MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/MacOSXBundleInfo.plist.in
+            XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED "YES")
+    endif()
+
+    # Magnum AL info target alias for superprojects
+    add_executable(Magnum::al-info ALIAS magnum-al-info)
+endif()
+
 if(BUILD_TESTS)
     add_subdirectory(Test)
 endif()
-
-# Magnum Audio target alias for superprojects
-add_library(Magnum::Audio ALIAS MagnumAudio)

@@ -3,7 +3,7 @@
 /*
     This file is part of Magnum.
 
-    Copyright © 2010, 2011, 2012, 2013, 2014, 2015
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Platform::WindowlessIosApplication, macro @ref MAGNUM_WINDOWLESSIOSAPPLICATION_MAIN()
+ * @brief Class @ref Magnum::Platform::WindowlessIosApplication, @ref Magnum::Platform::WindowlessIosContext, macro @ref MAGNUM_WINDOWLESSIOSAPPLICATION_MAIN()
  */
 
 #include <memory>
@@ -34,6 +34,7 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/OpenGL.h"
+#include "Magnum/Tags.h"
 #include "Magnum/Platform/Platform.h"
 
 #ifdef __OBJC__
@@ -45,11 +46,93 @@ struct EAGLContext;
 namespace Magnum { namespace Platform {
 
 /**
+@brief Windowless iOS context
+
+GL context using EAGL on iOS, used in @ref WindowlessIosApplication. Does not
+have any default framebuffer. It is built if `WITH_WINDOWLESSIOSAPPLICATION` is
+enabled in CMake.
+
+Meant to be used when there is a need to manage (multiple) GL contexts
+manually. See @ref platform-windowless-contexts for more information. If no
+other application header is included, this class is also aliased to
+`Platform::WindowlessGLContext`.
+*/
+class WindowlessIosContext {
+    public:
+        class Configuration;
+
+        /**
+         * @brief Constructor
+         * @param configuration Context configuration
+         * @param context       Optional Magnum context instance constructed
+         *      using @ref NoCreate to manage driver workarounds
+         *
+         * Once the context is created, make it current using @ref makeCurrent()
+         * and create @ref Platform::Context instance to be able to use Magnum.
+         * @see @ref isCreated()
+         */
+        explicit WindowlessIosContext(const Configuration& configuration, Context* context = nullptr);
+
+        /**
+         * @brief Construct without creating the context
+         *
+         * Move a instance with created context over to make it usable.
+         */
+        explicit WindowlessIosContext(NoCreateT) {}
+
+        /** @brief Copying is not allowed */
+        WindowlessIosContext(const WindowlessIosContext&) = delete;
+
+        /** @brief Move constructor */
+        WindowlessIosContext(WindowlessIosContext&& other);
+
+        /** @brief Copying is not allowed */
+        WindowlessIosContext& operator=(const WindowlessIosContext&) = delete;
+
+        /** @brief Move assignment */
+        WindowlessIosContext& operator=(WindowlessIosContext&& other);
+
+        /**
+         * @brief Destructor
+         *
+         * Destroys the context, if any.
+         */
+        ~WindowlessIosContext();
+
+        /** @brief Whether the context is created */
+        bool isCreated() const { return _context; }
+
+        /**
+         * @brief Make the context current
+         *
+         * Prints error message and returns `false` on failure, otherwise
+         * returns `true`.
+         */
+        bool makeCurrent();
+
+    private:
+        EAGLContext* _context{};
+};
+
+/**
+@brief Configuration
+
+@see @ref WindowlessIosContext(),
+    @ref WindowlessIosApplication::WindowlessIosApplication(),
+    @ref WindowlessIosApplication::createContext(),
+    @ref WindowlessIosApplication::tryCreateContext()
+*/
+class WindowlessIosContext::Configuration {
+    public:
+        constexpr /*implicit*/ Configuration() {}
+};
+
+/**
 @brief Windowless iOS application
 
-Application for offscreen rendering using EAGL on iOS. Does not have any
-default framebuffer. It is built if `WITH_WINDOWLESSIOSAPPLICATION` is enabled
-in CMake.
+Application for offscreen rendering using @ref WindowlessIosContext. Does not
+have any default framebuffer. It is built if `WITH_WINDOWLESSIOSAPPLICATION` is
+enabled in CMake.
 
 ## Bootstrap application
 
@@ -100,9 +183,25 @@ class WindowlessIosApplication {
             char** argv;    /**< @brief Argument values */
         };
 
-        class Configuration;
+        /**
+         * @brief Configuration
+         *
+         * @see @ref WindowlessIosApplication(), @ref createContext(),
+         *      @ref tryCreateContext()
+         */
+        typedef WindowlessIosContext::Configuration Configuration;
 
-        /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, const Configuration&) */
+        /**
+         * @brief Default constructor
+         * @param arguments     Application arguments
+         * @param configuration Configuration
+         *
+         * Creates application with default or user-specified configuration.
+         * See @ref Configuration for more information. The program exits if
+         * the context cannot be created, see @ref tryCreateContext() for an
+         * alternative.
+         * @see @ref WindowlessIosContext
+         */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         explicit WindowlessIosApplication(const Arguments& arguments, const Configuration& configuration = Configuration());
         #else
@@ -111,8 +210,22 @@ class WindowlessIosApplication {
         explicit WindowlessIosApplication(const Arguments& arguments);
         #endif
 
-        /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, std::nullptr_t) */
-        explicit WindowlessIosApplication(const Arguments& arguments, std::nullptr_t);
+        /**
+         * @brief Constructor
+         * @param arguments     Application arguments
+         *
+         * Unlike above, the context is not created and must be created later
+         * with @ref createContext() or @ref tryCreateContext().
+         */
+        explicit WindowlessIosApplication(const Arguments& arguments, NoCreateT);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief WindowlessIosApplication(const Arguments&, NoCreateT)
+         * @deprecated Use @ref WindowlessIosApplication(const Arguments&, NoCreateT) instead.
+         */
+        CORRADE_DEPRECATED("use WindowlessIosApplication(const Arguments&, NoCreateT) instead") explicit WindowlessIosApplication(const Arguments& arguments, std::nullptr_t): WindowlessIosApplication{arguments, NoCreate} {}
+        #endif
 
         /** @brief Copying is not allowed */
         WindowlessIosApplication(const WindowlessIosApplication&) = delete;
@@ -140,7 +253,15 @@ class WindowlessIosApplication {
            thus this is faster than public pure virtual destructor */
         ~WindowlessIosApplication();
 
-        /** @copydoc Sdl2Application::createContext() */
+        /**
+         * @brief Create context with given configuration
+         *
+         * Must be called if and only if the context wasn't created by the
+         * constructor itself. Error message is printed and the program exits
+         * if the context cannot be created, see @ref tryCreateContext() for an
+         * alternative.
+         * @see @ref WindowlessIosContext
+         */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         void createContext(const Configuration& configuration = Configuration());
         #else
@@ -149,55 +270,17 @@ class WindowlessIosApplication {
         void createContext();
         #endif
 
-        /** @copydoc Sdl2Application::tryCreateContext() */
+        /**
+         * @brief Try to create context with given configuration
+         *
+         * Unlike @ref createContext() returns `false` if the context cannot be
+         * created, `true` otherwise.
+         */
         bool tryCreateContext(const Configuration& configuration);
 
     private:
-        EAGLContext* _glContext;
-
+        WindowlessIosContext _glContext;
         std::unique_ptr<Platform::Context> _context;
-};
-
-/**
-@brief Configuration
-
-@see @ref WindowlessIosApplication(), @ref createContext(),
-    @ref tryCreateContext()
-*/
-class WindowlessIosApplication::Configuration {
-    public:
-        /**
-         * @brief Context flag
-         *
-         * @see @ref Flags, @ref setFlags(), @ref Context::Flag
-         */
-        enum class Flag: int {};
-
-        /**
-         * @brief Context flags
-         *
-         * @see @ref setFlags(), @ref Context::Flags
-         */
-        typedef Containers::EnumSet<Flag> Flags;
-
-        constexpr /*implicit*/ Configuration() {}
-
-        /** @brief Context flags */
-        Flags flags() const { return _flags; }
-
-        /**
-         * @brief Set context flags
-         * @return Reference to self (for method chaining)
-         *
-         * Default is no flag. See also @ref Context::flags().
-         */
-        Configuration& setFlags(Flags flags) {
-            _flags = flags;
-            return *this;
-        }
-
-    private:
-        Flags _flags;
 };
 
 /** @hideinitializer
@@ -219,6 +302,7 @@ windowless application header is included this macro is also aliased to
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_WINDOWLESSAPPLICATION_MAIN
 typedef WindowlessIosApplication WindowlessApplication;
+typedef WindowlessIosContext WindowlessGLContext;
 #define MAGNUM_WINDOWLESSAPPLICATION_MAIN(className) MAGNUM_WINDOWLESSIOSAPPLICATION_MAIN(className)
 #else
 #undef MAGNUM_WINDOWLESSAPPLICATION_MAIN

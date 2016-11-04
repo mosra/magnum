@@ -56,6 +56,16 @@ struct FramebufferState {
     #endif
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     void(AbstractFramebuffer::*readBufferImplementation)(GLenum);
+    #endif
+    #ifndef MAGNUM_TARGET_GLES
+    void(*copySub1DImplementation)(const Range2Di&, AbstractTexture&, Int, Int);
+    #endif
+    void(*copySub2DImplementation)(const Range2Di&, AbstractTexture&, GLenum, Int, const Vector2i&);
+    void(*copySubCubeMapImplementation)(const Range2Di&, AbstractTexture&, GLenum, Int, const Vector2i&);
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    void(*copySub3DImplementation)(const Range2Di&, AbstractTexture&, Int, const Vector3i&);
+    #endif
+    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     void(AbstractFramebuffer::*invalidateImplementation)(GLsizei, const GLenum*);
     #endif
     #ifndef MAGNUM_TARGET_GLES2

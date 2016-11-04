@@ -480,17 +480,17 @@ class MAGNUM_EXPORT DebugMessage {
             /** @copydoc DebugOutput::Source::Api
              * @deprecated Use @ref DebugOutput::Source::Api instead.
              */
-            Api = GLenum(DebugOutput::Source::Api),
+            Api CORRADE_DEPRECATED_ENUM("use DebugOutput::Source::Api instead") = GLenum(DebugOutput::Source::Api),
 
             /** @copydoc DebugOutput::Source::WindowSystem
              * @deprecated Use @ref DebugOutput::Source::WindowSystem instead.
              */
-            WindowSystem = GLenum(DebugOutput::Source::WindowSystem),
+            WindowSystem CORRADE_DEPRECATED_ENUM("use DebugOutput::Source::WindowSystem instead") = GLenum(DebugOutput::Source::WindowSystem),
 
             /** @copydoc DebugOutput::Source::ShaderCompiler
              * @deprecated Use @ref DebugOutput::Source::ShaderCompiler instead.
              */
-            ShaderCompiler = GLenum(DebugOutput::Source::ShaderCompiler),
+            ShaderCompiler CORRADE_DEPRECATED_ENUM("use DebugOutput::Source::ShaderCompiler instead") = GLenum(DebugOutput::Source::ShaderCompiler),
             #endif
 
             /** External debugger or third-party middleware */
@@ -511,7 +511,7 @@ class MAGNUM_EXPORT DebugMessage {
             /** @copydoc DebugOutput::Source::Other
              * @deprecated Use @ref DebugOutput::Source::Other instead.
              */
-            Other = GLenum(DebugOutput::Source::Other)
+            Other CORRADE_DEPRECATED_ENUM("use DebugOutput::Source::Other instead") = GLenum(DebugOutput::Source::Other)
             #endif
         };
 
@@ -581,7 +581,7 @@ class MAGNUM_EXPORT DebugMessage {
          * @deprecated Use @ref DebugOutput::Callback instead.
          */
         /* Can't mark this as deprecated because compiler then complains when I use it as a parameter in setCallback() */
-        typedef void(*Callback)(DebugMessage::Source, DebugMessage::Type, UnsignedInt, DebugOutput::Severity, const std::string&, const void*);
+        typedef CORRADE_DEPRECATED("use DebugOutput::Callback instead") void(*Callback)(DebugMessage::Source, DebugMessage::Type, UnsignedInt, DebugOutput::Severity, const std::string&, const void*);
 
         /** @copybrief DebugOutput::maxLoggedMessages()
          * @deprecated Use @ref DebugOutput::maxLoggedMessages() instead.
@@ -635,7 +635,7 @@ class MAGNUM_EXPORT DebugMessage {
         /** @copybrief DebugOutput::setCallback()
          * @deprecated Use @ref DebugOutput::setCallback() instead.
          */
-        CORRADE_DEPRECATED("use DebugOutput::setCallback() instead") static void setCallback(Callback callback, const void* userParam = nullptr) {
+        CORRADE_DEPRECATED("use DebugOutput::setCallback() instead") static void setCallback(DebugOutput::Callback callback, const void* userParam = nullptr) {
             DebugOutput::setCallback(reinterpret_cast<DebugOutput::Callback>(callback), userParam);
         }
 

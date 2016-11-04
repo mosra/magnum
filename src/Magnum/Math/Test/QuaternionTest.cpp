@@ -25,6 +25,7 @@
 
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/Numeric.h>
 
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Math/Quaternion.h"
@@ -68,6 +69,7 @@ struct QuaternionTest: Corrade::TestSuite::Tester {
 
     void compare();
     void isNormalized();
+    template<class T> void isNormalizedEpsilon();
 
     void addSubtract();
     void negated();
@@ -78,6 +80,7 @@ struct QuaternionTest: Corrade::TestSuite::Tester {
     void dotSelf();
     void length();
     void normalized();
+    template<class T> void normalizedIterative();
 
     void conjugated();
     void inverted();
@@ -114,6 +117,8 @@ QuaternionTest::QuaternionTest() {
 
               &QuaternionTest::compare,
               &QuaternionTest::isNormalized,
+              &QuaternionTest::isNormalizedEpsilon<Float>,
+              &QuaternionTest::isNormalizedEpsilon<Double>,
 
               &QuaternionTest::addSubtract,
               &QuaternionTest::negated,
@@ -123,9 +128,13 @@ QuaternionTest::QuaternionTest() {
               &QuaternionTest::dot,
               &QuaternionTest::dotSelf,
               &QuaternionTest::length,
-              &QuaternionTest::normalized,
+              &QuaternionTest::normalized});
 
-              &QuaternionTest::conjugated,
+    addRepeatedTests<QuaternionTest>({
+        &QuaternionTest::normalizedIterative<Float>,
+        &QuaternionTest::normalizedIterative<Double>}, 1000);
+
+    addTests({&QuaternionTest::conjugated,
               &QuaternionTest::inverted,
               &QuaternionTest::invertedNormalized,
 
@@ -148,6 +157,8 @@ void QuaternionTest::construct() {
     constexpr Float c = a.scalar();
     CORRADE_COMPARE(b, Vector3(1.0f, 2.0f, 3.0f));
     CORRADE_COMPARE(c, -4.0f);
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Quaternion, Vector3, Float>::value));
 }
 
 void QuaternionTest::constructIdentity() {
@@ -157,17 +168,29 @@ void QuaternionTest::constructIdentity() {
     CORRADE_COMPARE(b, Quaternion({0.0f, 0.0f, 0.0f}, 1.0f));
     CORRADE_COMPARE(a.length(), 1.0f);
     CORRADE_COMPARE(b.length(), 1.0f);
+
+    CORRADE_VERIFY(std::is_nothrow_default_constructible<Quaternion>::value);
+    CORRADE_VERIFY((std::is_nothrow_constructible<Quaternion, IdentityInitT>::value));
 }
 
 void QuaternionTest::constructZero() {
     constexpr Quaternion a{ZeroInit};
     CORRADE_COMPARE(a, Quaternion({0.0f, 0.0f, 0.0f}, 0.0f));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Quaternion, ZeroInitT>::value));
 }
 
 void QuaternionTest::constructNoInit() {
     Quaternion a{{1.0f, 2.0f, 3.0f}, -4.0f};
     new(&a) Quaternion{NoInit};
-    CORRADE_COMPARE(a, Quaternion({1.0f, 2.0f, 3.0f}, -4.0f));
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a, Quaternion({1.0f, 2.0f, 3.0f}, -4.0f));
+    }
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Quaternion, NoInitT>::value));
 }
 
 void QuaternionTest::constructFromVector() {
@@ -176,6 +199,8 @@ void QuaternionTest::constructFromVector() {
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Vector3, Quaternion>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Quaternion, Vector3>::value));
 }
 
 void QuaternionTest::constructConversion() {
@@ -188,12 +213,17 @@ void QuaternionTest::constructConversion() {
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Quaternion, Quaternioni>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Quaternion, Quaternioni>::value));
 }
 
 void QuaternionTest::constructCopy() {
     constexpr Quaternion a({1.0f, -3.0f, 7.0f}, 2.5f);
     constexpr Quaternion b(a);
     CORRADE_COMPARE(b, Quaternion({1.0f, -3.0f, 7.0f}, 2.5f));
+
+    CORRADE_VERIFY(std::is_nothrow_copy_constructible<Quaternion>::value);
+    CORRADE_VERIFY(std::is_nothrow_copy_assignable<Quaternion>::value);
 }
 
 void QuaternionTest::convert() {
@@ -230,6 +260,13 @@ void QuaternionTest::compare() {
 void QuaternionTest::isNormalized() {
     CORRADE_VERIFY(!Quaternion({1.0f, 2.0f, 3.0f}, 4.0f).isNormalized());
     CORRADE_VERIFY(Quaternion::rotation(Deg(23.0f), Vector3::xAxis()).isNormalized());
+}
+
+template<class T> void QuaternionTest::isNormalizedEpsilon() {
+    setTestCaseName(std::string{"isNormalizedEpsilon<"} + TypeTraits<T>::name() + ">");
+
+    CORRADE_VERIFY((Math::Quaternion<T>{{T(0.0106550719778129), T(0.311128101752138), T(-0.0468823167023769)}, T(0.949151106053128) + TypeTraits<T>::epsilon()/T(2.0)}.isNormalized()));
+    CORRADE_VERIFY(!(Math::Quaternion<T>{{T(0.0106550719778129), T(0.311128101752138), T(-0.0468823167023769)}, T(0.949151106053128) + TypeTraits<T>::epsilon()*T(2.0)}.isNormalized()));
 }
 
 void QuaternionTest::addSubtract() {
@@ -280,6 +317,19 @@ void QuaternionTest::normalized() {
     Quaternion normalized = Quaternion({1.0f, 3.0f, -2.0f}, -4.0f).normalized();
     CORRADE_COMPARE(normalized.length(), 1.0f);
     CORRADE_COMPARE(normalized, Quaternion({1.0f, 3.0f, -2.0f}, -4.0f)/std::sqrt(30.0f));
+}
+
+template<class T> void QuaternionTest::normalizedIterative() {
+    setTestCaseName(std::string{"normalizedIterative<"} + TypeTraits<T>::name() + ">");
+
+    const auto axis = Math::Vector3<T>{T(0.5), T(7.9), T(0.1)}.normalized();
+    auto a = Math::Quaternion<T>::rotation(Math::Deg<T>{T(36.7)}, Math::Vector3<T>{T(0.25), T(7.3), T(-1.1)}.normalized());
+    for(std::size_t i = 0; i != testCaseRepeatId(); ++i) {
+        a = Math::Quaternion<T>::rotation(Math::Deg<T>{T(87.1)}, axis)*a;
+        a = a.normalized();
+    }
+
+    CORRADE_VERIFY(a.isNormalized());
 }
 
 void QuaternionTest::conjugated() {
@@ -372,33 +422,47 @@ void QuaternionTest::matrix() {
     CORRADE_COMPARE(o.str(), "Math::Quaternion::fromMatrix(): the matrix is not orthogonal\n");
 
     /* Trace > 0 */
-    CORRADE_VERIFY(m.trace() > 0.0f);
+    CORRADE_COMPARE_AS(m.trace(), 0.0f, Corrade::TestSuite::Compare::Greater);
     CORRADE_COMPARE(Quaternion::fromMatrix(m), q);
 
     /* Trace < 0, max is diagonal[2] */
     Matrix3x3 m2 = Matrix4::rotation(Deg(130.0f), axis).rotationScaling();
     Quaternion q2 = Quaternion::rotation(Deg(130.0f), axis);
-    CORRADE_VERIFY(m2.trace() < 0.0f);
-    CORRADE_VERIFY(m2.diagonal()[2] > std::max(m2.diagonal()[0], m2.diagonal()[1]));
+    CORRADE_COMPARE_AS(m2.trace(), 0.0f, Corrade::TestSuite::Compare::Less);
+    CORRADE_COMPARE_AS(m2.diagonal()[2],
+        std::max(m2.diagonal()[0], m2.diagonal()[1]),
+        Corrade::TestSuite::Compare::Greater);
     CORRADE_COMPARE(Quaternion::fromMatrix(m2), q2);
 
     /* Trace < 0, max is diagonal[1] */
     Vector3 axis2 = Vector3(-3.0f, 5.0f, 1.0f).normalized();
     Matrix3x3 m3 = Matrix4::rotation(Deg(130.0f), axis2).rotationScaling();
     Quaternion q3 = Quaternion::rotation(Deg(130.0f), axis2);
-    CORRADE_VERIFY(m3.trace() < 0.0f);
-    CORRADE_VERIFY(m3.diagonal()[1] > std::max(m3.diagonal()[0], m3.diagonal()[2]));
+    CORRADE_COMPARE_AS(m3.trace(), 0.0f, Corrade::TestSuite::Compare::Less);
+    CORRADE_COMPARE_AS(m3.diagonal()[1],
+        std::max(m3.diagonal()[0], m3.diagonal()[2]),
+        Corrade::TestSuite::Compare::Greater);
     CORRADE_COMPARE(Quaternion::fromMatrix(m3), q3);
 
     /* Trace < 0, max is diagonal[0] */
     Vector3 axis3 = Vector3(5.0f, -3.0f, 1.0f).normalized();
     Matrix3x3 m4 = Matrix4::rotation(Deg(130.0f), axis3).rotationScaling();
     Quaternion q4 = Quaternion::rotation(Deg(130.0f), axis3);
-    CORRADE_VERIFY(m4.trace() < 0.0f);
-    CORRADE_VERIFY(m4.diagonal()[0] > std::max(m4.diagonal()[1], m4.diagonal()[2]));
+    CORRADE_COMPARE_AS(m4.trace(), 0.0f, Corrade::TestSuite::Compare::Less);
+    CORRADE_COMPARE_AS(m4.diagonal()[0],
+        std::max(m4.diagonal()[1], m4.diagonal()[2]),
+        Corrade::TestSuite::Compare::Greater);
     CORRADE_COMPARE(Quaternion::fromMatrix(m4), q4);
 }
 
+/* The crappy 4.9 20140827 (prerelease) in Android NDK segfaults when
+   optimizing the following function. Dialing down the optimization helps. No
+   problem when calling Math::lerp() anywhere else, so I won't dig further.
+   Fuck this. */
+#if defined(CORRADE_TARGET_ANDROID) && __GNUC__*100 + __GNUC_MINOR__*10 + __GNUC_PATCHLEVEL__ == 490
+#pragma GCC push_options
+#pragma GCC optimize("O0")
+#endif
 void QuaternionTest::lerp() {
     Quaternion a = Quaternion::rotation(Deg(15.0f), Vector3(1.0f/Constants<Float>::sqrt3()));
     Quaternion b = Quaternion::rotation(Deg(23.0f), Vector3::xAxis());
@@ -416,6 +480,9 @@ void QuaternionTest::lerp() {
     Quaternion lerp = Math::lerp(a, b, 0.35f);
     CORRADE_COMPARE(lerp, Quaternion({0.119127f, 0.049134f, 0.049134f}, 0.990445f));
 }
+#if defined(CORRADE_TARGET_ANDROID) && __GNUC__*100 + __GNUC_MINOR__*10 + __GNUC_PATCHLEVEL__ == 490
+#pragma GCC pop_options
+#endif
 
 void QuaternionTest::slerp() {
     Quaternion a = Quaternion::rotation(Deg(15.0f), Vector3(1.0f/Constants<Float>::sqrt3()));

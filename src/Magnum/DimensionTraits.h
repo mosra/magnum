@@ -118,7 +118,6 @@ template<> struct DimensionTraits<2, Float> {
     typedef Math::Range2D<Float> RangeType;
     typedef Math::Matrix3<Float> MatrixType;
 };
-#ifndef MAGNUM_TARGET_GLES
 template<> struct DimensionTraits<2, Double> {
     DimensionTraits() = delete;
 
@@ -126,7 +125,6 @@ template<> struct DimensionTraits<2, Double> {
     typedef Math::Range2D<Double> RangeType;
     typedef Math::Matrix3<Double> MatrixType;
 };
-#endif
 
 /* Three dimensions - integral */
 template<class T> struct DimensionTraits<3, T> {
@@ -144,7 +142,6 @@ template<> struct DimensionTraits<3, Float> {
     typedef Math::Range3D<Float> RangeType;
     typedef Math::Matrix4<Float> MatrixType;
 };
-#ifndef MAGNUM_TARGET_GLES
 template<> struct DimensionTraits<3, Double> {
     DimensionTraits() = delete;
 
@@ -152,7 +149,6 @@ template<> struct DimensionTraits<3, Double> {
     typedef Math::Range3D<Double> RangeType;
     typedef Math::Matrix4<Double> MatrixType;
 };
-#endif
 #endif
 
 }

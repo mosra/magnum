@@ -63,29 +63,34 @@ Float Sampler::maxMaxAnisotropy() {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const Sampler::Filter value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case Sampler::Filter::value: return debug << "Sampler::Filter::" #value;
         _c(Nearest)
         _c(Linear)
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Sampler::Filter::(invalid)";
+    return debug << "Sampler::Filter(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const Sampler::Mipmap value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case Sampler::Mipmap::value: return debug << "Sampler::Mipmap::" #value;
         _c(Base)
         _c(Nearest)
         _c(Linear)
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Sampler::Mipmap::(invalid)";
+    return debug << "Sampler::Mipmap(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const Sampler::Wrapping value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case Sampler::Wrapping::value: return debug << "Sampler::Wrapping::" #value;
         _c(Repeat)
         _c(MirroredRepeat)
@@ -97,25 +102,29 @@ Debug& operator<<(Debug& debug, const Sampler::Wrapping value) {
         _c(MirrorClampToEdge)
         #endif
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Sampler::Wrapping::(invalid)";
+    return debug << "Sampler::Wrapping(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 Debug& operator<<(Debug& debug, const Sampler::CompareMode value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case Sampler::CompareMode::value: return debug << "Sampler::CompareMode::" #value;
         _c(None)
         _c(CompareRefToTexture)
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Sampler::CompareFunction::(invalid)";
+    return debug << "Sampler::CompareMode(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const Sampler::CompareFunction value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case Sampler::CompareFunction::value: return debug << "Sampler::CompareFunction::" #value;
         _c(Never)
         _c(Always)
@@ -126,22 +135,25 @@ Debug& operator<<(Debug& debug, const Sampler::CompareFunction value) {
         _c(GreaterOrEqual)
         _c(Greater)
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Sampler::CompareFunction::(invalid)";
+    return debug << "Sampler::CompareFunction(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
 Debug& operator<<(Debug& debug, const Sampler::DepthStencilMode value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case Sampler::DepthStencilMode::value: return debug << "Sampler::DepthStencilMode::" #value;
         _c(DepthComponent)
         _c(StencilIndex)
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Sampler::DepthStencilMode::(invalid)";
+    return debug << "Sampler::DepthStencilMode(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 #endif

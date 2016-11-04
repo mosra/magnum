@@ -47,6 +47,19 @@ ShaderProgramState::ShaderProgramState(Context& context, std::vector<std::string
         , maxImageSamples(0)
         #endif
 {
+    #ifndef MAGNUM_TARGET_GLES2
+    #ifdef CORRADE_TARGET_WINDOWS
+    if((context.detectedDriver() & Context::DetectedDriver::NVidia) &&
+        !context.isDriverWorkaroundDisabled("nv-windows-dangling-transform-feedback-varying-names"))
+    {
+        transformFeedbackVaryingsImplementation = &AbstractShaderProgram::transformFeedbackVaryingsImplementationDanglingWorkaround;
+    } else
+    #endif
+    {
+        transformFeedbackVaryingsImplementation = &AbstractShaderProgram::transformFeedbackVaryingsImplementationDefault;
+    }
+    #endif
+
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::GL::ARB::separate_shader_objects>())

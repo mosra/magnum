@@ -81,14 +81,22 @@ class TimeQuery: public AbstractQuery {
     public:
         /** @brief Query target */
         enum class Target: GLenum {
-            /** Elapsed time */
+            /**
+             * Elapsed time. Use @ref result<UnsignedLong>() or @ref result<Long>()
+             * to retrieve the result.
+             * @see @ref timestamp()
+             */
             #ifndef MAGNUM_TARGET_GLES
             TimeElapsed = GL_TIME_ELAPSED,
             #else
             TimeElapsed = GL_TIME_ELAPSED_EXT,
             #endif
 
-            /** Timestamp (for use with @ref timestamp() only) */
+            /**
+             * Timestamp. For use with @ref timestamp() only, use
+             * @ref result<UnsignedLong>() or @ref result<Long>() to retrieve
+             * the result.
+             */
             #ifndef MAGNUM_TARGET_GLES
             Timestamp = GL_TIMESTAMP
             #else
@@ -141,9 +149,23 @@ class TimeQuery: public AbstractQuery {
          */
         explicit TimeQuery(NoCreateT) noexcept: AbstractQuery{NoCreate, GLenum(Target::TimeElapsed)} {}
 
+        /* Overloads to remove WTF-factor from method chaining order */
+        #if !defined(DOXYGEN_GENERATING_OUTPUT) && !defined(MAGNUM_TARGET_WEBGL)
+        TimeQuery& setLabel(const std::string& label) {
+            AbstractQuery::setLabel(label);
+            return *this;
+        }
+        template<std::size_t size> TimeQuery& setLabel(const char(&label)[size]) {
+            AbstractQuery::setLabel<size>(label);
+            return *this;
+        }
+        #endif
+
         /**
          * @brief Query timestamp
          *
+         * Use @ref result<UnsignedLong>() or @ref result<Long>() to retrieve
+         * the result.
          * @see @fn_gl{QueryCounter} with @def_gl{TIMESTAMP}
          */
         void timestamp() {
@@ -152,7 +174,7 @@ class TimeQuery: public AbstractQuery {
             #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
             glQueryCounterEXT(id(), GL_TIMESTAMP_EXT);
             #else
-            CORRADE_ASSERT_UNREACHABLE();
+            CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
             #endif
         }
 
@@ -166,18 +188,6 @@ class TimeQuery: public AbstractQuery {
         }
 
         using AbstractQuery::begin;
-        #endif
-
-        /* Overloads to remove WTF-factor from method chaining order */
-        #if !defined(DOXYGEN_GENERATING_OUTPUT) && !defined(MAGNUM_TARGET_WEBGL)
-        TimeQuery& setLabel(const std::string& label) {
-            AbstractQuery::setLabel(label);
-            return *this;
-        }
-        template<std::size_t size> TimeQuery& setLabel(const char(&label)[size]) {
-            AbstractQuery::setLabel<size>(label);
-            return *this;
-        }
         #endif
 
     private:

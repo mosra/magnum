@@ -80,11 +80,8 @@ data accordingly:
 std::vector<Vector3> positions;
 std::vector<Vector2> texCoords;
 
-std::vector<UnsignedInt> positionIndices;
-std::tie(positionIndices, positions) = MeshTools::removeDuplicates(positions);
-
-std::vector<UnsignedInt> texCoordIndices;
-std::tie(texCoordIndices, texCoords) = MeshTools::removeDuplicates(texCoords);
+std::vector<UnsignedInt> positionIndices = MeshTools::removeDuplicates(positions);
+std::vector<UnsignedInt> texCoordIndices = MeshTools::removeDuplicates(texCoords);
 
 std::vector<UnsignedInt> indices = MeshTools::combineIndexedArrays(
     std::make_pair(std::cref(positionIndices), std::ref(positions)),

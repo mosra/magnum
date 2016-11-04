@@ -204,6 +204,7 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
         class KeyEvent;
         class MouseEvent;
         class MouseMoveEvent;
+        class MouseScrollEvent;
 
         /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, const Configuration&) */
         #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -354,6 +355,16 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
          * on it, otherwise the event will be propagated to the browser.
          */
         virtual void mouseMoveEvent(MouseMoveEvent& event);
+
+        /**
+         * @brief Mouse scroll event
+         *
+         * Called when a scrolling device is used (mouse wheel or scrolling
+         * area on a touchpad). Default implementation does nothing. If you
+         * accept the event, call @ref InputEvent::setAccepted() "setAccepted()"
+         * on it, otherwise the event will be propagated to the browser.
+         */
+        virtual void mouseScrollEvent(MouseScrollEvent& event);
 
         /*@}*/
 
@@ -650,7 +661,8 @@ class NaClApplication::KeyEvent: public NaClApplication::InputEvent {
 @brief Mouse event
 
 See also @ref InputEvent for more information.
-@see @ref MouseMoveEvent, @ref mousePressEvent(), @ref mouseReleaseEvent()
+@see @ref MouseMoveEvent, @ref MouseScrollEvent, @ref mousePressEvent(),
+    @ref mouseReleaseEvent()
 */
 class NaClApplication::MouseEvent: public NaClApplication::InputEvent {
     friend NaClApplication;
@@ -665,8 +677,20 @@ class NaClApplication::MouseEvent: public NaClApplication::InputEvent {
             Left = PP_INPUTEVENT_MOUSEBUTTON_LEFT,      /**< Left button */
             Middle = PP_INPUTEVENT_MOUSEBUTTON_MIDDLE,  /**< Middle button */
             Right = PP_INPUTEVENT_MOUSEBUTTON_RIGHT,    /**< Right button */
-            WheelUp = 0xFFFF01,                         /**< Wheel up */
-            WheelDown = 0xFFFF02                        /**< Wheel down */
+
+            #ifdef MAGNUM_BUILD_DEPRECATED
+            /**
+             * Wheel up
+             * @deprecated Use @ref MouseScrollEvent and @ref mouseScrollEvent() instead.
+             */
+            WheelUp CORRADE_DEPRECATED_ENUM("use mouseScrollEvent() and MouseScrollEvent instead") = 0xFFFF01,
+
+            /**
+             * Wheel down
+             * @deprecated Use @ref MouseScrollEvent and @ref mouseScrollEvent() instead.
+             */
+            WheelDown CORRADE_DEPRECATED_ENUM("use mouseScrollEvent() and MouseScrollEvent instead") = 0xFFFF02
+            #endif
         };
 
         /** @brief Button */
@@ -692,7 +716,7 @@ class NaClApplication::MouseEvent: public NaClApplication::InputEvent {
 @brief Mouse move event
 
 See also @ref InputEvent for more information.
-@see @ref MouseEvent, @ref mouseMoveEvent()
+@see @ref MouseEvent, @ref MouseScrollEvent, @ref mouseMoveEvent()
 */
 class NaClApplication::MouseMoveEvent: public NaClApplication::InputEvent {
     friend NaClApplication;
@@ -712,6 +736,25 @@ class NaClApplication::MouseMoveEvent: public NaClApplication::InputEvent {
         constexpr MouseMoveEvent(const Vector2i& position, const Vector2i& relativePosition, Modifiers modifiers): InputEvent(modifiers), _position(position), _relativePosition(relativePosition) {}
 
         const Vector2i _position, _relativePosition;
+};
+
+/**
+@brief Mouse scroll event
+
+See also @ref InputEvent for more information.
+@see @ref MouseEvent, @ref MouseMoveEvent, @ref mouseScrollEvent()
+*/
+class NaClApplication::MouseScrollEvent: public NaClApplication::InputEvent {
+    friend NaClApplication;
+
+    public:
+        /** @brief Scroll offset */
+        constexpr Vector2 offset() const { return _offset; }
+
+    private:
+        constexpr MouseScrollEvent(const Vector2& offset, Modifiers modifiers): InputEvent{modifiers}, _offset{offset} {}
+
+        const Vector2 _offset;
 };
 
 CORRADE_ENUMSET_OPERATORS(NaClApplication::Flags)

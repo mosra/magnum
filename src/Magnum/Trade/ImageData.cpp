@@ -27,7 +27,7 @@
 
 namespace Magnum { namespace Trade {
 
-template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const PixelStorage storage, const PixelFormat format, const PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* const importerState): _compressed{false}, _storage{storage}, _format{format}, _type{type}, _size{size}, _data{std::move(data)}, _importerState{importerState} {
+template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const PixelStorage storage, const PixelFormat format, const PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* const importerState) noexcept: _compressed{false}, _storage{storage}, _format{format}, _type{type}, _size{size}, _data{std::move(data)}, _importerState{importerState} {
     CORRADE_ASSERT(Implementation::imageDataSize(*this) <= _data.size(), "Trade::ImageData::ImageData(): bad image data size, got" << _data.size() << "but expected at least" << Implementation::imageDataSize(*this), );
 }
 
@@ -63,7 +63,7 @@ template<UnsignedInt dimensions> std::size_t ImageData<dimensions>::pixelSize() 
     return PixelStorage::pixelSize(_format, _type);
 }
 
-template<UnsignedInt dimensions> std::tuple<std::size_t, VectorTypeFor<dimensions, std::size_t>, std::size_t> ImageData<dimensions>::dataProperties() const {
+template<UnsignedInt dimensions> std::tuple<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>, std::size_t> ImageData<dimensions>::dataProperties() const {
     CORRADE_ASSERT(!_compressed, "Trade::ImageData::dataProperties(): the image is compressed", {});
     return Implementation::imageDataProperties<dimensions>(*this);
 }

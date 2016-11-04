@@ -32,6 +32,7 @@ namespace Magnum {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const PixelFormat value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case PixelFormat::value: return debug << "PixelFormat::" #value;
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         _c(Red)
@@ -77,13 +78,15 @@ Debug& operator<<(Debug& debug, const PixelFormat value) {
         #endif
         _c(DepthStencil)
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
-    return debug << "PixelFormat::(invalid)";
+    return debug << "PixelFormat(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const PixelType value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case PixelType::value: return debug << "PixelType::" #value;
         _c(UnsignedByte)
         #ifndef MAGNUM_TARGET_GLES2
@@ -132,13 +135,15 @@ Debug& operator<<(Debug& debug, const PixelType value) {
         _c(Float32UnsignedInt248Rev)
         #endif
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
-    return debug << "PixelType::(invalid)";
+    return debug << "PixelType(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const CompressedPixelFormat value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case CompressedPixelFormat::value: return debug << "CompressedPixelFormat::" #value;
         #ifndef MAGNUM_TARGET_GLES
         _c(Red)
@@ -201,9 +206,10 @@ Debug& operator<<(Debug& debug, const CompressedPixelFormat value) {
         _c(SRGB8Alpha8Astc12x12)
         #endif
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
-    return debug << "CompressedPixelFormat::(invalid)";
+    return debug << "CompressedPixelFormat(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 

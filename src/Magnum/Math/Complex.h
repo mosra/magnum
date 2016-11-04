@@ -142,13 +142,13 @@ template<class T> class Complex {
          *      c = 1 + i0
          * @f]
          */
-        constexpr /*implicit*/ Complex(IdentityInitT = IdentityInit): _real(T(1)), _imaginary(T(0)) {}
+        constexpr /*implicit*/ Complex(IdentityInitT = IdentityInit) noexcept: _real(T(1)), _imaginary(T(0)) {}
 
         /** @brief Construct zero-initialized complex number */
-        constexpr explicit Complex(ZeroInitT): _real{}, _imaginary{} {}
+        constexpr explicit Complex(ZeroInitT) noexcept: _real{}, _imaginary{} {}
 
         /** @brief Construct without initializing the contents */
-        explicit Complex(NoInitT) {}
+        explicit Complex(NoInitT) noexcept {}
 
         /**
          * @brief Construct complex number from real and imaginary part
@@ -157,7 +157,7 @@ template<class T> class Complex {
          *      c = a + ib
          * @f]
          */
-        constexpr /*implicit*/ Complex(T real, T imaginary): _real(real), _imaginary(imaginary) {}
+        constexpr /*implicit*/ Complex(T real, T imaginary) noexcept: _real(real), _imaginary(imaginary) {}
 
         /**
          * @brief Construct complex number from vector
@@ -167,7 +167,7 @@ template<class T> class Complex {
          * @f]
          * @see @ref operator Vector2<T>(), @ref transformVector()
          */
-        constexpr explicit Complex(const Vector2<T>& vector): _real(vector.x()), _imaginary(vector.y()) {}
+        constexpr explicit Complex(const Vector2<T>& vector) noexcept: _real(vector.x()), _imaginary(vector.y()) {}
 
         /**
          * @brief Construct complex number from another of different type
@@ -175,10 +175,13 @@ template<class T> class Complex {
          * Performs only default casting on the values, no rounding or anything
          * else.
          */
-        template<class U> constexpr explicit Complex(const Complex<U>& other): _real{T(other._real)}, _imaginary{T(other._imaginary)} {}
+        template<class U> constexpr explicit Complex(const Complex<U>& other) noexcept: _real{T(other._real)}, _imaginary{T(other._imaginary)} {}
 
         /** @brief Construct complex number from external representation */
         template<class U, class V = decltype(Implementation::ComplexConverter<T, U>::from(std::declval<U>()))> constexpr explicit Complex(const U& other): Complex{Implementation::ComplexConverter<T, U>::from(other)} {}
+
+        /** @brief Copy constructor */
+        constexpr /*implicit*/ Complex(const Complex<T>&) noexcept = default;
 
         /** @brief Convert complex number to external representation */
         template<class U, class V = decltype(Implementation::ComplexConverter<T, U>::to(std::declval<Complex<T>>()))> constexpr explicit operator U() const {
@@ -490,9 +493,7 @@ template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& d
 /* Explicit instantiation for commonly used types */
 #ifndef DOXYGEN_GENERATING_OUTPUT
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Complex<Float>&);
-#ifndef MAGNUM_TARGET_GLES
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Complex<Double>&);
-#endif
 #endif
 
 }}

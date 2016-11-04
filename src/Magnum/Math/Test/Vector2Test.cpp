@@ -104,6 +104,8 @@ Vector2Test::Vector2Test() {
 void Vector2Test::construct() {
     constexpr Vector2 a = {1.5f, 2.5f};
     CORRADE_COMPARE(a, (Vector<2, Float>(1.5f, 2.5f)));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Vector2, Float, Float>::value));
 }
 
 void Vector2Test::constructDefault() {
@@ -111,12 +113,22 @@ void Vector2Test::constructDefault() {
     constexpr Vector2 b{ZeroInit};
     CORRADE_COMPARE(a, Vector2(0.0f, 0.0f));
     CORRADE_COMPARE(b, Vector2(0.0f, 0.0f));
+
+    CORRADE_VERIFY(std::is_nothrow_default_constructible<Vector2>::value);
+    CORRADE_VERIFY((std::is_nothrow_constructible<Vector2, ZeroInitT>::value));
 }
 
 void Vector2Test::constructNoInit() {
     Vector2 a{1.5f, 2.5f};
     new(&a) Vector2{NoInit};
-    CORRADE_COMPARE(a, (Vector2{1.5f, 2.5f}));
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a, (Vector2{1.5f, 2.5f}));
+    }
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Vector2, NoInitT>::value));
 }
 
 void Vector2Test::constructOneValue() {
@@ -125,6 +137,8 @@ void Vector2Test::constructOneValue() {
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Float, Vector2>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Vector2, Float>::value));
 }
 
 void Vector2Test::constructConversion() {
@@ -134,6 +148,8 @@ void Vector2Test::constructConversion() {
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Vector2, Vector2i>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Vector2, Vector2i>::value));
 }
 
 void Vector2Test::constructCopy() {
@@ -143,6 +159,9 @@ void Vector2Test::constructCopy() {
     #endif
     Vector2 b(a);
     CORRADE_COMPARE(b, Vector2(1.5f, 2.5f));
+
+    CORRADE_VERIFY(std::is_nothrow_copy_constructible<Vector2>::value);
+    CORRADE_VERIFY(std::is_nothrow_copy_assignable<Vector2>::value);
 }
 
 void Vector2Test::convert() {

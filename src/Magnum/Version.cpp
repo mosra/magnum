@@ -32,6 +32,7 @@ namespace Magnum {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, Version value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value, string) case Version::value: return debug << string;
         _c(None, "None")
         #ifndef MAGNUM_TARGET_GLES
@@ -56,6 +57,7 @@ Debug& operator<<(Debug& debug, Version value) {
         _c(GLES310, "OpenGL ES 3.1")
         #endif
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
     return debug << "Invalid";

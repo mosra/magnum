@@ -88,7 +88,7 @@ void MagnumFontConverterGLTest::exportFont() {
                     case 2: return {23, 0};
                 }
 
-                CORRADE_ASSERT_UNREACHABLE();
+                CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
             }
 
             bool _opened;

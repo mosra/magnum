@@ -23,11 +23,14 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-corrade_add_test(AbstractShaderProgramTest AbstractShaderProgramTest.cpp LIBRARIES Magnum)
 corrade_add_test(ArrayTest ArrayTest.cpp LIBRARIES Magnum)
+corrade_add_test(AttributeTest AttributeTest.cpp LIBRARIES Magnum)
+corrade_add_test(BufferTest BufferTest.cpp LIBRARIES Magnum)
 corrade_add_test(FormatTest FormatTest.cpp LIBRARIES Magnum)
 corrade_add_test(ContextTest ContextTest.cpp LIBRARIES Magnum)
-corrade_add_test(DebugOutputTest DebugOutputTest.cpp LIBRARIES Magnum)
+if(NOT MAGNUM_TARGET_WEBGL)
+    corrade_add_test(DebugOutputTest DebugOutputTest.cpp LIBRARIES Magnum)
+endif()
 corrade_add_test(DefaultFramebufferTest DefaultFramebufferTest.cpp LIBRARIES Magnum)
 corrade_add_test(FramebufferTest FramebufferTest.cpp LIBRARIES Magnum)
 corrade_add_test(ImageTest ImageTest.cpp LIBRARIES Magnum)

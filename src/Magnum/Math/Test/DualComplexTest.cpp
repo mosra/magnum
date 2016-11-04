@@ -67,12 +67,15 @@ struct DualComplexTest: Corrade::TestSuite::Tester {
     void convert();
 
     void isNormalized();
+    template<class T> void isNormalizedEpsilonRotation();
+    template<class T> void isNormalizedEpsilonTranslation();
 
     void multiply();
 
     void lengthSquared();
     void length();
     void normalized();
+    template<class T> void normalizedIterative();
 
     void complexConjugated();
     void dualConjugated();
@@ -108,14 +111,22 @@ DualComplexTest::DualComplexTest() {
               &DualComplexTest::convert,
 
               &DualComplexTest::isNormalized,
+              &DualComplexTest::isNormalizedEpsilonRotation<Float>,
+              &DualComplexTest::isNormalizedEpsilonRotation<Double>,
+              &DualComplexTest::isNormalizedEpsilonTranslation<Float>,
+              &DualComplexTest::isNormalizedEpsilonTranslation<Double>,
 
               &DualComplexTest::multiply,
 
               &DualComplexTest::lengthSquared,
               &DualComplexTest::length,
-              &DualComplexTest::normalized,
+              &DualComplexTest::normalized});
 
-              &DualComplexTest::complexConjugated,
+    addRepeatedTests<DualComplexTest>({
+        &DualComplexTest::normalizedIterative<Float>,
+        &DualComplexTest::normalizedIterative<Double>}, 1000);
+
+    addTests({&DualComplexTest::complexConjugated,
               &DualComplexTest::dualConjugated,
               &DualComplexTest::conjugated,
               &DualComplexTest::inverted,
@@ -141,6 +152,8 @@ void DualComplexTest::construct() {
 
     constexpr DualComplex d(Complex(-1.0f, 2.5f));
     CORRADE_COMPARE(d, DualComplex({-1.0f, 2.5f}, {0.0f, 0.0f}));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<DualComplex, Complex, Complex>::value));
 }
 
 void DualComplexTest::constructIdentity() {
@@ -150,17 +163,29 @@ void DualComplexTest::constructIdentity() {
     CORRADE_COMPARE(b, DualComplex({1.0f, 0.0f}, {0.0f, 0.0f}));
     CORRADE_COMPARE(a.length(), 1.0f);
     CORRADE_COMPARE(b.length(), 1.0f);
+
+    CORRADE_VERIFY(std::is_nothrow_default_constructible<DualComplex>::value);
+    CORRADE_VERIFY((std::is_nothrow_constructible<DualComplex, IdentityInitT>::value));
 }
 
 void DualComplexTest::constructZero() {
     constexpr DualComplex a{ZeroInit};
     CORRADE_COMPARE(a, DualComplex({0.0f, 0.0f}, {0.0f, 0.0f}));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<DualComplex, ZeroInitT>::value));
 }
 
 void DualComplexTest::constructNoInit() {
     DualComplex a{{-1.0f, 2.5f}, {3.0f, -7.5f}};
     new(&a) DualComplex{NoInit};
-    CORRADE_COMPARE(a, DualComplex({-1.0f, 2.5f}, {3.0f, -7.5f}));
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a, DualComplex({-1.0f, 2.5f}, {3.0f, -7.5f}));
+    }
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<DualComplex, NoInitT>::value));
 }
 
 void DualComplexTest::constructFromVector() {
@@ -169,6 +194,8 @@ void DualComplexTest::constructFromVector() {
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Vector2, DualComplex>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<DualComplex, Vector2>::value));
 }
 
 void DualComplexTest::constructConversion() {
@@ -181,6 +208,8 @@ void DualComplexTest::constructConversion() {
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<DualComplex, DualComplexi>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<DualComplex, DualComplexi>::value));
 }
 
 void DualComplexTest::constructCopy() {
@@ -190,6 +219,9 @@ void DualComplexTest::constructCopy() {
     #endif
     DualComplex b(a);
     CORRADE_COMPARE(b, DualComplex({-1.0f, 2.5f}, {3.0f, -7.5f}));
+
+    CORRADE_VERIFY(std::is_nothrow_copy_constructible<DualComplex>::value);
+    CORRADE_VERIFY(std::is_nothrow_copy_assignable<DualComplex>::value);
 }
 
 void DualComplexTest::convert() {
@@ -221,6 +253,21 @@ void DualComplexTest::isNormalized() {
     CORRADE_VERIFY((DualComplex::rotation(Deg(23.0f))*DualComplex::translation({6.0f, 3.0f})).isNormalized());
 }
 
+template<class T> void DualComplexTest::isNormalizedEpsilonRotation() {
+    setTestCaseName(std::string{"isNormalizedEpsilonRotation<"} + TypeTraits<T>::name() + ">");
+
+    CORRADE_VERIFY((Math::DualComplex<T>{{T(0.801775644243754) + TypeTraits<T>::epsilon()/T(2.0), T(0.597625146975521)}, {T(8018055.25501103), T(5975850.58193309)}}.isNormalized()));
+    CORRADE_VERIFY(!(Math::DualComplex<T>{{T(0.801775644243754) + TypeTraits<T>::epsilon()*T(2.0), T(0.597625146975521)}, {T(8018055.25501103), T(5975850.58193309)}}.isNormalized()));
+}
+
+template<class T> void DualComplexTest::isNormalizedEpsilonTranslation() {
+    setTestCaseName(std::string{"isNormalizedEpsilonTranslation<"} + TypeTraits<T>::name() + ">");
+
+    /* Translation does not affect normalization */
+    CORRADE_VERIFY((Math::DualComplex<T>{{T(0.801775644243754), T(0.597625146975521)}, {T(8018055.25501103), T(20.5)}}.isNormalized()));
+    CORRADE_VERIFY((Math::DualComplex<T>{{T(0.801775644243754), T(0.597625146975521)}, {T(8018055.25501103), T(-200000000.0)}}.isNormalized()));
+}
+
 void DualComplexTest::multiply() {
     DualComplex a({-1.5f,  2.0f}, { 3.0f, -6.5f});
     DualComplex b({ 2.0f, -7.5f}, {-0.5f,  1.0f});;
@@ -242,6 +289,28 @@ void DualComplexTest::normalized() {
     DualComplex b({-0.316228f, 0.948683f}, {0.5f, -2.0f});
     CORRADE_COMPARE(a.normalized().length(), 1.0f);
     CORRADE_COMPARE(a.normalized(), b);
+}
+
+namespace {
+    template<class> struct NormalizedIterativeData;
+    template<> struct NormalizedIterativeData<Float> {
+        static Math::Vector2<Float> translation() { return {10000.0f, -50.0f}; }
+    };
+    template<> struct NormalizedIterativeData<Double> {
+        static Math::Vector2<Double> translation() { return {10000000.0, -500.0}; }
+    };
+}
+
+template<class T> void DualComplexTest::normalizedIterative() {
+    setTestCaseName(std::string{"normalizedIterative<"} + TypeTraits<T>::name() + ">");
+
+    auto a = Math::DualComplex<T>::rotation(Math::Deg<T>{T(36.7)})*Math::DualComplex<T>::translation(NormalizedIterativeData<T>::translation());
+    for(std::size_t i = 0; i != testCaseRepeatId(); ++i) {
+        a = Math::DualComplex<T>::rotation(Math::Deg<T>{T(87.1)})*a;
+        a = a.normalized();
+    }
+
+    CORRADE_VERIFY(a.isNormalized());
 }
 
 void DualComplexTest::complexConjugated() {

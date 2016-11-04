@@ -5,6 +5,7 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2016 Alice Margatroid <loveoverwhelming@gmail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -26,35 +27,55 @@
 */
 
 /** @file
- * @brief Struct @ref Magnum::Audio::WavHeader
+ * @brief Struct @ref Magnum::Audio::RiffChunk, @ref Magnum::Audio::WavHeaderChunk, @ref Magnum::Audio::WavFormatChunk, enum @ref Magnum::Audio::WavAudioFormat
  */
 
-#include "Magnum/Types.h"
+#include "MagnumPlugins/WavAudioImporter/WavImporter.h"
 
 namespace Magnum { namespace Audio {
 
+/** @brief WAV audio format */
+enum class WavAudioFormat: UnsignedShort {
+    Unknown = 0x0000,       /**< Unknown */
+    Pcm = 0x0001,           /**< PCM */
+    AdPcm = 0x0002,         /**< Adaptive Differential PCM */
+    IeeeFloat = 0x0003,     /**< IEEE Float */
+    ALaw = 0x0006,          /**< A-Law */
+    MuLaw = 0x0007,         /**< μ-Law */
+    Extensible = 0xfffe     /**< Extensible */
+};
+
+#pragma pack(1)
+/** @brief RIFF chunk */
+struct RiffChunk {
+    char chunkId[4];            /**< @brief chunk name (4 characters) */
+    UnsignedInt chunkSize;      /**< @brief size of chunk (does not include chunk header) */
+};
+#pragma pack()
+
 #pragma pack(1)
 /** @brief WAV file header */
-struct WavHeader {
-    char chunkId[4];                /**< @brief `RIFF` characters */
-    UnsignedInt chunkSize;          /**< @brief Size of the rest of the file */
+struct WavHeaderChunk {
+    RiffChunk chunk;                /**< @brief Starting RIFF chunk */
     char format[4];                 /**< @brief `WAVE` characters */
+};
+#pragma pack()
 
-    char subChunk1Id[4];            /**< @brief `fmt ` characters */
-    UnsignedInt subChunk1Size;      /**< @brief 16 for PCM */
-    UnsignedShort audioFormat;      /**< @brief 1 = PCM */
+#pragma pack(1)
+/** @brief WAV 'fmt' header */
+struct WavFormatChunk {
+    RiffChunk chunk;                /**< @brief Starting RIFF chunk */
+    WavAudioFormat audioFormat;     /**< @brief Audio format */
     UnsignedShort numChannels;      /**< @brief 1 = Mono, 2 = Stereo */
     UnsignedInt sampleRate;         /**< @brief Sample rate in Hz */
     UnsignedInt byteRate;           /**< @brief Bytes per second */
     UnsignedShort blockAlign;       /**< @brief Bytes per sample (all channels) */
     UnsignedShort bitsPerSample;    /**< @brief Bits per sample (one channel) */
-
-    char subChunk2Id[4];            /**< @brief `data` characters */
-    UnsignedInt subChunk2Size;      /**< @brief Size of the following data */
 };
 #pragma pack()
 
-static_assert(sizeof(WavHeader) == 44, "WavHeader size is not 44 bytes");
+/** @debugoperatorenum{WavAudioFormat} */
+MAGNUM_WAVAUDIOIMPORTER_EXPORT Debug& operator<<(Debug& debug, WavAudioFormat value);
 
 }}
 

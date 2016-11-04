@@ -74,17 +74,31 @@ void UnitTest::construct() {
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Float, Sec>::value));
     CORRADE_VERIFY(!(std::is_convertible<Sec, Float>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Sec, Float>::value));
 }
 
 void UnitTest::constructDefault() {
-    constexpr Sec b;
+    constexpr Sec a;
+    constexpr Sec b{ZeroInit};
+    CORRADE_COMPARE(a, Sec(0.0f));
     CORRADE_COMPARE(b, Sec(0.0f));
+
+    CORRADE_VERIFY(std::is_nothrow_default_constructible<Sec>::value);
+    CORRADE_VERIFY((std::is_nothrow_constructible<Sec, ZeroInitT>::value));
 }
 
 void UnitTest::constructNoInit() {
     Sec a{25.0f};
     new(&a) Sec{NoInit};
-    CORRADE_COMPARE(a, Sec{25.0f});
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a, Sec{25.0f});
+    }
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Sec, NoInitT>::value));
 }
 
 void UnitTest::constructConversion() {
@@ -94,6 +108,8 @@ void UnitTest::constructConversion() {
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Sec, Seci>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Sec, Seci>::value));
 }
 
 void UnitTest::compare() {

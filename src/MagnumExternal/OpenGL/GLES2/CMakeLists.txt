@@ -23,10 +23,29 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# Desktop GLES on Windows still links to opengl32.dll so we have a special
+# function loading code that queries everything above OpenGL 1.1
+if(CORRADE_TARGET_WINDOWS AND MAGNUM_TARGET_DESKTOP_GLES)
+    set(MagnumOpenGL_HEADERS flextGLWindowsDesktop.h)
+    set(MagnumOpenGL_SRCS flextGLWindowsDesktop.cpp)
+
+# NaCl and Emscripten are special, provide only some extensions for them (and
+# no extension loading)
+elseif(CORRADE_TARGET_NACL)
+    set(MagnumOpenGL_HEADERS flextGLNaCl.h)
+elseif(CORRADE_TARGET_EMSCRIPTEN)
+    set(MagnumOpenGL_HEADERS flextGLEmscripten.h)
+
+# The common sane case
+else()
+    set(MagnumOpenGL_HEADERS flextGL.h)
+    set(MagnumOpenGL_SRCS flextGL.cpp)
+endif()
+
 # NaCl and Emscripten don't have the ability to load function pointers manually
 if(NOT CORRADE_TARGET_NACL AND NOT CORRADE_TARGET_EMSCRIPTEN)
-    # flextGLPlatform.cpp is compiled as part of Magnum*Context libraries in Platform
-    add_library(MagnumFlextGLObjects OBJECT flextGL.cpp)
+    # flextGLPlatform*.cpp is compiled as part of Magnum*Context libraries in Platform
+    add_library(MagnumFlextGLObjects OBJECT ${MagnumOpenGL_SRCS})
     target_include_directories(MagnumFlextGLObjects PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
 
     if(NOT BUILD_STATIC)
@@ -35,15 +54,6 @@ if(NOT CORRADE_TARGET_NACL AND NOT CORRADE_TARGET_EMSCRIPTEN)
     if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
         set_target_properties(MagnumFlextGLObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()
-endif()
-
-# NaCl and Emscripten are special, provide only some extensions for them
-if(CORRADE_TARGET_NACL)
-    set(MagnumOpenGL_HEADERS flextGLNaCl.h)
-elseif(CORRADE_TARGET_EMSCRIPTEN)
-    set(MagnumOpenGL_HEADERS flextGLEmscripten.h)
-else()
-    set(MagnumOpenGL_HEADERS flextGL.h)
 endif()
 
 install(FILES ${MagnumOpenGL_HEADERS} DESTINATION ${MAGNUM_EXTERNAL_INCLUDE_INSTALL_DIR}/OpenGL/GLES2)

@@ -79,6 +79,10 @@ class MAGNUM_EXPORT MeshView {
          *      @fn_gl{VertexAttribPointer}, @fn_gl{DisableVertexAttribArray}
          *      or @fn_gl{BindVertexArray}, @fn_gl{MultiDrawArrays} or
          *      @fn_gl{MultiDrawElements}/@fn_gl{MultiDrawElementsBaseVertex}
+         * @requires_gl32 Extension @extension{ARB,draw_elements_base_vertex}
+         *      if the mesh is indexed and @ref baseVertex() is not `0`.
+         * @requires_gl Specifying base vertex for indexed meshes is not
+         *      available in OpenGL ES or WebGL.
          */
         static void draw(AbstractShaderProgram& shader, std::initializer_list<std::reference_wrapper<MeshView>> meshes);
 
@@ -105,10 +109,14 @@ class MAGNUM_EXPORT MeshView {
         /** @brief Movement is not allowed */
         MeshView& operator=(MeshView&& other) = delete;
 
+        /** @brief Vertex/index count */
+        Int count() const { return _count; }
+
         /**
          * @brief Set vertex/index count
          * @return Reference to self (for method chaining)
          *
+         * Ignored when calling @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
          * Default is `0`.
          */
         MeshView& setCount(Int count) {
@@ -116,12 +124,16 @@ class MAGNUM_EXPORT MeshView {
             return *this;
         }
 
+        /** @brief Base vertex */
+        Int baseVertex() const { return _baseVertex; }
+
         /**
          * @brief Set base vertex
          * @return Reference to self (for method chaining)
          *
          * Sets number of vertices of which the vertex buffer will be offset
-         * when drawing. Default is `0`.
+         * when drawing. Ignored when calling @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
+         * Default is `0`.
          * @requires_gl32 Extension @extension{ARB,draw_elements_base_vertex}
          *      for indexed meshes
          * @requires_gl Base vertex cannot be specified for indexed meshes in
@@ -143,7 +155,8 @@ class MAGNUM_EXPORT MeshView {
          * performance, as only a portion of vertex buffer needs to be
          * acccessed. On OpenGL ES 2.0 this function behaves the same as
          * @ref setIndexRange(Int), as index range functionality is not
-         * available there.
+         * available there. Ignored when calling
+         * @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
          * @see @ref setCount()
          */
         /* MinGW/MSVC needs inline also here to avoid linkage conflicts */
@@ -155,7 +168,8 @@ class MAGNUM_EXPORT MeshView {
          * @return Reference to self (for method chaining)
          *
          * Prefer to use @ref setIndexRange(Int, UnsignedInt, UnsignedInt) for
-         * better performance.
+         * better performance. Ignored when calling
+         * @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
          * @see @ref setCount()
          */
         MeshView& setIndexRange(Int first);
@@ -168,7 +182,10 @@ class MAGNUM_EXPORT MeshView {
          * @return Reference to self (for method chaining)
          *
          * Default is `1`.
-         * @requires_gl31 Extension @extension{ARB,draw_instanced}
+         * @requires_gl31 Extension @extension{ARB,draw_instanced} if using
+         *      @ref draw(AbstractShaderProgram&)
+         * @requires_gl42 Extension @extension{ARB,transform_feedback_instanced}
+         *      if using @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt)
          * @requires_gles30 Extension @es_extension{ANGLE,instanced_arrays},
          *      @es_extension2{EXT,draw_instanced,draw_instanced} or
          *      @es_extension{NV,draw_instanced} in OpenGL ES 2.0.
@@ -188,6 +205,7 @@ class MAGNUM_EXPORT MeshView {
          * @brief Set base instance
          * @return Reference to self (for method chaining)
          *
+         * Ignored when calling @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
          * Default is `0`.
          * @requires_gl42 Extension @extension{ARB,base_instance}
          * @requires_gl Base instance cannot be specified in OpenGL ES or
@@ -202,11 +220,51 @@ class MAGNUM_EXPORT MeshView {
         /**
          * @brief Draw the mesh
          *
-         * See @ref Mesh::draw() for more information.
-         * @see @ref draw(AbstractShaderProgram&, std::initializer_list<std::reference_wrapper<MeshView>>)
+         * See @ref Mesh::draw(AbstractShaderProgram&) for more information.
+         * @see @ref draw(AbstractShaderProgram&, std::initializer_list<std::reference_wrapper<MeshView>>),
+         *      @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt)
+         * @requires_gl32 Extension @extension{ARB,draw_elements_base_vertex}
+         *      if the mesh is indexed and @ref baseVertex() is not `0`.
+         * @requires_gl33 Extension @extension{ARB,instanced_arrays} if
+         *      @ref instanceCount() is more than `1`.
+         * @requires_gl42 Extension @extension{ARB,base_instance} if
+         *      @ref baseInstance() is not `0`.
+         * @requires_gles30 Extension @es_extension{ANGLE,instanced_arrays},
+         *      @es_extension{EXT,instanced_arrays} or
+         *      @es_extension{NV,instanced_arrays} in OpenGL ES 2.0 if
+         *      @ref instanceCount() is more than `1`.
+         * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
+         *      in WebGL 1.0 if @ref instanceCount() is more than `1`.
+         * @requires_gl Specifying base vertex for indexed meshes is not
+         *      available in OpenGL ES or WebGL.
          */
         void draw(AbstractShaderProgram& shader);
         void draw(AbstractShaderProgram&& shader) { draw(shader); } /**< @overload */
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Draw the mesh with vertices coming out of transform feedback
+         *
+         * Everything set by @ref setCount(), @ref setBaseInstance(),
+         * @ref setBaseVertex(), @ref setIndexRange() and @ref Mesh::setIndexBuffer()
+         * is ignored, the mesh is drawn as non-indexed and the vertex count is
+         * taken from the @p xfb object. See
+         * @ref Mesh::draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt)
+         * for more information.
+         * @see @ref draw(AbstractShaderProgram&)
+         * @requires_gl40 Extension @extension{ARB,transform_feedback2}
+         * @requires_gl40 Extension @extension{ARB,transform_feedback3} if
+         *      @p stream is not `0`
+         * @requires_gl42 Extension @extension{ARB,transform_feedback_instanced}
+         *      if @ref instanceCount() is more than `1`.
+         */
+        void draw(AbstractShaderProgram& shader, TransformFeedback& xfb, UnsignedInt stream = 0);
+
+        /** @overload */
+        void draw(AbstractShaderProgram&& shader, TransformFeedback& xfb, UnsignedInt stream = 0) {
+            draw(shader, xfb, stream);
+        }
+        #endif
 
     private:
         #ifndef MAGNUM_TARGET_WEBGL

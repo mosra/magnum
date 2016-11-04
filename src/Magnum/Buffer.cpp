@@ -537,7 +537,7 @@ void* Buffer::mapImplementationDefault(MapAccess access) {
     return glMapBufferOES(GLenum(bindSomewhereInternal(_targetHint)), GLenum(access));
     #else
     static_cast<void>(access);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
@@ -561,7 +561,7 @@ void* Buffer::mapRangeImplementationDefault(GLintptr offset, GLsizeiptr length, 
     static_cast<void>(offset);
     static_cast<void>(length);
     static_cast<void>(access);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
@@ -584,7 +584,7 @@ void Buffer::flushMappedRangeImplementationDefault(GLintptr offset, GLsizeiptr l
     #else
     static_cast<void>(offset);
     static_cast<void>(length);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
@@ -605,7 +605,7 @@ bool Buffer::unmapImplementationDefault() {
     #elif !defined(CORRADE_TARGET_NACL)
     return glUnmapBufferOES(GLenum(bindSomewhereInternal(_targetHint)));
     #else
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
@@ -624,6 +624,7 @@ bool Buffer::unmapImplementationDSAEXT() {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, Buffer::TargetHint value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case Buffer::TargetHint::value: return debug << "Buffer::TargetHint::" #value;
         _c(Array)
         #ifndef MAGNUM_TARGET_GLES2
@@ -653,9 +654,10 @@ Debug& operator<<(Debug& debug, Buffer::TargetHint value) {
         _c(Uniform)
         #endif
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Buffer::TargetHint::(invalid)";
+    return debug << "Buffer::TargetHint(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 
@@ -674,6 +676,10 @@ Debug& operator<<(Debug& debug, Buffer::Target value) {
         #endif
 
         #ifdef MAGNUM_BUILD_DEPRECATED
+        #ifdef __GNUC__
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #endif
         case Buffer::Target::Array:
         #ifndef MAGNUM_TARGET_GLES2
         case Buffer::Target::CopyRead:
@@ -693,12 +699,15 @@ Debug& operator<<(Debug& debug, Buffer::Target value) {
         #endif
         #ifndef MAGNUM_TARGET_GLES2
         case Buffer::Target::TransformFeedback:
+        #ifdef __GNUC__
+        #pragma GCC diagnostic pop
+        #endif
         #endif
             return debug << static_cast<Buffer::TargetHint>(value);
         #endif
     }
 
-    return debug << "Buffer::Target::(invalid)";
+    return debug << "Buffer::Target(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 #endif

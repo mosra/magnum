@@ -48,9 +48,7 @@ typedef std::int64_t Long;
 #endif
 
 typedef float Float;
-#ifndef MAGNUM_TARGET_GLES
 typedef double Double;
-#endif
 
 }
 

@@ -43,6 +43,7 @@ struct BoolVectorTest: Corrade::TestSuite::Tester {
 
     void compare();
     void compareUndefined();
+    void convertBool();
     void all();
     void none();
     void any();
@@ -70,6 +71,7 @@ BoolVectorTest::BoolVectorTest() {
 
               &BoolVectorTest::compare,
               &BoolVectorTest::compareUndefined,
+              &BoolVectorTest::convertBool,
               &BoolVectorTest::all,
               &BoolVectorTest::none,
               &BoolVectorTest::any,
@@ -83,6 +85,8 @@ BoolVectorTest::BoolVectorTest() {
 void BoolVectorTest::construct() {
     constexpr BoolVector19 a = {0xa5, 0x5f, 0x07};
     CORRADE_COMPARE(a, BoolVector19(0xa5, 0x5f, 0x07));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<BoolVector19, UnsignedByte, UnsignedByte, UnsignedByte>::value));
 }
 
 void BoolVectorTest::constructDefault() {
@@ -90,12 +94,22 @@ void BoolVectorTest::constructDefault() {
     constexpr BoolVector19 b{ZeroInit};
     CORRADE_COMPARE(a, BoolVector19(0x00, 0x00, 0x00));
     CORRADE_COMPARE(b, BoolVector19(0x00, 0x00, 0x00));
+
+    CORRADE_VERIFY(std::is_nothrow_default_constructible<BoolVector19>::value);
+    CORRADE_VERIFY((std::is_nothrow_constructible<BoolVector19, ZeroInitT>::value));
 }
 
 void BoolVectorTest::constructNoInit() {
     BoolVector19 a{0xa5, 0x5f, 0x07};
     new(&a) BoolVector19{NoInit};
-    CORRADE_COMPARE(a, BoolVector19(0xa5, 0x5f, 0x07));
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a, BoolVector19(0xa5, 0x5f, 0x07));
+    }
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<BoolVector19, NoInitT>::value));
 }
 
 void BoolVectorTest::constructOneValue() {
@@ -106,6 +120,8 @@ void BoolVectorTest::constructOneValue() {
     CORRADE_COMPARE(b, BoolVector19(0xff, 0xff, 0x07));
 
     CORRADE_VERIFY(!(std::is_convertible<bool, BoolVector19>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<BoolVector19, bool>::value));
 }
 
 void BoolVectorTest::constructOneElement() {
@@ -113,12 +129,17 @@ void BoolVectorTest::constructOneElement() {
 
     constexpr BoolVector1 a = 0x01;
     CORRADE_COMPARE(a, BoolVector1(0x01));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<BoolVector1, UnsignedByte>::value));
 }
 
 void BoolVectorTest::constructCopy() {
     constexpr BoolVector19 a = {0xa5, 0x5f, 0x07};
     constexpr BoolVector19 b(a);
     CORRADE_COMPARE(b, BoolVector19(0xa5, 0x5f, 0x07));
+
+    CORRADE_VERIFY(std::is_nothrow_copy_constructible<BoolVector19>::value);
+    CORRADE_VERIFY(std::is_nothrow_copy_assignable<BoolVector19>::value);
 }
 
 void BoolVectorTest::data() {
@@ -172,6 +193,15 @@ void BoolVectorTest::compareUndefined() {
     /* Change in used part of last segment */
     BoolVector19 c(0xa5, 0x5f, 0x03);
     CORRADE_VERIFY(a != c);
+}
+
+void BoolVectorTest::convertBool() {
+    /* The ! operation should *just work* using the bool conversion operator */
+    CORRADE_VERIFY(BoolVector19(0xff, 0xff, 0x07));
+    CORRADE_VERIFY(!BoolVector19(0xff, 0xff, 0x04));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<BoolVector19, bool>::value));
 }
 
 void BoolVectorTest::all() {

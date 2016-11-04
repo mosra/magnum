@@ -23,4 +23,30 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#define TGAIMAGECONVERTER_TEST_DIR "${CMAKE_CURRENT_BINARY_DIR}"
+#include <Corrade/TestSuite/Tester.h>
+
+#include "Magnum/Audio/Buffer.h"
+#include "Magnum/Audio/Context.h"
+
+namespace Magnum { namespace Audio { namespace Test {
+
+struct BufferALTest: TestSuite::Tester {
+    explicit BufferALTest();
+
+    void construct();
+
+    Context _context;
+};
+
+BufferALTest::BufferALTest() {
+    addTests({&BufferALTest::construct});
+}
+
+void BufferALTest::construct() {
+    Buffer buf;
+    CORRADE_VERIFY(buf.id() != 0);
+}
+
+}}}
+
+CORRADE_TEST_MAIN(Magnum::Audio::Test::BufferALTest)

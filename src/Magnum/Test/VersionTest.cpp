@@ -108,10 +108,12 @@ void VersionTest::debug() {
     Debug(&out) << Version::GLES200;
     #endif
 
-    #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE(out.str(), "OpenGL 2.1\n");
-    #else
+    #ifdef MAGNUM_TARGET_WEBGL
+    CORRADE_COMPARE(out.str(), "WebGL 1.0\n");
+    #elif defined(MAGNUM_TARGET_GLES)
     CORRADE_COMPARE(out.str(), "OpenGL ES 2.0\n");
+    #else
+    CORRADE_COMPARE(out.str(), "OpenGL 2.1\n");
     #endif
 }
 

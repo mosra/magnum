@@ -102,27 +102,22 @@ fi
 if [ ${gl} = "desktop" ] ; then
     desktop_flag=ON
     es_flag=OFF
-    windowless_flag=ON
 elif [ ${gl} = "es2" ] ; then
     gl_flags="-DTARGET_GLES=ON -DTARGET_GLES2=ON"
     desktop_flag=OFF
     es_flag=ON
-    windowless_flag=OFF
 elif [ ${gl} = "es2desktop" ] ; then
     gl_flags="-DTARGET_GLES=ON -DTARGET_GLES2=ON -DTARGET_DESKTOP_GLES=ON"
     desktop_flag=OFF
     es_flag=OFF
-    windowless_flag=ON
 elif [ ${gl} = "es3" ] ; then
     gl_flags="-DTARGET_GLES=ON -DTARGET_GLES2=OFF"
     desktop_flag=OFF
     es_flag=ON
-    windowless_flag=OFF
 elif [ ${gl} = "es3desktop" ] ; then
     gl_flags="-DTARGET_GLES=ON -DTARGET_GLES2=OFF -DTARGET_DESKTOP_GLES=ON"
     desktop_flag=OFF
     es_flag=OFF
-    windowless_flag=ON
 fi
 
 mkdir -p build-${compiler}-${libraries}-${compatibility}-${gl}
@@ -136,7 +131,7 @@ cmake .. \
     -DCMAKE_CXX_COMPILER=${compiler_binary} \
     "${compiler_flags[@]}" \
     -DBUILD_TESTS=ON \
-    -DBUILD_GL_TESTS=${windowless_flag} \
+    -DBUILD_GL_TESTS=ON \
     -DBUILD_DEPRECATED=${deprecated_build_flag} \
     ${static_build_flag} \
     ${gl_flags} \
@@ -156,7 +151,7 @@ cmake .. \
     -DWITH_WAVAUDIOIMPORTER=ON \
     -DWITH_DISTANCEFIELDCONVERTER=${desktop_flag} \
     -DWITH_FONTCONVERTER=${desktop_flag} \
-    -DWITH_MAGNUMINFO=${windowless_flag} \
+    -DWITH_MAGNUMINFO=ON \
     -G Ninja
 
 ninja

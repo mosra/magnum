@@ -184,7 +184,7 @@ void DebugOutput::controlImplementationKhr(const GLenum source, const GLenum typ
     static_cast<void>(severity);
     static_cast<void>(ids);
     static_cast<void>(enabled);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
@@ -206,7 +206,7 @@ void DebugOutput::callbackImplementationKhr(const Callback callback, const void*
             (callbackWrapper, userParam);
         #else
         static_cast<void>(userParam);
-        CORRADE_ASSERT_UNREACHABLE();
+        CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
         #endif
 
     /* Deleting callback */
@@ -219,7 +219,7 @@ void DebugOutput::callbackImplementationKhr(const Callback callback, const void*
         #endif
             (nullptr, nullptr);
         #else
-        CORRADE_ASSERT_UNREACHABLE();
+        CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
         #endif
     }
 }
@@ -227,6 +227,7 @@ void DebugOutput::callbackImplementationKhr(const Callback callback, const void*
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const DebugOutput::Source value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case DebugOutput::Source::value: return debug << "DebugOutput::Source::" #value;
         _c(Api)
         _c(WindowSystem)
@@ -235,13 +236,15 @@ Debug& operator<<(Debug& debug, const DebugOutput::Source value) {
         _c(Application)
         _c(Other)
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
-    return debug << "DebugOutput::Source::(invalid)";
+    return debug << "DebugOutput::Source(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const DebugOutput::Type value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case DebugOutput::Type::value: return debug << "DebugOutput::Type::" #value;
         _c(Error)
         _c(DeprecatedBehavior)
@@ -253,9 +256,10 @@ Debug& operator<<(Debug& debug, const DebugOutput::Type value) {
         _c(PopGroup)
         _c(Other)
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
-    return debug << "DebugOutput::Type::(invalid)";
+    return debug << "DebugOutput::Type(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const DebugOutput::Severity value) {
@@ -268,7 +272,7 @@ Debug& operator<<(Debug& debug, const DebugOutput::Severity value) {
         #undef _c
     }
 
-    return debug << "DebugOutput::Severity::(invalid)";
+    return debug << "DebugOutput::Severity(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 
@@ -292,7 +296,7 @@ void DebugMessage::insertImplementationKhr(const Source source, const Type type,
     static_cast<void>(id);
     static_cast<void>(severity);
     static_cast<void>(string);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
@@ -301,7 +305,7 @@ void DebugMessage::insertImplementationExt(Source, Type, UnsignedInt, DebugOutpu
     glInsertEventMarkerEXT(string.size(), string.data());
     #else
     static_cast<void>(string);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
@@ -314,20 +318,29 @@ void DebugMessage::insertImplementationGremedy(Source, Type, UnsignedInt, DebugO
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const DebugMessage::Source value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case DebugMessage::Source::value: return debug << "DebugMessage::Source::" #value;
         _c(ThirdParty)
         _c(Application)
         #undef _c
         #ifdef MAGNUM_BUILD_DEPRECATED
+        #ifdef __GNUC__
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #endif
         case DebugMessage::Source::Api:
         case DebugMessage::Source::WindowSystem:
         case DebugMessage::Source::ShaderCompiler:
         case DebugMessage::Source::Other:
             return debug << DebugOutput::Source(value);
+        #ifdef __GNUC__
+        #pragma GCC diagnostic pop
         #endif
+        #endif
+        /* LCOV_EXCL_STOP */
     }
 
-    return debug << "DebugMessage::Source::(invalid)";
+    return debug << "DebugMessage::Source(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const DebugMessage::Type value) {
@@ -343,7 +356,7 @@ Debug& operator<<(Debug& debug, const DebugMessage::Type value) {
         #undef _c
     }
 
-    return debug << "DebugMessage::Type::(invalid)";
+    return debug << "DebugMessage::Type(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 
@@ -390,7 +403,7 @@ void DebugGroup::pushImplementationKhr(const Source source, const UnsignedInt id
     static_cast<void>(source);
     static_cast<void>(id);
     static_cast<void>(message);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
@@ -399,7 +412,7 @@ void DebugGroup::pushImplementationExt(Source, UnsignedInt, const Containers::Ar
     glPushGroupMarkerEXT(message.size(), message.data());
     #else
     static_cast<void>(message);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
@@ -411,7 +424,7 @@ void DebugGroup::popImplementationKhr() {
     #elif !defined(CORRADE_TARGET_NACL)
     glPopDebugGroupKHR();
     #else
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
@@ -419,20 +432,22 @@ void DebugGroup::popImplementationExt() {
     #ifndef CORRADE_TARGET_NACL
     glPopGroupMarkerEXT();
     #else
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const DebugGroup::Source value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case DebugGroup::Source::value: return debug << "DebugGroup::Source::" #value;
         _c(ThirdParty)
         _c(Application)
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
-    return debug << "DebugGroup::Source::(invalid)";
+    return debug << "DebugGroup::Source(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 

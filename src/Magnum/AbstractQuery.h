@@ -136,11 +136,10 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
          * See @ref resultAvailable().
          * @see @fn_gl{GetQueryObject} with @def_gl{QUERY_RESULT}
          * @requires_gl33 Extension @extension{ARB,timer_query} for result
-         *      type @ref Magnum::UnsignedInt "UnsignedInt" and @ref Magnum::Long
-         *      "Long"
+         *      type @ref Magnum::UnsignedLong "UnsignedLong" and @ref Magnum::Long "Long"
          * @requires_es_extension Extension @es_extension{EXT,disjoint_timer_query}
          *      for result types @ref Magnum::Int "Int", @ref Magnum::UnsignedLong "UnsignedLong"
-         *      @ref Magnum::Long "Long".
+         *      and @ref Magnum::Long "Long".
          * @requires_gles Only @ref Magnum::UnsignedInt "UnsignedInt" result
          *      type is available in WebGL.
          */
@@ -184,6 +183,9 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
         void begin(GLenum target);
         #endif
 
+        GLuint _id;
+        GLenum _target;
+
     private:
         #ifndef MAGNUM_TARGET_WEBGL
         AbstractQuery& setLabelInternal(Containers::ArrayView<const char> label);
@@ -194,8 +196,6 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
         void MAGNUM_LOCAL createImplementationDSA();
         #endif
 
-        GLuint _id;
-        GLenum _target;
         ObjectFlags _flags;
 };
 

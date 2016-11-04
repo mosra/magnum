@@ -23,8 +23,55 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
+    set(WAVAUDIOIMPORTER_TEST_DIR ".")
+else()
+    set(WAVAUDIOIMPORTER_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+endif()
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-corrade_add_test(WavAudioImporterTest WavImporterTest.cpp LIBRARIES MagnumWavAudioImporterTestLib)
+corrade_add_test(WavAudioImporterTest WavImporterTest.cpp
+    LIBRARIES MagnumWavAudioImporterTestLib
+    FILES
+        unsupportedChannelCount.wav
+        unsupportedFormat.wav
+        wrongSignature.wav
+
+        invalidPadding.wav
+        invalidLength.wav
+        invalidDataChunk.wav
+        invalidFactChunk.wav
+
+        mono4.wav
+        mono8.wav
+        mono8junk.wav
+        mono8ALaw.wav
+        mono8MuLaw.wav
+        mono16.wav
+        mono24.wav
+
+        stereo4.wav
+        stereo8.wav
+        stereo8ALaw.wav
+        stereo8MuLaw.wav
+        stereo12.wav
+        stereo16.wav
+        stereo24.wav
+        stereo32.wav
+
+        mono32f.wav
+        stereo32f.wav
+        stereo64f.wav
+
+        surround51Channel16.wav
+        surround71Channel24.wav)
 target_include_directories(WavAudioImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+# On Win32 we need to avoid dllimporting WavAudioImporter symbols, because it
+# would search for the symbols in some DLL even though they were linked
+# statically. However it apparently doesn't matter that they were dllexported
+# when building the static library. EH.
+if(WIN32)
+    target_compile_definitions(WavAudioImporterTest PRIVATE "MAGNUM_WAVAUDIOIMPORTER_BUILD_STATIC")
+endif()

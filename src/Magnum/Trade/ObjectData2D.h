@@ -83,7 +83,14 @@ class MAGNUM_EXPORT ObjectData2D {
         ObjectData2D(const ObjectData2D&) = delete;
 
         /** @brief Move constructor */
-        ObjectData2D(ObjectData2D&&);
+        ObjectData2D(ObjectData2D&&)
+            /* GCC 4.9.0 (the one from Android NDK) thinks this does not match
+               the implicit signature so it can't be defaulted. Works on 4.7,
+               5.0 and everywhere else, so I don't bother. */
+            #if !defined(__GNUC__) || __GNUC__*100 + __GNUC_MINOR__ != 409
+            noexcept
+            #endif
+            ;
 
         /** @brief Destructor */
         virtual ~ObjectData2D();
@@ -92,7 +99,14 @@ class MAGNUM_EXPORT ObjectData2D {
         ObjectData2D& operator=(const ObjectData2D&) = delete;
 
         /** @brief Move assignment */
-        ObjectData2D& operator=(ObjectData2D&&);
+        ObjectData2D& operator=(ObjectData2D&&)
+            /* GCC 4.9.0 (the one from Android NDK) thinks this does not match
+               the implicit signature so it can't be defaulted. Works on 4.7,
+               5.0 and everywhere else, so I don't bother. */
+            #if !defined(__GNUC__) || __GNUC__*100 + __GNUC_MINOR__ != 409
+            noexcept
+            #endif
+            ;
 
         /** @brief Child objects */
         std::vector<UnsignedInt>& children() { return _children; }
@@ -110,8 +124,10 @@ class MAGNUM_EXPORT ObjectData2D {
 
         /**
          * @brief Instance ID
-         * @return ID of given camera / light / mesh etc., specified by
-         *      @ref instanceType()
+         *
+         * Returns ID of given camera / light / mesh etc., specified by
+         * @ref instanceType(). If @ref instanceType() is
+         * @ref ObjectInstanceType2D::Empty, this function returns `-1`.
          */
         Int instance() const { return _instance; }
 

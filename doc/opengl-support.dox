@@ -40,7 +40,6 @@ The core subset of OpenGL 2.1 should be fully implemented, except for the
 following:
 
 -   Proxy textures
--   Copying framebuffer to texture (@fn_gl{CopyTexImage2D} etc.)
 -   Some forgotten limit queries
 
 @subsection opengl-support-30 OpenGL 3.0
@@ -132,8 +131,8 @@ GLSL 4.00                                   | done
 @extension{ARB,shader_subroutine}           | |
 @extension{ARB,tessellation_shader}         | missing some limit queries and patch parameter specification function
 @extension{ARB,texture_buffer_object_rgb32} | done
-@extension{ARB,transform_feedback2}         | missing transform feedback draw
-@extension{ARB,transform_feedback3}         | only advanced interleaving
+@extension{ARB,transform_feedback2}         | done
+@extension{ARB,transform_feedback3}         | missing indexed properties query
 
 @subsection opengl-support-41 OpenGL 4.1
 
@@ -155,7 +154,7 @@ GLSL 4.20                                   | done
 @extension{ARB,texture_compression_bptc}    | done
 @extension{ARB,base_instance}               | done
 @extension{ARB,shading_language_420pack}    | done (shading language only)
-@extension{ARB,transform_feedback_instanced} | |
+@extension{ARB,transform_feedback_instanced} | done
 @extension{ARB,compressed_texture_pixel_storage} | done
 @extension{ARB,conservative_depth}          | done (shading language only)
 @extension{ARB,internalformat_query}        | |
@@ -245,7 +244,7 @@ Extension                                   | Status
 @extension{ARB,sparse_texture}              | |
 @extension{ARB,pipeline_statistics_query}   | |
 @extension{ARB,sparse_buffer}               | |
-@extension{ARB,transform_feedback_overflow_query} | |
+@extension{ARB,transform_feedback_overflow_query} | done
 @extension{KHR,blend_equation_advanced}     | done
 @extension3{KHR,blend_equation_advanced_coherent,blend_equation_advanced} | done
 @extension{KHR,no_error}                    | done
@@ -258,6 +257,7 @@ Extension                                   | Status
 
 Extension                                   | Status
 ------------------------------------------- | ------
+@extension{AMD,transform_feedback3_lines_triangles} | done (nothing to do)
 @extension{AMD,vertex_shader_layer}         | done (shading language only)
 @extension{AMD,shader_trinary_minmax}       | done (shading language only)
 @extension{ATI,texture_mirror_once}         | done (GL 4.4 subset)
@@ -323,6 +323,7 @@ Extension                                   | Status
 @es_extension{NV,shadow_samplers_cube}      | done (shading language only)
 @es_extension{OES,depth24}                  | done
 @es_extension{OES,element_index_uint}       | done
+@es_extension{OES,fbo_render_mipmap}        | done
 @es_extension{OES,rgb8_rgba8}               | done (desktop-compatible subset)
 @es_extension{OES,texture_3D}               | done
 @es_extension2{OES,texture_half_float_linear,OES_texture_float_linear} | done
@@ -427,6 +428,7 @@ Extension                                   | Status
 @webgl_extension{OES,element_index_uint}    | done
 @webgl_extension{OES,texture_float_linear}  | done
 @webgl_extension{OES,texture_half_float_linear} | done
+@webgl_extension{OES,fbo_render_mipmap}     | done
 @webgl_extension{WEBGL,depth_texture}       | done
 @webgl_extension{WEBGL,draw_buffers}        | done
 

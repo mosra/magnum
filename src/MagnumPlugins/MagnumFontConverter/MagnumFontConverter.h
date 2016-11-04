@@ -31,6 +31,21 @@
 
 #include "Magnum/Text/AbstractFontConverter.h"
 
+#include "MagnumPlugins/MagnumFontConverter/configure.h"
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+#ifndef MAGNUM_MAGNUMFONTCONVERTER_BUILD_STATIC
+    #if defined(MagnumFontConverter_EXPORTS) || defined(MagnumFontConverterObjects_EXPORTS)
+        #define MAGNUM_MAGNUMFONTCONVERTER_EXPORT CORRADE_VISIBILITY_EXPORT
+    #else
+        #define MAGNUM_MAGNUMFONTCONVERTER_EXPORT CORRADE_VISIBILITY_IMPORT
+    #endif
+#else
+    #define MAGNUM_MAGNUMFONTCONVERTER_EXPORT CORRADE_VISIBILITY_STATIC
+#endif
+#define MAGNUM_MAGNUMFONTCONVERTER_LOCAL CORRADE_VISIBILITY_LOCAL
+#endif
+
 namespace Magnum { namespace Text {
 
 /**
@@ -49,7 +64,7 @@ dependency of another plugin, you need to request `MagnumFontConverter`
 component of `Magnum` package in CMake and link to `Magnum::MagnumFontConverter`
 target. See @ref building, @ref cmake and @ref plugins for more information.
 */
-class MagnumFontConverter: public Text::AbstractFontConverter {
+class MAGNUM_MAGNUMFONTCONVERTER_EXPORT MagnumFontConverter: public Text::AbstractFontConverter {
     public:
         /** @brief Default constructor */
         explicit MagnumFontConverter();
@@ -58,8 +73,8 @@ class MagnumFontConverter: public Text::AbstractFontConverter {
         explicit MagnumFontConverter(PluginManager::AbstractManager& manager, std::string plugin);
 
     private:
-        Features doFeatures() const override;
-        std::vector<std::pair<std::string, Containers::Array<char>>> doExportFontToData(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::u32string& characters) const override;
+        MAGNUM_MAGNUMFONTCONVERTER_LOCAL Features doFeatures() const override;
+        MAGNUM_MAGNUMFONTCONVERTER_LOCAL std::vector<std::pair<std::string, Containers::Array<char>>> doExportFontToData(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::u32string& characters) const override;
 };
 
 }}

@@ -30,6 +30,7 @@
 #include <Corrade/Utility/Directory.h>
 
 #include "Magnum/Image.h"
+#include "Magnum/Trade/ImageData.h"
 
 namespace Magnum { namespace Trade {
 
@@ -87,6 +88,10 @@ Containers::Array<char> AbstractImageConverter::doExportToData(const CompressedI
     return nullptr;
 }
 
+Containers::Array<char> AbstractImageConverter::exportToData(const ImageData2D& image) {
+    return image.isCompressed() ? exportToData(CompressedImageView2D(image)) : exportToData(ImageView2D(image));
+}
+
 bool AbstractImageConverter::exportToFile(const ImageView2D& image, const std::string& filename) {
     CORRADE_ASSERT(features() & Feature::ConvertFile,
         "Trade::AbstractImageConverter::exportToFile(): feature not supported", {});
@@ -129,6 +134,10 @@ bool AbstractImageConverter::doExportToFile(const CompressedImageView2D& image, 
     }
 
     return true;
+}
+
+bool AbstractImageConverter::exportToFile(const ImageData2D& image, const std::string& filename) {
+    return image.isCompressed() ? exportToFile(CompressedImageView2D(image), filename) : exportToFile(ImageView2D(image), filename);
 }
 
 }}

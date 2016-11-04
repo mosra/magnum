@@ -94,7 +94,7 @@ void Renderer::setPolygonMode(const PolygonMode mode) {
         (GL_FRONT_AND_BACK, GLenum(mode));
     #else
     static_cast<void>(mode);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 #endif
@@ -208,7 +208,8 @@ Renderer::GraphicsResetStatus Renderer::graphicsResetStatus() {
 
 void Renderer::initializeContextBasedFunctionality() {
     /* Set some "corporate identity" */
-    setClearColor(Color3(0.125f));
+    using namespace Magnum::Math::Literals;
+    setClearColor(0x1f1f1f_rgbf);
 }
 
 #ifndef MAGNUM_TARGET_GLES
@@ -232,7 +233,7 @@ Renderer::GraphicsResetStatus Renderer::graphicsResetStatusImplementationRobustn
     #elif !defined(CORRADE_TARGET_NACL)
     return GraphicsResetStatus(glGetGraphicsResetStatusEXT());
     #else
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 #endif
@@ -240,6 +241,7 @@ Renderer::GraphicsResetStatus Renderer::graphicsResetStatusImplementationRobustn
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const Renderer::Error value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case Renderer::Error::value: return debug << "Renderer::Error::" #value;
         _c(NoError)
         _c(InvalidEnum)
@@ -252,34 +254,39 @@ Debug& operator<<(Debug& debug, const Renderer::Error value) {
         _c(StackOverflow)
         #endif
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Renderer::Error::(invalid)";
+    return debug << "Renderer::Error(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
 Debug& operator<<(Debug& debug, const Renderer::ResetNotificationStrategy value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case Renderer::ResetNotificationStrategy::value: return debug << "Renderer::ResetNotificationStrategy::" #value;
         _c(NoResetNotification)
         _c(LoseContextOnReset)
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Renderer::ResetNotificationStrategy::(invalid)";
+    return debug << "Renderer::ResetNotificationStrategy(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const Renderer::GraphicsResetStatus value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case Renderer::GraphicsResetStatus::value: return debug << "Renderer::GraphicsResetStatus::" #value;
         _c(NoError)
         _c(GuiltyContextReset)
         _c(InnocentContextReset)
         _c(UnknownContextReset)
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Renderer::ResetNotificationStrategy::(invalid)";
+    return debug << "Renderer::GraphicsResetStatus(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 #endif

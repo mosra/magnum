@@ -27,6 +27,7 @@
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Math/Dual.h"
+#include "Magnum/Math/Quaternion.h"
 #include "Magnum/Math/Vector2.h"
 
 namespace Magnum { namespace Math { namespace Test {
@@ -36,6 +37,7 @@ struct DualTest: Corrade::TestSuite::Tester {
 
     void construct();
     void constructDefault();
+    void constructZero();
     void constructNoInit();
     void constructConversion();
     void constructCopy();
@@ -72,6 +74,7 @@ using namespace Literals;
 DualTest::DualTest() {
     addTests({&DualTest::construct,
               &DualTest::constructDefault,
+              &DualTest::constructZero,
               &DualTest::constructNoInit,
               &DualTest::constructConversion,
               &DualTest::constructCopy,
@@ -106,17 +109,44 @@ void DualTest::construct() {
     constexpr Dual d(3.0f);
     CORRADE_COMPARE(d.real(), 3.0f);
     CORRADE_COMPARE(d.dual(), 0.0f);
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Dual, Float, Float>::value));
 }
 
 void DualTest::constructDefault() {
     constexpr Dual a;
+    constexpr Math::Dual<Math::Quaternion<Float>> b;
     CORRADE_COMPARE(a, Dual(0.0f, 0.0f));
+    CORRADE_COMPARE(b, Math::Dual<Math::Quaternion<Float>>({{0.0f, 0.0f, 0.0f}, 1.0f}, {{0.0f, 0.0f, 0.0f}, 1.0f}));
+
+    CORRADE_VERIFY(std::is_nothrow_default_constructible<Dual>::value);
+}
+
+void DualTest::constructZero() {
+    constexpr Dual a{ZeroInit};
+    constexpr Math::Dual<Math::Quaternion<Float>> b{ZeroInit};
+    CORRADE_COMPARE(a, Dual(0.0f, 0.0f));
+    CORRADE_COMPARE(b, Math::Dual<Math::Quaternion<Float>>({{0.0f, 0.0f, 0.0f}, 0.0f}, {{0.0f, 0.0f, 0.0f}, 0.0f}));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Dual, ZeroInitT>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<Math::Dual<Math::Quaternion<Float>>, ZeroInitT>::value));
 }
 
 void DualTest::constructNoInit() {
     Dual a{2.0f, -7.5f};
+    Math::Dual<Math::Quaternion<Float>> b{{{3.0f, 0.1f, 1.0f}, 1.0f}, {{0.1f, 0.0f, 1.0f}, 0.3f}};
     new(&a) Dual{NoInit};
-    CORRADE_COMPARE(a, Dual(2.0f, -7.5f));
+    new(&b) Math::Dual<Math::Quaternion<Float>>{NoInit};
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a, Dual(2.0f, -7.5f));
+        CORRADE_COMPARE(b, (Math::Dual<Math::Quaternion<Float>>{{{3.0f, 0.1f, 1.0f}, 1.0f}, {{0.1f, 0.0f, 1.0f}, 0.3f}}));
+    }
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Dual, NoInitT>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<Math::Dual<Math::Quaternion<Float>>, NoInitT>::value));
 }
 
 void DualTest::constructConversion() {
@@ -129,12 +159,17 @@ void DualTest::constructConversion() {
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Dual, Duali>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Dual, Duali>::value));
 }
 
 void DualTest::constructCopy() {
     constexpr Dual a(2.0f, 3.0f);
     constexpr Dual b(a);
     CORRADE_COMPARE(b, Dual(2.0f, 3.0f));
+
+    CORRADE_VERIFY(std::is_nothrow_copy_constructible<Dual>::value);
+    CORRADE_VERIFY(std::is_nothrow_copy_assignable<Dual>::value);
 }
 
 void DualTest::compare() {

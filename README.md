@@ -53,15 +53,15 @@ Graphics APIs:
 Platforms:
 
 *   **Linux** and embedded Linux (natively using GLX/EGL and Xlib or through
-    SDL2 or GLUT toolkit) [![Build Status](https://travis-ci.org/mosra/magnum.svg?branch=master)](https://travis-ci.org/mosra/magnum)
-*   **Windows** natively or using ANGLE (through SDL2 or GLUT toolkit) [![Build status](https://ci.appveyor.com/api/projects/status/5b477m034cfaskse/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum/branch/master)
-*   **OS X** (through SDL2 toolkit) [![Build Status](https://travis-ci.org/mosra/magnum.svg?branch=master)](https://travis-ci.org/mosra/magnum)
-*   **iOS** (through SDL2 toolkit)
-*   **Android** 2.3 (API Level 9) and higher
-*   **Windows RT** (Store/Phone) using ANGLE (through SDL2 toolkit)
+    SDL2, GLFW or GLUT toolkit) [![Build Status](https://travis-ci.org/mosra/magnum.svg?branch=master)](https://travis-ci.org/mosra/magnum) [![Coverage Status](https://coveralls.io/repos/github/mosra/magnum/badge.svg?branch=master)](https://coveralls.io/github/mosra/magnum?branch=master)
+*   **Windows** on both MSVC and MinGW, natively or using ANGLE (through SDL2, GLFW or GLUT toolkit) [![Build Status](https://ci.appveyor.com/api/projects/status/5b477m034cfaskse/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum/branch/master)
+*   **OS X** (through SDL2 or GLFW toolkit) [![Build Status](https://travis-ci.org/mosra/magnum.svg?branch=master)](https://travis-ci.org/mosra/magnum)
+*   **iOS** (through SDL2 toolkit) [![Build Status](https://travis-ci.org/mosra/magnum.svg?branch=master)](https://travis-ci.org/mosra/magnum)
+*   **Android** 2.3 (API Level 9) and higher [![Build Status](https://travis-ci.org/mosra/magnum.svg?branch=master)](https://travis-ci.org/mosra/magnum)
+*   **Windows RT** (Store/Phone) using ANGLE (through SDL2 toolkit) [![Build Status](https://ci.appveyor.com/api/projects/status/5b477m034cfaskse/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum/branch/master)
 *   **Google Chrome** (through [Native Client](https://developers.google.com/native-client/),
     both `newlib` and `glibc` toolchains are supported)
-*   **HTML5/JavaScript** (through [Emscripten](https://github.com/kripken/emscripten/wiki))
+*   **HTML5/JavaScript** (through [Emscripten](https://github.com/kripken/emscripten/wiki)) [![Build Status](https://travis-ci.org/mosra/magnum.svg?branch=master)](https://travis-ci.org/mosra/magnum)
 
 FEATURES
 ========
@@ -89,11 +89,9 @@ comprehensive guide for building, packaging and crosscompiling.
 Minimal dependencies
 --------------------
 
--   C++ compiler with good C++11 support. Compilers which are tested to have
-    everything needed are **GCC** >= 4.7, **Clang** >= 3.1 and **MSVC** 2015.
-    On Windows you can also use **MinGW-w64**. GCC 4.6, 4.5, 4.4 and MSVC 2013
-    support involves some ugly workarounds and thus is available only in
-    `compatibility` branch.
+*   C++ compiler with good C++11 support. Compilers which are tested to have
+    everything needed are **GCC** >= 4.7, **Clang** >= 3.1 and **MSVC** >= 2015.
+    On Windows you can also use **MinGW-w64**.
 *   **CMake** >= 2.8.12
 *   **Corrade** - Plugin management and utility library. You can get it at
     https://github.com/mosra/corrade.

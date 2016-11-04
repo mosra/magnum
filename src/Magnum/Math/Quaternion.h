@@ -205,13 +205,13 @@ template<class T> class Quaternion {
          *      q = [\boldsymbol 0, 1]
          * @f]
          */
-        constexpr /*implicit*/ Quaternion(IdentityInitT = IdentityInit): _scalar{T(1)} {}
+        constexpr /*implicit*/ Quaternion(IdentityInitT = IdentityInit) noexcept: _scalar{T(1)} {}
 
         /** @brief Construct zero-initialized quaternion */
-        constexpr explicit Quaternion(ZeroInitT): _vector{ZeroInit}, _scalar{T{0}} {}
+        constexpr explicit Quaternion(ZeroInitT) noexcept: _vector{ZeroInit}, _scalar{T{0}} {}
 
         /** @brief Construct without initializing the contents */
-        explicit Quaternion(NoInitT): _vector{NoInit} {}
+        explicit Quaternion(NoInitT) noexcept: _vector{NoInit} {}
 
         /**
          * @brief Construct quaternion from vector and scalar
@@ -220,7 +220,7 @@ template<class T> class Quaternion {
          *      q = [\boldsymbol v, s]
          * @f]
          */
-        constexpr /*implicit*/ Quaternion(const Vector3<T>& vector, T scalar): _vector(vector), _scalar(scalar) {}
+        constexpr /*implicit*/ Quaternion(const Vector3<T>& vector, T scalar) noexcept: _vector(vector), _scalar(scalar) {}
 
         /**
          * @brief Construct quaternion from vector
@@ -230,7 +230,7 @@ template<class T> class Quaternion {
          * @f]
          * @see @ref transformVector(), @ref transformVectorNormalized()
          */
-        constexpr explicit Quaternion(const Vector3<T>& vector): _vector(vector), _scalar(T(0)) {}
+        constexpr explicit Quaternion(const Vector3<T>& vector) noexcept: _vector(vector), _scalar(T(0)) {}
 
         /**
          * @brief Construct dual complex number from another of different type
@@ -238,10 +238,13 @@ template<class T> class Quaternion {
          * Performs only default casting on the values, no rounding or anything
          * else.
          */
-        template<class U> constexpr explicit Quaternion(const Quaternion<U>& other): _vector{other._vector}, _scalar{T(other._scalar)} {}
+        template<class U> constexpr explicit Quaternion(const Quaternion<U>& other) noexcept: _vector{other._vector}, _scalar{T(other._scalar)} {}
 
         /** @brief Construct quaternion from external representation */
         template<class U, class V = decltype(Implementation::QuaternionConverter<T, U>::from(std::declval<U>()))> constexpr explicit Quaternion(const U& other): Quaternion{Implementation::QuaternionConverter<T, U>::from(other)} {}
+
+        /** @brief Copy constructor */
+        constexpr /*implicit*/ Quaternion(const Quaternion<T>&) noexcept = default;
 
         /** @brief Convert quaternion to external representation */
         template<class U, class V = decltype(Implementation::QuaternionConverter<T, U>::to(std::declval<Quaternion<T>>()))> constexpr explicit operator U() const {
@@ -554,9 +557,7 @@ template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& d
 /* Explicit instantiation for commonly used types */
 #ifndef DOXYGEN_GENERATING_OUTPUT
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Quaternion<Float>&);
-#ifndef MAGNUM_TARGET_GLES
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Quaternion<Double>&);
-#endif
 #endif
 
 namespace Implementation {

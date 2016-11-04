@@ -30,6 +30,7 @@ namespace Magnum {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const ResourceState value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case ResourceState::value: return debug << "ResourceState::" #value;
         _c(NotLoaded)
         _c(NotLoadedFallback)
@@ -40,9 +41,10 @@ Debug& operator<<(Debug& debug, const ResourceState value) {
         _c(Mutable)
         _c(Final)
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
-    return debug << "ResourceState::(invalid)";
+    return debug << "ResourceState(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 #endif
 

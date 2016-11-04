@@ -50,10 +50,8 @@ namespace Math {
 
     #ifdef MAGNUM_BUILD_DEPRECATED
     namespace Literals {
-        #ifndef MAGNUM_TARGET_GLES
         constexpr Rad<Double> operator "" _rad(long double);
         constexpr Deg<Double> operator "" _deg(long double);
-        #endif
         constexpr Rad<Float> operator "" _radf(long double);
         constexpr Deg<Float> operator "" _degf(long double);
     }
@@ -90,6 +88,16 @@ Defined if built as static libraries. Default are shared libraries.
 */
 #define MAGNUM_BUILD_STATIC
 #undef MAGNUM_BUILD_STATIC
+
+/**
+@brief Multi-threaded build
+
+Defined if the library is built in a way that allows multiple thread-local
+Magnum contexts. Enabled by default.
+@see @ref building, @ref cmake, @ref Magnum::Context::current() "Context::current()"
+*/
+#define MAGNUM_BUILD_MULTITHREADED
+#undef MAGNUM_BUILD_MULTITHREADED
 
 /**
 @brief OpenGL ES target
@@ -294,6 +302,18 @@ typedef Math::Matrix3x4<Float> Matrix3x4;
 /** @brief Float matrix with 4 columns and 3 rows */
 typedef Math::Matrix4x3<Float> Matrix4x3;
 
+/** @brief Float two-dimensional quadratic Bézier curve */
+typedef Math::QuadraticBezier2D<Float> QuadraticBezier2D;
+
+/** @brief Float three-dimensional quadratic Bézier curve */
+typedef Math::QuadraticBezier3D<Float> QuadraticBezier3D;
+
+/** @brief Float two-dimensional cubic Bézier curve */
+typedef Math::CubicBezier2D<Float> CubicBezier2D;
+
+/** @brief Float three-dimensional cubic Bézier curve */
+typedef Math::CubicBezier3D<Float> CubicBezier3D;
+
 /** @brief Float complex number */
 typedef Math::Complex<Float> Complex;
 
@@ -335,11 +355,9 @@ typedef Math::Range3D<Int> Range3Di;
 
 /*@}*/
 
-#ifndef MAGNUM_TARGET_GLES
 /** @{ @name Double-precision types
 
 See @ref types for more information.
-@requires_gl Only single-precision types are available in OpenGL ES and WebGL.
 */
 
 /** @brief Double (64bit) */
@@ -405,6 +423,18 @@ typedef Math::Matrix3x4<Double> Matrix3x4d;
 /** @brief Double matrix with 4 columns and 3 rows */
 typedef Math::Matrix4x3<Double> Matrix4x3d;
 
+/** @brief Double two-dimensional quadratic Bézier curve */
+typedef Math::QuadraticBezier2D<Float> QuadraticBezier2Dd;
+
+/** @brief Double three-dimensional quadratic Bézier curve */
+typedef Math::QuadraticBezier3D<Float> QuadraticBezier3Dd;
+
+/** @brief Double two-dimensional cubic Bézier curve */
+typedef Math::CubicBezier2D<Float> CubicBezier2Dd;
+
+/** @brief Double three-dimensional cubic Bézier curve */
+typedef Math::CubicBezier3D<Float> CubicBezier3Dd;
+
 /** @brief Double complex number */
 typedef Math::Complex<Double> Complexd;
 
@@ -436,13 +466,10 @@ typedef Math::Range2D<Double> Range2Dd;
 typedef Math::Range3D<Double> Range3Dd;
 
 /*@}*/
-#endif
 
 #ifdef MAGNUM_BUILD_DEPRECATED
-#ifndef MAGNUM_TARGET_GLES
 using Math::Literals::operator "" _deg;
 using Math::Literals::operator "" _rad;
-#endif
 using Math::Literals::operator "" _degf;
 using Math::Literals::operator "" _radf;
 #endif

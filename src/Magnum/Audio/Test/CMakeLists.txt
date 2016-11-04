@@ -24,6 +24,12 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+if(CORRADE_TARGET_EMSCRIPTEN)
+    set(AUDIO_TEST_DIR "")
+else()
+    set(AUDIO_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+endif()
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
@@ -34,7 +40,18 @@ corrade_add_test(AudioContextTest ContextTest.cpp LIBRARIES MagnumAudio)
 corrade_add_test(AudioRendererTest RendererTest.cpp LIBRARIES MagnumAudio)
 corrade_add_test(AudioSourceTest SourceTest.cpp LIBRARIES MagnumAudio)
 
-if(WITH_SCENEGRAPH)
-    corrade_add_test(AudioListenerTest ListenerTest.cpp LIBRARIES MagnumSceneGraph MagnumAudio)
-    corrade_add_test(AudioPlayableTest PlayableTest.cpp LIBRARIES MagnumSceneGraph MagnumAudio)
+if(BUILD_AL_TESTS)
+    corrade_add_test(AudioBufferALTest BufferALTest.cpp LIBRARIES MagnumAudio)
+    corrade_add_test(AudioContextALTest ContextALTest.cpp LIBRARIES MagnumAudio)
+    corrade_add_test(AudioRendererALTest RendererALTest.cpp LIBRARIES MagnumAudio)
+    corrade_add_test(AudioSourceALTest SourceALTest.cpp LIBRARIES MagnumAudio)
+
+    if(WITH_SCENEGRAPH)
+        corrade_add_test(AudioListenerALTest ListenerALTest.cpp LIBRARIES MagnumSceneGraph MagnumAudio)
+        corrade_add_test(AudioPlayableALTest PlayableALTest.cpp LIBRARIES MagnumSceneGraph MagnumAudio)
+    endif()
+endif()
+
+if(CORRADE_TARGET_EMSCRIPTEN)
+    emscripten_embed_file(AudioAbstractImporterTest file.bin "/file.bin")
 endif()

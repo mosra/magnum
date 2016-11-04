@@ -83,7 +83,6 @@ class MAGNUM_AUDIO_EXPORT Extension {
  */
 class MAGNUM_AUDIO_EXPORT Context {
     public:
-
         /**
          * @brief HRTF status
          *
@@ -126,6 +125,14 @@ class MAGNUM_AUDIO_EXPORT Context {
              */
             UnsupportedFormat = ALC_HRTF_UNSUPPORTED_FORMAT_SOFT
         };
+
+        /**
+         * @brief All device specifier strings
+         *
+         * @see @ref deviceSpecifierString(), @ref Configuration::setDeviceSpecifier()
+         *      @fn_al{GetString} with @def_alc{DEVICE_SPECIFIER}
+         */
+        static std::vector<std::string> deviceSpecifierStrings();
 
         /**
          * @brief Whether there is any current context
@@ -203,16 +210,26 @@ class MAGNUM_AUDIO_EXPORT Context {
         }
 
         /**
+         * @brief Device specifier string
+         *
+         * @see @ref deviceSpecifierStrings(), @ref vendorString(), @ref rendererString(),
+         *      @fn_al{GetString} with @def_alc{DEVICE_SPECIFIER}
+         */
+        std::string deviceSpecifierString() const { return alcGetString(_device, ALC_DEVICE_SPECIFIER); }
+
+        /**
          * @brief Vendor string
          *
-         * @see @ref rendererString(), @fn_al{GetString} with @def_al{VENDOR}
+         * @see @ref deviceSpecifierString(), @ref rendererString(),
+         *      @fn_al{GetString} with @def_al{VENDOR}
          */
         std::string vendorString() const { return alGetString(AL_VENDOR); }
 
         /**
          * @brief Renderer string
          *
-         * @see @ref vendorString(), @fn_al{GetString} with @def_al{RENDERER}
+         * @see @ref deviceSpecifierString(), @ref vendorString(),
+         *      @fn_al{GetString} with @def_al{RENDERER}
          */
         std::string rendererString() const { return alGetString(AL_RENDERER); }
 
@@ -314,13 +331,22 @@ class MAGNUM_AUDIO_EXPORT Context::Configuration {
             Disabled = 2    /**< Disabled */
         };
 
-        /** @brief Constructor */
-        explicit Configuration():
-            _frequency(-1),
-            _monoSources(-1),
-            _stereoSources(-1),
-            _refreshRate(-1)
-        {}
+        explicit Configuration();
+        ~Configuration();
+
+        /** @brief Device specifier */
+        const std::string& deviceSpecifier() const { return _deviceSpecifier; }
+
+        /**
+         * @brief Set device specifier
+         * @return Reference to self (for method chaining)
+         *
+         * If set to empty string (the default), default device specifier is
+         * used.
+         * @see @ref Context::deviceSpecifierStrings()
+         */
+        Configuration& setDeviceSpecifier(const std::string& specifier);
+        Configuration& setDeviceSpecifier(std::string&& specifier); /**< @overload */
 
         /** @brief Sampling rate in Hz */
         Int frequency() const { return _frequency; }
@@ -397,13 +423,15 @@ class MAGNUM_AUDIO_EXPORT Context::Configuration {
         }
 
     private:
-        Int _frequency;
-        Hrtf _hrtf;
+        std::string _deviceSpecifier;
 
-        Int _monoSources;
-        Int _stereoSources;
+        Int _frequency{-1};
+        Hrtf _hrtf{};
 
-        Int _refreshRate;
+        Int _monoSources{-1};
+        Int _stereoSources{-1};
+
+        Int _refreshRate{-1};
 };
 
 

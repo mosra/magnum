@@ -29,20 +29,54 @@
 
 #include "Magnum/Math/Color.h"
 
-namespace Magnum { namespace Math { namespace Test {
+struct Vec3 {
+    float x, y, z;
+};
+
+struct Vec4 {
+    float x, y, z, w;
+};
+
+namespace Magnum { namespace Math {
+
+namespace Implementation {
+
+template<> struct VectorConverter<3, float, Vec3> {
+    constexpr static Vector<3, Float> from(const Vec3& other) {
+        return {other.x, other.y, other.z};
+    }
+
+    constexpr static Vec3 to(const Vector<3, Float>& other) {
+        return {other[0], other[1], other[2]};
+    }
+};
+
+template<> struct VectorConverter<4, float, Vec4> {
+    constexpr static Vector<4, Float> from(const Vec4& other) {
+        return {other.x, other.y, other.z, other.w};
+    }
+
+    constexpr static Vec4 to(const Vector<4, Float>& other) {
+        return {other[0], other[1], other[2], other[3]};
+    }
+};
+
+}
+
+namespace Test {
 
 struct ColorTest: Corrade::TestSuite::Tester {
     explicit ColorTest();
 
     void construct();
     void constructDefault();
-    void constructZero();
     void constructNoInit();
     void constructOneValue();
     void constructParts();
     void constructConversion();
     void constructNormalization();
     void constructCopy();
+    void convert();
 
     void literals();
 
@@ -80,13 +114,13 @@ using namespace Literals;
 ColorTest::ColorTest() {
     addTests({&ColorTest::construct,
               &ColorTest::constructDefault,
-              &ColorTest::constructZero,
               &ColorTest::constructNoInit,
               &ColorTest::constructOneValue,
               &ColorTest::constructParts,
               &ColorTest::constructConversion,
               &ColorTest::constructNormalization,
               &ColorTest::constructCopy,
+              &ColorTest::convert,
 
               &ColorTest::literals,
 
@@ -121,6 +155,9 @@ void ColorTest::construct() {
     constexpr Color4ub d = {10, 25, 176};
     CORRADE_COMPARE(c, Vector4(1.0f, 0.5f, 0.75f, 1.0f));
     CORRADE_COMPARE(d, Math::Vector4<UnsignedByte>(10, 25, 176, 255));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Color3, Float, Float, Float>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<Color4, Float, Float, Float, Float>::value));
 }
 
 void ColorTest::constructDefault() {
@@ -129,17 +166,18 @@ void ColorTest::constructDefault() {
     CORRADE_COMPARE(a1, Color3(0.0f, 0.0f, 0.0f));
     CORRADE_COMPARE(a2, Color3(0.0f, 0.0f, 0.0f));
 
-    constexpr Color4 b;
-    constexpr Color4ub c;
-    CORRADE_COMPARE(b, Color4(0.0f, 0.0f, 0.0f, 0.0f));
-    CORRADE_COMPARE(c, Color4ub(0, 0, 0, 0));
-}
+    constexpr Color4 b1;
+    constexpr Color4 b2{Math::ZeroInit};
+    CORRADE_COMPARE(b1, Color4(0.0f, 0.0f, 0.0f, 0.0f));
+    CORRADE_COMPARE(b2, Color4(0.0f, 0.0f, 0.0f, 0.0f));
 
-void ColorTest::constructZero() {
-    constexpr Color3 a{Math::ZeroInit};
-    constexpr Color4 b{Math::ZeroInit};
-    CORRADE_COMPARE(a, Color3(0.0f, 0.0f, 0.0f));
-    CORRADE_COMPARE(b, Color4(0.0f, 0.0f, 0.0f, 0.0f));
+    constexpr Color4ub c;
+    CORRADE_COMPARE(c, Color4ub(0, 0, 0, 0));
+
+    CORRADE_VERIFY(std::is_nothrow_default_constructible<Color3>::value);
+    CORRADE_VERIFY(std::is_nothrow_default_constructible<Color4>::value);
+    CORRADE_VERIFY((std::is_nothrow_constructible<Color3, ZeroInitT>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<Color4, ZeroInitT>::value));
 }
 
 void ColorTest::constructNoInit() {
@@ -147,8 +185,16 @@ void ColorTest::constructNoInit() {
     Color4 b{1.0f, 0.5f, 0.75f, 0.5f};
     new(&a) Color3{Math::NoInit};
     new(&b) Color4{Math::NoInit};
-    CORRADE_COMPARE(a, (Color3{1.0f, 0.5f, 0.75f}));
-    CORRADE_COMPARE(b, (Color4{1.0f, 0.5f, 0.75f, 0.5f}));
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a, (Color3{1.0f, 0.5f, 0.75f}));
+        CORRADE_COMPARE(b, (Color4{1.0f, 0.5f, 0.75f, 0.5f}));
+    }
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Color3, NoInitT>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<Color4, NoInitT>::value));
 }
 
 void ColorTest::constructOneValue() {
@@ -167,6 +213,9 @@ void ColorTest::constructOneValue() {
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Float, Color3>::value));
     CORRADE_VERIFY(!(std::is_convertible<Float, Color4>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Color3, Float>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<Color4, Float, Float>::value));
 }
 
 void ColorTest::constructParts() {
@@ -181,6 +230,8 @@ void ColorTest::constructParts() {
     constexpr Color4ub e = c;
     CORRADE_COMPARE(d, Color4(1.0f, 0.5f, 0.75f, 1.0f));
     CORRADE_COMPARE(e, Color4ub(10, 25, 176, 255));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Color4, Color3, Float>::value));
 }
 
 void ColorTest::constructConversion() {
@@ -195,6 +246,9 @@ void ColorTest::constructConversion() {
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Color3, Color3ub>::value));
     CORRADE_VERIFY(!(std::is_convertible<Color4, Color4ub>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Color3ub, Color3>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<Color4, Color4ub>::value));
 }
 
 void ColorTest::constructNormalization() {
@@ -221,6 +275,48 @@ void ColorTest::constructCopy() {
     #endif
     Color4 d(c);
     CORRADE_COMPARE(d, Color4(1.0f, 0.5f, 0.75f, 0.25f));
+
+    CORRADE_VERIFY(std::is_nothrow_copy_constructible<Color3>::value);
+    CORRADE_VERIFY(std::is_nothrow_copy_constructible<Color4>::value);
+    CORRADE_VERIFY(std::is_nothrow_copy_assignable<Color3>::value);
+    CORRADE_VERIFY(std::is_nothrow_copy_assignable<Color4>::value);
+}
+
+void ColorTest::convert() {
+    constexpr Vec3 a3{1.5f, 2.0f, -3.5f};
+    constexpr Color3 b3{1.5f, 2.0f, -3.5f};
+
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY
+    constexpr /* No idea what's wrong. For Vector3 it "just works" */
+    #endif
+    Color3 c3(a3);
+    CORRADE_COMPARE(c3, b3);
+
+    constexpr Vec3 d3(b3);
+    CORRADE_COMPARE(d3.x, a3.x);
+    CORRADE_COMPARE(d3.y, a3.y);
+    CORRADE_COMPARE(d3.z, a3.z);
+
+    constexpr Vec4 a4{1.5f, 2.0f, -3.5f, -0.5f};
+    constexpr Color4 b4{1.5f, 2.0f, -3.5f, -0.5f};
+
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY
+    constexpr /* No idea what's wrong. For Vector4 it "just works" */
+    #endif
+    Color4 c4(a4);
+    CORRADE_COMPARE(c4, b4);
+
+    constexpr Vec4 d4(b4);
+    CORRADE_COMPARE(d4.x, a4.x);
+    CORRADE_COMPARE(d4.y, a4.y);
+    CORRADE_COMPARE(d4.z, a4.z);
+    CORRADE_COMPARE(d4.w, a4.w);
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Vec3, Color3>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Vec4, Color4>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Color3, Vec3>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Color4, Vec4>::value));
 }
 
 void ColorTest::literals() {
@@ -233,8 +329,8 @@ void ColorTest::literals() {
     CORRADE_COMPARE(b, (Color4ub{0x33, 0xb2, 0x7f, 0xcc}));
 
     /* Not constexpr yet */
-    CORRADE_COMPARE(0x33b27f_rgbf, (Color3{0.2, 0.698039f, 0.498039f}));
-    CORRADE_COMPARE(0x33b27fcc_rgbaf, (Color4{0.2, 0.698039f, 0.498039f, 0.8f}));
+    CORRADE_COMPARE(0x33b27f_rgbf, (Color3{0.2f, 0.698039f, 0.498039f}));
+    CORRADE_COMPARE(0x33b27fcc_rgbaf, (Color4{0.2f, 0.698039f, 0.498039f, 0.8f}));
 }
 
 void ColorTest::colors() {

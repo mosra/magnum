@@ -595,7 +595,9 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
          *
          * Adds given source to source list, preceeded with @c \#line directive
          * marking first line of the source as `n(1)` where n is number of
-         * added source. If passed string is empty, the function does nothing.
+         * added source. The source number `0` is @c \#version directive added
+         * in constructor, if any. If passed string is empty, the function does
+         * nothing.
          * @see @ref addFile()
          */
         Shader& addSource(std::string source);

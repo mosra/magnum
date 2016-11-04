@@ -31,6 +31,21 @@
 
 #include "Magnum/Trade/AbstractImporter.h"
 
+#include "MagnumPlugins/ObjImporter/configure.h"
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+#ifndef MAGNUM_OBJIMPORTER_BUILD_STATIC
+    #if defined(ObjImporter_EXPORTS) || defined(ObjImporterObjects_EXPORTS)
+        #define MAGNUM_OBJIMPORTER_EXPORT CORRADE_VISIBILITY_EXPORT
+    #else
+        #define MAGNUM_OBJIMPORTER_EXPORT CORRADE_VISIBILITY_IMPORT
+    #endif
+#else
+    #define MAGNUM_OBJIMPORTER_EXPORT CORRADE_VISIBILITY_STATIC
+#endif
+#define MAGNUM_OBJIMPORTER_LOCAL CORRADE_VISIBILITY_LOCAL
+#endif
+
 namespace Magnum { namespace Trade {
 
 /**
@@ -51,7 +66,7 @@ of another plugin, you need to request `ObjImporter` component of `Magnum`
 package in CMake and link to `Magnum::ObjImporter` target. See @ref building,
 @ref cmake and @ref plugins for more information.
 */
-class ObjImporter: public AbstractImporter {
+class MAGNUM_OBJIMPORTER_EXPORT ObjImporter: public AbstractImporter {
     public:
         /** @brief Default constructor */
         explicit ObjImporter();
@@ -64,19 +79,19 @@ class ObjImporter: public AbstractImporter {
     private:
         struct File;
 
-        Features doFeatures() const override;
+        MAGNUM_OBJIMPORTER_LOCAL Features doFeatures() const override;
 
-        bool doIsOpened() const override;
-        void doOpenData(Containers::ArrayView<const char> data) override;
-        void doOpenFile(const std::string& filename) override;
-        void doClose() override;
+        MAGNUM_OBJIMPORTER_LOCAL bool doIsOpened() const override;
+        MAGNUM_OBJIMPORTER_LOCAL void doOpenData(Containers::ArrayView<const char> data) override;
+        MAGNUM_OBJIMPORTER_LOCAL void doOpenFile(const std::string& filename) override;
+        MAGNUM_OBJIMPORTER_LOCAL void doClose() override;
 
-        UnsignedInt doMesh3DCount() const override;
-        Int doMesh3DForName(const std::string& name) override;
-        std::string doMesh3DName(UnsignedInt id) override;
-        std::optional<MeshData3D> doMesh3D(UnsignedInt id) override;
+        MAGNUM_OBJIMPORTER_LOCAL UnsignedInt doMesh3DCount() const override;
+        MAGNUM_OBJIMPORTER_LOCAL Int doMesh3DForName(const std::string& name) override;
+        MAGNUM_OBJIMPORTER_LOCAL std::string doMesh3DName(UnsignedInt id) override;
+        MAGNUM_OBJIMPORTER_LOCAL std::optional<MeshData3D> doMesh3D(UnsignedInt id) override;
 
-        void parseMeshNames();
+        MAGNUM_OBJIMPORTER_LOCAL void parseMeshNames();
 
         std::unique_ptr<File> _file;
 };

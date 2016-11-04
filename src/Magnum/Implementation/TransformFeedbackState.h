@@ -53,7 +53,8 @@ struct TransformFeedbackState {
         maxSeparateAttributes,
         maxSeparateComponents;
     #ifndef MAGNUM_TARGET_GLES
-    GLint maxBuffers;
+    GLint maxBuffers,
+        maxVertexStreams;
     #endif
 
     GLuint binding;

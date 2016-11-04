@@ -103,12 +103,12 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          *
          * @see @ref diagonal()
          */
-        constexpr static RectangularMatrix<cols, rows, T> fromDiagonal(const Vector<DiagonalSize, T>& diagonal) {
+        constexpr static RectangularMatrix<cols, rows, T> fromDiagonal(const Vector<DiagonalSize, T>& diagonal) noexcept {
             return RectangularMatrix(typename Implementation::GenerateSequence<cols>::Type(), diagonal);
         }
 
         /** @brief Construct zero-filled matrix */
-        constexpr /*implicit*/ RectangularMatrix(ZeroInitT = ZeroInit)
+        constexpr /*implicit*/ RectangularMatrix(ZeroInitT = ZeroInit) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             /* MSVC 2015 can't handle {} here */
@@ -117,7 +117,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
             {}
 
         /** @brief Construct matrix without initializing the contents */
-        explicit RectangularMatrix(NoInitT)
+        explicit RectangularMatrix(NoInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             /* MSVC 2015 can't handle {} here */
@@ -132,7 +132,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          *
          * @todo Creating matrix from arbitrary combination of matrices with n rows
          */
-        template<class ...U> constexpr /*implicit*/ RectangularMatrix(const Vector<rows, T>& first, const U&... next): _data{first, next...} {
+        template<class ...U> constexpr /*implicit*/ RectangularMatrix(const Vector<rows, T>& first, const U&... next) noexcept: _data{first, next...} {
             static_assert(sizeof...(next)+1 == cols, "Improper number of arguments passed to RectangularMatrix constructor");
         }
 
@@ -147,16 +147,13 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * // integral == {1, 2, -15, 7}
          * @endcode
          */
-        template<class U> constexpr explicit RectangularMatrix(const RectangularMatrix<cols, rows, U>& other): RectangularMatrix(typename Implementation::GenerateSequence<cols>::Type(), other) {}
+        template<class U> constexpr explicit RectangularMatrix(const RectangularMatrix<cols, rows, U>& other) noexcept: RectangularMatrix(typename Implementation::GenerateSequence<cols>::Type(), other) {}
 
         /** @brief Construct matrix from external representation */
         template<class U, class V = decltype(Implementation::RectangularMatrixConverter<cols, rows, T, U>::from(std::declval<U>()))> constexpr explicit RectangularMatrix(const U& other): RectangularMatrix(Implementation::RectangularMatrixConverter<cols, rows, T, U>::from(other)) {}
 
         /** @brief Copy constructor */
-        constexpr RectangularMatrix(const RectangularMatrix<cols, rows, T>&) = default;
-
-        /** @brief Assignment operator */
-        RectangularMatrix<cols, rows, T>& operator=(const RectangularMatrix<cols, rows, T>&) = default;
+        constexpr /*implicit*/ RectangularMatrix(const RectangularMatrix<cols, rows, T>&) noexcept = default;
 
         /** @brief Convert matrix to external representation */
         template<class U, class V = decltype(Implementation::RectangularMatrixConverter<cols, rows, T, U>::to(std::declval<RectangularMatrix<cols, rows, T>>()))> constexpr explicit operator U() const {
@@ -194,9 +191,19 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * Consider using @ref transposed() when accessing rows frequently, as
          * this is slower than accessing columns due to the way the matrix is
          * stored.
-         * @see @ref operator[]()
+         * @see @ref setRow(), @ref operator[]()
          */
         Vector<cols, T> row(std::size_t row) const;
+
+        /**
+         * @brief Set matrix row
+         *
+         * Consider using @ref transposed() when accessing rows frequently, as
+         * this is slower than accessing columns due to the way the matrix is
+         * stored.
+         * @see @ref row(), @ref operator[]()
+         */
+        void setRow(std::size_t row, const Vector<cols, T>& data);
 
         /** @brief Equality comparison */
         bool operator==(const RectangularMatrix<cols, rows, T>& other) const {
@@ -342,9 +349,32 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         /**
          * @brief Transposed matrix
          *
-         * @see @ref row()
+         * @f[
+         *      \boldsymbol{A}^T_ij = \boldsymbol{A}_ji
+         * @f]
+         * @see @ref row(), @ref flippedCols(), @ref flippedRows()
          */
         RectangularMatrix<rows, cols, T> transposed() const;
+
+        /**
+         * @brief Matrix with flipped cols
+         *
+         * The order of columns is reversed.
+         * @see @ref transposed(), @ref flippedRows(), @ref Vector::flipped()
+         */
+        constexpr RectangularMatrix<cols, rows, T> flippedCols() const {
+            return flippedColsInternal(typename Implementation::GenerateReverseSequence<cols>::Type{});
+        }
+
+        /**
+         * @brief Matrix with flipped rows
+         *
+         * The order of rows is reversed.
+         * @see @ref transposed(), @ref flippedCols(), @ref Vector::flipped()
+         */
+        constexpr RectangularMatrix<cols, rows, T> flippedRows() const {
+            return flippedRowsInternal(typename Implementation::GenerateSequence<cols>::Type{});
+        }
 
         /**
          * @brief Values on diagonal
@@ -376,11 +406,19 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
 
     private:
         /* Implementation for RectangularMatrix<cols, rows, T>::RectangularMatrix(const RectangularMatrix<cols, rows, U>&) */
-        template<class U, std::size_t ...sequence> constexpr explicit RectangularMatrix(Implementation::Sequence<sequence...>, const RectangularMatrix<cols, rows, U>& matrix): _data{Vector<rows, T>(matrix[sequence])...} {}
+        template<class U, std::size_t ...sequence> constexpr explicit RectangularMatrix(Implementation::Sequence<sequence...>, const RectangularMatrix<cols, rows, U>& matrix) noexcept: _data{Vector<rows, T>(matrix[sequence])...} {}
 
         /* Implementation for RectangularMatrix<cols, rows, T>::RectangularMatrix(ZeroInitT) and RectangularMatrix<cols, rows, T>::RectangularMatrix(NoInitT) */
         /* MSVC 2015 can't handle {} here */
-        template<class U, std::size_t ...sequence> constexpr explicit RectangularMatrix(Implementation::Sequence<sequence...>, U): _data{Vector<rows, T>((static_cast<void>(sequence), U{typename U::Init{}}))...} {}
+        template<class U, std::size_t ...sequence> constexpr explicit RectangularMatrix(Implementation::Sequence<sequence...>, U) noexcept: _data{Vector<rows, T>((static_cast<void>(sequence), U{typename U::Init{}}))...} {}
+
+        template<std::size_t ...sequence> constexpr RectangularMatrix<cols, rows, T> flippedColsInternal(Implementation::Sequence<sequence...>) const {
+            return {(*this)[sequence]...};
+        }
+
+        template<std::size_t ...sequence> constexpr RectangularMatrix<cols, rows, T> flippedRowsInternal(Implementation::Sequence<sequence...>) const {
+            return {(*this)[sequence].flipped()...};
+        }
 
         template<std::size_t ...sequence> constexpr Vector<DiagonalSize, T> diagonalInternal(Implementation::Sequence<sequence...>) const;
 
@@ -485,7 +523,7 @@ template<std::size_t cols, std::size_t rows, class T> inline RectangularMatrix<c
     #endif
     number, const RectangularMatrix<cols, rows, T>& matrix)
 {
-    RectangularMatrix<cols, rows, T> out;
+    RectangularMatrix<cols, rows, T> out{NoInit};
 
     for(std::size_t i = 0; i != cols; ++i)
         out[i] = number/matrix[i];
@@ -524,11 +562,9 @@ template<std::size_t cols, std::size_t rows, class T> Corrade::Utility::Debug& o
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<2, 2, Float>&);
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<3, 3, Float>&);
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<4, 4, Float>&);
-#ifndef MAGNUM_TARGET_GLES
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<2, 2, Double>&);
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<3, 3, Double>&);
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<4, 4, Double>&);
-#endif
 
 /* Rectangular matrices */
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<2, 3, Float>&);
@@ -537,14 +573,12 @@ extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utili
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<4, 2, Float>&);
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<3, 4, Float>&);
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<4, 3, Float>&);
-#ifndef MAGNUM_TARGET_GLES
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<2, 3, Double>&);
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<3, 2, Double>&);
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<2, 4, Double>&);
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<4, 2, Double>&);
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<3, 4, Double>&);
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<4, 3, Double>&);
-#endif
 
 #define MAGNUM_RECTANGULARMATRIX_SUBCLASS_IMPLEMENTATION(cols, rows, ...)   \
     static __VA_ARGS__& from(T* data) {                                     \
@@ -587,7 +621,13 @@ extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utili
     }                                                                       \
     __VA_ARGS__ operator/(T number) const {                                 \
         return Math::RectangularMatrix<cols, rows, T>::operator/(number);   \
-    }
+    }                                                                       \
+    constexpr __VA_ARGS__ flippedCols() const {                             \
+        return Math::RectangularMatrix<cols, rows, T>::flippedCols();       \
+    }                                                                       \
+    constexpr __VA_ARGS__ flippedRows() const {                             \
+        return Math::RectangularMatrix<cols, rows, T>::flippedRows();       \
+    }                                                                       \
 
 #define MAGNUM_MATRIX_OPERATOR_IMPLEMENTATION(...)                          \
     template<std::size_t size, class T> inline __VA_ARGS__ operator*(typename std::common_type<T>::type number, const __VA_ARGS__& matrix) { \
@@ -632,6 +672,11 @@ template<std::size_t cols, std::size_t rows, class T> inline Vector<cols, T> Rec
     return out;
 }
 
+template<std::size_t cols, std::size_t rows, class T> inline void RectangularMatrix<cols, rows, T>::setRow(std::size_t row, const Vector<cols, T>& data) {
+    for(std::size_t i = 0; i != cols; ++i)
+        _data[i][row] = data[i];
+}
+
 template<std::size_t cols, std::size_t rows, class T> inline RectangularMatrix<cols, rows, T> RectangularMatrix<cols, rows, T>::operator-() const {
     RectangularMatrix<cols, rows, T> out;
 
@@ -642,7 +687,7 @@ template<std::size_t cols, std::size_t rows, class T> inline RectangularMatrix<c
 }
 
 template<std::size_t cols, std::size_t rows, class T> template<std::size_t size> inline RectangularMatrix<size, rows, T> RectangularMatrix<cols, rows, T>::operator*(const RectangularMatrix<size, cols, T>& other) const {
-    RectangularMatrix<size, rows, T> out;
+    RectangularMatrix<size, rows, T> out{ZeroInit};
 
     for(std::size_t col = 0; col != size; ++col)
         for(std::size_t row = 0; row != rows; ++row)
@@ -653,7 +698,7 @@ template<std::size_t cols, std::size_t rows, class T> template<std::size_t size>
 }
 
 template<std::size_t cols, std::size_t rows, class T> inline RectangularMatrix<rows, cols, T> RectangularMatrix<cols, rows, T>::transposed() const {
-    RectangularMatrix<rows, cols, T> out;
+    RectangularMatrix<rows, cols, T> out{NoInit};
 
     for(std::size_t col = 0; col != cols; ++col)
         for(std::size_t row = 0; row != rows; ++row)
@@ -718,11 +763,9 @@ template<std::size_t cols, std::size_t rows, class T> struct ConfigurationValue<
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<2, 2, Magnum::Float>>;
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<3, 3, Magnum::Float>>;
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<4, 4, Magnum::Float>>;
-#ifndef MAGNUM_TARGET_GLES
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<2, 2, Magnum::Double>>;
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<3, 3, Magnum::Double>>;
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<4, 4, Magnum::Double>>;
-#endif
 
 /* Rectangular matrices */
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<2, 3, Magnum::Float>>;
@@ -731,14 +774,12 @@ extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Rectangula
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<4, 2, Magnum::Float>>;
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<3, 4, Magnum::Float>>;
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<4, 3, Magnum::Float>>;
-#ifndef MAGNUM_TARGET_GLES
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<2, 3, Magnum::Double>>;
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<3, 2, Magnum::Double>>;
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<2, 4, Magnum::Double>>;
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<4, 2, Magnum::Double>>;
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<3, 4, Magnum::Double>>;
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<4, 3, Magnum::Double>>;
-#endif
 #endif
 
 }}

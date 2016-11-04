@@ -46,6 +46,20 @@ add_custom_target(MagnumTrade SOURCES ${MagnumTrade_HEADERS})
 
 install(FILES ${MagnumTrade_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Trade)
 
+if(WITH_IMAGECONVERTER)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/imageconverterConfigure.h.cmake
+                   ${CMAKE_CURRENT_BINARY_DIR}/imageconverterConfigure.h)
+
+    add_executable(magnum-imageconverter imageconverter.cpp)
+    target_include_directories(magnum-imageconverter PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    target_link_libraries(magnum-imageconverter Magnum)
+
+    install(TARGETS magnum-imageconverter DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+
+    # Magnum imageconverter target alias for superprojects
+    add_executable(Magnum::imageconverter ALIAS magnum-imageconverter)
+endif()
+
 if(BUILD_TESTS)
     add_subdirectory(Test)
 endif()

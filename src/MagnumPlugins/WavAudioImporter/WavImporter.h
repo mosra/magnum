@@ -5,6 +5,7 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
               Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2016 Alice Margatroid <loveoverwhelming@gmail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -33,14 +34,36 @@
 
 #include "Magnum/Audio/AbstractImporter.h"
 
+#include "MagnumPlugins/WavAudioImporter/configure.h"
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+#ifndef MAGNUM_WAVAUDIOIMPORTER_BUILD_STATIC
+    #if defined(WavAudioImporter_EXPORTS) || defined(WavAudioImporterObjects_EXPORTS)
+        #define MAGNUM_WAVAUDIOIMPORTER_EXPORT CORRADE_VISIBILITY_EXPORT
+    #else
+        #define MAGNUM_WAVAUDIOIMPORTER_EXPORT CORRADE_VISIBILITY_IMPORT
+    #endif
+#else
+    #define MAGNUM_WAVAUDIOIMPORTER_EXPORT CORRADE_VISIBILITY_STATIC
+#endif
+#define MAGNUM_WAVAUDIOIMPORTER_LOCAL CORRADE_VISIBILITY_LOCAL
+#endif
+
 namespace Magnum { namespace Audio {
 
 /**
 @brief WAV importer plugin
 
-Supports mono and stereo PCM files with 8 or 16 bits per channel. The files are
-imported with @ref Buffer::Format::Mono8, @ref Buffer::Format::Mono16,
-@ref Buffer::Format::Stereo8 or @ref Buffer::Format::Stereo16, respectively.
+Supports mono and stereo files of the following formats:
+
+-   8 bit per channel PCM, imported as @ref Buffer::Format::Mono8 and @ref Buffer::Format::Stereo8
+-   16 bit per channel PCM, imported as @ref Buffer::Format::Mono16 and @ref Buffer::Format::Stereo16
+-   32-bit IEEE Float, imported as @ref Buffer::Format::MonoFloat / @ref Buffer::Format::StereoFloat
+-   64-bit IEEE Float, imported as @ref Buffer::Format::MonoDouble / @ref Buffer::Format::StereoDouble
+-   A-Law, imported as @ref Buffer::Format::MonoALaw / @ref Buffer::Format::StereoALaw
+-   μ-Law, imported as @ref Buffer::Format::MonoMuLaw / @ref Buffer::Format::StereoMuLaw
+
+Multi-channel formats are not supported.
 
 This plugin is built if `WITH_WAVAUDIOIMPORTER` is enabled when building
 Magnum. To use dynamic plugin, you need to load `WavAudioImporter` plugin
@@ -49,7 +72,7 @@ dependency of another plugin, you need to request `WavAudioImporter` component
 of `Magnum` package in CMake and link to `Magnum::WavAudioImporter` target. See
 @ref building, @ref cmake and @ref plugins for more information.
 */
-class WavImporter: public AbstractImporter {
+class MAGNUM_WAVAUDIOIMPORTER_EXPORT WavImporter: public AbstractImporter {
     public:
         /** @brief Default constructor */
         explicit WavImporter();
@@ -58,14 +81,14 @@ class WavImporter: public AbstractImporter {
         explicit WavImporter(PluginManager::AbstractManager& manager, std::string plugin);
 
     private:
-        Features doFeatures() const override;
-        bool doIsOpened() const override;
-        void doOpenData(Containers::ArrayView<const char> data) override;
-        void doClose() override;
+        MAGNUM_WAVAUDIOIMPORTER_LOCAL Features doFeatures() const override;
+        MAGNUM_WAVAUDIOIMPORTER_LOCAL bool doIsOpened() const override;
+        MAGNUM_WAVAUDIOIMPORTER_LOCAL void doOpenData(Containers::ArrayView<const char> data) override;
+        MAGNUM_WAVAUDIOIMPORTER_LOCAL void doClose() override;
 
-        Buffer::Format doFormat() const override;
-        UnsignedInt doFrequency() const override;
-        Containers::Array<char> doData() override;
+        MAGNUM_WAVAUDIOIMPORTER_LOCAL Buffer::Format doFormat() const override;
+        MAGNUM_WAVAUDIOIMPORTER_LOCAL UnsignedInt doFrequency() const override;
+        MAGNUM_WAVAUDIOIMPORTER_LOCAL Containers::Array<char> doData() override;
 
         Containers::Array<char> _data;
         Buffer::Format _format;

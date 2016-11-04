@@ -31,6 +31,9 @@
 #include "Magnum/Buffer.h"
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
+#ifndef MAGNUM_TARGET_GLES
+#include "Magnum/TransformFeedback.h"
+#endif
 
 #ifndef MAGNUM_TARGET_WEBGL
 #include "Implementation/DebugState.h"
@@ -119,7 +122,7 @@ std::size_t Mesh::indexSize(IndexType type) {
         case IndexType::UnsignedInt: return 4;
     }
 
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
 Mesh::Mesh(const MeshPrimitive primitive): _primitive{primitive}, _flags{ObjectFlag::DeleteOnDestruction}, _count{0}, _baseVertex{0}, _instanceCount{1},
@@ -245,6 +248,9 @@ Mesh& Mesh::setIndexBuffer(Buffer& buffer, GLintptr offset, IndexType type, Unsi
 }
 
 void Mesh::draw(AbstractShaderProgram& shader) {
+    /* Nothing to draw, exit without touching any state */
+    if(!_count || !_instanceCount) return;
+
     shader.use();
 
     #ifndef MAGNUM_TARGET_GLES
@@ -265,9 +271,6 @@ void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr i
 #endif
 {
     const Implementation::MeshState& state = *Context::current().state().mesh;
-
-    /* Nothing to draw */
-    if(!count || !instanceCount) return;
 
     (this->*state.bindImplementation)();
 
@@ -363,6 +366,42 @@ void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr i
     (this->*state.unbindImplementation)();
 }
 
+#ifndef MAGNUM_TARGET_GLES
+void Mesh::drawInternal(TransformFeedback& xfb, const UnsignedInt stream, const Int instanceCount) {
+    const Implementation::MeshState& state = *Context::current().state().mesh;
+
+    (this->*state.bindImplementation)();
+
+    /* Default stream */
+    if(stream == 0) {
+        /* Non-instanced mesh */
+        if(instanceCount == 1) glDrawTransformFeedback(GLenum(_primitive), xfb.id());
+
+        /* Instanced mesh */
+        else glDrawTransformFeedbackInstanced(GLenum(_primitive), xfb.id(), instanceCount);
+
+    /* Specific stream */
+    } else {
+        /* Non-instanced mesh */
+        if(instanceCount == 1) glDrawTransformFeedbackStream(GLenum(_primitive), xfb.id(), stream);
+
+        /* Instanced mesh */
+        else glDrawTransformFeedbackStreamInstanced(GLenum(_primitive), xfb.id(), stream, instanceCount);
+    }
+
+    (this->*state.unbindImplementation)();
+}
+
+void Mesh::draw(AbstractShaderProgram& shader, TransformFeedback& xfb, UnsignedInt stream) {
+    /* Nothing to draw, exit without touching any state */
+    if(!_instanceCount) return;
+
+    shader.use();
+
+    drawInternal(xfb, stream, _instanceCount);
+}
+#endif
+
 void Mesh::bindVAO() {
     GLuint& current = Context::current().state().mesh->currentVAO;
     if(current != _id) {
@@ -373,7 +412,7 @@ void Mesh::bindVAO() {
         #elif !defined(CORRADE_TARGET_NACL)
         glBindVertexArrayOES(current = _id);
         #else
-        CORRADE_ASSERT_UNREACHABLE();
+        CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
         #endif
     }
 }
@@ -389,7 +428,7 @@ void Mesh::createImplementationVAO() {
     #elif !defined(CORRADE_TARGET_NACL)
     glGenVertexArraysOES(1, &_id);
     #else
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
     CORRADE_INTERNAL_ASSERT(_id != Implementation::State::DisengagedBinding);
 }
@@ -409,7 +448,7 @@ void Mesh::destroyImplementationVAO() {
     #elif !defined(CORRADE_TARGET_NACL)
     glDeleteVertexArraysOES(1, &_id);
     #else
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
@@ -505,7 +544,7 @@ void Mesh::vertexAttribDivisorImplementationANGLE(const GLuint index, const GLui
     #else
     static_cast<void>(index);
     static_cast<void>(divisor);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 #ifndef MAGNUM_TARGET_WEBGL
@@ -515,7 +554,7 @@ void Mesh::vertexAttribDivisorImplementationEXT(const GLuint index, const GLuint
     #else
     static_cast<void>(index);
     static_cast<void>(divisor);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 void Mesh::vertexAttribDivisorImplementationNV(const GLuint index, const GLuint divisor) {
@@ -524,7 +563,7 @@ void Mesh::vertexAttribDivisorImplementationNV(const GLuint index, const GLuint 
     #else
     static_cast<void>(index);
     static_cast<void>(divisor);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 #endif
@@ -570,7 +609,7 @@ void Mesh::drawArraysInstancedImplementationANGLE(const GLint baseVertex, const 
     static_cast<void>(baseVertex);
     static_cast<void>(count);
     static_cast<void>(instanceCount);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
@@ -582,7 +621,7 @@ void Mesh::drawArraysInstancedImplementationEXT(const GLint baseVertex, const GL
     static_cast<void>(baseVertex);
     static_cast<void>(count);
     static_cast<void>(instanceCount);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
@@ -593,7 +632,7 @@ void Mesh::drawArraysInstancedImplementationNV(const GLint baseVertex, const GLs
     static_cast<void>(baseVertex);
     static_cast<void>(count);
     static_cast<void>(instanceCount);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 #endif
@@ -605,7 +644,7 @@ void Mesh::drawElementsInstancedImplementationANGLE(const GLsizei count, const G
     static_cast<void>(count);
     static_cast<void>(indexOffset);
     static_cast<void>(instanceCount);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
@@ -617,7 +656,7 @@ void Mesh::drawElementsInstancedImplementationEXT(const GLsizei count, const GLi
     static_cast<void>(count);
     static_cast<void>(indexOffset);
     static_cast<void>(instanceCount);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
@@ -628,7 +667,7 @@ void Mesh::drawElementsInstancedImplementationNV(const GLsizei count, const GLin
     static_cast<void>(count);
     static_cast<void>(indexOffset);
     static_cast<void>(instanceCount);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 #endif
@@ -637,6 +676,7 @@ void Mesh::drawElementsInstancedImplementationNV(const GLsizei count, const GLin
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, MeshPrimitive value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case MeshPrimitive::value: return debug << "MeshPrimitive::" #value;
         _c(Points)
         _c(LineStrip)
@@ -655,21 +695,24 @@ Debug& operator<<(Debug& debug, MeshPrimitive value) {
         _c(Patches)
         #endif
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
-    return debug << "MeshPrimitive::(invalid)";
+    return debug << "MeshPrimitive(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, Mesh::IndexType value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case Mesh::IndexType::value: return debug << "Mesh::IndexType::" #value;
         _c(UnsignedByte)
         _c(UnsignedShort)
         _c(UnsignedInt)
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Mesh::IndexType::(invalid)";
+    return debug << "Mesh::IndexType(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 

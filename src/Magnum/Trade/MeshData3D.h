@@ -63,7 +63,14 @@ class MAGNUM_EXPORT MeshData3D {
         MeshData3D(const MeshData3D&) = delete;
 
         /** @brief Move constructor */
-        MeshData3D(MeshData3D&&);
+        MeshData3D(MeshData3D&&)
+            /* GCC 4.9.0 (the one from Android NDK) thinks this does not match
+               the implicit signature so it can't be defaulted. Works on 4.7,
+               5.0 and everywhere else, so I don't bother. */
+            #if !defined(__GNUC__) || __GNUC__*100 + __GNUC_MINOR__ != 409
+            noexcept
+            #endif
+            ;
 
         ~MeshData3D();
 
@@ -71,7 +78,14 @@ class MAGNUM_EXPORT MeshData3D {
         MeshData3D& operator=(const MeshData3D&) = delete;
 
         /** @brief Move assignment */
-        MeshData3D& operator=(MeshData3D&&);
+        MeshData3D& operator=(MeshData3D&&)
+            /* GCC 4.9.0 (the one from Android NDK) thinks this does not match
+               the implicit signature so it can't be defaulted. Works on 4.7,
+               5.0 and everywhere else, so I don't bother. */
+            #if !defined(__GNUC__) || __GNUC__*100 + __GNUC_MINOR__ != 409
+            noexcept
+            #endif
+            ;
 
         /** @brief Primitive */
         MeshPrimitive primitive() const { return _primitive; }

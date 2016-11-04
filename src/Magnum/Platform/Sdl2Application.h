@@ -331,10 +331,10 @@ class Sdl2Application {
         class KeyEvent;
         class MouseEvent;
         class MouseMoveEvent;
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        class MouseScrollEvent;
+        class MultiGestureEvent;
         class TextInputEvent;
         class TextEditingEvent;
-        #endif
 
         /**
          * @brief Default constructor
@@ -343,7 +343,8 @@ class Sdl2Application {
          *
          * Creates application with default or user-specified configuration.
          * See @ref Configuration for more information. The program exits if
-         * the context cannot be created, see below for an alternative.
+         * the context cannot be created, see @ref tryCreateContext() for an
+         * alternative.
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         explicit Sdl2Application(const Arguments& arguments, const Configuration& configuration = Configuration());
@@ -421,14 +422,17 @@ class Sdl2Application {
 
         /** @{ @name Screen handling */
 
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
         /**
          * @brief Window size
          *
          * Window size to which all input event coordinates can be related.
          * Note that especially on HiDPI systems the reported window size might
          * not be the same as framebuffer size.
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          */
         Vector2i windowSize();
+        #endif
 
         /**
          * @brief Swap buffers
@@ -583,9 +587,29 @@ class Sdl2Application {
          */
         virtual void mouseMoveEvent(MouseMoveEvent& event);
 
+        /**
+         * @brief Mouse scroll event
+         *
+         * Called when a scrolling device is used (mouse wheel or scrolling
+         * area on a touchpad). Default implementation does nothing.
+         */
+        virtual void mouseScrollEvent(MouseScrollEvent& event);
+
         /*@}*/
 
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        /** @{ @name Touch gesture handling */
+
+        /**
+         * @brief Multi gesture event
+         *
+         * Called when the user performs a gesture using multiple fingers.
+         * Default implementation does nothing.
+         * @experimental
+         */
+        virtual void multiGestureEvent(MultiGestureEvent& event);
+
+        /*@}*/
+
         /** @{ @name Text input handling */
     public:
         /**
@@ -593,30 +617,30 @@ class Sdl2Application {
          *
          * If text input is active, text input events go to @ref textInputEvent()
          * and @ref textEditingEvent().
-         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         * @note Note that in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" the
+         *      value is emulated and might not reflect external events like
+         *      closing on-screen keyboard.
          * @see @ref startTextInput(), @ref stopTextInput()
          */
-        bool isTextInputActive() { return SDL_IsTextInputActive(); }
+        bool isTextInputActive();
 
         /**
          * @brief Start text input
          *
          * Starts text input that will go to @ref textInputEvent() and
          * @ref textEditingEvent().
-         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          * @see @ref stopTextInput(), @ref isTextInputActive(),
          *      @ref setTextInputRect()
          */
-        void startTextInput() { SDL_StartTextInput(); }
+        void startTextInput();
 
         /**
          * @brief Stop text input
          *
-         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          * @see @ref startTextInput(), @ref isTextInputActive(), @ref textInputEvent()
          *      @ref textEditingEvent()
          */
-        void stopTextInput() { SDL_StopTextInput(); }
+        void stopTextInput();
 
         /**
          * @brief Set text input rectangle
@@ -647,7 +671,6 @@ class Sdl2Application {
         virtual void textEditingEvent(TextEditingEvent& event);
 
         /*@}*/
-        #endif
 
     private:
         enum class Flag: UnsignedByte {
@@ -675,6 +698,7 @@ class Sdl2Application {
         UnsignedInt _minimalLoopPeriod;
         #else
         SDL_Surface* _glContext;
+        bool _isTextInputActive = false;
         #endif
 
         std::unique_ptr<Platform::Context> _context;
@@ -869,7 +893,8 @@ class Sdl2Application::Configuration {
          * backwards-compatible with requested one. Default is
          * @ref Version::None, i.e. any provided version is used.
          * @note In @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" this function
-         *      does nothing (@ref Version::GLES200 is always used).
+         *      does nothing (@ref Version::GLES200 or @ref Version::GLES300 is
+         *      used implicitly based on the target).
          */
         Configuration& setVersion(Version version) {
             #ifndef CORRADE_TARGET_EMSCRIPTEN
@@ -946,10 +971,40 @@ class Sdl2Application::InputEvent {
          *      @ref MouseEvent::modifiers(), @ref MouseMoveEvent::modifiers()
          */
         enum class Modifier: Uint16 {
-            Shift = KMOD_SHIFT,         /**< Shift */
-            Ctrl = KMOD_CTRL,           /**< Ctrl */
-            Alt = KMOD_ALT,             /**< Alt */
-            AltGr = KMOD_MODE,          /**< AltGr */
+            /**
+             * Shift
+             *
+             * @see @ref KeyEvent::Key::LeftShift, @ref KeyEvent::Key::RightShift
+             */
+            Shift = KMOD_SHIFT,
+
+            /**
+             * Ctrl
+             *
+             * @see @ref KeyEvent::Key::LeftCtrl, @ref KeyEvent::Key::RightCtrl
+             */
+            Ctrl = KMOD_CTRL,
+
+            /**
+             * Alt
+             *
+             * @see @ref KeyEvent::Key::LeftAlt, @ref KeyEvent::Key::RightAlt
+             */
+            Alt = KMOD_ALT,
+
+            /**
+             * Super key (Windows/⌘)
+             *
+             * @see @ref KeyEvent::Key::LeftSuper, @ref KeyEvent::Key::RightSuper
+             */
+            Super = KMOD_GUI,
+
+            /**
+             * AltGr
+             *
+             * @see @ref KeyEvent::Key::AltGr
+             */
+            AltGr = KMOD_MODE,
 
             CapsLock = KMOD_CAPS,       /**< Caps lock */
             NumLock = KMOD_NUM          /**< Num lock */
@@ -1015,6 +1070,69 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
          */
         enum class Key: SDL_Keycode {
             Unknown = SDLK_UNKNOWN,     /**< Unknown key */
+
+            /**
+             * Left Shift
+             *
+             * @see @ref InputEvent::Modifier::Shift
+             */
+            LeftShift = SDLK_LSHIFT,
+
+            /**
+             * Right Shift
+             *
+             * @see @ref InputEvent::Modifier::Shift
+             */
+            RightShift = SDLK_RSHIFT,
+
+            /**
+             * Left Ctrl
+             *
+             * @see @ref InputEvent::Modifier::Ctrl
+             */
+            LeftCtrl = SDLK_LCTRL,
+
+            /**
+             * Right Ctrl
+             *
+             * @see @ref InputEvent::Modifier::Ctrl
+             */
+            RightCtrl = SDLK_RCTRL,
+
+            /**
+             * Left Alt
+             *
+             * @see @ref InputEvent::Modifier::Alt
+             */
+            LeftAlt = SDLK_LALT,
+
+            /**
+             * Right Alt
+             *
+             * @see @ref InputEvent::Modifier::Alt
+             */
+            RightAlt = SDLK_RALT,
+
+            /**
+             * Left Super key (Windows/⌘)
+             *
+             * @see @ref InputEvent::Modifier::Super
+             */
+            LeftSuper = SDLK_LGUI,
+
+            /**
+             * Right Super key (Windows/⌘)
+             *
+             * @see @ref InputEvent::Modifier::Super
+             */
+            RightSuper = SDLK_RGUI,
+
+            /**
+             * AltGr
+             *
+             * @see @ref InputEvent::Modifier::AltGr
+             */
+            AltGr = SDLK_MODE,
 
             Enter = SDLK_RETURN,        /**< Enter */
             Esc = SDLK_ESCAPE,          /**< Escape */
@@ -1094,23 +1212,58 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
             Z = SDLK_z                  /**< Letter Z */
         };
 
-        /** @brief Key */
+        /**
+         * @brief Name for given key
+         *
+         * Human-readable localized UTF-8 name for given @p key, intended for
+         * displaying to the user in e.g. key binding configuration. If there
+         * is no name for given key, empty string is returned.
+         * @see @ref keyName(Key)
+         */
+        static std::string keyName(Key key);
+
+        /**
+         * @brief Key
+         *
+         * @see @ref keyName()
+         */
         constexpr Key key() const { return _key; }
+
+        /**
+         * @brief Key name
+         *
+         * Human-readable localized UTF-8 name for the key returned by
+         * @ref key(), intended for displaying to the user in e.g.
+         * key binding configuration. If there is no name for that key, empty
+         * string is returned.
+         * @see @ref keyName(Key)
+         */
+        std::string keyName() const;
 
         /** @brief Modifiers */
         constexpr Modifiers modifiers() const { return _modifiers; }
 
+        /**
+         * @brief Whether the key press is repeated
+         *
+         * Returns `true` if the key press event is repeated, `false` if not or
+         * if this was key release event.
+         */
+        constexpr bool isRepeated() const { return _repeated; }
+
     private:
-        constexpr KeyEvent(Key key, Modifiers modifiers): _key(key), _modifiers(modifiers) {}
+        constexpr KeyEvent(Key key, Modifiers modifiers, bool repeated): _key{key}, _modifiers{modifiers}, _repeated{repeated} {}
 
         const Key _key;
         const Modifiers _modifiers;
+        const bool _repeated;
 };
 
 /**
 @brief Mouse event
 
-@see @ref MouseMoveEvent, @ref mousePressEvent(), @ref mouseReleaseEvent()
+@see @ref MouseMoveEvent, @ref MouseScrollEvent, @ref mousePressEvent(),
+    @ref mouseReleaseEvent()
 */
 class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
     friend Sdl2Application;
@@ -1125,8 +1278,26 @@ class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
             Left = SDL_BUTTON_LEFT,         /**< Left button */
             Middle = SDL_BUTTON_MIDDLE,     /**< Middle button */
             Right = SDL_BUTTON_RIGHT,       /**< Right button */
-            WheelUp = SDL_BUTTON_X1,        /**< Wheel up */
-            WheelDown = SDL_BUTTON_X2       /**< Wheel down */
+
+            /** First extra button (e.g. wheel left) */
+            X1 = SDL_BUTTON_X1,
+
+            /** Second extra button (e.g. wheel right) */
+            X2 = SDL_BUTTON_X2,
+
+            #ifdef MAGNUM_BUILD_DEPRECATED
+            /**
+             * Wheel up
+             * @deprecated Use @ref MouseScrollEvent and @ref mouseScrollEvent() instead.
+             */
+            WheelUp CORRADE_DEPRECATED_ENUM("use mouseScrollEvent() and MouseScrollEvent instead") = SDL_BUTTON_X2 + 1,
+
+            /**
+             * Wheel down
+             * @deprecated Use @ref MouseScrollEvent and @ref mouseScrollEvent() instead.
+             */
+            WheelDown CORRADE_DEPRECATED_ENUM("use mouseScrollEvent() and MouseScrollEvent instead") = SDL_BUTTON_X2 + 2
+            #endif
         };
 
         /** @brief Button */
@@ -1134,6 +1305,15 @@ class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
 
         /** @brief Position */
         constexpr Vector2i position() const { return _position; }
+
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        /**
+         * @brief Click count
+         *
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         */
+        constexpr Int clickCount() const { return _clickCount; }
+        #endif
 
         /**
          * @brief Modifiers
@@ -1143,18 +1323,29 @@ class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
         Modifiers modifiers();
 
     private:
-        constexpr MouseEvent(Button button, const Vector2i& position): _button(button), _position(position), modifiersLoaded(false) {}
+        constexpr MouseEvent(Button button, const Vector2i& position
+            #ifndef CORRADE_TARGET_EMSCRIPTEN
+            , Int clickCount
+            #endif
+            ): _button{button}, _position{position},
+            #ifndef CORRADE_TARGET_EMSCRIPTEN
+            _clickCount{clickCount},
+            #endif
+            _modifiersLoaded{false} {}
 
         const Button _button;
         const Vector2i _position;
-        bool modifiersLoaded;
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        const Int _clickCount;
+        #endif
+        bool _modifiersLoaded;
         Modifiers _modifiers;
 };
 
 /**
 @brief Mouse move event
 
-@see @ref MouseEvent, @ref mouseMoveEvent()
+@see @ref MouseEvent, @ref MouseScrollEvent, @ref mouseMoveEvent()
 */
 class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
     friend Sdl2Application;
@@ -1169,8 +1360,12 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
             Left = SDL_BUTTON_LMASK,        /**< Left button */
             Middle = SDL_BUTTON_MMASK,      /**< Middle button */
             Right = SDL_BUTTON_RMASK,       /**< Right button */
-            WheelUp = SDL_BUTTON_X1MASK,    /**< Wheel up */
-            WheelDown = SDL_BUTTON_X2MASK   /**< Wheel down */
+
+            /** First extra button (e.g. wheel left) */
+            X1 = SDL_BUTTON_X1MASK,
+
+            /** Second extra button (e.g. wheel right) */
+            X2 = SDL_BUTTON_X2MASK
         };
 
         /**
@@ -1201,19 +1396,113 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
         Modifiers modifiers();
 
     private:
-        constexpr MouseMoveEvent(const Vector2i& position, const Vector2i& relativePosition, Buttons buttons): _position(position), _relativePosition(relativePosition), modifiersLoaded(false), _buttons(buttons) {}
+        constexpr MouseMoveEvent(const Vector2i& position, const Vector2i& relativePosition, Buttons buttons): _position{position}, _relativePosition{relativePosition}, _buttons{buttons}, _modifiersLoaded{false} {}
 
         const Vector2i _position, _relativePosition;
-        bool modifiersLoaded;
-        Buttons _buttons;
+        const Buttons _buttons;
+        bool _modifiersLoaded;
         Modifiers _modifiers;
 };
 
-#ifndef CORRADE_TARGET_EMSCRIPTEN
+/**
+@brief Mouse scroll event
+
+@see @ref MouseEvent, @ref MouseMoveEvent, @ref mouseScrollEvent()
+*/
+class Sdl2Application::MouseScrollEvent: public Sdl2Application::InputEvent {
+    friend Sdl2Application;
+
+    public:
+        /** @brief Scroll offset */
+        constexpr Vector2 offset() const { return _offset; }
+
+        /**
+         * @brief Modifiers
+         *
+         * Lazily populated on first request.
+         */
+        Modifiers modifiers();
+
+    private:
+        constexpr MouseScrollEvent(const Vector2& offset): _offset{offset}, _modifiersLoaded{false} {}
+
+        const Vector2 _offset;
+        bool _modifiersLoaded;
+        Modifiers _modifiers;
+};
+
+/**
+@brief Multi gesture event
+
+@experimental
+@see @ref multiGestureEvent()
+*/
+class Sdl2Application::MultiGestureEvent {
+    friend Sdl2Application;
+
+    public:
+        /** @brief Copying is not allowed */
+        MultiGestureEvent(const MultiGestureEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        MultiGestureEvent(MultiGestureEvent&&) = delete;
+
+        /** @brief Copying is not allowed */
+        MultiGestureEvent& operator=(const MultiGestureEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        MultiGestureEvent& operator=(MultiGestureEvent&&) = delete;
+
+        /** @brief Whether the event is accepted */
+        constexpr bool isAccepted() const { return _accepted; }
+
+        /**
+         * @brief Set event as accepted
+         *
+         * If the event is ignored (i.e., not set as accepted), it might be
+         * propagated elsewhere, for example to another screen when using
+         * @ref BasicScreenedApplication "ScreenedApplication". By default is
+         * each event ignored and thus propagated.
+         */
+        void setAccepted(bool accepted = true) { _accepted = accepted; }
+
+        /** @brief Gesture center */
+        Vector2 center() const { return _center; }
+
+        /**
+         * @brief Relative rotation
+         *
+         * Rotation relative to previous event.
+         */
+        Float relativeRotation() const { return _relativeRotation; }
+
+        /**
+         * @brief Relative distance
+         *
+         * Distance of the fingers relative to previous event.
+         */
+        Float relativeDistance() const { return _relativeDistance; }
+
+        /**
+         * @brief Finger count
+         *
+         * Count of fingers performing the gesture.
+         */
+        Int fingerCount() const { return _fingerCount; }
+
+    private:
+        constexpr MultiGestureEvent(const Vector2& center, Float relativeRotation, Float relativeDistance, Int fingerCount): _center{center}, _relativeRotation{relativeRotation}, _relativeDistance{relativeDistance}, _fingerCount{fingerCount}, _accepted{false} {}
+
+        Vector2 _center;
+        Float _relativeRotation,
+            _relativeDistance;
+        Int _fingerCount;
+        bool _accepted;
+};
+
 /**
 @brief Text input event
 
-@note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
 @see @ref TextEditingEvent, @ref textInputEvent()
 */
 class Sdl2Application::TextInputEvent {
@@ -1258,7 +1547,6 @@ class Sdl2Application::TextInputEvent {
 /**
 @brief Text editing event
 
-@note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
 @see @ref textEditingEvent()
 */
 class Sdl2Application::TextEditingEvent {
@@ -1306,7 +1594,6 @@ class Sdl2Application::TextEditingEvent {
         Int _start, _length;
         bool _accepted;
 };
-#endif
 
 /** @hideinitializer
 @brief Entry point for SDL2-based applications

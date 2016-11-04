@@ -30,7 +30,7 @@
  */
 
 #include "Magnum/Magnum.h"
-#include "Magnum/Math/Vector3.h"
+#include "Magnum/Math/Color.h"
 #include "Magnum/Trade/AbstractMaterialData.h"
 
 namespace Magnum { namespace Trade {
@@ -73,7 +73,19 @@ class MAGNUM_EXPORT PhongMaterialData: public AbstractMaterialData {
          * Colors and textures should be specified using member functions based
          * on what flags are set.
          */
-        explicit PhongMaterialData(Flags flags, Float shininess, const void* importerState = nullptr): AbstractMaterialData{MaterialType::Phong, importerState}, _shininess{shininess}, _flags{flags} {}
+        explicit PhongMaterialData(Flags flags, Float shininess, const void* importerState = nullptr) noexcept: AbstractMaterialData{MaterialType::Phong, importerState}, _flags{flags}, _shininess{shininess} {}
+
+        /** @brief Copying is not allowed */
+        PhongMaterialData(const PhongMaterialData&) = delete;
+
+        /** @brief Move constructor */
+        PhongMaterialData(PhongMaterialData&& other) noexcept;
+
+        /** @brief Copying is not allowed */
+        PhongMaterialData& operator=(const PhongMaterialData&) = delete;
+
+        /** @brief Move assignment */
+        PhongMaterialData& operator=(PhongMaterialData&& other) noexcept;
 
         /** @brief Material flags */
         Flags flags() const { return _flags; }
@@ -84,8 +96,8 @@ class MAGNUM_EXPORT PhongMaterialData: public AbstractMaterialData {
          * Available only if the material doesn't have @ref Flag::AmbientTexture.
          * @see @ref flags()
          */
-        Vector3& ambientColor();
-        Vector3 ambientColor() const; /**< @overload */
+        Color3& ambientColor();
+        Color3 ambientColor() const; /**< @overload */
 
         /**
          * @brief Ambient texture ID
@@ -102,8 +114,8 @@ class MAGNUM_EXPORT PhongMaterialData: public AbstractMaterialData {
          * Available only if the material doesn't have @ref Flag::DiffuseTexture.
          * @see @ref flags()
          */
-        Vector3& diffuseColor();
-        Vector3 diffuseColor() const; /**< @overload */
+        Color3& diffuseColor();
+        Color3 diffuseColor() const; /**< @overload */
 
         /**
          * @brief Diffuse texture ID
@@ -120,8 +132,8 @@ class MAGNUM_EXPORT PhongMaterialData: public AbstractMaterialData {
          * Available only if the material doesn't have @ref Flag::SpecularTexture.
          * @see @ref flags()
          */
-        Vector3& specularColor();
-        Vector3 specularColor() const; /**< @overload */
+        Color3& specularColor();
+        Color3 specularColor() const; /**< @overload */
 
         /**
          * @brief Specular texture ID
@@ -139,22 +151,22 @@ class MAGNUM_EXPORT PhongMaterialData: public AbstractMaterialData {
         union Source {
             Source() {}
 
-            Vector3 color;
+            Color3 color;
             UnsignedInt texture;
         };
 
+        Flags _flags;
+        Float _shininess;
         Source _ambient,
             _diffuse,
             _specular;
-        Float _shininess;
-        Flags _flags;
 };
 
 CORRADE_ENUMSET_OPERATORS(PhongMaterialData::Flags)
 
 /* Ugly as hell. */
 
-inline Vector3 PhongMaterialData::ambientColor() const {
+inline Color3 PhongMaterialData::ambientColor() const {
     return const_cast<PhongMaterialData*>(this)->ambientColor();
 }
 
@@ -162,7 +174,7 @@ inline UnsignedInt PhongMaterialData::ambientTexture() const {
     return const_cast<PhongMaterialData*>(this)->ambientTexture();
 }
 
-inline Vector3 PhongMaterialData::diffuseColor() const {
+inline Color3 PhongMaterialData::diffuseColor() const {
     return const_cast<PhongMaterialData*>(this)->diffuseColor();
 }
 
@@ -170,7 +182,7 @@ inline UnsignedInt PhongMaterialData::diffuseTexture() const {
     return const_cast<PhongMaterialData*>(this)->diffuseTexture();
 }
 
-inline Vector3 PhongMaterialData::specularColor() const {
+inline Color3 PhongMaterialData::specularColor() const {
     return const_cast<PhongMaterialData*>(this)->specularColor();
 }
 

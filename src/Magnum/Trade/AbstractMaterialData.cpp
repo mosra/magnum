@@ -29,18 +29,20 @@
 
 namespace Magnum { namespace Trade {
 
-AbstractMaterialData::AbstractMaterialData(const MaterialType type, const void* const importerState): _type{type}, _importerState{importerState} {}
+AbstractMaterialData::AbstractMaterialData(const MaterialType type, const void* const importerState) noexcept: _type{type}, _importerState{importerState} {}
 
 AbstractMaterialData::~AbstractMaterialData() {}
 
 Debug& operator<<(Debug& debug, const MaterialType value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case MaterialType::value: return debug << "Trade::MaterialType::" #value;
         _c(Phong)
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Trade::MaterialType::(unknown)";
+    return debug << "Trade::MaterialType(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
 }}

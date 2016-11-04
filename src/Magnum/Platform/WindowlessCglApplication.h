@@ -28,12 +28,13 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Platform::WindowlessCglApplication, macro @ref MAGNUM_WINDOWLESSCGLAPPLICATION_MAIN()
+ * @brief Class @ref Magnum::Platform::WindowlessCglApplication, @ref Magnum::Platform::WindowlessCglContext, macro @ref MAGNUM_WINDOWLESSCGLAPPLICATION_MAIN()
  */
 
 #include <memory>
 
 #include "Magnum/OpenGL.h"
+#include "Magnum/Tags.h"
 #include <OpenGL/OpenGL.h>
 #include <OpenGL/CGLTypes.h>
 #include <OpenGL/CGLCurrent.h>
@@ -44,13 +45,99 @@
 namespace Magnum { namespace Platform {
 
 /**
+@brief Windowless CGL context
+
+GL context used in @ref WindowlessCglApplication. Does not have any default
+framebuffer. It is built if `WITH_WINDOWLESSCGLAPPLICATION` is enabled in
+CMake.
+
+Meant to be used when there is a need to manage (multiple) GL contexts
+manually. See @ref platform-windowless-contexts for more information. If no
+other application header is included, this class is also aliased to
+`Platform::WindowlessGLContext`.
+*/
+class WindowlessCglContext {
+    public:
+        class Configuration;
+
+        /**
+         * @brief Constructor
+         * @param configuration Context configuration
+         * @param context       Optional Magnum context instance constructed
+         *      using @ref NoCreate to manage driver workarounds
+         *
+         * If version is not specified in @p configuration, it first tries to
+         * create core context (OpenGL 3.2+), if that fails, tries OpenGL 3.0+
+         * and as a last attempt falls back to compatibility OpenGL 2.1
+         * context.
+         *
+         * Once the context is created, make it current using @ref makeCurrent()
+         * and create @ref Platform::Context instance to be able to use Magnum.
+         * @see @ref isCreated()
+         */
+        explicit WindowlessCglContext(const Configuration& configuration, Context* context = nullptr);
+
+        /**
+         * @brief Construct without creating the context
+         *
+         * Move a instance with created context over to make it usable.
+         */
+        explicit WindowlessCglContext(NoCreateT) {}
+
+        /** @brief Copying is not allowed */
+        WindowlessCglContext(const WindowlessCglContext&) = delete;
+
+        /** @brief Move constructor */
+        WindowlessCglContext(WindowlessCglContext&& other);
+
+        /** @brief Copying is not allowed */
+        WindowlessCglContext& operator=(const WindowlessCglContext&) = delete;
+
+        /** @brief Move assignment */
+        WindowlessCglContext& operator=(WindowlessCglContext&& other);
+
+        /**
+         * @brief Destructor
+         *
+         * Destroys the context, if any.
+         */
+        ~WindowlessCglContext();
+
+        /** @brief Whether the context is created */
+        bool isCreated() const { return _context; }
+
+        /**
+         * @brief Make the context current
+         *
+         * Prints error message and returns `false` on failure, otherwise
+         * returns `true`.
+         */
+        bool makeCurrent();
+
+    private:
+        CGLPixelFormatObj _pixelFormat{};
+        CGLContextObj _context{};
+};
+
+/**
+@brief Configuration
+
+@see @ref WindowlessCglContext(),
+    @ref WindowlessCglApplication::WindowlessCglApplication(),
+    @ref WindowlessCglApplication::createContext(),
+    @ref WindowlessCglApplication::tryCreateContext()
+*/
+class WindowlessCglContext::Configuration {
+    public:
+        constexpr /*implicit*/ Configuration() {}
+};
+
+/**
 @brief Windowless CGL application
 
-Application for offscreen rendering using pure CGL. Does not have any default
-framebuffer.
-
-This application library is available on desktop OpenGL on OS X. It
-is built if `WITH_WINDOWLESSCGLAPPLICATION` is enabled in CMake.
+Application for offscreen rendering using @ref WindowlessCglContext. This
+application library is available on desktop OpenGL on OS X. It is built if
+`WITH_WINDOWLESSCGLAPPLICATION` is enabled in CMake.
 
 ## Bootstrap application
 
@@ -104,9 +191,25 @@ class WindowlessCglApplication {
             char** argv;    /**< @brief Argument values */
         };
 
-        class Configuration;
+        /**
+         * @brief Configuration
+         *
+         * @see @ref WindowlessCglApplication(), @ref createContext(),
+         *      @ref tryCreateContext()
+         */
+        typedef WindowlessCglContext::Configuration Configuration;
 
-        /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, const Configuration&) */
+        /**
+         * @brief Default constructor
+         * @param arguments     Application arguments
+         * @param configuration Configuration
+         *
+         * Creates application with default or user-specified configuration.
+         * See @ref Configuration for more information. The program exits if
+         * the context cannot be created, see @ref tryCreateContext() for an
+         * alternative.
+         * @see @ref WindowlessCglContext
+         */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         explicit WindowlessCglApplication(const Arguments& arguments, const Configuration& configuration = Configuration());
         #else
@@ -115,8 +218,22 @@ class WindowlessCglApplication {
         explicit WindowlessCglApplication(const Arguments& arguments);
         #endif
 
-        /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, std::nullptr_t) */
-        explicit WindowlessCglApplication(const Arguments& arguments, std::nullptr_t);
+        /**
+         * @brief Construct without creating the context
+         * @param arguments     Application arguments
+         *
+         * Unlike above, the context is not created and must be created later
+         * with @ref createContext() or @ref tryCreateContext().
+         */
+        explicit WindowlessCglApplication(const Arguments& arguments, NoCreateT);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief WindowlessCglApplication(const Arguments&, NoCreateT)
+         * @deprecated Use @ref WindowlessCglApplication(const Arguments&, NoCreateT) instead.
+         */
+        CORRADE_DEPRECATED("use WindowlessCglApplication(const Arguments&, NoCreateT) instead") explicit WindowlessCglApplication(const Arguments& arguments, std::nullptr_t): WindowlessCglApplication{arguments, NoCreate} {}
+        #endif
 
         /** @brief Copying is not allowed */
         WindowlessCglApplication(const WindowlessCglApplication&) = delete;
@@ -144,7 +261,15 @@ class WindowlessCglApplication {
            thus this is faster than public pure virtual destructor */
         ~WindowlessCglApplication();
 
-        /** @copydoc Sdl2Application::createContext() */
+        /**
+         * @brief Create context with given configuration
+         *
+         * Must be called if and only if the context wasn't created by the
+         * constructor itself. Error message is printed and the program exits
+         * if the context cannot be created, see @ref tryCreateContext() for an
+         * alternative.
+         * @see @ref WindowlessCglContext
+         */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         void createContext(const Configuration& configuration = Configuration());
         #else
@@ -153,25 +278,17 @@ class WindowlessCglApplication {
         void createContext();
         #endif
 
-        /** @copydoc Sdl2Application::tryCreateContext() */
+        /**
+         * @brief Try to create context with given configuration
+         *
+         * Unlike @ref createContext() returns `false` if the context cannot be
+         * created, `true` otherwise.
+         */
         bool tryCreateContext(const Configuration& configuration);
 
     private:
-        CGLContextObj _glContext;
-        CGLPixelFormatObj _pixelFormat;
-
+        WindowlessCglContext _glContext;
         std::unique_ptr<Platform::Context> _context;
-};
-
-/**
-@brief Configuration
-
-@see @ref WindowlessCglApplication(), @ref createContext(),
-    @ref tryCreateContext()
-*/
-class WindowlessCglApplication::Configuration {
-    public:
-        constexpr /*implicit*/ Configuration() {}
 };
 
 /** @hideinitializer
@@ -200,6 +317,7 @@ aliased to `MAGNUM_WINDOWLESSAPPLICATION_MAIN()`.
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_WINDOWLESSAPPLICATION_MAIN
 typedef WindowlessCglApplication WindowlessApplication;
+typedef WindowlessCglContext WindowlessGLContext;
 #define MAGNUM_WINDOWLESSAPPLICATION_MAIN(className) MAGNUM_WINDOWLESSCGLAPPLICATION_MAIN(className)
 #else
 #undef MAGNUM_WINDOWLESSAPPLICATION_MAIN

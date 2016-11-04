@@ -24,6 +24,9 @@
 */
 
 #include <Corrade/TestSuite/Tester.h>
+#ifdef _MSC_VER
+#include <algorithm> /* std::max() */
+#endif
 
 #include "Magnum/Math/TypeTraits.h"
 #include "Magnum/Math/Constants.h"
@@ -33,73 +36,218 @@ namespace Magnum { namespace Math { namespace Test {
 struct TypeTraitsTest: Corrade::TestSuite::Tester {
     explicit TypeTraitsTest();
 
+    void sizeOfLongDouble();
+    void name();
+
     template<class T> void equalsIntegral();
     template<class T> void equalsFloatingPoint0();
     template<class T> void equalsFloatingPoint1();
     template<class T> void equalsFloatingPointLarge();
     template<class T> void equalsFloatingPointInfinity();
     template<class T> void equalsFloatingPointNaN();
+
+    template<class T> void equalsZeroIntegral();
+    template<class T> void equalsZeroFloatingPoint();
+    template<class T> void equalsZeroFloatingPointSmall();
+    template<class T> void equalsZeroFloatingPointLarge();
 };
 
+namespace {
+
+enum: std::size_t { EqualsZeroDataCount = 3 };
+
+struct {
+    const char* name;
+    Float a, aStep;
+    Double b, bStep;
+    long double c, cStep;
+
+    Float get(Float) const { return a; }
+    Float getStep(Float) const { return aStep; }
+    Double get(Double) const { return b; }
+    Double getStep(Double) const { return bStep; }
+    long double get(long double) const { return c; }
+    long double getStep(long double) const { return cStep; }
+} EqualsZeroData[EqualsZeroDataCount] = {
+    {"", -3.141592653589793f, 5.0e-5f, -3.141592653589793, 5.0e-14, -3.141592653589793l,
+        #if !defined(_MSC_VER) && !defined(CORRADE_TARGET_ANDROID)
+        5.0e-17l
+        #else
+        5.0e-14
+        #endif
+    },
+    {"small", 1.0e-6f, 5.0e-6f, -1.0e-15, 5.0e-15, 1.0e-18l,
+        #if !defined(_MSC_VER) && !defined(CORRADE_TARGET_ANDROID)
+        5.0e-18l
+        #else
+        5.0e-15
+        #endif
+    },
+    {"large", 12345.0f, 0.2f, 12345678901234.0, 0.2,
+        #if !defined(_MSC_VER) && !defined(CORRADE_TARGET_ANDROID)
+        -12345678901234567.0l,
+        #else
+        -12345678901234.0l,
+        #endif
+        0.2l},
+};
+
+}
+
 TypeTraitsTest::TypeTraitsTest() {
-    addTests<TypeTraitsTest>({&TypeTraitsTest::equalsIntegral<UnsignedByte>,
+    addTests({&TypeTraitsTest::sizeOfLongDouble,
+              &TypeTraitsTest::name,
+
+              &TypeTraitsTest::equalsIntegral<UnsignedByte>,
               &TypeTraitsTest::equalsIntegral<Byte>,
               &TypeTraitsTest::equalsIntegral<UnsignedShort>,
               &TypeTraitsTest::equalsIntegral<Short>,
               &TypeTraitsTest::equalsIntegral<UnsignedInt>,
               &TypeTraitsTest::equalsIntegral<Int>,
+              #ifndef CORRADE_TARGET_EMSCRIPTEN
               &TypeTraitsTest::equalsIntegral<UnsignedLong>,
               &TypeTraitsTest::equalsIntegral<Long>,
+              #endif
+
               &TypeTraitsTest::equalsFloatingPoint0<Float>,
-              #ifndef MAGNUM_TARGET_GLES
               &TypeTraitsTest::equalsFloatingPoint0<Double>,
+              #ifndef CORRADE_TARGET_EMSCRIPTEN
+              &TypeTraitsTest::equalsFloatingPoint0<long double>,
               #endif
               &TypeTraitsTest::equalsFloatingPoint1<Float>,
-              #ifndef MAGNUM_TARGET_GLES
               &TypeTraitsTest::equalsFloatingPoint1<Double>,
+              #ifndef CORRADE_TARGET_EMSCRIPTEN
+              &TypeTraitsTest::equalsFloatingPoint1<long double>,
               #endif
               &TypeTraitsTest::equalsFloatingPointLarge<Float>,
-              #ifndef MAGNUM_TARGET_GLES
               &TypeTraitsTest::equalsFloatingPointLarge<Double>,
+              #ifndef CORRADE_TARGET_EMSCRIPTEN
+              &TypeTraitsTest::equalsFloatingPointLarge<long double>,
               #endif
               &TypeTraitsTest::equalsFloatingPointInfinity<Float>,
-              #ifndef MAGNUM_TARGET_GLES
               &TypeTraitsTest::equalsFloatingPointInfinity<Double>,
-              #endif
               &TypeTraitsTest::equalsFloatingPointNaN<Float>,
-              #ifndef MAGNUM_TARGET_GLES
-              &TypeTraitsTest::equalsFloatingPointNaN<Double>
+              &TypeTraitsTest::equalsFloatingPointNaN<Double>,
+
+              &TypeTraitsTest::equalsZeroIntegral<UnsignedByte>,
+              &TypeTraitsTest::equalsZeroIntegral<Byte>,
+              &TypeTraitsTest::equalsZeroIntegral<UnsignedShort>,
+              &TypeTraitsTest::equalsZeroIntegral<Short>,
+              &TypeTraitsTest::equalsZeroIntegral<UnsignedInt>,
+              &TypeTraitsTest::equalsZeroIntegral<Int>,
+              #ifndef CORRADE_TARGET_EMSCRIPTEN
+              &TypeTraitsTest::equalsZeroIntegral<UnsignedLong>,
+              &TypeTraitsTest::equalsZeroIntegral<Long>,
               #endif
               });
+
+    addInstancedTests<TypeTraitsTest>({
+        &TypeTraitsTest::equalsZeroFloatingPoint<Float>,
+        &TypeTraitsTest::equalsZeroFloatingPoint<Double>,
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        &TypeTraitsTest::equalsZeroFloatingPoint<long double>
+        #endif
+        }, EqualsZeroDataCount);
+}
+
+void TypeTraitsTest::sizeOfLongDouble() {
+    #ifdef CORRADE_TARGET_EMSCRIPTEN
+    CORRADE_SKIP("Not defined in Emscripten.");
+    #else
+    #if defined(_MSC_VER) || defined(CORRADE_TARGET_ANDROID)
+    CORRADE_COMPARE(sizeof(long double), 8);
+    CORRADE_EXPECT_FAIL("long double is equivalent to double on MSVC and Android.");
+    #endif
+
+    /* It's 80 bit, but has to be aligned somehow, so 128 bits / 16 bytes */
+    CORRADE_COMPARE(sizeof(long double), 16);
+    #endif
+}
+
+void TypeTraitsTest::name() {
+    CORRADE_COMPARE(TypeTraits<UnsignedShort>::name(), std::string{"UnsignedShort"});
+    CORRADE_COMPARE(TypeTraits<Float>::name(), std::string{"Float"});
 }
 
 template<class T> void TypeTraitsTest::equalsIntegral() {
+    setTestCaseName(std::string{"equalsIntegral<"} + TypeTraits<T>::name() + ">");
+
+    CORRADE_VERIFY(TypeTraits<T>::equals(1, 1));
+    CORRADE_VERIFY(!TypeTraits<T>::equals(1, -1));
     CORRADE_VERIFY(!TypeTraits<T>::equals(1, 1+TypeTraits<T>::epsilon()));
 }
 
 template<class T> void TypeTraitsTest::equalsFloatingPoint0() {
+    setTestCaseName(std::string{"equalsFloatingPoint0<"} + TypeTraits<T>::name() + ">");
+
     CORRADE_VERIFY(TypeTraits<T>::equals(T(0)+TypeTraits<T>::epsilon()/T(2), T(0)));
     CORRADE_VERIFY(!TypeTraits<T>::equals(T(0)+TypeTraits<T>::epsilon()*T(2), T(0)));
 }
 
 template<class T> void TypeTraitsTest::equalsFloatingPoint1() {
+    setTestCaseName(std::string{"equalsFloatingPoint1<"} + TypeTraits<T>::name() + ">");
+
     CORRADE_VERIFY(TypeTraits<T>::equals(T(1)+TypeTraits<T>::epsilon()/T(2), T(1)));
     CORRADE_VERIFY(!TypeTraits<T>::equals(T(1)+TypeTraits<T>::epsilon()*T(3), T(1)));
 }
 
 template<class T> void TypeTraitsTest::equalsFloatingPointLarge() {
+    setTestCaseName(std::string{"equalsFloatingPointLarge<"} + TypeTraits<T>::name() + ">");
+
     CORRADE_VERIFY(TypeTraits<T>::equals(T(25)+TypeTraits<T>::epsilon()*T(2), T(25)));
     CORRADE_VERIFY(!TypeTraits<T>::equals(T(25)+TypeTraits<T>::epsilon()*T(75), T(25)));
 }
 
 template<class T> void TypeTraitsTest::equalsFloatingPointInfinity() {
+    setTestCaseName(std::string{"equalsFloatingPointInfinity<"} + TypeTraits<T>::name() + ">");
+
     CORRADE_VERIFY(TypeTraits<T>::equals(Constants<T>::inf(),
                                          Constants<T>::inf()));
 }
 
 template<class T> void TypeTraitsTest::equalsFloatingPointNaN() {
+    setTestCaseName(std::string{"equalsFloatingPointNaN<"} + TypeTraits<T>::name() + ">");
+
     CORRADE_VERIFY(!TypeTraits<T>::equals(Constants<T>::nan(),
                                           Constants<T>::nan()));
+}
+
+namespace {
+    /* Argh! Why there is no standard std::abs() for unsigned types? */
+    template<class T, class U = typename std::enable_if<std::is_unsigned<T>::value>::type> T abs(T value) {
+        return value;
+    }
+    template<class T, class U = T, class V = typename std::enable_if<!std::is_unsigned<T>::value>::type> T abs(T value) {
+        return std::abs(value);
+    }
+}
+
+template<class T> void TypeTraitsTest::equalsZeroIntegral() {
+    setTestCaseName(std::string{"equalsZeroIntegral<"} + TypeTraits<T>::name() + ">");
+
+    const T a(-123);
+    const T b(-123);
+    const T magnitude = std::max(abs(a), abs(b));
+
+    CORRADE_VERIFY(TypeTraits<T>::equals(a, b));
+    CORRADE_VERIFY(TypeTraits<T>::equalsZero(a - b, magnitude));
+    CORRADE_VERIFY(!TypeTraits<T>::equalsZero(a - b + TypeTraits<T>::epsilon(), magnitude));
+}
+
+template<class T> void TypeTraitsTest::equalsZeroFloatingPoint() {
+    setTestCaseName(std::string{"equalsZeroFloatingPoint<"} + TypeTraits<T>::name() + ">");
+    setTestCaseDescription(EqualsZeroData[testCaseInstanceId()].name);
+
+    const T a = EqualsZeroData[testCaseInstanceId()].get(T{});
+    const T b = EqualsZeroData[testCaseInstanceId()].get(T{});
+    const T step = EqualsZeroData[testCaseInstanceId()].getStep(T{});
+    const T magnitude = std::max(abs(a), abs(b));
+
+    CORRADE_VERIFY(TypeTraits<T>::equals(a + step/T(2.0), b));
+    CORRADE_VERIFY(TypeTraits<T>::equalsZero(a + step/T(2.0) - b, magnitude));
+
+    CORRADE_VERIFY(!TypeTraits<T>::equals(a - step*T(2.0), b));
+    CORRADE_VERIFY(!TypeTraits<T>::equalsZero(a - step*T(2.0) - b, magnitude));
 }
 
 }}}

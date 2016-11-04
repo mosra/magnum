@@ -70,11 +70,19 @@ if(WITH_ANDROIDAPPLICATION)
     set(MagnumAndroidApplication_PRIVATE_HEADERS
         Implementation/Egl.h)
 
+    add_library(MagnumAndroidApplicationGlue OBJECT
+        ${ANDROID_NATIVE_APP_GLUE_SRC})
+    set_target_properties(MagnumAndroidApplicationGlue PROPERTIES CORRADE_USE_PEDANTIC_FLAGS OFF)
+    target_compile_options(MagnumAndroidApplicationGlue PRIVATE "-fvisibility=default")
+
     add_library(MagnumAndroidApplication STATIC
         ${MagnumAndroidApplication_SRCS}
         ${MagnumAndroidApplication_HEADERS}
         ${MagnumAndroidApplication_PRIVATE_HEADERS}
-        ${ANDROID_NATIVE_APP_GLUE_SRC})
+        $<TARGET_OBJECTS:MagnumAndroidApplicationGlue>)
+    # They just don't care, so of course the ANativeActivity_onCreate()
+    # function is not exported and thus the app startup fails if I don't
+    # disable hidden visibility for the file.
     target_include_directories(MagnumAndroidApplication PUBLIC ${ANDROID_NATIVE_APP_GLUE_INCLUDE_DIR})
     set_target_properties(MagnumAndroidApplication PROPERTIES DEBUG_POSTFIX "-d")
     # Assuming that PIC is not needed because the Application lib is always
@@ -222,8 +230,9 @@ if(WITH_WINDOWLESSNACLAPPLICATION)
         ${MagnumWindowlessNaClApplication_SRCS}
         ${MagnumWindowlessNaClApplication_HEADERS})
     set_target_properties(MagnumWindowlessNaClApplication PROPERTIES DEBUG_POSTFIX "-d")
-    # Assuming that PIC is not needed because the Application lib is always
-    # linked to the executable and not to any intermediate shared lib
+    if(BUILD_STATIC_PIC)
+        set_target_properties(MagnumWindowlessNaClApplication PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    endif()
     target_link_libraries(MagnumWindowlessNaClApplication Magnum ppapi_cpp ppapi)
 
     install(FILES ${MagnumWindowlessNaClApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
@@ -343,9 +352,10 @@ if(WITH_WINDOWLESSEGLAPPLICATION)
         ${MagnumWindowlessEglApplication_HEADERS}
         ${MagnumWindowlessEglApplication_PRIVATE_HEADERS})
     set_target_properties(MagnumWindowlessEglApplication PROPERTIES DEBUG_POSTFIX "-d")
+    if(BUILD_STATIC_PIC)
+        set_target_properties(MagnumWindowlessEglApplication PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    endif()
     target_link_libraries(MagnumWindowlessEglApplication Magnum EGL::EGL)
-    # Assuming that PIC is not needed because the Application lib is always
-    # linked to the executable and not to any intermediate shared lib
 
     install(FILES ${MagnumWindowlessEglApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumWindowlessEglApplication
@@ -372,8 +382,9 @@ if(WITH_WINDOWLESSGLXAPPLICATION)
     # X11 macros are a mess, disable warnings for C-style casts
     set_target_properties(MagnumWindowlessGlxApplication PROPERTIES DEBUG_POSTFIX "-d")
     target_compile_options(MagnumWindowlessGlxApplication PRIVATE "-Wno-old-style-cast")
-    # Assuming that PIC is not needed because the Application lib is always
-    # linked to the executable and not to any intermediate shared lib
+    if(BUILD_STATIC_PIC)
+        set_target_properties(MagnumWindowlessGlxApplication PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    endif()
     target_include_directories(MagnumWindowlessGlxApplication PUBLIC ${X11_INCLUDE_DIR})
     target_link_libraries(MagnumWindowlessGlxApplication Magnum ${X11_LIBRARIES})
 
@@ -405,12 +416,13 @@ if(WITH_WINDOWLESSIOSAPPLICATION)
         ${MagnumWindowlessIosApplication_SRCS}
         ${MagnumWindowlessIosApplication_HEADERS})
     set_target_properties(MagnumWindowlessIosApplication PROPERTIES DEBUG_POSTFIX "-d")
+    if(BUILD_STATIC_PIC)
+        set_target_properties(MagnumWindowlessIosApplication PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    endif()
     target_link_libraries(MagnumWindowlessIosApplication
         Magnum
         EGL::EGL
         ${_MAGNUM_IOS_FOUNDATION_FRAMEWORK_LIBRARY})
-    # Assuming that PIC is not needed because the Application lib is always
-    # linked to the executable and not to any intermediate shared lib
 
     install(FILES ${MagnumWindowlessIosApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumWindowlessIosApplication
@@ -436,8 +448,9 @@ if(WITH_WINDOWLESSWGLAPPLICATION)
         ${MagnumWindowlessWglApplication_HEADERS})
     set_target_properties(MagnumWindowlessWglApplication PROPERTIES DEBUG_POSTFIX "-d")
     target_compile_definitions(MagnumWindowlessWglApplication PRIVATE "UNICODE")
-    # Assuming that PIC is not needed because the Application lib is always
-    # linked to the executable and not to any intermediate shared lib
+    if(BUILD_STATIC_PIC)
+        set_target_properties(MagnumWindowlessWglApplication PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    endif()
     target_link_libraries(MagnumWindowlessWglApplication Magnum)
 
     install(FILES ${MagnumWindowlessWglApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
@@ -469,8 +482,9 @@ if(WITH_WINDOWLESSWINDOWSEGLAPPLICATION)
         ${MagnumWindowlessWindowsEglApplication_PRIVATE_HEADERS})
     set_target_properties(MagnumWindowlessWindowsEglApplication PROPERTIES DEBUG_POSTFIX "-d")
     target_compile_definitions(MagnumWindowlessWindowsEglApplication PRIVATE "UNICODE")
-    # Assuming that PIC is not needed because the Application lib is always
-    # linked to the executable and not to any intermediate shared lib
+    if(BUILD_STATIC_PIC)
+        set_target_properties(MagnumWindowlessWindowsEglApplication PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    endif()
     target_link_libraries(MagnumWindowlessWindowsEglApplication Magnum EGL::EGL)
 
     install(FILES ${MagnumWindowlessWindowsEglApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
@@ -496,8 +510,9 @@ if(WITH_WINDOWLESSCGLAPPLICATION)
         ${MagnumWindowlessCglApplication_SRCS}
         ${MagnumWindowlessCglApplication_HEADERS})
     set_target_properties(MagnumWindowlessCglApplication PROPERTIES DEBUG_POSTFIX "-d")
-    # Assuming that PIC is not needed because the Application lib is always
-    # linked to the executable and not to any intermediate shared lib
+    if(BUILD_STATIC_PIC)
+        set_target_properties(MagnumWindowlessCglApplication PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    endif()
     target_link_libraries(MagnumWindowlessCglApplication Magnum)
 
     install(FILES ${MagnumWindowlessCglApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
@@ -582,13 +597,17 @@ endif()
 if(NOT MAGNUM_TARGET_GLES)
     list(APPEND MagnumContext_SRCS ../../MagnumExternal/OpenGL/GL/flextGLPlatform.cpp)
 elseif(MAGNUM_TARGET_GLES AND MAGNUM_TARGET_GLES2)
-    if(CORRADE_TARGET_IOS)
+    if(CORRADE_TARGET_WINDOWS AND MAGNUM_TARGET_DESKTOP_GLES)
+        list(APPEND MagnumContext_SRCS ../../MagnumExternal/OpenGL/GLES2/flextGLPlatformWindowsDesktop.cpp)
+    elseif(CORRADE_TARGET_IOS)
         list(APPEND MagnumContext_SRCS ../../MagnumExternal/OpenGL/GLES2/flextGLPlatformIOS.cpp)
     else()
         list(APPEND MagnumContext_SRCS ../../MagnumExternal/OpenGL/GLES2/flextGLPlatform.cpp)
     endif()
 elseif(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_GLES2)
-    if(CORRADE_TARGET_IOS)
+    if(CORRADE_TARGET_WINDOWS AND MAGNUM_TARGET_DESKTOP_GLES)
+        list(APPEND MagnumContext_SRCS ../../MagnumExternal/OpenGL/GLES3/flextGLPlatformWindowsDesktop.cpp)
+    elseif(CORRADE_TARGET_IOS)
         list(APPEND MagnumContext_SRCS ../../MagnumExternal/OpenGL/GLES3/flextGLPlatformIOS.cpp)
     else()
         list(APPEND MagnumContext_SRCS ../../MagnumExternal/OpenGL/GLES3/flextGLPlatform.cpp)
@@ -645,7 +664,7 @@ if(NEED_EGLCONTEXT OR WITH_EGLCONTEXT)
     if(WITH_EGLCONTEXT)
         add_library(MagnumEglContext STATIC
             $<TARGET_OBJECTS:MagnumEglContextObjects>
-            ../dummy.cpp) # XCode workaround, see file comment for details
+            ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details
         set_target_properties(MagnumEglContext PROPERTIES DEBUG_POSTFIX "-d")
         if(BUILD_STATIC_PIC)
             set_target_properties(MagnumEglContext PROPERTIES POSITION_INDEPENDENT_CODE ON)
@@ -733,7 +752,11 @@ if(WITH_MAGNUMINFO)
     elseif(CORRADE_TARGET_NACL)
         target_link_libraries(magnum-info MagnumWindowlessNaClApplication)
     elseif(CORRADE_TARGET_UNIX)
-        target_link_libraries(magnum-info MagnumWindowlessGlxApplication)
+        if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_DESKTOP_GLES)
+            target_link_libraries(magnum-info MagnumWindowlessEglApplication)
+        else()
+            target_link_libraries(magnum-info MagnumWindowlessGlxApplication)
+        endif()
     elseif(CORRADE_TARGET_WINDOWS)
         if(NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES)
             target_link_libraries(magnum-info MagnumWindowlessWglApplication)

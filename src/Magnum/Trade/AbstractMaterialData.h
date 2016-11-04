@@ -40,7 +40,7 @@ namespace Magnum { namespace Trade {
 @see @ref AbstractMaterialData::type()
 */
 enum class MaterialType: UnsignedByte {
-    Phong       /**< Phong shading */
+    Phong       /**< Phong shading (see @ref PhongMaterialData) */
 };
 
 /**
@@ -50,27 +50,19 @@ Subclasses provide access to parameters for given material type.
 */
 class MAGNUM_EXPORT AbstractMaterialData {
     public:
-        /**
-         * @brief Constructor
-         * @param type              Material type
-         * @param importerState     Importer-specific state
-         */
-        explicit AbstractMaterialData(MaterialType type, const void* importerState = nullptr);
-
-        /** @brief Destructor */
-        virtual ~AbstractMaterialData() = 0;
+        virtual ~AbstractMaterialData();
 
         /** @brief Copying is not allowed */
         AbstractMaterialData(const AbstractMaterialData&) = delete;
 
         /** @brief Move constructor */
-        AbstractMaterialData(AbstractMaterialData&&) = default;
+        AbstractMaterialData(AbstractMaterialData&&) noexcept = default;
 
         /** @brief Copying is not allowed */
         AbstractMaterialData& operator=(const AbstractMaterialData&) = delete;
 
         /** @brief Move assignment */
-        AbstractMaterialData& operator=(AbstractMaterialData&&) = default;
+        AbstractMaterialData& operator=(AbstractMaterialData&&) noexcept = default;
 
         /** @brief Material type */
         MaterialType type() const { return _type; }
@@ -81,6 +73,14 @@ class MAGNUM_EXPORT AbstractMaterialData {
          * See @ref AbstractImporter::importerState() for more information.
          */
         const void* importerState() const { return _importerState; }
+
+    protected:
+        /**
+         * @brief Constructor
+         * @param type              Material type
+         * @param importerState     Importer-specific state
+         */
+        explicit AbstractMaterialData(MaterialType type, const void* importerState = nullptr) noexcept;
 
     private:
         MaterialType _type;

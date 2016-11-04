@@ -602,7 +602,9 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *
          * If the mesh is indexed, the value is treated as index count,
          * otherwise the value is vertex count. If set to `0`, no draw commands
-         * are issued when calling @ref draw(). Default is `0`.
+         * are issued when calling @ref draw(AbstractShaderProgram&). Ignored
+         * when calling @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
+         * Default is `0`.
          * @see @ref isIndexed(), @ref setBaseVertex(), @ref setInstanceCount()
          */
         Mesh& setCount(Int count) {
@@ -618,7 +620,9 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @return Reference to self (for method chaining)
          *
          * Sets number of vertices of which the vertex buffer will be offset
-         * when drawing. Default is `0`.
+         * when drawing. Ignored when calling
+         * @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
+         * Default is `0`.
          * @see @ref setCount(), @ref setBaseInstance()
          * @requires_gl32 Extension @extension{ARB,draw_elements_base_vertex}
          *      for indexed meshes
@@ -638,11 +642,16 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @return Reference to self (for method chaining)
          *
          * If set to `1`, non-instanced draw commands are issued when calling
-         * @ref draw(). If set to `0`, no draw commands are issued altogether.
-         * Default is `1`.
+         * @ref draw(AbstractShaderProgram&) or
+         * @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
+         * If set to `0`, no draw commands are issued altogether. Default is
+         * `1`.
          * @see @ref setBaseInstance(), @ref setCount(),
          *      @ref addVertexBufferInstanced()
-         * @requires_gl31 Extension @extension{ARB,draw_instanced}
+         * @requires_gl31 Extension @extension{ARB,draw_instanced} if using
+         *      @ref draw(AbstractShaderProgram&)
+         * @requires_gl42 Extension @extension{ARB,transform_feedback_instanced}
+         *      if using @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt)
          * @requires_gles30 Extension @es_extension{ANGLE,instanced_arrays},
          *      @es_extension2{EXT,draw_instanced,draw_instanced} or
          *      @es_extension{NV,draw_instanced} in OpenGL ES 2.0.
@@ -662,6 +671,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @brief Set base instance
          * @return Reference to self (for method chaining)
          *
+         * Ignored when calling @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
          * Default is `0`.
          * @see @ref setInstanceCount(), @ref setBaseVertex()
          * @requires_gl42 Extension @extension{ARB,base_instance}
@@ -803,6 +813,8 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * ES 2.0 or @webgl_extension{OES,vertex_array_object} in WebGL 1.0 is
          * available, the vertex array object is used to hold the parameters.
          *
+         * Ignored when calling @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
+         *
          * @see @ref maxElementIndex(), @ref maxElementsIndices(),
          *      @ref maxElementsVertices(), @ref setCount(), @ref isIndexed(),
          *      @fn_gl{BindVertexArray}, @fn_gl{BindBuffer}
@@ -838,6 +850,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * WebGL 1.0 is available, the associated vertex array object is bound
          * instead of setting up the mesh from scratch.
          * @see @ref setCount(), @ref setInstanceCount(),
+         *      @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt),
          *      @ref MeshView::draw(AbstractShaderProgram&),
          *      @ref MeshView::draw(AbstractShaderProgram&, std::initializer_list<std::reference_wrapper<MeshView>>),
          *      @fn_gl{UseProgram}, @fn_gl{EnableVertexAttribArray},
@@ -850,10 +863,60 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *      @fn_gl{DrawElementsInstancedBaseInstance}/
          *      @fn_gl{DrawElementsInstancedBaseVertex}/
          *      @fn_gl{DrawElementsInstancedBaseVertexBaseInstance}
+         * @requires_gl32 Extension @extension{ARB,draw_elements_base_vertex}
+         *      if the mesh is indexed and @ref baseVertex() is not `0`.
+         * @requires_gl33 Extension @extension{ARB,instanced_arrays} if
+         *      @ref instanceCount() is more than `1`.
+         * @requires_gl42 Extension @extension{ARB,base_instance} if
+         *      @ref baseInstance() is not `0`.
+         * @requires_gles30 Extension @es_extension{ANGLE,instanced_arrays},
+         *      @es_extension{EXT,instanced_arrays} or
+         *      @es_extension{NV,instanced_arrays} in OpenGL ES 2.0 if
+         *      @ref instanceCount() is more than `1`.
+         * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
+         *      in WebGL 1.0 if @ref instanceCount() is more than `1`.
+         * @requires_gl Specifying base vertex for indexed meshes is not
+         *      available in OpenGL ES or WebGL.
          */
         void draw(AbstractShaderProgram& shader);
-
         void draw(AbstractShaderProgram&& shader) { draw(shader); } /**< @overload */
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Draw the mesh with vertices coming out of transform feedback
+         * @param shader    Shader to use for drawing
+         * @param xfb       Transform feedback to use for vertex count
+         * @param stream    Transform feedback stream ID
+         *
+         * Expects that the @p shader is compatible with this mesh, is fully
+         * set up and that the output buffer(s) from @p xfb are used as vertex
+         * buffers in this mesh. Everything set by @ref setCount(),
+         * @ref setBaseInstance(), @ref setBaseVertex() and @ref setIndexBuffer()
+         * is ignored, the mesh is drawn as non-indexed and the vertex count is
+         * taken from the @p xfb object. If @p stream is `0`, non-stream draw
+         * command is used. If @extension{ARB,vertex_array_object} (part of
+         * OpenGL 3.0) is available, the associated vertex array object is
+         * bound instead of setting up the mesh from scratch.
+         * @see @ref setInstanceCount(), @ref draw(AbstractShaderProgram&),
+         *      @ref MeshView::draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt),
+         *      @fn_gl{UseProgram}, @fn_gl{EnableVertexAttribArray},
+         *      @fn_gl{BindBuffer}, @fn_gl{VertexAttribPointer},
+         *      @fn_gl{DisableVertexAttribArray} or @fn_gl{BindVertexArray},
+         *      @fn_gl{DrawTransformFeedback}/@fn_gl{DrawTransformFeedbackInstanced} or
+         *      @fn_gl{DrawTransformFeedbackStream}/@fn_gl{DrawTransformFeedbackStreamInstanced}
+         * @requires_gl40 Extension @extension{ARB,transform_feedback2}
+         * @requires_gl40 Extension @extension{ARB,transform_feedback3} if
+         *      @p stream is not `0`
+         * @requires_gl42 Extension @extension{ARB,transform_feedback_instanced}
+         *      if @ref instanceCount() is more than `1`.
+         */
+        void draw(AbstractShaderProgram& shader, TransformFeedback& xfb, UnsignedInt stream = 0);
+
+        /** @overload */
+        void draw(AbstractShaderProgram&& shader, TransformFeedback& xfb, UnsignedInt stream = 0) {
+            draw(shader, xfb, stream);
+        }
+        #endif
 
     private:
         enum class AttributeKind {
@@ -946,6 +1009,10 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         void drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr indexOffset, Int indexStart, Int indexEnd);
         #else
         void drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr indexOffset);
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES
+        void drawInternal(TransformFeedback& xfb, UnsignedInt stream, Int instanceCount);
         #endif
 
         void MAGNUM_LOCAL createImplementationDefault();

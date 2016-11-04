@@ -114,6 +114,10 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
         }
 
         #ifdef MAGNUM_BUILD_DEPRECATED
+        #ifdef __GNUC__
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #endif
         /**
          * @copybrief transform()
          * @deprecated Use @ref transform() or @ref transformLocal() instead.
@@ -121,6 +125,9 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
         CORRADE_DEPRECATED("use transform() or transformLocal() instead") Object<BasicRigidMatrixTransformation3D<T>>& transform(const Math::Matrix4<T>& transformation, TransformationType type) {
             return type == TransformationType::Global ? transform(transformation) : transformLocal(transformation);
         }
+        #ifdef __GNUC__
+        #pragma GCC diagnostic pop
+        #endif
         #endif
 
         /**
@@ -147,6 +154,10 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
         }
 
         #ifdef MAGNUM_BUILD_DEPRECATED
+        #ifdef __GNUC__
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #endif
         /**
          * @copybrief translate()
          * @deprecated Use @ref translate() or @ref translateLocal() instead.
@@ -154,6 +165,9 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
         CORRADE_DEPRECATED("use translate() or translateLocal() instead") Object<BasicRigidMatrixTransformation3D<T>>& translate(const Math::Vector3<T>& vector, TransformationType type) {
             return type == TransformationType::Global ? translate(vector) : translateLocal(vector);
         }
+        #ifdef __GNUC__
+        #pragma GCC diagnostic pop
+        #endif
         #endif
 
         /**
@@ -184,6 +198,10 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
         }
 
         #ifdef MAGNUM_BUILD_DEPRECATED
+        #ifdef __GNUC__
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #endif
         /**
          * @copybrief rotate()
          * @deprecated Use @ref rotate() or @ref rotateLocal() instead.
@@ -191,6 +209,9 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
         CORRADE_DEPRECATED("use rotate() or rotateLocal() instead") Object<BasicRigidMatrixTransformation3D<T>>& rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type) {
             return type == TransformationType::Global ? rotate(angle, normalizedAxis) : rotateLocal(angle, normalizedAxis);
         }
+        #ifdef __GNUC__
+        #pragma GCC diagnostic pop
+        #endif
         #endif
 
         /**
@@ -217,6 +238,10 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
         }
 
         #ifdef MAGNUM_BUILD_DEPRECATED
+        #ifdef __GNUC__
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #endif
         /**
          * @copybrief rotateX()
          * @deprecated Use @ref rotateX() or @ref rotateXLocal() instead.
@@ -224,6 +249,9 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
         CORRADE_DEPRECATED("use rotateX() or rotateXLocal() instead") Object<BasicRigidMatrixTransformation3D<T>>& rotateX(Math::Rad<T> angle, TransformationType type) {
             return type == TransformationType::Global ? rotateX(angle) : rotateXLocal(angle);
         }
+        #ifdef __GNUC__
+        #pragma GCC diagnostic pop
+        #endif
         #endif
 
         /**
@@ -250,6 +278,10 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
         }
 
         #ifdef MAGNUM_BUILD_DEPRECATED
+        #ifdef __GNUC__
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #endif
         /**
          * @copybrief rotateY()
          * @deprecated Use @ref rotateY() or @ref rotateYLocal() instead.
@@ -257,6 +289,9 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
         CORRADE_DEPRECATED("use rotateY() or rotateYLocal() instead") Object<BasicRigidMatrixTransformation3D<T>>& rotateY(Math::Rad<T> angle, TransformationType type) {
             return type == TransformationType::Global ? rotateY(angle) : rotateYLocal(angle);
         }
+        #ifdef __GNUC__
+        #pragma GCC diagnostic pop
+        #endif
         #endif
 
         /**
@@ -283,6 +318,10 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
         }
 
         #ifdef MAGNUM_BUILD_DEPRECATED
+        #ifdef __GNUC__
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #endif
         /**
          * @copybrief rotateZ()
          * @deprecated Use @ref rotateZ() or @ref rotateZLocal() instead.
@@ -290,6 +329,9 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
         CORRADE_DEPRECATED("use rotateZ() or rotateZLocal() instead") Object<BasicRigidMatrixTransformation3D<T>>& rotateZ(Math::Rad<T> angle, TransformationType type) {
             return type == TransformationType::Global ? rotateZ(angle) : rotateZLocal(angle);
         }
+        #ifdef __GNUC__
+        #pragma GCC diagnostic pop
+        #endif
         #endif
 
         /**
@@ -317,6 +359,10 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
         }
 
         #ifdef MAGNUM_BUILD_DEPRECATED
+        #ifdef __GNUC__
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #endif
         /**
          * @copybrief reflect()
          * @deprecated Use @ref reflect() or @ref reflectLocal() instead.
@@ -324,6 +370,9 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
         CORRADE_DEPRECATED("use reflect() or reflectLocal() instead") Object<BasicRigidMatrixTransformation3D<T>>& reflect(const Math::Vector3<T>& normal, TransformationType type) {
             return type == TransformationType::Global ? reflect(normal) : reflectLocal(normal);
         }
+        #ifdef __GNUC__
+        #pragma GCC diagnostic pop
+        #endif
         #endif
 
     protected:

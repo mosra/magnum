@@ -102,6 +102,8 @@ Vector3Test::Vector3Test() {
 void Vector3Test::construct() {
     constexpr Vector3 a = {1.0f, 2.5f, -3.0f};
     CORRADE_COMPARE(a, (Vector<3, Float>(1.0f, 2.5f, -3.0f)));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Vector3, Float, Float, Float>::value));
 }
 
 void Vector3Test::constructDefault() {
@@ -109,12 +111,22 @@ void Vector3Test::constructDefault() {
     constexpr Vector3 b{ZeroInit};
     CORRADE_COMPARE(a, Vector3(0.0f, 0.0f, 0.0f));
     CORRADE_COMPARE(b, Vector3(0.0f, 0.0f, 0.0f));
+
+    CORRADE_VERIFY(std::is_nothrow_default_constructible<Vector3>::value);
+    CORRADE_VERIFY((std::is_nothrow_constructible<Vector3, ZeroInitT>::value));
 }
 
 void Vector3Test::constructNoInit() {
     Vector3 a{1.0f, 2.5f, -3.0f};
     new(&a) Vector3{NoInit};
-    CORRADE_COMPARE(a, (Vector3{1.0f, 2.5f, -3.0f}));
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a, (Vector3{1.0f, 2.5f, -3.0f}));
+    }
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Vector3, NoInitT>::value));
 }
 
 void Vector3Test::constructOneValue() {
@@ -123,12 +135,16 @@ void Vector3Test::constructOneValue() {
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Float, Vector3>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Vector3, Float>::value));
 }
 
 void Vector3Test::constructParts() {
     constexpr Vector2 a(1.0f, 2.0f);
     constexpr Vector3 b = {a, 3.0f};
     CORRADE_COMPARE(b, Vector3(1.0f, 2.0f, 3.0f));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Vector3, Vector2, Float>::value));
 }
 
 void Vector3Test::constructConversion() {
@@ -138,6 +154,8 @@ void Vector3Test::constructConversion() {
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Vector3, Vector3i>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Vector3, Vector3i>::value));
 }
 
 void Vector3Test::constructCopy() {
@@ -147,6 +165,9 @@ void Vector3Test::constructCopy() {
     #endif
     Vector3 b(a);
     CORRADE_COMPARE(b, Vector3(1.0f, 2.5f, -3.0f));
+
+    CORRADE_VERIFY(std::is_nothrow_copy_constructible<Vector3>::value);
+    CORRADE_VERIFY(std::is_nothrow_copy_assignable<Vector3>::value);
 }
 
 void Vector3Test::convert() {

@@ -62,6 +62,9 @@ AbstractFontConverterTest::AbstractFontConverterTest() {
 
               &AbstractFontConverterTest::importGlyphCacheFromSingleData,
               &AbstractFontConverterTest::importGlyphCacheFromFile});
+
+    /* Create testing dir */
+    Utility::Directory::mkpath(TEXT_TEST_OUTPUT_DIR);
 }
 
 namespace {

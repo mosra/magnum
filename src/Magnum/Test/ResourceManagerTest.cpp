@@ -45,6 +45,8 @@ struct ResourceManagerTest: TestSuite::Tester {
     void clear();
     void clearWhileReferenced();
     void loader();
+
+    void debugResourceState();
 };
 
 struct Data {
@@ -69,7 +71,9 @@ ResourceManagerTest::ResourceManagerTest() {
               &ResourceManagerTest::defaults,
               &ResourceManagerTest::clear,
               &ResourceManagerTest::clearWhileReferenced,
-              &ResourceManagerTest::loader});
+              &ResourceManagerTest::loader,
+
+              &ResourceManagerTest::debugResourceState});
 }
 
 void ResourceManagerTest::state() {
@@ -324,6 +328,12 @@ void ResourceManagerTest::loader() {
 
     delete rm;
     CORRADE_COMPARE(Data::count, 0);
+}
+
+void ResourceManagerTest::debugResourceState() {
+    std::ostringstream out;
+    Debug{&out} << ResourceState::Loading << ResourceState(0xbe);
+    CORRADE_COMPARE(out.str(), "ResourceState::Loading ResourceState(0xbe)\n");
 }
 
 }}

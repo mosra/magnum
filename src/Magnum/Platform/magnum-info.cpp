@@ -66,7 +66,11 @@
 #elif defined(CORRADE_TARGET_APPLE)
 #include "Magnum/Platform/WindowlessCglApplication.h"
 #elif defined(CORRADE_TARGET_UNIX)
+#if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_DESKTOP_GLES)
+#include "Magnum/Platform/WindowlessEglApplication.h"
+#else
 #include "Magnum/Platform/WindowlessGlxApplication.h"
+#endif
 #elif defined(CORRADE_TARGET_WINDOWS)
 #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_DESKTOP_GLES)
 #include "Magnum/Platform/WindowlessWglApplication.h"
@@ -115,7 +119,7 @@ Using optional features:
     GL_ARB_invalidate_subdata
     ...
 Using driver workarounds:
-    amd-nv-no-forward-compatible-core-context
+    no-forward-compatible-core-context
     no-layout-qualifiers-on-old-glsl
 Context flags:
 Supported GLSL versions:
@@ -141,7 +145,7 @@ class MagnumInfo: public Platform::WindowlessApplication {
         int exec() override { return 0; }
 };
 
-MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplication(arguments, nullptr) {
+MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplication{arguments, NoCreate} {
     Utility::Arguments args;
     args.addBooleanOption('s', "short").setHelp("short", "display just essential info and exit")
         .addBooleanOption("extension-strings").setHelp("extension-strings", "list all extension strings provided by the driver (implies --short)")
@@ -245,6 +249,9 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #endif
     #ifdef MAGNUM_BUILD_STATIC
     Debug() << "    MAGNUM_BUILD_STATIC";
+    #endif
+    #ifdef MAGNUM_BUILD_MULTITHREADED
+    Debug() << "    MAGNUM_BUILD_MULTITHREADED";
     #endif
     #ifdef MAGNUM_TARGET_GLES
     Debug() << "    MAGNUM_TARGET_GLES";
@@ -605,6 +612,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         _h(ARB::transform_feedback3)
 
         _l(TransformFeedback::maxBuffers())
+        _l(TransformFeedback::maxVertexStreams())
     }
     #endif
 

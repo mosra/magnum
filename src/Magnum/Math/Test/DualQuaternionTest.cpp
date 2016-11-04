@@ -70,10 +70,13 @@ struct DualQuaternionTest: Corrade::TestSuite::Tester {
     void convert();
 
     void isNormalized();
+    template<class T> void isNormalizedEpsilonRotation();
+    template<class T> void isNormalizedEpsilonTranslation();
 
     void lengthSquared();
     void length();
     void normalized();
+    template<class T> void normalizedIterative();
 
     void quaternionConjugated();
     void dualConjugated();
@@ -115,12 +118,20 @@ DualQuaternionTest::DualQuaternionTest() {
               &DualQuaternionTest::convert,
 
               &DualQuaternionTest::isNormalized,
+              &DualQuaternionTest::isNormalizedEpsilonRotation<Float>,
+              &DualQuaternionTest::isNormalizedEpsilonRotation<Double>,
+              &DualQuaternionTest::isNormalizedEpsilonTranslation<Float>,
+              &DualQuaternionTest::isNormalizedEpsilonTranslation<Double>,
 
               &DualQuaternionTest::lengthSquared,
               &DualQuaternionTest::length,
-              &DualQuaternionTest::normalized,
+              &DualQuaternionTest::normalized});
 
-              &DualQuaternionTest::quaternionConjugated,
+    addRepeatedTests<DualQuaternionTest>({
+        &DualQuaternionTest::normalizedIterative<Float>,
+        &DualQuaternionTest::normalizedIterative<Double>}, 1000);
+
+    addTests({&DualQuaternionTest::quaternionConjugated,
               &DualQuaternionTest::dualConjugated,
               &DualQuaternionTest::conjugated,
               &DualQuaternionTest::inverted,
@@ -150,6 +161,8 @@ void DualQuaternionTest::construct() {
 
     constexpr DualQuaternion d({{1.0f, 2.0f, 3.0f}, -4.0f});
     CORRADE_COMPARE(d, DualQuaternion({{1.0f, 2.0f, 3.0f}, -4.0f}, {{0.0f, 0.0f, 0.0f}, 0.0f}));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<DualQuaternion, Quaternion, Quaternion>::value));
 }
 
 void DualQuaternionTest::constructVectorScalar() {
@@ -161,6 +174,8 @@ void DualQuaternionTest::constructVectorScalar() {
 
     constexpr Quaternion c = a.dual();
     CORRADE_COMPARE(c, Quaternion({0.5f, -3.1f, 3.3f}, 2.0f));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<DualQuaternion, Math::Dual<Vector3>, Math::Dual<Float>>::value));
 }
 
 void DualQuaternionTest::constructIdentity() {
@@ -170,17 +185,29 @@ void DualQuaternionTest::constructIdentity() {
     CORRADE_COMPARE(b, DualQuaternion({{0.0f, 0.0f, 0.0f}, 1.0f}, {{0.0f, 0.0f, 0.0f}, 0.0f}));
     CORRADE_COMPARE(a.length(), 1.0f);
     CORRADE_COMPARE(b.length(), 1.0f);
+
+    CORRADE_VERIFY(std::is_nothrow_default_constructible<DualQuaternion>::value);
+    CORRADE_VERIFY((std::is_nothrow_constructible<DualQuaternion, IdentityInitT>::value));
 }
 
 void DualQuaternionTest::constructZero() {
     constexpr DualQuaternion a{ZeroInit};
     CORRADE_COMPARE(a, DualQuaternion({{0.0f, 0.0f, 0.0f}, 0.0f}, {{0.0f, 0.0f, 0.0f}, 0.0f}));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<DualQuaternion, ZeroInitT>::value));
 }
 
 void DualQuaternionTest::constructNoInit() {
     DualQuaternion a{{{1.0f, 2.0f, 3.0f}, -4.0f}, {{0.5f, -3.1f, 3.3f}, 2.0f}};
     new(&a) DualQuaternion{NoInit};
-    CORRADE_COMPARE(a, DualQuaternion({{1.0f, 2.0f, 3.0f}, -4.0f}, {{0.5f, -3.1f, 3.3f}, 2.0f}));
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a, DualQuaternion({{1.0f, 2.0f, 3.0f}, -4.0f}, {{0.5f, -3.1f, 3.3f}, 2.0f}));
+    }
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<DualQuaternion, NoInitT>::value));
 }
 
 void DualQuaternionTest::constructFromVector() {
@@ -189,6 +216,8 @@ void DualQuaternionTest::constructFromVector() {
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Vector3, DualQuaternion>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<DualQuaternion, Vector3>::value));
 }
 
 void DualQuaternionTest::constructConversion() {
@@ -201,6 +230,8 @@ void DualQuaternionTest::constructConversion() {
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<DualQuaternion, DualQuaternioni>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<DualQuaternion, DualQuaternioni>::value));
 }
 
 void DualQuaternionTest::constructCopy() {
@@ -210,6 +241,9 @@ void DualQuaternionTest::constructCopy() {
     #endif
     DualQuaternion b(a);
     CORRADE_COMPARE(b, DualQuaternion({{1.0f, 2.0f, -3.0f}, -3.5f}, {{4.5f, -7.0f, 2.0f}, 1.0f}));
+
+    CORRADE_VERIFY(std::is_nothrow_copy_constructible<DualQuaternion>::value);
+    CORRADE_VERIFY(std::is_nothrow_copy_assignable<DualQuaternion>::value);
 }
 
 void DualQuaternionTest::convert() {
@@ -242,7 +276,25 @@ void DualQuaternionTest::convert() {
 
 void DualQuaternionTest::isNormalized() {
     CORRADE_VERIFY(!DualQuaternion({{1.0f, 2.0f, 3.0f}, 4.0f}, {}).isNormalized());
-    CORRADE_VERIFY((DualQuaternion::rotation(Deg(23.0f), Vector3::xAxis())*DualQuaternion::translation({3.0f, 1.0f, -0.5f})).isNormalized());
+    CORRADE_VERIFY((DualQuaternion::rotation(Deg(23.0f), Vector3::xAxis())*DualQuaternion::translation({0.9f, -1.0f, -0.5f})).isNormalized());
+}
+
+template<class T> void DualQuaternionTest::isNormalizedEpsilonRotation() {
+    setTestCaseName(std::string{"isNormalizedEpsilonRotation<"} + TypeTraits<T>::name() + ">");
+
+    CORRADE_VERIFY((Math::DualQuaternion<T>{{{T(0.199367934417197) + TypeTraits<T>::epsilon()/T(2.0), T(0.0), T(0.0)}, T(0.97992470462083)}, {{T(0.440966117079373), T(-0.440120368706115), T(-0.344665143363806)}, T(-0.0897155704877387)}}.isNormalized()));
+    CORRADE_VERIFY(!(Math::DualQuaternion<T>{{{T(0.199367934417197), T(0.0), T(0.0)}, T(0.97992470462083) + TypeTraits<T>::epsilon()*T(2.0)}, {{T(0.440966117079373), T(-0.440120368706115), T(-0.344665143363806)}, T(-0.0897155704877387)}}.isNormalized()));
+}
+
+template<class T> void DualQuaternionTest::isNormalizedEpsilonTranslation() {
+    setTestCaseName(std::string{"isNormalizedEpsilonTranslation<"} + TypeTraits<T>::name() + ">");
+
+    CORRADE_VERIFY((Math::DualQuaternion<T>{{{T(0.199367934417197), T(0.0), T(0.0)}, T(0.97992470462083)}, {{T(0.440966117079373), T(-0.440120368706115) + TypeTraits<T>::epsilon()*T(2.0), T(-0.344665143363806)}, T(-0.0897155704877387)}}.isNormalized()));
+    CORRADE_VERIFY(!(Math::DualQuaternion<T>{{{T(0.199367934417197), T(0.0), T(0.0)}, T(0.97992470462083)}, {{T(0.440966117079373) + TypeTraits<T>::epsilon()*T(4.0), T(-0.440120368706115), T(-0.344665143363806)}, T(-0.0897155704877387)}}.isNormalized()));
+
+    /* Large translation -- large epsilon */
+    CORRADE_VERIFY((Math::DualQuaternion<T>{{{T(0.0106550719778129), T(0.311128101752138), T(-0.0468823167023769)}, T(0.949151106053128)}, {{T(5056871.9114386), T(-245303.943266211) + TypeTraits<T>::epsilon()*T(10000000.0), T(-606492.066475555)}, T(-6315.26116124973)}}.isNormalized()));
+    CORRADE_VERIFY(!(Math::DualQuaternion<T>{{{T(0.0106550719778129), T(0.311128101752138), T(-0.0468823167023769)}, T(0.949151106053128)}, {{T(5056871.9114386), T(-245303.943266211) + TypeTraits<T>::epsilon()*T(20000000.0), T(-606492.066475555)}, T(-6315.26116124973)}}.isNormalized()));
 }
 
 void DualQuaternionTest::lengthSquared() {
@@ -260,6 +312,29 @@ void DualQuaternionTest::normalized() {
     DualQuaternion b({{0.182574f, 0.365148f, 0.547723f}, -0.730297f}, {{0.118673f, -0.49295f, 0.629881f}, 0.255604f});
     CORRADE_COMPARE(a.normalized().length(), 1.0f);
     CORRADE_COMPARE(a.normalized(), b);
+}
+
+namespace {
+    template<class> struct NormalizedIterativeData;
+    template<> struct NormalizedIterativeData<Float> {
+        static Math::Vector3<Float> translation() { return {10000.0f, -50.0f, 20000.0f}; }
+    };
+    template<> struct NormalizedIterativeData<Double> {
+        static Math::Vector3<Double> translation() { return {10000000000000.0, -500.0, 20000000000000.0}; }
+    };
+}
+
+template<class T> void DualQuaternionTest::normalizedIterative() {
+    setTestCaseName(std::string{"normalizedIterative<"} + TypeTraits<T>::name() + ">");
+
+    const auto axis = Math::Vector3<T>{T(0.5), T(7.9), T(0.1)}.normalized();
+    auto a = Math::DualQuaternion<T>::rotation(Math::Deg<T>{T(36.7)}, Math::Vector3<T>{T(0.25), T(7.3), T(-1.1)}.normalized())*Math::DualQuaternion<T>::translation(NormalizedIterativeData<T>::translation());
+    for(std::size_t i = 0; i != testCaseRepeatId(); ++i) {
+        a = Math::DualQuaternion<T>::rotation(Math::Deg<T>{T(87.1)}, axis)*a;
+        a = a.normalized();
+    }
+
+    CORRADE_VERIFY(a.isNormalized());
 }
 
 void DualQuaternionTest::quaternionConjugated() {

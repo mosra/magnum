@@ -26,15 +26,14 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include <Magnum/SceneGraph/Scene.h>
-#include <Magnum/SceneGraph/Object.h>
-#include <Magnum/SceneGraph/MatrixTransformation2D.h>
-#include <Magnum/SceneGraph/MatrixTransformation3D.h>
-
 #include "Magnum/Audio/Playable.h"
 #include "Magnum/Audio/Context.h"
 #include "Magnum/Audio/Listener.h"
 #include "Magnum/Audio/PlayableGroup.h"
+#include "Magnum/SceneGraph/Scene.h"
+#include "Magnum/SceneGraph/Object.h"
+#include "Magnum/SceneGraph/MatrixTransformation2D.h"
+#include "Magnum/SceneGraph/MatrixTransformation3D.h"
 
 namespace Magnum { namespace Audio { namespace Test {
 
@@ -44,23 +43,23 @@ typedef SceneGraph::Object<SceneGraph::MatrixTransformation2D> Object2D;
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 
-struct ListenerTest: TestSuite::Tester {
-    explicit ListenerTest();
+struct ListenerALTest: TestSuite::Tester {
+    explicit ListenerALTest();
 
-    void testFeature2D();
-    void testFeature3D();
-    void testUpdateGroups();
+    void feature2D();
+    void feature3D();
+    void updateGroups();
 
     Context _context;
 };
 
-ListenerTest::ListenerTest(): _context() {
-    addTests({&ListenerTest::testFeature2D,
-              &ListenerTest::testFeature3D,
-              &ListenerTest::testUpdateGroups});
+ListenerALTest::ListenerALTest() {
+    addTests({&ListenerALTest::feature2D,
+              &ListenerALTest::feature3D,
+              &ListenerALTest::updateGroups});
 }
 
-void ListenerTest::testFeature2D() {
+void ListenerALTest::feature2D() {
     Scene2D scene;
     Object2D object{&scene};
     Listener2D listener{object};
@@ -72,7 +71,7 @@ void ListenerTest::testFeature2D() {
     CORRADE_COMPARE(Renderer::listenerPosition(), offset);
 }
 
-void ListenerTest::testFeature3D() {
+void ListenerALTest::feature3D() {
     Scene3D scene;
     Object3D object{&scene};
     Listener3D listener{object};
@@ -84,7 +83,7 @@ void ListenerTest::testFeature3D() {
     CORRADE_COMPARE(Renderer::listenerPosition(), offset);
 }
 
-void ListenerTest::testUpdateGroups() {
+void ListenerALTest::updateGroups() {
     Scene3D scene;
     Object3D sourceObject{&scene};
     Object3D object{&scene};
@@ -108,4 +107,4 @@ void ListenerTest::testUpdateGroups() {
 
 }}}
 
-CORRADE_TEST_MAIN(Magnum::Audio::Test::ListenerTest)
+CORRADE_TEST_MAIN(Magnum::Audio::Test::ListenerALTest)

@@ -27,7 +27,6 @@
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Magnum.h"
-#include "Magnum/Audio/Context.h"
 #include "Magnum/Audio/Renderer.h"
 
 namespace Magnum { namespace Audio { namespace Test {
@@ -37,90 +36,23 @@ struct RendererTest: TestSuite::Tester {
 
     void debugError();
     void debugDistanceModel();
-    void listenerOrientation();
-    void listenerPosition();
-    void listenerVelocity();
-    void listenerGain();
-    void speedOfSound();
-    void dopplerFactor();
-    void distanceModel();
-
-    Context _context;
 };
 
 RendererTest::RendererTest() {
     addTests({&RendererTest::debugError,
-              &RendererTest::debugDistanceModel,
-              &RendererTest::listenerOrientation,
-              &RendererTest::listenerPosition,
-              &RendererTest::listenerVelocity,
-              &RendererTest::listenerGain,
-              &RendererTest::speedOfSound,
-              &RendererTest::dopplerFactor,
-              &RendererTest::distanceModel});
+              &RendererTest::debugDistanceModel});
 }
 
 void RendererTest::debugError() {
     std::ostringstream out;
-    Debug(&out) << Renderer::Error::InvalidOperation;
-    CORRADE_COMPARE(out.str(), "Audio::Renderer::Error::InvalidOperation\n");
+    Debug(&out) << Renderer::Error::InvalidOperation << Renderer::Error(0xdead);
+    CORRADE_COMPARE(out.str(), "Audio::Renderer::Error::InvalidOperation Audio::Renderer::Error(0xdead)\n");
 }
 
 void RendererTest::debugDistanceModel() {
     std::ostringstream out;
-    Debug(&out) << Renderer::DistanceModel::Inverse;
-    CORRADE_COMPARE(out.str(), "Audio::Renderer::DistanceModel::Inverse\n");
-}
-
-void RendererTest::listenerOrientation() {
-    constexpr Vector3 up{1.0f, 2.0f, 3.0f}, fwd{3.0f, 2.0f, 1.0f};
-    Renderer::setListenerOrientation(fwd, up);
-    std::array<Vector3, 2> orientation = Renderer::listenerOrientation();
-
-    CORRADE_COMPARE(orientation[0], fwd);
-    CORRADE_COMPARE(orientation[1], up);
-}
-
-void RendererTest::listenerPosition() {
-    constexpr Vector3 pos{1.0f, 3.0f, 2.0f};
-    Renderer::setListenerPosition(pos);
-
-    CORRADE_COMPARE(Renderer::listenerPosition(), pos);
-}
-
-void RendererTest::listenerVelocity() {
-    constexpr Vector3 vel{1.0f, 3.0f, 2.0f};
-    Renderer::setListenerVelocity(vel);
-
-    CORRADE_COMPARE(Renderer::listenerVelocity(), vel);
-}
-
-void RendererTest::listenerGain() {
-    constexpr Float gain = 0.512f;
-    Renderer::setListenerGain(gain);
-
-    CORRADE_COMPARE(Renderer::listenerGain(), gain);
-}
-
-void RendererTest::speedOfSound() {
-    constexpr Float speed = 1.25f;
-    Renderer::setSpeedOfSound(speed);
-
-    CORRADE_COMPARE(Renderer::speedOfSound(), speed);
-}
-
-void RendererTest::dopplerFactor() {
-    constexpr Float factor = 0.3335f;
-    Renderer::setDopplerFactor(factor);
-
-    CORRADE_COMPARE(Renderer::dopplerFactor(), factor);
-}
-
-void RendererTest::distanceModel() {
-    constexpr Renderer::DistanceModel model = Renderer::DistanceModel::InverseClamped;
-    Renderer::setDistanceModel(model);
-
-    CORRADE_COMPARE(Renderer::distanceModel(), model);
+    Debug(&out) << Renderer::DistanceModel::Inverse << Renderer::DistanceModel(0xdead);
+    CORRADE_COMPARE(out.str(), "Audio::Renderer::DistanceModel::Inverse Audio::Renderer::DistanceModel(0xdead)\n");
 }
 
 }}}

@@ -80,6 +80,7 @@ namespace GL {
     #ifndef MAGNUM_TARGET_GLES
     #line 1
     namespace AMD {
+        _extension(GL,AMD,transform_feedback3_lines_triangles, GL210, None) // #397
         _extension(GL,AMD,vertex_shader_layer,          GL210,  None) // #417
         _extension(GL,AMD,shader_trinary_minmax,        GL210,  None) // #428
     } namespace ARB {
@@ -265,6 +266,7 @@ namespace GL {
         _extension(GL,OES,element_index_uint,       GLES200, GLES300) // #10
         _extension(GL,OES,texture_float_linear,     GLES200, GLES300) // #20
         _extension(GL,OES,texture_half_float_linear, GLES200, GLES300) // #21
+        _extension(GL,OES,fbo_render_mipmap,        GLES200, GLES300) // #28
         #endif
     } namespace WEBGL {
         #ifdef MAGNUM_TARGET_GLES2
@@ -407,6 +409,7 @@ namespace GL {
         _extension(GL,OES,depth32,                  GLES200,    None) // #25
         #ifdef MAGNUM_TARGET_GLES2
         _extension(GL,OES,element_index_uint,       GLES200, GLES300) // #26
+        _extension(GL,OES,fbo_render_mipmap,        GLES200, GLES300) // #27
         #endif
         _extension(GL,OES,mapbuffer,                GLES200,    None) // #29
         #ifdef MAGNUM_TARGET_GLES2

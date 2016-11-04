@@ -73,8 +73,10 @@ namespace Implementation {
 /** @relatesalso Vector
 @brief Dot product of two vectors
 
-Returns `0` when two vectors are perpendicular, `1` when two *normalized*
-vectors are parallel and `-1` when two *normalized* vectors are antiparallel. @f[
+Returns `0` when two vectors are perpendicular, `> 0` when two vectors are in
+the same general direction, `1` when two *normalized* vectors are parallel,
+`< 0` when two vectors are in opposite general direction and `-1` when two
+*normalized* vectors are antiparallel. @f[
     \boldsymbol a \cdot \boldsymbol b = \sum_{i=0}^{n-1} \boldsymbol a_i \boldsymbol b_i
 @f]
 @see @ref Vector::dot() const, @ref Vector::operator-(), @ref Vector2::perpendicular()
@@ -173,10 +175,10 @@ template<std::size_t size, class T> class Vector {
          *      \boldsymbol v = \boldsymbol 0
          * @f]
          */
-        constexpr /*implicit*/ Vector(ZeroInitT = ZeroInit): _data{} {}
+        constexpr /*implicit*/ Vector(ZeroInitT = ZeroInit) noexcept: _data{} {}
 
         /** @brief Construct vector without initializing the contents */
-        explicit Vector(NoInitT) {}
+        explicit Vector(NoInitT) noexcept {}
 
         /** @todo Creating Vector from combination of vector and scalar types */
 
@@ -186,16 +188,16 @@ template<std::size_t size, class T> class Vector {
          * @param next  Next values
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        template<class ...U> constexpr /*implicit*/ Vector(T first, U... next);
+        template<class ...U> constexpr /*implicit*/ Vector(T first, U... next) noexcept;
         #else
-        template<class ...U, class V = typename std::enable_if<sizeof...(U)+1 == size, T>::type> constexpr /*implicit*/ Vector(T first, U... next): _data{first, next...} {}
+        template<class ...U, class V = typename std::enable_if<sizeof...(U)+1 == size, T>::type> constexpr /*implicit*/ Vector(T first, U... next) noexcept: _data{first, next...} {}
         #endif
 
         /** @brief Construct vector with one value for all fields */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        constexpr explicit Vector(T value);
+        constexpr explicit Vector(T value) noexcept;
         #else
-        template<class U, class V = typename std::enable_if<std::is_same<T, U>::value && size != 1, T>::type> constexpr explicit Vector(U value): Vector(typename Implementation::GenerateSequence<size>::Type(), value) {}
+        template<class U, class V = typename std::enable_if<std::is_same<T, U>::value && size != 1, T>::type> constexpr explicit Vector(U value) noexcept: Vector(typename Implementation::GenerateSequence<size>::Type(), value) {}
         #endif
 
         /**
@@ -209,16 +211,13 @@ template<std::size_t size, class T> class Vector {
          * // integral == {1, 2, -15, 7}
          * @endcode
          */
-        template<class U> constexpr explicit Vector(const Vector<size, U>& other): Vector(typename Implementation::GenerateSequence<size>::Type(), other) {}
+        template<class U> constexpr explicit Vector(const Vector<size, U>& other) noexcept: Vector(typename Implementation::GenerateSequence<size>::Type(), other) {}
 
         /** @brief Construct vector from external representation */
-        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::from(std::declval<U>()))> constexpr explicit Vector(const U& other): Vector(Implementation::VectorConverter<size, T, U>::from(other)) {}
+        template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::from(std::declval<U>()))> constexpr explicit Vector(const U& other) noexcept: Vector(Implementation::VectorConverter<size, T, U>::from(other)) {}
 
         /** @brief Copy constructor */
-        constexpr Vector(const Vector<size, T>&) = default;
-
-        /** @brief Assignment operator */
-        Vector<size, T>& operator=(const Vector<size, T>&) = default;
+        constexpr /*implicit*/ Vector(const Vector<size, T>&) noexcept = default;
 
         /** @brief Convert vector to external representation */
         template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::to(std::declval<Vector<size, T>>()))> constexpr explicit operator U() const {
@@ -537,6 +536,17 @@ template<std::size_t size, class T> class Vector {
         Vector<size, T> projectedOntoNormalized(const Vector<size, T>& line) const;
 
         /**
+         * @brief Flipped vector
+         *
+         * Returns the vector with components in reverse order.
+         * @see @ref RectangularMatrix::flippedCols(),
+         *      @ref RectangularMatrix::flippedRows()
+         */
+        constexpr Vector<size, T> flipped() const {
+            return flippedInternal(typename Implementation::GenerateReverseSequence<size>::Type{});
+        }
+
+        /**
          * @brief Sum of values in the vector
          *
          * @see @ref operator+()
@@ -566,13 +576,17 @@ template<std::size_t size, class T> class Vector {
 
     private:
         /* Implementation for Vector<size, T>::Vector(const Vector<size, U>&) */
-        template<class U, std::size_t ...sequence> constexpr explicit Vector(Implementation::Sequence<sequence...>, const Vector<size, U>& vector): _data{T(vector._data[sequence])...} {}
+        template<class U, std::size_t ...sequence> constexpr explicit Vector(Implementation::Sequence<sequence...>, const Vector<size, U>& vector) noexcept: _data{T(vector._data[sequence])...} {}
 
         /* Implementation for Vector<size, T>::Vector(U) */
-        template<std::size_t ...sequence> constexpr explicit Vector(Implementation::Sequence<sequence...>, T value): _data{Implementation::repeat(value, sequence)...} {}
+        template<std::size_t ...sequence> constexpr explicit Vector(Implementation::Sequence<sequence...>, T value) noexcept: _data{Implementation::repeat(value, sequence)...} {}
 
         template<std::size_t otherSize, std::size_t ...sequence> constexpr static Vector<size, T> padInternal(Implementation::Sequence<sequence...>, const Vector<otherSize, T>& a, T value) {
             return {sequence < otherSize ? a[sequence] : value...};
+        }
+
+        template<std::size_t ...sequence> constexpr Vector<size, T> flippedInternal(Implementation::Sequence<sequence...>) const {
+            return {(*this)[sequence]...};
         }
 
         T _data[size];
@@ -1085,11 +1099,9 @@ extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utili
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<2, UnsignedInt>&);
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<3, UnsignedInt>&);
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<4, UnsignedInt>&);
-#ifndef MAGNUM_TARGET_GLES
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<2, Double>&);
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<3, Double>&);
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<4, Double>&);
-#endif
 #endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -1102,11 +1114,6 @@ extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utili
     }                                                                       \
     template<std::size_t otherSize> constexpr static Type<T> pad(const Math::Vector<otherSize, T>& a, T value = T(0)) { \
         return Math::Vector<size, T>::pad(a, value);                        \
-    }                                                                       \
-                                                                            \
-    Type<T>& operator=(const Type<T>& other) {                              \
-        Math::Vector<size, T>::operator=(other);                            \
-        return *this;                                                       \
     }                                                                       \
                                                                             \
     Type<T> operator-() const {                                             \
@@ -1166,6 +1173,9 @@ extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utili
     }                                                                       \
     Type<T> projectedOntoNormalized(const Math::Vector<size, T>& other) const { \
         return Math::Vector<size, T>::projectedOntoNormalized(other);       \
+    }                                                                       \
+    constexpr Type<T> flipped() const {                                     \
+        return Math::Vector<size, T>::flipped();                            \
     }
 
 #define MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(size, Type)                  \
@@ -1356,7 +1366,7 @@ template<std::size_t size, class T> inline T Vector<size, T>::max() const {
 
 namespace Corrade { namespace Utility {
 
-/** @configurationvalue{Magnum::Math::RectangularMatrix} */
+/** @configurationvalue{Magnum::Math::Vector} */
 template<std::size_t size, class T> struct ConfigurationValue<Magnum::Math::Vector<size, T>> {
     ConfigurationValue() = delete;
 
@@ -1404,11 +1414,9 @@ extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<4, 
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<2, Magnum::UnsignedInt>>;
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<3, Magnum::UnsignedInt>>;
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<4, Magnum::UnsignedInt>>;
-#ifndef MAGNUM_TARGET_GLES
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<2, Magnum::Double>>;
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<3, Magnum::Double>>;
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<4, Magnum::Double>>;
-#endif
 #endif
 
 }}

@@ -711,7 +711,7 @@ void AbstractShaderProgramGLTest::compute() {
 
     /** @todo Test on ES */
     #ifndef MAGNUM_TARGET_GLES
-    const auto data = out.image(0, {PixelFormat::RGBAInteger, PixelType::UnsignedByte}).data();
+    const auto data = out.image(0, {PixelFormat::RGBAInteger, PixelType::UnsignedByte}).release();
 
     MAGNUM_VERIFY_NO_ERROR();
 

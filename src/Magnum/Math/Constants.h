@@ -30,11 +30,7 @@
  */
 
 #include <cmath>
-
-#include "Magnum/configure.h"
-#ifndef MAGNUM_TARGET_GLES
 #include <limits>
-#endif
 
 #include "Magnum/Types.h"
 
@@ -83,7 +79,6 @@ template<class T> struct Constants {
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef MAGNUM_TARGET_GLES
 template<> struct Constants<Double> {
     Constants() = delete;
 
@@ -97,7 +92,6 @@ template<> struct Constants<Double> {
     static constexpr Double nan()   { return std::numeric_limits<Double>::quiet_NaN(); }
     static constexpr Double inf()   { return std::numeric_limits<Double>::infinity(); }
 };
-#endif
 template<> struct Constants<Float> {
     Constants() = delete;
 

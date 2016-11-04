@@ -100,6 +100,8 @@ struct VectorTest: Corrade::TestSuite::Tester {
 
     void projected();
     void projectedOntoNormalized();
+    void flipped();
+
     void angle();
 
     void subclassTypes();
@@ -158,6 +160,8 @@ VectorTest::VectorTest() {
 
               &VectorTest::projected,
               &VectorTest::projectedOntoNormalized,
+              &VectorTest::flipped,
+
               &VectorTest::angle,
 
               &VectorTest::subclassTypes,
@@ -170,6 +174,8 @@ VectorTest::VectorTest() {
 void VectorTest::construct() {
     constexpr Vector4 a = {1.0f, 2.0f, -3.0f, 4.5f};
     CORRADE_COMPARE(a, Vector4(1.0f, 2.0f, -3.0f, 4.5f));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Vector4, Float, Float, Float, Float>::value));
 }
 
 void VectorTest::constructFromData() {
@@ -194,12 +200,22 @@ void VectorTest::constructDefault() {
     constexpr Vector4 b{ZeroInit};
     CORRADE_COMPARE(a, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
     CORRADE_COMPARE(b, Vector4(0.0f, 0.0f, 0.0f, 0.0f));
+
+    CORRADE_VERIFY(std::is_nothrow_default_constructible<Vector4>::value);
+    CORRADE_VERIFY((std::is_nothrow_constructible<Vector4, ZeroInitT>::value));
 }
 
 void VectorTest::constructNoInit() {
     Vector4 a{1.0f, 2.0f, -3.0f, 4.5f};
     new(&a) Vector4{NoInit};
-    CORRADE_COMPARE(a, (Vector4{1.0f, 2.0f, -3.0f, 4.5f}));
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a, (Vector4{1.0f, 2.0f, -3.0f, 4.5f}));
+    }
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Vector4, NoInitT>::value));
 }
 
 void VectorTest::constructOneValue() {
@@ -209,6 +225,8 @@ void VectorTest::constructOneValue() {
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Float, Vector4>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Vector4, Float>::value));
 }
 
 void VectorTest::constructOneComponent() {
@@ -217,6 +235,8 @@ void VectorTest::constructOneComponent() {
     /* Implicit constructor must work */
     constexpr Vector1 vec = 1.0f;
     CORRADE_COMPARE(vec, Vector1(1));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Vector1, Float>::value));
 }
 
 void VectorTest::constructConversion() {
@@ -227,12 +247,17 @@ void VectorTest::constructConversion() {
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Vector4, Vector4i>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Vector4, Vector4i>::value));
 }
 
 void VectorTest::constructCopy() {
     constexpr Vector4 a(1.0f, 3.5f, 4.0f, -2.7f);
     constexpr Vector4 b(a);
     CORRADE_COMPARE(b, Vector4(1.0f, 3.5f, 4.0f, -2.7f));
+
+    CORRADE_VERIFY(std::is_nothrow_copy_constructible<Vector4>::value);
+    CORRADE_VERIFY(std::is_nothrow_copy_assignable<Vector4>::value);
 }
 
 void VectorTest::convert() {
@@ -462,6 +487,12 @@ void VectorTest::projectedOntoNormalized() {
     CORRADE_COMPARE(projected, vector.projected(line));
 }
 
+void VectorTest::flipped() {
+    constexpr Vector4 vector{1.0f, -3.5f, 2.1f, 0.5f};
+    constexpr Vector4 flipped = vector.flipped();
+    CORRADE_COMPARE(flipped, (Vector4{0.5f, 2.1f, -3.5f, 1.0f}));
+}
+
 void VectorTest::angle() {
     std::ostringstream o;
     Error redirectError{&o};
@@ -557,6 +588,7 @@ void VectorTest::subclassTypes() {
     CORRADE_VERIFY((std::is_same<decltype(c.resized(1.0f)), Vec2>::value));
     CORRADE_VERIFY((std::is_same<decltype(c.projected(c2)), Vec2>::value));
     CORRADE_VERIFY((std::is_same<decltype(c.projectedOntoNormalized(c2)), Vec2>::value));
+    CORRADE_VERIFY((std::is_same<decltype(c.flipped()), Vec2>::value));
 }
 
 void VectorTest::subclass() {
@@ -615,17 +647,34 @@ void VectorTest::subclass() {
     /* Integral multiplication/division */
     CORRADE_COMPARE(Vec2i(2, 4)*1.5f, Vec2i(3, 6));
     CORRADE_COMPARE(1.5f*Vec2i(2, 4), Vec2i(3, 6));
-    CORRADE_COMPARE(Vec2i(2, 4)/(2.0f/3.0f), Vec2i(3, 6));
+    {
+        #ifdef CORRADE_TARGET_EMSCRIPTEN
+        CORRADE_EXPECT_FAIL_IF(Vec2i(2, 4)/(2.0f/3.0f) == Vec2i(2, 5),
+            "Emscripten -O1 misoptimizes the following (-O2 works).");
+        #endif
+        CORRADE_COMPARE(Vec2i(2, 4)/(2.0f/3.0f), Vec2i(3, 6));
+    }
 
     CORRADE_COMPARE(Vec2i(2, 4)*Vec2(-1.5f, 0.5f), Vec2i(-3, 2));
     CORRADE_COMPARE(Vec2(-1.5f, 0.5f)*Vec2i(2, 4), Vec2i(-3, 2));
-    CORRADE_COMPARE(Vec2i(2, 4)/Vec2(-2.0f/3.0f, 2.0f), Vec2i(-3, 2));
+    {
+        #ifdef CORRADE_TARGET_EMSCRIPTEN
+        CORRADE_EXPECT_FAIL_IF(Vec2i(2, 4)/Vec2(-2.0f/3.0f, 2.0f) == Vec2i(-2, 2),
+            "Emscripten -O1 misoptimizes the following (-O2 works).");
+        #endif
+        CORRADE_COMPARE(Vec2i(2, 4)/Vec2(-2.0f/3.0f, 2.0f), Vec2i(-3, 2));
+    }
 
     /* Functions */
     CORRADE_COMPARE(Vec2(3.0f, 0.0f).normalized(), Vec2(1.0f, 0.0f));
     CORRADE_COMPARE(Vec2(3.0f, 0.0f).resized(6.0f), Vec2(6.0f, 0.0f));
     CORRADE_COMPARE(Vec2(1.0f, 1.0f).projected({0.0f, 2.0f}), Vec2(0.0f, 1.0f));
     CORRADE_COMPARE(Vec2(1.0f, 1.0f).projectedOntoNormalized({0.0f, 1.0f}), Vec2(0.0f, 1.0f));
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Probably because copy is not constexpr */
+    constexpr
+    #endif
+    Vec2 flipped = Vec2{1.0f, 0.4f}.flipped();
+    CORRADE_COMPARE(flipped, (Vec2{0.4f, 1.0f}));
 }
 
 void VectorTest::debug() {

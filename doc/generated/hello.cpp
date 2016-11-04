@@ -31,6 +31,7 @@
 #include <Magnum/Platform/Sdl2Application.h>
 
 using namespace Magnum;
+using namespace Magnum::Math::Literals;
 
 class Hello: public Platform::Application {
 public:
@@ -42,8 +43,8 @@ private:
 
 Hello::Hello(const Arguments& arguments): Platform::Application(arguments) {
     Renderer::setClearColor(Color3::fromHSV(216.0_degf, 0.85f, 1.0f));
-    Debug() << "Hello! This application is running on" << Context::current()->version()
-            << "using" << Context::current()->rendererString();
+    Debug() << "Hello! This application is running on" << Context::current().version()
+            << "using" << Context::current().rendererString();
 }
 
 void Hello::drawEvent() {

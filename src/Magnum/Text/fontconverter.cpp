@@ -34,12 +34,24 @@
 
 #ifdef MAGNUM_TARGET_HEADLESS
 #include "Magnum/Platform/WindowlessEglApplication.h"
+#elif defined(CORRADE_TARGET_NACL)
+#include "Magnum/Platform/WindowlessNaClApplication.h"
+#elif defined(CORRADE_TARGET_IOS)
+#include "Magnum/Platform/WindowlessIosApplication.h"
 #elif defined(CORRADE_TARGET_APPLE)
 #include "Magnum/Platform/WindowlessCglApplication.h"
 #elif defined(CORRADE_TARGET_UNIX)
+#if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_DESKTOP_GLES)
+#include "Magnum/Platform/WindowlessEglApplication.h"
+#else
 #include "Magnum/Platform/WindowlessGlxApplication.h"
+#endif
 #elif defined(CORRADE_TARGET_WINDOWS)
+#if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_DESKTOP_GLES)
 #include "Magnum/Platform/WindowlessWglApplication.h"
+#else
+#include "Magnum/Platform/WindowlessWindowsEglApplication.h"
+#endif
 #else
 #error no windowless application available on this platform
 #endif
@@ -54,7 +66,7 @@ namespace Magnum {
 
 @section magnum-fontconverter-usage Usage
 
-    magnum-fontconverter [-h|--help] --font FONT --converter CONVERTER [--plugin-dir DIR] [--characters CHARACTERS] [--font-size N] [--atlas-size "X Y"] [--output-size "X Y"] [--radius N] [--] input output
+    magnum-fontconverter [--magnum-...] [-h|--help] --font FONT --converter CONVERTER [--plugin-dir DIR] [--characters CHARACTERS] [--font-size N] [--atlas-size "X Y"] [--output-size "X Y"] [--radius N] [--] input output
 
 Arguments:
 
@@ -72,6 +84,7 @@ Arguments:
 -   `--output-size "X Y"` -- output atlas size. If set to zero size, distance
     field computation will not be used. (default: `"256 256"`)
 -   `--radius N` -- distance field computation radius (default: `24`)
+-   `--magnum-...` -- engine-specific options (see @ref Context for details)
 
 The resulting font files can be then used as specified in the documentation of
 `converter` plugin.
@@ -101,12 +114,12 @@ class FontConverter: public Platform::WindowlessApplication {
         Utility::Arguments args;
 };
 
-FontConverter::FontConverter(const Arguments& arguments): Platform::WindowlessApplication(arguments, nullptr) {
+FontConverter::FontConverter(const Arguments& arguments): Platform::WindowlessApplication{arguments, NoCreate} {
     args.addArgument("input").setHelp("input", "input font")
         .addArgument("output").setHelp("output", "output filename prefix")
         .addNamedArgument("font").setHelp("font", "font plugin")
         .addNamedArgument("converter").setHelp("converter", "font converter plugin")
-        .addOption("plugin-dir", MAGNUM_PLUGINS_DIR).setHelp("plugin-dir", "base plugin dir", "DIR")
+        .addOption("plugin-dir", Utility::Directory::join(Utility::Directory::path(Utility::Directory::executableLocation()), MAGNUM_PLUGINS_DIR)).setHelp("plugin-dir", "base plugin dir", "DIR")
         .addOption("characters", "abcdefghijklmnopqrstuvwxyz"
                                  "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                                  "0123456789?!:;,. ").setHelp("characters", "characters to include in the output")

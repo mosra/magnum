@@ -52,6 +52,7 @@ Sdl2Application::InputEvent::Modifiers fixedModifiers(Uint16 mod) {
     if(modifiers & Sdl2Application::InputEvent::Modifier::Shift) modifiers |= Sdl2Application::InputEvent::Modifier::Shift;
     if(modifiers & Sdl2Application::InputEvent::Modifier::Ctrl) modifiers |= Sdl2Application::InputEvent::Modifier::Ctrl;
     if(modifiers & Sdl2Application::InputEvent::Modifier::Alt) modifiers |= Sdl2Application::InputEvent::Modifier::Alt;
+    if(modifiers & Sdl2Application::InputEvent::Modifier::Super) modifiers |= Sdl2Application::InputEvent::Modifier::Alt;
     return modifiers;
 }
 
@@ -186,6 +187,9 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
        version to the one specified, which is completely useless behavior. */
     #ifndef CORRADE_TARGET_APPLE
     constexpr static const char nvidiaVendorString[] = "NVIDIA Corporation";
+    #ifdef CORRADE_TARGET_WINDOWS
+    constexpr static const char intelVendorString[] = "Intel";
+    #endif
     constexpr static const char amdVendorString[] = "ATI Technologies Inc.";
     const char* vendorString;
     #endif
@@ -194,8 +198,11 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
         /* Sorry about the UGLY code, HOPEFULLY THERE WON'T BE MORE WORKAROUNDS */
         || (vendorString = reinterpret_cast<const char*>(glGetString(GL_VENDOR)),
         (std::strncmp(vendorString, nvidiaVendorString, sizeof(nvidiaVendorString)) == 0 ||
+         #ifdef CORRADE_TARGET_WINDOWS
+         std::strncmp(vendorString, intelVendorString, sizeof(intelVendorString)) == 0 ||
+         #endif
          std::strncmp(vendorString, amdVendorString, sizeof(amdVendorString)) == 0)
-         && !_context->isDriverWorkaroundDisabled("amd-nv-no-forward-compatible-core-context"))
+         && !_context->isDriverWorkaroundDisabled("no-forward-compatible-core-context"))
         #endif
     )) {
         /* Don't print any warning when doing the NV workaround, because the
@@ -273,11 +280,13 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
     return true;
 }
 
+#ifndef CORRADE_TARGET_EMSCRIPTEN
 Vector2i Sdl2Application::windowSize() {
     Vector2i size;
     SDL_GetWindowSize(_window, &size.x(), &size.y());
     return size;
 }
+#endif
 
 void Sdl2Application::swapBuffers() {
     #ifndef CORRADE_TARGET_EMSCRIPTEN
@@ -368,21 +377,42 @@ void Sdl2Application::mainLoop() {
 
             case SDL_KEYDOWN:
             case SDL_KEYUP: {
-                KeyEvent e(static_cast<KeyEvent::Key>(event.key.keysym.sym), fixedModifiers(event.key.keysym.mod));
+                KeyEvent e(static_cast<KeyEvent::Key>(event.key.keysym.sym), fixedModifiers(event.key.keysym.mod), event.key.repeat != 0);
                 event.type == SDL_KEYDOWN ? keyPressEvent(e) : keyReleaseEvent(e);
             } break;
 
             case SDL_MOUSEBUTTONDOWN:
             case SDL_MOUSEBUTTONUP: {
-                MouseEvent e(static_cast<MouseEvent::Button>(event.button.button), {event.button.x, event.button.y});
+                MouseEvent e(static_cast<MouseEvent::Button>(event.button.button), {event.button.x, event.button.y}
+                    #ifndef CORRADE_TARGET_EMSCRIPTEN
+                    , event.button.clicks
+                    #endif
+                    );
                 event.type == SDL_MOUSEBUTTONDOWN ? mousePressEvent(e) : mouseReleaseEvent(e);
             } break;
 
-            case SDL_MOUSEWHEEL:
+            case SDL_MOUSEWHEEL: {
+                MouseScrollEvent e{{Float(event.wheel.x), Float(event.wheel.y)}};
+                mouseScrollEvent(e);
+
+                #ifdef MAGNUM_BUILD_DEPRECATED
                 if(event.wheel.y != 0) {
-                    MouseEvent e(event.wheel.y > 0 ? MouseEvent::Button::WheelUp : MouseEvent::Button::WheelDown, {event.wheel.x, event.wheel.y});
+                    #ifdef __GNUC__
+                    #pragma GCC diagnostic push
+                    #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+                    #endif
+                    MouseEvent e(event.wheel.y > 0 ? MouseEvent::Button::WheelUp : MouseEvent::Button::WheelDown, {event.wheel.x, event.wheel.y}
+                        #ifndef CORRADE_TARGET_EMSCRIPTEN
+                        , 0
+                        #endif
+                        );
+                    #ifdef __GNUC__
+                    #pragma GCC diagnostic pop
+                    #endif
                     mousePressEvent(e);
-                } break;
+                }
+                #endif
+            } break;
 
             case SDL_MOUSEMOTION: {
                 MouseMoveEvent e({event.motion.x, event.motion.y}, {event.motion.xrel, event.motion.yrel}, static_cast<MouseMoveEvent::Button>(event.motion.state));
@@ -390,7 +420,12 @@ void Sdl2Application::mainLoop() {
                 break;
             }
 
-            #ifndef CORRADE_TARGET_EMSCRIPTEN
+            case SDL_MULTIGESTURE: {
+                MultiGestureEvent e({event.mgesture.x, event.mgesture.y}, event.mgesture.dTheta, event.mgesture.dDist, event.mgesture.numFingers);
+                multiGestureEvent(e);
+                break;
+            }
+
             case SDL_TEXTINPUT: {
                 TextInputEvent e{{event.text.text, std::strlen(event.text.text)}};
                 textInputEvent(e);
@@ -400,7 +435,6 @@ void Sdl2Application::mainLoop() {
                 TextEditingEvent e{{event.edit.text, std::strlen(event.text.text)}, event.edit.start, event.edit.length};
                 textEditingEvent(e);
             } break;
-            #endif
 
             case SDL_QUIT:
                 #ifndef CORRADE_TARGET_EMSCRIPTEN
@@ -457,12 +491,32 @@ void Sdl2Application::setMouseLocked(bool enabled) {
     #endif
 }
 
-#ifndef CORRADE_TARGET_EMSCRIPTEN
+bool Sdl2Application::isTextInputActive() {
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    return SDL_IsTextInputActive();
+    #else
+    return _isTextInputActive;
+    #endif
+}
+
+void Sdl2Application::startTextInput() {
+    SDL_StartTextInput();
+    #ifdef CORRADE_TARGET_EMSCRIPTEN
+    _isTextInputActive = true;
+    #endif
+}
+
+void Sdl2Application::stopTextInput() {
+    SDL_StopTextInput();
+    #ifdef CORRADE_TARGET_EMSCRIPTEN
+    _isTextInputActive = false;
+    #endif
+}
+
 void Sdl2Application::setTextInputRect(const Range2Di& rect) {
     SDL_Rect r{rect.min().x(), rect.min().y(), rect.sizeX(), rect.sizeY()};
     SDL_SetTextInputRect(&r);
 }
-#endif
 
 void Sdl2Application::tickEvent() {
     /* If this got called, the tick event is not implemented by user and thus
@@ -476,11 +530,10 @@ void Sdl2Application::keyReleaseEvent(KeyEvent&) {}
 void Sdl2Application::mousePressEvent(MouseEvent&) {}
 void Sdl2Application::mouseReleaseEvent(MouseEvent&) {}
 void Sdl2Application::mouseMoveEvent(MouseMoveEvent&) {}
-
-#ifndef CORRADE_TARGET_EMSCRIPTEN
+void Sdl2Application::mouseScrollEvent(MouseScrollEvent&) {}
+void Sdl2Application::multiGestureEvent(MultiGestureEvent&) {}
 void Sdl2Application::textInputEvent(TextInputEvent&) {}
 void Sdl2Application::textEditingEvent(TextEditingEvent&) {}
-#endif
 
 Sdl2Application::Configuration::Configuration():
     #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_IOS)
@@ -499,15 +552,29 @@ Sdl2Application::Configuration::Configuration():
 
 Sdl2Application::Configuration::~Configuration() = default;
 
+std::string Sdl2Application::KeyEvent::keyName(const Key key) {
+    return SDL_GetKeyName(SDL_Keycode(key));
+}
+
+std::string Sdl2Application::KeyEvent::keyName() const {
+    return keyName(_key);
+}
+
 Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseEvent::modifiers() {
-    if(modifiersLoaded) return _modifiers;
-    modifiersLoaded = true;
+    if(_modifiersLoaded) return _modifiers;
+    _modifiersLoaded = true;
     return _modifiers = fixedModifiers(Uint16(SDL_GetModState()));
 }
 
 Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseMoveEvent::modifiers() {
-    if(modifiersLoaded) return _modifiers;
-    modifiersLoaded = true;
+    if(_modifiersLoaded) return _modifiers;
+    _modifiersLoaded = true;
+    return _modifiers = fixedModifiers(Uint16(SDL_GetModState()));
+}
+
+Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseScrollEvent::modifiers() {
+    if(_modifiersLoaded) return _modifiers;
+    _modifiersLoaded = true;
     return _modifiers = fixedModifiers(Uint16(SDL_GetModState()));
 }
 

@@ -1,3 +1,5 @@
+#ifndef Magnum_ResourceManager_hpp
+#define Magnum_ResourceManager_hpp
 /*
     This file is part of Magnum.
 
@@ -48,3 +50,5 @@ ResourceManager<Types...>*& ResourceManagerLocalInstanceImplementation<Types...>
 }
 
 }}
+
+#endif

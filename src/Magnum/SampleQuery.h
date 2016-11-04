@@ -86,7 +86,9 @@ class SampleQuery: public AbstractQuery {
         enum class Target: GLenum {
             #ifndef MAGNUM_TARGET_GLES
             /**
-             * Count of samples passed from fragment shader
+             * Count of samples passed from fragment shader. Use
+             * @ref result<UnsignedInt>() or @ref result<Int>() to retrieve the
+             * result.
              * @requires_gl Only boolean query is available in OpenGL ES and
              *      WebGL.
              */
@@ -94,7 +96,8 @@ class SampleQuery: public AbstractQuery {
             #endif
 
             /**
-             * Whether any samples passed from fragment shader
+             * Whether any samples passed from fragment shader. Use
+             * @ref result<bool>() to retrieve the result.
              * @requires_gl33 Extension @extension{ARB,occlusion_query2}
              */
             #ifndef MAGNUM_TARGET_GLES2
@@ -104,10 +107,10 @@ class SampleQuery: public AbstractQuery {
             #endif
 
             /**
-             * Whether any samples passed from fragment shader (conservative)
-             *
-             * An implementation may choose a less precise version of the
-             * test at the expense of some false positives.
+             * Whether any samples passed from fragment shader (conservative).
+             * An implementation may choose a less precise version of the test
+             * at the expense of some false positives. Use @ref result<bool>()
+             * to retrieve the result.
              * @requires_gl43 Extension @extension{ARB,ES3_compatibility}
              */
             #ifndef MAGNUM_TARGET_GLES2

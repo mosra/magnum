@@ -50,7 +50,9 @@ if(NOT BUILD_PLUGINS_STATIC OR BUILD_STATIC_PIC)
 endif()
 
 # TgaImporter plugin
-add_plugin(TgaImporter ${MAGNUM_PLUGINS_IMPORTER_DEBUG_INSTALL_DIR} ${MAGNUM_PLUGINS_IMPORTER_RELEASE_INSTALL_DIR}
+add_plugin(TgaImporter
+    "${MAGNUM_PLUGINS_IMPORTER_DEBUG_BINARY_INSTALL_DIR};${MAGNUM_PLUGINS_IMPORTER_DEBUG_LIBRARY_INSTALL_DIR}"
+    "${MAGNUM_PLUGINS_IMPORTER_RELEASE_BINARY_INSTALL_DIR};${MAGNUM_PLUGINS_IMPORTER_RELEASE_LIBRARY_INSTALL_DIR}"
     TgaImporter.conf
     $<TARGET_OBJECTS:TgaImporterObjects>
     pluginRegistration.cpp)
@@ -63,7 +65,9 @@ install(FILES ${TgaImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTAL
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configure.h DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/TgaImporter)
 
 if(BUILD_TESTS)
-    add_library(MagnumTgaImporterTestLib STATIC $<TARGET_OBJECTS:TgaImporterObjects>)
+    add_library(MagnumTgaImporterTestLib STATIC
+        $<TARGET_OBJECTS:TgaImporterObjects>
+        ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details
     target_link_libraries(MagnumTgaImporterTestLib Magnum)
 
     add_subdirectory(Test)

@@ -55,7 +55,35 @@ class Buffer {
             Mono8 = AL_FORMAT_MONO8,        /**< 8-bit unsigned mono */
             Mono16 = AL_FORMAT_MONO16,      /**< 16-bit signed mono */
             Stereo8 = AL_FORMAT_STEREO8,    /**< 8-bit interleaved unsigned stereo */
-            Stereo16 = AL_FORMAT_STEREO16,   /**< 16-bit interleaved signed stereo */
+            Stereo16 = AL_FORMAT_STEREO16,  /**< 16-bit interleaved signed stereo */
+
+            /**
+             * @brief 8-bit mono [A-Law Compressed Sound Format](https://en.wikipedia.org/wiki/A-law_algorithm)
+             *
+             * @requires_al_extension Extension @al_extension{EXT,ALAW}
+             */
+            MonoALaw = AL_FORMAT_MONO_ALAW_EXT,
+
+            /**
+             * @brief 8-bit interleaved stereo [A-Law Compressed Sound Format](https://en.wikipedia.org/wiki/A-law_algorithm)
+             *
+             * @requires_al_extension Extension @al_extension{EXT,ALAW}
+             */
+            StereoALaw = AL_FORMAT_STEREO_ALAW_EXT,
+
+            /**
+             * @brief 8-bit mono [μ-Law Compressed Sound Format](https://en.wikipedia.org/wiki/Μ-law_algorithm)
+             *
+             * @requires_al_extension Extension @al_extension{EXT,MULAW}
+             */
+            MonoMuLaw = AL_FORMAT_MONO_MULAW_EXT,
+
+            /**
+             * @brief 8-bit interleaved [μ-Law Compressed Sound Format](https://en.wikipedia.org/wiki/Μ-law_algorithm)
+             *
+             * @requires_al_extension Extension @al_extension{EXT,MULAW}
+             */
+            StereoMuLaw = AL_FORMAT_STEREO_MULAW_EXT,
 
             /**
              * @brief 32-bit floating-point mono
@@ -83,7 +111,112 @@ class Buffer {
              *
              * @requires_al_extension Extension @al_extension{EXT,double}
              */
-            StereoDouble = AL_FORMAT_STEREO_DOUBLE_EXT
+            StereoDouble = AL_FORMAT_STEREO_DOUBLE_EXT,
+
+            /**
+             * @brief 8-bit unsigned quadrophonic
+             *
+             * @requires_al_extension Extension @al_extension{EXT,MCFORMATS}
+             */
+            Quad8 = AL_FORMAT_QUAD8,
+
+            /**
+             * @brief 16-bit signed quadrophonic
+             *
+             * @requires_al_extension Extension @al_extension{EXT,MCFORMATS}
+             */
+            Quad16 = AL_FORMAT_QUAD16,
+
+            /**
+             * @brief 32-bit interleaved floating-point quadrophonic
+             *
+             * @requires_al_extension Extension @al_extension{EXT,MCFORMATS}
+             */
+            Quad32 = AL_FORMAT_QUAD32,
+
+            /**
+             * @brief 8-bit unsigned rear
+             *
+             * @requires_al_extension Extension @al_extension{EXT,MCFORMATS}
+             */
+            Rear8 = AL_FORMAT_REAR8,
+
+            /**
+             * @brief 16-bit signed rear
+             *
+             * @requires_al_extension Extension @al_extension{EXT,MCFORMATS}
+             */
+            Rear16 = AL_FORMAT_REAR16,
+
+            /**
+             * @brief 32-bit interleaved floating-point rear
+             *
+             * @requires_al_extension Extension @al_extension{EXT,MCFORMATS}
+             */
+            Rear32 = AL_FORMAT_REAR32,
+
+            /**
+             * @brief 8-bit unsigned 5.1 surround
+             *
+             * @requires_al_extension Extension @al_extension{EXT,MCFORMATS}
+             */
+            Surround51Channel8 = AL_FORMAT_51CHN8,
+
+            /**
+             * @brief 16-bit signed 5.1 surround
+             *
+             * @requires_al_extension Extension @al_extension{EXT,MCFORMATS}
+             */
+            Surround51Channel16 = AL_FORMAT_51CHN16,
+
+            /**
+             * @brief 32-bit interleaved floating-point 5.1 surround
+             *
+             * @requires_al_extension Extension @al_extension{EXT,MCFORMATS}
+             */
+            Surround51Channel32 = AL_FORMAT_51CHN32,
+
+            /**
+             * @brief 8-bit unsigned 6.1 surround
+             *
+             * @requires_al_extension Extension @al_extension{EXT,MCFORMATS}
+             */
+            Surround61Channel8 = AL_FORMAT_61CHN8,
+
+            /**
+             * @brief 16-bit signed 6.1 surround
+             *
+             * @requires_al_extension Extension @al_extension{EXT,MCFORMATS}
+             */
+            Surround61Channel16 = AL_FORMAT_61CHN16,
+
+            /**
+             * @brief 32-bit interleaved floating-point 6.1 surround
+             *
+             * @requires_al_extension Extension @al_extension{EXT,MCFORMATS}
+             */
+            Surround61Channel32 = AL_FORMAT_61CHN32,
+
+            /**
+             * @brief 8-bit unsigned 7.1 surround
+             *
+             * @requires_al_extension Extension @al_extension{EXT,MCFORMATS}
+             */
+            Surround71Channel8 = AL_FORMAT_71CHN8,
+
+            /**
+             * @brief 16-bit signed 7.1 surround
+             *
+             * @requires_al_extension Extension @al_extension{EXT,MCFORMATS}
+             */
+            Surround71Channel16 = AL_FORMAT_71CHN16,
+
+            /**
+             * @brief 32-bit interleaved floating-point 7.1 surround
+             *
+             * @requires_al_extension Extension @al_extension{EXT,MCFORMATS}
+             */
+            Surround71Channel32 = AL_FORMAT_71CHN32
         };
 
         /**

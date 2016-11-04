@@ -99,7 +99,7 @@ void MeshView::multiDrawImplementationDefault(std::initializer_list<std::referen
         #elif !defined(CORRADE_TARGET_NACL)
         glMultiDrawArraysEXT(GLenum(original._primitive), baseVertex, count, meshes.size());
         #else
-        CORRADE_ASSERT_UNREACHABLE();
+        CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
         #endif
 
     /* Indexed meshes */
@@ -118,7 +118,7 @@ void MeshView::multiDrawImplementationDefault(std::initializer_list<std::referen
             #elif !defined(CORRADE_TARGET_NACL)
             glMultiDrawElementsEXT(GLenum(original._primitive), count, GLenum(original._indexType), indices, meshes.size());
             #else
-            CORRADE_ASSERT_UNREACHABLE();
+            CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
             #endif
         }
     }
@@ -130,10 +130,15 @@ void MeshView::multiDrawImplementationDefault(std::initializer_list<std::referen
 #ifdef MAGNUM_TARGET_GLES
 void MeshView::multiDrawImplementationFallback(std::initializer_list<std::reference_wrapper<MeshView>> meshes) {
     for(MeshView& mesh: meshes) {
+        /* Nothing to draw in this mesh */
+        if(!mesh._count) continue;
+
+        CORRADE_ASSERT(mesh._instanceCount == 1, "MeshView::draw(): cannot draw multiple instanced meshes", );
+
         #ifndef MAGNUM_TARGET_GLES2
-        mesh._original.get().drawInternal(mesh._count, mesh._baseVertex, mesh._instanceCount, mesh._indexOffset, mesh._indexStart, mesh._indexEnd);
+        mesh._original.get().drawInternal(mesh._count, mesh._baseVertex, 1, mesh._indexOffset, mesh._indexStart, mesh._indexEnd);
         #else
-        mesh._original.get().drawInternal(mesh._count, mesh._baseVertex, mesh._instanceCount, mesh._indexOffset);
+        mesh._original.get().drawInternal(mesh._count, mesh._baseVertex, 1, mesh._indexOffset);
         #endif
     }
 }
@@ -145,6 +150,9 @@ MeshView& MeshView::setIndexRange(Int first) {
 }
 
 void MeshView::draw(AbstractShaderProgram& shader) {
+    /* Nothing to draw, exit without touching any state */
+    if(!_count || !_instanceCount) return;
+
     shader.use();
 
     #ifndef MAGNUM_TARGET_GLES
@@ -155,5 +163,16 @@ void MeshView::draw(AbstractShaderProgram& shader) {
     _original.get().drawInternal(_count, _baseVertex, _instanceCount, _indexOffset);
     #endif
 }
+
+#ifndef MAGNUM_TARGET_GLES
+void MeshView::draw(AbstractShaderProgram& shader, TransformFeedback& xfb, UnsignedInt stream) {
+    /* Nothing to draw, exit without touching any state */
+    if(!_instanceCount) return;
+
+    shader.use();
+
+    _original.get().drawInternal(xfb, stream, _instanceCount);
+}
+#endif
 
 }

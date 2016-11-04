@@ -40,12 +40,24 @@
 
 #ifdef MAGNUM_TARGET_HEADLESS
 #include "Magnum/Platform/WindowlessEglApplication.h"
+#elif defined(CORRADE_TARGET_NACL)
+#include "Magnum/Platform/WindowlessNaClApplication.h"
+#elif defined(CORRADE_TARGET_IOS)
+#include "Magnum/Platform/WindowlessIosApplication.h"
 #elif defined(CORRADE_TARGET_APPLE)
 #include "Magnum/Platform/WindowlessCglApplication.h"
 #elif defined(CORRADE_TARGET_UNIX)
+#if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_DESKTOP_GLES)
+#include "Magnum/Platform/WindowlessEglApplication.h"
+#else
 #include "Magnum/Platform/WindowlessGlxApplication.h"
+#endif
 #elif defined(CORRADE_TARGET_WINDOWS)
+#if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_DESKTOP_GLES)
 #include "Magnum/Platform/WindowlessWglApplication.h"
+#else
+#include "Magnum/Platform/WindowlessWindowsEglApplication.h"
+#endif
 #else
 #error no windowless application available on this platform
 #endif
@@ -59,7 +71,7 @@ namespace Magnum {
 
 @section magnum-distancefieldconverter-usage Usage
 
-    magnum-distancefieldconverter [-h|--help] [--importer IMPORTER] [--converter CONVERTER] [--plugin-dir DIR] --output-size "X Y" --radius N [--] input output
+    magnum-distancefieldconverter [--magnum-...] [-h|--help] [--importer IMPORTER] [--converter CONVERTER] [--plugin-dir DIR] --output-size "X Y" --radius N [--] input output
 
 Arguments:
 
@@ -72,6 +84,7 @@ Arguments:
     Magnum install location)
 -   `--output-size "X Y"` -- size of output image
 -   `--radius N` -- distance field computation radius
+-   `--magnum-...` -- engine-specific options (see @ref Context for details)
 
 Images with @ref PixelFormat::Red, @ref PixelFormat::RGB or @ref PixelFormat::RGBA
 are accepted on input.
@@ -102,12 +115,12 @@ class DistanceFieldConverter: public Platform::WindowlessApplication {
         Utility::Arguments args;
 };
 
-DistanceFieldConverter::DistanceFieldConverter(const Arguments& arguments): Platform::WindowlessApplication(arguments, nullptr) {
+DistanceFieldConverter::DistanceFieldConverter(const Arguments& arguments): Platform::WindowlessApplication{arguments, NoCreate} {
     args.addArgument("input").setHelp("input", "input image")
         .addArgument("output").setHelp("output", "output image")
         .addOption("importer", "AnyImageImporter").setHelp("importer", "image importer plugin")
         .addOption("converter", "AnyImageConverter").setHelp("converter", "image converter plugin")
-        .addOption("plugin-dir", MAGNUM_PLUGINS_DIR).setHelp("plugin-dir", "base plugin dir", "DIR")
+        .addOption("plugin-dir", Utility::Directory::join(Utility::Directory::path(Utility::Directory::executableLocation()), MAGNUM_PLUGINS_DIR)).setHelp("plugin-dir", "base plugin dir", "DIR")
         .addNamedArgument("output-size").setHelp("output-size", "size of output image", "\"X Y\"")
         .addNamedArgument("radius").setHelp("radius", "distance field computation radius", "N")
         .addSkippedPrefix("magnum", "engine-specific options")

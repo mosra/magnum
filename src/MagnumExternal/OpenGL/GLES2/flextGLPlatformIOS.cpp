@@ -59,35 +59,21 @@
 #undef glProgramUniform1fvEXT
 #undef glProgramUniform1iEXT
 #undef glProgramUniform1ivEXT
-#undef glProgramUniform1uiEXT
-#undef glProgramUniform1uivEXT
 #undef glProgramUniform2fEXT
 #undef glProgramUniform2fvEXT
 #undef glProgramUniform2iEXT
 #undef glProgramUniform2ivEXT
-#undef glProgramUniform2uiEXT
-#undef glProgramUniform2uivEXT
 #undef glProgramUniform3fEXT
 #undef glProgramUniform3fvEXT
 #undef glProgramUniform3iEXT
 #undef glProgramUniform3ivEXT
-#undef glProgramUniform3uiEXT
-#undef glProgramUniform3uivEXT
 #undef glProgramUniform4fEXT
 #undef glProgramUniform4fvEXT
 #undef glProgramUniform4iEXT
 #undef glProgramUniform4ivEXT
-#undef glProgramUniform4uiEXT
-#undef glProgramUniform4uivEXT
 #undef glProgramUniformMatrix2fvEXT
-#undef glProgramUniformMatrix2x3fvEXT
-#undef glProgramUniformMatrix2x4fvEXT
 #undef glProgramUniformMatrix3fvEXT
-#undef glProgramUniformMatrix3x2fvEXT
-#undef glProgramUniformMatrix3x4fvEXT
 #undef glProgramUniformMatrix4fvEXT
-#undef glProgramUniformMatrix4x2fvEXT
-#undef glProgramUniformMatrix4x3fvEXT
 #undef glUseProgramStagesEXT
 #undef glValidateProgramPipelineEXT
 #undef glGetSamplerParameterIivEXT
@@ -98,12 +84,8 @@
 #undef glSamplerParameterIuivEXT
 #undef glTexParameterIivEXT
 #undef glTexParameterIuivEXT
-#undef glTexStorage1DEXT
 #undef glTexStorage2DEXT
 #undef glTexStorage3DEXT
-#undef glTextureStorage1DEXT
-#undef glTextureStorage2DEXT
-#undef glTextureStorage3DEXT
 #undef glBlendBarrierKHR
 #undef glDebugMessageCallbackKHR
 #undef glDebugMessageControlKHR
@@ -146,6 +128,9 @@
 #include <ES2/glext.h>
 
 void flextGLInit() {
+    /* Work around missing glTexStorage3D (can't be used anyway because GLES2
+       on iOS doesn't support OES_texture_3D) */
+    constexpr void(*glTexStorage3DEXT)() = nullptr;
 
     /* GL_ANGLE_framebuffer_blit */
     #if GL_ANGLE_framebuffer_blit
@@ -272,35 +257,21 @@ void flextGLInit() {
     flextglProgramUniform1fvEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, const GLfloat *)>(glProgramUniform1fvEXT);
     flextglProgramUniform1iEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLint)>(glProgramUniform1iEXT);
     flextglProgramUniform1ivEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, const GLint *)>(glProgramUniform1ivEXT);
-    flextglProgramUniform1uiEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLuint)>(glProgramUniform1uiEXT);
-    flextglProgramUniform1uivEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, const GLuint *)>(glProgramUniform1uivEXT);
     flextglProgramUniform2fEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLfloat, GLfloat)>(glProgramUniform2fEXT);
     flextglProgramUniform2fvEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, const GLfloat *)>(glProgramUniform2fvEXT);
     flextglProgramUniform2iEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLint, GLint)>(glProgramUniform2iEXT);
     flextglProgramUniform2ivEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, const GLint *)>(glProgramUniform2ivEXT);
-    flextglProgramUniform2uiEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLuint, GLuint)>(glProgramUniform2uiEXT);
-    flextglProgramUniform2uivEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, const GLuint *)>(glProgramUniform2uivEXT);
     flextglProgramUniform3fEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLfloat, GLfloat, GLfloat)>(glProgramUniform3fEXT);
     flextglProgramUniform3fvEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, const GLfloat *)>(glProgramUniform3fvEXT);
     flextglProgramUniform3iEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLint, GLint, GLint)>(glProgramUniform3iEXT);
     flextglProgramUniform3ivEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, const GLint *)>(glProgramUniform3ivEXT);
-    flextglProgramUniform3uiEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLuint, GLuint, GLuint)>(glProgramUniform3uiEXT);
-    flextglProgramUniform3uivEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, const GLuint *)>(glProgramUniform3uivEXT);
     flextglProgramUniform4fEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLfloat, GLfloat, GLfloat, GLfloat)>(glProgramUniform4fEXT);
     flextglProgramUniform4fvEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, const GLfloat *)>(glProgramUniform4fvEXT);
     flextglProgramUniform4iEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLint, GLint, GLint, GLint)>(glProgramUniform4iEXT);
     flextglProgramUniform4ivEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, const GLint *)>(glProgramUniform4ivEXT);
-    flextglProgramUniform4uiEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLuint, GLuint, GLuint, GLuint)>(glProgramUniform4uiEXT);
-    flextglProgramUniform4uivEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, const GLuint *)>(glProgramUniform4uivEXT);
     flextglProgramUniformMatrix2fvEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *)>(glProgramUniformMatrix2fvEXT);
-    flextglProgramUniformMatrix2x3fvEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *)>(glProgramUniformMatrix2x3fvEXT);
-    flextglProgramUniformMatrix2x4fvEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *)>(glProgramUniformMatrix2x4fvEXT);
     flextglProgramUniformMatrix3fvEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *)>(glProgramUniformMatrix3fvEXT);
-    flextglProgramUniformMatrix3x2fvEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *)>(glProgramUniformMatrix3x2fvEXT);
-    flextglProgramUniformMatrix3x4fvEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *)>(glProgramUniformMatrix3x4fvEXT);
     flextglProgramUniformMatrix4fvEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *)>(glProgramUniformMatrix4fvEXT);
-    flextglProgramUniformMatrix4x2fvEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *)>(glProgramUniformMatrix4x2fvEXT);
-    flextglProgramUniformMatrix4x3fvEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *)>(glProgramUniformMatrix4x3fvEXT);
     flextglUseProgramStagesEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLbitfield, GLuint)>(glUseProgramStagesEXT);
     flextglValidateProgramPipelineEXT = reinterpret_cast<void(APIENTRY*)(GLuint)>(glValidateProgramPipelineEXT);
     #endif
@@ -319,12 +290,8 @@ void flextGLInit() {
 
     /* GL_EXT_texture_storage */
     #if GL_EXT_texture_storage
-    flextglTexStorage1DEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLsizei, GLenum, GLsizei)>(glTexStorage1DEXT);
     flextglTexStorage2DEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLsizei, GLenum, GLsizei, GLsizei)>(glTexStorage2DEXT);
     flextglTexStorage3DEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLsizei, GLenum, GLsizei, GLsizei, GLsizei)>(glTexStorage3DEXT);
-    flextglTextureStorage1DEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum, GLsizei, GLenum, GLsizei)>(glTextureStorage1DEXT);
-    flextglTextureStorage2DEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum, GLsizei, GLenum, GLsizei, GLsizei)>(glTextureStorage2DEXT);
-    flextglTextureStorage3DEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum, GLsizei, GLenum, GLsizei, GLsizei, GLsizei)>(glTextureStorage3DEXT);
     #endif
 
     /* GL_KHR_blend_equation_advanced */

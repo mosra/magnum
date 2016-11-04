@@ -69,7 +69,7 @@ std::string shaderName(const Shader::Type type) {
         case Shader::Type::Fragment:                return "fragment";
     }
 
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
 UnsignedInt typeToIndex(const Shader::Type type) {
@@ -84,7 +84,7 @@ UnsignedInt typeToIndex(const Shader::Type type) {
         #endif
     }
 
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
 #ifndef MAGNUM_TARGET_GLES
@@ -784,15 +784,26 @@ Shader& Shader::addSource(std::string source) {
         converter << (_sources.size()+1)/2;
         #endif
 
-        /* Fix line numbers, so line 41 of third added file is marked as 3(41).
-           Source 0 is the #version string added in constructor. */
-        _sources.push_back("#line 1 " +
+        /* Fix line numbers, so line 41 of third added file is marked as 3(41)
+           in case shader version was not Version::None, because then source 0
+           is the #version directive added in constructor.
+
+           If version was Version::None, line 41 of third added file is marked
+           as 2(41). We apparently can't add even the #line directive before
+           the potential `#version` directive -- in that case the first source
+           file is not marked with any file number, thus having number 0. In
+           order to avoid complex logic in compile() where we assert for at
+           least some user-provided source, an empty string is added here
+           instead. */
+        if(!_sources.empty()) _sources.push_back("#line 1 " +
             #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID)
             std::to_string((_sources.size()+1)/2) +
             #else
             converter.str() +
             #endif
             '\n');
+        else _sources.emplace_back();
+
         _sources.push_back(std::move(source));
     }
 
@@ -892,6 +903,7 @@ bool Shader::compile(std::initializer_list<std::reference_wrapper<Shader>> shade
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const Shader::Type value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case Shader::Type::value: return debug << "Shader::Type::" #value;
         _c(Vertex)
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
@@ -902,9 +914,10 @@ Debug& operator<<(Debug& debug, const Shader::Type value) {
         #endif
         _c(Fragment)
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Shader::Type::(invalid)";
+    return debug << "Shader::Type(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 

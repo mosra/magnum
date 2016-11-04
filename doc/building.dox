@@ -33,10 +33,8 @@ namespace Magnum {
 Minimal set of tools and libraries required for building is:
 
 -   C++ compiler with good C++11 support. Compilers which are tested to have
-    everything needed are **GCC** >= 4.7, **Clang** >= 3.1 and **MSVC** 2015.
-    On Windows you can also use **MinGW-w64**. GCC 4.6, 4.5, 4.4 and MSVC 2013
-    support involves some ugly workarounds and thus is available only in
-    `compatibility` branch.
+    everything needed are **GCC** >= 4.7, **Clang** >= 3.1 and **MSVC** >= 2015.
+    On Windows you can also use **MinGW-w64**.
 -   **CMake** >= 2.8.12
 -   **Corrade** - Plugin management and utility library. See
     @ref building-corrade "Corrade download and installation guide" for more
@@ -51,12 +49,6 @@ repository with your favorite IDE or Git GUI, download currrent snapshot as
 compressed archive or use the command line:
 
     git clone git://github.com/mosra/magnum.git
-
-If you need to use the `compatibility` branch, check it out as following from
-the cloned repository or download the particular archive from
-https://github.com/mosra/magnum/tree/compatibility.
-
-    git checkout compatibility
 
 @section building-compilation Compilation, installation
 
@@ -103,8 +95,7 @@ value to that directory (e.g. `-DCMAKE_INSTALL_PREFIX=C:/Sys`).
 
 @subsubsection building-windows-msvc Using Visual Studio
 
-On Windows CMake by default creates Visual Studio project files. You need to
-use `compatibility` branch to compile with MSVC 2013, as said above.
+On Windows CMake by default creates Visual Studio project files.
 
 The most straightforward way to build and install the library is again via the
 command-line. The bonus point is that you don't even need to wait for Visual
@@ -166,12 +157,18 @@ available for desktop OpenGL only, see @ref requires-gl.
 -   `TARGET_GLES2` -- Target OpenGL ES 2.0. Currently enabled by default when
     `TARGET_GLES` is set.
 -   `TARGET_DESKTOP_GLES` -- Target OpenGL ES on desktop, i.e. use OpenGL ES
-    emulation in desktop OpenGL library. Might not be supported in all drivers.
+    emulation in desktop OpenGL library. Available on Linux and Windows, though
+    might not be supported by all drivers.
 -   `TARGET_HEADLESS` -- Build command-line utilities for use on a headless
     machine. Basically it means that EGL with no display attachment is being
     used everywhere instead of platform-specific toolkits like CGL, GLX or WGL.
     Supported mainly on OpenGL ES drivers, for desktop OpenGL the only driver
     that supports this configuration is NVidia >= 355.
+
+By default the engine is built in a way that allows having multiple
+thread-local Magnum contents. This might cause some performance penalties -- if
+you are sure that you will never need such feature, you can disable it via the
+`BUILD_MULTITHREADED` option.
 
 The features used can be conveniently detected in depending projects both in
 CMake and C++ sources, see @ref cmake and @ref Magnum/Magnum.h for more
@@ -229,17 +226,31 @@ information):
 -   `WITH_GLXCONTEXT` -- GLX context
 -   `WITH_WGLCONTEXT` -- WGL context
 
-There are also a few command-line utilities. They are currently available only
-on Linux, Mac OS X and Windows, also disabled by default:
+There are also a few command-line utilities, also disabled by default:
 
 -   `WITH_MAGNUMINFO` - @ref magnum-info "magnum-info" executable, provides
-    information about the engine and OpenGL capabilities.
+    information about the engine and OpenGL capabilities. Depends on some
+    windowless application library.
+-   `WITH_AL_INFO` -- @ref magnum-al-info "magnum-al-info" executable, provides
+    information about OpenAL capabilities.
 -   `WITH_DISTANCEFIELDCONVERTER` - @ref magnum-distancefieldconverter "magnum-distancefieldconverter"
     executable for converting black&white images to distance field textures.
-    Enables also building of TextureTools library.
+    Enables also building of @ref TextureTools library. Available only on
+    desktop GL, depends on some windowless application library.
 -   `WITH_FONTCONVERTER` - @ref magnum-fontconverter "magnum-fontconverter"
     executable for converting fonts to raster ones. Enables also building of
-    Text library.
+    @ref Text library. Available only on desktop GL, depends on some windowless
+    application library.
+-   `WITH_IMAGECONVERTER` - @ref magnum-imageconverter "magnum-imageconverter"
+    executable for converting images of different formats.
+
+Some of these utilities operate with plugins and they search for them in the
+default plugin locations. You can override those locations using
+`MAGNUM_PLUGINS_DIR` and `MAGNUM_PLUGINS_[DEBUG|RELEASE]_DIR` variables, much
+like when using Magnum from dependent projects -- see @ref cmake for more
+information. In particular, if you specify them as relative paths, the path
+will be taken relative to executable location, which is useful for making
+relocatable installations.
 
 Magnum also contains a set of dependency-less plugins for importing essential
 file formats. Additional plugins are provided in separate plugin repository,
@@ -277,9 +288,25 @@ in build directory. On Windows the tests require the library to be installed
 with DLLs accessible through `PATH`. See
 @ref building-windows "above Windows documentation" for more information.
 
-Platforms which have windowless context creation implemented (currently only
-desktop Linux) can build also tests for OpenGL functionality. You can enable
-them with `BUILD_GL_TESTS`.
+The @ref Audio library has tests which require OpenAL to be able to create a
+context.  That is the case on most platforms, so they are enabled by default.
+In case it's not possible to have OpenAL context (such as when running
+@ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" tests under Node.js), you can
+disable building of them with `BUILD_AL_TESTS`. The tests are suffixed with
+`ALTest` so they can be also selectively included/excluded when running CTest,
+e.g.:
+
+    ctest -E ALTest # run everything except tests requiring OpenAL context
+
+Platforms which have windowless GL context creation implemented (currently all
+platforms except @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten",
+@ref CORRADE_TARGET_NACL "NaCl", @ref CORRADE_TARGET_WINDOWS_RT "Windows RT"
+and @ref CORRADE_TARGET_ANDROID "Android")  can build also tests for OpenGL
+functionality. You can enable them with `BUILD_GL_TESTS`. All GL tests are
+suffixed with `GLTest` so they can be also selectively included/excluded when
+running CTest, e.g.:
+
+    ctest -R GLTest # run only tests requiring OpenGL context
 
 @subsection building-doc Building documentation
 
@@ -378,8 +405,9 @@ contents in `toolchains/` subdirectory.
     git submodule update
 
 Note that CMake for some reason treats `CMAKE_PREFIX_PATH` and
-`CMAKE_INSTALL_PREFIX` differently while crosscompiling and you may need to set
-also `CMAKE_FIND_ROOT_PATH` to make it able to find the dependencies.
+`CMAKE_INSTALL_PREFIX` differently while crosscompiling and you may need to add
+dependency paths to both `CMAKE_PREFIX_PATH` and `CMAKE_FIND_ROOT_PATH` to make
+it able to find the dependencies.
 
 @subsection building-cross-winrt Crosscompiling for Windows RT
 
@@ -390,15 +418,23 @@ installation path for WinRT dependencies is in `C:/Sys-winrt`.
 You need at least Windows 8.1, Visual Studio 2013 and Windows 8.1 Store/Phone
 SDK installed. Windows RT applications support OpenGL only through ANGLE, which
 is currently limited to OpenGL ES. Download and build ANGLE @ref building-windows-angle "according to instructions above",
-but use project files from the `winrt/` directory instead. Upcoming version
-2.0.4 of SDL has support for WinRT applications, download the source from
-https://www.libsdl.org/hg.php and use project files from the `VisualC-WinRT`
-directory. Because WinRT applications run in a sandbox, it's recommended to
-build the library as static so you don't have to bundle all the DLLs. Example:
+but use project files from the `winrt/` directory instead. Version 2.0.4 of SDL
+has support for WinRT applications, download the source from
+https://www.libsdl.org/download-2.0.php and use project files from the
+`VisualC-WinRT` directory. Because WinRT applications run in a sandbox, it's
+recommended to build the library as static so you don't have to bundle all the
+DLLs. Example:
 
     mkdir build-winrt
     cd build-winrt
-    cmake -DCORRADE_RC_EXECUTABLE="C:/Sys/bin/corrade-rc.exe" -DCMAKE_INSTALL_PREFIX="C:/Sys-winrt" -DBUILD_STATIC=ON -DWITH_SDL2APPLICATION=ON -DCMAKE_SYSTEM_NAME=WindowsStore -DCMAKE_SYSTEM_VERSION=8.1 -G "Visual Studio 14 2015" ..
+    cmake .. ^
+        -DCMAKE_SYSTEM_NAME=WindowsStore ^
+        -DCMAKE_SYSTEM_VERSION=10 ^
+        -DCORRADE_RC_EXECUTABLE="C:/Sys/bin/corrade-rc.exe" ^
+        -DCMAKE_INSTALL_PREFIX="C:/Sys-winrt" ^
+        -DBUILD_STATIC=ON ^
+        -DWITH_SDL2APPLICATION=ON ^
+        -G "Visual Studio 14 2015" ..
     cmake --build .
 
 Change `WindowsStore` to `WindowsPhone` if you want to build for Windows Phone
@@ -455,9 +491,7 @@ to find the compiler. NaCl currently supports only OpenGL ES 2, thus
 `TARGET_GLES` and `TARGET_GLES2` is always enabled.
 
 Then create build directories for x86-32 and x86-64 and run cmake and build
-command in them. The toolchains need access to the platform file, so be sure to
-properly set **absolute** path to `modules/` directory containing
-`Platform/NaCl.cmake`. Also adapt `CMAKE_INSTALL_PREFIX` to the same value as
+command in them. Be sure to adapt `CMAKE_INSTALL_PREFIX` to the same value as
 in `NACL_PREFIX` in toolchain file and specify path where Corrade is installed
 in `CMAKE_PREFIX_PATH`.
 
@@ -501,10 +535,8 @@ to path where Emscripten is installed. Default is `/usr/lib/emscripten`.
 Emscripten supports dynamic libraries only to simplify porting and they are
 generally slower, thus `BUILD_STATIC` is implicitly enabled.
 
-Then create build directory and run cmake and build command in it. The
-toolchain needs access to its platform file, so be sure to properly set **absolute**
-path to `modules/` directory containing `Platform/Emscripten.cmake`. Also set
-`CMAKE_INSTALL_PREFIX` to path contained in `EMSCRIPTEN_TOOLCHAIN_PATH`.
+Then create build directory and run cmake and build command in it. Be sure to
+set `CMAKE_INSTALL_PREFIX` to path contained in `EMSCRIPTEN_TOOLCHAIN_PATH`.
 
 WebGL 1.0 (GLES 2.0 equivalent) is enabled by default, switch to 2.0 (GLES 3.0
 equivalent) by disabling `TARGET_GLES2`.
@@ -536,16 +568,18 @@ building your projects for Emscripten.
 You will need OSX and Xcode installed.
 
 Set `CMAKE_OSX_ROOT` to SDK you want to target and enable all desired
-architectures in `CMAKE_OSX_ARCHITECTURES`. The toolchain needs access to its
-platform file, so be sure to properly set **absolute** path to `modules/`
-directory containing `Platform/iOS.cmake`. Set `CMAKE_INSTALL_PREFIX` to prefix
-where you store other iOS dependencies such as Corrade or SDL2.
+architectures in `CMAKE_OSX_ARCHITECTURES`. Be sure to set `CMAKE_INSTALL_PREFIX`
+to prefix where you store other iOS dependencies such as Corrade or SDL2.
 
 As every application is in its own sandbox, it doesn't make sense to build
 shared libraries (although it is supported). Enable `BUILD_STATIC` to build
 static libraries. You might also have problems using dynamic plugins, enable
 `BUILD_PLUGINS_STATIC` to build also plugins as static. OpenGL ES 2.0 is
 enabled by default, switch to 3.0 by disabling `TARGET_GLES2`.
+
+Please note that `BUILD_MULTITHREADED` is supported only since Xcode 7.3 and
+doesn't work on `i386` iOS Simulator, you need to disable it in order to build
+for older platforms.
 
     mkdir build-ios && cd build-ios
     cmake .. \
@@ -575,11 +609,9 @@ where NDK is installed. Default is `/opt/android-ndk`. Adapt also
 `ANDROID_SYSROOT` to your preferred API level. You might also need to update
 `ANDROID_TOOLCHAIN_PREFIX` and `ANDROID_TOOLCHAIN_ROOT` to fit your system.
 
-Then create build directory and run cmake and build command in it. The
-toolchain needs access to its platform file, so be sure to properly set **absolute**
-path to `modules/` directory containing `Platform/Android.cmake`. Also set
-`CMAKE_INSTALL_PREFIX` to `/usr` subdirectory of `ANDROID_SYSROOT` and specify
-path where Corrade is installed in `CMAKE_PREFIX_PATH`.
+Then create build directory and run cmake and build command in it. Be sure to
+set `CMAKE_INSTALL_PREFIX` to `/usr` subdirectory of `ANDROID_SYSROOT` and
+specify path where Corrade is installed in `CMAKE_PREFIX_PATH`.
 
 Note that `BUILD_STATIC` is implicitly enabled, because manually loading all
 depending shared libraries using JNI would be too inconvenient. The engine is
@@ -619,13 +651,15 @@ building your projects for Android.
 
 @subsection building-ci-travis Travis
 
-In `package/ci/` there is `travis.yml` file with Linux GCC 4.7 and OSX Clang
-configuration. Online at https://travis-ci.org/mosra/magnum.
+In `package/ci/` there is `travis.yml` file with Linux GCC 4.7, OSX Clang, iOS
+GLES2/GLES3 and Emscripten WebGL1/WebGL2 configuration. Online at
+https://travis-ci.org/mosra/magnum. The Linux build has code coverage reports
+available online at https://coveralls.io/github/mosra/magnum.
 
 @subsection building-ci-appveyor AppVeyor
 
-In `package/ci/` there is `appveyor.yml` file with Windows MSVC configuration.
-Online at https://ci.appveyor.com/project/mosra/magnum.
+In `package/ci/` there is `appveyor.yml` file with Windows desktop MSVC, MinGW
+and Windows RT GLES2/GLES3 configuration. Online at https://ci.appveyor.com/project/mosra/magnum.
 
 @subsection building-ci-jenkins Jenkins
 

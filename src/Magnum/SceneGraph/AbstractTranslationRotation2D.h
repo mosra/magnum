@@ -70,6 +70,10 @@ template<class T> class AbstractBasicTranslationRotation2D: public AbstractBasic
         }
 
         #ifdef MAGNUM_BUILD_DEPRECATED
+        #ifdef __GNUC__
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #endif
         /**
          * @copybrief rotate()
          * @deprecated Use @ref rotate() or @ref rotateLocal() instead.
@@ -77,6 +81,9 @@ template<class T> class AbstractBasicTranslationRotation2D: public AbstractBasic
         CORRADE_DEPRECATED("use rotate() or rotateLocal() instead") AbstractBasicTranslationRotation2D<T>& rotate(Math::Rad<T> angle, TransformationType type) {
             return type == TransformationType::Global ? rotate(angle) : rotateLocal(angle);
         }
+        #ifdef __GNUC__
+        #pragma GCC diagnostic pop
+        #endif
         #endif
 
         /* Overloads to remove WTF-factor from method chaining order */
@@ -94,6 +101,10 @@ template<class T> class AbstractBasicTranslationRotation2D: public AbstractBasic
             return *this;
         }
         #ifdef MAGNUM_BUILD_DEPRECATED
+        #ifdef __GNUC__
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #endif
         CORRADE_DEPRECATED("use translate() or translateLocal() instead") AbstractBasicTranslationRotation2D<T>& translate(const Math::Vector2<T>& vector, TransformationType type) {
             #ifdef _MSC_VER
             #pragma warning(suppress: 4996)
@@ -101,6 +112,9 @@ template<class T> class AbstractBasicTranslationRotation2D: public AbstractBasic
             AbstractBasicTranslation2D<T>::translate(vector, type);
             return *this;
         }
+        #ifdef __GNUC__
+        #pragma GCC diagnostic pop
+        #endif
         #endif
         #endif
 

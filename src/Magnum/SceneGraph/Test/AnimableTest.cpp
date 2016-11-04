@@ -353,8 +353,8 @@ void AnimableTest::pause() {
 
 void AnimableTest::debug() {
     std::ostringstream o;
-    Debug(&o) << AnimationState::Running;
-    CORRADE_COMPARE(o.str(), "SceneGraph::AnimationState::Running\n");
+    Debug(&o) << AnimationState::Running << AnimationState(0xbe);
+    CORRADE_COMPARE(o.str(), "SceneGraph::AnimationState::Running SceneGraph::AnimationState(0xbe)\n");
 }
 
 }}}

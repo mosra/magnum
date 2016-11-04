@@ -52,7 +52,7 @@ OpenGL function                         | Matching API
 --------------------------------------- | ------------
 @fn_gl{BeginConditionalRender}, `glEndConditionalRender()` | @ref SampleQuery::beginConditionalRender(), \n @ref SampleQuery::endConditionalRender()
 @fn_gl{BeginQuery}, `glEndQuery()`      | @ref PrimitiveQuery::begin(), \n @ref SampleQuery::begin(), \n @ref TimeQuery::begin(), \n @ref AbstractQuery::end()
-@fn_gl{BeginQueryIndexed}, `glEndQueryIndexed()` | |
+@fn_gl{BeginQueryIndexed}, `glEndQueryIndexed()` | @ref PrimitiveQuery::begin(UnsignedInt), \n @ref PrimitiveQuery::end()
 @fn_gl{BeginTransformFeedback}, `glEndTransformFeedback()` | @ref TransformFeedback::begin(), @ref TransformFeedback::end()
 @fn_gl{BindAttribLocation}              | @ref AbstractShaderProgram::bindAttributeLocation()
 @fn_gl{BindBuffer}                      | not needed, handled internally in @ref Buffer and elsewhere
@@ -101,8 +101,8 @@ OpenGL function                         | Matching API
 @fn_gl{CompressedTexSubImage1D}, \n `glCompressedTextureSubImage1D()`, \n @fn_gl_extension{CompressedTextureSubImage1D,EXT,direct_state_access}, \n @fn_gl{CompressedTexSubImage2D}, \n `glCompressedTextureSubImage2D()`, \n @fn_gl_extension{CompressedTextureSubImage2D,EXT,direct_state_access}, \n @fn_gl{CompressedTexSubImage3D}, \n `glCompressedTextureSubImage3D()`, \n @fn_gl_extension{CompressedTextureSubImage3D,EXT,direct_state_access} | @ref Texture::setCompressedSubImage(), \n @ref TextureArray::setCompressedSubImage(), \n @ref CubeMapTexture::setCompressedSubImage(), \n @ref CubeMapTextureArray::setCompressedSubImage(), \n @ref RectangleTexture::setCompressedSubImage()
 @fn_gl{CopyBufferSubData}, \n `glCopyNamedBufferSubData()`, \n @fn_gl_extension{NamedCopyBufferSubData,EXT,direct_state_access} | @ref Buffer::copy()
 @fn_gl{CopyImageSubData}                | |
-@fn_gl{CopyTexImage1D}, \n @fn_gl_extension{CopyTextureImage1D,EXT,direct_state_access}, \n @fn_gl{CopyTexImage2D}, \n @fn_gl_extension{CopyTextureImage2D,EXT,direct_state_access} | |
-@fn_gl{CopyTexSubImage1D}, \n `glCopyTextureSubImage1D()`, \n @fn_gl_extension{CopyTextureSubImage1D,EXT,direct_state_access}, \n @fn_gl{CopyTexSubImage2D}, \n `glCopyTextureSubImage2D()`, \n @fn_gl_extension{CopyTextureSubImage2D,EXT,direct_state_access}, \n @fn_gl{CopyTexSubImage3D}, \n `glCopyTextureSubImage3D()`, \n @fn_gl_extension{CopyTextureSubImage3D,EXT,direct_state_access} | |
+@fn_gl{CopyTexImage1D}, \n @fn_gl{CopyTexImage2D} | @ref Framebuffer::copyImage()
+@fn_gl{CopyTexSubImage1D}, \n `glCopyTextureSubImage1D()`, \n @fn_gl_extension{CopyTextureSubImage1D,EXT,direct_state_access}, \n @fn_gl{CopyTexSubImage2D}, \n `glCopyTextureSubImage2D()`, \n @fn_gl_extension{CopyTextureSubImage2D,EXT,direct_state_access}, \n @fn_gl{CopyTexSubImage3D}, \n `glCopyTextureSubImage3D()`, \n @fn_gl_extension{CopyTextureSubImage3D,EXT,direct_state_access} | @ref Framebuffer::copySubImage()
 @fn_gl{CreateProgram}, @fn_gl{DeleteProgram} | @ref AbstractShaderProgram constructor and destructor
 @fn_gl{CreateShader}, @fn_gl{DeleteShader} | @ref Shader constructor and destructor
 @fn_gl{CreateShaderProgram}             | |
@@ -124,10 +124,10 @@ OpenGL function                         | Matching API
 @fn_gl{DispatchCompute}                 | @ref AbstractShaderProgram::dispatchCompute()
 @fn_gl_extension{DispatchComputeGroupSize,ARB,compute_variable_group_size} | |
 @fn_gl{DispatchComputeIndirect}         | |
-@fn_gl{DrawArrays}, \n @fn_gl{DrawArraysInstanced}, \n @fn_gl{DrawArraysInstancedBaseInstance}, \n @fn_gl{DrawElements}, \n @fn_gl{DrawRangeElements}, \n @fn_gl{DrawElementsBaseVertex}, \n @fn_gl{DrawRangeElementsBaseVertex}, \n @fn_gl{DrawElementsInstanced}, \n @fn_gl{DrawElementsInstancedBaseInstance}, \n @fn_gl{DrawElementsInstancedBaseVertex}, \n @fn_gl{DrawElementsInstancedBaseVertexBaseInstance} | @ref Mesh::draw(), \n @ref MeshView::draw()
+@fn_gl{DrawArrays}, \n @fn_gl{DrawArraysInstanced}, \n @fn_gl{DrawArraysInstancedBaseInstance}, \n @fn_gl{DrawElements}, \n @fn_gl{DrawRangeElements}, \n @fn_gl{DrawElementsBaseVertex}, \n @fn_gl{DrawRangeElementsBaseVertex}, \n @fn_gl{DrawElementsInstanced}, \n @fn_gl{DrawElementsInstancedBaseInstance}, \n @fn_gl{DrawElementsInstancedBaseVertex}, \n @fn_gl{DrawElementsInstancedBaseVertexBaseInstance} | @ref Mesh::draw(AbstractShaderProgram&), \n @ref MeshView::draw(AbstractShaderProgram&)
 @fn_gl{DrawArraysIndirect}, \n @fn_gl{DrawElementsIndirect}, \n @fn_gl{MultiDrawArraysIndirect}, \n @fn_gl{MultiDrawElementsIndirect} | |
 @fn_gl{DrawBuffer}, \n `glNamedFramebufferDrawBuffer()`, \n @fn_gl_extension{FramebufferDrawBuffer,EXT,direct_state_access}, \n @fn_gl{DrawBuffers}, \n `glNamedFramebufferDrawBuffers()`, \n @fn_gl_extension{FramebufferDrawBuffers,EXT,direct_state_access} | @ref DefaultFramebuffer::mapForDraw(), \n @ref Framebuffer::mapForDraw()
-@fn_gl{DrawTransformFeedback}, \n @fn_gl{DrawTransformFeedbackInstanced}, \n @fn_gl{DrawTransformFeedbackStream}, \n @fn_gl{DrawTransformFeedbackStreamInstanced} | |
+@fn_gl{DrawTransformFeedback}, \n @fn_gl{DrawTransformFeedbackInstanced}, \n @fn_gl{DrawTransformFeedbackStream}, \n @fn_gl{DrawTransformFeedbackStreamInstanced} | @ref Mesh::draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt), \n @ref MeshView::draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt)
 
 @subsection opengl-mapping-functions-e E
 
@@ -478,6 +478,7 @@ OpenGL function                         | Matching API
 @def_gl{MAX_VERTEX_ATTRIB_STRIDE}       | |
 @def_gl{MAX_VERTEX_ATTRIB_BINDINGS}     | |
 @def_gl{MAX_VERTEX_ATTRIB_RELATIVE_OFFSET} | |
+@def_gl{MAX_VERTEX_STREAMS}             | @ref TransformFeedback::maxVertexStreams()
 @def_gl{MAX_VIEWPORTS}                  | |
 @def_gl{MAX_VIEWPORT_DIMS}              | @ref AbstractFramebuffer::maxViewportSize()
 @def_gl{MIN_FRAGMENT_INTERPOLATION_OFFSET}, \n @def_gl{MAX_FRAGMENT_INTERPOLATION_OFFSET} | |
@@ -488,7 +489,7 @@ OpenGL function                         | Matching API
 @def_gl{NUM_EXTENSIONS}                 | @ref Context::supportedExtensions()
 @def_gl{NUM_PROGRAM_BINARY_FORMATS}, \n @def_gl{PROGRAM_BINARY_FORMATS} | |
 @def_gl{NUM_SHADER_BINARY_FORMATS}, \n @def_gl{SHADER_BINARY_FORMATS} | |
-@def_gl{PACK_ALIGNMENT}, \n @def_gl{PACK_IMAGE_HEIGHT}, \n @def_gl{PACK_LSB_FIRST}, \n @def_gl{PACK_ROW_LENGTH}, \n @def_gl{PACK_SKIP_IMAGES}, \n @def_gl{PACK_SKIP_PIXELS}, \n @def_gl{PACK_SKIP_ROWS}, \n @def_gl{PACK_SWAP_BYTES}, \n @def_gl{UNPACK_ALIGNMENT}, \n @def_gl{UNPACK_IMAGE_HEIGHT}, \n @def_gl{UNPACK_LSB_FIRST}, \n @def_gl{UNPACK_ROW_LENGTH}, \n @def_gl{UNPACK_SKIP_IMAGES}, \n @def_gl{UNPACK_SKIP_PIXELS}, \n @def_gl{UNPACK_SKIP_ROWS}, \n @def_gl{UNPACK_SWAP_BYTES} | not queryable
+@def_gl{PACK_ALIGNMENT}, \n @def_gl{PACK_IMAGE_HEIGHT}, \n @def_gl{PACK_ROW_LENGTH}, \n @def_gl{PACK_SKIP_IMAGES}, \n @def_gl{PACK_SKIP_PIXELS}, \n @def_gl{PACK_SKIP_ROWS}, \n @def_gl{PACK_SWAP_BYTES}, \n @def_gl{UNPACK_ALIGNMENT}, \n @def_gl{UNPACK_IMAGE_HEIGHT}, \n @def_gl{UNPACK_ROW_LENGTH}, \n @def_gl{UNPACK_SKIP_IMAGES}, \n @def_gl{UNPACK_SKIP_PIXELS}, \n @def_gl{UNPACK_SKIP_ROWS}, \n @def_gl{UNPACK_SWAP_BYTES} | not queryable, @ref PixelStorage setters only
 @def_gl{POINT_FADE_THRESHOLD_SIZE}      | |
 @def_gl{POINT_SIZE_GRANULARITY}, \n @def_gl{POINT_SIZE_RANGE} | |
 @def_gl{POINT_SIZE}                     | not queryable, @ref Renderer::setPointSize() setter only

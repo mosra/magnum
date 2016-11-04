@@ -104,13 +104,13 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @f]
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        constexpr /*implicit*/ DualComplex(IdentityInitT = IdentityInit);
+        constexpr /*implicit*/ DualComplex(IdentityInitT = IdentityInit) noexcept;
         #else
-        constexpr /*implicit*/ DualComplex(IdentityInitT = IdentityInit): Dual<Complex<T>>({}, {T(0), T(0)}) {}
+        constexpr /*implicit*/ DualComplex(IdentityInitT = IdentityInit) noexcept: Dual<Complex<T>>({}, {T(0), T(0)}) {}
         #endif
 
         /** @brief Construct zero-initialized dual complex number */
-        constexpr explicit DualComplex(ZeroInitT)
+        constexpr explicit DualComplex(ZeroInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             /* MSVC 2015 can't handle {} here */
@@ -119,7 +119,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
             {}
 
         /** @brief Construct without initializing the contents */
-        explicit DualComplex(NoInitT)
+        explicit DualComplex(NoInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             /* MSVC 2015 can't handle {} here */
@@ -134,7 +134,10 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          *      \hat c = c_0 + \epsilon c_\epsilon
          * @f]
          */
-        constexpr /*implicit*/ DualComplex(const Complex<T>& real, const Complex<T>& dual = Complex<T>(T(0), T(0))): Dual<Complex<T>>(real, dual) {}
+        constexpr /*implicit*/ DualComplex(const Complex<T>& real, const Complex<T>& dual = Complex<T>(T(0), T(0))) noexcept: Dual<Complex<T>>(real, dual) {}
+
+        /* No constructor from a pair of Dual values because that would be
+           ambiguous with the above */
 
         /**
          * @brief Construct dual complex number from vector
@@ -144,9 +147,9 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @f]
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        constexpr explicit DualComplex(const Vector2<T>& vector);
+        constexpr explicit DualComplex(const Vector2<T>& vector) noexcept;
         #else
-        constexpr explicit DualComplex(const Vector2<T>& vector): Dual<Complex<T>>({}, Complex<T>(vector)) {}
+        constexpr explicit DualComplex(const Vector2<T>& vector) noexcept: Dual<Complex<T>>({}, Complex<T>(vector)) {}
         #endif
 
         /**
@@ -155,7 +158,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * Performs only default casting on the values, no rounding or anything
          * else.
          */
-        template<class U> constexpr explicit DualComplex(const DualComplex<U>& other)
+        template<class U> constexpr explicit DualComplex(const DualComplex<U>& other) noexcept
             #ifndef DOXYGEN_GENERATING_OUTPUT
             /* MSVC 2015 can't handle {} here */
             : Dual<Complex<T>>(other)
@@ -166,7 +169,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
         template<class U, class V = decltype(Implementation::DualComplexConverter<T, U>::from(std::declval<U>()))> constexpr explicit DualComplex(const U& other): DualComplex{Implementation::DualComplexConverter<T, U>::from(other)} {}
 
         /** @brief Copy constructor */
-        constexpr DualComplex(const Dual<Complex<T>>& other): Dual<Complex<T>>(other) {}
+        constexpr /*implicit*/ DualComplex(const Dual<Complex<T>>& other) noexcept: Dual<Complex<T>>(other) {}
 
         /** @brief Convert dual complex number to external representation */
         template<class U, class V = decltype(Implementation::DualComplexConverter<T, U>::to(std::declval<DualComplex<T>>()))> constexpr explicit operator U() const {
@@ -367,9 +370,7 @@ template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& d
 /* Explicit instantiation for commonly used types */
 #ifndef DOXYGEN_GENERATING_OUTPUT
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const DualComplex<Float>&);
-#ifndef MAGNUM_TARGET_GLES
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const DualComplex<Double>&);
-#endif
 #endif
 
 }}

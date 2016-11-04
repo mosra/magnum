@@ -244,6 +244,8 @@ class MAGNUM_EXPORT Context {
         /**
          * @brief Whether there is any current context
          *
+         * If Magnum is built with @ref MAGNUM_BUILD_MULTITHREADED, current
+         * context is thread-local instead of global (the default).
          * @see @ref current()
          */
         static bool hasCurrent();
@@ -251,7 +253,9 @@ class MAGNUM_EXPORT Context {
         /**
          * @brief Current context
          *
-         * Expect that there is current context.
+         * Expect that there is current context. If Magnum is built with
+         * @ref MAGNUM_BUILD_MULTITHREADED, current context is thread-local
+         * instead of global (the default).
          * @see @ref hasCurrent()
          */
         static Context& current();
@@ -501,9 +505,7 @@ class MAGNUM_EXPORT Context {
         Implementation::State& state() { return *_state; }
 
     private:
-        MAGNUM_LOCAL static Context* _current;
-
-        explicit Context(NoCreateT, Int argc, char** argv, void functionLoader());
+        explicit Context(NoCreateT, Int argc, const char** argv, void functionLoader());
 
         bool tryCreate();
         void create();
@@ -529,6 +531,7 @@ class MAGNUM_EXPORT Context {
         /* True means known and disabled, false means known */
         std::vector<std::pair<std::string, bool>> _driverWorkarounds;
         std::vector<std::string> _disabledExtensions;
+        bool _displayInitializationLog;
 };
 
 CORRADE_ENUMSET_OPERATORS(Context::DetectedDrivers)

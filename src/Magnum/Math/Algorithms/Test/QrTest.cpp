@@ -23,31 +23,47 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
+#include <tuple>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/Trade/AbstractMaterialData.h"
+#include "Magnum/Math/Matrix3.h"
+#include "Magnum/Math/Algorithms/Qr.h"
 
-namespace Magnum { namespace Trade { namespace Test {
+namespace Magnum { namespace Math { namespace Algorithms { namespace Test {
 
-class AbstractMaterialDataTest: public TestSuite::Tester {
-    public:
-        explicit AbstractMaterialDataTest();
+struct QrTest: Corrade::TestSuite::Tester {
+    explicit QrTest();
 
-        void debug();
+    void test();
 };
 
-AbstractMaterialDataTest::AbstractMaterialDataTest() {
-    addTests({&AbstractMaterialDataTest::debug});
+typedef Matrix3<Float> Matrix3;
+
+QrTest::QrTest() {
+    addTests({&QrTest::test});
 }
 
-void AbstractMaterialDataTest::debug() {
-    std::ostringstream out;
+void QrTest::test() {
+    Matrix3 a{{  0.0f,   3.0f,   4.0f},
+              {-20.0f,  27.0f,  11.0f},
+              {-14.0f,  -4.0f,  -2.0f}};
 
-    Debug(&out) << MaterialType::Phong;
-    CORRADE_COMPARE(out.str(), "Trade::MaterialType::Phong\n");
+    Matrix3 q, r;
+    std::tie(q, r) = Algorithms::qr(a);
+
+    CORRADE_COMPARE(q*r, a);
+
+    Matrix3 qExpected = Matrix3{{  0.0f,  15.0f, 20.0f},
+                                {-20.0f,  12.0f, -9.0f},
+                                {-15.0f, -16.0f, 12.0f}}/25.0f;
+    CORRADE_COMPARE(q, qExpected);
+
+    Matrix3 rExpected{{ 5.0f,  0.0f,  0.0f},
+                      {25.0f, 25.0f,  0.0f},
+                      {-4.0f, 10.0f, 10.0f}};
+    CORRADE_COMPARE(r, rExpected);
 }
 
-}}}
+}}}}
 
-CORRADE_TEST_MAIN(Magnum::Trade::Test::AbstractMaterialDataTest)
+CORRADE_TEST_MAIN(Magnum::Math::Algorithms::Test::QrTest)

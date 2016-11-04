@@ -147,6 +147,18 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
          *      WebGL.
          */
         static Int maxBuffers();
+
+        /**
+         * @brief Max supported vertex stream count
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. If extension @extension{ARB,transform_feedback3} (part
+         * of OpenGL 4.0) is not available, returns `1`.
+         * @see @fn_gl{Get} with @def_gl{MAX_VERTEX_STREAMS}
+         * @requires_gl Multiple vertex streams are not available in OpenGL ES
+         *      and WebGL.
+         */
+        static Int maxVertexStreams();
         #endif
 
         /**

@@ -51,6 +51,8 @@ corrade_add_test(MathDualComplexTest DualComplexTest.cpp LIBRARIES MagnumMathTes
 corrade_add_test(MathQuaternionTest QuaternionTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathDualQuaternionTest DualQuaternionTest.cpp LIBRARIES MagnumMathTestLib)
 
+corrade_add_test(MathBezierTest BezierTest.cpp LIBRARIES MagnumMathTestLib)
+
 set_property(TARGET
     MathVectorTest
     MathMatrixTest

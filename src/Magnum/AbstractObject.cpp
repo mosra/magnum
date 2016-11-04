@@ -107,7 +107,7 @@ namespace {
                 return khrIdentifier;
         }
 
-        CORRADE_ASSERT_UNREACHABLE();
+        CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     }
 }
 #endif
@@ -140,7 +140,7 @@ void AbstractObject::labelImplementationKhr(const GLenum identifier, const GLuin
     static_cast<void>(identifier);
     static_cast<void>(name);
     static_cast<void>(label);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
@@ -152,7 +152,7 @@ void AbstractObject::labelImplementationExt(const GLenum identifier, const GLuin
     static_cast<void>(identifier);
     static_cast<void>(name);
     static_cast<void>(label);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
@@ -169,7 +169,7 @@ std::string AbstractObject::getLabelImplementationKhr(const GLenum identifier, c
     #else
     static_cast<void>(identifier);
     static_cast<void>(name);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 
     /* Make place also for the null terminator */
@@ -180,7 +180,7 @@ std::string AbstractObject::getLabelImplementationKhr(const GLenum identifier, c
     #elif !defined(CORRADE_TARGET_NACL)
     glGetObjectLabelKHR(identifier, name, size+1, nullptr, &label[0]);
     #else
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 
     /* Pop null terminator and return the string */
@@ -198,7 +198,7 @@ std::string AbstractObject::getLabelImplementationExt(const GLenum identifier, c
     #else
     static_cast<void>(identifier);
     static_cast<void>(name);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 
     /* Make place also for the null terminator */
@@ -207,7 +207,7 @@ std::string AbstractObject::getLabelImplementationExt(const GLenum identifier, c
     #ifndef CORRADE_TARGET_NACL
     glGetObjectLabelEXT(type, name, size+1, nullptr, &label[0]);
     #else
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 
     /* Pop null terminator and return the string */

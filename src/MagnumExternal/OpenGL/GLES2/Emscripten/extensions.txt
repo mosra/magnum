@@ -13,6 +13,7 @@ extension OES_texture_half_float                optional
 extension OES_texture_float                     optional
 extension OES_standard_derivatives              optional
 extension OES_vertex_array_object               optional
+extension OES_fbo_render_mipmap                 optional
 # These are used as a base for WEBGL_* extensions
 extension ANGLE_depth_texture                   optional
 extension EXT_draw_buffers                      optional

@@ -32,10 +32,7 @@
 #include "Magnum/OpenGL.h"
 #include "Magnum/Math/Vector3.h"
 
-#ifdef _MSC_VER
-/* Otherwise the member function pointers will have different size based on
-   whether the header was included or not. CAUSES SERIOUS MEMORY CORRUPTION AND
-   IS NOT CAUGHT BY ANY WARNING WHATSOEVER! AARGH! */
+#ifndef MAGNUM_TARGET_GLES2
 #include "Magnum/AbstractShaderProgram.h"
 #endif
 
@@ -45,6 +42,10 @@ struct ShaderProgramState {
     explicit ShaderProgramState(Context& context, std::vector<std::string>& extensions);
 
     void reset();
+
+    #ifndef MAGNUM_TARGET_GLES2
+    void(AbstractShaderProgram::*transformFeedbackVaryingsImplementation)(Containers::ArrayView<const std::string>, AbstractShaderProgram::TransformFeedbackBufferMode);
+    #endif
 
     void(AbstractShaderProgram::*uniform1fvImplementation)(GLint, GLsizei, const GLfloat*);
     void(AbstractShaderProgram::*uniform2fvImplementation)(GLint, GLsizei, const Math::Vector<2, GLfloat>*);

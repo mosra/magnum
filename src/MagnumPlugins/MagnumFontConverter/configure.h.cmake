@@ -1,5 +1,3 @@
-#ifndef Magnum_MeshTools_Test_SubdivideRemoveDuplicatesBenchmark_h
-#define Magnum_MeshTools_Test_SubdivideRemoveDuplicatesBenchmark_h
 /*
     This file is part of Magnum.
 
@@ -25,26 +23,4 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <QtCore/QObject>
-
-#include "Magnum/Magnum.h"
-
-namespace Magnum { namespace MeshTools { namespace Test {
-
-class SubdivideRemoveDuplicatesBenchmark: public QObject {
-    Q_OBJECT
-
-    private slots:
-        void subdivide();
-        void subdivideAndRemoveDuplicatesMeshAfter();
-        void subdivideAndRemoveDuplicatesMeshBetween();
-
-    private:
-        static Magnum::Vector4 interpolator(const Magnum::Vector4& a, const Magnum::Vector4& b) {
-            return (a+b).xyz().normalized();
-        }
-};
-
-}}}
-
-#endif
+#cmakedefine MAGNUM_MAGNUMFONTCONVERTER_BUILD_STATIC

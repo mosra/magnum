@@ -319,8 +319,8 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          *
          * If @extension{ARB,robustness} is available, the operation is
          * protected from buffer overflow.
-         * @see @fn_gl{BindFramebuffer}, @fn_gl{ReadPixels} or
-         *      @fn_gl_extension{ReadnPixels,ARB,robustness}
+         * @see @fn_gl{BindFramebuffer}, then @fn_gl{PixelStore} and
+         *      @fn_gl{ReadPixels} or @fn_gl_extension{ReadnPixels,ARB,robustness}
          */
         void read(const Range2Di& rectangle, Image2D& image);
 
@@ -381,6 +381,307 @@ class MAGNUM_EXPORT AbstractFramebuffer {
             read({offset, size}, image, usage);
         }
         #endif
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Copy block of pixels from framebuffer to 1D texture image
+         * @param rectangle         Framebuffer rectangle to copy. Height must
+         *      be `1`.
+         * @param texture           Texture where to put the data
+         * @param level             Texture mip level
+         * @param internalFormat    Texture internal format
+         *
+         * On platforms that support it prefer to use @ref Texture1D::setStorage()
+         * and @ref copySubImage() instead, as it avoids unnecessary
+         * reallocations and has better performance characteristics. This call
+         * also has no equivalent in @extension{ARB,direct_state_access}, thus
+         * the texture needs to be bound to some texture unit before the
+         * operation.
+         * @see @ref Texture1D::maxSize(), @fn_gl{BindFramebuffer}, then
+         *      @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl{CopyTexImage1D}
+         * @requires_gl 1D textures are not available in OpenGL ES or WebGL.
+         * @deprecated_gl Prefer to use @ref Texture1D::setStorage() and
+         *      @ref copySubImage() instead.
+         */
+        void copyImage(const Range2Di& rectangle, Texture1D& texture, Int level, TextureFormat internalFormat);
+        #endif
+
+        /**
+         * @brief Copy block of pixels from framebuffer to 2D texture image
+         * @param rectangle         Framebuffer rectangle to copy
+         * @param texture           Texture where to put the data
+         * @param level             Texture mip level
+         * @param internalFormat    Texture internal format
+         *
+         * On platforms that support it prefer to use @ref Texture2D::setStorage()
+         * and @ref copySubImage() instead, as it avoids unnecessary
+         * reallocations and has better performance characteristics. This call
+         * also has no equivalent in @extension{ARB,direct_state_access}, thus
+         * the texture needs to be bound to some texture unit before the
+         * operation.
+         * @see @ref Texture2D::maxSize(), @fn_gl{BindFramebuffer}, then
+         *      @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl{CopyTexImage2D}
+         * @deprecated_gl Prefer to use @ref Texture2D::setStorage() and
+         *      @ref copySubImage() instead.
+         */
+        void copyImage(const Range2Di& rectangle, Texture2D& texture, Int level, TextureFormat internalFormat);
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Copy block of pixels from framebuffer to rectangle texture
+         * @param rectangle         Framebuffer rectangle to copy
+         * @param texture           Texture where to put the data
+         * @param internalFormat    Texture internal format
+         *
+         * On platforms that support it prefer to use @ref RectangleTexture::setStorage()
+         * and @ref copySubImage() instead, as it avoids unnecessary
+         * reallocations and has better performance characteristics. This call
+         * also has no equivalent in @extension{ARB,direct_state_access}, thus
+         * the texture needs to be bound to some texture unit before the
+         * operation.
+         * @see @ref Texture2D::maxSize(), @fn_gl{BindFramebuffer}, then
+         *      @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl{CopyTexImage2D}
+         * @requires_gl31 Extension @extension{ARB,texture_rectangle}
+         * @requires_gl Rectangle textures are not available in OpenGL ES and
+         *      WebGL.
+         * @deprecated_gl Prefer to use @ref RectangleTexture::setStorage() and
+         *      @ref copySubImage() instead.
+         */
+        void copyImage(const Range2Di& rectangle, RectangleTexture& texture, TextureFormat internalFormat);
+        #endif
+
+        /**
+         * @brief Copy block of pixels from framebuffer to cube map texture image
+         * @param rectangle         Framebuffer rectangle to copy
+         * @param texture           Texture where to put the data
+         * @param level             Texture mip level
+         * @param coordinate        Cube map coordinate
+         * @param internalFormat    Texture internal format
+         *
+         * On platforms that support it prefer to use @ref CubeMapTexture::setStorage()
+         * and @ref copySubImage() instead, as it avoids unnecessary
+         * reallocations and has better performance characteristics. This call
+         * also has no equivalent in @extension{ARB,direct_state_access}, thus
+         * the texture needs to be bound to some texture unit before the
+         * operation.
+         * @see @ref Texture2D::maxSize(), @fn_gl{BindFramebuffer}, then
+         *      @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl{CopyTexImage2D}
+         * @deprecated_gl Prefer to use @ref CubeMapTexture::setStorage() and
+         *      @ref copySubImage() instead.
+         */
+        void copyImage(const Range2Di& rectangle, CubeMapTexture& texture, CubeMapCoordinate coordinate, Int level, TextureFormat internalFormat);
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Copy block of pixels from framebuffer to 1D texture array image
+         * @param rectangle         Framebuffer rectangle to copy
+         * @param texture           Texture where to put the data
+         * @param level             Texture mip level
+         * @param internalFormat    Texture internal format
+         *
+         * On platforms that support it prefer to use @ref Texture2D::setStorage()
+         * and @ref copySubImage() instead, as it avoids unnecessary
+         * reallocations and has better performance characteristics. This call
+         * also has no equivalent in @extension{ARB,direct_state_access}, thus
+         * the texture needs to be bound to some texture unit before the
+         * operation.
+         * @see @ref Texture2D::maxSize(), @fn_gl{BindFramebuffer}, then
+         *      @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl{CopyTexImage2D}
+         * @requires_gl 1D array textures are not available in OpenGL ES or
+         *      WebGL, only 2D ones.
+         * @deprecated_gl Prefer to use @ref Texture1DArray::setStorage() and
+         *      @ref copySubImage() instead.
+         */
+        void copyImage(const Range2Di& rectangle, Texture1DArray& texture, Int level, TextureFormat internalFormat);
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Copy block of pixels from framebuffer to 1D texture subimage
+         * @param rectangle         Framebuffer rectangle to copy. Height must
+         *      be `1`.
+         * @param texture           Texture where to put the data
+         * @param level             Texture mip level
+         * @param offset            Offset inside the texture
+         *
+         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @extension{EXT,direct_state_access} desktop extension is
+         * available, the texture is bound before the operation (if not
+         * already).
+         * @see @ref Texture1D::setStorage(), @fn_gl{BindFramebuffer}, then
+         *      @fn_gl2{CopyTextureSubImage1D,CopyTexSubImage1D},
+         *      @fn_gl_extension{CopyTextureSubImage1D,EXT,direct_state_access},
+         *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl{CopyTexSubImage1D}
+         * @requires_gl 1D textures are not available in OpenGL ES or WebGL.
+         */
+        void copySubImage(const Range2Di& rectangle, Texture1D& texture, Int level, Int offset);
+        #endif
+
+        /**
+         * @brief Copy block of pixels from framebuffer to 2D texture subimage
+         * @param rectangle         Framebuffer rectangle to copy
+         * @param texture           Texture where to put the data
+         * @param level             Texture mip level
+         * @param offset            Offset inside the texture
+         *
+         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @extension{EXT,direct_state_access} desktop extension is
+         * available, the texture is bound before the operation (if not
+         * already).
+         * @see @ref Texture2D::setStorage(), @fn_gl{BindFramebuffer}, then
+         *      @fn_gl2{CopyTextureSubImage2D,CopyTexSubImage2D},
+         *      @fn_gl_extension{CopyTextureSubImage2D,EXT,direct_state_access},
+         *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl{CopyTexSubImage2D}
+         */
+        void copySubImage(const Range2Di& rectangle, Texture2D& texture, Int level, const Vector2i& offset);
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Copy block of pixels from framebuffer to rectangle texture subimage
+         * @param rectangle         Framebuffer rectangle to copy
+         * @param texture           Texture where to put the data
+         * @param offset            Offset inside the texture
+         *
+         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @extension{EXT,direct_state_access} desktop extension is
+         * available, the texture is bound before the operation (if not
+         * already).
+         * @see @ref RectangleTexture::setStorage(), @fn_gl{BindFramebuffer},
+         *      then @fn_gl2{CopyTextureSubImage2D,CopyTexSubImage2D},
+         *      @fn_gl_extension{CopyTextureSubImage2D,EXT,direct_state_access},
+         *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl{CopyTexSubImage2D}
+         * @requires_gl Rectangle textures are not available in OpenGL ES and
+         *      WebGL.
+         */
+        void copySubImage(const Range2Di& rectangle, RectangleTexture& texture, const Vector2i& offset);
+        #endif
+
+        /**
+         * @brief Copy block of pixels from framebuffer to cube map texture subimage
+         * @param rectangle         Framebuffer rectangle to copy
+         * @param texture           Texture where to put the data
+         * @param level             Texture mip level
+         * @param offset            Offset inside the texture
+         *
+         * Z coordinate of the offset is equivalent to number of texture face,
+         * i.e. +X is `0` and so on, in order of (+X, -X, +Y, -Y, +Z, -Z). If
+         * neither @extension{ARB,direct_state_access} (part of OpenGL 4.5) nor
+         * @extension{EXT,direct_state_access} desktop extension is available,
+         * the texture is bound before the operation (if not already).
+         * @see @ref CubeMapTexture::setStorage(), @fn_gl{BindFramebuffer},
+         *      then @fn_gl2{CopyTextureSubImage3D,CopyTexSubImage3D},
+         *      @fn_gl_extension{CopyTextureSubImage2D,EXT,direct_state_access},
+         *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl{CopyTexSubImage2D}
+         */
+        void copySubImage(const Range2Di& rectangle, CubeMapTexture& texture, Int level, const Vector3i& offset);
+
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+        /**
+         * @brief Copy block of pixels from framebuffer to 3D texture subimage
+         * @param rectangle         Framebuffer rectangle to copy
+         * @param texture           Texture where to put the data
+         * @param level             Texture mip level
+         * @param offset            Offset inside the texture
+         *
+         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @extension{EXT,direct_state_access} desktop extension is
+         * available, the texture is bound before the operation (if not
+         * already).
+         * @see @ref Texture3D::setStorage(), @fn_gl{BindFramebuffer}, then
+         *      @fn_gl2{CopyTextureSubImage3D,CopyTexSubImage3D},
+         *      @fn_gl_extension{CopyTextureSubImage3D,EXT,direct_state_access},
+         *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl{CopyTexSubImage3D}
+         * @requires_gles30 Extension @es_extension{OES,texture_3D} in OpenGL
+         *      ES 2.0.
+         * @requires_webgl20 Only 2D textures are available in WebGL 1.0.
+         */
+        void copySubImage(const Range2Di& rectangle, Texture3D& texture, Int level, const Vector3i& offset);
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Copy block of pixels from framebuffer to 1D texture array subimage
+         * @param rectangle         Framebuffer rectangle to copy
+         * @param texture           Texture where to put the data
+         * @param level             Texture mip level
+         * @param offset            Offset inside the texture
+         *
+         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @extension{EXT,direct_state_access} desktop extension is
+         * available, the texture is bound before the operation (if not
+         * already).
+         * @see @ref Texture1DArray::setStorage(), @fn_gl{BindFramebuffer},
+         *      then @fn_gl2{CopyTextureSubImage2D,CopyTexSubImage2D},
+         *      @fn_gl_extension{CopyTextureSubImage2D,EXT,direct_state_access},
+         *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl{CopyTexSubImage2D}
+         * @requires_gl 1D array textures are not available in OpenGL ES or
+         *      WebGL, only 2D ones.
+         */
+        void copySubImage(const Range2Di& rectangle, Texture1DArray& texture, Int level, const Vector2i& offset);
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Copy block of pixels from framebuffer to 2D texture array subimage
+         * @param rectangle         Framebuffer rectangle to copy
+         * @param texture           Texture where to put the data
+         * @param level             Texture mip level
+         * @param offset            Offset inside the texture
+         *
+         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @extension{EXT,direct_state_access} desktop extension is
+         * available, the texture is bound before the operation (if not
+         * already).
+         * @see @ref Texture2DArray::setStorage(), @fn_gl{BindFramebuffer},
+         *      then @fn_gl2{CopyTextureSubImage3D,CopyTexSubImage3D},
+         *      @fn_gl_extension{CopyTextureSubImage3D,EXT,direct_state_access},
+         *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl{CopyTexSubImage3D}
+         * @requires_gl30 Extension @extension{EXT,texture_array}
+         * @requires_gles30 Array textures are not available in OpenGL ES 2.0.
+         * @requires_webgl20 Array textures are not available in WebGL 1.0.
+         */
+        void copySubImage(const Range2Di& rectangle, Texture2DArray& texture, Int level, const Vector3i& offset);
+        #endif
+
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        /**
+         * @brief Copy block of pixels from framebuffer to cube map texture array subimage
+         * @param rectangle         Framebuffer rectangle to copy
+         * @param texture           Texture where to put the data
+         * @param level             Texture mip level
+         * @param offset            Offset inside the texture
+         *
+         * Z coordinate of the offset is equivalent to layer * 6 + number of
+         * texture face, i.e. +X is `0` and so on, in order of (+X, -X, +Y, -Y,
+         * +Z, -Z). If neither @extension{ARB,direct_state_access} (part of
+         * OpenGL 4.5) nor @extension{EXT,direct_state_access} desktop
+         * available, the texture is bound before the operation (if not
+         * already).
+         * @see @ref CubeMapTextureArray::setStorage(), @fn_gl{BindFramebuffer},
+         *      then @fn_gl2{CopyTextureSubImage3D,CopyTexSubImage3D},
+         *      @fn_gl_extension{CopyTextureSubImage3D,EXT,direct_state_access},
+         *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl{CopyTexSubImage3D}
+         * @requires_gl40 Extension @extension{ARB,texture_cube_map_array}
+         * @requires_gles30 Not defined in OpenGL ES 2.0.
+         * @requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
+         *      @es_extension{EXT,texture_cube_map_array}
+         * @requires_gles Cube map texture arrays are not available in WebGL.
+         */
+        void copySubImage(const Range2Di& rectangle, CubeMapTextureArray& texture, Int level, const Vector3i& offset);
         #endif
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -460,6 +761,27 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         static void MAGNUM_LOCAL readImplementationDefault(const Range2Di& rectangle, PixelFormat format, PixelType type, std::size_t dataSize, GLvoid* data);
         #ifndef MAGNUM_TARGET_WEBGL
         static void MAGNUM_LOCAL readImplementationRobustness(const Range2Di& rectangle, PixelFormat format, PixelType type, std::size_t dataSize, GLvoid* data);
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES
+        static void MAGNUM_LOCAL copySub1DImplementationDefault(const Range2Di& rectangle, AbstractTexture& texture, Int level, Int offset);
+        static void MAGNUM_LOCAL copySub1DImplementationDSA(const Range2Di& rectangle, AbstractTexture& texture, Int level, Int offset);
+        static void MAGNUM_LOCAL copySub1DImplementationDSAEXT(const Range2Di& rectangle, AbstractTexture& texture, Int level, Int offset);
+        #endif
+
+        static void MAGNUM_LOCAL copySub2DImplementationDefault(const Range2Di& rectangle, AbstractTexture& texture, GLenum textureTarget, Int level, const Vector2i& offset);
+        #ifndef MAGNUM_TARGET_GLES
+        static void MAGNUM_LOCAL copySub2DImplementationDSA(const Range2Di& rectangle, AbstractTexture& texture, GLenum textureTarget, Int level, const Vector2i& offset);
+        static void MAGNUM_LOCAL copySubCubeMapImplementationDSA(const Range2Di& rectangle, AbstractTexture& texture, GLenum textureTarget, Int level, const Vector2i& offset);
+        static void MAGNUM_LOCAL copySub2DImplementationDSAEXT(const Range2Di& rectangle, AbstractTexture& texture, GLenum textureTarget, Int level, const Vector2i& offset);
+        #endif
+
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+        static void MAGNUM_LOCAL copySub3DImplementationDefault(const Range2Di& rectangle, AbstractTexture& texture, Int level, const Vector3i& offset);
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        static void MAGNUM_LOCAL copySub3DImplementationDSA(const Range2Di& rectangle, AbstractTexture& texture, Int level, const Vector3i& offset);
+        static void MAGNUM_LOCAL copySub3DImplementationDSAEXT(const Range2Di& rectangle, AbstractTexture& texture, Int level, const Vector3i& offset);
         #endif
 
         void MAGNUM_LOCAL invalidateImplementationNoOp(GLsizei, const GLenum*);

@@ -45,8 +45,10 @@ struct ShaderGLTest: AbstractOpenGLTester {
     void label();
 
     void addSource();
+    void addSourceNoVersion();
     void addFile();
     void compile();
+    void compileNoVersion();
 };
 
 ShaderGLTest::ShaderGLTest() {
@@ -58,8 +60,10 @@ ShaderGLTest::ShaderGLTest() {
               &ShaderGLTest::label,
 
               &ShaderGLTest::addSource,
+              &ShaderGLTest::addSourceNoVersion,
               &ShaderGLTest::addFile,
-              &ShaderGLTest::compile});
+              &ShaderGLTest::compile,
+              &ShaderGLTest::compileNoVersion});
 }
 
 void ShaderGLTest::construct() {
@@ -183,6 +187,38 @@ void ShaderGLTest::addSource() {
     #endif
 }
 
+void ShaderGLTest::addSourceNoVersion() {
+    Shader shader(Version::None, Shader::Type::Fragment);
+
+    #ifndef MAGNUM_TARGET_GLES
+    shader.addSource("#version 120\n");
+    #else
+    shader.addSource("#version 100\n");
+    #endif
+    shader.addSource("#define FOO BAR\n")
+          .addSource("void main() {}\n");
+
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE(shader.sources(), (std::vector<std::string>{
+        "",
+        "#version 120\n",
+        "#line 1 1\n",
+        "#define FOO BAR\n",
+        "#line 1 2\n",
+        "void main() {}\n"
+    }));
+    #else
+    CORRADE_COMPARE(shader.sources(), (std::vector<std::string>{
+        "",
+        "#version 100\n",
+        "#line 1 1\n",
+        "#define FOO BAR\n",
+        "#line 1 2\n",
+        "void main() {}\n"
+    }));
+    #endif
+}
+
 void ShaderGLTest::addFile() {
     #ifndef MAGNUM_TARGET_GLES
     Shader shader(Version::GL210, Shader::Type::Fragment);
@@ -227,6 +263,16 @@ void ShaderGLTest::compile() {
     Shader shader2(v, Shader::Type::Fragment);
     shader2.addSource("[fu] bleh error #:! stuff\n");
     CORRADE_VERIFY(!shader2.compile());
+}
+
+void ShaderGLTest::compileNoVersion() {
+    Shader shader(Version::None, Shader::Type::Fragment);
+    #ifndef MAGNUM_TARGET_GLES
+    shader.addSource("#version 120\nvoid main() {}\n");
+    #else
+    shader.addSource("#version 100\nvoid main() {}\n");
+    #endif
+    CORRADE_VERIFY(shader.compile());
 }
 
 }}

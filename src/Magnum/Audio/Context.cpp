@@ -30,6 +30,7 @@
 
 #include <al.h>
 #include <alc.h>
+#include <cstring>
 
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
@@ -44,6 +45,9 @@ const std::vector<Extension>& Extension::extensions() {
     static const std::vector<Extension> extensions{
         _extension(AL,EXT,FLOAT32),
         _extension(AL,EXT,DOUBLE),
+        _extension(AL,EXT,ALAW),
+        _extension(AL,EXT,MULAW),
+        _extension(AL,EXT,MCFORMATS),
         _extension(ALC,EXT,ENUMERATION),
         _extension(ALC,SOFTX,HRTF),
         _extension(ALC,SOFT,HRTF)
@@ -55,6 +59,7 @@ const std::vector<Extension>& Extension::extensions() {
 
 Debug& operator<<(Debug& debug, const Context::HrtfStatus value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case Context::HrtfStatus::value: return debug << "Audio::Context::HrtfStatus::" #value;
         _c(Disabled)
         _c(Enabled)
@@ -63,12 +68,22 @@ Debug& operator<<(Debug& debug, const Context::HrtfStatus value) {
         _c(Detected)
         _c(UnsupportedFormat)
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Audio::Context::HrtfStatus::(invalid)";
+    return debug << "Audio::Context::HrtfStatus(" << Debug::nospace << reinterpret_cast<void*>(ALenum(value)) << Debug::nospace << ")";
 }
 
 Context* Context::_current = nullptr;
+
+std::vector<std::string> Context::deviceSpecifierStrings() {
+    std::vector<std::string> list;
+    const char* const devices = alcGetString(nullptr, ALC_DEVICE_SPECIFIER);
+    for(const char* device = devices; *device; device += std::strlen(device) + 1)
+        list.push_back(device);
+
+    return list;
+}
 
 bool Context::hasCurrent() { return _current; }
 
@@ -82,11 +97,10 @@ Context::Context(): Context{Configuration{}} {}
 Context::Context(const Configuration& config) {
     CORRADE_ASSERT(!_current, "Audio::Context: context already created", );
 
-    /* Open default device */
-    const ALCchar* const defaultDevice = alcGetString(nullptr, ALC_DEFAULT_DEVICE_SPECIFIER);
-    _device = alcOpenDevice(defaultDevice);
-    if(!_device) {
-        Error() << "Audio::Context: cannot open sound device" << defaultDevice;
+    /* Open the device */
+    const ALCchar* const deviceSpecifier = config.deviceSpecifier().empty() ? alcGetString(nullptr, ALC_DEFAULT_DEVICE_SPECIFIER) : config.deviceSpecifier().data();
+    if(!(_device = alcOpenDevice(deviceSpecifier))) {
+        Error() << "Audio::Context: cannot open sound device" << deviceSpecifier;
         std::exit(1);
     }
 
@@ -182,6 +196,19 @@ bool Context::tryCreateContext(const Configuration& config) {
 
     _context = alcCreateContext(_device, attributes);
     return !!_context;
+}
+
+Context::Configuration::Configuration() = default;
+Context::Configuration::~Configuration() = default;
+
+Context::Configuration& Context::Configuration::setDeviceSpecifier(const std::string& specifier) {
+    _deviceSpecifier = specifier;
+    return *this;
+}
+
+Context::Configuration& Context::Configuration::setDeviceSpecifier(std::string&& specifier) {
+    _deviceSpecifier = std::move(specifier);
+    return *this;
 }
 
 }}

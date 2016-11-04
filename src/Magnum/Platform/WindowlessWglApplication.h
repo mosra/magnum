@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Platform::WindowlessWglApplication, macro @ref MAGNUM_WINDOWLESSWGLAPPLICATION_MAIN()
+ * @brief Class @ref Magnum::Platform::WindowlessWglApplication, @ref Magnum::Platform::WindowlessWglContext, macro @ref MAGNUM_WINDOWLESSWGLAPPLICATION_MAIN()
  */
 
 #include <memory>
@@ -39,24 +39,153 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/OpenGL.h"
+#include "Magnum/Tags.h"
 #include "Magnum/Platform/Platform.h"
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 /* Define stuff that we need because I can't be bothered with creating a new
-   header just for two defines */
-#define WGL_CONTEXT_FLAGS_ARB 0x2094
+   header just for a few defines */
 #define WGL_CONTEXT_DEBUG_BIT_ARB 0x0001
 #endif
 
 namespace Magnum { namespace Platform {
 
 /**
+@brief Windowless WGL context
+
+GL context using pure WINAPI, used in @ref WindowlessWglApplication. It is
+built if `WITH_WINDOWLESSWGLAPPLICATION` is enabled in CMake.
+
+Meant to be used when there is a need to manage (multiple) GL contexts
+manually. See @ref platform-windowless-contexts for more information. If no
+other application header is included, this class is also aliased to
+`Platform::WindowlessGLContext`.
+*/
+class WindowlessWglContext {
+    public:
+        class Configuration;
+
+        /**
+         * @brief Constructor
+         * @param configuration Context configuration
+         * @param context       Optional Magnum context instance constructed
+         *      using @ref NoCreate to manage driver workarounds
+         *
+         * On desktop GL, if version is not specified in @p configuration, the
+         * application first tries to create core context (OpenGL 3.1+) and if
+         * that fails, falls back to compatibility OpenGL 2.1 context. However,
+         * on binary AMD and NVidia drivers, creating core context does not use
+         * the largest available version. If the application detects such case
+         * (and given workaround is not disabled in optionally passed
+         * @p context instance), the core context is destroyed and
+         * compatibility OpenGL 2.1 context is created instead to make the
+         * driver use the latest available version.
+         *
+         * Once the context is created, make it current using @ref makeCurrent()
+         * and create @ref Platform::Context instance to be able to use Magnum.
+         * @see @ref isCreated()
+         */
+        explicit WindowlessWglContext(const Configuration& configuration, Context* context = nullptr);
+
+        /**
+         * @brief Construct without creating the context
+         *
+         * Move a instance with created context over to make it usable.
+         */
+        explicit WindowlessWglContext(NoCreateT) {}
+
+        /** @brief Copying is not allowed */
+        WindowlessWglContext(const WindowlessWglContext&) = delete;
+
+        /** @brief Move constructor */
+        WindowlessWglContext(WindowlessWglContext&& other);
+
+        /** @brief Copying is not allowed */
+        WindowlessWglContext& operator=(const WindowlessWglContext&) = delete;
+
+        /** @brief Move assignment */
+        WindowlessWglContext& operator=(WindowlessWglContext&& other);
+
+        /**
+         * @brief Destructor
+         *
+         * Destroys the context, if any.
+         */
+        ~WindowlessWglContext();
+
+        /** @brief Whether the context is created */
+        bool isCreated() const { return _context; }
+
+        /**
+         * @brief Make the context current
+         *
+         * Prints error message and returns `false` on failure, otherwise
+         * returns `true`.
+         */
+        bool makeCurrent();
+
+    private:
+        HWND _window{};
+        HDC _deviceContext{};
+        HGLRC _context{};
+};
+
+/**
+@brief Configuration
+
+@see @ref WindowlessWglContext(),
+    @ref WindowlessWglApplication::WindowlessWglApplication(),
+    @ref WindowlessWglApplication::createContext(),
+    @ref WindowlessWglApplication::tryCreateContext()
+*/
+class WindowlessWglContext::Configuration {
+    public:
+        /**
+         * @brief Context flag
+         *
+         * @see @ref Flags, @ref setFlags(), @ref Context::Flag
+         */
+        enum class Flag: int {
+            Debug = WGL_CONTEXT_DEBUG_BIT_ARB   /**< Create debug context */
+        };
+
+        /**
+         * @brief Context flags
+         *
+         * @see @ref setFlags(), @ref Context::Flags
+         */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        typedef Containers::EnumSet<Flag, WGL_CONTEXT_DEBUG_BIT_ARB> Flags;
+        #else
+        typedef Containers::EnumSet<Flag> Flags;
+        #endif
+
+        constexpr /*implicit*/ Configuration() {}
+
+        /** @brief Context flags */
+        Flags flags() const { return _flags; }
+
+        /**
+         * @brief Set context flags
+         * @return Reference to self (for method chaining)
+         *
+         * Default is no flag. See also @ref Context::flags().
+         */
+        Configuration& setFlags(Flags flags) {
+            _flags = flags;
+            return *this;
+        }
+
+    private:
+        Flags _flags;
+};
+
+/**
 @brief Windowless WGL application
 
-Application for offscreen rendering using pure WINAPI.
-
-This application library is available on desktop OpenGL on Windows. It is built
-if `WITH_WINDOWLESSWGLAPPLICATION` is enabled in CMake.
+Application for offscreen rendering using @ref WindowlessWglContext. This
+application library is available on desktop OpenGL on Windows. It is built if
+`WITH_WINDOWLESSWGLAPPLICATION` is enabled in CMake.
 
 ## Bootstrap application
 
@@ -102,22 +231,31 @@ class WindowlessWglApplication {
         /** @brief Application arguments */
         struct Arguments {
             /** @brief Constructor */
-            /*implicit*/ constexpr Arguments(int& argc, char** argv, HWND window) noexcept: argc{argc}, argv{argv}, window{window} {}
+            /*implicit*/ constexpr Arguments(int& argc, char** argv) noexcept: argc{argc}, argv{argv} {}
 
             int& argc;      /**< @brief Argument count */
             char** argv;    /**< @brief Argument values */
-            #ifndef DOXYGEN_GENERATING_OUTPUT
-            HWND window;
-            #endif
         };
 
-        class Configuration;
+        /**
+         * @brief Configuration
+         *
+         * @see @ref WindowlessWglApplication(), @ref createContext(),
+         *      @ref tryCreateContext()
+         */
+        typedef WindowlessWglContext::Configuration Configuration;
 
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        static int create(LRESULT(CALLBACK windowProcedure)(HWND, UINT, WPARAM, LPARAM));
-        #endif
-
-        /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, const Configuration&) */
+        /**
+         * @brief Default constructor
+         * @param arguments     Application arguments
+         * @param configuration Configuration
+         *
+         * Creates application with default or user-specified configuration.
+         * See @ref Configuration for more information. The program exits if
+         * the context cannot be created, see @ref tryCreateContext() for an
+         * alternative.
+         * @see @ref WindowlessWglContext
+         */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         explicit WindowlessWglApplication(const Arguments& arguments, const Configuration& configuration = Configuration());
         #else
@@ -126,8 +264,22 @@ class WindowlessWglApplication {
         explicit WindowlessWglApplication(const Arguments& arguments);
         #endif
 
-        /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, std::nullptr_t) */
-        explicit WindowlessWglApplication(const Arguments& arguments, std::nullptr_t);
+        /**
+         * @brief Constructor
+         * @param arguments     Application arguments
+         *
+         * Unlike above, the context is not created and must be created later
+         * with @ref createContext() or @ref tryCreateContext().
+         */
+        explicit WindowlessWglApplication(const Arguments& arguments, NoCreateT);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief WindowlessWglApplication(const Arguments&, NoCreateT)
+         * @deprecated Use @ref WindowlessWglApplication(const Arguments&, NoCreateT) instead.
+         */
+        CORRADE_DEPRECATED("use WindowlessWglApplication(const Arguments&, NoCreateT) instead") explicit WindowlessWglApplication(const Arguments& arguments, std::nullptr_t): WindowlessWglApplication{arguments, NoCreate} {}
+        #endif
 
         /** @brief Copying is not allowed */
         WindowlessWglApplication(const WindowlessWglApplication&) = delete;
@@ -155,7 +307,15 @@ class WindowlessWglApplication {
            thus this is faster than public pure virtual destructor */
         ~WindowlessWglApplication();
 
-        /** @copydoc Sdl2Application::createContext() */
+        /**
+         * @brief Create context with given configuration
+         *
+         * Must be called if and only if the context wasn't created by the
+         * constructor itself. Error message is printed and the program exits
+         * if the context cannot be created, see @ref tryCreateContext() for an
+         * alternative.
+         * @see @ref WindowlessWglContext
+         */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         void createContext(const Configuration& configuration = Configuration());
         #else
@@ -164,63 +324,17 @@ class WindowlessWglApplication {
         void createContext();
         #endif
 
-        /** @copydoc Sdl2Application::tryCreateContext() */
+        /**
+         * @brief Try to create context with given configuration
+         *
+         * Unlike @ref createContext() returns `false` if the context cannot be
+         * created, `true` otherwise.
+         */
         bool tryCreateContext(const Configuration& configuration);
 
     private:
-        HWND _window;
-        HDC _deviceContext;
-        HGLRC _renderingContext;
-
+        WindowlessWglContext _glContext;
         std::unique_ptr<Platform::Context> _context;
-};
-
-/**
-@brief Configuration
-
-@see @ref WindowlessWglApplication(), @ref createContext(),
-    @ref tryCreateContext()
-*/
-class WindowlessWglApplication::Configuration {
-    public:
-        /**
-         * @brief Context flag
-         *
-         * @see @ref Flags, @ref setFlags(), @ref Context::Flag
-         */
-        enum class Flag: int {
-            Debug = WGL_CONTEXT_DEBUG_BIT_ARB   /**< Create debug context */
-        };
-
-        /**
-         * @brief Context flags
-         *
-         * @see @ref setFlags(), @ref Context::Flags
-         */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        typedef Containers::EnumSet<Flag, WGL_CONTEXT_DEBUG_BIT_ARB> Flags;
-        #else
-        typedef Containers::EnumSet<Flag> Flags;
-        #endif
-
-        constexpr /*implicit*/ Configuration() {}
-
-        /** @brief Context flags */
-        Flags flags() const { return _flags; }
-
-        /**
-         * @brief Set context flags
-         * @return Reference to self (for method chaining)
-         *
-         * Default is no flag. See also @ref Context::flags().
-         */
-        Configuration& setFlags(Flags flags) {
-            _flags = flags;
-            return *this;
-        }
-
-    private:
-        Flags _flags;
 };
 
 /** @hideinitializer
@@ -234,29 +348,15 @@ windowless application header is included this macro is also aliased to
 `MAGNUM_WINDOWLESSAPPLICATION_MAIN()`.
 */
 #define MAGNUM_WINDOWLESSWGLAPPLICATION_MAIN(className)                     \
-    int globalArgc; char** globalArgv;                                      \
-    LRESULT CALLBACK windowProcedure(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam); \
-    LRESULT CALLBACK windowProcedure(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) { \
-        switch(message) {                                                   \
-            case WM_CREATE:                                                 \
-                {                                                           \
-                    className app({globalArgc, globalArgv, hWnd});          \
-                    PostQuitMessage(app.exec());                            \
-                }                                                           \
-                break;                                                      \
-            default: return DefWindowProc(hWnd, message, wParam, lParam);   \
-        }                                                                   \
-        return 0;                                                           \
-    }                                                                       \
     int main(int argc, char** argv) {                                       \
-        globalArgc = argc;                                                  \
-        globalArgv = argv;                                                  \
-        return Magnum::Platform::WindowlessWglApplication::create(windowProcedure); \
+        className app({argc, argv});                                        \
+        return app.exec();                                                  \
     }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_WINDOWLESSAPPLICATION_MAIN
 typedef WindowlessWglApplication WindowlessApplication;
+typedef WindowlessWglContext WindowlessGLContext;
 #define MAGNUM_WINDOWLESSAPPLICATION_MAIN(className) MAGNUM_WINDOWLESSWGLAPPLICATION_MAIN(className)
 #else
 #undef MAGNUM_WINDOWLESSAPPLICATION_MAIN

@@ -56,38 +56,38 @@ DebugOutputTest::DebugOutputTest() {
 
 void DebugOutputTest::debugSource() {
     std::ostringstream o;
-    Debug(&o) << DebugOutput::Source::ShaderCompiler;
-    CORRADE_COMPARE(o.str(), "DebugOutput::Source::ShaderCompiler\n");
+    Debug(&o) << DebugOutput::Source::ShaderCompiler << DebugOutput::Source(0xdead);
+    CORRADE_COMPARE(o.str(), "DebugOutput::Source::ShaderCompiler DebugOutput::Source(0xdead)\n");
 }
 
 void DebugOutputTest::debugType() {
     std::ostringstream o;
-    Debug(&o) << DebugOutput::Type::PushGroup;
-    CORRADE_COMPARE(o.str(), "DebugOutput::Type::PushGroup\n");
+    Debug(&o) << DebugOutput::Type::PushGroup << DebugOutput::Type(0xdead);
+    CORRADE_COMPARE(o.str(), "DebugOutput::Type::PushGroup DebugOutput::Type(0xdead)\n");
 }
 
 void DebugOutputTest::debugSeverity() {
     std::ostringstream o;
-    Debug(&o) << DebugOutput::Severity::Notification;
-    CORRADE_COMPARE(o.str(), "DebugOutput::Severity::Notification\n");
+    Debug(&o) << DebugOutput::Severity::Notification << DebugOutput::Severity(0xdead);
+    CORRADE_COMPARE(o.str(), "DebugOutput::Severity::Notification DebugOutput::Severity(0xdead)\n");
 }
 
 void DebugOutputTest::debugMessageSource() {
     std::ostringstream o;
-    Debug(&o) << DebugMessage::Source::Application;
-    CORRADE_COMPARE(o.str(), "DebugMessage::Source::Application\n");
+    Debug(&o) << DebugMessage::Source::Application << DebugMessage::Source(0xdead);
+    CORRADE_COMPARE(o.str(), "DebugMessage::Source::Application DebugMessage::Source(0xdead)\n");
 }
 
 void DebugOutputTest::debugMessageType() {
     std::ostringstream o;
-    Debug(&o) << DebugMessage::Type::DeprecatedBehavior;
-    CORRADE_COMPARE(o.str(), "DebugMessage::Type::DeprecatedBehavior\n");
+    Debug(&o) << DebugMessage::Type::DeprecatedBehavior << DebugMessage::Type(0xdead);
+    CORRADE_COMPARE(o.str(), "DebugMessage::Type::DeprecatedBehavior DebugMessage::Type(0xdead)\n");
 }
 
 void DebugOutputTest::debugGroupSource() {
     std::ostringstream o;
-    Debug(&o) << DebugGroup::Source::ThirdParty;
-    CORRADE_COMPARE(o.str(), "DebugGroup::Source::ThirdParty\n");
+    Debug(&o) << DebugGroup::Source::ThirdParty << DebugGroup::Source(0xdead);
+    CORRADE_COMPARE(o.str(), "DebugGroup::Source::ThirdParty DebugGroup::Source(0xdead)\n");
 }
 
 }}

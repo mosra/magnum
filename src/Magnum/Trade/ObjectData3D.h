@@ -42,8 +42,8 @@ namespace Magnum { namespace Trade {
 @see @ref ObjectData3D::instanceType()
 */
 enum class ObjectInstanceType3D: UnsignedByte {
-    Camera,     /**< Camera instance (see CameraData) */
-    Light,      /**< Light instance (see LightData) */
+    Camera,     /**< Camera instance (see @ref CameraData) */
+    Light,      /**< Light instance (see @ref LightData) */
 
     /**
      * Mesh instance. The data can be cast to @ref MeshObjectData3D to provide
@@ -53,7 +53,6 @@ enum class ObjectInstanceType3D: UnsignedByte {
 
     Empty       /**< Empty */
 };
-
 
 /**
 @brief Three-dimensional object data
@@ -85,7 +84,14 @@ class MAGNUM_EXPORT ObjectData3D {
         ObjectData3D(const ObjectData3D&) = delete;
 
         /** @brief Move constructor */
-        ObjectData3D(ObjectData3D&&);
+        ObjectData3D(ObjectData3D&&)
+            /* GCC 4.9.0 (the one from Android NDK) thinks this does not match
+               the implicit signature so it can't be defaulted. Works on 4.7,
+               5.0 and everywhere else, so I don't bother. */
+            #if !defined(__GNUC__) || __GNUC__*100 + __GNUC_MINOR__ != 409
+            noexcept
+            #endif
+            ;
 
         /** @brief Destructor */
         virtual ~ObjectData3D();
@@ -94,7 +100,14 @@ class MAGNUM_EXPORT ObjectData3D {
         ObjectData3D& operator=(const ObjectData3D&) = delete;
 
         /** @brief Move assignment */
-        ObjectData3D& operator=(ObjectData3D&&);
+        ObjectData3D& operator=(ObjectData3D&&)
+            /* GCC 4.9.0 (the one from Android NDK) thinks this does not match
+               the implicit signature so it can't be defaulted. Works on 4.7,
+               5.0 and everywhere else, so I don't bother. */
+            #if !defined(__GNUC__) || __GNUC__*100 + __GNUC_MINOR__ != 409
+            noexcept
+            #endif
+            ;
 
         /** @brief Child objects */
         std::vector<UnsignedInt>& children() { return _children; }

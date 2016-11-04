@@ -34,34 +34,43 @@ struct RendererTest: TestSuite::Tester {
     explicit RendererTest();
 
     void debugError();
+    #ifndef MAGNUM_TARGET_WEBGL
     void debugResetNotificationStrategy();
     void debugGraphicsResetStatus();
+    #endif
 };
 
 RendererTest::RendererTest() {
-    addTests({&RendererTest::debugError});
+    addTests({&RendererTest::debugError,
+              #ifndef MAGNUM_TARGET_WEBGL
+              &RendererTest::debugResetNotificationStrategy,
+              &RendererTest::debugGraphicsResetStatus
+              #endif
+              });
 }
 
 void RendererTest::debugError() {
     std::ostringstream out;
 
-    Debug(&out) << Renderer::Error::InvalidOperation;
-    CORRADE_COMPARE(out.str(), "Renderer::Error::InvalidOperation\n");
+    Debug(&out) << Renderer::Error::InvalidOperation << Renderer::Error(0xdead);
+    CORRADE_COMPARE(out.str(), "Renderer::Error::InvalidOperation Renderer::Error(0xdead)\n");
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
 void RendererTest::debugResetNotificationStrategy() {
     std::ostringstream out;
 
-    Debug(&out) << Renderer::ResetNotificationStrategy::LoseContextOnReset;
-    CORRADE_COMPARE(out.str(), "Renderer::ResetNotificationStrategy::LoseContextOnReset\n");
+    Debug(&out) << Renderer::ResetNotificationStrategy::LoseContextOnReset << Renderer::ResetNotificationStrategy(0xdead);
+    CORRADE_COMPARE(out.str(), "Renderer::ResetNotificationStrategy::LoseContextOnReset Renderer::ResetNotificationStrategy(0xdead)\n");
 }
 
 void RendererTest::debugGraphicsResetStatus() {
     std::ostringstream out;
 
-    Debug(&out) << Renderer::GraphicsResetStatus::GuiltyContextReset;
-    CORRADE_COMPARE(out.str(), "Renderer::GraphicsResetStatus::GuiltyContextReset\n");
+    Debug(&out) << Renderer::GraphicsResetStatus::GuiltyContextReset << Renderer::GraphicsResetStatus(0xdead);
+    CORRADE_COMPARE(out.str(), "Renderer::GraphicsResetStatus::GuiltyContextReset Renderer::GraphicsResetStatus(0xdead)\n");
 }
+#endif
 
 }}
 

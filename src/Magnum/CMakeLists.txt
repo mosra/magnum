@@ -67,6 +67,7 @@ set(Magnum_SRCS
     Trade/AbstractImporter.cpp
     Trade/AbstractMaterialData.cpp
     Trade/ImageData.cpp
+    Trade/LightData.cpp
     Trade/MeshData2D.cpp
     Trade/MeshData3D.cpp
     Trade/MeshObjectData2D.cpp
@@ -150,6 +151,7 @@ endif()
 if(NOT TARGET_GLES2)
     list(APPEND Magnum_SRCS
         BufferImage.cpp
+        PrimitiveQuery.cpp
         TextureArray.cpp
         TransformFeedback.cpp
 
@@ -323,7 +325,7 @@ if(BUILD_TESTS)
     # Library with graceful assert for testing
     add_library(MagnumMathTestLib ${SHARED_OR_STATIC}
         $<TARGET_OBJECTS:MagnumMathObjects>
-        dummy.cpp) # XCode workaround, see file comment for details
+        ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details
     target_include_directories(MagnumMathTestLib PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
     target_compile_definitions(MagnumMathTestLib PRIVATE "CORRADE_GRACEFUL_ASSERT")
     set_target_properties(MagnumMathTestLib PROPERTIES DEBUG_POSTFIX "-d")

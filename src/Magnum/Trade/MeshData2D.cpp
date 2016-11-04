@@ -33,11 +33,19 @@ MeshData2D::MeshData2D(const MeshPrimitive primitive, std::vector<UnsignedInt> i
     CORRADE_ASSERT(!_positions.empty(), "Trade::MeshData2D: no position array specified", );
 }
 
-MeshData2D::MeshData2D(MeshData2D&&) = default;
+MeshData2D::MeshData2D(MeshData2D&&)
+    #if !defined(__GNUC__) || __GNUC__*100 + __GNUC_MINOR__ != 409
+    noexcept
+    #endif
+    = default;
 
 MeshData2D::~MeshData2D() = default;
 
-MeshData2D& MeshData2D::operator=(MeshData2D&&) = default;
+MeshData2D& MeshData2D::operator=(MeshData2D&&)
+    #if !defined(__GNUC__) || __GNUC__*100 + __GNUC_MINOR__ != 409
+    noexcept
+    #endif
+    = default;
 
 std::vector<UnsignedInt>& MeshData2D::indices() {
     CORRADE_ASSERT(isIndexed(), "Trade::MeshData2D::indices(): the mesh is not indexed", _indices);

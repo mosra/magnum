@@ -33,22 +33,43 @@
 
 #include "Magnum/Types.h"
 
-/** @brief Precision when testing floats for equality */
+/**
+@brief Precision when testing floats for equality
+
+They have "at least" 6 significant digits of precision, taking one digit less
+for more headroom.
+*/
 #ifndef FLOAT_EQUALITY_PRECISION
 #define FLOAT_EQUALITY_PRECISION 1.0e-5f
 #endif
 
-/** @brief Precision when testing doubles for equality */
+/**
+@brief Precision when testing doubles for equality
+
+They have "at least" 15 significant digits of precision, taking one digit less
+for more headroom.
+*/
 #ifndef DOUBLE_EQUALITY_PRECISION
-#define DOUBLE_EQUALITY_PRECISION 1.0e-12
+#define DOUBLE_EQUALITY_PRECISION 1.0e-14
 #endif
 
 /**
 @brief Precision when testing long doubles for equality
-@todo some proper value please
+
+They have "at least" 18 significant digits of precision, taking one digit less
+for more headroom.
+
+@attention On MSVC the precision is the same as for doubles, because they are
+    internally the same type (source: https://msdn.microsoft.com/en-us/library/9cx8xs15.aspx).
+    The same is apparently for @ref CORRADE_TARGET_ANDROID "Android", but I
+    couldn't find any source for that.
 */
 #ifndef LONG_DOUBLE_EQUALITY_PRECISION
-#define LONG_DOUBLE_EQUALITY_PRECISION 1.0e-18l
+#if !defined(_MSC_VER) && !defined(CORRADE_TARGET_ANDROID)
+#define LONG_DOUBLE_EQUALITY_PRECISION 1.0e-17l
+#else
+#define LONG_DOUBLE_EQUALITY_PRECISION 1.0e-14l
+#endif
 #endif
 
 namespace Magnum { namespace Math {
@@ -59,6 +80,10 @@ namespace Implementation {
 
         constexpr static bool equals(T a, T b) {
             return a == b;
+        }
+
+        constexpr static bool equalsZero(T a, T) {
+            return !a;
         }
     };
 }
@@ -88,6 +113,14 @@ template<class T> struct TypeTraits: Implementation::TypeTraitsDefault<T> {
     typedef U FloatingPointType;
 
     /**
+     * @brief Type name
+     *
+     * Returns a string representation of type name, such as `"UnsignedInt"`
+     * for @ref Magnum::UnsignedInt "UnsignedInt".
+     */
+    constexpr static const char* name();
+
+    /**
      * @brief Epsilon value for fuzzy compare
      *
      * Returns minimal difference between numbers to be considered
@@ -103,12 +136,49 @@ template<class T> struct TypeTraits: Implementation::TypeTraitsDefault<T> {
      * value), pure equality comparison everywhere else.
      */
     static bool equals(T a, T b);
+
+    /**
+     * @brief Fuzzy compare to zero with magnitude
+     *
+     * Uses fuzzy compare for floating-point types (using @ref epsilon()
+     * value), pure equality comparison everywhere else. Use this function when
+     * comparing e.g. a calculated nearly-zero difference with zero, knowing
+     * the magnitude of original values so the epsilon can be properly scaled.
+     * In other words, the following lines are equivalent:
+     * @code
+     * Float a, b;
+     * Math::TypeTraits<Float>::equals(a, b);
+     * Math::TypeTraits<Float>::equalsZero(a - b, Math::max(Math::abs(a), Math::abs(b)));
+     * @endcode
+     */
+    static bool equalsZero(T a, T magnitude);
     #endif
 };
 
 /* Integral scalar types */
 namespace Implementation {
-    template<class T> struct TypeTraitsIntegral: TypeTraitsDefault<T> {
+    template<class> struct TypeTraitsName;
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    #define _c(type) template<> struct TypeTraitsName<type> { \
+        constexpr static const char* name() { return #type; } \
+    };
+    _c(UnsignedByte)
+    _c(Byte)
+    _c(UnsignedShort)
+    _c(Short)
+    _c(UnsignedInt)
+    _c(Int)
+    #ifndef MAGNUM_TARGET_WEBGL
+    _c(UnsignedLong)
+    _c(Long)
+    #endif
+    _c(Float)
+    _c(Double)
+    _c(long double)
+    #undef _c
+    #endif
+
+    template<class T> struct TypeTraitsIntegral: TypeTraitsDefault<T>, TypeTraitsName<T> {
         constexpr static T epsilon() { return T(1); }
     };
 }
@@ -127,35 +197,28 @@ template<> struct TypeTraits<Short>: Implementation::TypeTraitsIntegral<Short> {
     typedef Float FloatingPointType;
 };
 template<> struct TypeTraits<UnsignedInt>: Implementation::TypeTraitsIntegral<UnsignedInt> {
-    #ifndef MAGNUM_TARGET_GLES
     typedef Double FloatingPointType;
-    #endif
 };
 template<> struct TypeTraits<Int>: Implementation::TypeTraitsIntegral<Int> {
-    #ifndef MAGNUM_TARGET_GLES
     typedef Double FloatingPointType;
-    #endif
 };
 #ifndef MAGNUM_TARGET_WEBGL
 template<> struct TypeTraits<UnsignedLong>: Implementation::TypeTraitsIntegral<UnsignedLong> {
-    #ifndef MAGNUM_TARGET_GLES
     typedef long double FloatingPointType;
-    #endif
 };
 template<> struct TypeTraits<Long>: Implementation::TypeTraitsIntegral<Long> {
-    #ifndef MAGNUM_TARGET_GLES
     typedef long double FloatingPointType;
-    #endif
 };
 #endif
 
 /* Floating-point scalar types */
 namespace Implementation {
 
-template<class T> struct TypeTraitsFloatingPoint {
+template<class T> struct TypeTraitsFloatingPoint: TypeTraitsName<T> {
     TypeTraitsFloatingPoint() = delete;
 
     static bool equals(T a, T b);
+    static bool equalsZero(T a, T epsilon);
 };
 
 /* Adapted from http://floating-point-gui.de/errors/comparison/ */
@@ -176,6 +239,20 @@ template<class T> bool TypeTraitsFloatingPoint<T>::equals(const T a, const T b) 
     return difference/(absA + absB) < TypeTraits<T>::epsilon();
 }
 
+template<class T> bool TypeTraitsFloatingPoint<T>::equalsZero(const T a, const T magnitude) {
+    /* Shortcut for binary equality */
+    if(a == T(0.0)) return true;
+
+    const T absA = std::abs(a);
+
+    /* The value is extremely close to zero, relative error is meaningless */
+    if(absA < TypeTraits<T>::epsilon())
+        return absA < TypeTraits<T>::epsilon();
+
+    /* Relative error */
+    return absA*T(0.5)/magnitude < TypeTraits<T>::epsilon();
+}
+
 }
 
 template<> struct TypeTraits<Float>: Implementation::TypeTraitsFloatingPoint<Float> {
@@ -183,13 +260,11 @@ template<> struct TypeTraits<Float>: Implementation::TypeTraitsFloatingPoint<Flo
 
     constexpr static Float epsilon() { return FLOAT_EQUALITY_PRECISION; }
 };
-#ifndef MAGNUM_TARGET_GLES
 template<> struct TypeTraits<Double>: Implementation::TypeTraitsFloatingPoint<Double> {
     typedef Double FloatingPointType;
 
     constexpr static Double epsilon() { return DOUBLE_EQUALITY_PRECISION; }
 };
-#endif
 template<> struct TypeTraits<long double>: Implementation::TypeTraitsFloatingPoint<long double> {
     typedef long double FloatingPointType;
 

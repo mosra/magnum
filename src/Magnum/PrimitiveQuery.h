@@ -63,25 +63,61 @@ UnsignedInt primitiveCount = q.result<UnsignedInt>();
 @requires_gl30 Extension @extension{EXT,transform_feedback}
 @requires_gles30 Only sample queries are available in OpenGL ES 2.0.
 @requires_webgl20 Queries are not available in WebGL 1.0.
-@todo glBeginQueryIndexed
-@todo @extension{ARB,transform_feedback_overflow_query}
 */
-class PrimitiveQuery: public AbstractQuery {
+class MAGNUM_EXPORT PrimitiveQuery: public AbstractQuery {
     public:
         /** @brief Query target */
         enum class Target: GLenum {
-            #ifndef MAGNUM_TARGET_GLES
+            #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
             /**
              * Count of primitives generated from vertex shader or geometry
-             * shader.
-             * @requires_gl Only transform feedback query is available in
-             *      OpenGL ES and WebGL.
+             * shader. When used with @ref begin(UnsignedInt), the index must
+             * be lower than @ref TransformFeedback::maxVertexStreams(). Use
+             * @ref result<UnsignedInt>() or @ref result<Int>() to retrieve the
+             * result.
+             * @requires_gles30 Not defined in OpenGL ES 2.0.
+             * @requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
+             *      @es_extension{EXT,geometry_shader}
+             * @requires_gles Geometry shaders are not available in WebGL.
              */
+            #ifndef MAGNUM_TARGET_GLES
             PrimitivesGenerated = GL_PRIMITIVES_GENERATED,
+            #else
+            PrimitivesGenerated = GL_PRIMITIVES_GENERATED_EXT,
+            #endif
             #endif
 
-            /** Count of primitives written to transform feedback buffer. */
-            TransformFeedbackPrimitivesWritten = GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN
+            /**
+             * Count of primitives written to transform feedback buffer. When
+             * used with @ref begin(UnsignedInt), the index must be lower than
+             * @ref TransformFeedback::maxVertexStreams(). Use
+             * @ref result<UnsignedInt>() or @ref result<Int>() to retrieve the
+             * result.
+             */
+            TransformFeedbackPrimitivesWritten = GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN,
+
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * Transform feedback overflow. When used with @ref begin(UnsignedInt),
+             * the index must be `0`. Use @ref result<bool>() to retrieve the
+             * result.
+             * @requires_extension Extension @extension{ARB,transform_feedback_overflow_query}
+             * @requires_gl Transform feedback overflow query is not available
+             *      in OpenGL ES or WebGL.
+             */
+            TransformFeedbackOverflow = GL_TRANSFORM_FEEDBACK_OVERFLOW_ARB,
+
+            /**
+             * Transform feedback stream overflow. When used with
+             * @ref begin(UnsignedInt), the index must be lower than
+             * @ref TransformFeedback::maxVertexStreams(). Use @ref result<bool>()
+             * to retrieve the result.
+             * @requires_extension Extension @extension{ARB,transform_feedback_overflow_query}
+             * @requires_gl Transform feedback overflow query is not available
+             *      in OpenGL ES or WebGL.
+             */
+            TransformFeedbackStreamOverflow = GL_TRANSFORM_FEEDBACK_STREAM_OVERFLOW_ARB
+            #endif
         };
 
         /**
@@ -129,17 +165,48 @@ class PrimitiveQuery: public AbstractQuery {
          */
         explicit PrimitiveQuery(NoCreateT) noexcept: AbstractQuery{NoCreate, GLenum(Target::TransformFeedbackPrimitivesWritten)} {}
 
+        /**
+         * @brief Begin query
+         *
+         * Begins counting until @ref end() is called. Equivalent to calling
+         * @ref begin(UnsignedInt) with @p index set to `0`.
+         * @see @fn_gl{BeginQuery}
+         */
+        void begin();
+
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @copybrief AbstractQuery::begin()
+         * @copybrief begin()
          * @deprecated Use @ref begin() instead.
          */
-        CORRADE_DEPRECATED("use begin() instead") void begin(Target target) {
-            AbstractQuery::begin(GLenum(target));
-        }
-
-        using AbstractQuery::begin;
+        CORRADE_DEPRECATED("use begin() instead") void begin(Target target);
         #endif
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Begin indexed query
+         *
+         * Begins counting until @ref end() is called.
+         * @see @fn_gl{BeginQueryIndexed}
+         * @requires_gl40 Extension @extension{ARB,transform_feedback3}
+         * @requires_gl Indexed queries are not available in OpenGL ES or WebGL.
+         */
+        void begin(UnsignedInt index);
+        #endif
+
+        /**
+         * @brief End query
+         *
+         * Ends the non-indexed or indexed query started with @ref begin() or
+         * @ref begin(UnsignedInt). The result can be then retrieved by calling
+         * @ref result().
+         * @see @fn_gl{EndQuery}, @fn_gl2{EndQueryIndexed,BeginQueryIndexed}
+         * @requires_gl40 Extension @extension{ARB,transform_feedback3} for
+         *      indexed queries
+         * @requires_gl Indexed queries are not available in OpenGL ES or
+         *      WebGL.
+         */
+        void end();
 
         /* Overloads to remove WTF-factor from method chaining order */
         #if !defined(DOXYGEN_GENERATING_OUTPUT) && !defined(MAGNUM_TARGET_WEBGL)
@@ -155,6 +222,10 @@ class PrimitiveQuery: public AbstractQuery {
 
     private:
         explicit PrimitiveQuery(GLuint id, Target target, ObjectFlags flags) noexcept: AbstractQuery{id, GLenum(target), flags} {}
+
+        #ifndef MAGNUM_TARGET_GLES
+        GLuint _index{};
+        #endif
 };
 
 }

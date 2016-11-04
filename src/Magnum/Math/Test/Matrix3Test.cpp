@@ -136,6 +136,8 @@ void Matrix3Test::construct() {
     CORRADE_COMPARE(a, Matrix3({3.0f,  5.0f, 8.0f},
                                {4.5f,  4.0f, 7.0f},
                                {7.9f, -1.0f, 8.0f}));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix3, Vector3, Vector3, Vector3>::value));
 }
 
 void Matrix3Test::constructIdentity() {
@@ -154,6 +156,9 @@ void Matrix3Test::constructIdentity() {
     CORRADE_COMPARE(identity, identityExpected);
     CORRADE_COMPARE(identity2, identityExpected);
     CORRADE_COMPARE(identity3, identity3Expected);
+
+    CORRADE_VERIFY(std::is_nothrow_default_constructible<Matrix3>::value);
+    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix3, IdentityInitT>::value));
 }
 
 void Matrix3Test::constructZero() {
@@ -161,6 +166,8 @@ void Matrix3Test::constructZero() {
     CORRADE_COMPARE(a, Matrix3({0.0f, 0.0f, 0.0f},
                                {0.0f, 0.0f, 0.0f},
                                {0.0f, 0.0f, 0.0f}));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix3, ZeroInitT>::value));
 }
 
 void Matrix3Test::constructNoInit() {
@@ -168,9 +175,16 @@ void Matrix3Test::constructNoInit() {
               {4.5f,  4.0f, 7.0f},
               {7.9f, -1.0f, 8.0f}};
     new(&a) Matrix3{NoInit};
-    CORRADE_COMPARE(a, Matrix3({3.0f,  5.0f, 8.0f},
-                               {4.5f,  4.0f, 7.0f},
-                               {7.9f, -1.0f, 8.0f}));
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a, Matrix3({3.0f,  5.0f, 8.0f},
+                                   {4.5f,  4.0f, 7.0f},
+                                   {7.9f, -1.0f, 8.0f}));
+    }
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix3, NoInitT>::value));
 }
 
 void Matrix3Test::constructConversion() {
@@ -184,6 +198,8 @@ void Matrix3Test::constructConversion() {
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Matrix3, Matrix3i>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix3, Matrix3i>::value));
 }
 
 void Matrix3Test::constructCopy() {
@@ -197,6 +213,9 @@ void Matrix3Test::constructCopy() {
     CORRADE_COMPARE(b, Matrix3({3.0f,  5.0f, 8.0f},
                                {4.5f,  4.0f, 7.0f},
                                {7.9f, -1.0f, 8.0f}));
+
+    CORRADE_VERIFY(std::is_nothrow_copy_constructible<Matrix3>::value);
+    CORRADE_VERIFY(std::is_nothrow_copy_assignable<Matrix3>::value);
 }
 
 void Matrix3Test::convert() {

@@ -28,8 +28,10 @@ namespace Magnum {
 @brief Command-line utilities for system information and data conversion
 
 -   @subpage magnum-info -- @copybrief magnum-info
+-   @subpage magnum-al-info -- @copybrief magnum-al-info
 -   @subpage magnum-distancefieldconverter -- @copybrief magnum-distancefieldconverter
 -   @subpage magnum-fontconverter -- @copybrief magnum-fontconverter
+-   @subpage magnum-imageconverter -- @copybrief magnum-imageconverter
 
 */
 }

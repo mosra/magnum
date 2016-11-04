@@ -1,3 +1,5 @@
+#ifndef Magnum_configure_h
+#define Magnum_configure_h
 /*
     This file is part of Magnum.
 
@@ -25,9 +27,12 @@
 
 #cmakedefine MAGNUM_BUILD_DEPRECATED
 #cmakedefine MAGNUM_BUILD_STATIC
+#cmakedefine MAGNUM_BUILD_MULTITHREADED
 #cmakedefine MAGNUM_TARGET_GLES
 #cmakedefine MAGNUM_TARGET_GLES2
 #cmakedefine MAGNUM_TARGET_GLES3
 #cmakedefine MAGNUM_TARGET_DESKTOP_GLES
 #cmakedefine MAGNUM_TARGET_WEBGL
 #cmakedefine MAGNUM_TARGET_HEADLESS
+
+#endif

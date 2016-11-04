@@ -23,6 +23,13 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+if(BUILD_PLUGINS_STATIC)
+    set(MAGNUM_MAGNUMFONTCONVERTER_BUILD_STATIC 1)
+endif()
+
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+
 set(MagnumFontConverter_SRCS
     MagnumFontConverter.cpp)
 
@@ -34,12 +41,17 @@ add_library(MagnumFontConverterObjects OBJECT
     ${MagnumFontConverter_SRCS}
     ${MagnumFontConverter_HEADERS})
 target_include_directories(MagnumFontConverterObjects PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
+if(NOT BUILD_PLUGINS_STATIC)
+    target_compile_definitions(MagnumFontConverterObjects PRIVATE "MagnumFontConverterObjects_EXPORTS")
+endif()
 if(NOT BUILD_PLUGINS_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(MagnumFontConverterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 
 # MagnumFontConverter plugin
-add_plugin(MagnumFontConverter ${MAGNUM_PLUGINS_FONTCONVERTER_DEBUG_INSTALL_DIR} ${MAGNUM_PLUGINS_FONTCONVERTER_RELEASE_INSTALL_DIR}
+add_plugin(MagnumFontConverter
+    "${MAGNUM_PLUGINS_FONTCONVERTER_DEBUG_BINARY_INSTALL_DIR};${MAGNUM_PLUGINS_FONTCONVERTER_DEBUG_LIBRARY_INSTALL_DIR}"
+    "${MAGNUM_PLUGINS_FONTCONVERTER_RELEASE_BINARY_INSTALL_DIR};${MAGNUM_PLUGINS_FONTCONVERTER_RELEASE_LIBRARY_INSTALL_DIR}"
     MagnumFontConverter.conf
     $<TARGET_OBJECTS:MagnumFontConverterObjects>
     pluginRegistration.cpp)
@@ -53,6 +65,7 @@ if(CORRADE_TARGET_WINDOWS)
 endif()
 
 install(FILES ${MagnumFontConverter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/MagnumFontConverter)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configure.h DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/MagnumFontConverter)
 
 if(BUILD_GL_TESTS)
     # On Win32 we need to avoid dllimporting TgaImageConverter symbols, because
@@ -63,9 +76,13 @@ if(BUILD_GL_TESTS)
         add_library(MagnumMagnumFontConverterTestLib STATIC
             ${MagnumFontConverter_SRCS}
             ${MagnumFontConverter_HEADERS})
-        target_compile_definitions(MagnumMagnumFontConverterTestLib PRIVATE "MAGNUM_TGAIMAGECONVERTER_BUILD_STATIC")
+        target_compile_definitions(MagnumMagnumFontConverterTestLib
+            PRIVATE "MAGNUM_TGAIMAGECONVERTER_BUILD_STATIC"
+            PUBLIC "MAGNUM_MAGNUMFONTCONVERTER_BUILD_STATIC")
     else()
-        add_library(MagnumMagnumFontConverterTestLib STATIC $<TARGET_OBJECTS:MagnumFontConverterObjects>)
+        add_library(MagnumMagnumFontConverterTestLib STATIC
+            $<TARGET_OBJECTS:MagnumFontConverterObjects>
+            ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details
     endif()
     target_link_libraries(MagnumMagnumFontConverterTestLib Magnum MagnumText MagnumTgaImageConverterTestLib)
 

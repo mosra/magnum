@@ -67,6 +67,7 @@
 #include "configure.h"
 
 using namespace Magnum;
+using namespace Magnum::Math::Literals;
 
 struct ShaderVisualizer: Platform::WindowlessApplication {
     using Platform::WindowlessApplication::WindowlessApplication;

@@ -43,8 +43,8 @@ DefaultFramebufferTest::DefaultFramebufferTest() {
 void DefaultFramebufferTest::debugStatus() {
     std::ostringstream out;
 
-    Debug(&out) << DefaultFramebuffer::Status::Undefined;
-    CORRADE_COMPARE(out.str(), "DefaultFramebuffer::Status::Undefined\n");
+    Debug(&out) << DefaultFramebuffer::Status::Complete << DefaultFramebuffer::Status(0xdead);
+    CORRADE_COMPARE(out.str(), "DefaultFramebuffer::Status::Complete DefaultFramebuffer::Status(0xdead)\n");
 }
 
 }}

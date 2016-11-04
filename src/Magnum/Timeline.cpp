@@ -26,7 +26,7 @@
 #include "Timeline.h"
 
 #include <Corrade/Utility/Debug.h>
-#include <Corrade/Utility/utilities.h>
+#include <Corrade/Utility/System.h>
 
 #include "Magnum/Magnum.h"
 
@@ -57,7 +57,7 @@ void Timeline::nextFrame() {
 
     #ifdef MAGNUM_BUILD_DEPRECATED
     if(_previousFrameDuration < _minimalFrameTime) {
-        Utility::sleep(std::size_t(_minimalFrameTime*1000) - duration/1000);
+        Utility::System::sleep(std::size_t(_minimalFrameTime*1000) - duration/1000);
         now = high_resolution_clock::now();
         _previousFrameDuration = duration_cast<microseconds>(now-_previousFrameTime).count()/1e6f;
     }

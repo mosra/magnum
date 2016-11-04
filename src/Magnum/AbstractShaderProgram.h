@@ -36,6 +36,10 @@
 #include "Magnum/AbstractObject.h"
 #include "Magnum/Attribute.h"
 
+#if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_GLES2)
+#include <vector>
+#endif
+
 namespace Magnum {
 
 namespace Implementation { struct ShaderProgramState; }
@@ -1189,6 +1193,13 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         Int uniformLocationInternal(Containers::ArrayView<const char> name);
         UnsignedInt uniformBlockIndexInternal(Containers::ArrayView<const char> name);
 
+        #ifndef MAGNUM_TARGET_GLES2
+        void MAGNUM_LOCAL transformFeedbackVaryingsImplementationDefault(Containers::ArrayView<const std::string> outputs, TransformFeedbackBufferMode bufferMode);
+        #ifdef CORRADE_TARGET_WINDOWS
+        void MAGNUM_LOCAL transformFeedbackVaryingsImplementationDanglingWorkaround(Containers::ArrayView<const std::string> outputs, TransformFeedbackBufferMode bufferMode);
+        #endif
+        #endif
+
         #ifndef MAGNUM_BUILD_DEPRECATED
         void use();
         #endif
@@ -1347,6 +1358,12 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         #endif
 
         GLuint _id;
+
+        #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_GLES2)
+        /* Needed for the nv-windows-dangling-transform-feedback-varying-names
+           workaround */
+        std::vector<std::string> _transformFeedbackVaryingNames;
+        #endif
 };
 
 }

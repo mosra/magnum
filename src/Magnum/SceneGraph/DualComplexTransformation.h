@@ -110,6 +110,10 @@ template<class T> class BasicDualComplexTransformation: public AbstractBasicTran
         }
 
         #ifdef MAGNUM_BUILD_DEPRECATED
+        #ifdef __GNUC__
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #endif
         /**
          * @copybrief transform()
          * @deprecated Use @ref transform() or @ref transformLocal() instead.
@@ -117,6 +121,9 @@ template<class T> class BasicDualComplexTransformation: public AbstractBasicTran
         CORRADE_DEPRECATED("use transform() or transformLocal() instead") Object<BasicDualComplexTransformation<T>>& transform(const Math::DualComplex<T>& transformation, TransformationType type) {
             return type == TransformationType::Global ? transform(transformation) : transformLocal(transformation);
         }
+        #ifdef __GNUC__
+        #pragma GCC diagnostic pop
+        #endif
         #endif
 
         /**
@@ -143,6 +150,10 @@ template<class T> class BasicDualComplexTransformation: public AbstractBasicTran
         }
 
         #ifdef MAGNUM_BUILD_DEPRECATED
+        #ifdef __GNUC__
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #endif
         /**
          * @copybrief translate()
          * @deprecated Use @ref translate() or @ref translateLocal() instead.
@@ -150,6 +161,9 @@ template<class T> class BasicDualComplexTransformation: public AbstractBasicTran
         CORRADE_DEPRECATED("use translate() or translateLocal() instead") Object<BasicDualComplexTransformation<T>>& translate(const Math::Vector2<T>& vector, TransformationType type) {
             return type == TransformationType::Global ? translate(vector) : translateLocal(vector);
         }
+        #ifdef __GNUC__
+        #pragma GCC diagnostic pop
+        #endif
         #endif
 
         /**
@@ -175,6 +189,10 @@ template<class T> class BasicDualComplexTransformation: public AbstractBasicTran
         }
 
         #ifdef MAGNUM_BUILD_DEPRECATED
+        #ifdef __GNUC__
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #endif
         /**
          * @copybrief rotate()
          * @deprecated Use @ref rotate() or @ref rotateLocal() instead.
@@ -182,6 +200,9 @@ template<class T> class BasicDualComplexTransformation: public AbstractBasicTran
         CORRADE_DEPRECATED("use rotate() or rotateLocal() instead") Object<BasicDualComplexTransformation<T>>& rotate(Math::Rad<T> angle, TransformationType type) {
             return type == TransformationType::Global ? rotate(angle) : rotateLocal(angle);
         }
+        #ifdef __GNUC__
+        #pragma GCC diagnostic pop
+        #endif
         #endif
 
     protected:

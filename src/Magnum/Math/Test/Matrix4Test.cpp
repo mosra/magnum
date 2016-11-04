@@ -25,6 +25,7 @@
 
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/Configuration.h>
 
 #include "Magnum/Math/Matrix4.h"
@@ -84,7 +85,9 @@ struct Matrix4Test: Corrade::TestSuite::Tester {
     void shearingYZ();
     void orthographicProjection();
     void perspectiveProjection();
+    void perspectiveProjectionInfiniteFar();
     void perspectiveProjectionFov();
+    void perspectiveProjectionFovInfiniteFar();
     void lookAt();
 
     void fromParts();
@@ -95,6 +98,7 @@ struct Matrix4Test: Corrade::TestSuite::Tester {
     void vectorParts();
     void invertedRigid();
     void transform();
+    void transformProjection();
 
     void debug();
     void configuration();
@@ -106,6 +110,7 @@ typedef Math::Matrix4<Float> Matrix4;
 typedef Math::Matrix4<Int> Matrix4i;
 typedef Math::Matrix<3, Float> Matrix3x3;
 typedef Math::Vector3<Float> Vector3;
+typedef Math::Vector4<Float> Vector4;
 typedef Math::Constants<Float> Constants;
 
 Matrix4Test::Matrix4Test() {
@@ -132,7 +137,9 @@ Matrix4Test::Matrix4Test() {
               &Matrix4Test::shearingYZ,
               &Matrix4Test::orthographicProjection,
               &Matrix4Test::perspectiveProjection,
+              &Matrix4Test::perspectiveProjectionInfiniteFar,
               &Matrix4Test::perspectiveProjectionFov,
+              &Matrix4Test::perspectiveProjectionFovInfiniteFar,
               &Matrix4Test::lookAt,
 
               &Matrix4Test::fromParts,
@@ -143,6 +150,7 @@ Matrix4Test::Matrix4Test() {
               &Matrix4Test::vectorParts,
               &Matrix4Test::invertedRigid,
               &Matrix4Test::transform,
+              &Matrix4Test::transformProjection,
 
               &Matrix4Test::debug,
               &Matrix4Test::configuration});
@@ -157,6 +165,8 @@ void Matrix4Test::construct() {
                                {4.5f,  4.0f, 7.0f,  2.0f},
                                {1.0f,  2.0f, 3.0f, -1.0f},
                                {7.9f, -1.0f, 8.0f, -1.5f}));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix4, Vector4, Vector4, Vector4, Vector4>::value));
 }
 
 void Matrix4Test::constructIdentity() {
@@ -177,6 +187,9 @@ void Matrix4Test::constructIdentity() {
     CORRADE_COMPARE(identity, identityExpected);
     CORRADE_COMPARE(identity2, identityExpected);
     CORRADE_COMPARE(identity3, identity3Expected);
+
+    CORRADE_VERIFY(std::is_nothrow_default_constructible<Matrix4>::value);
+    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix4, IdentityInitT>::value));
 }
 
 void Matrix4Test::constructZero() {
@@ -185,6 +198,8 @@ void Matrix4Test::constructZero() {
                                {0.0f, 0.0f, 0.0f, 0.0f},
                                {0.0f, 0.0f, 0.0f, 0.0f},
                                {0.0f, 0.0f, 0.0f, 0.0f}));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix4, ZeroInitT>::value));
 }
 
 void Matrix4Test::constructNoInit() {
@@ -193,10 +208,17 @@ void Matrix4Test::constructNoInit() {
                  {1.0f,  2.0f, 3.0f, -1.0f},
                  {7.9f, -1.0f, 8.0f, -1.5f}};
     new(&a) Matrix4{NoInit};
-    CORRADE_COMPARE(a, Matrix4({3.0f,  5.0f, 8.0f, -3.0f},
-                               {4.5f,  4.0f, 7.0f,  2.0f},
-                               {1.0f,  2.0f, 3.0f, -1.0f},
-                               {7.9f, -1.0f, 8.0f, -1.5f}));
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a, Matrix4({3.0f,  5.0f, 8.0f, -3.0f},
+                                   {4.5f,  4.0f, 7.0f,  2.0f},
+                                   {1.0f,  2.0f, 3.0f, -1.0f},
+                                   {7.9f, -1.0f, 8.0f, -1.5f}));
+    }
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix4, NoInitT>::value));
 }
 
 void Matrix4Test::constructConversion() {
@@ -212,6 +234,8 @@ void Matrix4Test::constructConversion() {
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Matrix4, Matrix4i>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix4, Matrix4i>::value));
 }
 
 void Matrix4Test::constructCopy() {
@@ -227,6 +251,9 @@ void Matrix4Test::constructCopy() {
                                {4.5f,  4.0f, 7.0f,  2.0f},
                                {1.0f,  2.0f, 3.0f, -1.0f},
                                {7.9f, -1.0f, 8.0f, -1.5f}));
+
+    CORRADE_VERIFY(std::is_nothrow_copy_constructible<Matrix4>::value);
+    CORRADE_VERIFY(std::is_nothrow_copy_assignable<Matrix4>::value);
 }
 
 void Matrix4Test::convert() {
@@ -382,7 +409,12 @@ void Matrix4Test::orthographicProjection() {
                      {0.0f, 0.5f,   0.0f, 0.0f},
                      {0.0f, 0.0f, -0.25f, 0.0f},
                      {0.0f, 0.0f, -1.25f, 1.0f});
-    CORRADE_COMPARE(Matrix4::orthographicProjection({5.0f, 4.0f}, 1, 9), expected);
+    Matrix4 actual = Matrix4::orthographicProjection({5.0f, 4.0f}, 1.0f, 9.0f);
+    CORRADE_COMPARE(actual, expected);
+
+    /* NDC is left-handed, so point on near plane should be -1, far +1 */
+    CORRADE_COMPARE(actual.transformPoint({0.0f, 0.0f, -1.0f}), Vector3(0.0f, 0.0f, -1.0f));
+    CORRADE_COMPARE(actual.transformPoint({0.0f, 0.0f, -9.0f}), Vector3(0.0f, 0.0f, +1.0f));
 }
 
 void Matrix4Test::perspectiveProjection() {
@@ -390,7 +422,26 @@ void Matrix4Test::perspectiveProjection() {
                      {0.0f, 7.111111f,         0.0f,  0.0f},
                      {0.0f,      0.0f,  -1.9411764f, -1.0f},
                      {0.0f,      0.0f, -94.1176452f,  0.0f});
-    CORRADE_COMPARE(Matrix4::perspectiveProjection({16.0f, 9.0f}, 32.0f, 100), expected);
+    Matrix4 actual = Matrix4::perspectiveProjection({16.0f, 9.0f}, 32.0f, 100.0f);
+    CORRADE_COMPARE(actual, expected);
+
+    /* NDC is left-handed, so point on near plane should be -1, far +1 */
+    CORRADE_COMPARE(actual.transformPoint({0.0f, 0.0f, -32.0f}), Vector3(0.0f, 0.0f, -1.0f));
+    CORRADE_COMPARE(actual.transformPoint({0.0f, 0.0f, -100.0f}), Vector3(0.0f, 0.0f, +1.0f));
+}
+
+void Matrix4Test::perspectiveProjectionInfiniteFar() {
+    Matrix4 expected({4.0f,      0.0f,   0.0f,  0.0f},
+                     {0.0f, 7.111111f,   0.0f,  0.0f},
+                     {0.0f,      0.0f,  -1.0f, -1.0f},
+                     {0.0f,      0.0f, -64.0f,  0.0f});
+    Matrix4 actual = Matrix4::perspectiveProjection({16.0f, 9.0f}, 32.0f, Constants::inf());
+    CORRADE_COMPARE(actual, expected);
+
+    /* NDC is left-handed, so point on near plane should be -1 and a *vector*
+       in direction of far plane +1 */
+    CORRADE_COMPARE(actual.transformPoint({0.0f, 0.0f, -32.0f}), Vector3(0.0f, 0.0f, -1.0f));
+    CORRADE_COMPARE(actual.transformVector({0.0f, 0.0f, -1.0f}), Vector3(0.0f, 0.0f, +1.0f));
 }
 
 void Matrix4Test::perspectiveProjectionFov() {
@@ -398,7 +449,15 @@ void Matrix4Test::perspectiveProjectionFov() {
                      {      0.0f, 9.788454f,         0.0f,  0.0f},
                      {      0.0f,      0.0f,  -1.9411764f, -1.0f},
                      {      0.0f,      0.0f, -94.1176452f,  0.0f});
-    CORRADE_COMPARE(Matrix4::perspectiveProjection(Deg(27.0f), 2.35f, 32.0f, 100), expected);
+    CORRADE_COMPARE(Matrix4::perspectiveProjection(Deg(27.0f), 2.35f, 32.0f, 100.0f), expected);
+}
+
+void Matrix4Test::perspectiveProjectionFovInfiniteFar() {
+    Matrix4 expected({4.1652994f,      0.0f,   0.0f,  0.0f},
+                     {      0.0f, 9.788454f,   0.0f,  0.0f},
+                     {      0.0f,      0.0f,  -1.0f, -1.0f},
+                     {      0.0f,      0.0f, -64.0f,  0.0f});
+    CORRADE_COMPARE(Matrix4::perspectiveProjection(Deg(27.0f), 2.35f, 32.0f, Constants::inf()), expected);
 }
 
 void Matrix4Test::fromParts() {
@@ -546,42 +605,35 @@ void Matrix4Test::transform() {
     CORRADE_COMPARE(a.transformPoint(v), Vector3(3.0f, -4.0f, 9.0f));
 }
 
+void Matrix4Test::transformProjection() {
+    Matrix4 a = Matrix4::perspectiveProjection({2.0f, 2.0f}, 1.0f, 100.0f);
+    Vector3 v{0.0f, 0.0f, -100.0f};
+
+    CORRADE_COMPARE(a.transformPoint(v), Vector3(0.0f, 0.0f, 1.0f));
+}
+
 void Matrix4Test::lookAt() {
-    Matrix4 a = Matrix4::lookAt({0.0f, 0.0f, 0.0f},
-                                {0.0f, 1.0f, 0.0f},
-                                {0.0f, 0.0f, 1.0f});
+    Vector3 translation{5.3f, -8.9f, -10.0f};
+    Vector3 target{19.0f, 29.3f, 0.0f};
+    Matrix4 a = Matrix4::lookAt(translation, target, Vector3::xAxis());
+
+    /* It's just a translation and rotation */
     CORRADE_VERIFY(a.isRigidTransformation());
-    CORRADE_COMPARE(a, Matrix4({1.0f,  0.0f, 0.0f, 0.0f},
-                               {0.0f,  0.0f, 1.0f, 0.0f},
-                               {0.0f, -1.0f, 0.0f, 0.0f},
-                               {0.0f,  0.0f, 0.0f, 1.0f}));
 
-    Matrix4 b = Matrix4::lookAt({100.0f, 200.0f, 300.0f},
-                                {  0.0f,   0.0f,   0.0f},
-                                {  0.0f,   1.0f,   0.0f});
-    CORRADE_VERIFY(b.isRigidTransformation());
-    CORRADE_COMPARE(b, Matrix4({ 0.948683f,      0.0f, -0.316228f, 0.0f},
-                               {-0.169031f, 0.845154f, -0.507093f, 0.0f},
-                               { 0.267261f, 0.534522f,  0.801784f, 0.0f},
-                               {    100.0f,    200.0f,     300.0f, 1.0f}));
+    /* The matrix should translate to the position */
+    CORRADE_COMPARE(a.translation(), translation);
 
-    Matrix4 c = Matrix4::lookAt({3.0f, 0.0f, 0.0f},
-                                {0.0f, 4.0f, 5.0f},
-                                {0.0f, 0.0f, 1.0f});
-    CORRADE_VERIFY(c.isRigidTransformation());
-    CORRADE_COMPARE(c, Matrix4({     0.8f,       0.6f,       0.0f, 0.0f},
-                               {0.424264f, -0.565685f,  0.707107f, 0.0f},
-                               {0.424264f, -0.565685f, -0.707107f, 0.0f},
-                               {     3.0f,       0.0f,       0.0f, 1.0f}));
+    /* Forward vector should point in direction of the target */
+    CORRADE_COMPARE(dot(-a.backward(), (target - translation).normalized()), 1.0f);
 
-    Matrix4 d = Matrix4::lookAt({ 0.0f, 3.0f,  0.0f},
-                                {-5.0f, 0.0f, -4.0f},
-                                { 0.0f, 1.0f,  0.0f});
-    CORRADE_VERIFY(d.isRigidTransformation());
-    CORRADE_COMPARE(d, Matrix4({ 0.624695f,      0.0f, -0.780869f, 0.0f},
-                               {-0.331295f, 0.905539f, -0.265036f, 0.0f},
-                               { 0.707107f, 0.424264f,  0.565685f, 0.0f},
-                               {      0.0f,      3.0f,       0.0f, 1.0f}));
+    /* Up vector should be in the same direction as X axis */
+    CORRADE_COMPARE_AS(dot(Vector3::xAxis(), a.up()), 0.0f, Corrade::TestSuite::Compare::Greater);
+
+    /* Just to be sure */
+    CORRADE_COMPARE(a, Matrix4({     0.0f,  0.253247f,  -0.967402f, 0.0f},
+                               {0.944754f, -0.317095f, -0.0830092f, 0.0f},
+                               {-0.32778f, -0.913957f,  -0.239256f, 0.0f},
+                               {     5.3f,      -8.9f,      -10.0f, 1.0f}));
 }
 
 void Matrix4Test::debug() {

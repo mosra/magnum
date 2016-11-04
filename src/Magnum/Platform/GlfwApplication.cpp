@@ -27,6 +27,7 @@
 #include "GlfwApplication.h"
 
 #include <tuple>
+#include <Corrade/Utility/String.h>
 
 #include "Magnum/Version.h"
 #include "Magnum/Platform/Context.h"
@@ -89,7 +90,7 @@ bool GlfwApplication::tryCreateContext(const Configuration& configuration) {
         glfwWindowHint(GLFW_ICONIFIED, flags >= Configuration::WindowFlag::Minimized);
         glfwWindowHint(GLFW_FLOATING, flags >= Configuration::WindowFlag::Floating);
     }
-    glfwWindowHint(GLFW_FLOATING, configuration.windowFlags() >= Configuration::WindowFlag::Focused);
+    glfwWindowHint(GLFW_FOCUSED, configuration.windowFlags() >= Configuration::WindowFlag::Focused);
 
     /* Context window hints */
     glfwWindowHint(GLFW_SAMPLES, configuration.sampleCount());
@@ -162,13 +163,15 @@ int GlfwApplication::exec() {
 }
 
 void GlfwApplication::staticKeyEvent(GLFWwindow*, int key, int, int action, int mods) {
-    KeyEvent e(static_cast<KeyEvent::Key>(key), {static_cast<InputEvent::Modifier>(mods)});
+    KeyEvent e(static_cast<KeyEvent::Key>(key), {static_cast<InputEvent::Modifier>(mods)}, action == GLFW_REPEAT);
 
     if(action == GLFW_PRESS) {
         _instance->keyPressEvent(e);
     } else if(action == GLFW_RELEASE) {
         _instance->keyReleaseEvent(e);
-    } /* we don't handle GLFW_REPEAT */
+    } else if(action == GLFW_REPEAT) {
+        _instance->keyPressEvent(e);
+    }
 }
 
 void GlfwApplication::staticMouseMoveEvent(GLFWwindow* window, double x, double y) {
@@ -187,13 +190,22 @@ void GlfwApplication::staticMouseEvent(GLFWwindow*, int button, int action, int 
 }
 
 void GlfwApplication::staticMouseScrollEvent(GLFWwindow* window, double xoffset, double yoffset) {
-    MouseScrollEvent e(Vector2d{xoffset, yoffset}, KeyEvent::getCurrentGlfwModifiers(window));
+    MouseScrollEvent e(Vector2{Float(xoffset), Float(yoffset)}, KeyEvent::getCurrentGlfwModifiers(window));
     _instance->mouseScrollEvent(e);
 
+    #ifdef MAGNUM_BUILD_DEPRECATED
     if(yoffset != 0.0) {
+        #ifdef __GNUC__
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #endif
         MouseEvent e1((yoffset > 0.0) ? MouseEvent::Button::WheelUp : MouseEvent::Button::WheelDown, KeyEvent::getCurrentGlfwModifiers(window));
+        #ifdef __GNUC__
+        #pragma GCC diagnostic pop
+        #endif
         _instance->mousePressEvent(e1);
     }
+    #endif
 }
 
 void GlfwApplication::staticErrorCallback(int, const char* description) {
@@ -212,7 +224,7 @@ auto GlfwApplication::KeyEvent::getCurrentGlfwModifiers(GLFWwindow* window) -> M
     if(glfwGetKey(window, Int(Key::LeftCtrl)) || glfwGetKey(window, Int(Key::RightCtrl)))
         mods |= Modifier::Ctrl;
     if(glfwGetKey(window, Int(Key::RightSuper)))
-        mods |= Modifier::AltGr;
+        mods |= Modifier::Super;
 
     return mods;
 }
@@ -233,6 +245,17 @@ GlfwApplication::Configuration::Configuration():
     _cursorMode{CursorMode::Normal} {}
 
 GlfwApplication::Configuration::~Configuration() = default;
+
+#if defined(DOXYGEN_GENERATING_OUTPUT) || GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302
+std::string GlfwApplication::KeyEvent::keyName(const Key key) {
+    /* It can return null, so beware */
+    return Utility::String::fromArray(glfwGetKeyName(int(key), 0));
+}
+
+std::string GlfwApplication::KeyEvent::keyName() const {
+    return keyName(_key);
+}
+#endif
 
 template class BasicScreen<GlfwApplication>;
 template class BasicScreenedApplication<GlfwApplication>;

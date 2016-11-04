@@ -25,12 +25,14 @@
 
 #include <Corrade/Containers/Array.h>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/TestSuite/Compare/FileToString.h>
 #include <Corrade/Utility/Directory.h>
 
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Trade/AbstractImageConverter.h"
+#include "Magnum/Trade/ImageData.h"
 
 #include "configure.h"
 
@@ -41,10 +43,19 @@ class AbstractImageConverterTest: public TestSuite::Tester {
         explicit AbstractImageConverterTest();
 
         void exportToFile();
+
+        void exportToDataImageData();
+        void exportToFileImageData();
 };
 
 AbstractImageConverterTest::AbstractImageConverterTest() {
-    addTests({&AbstractImageConverterTest::exportToFile});
+    addTests({&AbstractImageConverterTest::exportToFile,
+
+              &AbstractImageConverterTest::exportToDataImageData,
+              &AbstractImageConverterTest::exportToFileImageData});
+
+    /* Create testing dir */
+    Utility::Directory::mkpath(TRADE_TEST_OUTPUT_DIR);
 }
 
 void AbstractImageConverterTest::exportToFile() {
@@ -66,6 +77,59 @@ void AbstractImageConverterTest::exportToFile() {
     CORRADE_VERIFY(exporter.exportToFile(image, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
     CORRADE_COMPARE_AS(Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"),
         "\xFE\xED", TestSuite::Compare::FileToString);
+}
+
+namespace {
+
+class ImageDataExporter: public Trade::AbstractImageConverter {
+    private:
+        Features doFeatures() const override { return Feature::ConvertData; }
+
+        Containers::Array<char> doExportToData(const ImageView2D&) override {
+            return Containers::Array<char>::from('B');
+        };
+
+        Containers::Array<char> doExportToData(const CompressedImageView2D&) override {
+            return Containers::Array<char>::from('C');
+        };
+};
+
+}
+
+void AbstractImageConverterTest::exportToDataImageData() {
+    ImageDataExporter exporter;
+
+    {
+        /* Should get "B" when converting uncompressed */
+        ImageData2D image{PixelFormat::RGBA, PixelType::UnsignedByte, {}, nullptr};
+        CORRADE_COMPARE_AS(exporter.exportToData(image),
+            Containers::Array<char>::from('B'),
+            TestSuite::Compare::Container);
+    } {
+        /* Should get "C" when converting compressed */
+        ImageData2D image{PixelFormat::RGBA, PixelType::UnsignedByte, {}, nullptr};
+        CORRADE_COMPARE_AS(exporter.exportToData(image),
+            Containers::Array<char>::from('B'),
+            TestSuite::Compare::Container);
+    }
+}
+
+void AbstractImageConverterTest::exportToFileImageData() {
+    ImageDataExporter exporter;
+
+    {
+        /* Should get "B" when converting uncompressed */
+        ImageData2D image{PixelFormat::RGBA, PixelType::UnsignedByte, {}, nullptr};
+        CORRADE_VERIFY(exporter.exportToFile(image, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+        CORRADE_COMPARE_AS(Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"),
+            "B", TestSuite::Compare::FileToString);
+    } {
+        /* Should get "B" when converting uncompressed */
+        ImageData2D image{PixelFormat::RGBA, PixelType::UnsignedByte, {}, nullptr};
+        CORRADE_VERIFY(exporter.exportToFile(image, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
+        CORRADE_COMPARE_AS(Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"),
+            "B", TestSuite::Compare::FileToString);
+    }
 }
 
 }}}

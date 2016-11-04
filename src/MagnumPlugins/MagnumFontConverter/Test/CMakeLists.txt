@@ -31,7 +31,6 @@ corrade_add_test(MagnumFontConverterGLTest MagnumFontConverterGLTest.cpp LIBRARI
     MagnumTgaImporterTestLib
     ${GL_TEST_LIBRARIES})
 target_include_directories(MagnumFontConverterGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-
 # On Win32 we need to avoid dllimporting TgaImporter symbols, because it would
 # search for the symbols in some DLL even though they were linked statically.
 # However it apparently doesn't matter that they were dllexported when building

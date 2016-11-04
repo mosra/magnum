@@ -43,8 +43,8 @@ FramebufferTest::FramebufferTest() {
 void FramebufferTest::debugStatus() {
     std::ostringstream out;
 
-    Debug(&out) << Framebuffer::Status::IncompleteMissingAttachment;
-    CORRADE_COMPARE(out.str(), "Framebuffer::Status::IncompleteMissingAttachment\n");
+    Debug(&out) << Framebuffer::Status::IncompleteMissingAttachment << Framebuffer::Status(0xdead);
+    CORRADE_COMPARE(out.str(), "Framebuffer::Status::IncompleteMissingAttachment Framebuffer::Status(0xdead)\n");
 }
 
 }}

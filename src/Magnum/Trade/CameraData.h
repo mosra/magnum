@@ -54,6 +54,18 @@ class CameraData {
          */
         explicit CameraData(Rad fov, Float near, Float far, const void* importerState = nullptr) noexcept;
 
+        /** @brief Copying is not allowed */
+        CameraData(const CameraData&) = delete;
+
+        /** @brief Move constructor */
+        CameraData(CameraData&&) noexcept = default;
+
+        /** @brief Copying is not allowed */
+        CameraData& operator=(const CameraData&) = delete;
+
+        /** @brief Move assignment */
+        CameraData& operator=(CameraData&&) noexcept = default;
+
         /** @brief Field-of-view angle */
         Rad fov() const { return _fov; }
 

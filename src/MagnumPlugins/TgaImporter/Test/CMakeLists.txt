@@ -23,10 +23,18 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
+    set(TGAIMPORTER_TEST_DIR ".")
+else()
+    set(TGAIMPORTER_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+endif()
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-corrade_add_test(TgaImporterTest TgaImporterTest.cpp LIBRARIES MagnumTgaImporterTestLib)
+corrade_add_test(TgaImporterTest TgaImporterTest.cpp
+    LIBRARIES MagnumTgaImporterTestLib
+    FILES file.tga)
 target_include_directories(TgaImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 # On Win32 we need to avoid dllimporting TgaImporter symbols, because it would
 # search for the symbols in some DLL even though they were linked statically.

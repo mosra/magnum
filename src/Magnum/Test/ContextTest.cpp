@@ -41,9 +41,13 @@ ContextTest::ContextTest() {
 }
 
 void ContextTest::debugFlag() {
+    #ifdef MAGNUM_TARGET_WEBGL
+    CORRADE_SKIP("No context flags on Emscripten yet.");
+    #else
     std::ostringstream out;
-    Debug(&out) << Context::Flag::Debug;
-    CORRADE_COMPARE(out.str(), "Context::Flag::Debug\n");
+    Debug(&out) << Context::Flag::Debug << Context::Flag(0xdead);
+    CORRADE_COMPARE(out.str(), "Context::Flag::Debug Context::Flag(0xdead)\n");
+    #endif
 }
 
 }}

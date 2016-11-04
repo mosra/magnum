@@ -35,50 +35,32 @@
 
 namespace Magnum { namespace Platform {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-int WindowlessWindowsEglApplication::create(LRESULT(CALLBACK windowProcedure)(HWND, UINT, WPARAM, LPARAM)) {
-    const WNDCLASS wc{
-        0,
-        windowProcedure,
-        0,
-        0,
-        GetModuleHandle(nullptr),
-        nullptr,
-        nullptr,
-        HBRUSH(COLOR_BACKGROUND),
-        nullptr,
-        L"Magnum Windowless Application"
-    };
-    if(!RegisterClass(&wc)) return 1;
+WindowlessWindowsEglContext::WindowlessWindowsEglContext(const Configuration& configuration, Context*) {
+    /* Register the window class (if not yet done) */
+    WNDCLASSW wc;
+    if(!GetClassInfoW(GetModuleHandleW(nullptr), L"Magnum Windowless Application", &wc)) {
+        wc = WNDCLASSW{
+            0,
+            DefWindowProcW,
+            0,
+            0,
+            GetModuleHandleW(nullptr),
+            nullptr,
+            nullptr,
+            HBRUSH(COLOR_BACKGROUND),
+            nullptr,
+            L"Magnum Windowless Application"
+        };
 
-    CreateWindowW(wc.lpszClassName, L"Magnum Windowless Application",
+        if(!RegisterClassW(&wc)) {
+            Error() << "Platform::WindowlessWglContext: cannot create window class:" << GetLastError();
+            return;
+        }
+    }
+
+    /* Create the window */
+    _window = CreateWindowW(wc.lpszClassName, L"Magnum Windowless Application",
         WS_OVERLAPPEDWINDOW, 0, 0, 32, 32, 0, 0, wc.hInstance, 0);
-
-    /* Hammer the return code out of the messaging thingy */
-    MSG msg;
-    do {} while(GetMessageW(&msg, nullptr, 0, 0) != 0);
-    return msg.wParam;
-}
-#endif
-
-#ifndef DOXYGEN_GENERATING_OUTPUT
-WindowlessWindowsEglApplication::WindowlessWindowsEglApplication(const Arguments& arguments): WindowlessWindowsEglApplication{arguments, Configuration{}} {}
-#endif
-
-WindowlessWindowsEglApplication::WindowlessWindowsEglApplication(const Arguments& arguments, const Configuration& configuration): WindowlessWindowsEglApplication{arguments, nullptr} {
-    createContext(configuration);
-}
-
-WindowlessWindowsEglApplication::WindowlessWindowsEglApplication(const Arguments& arguments, std::nullptr_t): _window(arguments.window), _context{new Context{NoCreate, arguments.argc, arguments.argv}} {}
-
-void WindowlessWindowsEglApplication::createContext() { createContext({}); }
-
-void WindowlessWindowsEglApplication::createContext(const Configuration& configuration) {
-    if(!tryCreateContext(configuration)) std::exit(1);
-}
-
-bool WindowlessWindowsEglApplication::tryCreateContext(const Configuration& configuration) {
-    CORRADE_ASSERT(_context->version() == Version::None, "Platform::WindowlessWindowsEglApplication::tryCreateContext(): context already created", false);
 
     /* Initialize */
     _display = eglGetDisplay(GetDC(_window));
@@ -117,7 +99,8 @@ bool WindowlessWindowsEglApplication::tryCreateContext(const Configuration& conf
         EGL_NONE
     };
     EGLint configCount;
-    if(!eglChooseConfig(_display, attribs, &_config, 1, &configCount)) {
+    EGLConfig config;
+    if(!eglChooseConfig(_display, attribs, &config, 1, &configCount)) {
         Error() << "Platform::WindowlessWindowsEglApplication::tryCreateContext(): cannot get EGL visual config:" << Implementation::eglErrorString(eglGetError());
         return false;
     }
@@ -142,30 +125,73 @@ bool WindowlessWindowsEglApplication::tryCreateContext(const Configuration& conf
         EGL_NONE
     };
 
-    if(!(_glContext = eglCreateContext(_display, _config, EGL_NO_CONTEXT, attributes))) {
-        Error() << "Platform::WindowlessWindowsEglApplication::tryCreateContext(): cannot create EGL context:" << Implementation::eglErrorString(eglGetError());
-        return false;
-    }
-    if(!(_surface = eglCreateWindowSurface(_display, _config, _window, nullptr))) {
-        Error() << "Platform::WindowlessWindowsEglApplication::tryCreateContext(): cannot create window surface:" << Implementation::eglErrorString(eglGetError());
-        return false;
+    if(!(_context = eglCreateContext(_display, config, EGL_NO_CONTEXT, attributes))) {
+        Error() << "Platform::WindowlessWindowsEglContext: cannot create EGL context:" << Implementation::eglErrorString(eglGetError());
+        return;
     }
 
-    if(!eglMakeCurrent(_display, _surface, _surface, _glContext)) {
-        Error() << "Platform::WindowlessWindowsEglApplication::tryCreateContext(): cannot make context current:" << Implementation::eglErrorString(eglGetError());
-        return false;
-    }
-
-    /* Return true if the initialization succeeds */
-    return _context->tryCreate();
+    if(!(_surface = eglCreateWindowSurface(_display, config, _window, nullptr)))
+        Error() << "Platform::WindowlessWindowsEglContext: cannot create window surface:" << Implementation::eglErrorString(eglGetError());
 }
 
-WindowlessWindowsEglApplication::~WindowlessWindowsEglApplication() {
-    _context.reset();
-
-    eglDestroyContext(_display, _glContext);
-    eglDestroySurface(_display, _surface);
-    eglTerminate(_display);
+WindowlessWindowsEglContext::WindowlessWindowsEglContext(WindowlessWindowsEglContext&& other): _window{other._window}, _display{other._display}, _surface{other._surface}, _context{other._context} {
+    other._window = {};
+    other._display = {};
+    other._surface = {};
+    other._context = {};
 }
+
+WindowlessWindowsEglContext::~WindowlessWindowsEglContext() {
+    if(_context) eglDestroyContext(_display, _context);
+    if(_surface) eglDestroySurface(_display, _surface);
+    if(_display) eglTerminate(_display);
+    if(_window) DestroyWindow(_window);
+}
+
+WindowlessWindowsEglContext& WindowlessWindowsEglContext::operator=(WindowlessWindowsEglContext&& other) {
+    using std::swap;
+    swap(other._window, _window);
+    swap(other._display, _display);
+    swap(other._surface, _surface);
+    swap(other._context, _context);
+    return *this;
+}
+
+bool WindowlessWindowsEglContext::makeCurrent() {
+    if(eglMakeCurrent(_display, _surface, _surface, _context))
+        return true;
+
+    Error() << "Platform::WindowlessWindowsEglContext::makeCurrent(): cannot make context current:" << GetLastError();
+    return false;
+}
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+WindowlessWindowsEglApplication::WindowlessWindowsEglApplication(const Arguments& arguments): WindowlessWindowsEglApplication{arguments, Configuration{}} {}
+#endif
+
+WindowlessWindowsEglApplication::WindowlessWindowsEglApplication(const Arguments& arguments, const Configuration& configuration): WindowlessWindowsEglApplication{arguments, NoCreate} {
+    createContext(configuration);
+}
+
+WindowlessWindowsEglApplication::WindowlessWindowsEglApplication(const Arguments& arguments, std::nullptr_t): _glContext{NoCreate}, _context{new Context{NoCreate, arguments.argc, arguments.argv}} {}
+
+void WindowlessWindowsEglApplication::createContext() { createContext({}); }
+
+void WindowlessWindowsEglApplication::createContext(const Configuration& configuration) {
+    if(!tryCreateContext(configuration)) std::exit(1);
+}
+
+bool WindowlessWindowsEglApplication::tryCreateContext(const Configuration& configuration) {
+    CORRADE_ASSERT(_context->version() == Version::None, "Platform::WindowlessWindowsEglApplication::tryCreateContext(): context already created", false);
+
+    WindowlessWindowsEglContext glContext{configuration, _context.get()};
+    if(!glContext.isCreated() || !glContext.makeCurrent() || !_context->tryCreate())
+        return false;
+
+    _glContext = std::move(glContext);
+    return true;
+}
+
+WindowlessWindowsEglApplication::~WindowlessWindowsEglApplication() = default;
 
 }}

@@ -23,7 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Magnum/configure.h"
+#include <Corrade/TestSuite/Compare/Container.h>
+
 #include "Magnum/Context.h"
 #include "Magnum/CubeMapTexture.h"
 #include "Magnum/Extensions.h"
@@ -110,6 +111,35 @@ struct FramebufferGLTest: AbstractOpenGLTester {
     #ifndef MAGNUM_TARGET_GLES2
     void readBuffer();
     #endif
+    #ifndef MAGNUM_TARGET_GLES
+    void copyImageTexture1D();
+    #endif
+    void copyImageTexture2D();
+    #ifndef MAGNUM_TARGET_GLES
+    void copyImageTexture1DArray();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES
+    void copyImageRectangleTexture();
+    #endif
+    void copyImageCubeMapTexture();
+    #ifndef MAGNUM_TARGET_GLES
+    void copySubImageTexture1D();
+    #endif
+    void copySubImageTexture2D();
+    void copySubImageTexture3D();
+    #ifndef MAGNUM_TARGET_GLES
+    void copySubImageTexture1DArray();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    void copySubImageTexture2DArray();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES
+    void copySubImageRectangleTexture();
+    #endif
+    void copySubImageCubeMapTexture();
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    void copySubImageCubeMapTextureArray();
+    #endif
     void blit();
 
     #ifdef MAGNUM_TARGET_GLES2
@@ -174,6 +204,35 @@ FramebufferGLTest::FramebufferGLTest() {
               &FramebufferGLTest::read,
               #ifndef MAGNUM_TARGET_GLES2
               &FramebufferGLTest::readBuffer,
+              #endif
+              #ifndef MAGNUM_TARGET_GLES
+              &FramebufferGLTest::copyImageTexture1D,
+              #endif
+              &FramebufferGLTest::copyImageTexture2D,
+              #ifndef MAGNUM_TARGET_GLES
+              &FramebufferGLTest::copyImageTexture1DArray,
+              #endif
+              #ifndef MAGNUM_TARGET_GLES
+              &FramebufferGLTest::copyImageRectangleTexture,
+              #endif
+              &FramebufferGLTest::copyImageCubeMapTexture,
+              #ifndef MAGNUM_TARGET_GLES
+              &FramebufferGLTest::copySubImageTexture1D,
+              #endif
+              &FramebufferGLTest::copySubImageTexture2D,
+              &FramebufferGLTest::copySubImageTexture3D,
+              #ifndef MAGNUM_TARGET_GLES
+              &FramebufferGLTest::copySubImageTexture1DArray,
+              #endif
+              #ifndef MAGNUM_TARGET_GLES2
+              &FramebufferGLTest::copySubImageTexture2DArray,
+              #endif
+              #ifndef MAGNUM_TARGET_GLES
+              &FramebufferGLTest::copySubImageRectangleTexture,
+              #endif
+              &FramebufferGLTest::copySubImageCubeMapTexture,
+              #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+              &FramebufferGLTest::copySubImageCubeMapTextureArray,
               #endif
               &FramebufferGLTest::blit});
 
@@ -484,6 +543,8 @@ void FramebufferGLTest::attachTexture3D() {
 void FramebufferGLTest::attachTexture1DArray() {
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
         CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not available."));
 
     Texture1DArray color;
     color.setStorage(1, TextureFormat::RGBA8, {128, 8});
@@ -888,7 +949,8 @@ void FramebufferGLTest::multipleColorOutputs() {
                .attachTexture(Framebuffer::ColorAttachment(1), color2, 0)
                .attachRenderbuffer(Framebuffer::BufferAttachment::Depth, depth)
                .mapForDraw({{0, Framebuffer::ColorAttachment(1)},
-                            {1, Framebuffer::ColorAttachment(0)}});
+                            {1, Framebuffer::ColorAttachment(0)},
+                            {2, Framebuffer::DrawAttachment::None}});
 
     #ifdef MAGNUM_TARGET_GLES2
     if(Context::current().isExtensionSupported<Extensions::GL::NV::read_buffer>())
@@ -1151,6 +1213,501 @@ void FramebufferGLTest::readBuffer() {
     const auto colorData = colorImage.buffer().data<Color4ub>();
     CORRADE_COMPARE(colorData.size(), DataOffset + 8*16);
     CORRADE_COMPARE(colorData[DataOffset], Color4ub(128, 64, 32, 17));
+    #endif
+}
+#endif
+
+namespace {
+    constexpr char StorageData[]{
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
+        0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f,
+        0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f,
+        0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f
+    };
+
+    constexpr char ZeroStorage[4*4*4*6]{};
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void FramebufferGLTest::copyImageTexture1D() {
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+
+    Texture2D storage;
+    storage.setStorage(1, TextureFormat::RGBA8, Vector2i{4})
+        .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{4}, StorageData});
+
+    Framebuffer fb{{{}, Vector2i{4}}};
+    fb.attachTexture(Framebuffer::ColorAttachment{0}, storage, 0);
+
+    Texture1D texture;
+    fb.copyImage(Range2Di::fromSize(Vector2i{1}, {2, 1}), texture, 0, TextureFormat::RGBA8);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(texture.imageSize(0)[0], 2);
+    CORRADE_COMPARE_AS(texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}).release(),
+        Containers::Array<char>::from(0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b),
+        TestSuite::Compare::Container);
+}
+#endif
+
+void FramebufferGLTest::copyImageTexture2D() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    #endif
+
+    Texture2D storage;
+    storage.setStorage(1,
+        #ifndef MAGNUM_TARGET_GLES2
+        TextureFormat::RGBA8,
+        #else
+        rgbaFormatES2,
+        #endif
+        Vector2i{4})
+        .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{4}, StorageData});
+
+    Framebuffer fb{{{}, Vector2i{4}}};
+    fb.attachTexture(Framebuffer::ColorAttachment{0}, storage, 0);
+
+    Texture2D texture;
+    fb.copyImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}), texture, 0,
+        #ifndef MAGNUM_TARGET_GLES2
+        TextureFormat::RGBA8
+        #else
+        rgbaFormatES2
+        #endif
+        );
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE(texture.imageSize(0), Vector2i{2});
+    CORRADE_COMPARE_AS(texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}).release(),
+        Containers::Array<char>::from(0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b,
+                                      0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b),
+        TestSuite::Compare::Container);
+    #endif
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void FramebufferGLTest::copyImageTexture1DArray() {
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not available."));
+
+    Texture2D storage;
+    storage.setStorage(1, TextureFormat::RGBA8, Vector2i{4})
+        .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{4}, StorageData});
+
+    Framebuffer fb{{{}, Vector2i{4}}};
+    fb.attachTexture(Framebuffer::ColorAttachment{0}, storage, 0);
+
+    Texture1DArray texture;
+    fb.copyImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}), texture, 0, TextureFormat::RGBA8);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(texture.imageSize(0), Vector2i{2});
+    CORRADE_COMPARE_AS(texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}).release(),
+        Containers::Array<char>::from(0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b,
+                                      0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b),
+        TestSuite::Compare::Container);
+}
+
+void FramebufferGLTest::copyImageRectangleTexture() {
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not available."));
+
+    Texture2D storage;
+    storage.setStorage(1, TextureFormat::RGBA8, Vector2i{4})
+        .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{4}, StorageData});
+
+    Framebuffer fb{{{}, Vector2i{4}}};
+    fb.attachTexture(Framebuffer::ColorAttachment{0}, storage, 0);
+
+    RectangleTexture texture;
+    fb.copyImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}), texture, TextureFormat::RGBA8);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(texture.imageSize(), Vector2i{2});
+    CORRADE_COMPARE_AS(texture.image({PixelFormat::RGBA, PixelType::UnsignedByte}).release(),
+        Containers::Array<char>::from(0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b,
+                                      0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b),
+        TestSuite::Compare::Container);
+}
+#endif
+
+void FramebufferGLTest::copyImageCubeMapTexture() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    #endif
+
+    Texture2D storage;
+    storage.setStorage(1,
+        #ifndef MAGNUM_TARGET_GLES2
+        TextureFormat::RGBA8,
+        #else
+        rgbaFormatES2,
+        #endif
+        Vector2i{4})
+        .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{4}, StorageData});
+
+    Framebuffer fb{{{}, Vector2i{4}}};
+    fb.attachTexture(Framebuffer::ColorAttachment{0}, storage, 0);
+
+    CubeMapTexture texture;
+    fb.copyImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}), texture, CubeMapCoordinate::PositiveX, 0,
+        #ifndef MAGNUM_TARGET_GLES2
+        TextureFormat::RGBA8
+        #else
+        rgbaFormatES2
+        #endif
+        );
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE(texture.imageSize(0), Vector2i{2});
+    CORRADE_COMPARE_AS(texture.image(CubeMapCoordinate::PositiveX, 0, {PixelFormat::RGBA, PixelType::UnsignedByte}).release(),
+        Containers::Array<char>::from(0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b,
+                                      0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b),
+        TestSuite::Compare::Container);
+    #endif
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void FramebufferGLTest::copySubImageTexture1D() {
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+
+    Texture2D storage;
+    storage.setStorage(1, TextureFormat::RGBA8, Vector2i{4})
+        .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{4}, StorageData});
+
+    Framebuffer fb{{{}, Vector2i{4}}};
+    fb.attachTexture(Framebuffer::ColorAttachment{0}, storage, 0);
+
+    Texture1D texture;
+    texture.setStorage(1, TextureFormat::RGBA8, 4)
+        .setSubImage(0, {}, ImageView1D{PixelFormat::RGBA, PixelType::UnsignedByte, 4, ZeroStorage});
+    fb.copySubImage(Range2Di::fromSize(Vector2i{1}, {2, 1}), texture, 0, 1);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE_AS(texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}).release(),
+        Containers::Array<char>::from(
+            0x00, 0x00, 0x00, 0x00, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x00, 0x00, 0x00, 0x00),
+        TestSuite::Compare::Container);
+}
+#endif
+
+void FramebufferGLTest::copySubImageTexture2D() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    #endif
+
+    Texture2D storage;
+    storage.setStorage(1,
+        #ifndef MAGNUM_TARGET_GLES2
+        TextureFormat::RGBA8,
+        #else
+        rgbaFormatES2,
+        #endif
+        Vector2i{4})
+        .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{4}, StorageData});
+
+    Framebuffer fb{{{}, Vector2i{4}}};
+    fb.attachTexture(Framebuffer::ColorAttachment{0}, storage, 0);
+
+    Texture2D texture;
+    texture.setStorage(1,
+        #ifndef MAGNUM_TARGET_GLES2
+        TextureFormat::RGBA8,
+        #else
+        rgbaFormatES2,
+        #endif
+        Vector2i{4})
+        .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{4}, ZeroStorage});
+    fb.copySubImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}), texture, 0, Vector2i{1});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE_AS(texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}).release(),
+        Containers::Array<char>::from(
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
+        TestSuite::Compare::Container);
+    #endif
+}
+
+#if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+void FramebufferGLTest::copySubImageTexture3D() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    #elif defined(MAGNUM_TARGET_GLES2)
+    if(!Context::current().isExtensionSupported<Extensions::GL::OES::texture_3D>())
+        CORRADE_SKIP(Extensions::GL::OES::texture_3D::string() + std::string(" is not available."));
+    #endif
+
+    Texture2D storage;
+    storage.setStorage(1,
+        #ifndef MAGNUM_TARGET_GLES2
+        TextureFormat::RGBA8,
+        #else
+        rgbaFormatES2,
+        #endif
+        Vector2i{4})
+        .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{4}, StorageData});
+
+    Framebuffer fb{{{}, Vector2i{4}}};
+    fb.attachTexture(Framebuffer::ColorAttachment{0}, storage, 0);
+
+    Texture3D texture;
+    texture.setStorage(1,
+        #ifndef MAGNUM_TARGET_GLES2
+        TextureFormat::RGBA8,
+        #else
+        rgbaFormatES2,
+        #endif
+        {4, 4, 2})
+        .setSubImage(0, {}, ImageView3D{PixelFormat::RGBA, PixelType::UnsignedByte, {4, 4, 2}, ZeroStorage});
+    fb.copySubImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}), texture, 0, Vector3i{1});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE_AS(texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}).release(),
+        Containers::Array<char>::from(
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
+        TestSuite::Compare::Container);
+    #endif
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+void FramebufferGLTest::copySubImageTexture1DArray() {
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not available."));
+
+    Texture2D storage;
+    storage.setStorage(1, TextureFormat::RGBA8, Vector2i{4})
+        .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{4}, StorageData});
+
+    Framebuffer fb{{{}, Vector2i{4}}};
+    fb.attachTexture(Framebuffer::ColorAttachment{0}, storage, 0);
+
+    Texture1DArray texture;
+    texture.setStorage(1, TextureFormat::RGBA8, Vector2i{4})
+        .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{4}, ZeroStorage});
+    fb.copySubImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}), texture, 0, Vector2i{1});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE_AS(texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}).release(),
+        Containers::Array<char>::from(
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
+        TestSuite::Compare::Container);
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+void FramebufferGLTest::copySubImageTexture2DArray() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not available."));
+    #endif
+
+    Texture2D storage;
+    storage.setStorage(1, TextureFormat::RGBA8, Vector2i{4})
+        .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{4}, StorageData});
+
+    Framebuffer fb{{{}, Vector2i{4}}};
+    fb.attachTexture(Framebuffer::ColorAttachment{0}, storage, 0);
+
+    Texture2DArray texture;
+    texture.setStorage(1, TextureFormat::RGBA8, {4, 4, 2})
+        .setSubImage(0, {}, ImageView3D{PixelFormat::RGBA, PixelType::UnsignedByte, {4, 4, 2}, ZeroStorage});
+    fb.copySubImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}), texture, 0, Vector3i{1});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE_AS(texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}).release(),
+        Containers::Array<char>::from(
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
+        TestSuite::Compare::Container);
+    #endif
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+void FramebufferGLTest::copySubImageRectangleTexture() {
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not available."));
+
+    Texture2D storage;
+    storage.setStorage(1, TextureFormat::RGBA8, Vector2i{4})
+        .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{4}, StorageData});
+
+    Framebuffer fb{{{}, Vector2i{4}}};
+    fb.attachTexture(Framebuffer::ColorAttachment{0}, storage, 0);
+
+    RectangleTexture texture;
+    texture.setStorage(TextureFormat::RGBA8, Vector2i{4})
+        .setSubImage({}, ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{4}, ZeroStorage});
+    fb.copySubImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}), texture, Vector2i{1});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE_AS(texture.image({PixelFormat::RGBA, PixelType::UnsignedByte}).release(),
+        Containers::Array<char>::from(
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
+        TestSuite::Compare::Container);
+}
+#endif
+
+void FramebufferGLTest::copySubImageCubeMapTexture() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    #endif
+
+    Texture2D storage;
+    storage.setStorage(1,
+        #ifndef MAGNUM_TARGET_GLES2
+        TextureFormat::RGBA8,
+        #else
+        rgbaFormatES2,
+        #endif
+        Vector2i{4})
+        .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{4}, StorageData});
+
+    Framebuffer fb{{{}, Vector2i{4}}};
+    fb.attachTexture(Framebuffer::ColorAttachment{0}, storage, 0);
+
+    CubeMapTexture texture;
+    texture.setStorage(1,
+        #ifndef MAGNUM_TARGET_GLES2
+        TextureFormat::RGBA8,
+        #else
+        rgbaFormatES2,
+        #endif
+        Vector2i{4})
+        .setSubImage(CubeMapCoordinate::NegativeY, 0, {}, ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{4}, ZeroStorage});
+    fb.copySubImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}), texture, 0, {1, 1, 3});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE_AS(texture.image(CubeMapCoordinate::NegativeY, 0, {PixelFormat::RGBA, PixelType::UnsignedByte}).release(),
+        Containers::Array<char>::from(
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
+        TestSuite::Compare::Container);
+    #endif
+}
+
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+void FramebufferGLTest::copySubImageCubeMapTextureArray() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>())
+        CORRADE_SKIP(Extensions::GL::ARB::texture_cube_map_array::string() + std::string(" is not available."));
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_cube_map_array>())
+        CORRADE_SKIP(Extensions::GL::EXT::texture_cube_map_array::string() + std::string(" is not available."));
+    #endif
+
+    Texture2D storage;
+    storage.setStorage(1, TextureFormat::RGBA8, Vector2i{4})
+        .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{4}, StorageData});
+
+    Framebuffer fb{{{}, Vector2i{4}}};
+    fb.attachTexture(Framebuffer::ColorAttachment{0}, storage, 0);
+
+    CubeMapTextureArray texture;
+    texture.setStorage(1, TextureFormat::RGBA8, {4, 4, 6})
+        .setSubImage(0, {}, ImageView3D{PixelFormat::RGBA, PixelType::UnsignedByte, {4, 4, 6}, ZeroStorage});
+    fb.copySubImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}), texture, 0, {1, 1, 3});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE_AS(texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}).release(),
+        Containers::Array<char>::from(
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1a, 0x1b, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+            0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00),
+        TestSuite::Compare::Container);
     #endif
 }
 #endif

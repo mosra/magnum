@@ -34,7 +34,8 @@ build() {
         -DWITH_TGAIMAGECONVERTER=ON \
         -DWITH_TGAIMPORTER=ON \
         -DWITH_ANDROIDAPPLICATION=ON \
-        -DWITH_EGLCONTEXT=ON
+        -DWITH_EGLCONTEXT=ON \
+        -DBUILD_TESTS=ON
     ninja
 }
 

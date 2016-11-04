@@ -25,6 +25,7 @@
 
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/Configuration.h>
 
 #include "Magnum/Math/Angle.h"
 
@@ -34,81 +35,69 @@ struct AngleTest: Corrade::TestSuite::Tester {
     explicit AngleTest();
 
     void construct();
+    void constructDefault();
     void constructNoInit();
+    void constructConversion();
+    void constructCopy();
+
     void literals();
     void conversion();
 
     void debugDeg();
     void debugRad();
+    void configurationDeg();
+    void configurationRad();
 };
 
 typedef Math::Deg<Float> Deg;
 typedef Math::Rad<Float> Rad;
-#ifndef MAGNUM_TARGET_GLES
 typedef Math::Deg<Double> Degd;
 typedef Math::Rad<Double> Radd;
-#endif
 
 AngleTest::AngleTest() {
     addTests({&AngleTest::construct,
+              &AngleTest::constructDefault,
               &AngleTest::constructNoInit,
+              &AngleTest::constructConversion,
+              &AngleTest::constructCopy,
+
               &AngleTest::literals,
               &AngleTest::conversion,
 
               &AngleTest::debugDeg,
-              &AngleTest::debugRad});
+              &AngleTest::debugRad,
+              &AngleTest::configurationDeg,
+              &AngleTest::configurationRad});
 }
 
 void AngleTest::construct() {
-    /* Default constructor */
+    constexpr Deg b(25.0);
+    CORRADE_COMPARE(Float(b), 25.0f);
+    constexpr Radd n(3.14);
+    CORRADE_COMPARE(Double(n), 3.14);
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Float, Rad>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Double, Degd>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Deg, Float>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<Rad, Float>::value));
+}
+
+void AngleTest::constructDefault() {
     constexpr Deg m1;
     constexpr Deg m2{ZeroInit};
     CORRADE_COMPARE(Float(m1), 0.0f);
     CORRADE_COMPARE(Float(m2), 0.0f);
-    #ifndef MAGNUM_TARGET_GLES
     constexpr Radd a1;
     constexpr Radd a2{ZeroInit};
     CORRADE_COMPARE(Double(a1), 0.0);
     CORRADE_COMPARE(Double(a2), 0.0);
-    #else
-    constexpr Rad a1;
-    constexpr Rad a2{ZeroInit};
-    CORRADE_COMPARE(Float(a1), 0.0f);
-    CORRADE_COMPARE(Float(a2), 0.0f);
-    #endif
 
-    /* Value constructor */
-    constexpr Deg b(25.0);
-    CORRADE_COMPARE(Float(b), 25.0f);
-    #ifndef MAGNUM_TARGET_GLES
-    constexpr Radd n(3.14);
-    CORRADE_COMPARE(Double(n), 3.14);
-    #else
-    constexpr Rad n(3.14);
-    CORRADE_COMPARE(Float(n), 3.14f);
-    #endif
-
-    /* Copy constructor */
-    constexpr Deg c(b);
-    CORRADE_COMPARE(c, b);
-    #ifndef MAGNUM_TARGET_GLES
-    constexpr Radd o(n);
-    CORRADE_COMPARE(o, n);
-    #else
-    constexpr Rad o(n);
-    CORRADE_COMPARE(o, n);
-    #endif
-
-    /* Conversion operator */
-    constexpr Rad p(n);
-    CORRADE_COMPARE(Float(p), 3.14f);
-    #ifndef MAGNUM_TARGET_GLES
-    constexpr Degd d(b);
-    CORRADE_COMPARE(Double(d), 25.0);
-    #else
-    constexpr Deg d(b);
-    CORRADE_COMPARE(Float(d), 25.0f);
-    #endif
+    CORRADE_VERIFY(std::is_nothrow_default_constructible<Deg>::value);
+    CORRADE_VERIFY(std::is_nothrow_default_constructible<Rad>::value);
+    CORRADE_VERIFY((std::is_nothrow_constructible<Deg, ZeroInitT>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<Rad, ZeroInitT>::value));
 }
 
 void AngleTest::constructNoInit() {
@@ -116,27 +105,71 @@ void AngleTest::constructNoInit() {
     Rad b{3.14f};
     new(&a) Deg{NoInit};
     new(&b) Rad{NoInit};
-    CORRADE_COMPARE(Float(a), 25.0f);
-    CORRADE_COMPARE(Float(b), 3.14f);
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601
+        /* The warning is reported for both debug and release build */
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+        #ifdef __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        #endif
+        CORRADE_COMPARE(Float(a), 25.0f);
+        CORRADE_COMPARE(Float(b), 3.14f);
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601
+        #pragma GCC diagnostic pop
+        #endif
+    }
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Deg, NoInitT>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<Rad, NoInitT>::value));
+}
+
+void AngleTest::constructConversion() {
+    constexpr Deg a(25.0);
+    constexpr Radd b(3.14);
+
+    constexpr Rad c(b);
+    CORRADE_COMPARE(Float(c), 3.14f);
+    constexpr Degd d(a);
+    CORRADE_COMPARE(Double(d), 25.0);
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Degd, Deg>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Rad, Radd>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Deg, Degd>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<Radd, Rad>::value));
+}
+
+void AngleTest::constructCopy() {
+    constexpr Deg a(25.0);
+    constexpr Radd b(3.14);
+
+    constexpr Deg c(a);
+    CORRADE_COMPARE(c, a);
+    constexpr Radd d(b);
+    CORRADE_COMPARE(d, b);
+
+    CORRADE_VERIFY(std::is_nothrow_copy_constructible<Deg>::value);
+    CORRADE_VERIFY(std::is_nothrow_copy_constructible<Rad>::value);
+    CORRADE_VERIFY(std::is_nothrow_copy_assignable<Deg>::value);
+    CORRADE_VERIFY(std::is_nothrow_copy_assignable<Rad>::value);
 }
 
 void AngleTest::literals() {
     using namespace Literals;
 
-    #ifndef MAGNUM_TARGET_GLES
     constexpr auto a = 25.0_deg;
     CORRADE_VERIFY((std::is_same<decltype(a), const Degd>::value));
     CORRADE_COMPARE(Double(a), 25.0);
-    #endif
     constexpr auto b = 25.0_degf;
     CORRADE_VERIFY((std::is_same<decltype(b), const Deg>::value));
     CORRADE_COMPARE(Float(b), 25.0f);
 
-    #ifndef MAGNUM_TARGET_GLES
     constexpr auto m = 3.14_rad;
     CORRADE_VERIFY((std::is_same<decltype(m), const Radd>::value));
     CORRADE_COMPARE(Double(m), 3.14);
-    #endif
     constexpr auto n = 3.14_radf;
     CORRADE_VERIFY((std::is_same<decltype(n), const Rad>::value));
     CORRADE_COMPARE(Float(n), 3.14f);
@@ -173,6 +206,28 @@ void AngleTest::debugRad() {
     o.str({});
     Debug(&o) << Rad(1.5708f) - Rad(3.1416f);
     CORRADE_COMPARE(o.str(), "Rad(-1.5708)\n");
+}
+
+void AngleTest::configurationDeg() {
+    Corrade::Utility::Configuration c;
+
+    Deg angle{25.3f};
+    std::string value("25.3");
+
+    c.setValue("angle", angle);
+    CORRADE_COMPARE(c.value("angle"), value);
+    CORRADE_COMPARE(c.value<Deg>("angle"), angle);
+}
+
+void AngleTest::configurationRad() {
+    Corrade::Utility::Configuration c;
+
+    Rad angle{3.14159f};
+    std::string value("3.14159");
+
+    c.setValue("angle", angle);
+    CORRADE_COMPARE(c.value("angle"), value);
+    CORRADE_COMPARE(c.value<Rad>("angle"), angle);
 }
 
 }}}

@@ -42,12 +42,12 @@ ShapeImplementationTest::ShapeImplementationTest() {
 
 void ShapeImplementationTest::debug() {
     std::ostringstream o;
-    Debug(&o) << Implementation::ShapeDimensionTraits<2>::Type::Composition;
-    CORRADE_COMPARE(o.str(), "Shapes::Shape2D::Type::Composition\n");
+    Debug(&o) << Implementation::ShapeDimensionTraits<2>::Type::Composition << Implementation::ShapeDimensionTraits<2>::Type(0xbe);
+    CORRADE_COMPARE(o.str(), "Shapes::Shape2D::Type::Composition Shapes::Shape2D::Type(0xbe)\n");
 
     o.str({});
-    Debug(&o) << Implementation::ShapeDimensionTraits<3>::Type::Plane;
-    CORRADE_COMPARE(o.str(), "Shapes::Shape3D::Type::Plane\n");
+    Debug(&o) << Implementation::ShapeDimensionTraits<3>::Type::Plane << Implementation::ShapeDimensionTraits<3>::Type(0xbe);
+    CORRADE_COMPARE(o.str(), "Shapes::Shape3D::Type::Plane Shapes::Shape3D::Type(0xbe)\n");
 }
 
 }}}

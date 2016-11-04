@@ -34,18 +34,89 @@ class TextureDataTest: public TestSuite::Tester {
     public:
         explicit TextureDataTest();
 
-        void debug();
+        void construct();
+        void constructCopy();
+        void constructMove();
+
+        void debugType();
 };
 
 TextureDataTest::TextureDataTest() {
-    addTests({&TextureDataTest::debug});
+    addTests({&TextureDataTest::construct,
+              &TextureDataTest::constructCopy,
+              &TextureDataTest::constructMove,
+
+              &TextureDataTest::debugType});
 }
 
-void TextureDataTest::debug() {
+void TextureDataTest::construct() {
+    const int a{};
+    const TextureData data{TextureData::Type::Cube,
+        Sampler::Filter::Linear,
+        Sampler::Filter::Nearest,
+        Sampler::Mipmap::Nearest,
+        {Sampler::Wrapping::Repeat, Sampler::Wrapping::ClampToEdge, Sampler::Wrapping::MirroredRepeat},
+        42,
+        &a};
+
+    CORRADE_COMPARE(data.type(), TextureData::Type::Cube);
+    CORRADE_COMPARE(data.minificationFilter(), Sampler::Filter::Linear);
+    CORRADE_COMPARE(data.magnificationFilter(), Sampler::Filter::Nearest);
+    CORRADE_COMPARE(data.mipmapFilter(), Sampler::Mipmap::Nearest);
+    CORRADE_COMPARE(data.wrapping(), (Array3D<Sampler::Wrapping>{Sampler::Wrapping::Repeat, Sampler::Wrapping::ClampToEdge, Sampler::Wrapping::MirroredRepeat}));
+    CORRADE_COMPARE(data.image(), 42);
+    CORRADE_COMPARE(data.importerState(), &a);
+}
+
+void TextureDataTest::constructCopy() {
+    CORRADE_VERIFY(!(std::is_constructible<TextureData, const TextureData&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<TextureData, const TextureData&>{}));
+}
+
+void TextureDataTest::constructMove() {
+    const int a{};
+    TextureData data{TextureData::Type::Cube,
+        Sampler::Filter::Linear,
+        Sampler::Filter::Nearest,
+        Sampler::Mipmap::Nearest,
+        {Sampler::Wrapping::Repeat, Sampler::Wrapping::ClampToEdge, Sampler::Wrapping::MirroredRepeat},
+        42,
+        &a};
+
+    TextureData b{std::move(data)};
+
+    CORRADE_COMPARE(b.type(), TextureData::Type::Cube);
+    CORRADE_COMPARE(b.minificationFilter(), Sampler::Filter::Linear);
+    CORRADE_COMPARE(b.magnificationFilter(), Sampler::Filter::Nearest);
+    CORRADE_COMPARE(b.mipmapFilter(), Sampler::Mipmap::Nearest);
+    CORRADE_COMPARE(b.wrapping(), (Array3D<Sampler::Wrapping>{Sampler::Wrapping::Repeat, Sampler::Wrapping::ClampToEdge, Sampler::Wrapping::MirroredRepeat}));
+    CORRADE_COMPARE(b.image(), 42);
+    CORRADE_COMPARE(b.importerState(), &a);
+
+    const int c{};
+    TextureData d{TextureData::Type::Texture2D,
+        Sampler::Filter::Nearest,
+        Sampler::Filter::Linear,
+        Sampler::Mipmap::Base,
+        Sampler::Wrapping::ClampToEdge,
+        13,
+        &c};
+    d = std::move(b);
+
+    CORRADE_COMPARE(d.type(), TextureData::Type::Cube);
+    CORRADE_COMPARE(d.minificationFilter(), Sampler::Filter::Linear);
+    CORRADE_COMPARE(d.magnificationFilter(), Sampler::Filter::Nearest);
+    CORRADE_COMPARE(d.mipmapFilter(), Sampler::Mipmap::Nearest);
+    CORRADE_COMPARE(d.wrapping(), (Array3D<Sampler::Wrapping>{Sampler::Wrapping::Repeat, Sampler::Wrapping::ClampToEdge, Sampler::Wrapping::MirroredRepeat}));
+    CORRADE_COMPARE(d.image(), 42);
+    CORRADE_COMPARE(d.importerState(), &a);
+}
+
+void TextureDataTest::debugType() {
     std::ostringstream out;
 
-    Debug(&out) << TextureData::Type::Texture3D;
-    CORRADE_COMPARE(out.str(), "Trade::TextureData::Type::Texture3D\n");
+    Debug(&out) << TextureData::Type::Texture3D << TextureData::Type(0xbe);
+    CORRADE_COMPARE(out.str(), "Trade::TextureData::Type::Texture3D Trade::TextureData::Type(0xbe)\n");
 }
 
 }}}

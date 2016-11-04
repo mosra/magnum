@@ -27,7 +27,6 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/Audio/Extensions.h"
 #include "Magnum/Audio/Context.h"
 
 namespace Magnum { namespace Audio { namespace Test {
@@ -35,34 +34,17 @@ namespace Magnum { namespace Audio { namespace Test {
 struct ContextTest: TestSuite::Tester {
     explicit ContextTest();
 
-    void extensionsString();
-    void isExtensionEnabled();
-    void hrtfStatus();
-    void hrtfs();
-
-    Context _context;
+    void debugHrtfStatus();
 };
 
 ContextTest::ContextTest() {
-    addTests({&ContextTest::extensionsString,
-              &ContextTest::isExtensionEnabled,
-              &ContextTest::hrtfStatus});
+    addTests({&ContextTest::debugHrtfStatus});
 }
 
-void ContextTest::extensionsString() {
-    std::vector<std::string> extensions = _context.extensionStrings();
-
-    CORRADE_VERIFY(extensions.size() > 0);
-}
-
-void ContextTest::isExtensionEnabled() {
-    CORRADE_VERIFY(Context::current().isExtensionSupported<Extensions::ALC::EXT::ENUMERATION>());
-}
-
-void ContextTest::hrtfStatus() {
+void ContextTest::debugHrtfStatus() {
     std::ostringstream out;
-    Debug(&out) << Context::HrtfStatus::Denied;
-    CORRADE_COMPARE(out.str(), "Audio::Context::HrtfStatus::Denied\n");
+    Debug(&out) << Context::HrtfStatus::Denied << Context::HrtfStatus(0xdead);
+    CORRADE_COMPARE(out.str(), "Audio::Context::HrtfStatus::Denied Audio::Context::HrtfStatus(0xdead)\n");
 }
 
 }}}

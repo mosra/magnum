@@ -26,7 +26,11 @@
 #include "Magnum/AbstractShaderProgram.h"
 #include "Magnum/Buffer.h"
 #include "Magnum/Framebuffer.h"
+#include "Magnum/Image.h"
 #include "Magnum/Mesh.h"
+#include "Magnum/PixelFormat.h"
+#include "Magnum/PrimitiveQuery.h"
+#include "Magnum/SampleQuery.h"
 #include "Magnum/Renderbuffer.h"
 #include "Magnum/RenderbufferFormat.h"
 #include "Magnum/Shader.h"
@@ -54,8 +58,30 @@ struct TransformFeedbackGLTest: AbstractOpenGLTester {
 
     #ifndef MAGNUM_TARGET_GLES
     void interleaved();
+
+    void draw();
     #endif
 };
+
+namespace {
+
+enum: std::size_t { DrawDataCount = 4 };
+
+const struct {
+    const char* name;
+    UnsignedInt stream;
+    Int instances;
+    UnsignedInt countStream0;
+    UnsignedInt countStreamN;
+    UnsignedInt countDraw;
+} DrawData[DrawDataCount] = {
+    {"basic", 0, 1, 6, 6, 6},
+    {"instanced", 0, 5, 6, 6, 30},
+    {"stream", 1, 1, 0, 6, 6},
+    {"streamInstanced", 1, 5, 0, 6, 30}
+};
+
+}
 
 TransformFeedbackGLTest::TransformFeedbackGLTest() {
     addTests({&TransformFeedbackGLTest::construct,
@@ -72,9 +98,13 @@ TransformFeedbackGLTest::TransformFeedbackGLTest() {
               &TransformFeedbackGLTest::attachRanges,
 
               #ifndef MAGNUM_TARGET_GLES
-              &TransformFeedbackGLTest::interleaved
+              &TransformFeedbackGLTest::interleaved,
               #endif
               });
+
+    #ifndef MAGNUM_TARGET_GLES
+    addInstancedTests({&TransformFeedbackGLTest::draw}, DrawDataCount);
+    #endif
 }
 
 void TransformFeedbackGLTest::construct() {
@@ -529,6 +559,140 @@ void TransformFeedbackGLTest::interleaved() {
     CORRADE_COMPARE(data[2], Vector2(0.0f, 0.0f));
     CORRADE_COMPARE(data[3].y(), 3.0f);
     output.unmap();
+}
+
+void TransformFeedbackGLTest::draw() {
+    /* ARB_transform_feedback2 needed as base, other optional */
+    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
+        CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not supported."));
+    if(DrawData[testCaseInstanceId()].stream && !Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback3>())
+        CORRADE_SKIP(Extensions::GL::ARB::transform_feedback3::string() + std::string(" is not supported."));
+    if(DrawData[testCaseInstanceId()].instances && !Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback_instanced>())
+        CORRADE_SKIP(Extensions::GL::ARB::transform_feedback_instanced::string() + std::string(" is not supported."));
+
+    setTestCaseDescription(DrawData[testCaseInstanceId()].name);
+
+    /* Bind some FB to avoid errors on contexts w/o default FB */
+    Renderbuffer color;
+    color.setStorage(RenderbufferFormat::RGBA8, Vector2i{1});
+    Framebuffer fb{{{}, Vector2i{1}}};
+    fb.attachRenderbuffer(Framebuffer::ColorAttachment{0}, color)
+      .bind();
+
+    struct XfbShader: AbstractShaderProgram {
+        explicit XfbShader(UnsignedInt stream) {
+            Shader vert{stream ? Version::GL400 : Version::GL320, Shader::Type::Vertex},
+                geom{stream ? Version::GL400 : Version::GL320, Shader::Type::Geometry};
+            vert.addSource(
+                "out mediump vec2 vertexOutput;\n"
+                "void main() {\n"
+                "    vertexOutput = vec2(0.3);\n"
+                "    gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n"
+                "}\n");
+            if(stream) geom.addSource(
+                "#define STREAM " + std::to_string(stream) + "\n" +
+                "layout(stream = 0) out mediump float otherOutput;\n" +
+                "layout(stream = STREAM) out mediump vec2 geomOutput;\n");
+            else geom.addSource(
+                "out mediump vec2 geomOutput;\n");
+            geom.addSource(
+                "layout(points) in;\n"
+                "layout(points, max_vertices = 1) out;\n"
+                "in mediump vec2 vertexOutput[];\n"
+                "void main() {\n"
+                "    geomOutput = vertexOutput[0] - vec2(0.1);\n");
+            if(stream) geom.addSource(
+                "    EmitStreamVertex(STREAM);\n");
+            else geom.addSource(
+                "    EmitVertex();\n");
+            geom.addSource("}\n");
+            CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, geom}));
+            attachShaders({vert, geom});
+            setTransformFeedbackOutputs({"geomOutput"}, TransformFeedbackBufferMode::SeparateAttributes);
+            CORRADE_INTERNAL_ASSERT_OUTPUT(link());
+        }
+    } xfbShader{DrawData[testCaseInstanceId()].stream};
+
+    Buffer outputBuffer;
+    outputBuffer.setData({nullptr, 32*sizeof(Vector2)}, BufferUsage::StaticDraw);
+
+    Mesh inputMesh;
+    inputMesh.setPrimitive(MeshPrimitive::Points)
+        .setCount(6);
+
+    TransformFeedback feedback;
+    feedback.attachBuffer(0, outputBuffer);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    PrimitiveQuery queryStream0{PrimitiveQuery::Target::TransformFeedbackPrimitivesWritten},
+        queryStreamN{PrimitiveQuery::Target::TransformFeedbackPrimitivesWritten};
+
+    queryStream0.begin();
+    if(DrawData[testCaseInstanceId()].stream)
+        queryStreamN.begin(DrawData[testCaseInstanceId()].stream);
+
+    Renderer::enable(Renderer::Feature::RasterizerDiscard);
+    feedback.begin(xfbShader, TransformFeedback::PrimitiveMode::Points);
+    inputMesh.draw(xfbShader);
+    feedback.end();
+    Renderer::disable(Renderer::Feature::RasterizerDiscard);
+
+    if(DrawData[testCaseInstanceId()].stream)
+        queryStreamN.end();
+    queryStream0.end();
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(queryStream0.result<UnsignedInt>(), DrawData[testCaseInstanceId()].countStream0);
+    if(DrawData[testCaseInstanceId()].stream)
+        CORRADE_COMPARE(queryStreamN.result<UnsignedInt>(), DrawData[testCaseInstanceId()].countStreamN);
+
+    struct DrawShader: AbstractShaderProgram {
+        typedef Attribute<0, Vector2> Input;
+
+        explicit DrawShader() {
+            Shader vert{Version::GL320, Shader::Type::Vertex},
+                frag{Version::GL320, Shader::Type::Fragment};
+            vert.addSource(
+                "in mediump vec2 inputData;\n"
+                "out mediump vec2 interleaved;\n"
+                "void main() {\n"
+                "    interleaved = inputData;\n"
+                "    gl_Position = vec4(1.0);\n"
+                "}\n");
+            frag.addSource(
+                "in mediump vec2 interleaved;\n"
+                "out mediump float outputData;\n"
+                "void main() {\n"
+                "    outputData = interleaved.x + 2*interleaved.y;\n"
+                "}\n");
+
+            CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+            attachShaders({vert, frag});
+            bindAttributeLocation(Input::Location, "inputData");
+            CORRADE_INTERNAL_ASSERT_OUTPUT(link());
+        }
+    } drawShader;
+
+    Renderer::setPointSize(2.0f);
+
+    Mesh outputMesh;
+    outputMesh.setPrimitive(MeshPrimitive::Points)
+        .setInstanceCount(DrawData[testCaseInstanceId()].instances)
+        .addVertexBuffer(outputBuffer, 0, DrawShader::Input{});
+
+    PrimitiveQuery q{PrimitiveQuery::Target::PrimitivesGenerated};
+    q.begin();
+    outputMesh.draw(drawShader, feedback, DrawData[testCaseInstanceId()].stream);
+    q.end();
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_COMPARE(q.result<UnsignedInt>(), DrawData[testCaseInstanceId()].countDraw);
+    CORRADE_COMPARE(fb.read({{}, Vector2i{1}}, {PixelFormat::RGBA, PixelType::UnsignedByte}).data<UnsignedByte>()[0], 153);
+
+    MAGNUM_VERIFY_NO_ERROR();
 }
 #endif
 

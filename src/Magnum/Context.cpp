@@ -25,6 +25,7 @@
 
 #include "Context.h"
 
+#include <iostream> /* for initialization log redirection */
 #include <string>
 #include <unordered_map>
 #include <Corrade/Utility/Arguments.h>
@@ -64,6 +65,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
     static const std::vector<Extension> empty;
     #ifndef MAGNUM_TARGET_GLES
     static const std::vector<Extension> extensions{
+        _extension(GL,AMD,transform_feedback3_lines_triangles),
         _extension(GL,AMD,vertex_shader_layer),
         _extension(GL,AMD,shader_trinary_minmax),
         _extension(GL,ARB,robustness),
@@ -241,6 +243,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,OES,element_index_uint),
         _extension(GL,OES,texture_float_linear),
         _extension(GL,OES,texture_half_float_linear),
+        _extension(GL,OES,fbo_render_mipmap),
         _extension(GL,WEBGL,compressed_texture_s3tc),
         _extension(GL,WEBGL,depth_texture),
         _extension(GL,WEBGL,draw_buffers)};
@@ -355,6 +358,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,NV,shadow_samplers_cube),
         _extension(GL,OES,depth24),
         _extension(GL,OES,element_index_uint),
+        _extension(GL,OES,fbo_render_mipmap),
         _extension(GL,OES,rgb8_rgba8),
         _extension(GL,OES,texture_3D),
         _extension(GL,OES,texture_half_float_linear),
@@ -404,27 +408,41 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         #endif
     }
 
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
-Context* Context::_current = nullptr;
+namespace {
+    #ifdef MAGNUM_BUILD_MULTITHREADED
+    #if !defined(CORRADE_GCC47_COMPATIBILITY) && !defined(CORRADE_TARGET_APPLE)
+    thread_local
+    #else
+    __thread
+    #endif
+    #endif
+    Context* currentContext = nullptr;
+}
 
-bool Context::hasCurrent() { return _current; }
+bool Context::hasCurrent() { return currentContext; }
 
 Context& Context::current() {
-    CORRADE_ASSERT(_current, "Context::current(): no current context", *_current);
-    return *_current;
+    CORRADE_ASSERT(currentContext, "Context::current(): no current context", *currentContext);
+    return *currentContext;
 }
 
-Context::Context(NoCreateT, Int argc, char** argv, void functionLoader()): _functionLoader{functionLoader}, _version{Version::None} {
+Context::Context(NoCreateT, Int argc, const char** argv, void functionLoader()): _functionLoader{functionLoader}, _version{Version::None} {
     /* Parse arguments */
     Utility::Arguments args{"magnum"};
     args.addOption("disable-workarounds")
         .setHelp("disable-workarounds", "driver workarounds to disable\n      (see src/Magnum/Implementation/driverSpecific.cpp for detailed info)", "LIST")
         .addOption("disable-extensions").setHelp("disable-extensions", "OpenGL extensions to disable", "LIST")
+        .addOption("log", "default").setHelp("log", "Console logging", "default|quiet")
         .setFromEnvironment("disable-workarounds")
         .setFromEnvironment("disable-extensions")
+        .setFromEnvironment("log")
         .parse(argc, argv);
+
+    /* Decide whether to display initialization log */
+    _displayInitializationLog = !(args.value("log") == "quiet" || args.value("log") == "QUIET");
 
     /* Disable driver workarounds */
     for(auto&& workaround: Utility::String::splitWithoutEmptyParts(args.value("disable-workarounds")))
@@ -446,13 +464,13 @@ Context::Context(Context&& other): _version{std::move(other._version)},
     _detectedDrivers{std::move(other._detectedDrivers)}
 {
     other._state = nullptr;
-    if(_current == &other) _current = this;
+    if(currentContext == &other) currentContext = this;
 }
 
 Context::~Context() {
     delete _state;
 
-    if(_current == this) _current = nullptr;
+    if(currentContext == this) currentContext = nullptr;
 }
 
 void Context::create() {
@@ -638,17 +656,20 @@ bool Context::tryCreate() {
     setupDriverWorkarounds();
 
     /* Set this context as current */
-    CORRADE_ASSERT(!_current, "Context: Another context currently active", false);
-    _current = this;
+    CORRADE_ASSERT(!currentContext, "Context: Another context currently active", false);
+    currentContext = this;
+
+    /* Decide whether to print the initialization output or not */
+    std::ostream* output = _displayInitializationLog ? &std::cout : nullptr;
 
     /* Print some info and initialize state tracker (which also prints some
        more info) */
-    Debug() << "Renderer:" << rendererString() << "by" << vendorString();
-    Debug() << "OpenGL version:" << versionString();
+    Debug{output} << "Renderer:" << rendererString() << "by" << vendorString();
+    Debug{output} << "OpenGL version:" << versionString();
 
     /* Disable extensions as requested by the user */
     if(!_disabledExtensions.empty()) {
-        Debug() << "Disabling extensions:";
+        Debug{output} << "Disabling extensions:";
 
         /* Put remaining extensions into the hashmap for faster lookup */
         std::unordered_map<std::string, Extension> allExtensions{std::move(futureExtensions)};
@@ -664,17 +685,17 @@ bool Context::tryCreate() {
             if(found == allExtensions.end()) continue;
 
             _extensionRequiredVersion[found->second._index] = Version::None;
-            Debug() << "   " << extension;
+            Debug{output} << "   " << extension;
         }
     }
 
-    _state = new Implementation::State(*this);
+    _state = new Implementation::State{*this, output};
 
     /* Print a list of used workarounds */
     if(!_driverWorkarounds.empty()) {
-        Debug() << "Using driver workarounds:";
+        Debug{output} << "Using driver workarounds:";
         for(const auto& workaround: _driverWorkarounds)
-            if(!workaround.second) Debug() << "   " << workaround.first;
+            if(!workaround.second) Debug(output) << "   " << workaround.first;
     }
 
     /* Initialize functionality based on current OpenGL version and extensions */
@@ -810,6 +831,7 @@ void Context::resetState(const States states) {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const Context::Flag value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case Context::Flag::value: return debug << "Context::Flag::" #value;
         _c(Debug)
         _c(NoError)
@@ -817,9 +839,10 @@ Debug& operator<<(Debug& debug, const Context::Flag value) {
         _c(RobustAccess)
         #endif
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Context::Flag::(invalid)";
+    return debug << "Context::Flag(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 #endif
 #endif

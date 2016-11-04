@@ -389,7 +389,7 @@ void Framebuffer::textureLayerImplementationDefault(BufferAttachment attachment,
     static_cast<void>(textureId);
     static_cast<void>(mipLevel);
     static_cast<void>(layer);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 #endif
@@ -408,6 +408,7 @@ void Framebuffer::textureLayerImplementationDSAEXT(BufferAttachment attachment, 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const Framebuffer::Status value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(value) case Framebuffer::Status::value: return debug << "Framebuffer::Status::" #value;
         _c(Complete)
         _c(IncompleteAttachment)
@@ -424,9 +425,10 @@ Debug& operator<<(Debug& debug, const Framebuffer::Status value) {
         _c(IncompleteLayerTargets)
         #endif
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Framebuffer::Status::(invalid)";
+    return debug << "Framebuffer::Status(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 

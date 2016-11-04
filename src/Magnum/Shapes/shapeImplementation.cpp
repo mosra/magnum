@@ -31,6 +31,7 @@ namespace Magnum { namespace Shapes { namespace Implementation {
 
 Debug& operator<<(Debug& debug, ShapeDimensionTraits<2>::Type value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _val(value) case ShapeDimensionTraits<2>::Type::value: return debug << "Shapes::Shape2D::Type::" #value;
         _val(Point)
         _val(Line)
@@ -43,13 +44,15 @@ Debug& operator<<(Debug& debug, ShapeDimensionTraits<2>::Type value) {
         _val(Box)
         _val(Composition)
         #undef _val
+        /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Shapes::Shape2D::Type::(unknown)";
+    return debug << "Shapes::Shape2D::Type(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, ShapeDimensionTraits<3>::Type value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _val(value) case ShapeDimensionTraits<3>::Type::value: return debug << "Shapes::Shape3D::Type::" #value;
         _val(Point)
         _val(Line)
@@ -63,9 +66,10 @@ Debug& operator<<(Debug& debug, ShapeDimensionTraits<3>::Type value) {
         _val(Plane)
         _val(Composition)
         #undef _val
+        /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Shapes::Shape3D::Type::(unknown)";
+    return debug << "Shapes::Shape3D::Type(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
 template<UnsignedInt dimensions> AbstractShape<dimensions>::~AbstractShape() = default;

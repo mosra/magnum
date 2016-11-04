@@ -808,7 +808,7 @@ PixelFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
             return PixelFormat::DepthStencil;
     }
 
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
 PixelType AbstractTexture::imageTypeForInternalFormat(const TextureFormat internalFormat) {
@@ -1053,7 +1053,7 @@ PixelType AbstractTexture::imageTypeForInternalFormat(const TextureFormat intern
         #endif
     }
 
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 #endif
 
@@ -1254,7 +1254,7 @@ void AbstractTexture::storageImplementationFallback(const GLsizei levels, const 
     #endif
 
     /* No other targets are available */
-    } else CORRADE_ASSERT_UNREACHABLE();
+    } else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 #endif
 
@@ -1269,7 +1269,7 @@ void AbstractTexture::storageImplementationDefault(GLsizei levels, TextureFormat
     static_cast<void>(levels);
     static_cast<void>(internalFormat);
     static_cast<void>(size);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 #endif
@@ -1313,7 +1313,7 @@ void AbstractTexture::storageImplementationFallback(GLsizei levels, TextureForma
     #endif
 
     /* No other targets are available */
-    else CORRADE_ASSERT_UNREACHABLE();
+    else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 #endif
 
@@ -1328,7 +1328,7 @@ void AbstractTexture::storageImplementationDefault(GLsizei levels, TextureFormat
     static_cast<void>(levels);
     static_cast<void>(internalFormat);
     static_cast<void>(size);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 #endif
@@ -1511,7 +1511,7 @@ void AbstractTexture::subImageImplementationDefault(GLint level, const Vector3i&
     static_cast<void>(format);
     static_cast<void>(type);
     static_cast<void>(data);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
@@ -1527,7 +1527,7 @@ void AbstractTexture::compressedSubImageImplementationDefault(const GLint level,
     static_cast<void>(size);
     static_cast<void>(format);
     static_cast<void>(data);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 #endif
@@ -1995,7 +1995,7 @@ void AbstractTexture::DataHelper<3>::setImage(AbstractTexture& texture, const GL
     static_cast<void>(level);
     static_cast<void>(internalFormat);
     static_cast<void>(image);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 
@@ -2016,7 +2016,7 @@ void AbstractTexture::DataHelper<3>::setCompressedImage(AbstractTexture& texture
     #else
     static_cast<void>(level);
     static_cast<void>(image);
-    CORRADE_ASSERT_UNREACHABLE();
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     #endif
 }
 #endif

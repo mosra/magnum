@@ -83,7 +83,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          * Creates identity matrix. @p value allows you to specify value on
          * diagonal.
          */
-        constexpr /*implicit*/ Matrix(IdentityInitT = IdentityInit, T value = T(1))
+        constexpr /*implicit*/ Matrix(IdentityInitT = IdentityInit, T value = T(1)) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             /* MSVC 2015 can't handle {} here */
@@ -92,7 +92,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
             {}
 
         /** @copydoc RectangularMatrix::RectangularMatrix(ZeroInitT) */
-        constexpr explicit Matrix(ZeroInitT)
+        constexpr explicit Matrix(ZeroInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             /* MSVC 2015 can't handle {} here */
@@ -101,7 +101,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
             {}
 
         /** @copydoc RectangularMatrix::RectangularMatrix(NoInitT) */
-        constexpr explicit Matrix(NoInitT)
+        constexpr explicit Matrix(NoInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             /* MSVC 2015 can't handle {} here */
@@ -114,7 +114,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          * @param first First column vector
          * @param next  Next column vectors
          */
-        template<class ...U> constexpr /*implicit*/ Matrix(const Vector<size, T>& first, const U&... next): RectangularMatrix<size, size, T>(first, next...) {}
+        template<class ...U> constexpr /*implicit*/ Matrix(const Vector<size, T>& first, const U&... next) noexcept: RectangularMatrix<size, size, T>(first, next...) {}
 
         /**
          * @brief Construct matrix from another of different type
@@ -128,13 +128,13 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          * // integral == {{1, 2}, {-15, 7}}
          * @endcode
          */
-        template<class U> constexpr explicit Matrix(const RectangularMatrix<size, size, U>& other): RectangularMatrix<size, size, T>(other) {}
+        template<class U> constexpr explicit Matrix(const RectangularMatrix<size, size, U>& other) noexcept: RectangularMatrix<size, size, T>(other) {}
 
         /** @brief Construct matrix from external representation */
         template<class U, class V = decltype(Implementation::RectangularMatrixConverter<size, size, T, U>::from(std::declval<U>()))> constexpr explicit Matrix(const U& other): RectangularMatrix<size, size, T>(Implementation::RectangularMatrixConverter<size, size, T, U>::from(other)) {}
 
         /** @brief Copy constructor */
-        constexpr Matrix(const RectangularMatrix<size, size, T>& other): RectangularMatrix<size, size, T>(other) {}
+        constexpr /*implicit*/ Matrix(const RectangularMatrix<size, size, T>& other) noexcept: RectangularMatrix<size, size, T>(other) {}
 
         /**
          * @brief Whether the matrix is orthogonal
@@ -163,7 +163,8 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
         /**
          * @brief Determinant
          *
-         * Computed recursively using Laplace's formula: @f[
+         * Returns `0` if the matrix is noninvertible and `1` if the matrix is
+         * orthogonal. Computed recursively using Laplace's formula: @f[
          *      \det(A) = \sum_{j=1}^n (-1)^{i+j} a_{i,j} \det(A^{i,j})
          * @f] @f$ A^{i, j} @f$ is matrix without i-th row and j-th column, see
          * @ref ij(). The formula is expanded down to 2x2 matrix, where the
@@ -182,6 +183,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          * See @ref invertedOrthogonal(), @ref Matrix3::invertedRigid() and
          * @ref Matrix4::invertedRigid() which are faster alternatives for
          * particular matrix types.
+         * @see @ref Algorithms::gaussJordanInverted()
          */
         Matrix<size, T> inverted() const;
 
@@ -333,7 +335,7 @@ template<std::size_t size, class T> bool Matrix<size, T>::isOrthogonal() const {
 }
 
 template<std::size_t size, class T> Matrix<size-1, T> Matrix<size, T>::ij(const std::size_t skipCol, const std::size_t skipRow) const {
-    Matrix<size-1, T> out{ZeroInit};
+    Matrix<size-1, T> out{NoInit};
 
     for(std::size_t col = 0; col != size-1; ++col)
         for(std::size_t row = 0; row != size-1; ++row)
@@ -344,7 +346,7 @@ template<std::size_t size, class T> Matrix<size-1, T> Matrix<size, T>::ij(const 
 }
 
 template<std::size_t size, class T> Matrix<size, T> Matrix<size, T>::inverted() const {
-    Matrix<size, T> out{ZeroInit};
+    Matrix<size, T> out{NoInit};
 
     const T _determinant = determinant();
 

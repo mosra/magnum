@@ -171,7 +171,11 @@ template<UnsignedInt location, class T> class Attribute {
              * @requires_webgl20 Half float vertex attributes are not available
              *      in WebGL 1.0.
              */
+            #ifndef MAGNUM_TARGET_GLES2
             HalfFloat = GL_HALF_FLOAT,
+            #else
+            HalfFloat = GL_HALF_FLOAT_OES,
+            #endif
             #endif
 
             /** Float. Only for float attribute types. */

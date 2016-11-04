@@ -43,14 +43,19 @@
 if(CORRADE_TARGET_EMSCRIPTEN)
     set(_SDL2_PATH_SUFFIXES SDL)
 else()
+    # Precompiled libraries for Windows are in x86/x64 subdirectories
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+        set(_SDL_LIBRARY_PATH_SUFFIX lib/x64)
+    elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
+        set(_SDL_LIBRARY_PATH_SUFFIX lib/x86)
+    endif()
+
     find_library(SDL2_LIBRARY
         # Compiling SDL2 from scratch on OSX creates dead libSDL2.so symlink
         # which CMake somehow prefers before the SDL2-2.0.dylib file. Making
         # the dylib first so it is preferred.
         NAMES SDL2-2.0 SDL2
-
-        # Precompiled libraries for Windows are in x86/x64 subdirectories
-        PATH_SUFFIXES lib/x86 lib/x64)
+        PATH_SUFFIXES ${_SDL_LIBRARY_PATH_SUFFIX})
     set(SDL2_LIBRARY_NEEDED SDL2_LIBRARY)
     set(_SDL2_PATH_SUFFIXES SDL2)
 endif()
@@ -80,6 +85,7 @@ if(CORRADE_TARGET_IOS)
     set(_SDL2_FRAMEWORK_LIBRARIES )
     foreach(framework ${_SDL2_FRAMEWORKS})
         find_library(_SDL2_${framework}_LIBRARY ${framework})
+        mark_as_advanced(_SDL2_${framework}_LIBRARY)
         list(APPEND _SDL2_FRAMEWORK_LIBRARIES ${_SDL2_${framework}_LIBRARY})
         list(APPEND _SDL2_FRAMEWORK_LIBRARY_NAMES _SDL2_${framework}_LIBRARY)
     endforeach()
