@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Math/Constants.h"
@@ -37,17 +38,24 @@ struct DistanceTest: Corrade::TestSuite::Tester {
     void linePoint3D();
     void lineSegmentPoint2D();
     void lineSegmentPoint3D();
+    void pointPlane();
+    void pointPlaneScaled();
+    void pointPlaneNormalized();
 };
 
 typedef Math::Vector2<Float> Vector2;
 typedef Math::Vector3<Float> Vector3;
+typedef Math::Vector4<Float> Vector4;
 typedef Math::Constants<Float> Constants;
 
 DistanceTest::DistanceTest() {
     addTests({&DistanceTest::linePoint2D,
               &DistanceTest::linePoint3D,
               &DistanceTest::lineSegmentPoint2D,
-              &DistanceTest::lineSegmentPoint3D});
+              &DistanceTest::lineSegmentPoint3D,
+              &DistanceTest::pointPlane,
+              &DistanceTest::pointPlaneScaled,
+              &DistanceTest::pointPlaneNormalized});
 }
 
 void DistanceTest::linePoint2D() {
@@ -154,6 +162,33 @@ void DistanceTest::lineSegmentPoint3D() {
     /* Point outside the line segment, closer to B */
     CORRADE_COMPARE(Distance::lineSegmentPoint(a, b, Vector3(1.0f, 0.0f, 1.0f) + Vector3(1.0f)),
                     Constants::sqrt2());
+}
+
+void DistanceTest::pointPlane() {
+    Vector3 point{0.0f, 0.0f, 0.0f};
+    Vector4 plane{3.0f, 0.0f, 4.0f, 5.0f};
+
+    CORRADE_COMPARE(Distance::pointPlane(point, plane), 1.0f);
+}
+
+void DistanceTest::pointPlaneScaled() {
+    Vector3 point{1.0f, 1.0f, 1.0f};
+    Vector4 plane{2.0f, 2.0f, 2.0f, 0.0f};
+
+    CORRADE_COMPARE(Distance::pointPlaneScaled(point, plane), 6.0f);
+}
+
+void DistanceTest::pointPlaneNormalized() {
+    Vector3 point{1.0f, 2.0f, 3.0f};
+    Vector4 invalidPlane{2.0f, 2.0f, 2.0f, 0.0f};
+
+    const Vector4 plane{0.0f, 1.0f, 0.0f, 1.0f};
+    CORRADE_COMPARE(Distance::pointPlaneNormalized(point, plane), 3.0f);
+
+    std::ostringstream o;
+    Error redirectError{&o};
+    Distance::pointPlaneNormalized(point, invalidPlane);
+    CORRADE_COMPARE(o.str(), "Math::Geometry::Distance::pointPlaneNormalized(): the planes normal is not a unit vector\n");
 }
 
 }}}}

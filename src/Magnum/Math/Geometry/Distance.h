@@ -31,6 +31,7 @@
 
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Math/Vector3.h"
+#include "Magnum/Math/Vector4.h"
 
 namespace Magnum { namespace Math { namespace Geometry {
 
@@ -162,6 +163,61 @@ class Distance {
          * the square root.
          */
         template<class T> static T lineSegmentPointSquared(const Vector3<T>& a, const Vector3<T>& b, const Vector3<T>& point);
+
+        /**
+         * @brief Distance of point from plane
+         *
+         * The distance **d** is computed from point **p** and plane with normal
+         * **n** and **w** using: @f[
+         *      d = \frac{\sum_i^3 (p \cdot n) + w}{\left| n \right|}
+         * @f]
+         * The distance is negative if the point lies behind the plane.
+         *
+         * In cases where the planes normal is a unit vector, @ref pointPlaneUnnormalized()
+         * is more efficient.
+         *
+         * If merely the sign of the distance is of interest, @ref pointPlaneScaled()
+         * is more efficient.
+         */
+        template<class T> static T pointPlane(const Vector3<T>& point, const Vector4<T>& plane) {
+            return pointPlaneScaled<T>(point, plane)/plane.xyz().length();
+        }
+
+        /**
+         * @brief Distance of point from plane, scaled by the length of the planes normal
+         *
+         * The distance **d** is computed from point **p** and plane with normal
+         * **n** and **w** using: @f[
+         *      d = \sum_i^3 (p \cdot n) + w
+         * @f]
+         * The distance is negative if the point lies behind the plane.
+         *
+         * More efficient than @ref pointPlane() when merely the sign of the distance is
+         * of interest, for example when testing on which half space of the plane the
+         * point lies.
+         */
+        template<class T> static T pointPlaneScaled(const Vector3<T>& point, const Vector4<T>& plane) {
+            return (plane.xyz()*point).sum() + plane.w();
+        }
+
+        /**
+         * @brief Distance of point from plane with normalized normal
+         *
+         * The distance **d** is computed from point **p** and plane with normal
+         * **n** and **w** using: @f[
+         *      d = \sum_i^3 (p \cdot n) + w
+         * @f]
+         * The distance is negative if the point lies behind the plane.
+         *
+         * More efficient than @ref pointPlane() in cases where the planes normal is
+         * normalized.
+         */
+        template<class T> static T pointPlaneNormalized(const Vector3<T>& point, const Vector4<T>& plane) {
+            CORRADE_ASSERT(plane.xyz().isNormalized(),
+                    "Math::Geometry::Distance::pointPlaneNormalized(): the planes normal is not a unit vector", {});
+            return pointPlaneScaled<T>(point, plane);
+        }
+
 };
 
 template<class T> T Distance::lineSegmentPoint(const Vector2<T>& a, const Vector2<T>& b, const Vector2<T>& point) {
