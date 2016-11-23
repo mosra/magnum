@@ -60,9 +60,9 @@ void AnyImageImporter::doOpenFile(const std::string& filename) {
         plugin = "GifImporter";
     else if(Utility::String::endsWith(filename, ".hdr"))
         plugin = "HdrImporter";
-    else if(Utility::String::endsWith(filename, ".jpg")
-         || Utility::String::endsWith(filename, ".jpeg")
-         || Utility::String::endsWith(filename, ".jpe") )
+    else if(Utility::String::endsWith(filename, ".jpg") ||
+            Utility::String::endsWith(filename, ".jpeg") ||
+            Utility::String::endsWith(filename, ".jpe") )
         plugin = "JpegImporter";
     else if(Utility::String::endsWith(filename, ".jp2"))
         plugin = "Jp2Importer";
@@ -72,14 +72,14 @@ void AnyImageImporter::doOpenFile(const std::string& filename) {
         plugin = "PalImporter";
     else if(Utility::String::endsWith(filename, ".pbm"))
         plugin = "PbmImporter";
-    else if(Utility::String::endsWith(filename, ".pgm"))
-        plugin = "PgmImporter";
-    else if(Utility::String::endsWith(filename, ".pnm"))
-        plugin = "PnmImporter";
     else if(Utility::String::endsWith(filename, ".pcx"))
         plugin = "PcxImporter";
+    else if(Utility::String::endsWith(filename, ".pgm"))
+        plugin = "PgmImporter";
     else if(Utility::String::endsWith(filename, ".pic"))
         plugin = "PicImporter";
+    else if(Utility::String::endsWith(filename, ".pnm"))
+        plugin = "PnmImporter";
     else if(Utility::String::endsWith(filename, ".png"))
         plugin = "PngImporter";
     else if(Utility::String::endsWith(filename, ".ppm"))
@@ -88,18 +88,18 @@ void AnyImageImporter::doOpenFile(const std::string& filename) {
         plugin = "PsdImporter";
     else if(Utility::String::endsWith(filename, ".raw"))
         plugin = "RawImporter";
-    else if(Utility::String::endsWith(filename, ".sgi")
-         || Utility::String::endsWith(filename, ".bw")
-         || Utility::String::endsWith(filename, ".rgb")
-         || Utility::String::endsWith(filename, ".rgba"))
+    else if(Utility::String::endsWith(filename, ".sgi") ||
+            Utility::String::endsWith(filename, ".bw") ||
+            Utility::String::endsWith(filename, ".rgb") ||
+            Utility::String::endsWith(filename, ".rgba"))
         plugin = "SgiImporter";
-    else if(Utility::String::endsWith(filename, ".tif")
-         || Utility::String::endsWith(filename, ".tiff"))
+    else if(Utility::String::endsWith(filename, ".tif") ||
+            Utility::String::endsWith(filename, ".tiff"))
         plugin = "TiffImporter";
-    else if(Utility::String::endsWith(filename, ".tga")
-         || Utility::String::endsWith(filename, ".vda")
-         || Utility::String::endsWith(filename, ".icb")
-         || Utility::String::endsWith(filename, ".vst"))
+    else if(Utility::String::endsWith(filename, ".tga") ||
+            Utility::String::endsWith(filename, ".vda") ||
+            Utility::String::endsWith(filename, ".icb") ||
+            Utility::String::endsWith(filename, ".vst"))
         plugin = "TgaImporter";
     else {
         Error() << "Trade::AnyImageImporter::openFile(): cannot determine type of file" << filename;
