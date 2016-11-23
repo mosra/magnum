@@ -63,21 +63,34 @@ link to `MagnumPlugins::AnyImageImporter` target. See @ref building-plugins,
 
 Supported formats:
 
--   BMP (`*.bmp`), loaded with any plugin that provides `BmpImporter`
--   DDS (`*.dds`), loaded with @ref DdsImporter or any other plugin that
-    provides it
--   GIF (`*.gif`), loaded with any plugin that provides `GifImporter`
--   HDR (`*.hdr`), loaded with any plugin that provides `HdrImporter`
--   JPEG (`*.jpg`, `*.jpeg`), loaded with @ref JpegImporter or any other plugin
-    that provides it
--   PIC (`*.pic`), loaded with any plugin that provides `PicImporter`
--   PGM (`*.pgm`), loaded with any plugin that provides `PgmImporter`
--   PNG (`*.png`), loaded with @ref PngImporter or any other plugin that
-    provides it
--   PPM (`*.ppm`), loaded with any plugin that provides `PpmImporter`
--   PSD (`*.psd`), loaded with any plugin that provides `PsdImporter`
--   TGA (`*.tga`), loaded with @ref TgaImporter or any other plugin that
-    provides it
+-   Windows Bitmap (`*.bmp`), loaded with any plugin that provides `BmpImporter`
+-   DirectDraw Surface (`*.dds`), loaded with @ref DdsImporter or any other
+    plugin that provides it
+-   Graphics Interchange Format (`*.gif`), loaded with any plugin that provides
+    `GifImporter`
+-   Radiance HDR (`*.hdr`), loaded with any plugin that provides `HdrImporter`
+-   JPEG (`*.jpg`, `*.jpe`, `*.jpeg`), loaded with @ref JpegImporter or any
+    other plugin that provides it
+-   JPEG 2000 (`*.jp2`), loaded with any plugin that provides `Jp2Importer`
+-   Multiple-image Network Graphics (`*.mng`), loaded with any plugin that
+    provides `MngImporter`
+-   Portable Bitmap (`*.pbm`), loaded with any plugin that provides `PbmImporter`
+-   ZSoft PCX (`*.pcx`), loaded with any plugin that provides `PcxImporter`
+-   Portable Graymap (`*.pgm`), loaded with any plugin that provides
+    `PgmImporter`
+-   Softimage PIC (`*.pic`), loaded with any plugin that provides `PicImporter`
+-   Portable Anymap (`*.pnm`), loaded with any plugin that provides
+    `PnmImporter`
+-   Portable Network Graphics (`*.png`), loaded with @ref PngImporter or any
+    other plugin that provides it
+-   Portable Pixmap (`*.ppm`), loaded with any plugin that provides `PpmImporter`
+-   Adobe Photoshop (`*.psd`), loaded with any plugin that provides `PsdImporter`
+-   Silicon Graphics (`*.sgi`, `*.bw`, `*.rgb`, `*.rgba`), loaded with any
+    plugin that provides `SgiImporter`
+-   Tagged Image File Format (`*.tif`, `*.tiff`), loaded with any plugin that
+    provides `TiffImporter`
+-   Truevision TGA (`*.tga`, `*.vda`, `*.icb`, `*.vst`), loaded with
+    @ref TgaImporter or any other plugin that provides it
 
 Only loading from files is supported.
 */
