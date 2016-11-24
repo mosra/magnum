@@ -14,8 +14,9 @@ make -j install
 cd ../..
 
 mkdir build && cd build
+# Not using CXXFLAGS in order to avoid affecting dependencies
 cmake .. \
-    -DCMAKE_CXX_FLAGS=$COVERAGE \
+    -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
     -DCMAKE_PREFIX_PATH="$HOME/deps;$HOME/sdl2;$HOME/glfw" \
     -DCMAKE_BUILD_TYPE=Debug \
     -DWITH_AUDIO=ON \
@@ -37,4 +38,4 @@ cmake .. \
     -DBUILD_TESTS=ON \
     -DBUILD_GL_TESTS=ON
 make -j${JOBS_LIMIT}
-CORRADE_TEST_COLOR=ON ctest -V -E GLTest
+ASAN_OPTIONS="color=always" LSAN_OPTIONS="color=always" CORRADE_TEST_COLOR=ON ctest -V -E GLTest
