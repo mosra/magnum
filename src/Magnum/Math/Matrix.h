@@ -215,6 +215,9 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
         Vector<size, T> operator*(const Vector<size, T>& other) const {
             return RectangularMatrix<size, size, T>::operator*(other);
         }
+        Matrix<size, T> transposed() const {
+            return RectangularMatrix<size, size, T>::transposed();
+        }
         MAGNUM_RECTANGULARMATRIX_SUBCLASS_IMPLEMENTATION(size, size, Matrix<size, T>)
         #endif
 };
