@@ -87,6 +87,12 @@
 # OPENAL_LIBRARY to override this selection or set the CMake environment
 # CMAKE_INCLUDE_PATH to modify the search paths.
 
+# This version is modified for Magnum and was forked from
+# https://github.com/Kitware/CMake/blob/v3.6.1/Modules/FindOpenAL.cmake
+# The file was modified to add a new path suffix for finding OpenAL for
+# Emscripten on OSX and, in case of Emscripten, the library is not looked for
+# as it is linked in implicitly.
+
 find_path(OPENAL_INCLUDE_DIR al.h
   HINTS
     ENV OPENALDIR
