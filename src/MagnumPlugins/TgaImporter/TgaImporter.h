@@ -54,7 +54,8 @@ namespace Magnum { namespace Trade {
 /**
 @brief TGA importer plugin
 
-Supports uncompressed BGR, BGRA or grayscale images with 8 bits per channel.
+Supports Truevision TGA (`*.tga`, `*.vda`, `*.icb`, `*.vst`) uncompressed BGR,
+BGRA or grayscale images with 8 bits per channel.
 
 This plugin is built if `WITH_TGAIMPORTER` is enabled when building Magnum. To
 use dynamic plugin, you need to load `TgaImporter` plugin from
