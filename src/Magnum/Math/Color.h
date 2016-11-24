@@ -615,10 +615,16 @@ template<class T> inline Corrade::Utility::Debug& operator<<(Corrade::Utility::D
     return debug << static_cast<const Vector3<T>&>(value);
 }
 
+/** @debugoperator{Magnum::Math::Color3} */
+MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Color3<UnsignedByte>& value);
+
 /** @debugoperator{Magnum::Math::Color4} */
 template<class T> inline Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Color4<T>& value) {
     return debug << static_cast<const Vector4<T>&>(value);
 }
+
+/** @debugoperator{Magnum::Math::Color4} */
+MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Color4<UnsignedByte>& value);
 
 namespace Implementation {
     template<class T> struct TypeForSize<3, Color3<T>> { typedef Color3<T> Type; };

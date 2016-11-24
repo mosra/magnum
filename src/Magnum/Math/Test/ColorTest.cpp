@@ -96,6 +96,7 @@ struct ColorTest: Corrade::TestSuite::Tester {
 
     void swizzleType();
     void debug();
+    void debugUb();
     void configuration();
 };
 
@@ -140,6 +141,7 @@ ColorTest::ColorTest() {
 
               &ColorTest::swizzleType,
               &ColorTest::debug,
+              &ColorTest::debugUb,
               &ColorTest::configuration});
 }
 
@@ -460,6 +462,18 @@ void ColorTest::debug() {
     o.str({});
     Debug(&o) << Color4(0.5f, 0.75f, 0.0f, 1.0f);
     CORRADE_COMPARE(o.str(), "Vector(0.5, 0.75, 0, 1)\n");
+}
+
+void ColorTest::debugUb() {
+    using namespace Magnum::Math::Literals;
+
+    std::ostringstream o;
+    Debug(&o) << 0x123456_rgb << 0x789abc_rgb;
+    CORRADE_COMPARE(o.str(), "#123456 #789abc\n");
+
+    o.str({});
+    Debug(&o) << 0x12345678_rgba << 0x90abcdef_rgba;
+    CORRADE_COMPARE(o.str(), "#12345678 #90abcdef\n");
 }
 
 void ColorTest::configuration() {

@@ -229,6 +229,7 @@ endif()
 
 # Files shared between main library and math unit test library
 set(MagnumMath_SRCS
+    Math/Color.cpp
     Math/Functions.cpp
     Math/instantiation.cpp)
 
