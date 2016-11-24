@@ -65,14 +65,26 @@ template<class T> void SvdTest::test() {
     /* Test composition */
     Matrix8<T> u2{u[0], u[1], u[2], u[3], u[4], Vector8<T>{}, Vector8<T>{}, Vector8<T>{}};
     Matrix5x8<T> w2 = Matrix5x8<T>::fromDiagonal(w);
-    CORRADE_COMPARE(u2*w2*v.transposed(), a);
+    {
+        #ifdef CORRADE_TARGET_EMSCRIPTEN
+        CORRADE_EXPECT_FAIL_IF((std::is_same<T, Double>::value),
+            "Some strange problems with Double on recent Emscripten versions (1.36.5 worked fine).");
+        #endif
+        CORRADE_COMPARE(u2*w2*v.transposed(), a);
+    }
 
     /* Test that V is unitary */
     CORRADE_COMPARE(v*v.transposed(), Matrix5<T>{IdentityInit});
     CORRADE_COMPARE(v.transposed()*v, Matrix5<T>{IdentityInit});
 
     /* Test W */
-    CORRADE_COMPARE(w, expected);
+    {
+        #ifdef CORRADE_TARGET_EMSCRIPTEN
+        CORRADE_EXPECT_FAIL_IF((std::is_same<T, Double>::value),
+            "Some strange problems with Double on recent Emscripten versions (1.36.5 worked fine).");
+        #endif
+        CORRADE_COMPARE(w, expected);
+    }
 }
 
 }}}}
