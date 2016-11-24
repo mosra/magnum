@@ -35,6 +35,7 @@
 #include <Corrade/Utility/Debug.h>
 
 #include "Magnum/Math/Matrix4.h"
+#include "Magnum/Math/Vector4.h"
 
 namespace Magnum { namespace Math {
 
@@ -50,19 +51,19 @@ template<class T> class Frustum {
          */
         static Frustum<T> fromMatrix(const Matrix4<T>& m) {
             return Frustum{
-                    mvp.row(3) + mvp.row(0),
-                    mvp.row(3) - mvp.row(0),
-                    mvp.row(3) + mvp.row(1),
-                    mvp.row(3) - mvp.row(1),
-                    mvp.row(3) + mvp.row(2),
-                    mvp.row(3) - mvp.row(2)
+                    m.row(3) + m.row(0),
+                    m.row(3) - m.row(0),
+                    m.row(3) + m.row(1),
+                    m.row(3) - m.row(1),
+                    m.row(3) + m.row(2),
+                    m.row(3) - m.row(2)
                 };
         }
 
         /**
          * @brief Construct frustum from frustum planes
          */
-        constexpr /*implicit*/ Frustum(const Vector4<T>& left, const Vector4<T>& right, const Vector4<T>& bottom, const Vector4<T>& top, const Vector4<T>& near, const Vector4& far): _data{left, right, bottom, top, near, far} {}
+        constexpr /*implicit*/ Frustum(const Vector4<T>& left, const Vector4<T>& right, const Vector4<T>& bottom, const Vector4<T>& top, const Vector4<T>& near, const Vector4<T>& far): _data{left, right, bottom, top, near, far} {}
 
         /**
          * @brief Raw data
@@ -79,7 +80,9 @@ template<class T> class Frustum {
          * In order left (index `0`), right (index `1`), bottom (index `1`),
          * top (index `3`), near (index `4`), far (index `5`).
          */
-        constexpr Corrade::Containers::StaticArrayView<6, Vector4<T>> planes() const { return _data; }
+        constexpr Corrade::Containers::StaticArrayView<6, const Vector4<T>> planes() const {
+            return Corrade::Containers::StaticArrayView<6, const Vector4<T>>{_data};
+        }
 
         /**
          * @brief Plane at given index
