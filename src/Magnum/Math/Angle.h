@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Math::Deg, @ref Magnum::Math::Rad and related operators.
+ * @brief Class @ref Magnum::Math::Deg, @ref Magnum::Math::Rad and related operators
  */
 
 #include <Corrade/configure.h>
