@@ -23,7 +23,7 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-set(WAV_FILE ${CMAKE_CURRENT_SOURCE_DIR}/stereo8.wav)
+set(WAV_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/DrWavAudioImporter/Test/stereo8.wav)
 set(OGG_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/StbVorbisAudioImporter/Test/mono16.ogg)
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
