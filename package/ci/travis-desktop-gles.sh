@@ -15,7 +15,6 @@ cd ../..
 
 mkdir build && cd build
 cmake .. \
-    -DCMAKE_CXX_FLAGS=$COVERAGE \
     -DCMAKE_PREFIX_PATH="$HOME/deps" \
     -DCMAKE_BUILD_TYPE=Release \
     -DTARGET_GLES=ON \
