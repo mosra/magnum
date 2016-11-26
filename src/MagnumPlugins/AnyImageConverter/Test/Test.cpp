@@ -67,13 +67,15 @@ void AnyImageConverterTest::png() {
     if(_manager.loadState("PngImageConverter") == PluginManager::LoadState::NotFound)
         CORRADE_SKIP("PngImageConverter plugin not found, cannot test");
 
-    if(Utility::Directory::fileExists(PNG_OUTPUT_FILE))
-        CORRADE_VERIFY(Utility::Directory::rm(PNG_OUTPUT_FILE));
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_DIR, "output.png");
+
+    if(Utility::Directory::fileExists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
 
     /* Just test that the exported file exists */
     AnyImageConverter converter{_manager};
-    CORRADE_VERIFY(converter.exportToFile(Image, PNG_OUTPUT_FILE));
-    CORRADE_VERIFY(Utility::Directory::fileExists(PNG_OUTPUT_FILE));
+    CORRADE_VERIFY(converter.exportToFile(Image, filename));
+    CORRADE_VERIFY(Utility::Directory::fileExists(filename));
 }
 
 void AnyImageConverterTest::unknown() {

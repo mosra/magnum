@@ -23,12 +23,17 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-set(PNG_OUTPUT_FILE ${CMAKE_CURRENT_BINARY_DIR}/output.png)
+if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
+    set(ANYIMAGECONVERTER_TEST_DIR "write")
+else()
+    set(ANYIMAGECONVERTER_TEST_DIR ${CMAKE_CURRENT_BINARY_DIR})
+endif()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-corrade_add_test(AnyImageConverterTest Test.cpp LIBRARIES MagnumAnyImageConverterTestLib)
+corrade_add_test(AnyImageConverterTest Test.cpp
+    LIBRARIES MagnumAnyImageConverterTestLib)
 target_include_directories(AnyImageConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 # On Win32 we need to avoid dllimporting AnyImageConverter symbols, because it
 # would search for the symbols in some DLL even when they were linked

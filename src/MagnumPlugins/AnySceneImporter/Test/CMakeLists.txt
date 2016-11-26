@@ -23,13 +23,22 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-set(OBJ_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/AnySceneImporter/Test/mesh.obj)
-set(PLY_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/StanfordImporter/Test/common.ply)
+if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
+    set(OBJ_FILE mesh.obj)
+    set(PLY_FILE common.ply)
+else()
+    set(OBJ_FILE ${CMAKE_CURRENT_SOURCE_DIR}/mesh.obj)
+    set(PLY_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/StanfordImporter/Test/common.ply)
+endif()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-corrade_add_test(AnySceneImporterTest Test.cpp LIBRARIES MagnumAnySceneImporterTestLib)
+corrade_add_test(AnySceneImporterTest Test.cpp
+    LIBRARIES MagnumAnySceneImporterTestLib
+    FILES
+        mesh.obj
+        ../../StanfordImporter/Test/common.ply)
 target_include_directories(AnySceneImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 # On Win32 we need to avoid dllimporting AnySceneImporter symbols, because it
 # would search for the symbols in some DLL even when they were linked

@@ -23,14 +23,25 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-set(TGA_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/ColladaImporter/Test/ColladaImporterTestFiles/image.tga)
-set(JPEG_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/JpegImporter/Test/rgb.jpg)
-set(PNG_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/PngImporter/Test/rgb.png)
+if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
+    set(TGA_FILE image.tga)
+    set(JPEG_FILE rgb.jpg)
+    set(PNG_FILE rgb.png)
+else()
+    set(TGA_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/ColladaImporter/Test/ColladaImporterTestFiles/image.tga)
+    set(JPEG_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/JpegImporter/Test/rgb.jpg)
+    set(PNG_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/PngImporter/Test/rgb.png)
+endif()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-corrade_add_test(AnyImageImporterTest Test.cpp LIBRARIES MagnumAnyImageImporterTestLib)
+corrade_add_test(AnyImageImporterTest Test.cpp
+    LIBRARIES MagnumAnyImageImporterTestLib
+    FILES
+        ../../ColladaImporter/Test/ColladaImporterTestFiles/image.tga
+        ../../JpegImporter/Test/rgb.jpg
+        ../../PngImporter/Test/rgb.png)
 target_include_directories(AnyImageImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 # On Win32 we need to avoid dllimporting AnyImageImporter symbols, because it
 # would search for the symbols in some DLL even when they were linked
