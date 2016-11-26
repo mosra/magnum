@@ -24,11 +24,11 @@
 */
 
 #include <sstream>
-#include <Corrade/TestSuite/Tester.h>
 #include <Corrade/PluginManager/Manager.h>
+#include <Corrade/TestSuite/Tester.h>
+#include <Magnum/Math/Vector3.h>
+#include <Magnum/Trade/MeshData3D.h>
 
-#include "Magnum/Trade/ImageData.h"
-#include "Magnum/Trade/MeshData3D.h"
 #include "MagnumPlugins/AnySceneImporter/AnySceneImporter.h"
 
 #include "configure.h"

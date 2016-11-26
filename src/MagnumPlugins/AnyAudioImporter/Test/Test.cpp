@@ -24,10 +24,8 @@
 */
 
 #include <sstream>
-#include <Corrade/TestSuite/Tester.h>
 #include <Corrade/PluginManager/Manager.h>
-
-#include "Magnum/Trade/ImageData.h"
+#include <Corrade/TestSuite/Tester.h>
 
 #include "MagnumPlugins/AnyAudioImporter/AnyImporter.h"
 

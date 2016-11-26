@@ -27,9 +27,8 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/Directory.h>
 #include <Corrade/PluginManager/Manager.h>
-
-#include "Magnum/PixelFormat.h"
-#include "Magnum/Trade/ImageData.h"
+#include <Magnum/PixelFormat.h>
+#include <Magnum/Trade/ImageData.h>
 
 #include "MagnumPlugins/AnyImageConverter/AnyImageConverter.h"
 
