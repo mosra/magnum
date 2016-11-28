@@ -134,72 +134,61 @@ class Intersection {
          * @param frustum Frustum planes with normals pointing outwards
          * @return `true` if the point is on or inside the frustum.
          *
-         * Checks for each plane of the frustum whether the point is behind the plane
-         * (the points distance from the plane is negative) using
+         * Checks for each plane of the frustum whether the point is behind the
+         * plane (the points distance from the plane is negative) using
          * @ref Distance::pointPlaneScaled().
          */
         template<class T> static bool pointFrustum(const Vector3<T>& point, const Frustum<T>& frustum);
 
         /**
          * @brief Intersection of a range and a camera frustum
-         * @return `true` if the box intersects with the camera frustum.
+         * @return `true` if the box intersects with the camera frustum
          *
-         * Counts for each plane of the frustum how many points of the box lie in
-         * front of the plane (outside of the frustum). If none, the box must lie
-         * entirely outside of the frustum and there is no intersection.
-         * Else, the box is considered as intersecting, even if it is merely corners
-         * of the box overlapping with corners of the frustum, since checking the
-         * corners is less efficient.
+         * Counts for each plane of the frustum how many points of the box lie
+         * in front of the plane (outside of the frustum). If none, the box
+         * must lie entirely outside of the frustum and there is no
+         * intersection. Else, the box is considered as intersecting, even if
+         * it is merely corners of the box overlapping with corners of the
+         * frustum, since checking the corners is less efficient.
          */
         template<class T> static bool boxFrustum(const Range3D<T>& box, const Frustum<T>& frustum);
-
 };
 
 template<class T> bool Intersection::pointFrustum(const Vector3<T>& point, const Frustum<T>& frustum) {
-    for(const Vector4<T>& f : frustum.planes()) {
-        if(Distance::pointPlaneScaled<T>(point, f) < T(0)) {
-            /* the point is in front of one of the frustum planes (normals point outwards) */
+    for(const Vector4<T>& plane: frustum.planes()) {
+        /* The point is in front of one of the frustum planes (normals point
+           outwards) */
+        if(Distance::pointPlaneScaled<T>(point, plane) < T(0))
             return false;
-        }
     }
 
     return true;
 }
 
 template<class T> bool Intersection::boxFrustum(const Range3D<T>& box, const Frustum<T>& frustum) {
-    /*
-     * Create the 8 vertices of the box from the 2 given vertices min and max
-     * Check for each corner of an octant whether it is inside the frustum.
-     * If only some of the corners are inside, the octant requires further checks.
-     */
-    int planes = 0;
+    /* Create the 8 vertices of the box from the 2 given vertices min and max
+       Check for each corner of an octant whether it is inside the frustum. If
+       only some of the corners are inside, the octant requires further checks. */
+    Int planes = 0;
 
-    for(const Vector4<T>& plane : frustum.planes()) {
-        int corners = 0;
+    for(const Vector4<T>& plane: frustum.planes()) {
+        Int corners = 0;
 
-        for(UnsignedByte c = 0; c < 8; ++c) {
+        for(UnsignedByte c = 0; c != 8; ++c) {
             const Vector3<T> corner = Math::lerp(box.min(), box.max(), Math::BoolVector<3>{c});
 
-            if(Distance::pointPlaneScaled<T>(corner, plane) >= T(0)) {
+            if(Distance::pointPlaneScaled<T>(corner, plane) >= T(0))
                 ++corners;
-            }
         }
 
-        if(corners == 0) {
-            /* all corners are outside this plane */
-            return false;
-        }
+        /* All corners are outside this plane */
+        if(corners == 0) return false;
 
-        if(corners == 8) {
-            ++planes;
-        }
+        if(corners == 8) ++planes;
     }
 
-    if(planes == 6) {
-        return true;
-    }
-
-    // potentially check corners here to avoid false positives!
+    /** @todo potentially check corners here to avoid false positives */
+    /* if(planes == 6) return true; */
 
     return true;
 }

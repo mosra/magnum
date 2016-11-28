@@ -42,27 +42,22 @@ namespace Magnum { namespace Math {
 /**
 @brief Camera frustum
 
+Stores camera frustum planes in order left (index `0`), right (index `1`),
+bottom (index `2`), top (index `3`), near (index `4`) and far (index `5`).
 */
 template<class T> class Frustum {
     public:
-
-        /**
-         * @brief Create a frustum from projection matrix
-         */
+        /** @brief Create a frustum from projection matrix */
         static Frustum<T> fromMatrix(const Matrix4<T>& m) {
-            return Frustum{
-                    m.row(3) + m.row(0),
+            return {m.row(3) + m.row(0),
                     m.row(3) - m.row(0),
                     m.row(3) + m.row(1),
                     m.row(3) - m.row(1),
                     m.row(3) + m.row(2),
-                    m.row(3) - m.row(2)
-                };
+                    m.row(3) - m.row(2)};
         }
 
-        /**
-         * @brief Construct frustum from frustum planes
-         */
+        /** @brief Constructor */
         constexpr /*implicit*/ Frustum(const Vector4<T>& left, const Vector4<T>& right, const Vector4<T>& bottom, const Vector4<T>& top, const Vector4<T>& near, const Vector4<T>& far): _data{left, right, bottom, top, near, far} {}
 
         /**
@@ -70,26 +65,15 @@ template<class T> class Frustum {
          * @return One-dimensional array of length `24`.
          */
         T* data() { return _data[0].data(); }
+        constexpr const T* data() const { return _data[0].data(); } /**< @overload */
 
-        /** @overload */
-        constexpr const T* data() const { return _data[0].data(); }
-
-        /**
-         * @brief The frustum planes
-         *
-         * In order left (index `0`), right (index `1`), bottom (index `1`),
-         * top (index `3`), near (index `4`), far (index `5`).
-         */
+        /** @brief Frustum planes */
         constexpr Corrade::Containers::StaticArrayView<6, const Vector4<T>> planes() const {
+            /* GCC 4.7 needs explicit construction */
             return Corrade::Containers::StaticArrayView<6, const Vector4<T>>{_data};
         }
 
-        /**
-         * @brief Plane at given index
-         *
-         * In order left (index `0`), right (index `1`), bottom (index `1`),
-         * top (index `3`), near (index `4`), far (index `5`).
-         */
+        /** @brief Plane at given index */
         constexpr Vector4<T> operator[](std::size_t i) const { return _data[i]; }
 
     private:

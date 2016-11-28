@@ -24,27 +24,23 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <cmath>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 
 #include "Magnum/Math/Frustum.h"
 
-using namespace Corrade;
-
 namespace Magnum { namespace Math { namespace Test {
 
-struct FrustumTest: TestSuite::Tester {
+struct FrustumTest: Corrade::TestSuite::Tester {
     explicit FrustumTest();
 
     void construct();
     void constructFromMatrix();
 };
 
-typedef Vector4<Float> Vector4;
-typedef Matrix4<Float> Matrix4;
-typedef Frustum<Float> Frustum;
-typedef Deg<Float> Degf;
+typedef Math::Vector4<Float> Vector4;
+typedef Math::Matrix4<Float> Matrix4;
+typedef Math::Frustum<Float> Frustum;
 
 FrustumTest::FrustumTest() {
     addTests({&FrustumTest::construct,
@@ -53,35 +49,38 @@ FrustumTest::FrustumTest() {
 
 void FrustumTest::construct() {
     Vector4 planes[6]{
-        {-1.0f, 0.0f, 0.0f, 1.0f},
-        { 1.0f, 0.0f, 0.0f, 1.0f},
-        { 0.0f,-1.0f, 0.0f, 1.0f},
-        { 0.0f, 1.0f, 0.0f, 1.0f},
-        { 0.0f, 0.0f,-1.0f, 1.0f},
-        { 0.0f, 0.0f, 1.0f, 1.0f}};
+        {-1.0f,  0.0f,  0.0f, 1.0f},
+        { 1.0f,  0.0f,  0.0f, 1.0f},
+        { 0.0f, -1.0f,  0.0f, 1.0f},
+        { 0.0f,  1.0f,  0.0f, 1.0f},
+        { 0.0f,  0.0f, -1.0f, 1.0f},
+        { 0.0f,  0.0f,  1.0f, 1.0f}};
 
     Frustum frustum{
         planes[0], planes[1],
         planes[2], planes[3],
-        planes[4], planes[5],
-    };
+        planes[4], planes[5]};
 
-    CORRADE_COMPARE_AS(frustum.planes(), Containers::ArrayView<const Vector4>(planes), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(frustum.planes(), Corrade::Containers::ArrayView<const Vector4>(planes),
+                       Corrade::TestSuite::Compare::Container);
 }
 
 void FrustumTest::constructFromMatrix() {
-    Vector4 planes[6]{
-        { 1.0f, 0.0f,-1.0f, 0.0f},
-        {-1.0f, 0.0f,-1.0f, 0.0f},
-        { 0.0f, 1.0f,-1.0f, 0.0f},
-        { 0.0f,-1.0f,-1.0f, 0.0f},
-        { 0.0f, 0.0f,-2.22222f,-2.22222f},
-        { 0.0f, 0.0f, 0.22222f, 2.22222f}};
+    using namespace Magnum::Math::Literals;
+
+    Frustum expected{
+        { 1.0f,  0.0f, -1.0f, 0.0f},
+        {-1.0f,  0.0f, -1.0f, 0.0f},
+        { 0.0f,  1.0f, -1.0f, 0.0f},
+        { 0.0f, -1.0f, -1.0f, 0.0f},
+        { 0.0f,  0.0f, -2.22222f, -2.22222f},
+        { 0.0f,  0.0f,  0.22222f,  2.22222f}};
 
     const Frustum frustum = Frustum::fromMatrix(
-            Matrix4::perspectiveProjection(Degf(90.0f), 1.0f, 1.0f, 10.0f));
+            Matrix4::perspectiveProjection(90.0_degf, 1.0f, 1.0f, 10.0f));
 
-    CORRADE_COMPARE_AS(frustum.planes(), Containers::ArrayView<const Vector4>(planes), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(frustum.planes(), expected.planes(),
+                       TestSuite::Compare::Container);
 }
 
 }}}

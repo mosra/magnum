@@ -39,6 +39,7 @@ struct DistanceTest: Corrade::TestSuite::Tester {
     void linePoint3D();
     void lineSegmentPoint2D();
     void lineSegmentPoint3D();
+
     void pointPlane();
     void pointPlaneScaled();
     void pointPlaneNormalized();
@@ -54,6 +55,7 @@ DistanceTest::DistanceTest() {
               &DistanceTest::linePoint3D,
               &DistanceTest::lineSegmentPoint2D,
               &DistanceTest::lineSegmentPoint3D,
+
               &DistanceTest::pointPlane,
               &DistanceTest::pointPlaneScaled,
               &DistanceTest::pointPlaneNormalized});
@@ -189,7 +191,7 @@ void DistanceTest::pointPlaneNormalized() {
     std::ostringstream o;
     Error redirectError{&o};
     Distance::pointPlaneNormalized(point, invalidPlane);
-    CORRADE_COMPARE(o.str(), "Math::Geometry::Distance::pointPlaneNormalized(): the planes normal is not a unit vector\n");
+    CORRADE_COMPARE(o.str(), "Math::Geometry::Distance::pointPlaneNormalized(): plane normal is not an unit vector\n");
 }
 
 }}}}
