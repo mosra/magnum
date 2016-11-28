@@ -54,6 +54,8 @@ template<class> class Dual;
 template<class> class DualComplex;
 template<class> class DualQuaternion;
 
+template<class> class Frustum;
+
 template<std::size_t, class> class Matrix;
 template<class T> using Matrix2x2 = Matrix<2, T>;
 template<class T> using Matrix3x3 = Matrix<3, T>;

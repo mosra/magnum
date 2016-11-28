@@ -44,6 +44,7 @@ namespace Magnum { namespace Math {
 
 Stores camera frustum planes in order left (index `0`), right (index `1`),
 bottom (index `2`), top (index `3`), near (index `4`) and far (index `5`).
+@see @ref Magnum::Frustum, @ref Magnum::Frustumd
 */
 template<class T> class Frustum {
     public:

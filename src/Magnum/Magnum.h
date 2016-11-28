@@ -353,6 +353,9 @@ typedef Math::Range2D<Int> Range2Di;
 /** @brief Signed integer 3D range */
 typedef Math::Range3D<Int> Range3Di;
 
+/** @brief Float frustum */
+typedef Math::Frustum<Float> Frustum;
+
 /*@}*/
 
 /** @{ @name Double-precision types
@@ -464,6 +467,9 @@ typedef Math::Range2D<Double> Range2Dd;
 
 /** @brief Double 3D range */
 typedef Math::Range3D<Double> Range3Dd;
+
+/** @brief Double frustum */
+typedef Math::Frustum<Double> Frustumd;
 
 /*@}*/
 
