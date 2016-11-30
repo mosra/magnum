@@ -26,6 +26,7 @@
 #include "Magnum/Math/Bezier.h"
 #include "Magnum/Math/DualComplex.h"
 #include "Magnum/Math/DualQuaternion.h"
+#include "Magnum/Math/Frustum.h"
 #include "Magnum/Math/Range.h"
 
 namespace Corrade { namespace Utility {
@@ -178,6 +179,9 @@ template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vec
 template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<2, Double>&);
 template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<3, Double>&);
 template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<4, Double>&);
+
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Frustum<Float>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Frustum<Double>&);
 
 template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Range<1, Float>&);
 template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Range<2, Float>&);

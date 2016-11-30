@@ -81,6 +81,25 @@ template<class T> class Frustum {
         Vector4<T> _data[6];
 };
 
+/** @debugoperator{Magnum::Math::Frustum} */
+template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Frustum<T>& value) {
+    debug << "Frustum({" << Corrade::Utility::Debug::nospace;
+    for(std::size_t i = 0; i != 6; ++i) {
+        if(i != 0) debug << Corrade::Utility::Debug::nospace << "},\n        {" << Corrade::Utility::Debug::nospace;
+        for(std::size_t j = 0; j != 4; ++j) {
+            if(j != 0) debug << Corrade::Utility::Debug::nospace << ",";
+            debug << value[i][j];
+        }
+    }
+    return debug << Corrade::Utility::Debug::nospace << "})";
+}
+
+/* Explicit instantiation for commonly used types */
+#ifndef DOXYGEN_GENERATING_OUTPUT
+extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Frustum<Float>&);
+extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Frustum<Float>&);
+#endif
+
 }}
 
 #endif

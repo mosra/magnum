@@ -24,6 +24,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 
@@ -36,6 +37,8 @@ struct FrustumTest: Corrade::TestSuite::Tester {
 
     void construct();
     void constructFromMatrix();
+
+    void debug();
 };
 
 typedef Math::Vector4<Float> Vector4;
@@ -44,7 +47,9 @@ typedef Math::Frustum<Float> Frustum;
 
 FrustumTest::FrustumTest() {
     addTests({&FrustumTest::construct,
-              &FrustumTest::constructFromMatrix});
+              &FrustumTest::constructFromMatrix,
+
+              &FrustumTest::debug});
 }
 
 void FrustumTest::construct() {
@@ -81,6 +86,25 @@ void FrustumTest::constructFromMatrix() {
 
     CORRADE_COMPARE_AS(frustum.planes(), expected.planes(),
                        TestSuite::Compare::Container);
+}
+
+void FrustumTest::debug() {
+    Frustum frustum{
+        {-1.0f,  2.0f, -3.0f, 0.1f},
+        { 1.0f, -2.0f,  3.0f, 0.2f},
+        {-4.0f,  5.0f, -6.0f, 0.3f},
+        { 4.0f, -5.0f,  6.0f, 0.4f},
+        {-7.0f,  8.0f, -9.0f, 0.5f},
+        { 7.0f, -8.0f,  9.0f, 0.6f}};
+
+    std::ostringstream out;
+    Debug{&out} << frustum;
+    CORRADE_COMPARE(out.str(), "Frustum({-1, 2, -3, 0.1},\n"
+                               "        {1, -2, 3, 0.2},\n"
+                               "        {-4, 5, -6, 0.3},\n"
+                               "        {4, -5, 6, 0.4},\n"
+                               "        {-7, 8, -9, 0.5},\n"
+                               "        {7, -8, 9, 0.6})\n");
 }
 
 }}}
