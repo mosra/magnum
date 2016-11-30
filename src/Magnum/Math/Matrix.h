@@ -259,11 +259,6 @@ template<class T> using Matrix4x4 = Matrix<4, T>;
 
 MAGNUM_MATRIX_OPERATOR_IMPLEMENTATION(Matrix<size, T>)
 
-/** @debugoperator{Magnum::Math::Matrix} */
-template<std::size_t size, class T> inline Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Matrix<size, T>& value) {
-    return debug << static_cast<const RectangularMatrix<size, size, T>&>(value);
-}
-
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #define MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(size, Type, VectorType)       \
     VectorType<T>& operator[](std::size_t col) {                            \

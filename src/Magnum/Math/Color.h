@@ -610,20 +610,20 @@ inline Color4<Float> operator "" _rgbaf(unsigned long long value) {
 
 }
 
-/** @debugoperator{Magnum::Math::Color3} */
-template<class T> inline Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Color3<T>& value) {
-    return debug << static_cast<const Vector3<T>&>(value);
-}
+/**
+@debugoperator{Magnum::Math::Color3}
 
-/** @debugoperator{Magnum::Math::Color3} */
+Prints the value as hex color (e.g. `#ff33aa`). Other underlying types are
+handled by @ref operator<<(Corrade::Utility::Debug&, const Vector<size, T>&).
+*/
 MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Color3<UnsignedByte>& value);
 
-/** @debugoperator{Magnum::Math::Color4} */
-template<class T> inline Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Color4<T>& value) {
-    return debug << static_cast<const Vector4<T>&>(value);
-}
+/**
+@debugoperator{Magnum::Math::Color4}
 
-/** @debugoperator{Magnum::Math::Color4} */
+Prints the value as hex color (e.g. `#9933aaff`). Other underlying types are
+handled by @ref operator<<(Corrade::Utility::Debug&, const Vector<size, T>&).
+*/
 MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Color4<UnsignedByte>& value);
 
 namespace Implementation {

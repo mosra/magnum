@@ -407,11 +407,6 @@ template<class T> class Matrix3: public Matrix3x3<T> {
 MAGNUM_MATRIXn_OPERATOR_IMPLEMENTATION(3, Matrix3)
 #endif
 
-/** @debugoperator{Magnum::Math::Matrix3} */
-template<class T> inline Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Matrix3<T>& value) {
-    return debug << static_cast<const Matrix3x3<T>&>(value);
-}
-
 template<class T> Matrix3<T> Matrix3<T>::rotation(const Rad<T> angle) {
     const T sine = std::sin(T(angle));
     const T cosine = std::cos(T(angle));

@@ -206,11 +206,6 @@ template<class T> class Vector4: public Vector<4, T> {
 MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(4, Vector4)
 #endif
 
-/** @debugoperator{Magnum::Math::Vector4} */
-template<class T> inline Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Vector4<T>& value) {
-    return debug << static_cast<const Vector<4, T>&>(value);
-}
-
 namespace Implementation {
     template<class T> struct TypeForSize<4, T> { typedef Math::Vector4<typename T::Type> Type; };
 }

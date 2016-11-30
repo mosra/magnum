@@ -582,11 +582,6 @@ template<class T> class Matrix4: public Matrix4x4<T> {
 MAGNUM_MATRIXn_OPERATOR_IMPLEMENTATION(4, Matrix4)
 #endif
 
-/** @debugoperator{Magnum::Math::Matrix4} */
-template<class T> inline Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Matrix4<T>& value) {
-    return debug << static_cast<const Matrix4x4<T>&>(value);
-}
-
 template<class T> Matrix4<T> Matrix4<T>::rotation(const Rad<T> angle, const Vector3<T>& normalizedAxis) {
     CORRADE_ASSERT(normalizedAxis.isNormalized(),
                    "Math::Matrix4::rotation(): axis must be normalized", {});
