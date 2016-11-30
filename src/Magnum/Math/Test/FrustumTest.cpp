@@ -72,6 +72,8 @@ void FrustumTest::construct() {
 
     CORRADE_COMPARE_AS(frustum.planes(), Corrade::Containers::ArrayView<const Vector4>(planes),
                        Corrade::TestSuite::Compare::Container);
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Frustum, Vector4, Vector4, Vector4, Vector4, Vector4, Vector4>::value));
 }
 
 void FrustumTest::constructFromMatrix() {
