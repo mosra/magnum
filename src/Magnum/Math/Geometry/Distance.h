@@ -170,7 +170,7 @@ class Distance {
          *
          * The distance **d** is computed from point **p** and plane with
          * normal **n** and **w** using: @f[
-         *      d = \frac{\sum_i^3 (p \cdot n) + w}{\left| n \right|}
+         *      d = \frac{p \cdot n + w}{\left| n \right|}
          * @f]
          * The distance is negative if the point lies behind the plane.
          *
@@ -188,7 +188,7 @@ class Distance {
          *
          * The distance **d** is computed from point **p** and plane with
          * normal **n** and **w** using: @f[
-         *      d = \sum_i^3 (p \cdot n) + w
+         *      d = p \cdot n + w
          * @f]
          * The distance is negative if the point lies behind the plane.
          *
@@ -198,7 +198,7 @@ class Distance {
          * @see @ref pointPlaneNormalized()
          */
         template<class T> static T pointPlaneScaled(const Vector3<T>& point, const Vector4<T>& plane) {
-            return (plane.xyz()*point).sum() + plane.w();
+            return Math::dot(plane.xyz(), point) + plane.w();
         }
 
         /**
@@ -206,7 +206,7 @@ class Distance {
          *
          * The distance **d** is computed from point **p** and plane with
          * normal **n** and **w** using: @f[
-         *      d = \sum_i^3 (p \cdot n) + w
+         *      d = p \cdot n + w
          * @f]
          * The distance is negative if the point lies behind the plane. Expects
          * that @p plane normal is normalized.
