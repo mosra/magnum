@@ -38,6 +38,8 @@ struct FrustumTest: Corrade::TestSuite::Tester {
     void construct();
     void constructFromMatrix();
 
+    void compare();
+
     void debug();
 };
 
@@ -48,6 +50,8 @@ typedef Math::Frustum<Float> Frustum;
 FrustumTest::FrustumTest() {
     addTests({&FrustumTest::construct,
               &FrustumTest::constructFromMatrix,
+
+              &FrustumTest::compare,
 
               &FrustumTest::debug});
 }
@@ -84,8 +88,37 @@ void FrustumTest::constructFromMatrix() {
     const Frustum frustum = Frustum::fromMatrix(
             Matrix4::perspectiveProjection(90.0_degf, 1.0f, 1.0f, 10.0f));
 
-    CORRADE_COMPARE_AS(frustum.planes(), expected.planes(),
-                       TestSuite::Compare::Container);
+    CORRADE_COMPARE(frustum, expected);
+}
+
+void FrustumTest::compare() {
+    Frustum a{
+        {-1.0f,  2.0f, -3.0f, 0.1f},
+        { 1.0f, -2.0f,  3.0f, 0.2f},
+        {-4.0f,  5.0f, -6.0f, 0.3f},
+        { 4.0f, -5.0f,  6.0f, 0.4f},
+        {-7.0f,  8.0f, -9.0f, 0.5f},
+        { 7.0f,  8.0f,  9.0f, 0.6f}};
+
+    Frustum b{
+        {-1.0f,  2.0f, -3.0f, 0.1f},
+        { 1.0f, -2.0f,  3.0f, 0.2f},
+        {-4.0f,  5.0f, -6.0f, 0.3f + Math::TypeTraits<Float>::epsilon()/2.0f},
+        { 4.0f, -5.0f,  6.0f, 0.4f},
+        {-7.0f,  8.0f, -9.0f, 0.5f},
+        { 7.0f,  8.0f,  9.0f, 0.6f}};
+
+    Frustum c{
+        {-1.0f,  2.0f, -3.0f, 0.1f},
+        { 1.0f, -2.0f,  3.0f, 0.2f},
+        {-4.0f,  5.0f, -6.0f, 0.3f},
+        { 4.0f, -5.0f,  6.0f, 0.4f},
+        {-7.0f,  8.0f, -9.0f, 0.5f + Math::TypeTraits<Float>::epsilon()*2.0f},
+        { 7.0f,  8.0f,  9.0f, 0.6f}};
+
+    CORRADE_VERIFY(a == a);
+    CORRADE_VERIFY(a == b);
+    CORRADE_VERIFY(a != c);
 }
 
 void FrustumTest::debug() {

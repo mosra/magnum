@@ -61,6 +61,19 @@ template<class T> class Frustum {
         /** @brief Constructor */
         constexpr /*implicit*/ Frustum(const Vector4<T>& left, const Vector4<T>& right, const Vector4<T>& bottom, const Vector4<T>& top, const Vector4<T>& near, const Vector4<T>& far): _data{left, right, bottom, top, near, far} {}
 
+        /** @brief Equality comparison */
+        bool operator==(const Frustum<T>& other) const {
+            for(std::size_t i = 0; i != 6; ++i)
+                if(_data[i] != other._data[i]) return false;
+
+            return true;
+        }
+
+        /** @brief Non-equality comparison */
+        bool operator!=(const Frustum<T>& other) const {
+            return !operator==(other);
+        }
+
         /**
          * @brief Raw data
          * @return One-dimensional array of length `24`.
