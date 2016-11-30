@@ -228,6 +228,11 @@ void RangeTest::constructNoInit() {
     CORRADE_VERIFY((std::is_nothrow_constructible<Range1Di, NoInitT>::value));
     CORRADE_VERIFY((std::is_nothrow_constructible<Range2Di, NoInitT>::value));
     CORRADE_VERIFY((std::is_nothrow_constructible<Range3Di, NoInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<NoInitT, Range1Di>::value));
+    CORRADE_VERIFY(!(std::is_convertible<NoInitT, Range2Di>::value));
+    CORRADE_VERIFY(!(std::is_convertible<NoInitT, Range3Di>::value));
 }
 
 void RangeTest::constructFromSize() {

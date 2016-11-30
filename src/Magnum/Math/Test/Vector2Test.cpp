@@ -129,6 +129,9 @@ void Vector2Test::constructNoInit() {
     }
 
     CORRADE_VERIFY((std::is_nothrow_constructible<Vector2, NoInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<NoInitT, Vector2>::value));
 }
 
 void Vector2Test::constructOneValue() {

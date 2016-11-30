@@ -185,6 +185,9 @@ void Matrix3Test::constructNoInit() {
     }
 
     CORRADE_VERIFY((std::is_nothrow_constructible<Matrix3, NoInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<NoInitT, Matrix3>::value));
 }
 
 void Matrix3Test::constructConversion() {

@@ -177,6 +177,9 @@ void MatrixTest::constructNoInit() {
     }
 
     CORRADE_VERIFY((std::is_nothrow_constructible<Matrix4x4, NoInitT>::value));
+
+        /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<NoInitT, Matrix4x4>::value));
 }
 
 void MatrixTest::constructConversion() {

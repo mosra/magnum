@@ -116,6 +116,9 @@ void BezierTest::constructNoInit() {
     }
 
     CORRADE_VERIFY((std::is_nothrow_constructible<QuadraticBezier2D, NoInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<NoInitT, QuadraticBezier2D>::value));
 }
 
 void BezierTest::constructConversion() {

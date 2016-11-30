@@ -197,6 +197,10 @@ void ColorTest::constructNoInit() {
 
     CORRADE_VERIFY((std::is_nothrow_constructible<Color3, NoInitT>::value));
     CORRADE_VERIFY((std::is_nothrow_constructible<Color4, NoInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<NoInitT, Color3>::value));
+    CORRADE_VERIFY(!(std::is_convertible<NoInitT, Color4>::value));
 }
 
 void ColorTest::constructOneValue() {

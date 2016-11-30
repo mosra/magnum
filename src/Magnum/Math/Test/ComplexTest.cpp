@@ -183,6 +183,9 @@ void ComplexTest::constructNoInit() {
     }
 
     CORRADE_VERIFY((std::is_nothrow_constructible<Complex, NoInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<NoInitT, Complex>::value));
 }
 
 void ComplexTest::constructFromVector() {

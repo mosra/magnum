@@ -110,6 +110,9 @@ void BoolVectorTest::constructNoInit() {
     }
 
     CORRADE_VERIFY((std::is_nothrow_constructible<BoolVector19, NoInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<NoInitT, BoolVector19>::value));
 }
 
 void BoolVectorTest::constructOneValue() {

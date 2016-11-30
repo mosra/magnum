@@ -123,6 +123,10 @@ void AngleTest::constructNoInit() {
 
     CORRADE_VERIFY((std::is_nothrow_constructible<Deg, NoInitT>::value));
     CORRADE_VERIFY((std::is_nothrow_constructible<Rad, NoInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<NoInitT, Deg>::value));
+    CORRADE_VERIFY(!(std::is_convertible<NoInitT, Rad>::value));
 }
 
 void AngleTest::constructConversion() {

@@ -191,6 +191,9 @@ void QuaternionTest::constructNoInit() {
     }
 
     CORRADE_VERIFY((std::is_nothrow_constructible<Quaternion, NoInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<NoInitT, Quaternion>::value));
 }
 
 void QuaternionTest::constructFromVector() {

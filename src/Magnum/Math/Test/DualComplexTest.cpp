@@ -186,6 +186,9 @@ void DualComplexTest::constructNoInit() {
     }
 
     CORRADE_VERIFY((std::is_nothrow_constructible<DualComplex, NoInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<NoInitT, DualComplex>::value));
 }
 
 void DualComplexTest::constructFromVector() {
