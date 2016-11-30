@@ -75,7 +75,7 @@ void FrustumTest::construct() {
         {-7.0f,  8.0f, -9.0f, 0.5f},
         { 7.0f,  8.0f,  9.0f, 0.6f}};
 
-    constexpr Frustum frustum{
+    constexpr Frustum frustum = {
         planes[0], planes[1],
         planes[2], planes[3],
         planes[4], planes[5]};
