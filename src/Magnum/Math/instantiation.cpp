@@ -178,6 +178,16 @@ template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vec
 template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<2, Double>&);
 template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<3, Double>&);
 template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<4, Double>&);
+
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Range<1, Float>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Range<2, Float>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Range<3, Float>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Range<1, Int>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Range<2, Int>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Range<3, Int>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Range<1, Double>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Range<2, Double>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Range<3, Double>&);
 #endif
 
 }}
