@@ -41,6 +41,8 @@ struct FrustumTest: Corrade::TestSuite::Tester {
     void constructCopy();
     void constructFromMatrix();
 
+    void data();
+
     void compare();
 
     void debug();
@@ -57,21 +59,23 @@ FrustumTest::FrustumTest() {
               &FrustumTest::constructCopy,
               &FrustumTest::constructFromMatrix,
 
+              &FrustumTest::data,
+
               &FrustumTest::compare,
 
               &FrustumTest::debug});
 }
 
 void FrustumTest::construct() {
-    Vector4 planes[6]{
-        {-1.0f,  0.0f,  0.0f, 1.0f},
-        { 1.0f,  0.0f,  0.0f, 1.0f},
-        { 0.0f, -1.0f,  0.0f, 1.0f},
-        { 0.0f,  1.0f,  0.0f, 1.0f},
-        { 0.0f,  0.0f, -1.0f, 1.0f},
-        { 0.0f,  0.0f,  1.0f, 1.0f}};
+    constexpr Vector4 planes[6]{
+        {-1.0f,  2.0f, -3.0f, 0.1f},
+        { 1.0f, -2.0f,  3.0f, 0.2f},
+        {-4.0f,  5.0f, -6.0f, 0.3f},
+        { 4.0f, -5.0f,  6.0f, 0.4f},
+        {-7.0f,  8.0f, -9.0f, 0.5f},
+        { 7.0f,  8.0f,  9.0f, 0.6f}};
 
-    Frustum frustum{
+    constexpr Frustum frustum{
         planes[0], planes[1],
         planes[2], planes[3],
         planes[4], planes[5]};
@@ -162,6 +166,23 @@ void FrustumTest::constructFromMatrix() {
     /* Constructing from a default-constructed matrix should be equivalent to
        default constructor */
     CORRADE_COMPARE(Frustum::fromMatrix({}), Frustum{});
+}
+
+void FrustumTest::data() {
+    /* Using default-constructed to verify that the planes are in correct order */
+    constexpr Frustum a;
+
+    constexpr Vector4 right = a.planes()[1];
+    CORRADE_COMPARE(right, (Vector4{-1.0f, 0.0f, 0.0f, 1.0f}));
+
+    constexpr Vector4 bottom = a[2];
+    CORRADE_COMPARE(bottom, (Vector4{0.0f, 1.0f, 0.0f, 1.0f}));
+
+    constexpr Vector4 near = a.near();
+    CORRADE_COMPARE(near, (Vector4{0.0f, 0.0f, 1.0f, 1.0f}));
+
+    constexpr Float b = *a.data();
+    CORRADE_COMPARE(b, 1.0f);
 }
 
 void FrustumTest::compare() {
