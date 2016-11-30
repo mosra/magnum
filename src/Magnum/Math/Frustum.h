@@ -72,6 +72,14 @@ template<class T> class Frustum {
         /** @brief Construct a frustum from plane equations */
         constexpr /*implicit*/ Frustum(const Vector4<T>& left, const Vector4<T>& right, const Vector4<T>& bottom, const Vector4<T>& top, const Vector4<T>& near, const Vector4<T>& far) noexcept: _data{left, right, bottom, top, near, far} {}
 
+        /**
+         * @brief Construct frustum from another of different type
+         *
+         * Performs only default casting on the values, no rounding or
+         * anything else.
+         */
+        template<class U> constexpr explicit Frustum(const Frustum<U>& other) noexcept;
+
         /** @brief Equality comparison */
         bool operator==(const Frustum<T>& other) const {
             for(std::size_t i = 0; i != 6; ++i)
@@ -149,6 +157,14 @@ template<class T> constexpr Frustum<T>::Frustum(IdentityInitT) noexcept: _data{
     { 0.0f, -1.0f,  0.0f, 1.0f},
     { 0.0f,  0.0f,  1.0f, 1.0f},
     { 0.0f,  0.0f, -1.0f, 1.0f}} {}
+
+template<class T> template<class U> constexpr Frustum<T>::Frustum(const Frustum<U>& other) noexcept: _data{
+    Vector4<T>{other[0]},
+    Vector4<T>{other[1]},
+    Vector4<T>{other[2]},
+    Vector4<T>{other[3]},
+    Vector4<T>{other[4]},
+    Vector4<T>{other[5]}} {}
 
 }}
 

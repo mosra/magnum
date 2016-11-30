@@ -38,6 +38,7 @@ struct FrustumTest: Corrade::TestSuite::Tester {
     void construct();
     void constructIdentity();
     void constructNoInit();
+    void constructConversion();
     void constructCopy();
     void constructFromMatrix();
 
@@ -51,11 +52,13 @@ struct FrustumTest: Corrade::TestSuite::Tester {
 typedef Math::Vector4<Float> Vector4;
 typedef Math::Matrix4<Float> Matrix4;
 typedef Math::Frustum<Float> Frustum;
+typedef Math::Frustum<Double> Frustumd;
 
 FrustumTest::FrustumTest() {
     addTests({&FrustumTest::construct,
               &FrustumTest::constructIdentity,
               &FrustumTest::constructNoInit,
+              &FrustumTest::constructConversion,
               &FrustumTest::constructCopy,
               &FrustumTest::constructFromMatrix,
 
@@ -130,6 +133,31 @@ void FrustumTest::constructNoInit() {
 
     /* Implicit construction is not allowed */
     CORRADE_VERIFY((std::is_nothrow_constructible<Frustum, NoInitT>::value));
+}
+
+void FrustumTest::constructConversion() {
+    constexpr Frustumd a{
+        {-1.0,  2.0, -3.0, 0.1},
+        { 1.0, -2.0,  3.0, 0.2},
+        {-4.0,  5.0, -6.0, 0.3},
+        { 4.0, -5.0,  6.0, 0.4},
+        {-7.0,  8.0, -9.0, 0.5},
+        { 7.0,  8.0,  9.0, 0.6}};
+    Frustum expected{
+        {-1.0f,  2.0f, -3.0f, 0.1f},
+        { 1.0f, -2.0f,  3.0f, 0.2f},
+        {-4.0f,  5.0f, -6.0f, 0.3f},
+        { 4.0f, -5.0f,  6.0f, 0.4f},
+        {-7.0f,  8.0f, -9.0f, 0.5f},
+        { 7.0f,  8.0f,  9.0f, 0.6f}};
+
+    constexpr Frustum b{a};
+    CORRADE_COMPARE(b, expected);
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Frustum, Frustumd>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Frustum, Frustumd>::value));
 }
 
 void FrustumTest::constructCopy() {
