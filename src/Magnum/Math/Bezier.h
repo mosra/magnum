@@ -250,7 +250,7 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> Corrade::Utility::D
     return debug << ")";
 }
 
-/* Explicit instantiation for types used in OpenGL */
+/* Explicit instantiation for commonly used types */
 #ifndef DOXYGEN_GENERATING_OUTPUT
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Bezier<2, 2, Float>&);
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Bezier<2, 3, Float>&);
@@ -305,6 +305,7 @@ template<Magnum::UnsignedInt order, Magnum::UnsignedInt dimensions, class T> str
     }
 };
 
+/* Explicit instantiation for commonly used types */
 #if !defined(DOXYGEN_GENERATING_OUTPUT) && !defined(__MINGW32__)
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Bezier<2, 2, Magnum::Float>>;
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Bezier<2, 3, Magnum::Float>>;

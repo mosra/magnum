@@ -594,6 +594,7 @@ template<class T> struct ConfigurationValue<Magnum::Math::Range2D<T>>: public Co
 /** @configurationvalue{Magnum::Math::Range3D} */
 template<class T> struct ConfigurationValue<Magnum::Math::Range3D<T>>: public ConfigurationValue<Magnum::Math::Range<3, T>> {};
 
+/* Explicit instantiation for commonly used types */
 #if !defined(DOXYGEN_GENERATING_OUTPUT) && !defined(__MINGW32__)
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Range<2, Magnum::Float>>;
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Range<2, Magnum::Int>>;

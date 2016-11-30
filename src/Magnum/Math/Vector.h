@@ -1088,7 +1088,7 @@ template<std::size_t size, class T> Corrade::Utility::Debug& operator<<(Corrade:
     return debug << Corrade::Utility::Debug::nospace << ")";
 }
 
-/* Explicit instantiation for types used in OpenGL */
+/* Explicit instantiation for commonly used types */
 #ifndef DOXYGEN_GENERATING_OUTPUT
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<2, Float>&);
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<3, Float>&);
@@ -1403,8 +1403,8 @@ template<std::size_t size, class T> struct ConfigurationValue<Magnum::Math::Vect
     }
 };
 
+/* Explicit instantiation for commonly used types */
 #if !defined(DOXYGEN_GENERATING_OUTPUT) && !defined(__MINGW32__)
-/* Vectors */
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<2, Magnum::Float>>;
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<3, Magnum::Float>>;
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<4, Magnum::Float>>;

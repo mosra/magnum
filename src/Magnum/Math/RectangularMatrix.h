@@ -556,8 +556,8 @@ template<std::size_t cols, std::size_t rows, class T> Corrade::Utility::Debug& o
     return debug << Corrade::Utility::Debug::nospace << ")";
 }
 
+/* Explicit instantiation for commonly used types */
 #ifndef DOXYGEN_GENERATING_OUTPUT
-/* Explicit instantiation for types used in OpenGL */
 /* Square matrices */
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<2, 2, Float>&);
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<3, 3, Float>&);
@@ -758,6 +758,7 @@ template<std::size_t cols, std::size_t rows, class T> struct ConfigurationValue<
     }
 };
 
+/* Explicit instantiation for commonly used types */
 #if !defined(DOXYGEN_GENERATING_OUTPUT) && !defined(__MINGW32__)
 /* Square matrices */
 extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::RectangularMatrix<2, 2, Magnum::Float>>;
