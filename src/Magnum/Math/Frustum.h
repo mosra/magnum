@@ -58,7 +58,18 @@ template<class T> class Frustum {
                     m.row(3) - m.row(2)};
         }
 
-        /** @brief Constructor */
+        /**
+         * @brief Identity constructor
+         *
+         * Equivalent to creating a frustum from an identity matrix.
+         * @see @ref fromMatrix()
+         */
+        constexpr /*implicit*/ Frustum(IdentityInitT = IdentityInit) noexcept;
+
+        /** @brief Construct a frustum without initializing the contents */
+        explicit Frustum(NoInitT) noexcept: _data{Vector4<T>{NoInit}, Vector4<T>{NoInit}, Vector4<T>{NoInit}, Vector4<T>{NoInit}, Vector4<T>{NoInit}, Vector4<T>{NoInit}} {}
+
+        /** @brief Construct a frustum from plane equations */
         constexpr /*implicit*/ Frustum(const Vector4<T>& left, const Vector4<T>& right, const Vector4<T>& bottom, const Vector4<T>& top, const Vector4<T>& near, const Vector4<T>& far) noexcept: _data{left, right, bottom, top, near, far} {}
 
         /** @brief Equality comparison */
@@ -112,6 +123,14 @@ template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& d
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Frustum<Float>&);
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Frustum<Float>&);
 #endif
+
+template<class T> constexpr Frustum<T>::Frustum(IdentityInitT) noexcept: _data{
+    { 1.0f,  0.0f,  0.0f, 1.0f},
+    {-1.0f,  0.0f,  0.0f, 1.0f},
+    { 0.0f,  1.0f,  0.0f, 1.0f},
+    { 0.0f, -1.0f,  0.0f, 1.0f},
+    { 0.0f,  0.0f,  1.0f, 1.0f},
+    { 0.0f,  0.0f, -1.0f, 1.0f}} {}
 
 }}
 

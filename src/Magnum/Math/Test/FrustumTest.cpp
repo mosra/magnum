@@ -36,6 +36,9 @@ struct FrustumTest: Corrade::TestSuite::Tester {
     explicit FrustumTest();
 
     void construct();
+    void constructIdentity();
+    void constructNoInit();
+    void constructCopy();
     void constructFromMatrix();
 
     void compare();
@@ -49,6 +52,9 @@ typedef Math::Frustum<Float> Frustum;
 
 FrustumTest::FrustumTest() {
     addTests({&FrustumTest::construct,
+              &FrustumTest::constructIdentity,
+              &FrustumTest::constructNoInit,
+              &FrustumTest::constructCopy,
               &FrustumTest::constructFromMatrix,
 
               &FrustumTest::compare,
@@ -76,6 +82,67 @@ void FrustumTest::construct() {
     CORRADE_VERIFY((std::is_nothrow_constructible<Frustum, Vector4, Vector4, Vector4, Vector4, Vector4, Vector4>::value));
 }
 
+void FrustumTest::constructIdentity() {
+    Frustum expected{
+        { 1.0f,  0.0f,  0.0f, 1.0f},
+        {-1.0f,  0.0f,  0.0f, 1.0f},
+        { 0.0f,  1.0f,  0.0f, 1.0f},
+        { 0.0f, -1.0f,  0.0f, 1.0f},
+        { 0.0f,  0.0f,  1.0f, 1.0f},
+        { 0.0f,  0.0f, -1.0f, 1.0f}};
+
+    constexpr Frustum a;
+    constexpr Frustum b{IdentityInit};
+    CORRADE_COMPARE(a, expected);
+    CORRADE_COMPARE(b, expected);
+
+    CORRADE_VERIFY(std::is_nothrow_default_constructible<Frustum>::value);
+    CORRADE_VERIFY((std::is_nothrow_constructible<Frustum, IdentityInitT>::value));
+}
+
+void FrustumTest::constructNoInit() {
+    Frustum a{
+        {-1.0f,  2.0f, -3.0f, 0.1f},
+        { 1.0f, -2.0f,  3.0f, 0.2f},
+        {-4.0f,  5.0f, -6.0f, 0.3f},
+        { 4.0f, -5.0f,  6.0f, 0.4f},
+        {-7.0f,  8.0f, -9.0f, 0.5f},
+        { 7.0f,  8.0f,  9.0f, 0.6f}};
+
+    new(&a) Frustum{NoInit};
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+
+        CORRADE_COMPARE(a, (Frustum{
+            {-1.0f,  2.0f, -3.0f, 0.1f},
+            { 1.0f, -2.0f,  3.0f, 0.2f},
+            {-4.0f,  5.0f, -6.0f, 0.3f},
+            { 4.0f, -5.0f,  6.0f, 0.4f},
+            {-7.0f,  8.0f, -9.0f, 0.5f},
+            { 7.0f,  8.0f,  9.0f, 0.6f}}));
+    }
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY((std::is_nothrow_constructible<Frustum, NoInitT>::value));
+}
+
+void FrustumTest::constructCopy() {
+    constexpr Frustum a{
+        {-1.0f,  2.0f, -3.0f, 0.1f},
+        { 1.0f, -2.0f,  3.0f, 0.2f},
+        {-4.0f,  5.0f, -6.0f, 0.3f},
+        { 4.0f, -5.0f,  6.0f, 0.4f},
+        {-7.0f,  8.0f, -9.0f, 0.5f},
+        { 7.0f,  8.0f,  9.0f, 0.6f}};
+    constexpr Frustum b{a};
+    CORRADE_COMPARE(b, a);
+
+    CORRADE_VERIFY(std::is_nothrow_copy_constructible<Frustum>::value);
+    CORRADE_VERIFY(std::is_nothrow_copy_assignable<Frustum>::value);
+}
+
 void FrustumTest::constructFromMatrix() {
     using namespace Magnum::Math::Literals;
 
@@ -91,6 +158,10 @@ void FrustumTest::constructFromMatrix() {
             Matrix4::perspectiveProjection(90.0_degf, 1.0f, 1.0f, 10.0f));
 
     CORRADE_COMPARE(frustum, expected);
+
+    /* Constructing from a default-constructed matrix should be equivalent to
+       default constructor */
+    CORRADE_COMPARE(Frustum::fromMatrix({}), Frustum{});
 }
 
 void FrustumTest::compare() {
