@@ -66,7 +66,7 @@ WindowlessWindowsEglContext::WindowlessWindowsEglContext(const Configuration& co
     _display = eglGetDisplay(GetDC(_window));
     if(!eglInitialize(_display, nullptr, nullptr)) {
         Error() << "Platform::WindowlessWindowsEglApplication::tryCreateContext(): cannot initialize EGL:" << Implementation::eglErrorString(eglGetError());
-        return false;
+        return;
     }
 
     const EGLenum api =
@@ -78,7 +78,7 @@ WindowlessWindowsEglContext::WindowlessWindowsEglContext(const Configuration& co
         ;
     if(!eglBindAPI(api)) {
         Error() << "Platform::WindowlessWindowsEglApplication::tryCreateContext(): cannot bind EGL API:" << Implementation::eglErrorString(eglGetError());
-        return false;
+        return;
     }
 
     /* Choose EGL config */
@@ -102,12 +102,12 @@ WindowlessWindowsEglContext::WindowlessWindowsEglContext(const Configuration& co
     EGLConfig config;
     if(!eglChooseConfig(_display, attribs, &config, 1, &configCount)) {
         Error() << "Platform::WindowlessWindowsEglApplication::tryCreateContext(): cannot get EGL visual config:" << Implementation::eglErrorString(eglGetError());
-        return false;
+        return;
     }
 
     if(!configCount) {
         Error() << "Platform::WindowlessWindowsEglApplication::tryCreateContext(): no matching EGL visual config available";
-        return false;
+        return;
     }
 
     const EGLint attributes[] = {
@@ -173,7 +173,7 @@ WindowlessWindowsEglApplication::WindowlessWindowsEglApplication(const Arguments
     createContext(configuration);
 }
 
-WindowlessWindowsEglApplication::WindowlessWindowsEglApplication(const Arguments& arguments, std::nullptr_t): _glContext{NoCreate}, _context{new Context{NoCreate, arguments.argc, arguments.argv}} {}
+WindowlessWindowsEglApplication::WindowlessWindowsEglApplication(const Arguments& arguments, NoCreateT): _glContext{NoCreate}, _context{new Context{NoCreate, arguments.argc, arguments.argv}} {}
 
 void WindowlessWindowsEglApplication::createContext() { createContext({}); }
 
