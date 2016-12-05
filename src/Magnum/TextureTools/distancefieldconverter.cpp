@@ -53,10 +53,10 @@
 #include "Magnum/Platform/WindowlessGlxApplication.h"
 #endif
 #elif defined(CORRADE_TARGET_WINDOWS)
-#if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_DESKTOP_GLES)
-#include "Magnum/Platform/WindowlessWglApplication.h"
-#else
+#if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_DESKTOP_GLES)
 #include "Magnum/Platform/WindowlessWindowsEglApplication.h"
+#else
+#include "Magnum/Platform/WindowlessWglApplication.h"
 #endif
 #else
 #error no windowless application available on this platform
