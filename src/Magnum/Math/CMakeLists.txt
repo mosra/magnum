@@ -33,6 +33,7 @@ set(MagnumMath_HEADERS
     Dual.h
     DualComplex.h
     DualQuaternion.h
+    Frustum.h
     Functions.h
     Math.h
     TypeTraits.h

@@ -25,3 +25,7 @@
 
 corrade_add_test(MathGeometryDistanceTest DistanceTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathGeometryIntersectionTest IntersectionTest.cpp LIBRARIES MagnumMathTestLib)
+
+set_property(TARGET
+    MathGeometryDistanceTest
+    APPEND PROPERTY COMPILE_DEFINITIONS "CORRADE_GRACEFUL_ASSERT")
