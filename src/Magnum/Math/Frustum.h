@@ -107,7 +107,8 @@ template<class T> class Frustum {
         }
 
         /** @brief Plane at given index */
-        constexpr Vector4<T> operator[](std::size_t i) const { return _data[i]; }
+        /* returns const& so [][] operations are also constexpr */
+        constexpr const Vector4<T>& operator[](std::size_t i) const { return _data[i]; }
 
         /** @brief Left plane */
         constexpr Vector4<T> left() const { return _data[0]; }
