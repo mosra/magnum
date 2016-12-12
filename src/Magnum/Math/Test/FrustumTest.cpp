@@ -261,7 +261,10 @@ void FrustumTest::data() {
     /* Using default-constructed to verify that the planes are in correct order */
     constexpr Frustum a;
 
-    constexpr Vector4 right = a.planes()[1];
+    #if !defined(__GNUC__) || __GNUC__*100 + __GNUC_MINOR__ >= 500
+    constexpr
+    #endif
+    Vector4 right = a.planes()[1];
     CORRADE_COMPARE(right, (Vector4{-1.0f, 0.0f, 0.0f, 1.0f}));
 
     constexpr Vector4 bottom = a[2];
