@@ -94,7 +94,21 @@ and @ref cmake for more information.
 /** @namespace Magnum::Math::Geometry
 @brief Geometry library
 
-Functions for computing intersections, distances, areas and volumes.
+This library is built as part of Magnum by default. To use it, you need to
+find `Magnum` package and link to `Magnum::Magnum` target. See @ref building
+and @ref cmake for more information.
+*/
+
+/** @namespace Magnum::Math::Geometry::Distance
+@brief Functions for calculating distances
+
+This library is built as part of Magnum by default. To use it, you need to
+find `Magnum` package and link to `Magnum::Magnum` target. See @ref building
+and @ref cmake for more information.
+*/
+
+/** @namespace Magnum::Math::Geometry::Intersection
+@brief Function for calculating intersections
 
 This library is built as part of Magnum by default. To use it, you need to
 find `Magnum` package and link to `Magnum::Magnum` target. See @ref building
