@@ -39,10 +39,7 @@ namespace Magnum { namespace Math {
 namespace Implementation {
 
 template<> struct QuaternionConverter<Float, Quat> {
-    #if !defined(__GNUC__) || defined(__clang__)
-    constexpr /* See the convert() test case */
-    #endif
-    static Quaternion<Float> from(const Quat& other) {
+    constexpr static Quaternion<Float> from(const Quat& other) {
         return {{other.x, other.y, other.z}, other.w};
     }
 
@@ -233,13 +230,9 @@ void QuaternionTest::convert() {
     constexpr Quat a{1.5f, -3.5f, 7.0f, -0.5f};
     constexpr Quaternion b{{1.5f, -3.5f, 7.0f}, -0.5f};
 
-    /* GCC 5.1 fills the result with zeros instead of properly calling
-       delegated copy constructor if using constexpr. Reported here:
-       https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66450 */
-    #if !defined(__GNUC__) || defined(__clang__)
-    constexpr
-    #endif
-    Quaternion c{a};
+    /* GCC 5.1 had a bug: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=66450
+       Hopefully this does not reappear. */
+    constexpr Quaternion c{a};
     CORRADE_COMPARE(c, b);
 
     constexpr Quat d(b);
