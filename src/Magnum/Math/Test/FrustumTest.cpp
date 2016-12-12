@@ -270,7 +270,10 @@ void FrustumTest::data() {
     constexpr Vector4 near = a.near();
     CORRADE_COMPARE(near, (Vector4{0.0f, 0.0f, 1.0f, 1.0f}));
 
-    constexpr Float b = *a.data();
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Apparently dereferencing pointer is verboten */
+    constexpr
+    #endif
+    Float b = *a.data();
     CORRADE_COMPARE(b, 1.0f);
 }
 
