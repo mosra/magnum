@@ -113,7 +113,8 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
          * @p i should not be larger than @ref Order.
          */
         Vector<dimensions, T>& operator[](std::size_t i) { return _data[i]; }
-        constexpr Vector<dimensions, T> operator[](std::size_t i) const { return _data[i]; } /**< @overload */
+        /* returns const& so [][] operations are also constexpr */
+        constexpr const Vector<dimensions, T>& operator[](std::size_t i) const { return _data[i]; } /**< @overload */
 
         /**
          * @brief Interpolate the curve at given position
