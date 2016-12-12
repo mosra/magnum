@@ -41,7 +41,7 @@ namespace Implementation {
     template<class T> struct RangeTraits<2, T> { typedef Vector2<T> Type; };
     template<class T> struct RangeTraits<3, T> { typedef Vector3<T> Type; };
 
-    template<std::size_t, class, class> struct RangeConverter;
+    template<UnsignedInt, class, class> struct RangeConverter;
 }
 
 /**
