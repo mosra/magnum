@@ -30,7 +30,37 @@
 
 #include "Magnum/Math/Frustum.h"
 
-namespace Magnum { namespace Math { namespace Test {
+struct Frstm {
+    float data[24];
+};
+
+namespace Magnum { namespace Math {
+
+namespace Implementation {
+
+template<> struct FrustumConverter<Float, Frstm> {
+    constexpr static Frustum<Float> from(const Frstm& other) {
+        return {{other.data[ 0 + 0], other.data[ 0 + 1], other.data[ 0 + 2], other.data[ 0 + 3]},
+                {other.data[ 4 + 0], other.data[ 4 + 1], other.data[ 4 + 2], other.data[ 4 + 3]},
+                {other.data[ 8 + 0], other.data[ 8 + 1], other.data[ 8 + 2], other.data[ 8 + 3]},
+                {other.data[12 + 0], other.data[12 + 1], other.data[12 + 2], other.data[12 + 3]},
+                {other.data[16 + 0], other.data[16 + 1], other.data[16 + 2], other.data[16 + 3]},
+                {other.data[20 + 0], other.data[20 + 1], other.data[20 + 2], other.data[20 + 3]}};
+    }
+
+    constexpr static Frstm to(const Frustum<Float>& other) {
+        return {{other[0][0], other[0][1], other[0][2], other[0][3],
+                 other[1][0], other[1][1], other[1][2], other[1][3],
+                 other[2][0], other[2][1], other[2][2], other[2][3],
+                 other[3][0], other[3][1], other[3][2], other[3][3],
+                 other[4][0], other[4][1], other[4][2], other[4][3],
+                 other[5][0], other[5][1], other[5][2], other[5][3]}};
+    }
+};
+
+}
+
+namespace Test {
 
 struct FrustumTest: Corrade::TestSuite::Tester {
     explicit FrustumTest();
@@ -41,6 +71,7 @@ struct FrustumTest: Corrade::TestSuite::Tester {
     void constructConversion();
     void constructCopy();
     void constructFromMatrix();
+    void convert();
 
     void data();
 
@@ -61,6 +92,7 @@ FrustumTest::FrustumTest() {
               &FrustumTest::constructConversion,
               &FrustumTest::constructCopy,
               &FrustumTest::constructFromMatrix,
+              &FrustumTest::convert,
 
               &FrustumTest::data,
 
@@ -194,6 +226,35 @@ void FrustumTest::constructFromMatrix() {
     /* Constructing from a default-constructed matrix should be equivalent to
        default constructor */
     CORRADE_COMPARE(Frustum::fromMatrix({}), Frustum{});
+}
+
+void FrustumTest::convert() {
+    constexpr Frstm a{{
+        -1.0f,  2.0f, -3.0f, 0.1f,
+         1.0f, -2.0f,  3.0f, 0.2f,
+        -4.0f,  5.0f, -6.0f, 0.3f,
+         4.0f, -5.0f,  6.0f, 0.4f,
+        -7.0f,  8.0f, -9.0f, 0.5f,
+         7.0f,  8.0f,  9.0f, 0.6f}};
+    constexpr Frustum b{
+        {-1.0f,  2.0f, -3.0f, 0.1f},
+        { 1.0f, -2.0f,  3.0f, 0.2f},
+        {-4.0f,  5.0f, -6.0f, 0.3f},
+        { 4.0f, -5.0f,  6.0f, 0.4f},
+        {-7.0f,  8.0f, -9.0f, 0.5f},
+        { 7.0f,  8.0f,  9.0f, 0.6f}};
+
+    constexpr Frustum c{a};
+    CORRADE_COMPARE(c, b);
+
+    constexpr Frstm d(b);
+    CORRADE_COMPARE_AS(Corrade::Containers::ArrayView<const Float>{d.data},
+        (Corrade::Containers::ArrayView<const Float>{a.data}),
+        Corrade::TestSuite::Compare::Container);
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Frstm, Frustum>::value));
+    CORRADE_VERIFY(!(std::is_convertible<Frustum, Frstm>::value));
 }
 
 void FrustumTest::data() {

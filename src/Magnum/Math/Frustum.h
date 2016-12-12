@@ -39,6 +39,10 @@
 
 namespace Magnum { namespace Math {
 
+namespace Implementation {
+    template<class, class> struct FrustumConverter;
+}
+
 /**
 @brief Camera frustum
 
@@ -79,6 +83,14 @@ template<class T> class Frustum {
          * anything else.
          */
         template<class U> constexpr explicit Frustum(const Frustum<U>& other) noexcept;
+
+        /** @brief Construct frustum from external representation */
+        template<class U, class V = decltype(Implementation::FrustumConverter<T, U>::from(std::declval<U>()))> constexpr explicit Frustum(const U& other) noexcept: Frustum<T>{Implementation::FrustumConverter<T, U>::from(other)} {}
+
+        /** @brief Convert frustum to external representation */
+        template<class U, class V = decltype(Implementation::FrustumConverter<T, U>::to(std::declval<Frustum<T>>()))> constexpr explicit operator U() const {
+            return Implementation::FrustumConverter<T, U>::to(*this);
+        }
 
         /** @brief Equality comparison */
         bool operator==(const Frustum<T>& other) const {
