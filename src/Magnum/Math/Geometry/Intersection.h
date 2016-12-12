@@ -166,29 +166,23 @@ template<class T> bool Intersection::pointFrustum(const Vector3<T>& point, const
 }
 
 template<class T> bool Intersection::boxFrustum(const Range3D<T>& box, const Frustum<T>& frustum) {
-    /* Create the 8 vertices of the box from the 2 given vertices min and max
-       Check for each corner of an octant whether it is inside the frustum. If
-       only some of the corners are inside, the octant requires further checks. */
-    Int planes = 0;
-
     for(const Vector4<T>& plane: frustum.planes()) {
-        Int corners = 0;
+        bool cornerHit = 0;
 
         for(UnsignedByte c = 0; c != 8; ++c) {
             const Vector3<T> corner = Math::lerp(box.min(), box.max(), Math::BoolVector<3>{c});
 
-            if(Distance::pointPlaneScaled<T>(corner, plane) >= T(0))
-                ++corners;
+            if(Distance::pointPlaneScaled<T>(corner, plane) >= T(0)) {
+                cornerHit = true;
+                break;
+            }
         }
 
         /* All corners are outside this plane */
-        if(corners == 0) return false;
-
-        if(corners == 8) ++planes;
+        if(!cornerHit) return false;
     }
 
     /** @todo potentially check corners here to avoid false positives */
-    /* if(planes == 6) return true; */
 
     return true;
 }
