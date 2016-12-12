@@ -183,6 +183,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * @see @ref row(), @ref data()
          */
         Vector<rows, T>& operator[](std::size_t col) { return _data[col]; }
+        /* returns const& so [][] operations are also constexpr */
         constexpr const Vector<rows, T>& operator[](std::size_t col) const { return _data[col]; } /**< @overload */
 
         /**
