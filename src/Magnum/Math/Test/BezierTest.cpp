@@ -32,7 +32,27 @@
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/Math/Functions.h"
 
-namespace Magnum { namespace Math { namespace Test {
+struct QBezier2D {
+    float x0, x1, x2, y0, y1, y2;
+};
+
+namespace Magnum { namespace Math {
+
+namespace Implementation {
+
+template<> struct BezierConverter<2, 2, Float, QBezier2D> {
+    constexpr static QuadraticBezier2D<Float> from(const QBezier2D& other) {
+        return {Vector2<Float>{other.x0, other.y0}, Vector2<Float>{other.x1, other.y1}, Vector2<Float>{other.x2, other.y2}};
+    }
+
+    constexpr static QBezier2D to(const QuadraticBezier2D<Float>& other) {
+        return {other[0][0], other[1][0], other[2][0], other[0][1], other[1][1], other[2][1]};
+    }
+};
+
+}
+
+namespace Test {
 
 typedef Math::Vector2<Float> Vector2;
 typedef Math::Vector2<Double> Vector2d;
@@ -49,6 +69,7 @@ struct BezierTest : Corrade::TestSuite::Tester {
     void constructNoInit();
     void constructConversion();
     void constructCopy();
+    void convert();
 
     void data();
 
@@ -71,6 +92,7 @@ BezierTest::BezierTest() {
               &BezierTest::constructNoInit,
               &BezierTest::constructConversion,
               &BezierTest::constructCopy,
+              &BezierTest::convert,
 
               &BezierTest::data,
 
@@ -140,6 +162,24 @@ void BezierTest::constructCopy() {
 
     CORRADE_VERIFY(std::is_nothrow_copy_constructible<QuadraticBezier2D>::value);
     CORRADE_VERIFY(std::is_nothrow_copy_assignable<QuadraticBezier2D>::value);
+}
+
+void BezierTest::convert() {
+    constexpr QBezier2D a{0.5f, 1.1f, 0.1f, 1.0f, 0.3f, 1.2f};
+    constexpr QuadraticBezier2D b{Vector2{0.5f, 1.0f}, Vector2{1.1f, 0.3f}, Vector2{0.1f, 1.2f}};
+
+    constexpr QuadraticBezier2D c{a};
+    CORRADE_COMPARE(c, b);
+
+    constexpr QBezier2D d(b);
+    CORRADE_COMPARE(d.x0, a.x0);
+    CORRADE_COMPARE(d.x1, a.x1);
+    CORRADE_COMPARE(d.y0, a.y0);
+    CORRADE_COMPARE(d.y1, a.y1);
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<QBezier2D, QuadraticBezier2D>::value));
+    CORRADE_VERIFY(!(std::is_convertible<QuadraticBezier2D, QBezier2D>::value));
 }
 
 void BezierTest::data() {

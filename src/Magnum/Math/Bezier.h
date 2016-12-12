@@ -36,6 +36,10 @@
 
 namespace Magnum { namespace Math {
 
+namespace Implementation {
+    template<UnsignedInt, UnsignedInt, class, class> struct BezierConverter;
+}
+
 /**
 @brief Bézier curve
 @tparam order       Order of Bézier curve
@@ -94,6 +98,14 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
          * anything else.
          */
         template<class U> constexpr explicit Bezier(const Bezier<order, dimensions, U>& other) noexcept: Bezier{typename Implementation::GenerateSequence<order + 1>::Type(), other} {}
+
+        /** @brief Construct Bézier from external representation */
+        template<class U, class V = decltype(Implementation::BezierConverter<order, dimensions, T, U>::from(std::declval<U>()))> constexpr explicit Bezier(const U& other) noexcept: Bezier<order, dimensions, T>{Implementation::BezierConverter<order, dimensions, T, U>::from(other)} {}
+
+        /** @brief Convert Bézier to external representation */
+        template<class U, class V = decltype(Implementation::BezierConverter<order, dimensions, T, U>::to(std::declval<Bezier<order, dimensions, T>>()))> constexpr explicit operator U() const {
+            return Implementation::BezierConverter<order, dimensions, T, U>::to(*this);
+        }
 
         /** @brief Equality comparison */
         bool operator==(const Bezier<order, dimensions, T>& other) const {
