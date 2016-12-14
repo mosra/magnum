@@ -241,11 +241,11 @@ template<class T> class Color3: public Vector3<T> {
          *
          * Hue can overflow the range @f$ [0.0, 360.0] @f$.
          */
-        constexpr static Color3<T> fromHSV(HSV hsv) {
+        static Color3<T> fromHSV(HSV hsv) {
             return Implementation::fromHSV<T>(hsv);
         }
         /** @overload */
-        constexpr static Color3<T> fromHSV(Deg<FloatingPointType> hue, FloatingPointType saturation, FloatingPointType value) {
+        static Color3<T> fromHSV(Deg<FloatingPointType> hue, FloatingPointType saturation, FloatingPointType value) {
             return fromHSV(std::make_tuple(hue, saturation, value));
         }
 
@@ -318,7 +318,7 @@ template<class T> class Color3: public Vector3<T> {
          *
          * @see @ref hue(), @ref saturation(), @ref value(), @ref fromHSV()
          */
-        constexpr HSV toHSV() const {
+        HSV toHSV() const {
             return Implementation::toHSV<T>(*this);
         }
 
@@ -328,7 +328,7 @@ template<class T> class Color3: public Vector3<T> {
          *
          * @see @ref saturation(), @ref value(), @ref toHSV(), @ref fromHSV()
          */
-        constexpr Deg<FloatingPointType> hue() const {
+        Deg<FloatingPointType> hue() const {
             return Deg<FloatingPointType>(Implementation::hue<T>(*this));
         }
 
@@ -338,7 +338,7 @@ template<class T> class Color3: public Vector3<T> {
          *
          * @see @ref hue(), @ref value(), @ref toHSV(), @ref fromHSV()
          */
-        constexpr FloatingPointType saturation() const {
+        FloatingPointType saturation() const {
             return Implementation::saturation<T>(*this);
         }
 
@@ -348,7 +348,7 @@ template<class T> class Color3: public Vector3<T> {
          *
          * @see @ref hue(), @ref saturation(), @ref toHSV(), @ref fromHSV()
          */
-        constexpr FloatingPointType value() const {
+        FloatingPointType value() const {
             return Implementation::value<T>(*this);
         }
 
@@ -446,11 +446,11 @@ class Color4: public Vector4<T> {
          * @param a     Alpha value, defaults to `1.0` for floating-point types
          *      and maximum positive value for integral types.
          */
-        constexpr static Color4<T> fromHSV(HSV hsv, T a = Implementation::fullChannel<T>()) {
+        static Color4<T> fromHSV(HSV hsv, T a = Implementation::fullChannel<T>()) {
             return Color4<T>(Implementation::fromHSV<T>(hsv), a);
         }
         /** @overload */
-        constexpr static Color4<T> fromHSV(Deg<FloatingPointType> hue, FloatingPointType saturation, FloatingPointType value, T alpha = Implementation::fullChannel<T>()) {
+        static Color4<T> fromHSV(Deg<FloatingPointType> hue, FloatingPointType saturation, FloatingPointType value, T alpha = Implementation::fullChannel<T>()) {
             return fromHSV(std::make_tuple(hue, saturation, value), alpha);
         }
 
@@ -528,22 +528,22 @@ class Color4: public Vector4<T> {
         constexpr /*implicit*/ Color4(const Vector<4, T>& other) noexcept: Vector4<T>(other) {}
 
         /** @copydoc Color3::toHSV() */
-        constexpr HSV toHSV() const {
+        HSV toHSV() const {
             return Implementation::toHSV<T>(Vector4<T>::rgb());
         }
 
         /** @copydoc Color3::hue() */
-        constexpr Deg<FloatingPointType> hue() const {
+        Deg<FloatingPointType> hue() const {
             return Implementation::hue<T>(Vector4<T>::rgb());
         }
 
         /** @copydoc Color3::saturation() */
-        constexpr FloatingPointType saturation() const {
+        FloatingPointType saturation() const {
             return Implementation::saturation<T>(Vector4<T>::rgb());
         }
 
         /** @copydoc Color3::value() */
-        constexpr FloatingPointType value() const {
+        FloatingPointType value() const {
             return Implementation::value<T>(Vector4<T>::rgb());
         }
 
