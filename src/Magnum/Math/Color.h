@@ -39,7 +39,7 @@ namespace Magnum { namespace Math {
 namespace Implementation {
 
 /* Convert color from HSV */
-template<class T> typename std::enable_if<std::is_floating_point<T>::value, Color3<T>>::type fromHSV(typename Color3<T>::HSV hsv) {
+template<class T> typename std::enable_if<std::is_floating_point<T>::value, Color3<T>>::type fromHsv(typename Color3<T>::Hsv hsv) {
     Deg<T> hue;
     T saturation, value;
     std::tie(hue, saturation, value) = hsv;
@@ -65,8 +65,8 @@ template<class T> typename std::enable_if<std::is_floating_point<T>::value, Colo
         default: CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     }
 }
-template<class T> inline typename std::enable_if<std::is_integral<T>::value, Color3<T>>::type fromHSV(typename Color3<T>::HSV hsv) {
-    return denormalize<Color3<T>>(fromHSV<typename Color3<T>::FloatingPointType>(hsv));
+template<class T> inline typename std::enable_if<std::is_integral<T>::value, Color3<T>>::type fromHsv(typename Color3<T>::Hsv hsv) {
+    return denormalize<Color3<T>>(fromHsv<typename Color3<T>::FloatingPointType>(hsv));
 }
 
 /* Internal hue computing function */
@@ -113,14 +113,14 @@ template<class T> inline typename Color3<T>::FloatingPointType value(typename st
 }
 
 /* Convert color to HSV */
-template<class T> inline typename Color3<T>::HSV toHSV(typename std::enable_if<std::is_floating_point<T>::value, const Color3<T>&>::type color) {
+template<class T> inline typename Color3<T>::Hsv toHsv(typename std::enable_if<std::is_floating_point<T>::value, const Color3<T>&>::type color) {
     T max = color.max();
     T delta = max - color.min();
 
-    return typename Color3<T>::HSV(hue<typename Color3<T>::FloatingPointType>(color, max, delta), max != T(0) ? delta/max : T(0), max);
+    return typename Color3<T>::Hsv(hue<typename Color3<T>::FloatingPointType>(color, max, delta), max != T(0) ? delta/max : T(0), max);
 }
-template<class T> inline typename Color3<T>::HSV toHSV(typename std::enable_if<std::is_integral<T>::value, const Color3<T>&>::type color) {
-    return toHSV<typename Color3<T>::FloatingPointType>(normalize<Color3<typename Color3<T>::FloatingPointType>>(color));
+template<class T> inline typename Color3<T>::Hsv toHsv(typename std::enable_if<std::is_integral<T>::value, const Color3<T>&>::type color) {
+    return toHsv<typename Color3<T>::FloatingPointType>(normalize<Color3<typename Color3<T>::FloatingPointType>>(color));
 }
 
 /* Value for full channel (1.0f for floats, 255 for unsigned byte) */
@@ -233,22 +233,45 @@ template<class T> class Color3: public Vector3<T> {
          * Hue in range @f$ [0.0, 360.0] @f$, saturation and value in
          * range @f$ [0.0, 1.0] @f$.
          */
-        typedef std::tuple<Deg<FloatingPointType>, FloatingPointType, FloatingPointType> HSV;
+        typedef std::tuple<Deg<FloatingPointType>, FloatingPointType, FloatingPointType> Hsv;
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @copybrief Hsv
+         * @deprecated Use @ref Hsv instead.
+         */
+        typedef CORRADE_DEPRECATED("use Hsv instead") Hsv HSV;
+        #endif
 
         /**
          * @brief Create RGB color from HSV representation
          * @param hsv Hue, saturation and value
          *
          * Hue can overflow the range @f$ [0.0, 360.0] @f$.
-         * @see @ref toHSV()
+         * @see @ref toHsv()
          */
-        static Color3<T> fromHSV(HSV hsv) {
-            return Implementation::fromHSV<T>(hsv);
+        static Color3<T> fromHsv(Hsv hsv) {
+            return Implementation::fromHsv<T>(hsv);
         }
         /** @overload */
-        static Color3<T> fromHSV(Deg<FloatingPointType> hue, FloatingPointType saturation, FloatingPointType value) {
-            return fromHSV(std::make_tuple(hue, saturation, value));
+        static Color3<T> fromHsv(Deg<FloatingPointType> hue, FloatingPointType saturation, FloatingPointType value) {
+            return fromHsv(std::make_tuple(hue, saturation, value));
         }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @copybrief fromHsv(Hsv)
+         * @deprecated Use @ref fromHsv(Hsv) instead.
+         */
+        CORRADE_DEPRECATED("use fromHsv() instead") static Color3<T> fromHSV(Hsv hsv) {
+            return fromHsv(hsv);
+        }
+        /** @copybrief fromHsv(Deg<FloatingPointType>, FloatingPointType, FloatingPointType)
+         * @deprecated Use @ref fromHsv(Deg<FloatingPointType>, FloatingPointType, FloatingPointType)
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use fromHsv() instead") static Color3<T> fromHSV(Deg<FloatingPointType> hue, FloatingPointType saturation, FloatingPointType value) {
+            return fromHsv(hue, saturation, value);
+        }
+        #endif
 
         /**
          * @brief Default constructor
@@ -315,20 +338,27 @@ template<class T> class Color3: public Vector3<T> {
          * @code
          * Deg hue;
          * Float saturation, value;
-         * std::tie(hue, saturation, value) = color.toHSV();
+         * std::tie(hue, saturation, value) = color.toHsv();
          * @endcode
          *
-         * @see @ref hue(), @ref saturation(), @ref value(), @ref fromHSV()
+         * @see @ref hue(), @ref saturation(), @ref value(), @ref fromHSv()
          */
-        HSV toHSV() const {
-            return Implementation::toHSV<T>(*this);
+        Hsv toHsv() const {
+            return Implementation::toHsv<T>(*this);
         }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @copybrief toHsv()
+         * @deprecated Use @ref toHsv() instead.
+         */
+        CORRADE_DEPRECATED("use toHsv() instead") Hsv toHSV() const { return toHsv(); }
+        #endif
 
         /**
          * @brief Hue
          * @return Hue in range @f$ [0.0, 360.0] @f$.
          *
-         * @see @ref saturation(), @ref value(), @ref toHSV(), @ref fromHSV()
+         * @see @ref saturation(), @ref value(), @ref toHsv(), @ref fromHsv()
          */
         Deg<FloatingPointType> hue() const {
             return Deg<FloatingPointType>(Implementation::hue<T>(*this));
@@ -338,7 +368,7 @@ template<class T> class Color3: public Vector3<T> {
          * @brief Saturation
          * @return Saturation in range @f$ [0.0, 1.0] @f$.
          *
-         * @see @ref hue(), @ref value(), @ref toHSV(), @ref fromHSV()
+         * @see @ref hue(), @ref value(), @ref toHsv(), @ref fromHsv()
          */
         FloatingPointType saturation() const {
             return Implementation::saturation<T>(*this);
@@ -348,7 +378,7 @@ template<class T> class Color3: public Vector3<T> {
          * @brief Value
          * @return Value in range @f$ [0.0, 1.0] @f$.
          *
-         * @see @ref hue(), @ref saturation(), @ref toHSV(), @ref fromHSV()
+         * @see @ref hue(), @ref saturation(), @ref toHsv(), @ref fromHsv()
          */
         FloatingPointType value() const {
             return Implementation::value<T>(*this);
@@ -380,8 +410,15 @@ class Color4: public Vector4<T> {
         /** @copydoc Color3::FloatingPointType */
         typedef typename Color3<T>::FloatingPointType FloatingPointType;
 
-        /** @copydoc Color3::HSV */
-        typedef typename Color3<T>::HSV HSV;
+        /** @copydoc Color3::Hsv */
+        typedef typename Color3<T>::Hsv Hsv;
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @copybrief Hsv
+         * @deprecated Use @ref Hsv instead.
+         */
+        typedef CORRADE_DEPRECATED("use Hsv instead") Hsv HSV;
+        #endif
 
         /**
          * @brief Red color
@@ -450,15 +487,31 @@ class Color4: public Vector4<T> {
          *      and maximum positive value for integral types.
          *
          * Hue can overflow the range @f$ [0.0, 360.0] @f$.
-         * @see @ref toHSV()
+         * @see @ref toHsv()
          */
-        static Color4<T> fromHSV(HSV hsv, T a = Implementation::fullChannel<T>()) {
-            return Color4<T>(Implementation::fromHSV<T>(hsv), a);
+        static Color4<T> fromHsv(Hsv hsv, T a = Implementation::fullChannel<T>()) {
+            return Color4<T>(Implementation::fromHsv<T>(hsv), a);
         }
         /** @overload */
-        static Color4<T> fromHSV(Deg<FloatingPointType> hue, FloatingPointType saturation, FloatingPointType value, T alpha = Implementation::fullChannel<T>()) {
-            return fromHSV(std::make_tuple(hue, saturation, value), alpha);
+        static Color4<T> fromHsv(Deg<FloatingPointType> hue, FloatingPointType saturation, FloatingPointType value, T alpha = Implementation::fullChannel<T>()) {
+            return fromHsv(std::make_tuple(hue, saturation, value), alpha);
         }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @copybrief fromHsv(Hsv, T)
+         * @deprecated Use @ref fromHsv(Hsv, T) instead.
+         */
+        CORRADE_DEPRECATED("use fromHsv() instead") static Color4<T> fromHSV(Hsv hsv, T a = Implementation::fullChannel<T>()) {
+            return fromHsv(hsv, a);
+        }
+        /** @copybrief fromHsv(Deg<FloatingPointType>, FloatingPointType, FloatingPointType, T)
+         * @deprecated Use @ref fromHsv(Deg<FloatingPointType>, FloatingPointType, FloatingPointType, T)
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use fromHsv() instead") static Color4<T> fromHSV(Deg<FloatingPointType> hue, FloatingPointType saturation, FloatingPointType value, T a = Implementation::fullChannel<T>()) {
+            return fromHsv(hue, saturation, value, a);
+        }
+        #endif
 
         /**
          * @brief Default constructor
@@ -533,10 +586,17 @@ class Color4: public Vector4<T> {
         /** @brief Copy constructor */
         constexpr /*implicit*/ Color4(const Vector<4, T>& other) noexcept: Vector4<T>(other) {}
 
-        /** @copydoc Color3::toHSV() */
-        HSV toHSV() const {
-            return Implementation::toHSV<T>(Vector4<T>::rgb());
+        /** @copydoc Color3::toHsv() */
+        Hsv toHsv() const {
+            return Implementation::toHsv<T>(Vector4<T>::rgb());
         }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @copybrief toHsv()
+         * @deprecated Use @ref toHsv() instead.
+         */
+        CORRADE_DEPRECATED("use toHsv() instead") Hsv toHSV() const { return toHsv(); }
+        #endif
 
         /** @copydoc Color3::hue() */
         Deg<FloatingPointType> hue() const {

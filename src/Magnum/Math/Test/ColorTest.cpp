@@ -371,12 +371,12 @@ void ColorTest::colors() {
 }
 
 void ColorTest::fromHue() {
-    CORRADE_COMPARE(Color3ub::fromHSV(27.0_degf, 1.0f, 1.0f), Color3ub(255, 114, 0));
-    CORRADE_COMPARE(Color3ub::fromHSV(86.0_degf, 1.0f, 1.0f), Color3ub(144, 255, 0));
-    CORRADE_COMPARE(Color3ub::fromHSV(134.0_degf, 1.0f, 1.0f), Color3ub(0, 255, 59));
-    CORRADE_COMPARE(Color3ub::fromHSV(191.0_degf, 1.0f, 1.0f), Color3ub(0, 208, 255));
-    CORRADE_COMPARE(Color3ub::fromHSV(269.0_degf, 1.0f, 1.0f), Color3ub(123, 0, 255));
-    CORRADE_COMPARE(Color3ub::fromHSV(317.0_degf, 1.0f, 1.0f), Color3ub(255, 0, 182));
+    CORRADE_COMPARE(Color3ub::fromHsv(27.0_degf, 1.0f, 1.0f), Color3ub(255, 114, 0));
+    CORRADE_COMPARE(Color3ub::fromHsv(86.0_degf, 1.0f, 1.0f), Color3ub(144, 255, 0));
+    CORRADE_COMPARE(Color3ub::fromHsv(134.0_degf, 1.0f, 1.0f), Color3ub(0, 255, 59));
+    CORRADE_COMPARE(Color3ub::fromHsv(191.0_degf, 1.0f, 1.0f), Color3ub(0, 208, 255));
+    CORRADE_COMPARE(Color3ub::fromHsv(269.0_degf, 1.0f, 1.0f), Color3ub(123, 0, 255));
+    CORRADE_COMPARE(Color3ub::fromHsv(317.0_degf, 1.0f, 1.0f), Color3ub(255, 0, 182));
 }
 
 void ColorTest::hue() {
@@ -389,7 +389,7 @@ void ColorTest::hue() {
 }
 
 void ColorTest::fromSaturation() {
-    CORRADE_COMPARE(Color3ub::fromHSV(0.0_degf, 0.702f, 1.0f), Color3ub(255, 75, 75));
+    CORRADE_COMPARE(Color3ub::fromHsv(0.0_degf, 0.702f, 1.0f), Color3ub(255, 75, 75));
 }
 
 void ColorTest::saturation() {
@@ -398,7 +398,7 @@ void ColorTest::saturation() {
 }
 
 void ColorTest::fromValue() {
-    CORRADE_COMPARE(Color3ub::fromHSV(0.0_degf, 1.0f, 0.522f), Color3ub(133, 0, 0));
+    CORRADE_COMPARE(Color3ub::fromHsv(0.0_degf, 1.0f, 0.522f), Color3ub(133, 0, 0));
 }
 
 void ColorTest::value() {
@@ -406,39 +406,39 @@ void ColorTest::value() {
 }
 
 void ColorTest::hsv() {
-    CORRADE_COMPARE(Color3ub::fromHSV(230.0_degf, 0.749f, 0.427f), Color3ub(27, 40, 108));
+    CORRADE_COMPARE(Color3ub::fromHsv(230.0_degf, 0.749f, 0.427f), Color3ub(27, 40, 108));
 
     Deg hue;
     Float saturation, value;
-    std::tie(hue, saturation, value) = Color3ub(27, 41, 109).toHSV();
+    std::tie(hue, saturation, value) = Color3ub(27, 41, 109).toHsv();
     CORRADE_COMPARE(hue, 229.756106_degf);
     CORRADE_COMPARE(saturation, 0.752294f);
     CORRADE_COMPARE(value, 0.427451f);
 }
 
 void ColorTest::hsvOverflow() {
-    CORRADE_COMPARE(Color3ub::fromHSV(27.0_degf - 360.0_degf, 1.0f, 1.0f), Color3ub(255, 114, 0));
-    CORRADE_COMPARE(Color3ub::fromHSV(86.0_degf - 360.0_degf, 1.0f, 1.0f), Color3ub(144, 255, 0));
-    CORRADE_COMPARE(Color3ub::fromHSV(134.0_degf - 360.0_degf, 1.0f, 1.0f), Color3ub(0, 255, 59));
-    CORRADE_COMPARE(Color3ub::fromHSV(191.0_degf - 360.0_degf, 1.0f, 1.0f), Color3ub(0, 208, 255));
-    CORRADE_COMPARE(Color3ub::fromHSV(269.0_degf - 360.0_degf, 1.0f, 1.0f), Color3ub(123, 0, 255));
-    CORRADE_COMPARE(Color3ub::fromHSV(317.0_degf - 360.0_degf, 1.0f, 1.0f), Color3ub(255, 0, 182));
+    CORRADE_COMPARE(Color3ub::fromHsv(27.0_degf - 360.0_degf, 1.0f, 1.0f), Color3ub(255, 114, 0));
+    CORRADE_COMPARE(Color3ub::fromHsv(86.0_degf - 360.0_degf, 1.0f, 1.0f), Color3ub(144, 255, 0));
+    CORRADE_COMPARE(Color3ub::fromHsv(134.0_degf - 360.0_degf, 1.0f, 1.0f), Color3ub(0, 255, 59));
+    CORRADE_COMPARE(Color3ub::fromHsv(191.0_degf - 360.0_degf, 1.0f, 1.0f), Color3ub(0, 208, 255));
+    CORRADE_COMPARE(Color3ub::fromHsv(269.0_degf - 360.0_degf, 1.0f, 1.0f), Color3ub(123, 0, 255));
+    CORRADE_COMPARE(Color3ub::fromHsv(317.0_degf - 360.0_degf, 1.0f, 1.0f), Color3ub(255, 0, 182));
 
-    CORRADE_COMPARE(Color3ub::fromHSV(360.0_degf + 27.0_degf, 1.0f, 1.0f), Color3ub(255, 114, 0));
-    CORRADE_COMPARE(Color3ub::fromHSV(360.0_degf + 86.0_degf, 1.0f, 1.0f), Color3ub(144, 255, 0));
-    CORRADE_COMPARE(Color3ub::fromHSV(360.0_degf + 134.0_degf, 1.0f, 1.0f), Color3ub(0, 255, 59));
-    CORRADE_COMPARE(Color3ub::fromHSV(360.0_degf + 191.0_degf, 1.0f, 1.0f), Color3ub(0, 208, 255));
-    CORRADE_COMPARE(Color3ub::fromHSV(360.0_degf + 269.0_degf, 1.0f, 1.0f), Color3ub(123, 0, 255));
-    CORRADE_COMPARE(Color3ub::fromHSV(360.0_degf + 317.0_degf, 1.0f, 1.0f), Color3ub(255, 0, 182));
+    CORRADE_COMPARE(Color3ub::fromHsv(360.0_degf + 27.0_degf, 1.0f, 1.0f), Color3ub(255, 114, 0));
+    CORRADE_COMPARE(Color3ub::fromHsv(360.0_degf + 86.0_degf, 1.0f, 1.0f), Color3ub(144, 255, 0));
+    CORRADE_COMPARE(Color3ub::fromHsv(360.0_degf + 134.0_degf, 1.0f, 1.0f), Color3ub(0, 255, 59));
+    CORRADE_COMPARE(Color3ub::fromHsv(360.0_degf + 191.0_degf, 1.0f, 1.0f), Color3ub(0, 208, 255));
+    CORRADE_COMPARE(Color3ub::fromHsv(360.0_degf + 269.0_degf, 1.0f, 1.0f), Color3ub(123, 0, 255));
+    CORRADE_COMPARE(Color3ub::fromHsv(360.0_degf + 317.0_degf, 1.0f, 1.0f), Color3ub(255, 0, 182));
 }
 
 void ColorTest::hsvAlpha() {
-    CORRADE_COMPARE(Color4ub::fromHSV(std::make_tuple(230.0_degf, 0.749f, 0.427f), 23), Color4ub(27, 40, 108, 23));
-    CORRADE_COMPARE(Color4ub::fromHSV(230.0_degf, 0.749f, 0.427f, 23), Color4ub(27, 40, 108, 23));
+    CORRADE_COMPARE(Color4ub::fromHsv(std::make_tuple(230.0_degf, 0.749f, 0.427f), 23), Color4ub(27, 40, 108, 23));
+    CORRADE_COMPARE(Color4ub::fromHsv(230.0_degf, 0.749f, 0.427f, 23), Color4ub(27, 40, 108, 23));
 
     /* Default alpha */
-    CORRADE_COMPARE(Color4ub::fromHSV(std::make_tuple(230.0_degf, 0.749f, 0.427f)), Color4ub(27, 40, 108, 255));
-    CORRADE_COMPARE(Color4ub::fromHSV(230.0_degf, 0.749f, 0.427f), Color4ub(27, 40, 108, 255));
+    CORRADE_COMPARE(Color4ub::fromHsv(std::make_tuple(230.0_degf, 0.749f, 0.427f)), Color4ub(27, 40, 108, 255));
+    CORRADE_COMPARE(Color4ub::fromHsv(230.0_degf, 0.749f, 0.427f), Color4ub(27, 40, 108, 255));
 }
 
 void ColorTest::swizzleType() {
