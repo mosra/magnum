@@ -240,6 +240,7 @@ template<class T> class Color3: public Vector3<T> {
          * @param hsv Hue, saturation and value
          *
          * Hue can overflow the range @f$ [0.0, 360.0] @f$.
+         * @see @ref toHSV()
          */
         static Color3<T> fromHSV(HSV hsv) {
             return Implementation::fromHSV<T>(hsv);
@@ -312,7 +313,8 @@ template<class T> class Color3: public Vector3<T> {
          *
          * Example usage:
          * @code
-         * T hue, saturation, value;
+         * Deg hue;
+         * Float saturation, value;
          * std::tie(hue, saturation, value) = color.toHSV();
          * @endcode
          *
@@ -442,9 +444,13 @@ class Color4: public Vector4<T> {
         }
 
         /**
-         * @copydoc Color3::fromHSV()
+         * @brief Create RGB color from HSV representation
+         * @param hsv   Hue, saturation and value
          * @param a     Alpha value, defaults to `1.0` for floating-point types
          *      and maximum positive value for integral types.
+         *
+         * Hue can overflow the range @f$ [0.0, 360.0] @f$.
+         * @see @ref toHSV()
          */
         static Color4<T> fromHSV(HSV hsv, T a = Implementation::fullChannel<T>()) {
             return Color4<T>(Implementation::fromHSV<T>(hsv), a);
