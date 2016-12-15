@@ -134,10 +134,10 @@ template<class T> constexpr typename std::enable_if<std::is_integral<T>::value, 
 }
 
 /**
-@brief Three-component (RGB) color
+@brief Color in linear RGB color space
 
 The class can store either floating-point (normalized) or integral
-(denormalized) representation of color. Note that constructor conversion
+(denormalized) representation of RGB color. Note that constructor conversion
 between different types (like in @ref Vector classes) doesn't do any
 (de)normalization, you should use @ref normalize() and
 @ref denormalize() instead, for example:
@@ -224,11 +224,15 @@ template<class T> class Color3: public Vector3<T> {
             return {Implementation::fullChannel<T>(), Implementation::fullChannel<T>(), blue};
         }
 
-        /** @brief Corresponding floating-point type for HSV computation */
+        /**
+         * @brief Corresponding floating-point type
+         *
+         * For HSV and other color spaces.
+         */
         typedef typename TypeTraits<T>::FloatingPointType FloatingPointType;
 
         /**
-         * @brief Type for storing HSV values
+         * @brief Type for storing HSV color space values
          *
          * Hue in range @f$ [0.0, 360.0] @f$, saturation and value in
          * range @f$ [0.0, 1.0] @f$.
@@ -244,7 +248,7 @@ template<class T> class Color3: public Vector3<T> {
 
         /**
          * @brief Create RGB color from HSV representation
-         * @param hsv Hue, saturation and value
+         * @param hsv   Color in HSV color space
          *
          * Hue can overflow the range @f$ [0.0, 360.0] @f$.
          * @see @ref toHsv()
@@ -332,7 +336,7 @@ template<class T> class Color3: public Vector3<T> {
         constexpr /*implicit*/ Color3(const Vector<3, T>& other) noexcept: Vector3<T>(other) {}
 
         /**
-         * @brief Convert to HSV
+         * @brief Convert to HSV representation
          *
          * Example usage:
          * @code
@@ -392,7 +396,7 @@ MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(3, Color3)
 #endif
 
 /**
-@brief Four-component (RGBA) color
+@brief Color in linear RGBA color space
 
 See @ref Color3 for more information.
 @see @link operator""_rgba() @endlink, @link operator""_rgbaf() @endlink,
@@ -482,7 +486,7 @@ class Color4: public Vector4<T> {
 
         /**
          * @brief Create RGB color from HSV representation
-         * @param hsv   Hue, saturation and value
+         * @param hsv   Color in HSV color space
          * @param a     Alpha value, defaults to `1.0` for floating-point types
          *      and maximum positive value for integral types.
          *
@@ -586,7 +590,19 @@ class Color4: public Vector4<T> {
         /** @brief Copy constructor */
         constexpr /*implicit*/ Color4(const Vector<4, T>& other) noexcept: Vector4<T>(other) {}
 
-        /** @copydoc Color3::toHsv() */
+        /**
+         * @brief Convert to HSV representation
+         *
+         * The alpha channel is not subject to any conversion, so it is
+         * ignored. Example usage:
+         * @code
+         * Deg hue;
+         * Float saturation, value;
+         * std::tie(hue, saturation, value) = color.toHsv();
+         * @endcode
+         *
+         * @see @ref hue(), @ref saturation(), @ref value(), @ref fromHsv()
+         */
         Hsv toHsv() const {
             return Implementation::toHsv<T>(Vector4<T>::rgb());
         }
