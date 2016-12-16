@@ -170,6 +170,32 @@ template<class T, class Integral> inline Vector4<Integral> toSrgbAlphaIntegral(c
     return denormalize<Vector4<Integral>>(toSrgbAlpha<T>(rgba));
 }
 
+/* CIE XYZ -> RGB conversion */
+template<class T> typename std::enable_if<std::is_floating_point<T>::value, Color3<T>>::type fromXyz(const Vector3<T>& xyz) {
+    /* Taken from https://en.wikipedia.org/wiki/Talk:SRGB#Rounded_vs._Exact,
+       the rounded matrices from the main article don't round-trip perfectly */
+    return Matrix3x3<T>{
+        Vector3<T>{T(12831)/T(3959), T(-851781)/T(878810), T(705)/T(12673)},
+        Vector3<T>{T(-329)/T(214), T(1648619)/T(878810), T(-2585)/T(12673)},
+        Vector3<T>{T(-1974)/T(3959), T(36519)/T(878810), T(705)/T(667)}}*xyz;
+}
+template<class T> inline typename std::enable_if<std::is_integral<T>::value, Color3<T>>::type fromXyz(const Vector3<typename Color3<T>::FloatingPointType>& xyz) {
+    return denormalize<Color3<T>>(fromXyz<typename Color3<T>::FloatingPointType>(xyz));
+}
+
+/* RGB -> CIE XYZ conversion */
+template<class T> Vector3<typename Color3<T>::FloatingPointType> toXyz(typename std::enable_if<std::is_floating_point<T>::value, const Color3<T>&>::type rgb) {
+    /* Taken from https://en.wikipedia.org/wiki/Talk:SRGB#Rounded_vs._Exact,
+       the rounded matrices from the main article don't round-trip perfectly */
+    return (Matrix3x3<T>{
+        Vector3<T>{T(506752)/T(1228815), T(87098)/T(409605), T(7918)/T(409605)},
+        Vector3<T>{T(87881)/T(245763), T(175762)/T(245763), T(87881)/T(737289)},
+        Vector3<T>{T(12673)/T(70218), T(12673)/T(175545), T(1001167)/T(1053270)}})*rgb;
+}
+template<class T> inline Vector3<typename Color3<T>::FloatingPointType> toXyz(typename std::enable_if<std::is_integral<T>::value, const Color3<T>&>::type rgb) {
+    return toXyz<typename Color3<T>::FloatingPointType>(normalize<Color3<typename Color3<T>::FloatingPointType>>(rgb));
+}
+
 /* Value for full channel (1.0f for floats, 255 for unsigned byte) */
 template<class T> constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type fullChannel() {
     return T(1);
@@ -367,6 +393,26 @@ template<class T> class Color3: public Vector3<T> {
         }
 
         /**
+         * @brief Create RGB color from CIE XYZ representation
+         * @param xyz   Color in CIE XYZ color space
+         *
+         * Applies transformation matrix, returning the input in linear
+         * RGB color space with D65 illuminant and 2° standard colorimetric
+         * observer. @f[
+         *      \begin{bmatrix} R_\mathrm{linear} \\ G_\mathrm{linear} \\ B_\mathrm{linear} \end{bmatrix} =
+         *      \begin{bmatrix}
+         *          3.2406 & -1.5372 & -0.4986 \\
+         *          -0.9689 & 1.8758 & 0.0415 \\
+         *          0.0557 & -0.2040 & 1.0570
+         *      \end{bmatrix} \begin{bmatrix} X \\ Y \\ Z \end{bmatrix}
+         * @f]
+         * @see @ref toXyz(), @ref toSrgb()
+         */
+        static Color3<T> fromXyz(const Vector3<FloatingPointType>& xyz) {
+            return Implementation::fromXyz<T>(xyz);
+        }
+
+        /**
          * @brief Default constructor
          *
          * All components are set to zero.
@@ -506,6 +552,30 @@ template<class T> class Color3: public Vector3<T> {
          */
         template<class Integral> Vector3<Integral> toSrgb() const {
             return Implementation::toSrgbIntegral<T, Integral>(*this);
+        }
+
+        /**
+         * @brief Convert to CIE XYZ representation
+         *
+         * Assuming the color is in linear RGB with D65 illuminant and 2°
+         * standard colorimetric observer, applies transformation matrix,
+         * returning the color in CIE XYZ color space. @f[
+         *      \begin{bmatrix} X \\ Y \\ Z \end{bmatrix} =
+         *      \begin{bmatrix}
+         *          0.4124 & 0.3576 & 0.1805 \\
+         *          0.2126 & 0.7152 & 0.0722 \\
+         *          0.0193 & 0.1192 & 0.9505
+         *      \end{bmatrix}
+         *      \begin{bmatrix} R_\mathrm{linear} \\ G_\mathrm{linear} \\ B_\mathrm{linear} \end{bmatrix}
+         * @f]
+         *
+         * Please note that @ref x(), @ref y() and @ref z() *do not* correspond
+         * to primaries in CIE XYZ color space, but are rather aliases to
+         * @ref r(), @ref g() and @ref b().
+         * @see @ref fromXyz(), @ref fromSrgb()
+         */
+        Vector3<FloatingPointType> toXyz() const {
+            return Implementation::toXyz<T>(*this);
         }
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(3, Color3)
@@ -709,6 +779,20 @@ class Color4: public Vector4<T> {
         }
 
         /**
+         * @brief Create RGBA color from CIE XYZ representation
+         * @param xyz   Color in CIE XYZ color space
+         * @param a     Alpha value, defaults to `1.0` for floating-point types
+         *      and maximum positive value for integral types.
+         *
+         * Applies transformation matrix, returning the input in linear RGB
+         * color space. See @ref Color3::fromXyz() for more information.
+         * @see @ref toXyz(), @ref toSrgbAlpha()
+         */
+        static Color4<T> fromXyz(const Vector3<FloatingPointType> xyz, T a = Implementation::fullChannel<T>()) {
+            return {Implementation::fromXyz<T>(xyz), a};
+        }
+
+        /**
          * @brief Default constructor
          *
          * All components are set to zero.
@@ -847,6 +931,23 @@ class Color4: public Vector4<T> {
          */
         template<class Integral> Vector4<Integral> toSrgbAlpha() const {
             return Implementation::toSrgbAlphaIntegral<T, Integral>(*this);
+        }
+
+        /**
+         * @brief Convert to CIE XYZ representation
+         *
+         * Assuming the color is in linear RGB, applies transformation matrix,
+         * returning the color in CIE XYZ color space. The alpha channel is not
+         * subject to any conversion, so it is ignored. See @ref Color3::toXyz()
+         * for more information.
+         *
+         * Please note that @ref xyz(), @ref x(), @ref y() and @ref z() *do not*
+         * correspond to primaries in CIE XYZ color space, but are rather
+         * aliases to @ref rgb(), @ref r(), @ref g() and @ref b().
+         * @see @ref fromXyz()
+         */
+        Vector3<FloatingPointType> toXyz() const {
+            return Implementation::toXyz<T>(Vector4<T>::rgb());
         }
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(4, Color4)

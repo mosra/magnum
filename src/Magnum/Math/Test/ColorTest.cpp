@@ -95,6 +95,9 @@ struct ColorTest: Corrade::TestSuite::Tester {
     void srgbMonotonic();
     void srgbLiterals();
 
+    void xyz();
+    void fromXyzDefaultAlpha();
+
     void swizzleType();
     void debug();
     void debugUb();
@@ -139,6 +142,9 @@ ColorTest::ColorTest() {
 
     addTests({&ColorTest::fromSrgbDefaultAlpha,
               &ColorTest::srgbLiterals,
+
+              &ColorTest::xyz,
+              &ColorTest::fromXyzDefaultAlpha,
 
               &ColorTest::swizzleType,
               &ColorTest::debug,
@@ -642,6 +648,67 @@ void ColorTest::srgbLiterals() {
     /* Not constexpr yet */
     CORRADE_COMPARE(0x33b27f_srgbf, (Color3{0.0331048f, 0.445201f, 0.212231f}));
     CORRADE_COMPARE(0x33b27fcc_srgbaf, (Color4{0.0331048f, 0.445201f, 0.212231f, 0.8f}));
+}
+
+void ColorTest::xyz() {
+    /* Verified using http://colormine.org/convert/rgb-to-xyz and
+       http://www.easyrgb.com/index.php?X=CALC. The results have slight
+       precision differences, because most of the code out there uses just the
+       rounded matrices from Wikipedia which don't round-trip perfectly. I'm
+       having Y in 0-1 instead of 0-100, thus the values are 100 times smaller. */
+    CORRADE_COMPARE(Color3::fromSrgb<UnsignedByte>({232, 157, 16}).toXyz(),
+        (Vector3{0.454279f, 0.413092f, 0.0607124f}));
+    CORRADE_COMPARE(Color3::fromXyz({0.454279f, 0.413092f, 0.0607124f}).toSrgb<UnsignedByte>(),
+        (Math::Vector3<UnsignedByte>{231, 156, 16}));
+    CORRADE_COMPARE(Color3::fromXyz({0.454279f, 0.413092f, 0.0607124f}),
+        (Color3{0.806952f, 0.337163f, 0.0051861f}));
+
+    CORRADE_COMPARE(Color3::fromSrgb<UnsignedByte>({96, 43, 193}).toXyz(),
+        (Vector3{0.153122f, 0.0806478f, 0.512037f}));
+    CORRADE_COMPARE(Color3::fromXyz({0.153122f, 0.0806478f, 0.512037f}).toSrgb<UnsignedByte>(),
+        (Math::Vector3<UnsignedByte>{95, 43, 192}));
+    CORRADE_COMPARE(Color3::fromXyz({0.153122f, 0.0806478f, 0.512037f}),
+        (Color3{0.11697f, 0.0241579f, 0.533276f}));
+
+    /* Extremes -- for black it should be zeros, for white roughly X = 0.95,
+       Y = 1, Z = 1.09 corresponding to white point in D65 */
+    CORRADE_COMPARE((Color3{0.0f, 0.0f, 0.0f}).toXyz(),
+        (Vector3{0.0f, 0.0f, 0.0f}));
+    CORRADE_COMPARE((Color3{1.0f, 1.0f, 1.0f}).toXyz(),
+        (Vector3{0.950456f, 1.0f, 1.08906f}));
+
+    /* RGBA */
+    CORRADE_COMPARE(Color4::fromXyz({0.454279f, 0.413092f, 0.0607124f}, 0.175f),
+        (Color4{0.806952f, 0.337163f, 0.0051861f, 0.175f}));
+    CORRADE_COMPARE(Color4::fromSrgb<UnsignedByte>({232, 157, 16}, 0.175f).toXyz(),
+        (Vector3{0.454279f, 0.413092f, 0.0607124f}));
+
+    /* Integral -- slight precision loss */
+    CORRADE_COMPARE(Math::Color3<UnsignedShort>::fromXyz({0.454279f, 0.413092f, 0.0607124f}),
+        (Math::Color3<UnsignedShort>{52883, 22095, 339}));
+    CORRADE_COMPARE(Math::Color4<UnsignedShort>::fromXyz({0.454279f, 0.413092f, 0.0607124f}, 15299),
+        (Math::Color4<UnsignedShort>{52883, 22095, 339, 15299}));
+    CORRADE_COMPARE((Math::Color3<UnsignedShort>{52883, 22095, 339}).toXyz(),
+        (Vector3{0.454268f, 0.413079f, 0.0607021f}));
+    CORRADE_COMPARE((Math::Color4<UnsignedShort>{52883, 22095, 339, 15299}).toXyz(),
+        (Vector3{0.454268f, 0.413079f, 0.0607021f}));
+
+    /* Round-trip */
+    CORRADE_COMPARE(Color3::fromXyz({0.454279f, 0.413092f, 0.0607124f}).toXyz(),
+        (Vector3{0.454279f, 0.413092f, 0.0607124f}));
+    CORRADE_COMPARE(Color3::fromXyz({0.153122f, 0.0806478f, 0.512037f}).toXyz(),
+        (Vector3{0.153122f, 0.0806478f, 0.512037f}));
+    CORRADE_COMPARE(Color4::fromXyz({0.454279f, 0.413092f, 0.0607124f}, 0.175f).toXyz(),
+        (Vector3{0.454279f, 0.413092f, 0.0607124f}));
+}
+
+void ColorTest::fromXyzDefaultAlpha() {
+    CORRADE_COMPARE(Color4::fromXyz({0.454279f, 0.413092f, 0.0607124f}),
+        (Color4{0.806952f, 0.337163f, 0.0051861f, 1.0f}));
+
+    /* Integral */
+    CORRADE_COMPARE(Math::Color4<UnsignedShort>::fromXyz({0.454279f, 0.413092f, 0.0607124f}),
+        (Math::Color4<UnsignedShort>{52883, 22095, 339, 65535}));
 }
 
 void ColorTest::swizzleType() {
