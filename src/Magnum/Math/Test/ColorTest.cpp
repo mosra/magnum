@@ -105,8 +105,6 @@ typedef Math::Color4<UnsignedByte> Color4ub;
 
 typedef Math::Deg<Float> Deg;
 
-using namespace Literals;
-
 ColorTest::ColorTest() {
     addTests({&ColorTest::construct,
               &ColorTest::constructDefault,
@@ -361,6 +359,8 @@ void ColorTest::colors() {
 }
 
 void ColorTest::hue() {
+    using namespace Literals;
+
     CORRADE_COMPARE(Color3::fromHsv( 27.0_degf, 1.0f, 1.0f), (Color3{1.0f, 0.45f, 0.0f}));
     CORRADE_COMPARE(Color3::fromHsv( 86.0_degf, 1.0f, 1.0f), (Color3{0.566667f, 1.0f, 0.0f}));
     CORRADE_COMPARE(Color3::fromHsv(134.0_degf, 1.0f, 1.0f), (Color3{0.0f, 1.0f, 0.233333f}));
@@ -389,6 +389,8 @@ void ColorTest::hue() {
 }
 
 void ColorTest::saturation() {
+    using namespace Literals;
+
     CORRADE_COMPARE(Color3::fromHsv(0.0_degf, 0.702f, 1.0f), (Color3{1.0f, 0.298f, 0.298f}));
     CORRADE_COMPARE((Color3{1.0f, 0.298f, 0.298f}).saturation(), 0.702f);
 
@@ -410,6 +412,8 @@ void ColorTest::saturation() {
 }
 
 void ColorTest::value() {
+    using namespace Literals;
+
     CORRADE_COMPARE(Color3::fromHsv(0.0_degf, 1.0f, 0.522f), (Color3{0.522f, 0.0f, 0.0f}));
     CORRADE_COMPARE((Color3{0.522f, 0.0f, 0.0f}).value(), 0.522f);
 
@@ -431,6 +435,8 @@ void ColorTest::value() {
 }
 
 void ColorTest::hsv() {
+    using namespace Literals;
+
     CORRADE_COMPARE(Color3::fromHsv(std::make_tuple(230.0_degf, 0.749f, 0.427f)),
         (Color3{0.107177f, 0.160481f, 0.427f}));
     CORRADE_COMPARE(Color3::fromHsv(230.0_degf, 0.749f, 0.427f),
@@ -482,6 +488,8 @@ void ColorTest::hsv() {
 }
 
 void ColorTest::fromHsvHueOverflow() {
+    using namespace Literals;
+
     CORRADE_COMPARE(Color3::fromHsv( 27.0_degf - 360.0_degf, 1.0f, 1.0f), (Color3{1.0f, 0.45f, 0.0f}));
     CORRADE_COMPARE(Color3::fromHsv( 86.0_degf - 360.0_degf, 1.0f, 1.0f), (Color3{0.566667f, 1.0f, 0.0f}));
     CORRADE_COMPARE(Color3::fromHsv(134.0_degf - 360.0_degf, 1.0f, 1.0f), (Color3{0.0f, 1.0f, 0.233333f}));
@@ -498,6 +506,8 @@ void ColorTest::fromHsvHueOverflow() {
 }
 
 void ColorTest::fromHsvDefaultAlpha() {
+    using namespace Literals;
+
     CORRADE_COMPARE(Color4::fromHsv(std::make_tuple(230.0_degf, 0.749f, 0.427f)),
         (Color4{0.107177f, 0.160481f, 0.427f, 1.0f}));
     CORRADE_COMPARE(Color4::fromHsv(230.0_degf, 0.749f, 0.427f),
