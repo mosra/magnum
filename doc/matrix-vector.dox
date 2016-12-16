@@ -146,11 +146,22 @@ auto cyan = Color4::cyan(0.5f, 0.95f); // {0.5f, 1.0f, 1.0f, 0.95f}
 auto fadedRed = Color3::fromHSV(219.0_degf, 0.50f, 0.57f)
 @endcode
 
-Lastly, namespace @ref Math::Literals provides convenient `_rgb`/`_rgbf` and
-`_rgba`/`_rgbaf` literals for entering colors in hex representation:
+Lastly, namespace @ref Math::Literals provides convenient
+@link Literals::operator""_rgb() operator""_rgb() @endlink /
+@link Literals::operator""_rgbf() operator""_rgbf() @endlink and
+@link Literals::operator""_rgba() operator""_rgba() @endlink /
+@link Literals::operator""_rgbaf() operator""_rgbaf() @endlink literals for
+entering colors in hex representation. These literals assume linear RGB input
+and don't do any gamma correction on it. For sRGB input, there is
+@link Literals::operator""_srgb() operator""_srgb() @endlink /
+@link Literals::operator""_srgba() operator""_srgba() @endlink and
+@link Literals::operator""_srgbf() operator""_srgbf() @endlink /
+@link Literals::operator""_srgbaf() operator""_srgbaf() @endlink, see their
+documentation for more information.
 @code
-Color3ub a = 0x33b27f_rgb;   // {0x33, 0xb2, 0x7f}
-Color4 b = 0x33b27fcc_rgbaf; // {0.2f, 0.7f, 0.5f, 0.8f}
+Color3ub a = 0x33b27f_rgb;      // {0x33, 0xb2, 0x7f}
+Color4 b = 0x33b27fcc_rgbaf;    // {0.2f, 0.7f, 0.5f, 0.8f}
+Color4 c = 0x33b27fcc_srgbaf;   // {0.0331048f, 0.445201f, 0.212231f, 0.8f}
 @endcode
 
 @section matrix-vector-component-access Accessing matrix and vector components

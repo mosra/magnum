@@ -245,10 +245,24 @@ typedef Math::Color3<Float> Color3;
 /** @brief Four-component (RGBA) float color */
 typedef Math::Color4<Float> Color4;
 
-/** @brief Three-component (RGB) unsigned byte color */
+/**
+@brief Three-component (RGB) unsigned byte color
+
+@attention 8bit-per-channel colors are commonly treated as being in sRGB color
+    space, which is not directly usable in calculations and has to be converted
+    to linear RGB first. Use @ref Color3::fromSrgb() and @ref Color3::toSrgb()
+    for proper sRGB handling.
+*/
 typedef Math::Color3<UnsignedByte> Color3ub;
 
-/** @brief Four-component (RGBA) unsigned byte color */
+/**
+@brief Four-component (RGBA) unsigned byte color
+
+@attention 8bit-per-channel colors are commonly treated as being in sRGB color
+    space, which is not directly usable in calculations and has to be converted
+    to linear RGB first. Use @ref Color4::fromSrgbAlpha() and
+    @ref Color4::toSrgbAlpha() for proper sRGB handling.
+*/
 typedef Math::Color4<UnsignedByte> Color4ub;
 
 /**

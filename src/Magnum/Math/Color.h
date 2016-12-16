@@ -32,6 +32,7 @@
 #include <tuple>
 
 #include "Magnum/Math/Functions.h"
+#include "Magnum/Math/Matrix.h"
 #include "Magnum/Math/Vector4.h"
 
 namespace Magnum { namespace Math {
@@ -123,6 +124,52 @@ template<class T> inline typename Color3<T>::Hsv toHsv(typename std::enable_if<s
     return toHsv<typename Color3<T>::FloatingPointType>(normalize<Color3<typename Color3<T>::FloatingPointType>>(color));
 }
 
+/* sRGB -> RGB conversion */
+template<class T> typename std::enable_if<std::is_floating_point<T>::value, Color3<T>>::type fromSrgb(const Vector3<T>& srgb) {
+    constexpr const T a(0.055);
+    return lerp(srgb/T(12.92), pow((srgb + Vector3<T>{a})/(T(1.0) + a), T(2.4)), srgb > Vector3<T>(0.04045));
+}
+template<class T> typename std::enable_if<std::is_floating_point<T>::value, Color4<T>>::type fromSrgbAlpha(const Vector4<T>& srgbAlpha) {
+    return {fromSrgb<T>(srgbAlpha.rgb()), srgbAlpha.a()};
+}
+template<class T> inline typename std::enable_if<std::is_integral<T>::value, Color3<T>>::type fromSrgb(const Vector3<typename Color3<T>::FloatingPointType>& srgb) {
+    return denormalize<Color3<T>>(fromSrgb<typename Color3<T>::FloatingPointType>(srgb));
+}
+template<class T> inline typename std::enable_if<std::is_integral<T>::value, Color4<T>>::type fromSrgbAlpha(const Vector4<typename Color4<T>::FloatingPointType>& srgbAlpha) {
+    return {fromSrgb<T>(srgbAlpha.rgb()), denormalize<T>(srgbAlpha.a())};
+}
+template<class T, class Integral> inline Color3<T> fromSrgbIntegral(const Vector3<Integral>& srgb) {
+    static_assert(std::is_integral<Integral>::value, "only conversion from different integral type is supported");
+    return fromSrgb<T>(normalize<Vector3<typename Color3<T>::FloatingPointType>>(srgb));
+}
+template<class T, class Integral> inline Color4<T> fromSrgbAlphaIntegral(const Vector4<Integral>& srgbAlpha) {
+    static_assert(std::is_integral<Integral>::value, "only conversion from different integral type is supported");
+    return fromSrgbAlpha<T>(normalize<Vector4<typename Color4<T>::FloatingPointType>>(srgbAlpha));
+}
+
+/* RGB -> sRGB conversion */
+template<class T> Vector3<typename Color3<T>::FloatingPointType> toSrgb(typename std::enable_if<std::is_floating_point<T>::value, const Color3<T>&>::type rgb) {
+    constexpr const T a(0.055);
+    return lerp(rgb*T(12.92), (T(1.0) + a)*pow(rgb, T(1.0)/T(2.4)) - Vector3<T>{a}, rgb > Vector3<T>(0.0031308));
+}
+template<class T> Vector4<typename Color4<T>::FloatingPointType> toSrgbAlpha(typename std::enable_if<std::is_floating_point<T>::value, const Color4<T>&>::type rgba) {
+    return {toSrgb<T>(rgba.rgb()), rgba.a()};
+}
+template<class T> inline Vector3<typename Color3<T>::FloatingPointType> toSrgb(typename std::enable_if<std::is_integral<T>::value, const Color3<T>&>::type rgb) {
+    return toSrgb<typename Color3<T>::FloatingPointType>(normalize<Color3<typename Color3<T>::FloatingPointType>>(rgb));
+}
+template<class T> inline Vector4<typename Color4<T>::FloatingPointType> toSrgbAlpha(typename std::enable_if<std::is_integral<T>::value, const Color4<T>&>::type rgba) {
+    return {toSrgb<T>(rgba.rgb()), normalize<typename Color3<T>::FloatingPointType>(rgba.a())};
+}
+template<class T, class Integral> inline Vector3<Integral> toSrgbIntegral(const Color3<T>& rgb) {
+    static_assert(std::is_integral<Integral>::value, "only conversion from different integral type is supported");
+    return denormalize<Vector3<Integral>>(toSrgb<T>(rgb));
+}
+template<class T, class Integral> inline Vector4<Integral> toSrgbAlphaIntegral(const Color4<T>& rgba) {
+    static_assert(std::is_integral<Integral>::value, "only conversion from different integral type is supported");
+    return denormalize<Vector4<Integral>>(toSrgbAlpha<T>(rgba));
+}
+
 /* Value for full channel (1.0f for floats, 255 for unsigned byte) */
 template<class T> constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type fullChannel() {
     return T(1);
@@ -137,12 +184,15 @@ template<class T> constexpr typename std::enable_if<std::is_integral<T>::value, 
 @brief Color in linear RGB color space
 
 The class can store either floating-point (normalized) or integral
-(denormalized) representation of RGB color. Note that constructor conversion
-between different types (like in @ref Vector classes) doesn't do any
-(de)normalization, you should use @ref normalize() and
+(denormalized) representation of linear RGB color. Colors in sRGB color space
+should not be used directly in calculations -- they should be converted to
+linear RGB using @ref fromSrgb(), calculation done on the linear representation
+and then converted back to sRGB using @ref toSrgb().
+
+Note that constructor conversion between different types (like in @ref Vector
+classes) doesn't do any (de)normalization, you should use @ref normalize() and
 @ref denormalize() instead, for example:
 @code
-typedef Color3<UnsignedByte> Color3ub;
 Color3 a(1.0f, 0.5f, 0.75f);
 auto b = denormalize<Color3ub>(a); // b == {255, 127, 191}
 @endcode
@@ -152,6 +202,7 @@ is always in range in range @f$ [0.0, 360.0] @f$, saturation and value in
 range @f$ [0.0, 1.0] @f$.
 
 @see @link operator""_rgb() @endlink, @link operator""_rgbf() @endlink,
+    @link operator""_srgb() @endlink, @link operator""_srgbf() @endlink,
     @ref Color4, @ref Magnum::Color3, @ref Magnum::Color3ub
 */
 /* Not using template specialization because some internal functions are
@@ -278,6 +329,44 @@ template<class T> class Color3: public Vector3<T> {
         #endif
 
         /**
+         * @brief Create linear RGB color from sRGB representation
+         * @param srgb  Color in sRGB color space
+         *
+         * Applies inverse sRGB curve onto input, returning the input in linear
+         * RGB color space with D65 illuminant and 2° standard colorimetric
+         * observer. @f[
+         *      \boldsymbol{c}_\mathrm{linear} = \begin{cases}
+         *          \dfrac{\boldsymbol{c}_\mathrm{sRGB}}{12.92}, & \boldsymbol{c}_\mathrm{sRGB} \le 0.04045 \\
+         *          \left( \dfrac{\boldsymbol{c}_\mathrm{sRGB} + a}{1 + a} \right)^{2.4}, & \boldsymbol{c}_\mathrm{sRGB} > 0.04045
+         *      \end{cases}
+         * @f]
+         * @see @link operator""_srgbf() @endlink, @ref toSrgb()
+         */
+        /* Input is a Vector3 to hint that it doesn't have any (additive,
+           multiplicative) semantics of a linear RGB color */
+        static Color3<T> fromSrgb(const Vector3<FloatingPointType>& srgb) {
+            return Implementation::fromSrgb<T>(srgb);
+        }
+
+        /** @overload
+         * @brief Create linear RGB color from integral sRGB representation
+         * @param srgb  Color in sRGB color space
+         *
+         * Useful in cases where you have for example an 8-bit sRGB
+         * representation and want to create a floating-point linear RGB color
+         * out of it:
+         * @code
+         * Math::Vector3<UnsignedByte> srgb;
+         * auto rgb = Color3::fromSrgb(srgb);
+         * @endcode
+         */
+        /* Input is a Vector3 to hint that it doesn't have any (additive,
+           multiplicative) semantics of a linear RGB color */
+        template<class Integral> static Color3<T> fromSrgb(const Vector3<Integral>& srgb) {
+            return Implementation::fromSrgbIntegral<T, Integral>(srgb);
+        }
+
+        /**
          * @brief Default constructor
          *
          * All components are set to zero.
@@ -388,6 +477,37 @@ template<class T> class Color3: public Vector3<T> {
             return Implementation::value<T>(*this);
         }
 
+        /**
+         * @brief Convert to sRGB representation
+         *
+         * Assuming the color is in linear RGB with D65 illuminant and 2°
+         * standard colorimetric observer, applies sRGB curve onto it,
+         * returning the color represented in sRGB color space: @f[
+         *      \boldsymbol{c}_\mathrm{sRGB} = \begin{cases}
+         *          12.92C_\mathrm{linear}, & \boldsymbol{c}_\mathrm{linear} \le 0.0031308 \\
+         *          (1 + a) \boldsymbol{c}_\mathrm{linear}^{1/2.4}-a, & \boldsymbol{c}_\mathrm{linear} > 0.0031308
+         *      \end{cases}
+         * @f]
+         * @see @ref fromSrgb()
+         */
+        Vector3<FloatingPointType> toSrgb() const {
+            return Implementation::toSrgb<T>(*this);
+        }
+
+        /** @overload
+         * @brief Convert to integral sRGB representation
+         *
+         * Useful in cases where you have a floating-point linear RGB color and
+         * want to create for example an 8-bit sRGB representation out of it:
+         * @code
+         * Color3 color;
+         * Math::Vector3<UnsignedByte> srgb = color.toSrgb<UnsignedByte>();
+         * @endcode
+         */
+        template<class Integral> Vector3<Integral> toSrgb() const {
+            return Implementation::toSrgbIntegral<T, Integral>(*this);
+        }
+
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(3, Color3)
 };
 
@@ -400,6 +520,7 @@ MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(3, Color3)
 
 See @ref Color3 for more information.
 @see @link operator""_rgba() @endlink, @link operator""_rgbaf() @endlink,
+    @link operator""_srgba() @endlink, @link operator""_srgbaf() @endlink,
     @ref Magnum::Color4, @ref Magnum::Color4ub
 */
 /* Not using template specialization because some internal functions are
@@ -518,6 +639,76 @@ class Color4: public Vector4<T> {
         #endif
 
         /**
+         * @brief Create linear RGBA color from sRGB + alpha representation
+         * @param srgbAlpha     Color in sRGB color space with linear alpha
+         *
+         * Applies inverse sRGB curve onto RGB channels of the input, alpha
+         * channel is assumed to be linear. See @ref Color3::fromSrgb() for
+         * more information.
+         * @see @link operator""_srgbaf @endlink, @ref toSrgbAlpha()
+         */
+        /* Input is a Vector4 to hint that it doesn't have any (additive,
+           multiplicative) semantics of a linear RGB color */
+        static Color4<T> fromSrgbAlpha(const Vector4<FloatingPointType>& srgbAlpha) {
+            return {Implementation::fromSrgbAlpha<T>(srgbAlpha)};
+        }
+
+        /**
+         * @brief Create linear RGBA color from sRGB representation
+         * @param srgb      Color in sRGB color space
+         * @param a         Alpha value, defaults to `1.0` for floating-point
+         *      types and maximum positive value for integral types.
+         *
+         * Applies inverse sRGB curve onto RGB channels of the input. Alpha
+         * value is taken as-is. See @ref Color3::fromSrgb() for more
+         * information.
+         * @see @link operator""_srgbaf @endlink, @ref toSrgbAlpha()
+         */
+        /* Input is a Vector3 to hint that it doesn't have any (additive,
+           multiplicative) semantics of a linear RGB color */
+        static Color4<T> fromSrgb(const Vector3<FloatingPointType>& srgb, T a = Implementation::fullChannel<T>()) {
+            return {Implementation::fromSrgb<T>(srgb), a};
+        }
+
+        /** @overload
+         * @brief Create linear RGB color from integral sRGB + alpha representation
+         * @param srgbAlpha Color in sRGB color space with linear alpha
+         *
+         * Useful in cases where you have for example an 8-bit sRGB + alpha
+         * representation and want to create a floating-point linear RGBA color
+         * out of it:
+         * @code
+         * Math::Vector4<UnsignedByte> srgbAlpha;
+         * auto rgba = Color4::fromSrgbAlpha(srgbAlpha);
+         * @endcode
+         */
+        /* Input is a Vector4 to hint that it doesn't have any (additive,
+           multiplicative) semantics of a linear RGB color */
+        template<class Integral> static Color4<T> fromSrgbAlpha(const Vector4<Integral>& srgbAlpha) {
+            return {Implementation::fromSrgbAlphaIntegral<T, Integral>(srgbAlpha)};
+        }
+
+        /** @overload
+         * @brief Create linear RGB color from integral sRGB representation
+         * @param srgb      Color in sRGB color space
+         * @param a         Alpha value, defaults to `1.0` for floating-point
+         *      types and maximum positive value for integral types.
+         *
+         * Useful in cases where you have for example an 8-bit sRGB
+         * representation and want to create a floating-point linear RGBA color
+         * out of it:
+         * @code
+         * Math::Vector3<UnsignedByte> srgb;
+         * auto rgba = Color4::fromSrgb(srgb);
+         * @endcode
+         */
+        /* Input is a Vector3 to hint that it doesn't have any (additive,
+           multiplicative) semantics of a linear RGB color */
+        template<class Integral> static Color4<T> fromSrgb(const Vector3<Integral>& srgb, T a = Implementation::fullChannel<T>()) {
+            return {Implementation::fromSrgbIntegral<T, Integral>(srgb), a};
+        }
+
+        /**
          * @brief Default constructor
          *
          * All components are set to zero.
@@ -629,6 +820,35 @@ class Color4: public Vector4<T> {
             return Implementation::value<T>(Vector4<T>::rgb());
         }
 
+        /**
+         * @brief Convert to sRGB + alpha representation
+         *
+         * Assuming the color is in linear RGB, applies sRGB curve onto the RGB
+         * channels, returning the color represented in sRGB color space. Alpha
+         * channel is kept linear. See @ref Color3::toSrgb() for more
+         * information.
+         *
+         * @see @ref fromSrgbAlpha()
+         */
+        Vector4<FloatingPointType> toSrgbAlpha() const {
+            return Implementation::toSrgbAlpha<T>(*this);
+        }
+
+        /** @overload
+         * @brief Convert to integral sRGB + alpha representation
+         *
+         * Useful in cases where you have a floating-point linear RGBA color
+         * and want to create for example an 8-bit sRGB + alpha representation
+         * out of it:
+         * @code
+         * Color4 color;
+         * Math::Vector4<UnsignedByte> srgbAlpha = color.toSrgbAlpha<UnsignedByte>();
+         * @endcode
+         */
+        template<class Integral> Vector4<Integral> toSrgbAlpha() const {
+            return Implementation::toSrgbAlphaIntegral<T, Integral>(*this);
+        }
+
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(4, Color4)
 };
 
@@ -639,55 +859,162 @@ MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(4, Color4)
 namespace Literals {
 
 /** @relatesalso Magnum::Math::Color3
-@brief 8bit-per-channel RGB literal
+@brief 8bit-per-channel linear RGB literal
 
-Example usage:
+Unpacks the literal into three 8-bit values. Example usage:
 @code
-Color3ub a = 0x33b27f_rgb;   // {0x33, 0xb2, 0x7f}
+Color3ub a = 0x33b27f_rgb;  // {0x33, 0xb2, 0x7f}
 @endcode
+
+@attention 8bit-per-channel colors are commonly treated as being in sRGB color
+    space, which is not directly usable in calculations and has to be converted
+    to linear RGB first. To convey such meaning, use the @link operator""_srgb() @endlink
+    literal instead.
+
 @see @link operator""_rgba() @endlink, @link operator""_rgbf() @endlink
 */
 constexpr Color3<UnsignedByte> operator "" _rgb(unsigned long long value) {
     return {UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)};
 }
 
-/** @relatesalso Magnum::Math::Color4
-@brief 8bit-per-channel RGBA literal
+/** @relatesalso Magnum::Math::Color3
+@brief 8bit-per-channel sRGB literal
 
-Example usage:
+Unpacks the literal into three 8-bit values without any colorspace conversion.
+Behaves identically to @link operator""_rgb() @endlink though it doesn't
+return a @ref Color3 type to indicate that the resulting value is not linear
+RGB. Use this literal to document that given value is in sRGB. Example usage:
+@code
+Math::Vector3<UnsignedByte> a = 0x33b27f_srgb;  // {0x33, 0xb2, 0x7f}
+@endcode
+
+@attention Note that colors in sRGB representation should not be used directly
+    in calculations -- they should be converted to linear RGB, calculation done
+    on the linear representation and then converted back to sRGB. Use the
+    @link operator""_srgbf() @endlink literal if you want to get a linear RGB
+    representation directly or convert the value using @ref Color3::fromSrgb().
+
+@see @link operator""_srgba() @endlink, @link operator""_rgb() @endlink
+*/
+/* Output is a Vector3 to hint that it doesn't have any (additive,
+   multiplicative) semantics of a linear RGB color */
+constexpr Vector3<UnsignedByte> operator "" _srgb(unsigned long long value) {
+    return {UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)};
+}
+
+/** @relatesalso Magnum::Math::Color4
+@brief 8bit-per-channel linear RGBA literal
+
+Unpacks the literal into four 8-bit values. Example usage:
 @code
 Color4ub a = 0x33b27fcc_rgba;   // {0x33, 0xb2, 0x7f, 0xcc}
 @endcode
+
+@attention 8bit-per-channel colors are commonly treated as being in sRGB color
+    space, which is not directly usable in calculations and has to be converted
+    to linear RGB first. To convey such meaning, use the @link operator""_srgba() @endlink
+    literal instead.
+
 @see @link operator""_rgb() @endlink, @link operator""_rgbaf() @endlink
 */
 constexpr Color4<UnsignedByte> operator "" _rgba(unsigned long long value) {
     return {UnsignedByte(value >> 24), UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)};
 }
 
-/** @relatesalso Magnum::Math::Color3
-@brief Float RGB literal
+/** @relatesalso Magnum::Math::Color4
+@brief 8bit-per-channel sRGB + alpha literal
 
-Example usage:
+Unpacks the literal into four 8-bit values without any colorspace conversion.
+Behaves identically to @link operator""_rgba() @endlink though it doesn't
+return a @ref Color4 type to indicate that the resulting value is not linear
+RGBA. Use this literal to document that given value is in sRGB + alpha. Example
+usage:
 @code
-Color3 a = 0x33b27f_rgbf;   // {0.2f, 0.7f, 0.5f}
+Math::Vector4<UnsignedByte> a = 0x33b27fcc_srgba;   // {0x33, 0xb2, 0x7f, 0xcc}
 @endcode
+
+@attention Note that colors in sRGB representation should not be used directly
+    in calculations -- they should be converted to linear RGB, calculation done
+    on the linear representation and then converted back to sRGB. Use the
+    @link operator""_srgbaf() @endlink literal if you want to get a linear RGBA
+    representation directly or convert the value using @ref Color4::fromSrgbAlpha().
+
+@see @link operator""_srgb() @endlink, @link operator""_rgba() @endlink
+*/
+/* Output is a Vector3 to hint that it doesn't have any (additive,
+   multiplicative) semantics of a linear RGB color */
+constexpr Vector4<UnsignedByte> operator "" _srgba(unsigned long long value) {
+    return {UnsignedByte(value >> 24), UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)};
+}
+
+/** @relatesalso Magnum::Math::Color3
+@brief Float linear RGB literal
+
+Unpacks the 8-bit values into three floats. Example usage:
+@code
+Color3 a = 0x33b27f_rgbf;   // {0.2f, 0.698039f, 0.498039f}
+@endcode
+
+@attention 8bit-per-channel colors are commonly treated as being in sRGB color
+    space, which is not directly usable in calculations and has to be converted
+    to linear RGB first. In that case use the @link operator""_srgbf() @endlink
+    literal instead.
+
 @see @link operator""_rgbaf() @endlink, @link operator""_rgb() @endlink
 */
 inline Color3<Float> operator "" _rgbf(unsigned long long value) {
     return Math::normalize<Color3<Float>>(Color3<UnsignedByte>{UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)});
 }
 
-/** @relatesalso Magnum::Math::Color4
-@brief Float RGBA literal
+/** @relatesalso Magnum::Math::Color3
+@brief Float sRGB literal
 
-Example usage:
+Unpacks the 8-bit values into three floats and converts the color space from
+sRGB to linear RGB. See @ref Color3::fromSrgb() for more information. Example
+usage:
 @code
-Color4 a = 0x33b27fcc_rgbaf;   // {0.2f, 0.7f, 0.5f, 0.8f}
+Color3 a = 0x33b27f_srgbf;  // {0.0331048f, 0.445201f, 0.212231f}
 @endcode
-@see @link operator""_rgbf() @endlink, @link operator""_rgbaf() @endlink
+@see @link operator""_srgbaf() @endlink, @link operator""_srgb() @endlink,
+    @link operator""_rgbf() @endlink
+*/
+inline Color3<Float> operator "" _srgbf(unsigned long long value) {
+    return Color3<Float>::fromSrgb<UnsignedByte>({UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)});
+}
+
+/** @relatesalso Magnum::Math::Color4
+@brief Float linear RGBA literal
+
+Unpacks the 8-bit values into four floats. Example usage:
+@code
+Color4 a = 0x33b27fcc_rgbaf;    // {0.2f, 0.698039f, 0.498039f, 0.8f}
+@endcode
+
+@attention 8bit-per-channel colors are commonly treated as being in sRGB color
+    space, which is not directly usable in calculations and has to be converted
+    to linear RGB first. In that case use the @link operator""_srgbaf() @endlink
+    literal instead.
+
+@see @link operator""_rgbf() @endlink, @link operator""_rgba() @endlink
 */
 inline Color4<Float> operator "" _rgbaf(unsigned long long value) {
     return Math::normalize<Color4<Float>>(Color4<UnsignedByte>{UnsignedByte(value >> 24), UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)});
+}
+
+/** @relatesalso Magnum::Math::Color4
+@brief Float sRGB + alpha literal
+
+Unpacks the 8-bit values into four floats and converts the color space from
+sRGB + alpha to linear RGBA. See @ref Color4::fromSrgbAlpha() for more
+information. Example usage:
+@code
+Color4 a = 0x33b27fcc_srgbaf;  // {0.0331048f, 0.445201f, 0.212231f, 0.8f}
+@endcode
+@see @link operator""_srgbf() @endlink, @link operator""_srgba() @endlink,
+    @link operator""_rgbaf() @endlink
+*/
+inline Color4<Float> operator "" _srgbaf(unsigned long long value) {
+    return Color4<Float>::fromSrgbAlpha<UnsignedByte>({UnsignedByte(value >> 24), UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)});
 }
 
 }
