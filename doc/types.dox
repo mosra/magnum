@@ -69,10 +69,11 @@ underlying type.
 
 | Magnum vector type                             | Equivalent GLSL type      |
 | ---------------------------------------------- | ------------------------- |
-| @ref Vector2, @ref Vector3, @ref Vector4       | `vec2`, `vec3`, `vec4`    |
+| @ref Vector2, @ref Vector3, @ref Color3 @ref Vector4, @ref Color4 | `vec2`, `vec3`, `vec4` |
 | @ref Vector2ui, @ref Vector3ui, @ref Vector4ui | `uvec2`, `uvec3`, `uvec4` |
 | @ref Vector2i, @ref Vector3i, @ref Vector4i    | `ivec2`, `ivec3`, `ivec4` |
 | @ref Vector2d, @ref Vector3d, @ref Vector4d    | `dvec2`, `dvec3`, `dvec4` |
+| @ref Color3ub, @ref Color4ub                   | *(none)* |
 
 | Magnum matrix type                                               | Equivalent GLSL type                 |
 | ---------------------------------------------------------------- | ------------------------------------ |
@@ -162,6 +163,7 @@ Other types, which don't have their GLSL equivalent, are:
 -   @ref CubicBezier2D or @ref CubicBezier2Dd, @ref CubicBezier3D
     or @ref CubicBezier3Dd
 -   @ref Complex or @ref Complexd, @ref DualComplex or @ref DualComplexd
+-   @ref Frustum or @ref Frustumd
 -   @ref Quaternion or @ref Quaterniond, @ref DualQuaternion or
     @ref DualQuaterniond
 -   @ref Range1D / @ref Range2D / @ref Range3D, @ref Range1Di / @ref Range2Di /
