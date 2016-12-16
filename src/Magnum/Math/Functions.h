@@ -208,7 +208,7 @@ template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T
     return std::min(value, min);
 }
 template<std::size_t size, class T> inline Vector<size, T> min(const Vector<size, T>& value, const Vector<size, T>& min) {
-    Vector<size, T> out;
+    Vector<size, T> out{NoInit};
     for(std::size_t i = 0; i != size; ++i)
         out[i] = std::min(value[i], min[i]);
     return out;
@@ -236,7 +236,7 @@ template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T
     return std::max(value, max);
 }
 template<std::size_t size, class T> Vector<size, T> max(const Vector<size, T>& value, const Vector<size, T>& max) {
-    Vector<size, T> out;
+    Vector<size, T> out{NoInit};
     for(std::size_t i = 0; i != size; ++i)
         out[i] = std::max(value[i], max[i]);
     return out;
@@ -289,7 +289,7 @@ template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T
     return std::min(std::max(value, min), max);
 }
 template<std::size_t size, class T> Vector<size, T> clamp(const Vector<size, T>& value, T min, T max) {
-    Vector<size, T> out;
+    Vector<size, T> out{NoInit};
     for(std::size_t i = 0; i != size; ++i)
         out[i] = clamp(value[i], min, max);
     return out;
@@ -310,7 +310,7 @@ template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T
     return T(0);
 }
 template<std::size_t size, class T> Vector<size, T> sign(const Vector<size, T>& a) {
-    Vector<size, T> out;
+    Vector<size, T> out{NoInit};
     for(std::size_t i = 0; i != size; ++i)
         out[i] = sign(a[i]);
     return out;
@@ -325,7 +325,7 @@ template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T
     return std::abs(a);
 }
 template<std::size_t size, class T> Vector<size, T> abs(const Vector<size, T>& a) {
-    Vector<size, T> out;
+    Vector<size, T> out{NoInit};
     for(std::size_t i = 0; i != size; ++i)
         out[i] = std::abs(a[i]);
     return out;
@@ -340,7 +340,7 @@ template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T
     return std::floor(a);
 }
 template<std::size_t size, class T> Vector<size, T> floor(const Vector<size, T>& a) {
-    Vector<size, T> out;
+    Vector<size, T> out{NoInit};
     for(std::size_t i = 0; i != size; ++i)
         out[i] = std::floor(a[i]);
     return out;
@@ -360,7 +360,7 @@ template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T
     #endif
 }
 template<std::size_t size, class T> Vector<size, T> round(const Vector<size, T>& a) {
-    Vector<size, T> out;
+    Vector<size, T> out{NoInit};
     for(std::size_t i = 0; i != size; ++i) {
         #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID)
         out[i] = std::round(a[i]);
@@ -380,7 +380,7 @@ template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T
     return std::ceil(a);
 }
 template<std::size_t size, class T> Vector<size, T> ceil(const Vector<size, T>& a) {
-    Vector<size, T> out;
+    Vector<size, T> out{NoInit};
     for(std::size_t i = 0; i != size; ++i)
         out[i] = std::ceil(a[i]);
     return out;
@@ -399,7 +399,7 @@ template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T
     return T(std::sqrt(a));
 }
 template<std::size_t size, class T> Vector<size, T> sqrt(const Vector<size, T>& a) {
-    Vector<size, T> out;
+    Vector<size, T> out{NoInit};
     for(std::size_t i = 0; i != size; ++i)
         out[i] = T(std::sqrt(a[i]));
     return out;
@@ -459,7 +459,7 @@ template<std::size_t size, class T> inline Vector<size, T> lerp(const Vector<siz
 
 /** @overload */
 template<std::size_t size> inline BoolVector<size> lerp(const BoolVector<size>& a, const BoolVector<size>& b, const BoolVector<size>& t) {
-    BoolVector<size> out;
+    BoolVector<size> out{NoInit};
     for(std::size_t i = 0; i != size; ++i)
         out.set(i, t[i] ? b[i] : a[i]);
     return out;
