@@ -34,6 +34,9 @@ namespace Magnum { namespace Math { namespace Test {
 struct FunctionsTest: Corrade::TestSuite::Tester {
     explicit FunctionsTest();
 
+    void powIntegral();
+    void pow();
+
     void min();
     void minList();
     void max();
@@ -64,8 +67,6 @@ struct FunctionsTest: Corrade::TestSuite::Tester {
 
     void normalizeTypeDeduction();
 
-    void powIntegral();
-    void pow();
     void logIntegral();
     void log2();
     void log();
@@ -85,7 +86,10 @@ typedef Math::Vector3<Byte> Vector3b;
 typedef Math::Vector3<Int> Vector3i;
 
 FunctionsTest::FunctionsTest() {
-    addTests({&FunctionsTest::min,
+    addTests({&FunctionsTest::powIntegral,
+              &FunctionsTest::pow,
+
+              &FunctionsTest::min,
               &FunctionsTest::minList,
               &FunctionsTest::max,
               &FunctionsTest::maxList,
@@ -115,8 +119,6 @@ FunctionsTest::FunctionsTest() {
 
               &FunctionsTest::normalizeTypeDeduction,
 
-              &FunctionsTest::powIntegral,
-              &FunctionsTest::pow,
               &FunctionsTest::logIntegral,
               &FunctionsTest::log2,
               &FunctionsTest::log,
@@ -124,6 +126,23 @@ FunctionsTest::FunctionsTest() {
               &FunctionsTest::div,
               &FunctionsTest::trigonometric,
               &FunctionsTest::trigonometricWithBase});
+}
+
+void FunctionsTest::powIntegral() {
+    CORRADE_COMPARE(Math::pow<10>(2ul), 1024ul);
+    CORRADE_COMPARE(Math::pow<0>(3ul), 1ul);
+    CORRADE_COMPARE(Math::pow<2>(2.0f), 4.0f);
+
+    /* Constant expression */
+    constexpr Int a = Math::pow<3>(5);
+    CORRADE_COMPARE(a, 125);
+
+    CORRADE_COMPARE(Math::pow<2>(Vector3{2.0f, -3.0f, 1.5f}), (Vector3{4.0f, 9.0f, 2.25f}));
+}
+
+void FunctionsTest::pow() {
+    CORRADE_COMPARE(Math::pow(2.0f, 0.5f), 1.414213562f);
+    CORRADE_COMPARE(Math::pow(Vector3{2.0f, 9.0f, 25.0f}, 0.5f), (Vector3{1.414213562f, 3.0f, 5.0f}));
 }
 
 void FunctionsTest::min() {
@@ -435,20 +454,6 @@ void FunctionsTest::normalizeTypeDeduction() {
         CORRADE_COMPARE(Math::normalize<Float>('\x7F'), 0.498039f);
     }
     CORRADE_COMPARE((Math::normalize<Float, Byte>('\x7F')), 1.0f);
-}
-
-void FunctionsTest::powIntegral() {
-    CORRADE_COMPARE(Math::pow<10>(2ul), 1024ul);
-    CORRADE_COMPARE(Math::pow<0>(3ul), 1ul);
-    CORRADE_COMPARE(Math::pow<2>(2.0f), 4.0f);
-
-    /* Constant expression */
-    constexpr Int a = Math::pow<3>(5);
-    CORRADE_COMPARE(a, 125);
-}
-
-void FunctionsTest::pow() {
-    CORRADE_COMPARE(Math::pow(2.0f, 0.5f), 1.414213562f);
 }
 
 void FunctionsTest::logIntegral() {

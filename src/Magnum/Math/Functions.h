@@ -50,29 +50,12 @@ namespace Implementation {
     template<> struct Pow<0> {
         Pow() = delete;
 
-        template<class T> constexpr static T pow(T) { return 1; }
+        template<class T> constexpr static T pow(T) { return T(1); }
     };
 
     template<class> struct IsBoolVector: std::false_type {};
     template<std::size_t size> struct IsBoolVector<BoolVector<size>>: std::true_type {};
 }
-
-/**
-@brief Integral power
-
-Returns integral power of base to the exponent.
-*/
-template<UnsignedInt exponent, class T> constexpr T pow(T base) {
-    return Implementation::Pow<exponent>::pow(base);
-}
-
-/**
-@brief Power
-
-Returns power of @p base to the @p exponent.
-@see @ref pow(T), @ref exp()
-*/
-template<class T> T pow(T base, T exponent) { return std::pow(base, exponent); }
 
 /**
 @brief Integral logarithm
@@ -194,6 +177,46 @@ These functions are overloaded for both scalar and vector types. Scalar
 versions function exactly as their possible STL equivalents, vector overloads
 perform the operations component-wise.
 */
+
+/**
+@brief Integral power
+
+Returns integral power of base to the exponent.
+@see @ref pow(T, T)
+*/
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<UnsignedInt exponent, class T> constexpr T pow(T base);
+#else
+template<UnsignedInt exponent, class T> constexpr typename std::enable_if<std::is_arithmetic<T>::value, T>::type pow(T base) {
+    return Implementation::Pow<exponent>::pow(base);
+}
+template<UnsignedInt exponent, std::size_t size, class T> Vector<size, T> pow(const Vector<size, T>& base) {
+    Vector<size, T> out{NoInit};
+    for(std::size_t i = 0; i != size; ++i)
+        out[i] = Implementation::Pow<exponent>::pow(base[i]);
+    return out;
+}
+#endif
+
+/**
+@brief Power
+
+Returns power of @p base to the @p exponent.
+@see @ref pow(T), @ref exp()
+*/
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class T> T pow(T base, T exponent);
+#else
+template<class T> typename std::enable_if<std::is_arithmetic<T>::value, T>::type pow(T base, T exponent) {
+    return std::pow(base, exponent);
+}
+template<std::size_t size, class T> inline Vector<size, T> pow(const Vector<size, T>& base, T exponent) {
+    Vector<size, T> out{NoInit};
+    for(std::size_t i = 0; i != size; ++i)
+        out[i] = std::pow(base[i], exponent);
+    return out;
+}
+#endif
 
 /**
 @brief Minimum
