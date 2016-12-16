@@ -328,34 +328,47 @@ void ColorTest::literals() {
 }
 
 void ColorTest::colors() {
-    CORRADE_COMPARE(Color3ub::red(75), Color3ub(75, 0, 0));
-    CORRADE_COMPARE(Color3ub::green(75), Color3ub(0, 75, 0));
-    CORRADE_COMPARE(Color3ub::blue(75), Color3ub(0, 0, 75));
+    CORRADE_COMPARE(Color3::red(0.289f), (Color3{0.289f, 0.0f, 0.0f}));
+    CORRADE_COMPARE(Color3::green(0.289f), (Color3{0.0f, 0.289f, 0.0f}));
+    CORRADE_COMPARE(Color3::blue(0.289f), (Color3{0.0f, 0.0f, 0.289f}));
 
-    CORRADE_COMPARE(Color3ub::cyan(75), Color3ub(75, 255, 255));
-    CORRADE_COMPARE(Color3ub::magenta(75), Color3ub(255, 75, 255));
-    CORRADE_COMPARE(Color3ub::yellow(75), Color3ub(255, 255, 75));
+    CORRADE_COMPARE(Color3::cyan(0.289f), (Color3{0.289f, 1.0f, 1.0f}));
+    CORRADE_COMPARE(Color3::magenta(0.289f), (Color3{1.0f, 0.289f, 1.0f}));
+    CORRADE_COMPARE(Color3::yellow(0.289f), (Color3{1.0f, 1.0f, 0.289f}));
 
-    CORRADE_COMPARE(Color4ub::red(75, 138), Color4ub(75, 0, 0, 138));
-    CORRADE_COMPARE(Color4ub::green(75, 138), Color4ub(0, 75, 0, 138));
-    CORRADE_COMPARE(Color4ub::blue(75, 138), Color4ub(0, 0, 75, 138));
+    CORRADE_COMPARE(Color4::red(0.289f, 0.47f), (Color4{0.289f, 0.0f, 0.0f, 0.47f}));
+    CORRADE_COMPARE(Color4::green(0.289f, 0.47f), (Color4{0.0f, 0.289f, 0.0f, 0.47f}));
+    CORRADE_COMPARE(Color4::blue(0.289f, 0.47f), (Color4{0.0f, 0.0f, 0.289f, 0.47f}));
 
-    CORRADE_COMPARE(Color4ub::cyan(75, 138), Color4ub(75, 255, 255, 138));
-    CORRADE_COMPARE(Color4ub::magenta(75, 138), Color4ub(255, 75, 255, 138));
-    CORRADE_COMPARE(Color4ub::yellow(75, 138), Color4ub(255, 255, 75, 138));
+    CORRADE_COMPARE(Color4::cyan(0.289f, 0.47f), (Color4{0.289f, 1.0f, 1.0f, 0.47f}));
+    CORRADE_COMPARE(Color4::magenta(0.289f, 0.47f), (Color4{1.0f, 0.289f, 1.0f, 0.47f}));
+    CORRADE_COMPARE(Color4::yellow(0.289f, 0.47f), (Color4{1.0f, 1.0f, 0.289f, 0.47f}));
 
     /* Default values */
-    CORRADE_COMPARE(Color3ub::red(), Color3ub(255, 0, 0));
-    CORRADE_COMPARE(Color3ub::green(), Color3ub(0, 255, 0));
-    CORRADE_COMPARE(Color3ub::blue(), Color3ub(0, 0, 255));
+    CORRADE_COMPARE(Color3::red(), (Color3{1.0f, 0.0f, 0.0f}));
+    CORRADE_COMPARE(Color3::green(), (Color3{0.0f, 1.0f, 0.0f}));
+    CORRADE_COMPARE(Color3::blue(), (Color3{0.0f, 0.0f, 1.0f}));
 
-    CORRADE_COMPARE(Color4ub::red(), Color4ub(255, 0, 0, 255));
-    CORRADE_COMPARE(Color4ub::green(), Color4ub(0, 255, 0, 255));
-    CORRADE_COMPARE(Color4ub::blue(), Color4ub(0, 0, 255, 255));
+    CORRADE_COMPARE(Color4::red(), (Color4{1.0f, 0.0f, 0.0f, 1.0f}));
+    CORRADE_COMPARE(Color4::green(), (Color4{0.0f, 1.0f, 0.0f, 1.0f}));
+    CORRADE_COMPARE(Color4::blue(), (Color4{0.0f, 0.0f, 1.0f, 1.0f}));
 
-    CORRADE_COMPARE(Color4ub::cyan(), Color4ub(0, 255, 255, 255));
-    CORRADE_COMPARE(Color4ub::magenta(), Color4ub(255, 0, 255, 255));
-    CORRADE_COMPARE(Color4ub::yellow(), Color4ub(255, 255, 0, 255));
+    CORRADE_COMPARE(Color4::cyan(), (Color4{0.0f, 1.0f, 1.0f, 1.0f}));
+    CORRADE_COMPARE(Color4::magenta(), (Color4{1.0f, 0.0f, 1.0f, 1.0f}));
+    CORRADE_COMPARE(Color4::yellow(), (Color4{1.0f, 1.0f, 0.0f, 1.0f}));
+
+    /* Integral */
+    CORRADE_COMPARE(Math::Color3<UnsignedShort>::red(), (Math::Color3<UnsignedShort>{65535, 0, 0}));
+    CORRADE_COMPARE(Math::Color3<UnsignedShort>::green(), (Math::Color3<UnsignedShort>{0, 65535, 0}));
+    CORRADE_COMPARE(Math::Color3<UnsignedShort>::blue(), (Math::Color3<UnsignedShort>{0, 0, 65535}));
+
+    CORRADE_COMPARE(Math::Color4<UnsignedShort>::red(), (Math::Color4<UnsignedShort>{65535, 0, 0, 65535}));
+    CORRADE_COMPARE(Math::Color4<UnsignedShort>::green(), (Math::Color4<UnsignedShort>{0, 65535, 0, 65535}));
+    CORRADE_COMPARE(Math::Color4<UnsignedShort>::blue(), (Math::Color4<UnsignedShort>{0, 0, 65535, 65535}));
+
+    CORRADE_COMPARE(Math::Color4<UnsignedShort>::cyan(), (Math::Color4<UnsignedShort>{0, 65535, 65535, 65535}));
+    CORRADE_COMPARE(Math::Color4<UnsignedShort>::magenta(), (Math::Color4<UnsignedShort>{65535, 0, 65535, 65535}));
+    CORRADE_COMPARE(Math::Color4<UnsignedShort>::yellow(), (Math::Color4<UnsignedShort>{65535, 65535, 0, 65535}));
 }
 
 void ColorTest::hue() {
