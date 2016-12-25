@@ -156,6 +156,21 @@ std::size_t PixelStorage::pixelSize(PixelFormat format, PixelType type) {
     CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
+bool PixelStorage::operator==(const PixelStorage& other) const {
+    return
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+        _rowLength == other._rowLength &&
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        _imageHeight == other._imageHeight &&
+        #endif
+        _skip == other._skip &&
+        #ifndef MAGNUM_TARGET_GLES
+        _swapBytes == other._swapBytes &&
+        #endif
+        _alignment == other._alignment;
+}
+
 std::tuple<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>, std::size_t> PixelStorage::dataProperties(const PixelFormat format, const PixelType type, const Vector3i& size) const {
     const std::size_t pixelSize = PixelStorage::pixelSize(format, type);
     const Math::Vector3<std::size_t> dataSize{
@@ -269,6 +284,12 @@ void PixelStorage::applyUnpack() {
 }
 
 #ifndef MAGNUM_TARGET_GLES
+bool CompressedPixelStorage::operator==(const CompressedPixelStorage& other) const {
+    return PixelStorage::operator==(other) &&
+        _blockSize == other._blockSize &&
+        _blockDataSize == other._blockDataSize;
+}
+
 void CompressedPixelStorage::applyInternal(const bool isUnpack) {
     PixelStorage::applyInternal(isUnpack);
 

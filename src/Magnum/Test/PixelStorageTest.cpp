@@ -36,6 +36,11 @@ struct PixelStorageTest: TestSuite::Tester {
 
     void pixelSize();
 
+    void compare();
+    #ifndef MAGNUM_TARGET_GLES
+    void compareCompressed();
+    #endif
+
     void dataProperties();
     void dataPropertiesAlignment();
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
@@ -62,6 +67,11 @@ typedef Math::Vector3<std::size_t> Vector3st;
 
 PixelStorageTest::PixelStorageTest() {
     addTests({&PixelStorageTest::pixelSize,
+
+              &PixelStorageTest::compare,
+              #ifndef MAGNUM_TARGET_GLES
+              &PixelStorageTest::compareCompressed,
+              #endif
 
               &PixelStorageTest::dataProperties,
               &PixelStorageTest::dataPropertiesAlignment,
@@ -94,6 +104,53 @@ void PixelStorageTest::pixelSize() {
     #endif
     CORRADE_COMPARE(PixelStorage::pixelSize(PixelFormat::DepthStencil, PixelType::UnsignedInt248), 4);
 }
+
+void PixelStorageTest::compare() {
+    PixelStorage a;
+    a
+     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+     .setRowLength(1)
+     #endif
+     #ifndef MAGNUM_TARGET_GLES2
+     .setImageHeight(15)
+     #endif
+     .setSkip({1, 3, 4})
+     #ifndef MAGNUM_TARGET_GLES
+     .setSwapBytes(true)
+     #endif
+     .setAlignment(3);
+
+    CORRADE_VERIFY(a == a);
+    CORRADE_VERIFY(a != PixelStorage{});
+    CORRADE_VERIFY(PixelStorage{} == PixelStorage{});
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    CORRADE_VERIFY(PixelStorage{}.setRowLength(15) != PixelStorage{}.setRowLength(17));
+    #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_VERIFY(PixelStorage{}.setImageHeight(32) != PixelStorage{}.setImageHeight(31));
+    #endif
+    CORRADE_VERIFY(PixelStorage{}.setSkip({1, 5, 7}) != PixelStorage{}.setSkip({7, 1, 5}));
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_VERIFY(PixelStorage{}.setSwapBytes(false) != PixelStorage{}.setSwapBytes(true));
+    #endif
+    CORRADE_VERIFY(PixelStorage{}.setAlignment(3) != PixelStorage{}.setAlignment(5));
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void PixelStorageTest::compareCompressed() {
+    CompressedPixelStorage a;
+    a.setSkip({16, 2, 1})
+     .setCompressedBlockSize({4, 8, 2})
+     .setCompressedBlockDataSize(16);
+
+    CORRADE_VERIFY(a == a);
+    CORRADE_VERIFY(a != CompressedPixelStorage{});
+    CORRADE_VERIFY(CompressedPixelStorage{} == CompressedPixelStorage{});
+    CORRADE_VERIFY(CompressedPixelStorage{}.setSkip({16, 4, 17}) != CompressedPixelStorage{}.setSkip({4, 35, 12}));
+    CORRADE_VERIFY(CompressedPixelStorage{}.setCompressedBlockSize({2, 7, 19}) != CompressedPixelStorage{}.setCompressedBlockSize({2, 7, 16}));
+    CORRADE_VERIFY(CompressedPixelStorage{}.setCompressedBlockDataSize(32) != CompressedPixelStorage{}.setCompressedBlockDataSize(30));
+}
+#endif
 
 void PixelStorageTest::dataProperties() {
     PixelStorage storage;

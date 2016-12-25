@@ -81,6 +81,14 @@ class MAGNUM_EXPORT PixelStorage {
          */
         constexpr /*implicit*/ PixelStorage() noexcept;
 
+        /** @brief Equality comparison */
+        bool operator==(const PixelStorage& other) const;
+
+        /** @brief Non-equality comparison */
+        bool operator!=(const PixelStorage& other) const {
+            return !operator==(other);
+        }
+
         #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Whether to reverse byte order
@@ -274,6 +282,14 @@ class MAGNUM_EXPORT CompressedPixelStorage: public PixelStorage {
         constexpr
         #endif
         /*implicit*/ CompressedPixelStorage() noexcept: _blockSize{0}, _blockDataSize{0} {}
+
+        /** @brief Equality comparison */
+        bool operator==(const CompressedPixelStorage& other) const;
+
+        /** @brief Non-equality comparison */
+        bool operator!=(const CompressedPixelStorage& other) const {
+            return !operator==(other);
+        }
 
         /** @brief Compressed block size */
         constexpr Vector3i compressedBlockSize() const { return _blockSize; }
