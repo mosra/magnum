@@ -93,8 +93,8 @@ cmake_dependent_option(WITH_AL_INFO "Build magnum-al-info utility" OFF "WITH_AUD
 # EGL context and windowless EGL application, available everywhere except on
 # platforms which don't support extension loading
 if(NOT CORRADE_TARGET_EMSCRIPTEN AND NOT CORRADE_TARGET_NACL)
+    cmake_dependent_option(WITH_WINDOWLESSEGLAPPLICATION "Build WindowlessEglApplication library" OFF "NOT TARGET_GLES OR TARGET_DESKTOP_GLES OR NOT WITH_MAGNUMINFO" ON)
     option(WITH_EGLCONTEXT "Build EglContext library" OFF)
-    option(WITH_WINDOWLESSEGLAPPLICATION "Build WindowlessEglApplication library" OFF)
 endif()
 
 # NaCl-specific application libraries
@@ -118,9 +118,11 @@ elseif(CORRADE_TARGET_APPLE)
 # X11 + GLX/EGL-specific application libraries
 elseif(CORRADE_TARGET_UNIX)
     option(WITH_GLXAPPLICATION "Build GlxApplication library" OFF)
-    cmake_dependent_option(WITH_WINDOWLESSGLXAPPLICATION "Build WindowlessGlxApplication library" OFF "NOT WITH_MAGNUMINFO;NOT WITH_FONTCONVERTER;NOT WITH_DISTANCEFIELDCONVERTER" ON)
+    if(NOT TARGET_GLES OR TARGET_DESKTOP_GLES)
+        cmake_dependent_option(WITH_WINDOWLESSGLXAPPLICATION "Build WindowlessGlxApplication library" OFF "NOT WITH_MAGNUMINFO;NOT WITH_FONTCONVERTER;NOT WITH_DISTANCEFIELDCONVERTER" ON)
+        option(WITH_GLXCONTEXT "Build GlxContext library" OFF)
+    endif()
     option(WITH_XEGLAPPLICATION "Build XEglApplication library" OFF)
-    option(WITH_GLXCONTEXT "Build GlxContext library" OFF)
 
 # Windows-specific application libraries
 elseif(CORRADE_TARGET_WINDOWS)
