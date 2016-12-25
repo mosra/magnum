@@ -26,6 +26,7 @@
 set(MagnumMathAlgorithms_HEADERS
     GaussJordan.h
     GramSchmidt.h
+    KahanSum.h
     Qr.h
     Svd.h)
 
