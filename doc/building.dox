@@ -181,22 +181,24 @@ parameters you can specify which parts will be built and which not:
 
 -   `WITH_AUDIO` - @ref Audio library. Depends on **OpenAL** library, not built
     by default.
--   `WITH_DEBUGTOOLS` - @ref DebugTools library. Enables also building of
-    MeshTools, Primitives, SceneGraph, Shaders and Shapes libraries.
--   `WITH_MESHTOOLS` - @ref MeshTools library. Enabled automatically if
-    `WITH_DEBUGTOOLS` is enabled.
--   `WITH_PRIMITIVES` - @ref Primitives library. Enabled automatically if
-    `WITH_DEBUGTOOLS` is enabled.
+-   `WITH_DEBUGTOOLS` - @ref DebugTools library
+-   `WITH_MESHTOOLS` - @ref MeshTools library
+-   `WITH_PRIMITIVES` - @ref Primitives library
 -   `WITH_SCENEGRAPH` - @ref SceneGraph library. Enabled automatically if
-    `WITH_DEBUGTOOLS` or `WITH_SHAPES` is enabled.
--   `WITH_SHADERS` - @ref Shaders library. Enabled automatically if
-    `WITH_DEBUGTOOLS` is enabled.
+    `WITH_SHAPES` is enabled.
+-   `WITH_SHADERS` - @ref Shaders library
 -   `WITH_SHAPES` - @ref Shapes library. Enables also building of SceneGraph
     library. Enabled automatically if `WITH_DEBUGTOOLS` is enabled.
 -   `WITH_TEXT` - @ref Text library. Enables also building of TextureTools
     library.
 -   `WITH_TEXTURETOOLS` - @ref TextureTools library. Enabled automatically if
     `WITH_TEXT` or `WITH_DISTANCEFIELDCONVERTER` is enabled.
+
+There are more involved component dependencies that are not described here (for
+example the @ref DebugTools has some functionality that gets built only when
+@ref SceneGraph is enabled, which then makes it dependent on @ref Shaders and
+other things), but the CMake buildsystem takes care of these and only the
+relevant toggleable options are shown in CMake GUI or `ccmake`.
 
 None of the @ref Platform "application libraries" is built by default (and you
 need at least one). Choose the one which suits your requirements and your
@@ -368,7 +370,7 @@ features, for example), modify the last entry in `debian/rules`.
 @subsection building-packages-brew Homebrew formulas
 
 OS X Homebrew formulas are in `package/homebrew` directory. Either use the
-`*.rb` files directly or use the tap at https://github.com/mosra/homebrew-magnum:
+`*.rb` files directly or use the tap at https://github.com/mosra/homebrew-magnum :
 
     brew install --HEAD mosra/magnum/magnum
 
