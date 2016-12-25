@@ -106,16 +106,17 @@ if(BUILD_STATIC_PIC)
     set_target_properties(MagnumDebugTools PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 
-target_link_libraries(MagnumDebugTools
-    Magnum
-    MagnumMeshTools
-    MagnumPrimitives
-    MagnumShaders)
+target_link_libraries(MagnumDebugTools Magnum)
 if(WITH_SCENEGRAPH)
     target_link_libraries(MagnumDebugTools MagnumSceneGraph)
 endif()
 if(WITH_SHAPES)
-    target_link_libraries(MagnumDebugTools MagnumShapes)
+    target_link_libraries(MagnumDebugTools MagnumShapes MagnumPrimitives)
+endif()
+if(WITH_SCENEGRAPH OR WITH_SHAPES)
+    target_link_libraries(MagnumDebugTools
+        MagnumMeshTools
+        MagnumShaders)
 endif()
 
 install(TARGETS MagnumDebugTools

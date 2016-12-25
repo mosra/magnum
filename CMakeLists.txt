@@ -79,11 +79,11 @@ cmake_dependent_option(WITH_TGAIMPORTER "Build TgaImporter plugin" OFF "NOT WITH
 # Parts of the library
 cmake_dependent_option(WITH_AUDIO "Build Audio library" OFF "NOT WITH_WAVAUDIOIMPORTER" ON)
 option(WITH_DEBUGTOOLS "Build DebugTools library" ON)
-cmake_dependent_option(WITH_MESHTOOLS "Build MeshTools library" ON "NOT WITH_DEBUGTOOLS;NOT WITH_OBJIMPORTER" ON)
-cmake_dependent_option(WITH_PRIMITIVES "Builf Primitives library" ON "NOT WITH_DEBUGTOOLS" ON)
+cmake_dependent_option(WITH_MESHTOOLS "Build MeshTools library" ON "( NOT WITH_DEBUGTOOLS OR ( NOT WITH_SHAPES AND NOT WITH_SCENEGRAPH ) ) AND NOT WITH_OBJIMPORTER" ON)
+cmake_dependent_option(WITH_PRIMITIVES "Builf Primitives library" ON "NOT WITH_DEBUGTOOLS OR NOT WITH_SHAPES" ON)
 option(WITH_SHAPES "Build Shapes library" ON)
 cmake_dependent_option(WITH_SCENEGRAPH "Build SceneGraph library" ON "NOT WITH_SHAPES" ON)
-cmake_dependent_option(WITH_SHADERS "Build Shaders library" ON "NOT WITH_DEBUGTOOLS" ON)
+cmake_dependent_option(WITH_SHADERS "Build Shaders library" ON "NOT WITH_DEBUGTOOLS OR ( NOT WITH_SHAPES AND NOT WITH_SCENEGRAPH )" ON)
 cmake_dependent_option(WITH_TEXT "Build Text library" ON "NOT WITH_MAGNUMFONT;NOT WITH_MAGNUMFONTCONVERTER" ON)
 cmake_dependent_option(WITH_TEXTURETOOLS "Build TextureTools library" ON "NOT WITH_TEXT;NOT WITH_DISTANCEFIELDCONVERTER" ON)
 
