@@ -55,6 +55,8 @@ Float b = Math::unpack<Float, UnsignedByte>('\xFF');
 
 @see @ref pack()
 */
+/* Signed conversion with max(val, -1) according to
+   https://www.opengl.org/registry/specs/EXT/texture_snorm.txt */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class FloatingPoint, class Integral> inline FloatingPoint unpack(const Integral& value);
 #else
