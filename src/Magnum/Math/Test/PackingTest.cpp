@@ -58,6 +58,7 @@ PackingTest::PackingTest() {
 
 void PackingTest::unpackUnsigned() {
     CORRADE_COMPARE((Math::unpack<Float, UnsignedByte>(0)), 0.0f);
+    CORRADE_COMPARE((Math::unpack<Float, UnsignedByte>(149)), 0.584314f);
     CORRADE_COMPARE((Math::unpack<Float, UnsignedByte>(255)), 1.0f);
 
     CORRADE_COMPARE((Math::unpack<Double, UnsignedInt>(0)), 0.0);
@@ -79,7 +80,9 @@ void PackingTest::unpackUnsigned() {
 
 void PackingTest::unpackSigned() {
     CORRADE_COMPARE((Math::unpack<Float, Byte>(127)), 1.0f);
+    CORRADE_COMPARE((Math::unpack<Float, Byte>(37)), 0.291339f);
     CORRADE_COMPARE((Math::unpack<Float, Byte>(0)), 0.0f);
+    CORRADE_COMPARE((Math::unpack<Float, Byte>(-72)), -0.566929f);
     CORRADE_COMPARE((Math::unpack<Float, Byte>(-128)), -1.0f);
 
     CORRADE_COMPARE((Math::unpack<Float, Short>(std::numeric_limits<Short>::min())), -1.0f);
@@ -104,6 +107,7 @@ void PackingTest::unpackSigned() {
 
 void PackingTest::packUnsigned() {
     CORRADE_COMPARE(Math::pack<UnsignedByte>(0.0f), 0);
+    CORRADE_COMPARE(Math::pack<UnsignedByte>(0.4357f), 111);
     CORRADE_COMPARE(Math::pack<UnsignedByte>(1.0f), 255);
 
     CORRADE_COMPARE(Math::pack<UnsignedShort>(0.0f), 0);
@@ -130,7 +134,9 @@ void PackingTest::packUnsigned() {
 
 void PackingTest::packSigned() {
     CORRADE_COMPARE(Math::pack<Byte>(-1.0f), -127);
+    CORRADE_COMPARE(Math::pack<Byte>(-0.732f), -92);
     CORRADE_COMPARE(Math::pack<Byte>(0.0f), 0);
+    CORRADE_COMPARE(Math::pack<Byte>(0.1357f), 17);
     CORRADE_COMPARE(Math::pack<Byte>(1.0f), 127);
 
     CORRADE_COMPARE(Math::pack<Short>(-1.0f), std::numeric_limits<Short>::min()+1);
