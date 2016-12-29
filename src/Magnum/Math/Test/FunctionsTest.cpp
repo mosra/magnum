@@ -58,14 +58,6 @@ struct FunctionsTest: Corrade::TestSuite::Tester {
     void lerpBool();
     void lerpInverted();
     void fma();
-    void normalizeUnsigned();
-    void normalizeSigned();
-    void denormalizeUnsigned();
-    void denormalizeSigned();
-    void renormalizeUnsinged();
-    void renormalizeSinged();
-
-    void normalizeTypeDeduction();
 
     void logIntegral();
     void log2();
@@ -110,14 +102,6 @@ FunctionsTest::FunctionsTest() {
               &FunctionsTest::lerpBool,
               &FunctionsTest::lerpInverted,
               &FunctionsTest::fma,
-              &FunctionsTest::normalizeUnsigned,
-              &FunctionsTest::normalizeSigned,
-              &FunctionsTest::denormalizeUnsigned,
-              &FunctionsTest::denormalizeSigned,
-              &FunctionsTest::renormalizeUnsinged,
-              &FunctionsTest::renormalizeSinged,
-
-              &FunctionsTest::normalizeTypeDeduction,
 
               &FunctionsTest::logIntegral,
               &FunctionsTest::log2,
@@ -290,170 +274,6 @@ void FunctionsTest::fma() {
                               Vector3( 3.0f,  2.0f, -1.0f),
                               Vector3(0.75f, 0.25f,  0.1f)),
                               Vector3(6.75f, 3.25f, -0.4f));
-}
-
-void FunctionsTest::normalizeUnsigned() {
-    CORRADE_COMPARE((Math::normalize<Float, UnsignedByte>(0)), 0.0f);
-    CORRADE_COMPARE((Math::normalize<Float, UnsignedByte>(255)), 1.0f);
-
-    CORRADE_COMPARE((Math::normalize<Double, UnsignedInt>(0)), 0.0);
-    CORRADE_COMPARE((Math::normalize<Double, UnsignedInt>(std::numeric_limits<UnsignedInt>::max())), 1.0);
-
-    #ifndef MAGNUM_TARGET_WEBGL
-    CORRADE_COMPARE((Math::normalize<long double, UnsignedLong>(0)), 0.0);
-    CORRADE_COMPARE((Math::normalize<long double, UnsignedLong>(std::numeric_limits<UnsignedLong>::max())), 1.0);
-    #endif
-
-    CORRADE_COMPARE((Math::normalize<Float, UnsignedShort>(0)), 0.0f);
-    CORRADE_COMPARE((Math::normalize<Float, UnsignedShort>(std::numeric_limits<UnsignedShort>::max())), 1.0f);
-
-    CORRADE_COMPARE((Math::normalize<Float, UnsignedShort>(8192)), 0.125002f);
-    CORRADE_COMPARE((Math::normalize<Float, UnsignedShort>(49152)), 0.750011f);
-
-    CORRADE_COMPARE(Math::normalize<Vector3>(Vector3ub(0, 127, 255)), Vector3(0.0f, 0.498039f, 1.0f));
-}
-
-void FunctionsTest::normalizeSigned() {
-    CORRADE_COMPARE((Math::normalize<Float, Byte>(127)), 1.0f);
-    CORRADE_COMPARE((Math::normalize<Float, Byte>(0)), 0.0f);
-    CORRADE_COMPARE((Math::normalize<Float, Byte>(-128)), -1.0f);
-
-    CORRADE_COMPARE((Math::normalize<Float, Short>(std::numeric_limits<Short>::min())), -1.0f);
-    CORRADE_COMPARE((Math::normalize<Float, Short>(0)), 0.0f);
-    CORRADE_COMPARE((Math::normalize<Float, Short>(std::numeric_limits<Short>::max())), 1.0f);
-
-    CORRADE_COMPARE((Math::normalize<Double, Int>(std::numeric_limits<Int>::min())), -1.0);
-    CORRADE_COMPARE((Math::normalize<Double, Int>(0)), 0.0);
-    CORRADE_COMPARE((Math::normalize<Double, Int>(std::numeric_limits<Int>::max())), 1.0);
-
-    #ifndef MAGNUM_TARGET_WEBGL
-    CORRADE_COMPARE((Math::normalize<long double, Long>(std::numeric_limits<Long>::min())), -1.0);
-    CORRADE_COMPARE((Math::normalize<long double, Long>(0)), 0.0);
-    CORRADE_COMPARE((Math::normalize<long double, Long>(std::numeric_limits<Long>::max())), 1.0);
-    #endif
-
-    CORRADE_COMPARE((Math::normalize<Float, Short>(16384)), 0.500015f);
-    CORRADE_COMPARE((Math::normalize<Float, Short>(-16384)), -0.500015f);
-
-    CORRADE_COMPARE(Math::normalize<Vector3>(Vector3b(0, -127, 64)), Vector3(0.0f, -1.0f, 0.503937f));
-}
-
-void FunctionsTest::denormalizeUnsigned() {
-    CORRADE_COMPARE(Math::denormalize<UnsignedByte>(0.0f), 0);
-    CORRADE_COMPARE(Math::denormalize<UnsignedByte>(1.0f), 255);
-
-    CORRADE_COMPARE(Math::denormalize<UnsignedShort>(0.0f), 0);
-    CORRADE_COMPARE(Math::denormalize<UnsignedShort>(1.0f), std::numeric_limits<UnsignedShort>::max());
-
-    CORRADE_COMPARE(Math::denormalize<UnsignedInt>(0.0), 0);
-    CORRADE_COMPARE(Math::denormalize<UnsignedInt>(1.0), std::numeric_limits<UnsignedInt>::max());
-
-    #ifndef MAGNUM_TARGET_WEBGL
-    CORRADE_COMPARE(Math::denormalize<UnsignedLong>(0.0l), 0);
-    {
-        #ifdef CORRADE_MSVC2015_COMPATIBILITY
-        CORRADE_EXPECT_FAIL("Long double (de)normalization is broken on MSVC <= 2015.");
-        #endif
-        CORRADE_COMPARE(Math::denormalize<UnsignedLong>(1.0l), std::numeric_limits<UnsignedLong>::max());
-    }
-    #endif
-
-    CORRADE_COMPARE(Math::denormalize<UnsignedShort>(0.33f), 21626);
-    CORRADE_COMPARE(Math::denormalize<UnsignedShort>(0.66f), 43253);
-
-    CORRADE_COMPARE(Math::denormalize<Vector3ub>(Vector3(0.0f, 0.5f, 1.0f)), Vector3ub(0, 127, 255));
-}
-
-void FunctionsTest::denormalizeSigned() {
-    CORRADE_COMPARE(Math::denormalize<Byte>(-1.0f), -127);
-    CORRADE_COMPARE(Math::denormalize<Byte>(0.0f), 0);
-    CORRADE_COMPARE(Math::denormalize<Byte>(1.0f), 127);
-
-    CORRADE_COMPARE(Math::denormalize<Short>(-1.0f), std::numeric_limits<Short>::min()+1);
-    CORRADE_COMPARE(Math::denormalize<Short>(0.0f), 0);
-    CORRADE_COMPARE(Math::denormalize<Short>(1.0f), std::numeric_limits<Short>::max());
-
-    #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE(Math::denormalize<Int>(-1.0), std::numeric_limits<Int>::min()+1);
-    CORRADE_COMPARE(Math::denormalize<Int>(0.0), 0);
-    CORRADE_COMPARE(Math::denormalize<Int>(1.0), std::numeric_limits<Int>::max());
-
-    {
-        #ifdef CORRADE_MSVC2015_COMPATIBILITY
-        CORRADE_EXPECT_FAIL("Long double (de)normalization is broken on MSVC <= 2015.");
-        #endif
-        CORRADE_COMPARE(Math::denormalize<Long>(-1.0l), std::numeric_limits<Long>::min()+1);
-    }
-    CORRADE_COMPARE(Math::denormalize<Long>(0.0l), 0);
-    {
-        #ifdef CORRADE_MSVC2015_COMPATIBILITY
-        CORRADE_EXPECT_FAIL("Long double (de)normalization is broken on MSVC <= 2015.");
-        #endif
-        CORRADE_COMPARE(Math::denormalize<Long>(1.0l), std::numeric_limits<Long>::max());
-    }
-    #endif
-
-    CORRADE_COMPARE(Math::denormalize<Short>(-0.33f), -10813);
-    CORRADE_COMPARE(Math::denormalize<Short>(0.66f), 21626);
-
-    CORRADE_COMPARE(Math::denormalize<Vector3b>(Vector3(0.0f, -1.0f, 0.5f)), Vector3b(0, -127, 63));
-}
-
-void FunctionsTest::renormalizeUnsinged() {
-    CORRADE_COMPARE(Math::normalize<Float>(Math::denormalize<UnsignedByte>(0.0f)), 0.0f);
-    CORRADE_COMPARE(Math::normalize<Float>(Math::denormalize<UnsignedByte>(1.0f)), 1.0f);
-
-    CORRADE_COMPARE(Math::normalize<Float>(Math::denormalize<UnsignedShort>(0.0f)), 0.0f);
-    CORRADE_COMPARE(Math::normalize<Float>(Math::denormalize<UnsignedShort>(1.0f)), 1.0f);
-
-    CORRADE_COMPARE(Math::normalize<Double>(Math::denormalize<UnsignedInt>(0.0)), 0.0);
-    CORRADE_COMPARE(Math::normalize<Double>(Math::denormalize<UnsignedInt>(1.0)), 1.0);
-
-    #ifndef MAGNUM_TARGET_WEBGL
-    CORRADE_COMPARE(Math::normalize<long double>(Math::denormalize<UnsignedLong>(0.0l)), 0.0l);
-    {
-        #ifdef CORRADE_MSVC2015_COMPATIBILITY
-        CORRADE_EXPECT_FAIL("Long double (de)normalization is broken on MSVC <= 2015.");
-        #endif
-        CORRADE_COMPARE(Math::normalize<long double>(Math::denormalize<UnsignedLong>(1.0l)), 1.0l);
-    }
-    #endif
-}
-
-void FunctionsTest::renormalizeSinged() {
-    CORRADE_COMPARE(Math::normalize<Float>(Math::denormalize<Byte>(-1.0f)), -1.0f);
-    CORRADE_COMPARE(Math::normalize<Float>(Math::denormalize<Byte>(0.0f)), 0.0f);
-    CORRADE_COMPARE(Math::normalize<Float>(Math::denormalize<Byte>(1.0f)), 1.0f);
-
-    CORRADE_COMPARE(Math::normalize<Float>(Math::denormalize<Short>(-1.0f)), -1.0f);
-    CORRADE_COMPARE(Math::normalize<Float>(Math::denormalize<Short>(0.0f)), 0.0f);
-    CORRADE_COMPARE(Math::normalize<Float>(Math::denormalize<Short>(1.0f)), 1.0f);
-
-    CORRADE_COMPARE(Math::normalize<Double>(Math::denormalize<Int>(-1.0)), -1.0);
-    CORRADE_COMPARE(Math::normalize<Double>(Math::denormalize<Int>(0.0)), 0.0);
-    CORRADE_COMPARE(Math::normalize<Double>(Math::denormalize<Int>(1.0)), 1.0);
-
-    #ifndef MAGNUM_TARGET_WEBGL
-    CORRADE_COMPARE(Math::normalize<long double>(Math::denormalize<Long>(-1.0l)), -1.0l);
-    CORRADE_COMPARE(Math::normalize<long double>(Math::denormalize<Long>(0.0l)), 0.0l);
-    {
-        #ifdef CORRADE_MSVC2015_COMPATIBILITY
-        CORRADE_EXPECT_FAIL("Long double (de)normalization is broken on MSVC <= 2015.");
-        #endif
-        CORRADE_COMPARE(Math::normalize<long double>(Math::denormalize<Long>(1.0l)), 1.0l);
-    }
-    #endif
-}
-
-void FunctionsTest::normalizeTypeDeduction() {
-    if(std::is_signed<char>::value)
-        CORRADE_COMPARE(Math::normalize<Float>('\x7F'), 1.0f);
-    else {
-        /* Raspberry Pi `char` is unsigned (huh) */
-        CORRADE_VERIFY(std::is_unsigned<char>::value);
-        CORRADE_COMPARE(Math::normalize<Float>('\x7F'), 0.498039f);
-    }
-    CORRADE_COMPARE((Math::normalize<Float, Byte>('\x7F')), 1.0f);
 }
 
 void FunctionsTest::logIntegral() {

@@ -75,7 +75,7 @@ struct ColorTest: Corrade::TestSuite::Tester {
     void constructOneValue();
     void constructParts();
     void constructConversion();
-    void constructNormalization();
+    void constructPacking();
     void constructCopy();
     void convert();
 
@@ -121,7 +121,7 @@ ColorTest::ColorTest() {
               &ColorTest::constructOneValue,
               &ColorTest::constructParts,
               &ColorTest::constructConversion,
-              &ColorTest::constructNormalization,
+              &ColorTest::constructPacking,
               &ColorTest::constructCopy,
               &ColorTest::convert,
 
@@ -264,13 +264,13 @@ void ColorTest::constructConversion() {
     CORRADE_VERIFY((std::is_nothrow_constructible<Color4, Color4ub>::value));
 }
 
-void ColorTest::constructNormalization() {
+void ColorTest::constructPacking() {
     constexpr Color3 a(1.0f, 0.5f, 0.75f);
-    auto b = Math::denormalize<Color3ub>(a);
+    auto b = Math::pack<Color3ub>(a);
     CORRADE_COMPARE(b, Color3ub(255, 127, 191));
 
     constexpr Color4 c(1.0f, 0.5f, 0.75f, 0.25f);
-    auto d = Math::denormalize<Color4ub>(c);
+    auto d = Math::pack<Color4ub>(c);
     CORRADE_COMPARE(d, Color4ub(255, 127, 191, 63));
 }
 

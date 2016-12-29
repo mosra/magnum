@@ -222,14 +222,14 @@ auto c = Vector3i{a};            // {2, 0, -5}
 auto d = Vector3d{a};            // {2.2, 0.25, -5.1}
 @endcode
 
-For normalizing and denormalizing there are @ref Math::normalize() and
-@ref Math::denormalize() functions:
+For packing and unpacking there are @ref Math::pack() and @ref Math::unpack()
+functions:
 @code
 Color3 a{0.8f, 1.0f, 0.3f};
-auto b = Math::denormalize<Color3ub>(a);    // {204, 255, 76}
+auto b = Math::unpack<Color3ub>(a); // {204, 255, 76}
 
 Color3ub c{64, 127, 89};
-auto d = Math::normalize<Color3>(c);        // {0.251, 0.498, 0.349}
+auto d = Math::pack<Color3>(c);     // {0.251, 0.498, 0.349}
 @endcode
 
 See @ref matrix-vector-componentwise "below" for more information about other

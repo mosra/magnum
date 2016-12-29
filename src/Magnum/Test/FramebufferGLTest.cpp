@@ -1119,8 +1119,8 @@ void FramebufferGLTest::read() {
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 
-    Renderer::setClearColor(Math::normalize<Color4>(Color4ub(128, 64, 32, 17)));
-    Renderer::setClearDepth(Math::normalize<Float, UnsignedShort>(48352));
+    Renderer::setClearColor(Math::unpack<Color4>(Color4ub(128, 64, 32, 17)));
+    Renderer::setClearDepth(Math::unpack<Float, UnsignedShort>(48352));
     Renderer::setClearStencil(67);
     framebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth|FramebufferClear::Stencil);
 
@@ -1198,8 +1198,8 @@ void FramebufferGLTest::readBuffer() {
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 
-    Renderer::setClearColor(Math::normalize<Color4>(Color4ub(128, 64, 32, 17)));
-    Renderer::setClearDepth(Math::normalize<Float, UnsignedShort>(48352));
+    Renderer::setClearColor(Math::unpack<Color4>(Color4ub(128, 64, 32, 17)));
+    Renderer::setClearDepth(Math::unpack<Float, UnsignedShort>(48352));
     Renderer::setClearStencil(67);
     framebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth|FramebufferClear::Stencil);
 
@@ -1742,7 +1742,7 @@ void FramebufferGLTest::blit() {
     CORRADE_COMPARE(b.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 
     /* Clear first with some color and second with another */
-    Renderer::setClearColor(Math::normalize<Color4>(Color4ub(128, 64, 32, 17)));
+    Renderer::setClearColor(Math::unpack<Color4>(Color4ub(128, 64, 32, 17)));
     a.clear(FramebufferClear::Color);
     Renderer::setClearColor({});
     b.clear(FramebufferClear::Color);

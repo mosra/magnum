@@ -590,7 +590,7 @@ void MeshGLTest::addVertexBufferInt() {
 void MeshGLTest::addVertexBufferFloat() {
     typedef Attribute<0, Float> Attribute;
 
-    const Float data[] = { 0.0f, -0.7f, Math::normalize<Float, UnsignedByte>(96) };
+    const Float data[] = { 0.0f, -0.7f, Math::unpack<Float, UnsignedByte>(96) };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
@@ -619,7 +619,7 @@ void MeshGLTest::addVertexBufferDouble() {
 
     typedef Attribute<0, Double> Attribute;
 
-    const Double data[] = { 0.0, -0.7, Math::normalize<Double, UnsignedShort>(45828) };
+    const Double data[] = { 0.0, -0.7, Math::unpack<Double, UnsignedShort>(45828) };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
@@ -692,7 +692,7 @@ void MeshGLTest::addVertexBufferVectorNi() {
 void MeshGLTest::addVertexBufferVectorN() {
     typedef Attribute<0, Vector3> Attribute;
 
-    const Vector3 data[] = { {}, {0.0f, -0.9f, 1.0f}, Math::normalize<Vector3>(Color3ub(96, 24, 156)) };
+    const Vector3 data[] = { {}, {0.0f, -0.9f, 1.0f}, Math::unpack<Vector3>(Color3ub(96, 24, 156)) };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
@@ -723,7 +723,7 @@ void MeshGLTest::addVertexBufferVectorNd() {
 
     const Vector4d data[] = {
         {}, {0.0, -0.9, 1.0, 1.25},
-        Math::normalize<Vector4d>(Math::Vector4<UnsignedShort>(315, 65201, 2576, 12))
+        Math::unpack<Vector4d>(Math::Vector4<UnsignedShort>(315, 65201, 2576, 12))
     };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
@@ -748,7 +748,7 @@ void MeshGLTest::addVertexBufferMatrixNxN() {
     const Matrix3x3 data[] = {
         {},
         Matrix3x3::fromDiagonal({0.0f, -0.9f, 1.0f}),
-        Matrix3x3::fromDiagonal(Math::normalize<Vector3>(Color3ub(96, 24, 156)))
+        Matrix3x3::fromDiagonal(Math::unpack<Vector3>(Color3ub(96, 24, 156)))
     };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
@@ -777,7 +777,7 @@ void MeshGLTest::addVertexBufferMatrixNxNd() {
     const Matrix3x3d data[] = {
         {},
         Matrix3x3d::fromDiagonal({0.0, -0.9, 1.0}),
-        Matrix3x3d::fromDiagonal(Math::normalize<Vector3d>(Math::Vector3<UnsignedShort>(315, 65201, 2576)))
+        Matrix3x3d::fromDiagonal(Math::unpack<Vector3d>(Math::Vector3<UnsignedShort>(315, 65201, 2576)))
     };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
@@ -813,7 +813,7 @@ void MeshGLTest::addVertexBufferMatrixMxN() {
     const Matrix3x4 data[] = {
         {},
         Matrix3x4::fromDiagonal({0.0f, -0.9f, 1.0f}),
-        Matrix3x4::fromDiagonal(Math::normalize<Vector3>(Color3ub(96, 24, 156)))
+        Matrix3x4::fromDiagonal(Math::unpack<Vector3>(Color3ub(96, 24, 156)))
     };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
@@ -843,7 +843,7 @@ void MeshGLTest::addVertexBufferMatrixMxNd() {
     const Matrix3x4d data[] = {
         {},
         Matrix3x4d::fromDiagonal({0.0f, -0.9f, 1.0f}),
-        Matrix3x4d::fromDiagonal(Math::normalize<Vector3d>(Math::Vector3<UnsignedShort>(315, 65201, 2576)))
+        Matrix3x4d::fromDiagonal(Math::unpack<Vector3d>(Math::Vector3<UnsignedShort>(315, 65201, 2576)))
     };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
@@ -1000,7 +1000,7 @@ void MeshGLTest::addVertexBufferFloatWithHalfFloat() {
 void MeshGLTest::addVertexBufferFloatWithDouble() {
     typedef Attribute<0, Float> Attribute;
 
-    const Double data[] = { 0.0, -0.7, Math::normalize<Double, UnsignedByte>(186) };
+    const Double data[] = { 0.0, -0.7, Math::unpack<Double, UnsignedByte>(186) };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
@@ -1082,7 +1082,7 @@ void MeshGLTest::addVertexBufferLessVectorComponents() {
 
     const Vector3 data[] = {
         {}, {0.0f, -0.9f, 1.0f},
-        Math::normalize<Vector3>(Color3ub(96, 24, 156))
+        Math::unpack<Vector3>(Color3ub(96, 24, 156))
     };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
@@ -1241,14 +1241,14 @@ void MeshGLTest::addVertexBufferMultiple() {
                 1.0f, -0.5f,
 
         /* Second attribute */
-        Math::normalize<Float, UnsignedByte>(64),
-            Math::normalize<Float, UnsignedByte>(17),
-                Math::normalize<Float, UnsignedByte>(56),
-        Math::normalize<Float, UnsignedByte>(15),
-            Math::normalize<Float, UnsignedByte>(164),
-                Math::normalize<Float, UnsignedByte>(17),
-        Math::normalize<Float, UnsignedByte>(97),
-            Math::normalize<Float, UnsignedByte>(28)
+        Math::unpack<Float, UnsignedByte>(64),
+            Math::unpack<Float, UnsignedByte>(17),
+                Math::unpack<Float, UnsignedByte>(56),
+        Math::unpack<Float, UnsignedByte>(15),
+            Math::unpack<Float, UnsignedByte>(164),
+                Math::unpack<Float, UnsignedByte>(17),
+        Math::unpack<Float, UnsignedByte>(97),
+            Math::unpack<Float, UnsignedByte>(28)
     };
 
     Buffer buffer;
@@ -1283,14 +1283,14 @@ void MeshGLTest::addVertexBufferMultipleGaps() {
                 1.0f, -0.5f, 0.0f, 0.0f,
 
         /* Second attribute */
-        Math::normalize<Float, UnsignedByte>(64),
-            Math::normalize<Float, UnsignedByte>(17),
-                Math::normalize<Float, UnsignedByte>(56), 0.0f,
-        Math::normalize<Float, UnsignedByte>(15),
-            Math::normalize<Float, UnsignedByte>(164),
-                Math::normalize<Float, UnsignedByte>(17), 0.0f,
-        Math::normalize<Float, UnsignedByte>(97),
-            Math::normalize<Float, UnsignedByte>(28), 0.0f, 0.0f
+        Math::unpack<Float, UnsignedByte>(64),
+            Math::unpack<Float, UnsignedByte>(17),
+                Math::unpack<Float, UnsignedByte>(56), 0.0f,
+        Math::unpack<Float, UnsignedByte>(15),
+            Math::unpack<Float, UnsignedByte>(164),
+                Math::unpack<Float, UnsignedByte>(17), 0.0f,
+        Math::unpack<Float, UnsignedByte>(97),
+            Math::unpack<Float, UnsignedByte>(28), 0.0f, 0.0f
     };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
@@ -1321,14 +1321,14 @@ namespace {
         0.0f, /* Offset */
 
         /* First vertex */
-        Math::normalize<Float, UnsignedByte>(64),
-            Math::normalize<Float, UnsignedByte>(17),
-                Math::normalize<Float, UnsignedByte>(56),
-        Math::normalize<Float, UnsignedByte>(15),
-            Math::normalize<Float, UnsignedByte>(164),
-                Math::normalize<Float, UnsignedByte>(17),
-        Math::normalize<Float, UnsignedByte>(97),
-            Math::normalize<Float, UnsignedByte>(28),
+        Math::unpack<Float, UnsignedByte>(64),
+            Math::unpack<Float, UnsignedByte>(17),
+                Math::unpack<Float, UnsignedByte>(56),
+        Math::unpack<Float, UnsignedByte>(15),
+            Math::unpack<Float, UnsignedByte>(164),
+                Math::unpack<Float, UnsignedByte>(17),
+        Math::unpack<Float, UnsignedByte>(97),
+            Math::unpack<Float, UnsignedByte>(28),
 
         /* Second vertex */
         0.3f, 0.1f, 0.5f,
@@ -1351,14 +1351,14 @@ namespace {
                 0.0f, 0.0f,
 
         /* Third vertex */
-        Math::normalize<Float, UnsignedByte>(64),
-            Math::normalize<Float, UnsignedByte>(17),
-                Math::normalize<Float, UnsignedByte>(56),
-        Math::normalize<Float, UnsignedByte>(15),
-            Math::normalize<Float, UnsignedByte>(164),
-                Math::normalize<Float, UnsignedByte>(17),
-        Math::normalize<Float, UnsignedByte>(97),
-            Math::normalize<Float, UnsignedByte>(28),
+        Math::unpack<Float, UnsignedByte>(64),
+            Math::unpack<Float, UnsignedByte>(17),
+                Math::unpack<Float, UnsignedByte>(56),
+        Math::unpack<Float, UnsignedByte>(15),
+            Math::unpack<Float, UnsignedByte>(164),
+                Math::unpack<Float, UnsignedByte>(17),
+        Math::unpack<Float, UnsignedByte>(97),
+            Math::unpack<Float, UnsignedByte>(28),
 
         /* Fourth vertex */
         0.3f, 0.1f, 0.5f,
@@ -1502,7 +1502,7 @@ void MeshGLTest::setInstanceCount() {
 
     typedef Attribute<0, Float> Attribute;
 
-    const Float data[] = { 0.0f, -0.7f, Math::normalize<Float, UnsignedByte>(96) };
+    const Float data[] = { 0.0f, -0.7f, Math::unpack<Float, UnsignedByte>(96) };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
@@ -1582,7 +1582,7 @@ void MeshGLTest::setInstanceCountBaseInstance() {
 
     typedef Attribute<0, Float> Attribute;
 
-    const Float data[] = { 0.0f, -0.7f, Math::normalize<Float, UnsignedByte>(96) };
+    const Float data[] = { 0.0f, -0.7f, Math::unpack<Float, UnsignedByte>(96) };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
@@ -1732,7 +1732,7 @@ void MeshGLTest::addVertexBufferInstancedFloat() {
                 /* Base vertex is ignored for instanced arrays */
         -0.7f,  /* First instance */
         0.3f,   /* Second instance */
-        Math::normalize<Float, UnsignedByte>(96) /* Third instance */
+        Math::unpack<Float, UnsignedByte>(96) /* Third instance */
     };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
@@ -1808,7 +1808,7 @@ void MeshGLTest::addVertexBufferInstancedDouble() {
                 /* Base vertex is ignored for instanced arrays */
         -0.7,   /* First instance */
         0.3,    /* Second instance */
-        Math::normalize<Double, UnsignedShort>(45828) /* Third instance */
+        Math::unpack<Double, UnsignedShort>(45828) /* Third instance */
     };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
@@ -1885,7 +1885,7 @@ void MeshGLTest::multiDraw() {
 
     typedef Attribute<0, Float> Attribute;
 
-    const Float data[] = { 0.0f, -0.7f, Math::normalize<Float, UnsignedByte>(96) };
+    const Float data[] = { 0.0f, -0.7f, Math::unpack<Float, UnsignedByte>(96) };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 

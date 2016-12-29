@@ -31,8 +31,8 @@
 
 #include <tuple>
 
-#include "Magnum/Math/Functions.h"
 #include "Magnum/Math/Matrix.h"
+#include "Magnum/Math/Packing.h"
 #include "Magnum/Math/Vector4.h"
 
 namespace Magnum { namespace Math {
@@ -67,7 +67,7 @@ template<class T> typename std::enable_if<std::is_floating_point<T>::value, Colo
     }
 }
 template<class T> inline typename std::enable_if<std::is_integral<T>::value, Color3<T>>::type fromHsv(const typename Color3<T>::Hsv& hsv) {
-    return denormalize<Color3<T>>(fromHsv<typename Color3<T>::FloatingPointType>(hsv));
+    return pack<Color3<T>>(fromHsv<typename Color3<T>::FloatingPointType>(hsv));
 }
 
 /* Internal hue computing function */
@@ -104,13 +104,13 @@ template<class T> inline T value(typename std::enable_if<std::is_floating_point<
 
 /* Hue, saturation, value for integral types */
 template<class T> inline Deg<typename Color3<T>::FloatingPointType> hue(typename std::enable_if<std::is_integral<T>::value, const Color3<T>&>::type color) {
-    return hue<typename Color3<T>::FloatingPointType>(normalize<Color3<typename Color3<T>::FloatingPointType>>(color));
+    return hue<typename Color3<T>::FloatingPointType>(unpack<Color3<typename Color3<T>::FloatingPointType>>(color));
 }
 template<class T> inline typename Color3<T>::FloatingPointType saturation(typename std::enable_if<std::is_integral<T>::value, const Color3<T>&>::type& color) {
-    return saturation<typename Color3<T>::FloatingPointType>(normalize<Color3<typename Color3<T>::FloatingPointType>>(color));
+    return saturation<typename Color3<T>::FloatingPointType>(unpack<Color3<typename Color3<T>::FloatingPointType>>(color));
 }
 template<class T> inline typename Color3<T>::FloatingPointType value(typename std::enable_if<std::is_integral<T>::value, const Color3<T>&>::type color) {
-    return normalize<typename Color3<T>::FloatingPointType>(color.max());
+    return unpack<typename Color3<T>::FloatingPointType>(color.max());
 }
 
 /* Convert color to HSV */
@@ -121,7 +121,7 @@ template<class T> inline typename Color3<T>::Hsv toHsv(typename std::enable_if<s
     return typename Color3<T>::Hsv(hue<typename Color3<T>::FloatingPointType>(color, max, delta), max != T(0) ? delta/max : T(0), max);
 }
 template<class T> inline typename Color3<T>::Hsv toHsv(typename std::enable_if<std::is_integral<T>::value, const Color3<T>&>::type color) {
-    return toHsv<typename Color3<T>::FloatingPointType>(normalize<Color3<typename Color3<T>::FloatingPointType>>(color));
+    return toHsv<typename Color3<T>::FloatingPointType>(unpack<Color3<typename Color3<T>::FloatingPointType>>(color));
 }
 
 /* sRGB -> RGB conversion */
@@ -133,18 +133,18 @@ template<class T> typename std::enable_if<std::is_floating_point<T>::value, Colo
     return {fromSrgb<T>(srgbAlpha.rgb()), srgbAlpha.a()};
 }
 template<class T> inline typename std::enable_if<std::is_integral<T>::value, Color3<T>>::type fromSrgb(const Vector3<typename Color3<T>::FloatingPointType>& srgb) {
-    return denormalize<Color3<T>>(fromSrgb<typename Color3<T>::FloatingPointType>(srgb));
+    return pack<Color3<T>>(fromSrgb<typename Color3<T>::FloatingPointType>(srgb));
 }
 template<class T> inline typename std::enable_if<std::is_integral<T>::value, Color4<T>>::type fromSrgbAlpha(const Vector4<typename Color4<T>::FloatingPointType>& srgbAlpha) {
-    return {fromSrgb<T>(srgbAlpha.rgb()), denormalize<T>(srgbAlpha.a())};
+    return {fromSrgb<T>(srgbAlpha.rgb()), pack<T>(srgbAlpha.a())};
 }
 template<class T, class Integral> inline Color3<T> fromSrgbIntegral(const Vector3<Integral>& srgb) {
     static_assert(std::is_integral<Integral>::value, "only conversion from different integral type is supported");
-    return fromSrgb<T>(normalize<Vector3<typename Color3<T>::FloatingPointType>>(srgb));
+    return fromSrgb<T>(unpack<Vector3<typename Color3<T>::FloatingPointType>>(srgb));
 }
 template<class T, class Integral> inline Color4<T> fromSrgbAlphaIntegral(const Vector4<Integral>& srgbAlpha) {
     static_assert(std::is_integral<Integral>::value, "only conversion from different integral type is supported");
-    return fromSrgbAlpha<T>(normalize<Vector4<typename Color4<T>::FloatingPointType>>(srgbAlpha));
+    return fromSrgbAlpha<T>(unpack<Vector4<typename Color4<T>::FloatingPointType>>(srgbAlpha));
 }
 
 /* RGB -> sRGB conversion */
@@ -156,18 +156,18 @@ template<class T> Vector4<typename Color4<T>::FloatingPointType> toSrgbAlpha(typ
     return {toSrgb<T>(rgba.rgb()), rgba.a()};
 }
 template<class T> inline Vector3<typename Color3<T>::FloatingPointType> toSrgb(typename std::enable_if<std::is_integral<T>::value, const Color3<T>&>::type rgb) {
-    return toSrgb<typename Color3<T>::FloatingPointType>(normalize<Color3<typename Color3<T>::FloatingPointType>>(rgb));
+    return toSrgb<typename Color3<T>::FloatingPointType>(unpack<Color3<typename Color3<T>::FloatingPointType>>(rgb));
 }
 template<class T> inline Vector4<typename Color4<T>::FloatingPointType> toSrgbAlpha(typename std::enable_if<std::is_integral<T>::value, const Color4<T>&>::type rgba) {
-    return {toSrgb<T>(rgba.rgb()), normalize<typename Color3<T>::FloatingPointType>(rgba.a())};
+    return {toSrgb<T>(rgba.rgb()), unpack<typename Color3<T>::FloatingPointType>(rgba.a())};
 }
 template<class T, class Integral> inline Vector3<Integral> toSrgbIntegral(const Color3<T>& rgb) {
     static_assert(std::is_integral<Integral>::value, "only conversion from different integral type is supported");
-    return denormalize<Vector3<Integral>>(toSrgb<T>(rgb));
+    return pack<Vector3<Integral>>(toSrgb<T>(rgb));
 }
 template<class T, class Integral> inline Vector4<Integral> toSrgbAlphaIntegral(const Color4<T>& rgba) {
     static_assert(std::is_integral<Integral>::value, "only conversion from different integral type is supported");
-    return denormalize<Vector4<Integral>>(toSrgbAlpha<T>(rgba));
+    return pack<Vector4<Integral>>(toSrgbAlpha<T>(rgba));
 }
 
 /* CIE XYZ -> RGB conversion */
@@ -180,7 +180,7 @@ template<class T> typename std::enable_if<std::is_floating_point<T>::value, Colo
         Vector3<T>{T(-1974)/T(3959), T(36519)/T(878810), T(705)/T(667)}}*xyz;
 }
 template<class T> inline typename std::enable_if<std::is_integral<T>::value, Color3<T>>::type fromXyz(const Vector3<typename Color3<T>::FloatingPointType>& xyz) {
-    return denormalize<Color3<T>>(fromXyz<typename Color3<T>::FloatingPointType>(xyz));
+    return pack<Color3<T>>(fromXyz<typename Color3<T>::FloatingPointType>(xyz));
 }
 
 /* RGB -> CIE XYZ conversion */
@@ -193,7 +193,7 @@ template<class T> Vector3<typename Color3<T>::FloatingPointType> toXyz(typename 
         Vector3<T>{T(12673)/T(70218), T(12673)/T(175545), T(1001167)/T(1053270)}})*rgb;
 }
 template<class T> inline Vector3<typename Color3<T>::FloatingPointType> toXyz(typename std::enable_if<std::is_integral<T>::value, const Color3<T>&>::type rgb) {
-    return toXyz<typename Color3<T>::FloatingPointType>(normalize<Color3<typename Color3<T>::FloatingPointType>>(rgb));
+    return toXyz<typename Color3<T>::FloatingPointType>(unpack<Color3<typename Color3<T>::FloatingPointType>>(rgb));
 }
 
 /* Value for full channel (1.0f for floats, 255 for unsigned byte) */
@@ -216,11 +216,11 @@ linear RGB using @ref fromSrgb(), calculation done on the linear representation
 and then converted back to sRGB using @ref toSrgb().
 
 Note that constructor conversion between different types (like in @ref Vector
-classes) doesn't do any (de)normalization, you should use @ref normalize() and
-@ref denormalize() instead, for example:
+classes) doesn't do any (de)normalization, you should use @ref pack) and
+@ref unpack() instead, for example:
 @code
 Color3 a(1.0f, 0.5f, 0.75f);
-auto b = denormalize<Color3ub>(a); // b == {255, 127, 191}
+auto b = pack<Color3ub>(a); // b == {255, 127, 191}
 @endcode
 
 Conversion from and to HSV is done always using floating-point types, so hue
@@ -451,9 +451,9 @@ template<class T> class Color3: public Vector3<T> {
         /**
          * @copydoc Vector::Vector(const Vector<size, U>&)
          *
-         * @attention This function doesn't do any (de)normalization, use
-         *      @ref normalize() and @ref denormalize() instead.
-         *      See class documentation for more information.
+         * @attention This function doesn't do any (un)packing, use @ref pack()
+         *      and @ref unpack() instead. See class documentation for more
+         *      information.
          */
         template<class U> constexpr explicit Color3(const Vector<3, U>& other) noexcept: Vector3<T>(other) {}
 
@@ -846,9 +846,9 @@ class Color4: public Vector4<T> {
         /**
          * @copydoc Vector::Vector(const Vector<size, U>&)
          *
-         * @attention This function doesn't do any (de)normalization, use
-         *      @ref normalize() and @ref denormalize() instead.
-         *      See @ref Color3 class documentation for more information.
+         * @attention This function doesn't do any (un)packing, use @ref pack)
+         *      and @ref unpack() instead. See @ref Color3 class documentation
+         *      for more information.
          */
         template<class U> constexpr explicit Color4(const Vector<4, U>& other) noexcept: Vector4<T>(other) {}
 
@@ -1064,7 +1064,7 @@ Color3 a = 0x33b27f_rgbf;   // {0.2f, 0.698039f, 0.498039f}
 @see @link operator""_rgbaf() @endlink, @link operator""_rgb() @endlink
 */
 inline Color3<Float> operator "" _rgbf(unsigned long long value) {
-    return Math::normalize<Color3<Float>>(Color3<UnsignedByte>{UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)});
+    return Math::unpack<Color3<Float>>(Color3<UnsignedByte>{UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)});
 }
 
 /** @relatesalso Magnum::Math::Color3
@@ -1099,7 +1099,7 @@ Color4 a = 0x33b27fcc_rgbaf;    // {0.2f, 0.698039f, 0.498039f, 0.8f}
 @see @link operator""_rgbf() @endlink, @link operator""_rgba() @endlink
 */
 inline Color4<Float> operator "" _rgbaf(unsigned long long value) {
-    return Math::normalize<Color4<Float>>(Color4<UnsignedByte>{UnsignedByte(value >> 24), UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)});
+    return Math::unpack<Color4<Float>>(Color4<UnsignedByte>{UnsignedByte(value >> 24), UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)});
 }
 
 /** @relatesalso Magnum::Math::Color4
