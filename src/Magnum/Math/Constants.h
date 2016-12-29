@@ -30,7 +30,6 @@
  */
 
 #include <cmath>
-#include <limits>
 
 #include "Magnum/Types.h"
 
@@ -40,7 +39,6 @@ namespace Magnum { namespace Math {
 @brief Numeric constants
 
 @see @ref Magnum::Constants, @ref Magnum::Constantsd
-@todo Invent a way to generate double NaN/infinity without including whole limits header
 */
 template<class T> struct Constants {
     Constants() = delete;
@@ -89,8 +87,8 @@ template<> struct Constants<Double> {
     static constexpr Double sqrt2()     { return 1.414213562373095; }
     static constexpr Double sqrt3()     { return 1.732050807568877; }
 
-    static constexpr Double nan()   { return std::numeric_limits<Double>::quiet_NaN(); }
-    static constexpr Double inf()   { return std::numeric_limits<Double>::infinity(); }
+    static constexpr Double nan()   { return Double(NAN); }
+    static constexpr Double inf()   { return HUGE_VAL; }
 };
 template<> struct Constants<Float> {
     Constants() = delete;
@@ -103,7 +101,7 @@ template<> struct Constants<Float> {
     static constexpr Float sqrt3()      { return 1.732050808f; }
 
     static constexpr Float nan()    { return NAN; }
-    static constexpr Float inf()    { return INFINITY; }
+    static constexpr Float inf()    { return HUGE_VALF; }
 };
 #endif
 
