@@ -99,7 +99,7 @@ template<class Vector> std::vector<UnsignedInt> removeDuplicates(std::vector<Vec
 
     /* Make epsilon so large that std::size_t can index all vectors inside the
        bounds. */
-    epsilon = Math::max(epsilon, typename Vector::Type((max-min).max()/std::numeric_limits<std::size_t>::max()));
+    epsilon = Math::max(epsilon, typename Vector::Type((max-min).max()/~std::size_t{}));
 
     /* Resulting index array */
     std::vector<UnsignedInt> resultIndices(data.size());
