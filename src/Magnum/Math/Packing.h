@@ -70,15 +70,11 @@ template<class FloatingPoint, class Integral> inline typename std::enable_if<std
                   "unpacking must be done from integral to floating-point type");
     return Math::max(value/FloatingPoint(std::numeric_limits<Integral>::max()), FloatingPoint(-1.0));
 }
-template<class FloatingPoint, class Integral> inline typename std::enable_if<std::is_unsigned<typename Integral::Type>::value, FloatingPoint>::type unpack(const Integral& value) {
-    static_assert(std::is_floating_point<typename FloatingPoint::Type>::value && std::is_integral<typename Integral::Type>::value,
-                  "unpacking must be done from integral to floating-point type");
-    return FloatingPoint(value)/typename FloatingPoint::Type(std::numeric_limits<typename Integral::Type>::max());
-}
-template<class FloatingPoint, class Integral> inline typename std::enable_if<std::is_signed<typename Integral::Type>::value, FloatingPoint>::type unpack(const Integral& value) {
-    static_assert(std::is_floating_point<typename FloatingPoint::Type>::value && std::is_integral<typename Integral::Type>::value,
-                  "unpacking must be done from integral to floating-point type");
-    return Math::max(FloatingPoint(value)/typename FloatingPoint::Type(std::numeric_limits<typename Integral::Type>::max()), FloatingPoint(-1.0));
+template<class FloatingPoint, std::size_t size, class Integral> FloatingPoint unpack(const Vector<size, Integral>& value) {
+    FloatingPoint out{NoInit};
+    for(std::size_t i = 0; i != size; ++i)
+        out[i] = unpack<typename FloatingPoint::Type, Integral>(value[i]);
+    return out;
 }
 #endif
 
@@ -116,10 +112,11 @@ template<class Integral, class FloatingPoint> inline typename std::enable_if<std
                   "packing must be done from floating-point to integral type");
     return Integral(value*std::numeric_limits<Integral>::max());
 }
-template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_arithmetic<typename Integral::Type>::value, Integral>::type pack(const FloatingPoint& value) {
-    static_assert(std::is_floating_point<typename FloatingPoint::Type>::value && std::is_integral<typename Integral::Type>::value,
-                  "packing must be done from floating-point to integral type");
-    return Integral(value*std::numeric_limits<typename Integral::Type>::max());
+template<class Integral, std::size_t size, class FloatingPoint> Integral pack(const Vector<size, FloatingPoint>& value) {
+    Integral out{NoInit};
+    for(std::size_t i = 0; i != size; ++i)
+        out[i] = pack<typename Integral::Type, FloatingPoint>(value[i]);
+    return out;
 }
 #endif
 
