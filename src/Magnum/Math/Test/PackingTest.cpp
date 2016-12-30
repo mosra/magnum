@@ -33,6 +33,8 @@ namespace Magnum { namespace Math { namespace Test {
 struct PackingTest: Corrade::TestSuite::Tester {
     explicit PackingTest();
 
+    void bitMax();
+
     void unpackUnsigned();
     void unpackSigned();
     void packUnsigned();
@@ -47,13 +49,33 @@ typedef Math::Vector3<UnsignedByte> Vector3ub;
 typedef Math::Vector3<Byte> Vector3b;
 
 PackingTest::PackingTest() {
-    addTests({&PackingTest::unpackUnsigned,
+    addTests({&PackingTest::bitMax,
+
+              &PackingTest::unpackUnsigned,
               &PackingTest::unpackSigned,
               &PackingTest::packUnsigned,
               &PackingTest::packSigned,
               &PackingTest::reunpackUnsinged,
               &PackingTest::reunpackSinged,
               &PackingTest::unpackTypeDeduction});
+}
+
+void PackingTest::bitMax() {
+    CORRADE_COMPARE(Implementation::bitMax<UnsignedByte>(), 0xff);
+    CORRADE_COMPARE(Implementation::bitMax<Byte>(), 0x7f);
+    CORRADE_COMPARE(Implementation::bitMax<UnsignedShort>(), 0xffff);
+    CORRADE_COMPARE(Implementation::bitMax<Short>(), 0x7fff);
+    CORRADE_COMPARE(Implementation::bitMax<UnsignedInt>(), 0xffffffff);
+    CORRADE_COMPARE(Implementation::bitMax<Int>(), 0x7fffffff);
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    CORRADE_COMPARE(Implementation::bitMax<UnsignedLong>(), 0xffffffffffffffffull);
+    CORRADE_COMPARE(Implementation::bitMax<Long>(), 0x7fffffffffffffffll);
+    #endif
+
+    CORRADE_COMPARE((Implementation::bitMax<UnsignedShort, 14>()), 16383);
+    CORRADE_COMPARE((Implementation::bitMax<UnsignedInt, 14>()), 16383);
+    CORRADE_COMPARE((Implementation::bitMax<Short, 14>()), 8191);
+    CORRADE_COMPARE((Implementation::bitMax<Int, 14>()), 8191);
 }
 
 void PackingTest::unpackUnsigned() {
@@ -75,7 +97,15 @@ void PackingTest::unpackUnsigned() {
     CORRADE_COMPARE((Math::unpack<Float, UnsignedShort>(8192)), 0.125002f);
     CORRADE_COMPARE((Math::unpack<Float, UnsignedShort>(49152)), 0.750011f);
 
+    /* Bits */
+    CORRADE_COMPARE((Math::unpack<Float, UnsignedShort>(8191)), 0.124987f);
+    CORRADE_COMPARE((Math::unpack<Float, UnsignedShort, 14>(8191)), 0.499969f);
+    CORRADE_COMPARE((Math::unpack<Float, 14>(8191u)), 0.499969f);
+    CORRADE_COMPARE((Math::unpack<Float, 14>(8191)), 1.0f);
+
+    /* Vector overloads */
     CORRADE_COMPARE(Math::unpack<Vector3>(Vector3ub(0, 127, 255)), Vector3(0.0f, 0.498039f, 1.0f));
+    CORRADE_COMPARE((Math::unpack<Vector3, 6>(Vector3ub(0, 31, 63))), Vector3(0.0f, 0.492063f, 1.0f));
 }
 
 void PackingTest::unpackSigned() {
@@ -102,7 +132,13 @@ void PackingTest::unpackSigned() {
     CORRADE_COMPARE((Math::unpack<Float, Short>(16384)), 0.500015f);
     CORRADE_COMPARE((Math::unpack<Float, Short>(-16384)), -0.500015f);
 
+    /* Bits */
+    CORRADE_COMPARE((Math::unpack<Float, Short>(8191)), 0.249977f);
+    CORRADE_COMPARE((Math::unpack<Float, 14>(8191)), 1.0f);
+
+    /* Vector overloads */
     CORRADE_COMPARE(Math::unpack<Vector3>(Vector3b(0, -127, 64)), Vector3(0.0f, -1.0f, 0.503937f));
+    CORRADE_COMPARE((Math::unpack<Vector3, 6>(Vector3b(0, -31, 16))), Vector3(0.0f, -1.0f, 0.516129f));
 }
 
 void PackingTest::packUnsigned() {
@@ -129,7 +165,13 @@ void PackingTest::packUnsigned() {
     CORRADE_COMPARE(Math::pack<UnsignedShort>(0.33f), 21626);
     CORRADE_COMPARE(Math::pack<UnsignedShort>(0.66f), 43253);
 
+    /* Bits */
+    CORRADE_COMPARE((Math::pack<UnsignedShort>(0.5f)), 32767);
+    CORRADE_COMPARE((Math::pack<UnsignedShort, 14>(0.5f)), 8191);
+
+    /* Vector overloads */
     CORRADE_COMPARE(Math::pack<Vector3ub>(Vector3(0.0f, 0.5f, 1.0f)), Vector3ub(0, 127, 255));
+    CORRADE_COMPARE((Math::pack<Vector3ub, 6>(Vector3(0.0f, 0.5f, 1.0f))), Vector3ub(0, 31, 63));
 }
 
 void PackingTest::packSigned() {
@@ -166,7 +208,14 @@ void PackingTest::packSigned() {
     CORRADE_COMPARE(Math::pack<Short>(-0.33f), -10813);
     CORRADE_COMPARE(Math::pack<Short>(0.66f), 21626);
 
+    /* Bits */
+    CORRADE_COMPARE((Math::pack<Short>(-0.5f)), -16383);
+    CORRADE_COMPARE((Math::pack<Short, 14>(-0.5f)), -4095);
+
+    /* Vector overloads */
     CORRADE_COMPARE(Math::pack<Vector3b>(Vector3(0.0f, -1.0f, 0.5f)), Vector3b(0, -127, 63));
+    CORRADE_COMPARE((Math::pack<Vector3b, 6>(Vector3(0.0f, -1.0f, 0.5f))), Vector3b(0, -31, 15));
+
 }
 
 void PackingTest::reunpackUnsinged() {

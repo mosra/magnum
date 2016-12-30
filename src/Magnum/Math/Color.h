@@ -201,7 +201,7 @@ template<class T> constexpr typename std::enable_if<std::is_floating_point<T>::v
     return T(1);
 }
 template<class T> constexpr typename std::enable_if<std::is_integral<T>::value, T>::type fullChannel() {
-    return std::numeric_limits<T>::max();
+    return Implementation::bitMax<T>();
 }
 
 }

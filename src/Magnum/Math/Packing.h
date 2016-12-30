@@ -25,12 +25,19 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <limits>
-
 #include "Magnum/Math/Functions.h"
 
 namespace Magnum { namespace Math {
 
+namespace Implementation {
+
+template<class T, UnsignedInt bits = sizeof(T)*8> inline constexpr T bitMax() {
+    return T(typename std::make_unsigned<T>::type(~T{}) >> (sizeof(T)*8 - (std::is_signed<T>::value ? bits - 1 : bits)));
+}
+
+}
+
+#ifdef DOXYGEN_GENERATING_OUTPUT
 /**
 @brief Unpack integral value into a floating-point representation
 
@@ -55,26 +62,54 @@ Float b = Math::unpack<Float, UnsignedByte>('\xFF');
 
 @see @ref pack()
 */
-/* Signed conversion with max(val, -1) according to
-   https://www.opengl.org/registry/specs/EXT/texture_snorm.txt */
-#ifdef DOXYGEN_GENERATING_OUTPUT
 template<class FloatingPoint, class Integral> inline FloatingPoint unpack(const Integral& value);
+
+/**
+@brief Unpack integer bits into a floating-point representation
+
+Alternative to the above with ability to specify how many bits of the integral
+representation to use. Example usage:
+@code
+Float a = Math::unpack<Float, UnsignedShort>(8191);     // 0.124987f
+Float b = Math::unpack<Float, UnsignedShort, 14>(8191); // 0.499969f
+Float b = Math::unpack<Float, 14>(8191u);               // 0.499969f
+Float b = Math::unpack<Float, 14>(8191);                // 1.0f
+@endcode
+*/
+template<class FloatingPoint, class Integral, UnsignedInt bits> inline FloatingPoint unpack(const Integral& value);
 #else
-template<class FloatingPoint, class Integral> inline typename std::enable_if<std::is_arithmetic<Integral>::value && std::is_unsigned<Integral>::value, FloatingPoint>::type unpack(Integral value) {
+template<class FloatingPoint, class Integral, UnsignedInt bits = sizeof(Integral)*8> inline typename std::enable_if<std::is_arithmetic<Integral>::value && std::is_unsigned<Integral>::value, FloatingPoint>::type unpack(Integral value) {
     static_assert(std::is_floating_point<FloatingPoint>::value && std::is_integral<Integral>::value,
-                  "unpacking must be done from integral to floating-point type");
-    return value/FloatingPoint(std::numeric_limits<Integral>::max());
+        "unpacking must be done from integral to floating-point type");
+    static_assert(bits <= sizeof(Integral)*8,
+        "bit count larger than size of the integral type");
+    return value/FloatingPoint(Implementation::bitMax<Integral, bits>());
 }
-template<class FloatingPoint, class Integral> inline typename std::enable_if<std::is_arithmetic<Integral>::value && std::is_signed<Integral>::value, FloatingPoint>::type unpack(Integral value) {
+template<class FloatingPoint, class Integral, UnsignedInt bits = sizeof(Integral)*8> inline typename std::enable_if<std::is_arithmetic<Integral>::value && std::is_signed<Integral>::value, FloatingPoint>::type unpack(Integral value) {
     static_assert(std::is_floating_point<FloatingPoint>::value && std::is_integral<Integral>::value,
-                  "unpacking must be done from integral to floating-point type");
-    return Math::max(value/FloatingPoint(std::numeric_limits<Integral>::max()), FloatingPoint(-1.0));
+        "unpacking must be done from integral to floating-point type");
+    static_assert(bits <= sizeof(Integral)*8,
+        "bit count larger than size of the integral type");
+    /* According to https://www.opengl.org/registry/specs/EXT/texture_snorm.txt */
+    return Math::max(value/FloatingPoint(Implementation::bitMax<Integral, bits>()), FloatingPoint(-1.0));
 }
-template<class FloatingPoint, std::size_t size, class Integral> FloatingPoint unpack(const Vector<size, Integral>& value) {
+template<class FloatingPoint, std::size_t size, class Integral, UnsignedInt bits = sizeof(Integral)*8> FloatingPoint unpack(const Vector<size, Integral>& value) {
     FloatingPoint out{NoInit};
     for(std::size_t i = 0; i != size; ++i)
-        out[i] = unpack<typename FloatingPoint::Type, Integral>(value[i]);
+        out[i] = unpack<typename FloatingPoint::Type, Integral, bits>(value[i]);
     return out;
+}
+#endif
+
+/** @overload */
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class FloatingPoint, UnsignedInt bits, class Integral> inline FloatingPoint unpack(const Integral& value);
+#else
+template<class FloatingPoint, UnsignedInt bits, class Integral> inline typename std::enable_if<std::is_arithmetic<Integral>::value, FloatingPoint>::type unpack(const Integral& value) {
+    return unpack<FloatingPoint, Integral, bits>(value);
+}
+template<class FloatingPoint, UnsignedInt bits, std::size_t size, class Integral> inline FloatingPoint unpack(const Vector<size, Integral>& value) {
+    return unpack<FloatingPoint, size, Integral, bits>(value);
 }
 #endif
 
@@ -107,16 +142,39 @@ integral type.
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class Integral, class FloatingPoint> inline Integral pack(const FloatingPoint& value);
 #else
-template<class Integral, class FloatingPoint> inline typename std::enable_if<std::is_arithmetic<FloatingPoint>::value, Integral>::type pack(FloatingPoint value) {
+template<class Integral, class FloatingPoint, UnsignedInt bits = sizeof(Integral)*8> inline typename std::enable_if<std::is_arithmetic<FloatingPoint>::value, Integral>::type pack(FloatingPoint value) {
     static_assert(std::is_floating_point<FloatingPoint>::value && std::is_integral<Integral>::value,
-                  "packing must be done from floating-point to integral type");
-    return Integral(value*std::numeric_limits<Integral>::max());
+        "packing must be done from floating-point to integral type");
+    static_assert(bits <= sizeof(Integral)*8,
+        "bit count larger than size of the integral type");
+    return Integral(value*Implementation::bitMax<Integral, bits>());
 }
-template<class Integral, std::size_t size, class FloatingPoint> Integral pack(const Vector<size, FloatingPoint>& value) {
+template<class Integral, std::size_t size, class FloatingPoint, UnsignedInt bits = sizeof(typename Integral::Type)*8> Integral pack(const Vector<size, FloatingPoint>& value) {
     Integral out{NoInit};
     for(std::size_t i = 0; i != size; ++i)
-        out[i] = pack<typename Integral::Type, FloatingPoint>(value[i]);
+        out[i] = pack<typename Integral::Type, FloatingPoint, bits>(value[i]);
     return out;
+}
+#endif
+
+/**
+@brief Pack floating-point value into integer bits
+
+Alternative to the above with ability to specify how many bits of the integral
+representation to use. Example usage:
+@code
+auto a = Math::pack<UnsignedShort>(0.5f);     // 32767
+auto b = Math::pack<UnsignedShort, 14>(0.5f); // 8191
+@endcode
+*/
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<class Integral, UnsignedInt bits, class FloatingPoint> inline Integral pack(FloatingPoint value);
+#else
+template<class Integral, UnsignedInt bits, class FloatingPoint> inline typename std::enable_if<std::is_arithmetic<FloatingPoint>::value, Integral>::type pack(FloatingPoint value) {
+    return pack<Integral, FloatingPoint, bits>(value);
+}
+template<class Integral, UnsignedInt bits, std::size_t size, class FloatingPoint> inline Integral pack(const Vector<size, FloatingPoint>& value) {
+    return pack<Integral, size, FloatingPoint, bits>(value);
 }
 #endif
 
