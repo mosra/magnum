@@ -231,6 +231,7 @@ endif()
 set(MagnumMath_SRCS
     Math/Color.cpp
     Math/Functions.cpp
+    Math/Packing.cpp
     Math/instantiation.cpp)
 
 # Objects shared between main and test library
