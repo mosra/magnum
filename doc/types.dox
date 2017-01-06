@@ -74,7 +74,7 @@ underlying type.
 | @ref Vector2ui, @ref Vector3ui, @ref Vector4ui | `uvec2`, `uvec3`, `uvec4` |
 | @ref Vector2i, @ref Vector3i, @ref Vector4i    | `ivec2`, `ivec3`, `ivec4` |
 | @ref Vector2d, @ref Vector3d, @ref Vector4d    | `dvec2`, `dvec3`, `dvec4` |
-| @ref Color3ub, @ref Color4ub                   | *(none)* |
+| @ref Color3ub, @ref Color4ub                   | (*none*)                  |
 
 | Magnum matrix type                                               | Equivalent GLSL type                 |
 | ---------------------------------------------------------------- | ------------------------------------ |
@@ -91,6 +91,24 @@ underlying type.
 Any super- or sub-class of the same size and underlying type can be used
 equivalently (e.g. @ref Math::Vector "Math::Vector<Float>" or @ref Color3
 instead of @ref Vector3).
+
+For easier entering of (s)RGB colors in hexadecimal format there are
+@link Math::Literals::operator""_srgb() _srgb @endlink /
+@link Math::Literals::operator""_srgbf() _srgbf @endlink,
+@link Math::Literals::operator""_srgba() _srgba @endlink /
+@link Math::Literals::operator""_srgbaf() _srgbaf @endlink,
+@link Math::Literals::operator""_rgb() _rgb @endlink /
+@link Math::Literals::operator""_rgbf() _rgbf @endlink and
+@link Math::Literals::operator""_rgba() _rgba @endlink /
+@link Math::Literals::operator""_rgbaf() _rgbaf @endlink literals in
+@ref Math::Literals namespace. See their documentation for more information
+about the differences.
+@code
+using namespace Math::Literals;
+
+Color3 a = 0x33b27f_srgbf;      // {0.0331048f, 0.445201f, 0.212231f}
+Color4ub a = 0x33b27fcc_rgba;   // {0x33, 0xb2, 0x7f, 0xcc}
+@endcode
 
 @section types-binary Binary representation
 
@@ -119,8 +137,10 @@ usability impact in practice.
 
 These classes are *not* implicitly constructible or convertible from/to
 @ref Float or @ref Double, you have to either construct/convert them explicitly
-or use custom `_degf`/`_deg` and `_radf`/`_rad` literals that are provided in
-the @ref Math::Literals namespace:
+or use custom @link Math::Literals::operator""_degf() _degf @endlink /
+@link Math::Literals::operator""_deg() _deg @endlink and @link Math::Literals::operator""_radf() _radf @endlink
+/ @link Math::Literals::operator""_rad() _rad @endlink literals that are
+provided in the @ref Math::Literals namespace:
 @code
 using namespace Math::Literals;
 
