@@ -212,6 +212,9 @@ typedef std::int64_t Long;
 /** @brief Float (32bit) */
 typedef float Float;
 
+/** @brief Half (16bit) */
+typedef Math::Half Half;
+
 /** @brief Two-component float vector */
 typedef Math::Vector2<Float> Vector2;
 

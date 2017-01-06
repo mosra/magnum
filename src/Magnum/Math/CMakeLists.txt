@@ -35,6 +35,7 @@ set(MagnumMath_HEADERS
     DualQuaternion.h
     Frustum.h
     Functions.h
+    Half.h
     Math.h
     TypeTraits.h
     Matrix.h

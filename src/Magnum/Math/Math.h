@@ -78,6 +78,8 @@ template<template<class> class, class> class Unit;
 template<class> class Deg;
 template<class> class Rad;
 
+class Half;
+
 template<std::size_t, class> class Vector;
 template<class> class Vector2;
 template<class> class Vector3;

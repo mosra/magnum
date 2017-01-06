@@ -52,6 +52,7 @@ refer to the same type).
 | @ref Int           | 32bit signed   | `int`                |
 | @ref UnsignedLong  | 64bit unsigned |                      |
 | @ref Long          | 64bit signed   |                      |
+| @ref Half          | 16bit          | (*none*)             |
 | @ref Float         | 32bit          | `float`              |
 | @ref Double        | 64bit          | `double`             |
 
@@ -152,6 +153,19 @@ any need to care about what input the function expects:
 @code
 Float a = Math::sin(1.32457_radf);
 Complex b = Complex::rotation(60.0_degf);
+@endcode
+
+There is also a @ref Half type for handling half-precision floating point
+values. By design it doesn't support any arithmetic operations as they would be
+done faster on single-precision, it's sole purpose is to make working with
+half-float values easier. It provides either explicit constructors and
+conversion operators from/to @ref Float and @ref UnsignedShort and you can also
+use the @link Math::Literals::operator""_h() _h @endlink literal that is
+provided in the @ref Math::Literals namespace:
+@code
+using namespace Math::Literals;
+
+Half a = 3.5_h;         // 0x4300 internally
 @endcode
 
 @section types-other Other types

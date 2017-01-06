@@ -375,7 +375,7 @@ enum class PixelType: GLenum {
 
     /**
      * Each component half float.
-     * @see @ref Math::packHalf(), @ref Math::unpackHalf()
+     * @see @ref Half, @ref Math::packHalf(), @ref Math::unpackHalf()
      * @requires_gl30 Extension @extension{ARB,half_float_pixel}
      * @requires_gles30 For texture data only, extension
      *      @es_extension2{OES,texture_half_float,OES_texture_float} in OpenGL

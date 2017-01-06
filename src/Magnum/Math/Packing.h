@@ -197,7 +197,7 @@ that rounding mode is unspecified in order to save some cycles.
 
 Implementation based on CC0 / public domain code by *Fabian Giesen*,
 https://fgiesen.wordpress.com/2012/03/28/half-to-float-done-quic/ .
-@see @ref unpackHalf()
+@see @ref unpackHalf(), @ref Half
 */
 MAGNUM_EXPORT UnsignedShort packHalf(Float value);
 

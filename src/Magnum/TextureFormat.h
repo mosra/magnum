@@ -513,7 +513,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * Red component, half float.
-     * @see @ref Math::packHalf(), @ref Math::unpackHalf()
+     * @ref Half, @ref Math::packHalf(), @ref Math::unpackHalf()
      * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{ARB,texture_float}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -524,7 +524,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * Red and green component, each half float.
-     * @see @ref Math::packHalf(), @ref Math::unpackHalf()
+     * @ref Half, @ref Math::packHalf(), @ref Math::unpackHalf()
      * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{ARB,texture_float}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -535,7 +535,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGB, each component half float.
-     * @see @ref Math::packHalf(), @ref Math::unpackHalf()
+     * @ref Half, @ref Math::packHalf(), @ref Math::unpackHalf()
      * @requires_gl30 Extension @extension{ARB,texture_float}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -546,7 +546,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGBA, each component half float.
-     * @see @ref Math::packHalf(), @ref Math::unpackHalf()
+     * @ref Half, @ref Math::packHalf(), @ref Math::unpackHalf()
      * @requires_gl30 Extension @extension{ARB,texture_float}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.

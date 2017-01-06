@@ -23,9 +23,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/Math/Packing.h"
+#include "Magnum/Math/Half.h"
 #include "Magnum/Math/Vector3.h"
 
 namespace Magnum { namespace Math { namespace Test {
@@ -43,6 +44,21 @@ struct HalfTest: Corrade::TestSuite::Tester {
     void pack1k();
     void pack1kNaive();
     void pack1kTable();
+
+    void constructDefault();
+    void constructValue();
+    void constructData();
+    void constructNoInit();
+    void constructCopy();
+
+    void compare();
+    void compareNaN();
+
+    void promotion();
+    void negation();
+
+    void literal();
+    void debug();
 
     private:
         /* Naive / ground-truth packing helpers */
@@ -76,6 +92,22 @@ HalfTest::HalfTest() {
         &HalfTest::pack1k,
         &HalfTest::pack1kNaive,
         &HalfTest::pack1kTable}, 100);
+
+    addTests({&HalfTest::constructDefault,
+              &HalfTest::constructValue,
+              &HalfTest::constructData,
+              &HalfTest::constructNoInit,
+              &HalfTest::constructCopy,
+
+              &HalfTest::compare});
+
+    addRepeatedTests({&HalfTest::compareNaN}, 65536);
+
+    addTests({&HalfTest::promotion,
+              &HalfTest::negation,
+
+              &HalfTest::literal,
+              &HalfTest::debug});
 
     /* Calculate tables for table-based benchmark */
     _mantissaTable[0] = 0;
@@ -464,6 +496,128 @@ void HalfTest::unpack1kTable() {
 
     /* To avoid optimizing things out */
     CORRADE_VERIFY(out);
+}
+
+void HalfTest::constructDefault() {
+    constexpr Half a;
+    CORRADE_COMPARE(Float(a), 0.0f);
+    CORRADE_COMPARE(UnsignedShort(a), 0);
+    CORRADE_COMPARE(a.data(), 0);
+
+    constexpr Half b{ZeroInit};
+    CORRADE_COMPARE(Float(b), 0.0f);
+    CORRADE_COMPARE(UnsignedShort(b), 0);
+    CORRADE_COMPARE(b.data(), 0);
+
+    CORRADE_VERIFY((std::is_nothrow_default_constructible<Half>::value));
+    CORRADE_VERIFY((std::is_nothrow_constructible<Half, ZeroInitT>::value));
+}
+
+void HalfTest::constructValue() {
+    Half a{3.5f};
+    CORRADE_COMPARE(Float(a), 3.5f);
+    CORRADE_COMPARE(UnsignedShort(a), 0x4300);
+    CORRADE_COMPARE(a.data(), 0x4300);
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Half, Float>::value));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Float, Half>::value));
+}
+
+void HalfTest::constructData() {
+    constexpr Half a{UnsignedShort(0x4300)};
+    CORRADE_COMPARE(Float(a), 3.5f);
+    CORRADE_COMPARE(UnsignedShort(a), 0x4300);
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Half, UnsignedShort>::value));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<UnsignedShort, Half>::value));
+}
+
+void HalfTest::constructNoInit() {
+    Half a{3.5f};
+    new(&a) Half{NoInit};
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a, Half{3.5f});
+    }
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Half, NoInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<NoInitT, Half>::value));
+}
+
+void HalfTest::constructCopy() {
+    constexpr Half a{UnsignedShort(0x4300)};
+    constexpr Half b{a};
+
+    CORRADE_COMPARE(b, Half{3.5f});
+
+    CORRADE_VERIFY(std::is_nothrow_copy_constructible<Half>::value);
+    CORRADE_VERIFY(std::is_nothrow_copy_assignable<Half>::value);
+}
+
+void HalfTest::compare() {
+    constexpr Half a{UnsignedShort(0x4300)};
+    constexpr Half b{UnsignedShort(0x4301)};
+
+    CORRADE_VERIFY(a == a);
+    CORRADE_VERIFY(a != b);
+}
+
+void HalfTest::compareNaN() {
+    Half a{UnsignedShort(testCaseRepeatId())};
+    Float fa(a);
+
+    /* If the values are NaNs as Float, they should also not compare as Half.
+       Interestingly enough, writing Float(a) != Float(a) in expected confused
+       the optimizer in Emscripten on higher optimization levels and it was
+       always saying `true` for values >= 32769 (which is *not* right). */
+    CORRADE_COMPARE(a != a, fa != fa);
+}
+
+void HalfTest::promotion() {
+    constexpr Half a{UnsignedShort(0x4300)};
+    constexpr Half b = +a;
+
+    CORRADE_COMPARE(b, a);
+}
+
+void HalfTest::negation() {
+    constexpr Half a{UnsignedShort(0x4300)};
+    constexpr Half b = -a;
+
+    CORRADE_COMPARE(b, Half{-3.5f});
+    CORRADE_COMPARE(-b, a);
+}
+
+void HalfTest::literal() {
+    using namespace Literals;
+
+    Half a = 3.5_h;
+    CORRADE_COMPARE(a, Half{UnsignedShort(0x4300)});
+    CORRADE_COMPARE(a, Half{3.5f});
+}
+
+void HalfTest::debug() {
+    using namespace Literals;
+
+    std::ostringstream out;
+
+    Debug{&out} << -3.64_h << Half{Constants::inf()}
+        << Math::Vector3<Half>{3.14159_h, -1.4142_h, 1.618_h};
+    #ifdef _MSC_VER
+    CORRADE_COMPARE(out.str(), "-3.64063 inf Vector(3.14063, -1.41406, 1.61816)\n");
+    #elif defined(CORRADE_TARGET_ANDROID)
+    CORRADE_COMPARE(out.str(), "-3.64062 Inf Vector(3.14062, -1.41406, 1.61816)\n");
+    #else
+    CORRADE_COMPARE(out.str(), "-3.64062 inf Vector(3.14062, -1.41406, 1.61816)\n");
+    #endif
 }
 
 }}}
