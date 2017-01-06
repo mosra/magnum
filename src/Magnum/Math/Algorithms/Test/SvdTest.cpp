@@ -67,8 +67,10 @@ template<class T> void SvdTest::test() {
     Matrix5x8<T> w2 = Matrix5x8<T>::fromDiagonal(w);
     {
         #ifdef CORRADE_TARGET_EMSCRIPTEN
-        CORRADE_EXPECT_FAIL_IF((std::is_same<T, Double>::value),
-            "Some strange problems with Double on recent Emscripten versions (1.36.5 worked fine).");
+        CORRADE_EXPECT_FAIL_IF((std::is_same<T, Double>::value) && u2*w2*v.transposed() != a,
+            "Some strange problems with Double on recent Emscripten versions "
+            "(1.36.5 worked fine, 1.37.1 works fine on larger optimization "
+            "levels, not on -O1).");
         #endif
         CORRADE_COMPARE(u2*w2*v.transposed(), a);
     }
