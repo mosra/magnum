@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <limits>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Math/Packing.h"
