@@ -35,7 +35,7 @@ namespace Magnum { namespace Trade {
 
 AnyImageConverter::AnyImageConverter(PluginManager::Manager<AbstractImageConverter>& manager): AbstractImageConverter{manager} {}
 
-AnyImageConverter::AnyImageConverter(PluginManager::AbstractManager& manager, std::string plugin): AbstractImageConverter{manager, std::move(plugin)} {}
+AnyImageConverter::AnyImageConverter(PluginManager::AbstractManager& manager, const std::string& plugin): AbstractImageConverter{manager, plugin} {}
 
 AnyImageConverter::~AnyImageConverter() = default;
 

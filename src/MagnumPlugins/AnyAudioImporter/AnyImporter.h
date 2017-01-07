@@ -78,7 +78,7 @@ class MAGNUM_ANYAUDIOIMPORTER_EXPORT AnyImporter: public AbstractImporter {
         explicit AnyImporter(PluginManager::Manager<AbstractImporter>& manager);
 
         /** @brief Plugin manager constructor */
-        explicit AnyImporter(PluginManager::AbstractManager& manager, std::string plugin);
+        explicit AnyImporter(PluginManager::AbstractManager& manager, const std::string& plugin);
 
         ~AnyImporter();
 

@@ -80,7 +80,7 @@ class MAGNUM_ANYSCENEIMPORTER_EXPORT AnySceneImporter: public AbstractImporter {
         explicit AnySceneImporter(PluginManager::Manager<AbstractImporter>& manager);
 
         /** @brief Plugin manager constructor */
-        explicit AnySceneImporter(PluginManager::AbstractManager& manager, std::string plugin);
+        explicit AnySceneImporter(PluginManager::AbstractManager& manager, const std::string& plugin);
 
         ~AnySceneImporter();
 

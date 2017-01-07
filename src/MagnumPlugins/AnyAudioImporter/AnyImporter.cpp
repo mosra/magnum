@@ -34,7 +34,7 @@ namespace Magnum { namespace Audio {
 
 AnyImporter::AnyImporter(PluginManager::Manager<AbstractImporter>& manager): AbstractImporter{manager} {}
 
-AnyImporter::AnyImporter(PluginManager::AbstractManager& manager, std::string plugin): AbstractImporter{manager, std::move(plugin)} {}
+AnyImporter::AnyImporter(PluginManager::AbstractManager& manager, const std::string& plugin): AbstractImporter{manager, plugin} {}
 
 AnyImporter::~AnyImporter() = default;
 

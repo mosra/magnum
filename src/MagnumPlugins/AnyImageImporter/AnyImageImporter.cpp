@@ -35,7 +35,7 @@ namespace Magnum { namespace Trade {
 
 AnyImageImporter::AnyImageImporter(PluginManager::Manager<AbstractImporter>& manager): AbstractImporter{manager} {}
 
-AnyImageImporter::AnyImageImporter(PluginManager::AbstractManager& manager, std::string plugin): AbstractImporter{manager, std::move(plugin)} {}
+AnyImageImporter::AnyImageImporter(PluginManager::AbstractManager& manager, const std::string& plugin): AbstractImporter{manager, plugin} {}
 
 AnyImageImporter::~AnyImageImporter() = default;
 

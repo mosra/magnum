@@ -44,7 +44,7 @@ namespace Magnum { namespace Trade {
 
 AnySceneImporter::AnySceneImporter(PluginManager::Manager<AbstractImporter>& manager): AbstractImporter{manager} {}
 
-AnySceneImporter::AnySceneImporter(PluginManager::AbstractManager& manager, std::string plugin): AbstractImporter{manager, std::move(plugin)} {}
+AnySceneImporter::AnySceneImporter(PluginManager::AbstractManager& manager, const std::string& plugin): AbstractImporter{manager, plugin} {}
 
 AnySceneImporter::~AnySceneImporter() = default;
 
