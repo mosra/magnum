@@ -138,6 +138,7 @@ ColorTest::ColorTest() {
 
               &ColorTest::srgb});
 
+    /* Comparing with the previous one, so not 65536 */
     addRepeatedTests({&ColorTest::srgbMonotonic}, 65535);
 
     addTests({&ColorTest::fromSrgbDefaultAlpha,
