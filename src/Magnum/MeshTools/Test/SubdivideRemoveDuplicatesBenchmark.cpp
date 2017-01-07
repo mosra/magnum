@@ -45,7 +45,7 @@ struct SubdivideRemoveDuplicatesBenchmark: TestSuite::Tester {
 SubdivideRemoveDuplicatesBenchmark::SubdivideRemoveDuplicatesBenchmark() {
     addBenchmarks({&SubdivideRemoveDuplicatesBenchmark::subdivide,
                    &SubdivideRemoveDuplicatesBenchmark::subdivideAndRemoveDuplicatesAfter,
-                   &SubdivideRemoveDuplicatesBenchmark::subdivideAndRemoveDuplicatesInBetween}, 4, BenchmarkType::WallClock);
+                   &SubdivideRemoveDuplicatesBenchmark::subdivideAndRemoveDuplicatesInBetween}, 4);
 }
 
 namespace {
