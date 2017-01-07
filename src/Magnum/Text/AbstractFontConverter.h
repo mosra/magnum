@@ -133,7 +133,7 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
         explicit AbstractFontConverter();
 
         /** @brief Plugin manager constructor */
-        explicit AbstractFontConverter(PluginManager::AbstractManager& manager, std::string plugin);
+        explicit AbstractFontConverter(PluginManager::AbstractManager& manager, const std::string& plugin);
 
         /** @brief Features supported by this converter */
         Features features() const { return doFeatures(); }

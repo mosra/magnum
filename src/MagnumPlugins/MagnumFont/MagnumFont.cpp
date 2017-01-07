@@ -60,7 +60,7 @@ namespace {
 
 MagnumFont::MagnumFont(): _opened(nullptr) {}
 
-MagnumFont::MagnumFont(PluginManager::AbstractManager& manager, std::string plugin): AbstractFont(manager, std::move(plugin)), _opened(nullptr) {}
+MagnumFont::MagnumFont(PluginManager::AbstractManager& manager, const std::string& plugin): AbstractFont{manager, plugin}, _opened(nullptr) {}
 
 MagnumFont::~MagnumFont() { close(); }
 

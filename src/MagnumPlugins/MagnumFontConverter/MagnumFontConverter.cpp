@@ -39,7 +39,7 @@ namespace Magnum { namespace Text {
 
 MagnumFontConverter::MagnumFontConverter() = default;
 
-MagnumFontConverter::MagnumFontConverter(PluginManager::AbstractManager& manager, std::string plugin): AbstractFontConverter(manager, std::move(plugin)) {}
+MagnumFontConverter::MagnumFontConverter(PluginManager::AbstractManager& manager, const std::string& plugin): AbstractFontConverter{manager, plugin} {}
 
 auto MagnumFontConverter::doFeatures() const -> Features {
     return Feature::ExportFont|Feature::ConvertData|Feature::MultiFile;

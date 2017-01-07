@@ -36,7 +36,7 @@ namespace Magnum { namespace Audio {
 
 WavImporter::WavImporter() = default;
 
-WavImporter::WavImporter(PluginManager::AbstractManager& manager, std::string plugin): AbstractImporter(manager, std::move(plugin)) {}
+WavImporter::WavImporter(PluginManager::AbstractManager& manager, const std::string& plugin): AbstractImporter{manager, plugin} {}
 
 auto WavImporter::doFeatures() const -> Features { return Feature::OpenData; }
 

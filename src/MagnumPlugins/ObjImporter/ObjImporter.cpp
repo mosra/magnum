@@ -109,7 +109,7 @@ template<class T> void reindex(const std::vector<UnsignedInt>& indices, std::vec
 
 ObjImporter::ObjImporter() = default;
 
-ObjImporter::ObjImporter(PluginManager::AbstractManager& manager, std::string plugin): AbstractImporter(manager, std::move(plugin)) {}
+ObjImporter::ObjImporter(PluginManager::AbstractManager& manager, const std::string& plugin): AbstractImporter{manager, plugin} {}
 
 ObjImporter::~ObjImporter() = default;
 

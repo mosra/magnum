@@ -70,7 +70,7 @@ class MAGNUM_MAGNUMFONTCONVERTER_EXPORT MagnumFontConverter: public Text::Abstra
         explicit MagnumFontConverter();
 
         /** @brief Plugin manager constructor */
-        explicit MagnumFontConverter(PluginManager::AbstractManager& manager, std::string plugin);
+        explicit MagnumFontConverter(PluginManager::AbstractManager& manager, const std::string& plugin);
 
     private:
         MAGNUM_MAGNUMFONTCONVERTER_LOCAL Features doFeatures() const override;

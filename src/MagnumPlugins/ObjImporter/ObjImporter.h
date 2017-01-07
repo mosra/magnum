@@ -72,7 +72,7 @@ class MAGNUM_OBJIMPORTER_EXPORT ObjImporter: public AbstractImporter {
         explicit ObjImporter();
 
         /** @brief Plugin manager constructor */
-        explicit ObjImporter(PluginManager::AbstractManager& manager, std::string plugin);
+        explicit ObjImporter(PluginManager::AbstractManager& manager, const std::string& plugin);
 
         ~ObjImporter();
 

@@ -35,7 +35,7 @@ AbstractImporter::AbstractImporter() = default;
 
 AbstractImporter::AbstractImporter(PluginManager::Manager<AbstractImporter>& manager): PluginManager::AbstractManagingPlugin<AbstractImporter>{manager} {}
 
-AbstractImporter::AbstractImporter(PluginManager::AbstractManager& manager, std::string plugin): PluginManager::AbstractManagingPlugin<AbstractImporter>{manager, std::move(plugin)} {}
+AbstractImporter::AbstractImporter(PluginManager::AbstractManager& manager, const std::string& plugin): PluginManager::AbstractManagingPlugin<AbstractImporter>{manager, plugin} {}
 
 bool AbstractImporter::openData(Containers::ArrayView<const char> data) {
     CORRADE_ASSERT(features() & Feature::OpenData,

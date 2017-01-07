@@ -120,7 +120,7 @@ class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractManagi
         explicit AbstractImageConverter(PluginManager::Manager<AbstractImageConverter>& manager);
 
         /** @brief Plugin manager constructor */
-        explicit AbstractImageConverter(PluginManager::AbstractManager& manager, std::string plugin);
+        explicit AbstractImageConverter(PluginManager::AbstractManager& manager, const std::string& plugin);
 
         /** @brief Features supported by this converter */
         Features features() const { return doFeatures(); }

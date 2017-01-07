@@ -38,7 +38,7 @@ AbstractImageConverter::AbstractImageConverter() = default;
 
 AbstractImageConverter::AbstractImageConverter(PluginManager::Manager<AbstractImageConverter>& manager): PluginManager::AbstractManagingPlugin<AbstractImageConverter>{manager} {}
 
-AbstractImageConverter::AbstractImageConverter(PluginManager::AbstractManager& manager, std::string plugin): PluginManager::AbstractManagingPlugin<AbstractImageConverter>{manager, std::move(plugin)} {}
+AbstractImageConverter::AbstractImageConverter(PluginManager::AbstractManager& manager, const std::string& plugin): PluginManager::AbstractManagingPlugin<AbstractImageConverter>{manager, plugin} {}
 
 std::optional<Image2D> AbstractImageConverter::exportToImage(const ImageView2D& image) {
     CORRADE_ASSERT(features() & Feature::ConvertImage,
