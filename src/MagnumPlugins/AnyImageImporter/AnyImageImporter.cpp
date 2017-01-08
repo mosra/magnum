@@ -65,7 +65,7 @@ void AnyImageImporter::doOpenFile(const std::string& filename) {
             Utility::String::endsWith(filename, ".jpe") )
         plugin = "JpegImporter";
     else if(Utility::String::endsWith(filename, ".jp2"))
-        plugin = "Jp2Importer";
+        plugin = "Jpeg2000Importer";
     else if(Utility::String::endsWith(filename, ".mng"))
         plugin = "MngImporter";
     else if(Utility::String::endsWith(filename, ".pbm"))

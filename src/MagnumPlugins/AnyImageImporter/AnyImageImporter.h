@@ -71,7 +71,8 @@ Supported formats:
 -   Radiance HDR (`*.hdr`), loaded with any plugin that provides `HdrImporter`
 -   JPEG (`*.jpg`, `*.jpe`, `*.jpeg`), loaded with @ref JpegImporter or any
     other plugin that provides it
--   JPEG 2000 (`*.jp2`), loaded with any plugin that provides `Jp2Importer`
+-   JPEG 2000 (`*.jp2`), loaded with any plugin that provides
+    `Jpeg2000Importer`
 -   Multiple-image Network Graphics (`*.mng`), loaded with any plugin that
     provides `MngImporter`
 -   Portable Bitmap (`*.pbm`), loaded with any plugin that provides `PbmImporter`
