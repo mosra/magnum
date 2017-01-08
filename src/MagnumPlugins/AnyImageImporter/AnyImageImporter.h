@@ -68,6 +68,7 @@ Supported formats:
     plugin that provides it
 -   Graphics Interchange Format (`*.gif`), loaded with any plugin that provides
     `GifImporter`
+-   OpenEXR (`*.exr`), loaded with any plugin that provides `OpenExrImporter`
 -   Radiance HDR (`*.hdr`), loaded with any plugin that provides `HdrImporter`
 -   JPEG (`*.jpg`, `*.jpe`, `*.jpeg`), loaded with @ref JpegImporter or any
     other plugin that provides it
