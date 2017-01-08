@@ -65,10 +65,14 @@ Supported formats for uncompressed data:
 
 -   OpenEXR (`*.exr`), converted with any plugin that provides
     `OpenExrImageConverter`
--   PNG (`*.png`), converted with @ref PngImageConverter or any other plugin
-    that provides it
--   TGA (`*.tga`), converted with @ref TgaImageConverter or any other plugin
-    that provides it
+-   Windows Bitmap (`*.bmp`), converted with any plugin that provides
+    `BmpImageConverter`
+-   Radiance HDR (`*.hdr`), converted with any plugin that provides
+    `HdrImageConverter`
+-   Portable Network Graphics (`*.png`), converted with @ref PngImageConverter
+    or any other plugin that provides it
+-   Truevision TGA (`*.tga`, `*.vda`, `*.icb`, `*.vst`), converted with
+    @ref TgaImageConverter or any other plugin that provides it
 
 No supported formats for compressed data yet.
 

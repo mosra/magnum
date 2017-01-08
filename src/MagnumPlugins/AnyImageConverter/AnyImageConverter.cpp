@@ -48,11 +48,18 @@ bool AnyImageConverter::doExportToFile(const ImageView2D& image, const std::stri
 
     /* Detect type from extension */
     std::string plugin;
-    if(Utility::String::endsWith(filename, ".exr"))
+    if(Utility::String::endsWith(filename, ".bmp"))
+        plugin = "BmpImageConverter";
+    else if(Utility::String::endsWith(filename, ".exr"))
         plugin = "OpenExrImageConverter";
+    else if(Utility::String::endsWith(filename, ".hdr"))
+        plugin = "HdrImageConverter";
     else if(Utility::String::endsWith(filename, ".png"))
         plugin = "PngImageConverter";
-    else if(Utility::String::endsWith(filename, ".tga"))
+    else if(Utility::String::endsWith(filename, ".tga") ||
+            Utility::String::endsWith(filename, ".vda") ||
+            Utility::String::endsWith(filename, ".icb") ||
+            Utility::String::endsWith(filename, ".vst"))
         plugin = "TgaImageConverter";
     else {
         Error() << "Trade::AnyImageConverter::exportToFile(): cannot determine type of file" << filename;
