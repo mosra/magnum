@@ -214,8 +214,8 @@ class MAGNUM_EXPORT PixelStorage {
          * Returns byte offset in each direction, (row length, row count, layer
          * count) and pixel size for image of given @p size with current pixel
          * storage parameters, @p format and @p type. The offset reflects the
-         * @ref skip() parameter. Adding byte offset and product of the vector
-         * gives minimal byte count to store given data.
+         * @ref skip() parameter. Sum of the byte offset vector gives the
+         * byte offset of first pixel in the data array.
          * @see @ref pixelSize()
          */
         std::tuple<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>, std::size_t> dataProperties(PixelFormat format, PixelType type, const Vector3i& size) const;
