@@ -335,3 +335,8 @@ set(MAGNUM_PLUGINS_AUDIOIMPORTER_RELEASE_DIR ${MAGNUM_PLUGINS_RELEASE_DIR}/audio
 
 add_subdirectory(modules)
 add_subdirectory(src)
+
+# Build snippets as part of testing
+if(BUILD_TESTS)
+    add_subdirectory(doc/snippets)
+endif()

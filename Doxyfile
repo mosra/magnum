@@ -892,7 +892,8 @@ EXCLUDE_SYMBOLS        = Magnum::*Implementation \
 # that contain example code fragments that are included (see the \include
 # command).
 
-EXAMPLE_PATH           = ../magnum-examples/src/
+EXAMPLE_PATH           = doc/snippets/ \
+                         ../magnum-examples/src/
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp and
@@ -913,6 +914,7 @@ EXAMPLE_RECURSIVE      = NO
 # \image command).
 
 IMAGE_PATH             = doc/ \
+                         doc/snippets/ \
                          ../magnum-examples/src/
 
 # The INPUT_FILTER tag can be used to specify a program that doxygen should

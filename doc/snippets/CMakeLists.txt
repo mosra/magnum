@@ -23,21 +23,18 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-if(WITH_SHAPES)
-    corrade_add_test(DebugToolsCapsuleRendererTest CapsuleRendererTest.cpp LIBRARIES MagnumMathTestLib)
-    corrade_add_test(DebugToolsCylinderRendererTest CylinderRendererTest.cpp LIBRARIES MagnumMathTestLib)
-    corrade_add_test(DebugToolsLineSegmentRendererTest LineSegmentRendererTest.cpp LIBRARIES MagnumMathTestLib)
-endif()
+find_package(Corrade COMPONENTS TestSuite)
 
-if(WITH_SCENEGRAPH)
-    corrade_add_test(DebugToolsForceRendererTest ForceRendererTest.cpp LIBRARIES MagnumMathTestLib)
-endif()
+if(WITH_DEBUGTOOLS AND Corrade_TestSuite_FOUND)
+    set(SNIPPETS_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+                   ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-if(Corrade_TestSuite_FOUND)
-    corrade_add_test(DebugToolsCompareImageTest CompareImageTest.cpp LIBRARIES MagnumDebugTools)
-endif()
-
-if(BUILD_GL_TESTS)
-    corrade_add_test(DebugToolsBufferDataGLTest BufferDataGLTest.cpp LIBRARIES MagnumDebugTools ${GL_TEST_LIBRARIES})
-    corrade_add_test(DebugToolsTextureImageGLTest TextureImageGLTest.cpp LIBRARIES MagnumDebugTools ${GL_TEST_LIBRARIES})
+    # CompareImage documentation snippet. I need it executable so I can
+    # copy&paste the output to the documentation. Also mot using
+    # corrade_add_test() because it shouldn't be run as part of CTest as it
+    # purposedly fails.
+    add_executable(debugtools-compareimage debugtools-compareimage.cpp)
+    target_link_libraries(debugtools-compareimage PRIVATE MagnumDebugTools)
+    target_include_directories(debugtools-compareimage PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 endif()

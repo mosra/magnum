@@ -43,6 +43,16 @@ if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_GLES2)
     list(APPEND MagnumDebugTools_SRCS ${MagnumDebugTools_RESOURCES})
 endif()
 
+# Build the TestSuite-related functionality only if it is present
+find_package(Corrade COMPONENTS TestSuite)
+if(Corrade_TestSuite_FOUND)
+    list(APPEND MagnumDebugTools_SRCS
+        CompareImage.cpp)
+
+    list(APPEND MagnumDebugTools_HEADERS
+        CompareImage.h)
+endif()
+
 if(NOT MAGNUM_TARGET_WEBGL)
     list(APPEND MagnumDebugTools_SRCS
         BufferData.cpp)
@@ -107,6 +117,9 @@ if(BUILD_STATIC_PIC)
 endif()
 
 target_link_libraries(MagnumDebugTools Magnum)
+if(Corrade_TestSuite_FOUND)
+    target_link_libraries(MagnumDebugTools Corrade::TestSuite)
+endif()
 if(WITH_SCENEGRAPH)
     target_link_libraries(MagnumDebugTools MagnumSceneGraph)
 endif()
