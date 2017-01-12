@@ -126,8 +126,8 @@ template<class T> inline typename Color3<T>::Hsv toHsv(typename std::enable_if<s
 
 /* sRGB -> RGB conversion */
 template<class T> typename std::enable_if<std::is_floating_point<T>::value, Color3<T>>::type fromSrgb(const Vector3<T>& srgb) {
-    constexpr const T a(0.055);
-    return lerp(srgb/T(12.92), pow((srgb + Vector3<T>{a})/(T(1.0) + a), T(2.4)), srgb > Vector3<T>(0.04045));
+    constexpr const T a(T(0.055));
+    return lerp(srgb/T(12.92), pow((srgb + Vector3<T>{a})/(T(1.0) + a), T(2.4)), srgb > Vector3<T>(T(0.04045)));
 }
 template<class T> typename std::enable_if<std::is_floating_point<T>::value, Color4<T>>::type fromSrgbAlpha(const Vector4<T>& srgbAlpha) {
     return {fromSrgb<T>(srgbAlpha.rgb()), srgbAlpha.a()};
