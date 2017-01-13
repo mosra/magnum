@@ -327,10 +327,17 @@ class WindowlessWindowsEglApplication {
 @param className Class name
 
 See @ref Magnum::Platform::WindowlessWindowsEglApplication "Platform::WindowlessWindowsEglApplication"
-for usage information. This macro abstracts out platform-specific entry point
-code, see @ref portability-applications for more information. When no other
-windowless application header is included this macro is also aliased to
-`MAGNUM_WINDOWLESSAPPLICATION_MAIN()`.
+for usage information.This macro abstracts out platform-specific entry point
+code and is equivalent to the following, see @ref portability-applications for
+more information.
+@code
+int main(int argc, char** argv) {
+    className app({argc, argv});
+    return app.exec();
+}
+@endcode
+When no other windowless application header is included this macro is also
+aliased to `MAGNUM_WINDOWLESSAPPLICATION_MAIN()`.
 */
 #define MAGNUM_WINDOWLESSWINDOWSEGLAPPLICATION_MAIN(className)              \
     int main(int argc, char** argv) {                                       \

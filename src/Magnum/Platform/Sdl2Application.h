@@ -1601,8 +1601,9 @@ class Sdl2Application::TextEditingEvent {
 
 See @ref Magnum::Platform::Sdl2Application "Platform::Sdl2Application" for
 usage information. This macro abstracts out platform-specific entry point code
-and is equivalent to the following, see @ref portability-applications for more
-information.
+and is equivalent to the following on all supported platforms except
+@ref CORRADE_TARGET_WINDOWS_RT "Windows RT", see @ref portability-applications
+for more information.
 @code
 int main(int argc, char** argv) {
     className app({argc, argv});
