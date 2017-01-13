@@ -228,6 +228,24 @@ information):
 -   `WITH_GLXCONTEXT` -- GLX context
 -   `WITH_WGLCONTEXT` -- WGL context
 
+Magnum also contains a set of dependency-less plugins for importing essential
+file formats. Additional plugins are provided in separate plugin repository,
+see @ref building-plugins for more information. None of the plugins is built by
+default.
+
+-   `WITH_MAGNUMFONT` -- @ref Text::MagnumFont "MagnumFont" plugin. Available
+    only if `WITH_TEXT` is enabled. Enables also building of
+    @ref Trade::TgaImporter "TgaImporter" plugin.
+-   `WITH_MAGNUMFONTCONVERTER` -- @ref Text::MagnumFontConverter "MagnumFontConverter"
+    plugin. Available only if `WITH_TEXT` is enabled. Enables also building of
+    @ref Trade::TgaImageConverter "TgaImageConverter" plugin.
+-   `WITH_OBJIMPORTER` -- @ref Trade::ObjImporter "ObjImporter" plugin.
+-   `WITH_TGAIMPORTER` -- @ref Trade::TgaImporter "TgaImporter" plugin.
+-   `WITH_TGAIMAGECONVERTER` -- @ref Trade::TgaImageConverter "TgaImageConverter"
+    plugin.
+-   `WITH_WAVAUDIOIMPORTER` -- @ref Audio::WavImporter "WavAudioImporter"
+    plugin. Available only if `WITH_AUDIO` is enabled.
+
 There are also a few command-line utilities, also disabled by default:
 
 -   `WITH_MAGNUMINFO` - @ref magnum-info "magnum-info" executable, provides
@@ -253,24 +271,6 @@ like when using Magnum from dependent projects -- see @ref cmake for more
 information. In particular, if you specify them as relative paths, the path
 will be taken relative to executable location, which is useful for making
 relocatable installations.
-
-Magnum also contains a set of dependency-less plugins for importing essential
-file formats. Additional plugins are provided in separate plugin repository,
-see @ref building-plugins for more information. None of the plugins is built by
-default.
-
--   `WITH_MAGNUMFONT` -- @ref Text::MagnumFont "MagnumFont" plugin. Available
-    only if `WITH_TEXT` is enabled. Enables also building of
-    @ref Trade::TgaImporter "TgaImporter" plugin.
--   `WITH_MAGNUMFONTCONVERTER` -- @ref Text::MagnumFontConverter "MagnumFontConverter"
-    plugin. Available only if `WITH_TEXT` is enabled. Enables also building of
-    @ref Trade::TgaImageConverter "TgaImageConverter" plugin.
--   `WITH_OBJIMPORTER` -- @ref Trade::ObjImporter "ObjImporter" plugin.
--   `WITH_TGAIMPORTER` -- @ref Trade::TgaImporter "TgaImporter" plugin.
--   `WITH_TGAIMAGECONVERTER` -- @ref Trade::TgaImageConverter "TgaImageConverter"
-    plugin.
--   `WITH_WAVAUDIOIMPORTER` -- @ref Audio::WavImporter "WavAudioImporter"
-    plugin. Available only if `WITH_AUDIO` is enabled.
 
 Note that [each namespace](namespaces.html) and all @ref Platform libraries
 contain more detailed information about dependencies, availability on
