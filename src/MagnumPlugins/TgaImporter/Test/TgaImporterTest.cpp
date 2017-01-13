@@ -37,23 +37,22 @@
 
 namespace Magnum { namespace Trade { namespace Test {
 
-class TgaImporterTest: public TestSuite::Tester {
-    public:
-        TgaImporterTest();
+struct TgaImporterTest: TestSuite::Tester {
+    explicit TgaImporterTest();
 
-        void openNonexistent();
-        void openShort();
-        void paletted();
-        void compressed();
+    void openNonexistent();
+    void openShort();
+    void paletted();
+    void compressed();
 
-        void colorBits16();
-        void colorBits24();
-        void colorBits32();
+    void colorBits16();
+    void colorBits24();
+    void colorBits32();
 
-        void grayscaleBits8();
-        void grayscaleBits16();
+    void grayscaleBits8();
+    void grayscaleBits16();
 
-        void useTwice();
+    void useTwice();
 };
 
 TgaImporterTest::TgaImporterTest() {

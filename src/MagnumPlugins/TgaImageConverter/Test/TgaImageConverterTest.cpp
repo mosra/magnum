@@ -38,15 +38,14 @@
 
 namespace Magnum { namespace Trade { namespace Test {
 
-class TgaImageConverterTest: public TestSuite::Tester {
-    public:
-        explicit TgaImageConverterTest();
+struct TgaImageConverterTest: TestSuite::Tester {
+    explicit TgaImageConverterTest();
 
-        void wrongFormat();
-        void wrongType();
+    void wrongFormat();
+    void wrongType();
 
-        void rgb();
-        void rgba();
+    void rgb();
+    void rgba();
 };
 
 namespace {

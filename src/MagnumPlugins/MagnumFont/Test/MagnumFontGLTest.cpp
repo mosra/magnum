@@ -33,13 +33,12 @@
 
 namespace Magnum { namespace Text { namespace Test {
 
-class MagnumFontGLTest: public OpenGLTester {
-    public:
-        explicit MagnumFontGLTest();
+struct MagnumFontGLTest: OpenGLTester {
+    explicit MagnumFontGLTest();
 
-        void properties();
-        void layout();
-        void createGlyphCache();
+    void properties();
+    void layout();
+    void createGlyphCache();
 };
 
 MagnumFontGLTest::MagnumFontGLTest() {

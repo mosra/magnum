@@ -37,44 +37,43 @@
 
 namespace Magnum { namespace Audio { namespace Test {
 
-class WavImporterTest: public TestSuite::Tester {
-    public:
-        explicit WavImporterTest();
+struct WavImporterTest: TestSuite::Tester {
+    explicit WavImporterTest();
 
-        void wrongSize();
-        void wrongSignature();
-        void unsupportedFormat();
-        void unsupportedChannelCount();
+    void wrongSize();
+    void wrongSignature();
+    void unsupportedFormat();
+    void unsupportedChannelCount();
 
-        void invalidPadding();
-        void invalidLength();
-        void invalidDataChunk();
-        void invalidFactChunk();
+    void invalidPadding();
+    void invalidLength();
+    void invalidDataChunk();
+    void invalidFactChunk();
 
-        void mono4();
-        void mono8();
-        void mono8junk();
-        void mono8ALaw();
-        void mono8MuLaw();
-        void mono16();
+    void mono4();
+    void mono8();
+    void mono8junk();
+    void mono8ALaw();
+    void mono8MuLaw();
+    void mono16();
 
-        void stereo4();
-        void stereo8();
-        void stereo8ALaw();
-        void stereo8MuLaw();
-        void stereo12();
-        void stereo16();
-        void stereo24();
-        void stereo32();
+    void stereo4();
+    void stereo8();
+    void stereo8ALaw();
+    void stereo8MuLaw();
+    void stereo12();
+    void stereo16();
+    void stereo24();
+    void stereo32();
 
-        void mono32f();
-        void stereo32f();
-        void stereo64f();
+    void mono32f();
+    void stereo32f();
+    void stereo64f();
 
-        void surround51Channel16();
-        void surround71Channel24();
+    void surround51Channel16();
+    void surround71Channel24();
 
-        void debugAudioFormat();
+    void debugAudioFormat();
 };
 
 WavImporterTest::WavImporterTest() {

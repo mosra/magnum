@@ -36,59 +36,58 @@
 
 namespace Magnum { namespace Trade { namespace Test {
 
-class ObjImporterTest: public TestSuite::Tester {
-    public:
-        explicit ObjImporterTest();
+struct ObjImporterTest: TestSuite::Tester {
+    explicit ObjImporterTest();
 
-        void pointMesh();
-        void lineMesh();
-        void triangleMesh();
-        void mixedPrimitives();
+    void pointMesh();
+    void lineMesh();
+    void triangleMesh();
+    void mixedPrimitives();
 
-        void positionsOnly();
-        void textureCoordinates();
-        void normals();
-        void textureCoordinatesNormals();
+    void positionsOnly();
+    void textureCoordinates();
+    void normals();
+    void textureCoordinatesNormals();
 
-        void emptyFile();
-        void unnamedMesh();
-        void namedMesh();
-        void moreMeshes();
-        void unnamedFirstMesh();
+    void emptyFile();
+    void unnamedMesh();
+    void namedMesh();
+    void moreMeshes();
+    void unnamedFirstMesh();
 
-        void wrongFloat();
-        void wrongInteger();
-        void unmergedIndexOutOfRange();
-        void mergedIndexOutOfRange();
-        void zeroIndex();
+    void wrongFloat();
+    void wrongInteger();
+    void unmergedIndexOutOfRange();
+    void mergedIndexOutOfRange();
+    void zeroIndex();
 
-        void explicitOptionalPositionCoordinate();
-        void explicitOptionalTextureCoordinate();
-        void unsupportedOptionalPositionCoordinate();
-        void unsupportedOptionalTextureCoordinate();
+    void explicitOptionalPositionCoordinate();
+    void explicitOptionalTextureCoordinate();
+    void unsupportedOptionalPositionCoordinate();
+    void unsupportedOptionalTextureCoordinate();
 
-        void shortFloatData();
-        void longFloatData();
-        void longOptionalFloatData();
+    void shortFloatData();
+    void longFloatData();
+    void longOptionalFloatData();
 
-        void longIndexData();
-        void wrongPointIndexData();
-        void wrongLineIndexData();
-        void wrongTriangleIndexData();
-        void polygonIndexData();
+    void longIndexData();
+    void wrongPointIndexData();
+    void wrongLineIndexData();
+    void wrongTriangleIndexData();
+    void polygonIndexData();
 
-        void missingPositionData();
-        void missingNormalData();
-        void missingTextureCoordinateData();
-        void missingPositionIndices();
-        void missingNormalIndices();
-        void missingTextureCoordinateIndices();
+    void missingPositionData();
+    void missingNormalData();
+    void missingTextureCoordinateData();
+    void missingPositionIndices();
+    void missingNormalIndices();
+    void missingTextureCoordinateIndices();
 
-        void wrongTextureCoordinateIndexCount();
-        void wrongNormalIndexCount();
+    void wrongTextureCoordinateIndexCount();
+    void wrongNormalIndexCount();
 
-        void unsupportedKeyword();
-        void unknownKeyword();
+    void unsupportedKeyword();
+    void unknownKeyword();
 };
 
 ObjImporterTest::ObjImporterTest() {

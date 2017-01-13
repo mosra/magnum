@@ -42,11 +42,10 @@
 
 namespace Magnum { namespace Text { namespace Test {
 
-class MagnumFontConverterGLTest: public OpenGLTester {
-    public:
-        explicit MagnumFontConverterGLTest();
+struct MagnumFontConverterGLTest: OpenGLTester {
+    explicit MagnumFontConverterGLTest();
 
-        void exportFont();
+    void exportFont();
 };
 
 MagnumFontConverterGLTest::MagnumFontConverterGLTest() {
