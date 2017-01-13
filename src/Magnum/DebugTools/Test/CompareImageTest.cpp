@@ -244,11 +244,12 @@ void CompareImageTest::pixelDelta() {
     Debug d{&out, Debug::Flag::DisableColors};
     Implementation::printPixelDeltas(d, DeltaRed, ActualRed, ExpectedRed, 0.5f, 0.1f, 10);
 
-    CORRADE_COMPARE(out.str(), R"(        Pixels above max/mean threshold:
-          [1,2] Vector(1), expected Vector(0) (Δ = 1)
-          [0,0] Vector(0.3), expected Vector(0.65) (Δ = 0.35)
-          [2,0] Vector(0.9), expected Vector(0.6) (Δ = 0.3)
-          [0,2] Vector(-0.1), expected Vector(0.02) (Δ = 0.12))");
+    CORRADE_COMPARE(out.str(),
+        "        Pixels above max/mean threshold:\n"
+        "          [1,2] Vector(1), expected Vector(0) (Δ = 1)\n"
+        "          [0,0] Vector(0.3), expected Vector(0.65) (Δ = 0.35)\n"
+        "          [2,0] Vector(0.9), expected Vector(0.6) (Δ = 0.3)\n"
+        "          [0,2] Vector(-0.1), expected Vector(0.02) (Δ = 0.12)");
 }
 
 void CompareImageTest::pixelDeltaOverflow() {
@@ -256,10 +257,11 @@ void CompareImageTest::pixelDeltaOverflow() {
     Debug d{&out, Debug::Flag::DisableColors};
     Implementation::printPixelDeltas(d, DeltaRed, ActualRed, ExpectedRed, 0.5f, 0.1f, 3);
 
-    CORRADE_COMPARE(out.str(), R"(        Top 3 out of 4 pixels above max/mean threshold:
-          [1,2] Vector(1), expected Vector(0) (Δ = 1)
-          [0,0] Vector(0.3), expected Vector(0.65) (Δ = 0.35)
-          [2,0] Vector(0.9), expected Vector(0.6) (Δ = 0.3))");
+    CORRADE_COMPARE(out.str(),
+        "        Top 3 out of 4 pixels above max/mean threshold:\n"
+        "          [1,2] Vector(1), expected Vector(0) (Δ = 1)\n"
+        "          [0,0] Vector(0.3), expected Vector(0.65) (Δ = 0.35)\n"
+        "          [2,0] Vector(0.9), expected Vector(0.6) (Δ = 0.3)");
 }
 
 void CompareImageTest::compareDifferentSize() {
@@ -345,13 +347,12 @@ void CompareImageTest::compareAboveThresholds() {
     }
 
     CORRADE_COMPARE(out.str(),
-R"(Images a and b have both max and mean delta above threshold, actual 39/18.5 but at most 20/10 expected. Delta image:
-          |?M|
-        Pixels above max/mean threshold:
-          [1,1] #abcd85, expected #abcdfa (Δ = 39)
-          [1,0] #5647ec, expected #5610ed (Δ = 18.6667)
-          [0,1] #235710, expected #232710 (Δ = 16)
-)");
+        "Images a and b have both max and mean delta above threshold, actual 39/18.5 but at most 20/10 expected. Delta image:\n"
+        "          |?M|\n"
+        "        Pixels above max/mean threshold:\n"
+        "          [1,1] #abcd85, expected #abcdfa (Δ = 39)\n"
+        "          [1,0] #5647ec, expected #5610ed (Δ = 18.6667)\n"
+        "          [0,1] #235710, expected #232710 (Δ = 16)\n");
 }
 
 void CompareImageTest::compareAboveMaxThreshold() {
@@ -365,11 +366,10 @@ void CompareImageTest::compareAboveMaxThreshold() {
     }
 
     CORRADE_COMPARE(out.str(),
-R"(Images a and b have max delta above threshold, actual 39 but at most 30 expected. Mean delta 18.5 is below threshold 20. Delta image:
-          |?M|
-        Pixels above max/mean threshold:
-          [1,1] #abcd85, expected #abcdfa (Δ = 39)
-)");
+        "Images a and b have max delta above threshold, actual 39 but at most 30 expected. Mean delta 18.5 is below threshold 20. Delta image:\n"
+        "          |?M|\n"
+        "        Pixels above max/mean threshold:\n"
+        "          [1,1] #abcd85, expected #abcdfa (Δ = 39)\n");
 }
 
 void CompareImageTest::compareAboveMeanThreshold() {
@@ -383,12 +383,11 @@ void CompareImageTest::compareAboveMeanThreshold() {
     }
 
     CORRADE_COMPARE(out.str(),
-R"(Images a and b have mean delta above threshold, actual 18.5 but at most 18 expected. Max delta 39 is below threshold 50. Delta image:
-          |?M|
-        Pixels above max/mean threshold:
-          [1,1] #abcd85, expected #abcdfa (Δ = 39)
-          [1,0] #5647ec, expected #5610ed (Δ = 18.6667)
-)");
+        "Images a and b have mean delta above threshold, actual 18.5 but at most 18 expected. Max delta 39 is below threshold 50. Delta image:\n"
+        "          |?M|\n"
+        "        Pixels above max/mean threshold:\n"
+        "          [1,1] #abcd85, expected #abcdfa (Δ = 39)\n"
+        "          [1,0] #5647ec, expected #5610ed (Δ = 18.6667)\n");
 }
 
 }}}
