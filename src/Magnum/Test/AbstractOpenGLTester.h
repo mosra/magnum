@@ -60,9 +60,6 @@ class AbstractOpenGLTester: public TestSuite::Tester {
     public:
         explicit AbstractOpenGLTester();
 
-        /* Private use only */
-        static std::optional<Platform::WindowlessApplication::Arguments> _windowlessApplicationArguments;
-
     private:
         struct WindowlessApplication: Platform::WindowlessApplication {
             explicit WindowlessApplication(const Arguments& arguments): Platform::WindowlessApplication{arguments, NoCreate} {}
@@ -74,7 +71,7 @@ class AbstractOpenGLTester: public TestSuite::Tester {
         } _windowlessApplication;
 };
 
-AbstractOpenGLTester::AbstractOpenGLTester(): TestSuite::Tester{TestSuite::Tester::TesterConfiguration{}.setSkippedArgumentPrefixes({"magnum"})}, _windowlessApplication{*_windowlessApplicationArguments} {
+AbstractOpenGLTester::AbstractOpenGLTester(): TestSuite::Tester{TestSuite::Tester::TesterConfiguration{}.setSkippedArgumentPrefixes({"magnum"})}, _windowlessApplication{{arguments().first, arguments().second}} {
     /* Try to create debug context, fallback to normal one if not possible. No
        such thing on OSX or iOS. */
     #ifndef CORRADE_TARGET_APPLE
@@ -94,27 +91,9 @@ AbstractOpenGLTester::AbstractOpenGLTester(): TestSuite::Tester{TestSuite::Teste
     }
 }
 
-std::optional<Platform::WindowlessApplication::Arguments> AbstractOpenGLTester::_windowlessApplicationArguments;
-
 #define MAGNUM_VERIFY_NO_ERROR() CORRADE_COMPARE(Magnum::Renderer::error(), Magnum::Renderer::Error::NoError)
 
-#ifdef CORRADE_TESTSUITE_TARGET_XCTEST
-#define MAGNUM_GL_TEST_MAIN(Class)                                          \
-    int CORRADE_VISIBILITY_EXPORT corradeTestMain(int argc, char** argv) {  \
-        Magnum::Test::AbstractOpenGLTester::_windowlessApplicationArguments.emplace(argc, argv); \
-        Class t;                                                            \
-        t.registerTest(__FILE__, #Class);                                   \
-        return t.exec(argc, argv);                                          \
-    }
-#else
-#define MAGNUM_GL_TEST_MAIN(Class)                                          \
-    int main(int argc, char** argv) {                                       \
-        Magnum::Test::AbstractOpenGLTester::_windowlessApplicationArguments.emplace(argc, argv); \
-        Class t;                                                            \
-        t.registerTest(__FILE__, #Class);                                   \
-        return t.exec(argc, argv);                                          \
-    }
-#endif
+#define MAGNUM_GL_TEST_MAIN(Class) CORRADE_TEST_MAIN(Class)
 
 }}
 
