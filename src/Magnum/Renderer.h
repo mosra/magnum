@@ -156,13 +156,15 @@ class MAGNUM_EXPORT Renderer {
 
             #ifndef MAGNUM_TARGET_WEBGL
             /**
-             * sRGB encoding of the default framebuffer
+             * Perform sRGB conversion of values written to sRGB framebuffers.
+             * Disabled by default on desktop GL, enabled by default on OpenGL
+             * ES.
              * @requires_gl30 Extension @extension{ARB,framebuffer_sRGB}
-             * @requires_es_extension @es_extension{EXT,sRGB_write_control}.
-             *      Otherwise sRGB encoding of the default framebuffer is
-             *      implementation-defined.
-             * @requires_gles sRGB encoding of the default framebuffer is
-             *      implementation-defined in WebGL.
+             * @requires_es_extension @es_extension{EXT,sRGB_write_control}. If
+             *      the extension is not present, there's no ability to turn
+             *      the sRGB conversion off.
+             * @requires_gles WebGL has no ability to turn the sRGB conversion
+             *      off.
              */
             #ifndef MAGNUM_TARGET_GLES
             FramebufferSRGB = GL_FRAMEBUFFER_SRGB,
