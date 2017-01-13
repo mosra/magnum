@@ -25,7 +25,8 @@
 
 #include <Corrade/TestSuite/Compare/Container.h>
 
-#include "Magnum/configure.h"
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
 #ifndef MAGNUM_TARGET_GLES2
 #include "Magnum/BufferImage.h"
 #endif
@@ -33,16 +34,16 @@
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 #include "Magnum/ImageFormat.h"
 #endif
+#include "Magnum/OpenGLTester.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Texture.h"
 #include "Magnum/TextureFormat.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Range.h"
-#include "Magnum/Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Test {
 
-struct TextureGLTest: AbstractOpenGLTester {
+struct TextureGLTest: OpenGLTester {
     explicit TextureGLTest();
 
     #ifndef MAGNUM_TARGET_GLES
@@ -2184,4 +2185,4 @@ void TextureGLTest::invalidateSubImage3D() {
 
 }}
 
-MAGNUM_GL_TEST_MAIN(Magnum::Test::TextureGLTest)
+CORRADE_TEST_MAIN(Magnum::Test::TextureGLTest)

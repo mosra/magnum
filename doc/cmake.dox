@@ -119,6 +119,11 @@ information):
 -   `GlxContext` -- GLX context
 -   `WglContext` -- WGL context
 
+There are also extensions to @ref Corrade::TestSuite::Tester for testing GPU
+code:
+
+-   `OpenGLTester` -- @ref OpenGLTester class
+
 The library also contains a set of plugins for importing essential file
 formats. Additional plugins are provided in separate plugin repository, see
 @ref cmake-plugins for more information. If you are going to use dynamic

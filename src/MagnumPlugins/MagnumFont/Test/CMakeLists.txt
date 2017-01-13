@@ -26,5 +26,5 @@
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-corrade_add_test(MagnumFontGLTest MagnumFontGLTest.cpp LIBRARIES MagnumMagnumFontTestLib ${GL_TEST_LIBRARIES})
+corrade_add_test(MagnumFontGLTest MagnumFontGLTest.cpp LIBRARIES MagnumMagnumFontTestLib MagnumOpenGLTester)
 target_include_directories(MagnumFontGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})

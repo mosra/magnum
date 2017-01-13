@@ -25,7 +25,7 @@
 
 #include <Corrade/Utility/Directory.h>
 
-#include "Magnum/Test/AbstractOpenGLTester.h"
+#include "Magnum/OpenGLTester.h"
 #include "Magnum/Text/GlyphCache.h"
 #include "MagnumPlugins/MagnumFont/MagnumFont.h"
 
@@ -33,7 +33,7 @@
 
 namespace Magnum { namespace Text { namespace Test {
 
-class MagnumFontGLTest: public Magnum::Test::AbstractOpenGLTester {
+class MagnumFontGLTest: public OpenGLTester {
     public:
         explicit MagnumFontGLTest();
 
@@ -117,4 +117,4 @@ void MagnumFontGLTest::createGlyphCache() {
 
 }}}
 
-MAGNUM_GL_TEST_MAIN(Magnum::Text::Test::MagnumFontGLTest)
+CORRADE_TEST_MAIN(Magnum::Text::Test::MagnumFontGLTest)

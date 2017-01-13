@@ -25,12 +25,14 @@
 
 #include <Corrade/TestSuite/Compare/Numeric.h>
 
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
+#include "Magnum/OpenGLTester.h"
 #include "Magnum/TimeQuery.h"
-#include "Magnum/Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Test {
 
-struct TimeQueryGLTest: AbstractOpenGLTester {
+struct TimeQueryGLTest: OpenGLTester {
     explicit TimeQueryGLTest();
 
     void constructNoCreate();
@@ -147,4 +149,4 @@ void TimeQueryGLTest::queryTimestamp() {
 
 }}
 
-MAGNUM_GL_TEST_MAIN(Magnum::Test::TimeQueryGLTest)
+CORRADE_TEST_MAIN(Magnum::Test::TimeQueryGLTest)

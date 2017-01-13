@@ -31,11 +31,11 @@
 #include "Magnum/Buffer.h"
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
-#include "Magnum/Test/AbstractOpenGLTester.h"
+#include "Magnum/OpenGLTester.h"
 
 namespace Magnum { namespace Test {
 
-struct BufferGLTest: AbstractOpenGLTester {
+struct BufferGLTest: OpenGLTester {
     explicit BufferGLTest();
 
     void construct();
@@ -447,4 +447,4 @@ void BufferGLTest::invalidate() {
 
 }}
 
-MAGNUM_GL_TEST_MAIN(Magnum::Test::BufferGLTest)
+CORRADE_TEST_MAIN(Magnum::Test::BufferGLTest)

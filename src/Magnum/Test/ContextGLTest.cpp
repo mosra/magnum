@@ -27,11 +27,11 @@
 
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
-#include "Magnum/Test/AbstractOpenGLTester.h"
+#include "Magnum/OpenGLTester.h"
 
 namespace Magnum { namespace Test {
 
-struct ContextGLTest: AbstractOpenGLTester {
+struct ContextGLTest: OpenGLTester {
     explicit ContextGLTest();
 
     void constructCopyMove();
@@ -141,4 +141,4 @@ void ContextGLTest::isExtensionDisabled() {
 
 }}
 
-MAGNUM_GL_TEST_MAIN(Magnum::Test::ContextGLTest)
+CORRADE_TEST_MAIN(Magnum::Test::ContextGLTest)

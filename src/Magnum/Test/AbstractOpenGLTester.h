@@ -25,40 +25,20 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Corrade/TestSuite/Tester.h>
+#include "Magnum/OpenGLTester.h"
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_DEPRECATED_FILE("use Magnum/OpenGLTester.h and Magnum::OpenGLTester library instead")
 
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
 #include "Magnum/DebugOutput.h"
-#include "Magnum/Renderer.h"
-
-#ifdef MAGNUM_TARGET_HEADLESS
-#include "Magnum/Platform/WindowlessEglApplication.h"
-#elif defined(CORRADE_TARGET_IOS)
-#include "Magnum/Platform/WindowlessIosApplication.h"
-#elif defined(CORRADE_TARGET_APPLE)
-#include "Magnum/Platform/WindowlessCglApplication.h"
-#elif defined(CORRADE_TARGET_UNIX)
-#if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_DESKTOP_GLES)
-#include "Magnum/Platform/WindowlessEglApplication.h"
-#else
-#include "Magnum/Platform/WindowlessGlxApplication.h"
-#endif
-#elif defined(CORRADE_TARGET_WINDOWS)
-#if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_DESKTOP_GLES)
-#include "Magnum/Platform/WindowlessWglApplication.h"
-#else
-#include "Magnum/Platform/WindowlessWindowsEglApplication.h"
-#endif
-#else
-#error cannot run OpenGL tests on this platform
-#endif
 
 namespace Magnum { namespace Test {
 
 class AbstractOpenGLTester: public TestSuite::Tester {
     public:
-        explicit AbstractOpenGLTester();
+        /* Deprecating the class doesn't make GCC print the warnings :( */
+        explicit CORRADE_DEPRECATED("use OpenGLTester instead") AbstractOpenGLTester();
 
     private:
         struct WindowlessApplication: Platform::WindowlessApplication {
@@ -91,9 +71,10 @@ AbstractOpenGLTester::AbstractOpenGLTester(): TestSuite::Tester{TestSuite::Teste
     }
 }
 
-#define MAGNUM_VERIFY_NO_ERROR() CORRADE_COMPARE(Magnum::Renderer::error(), Magnum::Renderer::Error::NoError)
-
 #define MAGNUM_GL_TEST_MAIN(Class) CORRADE_TEST_MAIN(Class)
+#else
+#error use Magnum/OpenGLTester.h and Magnum::OpenGLTester library instead
+#endif
 
 }}
 

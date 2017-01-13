@@ -23,12 +23,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include "Magnum/OpenGLTester.h"
 #include "Magnum/Shaders/DistanceFieldVector.h"
-#include "Magnum/Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Shaders { namespace Test {
 
-struct DistanceFieldVectorGLTest: Magnum::Test::AbstractOpenGLTester {
+struct DistanceFieldVectorGLTest: OpenGLTester {
     explicit DistanceFieldVectorGLTest();
 
     void compile2D();
@@ -62,4 +62,4 @@ void DistanceFieldVectorGLTest::compile3D() {
 
 }}}
 
-MAGNUM_GL_TEST_MAIN(Magnum::Shaders::Test::DistanceFieldVectorGLTest)
+CORRADE_TEST_MAIN(Magnum::Shaders::Test::DistanceFieldVectorGLTest)

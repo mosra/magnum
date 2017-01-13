@@ -26,10 +26,11 @@
 #include <Corrade/Utility/Directory.h>
 #include <Corrade/TestSuite/Compare/File.h>
 
+#include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/TextureFormat.h"
-#include "Magnum/Test/AbstractOpenGLTester.h"
+#include "Magnum/OpenGLTester.h"
 #include "Magnum/Text/GlyphCache.h"
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Trade/ImageData.h"
@@ -41,7 +42,7 @@
 
 namespace Magnum { namespace Text { namespace Test {
 
-class MagnumFontConverterGLTest: public Magnum::Test::AbstractOpenGLTester {
+class MagnumFontConverterGLTest: public OpenGLTester {
     public:
         explicit MagnumFontConverterGLTest();
 
@@ -123,4 +124,4 @@ void MagnumFontConverterGLTest::exportFont() {
 
 }}}
 
-MAGNUM_GL_TEST_MAIN(Magnum::Text::Test::MagnumFontConverterGLTest)
+CORRADE_TEST_MAIN(Magnum::Text::Test::MagnumFontConverterGLTest)

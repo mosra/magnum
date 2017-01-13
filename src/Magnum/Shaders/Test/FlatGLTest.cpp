@@ -23,12 +23,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include "Magnum/OpenGLTester.h"
 #include "Magnum/Shaders/Flat.h"
-#include "Magnum/Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Shaders { namespace Test {
 
-struct FlatGLTest: Magnum::Test::AbstractOpenGLTester {
+struct FlatGLTest: OpenGLTester {
     explicit FlatGLTest();
 
     void compile2D();
@@ -86,4 +86,4 @@ void FlatGLTest::compile3DTextured() {
 
 }}}
 
-MAGNUM_GL_TEST_MAIN(Magnum::Shaders::Test::FlatGLTest)
+CORRADE_TEST_MAIN(Magnum::Shaders::Test::FlatGLTest)

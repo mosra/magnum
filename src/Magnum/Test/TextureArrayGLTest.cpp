@@ -25,20 +25,21 @@
 
 #include <Corrade/TestSuite/Compare/Container.h>
 
-#include "Magnum/configure.h"
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
 #include "Magnum/BufferImage.h"
 #include "Magnum/Image.h"
 #include "Magnum/ImageFormat.h"
+#include "Magnum/OpenGLTester.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/TextureArray.h"
 #include "Magnum/TextureFormat.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Range.h"
-#include "Magnum/Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Test {
 
-struct TextureArrayGLTest: AbstractOpenGLTester {
+struct TextureArrayGLTest: OpenGLTester {
     explicit TextureArrayGLTest();
 
     #ifndef MAGNUM_TARGET_GLES
@@ -1553,4 +1554,4 @@ void TextureArrayGLTest::invalidateSubImage2D() {
 
 }}
 
-MAGNUM_GL_TEST_MAIN(Magnum::Test::TextureArrayGLTest)
+CORRADE_TEST_MAIN(Magnum::Test::TextureArrayGLTest)

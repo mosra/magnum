@@ -25,12 +25,12 @@
 
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
+#include "Magnum/OpenGLTester.h"
 #include "Magnum/Shaders/MeshVisualizer.h"
-#include "Magnum/Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Shaders { namespace Test {
 
-struct MeshVisualizerGLTest: Magnum::Test::AbstractOpenGLTester {
+struct MeshVisualizerGLTest: OpenGLTester {
     explicit MeshVisualizerGLTest();
 
     void compile();
@@ -95,4 +95,4 @@ void MeshVisualizerGLTest::compileWireframeNoGeometryShader() {
 
 }}}
 
-MAGNUM_GL_TEST_MAIN(Magnum::Shaders::Test::MeshVisualizerGLTest)
+CORRADE_TEST_MAIN(Magnum::Shaders::Test::MeshVisualizerGLTest)

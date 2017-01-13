@@ -27,11 +27,11 @@
 
 #include "Magnum/BufferImage.h"
 #include "Magnum/PixelFormat.h"
-#include "Magnum/Test/AbstractOpenGLTester.h"
+#include "Magnum/OpenGLTester.h"
 
 namespace Magnum { namespace Test {
 
-struct BufferImageGLTest: AbstractOpenGLTester {
+struct BufferImageGLTest: OpenGLTester {
     explicit BufferImageGLTest();
 
     void construct();
@@ -263,4 +263,4 @@ void BufferImageGLTest::setDataCompressed() {
 
 }}
 
-MAGNUM_GL_TEST_MAIN(Magnum::Test::BufferImageGLTest)
+CORRADE_TEST_MAIN(Magnum::Test::BufferImageGLTest)

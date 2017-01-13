@@ -228,6 +228,12 @@ information):
 -   `WITH_GLXCONTEXT` -- GLX context
 -   `WITH_WGLCONTEXT` -- WGL context
 
+There are also extensions to @ref Corrade::TestSuite::Tester for testing GPU
+code:
+
+-   `WITH_OPENGLTESTER` -- @ref OpenGLTester class. Enables building of one of
+    `Platform::Windowless*Application` libraries based on platform.
+
 Magnum also contains a set of dependency-less plugins for importing essential
 file formats. Additional plugins are provided in separate plugin repository,
 see @ref building-plugins for more information. None of the plugins is built by
@@ -272,10 +278,10 @@ information. In particular, if you specify them as relative paths, the path
 will be taken relative to executable location, which is useful for making
 relocatable installations.
 
-Note that [each namespace](namespaces.html) and all @ref Platform libraries
-contain more detailed information about dependencies, availability on
-particular platform and also guide how to enable given library in build and use
-it with CMake.
+Note that [each namespace](namespaces.html), all @ref Platform libraries and
+the @ref OpenGLTester class contain more detailed information about
+dependencies, availability on particular platform and also guide how to enable
+given library in build and use it with CMake.
 
 @subsection building-tests Building and running unit tests
 

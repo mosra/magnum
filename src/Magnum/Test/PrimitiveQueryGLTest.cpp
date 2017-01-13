@@ -28,19 +28,21 @@
 
 #include "Magnum/AbstractShaderProgram.h"
 #include "Magnum/Buffer.h"
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
 #include "Magnum/Framebuffer.h"
 #include "Magnum/Mesh.h"
+#include "Magnum/OpenGLTester.h"
 #include "Magnum/PrimitiveQuery.h"
 #include "Magnum/Renderbuffer.h"
 #include "Magnum/RenderbufferFormat.h"
 #include "Magnum/Shader.h"
 #include "Magnum/TransformFeedback.h"
 #include "Magnum/Math/Vector2.h"
-#include "Magnum/Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Test {
 
-struct PrimitiveQueryGLTest: AbstractOpenGLTester {
+struct PrimitiveQueryGLTest: OpenGLTester {
     explicit PrimitiveQueryGLTest();
 
     void constructNoCreate();
@@ -395,4 +397,4 @@ void PrimitiveQueryGLTest::transformFeedbackOverflow() {
 
 }}
 
-MAGNUM_GL_TEST_MAIN(Magnum::Test::PrimitiveQueryGLTest)
+CORRADE_TEST_MAIN(Magnum::Test::PrimitiveQueryGLTest)

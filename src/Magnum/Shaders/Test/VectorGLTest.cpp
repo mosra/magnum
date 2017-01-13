@@ -23,12 +23,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include "Magnum/OpenGLTester.h"
 #include "Magnum/Shaders/Vector.h"
-#include "Magnum/Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Shaders { namespace Test {
 
-struct VectorGLTest: Magnum::Test::AbstractOpenGLTester {
+struct VectorGLTest: OpenGLTester {
     explicit VectorGLTest();
 
     void compile2D();
@@ -62,4 +62,4 @@ void VectorGLTest::compile3D() {
 
 }}}
 
-MAGNUM_GL_TEST_MAIN(Magnum::Shaders::Test::VectorGLTest)
+CORRADE_TEST_MAIN(Magnum::Shaders::Test::VectorGLTest)

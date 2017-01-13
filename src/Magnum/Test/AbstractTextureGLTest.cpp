@@ -26,11 +26,11 @@
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
 #include "Magnum/Texture.h"
-#include "Magnum/Test/AbstractOpenGLTester.h"
+#include "Magnum/OpenGLTester.h"
 
 namespace Magnum { namespace Test {
 
-struct AbstractTextureGLTest: AbstractOpenGLTester {
+struct AbstractTextureGLTest: OpenGLTester {
     explicit AbstractTextureGLTest();
 
     void construct();
@@ -105,4 +105,4 @@ void AbstractTextureGLTest::label() {
 
 }}
 
-MAGNUM_GL_TEST_MAIN(Magnum::Test::AbstractTextureGLTest)
+CORRADE_TEST_MAIN(Magnum::Test::AbstractTextureGLTest)

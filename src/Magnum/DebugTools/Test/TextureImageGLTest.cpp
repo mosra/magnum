@@ -27,13 +27,13 @@
 
 #include "Magnum/CubeMapTexture.h"
 #include "Magnum/Image.h"
+#include "Magnum/OpenGLTester.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Texture.h"
 #include "Magnum/TextureFormat.h"
 #include "Magnum/DebugTools/BufferData.h"
 #include "Magnum/DebugTools/TextureImage.h"
 #include "Magnum/Math/Range.h"
-#include "Magnum/Test/AbstractOpenGLTester.h"
 
 #ifndef MAGNUM_TARGET_GLES2
 #include "Magnum/BufferImage.h"
@@ -41,7 +41,7 @@
 
 namespace Magnum { namespace DebugTools { namespace Test {
 
-struct TextureImageGLTest: Magnum::Test::AbstractOpenGLTester {
+struct TextureImageGLTest: OpenGLTester {
     explicit TextureImageGLTest();
 
     void subImage2D();
@@ -200,4 +200,4 @@ void TextureImageGLTest::subImage2DFloat() {
 
 }}}
 
-MAGNUM_GL_TEST_MAIN(Magnum::DebugTools::Test::TextureImageGLTest)
+CORRADE_TEST_MAIN(Magnum::DebugTools::Test::TextureImageGLTest)

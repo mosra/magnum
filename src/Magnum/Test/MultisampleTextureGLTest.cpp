@@ -25,15 +25,17 @@
 
 #include <Corrade/TestSuite/Compare/Container.h>
 
-#include "Magnum/MultisampleTexture.h"
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
 #include "Magnum/ImageFormat.h"
+#include "Magnum/MultisampleTexture.h"
+#include "Magnum/OpenGLTester.h"
 #include "Magnum/TextureFormat.h"
 #include "Magnum/Math/Vector3.h"
-#include "Magnum/Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Test {
 
-struct MultisampleTextureGLTest: AbstractOpenGLTester {
+struct MultisampleTextureGLTest: OpenGLTester {
     explicit MultisampleTextureGLTest();
 
     void construct2D();
@@ -422,4 +424,4 @@ void MultisampleTextureGLTest::invalidateSubImage2DArray() {
 
 }}
 
-MAGNUM_GL_TEST_MAIN(Magnum::Test::MultisampleTextureGLTest)
+CORRADE_TEST_MAIN(Magnum::Test::MultisampleTextureGLTest)

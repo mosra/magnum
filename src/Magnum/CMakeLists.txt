@@ -118,9 +118,6 @@ set(Magnum_HEADERS
 
     visibility.h)
 
-set(MagnumTest_HEADERS
-    Test/AbstractOpenGLTester.h)
-
 # Header files to display in project view of IDEs only
 set(Magnum_PRIVATE_HEADERS
     Implementation/BufferState.h
@@ -165,7 +162,6 @@ if(NOT TARGET_GLES2)
 
     list(APPEND Magnum_PRIVATE_HEADES
         Implementation/TransformFeedbackState.h)
-
 endif()
 
 # Desktop and OpenGL ES stuff that is not available in WebGL
@@ -249,7 +245,6 @@ add_library(Magnum ${SHARED_OR_STATIC}
     ${Magnum_SRCS}
     ${Magnum_HEADERS}
     ${Magnum_PRIVATE_HEADERS}
-    ${MagnumTest_HEADERS}
     $<TARGET_OBJECTS:MagnumMathObjects>)
 set_target_properties(Magnum PROPERTIES DEBUG_POSTFIX "-d")
 if(NOT BUILD_STATIC)
@@ -280,8 +275,42 @@ install(TARGETS Magnum
     LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
     ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${Magnum_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR})
-install(FILES ${MagnumTest_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Test)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configure.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR})
+
+# OpenGLTester class
+if(WITH_OPENGLTESTER)
+    find_package(Corrade REQUIRED TestSuite)
+
+    set(MagnumOpenGLTester_SRCS OpenGLTester.cpp)
+    set(MagnumOpenGLTester_HEADERS OpenGLTester.h)
+    if(BUILD_DEPRECATED)
+        set(MagnumOpenGLTester_DEPRECATED_HEADERS Test/AbstractOpenGLTester.h)
+    endif()
+
+    add_library(MagnumOpenGLTester STATIC
+        ${MagnumOpenGLTester_SRCS}
+        ${MagnumOpenGLTester_HEADERS}
+        ${MagnumOpenGLTester_DEPRECATED_HEADERS}) # TODO: remove when the header is removed
+    set_target_properties(MagnumOpenGLTester PROPERTIES DEBUG_POSTFIX "-d")
+    # Assuming that PIC is not needed because the Tester lib is always linked
+    # to the executable and not to any intermediate shared lib
+
+    # OPENGLTESTER_APPLICATION defined in the root CMakeLists, because it also
+    # enables the application library dependencies
+    target_link_libraries(MagnumOpenGLTester Magnum Corrade::TestSuite ${OPENGLTESTER_APPLICATION})
+
+    install(FILES ${MagnumOpenGLTester_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR})
+    if(BUILD_DEPRECATED)
+        install(FILES ${MagnumOpenGLTester_DEPRECATED_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Test)
+    endif()
+    install(TARGETS MagnumOpenGLTester
+        RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+        LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+        ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+
+    # Magnum OpenGLTester target alias for superprojects
+    add_library(Magnum::OpenGLTester ALIAS MagnumOpenGLTester)
+endif()
 
 add_subdirectory(Math)
 add_subdirectory(Platform)

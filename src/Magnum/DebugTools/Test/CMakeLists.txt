@@ -38,6 +38,6 @@ if(Corrade_TestSuite_FOUND)
 endif()
 
 if(BUILD_GL_TESTS)
-    corrade_add_test(DebugToolsBufferDataGLTest BufferDataGLTest.cpp LIBRARIES MagnumDebugTools ${GL_TEST_LIBRARIES})
-    corrade_add_test(DebugToolsTextureImageGLTest TextureImageGLTest.cpp LIBRARIES MagnumDebugTools ${GL_TEST_LIBRARIES})
+    corrade_add_test(DebugToolsBufferDataGLTest BufferDataGLTest.cpp LIBRARIES MagnumDebugTools MagnumOpenGLTester)
+    corrade_add_test(DebugToolsTextureImageGLTest TextureImageGLTest.cpp LIBRARIES MagnumDebugTools MagnumOpenGLTester)
 endif()

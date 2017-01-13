@@ -42,11 +42,11 @@
 #include "Magnum/Math/Matrix.h"
 #include "Magnum/Math/Vector4.h"
 #include "Magnum/Math/Color.h"
-#include "Magnum/Test/AbstractOpenGLTester.h"
+#include "Magnum/OpenGLTester.h"
 
 namespace Magnum { namespace Test {
 
-struct AbstractShaderProgramGLTest: AbstractOpenGLTester {
+struct AbstractShaderProgramGLTest: OpenGLTester {
     explicit AbstractShaderProgramGLTest();
 
     void construct();
@@ -725,4 +725,4 @@ void AbstractShaderProgramGLTest::compute() {
 
 }}
 
-MAGNUM_GL_TEST_MAIN(Magnum::Test::AbstractShaderProgramGLTest)
+CORRADE_TEST_MAIN(Magnum::Test::AbstractShaderProgramGLTest)

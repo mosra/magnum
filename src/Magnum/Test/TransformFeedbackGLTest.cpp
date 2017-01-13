@@ -25,9 +25,12 @@
 
 #include "Magnum/AbstractShaderProgram.h"
 #include "Magnum/Buffer.h"
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
 #include "Magnum/Framebuffer.h"
 #include "Magnum/Image.h"
 #include "Magnum/Mesh.h"
+#include "Magnum/OpenGLTester.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/PrimitiveQuery.h"
 #include "Magnum/SampleQuery.h"
@@ -36,11 +39,10 @@
 #include "Magnum/Shader.h"
 #include "Magnum/TransformFeedback.h"
 #include "Magnum/Math/Vector2.h"
-#include "Magnum/Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Test {
 
-struct TransformFeedbackGLTest: AbstractOpenGLTester {
+struct TransformFeedbackGLTest: OpenGLTester {
     explicit TransformFeedbackGLTest();
 
     void construct();
@@ -698,4 +700,4 @@ void TransformFeedbackGLTest::draw() {
 
 }}
 
-MAGNUM_GL_TEST_MAIN(Magnum::Test::TransformFeedbackGLTest)
+CORRADE_TEST_MAIN(Magnum::Test::TransformFeedbackGLTest)

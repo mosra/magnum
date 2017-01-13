@@ -28,11 +28,11 @@
 #include "Magnum/Context.h"
 #include "Magnum/DebugOutput.h"
 #include "Magnum/Extensions.h"
-#include "Magnum/Test/AbstractOpenGLTester.h"
+#include "Magnum/OpenGLTester.h"
 
 namespace Magnum { namespace Test {
 
-struct DebugOutputGLTest: AbstractOpenGLTester {
+struct DebugOutputGLTest: OpenGLTester {
     explicit DebugOutputGLTest();
 
     void setCallback();
@@ -175,4 +175,4 @@ void DebugOutputGLTest::groupFallback() {
 
 }}
 
-MAGNUM_GL_TEST_MAIN(Magnum::Test::DebugOutputGLTest)
+CORRADE_TEST_MAIN(Magnum::Test::DebugOutputGLTest)

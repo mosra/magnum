@@ -36,7 +36,7 @@
 #include "Magnum/Texture.h"
 #include "Magnum/TextureFormat.h"
 #include "Magnum/Math/Color.h"
-#include "Magnum/Test/AbstractOpenGLTester.h"
+#include "Magnum/OpenGLTester.h"
 
 #ifndef MAGNUM_TARGET_GLES2
 #include "Magnum/BufferImage.h"
@@ -52,7 +52,7 @@
 
 namespace Magnum { namespace Test {
 
-struct FramebufferGLTest: AbstractOpenGLTester {
+struct FramebufferGLTest: OpenGLTester {
     explicit FramebufferGLTest();
 
     void construct();
@@ -1763,4 +1763,4 @@ void FramebufferGLTest::blit() {
 
 }}
 
-MAGNUM_GL_TEST_MAIN(Magnum::Test::FramebufferGLTest)
+CORRADE_TEST_MAIN(Magnum::Test::FramebufferGLTest)

@@ -23,12 +23,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include "Magnum/OpenGLTester.h"
 #include "Magnum/Shaders/Phong.h"
-#include "Magnum/Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Shaders { namespace Test {
 
-struct PhongGLTest: Magnum::Test::AbstractOpenGLTester {
+struct PhongGLTest: OpenGLTester {
     explicit PhongGLTest();
 
     void compile();
@@ -134,4 +134,4 @@ void PhongGLTest::compileAmbientDiffuseSpecularTexture() {
 
 }}}
 
-MAGNUM_GL_TEST_MAIN(Magnum::Shaders::Test::PhongGLTest)
+CORRADE_TEST_MAIN(Magnum::Shaders::Test::PhongGLTest)

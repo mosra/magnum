@@ -28,13 +28,13 @@
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
 #include "Magnum/Shader.h"
-#include "Magnum/Test/AbstractOpenGLTester.h"
+#include "Magnum/OpenGLTester.h"
 
 #include "configure.h"
 
 namespace Magnum { namespace Test {
 
-struct ShaderGLTest: AbstractOpenGLTester {
+struct ShaderGLTest: OpenGLTester {
     explicit ShaderGLTest();
 
     void construct();
@@ -277,4 +277,4 @@ void ShaderGLTest::compileNoVersion() {
 
 }}
 
-MAGNUM_GL_TEST_MAIN(Magnum::Test::ShaderGLTest)
+CORRADE_TEST_MAIN(Magnum::Test::ShaderGLTest)

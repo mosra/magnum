@@ -28,11 +28,11 @@
 #include "Magnum/Extensions.h"
 #include "Magnum/Renderbuffer.h"
 #include "Magnum/RenderbufferFormat.h"
-#include "Magnum/Test/AbstractOpenGLTester.h"
+#include "Magnum/OpenGLTester.h"
 
 namespace Magnum { namespace Test {
 
-struct RenderbufferGLTest: AbstractOpenGLTester {
+struct RenderbufferGLTest: OpenGLTester {
     explicit RenderbufferGLTest();
 
     void construct();
@@ -199,4 +199,4 @@ void RenderbufferGLTest::setStorageMultisample() {
 
 }}
 
-MAGNUM_GL_TEST_MAIN(Magnum::Test::RenderbufferGLTest)
+CORRADE_TEST_MAIN(Magnum::Test::RenderbufferGLTest)

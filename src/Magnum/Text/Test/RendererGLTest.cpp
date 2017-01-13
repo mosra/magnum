@@ -23,13 +23,15 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Magnum/Test/AbstractOpenGLTester.h"
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
+#include "Magnum/OpenGLTester.h"
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/Renderer.h"
 
 namespace Magnum { namespace Text { namespace Test {
 
-struct RendererGLTest: Magnum::Test::AbstractOpenGLTester {
+struct RendererGLTest: OpenGLTester {
     explicit RendererGLTest();
 
     void renderData();
@@ -432,4 +434,4 @@ void RendererGLTest::multiline() {
 
 }}}
 
-MAGNUM_GL_TEST_MAIN(Magnum::Text::Test::RendererGLTest)
+CORRADE_TEST_MAIN(Magnum::Text::Test::RendererGLTest)

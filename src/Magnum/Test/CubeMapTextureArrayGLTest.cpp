@@ -27,17 +27,19 @@
 
 #include "Magnum/BufferImage.h"
 #include "Magnum/CubeMapTextureArray.h"
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
 #include "Magnum/Image.h"
 #include "Magnum/ImageFormat.h"
+#include "Magnum/OpenGLTester.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/TextureFormat.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Range.h"
-#include "Magnum/Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Test {
 
-struct CubeMapTextureArrayGLTest: AbstractOpenGLTester {
+struct CubeMapTextureArrayGLTest: OpenGLTester {
     explicit CubeMapTextureArrayGLTest();
 
     void construct();
@@ -1046,4 +1048,4 @@ void CubeMapTextureArrayGLTest::invalidateSubImage() {
 
 }}
 
-MAGNUM_GL_TEST_MAIN(Magnum::Test::CubeMapTextureArrayGLTest)
+CORRADE_TEST_MAIN(Magnum::Test::CubeMapTextureArrayGLTest)

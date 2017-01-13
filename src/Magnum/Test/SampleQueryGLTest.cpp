@@ -28,17 +28,19 @@
 
 #include "Magnum/AbstractShaderProgram.h"
 #include "Magnum/Buffer.h"
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
 #include "Magnum/Framebuffer.h"
 #include "Magnum/Mesh.h"
+#include "Magnum/OpenGLTester.h"
 #include "Magnum/Renderbuffer.h"
 #include "Magnum/RenderbufferFormat.h"
 #include "Magnum/SampleQuery.h"
 #include "Magnum/Shader.h"
-#include "Magnum/Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Test {
 
-struct SampleQueryGLTest: AbstractOpenGLTester {
+struct SampleQueryGLTest: OpenGLTester {
     explicit SampleQueryGLTest();
 
     void constructNoCreate();
@@ -278,4 +280,4 @@ void SampleQueryGLTest::conditionalRender() {
 
 }}
 
-MAGNUM_GL_TEST_MAIN(Magnum::Test::SampleQueryGLTest)
+CORRADE_TEST_MAIN(Magnum::Test::SampleQueryGLTest)

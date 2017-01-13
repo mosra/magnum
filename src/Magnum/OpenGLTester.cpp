@@ -23,49 +23,34 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Corrade/TestSuite/Compare/Container.h>
+#include "OpenGLTester.h"
 
-#include "Magnum/OpenGLTester.h"
-#include "Magnum/DebugTools/BufferData.h"
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
+#include "Magnum/DebugOutput.h"
 
-namespace Magnum { namespace DebugTools { namespace Test {
+namespace Magnum {
 
-struct BufferDataGLTest: Magnum::OpenGLTester {
-    explicit BufferDataGLTest();
+OpenGLTester::OpenGLTester(): TestSuite::Tester{TestSuite::Tester::TesterConfiguration{}.setSkippedArgumentPrefixes({"magnum"})}, _windowlessApplication{{arguments().first, arguments().second}} {
+    /* Try to create debug context, fallback to normal one if not possible. No
+       such thing on OSX or iOS. */
+    #ifndef CORRADE_TARGET_APPLE
+    if(!_windowlessApplication.tryCreateContext(Platform::WindowlessApplication::Configuration{}.setFlags(Platform::WindowlessApplication::Configuration::Flag::Debug)))
+        _windowlessApplication.createContext();
+    #else
+    _windowlessApplication.createContext();
+    #endif
 
-    void data();
-    void subData();
-};
+    if(Context::current().isExtensionSupported<Extensions::GL::KHR::debug>()) {
+        Renderer::enable(Renderer::Feature::DebugOutput);
+        Renderer::enable(Renderer::Feature::DebugOutputSynchronous);
+        DebugOutput::setDefaultCallback();
 
-BufferDataGLTest::BufferDataGLTest() {
-    addTests({&BufferDataGLTest::data,
-              &BufferDataGLTest::subData});
+        /* Disable "Buffer detailed info" message on NV (too spammy) */
+        DebugOutput::setEnabled(DebugOutput::Source::Api, DebugOutput::Type::Other, {131185}, false);
+    }
 }
 
-namespace {
-    constexpr Int Data[] = {2, 7, 5, 13, 25};
+OpenGLTester::~OpenGLTester() = default;
+
 }
-
-void BufferDataGLTest::data() {
-    Buffer buffer;
-    buffer.setData(Data, BufferUsage::StaticDraw);
-    const Containers::Array<Int> contents = bufferData<Int>(buffer);
-    MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE_AS(contents,
-        Containers::ArrayView<const Int>{Data},
-        TestSuite::Compare::Container);
-}
-
-void BufferDataGLTest::subData() {
-    Buffer buffer;
-    buffer.setData(Data, BufferUsage::StaticDraw);
-    const Containers::Array<Int> contents = bufferSubData<Int>(buffer, 4, 3);
-    MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE_AS(contents,
-        Containers::ArrayView<const Int>{Data}.slice(1, 4),
-        TestSuite::Compare::Container);
-}
-
-}}}
-
-CORRADE_TEST_MAIN(Magnum::DebugTools::Test::BufferDataGLTest)

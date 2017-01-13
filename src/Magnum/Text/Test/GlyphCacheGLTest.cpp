@@ -25,12 +25,12 @@
 
 #include <tuple>
 
-#include "Magnum/Test/AbstractOpenGLTester.h"
+#include "Magnum/OpenGLTester.h"
 #include "Magnum/Text/GlyphCache.h"
 
 namespace Magnum { namespace Text { namespace Test {
 
-struct GlyphCacheGLTest: Magnum::Test::AbstractOpenGLTester {
+struct GlyphCacheGLTest: OpenGLTester {
     explicit GlyphCacheGLTest();
 
     void initialize();
@@ -93,4 +93,4 @@ void GlyphCacheGLTest::reserve() {
 
 }}}
 
-MAGNUM_GL_TEST_MAIN(Magnum::Text::Test::GlyphCacheGLTest)
+CORRADE_TEST_MAIN(Magnum::Text::Test::GlyphCacheGLTest)

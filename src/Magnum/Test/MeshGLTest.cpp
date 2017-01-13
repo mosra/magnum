@@ -25,10 +25,13 @@
 
 #include "Magnum/AbstractShaderProgram.h"
 #include "Magnum/Buffer.h"
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
 #include "Magnum/Framebuffer.h"
 #include "Magnum/Image.h"
 #include "Magnum/Mesh.h"
 #include "Magnum/MeshView.h"
+#include "Magnum/OpenGLTester.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Renderbuffer.h"
 #include "Magnum/RenderbufferFormat.h"
@@ -36,13 +39,12 @@
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Matrix.h"
 #include "Magnum/Math/Vector4.h"
-#include "Magnum/Test/AbstractOpenGLTester.h"
 
 namespace Magnum { namespace Test {
 
 /* Tests also MeshView class. */
 
-struct MeshGLTest: AbstractOpenGLTester {
+struct MeshGLTest: OpenGLTester {
     explicit MeshGLTest();
 
     void construct();
@@ -1956,4 +1958,4 @@ void MeshGLTest::multiDrawBaseVertex() {
 
 }}
 
-MAGNUM_GL_TEST_MAIN(Magnum::Test::MeshGLTest)
+CORRADE_TEST_MAIN(Magnum::Test::MeshGLTest)

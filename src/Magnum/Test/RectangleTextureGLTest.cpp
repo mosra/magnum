@@ -26,20 +26,22 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 
-#include "Magnum/configure.h"
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
 #include "Magnum/BufferImage.h"
 #include "Magnum/Image.h"
 #include "Magnum/ImageFormat.h"
+#include "Magnum/OpenGLTester.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/RectangleTexture.h"
 #include "Magnum/TextureFormat.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Range.h"
-#include "Magnum/Test/AbstractOpenGLTester.h"
+#include "Magnum/OpenGLTester.h"
 
 namespace Magnum { namespace Test {
 
-struct RectangleTextureGLTest: AbstractOpenGLTester {
+struct RectangleTextureGLTest: OpenGLTester {
     explicit RectangleTextureGLTest();
 
     void construct();
@@ -485,4 +487,4 @@ void RectangleTextureGLTest::invalidateSubImage() {
 
 }}
 
-MAGNUM_GL_TEST_MAIN(Magnum::Test::RectangleTextureGLTest)
+CORRADE_TEST_MAIN(Magnum::Test::RectangleTextureGLTest)

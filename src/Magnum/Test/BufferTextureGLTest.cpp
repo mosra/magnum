@@ -28,12 +28,14 @@
 #include "Magnum/Buffer.h"
 #include "Magnum/BufferTexture.h"
 #include "Magnum/BufferTextureFormat.h"
+#include "Magnum/Context.h"
+#include "Magnum/Extensions.h"
 #include "Magnum/ImageFormat.h"
-#include "Magnum/Test/AbstractOpenGLTester.h"
+#include "Magnum/OpenGLTester.h"
 
 namespace Magnum { namespace Test {
 
-struct BufferTextureGLTest: AbstractOpenGLTester {
+struct BufferTextureGLTest: OpenGLTester {
     explicit BufferTextureGLTest();
 
     void construct();
@@ -228,4 +230,4 @@ void BufferTextureGLTest::setBufferOffset() {
 
 }}
 
-MAGNUM_GL_TEST_MAIN(Magnum::Test::BufferTextureGLTest)
+CORRADE_TEST_MAIN(Magnum::Test::BufferTextureGLTest)

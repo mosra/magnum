@@ -31,9 +31,9 @@
 
 Contains classes for interacting with OpenGL.
 
-This library is built as part of Magnum by default. To use it, you need to
-find `Magnum` package and link to `Magnum::Magnum` target. See @ref building
-and @ref cmake for more information.
+All of this library except @ref OpenGLTester is built as part of Magnum by
+default. To use it, you need to find `Magnum` package and link to `Magnum::Magnum`
+target. See @ref building and @ref cmake for more information.
 */
 
 /** @dir Magnum/Platform
