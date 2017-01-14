@@ -53,4 +53,18 @@ OpenGLTester::OpenGLTester(): TestSuite::Tester{TestSuite::Tester::TesterConfigu
 
 OpenGLTester::~OpenGLTester() = default;
 
+void OpenGLTester::gpuTimeBenchmarkBegin() {
+    setBenchmarkName("GPU time");
+
+    /* Initialize, if not already */
+    if(!_gpuTimeQuery.id()) _gpuTimeQuery = TimeQuery{TimeQuery::Target::TimeElapsed};
+
+    _gpuTimeQuery.begin();
+}
+
+std::uint64_t OpenGLTester::gpuTimeBenchmarkEnd() {
+    _gpuTimeQuery.end();
+    return _gpuTimeQuery.result<UnsignedLong>();
+}
+
 }
