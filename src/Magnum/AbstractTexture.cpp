@@ -120,7 +120,9 @@ void AbstractTexture::unbind(const Int textureUnit) {
 
     /* Unbind the texture, reset state tracker */
     Context::current().state().texture->unbindImplementation(textureUnit);
-    textureState.bindings[textureUnit] = {};
+    /* libstdc++ since GCC 6.3 can't handle just = {} (ambiguous overload of
+       operator=) */
+    textureState.bindings[textureUnit] = std::pair<GLenum, GLuint>{};
 }
 
 void AbstractTexture::unbindImplementationDefault(const GLint textureUnit) {
@@ -237,7 +239,9 @@ AbstractTexture::~AbstractTexture() {
     /* Remove all bindings */
     for(auto& binding: Context::current().state().texture->bindings) {
         /* MSVC 2015 needs the parentheses around */
-        if(binding.second == _id) binding = {};
+        /* libstdc++ since GCC 6.3 can't handle just = {} (ambiguous overload
+           of operator=) */
+        if(binding.second == _id) binding = std::pair<GLenum, GLuint>{};
     }
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
