@@ -120,7 +120,7 @@ void AbstractTexture::unbind(const Int textureUnit) {
 
     /* Unbind the texture, reset state tracker */
     Context::current().state().texture->unbindImplementation(textureUnit);
-    textureState.bindings[textureUnit] = {};
+    textureState.bindings[textureUnit] = {0, 0};
 }
 
 void AbstractTexture::unbindImplementationDefault(const GLint textureUnit) {
@@ -237,7 +237,7 @@ AbstractTexture::~AbstractTexture() {
     /* Remove all bindings */
     for(auto& binding: Context::current().state().texture->bindings) {
         /* MSVC 2015 needs the parentheses around */
-        if(binding.second == _id) binding = {};
+        if(binding.second == _id) binding = {0, 0};
     }
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
