@@ -74,7 +74,13 @@ template<class T> struct Constants {
      */
     static constexpr T tau();
 
-    static constexpr T e();     /**< @brief Euler's number */
+    /**
+     * @brief Euler's number
+     *
+     * @see @ref log(), @ref exp()
+     */
+    static constexpr T e();
+
     static constexpr T sqrt2(); /**< @brief Square root of 2 */
     static constexpr T sqrt3(); /**< @brief Square root of 3 */
 
