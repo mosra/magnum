@@ -29,7 +29,12 @@ notifications:
 install:
 - cinst ninja
 - set PATH=C:/tools/ninja;%PATH%
-- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" cinst mingw /f >nul
+# `cinst mingw` fails with 404 since Dec 2016, `appveyor Downloadfile` fails
+# with "Message string length exceeds 32k characters" so I have to call a
+# fucking powershell command in order to download a file. Oh and %20 in the URL
+# somehow gives a 404 ALSO so I have to explicitly use spaces. WHAT THE FUCK!
+- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\x86_64-6.3.0-release-posix-seh-rt_v5-rev1.7z powershell -Command "(new-object System.Net.WebClient).Downloadfile('https://sourceforge.net/projects/mingw-w64/files/Toolchains targetting Win64/Personal Builds/mingw-builds/6.3.0/threads-posix/seh/x86_64-6.3.0-release-posix-seh-rt_v5-rev1.7z', 'x86_64-6.3.0-release-posix-seh-rt_v5-rev1.7z')"
+- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" cd C:\tools && 7z x %APPVEYOR_BUILD_FOLDER%\x86_64-6.3.0-release-posix-seh-rt_v5-rev1.7z && cd %APPVEYOR_BUILD_FOLDER%
 
 # OpenAL
 - IF NOT "%TARGET%" == "rt" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\openal-soft-1.17.2-bin.zip appveyor DownloadFile http://kcat.strangesoft.net/openal-binaries/openal-soft-1.17.2-bin.zip
@@ -53,3 +58,4 @@ cache:
 - SDL2-devel-2.0.4-VC.zip
 - SDL2-devel-2.0.4-mingw.zip
 - openal-soft-1.17.2-bin.zip
+- x86_64-6.3.0-release-posix-seh-rt_v5-rev1.7z
