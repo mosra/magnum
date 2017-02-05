@@ -180,7 +180,7 @@ template<UnsignedInt dimensions, class T> class Camera: public AbstractFeature<d
          * @deprecated Use @ref setProjectionMatrix() with
          *      @ref Matrix4::perspectiveProjection() instead.
          */
-        template<UnsignedInt d = dimensions, class = typename std::enable_if<d == 3>::type> CORRADE_DEPRECATED("use setProjectionMatrix() with Matrix4::orthographicProjection() instead") BasicCamera3D<T>& setPerspective(const Math::Vector2<T>& size, T near, T far) {
+        template<UnsignedInt d = dimensions, class = typename std::enable_if<d == 3>::type> CORRADE_DEPRECATED("use setProjectionMatrix() with Matrix4::perspectiveProjection() instead") BasicCamera3D<T>& setPerspective(const Math::Vector2<T>& size, T near, T far) {
             return setProjectionMatrix(Math::Matrix4<T>::perspectiveProjection(size, near, far));
         }
 
@@ -189,7 +189,7 @@ template<UnsignedInt dimensions, class T> class Camera: public AbstractFeature<d
          * @deprecated Use @ref setProjectionMatrix() with
          *      @ref Matrix4::perspectiveProjection() instead.
          */
-        template<UnsignedInt d = dimensions, class = typename std::enable_if<d == 3>::type> CORRADE_DEPRECATED("use setProjectionMatrix() with Matrix4::orthographicProjection() instead") BasicCamera3D<T>& setPerspective(Math::Rad<T> fov, T aspectRatio, T near, T far) {
+        template<UnsignedInt d = dimensions, class = typename std::enable_if<d == 3>::type> CORRADE_DEPRECATED("use setProjectionMatrix() with Matrix4::perspectiveProjection() instead") BasicCamera3D<T>& setPerspective(Math::Rad<T> fov, T aspectRatio, T near, T far) {
             return setProjectionMatrix(Math::Matrix4<T>::perspectiveProjection(fov, aspectRatio, near, far));
         }
         #endif
