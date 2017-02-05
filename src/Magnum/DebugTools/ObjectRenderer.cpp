@@ -173,7 +173,7 @@ template<UnsignedInt dimensions> ObjectRenderer<dimensions>::ObjectRenderer(Scen
             typename Shaders::VertexColor<dimensions>::Position(),
             typename Shaders::VertexColor<dimensions>::Color())
         .setIndexBuffer(*indexBuffer, 0, Mesh::IndexType::UnsignedByte, 0, Renderer<dimensions>::positions.size());
-    ResourceManager::instance().set<Mesh>(_mesh.key(), _mesh, ResourceDataState::Final, ResourcePolicy::Manual);
+    ResourceManager::instance().set<Mesh>(_mesh.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
 }
 
 /* To avoid deleting pointers to incomplete type on destruction of Resource members */
