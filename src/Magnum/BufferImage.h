@@ -152,7 +152,11 @@ template<UnsignedInt dimensions> class BufferImage {
         /** @brief Currently allocated data size */
         std::size_t dataSize() const { return _dataSize; }
 
-        /** @brief Image buffer */
+        /**
+         * @brief Image buffer
+         *
+         * @see @ref release()
+         */
         Buffer& buffer() { return _buffer; }
 
         /**
@@ -201,6 +205,15 @@ template<UnsignedInt dimensions> class BufferImage {
         }
         #endif
         #endif
+
+        /**
+         * @brief Release the image buffer
+         *
+         * Releases the ownership of the image buffer and resets internal state
+         * to default.
+         * @see @ref buffer()
+         */
+        Buffer release();
 
     private:
         PixelStorage _storage;
@@ -338,7 +351,11 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
         }
         #endif
 
-        /** @brief Image buffer */
+        /**
+         * @brief Image buffer
+         *
+         * @see @ref release()
+         */
         Buffer& buffer() { return _buffer; }
 
         /** @brief Raw data size */
@@ -376,6 +393,15 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
          * parameters (or the hardcoded ones in OpenGL ES and WebGL).
          */
         void setData(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage);
+
+        /**
+         * @brief Release the image buffer
+         *
+         * Releases the ownership of the image buffer and resets internal state
+         * to default.
+         * @see @ref buffer()
+         */
+        Buffer release();
 
     private:
         #ifndef MAGNUM_TARGET_GLES

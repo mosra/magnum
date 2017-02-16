@@ -43,6 +43,9 @@ struct BufferImageGLTest: OpenGLTester {
 
     void setData();
     void setDataCompressed();
+
+    void release();
+    void releaseCompressed();
 };
 
 BufferImageGLTest::BufferImageGLTest() {
@@ -54,7 +57,10 @@ BufferImageGLTest::BufferImageGLTest() {
               &BufferImageGLTest::constructMoveCompressed,
 
               &BufferImageGLTest::setData,
-              &BufferImageGLTest::setDataCompressed});
+              &BufferImageGLTest::setDataCompressed,
+
+              &BufferImageGLTest::release,
+              &BufferImageGLTest::releaseCompressed});
 }
 
 void BufferImageGLTest::construct() {
@@ -259,6 +265,26 @@ void BufferImageGLTest::setDataCompressed() {
     CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const char>{data2},
                        TestSuite::Compare::Container);
     #endif
+}
+
+void BufferImageGLTest::release() {
+    BufferImage2D a{PixelFormat::RGBA, PixelType::UnsignedByte};
+    const UnsignedInt id = a.buffer().id();
+
+    CORRADE_VERIFY(a.buffer().id());
+    Buffer b = a.release();
+    CORRADE_VERIFY(!a.buffer().id());
+    CORRADE_COMPARE(b.id(), id);
+}
+
+void BufferImageGLTest::releaseCompressed() {
+    CompressedBufferImage2D a;
+    const UnsignedInt id = a.buffer().id();
+
+    CORRADE_VERIFY(a.buffer().id());
+    Buffer b = a.release();
+    CORRADE_VERIFY(!a.buffer().id());
+    CORRADE_COMPARE(b.id(), id);
 }
 
 }}

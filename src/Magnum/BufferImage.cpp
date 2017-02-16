@@ -89,6 +89,18 @@ template<UnsignedInt dimensions> void CompressedBufferImage<dimensions>::setData
     _dataSize = data.size();
 }
 
+template<UnsignedInt dimensions> Buffer BufferImage<dimensions>::release() {
+    _size = {};
+    _dataSize = {};
+    return std::move(_buffer);
+}
+
+template<UnsignedInt dimensions> Buffer CompressedBufferImage<dimensions>::release() {
+    _size = {};
+    _dataSize = {};
+    return std::move(_buffer);
+}
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template class MAGNUM_EXPORT BufferImage<1>;
 template class MAGNUM_EXPORT BufferImage<2>;
