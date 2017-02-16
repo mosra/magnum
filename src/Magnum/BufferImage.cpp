@@ -25,6 +25,8 @@
 
 #include "BufferImage.h"
 
+#include "Magnum/PixelFormat.h"
+
 namespace Magnum {
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -38,6 +40,8 @@ template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const Pixe
 }
 
 template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const PixelFormat format, const PixelType type): _storage{storage}, _format{format}, _type{type}, _buffer{Buffer::TargetHint::PixelPack}, _dataSize{0} {}
+
+template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(NoCreateT) noexcept: _format{PixelFormat::RGBA}, _type{PixelType::UnsignedByte}, _buffer{NoCreate}, _dataSize{} {}
 
 template<UnsignedInt dimensions> void BufferImage<dimensions>::setData(const PixelStorage storage, const PixelFormat format, const PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> const data, const BufferUsage usage) {
     _storage = storage;
@@ -87,6 +91,8 @@ template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBu
     _storage{storage},
     #endif
     _format{}, _buffer{Buffer::TargetHint::PixelPack}, _dataSize{} {}
+
+template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(NoCreateT) noexcept: _format{}, _buffer{NoCreate}, _dataSize{} {}
 
 template<UnsignedInt dimensions> void CompressedBufferImage<dimensions>::setData(
     #ifndef MAGNUM_TARGET_GLES

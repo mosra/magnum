@@ -36,6 +36,8 @@ struct BufferImageGLTest: OpenGLTester {
 
     void construct();
     void constructCompressed();
+    void constructNoCreate();
+    void constructNoCreateCompressed();
     void constructBuffer();
     void constructBufferCompressed();
     void constructCopy();
@@ -53,6 +55,8 @@ struct BufferImageGLTest: OpenGLTester {
 BufferImageGLTest::BufferImageGLTest() {
     addTests({&BufferImageGLTest::construct,
               &BufferImageGLTest::constructCompressed,
+              &BufferImageGLTest::constructNoCreate,
+              &BufferImageGLTest::constructNoCreateCompressed,
               &BufferImageGLTest::constructBuffer,
               &BufferImageGLTest::constructBufferCompressed,
               &BufferImageGLTest::constructCopy,
@@ -117,6 +121,28 @@ void BufferImageGLTest::constructCompressed() {
     CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const char>{data},
                        TestSuite::Compare::Container);
     #endif
+}
+
+void BufferImageGLTest::constructNoCreate() {
+    {
+        BufferImage2D image{NoCreate};
+
+        MAGNUM_VERIFY_NO_ERROR();
+        CORRADE_COMPARE(image.buffer().id(), 0);
+    }
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void BufferImageGLTest::constructNoCreateCompressed() {
+    {
+        CompressedBufferImage2D image{NoCreate};
+
+        MAGNUM_VERIFY_NO_ERROR();
+        CORRADE_COMPARE(image.buffer().id(), 0);
+    }
+
+    MAGNUM_VERIFY_NO_ERROR();
 }
 
 void BufferImageGLTest::constructBuffer() {

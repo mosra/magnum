@@ -128,6 +128,17 @@ template<UnsignedInt dimensions> class BufferImage {
          */
         /*implicit*/ BufferImage(PixelFormat format, PixelType type): BufferImage{{}, format, type} {}
 
+        /**
+         * @brief Construct without creating the underlying OpenGL object
+         *
+         * The constructed instance is equivalent to moved-from state with
+         * @ref PixelFormat::RGBA and @ref PixelType::UnsignedByte. Useful in
+         * cases where you will overwrite the instance later anyway. Move
+         * another object over it to make it useful.
+         * @see @ref BufferImage(), @ref wrap()
+         */
+        explicit BufferImage(NoCreateT) noexcept;
+
         /** @brief Copying is not allowed */
         BufferImage(const BufferImage<dimensions>&) = delete;
 
@@ -347,6 +358,16 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
          * parameters (or the hardcoded ones in OpenGL ES and WebGL).
          */
         /*implicit*/ CompressedBufferImage();
+
+        /**
+         * @brief Construct without creating the underlying OpenGL object
+         *
+         * The constructed instance is equivalent to moved-from state. Useful
+         * in cases where you will overwrite the instance later anyway. Move
+         * another object over it to make it useful.
+         * @see @ref BufferImage(), @ref wrap()
+         */
+        explicit CompressedBufferImage(NoCreateT) noexcept;
 
         /** @brief Copying is not allowed */
         CompressedBufferImage(const CompressedBufferImage<dimensions>&) = delete;
