@@ -62,7 +62,7 @@ template<class T> struct Constants {
     /**
      * @brief Tau
      *
-     * Or two pi.
+     * Or two pi. See the [Tau manifesto](https://www.tauday.com/tau-manifesto).
      * @see @ref pi(), @ref piHalf(), @ref Deg, @ref Rad
      */
     static constexpr T tau();
