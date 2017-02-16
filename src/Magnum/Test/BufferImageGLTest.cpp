@@ -36,6 +36,8 @@ struct BufferImageGLTest: OpenGLTester {
 
     void construct();
     void constructCompressed();
+    void constructBuffer();
+    void constructBufferCompressed();
     void constructCopy();
     void constructCopyCompressed();
     void constructMove();
@@ -51,6 +53,8 @@ struct BufferImageGLTest: OpenGLTester {
 BufferImageGLTest::BufferImageGLTest() {
     addTests({&BufferImageGLTest::construct,
               &BufferImageGLTest::constructCompressed,
+              &BufferImageGLTest::constructBuffer,
+              &BufferImageGLTest::constructBufferCompressed,
               &BufferImageGLTest::constructCopy,
               &BufferImageGLTest::constructCopyCompressed,
               &BufferImageGLTest::constructMove,
@@ -104,6 +108,70 @@ void BufferImageGLTest::constructCompressed() {
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{4});
     #endif
+    CORRADE_COMPARE(a.format(), CompressedPixelFormat::RGBAS3tcDxt1);
+    CORRADE_COMPARE(a.size(), Vector2i(4, 4));
+    CORRADE_COMPARE(a.dataSize(), 8);
+
+    /** @todo How to verify the contents in ES? */
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const char>{data},
+                       TestSuite::Compare::Container);
+    #endif
+}
+
+void BufferImageGLTest::constructBuffer() {
+    const char data[] = { 'a', 'b', 'c' };
+    Buffer buffer;
+    buffer.setData(data, BufferUsage::StaticDraw);
+    const UnsignedInt id = buffer.id();
+
+    BufferImage2D a{PixelStorage{}.setAlignment(1),
+        PixelFormat::Red, PixelType::UnsignedByte, {1, 3}, std::move(buffer), sizeof(data)};
+
+    #ifndef MAGNUM_TARGET_GLES
+    const auto imageData = a.buffer().data();
+    #endif
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    CORRADE_VERIFY(!buffer.id());
+    CORRADE_COMPARE(a.buffer().id(), id);
+    CORRADE_COMPARE(a.storage().alignment(), 1);
+    CORRADE_COMPARE(a.format(), PixelFormat::Red);
+    CORRADE_COMPARE(a.type(), PixelType::UnsignedByte);
+    CORRADE_COMPARE(a.size(), Vector2i(1, 3));
+
+    /** @todo How to verify the contents in ES? */
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const char>{data},
+                       TestSuite::Compare::Container);
+    #endif
+}
+
+void BufferImageGLTest::constructBufferCompressed() {
+    const char data[] = { 'a', 0, 0, 0, 'b', 0, 0, 0 };
+    Buffer buffer;
+    buffer.setData(data, BufferUsage::StaticDraw);
+    const UnsignedInt id = buffer.id();
+
+    CompressedBufferImage2D a{
+        #ifndef MAGNUM_TARGET_GLES
+        CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
+        #endif
+        CompressedPixelFormat::RGBAS3tcDxt1,
+        {4, 4}, std::move(buffer), sizeof(data)};
+
+    #ifndef MAGNUM_TARGET_GLES
+    const auto imageData = a.buffer().data();
+    #endif
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    #ifndef MAGNUM_TARGET_GLES
+    CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{4});
+    #endif
+    CORRADE_VERIFY(!buffer.id());
+    CORRADE_COMPARE(a.buffer().id(), id);
     CORRADE_COMPARE(a.format(), CompressedPixelFormat::RGBAS3tcDxt1);
     CORRADE_COMPARE(a.size(), Vector2i(4, 4));
     CORRADE_COMPARE(a.dataSize(), 8);

@@ -74,6 +74,25 @@ template<UnsignedInt dimensions> class BufferImage {
          */
         explicit BufferImage(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage): BufferImage{{}, format, type, size, data, usage} {}
 
+        /**
+         * @brief Construct from existing buffer
+         * @param storage           Storage of pixel data
+         * @param format            Format of pixel data
+         * @param type              Data type of pixel data
+         * @param size              Image size
+         * @param buffer            Buffer
+         * @param dataSize          Buffer data size
+         *
+         * If @p dataSize is 0, the buffer is unconditionally reallocated on
+         * the first call to @ref setData().
+         */
+        explicit BufferImage(PixelStorage storage, PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, std::size_t dataSize) noexcept;
+
+        /** @overload
+         * Similar to the above, but uses default @ref PixelStorage parameters.
+         */
+        explicit BufferImage(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, std::size_t dataSize) noexcept: BufferImage{{}, format, type, size, std::move(buffer), dataSize} {}
+
         #ifdef MAGNUM_BUILD_DEPRECATED
         /** @copybrief BufferImage(PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<const void>, BufferUsage)
          * @deprecated Use @ref BufferImage(PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<const void>, BufferUsage)
@@ -286,6 +305,28 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
         /**
          * @brief Constructor
          * @param storage           Storage of compressed pixel data
+         * @param format            Format of compressed pixel data
+         * @param size              Image size
+         * @param data              Image data
+         * @param usage             Image buffer usage
+         *
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl Compressed pixel storage is hardcoded in OpenGL ES and
+         *      WebGL.
+         */
+        explicit CompressedBufferImage(CompressedPixelStorage storage, CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, std::size_t dataSize) noexcept;
+        #endif
+
+        /** @overload
+         * Similar the above, but uses default @ref CompressedPixelStorage
+         * parameters (or the hardcoded ones in OpenGL ES and WebGL).
+         */
+        explicit CompressedBufferImage(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, std::size_t dataSize) noexcept;
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Constructor
+         * @param storage           Storage of compressed pixel data
          *
          * Format is undefined, size is zero and buffer is empty, call
          * @ref setData() to fill the image with data or use
@@ -459,6 +500,8 @@ template<UnsignedInt dimensions> inline CompressedBufferImage<dimensions>& Compr
 
 #ifndef MAGNUM_TARGET_GLES
 template<UnsignedInt dimensions> inline CompressedBufferImage<dimensions>::CompressedBufferImage(const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<const void> data, const BufferUsage usage): CompressedBufferImage{{}, format, size, data, usage} {}
+
+template<UnsignedInt dimensions> inline CompressedBufferImage<dimensions>::CompressedBufferImage(const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, const std::size_t dataSize) noexcept: CompressedBufferImage{{}, format, size, std::move(buffer), dataSize} {}
 
 template<UnsignedInt dimensions> inline CompressedBufferImage<dimensions>::CompressedBufferImage(): CompressedBufferImage{CompressedPixelStorage{}} {}
 
