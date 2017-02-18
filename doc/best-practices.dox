@@ -24,18 +24,23 @@
 */
 
 namespace Magnum {
-/** @page best-practices Best practices and platform-specific information
+/** @page best-practices Best practices, pitfalls and platform-specific information
 
 @brief Performance advices and solutions for platform-specific issues
 
 @tableofcontents
 
-Here is collection of carefully selected links to official guidelines and
-other articles with valuable information to help developers create better
+Here is collection of carefully selected notes, links to official guidelines
+and other articles with valuable information to help developers create better
 applications. Feel free to add one, if it contains new unique information.
 
 @section best-practices-gles GLES-specific
 
+-   Rendering to RGB textures doesn't work on many platforms, either due to
+    alignment issues or other factors. For example it is not possible to render
+    to @ref TextureFormat::RGB8 on iOS (but it works elsewhere); rendering to
+    @ref TextureFormat::RGB32F is not possible even on NVidia. Use RGBA formats
+    instead.
 -   [Writing Portable OpenGL ES 2.0](https://www.khronos.org/assets/uploads/developers/library/2011-siggraph-mobile/Writing-Portable-OpenGL-ES-2.0_Aug-11.pdf)
 
 @section best-practices-platform Platform-specific
@@ -45,11 +50,23 @@ information.
 
 @subsection best-practices-mac macOS
 
+-   @ref AbstractShaderProgram::validate() expects that the shader has a
+    properly configured framebuffer bound along with proper @ref Renderer
+    setup. That is often hard to achieve, so the function cannot be portably
+    used for shader validity testing.
+-   `GL_TIMESTAMP` used by @ref TimeQuery::timestamp() is not implemented on
+    macOS and gives zero results.
 -   [Best Practices for Working with Vertex Data](https://developer.apple.com/library/mac/#documentation/graphicsimaging/Conceptual/OpenGL-MacProgGuide/opengl_vertexdata/opengl_vertexdata.html)
 -   [Best Practices for Working with Texture Data](https://developer.apple.com/library/mac/#documentation/graphicsimaging/Conceptual/OpenGL-MacProgGuide/opengl_texturedata/opengl_texturedata.html)
 
 @subsection best-practices-ios iOS
 
+-   GLSL `texelFetch()` returns zero results if you have a texture with integer
+    type and the filtering is not @ref Sampler::Filter::Nearest. Yes, it
+    shouldn't matter, but it does.
+-   OpenGL ES 3.0 contexts don't support rendering to 32-bit float textures.
+    However, it is possible to work around that issue by creating 32-bit
+    unsigned integer texture
 -   [Best Practices for Working with Vertex Data](http://developer.apple.com/library/ios/#documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/TechniquesforWorkingwithVertexData/TechniquesforWorkingwithVertexData.html)
 -   [Best Practices for Working with Texture Data](http://developer.apple.com/library/ios/#documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/TechniquesForWorkingWithTextureData/TechniquesForWorkingWithTextureData.html)
 -   [Best Practices for Shaders](http://developer.apple.com/library/ios/#documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/BestPracticesforShaders/BestPracticesforShaders.html#//apple_ref/doc/uid/TP40008793-CH7-SW3)
