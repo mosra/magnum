@@ -34,29 +34,29 @@ Here is collection of carefully selected links to official guidelines and
 other articles with valuable information to help developers create better
 applications. Feel free to add one, if it contains new unique information.
 
-@section best-practices-general General best practices
+@section best-practices-gles GLES-specific
 
-- [Writing Portable OpenGL ES 2.0](https://www.khronos.org/assets/uploads/developers/library/2011-siggraph-mobile/Writing-Portable-OpenGL-ES-2.0_Aug-11.pdf)
+-   [Writing Portable OpenGL ES 2.0](https://www.khronos.org/assets/uploads/developers/library/2011-siggraph-mobile/Writing-Portable-OpenGL-ES-2.0_Aug-11.pdf)
 
 @section best-practices-platform Platform-specific
 
 Some platforms need special care, see their respective sections for more
 information.
 
-@subsection best-practices-mac Mac OS
+@subsection best-practices-mac macOS
 
-- [Best Practices for Working with Vertex Data](https://developer.apple.com/library/mac/#documentation/graphicsimaging/Conceptual/OpenGL-MacProgGuide/opengl_vertexdata/opengl_vertexdata.html)
-- [Best Practices for Working with Texture Data](https://developer.apple.com/library/mac/#documentation/graphicsimaging/Conceptual/OpenGL-MacProgGuide/opengl_texturedata/opengl_texturedata.html)
+-   [Best Practices for Working with Vertex Data](https://developer.apple.com/library/mac/#documentation/graphicsimaging/Conceptual/OpenGL-MacProgGuide/opengl_vertexdata/opengl_vertexdata.html)
+-   [Best Practices for Working with Texture Data](https://developer.apple.com/library/mac/#documentation/graphicsimaging/Conceptual/OpenGL-MacProgGuide/opengl_texturedata/opengl_texturedata.html)
 
 @subsection best-practices-ios iOS
 
-- [Best Practices for Working with Vertex Data](http://developer.apple.com/library/ios/#documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/TechniquesforWorkingwithVertexData/TechniquesforWorkingwithVertexData.html)
-- [Best Practices for Working with Texture Data](http://developer.apple.com/library/ios/#documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/TechniquesForWorkingWithTextureData/TechniquesForWorkingWithTextureData.html)
-- [Best Practices for Shaders](http://developer.apple.com/library/ios/#documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/BestPracticesforShaders/BestPracticesforShaders.html#//apple_ref/doc/uid/TP40008793-CH7-SW3)
+-   [Best Practices for Working with Vertex Data](http://developer.apple.com/library/ios/#documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/TechniquesforWorkingwithVertexData/TechniquesforWorkingwithVertexData.html)
+-   [Best Practices for Working with Texture Data](http://developer.apple.com/library/ios/#documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/TechniquesForWorkingWithTextureData/TechniquesForWorkingWithTextureData.html)
+-   [Best Practices for Shaders](http://developer.apple.com/library/ios/#documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/BestPracticesforShaders/BestPracticesforShaders.html#//apple_ref/doc/uid/TP40008793-CH7-SW3)
 
 @subsection best-practices-angle ANGLE (WebGL, NaCl)
 
-- [WebGL Insights -- ANGLE](https://books.google.cz/books?id=6crECQAAQBAJ&lpg=PP1&pg=PA3&redir_esc=y#v=onepage&q&f=true)
+-   [WebGL Insights -- ANGLE](https://books.google.cz/books?id=6crECQAAQBAJ&lpg=PP1&pg=PA3&redir_esc=y#v=onepage&q&f=true)
 
 @subsection best-practices-webgl WebGL (Emscripten)
 
@@ -70,7 +70,7 @@ buffer attachments. See @ref Buffer, @ref Framebuffer,
 
 @subsection best-practices-nacl Google Chrome Native Client
 
-- [Best practices for 3D graphics](https://developers.google.com/native-client/beta/devguide/coding/3D-graphics#best-practices)
+-   [Best practices for 3D graphics](https://developers.google.com/native-client/beta/devguide/coding/3D-graphics#best-practices)
 
 Similarly to WebGL, buffers in NaCl implementation need to be bound only to one
 unique target. See @ref Buffer class documentation for more information.
@@ -79,19 +79,19 @@ unique target. See @ref Buffer class documentation for more information.
 
 @subsection best-practices-intel Intel hardware
 
-- [Performance tuning applications for Intel Graphics for Linux and Chrome OS](http://software.intel.com/sites/default/files/Performance-tuning-applications-for-Intel-GEN-Graphics-for-Linux-and-Google-Chrome-OS.pdf) [PDF]
+-   [Performance tuning applications for Intel Graphics for Linux and Chrome OS](http://software.intel.com/sites/default/files/Performance-tuning-applications-for-Intel-GEN-Graphics-for-Linux-and-Google-Chrome-OS.pdf) [PDF]
 
 @subsection best-practices-powervr PowerVR hardware
 
-- [PowerVR Performance Recommendations](https://github.com/burningsun/pecker_framework/blob/master/参考资料/PowerVR.Performance%20Recommendations.pdf?raw=true) [PDF]
+-   [PowerVR Performance Recommendations](https://github.com/burningsun/pecker_framework/blob/master/参考资料/PowerVR.Performance%20Recommendations.pdf?raw=true) [PDF]
 
 @subsection best-practices-amd AMD hardware
 
-- [ATI Radeon HD 2000 programming guide](http://developer.amd.com/wordpress/media/2012/10/ATI_Radeon_HD_2000_programming_guide.pdf)
+-   [ATI Radeon HD 2000 programming guide](http://developer.amd.com/wordpress/media/2012/10/ATI_Radeon_HD_2000_programming_guide.pdf)
 
 @subsection best-practices-tegra NVidia Tegra hardware
 
-- [Optimize OpenGL ES 2.0 Performance for Tegra](http://docs.nvidia.com/tegra/index.html#GLES2_Perf_Main.html)
+-   [Optimize OpenGL ES 2.0 Performance for Tegra](http://docs.nvidia.com/tegra/index.html#GLES2_Perf_Main.html)
 
 */
 }
