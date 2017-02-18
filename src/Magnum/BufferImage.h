@@ -135,7 +135,7 @@ template<UnsignedInt dimensions> class BufferImage {
          * @ref PixelFormat::RGBA and @ref PixelType::UnsignedByte. Useful in
          * cases where you will overwrite the instance later anyway. Move
          * another object over it to make it useful.
-         * @see @ref BufferImage(), @ref wrap()
+         * @see @ref BufferImage(), @ref Buffer::wrap()
          */
         explicit BufferImage(NoCreateT) noexcept;
 
@@ -318,8 +318,8 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
          * @param storage           Storage of compressed pixel data
          * @param format            Format of compressed pixel data
          * @param size              Image size
-         * @param data              Image data
-         * @param usage             Image buffer usage
+         * @param buffer            Image data
+         * @param dataSize          Image buffer usage
          *
          * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
          * @requires_gl Compressed pixel storage is hardcoded in OpenGL ES and
@@ -365,7 +365,7 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
          * The constructed instance is equivalent to moved-from state. Useful
          * in cases where you will overwrite the instance later anyway. Move
          * another object over it to make it useful.
-         * @see @ref BufferImage(), @ref wrap()
+         * @see @ref CompressedBufferImage(), @ref Buffer::wrap()
          */
         explicit CompressedBufferImage(NoCreateT) noexcept;
 
