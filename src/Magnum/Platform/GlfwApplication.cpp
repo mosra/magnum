@@ -189,7 +189,9 @@ void GlfwApplication::staticMouseMoveEvent(GLFWwindow* window, double x, double 
 }
 
 void GlfwApplication::staticMouseEvent(GLFWwindow*, int button, int action, int mods) {
-    MouseEvent e(static_cast<MouseEvent::Button>(button), {static_cast<InputEvent::Modifier>(mods)});
+    double x, y;
+    glfwGetCursorPos(_instance->_window, &x, &y);
+    MouseEvent e(static_cast<MouseEvent::Button>(button), {Int(x), Int(y)}, {static_cast<InputEvent::Modifier>(mods)});
 
     if(action == GLFW_PRESS) {
         _instance->mousePressEvent(e);
@@ -208,7 +210,7 @@ void GlfwApplication::staticMouseScrollEvent(GLFWwindow* window, double xoffset,
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
         #endif
-        MouseEvent e1((yoffset > 0.0) ? MouseEvent::Button::WheelUp : MouseEvent::Button::WheelDown, KeyEvent::getCurrentGlfwModifiers(window));
+        MouseEvent e1((yoffset > 0.0) ? MouseEvent::Button::WheelUp : MouseEvent::Button::WheelDown, {}, KeyEvent::getCurrentGlfwModifiers(window));
         #ifdef __GNUC__
         #pragma GCC diagnostic pop
         #endif
