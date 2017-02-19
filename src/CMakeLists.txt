@@ -41,6 +41,12 @@ if(CORRADE_TARGET_EMSCRIPTEN AND NOT TARGET_GLES2)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s USE_WEBGL2=1")
 endif()
 
+# On Windows enable UNICODE/_UNICODE macros to avoid accidentally passing UTF-8
+# values to ANSI functions
+if(CORRADE_TARGET_WINDOWS)
+    add_definitions("-DUNICODE" "-D_UNICODE")
+endif()
+
 set_directory_properties(PROPERTIES
     CORRADE_CXX_STANDARD 11
     CORRADE_USE_PEDANTIC_FLAGS ON)
