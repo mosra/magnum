@@ -28,6 +28,7 @@
 
 #include <tuple>
 #include <Corrade/Utility/String.h>
+#include <Corrade/Utility/Unicode.h>
 
 #include "Magnum/Version.h"
 #include "Magnum/Platform/Context.h"
@@ -138,6 +139,7 @@ bool GlfwApplication::tryCreateContext(const Configuration& configuration) {
     glfwSetCursorPosCallback(_window, staticMouseMoveEvent);
     glfwSetMouseButtonCallback(_window, staticMouseEvent);
     glfwSetScrollCallback(_window, staticMouseScrollEvent);
+    glfwSetCharCallback(_window, staticTextInputEvent);
 
     glfwMakeContextCurrent(_window);
 
@@ -219,6 +221,15 @@ void GlfwApplication::staticMouseScrollEvent(GLFWwindow* window, double xoffset,
     #endif
 }
 
+void GlfwApplication::staticTextInputEvent(GLFWwindow*, unsigned int codepoint) {
+    if(!(_instance->_flags & Flag::TextInputActive)) return;
+
+    char utf8[4];
+    const std::size_t size = Utility::Unicode::utf8(codepoint, utf8);
+    TextInputEvent e{{utf8, size}};
+    _instance->textInputEvent(e);
+}
+
 void GlfwApplication::staticErrorCallback(int, const char* description) {
     Error() << description;
 }
@@ -247,6 +258,7 @@ void GlfwApplication::mousePressEvent(MouseEvent&) {}
 void GlfwApplication::mouseReleaseEvent(MouseEvent&) {}
 void GlfwApplication::mouseMoveEvent(MouseMoveEvent&) {}
 void GlfwApplication::mouseScrollEvent(MouseScrollEvent&) {}
+void GlfwApplication::textInputEvent(TextInputEvent&) {}
 
 GlfwApplication::Configuration::Configuration():
     _title{"Magnum GLFW Application"},

@@ -32,6 +32,7 @@
 
 #include <memory>
 #include <string>
+#include <Corrade/Containers/ArrayView.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Vector2.h"
@@ -110,6 +111,7 @@ class GlfwApplication {
         class MouseEvent;
         class MouseMoveEvent;
         class MouseScrollEvent;
+        class TextInputEvent;
 
         /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, const Configuration&) */
         #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -251,9 +253,53 @@ class GlfwApplication {
 
         /*@}*/
 
+        /** @{ @name Text input handling */
+    public:
+        /**
+         * @brief Whether text input is active
+         *
+         * If text input is active, text input events go to
+         * @ref textInputEvent().
+         * @see @ref startTextInput(), @ref stopTextInput()
+         */
+        bool isTextInputActive() const { return !!(_flags & Flag::TextInputActive); }
+
+        /**
+         * @brief Start text input
+         *
+         * Starts text input that will go to @ref textInputEvent().
+         * @see @ref stopTextInput(), @ref isTextInputActive()
+         */
+        void startTextInput() { _flags |= Flag::TextInputActive; }
+
+        /**
+         * @brief Stop text input
+         *
+         * Stops text input that went to @ref textInputEvent().
+         * @see @ref startTextInput(), @ref isTextInputActive(),
+         *      @ref textInputEvent()
+         */
+        void stopTextInput() { _flags &= ~Flag::TextInputActive; }
+
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    protected:
+    #else
+    private:
+    #endif
+        /**
+         * @brief Text input event
+         *
+         * Called when text input is active and the text is being input.
+         * @see @ref isTextInputActive()
+         */
+        virtual void textInputEvent(TextInputEvent& event);
+
+        /*@}*/
+
     private:
         enum class Flag: UnsignedByte {
-            Redraw = 1 << 0
+            Redraw = 1 << 0,
+            TextInputActive = 1 << 1
         };
 
         typedef Containers::EnumSet<Flag> Flags;
@@ -272,6 +318,8 @@ class GlfwApplication {
         static void staticMouseScrollEvent(GLFWwindow* window, double xoffset, double yoffset);
 
         static void staticErrorCallback(int error, const char* description);
+
+        static void staticTextInputEvent(GLFWwindow* window, unsigned int codepoint);
 
         static GlfwApplication* _instance;
 
@@ -920,6 +968,50 @@ class GlfwApplication::MouseScrollEvent: public GlfwApplication::InputEvent {
 
         const Vector2 _offset;
         const Modifiers _modifiers;
+};
+
+/**
+@brief Text input event
+
+@see @ref textInputEvent()
+*/
+class GlfwApplication::TextInputEvent {
+    friend GlfwApplication;
+
+    public:
+        /** @brief Copying is not allowed */
+        TextInputEvent(const TextInputEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        TextInputEvent(TextInputEvent&&) = delete;
+
+        /** @brief Copying is not allowed */
+        TextInputEvent& operator=(const TextInputEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        TextInputEvent& operator=(TextInputEvent&&) = delete;
+
+        /** @brief Whether the event is accepted */
+        constexpr bool isAccepted() const { return _accepted; }
+
+        /**
+         * @brief Set event as accepted
+         *
+         * If the event is ignored (i.e., not set as accepted), it might be
+         * propagated elsewhere, for example to another screen when using
+         * @ref BasicScreenedApplication "ScreenedApplication". By default is
+         * each event ignored and thus propagated.
+         */
+        void setAccepted(bool accepted = true) { _accepted = accepted; }
+
+        /** @brief Input text in UTF-8 */
+        constexpr Containers::ArrayView<const char> text() const { return _text; }
+
+    private:
+        constexpr TextInputEvent(Containers::ArrayView<const char> text): _text{text}, _accepted{false} {}
+
+        Containers::ArrayView<const char> _text;
+        bool _accepted;
 };
 
 /** @hideinitializer
