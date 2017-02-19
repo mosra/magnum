@@ -52,7 +52,7 @@ GlfwApplication::GlfwApplication(const Arguments& arguments, const Configuration
 
 GlfwApplication::GlfwApplication(const Arguments& arguments, std::nullptr_t):
     _context{new Context{NoCreate, arguments.argc, arguments.argv}},
-    _needsRedraw(true)
+    _flags{Flag::Redraw}
 {
     /* Save global instance */
     _instance = this;
@@ -154,7 +154,8 @@ void GlfwApplication::setSwapInterval(const Int interval) {
 
 int GlfwApplication::exec() {
     while(!glfwWindowShouldClose(_window)) {
-        if(_needsRedraw) {
+        if(_flags & Flag::Redraw) {
+            _flags &= ~Flag::Redraw;
             drawEvent();
         }
         glfwPollEvents();

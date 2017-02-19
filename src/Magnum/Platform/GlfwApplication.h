@@ -183,7 +183,7 @@ class GlfwApplication {
         void setSwapInterval(Int interval);
 
         /** @copydoc Sdl2Application::redraw() */
-        void redraw() { _needsRedraw = true; }
+        void redraw() { _flags |= Flag::Redraw; }
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     protected:
@@ -241,6 +241,13 @@ class GlfwApplication {
         /*@}*/
 
     private:
+        enum class Flag: UnsignedByte {
+            Redraw = 1 << 0
+        };
+
+        typedef Containers::EnumSet<Flag> Flags;
+        CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
+
         static void staticViewportEvent(GLFWwindow*, int w, int h) {
             _instance->viewportEvent({w, h});
         }
@@ -259,8 +266,10 @@ class GlfwApplication {
 
         GLFWwindow* _window;
         std::unique_ptr<Platform::Context> _context;
-        bool _needsRedraw;
+        Flags _flags;
 };
+
+CORRADE_ENUMSET_OPERATORS(GlfwApplication::Flags)
 
 /**
 @brief Configuration
