@@ -132,6 +132,7 @@ void FunctionsTest::pow() {
 void FunctionsTest::min() {
     CORRADE_COMPARE(Math::min(5, 9), 5);
     CORRADE_COMPARE(Math::min(Vector3i(5, -3, 2), Vector3i(9, -5, 18)), Vector3i(5, -5, 2));
+    CORRADE_COMPARE(Math::min(Vector3i{5, -3, 2}, 1), (Vector3i{1, -3, 1}));
 }
 
 void FunctionsTest::minList() {
@@ -144,6 +145,7 @@ void FunctionsTest::minList() {
 void FunctionsTest::max() {
     CORRADE_COMPARE(Math::max(5, 9), 9);
     CORRADE_COMPARE(Math::max(Vector3i(5, -3, 2), Vector3i(9, -5, 18)), Vector3i(9, -3, 18));
+    CORRADE_COMPARE(Math::max(Vector3i{5, -3, 2}, 3), (Vector3i{5, 3, 3}));
 }
 
 void FunctionsTest::maxList() {
@@ -169,6 +171,12 @@ void FunctionsTest::clamp() {
     CORRADE_COMPARE(Math::clamp(0.5f, -1.0f, 5.0f), 0.5f);
     CORRADE_COMPARE(Math::clamp(-1.6f, -1.0f, 5.0f), -1.0f);
     CORRADE_COMPARE(Math::clamp(9.5f, -1.0f, 5.0f), 5.0f);
+
+    CORRADE_COMPARE(Math::clamp(
+        Vector3{0.5f, -1.6f, 9.5f},
+        Vector3{-1.0f, 2.0f, 0.3f},
+        Vector3{0.7f, 3.0f, 5.0f}),
+        Vector3(0.5f, 2.0f, 5.0f));
 
     CORRADE_COMPARE(Math::clamp(Vector3(0.5f, -1.6f, 9.5f), -1.0f, 5.0f), Vector3(0.5f, -1.0f, 5.0f));
 }

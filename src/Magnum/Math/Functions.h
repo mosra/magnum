@@ -238,6 +238,14 @@ template<std::size_t size, class T> inline Vector<size, T> min(const Vector<size
 #endif
 
 /** @overload */
+template<std::size_t size, class T> inline Vector<size, T> min(const Vector<size, T>& value, T min) {
+    Vector<size, T> out{NoInit};
+    for(std::size_t i = 0; i != size; ++i)
+        out[i] = std::min(value[i], min);
+    return out;
+}
+
+/** @overload */
 template<class T> inline T min(std::initializer_list<T> list) {
     T out(*list.begin());
     for(auto it = list.begin()+1; it != list.end(); ++it)
@@ -264,6 +272,14 @@ template<std::size_t size, class T> Vector<size, T> max(const Vector<size, T>& v
     return out;
 }
 #endif
+
+/** @overload */
+template<std::size_t size, class T> Vector<size, T> max(const Vector<size, T>& value, T max) {
+    Vector<size, T> out{NoInit};
+    for(std::size_t i = 0; i != size; ++i)
+        out[i] = std::max(value[i], max);
+    return out;
+}
 
 /** @overload */
 template<class T> inline T max(std::initializer_list<T> list) {
@@ -305,18 +321,26 @@ Math::min(Math::max(value, min), max)
 @see @ref min(), @ref max()
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T, class U> inline T clamp(const T& value, U min, U max);
+template<class T, class U> inline T clamp(const T& value, const T& min, const T& max);
 #else
 template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type clamp(T value, T min, T max) {
     return std::min(std::max(value, min), max);
 }
+template<std::size_t size, class T> Vector<size, T> clamp(const Vector<size, T>& value, const Vector<size, T>& min, const Vector<size, T>& max) {
+    Vector<size, T> out{NoInit};
+    for(std::size_t i = 0; i != size; ++i)
+        out[i] = clamp(value[i], min[i], max[i]);
+    return out;
+}
+#endif
+
+/** @overload */
 template<std::size_t size, class T> Vector<size, T> clamp(const Vector<size, T>& value, T min, T max) {
     Vector<size, T> out{NoInit};
     for(std::size_t i = 0; i != size; ++i)
         out[i] = clamp(value[i], min, max);
     return out;
 }
-#endif
 
 /**
 @brief Sign
