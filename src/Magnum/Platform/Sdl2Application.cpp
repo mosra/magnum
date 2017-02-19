@@ -495,21 +495,21 @@ bool Sdl2Application::isTextInputActive() {
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     return SDL_IsTextInputActive();
     #else
-    return _isTextInputActive;
+    return !!(_flags & Flag::TextInputActive);
     #endif
 }
 
 void Sdl2Application::startTextInput() {
     SDL_StartTextInput();
     #ifdef CORRADE_TARGET_EMSCRIPTEN
-    _isTextInputActive = true;
+    _flags |= Flag::TextInputActive;
     #endif
 }
 
 void Sdl2Application::stopTextInput() {
     SDL_StopTextInput();
     #ifdef CORRADE_TARGET_EMSCRIPTEN
-    _isTextInputActive = false;
+    _flags &= ~Flag::TextInputActive;
     #endif
 }
 

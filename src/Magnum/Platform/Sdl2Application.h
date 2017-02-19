@@ -680,6 +680,9 @@ class Sdl2Application {
             #ifndef CORRADE_TARGET_EMSCRIPTEN
             Exit = 1 << 3
             #endif
+            #ifdef CORRADE_TARGET_EMSCRIPTEN
+            TextInputActive = 1 << 4
+            #endif
         };
 
         typedef Containers::EnumSet<Flag> Flags;
@@ -698,7 +701,6 @@ class Sdl2Application {
         UnsignedInt _minimalLoopPeriod;
         #else
         SDL_Surface* _glContext;
-        bool _isTextInputActive = false;
         #endif
 
         std::unique_ptr<Platform::Context> _context;
