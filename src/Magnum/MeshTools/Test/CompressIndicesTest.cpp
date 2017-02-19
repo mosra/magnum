@@ -116,7 +116,7 @@ void CompressIndicesTest::compressInt() {
 
 void CompressIndicesTest::compressAsShort() {
     CORRADE_COMPARE_AS(MeshTools::compressIndicesAs<UnsignedShort>({123, 456}),
-        Containers::Array<UnsignedShort>::from(123, 456),
+        (Containers::Array<UnsignedShort>{Containers::InPlaceInit, {123, 456}}),
         TestSuite::Compare::Container);
 
     std::ostringstream out;

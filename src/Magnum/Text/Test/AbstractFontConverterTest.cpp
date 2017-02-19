@@ -127,8 +127,8 @@ void AbstractFontConverterTest::exportFontToFile() {
                 /* Why the hell GCC 4.9 fails to do proper move so I need to
                    work around that this ugly way?! */
                 std::vector<std::pair<std::string, Containers::Array<char>>> ret;
-                ret.emplace_back(filename, Containers::Array<char>::from('\xf0'));
-                ret.emplace_back(filename + ".data", Containers::Array<char>::from('\xfe', '\xed'));
+                ret.emplace_back(filename, Containers::Array<char>{Containers::InPlaceInit, {'\xf0'}});
+                ret.emplace_back(filename + ".data", Containers::Array<char>{Containers::InPlaceInit, {'\xfe', '\xed'}});
                 return ret;
             }
     };
@@ -153,7 +153,7 @@ void AbstractFontConverterTest::exportGlyphCacheToSingleData() {
             Features doFeatures() const override { return Feature::ConvertData|Feature::ExportGlyphCache; }
 
             Containers::Array<char> doExportGlyphCacheToSingleData(GlyphCache&) const override {
-                return Containers::Array<char>::from('\xee');
+                return Containers::Array<char>{Containers::InPlaceInit, {'\xee'}};
             }
     };
 
@@ -162,7 +162,9 @@ void AbstractFontConverterTest::exportGlyphCacheToSingleData() {
     auto ret = exporter.exportGlyphCacheToData(nullGlyphCache, "font.out");
     CORRADE_COMPARE(ret.size(), 1);
     CORRADE_COMPARE(ret[0].first, "font.out");
-    CORRADE_COMPARE_AS(ret[0].second, Containers::Array<char>::from('\xee'), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(ret[0].second,
+        (Containers::Array<char>{Containers::InPlaceInit, {'\xee'}}),
+        TestSuite::Compare::Container);
 }
 
 void AbstractFontConverterTest::exportGlyphCacheToFile() {
@@ -174,8 +176,8 @@ void AbstractFontConverterTest::exportGlyphCacheToFile() {
                 /* Why the hell GCC 4.9 fails to do proper move so I need to
                    work around that this ugly way?! */
                 std::vector<std::pair<std::string, Containers::Array<char>>> ret;
-                ret.emplace_back(filename, Containers::Array<char>::from('\xf0'));
-                ret.emplace_back(filename + ".data", Containers::Array<char>::from('\xfe', '\xed'));
+                ret.emplace_back(filename, Containers::Array<char>{Containers::InPlaceInit, {'\xf0'}});
+                ret.emplace_back(filename + ".data", Containers::Array<char>{Containers::InPlaceInit, {'\xfe', '\xed'}});
                 return ret;
             }
     };
