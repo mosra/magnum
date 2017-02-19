@@ -637,6 +637,8 @@ class Sdl2Application {
         /**
          * @brief Stop text input
          *
+         * Stops text input that went to @ref textInputEvent() and
+         * @ref textEditingEvent().
          * @see @ref startTextInput(), @ref isTextInputActive(), @ref textInputEvent()
          *      @ref textEditingEvent()
          */
