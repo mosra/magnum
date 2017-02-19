@@ -150,6 +150,13 @@ class GlfwApplication {
             glfwSetWindowShouldClose(_window, true);
         }
 
+        /**
+         * @brief Underlying window handle
+         *
+         * Use in case you need to call GLFW functionality directly.
+         */
+        GLFWwindow* window() { return _window; }
+
     protected:
         /* Nobody will need to have (and delete) GlfwApplication*, thus this is
            faster than public pure virtual destructor */

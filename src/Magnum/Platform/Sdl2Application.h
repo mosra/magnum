@@ -386,6 +386,16 @@ class Sdl2Application {
         /** @brief Exit application main loop */
         void exit();
 
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        /**
+         * @brief Underlying window handle
+         *
+         * Use in case you need to call SDL functionality directly.
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         */
+        SDL_Window* window() { return _window; }
+        #endif
+
     protected:
         /* Nobody will need to have (and delete) Sdl2Application*, thus this is
            faster than public pure virtual destructor */
