@@ -94,6 +94,7 @@ struct VectorTest: Corrade::TestSuite::Tester {
     void product();
     void min();
     void max();
+    void minmax();
 
     void projected();
     void projectedOntoNormalized();
@@ -458,6 +459,16 @@ void VectorTest::min() {
 void VectorTest::max() {
     /* Check also that initial value isn't initialized to 0 */
     CORRADE_COMPARE(Vector3(-1.0f, -2.0f, -3.0f).max(), -1.0f);
+}
+
+void VectorTest::minmax() {
+    const auto expected = std::make_pair(-3.0f, 2.0f);
+    CORRADE_COMPARE((Vector3{-1.0f, 2.0f, -3.0f}.minmax()), expected);
+    CORRADE_COMPARE((Vector3{-1.0f, -3.0f, 2.0f}.minmax()), expected);
+    CORRADE_COMPARE((Vector3{2.0f, -1.0f, -3.0f}.minmax()), expected);
+    CORRADE_COMPARE((Vector3{2.0f, -3.0f, -1.0f}.minmax()), expected);
+    CORRADE_COMPARE((Vector3{-3.0f, 2.0f, -1.0f}.minmax()), expected);
+    CORRADE_COMPARE((Vector3{-3.0f, -1.0f, 2.0f}.minmax()), expected);
 }
 
 void VectorTest::projected() {

@@ -68,7 +68,6 @@ struct Vector2Test: Corrade::TestSuite::Tester {
     void scales();
     void perpendicular();
     void aspectRatio();
-    void minmax();
 
     void swizzleType();
     void debug();
@@ -94,7 +93,6 @@ Vector2Test::Vector2Test() {
               &Vector2Test::scales,
               &Vector2Test::perpendicular,
               &Vector2Test::aspectRatio,
-              &Vector2Test::minmax,
 
               &Vector2Test::swizzleType,
               &Vector2Test::debug,
@@ -226,12 +224,6 @@ void Vector2Test::perpendicular() {
 
 void Vector2Test::aspectRatio() {
     CORRADE_COMPARE(Vector2(3.0f, 4.0f).aspectRatio(), 0.75f);
-}
-
-void Vector2Test::minmax() {
-    const auto expected = std::make_pair(-5.0f, 4.0f);
-    CORRADE_COMPARE(Vector2(-5.0f, 4.0f).minmax(), expected);
-    CORRADE_COMPARE(Vector2(4.0f, -5.0f).minmax(), expected);
 }
 
 void Vector2Test::swizzleType() {

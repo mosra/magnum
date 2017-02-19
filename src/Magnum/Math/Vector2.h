@@ -183,15 +183,6 @@ template<class T> class Vector2: public Vector<2, T> {
          */
         T aspectRatio() const { return x()/y(); }
 
-        /**
-         * @brief Minimum and maximum value
-         *
-         * @see @ref min(), @ref max(), @ref Math::minmax()
-         */
-        std::pair<T, T> minmax() const {
-            return x() < y() ? std::make_pair(x(), y()) : std::make_pair(y(), x());
-        }
-
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(2, Vector2)
 };
 

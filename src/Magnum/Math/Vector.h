@@ -563,16 +563,23 @@ template<std::size_t size, class T> class Vector {
         /**
          * @brief Minimal value in the vector
          *
-         * @see @ref Math::min(), @ref Vector2::minmax()
+         * @see @ref Math::min(), @ref minmax()
          */
         T min() const;
 
         /**
          * @brief Maximal value in the vector
          *
-         * @see @ref Math::max(), @ref Vector2::minmax()
+         * @see @ref Math::max(), @ref minmax()
          */
         T max() const;
+
+        /**
+         * @brief Minimal and maximal value in the vector
+         *
+         * @see @ref min(), @ref max(), @ref Math::minmax()
+         */
+        std::pair<T, T> minmax() const;
 
     private:
         /* Implementation for Vector<size, T>::Vector(const Vector<size, U>&) */
@@ -1360,6 +1367,19 @@ template<std::size_t size, class T> inline T Vector<size, T>::max() const {
         out = std::max(out, _data[i]);
 
     return out;
+}
+
+template<std::size_t size, class T> inline std::pair<T, T> Vector<size, T>::minmax() const {
+    T min{_data[0]}, max{_data[0]};
+
+    for(std::size_t i = 1; i != size; ++i) {
+        if(_data[i] < min)
+            min = _data[i];
+        else if(_data[i] > max)
+            max = _data[i];
+    }
+
+    return {min, max};
 }
 
 }}
