@@ -343,8 +343,14 @@ void ColorTest::data() {
 
     Color3 c3a = c.rgb();
     Color3 c3b = c.xyz();
-    constexpr Color3 cc3a{cc.rgb()};
-    constexpr Color3 cc3b{cc.xyz()};
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY
+    constexpr /* No idea what's wrong. For Vector4 it "just works" */
+    #endif
+    Color3 cc3a{cc.rgb()};
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY
+    constexpr /* No idea what's wrong. For Vector4 it "just works" */
+    #endif
+    Color3 cc3b{cc.xyz()};
     CORRADE_COMPARE(c3a, (Color3{1.0f, 2.0f, 3.0f}));
     CORRADE_COMPARE(c3b, (Color3{1.0f, 2.0f, 3.0f}));
     CORRADE_COMPARE(cc3a, (Color3{1.0f, 2.0f, 3.0f}));
