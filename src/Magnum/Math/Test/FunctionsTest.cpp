@@ -140,6 +140,8 @@ void FunctionsTest::minList() {
     CORRADE_COMPARE(Math::min({Vector3i(5, -3, 2),
                                Vector3i(-2, 14, 7),
                                Vector3i(9, -5, 18)}), Vector3i(-2, -5, 2));
+
+    CORRADE_COMPARE(Math::min(std::initializer_list<Vector3i>{}), Vector3i{});
 }
 
 void FunctionsTest::max() {
@@ -153,6 +155,8 @@ void FunctionsTest::maxList() {
     CORRADE_COMPARE(Math::max({Vector3i(5, -3, 2),
                                Vector3i(-2, 14, 7),
                                Vector3i(9, -5, 18)}), Vector3i(9, 14, 18));
+
+    CORRADE_COMPARE(Math::max(std::initializer_list<Vector3i>{}), Vector3i{});
 }
 
 void FunctionsTest::minmax() {

@@ -246,8 +246,14 @@ template<std::size_t size, class T> inline Vector<size, T> min(const Vector<size
     return out;
 }
 
-/** @brief Minimum of a range */
+/**
+@brief Minimum of a range
+
+If the range is empty, returns default-constructed value.
+*/
 template<class T> T min(Corrade::Containers::ArrayView<const T> range) {
+    if(range.empty()) return {};
+
     T out(range[0]);
     for(std::size_t i = 1; i != range.size(); ++i)
         out = min(out, range[i]);
@@ -287,8 +293,14 @@ template<std::size_t size, class T> Vector<size, T> max(const Vector<size, T>& v
     return out;
 }
 
-/** @brief Maximum of a range */
+/**
+@brief Maximum of a range
+
+If the range is empty, returns default-constructed value.
+*/
 template<class T> T max(Corrade::Containers::ArrayView<const T> range) {
+    if(range.empty()) return {};
+
     T out(range[0]);
     for(std::size_t i = 1; i != range.size(); ++i)
         out = max(out, range[i]);
