@@ -150,6 +150,12 @@ GlfwApplication::~GlfwApplication() {
     glfwTerminate();
 }
 
+Vector2i GlfwApplication::windowSize() {
+    Vector2i size;
+    glfwGetWindowSize(_window, &size.x(), &size.y());
+    return size;
+}
+
 void GlfwApplication::setSwapInterval(const Int interval) {
     glfwSwapInterval(interval);
 }

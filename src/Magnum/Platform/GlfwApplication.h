@@ -167,6 +167,17 @@ class GlfwApplication {
 
         /** @{ @name Screen handling */
 
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        /**
+         * @brief Window size
+         *
+         * Window size to which all input event coordinates can be related.
+         * Note that especially on HiDPI systems the reported window size might
+         * not be the same as framebuffer size.
+         */
+        Vector2i windowSize();
+        #endif
+
         /**
          * @brief Swap buffers
          *
