@@ -947,8 +947,17 @@ class Color4: public Vector4<T> {
          * @see @ref fromXyz()
          */
         Vector3<FloatingPointType> toXyz() const {
-            return Implementation::toXyz<T>(Vector4<T>::rgb());
+            return Implementation::toXyz<T>(rgb());
         }
+
+        /* Overloads to remove WTF-factor from return types */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        Color3<T>& xyz() { return Color3<T>::from(Vector4<T>::data()); }
+        constexpr const Color3<T> xyz() const { return Vector4<T>::xyz(); }
+
+        Color3<T>& rgb() { return xyz(); }
+        constexpr const Color3<T> rgb() const { return xyz(); }
+        #endif
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(4, Color4)
 };

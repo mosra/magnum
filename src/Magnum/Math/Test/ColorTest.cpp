@@ -79,6 +79,8 @@ struct ColorTest: Corrade::TestSuite::Tester {
     void constructCopy();
     void convert();
 
+    void data();
+
     void literals();
 
     void colors();
@@ -124,6 +126,8 @@ ColorTest::ColorTest() {
               &ColorTest::constructPacking,
               &ColorTest::constructCopy,
               &ColorTest::convert,
+
+              &ColorTest::data,
 
               &ColorTest::literals,
 
@@ -331,6 +335,25 @@ void ColorTest::convert() {
     CORRADE_VERIFY(!(std::is_convertible<Vec4, Color4>::value));
     CORRADE_VERIFY(!(std::is_convertible<Color3, Vec3>::value));
     CORRADE_VERIFY(!(std::is_convertible<Color4, Vec4>::value));
+}
+
+void ColorTest::data() {
+    Color4 c{1.0f, 2.0f, 3.0f, 4.0f};
+    constexpr const Color4 cc{1.0f, 2.0f, 3.0f, 4.0f};
+
+    Color3 c3a = c.rgb();
+    Color3 c3b = c.xyz();
+    constexpr Color3 cc3a{cc.rgb()};
+    constexpr Color3 cc3b{cc.xyz()};
+    CORRADE_COMPARE(c3a, (Color3{1.0f, 2.0f, 3.0f}));
+    CORRADE_COMPARE(c3b, (Color3{1.0f, 2.0f, 3.0f}));
+    CORRADE_COMPARE(cc3a, (Color3{1.0f, 2.0f, 3.0f}));
+    CORRADE_COMPARE(cc3b, (Color3{1.0f, 2.0f, 3.0f}));
+
+    CORRADE_VERIFY((std::is_same<decltype(c.xyz()), Color3&>::value));
+    CORRADE_VERIFY((std::is_same<decltype(cc.xyz()), const Color3>::value));
+    CORRADE_VERIFY((std::is_same<decltype(c.rgb()), Color3&>::value));
+    CORRADE_VERIFY((std::is_same<decltype(cc.rgb()), const Color3>::value));
 }
 
 void ColorTest::literals() {
