@@ -94,6 +94,8 @@ template<class FloatingPoint, class Integral, UnsignedInt bits = sizeof(Integral
     return Math::max(value/FloatingPoint(Implementation::bitMax<Integral, bits>()), FloatingPoint(-1.0));
 }
 template<class FloatingPoint, std::size_t size, class Integral, UnsignedInt bits = sizeof(Integral)*8> FloatingPoint unpack(const Vector<size, Integral>& value) {
+    static_assert(FloatingPoint::Size == size,
+        "return vector type should have the same size as input vector type");
     FloatingPoint out{NoInit};
     for(std::size_t i = 0; i != size; ++i)
         out[i] = unpack<typename FloatingPoint::Type, Integral, bits>(value[i]);
@@ -150,6 +152,8 @@ template<class Integral, class FloatingPoint, UnsignedInt bits = sizeof(Integral
     return Integral(value*Implementation::bitMax<Integral, bits>());
 }
 template<class Integral, std::size_t size, class FloatingPoint, UnsignedInt bits = sizeof(typename Integral::Type)*8> Integral pack(const Vector<size, FloatingPoint>& value) {
+    static_assert(Integral::Size == size,
+        "return vector type should have the same size as input vector type");
     Integral out{NoInit};
     for(std::size_t i = 0; i != size; ++i)
         out[i] = pack<typename Integral::Type, FloatingPoint, bits>(value[i]);
