@@ -82,7 +82,7 @@ bool GlfwApplication::tryCreateContext(const Configuration& configuration) {
         glfwWindowHint(GLFW_AUTO_ICONIFY, configuration.windowFlags() >= Configuration::WindowFlag::AutoIconify);
     } else {
         const Configuration::WindowFlags& flags = configuration.windowFlags();
-        glfwWindowHint(GLFW_RESIZABLE, flags >= Configuration::WindowFlag::Resizeable);
+        glfwWindowHint(GLFW_RESIZABLE, flags >= Configuration::WindowFlag::Resizable);
         glfwWindowHint(GLFW_VISIBLE, !(flags >= Configuration::WindowFlag::Hidden));
         #ifdef GLFW_MAXIMIZED
         glfwWindowHint(GLFW_MAXIMIZED, flags >= Configuration::WindowFlag::Maximized);
