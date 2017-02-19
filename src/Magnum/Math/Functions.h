@@ -32,6 +32,7 @@
 #include <cmath>
 #include <type_traits>
 #include <utility>
+#include <Corrade/Containers/ArrayView.h>
 
 #include "Magnum/visibility.h"
 #include "Magnum/Math/Vector.h"
@@ -245,12 +246,17 @@ template<std::size_t size, class T> inline Vector<size, T> min(const Vector<size
     return out;
 }
 
+/** @brief Minimum of a range */
+template<class T> T min(Corrade::Containers::ArrayView<const T> range) {
+    T out(range[0]);
+    for(std::size_t i = 1; i != range.size(); ++i)
+        out = min(out, range[i]);
+    return out;
+}
+
 /** @overload */
 template<class T> inline T min(std::initializer_list<T> list) {
-    T out(*list.begin());
-    for(auto it = list.begin()+1; it != list.end(); ++it)
-        out = min(out, *it);
-    return out;
+    return min(Corrade::Containers::ArrayView<const T>{list.begin(), list.size()});
 }
 
 /**
@@ -281,12 +287,17 @@ template<std::size_t size, class T> Vector<size, T> max(const Vector<size, T>& v
     return out;
 }
 
+/** @brief Maximum of a range */
+template<class T> T max(Corrade::Containers::ArrayView<const T> range) {
+    T out(range[0]);
+    for(std::size_t i = 1; i != range.size(); ++i)
+        out = max(out, range[i]);
+    return out;
+}
+
 /** @overload */
 template<class T> inline T max(std::initializer_list<T> list) {
-    T out(*list.begin());
-    for(auto it = list.begin()+1; it != list.end(); ++it)
-        out = max(out, *it);
-    return out;
+    return max(Corrade::Containers::ArrayView<const T>{list.begin(), list.size()});
 }
 
 /**
