@@ -87,7 +87,6 @@ bool GlfwApplication::tryCreateContext(const Configuration& configuration) {
         #ifdef GLFW_MAXIMIZED
         glfwWindowHint(GLFW_MAXIMIZED, flags >= Configuration::WindowFlag::Maximized);
         #endif
-        glfwWindowHint(GLFW_ICONIFIED, flags >= Configuration::WindowFlag::Minimized);
         glfwWindowHint(GLFW_FLOATING, flags >= Configuration::WindowFlag::Floating);
     }
     glfwWindowHint(GLFW_FOCUSED, configuration.windowFlags() >= Configuration::WindowFlag::Focused);
@@ -102,9 +101,6 @@ bool GlfwApplication::tryCreateContext(const Configuration& configuration) {
     #endif
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, flags >= Configuration::Flag::Debug);
     glfwWindowHint(GLFW_STEREO, flags >= Configuration::Flag::Stereo);
-
-    /* Cursor flags */
-    glfwWindowHint(GLFW_CURSOR, Int(configuration.cursorMode()));
 
     /* Set context version, if requested */
     if(configuration.version() != Version::None) {
@@ -129,6 +125,12 @@ bool GlfwApplication::tryCreateContext(const Configuration& configuration) {
         glfwTerminate();
         return false;
     }
+
+    /* Proceed with configuring other stuff that couldn't be done with window
+       hints */
+    if(configuration.windowFlags() >= Configuration::WindowFlag::Minimized)
+        glfwIconifyWindow(_window);
+    glfwSetInputMode(_window, GLFW_CURSOR, Int(configuration.cursorMode()));
 
     /* Set callbacks */
     glfwSetFramebufferSizeCallback(_window, staticViewportEvent);
