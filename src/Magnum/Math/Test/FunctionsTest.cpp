@@ -42,6 +42,7 @@ struct FunctionsTest: Corrade::TestSuite::Tester {
     void max();
     void maxList();
     void minmax();
+    void minmaxList();
     void clamp();
     void nanPropagation();
 
@@ -86,6 +87,7 @@ FunctionsTest::FunctionsTest() {
               &FunctionsTest::max,
               &FunctionsTest::maxList,
               &FunctionsTest::minmax,
+              &FunctionsTest::minmaxList,
               &FunctionsTest::clamp,
               &FunctionsTest::nanPropagation,
 
@@ -169,6 +171,24 @@ void FunctionsTest::minmax() {
     const std::pair<Vector3, Vector3> expectedVector{{5.0f, -4.0f, 1.0f}, {7.0f, -3.0f, 1.0f}};
     CORRADE_COMPARE_AS(Math::minmax(a, b), expectedVector, std::pair<Vector3, Vector3>);
     CORRADE_COMPARE_AS(Math::minmax(b, a), expectedVector, std::pair<Vector3, Vector3>);
+}
+
+void FunctionsTest::minmaxList() {
+    const auto expected = std::make_pair(-3.0f, 2.0f);
+    CORRADE_COMPARE(Math::minmax({-1.0f, 2.0f, -3.0f}), expected);
+    CORRADE_COMPARE(Math::minmax({-1.0f, -3.0f, 2.0f}), expected);
+    CORRADE_COMPARE(Math::minmax({2.0f, -1.0f, -3.0f}), expected);
+    CORRADE_COMPARE(Math::minmax({2.0f, -3.0f, -1.0f}), expected);
+    CORRADE_COMPARE(Math::minmax({-3.0f, 2.0f, -1.0f}), expected);
+    CORRADE_COMPARE(Math::minmax({-3.0f, -1.0f, 2.0f}), expected);
+
+    const std::pair<Vector2, Vector2> expectedVec{Vector2{-3.0f, -2.0f}, Vector2{2.0f, 3.0f}};
+    CORRADE_COMPARE(Math::minmax({Vector2{-1.0f, 3.0f}, Vector2{2.0f, 1.0f}, Vector2{-3.0f, -2.0f}}), expectedVec);
+    CORRADE_COMPARE(Math::minmax({Vector2{-1.0f, 1.0f}, Vector2{-3.0f, 3.0f}, Vector2{2.0f, -2.0f}}), expectedVec);
+    CORRADE_COMPARE(Math::minmax({Vector2{2.0f, -2.0f}, Vector2{-1.0f, 1.0f}, Vector2{-3.0f, 3.0f}}), expectedVec);
+    CORRADE_COMPARE(Math::minmax({Vector2{2.0f, 1.0f}, Vector2{-3.0f, -2.0f}, Vector2{-1.0f, 3.0f}}), expectedVec);
+    CORRADE_COMPARE(Math::minmax({Vector2{-3.0f, 3.0f}, Vector2{2.0f, -2.0f}, Vector2{-1.0f, 1.0f}}), expectedVec);
+    CORRADE_COMPARE(Math::minmax({Vector2{-3.0f, -2.0f}, Vector2{-1.0f, 3.0f}, Vector2{2.0f, 1.0f}}), expectedVec);
 }
 
 void FunctionsTest::clamp() {

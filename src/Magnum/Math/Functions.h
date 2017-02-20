@@ -332,6 +332,39 @@ template<std::size_t size, class T> std::pair<Vector<size, T>, Vector<size, T>> 
 }
 #endif
 
+namespace Implementation {
+    template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, void>::type minmax(T& min, T& max, T value) {
+        if(value < min)
+            min = value;
+        else if(value > max)
+            max = value;
+    }
+    template<std::size_t size, class T> inline void minmax(Vector<size, T>& min, Vector<size, T>& max, const Vector<size, T>& value) {
+        for(std::size_t i = 0; i != size; ++i)
+            minmax(min[i], max[i], value[i]);
+    }
+}
+
+/**
+@brief Minimum and maximum of a range
+
+If the range is empty, returns default-constructed values.
+*/
+template<class T> std::pair<T, T> minmax(Corrade::Containers::ArrayView<const T> range) {
+    if(range.empty()) return {};
+
+    T min{range[0]}, max{range[0]};
+    for(std::size_t i = 1; i != range.size(); ++i)
+        Implementation::minmax(min, max, range[i]);
+
+    return {min, max};
+}
+
+/** @overload */
+template<class T> inline std::pair<T, T> minmax(std::initializer_list<T> list) {
+    return minmax(Corrade::Containers::ArrayView<const T>{list.begin(), list.size()});
+}
+
 /**
 @brief Clamp value
 
