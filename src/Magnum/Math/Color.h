@@ -406,7 +406,7 @@ template<class T> class Color3: public Vector3<T> {
          *          0.0557 & -0.2040 & 1.0570
          *      \end{bmatrix} \begin{bmatrix} X \\ Y \\ Z \end{bmatrix}
          * @f]
-         * @see @ref toXyz(), @ref toSrgb()
+         * @see @ref toXyz(), @ref toSrgb(), @ref xyYToXyz()
          */
         static Color3<T> fromXyz(const Vector3<FloatingPointType>& xyz) {
             return Implementation::fromXyz<T>(xyz);
@@ -572,7 +572,7 @@ template<class T> class Color3: public Vector3<T> {
          * Please note that @ref x(), @ref y() and @ref z() *do not* correspond
          * to primaries in CIE XYZ color space, but are rather aliases to
          * @ref r(), @ref g() and @ref b().
-         * @see @ref fromXyz(), @ref fromSrgb()
+         * @see @ref fromXyz(), @ref fromSrgb(), @ref xyzToXyY()
          */
         Vector3<FloatingPointType> toXyz() const {
             return Implementation::toXyz<T>(*this);
@@ -786,7 +786,7 @@ class Color4: public Vector4<T> {
          *
          * Applies transformation matrix, returning the input in linear RGB
          * color space. See @ref Color3::fromXyz() for more information.
-         * @see @ref toXyz(), @ref toSrgbAlpha()
+         * @see @ref toXyz(), @ref toSrgbAlpha(), @ref xyYToXyz()
          */
         static Color4<T> fromXyz(const Vector3<FloatingPointType> xyz, T a = Implementation::fullChannel<T>()) {
             return {Implementation::fromXyz<T>(xyz), a};
@@ -944,7 +944,7 @@ class Color4: public Vector4<T> {
          * Please note that @ref xyz(), @ref x(), @ref y() and @ref z() *do not*
          * correspond to primaries in CIE XYZ color space, but are rather
          * aliases to @ref rgb(), @ref r(), @ref g() and @ref b().
-         * @see @ref fromXyz()
+         * @see @ref fromXyz(), @ref xyzToXyY()
          */
         Vector3<FloatingPointType> toXyz() const {
             return Implementation::toXyz<T>(rgb());
@@ -961,6 +961,36 @@ class Color4: public Vector4<T> {
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(4, Color4)
 };
+
+/** @relatesalso Color3
+@brief Convert color from CIE xyY representation to CIE XYZ
+
+@f[
+    \begin{array}{rcl}
+        X & = & \dfrac{Y}{y}x \\
+        Z & = & \dfrac{Y}{y}(1 - x - y)
+    \end{array}
+@f]
+@see @ref xyzToXyY(), @ref Color3::fromXyz(), @ref Color3::toXyz()
+*/
+template<class T> inline Vector3<T> xyYToXyz(const Vector3<T>& xyY) {
+    return {xyY[0]*xyY[2]/xyY[1], xyY[2], (T(1) - xyY[0] - xyY[1])*xyY[2]/xyY[1]};
+}
+
+/** @relatesalso Color3
+@brief Convert color from CIE XYZ representation to CIE xyY
+
+@f[
+    \begin{array}{rcl}
+        x & = & \dfrac{X}{X + Y + Z} \\
+        y & = & \dfrac{Y}{X + Y + Z}
+    \end{array}
+@f]
+@see @ref xyYToXyz(), @ref Color3::fromXyz(), @ref Color3::toXyz()
+*/
+template<class T> inline Vector3<T> xyzToXyY(const Vector3<T>& xyz) {
+    return {xyz.xy()/xyz.sum(), xyz.y()};
+}
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(4, Color4)

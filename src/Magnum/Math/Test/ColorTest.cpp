@@ -99,6 +99,7 @@ struct ColorTest: Corrade::TestSuite::Tester {
 
     void xyz();
     void fromXyzDefaultAlpha();
+    void xyY();
 
     void swizzleType();
     void debug();
@@ -150,6 +151,7 @@ ColorTest::ColorTest() {
 
               &ColorTest::xyz,
               &ColorTest::fromXyzDefaultAlpha,
+              &ColorTest::xyY,
 
               &ColorTest::swizzleType,
               &ColorTest::debug,
@@ -747,6 +749,15 @@ void ColorTest::fromXyzDefaultAlpha() {
     /* Integral */
     CORRADE_COMPARE(Math::Color4<UnsignedShort>::fromXyz({0.454279f, 0.413092f, 0.0607124f}),
         (Math::Color4<UnsignedShort>{52883, 22095, 339, 65535}));
+}
+
+void ColorTest::xyY() {
+    /* Verified using http://www.easyrgb.com/index.php?X=CALC */
+    Vector3 xyz{0.454279f, 0.413092f, 0.0607124f};
+    Vector3 xyY{0.489481f, 0.445102f, 0.413092f};
+
+    CORRADE_COMPARE(xyzToXyY(xyz), xyY);
+    CORRADE_COMPARE(xyYToXyz(xyY), xyz);
 }
 
 void ColorTest::swizzleType() {
