@@ -28,9 +28,13 @@
 #include "Magnum/Buffer.h"
 #include "Magnum/Mesh.h"
 #include "Magnum/DebugTools/ResourceManager.h"
+#include "Magnum/MeshTools/CompressIndices.h"
 #include "Magnum/MeshTools/Interleave.h"
+#include "Magnum/Primitives/Axis.h"
 #include "Magnum/SceneGraph/Camera.h"
 #include "Magnum/Shaders/VertexColor.h"
+#include "Magnum/Trade/MeshData2D.h"
+#include "Magnum/Trade/MeshData3D.h"
 
 namespace Magnum { namespace DebugTools {
 
@@ -43,104 +47,16 @@ template<> struct Renderer<2> {
     static ResourceKey vertexBuffer() { return {"object2d-vertices"}; }
     static ResourceKey indexBuffer() { return {"object2d-indices"}; }
     static ResourceKey mesh() { return {"object2d"}; }
-
-    static const std::array<Vector2, 8> positions;
-    static const std::array<Color3, 8> colors;
-    static const std::array<UnsignedByte, 12> indices;
+    static Trade::MeshData2D meshData() { return Primitives::axis2D(); }
 };
-
-const std::array<Vector2, 8> Renderer<2>::positions{{
-    { 0.0f,  0.0f},
-    { 1.0f,  0.0f}, /* X axis */
-    { 0.9f,  0.1f},
-    { 0.9f, -0.1f},
-
-    { 0.0f,  0.0f},
-    { 0.0f,  1.0f}, /* Y axis */
-    { 0.1f,  0.9f},
-    {-0.1f,  0.9f}
-}};
-
-const std::array<Color3, 8> Renderer<2>::colors{{
-    {1.0f, 0.0f, 0.0f},
-    {1.0f, 0.0f, 0.0f}, /* X axis */
-    {1.0f, 0.0f, 0.0f},
-    {1.0f, 0.0f, 0.0f},
-
-    {0.0f, 1.0f, 0.0f},
-    {0.0f, 1.0f, 0.0f}, /* Y axis */
-    {0.0f, 1.0f, 0.0f},
-    {0.0f, 1.0f, 0.0f},
-}};
-
-const std::array<UnsignedByte, 12> Renderer<2>::indices{{
-    0, 1,
-    1, 2, /* X axis */
-    1, 3,
-
-    4, 5,
-    5, 6, /* Y axis */
-    5, 7
-}};
 
 template<> struct Renderer<3> {
     static ResourceKey shader() { return {"VertexColorShader3D"}; }
     static ResourceKey vertexBuffer() { return {"object3d-vertices"}; }
     static ResourceKey indexBuffer() { return {"object3d-indices"}; }
     static ResourceKey mesh() { return {"object3d"}; }
-
-    static const std::array<Vector3, 12> positions;
-    static const std::array<Color3, 12> colors;
-    static const std::array<uint8_t, 18> indices;
+    static Trade::MeshData3D meshData() { return Primitives::axis3D(); }
 };
-
-const std::array<Vector3, 12> Renderer<3>::positions{{
-    { 0.0f,  0.0f,  0.0f},
-    { 1.0f,  0.0f,  0.0f}, /* X axis */
-    { 0.9f,  0.1f,  0.0f},
-    { 0.9f, -0.1f,  0.0f},
-
-    { 0.0f,  0.0f,  0.0f},
-    { 0.0f,  1.0f,  0.0f}, /* Y axis */
-    { 0.1f,  0.9f,  0.0f},
-    {-0.1f,  0.9f,  0.0f},
-
-    { 0.0f,  0.0f,  0.0f},
-    { 0.0f,  0.0f,  1.0f}, /* Z axis */
-    { 0.1f,  0.0f,  0.9f},
-    {-0.1f,  0.0f,  0.9f}
-}};
-
-const std::array<Color3, 12> Renderer<3>::colors{{
-    {1.0f, 0.0f, 0.0f},
-    {1.0f, 0.0f, 0.0f}, /* X axis */
-    {1.0f, 0.0f, 0.0f},
-    {1.0f, 0.0f, 0.0f},
-
-    {0.0f, 1.0f, 0.0f},
-    {0.0f, 1.0f, 0.0f}, /* Y axis */
-    {0.0f, 1.0f, 0.0f},
-    {0.0f, 1.0f, 0.0f},
-
-    {0.0f, 0.0f, 1.0f},
-    {0.0f, 0.0f, 1.0f}, /* Z axis */
-    {0.0f, 0.0f, 1.0f},
-    {0.0f, 0.0f, 1.0f}
-}};
-
-const std::array<UnsignedByte, 18> Renderer<3>::indices{{
-    0, 1,
-    1, 2,  /* X axis */
-    1, 3,
-
-    4, 5,
-    5, 6,  /* Y axis */
-    5, 7,
-
-    8, 9,
-    9, 10, /* Z axis */
-    9, 11
-}};
 
 }
 
@@ -161,18 +77,20 @@ template<UnsignedInt dimensions> ObjectRenderer<dimensions>::ObjectRenderer(Scen
     Buffer* indexBuffer = new Buffer{Buffer::TargetHint::ElementArray};
     Mesh* mesh = new Mesh;
 
-    vertexBuffer->setData(MeshTools::interleave(Renderer<dimensions>::positions, Renderer<dimensions>::colors), BufferUsage::StaticDraw);
+    auto data = Renderer<dimensions>::meshData();
+
+    vertexBuffer->setData(MeshTools::interleave(data.positions(0), data.colors(0)), BufferUsage::StaticDraw);
     ResourceManager::instance().set(_vertexBuffer.key(), vertexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
 
-    indexBuffer->setData(Renderer<dimensions>::indices, BufferUsage::StaticDraw);
+    indexBuffer->setData(MeshTools::compressIndicesAs<UnsignedByte>(data.indices()), BufferUsage::StaticDraw);
     ResourceManager::instance().set(_indexBuffer.key(), indexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
 
     mesh->setPrimitive(MeshPrimitive::Lines)
-        .setCount(Renderer<dimensions>::indices.size())
+        .setCount(data.indices().size())
         .addVertexBuffer(*vertexBuffer, 0,
             typename Shaders::VertexColor<dimensions>::Position(),
             typename Shaders::VertexColor<dimensions>::Color{Shaders::VertexColor<dimensions>::Color::Components::Four})
-        .setIndexBuffer(*indexBuffer, 0, Mesh::IndexType::UnsignedByte, 0, Renderer<dimensions>::positions.size());
+        .setIndexBuffer(*indexBuffer, 0, Mesh::IndexType::UnsignedByte, 0, data.positions(0).size());
     ResourceManager::instance().set<Mesh>(_mesh.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
 }
 
