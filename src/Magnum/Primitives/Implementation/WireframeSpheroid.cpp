@@ -26,7 +26,7 @@
 #include "WireframeSpheroid.h"
 
 #include "Magnum/Math/Functions.h"
-#include "Magnum/Math/Vector3.h"
+#include "Magnum/Math/Color.h"
 #include "Magnum/Mesh.h"
 #include "Magnum/Trade/MeshData3D.h"
 
@@ -111,7 +111,7 @@ void WireframeSpheroid::cylinder() {
 }
 
 Trade::MeshData3D WireframeSpheroid::finalize() {
-    return Trade::MeshData3D(MeshPrimitive::Lines, std::move(_indices), {std::move(_positions)}, {}, {});
+    return Trade::MeshData3D{MeshPrimitive::Lines, std::move(_indices), {std::move(_positions)}, {}, {}, {}, nullptr};
 }
 
 }}}

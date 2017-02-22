@@ -26,13 +26,13 @@
 #include "Cube.h"
 
 #include "Magnum/Mesh.h"
-#include "Magnum/Math/Vector3.h"
+#include "Magnum/Math/Color.h"
 #include "Magnum/Trade/MeshData3D.h"
 
 namespace Magnum { namespace Primitives {
 
 Trade::MeshData3D Cube::solid() {
-    return Trade::MeshData3D(MeshPrimitive::Triangles, {
+    return Trade::MeshData3D{MeshPrimitive::Triangles, {
          0,  1,  2,  0,  2,  3, /* +Z */
          4,  5,  6,  4,  6,  7, /* +X */
          8,  9, 10,  8, 10, 11, /* +Y */
@@ -99,7 +99,7 @@ Trade::MeshData3D Cube::solid() {
         {-1.0f,  0.0f,  0.0f},
         {-1.0f,  0.0f,  0.0f}, /* -X */
         {-1.0f,  0.0f,  0.0f}
-    }}, {});
+    }}, {}, {}, nullptr};
 }
 
 Trade::MeshData3D Cube::solidStrip() {
@@ -126,7 +126,7 @@ Trade::MeshData3D Cube::solidStrip() {
             |F \|
             2---3
     */
-    return Trade::MeshData3D(MeshPrimitive::TriangleStrip, {}, {{
+    return Trade::MeshData3D{MeshPrimitive::TriangleStrip, {}, {{
         { 1.0f,  1.0f,  1.0f}, /* 3 */
         {-1.0f,  1.0f,  1.0f}, /* 2 */
         { 1.0f, -1.0f,  1.0f}, /* 6 */
@@ -141,11 +141,11 @@ Trade::MeshData3D Cube::solidStrip() {
         {-1.0f, -1.0f, -1.0f}, /* 4 */
         { 1.0f,  1.0f, -1.0f}, /* 1 */
         {-1.0f,  1.0f, -1.0f}  /* 0 */
-    }}, {}, {});
+    }}, {}, {}, {}, nullptr};
 }
 
 Trade::MeshData3D Cube::wireframe() {
-    return Trade::MeshData3D(MeshPrimitive::Lines, {
+    return Trade::MeshData3D{MeshPrimitive::Lines, {
         0, 1, 1, 2, 2, 3, 3, 0, /* +Z */
         4, 5, 5, 6, 6, 7, 7, 4, /* -Z */
         1, 5, 2, 6,             /* +X */
@@ -160,7 +160,7 @@ Trade::MeshData3D Cube::wireframe() {
         { 1.0f, -1.0f, -1.0f},
         { 1.0f,  1.0f, -1.0f},
         {-1.0f,  1.0f, -1.0f}
-    }}, {}, {});
+    }}, {}, {}, {}, nullptr};
 }
 
 }}

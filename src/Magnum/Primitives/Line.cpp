@@ -26,22 +26,22 @@
 #include "Line.h"
 
 #include "Magnum/Mesh.h"
-#include "Magnum/Math/Vector3.h"
+#include "Magnum/Math/Color.h"
 #include "Magnum/Trade/MeshData2D.h"
 #include "Magnum/Trade/MeshData3D.h"
 
 namespace Magnum { namespace Primitives {
 
 Trade::MeshData2D Line2D::wireframe() {
-    return Trade::MeshData2D(MeshPrimitive::Lines, {}, {{
+    return Trade::MeshData2D{MeshPrimitive::Lines, {}, {{
         {0.0f, 0.0f}, {1.0f, 0.0f}
-    }}, {});
+    }}, {}, {}, nullptr};
 }
 
 Trade::MeshData3D Line3D::wireframe() {
-    return Trade::MeshData3D(MeshPrimitive::Lines, {}, {{
+    return Trade::MeshData3D{MeshPrimitive::Lines, {}, {{
         {0.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f},
-    }}, {}, {});
+    }}, {}, {}, {}, nullptr};
 }
 
 }}

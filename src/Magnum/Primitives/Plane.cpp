@@ -25,8 +25,8 @@
 
 #include "Plane.h"
 
-#include "Magnum/Math/Vector3.h"
 #include "Magnum/Mesh.h"
+#include "Magnum/Math/Color.h"
 #include "Magnum/Trade/MeshData3D.h"
 
 namespace Magnum { namespace Primitives {
@@ -40,7 +40,7 @@ Trade::MeshData3D Plane::solid(const TextureCoords textureCoords) {
         {0.0f, 1.0f}
     });
 
-    return Trade::MeshData3D(MeshPrimitive::TriangleStrip, {}, {{
+    return Trade::MeshData3D{MeshPrimitive::TriangleStrip, {}, {{
         {1.0f, -1.0f, 0.0f},
         {1.0f, 1.0f, 0.0f},
         {-1.0f, -1.0f, 0.0f},
@@ -50,16 +50,16 @@ Trade::MeshData3D Plane::solid(const TextureCoords textureCoords) {
         {0.0f, 0.0f, 1.0f},
         {0.0f, 0.0f, 1.0f},
         {0.0f, 0.0f, 1.0f}
-    }}, std::move(coords));
+    }}, std::move(coords), {}, nullptr};
 }
 
 Trade::MeshData3D Plane::wireframe() {
-    return Trade::MeshData3D(MeshPrimitive::LineLoop, {}, {{
+    return Trade::MeshData3D{MeshPrimitive::LineLoop, {}, {{
         {-1.0f, -1.0f, 0.0f},
         {1.0f, -1.0f, 0.0f},
         {1.0f, 1.0f, 0.0f},
         {-1.0f, 1.0f, 0.0f}
-    }}, {}, {});
+    }}, {}, {}, {}, nullptr};
 }
 
 }}

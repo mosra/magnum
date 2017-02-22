@@ -35,7 +35,7 @@
 #include "Magnum/Mesh.h"
 #include "Magnum/MeshTools/CombineIndexedArrays.h"
 #include "Magnum/MeshTools/Duplicate.h"
-#include "Magnum/Math/Vector3.h"
+#include "Magnum/Math/Color.h"
 #include "Magnum/Trade/MeshData3D.h"
 
 namespace Magnum { namespace Trade {
@@ -495,7 +495,7 @@ std::optional<MeshData3D> ObjImporter::doMesh3D(UnsignedInt id) {
         }
     }
 
-    return MeshData3D(*primitive, std::move(indices), {std::move(positions)}, std::move(normals), std::move(textureCoordinates));
+    return MeshData3D{*primitive, std::move(indices), {std::move(positions)}, std::move(normals), std::move(textureCoordinates), {}, nullptr};
 }
 
 }}

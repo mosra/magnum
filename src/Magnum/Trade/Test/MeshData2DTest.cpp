@@ -26,7 +26,7 @@
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Mesh.h"
-#include "Magnum/Math/Vector2.h"
+#include "Magnum/Math/Color.h"
 #include "Magnum/Trade/MeshData2D.h"
 
 namespace Magnum { namespace Trade { namespace Test {
@@ -37,6 +37,7 @@ struct MeshData2DTest: TestSuite::Tester {
     void construct();
     void constructNonIndexed();
     void constructNoTexCoords();
+    void constructNoColors();
     void constructCopy();
     void constructMove();
 };
@@ -45,9 +46,12 @@ MeshData2DTest::MeshData2DTest() {
     addTests({&MeshData2DTest::construct,
               &MeshData2DTest::constructNonIndexed,
               &MeshData2DTest::constructNoTexCoords,
+              &MeshData2DTest::constructNoColors,
               &MeshData2DTest::constructCopy,
               &MeshData2DTest::constructMove});
 }
+
+using namespace Math::Literals;
 
 void MeshData2DTest::construct() {
     const int a{};
@@ -57,6 +61,7 @@ void MeshData2DTest::construct() {
         {{{0.0f, 0.0f}, {0.3f, 0.7f}},
          {{0.1f, 0.2f}, {0.7f, 1.0f}},
          {{0.0f, 0.0f}, {1.0f, 1.0f}}},
+        {{0xff98ab_rgbf, 0xff3366_rgbf}},
         &a};
 
     CORRADE_COMPARE(data.primitive(), MeshPrimitive::Lines);
@@ -74,6 +79,10 @@ void MeshData2DTest::construct() {
     CORRADE_COMPARE(data.textureCoords2D(1), (std::vector<Vector2>{{0.1f, 0.2f}, {0.7f, 1.0f}}));
     CORRADE_COMPARE(data.textureCoords2D(2), (std::vector<Vector2>{{0.0f, 0.0f}, {1.0f, 1.0f}}));
 
+    CORRADE_VERIFY(data.hasColors());
+    CORRADE_COMPARE(data.colorArrayCount(), 1);
+    CORRADE_COMPARE(data.colors(0), (std::vector<Color4>{0xff98ab_rgbf, 0xff3366_rgbf}));
+
     CORRADE_COMPARE(data.importerState(), &a);
 }
 
@@ -82,6 +91,7 @@ void MeshData2DTest::constructNonIndexed() {
     const MeshData2D data{MeshPrimitive::Lines, {},
         {{{0.5f, 1.0f}, {-1.0f, 0.3f}}},
         {{{0.0f, 0.0f}, {0.3f, 0.7f}}},
+        {{0xff98ab_rgbf, 0xff3366_rgbf}},
         &a};
 
     CORRADE_VERIFY(!data.isIndexed());
@@ -93,10 +103,24 @@ void MeshData2DTest::constructNoTexCoords() {
         {{{0.5f, 1.0f}, {-1.0f, 0.3f}},
          {{1.4f, 0.2f}, {1.1f, 0.13f}}},
         {},
+        {{0xff98ab_rgbf, 0xff3366_rgbf}},
         &a};
 
     CORRADE_VERIFY(!data.hasTextureCoords2D());
     CORRADE_COMPARE(data.textureCoords2DArrayCount(), 0);
+}
+
+void MeshData2DTest::constructNoColors() {
+    const int a{};
+    const MeshData2D data{MeshPrimitive::Lines, {12, 1, 0},
+        {{{0.5f, 1.0f}, {-1.0f, 0.3f}},
+         {{1.4f, 0.2f}, {1.1f, 0.13f}}},
+        {{{0.0f, 0.0f}, {0.3f, 0.7f}}},
+        {},
+        &a};
+
+    CORRADE_VERIFY(!data.hasColors());
+    CORRADE_COMPARE(data.colorArrayCount(), 0);
 }
 
 void MeshData2DTest::constructCopy() {
@@ -109,6 +133,7 @@ void MeshData2DTest::constructMove() {
     MeshData2D data{MeshPrimitive::LineStrip, {12, 1, 0},
         {{{0.5f, 1.0f}, {-1.0f, 0.3f}}},
         {{{0.0f, 0.0f}, {0.3f, 0.7f}}},
+        {{0xff98ab_rgbf, 0xff3366_rgbf}},
         &a};
 
     MeshData2D b{std::move(data)};
@@ -120,11 +145,14 @@ void MeshData2DTest::constructMove() {
     CORRADE_COMPARE(b.positions(0), (std::vector<Vector2>{{0.5f, 1.0f}, {-1.0f, 0.3f}}));
     CORRADE_COMPARE(b.textureCoords2DArrayCount(), 1);
     CORRADE_COMPARE(b.textureCoords2D(0), (std::vector<Vector2>{{0.0f, 0.0f}, {0.3f, 0.7f}}));
+    CORRADE_COMPARE(b.colorArrayCount(), 1);
+    CORRADE_COMPARE(b.colors(0), (std::vector<Color4>{0xff98ab_rgbf, 0xff3366_rgbf}));
     CORRADE_COMPARE(b.importerState(), &a);
 
     const int c{};
     MeshData2D d{MeshPrimitive::TriangleFan, {},
         {{}},
+        {},
         {},
         &c};
     d = std::move(b);
@@ -135,6 +163,8 @@ void MeshData2DTest::constructMove() {
     CORRADE_COMPARE(d.positions(0), (std::vector<Vector2>{{0.5f, 1.0f}, {-1.0f, 0.3f}}));
     CORRADE_COMPARE(d.textureCoords2DArrayCount(), 1);
     CORRADE_COMPARE(d.textureCoords2D(0), (std::vector<Vector2>{{0.0f, 0.0f}, {0.3f, 0.7f}}));
+    CORRADE_COMPARE(d.colorArrayCount(), 1);
+    CORRADE_COMPARE(d.colors(0), (std::vector<Color4>{0xff98ab_rgbf, 0xff3366_rgbf}));
     CORRADE_COMPARE(d.importerState(), &a);
 }
 

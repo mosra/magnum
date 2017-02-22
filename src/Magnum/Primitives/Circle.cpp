@@ -26,7 +26,7 @@
 #include "Circle.h"
 
 #include "Magnum/Math/Functions.h"
-#include "Magnum/Math/Vector2.h"
+#include "Magnum/Math/Color.h"
 #include "Magnum/Mesh.h"
 #include "Magnum/Trade/MeshData2D.h"
 
@@ -34,7 +34,7 @@ namespace Magnum { namespace Primitives {
 
 Trade::MeshData2D Circle::solid(UnsignedInt segments) {
     CORRADE_ASSERT(segments >= 3, "Primitives::Circle::solid(): segments must be >= 3",
-        Trade::MeshData2D(MeshPrimitive::TriangleFan, {}, {}, {}));
+        (Trade::MeshData2D{MeshPrimitive::TriangleFan, {}, {}, {}, {}, nullptr}));
 
     std::vector<Vector2> positions;
     positions.reserve(segments+1);
@@ -49,12 +49,12 @@ Trade::MeshData2D Circle::solid(UnsignedInt segments) {
         positions.emplace_back(Math::cos(angle), Math::sin(angle));
     }
 
-    return Trade::MeshData2D(MeshPrimitive::TriangleFan, {}, {std::move(positions)}, {});
+    return Trade::MeshData2D{MeshPrimitive::TriangleFan, {}, {std::move(positions)}, {}, {}, nullptr};
 }
 
 Trade::MeshData2D Circle::wireframe(UnsignedInt segments) {
     CORRADE_ASSERT(segments >= 3, "Primitives::Circle::wireframe(): segments must be >= 3",
-        Trade::MeshData2D(MeshPrimitive::LineLoop, {}, {}, {}));
+        (Trade::MeshData2D{MeshPrimitive::LineLoop, {}, {}, {}, {}, nullptr}));
 
     std::vector<Vector2> positions;
     positions.reserve(segments);
@@ -66,7 +66,7 @@ Trade::MeshData2D Circle::wireframe(UnsignedInt segments) {
         positions.emplace_back(Math::cos(angle), Math::sin(angle));
     }
 
-    return Trade::MeshData2D(MeshPrimitive::LineLoop, {}, {std::move(positions)}, {});
+    return Trade::MeshData2D{MeshPrimitive::LineLoop, {}, {std::move(positions)}, {}, {}, nullptr};
 }
 
 }}

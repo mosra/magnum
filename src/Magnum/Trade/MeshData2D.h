@@ -54,9 +54,17 @@ class MAGNUM_EXPORT MeshData2D {
          *      array should be present.
          * @param textureCoords2D   Two-dimensional texture coordinate arrays,
          *      if present
+         * @param colors            Vertex color arrays, if present
          * @param importerState     Importer-specific state
          */
-        explicit MeshData2D(MeshPrimitive primitive, std::vector<UnsignedInt> indices, std::vector<std::vector<Vector2>> positions, std::vector<std::vector<Vector2>> textureCoords2D, const void* importerState = nullptr);
+        explicit MeshData2D(MeshPrimitive primitive, std::vector<UnsignedInt> indices, std::vector<std::vector<Vector2>> positions, std::vector<std::vector<Vector2>> textureCoords2D, std::vector<std::vector<Color4>> colors, const void* importerState = nullptr);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @copybrief MeshData2D(MeshPrimitive, std::vector<UnsignedInt>, std::vector<std::vector<Vector2>>, std::vector<std::vector<Vector2>>, std::vector<std::vector<Color4>>, const void*)
+         * @deprecated Use @ref MeshData2D(MeshPrimitive, std::vector<UnsignedInt>, std::vector<std::vector<Vector2>>, std::vector<std::vector<Vector2>>, std::vector<std::vector<Color4>>, const void*) instead.
+         */
+        CORRADE_DEPRECATED("Use MeshData2D(MeshPrimitive, std::vector<UnsignedInt>, std::vector<std::vector<Vector2>>, std::vector<std::vector<Vector2>>, std::vector<std::vector<Color4>>, const void*) instead") explicit MeshData2D(MeshPrimitive primitive, std::vector<UnsignedInt> indices, std::vector<std::vector<Vector2>> positions, std::vector<std::vector<Vector2>> textureCoords2D, const void* importerState = nullptr);
+        #endif
 
         /** @brief Copying is not allowed */
         MeshData2D(const MeshData2D&) = delete;
@@ -131,6 +139,21 @@ class MAGNUM_EXPORT MeshData2D {
         std::vector<Vector2>& textureCoords2D(UnsignedInt id);
         const std::vector<Vector2>& textureCoords2D(UnsignedInt id) const; /**< @overload */
 
+        /** @brief Whether the data contain any vertex colors */
+        bool hasColors() const { return !_colors.empty(); }
+
+        /** @brief Count of color arrays */
+        UnsignedInt colorArrayCount() const { return _colors.size(); }
+
+        /**
+         * @brief Vertex colors
+         * @param id    Vertex color array ID
+         *
+         * @see @ref colorArrayCount()
+         */
+        std::vector<Color4>& colors(UnsignedInt id);
+        const std::vector<Color4>& colors(UnsignedInt id) const; /**< @overload */
+
         /**
          * @brief Importer-specific state
          *
@@ -143,6 +166,7 @@ class MAGNUM_EXPORT MeshData2D {
         std::vector<UnsignedInt> _indices;
         std::vector<std::vector<Vector2>> _positions;
         std::vector<std::vector<Vector2>> _textureCoords2D;
+        std::vector<std::vector<Color4>> _colors;
         const void* _importerState;
 };
 

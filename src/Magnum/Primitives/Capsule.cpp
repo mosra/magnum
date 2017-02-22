@@ -25,7 +25,7 @@
 
 #include "Capsule.h"
 
-#include "Magnum/Math/Vector3.h"
+#include "Magnum/Math/Color.h"
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Mesh.h"
 #include "Magnum/Primitives/Implementation/Spheroid.h"
@@ -36,7 +36,8 @@
 namespace Magnum { namespace Primitives {
 
 Trade::MeshData2D Capsule2D::wireframe(UnsignedInt hemisphereRings, UnsignedInt cylinderRings, Float halfLength) {
-    CORRADE_ASSERT(hemisphereRings >= 1 && cylinderRings >= 1, "Capsule must have at least one hemisphere ring, one cylinder ring and three segments", Trade::MeshData2D(MeshPrimitive::Lines, {}, {}, {}));
+    CORRADE_ASSERT(hemisphereRings >= 1 && cylinderRings >= 1, "Capsule must have at least one hemisphere ring, one cylinder ring and three segments",
+        (Trade::MeshData2D{MeshPrimitive::Triangles, {}, {}, {}, {}, nullptr}));
 
     std::vector<Vector2> positions;
     positions.reserve(hemisphereRings*4+2+(cylinderRings-1)*2);
@@ -87,11 +88,12 @@ Trade::MeshData2D Capsule2D::wireframe(UnsignedInt hemisphereRings, UnsignedInt 
         {UnsignedInt(positions.size())-3, UnsignedInt(positions.size())-1,
          UnsignedInt(positions.size())-2, UnsignedInt(positions.size())-1});
 
-    return Trade::MeshData2D(MeshPrimitive::Lines, std::move(indices), {std::move(positions)}, {});
+    return Trade::MeshData2D{MeshPrimitive::Lines, std::move(indices), {std::move(positions)}, {}, {}, nullptr};
 }
 
 Trade::MeshData3D Capsule3D::solid(UnsignedInt hemisphereRings, UnsignedInt cylinderRings, UnsignedInt segments, Float halfLength, TextureCoords textureCoords) {
-    CORRADE_ASSERT(hemisphereRings >= 1 && cylinderRings >= 1 && segments >= 3, "Capsule must have at least one hemisphere ring, one cylinder ring and three segments", Trade::MeshData3D(MeshPrimitive::Triangles, {}, {}, {}, {}));
+    CORRADE_ASSERT(hemisphereRings >= 1 && cylinderRings >= 1 && segments >= 3, "Capsule must have at least one hemisphere ring, one cylinder ring and three segments",
+        (Trade::MeshData3D{MeshPrimitive::Triangles, {}, {}, {}, {}, {}, nullptr}));
 
     Implementation::Spheroid capsule(segments, textureCoords == TextureCoords::Generate ?
         Implementation::Spheroid::TextureCoords::Generate :
@@ -125,7 +127,8 @@ Trade::MeshData3D Capsule3D::solid(UnsignedInt hemisphereRings, UnsignedInt cyli
 }
 
 Trade::MeshData3D Capsule3D::wireframe(const UnsignedInt hemisphereRings, const UnsignedInt cylinderRings, const UnsignedInt segments, const Float halfLength) {
-    CORRADE_ASSERT(hemisphereRings >= 1 && cylinderRings >= 1 && segments >= 4 && segments%4 == 0, "Primitives::Capsule::wireframe(): improper parameters", Trade::MeshData3D(MeshPrimitive::Lines, {}, {}, {}, {}));
+    CORRADE_ASSERT(hemisphereRings >= 1 && cylinderRings >= 1 && segments >= 4 && segments%4 == 0, "Primitives::Capsule::wireframe(): improper parameters",
+        (Trade::MeshData3D{MeshPrimitive::Triangles, {}, {}, {}, {}, {}, nullptr}));
 
     Implementation::WireframeSpheroid capsule(segments/4);
 

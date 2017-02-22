@@ -55,9 +55,17 @@ class MAGNUM_EXPORT MeshData3D {
          * @param normals           Normal arrays, if present
          * @param textureCoords2D   Two-dimensional texture coordinate arrays,
          *      if present
+         * @param colors            Vertex color arrays, if present
          * @param importerState     Importer-specific state
          */
-        explicit MeshData3D(MeshPrimitive primitive, std::vector<UnsignedInt> indices, std::vector<std::vector<Vector3>> positions, std::vector<std::vector<Vector3>> normals, std::vector<std::vector<Vector2>> textureCoords2D, const void* importerState = nullptr);
+        explicit MeshData3D(MeshPrimitive primitive, std::vector<UnsignedInt> indices, std::vector<std::vector<Vector3>> positions, std::vector<std::vector<Vector3>> normals, std::vector<std::vector<Vector2>> textureCoords2D, std::vector<std::vector<Color4>> colors, const void* importerState = nullptr);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @copybrief MeshData3D(MeshPrimitive, std::vector<UnsignedInt>, std::vector<std::vector<Vector3>>, std::vector<std::vector<Vector3>>, std::vector<std::vector<Vector2>>, std::vector<std::vector<Color4>>, const void*)
+         * @deprecated Use @ref MeshData3D(MeshPrimitive, std::vector<UnsignedInt>, std::vector<std::vector<Vector3>>, std::vector<std::vector<Vector3>>, std::vector<std::vector<Vector2>>, std::vector<std::vector<Color4>>, const void*) instead.
+         */
+        CORRADE_DEPRECATED("Use MeshData3D(MeshPrimitive, std::vector<UnsignedInt>, std::vector<std::vector<Vector3>>, std::vector<std::vector<Vector3>>, std::vector<std::vector<Vector2>>, std::vector<std::vector<Color4>>, const void*) instead") explicit MeshData3D(MeshPrimitive primitive, std::vector<UnsignedInt> indices, std::vector<std::vector<Vector3>> positions, std::vector<std::vector<Vector3>> normals, std::vector<std::vector<Vector2>> textureCoords2D, const void* importerState = nullptr);
+        #endif
 
         /** @brief Copying is not allowed */
         MeshData3D(const MeshData3D&) = delete;
@@ -147,6 +155,21 @@ class MAGNUM_EXPORT MeshData3D {
         std::vector<Vector2>& textureCoords2D(UnsignedInt id);
         const std::vector<Vector2>& textureCoords2D(UnsignedInt id) const; /**< @overload */
 
+        /** @brief Whether the data contain any vertex colors */
+        bool hasColors() const { return !_colors.empty(); }
+
+        /** @brief Count of color arrays */
+        UnsignedInt colorArrayCount() const { return _colors.size(); }
+
+        /**
+         * @brief Vertex colors
+         * @param id    Vertex color array ID
+         *
+         * @see @ref colorArrayCount()
+         */
+        std::vector<Color4>& colors(UnsignedInt id);
+        const std::vector<Color4>& colors(UnsignedInt id) const; /**< @overload */
+
         /**
          * @brief Importer-specific state
          *
@@ -160,6 +183,7 @@ class MAGNUM_EXPORT MeshData3D {
         std::vector<std::vector<Vector3>> _positions;
         std::vector<std::vector<Vector3>> _normals;
         std::vector<std::vector<Vector2>> _textureCoords2D;
+        std::vector<std::vector<Color4>> _colors;
         const void* _importerState;
 };
 

@@ -26,7 +26,7 @@
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Mesh.h"
-#include "Magnum/Math/Vector3.h"
+#include "Magnum/Math/Color.h"
 #include "Magnum/Trade/MeshData3D.h"
 
 namespace Magnum { namespace Trade { namespace Test {
@@ -38,6 +38,7 @@ struct MeshData3DTest: TestSuite::Tester {
     void constructNonIndexed();
     void constructNoNormals();
     void constructNoTexCoords();
+    void constructNoColors();
     void constructCopy();
     void constructMove();
 };
@@ -47,9 +48,12 @@ MeshData3DTest::MeshData3DTest() {
               &MeshData3DTest::constructNonIndexed,
               &MeshData3DTest::constructNoNormals,
               &MeshData3DTest::constructNoTexCoords,
+              &MeshData3DTest::constructNoColors,
               &MeshData3DTest::constructCopy,
               &MeshData3DTest::constructMove});
 }
+
+using namespace Math::Literals;
 
 void MeshData3DTest::construct() {
     const int a{};
@@ -60,6 +64,7 @@ void MeshData3DTest::construct() {
         {{{0.0f, 0.0f}, {0.3f, 0.7f}},
          {{0.1f, 0.2f}, {0.7f, 1.0f}},
          {{0.0f, 0.0f}, {1.0f, 1.0f}}},
+        {{0xff98ab_rgbf, 0xff3366_rgbf}},
         &a};
 
     CORRADE_COMPARE(data.primitive(), MeshPrimitive::Lines);
@@ -81,6 +86,10 @@ void MeshData3DTest::construct() {
     CORRADE_COMPARE(data.textureCoords2D(1), (std::vector<Vector2>{{0.1f, 0.2f}, {0.7f, 1.0f}}));
     CORRADE_COMPARE(data.textureCoords2D(2), (std::vector<Vector2>{{0.0f, 0.0f}, {1.0f, 1.0f}}));
 
+    CORRADE_VERIFY(data.hasColors());
+    CORRADE_COMPARE(data.colorArrayCount(), 1);
+    CORRADE_COMPARE(data.colors(0), (std::vector<Color4>{0xff98ab_rgbf, 0xff3366_rgbf}));
+
     CORRADE_COMPARE(data.importerState(), &a);
 }
 
@@ -90,6 +99,7 @@ void MeshData3DTest::constructNonIndexed() {
         {{{0.5f, 1.0f, 0.1f}, {-1.0f, 0.3f, -1.0f}}},
         {{{0.0f, 1.0f, 0.0f}, {-1.0f, 0.0f, 0.0f}}},
         {{{0.0f, 0.0f}, {0.3f, 0.7f}}},
+        {{0xff98ab_rgbf, 0xff3366_rgbf}},
         &a};
 
     CORRADE_VERIFY(!data.isIndexed());
@@ -101,6 +111,7 @@ void MeshData3DTest::constructNoNormals() {
         {{{0.5f, 1.0f, 0.1f}, {-1.0f, 0.3f, -1.0f}}},
         {},
         {{{0.0f, 0.0f}, {0.3f, 0.7f}}},
+        {{0xff98ab_rgbf, 0xff3366_rgbf}},
         &a};
 
     CORRADE_VERIFY(!data.hasNormals());
@@ -113,10 +124,24 @@ void MeshData3DTest::constructNoTexCoords() {
         {{{0.5f, 1.0f, 0.1f}, {-1.0f, 0.3f, -1.0f}}},
         {{{0.0f, 1.0f, 0.0f}, {-1.0f, 0.0f, 0.0f}}},
         {},
+        {{0xff98ab_rgbf, 0xff3366_rgbf}},
         &a};
 
     CORRADE_VERIFY(!data.hasTextureCoords2D());
     CORRADE_COMPARE(data.textureCoords2DArrayCount(), 0);
+}
+
+void MeshData3DTest::constructNoColors() {
+    const int a{};
+    const MeshData3D data{MeshPrimitive::Lines, {12, 1, 0},
+        {{{0.5f, 1.0f, 0.1f}, {-1.0f, 0.3f, -1.0f}}},
+        {{{0.0f, 1.0f, 0.0f}, {-1.0f, 0.0f, 0.0f}}},
+        {{{0.0f, 0.0f}, {0.3f, 0.7f}}},
+        {},
+        &a};
+
+    CORRADE_VERIFY(!data.hasColors());
+    CORRADE_COMPARE(data.colorArrayCount(), 0);
 }
 
 void MeshData3DTest::constructCopy() {
@@ -130,6 +155,7 @@ void MeshData3DTest::constructMove() {
         {{{0.5f, 1.0f, 0.1f}, {-1.0f, 0.3f, -1.0f}}},
         {{{0.0f, 1.0f, 0.0f}, {-1.0f, 0.0f, 0.0f}}},
         {{{0.0f, 0.0f}, {0.3f, 0.7f}}},
+        {{0xff98ab_rgbf, 0xff3366_rgbf}},
         &a};
 
     MeshData3D b{std::move(data)};
@@ -143,6 +169,8 @@ void MeshData3DTest::constructMove() {
     CORRADE_COMPARE(b.normals(0), (std::vector<Vector3>{{0.0f, 1.0f, 0.0f}, {-1.0f, 0.0f, 0.0f}}));
     CORRADE_COMPARE(b.textureCoords2DArrayCount(), 1);
     CORRADE_COMPARE(b.textureCoords2D(0), (std::vector<Vector2>{{0.0f, 0.0f}, {0.3f, 0.7f}}));
+    CORRADE_COMPARE(b.colorArrayCount(), 1);
+    CORRADE_COMPARE(b.colors(0), (std::vector<Color4>{0xff98ab_rgbf, 0xff3366_rgbf}));
     CORRADE_COMPARE(b.importerState(), &a);
 
     const int c{};
@@ -150,6 +178,7 @@ void MeshData3DTest::constructMove() {
         {{}},
         {},
         {{}},
+        {},
         &c};
     d = std::move(b);
     CORRADE_COMPARE(d.primitive(), MeshPrimitive::LineStrip);
@@ -161,6 +190,8 @@ void MeshData3DTest::constructMove() {
     CORRADE_COMPARE(d.normals(0), (std::vector<Vector3>{{0.0f, 1.0f, 0.0f}, {-1.0f, 0.0f, 0.0f}}));
     CORRADE_COMPARE(d.textureCoords2DArrayCount(), 1);
     CORRADE_COMPARE(d.textureCoords2D(0), (std::vector<Vector2>{{0.0f, 0.0f}, {0.3f, 0.7f}}));
+    CORRADE_COMPARE(d.colorArrayCount(), 1);
+    CORRADE_COMPARE(d.colors(0), (std::vector<Color4>{0xff98ab_rgbf, 0xff3366_rgbf}));
     CORRADE_COMPARE(d.importerState(), &a);
 }
 

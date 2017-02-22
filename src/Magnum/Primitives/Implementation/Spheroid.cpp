@@ -26,7 +26,7 @@
 #include "Spheroid.h"
 
 #include "Magnum/Math/Functions.h"
-#include "Magnum/Math/Vector3.h"
+#include "Magnum/Math/Color.h"
 #include "Magnum/Mesh.h"
 #include "Magnum/Trade/MeshData3D.h"
 
@@ -163,8 +163,8 @@ void Spheroid::capVertexRing(Float y, Float textureCoordsV, const Vector3& norma
 }
 
 Trade::MeshData3D Spheroid::finalize() {
-    return Trade::MeshData3D(MeshPrimitive::Triangles, std::move(indices), {std::move(positions)}, {std::move(normals)},
-        textureCoords == TextureCoords::Generate ? std::vector<std::vector<Vector2>>{std::move(textureCoords2D)} : std::vector<std::vector<Vector2>>());
+    return Trade::MeshData3D{MeshPrimitive::Triangles, std::move(indices), {std::move(positions)}, {std::move(normals)},
+        textureCoords == TextureCoords::Generate ? std::vector<std::vector<Vector2>>{std::move(textureCoords2D)} : std::vector<std::vector<Vector2>>(), {}, nullptr};
 }
 
 }}}

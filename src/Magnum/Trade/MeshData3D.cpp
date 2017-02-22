@@ -25,13 +25,17 @@
 
 #include "MeshData3D.h"
 
-#include "Magnum/Math/Vector3.h"
+#include "Magnum/Math/Color.h"
 
 namespace Magnum { namespace Trade {
 
-MeshData3D::MeshData3D(const MeshPrimitive primitive, std::vector<UnsignedInt> indices, std::vector<std::vector<Vector3>> positions, std::vector<std::vector<Vector3>> normals, std::vector<std::vector<Vector2>> textureCoords2D, const void* const importerState): _primitive{primitive}, _indices{std::move(indices)}, _positions{std::move(positions)}, _normals{std::move(normals)}, _textureCoords2D{std::move(textureCoords2D)}, _importerState{importerState} {
+MeshData3D::MeshData3D(const MeshPrimitive primitive, std::vector<UnsignedInt> indices, std::vector<std::vector<Vector3>> positions, std::vector<std::vector<Vector3>> normals, std::vector<std::vector<Vector2>> textureCoords2D, std::vector<std::vector<Color4>> colors, const void* const importerState): _primitive{primitive}, _indices{std::move(indices)}, _positions{std::move(positions)}, _normals{std::move(normals)}, _textureCoords2D{std::move(textureCoords2D)}, _colors{std::move(colors)}, _importerState{importerState} {
     CORRADE_ASSERT(!_positions.empty(), "Trade::MeshData3D: no position array specified", );
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+MeshData3D::MeshData3D(const MeshPrimitive primitive, std::vector<UnsignedInt> indices, std::vector<std::vector<Vector3>> positions, std::vector<std::vector<Vector3>> normals, std::vector<std::vector<Vector2>> textureCoords2D, const void* const importerState): MeshData3D{primitive, std::move(indices), std::move(positions), std::move(normals), std::move(textureCoords2D), {}, importerState} {}
+#endif
 
 MeshData3D::MeshData3D(MeshData3D&&)
     #if !defined(__GNUC__) || __GNUC__*100 + __GNUC_MINOR__ != 409
@@ -85,6 +89,16 @@ std::vector<Vector2>& MeshData3D::textureCoords2D(const UnsignedInt id) {
 const std::vector<Vector2>& MeshData3D::textureCoords2D(const UnsignedInt id) const {
     CORRADE_ASSERT(id < textureCoords2DArrayCount(), "Trade::MeshData3D::textureCoords2D(): index out of range", _textureCoords2D[id]);
     return _textureCoords2D[id];
+}
+
+std::vector<Color4>& MeshData3D::colors(const UnsignedInt id) {
+    CORRADE_ASSERT(id < colorArrayCount(), "Trade::MeshData3D::colors(): index out of range", _colors[id]);
+    return _colors[id];
+}
+
+const std::vector<Color4>& MeshData3D::colors(const UnsignedInt id) const {
+    CORRADE_ASSERT(id < colorArrayCount(), "Trade::MeshData3D::colors(): index out of range", _colors[id]);
+    return _colors[id];
 }
 
 }}
