@@ -24,6 +24,7 @@
 #
 
 set(MagnumPrimitives_SRCS
+    Axis.cpp
     Capsule.cpp
     Circle.cpp
     Crosshair.cpp
@@ -39,6 +40,7 @@ set(MagnumPrimitives_SRCS
     Implementation/WireframeSpheroid.cpp)
 
 set(MagnumPrimitives_HEADERS
+    Axis.h
     Capsule.h
     Circle.h
     Crosshair.h
