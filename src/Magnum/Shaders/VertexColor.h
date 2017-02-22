@@ -51,7 +51,10 @@ attributes in your triangle mesh and call at least
 
 ## Example usage
 
-Common mesh setup:
+Common mesh setup. Note the explicit specification of components for the color
+attribute -- the shader accepts four-component color attribute but, similarly
+to all other attributes, it's possible to supply also three-component colors if
+alpha is not important.
 @code
 struct Vertex {
     Vector3 position;
@@ -65,7 +68,7 @@ vertices.setData(data, BufferUsage::StaticDraw);
 Mesh mesh;
 mesh.addVertexBuffer(vertices, 0,
     Shaders::VertexColor3D::Position{},
-    Shaders::VertexColor3D::Color{});
+    Shaders::VertexColor3D::Color{Shaders::VertexColor3D::Color::Components::Three});
 @endcode
 
 Common rendering setup:
@@ -94,7 +97,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColor: public
         /**
          * @brief Vertex color
          *
-         * @ref shaders-generic "Generic attribute", @ref Color3.
+         * @ref shaders-generic "Generic attribute", @ref Color4, however
+         * defaults to @ref Color3 if @ref MAGNUM_BUILD_DEPRECATED is defined.
+         * See the @ref Generic::Color for more information.
          */
         typedef typename Generic<dimensions>::Color Color;
 

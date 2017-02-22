@@ -70,9 +70,25 @@ template<UnsignedInt dimensions> struct Generic {
     /**
      * @brief Vertex color
      *
-     * @ref Color3.
+     * @ref Color4, however defaults to @ref Color3 if @ref MAGNUM_BUILD_DEPRECATED
+     * is defined. See the constructor documentation for more information.
      */
-    typedef Attribute<3, Color3> Color;
+    struct Color: Attribute<3, Color4> {
+        /**
+         * @brief Constructor
+         * @param components    Component count
+         * @param dataType      Type of passed data
+         * @param dataOptions   Data options
+         */
+        constexpr explicit Color(Components components, DataType dataType = DataType::Float, DataOptions dataOptions = {});
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @copybrief Color(Components, DataType, DataOptions)
+         * @deprecated Use @ref Color(Components, DataType, DataOptions) instead.
+         */
+        CORRADE_DEPRECATED("use Color(Components, DataType, DataOptions) instead") constexpr explicit Color(DataType dataType = DataType::Float, DataOptions dataOptions = {});
+        #endif
+    };
 };
 #endif
 
@@ -85,7 +101,14 @@ typedef Generic<3> Generic3D;
 #ifndef DOXYGEN_GENERATING_OUTPUT
 struct BaseGeneric {
     typedef Attribute<1, Vector2> TextureCoordinates;
-    typedef Attribute<3, Color3> Color;
+
+    struct Color: Attribute<3, Color4> {
+        constexpr explicit Color(Components components, DataType dataType = DataType::Float, DataOptions dataOptions = DataOptions()): Attribute<3, Color4>{components, dataType, dataOptions} {}
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        CORRADE_DEPRECATED("use Color(Components, DataType, DataOptions) instead") constexpr explicit Color(DataType dataType = DataType::Float, DataOptions dataOptions = DataOptions()): Attribute<3, Color4>{Components::Three, dataType, dataOptions} {}
+        #endif
+    };
 };
 
 template<> struct Generic<2>: BaseGeneric {

@@ -28,12 +28,12 @@
 #define fragmentColor gl_FragColor
 #endif
 
-in lowp vec3 interpolatedColor;
+in lowp vec4 interpolatedColor;
 
 #ifdef NEW_GLSL
 out lowp vec4 fragmentColor;
 #endif
 
 void main() {
-    fragmentColor = vec4(interpolatedColor, 1.0);
+    fragmentColor = interpolatedColor;
 }

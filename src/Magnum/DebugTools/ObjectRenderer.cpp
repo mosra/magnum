@@ -171,7 +171,7 @@ template<UnsignedInt dimensions> ObjectRenderer<dimensions>::ObjectRenderer(Scen
         .setCount(Renderer<dimensions>::indices.size())
         .addVertexBuffer(*vertexBuffer, 0,
             typename Shaders::VertexColor<dimensions>::Position(),
-            typename Shaders::VertexColor<dimensions>::Color())
+            typename Shaders::VertexColor<dimensions>::Color{Shaders::VertexColor<dimensions>::Color::Components::Four})
         .setIndexBuffer(*indexBuffer, 0, Mesh::IndexType::UnsignedByte, 0, Renderer<dimensions>::positions.size());
     ResourceManager::instance().set<Mesh>(_mesh.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
 }

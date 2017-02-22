@@ -45,9 +45,9 @@ in highp vec2 position;
 #ifdef EXPLICIT_ATTRIB_LOCATION
 layout(location = 3)
 #endif
-in lowp vec3 color;
+in lowp vec4 color;
 
-out lowp vec3 interpolatedColor;
+out lowp vec4 interpolatedColor;
 
 void main() {
     gl_Position.xywz = vec4(transformationProjectionMatrix*vec3(position, 1.0), 0.0);
