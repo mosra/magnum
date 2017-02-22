@@ -29,6 +29,7 @@
  * @brief Class @ref Magnum::Shaders::AbstractVector, typedef @ref Magnum::Shaders::AbstractVector2D, @ref Magnum::Shaders::AbstractVector3D
  */
 
+#include "Magnum/AbstractShaderProgram.h"
 #include "Magnum/Shaders/Generic.h"
 
 namespace Magnum { namespace Shaders {

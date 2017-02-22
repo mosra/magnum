@@ -29,6 +29,7 @@
  * @brief Class @ref Magnum::Shaders::VertexColor
  */
 
+#include "Magnum/AbstractShaderProgram.h"
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Matrix3.h"
