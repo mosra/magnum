@@ -225,6 +225,42 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         }
 
         /**
+         * @brief Component-wise less than
+         *
+         * Calls @ref Vector::operator<() on @ref toVector().
+         */
+        BoolVector<cols*rows> operator<(const RectangularMatrix<cols, rows, T>& other) const {
+            return toVector() < other.toVector();
+        }
+
+        /**
+         * @brief Component-wise less than or equal
+         *
+         * Calls @ref Vector::operator<=() on @ref toVector().
+         */
+        BoolVector<cols*rows> operator<=(const RectangularMatrix<cols, rows, T>& other) const {
+            return toVector() <= other.toVector();
+        }
+
+        /**
+         * @brief Component-wise greater than or equal
+         *
+         * Calls @ref Vector::operator>=() on @ref toVector().
+         */
+        BoolVector<cols*rows> operator>=(const RectangularMatrix<cols, rows, T>& other) const {
+            return toVector() >= other.toVector();
+        }
+
+        /**
+         * @brief Component-wise greater than
+         *
+         * Calls @ref Vector::operator>() on @ref toVector().
+         */
+        BoolVector<cols*rows> operator>(const RectangularMatrix<cols, rows, T>& other) const {
+            return toVector() > other.toVector();
+        }
+
+        /**
          * @brief Negated matrix
          *
          * The computation is done column-wise. @f[

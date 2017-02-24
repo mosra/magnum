@@ -70,6 +70,7 @@ struct RectangularMatrixTest: Corrade::TestSuite::Tester {
     void row();
 
     void compare();
+    void compareComponentWise();
 
     void negative();
     void addSubtract();
@@ -119,6 +120,7 @@ RectangularMatrixTest::RectangularMatrixTest() {
               &RectangularMatrixTest::row,
 
               &RectangularMatrixTest::compare,
+              &RectangularMatrixTest::compareComponentWise,
 
               &RectangularMatrixTest::negative,
               &RectangularMatrixTest::addSubtract,
@@ -329,6 +331,15 @@ void RectangularMatrixTest::compare() {
                   Vector2i(5, -10));
     CORRADE_VERIFY(ai == ai);
     CORRADE_VERIFY(ai != bi);
+}
+
+void RectangularMatrixTest::compareComponentWise() {
+    typedef BoolVector<3> BoolVector3;
+    typedef RectangularMatrix<3, 1, Float> Matrix3x1;
+    CORRADE_COMPARE(Matrix3x1(1.0f, -1.0f, 5.0f) < Matrix3x1(1.1f, -1.0f, 3.0f), BoolVector3(0x1));
+    CORRADE_COMPARE(Matrix3x1(1.0f, -1.0f, 5.0f) <= Matrix3x1(1.1f, -1.0f, 3.0f), BoolVector3(0x3));
+    CORRADE_COMPARE(Matrix3x1(1.0f, -1.0f, 5.0f) >= Matrix3x1(1.1f, -1.0f, 3.0f), BoolVector3(0x6));
+    CORRADE_COMPARE(Matrix3x1(1.0f, -1.0f, 5.0f) > Matrix3x1(1.1f, -1.0f, 3.0f), BoolVector3(0x4));
 }
 
 void RectangularMatrixTest::negative() {
