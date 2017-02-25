@@ -91,7 +91,6 @@ cmake .. \
     -DBUILD_DEPRECATED=${deprecated_build_flag} \
     ${static_build_flag} \
     -DWITH_AUDIO=ON \
-    -DWITH_GLUTAPPLICATION=ON \
     -DWITH_SDL2APPLICATION=ON \
     -DWITH_WINDOWLESSWGLAPPLICATION=ON \
     -DWITH_WGLCONTEXT=ON \

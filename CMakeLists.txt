@@ -137,7 +137,6 @@ endif()
 # Platform-independent (almost) application libraries
 if(NOT CORRADE_TARGET_NACL AND NOT CORRADE_TARGET_ANDROID)
     option(WITH_GLFWAPPLICATION "Build GlfwApplication library")
-    cmake_dependent_option(WITH_GLUTAPPLICATION "Build GlutApplication library" OFF "NOT TARGET_GLES" OFF)
     option(WITH_SDL2APPLICATION "Build Sdl2Application library" OFF)
 endif()
 

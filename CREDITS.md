@@ -8,8 +8,6 @@ Not mentioning OpenGL API and platform-specific toolkits.
     Weber, licensed under [MIT license](https://raw.githubusercontent.com/ginkgo/flextGL/master/COPYING)
 *   The `Audio` namespace depends on the **OpenAL** API --
     http://www.openal.org.
-*   The `Platform::GlutApplication` class uses **freeGLUT** library --
-    http://freeglut.sourceforge.net/, licensed under MIT license.
 *   The `Platform::Sdl2Application` class uses **SDL2** library --
     https://www.libsdl.org/, licensed under [ZLIB license](http://www.gzip.org/zlib/zlib_license.html)
 

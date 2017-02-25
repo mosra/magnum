@@ -206,7 +206,6 @@ platform best:
 
 -   `WITH_ANDROIDAPPLICATION` - @ref Platform::AndroidApplication "AndroidApplication"
 -   `WITH_GLFWAPPLICATION` - @ref Platform::GlfwApplication "GlfwApplication"
--   `WITH_GLUTAPPLICATION` - @ref Platform::GlutApplication "GlutApplication"
 -   `WITH_GLXAPPLICATION` - @ref Platform::GlxApplication "GlxApplication"
 -   `WITH_NACLAPPLICATION` - @ref Platform::NaClApplication "NaClApplication"
 -   `WITH_SDL2APPLICATION` - @ref Platform::Sdl2Application "Sdl2Application"
@@ -687,7 +686,7 @@ replace `localhost:8080` with your server name, replace `update-job` with
     java -jar ~/jenkins-cli.jar -s http://localhost:8080 update-job Magnum-GLTests < package/ci/jenkins-gltests.xml
 
 Build is done using **Ninja** build system and everything possible is enabled,
-thus you need also **SDL2**, **GLFW**, **GLUT** and **OpenAL** libraries. It
+thus you need also **SDL2**, **GLFW** and **OpenAL** libraries. It
 expects that **GCC** >= 4.9, 4.8, 4.7 and **Clang** are installed and there
 are **OpenGL**, **OpenGL ES 2.0** and **OpenGL ES 3.0** librares as it tries to
 compile the library with every combination of them. You can add/remove the axes
