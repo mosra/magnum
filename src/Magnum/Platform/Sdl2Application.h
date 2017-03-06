@@ -35,6 +35,7 @@
 #include <Corrade/Containers/EnumSet.h>
 
 #include "Magnum/Magnum.h"
+#include "Magnum/Tags.h"
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/Platform/Platform.h"
 
@@ -361,7 +362,15 @@ class Sdl2Application {
          * Unlike above, the context is not created and must be created later
          * with @ref createContext() or @ref tryCreateContext().
          */
-        explicit Sdl2Application(const Arguments& arguments, std::nullptr_t);
+        explicit Sdl2Application(const Arguments& arguments, NoCreateT);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief Sdl2Application(const Arguments&, NoCreateT)
+         * @deprecated Use @ref Sdl2Application(const Arguments&, NoCreateT) instead.
+         */
+        CORRADE_DEPRECATED("use Sdl2Application(const Arguments&, NoCreateT) instead") explicit Sdl2Application(const Arguments& arguments, std::nullptr_t): Sdl2Application{arguments, NoCreate} {}
+        #endif
 
         /** @brief Copying is not allowed */
         Sdl2Application(const Sdl2Application&) = delete;

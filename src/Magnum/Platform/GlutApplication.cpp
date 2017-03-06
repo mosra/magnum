@@ -39,11 +39,11 @@ GlutApplication* GlutApplication::_instance = nullptr;
 GlutApplication::GlutApplication(const Arguments& arguments): GlutApplication{arguments, Configuration{}} {}
 #endif
 
-GlutApplication::GlutApplication(const Arguments& arguments, const Configuration& configuration): GlutApplication{arguments, nullptr} {
+GlutApplication::GlutApplication(const Arguments& arguments, const Configuration& configuration): GlutApplication{arguments, NoCreate} {
     createContext(configuration);
 }
 
-GlutApplication::GlutApplication(const Arguments& arguments, std::nullptr_t): _context{new Context{NoCreate, arguments.argc, arguments.argv}} {
+GlutApplication::GlutApplication(const Arguments& arguments, NoCreateT): _context{new Context{NoCreate, arguments.argc, arguments.argv}} {
     /* Save global instance */
     _instance = this;
 

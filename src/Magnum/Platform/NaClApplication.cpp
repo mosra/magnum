@@ -62,11 +62,11 @@ NaClApplication::ConsoleDebugOutput::ConsoleDebugOutput(pp::Instance* instance):
 NaClApplication::NaClApplication(const Arguments& arguments): NaClApplication{arguments, Configuration{}} {}
 #endif
 
-NaClApplication::NaClApplication(const Arguments& arguments, const Configuration& configuration): NaClApplication{arguments, nullptr} {
+NaClApplication::NaClApplication(const Arguments& arguments, const Configuration& configuration): NaClApplication{arguments, NoCreate} {
     createContext(configuration);
 }
 
-NaClApplication::NaClApplication(const Arguments& arguments, std::nullptr_t): Instance(arguments), Graphics3DClient(this), MouseLock(this) {
+NaClApplication::NaClApplication(const Arguments& arguments, NoCreateT): Instance(arguments), Graphics3DClient(this), MouseLock(this) {
     _debugOutput.reset(new ConsoleDebugOutput{this});
 }
 

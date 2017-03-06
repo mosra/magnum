@@ -69,11 +69,11 @@ void Sdl2Application::staticMainLoop() {
 Sdl2Application::Sdl2Application(const Arguments& arguments): Sdl2Application{arguments, Configuration{}} {}
 #endif
 
-Sdl2Application::Sdl2Application(const Arguments& arguments, const Configuration& configuration): Sdl2Application{arguments, nullptr} {
+Sdl2Application::Sdl2Application(const Arguments& arguments, const Configuration& configuration): Sdl2Application{arguments, NoCreate} {
     createContext(configuration);
 }
 
-Sdl2Application::Sdl2Application(const Arguments& arguments, std::nullptr_t): _glContext{nullptr},
+Sdl2Application::Sdl2Application(const Arguments& arguments, NoCreateT): _glContext{nullptr},
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     _minimalLoopPeriod{0},
     #endif

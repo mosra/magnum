@@ -33,6 +33,7 @@
 #include <string>
 
 #include "Magnum/Magnum.h"
+#include "Magnum/Tags.h"
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/Platform/Platform.h"
 
@@ -117,8 +118,16 @@ class GlutApplication {
         explicit GlutApplication(const Arguments& arguments);
         #endif
 
-        /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, std::nullptr_t) */
-        explicit GlutApplication(const Arguments& arguments, std::nullptr_t);
+        /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, NoCreateT) */
+        explicit GlutApplication(const Arguments& arguments, NoCreateT);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief GlutApplication(const Arguments&, NoCreateT)
+         * @deprecated Use @ref GlutApplication(const Arguments&, NoCreateT) instead.
+         */
+        CORRADE_DEPRECATED("use GlutApplication(const Arguments&, NoCreateT) instead") explicit GlutApplication(const Arguments& arguments, std::nullptr_t): GlutApplication{arguments, NoCreate} {}
+        #endif
 
         /** @brief Copying is not allowed */
         GlutApplication(const GlutApplication&) = delete;

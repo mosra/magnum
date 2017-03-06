@@ -57,11 +57,11 @@ AndroidApplication::LogOutput::LogOutput():
 AndroidApplication::AndroidApplication(const Arguments& arguments): AndroidApplication{arguments, Configuration{}} {}
 #endif
 
-AndroidApplication::AndroidApplication(const Arguments& arguments, const Configuration& configuration): AndroidApplication{arguments, nullptr} {
+AndroidApplication::AndroidApplication(const Arguments& arguments, const Configuration& configuration): AndroidApplication{arguments, NoCreate} {
     createContext(configuration);
 }
 
-AndroidApplication::AndroidApplication(const Arguments& arguments, std::nullptr_t): _state{arguments}, _context{new Context{NoCreate, 0, nullptr}} {
+AndroidApplication::AndroidApplication(const Arguments& arguments, NoCreateT): _state{arguments}, _context{new Context{NoCreate, 0, nullptr}} {
     /* Redirect debug output to Android log */
     _logOutput.reset(new LogOutput);
 }

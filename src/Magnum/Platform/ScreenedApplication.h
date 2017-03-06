@@ -120,7 +120,15 @@ template<class Application> class BasicScreenedApplication: public Application, 
          * with @ref Sdl2Application::createContext() "createContext()" or
          * @ref Sdl2Application::tryCreateContext() "tryCreateContext()".
          */
-        explicit BasicScreenedApplication(const typename Application::Arguments& arguments, std::nullptr_t);
+        explicit BasicScreenedApplication(const typename Application::Arguments& arguments, NoCreateT);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief BasicScreenedApplication(const Arguments&, NoCreateT)
+         * @deprecated Use @ref BasicScreenedApplication(const Arguments&, NoCreateT) instead.
+         */
+        CORRADE_DEPRECATED("use BasicScreenedApplication(const Arguments&, NoCreateT) instead") explicit BasicScreenedApplication(const typename Application::Arguments& arguments, std::nullptr_t): BasicScreenedApplication{arguments, NoCreate} {}
+        #endif
 
         /**
          * @brief Add screen to application

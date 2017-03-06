@@ -34,6 +34,7 @@
 #include <android_native_app_glue.h>
 
 #include "Magnum/Magnum.h"
+#include "Magnum/Tags.h"
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/Platform/Platform.h"
 
@@ -201,8 +202,16 @@ class AndroidApplication {
         explicit AndroidApplication(const Arguments& arguments);
         #endif
 
-        /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, std::nullptr_t) */
-        explicit AndroidApplication(const Arguments& arguments, std::nullptr_t);
+        /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, NoCreateT) */
+        explicit AndroidApplication(const Arguments& arguments, NoCreateT);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief AndroidApplication(const Arguments&, NoCreateT)
+         * @deprecated Use @ref AndroidApplication(const Arguments&, NoCreateT) instead.
+         */
+        CORRADE_DEPRECATED("use AndroidApplication(const Arguments&, NoCreateT) instead") explicit AndroidApplication(const Arguments& arguments, std::nullptr_t): AndroidApplication{arguments, NoCreate} {}
+        #endif
 
         /** @brief Copying is not allowed */
         AndroidApplication(const AndroidApplication&) = delete;

@@ -47,11 +47,11 @@ static_assert(GLFW_TRUE == true && GLFW_FALSE == false, "GLFW does not have sane
 GlfwApplication::GlfwApplication(const Arguments& arguments): GlfwApplication{arguments, Configuration{}} {}
 #endif
 
-GlfwApplication::GlfwApplication(const Arguments& arguments, const Configuration& configuration): GlfwApplication{arguments, nullptr} {
+GlfwApplication::GlfwApplication(const Arguments& arguments, const Configuration& configuration): GlfwApplication{arguments, NoCreate} {
     createContext(configuration);
 }
 
-GlfwApplication::GlfwApplication(const Arguments& arguments, std::nullptr_t):
+GlfwApplication::GlfwApplication(const Arguments& arguments, NoCreateT):
     _context{new Context{NoCreate, arguments.argc, arguments.argv}},
     _flags{Flag::Redraw}
 {

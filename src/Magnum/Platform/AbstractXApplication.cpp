@@ -37,11 +37,11 @@
 
 namespace Magnum { namespace Platform {
 
-AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandler<Configuration, Display*, VisualID, Window>* contextHandler, const Arguments& arguments, const Configuration& configuration): AbstractXApplication{contextHandler, arguments, nullptr} {
+AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandler<Configuration, Display*, VisualID, Window>* contextHandler, const Arguments& arguments, const Configuration& configuration): AbstractXApplication{contextHandler, arguments, NoCreate} {
     createContext(configuration);
 }
 
-AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandler<Configuration, Display*, VisualID, Window>* contextHandler, const Arguments& arguments, std::nullptr_t): _contextHandler{contextHandler}, _context{new Context{NoCreate, arguments.argc, arguments.argv}}, _flags{Flag::Redraw} {}
+AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandler<Configuration, Display*, VisualID, Window>* contextHandler, const Arguments& arguments, NoCreateT): _contextHandler{contextHandler}, _context{new Context{NoCreate, arguments.argc, arguments.argv}}, _flags{Flag::Redraw} {}
 
 void AbstractXApplication::createContext() { createContext({}); }
 

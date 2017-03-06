@@ -44,6 +44,7 @@
 #include <ppapi/gles2/gl2ext_ppapi.h>
 
 #include "Magnum/Magnum.h"
+#include "Magnum/Tags.h"
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/Platform/Platform.h"
 
@@ -215,8 +216,16 @@ class NaClApplication: public pp::Instance, public pp::Graphics3DClient, public 
         explicit NaClApplication(const Arguments& arguments);
         #endif
 
-        /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, std::nullptr_t) */
-        explicit NaClApplication(const Arguments& arguments, std::nullptr_t);
+        /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, NoCreateT) */
+        explicit NaClApplication(const Arguments& arguments, NoCreateT);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief NaClApplication(const Arguments&, NoCreateT)
+         * @deprecated Use @ref NaClApplication(const Arguments&, NoCreateT) instead.
+         */
+        CORRADE_DEPRECATED("use NaClApplication(const Arguments&, NoCreateT) instead") explicit NaClApplication(const Arguments& arguments, std::nullptr_t): NaClApplication{arguments, NoCreate} {}
+        #endif
 
         /** @brief Copying is not allowed */
         NaClApplication(const NaClApplication&) = delete;

@@ -45,7 +45,7 @@ template<class Application> void BasicScreen<Application>::mouseMoveEvent(MouseM
 
 template<class Application> BasicScreenedApplication<Application>::BasicScreenedApplication(const typename Application::Arguments& arguments, const typename Application::Configuration& configuration): Application(arguments, configuration) {}
 
-template<class Application> BasicScreenedApplication<Application>::BasicScreenedApplication(const typename Application::Arguments& arguments, std::nullptr_t): Application(arguments, nullptr) {}
+template<class Application> BasicScreenedApplication<Application>::BasicScreenedApplication(const typename Application::Arguments& arguments, NoCreateT): Application(arguments, NoCreate) {}
 
 template<class Application> BasicScreenedApplication<Application>::~BasicScreenedApplication() = default;
 

@@ -35,6 +35,7 @@
 #include <Corrade/Containers/ArrayView.h>
 
 #include "Magnum/Magnum.h"
+#include "Magnum/Tags.h"
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/Platform/Platform.h"
 
@@ -122,8 +123,16 @@ class GlfwApplication {
         explicit GlfwApplication(const Arguments& arguments);
         #endif
 
-        /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, std::nullptr_t) */
-        explicit GlfwApplication(const Arguments& arguments, std::nullptr_t);
+        /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, NoCreateT) */
+        explicit GlfwApplication(const Arguments& arguments, NoCreateT);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @copybrief GlfwApplication(const Arguments&, NoCreateT)
+         * @deprecated Use @ref GlfwApplication(const Arguments&, NoCreateT) instead.
+         */
+        CORRADE_DEPRECATED("use GlfwApplication(const Arguments&, NoCreateT) instead") explicit GlfwApplication(const Arguments& arguments, std::nullptr_t): GlfwApplication{arguments, NoCreate} {}
+        #endif
 
         /** @brief Copying is not allowed */
         GlfwApplication(const GlfwApplication&) = delete;

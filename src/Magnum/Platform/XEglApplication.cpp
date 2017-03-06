@@ -32,7 +32,7 @@ namespace Magnum { namespace Platform {
 
 XEglApplication::XEglApplication(const Arguments& arguments, const Configuration& configuration): AbstractXApplication(new Implementation::EglContextHandler, arguments, configuration) {}
 
-XEglApplication::XEglApplication(const Arguments& arguments, std::nullptr_t): AbstractXApplication(new Implementation::EglContextHandler, arguments, nullptr) {}
+XEglApplication::XEglApplication(const Arguments& arguments, NoCreateT): AbstractXApplication{new Implementation::EglContextHandler, arguments, NoCreate} {}
 
 XEglApplication::~XEglApplication() = default;
 
