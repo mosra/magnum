@@ -35,6 +35,7 @@
 
 #include "Magnum/AbstractObject.h"
 #include "Magnum/Attribute.h"
+#include "Magnum/Tags.h"
 
 #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_TARGET_GLES2)
 #include <vector>
@@ -694,6 +695,19 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * @see @fn_gl{CreateProgram}
          */
         explicit AbstractShaderProgram();
+
+        /**
+         * @brief Construct without creating the underlying OpenGL object
+         *
+         * The constructed instance is equivalent to moved-from state. Useful
+         * in cases where you will overwrite the instance later anyway. Move
+         * another object over it to make it useful.
+         *
+         * This function can be safely used for constructing (and later
+         * destructing) objects even without any OpenGL context being active.
+         * @see @ref AbstractShaderProgram()
+         */
+        explicit AbstractShaderProgram(NoCreateT) noexcept;
 
         /** @brief Copying is not allowed */
         AbstractShaderProgram(const AbstractShaderProgram&) = delete;

@@ -277,16 +277,20 @@ AbstractShaderProgram::AbstractShaderProgram(): _id(glCreateProgram()) {
     CORRADE_INTERNAL_ASSERT(_id != Implementation::State::DisengagedBinding);
 }
 
+AbstractShaderProgram::AbstractShaderProgram(NoCreateT) noexcept: _id{0} {}
+
 AbstractShaderProgram::AbstractShaderProgram(AbstractShaderProgram&& other) noexcept: _id(other._id) {
     other._id = 0;
 }
 
 AbstractShaderProgram::~AbstractShaderProgram() {
+    if(!_id) return;
+
     /* Remove current usage from the state */
     GLuint& current = Context::current().state().shaderProgram->current;
     if(current == _id) current = 0;
 
-    if(_id) glDeleteProgram(_id);
+    glDeleteProgram(_id);
 }
 
 AbstractShaderProgram& AbstractShaderProgram::operator=(AbstractShaderProgram&& other) noexcept {
