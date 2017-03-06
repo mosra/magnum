@@ -47,7 +47,6 @@ struct CubeMapTextureGLTest: OpenGLTester {
     explicit CubeMapTextureGLTest();
 
     void construct();
-    void constructNoCreate();
     void wrap();
 
     void bind();
@@ -119,7 +118,6 @@ private:
 
 CubeMapTextureGLTest::CubeMapTextureGLTest() {
     addTests({&CubeMapTextureGLTest::construct,
-              &CubeMapTextureGLTest::constructNoCreate,
               &CubeMapTextureGLTest::wrap,
 
               &CubeMapTextureGLTest::bind,
@@ -228,17 +226,6 @@ void CubeMapTextureGLTest::construct() {
 
         MAGNUM_VERIFY_NO_ERROR();
         CORRADE_VERIFY(texture.id() > 0);
-    }
-
-    MAGNUM_VERIFY_NO_ERROR();
-}
-
-void CubeMapTextureGLTest::constructNoCreate() {
-    {
-        CubeMapTexture texture{NoCreate};
-
-        MAGNUM_VERIFY_NO_ERROR();
-        CORRADE_COMPARE(texture.id(), 0);
     }
 
     MAGNUM_VERIFY_NO_ERROR();

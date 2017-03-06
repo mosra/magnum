@@ -353,6 +353,9 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * The constructed instance is equivalent to moved-from state. Useful
          * in cases where you will overwrite the instance later anyway. Move
          * another object over it to make it useful.
+         *
+         * This function can be safely used for constructing (and later
+         * destructing) objects even without any OpenGL context being active.
          * @see @ref Framebuffer(const Range2Di&), @ref wrap()
          */
         explicit Framebuffer(NoCreateT) noexcept { _id = 0; }

@@ -148,6 +148,9 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
          * The constructed instance is equivalent to moved-from state. Useful
          * in cases where you will overwrite the instance later anyway. Move
          * another object over it to make it useful.
+         *
+         * This function can be safely used for constructing (and later
+         * destructing) objects even without any OpenGL context being active.
          * @see @ref BufferTexture(), @ref wrap()
          */
         explicit BufferTexture(NoCreateT) noexcept:

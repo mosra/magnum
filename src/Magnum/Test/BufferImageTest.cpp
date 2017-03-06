@@ -23,43 +23,42 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/Framebuffer.h"
+#include "Magnum/BufferImage.h"
 
 namespace Magnum { namespace Test {
 
-struct FramebufferTest: TestSuite::Tester {
-    explicit FramebufferTest();
+struct BufferImageTest: TestSuite::Tester {
+    explicit BufferImageTest();
 
     void constructNoCreate();
-
-    void debugStatus();
+    void constructNoCreateCompressed();
 };
 
-FramebufferTest::FramebufferTest() {
-    addTests({&FramebufferTest::constructNoCreate,
-
-              &FramebufferTest::debugStatus});
+BufferImageTest::BufferImageTest() {
+    addTests({&BufferImageTest::constructNoCreate,
+              &BufferImageTest::constructNoCreateCompressed});
 }
 
-void FramebufferTest::constructNoCreate() {
+void BufferImageTest::constructNoCreate() {
     {
-        Framebuffer framebuffer{NoCreate};
-        CORRADE_COMPARE(framebuffer.id(), 0);
+        BufferImage2D image{NoCreate};
+        CORRADE_COMPARE(image.buffer().id(), 0);
     }
 
     CORRADE_VERIFY(true);
 }
 
-void FramebufferTest::debugStatus() {
-    std::ostringstream out;
+void BufferImageTest::constructNoCreateCompressed() {
+    {
+        CompressedBufferImage2D image{NoCreate};
+        CORRADE_COMPARE(image.buffer().id(), 0);
+    }
 
-    Debug(&out) << Framebuffer::Status::IncompleteMissingAttachment << Framebuffer::Status(0xdead);
-    CORRADE_COMPARE(out.str(), "Framebuffer::Status::IncompleteMissingAttachment Framebuffer::Status(0xdead)\n");
+    CORRADE_VERIFY(true);
 }
 
 }}
 
-CORRADE_TEST_MAIN(Magnum::Test::FramebufferTest)
+CORRADE_TEST_MAIN(Magnum::Test::BufferImageTest)

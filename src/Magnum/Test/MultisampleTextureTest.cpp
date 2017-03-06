@@ -23,43 +23,42 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/Framebuffer.h"
+#include "Magnum/MultisampleTexture.h"
 
 namespace Magnum { namespace Test {
 
-struct FramebufferTest: TestSuite::Tester {
-    explicit FramebufferTest();
+struct MultisampleTextureTest: TestSuite::Tester {
+    explicit MultisampleTextureTest();
 
-    void constructNoCreate();
-
-    void debugStatus();
+    void construct2DNoCreate();
+    void construct2DArrayNoCreate();
 };
 
-FramebufferTest::FramebufferTest() {
-    addTests({&FramebufferTest::constructNoCreate,
-
-              &FramebufferTest::debugStatus});
+MultisampleTextureTest::MultisampleTextureTest() {
+    addTests({&MultisampleTextureTest::construct2DNoCreate,
+              &MultisampleTextureTest::construct2DArrayNoCreate});
 }
 
-void FramebufferTest::constructNoCreate() {
+void MultisampleTextureTest::construct2DNoCreate() {
     {
-        Framebuffer framebuffer{NoCreate};
-        CORRADE_COMPARE(framebuffer.id(), 0);
+        MultisampleTexture2D texture{NoCreate};
+        CORRADE_COMPARE(texture.id(), 0);
     }
 
     CORRADE_VERIFY(true);
 }
 
-void FramebufferTest::debugStatus() {
-    std::ostringstream out;
+void MultisampleTextureTest::construct2DArrayNoCreate() {
+    {
+        MultisampleTexture2DArray texture{NoCreate};
+        CORRADE_COMPARE(texture.id(), 0);
+    }
 
-    Debug(&out) << Framebuffer::Status::IncompleteMissingAttachment << Framebuffer::Status(0xdead);
-    CORRADE_COMPARE(out.str(), "Framebuffer::Status::IncompleteMissingAttachment Framebuffer::Status(0xdead)\n");
+    CORRADE_VERIFY(true);
 }
 
 }}
 
-CORRADE_TEST_MAIN(Magnum::Test::FramebufferTest)
+CORRADE_TEST_MAIN(Magnum::Test::MultisampleTextureTest)

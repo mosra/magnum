@@ -44,10 +44,8 @@ struct TextureArrayGLTest: OpenGLTester {
 
     #ifndef MAGNUM_TARGET_GLES
     void construct1D();
-    void construct1DNoCreate();
     #endif
     void construct2D();
-    void construct2DNoCreate();
 
     #ifndef MAGNUM_TARGET_GLES
     void wrap1D();
@@ -166,10 +164,8 @@ TextureArrayGLTest::TextureArrayGLTest() {
     addTests({
         #ifndef MAGNUM_TARGET_GLES
         &TextureArrayGLTest::construct1D,
-        &TextureArrayGLTest::construct1DNoCreate,
         #endif
         &TextureArrayGLTest::construct2D,
-        &TextureArrayGLTest::construct2DNoCreate,
 
         #ifndef MAGNUM_TARGET_GLES
         &TextureArrayGLTest::wrap1D,
@@ -315,17 +311,6 @@ void TextureArrayGLTest::construct1D() {
 
     MAGNUM_VERIFY_NO_ERROR();
 }
-
-void TextureArrayGLTest::construct1DNoCreate() {
-    {
-        Texture1DArray texture{NoCreate};
-
-        MAGNUM_VERIFY_NO_ERROR();
-        CORRADE_COMPARE(texture.id(), 0);
-    }
-
-    MAGNUM_VERIFY_NO_ERROR();
-}
 #endif
 
 void TextureArrayGLTest::construct2D() {
@@ -339,17 +324,6 @@ void TextureArrayGLTest::construct2D() {
 
         MAGNUM_VERIFY_NO_ERROR();
         CORRADE_VERIFY(texture.id() > 0);
-    }
-
-    MAGNUM_VERIFY_NO_ERROR();
-}
-
-void TextureArrayGLTest::construct2DNoCreate() {
-    {
-        Texture2DArray texture{NoCreate};
-
-        MAGNUM_VERIFY_NO_ERROR();
-        CORRADE_COMPARE(texture.id(), 0);
     }
 
     MAGNUM_VERIFY_NO_ERROR();

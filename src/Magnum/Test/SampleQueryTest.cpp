@@ -23,43 +23,31 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/Framebuffer.h"
+#include "Magnum/SampleQuery.h"
 
 namespace Magnum { namespace Test {
 
-struct FramebufferTest: TestSuite::Tester {
-    explicit FramebufferTest();
+struct SampleQueryTest: TestSuite::Tester {
+    explicit SampleQueryTest();
 
     void constructNoCreate();
-
-    void debugStatus();
 };
 
-FramebufferTest::FramebufferTest() {
-    addTests({&FramebufferTest::constructNoCreate,
-
-              &FramebufferTest::debugStatus});
+SampleQueryTest::SampleQueryTest() {
+    addTests({&SampleQueryTest::constructNoCreate});
 }
 
-void FramebufferTest::constructNoCreate() {
+void SampleQueryTest::constructNoCreate() {
     {
-        Framebuffer framebuffer{NoCreate};
-        CORRADE_COMPARE(framebuffer.id(), 0);
+        SampleQuery query{NoCreate};
+        CORRADE_COMPARE(query.id(), 0);
     }
 
     CORRADE_VERIFY(true);
 }
 
-void FramebufferTest::debugStatus() {
-    std::ostringstream out;
-
-    Debug(&out) << Framebuffer::Status::IncompleteMissingAttachment << Framebuffer::Status(0xdead);
-    CORRADE_COMPARE(out.str(), "Framebuffer::Status::IncompleteMissingAttachment Framebuffer::Status(0xdead)\n");
-}
-
 }}
 
-CORRADE_TEST_MAIN(Magnum::Test::FramebufferTest)
+CORRADE_TEST_MAIN(Magnum::Test::SampleQueryTest)

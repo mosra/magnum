@@ -36,7 +36,6 @@ struct RenderbufferGLTest: OpenGLTester {
     explicit RenderbufferGLTest();
 
     void construct();
-    void constructNoCreate();
     void constructCopy();
     void constructMove();
     void wrap();
@@ -49,7 +48,6 @@ struct RenderbufferGLTest: OpenGLTester {
 
 RenderbufferGLTest::RenderbufferGLTest() {
     addTests({&RenderbufferGLTest::construct,
-              &RenderbufferGLTest::constructNoCreate,
               &RenderbufferGLTest::constructCopy,
               &RenderbufferGLTest::constructMove,
               &RenderbufferGLTest::wrap,
@@ -71,17 +69,6 @@ void RenderbufferGLTest::construct() {
 
         MAGNUM_VERIFY_NO_ERROR();
         CORRADE_VERIFY(renderbuffer.id() > 0);
-    }
-
-    MAGNUM_VERIFY_NO_ERROR();
-}
-
-void RenderbufferGLTest::constructNoCreate() {
-    {
-        Renderbuffer renderbuffer{NoCreate};
-
-        MAGNUM_VERIFY_NO_ERROR();
-        CORRADE_COMPARE(renderbuffer.id(), 0);
     }
 
     MAGNUM_VERIFY_NO_ERROR();

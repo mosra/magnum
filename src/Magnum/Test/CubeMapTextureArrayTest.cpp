@@ -23,43 +23,31 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/Framebuffer.h"
+#include "Magnum/CubeMapTextureArray.h"
 
 namespace Magnum { namespace Test {
 
-struct FramebufferTest: TestSuite::Tester {
-    explicit FramebufferTest();
+struct CubeMapTextureArrayTest: TestSuite::Tester {
+    explicit CubeMapTextureArrayTest();
 
     void constructNoCreate();
-
-    void debugStatus();
 };
 
-FramebufferTest::FramebufferTest() {
-    addTests({&FramebufferTest::constructNoCreate,
-
-              &FramebufferTest::debugStatus});
+CubeMapTextureArrayTest::CubeMapTextureArrayTest() {
+    addTests({&CubeMapTextureArrayTest::constructNoCreate});
 }
 
-void FramebufferTest::constructNoCreate() {
+void CubeMapTextureArrayTest::constructNoCreate() {
     {
-        Framebuffer framebuffer{NoCreate};
-        CORRADE_COMPARE(framebuffer.id(), 0);
+        CubeMapTextureArray texture{NoCreate};
+        CORRADE_COMPARE(texture.id(), 0);
     }
 
     CORRADE_VERIFY(true);
 }
 
-void FramebufferTest::debugStatus() {
-    std::ostringstream out;
-
-    Debug(&out) << Framebuffer::Status::IncompleteMissingAttachment << Framebuffer::Status(0xdead);
-    CORRADE_COMPARE(out.str(), "Framebuffer::Status::IncompleteMissingAttachment Framebuffer::Status(0xdead)\n");
-}
-
 }}
 
-CORRADE_TEST_MAIN(Magnum::Test::FramebufferTest)
+CORRADE_TEST_MAIN(Magnum::Test::CubeMapTextureArrayTest)

@@ -41,9 +41,6 @@ struct MultisampleTextureGLTest: OpenGLTester {
     void construct2D();
     void construct2DArray();
 
-    void construct2DNoCreate();
-    void construct2DArrayNoCreate();
-
     void wrap2D();
     void wrap2DArray();
 
@@ -66,9 +63,6 @@ struct MultisampleTextureGLTest: OpenGLTester {
 MultisampleTextureGLTest::MultisampleTextureGLTest() {
     addTests({&MultisampleTextureGLTest::construct2D,
               &MultisampleTextureGLTest::construct2DArray,
-
-              &MultisampleTextureGLTest::construct2DNoCreate,
-              &MultisampleTextureGLTest::construct2DArrayNoCreate,
 
               &MultisampleTextureGLTest::wrap2D,
               &MultisampleTextureGLTest::wrap2DArray,
@@ -108,17 +102,6 @@ void MultisampleTextureGLTest::construct2D() {
     MAGNUM_VERIFY_NO_ERROR();
 }
 
-void MultisampleTextureGLTest::construct2DNoCreate() {
-    {
-        MultisampleTexture2D texture{NoCreate};
-
-        MAGNUM_VERIFY_NO_ERROR();
-        CORRADE_COMPARE(texture.id(), 0);
-    }
-
-    MAGNUM_VERIFY_NO_ERROR();
-}
-
 void MultisampleTextureGLTest::construct2DArray() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
@@ -133,17 +116,6 @@ void MultisampleTextureGLTest::construct2DArray() {
 
         MAGNUM_VERIFY_NO_ERROR();
         CORRADE_VERIFY(texture.id() > 0);
-    }
-
-    MAGNUM_VERIFY_NO_ERROR();
-}
-
-void MultisampleTextureGLTest::construct2DArrayNoCreate() {
-    {
-        MultisampleTexture2DArray texture{NoCreate};
-
-        MAGNUM_VERIFY_NO_ERROR();
-        CORRADE_COMPARE(texture.id(), 0);
     }
 
     MAGNUM_VERIFY_NO_ERROR();

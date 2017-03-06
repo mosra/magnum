@@ -45,7 +45,6 @@ namespace Magnum { namespace Test {
 struct PrimitiveQueryGLTest: OpenGLTester {
     explicit PrimitiveQueryGLTest();
 
-    void constructNoCreate();
     void wrap();
 
     #ifndef MAGNUM_TARGET_GLES
@@ -59,8 +58,7 @@ struct PrimitiveQueryGLTest: OpenGLTester {
 };
 
 PrimitiveQueryGLTest::PrimitiveQueryGLTest() {
-    addTests({&PrimitiveQueryGLTest::constructNoCreate,
-              &PrimitiveQueryGLTest::wrap,
+    addTests({&PrimitiveQueryGLTest::wrap,
 
               #ifndef MAGNUM_TARGET_GLES
               &PrimitiveQueryGLTest::primitivesGenerated,
@@ -71,17 +69,6 @@ PrimitiveQueryGLTest::PrimitiveQueryGLTest() {
               &PrimitiveQueryGLTest::transformFeedbackOverflow
               #endif
               });
-}
-
-void PrimitiveQueryGLTest::constructNoCreate() {
-    {
-        PrimitiveQuery query{NoCreate};
-
-        MAGNUM_VERIFY_NO_ERROR();
-        CORRADE_COMPARE(query.id(), 0);
-    }
-
-    MAGNUM_VERIFY_NO_ERROR();
 }
 
 void PrimitiveQueryGLTest::wrap() {

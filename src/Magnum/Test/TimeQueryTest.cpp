@@ -23,43 +23,31 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/Framebuffer.h"
+#include "Magnum/TimeQuery.h"
 
 namespace Magnum { namespace Test {
 
-struct FramebufferTest: TestSuite::Tester {
-    explicit FramebufferTest();
+struct TimeQueryTest: TestSuite::Tester {
+    explicit TimeQueryTest();
 
     void constructNoCreate();
-
-    void debugStatus();
 };
 
-FramebufferTest::FramebufferTest() {
-    addTests({&FramebufferTest::constructNoCreate,
-
-              &FramebufferTest::debugStatus});
+TimeQueryTest::TimeQueryTest() {
+    addTests({&TimeQueryTest::constructNoCreate});
 }
 
-void FramebufferTest::constructNoCreate() {
+void TimeQueryTest::constructNoCreate() {
     {
-        Framebuffer framebuffer{NoCreate};
-        CORRADE_COMPARE(framebuffer.id(), 0);
+        TimeQuery query{NoCreate};
+        CORRADE_COMPARE(query.id(), 0);
     }
 
     CORRADE_VERIFY(true);
 }
 
-void FramebufferTest::debugStatus() {
-    std::ostringstream out;
-
-    Debug(&out) << Framebuffer::Status::IncompleteMissingAttachment << Framebuffer::Status(0xdead);
-    CORRADE_COMPARE(out.str(), "Framebuffer::Status::IncompleteMissingAttachment Framebuffer::Status(0xdead)\n");
-}
-
 }}
 
-CORRADE_TEST_MAIN(Magnum::Test::FramebufferTest)
+CORRADE_TEST_MAIN(Magnum::Test::TimeQueryTest)

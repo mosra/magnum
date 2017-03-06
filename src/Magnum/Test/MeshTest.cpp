@@ -34,6 +34,8 @@ namespace Magnum { namespace Test {
 struct MeshTest: TestSuite::Tester {
     explicit MeshTest();
 
+    void constructNoCreate();
+
     void indexSize();
 
     void debugPrimitive();
@@ -43,12 +45,23 @@ struct MeshTest: TestSuite::Tester {
 };
 
 MeshTest::MeshTest() {
-    addTests({&MeshTest::indexSize,
+    addTests({&MeshTest::constructNoCreate,
+
+              &MeshTest::indexSize,
 
               &MeshTest::debugPrimitive,
               &MeshTest::debugIndexType,
               &MeshTest::configurationPrimitive,
               &MeshTest::configurationIndexType});
+}
+
+void MeshTest::constructNoCreate() {
+    {
+        Mesh mesh{NoCreate};
+        CORRADE_COMPARE(mesh.id(), 0);
+    }
+
+    CORRADE_VERIFY(true);
 }
 
 void MeshTest::indexSize() {

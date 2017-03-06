@@ -23,43 +23,67 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/Framebuffer.h"
+#include "Magnum/Texture.h"
 
 namespace Magnum { namespace Test {
 
-struct FramebufferTest: TestSuite::Tester {
-    explicit FramebufferTest();
+struct TextureTest: TestSuite::Tester {
+    explicit TextureTest();
 
-    void constructNoCreate();
-
-    void debugStatus();
+    #ifndef MAGNUM_TARGET_GLES
+    void construct1DNoCreate();
+    #endif
+    void construct2DNoCreate();
+    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+    void construct3DNoCreate();
+    #endif
 };
 
-FramebufferTest::FramebufferTest() {
-    addTests({&FramebufferTest::constructNoCreate,
-
-              &FramebufferTest::debugStatus});
+TextureTest::TextureTest() {
+    addTests({
+        #ifndef MAGNUM_TARGET_GLES
+        &TextureTest::construct1DNoCreate,
+        #endif
+        &TextureTest::construct2DNoCreate,
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+        &TextureTest::construct3DNoCreate
+        #endif
+        });
 }
 
-void FramebufferTest::constructNoCreate() {
+#ifndef MAGNUM_TARGET_GLES
+void TextureTest::construct1DNoCreate() {
     {
-        Framebuffer framebuffer{NoCreate};
-        CORRADE_COMPARE(framebuffer.id(), 0);
+        Texture1D texture{NoCreate};
+        CORRADE_COMPARE(texture.id(), 0);
+    }
+
+    CORRADE_VERIFY(true);
+}
+#endif
+
+void TextureTest::construct2DNoCreate() {
+    {
+        Texture2D texture{NoCreate};
+        CORRADE_COMPARE(texture.id(), 0);
     }
 
     CORRADE_VERIFY(true);
 }
 
-void FramebufferTest::debugStatus() {
-    std::ostringstream out;
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+void TextureTest::construct3DNoCreate() {
+    {
+        Texture3D texture{NoCreate};
+        CORRADE_COMPARE(texture.id(), 0);
+    }
 
-    Debug(&out) << Framebuffer::Status::IncompleteMissingAttachment << Framebuffer::Status(0xdead);
-    CORRADE_COMPARE(out.str(), "Framebuffer::Status::IncompleteMissingAttachment Framebuffer::Status(0xdead)\n");
+    CORRADE_VERIFY(true);
 }
+#endif
 
 }}
 
-CORRADE_TEST_MAIN(Magnum::Test::FramebufferTest)
+CORRADE_TEST_MAIN(Magnum::Test::TextureTest)

@@ -35,7 +35,6 @@ namespace Magnum { namespace Test {
 struct TimeQueryGLTest: OpenGLTester {
     explicit TimeQueryGLTest();
 
-    void constructNoCreate();
     void wrap();
 
     void queryTime();
@@ -43,22 +42,10 @@ struct TimeQueryGLTest: OpenGLTester {
 };
 
 TimeQueryGLTest::TimeQueryGLTest() {
-    addTests({&TimeQueryGLTest::constructNoCreate,
-              &TimeQueryGLTest::wrap,
+    addTests({&TimeQueryGLTest::wrap,
 
               &TimeQueryGLTest::queryTime,
               &TimeQueryGLTest::queryTimestamp});
-}
-
-void TimeQueryGLTest::constructNoCreate() {
-    {
-        TimeQuery query{NoCreate};
-
-        MAGNUM_VERIFY_NO_ERROR();
-        CORRADE_COMPARE(query.id(), 0);
-    }
-
-    MAGNUM_VERIFY_NO_ERROR();
 }
 
 void TimeQueryGLTest::wrap() {

@@ -156,6 +156,9 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
          * The constructed instance is equivalent to moved-from state. Useful
          * in cases where you will overwrite the instance later anyway. Move
          * another object over it to make it useful.
+         *
+         * This function can be safely used for constructing (and later
+         * destructing) objects even without any OpenGL context being active.
          * @see @ref MultisampleTexture(), @ref wrap()
          */
         explicit MultisampleTexture(NoCreateT) noexcept: AbstractTexture{NoCreate, Implementation::multisampleTextureTarget<dimensions>()} {}

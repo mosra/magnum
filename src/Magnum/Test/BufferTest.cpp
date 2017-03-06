@@ -34,6 +34,8 @@ namespace Magnum { namespace Test {
 struct BufferTest: TestSuite::Tester {
     explicit BufferTest();
 
+    void constructNoCreate();
+
     void debugTargetHint();
     #ifndef MAGNUM_TARGET_GLES2
     void debugTarget();
@@ -41,11 +43,22 @@ struct BufferTest: TestSuite::Tester {
 };
 
 BufferTest::BufferTest() {
-    addTests({&BufferTest::debugTargetHint,
+    addTests({&BufferTest::constructNoCreate,
+
+              &BufferTest::debugTargetHint,
               #ifndef MAGNUM_TARGET_GLES2
               &BufferTest::debugTarget
               #endif
               });
+}
+
+void BufferTest::constructNoCreate() {
+    {
+        Buffer buffer{NoCreate};
+        CORRADE_COMPARE(buffer.id(), 0);
+    }
+
+    CORRADE_VERIFY(true);
 }
 
 void BufferTest::debugTargetHint() {
