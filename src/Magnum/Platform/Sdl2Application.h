@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Platform::Sdl2Application, macro @ref MAGNUM_SDL2APPLICATION_MAIN()
+ * @brief Class @ref Magnum::Platform::Sdl2Application, @ref Magnum::Platform::Sdl2ApplicationWindow, macro @ref MAGNUM_SDL2APPLICATION_MAIN()
  */
 
 #include <memory>
@@ -35,6 +35,7 @@
 #include <Corrade/Containers/EnumSet.h>
 
 #include "Magnum/Magnum.h"
+#include "Magnum/Tags.h"
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/Platform/Platform.h"
 
@@ -48,7 +49,244 @@
 #include <wrl.h> /* For the WinMain entrypoint */
 #endif
 
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+#include <vector>
+#else
+#include <array>
+#endif
+
 namespace Magnum { namespace Platform {
+
+class Sdl2Application;
+
+/**
+@brief SDL2 Application window
+
+See @ref Sdl2Application for more information.
+*/
+class Sdl2ApplicationWindow {
+    friend Sdl2Application;
+
+    public:
+        class WindowConfiguration;
+        class InputEvent;
+        class KeyEvent;
+        class MouseEvent;
+        class MouseMoveEvent;
+        class MouseScrollEvent;
+        class MultiGestureEvent;
+        class TextInputEvent;
+        class TextEditingEvent;
+
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        /**
+         * @brief Default constructor
+         * @param application   Application instance
+         * @param configuration Window Configuration
+         *
+         * Creates new application window with default or user-specified
+         * configuration. See @ref WindowConfiguration for more information.
+         *
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"
+         *      as there is no concept of windows.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        explicit Sdl2ApplicationWindow(Sdl2Application& application, const WindowConfiguration& configuration = WindowConfiguration());
+        #else
+        /* To avoid "invalid use of incomplete type" */
+        explicit Sdl2ApplicationWindow(Sdl2Application& application, const WindowConfiguration& configuration);
+        explicit Sdl2ApplicationWindow(Sdl2Application& application);
+        #endif
+        #endif
+
+        /** @brief Copying is not allowed */
+        Sdl2ApplicationWindow(const Sdl2ApplicationWindow&) = delete;
+
+        /** @brief Moving is not allowed */
+        Sdl2ApplicationWindow(Sdl2ApplicationWindow&&) = delete;
+
+        /** @brief Copying is not allowed */
+        Sdl2ApplicationWindow& operator=(const Sdl2ApplicationWindow&) = delete;
+
+        /** @brief Moving is not allowed */
+        Sdl2ApplicationWindow& operator=(Sdl2ApplicationWindow&&) = delete;
+
+    protected:
+        /* Nobody will need to have (and delete) Sdl2ApplicationWindow*, thus
+           this is faster than public pure virtual destructor */
+        ~Sdl2ApplicationWindow();
+
+        /** @brief Application instance */
+        Sdl2Application& application() { return _application; }
+        const Sdl2Application& application() const { return _application; } /**< @overload */
+
+        /** @{ @name Screen handling */
+
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        /**
+         * @brief Window size
+         *
+         * Window size to which all input event coordinates can be related.
+         * Note that especially on HiDPI systems the reported window size might
+         * not be the same as framebuffer size.
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         */
+        Vector2i windowSize();
+        #endif
+
+        /**
+         * @brief Swap buffers
+         *
+         * Paints currently rendered framebuffer on screen.
+         * @see @ref setSwapInterval()
+         */
+        void swapBuffers();
+
+    public:
+        /**
+         * @brief Redraw immediately
+         *
+         * Marks the window for redrawing, resulting in call to @ref drawEvent()
+         * in the next iteration. You can call it from @ref drawEvent() itself
+         * to redraw immediately without waiting for user input.
+         */
+        void redraw() { _windowFlags |= WindowFlag::Redraw; }
+
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    protected:
+    #else
+    private:
+    #endif
+        /**
+         * @brief Viewport event
+         *
+         * Called when window size changes. The default implementation does
+         * nothing, if you want to respond to size changes, you should pass the
+         * new size to @ref DefaultFramebuffer::setViewport() and possibly
+         * elsewhere (to @ref SceneGraph::Camera::setViewport(), other
+         * framebuffers...).
+         *
+         * Note that this function might not get called at all if the window
+         * size doesn't change. You should configure the initial state of your
+         * cameras, framebuffers etc. in application constructor rather than
+         * relying on this function to be called. Viewport of default
+         * framebuffer can be retrieved via @ref DefaultFramebuffer::viewport().
+         */
+        virtual void viewportEvent(const Vector2i& size);
+
+        /**
+         * @brief Draw event
+         *
+         * Called when the screen is redrawn. You should clean the framebuffer
+         * using @ref DefaultFramebuffer::clear() and then add your own drawing
+         * functions. After drawing is finished, call @ref swapBuffers(). If
+         * you want to draw immediately again, call also @ref redraw().
+         */
+        virtual void drawEvent() = 0;
+
+        /*@}*/
+
+        /** @{ @name Keyboard handling */
+
+        /**
+         * @brief Key press event
+         *
+         * Called when an key is pressed. Default implementation does nothing.
+         */
+        virtual void keyPressEvent(KeyEvent& event);
+
+        /**
+         * @brief Key release event
+         *
+         * Called when an key is released. Default implementation does nothing.
+         */
+        virtual void keyReleaseEvent(KeyEvent& event);
+
+        /*@}*/
+
+        /** @{ @name Mouse handling */
+
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    protected:
+    #else
+    private:
+    #endif
+        /**
+         * @brief Mouse press event
+         *
+         * Called when mouse button is pressed. Default implementation does
+         * nothing.
+         */
+        virtual void mousePressEvent(MouseEvent& event);
+
+        /**
+         * @brief Mouse release event
+         *
+         * Called when mouse button is released. Default implementation does
+         * nothing.
+         */
+        virtual void mouseReleaseEvent(MouseEvent& event);
+
+        /**
+         * @brief Mouse move event
+         *
+         * Called when mouse is moved. Default implementation does nothing.
+         */
+        virtual void mouseMoveEvent(MouseMoveEvent& event);
+
+        /**
+         * @brief Mouse scroll event
+         *
+         * Called when a scrolling device is used (mouse wheel or scrolling
+         * area on a touchpad). Default implementation does nothing.
+         */
+        virtual void mouseScrollEvent(MouseScrollEvent& event);
+
+        /*@}*/
+
+        /** @{ @name Text input handling */
+
+        /**
+         * @brief Text input event
+         *
+         * Called when text input is active and the text is being input.
+         * @see @ref isTextInputActive()
+         */
+        virtual void textInputEvent(TextInputEvent& event);
+
+        /**
+         * @brief Text editing event
+         *
+         * Called when text input is active and the text is being edited.
+         */
+        virtual void textEditingEvent(TextEditingEvent& event);
+
+        /*@}*/
+
+    private:
+        explicit Sdl2ApplicationWindow(Sdl2Application& application, NoCreateT);
+
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        bool tryCreateWindow(const WindowConfiguration& configuration);
+        void destroyWindow();
+        #endif
+
+        enum class WindowFlag: UnsignedByte {
+            Redraw = 1 << 0
+        };
+
+        typedef Containers::EnumSet<WindowFlag> WindowFlags;
+        CORRADE_ENUMSET_FRIEND_OPERATORS(WindowFlags)
+
+        Sdl2Application& _application;
+
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        SDL_Window* _window;
+        Vector2i _viewportSize;
+        #endif
+
+        WindowFlags _windowFlags;
+};
 
 /** @nosubgrouping
 @brief SDL2 application
@@ -314,8 +552,14 @@ mark all non-source files (except for the `*.pfx` key) with `VS_DEPLOYMENT_CONTE
 property and optionally set their location with `VS_DEPLOYMENT_LOCATION`. If
 you are using `*.resw` files, these need to have the `VS_TOOL_OVERRIDE`
 property set to `PRIResource`.
+
+## Multi-window usage
+
+TODO ..
 */
-class Sdl2Application {
+class Sdl2Application: public Sdl2ApplicationWindow {
+    friend Sdl2ApplicationWindow;
+
     public:
         /** @brief Application arguments */
         struct Arguments {
@@ -327,14 +571,6 @@ class Sdl2Application {
         };
 
         class Configuration;
-        class InputEvent;
-        class KeyEvent;
-        class MouseEvent;
-        class MouseMoveEvent;
-        class MouseScrollEvent;
-        class MultiGestureEvent;
-        class TextInputEvent;
-        class TextEditingEvent;
 
         /**
          * @brief Default constructor
@@ -430,28 +666,6 @@ class Sdl2Application {
          */
         bool tryCreateContext(const Configuration& configuration);
 
-        /** @{ @name Screen handling */
-
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
-        /**
-         * @brief Window size
-         *
-         * Window size to which all input event coordinates can be related.
-         * Note that especially on HiDPI systems the reported window size might
-         * not be the same as framebuffer size.
-         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
-         */
-        Vector2i windowSize();
-        #endif
-
-        /**
-         * @brief Swap buffers
-         *
-         * Paints currently rendered framebuffer on screen.
-         * @see @ref setSwapInterval()
-         */
-        void swapBuffers();
-
         /** @brief Swap interval */
         Int swapInterval() const;
 
@@ -482,15 +696,6 @@ class Sdl2Application {
         }
         #endif
 
-        /**
-         * @brief Redraw immediately
-         *
-         * Marks the window for redrawing, resulting in call to @ref drawEvent()
-         * in the next iteration. You can call it from @ref drawEvent() itself
-         * to redraw immediately without waiting for user input.
-         */
-        void redraw() { _flags |= Flag::Redraw; }
-
     #ifdef DOXYGEN_GENERATING_OUTPUT
     protected:
     #else
@@ -507,53 +712,6 @@ class Sdl2Application {
          */
         virtual void tickEvent();
 
-        /**
-         * @brief Viewport event
-         *
-         * Called when window size changes. The default implementation does
-         * nothing, if you want to respond to size changes, you should pass the
-         * new size to @ref DefaultFramebuffer::setViewport() and possibly
-         * elsewhere (to @ref SceneGraph::Camera::setViewport(), other
-         * framebuffers...).
-         *
-         * Note that this function might not get called at all if the window
-         * size doesn't change. You should configure the initial state of your
-         * cameras, framebuffers etc. in application constructor rather than
-         * relying on this function to be called. Viewport of default
-         * framebuffer can be retrieved via @ref DefaultFramebuffer::viewport().
-         */
-        virtual void viewportEvent(const Vector2i& size);
-
-        /**
-         * @brief Draw event
-         *
-         * Called when the screen is redrawn. You should clean the framebuffer
-         * using @ref DefaultFramebuffer::clear() and then add your own drawing
-         * functions. After drawing is finished, call @ref swapBuffers(). If
-         * you want to draw immediately again, call also @ref redraw().
-         */
-        virtual void drawEvent() = 0;
-
-        /*@}*/
-
-        /** @{ @name Keyboard handling */
-
-        /**
-         * @brief Key press event
-         *
-         * Called when an key is pressed. Default implementation does nothing.
-         */
-        virtual void keyPressEvent(KeyEvent& event);
-
-        /**
-         * @brief Key release event
-         *
-         * Called when an key is released. Default implementation does nothing.
-         */
-        virtual void keyReleaseEvent(KeyEvent& event);
-
-        /*@}*/
-
         /** @{ @name Mouse handling */
 
     public:
@@ -561,52 +719,31 @@ class Sdl2Application {
         bool isMouseLocked() const { return SDL_GetRelativeMouseMode(); }
 
         /**
-         * @brief Enable or disable mouse locking
+         * @brief Enable or disable mouse locking for given window
          *
          * When mouse is locked, the cursor is hidden and only
          * @ref MouseMoveEvent::relativePosition() is changing, absolute
-         * position stays the same.
+         * position stays the same. Set @p window to `nullptr` to unlock the
+         * mouse again.
          */
-        void setMouseLocked(bool enabled);
+        void setMouseLocked(Sdl2ApplicationWindow* window);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @copybrief setMouseLocked(Sdl2ApplicationWindow*)
+         * @deprecated Use @ref setMouseLocked(Sdl2ApplicationWindow*) instead.
+         */
+        CORRADE_DEPRECATED("Use setMouseLocked(Sdl2ApplicationWindow*) instead") void setMouseLocked(bool enabled) {
+            setMouseLocked(enabled ? this : nullptr);
+        }
+        #endif
+
+        /*@}*/
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     protected:
     #else
     private:
     #endif
-        /**
-         * @brief Mouse press event
-         *
-         * Called when mouse button is pressed. Default implementation does
-         * nothing.
-         */
-        virtual void mousePressEvent(MouseEvent& event);
-
-        /**
-         * @brief Mouse release event
-         *
-         * Called when mouse button is released. Default implementation does
-         * nothing.
-         */
-        virtual void mouseReleaseEvent(MouseEvent& event);
-
-        /**
-         * @brief Mouse move event
-         *
-         * Called when mouse is moved. Default implementation does nothing.
-         */
-        virtual void mouseMoveEvent(MouseMoveEvent& event);
-
-        /**
-         * @brief Mouse scroll event
-         *
-         * Called when a scrolling device is used (mouse wheel or scrolling
-         * area on a touchpad). Default implementation does nothing.
-         */
-        virtual void mouseScrollEvent(MouseScrollEvent& event);
-
-        /*@}*/
-
         /** @{ @name Touch gesture handling */
 
         /**
@@ -618,7 +755,7 @@ class Sdl2Application {
          */
         virtual void multiGestureEvent(MultiGestureEvent& event);
 
-        /*@}*/
+         /*@}*/
 
         /** @{ @name Text input handling */
     public:
@@ -662,35 +799,14 @@ class Sdl2Application {
          */
         void setTextInputRect(const Range2Di& rect);
 
-    #ifdef DOXYGEN_GENERATING_OUTPUT
-    protected:
-    #else
-    private:
-    #endif
-        /**
-         * @brief Text input event
-         *
-         * Called when text input is active and the text is being input.
-         * @see @ref isTextInputActive()
-         */
-        virtual void textInputEvent(TextInputEvent& event);
-
-        /**
-         * @brief Text editing event
-         *
-         * Called when text input is active and the text is being edited.
-         */
-        virtual void textEditingEvent(TextEditingEvent& event);
-
         /*@}*/
 
     private:
         enum class Flag: UnsignedByte {
-            Redraw = 1 << 0,
-            VSyncEnabled = 1 << 1,
-            NoTickEvent = 1 << 2,
+            VSyncEnabled = 1 << 0,
+            NoTickEvent = 1 << 1,
             #ifndef CORRADE_TARGET_EMSCRIPTEN
-            Exit = 1 << 3
+            Exit = 1 << 2
             #endif
             #ifdef CORRADE_TARGET_EMSCRIPTEN
             TextInputActive = 1 << 4
@@ -705,62 +821,37 @@ class Sdl2Application {
         static void staticMainLoop();
         #endif
 
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        void makeContextCurrent(Sdl2ApplicationWindow& window);
+        #endif
+        template<class ...Args> void callEventHandler(std::size_t windowId, void(Sdl2ApplicationWindow::*eventHandler)(Args...), Args&&...);
         void mainLoop();
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN
-        SDL_Window* _window;
         SDL_GLContext _glContext;
         UnsignedInt _minimalLoopPeriod;
+        SDL_Window* _activeGlContextWindow{};
         #else
         SDL_Surface* _glContext;
         #endif
 
         std::unique_ptr<Platform::Context> _context;
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        std::vector<Sdl2ApplicationWindow*> _windows;
+        #else
+        std::array<Sdl2ApplicationWindow*, 1> _windows;
+        #endif
 
         Flags _flags;
 };
 
 /**
-@brief Configuration
+@brief Window configuration
 
-The created window is always with double-buffered OpenGL context and 24bit
-depth buffer.
-@see @ref Sdl2Application(), @ref createContext(), @ref tryCreateContext()
+@see @ref Configuration
 */
-class Sdl2Application::Configuration {
+class Sdl2ApplicationWindow::WindowConfiguration {
     public:
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
-        /**
-         * @brief Context flag
-         *
-         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
-         * @see @ref Flags, @ref setFlags(), @ref Context::Flag
-         * @todo re-enable when Emscripten has proper SDL2 support
-         */
-        enum class Flag: int {
-            Debug = SDL_GL_CONTEXT_DEBUG_FLAG,  /**< Create debug context */
-
-            /** Create context with robust access */
-            RobustAccess = SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG,
-
-            /** Create context with reset isolation */
-            ResetIsolation = SDL_GL_CONTEXT_RESET_ISOLATION_FLAG
-        };
-
-        /**
-         * @brief Context flags
-         *
-         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
-         * @see @ref setFlags(), @ref Context::Flags
-         */
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        typedef Containers::EnumSet<Flag, SDL_GL_CONTEXT_DEBUG_FLAG|
-            SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG|SDL_GL_CONTEXT_RESET_ISOLATION_FLAG> Flags;
-        #else
-        typedef Containers::EnumSet<Flag> Flags;
-        #endif
-        #endif
-
         /**
          * @brief Window flag
          *
@@ -808,8 +899,8 @@ class Sdl2Application::Configuration {
         typedef Containers::EnumSet<WindowFlag> WindowFlags;
         #endif
 
-        /*implicit*/ Configuration();
-        ~Configuration();
+        /*implicit*/ WindowConfiguration();
+        ~WindowConfiguration();
 
         #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_IOS)
         /**
@@ -832,12 +923,12 @@ class Sdl2Application::Configuration {
          *      separately in platform-specific configuration file.
          */
         #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_IOS)
-        Configuration& setTitle(std::string title) {
+        WindowConfiguration& setTitle(std::string title) {
             _title = std::move(title);
             return *this;
         }
         #else
-        template<class T> Configuration& setTitle(const T&) { return *this; }
+        template<class T> WindowConfiguration& setTitle(const T&) { return *this; }
         #endif
 
         /** @brief Window size */
@@ -852,7 +943,7 @@ class Sdl2Application::Configuration {
          * @ref WindowFlag::AllowHighDpi, but not necessarily native display
          * resolution (you have to set it explicitly).
          */
-        Configuration& setSize(const Vector2i& size) {
+        WindowConfiguration& setSize(const Vector2i& size) {
             _size = size;
             return *this;
         }
@@ -866,10 +957,60 @@ class Sdl2Application::Configuration {
          *
          * Default are none.
          */
-        Configuration& setWindowFlags(WindowFlags flags) {
+        WindowConfiguration& setWindowFlags(WindowFlags flags) {
             _windowFlags = flags;
             return *this;
         }
+
+    private:
+        #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_IOS)
+        std::string _title;
+        #endif
+        Vector2i _size;
+        WindowFlags _windowFlags;
+};
+
+/**
+@brief Configuration
+
+The created OpenGL context is always double-buffered with 24bit depth buffer.
+@see @ref Sdl2Application(), @ref createContext(), @ref tryCreateContext()
+*/
+class Sdl2Application::Configuration: public WindowConfiguration {
+    public:
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        /**
+         * @brief Context flag
+         *
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         * @see @ref Flags, @ref setFlags(), @ref Context::Flag
+         * @todo re-enable when Emscripten has proper SDL2 support
+         */
+        enum class Flag: int {
+            Debug = SDL_GL_CONTEXT_DEBUG_FLAG,  /**< Create debug context */
+
+            /** Create context with robust access */
+            RobustAccess = SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG,
+
+            /** Create context with reset isolation */
+            ResetIsolation = SDL_GL_CONTEXT_RESET_ISOLATION_FLAG
+        };
+
+        /**
+         * @brief Context flags
+         *
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         * @see @ref setFlags(), @ref Context::Flags
+         */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        typedef Containers::EnumSet<Flag, SDL_GL_CONTEXT_DEBUG_FLAG|
+            SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG|SDL_GL_CONTEXT_RESET_ISOLATION_FLAG> Flags;
+        #else
+        typedef Containers::EnumSet<Flag> Flags;
+        #endif
+        #endif
+
+        /*implicit*/ Configuration();
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         /**
@@ -955,12 +1096,27 @@ class Sdl2Application::Configuration {
         }
         #endif
 
-    private:
-        #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_IOS)
-        std::string _title;
+        /* Overloads to remove WTF-factor from method chaining order */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        Configuration& setTitle(std::string title) {
+            WindowConfiguration::setTitle(std::move(title));
+            return *this;
+        }
+        #else
+        template<class T> Configuration& setTitle(const T&) { return *this; }
         #endif
-        Vector2i _size;
-        WindowFlags _windowFlags;
+        Configuration& setSize(const Vector2i& size) {
+            WindowConfiguration::setSize(size);
+            return *this;
+        }
+        Configuration& setWindowFlags(WindowFlags flags) {
+            WindowConfiguration::setWindowFlags(flags);
+            return *this;
+        }
+        #endif
+
+    private:
         Int _sampleCount;
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         Version _version;
@@ -976,7 +1132,7 @@ class Sdl2Application::Configuration {
     @ref keyReleaseEvent(), @ref mousePressEvent(), @ref mouseReleaseEvent(),
     @ref mouseMoveEvent()
 */
-class Sdl2Application::InputEvent {
+class Sdl2ApplicationWindow::InputEvent {
     public:
         /**
          * @brief Modifier
@@ -1073,7 +1229,7 @@ class Sdl2Application::InputEvent {
 
 @see @ref keyPressEvent(), @ref keyReleaseEvent()
 */
-class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
+class Sdl2ApplicationWindow::KeyEvent: public Sdl2ApplicationWindow::InputEvent {
     friend Sdl2Application;
 
     public:
@@ -1279,7 +1435,7 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
 @see @ref MouseMoveEvent, @ref MouseScrollEvent, @ref mousePressEvent(),
     @ref mouseReleaseEvent()
 */
-class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
+class Sdl2ApplicationWindow::MouseEvent: public Sdl2ApplicationWindow::InputEvent {
     friend Sdl2Application;
 
     public:
@@ -1361,7 +1517,7 @@ class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
 
 @see @ref MouseEvent, @ref MouseScrollEvent, @ref mouseMoveEvent()
 */
-class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
+class Sdl2ApplicationWindow::MouseMoveEvent: public Sdl2ApplicationWindow::InputEvent {
     friend Sdl2Application;
 
     public:
@@ -1652,6 +1808,7 @@ When no other application header is included this macro is also aliased to
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_APPLICATION_MAIN
 typedef Sdl2Application Application;
+typedef Sdl2ApplicationWindow ApplicationWindow;
 typedef BasicScreen<Sdl2Application> Screen;
 typedef BasicScreenedApplication<Sdl2Application> ScreenedApplication;
 #define MAGNUM_APPLICATION_MAIN(className) MAGNUM_SDL2APPLICATION_MAIN(className)
@@ -1660,13 +1817,14 @@ typedef BasicScreenedApplication<Sdl2Application> ScreenedApplication;
 #endif
 #endif
 
+CORRADE_ENUMSET_OPERATORS(Sdl2ApplicationWindow::WindowFlags)
+CORRADE_ENUMSET_OPERATORS(Sdl2ApplicationWindow::WindowConfiguration::WindowFlags)
+CORRADE_ENUMSET_OPERATORS(Sdl2ApplicationWindow::InputEvent::Modifiers)
+CORRADE_ENUMSET_OPERATORS(Sdl2ApplicationWindow::MouseMoveEvent::Buttons)
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::Flags)
 #ifndef CORRADE_TARGET_EMSCRIPTEN
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::Flags)
 #endif
-CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::WindowFlags)
-CORRADE_ENUMSET_OPERATORS(Sdl2Application::InputEvent::Modifiers)
-CORRADE_ENUMSET_OPERATORS(Sdl2Application::MouseMoveEvent::Buttons)
 
 }}
 

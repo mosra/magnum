@@ -58,6 +58,79 @@ Sdl2Application::InputEvent::Modifiers fixedModifiers(Uint16 mod) {
 
 }
 
+Sdl2ApplicationWindow::Sdl2ApplicationWindow(Sdl2Application& application, NoCreateT): _application{application},
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    _window{nullptr},
+    #endif
+    _windowFlags{WindowFlag::Redraw} {}
+
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+Sdl2ApplicationWindow::Sdl2ApplicationWindow(Sdl2Application& application, const Sdl2ApplicationWindow::WindowConfiguration& configuration): Sdl2ApplicationWindow{application, NoCreate} {
+    if(!tryCreateWindow(configuration)) std::exit(1);
+}
+
+Sdl2ApplicationWindow::Sdl2ApplicationWindow(Sdl2Application& application): Sdl2ApplicationWindow{application, WindowConfiguration{}} {}
+#endif
+
+Sdl2ApplicationWindow::~Sdl2ApplicationWindow() {
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    destroyWindow();
+    #endif
+}
+
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+bool Sdl2ApplicationWindow::tryCreateWindow(const WindowConfiguration& configuration) {
+    CORRADE_INTERNAL_ASSERT(!_window);
+
+    /* Create the window */
+    if(!(_window = SDL_CreateWindow(
+        #ifndef CORRADE_TARGET_IOS
+        configuration.title().data(),
+        #else
+        nullptr,
+        #endif
+        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+        configuration.size().x(), configuration.size().y(),
+        SDL_WINDOW_OPENGL|Uint32(configuration.windowFlags()))))
+    {
+        Error() << "Platform::Sdl2Application::tryCreateContext(): cannot create window:" << SDL_GetError();
+        return false;
+    }
+
+    /* Add itself to the window list */
+    const std::size_t windowId = SDL_GetWindowID(_window);
+    CORRADE_INTERNAL_ASSERT(windowId <= _application._windows.size() + 2);
+    for(std::size_t i = _application._windows.size(); i < windowId; ++i)
+        _application._windows.push_back(nullptr);
+    _application._windows.push_back(this);
+
+    return true;
+}
+
+void Sdl2ApplicationWindow::destroyWindow() {
+    /* Already done, nothing to do */
+    if(!_window) return;
+
+    /* Remove itself from the window list */
+    const std::size_t id = SDL_GetWindowID(_window);
+    CORRADE_INTERNAL_ASSERT(id < _application._windows.size());
+    _application._windows[id] = nullptr;
+
+    SDL_DestroyWindow(_window);
+    _window = nullptr;
+}
+#endif
+
+void Sdl2ApplicationWindow::viewportEvent(const Vector2i&) {}
+void Sdl2ApplicationWindow::keyPressEvent(KeyEvent&) {}
+void Sdl2ApplicationWindow::keyReleaseEvent(KeyEvent&) {}
+void Sdl2ApplicationWindow::mousePressEvent(MouseEvent&) {}
+void Sdl2ApplicationWindow::mouseReleaseEvent(MouseEvent&) {}
+void Sdl2ApplicationWindow::mouseMoveEvent(MouseMoveEvent&) {}
+void Sdl2ApplicationWindow::mouseScrollEvent(MouseScrollEvent&) {}
+void Sdl2ApplicationWindow::textInputEvent(TextInputEvent&) {}
+void Sdl2ApplicationWindow::textEditingEvent(TextEditingEvent&) {}
+
 #ifdef CORRADE_TARGET_EMSCRIPTEN
 Sdl2Application* Sdl2Application::_instance = nullptr;
 void Sdl2Application::staticMainLoop() {
@@ -73,15 +146,16 @@ Sdl2Application::Sdl2Application(const Arguments& arguments, const Configuration
     createContext(configuration);
 }
 
-Sdl2Application::Sdl2Application(const Arguments& arguments, std::nullptr_t): _glContext{nullptr},
+Sdl2Application::Sdl2Application(const Arguments& arguments, std::nullptr_t): Sdl2ApplicationWindow{*this, NoCreate}, _glContext{nullptr},
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     _minimalLoopPeriod{0},
     #endif
-    _context{new Context{NoCreate, arguments.argc, arguments.argv}}, _flags{Flag::Redraw}
+    _context{new Context{NoCreate, arguments.argc, arguments.argv}}
 {
     #ifdef CORRADE_TARGET_EMSCRIPTEN
     CORRADE_ASSERT(!_instance, "Platform::Sdl2Application::Sdl2Application(): the instance is already created", );
     _instance = this;
+    _windows[0] = this;
     #endif
 
     if(SDL_Init(SDL_INIT_VIDEO) < 0) {
@@ -111,6 +185,11 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
     /* sRGB */
     SDL_GL_SetAttribute(SDL_GL_FRAMEBUFFER_SRGB_CAPABLE, configuration.isSRGBCapable());
     #endif
+
+    /* Hide the main window by default so we don't have distracting window
+       blinking in case we have to destroy it again right away */
+    WindowConfiguration hiddenConfiguration{configuration};
+    hiddenConfiguration.setWindowFlags(hiddenConfiguration.windowFlags()|WindowConfiguration::WindowFlag::Hidden);
 
     /** @todo Remove when Emscripten has proper SDL2 support */
     #ifndef CORRADE_TARGET_EMSCRIPTEN
@@ -160,21 +239,8 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
         #endif
     }
 
-    /* Create window. Hide it by default so we don't have distracting window
-       blinking in case we have to destroy it again right away */
-    if(!(_window = SDL_CreateWindow(
-        #ifndef CORRADE_TARGET_IOS
-        configuration.title().data(),
-        #else
-        nullptr,
-        #endif
-        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-        configuration.size().x(), configuration.size().y(),
-        SDL_WINDOW_OPENGL|SDL_WINDOW_HIDDEN|Uint32(configuration.windowFlags()))))
-    {
-        Error() << "Platform::Sdl2Application::tryCreateContext(): cannot create window:" << SDL_GetError();
-        return false;
-    }
+    /* Create the main window */
+    if(!tryCreateWindow(hiddenConfiguration)) return false;
 
     /* Create context */
     _glContext = SDL_GL_CreateContext(_window);
@@ -212,21 +278,14 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
             << SDL_GetError() << "(falling back to compatibility context)";
         else SDL_GL_DeleteContext(_glContext);
 
-        SDL_DestroyWindow(_window);
+        destroyWindow();
 
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, int(configuration.flags()));
 
-        if(!(_window = SDL_CreateWindow(configuration.title().data(),
-            SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-            configuration.size().x(), configuration.size().y(),
-            SDL_WINDOW_OPENGL|SDL_WINDOW_HIDDEN|Uint32(configuration.windowFlags()))))
-        {
-            Error() << "Platform::Sdl2Application::tryCreateContext(): cannot create window:" << SDL_GetError();
-            return false;
-        }
+        if(!tryCreateWindow(hiddenConfiguration)) return false;
 
         /* Create compatibility context */
         _glContext = SDL_GL_CreateContext(_window);
@@ -236,8 +295,7 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
     /* Cannot create context (or fallback compatibility context on desktop) */
     if(!_glContext) {
         Error() << "Platform::Sdl2Application::tryCreateContext(): cannot create context:" << SDL_GetError();
-        SDL_DestroyWindow(_window);
-        _window = nullptr;
+        destroyWindow();
         return false;
     }
 
@@ -270,6 +328,8 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
         return false;
     }
 
+    _activeGlContextWindow = _window;
+
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     /* Show the window once we are sure that everything is okay */
     if(!(configuration.windowFlags() & Configuration::WindowFlag::Hidden))
@@ -281,18 +341,18 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
 }
 
 #ifndef CORRADE_TARGET_EMSCRIPTEN
-Vector2i Sdl2Application::windowSize() {
+Vector2i Sdl2ApplicationWindow::windowSize() {
     Vector2i size;
     SDL_GetWindowSize(_window, &size.x(), &size.y());
     return size;
 }
 #endif
 
-void Sdl2Application::swapBuffers() {
+void Sdl2ApplicationWindow::swapBuffers() {
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     SDL_GL_SwapWindow(_window);
     #else
-    SDL_Flip(_glContext);
+    SDL_Flip(_application._glContext);
     #endif
 }
 
@@ -322,7 +382,9 @@ Sdl2Application::~Sdl2Application() {
 
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     SDL_GL_DeleteContext(_glContext);
-    SDL_DestroyWindow(_window);
+    /* Destroy all windows before calling SDL_Quit */
+    for(Sdl2ApplicationWindow* w: _windows)
+        if(w) w->destroyWindow();
     #else
     SDL_FreeSurface(_glContext);
     CORRADE_INTERNAL_ASSERT(_instance == this);
@@ -348,6 +410,31 @@ void Sdl2Application::exit() {
     #endif
 }
 
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+void Sdl2Application::makeContextCurrent(Sdl2ApplicationWindow& window) {
+    /* Only do it if it is not active already */
+    if(_activeGlContextWindow != window._window) {
+        SDL_GL_MakeCurrent(window._window, _glContext);
+        _activeGlContextWindow = window._window;
+        Context::current().resetState(Context::State::WindowSpecific);
+    }
+}
+#endif
+
+template<class ...Args> inline void Sdl2Application::callEventHandler(std::size_t windowId, void(Sdl2ApplicationWindow::*eventHandler)(Args...), Args&&... args) {
+    if(!(windowId < _windows.size() && _windows[windowId])) {
+        Debug() << "HUH" << windowId << _windows.size();
+        return;
+    }
+
+    CORRADE_INTERNAL_ASSERT(windowId < _windows.size() && _windows[windowId]);
+
+    /* Make GL context current on that window so the user is not restricted in
+       which functions can be called */
+    makeContextCurrent(*_windows[windowId]);
+    (_windows[windowId]->*eventHandler)(std::forward<Args>(args)...);
+}
+
 void Sdl2Application::mainLoop() {
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     const UnsignedInt timeBefore = _minimalLoopPeriod ? SDL_GetTicks() : 0;
@@ -360,25 +447,35 @@ void Sdl2Application::mainLoop() {
                 switch(event.window.event) {
                     case SDL_WINDOWEVENT_RESIZED: {
                         #ifndef CORRADE_TARGET_IOS
-                        viewportEvent({event.window.data1, event.window.data2});
+                        /* Can't pass it directly because that would cause
+                           ambiguous template parameter pack resolution */
+                        const Vector2i drawableSize{event.window.data1, event.window.data2};
+                        callEventHandler(event.window.windowID,
+                            &Sdl2ApplicationWindow::viewportEvent,
+                            drawableSize);
                         #else
                         /* On iOS the window event is in points and not pixels,
                            but we need pixels to call glViewport() properly */
                         Vector2i drawableSize;
                         SDL_GL_GetDrawableSize(_window, &drawableSize.x(), &drawableSize.y());
-                        viewportEvent(drawableSize);
+                        callEventHandler(event.window.windowID,
+                            &Sdl2ApplicationWindow::viewportEvent,
+                            drawableSize);
                         #endif
-                        _flags |= Flag::Redraw;
+                        _windows[event.window.windowID]->_windowFlags |= WindowFlag::Redraw;
                     } break;
                     case SDL_WINDOWEVENT_EXPOSED:
-                        _flags |= Flag::Redraw;
+                        CORRADE_INTERNAL_ASSERT(event.window.windowID < _windows.size() && _windows[event.window.windowID]);
+                        _windows[event.window.windowID]->_windowFlags |= WindowFlag::Redraw;
                         break;
                 } break;
 
             case SDL_KEYDOWN:
             case SDL_KEYUP: {
                 KeyEvent e(static_cast<KeyEvent::Key>(event.key.keysym.sym), fixedModifiers(event.key.keysym.mod), event.key.repeat != 0);
-                event.type == SDL_KEYDOWN ? keyPressEvent(e) : keyReleaseEvent(e);
+                callEventHandler(event.key.windowID,
+                    event.type == SDL_KEYDOWN ? &Sdl2ApplicationWindow::keyPressEvent : &Sdl2ApplicationWindow::keyReleaseEvent,
+                    e);
             } break;
 
             case SDL_MOUSEBUTTONDOWN:
@@ -388,12 +485,16 @@ void Sdl2Application::mainLoop() {
                     , event.button.clicks
                     #endif
                     );
-                event.type == SDL_MOUSEBUTTONDOWN ? mousePressEvent(e) : mouseReleaseEvent(e);
+                callEventHandler(event.button.windowID,
+                    event.type == SDL_MOUSEBUTTONDOWN ? &Sdl2ApplicationWindow::mousePressEvent : &Sdl2ApplicationWindow::mouseReleaseEvent,
+                    e);
             } break;
 
             case SDL_MOUSEWHEEL: {
                 MouseScrollEvent e{{Float(event.wheel.x), Float(event.wheel.y)}};
-                mouseScrollEvent(e);
+                callEventHandler(event.wheel.windowID,
+                    &Sdl2ApplicationWindow::mouseScrollEvent,
+                    e);
 
                 #ifdef MAGNUM_BUILD_DEPRECATED
                 if(event.wheel.y != 0) {
@@ -409,31 +510,43 @@ void Sdl2Application::mainLoop() {
                     #ifdef __GNUC__
                     #pragma GCC diagnostic pop
                     #endif
-                    mousePressEvent(e);
+                    callEventHandler(event.wheel.windowID,
+                        &Sdl2ApplicationWindow::mousePressEvent,
+                        e);
                 }
                 #endif
             } break;
 
             case SDL_MOUSEMOTION: {
                 MouseMoveEvent e({event.motion.x, event.motion.y}, {event.motion.xrel, event.motion.yrel}, static_cast<MouseMoveEvent::Button>(event.motion.state));
-                mouseMoveEvent(e);
+                callEventHandler(event.motion.windowID,
+                    &Sdl2ApplicationWindow::mouseMoveEvent,
+                    e);
                 break;
             }
 
             case SDL_MULTIGESTURE: {
+                /* For some reason not specific to a window, so calling it on
+                   the main window only. SDL2 omission? */
                 MultiGestureEvent e({event.mgesture.x, event.mgesture.y}, event.mgesture.dTheta, event.mgesture.dDist, event.mgesture.numFingers);
+                makeContextCurrent(*this);
                 multiGestureEvent(e);
                 break;
             }
 
             case SDL_TEXTINPUT: {
                 TextInputEvent e{{event.text.text, std::strlen(event.text.text)}};
-                textInputEvent(e);
+                callEventHandler(event.text.windowID,
+                    &Sdl2ApplicationWindow::textInputEvent,
+                    e);
             } break;
 
             case SDL_TEXTEDITING: {
+                CORRADE_INTERNAL_ASSERT(event.edit.windowID < _windows.size() && _windows[event.edit.windowID]);
                 TextEditingEvent e{{event.edit.text, std::strlen(event.text.text)}, event.edit.start, event.edit.length};
-                textEditingEvent(e);
+                callEventHandler(event.text.windowID,
+                    &Sdl2ApplicationWindow::textEditingEvent,
+                    e);
             } break;
 
             case SDL_QUIT:
@@ -447,26 +560,34 @@ void Sdl2Application::mainLoop() {
     }
 
     /* Tick event */
-    if(!(_flags & Flag::NoTickEvent)) tickEvent();
+    if(!(_flags & Flag::NoTickEvent)) {
+        makeContextCurrent(*this);
+        tickEvent();
+    }
 
     /* Draw event */
-    if(_flags & Flag::Redraw) {
-        _flags &= ~Flag::Redraw;
-        drawEvent();
+    bool somethingDrawn = false;
+    for(std::size_t i = 0; i != _windows.size(); ++i) {
+        if(!_windows[i] || !(_windows[i]->_windowFlags & WindowFlag::Redraw)) continue;
 
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
-        /* If VSync is not enabled, delay to prevent CPU hogging (if set) */
+        _windows[i]->_windowFlags &= ~WindowFlag::Redraw;
+        callEventHandler(i,
+            &Sdl2ApplicationWindow::drawEvent);
+        somethingDrawn = true;
+    }
+
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    /* If VSync is not enabled, delay to prevent CPU hogging (if set) */
+    if(somethingDrawn) {
         if(!(_flags & Flag::VSyncEnabled) && _minimalLoopPeriod) {
             const UnsignedInt loopTime = SDL_GetTicks() - timeBefore;
             if(loopTime < _minimalLoopPeriod)
                 SDL_Delay(_minimalLoopPeriod - loopTime);
         }
-        #endif
 
         return;
     }
 
-    #ifndef CORRADE_TARGET_EMSCRIPTEN
     /* If not drawing anything, delay to prevent CPU hogging (if set) */
     if(_minimalLoopPeriod) {
         const UnsignedInt loopTime = SDL_GetTicks() - timeBefore;
@@ -480,14 +601,14 @@ void Sdl2Application::mainLoop() {
     #endif
 }
 
-void Sdl2Application::setMouseLocked(bool enabled) {
+void Sdl2Application::setMouseLocked(Sdl2ApplicationWindow* const window) {
     /** @todo Implement this in Emscripten */
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    SDL_SetWindowGrab(_window, enabled ? SDL_TRUE : SDL_FALSE);
-    SDL_SetRelativeMouseMode(enabled ? SDL_TRUE : SDL_FALSE);
+    SDL_SetWindowGrab(window ? window->_window : _window, window ? SDL_TRUE : SDL_FALSE);
+    SDL_SetRelativeMouseMode(window ? SDL_TRUE : SDL_FALSE);
     #else
     CORRADE_ASSERT(false, "Sdl2Application::setMouseLocked(): not implemented", );
-    static_cast<void>(enabled);
+    static_cast<void>(window);
     #endif
 }
 
@@ -524,18 +645,9 @@ void Sdl2Application::tickEvent() {
     _flags |= Flag::NoTickEvent;
 }
 
-void Sdl2Application::viewportEvent(const Vector2i&) {}
-void Sdl2Application::keyPressEvent(KeyEvent&) {}
-void Sdl2Application::keyReleaseEvent(KeyEvent&) {}
-void Sdl2Application::mousePressEvent(MouseEvent&) {}
-void Sdl2Application::mouseReleaseEvent(MouseEvent&) {}
-void Sdl2Application::mouseMoveEvent(MouseMoveEvent&) {}
-void Sdl2Application::mouseScrollEvent(MouseScrollEvent&) {}
 void Sdl2Application::multiGestureEvent(MultiGestureEvent&) {}
-void Sdl2Application::textInputEvent(TextInputEvent&) {}
-void Sdl2Application::textEditingEvent(TextEditingEvent&) {}
 
-Sdl2Application::Configuration::Configuration():
+Sdl2ApplicationWindow::WindowConfiguration::WindowConfiguration():
     #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_IOS)
     _title("Magnum SDL2 Application"),
     #endif
@@ -544,35 +656,38 @@ Sdl2Application::Configuration::Configuration():
     #else
     _size{}, /* SDL2 detects someting for us */
     #endif
-    _windowFlags{}, _sampleCount(0)
+    _windowFlags{} {}
+
+Sdl2ApplicationWindow::WindowConfiguration::~WindowConfiguration() = default;
+
+Sdl2Application::Configuration::Configuration():
+    _sampleCount(0)
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     , _version(Version::None), _sRGBCapable{false}
     #endif
     {}
 
-Sdl2Application::Configuration::~Configuration() = default;
-
-std::string Sdl2Application::KeyEvent::keyName(const Key key) {
+std::string Sdl2ApplicationWindow::KeyEvent::keyName(const Key key) {
     return SDL_GetKeyName(SDL_Keycode(key));
 }
 
-std::string Sdl2Application::KeyEvent::keyName() const {
+std::string Sdl2ApplicationWindow::KeyEvent::keyName() const {
     return keyName(_key);
 }
 
-Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseEvent::modifiers() {
+Sdl2ApplicationWindow::InputEvent::Modifiers Sdl2ApplicationWindow::MouseEvent::modifiers() {
     if(_modifiersLoaded) return _modifiers;
     _modifiersLoaded = true;
     return _modifiers = fixedModifiers(Uint16(SDL_GetModState()));
 }
 
-Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseMoveEvent::modifiers() {
+Sdl2ApplicationWindow::InputEvent::Modifiers Sdl2ApplicationWindow::MouseMoveEvent::modifiers() {
     if(_modifiersLoaded) return _modifiers;
     _modifiersLoaded = true;
     return _modifiers = fixedModifiers(Uint16(SDL_GetModState()));
 }
 
-Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseScrollEvent::modifiers() {
+Sdl2ApplicationWindow::InputEvent::Modifiers Sdl2ApplicationWindow::MouseScrollEvent::modifiers() {
     if(_modifiersLoaded) return _modifiers;
     _modifiersLoaded = true;
     return _modifiers = fixedModifiers(Uint16(SDL_GetModState()));

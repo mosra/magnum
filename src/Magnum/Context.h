@@ -182,18 +182,27 @@ class MAGNUM_EXPORT Context {
             /** Reset tracked pixel storage-related state */
             PixelStorage = 1 << 3,
 
-            /** Reset tracked renderer-related state */
+            /**
+             * Reset tracked renderer-related state except window-specific
+             * renderer state.
+             */
             Renderer = 1 << 4,
 
+            /**
+             * Reset tracked window-specific state. Useful when rendering into
+             * multiple windows using a single OpenGL context.
+             */
+            WindowSpecific = 1 << 5,
+
             /** Reset tracked shader-related bindings */
-            Shaders = 1 << 5,
+            Shaders = 1 << 6,
 
             /** Reset tracked texture-related bindings and state */
-            Textures = 1 << 6,
+            Textures = 1 << 7,
 
             #ifndef MAGNUM_TARGET_GLES2
             /** Reset tracked transform feedback-related bindings */
-            TransformFeedback = 1 << 7
+            TransformFeedback = 1 << 8
             #endif
         };
 
