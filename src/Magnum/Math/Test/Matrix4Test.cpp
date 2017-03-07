@@ -66,6 +66,7 @@ struct Matrix4Test: Corrade::TestSuite::Tester {
     void constructIdentity();
     void constructZero();
     void constructNoInit();
+    void constructOneValue();
     void constructConversion();
     void constructCopy();
     void convert();
@@ -118,6 +119,7 @@ Matrix4Test::Matrix4Test() {
               &Matrix4Test::constructIdentity,
               &Matrix4Test::constructZero,
               &Matrix4Test::constructNoInit,
+              &Matrix4Test::constructOneValue,
               &Matrix4Test::constructConversion,
               &Matrix4Test::constructCopy,
               &Matrix4Test::convert,
@@ -222,6 +224,19 @@ void Matrix4Test::constructNoInit() {
 
     /* Implicit construction is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<NoInitT, Matrix4>::value));
+}
+
+void Matrix4Test::constructOneValue() {
+    constexpr Matrix4 a{1.5f};
+    CORRADE_COMPARE(a, (Matrix4{{1.5f, 1.5f, 1.5f, 1.5f},
+                                {1.5f, 1.5f, 1.5f, 1.5f},
+                                {1.5f, 1.5f, 1.5f, 1.5f},
+                                {1.5f, 1.5f, 1.5f, 1.5f}}));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Float, Matrix4>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix4, Float>::value));
 }
 
 void Matrix4Test::constructConversion() {

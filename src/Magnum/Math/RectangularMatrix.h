@@ -130,6 +130,9 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
             static_assert(sizeof...(next)+1 == cols, "Improper number of arguments passed to RectangularMatrix constructor");
         }
 
+        /** @brief Construct matrix with one value for all components */
+        constexpr explicit RectangularMatrix(T value) noexcept: RectangularMatrix{typename Implementation::GenerateSequence<cols>::Type(), value} {}
+
         /**
          * @brief Construct matrix from another of different type
          *
@@ -434,6 +437,10 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
     #endif
         /* Implementation for RectangularMatrix<cols, rows, T>::fromDiagonal() and Matrix<size, T>(IdentityInitT, T) */
         template<std::size_t ...sequence> constexpr explicit RectangularMatrix(Implementation::Sequence<sequence...>, const Vector<DiagonalSize, T>& diagonal);
+
+        /* Implementation for RectangularMatrix<cols, rows, T>::RectangularMatrix(T) and Matrix<size, T>(T) */
+        /* MSVC 2015 can't handle {} here */
+        template<std::size_t ...sequence> constexpr explicit RectangularMatrix(Implementation::Sequence<sequence...>, T value) noexcept: _data{Vector<rows, T>((static_cast<void>(sequence), value))...} {}
 
     private:
         /* Implementation for RectangularMatrix<cols, rows, T>::RectangularMatrix(const RectangularMatrix<cols, rows, U>&) */

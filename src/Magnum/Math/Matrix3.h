@@ -230,6 +230,9 @@ template<class T> class Matrix3: public Matrix3x3<T> {
         /** @brief Construct matrix from column vectors */
         constexpr /*implicit*/ Matrix3(const Vector3<T>& first, const Vector3<T>& second, const Vector3<T>& third) noexcept: Matrix3x3<T>(first, second, third) {}
 
+        /** @brief Construct matrix with one value for all elements */
+        constexpr explicit Matrix3(T value) noexcept: Matrix3x3<T>{value} {}
+
         /** @copydoc Matrix::Matrix(const RectangularMatrix<size, size, U>&) */
         template<class U> constexpr explicit Matrix3(const RectangularMatrix<3, 3, U>& other) noexcept: Matrix3x3<T>(other) {}
 

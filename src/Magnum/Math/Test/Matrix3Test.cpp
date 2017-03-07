@@ -63,6 +63,7 @@ struct Matrix3Test: Corrade::TestSuite::Tester {
     void constructIdentity();
     void constructZero();
     void constructNoInit();
+    void constructOneValue();
     void constructConversion();
     void constructCopy();
     void convert();
@@ -102,6 +103,7 @@ Matrix3Test::Matrix3Test() {
               &Matrix3Test::constructIdentity,
               &Matrix3Test::constructZero,
               &Matrix3Test::constructNoInit,
+              &Matrix3Test::constructOneValue,
               &Matrix3Test::constructConversion,
               &Matrix3Test::constructCopy,
               &Matrix3Test::convert,
@@ -188,6 +190,18 @@ void Matrix3Test::constructNoInit() {
 
     /* Implicit construction is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<NoInitT, Matrix3>::value));
+}
+
+void Matrix3Test::constructOneValue() {
+    constexpr Matrix3 a{1.5f};
+    CORRADE_COMPARE(a, (Matrix3{Vector3{1.5f, 1.5f, 1.5f},
+                                Vector3{1.5f, 1.5f, 1.5f},
+                                Vector3{1.5f, 1.5f, 1.5f}}));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Float, Matrix3>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix3, Float>::value));
 }
 
 void Matrix3Test::constructConversion() {

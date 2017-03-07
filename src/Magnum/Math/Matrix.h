@@ -112,6 +112,9 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
         /** @brief Construct matrix from column vectors */
         template<class ...U> constexpr /*implicit*/ Matrix(const Vector<size, T>& first, const U&... next) noexcept: RectangularMatrix<size, size, T>(first, next...) {}
 
+        /** @brief Construct matrix with one value for all elements */
+        constexpr explicit Matrix(T value) noexcept: RectangularMatrix<size, size, T>{typename Implementation::GenerateSequence<size>::Type(), value} {}
+
         /**
          * @brief Construct matrix from another of different type
          *

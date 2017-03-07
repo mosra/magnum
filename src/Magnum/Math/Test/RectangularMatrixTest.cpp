@@ -60,6 +60,8 @@ struct RectangularMatrixTest: Corrade::TestSuite::Tester {
     void construct();
     void constructDefault();
     void constructNoInit();
+    void constructOneValue();
+    void constructOneComponent();
     void constructConversion();
     void constructFromData();
     void constructFromDiagonal();
@@ -110,6 +112,8 @@ RectangularMatrixTest::RectangularMatrixTest() {
     addTests({&RectangularMatrixTest::construct,
               &RectangularMatrixTest::constructDefault,
               &RectangularMatrixTest::constructNoInit,
+              &RectangularMatrixTest::constructOneValue,
+              &RectangularMatrixTest::constructOneComponent,
               &RectangularMatrixTest::constructConversion,
               &RectangularMatrixTest::constructFromData,
               &RectangularMatrixTest::constructFromDiagonal,
@@ -187,6 +191,33 @@ void RectangularMatrixTest::constructNoInit() {
 
     /* Implicit construction is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<NoInitT, Matrix3x4>::value));
+}
+
+void RectangularMatrixTest::constructOneValue() {
+    constexpr Matrix3x4 a{1.5f};
+    CORRADE_COMPARE(a, (Matrix3x4{Vector4{1.5f, 1.5f, 1.5f, 1.5f},
+                                  Vector4{1.5f, 1.5f, 1.5f, 1.5f},
+                                  Vector4{1.5f, 1.5f, 1.5f, 1.5f}}));
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<Float, Matrix3x4>::value));
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix3x4, Float>::value));
+}
+
+void RectangularMatrixTest::constructOneComponent() {
+    typedef Math::RectangularMatrix<1, 1, Float> Matrix1x1;
+    typedef Math::Vector<1, Float> Vector1;
+
+    constexpr Matrix1x1 a{1.5f};
+    constexpr Matrix1x1 b{Vector1{1.5f}};
+    CORRADE_COMPARE(a, b);
+
+    /* Implicit constructor must work */
+    constexpr Matrix1x1 c = Vector1{1.5f};
+    CORRADE_COMPARE(c, Matrix1x1{Vector1{1.5f}});
+
+    CORRADE_VERIFY((std::is_nothrow_constructible<Matrix1x1, Vector1>::value));
 }
 
 void RectangularMatrixTest::constructConversion() {
