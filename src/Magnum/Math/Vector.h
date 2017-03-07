@@ -180,20 +180,14 @@ template<std::size_t size, class T> class Vector {
         /** @brief Construct vector without initializing the contents */
         explicit Vector(NoInitT) noexcept {}
 
-        /** @todo Creating Vector from combination of vector and scalar types */
-
-        /**
-         * @brief Construct vector from values
-         * @param first First value
-         * @param next  Next values
-         */
+        /** @brief Construct vector from components */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         template<class ...U> constexpr /*implicit*/ Vector(T first, U... next) noexcept;
         #else
         template<class ...U, class V = typename std::enable_if<sizeof...(U)+1 == size, T>::type> constexpr /*implicit*/ Vector(T first, U... next) noexcept: _data{first, next...} {}
         #endif
 
-        /** @brief Construct vector with one value for all fields */
+        /** @brief Construct vector with one value for all components */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         constexpr explicit Vector(T value) noexcept;
         #else

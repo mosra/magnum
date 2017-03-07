@@ -125,13 +125,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
             #endif
             {}
 
-        /**
-         * @brief Construct matrix from column vectors
-         * @param first First column vector
-         * @param next  Next column vectors
-         *
-         * @todo Creating matrix from arbitrary combination of matrices with n rows
-         */
+        /** @brief Construct matrix from column vectors */
         template<class ...U> constexpr /*implicit*/ RectangularMatrix(const Vector<rows, T>& first, const U&... next) noexcept: _data{first, next...} {
             static_assert(sizeof...(next)+1 == cols, "Improper number of arguments passed to RectangularMatrix constructor");
         }
@@ -438,7 +432,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
     #else
     private:
     #endif
-        /* Implementation for RectangularMatrix<cols, rows, T>::fromDiagonal() and Matrix<size, T>(T) */
+        /* Implementation for RectangularMatrix<cols, rows, T>::fromDiagonal() and Matrix<size, T>(IdentityInitT, T) */
         template<std::size_t ...sequence> constexpr explicit RectangularMatrix(Implementation::Sequence<sequence...>, const Vector<DiagonalSize, T>& diagonal);
 
     private:

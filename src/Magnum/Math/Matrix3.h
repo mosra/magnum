@@ -227,7 +227,7 @@ template<class T> class Matrix3: public Matrix3x3<T> {
             #endif
             {}
 
-        /** @brief Matrix from column vectors */
+        /** @brief Construct matrix from column vectors */
         constexpr /*implicit*/ Matrix3(const Vector3<T>& first, const Vector3<T>& second, const Vector3<T>& third) noexcept: Matrix3x3<T>(first, second, third) {}
 
         /** @copydoc Matrix::Matrix(const RectangularMatrix<size, size, U>&) */

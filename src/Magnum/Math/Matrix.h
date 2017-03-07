@@ -109,11 +109,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
             #endif
             {}
 
-        /**
-         * @brief Matrix from column vectors
-         * @param first First column vector
-         * @param next  Next column vectors
-         */
+        /** @brief Construct matrix from column vectors */
         template<class ...U> constexpr /*implicit*/ Matrix(const Vector<size, T>& first, const U&... next) noexcept: RectangularMatrix<size, size, T>(first, next...) {}
 
         /**
