@@ -639,7 +639,9 @@ template<UnsignedInt> class Texture;
 typedef Texture<1> Texture1D;
 #endif
 typedef Texture<2> Texture2D;
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 typedef Texture<3> Texture3D;
+#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 template<UnsignedInt> class TextureArray;

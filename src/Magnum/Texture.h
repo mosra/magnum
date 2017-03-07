@@ -1279,6 +1279,7 @@ typedef Texture<1> Texture1D;
 /** @brief Two-dimensional texture */
 typedef Texture<2> Texture2D;
 
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 /**
 @brief Three-dimensional texture
 
@@ -1286,6 +1287,7 @@ typedef Texture<2> Texture2D;
 @requires_webgl20 3D textures are not available in WebGL 1.0.
 */
 typedef Texture<3> Texture3D;
+#endif
 
 }
 
