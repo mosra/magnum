@@ -66,6 +66,7 @@ template<UnsignedInt dimensions> class AbstractVector: public AbstractShaderProg
     protected:
         enum: Int { VectorTextureLayer = 15 };
 
+        explicit AbstractVector(NoCreateT) noexcept: AbstractShaderProgram{NoCreate} {}
         explicit AbstractVector() = default;
         ~AbstractVector() = default;
 };

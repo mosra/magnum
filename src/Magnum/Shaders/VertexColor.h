@@ -106,6 +106,18 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColor: public
         explicit VertexColor();
 
         /**
+         * @brief Construct without creating the underlying OpenGL object
+         *
+         * The constructed instance is equivalent to moved-from state. Useful
+         * in cases where you will overwrite the instance later anyway. Move
+         * another object over it to make it useful.
+         *
+         * This function can be safely used for constructing (and later
+         * destructing) objects even without any OpenGL context being active.
+         */
+        explicit VertexColor(NoCreateT) noexcept: AbstractShaderProgram{NoCreate} {}
+
+        /**
          * @brief Set transformation and projection matrix
          * @return Reference to self (for method chaining)
          *

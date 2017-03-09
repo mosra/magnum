@@ -23,6 +23,13 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+corrade_add_test(ShadersDistanceFieldVectorTest DistanceFieldVectorTest.cpp LIBRARIES MagnumShaders)
+corrade_add_test(ShadersFlatTest FlatTest.cpp LIBRARIES MagnumShaders)
+corrade_add_test(ShadersMeshVisualizerTest MeshVisualizerTest.cpp LIBRARIES MagnumShaders)
+corrade_add_test(ShadersPhongTest PhongTest.cpp LIBRARIES MagnumShaders)
+corrade_add_test(ShadersVectorTest VectorTest.cpp LIBRARIES MagnumShaders)
+corrade_add_test(ShadersVertexColorTest VertexColorTest.cpp LIBRARIES MagnumShaders)
+
 if(BUILD_GL_TESTS)
     corrade_add_test(ShadersDistanceFieldVectorGLTest DistanceFieldVectorGLTest.cpp LIBRARIES MagnumShaders MagnumOpenGLTester)
     corrade_add_test(ShadersFlatGLTest FlatGLTest.cpp LIBRARIES MagnumShaders MagnumOpenGLTester)
