@@ -93,7 +93,7 @@ mesh.draw(shader);
 */
 template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector: public AbstractVector<dimensions> {
     public:
-        DistanceFieldVector();
+        explicit DistanceFieldVector();
 
         /**
          * @brief Set transformation and projection matrix

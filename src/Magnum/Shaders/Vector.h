@@ -87,7 +87,7 @@ mesh.draw(shader);
 */
 template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Vector: public AbstractVector<dimensions> {
     public:
-        Vector();
+        explicit Vector();
 
         /**
          * @brief Set transformation and projection matrix
