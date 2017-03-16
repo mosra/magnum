@@ -1411,7 +1411,7 @@ template<std::size_t size, class T> struct ConfigurationValue<Magnum::Math::Vect
             }
 
             oldpos = pos+1;
-        } while(pos != std::string::npos);
+        } while(pos != std::string::npos && i != size);
 
         return result;
     }

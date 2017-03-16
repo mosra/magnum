@@ -793,7 +793,7 @@ template<std::size_t cols, std::size_t rows, class T> struct ConfigurationValue<
             }
 
             oldpos = pos+1;
-        } while(pos != std::string::npos);
+        } while(pos != std::string::npos && i != cols*rows);
 
         return result;
     }
