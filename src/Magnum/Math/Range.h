@@ -234,8 +234,7 @@ template<class T> class Range2D: public Range<2, T> {
         constexpr /*implicit*/ Range2D(ZeroInitT = ZeroInit) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            /* MSVC 2015 can't handle {} here */
-            : Range<2, T>(ZeroInit)
+            : Range<2, T>{ZeroInit}
             #endif
             {}
 
@@ -243,8 +242,7 @@ template<class T> class Range2D: public Range<2, T> {
         explicit Range2D(NoInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            /* MSVC 2015 can't handle {} here */
-            : Range<2, T>(NoInit)
+            : Range<2, T>{NoInit}
             #endif
             {}
 
@@ -266,9 +264,9 @@ template<class T> class Range2D: public Range<2, T> {
             #endif
             >
         constexpr explicit Range2D(const U& other)
+            /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            /* MSVC 2015 can't handle {} here */
-            : Range<2, T>(Implementation::RangeConverter<2, T, U>::from(other))
+            : Range<2, T>{Implementation::RangeConverter<2, T, U>::from(other)}
             #endif
             {}
 
@@ -368,8 +366,7 @@ template<class T> class Range3D: public Range<3, T> {
         constexpr /*implicit*/ Range3D(ZeroInitT = ZeroInit) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            /* MSVC 2015 can't handle {} here */
-            : Range<3, T>(ZeroInit)
+            : Range<3, T>{ZeroInit}
             #endif
             {}
 
@@ -377,8 +374,7 @@ template<class T> class Range3D: public Range<3, T> {
         explicit Range3D(NoInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            /* MSVC 2015 can't handle {} here */
-            : Range<3, T>(NoInit)
+            : Range<3, T>{NoInit}
             #endif
             {}
 
@@ -393,9 +389,9 @@ template<class T> class Range3D: public Range<3, T> {
          * @todoc Remove workaround when Doxygen no longer chokes on that line
          */
         template<class U, class V = decltype(Implementation::RangeConverter<3, T, U>::from(std::declval<U>()))> constexpr explicit Range3D(const U& other) noexcept
+            /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            /* MSVC 2015 can't handle {} here */
-            : Range<3, T>(Implementation::RangeConverter<3, T, U>::from(other))
+            : Range<3, T>{Implementation::RangeConverter<3, T, U>::from(other)}
             #endif
             {}
 

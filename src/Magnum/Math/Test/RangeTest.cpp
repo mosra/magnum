@@ -488,8 +488,7 @@ void RangeTest::join() {
 
 template<class T> class BasicRect: public Math::Range<2, T> {
     public:
-        /* MSVC 2015 can't handle {} here */
-        template<class ...U> constexpr BasicRect(U&&... args): Math::Range<2, T>(args...) {}
+        template<class ...U> constexpr BasicRect(U&&... args): Math::Range<2, T>{args...} {}
 
         MAGNUM_RANGE_SUBCLASS_IMPLEMENTATION(2, BasicRect, Vector2)
 };

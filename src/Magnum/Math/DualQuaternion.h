@@ -167,7 +167,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         constexpr /*implicit*/ DualQuaternion(IdentityInitT = IdentityInit) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            : Dual<Quaternion<T>>({}, {{}, T(0)})
+            : Dual<Quaternion<T>>{{}, {{}, T(0)}}
             #endif
             {}
 
@@ -175,8 +175,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         constexpr explicit DualQuaternion(ZeroInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            /* MSVC 2015 can't handle {} here */
-            : Dual<Quaternion<T>>(Quaternion<T>{ZeroInit}, Quaternion<T>{ZeroInit})
+            : Dual<Quaternion<T>>{Quaternion<T>{ZeroInit}, Quaternion<T>{ZeroInit}}
             #endif
             {}
 
@@ -184,8 +183,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         explicit DualQuaternion(NoInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            /* MSVC 2015 can't handle {} here */
-            : Dual<Quaternion<T>>(NoInit)
+            : Dual<Quaternion<T>>{NoInit}
             #endif
             {}
 
@@ -207,8 +205,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          */
         constexpr /*implicit*/ DualQuaternion(const Dual<Vector3<T>>& vector, const Dual<T>& scalar) noexcept
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            /* MSVC 2015 can't handle {} here */
-            : Dual<Quaternion<T>>({vector.real(), scalar.real()}, {vector.dual(), scalar.dual()})
+            : Dual<Quaternion<T>>{{vector.real(), scalar.real()}, {vector.dual(), scalar.dual()}}
             #endif
             {}
 

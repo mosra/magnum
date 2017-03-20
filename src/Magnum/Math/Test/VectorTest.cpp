@@ -517,8 +517,7 @@ void VectorTest::angle() {
 
 template<class T> class BasicVec2: public Math::Vector<2, T> {
     public:
-        /* MSVC 2015 can't handle {} here */
-        template<class ...U> constexpr BasicVec2(U&&... args): Math::Vector<2, T>(args...) {}
+        template<class ...U> constexpr BasicVec2(U&&... args): Math::Vector<2, T>{args...} {}
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(2, BasicVec2)
 };

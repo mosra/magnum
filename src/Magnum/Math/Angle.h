@@ -126,12 +126,20 @@ std::sin(Float(Rad<Float>(b));  // required explicit conversion hints to user
 template<class T> class Deg: public Unit<Deg, T> {
     public:
         /** @brief Construct zero angle */
-        /* MSVC 2015 can't handle {} here */
-        constexpr /*implicit*/ Deg(ZeroInitT = ZeroInit) noexcept: Unit<Math::Deg, T>(ZeroInit) {}
+        constexpr /*implicit*/ Deg(ZeroInitT = ZeroInit) noexcept
+            /** @todoc remove workaround when doxygen is sane */
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            : Unit<Math::Deg, T>{ZeroInit}
+            #endif
+            {}
 
         /** @brief Construct without initializing the contents */
-        /* MSVC 2015 can't handle {} here */
-        explicit Deg(NoInitT) noexcept: Unit<Math::Deg, T>(NoInit) {}
+        explicit Deg(NoInitT) noexcept
+            /** @todoc remove workaround when doxygen is sane */
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            : Unit<Math::Deg, T>{NoInit}
+            #endif
+            {}
 
         /** @brief Explicit constructor from unitless type */
         constexpr explicit Deg(T value) noexcept: Unit<Math::Deg, T>(value) {}
@@ -190,12 +198,20 @@ See @ref Deg for more information.
 template<class T> class Rad: public Unit<Rad, T> {
     public:
         /** @brief Default constructor */
-        /* MSVC 2015 can't handle {} here */
-        constexpr /*implicit*/ Rad(ZeroInitT = ZeroInit) noexcept: Unit<Math::Rad, T>(ZeroInit) {}
+        constexpr /*implicit*/ Rad(ZeroInitT = ZeroInit) noexcept
+            /** @todoc remove workaround when doxygen is sane */
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            : Unit<Math::Rad, T>{ZeroInit}
+            #endif
+            {}
 
         /** @brief Construct without initializing the contents */
-        /* MSVC 2015 can't handle {} here */
-        explicit Rad(NoInitT) noexcept: Unit<Math::Rad, T>(NoInit) {}
+        explicit Rad(NoInitT) noexcept
+            /** @todoc remove workaround when doxygen is sane */
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            : Unit<Math::Rad, T>{NoInit}
+            #endif
+            {}
 
         /** @brief Construct from unitless type */
         constexpr explicit Rad(T value) noexcept: Unit<Math::Rad, T>(value) {}

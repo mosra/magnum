@@ -204,8 +204,7 @@ template<class T> class Matrix3: public Matrix3x3<T> {
         constexpr /*implicit*/ Matrix3(IdentityInitT = IdentityInit, T value = T{1}) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            /* MSVC 2015 can't handle {} here */
-            : Matrix3x3<T>(IdentityInit, value)
+            : Matrix3x3<T>{IdentityInit, value}
             #endif
             {}
 
@@ -213,8 +212,7 @@ template<class T> class Matrix3: public Matrix3x3<T> {
         constexpr explicit Matrix3(ZeroInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            /* MSVC 2015 can't handle {} here */
-            : Matrix3x3<T>(ZeroInit)
+            : Matrix3x3<T>{ZeroInit}
             #endif
             {}
 
@@ -222,8 +220,7 @@ template<class T> class Matrix3: public Matrix3x3<T> {
         constexpr explicit Matrix3(NoInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            /* MSVC 2015 can't handle {} here */
-            : Matrix3x3<T>(NoInit)
+            : Matrix3x3<T>{NoInit}
             #endif
             {}
 

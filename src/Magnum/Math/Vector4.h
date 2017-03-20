@@ -63,8 +63,7 @@ template<class T> class Vector4: public Vector<4, T> {
         constexpr /*implicit*/ Vector4(ZeroInitT = ZeroInit) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            /* MSVC 2015 can't handle {} here */
-            : Vector<4, T>(ZeroInit)
+            : Vector<4, T>{ZeroInit}
             #endif
             {}
 
@@ -72,8 +71,7 @@ template<class T> class Vector4: public Vector<4, T> {
         explicit Vector4(NoInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            /* MSVC 2015 can't handle {} here */
-            : Vector<4, T>(NoInit)
+            : Vector<4, T>{NoInit}
             #endif
             {}
 

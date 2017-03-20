@@ -106,8 +106,7 @@ template<UnsignedInt dimensions, class T> class Camera: public AbstractFeature<d
         #ifndef DOXYGEN_GENERATING_OUTPUT
         /* This is here to avoid ambiguity with deleted copy constructor when
            passing `*this` from class subclassing both Camera and AbstractObject */
-        /* MSVC 2015 can't handle {} here */
-        template<class U, class = typename std::enable_if<std::is_base_of<AbstractObject<dimensions, T>, U>::value>::type> Camera(U& object): Camera<dimensions, T>(static_cast<AbstractObject<dimensions, T>&>(object)) {}
+        template<class U, class = typename std::enable_if<std::is_base_of<AbstractObject<dimensions, T>, U>::value>::type> Camera(U& object): Camera<dimensions, T>{static_cast<AbstractObject<dimensions, T>&>(object)} {}
         #endif
 
         ~Camera();

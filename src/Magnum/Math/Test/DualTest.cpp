@@ -262,8 +262,7 @@ namespace {
 
 template<class T> class BasicDualVec2: public Math::Dual<Math::Vector2<T>> {
     public:
-        /* MSVC 2015 can't handle {} here */
-        template<class ...U> constexpr BasicDualVec2(U&&... args): Math::Dual<Math::Vector2<T>>(args...) {}
+        template<class ...U> constexpr BasicDualVec2(U&&... args): Math::Dual<Math::Vector2<T>>{args...} {}
 
         MAGNUM_DUAL_SUBCLASS_IMPLEMENTATION(BasicDualVec2, Math::Vector2, T)
         MAGNUM_DUAL_SUBCLASS_MULTIPLICATION_IMPLEMENTATION(BasicDualVec2, Math::Vector2)

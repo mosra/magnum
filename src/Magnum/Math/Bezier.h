@@ -72,8 +72,7 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
         constexpr /*implicit*/ Bezier(ZeroInitT = ZeroInit) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            /* MSVC 2015 can't handle {} here */
-            : Bezier<order, dimensions, T>(typename Implementation::GenerateSequence<order + 1>::Type{}, ZeroInit)
+            : Bezier<order, dimensions, T>{typename Implementation::GenerateSequence<order + 1>::Type{}, ZeroInit}
             #endif
             {}
 
@@ -81,8 +80,7 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
         explicit Bezier(NoInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            /* MSVC 2015 can't handle {} here */
-            : Bezier<order, dimensions, T>(typename Implementation::GenerateSequence<order + 1>::Type{}, NoInit)
+            : Bezier<order, dimensions, T>{typename Implementation::GenerateSequence<order + 1>::Type{}, NoInit}
             #endif
             {}
 

@@ -113,8 +113,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
         constexpr explicit DualComplex(ZeroInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            /* MSVC 2015 can't handle {} here */
-            : Dual<Complex<T>>(Complex<T>{ZeroInit}, Complex<T>{ZeroInit})
+            : Dual<Complex<T>>{Complex<T>{ZeroInit}, Complex<T>{ZeroInit}}
             #endif
             {}
 
@@ -122,8 +121,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
         explicit DualComplex(NoInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            /* MSVC 2015 can't handle {} here */
-            : Dual<Complex<T>>(NoInit)
+            : Dual<Complex<T>>{NoInit}
             #endif
             {}
 
@@ -159,9 +157,9 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * else.
          */
         template<class U> constexpr explicit DualComplex(const DualComplex<U>& other) noexcept
+            /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            /* MSVC 2015 can't handle {} here */
-            : Dual<Complex<T>>(other)
+            : Dual<Complex<T>>{other}
             #endif
             {}
 

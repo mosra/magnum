@@ -350,14 +350,12 @@ void MatrixTest::invertedOrthogonal() {
 
 template<class T> class BasicVec2: public Math::Vector<2, T> {
     public:
-        /* MSVC 2015 can't handle {} here */
-        template<class ...U> constexpr BasicVec2(U&&... args): Math::Vector<2, T>(args...) {}
+        template<class ...U> constexpr BasicVec2(U&&... args): Math::Vector<2, T>{args...} {}
 };
 
 template<class T> class BasicMat2: public Math::Matrix<2, T> {
     public:
-        /* MSVC 2015 can't handle {} here */
-        template<class ...U> constexpr BasicMat2(U&&... args): Math::Matrix<2, T>(args...) {}
+        template<class ...U> constexpr BasicMat2(U&&... args): Math::Matrix<2, T>{args...} {}
 
         MAGNUM_MATRIX_SUBCLASS_IMPLEMENTATION(2, BasicMat2, BasicVec2)
 };

@@ -115,8 +115,7 @@ template<class T> class Vector2: public Vector<2, T> {
         constexpr /*implicit*/ Vector2(ZeroInitT = ZeroInit) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            /* MSVC 2015 can't handle {} here */
-            : Vector<2, T>(ZeroInit)
+            : Vector<2, T>{ZeroInit}
             #endif
             {}
 
@@ -124,8 +123,7 @@ template<class T> class Vector2: public Vector<2, T> {
         explicit Vector2(NoInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            /* MSVC 2015 can't handle {} here */
-            : Vector<2, T>(NoInit)
+            : Vector<2, T>{NoInit}
             #endif
             {}
 
