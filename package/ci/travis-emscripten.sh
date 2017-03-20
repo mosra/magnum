@@ -56,6 +56,7 @@ cmake .. \
     -DWITH_WAVAUDIOIMPORTER=ON \
     -DBUILD_TESTS=ON \
     -DTARGET_GLES2=$TARGET_GLES2
+# Otherwise the job gets killed (probably because using too much memory)
 make -j4
 
 # Test
