@@ -99,7 +99,12 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Vector: public Abst
          * This function can be safely used for constructing (and later
          * destructing) objects even without any OpenGL context being active.
          */
-        explicit Vector(NoCreateT) noexcept: AbstractVector<dimensions>{NoCreate} {}
+        explicit Vector(NoCreateT) noexcept
+            /** @todoc remove workaround when doxygen is sane */
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            : AbstractVector<dimensions>{NoCreate}
+            #endif
+            {}
 
         /**
          * @brief Set transformation and projection matrix

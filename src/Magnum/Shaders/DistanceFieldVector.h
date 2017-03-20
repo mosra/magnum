@@ -105,7 +105,12 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * This function can be safely used for constructing (and later
          * destructing) objects even without any OpenGL context being active.
          */
-        explicit DistanceFieldVector(NoCreateT) noexcept: AbstractVector<dimensions>{NoCreate} {}
+        explicit DistanceFieldVector(NoCreateT) noexcept
+            /** @todoc remove workaround when doxygen is sane */
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            : AbstractVector<dimensions>{NoCreate}
+            #endif
+            {}
 
         /**
          * @brief Set transformation and projection matrix

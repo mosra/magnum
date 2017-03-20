@@ -402,7 +402,12 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         constexpr /*implicit*/ Matrix4(const Vector4<T>& first, const Vector4<T>& second, const Vector4<T>& third, const Vector4<T>& fourth) noexcept: Matrix4x4<T>(first, second, third, fourth) {}
 
         /** @brief Construct matrix with one value for all elements */
-        constexpr explicit Matrix4(T value) noexcept: Matrix4x4<T>{value} {}
+        constexpr explicit Matrix4(T value) noexcept
+            /** @todoc remove workaround when doxygen is sane */
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            : Matrix4x4<T>{value}
+            #endif
+            {}
 
         /** @copydoc Matrix::Matrix(const RectangularMatrix<size, size, U>&) */
         template<class U> constexpr explicit Matrix4(const RectangularMatrix<4, 4, U>& other) noexcept: Matrix4x4<T>(other) {}

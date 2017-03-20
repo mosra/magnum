@@ -131,7 +131,12 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         }
 
         /** @brief Construct matrix with one value for all components */
-        constexpr explicit RectangularMatrix(T value) noexcept: RectangularMatrix{typename Implementation::GenerateSequence<cols>::Type(), value} {}
+        constexpr explicit RectangularMatrix(T value) noexcept
+            /** @todoc remove workaround when doxygen is sane */
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            : RectangularMatrix{typename Implementation::GenerateSequence<cols>::Type(), value}
+            #endif
+            {}
 
         /**
          * @brief Construct matrix from another of different type
