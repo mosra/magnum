@@ -243,8 +243,8 @@ ALIASES                = \
     "collisionoccurenceoperator{2}=@relatesalso \1\n@brief Collision occurence of \1 and \2\n@see \2::operator%(const \1&) const" \
     "collisionoperator{2}=@relatesalso \1\n@brief Collision of \1 and \2\n@see \2::operator/(const \1&) const" \
     "todoc=@xrefitem todoc \"Documentation todo\" \"Documentation-related todo list\"" \
-    "fn_gl{1}=<a href=\"http://www.opengl.org/sdk/docs/man4/xhtml/gl\1.xml\">gl\1()</a>" \
-    "fn_gl2{2}=<a href=\"http://www.opengl.org/sdk/docs/man4/xhtml/gl\2.xml\">gl\1()</a>" \
+    "fn_gl{1}=<a href=\"http://www.khronos.org/registry/OpenGL-Refpages/gl4/html/gl\1.xhtml\">gl\1()</a>" \
+    "fn_gl2{2}=<a href=\"http://www.khronos.org/registry/OpenGL-Refpages/gl4/html/gl\2.xhtml\">gl\1()</a>" \
     "fn_gl_extension{3}=<a href=\"http://www.opengl.org/registry/specs/\2/\3.txt\">gl\1<b></b>\2()</a>" \
     "fn_gl_extension2{3}=<a href=\"http://www.opengl.org/registry/specs/\2/\2_\3.txt\">gl\1<b></b>\2()</a>" \
     "fn_gles_extension{3}=<a href=\"http://www.khronos.org/registry/gles/extensions/\2/\2_\3.txt\">gl\1<b></b>\2()</a>" \
