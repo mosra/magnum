@@ -117,7 +117,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * @return Reference to self (for method chaining)
          */
         DistanceFieldVector& setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
-            AbstractShaderProgram::setUniform(transformationProjectionMatrixUniform, matrix);
+            AbstractShaderProgram::setUniform(_transformationProjectionMatrixUniform, matrix);
             return *this;
         }
 
@@ -128,7 +128,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * @see @ref setOutlineColor()
          */
         DistanceFieldVector& setColor(const Color4& color) {
-            AbstractShaderProgram::setUniform(colorUniform, color);
+            AbstractShaderProgram::setUniform(_colorUniform, color);
             return *this;
         }
 
@@ -139,7 +139,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * @see @ref setOutlineRange(), @ref setColor()
          */
         DistanceFieldVector& setOutlineColor(const Color4& color) {
-            AbstractShaderProgram::setUniform(outlineColorUniform, color);
+            AbstractShaderProgram::setUniform(_outlineColorUniform, color);
             return *this;
         }
 
@@ -158,7 +158,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * @see @ref setOutlineColor()
          */
         DistanceFieldVector& setOutlineRange(Float start, Float end) {
-            AbstractShaderProgram::setUniform(outlineRangeUniform, Vector2(start, end));
+            AbstractShaderProgram::setUniform(_outlineRangeUniform, Vector2(start, end));
             return *this;
         }
 
@@ -171,7 +171,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * aliased). Initial value is `0.04f`.
          */
         DistanceFieldVector& setSmoothness(Float value) {
-            AbstractShaderProgram::setUniform(smoothnessUniform, value);
+            AbstractShaderProgram::setUniform(_smoothnessUniform, value);
             return *this;
         }
 
@@ -184,11 +184,11 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
         #endif
 
     private:
-        Int transformationProjectionMatrixUniform,
-            colorUniform,
-            outlineColorUniform,
-            outlineRangeUniform,
-            smoothnessUniform;
+        Int _transformationProjectionMatrixUniform{0},
+            _colorUniform{1},
+            _outlineColorUniform{2},
+            _outlineRangeUniform{3},
+            _smoothnessUniform{4};
 };
 
 /** @brief Two-dimensional distance field vector shader */

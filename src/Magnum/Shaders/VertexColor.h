@@ -124,12 +124,12 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColor: public
          * Default is identity matrix.
          */
         VertexColor<dimensions>& setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
-            setUniform(transformationProjectionMatrixUniform, matrix);
+            setUniform(_transformationProjectionMatrixUniform, matrix);
             return *this;
         }
 
     private:
-        Int transformationProjectionMatrixUniform;
+        Int _transformationProjectionMatrixUniform{0};
 };
 
 /** @brief 2D vertex color shader */

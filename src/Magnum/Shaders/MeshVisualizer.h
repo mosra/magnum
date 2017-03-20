@@ -204,7 +204,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public AbstractShaderProgram {
          * @brief Constructor
          * @param flags     Flags
          */
-        explicit MeshVisualizer(Flags flags = Flags());
+        explicit MeshVisualizer(Flags flags = {});
 
         /**
          * @brief Construct without creating the underlying OpenGL object
@@ -223,7 +223,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public AbstractShaderProgram {
          * @return Reference to self (for method chaining)
          */
         MeshVisualizer& setTransformationProjectionMatrix(const Matrix4& matrix) {
-            setUniform(transformationProjectionMatrixUniform, matrix);
+            setUniform(_transformationProjectionMatrixUniform, matrix);
             return *this;
         }
 
@@ -235,8 +235,8 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public AbstractShaderProgram {
          * shaders are used.
          */
         MeshVisualizer& setViewportSize(const Vector2& size) {
-            if(flags & Flag::Wireframe && !(flags & Flag::NoGeometryShader))
-                setUniform(viewportSizeUniform, size);
+            if(_flags & Flag::Wireframe && !(_flags & Flag::NoGeometryShader))
+                setUniform(_viewportSizeUniform, size);
             return *this;
         }
 
@@ -247,7 +247,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public AbstractShaderProgram {
          * Initial value is fully opaque white.
          */
         MeshVisualizer& setColor(const Color4& color) {
-            setUniform(colorUniform, color);
+            setUniform(_colorUniform, color);
             return *this;
         }
 
@@ -259,7 +259,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public AbstractShaderProgram {
          * @ref Flag::Wireframe is enabled.
          */
         MeshVisualizer& setWireframeColor(const Color4& color) {
-            if(flags & Flag::Wireframe) setUniform(wireframeColorUniform, color);
+            if(_flags & Flag::Wireframe) setUniform(_wireframeColorUniform, color);
             return *this;
         }
 
@@ -271,7 +271,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public AbstractShaderProgram {
          * enabled.
          */
         MeshVisualizer& setWireframeWidth(Float width) {
-            if(flags & Flag::Wireframe) setUniform(wireframeWidthUniform, width);
+            if(_flags & Flag::Wireframe) setUniform(_wireframeWidthUniform, width);
             return *this;
         }
 
@@ -285,20 +285,20 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public AbstractShaderProgram {
         MeshVisualizer& setSmoothness(Float smoothness);
 
     private:
-        Flags flags;
-        Int transformationProjectionMatrixUniform,
-            viewportSizeUniform,
-            colorUniform,
-            wireframeColorUniform,
-            wireframeWidthUniform,
-            smoothnessUniform;
+        Flags _flags;
+        Int _transformationProjectionMatrixUniform{0},
+            _viewportSizeUniform{1},
+            _colorUniform{2},
+            _wireframeColorUniform{3},
+            _wireframeWidthUniform{4},
+            _smoothnessUniform{5};
 };
 
 CORRADE_ENUMSET_OPERATORS(MeshVisualizer::Flags)
 
 inline MeshVisualizer& MeshVisualizer::setSmoothness(Float smoothness) {
-    if(flags & Flag::Wireframe)
-        setUniform(smoothnessUniform, smoothness);
+    if(_flags & Flag::Wireframe)
+        setUniform(_smoothnessUniform, smoothness);
     return *this;
 }
 

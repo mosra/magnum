@@ -59,7 +59,7 @@ uniform lowp sampler2D ambientTexture;
 #endif
 
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 5)
+layout(location = 4)
 #endif
 uniform lowp vec4 ambientColor
     #ifndef GL_ES
@@ -79,7 +79,7 @@ uniform lowp sampler2D diffuseTexture;
 #endif
 
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 4)
+layout(location = 5)
 #endif
 uniform lowp vec4 diffuseColor
     #if !defined(GL_ES) && defined(DIFFUSE_TEXTURE)

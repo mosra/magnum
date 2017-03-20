@@ -41,7 +41,7 @@ namespace {
     template<> constexpr const char* vertexShaderName<3>() { return "AbstractVector3D.vert"; }
 }
 
-template<UnsignedInt dimensions> DistanceFieldVector<dimensions>::DistanceFieldVector(): transformationProjectionMatrixUniform(0), colorUniform(1), outlineColorUniform(2), outlineRangeUniform(3), smoothnessUniform(4) {
+template<UnsignedInt dimensions> DistanceFieldVector<dimensions>::DistanceFieldVector() {
     #ifdef MAGNUM_BUILD_STATIC
     /* Import resources on static build, if not already */
     if(!Utility::Resource::hasGroup("MagnumShaders"))
@@ -82,11 +82,11 @@ template<UnsignedInt dimensions> DistanceFieldVector<dimensions>::DistanceFieldV
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>(version))
     #endif
     {
-        transformationProjectionMatrixUniform = AbstractShaderProgram::uniformLocation("transformationProjectionMatrix");
-        colorUniform = AbstractShaderProgram::uniformLocation("color");
-        outlineColorUniform = AbstractShaderProgram::uniformLocation("outlineColor");
-        outlineRangeUniform = AbstractShaderProgram::uniformLocation("outlineRange");
-        smoothnessUniform = AbstractShaderProgram::uniformLocation("smoothness");
+        _transformationProjectionMatrixUniform = AbstractShaderProgram::uniformLocation("transformationProjectionMatrix");
+        _colorUniform = AbstractShaderProgram::uniformLocation("color");
+        _outlineColorUniform = AbstractShaderProgram::uniformLocation("outlineColor");
+        _outlineRangeUniform = AbstractShaderProgram::uniformLocation("outlineRange");
+        _smoothnessUniform = AbstractShaderProgram::uniformLocation("smoothness");
     }
 
     #ifndef MAGNUM_TARGET_GLES

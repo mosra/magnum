@@ -111,7 +111,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Vector: public Abst
          * @return Reference to self (for method chaining)
          */
         Vector& setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
-            AbstractShaderProgram::setUniform(transformationProjectionMatrixUniform, matrix);
+            AbstractShaderProgram::setUniform(_transformationProjectionMatrixUniform, matrix);
             return *this;
         }
 
@@ -123,7 +123,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Vector: public Abst
          * @see @ref setColor()
          */
         Vector& setBackgroundColor(const Color4& color) {
-            AbstractShaderProgram::setUniform(backgroundColorUniform, color);
+            AbstractShaderProgram::setUniform(_backgroundColorUniform, color);
             return *this;
         }
 
@@ -134,7 +134,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Vector: public Abst
          * @see @ref setBackgroundColor()
          */
         Vector& setColor(const Color4& color) {
-            AbstractShaderProgram::setUniform(colorUniform, color);
+            AbstractShaderProgram::setUniform(_colorUniform, color);
             return *this;
         }
 
@@ -147,9 +147,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Vector: public Abst
         #endif
 
     private:
-        Int transformationProjectionMatrixUniform,
-            backgroundColorUniform,
-            colorUniform;
+        Int _transformationProjectionMatrixUniform{0},
+            _backgroundColorUniform{1},
+            _colorUniform{2};
 };
 
 /** @brief Two-dimensional vector shader */

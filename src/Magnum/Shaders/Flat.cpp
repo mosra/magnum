@@ -44,7 +44,7 @@ namespace {
     template<> constexpr const char* vertexShaderName<3>() { return "Flat3D.vert"; }
 }
 
-template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): transformationProjectionMatrixUniform(0), colorUniform(1), _flags(flags) {
+template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): _flags(flags) {
     #ifdef MAGNUM_BUILD_STATIC
     /* Import resources on static build, if not already */
     if(!Utility::Resource::hasGroup("MagnumShaders"))
@@ -87,8 +87,8 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): tran
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>(version))
     #endif
     {
-        transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
-        colorUniform = uniformLocation("color");
+        _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
+        _colorUniform = uniformLocation("color");
     }
 
     #ifndef MAGNUM_TARGET_GLES

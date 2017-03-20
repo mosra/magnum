@@ -36,7 +36,7 @@
 
 namespace Magnum { namespace Shaders {
 
-MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationProjectionMatrixUniform(0), viewportSizeUniform(1), colorUniform(2), wireframeColorUniform(3), wireframeWidthUniform(4), smoothnessUniform(5) {
+MeshVisualizer::MeshVisualizer(const Flags flags): _flags{flags} {
     #ifndef MAGNUM_TARGET_GLES2
     if(flags & Flag::Wireframe && !(flags & Flag::NoGeometryShader)) {
         #ifndef MAGNUM_TARGET_GLES
@@ -47,7 +47,7 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
         #endif
     }
     #else
-    if(flags & Flag::Wireframe)
+    if(_flags & Flag::Wireframe)
         MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::OES::standard_derivatives);
     #endif
 
@@ -128,21 +128,21 @@ MeshVisualizer::MeshVisualizer(const Flags flags): flags(flags), transformationP
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>(version))
     #endif
     {
-        transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
-        colorUniform = uniformLocation("color");
+        _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
+        _colorUniform = uniformLocation("color");
         if(flags & Flag::Wireframe) {
-            wireframeColorUniform = uniformLocation("wireframeColor");
-            wireframeWidthUniform = uniformLocation("wireframeWidth");
-            smoothnessUniform = uniformLocation("smoothness");
+            _wireframeColorUniform = uniformLocation("wireframeColor");
+            _wireframeWidthUniform = uniformLocation("wireframeWidth");
+            _smoothnessUniform = uniformLocation("smoothness");
             if(!(flags & Flag::NoGeometryShader))
-                viewportSizeUniform = uniformLocation("viewportSize");
+                _viewportSizeUniform = uniformLocation("viewportSize");
         }
     }
 
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
     #ifdef MAGNUM_TARGET_GLES
     setColor(Color3(1.0f));
-    if(flags & Flag::Wireframe) {
+    if(_flags & Flag::Wireframe) {
         setWireframeColor(Color3(0.0f));
         setWireframeWidth(1.0f);
         setSmoothness(2.0f);

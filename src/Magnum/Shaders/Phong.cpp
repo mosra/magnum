@@ -44,7 +44,7 @@ namespace {
     };
 }
 
-Phong::Phong(const Flags flags): transformationMatrixUniform(0), projectionMatrixUniform(1), normalMatrixUniform(2), lightUniform(3), diffuseColorUniform(4), ambientColorUniform(5), specularColorUniform(6), lightColorUniform(7), shininessUniform(8), _flags(flags) {
+Phong::Phong(const Flags flags): _flags(flags) {
     #ifdef MAGNUM_BUILD_STATIC
     /* Import resources on static build, if not already */
     if(!Utility::Resource::hasGroup("MagnumShaders"))
@@ -90,15 +90,15 @@ Phong::Phong(const Flags flags): transformationMatrixUniform(0), projectionMatri
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>(version))
     #endif
     {
-        transformationMatrixUniform = uniformLocation("transformationMatrix");
-        projectionMatrixUniform = uniformLocation("projectionMatrix");
-        normalMatrixUniform = uniformLocation("normalMatrix");
-        lightUniform = uniformLocation("light");
-        ambientColorUniform = uniformLocation("ambientColor");
-        diffuseColorUniform = uniformLocation("diffuseColor");
-        specularColorUniform = uniformLocation("specularColor");
-        lightColorUniform = uniformLocation("lightColor");
-        shininessUniform = uniformLocation("shininess");
+        _transformationMatrixUniform = uniformLocation("transformationMatrix");
+        _projectionMatrixUniform = uniformLocation("projectionMatrix");
+        _normalMatrixUniform = uniformLocation("normalMatrix");
+        _lightUniform = uniformLocation("light");
+        _ambientColorUniform = uniformLocation("ambientColor");
+        _diffuseColorUniform = uniformLocation("diffuseColor");
+        _specularColorUniform = uniformLocation("specularColor");
+        _lightColorUniform = uniformLocation("lightColor");
+        _shininessUniform = uniformLocation("shininess");
     }
 
     #ifndef MAGNUM_TARGET_GLES

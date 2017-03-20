@@ -194,7 +194,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * @brief Constructor
          * @param flags     Flags
          */
-        explicit Phong(Flags flags = Flags());
+        explicit Phong(Flags flags = {});
 
         /**
          * @brief Construct without creating the underlying OpenGL object
@@ -221,7 +221,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * @see @ref setAmbientTexture()
          */
         Phong& setAmbientColor(const Color4& color) {
-            setUniform(ambientColorUniform, color);
+            setUniform(_ambientColorUniform, color);
             return *this;
         }
 
@@ -244,7 +244,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * @see @ref setDiffuseTexture()
          */
         Phong& setDiffuseColor(const Color4& color) {
-            setUniform(diffuseColorUniform, color);
+            setUniform(_diffuseColorUniform, color);
             return *this;
         }
 
@@ -267,7 +267,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * @see @ref setSpecularTexture()
          */
         Phong& setSpecularColor(const Color4& color) {
-            setUniform(specularColorUniform, color);
+            setUniform(_specularColorUniform, color);
             return *this;
         }
 
@@ -300,7 +300,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * If not set, default value is `80.0f`.
          */
         Phong& setShininess(Float shininess) {
-            setUniform(shininessUniform, shininess);
+            setUniform(_shininessUniform, shininess);
             return *this;
         }
 
@@ -309,7 +309,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * @return Reference to self (for method chaining)
          */
         Phong& setTransformationMatrix(const Matrix4& matrix) {
-            setUniform(transformationMatrixUniform, matrix);
+            setUniform(_transformationMatrixUniform, matrix);
             return *this;
         }
 
@@ -321,7 +321,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * must be done in the shader anyway.
          */
         Phong& setNormalMatrix(const Matrix3x3& matrix) {
-            setUniform(normalMatrixUniform, matrix);
+            setUniform(_normalMatrixUniform, matrix);
             return *this;
         }
 
@@ -330,7 +330,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * @return Reference to self (for method chaining)
          */
         Phong& setProjectionMatrix(const Matrix4& matrix) {
-            setUniform(projectionMatrixUniform, matrix);
+            setUniform(_projectionMatrixUniform, matrix);
             return *this;
         }
 
@@ -339,7 +339,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * @return Reference to self (for method chaining)
          */
         Phong& setLightPosition(const Vector3& light) {
-            setUniform(lightUniform, light);
+            setUniform(_lightUniform, light);
             return *this;
         }
 
@@ -350,22 +350,21 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * If not set, default value is `{1.0f, 1.0f, 1.0f, 1.0f}`.
          */
         Phong& setLightColor(const Color4& color) {
-            setUniform(lightColorUniform, color);
+            setUniform(_lightColorUniform, color);
             return *this;
         }
 
     private:
-        Int transformationMatrixUniform,
-            projectionMatrixUniform,
-            normalMatrixUniform,
-            lightUniform,
-            diffuseColorUniform,
-            ambientColorUniform,
-            specularColorUniform,
-            lightColorUniform,
-            shininessUniform;
-
         Flags _flags;
+        Int _transformationMatrixUniform{0},
+            _projectionMatrixUniform{1},
+            _normalMatrixUniform{2},
+            _lightUniform{3},
+            _ambientColorUniform{4},
+            _diffuseColorUniform{5},
+            _specularColorUniform{6},
+            _lightColorUniform{7},
+            _shininessUniform{8};
 };
 
 CORRADE_ENUMSET_OPERATORS(Phong::Flags)

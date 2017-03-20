@@ -41,7 +41,7 @@ namespace {
     template<> constexpr const char* vertexShaderName<3>() { return "VertexColor3D.vert"; }
 }
 
-template<UnsignedInt dimensions> VertexColor<dimensions>::VertexColor(): transformationProjectionMatrixUniform(0) {
+template<UnsignedInt dimensions> VertexColor<dimensions>::VertexColor() {
     #ifdef MAGNUM_BUILD_STATIC
     /* Import resources on static build, if not already */
     if(!Utility::Resource::hasGroup("MagnumShaders"))
@@ -82,7 +82,7 @@ template<UnsignedInt dimensions> VertexColor<dimensions>::VertexColor(): transfo
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>(version))
     #endif
     {
-        transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
+        _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
     }
 
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */

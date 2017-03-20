@@ -41,7 +41,7 @@ namespace {
     template<> constexpr const char* vertexShaderName<3>() { return "AbstractVector3D.vert"; }
 }
 
-template<UnsignedInt dimensions> Vector<dimensions>::Vector(): transformationProjectionMatrixUniform(0), backgroundColorUniform(1), colorUniform(2) {
+template<UnsignedInt dimensions> Vector<dimensions>::Vector() {
     #ifdef MAGNUM_BUILD_STATIC
     /* Import resources on static build, if not already */
     if(!Utility::Resource::hasGroup("MagnumShaders"))
@@ -82,9 +82,9 @@ template<UnsignedInt dimensions> Vector<dimensions>::Vector(): transformationPro
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>(version))
     #endif
     {
-        transformationProjectionMatrixUniform = AbstractShaderProgram::uniformLocation("transformationProjectionMatrix");
-        backgroundColorUniform = AbstractShaderProgram::uniformLocation("backgroundColor");
-        colorUniform = AbstractShaderProgram::uniformLocation("color");
+        _transformationProjectionMatrixUniform = AbstractShaderProgram::uniformLocation("transformationProjectionMatrix");
+        _backgroundColorUniform = AbstractShaderProgram::uniformLocation("backgroundColor");
+        _colorUniform = AbstractShaderProgram::uniformLocation("color");
     }
 
     #ifndef MAGNUM_TARGET_GLES

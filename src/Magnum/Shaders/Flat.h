@@ -168,7 +168,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public Abstra
          * @brief Constructor
          * @param flags     Flags
          */
-        explicit Flat(Flags flags = Flags());
+        explicit Flat(Flags flags = {});
 
         /**
          * @brief Construct without creating the underlying OpenGL object
@@ -190,7 +190,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public Abstra
          * @return Reference to self (for method chaining)
          */
         Flat<dimensions>& setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
-            setUniform(transformationProjectionMatrixUniform, matrix);
+            setUniform(_transformationProjectionMatrixUniform, matrix);
             return *this;
         }
 
@@ -203,7 +203,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public Abstra
          * @see @ref setTexture()
          */
         Flat<dimensions>& setColor(const Color4& color){
-            setUniform(colorUniform, color);
+            setUniform(_colorUniform, color);
             return *this;
         }
 
@@ -217,10 +217,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public Abstra
         Flat<dimensions>& setTexture(Texture2D& texture);
 
     private:
-        Int transformationProjectionMatrixUniform,
-            colorUniform;
-
         Flags _flags;
+        Int _transformationProjectionMatrixUniform{0},
+            _colorUniform{1};
 };
 
 /** @brief 2D flat shader */
