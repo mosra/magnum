@@ -19,6 +19,12 @@ matrix:
     - TARGET=desktop
   - language: cpp
     os: linux
+    compiler: gcc
+    env:
+    - TARGET=desktop
+    - BUILD_DEPRECATED=OFF
+  - language: cpp
+    os: linux
     compiler: clang
     env:
     - TARGET=desktop-sanitizers
@@ -114,6 +120,7 @@ install:
 
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ ! "$TARGET" == "desktop-sanitizers" ]; then export CXX=g++-4.7; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "desktop-sanitizers" ]; then export CXX=clang++-3.8; fi
+- if [ "$BUILD_DEPRECATED" != "OFF" ]; then export BUILD_DEPRECATED=ON; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export PLATFORM_GL_API=GLX; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "android" ]; then wget -nc http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86_64.bin && chmod +x android-*.bin && ./android-*.bin -y | grep -v Extracting; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop" ]; then export PLATFORM_GL_API=CGL; fi

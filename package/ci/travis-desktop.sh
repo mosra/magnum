@@ -9,6 +9,7 @@ cmake .. \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_INSTALL_RPATH=$HOME/deps/lib \
     -DCMAKE_BUILD_TYPE=Debug \
+    -DBUILD_DEPRECATED=$BUILD_DEPRECATED \
     -DWITH_INTERCONNECT=OFF
 make -j install
 cd ../..
@@ -37,7 +38,8 @@ cmake .. \
     -DWITH_MAGNUMINFO=ON \
     -DWITH_AL_INFO=ON \
     -DBUILD_TESTS=ON \
-    -DBUILD_GL_TESTS=ON
+    -DBUILD_GL_TESTS=ON \
+    -DBUILD_DEPRECATED=$BUILD_DEPRECATED
 # Otherwise the job gets killed (probably because using too much memory)
 make -j4
 ASAN_OPTIONS="color=always" LSAN_OPTIONS="color=always suppressions=$TRAVIS_BUILD_DIR/package/ci/leaksanitizer.conf" CORRADE_TEST_COLOR=ON ctest -V -E GLTest
