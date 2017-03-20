@@ -63,12 +63,12 @@ class MAGNUM_EXPORT MeshView {
         /**
          * @brief Draw multiple meshes at once
          *
-         * In OpenGL ES, if @es_extension2{EXT,multi_draw_arrays,multi_draw_arrays}
+         * In OpenGL ES, if @extension2{EXT,multi_draw_arrays,multi_draw_arrays}
          * is not present, the functionality is emulated using sequence of
          * @ref draw(AbstractShaderProgram&) calls.
          *
          * If @extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL
-         * ES 3.0, WebGL 2.0, @es_extension{OES,vertex_array_object} in OpenGL
+         * ES 3.0, WebGL 2.0, @extension{OES,vertex_array_object} in OpenGL
          * ES 2.0 or @webgl_extension{OES,vertex_array_object} in WebGL 1.0 is
          * available, the associated vertex array object is bound instead of
          * setting up the mesh from scratch.
@@ -186,9 +186,9 @@ class MAGNUM_EXPORT MeshView {
          *      @ref draw(AbstractShaderProgram&)
          * @requires_gl42 Extension @extension{ARB,transform_feedback_instanced}
          *      if using @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt)
-         * @requires_gles30 Extension @es_extension{ANGLE,instanced_arrays},
-         *      @es_extension2{EXT,draw_instanced,draw_instanced} or
-         *      @es_extension{NV,draw_instanced} in OpenGL ES 2.0.
+         * @requires_gles30 Extension @extension{ANGLE,instanced_arrays},
+         *      @extension2{EXT,draw_instanced,draw_instanced} or
+         *      @extension{NV,draw_instanced} in OpenGL ES 2.0.
          * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
          *      in WebGL 1.0.
          */
@@ -229,9 +229,9 @@ class MAGNUM_EXPORT MeshView {
          *      @ref instanceCount() is more than `1`.
          * @requires_gl42 Extension @extension{ARB,base_instance} if
          *      @ref baseInstance() is not `0`.
-         * @requires_gles30 Extension @es_extension{ANGLE,instanced_arrays},
-         *      @es_extension{EXT,instanced_arrays} or
-         *      @es_extension{NV,instanced_arrays} in OpenGL ES 2.0 if
+         * @requires_gles30 Extension @extension{ANGLE,instanced_arrays},
+         *      @extension{EXT,instanced_arrays} or
+         *      @extension{NV,instanced_arrays} in OpenGL ES 2.0 if
          *      @ref instanceCount() is more than `1`.
          * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
          *      in WebGL 1.0 if @ref instanceCount() is more than `1`.

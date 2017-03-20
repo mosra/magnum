@@ -76,8 +76,8 @@ class MAGNUM_EXPORT PrimitiveQuery: public AbstractQuery {
              * @ref result<UnsignedInt>() or @ref result<Int>() to retrieve the
              * result.
              * @requires_gles30 Not defined in OpenGL ES 2.0.
-             * @requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
-             *      @es_extension{EXT,geometry_shader}
+             * @requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
+             *      @extension{EXT,geometry_shader}
              * @requires_gles Geometry shaders are not available in WebGL.
              */
             #ifndef MAGNUM_TARGET_GLES

@@ -129,14 +129,13 @@ with @c \@extension command:
 It produces link to the specification of the extension in OpenGL registry:
 > @extension{ARB,timer_query}
 
-Similarly for OpenGL ES extensions there is @c \@es_extension command. Some
-extensions have slightly different URL, with command @c \@es_extension2 you can
-specify extension filename, if the previous command gives 404 error. For example
+With command @c \@extension2 you can specify extension filename, if the
+previous command gives 404 error. For example
 @code
-@es_extension2{NV,read_buffer_front,GL_NV_read_buffer}
+@extension2{NV,read_buffer_front,GL_NV_read_buffer}
 @endcode
 produces this link:
-> @es_extension2{NV,read_buffer_front,GL_NV_read_buffer}
+> @extension2{NV,read_buffer_front,GL_NV_read_buffer}
 
 @subsubsection coding-style-documentation-commands-ref_gl Links to related OpenGL functions and definitions
 

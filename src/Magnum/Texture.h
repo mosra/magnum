@@ -98,7 +98,7 @@ in shaders.
 @see @ref Texture1D, @ref Texture2D, @ref Texture3D, @ref TextureArray,
     @ref CubeMapTexture, @ref CubeMapTextureArray, @ref RectangleTexture,
     @ref BufferTexture, @ref MultisampleTexture
-@requires_gles30 Extension @es_extension{OES,texture_3D} for 3D textures in
+@requires_gles30 Extension @extension{OES,texture_3D} for 3D textures in
     OpenGL ES 2.0.
 @requires_webgl20 3D textures are not available in WebGL 1.0.
 @requires_gl 1D textures are not available in OpenGL ES or WebGL.
@@ -114,7 +114,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. For 3D textures in OpenGL ES 2.0, if
-         * @es_extension{OES,texture_3D} extension is not available, returns
+         * @extension{OES,texture_3D} extension is not available, returns
          * zero vector.
          * @see @fn_gl{Get} with @def_gl{MAX_TEXTURE_SIZE},
          *      @def_gl{MAX_3D_TEXTURE_SIZE}
@@ -323,7 +323,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl_extension{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{TexParameter} with @def_gl{TEXTURE_MAX_LEVEL}
-         * @requires_gles30 Extension @es_extension{APPLE,texture_max_level},
+         * @requires_gles30 Extension @extension{APPLE,texture_max_level},
          *      otherwise the max level is always set to largest possible value
          *      in OpenGL ES 2.0.
          * @requires_webgl20 Always set to largest possible value in WebGL 1.0.
@@ -486,9 +486,9 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl_extension{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{TexParameter} with @def_gl{TEXTURE_BORDER_COLOR}
-         * @requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
-         *      @es_extension{EXT,texture_border_clamp} or
-         *      @es_extension{NV,texture_border_clamp}
+         * @requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
+         *      @extension{EXT,texture_border_clamp} or
+         *      @extension{NV,texture_border_clamp}
          * @requires_gles Border clamp is not available in WebGL.
          */
         Texture<dimensions>& setBorderColor(const Color4& color) {
@@ -514,8 +514,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @requires_gl30 Extension @extension{EXT,texture_integer}
          * @requires_gles30 Not defined in OpenGL ES 2.0.
          * @requires_es_extension Extension
-         *      @es_extension{ANDROID,extension_pack_es31a}/
-         *      @es_extension{EXT,texture_border_clamp}
+         *      @extension{ANDROID,extension_pack_es31a}/
+         *      @extension{EXT,texture_border_clamp}
          * @requires_gles Border clamp is not available in WebGL.
          */
         Texture<dimensions>& setBorderColor(const Vector4ui& color) {
@@ -527,8 +527,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @requires_gl30 Extension @extension{EXT,texture_integer}
          * @requires_gles30 Not defined in OpenGL ES 2.0.
          * @requires_es_extension Extension
-         *      @es_extension{ANDROID,extension_pack_es31a}/
-         *      @es_extension{EXT,texture_border_clamp}
+         *      @extension{ANDROID,extension_pack_es31a}/
+         *      @extension{EXT,texture_border_clamp}
          * @requires_gles Border clamp is not available in WebGL.
          */
         Texture<dimensions>& setBorderColor(const Vector4i& color) {
@@ -575,9 +575,9 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl{TexParameter} with @def_gl{TEXTURE_SRGB_DECODE_EXT}
          * @requires_extension Extension @extension{EXT,texture_sRGB_decode}
          * @requires_es_extension OpenGL ES 3.0 or extension
-         *      @es_extension{EXT,sRGB} and
-         *      @es_extension{ANDROID,extension_pack_es31a}/
-         *      @es_extension2{EXT,texture_sRGB_decode,texture_sRGB_decode}
+         *      @extension{EXT,sRGB} and
+         *      @extension{ANDROID,extension_pack_es31a}/
+         *      @extension2{EXT,texture_sRGB_decode,texture_sRGB_decode}
          * @requires_gles SRGB decode is not available in WebGL.
          */
         Texture<dimensions>& setSRGBDecode(bool decode) {
@@ -632,7 +632,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl_extension{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{TexParameter} with @def_gl{TEXTURE_COMPARE_MODE}
-         * @requires_gles30 Extension @es_extension{EXT,shadow_samplers} in
+         * @requires_gles30 Extension @extension{EXT,shadow_samplers} in
          *      OpenGL ES 2.0.
          * @requires_webgl20 Depth texture comparison is not available in WebGL
          *      1.0.
@@ -657,7 +657,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl_extension{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{TexParameter} with @def_gl{TEXTURE_COMPARE_FUNC}
-         * @requires_gles30 Extension @es_extension{EXT,shadow_samplers} in
+         * @requires_gles30 Extension @extension{EXT,shadow_samplers} in
          *      OpenGL ES 2.0.
          * @requires_webgl20 Depth texture comparison is not available in WebGL
          *      1.0.
@@ -708,7 +708,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * nor @extension{EXT,direct_state_access} desktop extension is
          * available, the texture is bound before the operation (if not
          * already). If neither @extension{ARB,texture_storage} (part of OpenGL
-         * 4.2), OpenGL ES 3.0 nor @es_extension{EXT,texture_storage} in OpenGL
+         * 4.2), OpenGL ES 3.0 nor @extension{EXT,texture_storage} in OpenGL
          * ES 2.0 is available, the feature is emulated with sequence of
          * @ref setImage() calls.
          * @see @ref maxSize(), @ref setMaxLevel(), @fn_gl2{TextureStorage1D,TexStorage1D} /
@@ -1286,7 +1286,7 @@ typedef Texture<2> Texture2D;
 /**
 @brief Three-dimensional texture
 
-@requires_gles30 Extension @es_extension{OES,texture_3D} in OpenGL ES 2.0
+@requires_gles30 Extension @extension{OES,texture_3D} in OpenGL ES 2.0
 @requires_webgl20 3D textures are not available in WebGL 1.0.
 */
 typedef Texture<3> Texture3D;

@@ -115,7 +115,7 @@ and then set data using @ref Texture::setSubImage() "setSubImage()".
 Function @ref Texture::setStorage() "setStorage()" creates immutable texture
 storage, removing the need for additional consistency checks and memory
 reallocations when updating the data later. If OpenGL 4.2, @extension{ARB,texture_storage},
-OpenGL ES 3.0 or @es_extension{EXT,texture_storage} in OpenGL ES 2.0 is not
+OpenGL ES 3.0 or @extension{EXT,texture_storage} in OpenGL ES 2.0 is not
 available, the feature is emulated with sequence of @ref Texture::setImage() "setImage()"
 calls.
 
@@ -347,11 +347,11 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          *
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls. If OpenGL 4.3 is not supported and neither
-         * @extension{KHR,debug} (covered also by @es_extension{ANDROID,extension_pack_es31a})
-         * nor @extension2{EXT,debug_label} desktop or ES extension is
+         * @extension{KHR,debug} (covered also by @extension{ANDROID,extension_pack_es31a})
+         * nor @extension{EXT,debug_label} desktop or ES extension is
          * available, this function returns empty string.
          * @see @fn_gl{GetObjectLabel} or
-         *      @fn_gl_extension2{GetObjectLabel,EXT,debug_label} with
+         *      @fn_gl_extension{GetObjectLabel,EXT,debug_label} with
          *      @def_gl{TEXTURE}
          * @requires_gles Debug output is not available in WebGL.
          */
@@ -362,11 +362,11 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          * @return Reference to self (for method chaining)
          *
          * Default is empty string. If OpenGL 4.3 is not supported and neither
-         * @extension{KHR,debug} (covered also by @es_extension{ANDROID,extension_pack_es31a})
-         * nor @extension2{EXT,debug_label} desktop or ES extension is
+         * @extension{KHR,debug} (covered also by @extension{ANDROID,extension_pack_es31a})
+         * nor @extension{EXT,debug_label} desktop or ES extension is
          * available, this function does nothing.
          * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} or
-         *      @fn_gl_extension2{LabelObject,EXT,debug_label} with
+         *      @fn_gl_extension{LabelObject,EXT,debug_label} with
          *      @def_gl{TEXTURE}
          * @requires_gles Debug output is not available in WebGL.
          */

@@ -92,7 +92,7 @@ documentation for more information about usage in shaders.
 @requires_webgl20 Array textures are not available in WebGL 1.0.
 @requires_gl 1D array textures are not available in OpenGL ES or WebGL, only
     2D ones.
-@todo Fix this when @es_extension{NV,texture_array} is in ES2 extension headers
+@todo Fix this when @extension{NV,texture_array} is in ES2 extension headers
  */
 template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
     public:
@@ -328,9 +328,9 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *
          * See @ref Texture::setBorderColor(const Color4&) for more
          * information.
-         * @requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
-         *      @es_extension{EXT,texture_border_clamp} or
-         *      @es_extension{NV,texture_border_clamp}
+         * @requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
+         *      @extension{EXT,texture_border_clamp} or
+         *      @extension{NV,texture_border_clamp}
          * @requires_gles Border clamp is not available in WebGL.
          */
         TextureArray<dimensions>& setBorderColor(const Color4& color) {
@@ -345,8 +345,8 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * See @ref Texture::setBorderColor(const Vector4ui&) for more
          * information.
          * @requires_gl30 Extension @extension{EXT,texture_integer}
-         * @requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
-         *      @es_extension{EXT,texture_border_clamp}
+         * @requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
+         *      @extension{EXT,texture_border_clamp}
          * @requires_gles Border clamp is not available in WebGL.
          */
         TextureArray<dimensions>& setBorderColor(const Vector4ui& color) {
@@ -356,8 +356,8 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
 
         /** @overload
          * @requires_gl30 Extension @extension{EXT,texture_integer}
-         * @requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
-         *      @es_extension{EXT,texture_border_clamp}
+         * @requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
+         *      @extension{EXT,texture_border_clamp}
          * @requires_gles Border clamp is not available in WebGL.
          */
         TextureArray<dimensions>& setBorderColor(const Vector4i& color) {
@@ -384,8 +384,8 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *
          * See @ref Texture::setSRGBDecode() for more information.
          * @requires_extension Extension @extension{EXT,texture_sRGB_decode}
-         * @requires_es_extension Extension  @es_extension{ANDROID,extension_pack_es31a}/
-         *      @es_extension2{EXT,texture_sRGB_decode,texture_sRGB_decode}
+         * @requires_es_extension Extension  @extension{ANDROID,extension_pack_es31a}/
+         *      @extension2{EXT,texture_sRGB_decode,texture_sRGB_decode}
          * @requires_gles SRGB decode is not available in WebGL.
          */
         TextureArray<dimensions>& setSRGBDecode(bool decode) {

@@ -76,7 +76,7 @@ q.endConditionalRender();
 @endcode
 
 @see @ref PrimitiveQuery, @ref TimeQuery
-@requires_gles30 Extension @es_extension{EXT,occlusion_query_boolean} in
+@requires_gles30 Extension @extension{EXT,occlusion_query_boolean} in
     OpenGL ES 2.0.
 @requires_webgl20 Queries are not available in WebGL 1.0.
 */

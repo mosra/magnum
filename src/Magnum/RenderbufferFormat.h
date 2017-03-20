@@ -38,7 +38,7 @@ namespace Magnum {
 
 @see @ref Renderbuffer
 @requires_gl30 Extension @extension{ARB,framebuffer_object}
-@todo RGB, RGB8 ES only (ES3 + @es_extension{OES,rgb8_rgba8})
+@todo RGB, RGB8 ES only (ES3 + @extension{OES,rgb8_rgba8})
  */
 enum class RenderbufferFormat: GLenum {
     #ifndef MAGNUM_TARGET_GLES
@@ -56,7 +56,7 @@ enum class RenderbufferFormat: GLenum {
     /**
      * Red component, normalized unsigned byte.
      * @requires_gl30 Extension @extension{ARB,texture_rg}
-     * @requires_gles30 Extension @es_extension{EXT,texture_rg} in OpenGL ES
+     * @requires_gles30 Extension @extension{EXT,texture_rg} in OpenGL ES
      *      2.0.
      * @requires_webgl20 Not available in WebGL 1.0.
      */
@@ -83,7 +83,7 @@ enum class RenderbufferFormat: GLenum {
     /**
      * Red and green component, each normalized unsigned byte.
      * @requires_gl30 Extension @extension{ARB,texture_rg}
-     * @requires_gles30 Extension @es_extension{EXT,texture_rg} in OpenGL ES
+     * @requires_gles30 Extension @extension{EXT,texture_rg} in OpenGL ES
      *      2.0.
      * @requires_webgl20 Not available in WebGL 1.0.
      */
@@ -107,7 +107,7 @@ enum class RenderbufferFormat: GLenum {
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     /**
      * RGBA, each component normalized unsigned byte.
-     * @requires_gles30 Extension @es_extension{ARM,rgba8} or @es_extension{OES,rgb8_rgba8}
+     * @requires_gles30 Extension @extension{ARM,rgba8} or @extension{OES,rgb8_rgba8}
      *      in OpenGL ES 2.0.
      * @requires_webgl20 Not available in WebGL 1.0.
      */
@@ -423,7 +423,7 @@ enum class RenderbufferFormat: GLenum {
 
     /**
      * sRGBA, each component normalized unsigned byte.
-     * @requires_gles30 Extension @es_extension{EXT,sRGB} in OpenGL ES 2.0.
+     * @requires_gles30 Extension @extension{EXT,sRGB} in OpenGL ES 2.0.
      * @requires_webgl20 Extension @webgl_extension{EXT,sRGB} in WebGL 1.0.
      */
     #ifndef MAGNUM_TARGET_GLES2
@@ -450,7 +450,7 @@ enum class RenderbufferFormat: GLenum {
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     /**
      * Depth component, 24bit.
-     * @requires_gles30 Extension @es_extension{OES,depth24} in OpenGL ES 2.0.
+     * @requires_gles30 Extension @extension{OES,depth24} in OpenGL ES 2.0.
      * @requires_webgl20 Only 16bit depth component is available in WebGL.
      */
     #ifndef MAGNUM_TARGET_GLES2
@@ -463,7 +463,7 @@ enum class RenderbufferFormat: GLenum {
     #ifndef MAGNUM_TARGET_WEBGL
     /**
      * Depth component, 32bit.
-     * @requires_es_extension Extension @es_extension{OES,depth32}
+     * @requires_es_extension Extension @extension{OES,depth32}
      * @requires_gles At most 24bit depth component is available in WebGL.
      */
     #ifndef MAGNUM_TARGET_GLES
@@ -499,7 +499,7 @@ enum class RenderbufferFormat: GLenum {
     #ifndef MAGNUM_TARGET_WEBGL
     /**
      * 1-bit stencil index.
-     * @requires_es_extension Extension @es_extension{OES,stencil1}
+     * @requires_es_extension Extension @extension{OES,stencil1}
      * @requires_gles Only 8bit stencil index is available in WebGL.
      */
     #ifndef MAGNUM_TARGET_GLES
@@ -510,7 +510,7 @@ enum class RenderbufferFormat: GLenum {
 
     /**
      * 4-bit stencil index.
-     * @requires_es_extension Extension @es_extension{OES,stencil4}
+     * @requires_es_extension Extension @extension{OES,stencil4}
      * @requires_gles Only 8bit stencil index is available in WebGL.
      */
     #ifndef MAGNUM_TARGET_GLES
@@ -550,7 +550,7 @@ enum class RenderbufferFormat: GLenum {
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     /**
      * 24bit depth and 8bit stencil component.
-     * @requires_gles30 Extension @es_extension{OES,packed_depth_stencil} in
+     * @requires_gles30 Extension @extension{OES,packed_depth_stencil} in
      *      OpenGL ES 2.0.
      * @requires_webgl20 Use @ref RenderbufferFormat::DepthStencil in WebGL
      *      1.0 instead.

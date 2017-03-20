@@ -243,10 +243,10 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
          *
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls. If OpenGL 4.3 is not supported and neither
-         * @extension{KHR,debug} (covered also by @es_extension{ANDROID,extension_pack_es31a})
-         * nor @extension2{EXT,debug_label} desktop or ES extension is
+         * @extension{KHR,debug} (covered also by @extension{ANDROID,extension_pack_es31a})
+         * nor @extension{EXT,debug_label} desktop or ES extension is
          * available, this function returns empty string.
-         * @see @fn_gl{GetObjectLabel} or @fn_gl_extension2{GetObjectLabel,EXT,debug_label}
+         * @see @fn_gl{GetObjectLabel} or @fn_gl_extension{GetObjectLabel,EXT,debug_label}
          *      with @def_gl{TRANSFORM_FEEDBACK}
          * @requires_gles Debug output is not available in WebGL.
          */
@@ -257,11 +257,11 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
          * @return Reference to self (for method chaining)
          *
          * Default is empty string. If OpenGL 4.3 is not supported and neither
-         * @extension{KHR,debug} (covered also by @es_extension{ANDROID,extension_pack_es31a})
-         * nor @extension2{EXT,debug_label} desktop or ES extension is
+         * @extension{KHR,debug} (covered also by @extension{ANDROID,extension_pack_es31a})
+         * nor @extension{EXT,debug_label} desktop or ES extension is
          * available, this function does nothing.
          * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} or
-         *      @fn_gl_extension2{LabelObject,EXT,debug_label} with
+         *      @fn_gl_extension{LabelObject,EXT,debug_label} with
          *      @def_gl{TRANSFORM_FEEDBACK}
          * @requires_gles Debug output is not available in WebGL.
          */

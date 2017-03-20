@@ -87,11 +87,11 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
          *
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls. If OpenGL 4.3 is not supported and neither
-         * @extension{KHR,debug} (covered also by @es_extension{ANDROID,extension_pack_es31a})
-         * nor @extension2{EXT,debug_label} desktop or ES extension is
+         * @extension{KHR,debug} (covered also by @extension{ANDROID,extension_pack_es31a})
+         * nor @extension{EXT,debug_label} desktop or ES extension is
          * available, this function returns empty string.
          * @see @fn_gl{GetObjectLabel} with @def_gl{QUERY} or
-         *      @fn_gl_extension2{GetObjectLabel,EXT,debug_label} with
+         *      @fn_gl_extension{GetObjectLabel,EXT,debug_label} with
          *      @def_gl{QUERY_OBJECT_EXT}
          * @requires_gles Debug output is not available in WebGL.
          */
@@ -102,11 +102,11 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
          * @return Reference to self (for method chaining)
          *
          * Default is empty string. If OpenGL 4.3 is not supported and neither
-         * @extension{KHR,debug} (covered also by @es_extension{ANDROID,extension_pack_es31a})
-         * nor @extension2{EXT,debug_label} desktop or ES extension is
+         * @extension{KHR,debug} (covered also by @extension{ANDROID,extension_pack_es31a})
+         * nor @extension{EXT,debug_label} desktop or ES extension is
          * available, this function does nothing.
          * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} with
-         *      @def_gl{QUERY} or @fn_gl_extension2{LabelObject,EXT,debug_label}
+         *      @def_gl{QUERY} or @fn_gl_extension{LabelObject,EXT,debug_label}
          *      with @def_gl{QUERY_OBJECT_EXT}
          * @requires_gles Debug output is not available in WebGL.
          */
@@ -137,7 +137,7 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
          * @see @fn_gl{GetQueryObject} with @def_gl{QUERY_RESULT}
          * @requires_gl33 Extension @extension{ARB,timer_query} for result
          *      type @ref Magnum::UnsignedLong "UnsignedLong" and @ref Magnum::Long "Long"
-         * @requires_es_extension Extension @es_extension{EXT,disjoint_timer_query}
+         * @requires_es_extension Extension @extension{EXT,disjoint_timer_query}
          *      for result types @ref Magnum::Int "Int", @ref Magnum::UnsignedLong "UnsignedLong"
          *      and @ref Magnum::Long "Long".
          * @requires_gles Only @ref Magnum::UnsignedInt "UnsignedInt" result

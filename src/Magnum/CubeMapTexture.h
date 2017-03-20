@@ -251,7 +251,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setMaxLevel() for more information.
-         * @requires_gles30 Extension @es_extension{APPLE,texture_max_level},
+         * @requires_gles30 Extension @extension{APPLE,texture_max_level},
          *      otherwise the max level is always set to largest possible value
          *      in OpenGL ES 2.0.
          * @requires_webgl20 Always set to largest possible value in WebGL 1.0.
@@ -349,9 +349,9 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * See @ref Texture::setBorderColor(const Color4&) for more
          * information.
-         * @requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
-         *      @es_extension{EXT,texture_border_clamp} or
-         *      @es_extension{NV,texture_border_clamp}
+         * @requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
+         *      @extension{EXT,texture_border_clamp} or
+         *      @extension{NV,texture_border_clamp}
          * @requires_gles Border clamp is not available in WebGL.
          */
         CubeMapTexture& setBorderColor(const Color4& color) {
@@ -369,8 +369,8 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * @requires_gl30 Extension @extension{EXT,texture_integer}
          * @requires_gles30 Not defined in OpenGL ES 2.0.
          * @requires_es_extension Extension
-         *      @es_extension{ANDROID,extension_pack_es31a}/
-         *      @es_extension{EXT,texture_border_clamp}
+         *      @extension{ANDROID,extension_pack_es31a}/
+         *      @extension{EXT,texture_border_clamp}
          * @requires_gles Border clamp is not available in WebGL.
          */
         CubeMapTexture& setBorderColor(const Vector4ui& color) {
@@ -382,8 +382,8 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * @requires_gl30 Extension @extension{EXT,texture_integer}
          * @requires_gles30 Not defined in OpenGL ES 2.0.
          * @requires_es_extension Extension
-         *      @es_extension{ANDROID,extension_pack_es31a}/
-         *      @es_extension{EXT,texture_border_clamp}
+         *      @extension{ANDROID,extension_pack_es31a}/
+         *      @extension{EXT,texture_border_clamp}
          * @requires_gles Border clamp is not available in WebGL.
          */
         CubeMapTexture& setBorderColor(const Vector4i& color) {
@@ -412,9 +412,9 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * See @ref Texture::setSRGBDecode() for more information.
          * @requires_extension Extension @extension{EXT,texture_sRGB_decode}
          * @requires_es_extension OpenGL ES 3.0 or extension
-         *      @es_extension{EXT,sRGB} and
-         *      @es_extension{ANDROID,extension_pack_es31a}/
-         *      @es_extension2{EXT,texture_sRGB_decode,texture_sRGB_decode}
+         *      @extension{EXT,sRGB} and
+         *      @extension{ANDROID,extension_pack_es31a}/
+         *      @extension2{EXT,texture_sRGB_decode,texture_sRGB_decode}
          * @requires_gles SRGB decode is not available in WebGL.
          */
         CubeMapTexture& setSRGBDecode(bool decode) {
@@ -445,8 +445,8 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setCompareMode() for more information.
-         * @requires_gles30 Extension @es_extension{EXT,shadow_samplers} and
-         *      @es_extension{NV,shadow_samplers_cube} in OpenGL ES 2.0.
+         * @requires_gles30 Extension @extension{EXT,shadow_samplers} and
+         *      @extension{NV,shadow_samplers_cube} in OpenGL ES 2.0.
          * @requires_webgl20 Depth texture comparison is not available in WebGL
          *      1.0.
          */
@@ -460,8 +460,8 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setCompareFunction() for more information.
-         * @requires_gles30 Extension @es_extension{EXT,shadow_samplers} and
-         *      @es_extension{NV,shadow_samplers_cube} in OpenGL ES 2.0.
+         * @requires_gles30 Extension @extension{EXT,shadow_samplers} and
+         *      @extension{NV,shadow_samplers_cube} in OpenGL ES 2.0.
          * @requires_webgl20 Depth texture comparison is not available in WebGL
          *      1.0.
          */

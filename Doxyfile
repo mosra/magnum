@@ -245,11 +245,9 @@ ALIASES                = \
     "todoc=@xrefitem todoc \"Documentation todo\" \"Documentation-related todo list\"" \
     "fn_gl{1}=<a href=\"http://www.khronos.org/registry/OpenGL-Refpages/gl4/html/gl\1.xhtml\">gl\1()</a>" \
     "fn_gl2{2}=<a href=\"http://www.khronos.org/registry/OpenGL-Refpages/gl4/html/gl\2.xhtml\">gl\1()</a>" \
-    "fn_gl_extension{3}=<a href=\"http://www.opengl.org/registry/specs/\2/\3.txt\">gl\1<b></b>\2()</a>" \
-    "fn_gl_extension2{3}=<a href=\"http://www.opengl.org/registry/specs/\2/\2_\3.txt\">gl\1<b></b>\2()</a>" \
-    "fn_gles_extension{3}=<a href=\"http://www.khronos.org/registry/gles/extensions/\2/\2_\3.txt\">gl\1<b></b>\2()</a>" \
+    "fn_gl_extension{3}=<a href=\"https://www.khronos.org/registry/OpenGL/extensions/\2/\2_\3.txt\">gl\1<b></b>\2()</a>" \
     "def_gl{1}=`GL_\1`" \
-    "def_gl_extension{3}=<a href=\"http://www.opengl.org/registry/specs/\2/\3.txt\">GL_\1_\2</a>" \
+    "def_gl_extension{3}=<a href=\"https://www.khronos.org/registry/OpenGL/extensions/\2/\2_\3.txt\">GL_\1_\2</a>" \
     "deprecated_gl=@xrefitem opengl-deprecated \"Deprecated OpenGL API\" \"Deprecated OpenGL API list\"" \
     "requires_gl30=@xrefitem requires-gl30 \"Requires OpenGL 3.0\" \"Functionality requiring OpenGL 3.0\"" \
     "requires_gl31=@xrefitem requires-gl31 \"Requires OpenGL 3.1\" \"Functionality requiring OpenGL 3.1\"" \
@@ -263,9 +261,8 @@ ALIASES                = \
     "requires_gl45=@xrefitem requires-gl45 \"Requires OpenGL 4.5\" \"Functionality requiring OpenGL 4.5\"" \
     "requires_extension=@xrefitem requires-extension \"Requires OpenGL extension\" \"Functionality requiring specific OpenGL extension\"" \
     "requires_gl=@xrefitem requires-gl \"Requires desktop OpenGL\" \"Functionality requiring desktop OpenGL\"" \
-    "extension{2}=<a href=\"http://www.opengl.org/registry/specs/\1/\2.txt\"><tt>\1_\2</tt></a>" \
-    "extension2{2}=<a href=\"http://www.opengl.org/registry/specs/\1/\1_\2.txt\"><tt>\1_\2</tt></a>" \
-    "extension3{3}=<a href=\"http://www.opengl.org/registry/specs/\1/\3.txt\"><tt>\1_\2</tt></a>" \
+    "extension{2}=<a href=\"https://www.khronos.org/registry/OpenGL/extensions/\1/\1_\2.txt\"><tt>\1_\2</tt></a>" \
+    "extension2{3}=<a href=\"https://www.khronos.org/registry/OpenGL/extensions/\1/\3.txt\"><tt>\1_\2</tt></a>" \
     "requires_gles20=@xrefitem requires-gles20 \"Requires OpenGL ES 2.0 / WebGL 1.0\" \"Functionality requiring OpenGL ES 2.0 or WebGL 1.0\"" \
     "requires_gles30=@xrefitem requires-gles30 \"Requires OpenGL ES 3.0\" \"Functionality requiring OpenGL ES 3.0\"" \
     "requires_gles31=@xrefitem requires-gles31 \"Requires OpenGL ES 3.1\" \"Functionality requiring OpenGL ES 3.1\"" \
@@ -273,8 +270,6 @@ ALIASES                = \
     "requires_gles=@xrefitem requires-gles \"Requires OpenGL ES or desktop OpenGL\" \"Functionality requiring OpenGL ES or desktop OpenGL\"" \
     "requires_webgl20=@xrefitem requires-webgl20 \"Requires WebGL 2.0\" \"Functionality requiring WebGL 2.0\"" \
     "requires_webgl_extension=@xrefitem requires-webgl-extension \"Requires WebGL extension\" \"Functionality requiring specific WebGL extension\"" \
-    "es_extension{2}=<a href=\"http://www.khronos.org/registry/gles/extensions/\1/\1_\2.txt\"><tt>\1_\2</tt></a>" \
-    "es_extension2{3}=<a href=\"http://www.khronos.org/registry/gles/extensions/\1/\3.txt\"><tt>\1_\2</tt></a>" \
     "webgl_extension{2}=<a href=\"https://www.khronos.org/registry/webgl/extensions/\1_\2/\"><tt>\1_\2</tt></a>" \
     "fn_al{1}=`al\1()`" \
     "fn_alc{1}=`alc\1()`" \

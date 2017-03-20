@@ -127,8 +127,8 @@ class MAGNUM_EXPORT Context {
             /**
              * Debug context
              * @requires_gl43 Extension @extension{KHR,debug}
-             * @requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
-             *      @es_extension2{KHR,debug,debug}
+             * @requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
+             *      @extension2{KHR,debug,debug}
              */
             #ifndef MAGNUM_TARGET_GLES
             Debug = GL_CONTEXT_FLAG_DEBUG_BIT,
@@ -139,7 +139,7 @@ class MAGNUM_EXPORT Context {
             /**
              * Context without error reporting
              * @requires_extension Extension @extension{KHR,no_error}
-             * @requires_es_extension Extension @es_extension2{KHR,no_error,no_error}
+             * @requires_es_extension Extension @extension2{KHR,no_error,no_error}
              */
             NoError = GL_CONTEXT_FLAG_NO_ERROR_BIT_KHR,
 
@@ -147,7 +147,7 @@ class MAGNUM_EXPORT Context {
             /**
              * Context with robust access
              * @requires_extension Extension @extension{ARB,robustness}
-             * @requires_es_extension Extension @es_extension{EXT,robustness}
+             * @requires_es_extension Extension @extension{EXT,robustness}
              * @todo In ES available under glGetIntegerv(CONTEXT_ROBUST_ACCESS_EXT),
              *      how to make it compatible?
              */

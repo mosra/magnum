@@ -48,7 +48,7 @@ namespace Implementation {
 
 Emulates @ref Buffer::subData() call on platforms that don't support it (such
 as OpenGL ES) by using @ref Buffer::map().
-@requires_gles30 Extension @es_extension{EXT,map_buffer_range} in OpenGL ES
+@requires_gles30 Extension @extension{EXT,map_buffer_range} in OpenGL ES
     2.0.
 @requires_gles Buffer mapping is not available in WebGL.
 */
@@ -63,7 +63,7 @@ template<class T> Containers::Array<T> inline bufferSubData(Buffer& buffer, GLin
 
 Emulates @ref Buffer::data() call on platforms that don't support it (such as
 OpenGL ES) by using @ref Buffer::map().
-@requires_gles30 Extension @es_extension{EXT,map_buffer_range} in OpenGL ES
+@requires_gles30 Extension @extension{EXT,map_buffer_range} in OpenGL ES
     2.0.
 @requires_gles Buffer mapping is not available in WebGL.
 */

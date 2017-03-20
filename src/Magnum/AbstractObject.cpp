@@ -90,8 +90,8 @@ namespace {
              * @todo Shouldn't ES2's KHR_debug have `GL_TRANSFORM_FEEDBACK_KHR`
              *      instead of `GL_TRANSFORM_FEEDBACK`? (it's a new enum in 2.0)
              *      NaCl extension header doesn't have it at all. Also the
-             *      original @es_extension{EXT,debug_label} mentions it only
-             *      for ES3 (i.e. no mention of @es_extension{EXT,transform_feedback})
+             *      original @extension{EXT,debug_label} mentions it only
+             *      for ES3 (i.e. no mention of @extension{EXT,transform_feedback})
              */
             #ifndef CORRADE_TARGET_NACL
             case GL_TRANSFORM_FEEDBACK:

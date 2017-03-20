@@ -324,7 +324,7 @@ layout, see @ref addVertexBuffer() documentation for details.
 ## Performance optimizations
 
 If @extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL ES 3.0,
-WebGL 2.0, @es_extension{OES,vertex_array_object} in OpenGL ES 2.0 or
+WebGL 2.0, @extension{OES,vertex_array_object} in OpenGL ES 2.0 or
 @webgl_extension{OES,vertex_array_object} in WebGL 1.0 is supported, VAOs are
 used instead of binding the buffers and specifying vertex attribute pointers
 in each @ref draw() call. The engine tracks currently bound VAO and currently
@@ -358,7 +358,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
 
             /**
              * Unsigned int
-             * @requires_gles30 Extension @es_extension{OES,element_index_uint}
+             * @requires_gles30 Extension @extension{OES,element_index_uint}
              *       in OpenGL ES 2.0.
              * @requires_webgl20 Extension @webgl_extension{OES,element_index_uint}
              *      in WebGL 1.0.
@@ -438,7 +438,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * different behavior.
          * @see @ref release()
          * @requires_gl30 Extension @extension{ARB,vertex_array_object}
-         * @requires_gles30 Extension @es_extension{OES,vertex_array_object} in
+         * @requires_gles30 Extension @extension{OES,vertex_array_object} in
          *      OpenGL ES 2.0.
          * @requires_webgl20 Extension @webgl_extension{OES,vertex_array_object}
          *      in WebGL 1.0.
@@ -457,7 +457,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @param primitive     Primitive type
          *
          * If @extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL
-         * ES 3.0, WebGL 2.0, @es_extension{OES,vertex_array_object} in OpenGL
+         * ES 3.0, WebGL 2.0, @extension{OES,vertex_array_object} in OpenGL
          * ES 2.0 or @webgl_extension{OES,vertex_array_object} in WebGL 1.0 is
          * available, vertex array object is created. If @extension{ARB,direct_state_access}
          * (part of OpenGL 4.5) is not available, the vertex array object is
@@ -491,7 +491,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @brief Destructor
          *
          * If @extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL
-         * ES 3.0, WebGL 2.0, @es_extension{OES,vertex_array_object} in OpenGL
+         * ES 3.0, WebGL 2.0, @extension{OES,vertex_array_object} in OpenGL
          * ES 2.0 or @webgl_extension{OES,vertex_array_object} in WebGL 1.0 is
          * available, associated vertex array object is deleted.
          * @see @ref wrap(), @ref release(), @fn_gl{DeleteVertexArrays}
@@ -508,7 +508,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @brief OpenGL vertex array ID
          *
          * If neither @extension{ARB,vertex_array_object} (part of OpenGL 3.0)
-         * nor OpenGL ES 3.0 / WebGL 2.0 nor @es_extension{OES,vertex_array_object}
+         * nor OpenGL ES 3.0 / WebGL 2.0 nor @extension{OES,vertex_array_object}
          * in OpenGL ES 2.0 / @webgl_extension{OES,vertex_array_object} in
          * WebGL 1.0 is available, returns `0`.
          */
@@ -522,7 +522,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * equivalent to moved-from state.
          * @see @ref wrap()
          * @requires_gl30 Extension @extension{ARB,vertex_array_object}
-         * @requires_gles30 Extension @es_extension{OES,vertex_array_object} in
+         * @requires_gles30 Extension @extension{OES,vertex_array_object} in
          *      OpenGL ES 2.0.
          * @requires_webgl20 Extension @webgl_extension{OES,vertex_array_object}
          *      in WebGL 1.0.
@@ -535,11 +535,11 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls. If OpenGL 4.3 is not supported and neither
-         * @extension{KHR,debug} (covered also by @es_extension{ANDROID,extension_pack_es31a})
-         * nor @extension2{EXT,debug_label} desktop or ES extension is
+         * @extension{KHR,debug} (covered also by @extension{ANDROID,extension_pack_es31a})
+         * nor @extension{EXT,debug_label} desktop or ES extension is
          * available, this function returns empty string.
          * @see @fn_gl{GetObjectLabel} with @def_gl{VERTEX_ARRAY} or
-         *      @fn_gl_extension2{GetObjectLabel,EXT,debug_label} with
+         *      @fn_gl_extension{GetObjectLabel,EXT,debug_label} with
          *      @def_gl{VERTEX_ARRAY_OBJECT_EXT}
          * @requires_gles Debug output is not available in WebGL.
          */
@@ -550,11 +550,11 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @return Reference to self (for method chaining)
          *
          * Default is empty string. If OpenGL 4.3 is not supported and neither
-         * @extension{KHR,debug} (covered also by @es_extension{ANDROID,extension_pack_es31a})
-         * nor @extension2{EXT,debug_label} desktop or ES extension is
+         * @extension{KHR,debug} (covered also by @extension{ANDROID,extension_pack_es31a})
+         * nor @extension{EXT,debug_label} desktop or ES extension is
          * available, this function does nothing.
          * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} with
-         *      @def_gl{VERTEX_ARRAY} or @fn_gl_extension2{LabelObject,EXT,debug_label}
+         *      @def_gl{VERTEX_ARRAY} or @fn_gl_extension{LabelObject,EXT,debug_label}
          *      with @def_gl{VERTEX_ARRAY_OBJECT_EXT}
          * @requires_gles Debug output is not available in WebGL.
          */
@@ -655,9 +655,9 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *      @ref draw(AbstractShaderProgram&)
          * @requires_gl42 Extension @extension{ARB,transform_feedback_instanced}
          *      if using @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt)
-         * @requires_gles30 Extension @es_extension{ANGLE,instanced_arrays},
-         *      @es_extension2{EXT,draw_instanced,draw_instanced} or
-         *      @es_extension{NV,draw_instanced} in OpenGL ES 2.0.
+         * @requires_gles30 Extension @extension{ANGLE,instanced_arrays},
+         *      @extension2{EXT,draw_instanced,draw_instanced} or
+         *      @extension{NV,draw_instanced} in OpenGL ES 2.0.
          * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
          *      in WebGL 1.0.
          */
@@ -735,7 +735,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @endcode
          *
          * If @extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL
-         * ES 3.0, WebGL 2.0, @es_extension{OES,vertex_array_object} in OpenGL
+         * ES 3.0, WebGL 2.0, @extension{OES,vertex_array_object} in OpenGL
          * ES 2.0 or @webgl_extension{OES,vertex_array_object} in WebGL 1.0 is
          * available, the vertex array object is used to hold the parameters.
          *
@@ -770,7 +770,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @ref addVertexBuffer().
          *
          * If @extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL
-         * ES 3.0, WebGL 2.0, @es_extension{OES,vertex_array_object} in OpenGL
+         * ES 3.0, WebGL 2.0, @extension{OES,vertex_array_object} in OpenGL
          * ES 2.0 or @webgl_extension{OES,vertex_array_object} in WebGL 1.0 is
          * available, the vertex array object is used to hold the parameters.
          *
@@ -783,9 +783,9 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *      @fn_gl_extension{VertexArrayVertexAttribOffset,EXT,direct_state_access},
          *      @fn_gl_extension{VertexArrayVertexAttribDivisor,EXT,direct_state_access}
          * @requires_gl33 Extension @extension{ARB,instanced_arrays}
-         * @requires_gles30 Extension @es_extension{ANGLE,instanced_arrays},
-         *      @es_extension{EXT,instanced_arrays} or
-         *      @es_extension{NV,instanced_arrays} in OpenGL ES 2.0.
+         * @requires_gles30 Extension @extension{ANGLE,instanced_arrays},
+         *      @extension{EXT,instanced_arrays} or
+         *      @extension{NV,instanced_arrays} in OpenGL ES 2.0.
          * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
          *      in WebGL 1.0.
          */
@@ -812,7 +812,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * functionality is not available there.
          *
          * If @extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL
-         * ES 3.0, WebGL 2.0, @es_extension{OES,vertex_array_object} in OpenGL
+         * ES 3.0, WebGL 2.0, @extension{OES,vertex_array_object} in OpenGL
          * ES 2.0 or @webgl_extension{OES,vertex_array_object} in WebGL 1.0 is
          * available, the vertex array object is used to hold the parameters.
          *
@@ -848,7 +848,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * commands are issued. See also
          * @ref AbstractShaderProgram-rendering-workflow "AbstractShaderProgram documentation"
          * for more information. If @extension{ARB,vertex_array_object} (part
-         * of OpenGL 3.0), OpenGL ES 3.0, WebGL 2.0, @es_extension{OES,vertex_array_object}
+         * of OpenGL 3.0), OpenGL ES 3.0, WebGL 2.0, @extension{OES,vertex_array_object}
          * in OpenGL ES 2.0 or @webgl_extension{OES,vertex_array_object} in
          * WebGL 1.0 is available, the associated vertex array object is bound
          * instead of setting up the mesh from scratch.
@@ -872,9 +872,9 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *      @ref instanceCount() is more than `1`.
          * @requires_gl42 Extension @extension{ARB,base_instance} if
          *      @ref baseInstance() is not `0`.
-         * @requires_gles30 Extension @es_extension{ANGLE,instanced_arrays},
-         *      @es_extension{EXT,instanced_arrays} or
-         *      @es_extension{NV,instanced_arrays} in OpenGL ES 2.0 if
+         * @requires_gles30 Extension @extension{ANGLE,instanced_arrays},
+         *      @extension{EXT,instanced_arrays} or
+         *      @extension{NV,instanced_arrays} in OpenGL ES 2.0 if
          *      @ref instanceCount() is more than `1`.
          * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
          *      in WebGL 1.0 if @ref instanceCount() is more than `1`.

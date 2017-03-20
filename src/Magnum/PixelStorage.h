@@ -131,8 +131,8 @@ class MAGNUM_EXPORT PixelStorage {
         /**
          * @brief Row length
          *
-         * @requires_gles30 Extension @es_extension{EXT,unpack_subimage}/
-         *      @es_extension{NV,pack_subimage} in OpenGL ES 2.0.
+         * @requires_gles30 Extension @extension{EXT,unpack_subimage}/
+         *      @extension{NV,pack_subimage} in OpenGL ES 2.0.
          * @requires_webgl20 Row length specification is not available in WebGL
          *      1.0.
          */
@@ -145,8 +145,8 @@ class MAGNUM_EXPORT PixelStorage {
          * actual image is used. Default is `0`.
          * @see @fn_gl{PixelStore} with @def_gl{UNPACK_ROW_LENGTH}/
          *      @def_gl{PACK_ROW_LENGTH}
-         * @requires_gles30 Extension @es_extension{EXT,unpack_subimage}/
-         *      @es_extension{NV,pack_subimage} in OpenGL ES 2.0.
+         * @requires_gles30 Extension @extension{EXT,unpack_subimage}/
+         *      @extension{NV,pack_subimage} in OpenGL ES 2.0.
          * @requires_webgl20 Row length specification is not available in WebGL
          *      1.0.
          */

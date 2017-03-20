@@ -198,14 +198,14 @@ bindFragmentDataLocationIndexed(NormalOutput, 1, "normal");
     instead.
 @requires_gles30 Multiple fragment shader outputs are not available in OpenGL
     ES 2.0, similar functionality is available in extension
-    @es_extension{EXT,draw_buffers} or @es_extension{NV,draw_buffers}.
+    @extension{EXT,draw_buffers} or @extension{NV,draw_buffers}.
 @requires_webgl20 Explicit location specification of input attributes is not
     supported in WebGL 1.0, use @ref bindAttributeLocation() instead.
 @requires_webgl20 Multiple fragment shader outputs are not available in WebGL
     1.0, similar functionality is available in extension
     @webgl_extension{WEBGL,draw_buffers}.
 
-@todo @es_extension{EXT,separate_shader_objects} supports explicit attrib
+@todo @extension{EXT,separate_shader_objects} supports explicit attrib
     location
 
 @anchor AbstractShaderProgram-uniform-location
@@ -467,7 +467,7 @@ cached, so repeated queries don't result in repeated @fn_gl{Get} calls. See
 also @ref Context::resetState() and @ref Context::State::Shaders.
 
 If extension @extension{ARB,separate_shader_objects} (part of OpenGL 4.1),
-@extension{EXT,direct_state_access} desktop extension, @es_extension{EXT,separate_shader_objects}
+@extension{EXT,direct_state_access} desktop extension, @extension{EXT,separate_shader_objects}
 OpenGL ES extension or OpenGL ES 3.1 is available, uniform setting functions
 use DSA functions to avoid unnecessary calls to @fn_gl{UseProgram}. See
 @ref setUniform() documentation for more information.
@@ -738,11 +738,11 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          *
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls. If OpenGL 4.3 is not supported and neither
-         * @extension{KHR,debug} (covered also by @es_extension{ANDROID,extension_pack_es31a})
-         * nor @extension2{EXT,debug_label} desktop or ES extension is
+         * @extension{KHR,debug} (covered also by @extension{ANDROID,extension_pack_es31a})
+         * nor @extension{EXT,debug_label} desktop or ES extension is
          * available, this function returns empty string.
          * @see @fn_gl{GetObjectLabel} with @def_gl{PROGRAM} or
-         *      @fn_gl_extension2{GetObjectLabel,EXT,debug_label} with
+         *      @fn_gl_extension{GetObjectLabel,EXT,debug_label} with
          *      @def_gl{PROGRAM_OBJECT_EXT}
          * @requires_gles Debug output is not available in WebGL.
          */
@@ -753,11 +753,11 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * @return Reference to self (for method chaining)
          *
          * Default is empty string. If OpenGL 4.3 is not supported and neither
-         * @extension{KHR,debug} (covered also by @es_extension{ANDROID,extension_pack_es31a})
-         * nor @extension2{EXT,debug_label} desktop or ES extension is
+         * @extension{KHR,debug} (covered also by @extension{ANDROID,extension_pack_es31a})
+         * nor @extension{EXT,debug_label} desktop or ES extension is
          * available, this function does nothing.
          * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} with
-         *      @def_gl{PROGRAM} or @fn_gl_extension2{LabelObject,EXT,debug_label}
+         *      @def_gl{PROGRAM} or @fn_gl_extension{LabelObject,EXT,debug_label}
          *      with @def_gl{PROGRAM_OBJECT_EXT}
          * @requires_gles Debug output is not available in WebGL.
          */
@@ -843,7 +843,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * Initially disabled.
          * @see @fn_gl{ProgramParameter} with @def_gl{PROGRAM_SEPARABLE}
          * @requires_gl41 Extension @extension{ARB,separate_shader_objects}
-         * @requires_es_extension Extension @es_extension{EXT,separate_shader_objects}
+         * @requires_es_extension Extension @extension{EXT,separate_shader_objects}
          * @requires_gles Separate shader objects are not supported in WebGL.
          */
         void setSeparable(bool enabled) {
@@ -935,7 +935,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          *      for more information.
          * @requires_gl30 Extension @extension{EXT,gpu_shader4}
          * @requires_gl Use explicit location specification in OpenGL ES 3.0 or
-         *      WebGL 2.0 and `gl_FragData[n]` provided by @es_extension{NV,draw_buffers}
+         *      WebGL 2.0 and `gl_FragData[n]` provided by @extension{NV,draw_buffers}
          *      in OpenGL ES 2.0 and @webgl_extension{WEBGL,draw_buffers} in
          *      WebGL 1.0.
          */
@@ -1085,7 +1085,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          *
          * If neither @extension{ARB,separate_shader_objects} (part of OpenGL
          * 4.1) nor @extension{EXT,direct_state_access} desktop extension nor
-         * @es_extension{EXT,separate_shader_objects} OpenGL ES extension nor
+         * @extension{EXT,separate_shader_objects} OpenGL ES extension nor
          * OpenGL ES 3.1 is available, the shader is marked for use before the
          * operation.
          * @see @ref setUniform(Int, const T&), @ref uniformLocation(),

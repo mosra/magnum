@@ -96,7 +96,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
             #ifndef MAGNUM_TARGET_WEBGL
             /**
              * The default framebuffer does not exist.
-             * @requires_gles30 Extension @es_extension{OES,surfaceless_context}
+             * @requires_gles30 Extension @extension{OES,surfaceless_context}
              *      in OpenGL ES 2.0.
              * @requires_gles Surfaceless context is not available in WebGL.
              */
@@ -112,7 +112,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @brief Draw attachment
          *
          * @see @ref mapForDraw()
-         * @requires_gles30 Extension @es_extension{EXT,draw_buffers} in OpenGL
+         * @requires_gles30 Extension @extension{EXT,draw_buffers} in OpenGL
          *      ES 2.0.
          * @requires_webgl20 Extension @webgl_extension{WEBGL,draw_buffers} in
          *      WebGL 1.0.
@@ -168,7 +168,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @brief Read attachment
          *
          * @see @ref mapForRead()
-         * @requires_gles30 Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
+         * @requires_gles30 Extension @extension2{NV,read_buffer,GL_NV_read_buffer}
          *      in OpenGL ES 2.0.
          * @requires_webgl20 Framebuffer read mapping is not available in WebGL
          *      1.0.
@@ -226,7 +226,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
 
             /**
              * Read from front buffer.
-             * @requires_es_extension Extension @es_extension2{NV,read_buffer_front,GL_NV_read_buffer}
+             * @requires_es_extension Extension @extension2{NV,read_buffer_front,GL_NV_read_buffer}
              * @requires_gles Reading from front buffer is not available in
              *      WebGL.
              */
@@ -250,7 +250,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          *
          * @see @ref invalidate()
          * @requires_gl43 Extension @extension{ARB,invalidate_subdata}
-         * @requires_gles30 Extension @es_extension{EXT,discard_framebuffer} in
+         * @requires_gles30 Extension @extension{EXT,discard_framebuffer} in
          *      OpenGL ES 2.0.
          * @requires_webgl20 Framebuffer invalidation is not available in WebGL
          *      1.0.
@@ -333,8 +333,8 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * already).
          *
          * The @p target parameter is ignored on OpenGL ES 2.0 if none of
-         * @es_extension{APPLE,framebuffer_multisample}, @es_extension{ANGLE,framebuffer_blit}
-         * or @es_extension{NV,framebuffer_blit} is available and also on WebGL
+         * @extension{APPLE,framebuffer_multisample}, @extension{ANGLE,framebuffer_blit}
+         * or @extension{NV,framebuffer_blit} is available and also on WebGL
          * 1.0.
          * @see @fn_gl2{CheckNamedFramebufferStatus,CheckFramebufferStatus},
          *      @fn_gl_extension{CheckNamedFramebufferStatus,EXT,direct_state_access},
@@ -364,7 +364,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          *      @ref mapForRead(), @fn_gl2{NamedFramebufferDrawBuffers,DrawBuffers},
          *      @fn_gl_extension{FramebufferDrawBuffers,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and @fn_gl{DrawBuffers}
-         * @requires_gles30 Extension @es_extension{EXT,draw_buffers} in OpenGL
+         * @requires_gles30 Extension @extension{EXT,draw_buffers} in OpenGL
          *      ES 2.0.
          * @requires_webgl20 Extension @webgl_extension{WEBGL,draw_buffers} in
          *      WebGL 1.0.
@@ -387,7 +387,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          *      @fn_gl_extension{FramebufferDrawBuffer,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and @fn_gl{DrawBuffer} or
          *      @fn_gl{DrawBuffers} in OpenGL ES 3.0
-         * @requires_gles30 Extension @es_extension{EXT,draw_buffers} in OpenGL
+         * @requires_gles30 Extension @extension{EXT,draw_buffers} in OpenGL
          *      ES 2.0.
          * @requires_webgl20 Extension @webgl_extension{WEBGL,draw_buffers} in
          *      WebGL 1.0.
@@ -407,7 +407,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @see @ref mapForDraw(), @fn_gl2{NamedFramebufferReadBuffer,ReadBuffer},
          *      @fn_gl_extension{FramebufferReadBuffer,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and @fn_gl{ReadBuffer}
-         * @requires_gles30 Extension @es_extension2{NV,read_buffer,GL_NV_read_buffer}
+         * @requires_gles30 Extension @extension2{NV,read_buffer,GL_NV_read_buffer}
          *      in OpenGL ES 2.0.
          * @requires_webgl20 Framebuffer read mapping is not available in WebGL
          *      1.0.
@@ -419,14 +419,14 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @param attachments       Attachments to invalidate
          *
          * If extension @extension{ARB,invalidate_subdata} (part of OpenGL
-         * 4.3), extension @es_extension{EXT,discard_framebuffer} in OpenGL ES
+         * 4.3), extension @extension{EXT,discard_framebuffer} in OpenGL ES
          * 2.0 or OpenGL ES 3.0 is not available, this function does nothing.
          * If @extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
          * available, the framebuffer is bound before the operation (if not
          * already).
          * @see @fn_gl2{InvalidateNamedFramebufferData,InvalidateFramebuffer},
          *      eventually @fn_gl{InvalidateFramebuffer} or
-         *      @fn_gles_extension{DiscardFramebuffer,EXT,discard_framebuffer}
+         *      @fn_gl_extension{DiscardFramebuffer,EXT,discard_framebuffer}
          *      on OpenGL ES 2.0
          * @requires_webgl20 Framebuffer invalidation is not available in WebGL
          *      1.0.

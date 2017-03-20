@@ -497,8 +497,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @brief Memory mapping access
          *
          * @see @ref map(MapAccess), @ref mapSub()
-         * @requires_es_extension Extension @es_extension{OES,mapbuffer} or
-         *      @es_extension{CHROMIUM,map_sub}
+         * @requires_es_extension Extension @extension{OES,mapbuffer} or
+         *      @extension{CHROMIUM,map_sub}
          * @requires_gles Buffer mapping is not available in WebGL.
          * @deprecated_gl Prefer to use @ref map(GLintptr, GLsizeiptr, MapFlags)
          *      instead, as it has more complete set of features.
@@ -533,7 +533,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *
          * @see @ref MapFlags, @ref map(GLintptr, GLsizeiptr, MapFlags)
          * @requires_gl30 Extension @extension{ARB,map_buffer_range}
-         * @requires_gles30 Extension @es_extension{EXT,map_buffer_range} in
+         * @requires_gles30 Extension @extension{EXT,map_buffer_range} in
          *      OpenGL ES 2.0.
          * @requires_gles Buffer mapping is not available in WebGL.
          */
@@ -601,7 +601,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *
          * @see @ref map(GLintptr, GLsizeiptr, MapFlags)
          * @requires_gl30 Extension @extension{ARB,map_buffer_range}
-         * @requires_gles30 Extension @es_extension{EXT,map_buffer_range} in
+         * @requires_gles30 Extension @extension{EXT,map_buffer_range} in
          *      OpenGL ES 2.0.
          * @requires_gles Buffer mapping is not available in WebGL.
          */
@@ -920,11 +920,11 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls. If OpenGL 4.3 is not supported and neither
-         * @extension{KHR,debug} (covered also by @es_extension{ANDROID,extension_pack_es31a})
-         * nor @extension2{EXT,debug_label} desktop or ES extension is
+         * @extension{KHR,debug} (covered also by @extension{ANDROID,extension_pack_es31a})
+         * nor @extension{EXT,debug_label} desktop or ES extension is
          * available, this function returns empty string.
          * @see @fn_gl{GetObjectLabel} with @def_gl{BUFFER} or
-         *      @fn_gl_extension2{GetObjectLabel,EXT,debug_label} with
+         *      @fn_gl_extension{GetObjectLabel,EXT,debug_label} with
          *      @def_gl{BUFFER_OBJECT_EXT}
          * @requires_gles Debug output is not available in WebGL.
          */
@@ -935,11 +935,11 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @return Reference to self (for method chaining)
          *
          * Default is empty string. If OpenGL 4.3 is not supported and neither
-         * @extension{KHR,debug} (covered also by @es_extension{ANDROID,extension_pack_es31a})
-         * nor @extension2{EXT,debug_label} desktop or ES extension is
+         * @extension{KHR,debug} (covered also by @extension{ANDROID,extension_pack_es31a})
+         * nor @extension{EXT,debug_label} desktop or ES extension is
          * available, this function does nothing.
          * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} with @def_gl{BUFFER}
-         *      or @fn_gl_extension2{LabelObject,EXT,debug_label} with
+         *      or @fn_gl_extension{LabelObject,EXT,debug_label} with
          *      @def_gl{BUFFER_OBJECT_EXT}
          * @requires_gles Debug output is not available in WebGL.
          */
@@ -1188,7 +1188,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      @fn_gl2{MapNamedBuffer,MapBuffer},
          *      @fn_gl_extension{MapNamedBuffer,EXT,direct_state_access},
          *      eventually @fn_gl{BindBuffer} and @fn_gl{MapBuffer}
-         * @requires_es_extension Extension @es_extension{OES,mapbuffer} in
+         * @requires_es_extension Extension @extension{OES,mapbuffer} in
          *      OpenGL ES 2.0, use @ref map(GLintptr, GLsizeiptr, MapFlags) in
          *      OpenGL ES 3.0 instead.
          * @requires_gles Buffer mapping is not available in WebGL.
@@ -1216,7 +1216,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      @fn_gl_extension{MapBufferSubData,CHROMIUM,map_sub}
          * @requires_gles20 Available only in NaCl build. Use
          *      @ref map(GLintptr, GLsizeiptr, MapFlags) elsewhere.
-         * @requires_es_extension Extension @es_extension{CHROMIUM,map_sub}
+         * @requires_es_extension Extension @extension{CHROMIUM,map_sub}
          * @requires_gles Buffer mapping is not available in WebGL.
          * @deprecated_gl Prefer to use @ref map(GLintptr, GLsizeiptr, MapFlags)
          *      instead, as it has more complete set of features.
@@ -1247,7 +1247,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      @fn_gl_extension{MapNamedBufferRange,EXT,direct_state_access},
          *      eventually @fn_gl{BindBuffer} and @fn_gl{MapBufferRange}
          * @requires_gl30 Extension @extension{ARB,map_buffer_range}
-         * @requires_gles30 Extension @es_extension{EXT,map_buffer_range} in
+         * @requires_gles30 Extension @extension{EXT,map_buffer_range} in
          *      OpenGL ES 2.0.
          * @requires_gles Buffer mapping is not available in WebGL.
          */
@@ -1276,7 +1276,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      @fn_gl_extension{FlushMappedNamedBufferRange,EXT,direct_state_access},
          *      eventually @fn_gl{BindBuffer} and @fn_gl{FlushMappedBufferRange}
          * @requires_gl30 Extension @extension{ARB,map_buffer_range}
-         * @requires_gles30 Extension @es_extension{EXT,map_buffer_range} in
+         * @requires_gles30 Extension @extension{EXT,map_buffer_range} in
          *      OpenGL ES 2.0.
          * @requires_gles Buffer mapping is not available in WebGL.
          */
@@ -1297,7 +1297,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @see @ref setTargetHint(), @fn_gl2{UnmapNamedBuffer,UnmapBuffer},
          *      @fn_gl_extension{UnmapNamedBuffer,EXT,direct_state_access},
          *      eventually  @fn_gl{BindBuffer} and @fn_gl{UnmapBuffer}
-         * @requires_gles30 Extension @es_extension{OES,mapbuffer} in OpenGL
+         * @requires_gles30 Extension @extension{OES,mapbuffer} in OpenGL
          *      ES 2.0.
          * @requires_gles Buffer mapping is not available in WebGL.
          */
@@ -1312,7 +1312,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @see @fn_gl_extension{UnmapBufferSubData,CHROMIUM,map_sub}
          * @requires_gles20 Available only in NaCl build. Use
          *      @ref map(GLintptr, GLsizeiptr, MapFlags) elsewhere.
-         * @requires_es_extension Extension @es_extension{CHROMIUM,map_sub}
+         * @requires_es_extension Extension @extension{CHROMIUM,map_sub}
          * @requires_gles Buffer mapping is not available in WebGL.
          */
         void unmapSub();

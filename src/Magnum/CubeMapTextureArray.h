@@ -81,8 +81,8 @@ the six sides of the cube map, fourth part is layer in the array. See
     @ref MultisampleTexture
 @requires_gl40 Extension @extension{ARB,texture_cube_map_array}
 @requires_gles30 Not defined in OpenGL ES 2.0.
-@requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
-    @es_extension{EXT,texture_cube_map_array}
+@requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
+    @extension{EXT,texture_cube_map_array}
 @requires_gles Cube map texture arrays are not available in WebGL.
 */
 class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
@@ -321,9 +321,9 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          *
          * See @ref Texture::setBorderColor(const Color4&) for more
          * information.
-         * @requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
-         *      @es_extension{EXT,texture_border_clamp} or
-         *      @es_extension{NV,texture_border_clamp}
+         * @requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
+         *      @extension{EXT,texture_border_clamp} or
+         *      @extension{NV,texture_border_clamp}
          */
         CubeMapTextureArray& setBorderColor(const Color4& color) {
             AbstractTexture::setBorderColor(color);
@@ -337,8 +337,8 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          * See @ref Texture::setBorderColor(const Vector4ui&) for more
          * information.
          * @requires_gl30 Extension @extension{EXT,texture_integer}
-         * @requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
-         *      @es_extension{EXT,texture_border_clamp}
+         * @requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
+         *      @extension{EXT,texture_border_clamp}
          */
         CubeMapTextureArray& setBorderColor(const Vector4ui& color) {
             AbstractTexture::setBorderColor(color);
@@ -347,8 +347,8 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
 
         /** @overload
          * @requires_gl30 Extension @extension{EXT,texture_integer}
-         * @requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
-         *      @es_extension{EXT,texture_border_clamp}
+         * @requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
+         *      @extension{EXT,texture_border_clamp}
          */
         CubeMapTextureArray& setBorderColor(const Vector4i& color) {
             AbstractTexture::setBorderColor(color);
@@ -372,8 +372,8 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          *
          * See @ref Texture::setSRGBDecode() for more information.
          * @requires_extension Extension @extension{EXT,texture_sRGB_decode}
-         * @requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
-         *      @es_extension2{EXT,texture_sRGB_decode,texture_sRGB_decode}
+         * @requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
+         *      @extension2{EXT,texture_sRGB_decode,texture_sRGB_decode}
          */
         CubeMapTextureArray& setSRGBDecode(bool decode) {
             AbstractTexture::setSRGBDecode(decode);

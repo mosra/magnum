@@ -114,7 +114,7 @@ OpenGL function                         | Matching API
 --------------------------------------- | ------------
 @fn_gl{DebugMessageCallback}            | @ref DebugOutput::setCallback()
 @fn_gl{DebugMessageControl}             | @ref DebugOutput::setEnabled()
-@fn_gl{DebugMessageInsert}, \n @fn_gl_extension2{InsertEventMarker,EXT,debug_marker}, \n @fn_gl_extension{StringMarker,GREMEDY,string_marker} | @ref DebugMessage::insert()
+@fn_gl{DebugMessageInsert}, \n @fn_gl_extension{InsertEventMarker,EXT,debug_marker}, \n @fn_gl_extension{StringMarker,GREMEDY,string_marker} | @ref DebugMessage::insert()
 @fn_gl{DepthFunc}                       | @ref Renderer::setDepthFunction()
 @fn_gl{DepthMask}                       | @ref Renderer::setDepthMask()
 @fn_gl{DepthRange}                      | |
@@ -237,7 +237,7 @@ OpenGL function                         | Matching API
 --------------------------------------- | ------------
 @fn_gl{InvalidateBufferData}            | @ref Buffer::invalidateData()
 @fn_gl{InvalidateBufferSubData}         | @ref Buffer::invalidateSubData()
-@fn_gl{InvalidateFramebuffer}, \n `glInvalidateNamedFramebufferData()`, \n @fn_gles_extension{DiscardFramebuffer,EXT,discard_framebuffer} | @ref DefaultFramebuffer::invalidate(), \n @ref Framebuffer::invalidate()
+@fn_gl{InvalidateFramebuffer}, \n `glInvalidateNamedFramebufferData()`, \n @fn_gl_extension{DiscardFramebuffer,EXT,discard_framebuffer} | @ref DefaultFramebuffer::invalidate(), \n @ref Framebuffer::invalidate()
 @fn_gl{InvalidateSubFramebuffer}, \n `glInvalidateNamedFramebufferSubData()` | @ref DefaultFramebuffer::invalidate(), \n @ref Framebuffer::invalidate()
 @fn_gl{InvalidateTexImage}              | @ref Texture::invalidateImage(), \n @ref TextureArray::invalidateImage(), \n @ref CubeMapTexture::invalidateImage(), \n @ref CubeMapTextureArray::invalidateImage(), \n @ref RectangleTexture::invalidateImage(), \n @ref MultisampleTexture::invalidateImage()
 @fn_gl{InvalidateTexSubImage}           | @ref Texture::invalidateSubImage(), \n @ref TextureArray::invalidateSubImage(), \n @ref CubeMapTexture::invalidateSubImage(), \n @ref CubeMapTextureArray::invalidateSubImage(), \n @ref RectangleTexture::invalidateSubImage(), \n @ref MultisampleTexture::invalidateSubImage()
@@ -273,7 +273,7 @@ OpenGL function                         | Matching API
 
 OpenGL function                         | Matching API
 --------------------------------------- | ------------
-@fn_gl{ObjectLabel}, \n @fn_gl{ObjectPtrLabel}, \n @fn_gl_extension2{LabelObject,EXT,debug_label} | @ref AbstractShaderProgram::setLabel(), \n @ref AbstractQuery::setLabel(), \n @ref AbstractTexture::setLabel(), \n @ref Buffer::setLabel(), \n @ref Framebuffer::setLabel(), \n @ref Mesh::setLabel(), \n @ref Renderbuffer::setLabel(), \n @ref Shader::setLabel()
+@fn_gl{ObjectLabel}, \n @fn_gl{ObjectPtrLabel}, \n @fn_gl_extension{LabelObject,EXT,debug_label} | @ref AbstractShaderProgram::setLabel(), \n @ref AbstractQuery::setLabel(), \n @ref AbstractTexture::setLabel(), \n @ref Buffer::setLabel(), \n @ref Framebuffer::setLabel(), \n @ref Mesh::setLabel(), \n @ref Renderbuffer::setLabel(), \n @ref Shader::setLabel()
 
 @subsection opengl-mapping-functions-p P
 
@@ -286,13 +286,13 @@ OpenGL function                         | Matching API
 @fn_gl{PointSize}                       | @ref Renderer::setPointSize()
 @fn_gl{PolygonMode}                     | @ref Renderer::setPolygonMode()
 @fn_gl{PolygonOffset}                   | @ref Renderer::setPolygonOffset()
-@fn_gles_extension{PrimitiveBoundingBox,EXT,primitive_bounding_box} | |
+@fn_gl_extension{PrimitiveBoundingBox,EXT,primitive_bounding_box} | |
 @fn_gl{PrimitiveRestartIndex}           | |
 @fn_gl{ProgramBinary}                   | |
 @fn_gl{ProgramParameter}                | @ref AbstractShaderProgram::setRetrievableBinary(), \n @ref AbstractShaderProgram::setSeparable()
 @fn_gl{ProvokingVertex}                 | @ref Renderer::setProvokingVertex()
-@fn_gl{PushDebugGroup}, \n @fn_gl_extension2{PushGroupMarker,EXT,debug_marker} | @ref DebugGroup::push()
-@fn_gl{PopDebugGroup}, \n @fn_gl_extension2{PopGroupMarker,EXT,debug_marker} | @ref DebugGroup::pop()
+@fn_gl{PushDebugGroup}, \n @fn_gl_extension{PushGroupMarker,EXT,debug_marker} | @ref DebugGroup::push()
+@fn_gl{PopDebugGroup}, \n @fn_gl_extension{PopGroupMarker,EXT,debug_marker} | @ref DebugGroup::pop()
 
 @subsection opengl-mapping-functions-q Q
 

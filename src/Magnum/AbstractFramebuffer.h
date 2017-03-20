@@ -66,8 +66,8 @@ typedef Containers::EnumSet<FramebufferClear> FramebufferClearMask;
 
 @see @ref AbstractFramebuffer, @ref FramebufferBlitMask
 @requires_gl30 Extension @extension{ARB,framebuffer_object}
-@requires_gles30 Extension @es_extension{ANGLE,framebuffer_blit} or
-    @es_extension{NV,framebuffer_blit} in OpenGL ES 2.0.
+@requires_gles30 Extension @extension{ANGLE,framebuffer_blit} or
+    @extension{NV,framebuffer_blit} in OpenGL ES 2.0.
 @requires_webgl20 Framebuffer blit is not available in WebGL 1.0.
 */
 enum class FramebufferBlit: GLbitfield {
@@ -81,8 +81,8 @@ enum class FramebufferBlit: GLbitfield {
 
 @see @ref AbstractFramebuffer::blit()
 @requires_gl30 Extension @extension{ARB,framebuffer_object}
-@requires_gles30 Extension @es_extension{ANGLE,framebuffer_blit} or
-    @es_extension{NV,framebuffer_blit} in OpenGL ES 2.0.
+@requires_gles30 Extension @extension{ANGLE,framebuffer_blit} or
+    @extension{NV,framebuffer_blit} in OpenGL ES 2.0.
 @requires_webgl20 Framebuffer blit is not available in WebGL 1.0.
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -97,8 +97,8 @@ typedef Containers::EnumSet<FramebufferBlit> FramebufferBlitMask;
 
 @see @ref AbstractFramebuffer::blit()
 @requires_gl30 Extension @extension{ARB,framebuffer_object}
-@requires_gles30 Extension @es_extension{ANGLE,framebuffer_blit} or
-    @es_extension{NV,framebuffer_blit} in OpenGL ES 2.0.
+@requires_gles30 Extension @extension{ANGLE,framebuffer_blit} or
+    @extension{NV,framebuffer_blit} in OpenGL ES 2.0.
 @requires_webgl20 Framebuffer blit is not available in WebGL 1.0.
 */
 enum class FramebufferBlitFilter: GLenum {
@@ -191,8 +191,8 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @brief Max supported draw buffer count
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If neither @es_extension{EXT,draw_buffers} nor
-         * @es_extension{NV,draw_buffers} is available in OpenGL ES 2.0 and
+         * OpenGL calls. If neither @extension{EXT,draw_buffers} nor
+         * @extension{NV,draw_buffers} is available in OpenGL ES 2.0 and
          * @webgl_extension{WEBGL,draw_buffers} is not available in WebGL 1.0,
          * returns `0`.
          * @see @ref DefaultFramebuffer::mapForDraw(), @ref Framebuffer::mapForDraw(),
@@ -234,8 +234,8 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * before the operation (if not already).
          * @see @fn_gl2{BlitNamedFramebuffer,BlitFramebuffer}, eventually
          *      @fn_gl{BlitFramebuffer}
-         * @requires_gles30 Extension @es_extension{ANGLE,framebuffer_blit} or
-         *      @es_extension{NV,framebuffer_blit} in OpenGL ES 2.0.
+         * @requires_gles30 Extension @extension{ANGLE,framebuffer_blit} or
+         *      @extension{NV,framebuffer_blit} in OpenGL ES 2.0.
          * @requires_webgl20 Framebuffer blit is not available in WebGL 1.0.
          * @todo NaCl exports `BlitFramebufferEXT` (although no such extension
          *      exists for ES)
@@ -602,7 +602,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          *      @fn_gl_extension{CopyTextureSubImage3D,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{CopyTexSubImage3D}
-         * @requires_gles30 Extension @es_extension{OES,texture_3D} in OpenGL
+         * @requires_gles30 Extension @extension{OES,texture_3D} in OpenGL
          *      ES 2.0.
          * @requires_webgl20 Only 2D textures are available in WebGL 1.0.
          */
@@ -677,8 +677,8 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          *      @fn_gl{CopyTexSubImage3D}
          * @requires_gl40 Extension @extension{ARB,texture_cube_map_array}
          * @requires_gles30 Not defined in OpenGL ES 2.0.
-         * @requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
-         *      @es_extension{EXT,texture_cube_map_array}
+         * @requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
+         *      @extension{EXT,texture_cube_map_array}
          * @requires_gles Cube map texture arrays are not available in WebGL.
          */
         void copySubImage(const Range2Di& rectangle, CubeMapTextureArray& texture, Int level, const Vector3i& offset);

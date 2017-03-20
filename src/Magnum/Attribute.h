@@ -166,7 +166,7 @@ template<UnsignedInt location, class T> class Attribute {
             /**
              * Half float. Only for float attribute types.
              * @requires_gl30 Extension @extension{ARB,half_float_vertex}
-             * @requires_gles30 Extension @es_extension{OES,vertex_half_float}
+             * @requires_gles30 Extension @extension{OES,vertex_half_float}
              *      in OpenGL ES 2.0
              * @requires_webgl20 Half float vertex attributes are not available
              *      in WebGL 1.0.
@@ -204,7 +204,7 @@ template<UnsignedInt location, class T> class Attribute {
             /**
              * Unsigned 2.10.10.10 packed integer. Only for four-component
              * float vector attribute type.
-             * @todo How about (incompatible) @es_extension{OES,vertex_type_10_10_10_2}?
+             * @todo How about (incompatible) @extension{OES,vertex_type_10_10_10_2}?
              * @requires_gl33 Extension @extension{ARB,vertex_type_2_10_10_10_rev}
              * @requires_gles30 Packed attributes are not available in OpenGL
              *      ES 2.0.

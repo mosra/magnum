@@ -232,7 +232,7 @@ GLSL 4.50                                   | done
 Extension                                   | Status
 ------------------------------------------- | ------
 @extension{ARB,robustness}                  | done
-@extension3{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr} | done
+@extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr} | done
 @extension{KHR,texture_compression_astc_hdr} | done
 @extension{ARB,robustness_isolation}        | done
 @extension{ARB,bindless_texture}            | |
@@ -246,7 +246,7 @@ Extension                                   | Status
 @extension{ARB,sparse_buffer}               | |
 @extension{ARB,transform_feedback_overflow_query} | done
 @extension{KHR,blend_equation_advanced}     | done
-@extension3{KHR,blend_equation_advanced_coherent,blend_equation_advanced} | done
+@extension2{KHR,blend_equation_advanced_coherent,blend_equation_advanced} | done
 @extension{KHR,no_error}                    | done
 
 @subsection opengl-support-extensions-vendor Vendor OpenGL extensions
@@ -267,8 +267,8 @@ Extension                                   | Status
 @extension{EXT,direct_state_access}         | done for implemented functionality
 @extension{EXT,texture_sRGB_decode}         | done
 @extension{EXT,shader_integer_mix}          | done (shading language only)
-@extension2{EXT,debug_label}                | missing pipeline and sampler label
-@extension2{EXT,debug_marker}               | done
+@extension{EXT,debug_label}                 | missing pipeline and sampler label
+@extension{EXT,debug_marker}                | done
 @extension{GREMEDY,string_marker}           | done
 
 @subsection opengl-support-es20 OpenGL ES 2.0
@@ -290,119 +290,119 @@ supported. ESSL 3.10 is supported.
 
 Extension                                   | Status
 ------------------------------------------- | ------
-@es_extension{ANGLE,framebuffer_blit}       | done
-@es_extension{ANGLE,framebuffer_multisample} | done
-@es_extension{ANGLE,instanced_arrays}       | done
-@es_extension{ANGLE,depth_texture}          | done
-@es_extension{APPLE,framebuffer_multisample} | done (ES 3.0 subset)
-@es_extension{APPLE,texture_max_level}      | done
-@es_extension{ARM,rgba8}                    | done
-@es_extension{EXT,texture_type_2_10_10_10_REV} | done
-@es_extension{EXT,discard_framebuffer}      | done
-@es_extension2{EXT,blend_minmax,blend_minmax} | done
-@es_extension{EXT,shader_texture_lod}       | done (shading language only)
-@es_extension{EXT,unpack_subimage}          | done
-@es_extension{EXT,occlusion_query_boolean}  | done
-@es_extension{EXT,shadow_samplers}          | done
-@es_extension{EXT,texture_rg}               | done
-@es_extension{EXT,sRGB}                     | done
-@es_extension{EXT,texture_storage}          | done
-@es_extension{EXT,map_buffer_range}         | done
-@es_extension{EXT,draw_buffers}             | done
-@es_extension{EXT,instanced_arrays}         | done
-@es_extension2{EXT,draw_instanced,draw_instanced} | done
-@es_extension{NV,draw_buffers}              | done
-@es_extension{NV,fbo_color_attachments}     | done
-@es_extension{NV,read_buffer}               | done
-@es_extension{NV,pack_subimage}             | done
-@es_extension{NV,draw_instanced}            | done
-@es_extension{NV,framebuffer_blit}          | done
-@es_extension{NV,framebuffer_multisample}   | done
-@es_extension{NV,instanced_arrays}          | done
-@es_extension{NV,shadow_samplers_array}     | done (shading language only)
-@es_extension{NV,shadow_samplers_cube}      | done (shading language only)
-@es_extension{OES,depth24}                  | done
-@es_extension{OES,element_index_uint}       | done
-@es_extension{OES,fbo_render_mipmap}        | done
-@es_extension{OES,rgb8_rgba8}               | done (desktop-compatible subset)
-@es_extension{OES,texture_3D}               | done
-@es_extension2{OES,texture_half_float_linear,OES_texture_float_linear} | done
-@es_extension{OES,texture_float_linear}     | done
-@es_extension2{OES,texture_half_float,OES_texture_float} | done
-@es_extension{OES,texture_float}            | done
-@es_extension{OES,texture_npot}             | done (nothing to do)
-@es_extension{OES,vertex_half_float}        | done
-@es_extension{OES,packed_depth_stencil}     | done
-@es_extension{OES,depth_texture}            | done
-@es_extension{OES,standard_derivatives}     | done
-@es_extension{OES,vertex_array_object}      | done
-@es_extension{OES,required_internalformat}  | done (desktop-compatible subset)
-@es_extension{OES,surfaceless_context}      | done
+@extension{ANGLE,framebuffer_blit}          | done
+@extension{ANGLE,framebuffer_multisample}   | done
+@extension{ANGLE,instanced_arrays}          | done
+@extension{ANGLE,depth_texture}             | done
+@extension{APPLE,framebuffer_multisample}   | done (ES 3.0 subset)
+@extension{APPLE,texture_max_level}         | done
+@extension{ARM,rgba8}                       | done
+@extension{EXT,texture_type_2_10_10_10_REV} | done
+@extension{EXT,discard_framebuffer}         | done
+@extension2{EXT,blend_minmax,blend_minmax}  | done
+@extension{EXT,shader_texture_lod}          | done (shading language only)
+@extension{EXT,unpack_subimage}             | done
+@extension{EXT,occlusion_query_boolean}     | done
+@extension{EXT,shadow_samplers}             | done
+@extension{EXT,texture_rg}                  | done
+@extension{EXT,sRGB}                        | done
+@extension{EXT,texture_storage}             | done
+@extension{EXT,map_buffer_range}            | done
+@extension{EXT,draw_buffers}                | done
+@extension{EXT,instanced_arrays}            | done
+@extension2{EXT,draw_instanced,draw_instanced} | done
+@extension{NV,draw_buffers}                 | done
+@extension{NV,fbo_color_attachments}        | done
+@extension{NV,read_buffer}                  | done
+@extension{NV,pack_subimage}                | done
+@extension{NV,draw_instanced}               | done
+@extension{NV,framebuffer_blit}             | done
+@extension{NV,framebuffer_multisample}      | done
+@extension{NV,instanced_arrays}             | done
+@extension{NV,shadow_samplers_array}        | done (shading language only)
+@extension{NV,shadow_samplers_cube}         | done (shading language only)
+@extension{OES,depth24}                     | done
+@extension{OES,element_index_uint}          | done
+@extension{OES,fbo_render_mipmap}           | done
+@extension{OES,rgb8_rgba8}                  | done (desktop-compatible subset)
+@extension{OES,texture_3D}                  | done
+@extension2{OES,texture_half_float_linear,OES_texture_float_linear} | done
+@extension{OES,texture_float_linear}        | done
+@extension2{OES,texture_half_float,OES_texture_float} | done
+@extension{OES,texture_float}               | done
+@extension{OES,texture_npot}                | done (nothing to do)
+@extension{OES,vertex_half_float}           | done
+@extension{OES,packed_depth_stencil}        | done
+@extension{OES,depth_texture}               | done
+@extension{OES,standard_derivatives}        | done
+@extension{OES,vertex_array_object}         | done
+@extension{OES,required_internalformat}     | done (desktop-compatible subset)
+@extension{OES,surfaceless_context}         | done
 
 @subsection opengl-support-es-extensions OpenGL ES extensions
 
-@todo @es_extension{NV,non_square_matrices}
+@todo @extension{NV,non_square_matrices}
 @todo Support also IMG_multisampled_render_to_texture? It has different enum
     values (!)
 
 Extension                                   | Status
 ------------------------------------------- | ------
-@es_extension{ANDROID,extension_pack_es31a} | done (nothing to do)
-@es_extension{APPLE,texture_format_BGRA8888} | done
-@es_extension{ARM,shader_framebuffer_fetch} | missing renderer setup and limit query
-@es_extension{ARM,shader_framebuffer_fetch_depth_stencil} | done (shading language only)
-@es_extension{CHROMIUM,map_sub} (NaCl only) | only buffer mapping
-@es_extension{EXT,texture_filter_anisotropic} | done
-@es_extension{EXT,texture_format_BGRA8888}  | done
-@es_extension{EXT,read_format_bgra}         | done
-@es_extension2{EXT,multi_draw_arrays,multi_draw_arrays} | done
-@es_extension{EXT,debug_label}              | see above
-@es_extension{EXT,debug_marker}             | done
-@es_extension{EXT,separate_shader_objects}  | only direct uniform binding
-@es_extension{EXT,multisampled_render_to_texture} | only renderbuffer storage
-@es_extension{EXT,robustness}               | done
-@es_extension{EXT,shader_framebuffer_fetch} | missing limit query
-@es_extension{EXT,disjoint_timer_query}     | only time elapsed query
-@es_extension{EXT,texture_sRGB_decode}      | done
-@es_extension{EXT,sRGB_write_control}       | done
-@es_extension2{EXT,texture_compression_s3tc,texture_compression_s3tc} | done
-@es_extension{EXT,shader_integer_mix}       | done (shading language only)
-@es_extension{EXT,copy_image}               | |
-@es_extension{EXT,draw_buffers_indexed}     | |
-@es_extension{EXT,geometry_shader}          | missing some ES-specific limit queries
-@es_extension{EXT,gpu_shader5}              | done (shading language only)
-@es_extension{EXT,shader_io_blocks}         | done (shading language only)
-@es_extension{EXT,tessellation_shader}      | see above
-@es_extension{EXT,texture_border_clamp}     | done
-@es_extension{EXT,texture_buffer}           | done
-@es_extension{EXT,texture_cube_map_array}   | done
-@es_extension{EXT,primitive_bounding_box}   | |
-@es_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr} | done
-@es_extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr} | done
-@es_extension{KHR,debug}                    | see above
-@es_extension2{KHR,blend_equation_advanced,blend_equation_advanced}  | done
-@es_extension2{KHR,blend_equation_advanced_coherent,blend_equation_advanced} | done
-@es_extension{KHR,robustness}               | |
-@es_extension{KHR,robust_buffer_access_behavior} | done (nothing to do)
-@es_extension{KHR,context_flush_control}    | |
-@es_extension2{KHR,no_error,no_error}       | done
-@es_extension2{NV,read_buffer_front,NV_read_buffer} | done
-@es_extension2{NV,read_depth,NV_read_depth_stencil} | done
-@es_extension2{NV,read_stencil,NV_read_depth_stencil} | done
-@es_extension{NV,read_depth_stencil}        | done
-@es_extension{NV,texture_border_clamp}      | done
-@es_extension{NV,shader_noperspective_interpolation} | done (shading language only)
-@es_extension{NV,polygon_mode}              | done
-@es_extension{OES,depth32}                  | done
-@es_extension{OES,mapbuffer}                | done
-@es_extension{OES,stencil1}                 | done
-@es_extension{OES,stencil4}                 | done
-@es_extension{OES,sample_shading}           | |
-@es_extension{OES,sample_variables}         | done (shading language only)
-@es_extension{OES,shader_image_atomic}      | done (shading language only)
-@es_extension{OES,shader_multisample_interpolation} | |
-@es_extension{OES,texture_stencil8}         | done
-@es_extension{OES,texture_storage_multisample_2d_array} | done
+@extension{ANDROID,extension_pack_es31a}    | done (nothing to do)
+@extension{APPLE,texture_format_BGRA8888}   | done
+@extension{ARM,shader_framebuffer_fetch}    | missing renderer setup and limit query
+@extension{ARM,shader_framebuffer_fetch_depth_stencil} | done (shading language only)
+@extension{CHROMIUM,map_sub} (NaCl only)    | only buffer mapping
+@extension{EXT,texture_filter_anisotropic}  | done
+@extension{EXT,texture_format_BGRA8888}     | done
+@extension{EXT,read_format_bgra}            | done
+@extension2{EXT,multi_draw_arrays,multi_draw_arrays} | done
+@extension{EXT,debug_label}                 | see above
+@extension{EXT,debug_marker}                | done
+@extension{EXT,separate_shader_objects}     | only direct uniform binding
+@extension{EXT,multisampled_render_to_texture} | only renderbuffer storage
+@extension{EXT,robustness}                  | done
+@extension{EXT,shader_framebuffer_fetch}    | missing limit query
+@extension{EXT,disjoint_timer_query}        | only time elapsed query
+@extension{EXT,texture_sRGB_decode}         | done
+@extension{EXT,sRGB_write_control}          | done
+@extension2{EXT,texture_compression_s3tc,texture_compression_s3tc} | done
+@extension{EXT,shader_integer_mix}          | done (shading language only)
+@extension{EXT,copy_image}                  | |
+@extension{EXT,draw_buffers_indexed}        | |
+@extension{EXT,geometry_shader}             | missing some ES-specific limit queries
+@extension{EXT,gpu_shader5}                 | done (shading language only)
+@extension{EXT,shader_io_blocks}            | done (shading language only)
+@extension{EXT,tessellation_shader}         | see above
+@extension{EXT,texture_border_clamp}        | done
+@extension{EXT,texture_buffer}              | done
+@extension{EXT,texture_cube_map_array}      | done
+@extension{EXT,primitive_bounding_box}      | |
+@extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr} | done
+@extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr} | done
+@extension{KHR,debug}                       | see above
+@extension2{KHR,blend_equation_advanced,blend_equation_advanced}  | done
+@extension2{KHR,blend_equation_advanced_coherent,blend_equation_advanced} | done
+@extension{KHR,robustness}                  | |
+@extension{KHR,robust_buffer_access_behavior} | done (nothing to do)
+@extension{KHR,context_flush_control}       | |
+@extension2{KHR,no_error,no_error}          | done
+@extension2{NV,read_buffer_front,NV_read_buffer} | done
+@extension2{NV,read_depth,NV_read_depth_stencil} | done
+@extension2{NV,read_stencil,NV_read_depth_stencil} | done
+@extension{NV,read_depth_stencil}           | done
+@extension{NV,texture_border_clamp}         | done
+@extension{NV,shader_noperspective_interpolation} | done (shading language only)
+@extension{NV,polygon_mode}                 | done
+@extension{OES,depth32}                     | done
+@extension{OES,mapbuffer}                   | done
+@extension{OES,stencil1}                    | done
+@extension{OES,stencil4}                    | done
+@extension{OES,sample_shading}              | |
+@extension{OES,sample_variables}            | done (shading language only)
+@extension{OES,shader_image_atomic}         | done (shading language only)
+@extension{OES,shader_multisample_interpolation} | |
+@extension{OES,texture_stencil8}            | done
+@extension{OES,texture_storage_multisample_2d_array} | done
 
 @subsection opengl-support-webgl10 WebGL 1.0
 

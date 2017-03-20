@@ -65,7 +65,7 @@ class MAGNUM_TEXT_EXPORT DistanceFieldGlyphCache: public GlyphCache {
          * See @ref TextureTools::distanceField() for more information about
          * the parameters. Sets internal texture format to red channel only. On
          * desktop OpenGL requires @extension{ARB,texture_rg} (also part of
-         * OpenGL ES 3.0), in ES2 uses @es_extension{EXT,texture_rg} if
+         * OpenGL ES 3.0), in ES2 uses @extension{EXT,texture_rg} if
          * available or @ref TextureFormat::RGB as fallback.
          * @todo Is Luminance format renderable anywhere? Also would it be
          *      possible to convert the RGB texture to Luminance after it has

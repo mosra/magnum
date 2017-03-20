@@ -80,8 +80,8 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If neither OpenGL ES 3.0 nor ES extension
-         * @es_extension{ANGLE,framebuffer_multisample} /
-         * @es_extension{NV,framebuffer_multisample} is available, returns `0`.
+         * @extension{ANGLE,framebuffer_multisample} /
+         * @extension{NV,framebuffer_multisample} is available, returns `0`.
          * @see @ref setStorageMultisample(), @fn_gl{Get} with @def_gl{MAX_SAMPLES}
          * @requires_webgl20 Multisample framebuffers are not available in
          *      WebGL 1.0.
@@ -170,11 +170,11 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
          *
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls. If OpenGL 4.3 is not supported and neither
-         * @extension{KHR,debug} (covered also by @es_extension{ANDROID,extension_pack_es31a})
-         * nor @extension2{EXT,debug_label} desktop or ES extension is
+         * @extension{KHR,debug} (covered also by @extension{ANDROID,extension_pack_es31a})
+         * nor @extension{EXT,debug_label} desktop or ES extension is
          * available, this function returns empty string.
          * @see @fn_gl{GetObjectLabel} or
-         *      @fn_gl_extension2{GetObjectLabel,EXT,debug_label} with
+         *      @fn_gl_extension{GetObjectLabel,EXT,debug_label} with
          *      @def_gl{RENDERBUFFER}
          * @requires_gles Debug output is not available in WebGL.
          */
@@ -185,11 +185,11 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
          * @return Reference to self (for method chaining)
          *
          * Default is empty string. If OpenGL 4.3 is not supported and neither
-         * @extension{KHR,debug} (covered also by @es_extension{ANDROID,extension_pack_es31a})
-         * nor @extension2{EXT,debug_label} desktop or ES extension is
+         * @extension{KHR,debug} (covered also by @extension{ANDROID,extension_pack_es31a})
+         * nor @extension{EXT,debug_label} desktop or ES extension is
          * available, this function does nothing.
          * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} or
-         *      @fn_gl_extension2{LabelObject,EXT,debug_label} with
+         *      @fn_gl_extension{LabelObject,EXT,debug_label} with
          *      @def_gl{RENDERBUFFER}
          * @requires_gles Debug output is not available in WebGL.
          */
@@ -233,11 +233,11 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
          *      @fn_gl2{NamedRenderbufferStorageMultisample,RenderbufferStorageMultisample},
          *      @fn_gl_extension{NamedRenderbufferStorageMultisample,EXT,direct_state_access},
          *      eventually @fn_gl{BindRenderbuffer} and @fn_gl{RenderbufferStorageMultisample}
-         * @requires_gles30 Extension @es_extension{ANGLE,framebuffer_multisample}
-         *      or @es_extension{NV,framebuffer_multisample} in OpenGL ES 2.0.
+         * @requires_gles30 Extension @extension{ANGLE,framebuffer_multisample}
+         *      or @extension{NV,framebuffer_multisample} in OpenGL ES 2.0.
          * @requires_webgl20 Multisample framebuffers are not available in
          *      WebGL 1.0.
-         * @todo How about @es_extension{APPLE,framebuffer_multisample}?
+         * @todo How about @extension{APPLE,framebuffer_multisample}?
          * @todo NaCl has @fn_gl_extension{RenderbufferStorageMultisample,EXT,multisampled_render_to_texture}
          */
         void setStorageMultisample(Int samples, RenderbufferFormat internalFormat, const Vector2i& size);

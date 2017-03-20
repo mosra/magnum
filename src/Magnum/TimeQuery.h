@@ -70,12 +70,12 @@ UnsignedInt timeElapsed2 = q3.result<UnsignedInt>()-tmp;
 @endcode
 Using the latter results in fewer OpenGL calls when doing more measures.
 @requires_gl33 Extension @extension{ARB,timer_query}
-@requires_es_extension Extension @es_extension{EXT,disjoint_timer_query}
+@requires_es_extension Extension @extension{EXT,disjoint_timer_query}
 @requires_gles Time query is not available in WebGL.
 
 @see @ref PrimitiveQuery, @ref SampleQuery
 @todo timestamp with glGet + example usage
-@todo @es_extension{EXT,disjoint_timer_query} -- GL_GPU_DISJOINT_EXT support? where?
+@todo @extension{EXT,disjoint_timer_query} -- GL_GPU_DISJOINT_EXT support? where?
 */
 class TimeQuery: public AbstractQuery {
     public:

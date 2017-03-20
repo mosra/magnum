@@ -83,8 +83,8 @@ and respective function documentation for more information.
     @ref CubeMapTextureArray, @ref RectangleTexture, @ref MultisampleTexture
 @requires_gl31 Extension @extension{ARB,texture_buffer_object}
 @requires_gles30 Not defined in OpenGL ES 2.0.
-@requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
-    @es_extension{EXT,texture_buffer}
+@requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
+    @extension{EXT,texture_buffer}
 @requires_gles Texture buffers are not available in WebGL.
 */
 class MAGNUM_EXPORT BufferTexture: public AbstractTexture {

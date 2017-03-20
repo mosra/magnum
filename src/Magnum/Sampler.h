@@ -54,8 +54,8 @@ class MAGNUM_EXPORT Sampler {
 
             /**
              * Linear interpolation filtering.
-             * @requires_gles30 Extension @es_extension{OES,texture_float_linear} /
-             *      @es_extension2{OES,texture_half_float_linear,OES_texture_float_linear}
+             * @requires_gles30 Extension @extension{OES,texture_float_linear} /
+             *      @extension2{OES,texture_half_float_linear,OES_texture_float_linear}
              *      for linear interpolation of textures with
              *      @ref TextureFormat::HalfFloat / @ref TextureFormat::Float
              *      in OpenGL ES 2.0.
@@ -83,8 +83,8 @@ class MAGNUM_EXPORT Sampler {
             /**
              * Linear interpolation of nearest mip levels. **Unavailable on
              * rectangle textures.**
-             * @requires_gles30 Extension @es_extension{OES,texture_float_linear} /
-             *      @es_extension2{OES,texture_half_float_linear,OES_texture_float_linear}
+             * @requires_gles30 Extension @extension{OES,texture_float_linear} /
+             *      @extension2{OES,texture_half_float_linear,OES_texture_float_linear}
              *      for linear interpolation of textures with
              *      @ref TextureFormat::HalfFloat / @ref TextureFormat::Float
              *      in OpenGL ES 2.0.
@@ -121,9 +121,9 @@ class MAGNUM_EXPORT Sampler {
              * Clamp to border color. Coordinates out of range will be clamped
              * to border color (set with
              * @ref Texture::setBorderColor() "*Texture::setBorderColor()").
-             * @requires_es_extension Extension @es_extension{ANDROID,extension_pack_es31a}/
-             *      @es_extension{EXT,texture_border_clamp} or
-             *      @es_extension{NV,texture_border_clamp}
+             * @requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
+             *      @extension{EXT,texture_border_clamp} or
+             *      @extension{NV,texture_border_clamp}
              * @requires_gles Border clamp is not available in WebGL.
              */
             #ifndef MAGNUM_TARGET_GLES
@@ -153,7 +153,7 @@ class MAGNUM_EXPORT Sampler {
          *
          * @see @ref CompareFunction,
          *      @ref Texture::setCompareMode() "*Texture::setCompareMode()"
-         * @requires_gles30 Extension @es_extension{EXT,shadow_samplers} in
+         * @requires_gles30 Extension @extension{EXT,shadow_samplers} in
          *      OpenGL ES 2.0.
          * @requires_webgl20 Depth texture comparison is not available in WebGL
          *      1.0.
@@ -178,7 +178,7 @@ class MAGNUM_EXPORT Sampler {
          * @ref CompareMode::CompareRefToTexture.
          * @see @ref Texture::setCompareFunction() "*Texture::setCompareFunction()",
          *      @ref Texture::setCompareMode() "*Texture::setCompareMode()"
-         * @requires_gles30 Extension @es_extension{EXT,shadow_samplers} in
+         * @requires_gles30 Extension @extension{EXT,shadow_samplers} in
          *      OpenGL ES 2.0.
          * @requires_webgl20 Depth texture comparison is not available in WebGL
          *      1.0.
