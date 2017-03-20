@@ -63,7 +63,11 @@ template<UnsignedInt dimensions> class AbstractVector: public AbstractShaderProg
          */
         AbstractVector<dimensions>& setVectorTexture(Texture2D& texture);
 
+    #ifndef DOXYGEN_GENERATING_OUTPUT
     protected:
+    #else
+    private:
+    #endif
         enum: Int { VectorTextureLayer = 15 };
 
         explicit AbstractVector(NoCreateT) noexcept: AbstractShaderProgram{NoCreate} {}
