@@ -41,7 +41,7 @@ build() {
 }
 
 check() {
-    cd "$_rootdir/build-emscripten"
+    cd "$_rootdir/build-emscripten-webgl2"
     CORRADE_TEST_COLOR=ON ctest --output-on-failure -E ALTest
 }
 
