@@ -659,59 +659,18 @@ building your projects for Android.
 
 @subsection building-ci-travis Travis
 
-In `package/ci/` there is `travis.yml` file with Linux GCC 4.7, OSX Clang, iOS
-GLES2/GLES3 and Emscripten WebGL1/WebGL2 configuration. Online at
-https://travis-ci.org/mosra/magnum. The Linux build has code coverage reports
-available online at https://coveralls.io/github/mosra/magnum.
+In `package/ci/` there is a `travis.yml` file with Linux GCC 4.7, OSX Clang,
+Linux desktop GLES2/GLES3, iOS GLES2/GLES3, Emscripten WebGL1/WebGL2,
+Android GLES2/GLES3, AddressSanitizer and ThreadSanitizer configuration. Online
+at https://travis-ci.org/mosra/magnum. The Linux build has code coverage
+reports available online at https://coveralls.io/github/mosra/magnum.
 
 @subsection building-ci-appveyor AppVeyor
 
-In `package/ci/` there is `appveyor.yml` file with Windows desktop MSVC, MinGW
-and Windows RT GLES2/GLES3 configuration. Online at https://ci.appveyor.com/project/mosra/magnum.
+In `package/ci/` there is an `appveyor.yml` file with Windows desktop MSVC,
+MinGW, Windows desktop GLES2/GLES3 and Windows RT GLES2/GLES3 configuration.
+Online at https://ci.appveyor.com/project/mosra/magnum.
 
-@subsection building-ci-jenkins Jenkins
-
-In `package/ci/` there are `jenkins.xml` and `jenkins-gltests.xml` files
-containing job configuration, one for build and non-GL tests and the other for
-GL tests only. Setup your Jenkins server, enable the **Git** and **Text-finder**
-plugin and download the CLI application from here (replace `localhost:8080`
-with your server name):
-
-    http://localhost:8080/cli
-
-Then add new jobs or update existing ones (update path to the `*.jar` file,
-replace `localhost:8080` with your server name, replace `update-job` with
-`create-job` if the job doesn't exist yet).
-
-    java -jar ~/jenkins-cli.jar -s http://localhost:8080 update-job Magnum < package/ci/jenkins.xml
-    java -jar ~/jenkins-cli.jar -s http://localhost:8080 update-job Magnum-GLTests < package/ci/jenkins-gltests.xml
-
-Build is done using **Ninja** build system and everything possible is enabled,
-thus you need also **SDL2**, **GLFW**, **GLUT** and **OpenAL** libraries. It
-expects that **GCC** >= 4.9, 4.8, 4.7 and **Clang** are installed and there
-are **OpenGL**, **OpenGL ES 2.0** and **OpenGL ES 3.0** librares as it tries to
-compile the library with every combination of them. You can add/remove the axes
-in `axes/hudson.matrix.TextAxis` or via the web interface later.
-
-Magnum-GLTests depend on active X11 session, thus they should be run from
-Jenkins instance running on graphical user session.
-
-Clang Analyzer and *Sanitizer checks are also available. They both require **Clang**,
-Analyzer job additionally requires **clang-analyzer** tool.
-
-    java -jar ~/jenkins-cli.jar -s http://localhost:8080 update-job Magnum-ClangAnalyzer < package/ci/jenkins-clang-analyzer.xml
-    java -jar ~/jenkins-cli.jar -s http://localhost:8080 update-job Magnum-ClangSanitizer < package/ci/jenkins-clang-sanitizer.xml
-    java -jar ~/jenkins-cli.jar -s http://localhost:8080 update-job Magnum-ClangSanitizer-GLTests < package/ci/jenkins-clang-sanitizer-gltests.xml
-
-There is also MinGW-w64, Emscripten, NaCl and Android configuration, add or
-update them with the commands below. See @ref building-crosscompiling for more
-information about setting up the crosscompilers and `toolchains/` submodule.
-For Emscripten you need also **Node.js** installed to run the tests.
-
-    java -jar ~/jenkins-cli.jar -s http://localhost:8080 update-job Magnum-MinGW-w64 < package/ci/jenkins-mingw-w64.xml
-    java -jar ~/jenkins-cli.jar -s http://localhost:8080 update-job Magnum-Emscripten < package/ci/jenkins-emscripten.xml
-    java -jar ~/jenkins-cli.jar -s http://localhost:8080 update-job Magnum-NaCl < package/ci/jenkins-nacl.xml
-    java -jar ~/jenkins-cli.jar -s http://localhost:8080 update-job Magnum-Android < package/ci/jenkins-android.xml
 */
 
 }
