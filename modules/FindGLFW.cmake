@@ -16,7 +16,7 @@
 #
 #   This file is part of Magnum.
 #
-#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016
+#   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017
 #             Vladimír Vondruš <mosra@centrum.cz>
 #   Copyright © 2016 Jonathan Hale <squareys@googlemail.com>
 #
