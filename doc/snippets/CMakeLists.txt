@@ -25,7 +25,8 @@
 
 find_package(Corrade COMPONENTS TestSuite)
 
-if(WITH_DEBUGTOOLS AND Corrade_TestSuite_FOUND)
+# TODO: causes spurious linker errors on Travis iOS build, so I'm disabling it
+if(WITH_DEBUGTOOLS AND Corrade_TestSuite_FOUND AND NOT CORRADE_TARGET_IOS)
     set(SNIPPETS_DIR ${CMAKE_CURRENT_SOURCE_DIR})
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                    ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
