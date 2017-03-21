@@ -46,6 +46,7 @@
 #include <SDL_scancode.h>
 
 #ifdef CORRADE_TARGET_WINDOWS_RT
+#include <SDL_main.h> /* For SDL_WinRTRunApp */
 #include <wrl.h> /* For the WinMain entrypoint */
 #endif
 
