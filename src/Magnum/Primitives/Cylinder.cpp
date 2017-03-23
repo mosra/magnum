@@ -59,7 +59,7 @@ Trade::MeshData3D Cylinder::solid(const UnsignedInt rings, const UnsignedInt seg
 
     /* Faces */
     if(flags & Flag::CapEnds) cylinder.bottomFaceRing();
-    cylinder.faceRings(rings, flags & Flag::CapEnds ? 1 : 0);
+    cylinder.faceRings(rings, flags & Flag::CapEnds ? (1 + segments) : 0);
     if(flags & Flag::CapEnds) cylinder.topFaceRing();
 
     return cylinder.finalize();
