@@ -59,7 +59,9 @@ add_library(MagnumAudio ${SHARED_OR_STATIC}
     ${MagnumAudio_SRCS}
     ${MagnumAudio_HEADERS})
 target_include_directories(MagnumAudio PUBLIC ${OPENAL_INCLUDE_DIR})
-set_target_properties(MagnumAudio PROPERTIES DEBUG_POSTFIX "-d")
+set_target_properties(MagnumAudio PROPERTIES
+    DEBUG_POSTFIX "-d"
+    FOLDER "Magnum/Audio")
 if(BUILD_STATIC_PIC)
     set_target_properties(MagnumAudio PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()

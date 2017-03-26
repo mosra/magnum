@@ -64,7 +64,9 @@ add_library(MagnumPrimitives ${SHARED_OR_STATIC}
     ${MagnumPrimitives_SRCS}
     ${MagnumPrimitives_HEADERS}
     ${MagnumPrimitives_PRIVATE_HEADERS})
-set_target_properties(MagnumPrimitives PROPERTIES DEBUG_POSTFIX "-d")
+set_target_properties(MagnumPrimitives PROPERTIES
+    DEBUG_POSTFIX "-d"
+    FOLDER "Magnum/Primitives")
 if(BUILD_STATIC_PIC)
     set_target_properties(MagnumPrimitives PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()

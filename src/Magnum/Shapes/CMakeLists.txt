@@ -69,7 +69,9 @@ add_library(MagnumShapes ${SHARED_OR_STATIC}
     ${MagnumShapes_SRCS}
     ${MagnumShapes_HEADERS}
     ${MagnumShapes_PRIVATE_HEADERS})
-set_target_properties(MagnumShapes PROPERTIES DEBUG_POSTFIX "-d")
+set_target_properties(MagnumShapes PROPERTIES
+    DEBUG_POSTFIX "-d"
+    FOLDER "Magnum/Shapes")
 if(BUILD_STATIC_PIC)
     set_target_properties(MagnumShapes PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()

@@ -111,11 +111,12 @@ add_library(MagnumDebugTools ${SHARED_OR_STATIC}
     ${MagnumDebugTools_SRCS}
     ${MagnumDebugTools_HEADERS}
     ${MagnumDebugTools_PRIVATE_HEADERS})
-set_target_properties(MagnumDebugTools PROPERTIES DEBUG_POSTFIX "-d")
+set_target_properties(MagnumDebugTools PROPERTIES
+    DEBUG_POSTFIX "-d"
+    FOLDER "Magnum/DebugTools")
 if(BUILD_STATIC_PIC)
     set_target_properties(MagnumDebugTools PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-
 target_link_libraries(MagnumDebugTools Magnum)
 if(Corrade_TestSuite_FOUND)
     target_link_libraries(MagnumDebugTools Corrade::TestSuite)

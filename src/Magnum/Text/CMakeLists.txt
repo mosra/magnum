@@ -44,7 +44,9 @@ set(MagnumText_HEADERS
 add_library(MagnumText ${SHARED_OR_STATIC}
     ${MagnumText_SRCS}
     ${MagnumText_HEADERS})
-set_target_properties(MagnumText PROPERTIES DEBUG_POSTFIX "-d")
+set_target_properties(MagnumText PROPERTIES
+    DEBUG_POSTFIX "-d"
+    FOLDER "Magnum/Text")
 if(BUILD_STATIC_PIC)
     set_target_properties(MagnumText PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()

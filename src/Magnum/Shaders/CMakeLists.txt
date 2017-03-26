@@ -57,7 +57,9 @@ add_library(MagnumShaders ${SHARED_OR_STATIC}
     ${MagnumShaders_SRCS}
     ${MagnumShaders_HEADERS}
     ${MagnumShaders_PRIVATE_HEADERS})
-set_target_properties(MagnumShaders PROPERTIES DEBUG_POSTFIX "-d")
+set_target_properties(MagnumShaders PROPERTIES
+    DEBUG_POSTFIX "-d"
+    FOLDER "Magnum/Shaders")
 if(BUILD_STATIC_PIC)
     set_target_properties(MagnumShaders PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()

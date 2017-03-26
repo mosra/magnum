@@ -68,11 +68,12 @@ endif()
 add_library(MagnumMeshTools ${SHARED_OR_STATIC}
     $<TARGET_OBJECTS:MagnumMeshToolsObjects>
     ${MagnumMeshTools_GracefulAssert_SRCS})
-set_target_properties(MagnumMeshTools PROPERTIES DEBUG_POSTFIX "-d")
+set_target_properties(MagnumMeshTools PROPERTIES
+    DEBUG_POSTFIX "-d"
+    FOLDER "Magnum/MeshTools")
 if(BUILD_STATIC_PIC)
     set_target_properties(MagnumMeshTools PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-
 target_link_libraries(MagnumMeshTools Magnum)
 
 install(TARGETS MagnumMeshTools

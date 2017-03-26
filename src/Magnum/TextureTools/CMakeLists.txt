@@ -40,7 +40,9 @@ set(MagnumTextureTools_HEADERS
 add_library(MagnumTextureTools ${SHARED_OR_STATIC}
     ${MagnumTextureTools_SRCS}
     ${MagnumTextureTools_HEADERS})
-set_target_properties(MagnumTextureTools PROPERTIES DEBUG_POSTFIX "-d")
+set_target_properties(MagnumTextureTools PROPERTIES
+    DEBUG_POSTFIX "-d"
+    FOLDER "Magnum/TextureTools")
 if(BUILD_STATIC_PIC)
     set_target_properties(MagnumTextureTools PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()

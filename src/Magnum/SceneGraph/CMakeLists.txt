@@ -91,7 +91,9 @@ endif()
 add_library(MagnumSceneGraph ${SHARED_OR_STATIC}
     $<TARGET_OBJECTS:MagnumSceneGraphObjects>
     ${MagnumSceneGraph_GracefulAssert_SRCS})
-set_target_properties(MagnumSceneGraph PROPERTIES DEBUG_POSTFIX "-d")
+set_target_properties(MagnumSceneGraph PROPERTIES
+    DEBUG_POSTFIX "-d"
+    FOLDER "Magnum/SceneGraph")
 if(BUILD_STATIC_PIC)
     set_target_properties(MagnumSceneGraph PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()

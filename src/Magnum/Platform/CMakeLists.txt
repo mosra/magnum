@@ -84,7 +84,9 @@ if(WITH_ANDROIDAPPLICATION)
     # function is not exported and thus the app startup fails if I don't
     # disable hidden visibility for the file.
     target_include_directories(MagnumAndroidApplication PUBLIC ${ANDROID_NATIVE_APP_GLUE_INCLUDE_DIR})
-    set_target_properties(MagnumAndroidApplication PROPERTIES DEBUG_POSTFIX "-d")
+    set_target_properties(MagnumAndroidApplication PROPERTIES
+        DEBUG_POSTFIX "-d"
+        FOLDER "Magnum/Platform")
     # Assuming that PIC is not needed because the Application lib is always
     # linked to the executable and not to any intermediate shared lib
     target_link_libraries(MagnumAndroidApplication Magnum)
@@ -114,7 +116,9 @@ if(WITH_GLFWAPPLICATION)
     add_library(MagnumGlfwApplication STATIC
         ${MagnumGlfwApplication_SRCS}
         ${MagnumGlfwApplication_HEADERS})
-    set_target_properties(MagnumGlfwApplication PROPERTIES DEBUG_POSTFIX "-d")
+    set_target_properties(MagnumGlfwApplication PROPERTIES
+        DEBUG_POSTFIX "-d"
+        FOLDER "Magnum/Platform")
     # Assuming that PIC is not needed because the Application lib is always
     # linked to the executable and not to any intermediate shared lib
     target_link_libraries(MagnumGlfwApplication Magnum GLFW::GLFW)
@@ -144,7 +148,9 @@ if(WITH_GLUTAPPLICATION)
     add_library(MagnumGlutApplication STATIC
         ${MagnumGlutApplication_SRCS}
         ${MagnumGlutApplication_HEADERS})
-    set_target_properties(MagnumGlutApplication PROPERTIES DEBUG_POSTFIX "-d")
+    set_target_properties(MagnumGlutApplication PROPERTIES
+        DEBUG_POSTFIX "-d"
+        FOLDER "Magnum/Platform")
     # Assuming that PIC is not needed because the Application lib is always
     # linked to the executable and not to any intermediate shared lib
     target_include_directories(MagnumGlutApplication PUBLIC ${GLUT_INCLUDE_DIR})
@@ -175,7 +181,9 @@ if(WITH_SDL2APPLICATION)
     add_library(MagnumSdl2Application STATIC
         ${MagnumSdl2Application_SRCS}
         ${MagnumSdl2Application_HEADERS})
-    set_target_properties(MagnumSdl2Application PROPERTIES DEBUG_POSTFIX "-d")
+    set_target_properties(MagnumSdl2Application PROPERTIES
+        DEBUG_POSTFIX "-d"
+        FOLDER "Magnum/Platform")
     # Assuming that PIC is not needed because the Application lib is always
     # linked to the executable and not to any intermediate shared lib
     target_link_libraries(MagnumSdl2Application Magnum SDL2::SDL2)
@@ -202,7 +210,9 @@ if(WITH_NACLAPPLICATION)
     add_library(MagnumNaClApplication STATIC
         ${MagnumNaClApplication_SRCS}
         ${MagnumNaClApplication_HEADERS})
-    set_target_properties(MagnumNaClApplication PROPERTIES DEBUG_POSTFIX "-d")
+    set_target_properties(MagnumNaClApplication PROPERTIES
+        DEBUG_POSTFIX "-d"
+        FOLDER "Magnum/Platform")
     # Assuming that PIC is not needed because the Application lib is always
     # linked to the executable and not to any intermediate shared lib
     target_link_libraries(MagnumNaClApplication Magnum ppapi_cpp ppapi)
@@ -229,7 +239,9 @@ if(WITH_WINDOWLESSNACLAPPLICATION)
     add_library(MagnumWindowlessNaClApplication STATIC
         ${MagnumWindowlessNaClApplication_SRCS}
         ${MagnumWindowlessNaClApplication_HEADERS})
-    set_target_properties(MagnumWindowlessNaClApplication PROPERTIES DEBUG_POSTFIX "-d")
+    set_target_properties(MagnumWindowlessNaClApplication PROPERTIES
+        DEBUG_POSTFIX "-d"
+        FOLDER "Magnum/Platform")
     if(BUILD_STATIC_PIC)
         set_target_properties(MagnumWindowlessNaClApplication PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()
@@ -279,7 +291,9 @@ if(WITH_GLXAPPLICATION)
     add_library(MagnumGlxApplication STATIC
         ${MagnumGlxApplication_SRCS}
         ${MagnumGlxApplication_HEADERS})
-    set_target_properties(MagnumGlxApplication PROPERTIES DEBUG_POSTFIX "-d")
+    set_target_properties(MagnumGlxApplication PROPERTIES
+        DEBUG_POSTFIX "-d"
+        FOLDER "Magnum/Platform")
     # Assuming that PIC is not needed because the Application lib is always
     # linked to the executable and not to any intermediate shared lib
     target_include_directories(MagnumGlxApplication PUBLIC ${X11_INCLUDE_DIR})
@@ -311,7 +325,9 @@ if(WITH_XEGLAPPLICATION)
     add_library(MagnumXEglApplication STATIC
         ${MagnumXEglApplication_SRCS}
         ${MagnumXEglApplication_HEADERS})
-    set_target_properties(MagnumXEglApplication PROPERTIES DEBUG_POSTFIX "-d")
+    set_target_properties(MagnumXEglApplication PROPERTIES
+        DEBUG_POSTFIX "-d"
+        FOLDER "Magnum/Platform")
     # Assuming that PIC is not needed because the Application lib is always
     # linked to the executable and not to any intermediate shared lib
     target_include_directories(MagnumXEglApplication PUBLIC ${X11_INCLUDE_DIR})
@@ -351,7 +367,9 @@ if(WITH_WINDOWLESSEGLAPPLICATION)
         ${MagnumWindowlessEglApplication_SRCS}
         ${MagnumWindowlessEglApplication_HEADERS}
         ${MagnumWindowlessEglApplication_PRIVATE_HEADERS})
-    set_target_properties(MagnumWindowlessEglApplication PROPERTIES DEBUG_POSTFIX "-d")
+    set_target_properties(MagnumWindowlessEglApplication PROPERTIES
+        DEBUG_POSTFIX "-d"
+        FOLDER "Magnum/Platform")
     if(BUILD_STATIC_PIC)
         set_target_properties(MagnumWindowlessEglApplication PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()
@@ -379,8 +397,10 @@ if(WITH_WINDOWLESSGLXAPPLICATION)
     add_library(MagnumWindowlessGlxApplication STATIC
         ${MagnumWindowlessGlxApplication_SRCS}
         ${MagnumWindowlessGlxApplication_HEADERS})
+    set_target_properties(MagnumWindowlessGlxApplication PROPERTIES
+        DEBUG_POSTFIX "-d"
+        FOLDER "Magnum/Platform")
     # X11 macros are a mess, disable warnings for C-style casts
-    set_target_properties(MagnumWindowlessGlxApplication PROPERTIES DEBUG_POSTFIX "-d")
     target_compile_options(MagnumWindowlessGlxApplication PRIVATE "-Wno-old-style-cast")
     if(BUILD_STATIC_PIC)
         set_target_properties(MagnumWindowlessGlxApplication PROPERTIES POSITION_INDEPENDENT_CODE ON)
@@ -415,7 +435,9 @@ if(WITH_WINDOWLESSIOSAPPLICATION)
     add_library(MagnumWindowlessIosApplication STATIC
         ${MagnumWindowlessIosApplication_SRCS}
         ${MagnumWindowlessIosApplication_HEADERS})
-    set_target_properties(MagnumWindowlessIosApplication PROPERTIES DEBUG_POSTFIX "-d")
+    set_target_properties(MagnumWindowlessIosApplication PROPERTIES
+        DEBUG_POSTFIX "-d"
+        FOLDER "Magnum/Platform")
     if(BUILD_STATIC_PIC)
         set_target_properties(MagnumWindowlessIosApplication PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()
@@ -446,7 +468,9 @@ if(WITH_WINDOWLESSWGLAPPLICATION)
     add_library(MagnumWindowlessWglApplication STATIC
         ${MagnumWindowlessWglApplication_SRCS}
         ${MagnumWindowlessWglApplication_HEADERS})
-    set_target_properties(MagnumWindowlessWglApplication PROPERTIES DEBUG_POSTFIX "-d")
+    set_target_properties(MagnumWindowlessWglApplication PROPERTIES
+        DEBUG_POSTFIX "-d"
+        FOLDER "Magnum/Platform")
     target_compile_definitions(MagnumWindowlessWglApplication PRIVATE "UNICODE")
     if(BUILD_STATIC_PIC)
         set_target_properties(MagnumWindowlessWglApplication PROPERTIES POSITION_INDEPENDENT_CODE ON)
@@ -480,7 +504,9 @@ if(WITH_WINDOWLESSWINDOWSEGLAPPLICATION)
         ${MagnumWindowlessWindowsEglApplication_SRCS}
         ${MagnumWindowlessWindowsEglApplication_HEADERS}
         ${MagnumWindowlessWindowsEglApplication_PRIVATE_HEADERS})
-    set_target_properties(MagnumWindowlessWindowsEglApplication PROPERTIES DEBUG_POSTFIX "-d")
+    set_target_properties(MagnumWindowlessWindowsEglApplication PROPERTIES
+        DEBUG_POSTFIX "-d"
+        FOLDER "Magnum/Platform")
     target_compile_definitions(MagnumWindowlessWindowsEglApplication PRIVATE "UNICODE")
     if(BUILD_STATIC_PIC)
         set_target_properties(MagnumWindowlessWindowsEglApplication PROPERTIES POSITION_INDEPENDENT_CODE ON)
@@ -509,7 +535,9 @@ if(WITH_WINDOWLESSCGLAPPLICATION)
     add_library(MagnumWindowlessCglApplication STATIC
         ${MagnumWindowlessCglApplication_SRCS}
         ${MagnumWindowlessCglApplication_HEADERS})
-    set_target_properties(MagnumWindowlessCglApplication PROPERTIES DEBUG_POSTFIX "-d")
+    set_target_properties(MagnumWindowlessCglApplication PROPERTIES
+        DEBUG_POSTFIX "-d"
+        FOLDER "Magnum/Platform")
     if(BUILD_STATIC_PIC)
         set_target_properties(MagnumWindowlessCglApplication PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()
@@ -628,7 +656,9 @@ if(NEED_CGLCONTEXT OR WITH_CGLCONTEXT)
         # consisted only of $<TARGET_OBJECTS> entries, thus compiling the
         # sources again in this case
         add_library(MagnumCglContext STATIC ${MagnumContext_SRCS})
-        set_target_properties(MagnumCglContext PROPERTIES DEBUG_POSTFIX "-d")
+        set_target_properties(MagnumCglContext PROPERTIES
+            DEBUG_POSTFIX "-d"
+            FOLDER "Magnum/Platform")
         if(BUILD_STATIC_PIC)
             set_target_properties(MagnumCglContext PROPERTIES POSITION_INDEPENDENT_CODE ON)
         endif()
@@ -665,7 +695,9 @@ if(NEED_EGLCONTEXT OR WITH_EGLCONTEXT)
         add_library(MagnumEglContext STATIC
             $<TARGET_OBJECTS:MagnumEglContextObjects>
             ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details
-        set_target_properties(MagnumEglContext PROPERTIES DEBUG_POSTFIX "-d")
+        set_target_properties(MagnumEglContext PROPERTIES
+            DEBUG_POSTFIX "-d"
+            FOLDER "Magnum/Platform")
         if(BUILD_STATIC_PIC)
             set_target_properties(MagnumEglContext PROPERTIES POSITION_INDEPENDENT_CODE ON)
         endif()
@@ -695,7 +727,9 @@ if(NEED_GLXCONTEXT OR WITH_GLXCONTEXT)
     # Also create proper static library, if requested
     if(WITH_GLXCONTEXT)
         add_library(MagnumGlxContext STATIC $<TARGET_OBJECTS:MagnumGlxContextObjects>)
-        set_target_properties(MagnumGlxContext PROPERTIES DEBUG_POSTFIX "-d")
+        set_target_properties(MagnumGlxContext PROPERTIES
+            DEBUG_POSTFIX "-d"
+            FOLDER "Magnum/Platform")
         if(BUILD_STATIC_PIC)
             set_target_properties(MagnumGlxContext PROPERTIES POSITION_INDEPENDENT_CODE ON)
         endif()
@@ -723,7 +757,9 @@ if(NEED_WGLCONTEXT OR WITH_WGLCONTEXT)
     # Also create proper static library, if requested
     if(WITH_WGLCONTEXT)
         add_library(MagnumWglContext STATIC $<TARGET_OBJECTS:MagnumWglContextObjects>)
-        set_target_properties(MagnumWglContext PROPERTIES DEBUG_POSTFIX "-d")
+        set_target_properties(MagnumWglContext PROPERTIES
+            DEBUG_POSTFIX "-d"
+            FOLDER "Magnum/Platform")
         if(BUILD_STATIC_PIC)
             set_target_properties(MagnumWglContext PROPERTIES POSITION_INDEPENDENT_CODE ON)
         endif()

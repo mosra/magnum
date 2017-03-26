@@ -246,7 +246,9 @@ add_library(Magnum ${SHARED_OR_STATIC}
     ${Magnum_HEADERS}
     ${Magnum_PRIVATE_HEADERS}
     $<TARGET_OBJECTS:MagnumMathObjects>)
-set_target_properties(Magnum PROPERTIES DEBUG_POSTFIX "-d")
+set_target_properties(Magnum PROPERTIES
+    DEBUG_POSTFIX "-d"
+    FOLDER "Magnum")
 if(NOT BUILD_STATIC)
     target_compile_definitions(Magnum PRIVATE "FlextGL_EXPORTS")
 elseif(BUILD_STATIC_PIC)
@@ -291,7 +293,9 @@ if(WITH_OPENGLTESTER)
         ${MagnumOpenGLTester_SRCS}
         ${MagnumOpenGLTester_HEADERS}
         ${MagnumOpenGLTester_DEPRECATED_HEADERS}) # TODO: remove when the header is removed
-    set_target_properties(MagnumOpenGLTester PROPERTIES DEBUG_POSTFIX "-d")
+    set_target_properties(MagnumOpenGLTester PROPERTIES
+        DEBUG_POSTFIX "-d"
+        FOLDER "Magnum")
     # Assuming that PIC is not needed because the Tester lib is always linked
     # to the executable and not to any intermediate shared lib
 
