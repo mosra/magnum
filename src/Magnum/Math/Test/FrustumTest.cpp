@@ -115,7 +115,7 @@ void FrustumTest::construct() {
         planes[2], planes[3],
         planes[4], planes[5]};
 
-    CORRADE_COMPARE_AS(frustum.planes(), Corrade::Containers::ArrayView<const Vector4>(planes),
+    CORRADE_COMPARE_AS(frustum.planes(), Corrade::Containers::arrayView(planes),
                        Corrade::TestSuite::Compare::Container);
 
     CORRADE_VERIFY((std::is_nothrow_constructible<Frustum, Vector4, Vector4, Vector4, Vector4, Vector4, Vector4>::value));
@@ -248,8 +248,8 @@ void FrustumTest::convert() {
     CORRADE_COMPARE(c, b);
 
     constexpr Frstm d(b);
-    CORRADE_COMPARE_AS(Corrade::Containers::ArrayView<const Float>{d.data},
-        (Corrade::Containers::ArrayView<const Float>{a.data}),
+    CORRADE_COMPARE_AS(Corrade::Containers::arrayView(d.data),
+        Corrade::Containers::arrayView(a.data),
         Corrade::TestSuite::Compare::Container);
 
     /* Implicit conversion is not allowed */

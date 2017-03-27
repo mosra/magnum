@@ -235,8 +235,7 @@ void BufferGLTest::data() {
     #ifndef MAGNUM_TARGET_GLES
     const Containers::Array<Int> contents = buffer.data<Int>();
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE_AS(contents,
-        Containers::ArrayView<const Int>{data},
+    CORRADE_COMPARE_AS(contents, Containers::arrayView(data),
         TestSuite::Compare::Container);
     #endif
 
@@ -262,8 +261,7 @@ void BufferGLTest::data() {
     #ifndef MAGNUM_TARGET_GLES
     const Containers::Array<Int> subContents = buffer.subData<Int>(4, 3);
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE_AS(subContents,
-        Containers::ArrayView<const Int>{subData},
+    CORRADE_COMPARE_AS(subContents, Containers::arrayView(subData),
         TestSuite::Compare::Container);
     #endif
 }
@@ -411,8 +409,7 @@ void BufferGLTest::copy() {
     /** @todo How to verify the contents in ES? */
     #ifndef MAGNUM_TARGET_GLES
     const Containers::Array<char> subContents = buffer2.subData<char>(2, 3);
-    CORRADE_COMPARE_AS(subContents,
-        Containers::ArrayView<const char>{data}.slice(1, 4),
+    CORRADE_COMPARE_AS(subContents, Containers::arrayView(data).slice(1, 4),
         TestSuite::Compare::Container);
     #endif
 }

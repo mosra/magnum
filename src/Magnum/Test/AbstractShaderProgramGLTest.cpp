@@ -715,9 +715,8 @@ void AbstractShaderProgramGLTest::compute() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    CORRADE_COMPARE_AS(
-        (Corrade::Containers::ArrayView<const Color4ub>{reinterpret_cast<const Color4ub*>(data.data()), 4}),
-        (Corrade::Containers::ArrayView<const Color4ub>{outData}),
+    CORRADE_COMPARE_AS(Containers::arrayCast<const Color4ub>(data),
+        Containers::arrayView(outData),
         TestSuite::Compare::Container);
     #endif
 }

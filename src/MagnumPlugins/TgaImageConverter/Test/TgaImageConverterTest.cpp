@@ -133,7 +133,7 @@ void TgaImageConverterTest::rgb() {
     CORRADE_COMPARE(converted->size(), Vector2i(2, 3));
     CORRADE_COMPARE(converted->format(), PixelFormat::RGB);
     CORRADE_COMPARE(converted->type(), PixelType::UnsignedByte);
-    CORRADE_COMPARE_AS(converted->data(), Containers::ArrayView<const char>{ConvertedDataRGB},
+    CORRADE_COMPARE_AS(converted->data(), Containers::arrayView(ConvertedDataRGB),
         TestSuite::Compare::Container);
 }
 
@@ -149,7 +149,7 @@ void TgaImageConverterTest::rgba() {
     CORRADE_COMPARE(converted->size(), Vector2i(2, 3));
     CORRADE_COMPARE(converted->format(), PixelFormat::RGBA);
     CORRADE_COMPARE(converted->type(), PixelType::UnsignedByte);
-    CORRADE_COMPARE_AS(converted->data(), Containers::ArrayView<const char>{OriginalDataRGBA},
+    CORRADE_COMPARE_AS(converted->data(), Containers::arrayView(OriginalDataRGBA),
         TestSuite::Compare::Container);
 }
 

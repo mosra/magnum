@@ -136,7 +136,7 @@ void PixelStorageGLTest::unpack2D() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    CORRADE_COMPARE_AS(actual.data(), Containers::ArrayView<const char>{ActualData},
+    CORRADE_COMPARE_AS(actual.data(), Containers::arrayView(ActualData),
         TestSuite::Compare::Container);
 }
 
@@ -171,7 +171,7 @@ void PixelStorageGLTest::pack2D() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    CORRADE_COMPARE_AS(image.data(), Containers::ArrayView<const char>{Data2D},
+    CORRADE_COMPARE_AS(image.data(), Containers::arrayView(Data2D),
         TestSuite::Compare::Container);
 }
 
@@ -228,10 +228,10 @@ void PixelStorageGLTest::unpack3D() {
 
     /* Clear padding in the last row (the driver might leave them untouched,
        confirmed on NVidia 358.16) */
-    CORRADE_VERIFY(actual.data().size() == Containers::ArrayView<const char>{ActualData}.size());
+    CORRADE_VERIFY(actual.data().size() == Containers::arrayView(ActualData).size());
     *(actual.data().end() - 1) = *(actual.data().end() - 2) = 0;
 
-    CORRADE_COMPARE_AS(actual.data(), Containers::ArrayView<const char>{ActualData},
+    CORRADE_COMPARE_AS(actual.data(), Containers::arrayView(ActualData),
         TestSuite::Compare::Container);
     #endif
 }
@@ -259,7 +259,7 @@ void PixelStorageGLTest::pack3D() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    CORRADE_COMPARE_AS(image.data(), Containers::ArrayView<const char>{Data3D},
+    CORRADE_COMPARE_AS(image.data(), Containers::arrayView(Data3D),
         TestSuite::Compare::Container);
 }
 #endif
@@ -311,8 +311,8 @@ void PixelStorageGLTest::unpackCompressed2D() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    CORRADE_COMPARE_AS((Containers::ArrayView<const UnsignedByte>{actual.data<UnsignedByte>(), actual.data().size()}),
-        Containers::ArrayView<const UnsignedByte>{ActualCompressedData},
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(actual.data()),
+        Containers::arrayView(ActualCompressedData),
         TestSuite::Compare::Container);
 }
 
@@ -339,8 +339,8 @@ void PixelStorageGLTest::packCompressed2D() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    CORRADE_COMPARE_AS((Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}),
-        Containers::ArrayView<const UnsignedByte>{CompressedData2D},
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()),
+        Containers::arrayView(CompressedData2D),
         TestSuite::Compare::Container);
 }
 
@@ -420,8 +420,8 @@ void PixelStorageGLTest::unpackCompressed3D() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    CORRADE_COMPARE_AS((Containers::ArrayView<const UnsignedByte>{actual.data<UnsignedByte>(), actual.data().size()}),
-        Containers::ArrayView<const UnsignedByte>{ActualCompressedData},
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(actual.data()),
+        Containers::arrayView(ActualCompressedData),
         TestSuite::Compare::Container);
 }
 
@@ -449,8 +449,8 @@ void PixelStorageGLTest::packCompressed3D() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    CORRADE_COMPARE_AS((Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}),
-        Containers::ArrayView<const UnsignedByte>{CompressedData3D},
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()),
+        Containers::arrayView(CompressedData3D),
         TestSuite::Compare::Container);
 }
 #endif

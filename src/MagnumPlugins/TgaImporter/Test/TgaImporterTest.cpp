@@ -135,7 +135,7 @@ void TgaImporterTest::colorBits24() {
     CORRADE_COMPARE(image->format(), PixelFormat::RGB);
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
     CORRADE_COMPARE(image->type(), PixelType::UnsignedByte);
-    CORRADE_COMPARE_AS(image->data(), Containers::ArrayView<const char>{pixels},
+    CORRADE_COMPARE_AS(image->data(), Containers::arrayView(pixels),
         TestSuite::Compare::Container);
 }
 
@@ -160,7 +160,7 @@ void TgaImporterTest::colorBits32() {
     CORRADE_COMPARE(image->format(), PixelFormat::RGBA);
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
     CORRADE_COMPARE(image->type(), PixelType::UnsignedByte);
-    CORRADE_COMPARE_AS(image->data(), Containers::ArrayView<const char>{pixels},
+    CORRADE_COMPARE_AS(image->data(), Containers::arrayView(pixels),
         TestSuite::Compare::Container);
 }
 
@@ -184,7 +184,7 @@ void TgaImporterTest::grayscaleBits8() {
     #endif
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
     CORRADE_COMPARE(image->type(), PixelType::UnsignedByte);
-    CORRADE_COMPARE_AS(image->data(), Containers::ArrayView<const char>{data}.suffix(18),
+    CORRADE_COMPARE_AS(image->data(), Containers::arrayView(data).suffix(18),
         TestSuite::Compare::Container);
 }
 

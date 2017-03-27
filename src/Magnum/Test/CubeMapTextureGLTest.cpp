@@ -483,9 +483,8 @@ void CubeMapTextureGLTest::image() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(2));
-    CORRADE_COMPARE_AS(
-        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}.suffix(_dataOffset)),
-        Containers::ArrayView<const UnsignedByte>{Data}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(_dataOffset),
+        Containers::arrayView(Data), TestSuite::Compare::Container);
     #endif
 }
 
@@ -520,9 +519,8 @@ void CubeMapTextureGLTest::compressedImage() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i{4});
-    CORRADE_COMPARE_AS(
-        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}).suffix(_compressedDataOffset),
-        Containers::ArrayView<const UnsignedByte>{CompressedData}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(_compressedDataOffset),
+        Containers::arrayView(CompressedData), TestSuite::Compare::Container);
     #endif
 }
 
@@ -544,7 +542,7 @@ void CubeMapTextureGLTest::imageBuffer() {
 
     CORRADE_COMPARE(image.size(), Vector2i(2));
     CORRADE_COMPARE_AS(imageData.suffix(_dataOffset),
-        Containers::ArrayView<const UnsignedByte>{Data}, TestSuite::Compare::Container);
+        Containers::arrayView(Data), TestSuite::Compare::Container);
     #endif
 }
 
@@ -582,7 +580,7 @@ void CubeMapTextureGLTest::compressedImageBuffer() {
 
     CORRADE_COMPARE(image.size(), Vector2i{4});
     CORRADE_COMPARE_AS(imageData.suffix(_compressedDataOffset),
-        Containers::ArrayView<const UnsignedByte>{CompressedData}, TestSuite::Compare::Container);
+        Containers::arrayView(CompressedData), TestSuite::Compare::Container);
     #endif
 }
 #endif
@@ -628,9 +626,8 @@ void CubeMapTextureGLTest::immutableCompressedImage() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i{4});
-    CORRADE_COMPARE_AS(
-        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}),
-        Containers::ArrayView<const UnsignedByte>{CompressedData}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()),
+        Containers::arrayView(CompressedData), TestSuite::Compare::Container);
     #endif
 }
 
@@ -704,9 +701,8 @@ void CubeMapTextureGLTest::fullImageQuery() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i(2, 2, 6));
-    CORRADE_COMPARE_AS(
-        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}.suffix(FullDataOffset)),
-        Containers::ArrayView<const UnsignedByte>{FullData}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(FullDataOffset),
+        Containers::arrayView(FullData), TestSuite::Compare::Container);
 }
 
 void CubeMapTextureGLTest::compressedFullImageQuery() {
@@ -726,9 +722,8 @@ void CubeMapTextureGLTest::compressedFullImageQuery() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), (Vector3i{4, 4, 6}));
-    CORRADE_COMPARE_AS(
-        Containers::ArrayView<const UnsignedByte>(image.data<UnsignedByte>(), image.data().size()).suffix(_compressedFullDataOffset),
-        Containers::ArrayView<const UnsignedByte>{CompressedFullData}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(_compressedFullDataOffset),
+        Containers::arrayView(CompressedFullData), TestSuite::Compare::Container);
 }
 
 void CubeMapTextureGLTest::fullImageQueryBuffer() {
@@ -749,7 +744,7 @@ void CubeMapTextureGLTest::fullImageQueryBuffer() {
     CORRADE_COMPARE(image.size(), Vector3i(2, 2, 6));
     const auto imageData = image.buffer().data<UnsignedByte>();
     CORRADE_COMPARE_AS(imageData.suffix(FullDataOffset),
-        Containers::ArrayView<const UnsignedByte>{FullData}, TestSuite::Compare::Container);
+        Containers::arrayView(FullData), TestSuite::Compare::Container);
 }
 
 void CubeMapTextureGLTest::compressedFullImageQueryBuffer() {
@@ -771,7 +766,7 @@ void CubeMapTextureGLTest::compressedFullImageQueryBuffer() {
     CORRADE_COMPARE(image.size(), (Vector3i{4, 4, 6}));
     const auto imageData = image.buffer().data<UnsignedByte>();
     CORRADE_COMPARE_AS(imageData.suffix(_compressedFullDataOffset),
-        Containers::ArrayView<const UnsignedByte>{CompressedFullData}, TestSuite::Compare::Container);
+        Containers::arrayView(CompressedFullData), TestSuite::Compare::Container);
 }
 #endif
 
@@ -839,9 +834,8 @@ void CubeMapTextureGLTest::subImage() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(4));
-    CORRADE_COMPARE_AS(
-        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}),
-        Containers::ArrayView<const UnsignedByte>{SubDataComplete}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()),
+        Containers::arrayView(SubDataComplete), TestSuite::Compare::Container);
     #endif
 }
 
@@ -882,9 +876,9 @@ void CubeMapTextureGLTest::compressedSubImage() {
         MAGNUM_VERIFY_NO_ERROR();
 
         CORRADE_COMPARE(image.size(), Vector2i{12});
-        CORRADE_COMPARE_AS(
-            (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}),
-            Containers::ArrayView<const UnsignedByte>{CompressedSubDataComplete}, TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()),
+            Containers::arrayView(CompressedSubDataComplete),
+            TestSuite::Compare::Container);
     }
     #endif
 
@@ -920,9 +914,9 @@ void CubeMapTextureGLTest::compressedSubImage() {
         CORRADE_EXPECT_FAIL_IF(Context::current().isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>() && Context::current().isExtensionSupported<Extensions::GL::ARB::direct_state_access>() && (Context::current().detectedDriver() & Context::DetectedDriver::NVidia),
             "Non-default compressed pixel storage for cube map textures behaves weirdly on NVidia for client-memory images when using ARB_direct_state_access");
 
-        CORRADE_COMPARE_AS(
-            (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}),
-            Containers::ArrayView<const UnsignedByte>{CompressedSubDataComplete}, TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()),
+            Containers::arrayView(CompressedSubDataComplete),
+            TestSuite::Compare::Container);
     }
     #endif
 }
@@ -955,7 +949,8 @@ void CubeMapTextureGLTest::subImageBuffer() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(4));
-    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedByte>{SubDataComplete}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(imageData, Containers::arrayView(SubDataComplete),
+        TestSuite::Compare::Container);
     #endif
 }
 
@@ -997,7 +992,8 @@ void CubeMapTextureGLTest::compressedSubImageBuffer() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i{12});
-    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedByte>{CompressedSubDataComplete}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(imageData, Containers::arrayView(CompressedSubDataComplete),
+        TestSuite::Compare::Container);
     #endif
 }
 #endif
@@ -1022,9 +1018,8 @@ void CubeMapTextureGLTest::subImageQuery() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i(2, 2, 1));
-    CORRADE_COMPARE_AS(
-        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}).suffix(_dataOffset),
-        Containers::ArrayView<const UnsignedByte>{Data}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(Containers::arrayCast<const UnsignedByte>(image.data()).suffix(_dataOffset),
+        Containers::arrayView(Data), TestSuite::Compare::Container);
 }
 
 void CubeMapTextureGLTest::compressedSubImageQuery() {
@@ -1050,9 +1045,9 @@ void CubeMapTextureGLTest::compressedSubImageQuery() {
         MAGNUM_VERIFY_NO_ERROR();
 
         CORRADE_COMPARE(image.size(), (Vector3i{4, 4, 1}));
-        CORRADE_COMPARE_AS(
-            (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}),
-            Containers::ArrayView<const UnsignedByte>{CompressedData}, TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()),
+            Containers::arrayView(CompressedData),
+            TestSuite::Compare::Container);
     }
 
     CompressedImage3D image = texture.compressedSubImage(0, Range3Di::fromSize({4, 4, 0}, {4, 4, 1}), {_compressedDataStorage});
@@ -1060,9 +1055,8 @@ void CubeMapTextureGLTest::compressedSubImageQuery() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), (Vector3i{4, 4, 1}));
-    CORRADE_COMPARE_AS(
-        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}.suffix(_compressedDataOffset)),
-        Containers::ArrayView<const UnsignedByte>{CompressedData}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(_compressedDataOffset),
+        Containers::arrayView(CompressedData), TestSuite::Compare::Container);
 }
 
 void CubeMapTextureGLTest::subImageQueryBuffer() {
@@ -1085,7 +1079,8 @@ void CubeMapTextureGLTest::subImageQueryBuffer() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i(2, 2, 1));
-    CORRADE_COMPARE_AS(imageData.suffix(_dataOffset), Containers::ArrayView<const UnsignedByte>{Data}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(imageData.suffix(_dataOffset),
+        Containers::arrayView(Data), TestSuite::Compare::Container);
 }
 
 void CubeMapTextureGLTest::compressedSubImageQueryBuffer() {
@@ -1112,7 +1107,8 @@ void CubeMapTextureGLTest::compressedSubImageQueryBuffer() {
         MAGNUM_VERIFY_NO_ERROR();
 
         CORRADE_COMPARE(image.size(), (Vector3i{4, 4, 1}));
-        CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedByte>{CompressedData}, TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(imageData, Containers::arrayView(CompressedData),
+            TestSuite::Compare::Container);
     }
 
     CompressedBufferImage3D image = texture.compressedSubImage(0, Range3Di::fromSize({4, 4, 0}, {4, 4, 1}), {_compressedDataStorage}, BufferUsage::StaticRead);
@@ -1121,7 +1117,8 @@ void CubeMapTextureGLTest::compressedSubImageQueryBuffer() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), (Vector3i{4, 4, 1}));
-    CORRADE_COMPARE_AS(imageData.suffix(_compressedDataOffset), Containers::ArrayView<const UnsignedByte>{CompressedData}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(imageData.suffix(_compressedDataOffset),
+        Containers::arrayView(CompressedData), TestSuite::Compare::Container);
 }
 #endif
 

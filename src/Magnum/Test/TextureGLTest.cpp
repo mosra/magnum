@@ -1053,9 +1053,8 @@ void TextureGLTest::image1D() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), 2);
-    CORRADE_COMPARE_AS(
-        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}.suffix(DataOffset1D)),
-        Containers::ArrayView<const UnsignedByte>{Data1D}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(DataOffset1D),
+        Containers::arrayView(Data1D), TestSuite::Compare::Container);
 }
 
 void TextureGLTest::compressedImage1D() {
@@ -1077,7 +1076,7 @@ void TextureGLTest::image1DBuffer() {
 
     CORRADE_COMPARE(image.size(), 2);
     CORRADE_COMPARE_AS(imageData.suffix(DataOffset1D),
-        Containers::ArrayView<const UnsignedByte>{Data1D}, TestSuite::Compare::Container);
+        Containers::arrayView(Data1D), TestSuite::Compare::Container);
 }
 
 void TextureGLTest::compressedImage1DBuffer() {
@@ -1112,9 +1111,8 @@ void TextureGLTest::image2D() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(2));
-    CORRADE_COMPARE_AS(
-        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}.suffix(_dataOffset2D)),
-        Containers::ArrayView<const UnsignedByte>{Data2D}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(_dataOffset2D),
+        Containers::arrayView(Data2D), TestSuite::Compare::Container);
     #endif
 }
 
@@ -1143,9 +1141,9 @@ void TextureGLTest::compressedImage2D() {
 
     CORRADE_COMPARE(image.size(), Vector2i{4});
 
-    CORRADE_COMPARE_AS(
-        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}.suffix(_compressedDataOffset2D)),
-        Containers::ArrayView<const UnsignedByte>{CompressedData2D}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(_compressedDataOffset2D),
+        Containers::arrayView(CompressedData2D),
+        TestSuite::Compare::Container);
     #endif
 }
 
@@ -1167,7 +1165,7 @@ void TextureGLTest::image2DBuffer() {
 
     CORRADE_COMPARE(image.size(), Vector2i(2));
     CORRADE_COMPARE_AS(imageData.suffix(_dataOffset2D),
-        Containers::ArrayView<const UnsignedByte>{Data2D}, TestSuite::Compare::Container);
+        Containers::arrayView(Data2D), TestSuite::Compare::Container);
     #endif
 }
 
@@ -1197,7 +1195,8 @@ void TextureGLTest::compressedImage2DBuffer() {
 
     CORRADE_COMPARE(image.size(), Vector2i{4});
     CORRADE_COMPARE_AS(imageData.suffix(_compressedDataOffset2D),
-        Containers::ArrayView<const UnsignedByte>{CompressedData2D}, TestSuite::Compare::Container);
+        Containers::arrayView(CompressedData2D),
+        TestSuite::Compare::Container);
     #endif
 }
 #endif
@@ -1246,9 +1245,8 @@ void TextureGLTest::image3D() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i(2));
-    CORRADE_COMPARE_AS(
-        Containers::ArrayView<const UnsignedByte>(image.data<UnsignedByte>(), image.data().size()).suffix(_dataOffset3D),
-        Containers::ArrayView<const UnsignedByte>{Data3D}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(_dataOffset3D),
+        Containers::arrayView(Data3D), TestSuite::Compare::Container);
     #endif
 }
 
@@ -1271,9 +1269,9 @@ void TextureGLTest::compressedImage3D() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i{4});
-    CORRADE_COMPARE_AS(
-        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}.suffix(_compressedDataOffset3D)),
-        Containers::ArrayView<const UnsignedByte>{CompressedData3D}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(_compressedDataOffset3D),
+        Containers::arrayView(CompressedData3D),
+        TestSuite::Compare::Container);
     #endif
 }
 
@@ -1295,7 +1293,7 @@ void TextureGLTest::image3DBuffer() {
 
     CORRADE_COMPARE(image.size(), Vector3i(2));
     CORRADE_COMPARE_AS(imageData.suffix(_dataOffset3D),
-        Containers::ArrayView<const UnsignedByte>{Data3D}, TestSuite::Compare::Container);
+        Containers::arrayView(Data3D), TestSuite::Compare::Container);
     #endif
 }
 
@@ -1320,7 +1318,8 @@ void TextureGLTest::compressedImage3DBuffer() {
 
     CORRADE_COMPARE(image.size(), Vector3i{4});
     CORRADE_COMPARE_AS(imageData.suffix(_compressedDataOffset3D),
-        Containers::ArrayView<const UnsignedByte>{CompressedData3D}, TestSuite::Compare::Container);
+        Containers::arrayView(CompressedData3D),
+        TestSuite::Compare::Container);
     #endif
 }
 #endif
@@ -1347,9 +1346,9 @@ void TextureGLTest::subImage1D() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), 4);
-    CORRADE_COMPARE_AS(
-        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}.suffix(DataOffset1D)),
-        Containers::ArrayView<const UnsignedByte>{SubData1DComplete}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(DataOffset1D),
+        Containers::arrayView(SubData1DComplete),
+        TestSuite::Compare::Container);
 }
 
 void TextureGLTest::compressedSubImage1D() {
@@ -1372,7 +1371,8 @@ void TextureGLTest::subImage1DBuffer() {
 
     CORRADE_COMPARE(image.size(), 4);
     CORRADE_COMPARE_AS(imageData.suffix(DataOffset1D),
-        Containers::ArrayView<const UnsignedByte>{SubData1DComplete}, TestSuite::Compare::Container);
+        Containers::arrayView(SubData1DComplete),
+        TestSuite::Compare::Container);
 }
 
 void TextureGLTest::compressedSubImage1DBuffer() {
@@ -1395,8 +1395,8 @@ void TextureGLTest::subImage1DQuery() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), 2);
-    CORRADE_COMPARE_AS(
-        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}.suffix(DataOffset1D)), Containers::ArrayView<const UnsignedByte>{Data1D}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(DataOffset1D),
+        Containers::arrayView(Data1D), TestSuite::Compare::Container);
 }
 
 void TextureGLTest::compressedSubImage1DQuery() {
@@ -1421,7 +1421,7 @@ void TextureGLTest::subImage1DQueryBuffer() {
 
     CORRADE_COMPARE(image.size(), 2);
     CORRADE_COMPARE_AS(imageData.suffix(DataOffset1D),
-        Containers::ArrayView<const UnsignedByte>{Data1D}, TestSuite::Compare::Container);
+        Containers::arrayView(Data1D), TestSuite::Compare::Container);
 }
 
 void TextureGLTest::compressedSubImage1DQueryBuffer() {
@@ -1469,9 +1469,9 @@ void TextureGLTest::subImage2D() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(4));
-    CORRADE_COMPARE_AS(
-        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}),
-        Containers::ArrayView<const UnsignedByte>{SubData2DComplete}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()),
+        Containers::arrayView(SubData2DComplete),
+        TestSuite::Compare::Container);
     #endif
 }
 
@@ -1501,9 +1501,9 @@ void TextureGLTest::compressedSubImage2D() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), (Vector2i{12, 4}));
-    CORRADE_COMPARE_AS(
-        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}),
-        Containers::ArrayView<const UnsignedByte>{CompressedSubData2DComplete}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()),
+        Containers::arrayView(CompressedSubData2DComplete),
+        TestSuite::Compare::Container);
     #endif
 }
 
@@ -1525,7 +1525,8 @@ void TextureGLTest::subImage2DBuffer() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(4));
-    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedByte>{SubData2DComplete}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(imageData, Containers::arrayView(SubData2DComplete),
+        TestSuite::Compare::Container);
     #endif
 }
 
@@ -1556,7 +1557,8 @@ void TextureGLTest::compressedSubImage2DBuffer() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), (Vector2i{12, 4}));
-    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedByte>{CompressedSubData2DComplete}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(imageData, Containers::arrayView(CompressedSubData2DComplete),
+        TestSuite::Compare::Container);
     #endif
 }
 #endif
@@ -1578,8 +1580,8 @@ void TextureGLTest::subImage2DQuery() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i{2});
-    CORRADE_COMPARE_AS(
-        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}.suffix(_dataOffset2D)), Containers::ArrayView<const UnsignedByte>{Data2D}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(_dataOffset2D),
+        Containers::arrayView(Data2D), TestSuite::Compare::Container);
 }
 
 void TextureGLTest::compressedSubImage2DQuery() {
@@ -1602,9 +1604,9 @@ void TextureGLTest::compressedSubImage2DQuery() {
         MAGNUM_VERIFY_NO_ERROR();
 
         CORRADE_COMPARE(image.size(), Vector2i{4});
-        CORRADE_COMPARE_AS(
-            (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}),
-            Containers::ArrayView<const UnsignedByte>{CompressedData2D}, TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()),
+            Containers::arrayView(CompressedData2D),
+            TestSuite::Compare::Container);
     }
 
     CompressedImage2D image = texture.compressedSubImage(0, Range2Di::fromSize({4, 0}, Vector2i{4}), {_compressedDataStorage2D});
@@ -1612,9 +1614,9 @@ void TextureGLTest::compressedSubImage2DQuery() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i{4});
-    CORRADE_COMPARE_AS(
-        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}.suffix(_compressedDataOffset2D)),
-        Containers::ArrayView<const UnsignedByte>{CompressedData2D}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(_compressedDataOffset2D),
+        Containers::arrayView(CompressedData2D),
+        TestSuite::Compare::Container);
 }
 
 void TextureGLTest::subImage2DQueryBuffer() {
@@ -1635,7 +1637,7 @@ void TextureGLTest::subImage2DQueryBuffer() {
 
     CORRADE_COMPARE(image.size(), Vector2i{2});
     CORRADE_COMPARE_AS(imageData.suffix(_dataOffset2D),
-        Containers::ArrayView<const UnsignedByte>{Data2D}, TestSuite::Compare::Container);
+        Containers::arrayView(Data2D), TestSuite::Compare::Container);
 }
 
 void TextureGLTest::compressedSubImage2DQueryBuffer() {
@@ -1659,7 +1661,8 @@ void TextureGLTest::compressedSubImage2DQueryBuffer() {
         MAGNUM_VERIFY_NO_ERROR();
 
         CORRADE_COMPARE(image.size(), Vector2i{4});
-        CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedByte>{CompressedData2D}, TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(imageData, Containers::arrayView(CompressedData2D),
+            TestSuite::Compare::Container);
     }
 
     CompressedBufferImage2D image = texture.compressedSubImage(0, Range2Di::fromSize({4, 0}, Vector2i{4}), {_compressedDataStorage2D}, BufferUsage::StaticRead);
@@ -1668,7 +1671,9 @@ void TextureGLTest::compressedSubImage2DQueryBuffer() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i{4});
-    CORRADE_COMPARE_AS(imageData.suffix(_compressedDataOffset2D), Containers::ArrayView<const UnsignedByte>{CompressedData2D}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(imageData.suffix(_compressedDataOffset2D),
+        Containers::arrayView(CompressedData2D),
+        TestSuite::Compare::Container);
 }
 #endif
 
@@ -1763,9 +1768,9 @@ void TextureGLTest::subImage3D() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i(4));
-    CORRADE_COMPARE_AS(
-        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}),
-        Containers::ArrayView<const UnsignedByte>{SubData3DComplete}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()),
+        Containers::arrayView(SubData3DComplete),
+        TestSuite::Compare::Container);
     #endif
 }
 
@@ -1795,9 +1800,9 @@ void TextureGLTest::compressedSubImage3D() {
         CORRADE_EXPECT_FAIL_IF(!Context::current().isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>() && (Context::current().detectedDriver() & Context::DetectedDriver::NVidia),
             "Default compressed pixel storage behaves weirdly with BPTC compression on NVidia");
 
-        CORRADE_COMPARE_AS(
-            (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}),
-            Containers::ArrayView<const UnsignedByte>{CompressedSubData3DComplete}, TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()),
+            Containers::arrayView(CompressedSubData3DComplete),
+            TestSuite::Compare::Container);
     }
     #endif
 }
@@ -1820,7 +1825,8 @@ void TextureGLTest::subImage3DBuffer() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i(4));
-    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedByte>{SubData3DComplete}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(imageData, Containers::arrayView(SubData3DComplete),
+        TestSuite::Compare::Container);
     #endif
 }
 
@@ -1851,7 +1857,9 @@ void TextureGLTest::compressedSubImage3DBuffer() {
         CORRADE_EXPECT_FAIL_IF(!Context::current().isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>() && (Context::current().detectedDriver() & Context::DetectedDriver::NVidia),
             "Default compressed pixel storage behaves weirdly with BPTC compression on NVidia");
 
-        CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedByte>{CompressedSubData3DComplete}, TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(imageData,
+            Containers::arrayView(CompressedSubData3DComplete),
+            TestSuite::Compare::Container);
     }
     #endif
 }
@@ -1874,8 +1882,8 @@ void TextureGLTest::subImage3DQuery() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i{2});
-    CORRADE_COMPARE_AS(
-        (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}.suffix(_dataOffset3D)), Containers::ArrayView<const UnsignedByte>{Data3D}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(_dataOffset3D),
+        Containers::arrayView(Data3D), TestSuite::Compare::Container);
 }
 
 void TextureGLTest::compressedSubImage3DQuery() {
@@ -1902,9 +1910,9 @@ void TextureGLTest::compressedSubImage3DQuery() {
         CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & Context::DetectedDriver::NVidia,
             "Default compressed pixel storage behaves weirdly with BPTC compression on NVidia");
 
-        CORRADE_COMPARE_AS(
-            (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}),
-            Containers::ArrayView<const UnsignedByte>{CompressedData3D}, TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()),
+            Containers::arrayView(CompressedData3D),
+            TestSuite::Compare::Container);
     }
 
     CompressedImage3D image = texture.compressedSubImage(0, Range3Di::fromSize({4, 0, 0}, Vector3i{4}), {_compressedDataStorage3D});
@@ -1917,9 +1925,8 @@ void TextureGLTest::compressedSubImage3DQuery() {
         CORRADE_EXPECT_FAIL_IF(!Context::current().isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>() && (Context::current().detectedDriver() & Context::DetectedDriver::NVidia),
             "Default compressed pixel storage behaves weirdly with BPTC compression on NVidia");
 
-        CORRADE_COMPARE_AS(
-            (Containers::ArrayView<const UnsignedByte>{image.data<UnsignedByte>(), image.data().size()}.suffix(_compressedDataOffset3D)),
-            Containers::ArrayView<const UnsignedByte>{CompressedData3D}, TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(_compressedDataOffset3D),
+            Containers::arrayView(CompressedData3D), TestSuite::Compare::Container);
     }
 }
 
@@ -1941,7 +1948,7 @@ void TextureGLTest::subImage3DQueryBuffer() {
 
     CORRADE_COMPARE(image.size(), Vector3i{2});
     CORRADE_COMPARE_AS(imageData.suffix(_dataOffset3D),
-        Containers::ArrayView<const UnsignedByte>{Data3D}, TestSuite::Compare::Container);
+        Containers::arrayView(Data3D), TestSuite::Compare::Container);
 }
 
 void TextureGLTest::compressedSubImage3DQueryBuffer() {
@@ -1969,7 +1976,8 @@ void TextureGLTest::compressedSubImage3DQueryBuffer() {
         CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & Context::DetectedDriver::NVidia,
             "Default compressed pixel storage behaves weirdly with BPTC compression on NVidia");
 
-        CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedByte>{CompressedData3D}, TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(imageData, Containers::arrayView(CompressedData3D),
+            TestSuite::Compare::Container);
     }
 
     CompressedBufferImage3D image = texture.compressedSubImage(0, Range3Di::fromSize({4, 0, 0}, Vector3i{4}), {_compressedDataStorage3D}, BufferUsage::StaticRead);
@@ -1983,7 +1991,9 @@ void TextureGLTest::compressedSubImage3DQueryBuffer() {
         CORRADE_EXPECT_FAIL_IF(!Context::current().isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>() && (Context::current().detectedDriver() & Context::DetectedDriver::NVidia),
             "Default compressed pixel storage behaves weirdly with BPTC compression on NVidia");
 
-        CORRADE_COMPARE_AS(imageData.suffix(_compressedDataOffset3D), Containers::ArrayView<const UnsignedByte>{CompressedData3D}, TestSuite::Compare::Container);
+        CORRADE_COMPARE_AS(imageData.suffix(_compressedDataOffset3D),
+            Containers::arrayView(CompressedData3D),
+            TestSuite::Compare::Container);
     }
 }
 

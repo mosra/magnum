@@ -85,8 +85,8 @@ void BufferImageGLTest::construct() {
 
     /** @todo How to verify the contents in ES? */
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const char>{data},
-                       TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(imageData, Containers::arrayView(data),
+        TestSuite::Compare::Container);
     #endif
 }
 
@@ -114,8 +114,8 @@ void BufferImageGLTest::constructCompressed() {
 
     /** @todo How to verify the contents in ES? */
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const char>{data},
-                       TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(imageData, Containers::arrayView(data),
+        TestSuite::Compare::Container);
     #endif
 }
 
@@ -143,8 +143,8 @@ void BufferImageGLTest::constructBuffer() {
 
     /** @todo How to verify the contents in ES? */
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const char>{data},
-                       TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(imageData, Containers::arrayView(data),
+        TestSuite::Compare::Container);
     #endif
 }
 
@@ -178,8 +178,8 @@ void BufferImageGLTest::constructBufferCompressed() {
 
     /** @todo How to verify the contents in ES? */
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const char>{data},
-                       TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(imageData, Containers::arrayView(data),
+        TestSuite::Compare::Container);
     #endif
 }
 
@@ -299,8 +299,8 @@ void BufferImageGLTest::setData() {
 
     /** @todo How to verify the contents in ES? */
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedShort>{data2},
-                       TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(imageData, Containers::arrayView(data2),
+        TestSuite::Compare::Container);
     #endif
 }
 
@@ -330,8 +330,8 @@ void BufferImageGLTest::setDataCompressed() {
 
     /** @todo How to verify the contents in ES? */
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const char>{data2},
-                       TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(imageData, Containers::arrayView(data2),
+        TestSuite::Compare::Container);
     #endif
 }
 

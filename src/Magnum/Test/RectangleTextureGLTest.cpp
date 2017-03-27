@@ -301,9 +301,8 @@ void RectangleTextureGLTest::image() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(2));
-    CORRADE_COMPARE_AS(
-        Containers::ArrayView<const UnsignedByte>(image.data<UnsignedByte>(), image.data().size()).suffix(DataOffset),
-        Containers::ArrayView<const UnsignedByte>{Data}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(DataOffset),
+        Containers::arrayView(Data), TestSuite::Compare::Container);
 }
 
 void RectangleTextureGLTest::compressedImage() {
@@ -327,7 +326,7 @@ void RectangleTextureGLTest::imageBuffer() {
 
     CORRADE_COMPARE(image.size(), Vector2i(2));
     CORRADE_COMPARE_AS(imageData.suffix(DataOffset),
-        Containers::ArrayView<const UnsignedByte>{Data}, TestSuite::Compare::Container);
+        Containers::arrayView(Data), TestSuite::Compare::Container);
 }
 
 void RectangleTextureGLTest::compressedImageBuffer() {
@@ -362,9 +361,8 @@ void RectangleTextureGLTest::subImage() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(4));
-    CORRADE_COMPARE_AS(
-        Containers::ArrayView<const UnsignedByte>(image.data<UnsignedByte>(), image.data().size()),
-        Containers::ArrayView<const UnsignedByte>{SubDataComplete}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()),
+        Containers::arrayView(SubDataComplete), TestSuite::Compare::Container);
 }
 
 void RectangleTextureGLTest::compressedSubImage() {
@@ -389,7 +387,8 @@ void RectangleTextureGLTest::subImageBuffer() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(4));
-    CORRADE_COMPARE_AS(imageData, Containers::ArrayView<const UnsignedByte>{SubDataComplete}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(imageData, Containers::arrayView(SubDataComplete),
+        TestSuite::Compare::Container);
 }
 
 void RectangleTextureGLTest::compressedSubImageBuffer() {
@@ -414,9 +413,8 @@ void RectangleTextureGLTest::subImageQuery() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i{2});
-    CORRADE_COMPARE_AS(
-        Containers::ArrayView<const UnsignedByte>(image.data<UnsignedByte>(), image.data().size()).suffix(DataOffset),
-        Containers::ArrayView<const UnsignedByte>{Data}, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(DataOffset),
+        Containers::arrayView(Data), TestSuite::Compare::Container);
 }
 
 void RectangleTextureGLTest::compressedSubImageQuery() {
@@ -443,7 +441,7 @@ void RectangleTextureGLTest::subImageQueryBuffer() {
 
     CORRADE_COMPARE(image.size(), Vector2i{2});
     CORRADE_COMPARE_AS(imageData.suffix(DataOffset),
-        Containers::ArrayView<const UnsignedByte>{Data}, TestSuite::Compare::Container);
+        Containers::arrayView(Data), TestSuite::Compare::Container);
 }
 
 void RectangleTextureGLTest::compressedSubImageQueryBuffer() {
