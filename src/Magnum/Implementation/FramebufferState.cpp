@@ -47,7 +47,7 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
     /* Create implementation */
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
-        extensions.push_back(Extensions::GL::ARB::direct_state_access::string());
+        extensions.emplace_back(Extensions::GL::ARB::direct_state_access::string());
         createImplementation = &Framebuffer::createImplementationDSA;
         createRenderbufferImplementation = &Renderbuffer::createImplementationDSA;
 
@@ -86,7 +86,7 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
         renderbufferStorageImplementation = &Renderbuffer::storageImplementationDSA;
 
     } else if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
-        extensions.push_back(Extensions::GL::EXT::direct_state_access::string());
+        extensions.emplace_back(Extensions::GL::EXT::direct_state_access::string());
 
         checkStatusImplementation = &AbstractFramebuffer::checkStatusImplementationDSAEXT;
         drawBuffersImplementation = &AbstractFramebuffer::drawBuffersImplementationDSAEXT;
@@ -211,7 +211,7 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
-        extensions.push_back(Extensions::GL::ARB::robustness::string());
+        extensions.emplace_back(Extensions::GL::ARB::robustness::string());
         #else
         extensions.push_back(Extensions::GL::EXT::robustness::string());
         #endif
@@ -256,7 +256,7 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
     /* Framebuffer invalidation implementation on desktop GL */
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::GL::ARB::invalidate_subdata>()) {
-        extensions.push_back(Extensions::GL::ARB::invalidate_subdata::string());
+        extensions.emplace_back(Extensions::GL::ARB::invalidate_subdata::string());
 
         if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
             /* Extension added above */

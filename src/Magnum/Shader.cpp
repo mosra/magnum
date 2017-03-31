@@ -722,23 +722,23 @@ Shader::Shader(const Version version, const Type type): _type(type), _id(0) {
 
     switch(version) {
         #ifndef MAGNUM_TARGET_GLES
-        case Version::GL210: _sources.push_back("#version 120\n"); return;
-        case Version::GL300: _sources.push_back("#version 130\n"); return;
-        case Version::GL310: _sources.push_back("#version 140\n"); return;
-        case Version::GL320: _sources.push_back("#version 150\n"); return;
-        case Version::GL330: _sources.push_back("#version 330\n"); return;
-        case Version::GL400: _sources.push_back("#version 400\n"); return;
-        case Version::GL410: _sources.push_back("#version 410\n"); return;
-        case Version::GL420: _sources.push_back("#version 420\n"); return;
-        case Version::GL430: _sources.push_back("#version 430\n"); return;
-        case Version::GL440: _sources.push_back("#version 440\n"); return;
-        case Version::GL450: _sources.push_back("#version 450\n"); return;
+        case Version::GL210: _sources.emplace_back("#version 120\n"); return;
+        case Version::GL300: _sources.emplace_back("#version 130\n"); return;
+        case Version::GL310: _sources.emplace_back("#version 140\n"); return;
+        case Version::GL320: _sources.emplace_back("#version 150\n"); return;
+        case Version::GL330: _sources.emplace_back("#version 330\n"); return;
+        case Version::GL400: _sources.emplace_back("#version 400\n"); return;
+        case Version::GL410: _sources.emplace_back("#version 410\n"); return;
+        case Version::GL420: _sources.emplace_back("#version 420\n"); return;
+        case Version::GL430: _sources.emplace_back("#version 430\n"); return;
+        case Version::GL440: _sources.emplace_back("#version 440\n"); return;
+        case Version::GL450: _sources.emplace_back("#version 450\n"); return;
         #endif
         /* `#version 100` really is GLSL ES 1.00 and *not* GLSL 1.00. What a mess. */
-        case Version::GLES200: _sources.push_back("#version 100\n"); return;
-        case Version::GLES300: _sources.push_back("#version 300 es\n"); return;
+        case Version::GLES200: _sources.emplace_back("#version 100\n"); return;
+        case Version::GLES300: _sources.emplace_back("#version 300 es\n"); return;
         #ifndef MAGNUM_TARGET_WEBGL
-        case Version::GLES310: _sources.push_back("#version 310 es\n"); return;
+        case Version::GLES310: _sources.emplace_back("#version 310 es\n"); return;
         #endif
 
         /* The user is responsible for (not) adding #version directive */

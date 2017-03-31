@@ -39,7 +39,7 @@ DebugState::DebugState(Context& context, std::vector<std::string>& extensions):
     messageCallback(nullptr)
 {
     if(context.isExtensionSupported<Extensions::GL::KHR::debug>()) {
-        extensions.push_back(Extensions::GL::KHR::debug::string());
+        extensions.emplace_back(Extensions::GL::KHR::debug::string());
 
         getLabelImplementation = &AbstractObject::getLabelImplementationKhr;
         labelImplementation = &AbstractObject::labelImplementationKhr;
@@ -51,7 +51,7 @@ DebugState::DebugState(Context& context, std::vector<std::string>& extensions):
 
     } else {
         if(context.isExtensionSupported<Extensions::GL::EXT::debug_label>()) {
-            extensions.push_back(Extensions::GL::EXT::debug_label::string());
+            extensions.emplace_back(Extensions::GL::EXT::debug_label::string());
 
             getLabelImplementation = &AbstractObject::getLabelImplementationExt;
             labelImplementation = &AbstractObject::labelImplementationExt;
@@ -61,14 +61,14 @@ DebugState::DebugState(Context& context, std::vector<std::string>& extensions):
         }
 
         if(context.isExtensionSupported<Extensions::GL::EXT::debug_marker>()) {
-            extensions.push_back(Extensions::GL::EXT::debug_marker::string());
+            extensions.emplace_back(Extensions::GL::EXT::debug_marker::string());
 
             pushGroupImplementation = &DebugGroup::pushImplementationExt;
             popGroupImplementation = &DebugGroup::popImplementationExt;
             messageInsertImplementation = &DebugMessage::insertImplementationExt;
         #ifndef MAGNUM_TARGET_GLES
         } else if(context.isExtensionSupported<Extensions::GL::GREMEDY::string_marker>()) {
-            extensions.push_back(Extensions::GL::GREMEDY::string_marker::string());
+            extensions.emplace_back(Extensions::GL::GREMEDY::string_marker::string());
 
             pushGroupImplementation = &DebugGroup::pushImplementationNoOp;
             popGroupImplementation = &DebugGroup::popImplementationNoOp;

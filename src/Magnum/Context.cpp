@@ -736,7 +736,7 @@ std::vector<std::string> Context::shadingLanguageVersionStrings() const {
     std::vector<std::string> versions;
     versions.reserve(versionCount);
     for(GLint i = 0; i != versionCount; ++i)
-        versions.push_back(reinterpret_cast<const char*>(glGetStringi(GL_SHADING_LANGUAGE_VERSION, i)));
+        versions.emplace_back(reinterpret_cast<const char*>(glGetStringi(GL_SHADING_LANGUAGE_VERSION, i)));
     return versions;
     #else
     return {shadingLanguageVersionString()};
@@ -755,7 +755,7 @@ std::vector<std::string> Context::extensionStrings() const {
     {
         extensions.reserve(extensionCount);
         for(GLint i = 0; i != extensionCount; ++i)
-            extensions.push_back(reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, i)));
+            extensions.emplace_back(reinterpret_cast<const char*>(glGetStringi(GL_EXTENSIONS, i)));
     }
     #ifndef MAGNUM_TARGET_GLES3
     else

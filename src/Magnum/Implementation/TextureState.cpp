@@ -65,7 +65,7 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     /* Create implementation */
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
-        extensions.push_back(Extensions::GL::ARB::direct_state_access::string());
+        extensions.emplace_back(Extensions::GL::ARB::direct_state_access::string());
         createImplementation = &AbstractTexture::createImplementationDSA;
 
     } else
@@ -103,7 +103,7 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     /* Multi bind implementation */
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::GL::ARB::multi_bind>()) {
-        extensions.push_back(Extensions::GL::ARB::multi_bind::string());
+        extensions.emplace_back(Extensions::GL::ARB::multi_bind::string());
 
         bindMultiImplementation = &AbstractTexture::bindImplementationMulti;
 
@@ -116,7 +116,7 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     /* DSA/non-DSA implementation */
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
-        extensions.push_back(Extensions::GL::ARB::direct_state_access::string());
+        extensions.emplace_back(Extensions::GL::ARB::direct_state_access::string());
 
         parameteriImplementation = &AbstractTexture::parameterImplementationDSA;
         parameterfImplementation = &AbstractTexture::parameterImplementationDSA;
@@ -141,7 +141,7 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         cubeCompressedSubImageImplementation = &CubeMapTexture::compressedSubImageImplementationDSA;
 
     } else if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
-        extensions.push_back(Extensions::GL::EXT::direct_state_access::string());
+        extensions.emplace_back(Extensions::GL::EXT::direct_state_access::string());
 
         parameteriImplementation = &AbstractTexture::parameterImplementationDSAEXT;
         parameterfImplementation = &AbstractTexture::parameterImplementationDSAEXT;
@@ -208,7 +208,7 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     /* Data invalidation implementation */
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::GL::ARB::invalidate_subdata>()) {
-        extensions.push_back(Extensions::GL::ARB::invalidate_subdata::string());
+        extensions.emplace_back(Extensions::GL::ARB::invalidate_subdata::string());
 
         invalidateImageImplementation = &AbstractTexture::invalidateImageImplementationARB;
         invalidateSubImageImplementation = &AbstractTexture::invalidateSubImageImplementationARB;
@@ -244,7 +244,7 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         getCompressedImageImplementation = &AbstractTexture::getCompressedImageImplementationDSA;
 
     } else if(context.isExtensionSupported<Extensions::GL::ARB::robustness>()) {
-        extensions.push_back(Extensions::GL::ARB::robustness::string());
+        extensions.emplace_back(Extensions::GL::ARB::robustness::string());
         getImageImplementation = &AbstractTexture::getImageImplementationRobustness;
         getCompressedImageImplementation = &AbstractTexture::getCompressedImageImplementationRobustness;
 
@@ -260,7 +260,7 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
 
     /* Image retrieval implementation for cube map */
     if(context.isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>()) {
-        extensions.push_back(Extensions::GL::ARB::get_texture_sub_image::string());
+        extensions.emplace_back(Extensions::GL::ARB::get_texture_sub_image::string());
         getCubeImageImplementation = &CubeMapTexture::getImageImplementationDSA;
         getCompressedCubeImageImplementation = &CubeMapTexture::getCompressedImageImplementationDSA;
 
@@ -298,7 +298,7 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
-        extensions.push_back(Extensions::GL::ARB::texture_storage::string());
+        extensions.emplace_back(Extensions::GL::ARB::texture_storage::string());
         #elif defined(MAGNUM_TARGET_GLES2)
         extensions.push_back(Extensions::GL::EXT::texture_storage::string());
         #endif
@@ -347,7 +347,7 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     /* Storage implementation for multisample textures. The fallback doesn't
        have DSA alternative, so it must be handled specially. */
     if(context.isExtensionSupported<Extensions::GL::ARB::texture_storage_multisample>()) {
-        extensions.push_back(Extensions::GL::ARB::texture_storage_multisample::string());
+        extensions.emplace_back(Extensions::GL::ARB::texture_storage_multisample::string());
 
         if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
             storage2DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationDSA;
@@ -370,7 +370,7 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
 
     /* Anisotropic filter implementation */
     if(context.isExtensionSupported<Extensions::GL::EXT::texture_filter_anisotropic>()) {
-        extensions.push_back(Extensions::GL::EXT::texture_filter_anisotropic::string());
+        extensions.emplace_back(Extensions::GL::EXT::texture_filter_anisotropic::string());
 
         setMaxAnisotropyImplementation = &AbstractTexture::setMaxAnisotropyImplementationExt;
     } else setMaxAnisotropyImplementation = &AbstractTexture::setMaxAnisotropyImplementationNoOp;
