@@ -298,13 +298,13 @@ std::optional<MeshData3D> ObjImporter::doMesh3D(UnsignedInt id) {
                 return std::nullopt;
             }
 
-            if(textureCoordinates.empty()) textureCoordinates.push_back({});
-            textureCoordinates.front().push_back(data);
+            if(textureCoordinates.empty()) textureCoordinates.emplace_back();
+            textureCoordinates.front().emplace_back(data);
 
         /* Normal */
         } else if(keyword == "vn") {
-            if(normals.empty()) normals.push_back({});
-            normals.front().push_back(extractFloatData<3>(contents));
+            if(normals.empty()) normals.emplace_back();
+            normals.front().emplace_back(extractFloatData<3>(contents));
 
         /* Indices */
         } else if(keyword == "p" || keyword == "l" || keyword == "f") {
@@ -470,9 +470,9 @@ std::optional<MeshData3D> ObjImporter::doMesh3D(UnsignedInt id) {
     if(!normalIndices.empty() || !textureCoordinateIndices.empty()) {
         std::vector<std::reference_wrapper<std::vector<UnsignedInt>>> arrays;
         arrays.reserve(3);
-        arrays.push_back(positionIndices);
-        if(!normalIndices.empty()) arrays.push_back(normalIndices);
-        if(!textureCoordinateIndices.empty()) arrays.push_back(textureCoordinateIndices);
+        arrays.emplace_back(positionIndices);
+        if(!normalIndices.empty()) arrays.emplace_back(normalIndices);
+        if(!textureCoordinateIndices.empty()) arrays.emplace_back(textureCoordinateIndices);
         indices = MeshTools::combineIndexArrays(arrays);
 
         /* Reindex data arrays */

@@ -48,7 +48,7 @@ MeshState::MeshState(Context& context, std::vector<std::string>& extensions): cu
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
-        extensions.push_back(Extensions::GL::ARB::vertex_array_object::string());
+        extensions.emplace_back(Extensions::GL::ARB::vertex_array_object::string());
         #elif defined(MAGNUM_TARGET_GLES2)
         extensions.push_back(Extensions::GL::OES::vertex_array_object::string());
         #endif
@@ -58,7 +58,7 @@ MeshState::MeshState(Context& context, std::vector<std::string>& extensions): cu
 
         #ifndef MAGNUM_TARGET_GLES
         if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
-            extensions.push_back(Extensions::GL::EXT::direct_state_access::string());
+            extensions.emplace_back(Extensions::GL::EXT::direct_state_access::string());
 
             attributePointerImplementation = &Mesh::attributePointerImplementationDSAEXT;
         } else
@@ -85,7 +85,7 @@ MeshState::MeshState(Context& context, std::vector<std::string>& extensions): cu
     #ifndef MAGNUM_TARGET_GLES
     /* DSA create implementation (other cases handled above) */
     if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
-        extensions.push_back(Extensions::GL::ARB::direct_state_access::string());
+        extensions.emplace_back(Extensions::GL::ARB::direct_state_access::string());
         createImplementation = &Mesh::createImplementationVAODSA;
     }
     #endif

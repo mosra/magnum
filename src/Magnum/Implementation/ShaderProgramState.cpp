@@ -68,7 +68,7 @@ ShaderProgramState::ShaderProgramState(Context& context, std::vector<std::string
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
-        extensions.push_back(Extensions::GL::ARB::separate_shader_objects::string());
+        extensions.emplace_back(Extensions::GL::ARB::separate_shader_objects::string());
         #endif
 
         uniform1fvImplementation = &AbstractShaderProgram::uniformImplementationSSO;
@@ -121,7 +121,7 @@ ShaderProgramState::ShaderProgramState(Context& context, std::vector<std::string
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
-        extensions.push_back(Extensions::GL::EXT::direct_state_access::string());
+        extensions.emplace_back(Extensions::GL::EXT::direct_state_access::string());
         #else
         extensions.push_back(Extensions::GL::EXT::separate_shader_objects::string());
         #endif

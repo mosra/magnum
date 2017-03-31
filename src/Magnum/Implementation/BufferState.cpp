@@ -96,7 +96,7 @@ BufferState::BufferState(Context& context, std::vector<std::string>& extensions)
     /* Create implementation */
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
-        extensions.push_back(Extensions::GL::ARB::direct_state_access::string());
+        extensions.emplace_back(Extensions::GL::ARB::direct_state_access::string());
         createImplementation = &Buffer::createImplementationDSA;
 
     } else
@@ -107,7 +107,7 @@ BufferState::BufferState(Context& context, std::vector<std::string>& extensions)
 
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
-        extensions.push_back(Extensions::GL::ARB::direct_state_access::string());
+        extensions.emplace_back(Extensions::GL::ARB::direct_state_access::string());
 
         copyImplementation = &Buffer::copyImplementationDSA;
         getParameterImplementation = &Buffer::getParameterImplementationDSA;
@@ -119,7 +119,7 @@ BufferState::BufferState(Context& context, std::vector<std::string>& extensions)
         flushMappedRangeImplementation = &Buffer::flushMappedRangeImplementationDSA;
         unmapImplementation = &Buffer::unmapImplementationDSA;
     } else if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
-        extensions.push_back(Extensions::GL::EXT::direct_state_access::string());
+        extensions.emplace_back(Extensions::GL::EXT::direct_state_access::string());
 
         copyImplementation = &Buffer::copyImplementationDSAEXT;
         getParameterImplementation = &Buffer::getParameterImplementationDSAEXT;
@@ -152,7 +152,7 @@ BufferState::BufferState(Context& context, std::vector<std::string>& extensions)
 
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::GL::ARB::invalidate_subdata>()) {
-        extensions.push_back(Extensions::GL::ARB::invalidate_subdata::string());
+        extensions.emplace_back(Extensions::GL::ARB::invalidate_subdata::string());
 
         invalidateImplementation = &Buffer::invalidateImplementationARB;
         invalidateSubImplementation = &Buffer::invalidateSubImplementationARB;
@@ -166,7 +166,7 @@ BufferState::BufferState(Context& context, std::vector<std::string>& extensions)
     #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::GL::ARB::multi_bind>()) {
-        extensions.push_back(Extensions::GL::ARB::multi_bind::string());
+        extensions.emplace_back(Extensions::GL::ARB::multi_bind::string());
 
         bindBasesImplementation = &Buffer::bindImplementationMulti;
         bindRangesImplementation = &Buffer::bindImplementationMulti;

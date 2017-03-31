@@ -35,11 +35,11 @@ namespace Magnum { namespace Primitives { namespace Implementation {
 Spheroid::Spheroid(UnsignedInt segments, TextureCoords textureCoords): segments(segments), textureCoords(textureCoords) {}
 
 void Spheroid::capVertex(Float y, Float normalY, Float textureCoordsV) {
-    positions.push_back({0.0f, y, 0.0f});
-    normals.push_back({0.0f, normalY, 0.0f});
+    positions.emplace_back(0.0f, y, 0.0f);
+    normals.emplace_back(0.0f, normalY, 0.0f);
 
     if(textureCoords == TextureCoords::Generate)
-        textureCoords2D.push_back({0.5, textureCoordsV});
+        textureCoords2D.emplace_back(0.5, textureCoordsV);
 }
 
 void Spheroid::hemisphereVertexRings(UnsignedInt count, Float centerY, Rad startRingAngle, Rad ringAngleIncrement, Float startTextureCoordsV, Float textureCoordsVIncrement) {
@@ -52,18 +52,18 @@ void Spheroid::hemisphereVertexRings(UnsignedInt count, Float centerY, Rad start
 
         for(UnsignedInt j = 0; j != segments; ++j) {
             Rad segmentAngle = Float(j)*segmentAngleIncrement;
-            positions.push_back({x*Math::sin(segmentAngle), centerY+y, z*Math::cos(segmentAngle)});
-            normals.push_back({x*Math::sin(segmentAngle), y, z*Math::cos(segmentAngle)});
+            positions.emplace_back(x*Math::sin(segmentAngle), centerY+y, z*Math::cos(segmentAngle));
+            normals.emplace_back(x*Math::sin(segmentAngle), y, z*Math::cos(segmentAngle));
 
             if(textureCoords == TextureCoords::Generate)
-                textureCoords2D.push_back({j*1.0f/segments, startTextureCoordsV + i*textureCoordsVIncrement});
+                textureCoords2D.emplace_back(j*1.0f/segments, startTextureCoordsV + i*textureCoordsVIncrement);
         }
 
         /* Duplicate first segment in the ring for additional vertex for texture coordinate */
         if(textureCoords == TextureCoords::Generate) {
             positions.push_back(positions[positions.size()-segments]);
             normals.push_back(normals[normals.size()-segments]);
-            textureCoords2D.push_back({1.0f, startTextureCoordsV + i*textureCoordsVIncrement});
+            textureCoords2D.emplace_back(1.0f, startTextureCoordsV + i*textureCoordsVIncrement);
         }
     }
 }
@@ -73,18 +73,18 @@ void Spheroid::cylinderVertexRings(UnsignedInt count, Float startY, Float yIncre
     for(UnsignedInt i = 0; i != count; ++i) {
         for(UnsignedInt j = 0; j != segments; ++j) {
             Rad segmentAngle = Float(j)*segmentAngleIncrement;
-            positions.push_back({Math::sin(segmentAngle), startY, Math::cos(segmentAngle)});
-            normals.push_back({Math::sin(segmentAngle), 0.0f, Math::cos(segmentAngle)});
+            positions.emplace_back(Math::sin(segmentAngle), startY, Math::cos(segmentAngle));
+            normals.emplace_back(Math::sin(segmentAngle), 0.0f, Math::cos(segmentAngle));
 
             if(textureCoords == TextureCoords::Generate)
-                textureCoords2D.push_back({j*1.0f/segments, startTextureCoordsV + i*textureCoordsVIncrement});
+                textureCoords2D.emplace_back(j*1.0f/segments, startTextureCoordsV + i*textureCoordsVIncrement);
         }
 
         /* Duplicate first segment in the ring for additional vertex for texture coordinate */
         if(textureCoords == TextureCoords::Generate) {
             positions.push_back(positions[positions.size()-segments]);
             normals.push_back(normals[normals.size()-segments]);
-            textureCoords2D.push_back({1.0f, startTextureCoordsV + i*textureCoordsVIncrement});
+            textureCoords2D.emplace_back(1.0f, startTextureCoordsV + i*textureCoordsVIncrement);
         }
 
         startY += yIncrement;
@@ -147,18 +147,18 @@ void Spheroid::capVertexRing(Float y, Float textureCoordsV, const Vector3& norma
 
     for(UnsignedInt i = 0; i != segments; ++i) {
         Rad segmentAngle = Float(i)*segmentAngleIncrement;
-        positions.push_back({Math::sin(segmentAngle), y, Math::cos(segmentAngle)});
+        positions.emplace_back(Math::sin(segmentAngle), y, Math::cos(segmentAngle));
         normals.push_back(normal);
 
         if(textureCoords == TextureCoords::Generate)
-            textureCoords2D.push_back({i*1.0f/segments, textureCoordsV});
+            textureCoords2D.emplace_back(i*1.0f/segments, textureCoordsV);
     }
 
     /* Duplicate first segment in the ring for additional vertex for texture coordinate */
     if(textureCoords == TextureCoords::Generate) {
         positions.push_back(positions[positions.size()-segments]);
         normals.push_back(normal);
-        textureCoords2D.push_back({1.0f, textureCoordsV});
+        textureCoords2D.emplace_back(1.0f, textureCoordsV);
     }
 }
 

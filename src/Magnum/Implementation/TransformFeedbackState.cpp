@@ -15,7 +15,7 @@ TransformFeedbackState::TransformFeedbackState(Context& context, std::vector<std
 {
     #ifndef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
-        extensions.push_back(Extensions::GL::ARB::direct_state_access::string());
+        extensions.emplace_back(Extensions::GL::ARB::direct_state_access::string());
 
         createImplementation = &TransformFeedback::createImplementationDSA;
         attachRangeImplementation = &TransformFeedback::attachImplementationDSA;

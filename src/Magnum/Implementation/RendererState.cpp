@@ -41,7 +41,7 @@ RendererState::RendererState(Context& context, std::vector<std::string>& extensi
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
-        extensions.push_back(Extensions::GL::ARB::ES2_compatibility::string());
+        extensions.emplace_back(Extensions::GL::ARB::ES2_compatibility::string());
         #endif
 
         clearDepthfImplementation = &Renderer::clearDepthfImplementationES;
@@ -59,7 +59,7 @@ RendererState::RendererState(Context& context, std::vector<std::string>& extensi
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
-        extensions.push_back(Extensions::GL::ARB::robustness::string());
+        extensions.emplace_back(Extensions::GL::ARB::robustness::string());
         #else
         extensions.push_back(Extensions::GL::EXT::robustness::string());
         #endif
