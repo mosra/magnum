@@ -120,7 +120,7 @@ template<UnsignedInt dimensions> AbstractShapeRenderer<dimensions>::AbstractShap
         new Shaders::Flat<dimensions>, ResourceDataState::Final, ResourcePolicy::Resident);
 }
 
-template<UnsignedInt dimensions> AbstractShapeRenderer<dimensions>::~AbstractShapeRenderer() {}
+template<UnsignedInt dimensions> AbstractShapeRenderer<dimensions>::~AbstractShapeRenderer() = default;
 
 template<UnsignedInt dimensions> void AbstractShapeRenderer<dimensions>::createResources(typename MeshData<dimensions>::Type data) {
     create<dimensions>(data, wireframeMesh, vertexBuffer, indexBuffer);

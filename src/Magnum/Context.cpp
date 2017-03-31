@@ -453,14 +453,14 @@ Context::Context(NoCreateT, Int argc, const char** argv, void functionLoader()):
         _disabledExtensions.push_back(extension);
 }
 
-Context::Context(Context&& other): _version{std::move(other._version)},
+Context::Context(Context&& other): _version{other._version},
     #ifndef MAGNUM_TARGET_WEBGL
-    _flags{std::move(other._flags)},
+    _flags{other._flags},
     #endif
-    _extensionRequiredVersion(std::move(other._extensionRequiredVersion)),
-    _extensionStatus{std::move(other._extensionStatus)},
+    _extensionRequiredVersion(other._extensionRequiredVersion),
+    _extensionStatus{other._extensionStatus},
     _supportedExtensions{std::move(other._supportedExtensions)},
-    _state{std::move(other._state)},
+    _state{other._state},
     _detectedDrivers{std::move(other._detectedDrivers)}
 {
     other._state = nullptr;

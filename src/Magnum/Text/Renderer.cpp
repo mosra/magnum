@@ -330,7 +330,7 @@ AbstractRenderer::AbstractRenderer(AbstractFont& font, const GlyphCache& cache, 
     _mesh.setPrimitive(MeshPrimitive::Triangles);
 }
 
-AbstractRenderer::~AbstractRenderer() {}
+AbstractRenderer::~AbstractRenderer() = default;
 
 template<UnsignedInt dimensions> Renderer<dimensions>::Renderer(AbstractFont& font, const GlyphCache& cache, const Float size, const Alignment alignment): AbstractRenderer(font, cache, size, alignment) {
     /* Finalize mesh configuration */

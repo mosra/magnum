@@ -40,8 +40,8 @@ namespace Magnum {
 
 namespace {
     template<UnsignedInt> struct VectorOrScalar;
-    template<> struct VectorOrScalar<1> { typedef Int Type; };
-    template<> struct VectorOrScalar<2> { typedef Vector2i Type; };
+    template<> struct VectorOrScalar<1> { using Type = Int; };
+    template<> struct VectorOrScalar<2> { using Type = Vector2i; };
 }
 
 template<UnsignedInt dimensions> VectorTypeFor<dimensions+1, Int> TextureArray<dimensions>::maxSize() {
