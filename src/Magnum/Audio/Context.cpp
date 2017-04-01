@@ -80,7 +80,7 @@ std::vector<std::string> Context::deviceSpecifierStrings() {
     std::vector<std::string> list;
     const char* const devices = alcGetString(nullptr, ALC_DEVICE_SPECIFIER);
     for(const char* device = devices; *device; device += std::strlen(device) + 1)
-        list.push_back(device);
+        list.emplace_back(device);
 
     return list;
 }
