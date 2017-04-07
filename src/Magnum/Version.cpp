@@ -33,7 +33,7 @@ namespace Magnum {
 Debug& operator<<(Debug& debug, Version value) {
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value, string) case Version::value: return debug << string;
+        #define _c(value, string) case Version::value: return debug << (string);
         _c(None, "None")
         #ifndef MAGNUM_TARGET_GLES
         _c(GL210, "OpenGL 2.1")

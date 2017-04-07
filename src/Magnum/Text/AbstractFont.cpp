@@ -165,7 +165,7 @@ std::unique_ptr<AbstractLayouter> AbstractFont::layout(const GlyphCache& cache, 
 
 AbstractLayouter::AbstractLayouter(UnsignedInt glyphCount): _glyphCount(glyphCount) {}
 
-AbstractLayouter::~AbstractLayouter() {}
+AbstractLayouter::~AbstractLayouter() = default;
 
 std::pair<Range2D, Range2D> AbstractLayouter::renderGlyph(const UnsignedInt i, Vector2& cursorPosition, Range2D& rectangle) {
     CORRADE_ASSERT(i < glyphCount(), "Text::AbstractLayouter::renderGlyph(): glyph index out of bounds", {});

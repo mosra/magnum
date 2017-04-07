@@ -77,12 +77,12 @@ class DistanceFieldShader: public AbstractShaderProgram {
     private:
         enum: Int { TextureUnit = 8 };
 
-        Int radiusUniform,
-            scalingUniform,
+        Int radiusUniform{0},
+            scalingUniform{1},
             imageSizeInvertedUniform;
 };
 
-DistanceFieldShader::DistanceFieldShader(): radiusUniform(0), scalingUniform(1) {
+DistanceFieldShader::DistanceFieldShader() {
     #ifdef MAGNUM_BUILD_STATIC
     /* Import resources on static build, if not already */
     if(!Utility::Resource::hasGroup("MagnumTextureTools"))

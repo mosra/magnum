@@ -48,6 +48,6 @@ ResourceManager::ResourceManager() {
     setFallback(new ShapeRendererOptions);
 }
 
-ResourceManager::~ResourceManager() {}
+ResourceManager::~ResourceManager() = default;
 
 }}

@@ -31,7 +31,7 @@ namespace Magnum { namespace Trade {
 
 AbstractMaterialData::AbstractMaterialData(const MaterialType type, const void* const importerState) noexcept: _type{type}, _importerState{importerState} {}
 
-AbstractMaterialData::~AbstractMaterialData() {}
+AbstractMaterialData::~AbstractMaterialData() = default;
 
 Debug& operator<<(Debug& debug, const MaterialType value) {
     switch(value) {

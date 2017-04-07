@@ -53,7 +53,7 @@ void ignoreLine(std::istream& in) {
     in.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
 
-template<std::size_t size> Math::Vector<size, Float> extractFloatData(std::string str, Float* extra = nullptr) {
+template<std::size_t size> Math::Vector<size, Float> extractFloatData(const std::string& str, Float* extra = nullptr) {
     std::vector<std::string> data = Utility::String::splitWithoutEmptyParts(str, ' ');
     if(data.size() < size || data.size() > size + (extra ? 1 : 0)) {
         Error() << "Trade::ObjImporter::mesh3D(): invalid float array size";

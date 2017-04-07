@@ -27,7 +27,7 @@
 
 namespace Magnum { namespace Trade {
 
-PhongMaterialData::PhongMaterialData(PhongMaterialData&& other) noexcept: AbstractMaterialData{std::move(other)}, _flags{std::move(other._flags)}, _shininess{std::move(other._shininess)} {
+PhongMaterialData::PhongMaterialData(PhongMaterialData&& other) noexcept: AbstractMaterialData{std::move(other)}, _flags{other._flags}, _shininess{other._shininess} {
     if(_flags & Flag::AmbientTexture)
         _ambient.texture = other._ambient.texture;
     else
