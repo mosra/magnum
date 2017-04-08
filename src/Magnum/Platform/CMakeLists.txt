@@ -507,7 +507,6 @@ if(WITH_WINDOWLESSWINDOWSEGLAPPLICATION)
     set_target_properties(MagnumWindowlessWindowsEglApplication PROPERTIES
         DEBUG_POSTFIX "-d"
         FOLDER "Magnum/Platform")
-    target_compile_definitions(MagnumWindowlessWindowsEglApplication PRIVATE "UNICODE")
     if(BUILD_STATIC_PIC)
         set_target_properties(MagnumWindowlessWindowsEglApplication PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()
