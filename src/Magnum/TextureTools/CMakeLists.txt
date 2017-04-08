@@ -48,6 +48,12 @@ if(BUILD_STATIC_PIC)
 endif()
 target_link_libraries(MagnumTextureTools Magnum)
 
+install(TARGETS MagnumTextureTools
+    RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+    LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+    ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+install(FILES ${MagnumTextureTools_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/TextureTools)
+
 if(WITH_DISTANCEFIELDCONVERTER)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/distancefieldconverterConfigure.h.cmake
                    ${CMAKE_CURRENT_BINARY_DIR}/distancefieldconverterConfigure.h)
@@ -84,12 +90,6 @@ if(WITH_DISTANCEFIELDCONVERTER)
     # Magnum distancefieldconverter target alias for superprojects
     add_executable(Magnum::distancefieldconverter ALIAS magnum-distancefieldconverter)
 endif()
-
-install(TARGETS MagnumTextureTools
-    RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
-    LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
-    ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
-install(FILES ${MagnumTextureTools_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/TextureTools)
 
 if(BUILD_TESTS)
     add_subdirectory(Test)
