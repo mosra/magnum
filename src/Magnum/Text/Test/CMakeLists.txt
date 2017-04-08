@@ -44,7 +44,18 @@ corrade_add_test(TextAbstractFontConverterTest AbstractFontConverterTest.cpp
 target_include_directories(TextAbstractFontConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 corrade_add_test(TextAbstractLayouterTest AbstractLayouterTest.cpp LIBRARIES Magnum MagnumText)
 
+set_target_properties(
+    TextAbstractFontTest
+    TextAbstractFontConverterTest
+    TextAbstractLayouterTest
+    PROPERTIES FOLDER "Magnum/Text/Test")
+
 if(BUILD_GL_TESTS)
     corrade_add_test(TextGlyphCacheGLTest GlyphCacheGLTest.cpp LIBRARIES MagnumText MagnumOpenGLTester)
     corrade_add_test(TextRendererGLTest RendererGLTest.cpp LIBRARIES MagnumText MagnumOpenGLTester)
+
+    set_target_properties(
+        TextGlyphCacheGLTest
+        TextRendererGLTest
+        PROPERTIES FOLDER "Magnum/Text/Test")
 endif()

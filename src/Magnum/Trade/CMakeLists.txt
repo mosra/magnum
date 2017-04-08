@@ -43,6 +43,7 @@ set(MagnumTrade_HEADERS
 
 # Force IDEs to display all header files in project view
 add_custom_target(MagnumTrade SOURCES ${MagnumTrade_HEADERS})
+set_target_properties(MagnumTrade PROPERTIES FOLDER "Magnum/Trade")
 
 install(FILES ${MagnumTrade_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Trade)
 
@@ -53,6 +54,7 @@ if(WITH_IMAGECONVERTER)
     add_executable(magnum-imageconverter imageconverter.cpp)
     target_include_directories(magnum-imageconverter PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
     target_link_libraries(magnum-imageconverter Magnum)
+    set_target_properties(magnum-imageconverter PROPERTIES FOLDER "Magnum/Trade")
 
     install(TARGETS magnum-imageconverter DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 

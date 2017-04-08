@@ -24,8 +24,11 @@
 #
 
 corrade_add_test(MathGeometryDistanceTest DistanceTest.cpp LIBRARIES MagnumMathTestLib)
+target_compile_definitions(MathGeometryDistanceTest PRIVATE "CORRADE_GRACEFUL_ASSERT")
+
 corrade_add_test(MathGeometryIntersectionTest IntersectionTest.cpp LIBRARIES MagnumMathTestLib)
 
-set_property(TARGET
+set_target_properties(
     MathGeometryDistanceTest
-    APPEND PROPERTY COMPILE_DEFINITIONS "CORRADE_GRACEFUL_ASSERT")
+    MathGeometryIntersectionTest
+    PROPERTIES FOLDER "Magnum/Math/Geometry/Test")

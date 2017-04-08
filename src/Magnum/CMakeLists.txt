@@ -239,6 +239,7 @@ endif()
 if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(MagnumMathObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
+set_target_properties(MagnumMathObjects PROPERTIES FOLDER "Magnum/Math")
 
 # Main library
 add_library(Magnum ${SHARED_OR_STATIC}
@@ -363,7 +364,9 @@ if(BUILD_TESTS)
         ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details
     target_include_directories(MagnumMathTestLib PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
     target_compile_definitions(MagnumMathTestLib PRIVATE "CORRADE_GRACEFUL_ASSERT")
-    set_target_properties(MagnumMathTestLib PROPERTIES DEBUG_POSTFIX "-d")
+    set_target_properties(MagnumMathTestLib PROPERTIES
+        DEBUG_POSTFIX "-d"
+        FOLDER "Magnum/Math")
     target_link_libraries(MagnumMathTestLib Corrade::Utility)
 
     # On Windows we need to install first and then run the tests to avoid "DLL

@@ -24,6 +24,7 @@
 #
 
 corrade_add_resource(MagnumShaders_RCS resources.conf)
+set_target_properties(MagnumShaders_RCS-dependencies PROPERTIES FOLDER "Magnum/Shaders")
 
 set(MagnumShaders_SRCS
     AbstractVector.cpp

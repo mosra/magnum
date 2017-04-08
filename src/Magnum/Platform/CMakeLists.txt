@@ -72,7 +72,9 @@ if(WITH_ANDROIDAPPLICATION)
 
     add_library(MagnumAndroidApplicationGlue OBJECT
         ${ANDROID_NATIVE_APP_GLUE_SRC})
-    set_target_properties(MagnumAndroidApplicationGlue PROPERTIES CORRADE_USE_PEDANTIC_FLAGS OFF)
+    set_target_properties(MagnumAndroidApplicationGlue PROPERTIES
+        CORRADE_USE_PEDANTIC_FLAGS OFF
+        FOLDER "Magnum/Platform")
     # They just don't care, so of course the ANativeActivity_onCreate()
     # function is not exported and thus the app startup fails if I don't
     # disable hidden visibility for the file.
@@ -565,6 +567,7 @@ if(NEED_ABSTRACTXAPPLICATION)
     target_compile_options(MagnumAbstractXApplication PRIVATE "-Wno-old-style-cast")
     # Assuming that PIC is not needed because the Application lib is always
     # linked to the executable and not to any intermediate shared lib
+    set_target_properties(MagnumAbstractXApplication PROPERTIES FOLDER "Magnum/Platform")
 
     install(FILES ${MagnumAbstractXApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
 endif()
@@ -586,6 +589,7 @@ if(NEED_GLXCONTEXTHANDLER)
     # Assuming that PIC is not needed because this is part of Application lib,
     # which is always linked to the executable and not to any intermediate
     # shared lib
+    set_target_properties(MagnumGlxContextHandler PROPERTIES FOLDER "Magnum/Platform")
 endif()
 
 # EGL context handler
@@ -614,6 +618,7 @@ if(NEED_EGLCONTEXTHANDLER)
     # Assuming that PIC is not needed because this is part of Application lib,
     # which is always linked to the executable and not to any intermediate
     # shared lib
+    set_target_properties(MagnumEglContextHandler PROPERTIES FOLDER "Magnum/Platform")
 endif()
 
 # Platform-specific sources for context library
@@ -648,6 +653,7 @@ if(NEED_CGLCONTEXT OR WITH_CGLCONTEXT)
     if(BUILD_STATIC_PIC)
         set_target_properties(MagnumCglContextObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()
+    set_target_properties(MagnumCglContextObjects PROPERTIES FOLDER "Magnum/Platform")
 
     # Also create proper static library, if requested
     if(WITH_CGLCONTEXT)
@@ -688,6 +694,7 @@ if(NEED_EGLCONTEXT OR WITH_EGLCONTEXT)
     if(BUILD_STATIC_PIC)
         set_target_properties(MagnumEglContextObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()
+    set_target_properties(MagnumEglContextObjects PROPERTIES FOLDER "Magnum/Platform")
 
     # Also create proper static library, if requested
     if(WITH_EGLCONTEXT)
@@ -722,6 +729,7 @@ if(NEED_GLXCONTEXT OR WITH_GLXCONTEXT)
     if(BUILD_STATIC_PIC)
         set_target_properties(MagnumGlxContextObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()
+    set_target_properties(MagnumGlxContextObjects PROPERTIES FOLDER "Magnum/Platform")
 
     # Also create proper static library, if requested
     if(WITH_GLXCONTEXT)
@@ -801,6 +809,7 @@ if(WITH_MAGNUMINFO)
     else()
         message(FATAL_ERROR "magnum-info is not available on this platform. Set WITH_MAGNUMINFO to OFF to skip building it.")
     endif()
+    set_target_properties(magnum-info PROPERTIES FOLDER "Magnum/Platform")
 
     install(TARGETS magnum-info DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
     if(CORRADE_TARGET_NACL)
@@ -820,3 +829,4 @@ endif()
 
 # Force IDEs display also all header files and additional files in project view
 add_custom_target(MagnumPlatform SOURCES ${MagnumPlatform_HEADERS} ${MagnumPlatform_FILES})
+set_target_properties(MagnumPlatform PROPERTIES FOLDER "Magnum/Platform")

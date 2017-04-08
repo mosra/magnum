@@ -27,17 +27,30 @@ if(WITH_SHAPES)
     corrade_add_test(DebugToolsCapsuleRendererTest CapsuleRendererTest.cpp LIBRARIES MagnumMathTestLib)
     corrade_add_test(DebugToolsCylinderRendererTest CylinderRendererTest.cpp LIBRARIES MagnumMathTestLib)
     corrade_add_test(DebugToolsLineSegmentRendererTest LineSegmentRendererTest.cpp LIBRARIES MagnumMathTestLib)
+
+    set_target_properties(
+        DebugToolsCapsuleRendererTest
+        DebugToolsCylinderRendererTest
+        DebugToolsLineSegmentRendererTest
+        PROPERTIES FOLDER "Magnum/DebugTools/Test")
 endif()
 
 if(WITH_SCENEGRAPH)
     corrade_add_test(DebugToolsForceRendererTest ForceRendererTest.cpp LIBRARIES MagnumMathTestLib)
+    set_target_properties(DebugToolsForceRendererTest PROPERTIES FOLDER "Magnum/DebugTools/Test")
 endif()
 
 if(Corrade_TestSuite_FOUND)
     corrade_add_test(DebugToolsCompareImageTest CompareImageTest.cpp LIBRARIES MagnumDebugTools)
+    set_target_properties(DebugToolsCompareImageTest PROPERTIES FOLDER "Magnum/DebugTools/Test")
 endif()
 
 if(BUILD_GL_TESTS)
     corrade_add_test(DebugToolsBufferDataGLTest BufferDataGLTest.cpp LIBRARIES MagnumDebugTools MagnumOpenGLTester)
     corrade_add_test(DebugToolsTextureImageGLTest TextureImageGLTest.cpp LIBRARIES MagnumDebugTools MagnumOpenGLTester)
+
+    set_target_properties(
+        DebugToolsBufferDataGLTest
+        DebugToolsTextureImageGLTest
+        PROPERTIES FOLDER "Magnum/DebugTools/Test")
 endif()

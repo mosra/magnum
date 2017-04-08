@@ -86,6 +86,7 @@ endif()
 if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(MagnumSceneGraphObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
+set_target_properties(MagnumSceneGraphObjects PROPERTIES FOLDER "Magnum/SceneGraph")
 
 # Main SceneGraph library
 add_library(MagnumSceneGraph ${SHARED_OR_STATIC}
@@ -110,7 +111,9 @@ if(BUILD_TESTS)
     add_library(MagnumSceneGraphTestLib ${SHARED_OR_STATIC}
         $<TARGET_OBJECTS:MagnumSceneGraphObjects>
         ${MagnumSceneGraph_GracefulAssert_SRCS})
-    set_target_properties(MagnumSceneGraphTestLib PROPERTIES DEBUG_POSTFIX "-d")
+    set_target_properties(MagnumSceneGraphTestLib PROPERTIES
+        DEBUG_POSTFIX "-d"
+        FOLDER "Magnum/SceneGraph")
     target_compile_definitions(MagnumSceneGraphTestLib PRIVATE
         "CORRADE_GRACEFUL_ASSERT" "MagnumSceneGraph_EXPORTS")
     target_link_libraries(MagnumSceneGraphTestLib MagnumMathTestLib)

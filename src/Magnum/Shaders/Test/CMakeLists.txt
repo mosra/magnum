@@ -30,6 +30,15 @@ corrade_add_test(ShadersPhongTest PhongTest.cpp LIBRARIES MagnumShaders)
 corrade_add_test(ShadersVectorTest VectorTest.cpp LIBRARIES MagnumShaders)
 corrade_add_test(ShadersVertexColorTest VertexColorTest.cpp LIBRARIES MagnumShaders)
 
+set_target_properties(
+    ShadersDistanceFieldVectorTest
+    ShadersFlatTest
+    ShadersMeshVisualizerTest
+    ShadersPhongTest
+    ShadersVectorTest
+    ShadersVertexColorTest
+    PROPERTIES FOLDER "Magnum/Shaders/Test")
+
 if(BUILD_GL_TESTS)
     corrade_add_test(ShadersDistanceFieldVectorGLTest DistanceFieldVectorGLTest.cpp LIBRARIES MagnumShaders MagnumOpenGLTester)
     corrade_add_test(ShadersFlatGLTest FlatGLTest.cpp LIBRARIES MagnumShaders MagnumOpenGLTester)
@@ -37,4 +46,13 @@ if(BUILD_GL_TESTS)
     corrade_add_test(ShadersPhongGLTest PhongGLTest.cpp LIBRARIES MagnumShaders MagnumOpenGLTester)
     corrade_add_test(ShadersVectorGLTest VectorGLTest.cpp LIBRARIES MagnumShaders MagnumOpenGLTester)
     corrade_add_test(ShadersVertexColorGLTest VertexColorGLTest.cpp LIBRARIES MagnumShaders MagnumOpenGLTester)
+
+    set_target_properties(
+        ShadersDistanceFieldVectorGLTest
+        ShadersFlatGLTest
+        ShadersMeshVisualizerGLTest
+        ShadersPhongGLTest
+        ShadersVectorGLTest
+        ShadersVertexColorGLTest
+        PROPERTIES FOLDER "Magnum/Shaders/Test")
 endif()

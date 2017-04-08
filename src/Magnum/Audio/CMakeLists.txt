@@ -82,6 +82,8 @@ add_library(Magnum::Audio ALIAS MagnumAudio)
 if(WITH_AL_INFO)
     add_executable(magnum-al-info magnum-al-info.cpp)
     target_link_libraries(magnum-al-info MagnumAudio)
+    set_target_properties(magnum-al-info PROPERTIES FOLDER "Magnum/Audio")
+
     install(TARGETS magnum-al-info DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 
     if(CORRADE_TARGET_IOS)

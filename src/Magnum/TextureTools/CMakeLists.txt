@@ -24,6 +24,7 @@
 #
 
 corrade_add_resource(MagnumTextureTools_RCS resources.conf)
+set_target_properties(MagnumTextureTools_RCS-dependencies PROPERTIES FOLDER "Magnum/TextureTools")
 
 set(MagnumTextureTools_SRCS
     Atlas.cpp
@@ -84,6 +85,7 @@ if(WITH_DISTANCEFIELDCONVERTER)
     else()
         message(FATAL_ERROR "magnum-distancefieldconverter is not available on this platform. Set WITH_DISTANCEFIELDCONVERTER to OFF to suppress this warning.")
     endif()
+    set_target_properties(magnum-distancefieldconverter PROPERTIES FOLDER "Magnum/TextureTools")
 
     install(TARGETS magnum-distancefieldconverter DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 

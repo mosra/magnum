@@ -50,3 +50,18 @@ corrade_add_test(TradeObjectData2DTest ObjectData2DTest.cpp LIBRARIES Magnum)
 corrade_add_test(TradeObjectData3DTest ObjectData3DTest.cpp LIBRARIES Magnum)
 corrade_add_test(TradeSceneDataTest SceneDataTest.cpp LIBRARIES Magnum)
 corrade_add_test(TradeTextureDataTest TextureDataTest.cpp LIBRARIES Magnum)
+
+set_target_properties(
+    TradeAbstractImageConverterTest
+    TradeAbstractImporterTest
+    TradeCameraDataTest
+    TradeImageDataTest
+    TradeLightDataTest
+    TradeMaterialDataTest
+    TradeMeshData2DTest
+    TradeMeshData3DTest
+    TradeObjectData2DTest
+    TradeObjectData3DTest
+    TradeSceneDataTest
+    TradeTextureDataTest
+    PROPERTIES FOLDER "Magnum/Trade/Test")

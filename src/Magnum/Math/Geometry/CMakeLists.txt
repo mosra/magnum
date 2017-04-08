@@ -29,6 +29,7 @@ set(MagnumMathGeometry_HEADERS
 
 # Force IDEs to display all header files in project view
 add_custom_target(MagnumMathGeometry SOURCES ${MagnumMathGeometry_HEADERS})
+set_target_properties(MagnumMathGeometry PROPERTIES FOLDER "Magnum/Math/Geometry")
 
 install(FILES ${MagnumMathGeometry_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Math/Geometry)
 

@@ -41,3 +41,17 @@ set_property(TARGET
     MeshToolsInterleaveTest
     MeshToolsSubdivideTest
     APPEND PROPERTY COMPILE_DEFINITIONS "CORRADE_GRACEFUL_ASSERT")
+
+set_target_properties(
+    MeshToolsCombineIndexedArraysTest
+    MeshToolsCompressIndicesTest
+    MeshToolsDuplicateTest
+    MeshToolsFlipNormalsTest
+    MeshToolsGenerateFlatNormalsTest
+    MeshToolsInterleaveTest
+    MeshToolsRemoveDuplicatesTest
+    MeshToolsSubdivideTest
+    MeshToolsSubdivideRemov___Benchmark
+    MeshToolsTipsifyTest
+    MeshToolsTransformTest
+    PROPERTIES FOLDER "Magnum/MeshTools/Test")

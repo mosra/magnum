@@ -24,3 +24,4 @@
 #
 
 corrade_add_test(TextureToolsAtlasTest AtlasTest.cpp LIBRARIES MagnumTextureTools)
+set_target_properties(TextureToolsAtlasTest PROPERTIES FOLDER "Magnum/TextureTools/Test")

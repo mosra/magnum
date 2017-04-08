@@ -41,4 +41,18 @@ set_property(TARGET
     SceneGraphRigidMatrixTrans___2DTest
     SceneGraphRigidMatrixTrans___3DTest
     SceneGraphTranslationTransfo___Test
-    PROPERTY COMPILE_DEFINITIONS "CORRADE_GRACEFUL_ASSERT")
+    APPEND PROPERTY COMPILE_DEFINITIONS "CORRADE_GRACEFUL_ASSERT")
+
+set_target_properties(
+    SceneGraphAnimableTest
+    SceneGraphCameraTest
+    SceneGraphDualComplexTransfo___Test
+    SceneGraphDualQuaternionTran___Test
+    SceneGraphMatrixTransforma___2DTest
+    SceneGraphMatrixTransforma___3DTest
+    SceneGraphObjectTest
+    SceneGraphRigidMatrixTrans___2DTest
+    SceneGraphRigidMatrixTrans___3DTest
+    SceneGraphSceneTest
+    SceneGraphTranslationTransfo___Test
+    PROPERTIES FOLDER "Magnum/SceneGraph/Test")

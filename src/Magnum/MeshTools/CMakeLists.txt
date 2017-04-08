@@ -63,6 +63,7 @@ endif()
 if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(MagnumMeshToolsObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
+set_target_properties(MagnumMeshToolsObjects PROPERTIES FOLDER "Magnum/MeshTools")
 
 # Main MeshTools library
 add_library(MagnumMeshTools ${SHARED_OR_STATIC}
@@ -87,7 +88,9 @@ if(BUILD_TESTS)
     add_library(MagnumMeshToolsTestLib ${SHARED_OR_STATIC}
         $<TARGET_OBJECTS:MagnumMeshToolsObjects>
         ${MagnumMeshTools_GracefulAssert_SRCS})
-    set_target_properties(MagnumMeshToolsTestLib PROPERTIES DEBUG_POSTFIX "-d")
+    set_target_properties(MagnumMeshToolsTestLib PROPERTIES
+        DEBUG_POSTFIX "-d"
+        FOLDER "Magnum/MeshTools")
     target_compile_definitions(MagnumMeshToolsTestLib PRIVATE
         "CORRADE_GRACEFUL_ASSERT" "MagnumMeshTools_EXPORTS")
     if(BUILD_STATIC_PIC)

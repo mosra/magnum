@@ -55,6 +55,7 @@ set(MagnumMath_HEADERS
 
 # Force IDEs to display all header files in project view
 add_custom_target(MagnumMath SOURCES ${MagnumMath_HEADERS})
+set_target_properties(MagnumMath PROPERTIES FOLDER "Magnum/Math")
 
 install(FILES ${MagnumMath_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Math)
 

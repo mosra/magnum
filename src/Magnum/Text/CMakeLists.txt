@@ -88,6 +88,7 @@ if(WITH_FONTCONVERTER)
     else()
         message(FATAL_ERROR "magnum-fontconverter is not available on this platform. Set WITH_FONTCONVERTER to OFF to suppress this warning.")
     endif()
+    set_target_properties(magnum-fontconverter PROPERTIES FOLDER "Magnum/Text")
 
     install(TARGETS magnum-fontconverter DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
 

@@ -45,13 +45,13 @@ if(NOT CORRADE_TARGET_NACL AND NOT CORRADE_TARGET_EMSCRIPTEN)
     # flextGLPlatform*.cpp is compiled as part of Magnum*Context libraries in Platform
     add_library(MagnumFlextGLObjects OBJECT ${MagnumOpenGL_SRCS})
     target_include_directories(MagnumFlextGLObjects PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
-
     if(NOT BUILD_STATIC)
         target_compile_definitions(MagnumFlextGLObjects PRIVATE "FlextGL_EXPORTS")
     endif()
     if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
         set_target_properties(MagnumFlextGLObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()
+    set_target_properties(MagnumFlextGLObjects PROPERTIES FOLDER "MagnumExternal/OpenGL")
 endif()
 
 install(FILES ${MagnumOpenGL_HEADERS} DESTINATION ${MAGNUM_EXTERNAL_INCLUDE_INSTALL_DIR}/OpenGL/GLES3)

@@ -42,14 +42,34 @@ corrade_add_test(AudioContextTest ContextTest.cpp LIBRARIES MagnumAudio)
 corrade_add_test(AudioRendererTest RendererTest.cpp LIBRARIES MagnumAudio)
 corrade_add_test(AudioSourceTest SourceTest.cpp LIBRARIES MagnumAudio)
 
+set_target_properties(
+    AudioAbstractImporterTest
+    AudioBufferTest
+    AudioContextTest
+    AudioRendererTest
+    AudioSourceTest
+    PROPERTIES FOLDER "Magnum/Audio/Test")
+
 if(BUILD_AL_TESTS)
     corrade_add_test(AudioBufferALTest BufferALTest.cpp LIBRARIES MagnumAudio)
     corrade_add_test(AudioContextALTest ContextALTest.cpp LIBRARIES MagnumAudio)
     corrade_add_test(AudioRendererALTest RendererALTest.cpp LIBRARIES MagnumAudio)
     corrade_add_test(AudioSourceALTest SourceALTest.cpp LIBRARIES MagnumAudio)
 
+    set_target_properties(
+        AudioBufferALTest
+        AudioContextALTest
+        AudioRendererALTest
+        AudioSourceALTest
+        PROPERTIES FOLDER "Magnum/Audio/Test")
+
     if(WITH_SCENEGRAPH)
         corrade_add_test(AudioListenerALTest ListenerALTest.cpp LIBRARIES MagnumSceneGraph MagnumAudio)
         corrade_add_test(AudioPlayableALTest PlayableALTest.cpp LIBRARIES MagnumSceneGraph MagnumAudio)
     endif()
+
+    set_target_properties(
+        AudioListenerALTest
+        AudioPlayableALTest
+        PROPERTIES FOLDER "Magnum/Audio/Test")
 endif()

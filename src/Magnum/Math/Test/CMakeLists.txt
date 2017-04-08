@@ -66,3 +66,38 @@ set_property(TARGET
     MathQuaternionTest
     MathDualQuaternionTest
     APPEND PROPERTY COMPILE_DEFINITIONS "CORRADE_GRACEFUL_ASSERT")
+
+set_target_properties(
+    MathBoolVectorTest
+    MathConstantsTest
+    MathFunctionsTest
+    MathHalfTest
+    MathPackingTest
+    MathTagsTest
+    MathTypeTraitsTest
+
+    MathVectorTest
+    MathVector2Test
+    MathVector3Test
+    MathVector4Test
+    MathColorTest
+
+    MathRectangularMatrixTest
+    MathMatrixTest
+    MathMatrix3Test
+    MathMatrix4Test
+
+    MathSwizzleTest
+    MathUnitTest
+    MathAngleTest
+    MathRangeTest
+
+    MathDualTest
+    MathComplexTest
+    MathDualComplexTest
+    MathQuaternionTest
+    MathDualQuaternionTest
+
+    MathBezierTest
+    MathFrustumTest
+    PROPERTIES FOLDER "Magnum/Math/Test")

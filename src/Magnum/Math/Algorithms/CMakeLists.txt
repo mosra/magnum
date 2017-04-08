@@ -32,6 +32,7 @@ set(MagnumMathAlgorithms_HEADERS
 
 # Force IDEs to display all header files in project view
 add_custom_target(MagnumMathAlgorithms SOURCES ${MagnumMathAlgorithms_HEADERS})
+set_target_properties(MagnumMathAlgorithms PROPERTIES FOLDER "Magnum/Math/Algorithms")
 
 install(FILES ${MagnumMathAlgorithms_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Math/Algorithms)
 

@@ -36,3 +36,18 @@ corrade_add_test(ShapesCompositionTest CompositionTest.cpp LIBRARIES MagnumShape
 corrade_add_test(ShapesSphereTest SphereTest.cpp LIBRARIES MagnumShapes)
 
 corrade_add_test(ShapesShapeTest ShapeTest.cpp LIBRARIES MagnumShapes)
+
+set_target_properties(
+    ShapesShapeImplementationTest
+    ShapesAxisAlignedBoxTest
+    ShapesBoxTest
+    ShapesCapsuleTest
+    ShapesCollisionTest
+    ShapesCylinderTest
+    ShapesLineTest
+    ShapesPlaneTest
+    ShapesPointTest
+    ShapesCompositionTest
+    ShapesSphereTest
+    ShapesShapeTest
+    PROPERTIES FOLDER "Magnum/Shapes/Test")
