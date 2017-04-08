@@ -33,7 +33,9 @@ endif()
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-corrade_add_test(AudioAbstractImporterTest AbstractImporterTest.cpp LIBRARIES MagnumAudio)
+corrade_add_test(AudioAbstractImporterTest AbstractImporterTest.cpp
+    LIBRARIES MagnumAudio
+    FILES file.bin)
 target_include_directories(AudioAbstractImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 corrade_add_test(AudioBufferTest BufferTest.cpp LIBRARIES MagnumAudio)
 corrade_add_test(AudioContextTest ContextTest.cpp LIBRARIES MagnumAudio)
@@ -50,8 +52,4 @@ if(BUILD_AL_TESTS)
         corrade_add_test(AudioListenerALTest ListenerALTest.cpp LIBRARIES MagnumSceneGraph MagnumAudio)
         corrade_add_test(AudioPlayableALTest PlayableALTest.cpp LIBRARIES MagnumSceneGraph MagnumAudio)
     endif()
-endif()
-
-if(CORRADE_TARGET_EMSCRIPTEN)
-    emscripten_embed_file(AudioAbstractImporterTest file.bin "/file.bin")
 endif()
