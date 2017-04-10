@@ -67,7 +67,7 @@ FEATURES
 ========
 
 *   Actively maintained Doxygen documentation with tutorials and examples.
-    Snapshot is available at http://mosra.cz/blog/magnum-doc/.
+    Snapshot is available at http://doc.magnum.graphics/magnum/.
 *   Vector and matrix library with implementation of complex numbers,
     quaternions and their dual counterparts for representing transformations.
 *   Classes wrapping OpenGL using RAII principle and simplifying its usage with
@@ -83,7 +83,7 @@ INSTALLATION
 
 You can either use packaging scripts, which are stored in `package/`
 subdirectory, or compile and install everything manually. Note that
-[Magnum documentation](http://mosra.cz/blog/magnum-doc/) contains more
+[Magnum documentation](http://doc.magnum.graphics/magnum/) contains more
 comprehensive guide for building, packaging and crosscompiling.
 
 Minimal dependencies
