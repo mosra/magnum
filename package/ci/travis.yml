@@ -116,7 +116,7 @@ cache:
   - $HOME/glfw
 
 install:
-- if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "desktop" ]; then pip install --user urllib3[secure] && pip install --user cpp-coveralls && export CMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS --coverage"; fi
+- if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "desktop" ] && [ "$BUILD_DEPRECATED" != "OFF" ]; then pip install --user urllib3[secure] && pip install --user cpp-coveralls && export CMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS --coverage"; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ]; then brew update; fi
 
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ ! "$TARGET" == "desktop-sanitizers" ]; then export CXX=g++-4.7; fi
@@ -150,4 +150,4 @@ script:
 
 after_success:
 # Ignoring all stuff that needs GL context and thus can't be run on Travis
-- if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "desktop" ]; then coveralls --gcov /usr/bin/gcov-4.7 -i src/ -E "(.*/(Test|MagnumExternal|Shaders|Platform)/.*|.*/src/Magnum/(AbstractFramebuffer|AbstractObject|AbstractQuery|AbstractShaderProgram|AbstractTexture|Buffer|BufferImage|BufferTexture|Context|CubeMapTexture|CubeMapTextureArray|DebugOutput|DefaultFramebuffer|Framebuffer|Mesh|MeshView|MultisampleTexture|OpenGL|PixelStorage|PrimitiveQuery|RectangleTexture|Renderbuffer|Renderer|SampleQuery|Sampler|Shader|Texture|TextureArray|TimeQuery|TransformFeedback|Implementation/BufferState|Implementation/DebugState|Implementation/driverSpecific|Implementation/FramebufferState|Implementation/maxTextureSize|Implementation/MeshState|Implementation/QueryState|Implementation/RendererState|Implementation/ShaderProgramState|Implementation/ShaderState|Implementation/State|Implementation/TextureState|Implementation/TransformFeedbackState)\\.(cpp|h))" --gcov-options '\-lp' > /dev/null; fi
+- if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "desktop" ] && [ "$BUILD_DEPRECATED" != "OFF" ]; then coveralls --gcov /usr/bin/gcov-4.7 -i src/ -E "(.*/(Test|MagnumExternal|Shaders|Platform)/.*|.*/src/Magnum/(AbstractFramebuffer|AbstractObject|AbstractQuery|AbstractShaderProgram|AbstractTexture|Buffer|BufferImage|BufferTexture|Context|CubeMapTexture|CubeMapTextureArray|DebugOutput|DefaultFramebuffer|Framebuffer|Mesh|MeshView|MultisampleTexture|OpenGL|PixelStorage|PrimitiveQuery|RectangleTexture|Renderbuffer|Renderer|SampleQuery|Sampler|Shader|Texture|TextureArray|TimeQuery|TransformFeedback|Implementation/BufferState|Implementation/DebugState|Implementation/driverSpecific|Implementation/FramebufferState|Implementation/maxTextureSize|Implementation/MeshState|Implementation/QueryState|Implementation/RendererState|Implementation/ShaderProgramState|Implementation/ShaderState|Implementation/State|Implementation/TextureState|Implementation/TransformFeedbackState)\\.(cpp|h))" --gcov-options '\-lp' > /dev/null; fi
