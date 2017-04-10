@@ -174,6 +174,9 @@ separate repositories.
 *   **libRocket integration** -- integrates Magnum as rendering backend into
     [libRocket](https://github.com/libRocket/libRocket) GUI library:
     https://github.com/miguelmartin75/Magnum-libRocket
+*   **Dear IMGUI integration** -- integrated Magnum as rendering backend into
+    [Dear IMGUI](https://github.com/ocornut/imgui) library:
+    https://github.com/denesik/MagnumImguiPort
 *   **Magnum Inspector** -- Gtk-based inspector window running alongside Magnum
     https://github.com/wivlaro/magnum-inspector
 
