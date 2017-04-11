@@ -1173,7 +1173,16 @@ void CubeMapTextureGLTest::invalidateSubImage() {
     texture.setStorage(2, TextureFormat::RGBA8, Vector2i(32));
     texture.invalidateSubImage(1, Vector3i(2), Vector3i(Vector2i(8), 4));
 
-    MAGNUM_VERIFY_NO_ERROR();
+    {
+        /* Mesa (last checked version 12.0.6) treats cube map images as having
+           only single layer instead of 6, so the above invalidation call
+           fails. Relevant source code (scroll up to see imageDepth = 1):
+           https://github.com/anholt/mesa/blob/1c0ac1976ac7a87bfd2ade47f25047c31527f18a/src/mesa/main/texobj.c#L2179 */
+        CORRADE_EXPECT_FAIL_IF((Context::current().detectedDriver() & Context::DetectedDriver::Mesa),
+            "Broken on Mesa.");
+
+        MAGNUM_VERIFY_NO_ERROR();
+    }
 }
 
 }}
