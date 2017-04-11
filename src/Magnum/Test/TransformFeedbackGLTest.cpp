@@ -551,15 +551,15 @@ void TransformFeedbackGLTest::interleaved() {
 }
 
 void TransformFeedbackGLTest::draw() {
+    setTestCaseDescription(DrawData[testCaseInstanceId()].name);
+
     /* ARB_transform_feedback2 needed as base, other optional */
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
         CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not supported."));
-    if(DrawData[testCaseInstanceId()].stream && !Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback3>())
-        CORRADE_SKIP(Extensions::GL::ARB::transform_feedback3::string() + std::string(" is not supported."));
+    if(DrawData[testCaseInstanceId()].stream && (!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback3>() || TransformFeedback::maxVertexStreams() < 2))
+        CORRADE_SKIP(Extensions::GL::ARB::transform_feedback3::string() + std::string(" is not supported well enough."));
     if(DrawData[testCaseInstanceId()].instances && !Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback_instanced>())
         CORRADE_SKIP(Extensions::GL::ARB::transform_feedback_instanced::string() + std::string(" is not supported."));
-
-    setTestCaseDescription(DrawData[testCaseInstanceId()].name);
 
     /* Bind some FB to avoid errors on contexts w/o default FB */
     Renderbuffer color;
