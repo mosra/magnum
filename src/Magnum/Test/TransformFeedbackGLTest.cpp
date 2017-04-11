@@ -570,8 +570,8 @@ void TransformFeedbackGLTest::draw() {
 
     struct XfbShader: AbstractShaderProgram {
         explicit XfbShader(UnsignedInt stream) {
-            Shader vert{stream ? Version::GL400 : Version::GL320, Shader::Type::Vertex},
-                geom{stream ? Version::GL400 : Version::GL320, Shader::Type::Geometry};
+            Shader vert{Version::GL320, Shader::Type::Vertex},
+                geom{Version::GL320, Shader::Type::Geometry};
             vert.addSource(
                 "out mediump vec2 vertexOutput;\n"
                 "void main() {\n"
@@ -579,6 +579,7 @@ void TransformFeedbackGLTest::draw() {
                 "    gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n"
                 "}\n");
             if(stream) geom.addSource(
+                "#extension GL_ARB_gpu_shader5: require\n"
                 "#define STREAM " + std::to_string(stream) + "\n" +
                 "layout(stream = 0) out mediump float otherOutput;\n" +
                 "layout(stream = STREAM) out mediump vec2 geomOutput;\n");
