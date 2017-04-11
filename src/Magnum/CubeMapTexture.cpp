@@ -109,7 +109,7 @@ void CubeMapTexture::compressedImage(const Int level, CompressedImage3D& image) 
     createIfNotAlready();
 
     const Vector3i size{imageSize(level), 6};
-    const GLint textureDataSize = (this->*Context::current().state().texture->getCubeLevelCompressedImageSizeImplementation)(level);
+    const GLint textureDataSize = (this->*Context::current().state().texture->getCubeLevelCompressedImageSizeImplementation)(level)*6;
     std::size_t dataOffset, dataSize;
     std::tie(dataOffset, dataSize) = Implementation::compressedImageDataOffsetSizeFor(image, size, textureDataSize);
     GLint format;
@@ -135,7 +135,7 @@ void CubeMapTexture::compressedImage(const Int level, CompressedBufferImage3D& i
     createIfNotAlready();
 
     const Vector3i size{imageSize(level), 6};
-    const GLint textureDataSize = (this->*Context::current().state().texture->getCubeLevelCompressedImageSizeImplementation)(level);
+    const GLint textureDataSize = (this->*Context::current().state().texture->getCubeLevelCompressedImageSizeImplementation)(level)*6;
     std::size_t dataOffset, dataSize;
     std::tie(dataOffset, dataSize) = Implementation::compressedImageDataOffsetSizeFor(image, size, textureDataSize);
     GLint format;
@@ -199,9 +199,7 @@ BufferImage2D CubeMapTexture::image(const CubeMapCoordinate coordinate, const In
 
 void CubeMapTexture::compressedImage(const CubeMapCoordinate coordinate, const Int level, CompressedImage2D& image) {
     const Vector2i size = imageSize(level);
-    /* The function returns size of all six faces, divide the result to get size
-       of one face */
-    const GLint textureDataSize = (this->*Context::current().state().texture->getCubeLevelCompressedImageSizeImplementation)(level)/6;
+    const GLint textureDataSize = (this->*Context::current().state().texture->getCubeLevelCompressedImageSizeImplementation)(level);
     const std::size_t dataSize = Implementation::compressedImageDataSizeFor(image, size, textureDataSize);
     GLint format;
     (this->*Context::current().state().texture->getCubeLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
@@ -224,9 +222,7 @@ CompressedImage2D CubeMapTexture::compressedImage(const CubeMapCoordinate coordi
 
 void CubeMapTexture::compressedImage(const CubeMapCoordinate coordinate, const Int level, CompressedBufferImage2D& image, const BufferUsage usage) {
     const Vector2i size = imageSize(level);
-    /* The function returns size of all six faces, divide the result to get size
-       of one face */
-    const GLint textureDataSize = (this->*Context::current().state().texture->getCubeLevelCompressedImageSizeImplementation)(level)/6;
+    const GLint textureDataSize = (this->*Context::current().state().texture->getCubeLevelCompressedImageSizeImplementation)(level);
     const std::size_t dataSize = Implementation::compressedImageDataSizeFor(image, size, textureDataSize);
     GLint format;
     (this->*Context::current().state().texture->getCubeLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
@@ -382,8 +378,7 @@ GLint CubeMapTexture::getLevelCompressedImageSizeImplementationDefault(const GLi
     GLint value;
     glGetTexLevelParameteriv(GL_TEXTURE_CUBE_MAP_POSITIVE_X, level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &value);
 
-    /* Size of all six faces */
-    return value*6;
+    return value;
 }
 
 GLint CubeMapTexture::getLevelCompressedImageSizeImplementationDefaultImmutableWorkaround(const GLint level) {
@@ -405,7 +400,7 @@ GLint CubeMapTexture::getLevelCompressedImageSizeImplementationDSANonImmutableWo
 
     GLint immutable;
     glGetTextureParameteriv(_id, GL_TEXTURE_IMMUTABLE_LEVELS, &immutable);
-    return immutable ? value : value*6;
+    return immutable ? value/6 : value;
 }
 
 GLint CubeMapTexture::getLevelCompressedImageSizeImplementationDSAEXT(const GLint level) {
@@ -415,8 +410,7 @@ GLint CubeMapTexture::getLevelCompressedImageSizeImplementationDSAEXT(const GLin
     GLint value;
     glGetTextureLevelParameterivEXT(_id, GL_TEXTURE_CUBE_MAP_POSITIVE_X, level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &value);
 
-    /* Size of all six faces */
-    return value*6;
+    return value;
 }
 
 GLint CubeMapTexture::getLevelCompressedImageSizeImplementationDSAEXTImmutableWorkaround(const GLint level) {
