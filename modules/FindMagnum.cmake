@@ -209,6 +209,7 @@ mark_as_advanced(MAGNUM_INCLUDE_DIR)
 # Configuration file
 find_file(_MAGNUM_CONFIGURE_FILE configure.h
     HINTS ${MAGNUM_INCLUDE_DIR}/Magnum/)
+mark_as_advanced(_MAGNUM_CONFIGURE_FILE)
 
 # We need to open configure.h file from MAGNUM_INCLUDE_DIR before we check for
 # the components. Bail out with proper error message if it wasn't found. The
