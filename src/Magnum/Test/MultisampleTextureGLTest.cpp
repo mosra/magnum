@@ -32,6 +32,7 @@
 #include "Magnum/OpenGLTester.h"
 #include "Magnum/TextureFormat.h"
 #include "Magnum/Math/Vector3.h"
+#include "Magnum/Math/Functions.h"
 
 namespace Magnum { namespace Test {
 
@@ -235,7 +236,9 @@ void MultisampleTextureGLTest::bindImage2D() {
     #endif
 
     MultisampleTexture2D texture;
-    texture.setStorage(4, TextureFormat::RGBA8, Vector2i{32})
+    /* Mesa software implementation supports only 1 sample so we have to clamp */
+    texture.setStorage(Math::min(4, MultisampleTexture2D::maxColorSamples()),
+            TextureFormat::RGBA8, Vector2i{32})
         .bindImage(2, ImageAccess::ReadWrite, ImageFormat::RGBA8);
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -269,7 +272,9 @@ void MultisampleTextureGLTest::bindImage2DArray() {
     #endif
 
     MultisampleTexture2DArray texture;
-    texture.setStorage(4, TextureFormat::RGBA8, {32, 32, 4})
+    /* Mesa software implementation supports only 1 sample so we have to clamp */
+    texture.setStorage(Math::min(4, MultisampleTexture2DArray::maxColorSamples()),
+            TextureFormat::RGBA8, {32, 32, 4})
         .bindImage(2, 1, ImageAccess::ReadWrite, ImageFormat::RGBA8);
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -302,7 +307,9 @@ void MultisampleTextureGLTest::storage2D() {
     #endif
 
     MultisampleTexture2D texture;
-    texture.setStorage(4, TextureFormat::RGBA8, {16, 16});
+    /* Mesa software implementation supports only 1 sample so we have to clamp */
+    texture.setStorage(Math::min(4, MultisampleTexture2D::maxColorSamples()),
+        TextureFormat::RGBA8, {16, 16});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -321,7 +328,9 @@ void MultisampleTextureGLTest::storage2DArray() {
     #endif
 
     MultisampleTexture2DArray texture;
-    texture.setStorage(4, TextureFormat::RGBA8, {16, 16, 5});
+    /* Mesa software implementation supports only 1 sample so we have to clamp */
+    texture.setStorage(Math::min(4, MultisampleTexture2DArray::maxColorSamples()),
+        TextureFormat::RGBA8, {16, 16, 5});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -340,7 +349,9 @@ void MultisampleTextureGLTest::invalidateImage2D() {
     #endif
 
     MultisampleTexture2D texture;
-    texture.setStorage(4, TextureFormat::RGBA8, {16, 16});
+    /* Mesa software implementation supports only 1 sample so we have to clamp */
+    texture.setStorage(Math::min(4, MultisampleTexture2D::maxColorSamples()),
+        TextureFormat::RGBA8, {16, 16});
     texture.invalidateImage();
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -356,7 +367,9 @@ void MultisampleTextureGLTest::invalidateImage2DArray() {
     #endif
 
     MultisampleTexture2DArray texture;
-    texture.setStorage(4, TextureFormat::RGBA8, {16, 16, 5});
+    /* Mesa software implementation supports only 1 sample so we have to clamp */
+    texture.setStorage(Math::min(4, MultisampleTexture2DArray::maxColorSamples()),
+        TextureFormat::RGBA8, {16, 16, 5});
     texture.invalidateImage();
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -372,7 +385,9 @@ void MultisampleTextureGLTest::invalidateSubImage2D() {
     #endif
 
     MultisampleTexture2D texture;
-    texture.setStorage(4, TextureFormat::RGBA8, {16, 16});
+    /* Mesa software implementation supports only 1 sample so we have to clamp */
+    texture.setStorage(Math::min(4, MultisampleTexture2D::maxColorSamples()),
+        TextureFormat::RGBA8, {16, 16});
     texture.invalidateSubImage({3, 4}, {5, 6});
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -388,7 +403,9 @@ void MultisampleTextureGLTest::invalidateSubImage2DArray() {
     #endif
 
     MultisampleTexture2DArray texture;
-    texture.setStorage(4, TextureFormat::RGBA8, {16, 16, 5});
+    /* Mesa software implementation supports only 1 sample so we have to clamp */
+    texture.setStorage(Math::min(4, MultisampleTexture2DArray::maxColorSamples()),
+        TextureFormat::RGBA8, {16, 16, 5});
     texture.invalidateSubImage({3, 4, 1}, {5, 6, 3});
 
     MAGNUM_VERIFY_NO_ERROR();

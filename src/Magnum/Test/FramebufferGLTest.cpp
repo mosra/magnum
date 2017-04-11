@@ -587,10 +587,14 @@ void FramebufferGLTest::attachTexture2DMultisample() {
     #endif
 
     MultisampleTexture2D color;
-    color.setStorage(4, TextureFormat::RGBA8, {128, 128});
+    /* Mesa software implementation supports only 1 sample so we have to clamp */
+    color.setStorage(Math::min(4, MultisampleTexture2D::maxColorSamples()),
+        TextureFormat::RGBA8, {128, 128});
 
     MultisampleTexture2D depthStencil;
-    depthStencil.setStorage(4, TextureFormat::Depth24Stencil8, {128, 128});
+    /* Mesa software implementation supports only 1 sample so we have to clamp */
+    depthStencil.setStorage(Math::min(4, MultisampleTexture2D::maxDepthSamples()),
+        TextureFormat::Depth24Stencil8, {128, 128});
 
     Framebuffer framebuffer({{}, Vector2i(128)});
     framebuffer.attachTexture(Framebuffer::ColorAttachment(0), color)
@@ -615,10 +619,14 @@ void FramebufferGLTest::attachTexture2DMultisampleArray() {
     #endif
 
     MultisampleTexture2DArray color;
-    color.setStorage(4, TextureFormat::RGBA8, {128, 128, 8});
+    /* Mesa software implementation supports only 1 sample so we have to clamp */
+    color.setStorage(Math::min(4, MultisampleTexture2DArray::maxColorSamples()),
+        TextureFormat::RGBA8, {128, 128, 8});
 
     MultisampleTexture2DArray depthStencil;
-    depthStencil.setStorage(4, TextureFormat::Depth24Stencil8, {128, 128, 8});
+    /* Mesa software implementation supports only 1 sample so we have to clamp */
+    depthStencil.setStorage(Math::min(4, MultisampleTexture2DArray::maxDepthSamples()),
+        TextureFormat::Depth24Stencil8, {128, 128, 8});
 
     Framebuffer framebuffer({{}, Vector2i(128)});
     framebuffer.attachTextureLayer(Framebuffer::ColorAttachment(0), color, 3)
@@ -875,10 +883,14 @@ void FramebufferGLTest::attachLayeredTexture2DMultisampleArray() {
     #endif
 
     MultisampleTexture2DArray color;
-    color.setStorage(4, TextureFormat::RGBA8, {128, 128, 8});
+    /* Mesa software implementation supports only 1 sample so we have to clamp */
+    color.setStorage(Math::min(4, MultisampleTexture2DArray::maxColorSamples()),
+        TextureFormat::RGBA8, {128, 128, 8});
 
     MultisampleTexture2DArray depthStencil;
-    depthStencil.setStorage(4, TextureFormat::Depth24Stencil8, {128, 128, 8});
+    /* Mesa software implementation supports only 1 sample so we have to clamp */
+    depthStencil.setStorage(Math::min(4, MultisampleTexture2DArray::maxDepthSamples()),
+        TextureFormat::Depth24Stencil8, {128, 128, 8});
 
     Framebuffer framebuffer{{{}, Vector2i{128}}};
     framebuffer.attachLayeredTexture(Framebuffer::ColorAttachment{0}, color)
