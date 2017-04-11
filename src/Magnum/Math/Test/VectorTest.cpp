@@ -702,6 +702,14 @@ void VectorTest::configuration() {
     c.setValue("vector", vec);
     CORRADE_COMPARE(c.value("vector"), value);
     CORRADE_COMPARE(c.value<Vector4>("vector"), vec);
+
+    /* Underflow */
+    c.setValue("underflow", "2.1 8.9");
+    CORRADE_COMPARE(c.value<Vector4>("underflow"), (Vector4{2.1f, 8.9f, 0.0f, 0.0f}));
+
+    /* Overflow */
+    c.setValue("overflow", "2 1 8 9 16 33");
+    CORRADE_COMPARE(c.value<Vector4>("overflow"), (Vector4{2.0f, 1.0f, 8.0f, 9.0f}));
 }
 
 }}}

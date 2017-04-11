@@ -707,6 +707,20 @@ void RectangularMatrixTest::configuration() {
 
     CORRADE_COMPARE(c.value("matrix"), value);
     CORRADE_COMPARE(c.value<Matrix3x4>("matrix"), m);
+
+    /* Underflow */
+    c.setValue("underflow", "2.1 8.9 1.3 1 5 7 1.5");
+    CORRADE_COMPARE(c.value<Matrix3x4>("underflow"), (Matrix3x4{
+        Vector4{2.1f, 1.0f, 1.5f, 0.0f},
+        Vector4{8.9f, 5.0f, 0.0f, 0.0f},
+        Vector4{1.3f, 7.0f, 0.0f, 0.0f}}));
+
+    /* Overflow */
+    c.setValue("overflow", "2 1 8 9 1 3 1 5 7 1 6 3 3 1.5 23 17");
+    CORRADE_COMPARE(c.value<Matrix3x4>("overflow"), (Matrix3x4{
+        Vector4{2.0f, 9.0f, 1.0f, 1.0f},
+        Vector4{1.0f, 1.0f, 5.0f, 6.0f},
+        Vector4{8.0f, 3.0f, 7.0f, 3.0f}}));
 }
 
 }}}
