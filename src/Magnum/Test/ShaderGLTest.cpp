@@ -268,7 +268,11 @@ void ShaderGLTest::compile() {
 void ShaderGLTest::compileNoVersion() {
     Shader shader(Version::None, Shader::Type::Fragment);
     #ifndef MAGNUM_TARGET_GLES
+    #ifndef CORRADE_TARGET_APPLE
     shader.addSource("#version 120\nvoid main() {}\n");
+    #else
+    shader.addSource("#version 400\nvoid main() {}\n");
+    #endif
     #else
     shader.addSource("#version 100\nvoid main() {}\n");
     #endif
