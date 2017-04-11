@@ -127,6 +127,7 @@ auto Context::detectedDriver() -> DetectedDrivers {
     _detectedDrivers = DetectedDrivers{};
 
     const std::string vendor = vendorString();
+    const std::string version = versionString();
 
     /* Apple has its own drivers */
     #ifndef CORRADE_TARGET_APPLE
@@ -139,6 +140,12 @@ auto Context::detectedDriver() -> DetectedDrivers {
     /* Intel Windows drivers */
     if(vendor.find("Intel") != std::string::npos)
         return *_detectedDrivers |= DetectedDriver::IntelWindows;
+    #endif
+
+    #ifdef CORRADE_TARGET_UNIX
+    /* Mesa drivers */
+    if(version.find("Mesa") != std::string::npos)
+        return *_detectedDrivers |= DetectedDriver::Mesa;
     #endif
     #endif
 

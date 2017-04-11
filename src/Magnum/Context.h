@@ -223,6 +223,9 @@ class MAGNUM_EXPORT Context {
             NVidia = 1 << 2,
             #endif
 
+            /** Mesa drivers on Linux */
+            Mesa = 1 << 3,
+
             #ifdef MAGNUM_TARGET_GLES
             /**
              * OpenGL ES implementation by ANGLE (translated to D3D), used by
@@ -230,7 +233,7 @@ class MAGNUM_EXPORT Context {
              * specification explicitly disallows exposing driver information
              * to the application, this check cannot be done reliably.
              */
-            ProbablyAngle = 1 << 3
+            ProbablyAngle = 1 << 4
             #endif
         };
 
