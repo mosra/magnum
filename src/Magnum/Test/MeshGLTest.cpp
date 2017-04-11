@@ -476,15 +476,24 @@ IntegerShader::IntegerShader(const std::string& type) {
 
 #ifndef MAGNUM_TARGET_GLES
 DoubleShader::DoubleShader(const std::string& type, const std::string& outputType, const std::string& conversion) {
-    Shader vert(Version::GL410, Shader::Type::Vertex);
-    Shader frag(Version::GL410, Shader::Type::Fragment);
+    constexpr const Version version =
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL300;
+        #else
+        Version::GL400;
+        #endif
+    Shader vert{version, Shader::Type::Vertex};
+    Shader frag(version, Shader::Type::Fragment);
 
-    vert.addSource("in " + type + " value;\n"
-                   "out " + outputType + " valueInterpolated;\n"
-                   "void main() {\n"
-                   "    valueInterpolated = " + conversion + ";\n"
-                   "    gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n"
-                   "}\n");
+    vert.addSource(
+        "#extension GL_ARB_vertex_attrib_64bit: require\n"
+        "#extension GL_ARB_gpu_shader_fp64: require\n"
+        "in " + type + " value;\n"
+        "out " + outputType + " valueInterpolated;\n"
+        "void main() {\n"
+        "    valueInterpolated = " + conversion + ";\n"
+        "    gl_Position = vec4(0.0, 0.0, 0.0, 1.0);\n"
+        "}\n");
     frag.addSource("in " + outputType + " valueInterpolated;\n"
                    "out " + outputType + " result;\n"
                    "void main() { result = valueInterpolated; }\n");
