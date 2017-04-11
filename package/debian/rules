@@ -5,6 +5,7 @@
 
 override_dh_auto_configure:
 	dh_auto_configure -- \
+		-DCMAKE_BUILD_TYPE=Release \
 		-DWITH_AUDIO=ON \
 		-DWITH_GLXAPPLICATION=ON \
 		-DWITH_SDL2APPLICATION=ON \
