@@ -230,7 +230,7 @@ namespace {
             Containers::arrayView(Data1D).suffix(4), 0},
         {"skip X",
             Containers::arrayView(Data1D).suffix(4), PixelStorage{}.setSkip({1, 0, 0}),
-            Data1D, 4}};
+            Containers::arrayView(Data1D), 4}};
     #endif
 
     constexpr UnsignedByte Data2D[]{
@@ -260,7 +260,7 @@ namespace {
         #if !defined(MAGNUM_TARGET_GLES2) || !defined(MAGNUM_TARGET_WEBGL)
         {"skip Y",
             Containers::arrayView(Data2D).suffix(8), PixelStorage{}.setSkip({0, 1, 0}),
-            Data2D, 8}
+            Containers::arrayView(Data2D), 8}
         #endif
     };
 
@@ -301,7 +301,8 @@ namespace {
             CompressedPixelStorage{}
                 .setCompressedBlockSize({4, 4, 1})
                 .setCompressedBlockDataSize(16)
-                .setSkip({0, 4, 0}), CompressedData2D, 16}
+                .setSkip({0, 4, 0}),
+            Containers::arrayView(CompressedData2D), 16}
         #endif
     };
 
@@ -336,7 +337,7 @@ namespace {
         #if !defined(MAGNUM_TARGET_GLES2) || !defined(MAGNUM_TARGET_WEBGL)
         {"skip Z",
             Containers::arrayView(Data3D).suffix(16), PixelStorage{}.setSkip({0, 0, 1}),
-            Data3D, 16}
+            Containers::arrayView(Data3D), 16}
         #endif
     };
 
@@ -380,14 +381,15 @@ namespace {
             #ifndef MAGNUM_TARGET_GLES
             {},
             #endif
-            Containers::arrayView(CompressedData3D).suffix(16*4), {}},
+            Containers::arrayView(CompressedData3D).suffix(16*4), 0},
         #ifndef MAGNUM_TARGET_GLES
         {"skip Z",
             Containers::arrayView(CompressedData3D).suffix(16*4),
             CompressedPixelStorage{}
                 .setCompressedBlockSize({4, 4, 4})
                 .setCompressedBlockDataSize(16*4)
-                .setSkip({0, 0, 4}), CompressedData3D, 16*4}
+                .setSkip({0, 0, 4}),
+            Containers::arrayView(CompressedData3D), 16*4}
         #endif
     };
 }

@@ -119,7 +119,7 @@ namespace {
             Containers::arrayView(Data).suffix(16), 0},
         {"skip Z",
             Containers::arrayView(Data).suffix(16), PixelStorage{}.setSkip({0, 0, 1}),
-            Data, 16}
+            Containers::arrayView(Data), 16}
     };
 
     /* Just 4x4 0x00 - 0x3f compressed using RGBA DXT3 by the driver, repeated
@@ -175,7 +175,7 @@ namespace {
                 .setCompressedBlockSize({4, 4, 1})
                 .setCompressedBlockDataSize(16)
                 .setSkip({0, 0, 4}),
-            CompressedData, 16*4}
+            Containers::arrayView(CompressedData), 16*4}
         #endif
     };
 
@@ -208,7 +208,7 @@ namespace {
             Containers::arrayView(SubData).suffix(16), 0},
         {"skip Z",
             Containers::arrayView(SubData).suffix(16), PixelStorage{}.setSkip({0, 0, 1}),
-            SubData, 16}
+            Containers::arrayView(SubData), 16}
     };
 
     /* Just 4x4x4 0x00 - 0xff compressed using RGBA DXT3 by the driver */
@@ -258,7 +258,7 @@ namespace {
                 .setCompressedBlockSize({4, 4, 1})
                 .setCompressedBlockDataSize(16)
                 .setSkip({0, 0, 4}),
-            CompressedSubData, 16*4}
+            Containers::arrayView(CompressedSubData), 16*4}
         #endif
     };
 }

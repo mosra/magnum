@@ -96,7 +96,7 @@ namespace {
         #if !defined(MAGNUM_TARGET_GLES2) || !defined(MAGNUM_TARGET_WEBGL)
         {"skip Y",
             Containers::arrayView(Data).suffix(8), PixelStorage{}.setSkip({0, 1, 0}),
-            Data, 8}
+            Containers::arrayView(Data), 8}
         #endif
     };
 }

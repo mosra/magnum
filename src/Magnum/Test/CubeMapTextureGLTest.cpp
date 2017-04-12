@@ -136,7 +136,7 @@ namespace {
         #if !defined(MAGNUM_TARGET_GLES2) || !defined(MAGNUM_TARGET_WEBGL)
         {"skip Y",
             Containers::arrayView(Data).suffix(8), PixelStorage{}.setSkip({0, 1, 0}),
-            Data, 8}
+            Containers::arrayView(Data), 8}
         #endif
     };
 
@@ -177,7 +177,7 @@ namespace {
                 .setCompressedBlockSize({4, 4, 1})
                 .setCompressedBlockDataSize(16)
                 .setSkip({0, 4, 0}),
-            CompressedData, 16}
+            Containers::arrayView(CompressedData), 16}
         #endif
     };
 

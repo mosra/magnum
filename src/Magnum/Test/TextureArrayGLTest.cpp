@@ -170,7 +170,7 @@ namespace {
             Containers::arrayView(Data1D).suffix(8), 0},
         {"skip Y",
             Containers::arrayView(Data1D).suffix(8), PixelStorage{}.setSkip({0, 1, 0}),
-            Data1D, 8}};
+            Containers::arrayView(Data1D), 8}};
     #endif
 
     constexpr UnsignedByte Data2D[]{
@@ -196,7 +196,7 @@ namespace {
             Containers::arrayView(Data2D).suffix(16), 0},
         {"skip Z",
             Containers::arrayView(Data2D).suffix(16), PixelStorage{}.setSkip({0, 0, 1}),
-            Data2D, 16}};
+            Containers::arrayView(Data2D), 16}};
 
     /* Just 4x4x3 0x00 - 0x7f compressed using RGBA DXT3 by the driver */
     constexpr UnsignedByte CompressedData2D[]{
@@ -237,7 +237,8 @@ namespace {
             CompressedPixelStorage{}
                 .setCompressedBlockSize({4, 4, 1})
                 .setCompressedBlockDataSize(16)
-                .setSkip({0, 0, 1}), CompressedData2D, 16}
+                .setSkip({0, 0, 1}),
+            Containers::arrayView(CompressedData2D), 16}
         #endif
     };
 
