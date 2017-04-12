@@ -104,8 +104,9 @@ template<UnsignedInt dimensions> class BufferImage {
         /* To avoid decay of sized arrays and nullptr to const void* and
            unwanted use of deprecated function */
         template<class T, std::size_t dataSize> explicit BufferImage(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, const T(&data)[dataSize], BufferUsage usage): BufferImage{{}, format, type, size, Containers::ArrayView<const void>{data}, usage} {}
-        /* To avoid ambiguous overload when passing Containers::Array */
+        /* To avoid ambiguous overload when passing Containers::Array[View] */
         template<class T> explicit BufferImage(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, const Containers::Array<T>& data, BufferUsage usage): BufferImage{{}, format, type, size, Containers::ArrayView<const void>{data}, usage} {}
+        template<class T> explicit BufferImage(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<T>& data, BufferUsage usage): BufferImage{{}, format, type, size, Containers::ArrayView<const void>{data}, usage} {}
         #endif
         #endif
 
