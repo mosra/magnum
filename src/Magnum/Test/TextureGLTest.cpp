@@ -1753,6 +1753,8 @@ void TextureGLTest::compressedSubImage2DQuery() {
         CORRADE_SKIP(Extensions::GL::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
     if(CompressedPixelStorage2DData[testCaseInstanceId()].storage != CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>())
         CORRADE_SKIP(Extensions::GL::ARB::compressed_texture_pixel_storage::string() + std::string(" is not supported."));
+    if(CompressedPixelStorage2DData[testCaseInstanceId()].storage == CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::GL::ARB::internalformat_query2>())
+        CORRADE_SKIP(Extensions::GL::ARB::internalformat_query2::string() + std::string(" is not supported."));
 
     Texture2D texture;
     texture.setStorage(1, TextureFormat::CompressedRGBAS3tcDxt3, {12, 4})
@@ -1780,6 +1782,8 @@ void TextureGLTest::compressedSubImage2DQueryBuffer() {
         CORRADE_SKIP(Extensions::GL::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
     if(CompressedPixelStorage2DData[testCaseInstanceId()].storage != CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>())
         CORRADE_SKIP(Extensions::GL::ARB::compressed_texture_pixel_storage::string() + std::string(" is not supported."));
+    if(CompressedPixelStorage2DData[testCaseInstanceId()].storage == CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::GL::ARB::internalformat_query2>())
+        CORRADE_SKIP(Extensions::GL::ARB::internalformat_query2::string() + std::string(" is not supported."));
 
     Texture2D texture;
     texture.setStorage(1, TextureFormat::CompressedRGBAS3tcDxt3, {12, 4})
@@ -2199,6 +2203,8 @@ void TextureGLTest::compressedSubImage3DQuery() {
         CORRADE_SKIP(Extensions::GL::ARB::texture_compression_bptc::string() + std::string(" is not supported."));
     if(CompressedPixelStorage3DData[testCaseInstanceId()].storage != CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>())
         CORRADE_SKIP(Extensions::GL::ARB::compressed_texture_pixel_storage::string() + std::string(" is not supported."));
+    if(CompressedPixelStorage3DData[testCaseInstanceId()].storage == CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::GL::ARB::internalformat_query2>())
+        CORRADE_SKIP(Extensions::GL::ARB::internalformat_query2::string() + std::string(" is not supported."));
 
     Texture3D texture;
     texture.setStorage(1, TextureFormat::CompressedRGBABptcUnorm, {12, 4, 4})
@@ -2232,6 +2238,8 @@ void TextureGLTest::compressedSubImage3DQueryBuffer() {
         CORRADE_SKIP(Extensions::GL::ARB::texture_compression_bptc::string() + std::string(" is not supported."));
     if(CompressedPixelStorage3DData[testCaseInstanceId()].storage != CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>())
         CORRADE_SKIP(Extensions::GL::ARB::compressed_texture_pixel_storage::string() + std::string(" is not supported."));
+    if(CompressedPixelStorage3DData[testCaseInstanceId()].storage == CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::GL::ARB::internalformat_query2>())
+        CORRADE_SKIP(Extensions::GL::ARB::internalformat_query2::string() + std::string(" is not supported."));
 
     Texture3D texture;
     texture.setStorage(1, TextureFormat::CompressedRGBABptcUnorm, {12, 4, 4})

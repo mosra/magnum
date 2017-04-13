@@ -345,11 +345,6 @@ void PixelStorageTest::dataPropertiesCompressedImageHeight() {
 }
 
 void PixelStorageTest::dataOffsetSizeCompressed() {
-    /* Tf the storage doesn't contain any info about block sizes (the default),
-       using the provided value */
-    CORRADE_COMPARE(Implementation::compressedImageDataOffsetSizeFor(CompressedImage3D{},
-        Vector2i{37, 35}, 1579), (std::pair<std::size_t, std::size_t>{0, 1579}));
-
     /* The same parameters as in PixelStorageGLTest 3D case */
     const CompressedImage3D image{CompressedPixelStorage{}
         .setCompressedBlockSize({4, 4, 1})
@@ -357,7 +352,7 @@ void PixelStorageTest::dataOffsetSizeCompressed() {
         .setRowLength(8)
         .setImageHeight(8)
         .setSkip({4, 4, 4})};
-    CORRADE_COMPARE(Implementation::compressedImageDataOffsetSizeFor(image, Vector3i{4, 4, 1}, 1579),
+    CORRADE_COMPARE(Implementation::compressedImageDataOffsetSizeFor(image, Vector3i{4, 4, 1}),
         (std::pair<std::size_t, std::size_t>{16*4*4 + 16*2 + 16, 16}));
 }
 #endif

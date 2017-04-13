@@ -444,9 +444,8 @@ namespace Implementation {
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
-    template<std::size_t dimensions, class T> std::pair<std::size_t, std::size_t> compressedImageDataOffsetSizeFor(const T& image, const Math::Vector<dimensions, Int>& size, std::size_t dataSize) {
-        if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize())
-            return {0, dataSize};
+    template<std::size_t dimensions, class T> std::pair<std::size_t, std::size_t> compressedImageDataOffsetSizeFor(const T& image, const Math::Vector<dimensions, Int>& size) {
+        CORRADE_INTERNAL_ASSERT(image.storage().compressedBlockSize().product() && image.storage().compressedBlockDataSize());
 
         Math::Vector3<std::size_t> offset, blockCount;
         std::size_t blockDataSize;
@@ -458,14 +457,15 @@ namespace Implementation {
     }
 
     /* Used in image query functions */
-    template<std::size_t dimensions, class T> std::size_t compressedImageDataSizeFor(const T& image, const Math::Vector<dimensions, Int>& size, std::size_t dataSize) {
-        auto r = compressedImageDataOffsetSizeFor(image, size, dataSize);
+    template<std::size_t dimensions, class T> std::size_t compressedImageDataSizeFor(const T& image, const Math::Vector<dimensions, Int>& size) {
+        auto r = compressedImageDataOffsetSizeFor(image, size);
         return r.first + r.second;
     }
 
     /* Use in compressed image upload functions */
     template<class T> std::size_t occupiedCompressedImageDataSize(const T& image, std::size_t dataSize) {
-        return compressedImageDataOffsetSizeFor(image, image.size(), dataSize).second;
+        return image.storage().compressedBlockSize().product() && image.storage().compressedBlockDataSize()
+            ? compressedImageDataOffsetSizeFor(image, image.size()).second : dataSize;
     }
     #else
     template<class T> std::size_t occupiedCompressedImageDataSize(const T&, std::size_t dataSize) {

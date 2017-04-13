@@ -109,9 +109,16 @@ void CubeMapTexture::compressedImage(const Int level, CompressedImage3D& image) 
     createIfNotAlready();
 
     const Vector3i size{imageSize(level), 6};
-    const GLint textureDataSize = (this->*Context::current().state().texture->getCubeLevelCompressedImageSizeImplementation)(level)*6;
+
+    /* If the user-provided pixel storage doesn't tell us all properties about
+       the compression, we need to ask GL for it */
     std::size_t dataOffset, dataSize;
-    std::tie(dataOffset, dataSize) = Implementation::compressedImageDataOffsetSizeFor(image, size, textureDataSize);
+    if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize()) {
+        dataOffset = 0;
+        dataSize = (this->*Context::current().state().texture->getCubeLevelCompressedImageSizeImplementation)(level)*6;
+    } else std::tie(dataOffset, dataSize) = Implementation::compressedImageDataOffsetSizeFor(image, size);
+
+    /* Internal texture format */
     GLint format;
     (this->*Context::current().state().texture->getCubeLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
 
@@ -135,9 +142,16 @@ void CubeMapTexture::compressedImage(const Int level, CompressedBufferImage3D& i
     createIfNotAlready();
 
     const Vector3i size{imageSize(level), 6};
-    const GLint textureDataSize = (this->*Context::current().state().texture->getCubeLevelCompressedImageSizeImplementation)(level)*6;
+
+    /* If the user-provided pixel storage doesn't tell us all properties about
+       the compression, we need to ask GL for it */
     std::size_t dataOffset, dataSize;
-    std::tie(dataOffset, dataSize) = Implementation::compressedImageDataOffsetSizeFor(image, size, textureDataSize);
+    if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize()) {
+        dataOffset = 0;
+        dataSize = (this->*Context::current().state().texture->getCubeLevelCompressedImageSizeImplementation)(level)*6;
+    } else std::tie(dataOffset, dataSize) = Implementation::compressedImageDataOffsetSizeFor(image, size);
+
+    /* Internal texture format */
     GLint format;
     (this->*Context::current().state().texture->getCubeLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
 
@@ -199,8 +213,16 @@ BufferImage2D CubeMapTexture::image(const CubeMapCoordinate coordinate, const In
 
 void CubeMapTexture::compressedImage(const CubeMapCoordinate coordinate, const Int level, CompressedImage2D& image) {
     const Vector2i size = imageSize(level);
-    const GLint textureDataSize = (this->*Context::current().state().texture->getCubeLevelCompressedImageSizeImplementation)(level);
-    const std::size_t dataSize = Implementation::compressedImageDataSizeFor(image, size, textureDataSize);
+
+    /* If the user-provided pixel storage doesn't tell us all properties about
+       the compression, we need to ask GL for it */
+    std::size_t dataSize;
+    if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize())
+        dataSize = (this->*Context::current().state().texture->getCubeLevelCompressedImageSizeImplementation)(level);
+    else
+        dataSize = Implementation::compressedImageDataSizeFor(image, size);
+
+    /* Internal texture format */
     GLint format;
     (this->*Context::current().state().texture->getCubeLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
 
@@ -222,8 +244,16 @@ CompressedImage2D CubeMapTexture::compressedImage(const CubeMapCoordinate coordi
 
 void CubeMapTexture::compressedImage(const CubeMapCoordinate coordinate, const Int level, CompressedBufferImage2D& image, const BufferUsage usage) {
     const Vector2i size = imageSize(level);
-    const GLint textureDataSize = (this->*Context::current().state().texture->getCubeLevelCompressedImageSizeImplementation)(level);
-    const std::size_t dataSize = Implementation::compressedImageDataSizeFor(image, size, textureDataSize);
+
+    /* If the user-provided pixel storage doesn't tell us all properties about
+       the compression, we need to ask GL for it */
+    std::size_t dataSize;
+    if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize())
+        dataSize = (this->*Context::current().state().texture->getCubeLevelCompressedImageSizeImplementation)(level);
+    else
+        dataSize = Implementation::compressedImageDataSizeFor(image, size);
+
+    /* Internal texture format */
     GLint format;
     (this->*Context::current().state().texture->getCubeLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
 

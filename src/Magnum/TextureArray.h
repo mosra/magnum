@@ -606,6 +606,10 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * See @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage&)
          * for more information.
          * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         * @requires_gl43 Extension @extension{ARB,internalformat_query2} if
+         *      @ref CompressedPixelStorage::compressedBlockSize() and
+         *      @ref CompressedPixelStorage::compressedBlockDataSize() are not
+         *      set to non-zero values
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() for possible workaround.
          */
@@ -628,6 +632,10 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * See @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedBufferImage&, BufferUsage)
          * for more information.
          * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         * @requires_gl43 Extension @extension{ARB,internalformat_query2} if
+         *      @ref CompressedPixelStorage::compressedBlockSize() and
+         *      @ref CompressedPixelStorage::compressedBlockDataSize() are not
+         *      set to non-zero values
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() for possible workaround.
          */

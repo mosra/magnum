@@ -129,7 +129,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *
          * If @p format is compressed, returns compressed block size (in
          * pixels). For uncompressed formats returns zero vector.
-         * @see @ref compressedBlockDataSize(), @fn_gl{Getinternalformat} with
+         * @see @ref compressedBlockDataSize(), @fn_gl{GetInternalformat} with
          *      @def_gl{TEXTURE_COMPRESSED_BLOCK_WIDTH},
          *      @def_gl{TEXTURE_COMPRESSED_BLOCK_HEIGHT}
          * @requires_gl43 Extension @extension{ARB,internalformat_query2}
@@ -145,7 +145,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *
          * If @p format is compressed, returns compressed block data size (in
          * bytes). For uncompressed formats returns zero.
-         * @see @ref compressedBlockSize(), @fn_gl{Getinternalformat} with
+         * @see @ref compressedBlockSize(), @fn_gl{GetInternalformat} with
          *      @def_gl{TEXTURE_COMPRESSED_BLOCK_SIZE}
          * @requires_gl43 Extension @extension{ARB,internalformat_query2}
          * @requires_gl Compressed texture queries are not available in OpenGL
@@ -958,9 +958,16 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @see @fn_gl2{GetTextureLevelParameter,GetTexLevelParameter},
          *      @fn_gl_extension{GetTextureLevelParameter,EXT,direct_state_access},
          *      eventually @fn_gl{GetTexLevelParameter} with
-         *      @def_gl{TEXTURE_COMPRESSED_IMAGE_SIZE}, @def_gl{TEXTURE_INTERNAL_FORMAT},
-         *      then @fn_gl{GetCompressedTextureSubImage}
+         *      @def_gl{TEXTURE_INTERNAL_FORMAT}, then possibly
+         *      @fn_gl{GetInternalformat} with @def_gl{TEXTURE_COMPRESSED_BLOCK_SIZE},
+         *      @def_gl{TEXTURE_COMPRESSED_BLOCK_WIDTH} and
+         *      @def_gl{TEXTURE_COMPRESSED_BLOCK_HEIGHT}, then
+         *      @fn_gl{GetCompressedTextureSubImage}
          * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         * @requires_gl43 Extension @extension{ARB,internalformat_query2} if
+         *      @ref CompressedPixelStorage::compressedBlockSize() and
+         *      @ref CompressedPixelStorage::compressedBlockDataSize() are not
+         *      set to non-zero values
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() for possible workaround.
          */
@@ -987,6 +994,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * See @ref compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedBufferImage&, BufferUsage)
          * for more information.
          * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         * @requires_gl43 Extension @extension{ARB,internalformat_query2} if
+         *      @ref CompressedPixelStorage::compressedBlockSize() and
+         *      @ref CompressedPixelStorage::compressedBlockDataSize() are not
+         *      set to non-zero values
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() for possible workaround.
          */

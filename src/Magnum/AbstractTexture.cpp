@@ -1616,9 +1616,17 @@ template void MAGNUM_EXPORT AbstractTexture::image<3>(GLint, BufferImage<3>&, Bu
 
 template<UnsignedInt dimensions> void AbstractTexture::compressedImage(const GLint level, CompressedImage<dimensions>& image) {
     const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, level);
-    GLint textureDataSize;
-    (this->*Context::current().state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &textureDataSize);
-    const std::size_t dataSize = Implementation::compressedImageDataSizeFor(image, size, textureDataSize);
+
+    /* If the user-provided pixel storage doesn't tell us all properties about
+       the compression, we need to ask GL for it */
+    std::size_t dataSize;
+    if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize()) {
+        GLint textureDataSize;
+        (this->*Context::current().state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &textureDataSize);
+        dataSize = textureDataSize;
+    } else dataSize = Implementation::compressedImageDataSizeFor(image, size);
+
+    /* Internal texture format */
     GLint format;
     (this->*Context::current().state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
 
@@ -1639,9 +1647,17 @@ template void MAGNUM_EXPORT AbstractTexture::compressedImage<3>(GLint, Compresse
 
 template<UnsignedInt dimensions> void AbstractTexture::compressedImage(const GLint level, CompressedBufferImage<dimensions>& image, BufferUsage usage) {
     const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, level);
-    GLint textureDataSize;
-    (this->*Context::current().state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &textureDataSize);
-    const std::size_t dataSize = Implementation::compressedImageDataSizeFor(image, size, textureDataSize);
+
+    /* If the user-provided pixel storage doesn't tell us all properties about
+       the compression, we need to ask GL for it */
+    std::size_t dataSize;
+    if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize()) {
+        GLint textureDataSize;
+        (this->*Context::current().state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &textureDataSize);
+        dataSize = textureDataSize;
+    } else dataSize = Implementation::compressedImageDataSizeFor(image, size);
+
+    /* Internal texture format */
     GLint format;
     (this->*Context::current().state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
 
@@ -1720,9 +1736,18 @@ template<UnsignedInt dimensions> void AbstractTexture::compressedSubImage(const 
     const Math::Vector<dimensions, Int> size = range.size();
     const Vector3i paddedOffset = Vector3i::pad(range.min());
     const Vector3i paddedSize = Vector3i::pad(size, 1);
+
+    /* Internal texture format */
     GLint format;
     (this->*Context::current().state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
-    const std::size_t dataSize = Implementation::compressedImageDataSizeFor(image, size, compressedSubImageSize<dimensions>(TextureFormat(format), size));
+
+    /* Calculate compressed subimage size. If the user-provided pixel storage
+       doesn't tell us all properties about the compression, we need to ask GL
+       for it. That requires GL_ARB_internalformat_query2. */
+    std::size_t dataSize;
+    if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize())
+        dataSize = compressedSubImageSize<dimensions>(TextureFormat(format), size);
+    else dataSize = Implementation::compressedImageDataSizeFor(image, size);
 
     /* Reallocate only if needed */
     Containers::Array<char> data{image.release()};
@@ -1745,9 +1770,18 @@ template<UnsignedInt dimensions> void AbstractTexture::compressedSubImage(const 
     const Math::Vector<dimensions, Int> size = range.size();
     const Vector3i paddedOffset = Vector3i::pad(range.min());
     const Vector3i paddedSize = Vector3i::pad(size, 1);
+
+    /* Internal texture format */
     GLint format;
     (this->*Context::current().state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
-    const std::size_t dataSize = Implementation::compressedImageDataSizeFor(image, size, compressedSubImageSize<dimensions>(TextureFormat(format), size));
+
+    /* Calculate compressed subimage size. If the user-provided pixel storage
+       doesn't tell us all properties about the compression, we need to ask GL
+       for it. That requires GL_ARB_internalformat_query2. */
+    std::size_t dataSize;
+    if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize())
+        dataSize = compressedSubImageSize<dimensions>(TextureFormat(format), size);
+    else dataSize = Implementation::compressedImageDataSizeFor(image, size);
 
     /* Reallocate only if needed */
     if(image.dataSize() < dataSize)
