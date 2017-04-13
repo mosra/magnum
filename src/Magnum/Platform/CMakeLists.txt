@@ -760,6 +760,7 @@ if(NEED_WGLCONTEXT OR WITH_WGLCONTEXT)
     if(BUILD_STATIC_PIC)
         set_target_properties(MagnumWglContextObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()
+    set_target_properties(MagnumWglContextObjects PROPERTIES FOLDER "Magnum/Platform")
 
     # Also create proper static library, if requested
     if(WITH_WGLCONTEXT)
