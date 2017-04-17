@@ -1,0 +1,53 @@
+# Author: mosra <mosra@centrum.cz>
+pkgname=emscripten-magnum
+pkgver=dev.webgl2
+pkgrel=1
+pkgdesc="C++11/C++14 and OpenGL 2D/3D graphics engine (Emscripten WebGL 2.0, w/o optimizations)"
+arch=('any')
+url="http://mosra.cz/blog/magnum.php"
+license=('MIT')
+depends=('emscripten-corrade')
+makedepends=('cmake' 'emscripten' 'corrade' 'ninja')
+options=('!strip' '!buildflags')
+
+_rootdir=$startdir/../../
+
+build() {
+    if [ ! -d "$_rootdir/build-emscripten-noopt-webgl2" ] ; then
+        mkdir "$_rootdir/build-emscripten-noopt-webgl2"
+        cd "$_rootdir/build-emscripten-noopt-webgl2"
+
+        cmake .. \
+            -DCMAKE_TOOLCHAIN_FILE="$_rootdir/toolchains/generic/Emscripten.cmake" \
+            -DCMAKE_PREFIX_PATH=/usr/lib/emscripten/system \
+            -G Ninja
+    fi
+
+    cd "$_rootdir/build-emscripten-noopt-webgl2"
+
+    cmake .. \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr/lib/emscripten/system \
+        -DCMAKE_CXX_FLAGS_RELEASE="-DNDEBUG -O1" \
+        -DCMAKE_EXE_LINKER_FLAGS_RELEASE="-O1" \
+        -DTARGET_GLES2=OFF \
+        -DWITH_AUDIO=ON \
+        -DWITH_SDL2APPLICATION=ON \
+        -DWITH_MAGNUMFONT=ON \
+        -DWITH_OBJIMPORTER=ON \
+        -DWITH_TGAIMAGECONVERTER=ON \
+        -DWITH_TGAIMPORTER=ON \
+        -DWITH_WAVAUDIOIMPORTER=ON \
+        -DBUILD_TESTS=ON
+    ninja
+}
+
+check() {
+    cd "$_rootdir/build-emscripten-noopt-webgl2"
+    CORRADE_TEST_COLOR=ON ctest --output-on-failure -E ALTest
+}
+
+package() {
+    cd "$_rootdir/build-emscripten-noopt-webgl2"
+    DESTDIR="$pkgdir/" ninja install
+}
