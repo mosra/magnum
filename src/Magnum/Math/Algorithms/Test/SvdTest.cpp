@@ -82,8 +82,10 @@ template<class T> void SvdTest::test() {
     /* Test W */
     {
         #ifdef CORRADE_TARGET_EMSCRIPTEN
-        CORRADE_EXPECT_FAIL_IF((std::is_same<T, Double>::value),
-            "Some strange problems with Double on recent Emscripten versions (1.36.5 worked fine).");
+        CORRADE_EXPECT_FAIL_IF((std::is_same<T, Double>::value && w != expected),
+            "Some strange problems with Double on recent Emscripten versions "
+            "(1.36.5 worked fine, 1.37.1 worked fine on larger optimization "
+            "levels, not on -O1, 1.37.5 works fine again).");
         #endif
         CORRADE_COMPARE(w, expected);
     }
