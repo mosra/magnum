@@ -710,11 +710,6 @@ class Sdl2Application {
         typedef Containers::EnumSet<Flag> Flags;
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
 
-        #ifdef CORRADE_TARGET_EMSCRIPTEN
-        static Sdl2Application* _instance;
-        static void staticMainLoop();
-        #endif
-
         void mainLoop();
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN

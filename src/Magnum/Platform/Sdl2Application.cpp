@@ -58,13 +58,6 @@ Sdl2Application::InputEvent::Modifiers fixedModifiers(Uint16 mod) {
 
 }
 
-#ifdef CORRADE_TARGET_EMSCRIPTEN
-Sdl2Application* Sdl2Application::_instance = nullptr;
-void Sdl2Application::staticMainLoop() {
-    _instance->mainLoop();
-}
-#endif
-
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Sdl2Application::Sdl2Application(const Arguments& arguments): Sdl2Application{arguments, Configuration{}} {}
 #endif
@@ -79,11 +72,6 @@ Sdl2Application::Sdl2Application(const Arguments& arguments, NoCreateT): _glCont
     #endif
     _context{new Context{NoCreate, arguments.argc, arguments.argv}}, _flags{Flag::Redraw}
 {
-    #ifdef CORRADE_TARGET_EMSCRIPTEN
-    CORRADE_ASSERT(!_instance, "Platform::Sdl2Application::Sdl2Application(): the instance is already created", );
-    _instance = this;
-    #endif
-
     if(SDL_Init(SDL_INIT_VIDEO) < 0) {
         Error() << "Cannot initialize SDL.";
         std::exit(1);
@@ -325,8 +313,6 @@ Sdl2Application::~Sdl2Application() {
     SDL_DestroyWindow(_window);
     #else
     SDL_FreeSurface(_glContext);
-    CORRADE_INTERNAL_ASSERT(_instance == this);
-    _instance = nullptr;
     #endif
     SDL_Quit();
 }
@@ -335,7 +321,9 @@ int Sdl2Application::exec() {
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     while(!(_flags & Flag::Exit)) mainLoop();
     #else
-    emscripten_set_main_loop(staticMainLoop, 0, true);
+    emscripten_set_main_loop_arg([](void* arg) {
+        static_cast<Sdl2Application*>(arg)->mainLoop();
+    }, this, 0, true);
     #endif
     return 0;
 }
