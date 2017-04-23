@@ -319,10 +319,10 @@ Sdl2Application::~Sdl2Application() {
 
 int Sdl2Application::exec() {
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    while(!(_flags & Flag::Exit)) mainLoop();
+    while(!(_flags & Flag::Exit)) mainLoopIteration();
     #else
     emscripten_set_main_loop_arg([](void* arg) {
-        static_cast<Sdl2Application*>(arg)->mainLoop();
+        static_cast<Sdl2Application*>(arg)->mainLoopIteration();
     }, this, 0, true);
     #endif
     return 0;
@@ -336,7 +336,7 @@ void Sdl2Application::exit() {
     #endif
 }
 
-void Sdl2Application::mainLoop() {
+void Sdl2Application::mainLoopIteration() {
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     const UnsignedInt timeBefore = _minimalLoopPeriod ? SDL_GetTicks() : 0;
     #endif

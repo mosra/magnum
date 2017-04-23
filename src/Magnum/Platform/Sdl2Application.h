@@ -389,12 +389,28 @@ class Sdl2Application {
          * @brief Execute main loop
          * @return Value for returning from `main()`
          *
-         * See @ref MAGNUM_SDL2APPLICATION_MAIN() for usage information.
+         * Calls @ref mainLoopIteration() in a loop until @ref exit() is
+         * called. See @ref MAGNUM_SDL2APPLICATION_MAIN() for usage
+         * information.
          */
         int exec();
 
-        /** @brief Exit application main loop */
+        /**
+         * @brief Exit application main loop
+         *
+         * Stops main loop started by @ref exec().
+         */
         void exit();
+
+        /**
+         * @brief Run one iteration of application main loop
+         *
+         * Called internally from @ref exec(). If you want to have better
+         * control over how the main loop behaves, you can call this function
+         * yourself from your own `main()` function instead of it being called
+         * automatically from @ref exec() / @ref MAGNUM_SDL2APPLICATION_MAIN().
+         */
+        void mainLoopIteration();
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         /**
@@ -709,8 +725,6 @@ class Sdl2Application {
 
         typedef Containers::EnumSet<Flag> Flags;
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
-
-        void mainLoop();
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         SDL_Window* _window;
