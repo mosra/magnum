@@ -76,6 +76,7 @@ find_path(SDL2_INCLUDE_DIR
 if(CORRADE_TARGET_IOS)
     set(_SDL2_FRAMEWORKS
         AudioToolbox
+        AVFoundation
         CoreGraphics
         CoreMotion
         Foundation
