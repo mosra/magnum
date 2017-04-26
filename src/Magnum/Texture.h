@@ -486,7 +486,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{TexParameter} with @def_gl_keyword{TEXTURE_BORDER_COLOR}
-         * @requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
+         * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
          *      @extension{EXT,texture_border_clamp} or
          *      @extension{NV,texture_border_clamp}
          * @requires_gles Border clamp is not available in WebGL.
@@ -513,8 +513,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl_keyword{TexParameter} with @def_gl_keyword{TEXTURE_BORDER_COLOR}
          * @requires_gl30 Extension @extension{EXT,texture_integer}
          * @requires_gles30 Not defined in OpenGL ES 2.0.
-         * @requires_es_extension Extension
-         *      @extension{ANDROID,extension_pack_es31a}/
+         * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
          *      @extension{EXT,texture_border_clamp}
          * @requires_gles Border clamp is not available in WebGL.
          */
@@ -526,8 +525,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         /** @overload
          * @requires_gl30 Extension @extension{EXT,texture_integer}
          * @requires_gles30 Not defined in OpenGL ES 2.0.
-         * @requires_es_extension Extension
-         *      @extension{ANDROID,extension_pack_es31a}/
+         * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
          *      @extension{EXT,texture_border_clamp}
          * @requires_gles Border clamp is not available in WebGL.
          */

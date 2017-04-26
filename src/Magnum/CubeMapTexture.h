@@ -351,7 +351,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * See @ref Texture::setBorderColor(const Color4&) for more
          * information.
-         * @requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
+         * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
          *      @extension{EXT,texture_border_clamp} or
          *      @extension{NV,texture_border_clamp}
          * @requires_gles Border clamp is not available in WebGL.
@@ -370,8 +370,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * information.
          * @requires_gl30 Extension @extension{EXT,texture_integer}
          * @requires_gles30 Not defined in OpenGL ES 2.0.
-         * @requires_es_extension Extension
-         *      @extension{ANDROID,extension_pack_es31a}/
+         * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
          *      @extension{EXT,texture_border_clamp}
          * @requires_gles Border clamp is not available in WebGL.
          */
@@ -383,8 +382,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         /** @overload
          * @requires_gl30 Extension @extension{EXT,texture_integer}
          * @requires_gles30 Not defined in OpenGL ES 2.0.
-         * @requires_es_extension Extension
-         *      @extension{ANDROID,extension_pack_es31a}/
+         * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
          *      @extension{EXT,texture_border_clamp}
          * @requires_gles Border clamp is not available in WebGL.
          */

@@ -174,7 +174,7 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         parameterivImplementation = &AbstractTexture::parameterImplementationDefault;
         #endif
         parameterfvImplementation = &AbstractTexture::parameterImplementationDefault;
-        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        #ifndef MAGNUM_TARGET_GLES
         parameterIuivImplementation = &AbstractTexture::parameterIImplementationDefault;
         parameterIivImplementation = &AbstractTexture::parameterIImplementationDefault;
         #endif
@@ -204,6 +204,20 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         cubeSubImageImplementation = &CubeMapTexture::subImageImplementationDefault;
         cubeCompressedSubImageImplementation = &CubeMapTexture::compressedSubImageImplementationDefault;
     }
+
+    /* Integer parameter implementation for ES3 */
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    if(context.isVersionSupported(Version::GLES320)) {
+        parameterIuivImplementation = &AbstractTexture::parameterIImplementationDefault;
+        parameterIivImplementation = &AbstractTexture::parameterIImplementationDefault;
+    } else if(context.isExtensionSupported<Extensions::GL::EXT::texture_border_clamp>()) {
+        parameterIuivImplementation = &AbstractTexture::parameterIImplementationEXT;
+        parameterIivImplementation = &AbstractTexture::parameterIImplementationEXT;
+    } else {
+        parameterIuivImplementation = nullptr;
+        parameterIivImplementation = nullptr;
+    }
+    #endif
 
     /* Data invalidation implementation */
     #ifndef MAGNUM_TARGET_GLES

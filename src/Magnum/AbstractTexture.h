@@ -539,6 +539,10 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         void MAGNUM_LOCAL parameterIImplementationDefault(GLenum parameter, const GLuint* values);
         void MAGNUM_LOCAL parameterIImplementationDefault(GLenum parameter, const GLint* values);
+        #ifdef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL parameterIImplementationEXT(GLenum parameter, const GLuint* values);
+        void MAGNUM_LOCAL parameterIImplementationEXT(GLenum parameter, const GLint* values);
+        #endif
         #endif
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL parameterImplementationDSA(GLenum parameter, GLint value);

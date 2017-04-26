@@ -125,7 +125,7 @@ class MAGNUM_EXPORT Sampler {
              * Clamp to border color. Coordinates out of range will be clamped
              * to border color (set with
              * @ref Texture::setBorderColor() "*Texture::setBorderColor()").
-             * @requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
+             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
              *      @extension{EXT,texture_border_clamp} or
              *      @extension{NV,texture_border_clamp}
              * @requires_gles Border clamp is not available in WebGL.
