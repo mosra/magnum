@@ -1545,7 +1545,7 @@ enum class TextureFormat: GLenum {
     /**
      * Stencil index, 8bit. Not supported in 3D textures.
      * @requires_gl44 Extension @extension{ARB,texture_stencil8}
-     * @requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
+     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
      *      @extension{OES,texture_stencil8}
      * @requires_gles Only available as renderbuffer format in WebGL.
      */

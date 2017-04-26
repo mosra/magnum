@@ -288,7 +288,7 @@ enum class PixelFormat: GLenum {
      *      data, otherwise for framebuffer reading only.
      * @requires_es_extension Extension @extension2{NV,read_stencil,GL_NV_read_depth_stencil},
      *      for framebuffer reading only.
-     * @requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
+     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
      *      @extension{OES,texture_stencil8}, for texture data only.
      * @requires_gles Stencil index is not available in WebGL.
      */
