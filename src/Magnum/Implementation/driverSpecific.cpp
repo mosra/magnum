@@ -135,7 +135,6 @@ auto Context::detectedDriver() -> DetectedDrivers {
 
     /* Apple has its own drivers */
     #ifndef CORRADE_TARGET_APPLE
-    #ifndef MAGNUM_TARGET_GLES
     /* AMD binary desktop drivers */
     if(vendor.find("ATI Technologies Inc.") != std::string::npos)
         return *_detectedDrivers |= DetectedDriver::AMD;
@@ -150,7 +149,6 @@ auto Context::detectedDriver() -> DetectedDrivers {
     /* Mesa drivers */
     if(version.find("Mesa") != std::string::npos)
         return *_detectedDrivers |= DetectedDriver::Mesa;
-    #endif
     #endif
 
     #ifndef MAGNUM_TARGET_WEBGL

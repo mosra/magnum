@@ -214,13 +214,11 @@ class MAGNUM_EXPORT Context {
          * @see @ref DetectedDriver, @ref detectedDriver()
          */
         enum class DetectedDriver: UnsignedShort {
-            #ifndef MAGNUM_TARGET_GLES
             /** Binary AMD desktop drivers on Windows and Linux */
             AMD = 1 << 0,
 
             /** Intel desktop drivers on Windows */
             IntelWindows = 1 << 1,
-            #endif
 
             #ifndef MAGNUM_TARGET_WEBGL
             /** Binary NVidia drivers on Windows and Linux */
