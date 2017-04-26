@@ -49,8 +49,6 @@ const Buffer::TargetHint BufferState::targetForIndex[] = {
     Buffer::TargetHint::DispatchIndirect,
     Buffer::TargetHint::DrawIndirect,
     Buffer::TargetHint::ShaderStorage,
-    #endif
-    #ifndef MAGNUM_TARGET_GLES
     Buffer::TargetHint::Texture
     #endif
     #endif
@@ -72,8 +70,6 @@ std::size_t BufferState::indexForTarget(Buffer::TargetHint target) {
         case Buffer::TargetHint::DispatchIndirect:  return 10;
         case Buffer::TargetHint::DrawIndirect:      return 11;
         case Buffer::TargetHint::ShaderStorage:     return 12;
-        #endif
-        #ifndef MAGNUM_TARGET_GLES
         case Buffer::TargetHint::Texture:           return 13;
         #endif
         #endif

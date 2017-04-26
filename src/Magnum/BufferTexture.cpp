@@ -47,13 +47,8 @@ Int BufferTexture::maxSize() {
     GLint& value = Context::current().state().texture->maxBufferSize;
 
     /* Get the value, if not already cached */
-    if(value == 0) glGetIntegerv(
-        #ifndef MAGNUM_TARGET_GLES
-        GL_MAX_TEXTURE_BUFFER_SIZE,
-        #else
-        GL_MAX_TEXTURE_BUFFER_SIZE_EXT,
-        #endif
-        &value);
+    if(value == 0)
+        glGetIntegerv(GL_MAX_TEXTURE_BUFFER_SIZE, &value);
 
     return value;
 }
@@ -70,13 +65,8 @@ Int BufferTexture::offsetAlignment() {
     GLint& value = Context::current().state().texture->bufferOffsetAlignment;
 
     /* Get the value, if not already cached */
-    if(value == 0) glGetIntegerv(
-        #ifndef MAGNUM_TARGET_GLES
-        GL_TEXTURE_BUFFER_OFFSET_ALIGNMENT,
-        #else
-        GL_TEXTURE_BUFFER_OFFSET_ALIGNMENT_EXT,
-        #endif
-        &value);
+    if(value == 0)
+        glGetIntegerv(GL_TEXTURE_BUFFER_OFFSET_ALIGNMENT, &value);
 
     return value;
 }
@@ -93,19 +83,15 @@ BufferTexture& BufferTexture::setBuffer(const BufferTextureFormat internalFormat
 
 void BufferTexture::setBufferImplementationDefault(BufferTextureFormat internalFormat, Buffer& buffer) {
     bindInternal();
-    #ifndef MAGNUM_TARGET_GLES
-    glTexBuffer
-    #else
-    glTexBufferEXT
-    #endif
-        (
-        #ifndef MAGNUM_TARGET_GLES
-        GL_TEXTURE_BUFFER,
-        #else
-        GL_TEXTURE_BUFFER_EXT,
-        #endif
-        GLenum(internalFormat), buffer.id());
+    glTexBuffer(GL_TEXTURE_BUFFER, GLenum(internalFormat), buffer.id());
 }
+
+#ifdef MAGNUM_TARGET_GLES
+void BufferTexture::setBufferImplementationEXT(BufferTextureFormat internalFormat, Buffer& buffer) {
+    bindInternal();
+    glTexBufferEXT(GL_TEXTURE_BUFFER, GLenum(internalFormat), buffer.id());
+}
+#endif
 
 #ifndef MAGNUM_TARGET_GLES
 void BufferTexture::setBufferImplementationDSA(const BufferTextureFormat internalFormat, Buffer& buffer) {
@@ -119,19 +105,15 @@ void BufferTexture::setBufferImplementationDSAEXT(BufferTextureFormat internalFo
 
 void BufferTexture::setBufferRangeImplementationDefault(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size) {
     bindInternal();
-    #ifndef MAGNUM_TARGET_GLES
-    glTexBufferRange
-    #else
-    glTexBufferRangeEXT
-    #endif
-        (
-        #ifndef MAGNUM_TARGET_GLES
-        GL_TEXTURE_BUFFER,
-        #else
-        GL_TEXTURE_BUFFER_EXT,
-        #endif
-        GLenum(internalFormat), buffer.id(), offset, size);
+    glTexBufferRange(GL_TEXTURE_BUFFER, GLenum(internalFormat), buffer.id(), offset, size);
 }
+
+#ifdef MAGNUM_TARGET_GLES
+void BufferTexture::setBufferRangeImplementationEXT(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size) {
+    bindInternal();
+    glTexBufferRangeEXT(GL_TEXTURE_BUFFER, GLenum(internalFormat), buffer.id(), offset, size);
+}
+#endif
 
 #ifndef MAGNUM_TARGET_GLES
 void BufferTexture::setBufferRangeImplementationDSA(const BufferTextureFormat internalFormat, Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {

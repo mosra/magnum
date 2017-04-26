@@ -43,7 +43,7 @@ namespace Magnum {
 @m_enum_values_as_keywords
 @requires_gl31 Extension @extension{ARB,texture_buffer_object}
 @requires_gles30 Not defined in OpenGL ES 2.0.
-@requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
+@requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
     @extension{EXT,texture_buffer}
 @requires_gles Texture buffers are not available in WebGL.
 */

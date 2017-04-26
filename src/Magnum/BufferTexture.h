@@ -85,7 +85,7 @@ and respective function documentation for more information.
     @ref CubeMapTextureArray, @ref RectangleTexture, @ref MultisampleTexture
 @requires_gl31 Extension @extension{ARB,texture_buffer_object}
 @requires_gles30 Not defined in OpenGL ES 2.0.
-@requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
+@requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
     @extension{EXT,texture_buffer}
 @requires_gles Texture buffers are not available in WebGL.
 */
@@ -138,12 +138,7 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
          *      @fn_gl_keyword{CreateTextures} with @def_gl{TEXTURE_BUFFER},
          *      eventually @fn_gl_keyword{GenTextures}
          */
-        explicit BufferTexture():
-            #ifndef MAGNUM_TARGET_GLES
-            AbstractTexture(GL_TEXTURE_BUFFER) {}
-            #else
-            AbstractTexture(GL_TEXTURE_BUFFER_EXT) {}
-            #endif
+        explicit BufferTexture(): AbstractTexture(GL_TEXTURE_BUFFER) {}
 
         /**
          * @brief Construct without creating the underlying OpenGL object
@@ -156,12 +151,7 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
          * destructing) objects even without any OpenGL context being active.
          * @see @ref BufferTexture(), @ref wrap()
          */
-        explicit BufferTexture(NoCreateT) noexcept:
-            #ifndef MAGNUM_TARGET_GLES
-            AbstractTexture{NoCreate, GL_TEXTURE_BUFFER} {}
-            #else
-            AbstractTexture{NoCreate, GL_TEXTURE_BUFFER_EXT} {}
-            #endif
+        explicit BufferTexture(NoCreateT) noexcept: AbstractTexture{NoCreate, GL_TEXTURE_BUFFER} {}
 
         /**
          * @brief Bind texture to given image unit
@@ -239,21 +229,21 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
         #endif
 
     private:
-        explicit BufferTexture(GLuint id, ObjectFlags flags): AbstractTexture{id,
-            #ifndef MAGNUM_TARGET_GLES
-            GL_TEXTURE_BUFFER,
-            #else
-            GL_TEXTURE_BUFFER_EXT,
-            #endif
-            flags} {}
+        explicit BufferTexture(GLuint id, ObjectFlags flags): AbstractTexture{id, GL_TEXTURE_BUFFER, flags} {}
 
         void MAGNUM_LOCAL setBufferImplementationDefault(BufferTextureFormat internalFormat, Buffer& buffer);
+        #ifdef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL setBufferImplementationEXT(BufferTextureFormat internalFormat, Buffer& buffer);
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL setBufferImplementationDSA(BufferTextureFormat internalFormat, Buffer& buffer);
         void MAGNUM_LOCAL setBufferImplementationDSAEXT(BufferTextureFormat internalFormat, Buffer& buffer);
         #endif
 
         void MAGNUM_LOCAL setBufferRangeImplementationDefault(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
+        #ifdef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL setBufferRangeImplementationEXT(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL setBufferRangeImplementationDSA(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
         void MAGNUM_LOCAL setBufferRangeImplementationDSAEXT(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);

@@ -193,7 +193,7 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         compressedSubImage3DImplementation = &AbstractTexture::compressedSubImageImplementationDefault;
         #endif
 
-        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        #ifndef MAGNUM_TARGET_GLES
         setBufferImplementation = &BufferTexture::setBufferImplementationDefault;
         setBufferRangeImplementation = &BufferTexture::setBufferRangeImplementationDefault;
         #endif
@@ -205,8 +205,8 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         cubeCompressedSubImageImplementation = &CubeMapTexture::compressedSubImageImplementationDefault;
     }
 
-    /* Integer parameter implementation for ES3 */
     #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    /* Integer parameter implementation for ES3 */
     if(context.isVersionSupported(Version::GLES320)) {
         parameterIuivImplementation = &AbstractTexture::parameterIImplementationDefault;
         parameterIivImplementation = &AbstractTexture::parameterIImplementationDefault;
@@ -216,6 +216,18 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     } else {
         parameterIuivImplementation = nullptr;
         parameterIivImplementation = nullptr;
+    }
+
+    /* Buffer texture implementation for ES3 */
+    if(context.isVersionSupported(Version::GLES320)) {
+        setBufferImplementation = &BufferTexture::setBufferImplementationDefault;
+        setBufferRangeImplementation = &BufferTexture::setBufferRangeImplementationDefault;
+    } else if(context.isExtensionSupported<Extensions::GL::EXT::texture_buffer>()) {
+        setBufferImplementation = &BufferTexture::setBufferImplementationEXT;
+        setBufferRangeImplementation = &BufferTexture::setBufferRangeImplementationEXT;
+    } else {
+        setBufferImplementation = nullptr;
+        setBufferRangeImplementation = nullptr;
     }
     #endif
 

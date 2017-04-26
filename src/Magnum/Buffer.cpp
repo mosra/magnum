@@ -601,7 +601,7 @@ Debug& operator<<(Debug& debug, Buffer::TargetHint value) {
         _c(ShaderStorage)
         #endif
         #endif
-        #ifndef MAGNUM_TARGET_GLES
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         _c(Texture)
         #endif
         #ifndef MAGNUM_TARGET_GLES2

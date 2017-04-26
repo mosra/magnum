@@ -337,12 +337,14 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
             #endif
             #endif
 
-            #ifndef MAGNUM_TARGET_GLES
+            #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
             /**
              * Source for texel fetches. See @ref BufferTexture.
              * @requires_gl31 Extension @extension{ARB,texture_buffer_object}
-             * @requires_gl Texture buffers are not available in OpenGL ES or
-             *      WebGL.
+             * @requires_gles30 Not defined in OpenGL ES 2.0.
+             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
+             *     @extension{EXT,texture_buffer}
+             * @requires_gles Texture buffers are not available in WebGL.
              */
             Texture = GL_TEXTURE_BUFFER,
             #endif

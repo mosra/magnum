@@ -31,12 +31,10 @@ namespace Magnum { namespace Implementation {
 
 struct BufferState {
     enum: std::size_t {
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_WEBGL
         TargetCount = 13+1
         #elif !defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL)
         TargetCount = 8+1
-        #elif !defined(MAGNUM_TARGET_GLES2)
-        TargetCount = 12+1
         #else
         TargetCount = 2+1
         #endif
