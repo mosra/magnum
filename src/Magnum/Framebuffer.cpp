@@ -379,13 +379,14 @@ void Framebuffer::textureCubeMapImplementationDSA(const BufferAttachment attachm
 
 #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
 void Framebuffer::textureImplementationDefault(BufferAttachment attachment, GLuint textureId, GLint mipLevel) {
-    #ifndef MAGNUM_TARGET_GLES
-    glFramebufferTexture
-    #else
-    glFramebufferTextureEXT
-    #endif
-        (GLenum(bindInternal()), GLenum(attachment), textureId, mipLevel);
+    glFramebufferTexture(GLenum(bindInternal()), GLenum(attachment), textureId, mipLevel);
 }
+
+#ifdef MAGNUM_TARGET_GLES
+void Framebuffer::textureImplementationEXT(BufferAttachment attachment, GLuint textureId, GLint mipLevel) {
+    glFramebufferTextureEXT(GLenum(bindInternal()), GLenum(attachment), textureId, mipLevel);
+}
+#endif
 #endif
 
 #ifndef MAGNUM_TARGET_GLES

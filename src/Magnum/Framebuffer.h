@@ -812,7 +812,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          *      @fn_gl_keyword{FramebufferTexture}
          * @requires_gl32 Extension @extension{ARB,geometry_shader4}
          * @requires_gles30 Not defined in OpenGL ES 2.0.
-         * @requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
+         * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
          *      @extension{EXT,geometry_shader}
          * @requires_gles Geometry shaders are not available in WebGL.
          */
@@ -830,7 +830,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         /** @overload
          * @requires_gl32 Extension @extension{ARB,geometry_shader4}
          * @requires_gles30 Not defined in OpenGL ES 2.0.
-         * @requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
+         * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
          *      @extension{EXT,geometry_shader}
          * @requires_gles Geometry shaders are not available in WebGL.
          */
@@ -840,7 +840,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @overload
          * @requires_gl32 Extension @extension{ARB,geometry_shader4}
          * @requires_gles30 Not defined in OpenGL ES 2.0.
-         * @requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
+         * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
          *      @extension{EXT,geometry_shader}
          * @requires_gles Geometry shaders are not available in WebGL.
          */
@@ -849,7 +849,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         /** @overload
          * @requires_gl40 Extension @extension{ARB,texture_cube_map_array}
          * @requires_gles30 Not defined in OpenGL ES 2.0.
-         * @requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
+         * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
          *      @extension{EXT,geometry_shader} and
          *      @extension{EXT,texture_cube_map_array}
          * @requires_gles Geometry shaders are not available in WebGL.
@@ -860,7 +860,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @requires_gl32 Extension @extension{ARB,geometry_shader4} and
          *      @extension{ARB,texture_multisample}
          * @requires_gles30 Not defined in OpenGL ES 2.0.
-         * @requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
+         * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
          *      @extension{EXT,geometry_shader} and
          *      @extension{OES,texture_storage_multisample_2d_array}
          * @requires_gles Geometry shaders are not available in WebGL.
@@ -944,6 +944,9 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
 
         #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
         void MAGNUM_LOCAL textureImplementationDefault(BufferAttachment attachment, GLuint textureId, GLint level);
+        #ifdef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL textureImplementationEXT(BufferAttachment attachment, GLuint textureId, GLint level);
+        #endif
         #endif
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL textureImplementationDSA(BufferAttachment attachment, GLuint textureId, GLint level);

@@ -64,18 +64,24 @@ enum class MeshPrimitive: GLenum {
      */
     Lines = GL_LINES,
 
-    #ifndef MAGNUM_TARGET_GLES
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     /**
      * Line strip with adjacency information.
      * @requires_gl32 Extension @extension{ARB,geometry_shader4}
-     * @requires_gl Geometry shaders are not available in OpenGL ES or WebGL.
+     * @requires_gles30 Not defined in OpenGL ES 2.0.
+     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
+     *      @extension{EXT,geometry_shader}
+     * @requires_gles Geometry shaders are not available in WebGL.
      */
     LineStripAdjacency = GL_LINE_STRIP_ADJACENCY,
 
     /**
      * Lines with adjacency information.
      * @requires_gl32 Extension @extension{ARB,geometry_shader4}
-     * @requires_gl Geometry shaders are not available in OpenGL ES or WebGL.
+     * @requires_gles30 Not defined in OpenGL ES 2.0.
+     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
+     *      @extension{EXT,geometry_shader}
+     * @requires_gles Geometry shaders are not available in WebGL.
      */
     LinesAdjacency = GL_LINES_ADJACENCY,
     #endif
@@ -95,26 +101,34 @@ enum class MeshPrimitive: GLenum {
     /** Each three vertices define one triangle. */
     Triangles = GL_TRIANGLES,
 
-    #ifndef MAGNUM_TARGET_GLES
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     /**
      * Triangle strip with adjacency information.
      * @requires_gl32 Extension @extension{ARB,geometry_shader4}
-     * @requires_gl Geometry shaders are not available in OpenGL ES or WebGL.
+     * @requires_gles30 Not defined in OpenGL ES 2.0.
+     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
+     *      @extension{EXT,geometry_shader}
+     * @requires_gles Geometry shaders are not available in WebGL.
      */
     TriangleStripAdjacency = GL_TRIANGLE_STRIP_ADJACENCY,
 
     /**
      * Triangles with adjacency information.
      * @requires_gl32 Extension @extension{ARB,geometry_shader4}
-     * @requires_gl Geometry shaders are not available in OpenGL ES or WebGL.
+     * @requires_gles30 Not defined in OpenGL ES 2.0.
+     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
+     *      @extension{EXT,geometry_shader}
+     * @requires_gles Geometry shaders are not available in WebGL.
      */
     TrianglesAdjacency = GL_TRIANGLES_ADJACENCY,
 
     /**
      * Patches.
      * @requires_gl40 Extension @extension{ARB,tessellation_shader}
-     * @requires_gl Tessellation shaders are not available in OpenGL ES or
-     *      WebGL.
+     * @requires_gles30 Not defined in OpenGL ES 2.0.
+     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
+     *      @extension{EXT,tessellation_shader}
+     * @requires_gles Tessellation shaders are not available in WebGL.
      */
     Patches = GL_PATCHES
     #endif
