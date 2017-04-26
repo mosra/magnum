@@ -279,6 +279,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     Debug() << "Core profile:" << (c.isCoreProfile() ? "yes" : "no");
     #endif
     Debug() << "Context flags:" << c.flags();
+    Debug() << "Detected driver:" << c.detectedDriver();
 
     Debug() << "Supported GLSL versions:";
     const std::vector<std::string> shadingLanguageVersions = c.shadingLanguageVersionStrings();
