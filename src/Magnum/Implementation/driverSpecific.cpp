@@ -134,7 +134,7 @@ auto Context::detectedDriver() -> DetectedDrivers {
     const std::string version = versionString();
 
     /* Apple has its own drivers */
-    #ifndef CORRADE_TARGET_APPLE
+    #if !defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_WEBGL)
     /* AMD binary desktop drivers */
     if(vendor.find("ATI Technologies Inc.") != std::string::npos)
         return *_detectedDrivers |= DetectedDriver::AMD;
@@ -151,10 +151,8 @@ auto Context::detectedDriver() -> DetectedDrivers {
         return *_detectedDrivers |= DetectedDriver::Mesa;
     #endif
 
-    #ifndef MAGNUM_TARGET_WEBGL
     if(vendor.find("NVIDIA Corporation") != std::string::npos)
         return *_detectedDrivers |= DetectedDriver::NVidia;
-    #endif
     #endif
 
     /** @todo there is also D3D9/D3D11 distinction on webglreport.com, is it useful? */

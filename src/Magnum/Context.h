@@ -214,19 +214,35 @@ class MAGNUM_EXPORT Context {
          * @see @ref DetectedDriver, @ref detectedDriver()
          */
         enum class DetectedDriver: UnsignedShort {
-            /** Binary AMD desktop drivers on Windows and Linux */
+            #ifndef MAGNUM_TARGET_WEBGL
+            /**
+             * Binary AMD desktop drivers on Windows and Linux
+             * @requires_gles Not detectable on WebGL, as browsers
+             *      intentionally hide most of the driver information.
+             */
             AMD = 1 << 0,
 
-            /** Intel desktop drivers on Windows */
+            /**
+             * Intel desktop drivers on Windows
+             * @requires_gles Not detectable on WebGL, as browsers
+             *      intentionally hide most of the driver information.
+             */
             IntelWindows = 1 << 1,
 
-            #ifndef MAGNUM_TARGET_WEBGL
-            /** Binary NVidia drivers on Windows and Linux */
-            NVidia = 1 << 2,
-            #endif
+            /**
+             * Mesa drivers on Linux
+             * @requires_gles Not detectable on WebGL, as browsers
+             *      intentionally hide most of the driver information.
+             */
+            Mesa = 1 << 2,
 
-            /** Mesa drivers on Linux */
-            Mesa = 1 << 3,
+            /**
+             * Binary NVidia drivers on Windows and Linux
+             * @requires_gles Not detectable on WebGL, as browsers
+             *      intentionally hide most of the driver information.
+             */
+            NVidia = 1 << 3,
+            #endif
 
             #ifdef MAGNUM_TARGET_GLES
             /**
