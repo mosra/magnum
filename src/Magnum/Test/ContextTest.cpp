@@ -35,11 +35,17 @@ struct ContextTest: TestSuite::Tester {
 
     void debugFlag();
     void debugFlags();
+
+    void debugDetectedDriver();
+    void debugDetectedDrivers();
 };
 
 ContextTest::ContextTest() {
     addTests({&ContextTest::debugFlag,
-              &ContextTest::debugFlags});
+              &ContextTest::debugFlags,
+
+              &ContextTest::debugDetectedDriver,
+              &ContextTest::debugDetectedDrivers});
 }
 
 void ContextTest::debugFlag() {
@@ -59,6 +65,28 @@ void ContextTest::debugFlags() {
     std::ostringstream out;
     Debug(&out) << Context::Flags{} << (Context::Flag::Debug|Context::Flag::NoError) << (Context::Flag::Debug|Context::Flag(0xded0));
     CORRADE_COMPARE(out.str(), "Context::Flags{} Context::Flag::Debug|Context::Flag::NoError Context::Flag::Debug|Context::Flag(0xded0)\n");
+    #endif
+}
+
+void ContextTest::debugDetectedDriver() {
+    std::ostringstream out;
+    #ifndef MAGNUM_TARGET_WEBGL
+    Debug{&out} << Context::DetectedDriver::AMD << Context::DetectedDriver(0xdead);
+    CORRADE_COMPARE(out.str(), "Context::DetectedDriver::AMD Context::DetectedDriver(0xdead)\n");
+    #else
+    Debug{&out} << Context::DetectedDriver::ProbablyAngle << Context::DetectedDriver(0xdead);
+    CORRADE_COMPARE(out.str(), "Context::DetectedDriver::ProbablyAngle Context::DetectedDriver(0xdead)\n");
+    #endif
+}
+
+void ContextTest::debugDetectedDrivers() {
+    std::ostringstream out;
+    #ifndef MAGNUM_TARGET_WEBGL
+    Debug{&out} << Context::DetectedDrivers{} << (Context::DetectedDriver::AMD|Context::DetectedDriver::NVidia) << (Context::DetectedDriver::Mesa|Context::DetectedDriver(0xde00));
+    CORRADE_COMPARE(out.str(), "Context::DetectedDrivers{} Context::DetectedDriver::AMD|Context::DetectedDriver::NVidia Context::DetectedDriver::Mesa|Context::DetectedDriver(0xde00)\n");
+    #else
+    Debug{&out} << Context::DetectedDrivers{} << (Context::DetectedDriver::ProbablyAngle) << (Context::DetectedDriver::ProbablyAngle|Context::DetectedDriver(0xde00));
+    CORRADE_COMPARE(out.str(), "Context::DetectedDrivers{} Context::DetectedDriver::ProbablyAngle Context::DetectedDriver::ProbablyAngle|Context::DetectedDriver(0xde00)\n");
     #endif
 }
 

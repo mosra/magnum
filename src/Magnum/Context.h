@@ -527,7 +527,8 @@ class MAGNUM_EXPORT Context {
          *
          * Tries to detect driver using various OpenGL state queries. Once the
          * detection is done, the result is cached, repeated queries don't
-         * result in repeated GL calls.
+         * result in repeated GL calls. Used primarily for enabling
+         * driver-specific workarounds.
          */
         DetectedDrivers detectedDriver();
 
@@ -588,6 +589,12 @@ MAGNUM_EXPORT Debug& operator<<(Debug& debug, Context::Flag value);
 /** @debugoperatorclassenum{Magnum::Context,Magnum::Context::Flags} */
 MAGNUM_EXPORT Debug& operator<<(Debug& debug, Context::Flags value);
 #endif
+
+/** @debugoperatorclassenum{Magnum::Context,Magnum::Context::DetectedDriver} */
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, Context::DetectedDriver value);
+
+/** @debugoperatorclassenum{Magnum::Context,Magnum::Context::DetectedDrivers} */
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, Context::DetectedDrivers value);
 
 /** @hideinitializer
 @brief Assert that given OpenGL version is supported

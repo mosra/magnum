@@ -860,8 +860,8 @@ void Context::resetState(const States states) {
     #endif
 }
 
-#ifndef MAGNUM_TARGET_WEBGL
 #ifndef DOXYGEN_GENERATING_OUTPUT
+#ifndef MAGNUM_TARGET_WEBGL
 Debug& operator<<(Debug& debug, const Context::Flag value) {
     switch(value) {
         /* LCOV_EXCL_START */
@@ -888,6 +888,40 @@ Debug& operator<<(Debug& debug, const Context::Flags value) {
     });
 }
 #endif
+
+Debug& operator<<(Debug& debug, const Context::DetectedDriver value) {
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case Context::DetectedDriver::value: return debug << "Context::DetectedDriver::" #value;
+        #ifndef MAGNUM_TARGET_WEBGL
+        _c(AMD)
+        _c(IntelWindows)
+        _c(Mesa)
+        _c(NVidia)
+        #endif
+        #ifdef MAGNUM_TARGET_GLES
+        _c(ProbablyAngle)
+        #endif
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "Context::DetectedDriver(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const Context::DetectedDrivers value) {
+    return Containers::enumSetDebugOutput(debug, value, "Context::DetectedDrivers{}", {
+        #ifndef MAGNUM_TARGET_WEBGL
+        Context::DetectedDriver::AMD,
+        Context::DetectedDriver::IntelWindows,
+        Context::DetectedDriver::Mesa,
+        Context::DetectedDriver::NVidia,
+        #endif
+        #ifdef MAGNUM_TARGET_GLES
+        Context::DetectedDriver::ProbablyAngle
+        #endif
+    });
+}
 #endif
 
 }
