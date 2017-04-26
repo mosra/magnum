@@ -775,7 +775,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
         /** @overload
          * @requires_gl40 Extension @extension{ARB,texture_cube_map_array}
          * @requires_gles30 Not defined in OpenGL ES 2.0.
-         * @requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
+         * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
          *      @extension{EXT,texture_cube_map_array}
          * @requires_gles Cube map texture arrays are not available in WebGL.
          */

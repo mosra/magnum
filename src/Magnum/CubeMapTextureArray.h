@@ -83,7 +83,7 @@ more information about usage in shaders.
     @ref MultisampleTexture
 @requires_gl40 Extension @extension{ARB,texture_cube_map_array}
 @requires_gles30 Not defined in OpenGL ES 2.0.
-@requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
+@requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
     @extension{EXT,texture_cube_map_array}
 @requires_gles Cube map texture arrays are not available in WebGL.
 */
@@ -153,12 +153,7 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          *      @fn_gl_keyword{CreateTextures} with @def_gl{TEXTURE_CUBE_MAP_ARRAY},
          *      eventually @fn_gl_keyword{GenTextures}
          */
-        explicit CubeMapTextureArray():
-            #ifndef MAGNUM_TARGET_GLES
-            AbstractTexture{GL_TEXTURE_CUBE_MAP_ARRAY} {}
-            #else
-            AbstractTexture{GL_TEXTURE_CUBE_MAP_ARRAY_EXT} {}
-            #endif
+        explicit CubeMapTextureArray(): AbstractTexture{GL_TEXTURE_CUBE_MAP_ARRAY} {}
 
         /**
          * @brief Construct without creating the underlying OpenGL object
@@ -171,12 +166,7 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          * destructing) objects even without any OpenGL context being active.
          * @see @ref CubeMapTextureArray(), @ref wrap()
          */
-        explicit CubeMapTextureArray(NoCreateT) noexcept:
-            #ifndef MAGNUM_TARGET_GLES
-            AbstractTexture{NoCreate, GL_TEXTURE_CUBE_MAP_ARRAY} {}
-            #else
-            AbstractTexture{NoCreate, GL_TEXTURE_CUBE_MAP_ARRAY_EXT} {}
-            #endif
+        explicit CubeMapTextureArray(NoCreateT) noexcept: AbstractTexture{NoCreate, GL_TEXTURE_CUBE_MAP_ARRAY} {}
 
         /**
          * @brief Bind level of given texture layer to given image unit
@@ -817,13 +807,7 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
         #endif
 
     private:
-        explicit CubeMapTextureArray(GLuint id, ObjectFlags flags) noexcept: AbstractTexture{id,
-            #ifndef MAGNUM_TARGET_GLES
-            GL_TEXTURE_CUBE_MAP_ARRAY,
-            #else
-            GL_TEXTURE_CUBE_MAP_ARRAY_EXT,
-            #endif
-            flags} {}
+        explicit CubeMapTextureArray(GLuint id, ObjectFlags flags) noexcept: AbstractTexture{id, GL_TEXTURE_CUBE_MAP_ARRAY, flags} {}
 };
 
 }
