@@ -343,16 +343,20 @@ void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr i
 
         /* Indexed mesh with base vertex */
         } else if(baseVertex) {
+            #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
             #ifndef MAGNUM_TARGET_GLES
             /* Indexed mesh with base vertex and base instance */
-            if(baseInstance)
+            if(baseInstance) {
                 glDrawElementsInstancedBaseVertexBaseInstance(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), instanceCount, baseVertex, baseInstance);
 
             /* Indexed mesh with base vertex */
-            else
+            } else
+            #endif
+            {
                 glDrawElementsInstancedBaseVertex(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), instanceCount, baseVertex);
+            }
             #else
-            CORRADE_ASSERT(false, "Mesh::draw(): desktop OpenGL is required for base vertex specification in indexed meshes", );
+            CORRADE_ASSERT(false, "Mesh::draw(): OpenGL ES 3.2 or desktop GL is required for base vertex specification in indexed meshes", );
             #endif
 
         /* Indexed mesh */

@@ -652,8 +652,8 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @see @ref setCount(), @ref setBaseInstance()
          * @requires_gl32 Extension @extension{ARB,draw_elements_base_vertex}
          *      for indexed meshes
-         * @requires_gl Base vertex cannot be specified for indexed meshes in
-         *      OpenGL ES or WebGL.
+         * @requires_gles32 Base vertex cannot be specified for indexed meshes
+         *      in OpenGL ES 3.1 or WebGL.
          */
         Mesh& setBaseVertex(Int baseVertex) {
             _baseVertex = baseVertex;

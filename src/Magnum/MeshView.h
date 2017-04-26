@@ -136,8 +136,8 @@ class MAGNUM_EXPORT MeshView {
          * Default is @cpp 0 @ce.
          * @requires_gl32 Extension @extension{ARB,draw_elements_base_vertex}
          *      for indexed meshes
-         * @requires_gl Base vertex cannot be specified for indexed meshes in
-         *      OpenGL ES or WebGL.
+         * @requires_gles32 Base vertex cannot be specified for indexed meshes
+         *      in OpenGL ES 3.1 or WebGL.
          */
         MeshView& setBaseVertex(Int baseVertex) {
             _baseVertex = baseVertex;
