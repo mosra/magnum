@@ -275,6 +275,9 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     createContext();
     Context& c = Context::current();
 
+    #ifndef MAGNUM_TARGET_GLES
+    Debug() << "Core profile:" << (c.isCoreProfile() ? "yes" : "no");
+    #endif
     Debug() << "Context flags:";
     for(const auto flag: {Context::Flag::Debug,
                           Context::Flag::NoError,
