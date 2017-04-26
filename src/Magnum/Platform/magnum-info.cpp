@@ -278,14 +278,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #ifndef MAGNUM_TARGET_GLES
     Debug() << "Core profile:" << (c.isCoreProfile() ? "yes" : "no");
     #endif
-    Debug() << "Context flags:";
-    for(const auto flag: {Context::Flag::Debug,
-                          Context::Flag::NoError,
-                          #ifndef MAGNUM_TARGET_GLES
-                          Context::Flag::RobustAccess
-                          #endif
-                          })
-        if(c.flags() & flag) Debug() << "   " << flag;
+    Debug() << "Context flags:" << c.flags();
 
     Debug() << "Supported GLSL versions:";
     const std::vector<std::string> shadingLanguageVersions = c.shadingLanguageVersionStrings();

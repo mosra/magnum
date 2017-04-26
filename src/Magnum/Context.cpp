@@ -31,6 +31,7 @@
 #include <iostream> /* for initialization log redirection */
 #include <string>
 #include <unordered_map>
+#include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/Debug.h>
 #include <Corrade/Utility/String.h>
@@ -875,6 +876,16 @@ Debug& operator<<(Debug& debug, const Context::Flag value) {
     }
 
     return debug << "Context::Flag(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const Context::Flags value) {
+    return Containers::enumSetDebugOutput(debug, value, "Context::Flags{}", {
+        Context::Flag::Debug,
+        Context::Flag::NoError,
+        #ifndef MAGNUM_TARGET_GLES
+        Context::Flag::RobustAccess
+        #endif
+    });
 }
 #endif
 #endif

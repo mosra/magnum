@@ -562,11 +562,17 @@ class MAGNUM_EXPORT Context {
         bool _displayInitializationLog;
 };
 
+#ifndef MAGNUM_TARGET_WEBGL
+CORRADE_ENUMSET_OPERATORS(Context::Flags)
+#endif
 CORRADE_ENUMSET_OPERATORS(Context::DetectedDrivers)
 
 #ifndef MAGNUM_TARGET_WEBGL
 /** @debugoperatorclassenum{Magnum::Context,Magnum::Context::Flag} */
 MAGNUM_EXPORT Debug& operator<<(Debug& debug, Context::Flag value);
+
+/** @debugoperatorclassenum{Magnum::Context,Magnum::Context::Flags} */
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, Context::Flags value);
 #endif
 
 /** @hideinitializer

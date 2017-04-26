@@ -34,10 +34,12 @@ struct ContextTest: TestSuite::Tester {
     explicit ContextTest();
 
     void debugFlag();
+    void debugFlags();
 };
 
 ContextTest::ContextTest() {
-    addTests({&ContextTest::debugFlag});
+    addTests({&ContextTest::debugFlag,
+              &ContextTest::debugFlags});
 }
 
 void ContextTest::debugFlag() {
@@ -47,6 +49,16 @@ void ContextTest::debugFlag() {
     std::ostringstream out;
     Debug(&out) << Context::Flag::Debug << Context::Flag(0xdead);
     CORRADE_COMPARE(out.str(), "Context::Flag::Debug Context::Flag(0xdead)\n");
+    #endif
+}
+
+void ContextTest::debugFlags() {
+    #ifdef MAGNUM_TARGET_WEBGL
+    CORRADE_SKIP("No context flags on Emscripten yet.");
+    #else
+    std::ostringstream out;
+    Debug(&out) << Context::Flags{} << (Context::Flag::Debug|Context::Flag::NoError) << (Context::Flag::Debug|Context::Flag(0xded0));
+    CORRADE_COMPARE(out.str(), "Context::Flags{} Context::Flag::Debug|Context::Flag::NoError Context::Flag::Debug|Context::Flag(0xded0)\n");
     #endif
 }
 
