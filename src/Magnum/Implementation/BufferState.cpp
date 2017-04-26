@@ -178,6 +178,15 @@ BufferState::BufferState(Context& context, std::vector<std::string>& extensions)
     }
     #endif
 
+    #ifndef MAGNUM_TARGET_GLES
+    if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>() &&
+      (context.detectedDriver() & Context::DetectedDriver::Svga3D) &&
+      !context.isDriverWorkaroundDisabled("svga3d-broken-dsa-bufferdata"))
+    {
+        dataImplementation = &Buffer::dataImplementationDefault;
+    }
+    #endif
+
     #ifdef MAGNUM_TARGET_GLES
     static_cast<void>(context);
     static_cast<void>(extensions);
