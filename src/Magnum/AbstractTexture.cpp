@@ -1400,13 +1400,15 @@ void AbstractTexture::storageMultisampleImplementationFallback(const GLsizei sam
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void AbstractTexture::storageMultisampleImplementationDefault(const GLsizei samples, const TextureFormat internalFormat, const Vector3i& size, const GLboolean fixedSampleLocations) {
     bindInternal();
-    #ifndef MAGNUM_TARGET_GLES
-    glTexStorage3DMultisample
-    #else
-    glTexStorage3DMultisampleOES
-    #endif
-        (_target, samples, GLenum(internalFormat), size.x(), size.y(), size.z(), fixedSampleLocations);
+    glTexStorage3DMultisample(_target, samples, GLenum(internalFormat), size.x(), size.y(), size.z(), fixedSampleLocations);
 }
+
+#ifdef MAGNUM_TARGET_GLES
+void AbstractTexture::storageMultisampleImplementationOES(const GLsizei samples, const TextureFormat internalFormat, const Vector3i& size, const GLboolean fixedSampleLocations) {
+    bindInternal();
+    glTexStorage3DMultisampleOES(_target, samples, GLenum(internalFormat), size.x(), size.y(), size.z(), fixedSampleLocations);
+}
+#endif
 #endif
 
 #ifndef MAGNUM_TARGET_GLES

@@ -612,6 +612,9 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         void MAGNUM_LOCAL storageMultisampleImplementationDefault(GLsizei samples, TextureFormat internalFormat, const Vector2i& size, GLboolean fixedsamplelocations);
         void MAGNUM_LOCAL storageMultisampleImplementationDefault(GLsizei samples, TextureFormat internalFormat, const Vector3i& size, GLboolean fixedsamplelocations);
+        #ifdef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL storageMultisampleImplementationOES(GLsizei samples, TextureFormat internalFormat, const Vector3i& size, GLboolean fixedsamplelocations);
+        #endif
         #endif
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_LOCAL storageMultisampleImplementationDSA(GLsizei samples, TextureFormat internalFormat, const Vector2i& size, GLboolean fixedsamplelocations);

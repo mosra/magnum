@@ -97,7 +97,7 @@ Note that multisample textures don't support compressed formats.
     older.
 @requires_gles30 Multisample 2D array textures are not defined in OpenGL ES
     2.0.
-@requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
+@requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
     @extension{OES,texture_storage_multisample_2d_array} for multisample 2D
     array textures.
 @requires_gles Multisample textures are not available in WebGL.
@@ -204,7 +204,7 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
          *      @ref AbstractShaderProgram::maxImageUnits(),
          *      @fn_gl_keyword{BindImageTexture}
          * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
-         * @requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
+         * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
          *      @extension{OES,texture_storage_multisample_2d_array} for
          *      multisample 2D array textures.
          */
@@ -230,7 +230,7 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
          *      @ref AbstractShaderProgram::maxImageUnits(),
          *      @fn_gl_keyword{BindImageTexture}
          * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
-         * @requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
+         * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
          *      @extension{OES,texture_storage_multisample_2d_array} for
          *      multisample 2D array textures.
          */
@@ -334,7 +334,7 @@ typedef MultisampleTexture<2> MultisampleTexture2D;
 
 @requires_gl32 Extension @extension{ARB,texture_multisample}
 @requires_gles30 Not defined in OpenGL ES 2.0.
-@requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
+@requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
     @extension{OES,texture_storage_multisample_2d_array}
 @requires_gles Multisample textures are not available in WebGL.
 */
