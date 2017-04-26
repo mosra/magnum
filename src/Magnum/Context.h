@@ -154,15 +154,17 @@ class MAGNUM_EXPORT Context {
              */
             NoError = GL_CONTEXT_FLAG_NO_ERROR_BIT_KHR,
 
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             /**
              * Context with robust access
-             * @requires_extension Extension @extension{ARB,robustness}
-             * @requires_es_extension Extension @extension{EXT,robustness}
-             * @todo In ES available under glGetIntegerv(CONTEXT_ROBUST_ACCESS_EXT),
+             * @requires_gl45 Extension @extension{KHR,robustness} or
+             *      @extension{ARB,robustness}
+             * @requires_gles32 Extension @extension{KHR,robustness} or
+             *      @extension{EXT,robustness}
+             * @todo In ES2 available under glGetIntegerv(CONTEXT_ROBUST_ACCESS_EXT),
              *      how to make it compatible?
              */
-            RobustAccess = GL_CONTEXT_FLAG_ROBUST_ACCESS_BIT_ARB
+            RobustAccess = GL_CONTEXT_FLAG_ROBUST_ACCESS_BIT
             #endif
         };
 
