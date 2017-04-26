@@ -739,6 +739,7 @@ Shader::Shader(const Version version, const Type type): _type(type), _id(0) {
         case Version::GLES300: _sources.emplace_back("#version 300 es\n"); return;
         #ifndef MAGNUM_TARGET_WEBGL
         case Version::GLES310: _sources.emplace_back("#version 310 es\n"); return;
+        case Version::GLES320: _sources.emplace_back("#version 320 es\n"); return;
         #endif
 
         /* The user is responsible for (not) adding #version directive */

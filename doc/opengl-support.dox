@@ -256,7 +256,6 @@ GLSL 4.50                                   | done
 Extension                                   | Status
 ------------------------------------------- | ------
 @extension{ARB,robustness}                  | done
-@extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr} | done
 @extension{KHR,texture_compression_astc_hdr} | done
 @extension{ARB,robustness_isolation}        | done
 @extension{ARB,bindless_texture}            | |
@@ -269,6 +268,9 @@ Extension                                   | Status
 @extension{ARB,pipeline_statistics_query}   | |
 @extension{ARB,sparse_buffer}               | |
 @extension{ARB,transform_feedback_overflow_query} | done
+@extension{ARB,ES3_2_compatibility}         | |
+@extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr} | done
+@extension{KHR,robust_buffer_access_behavior} | done (nothing to do)
 @extension{KHR,blend_equation_advanced}     | done
 @extension2{KHR,blend_equation_advanced_coherent,blend_equation_advanced} | done
 @extension{KHR,no_error}                    | done
@@ -311,6 +313,37 @@ supported. ESSL 3.00 is supported.
 
 Features that have their equivalents implemented in desktop version are
 supported. ESSL 3.10 is supported.
+
+@subsection opengl-support-es32 OpenGL ES 3.2
+
+Features that have their equivalents implemented in desktop version are
+supported. ESSL 3.20 is supported.
+
+Extension                                   | Status
+------------------------------------------- | ------
+@extension{EXT,color_buffer_half_float}     | |
+@extension{EXT,color_buffer_float}          | |
+@extension{EXT,copy_image}                  | |
+@extension{EXT,draw_buffers_indexed}        | |
+@extension{EXT,geometry_shader}             | missing some ES-specific limit queries
+@extension{EXT,gpu_shader5}                 | done (shading language only)
+@extension{EXT,shader_io_blocks}            | done (shading language only)
+@extension{EXT,tessellation_shader}         | see above
+@extension{EXT,texture_border_clamp}        | done
+@extension{EXT,texture_buffer}              | done
+@extension{EXT,texture_cube_map_array}      | done
+@extension{EXT,primitive_bounding_box}      | |
+@extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr} | done
+@extension{KHR,debug}                       | see above
+@extension2{KHR,blend_equation_advanced,blend_equation_advanced}  | done
+@extension{KHR,robustness}                  | |
+@extension{KHR,robust_buffer_access_behavior} | done (nothing to do)
+@extension{OES,sample_shading}              | |
+@extension{OES,sample_variables}            | done (shading language only)
+@extension{OES,shader_image_atomic}         | done (shading language only)
+@extension{OES,shader_multisample_interpolation} | |
+@extension{OES,texture_stencil8}            | done
+@extension{OES,texture_storage_multisample_2d_array} | done
 
 @subsection opengl-support-es30-extensions OpenGL ES 2.0 extensions to match ES 3.0 functionality
 
@@ -396,23 +429,8 @@ Extension                                   | Status
 @extension{EXT,sRGB_write_control}          | done
 @extension2{EXT,texture_compression_s3tc,texture_compression_s3tc} | done
 @extension{EXT,shader_integer_mix}          | done (shading language only)
-@extension{EXT,copy_image}                  | |
-@extension{EXT,draw_buffers_indexed}        | |
-@extension{EXT,geometry_shader}             | missing some ES-specific limit queries
-@extension{EXT,gpu_shader5}                 | done (shading language only)
-@extension{EXT,shader_io_blocks}            | done (shading language only)
-@extension{EXT,tessellation_shader}         | see above
-@extension{EXT,texture_border_clamp}        | done
-@extension{EXT,texture_buffer}              | done
-@extension{EXT,texture_cube_map_array}      | done
-@extension{EXT,primitive_bounding_box}      | |
-@extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr} | done
 @extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr} | done
-@extension{KHR,debug}                       | see above
-@extension2{KHR,blend_equation_advanced,blend_equation_advanced}  | done
 @extension2{KHR,blend_equation_advanced_coherent,blend_equation_advanced} | done
-@extension{KHR,robustness}                  | |
-@extension{KHR,robust_buffer_access_behavior} | done (nothing to do)
 @extension{KHR,context_flush_control}       | |
 @extension2{KHR,no_error,no_error}          | done
 @extension2{NV,read_buffer_front,NV_read_buffer} | done
@@ -426,12 +444,6 @@ Extension                                   | Status
 @extension{OES,mapbuffer}                   | done
 @extension{OES,stencil1}                    | done
 @extension{OES,stencil4}                    | done
-@extension{OES,sample_shading}              | |
-@extension{OES,sample_variables}            | done (shading language only)
-@extension{OES,shader_image_atomic}         | done (shading language only)
-@extension{OES,shader_multisample_interpolation} | |
-@extension{OES,texture_stencil8}            | done
-@extension{OES,texture_storage_multisample_2d_array} | done
 
 @subsection opengl-support-webgl10 WebGL 1.0
 
@@ -450,6 +462,7 @@ supported.
 Extension                                   | Status
 ------------------------------------------- | ------
 @webgl_extension{ANGLE,instanced_arrays}    | done
+@webgl_extension{EXT,color_buffer_half_float} | |
 @webgl_extension{EXT,blend_minmax}          | done
 @webgl_extension{EXT,shader_texture_lod}    | done (shading language only)
 @webgl_extension{OES,texture_float}         | done
@@ -461,7 +474,13 @@ Extension                                   | Status
 @webgl_extension{OES,texture_half_float_linear} | done
 @webgl_extension{OES,fbo_render_mipmap}     | done
 @webgl_extension{WEBGL,depth_texture}       | done
+@webgl_extension{WEBGL,color_buffer_float}  | |
 @webgl_extension{WEBGL,draw_buffers}        | done
+
+@attention @webgl_extension{EXT,color_buffer_half_float} and
+    @webgl_extension{WEBGL,color_buffer_float} are not part of WebGL 2.0, but
+    are included in this table because they are subsumed by
+    @webgl_extension{EXT,color_buffer_float} in WebGL 2.0.
 
 @subsection opengl-support-webgl-extensions WebGL extensions to match desktop functionality
 
@@ -472,6 +491,7 @@ Extension                                   | Status
 @webgl_extension{EXT,texture_filter_anisotropic} | done
 @webgl_extension{EXT,sRGB}                  | done
 @webgl_extension{EXT,disjoint_timer_query}  | only time elapsed query
+@webgl_extension{EXT,color_buffer_float}    | |
 @webgl_extension{WEBGL,compressed_texture_s3tc} | done
 
 @section opengl-unsupported Unsupported OpenGL features

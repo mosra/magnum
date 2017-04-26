@@ -103,7 +103,23 @@ enum class Version: Int {
     #ifndef MAGNUM_TARGET_GLES
     GLES310 = Implementation::VersionESMask|310,
     #else
-    GLES310 = 310
+    GLES310 = 310,
+    #endif
+    #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    /**
+     * OpenGL ES 3.2, GLSL ES 3.20.
+     *
+     * On desktop OpenGL, all related functionality is present in extension
+     * @extension{ARB,ES3_2_compatibility}, so testing for this version using
+     * @ref Context::isVersionSupported() is equivalent to testing for
+     * availability of that extension.
+     */
+    #ifndef MAGNUM_TARGET_GLES
+    GLES320 = Implementation::VersionESMask|320,
+    #else
+    GLES320 = 320
     #endif
     #endif
 };

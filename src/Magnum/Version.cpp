@@ -55,6 +55,7 @@ Debug& operator<<(Debug& debug, Version value) {
         _c(GLES200, "OpenGL ES 2.0")
         _c(GLES300, "OpenGL ES 3.0")
         _c(GLES310, "OpenGL ES 3.1")
+        _c(GLES320, "OpenGL ES 3.2")
         #endif
         #undef _c
         /* LCOV_EXCL_STOP */

@@ -67,6 +67,7 @@ is supported on older Intel GPUs even if they are capable of OpenGL 2.1 only).
 -   @subpage requires-gles20
 -   @subpage requires-gles30
 -   @subpage requires-gles31
+-   @subpage requires-gles32
 -   @subpage requires-es-extension
 -   @subpage requires-gles
 -   @subpage requires-webgl20
@@ -144,6 +145,12 @@ or desktop OpenGL.
 */
 
 /** @page requires-gles31 Functionality requiring OpenGL ES 3.1
+@m_footernavigation
+
+The following symbols are not defined when targeting OpenGL ES 2.0.
+*/
+
+/** @page requires-gles32 Functionality requiring OpenGL ES 3.2
 @m_footernavigation
 
 The following symbols are not defined when targeting OpenGL ES 2.0.
