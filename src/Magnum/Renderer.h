@@ -85,7 +85,8 @@ class MAGNUM_EXPORT Renderer {
              * extension @extension2{KHR,blend_equation_advanced_coherent,blend_equation_advanced}
              * is available. See @ref blendBarrier() for more information.
              * @requires_extension Extension @extension{KHR,blend_equation_advanced}
-             * @requires_es_extension Extension @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
+             *      @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
              * @requires_gles Advanced blend equations are not available in WebGL.
              */
             BlendAdvancedCoherent = GL_BLEND_ADVANCED_COHERENT_KHR,
@@ -823,7 +824,8 @@ class MAGNUM_EXPORT Renderer {
              * @ref setBlendEquation(BlendEquation).
              * @see @ref blendBarrier()
              * @requires_extension Extension @extension{KHR,blend_equation_advanced}
-             * @requires_es_extension Extension @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
+             *      @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
              * @requires_gles Advanced blend equations are not available in
              *      WebGL.
              */
@@ -835,7 +837,8 @@ class MAGNUM_EXPORT Renderer {
              * @ref setBlendEquation(BlendEquation).
              * @see @ref blendBarrier()
              * @requires_extension Extension @extension{KHR,blend_equation_advanced}
-             * @requires_es_extension Extension @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
+             *      @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
              * @requires_gles Advanced blend equations are not available in
              *      WebGL.
              */
@@ -847,7 +850,8 @@ class MAGNUM_EXPORT Renderer {
              * @ref setBlendEquation(BlendEquation).
              * @see @ref blendBarrier()
              * @requires_extension Extension @extension{KHR,blend_equation_advanced}
-             * @requires_es_extension Extension @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
+             *      @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
              * @requires_gles Advanced blend equations are not available in
              *      WebGL.
              */
@@ -859,7 +863,8 @@ class MAGNUM_EXPORT Renderer {
              * @ref setBlendEquation(BlendEquation).
              * @see @ref blendBarrier()
              * @requires_extension Extension @extension{KHR,blend_equation_advanced}
-             * @requires_es_extension Extension @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
+             *      @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
              * @requires_gles Advanced blend equations are not available in
              *      WebGL.
              */
@@ -871,7 +876,8 @@ class MAGNUM_EXPORT Renderer {
              * @ref setBlendEquation(BlendEquation).
              * @see @ref blendBarrier()
              * @requires_extension Extension @extension{KHR,blend_equation_advanced}
-             * @requires_es_extension Extension @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
+             *      @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
              * @requires_gles Advanced blend equations are not available in
              *      WebGL.
              */
@@ -883,7 +889,8 @@ class MAGNUM_EXPORT Renderer {
              * @ref setBlendEquation(BlendEquation).
              * @see @ref blendBarrier()
              * @requires_extension Extension @extension{KHR,blend_equation_advanced}
-             * @requires_es_extension Extension @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
+             *      @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
              * @requires_gles Advanced blend equations are not available in
              *      WebGL.
              */
@@ -895,7 +902,8 @@ class MAGNUM_EXPORT Renderer {
              * @ref setBlendEquation(BlendEquation).
              * @see @ref blendBarrier()
              * @requires_extension Extension @extension{KHR,blend_equation_advanced}
-             * @requires_es_extension Extension @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
+             *      @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
              * @requires_gles Advanced blend equations are not available in
              *      WebGL.
              */
@@ -907,7 +915,8 @@ class MAGNUM_EXPORT Renderer {
              * @ref setBlendEquation(BlendEquation).
              * @see @ref blendBarrier()
              * @requires_extension Extension @extension{KHR,blend_equation_advanced}
-             * @requires_es_extension Extension @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
+             *      @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
              * @requires_gles Advanced blend equations are not available in
              *      WebGL.
              */
@@ -919,7 +928,8 @@ class MAGNUM_EXPORT Renderer {
              * @ref setBlendEquation(BlendEquation).
              * @see @ref blendBarrier()
              * @requires_extension Extension @extension{KHR,blend_equation_advanced}
-             * @requires_es_extension Extension @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
+             *      @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
              * @requires_gles Advanced blend equations are not available in
              *      WebGL.
              */
@@ -931,7 +941,8 @@ class MAGNUM_EXPORT Renderer {
              * @ref setBlendEquation(BlendEquation).
              * @see @ref blendBarrier()
              * @requires_extension Extension @extension{KHR,blend_equation_advanced}
-             * @requires_es_extension Extension @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
+             *      @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
              * @requires_gles Advanced blend equations are not available in
              *      WebGL.
              */
@@ -943,7 +954,8 @@ class MAGNUM_EXPORT Renderer {
              * @ref setBlendEquation(BlendEquation).
              * @see @ref blendBarrier()
              * @requires_extension Extension @extension{KHR,blend_equation_advanced}
-             * @requires_es_extension Extension @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
+             *      @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
              * @requires_gles Advanced blend equations are not available in
              *      WebGL.
              */
@@ -955,7 +967,8 @@ class MAGNUM_EXPORT Renderer {
              * @ref setBlendEquation(BlendEquation).
              * @see @ref blendBarrier()
              * @requires_extension Extension @extension{KHR,blend_equation_advanced}
-             * @requires_es_extension Extension @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
+             *      @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
              * @requires_gles Advanced blend equations are not available in
              *      WebGL.
              */
@@ -967,7 +980,8 @@ class MAGNUM_EXPORT Renderer {
              * @ref setBlendEquation(BlendEquation).
              * @see @ref blendBarrier()
              * @requires_extension Extension @extension{KHR,blend_equation_advanced}
-             * @requires_es_extension Extension @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
+             *      @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
              * @requires_gles Advanced blend equations are not available in
              *      WebGL.
              */
@@ -979,7 +993,8 @@ class MAGNUM_EXPORT Renderer {
              * @ref setBlendEquation(BlendEquation).
              * @see @ref blendBarrier()
              * @requires_extension Extension @extension{KHR,blend_equation_advanced}
-             * @requires_es_extension Extension @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
+             *      @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
              * @requires_gles Advanced blend equations are not available in
              *      WebGL.
              */
@@ -991,7 +1006,8 @@ class MAGNUM_EXPORT Renderer {
              * @ref setBlendEquation(BlendEquation).
              * @see @ref blendBarrier()
              * @requires_extension Extension @extension{KHR,blend_equation_advanced}
-             * @requires_es_extension Extension @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
+             *      @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
              * @requires_gles Advanced blend equations are not available in
              *      WebGL.
              */
@@ -1198,7 +1214,8 @@ class MAGNUM_EXPORT Renderer {
          * is available and @ref Feature::BlendAdvancedCoherent is turned off.
          * @see @ref BlendEquation, @fn_gl_extension_keyword{BlendBarrier,KHR,blend_equation_advanced}
          * @requires_extension Extension @extension{KHR,blend_equation_advanced}
-         * @requires_es_extension Extension @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+         * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
+         *      @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
          * @requires_gles Advanced blend equations are not available in WebGL.
          */
         static void blendBarrier() { glBlendBarrierKHR(); }
