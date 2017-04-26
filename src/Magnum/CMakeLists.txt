@@ -54,6 +54,7 @@ set(Magnum_SRCS
     Version.cpp
 
     Implementation/BufferState.cpp
+    Implementation/ContextState.cpp
     Implementation/FramebufferState.cpp
     Implementation/MeshState.cpp
     Implementation/RendererState.cpp
@@ -121,6 +122,7 @@ set(Magnum_HEADERS
 # Header files to display in project view of IDEs only
 set(Magnum_PRIVATE_HEADERS
     Implementation/BufferState.h
+    Implementation/ContextState.h
     Implementation/FramebufferState.h
     Implementation/maxTextureSize.h
     Implementation/MeshState.h

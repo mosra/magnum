@@ -78,6 +78,10 @@ namespace {
         /* NVidia drivers (358.16) return only the first slice of compressed
            cube map image when querying all six slice using ARB_DSA API */
         "nv-cubemap-broken-full-compressed-image-query",
+
+        /* NVidia drivers return 0 when asked for GL_CONTEXT_PROFILE_MASK,
+           so it needs to be worked around by asking for GL_ARB_compatibility */
+        "nv-zero-context-profile-mask",
         #endif
 
         #ifdef CORRADE_TARGET_NACL

@@ -43,7 +43,10 @@
 
 namespace Magnum {
 
-namespace Implementation { struct State; }
+namespace Implementation {
+    struct ContextState;
+    struct State;
+}
 namespace Platform { class Context; }
 
 /**
@@ -112,6 +115,7 @@ Arguments:
 
 */
 class MAGNUM_EXPORT Context {
+    friend Implementation::ContextState;
     friend Platform::Context;
 
     public:
@@ -371,6 +375,18 @@ class MAGNUM_EXPORT Context {
             return _supportedExtensions;
         }
 
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Detect if current OpenGL context is a core profile
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls.
+         * @see @fn_gl{Get} with @def_gl{CORE_PROFILE_MASK}
+         * @requires_gl Not available on OpenGL ES or WebGL.
+         */
+        bool isCoreProfile();
+        #endif
+
         /**
          * @brief Whether given OpenGL version is supported
          *
@@ -516,6 +532,11 @@ class MAGNUM_EXPORT Context {
 
         /* Defined in Implementation/driverSpecific.cpp */
         MAGNUM_LOCAL void setupDriverWorkarounds();
+
+        #ifndef MAGNUM_TARGET_GLES
+        MAGNUM_LOCAL bool isCoreProfileImplementationDefault();
+        MAGNUM_LOCAL bool isCoreProfileImplementationNV();
+        #endif
 
         void(*_functionLoader)();
         Version _version;

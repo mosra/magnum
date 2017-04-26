@@ -31,6 +31,7 @@
 #include "Magnum/Extensions.h"
 
 #include "BufferState.h"
+#include "ContextState.h"
 #ifndef MAGNUM_TARGET_WEBGL
 #include "DebugState.h"
 #endif
@@ -60,6 +61,7 @@ State::State(Context& context, std::ostream* const out) {
     #endif
 
     buffer.reset(new BufferState{context, extensions});
+    this->context.reset(new ContextState{context, extensions});
     #ifndef MAGNUM_TARGET_WEBGL
     debug.reset(new DebugState{context, extensions});
     #endif

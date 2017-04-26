@@ -394,6 +394,7 @@ OpenGL function                         | Matching API
 @def_gl{COLOR_CLEAR_VALUE}, \n @def_gl{DEPTH_CLEAR_VALUE}, \n @def_gl{STENCIL_CLEAR_VALUE} | not queryable, @ref Renderer::setClearColor(), \n @ref Renderer::setClearDepth() and \n @ref Renderer::setClearStencil() setters only
 @def_gl{COLOR_WRITEMASK}, \n @def_gl{DEPTH_WRITEMASK}, \n @def_gl{STENCIL_BACK_WRITEMASK}, \n @def_gl{STENCIL_WRITEMASK}               | not queryable, @ref Renderer::setColorMask(), \n @ref Renderer::setDepthMask() and \n @ref Renderer::setStencilMask() setters only
 @def_gl{CONTEXT_FLAGS}                  | @ref Context::flags()
+@def_gl{CONTEXT_PROFILE_MASK}           | @ref Context::isCoreProfile()
 @def_gl{CURRENT_PROGRAM}                | not queryable but tracked internally
 @def_gl{DEBUG_GROUP_STACK_DEPTH}        | |
 @def_gl{DEPTH_FUNC}                     | not queryable, @ref Renderer::setDepthFunction() setter only

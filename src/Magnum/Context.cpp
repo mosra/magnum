@@ -25,6 +25,9 @@
 
 #include "Context.h"
 
+#ifndef MAGNUM_TARGET_GLES
+#include <algorithm> /* std::find in isCoreProfileImplementationNV() */
+#endif
 #include <iostream> /* for initialization log redirection */
 #include <string>
 #include <unordered_map>
@@ -47,6 +50,7 @@
 #include "Magnum/Renderer.h"
 
 #include "Implementation/State.h"
+#include "Implementation/ContextState.h"
 #include "Implementation/BufferState.h"
 #include "Implementation/FramebufferState.h"
 #include "Implementation/MeshState.h"
@@ -774,6 +778,31 @@ std::vector<std::string> Context::extensionStrings() const {
 
     return extensions;
 }
+
+#ifndef MAGNUM_TARGET_GLES
+bool Context::isCoreProfile() {
+    Implementation::ContextState& state = *_state->context;
+    Implementation::ContextState::CoreProfile& value = state.coreProfile;
+
+    if(value == Implementation::ContextState::CoreProfile::Initial)
+        value = (this->*state.isCoreProfileImplementation)() ?
+            Implementation::ContextState::CoreProfile::Core :
+            Implementation::ContextState::CoreProfile::Compatibility;
+
+    return value == Implementation::ContextState::CoreProfile::Core;
+}
+
+bool Context::isCoreProfileImplementationDefault() {
+    GLint value = 0;
+    glGetIntegerv(GL_CONTEXT_PROFILE_MASK, &value);
+    return value & GL_CONTEXT_CORE_PROFILE_BIT;
+}
+
+bool Context::isCoreProfileImplementationNV() {
+    auto extensions = extensionStrings();
+    return std::find(extensions.begin(), extensions.end(), "GL_ARB_compatibility") == extensions.end();
+}
+#endif
 
 bool Context::isVersionSupported(Version version) const {
     #ifndef MAGNUM_TARGET_GLES
