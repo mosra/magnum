@@ -66,7 +66,7 @@ State::State(Context& context, std::ostream* const out) {
     debug.reset(new DebugState{context, extensions});
     #endif
     framebuffer.reset(new FramebufferState{context, extensions});
-    mesh.reset(new MeshState{context, extensions});
+    mesh.reset(new MeshState{context, *this->context, extensions});
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     query.reset(new QueryState{context, extensions});
     #endif

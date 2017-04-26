@@ -781,7 +781,10 @@ std::vector<std::string> Context::extensionStrings() const {
 
 #ifndef MAGNUM_TARGET_GLES
 bool Context::isCoreProfile() {
-    Implementation::ContextState& state = *_state->context;
+    return isCoreProfileInternal(*_state->context);
+}
+
+bool Context::isCoreProfileInternal(Implementation::ContextState& state) {
     Implementation::ContextState::CoreProfile& value = state.coreProfile;
 
     if(value == Implementation::ContextState::CoreProfile::Initial)

@@ -33,7 +33,7 @@
 
 namespace Magnum { namespace Implementation {
 
-MeshState::MeshState(Context& context, std::vector<std::string>& extensions): currentVAO(0)
+MeshState::MeshState(Context& context, ContextState& contextState, std::vector<std::string>& extensions): currentVAO(0)
     #ifndef MAGNUM_TARGET_GLES2
     , maxElementIndex{0}, maxElementsIndices{0}, maxElementsVertices{0}
     #endif
@@ -158,6 +158,24 @@ MeshState::MeshState(Context& context, std::vector<std::string>& extensions): cu
     }
     #endif
     else vertexAttribDivisorImplementation = nullptr;
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    /* If we are on core profile and ARB_VAO was explicitly disabled by the
+       user, we need to bind a default VAO so we are still able to draw things */
+    if(context.isExtensionDisabled<Extensions::GL::ARB::vertex_array_object>() && context.isCoreProfileInternal(contextState)) {
+        glGenVertexArrays(1, &defaultVAO);
+        glBindVertexArray(defaultVAO);
+    }
+    #else
+    static_cast<void>(contextState);
+    #endif
+}
+
+MeshState::~MeshState() {
+    #ifndef MAGNUM_TARGET_GLES
+    /* If the default VAO was created, we need to delete it to avoid leaks */
+    if(defaultVAO) glDeleteVertexArrays(1, &defaultVAO);
     #endif
 }
 

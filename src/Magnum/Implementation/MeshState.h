@@ -32,8 +32,11 @@
 
 namespace Magnum { namespace Implementation {
 
+struct ContextState;
+
 struct MeshState {
-    explicit MeshState(Context& context, std::vector<std::string>& extensions);
+    explicit MeshState(Context& context, ContextState& contextState, std::vector<std::string>& extensions);
+    ~MeshState();
 
     void reset();
 
@@ -54,6 +57,10 @@ struct MeshState {
 
     #ifdef MAGNUM_TARGET_GLES
     void(*multiDrawImplementation)(std::initializer_list<std::reference_wrapper<MeshView>>);
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    GLuint defaultVAO{}; /* Used on core profile in case ARB_VAO is disabled */
     #endif
 
     GLuint currentVAO;

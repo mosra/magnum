@@ -523,6 +523,10 @@ class MAGNUM_EXPORT Context {
         bool isDriverWorkaroundDisabled(const std::string& workaround);
         Implementation::State& state() { return *_state; }
 
+        /* This function is called from MeshState constructor, which means the
+           state() pointer is not ready yet so we have to pass it directly */
+        MAGNUM_LOCAL bool isCoreProfileInternal(Implementation::ContextState& state);
+
     private:
         explicit Context(NoCreateT, Int argc, const char** argv, void functionLoader());
 
