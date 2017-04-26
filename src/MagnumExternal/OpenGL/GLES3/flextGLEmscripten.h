@@ -694,6 +694,16 @@ typedef khronos_ssize_t GLsizeiptr;
 #define GL_TEXTURE_MAX_ANISOTROPY_EXT 0x84FE
 #define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT 0x84FF
 
+/* GL_EXT_disjoint_timer_query */
+
+#define GL_QUERY_COUNTER_BITS_EXT 0x8864
+#define GL_CURRENT_QUERY_EXT 0x8865
+#define GL_QUERY_RESULT_EXT 0x8866
+#define GL_QUERY_RESULT_AVAILABLE_EXT 0x8867
+#define GL_TIME_ELAPSED_EXT 0x88BF
+#define GL_TIMESTAMP_EXT 0x8E28
+#define GL_GPU_DISJOINT_EXT 0x8FBB
+
 /* GL_EXT_texture_compression_s3tc */
 
 #define GL_COMPRESSED_RGB_S3TC_DXT1_EXT 0x83F0
@@ -954,6 +964,20 @@ GLAPI void glVertexAttribI4ui(GLuint, GLuint, GLuint, GLuint, GLuint);
 GLAPI void glVertexAttribI4uiv(GLuint, const GLuint *);
 GLAPI void glVertexAttribIPointer(GLuint, GLint, GLenum, GLsizei, const void *);
 GLAPI void glWaitSync(GLsync, GLbitfield, GLuint64);
+
+/* GL_EXT_disjoint_timer_query */
+
+GLAPI void glBeginQueryEXT(GLenum, GLuint);
+GLAPI void glDeleteQueriesEXT(GLsizei, const GLuint *);
+GLAPI void glEndQueryEXT(GLenum);
+GLAPI void glGenQueriesEXT(GLsizei, GLuint *);
+GLAPI void glGetQueryObjecti64vEXT(GLuint, GLenum, GLint64 *);
+GLAPI void glGetQueryObjectivEXT(GLuint, GLenum, GLint *);
+GLAPI void glGetQueryObjectui64vEXT(GLuint, GLenum, GLuint64 *);
+GLAPI void glGetQueryObjectuivEXT(GLuint, GLenum, GLuint *);
+GLAPI void glGetQueryivEXT(GLenum, GLenum, GLint *);
+GLAPI GLboolean glIsQueryEXT(GLuint);
+GLAPI void glQueryCounterEXT(GLuint, GLenum);
 
 #ifdef __cplusplus
 }

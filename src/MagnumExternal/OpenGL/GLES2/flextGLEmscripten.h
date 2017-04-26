@@ -363,10 +363,14 @@ typedef khronos_ssize_t GLsizeiptr;
 
 #define GL_VERTEX_ATTRIB_ARRAY_DIVISOR_ANGLE 0x88FE
 
-/* GL_EXT_blend_minmax */
+/* GL_EXT_color_buffer_half_float */
 
-#define GL_MIN_EXT 0x8007
-#define GL_MAX_EXT 0x8008
+#define GL_RGBA16F_EXT 0x881A
+#define GL_RGB16F_EXT 0x881B
+#define GL_RG16F_EXT 0x822F
+#define GL_R16F_EXT 0x822D
+#define GL_FRAMEBUFFER_ATTACHMENT_COMPONENT_TYPE_EXT 0x8211
+#define GL_UNSIGNED_NORMALIZED_EXT 0x8C17
 
 /* GL_EXT_sRGB */
 
@@ -375,17 +379,18 @@ typedef khronos_ssize_t GLsizeiptr;
 #define GL_SRGB8_ALPHA8_EXT 0x8C43
 #define GL_FRAMEBUFFER_ATTACHMENT_COLOR_ENCODING_EXT 0x8210
 
-/* GL_OES_element_index_uint */
+/* GL_EXT_blend_minmax */
 
-#define GL_UNSIGNED_INT 0x1405
-
-/* GL_OES_texture_half_float */
-
-#define GL_HALF_FLOAT_OES 0x8D61
+#define GL_MIN_EXT 0x8007
+#define GL_MAX_EXT 0x8008
 
 /* GL_OES_texture_float */
 
 #define GL_FLOAT 0x1406
+
+/* GL_OES_texture_half_float */
+
+#define GL_HALF_FLOAT_OES 0x8D61
 
 /* GL_OES_standard_derivatives */
 
@@ -394,6 +399,10 @@ typedef khronos_ssize_t GLsizeiptr;
 /* GL_OES_vertex_array_object */
 
 #define GL_VERTEX_ARRAY_BINDING_OES 0x85B5
+
+/* GL_OES_element_index_uint */
+
+#define GL_UNSIGNED_INT 0x1405
 
 /* GL_ANGLE_depth_texture */
 
@@ -447,6 +456,16 @@ typedef khronos_ssize_t GLsizeiptr;
 
 #define GL_TEXTURE_MAX_ANISOTROPY_EXT 0x84FE
 #define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT 0x84FF
+
+/* GL_EXT_disjoint_timer_query */
+
+#define GL_QUERY_COUNTER_BITS_EXT 0x8864
+#define GL_CURRENT_QUERY_EXT 0x8865
+#define GL_QUERY_RESULT_EXT 0x8866
+#define GL_QUERY_RESULT_AVAILABLE_EXT 0x8867
+#define GL_TIME_ELAPSED_EXT 0x88BF
+#define GL_TIMESTAMP_EXT 0x8E28
+#define GL_GPU_DISJOINT_EXT 0x8FBB
 
 /* GL_EXT_texture_compression_s3tc */
 
@@ -607,6 +626,20 @@ GLAPI void glVertexAttrib4f(GLuint, GLfloat, GLfloat, GLfloat, GLfloat);
 GLAPI void glVertexAttrib4fv(GLuint, const GLfloat *);
 GLAPI void glVertexAttribPointer(GLuint, GLint, GLenum, GLboolean, GLsizei, const void *);
 GLAPI void glViewport(GLint, GLint, GLsizei, GLsizei);
+
+/* GL_EXT_disjoint_timer_query */
+
+GLAPI void glBeginQueryEXT(GLenum, GLuint);
+GLAPI void glDeleteQueriesEXT(GLsizei, const GLuint *);
+GLAPI void glEndQueryEXT(GLenum);
+GLAPI void glGenQueriesEXT(GLsizei, GLuint *);
+GLAPI void glGetQueryObjecti64vEXT(GLuint, GLenum, GLint64 *);
+GLAPI void glGetQueryObjectivEXT(GLuint, GLenum, GLint *);
+GLAPI void glGetQueryObjectui64vEXT(GLuint, GLenum, GLuint64 *);
+GLAPI void glGetQueryObjectuivEXT(GLuint, GLenum, GLuint *);
+GLAPI void glGetQueryivEXT(GLenum, GLenum, GLint *);
+GLAPI GLboolean glIsQueryEXT(GLuint);
+GLAPI void glQueryCounterEXT(GLuint, GLenum);
 
 /* GL_EXT_draw_buffers */
 

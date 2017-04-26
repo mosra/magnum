@@ -51,6 +51,17 @@ extension OES_vertex_array_object               optional
 extension OES_required_internalformat           optional
 extension OES_surfaceless_context               optional
 
+extension EXT_color_buffer_half_float           optional
+extension EXT_color_buffer_float                optional
+extension EXT_draw_buffers_indexed              optional
+extension EXT_texture_border_clamp              optional
+extension KHR_texture_compression_astc_ldr      optional
+extension KHR_debug                             optional
+extension KHR_blend_equation_advanced           optional
+extension KHR_robustness                        optional
+extension KHR_robust_buffer_access_behavior     optional
+extension OES_texture_stencil8                  optional
+
 extension APPLE_texture_format_BGRA8888         optional
 extension ARM_shader_framebuffer_fetch          optional
 extension ARM_shader_framebuffer_fetch_depth_stencil optional
@@ -60,23 +71,16 @@ extension EXT_read_format_bgra                  optional
 extension EXT_multi_draw_arrays                 optional
 extension EXT_debug_label                       optional
 extension EXT_debug_marker                      optional
+extension EXT_separate_shader_objects           optional
+extension EXT_multisampled_render_to_texture    optional
+extension EXT_robustness                        optional
 extension EXT_shader_framebuffer_fetch          optional
 extension EXT_disjoint_timer_query              optional
 extension EXT_texture_sRGB_decode               optional
 extension EXT_sRGB_write_control                optional
 extension EXT_texture_compression_s3tc          optional
-extension EXT_draw_buffers_indexed              optional
-extension EXT_texture_border_clamp              optional
-extension EXT_separate_shader_objects           optional
-extension EXT_multisampled_render_to_texture    optional
-extension EXT_robustness                        optional
-extension KHR_texture_compression_astc_ldr      optional
 extension KHR_texture_compression_astc_hdr      optional
-extension KHR_debug                             optional
-extension KHR_blend_equation_advanced           optional
 extension KHR_blend_equation_advanced_coherent  optional
-extension KHR_robustness                        optional
-extension KHR_robust_buffer_access_behavior     optional
 extension KHR_context_flush_control             optional
 extension KHR_no_error                          optional
 extension NV_read_buffer_front                  optional
@@ -89,7 +93,6 @@ extension OES_depth32                           optional
 extension OES_mapbuffer                         optional
 extension OES_stencil1                          optional
 extension OES_stencil4                          optional
-extension OES_texture_stencil8                  optional
 
 begin functions blacklist
     # These are listed in EXT_separate_shader_objects with only the comment

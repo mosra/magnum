@@ -68,6 +68,50 @@
 #undef glVertexAttribFormat
 #undef glVertexAttribIFormat
 #undef glVertexBindingDivisor
+#undef glBlendBarrier
+#undef glBlendEquationSeparatei
+#undef glBlendEquationi
+#undef glBlendFuncSeparatei
+#undef glBlendFunci
+#undef glColorMaski
+#undef glCopyImageSubData
+#undef glDebugMessageCallback
+#undef glDebugMessageControl
+#undef glDebugMessageInsert
+#undef glDisablei
+#undef glDrawElementsBaseVertex
+#undef glDrawElementsInstancedBaseVertex
+#undef glDrawRangeElementsBaseVertex
+#undef glEnablei
+#undef glFramebufferTexture
+#undef glGetDebugMessageLog
+#undef glGetGraphicsResetStatus
+#undef glGetObjectLabel
+#undef glGetObjectPtrLabel
+#undef glGetPointerv
+#undef glGetSamplerParameterIiv
+#undef glGetSamplerParameterIuiv
+#undef glGetTexParameterIiv
+#undef glGetTexParameterIuiv
+#undef glGetnUniformfv
+#undef glGetnUniformiv
+#undef glGetnUniformuiv
+#undef glIsEnabledi
+#undef glMinSampleShading
+#undef glObjectLabel
+#undef glObjectPtrLabel
+#undef glPatchParameteri
+#undef glPopDebugGroup
+#undef glPrimitiveBoundingBox
+#undef glPushDebugGroup
+#undef glReadnPixels
+#undef glSamplerParameterIiv
+#undef glSamplerParameterIuiv
+#undef glTexBuffer
+#undef glTexBufferRange
+#undef glTexParameterIiv
+#undef glTexParameterIuiv
+#undef glTexStorage3DMultisample
 #undef glCopyImageSubDataEXT
 #undef glGetObjectLabelEXT
 #undef glLabelObjectEXT
@@ -256,6 +300,54 @@ void flextGLInit() {
     flextglVertexAttribFormat = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLenum, GLboolean, GLuint)>(glVertexAttribFormat);
     flextglVertexAttribIFormat = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLenum, GLuint)>(glVertexAttribIFormat);
     flextglVertexBindingDivisor = reinterpret_cast<void(APIENTRY*)(GLuint, GLuint)>(glVertexBindingDivisor);
+    #endif
+
+    /* GL_ES_VERSION_3_2 */
+    #if GL_ES_VERSION_3_2
+    flextglBlendBarrier = reinterpret_cast<void(APIENTRY*)(void)>(glBlendBarrier);
+    flextglBlendEquationSeparatei = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum, GLenum)>(glBlendEquationSeparatei);
+    flextglBlendEquationi = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum)>(glBlendEquationi);
+    flextglBlendFuncSeparatei = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum, GLenum, GLenum, GLenum)>(glBlendFuncSeparatei);
+    flextglBlendFunci = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum, GLenum)>(glBlendFunci);
+    flextglColorMaski = reinterpret_cast<void(APIENTRY*)(GLuint, GLboolean, GLboolean, GLboolean, GLboolean)>(glColorMaski);
+    flextglCopyImageSubData = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum, GLint, GLint, GLint, GLint, GLuint, GLenum, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei)>(glCopyImageSubData);
+    flextglDebugMessageCallback = reinterpret_cast<void(APIENTRY*)(GLDEBUGPROC, const void *)>(glDebugMessageCallback);
+    flextglDebugMessageControl = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLenum, GLsizei, const GLuint *, GLboolean)>(glDebugMessageControl);
+    flextglDebugMessageInsert = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLuint, GLenum, GLsizei, const GLchar *)>(glDebugMessageInsert);
+    flextglDisablei = reinterpret_cast<void(APIENTRY*)(GLenum, GLuint)>(glDisablei);
+    flextglDrawElementsBaseVertex = reinterpret_cast<void(APIENTRY*)(GLenum, GLsizei, GLenum, const void *, GLint)>(glDrawElementsBaseVertex);
+    flextglDrawElementsInstancedBaseVertex = reinterpret_cast<void(APIENTRY*)(GLenum, GLsizei, GLenum, const void *, GLsizei, GLint)>(glDrawElementsInstancedBaseVertex);
+    flextglDrawRangeElementsBaseVertex = reinterpret_cast<void(APIENTRY*)(GLenum, GLuint, GLuint, GLsizei, GLenum, const void *, GLint)>(glDrawRangeElementsBaseVertex);
+    flextglEnablei = reinterpret_cast<void(APIENTRY*)(GLenum, GLuint)>(glEnablei);
+    flextglFramebufferTexture = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLuint, GLint)>(glFramebufferTexture);
+    flextglGetDebugMessageLog = reinterpret_cast<GLuint(APIENTRY*)(GLuint, GLsizei, GLenum *, GLenum *, GLuint *, GLenum *, GLsizei *, GLchar *)>(glGetDebugMessageLog);
+    flextglGetGraphicsResetStatus = reinterpret_cast<GLenum(APIENTRY*)(void)>(glGetGraphicsResetStatus);
+    flextglGetObjectLabel = reinterpret_cast<void(APIENTRY*)(GLenum, GLuint, GLsizei, GLsizei *, GLchar *)>(glGetObjectLabel);
+    flextglGetObjectPtrLabel = reinterpret_cast<void(APIENTRY*)(const void *, GLsizei, GLsizei *, GLchar *)>(glGetObjectPtrLabel);
+    flextglGetPointerv = reinterpret_cast<void(APIENTRY*)(GLenum, void **)>(glGetPointerv);
+    flextglGetSamplerParameterIiv = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum, GLint *)>(glGetSamplerParameterIiv);
+    flextglGetSamplerParameterIuiv = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum, GLuint *)>(glGetSamplerParameterIuiv);
+    flextglGetTexParameterIiv = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLint *)>(glGetTexParameterIiv);
+    flextglGetTexParameterIuiv = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLuint *)>(glGetTexParameterIuiv);
+    flextglGetnUniformfv = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, GLfloat *)>(glGetnUniformfv);
+    flextglGetnUniformiv = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, GLint *)>(glGetnUniformiv);
+    flextglGetnUniformuiv = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, GLuint *)>(glGetnUniformuiv);
+    flextglIsEnabledi = reinterpret_cast<GLboolean(APIENTRY*)(GLenum, GLuint)>(glIsEnabledi);
+    flextglMinSampleShading = reinterpret_cast<void(APIENTRY*)(GLfloat)>(glMinSampleShading);
+    flextglObjectLabel = reinterpret_cast<void(APIENTRY*)(GLenum, GLuint, GLsizei, const GLchar *)>(glObjectLabel);
+    flextglObjectPtrLabel = reinterpret_cast<void(APIENTRY*)(const void *, GLsizei, const GLchar *)>(glObjectPtrLabel);
+    flextglPatchParameteri = reinterpret_cast<void(APIENTRY*)(GLenum, GLint)>(glPatchParameteri);
+    flextglPopDebugGroup = reinterpret_cast<void(APIENTRY*)(void)>(glPopDebugGroup);
+    flextglPrimitiveBoundingBox = reinterpret_cast<void(APIENTRY*)(GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat)>(glPrimitiveBoundingBox);
+    flextglPushDebugGroup = reinterpret_cast<void(APIENTRY*)(GLenum, GLuint, GLsizei, const GLchar *)>(glPushDebugGroup);
+    flextglReadnPixels = reinterpret_cast<void(APIENTRY*)(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void *)>(glReadnPixels);
+    flextglSamplerParameterIiv = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum, const GLint *)>(glSamplerParameterIiv);
+    flextglSamplerParameterIuiv = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum, const GLuint *)>(glSamplerParameterIuiv);
+    flextglTexBuffer = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLuint)>(glTexBuffer);
+    flextglTexBufferRange = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLuint, GLintptr, GLsizeiptr)>(glTexBufferRange);
+    flextglTexParameterIiv = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, const GLint *)>(glTexParameterIiv);
+    flextglTexParameterIuiv = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, const GLuint *)>(glTexParameterIuiv);
+    flextglTexStorage3DMultisample = reinterpret_cast<void(APIENTRY*)(GLenum, GLsizei, GLenum, GLsizei, GLsizei, GLsizei, GLboolean)>(glTexStorage3DMultisample);
     #endif
 
     /* GL_EXT_copy_image */

@@ -3,21 +3,24 @@
 version 2.0 es
 
 extension ANGLE_instanced_arrays                optional
+extension EXT_color_buffer_half_float           optional
+extension EXT_sRGB                              optional
 extension EXT_blend_minmax                      optional
 extension EXT_shader_texture_lod                optional
-extension EXT_sRGB                              optional
-extension OES_element_index_uint                optional
-extension OES_texture_half_float_linear         optional
-extension OES_texture_float_linear              optional
-extension OES_texture_half_float                optional
 extension OES_texture_float                     optional
+extension OES_texture_half_float                optional
 extension OES_standard_derivatives              optional
 extension OES_vertex_array_object               optional
+extension OES_element_index_uint                optional
+extension OES_texture_float_linear              optional
+extension OES_texture_half_float_linear         optional
 extension OES_fbo_render_mipmap                 optional
 # These are used as a base for WEBGL_* extensions
 extension ANGLE_depth_texture                   optional
 extension EXT_draw_buffers                      optional
 
 extension EXT_texture_filter_anisotropic        optional
+extension EXT_disjoint_timer_query              optional
+extension EXT_color_buffer_float                optional
 # These are used as a base for WEBGL_* extensions
 extension EXT_texture_compression_s3tc          optional
