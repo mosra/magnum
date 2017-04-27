@@ -546,85 +546,196 @@ enum class TextureFormat: GLenum {
 
     /**
      * Red component, half float.
-     * @ref Half, @ref Math::packHalf(), @ref Math::unpackHalf()
+     * @see @ref Half, @ref Math::packHalf(), @ref Math::unpackHalf()
      * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{ARB,texture_float}
-     * @requires_gles30 Only normalized integral formats are available in
-     *      OpenGL ES 2.0.
-     * @requires_webgl20 Only normalized integral formats are available in
-     *      WebGL 1.0.
+     * @requires_gles30 Use @ref TextureFormat::Red / @ref TextureFormat::Luminance
+     *      in combination with @ref PixelFormat::HalfFloat
+     *      (@extension2{OES,texture_half_float,OES_texture_float}) in OpenGL
+     *      ES 2.0 instead.
+     * @requires_gles30 Extension @extension2{OES,texture_half_float_linear,OES_texture_float_linear}
+     *      for filtering using @ref Sampler::Filter::Linear in OpenGL ES 2.0.
+     * @requires_gles32 Extension @extension{EXT,color_buffer_half_float} to
+     *      use as a render target. Use @ref TextureFormat::R16UI or
+     *      @ref TextureFormat::R16I instead if not available.
+     * @requires_webgl20 Use @ref TextureFormat::Red / @ref TextureFormat::Luminance
+     *      in combination with @ref PixelFormat::HalfFloat (@webgl_extension{OES,texture_half_float})
+     *      in WebGL 1.0.
+     * @requires_webgl20 Extension @webgl_extension{OES,texture_half_float_linear}
+     *      for filtering using @ref Sampler::Filter::Linear in WebGL 1.0.
+     * @requires_webgl_extension Extension @webgl_extension{EXT,color_buffer_float}
+     *      to use as a render target in WebGL 2.0; use @ref TextureFormat::R16UI
+     *      or @ref TextureFormat::R16I instead if not available. Only three-
+     *      and four-component half-float texture formats can be used as
+     *      a render target in WebGL 1.0, see @ref TextureFormat::RGBA16F for
+     *      more information.
      */
     R16F = GL_R16F,
 
     /**
      * Red and green component, each half float.
-     * @ref Half, @ref Math::packHalf(), @ref Math::unpackHalf()
+     * @see @ref Half, @ref Math::packHalf(), @ref Math::unpackHalf()
      * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{ARB,texture_float}
-     * @requires_gles30 Only normalized integral formats are available in
-     *      OpenGL ES 2.0.
-     * @requires_webgl20 Only normalized integral formats are available in
-     *      WebGL 1.0.
+     * @requires_gles30 Use @ref TextureFormat::RG / @ref TextureFormat::LuminanceAlpha
+     *      in combination with @ref PixelFormat::HalfFloat
+     *      (@extension2{OES,texture_half_float,OES_texture_float}) in OpenGL
+     *      ES 2.0 instead.
+     * @requires_gles30 Extension @extension2{OES,texture_half_float_linear,OES_texture_float_linear}
+     *      for filtering using @ref Sampler::Filter::Linear in OpenGL ES 2.0.
+     * @requires_gles32 Extension @extension{EXT,color_buffer_half_float} to
+     *      use as a render target in OpenGL ES. Use @ref TextureFormat::RG16UI
+     *      or @ref TextureFormat::RG16I instead if not available.
+     * @requires_webgl20 Use @ref TextureFormat::RG / @ref TextureFormat::LuminanceAlpha
+     *      in combination with @ref PixelFormat::HalfFloat (@webgl_extension{OES,texture_half_float})
+     *      in WebGL 1.0 instead.
+     * @requires_webgl20 Extension @webgl_extension{OES,texture_half_float_linear}
+     *      for filtering using @ref Sampler::Filter::Linear in WebGL 1.0.
+     * @requires_webgl_extension Extension @webgl_extension{EXT,color_buffer_float}
+     *      to use as a render target in WebGL 2.0; use @ref TextureFormat::RG16UI
+     *      or @ref TextureFormat::RG16I instead if not available. Only three-
+     *      and four-component half-float texture formats can be used as
+     *      a render target in WebGL 1.0, see @ref TextureFormat::RGBA16F for
+     *      more information.
      */
     RG16F = GL_RG16F,
 
     /**
      * RGB, each component half float.
-     * @ref Half, @ref Math::packHalf(), @ref Math::unpackHalf()
+     * @see @ref Half, @ref Math::packHalf(), @ref Math::unpackHalf()
      * @requires_gl30 Extension @extension{ARB,texture_float}
-     * @requires_gles30 Only normalized integral formats are available in
-     *      OpenGL ES 2.0.
-     * @requires_webgl20 Only normalized integral formats are available in
-     *      WebGL 1.0.
+     * @requires_gles30 Use @ref TextureFormat::RGB in combination with
+     *      @ref PixelFormat::HalfFloat (@extension2{OES,texture_half_float,OES_texture_float})
+     *      in OpenGL ES 2.0 instead.
+     * @requires_gles30 Extension @extension2{OES,texture_half_float_linear,OES_texture_float_linear}
+     *      for filtering using @ref Sampler::Filter::Linear in OpenGL ES 2.0.
+     * @requires_webgl20 Use @ref TextureFormat::RGB in combination with
+     *      @ref PixelFormat::HalfFloat (@webgl_extension{OES,texture_half_float})
+     *      in WebGL 1.0 instead.
+     * @requires_webgl20 Extension @webgl_extension{OES,texture_half_float_linear}
+     *      for filtering using @ref Sampler::Filter::Linear in WebGL 1.0.
+     * @requires_gl Can't be used as a render target in OpenGL ES or WebGL 2.0.
+     *      Use @ref TextureFormat::RGBA16F instead. Use @ref TextureFormat::RGB
+     *      in combination with @ref PixelFormat::HalfFloat
+     *      (@webgl_extension{EXT,color_buffer_half_float}) in WebGL 1.0
+     *      instead.
      */
     RGB16F = GL_RGB16F,
 
     /**
      * RGBA, each component half float.
-     * @ref Half, @ref Math::packHalf(), @ref Math::unpackHalf()
+     * @see @ref Half, @ref Math::packHalf(), @ref Math::unpackHalf()
      * @requires_gl30 Extension @extension{ARB,texture_float}
-     * @requires_gles30 Only normalized integral formats are available in
-     *      OpenGL ES 2.0.
-     * @requires_webgl20 Only normalized integral formats are available in
-     *      WebGL 1.0.
+     * @requires_gles30 Use @ref TextureFormat::RGBA in combination with
+     *      @ref PixelFormat::HalfFloat (@extension2{OES,texture_half_float,OES_texture_float})
+     *      in OpenGL ES 2.0 instead.
+     * @requires_gles30 Extension @extension2{OES,texture_half_float_linear,OES_texture_float_linear}
+     *      for filtering using @ref Sampler::Filter::Linear.
+     * @requires_gles32 Extension @extension{EXT,color_buffer_half_float} to
+     *      use as a render target in OpenGL ES. Use @ref TextureFormat::RGBA16UI
+     *      or @ref TextureFormat::RGBA16I instead if not available.
+     * @requires_webgl20 Use @ref TextureFormat::RGBA in combination with
+     *      @ref PixelFormat::HalfFloat (@webgl_extension{OES,texture_half_float})
+     *      in WebGL 1.0 instead.
+     * @requires_webgl20 Extension @webgl_extension{OES,texture_half_float_linear}
+     *      for filtering using @ref Sampler::Filter::Linear in WebGL 1.0.
+     * @requires_webgl_extension Extension @webgl_extension{EXT,color_buffer_float}
+     *      to use as a render target in WebGL 2.0. Use @ref TextureFormat::RGBA16UI
+     *      or @ref TextureFormat::RGBA16I instead if not available. Use
+     *      @ref TextureFormat::RGBA in combination with @ref PixelFormat::HalfFloat
+     *      (@webgl_extension{EXT,color_buffer_half_float}) in WebGL 1.0 instead.
      */
     RGBA16F = GL_RGBA16F,
 
     /**
      * Red component, float.
      * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{ARB,texture_float}
-     * @requires_gles30 Only normalized integral formats are available in
-     *      OpenGL ES 2.0.
-     * @requires_webgl20 Only normalized integral formats are available in
-     *      WebGL 1.0.
+     * @requires_gles30 Use @ref TextureFormat::Red / @ref TextureFormat::Luminance
+     *      in combination with @ref PixelFormat::Float (@extension{OES,texture_float})
+     *      in OpenGL ES 2.0 instead.
+     * @requires_gles32 Extension @extension{EXT,color_buffer_float} to use as
+     *      a render target. Use @ref TextureFormat::R32UI or
+     *      @ref TextureFormat::R32I instead if not available.
+     * @requires_es_extension Extension @extension{OES,texture_float_linear}
+     *      for filtering using @ref Sampler::Filter::Linear.
+     * @requires_webgl20 Use @ref TextureFormat::Red / @ref TextureFormat::Luminance
+     *      in combination with @ref PixelFormat::Float (@webgl_extension{OES,texture_float})
+     *      in WebGL 1.0 instead.
+     * @requires_webgl_extension Extension @webgl_extension{OES,texture_float_linear}
+     *      for filtering using @ref Sampler::Filter::Linear.
+     * @requires_webgl_extension Extension @webgl_extension{EXT,color_buffer_float}
+     *      to use as a render target in WebGL 2.0; use @ref TextureFormat::R32UI
+     *      or @ref TextureFormat::R32I instead if not available. Only three-
+     *      and four-component half-float texture formats can be used as
+     *      a render target in WebGL 1.0. See @ref TextureFormat::RGBA32F for
+     *      more information.
      */
     R32F = GL_R32F,
 
     /**
      * Red and green component, each float.
      * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{ARB,texture_float}
-     * @requires_gles30 Only normalized integral formats are available in
-     *      OpenGL ES 2.0.
-     * @requires_webgl20 Only normalized integral formats are available in
-     *      WebGL 1.0.
+     * @requires_gles30 Use @ref TextureFormat::RG / @ref TextureFormat::LuminanceAlpha
+     *      in combination with @ref PixelFormat::Float (@extension{OES,texture_float})
+     *      in OpenGL ES 2.0 instead.
+     * @requires_gles32 Extension @extension{EXT,color_buffer_float} to use as
+     *      a render target. Use @ref TextureFormat::RG32UI or
+     *      @ref TextureFormat::RG32I instead if not available.
+     * @requires_es_extension Extension @extension{OES,texture_float_linear}
+     *      for filtering using @ref Sampler::Filter::Linear.
+     * @requires_webgl20 Use @ref TextureFormat::RG / @ref TextureFormat::LuminanceAlpha
+     *      in combination with @ref PixelFormat::Float (@webgl_extension{OES,texture_float})
+     *      in WebGL 1.0 instead.
+     * @requires_webgl_extension Extension @webgl_extension{OES,texture_float_linear}
+     *      for filtering using @ref Sampler::Filter::Linear.
+     * @requires_webgl_extension Extension @webgl_extension{EXT,color_buffer_float}
+     *      to use as a render target in WebGL 2.0; use @ref TextureFormat::RG32UI
+     *      or @ref TextureFormat::RG32I instead if not available. Only three-
+     *      and four-component half-float texture formats can be used as
+     *      a render target in WebGL 1.0. See @ref TextureFormat::RGBA32F for
+     *      more information.
      */
     RG32F = GL_RG32F,
 
     /**
      * RGB, each component float.
      * @requires_gl30 Extension @extension{ARB,texture_float}
-     * @requires_gles30 Only normalized integral formats are available in
-     *      OpenGL ES 2.0.
-     * @requires_webgl20 Only normalized integral formats are available in
-     *      WebGL 1.0.
+     * @requires_gles30 Use @ref TextureFormat::RGB in combination with
+     *      @ref PixelFormat::Float (@extension{OES,texture_float}) in OpenGL
+     *      ES 2.0 instead.
+     * @requires_es_extension Extension @extension{OES,texture_float_linear}
+     *      for filtering using @ref Sampler::Filter::Linear.
+     * @requires_webgl20 Use @ref TextureFormat::RGB in combination with
+     *      @ref PixelFormat::Float (@webgl_extension{OES,texture_float}) in
+     *      WebGL 1.0 instead.
+     * @requires_webgl_extension Extension @webgl_extension{OES,texture_float_linear}
+     *      for filtering using @ref Sampler::Filter::Linear.
+     * @requires_gl Can't be used as a render target in OpenGL ES or WebGL 2.0.
+     *      Use @ref TextureFormat::RGBA32F instead. Use @ref TextureFormat::RGB
+     *      in combination with @ref PixelFormat::Float
+     *      (@webgl_extension{WEBGL,color_buffer_float}) in WebGL 1.0 instead.
      */
     RGB32F = GL_RGB32F,
 
     /**
      * RGBA, each component float.
      * @requires_gl30 Extension @extension{ARB,texture_float}
-     * @requires_gles30 Only normalized integral formats are available in
-     *      OpenGL ES 2.0.
-     * @requires_webgl20 Only normalized integral formats are available in
-     *      WebGL 1.0.
+     * @requires_gles30 Use @ref TextureFormat::RGBA in combination with
+     *      @ref PixelFormat::Float (@extension{OES,texture_float}) in OpenGL
+     *      ES 2.0 instead.
+     * @requires_es_extension Extension @extension{OES,texture_float_linear}
+     *      for filtering using @ref Sampler::Filter::Linear.
+     * @requires_gles32 Extension @extension{EXT,color_buffer_float} to
+     *      use as a render target in OpenGL ES. Use @ref TextureFormat::RGBA32UI
+     *      or @ref TextureFormat::RGBA32I instead if not available.
+     * @requires_webgl20 Use @ref TextureFormat::RGBA in combination with
+     *      @ref PixelFormat::Float (@webgl_extension{OES,texture_float}) in
+     *      WebGL 1.0 instead.
+     * @requires_webgl_extension Extension @webgl_extension{OES,texture_float_linear}
+     *      for filtering using @ref Sampler::Filter::Linear.
+     * @requires_webgl_extension Extension @webgl_extension{EXT,color_buffer_float}
+     *      to use as a render target in WebGL 2.0. Use @ref TextureFormat::RGBA32UI
+     *      or @ref TextureFormat::RGBA32I instead if not available. Use
+     *      @ref TextureFormat::RGBA in combination with @ref PixelFormat::Float
+     *      (@webgl_extension{WEBGL,color_buffer_float}) in WebGL 1.0 instead.
      */
     RGBA32F = GL_RGBA32F,
     #endif

@@ -279,7 +279,9 @@ namespace GL {
         _extension(GL,OES,standard_derivatives,     GLES200, GLES300) // #4
         _extension(GL,OES,vertex_array_object,      GLES200, GLES300) // #5
         _extension(GL,OES,element_index_uint,       GLES200, GLES300) // #10
-        _extension(GL,OES,texture_float_linear,     GLES200, GLES300) // #20
+        #endif
+        _extension(GL,OES,texture_float_linear,     GLES200,    None) // #20
+        #ifdef MAGNUM_TARGET_GLES2
         _extension(GL,OES,texture_half_float_linear, GLES200, GLES300) // #21
         _extension(GL,OES,fbo_render_mipmap,        GLES200, GLES300) // #28
         #endif
@@ -436,7 +438,9 @@ namespace GL {
         #ifdef MAGNUM_TARGET_GLES2
         _extension(GL,OES,texture_3D,               GLES200, GLES300) // #34
         _extension(GL,OES,texture_half_float_linear, GLES200, GLES300) // #35
-        _extension(GL,OES,texture_float_linear,     GLES200, GLES300) // #35
+        #endif
+        _extension(GL,OES,texture_float_linear,     GLES200,    None) // #35
+        #ifdef MAGNUM_TARGET_GLES2
         _extension(GL,OES,texture_half_float,       GLES200, GLES300) // #36
         _extension(GL,OES,texture_float,            GLES200, GLES300) // #36
         _extension(GL,OES,texture_npot,             GLES200, GLES300) // #37

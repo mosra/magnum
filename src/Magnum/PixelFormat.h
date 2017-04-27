@@ -401,11 +401,18 @@ enum class PixelType: GLenum {
      * Each component half float.
      * @see @ref Half, @ref Math::packHalf(), @ref Math::unpackHalf()
      * @requires_gl30 Extension @extension{ARB,half_float_pixel}
-     * @requires_gles30 For texture data only, extension
-     *      @extension2{OES,texture_half_float,OES_texture_float} in OpenGL
-     *      ES 2.0.
-     * @requires_webgl20 For texture data only, extension
-     *      @webgl_extension{OES,texture_half_float} in WebGL 1.0.
+     * @requires_gles30 Extension @extension2{OES,texture_half_float,OES_texture_float}
+     *      to use for texture reading in OpenGL ES 2.0.
+     * @requires_gles30 Extension @extension2{OES,texture_half_float_linear,OES_texture_float_linear}
+     *      for filtering the texture using @ref Sampler::Filter::Linear.
+     * @requires_gles32 Extension @extension{EXT,color_buffer_half_float}
+     *      to use the texture as a render target.
+     * @requires_webgl20 Extension @webgl_extension{OES,texture_half_float} to
+     *      use for texture reading in WebGL 1.0.
+     * @requires_webgl20 Extension @webgl_extension{OES,texture_half_float_linear}
+     *      for filtering the texture using @ref Sampler::Filter::Linear.
+     * @requires_webgl_extension Extension @webgl_extension{EXT,color_buffer_half_float}
+     *      to use the texture as a render target.
      */
     #ifndef MAGNUM_TARGET_GLES2
     HalfFloat = GL_HALF_FLOAT,
@@ -415,10 +422,19 @@ enum class PixelType: GLenum {
 
     /**
      * Each component float.
-     * @requires_gles30 For texture data only, extension @extension{OES,texture_float}
-     *      in OpenGL ES 2.0.
-     * @requires_webgl20 For texture data only, extension @webgl_extension{OES,texture_float}
-     *      in WebGL 1.0.
+     * @requires_gles30 Extension @extension{OES,texture_float} to use for
+     *      texture reading in OpenGL ES 2.0.
+     * @requires_gles32 Extension @extension{EXT,color_half_float} to use the
+     *      texture as a render target.
+     * @requires_es_extension Extension @extension{OES,texture_float_linear}
+     *      for filtering the texture using @ref Sampler::Filter::Linear.
+     * @requires_webgl20 Extension @webgl_extension{OES,texture_float} to use
+     *      for texture reading in WebGL 1.0.
+     * @requires_webgl_extension Extension @webgl_extension{OES,texture_float_linear}
+     *      for filtering the texture using @ref Sampler::Filter::Linear.
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,color_buffer_float}
+     *      in WebGL 1.0 or @webgl_extension{EXT,color_buffer_float} in WebGL
+     *      2.0 to use the texture as a render target.
      */
     Float = GL_FLOAT,
 

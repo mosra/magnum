@@ -237,6 +237,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,EXT,texture_filter_anisotropic),
         _extension(GL,EXT,disjoint_timer_query),
         _extension(GL,EXT,color_buffer_float),
+        _extension(GL,OES,texture_float_linear),
         _extension(GL,WEBGL,compressed_texture_s3tc)};
     #ifdef MAGNUM_TARGET_GLES2
     static const std::vector<Extension> extensionsES300{
@@ -250,7 +251,6 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,OES,standard_derivatives),
         _extension(GL,OES,vertex_array_object),
         _extension(GL,OES,element_index_uint),
-        _extension(GL,OES,texture_float_linear),
         _extension(GL,OES,texture_half_float_linear),
         _extension(GL,OES,fbo_render_mipmap),
         _extension(GL,WEBGL,depth_texture),
@@ -298,7 +298,8 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,OES,depth32),
         _extension(GL,OES,mapbuffer),
         _extension(GL,OES,stencil1),
-        _extension(GL,OES,stencil4)};
+        _extension(GL,OES,stencil4),
+        _extension(GL,OES,texture_float_linear)};
     #ifdef MAGNUM_TARGET_GLES2
     static const std::vector<Extension> extensionsES300{
         _extension(GL,ANGLE,framebuffer_blit),
@@ -338,7 +339,6 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,OES,rgb8_rgba8),
         _extension(GL,OES,texture_3D),
         _extension(GL,OES,texture_half_float_linear),
-        _extension(GL,OES,texture_float_linear),
         _extension(GL,OES,texture_half_float),
         _extension(GL,OES,texture_float),
         _extension(GL,OES,texture_npot),

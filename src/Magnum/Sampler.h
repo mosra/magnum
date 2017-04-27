@@ -54,16 +54,20 @@ class MAGNUM_EXPORT Sampler {
             Nearest = GL_NEAREST,   /**< Nearest neighbor filtering */
 
             /**
-             * Linear interpolation filtering.
-             * @requires_gles30 Extension @extension{OES,texture_float_linear} /
-             *      @extension2{OES,texture_half_float_linear,OES_texture_float_linear}
+             * Linear interpolation filtering. Can't be used with integer
+             * texture formats.
+             * @requires_es_extension Extension @extension{OES,texture_float_linear}
              *      for linear interpolation of textures with
-             *      @ref TextureFormat::HalfFloat / @ref TextureFormat::Float
-             *      in OpenGL ES 2.0.
-             * @requires_webgl20 Extension @webgl_extension{OES,texture_float_linear}
-             *      / @webgl_extension{OES,texture_half_float_linear} for
-             *      linear interpolation of textures with @ref TextureFormat::HalfFloat
-             *      / @ref TextureFormat::Float in WebGL 1.0.
+             *      @ref TextureFormat::Float
+             * @requires_webgl_extension Extensiion @webgl_extension{OES,texture_float_linear}
+             *      for linear interpolation of textures with
+             *      @ref TextureFormat::Float
+             * @requires_gles30 Extension @extension2{OES,texture_half_float_linear,OES_texture_float_linear}
+             *      for linear interpolation of textures with
+             *      @ref TextureFormat::HalfFloat in OpenGL ES 2.0.
+             * @requires_webgl20 Extension @webgl_extension{OES,texture_half_float_linear}
+             *      for linear interpolation of textures with
+             *      @ref TextureFormat::HalfFloat in WebGL 1.0.
              */
             Linear = GL_LINEAR
         };
@@ -86,15 +90,18 @@ class MAGNUM_EXPORT Sampler {
              * Linear interpolation of nearest mip levels. **Unavailable on
              * rectangle textures.**
              * @m_keywords{GL_NEAREST_MIPMAP_LINEAR}
-             * @requires_gles30 Extension @extension{OES,texture_float_linear} /
-             *      @extension2{OES,texture_half_float_linear,OES_texture_float_linear}
+             * @requires_es_extension Extension @extension{OES,texture_float_linear}
              *      for linear interpolation of textures with
-             *      @ref TextureFormat::HalfFloat / @ref TextureFormat::Float
-             *      in OpenGL ES 2.0.
-             * @requires_webgl20 Extension @webgl_extension{OES,texture_float_linear}
-             *      / @webgl_extension{OES,texture_half_float_linear} for
-             *      linear interpolation of textures with @ref TextureFormat::HalfFloat
-             *      / @ref TextureFormat::Float in WebGL 1.0.
+             *      @ref TextureFormat::Float
+             * @requires_webgl_extension Extensiion @webgl_extension{OES,texture_float_linear}
+             *      for linear interpolation of textures with
+             *      @ref TextureFormat::Float
+             * @requires_gles30 Extension @extension2{OES,texture_half_float_linear,OES_texture_float_linear}
+             *      for linear interpolation of textures with
+             *      @ref TextureFormat::HalfFloat in OpenGL ES 2.0.
+             * @requires_webgl20 Extension @webgl_extension{OES,texture_half_float_linear}
+             *      for linear interpolation of textures with
+             *      @ref TextureFormat::HalfFloat in WebGL 1.0.
              */
             Linear = GL_NEAREST_MIPMAP_LINEAR & ~GL_NEAREST
         };

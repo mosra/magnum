@@ -388,7 +388,6 @@ Extension                                   | Status
 @extension{OES,rgb8_rgba8}                  | done (desktop-compatible subset)
 @extension{OES,texture_3D}                  | done
 @extension2{OES,texture_half_float_linear,OES_texture_float_linear} | done
-@extension{OES,texture_float_linear}        | done
 @extension2{OES,texture_half_float,OES_texture_float} | done
 @extension{OES,texture_float}               | done
 @extension{OES,texture_npot}                | done (nothing to do)
@@ -444,6 +443,7 @@ Extension                                   | Status
 @extension{OES,mapbuffer}                   | done
 @extension{OES,stencil1}                    | done
 @extension{OES,stencil4}                    | done
+@extension{OES,texture_float_linear}        | done
 
 @subsection opengl-support-webgl10 WebGL 1.0
 
@@ -470,7 +470,6 @@ Extension                                   | Status
 @webgl_extension{OES,standard_derivatives}  | done
 @webgl_extension{OES,vertex_array_object}   | done
 @webgl_extension{OES,element_index_uint}    | done
-@webgl_extension{OES,texture_float_linear}  | done
 @webgl_extension{OES,texture_half_float_linear} | done
 @webgl_extension{OES,fbo_render_mipmap}     | done
 @webgl_extension{WEBGL,depth_texture}       | done
@@ -492,6 +491,7 @@ Extension                                   | Status
 @webgl_extension{EXT,sRGB}                  | done
 @webgl_extension{EXT,disjoint_timer_query}  | only time elapsed query
 @webgl_extension{EXT,color_buffer_float}    | |
+@webgl_extension{OES,texture_float_linear}  | done
 @webgl_extension{WEBGL,compressed_texture_s3tc} | done
 
 @section opengl-unsupported Unsupported OpenGL features
