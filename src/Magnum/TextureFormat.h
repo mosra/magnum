@@ -177,6 +177,8 @@ enum class TextureFormat: GLenum {
     /**
      * Red component, normalized signed byte.
      * @requires_gl31 Extension @extension{EXT,texture_snorm}
+     * @requires_gl Can't be used as render target in OpenGL ES. Use
+     *      @ref TextureFormat::RGB8I instead.
      * @requires_gles30 Only unsigned formats are available in OpenGL ES 2.0.
      * @requires_webgl20 Only unsigned formats are available in WebGL 1.0.
      */
@@ -185,6 +187,8 @@ enum class TextureFormat: GLenum {
     /**
      * Red and green component, each normalized signed byte.
      * @requires_gl31 Extension @extension{EXT,texture_snorm}
+     * @requires_gl Can't be used as render target in OpenGL ES. Use
+     *      @ref TextureFormat::RGB8I instead.
      * @requires_gles30 Only unsigned formats are available in OpenGL ES 2.0.
      * @requires_webgl20 Only unsigned formats are available in WebGL 1.0.
      */
@@ -193,6 +197,8 @@ enum class TextureFormat: GLenum {
     /**
      * RGB, each component normalized signed byte.
      * @requires_gl31 Extension @extension{EXT,texture_snorm}
+     * @requires_gl Can't be used as render target in OpenGL ES. Use
+     *      @ref TextureFormat::RGB8I instead.
      * @requires_gles30 Only unsigned formats are available in OpenGL ES 2.0.
      * @requires_webgl20 Only unsigned formats are available in WebGL 1.0.
      */
@@ -201,6 +207,8 @@ enum class TextureFormat: GLenum {
     /**
      * RGBA, each component normalized signed byte.
      * @requires_gl31 Extension @extension{EXT,texture_snorm}
+     * @requires_gl Can't be used as render target in OpenGL ES. Use
+     *      @ref TextureFormat::RGB8I instead.
      * @requires_gles30 Only unsigned formats are available in OpenGL ES 2.0.
      * @requires_webgl20 Only unsigned formats are available in WebGL 1.0.
      */
@@ -273,7 +281,8 @@ enum class TextureFormat: GLenum {
 
     #ifndef MAGNUM_TARGET_GLES2
     /**
-     * Red component, non-normalized unsigned byte.
+     * Red component, non-normalized unsigned byte. Can't be filtered using
+     * @ref Sampler::Filter::Linear.
      * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -283,7 +292,8 @@ enum class TextureFormat: GLenum {
     R8UI = GL_R8UI,
 
     /**
-     * Red and green component, each non-normalized unsigned byte.
+     * Red and green component, each non-normalized unsigned byte. Can't be
+     * filtered using @ref Sampler::Filter::Linear.
      * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -293,7 +303,8 @@ enum class TextureFormat: GLenum {
     RG8UI = GL_RG8UI,
 
     /**
-     * RGB, each component non-normalized unsigned byte.
+     * RGB, each component non-normalized unsigned byte. Can't be filtered
+     * using @ref Sampler::Filter::Linear.
      * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -303,7 +314,8 @@ enum class TextureFormat: GLenum {
     RGB8UI = GL_RGB8UI,
 
     /**
-     * RGBA, each component non-normalized unsigned byte.
+     * RGBA, each component non-normalized unsigned byte. Can't be filtered
+     * using @ref Sampler::Filter::Linear.
      * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -313,7 +325,8 @@ enum class TextureFormat: GLenum {
     RGBA8UI = GL_RGBA8UI,
 
     /**
-     * Red component, non-normalized signed byte.
+     * Red component, non-normalized signed byte. Can't be filtered using
+     * @ref Sampler::Filter::Linear.
      * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -323,7 +336,8 @@ enum class TextureFormat: GLenum {
     R8I = GL_R8I,
 
     /**
-     * Red and green component, each non-normalized signed byte.
+     * Red and green component, each non-normalized signed byte. Can't be
+     * filtered using @ref Sampler::Filter::Linear.
      * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -333,7 +347,8 @@ enum class TextureFormat: GLenum {
     RG8I = GL_RG8I,
 
     /**
-     * RGB, each component non-normalized signed byte.
+     * RGB, each component non-normalized signed byte. Can't be filtered using
+     * @ref Sampler::Filter::Linear.
      * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -343,7 +358,8 @@ enum class TextureFormat: GLenum {
     RGB8I = GL_RGB8I,
 
     /**
-     * RGBA, each component non-normalized signed byte.
+     * RGBA, each component non-normalized signed byte. Can't be filtered using
+     * @ref Sampler::Filter::Linear.
      * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -353,7 +369,8 @@ enum class TextureFormat: GLenum {
     RGBA8I = GL_RGBA8I,
 
     /**
-     * Red component, non-normalized unsigned short.
+     * Red component, non-normalized unsigned short. Can't be filtered using
+     * @ref Sampler::Filter::Linear.
      * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -363,7 +380,8 @@ enum class TextureFormat: GLenum {
     R16UI = GL_R16UI,
 
     /**
-     * Red and green component, each non-normalized unsigned short.
+     * Red and green component, each non-normalized unsigned short. Can't be
+     * filtered using @ref Sampler::Filter::Linear.
      * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -373,7 +391,8 @@ enum class TextureFormat: GLenum {
     RG16UI = GL_RG16UI,
 
     /**
-     * RGB, each component non-normalized unsigned short.
+     * RGB, each component non-normalized unsigned short. Can't be filtered
+     * using @ref Sampler::Filter::Linear.
      * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -383,7 +402,8 @@ enum class TextureFormat: GLenum {
     RGB16UI = GL_RGB16UI,
 
     /**
-     * RGBA, each component non-normalized unsigned short.
+     * RGBA, each component non-normalized unsigned short. Can't be filtered
+     * using @ref Sampler::Filter::Linear.
      * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -393,7 +413,8 @@ enum class TextureFormat: GLenum {
     RGBA16UI = GL_RGBA16UI,
 
     /**
-     * Red component, non-normalized signed short.
+     * Red component, non-normalized signed short. Can't be filtered using
+     * @ref Sampler::Filter::Linear.
      * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -403,7 +424,8 @@ enum class TextureFormat: GLenum {
     R16I = GL_R16I,
 
     /**
-     * Red and green component, each non-normalized signed short.
+     * Red and green component, each non-normalized signed short. Can't be
+     * filtered using @ref Sampler::Filter::Linear.
      * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -413,7 +435,8 @@ enum class TextureFormat: GLenum {
     RG16I = GL_RG16I,
 
     /**
-     * RGB, each component non-normalized signed short.
+     * RGB, each component non-normalized signed short. Can't be filtered using
+     * @ref Sampler::Filter::Linear.
      * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -423,7 +446,8 @@ enum class TextureFormat: GLenum {
     RGB16I = GL_RGB16I,
 
     /**
-     * RGBA, each component non-normalized signed short.
+     * RGBA, each component non-normalized signed short. Can't be filtered
+     * using @ref Sampler::Filter::Linear.
      * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -433,7 +457,8 @@ enum class TextureFormat: GLenum {
     RGBA16I = GL_RGBA16I,
 
     /**
-     * Red component, non-normalized unsigned int.
+     * Red component, non-normalized unsigned int. Can't be filtered using
+     * @ref Sampler::Filter::Linear.
      * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -443,7 +468,8 @@ enum class TextureFormat: GLenum {
     R32UI = GL_R32UI,
 
     /**
-     * Red and green component, each non-normalized unsigned int.
+     * Red and green component, each non-normalized unsigned int. Can't be
+     * filtered using @ref Sampler::Filter::Linear.
      * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -453,7 +479,8 @@ enum class TextureFormat: GLenum {
     RG32UI = GL_RG32UI,
 
     /**
-     * RGB, each component non-normalized unsigned int.
+     * RGB, each component non-normalized unsigned int. Can't be filtered using
+     * @ref Sampler::Filter::Linear.
      * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -463,7 +490,8 @@ enum class TextureFormat: GLenum {
     RGB32UI = GL_RGB32UI,
 
     /**
-     * RGBA, each component non-normalized unsigned int.
+     * RGBA, each component non-normalized unsigned int. Can't be filtered
+     * using @ref Sampler::Filter::Linear.
      * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -473,7 +501,8 @@ enum class TextureFormat: GLenum {
     RGBA32UI = GL_RGBA32UI,
 
     /**
-     * Red component, non-normalized signed int.
+     * Red component, non-normalized signed int. Can't be filtered using
+     * @ref Sampler::Filter::Linear.
      * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -483,7 +512,8 @@ enum class TextureFormat: GLenum {
     R32I = GL_R32I,
 
     /**
-     * Red and green component, each non-normalized signed int.
+     * Red and green component, each non-normalized signed int. Can't be
+     * filtered using @ref Sampler::Filter::Linear.
      * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -493,7 +523,8 @@ enum class TextureFormat: GLenum {
     RG32I = GL_RG32I,
 
     /**
-     * RGB, each component non-normalized signed int.
+     * RGB, each component non-normalized signed int. Can't be filtered using
+     * @ref Sampler::Filter::Linear.
      * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -503,7 +534,8 @@ enum class TextureFormat: GLenum {
     RGB32I = GL_RGB32I,
 
     /**
-     * RGBA, each component non-normalized signed int.
+     * RGBA, each component non-normalized signed int. Can't be filtered using
+     * @ref Sampler::Filter::Linear.
      * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -725,6 +757,8 @@ enum class TextureFormat: GLenum {
      *      @extension{EXT,texture_storage}, only for
      *      @ref Texture::setStorage() "*Texture::setStorage()" calls,
      *      otherwise use @ref TextureFormat::SRGB in OpenGL ES 2.0 instead.
+     * @requires_gl Can't be used as render target in OpenGL ES. Use
+     *      @ref TextureFormat::SRGB8Alpha8 instead.
      * @requires_webgl20 Use @ref TextureFormat::SRGB in WebGL 1.0 instead.
      */
     #ifndef MAGNUM_TARGET_GLES2
@@ -783,6 +817,7 @@ enum class TextureFormat: GLenum {
     #ifndef MAGNUM_TARGET_GLES2
     /**
      * RGBA, non-normalized unsigned, each RGB component 10bit, alpha 2bit.
+     * Can't be filtered using @ref Sampler::Filter::Linear.
      * @requires_gl33 Extension @extension{ARB,texture_rgb10_a2ui}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
