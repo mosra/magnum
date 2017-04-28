@@ -256,7 +256,8 @@ class MAGNUM_EXPORT Context {
             IntelWindows = 1 << 2,
 
             /**
-             * Mesa drivers on Linux
+             * Mesa drivers on Windows and Linux. See also
+             * @ref DetectedDriver::Svga3D.
              * @requires_gles Not detectable on WebGL, as browsers
              *      intentionally hide most of the driver information.
              */
@@ -267,7 +268,19 @@ class MAGNUM_EXPORT Context {
              * @requires_gles Not detectable on WebGL, as browsers
              *      intentionally hide most of the driver information.
              */
-            NVidia = 1 << 4
+            NVidia = 1 << 4,
+            #endif
+
+            #ifndef MAGNUM_TARGET_WEBGL
+            /**
+             * VMware guest GL driver SVGA3D, implemented using Mesa, both
+             * Windows and Linux guests. See https://www.mesa3d.org/vmware-guest.html
+             * for more information. Detected in combination with
+             * @ref DetectedDriver::Mesa.
+             * @requires_gles Not detectable on WebGL, as browsers
+             *      intentionally hide most of the driver information.
+             */
+            Svga3D = 1 << 5
             #endif
         };
 

@@ -904,6 +904,9 @@ Debug& operator<<(Debug& debug, const Context::DetectedDriver value) {
         _c(Mesa)
         _c(NVidia)
         #endif
+        #ifndef MAGNUM_TARGET_WEBGL
+        _c(Svga3D)
+        #endif
         #undef _c
         /* LCOV_EXCL_STOP */
     }
@@ -923,6 +926,9 @@ Debug& operator<<(Debug& debug, const Context::DetectedDrivers value) {
         Context::DetectedDriver::IntelWindows,
         Context::DetectedDriver::Mesa,
         Context::DetectedDriver::NVidia,
+        #endif
+        #ifndef MAGNUM_TARGET_WEBGL
+        Context::DetectedDriver::Svga3D
         #endif
     });
 }
