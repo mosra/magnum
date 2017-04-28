@@ -91,10 +91,12 @@ struct TextureState {
     void(AbstractTexture::*subImage1DImplementation)(GLint, const Math::Vector<1, GLint>&, const Math::Vector<1, GLsizei>&, PixelFormat, PixelType, const GLvoid*);
     void(AbstractTexture::*compressedSubImage1DImplementation)(GLint, const Math::Vector<1, GLint>&, const Math::Vector<1, GLsizei>&, CompressedPixelFormat, const GLvoid*, GLsizei);
     #endif
-    void(AbstractTexture::*subImage2DImplementation)(GLint, const Vector2i&, const Vector2i&, PixelFormat, PixelType, const GLvoid*);
+    void (AbstractTexture::*image2DImplementation)(GLenum, GLint, TextureFormat, const Vector2i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&);
+    void(AbstractTexture::*subImage2DImplementation)(GLint, const Vector2i&, const Vector2i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&);
     void(AbstractTexture::*compressedSubImage2DImplementation)(GLint, const Vector2i&, const Vector2i&, CompressedPixelFormat, const GLvoid*, GLsizei);
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-    void(AbstractTexture::*subImage3DImplementation)(GLint, const Vector3i&, const Vector3i&, PixelFormat, PixelType, const GLvoid*);
+    void (AbstractTexture::*image3DImplementation)(GLint, TextureFormat, const Vector3i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&);
+    void(AbstractTexture::*subImage3DImplementation)(GLint, const Vector3i&, const Vector3i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&);
     void(AbstractTexture::*compressedSubImage3DImplementation)(GLint, const Vector3i&, const Vector3i&, CompressedPixelFormat, const GLvoid*, GLsizei);
     #endif
     void(AbstractTexture::*invalidateImageImplementation)(GLint);
@@ -113,6 +115,7 @@ struct TextureState {
     void(CubeMapTexture::*getCubeImageImplementation)(CubeMapCoordinate, GLint, const Vector2i&, PixelFormat, PixelType, std::size_t, GLvoid*);
     void(CubeMapTexture::*getFullCompressedCubeImageImplementation)(GLint, const Vector2i&, std::size_t, std::size_t, GLvoid*);
     void(CubeMapTexture::*getCompressedCubeImageImplementation)(CubeMapCoordinate, GLint, const Vector2i&, std::size_t, GLvoid*);
+    void(CubeMapTexture::*cubeSubImage3DImplementation)(GLint, const Vector3i&, const Vector3i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&);
     #endif
     void(CubeMapTexture::*cubeSubImageImplementation)(CubeMapCoordinate, GLint, const Vector2i&, const Vector2i&, PixelFormat, PixelType, const GLvoid*);
     void(CubeMapTexture::*cubeCompressedSubImageImplementation)(CubeMapCoordinate, GLint, const Vector2i&, const Vector2i&, CompressedPixelFormat, const GLvoid*, GLsizei);

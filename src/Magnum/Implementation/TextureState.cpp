@@ -127,8 +127,8 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         getLevelParameterivImplementation = &AbstractTexture::getLevelParameterImplementationDSA;
         mipmapImplementation = &AbstractTexture::mipmapImplementationDSA;
         subImage1DImplementation = &AbstractTexture::subImageImplementationDSA;
-        subImage2DImplementation = &AbstractTexture::subImageImplementationDSA;
-        subImage3DImplementation = &AbstractTexture::subImageImplementationDSA;
+        subImage2DImplementation = &AbstractTexture::subImage2DImplementationDSA;
+        subImage3DImplementation = &AbstractTexture::subImage3DImplementationDSA;
         compressedSubImage1DImplementation = &AbstractTexture::compressedSubImageImplementationDSA;
         compressedSubImage2DImplementation = &AbstractTexture::compressedSubImageImplementationDSA;
         compressedSubImage3DImplementation = &AbstractTexture::compressedSubImageImplementationDSA;
@@ -186,10 +186,10 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         subImage1DImplementation = &AbstractTexture::subImageImplementationDefault;
         compressedSubImage1DImplementation = &AbstractTexture::compressedSubImageImplementationDefault;
         #endif
-        subImage2DImplementation = &AbstractTexture::subImageImplementationDefault;
+        subImage2DImplementation = &AbstractTexture::subImage2DImplementationDefault;
         compressedSubImage2DImplementation = &AbstractTexture::compressedSubImageImplementationDefault;
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        subImage3DImplementation = &AbstractTexture::subImageImplementationDefault;
+        subImage3DImplementation = &AbstractTexture::subImage3DImplementationDefault;
         compressedSubImage3DImplementation = &AbstractTexture::compressedSubImageImplementationDefault;
         #endif
 
@@ -383,6 +383,47 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     else
         compressedBlockDataSizeImplementation = &AbstractTexture::compressedBlockDataSizeImplementationDefault;
     #endif
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    /* SVGA3D workaround for array / 3D / cube map texture upload. Overrides
+       the DSA / non-DSA function pointers set above. */
+    if((context.detectedDriver() & Context::DetectedDriver::Svga3D) &&
+       !context.isDriverWorkaroundDisabled("svga3d-texture-upload-slice-by-slice")) {
+        #ifndef MAGNUM_TARGET_GLES
+        image2DImplementation = &AbstractTexture::imageImplementationSvga3DSliceBySlice;
+        #endif
+        image3DImplementation = &AbstractTexture::imageImplementationSvga3DSliceBySlice;
+        #ifndef MAGNUM_TARGET_GLES
+        if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
+            #ifndef MAGNUM_TARGET_GLES
+            subImage2DImplementation = &AbstractTexture::subImageImplementationSvga3DSliceBySlice<&AbstractTexture::subImage2DImplementationDSA>;
+            #endif
+            subImage3DImplementation = &AbstractTexture::subImageImplementationSvga3DSliceBySlice<&AbstractTexture::subImage3DImplementationDSA>;
+            cubeSubImage3DImplementation = &CubeMapTexture::subImageImplementationSvga3DSliceBySlice;
+        } else
+        #endif
+        {
+            #ifndef MAGNUM_TARGET_GLES
+            subImage2DImplementation = &AbstractTexture::subImageImplementationSvga3DSliceBySlice<&AbstractTexture::subImage2DImplementationDefault>;
+            #endif
+            subImage3DImplementation = &AbstractTexture::subImageImplementationSvga3DSliceBySlice<&AbstractTexture::subImage3DImplementationDefault>;
+            #ifndef MAGNUM_TARGET_GLES
+            cubeSubImage3DImplementation = nullptr;
+            #endif
+        }
+    } else
+    #endif
+    {
+        /* These need to be set up in any case */
+        image2DImplementation = &AbstractTexture::imageImplementationDefault;
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+        image3DImplementation = &AbstractTexture::imageImplementationDefault;
+        #endif
+        /* The other subImage implementations were set already above */
+        #ifndef MAGNUM_TARGET_GLES
+        cubeSubImage3DImplementation = &CubeMapTexture::subImageImplementationDefault;
+        #endif
+    }
 
     /* Allocate texture bindings array to hold all possible texture units */
     glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &maxTextureUnits);

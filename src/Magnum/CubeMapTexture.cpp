@@ -298,7 +298,7 @@ CubeMapTexture& CubeMapTexture::setSubImage(const Int level, const Vector3i& off
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
     image.storage().applyUnpack();
-    glTextureSubImage3D(_id, level, offset.x(), offset.y(), offset.z(), image.size().x(), image.size().y(), image.size().z(), GLenum(image.format()), GLenum(image.type()), image.data());
+    (this->*Context::current().state().texture->cubeSubImage3DImplementation)(level, offset, image.size(), image.format(), image.type(), image.data(), image.storage());
     return *this;
 }
 
@@ -500,6 +500,18 @@ void CubeMapTexture::getImageImplementationRobustness(const CubeMapCoordinate co
 void CubeMapTexture::getCompressedImageImplementationRobustness(const CubeMapCoordinate coordinate, const GLint level, const Vector2i&, const std::size_t dataSize, GLvoid* const data) {
     bindInternal();
     glGetnCompressedTexImageARB(GLenum(coordinate), level, dataSize, data);
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+void CubeMapTexture::subImageImplementationDefault(const GLint level, const Vector3i& offset, const Vector3i& size, const PixelFormat format, const PixelType type, const GLvoid* const data, const PixelStorage&) {
+    glTextureSubImage3D(_id, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), GLenum(format), GLenum(type), data);
+}
+
+void CubeMapTexture::subImageImplementationSvga3DSliceBySlice(const GLint level, const Vector3i& offset, const Vector3i& size, const PixelFormat format, const PixelType type, const GLvoid* const data, const PixelStorage& storage) {
+    const std::size_t stride = std::get<1>(storage.dataProperties(format, type, size)).xy().product();
+    for(Int i = 0; i != size.z(); ++i)
+        subImageImplementationDefault(level, {offset.xy(), offset.z() + i}, {size.xy(), 1}, format, type, static_cast<const char*>(data) + stride*i, storage);
 }
 #endif
 

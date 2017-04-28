@@ -632,22 +632,46 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         void MAGNUM_LOCAL compressedSubImageImplementationDSAEXT(GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, CompressedPixelFormat format, const GLvoid* data, GLsizei dataSize);
         #endif
 
-        void MAGNUM_LOCAL subImageImplementationDefault(GLint level, const Vector2i& offset, const Vector2i& size, PixelFormat format, PixelType type, const GLvoid* data);
+        void MAGNUM_LOCAL imageImplementationDefault(GLenum target, GLint level, TextureFormat internalFormat, const Vector2i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL imageImplementationSvga3DSliceBySlice(GLenum target, GLint level, TextureFormat internalFormat, const Vector2i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&);
+        #endif
+        /* Had to put explicit "2D" in the name so it's not overloaded and
+           Clang is able to pass it as template parameter to
+           subImageImplementationSvga3DSliceBySlice(). GCC had no problem with
+           the original. */
+        void MAGNUM_LOCAL subImage2DImplementationDefault(GLint level, const Vector2i& offset, const Vector2i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&);
+        #ifndef MAGNUM_TARGET_GLES
+        template<void(AbstractTexture::*original)(GLint, const Vector2i&, const Vector2i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&)> void MAGNUM_LOCAL subImageImplementationSvga3DSliceBySlice(GLint level, const Vector2i& offset, const Vector2i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage& storage);
+        #endif
         void MAGNUM_LOCAL compressedSubImageImplementationDefault(GLint level, const Vector2i& offset, const Vector2i& size, CompressedPixelFormat format, const GLvoid* data, GLsizei dataSize);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL subImageImplementationDSA(GLint level, const Vector2i& offset, const Vector2i& size, PixelFormat format, PixelType type, const GLvoid* data);
-        void MAGNUM_LOCAL subImageImplementationDSAEXT(GLint level, const Vector2i& offset, const Vector2i& size, PixelFormat format, PixelType type, const GLvoid* data);
+        void MAGNUM_LOCAL subImage2DImplementationDSA(GLint level, const Vector2i& offset, const Vector2i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&);
+        void MAGNUM_LOCAL subImageImplementationDSAEXT(GLint level, const Vector2i& offset, const Vector2i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&);
         void MAGNUM_LOCAL compressedSubImageImplementationDSA(GLint level, const Vector2i& offset, const Vector2i& size, CompressedPixelFormat format, const GLvoid* data, GLsizei dataSize);
         void MAGNUM_LOCAL compressedSubImageImplementationDSAEXT(GLint level, const Vector2i& offset, const Vector2i& size, CompressedPixelFormat format, const GLvoid* data, GLsizei dataSize);
         #endif
 
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        void MAGNUM_LOCAL subImageImplementationDefault(GLint level, const Vector3i& offset, const Vector3i& size, PixelFormat format, PixelType type, const GLvoid* data);
+        void MAGNUM_LOCAL imageImplementationDefault(GLint level, TextureFormat internalFormat, const Vector3i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&);
+        #ifndef MAGNUM_TARGET_WEBGL
+        void MAGNUM_LOCAL imageImplementationSvga3DSliceBySlice(GLint level, TextureFormat internalFormat, const Vector3i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&);
+        #endif
+        /* Had to put explicit "3D" in the name so it's not overloaded and
+           Clang is able to pass it as template parameter to
+           subImageImplementationSvga3DSliceBySlice(). GCC had no problem with
+           the original. */
+        void MAGNUM_LOCAL subImage3DImplementationDefault(GLint level, const Vector3i& offset, const Vector3i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&);
+        #ifndef MAGNUM_TARGET_WEBGL
+        template<void(AbstractTexture::*original)(GLint, const Vector3i&, const Vector3i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&)> void MAGNUM_LOCAL subImageImplementationSvga3DSliceBySlice(GLint level, const Vector3i& offset, const Vector3i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage& storage);
+        #endif
         void MAGNUM_LOCAL compressedSubImageImplementationDefault(GLint level, const Vector3i& offset, const Vector3i& size, CompressedPixelFormat format, const GLvoid* data, GLsizei dataSize);
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_LOCAL subImageImplementationDSA(GLint level, const Vector3i& offset, const Vector3i& size, PixelFormat format, PixelType type, const GLvoid* data);
-        void MAGNUM_LOCAL subImageImplementationDSAEXT(GLint level, const Vector3i& offset, const Vector3i& size, PixelFormat format, PixelType type, const GLvoid* data);
+        void MAGNUM_LOCAL subImage3DImplementationDSA(GLint level, const Vector3i& offset, const Vector3i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&);
+        #ifndef MAGNUM_TARGET_WEBGL
+        void MAGNUM_LOCAL subImageImplementationDSAEXT(GLint level, const Vector3i& offset, const Vector3i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&);
+        #endif
         void MAGNUM_LOCAL compressedSubImageImplementationDSA(GLint level, const Vector3i& offset, const Vector3i& size, CompressedPixelFormat format, const GLvoid* data, GLsizei dataSize);
         void MAGNUM_LOCAL compressedSubImageImplementationDSAEXT(GLint level, const Vector3i& offset, const Vector3i& size, CompressedPixelFormat format, const GLvoid* data, GLsizei dataSize);
         #endif

@@ -103,6 +103,14 @@ namespace {
            whole ARB_get_texture_sub_image is disabled. */
         "svga3d-gettexsubimage-oob-write",
         #endif
+
+        /* SVGA3D has broken handling of glTex[ture][Sub]Image*D() for 1D
+           arrays, 2D arrays, 3D textures and cube map textures where it
+           uploads just the first slice in the last dimension. This is only
+           with copies from host memory, not with buffer images. Seems to be
+           fixed in Mesa 13, but I have no such system to verify that on.
+           https://github.com/mesa3d/mesa/commit/2aa9ff0cda1f6ad97c83d5583fab7a84efabe19e */
+        "svga3d-texture-upload-slice-by-slice"
     };
 }
 
