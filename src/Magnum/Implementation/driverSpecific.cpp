@@ -97,6 +97,11 @@ namespace {
            vertex buffer memory is initialized using glNamedBufferData() from
            ARB_DSA. Using the non-DSA glBufferData() works. */
         "svga3d-broken-dsa-bufferdata",
+
+        /* SVGA3D does out-of-bound writes in some cases of glGetTexSubImage(),
+           leading to memory corruption on client machines. That's nasty, so the
+           whole ARB_get_texture_sub_image is disabled. */
+        "svga3d-gettexsubimage-oob-write",
         #endif
     };
 }
@@ -255,6 +260,13 @@ void Context::setupDriverWorkarounds() {
         _setRequiredVersion(GL::OES::texture_3D, None);
         _setRequiredVersion(GL::OES::vertex_array_object, None);
     }
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if((detectedDriver() & DetectedDriver::Svga3D) &&
+       isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>() &&
+       !isDriverWorkaroundDisabled("svga3d-gettexsubimage-oob-write"))
+        _setRequiredVersion(GL::ARB::get_texture_sub_image, None);
     #endif
 
     #undef _setRequiredVersion
