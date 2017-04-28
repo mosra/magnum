@@ -103,11 +103,14 @@ void ImageViewTest::constructCompressed() {
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 void ImageViewTest::constructDeprecatedArrayView() {
-    const char data[12]{};
-    Containers::ArrayView<const char> view{data};
+    char data[12]{};
+    Containers::ArrayView<char> view{data};
     ImageView2D a{PixelFormat::RGB, PixelType::UnsignedByte, {1, 3}, view};
-
     CORRADE_COMPARE(a.data(), data);
+
+    Containers::ArrayView<const char> cview{data};
+    ImageView2D b{PixelFormat::RGB, PixelType::UnsignedByte, {1, 3}, cview};
+    CORRADE_COMPARE(b.data(), data);
 }
 
 void ImageViewTest::constructDeprecatedArray() {
