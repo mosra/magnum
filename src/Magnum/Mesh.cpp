@@ -303,6 +303,9 @@ void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr i
 
             /* Indexed mesh */
             } else
+            #elif !defined(MAGNUM_TARGET_GLES2)
+            static_cast<void>(indexStart);
+            static_cast<void>(indexEnd);
             #endif
             {
                 glDrawElements(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset));
