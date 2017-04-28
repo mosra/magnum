@@ -92,7 +92,7 @@ template<UnsignedInt dimensions> class ImageView {
         #ifndef DOXYGEN_GENERATING_OUTPUT
         /* To avoid ambiguous overload when passing ArrayView<T> to the
            constructor */
-        template<class T> explicit ImageView(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const T> data): ImageView{{}, format, type, size, Containers::ArrayView<const void>{data}} {}
+        template<class T> explicit ImageView(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<T> data): ImageView{{}, format, type, size, Containers::ArrayView<const void>{data}} {}
         template<class T> explicit ImageView(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, const Containers::Array<T>& data): ImageView{{}, format, type, size, Containers::ArrayView<const void>(data)} {}
         /* To avoid decay of sized arrays and nullptr to const void* and
            unwanted use of deprecated function */
