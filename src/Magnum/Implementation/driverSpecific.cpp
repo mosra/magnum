@@ -33,6 +33,7 @@
 namespace Magnum {
 
 namespace {
+    /* Search the code for the following strings to see where they are implemented. */
     std::vector<std::string> KnownWorkarounds{
         #if !defined(MAGNUM_TARGET_GLES) && !defined(CORRADE_TARGET_APPLE)
         /* Creating core context with specific version on AMD and NV
@@ -59,7 +60,7 @@ namespace {
         "nv-windows-dangling-transform-feedback-varying-names",
         #endif
 
-        #if !defined(MAGNUM_TARGET_GLES)
+        #ifndef MAGNUM_TARGET_GLES
         /* Layout qualifier causes compiler error with GLSL 1.20 on Mesa, GLSL
            1.30 on NVidia and 1.40 on Mac OS X. Everything is fine when using
            newer GLSL version. */
