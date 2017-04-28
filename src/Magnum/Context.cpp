@@ -894,13 +894,15 @@ Debug& operator<<(Debug& debug, const Context::DetectedDriver value) {
         /* LCOV_EXCL_START */
         #define _c(value) case Context::DetectedDriver::value: return debug << "Context::DetectedDriver::" #value;
         #ifndef MAGNUM_TARGET_WEBGL
-        _c(AMD)
+        _c(Amd)
+        #endif
+        #ifdef MAGNUM_TARGET_GLES
+        _c(Angle)
+        #endif
+        #ifndef MAGNUM_TARGET_WEBGL
         _c(IntelWindows)
         _c(Mesa)
         _c(NVidia)
-        #endif
-        #ifdef MAGNUM_TARGET_GLES
-        _c(ProbablyAngle)
         #endif
         #undef _c
         /* LCOV_EXCL_STOP */
@@ -912,13 +914,15 @@ Debug& operator<<(Debug& debug, const Context::DetectedDriver value) {
 Debug& operator<<(Debug& debug, const Context::DetectedDrivers value) {
     return Containers::enumSetDebugOutput(debug, value, "Context::DetectedDrivers{}", {
         #ifndef MAGNUM_TARGET_WEBGL
-        Context::DetectedDriver::AMD,
+        Context::DetectedDriver::Amd,
+        #endif
+        #ifdef MAGNUM_TARGET_GLES
+        Context::DetectedDriver::Angle,
+        #endif
+        #ifndef MAGNUM_TARGET_WEBGL
         Context::DetectedDriver::IntelWindows,
         Context::DetectedDriver::Mesa,
         Context::DetectedDriver::NVidia,
-        #endif
-        #ifdef MAGNUM_TARGET_GLES
-        Context::DetectedDriver::ProbablyAngle
         #endif
     });
 }

@@ -220,28 +220,14 @@ class MAGNUM_EXPORT Context {
              * @requires_gles Not detectable on WebGL, as browsers
              *      intentionally hide most of the driver information.
              */
-            AMD = 1 << 0,
+            Amd = 1 << 0,
 
-            /**
-             * Intel desktop drivers on Windows
-             * @requires_gles Not detectable on WebGL, as browsers
-             *      intentionally hide most of the driver information.
+            #ifdef MAGNUM_BUILD_DEPRECATED
+            /** @copydoc DetectedDriver::Amd
+             * @deprecated Use @ref DetectedDriver::Amd instead.
              */
-            IntelWindows = 1 << 1,
-
-            /**
-             * Mesa drivers on Linux
-             * @requires_gles Not detectable on WebGL, as browsers
-             *      intentionally hide most of the driver information.
-             */
-            Mesa = 1 << 2,
-
-            /**
-             * Binary NVidia drivers on Windows and Linux
-             * @requires_gles Not detectable on WebGL, as browsers
-             *      intentionally hide most of the driver information.
-             */
-            NVidia = 1 << 3,
+            AMD CORRADE_DEPRECATED_ENUM("use DetectedDriver::Amd instead") = UnsignedShort(DetectedDriver::Amd),
+            #endif
             #endif
 
             #ifdef MAGNUM_TARGET_GLES
@@ -251,7 +237,37 @@ class MAGNUM_EXPORT Context {
              * specification explicitly disallows exposing driver information
              * to the application, this check cannot be done reliably.
              */
-            ProbablyAngle = 1 << 4
+            Angle = 1 << 1,
+
+            #ifdef MAGNUM_BUILD_DEPRECATED
+            /** @copydoc DetectedDriver::Angle
+             * @deprecated Use @ref DetectedDriver::Angle instead.
+             */
+            ProbablyAngle CORRADE_DEPRECATED_ENUM("use DetectedDriver::Angle instead") = UnsignedShort(DetectedDriver::Angle),
+            #endif
+            #endif
+
+            #ifndef MAGNUM_TARGET_WEBGL
+            /**
+             * Intel desktop drivers on Windows
+             * @requires_gles Not detectable on WebGL, as browsers
+             *      intentionally hide most of the driver information.
+             */
+            IntelWindows = 1 << 2,
+
+            /**
+             * Mesa drivers on Linux
+             * @requires_gles Not detectable on WebGL, as browsers
+             *      intentionally hide most of the driver information.
+             */
+            Mesa = 1 << 3,
+
+            /**
+             * Binary NVidia drivers on Windows and Linux
+             * @requires_gles Not detectable on WebGL, as browsers
+             *      intentionally hide most of the driver information.
+             */
+            NVidia = 1 << 4
             #endif
         };
 

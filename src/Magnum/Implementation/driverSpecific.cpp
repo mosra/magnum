@@ -137,7 +137,7 @@ auto Context::detectedDriver() -> DetectedDrivers {
     #if !defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_WEBGL)
     /* AMD binary desktop drivers */
     if(vendor.find("ATI Technologies Inc.") != std::string::npos)
-        return *_detectedDrivers |= DetectedDriver::AMD;
+        return *_detectedDrivers |= DetectedDriver::Amd;
 
     #ifdef CORRADE_TARGET_WINDOWS
     /* Intel Windows drivers */
@@ -165,7 +165,7 @@ auto Context::detectedDriver() -> DetectedDrivers {
         Range1Di range;
         glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, range.data());
         if(range.min() == 1 && range.max() == 1 && vendor != "Internet Explorer")
-            return *_detectedDrivers |= DetectedDriver::ProbablyAngle;
+            return *_detectedDrivers |= DetectedDriver::Angle;
     }
     #endif
 

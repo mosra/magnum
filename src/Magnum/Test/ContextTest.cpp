@@ -71,22 +71,22 @@ void ContextTest::debugFlags() {
 void ContextTest::debugDetectedDriver() {
     std::ostringstream out;
     #ifndef MAGNUM_TARGET_WEBGL
-    Debug{&out} << Context::DetectedDriver::AMD << Context::DetectedDriver(0xdead);
-    CORRADE_COMPARE(out.str(), "Context::DetectedDriver::AMD Context::DetectedDriver(0xdead)\n");
+    Debug{&out} << Context::DetectedDriver::Amd << Context::DetectedDriver(0xdead);
+    CORRADE_COMPARE(out.str(), "Context::DetectedDriver::Amd Context::DetectedDriver(0xdead)\n");
     #else
-    Debug{&out} << Context::DetectedDriver::ProbablyAngle << Context::DetectedDriver(0xdead);
-    CORRADE_COMPARE(out.str(), "Context::DetectedDriver::ProbablyAngle Context::DetectedDriver(0xdead)\n");
+    Debug{&out} << Context::DetectedDriver::Angle << Context::DetectedDriver(0xdead);
+    CORRADE_COMPARE(out.str(), "Context::DetectedDriver::Angle Context::DetectedDriver(0xdead)\n");
     #endif
 }
 
 void ContextTest::debugDetectedDrivers() {
     std::ostringstream out;
     #ifndef MAGNUM_TARGET_WEBGL
-    Debug{&out} << Context::DetectedDrivers{} << (Context::DetectedDriver::AMD|Context::DetectedDriver::NVidia) << (Context::DetectedDriver::Mesa|Context::DetectedDriver(0xde00));
-    CORRADE_COMPARE(out.str(), "Context::DetectedDrivers{} Context::DetectedDriver::AMD|Context::DetectedDriver::NVidia Context::DetectedDriver::Mesa|Context::DetectedDriver(0xde00)\n");
+    Debug{&out} << Context::DetectedDrivers{} << (Context::DetectedDriver::Amd|Context::DetectedDriver::NVidia) << (Context::DetectedDriver::Mesa|Context::DetectedDriver(0xde00));
+    CORRADE_COMPARE(out.str(), "Context::DetectedDrivers{} Context::DetectedDriver::Amd|Context::DetectedDriver::NVidia Context::DetectedDriver::Mesa|Context::DetectedDriver(0xde00)\n");
     #else
-    Debug{&out} << Context::DetectedDrivers{} << (Context::DetectedDriver::ProbablyAngle) << (Context::DetectedDriver::ProbablyAngle|Context::DetectedDriver(0xde00));
-    CORRADE_COMPARE(out.str(), "Context::DetectedDrivers{} Context::DetectedDriver::ProbablyAngle Context::DetectedDriver::ProbablyAngle|Context::DetectedDriver(0xde00)\n");
+    Debug{&out} << Context::DetectedDrivers{} << (Context::DetectedDriver::Angle) << (Context::DetectedDriver::Angle|Context::DetectedDriver(0xde00));
+    CORRADE_COMPARE(out.str(), "Context::DetectedDrivers{} Context::DetectedDriver::Angle Context::DetectedDriver::Angle|Context::DetectedDriver(0xde00)\n");
     #endif
 }
 
