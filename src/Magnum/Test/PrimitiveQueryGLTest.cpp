@@ -47,8 +47,10 @@ struct PrimitiveQueryGLTest: OpenGLTester {
 
     void wrap();
 
-    #ifndef MAGNUM_TARGET_GLES
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     void primitivesGenerated();
+    #endif
+    #ifndef MAGNUM_TARGET_GLES
     void primitivesGeneratedIndexed();
     #endif
     void transformFeedbackPrimitivesWritten();
@@ -60,8 +62,10 @@ struct PrimitiveQueryGLTest: OpenGLTester {
 PrimitiveQueryGLTest::PrimitiveQueryGLTest() {
     addTests({&PrimitiveQueryGLTest::wrap,
 
-              #ifndef MAGNUM_TARGET_GLES
+              #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
               &PrimitiveQueryGLTest::primitivesGenerated,
+              #endif
+              #ifndef MAGNUM_TARGET_GLES
               &PrimitiveQueryGLTest::primitivesGeneratedIndexed,
               #endif
               &PrimitiveQueryGLTest::transformFeedbackPrimitivesWritten,
@@ -91,10 +95,15 @@ void PrimitiveQueryGLTest::wrap() {
     glDeleteQueries(1, &id);
 }
 
-#ifndef MAGNUM_TARGET_GLES
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void PrimitiveQueryGLTest::primitivesGenerated() {
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::GL::EXT::transform_feedback>())
         CORRADE_SKIP(Extensions::GL::EXT::transform_feedback::string() + std::string(" is not available."));
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::geometry_shader>())
+        CORRADE_SKIP(Extensions::GL::EXT::geometry_shader::string() + std::string(" is not available."));
+    #endif
 
     /* Bind some FB to avoid errors on contexts w/o default FB */
     Renderbuffer color;
@@ -108,10 +117,12 @@ void PrimitiveQueryGLTest::primitivesGenerated() {
 
         explicit MyShader() {
             Shader vert(
-                #ifndef CORRADE_TARGET_APPLE
-                Version::GL210
-                #else
+                #ifdef MAGNUM_TARGET_GLES
+                Version::GLES310
+                #elif defined(CORRADE_TARGET_APPLE)
                 Version::GL310
+                #else
+                Version::GL210
                 #endif
                 , Shader::Type::Vertex);
 
@@ -125,6 +136,12 @@ void PrimitiveQueryGLTest::primitivesGenerated() {
                 "}\n").compile());
 
             attachShader(vert);
+            #ifdef MAGNUM_TARGET_GLES
+            /* ES for some reason needs both vertex and fragment shader */
+            Shader frag{Version::GLES310, Shader::Type::Fragment};
+            CORRADE_INTERNAL_ASSERT_OUTPUT(frag.addSource("void main() {}\n").compile());
+            attachShader(frag);
+            #endif
             bindAttributeLocation(Position::Location, "position");
             CORRADE_INTERNAL_ASSERT_OUTPUT(link());
         }
@@ -156,7 +173,9 @@ void PrimitiveQueryGLTest::primitivesGenerated() {
     CORRADE_VERIFY(availableAfter);
     CORRADE_COMPARE(count, 3);
 }
+#endif
 
+#ifndef MAGNUM_TARGET_GLES
 void PrimitiveQueryGLTest::primitivesGeneratedIndexed() {
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback3>())
         CORRADE_SKIP(Extensions::GL::ARB::transform_feedback3::string() + std::string(" is not available."));
