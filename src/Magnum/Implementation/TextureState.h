@@ -32,12 +32,16 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/OpenGL.h"
 
-#if defined(_MSC_VER) && !defined(MAGNUM_TARGET_GLES2)
+#ifdef _MSC_VER
+#include "Magnum/AbstractTexture.h"
+
+#ifndef MAGNUM_TARGET_GLES2
 /* Otherwise the member function pointers will have different size based on
    whether the header was included or not. CAUSES SERIOUS MEMORY CORRUPTION AND
    IS NOT CAUGHT BY ANY WARNING WHATSOEVER! AARGH! */
 #include "Magnum/BufferTexture.h"
 #include "Magnum/CubeMapTexture.h"
+#endif
 #endif
 
 namespace Magnum { namespace Implementation {
