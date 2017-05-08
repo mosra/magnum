@@ -169,6 +169,10 @@ subdirectory of the build dir:
     cmake --build .
     ./src/MyApplication
 
+@note If you installed Corrade and Magnum separately (instead of putting them
+    in the project as subprojects), the `-DWITH_SDL2APPLICATION=ON` is not
+    needed as that was already done when compiling & installing Magnum before.
+
 On Windows you can use either MSVC or MinGW-w64 compiler and prebuilt SDL2
 binaries can be downloaded at https://libsdl.org/download-2.0.php. It's then up
 to you whether you will use command-line, QtCreator or Visual Studio. With
@@ -219,7 +223,7 @@ print something to debug output:
 @code
 using namespace Magnum::Math::Literals;
 
-Renderer::setClearColor(Color3::fromHSV(216.0_degf, 0.85f, 1.0f));
+Renderer::setClearColor(Color3::fromHsv(216.0_degf, 0.85f, 1.0f));
 
 Debug() << "Hello! This application is running on" << Context::current().version()
         << "using" << Context::current().rendererString();
