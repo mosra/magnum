@@ -30,7 +30,7 @@
  * @brief Class @ref Magnum::Vk::Shader
  */
 
-#include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/ArrayView.h>
 #include "Magnum/Magnum.h"
 #include "Magnum/Vk/visibility.h"
 
@@ -43,7 +43,7 @@ namespace Magnum { namespace Vk {
 class MAGNUM_VK_EXPORT Shader {
     public:
 
-        Shader(Device& device, const Containers::Array<char>& shaderCode):
+        Shader(Device& device, const Containers::ArrayView<const char>& shaderCode):
             _device{&device} {
             VkShaderModuleCreateInfo moduleCreateInfo;
             moduleCreateInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
