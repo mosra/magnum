@@ -112,7 +112,7 @@ if(NOT MAGNUM_TARGET_WEBGL)
 endif()
 
 if(NOT MAGNUM_TARGET_GLES)
-    corrade_add_test(RectangleTextureTest RectangleTextureTest.cpp LIBRARIES MagnumOpenGLTester)
+    corrade_add_test(RectangleTextureTest RectangleTextureTest.cpp LIBRARIES Magnum)
     set_target_properties(RectangleTextureTest PROPERTIES FOLDER "Magnum/Test")
 endif()
 
