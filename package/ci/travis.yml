@@ -1,5 +1,8 @@
 # kate: indent-width 2;
 
+# trusty has cmake >= 2.8.12 in the official package repository
+dist: trusty
+
 addons:
   apt:
     sources:
@@ -9,6 +12,9 @@ addons:
     - g++-4.7
     - cmake
     - libopenal-dev
+    - libxrandr-dev
+    - libxinerama-dev
+    - libxcursor-dev
 
 matrix:
   include:
@@ -39,6 +45,9 @@ matrix:
         - clang-3.8
         - cmake
         - libopenal-dev
+        - libxrandr-dev
+        - libxinerama-dev
+        - libxcursor-dev
   - language: cpp
     os: linux
     compiler: gcc
