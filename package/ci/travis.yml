@@ -2,29 +2,34 @@
 
 addons:
   apt:
-    sources:
-    - ubuntu-toolchain-r-test
-    - kubuntu-backports
     packages:
     - g++-4.7
-    - cmake
+    - libsdl2-dev
     - libopenal-dev
+    # GLFW dependencies, libxi-dev will be needed in the future
+    - libxrandr-dev
+    - libxinerama-dev
+    - libxcursor-dev
+    #- libxi-dev
 
 matrix:
   include:
   - language: cpp
     os: linux
+    dist: trusty
     compiler: gcc
     env:
     - TARGET=desktop
   - language: cpp
     os: linux
+    dist: trusty
     compiler: gcc
     env:
     - TARGET=desktop
     - BUILD_DEPRECATED=OFF
   - language: cpp
     os: linux
+    dist: trusty
     compiler: clang
     env:
     - TARGET=desktop-sanitizers
@@ -32,27 +37,30 @@ matrix:
     addons:
       apt:
         sources:
-        - ubuntu-toolchain-r-test
-        - llvm-toolchain-precise-3.8
-        - kubuntu-backports
+        - llvm-toolchain-trusty
         packages:
         - clang-3.8
-        - cmake
+        - libsdl2-dev
         - libopenal-dev
+        # GLFW dependencies, libxi-dev will be needed in the future
+        - libxrandr-dev
+        - libxinerama-dev
+        - libxcursor-dev
+        #- libxi-dev
   - language: cpp
     os: linux
+    dist: trusty
     compiler: gcc
     env:
     - TARGET=desktop-gles
     - TARGET_GLES2=ON
-  # Disabled because the Ubuntu 12.04 drivers are missing some ES3 entrypoints
-  # Should be enabled after moving to 14.04
-  #- language: cpp
-    #os: linux
-    #compiler: gcc
-    #env:
-    #- TARGET=desktop-gles
-    #- TARGET_GLES2=OFF
+  - language: cpp
+    os: linux
+    dist: trusty
+    compiler: gcc
+    env:
+    - TARGET=desktop-gles
+    - TARGET_GLES2=OFF
   - language: cpp
     os: osx
     compiler: clang
@@ -83,9 +91,18 @@ matrix:
     - TARGET_GLES2=OFF
   - language: android
     os: linux
+    # 14.04 doesn't know Android yet so we have to use 12.04 with all the
+    # annoyances: https://github.com/travis-ci/travis-ci/issues/5370
+    dist: precise
     env:
     - TARGET=android
     - TARGET_GLES2=ON
+    addons:
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        packages:
+        - g++-4.7
     android:
       components:
       - build-tools-19.0.0
@@ -93,9 +110,18 @@ matrix:
       - sys-img-armeabi-v7a-android-19
   - language: android
     os: linux
+    # 14.04 doesn't know Android yet so we have to use 12.04 with all the
+    # annoyances: https://github.com/travis-ci/travis-ci/issues/5370
+    dist: precise
     env:
     - TARGET=android
     - TARGET_GLES2=OFF
+    addons:
+      apt:
+        sources:
+        - ubuntu-toolchain-r-test
+        packages:
+        - g++-4.7
     android:
       components:
       - build-tools-19.0.0
@@ -124,6 +150,11 @@ install:
 - if [ "$BUILD_DEPRECATED" != "OFF" ]; then export BUILD_DEPRECATED=ON; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ]; then export PLATFORM_GL_API=GLX; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "android" ]; then wget -nc http://dl.google.com/android/ndk/android-ndk-r10e-linux-x86_64.bin && chmod +x android-*.bin && ./android-*.bin -y | grep -v Extracting; fi
+# Because Android build has to use 12.04 and CMake 2.8.12 stopped working there
+# since May 2017, I have to manually download a prebuilt version. Also, the
+# PATH setting can't be cached, so it's separate (bit me two times already)
+- if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "android" ] && [ ! -e "$HOME/cmake/bin" ]; then cd $HOME ; wget -nc --no-check-certificate https://cmake.org/files/v2.8/cmake-2.8.12.2-Linux-i386.tar.gz && mkdir -p cmake && cd cmake && tar --strip-components=1 -xzvf ../cmake-2.8.12.2-Linux-i386.tar.gz && cd $TRAVIS_BUILD_DIR ; fi
+- if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "android" ]; then export PATH=$HOME/cmake/bin:$PATH; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop" ]; then export PLATFORM_GL_API=CGL; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "ios-simulator" ]; then gem install xcpretty; fi
 # Emscripten 1.37.10 is broken (crashes during optimization), using 1.37.1
@@ -131,10 +162,9 @@ install:
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "emscripten" ]; then brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/53f53f6498ba0f507c443dd4f0c6217937f1ddf2/Formula/emscripten.rb && export LLVM=/usr/local/opt/emscripten/libexec/llvm/bin && emcc; fi
 - if [ "$TARGET" == "desktop" ] || [ "$TARGET" == "desktop-sanitizers" ] || [ "$TARGET" == "desktop-gles" ]; then printf "[General]\ndrivers=null" > ~/.alsoftrc; fi
 
-# SDL (cached)
+# SDL on macOS and iOS (cached)
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop" ]; then brew install sdl2; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "ios-simulator" ]; then curl -O https://www.libsdl.org/release/SDL2-2.0.4.tar.gz && tar -xzvf SDL2-2.0.4.tar.gz && cd SDL2-2.0.4/Xcode-iOS/SDL && xcodebuild -sdk iphonesimulator9.3 | xcpretty && mkdir -p ../../../sdl2/lib && cp build/Release-iphonesimulator/libSDL2.a ../../../sdl2/lib && mkdir -p ../../../sdl2/include/SDL2 && cp -R ../../include/* ../../../sdl2/include/SDL2 && cd ../../..; fi
-- if [ "$TRAVIS_OS_NAME" == "linux" ] && ( [ "$TARGET" == "desktop" ] || [ "$TARGET" == "desktop-sanitizers" ] ) && [ ! -e "$HOME/sdl2/include" ]; then curl -O http://www.libsdl.org/release/SDL2-2.0.4.tar.gz && tar -xzvf SDL2-2.0.4.tar.gz && cd SDL2-2.0.4 && mkdir build && cd build && cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/sdl2 -DCMAKE_BUILD_TYPE=Release && cmake --build . --target install && cd ../..; fi
 
 # GLFW (cached)
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop" ]; then brew install homebrew/versions/glfw3; fi
