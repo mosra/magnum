@@ -8,6 +8,8 @@ issues.
 DESIGN GOALS
 ============
 
+[![Join the chat at https://gitter.im/mosra/magnum](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mosra/magnum?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 *   **2D is not an ugly stepchild**
     Many engines out there were created as pure 2D or 3D and the alternative is
     usually just an afterthought, if it is present at all. If you want to do
