@@ -30,7 +30,7 @@ FLEXTGL_EXPORT void(APIENTRY *flextglMultiDrawArraysIndirectCountARB)(GLenum, GL
 FLEXTGL_EXPORT void(APIENTRY *flextglMultiDrawElementsIndirectCountARB)(GLenum, GLenum, GLintptr, GLintptr, GLsizei, GLsizei) = nullptr;
 
 /* GL_ARB_robustness */
-FLEXTGL_EXPORT GLenum(APIENTRY *flextglGetGraphicsResetStatusARB)(void) = nullptr;
+FLEXTGL_EXPORT GLenum(APIENTRY *flextglGetGraphicsResetStatusARB)() = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglGetnCompressedTexImageARB)(GLenum, GLint, GLsizei, void *) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglGetnTexImageARB)(GLenum, GLint, GLenum, GLenum, GLsizei, void *) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglGetnUniformdvARB)(GLuint, GLint, GLsizei, GLdouble *) = nullptr;
@@ -53,7 +53,7 @@ FLEXTGL_EXPORT void(APIENTRY *flextglLabelObjectEXT)(GLenum, GLuint, GLsizei, co
 
 /* GL_EXT_debug_marker */
 FLEXTGL_EXPORT void(APIENTRY *flextglInsertEventMarkerEXT)(GLsizei, const GLchar *) = nullptr;
-FLEXTGL_EXPORT void(APIENTRY *flextglPopGroupMarkerEXT)(void) = nullptr;
+FLEXTGL_EXPORT void(APIENTRY *flextglPopGroupMarkerEXT)() = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglPushGroupMarkerEXT)(GLsizei, const GLchar *) = nullptr;
 
 /* GL_EXT_direct_state_access */
@@ -317,7 +317,7 @@ FLEXTGL_EXPORT void(APIENTRY *flextglVertexArrayVertexOffsetEXT)(GLuint, GLuint,
 FLEXTGL_EXPORT void(APIENTRY *flextglStringMarkerGREMEDY)(GLsizei, const void *) = nullptr;
 
 /* GL_KHR_blend_equation_advanced */
-FLEXTGL_EXPORT void(APIENTRY *flextglBlendBarrierKHR)(void) = nullptr;
+FLEXTGL_EXPORT void(APIENTRY *flextglBlendBarrierKHR)() = nullptr;
 
 /* GL_VERSION_1_2 */
 FLEXTGL_EXPORT void(APIENTRY *flextglCopyTexSubImage3D)(GLenum, GLint, GLint, GLint, GLint, GLint, GLint, GLsizei, GLsizei) = nullptr;
@@ -373,7 +373,7 @@ FLEXTGL_EXPORT void(APIENTRY *flextglAttachShader)(GLuint, GLuint) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglBindAttribLocation)(GLuint, GLuint, const GLchar *) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglBlendEquationSeparate)(GLenum, GLenum) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglCompileShader)(GLuint) = nullptr;
-FLEXTGL_EXPORT GLuint(APIENTRY *flextglCreateProgram)(void) = nullptr;
+FLEXTGL_EXPORT GLuint(APIENTRY *flextglCreateProgram)() = nullptr;
 FLEXTGL_EXPORT GLuint(APIENTRY *flextglCreateShader)(GLenum) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglDeleteProgram)(GLuint) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglDeleteShader)(GLuint) = nullptr;
@@ -493,8 +493,8 @@ FLEXTGL_EXPORT void(APIENTRY *flextglDeleteRenderbuffers)(GLsizei, const GLuint 
 FLEXTGL_EXPORT void(APIENTRY *flextglDeleteVertexArrays)(GLsizei, const GLuint *) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglDisablei)(GLenum, GLuint) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglEnablei)(GLenum, GLuint) = nullptr;
-FLEXTGL_EXPORT void(APIENTRY *flextglEndConditionalRender)(void) = nullptr;
-FLEXTGL_EXPORT void(APIENTRY *flextglEndTransformFeedback)(void) = nullptr;
+FLEXTGL_EXPORT void(APIENTRY *flextglEndConditionalRender)() = nullptr;
+FLEXTGL_EXPORT void(APIENTRY *flextglEndTransformFeedback)() = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglFlushMappedBufferRange)(GLenum, GLintptr, GLsizeiptr) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglFramebufferRenderbuffer)(GLenum, GLenum, GLenum, GLuint) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglFramebufferTexture1D)(GLenum, GLenum, GLenum, GLuint, GLint) = nullptr;
@@ -649,8 +649,8 @@ FLEXTGL_EXPORT GLboolean(APIENTRY *flextglIsTransformFeedback)(GLuint) = nullptr
 FLEXTGL_EXPORT void(APIENTRY *flextglMinSampleShading)(GLfloat) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglPatchParameterfv)(GLenum, const GLfloat *) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglPatchParameteri)(GLenum, GLint) = nullptr;
-FLEXTGL_EXPORT void(APIENTRY *flextglPauseTransformFeedback)(void) = nullptr;
-FLEXTGL_EXPORT void(APIENTRY *flextglResumeTransformFeedback)(void) = nullptr;
+FLEXTGL_EXPORT void(APIENTRY *flextglPauseTransformFeedback)() = nullptr;
+FLEXTGL_EXPORT void(APIENTRY *flextglResumeTransformFeedback)() = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglUniform1d)(GLint, GLdouble) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglUniform1dv)(GLint, GLsizei, const GLdouble *) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglUniform2d)(GLint, GLdouble, GLdouble) = nullptr;
@@ -740,7 +740,7 @@ FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix4x2dv)(GLuint, GLint, G
 FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix4x2fv)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix4x3dv)(GLuint, GLint, GLsizei, GLboolean, const GLdouble *) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglProgramUniformMatrix4x3fv)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *) = nullptr;
-FLEXTGL_EXPORT void(APIENTRY *flextglReleaseShaderCompiler)(void) = nullptr;
+FLEXTGL_EXPORT void(APIENTRY *flextglReleaseShaderCompiler)() = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglScissorArrayv)(GLuint, GLsizei, const GLint *) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglScissorIndexed)(GLuint, GLint, GLint, GLsizei, GLsizei) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglScissorIndexedv)(GLuint, const GLint *) = nullptr;
@@ -807,7 +807,7 @@ FLEXTGL_EXPORT void(APIENTRY *flextglMultiDrawArraysIndirect)(GLenum, const void
 FLEXTGL_EXPORT void(APIENTRY *flextglMultiDrawElementsIndirect)(GLenum, GLenum, const void *, GLsizei, GLsizei) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglObjectLabel)(GLenum, GLuint, GLsizei, const GLchar *) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglObjectPtrLabel)(const void *, GLsizei, const GLchar *) = nullptr;
-FLEXTGL_EXPORT void(APIENTRY *flextglPopDebugGroup)(void) = nullptr;
+FLEXTGL_EXPORT void(APIENTRY *flextglPopDebugGroup)() = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglPushDebugGroup)(GLenum, GLuint, GLsizei, const GLchar *) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglShaderStorageBlockBinding)(GLuint, GLuint, GLuint) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglTexBufferRange)(GLenum, GLenum, GLuint, GLintptr, GLsizeiptr) = nullptr;
@@ -864,7 +864,7 @@ FLEXTGL_EXPORT void(APIENTRY *flextglFlushMappedNamedBufferRange)(GLuint, GLintp
 FLEXTGL_EXPORT void(APIENTRY *flextglGenerateTextureMipmap)(GLuint) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglGetCompressedTextureImage)(GLuint, GLint, GLsizei, void *) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglGetCompressedTextureSubImage)(GLuint, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLsizei, void *) = nullptr;
-FLEXTGL_EXPORT GLenum(APIENTRY *flextglGetGraphicsResetStatus)(void) = nullptr;
+FLEXTGL_EXPORT GLenum(APIENTRY *flextglGetGraphicsResetStatus)() = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglGetNamedBufferParameteri64v)(GLuint, GLenum, GLint64 *) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglGetNamedBufferParameteriv)(GLuint, GLenum, GLint *) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglGetNamedBufferPointerv)(GLuint, GLenum, void **) = nullptr;
@@ -914,7 +914,7 @@ FLEXTGL_EXPORT void(APIENTRY *flextglNamedFramebufferTextureLayer)(GLuint, GLenu
 FLEXTGL_EXPORT void(APIENTRY *flextglNamedRenderbufferStorage)(GLuint, GLenum, GLsizei, GLsizei) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglNamedRenderbufferStorageMultisample)(GLuint, GLsizei, GLenum, GLsizei, GLsizei) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglReadnPixels)(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void *) = nullptr;
-FLEXTGL_EXPORT void(APIENTRY *flextglTextureBarrier)(void) = nullptr;
+FLEXTGL_EXPORT void(APIENTRY *flextglTextureBarrier)() = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglTextureBuffer)(GLuint, GLenum, GLuint) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglTextureBufferRange)(GLuint, GLenum, GLuint, GLintptr, GLsizeiptr) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglTextureParameterIiv)(GLuint, GLenum, const GLint *) = nullptr;

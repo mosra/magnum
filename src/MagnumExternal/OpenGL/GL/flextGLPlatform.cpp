@@ -34,7 +34,7 @@ void flextGLInit() {
     flextglMultiDrawElementsIndirectCountARB = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLintptr, GLintptr, GLsizei, GLsizei)>(loader.load("glMultiDrawElementsIndirectCountARB"));
 
     /* GL_ARB_robustness */
-    flextglGetGraphicsResetStatusARB = reinterpret_cast<GLenum(APIENTRY*)(void)>(loader.load("glGetGraphicsResetStatusARB"));
+    flextglGetGraphicsResetStatusARB = reinterpret_cast<GLenum(APIENTRY*)()>(loader.load("glGetGraphicsResetStatusARB"));
     flextglGetnCompressedTexImageARB = reinterpret_cast<void(APIENTRY*)(GLenum, GLint, GLsizei, void *)>(loader.load("glGetnCompressedTexImageARB"));
     flextglGetnTexImageARB = reinterpret_cast<void(APIENTRY*)(GLenum, GLint, GLenum, GLenum, GLsizei, void *)>(loader.load("glGetnTexImageARB"));
     flextglGetnUniformdvARB = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, GLdouble *)>(loader.load("glGetnUniformdvARB"));
@@ -57,7 +57,7 @@ void flextGLInit() {
 
     /* GL_EXT_debug_marker */
     flextglInsertEventMarkerEXT = reinterpret_cast<void(APIENTRY*)(GLsizei, const GLchar *)>(loader.load("glInsertEventMarkerEXT"));
-    flextglPopGroupMarkerEXT = reinterpret_cast<void(APIENTRY*)(void)>(loader.load("glPopGroupMarkerEXT"));
+    flextglPopGroupMarkerEXT = reinterpret_cast<void(APIENTRY*)()>(loader.load("glPopGroupMarkerEXT"));
     flextglPushGroupMarkerEXT = reinterpret_cast<void(APIENTRY*)(GLsizei, const GLchar *)>(loader.load("glPushGroupMarkerEXT"));
 
     /* GL_EXT_direct_state_access */
@@ -321,7 +321,7 @@ void flextGLInit() {
     flextglStringMarkerGREMEDY = reinterpret_cast<void(APIENTRY*)(GLsizei, const void *)>(loader.load("glStringMarkerGREMEDY"));
 
     /* GL_KHR_blend_equation_advanced */
-    flextglBlendBarrierKHR = reinterpret_cast<void(APIENTRY*)(void)>(loader.load("glBlendBarrierKHR"));
+    flextglBlendBarrierKHR = reinterpret_cast<void(APIENTRY*)()>(loader.load("glBlendBarrierKHR"));
 
     /* GL_VERSION_1_2 */
     flextglCopyTexSubImage3D = reinterpret_cast<void(APIENTRY*)(GLenum, GLint, GLint, GLint, GLint, GLint, GLint, GLsizei, GLsizei)>(loader.load("glCopyTexSubImage3D"));
@@ -377,7 +377,7 @@ void flextGLInit() {
     flextglBindAttribLocation = reinterpret_cast<void(APIENTRY*)(GLuint, GLuint, const GLchar *)>(loader.load("glBindAttribLocation"));
     flextglBlendEquationSeparate = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum)>(loader.load("glBlendEquationSeparate"));
     flextglCompileShader = reinterpret_cast<void(APIENTRY*)(GLuint)>(loader.load("glCompileShader"));
-    flextglCreateProgram = reinterpret_cast<GLuint(APIENTRY*)(void)>(loader.load("glCreateProgram"));
+    flextglCreateProgram = reinterpret_cast<GLuint(APIENTRY*)()>(loader.load("glCreateProgram"));
     flextglCreateShader = reinterpret_cast<GLuint(APIENTRY*)(GLenum)>(loader.load("glCreateShader"));
     flextglDeleteProgram = reinterpret_cast<void(APIENTRY*)(GLuint)>(loader.load("glDeleteProgram"));
     flextglDeleteShader = reinterpret_cast<void(APIENTRY*)(GLuint)>(loader.load("glDeleteShader"));
@@ -497,8 +497,8 @@ void flextGLInit() {
     flextglDeleteVertexArrays = reinterpret_cast<void(APIENTRY*)(GLsizei, const GLuint *)>(loader.load("glDeleteVertexArrays"));
     flextglDisablei = reinterpret_cast<void(APIENTRY*)(GLenum, GLuint)>(loader.load("glDisablei"));
     flextglEnablei = reinterpret_cast<void(APIENTRY*)(GLenum, GLuint)>(loader.load("glEnablei"));
-    flextglEndConditionalRender = reinterpret_cast<void(APIENTRY*)(void)>(loader.load("glEndConditionalRender"));
-    flextglEndTransformFeedback = reinterpret_cast<void(APIENTRY*)(void)>(loader.load("glEndTransformFeedback"));
+    flextglEndConditionalRender = reinterpret_cast<void(APIENTRY*)()>(loader.load("glEndConditionalRender"));
+    flextglEndTransformFeedback = reinterpret_cast<void(APIENTRY*)()>(loader.load("glEndTransformFeedback"));
     flextglFlushMappedBufferRange = reinterpret_cast<void(APIENTRY*)(GLenum, GLintptr, GLsizeiptr)>(loader.load("glFlushMappedBufferRange"));
     flextglFramebufferRenderbuffer = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLenum, GLuint)>(loader.load("glFramebufferRenderbuffer"));
     flextglFramebufferTexture1D = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLenum, GLuint, GLint)>(loader.load("glFramebufferTexture1D"));
@@ -653,8 +653,8 @@ void flextGLInit() {
     flextglMinSampleShading = reinterpret_cast<void(APIENTRY*)(GLfloat)>(loader.load("glMinSampleShading"));
     flextglPatchParameterfv = reinterpret_cast<void(APIENTRY*)(GLenum, const GLfloat *)>(loader.load("glPatchParameterfv"));
     flextglPatchParameteri = reinterpret_cast<void(APIENTRY*)(GLenum, GLint)>(loader.load("glPatchParameteri"));
-    flextglPauseTransformFeedback = reinterpret_cast<void(APIENTRY*)(void)>(loader.load("glPauseTransformFeedback"));
-    flextglResumeTransformFeedback = reinterpret_cast<void(APIENTRY*)(void)>(loader.load("glResumeTransformFeedback"));
+    flextglPauseTransformFeedback = reinterpret_cast<void(APIENTRY*)()>(loader.load("glPauseTransformFeedback"));
+    flextglResumeTransformFeedback = reinterpret_cast<void(APIENTRY*)()>(loader.load("glResumeTransformFeedback"));
     flextglUniform1d = reinterpret_cast<void(APIENTRY*)(GLint, GLdouble)>(loader.load("glUniform1d"));
     flextglUniform1dv = reinterpret_cast<void(APIENTRY*)(GLint, GLsizei, const GLdouble *)>(loader.load("glUniform1dv"));
     flextglUniform2d = reinterpret_cast<void(APIENTRY*)(GLint, GLdouble, GLdouble)>(loader.load("glUniform2d"));
@@ -744,7 +744,7 @@ void flextGLInit() {
     flextglProgramUniformMatrix4x2fv = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *)>(loader.load("glProgramUniformMatrix4x2fv"));
     flextglProgramUniformMatrix4x3dv = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, GLboolean, const GLdouble *)>(loader.load("glProgramUniformMatrix4x3dv"));
     flextglProgramUniformMatrix4x3fv = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, GLboolean, const GLfloat *)>(loader.load("glProgramUniformMatrix4x3fv"));
-    flextglReleaseShaderCompiler = reinterpret_cast<void(APIENTRY*)(void)>(loader.load("glReleaseShaderCompiler"));
+    flextglReleaseShaderCompiler = reinterpret_cast<void(APIENTRY*)()>(loader.load("glReleaseShaderCompiler"));
     flextglScissorArrayv = reinterpret_cast<void(APIENTRY*)(GLuint, GLsizei, const GLint *)>(loader.load("glScissorArrayv"));
     flextglScissorIndexed = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLint, GLsizei, GLsizei)>(loader.load("glScissorIndexed"));
     flextglScissorIndexedv = reinterpret_cast<void(APIENTRY*)(GLuint, const GLint *)>(loader.load("glScissorIndexedv"));
@@ -811,7 +811,7 @@ void flextGLInit() {
     flextglMultiDrawElementsIndirect = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, const void *, GLsizei, GLsizei)>(loader.load("glMultiDrawElementsIndirect"));
     flextglObjectLabel = reinterpret_cast<void(APIENTRY*)(GLenum, GLuint, GLsizei, const GLchar *)>(loader.load("glObjectLabel"));
     flextglObjectPtrLabel = reinterpret_cast<void(APIENTRY*)(const void *, GLsizei, const GLchar *)>(loader.load("glObjectPtrLabel"));
-    flextglPopDebugGroup = reinterpret_cast<void(APIENTRY*)(void)>(loader.load("glPopDebugGroup"));
+    flextglPopDebugGroup = reinterpret_cast<void(APIENTRY*)()>(loader.load("glPopDebugGroup"));
     flextglPushDebugGroup = reinterpret_cast<void(APIENTRY*)(GLenum, GLuint, GLsizei, const GLchar *)>(loader.load("glPushDebugGroup"));
     flextglShaderStorageBlockBinding = reinterpret_cast<void(APIENTRY*)(GLuint, GLuint, GLuint)>(loader.load("glShaderStorageBlockBinding"));
     flextglTexBufferRange = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLuint, GLintptr, GLsizeiptr)>(loader.load("glTexBufferRange"));
@@ -868,7 +868,7 @@ void flextGLInit() {
     flextglGenerateTextureMipmap = reinterpret_cast<void(APIENTRY*)(GLuint)>(loader.load("glGenerateTextureMipmap"));
     flextglGetCompressedTextureImage = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, void *)>(loader.load("glGetCompressedTextureImage"));
     flextglGetCompressedTextureSubImage = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLint, GLint, GLint, GLsizei, GLsizei, GLsizei, GLsizei, void *)>(loader.load("glGetCompressedTextureSubImage"));
-    flextglGetGraphicsResetStatus = reinterpret_cast<GLenum(APIENTRY*)(void)>(loader.load("glGetGraphicsResetStatus"));
+    flextglGetGraphicsResetStatus = reinterpret_cast<GLenum(APIENTRY*)()>(loader.load("glGetGraphicsResetStatus"));
     flextglGetNamedBufferParameteri64v = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum, GLint64 *)>(loader.load("glGetNamedBufferParameteri64v"));
     flextglGetNamedBufferParameteriv = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum, GLint *)>(loader.load("glGetNamedBufferParameteriv"));
     flextglGetNamedBufferPointerv = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum, void **)>(loader.load("glGetNamedBufferPointerv"));
@@ -918,7 +918,7 @@ void flextGLInit() {
     flextglNamedRenderbufferStorage = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum, GLsizei, GLsizei)>(loader.load("glNamedRenderbufferStorage"));
     flextglNamedRenderbufferStorageMultisample = reinterpret_cast<void(APIENTRY*)(GLuint, GLsizei, GLenum, GLsizei, GLsizei)>(loader.load("glNamedRenderbufferStorageMultisample"));
     flextglReadnPixels = reinterpret_cast<void(APIENTRY*)(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void *)>(loader.load("glReadnPixels"));
-    flextglTextureBarrier = reinterpret_cast<void(APIENTRY*)(void)>(loader.load("glTextureBarrier"));
+    flextglTextureBarrier = reinterpret_cast<void(APIENTRY*)()>(loader.load("glTextureBarrier"));
     flextglTextureBuffer = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum, GLuint)>(loader.load("glTextureBuffer"));
     flextglTextureBufferRange = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum, GLuint, GLintptr, GLsizeiptr)>(loader.load("glTextureBufferRange"));
     flextglTextureParameterIiv = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum, const GLint *)>(loader.load("glTextureParameterIiv"));
