@@ -122,12 +122,12 @@ template<class Transformation> void Object<Transformation>::setDirty() {
     if(flags & Flag::Dirty) return;
 
     /* Make all features dirty */
-    for(AbstractFeature<Transformation::Dimensions, typename Transformation::Type>& feature: this->features())
-        feature.markDirty();
+	for (auto feature = this->features().first(); feature; feature = feature->nextFeature())
+        feature->markDirty();
 
     /* Make all children dirty */
-    for(Object<Transformation>& child: children())
-        child.setDirty();
+    for(auto child = children().first(); child; child = child->nextSibling())
+        child->setDirty();
 
     /* Mark object as dirty */
     flags |= Flag::Dirty;
@@ -388,28 +388,28 @@ template<class Transformation> void Object<Transformation>::setCleanInternal(con
     MatrixType matrix, invertedMatrix;
 
     /* Clean all features */
-    for(AbstractFeature<Transformation::Dimensions, typename Transformation::Type>& feature: this->features()) {
+	for (auto feature = this->features().first(); feature; feature = feature->nextFeature()) {
         /* Cached absolute transformation, compute it if it wasn't
             computed already */
-        if(feature.cachedTransformations() & CachedTransformation::Absolute) {
+        if(feature->cachedTransformations() & CachedTransformation::Absolute) {
             if(!(cached & CachedTransformation::Absolute)) {
                 cached |= CachedTransformation::Absolute;
                 matrix = Implementation::Transformation<Transformation>::toMatrix(absoluteTransformation);
             }
 
-            feature.clean(matrix);
+            feature->clean(matrix);
         }
 
         /* Cached inverse absolute transformation, compute it if it wasn't
             computed already */
-        if(feature.cachedTransformations() & CachedTransformation::InvertedAbsolute) {
+        if(feature->cachedTransformations() & CachedTransformation::InvertedAbsolute) {
             if(!(cached & CachedTransformation::InvertedAbsolute)) {
                 cached |= CachedTransformation::InvertedAbsolute;
                 invertedMatrix = Implementation::Transformation<Transformation>::toMatrix(
                     Implementation::Transformation<Transformation>::inverted(absoluteTransformation));
             }
 
-            feature.cleanInverted(invertedMatrix);
+            feature->cleanInverted(invertedMatrix);
         }
     }
 
