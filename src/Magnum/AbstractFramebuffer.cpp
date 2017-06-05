@@ -183,7 +183,11 @@ FramebufferTarget AbstractFramebuffer::bindImplementationSingle() {
         glBindFramebuffer(GL_FRAMEBUFFER, _id);
     }
 
-    return FramebufferTarget{};
+    /* On ES2 w/o separate read/draw bindings the return value is used as a
+       first parameter to glFramebufferRenderbuffer() etc. and so it needs to
+       be unconditionally GL_FRAMEBUFFER. That value is not part of the public
+       enum, though. */
+    return FramebufferTarget(GL_FRAMEBUFFER);
 }
 #endif
 
