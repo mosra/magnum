@@ -36,6 +36,7 @@
 #ifndef MAGNUM_TARGET_WEBGL
 #include "Implementation/DebugState.h"
 #endif
+#include "Implementation/MeshState.h"
 
 namespace Magnum {
 
@@ -275,6 +276,27 @@ auto Buffer::bindSomewhereInternal(const TargetHint hint) -> TargetHint {
     /** @todo wtf there is one more? */
     for(std::size_t i = 1; i != Implementation::BufferState::TargetCount; ++i)
         if(bindings[i] == _id) return Implementation::BufferState::targetForIndex[i-1];
+
+    /* Sorry, this is ugly because GL is also ugly. Blame GL, not me.
+
+       If the buffer target hint is ElementArray and some VAO is bound (or our
+       state tracker is not sure), we have to unbound the VAO first in order to
+       prevent accidental modification of that VAO. See
+       Test::MeshGLTest::unbindVAOwhenSettingIndexBufferData() for details. */
+    if(hint == TargetHint::ElementArray) {
+        auto& currentVAO = Context::current().state().mesh->currentVAO;
+        /* It can be also State::DisengagedBinding, in which case we unbind as
+           well to be sure */
+        if(currentVAO != 0) {
+            #ifndef MAGNUM_TARGET_GLES2
+            glBindVertexArray(currentVAO = 0);
+            #elif !defined(CORRADE_TARGET_NACL)
+            glBindVertexArrayOES(currentVAO = 0);
+            #else
+            CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+            #endif
+        }
+    }
 
     /* Bind the buffer to hint target otherwise */
     hintBinding = _id;
