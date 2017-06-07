@@ -45,6 +45,9 @@ namespace Implementation {
 
 /**
 @brief Combine index arrays
+@param[in,out] arrays   Index arrays to combine. These arrays are updated
+    in-place to contain unique combinations of the original indices.
+@return Resulting combined index array
 
 Creates new combined index array and updates the original ones with translation
 to new ones. For example, when you have position and normal array, each indexed
@@ -92,7 +95,7 @@ inline std::vector<UnsignedInt> combineIndexArrays(std::initializer_list<std::re
 }
 
 /**
-@brief Combine index arrays
+@brief Combine interleaved index arrays
 
 Unlike above, this function takes one interleaved array instead of separate
 index arrays. Continuing with the above example, you would call this function
