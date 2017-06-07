@@ -50,7 +50,6 @@ struct ObjImporterTest: TestSuite::Tester {
     void textureCoordinatesNormals();
 
     void emptyFile();
-    void unnamedMesh();
     void namedMesh();
     void moreMeshes();
     void unnamedFirstMesh();
@@ -104,7 +103,6 @@ ObjImporterTest::ObjImporterTest() {
               &ObjImporterTest::textureCoordinatesNormals,
 
               &ObjImporterTest::emptyFile,
-              &ObjImporterTest::unnamedMesh,
               &ObjImporterTest::namedMesh,
               &ObjImporterTest::moreMeshes,
               &ObjImporterTest::unnamedFirstMesh,
@@ -156,11 +154,11 @@ void ObjImporterTest::pointMesh() {
     CORRADE_COMPARE(data->positionArrayCount(), 1);
     CORRADE_COMPARE(data->positions(0), (std::vector<Vector3>{
         {0.5f, 2.0f, 3.0f},
-        {0.0f, 1.5f, 1.0f},
-        {2.0f, 3.0f, 5.0f}
+        {2.0f, 3.0f, 5.0f},
+        {0.0f, 1.5f, 1.0f}
     }));
     CORRADE_COMPARE(data->indices(), (std::vector<UnsignedInt>{
-        0, 2, 1, 0
+        0, 1, 2, 0
     }));
 }
 
@@ -206,12 +204,32 @@ void ObjImporterTest::triangleMesh() {
 void ObjImporterTest::mixedPrimitives() {
     ObjImporter importer;
     CORRADE_VERIFY(importer.openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "mixedPrimitives.obj")));
-    CORRADE_COMPARE(importer.mesh3DCount(), 1);
+    CORRADE_COMPARE(importer.mesh3DCount(), 2);
 
-    std::ostringstream out;
-    Error redirectError{&out};
-    CORRADE_VERIFY(!importer.mesh3D(0));
-    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh3D(): mixed primitive MeshPrimitive::Points and MeshPrimitive::Lines\n");
+    /* point mesh */
+    auto pointData = importer.mesh3D(0);
+    CORRADE_VERIFY(pointData);
+    CORRADE_COMPARE(pointData->primitive(), MeshPrimitive::Points);
+    CORRADE_COMPARE(pointData->positions(0), (std::vector<Vector3>{
+        {0.5f, 2.0f, 3.0f},
+        {2.0f, 3.0f, 5.0f},
+        {0.0f, 1.5f, 1.0f}
+    }));
+    CORRADE_COMPARE(pointData->indices(), (std::vector<UnsignedInt>{
+        0, 1, 2
+    }));
+
+    auto lineData = importer.mesh3D(1);
+    CORRADE_VERIFY(lineData);
+    CORRADE_COMPARE(lineData->primitive(), MeshPrimitive::Lines);
+    CORRADE_COMPARE(lineData->positions(0), (std::vector<Vector3>{
+        {0.5f, 2.0f, 3.0f},
+        {0.0f, 1.5f, 1.0f},
+        {2.0f, 3.0f, 5.0f}
+    }));
+    CORRADE_COMPARE(lineData->indices(), (std::vector<UnsignedInt>{
+        0, 1, 1, 2
+    }));
 }
 
 void ObjImporterTest::positionsOnly() {
@@ -261,7 +279,7 @@ void ObjImporterTest::normals() {
 
     const Containers::Optional<MeshData3D> data = importer.mesh3D(0);
     CORRADE_VERIFY(data);
-    CORRADE_COMPARE(data->primitive(), MeshPrimitive::Lines);
+    CORRADE_COMPARE(data->primitive(), MeshPrimitive::Triangles);
     CORRADE_COMPARE(data->positionArrayCount(), 1);
     CORRADE_VERIFY(!data->hasTextureCoords2D());
     CORRADE_COMPARE(data->normalArrayCount(), 1);
@@ -278,7 +296,7 @@ void ObjImporterTest::normals() {
         {0.5f, 1.0f, 0.5f}
     }));
     CORRADE_COMPARE(data->indices(), (std::vector<UnsignedInt>{
-        0, 1, 2, 3, 1, 0
+        0, 1, 0, 2, 3, 0, 1, 0, 0
     }));
 }
 
@@ -289,7 +307,7 @@ void ObjImporterTest::textureCoordinatesNormals() {
 
     const Containers::Optional<MeshData3D> data = importer.mesh3D(0);
     CORRADE_VERIFY(data);
-    CORRADE_COMPARE(data->primitive(), MeshPrimitive::Lines);
+    CORRADE_COMPARE(data->primitive(), MeshPrimitive::Triangles);
     CORRADE_COMPARE(data->positionArrayCount(), 1);
     CORRADE_COMPARE(data->textureCoords2DArrayCount(), 1);
     CORRADE_COMPARE(data->normalArrayCount(), 1);
@@ -315,30 +333,26 @@ void ObjImporterTest::textureCoordinatesNormals() {
         {0.5f, 1.0f, 0.5f}
     }));
     CORRADE_COMPARE(data->indices(), (std::vector<UnsignedInt>{
-        0, 1, 2, 3, 1, 0, 4, 2
+        0, 1, 2, 3, 1, 0, 4, 2, 2
     }));
 }
 
 void ObjImporterTest::emptyFile() {
     ObjImporter importer;
     CORRADE_VERIFY(importer.openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "emptyFile.obj")));
-    CORRADE_COMPARE(importer.mesh3DCount(), 1);
-}
 
-void ObjImporterTest::unnamedMesh() {
-    ObjImporter importer;
-    CORRADE_VERIFY(importer.openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "emptyFile.obj")));
-    CORRADE_COMPARE(importer.mesh3DCount(), 1);
-    CORRADE_COMPARE(importer.mesh3DName(0), "");
-    CORRADE_COMPARE(importer.mesh3DForName(""), -1);
+    CORRADE_COMPARE(importer.mesh3DCount(), 0);
+    CORRADE_COMPARE(importer.object3DCount(), 0);
+    CORRADE_COMPARE(importer.image3DCount(), 0);
 }
 
 void ObjImporterTest::namedMesh() {
     ObjImporter importer;
     CORRADE_VERIFY(importer.openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "namedMesh.obj")));
-    CORRADE_COMPARE(importer.mesh3DCount(), 1);
-    CORRADE_COMPARE(importer.mesh3DName(0), "MyMesh");
-    CORRADE_COMPARE(importer.mesh3DForName("MyMesh"), 0);
+    CORRADE_COMPARE(importer.mesh3DCount(), 0);
+    CORRADE_COMPARE(importer.object3DCount(), 1);
+    CORRADE_COMPARE(importer.object3DName(0), "MyMesh");
+    CORRADE_COMPARE(importer.object3DForName("MyMesh"), 0);
 }
 
 void ObjImporterTest::moreMeshes() {
@@ -357,7 +371,7 @@ void ObjImporterTest::moreMeshes() {
         {0.0f, 1.5f, 1.0f}
     }));
     CORRADE_COMPARE(data->indices(), (std::vector<UnsignedInt>{
-        0, 1
+        0, 1, 0
     }));
 
     CORRADE_COMPARE(importer.mesh3DName(1), "LineMesh");
@@ -393,13 +407,17 @@ void ObjImporterTest::moreMeshes() {
 void ObjImporterTest::unnamedFirstMesh() {
     ObjImporter importer;
     CORRADE_VERIFY(importer.openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "unnamedFirstMesh.obj")));
-    CORRADE_COMPARE(importer.mesh3DCount(), 2);
+    CORRADE_COMPARE(importer.mesh3DCount(), 1);
+    CORRADE_COMPARE(importer.object3DCount(), 2); /* Second mesh is empty, hence 2 objects, but 1 mesh */
+
+    CORRADE_COMPARE(importer.object3DName(0), "");
+    CORRADE_COMPARE(importer.object3DForName(""), 0); // TODO: why is this -1?
 
     CORRADE_COMPARE(importer.mesh3DName(0), "");
-    CORRADE_COMPARE(importer.mesh3DForName(""), -1);
+    CORRADE_COMPARE(importer.mesh3DForName(""), 0);
 
-    CORRADE_COMPARE(importer.mesh3DName(1), "SecondMesh");
-    CORRADE_COMPARE(importer.mesh3DForName("SecondMesh"), 1);
+    CORRADE_COMPARE(importer.object3DName(1), "SecondMesh");
+    CORRADE_COMPARE(importer.object3DForName("SecondMesh"), 1);
 }
 
 void ObjImporterTest::wrongFloat() {
@@ -410,7 +428,6 @@ void ObjImporterTest::wrongFloat() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!importer.mesh3D(id));
     CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh3D(): error while converting numeric data\n");
 }
 
@@ -745,7 +762,6 @@ void ObjImporterTest::unsupportedKeyword() {
     CORRADE_COMPARE(data->positions(0), (std::vector<Vector3>{
         {0.0f, 1.0f, 2.0f}
     }));
-    CORRADE_COMPARE(data->indices(), std::vector<UnsignedInt>{0});
 }
 
 void ObjImporterTest::unknownKeyword() {

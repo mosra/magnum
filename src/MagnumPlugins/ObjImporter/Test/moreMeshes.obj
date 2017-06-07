@@ -4,8 +4,8 @@ v 0.5 2 3
 v 0 1.5 1
 vn 0.5 2 3
 vn 0 1.5 1
-p 1//1
-p 2//2
+p 1 2
+p 1
 
 # Lines
 o LineMesh

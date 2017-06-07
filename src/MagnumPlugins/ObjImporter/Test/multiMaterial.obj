@@ -1,24 +1,22 @@
 mtllib multiMaterial.mtl
 
-
-
 # Billboard
 
-# positions 
+# positions
 v -2.94249 18.5768 3.27633
 v 1.72414 18.9233 -3.20162
 v 2.74428 -0.499733 -3.50576
 v -1.92235 -0.846268 2.9722
 
 
-# normals 
+# normals
 vn 0.810085 0.0333816 0.585361
 vn 0.810085 0.0333816 0.585361
 vn 0.810085 0.0333816 0.585361
 vn 0.810085 0.0333816 0.585361
 
 
-# texture coords 
+# texture coords
 vt 0 1
 vt 0 0
 vt 1 0
@@ -26,28 +24,28 @@ vt 1 1
 
 usemtl mat_0
 
-# faces 
+# faces
 f 1/1/1 2/2/2 3/3/3
 f 1/1/1 3/3/3 4/4/4
 
 
 # Billboard
 
-# positions 
+# positions
 v 2.43556 18.8755 2.23745
 v -3.6539 18.6246 -2.16274
 v -2.63377 -0.798466 -2.46688
 v 3.4557 -0.547535 1.93331
 
 
-# normals 
+# normals
 vn 0.583961 0.0433639 -0.810622
 vn 0.583961 0.0433639 -0.810622
 vn 0.583961 0.0433639 -0.810622
 vn 0.583961 0.0433639 -0.810622
 
 
-# texture coords 
+# texture coords
 vt 0 1
 vt 0 0
 vt 1 0
@@ -55,6 +53,6 @@ vt 1 1
 
 usemtl mat_1
 
-# faces 
+# faces
 f 5/5/5 6/6/6 7/7/7
 f 5/5/5 7/7/7 8/8/8
