@@ -131,12 +131,17 @@
 # ``Corrade::TestSuite`` target is linked automatically to each test. Note
 # that the :command:`enable_testing()` function must be called explicitly.
 #
-# You can list files needed by the test in the `FILES` section. The filenames
-# are treated relatively to `CMAKE_CURRENT_SOURCE_DIR`. On desktop platforms
-# the files are added to the :prop_test:`REQUIRED_FILES` target property. On
+# You can list files needed by the test in the ``FILES`` section. If given
+# filename is relative, it is treated relatively to `CMAKE_CURRENT_SOURCE_DIR`.
+# The files are added to the :prop_test:`REQUIRED_FILES` target property. On
 # Emscripten they are bundled to the executable and available in the virtual
 # filesystem root. On Android they are copied along the executable to the
-# target.
+# target. In case of Emscripten and Android, if the file is absolute or
+# contains ``..``, only the leaf name is used. Alternatively you can have a
+# filename formatted as ``<input>@<output>``, in which case the ``<input>`` is
+# treated as local filesystem location and ``<output>`` as remote/virtual
+# filesystem location. The remote location can't be absolute or contain ``..``
+# / ``@`` characters.
 #
 # Unless :variable:`CORRADE_TESTSUITE_TARGET_XCTEST` is set, test cases on iOS
 # targets are created as bundles with bundle identifier set to CMake project
@@ -153,7 +158,8 @@
 # generates resource data using given configuration file in current build
 # directory. Argument name is name under which the resources can be explicitly
 # loaded. Variable ``<name>`` contains compiled resource filename, which is
-# then used for compiling library / executable. Example usage::
+# then used for compiling library / executable. On CMake >= 3.1 the
+# `resources.conf` file can contain UTF-8-encoded filenames. Example usage::
 #
 #  corrade_add_resource(app_resources resources.conf)
 #  add_executable(app source1 source2 ... ${app_resources})
@@ -231,8 +237,8 @@
 #
 #   This file is part of Corrade.
 #
-#   Copyright © 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016
-#             Vladimír Vondruš <mosra@centrum.cz>
+#   Copyright © 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016,
+#               2017 Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -298,20 +304,6 @@ foreach(_corradeFlag ${_corradeFlags})
         set(CORRADE_${_corradeFlag} 1)
     endif()
 endforeach()
-
-# XCTest runner file
-if(CORRADE_TESTSUITE_TARGET_XCTEST)
-    find_file(CORRADE_TESTSUITE_XCTEST_RUNNER XCTestRunner.mm.in
-        PATH_SUFFIXES share/corrade/TestSuite)
-    set(CORRADE_TESTSUITE_XCTEST_RUNNER_NEEDED CORRADE_TESTSUITE_XCTEST_RUNNER)
-endif()
-
-# ADB runner file
-if(CORRADE_TARGET_ANDROID)
-    find_file(CORRADE_TESTSUITE_ADB_RUNNER AdbRunner.sh
-        PATH_SUFFIXES share/corrade/TestSuite)
-    set(CORRADE_TESTSUITE_ADB_RUNNER_NEEDED CORRADE_TESTSUITE_ADB_RUNNER)
-endif()
 
 # CMake module dir
 find_path(_CORRADE_MODULE_DIR
@@ -425,7 +417,21 @@ foreach(_component ${Corrade_FIND_COMPONENTS})
                     INTERFACE_LINK_LIBRARIES ${CMAKE_DL_LIBS})
             endif()
 
-        # No special setup for TestSuite library
+        # TestSuite library has some additional files
+        elseif(_component STREQUAL TestSuite)
+            # XCTest runner file
+            if(CORRADE_TESTSUITE_TARGET_XCTEST)
+                find_file(CORRADE_TESTSUITE_XCTEST_RUNNER XCTestRunner.mm.in
+                    PATH_SUFFIXES share/corrade/TestSuite)
+                set(CORRADE_TESTSUITE_XCTEST_RUNNER_NEEDED CORRADE_TESTSUITE_XCTEST_RUNNER)
+            endif()
+
+            # ADB runner file
+            if(CORRADE_TARGET_ANDROID)
+                find_file(CORRADE_TESTSUITE_ADB_RUNNER AdbRunner.sh
+                    PATH_SUFFIXES share/corrade/TestSuite)
+                set(CORRADE_TESTSUITE_ADB_RUNNER_NEEDED CORRADE_TESTSUITE_ADB_RUNNER)
+            endif()
 
         # Utility library (contains all setup that is used by others)
         elseif(_component STREQUAL Utility)
