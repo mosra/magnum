@@ -48,6 +48,12 @@ install:
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\SDL2-devel-2.0.4-mingw.tar.gz appveyor DownloadFile http://libsdl.org/release/SDL2-devel-2.0.4-mingw.tar.gz
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" 7z x SDL2-devel-2.0.4-mingw.tar.gz & 7z x SDL2-devel-2.0.4-mingw.tar & ren SDL2-2.0.4 SDL
 
+# GLFW
+- IF "%TARGET%" == "desktop" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\glfw-3.2.1.bin.WIN64.zip appveyor DownloadFile https://github.com/glfw/glfw/releases/download/3.2.1/glfw-3.2.1.bin.WIN64.zip
+- IF "%TARGET%" == "desktop" 7z x glfw-3.2.1.bin.WIN64.zip && ren glfw-3.2.1.bin.WIN64 glfw && mkdir deps && mkdir deps\lib && mkdir deps\bin && mkdir deps\include && xcopy /e glfw\include\* deps\include\
+- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" copy glfw\lib-vc2015\glfw3.dll deps\bin\ && copy glfw\lib-vc2015\glfw3dll.lib deps\lib\glfw3.lib
+- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" copy glfw\lib-mingw-w64\glfw3.dll deps\bin\ && copy glfw\lib-mingw-w64\libglfw3dll.a deps\lib\libglfw3.a
+
 build_script:
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" call package\ci\appveyor-desktop.bat
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" call package\ci\appveyor-desktop-mingw.bat
@@ -59,3 +65,4 @@ cache:
 - SDL2-devel-2.0.4-mingw.zip
 - openal-soft-1.17.2-bin.zip
 - x86_64-6.3.0-release-posix-seh-rt_v5-rev1.7z
+- glfw-3.2.1.bin.WIN64.zip
