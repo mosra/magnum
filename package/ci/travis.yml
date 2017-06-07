@@ -140,6 +140,7 @@ cache:
   directories:
   - $HOME/sdl2
   - $HOME/glfw
+  - $HOME/cmake
 
 install:
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "desktop" ] && [ "$BUILD_DEPRECATED" != "OFF" ]; then pip install --user urllib3[secure] && pip install --user cpp-coveralls && export CMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS --coverage"; fi
