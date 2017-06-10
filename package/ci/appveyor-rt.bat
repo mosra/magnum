@@ -1,4 +1,7 @@
-call "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/vcvarsall.bat" x64 || exit /b
+if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2017" call "C:/Program Files (x86)/Microsoft Visual Studio/2017/Community/VC/Auxiliary/Build/vcvarsall.bat" x64 || exit /b
+if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2015" call "C:/Program Files (x86)/Microsoft Visual Studio 14.0/VC/vcvarsall.bat" x64 || exit /b
+if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2015" set GENERATOR=Visual Studio 14 2015
+if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2017" set GENERATOR=Visual Studio 15 2017
 set PATH=%APPVEYOR_BUILD_FOLDER%\deps-native\bin;%PATH%
 
 rem Build ANGLE
@@ -39,7 +42,7 @@ cmake .. ^
     -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/deps ^
     -DWITH_INTERCONNECT=OFF ^
     -DBUILD_STATIC=ON ^
-    -G "Visual Studio 14 2015" -A x64 || exit /b
+    -G "%GENERATOR%" -A x64 || exit /b
 cmake --build . --config Release --target install -- /m /v:m || exit /b
 cd .. || exit /b
 
@@ -72,5 +75,5 @@ cmake .. ^
     -DBUILD_TESTS=ON ^
     -DBUILD_STATIC=ON ^
     -DBUILD_PLUGINS_STATIC=ON ^
-    -G "Visual Studio 14 2015" -A x64 || exit /b
+    -G "%GENERATOR%" -A x64 || exit /b
 cmake --build . --config Release -- /m /v:m || exit /b
