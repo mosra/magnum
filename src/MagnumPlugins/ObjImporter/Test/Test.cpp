@@ -429,6 +429,7 @@ void ObjImporterTest::wrongFloat() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh3D(): error while converting numeric data\n");
+    CORRADE_VERIFY(!importer.mesh3D(id));
 }
 
 void ObjImporterTest::wrongInteger() {
@@ -735,12 +736,12 @@ void ObjImporterTest::multiMaterialObject() {
     CORRADE_COMPARE(data->primitive(), MeshPrimitive::Triangles);
     CORRADE_COMPARE(data->positionArrayCount(), 1);
     CORRADE_COMPARE(data->positions(0), (std::vector<Vector3>{
-        {Vector3(1.72414, 18.9233, -3.20162),
-         Vector3(2.74428, -0.499733, -3.50576),
-         Vector3(-1.92235, -0.846268, 2.9722),
-         Vector3(1.72414, 18.9233, -3.20162),
-         Vector3(-1.92235, -0.846268, 2.9722),
-         Vector3(2.43556, 18.8755, 2.23745)}
+        {{1.72414f, 18.9233f, -3.20162f},
+         {2.74428f, -0.499733f, -3.50576f},
+         {-1.92235f, -0.846268f, 2.9722f},
+         {1.72414f, 18.9233f, -3.20162f},
+         {-1.92235f, -0.846268f, 2.9722f},
+         {2.43556f, 18.8755f, 2.23745f}}
     }));
 
     data = importer.mesh3D(1);
@@ -762,6 +763,7 @@ void ObjImporterTest::unsupportedKeyword() {
     CORRADE_COMPARE(data->positions(0), (std::vector<Vector3>{
         {0.0f, 1.0f, 2.0f}
     }));
+    CORRADE_COMPARE(data->indices(), std::vector<UnsignedInt>{0});
 }
 
 void ObjImporterTest::unknownKeyword() {

@@ -112,11 +112,9 @@ class MAGNUM_OBJIMPORTER_EXPORT ObjImporter: public AbstractImporter {
         MAGNUM_OBJIMPORTER_LOCAL std::optional<ImageData2D> doImage2D(UnsignedInt id);
 
         MAGNUM_OBJIMPORTER_LOCAL void parse();
-        MAGNUM_OBJIMPORTER_LOCAL void parseMaterialLibrary(Containers::ArrayView<char> libname);
+        MAGNUM_OBJIMPORTER_LOCAL void parseMaterialLibrary(Containers::ArrayView<const char> libname);
 
-        Containers::Array<char> _in;
         std::unique_ptr<struct ImporterState> _state;
-        std::string _fileRoot;
 };
 
 }}
