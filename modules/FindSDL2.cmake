@@ -100,7 +100,23 @@ find_package_handle_standard_args("SDL2" DEFAULT_MSG
 
 if(NOT TARGET SDL2::SDL2)
     if(SDL2_LIBRARY_NEEDED)
-        add_library(SDL2::SDL2 UNKNOWN IMPORTED)
+        # CMake 3.0 doesn't propagate the local target as dependency upwards
+        # the tree and then complains that SDL2::SDL2 target was not found,
+        # which it shouldn't. This is reproducible with the base bootstrap
+        # project *and* when using Magnum as CMake subproject. Works with both
+        # 2.8.12 and 3.1, so I'm assuming this is a CMake 3.0 bug. The
+        # workaround is to make the target GLOBAL so it's propagated upwards
+        # the tree unconditionally. For some reason, UNKNOWN targets can't be
+        # marked as GLOBAL, so I'm  biting the bullet and saying the library is
+        # shared -- CMake 3.0 is only on Debian Jessie now and I'm assuming SDL
+        # comes from system libsdl2-dev package, which *is* shared. Hopefully
+        # this won't bite back in the future.
+        if(CMAKE_VERSION VERSION_GREATER "2.8.12.2" AND CMAKE_VERSION VERSION_LESS "3.1.0")
+            set(_SDL2_IMPORTED_LIBRARY_KIND SHARED IMPORTED GLOBAL)
+        else()
+            set(_SDL2_IMPORTED_LIBRARY_KIND UNKNOWN IMPORTED)
+        endif()
+        add_library(SDL2::SDL2 ${_SDL2_IMPORTED_LIBRARY_KIND})
 
         # Work around BUGGY framework support on OSX
         # https://cmake.org/Bug/view.php?id=14105
