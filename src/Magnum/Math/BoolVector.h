@@ -122,7 +122,7 @@ template<std::size_t size> class BoolVector {
 
         /** @brief Set bit at given position */
         BoolVector<size>& set(std::size_t i, bool value) {
-            _data[i/8] |= ((value & 0x01) << i%8);
+            _data[i/8] ^= (-Byte(value) ^ _data[i/8]) & (0x01 << i%8);
             return *this;
         }
 
