@@ -169,6 +169,9 @@ void BoolVectorTest::data() {
     d.set(15, true);
     CORRADE_VERIFY(d[15]);
     CORRADE_COMPARE(d, BoolVector19(0x08, 0x83, 0x04));
+    d.set(15, false);
+    CORRADE_VERIFY(!d[15]);
+    CORRADE_COMPARE(d, BoolVector19(0x08, 0x03, 0x04));
 }
 
 void BoolVectorTest::compare() {
