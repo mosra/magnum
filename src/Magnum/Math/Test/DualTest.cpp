@@ -106,9 +106,11 @@ void DualTest::construct() {
     CORRADE_COMPARE(b, 2.0f);
     CORRADE_COMPARE(c, -7.5f);
 
+#if !defined(_MSC_VER) || (_MSC_VER > 1910)
     constexpr Dual d(3.0f);
     CORRADE_COMPARE(d.real(), 3.0f);
     CORRADE_COMPARE(d.dual(), 0.0f);
+#endif
 
     CORRADE_VERIFY((std::is_nothrow_constructible<Dual, Float, Float>::value));
 }
