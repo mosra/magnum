@@ -14,6 +14,10 @@ environment:
     TARGET_GLES2: ON
   - TARGET: desktop-gles
     TARGET_GLES2: OFF
+  - TARGET: desktop-angle
+    TARGET_GLES2: ON
+  - TARGET: desktop-angle
+    TARGET_GLES2: OFF
   - TARGET: rt
     TARGET_GLES2: ON
   - TARGET: rt
@@ -58,6 +62,7 @@ build_script:
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" call package\ci\appveyor-desktop.bat
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" call package\ci\appveyor-desktop-mingw.bat
 - IF "%TARGET%" == "desktop-gles" call package\ci\appveyor-desktop-gles.bat
+- IF "%TARGET%" == "desktop-angle" call package\ci\appveyor-desktop-angle.bat
 - IF "%TARGET%" == "rt" call package\ci\appveyor-rt.bat
 
 cache:
