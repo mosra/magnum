@@ -40,5 +40,6 @@ Contributors to Magnum library
 *   Alice Margatroid ([@Alicemargatroid](https://github.com/Alicemargatroid)) --
     Multi-channel support in Audio library, standard conformance, float,
     double, A-Law and μ-Law format support in `WavAudioImporter` plugin
+*   [@sigman78](https://github.com/sigman78) -- Initial MSVC 2017 port
 
 Big thanks to everyone involved!
