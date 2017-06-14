@@ -84,7 +84,14 @@ template<class T> class Dual {
          *      \hat a = a_0 + \epsilon a_\epsilon
          * @f]
          */
+        #if !defined(CORRADE_MSVC2017_COMPATIBILITY) || defined(CORRADE_MSVC2015_COMPATIBILITY)
         constexpr /*implicit*/ Dual(const T& real, const T& dual = T()) noexcept: _real(real), _dual(dual) {}
+        #else
+        /* The default parameter makes MSVC2017 confused -- "expression does
+           not evaluate to a constant". MSVC2015 works. */
+        constexpr /*implicit*/ Dual(const T& real, const T& dual) noexcept: _real(real), _dual(dual) {}
+        constexpr /*implicit*/ Dual(const T& real) noexcept: _real(real), _dual() {}
+        #endif
 
         /**
          * @brief Construct dual number from another of different type
