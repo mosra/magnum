@@ -68,6 +68,8 @@ template<class T> struct Iterator
 {
     explicit Iterator(T value, std::size_t i = 0): _value{value}, _i{i} {}
 
+    /* MSVC 2017 needs operator==() as well */
+    bool operator==(const Iterator& other) const { return _i == other._i; }
     bool operator!=(const Iterator& other) const { return _i != other._i; }
 
     Iterator& operator++() {
