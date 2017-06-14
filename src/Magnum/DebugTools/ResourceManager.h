@@ -38,7 +38,7 @@
 #include "Magnum/Shapes/Shapes.h"
 
 /** @todo fix this better */
-#ifdef CORRADE_MSVC2015_COMPATIBILITY
+#ifdef CORRADE_MSVC2017_COMPATIBILITY
 #include "Magnum/AbstractShaderProgram.h"
 #include "Magnum/Buffer.h"
 #include "Magnum/Mesh.h"
