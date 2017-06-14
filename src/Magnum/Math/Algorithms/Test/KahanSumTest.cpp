@@ -57,7 +57,7 @@ namespace {
 /* Custom iterator class to avoid allocating half a gigabyte for hundred
    million values */
 template<class T> struct Iterator
-    #ifdef CORRADE_MSVC2015_COMPATIBILITY
+    #ifdef CORRADE_MSVC2017_COMPATIBILITY
     /* This is needed on MSVC in order to have std::accumulate() eat these
        iterators properly. However, std::iterator is being deprecated in C++17
        and the go-to way of typedef'ing all the things doesn't work (the
