@@ -159,8 +159,8 @@ void PackingTest::packUnsigned() {
     #ifndef MAGNUM_TARGET_WEBGL
     CORRADE_COMPARE(Math::pack<UnsignedLong>(0.0l), 0);
     {
-        #ifdef CORRADE_MSVC2015_COMPATIBILITY
-        CORRADE_EXPECT_FAIL("Long double (de)normalization is broken on MSVC <= 2015.");
+        #ifdef _MSC_VER
+        CORRADE_EXPECT_FAIL("Long double (de)normalization is broken on MSVC.");
         #endif
         CORRADE_COMPARE(Math::pack<UnsignedLong>(1.0l), std::numeric_limits<UnsignedLong>::max());
     }
@@ -195,15 +195,15 @@ void PackingTest::packSigned() {
     CORRADE_COMPARE(Math::pack<Int>(1.0), std::numeric_limits<Int>::max());
 
     {
-        #ifdef CORRADE_MSVC2015_COMPATIBILITY
-        CORRADE_EXPECT_FAIL("Long double (de)normalization is broken on MSVC <= 2015.");
+        #ifdef _MSC_VER
+        CORRADE_EXPECT_FAIL("Long double (de)normalization is broken on MSVC.");
         #endif
         CORRADE_COMPARE(Math::pack<Long>(-1.0l), std::numeric_limits<Long>::min()+1);
     }
     CORRADE_COMPARE(Math::pack<Long>(0.0l), 0);
     {
-        #ifdef CORRADE_MSVC2015_COMPATIBILITY
-        CORRADE_EXPECT_FAIL("Long double (de)normalization is broken on MSVC <= 2015.");
+        #ifdef _MSC_VER
+        CORRADE_EXPECT_FAIL("Long double (de)normalization is broken on MSVC.");
         #endif
         CORRADE_COMPARE(Math::pack<Long>(1.0l), std::numeric_limits<Long>::max());
     }
@@ -235,8 +235,8 @@ void PackingTest::reunpackUnsinged() {
     #ifndef MAGNUM_TARGET_WEBGL
     CORRADE_COMPARE(Math::unpack<long double>(Math::pack<UnsignedLong>(0.0l)), 0.0l);
     {
-        #ifdef CORRADE_MSVC2015_COMPATIBILITY
-        CORRADE_EXPECT_FAIL("Long double (de)normalization is broken on MSVC <= 2015.");
+        #ifdef _MSC_VER
+        CORRADE_EXPECT_FAIL("Long double (de)normalization is broken on MSVC.");
         #endif
         CORRADE_COMPARE(Math::unpack<long double>(Math::pack<UnsignedLong>(1.0l)), 1.0l);
     }
@@ -260,8 +260,8 @@ void PackingTest::reunpackSinged() {
     CORRADE_COMPARE(Math::unpack<long double>(Math::pack<Long>(-1.0l)), -1.0l);
     CORRADE_COMPARE(Math::unpack<long double>(Math::pack<Long>(0.0l)), 0.0l);
     {
-        #ifdef CORRADE_MSVC2015_COMPATIBILITY
-        CORRADE_EXPECT_FAIL("Long double (de)normalization is broken on MSVC <= 2015.");
+        #ifdef _MSC_VER
+        CORRADE_EXPECT_FAIL("Long double (de)normalization is broken on MSVC.");
         #endif
         CORRADE_COMPARE(Math::unpack<long double>(Math::pack<Long>(1.0l)), 1.0l);
     }
