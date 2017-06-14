@@ -76,7 +76,8 @@ auto MagnumFont::doOpenData(const std::vector<std::pair<std::string, Containers:
     }
 
     /* Open the configuration file */
-    std::istringstream in({data[0].second.begin(), data[0].second.size()});
+    /* MSVC 2017 requires explicit std::string constructor. MSVC 2015 doesn't. */
+    std::istringstream in(std::string{data[0].second.begin(), data[0].second.size()});
     Utility::Configuration conf(in, Utility::Configuration::Flag::SkipComments);
     if(!conf.isValid() || conf.isEmpty()) {
         Error() << "Text::MagnumFont::openData(): cannot open file" << data[0].first;
