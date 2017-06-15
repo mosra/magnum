@@ -10,6 +10,9 @@
 # following:
 #
 #  Magnum_FOUND                 - Whether the base library was found
+#  MAGNUM_DEPLOY_PREFIX         - Prefix where to put final application
+#   executables, defaults to empty string. If a relative path is used, it's
+#   relative to :variable:`CMAKE_INSTALL_PREFIX`.
 #  MAGNUM_PLUGINS_DEBUG_DIR     - Base directory with dynamic plugins for
 #   debug builds, defaults to magnum-d/ subdirectory of dir where Magnum
 #   library was found
@@ -790,7 +793,10 @@ if(_MAGNUM_CONTEXT_ALIAS AND NOT TARGET Magnum::Context)
     unset(_MAGNUM_CONTEXT_ALIAS)
 endif()
 
-# Installation dirs
+# Installation and deploy dirs
+set(MAGNUM_DEPLOY_PREFIX ""
+    CACHE STRING "Prefix where to put final application executables")
+
 include(${CORRADE_LIB_SUFFIX_MODULE})
 set(MAGNUM_BINARY_INSTALL_DIR bin)
 set(MAGNUM_LIBRARY_INSTALL_DIR lib${LIB_SUFFIX})
