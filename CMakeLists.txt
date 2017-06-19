@@ -24,7 +24,13 @@
 #
 
 cmake_minimum_required(VERSION 2.8.12)
-project(Magnum)
+
+# Configuration fails on < 3.4 if only C++ is enabled (CheckFunctionExists
+# macro called from FindX11)
+if(NOT CMAKE_VERSION VERSION_LESS 3.4.0)
+    set(LANG CXX)
+endif()
+project(Magnum ${LANG})
 
 # CMake policies: enable MACOSX_RPATH by default
 if(POLICY CMP0042)
