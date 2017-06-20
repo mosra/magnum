@@ -50,6 +50,7 @@ target_compile_definitions(AnyAudioImporterObjects PRIVATE "AnyAudioImporterObje
 if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(AnyAudioImporterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
+set_target_properties(AnyAudioImporterObjects PROPERTIES FOLDER "MagnumPlugins/AnyAudioImporter")
 
 # AnyAudioImporter plugin
 add_plugin(AnyAudioImporter
@@ -76,6 +77,7 @@ if(BUILD_TESTS)
     target_include_directories(MagnumAnyAudioImporterTestLib PUBLIC
         ${PROJECT_SOURCE_DIR}/src
         ${PROJECT_BINARY_DIR}/src)
+    set_target_properties(MagnumAnyAudioImporterTestLib PROPERTIES FOLDER "MagnumPlugins/AnyAudioImporter")
     target_link_libraries(MagnumAnyAudioImporterTestLib Magnum::Magnum Magnum::Audio)
     add_subdirectory(Test)
 endif()

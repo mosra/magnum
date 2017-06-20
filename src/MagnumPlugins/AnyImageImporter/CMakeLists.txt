@@ -48,6 +48,7 @@ target_compile_definitions(AnyImageImporterObjects PRIVATE "AnyImageImporterObje
 if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(AnyImageImporterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
+set_target_properties(AnyImageImporterObjects PROPERTIES FOLDER "MagnumPlugins/AnyImageImporter")
 
 # AnyImageImporter plugin
 add_plugin(AnyImageImporter
@@ -74,6 +75,7 @@ if(BUILD_TESTS)
     target_include_directories(MagnumAnyImageImporterTestLib PUBLIC
         ${PROJECT_SOURCE_DIR}/src
         ${PROJECT_BINARY_DIR}/src)
+    set_target_properties(MagnumAnyImageImporterTestLib PROPERTIES FOLDER "MagnumPlugins/AnyImageImporter")
     target_link_libraries(MagnumAnyImageImporterTestLib Magnum::Magnum)
     add_subdirectory(Test)
 endif()

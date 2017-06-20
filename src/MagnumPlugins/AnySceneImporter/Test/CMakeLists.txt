@@ -47,3 +47,4 @@ target_include_directories(AnySceneImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_D
 if(WIN32)
     target_compile_definitions(AnySceneImporterTest PRIVATE "MAGNUM_ANYSCENEIMPORTER_BUILD_STATIC")
 endif()
+set_target_properties(AnySceneImporterTest PROPERTIES FOLDER "MagnumPlugins/AnySceneImporter/Test")

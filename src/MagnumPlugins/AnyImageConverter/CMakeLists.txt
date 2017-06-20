@@ -48,6 +48,7 @@ target_compile_definitions(AnyImageConverterObjects PRIVATE "AnyImageConverterOb
 if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(AnyImageConverterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
+set_target_properties(AnyImageConverterObjects PROPERTIES FOLDER "MagnumPlugins/AnyImageConverter")
 
 # AnyImageConverter plugin
 add_plugin(AnyImageConverter
@@ -74,6 +75,7 @@ if(BUILD_TESTS)
     target_include_directories(MagnumAnyImageConverterTestLib PUBLIC
         ${PROJECT_SOURCE_DIR}/src
         ${PROJECT_BINARY_DIR}/src)
+    set_target_properties(MagnumAnyImageConverterTestLib PROPERTIES FOLDER "MagnumPlugins/AnyImageConverter")
     target_link_libraries(MagnumAnyImageConverterTestLib Magnum::Magnum)
     add_subdirectory(Test)
 endif()

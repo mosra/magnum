@@ -50,3 +50,4 @@ target_include_directories(AnyImageImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_D
 if(WIN32)
     target_compile_definitions(AnyImageImporterTest PRIVATE "MAGNUM_ANYIMAGEIMPORTER_BUILD_STATIC")
 endif()
+set_target_properties(AnyImageImporterTest PROPERTIES FOLDER "MagnumPlugins/AnyImageImporter/Test")

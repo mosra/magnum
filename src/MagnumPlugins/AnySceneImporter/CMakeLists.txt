@@ -48,6 +48,7 @@ target_compile_definitions(AnySceneImporterObjects PRIVATE "AnySceneImporterObje
 if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(AnySceneImporterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
+set_target_properties(AnySceneImporterObjects PROPERTIES FOLDER "MagnumPlugins/AnySceneImporter")
 
 # AnySceneImporter plugin
 add_plugin(AnySceneImporter
@@ -74,6 +75,7 @@ if(BUILD_TESTS)
     target_include_directories(MagnumAnySceneImporterTestLib PUBLIC
         ${PROJECT_SOURCE_DIR}/src
         ${PROJECT_BINARY_DIR}/src)
+    set_target_properties(MagnumAnySceneImporterTestLib PROPERTIES FOLDER "MagnumPlugins/AnySceneImporter")
     target_link_libraries(MagnumAnySceneImporterTestLib Magnum::Magnum)
     add_subdirectory(Test)
 endif()

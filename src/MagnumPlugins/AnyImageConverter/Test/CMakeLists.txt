@@ -42,3 +42,4 @@ target_include_directories(AnyImageConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_
 if(WIN32)
     target_compile_definitions(AnyImageConverterTest PRIVATE "MAGNUM_ANYIMAGECONVERTER_BUILD_STATIC")
 endif()
+set_target_properties(AnyImageConverterTest PROPERTIES FOLDER "MagnumPlugins/AnyImageConverter/Test")

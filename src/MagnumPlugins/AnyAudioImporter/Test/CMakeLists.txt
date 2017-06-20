@@ -47,3 +47,4 @@ target_include_directories(AnyAudioImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_D
 if(WIN32)
     target_compile_definitions(AnyAudioImporterTest PRIVATE "MAGNUM_ANYAUDIOIMPORTER_BUILD_STATIC")
 endif()
+set_target_properties(AnyAudioImporterTest PROPERTIES FOLDER "MagnumPlugins/AnyAudioImporter/Test")
