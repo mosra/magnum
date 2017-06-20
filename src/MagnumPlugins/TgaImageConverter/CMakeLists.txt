@@ -47,6 +47,7 @@ endif()
 if(NOT BUILD_PLUGINS_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(TgaImageConverterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
+set_target_properties(TgaImageConverterObjects PROPERTIES FOLDER "MagnumPlugins/TgaImageConverter")
 
 # TgaImageConverter plugin
 add_plugin(TgaImageConverter
@@ -67,6 +68,7 @@ if(BUILD_TESTS)
     add_library(MagnumTgaImageConverterTestLib STATIC
         $<TARGET_OBJECTS:TgaImageConverterObjects>
         ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details
+    set_target_properties(MagnumTgaImageConverterTestLib PROPERTIES FOLDER "MagnumPlugins/TgaImageConverter")
     target_link_libraries(MagnumTgaImageConverterTestLib Magnum)
 
     add_subdirectory(Test)

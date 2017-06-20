@@ -24,6 +24,7 @@
 #
 
 corrade_add_test(TgaImageConverterTest TgaImageConverterTest.cpp LIBRARIES MagnumTgaImageConverterTestLib MagnumTgaImporterTestLib)
+set_target_properties(TgaImageConverterTest PROPERTIES FOLDER "MagnumPlugins/TgaImageConverter/Test")
 # On Win32 we need to avoid dllimporting TgaImporter and TgaImageConverterTest
 # symbols, because it would search for the symbols in some DLL even though they
 # were linked statically. However it apparently doesn't matter that they were

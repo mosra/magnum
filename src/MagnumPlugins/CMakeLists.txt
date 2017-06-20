@@ -27,8 +27,10 @@
 macro(add_plugin plugin_name debug_install_dirs release_install_dirs metadata_file)
     if(NOT BUILD_PLUGINS_STATIC)
         corrade_add_plugin(${plugin_name} "${debug_install_dirs}" "${release_install_dirs}" ${metadata_file} ${ARGN})
+        set_target_properties(${plugin_name} ${plugin_name}-metadata PROPERTIES FOLDER "MagnumPlugins/${plugin_name}")
     else()
         corrade_add_static_plugin(${plugin_name} "${release_install_dirs}" ${metadata_file} ${ARGN})
+        set_target_properties(${plugin_name} ${plugin_name}-dependencies PROPERTIES FOLDER "MagnumPlugins/${plugin_name}")
     endif()
 endmacro()
 

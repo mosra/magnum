@@ -36,6 +36,7 @@ corrade_add_test(TgaImporterTest TgaImporterTest.cpp
     LIBRARIES MagnumTgaImporterTestLib
     FILES file.tga)
 target_include_directories(TgaImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+set_target_properties(TgaImporterTest PROPERTIES FOLDER "MagnumPlugins/TgaImporter/Test")
 # On Win32 we need to avoid dllimporting TgaImporter symbols, because it would
 # search for the symbols in some DLL even though they were linked statically.
 # However it apparently doesn't matter that they were dllexported when building

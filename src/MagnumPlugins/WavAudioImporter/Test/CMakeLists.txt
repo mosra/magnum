@@ -68,6 +68,7 @@ corrade_add_test(WavAudioImporterTest WavImporterTest.cpp
         surround51Channel16.wav
         surround71Channel24.wav)
 target_include_directories(WavAudioImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+set_target_properties(WavAudioImporterTest PROPERTIES FOLDER "MagnumPlugins/WavAudioImporter/Test")
 # On Win32 we need to avoid dllimporting WavAudioImporter symbols, because it
 # would search for the symbols in some DLL even though they were linked
 # statically. However it apparently doesn't matter that they were dllexported

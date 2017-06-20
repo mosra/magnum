@@ -47,6 +47,7 @@ endif()
 if(NOT BUILD_PLUGINS_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(ObjImporterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
+set_target_properties(ObjImporterObjects PROPERTIES FOLDER "MagnumPlugins/ObjImporter")
 
 # ObjImporter plugin
 add_plugin(ObjImporter
@@ -67,6 +68,7 @@ if(BUILD_TESTS)
     add_library(MagnumObjImporterTestLib STATIC
         $<TARGET_OBJECTS:ObjImporterObjects>
         ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details
+    set_target_properties(MagnumObjImporterTestLib PROPERTIES FOLDER "MagnumPlugins/ObjImporter")
     target_link_libraries(MagnumObjImporterTestLib Magnum MagnumMeshTools)
 
     add_subdirectory(Test)

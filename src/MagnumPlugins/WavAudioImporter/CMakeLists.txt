@@ -51,6 +51,7 @@ endif()
 if(NOT BUILD_PLUGINS_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(WavAudioImporterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
+set_target_properties(WavAudioImporterObjects PROPERTIES FOLDER "MagnumPlugins/WavAudioImporter")
 
 # WavAudioImporter plugin
 add_plugin(WavAudioImporter
@@ -71,6 +72,7 @@ if(BUILD_TESTS)
     add_library(MagnumWavAudioImporterTestLib STATIC
         $<TARGET_OBJECTS:WavAudioImporterObjects>
         ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details
+    set_target_properties(MagnumWavAudioImporterTestLib PROPERTIES FOLDER "MagnumPlugins/WavAudioImporter")
     target_link_libraries(MagnumWavAudioImporterTestLib Magnum MagnumAudio)
 
     add_subdirectory(Test)

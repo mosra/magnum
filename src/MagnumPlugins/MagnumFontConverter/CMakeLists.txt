@@ -47,6 +47,7 @@ endif()
 if(NOT BUILD_PLUGINS_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(MagnumFontConverterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
+set_target_properties(MagnumFontConverterObjects PROPERTIES FOLDER "MagnumPlugins/MagnumFontConverter")
 
 # MagnumFontConverter plugin
 add_plugin(MagnumFontConverter
@@ -58,7 +59,6 @@ add_plugin(MagnumFontConverter
 if(BUILD_STATIC_PIC)
     set_target_properties(MagnumFontConverter PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-
 target_link_libraries(MagnumFontConverter Magnum MagnumText)
 if(CORRADE_TARGET_WINDOWS)
     target_link_libraries(MagnumFontConverter TgaImageConverter)
@@ -84,6 +84,7 @@ if(BUILD_GL_TESTS)
             $<TARGET_OBJECTS:MagnumFontConverterObjects>
             ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details
     endif()
+    set_target_properties(MagnumMagnumFontConverterTestLib PROPERTIES FOLDER "MagnumPlugins/MagnumFontConverter")
     target_link_libraries(MagnumMagnumFontConverterTestLib Magnum MagnumText MagnumTgaImageConverterTestLib)
 
     add_subdirectory(Test)

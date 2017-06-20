@@ -53,6 +53,7 @@ corrade_add_test(ObjImporterTest Test.cpp
         wrongNumberCount.obj
         wrongNumbers.obj)
 target_include_directories(ObjImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+set_target_properties(ObjImporterTest PROPERTIES FOLDER "MagnumPlugins/ObjImporter/Test")
 # On Win32 we need to avoid dllimporting ObjImporter symbols, because it would
 # search for the symbols in some DLL even though they were linked statically.
 # However it apparently doesn't matter that they were dllexported when building

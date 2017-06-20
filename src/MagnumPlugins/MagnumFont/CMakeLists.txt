@@ -47,6 +47,7 @@ endif()
 if(NOT BUILD_PLUGINS_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(MagnumFontObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
+set_target_properties(MagnumFontObjects PROPERTIES FOLDER "MagnumPlugins/MagnumFont")
 
 # MagnumFont plugin
 add_plugin(MagnumFont
@@ -58,7 +59,6 @@ add_plugin(MagnumFont
 if(BUILD_STATIC_PIC)
     set_target_properties(MagnumFont PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-
 target_link_libraries(MagnumFont Magnum MagnumText)
 if(CORRADE_TARGET_WINDOWS)
     target_link_libraries(MagnumFont TgaImporter)
@@ -84,6 +84,7 @@ if(BUILD_GL_TESTS)
             $<TARGET_OBJECTS:MagnumFontObjects>
             ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details
     endif()
+    set_target_properties(MagnumMagnumFontTestLib PROPERTIES FOLDER "MagnumPlugins/MagnumFont")
     target_link_libraries(MagnumMagnumFontTestLib Magnum MagnumText MagnumTgaImporterTestLib)
 
     add_subdirectory(Test)
