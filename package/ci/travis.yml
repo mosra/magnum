@@ -3,6 +3,7 @@
 addons:
   apt:
     packages:
+    - libgl1-mesa-dev
     - g++-4.7
     - libsdl2-dev
     - freeglut3-dev
@@ -40,6 +41,7 @@ matrix:
         sources:
         - llvm-toolchain-trusty
         packages:
+        - libgl1-mesa-dev
         - clang-3.8
         - libsdl2-dev
         - libopenal-dev
