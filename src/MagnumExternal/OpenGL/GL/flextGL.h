@@ -27,6 +27,7 @@
 #define __GLEW_H__
 #define __gl_h_
 #define __GL_H__
+#define __gl3_h_
 #define __glext_h_
 #define __GLEXT_H_
 #define __gltypes_h_
