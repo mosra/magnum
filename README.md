@@ -186,7 +186,7 @@ CONTACT
 Want to learn more about the library? Found a bug or want to tell me an awesome
 idea? Feel free to visit my website or contact me at:
 
-*   Website -- http://mosra.cz/blog/magnum.php
+*   Website -- http://magnum.graphics/
 *   GitHub -- https://github.com/mosra/magnum
 *   Gitter -- https://gitter.im/mosra/magnum
 *   IRC -- join `#magnum-engine` channel on freenode
