@@ -37,6 +37,12 @@ following table.
 
 -   @subpage opengl-support
 
+Some OpenGL APIs are marked as deprecated, as they are superseded by newer
+functionality. You may still need to use them to support older hardware, but in
+general they should be avoided.
+
+-   @subpage opengl-deprecated
+
 @section opengl-required-extensions Version and extension requirements
 
 The engine requires at least OpenGL 2.1 or OpenGL ES 2.0, but some specific
