@@ -25,6 +25,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+/** @file
+ * @brief Functions @ref Magnum::Math::pack(), @ref Magnum::Math::unpack(), @ref Magnum::Math::packHalf(), @ref Magnum::Math::unpackHalf()
+ */
+
 #include "Magnum/Math/Functions.h"
 
 namespace Magnum { namespace Math {

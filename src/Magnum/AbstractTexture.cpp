@@ -1498,7 +1498,8 @@ void AbstractTexture::subImage2DImplementationDefault(GLint level, const Vector2
     glTexSubImage2D(_target, level, offset.x(), offset.y(), size.x(), size.y(), GLenum(format), GLenum(type), data);
 }
 
-#ifndef MAGNUM_TARGET_GLES
+/* Doxygen gets confused by the template parameter */
+#if !defined(DOXYGEN_GENERATING_OUTPUT) && !defined(MAGNUM_TARGET_GLES)
 template<void(AbstractTexture::*original)(GLint, const Vector2i&, const Vector2i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&)> void AbstractTexture::subImageImplementationSvga3DSliceBySlice(GLint level, const Vector2i& offset, const Vector2i& size, PixelFormat format, PixelType type, const GLvoid* const data, const PixelStorage& storage) {
     /* Upload the data slice by slice only if this is an array texture and we
        are copying from user memory (not from a buffer) */
@@ -1603,8 +1604,9 @@ void AbstractTexture::subImage3DImplementationDefault(GLint level, const Vector3
     #endif
 }
 
-#ifndef MAGNUM_TARGET_WEBGL
-template<void(AbstractTexture::*original)(GLint, const Vector3i&, const Vector3i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&)> void AbstractTexture::subImageImplementationSvga3DSliceBySlice(GLint level, const Vector3i& offset, const Vector3i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage& storage) {
+/* Doxygen gets confused by the template parameter */
+#if !defined(DOXYGEN_GENERATING_OUTPUT) && !defined(MAGNUM_TARGET_WEBGL)
+template<void(AbstractTexture::*original)(GLint, const Vector3i&, const Vector3i&, PixelFormat, PixelType, const GLvoid*, const PixelStorage&)> void AbstractTexture::subImageImplementationSvga3DSliceBySlice(GLint level, const Vector3i& offset, const Vector3i& size, PixelFormat format, PixelType type, const GLvoid* const data, const PixelStorage& storage) {
     /* Upload the data slice by slice only if this is an array texture and we
        are copying from user memory (not from a buffer) */
     if(

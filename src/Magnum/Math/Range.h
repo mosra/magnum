@@ -526,7 +526,7 @@ template<class T> class Range3D: public Range<3, T> {
         MAGNUM_RANGE_SUBCLASS_IMPLEMENTATION(3, Range3D, Vector3)
 };
 
-/** @relates Range
+/** @relatesalso Range
 @brief Join two ranges
 
 Returns a range that contains both input ranges. If one of the ranges is empty,
