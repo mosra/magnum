@@ -204,7 +204,7 @@ template<UnsignedInt dimensions> class Image {
          * @deprecated Use @ref setData(PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&)
          *      instead.
          */
-        void CORRADE_DEPRECATED("use setData(PixelFormat, PixelType, const VectorTypeFor&, Containers::ArrayView) instead")  setData(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, void* data) {
+        void CORRADE_DEPRECATED("use setData(PixelFormat, PixelType, const VectorTypeFor&, Containers::ArrayView) instead") setData(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, void* data) {
             setData({}, format, type, size, Containers::Array<char>{reinterpret_cast<char*>(data), Implementation::imageDataSizeFor(format, type, size)});
         }
         #endif
