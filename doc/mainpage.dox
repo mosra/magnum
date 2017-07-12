@@ -112,9 +112,9 @@ right now! There is the already mentioned guide about
 @ref coding-style "coding style and best practices" which you should follow to
 make the library as consistent and maintainable as possible.
 
-Feel free to get more information or contact the author at:
+Feel free to get more information or contact the team at:
 
--   Website -- http://magnum.graphics/
+-   Website -- http://magnum.graphics
 -   GitHub -- https://github.com/mosra/magnum
 -   Gitter -- https://gitter.im/mosra/magnum
 -   IRC -- join `#magnum-engine` channel on freenode

@@ -4,7 +4,7 @@ Maintainer: Vladimír Vondruš <mosra@centrum.cz>
 Build-Depends: debhelper (>= 9), cmake (>= 2.8.12), corrade-dev, libgl-dev, libopenal-dev, libsdl2-dev
 Standards-Version: 3.9.2
 Section: libs
-Homepage: http://mosra.cz/blog/magnum.php
+Homepage: http://magnum.graphics
 Vcs-Git: git://github.com/mosra/magnum.git
 Vcs-Browser: https://github.com/mosra/magnum
 

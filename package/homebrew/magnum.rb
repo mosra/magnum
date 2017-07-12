@@ -2,7 +2,7 @@
 
 class Magnum < Formula
   desc "C++11/C++14 and OpenGL 2D/3D graphics engine"
-  homepage "https://github.com/mosra/magnum"
+  homepage "http://magnum.graphics"
   head "git://github.com/mosra/magnum.git"
 
   depends_on "cmake"

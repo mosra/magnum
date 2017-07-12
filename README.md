@@ -142,7 +142,7 @@ if it doesn't exist yet.
 GETTING STARTED
 ===============
 
-The Doxygen documentation has a thorough [guide how to start using Magnum](http://mosra.cz/blog/magnum-doc/getting-started.html)
+The Doxygen documentation has a thorough [guide how to start using Magnum](http://doc.magnum.graphics/magnum/getting-started.html)
 in your project.
 
 RELATED PROJECTS
@@ -183,10 +183,10 @@ separate repositories.
 CONTACT
 =======
 
-Want to learn more about the library? Found a bug or want to tell me an awesome
-idea? Feel free to visit my website or contact me at:
+Want to learn more about the library? Found a bug or want to share an awesome
+idea? Feel free to visit the project website or contact the team at:
 
-*   Website -- http://magnum.graphics/
+*   Website -- http://magnum.graphics
 *   GitHub -- https://github.com/mosra/magnum
 *   Gitter -- https://gitter.im/mosra/magnum
 *   IRC -- join `#magnum-engine` channel on freenode
