@@ -1,0 +1,588 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017
+              Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+namespace Magnum {
+
+/** @page changelog Changelog
+
+@tableofcontents
+
+@section changelog-latest Changes since 2015-05 snapshot
+
+## De­pen­den­cy changes
+
+-   Dropped support for the old MinGW32 (only MinGW-w64 is supported now)
+-   Bumped minimal CMake version to 2.8.12
+-   Removed support for macOS 10.8 and older
+-   Dropped the `compatibility` branch and all support for MSVC 2013 and GCC <
+    4.7
+
+## New features
+
+-   MSVC 2015 and MSVC 2017 support in `master` branch
+-   ANGLE ES2/ES3 support, ability to create desktop GLES contexts on Windows
+-   Windows Phone/Store support via ANGLE
+-   iOS support
+-   WebGL 2.0 support
+-   New OpenGL extension support:
+    -   @extension{EXT,draw_buffers} ES2 extension
+    -   @extension{EXT,sRGB_write_control} ES extension
+    -   @extension{NV,polygon_mode} ES extension
+    -   @extension{KHR,blend_equation_advanced},
+        @extension2{KHR,blend_equation_advanced_coherent,KHR_blend_equation_advanced}
+        desktop and ES extensions
+    -   @extension{ANDROID,extension_pack_es31a} ES3 extension, which
+        includes:
+        -   @extension{OES,texture_storage_multisample_2d_array}
+        -   @extension{OES,texture_stencil8}
+        -   @extension{EXT,texture_border_clamp}
+        -   @extension{EXT,texture_cube_map_array}
+        -   @extension{EXT,texture_buffer}
+        -   @extension{EXT,geometry_shader}
+        -   @extension{EXT,tessellation_shader}
+    -   @extension{NV,shader_noperspective_interpolation} ES3 extension
+    -   @extension{EXT,texture_compression_s3tc} desktop and ES extension,
+        @webgl_extension{WEBGL,compressed_texture_s3tc} WebGL extension
+    -   @extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr},
+        @extension{KHR,texture_compression_astc_hdr} desktop and ES
+        extension
+    -   @extension{EXT,unpack_subimage} and @extension{NV,pack_subimage}
+        ES2 extensions
+    -   @extension{ARB,uniform_buffer_object} and its ES3/WebGL2
+        counterpart, except for data layout queries
+    -   @extension{ARB,texture_barrier}
+    -   @extension{ARB,shader_storage_buffer_object} and its ES3.1
+        counterpart
+    -   @extension{ARB,compute_shader} and its ES3.1 counterpart
+    -   @extension{ARB,shader_image_load_store} and its ES3.1 counterpart
+    -   @extension{KHR,no_error} Desktop and ES extension
+    -   @extension{EXT,shader_framebuffer_fetch}, @extension{ARM,shader_framebuffer_fetch}
+        and @extension{ARM,shader_framebuffer_fetch_depth_stencil} (partial
+        support)
+    -   @extension{ARB,transform_feedback2},
+        @extension{ARB,transform_feedback3},
+        @extension{AMD,transform_feedback3_lines_triangles},
+        @extension{ARB,transform_feedback_overflow_query} desktop extension
+        and their ES3 counterparts, if applicable
+-   Compressed image support:
+    -   Added @ref CompressedColorFormat enum, @ref CompressedImage,
+        @ref CompressedImageView and @ref CompressedBufferImage classes
+    -   Added @ref Texture::setCompressedImage() "*Texture::setCompressedImage()",
+        @ref Texture::setCompressedSubImage() "*Texture::setCompressedSubImage()"
+        and @ref Texture::compressedImage() "Texture::compressedImage()"
+        functions
+    -   Added @ref Renderer::Hint::TextureCompression enum value
+-   Ability to pass arguments to engine startup via
+    @ref Context "command-line and environment variables":
+    -   The engine now prints what driver workarounds are enabled and gives the
+        user an ability to disable them via `--magnum-disable-workarounds`
+    -   It's possible to disable OpenGL extensions to work around driver bugs
+        using `--magnum-disable-extensions`
+    -   It's possible to control amount of log output on engine startup via
+        `--magnum-log`
+-   Published OpenGL test setup code to a new @ref OpenGLTester library and
+    added GPU time benchmarking to it
+-   Added @ref PixelStorage class, tracking OpenGL pixel storage state and
+    applying it prior to read and upload of image data
+-   Added @ref NoCreate tag to control initialization of GL object classes
+-   Added templated version of @ref Buffer::map() "Buffer::map*()" functions
+-   New `BUILD_MULTITHREADED` @ref cmake "CMake option" and a corresponding
+    @ref MAGNUM_BUILD_MULTITHREADED CMake variable and preprocessor define
+-   Added @ref Framebuffer::detach() as a conunterpart to all the
+    @ref Framebuffer::attachTexture() "attach*()" functions
+-   Added @ref Framebuffer::attachLayeredTexture() for layered texture
+    attachments
+-   Added @ref BufferImage::release() "{Compressed,}BufferImage::release()" and
+    an ability to create @ref BufferImage "{Compressed,}BufferImage" from an
+    existing @ref Buffer
+-   Implemented @ref Renderer::setMemoryBarrier() and
+    @ref Renderer::setMemoryBarrierByRegion()
+-   Added @ref isVersionES() utility
+-   Added @ref Context::isCoreProfile()
+-   Added @ref TransformFeedback::maxVertexStreams() limit query
+
+### Audio library
+
+-   Ported to Emscripten
+-   Added @ref Audio::Source::position(), @ref Audio::Source::velocity(),
+    @ref Audio::Source::isRelative(), @ref Audio::Source::gain(),
+    @ref Audio::Source::minGain(), @ref Audio::Source::maxGain(),
+    @ref Audio::Source::referenceDistance(), @ref Audio::Source::rolloffFactor(),
+    @ref Audio::Source::maxDistance(), @ref Audio::Source::direction(),
+    @ref Audio::Source::innerConeAngle(), @ref Audio::Source::outerConeAngle(),
+    @ref Audio::Source::outerConeGain(), @ref Audio::Source::pitch() getters
+-   Added @ref Audio::Renderer::listenerPosition(), @ref Audio::Renderer::listenerOrientation(),
+    @ref Audio::Renderer::listenerVelocity(), @ref Audio::Renderer::listenerGain(),
+    @ref Audio::Renderer::dopplerFactor(), @ref Audio::Renderer::speedOfSound(),
+    @ref Audio::Renderer::distanceModel() getters
+-   Added debug operator for @ref Audio::Renderer::DistanceModel
+-   Added @ref Audio::Playable, @ref Audio::Listener scene graph features and
+    @ref Audio::PlayableGroup feature group
+-   New namespace @ref Audio::Extensions for OpenAL extensions, similar to
+    @ref Extensions for OpenGL
+-   HRTF support through @ref Audio::Context::Configuration::setHrtf(),
+    @ref Audio::Context::isHrtfEnabled(), @ref Audio::Context::hrtfStatus()
+-   Floating-point audio support in @ref Audio::Buffer
+-   @ref Audio::WavImporter "WavAudioImporter" plugin now supports more
+    formats, is more flexible and gives better errors
+-   New @ref magnum-al-info "magnum-al-info" utility
+
+### DebugTools library
+
+-   Added @ref DebugTools::bufferData(), @ref DebugTools::bufferSubData()
+    and @ref DebugTools::textureSubImage() debugging helpers to emulate missing
+    functionality on OpenGL ES
+-   New @ref DebugTools::CompareImage class for fuzzy image comparison in
+    @ref Corrade::TestSuite
+
+### Math library
+
+-   New @ref Math::Bezier class for handling N-dimensional M-order Bézier
+    curves
+-   New @ref Math::Frustum class and @ref Math::Geometry::Intersection::pointFrustum(),
+    @ref Math::Geometry::Intersection::boxFrustum() functions
+-   New @ref Math::Half class, @link Math::Literals::operator""_h @endlink
+    literal and @ref Math::packHalf() and @ref Math::unpackHalf() functions
+-   New @ref Math::Color3::fromSrgb(), @ref Math::Color3::toSrgb(),
+    @ref Math::Color4::fromSrgbAlpha(), @ref Math::Color4::toSrgbAlpha()
+-   8-bit and float RGB, RGBA, sRGB and sRGBA literals in @ref Math::Literals
+    namespace
+-   Added @ref Math::Color3::fromXyz() "Math::Color*::fromXyz()",
+    @ref Math::Color3::toXyz() "Math::Color*::toXyz()", @ref Math::xyYToXyz()
+    and @ref Math::xyzToXyY()
+-   New @ref Math::pack() and @ref Math::unpack() functions for (un)packing
+    floats to an integral range with given number of bits
+-   Implemented @ref Math::sclerp() for dual quaternions
+-   Added @ref Math::sincos() for real and @ref Math::Dual numbers
+-   Added @ref Math::clamp() taking three vectors
+-   Added @ref Math::min() / @ref Math::max() taking a vector and a scalar
+-   Added @ref Math::min(), @ref Math::max() and @ref Math::minmax() for value
+    ranges
+-   Added @ref Math::pow(), @ref Math::log() and @ref Math::exp()
+-   Added @ref Math::Algorithms::qr(), @ref Math::Algorithms::gaussJordanInverted(),
+    @ref Math::Algorithms::kahanSum()
+-   Added @ref Math::Geometry::Distance::pointPlane(),
+    @ref Math::Geometry::Distance::pointPlaneScaled(),
+    @ref Math::Geometry::Distance::pointPlaneNormalized() functions
+-   Added @ref Math::Range::contains() and @ref Math::join() to join two ranges
+-   Ability to convert @ref Math::Complex, @ref Math::DualComplex,
+    @ref Math::Quaternion, @ref Math::DualQuaternion, @ref Math::Color3,
+    @ref Math::Color4 and @ref Math::Range classes from/to external
+    representation
+-   Ability to construct @ref Math::Dual, @ref Math::Complex and
+    @ref Math::Quaternion from a different underlying type
+-   Added @ref Math::ZeroInit, @ref Math::NoInit, @ref Math::IdentityInit tags
+    to control initialization of all math classes
+-   Added @ref Math::lerp(const Vector<size, T>&, const Vector<size, T>&, const BoolVector<size>&)
+-   Added @ref Math::Vector::flipped(), @ref Math::RectangularMatrix::flippedCols(),
+    @ref Math::RectangularMatrix::flippedRows()
+-   Added @ref Math::TypeTraits::name() and @ref Math::TypeTraits::equalsZero()
+-   Added @ref Math::RectangularMatrix::setRow()
+-   Ability to multiply and divide @ref Math::Dual with a real number
+-   Ability to access @ref Math::Dual members via reference
+-   Ability to construct @ref Math::DualQuaternion from dual vector and scalar
+-   Ability to save and restore @ref Deg and @ref Rad from
+    @ref Corrade::Utility::Configuration
+-   Explicit bool conversion for @ref Math::BoolVector
+-   Component-wise comparison for @ref Math::RectangularMatrix
+-   Ability to construct @ref Math::RectangularMatrix and derived classes
+    with one value for all components
+
+### Platform libraries
+
+-   New @ref Platform::GlfwApplication class
+-   Text input support in @ref Platform::Sdl2Application and
+    @ref Platform::GlfwApplication
+-   Added @ref Platform::WindowlessWindowsEglApplication and
+    @ref Platform::WindowlessIosApplication for ANGLE and iOS
+-   New @ref Platform::WindowlessGlxContext "Platform::Windowless*Context"
+    classes that manage OpenGL context to make threaded context creation
+    possible
+-   First-class support for scroll events in
+    @ref Platform::Sdl2Application::MouseScrollEvent and
+    @ref Platform::NaClApplication::MouseScrollEvent
+-   Added @ref Platform::Sdl2Application::MouseEvent::clickCount()
+-   Added @ref Platform::Sdl2Application::multiGestureEvent()
+-   Exposing key repeat in
+    @ref Platform::Sdl2Application::KeyEvent::isRepeated() "Platform::*Application::KeyEvent::isRepeated()"
+-   Added @ref Platform::Sdl2Application::setMinimalLoopPeriod(), which, along
+    with @ref Platform::Sdl2Application::setSwapInterval() replaces
+    @ref Timeline::setMinimalFrameTime()
+-   Added @ref Platform::Sdl2Application::window() and
+    @ref Platform::GlfwApplication::window() to access the underlying window
+    handle
+-   Added @ref Platform::Sdl2Application::tickEvent()
+-   Added @ref Platform::Context::tryCreate(), which allows the context to be
+    destructed and created again in case the version is not what the
+    application wants (as opposed to just aborting the application).
+-   Added @ref Platform::Sdl2Application::Configuration::setSRGBCapable()
+-   Added @ref Platform::Sdl2Application::Configuration::WindowFlag::Borderless
+    and @ref Platform::Sdl2Application::Configuration::WindowFlag::AllowHighDpi
+    for iOS and macOS
+-   Added @ref Platform::WindowlessGlxApplication::Configuration::setFlags() "Platform::Windowless*Application::Configuration::setFlags()" with
+    @ref Platform::WindowlessGlxApplication::Configuration::Flag::Debug "Flag::Debug"
+-   @ref magnum-info now accepts `--short` and `--extension-strings` options
+-   Added @ref Platform::Sdl2Application::windowSize(),
+    @ref Platform::GlfwApplication::windowSize()
+-   Extended @ref Platform::Sdl2Application::KeyEvent::Key to be consistent
+    with @ref Platform::GlfwApplication
+-   Added modifier keys to
+    @ref Platform::Sdl2Application::KeyEvent::Key "Platform::*Application::KeyEvent::Key"
+-   Added @ref Platform::Sdl2Application::InputEvent::Modifier::Super to be
+    consistent with @ref Platform::GlfwApplication
+-   Added @ref Platform::Sdl2Application::KeyEvent::keyName() "Platform::*Application::KeyEvent::keyName()"
+-   It's now possible to iterate main loop manually using
+    @ref Platform::Sdl2Application::mainLoopIteration()
+
+### Primitives library
+
+-   New @ref Primitives::axis2D() and @ref Primitives::axis3D() primitives
+
+### Shaders library
+
+-   Ability to construct all @ref Shader classes without an OpenGL context
+    present using @ref NoCreate
+
+### Text library
+
+-   New @ref Text::AbstractFont::ascent() and @ref Text::AbstractFont::descent()
+    font properties
+
+### Trade library
+
+-   New @ref magnum-imageconverter "magnum-imageconverter" utility
+-   Initial implementation of @ref Trade::CameraData and @ref Trade::LightData
+-   Vertex color support in @ref Trade::MeshData2D and @ref Trade::MeshData3D
+-   @ref Trade::AbstractImageConverter member functions were changed to
+    non-`const` to make implementation of complex converter plugins possible
+-   New @ref Trade::AbstractImageConverter::exportToCompressedImage() plugin
+    interface and @ref Trade::AbstractImageConverter::exportToData(),
+    @ref Trade::AbstractImageConverter::exportToFile() taking
+    @ref CompressedImageView as a parameter
+-   Providing access to plugin manager in @ref Trade::AbstractImporter,
+    @ref Trade::AbstractImageConverter and @ref Audio::AbstractImporter plugin
+    APIs now have access to the plugin manager in order to be able to load
+    other plugins
+-   @ref Trade::ImageData now handles both compressed and uncompressed
+    images, @ref Trade::AbstractImageConverter is able to take it and then
+    delegate to proper function based on whether the image is commpressed or
+    not
+-   @ref Trade::AbstractImporter and all `Trade::*Data` classes now provide
+    member `importerState()` functions allowing the user to access
+    importer-specific state
+-   @ref magnum-distancefieldconverter "magnum-distancefieldconverter" now uses
+    @ref Trade::AnyImageConverter "AnyImageConverter" by default
+-   @ref Trade::TgaImporter "TgaImporter" sets proper @ref PixelStorage
+    alignment if rows are not four-byte aligned
+-   @ref Trade::TgaImageConverter "TgaImageConverter" now properly handles
+    @ref PixelStorage parameters
+
+## Changes and improvements
+
+### Core library
+
+-   Functionality that is not available on WebGL (like debug output etc.) is
+    not present in WebGL builds to reduce compiled code size
+-   The @ref Mesh class now stores a copy of @ref Buffer instance instead of
+    reference, meaning that you can move your buffers freely after assigning
+    them to a mesh
+-   @ref Trade::TgaImporter "TgaImporter" and @ref Trade::TgaImageConverter "TgaImageConverter"
+    now consistently use RGB(A) on all platforms and don't require BGR(A) on
+    desktop
+-   Ignoring `"No errors."` message produced by GLSL compiler/linker on Intel
+    Windows drivers.
+-   @ref Texture::image() "*Texture::image()" and @ref Framebuffer::read() "*Framebuffer::read()"
+    now reallocate image data only if needed, for both @ref Image and
+    @ref BufferImage types
+-   R-value @ref Image "Image*" no longer restricts conversion to
+    @ref ImageView as it is a valid use case (for example passing output from
+    @ref Framebuffer::read() directly to @ref Trade::AbstractImageConverter::exportToFile())
+-   It's no longer possible to call @ref Image::data() "Image*::data()" on
+    r-value instances as that would cause accessing freed data. Use
+    @ref Image::release() instead.
+-   Graceful handling of broken GL contexts
+-   Behavior of @ref Version::GLES200 and upwards on desktop OpenGL is changed
+    to request an ES dialect of GLSL when used in @ref Shader (instead of a
+    particular desktop GL version that supports given ES version), looks for
+    @extension{ARB,ES2_compatibility} and others (instead of checking for a
+    particular desktop GL version that supports given ES version)
+-   Binding some default VAO in case the engine is running on core profile with
+    @extension{ARB,vertex_array_object} disabled
+-   It's now possible to create @ref ImageView with `nullptr` data (for example
+    for old-style texture allocation using @ref Texture::setImage())
+-   Various workarounds to make the engine working better on SVGA3D drivers
+    (VMWare guest)
+
+### Math library
+
+-   @ref Double types are no longer restricted to just desktop GL builds, all
+    related types also work on ES and WebGL builds
+-   Default-constructed @ref Color4 has zero alpha now instead of fully opaque
+    black
+-   Proper implementation of @ref Math::Vector::isZero() for integers
+-   @ref Math::Matrix4::transformPoint() now properly uses the perspective
+    divide from projection matrices
+-   Updated @ref Math::TypeTraits fuzzy comparison epsilon values for
+    `long double` and `double`
+-   @ref Math::Matrix4::perspectiveProjection() now supports infinite far plane
+-   @ref Math::pow() now works for both vectors and scalars
+-   @ref Math::Vector::minmax() now works on arbitrary vectors instead of just
+    @ref Math::Vector2
+
+### Platform library
+
+-   Requesting core OpenGL context by default in @ref Platform::WindowlessGlxApplication
+    and @ref Platform::Sdl2Application. On binary NVidia, AMD and Windows Intel
+    drivers this causes the context to be stuck on OpenGL 3.1, in which case
+    the context is destroyed and old-style forward-compatible context is
+    requested instead.
+-   @ref Platform::Sdl2Application now leaves windows positioning on the system
+    instead of forcing the window to be centered
+-   @ref Platform::Sdl2Application now shows the window only once the GL
+    context is fully created to avoid flickering
+
+### Shaders library
+
+-   @ref Shaders::Flat now sets default color to white only in textured version
+-   @ref Shaders::Phong gained the ability to have both color and texture
+-   @ref Shaders::Phong is now able to do alpha-masking
+
+## Build system
+
+-   Continuous testing for Linux, macOS, Windows MSVC, Windows MinGW, Windows RT,
+    iOS, Android and Emscripten on [Travis CI](https://travis-ci.org/mosra/magnum)
+    and [AppVeyor CI](https://ci.appveyor.com/project/mosra/magnum), with code
+    coverage on [coveralls.io](https://coveralls.io/github/mosra/magnum);
+    replacing the unmaintained and outdated Jenkins configuration
+-   Support for CMake subprojects. You can now clone Magnum into a subdirectory
+    in your project and add it using `add_subdirectory()`. The `find_package()`
+    command will then use the CMake subproject instead of looking for it in
+    system-wide locations.
+-   Reworked CMake buildsystem to use the new imported target workflow, see
+    @ref cmake for more information
+-   CMake targets are now organized in folders for better development
+    experience in IDEs such as Visual Studio or Xcode
+-   Added @ref building-packages-brew "Homebrew package"
+-   Improvements and dependency updates to the
+    @ref building-packages-deb "Debian package"
+-   Ability to build OpenGL tests also on Windows and macOS (see `BUILD_GL_TESTS`
+    @ref building-features "CMake option")
+-   Ability to override the implicit plugin directory using a
+    `MAGNUM_PLUGINS_DIR` CMake cache variable
+-   Ability to override deploy directory (used for example by Emscripten) using
+    a `MAGNUM_DEPLOY_PREFIX` CMake cache variable
+-   Better handling of compiled-in resources in static build. You don't need to
+    manually register resources when using Shaders library in static builds.
+-   `MACOSX_RPATH` is now enabled by default on CMake 3.0+
+-   Enabling only C++ in CMake `project()` call, if possible, to speed up
+    initial CMake run
+-   Windowless application libraries now make use of the `BUILD_STATIC_PIC`
+    @ref cmake "CMake option"
+-   Fixed `FindSDL2.cmake` module to work out-of-the-box on Windows and macOS
+-   Bundling a patched version of `FindOpenAL.cmake` to make it working on
+    Emscripten
+
+## Bug fixes
+
+-   Wrapping mode for @ref CubeMapTexture is now correctly two-dimensional
+    instead of three-dimensional, wrapping mode for @ref Texture2DArray "TextureNDArray"
+    is now correctly N-dimensional instead of N+1
+-   Fixed WebGL context creation on Internet Explorer, it claims to have
+    version 0.94
+-   Fixed random browser-specific issues by avoiding the use of XHTML in
+    Emscripten and NaCl builds
+-   @ref Trade::ObjImporter "ObjImporter" plugin now opens the files as binary
+    to avoid line ending issues
+-   Various compatibility updates to the @ref Shaders library
+-   Updates to OpenGL tests to work better on non-NVidia cards
+-   Various fixes for OpenGL object label queries on AMD drivers
+-   Fixed @ref TextureTools::distanceField() on 3.0 &lt;= GL < 3.2
+-   Fixed driver crash on AMD with @ref TextureTools::distanceField()
+-   @ref Framebuffer::attachCubeMapTexture() incorrectly behaved as a layered
+    attachment
+-   Fixed object label queries using the @extension{EXT,debug_label}
+    extension
+-   @extension{EXT,direct_state_access} function was accidentally used in
+    @extension{ARB,direct_state_access} code path, causing crashes on Mesa
+-   Properly export @ref Framebuffer::DrawAttachment to avoid linker failures
+    on Windows
+-   @ref Platform::WindowlessWglApplication is fixed to allow the GL context to
+    be created and destroyed multiple times during application run
+-   @ref SceneGraph::Camera now works properly with @ref Double underlying type
+-   @ref Text::AbstractLayouter has now a virtual destructor to avoid leaking
+    its subclasses
+-   Fixed @ref Trade::ObjImporter on Android
+-   Fixed assertion when using @ref DebugTools::ObjectRenderer
+-   Fixed appearance of @ref Primitives::Cylinder::solid()
+-   Fixed a possible OOB access when reading @ref Math::Vector /
+    @ref Math::RectangularMatrix from @ref Corrade::Utility::Configuration
+-   Fixed unfortunate interaction of VAOs and index buffers on platforms
+    without direct state access
+-   Fixed resetting a bit in @ref Math::BoolVector::set()
+-   Fixed bad interaction of builtin OpenGL headers and Qt on macOS
+
+## Deprecated APIs
+
+-   `Timeline::setMinimalFrameTime()` is deprecated, use
+    @ref Platform::Sdl2Application::setSwapInterval() "Platform::*Application::setSwapInterval()"
+    and/or @ref Platform::Sdl2Application::setMinimalLoopPeriod() "Platform::*Application::setMinimalLoopPeriod()"
+    instead
+-   `SceneGraph::Camera2D::setProjection()`,
+    `SceneGraph::Camera3D::setOrthographic()` and
+    `SceneGraph::Camera3D::setPerspective()` are deprecated, use
+    @ref SceneGraph::Camera::setProjectionMatrix() in combination with
+    @ref Matrix3::projection(), @ref Matrix4::orthographicProjection() and
+    @ref Matrix4::perspectiveProjection() instead
+-   `SceneGraph::AbstractCamera`, `SceneGraph::AbstractBasicCamera2D`,
+    `SceneGraph::AbstractBasicCamera3D`, `SceneGraph::AbstractCamera2D` and
+    `SceneGraph::AbstractCamera3D` are deprecated, use @ref SceneGraph::Camera,
+    @ref SceneGraph::BasicCamera2D, @ref SceneGraph::BasicCamera3D,
+    @ref SceneGraph::Camera2D and @ref SceneGraph::Camera3D instead
+-   `Math::Matrix::IdentityType`, `Math::Matrix::ZeroType`,
+    `Math::Matrix::Identity` and `Math::Matrix::Zero` are deprecated, use the
+    new @ref Math::IdentityInit and @ref Math::ZeroInit tags instead
+-   `AbstractShaderProgram::setUniform(Int, UnsignedInt, const T*)` is
+    deprecated, use @ref AbstractShaderProgram::setUniform(Int, Containers::ArrayView<const Float>) "AbstractShaderProgram::setUniform(Int, Containers::ArrayView<const T>)"
+    instead
+-   `Magnum/ImageReference.h` header and `ImageReference` type is deprecated,
+    use @ref Magnum/ImageView.h and @ref ImageView instead
+-   `Magnum/Color.h` header and `BasicColor3` and `BasiColor4` types are
+    deprecated, use @ref Magnum/Math/Color.h, @ref Math::Color3 and
+    @ref Math::Color4 instead
+-   `Magnum/ColorFormat.h` header and `ColorFormat` and `ColorType` enums are
+    deprecated, use @ref Magnum/PixelFormat.h, @ref PixelFormat and @ref PixelType
+    instead
+-   @ref Image, @ref ImageView, @ref Trade::ImageData constructors, @ref Image::setData()
+    and @ref ImageView::setData() taking `void*` are deprecated, use
+    constructors and functions taking @ref Corrade::Containers::Array /
+    @ref Corrade::Containers::ArrayView instead
+-   @ref Context::current() and @ref Audio::Context::current() returning a
+    pointer is deprecated, it's returning a reference now and asserts that a
+    context exists. Use @ref Context::hasCurrent() and @ref Audio::Context::hasCurrent()
+    to check for context presence.
+-   Angle literals available directly in the @ref Magnum namespace are
+    deprecated, import the @ref Math::Literals namespace instead
+-   `Platform::Sdl2Application::MouseEvent::Button::WheelUp`,
+    `Platform::Sdl2Application::MouseEvent::Button::WheelDown`,
+    `Platform::GlfwApplication::MouseEvent::Button::WheelUp` and
+    `Platform::GlfwApplication::MouseEvent::Button::WheelDown` mouse events are
+    deprecated, use @ref Platform::Sdl2Application::mouseScrollEvent() /
+    @ref Platform::GlfwApplication::mouseScrollEvent() and
+    @ref Platform::Sdl2Application::MouseScrollEvent /
+    @ref Platform::GlfwApplication::MouseScrollEvent instead
+-   @ref Platform::Sdl2Application::Sdl2Application() "Platform::*Application::*Application()"
+    and @ref Platform::WindowlessGlxApplication::WindowlessGlxApplication() "Platform::Windowless*Application::Windowless*Application()"
+    constructors taking `nullptr` are deprecated, use constructors taking
+    @ref NoCreateT instead to create an application without creating OpenGL
+    context
+-   `Math::Color*::fromHSV()` and `Math::Color*::toHSV()` are deprecated, use
+    @ref Math::Color3::fromHsv() "Math::Color*::fromHsv()" and
+    @ref Math::Color3::toHsv() "Math::Color*::toHsv()" instead
+-   `Math::normalize()` and `Math::denormalize()` had confusing naming and thus
+    are deprecated, use @ref Math::pack() and @ref Math::unpack() from the
+    @ref Magnum/Math/Packing.h header instead
+-   @ref Trade::MeshData2D and @ref Trade::MeshData3D constructors without the
+    `colors` parameter are deprecated, use the full ones instead
+-   @ref Shaders::Generic::Color vertex attribute implicit constructor is
+    deprecated, use a constructor with explicit component count instead
+
+## Potential compatibility breakages, removed APIs
+
+-   The @ref Math::Geometry::Distance and @ref Math::Geometry::Intersection
+    classes are now a namespace (might break `using` declarations, but
+    otherwise it's fully source-compatible)
+-   Removed `Context::majorVersion()` and `Context::minorVersion()` functions,
+    use @ref Context::version() instead
+-   Removed deprecated `Magnum/DebugMarker.h` header, use
+    @ref Magnum/DebugOutput.h and @ref DebugMessage class instead
+-   Removed deprecated `*Buffer` values from @ref FramebufferBlit, use values
+    without the `Buffer` suffix
+-   Removed deprecated list-argument functions taking pointers from @ref Audio
+    and @ref SceneGraph libraries, use lists of references instead
+-   Removed deprecated texture unit enums from @ref Shaders library, use
+    dedicated texture setters instead
+-   Removed deprecated `*Texture::maxLayers()` functions, use
+    @ref Shader::maxCombinedTextureImageUnits() instead
+-   Removed deprecated @ref MeshTools::combineIndexedArrays(),
+    @ref MeshTools::compressIndices(), @ref MeshTools::interleave() and
+    @ref MeshTools::removeDuplicates() overloads, use the general ones instead
+-   Removed deprecated `Mesh*::set*{Range,Count}()` functions, use
+    @ref Mesh::setCount() "Mesh*::setCount()" and @ref MeshView::setIndexRange()
+    instead
+-   Removed deprecated parameterless @ref Mesh::draw() "Mesh*::draw()"
+    overload, use the one with explicit shader parameter instead
+-   Removed deprecated `Context::Flag::Robustness` enum value, use
+    @ref Context::Flag::RobustAccess instead
+-   Removed deprecated `Texture::Target` enum, use dedicated @ref Texture,
+    @ref TextureArray, @ref RectangleTexture and @ref MultisampleTexture
+    classes instead
+-   Removed deprecated @ref Resource conversion operator, use explicit
+    conversion instead
+-   Removed deprecated `Framebuffer::attachTexture*D()` overloads, use one of
+    @ref Framebuffer::attachTexture() or @ref Framebuffer::attachTextureLayer()
+    overloads instead.
+-   Removed `SceneGraph::Camera3D::near()` and `SceneGraph::Camera3D::far()`
+    getters, because they can't be provided anymore with current more general
+    implementation. THe user is advised to cache the values on application side
+    if they are really needed.
+-   Removed `AbstractImage` class and `Magnum/AbstractImage.h` header, its
+    functionality is present in the @ref Image "Image*" classes directly
+-   Removed `Image::dataSize()` function as it has ambiguous meaning in regards
+    to recently added features, use @ref Image::dataProperties() "Image::dataProperties()"
+    instead
+
+## Performance improvements
+
+-   Reduced size of and number of allocations in @ref Mesh class.
+
+## Documentation
+
+-   Explicit list of extensions that are available in WebGL builds
+-   New page explaining @ref opengl-wrapping "OpenGL wrapper layer"
+-   Documented extra CMake modules in @ref cmake-modules
+
+@section changelog-2015-05 2015-05 snapshot
+
+See the [release notes and full changelog](http://blog.magnum.graphics/announcements/may-2015-updates/#magnum).
+
+@section changelog-2014-06 2014-06 snapshot
+
+See the [release notes and full changelog](http://blog.magnum.graphics/announcements/june-2014-updates/#magnum).
+
+@section changelog-2014-01 2014-01 snapshot
+
+See the [release notes and full changelog](http://blog.magnum.graphics/announcements/january-2014-updates/#magnum).
+
+@section changelog-2013-10 2013-10 snapshot
+
+See the [release notes and full changelog](http://blog.magnum.graphics/announcements/october-2013-updates/#magnum).
+
+@section changelog-initial Initial release
+
+See the [Magnum project announcement](http://blog.magnum.graphics/announcements/introducing-magnum/).
+
+*/
+
+}
