@@ -63,14 +63,45 @@ link to `MagnumPlugins::AnySceneImporter` target. See @ref building-plugins,
 
 Supported formats:
 
+-   3ds Max 3DS and ASE (`*.3ds`, `*.ase`), loaded with any plugin that
+    provides `3dsImporter``
+-   AC3D (`*.ac`), loaded with any plugin that provides `Ac3dImporter`
+-   Blender 3D (`*.blend`), loaded with any plugin that provides
+    `BlenderImporter`
+-   Biovision BVH (`*.bvh`), loaded with any plugin that provides `BvhImporter`
+-   CharacterStudio Motion (`*.csm`), loaded with any plugin that provides
+    `CsmImporter`
 -   COLLADA (`*.dae`), loaded with @ref ColladaImporter or any other plugin
     that provides it
--   OBJ (`*.obj`), loaded with @ref ObjImporter or any other plugin that
-    provides it
+-   DirectX X (`*.x`), loaded with any plugin that provides `DirectXImporter`
+-   AutoCAD DXF (`*.dxf`), loaded with any plugin that provides `DxfImporter`
+-   Autodesk FBX (`*.fbx`), loaded with any plugin that provides `FbxImporter`
+-   glTF (`*.gltf`, `*.glb`), loaded with any plugin that provides
+    `GltfImporter`
+-   Industry Foundation Classes (IFC/Step) (`*.ifc`), loaded with any plugin
+    that provides `IfcImporter`
+-   Irrlicht Mesh and Scene (`*.irrmesh`, `*.irr`), loaded with any plugin that
+    provides `IrrlichtImporter`
+-   LightWave, LightWave Scene (`*.lwo`, `*.lws`), loaded with any plugin that
+    provides `LightWaveImporter`
+-   Modo (`*.lxo`), loaded with any plugin that provides `ModoImporter`
+-   Milkshape 3D (`*.ms3d`), loaded with any plugin that provides
+    `MilkshapeImporter`
+-   Wavefront OBJ (`*.obj`), loaded with @ref ObjImporter or any other plugin
+    that provides it
+-   Ogre XML (`*.xml`), loaded with any plugin that provides `OgreImporter`
 -   OpenGEX (`*.ogex`), loaded with @ref OpenGexImporter or any other plugin
     that provides it
 -   Stanford (`*.ply`), loaded with @ref StanfordImporter or any other plugin
     that provides it
+-   Stereolitography (`*.stl`), loaded with any plugin that provides
+    `StlImporter`
+-   TrueSpace (`*.cob`, `*.scn`), loaded with any plugin that provides
+    `TrueSpaceImporter`
+-   Unreal (`*.3d`), loaded with any plugin that provides `UnrealImporter`
+-   Valve Model (`*.smd`, `*.vta`), loaded with any plugin that provides
+    `ValveImporter`
+-   XGL (`*.xgl`, `*.zgl`), loaded with any plugin that provides `XglImporter`
 
 Only loading from files is supported.
 */

@@ -85,9 +85,9 @@ void AnySceneImporterTest::unknown() {
     Error redirectError{&output};
 
     AnySceneImporter importer{_manager};
-    CORRADE_VERIFY(!importer.openFile("mesh.stl"));
+    CORRADE_VERIFY(!importer.openFile("mesh.wtf"));
 
-    CORRADE_COMPARE(output.str(), "Trade::AnySceneImporter::openFile(): cannot determine type of file mesh.stl\n");
+    CORRADE_COMPARE(output.str(), "Trade::AnySceneImporter::openFile(): cannot determine type of file mesh.wtf\n");
 }
 
 }}}
