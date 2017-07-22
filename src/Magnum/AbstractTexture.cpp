@@ -1310,14 +1310,17 @@ void AbstractTexture::storageImplementationFallback(GLsizei levels, TextureForma
 
     #ifndef MAGNUM_TARGET_GLES2
     /* Array texture is not scaled in "layer" dimension */
-    #ifndef MAGNUM_TARGET_GLES
-    else if(_target == GL_TEXTURE_2D_ARRAY || _target == GL_TEXTURE_CUBE_MAP_ARRAY)
-    #else
-    else if(_target == GL_TEXTURE_2D_ARRAY)
-    #endif
+    else if(_target == GL_TEXTURE_2D_ARRAY || _target ==
+        #ifndef MAGNUM_TARGET_GLES
+        GL_TEXTURE_CUBE_MAP_ARRAY
+        #else
+        GL_TEXTURE_CUBE_MAP_ARRAY_EXT
+        #endif
+    ) {
         for(GLsizei level = 0; level != levels; ++level)
             DataHelper<3>::setImage(*this, level, internalFormat,
                 ImageView3D{format, type, Vector3i{Math::max(Vector2i{1}, size.xy() >> level), size.z()}});
+    }
     #endif
 
     /* No other targets are available */
