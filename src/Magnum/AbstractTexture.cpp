@@ -1229,6 +1229,15 @@ void AbstractTexture::storageImplementationFallback(const GLsizei levels, const 
     const PixelFormat format = pixelFormatForInternalFormat(internalFormat);
     const PixelType type = pixelTypeForInternalFormat(internalFormat);
 
+    /* If EXT_texture_storage is not available on ES2, passing e.g.
+       TextureFormat::RGBA8 would cause an error. On ES2 it's required to have
+       internalFormat equal to format, so we do exactly that. */
+    #ifndef MAGNUM_TARGET_GLES2
+    const TextureFormat finalInternalFormat = internalFormat;
+    #else
+    const TextureFormat finalInternalFormat = TextureFormat(GLenum(format));
+    #endif
+
     /* Common code for classic types */
     #ifndef MAGNUM_TARGET_GLES
     if(_target == GL_TEXTURE_2D || _target == GL_TEXTURE_RECTANGLE)
@@ -1237,7 +1246,7 @@ void AbstractTexture::storageImplementationFallback(const GLsizei levels, const 
     #endif
     {
         for(GLsizei level = 0; level != levels; ++level)
-            DataHelper<2>::setImage(*this, level, internalFormat,
+            DataHelper<2>::setImage(*this, level, finalInternalFormat,
                 ImageView2D{format, type, Math::max(Vector2i(1), size >> level)});
 
     /* Cube map additionally needs to specify all faces */
@@ -1249,7 +1258,7 @@ void AbstractTexture::storageImplementationFallback(const GLsizei levels, const 
                               GL_TEXTURE_CUBE_MAP_NEGATIVE_Y,
                               GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
                               GL_TEXTURE_CUBE_MAP_NEGATIVE_Z})
-                DataHelper<2>::setImage(*this, face, level, internalFormat,
+                DataHelper<2>::setImage(*this, face, level, finalInternalFormat,
                     ImageView2D{format, type, Math::max(Vector2i(1), size >> level)});
         }
 
@@ -1298,6 +1307,15 @@ void AbstractTexture::storageImplementationFallback(GLsizei levels, TextureForma
     const PixelFormat format = pixelFormatForInternalFormat(internalFormat);
     const PixelType type = pixelTypeForInternalFormat(internalFormat);
 
+    /* If EXT_texture_storage is not available on ES2, passing e.g.
+       TextureFormat::RGBA8 would cause an error. On ES2 it's required to have
+       internalFormat equal to format, so we do exactly that. */
+    #ifndef MAGNUM_TARGET_GLES2
+    const TextureFormat finalInternalFormat = internalFormat;
+    #else
+    const TextureFormat finalInternalFormat = TextureFormat(GLenum(format));
+    #endif
+
     /* Common code for classic type */
     #ifndef MAGNUM_TARGET_GLES2
     if(_target == GL_TEXTURE_3D)
@@ -1305,7 +1323,7 @@ void AbstractTexture::storageImplementationFallback(GLsizei levels, TextureForma
     if(_target == GL_TEXTURE_3D_OES)
     #endif
         for(GLsizei level = 0; level != levels; ++level)
-            DataHelper<3>::setImage(*this, level, internalFormat,
+            DataHelper<3>::setImage(*this, level, finalInternalFormat,
                 ImageView3D{format, type, Math::max(Vector3i(1), size >> level)});
 
     #ifndef MAGNUM_TARGET_GLES2
