@@ -686,11 +686,6 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
         void MAGNUM_LOCAL invalidateSubImageImplementationARB(GLint level, const Vector3i& offset, const Vector3i& size);
         #endif
 
-        #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
-        PixelFormat MAGNUM_LOCAL imageFormatForInternalFormat(TextureFormat internalFormat);
-        PixelType MAGNUM_LOCAL imageTypeForInternalFormat(TextureFormat internalFormat);
-        #endif
-
         GLuint _id;
         ObjectFlags _flags;
 };

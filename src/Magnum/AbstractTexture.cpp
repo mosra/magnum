@@ -555,7 +555,9 @@ void AbstractTexture::bindInternal() {
 }
 
 #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
-PixelFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat internalFormat) {
+namespace {
+
+PixelFormat pixelFormatForInternalFormat(const TextureFormat internalFormat) {
     switch(internalFormat) {
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         case TextureFormat::Red:
@@ -815,7 +817,7 @@ PixelFormat AbstractTexture::imageFormatForInternalFormat(const TextureFormat in
     CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
-PixelType AbstractTexture::imageTypeForInternalFormat(const TextureFormat internalFormat) {
+PixelType pixelTypeForInternalFormat(const TextureFormat internalFormat) {
     switch(internalFormat) {
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         case TextureFormat::Red:
@@ -1059,6 +1061,8 @@ PixelType AbstractTexture::imageTypeForInternalFormat(const TextureFormat intern
 
     CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
+
+}
 #endif
 
 void AbstractTexture::parameterImplementationDefault(GLenum parameter, GLint value) {
@@ -1197,8 +1201,8 @@ void AbstractTexture::getLevelParameterImplementationDSAEXT(const GLint level, c
 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::storageImplementationFallback(const GLsizei levels, const TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size) {
-    const PixelFormat format = imageFormatForInternalFormat(internalFormat);
-    const PixelType type = imageTypeForInternalFormat(internalFormat);
+    const PixelFormat format = pixelFormatForInternalFormat(internalFormat);
+    const PixelType type = pixelTypeForInternalFormat(internalFormat);
 
     for(GLsizei level = 0; level != levels; ++level)
         DataHelper<1>::setImage(*this, level, internalFormat,
@@ -1222,8 +1226,8 @@ void AbstractTexture::storageImplementationDSAEXT(GLsizei levels, TextureFormat 
 
 #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
 void AbstractTexture::storageImplementationFallback(const GLsizei levels, const TextureFormat internalFormat, const Vector2i& size) {
-    const PixelFormat format = imageFormatForInternalFormat(internalFormat);
-    const PixelType type = imageTypeForInternalFormat(internalFormat);
+    const PixelFormat format = pixelFormatForInternalFormat(internalFormat);
+    const PixelType type = pixelTypeForInternalFormat(internalFormat);
 
     /* Common code for classic types */
     #ifndef MAGNUM_TARGET_GLES
@@ -1291,8 +1295,8 @@ void AbstractTexture::storageImplementationDSAEXT(GLsizei levels, TextureFormat 
 
 #if !defined(MAGNUM_TARGET_GLES) || (defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
 void AbstractTexture::storageImplementationFallback(GLsizei levels, TextureFormat internalFormat, const Vector3i& size) {
-    const PixelFormat format = imageFormatForInternalFormat(internalFormat);
-    const PixelType type = imageTypeForInternalFormat(internalFormat);
+    const PixelFormat format = pixelFormatForInternalFormat(internalFormat);
+    const PixelType type = pixelTypeForInternalFormat(internalFormat);
 
     /* Common code for classic type */
     #ifndef MAGNUM_TARGET_GLES2
