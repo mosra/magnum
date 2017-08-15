@@ -51,7 +51,8 @@ namespace Magnum { namespace Trade {
 /**
 @brief OBJ importer plugin
 
-Supported features:
+Loads Wavefront OBJ (`*.obj`) files, with the following supported features:
+
 -   multiple objects
 -   vertex positions, normals and 2D texture coordinates
 -   triangles, lines and points
