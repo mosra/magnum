@@ -2143,7 +2143,7 @@ void TextureGLTest::compressedSubImage3D() {
 
     {
         CORRADE_EXPECT_FAIL_IF(CompressedPixelStorage3DData[testCaseInstanceId()].storage == CompressedPixelStorage{} && (Context::current().detectedDriver() & Context::DetectedDriver::NVidia),
-            "Default compressed pixel storage behaves weirdly with BPTC compression on NVidia");
+            "Default compressed pixel storage behaves weirdly with BPTC compression on NVidia.");
 
         CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()),
             Containers::arrayView(CompressedSubData3DComplete),
@@ -2183,7 +2183,7 @@ void TextureGLTest::compressedSubImage3DBuffer() {
 
     {
         CORRADE_EXPECT_FAIL_IF(CompressedPixelStorage3DData[testCaseInstanceId()].storage == CompressedPixelStorage{} && (Context::current().detectedDriver() & Context::DetectedDriver::NVidia),
-            "Default compressed pixel storage behaves weirdly with BPTC compression on NVidia");
+            "Default compressed pixel storage behaves weirdly with BPTC compression on NVidia.");
 
         CORRADE_COMPARE_AS(imageData,
             Containers::arrayView(CompressedSubData3DComplete),
@@ -2221,7 +2221,7 @@ void TextureGLTest::compressedSubImage3DQuery() {
 
     {
         CORRADE_EXPECT_FAIL_IF(CompressedPixelStorage3DData[testCaseInstanceId()].storage == CompressedPixelStorage{} && (Context::current().detectedDriver() & Context::DetectedDriver::NVidia),
-            "Default compressed pixel storage behaves weirdly with BPTC compression on NVidia");
+            "Default compressed pixel storage behaves weirdly with BPTC compression on NVidia.");
 
         CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(CompressedPixelStorage3DData[testCaseInstanceId()].offset),
             CompressedPixelStorage3DData[testCaseInstanceId()].data,
@@ -2257,7 +2257,7 @@ void TextureGLTest::compressedSubImage3DQueryBuffer() {
 
     {
         CORRADE_EXPECT_FAIL_IF(CompressedPixelStorage3DData[testCaseInstanceId()].storage == CompressedPixelStorage{} && (Context::current().detectedDriver() & Context::DetectedDriver::NVidia),
-            "Default compressed pixel storage behaves weirdly with BPTC compression on NVidia");
+            "Default compressed pixel storage behaves weirdly with BPTC compression on NVidia.");
 
         CORRADE_COMPARE_AS(imageData.suffix(CompressedPixelStorage3DData[testCaseInstanceId()].offset),
             CompressedPixelStorage3DData[testCaseInstanceId()].data,
