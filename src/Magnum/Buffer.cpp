@@ -341,6 +341,12 @@ Int Buffer::size() {
     return size;
 }
 
+#ifndef MAGNUM_TARGET_GLES
+Containers::Array<char> Buffer::data() {
+    return subData(0, size());
+}
+#endif
+
 Buffer& Buffer::setData(const Containers::ArrayView<const void> data, const BufferUsage usage) {
     (this->*Context::current().state().buffer->dataImplementation)(data.size(), data, usage);
     return *this;
@@ -362,8 +368,8 @@ Buffer& Buffer::invalidateSubData(const GLintptr offset, const GLsizeiptr length
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
-void* Buffer::map(const MapAccess access) {
-    return (this->*Context::current().state().buffer->mapImplementation)(access);
+char* Buffer::map(const MapAccess access) {
+    return static_cast<char*>((this->*Context::current().state().buffer->mapImplementation)(access));
 }
 
 #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_NACL)
@@ -373,8 +379,8 @@ void* Buffer::mapSub(const GLintptr offset, const GLsizeiptr length, const MapAc
 }
 #endif
 
-void* Buffer::map(const GLintptr offset, const GLsizeiptr length, const MapFlags flags) {
-    return (this->*Context::current().state().buffer->mapRangeImplementation)(offset, length, flags);
+Containers::ArrayView<char> Buffer::map(const GLintptr offset, const GLsizeiptr length, const MapFlags flags) {
+    return {static_cast<char*>((this->*Context::current().state().buffer->mapRangeImplementation)(offset, length, flags)), std::size_t(length)};
 }
 
 Buffer& Buffer::flushMappedRange(const GLintptr offset, const GLsizeiptr length) {
@@ -394,9 +400,18 @@ void Buffer::unmapSub() {
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
+Containers::Array<char> Buffer::subData(const GLintptr offset, const GLsizeiptr size) {
+    Containers::Array<char> data(size);
+    if(size) (this->*Context::current().state().buffer->getSubDataImplementation)(offset, size, data);
+    return data;
+}
+
+/** @todo remove when this is not used anymore */
+#ifdef MAGNUM_BUILD_DEPRECATED
 void Buffer::subDataInternal(GLintptr offset, GLsizeiptr size, GLvoid* data) {
     (this->*Context::current().state().buffer->getSubDataImplementation)(offset, size, data);
 }
+#endif
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2

@@ -301,8 +301,6 @@ namespace Magnum {
 
 ## Changes and improvements
 
-### Core library
-
 -   Functionality that is not available on WebGL (like debug output etc.) is
     not present in WebGL builds to reduce compiled code size
 -   The @ref Mesh class now stores a copy of @ref Buffer instance instead of
@@ -322,6 +320,8 @@ namespace Magnum {
 -   It's no longer possible to call @ref Image::data() "Image*::data()" on
     r-value instances as that would cause accessing freed data. Use
     @ref Image::release() instead.
+-   @ref Buffer::map() now returns @ref Corrade::Containers::ArrayView instead
+    of a plain pointer for better security
 -   Graceful handling of broken GL contexts
 -   Behavior of @ref Version::GLES200 and upwards on desktop OpenGL is changed
     to request an ES dialect of GLSL when used in @ref Shader (instead of a
@@ -478,6 +478,9 @@ namespace Magnum {
     and @ref ImageView::setData() taking `void*` are deprecated, use
     constructors and functions taking @ref Corrade::Containers::Array /
     @ref Corrade::Containers::ArrayView instead
+-   Templated @ref Buffer::data(), @ref Buffer::subData() and
+    @ref Buffer::map() are deprecated, use the non-templated versions in
+    combination with @ref Corrade::Containers::arrayCast() instead
 -   @ref Context::current() and @ref Audio::Context::current() returning a
     pointer is deprecated, it's returning a reference now and asserts that a
     context exists. Use @ref Context::hasCurrent() and @ref Audio::Context::hasCurrent()

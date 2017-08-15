@@ -32,7 +32,7 @@
 #include <cstddef>
 #include <array>
 #include <vector>
-#include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/Utility/Assert.h>
 
@@ -41,6 +41,7 @@
 #include "Magnum/Tags.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Containers/Array.h>
 #include <Corrade/Utility/Macros.h>
 #endif
 
@@ -165,18 +166,21 @@ buffer.setData({nullptr, 200*sizeof(Vector3)}, BufferUsage::StaticDraw);
 @endcode
 Then you can map the buffer to client memory and operate with the memory
 directly. After you are done with the operation, call @ref unmap() to unmap the
-buffer again.
+buffer again. The @ref map() functions return a view on `char` array and you
+may want to cast it to some useful type first using @ref Containers::arrayCast():
 @code
-Vector3* data = buffer.map<Vector3>(0, 200*sizeof(Vector3), Buffer::MapFlag::Write|Buffer::MapFlag::InvalidateBuffer);
-for(std::size_t i = 0; i != 200; ++i)
-    data[i] = ...;
+Containers::ArrayView<Vector3> data = Containers::arrayCast<Vector3>(buffer.map(0, 200*sizeof(Vector3), Buffer::MapFlag::Write|Buffer::MapFlag::InvalidateBuffer));
+CORRADE_INTERNAL_ASSERT(data);
+for(Vector3& d: data)
+    d = ...;
 CORRADE_INTERNAL_ASSERT_OUTPUT(buffer.unmap());
 @endcode
 If you are updating only a few discrete portions of the buffer, you can use
 @ref MapFlag::FlushExplicit and @ref flushMappedRange() to reduce number of
 memory operations performed by OpenGL on unmapping. Example:
 @code
-Vector3* data = buffer.map<Vector3>(0, 200*sizeof(Vector3), Buffer::MapFlag::Write|Buffer::MapFlag::FlushExplicit);
+Containers::ArrayView<Vector3> data = Containers::arrayCast<Vector3>(buffer.map(0, 200*sizeof(Vector3), Buffer::MapFlag::Write|Buffer::MapFlag::FlushExplicit));
+CORRADE_INTERNAL_ASSERT(data);
 for(std::size_t i: {7, 27, 56, 128}) {
     data[i] = ...;
     buffer.flushMappedRange(i*sizeof(Vector3), sizeof(Vector3));
@@ -1072,13 +1076,21 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      WebGL. Use @ref map() or @ref DebugTools::bufferData() in
          *      OpenGL ES instead.
          */
+        Containers::Array<char> data();
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @copybrief data()
+         * @deprecated Use non-templated @ref subData() and @ref Containers::arrayCast()
+         *      instead.
+         */
         /* MinGW complains loudly if the declaration doesn't also have inline */
-        template<class T = char> inline Containers::Array<T> data();
+        template<class T> CORRADE_DEPRECATED("use non-templated data() and Containers::arrayCast() instead") inline Containers::Array<T> data();
+        #endif
 
         /**
          * @brief Buffer subdata
          * @param offset    Byte offset in the buffer
-         * @param size      Data size (count of @p T values)
+         * @param size      Data size in bytes
          *
          * Returns data of given buffer portion. If neither
          * @extension{ARB,direct_state_access} (part of OpenGL 4.5) nor
@@ -1092,8 +1104,15 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      WebGL. Use @ref map() or @ref DebugTools::bufferData() in
          *      OpenGL ES instead.
          */
+        Containers::Array<char> subData(GLintptr offset, GLsizeiptr size);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @copybrief subData()
+         * @deprecated Use non-templated @ref subData() and @ref Containers::arrayCast() instead
+         */
         /* MinGW complains loudly if the declaration doesn't also have inline */
-        template<class T = char> inline Containers::Array<T> subData(GLintptr offset, GLsizeiptr size);
+        template<class T> CORRADE_DEPRECATED("use non-templated subData() and Containers::arrayCast() instead") inline Containers::Array<T> subData(GLintptr offset, GLsizeiptr size);
+        #endif
         #endif
 
         /**
@@ -1126,7 +1145,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
 
         /**
          * @brief Set buffer subdata
-         * @param offset    Offset in the buffer
+         * @param offset    Byte offset in the buffer
          * @param data      Data
          * @return Reference to self (for method chaining)
          *
@@ -1164,7 +1183,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
 
         /**
          * @brief Invalidate buffer subdata
-         * @param offset    Offset into the buffer
+         * @param offset    Byte offset into the buffer
          * @param length    Length of the invalidated range
          * @return Reference to self (for method chaining)
          *
@@ -1178,7 +1197,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         /**
          * @brief Map buffer to client memory
          * @param access    Access
-         * @return Pointer to buffer data
+         * @return Pointer to mapped buffer data or `nullptr` on error
          *
          * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
          * nor @extension{EXT,direct_state_access} desktop extension is
@@ -1195,12 +1214,17 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @deprecated_gl Prefer to use @ref map(GLintptr, GLsizeiptr, MapFlags)
          *      instead, as it has more complete set of features.
          */
-        void* map(MapAccess access);
+        char* map(MapAccess access);
 
-        /** @overload */
-        template<class T> T* map(MapAccess access) {
-            return static_cast<T*>(map(access));
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @overload
+         * @deprecated Use non-templated @ref map() and cast the result
+         *      manually instead.
+         */
+        template<class T> CORRADE_DEPRECATED("use non-templated map() and cast the result manually instead") T* map(MapAccess access) {
+            return reinterpret_cast<T*>(map(access));
         }
+        #endif
 
         #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_NACL)
         /**
@@ -1231,11 +1255,11 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
 
         /**
          * @brief Map buffer to client memory
-         * @param offset    Offset into the buffer
-         * @param length    Length of the mapped memory
+         * @param offset    Byte offset into the buffer
+         * @param length    Length of the mapped memory in bytes
          * @param flags     Flags. At least @ref MapFlag::Read or
          *      @ref MapFlag::Write must be specified.
-         * @return Pointer to buffer data
+         * @return Sized view to buffer data or `nullptr` on error
          *
          * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
          * nor @extension{EXT,direct_state_access} desktop extension is
@@ -1251,17 +1275,22 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      OpenGL ES 2.0.
          * @requires_gles Buffer mapping is not available in WebGL.
          */
-        void* map(GLintptr offset, GLsizeiptr length, MapFlags flags);
+        Containers::ArrayView<char> map(GLintptr offset, GLsizeiptr length, MapFlags flags);
 
-        /** @overload */
-        template<class T> T* map(GLintptr offset, GLsizeiptr length, MapFlags flags) {
-            return static_cast<T*>(map(offset, length, flags));
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @overload
+         * @deprecated Use non-templated @ref map() and @ref Containers::arrayCast()
+         *      instead.
+         */
+        template<class T> CORRADE_DEPRECATED("use non-templated map() and Containers::arrayCast() instead") T* map(GLintptr offset, GLsizeiptr length, MapFlags flags) {
+            return Containers::arrayCast<T>(map(offset, length, flags));
         }
+        #endif
 
         /**
          * @brief Flush mapped range
-         * @param offset    Offset relative to start of mapped range
-         * @param length    Length of the flushed memory
+         * @param offset    Byte offset relative to start of mapped range
+         * @param length    Length of the flushed memory in bytes
          * @return Reference to self (for method chaining)
          *
          * Flushes specified subsection of mapped range. Use only if you called
@@ -1364,8 +1393,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         Buffer& setLabelInternal(Containers::ArrayView<const char> label);
         #endif
 
-        #ifndef MAGNUM_TARGET_GLES
-        void subDataInternal(GLintptr offset, GLsizeiptr size, GLvoid* data);
+        #if !defined(MAGNUM_TARGET_GLES) && defined(MAGNUM_BUILD_DEPRECATED)
+        CORRADE_DEPRECATED("used only by deprecated subData<T>()") void subDataInternal(GLintptr offset, GLsizeiptr size, GLvoid* data);
         #endif
 
         void MAGNUM_LOCAL getParameterImplementationDefault(GLenum value, GLint* data);
@@ -1483,7 +1512,11 @@ inline GLuint Buffer::release() {
     return id;
 }
 
-#ifndef MAGNUM_TARGET_GLES
+#if !defined(MAGNUM_TARGET_GLES) && defined(MAGNUM_BUILD_DEPRECATED)
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
 template<class T> Containers::Array<T> inline Buffer::data() {
     const Int bufferSize = size();
     CORRADE_ASSERT(bufferSize%sizeof(T) == 0, "Buffer::data(): the buffer size is" << bufferSize << "bytes, which can't be expressed as array of types with size" << sizeof(T), nullptr);
@@ -1495,6 +1528,9 @@ template<class T> Containers::Array<T> inline Buffer::subData(const GLintptr off
     if(size) subDataInternal(offset, size*sizeof(T), data);
     return data;
 }
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 #endif
 
 }
