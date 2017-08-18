@@ -45,7 +45,7 @@
 namespace Magnum {
 
 struct Mesh::AttributeLayout {
-    explicit AttributeLayout(const Buffer& buffer, GLuint location, GLint size, GLenum type, AttributeKind kind, GLintptr offset, GLsizei stride, GLuint divisor) noexcept: buffer{Buffer::wrap(buffer.id())}, location{location}, size{size}, type{type}, kind{kind}, offset{offset}, stride{stride}, divisor{divisor} {}
+    explicit AttributeLayout(const Buffer& buffer, GLuint location, GLint size, GLenum type, DynamicAttribute::Kind kind, GLintptr offset, GLsizei stride, GLuint divisor) noexcept: buffer{Buffer::wrap(buffer.id())}, location{location}, size{size}, type{type}, kind{kind}, offset{offset}, stride{stride}, divisor{divisor} {}
 
     explicit AttributeLayout(const AttributeLayout& other): buffer{Buffer::wrap(other.buffer.id())}, location{other.location}, size{other.size}, type{other.type}, kind{other.kind}, offset{other.offset}, stride{other.stride}, divisor{other.divisor} {}
 
@@ -53,7 +53,7 @@ struct Mesh::AttributeLayout {
     GLuint location;
     GLint size;
     GLenum type;
-    AttributeKind kind;
+    DynamicAttribute::Kind kind;
     GLintptr offset;
     GLsizei stride;
     GLuint divisor;
@@ -226,6 +226,19 @@ Mesh& Mesh::setLabelInternal(const Containers::ArrayView<const char> label) {
     return *this;
 }
 #endif
+
+Mesh& Mesh::addVertexBufferInstanced(Buffer& buffer, const UnsignedInt divisor, const GLintptr offset, const GLsizei stride, const DynamicAttribute& attribute) {
+    AttributeLayout l{buffer,
+        attribute.location(),
+        GLint(attribute.components()),
+        GLenum(attribute.dataType()),
+        attribute.kind(),
+        offset,
+        stride,
+        divisor};
+    attributePointerInternal(l);
+    return *this;
+}
 
 Mesh& Mesh::setIndexBuffer(Buffer& buffer, GLintptr offset, IndexType type, UnsignedInt start, UnsignedInt end) {
     #if defined(CORRADE_TARGET_NACL) || defined(MAGNUM_TARGET_WEBGL)
@@ -455,7 +468,7 @@ void Mesh::destroyImplementationVAO() {
     #endif
 }
 
-void Mesh::attributePointerInternal(const Buffer& buffer, const GLuint location, const GLint size, const GLenum type, const AttributeKind kind, const GLintptr offset, const GLsizei stride, const GLuint divisor) {
+void Mesh::attributePointerInternal(const Buffer& buffer, const GLuint location, const GLint size, const GLenum type, const DynamicAttribute::Kind kind, const GLintptr offset, const GLsizei stride, const GLuint divisor) {
     AttributeLayout l{buffer, location, size, type, kind, offset, stride, divisor};
     attributePointerInternal(l);
 }
@@ -489,16 +502,16 @@ void Mesh::attributePointerImplementationDSAEXT(AttributeLayout& attribute) {
     glEnableVertexArrayAttribEXT(_id, attribute.location);
 
     #ifndef MAGNUM_TARGET_GLES2
-    if(attribute.kind == AttributeKind::Integral)
+    if(attribute.kind == DynamicAttribute::Kind::Integral)
         glVertexArrayVertexAttribIOffsetEXT(_id, attribute.buffer.id(), attribute.location, attribute.size, attribute.type, attribute.stride, attribute.offset);
     #ifndef MAGNUM_TARGET_GLES
-    else if(attribute.kind == AttributeKind::Long)
+    else if(attribute.kind == DynamicAttribute::Kind::Long)
         glVertexArrayVertexAttribLOffsetEXT(_id, attribute.buffer.id(), attribute.location, attribute.size, attribute.type, attribute.stride, attribute.offset);
     #endif
     else
     #endif
     {
-        glVertexArrayVertexAttribOffsetEXT(_id, attribute.buffer.id(), attribute.location, attribute.size, attribute.type, attribute.kind == AttributeKind::GenericNormalized, attribute.stride, attribute.offset);
+        glVertexArrayVertexAttribOffsetEXT(_id, attribute.buffer.id(), attribute.location, attribute.size, attribute.type, attribute.kind == DynamicAttribute::Kind::GenericNormalized, attribute.stride, attribute.offset);
     }
 
     if(attribute.divisor)
@@ -511,16 +524,16 @@ void Mesh::vertexAttribPointer(AttributeLayout& attribute) {
     attribute.buffer.bindInternal(Buffer::TargetHint::Array);
 
     #ifndef MAGNUM_TARGET_GLES2
-    if(attribute.kind == AttributeKind::Integral)
+    if(attribute.kind == DynamicAttribute::Kind::Integral)
         glVertexAttribIPointer(attribute.location, attribute.size, attribute.type, attribute.stride, reinterpret_cast<const GLvoid*>(attribute.offset));
     #ifndef MAGNUM_TARGET_GLES
-    else if(attribute.kind == AttributeKind::Long)
+    else if(attribute.kind == DynamicAttribute::Kind::Long)
         glVertexAttribLPointer(attribute.location, attribute.size, attribute.type, attribute.stride, reinterpret_cast<const GLvoid*>(attribute.offset));
     #endif
     else
     #endif
     {
-        glVertexAttribPointer(attribute.location, attribute.size, attribute.type, attribute.kind == AttributeKind::GenericNormalized, attribute.stride, reinterpret_cast<const GLvoid*>(attribute.offset));
+        glVertexAttribPointer(attribute.location, attribute.size, attribute.type, attribute.kind == DynamicAttribute::Kind::GenericNormalized, attribute.stride, reinterpret_cast<const GLvoid*>(attribute.offset));
     }
 
     if(attribute.divisor) {

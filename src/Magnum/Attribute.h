@@ -101,6 +101,7 @@ template<UnsignedInt location, class T> class Attribute {
          * Count of components passed to the shader. If passing smaller count
          * of components than corresponding type has, unspecified components
          * are set to default values (second and third to `0`, fourth to `1`).
+         * @see @ref Attribute()
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         enum class Components: GLint {
@@ -306,6 +307,198 @@ template<class T> Debug& operator<<(Debug& debug, Attribute<T>::Components);
 /** @debugoperatorclassenum{Magnum::Attribute,Magnum::Attribute::DataType} */
 template<class T> Debug& operator<<(Debug& debug, Attribute<T>::DataType);
 #endif
+
+/**
+@brief Base class for dynamic attribute location and type
+
+Counterpart to @ref Attribute that allows runtime specification of attribute
+location and base type. Note that unlike the compile-time specification, this
+class doesn't do any sanity verification and leaves most of the responsibility
+on the user.
+*/
+class DynamicAttribute {
+    public:
+        /**
+         * @brief Attribute kind
+         *
+         * Specifies what kind of shader type matches the attribute.
+         * @see @ref DynamicAttribute()
+         */
+        enum class Kind {
+            /** Generic, matches single-precision floating-point shader type */
+            Generic,
+
+            /**
+             * Normalized integral, matches single-precision floating-point
+             * shader type
+             */
+            GenericNormalized,
+
+            #ifndef MAGNUM_TARGET_GLES2
+            /** Integral, matches integral shader type */
+            Integral,
+            #ifndef MAGNUM_TARGET_GLES
+
+            /** Long, matches double-precision shader type */
+            Long
+            #endif
+            #endif
+        };
+
+        /**
+         * @brief Component count
+         *
+         * Count of components passed to the shader. If passing smaller count
+         * of components than corresponding type has, unspecified components
+         * are set to default values (second and third to `0`, fourth to `1`).
+         * @see @ref DynamicAttribute()
+         */
+        enum class Components: GLint {
+            /**
+             * Only first component is specified. Second, third and fourth
+             * component are set to `0`, `0`, `1`, respectively. Only for
+             * scalar and vector types, not matrices.
+             */
+            One = 1,
+
+            /**
+             * First two components are specified. Third and fourth component
+             * are set to `0`, `1`, respectively. Only for two, three and
+             * four-component vector types and 2x2, 3x2 and 4x2 matrix types.
+             */
+            Two = 2,
+
+            /**
+             * First three components are specified. Fourth component is set to
+             * `1`. Only for three and four-component vector types, 2x3, 3x3
+             * and 4x3 matrix types.
+             */
+            Three = 3,
+
+            /**
+             * All four components are specified. Only for four-component
+             * vector types and 2x4, 3x4 and 4x4 matrix types.
+             */
+            Four = 4,
+
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * Four components with BGRA ordering. Only for four-component
+             * float vector type. Must be used along with @ref DataType::UnsignedByte
+             * and @ref Kind::GenericNormalized.
+             * @requires_gl32 Extension @extension{ARB,vertex_array_bgra}
+             * @requires_gl Only RGBA component ordering is supported in OpenGL
+             *      ES and WebGL.
+             */
+            BGRA = GL_BGRA
+            #endif
+        };
+
+        /**
+         * @brief Data type
+         *
+         * Type of data passed to shader.
+         * @see @ref Kind, @ref DynamicAttribute()
+         */
+        enum class DataType: GLenum {
+            UnsignedByte = GL_UNSIGNED_BYTE,    /**< Unsigned byte */
+            Byte = GL_BYTE,                     /**< Byte */
+            UnsignedShort = GL_UNSIGNED_SHORT,  /**< Unsigned short */
+            Short = GL_SHORT,                   /**< Short */
+            UnsignedInt = GL_UNSIGNED_INT,      /**< Unsigned int */
+            Int = GL_INT,                       /**< Int */
+
+            #ifndef MAGNUM_TARGET_WEBGL
+            /**
+             * Half float. Only for float attribute types.
+             * @requires_gl30 Extension @extension{ARB,half_float_vertex}
+             * @requires_gles30 Extension @extension{OES,vertex_half_float}
+             *      in OpenGL ES 2.0
+             * @requires_webgl20 Half float vertex attributes are not available
+             *      in WebGL 1.0.
+             */
+            #ifndef MAGNUM_TARGET_GLES2
+            HalfFloat = GL_HALF_FLOAT,
+            #else
+            HalfFloat = GL_HALF_FLOAT_OES,
+            #endif
+            #endif
+
+            /** Float. Only for float attribute types. */
+            Float = GL_FLOAT,
+
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * Double. Only for float and double attribute types.
+             * @requires_gl Only floats are available in OpenGL ES or WebGL.
+             */
+            Double = GL_DOUBLE,
+
+            /**
+             * Unsigned 10.11.11 packed float. Only for three-component float
+             * vector attribute type.
+             * @requires_gl44 Extension @extension{ARB,vertex_type_10f_11f_11f_rev}
+             * @requires_gl Packed float attributes are not available in OpenGL
+             *      ES or WebGL.
+             */
+            UnsignedInt10f11f11fRev = GL_UNSIGNED_INT_10F_11F_11F_REV,
+            #endif
+
+            /* GL_FIXED not supported */
+
+            #ifndef MAGNUM_TARGET_GLES2
+            /**
+             * Unsigned 2.10.10.10 packed integer. Only for four-component
+             * float vector attribute type.
+             * @todo How about (incompatible) @extension{OES,vertex_type_10_10_10_2}?
+             * @requires_gl33 Extension @extension{ARB,vertex_type_2_10_10_10_rev}
+             * @requires_gles30 Packed attributes are not available in OpenGL
+             *      ES 2.0.
+             * @requires_webgl20 Packed attributes are not available in WebGL
+             *      1.0.
+             */
+            UnsignedInt2101010Rev = GL_UNSIGNED_INT_2_10_10_10_REV,
+
+            /**
+             * Signed 2.10.10.10 packed integer. Only for four-component float
+             * vector attribute type.
+             * @requires_gl33 Extension @extension{ARB,vertex_type_2_10_10_10_rev}
+             * @requires_gles30 Packed attributes are not available in OpenGL
+             *      ES 2.0.
+             * @requires_webgl20 Packed attributes are not available in WebGL
+             *      1.0.
+             */
+            Int2101010Rev = GL_INT_2_10_10_10_REV
+            #endif
+        };
+
+        /**
+         * @brief Constructor
+         * @param kind          Attribute kind
+         * @param location      Attribute location
+         * @param components    Component count
+         * @param dataType      Type of passed data
+         */
+        constexpr DynamicAttribute(Kind kind, UnsignedInt location, Components components, DataType dataType): _kind{kind}, _location{location}, _components{components}, _dataType{dataType} {}
+
+        /** @brief Attribute kind */
+        constexpr Kind kind() const { return _kind; }
+
+        /** @brief Attribute location */
+        constexpr UnsignedInt location() const { return _location; }
+
+        /** @brief Component count of passed data */
+        constexpr Components components() const { return _components; }
+
+        /** @brief Type of passed data */
+        constexpr DataType dataType() const { return _dataType; }
+
+    private:
+        Kind _kind;
+        UnsignedInt _location;
+        Components _components;
+        DataType _dataType;
+};
 
 namespace Implementation {
 

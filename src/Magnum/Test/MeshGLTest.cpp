@@ -147,58 +147,61 @@ MeshGLTest::MeshGLTest() {
               &MeshGLTest::constructMove,
               &MeshGLTest::wrap,
 
-              &MeshGLTest::label,
+              &MeshGLTest::label});
 
-              #ifndef MAGNUM_TARGET_GLES2
-              &MeshGLTest::addVertexBufferUnsignedInt,
-              &MeshGLTest::addVertexBufferInt,
-              #endif
-              &MeshGLTest::addVertexBufferFloat,
-              #ifndef MAGNUM_TARGET_GLES
-              &MeshGLTest::addVertexBufferDouble,
-              #endif
-              #ifndef MAGNUM_TARGET_GLES2
-              &MeshGLTest::addVertexBufferVectorNui,
-              &MeshGLTest::addVertexBufferVectorNi,
-              #endif
-              &MeshGLTest::addVertexBufferVectorN,
-              #ifndef MAGNUM_TARGET_GLES
-              &MeshGLTest::addVertexBufferVectorNd,
-              #endif
-              &MeshGLTest::addVertexBufferMatrixNxN,
-              #ifndef MAGNUM_TARGET_GLES
-              &MeshGLTest::addVertexBufferMatrixNxNd,
-              #endif
-              #ifndef MAGNUM_TARGET_GLES2
-              &MeshGLTest::addVertexBufferMatrixMxN,
-              #endif
-              #ifndef MAGNUM_TARGET_GLES
-              &MeshGLTest::addVertexBufferMatrixMxNd,
-              #endif
+    /* First instance is always using Attribute, second DynamicAttribute */
+    addInstancedTests({
+        #ifndef MAGNUM_TARGET_GLES2
+        &MeshGLTest::addVertexBufferUnsignedInt,
+        &MeshGLTest::addVertexBufferInt,
+        #endif
+        &MeshGLTest::addVertexBufferFloat,
+        #ifndef MAGNUM_TARGET_GLES
+        &MeshGLTest::addVertexBufferDouble,
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        &MeshGLTest::addVertexBufferVectorNui,
+        &MeshGLTest::addVertexBufferVectorNi,
+        #endif
+        &MeshGLTest::addVertexBufferVectorN,
+        #ifndef MAGNUM_TARGET_GLES
+        &MeshGLTest::addVertexBufferVectorNd,
+        #endif
+        &MeshGLTest::addVertexBufferMatrixNxN,
+        #ifndef MAGNUM_TARGET_GLES
+        &MeshGLTest::addVertexBufferMatrixNxNd,
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        &MeshGLTest::addVertexBufferMatrixMxN,
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        &MeshGLTest::addVertexBufferMatrixMxNd,
+        #endif
 
-              #ifndef MAGNUM_TARGET_GLES2
-              &MeshGLTest::addVertexBufferUnsignedIntWithUnsignedShort,
-              &MeshGLTest::addVertexBufferUnsignedIntWithShort,
-              &MeshGLTest::addVertexBufferIntWithUnsignedShort,
-              &MeshGLTest::addVertexBufferIntWithShort,
-              #endif
-              &MeshGLTest::addVertexBufferFloatWithHalfFloat,
-              #ifndef MAGNUM_TARGET_GLES
-              &MeshGLTest::addVertexBufferFloatWithDouble,
-              &MeshGLTest::addVertexBufferVector3WithUnsignedInt10f11f11fRev,
-              #endif
-              #ifndef MAGNUM_TARGET_GLES2
-              &MeshGLTest::addVertexBufferVector4WithUnsignedInt2101010Rev,
-              &MeshGLTest::addVertexBufferVector4WithInt2101010Rev,
-              #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        &MeshGLTest::addVertexBufferUnsignedIntWithUnsignedShort,
+        &MeshGLTest::addVertexBufferUnsignedIntWithShort,
+        &MeshGLTest::addVertexBufferIntWithUnsignedShort,
+        &MeshGLTest::addVertexBufferIntWithShort,
+        #endif
+        &MeshGLTest::addVertexBufferFloatWithHalfFloat,
+        #ifndef MAGNUM_TARGET_GLES
+        &MeshGLTest::addVertexBufferFloatWithDouble,
+        &MeshGLTest::addVertexBufferVector3WithUnsignedInt10f11f11fRev,
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        &MeshGLTest::addVertexBufferVector4WithUnsignedInt2101010Rev,
+        &MeshGLTest::addVertexBufferVector4WithInt2101010Rev,
+        #endif
 
-              &MeshGLTest::addVertexBufferLessVectorComponents,
-              &MeshGLTest::addVertexBufferNormalized,
-              #ifndef MAGNUM_TARGET_GLES
-              &MeshGLTest::addVertexBufferBGRA,
-              #endif
+        &MeshGLTest::addVertexBufferLessVectorComponents,
+        &MeshGLTest::addVertexBufferNormalized,
+        #ifndef MAGNUM_TARGET_GLES
+        &MeshGLTest::addVertexBufferBGRA
+        #endif
+        }, 2);
 
-              &MeshGLTest::addVertexBufferMultiple,
+    addTests({&MeshGLTest::addVertexBufferMultiple,
               &MeshGLTest::addVertexBufferMultipleGaps,
 
               &MeshGLTest::setIndexBuffer,
@@ -545,15 +548,23 @@ void MeshGLTest::addVertexBufferUnsignedInt() {
         CORRADE_SKIP(Extensions::GL::EXT::gpu_shader4::string() + std::string(" is not available."));
     #endif
 
-    typedef Attribute<0, UnsignedInt> Attribute;
-
     constexpr UnsignedInt data[] = { 0, 157, 35681 };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.setBaseVertex(1)
-        .addVertexBuffer(buffer, 4, Attribute());
+    mesh.setBaseVertex(1);
+
+    if(testCaseInstanceId() == 0) {
+        setTestCaseDescription("Attribute");
+        mesh.addVertexBuffer(buffer, 4, Attribute<0, UnsignedInt>{});
+    } else if(testCaseInstanceId() == 1) {
+        setTestCaseDescription("DynamicAttribute");
+        mesh.addVertexBuffer(buffer, 4, 4, DynamicAttribute{
+            DynamicAttribute::Kind::Integral, 0,
+            DynamicAttribute::Components::One,
+            DynamicAttribute::DataType::UnsignedInt});
+    } else CORRADE_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -570,15 +581,23 @@ void MeshGLTest::addVertexBufferInt() {
         CORRADE_SKIP(Extensions::GL::EXT::gpu_shader4::string() + std::string(" is not available."));
     #endif
 
-    typedef Attribute<0, Int> Attribute;
-
     constexpr Int data[] = { 0, 457931, 27530 };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.setBaseVertex(1)
-        .addVertexBuffer(buffer, 4, Attribute());
+    mesh.setBaseVertex(1);
+
+    if(testCaseInstanceId() == 0) {
+        setTestCaseDescription("Attribute");
+        mesh.addVertexBuffer(buffer, 4, Attribute<0, Int>{});
+    } else if(testCaseInstanceId() == 1) {
+        setTestCaseDescription("DynamicAttribute");
+        mesh.addVertexBuffer(buffer, 4, 4, DynamicAttribute{
+            DynamicAttribute::Kind::Integral, 0,
+            DynamicAttribute::Components::One,
+            DynamicAttribute::DataType::Int});
+    } else CORRADE_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -591,15 +610,23 @@ void MeshGLTest::addVertexBufferInt() {
 #endif
 
 void MeshGLTest::addVertexBufferFloat() {
-    typedef Attribute<0, Float> Attribute;
-
     const Float data[] = { 0.0f, -0.7f, Math::unpack<Float, UnsignedByte>(96) };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.setBaseVertex(1)
-        .addVertexBuffer(buffer, 4, Attribute());
+    mesh.setBaseVertex(1);
+
+    if(testCaseInstanceId() == 0) {
+        setTestCaseDescription("Attribute");
+        mesh.addVertexBuffer(buffer, 4, Attribute<0, Float>{});
+    } else if(testCaseInstanceId() == 1) {
+        setTestCaseDescription("DynamicAttribute");
+        mesh.addVertexBuffer(buffer, 4, 4, DynamicAttribute{
+            DynamicAttribute::Kind::Generic, 0,
+            DynamicAttribute::Components::One,
+            DynamicAttribute::DataType::Float});
+    } else CORRADE_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -620,15 +647,23 @@ void MeshGLTest::addVertexBufferDouble() {
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::vertex_attrib_64bit>())
         CORRADE_SKIP(Extensions::GL::ARB::vertex_attrib_64bit::string() + std::string(" is not available."));
 
-    typedef Attribute<0, Double> Attribute;
-
     const Double data[] = { 0.0, -0.7, Math::unpack<Double, UnsignedShort>(45828) };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.setBaseVertex(1)
-        .addVertexBuffer(buffer, 8, Attribute());
+    mesh.setBaseVertex(1);
+
+    if(testCaseInstanceId() == 0) {
+        setTestCaseDescription("Attribute");
+        mesh.addVertexBuffer(buffer, 8, Attribute<0, Double>{});
+    } else if(testCaseInstanceId() == 1) {
+        setTestCaseDescription("DynamicAttribute");
+        mesh.addVertexBuffer(buffer, 8, 8, DynamicAttribute{
+            DynamicAttribute::Kind::Long, 0,
+            DynamicAttribute::Components::One,
+            DynamicAttribute::DataType::Double});
+    } else CORRADE_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -647,15 +682,23 @@ void MeshGLTest::addVertexBufferVectorNui() {
         CORRADE_SKIP(Extensions::GL::EXT::gpu_shader4::string() + std::string(" is not available."));
     #endif
 
-    typedef Attribute<0, Vector3ui> Attribute;
-
     constexpr Vector3ui data[] = { {}, {37448, 547686, 156}, {27592, 157, 25} };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.setBaseVertex(1)
-        .addVertexBuffer(buffer, 3*4, Attribute());
+    mesh.setBaseVertex(1);
+
+    if(testCaseInstanceId() == 0) {
+        setTestCaseDescription("Attribute");
+        mesh.addVertexBuffer(buffer, 3*4, Attribute<0, Vector3ui>{});
+    } else if(testCaseInstanceId() == 1) {
+        setTestCaseDescription("DynamicAttribute");
+        mesh.addVertexBuffer(buffer, 3*4, 3*4, DynamicAttribute{
+            DynamicAttribute::Kind::Integral, 0,
+            DynamicAttribute::Components::Three,
+            DynamicAttribute::DataType::UnsignedInt});
+    } else CORRADE_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -672,15 +715,23 @@ void MeshGLTest::addVertexBufferVectorNi() {
         CORRADE_SKIP(Extensions::GL::EXT::gpu_shader4::string() + std::string(" is not available."));
     #endif
 
-    typedef Attribute<0, Vector2i> Attribute;
-
     constexpr Vector2i data[] = { {}, {-37448, 547686}, {27592, -157} };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.setBaseVertex(1)
-        .addVertexBuffer(buffer, 2*4, Attribute());
+    mesh.setBaseVertex(1);
+
+    if(testCaseInstanceId() == 0) {
+        setTestCaseDescription("Attribute");
+        mesh.addVertexBuffer(buffer, 2*4, Attribute<0, Vector2i>{});
+    } else if(testCaseInstanceId() == 1) {
+        setTestCaseDescription("DynamicAttribute");
+        mesh.addVertexBuffer(buffer, 2*4, 2*4, DynamicAttribute{
+            DynamicAttribute::Kind::Integral, 0,
+            DynamicAttribute::Components::Two,
+            DynamicAttribute::DataType::Int});
+    } else CORRADE_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -693,15 +744,23 @@ void MeshGLTest::addVertexBufferVectorNi() {
 #endif
 
 void MeshGLTest::addVertexBufferVectorN() {
-    typedef Attribute<0, Vector3> Attribute;
-
     const Vector3 data[] = { {}, {0.0f, -0.9f, 1.0f}, Math::unpack<Vector3>(Color3ub(96, 24, 156)) };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.setBaseVertex(1)
-        .addVertexBuffer(buffer, 3*4, Attribute());
+    mesh.setBaseVertex(1);
+
+    if(testCaseInstanceId() == 0) {
+        setTestCaseDescription("Attribute");
+        mesh.addVertexBuffer(buffer, 3*4, Attribute<0, Vector3>{});
+    } else if(testCaseInstanceId() == 1) {
+        setTestCaseDescription("DynamicAttribute");
+        mesh.addVertexBuffer(buffer, 3*4, 3*4, DynamicAttribute{
+            DynamicAttribute::Kind::Generic, 0,
+            DynamicAttribute::Components::Three,
+            DynamicAttribute::DataType::Float});
+    } else CORRADE_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -722,8 +781,6 @@ void MeshGLTest::addVertexBufferVectorNd() {
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::vertex_attrib_64bit>())
         CORRADE_SKIP(Extensions::GL::ARB::vertex_attrib_64bit::string() + std::string(" is not available."));
 
-    typedef Attribute<0, Vector4d> Attribute;
-
     const Vector4d data[] = {
         {}, {0.0, -0.9, 1.0, 1.25},
         Math::unpack<Vector4d>(Math::Vector4<UnsignedShort>(315, 65201, 2576, 12))
@@ -732,8 +789,18 @@ void MeshGLTest::addVertexBufferVectorNd() {
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.setBaseVertex(1)
-        .addVertexBuffer(buffer, 4*8, Attribute());
+    mesh.setBaseVertex(1);
+
+    if(testCaseInstanceId() == 0) {
+        setTestCaseDescription("Attribute");
+        mesh.addVertexBuffer(buffer, 4*8, Attribute<0, Vector4d>{});
+    } else if(testCaseInstanceId() == 1) {
+        setTestCaseDescription("DynamicAttribute");
+        mesh.addVertexBuffer(buffer, 4*8, 4*8, DynamicAttribute{
+            DynamicAttribute::Kind::Long, 0,
+            DynamicAttribute::Components::Four,
+            DynamicAttribute::DataType::Double});
+    } else CORRADE_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -746,8 +813,6 @@ void MeshGLTest::addVertexBufferVectorNd() {
 #endif
 
 void MeshGLTest::addVertexBufferMatrixNxN() {
-    typedef Attribute<0, Matrix3x3> Attribute;
-
     const Matrix3x3 data[] = {
         {},
         Matrix3x3::fromDiagonal({0.0f, -0.9f, 1.0f}),
@@ -757,8 +822,26 @@ void MeshGLTest::addVertexBufferMatrixNxN() {
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.setBaseVertex(1)
-        .addVertexBuffer(buffer, 3*3*4, Attribute());
+    mesh.setBaseVertex(1);
+
+    if(testCaseInstanceId() == 0) {
+        setTestCaseDescription("Attribute");
+        mesh.addVertexBuffer(buffer, 3*3*4, Attribute<0, Matrix3x3>{});
+    } else if(testCaseInstanceId() == 1) {
+        setTestCaseDescription("DynamicAttribute");
+        mesh.addVertexBuffer(buffer, 3*3*4, 3*3*4, DynamicAttribute{
+                DynamicAttribute::Kind::Generic, 0,
+                DynamicAttribute::Components::Three,
+                DynamicAttribute::DataType::Float})
+            .addVertexBuffer(buffer, 3*3*4 + 3*4, 3*3*4, DynamicAttribute{
+                DynamicAttribute::Kind::Generic, 1,
+                DynamicAttribute::Components::Three,
+                DynamicAttribute::DataType::Float})
+            .addVertexBuffer(buffer, 3*3*4 + 6*4, 3*3*4, DynamicAttribute{
+                DynamicAttribute::Kind::Generic, 2,
+                DynamicAttribute::Components::Three,
+                DynamicAttribute::DataType::Float});
+    } else CORRADE_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -775,8 +858,6 @@ void MeshGLTest::addVertexBufferMatrixNxNd() {
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::vertex_attrib_64bit>())
         CORRADE_SKIP(Extensions::GL::ARB::vertex_attrib_64bit::string() + std::string(" is not available."));
 
-    typedef Attribute<0, Matrix3x3d> Attribute;
-
     const Matrix3x3d data[] = {
         {},
         Matrix3x3d::fromDiagonal({0.0, -0.9, 1.0}),
@@ -786,8 +867,26 @@ void MeshGLTest::addVertexBufferMatrixNxNd() {
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.setBaseVertex(1)
-        .addVertexBuffer(buffer, 3*3*8, Attribute());
+    mesh.setBaseVertex(1);
+
+    if(testCaseInstanceId() == 0) {
+        setTestCaseDescription("Attribute");
+        mesh.addVertexBuffer(buffer, 3*3*8, Attribute<0, Matrix3x3d>{});
+    } else if(testCaseInstanceId() == 1) {
+        setTestCaseDescription("DynamicAttribute");
+        mesh.addVertexBuffer(buffer, 3*3*8, 3*3*8, DynamicAttribute{
+                DynamicAttribute::Kind::Long, 0,
+                DynamicAttribute::Components::Three,
+                DynamicAttribute::DataType::Double})
+            .addVertexBuffer(buffer, 3*3*8 + 3*8, 3*3*8, DynamicAttribute{
+                DynamicAttribute::Kind::Long, 1,
+                DynamicAttribute::Components::Three,
+                DynamicAttribute::DataType::Double})
+            .addVertexBuffer(buffer, 3*3*8 + 6*4, 3*3*8, DynamicAttribute{
+                DynamicAttribute::Kind::Long, 2,
+                DynamicAttribute::Components::Three,
+                DynamicAttribute::DataType::Double});
+    } else CORRADE_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -811,8 +910,6 @@ void MeshGLTest::addVertexBufferMatrixNxNd() {
 
 #ifndef MAGNUM_TARGET_GLES2
 void MeshGLTest::addVertexBufferMatrixMxN() {
-    typedef Attribute<0, Matrix3x4> Attribute;
-
     const Matrix3x4 data[] = {
         {},
         Matrix3x4::fromDiagonal({0.0f, -0.9f, 1.0f}),
@@ -822,8 +919,26 @@ void MeshGLTest::addVertexBufferMatrixMxN() {
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.setBaseVertex(1)
-        .addVertexBuffer(buffer, 3*4*4, Attribute());
+    mesh.setBaseVertex(1);
+
+    if(testCaseInstanceId() == 0) {
+        setTestCaseDescription("Attribute");
+        mesh.addVertexBuffer(buffer, 3*4*4, Attribute<0, Matrix3x4>{});
+    } else if(testCaseInstanceId() == 1) {
+        setTestCaseDescription("DynamicAttribute");
+        mesh.addVertexBuffer(buffer, 3*4*4, 3*4*4, DynamicAttribute{
+                DynamicAttribute::Kind::Generic, 0,
+                DynamicAttribute::Components::Four,
+                DynamicAttribute::DataType::Float})
+            .addVertexBuffer(buffer, 3*4*4 + 4*4, 3*4*4, DynamicAttribute{
+                DynamicAttribute::Kind::Generic, 1,
+                DynamicAttribute::Components::Four,
+                DynamicAttribute::DataType::Float})
+            .addVertexBuffer(buffer, 3*4*4 + 8*4, 3*4*4, DynamicAttribute{
+                DynamicAttribute::Kind::Generic, 2,
+                DynamicAttribute::Components::Four,
+                DynamicAttribute::DataType::Float});
+    } else CORRADE_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -841,8 +956,6 @@ void MeshGLTest::addVertexBufferMatrixMxNd() {
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::vertex_attrib_64bit>())
         CORRADE_SKIP(Extensions::GL::ARB::vertex_attrib_64bit::string() + std::string(" is not available."));
 
-    typedef Attribute<0, Matrix3x4d> Attribute;
-
     const Matrix3x4d data[] = {
         {},
         Matrix3x4d::fromDiagonal({0.0f, -0.9f, 1.0f}),
@@ -852,8 +965,26 @@ void MeshGLTest::addVertexBufferMatrixMxNd() {
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.setBaseVertex(1)
-        .addVertexBuffer(buffer, 3*4*8, Attribute());
+    mesh.setBaseVertex(1);
+
+    if(testCaseInstanceId() == 0) {
+        setTestCaseDescription("Attribute");
+        mesh.addVertexBuffer(buffer, 3*4*8, Attribute<0, Matrix3x4d>{});
+    } else if(testCaseInstanceId() == 1) {
+        setTestCaseDescription("DynamicAttribute");
+        mesh.addVertexBuffer(buffer, 3*4*8, 3*4*8, DynamicAttribute{
+                DynamicAttribute::Kind::Long, 0,
+                DynamicAttribute::Components::Four,
+                DynamicAttribute::DataType::Double})
+            .addVertexBuffer(buffer, 3*4*8 + 4*8, 3*4*8, DynamicAttribute{
+                DynamicAttribute::Kind::Long, 1,
+                DynamicAttribute::Components::Four,
+                DynamicAttribute::DataType::Double})
+            .addVertexBuffer(buffer, 3*4*8 + 8*8, 3*4*8, DynamicAttribute{
+                DynamicAttribute::Kind::Long, 2,
+                DynamicAttribute::Components::Four,
+                DynamicAttribute::DataType::Double});
+    } else CORRADE_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -882,15 +1013,23 @@ void MeshGLTest::addVertexBufferUnsignedIntWithUnsignedShort() {
         CORRADE_SKIP(Extensions::GL::EXT::gpu_shader4::string() + std::string(" is not available."));
     #endif
 
-    typedef Attribute<0, UnsignedInt> Attribute;
-
     constexpr UnsignedShort data[] = { 0, 49563, 2128, 3821, 16583 };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.setBaseVertex(1)
-        .addVertexBuffer(buffer, 2, 2, Attribute(Attribute::DataType::UnsignedShort));
+    mesh.setBaseVertex(1);
+
+    if(testCaseInstanceId() == 0) {
+        setTestCaseDescription("Attribute");
+        mesh.addVertexBuffer(buffer, 2, 2, Attribute<0, UnsignedInt>{Attribute<0, UnsignedInt>::DataType::UnsignedShort});
+    } else if(testCaseInstanceId() == 1) {
+        setTestCaseDescription("DynamicAttribute");
+        mesh.addVertexBuffer(buffer, 4, 4, DynamicAttribute{
+            DynamicAttribute::Kind::Integral, 0,
+            DynamicAttribute::Components::One,
+            DynamicAttribute::DataType::UnsignedShort});
+    } else CORRADE_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -907,15 +1046,23 @@ void MeshGLTest::addVertexBufferUnsignedIntWithShort() {
         CORRADE_SKIP(Extensions::GL::EXT::gpu_shader4::string() + std::string(" is not available."));
     #endif
 
-    typedef Attribute<0, UnsignedInt> Attribute;
-
     constexpr Short data[] = { 0, 24563, 2128, 3821, 16583 };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.setBaseVertex(1)
-        .addVertexBuffer(buffer, 2, 2, Attribute(Attribute::DataType::Short));
+    mesh.setBaseVertex(1);
+
+    if(testCaseInstanceId() == 0) {
+        setTestCaseDescription("Attribute");
+        mesh.addVertexBuffer(buffer, 2, 2, Attribute<0, UnsignedInt>{Attribute<0, UnsignedInt>::DataType::Short});
+    } else if(testCaseInstanceId() == 1) {
+        setTestCaseDescription("DynamicAttribute");
+        mesh.addVertexBuffer(buffer, 4, 4, DynamicAttribute{
+            DynamicAttribute::Kind::Integral, 0,
+            DynamicAttribute::Components::One,
+            DynamicAttribute::DataType::Short});
+    } else CORRADE_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -932,15 +1079,23 @@ void MeshGLTest::addVertexBufferIntWithUnsignedShort() {
         CORRADE_SKIP(Extensions::GL::EXT::gpu_shader4::string() + std::string(" is not available."));
     #endif
 
-    typedef Attribute<0, Int> Attribute;
-
     constexpr UnsignedShort data[] = { 0, 49563, 2128, 3821, 16583 };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.setBaseVertex(1)
-        .addVertexBuffer(buffer, 2, 2, Attribute(Attribute::DataType::UnsignedShort));
+    mesh.setBaseVertex(1);
+
+    if(testCaseInstanceId() == 0) {
+        setTestCaseDescription("Attribute");
+        mesh.addVertexBuffer(buffer, 2, 2, Attribute<0, Int>{Attribute<0, Int>::DataType::UnsignedShort});
+    } else if(testCaseInstanceId() == 1) {
+        setTestCaseDescription("DynamicAttribute");
+        mesh.addVertexBuffer(buffer, 4, 4, DynamicAttribute{
+            DynamicAttribute::Kind::Integral, 0,
+            DynamicAttribute::Components::One,
+            DynamicAttribute::DataType::UnsignedShort});
+    } else CORRADE_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -957,15 +1112,23 @@ void MeshGLTest::addVertexBufferIntWithShort() {
         CORRADE_SKIP(Extensions::GL::EXT::gpu_shader4::string() + std::string(" is not available."));
     #endif
 
-    typedef Attribute<0, Int> Attribute;
-
     constexpr Short data[] = { 0, 24563, 2128, 3821, -16583 };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.setBaseVertex(1)
-        .addVertexBuffer(buffer, 2, 2, Attribute(Attribute::DataType::Short));
+    mesh.setBaseVertex(1);
+
+    if(testCaseInstanceId() == 0) {
+        setTestCaseDescription("Attribute");
+        mesh.addVertexBuffer(buffer, 2, 2, Attribute<0, Int>{Attribute<0, Int>::DataType::Short});
+    } else if(testCaseInstanceId() == 1) {
+        setTestCaseDescription("DynamicAttribute");
+        mesh.addVertexBuffer(buffer, 4, 4, DynamicAttribute{
+            DynamicAttribute::Kind::Integral, 0,
+            DynamicAttribute::Components::One,
+            DynamicAttribute::DataType::Short});
+    } else CORRADE_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -988,15 +1151,23 @@ void MeshGLTest::addVertexBufferFloatWithHalfFloat() {
 
     using namespace Math::Literals;
 
-    typedef Attribute<0, Float> Attribute;
-
     const Half data[] = { 0.0_h, -0.7_h, Half(Math::unpack<Float, UnsignedByte>(186)) };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.setBaseVertex(1)
-        .addVertexBuffer(buffer, 2, Attribute(Attribute::DataType::HalfFloat));
+    mesh.setBaseVertex(1);
+
+    if(testCaseInstanceId() == 0) {
+        setTestCaseDescription("Attribute");
+        mesh.addVertexBuffer(buffer, 2, Attribute<0, Float>{Attribute<0, Float>::DataType::HalfFloat});
+    } else if(testCaseInstanceId() == 1) {
+        setTestCaseDescription("DynamicAttribute");
+        mesh.addVertexBuffer(buffer, 2, 2, DynamicAttribute{
+            DynamicAttribute::Kind::Generic, 0,
+            DynamicAttribute::Components::One,
+            DynamicAttribute::DataType::HalfFloat});
+    } else CORRADE_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -1009,15 +1180,24 @@ void MeshGLTest::addVertexBufferFloatWithHalfFloat() {
 
 #ifndef MAGNUM_TARGET_GLES
 void MeshGLTest::addVertexBufferFloatWithDouble() {
-    typedef Attribute<0, Float> Attribute;
-
     const Double data[] = { 0.0, -0.7, Math::unpack<Double, UnsignedByte>(186) };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
     mesh.setBaseVertex(1)
-        .addVertexBuffer(buffer, 8, Attribute(Attribute::DataType::Double));
+        .addVertexBuffer(buffer, 8, Attribute<0, Float>(Attribute<0, Float>::DataType::Double));
+
+    if(testCaseInstanceId() == 0) {
+        setTestCaseDescription("Attribute");
+        mesh.addVertexBuffer(buffer, 8, Attribute<0, Float>{Attribute<0, Float>::DataType::Double});
+    } else if(testCaseInstanceId() == 1) {
+        setTestCaseDescription("DynamicAttribute");
+        mesh.addVertexBuffer(buffer, 8, 8, DynamicAttribute{
+            DynamicAttribute::Kind::Generic, 0,
+            DynamicAttribute::Components::One,
+            DynamicAttribute::DataType::Double});
+    } else CORRADE_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -1034,14 +1214,22 @@ void MeshGLTest::addVertexBufferVector3WithUnsignedInt10f11f11fRev() {
         CORRADE_SKIP(Extensions::GL::ARB::vertex_type_10f_11f_11f_rev::string() + std::string(" is not available."));
     #endif
 
-    typedef Attribute<0, Vector3> Attribute;
-
     Buffer buffer;
     buffer.setData({nullptr, 12}, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.setBaseVertex(1)
-        .addVertexBuffer(buffer, 4, Attribute(Attribute::DataType::UnsignedInt10f11f11fRev));
+    mesh.setBaseVertex(1);
+
+    if(testCaseInstanceId() == 0) {
+        setTestCaseDescription("Attribute");
+        mesh.addVertexBuffer(buffer, 4, Attribute<0, Vector3>{Attribute<0, Vector3>::DataType::UnsignedInt10f11f11fRev});
+    } else if(testCaseInstanceId() == 1) {
+        setTestCaseDescription("DynamicAttribute");
+        mesh.addVertexBuffer(buffer, 4, 4, DynamicAttribute{
+            DynamicAttribute::Kind::Generic, 0,
+            DynamicAttribute::Components::Three,
+            DynamicAttribute::DataType::UnsignedInt10f11f11fRev});
+    } else CORRADE_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_ERROR();
     /* Won't test the actual values */
@@ -1055,14 +1243,22 @@ void MeshGLTest::addVertexBufferVector4WithUnsignedInt2101010Rev() {
         CORRADE_SKIP(Extensions::GL::ARB::vertex_type_2_10_10_10_rev::string() + std::string(" is not available."));
     #endif
 
-    typedef Attribute<0, Vector4> Attribute;
-
     Buffer buffer;
     buffer.setData({nullptr, 12}, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.setBaseVertex(1)
-        .addVertexBuffer(buffer, 4, Attribute(Attribute::DataType::UnsignedInt2101010Rev));
+    mesh.setBaseVertex(1);
+
+    if(testCaseInstanceId() == 0) {
+        setTestCaseDescription("Attribute");
+        mesh.addVertexBuffer(buffer, 4, Attribute<0, Vector4>{Attribute<0, Vector4>::DataType::UnsignedInt2101010Rev});
+    } else if(testCaseInstanceId() == 1) {
+        setTestCaseDescription("DynamicAttribute");
+        mesh.addVertexBuffer(buffer, 4, 4, DynamicAttribute{
+            DynamicAttribute::Kind::Generic, 0,
+            DynamicAttribute::Components::Four,
+            DynamicAttribute::DataType::UnsignedInt2101010Rev});
+    } else CORRADE_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_ERROR();
     /* Won't test the actual values */
@@ -1074,14 +1270,22 @@ void MeshGLTest::addVertexBufferVector4WithInt2101010Rev() {
         CORRADE_SKIP(Extensions::GL::ARB::vertex_type_2_10_10_10_rev::string() + std::string(" is not available."));
     #endif
 
-    typedef Attribute<0, Vector4> Attribute;
-
     Buffer buffer;
     buffer.setData({nullptr, 12}, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.setBaseVertex(1)
-        .addVertexBuffer(buffer, 4, Attribute(Attribute::DataType::Int2101010Rev));
+    mesh.setBaseVertex(1);
+
+    if(testCaseInstanceId() == 0) {
+        setTestCaseDescription("Attribute");
+        mesh.addVertexBuffer(buffer, 4, Attribute<0, Vector4>{Attribute<0, Vector4>::DataType::Int2101010Rev});
+    } else if(testCaseInstanceId() == 1) {
+        setTestCaseDescription("DynamicAttribute");
+        mesh.addVertexBuffer(buffer, 4, 4, DynamicAttribute{
+            DynamicAttribute::Kind::Generic, 0,
+            DynamicAttribute::Components::Four,
+            DynamicAttribute::DataType::Int2101010Rev});
+    } else CORRADE_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_ERROR();
     /* Won't test the actual values */
@@ -1089,8 +1293,6 @@ void MeshGLTest::addVertexBufferVector4WithInt2101010Rev() {
 #endif
 
 void MeshGLTest::addVertexBufferLessVectorComponents() {
-    typedef Attribute<0, Vector4> Attribute;
-
     const Vector3 data[] = {
         {}, {0.0f, -0.9f, 1.0f},
         Math::unpack<Vector3>(Color3ub(96, 24, 156))
@@ -1099,8 +1301,18 @@ void MeshGLTest::addVertexBufferLessVectorComponents() {
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.setBaseVertex(1)
-        .addVertexBuffer(buffer, 3*4, Attribute(Attribute::Components::Three));
+    mesh.setBaseVertex(1);
+
+    if(testCaseInstanceId() == 0) {
+        setTestCaseDescription("Attribute");
+        mesh.addVertexBuffer(buffer, 3*4, Attribute<0, Vector4>{Attribute<0, Vector4>::Components::Three});
+    } else if(testCaseInstanceId() == 1) {
+        setTestCaseDescription("DynamicAttribute");
+        mesh.addVertexBuffer(buffer, 3*4, 3*4, DynamicAttribute{
+            DynamicAttribute::Kind::Generic, 0,
+            DynamicAttribute::Components::Three,
+            DynamicAttribute::DataType::Float});
+    } else CORRADE_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -1117,15 +1329,24 @@ void MeshGLTest::addVertexBufferLessVectorComponents() {
 }
 
 void MeshGLTest::addVertexBufferNormalized() {
-    typedef Attribute<0, Vector3> Attribute;
-
     constexpr Color4ub data[] = { {}, {0, 128, 64}, {32, 156, 228} };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.setBaseVertex(1)
-        .addVertexBuffer(buffer, 4, Attribute(Attribute::DataType::UnsignedByte, Attribute::DataOption::Normalized), 1);
+    mesh.setBaseVertex(1);
+
+    if(testCaseInstanceId() == 0) {
+        setTestCaseDescription("Attribute");
+        typedef Attribute<0, Vector3> Attribute;
+        mesh.addVertexBuffer(buffer, 4, Attribute(Attribute::DataType::UnsignedByte, Attribute::DataOption::Normalized), 1);
+    } else if(testCaseInstanceId() == 1) {
+        setTestCaseDescription("DynamicAttribute");
+        mesh.addVertexBuffer(buffer, 4, 4, DynamicAttribute{
+            DynamicAttribute::Kind::GenericNormalized, 0,
+            DynamicAttribute::Components::Three,
+            DynamicAttribute::DataType::UnsignedByte});
+    } else CORRADE_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -1148,15 +1369,24 @@ void MeshGLTest::addVertexBufferBGRA() {
         CORRADE_SKIP(Extensions::GL::ARB::vertex_array_bgra::string() + std::string(" is not available."));
     #endif
 
-    typedef Attribute<0, Vector4> Attribute;
-
     constexpr Color4ub data[] = { {}, {0, 128, 64, 161}, {96, 24, 156, 225} };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
-    mesh.setBaseVertex(1)
-        .addVertexBuffer(buffer, 4, Attribute(Attribute::Components::BGRA, Attribute::DataType::UnsignedByte, Attribute::DataOption::Normalized));
+    mesh.setBaseVertex(1);
+
+    if(testCaseInstanceId() == 0) {
+        setTestCaseDescription("Attribute");
+        typedef Attribute<0, Vector4> Attribute;
+        mesh.addVertexBuffer(buffer, 4, Attribute(Attribute::Components::BGRA, Attribute::DataType::UnsignedByte, Attribute::DataOption::Normalized));
+    } else if(testCaseInstanceId() == 1) {
+        setTestCaseDescription("DynamicAttribute");
+        mesh.addVertexBuffer(buffer, 4, 4, DynamicAttribute{
+            DynamicAttribute::Kind::GenericNormalized, 0,
+            DynamicAttribute::Components::BGRA,
+            DynamicAttribute::DataType::UnsignedByte});
+    } else CORRADE_ASSERT_UNREACHABLE();
 
     MAGNUM_VERIFY_NO_ERROR();
 

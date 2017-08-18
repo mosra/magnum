@@ -308,6 +308,24 @@ mesh.addVertexBuffer(colorBuffer, 0, MyShader::Color{
     MyShader::Color::DataOption::Normalized});
 @endcode
 
+@anchor Mesh-configuration-dynamic
+#### Dynamically specified attributes
+
+In some cases, for example when the shader code is fully generated at runtime,
+it's not possible to know attribute locations and types at compile time. In
+that case, there are overloads of @ref addVertexBuffer() and
+@ref addVertexBufferInstanced() that take @ref DynamicAttribute instead of
+@ref Attribute typedefs. Adding a RGB attribute at location 3 normalized from
+unsigned byte to float with one byte padding at the end could then look like
+this:
+@code
+mesh.addVertexBuffer(colorBuffer, 0, 4, DynamicAttribute{
+    DynamicAttribute::Kind::GenericNormalized, 3,
+    DynamicAttribute::Components::Three,
+    DynamicAttribute::DataType::UnsignedByte});
+});
+@endcode
+
 ## Rendering meshes
 
 Basic workflow is: bind specific framebuffer for drawing (if needed), set up
@@ -795,6 +813,32 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         }
 
         /**
+         * @brief Add buffer with dynamic vertex attributes for use with given shader
+         * @return Reference to self (for method chaining)
+         *
+         * Equivalent to @ref addVertexBuffer(Buffer&, GLintptr, const T&...)
+         * but with the possibility to fully specify the attribute properties
+         * at runtime, including base type and location. See
+         * @ref Mesh-configuration-dynamic "class documentation" for usage
+         * example.
+         */
+        Mesh& addVertexBuffer(Buffer& buffer, GLintptr offset, GLsizei stride, const DynamicAttribute& attribute) {
+            return addVertexBufferInstanced(buffer, 0, offset, stride, attribute);
+        }
+
+        /**
+         * @brief Add buffer with dynamic vertex attributes for use with given shader
+         * @return Reference to self (for method chaining)
+         *
+         * Equivalent to @ref addVertexBufferInstanced(Buffer&, UnsignedInt, GLintptr, const T&...)
+         * but with the possibility to fully specify the attribute properties
+         * at runtime, including base type and location. See
+         * @ref Mesh-configuration-dynamic "class documentation" for usage
+         * example.
+         */
+        Mesh& addVertexBufferInstanced(Buffer& buffer, UnsignedInt divisor, GLintptr offset, GLsizei stride, const DynamicAttribute& attribute);
+
+        /**
          * @brief Set index buffer
          * @param buffer        Index buffer
          * @param offset        Offset into the buffer
@@ -922,17 +966,6 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         #endif
 
     private:
-        enum class AttributeKind {
-            Generic,
-            GenericNormalized,
-            #ifndef MAGNUM_TARGET_GLES2
-            Integral,
-            #ifndef MAGNUM_TARGET_GLES
-            Long
-            #endif
-            #endif
-        };
-
         struct MAGNUM_LOCAL AttributeLayout;
 
         explicit Mesh(GLuint id, MeshPrimitive primitive, ObjectFlags flags);
@@ -971,7 +1004,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
                     location+i,
                     GLint(attribute.components()),
                     GLenum(attribute.dataType()),
-                    attribute.dataOptions() & Attribute<location, T>::DataOption::Normalized ? AttributeKind::GenericNormalized : AttributeKind::Generic,
+                    attribute.dataOptions() & Attribute<location, T>::DataOption::Normalized ? DynamicAttribute::Kind::GenericNormalized : DynamicAttribute::Kind::Generic,
                     GLintptr(offset+i*attribute.vectorSize()),
                     stride,
                     divisor);
@@ -983,7 +1016,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
                 location,
                 GLint(attribute.components()),
                 GLenum(attribute.dataType()),
-                AttributeKind::Integral,
+                DynamicAttribute::Kind::Integral,
                 offset,
                 stride,
                 divisor);
@@ -996,7 +1029,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
                     location+i,
                     GLint(attribute.components()),
                     GLenum(attribute.dataType()),
-                    AttributeKind::Long,
+                    DynamicAttribute::Kind::Long,
                     GLintptr(offset+i*attribute.vectorSize()),
                     stride,
                     divisor);
@@ -1027,7 +1060,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         void MAGNUM_LOCAL destroyImplementationDefault();
         void MAGNUM_LOCAL destroyImplementationVAO();
 
-        void attributePointerInternal(const Buffer& buffer, GLuint location, GLint size, GLenum type, AttributeKind kind, GLintptr offset, GLsizei stride, GLuint divisor);
+        void attributePointerInternal(const Buffer& buffer, GLuint location, GLint size, GLenum type, DynamicAttribute::Kind kind, GLintptr offset, GLsizei stride, GLuint divisor);
         void MAGNUM_LOCAL attributePointerInternal(AttributeLayout& attribute);
         void MAGNUM_LOCAL attributePointerImplementationDefault(AttributeLayout& attribute);
         void MAGNUM_LOCAL attributePointerImplementationVAO(AttributeLayout& attribute);
