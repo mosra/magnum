@@ -74,6 +74,27 @@ Debug& operator<<(Debug& debug, const Context::HrtfStatus value) {
     return debug << "Audio::Context::HrtfStatus(" << Debug::nospace << reinterpret_cast<void*>(ALenum(value)) << Debug::nospace << ")";
 }
 
+namespace {
+
+const char* alcErrorString(const ALenum error) {
+    switch(error) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case value: return #value;
+        _c(ALC_NO_ERROR)
+        _c(ALC_INVALID_DEVICE)
+        _c(ALC_INVALID_CONTEXT)
+        _c(ALC_INVALID_ENUM)
+        _c(ALC_INVALID_VALUE)
+        _c(ALC_OUT_OF_MEMORY)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return "ALC_(invalid)";
+}
+
+}
+
 Context* Context::_current = nullptr;
 
 std::vector<std::string> Context::deviceSpecifierStrings() {
@@ -105,7 +126,7 @@ Context::Context(const Configuration& config) {
     }
 
     if(!tryCreateContext(config)) {
-        Error() << "Audio::Context: cannot create context:" << alcGetError(_device);
+        Error() << "Audio::Context: cannot create context:" << alcErrorString(alcGetError(_device));
         std::exit(1);
     }
 
