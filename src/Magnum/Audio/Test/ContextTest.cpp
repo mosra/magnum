@@ -35,16 +35,32 @@ struct ContextTest: TestSuite::Tester {
     explicit ContextTest();
 
     void debugHrtfStatus();
+    void debugError();
+    void debugContextError();
 };
 
 ContextTest::ContextTest() {
-    addTests({&ContextTest::debugHrtfStatus});
+    addTests({&ContextTest::debugHrtfStatus,
+              &ContextTest::debugError,
+              &ContextTest::debugContextError});
 }
 
 void ContextTest::debugHrtfStatus() {
     std::ostringstream out;
     Debug(&out) << Context::HrtfStatus::Denied << Context::HrtfStatus(0xdead);
     CORRADE_COMPARE(out.str(), "Audio::Context::HrtfStatus::Denied Audio::Context::HrtfStatus(0xdead)\n");
+}
+
+void ContextTest::debugError() {
+    std::ostringstream out;
+    Debug(&out) << Error::None << Error(0xdead);
+    CORRADE_COMPARE(out.str(), "Audio::Error::None Audio::Error(0xdead)\n");
+}
+
+void ContextTest::debugContextError() {
+    std::ostringstream out;
+    Debug(&out) << Context::Error::None << Context::Error(0xdead);
+    CORRADE_COMPARE(out.str(), "Audio::Context::Error::None Audio::Context::Error(0xdead)\n");
 }
 
 }}}

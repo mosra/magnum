@@ -74,6 +74,40 @@ Debug& operator<<(Debug& debug, const Context::HrtfStatus value) {
     return debug << "Audio::Context::HrtfStatus(" << Debug::nospace << reinterpret_cast<void*>(ALenum(value)) << Debug::nospace << ")";
 }
 
+Debug& operator<<(Debug& debug, const Error value) {
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case Error::value: return debug << "Audio::Error::" #value;
+        _c(None)
+        _c(InvalidName)
+        _c(InvalidEnum)
+        _c(InvalidValue)
+        _c(InvalidOperation)
+        _c(OutOfMemory)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "Audio::Error(" << Debug::nospace << reinterpret_cast<void*>(ALenum(value)) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const Context::Error value) {
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case Context::Error::value: return debug << "Audio::Context::Error::" #value;
+        _c(None)
+        _c(InvalidDevice)
+        _c(InvalidContext)
+        _c(InvalidEnum)
+        _c(InvalidValue)
+        _c(OutOfMemory)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "Audio::Context::Error(" << Debug::nospace << reinterpret_cast<void*>(ALenum(value)) << Debug::nospace << ")";
+}
+
 Context* Context::_current = nullptr;
 
 std::vector<std::string> Context::deviceSpecifierStrings() {
@@ -100,12 +134,12 @@ Context::Context(const Configuration& config) {
     /* Open the device */
     const ALCchar* const deviceSpecifier = config.deviceSpecifier().empty() ? alcGetString(nullptr, ALC_DEFAULT_DEVICE_SPECIFIER) : config.deviceSpecifier().data();
     if(!(_device = alcOpenDevice(deviceSpecifier))) {
-        Error() << "Audio::Context: cannot open sound device" << deviceSpecifier;
+        Magnum::Error() << "Audio::Context: cannot open sound device" << deviceSpecifier;
         std::exit(1);
     }
 
     if(!tryCreateContext(config)) {
-        Error() << "Audio::Context: cannot create context:" << alcGetError(_device);
+        Magnum::Error() << "Audio::Context: cannot create context:" << Audio::Context::Error(alcGetError(_device));
         std::exit(1);
     }
 
@@ -194,7 +228,16 @@ bool Context::tryCreateContext(const Configuration& config) {
         attributes[last++] = config.refreshRate();
     }
 
+#ifndef CORRADE_TARGET_EMSCRIPTEN
     _context = alcCreateContext(_device, attributes);
+#else
+    /* Attribute list currently not supported by emscripten */
+    if(last != 0) {
+        Magnum::Error() << "Audio::Context::tryCreateContext(): spcifying attributes is not supported with emscripten.";
+        return false;
+    }
+    _context = alcCreateContext(_device, nullptr);
+#endif
     return !!_context;
 }
 
