@@ -215,7 +215,13 @@ bool Context::tryCreateContext(const Configuration& config) {
         attributes[last++] = config.refreshRate();
     }
 
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
     _context = alcCreateContext(_device, attributes);
+    #else
+    if(last != 0)
+        Warning() << "Audio::Context::tryCreateContext(): specifying attributes is not supported with Emscripten, ignoring";
+    _context = alcCreateContext(_device, nullptr);
+    #endif
     return !!_context;
 }
 
