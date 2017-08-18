@@ -642,12 +642,12 @@ void CubeMapTextureGLTest::imageBuffer() {
     #ifndef MAGNUM_TARGET_GLES
     BufferImage2D image = texture.image(CubeMapCoordinate::PositiveX, 0,
         {PixelStorageData[testCaseInstanceId()].storage, PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
-    const auto imageData = image.buffer().data<UnsignedByte>();
+    const auto imageData = image.buffer().data();
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(2));
-    CORRADE_COMPARE_AS(imageData.suffix(PixelStorageData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).suffix(PixelStorageData[testCaseInstanceId()].offset),
         PixelStorageData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
     #endif
@@ -733,12 +733,13 @@ void CubeMapTextureGLTest::subImageBuffer() {
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
     BufferImage2D image = texture.image(CubeMapCoordinate::PositiveX, 0, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
-    const auto imageData = image.buffer().data<UnsignedByte>();
+    const auto imageData = image.buffer().data();
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(4));
-    CORRADE_COMPARE_AS(imageData, Containers::arrayView(SubDataComplete),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData),
+        Containers::arrayView(SubDataComplete),
         TestSuite::Compare::Container);
     #endif
 }
@@ -790,12 +791,12 @@ void CubeMapTextureGLTest::subImageQueryBuffer() {
     BufferImage3D image = texture.subImage(0, Range3Di::fromSize({1, 1, 0}, {2, 2, 1}),
         {PixelStorageData[testCaseInstanceId()].storage,
         PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
-    const auto imageData = image.buffer().data<UnsignedByte>();
+    const auto imageData = image.buffer().data();
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i(2, 2, 1));
-    CORRADE_COMPARE_AS(imageData.suffix(PixelStorageData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).suffix(PixelStorageData[testCaseInstanceId()].offset),
         PixelStorageData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
 }
@@ -884,12 +885,12 @@ void CubeMapTextureGLTest::compressedImageBuffer() {
     #ifndef MAGNUM_TARGET_GLES
     CompressedBufferImage2D image = texture.compressedImage(CubeMapCoordinate::PositiveX, 0,
         {CompressedPixelStorageData[testCaseInstanceId()].storage}, BufferUsage::StaticRead);
-    const auto imageData = image.buffer().data<UnsignedByte>();
+    const auto imageData = image.buffer().data();
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i{4});
-    CORRADE_COMPARE_AS(imageData.suffix(CompressedPixelStorageData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).suffix(CompressedPixelStorageData[testCaseInstanceId()].offset),
         CompressedPixelStorageData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
     #endif
@@ -1079,12 +1080,13 @@ void CubeMapTextureGLTest::compressedSubImageBuffer() {
     #ifndef MAGNUM_TARGET_GLES
     CompressedBufferImage2D image = texture.compressedImage(CubeMapCoordinate::PositiveX, 0,
         {}, BufferUsage::StaticRead);
-    const auto imageData = image.buffer().data<UnsignedByte>();
+    const auto imageData = image.buffer().data();
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i{12});
-    CORRADE_COMPARE_AS(imageData, Containers::arrayView(CompressedSubDataComplete),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData),
+        Containers::arrayView(CompressedSubDataComplete),
         TestSuite::Compare::Container);
     #endif
 }
@@ -1144,12 +1146,13 @@ void CubeMapTextureGLTest::compressedSubImageQueryBuffer() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CompressedBufferImage3D image = texture.compressedSubImage(0, Range3Di::fromSize({4, 4, 0}, {4, 4, 1}), {CompressedPixelStorageData[testCaseInstanceId()].storage}, BufferUsage::StaticRead);
-    const auto imageData = image.buffer().data<UnsignedByte>();
+    const auto imageData = image.buffer().data();
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), (Vector3i{4, 4, 1}));
-    CORRADE_COMPARE_AS(imageData.suffix(CompressedPixelStorageData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(
+        Containers::arrayCast<UnsignedByte>(imageData).suffix(CompressedPixelStorageData[testCaseInstanceId()].offset),
         CompressedPixelStorageData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
 }
@@ -1203,8 +1206,8 @@ void CubeMapTextureGLTest::fullImageQueryBuffer() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i(2, 2, 6));
-    const auto imageData = image.buffer().data<UnsignedByte>();
-    CORRADE_COMPARE_AS(imageData.suffix(FullPixelStorageData[testCaseInstanceId()].offset),
+    const auto imageData = image.buffer().data();
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).suffix(FullPixelStorageData[testCaseInstanceId()].offset),
         FullPixelStorageData[testCaseInstanceId()].data, TestSuite::Compare::Container);
 }
 
@@ -1260,8 +1263,8 @@ void CubeMapTextureGLTest::compressedFullImageQueryBuffer() {
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), (Vector3i{4, 4, 6}));
-    const auto imageData = image.buffer().data<UnsignedByte>();
-    CORRADE_COMPARE_AS(imageData.suffix(CompressedFullPixelStorageData[testCaseInstanceId()].offset),
+    const auto imageData = image.buffer().data();
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).suffix(CompressedFullPixelStorageData[testCaseInstanceId()].offset),
         CompressedFullPixelStorageData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
 }

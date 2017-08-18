@@ -25,6 +25,8 @@
 
 #include "AbstractShapeRenderer.h"
 
+#include <Corrade/Containers/Array.h>
+
 #include "Magnum/AbstractShaderProgram.h"
 #include "Magnum/Buffer.h"
 #include "Magnum/Mesh.h"

@@ -233,9 +233,10 @@ void BufferGLTest::data() {
 
     /** @todo How to verify the contents in ES? */
     #ifndef MAGNUM_TARGET_GLES
-    const Containers::Array<Int> contents = buffer.data<Int>();
+    auto contents = buffer.data();
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE_AS(contents, Containers::arrayView(data),
+    CORRADE_COMPARE_AS(Containers::arrayCast<Int>(contents),
+        Containers::arrayView(data),
         TestSuite::Compare::Container);
     #endif
 
@@ -259,9 +260,10 @@ void BufferGLTest::data() {
 
     /** @todo How to verify the contents in ES? */
     #ifndef MAGNUM_TARGET_GLES
-    const Containers::Array<Int> subContents = buffer.subData<Int>(4, 3);
+    auto subContents = buffer.subData(4, 3*4);
     MAGNUM_VERIFY_NO_ERROR();
-    CORRADE_COMPARE_AS(subContents, Containers::arrayView(subData),
+    CORRADE_COMPARE_AS(Containers::arrayCast<Int>(subContents),
+        Containers::arrayView(subData),
         TestSuite::Compare::Container);
     #endif
 }
@@ -276,11 +278,13 @@ void BufferGLTest::map() {
     constexpr char data[] = {2, 7, 5, 13, 25};
     buffer.setData(data, BufferUsage::StaticDraw);
 
-    #ifndef MAGNUM_TARGET_GLES
-    char* contents = buffer.map<char>(Buffer::MapAccess::ReadWrite);
-    #else
-    char* contents = buffer.map<char>(Buffer::MapAccess::WriteOnly);
-    #endif
+    char* contents = buffer.map(
+        #ifndef MAGNUM_TARGET_GLES
+        Buffer::MapAccess::ReadWrite
+        #else
+        Buffer::MapAccess::WriteOnly
+        #endif
+        );
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_VERIFY(contents);
@@ -294,7 +298,7 @@ void BufferGLTest::map() {
 
     /** @todo How to verify the contents in ES? */
     #ifndef MAGNUM_TARGET_GLES
-    Containers::Array<char> changedContents = buffer.data<char>();
+    Containers::Array<char> changedContents = buffer.data();
     CORRADE_COMPARE(changedContents.size(), 5);
     CORRADE_COMPARE(changedContents[3], 107);
     #endif
@@ -336,10 +340,11 @@ void BufferGLTest::mapRange() {
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
-    char* contents = buffer.map<char>(1, 4, Buffer::MapFlag::Read|Buffer::MapFlag::Write);
+    Containers::ArrayView<char> contents = buffer.map(1, 4, Buffer::MapFlag::Read|Buffer::MapFlag::Write);
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_VERIFY(contents);
+    CORRADE_COMPARE(contents.size(), 4);
     CORRADE_COMPARE(contents[2], 13);
     contents[3] = 107;
 
@@ -348,7 +353,7 @@ void BufferGLTest::mapRange() {
 
     /** @todo How to verify the contents in ES? */
     #ifndef MAGNUM_TARGET_GLES
-    Containers::Array<char> changedContents = buffer.data<char>();
+    Containers::Array<char> changedContents = buffer.data();
     CORRADE_COMPARE(changedContents.size(), 5);
     CORRADE_COMPARE(changedContents[4], 107);
     #endif
@@ -368,7 +373,7 @@ void BufferGLTest::mapRangeExplicitFlush() {
     buffer.setData(data, BufferUsage::StaticDraw);
 
     /* Map, set byte, don't flush and unmap */
-    char* contents = buffer.map<char>(1, 4, Buffer::MapFlag::Write|Buffer::MapFlag::FlushExplicit);
+    Containers::ArrayView<char> contents = buffer.map(1, 4, Buffer::MapFlag::Write|Buffer::MapFlag::FlushExplicit);
     CORRADE_VERIFY(contents);
     contents[2] = 99;
     CORRADE_VERIFY(buffer.unmap());
@@ -377,7 +382,7 @@ void BufferGLTest::mapRangeExplicitFlush() {
     /* Unflushed range _might_ not be changed, thus nothing to test */
 
     /* Map, set byte, flush and unmap */
-    contents = buffer.map<char>(1, 4, Buffer::MapFlag::Write|Buffer::MapFlag::FlushExplicit);
+    contents = buffer.map(1, 4, Buffer::MapFlag::Write|Buffer::MapFlag::FlushExplicit);
     CORRADE_VERIFY(contents);
     contents[3] = 107;
     buffer.flushMappedRange(3, 1);
@@ -388,7 +393,7 @@ void BufferGLTest::mapRangeExplicitFlush() {
     /* Flushed range should be changed */
     /** @todo How to verify the contents in ES? */
     #ifndef MAGNUM_TARGET_GLES
-    Containers::Array<char> changedContents = buffer.data<char>();
+    Containers::Array<char> changedContents = buffer.data();
     CORRADE_COMPARE(changedContents.size(), 5);
     CORRADE_COMPARE(changedContents[4], 107);
     #endif
@@ -408,7 +413,7 @@ void BufferGLTest::copy() {
 
     /** @todo How to verify the contents in ES? */
     #ifndef MAGNUM_TARGET_GLES
-    const Containers::Array<char> subContents = buffer2.subData<char>(2, 3);
+    const Containers::Array<char> subContents = buffer2.subData(2, 3);
     CORRADE_COMPARE_AS(subContents, Containers::arrayView(data).slice(1, 4),
         TestSuite::Compare::Container);
     #endif

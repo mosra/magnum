@@ -41,6 +41,10 @@
 #include "Magnum/Text/Alignment.h"
 #include "Magnum/Text/visibility.h"
 
+#ifdef CORRADE_TARGET_EMSCRIPTEN
+#include <Corrade/Containers/Array.h>
+#endif
+
 namespace Magnum { namespace Text {
 
 /**

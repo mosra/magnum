@@ -848,12 +848,12 @@ void TextureArrayGLTest::image1DBuffer() {
     BufferImage2D image = texture.image(0,
         {PixelStorage1DData[testCaseInstanceId()].storage,
         PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
-    const auto imageData = image.buffer().data<UnsignedByte>();
+    auto imageData = image.buffer().data();
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(2));
-    CORRADE_COMPARE_AS(imageData.suffix(PixelStorage1DData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).suffix(PixelStorage1DData[testCaseInstanceId()].offset),
         PixelStorage1DData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
 }
@@ -911,12 +911,13 @@ void TextureArrayGLTest::subImage1DBuffer() {
     MAGNUM_VERIFY_NO_ERROR();
 
     BufferImage2D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
-    const auto imageData = image.buffer().data<UnsignedByte>();
+    auto imageData = image.buffer().data();
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(4));
-    CORRADE_COMPARE_AS(imageData, Containers::arrayView(SubData1DComplete),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData),
+        Containers::arrayView(SubData1DComplete),
         TestSuite::Compare::Container);
 }
 
@@ -963,12 +964,12 @@ void TextureArrayGLTest::subImage1DQueryBuffer() {
     BufferImage2D image = texture.subImage(0, Range2Di::fromSize(Vector2i{1}, Vector2i{2}),
         {PixelStorage1DData[testCaseInstanceId()].storage,
         PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
-    const auto imageData = image.buffer().data<UnsignedByte>();
+    auto imageData = image.buffer().data();
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i{2});
-    CORRADE_COMPARE_AS(imageData.suffix(PixelStorage1DData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).suffix(PixelStorage1DData[testCaseInstanceId()].offset),
         PixelStorage1DData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
 }
@@ -1049,12 +1050,12 @@ void TextureArrayGLTest::image2DBuffer() {
     #ifndef MAGNUM_TARGET_GLES
     BufferImage3D image = texture.image(0, {PixelStorage2DData[testCaseInstanceId()].storage,
         PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
-    const auto imageData = image.buffer().data<UnsignedByte>();
+    auto imageData = image.buffer().data();
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i(2));
-    CORRADE_COMPARE_AS(imageData.suffix(PixelStorage2DData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).suffix(PixelStorage2DData[testCaseInstanceId()].offset),
         PixelStorage2DData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
     #endif
@@ -1139,12 +1140,13 @@ void TextureArrayGLTest::subImage2DBuffer() {
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
     BufferImage3D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
-    const auto imageData = image.buffer().data<UnsignedByte>();
+    const auto imageData = image.buffer().data();
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i(4));
-    CORRADE_COMPARE_AS(imageData, Containers::arrayView(SubData2DComplete),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData),
+        Containers::arrayView(SubData2DComplete),
         TestSuite::Compare::Container);
     #endif
 }
@@ -1193,12 +1195,12 @@ void TextureArrayGLTest::subImage2DQueryBuffer() {
     BufferImage3D image = texture.subImage(0, Range3Di::fromSize(Vector3i{1}, Vector3i{2}),
         {PixelStorage2DData[testCaseInstanceId()].storage,
         PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
-    const auto imageData = image.buffer().data<UnsignedByte>();
+    const auto imageData = image.buffer().data();
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i{2});
-    CORRADE_COMPARE_AS(imageData.suffix(PixelStorage2DData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).suffix(PixelStorage2DData[testCaseInstanceId()].offset),
         PixelStorage2DData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
 }
@@ -1279,12 +1281,12 @@ void TextureArrayGLTest::compressedImage2DBuffer() {
 
     #ifndef MAGNUM_TARGET_GLES
     CompressedBufferImage3D image = texture.compressedImage(0, {CompressedPixelStorage2DData[testCaseInstanceId()].storage}, BufferUsage::StaticRead);
-    const auto imageData = image.buffer().data<UnsignedByte>();
+    const auto imageData = image.buffer().data();
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), (Vector3i{4, 4, 2}));
-    CORRADE_COMPARE_AS(imageData.suffix(CompressedPixelStorage2DData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).suffix(CompressedPixelStorage2DData[testCaseInstanceId()].offset),
         CompressedPixelStorage2DData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
     #endif
@@ -1411,12 +1413,12 @@ void TextureArrayGLTest::compressedSubImage2DBuffer() {
 
     #ifndef MAGNUM_TARGET_GLES
     CompressedBufferImage3D image = texture.compressedImage(0, {}, BufferUsage::StaticRead);
-    const auto imageData = image.buffer().data<UnsignedByte>();
+    const auto imageData = image.buffer().data();
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), (Vector3i{12, 4, 4}));
-    CORRADE_COMPARE_AS(imageData,
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData),
         Containers::arrayView(CompressedSubData2DComplete),
         TestSuite::Compare::Container);
     #endif
@@ -1480,12 +1482,12 @@ void TextureArrayGLTest::compressedSubImage2DQueryBuffer() {
         CompressedPixelStorage2DData[testCaseInstanceId()].storage
         #endif
     }, BufferUsage::StaticRead);
-    const auto imageData = image.buffer().data<UnsignedByte>();
+    const auto imageData = image.buffer().data();
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), (Vector3i{4, 4, 2}));
-    CORRADE_COMPARE_AS(imageData.suffix(CompressedPixelStorage2DData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).suffix(CompressedPixelStorage2DData[testCaseInstanceId()].offset),
         CompressedPixelStorage2DData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
 }

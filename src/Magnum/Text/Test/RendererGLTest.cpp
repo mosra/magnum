@@ -23,6 +23,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/Array.h>
+#include <Corrade/TestSuite/Compare/Container.h>
+
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
 #include "Magnum/OpenGLTester.h"
@@ -190,32 +193,32 @@ void RendererGLTest::renderMesh() {
     /** @todo How to verify this on ES? */
     #ifndef MAGNUM_TARGET_GLES
     /* Vertex buffer contents */
-    const Containers::Array<Float> vertices = vertexBuffer.data<Float>();
-    CORRADE_COMPARE(vertices.size(), 3*4*(2 + 2));
-    CORRADE_COMPARE(std::vector<Float>(vertices.begin(), vertices.end()), (std::vector<Float>{
-        0.0f + offset.x(),  0.5f + offset.y(), 0.0f, 10.0f,
-        0.0f + offset.x(),  0.0f + offset.y(), 0.0f,  0.0f,
-        0.75f + offset.x(), 0.5f + offset.y(), 6.0f, 10.0f,
-        0.75f + offset.x(), 0.0f + offset.y(), 6.0f,  0.0f,
+    Containers::Array<char> vertices = vertexBuffer.data();
+    CORRADE_COMPARE_AS(Containers::arrayCast<const Float>(vertices),
+        (Containers::Array<Float>{Containers::InPlaceInit, {
+            0.0f + offset.x(),  0.5f + offset.y(), 0.0f, 10.0f,
+            0.0f + offset.x(),  0.0f + offset.y(), 0.0f,  0.0f,
+            0.75f + offset.x(), 0.5f + offset.y(), 6.0f, 10.0f,
+            0.75f + offset.x(), 0.0f + offset.y(), 6.0f,  0.0f,
 
-        1.0f + offset.x(),  0.75f + offset.y(),  6.0f, 10.0f,
-        1.0f + offset.x(), -0.25f + offset.y(),  6.0f,  0.0f,
-        2.5f + offset.x(),  0.75f + offset.y(), 12.0f, 10.0f,
-        2.5f + offset.x(), -0.25f + offset.y(), 12.0f,  0.0f,
+            1.0f + offset.x(),  0.75f + offset.y(),  6.0f, 10.0f,
+            1.0f + offset.x(), -0.25f + offset.y(),  6.0f,  0.0f,
+            2.5f + offset.x(),  0.75f + offset.y(), 12.0f, 10.0f,
+            2.5f + offset.x(), -0.25f + offset.y(), 12.0f,  0.0f,
 
-        2.75f + offset.x(),  1.0f + offset.y(), 12.0f, 10.0f,
-        2.75f + offset.x(), -0.5f + offset.y(), 12.0f,  0.0f,
-        5.0f + offset.x(),   1.0f + offset.y(), 18.0f, 10.0f,
-        5.0f + offset.x(),  -0.5f + offset.y(), 18.0f,  0.0f
-    }));
+            2.75f + offset.x(),  1.0f + offset.y(), 12.0f, 10.0f,
+            2.75f + offset.x(), -0.5f + offset.y(), 12.0f,  0.0f,
+            5.0f + offset.x(),   1.0f + offset.y(), 18.0f, 10.0f,
+            5.0f + offset.x(),  -0.5f + offset.y(), 18.0f,  0.0f
+        }}), TestSuite::Compare::Container);
 
-    const Containers::Array<UnsignedByte> indices = indexBuffer.data<UnsignedByte>();
-    CORRADE_COMPARE(indices.size(), 3*6);
-    CORRADE_COMPARE(std::vector<UnsignedByte>(indices.begin(), indices.end()), (std::vector<UnsignedByte>{
-        0,  1,  2,  1,  3,  2,
-        4,  5,  6,  5,  7,  6,
-        8,  9, 10,  9, 11, 10
-    }));
+    Containers::Array<char> indices = indexBuffer.data();
+    CORRADE_COMPARE_AS(Containers::arrayCast<const UnsignedByte>(indices),
+        (Containers::Array<UnsignedByte>{Containers::InPlaceInit, {
+            0,  1,  2,  1,  3,  2,
+            4,  5,  6,  5,  7,  6,
+            8,  9, 10,  9, 11, 10
+        }}), TestSuite::Compare::Container);
     #endif
 }
 
@@ -232,27 +235,29 @@ void RendererGLTest::renderMeshIndexType() {
     std::tie(mesh, std::ignore) = Text::Renderer3D::render(font, nullGlyphCache,
         1.0f, std::string(64, 'a'), vertexBuffer, indexBuffer, BufferUsage::StaticDraw);
     MAGNUM_VERIFY_NO_ERROR();
-    Containers::Array<UnsignedByte> indicesByte = indexBuffer.data<UnsignedByte>();
+    Containers::Array<char> indicesByte = indexBuffer.data();
     CORRADE_COMPARE(vertexBuffer.size(), 256*(2 + 2)*4);
     CORRADE_COMPARE(indicesByte.size(), 64*6);
-    CORRADE_COMPARE(std::vector<UnsignedByte>(indicesByte.begin(), indicesByte.begin()+18), (std::vector<UnsignedByte>{
-        0,  1,  2,  1,  3,  2,
-        4,  5,  6,  5,  7,  6,
-        8,  9, 10,  9, 11, 10
-    }));
+    CORRADE_COMPARE_AS(Containers::arrayCast<const UnsignedByte>(indicesByte).prefix(18),
+        (Containers::Array<UnsignedByte>{Containers::InPlaceInit, {
+            0,  1,  2,  1,  3,  2,
+            4,  5,  6,  5,  7,  6,
+            8,  9, 10,  9, 11, 10
+        }}), TestSuite::Compare::Container);
 
     /* 16-bit indices (260 vertices) */
     std::tie(mesh, std::ignore) = Text::Renderer3D::render(font, nullGlyphCache,
         1.0f, std::string(65, 'a'), vertexBuffer, indexBuffer, BufferUsage::StaticDraw);
     MAGNUM_VERIFY_NO_ERROR();
-    Containers::Array<UnsignedShort> indicesShort = indexBuffer.data<UnsignedShort>();
+    Containers::Array<char> indicesShort = indexBuffer.data();
     CORRADE_COMPARE(vertexBuffer.size(), 260*(2 + 2)*4);
-    CORRADE_COMPARE(indicesShort.size(), 65*6);
-    CORRADE_COMPARE(std::vector<UnsignedShort>(indicesShort.begin(), indicesShort.begin()+18), (std::vector<UnsignedShort>{
-        0,  1,  2,  1,  3,  2,
-        4,  5,  6,  5,  7,  6,
-        8,  9, 10,  9, 11, 10
-    }));
+    CORRADE_COMPARE(indicesShort.size(), 65*6*2);
+    CORRADE_COMPARE_AS(Containers::arrayCast<const UnsignedShort>(indicesShort).prefix(18),
+        (Containers::Array<UnsignedShort>{Containers::InPlaceInit, {
+            0,  1,  2,  1,  3,  2,
+            4,  5,  6,  5,  7,  6,
+            8,  9, 10,  9, 11, 10
+        }}), TestSuite::Compare::Container);
     #else
     CORRADE_SKIP("Can't verify buffer contents on OpenGL ES.");
     #endif
@@ -285,13 +290,14 @@ void RendererGLTest::mutableText() {
     CORRADE_COMPARE(renderer.capacity(), 4);
     /** @todo How to verify this on ES? */
     #ifndef MAGNUM_TARGET_GLES
-    Containers::Array<UnsignedByte> indices = renderer.indexBuffer().data<UnsignedByte>();
-    CORRADE_COMPARE(std::vector<UnsignedByte>(indices.begin(), indices.end()), (std::vector<UnsignedByte>{
-         0,  1,  2,  1,  3,  2,
-         4,  5,  6,  5,  7,  6,
-         8,  9, 10,  9, 11, 10,
-        12, 13, 14, 13, 15, 14
-    }));
+    Containers::Array<char> indices = renderer.indexBuffer().data();
+    CORRADE_COMPARE_AS(Containers::arrayCast<const UnsignedByte>(indices).prefix(24),
+        (Containers::Array<UnsignedByte>{Containers::InPlaceInit, {
+             0,  1,  2,  1,  3,  2,
+             4,  5,  6,  5,  7,  6,
+             8,  9, 10,  9, 11, 10,
+            12, 13, 14, 13, 15, 14
+        }}), TestSuite::Compare::Container);
     #endif
 
     /* Render text */
@@ -305,23 +311,24 @@ void RendererGLTest::mutableText() {
 
     /** @todo How to verify this on ES? */
     #ifndef MAGNUM_TARGET_GLES
-    Containers::Array<Float> vertices = renderer.vertexBuffer().subData<Float>(0, 48);
-    CORRADE_COMPARE(std::vector<Float>(vertices.begin(), vertices.end()), (std::vector<Float>{
-        0.0f,  0.5f, 0.0f, 10.0f,
-        0.0f,  0.0f, 0.0f,  0.0f,
-        0.75f, 0.5f, 6.0f, 10.0f,
-        0.75f, 0.0f, 6.0f,  0.0f,
+    Containers::Array<char> vertices = renderer.vertexBuffer().data();
+    CORRADE_COMPARE_AS(Containers::arrayCast<const Float>(vertices).prefix(48),
+        (Containers::Array<Float>{Containers::InPlaceInit, {
+            0.0f,  0.5f, 0.0f, 10.0f,
+            0.0f,  0.0f, 0.0f,  0.0f,
+            0.75f, 0.5f, 6.0f, 10.0f,
+            0.75f, 0.0f, 6.0f,  0.0f,
 
-        1.0f,  0.75f,  6.0f, 10.0f,
-        1.0f, -0.25f,  6.0f,  0.0f,
-        2.5f,  0.75f, 12.0f, 10.0f,
-        2.5f, -0.25f, 12.0f,  0.0f,
+            1.0f,  0.75f,  6.0f, 10.0f,
+            1.0f, -0.25f,  6.0f,  0.0f,
+            2.5f,  0.75f, 12.0f, 10.0f,
+            2.5f, -0.25f, 12.0f,  0.0f,
 
-        2.75f,  1.0f, 12.0f, 10.0f,
-        2.75f, -0.5f, 12.0f,  0.0f,
-        5.0f,   1.0f, 18.0f, 10.0f,
-        5.0f,  -0.5f, 18.0f,  0.0f
-    }));
+            2.75f,  1.0f, 12.0f, 10.0f,
+            2.75f, -0.5f, 12.0f,  0.0f,
+            5.0f,   1.0f, 18.0f, 10.0f,
+            5.0f,  -0.5f, 18.0f,  0.0f
+        }}), TestSuite::Compare::Container);
     #endif
 }
 

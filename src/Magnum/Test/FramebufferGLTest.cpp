@@ -1209,9 +1209,9 @@ void FramebufferGLTest::readBuffer() {
     MAGNUM_VERIFY_NO_ERROR();
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
-    const auto colorData = colorImage.buffer().data<Color4ub>();
-    CORRADE_COMPARE(colorData.size(), DataOffset + 8*16);
-    CORRADE_COMPARE(colorData[DataOffset], Color4ub(128, 64, 32, 17));
+    auto colorData = colorImage.buffer().data();
+    CORRADE_COMPARE(colorData.size(), (DataOffset + 8*16)*sizeof(Color4ub));
+    CORRADE_COMPARE(Containers::arrayCast<Color4ub>(colorData)[DataOffset], Color4ub(128, 64, 32, 17));
     #endif
 }
 #endif

@@ -339,12 +339,12 @@ void RectangleTextureGLTest::imageBuffer() {
 
     BufferImage2D image = texture.image({PixelStorageData[testCaseInstanceId()].storage,
         PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
-    const auto imageData = image.buffer().data<UnsignedByte>();
+    const auto imageData = image.buffer().data();
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(2));
-    CORRADE_COMPARE_AS(imageData.suffix(PixelStorageData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).suffix(PixelStorageData[testCaseInstanceId()].offset),
         PixelStorageData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
 }
@@ -402,12 +402,13 @@ void RectangleTextureGLTest::subImageBuffer() {
     MAGNUM_VERIFY_NO_ERROR();
 
     BufferImage2D image = texture.image({PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
-    const auto imageData = image.buffer().data<UnsignedByte>();
+    const auto imageData = image.buffer().data();
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(4));
-    CORRADE_COMPARE_AS(imageData, Containers::arrayView(SubDataComplete),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData),
+        Containers::arrayView(SubDataComplete),
         TestSuite::Compare::Container);
 }
 
@@ -454,12 +455,12 @@ void RectangleTextureGLTest::subImageQueryBuffer() {
     BufferImage2D image = texture.subImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}),
         {PixelStorageData[testCaseInstanceId()].storage,
         PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
-    const auto imageData = image.buffer().data<UnsignedByte>();
+    const auto imageData = image.buffer().data();
 
     MAGNUM_VERIFY_NO_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i{2});
-    CORRADE_COMPARE_AS(imageData.suffix(PixelStorageData[testCaseInstanceId()].offset),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).suffix(PixelStorageData[testCaseInstanceId()].offset),
         PixelStorageData[testCaseInstanceId()].data,
         TestSuite::Compare::Container);
 }

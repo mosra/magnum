@@ -29,8 +29,8 @@
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
 void bufferSubData(Buffer& buffer, GLintptr offset, GLsizeiptr size, void* output) {
-    const char* data = buffer.map<const char>(offset, size, Buffer::MapFlag::Read);
-    std::copy(data, data + size, reinterpret_cast<char*>(output));
+    Containers::ArrayView<const char> data = buffer.mapRead(offset, size);
+    std::copy(data.begin(), data.end(), reinterpret_cast<char*>(output));
     buffer.unmap();
 }
 

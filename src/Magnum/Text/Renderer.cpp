@@ -25,6 +25,8 @@
 
 #include "Renderer.h"
 
+#include <Corrade/Containers/Array.h>
+
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
 #include "Magnum/Mesh.h"

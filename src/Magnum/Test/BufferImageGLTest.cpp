@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/Array.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 
 #include "Magnum/BufferImage.h"
@@ -287,7 +288,7 @@ void BufferImageGLTest::setData() {
     a.setData(PixelFormat::RGBA, PixelType::UnsignedShort, {1, 2}, data2, BufferUsage::StaticDraw);
 
     #ifndef MAGNUM_TARGET_GLES
-    const auto imageData = a.buffer().data<UnsignedShort>();
+    const auto imageData = a.buffer().data();
     #endif
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -299,7 +300,8 @@ void BufferImageGLTest::setData() {
 
     /** @todo How to verify the contents in ES? */
     #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE_AS(imageData, Containers::arrayView(data2),
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedShort>(imageData),
+        Containers::arrayView(data2),
         TestSuite::Compare::Container);
     #endif
 }

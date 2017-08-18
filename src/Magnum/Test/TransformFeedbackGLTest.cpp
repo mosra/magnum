@@ -282,7 +282,7 @@ void TransformFeedbackGLTest::attachBase() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    Vector2* data = output.map<Vector2>(0, 2*sizeof(Vector2), Buffer::MapFlag::Read);
+    auto data = Containers::arrayCast<const Vector2>(output.mapRead(0, 2*sizeof(Vector2)));
     CORRADE_COMPARE(data[0], Vector2(1.0f, -1.0f));
     CORRADE_COMPARE(data[1], Vector2(0.0f, 0.0f));
     output.unmap();
@@ -325,7 +325,7 @@ void TransformFeedbackGLTest::attachRange() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    Vector2* data = output.map<Vector2>(256, 2*sizeof(Vector2), Buffer::MapFlag::Read);
+    auto data = Containers::arrayCast<const Vector2>(output.mapRead(256, 2*sizeof(Vector2)));
     CORRADE_COMPARE(data[0], Vector2(1.0f, -1.0f));
     CORRADE_COMPARE(data[1], Vector2(0.0f, 0.0f));
     output.unmap();
@@ -415,12 +415,12 @@ void TransformFeedbackGLTest::attachBases() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    Vector2* data1 = output1.map<Vector2>(0, 2*sizeof(Vector2), Buffer::MapFlag::Read);
+    auto data1 = Containers::arrayCast<const Vector2>(output1.mapRead(0, 2*sizeof(Vector2)));
     CORRADE_COMPARE(data1[0], Vector2(1.0f, -1.0f));
     CORRADE_COMPARE(data1[1], Vector2(0.0f, 0.0f));
     output1.unmap();
 
-    Float* data2 = output2.map<Float>(0, 2*sizeof(Float), Buffer::MapFlag::Read);
+    auto data2 = Containers::arrayCast<const Float>(output2.mapRead(0, 2*sizeof(Float)));
     CORRADE_COMPARE(data2[0], 0.0f);
     CORRADE_COMPARE(data2[1], -2.0f);
     output2.unmap();
@@ -467,12 +467,12 @@ void TransformFeedbackGLTest::attachRanges() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    Vector2* data1 = output1.map<Vector2>(256, 2*sizeof(Vector2), Buffer::MapFlag::Read);
+    auto data1 = Containers::arrayCast<const Vector2>(output1.mapRead(256, 2*sizeof(Vector2)));
     CORRADE_COMPARE(data1[0], Vector2(1.0f, -1.0f));
     CORRADE_COMPARE(data1[1], Vector2(0.0f, 0.0f));
     output1.unmap();
 
-    Float* data2 = output2.map<Float>(512, 2*sizeof(Float), Buffer::MapFlag::Read);
+    auto data2 = Containers::arrayCast<const Float>(output2.mapRead(512, 2*sizeof(Float)));
     CORRADE_COMPARE(data2[0], 0.0f);
     CORRADE_COMPARE(data2[1], -2.0f);
     output2.unmap();
@@ -542,7 +542,7 @@ void TransformFeedbackGLTest::interleaved() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    Vector2* data = output.map<Vector2>(0, 4*sizeof(Vector2), Buffer::MapFlag::Read);
+    auto data = Containers::arrayCast<const Vector2>(output.mapRead(0, 4*sizeof(Vector2)));
     CORRADE_COMPARE(data[0], Vector2(1.0f, -1.0f));
     CORRADE_COMPARE(data[1].y(), 5.0f);
     CORRADE_COMPARE(data[2], Vector2(0.0f, 0.0f));
