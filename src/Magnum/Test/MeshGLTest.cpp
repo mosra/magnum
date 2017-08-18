@@ -37,6 +37,7 @@
 #include "Magnum/RenderbufferFormat.h"
 #include "Magnum/Shader.h"
 #include "Magnum/Math/Color.h"
+#include "Magnum/Math/Half.h"
 #include "Magnum/Math/Matrix.h"
 #include "Magnum/Math/Vector4.h"
 
@@ -985,17 +986,25 @@ void MeshGLTest::addVertexBufferFloatWithHalfFloat() {
         CORRADE_SKIP(Extensions::GL::OES::vertex_half_float::string() + std::string(" is not supported."));
     #endif
 
+    using namespace Math::Literals;
+
     typedef Attribute<0, Float> Attribute;
 
+    const Half data[] = { 0.0_h, -0.7_h, Half(Math::unpack<Float, UnsignedByte>(186)) };
     Buffer buffer;
-    buffer.setData({nullptr, 6}, BufferUsage::StaticDraw);
+    buffer.setData(data, BufferUsage::StaticDraw);
 
     Mesh mesh;
     mesh.setBaseVertex(1)
         .addVertexBuffer(buffer, 2, Attribute(Attribute::DataType::HalfFloat));
 
     MAGNUM_VERIFY_NO_ERROR();
-    /* Won't test the actual values */
+
+    const auto value = Checker(FloatShader("float", "vec4(valueInterpolated, 0.0, 0.0, 0.0)"),
+        RenderbufferFormat::RGBA8, mesh).get<UnsignedByte>(PixelFormat::RGBA, PixelType::UnsignedShort);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(value, 186);
 }
 
 #ifndef MAGNUM_TARGET_GLES
