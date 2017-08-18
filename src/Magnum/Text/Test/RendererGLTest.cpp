@@ -391,7 +391,7 @@ void RendererGLTest::multiline() {
            [e] [f]
 
          [g] [h] [i]   */
-    CORRADE_COMPARE(positions, (std::vector<Vector2>{
+    CORRADE_COMPARE_AS(positions, (std::vector<Vector2>{
         Vector2{-3.5f,  5.0f}, Vector2{-3.5f,  4.0f}, /* a */
         Vector2{-2.5f,  5.0f}, Vector2{-2.5f,  4.0f},
 
@@ -418,7 +418,7 @@ void RendererGLTest::multiline() {
 
         Vector2{ 1.5f, -4.0f}, Vector2{ 1.5f, -5.0f}, /* i */
         Vector2{ 2.5f, -4.0f}, Vector2{ 2.5f, -5.0f},
-    }));
+    }), TestSuite::Compare::Container);
 
     /* Indices
        0---2 0---2 5
@@ -426,7 +426,7 @@ void RendererGLTest::multiline() {
        |   | | / / |
        |   | |/ /  |
        1---3 1 3---4 */
-    CORRADE_COMPARE(indices, (std::vector<UnsignedInt>{
+    CORRADE_COMPARE_AS(indices, (std::vector<UnsignedInt>{
          0,  1,  2,  1,  3,  2,
          4,  5,  6,  5,  7,  6,
          8,  9, 10,  9, 11, 10,
@@ -436,7 +436,7 @@ void RendererGLTest::multiline() {
         24, 25, 26, 25, 27, 26,
         28, 29, 30, 29, 31, 30,
         32, 33, 34, 33, 35, 34
-    }));
+    }), TestSuite::Compare::Container);
 }
 
 }}}
