@@ -51,6 +51,29 @@ typedef struct ALCcontext_struct ALCcontext;
 namespace Magnum { namespace Audio {
 
 /**
+ * @brief OpenAL error
+ */
+enum class Error: ALenum {
+    /** No error */
+    None = AL_NO_ERROR,
+
+    /** Invalid name parameter passed to AL call. */
+    InvalidName = AL_INVALID_NAME,
+
+    /** Invalid enum parameter passed to AL call. */
+    InvalidEnum = AL_INVALID_ENUM,
+
+    /** Invalid value parameter passed to AL call. */
+    InvalidValue = AL_INVALID_VALUE,
+
+    /** Illegal AL call. */
+    InvalidOperation = AL_INVALID_OPERATION,
+
+    /** Out of memory. */
+    OutOfMemory = AL_OUT_OF_MEMORY
+};
+
+/**
 @brief Run-time information about OpenAL extension
 
 Encapsulates runtime information about OpenAL extension, such as name string,
@@ -124,6 +147,29 @@ class MAGNUM_AUDIO_EXPORT Context {
              * @requires_al_extension Extension @alc_extension{SOFT,HRTF}
              */
             UnsupportedFormat = ALC_HRTF_UNSUPPORTED_FORMAT_SOFT
+        };
+
+        /**
+         * @brief OpenAL context error
+         */
+        enum class Error: ALenum {
+            /** No error. */
+            None = ALC_NO_ERROR,
+
+            /** Invalid device handle. */
+            InvalidDevice = ALC_INVALID_DEVICE,
+
+            /** Invalid context handle. */
+            InvalidContext = ALC_INVALID_CONTEXT,
+
+            /** Invalid enum parameter passed to an ALC call. */
+            InvalidEnum = ALC_INVALID_ENUM,
+
+            /** Invalid value parameter passed to an ALC call. */
+            InvalidValue = ALC_INVALID_VALUE,
+
+            /** Out of memory. */
+            OutOfMemory = ALC_OUT_OF_MEMORY
         };
 
         /**
@@ -466,6 +512,12 @@ MAGNUM_ASSERT_AUDIO_EXTENSION_SUPPORTED(Extensions::ALC::SOFTX::HRTF);
 
 /** @debugoperatorclassenum{Magnum::Audio::Context,Magnum::Audio::Context::HrtfStatus} */
 MAGNUM_AUDIO_EXPORT Debug& operator<<(Debug& debug, Context::HrtfStatus value);
+
+/** @debugoperatorclassenum{Magnum::Audio::Context,Magnum::Audio::Error} */
+MAGNUM_AUDIO_EXPORT Debug& operator<<(Debug& debug, Error value);
+
+/** @debugoperatorclassenum{Magnum::Audio::Context,Magnum::Audio::Context::Error} */
+MAGNUM_AUDIO_EXPORT Debug& operator<<(Debug& debug, Context::Error value);
 
 inline bool Context::isHrtfEnabled() const {
     Int enabled;
