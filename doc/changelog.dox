@@ -117,6 +117,8 @@ namespace Magnum {
 -   Added @ref BufferImage::release() "{Compressed,}BufferImage::release()" and
     an ability to create @ref BufferImage "{Compressed,}BufferImage" from an
     existing @ref Buffer
+-   New @ref Buffer::mapRead() convenience alternatives to @ref Buffer::map()
+    that return `const` pointer and implicitly map as read-only
 -   Implemented @ref Renderer::setMemoryBarrier() and
     @ref Renderer::setMemoryBarrierByRegion()
 -   Added @ref isVersionES() utility

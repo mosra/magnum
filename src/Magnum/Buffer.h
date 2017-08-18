@@ -209,20 +209,20 @@ vertex and index buffers in both WebGL and NaCl.
 
 The engine tracks currently bound buffers to avoid unnecessary calls to
 @fn_gl{BindBuffer}. If the buffer is already bound to some target, functions
-@ref copy(), @ref setData(), @ref setSubData(), @ref map(), @ref flushMappedRange()
-and @ref unmap() use that target instead of binding the buffer to some specific
-target. You can also use @ref setTargetHint() to possibly reduce unnecessary
-rebinding. Buffer limits and implementation-defined values (such as
-@ref maxUniformBindings()) are cached, so repeated queries don't result in
-repeated @fn_gl{Get} calls. See also @ref Context::resetState() and
-@ref Context::State::Buffers.
+@ref copy(), @ref setData(), @ref setSubData(), @ref map(), @ref mapRead(),
+@ref flushMappedRange() and @ref unmap() use that target instead of binding the
+buffer to some specific target. You can also use @ref setTargetHint() to
+possibly reduce unnecessary rebinding. Buffer limits and implementation-defined
+values (such as @ref maxUniformBindings()) are cached, so repeated queries
+don't result in repeated @fn_gl{Get} calls. See also @ref Context::resetState()
+and @ref Context::State::Buffers.
 
 If either @extension{ARB,direct_state_access} (part of OpenGL 4.5) or
 @extension{EXT,direct_state_access} desktop extension is available, functions
 @ref copy(), @ref size(), @ref data(), @ref subData(), @ref setData(),
-@ref setSubData(), @ref map(), @ref flushMappedRange() and @ref unmap() use DSA
-functions to avoid unnecessary calls to @fn_gl{BindBuffer}. See their
-respective documentation for more information.
+@ref setSubData(), @ref map(), @ref mapRead(), @ref flushMappedRange() and
+@ref unmap() use DSA functions to avoid unnecessary calls to @fn_gl{BindBuffer}.
+See their respective documentation for more information.
 
 You can use functions @ref invalidateData() and @ref invalidateSubData() if you
 don't need buffer data anymore to avoid unnecessary memory operations performed
@@ -619,7 +619,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,map_buffer_alignment}
          * (part of OpenGL 4.2) is not available, returns `1`.
-         * @see @ref map(), @fn_gl{Get} with @def_gl{MIN_MAP_BUFFER_ALIGNMENT}
+         * @see @ref map(), @ref mapRead(), @fn_gl{Get} with
+         *      @def_gl{MIN_MAP_BUFFER_ALIGNMENT}
          * @requires_gl No minimal value is specified for OpenGL ES. Buffer
          *      mapping is not available in WebGL.
          */
@@ -1073,8 +1074,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      @fn_gl_extension{GetNamedBufferSubData,EXT,direct_state_access},
          *      eventually @fn_gl{GetBufferSubData}
          * @requires_gl Buffer data queries are not available in OpenGL ES and
-         *      WebGL. Use @ref map() or @ref DebugTools::bufferData() in
-         *      OpenGL ES instead.
+         *      WebGL. Use @ref map(), @ref mapRead() or @ref DebugTools::bufferData()
+         *      in OpenGL ES instead.
          */
         Containers::Array<char> data();
 
@@ -1101,8 +1102,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      @fn_gl_extension{GetNamedBufferSubData,EXT,direct_state_access},
          *      eventually @fn_gl{BindBuffer} and @fn_gl{GetBufferSubData}
          * @requires_gl Buffer data queries are not available in OpenGL ES and
-         *      WebGL. Use @ref map() or @ref DebugTools::bufferData() in
-         *      OpenGL ES instead.
+         *      WebGL. Use @ref map(), @ref mapRead() or @ref DebugTools::bufferData()
+         *      in OpenGL ES instead.
          */
         Containers::Array<char> subData(GLintptr offset, GLsizeiptr size);
 
@@ -1203,8 +1204,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * nor @extension{EXT,direct_state_access} desktop extension is
          * available, the buffer is bound to hinted target before the operation
          * (if not already).
-         * @see @ref minMapAlignment(), @ref unmap(), @ref setTargetHint(),
-         *      @fn_gl2{MapNamedBuffer,MapBuffer},
+         * @see @ref mapRead(), @ref minMapAlignment(), @ref unmap(),
+         *      @ref setTargetHint(), @fn_gl2{MapNamedBuffer,MapBuffer},
          *      @fn_gl_extension{MapNamedBuffer,EXT,direct_state_access},
          *      eventually @fn_gl{BindBuffer} and @fn_gl{MapBuffer}
          * @requires_es_extension Extension @extension{OES,mapbuffer} in
@@ -1215,6 +1216,17 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      instead, as it has more complete set of features.
          */
         char* map(MapAccess access);
+
+        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Map buffer read-only to client memory
+         *
+         * Equivalent to @ref map() with @ref MapAccess::ReadOnly.
+         * @requires_gl @ref MapAccess::ReadOnly is not available in OpenGL ES;
+         *      buffer mapping is not available in WebGL.
+         */
+        const char* mapRead() { return map(MapAccess::ReadOnly); }
+        #endif
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /** @overload
@@ -1265,8 +1277,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * nor @extension{EXT,direct_state_access} desktop extension is
          * available, the buffer is bound to hinted target before the operation
          * (if not already).
-         * @see @ref minMapAlignment(), @ref flushMappedRange(), @ref unmap(),
-         *      @ref map(MapAccess), @ref setTargetHint(),
+         * @see @ref mapRead(), @ref minMapAlignment(), @ref flushMappedRange(),
+         *      @ref unmap(), @ref map(MapAccess), @ref setTargetHint(),
          *      @fn_gl2{MapNamedBufferRange,MapBufferRange},
          *      @fn_gl_extension{MapNamedBufferRange,EXT,direct_state_access},
          *      eventually @fn_gl{BindBuffer} and @fn_gl{MapBufferRange}
@@ -1276,6 +1288,15 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @requires_gles Buffer mapping is not available in WebGL.
          */
         Containers::ArrayView<char> map(GLintptr offset, GLsizeiptr length, MapFlags flags);
+
+        /**
+         * @brief Map buffer read-only to client memory
+         *
+         * Equivalent to @ref map() with @ref MapFlag::Read added implicitly.
+         */
+        Containers::ArrayView<const char> mapRead(GLintptr offset, GLsizeiptr length, MapFlags flags = {}) {
+            return map(offset, length, flags|MapFlag::Read);
+        }
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /** @overload
@@ -1317,8 +1338,8 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          *      the buffer was mapped (e.g. after screen was resized), `true`
          *      otherwise.
          *
-         * Unmaps buffer previously mapped with @ref map(), invalidating the
-         * pointer returned by these functions. If neither
+         * Unmaps buffer previously mapped with @ref map() / @ref mapRead(),
+         * invalidating the pointer returned by these functions. If neither
          * @extension{ARB,direct_state_access} (part of OpenGL 4.5) nor
          * @extension{EXT,direct_state_access} desktop extension is available,
          * the buffer is bound to hinted target before the operation (if not
