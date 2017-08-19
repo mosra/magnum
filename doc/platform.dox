@@ -296,12 +296,12 @@ find particular `*Context` library, add its include dir and then link to it.
 These platform-specific libraries are available:
 
 -   `CglContext` -- CGL context (Mac OS X)
--   `EglContext` -- EGL context (everywhere except Emscripten and NaCl)
+-   `EglContext` -- EGL context (everywhere except Emscripten)
 -   `GlxContext` -- GLX context (X11-based Unix)
 -   `WglContext` -- WGL context (Windows)
 
-Systems not listed here (such as Emscripten or NaCl) don't need any `Context`
-library, because dynamic function pointer loading is not available on these.
+Systems not listed here (such as Emscripten) don't need any `Context` library,
+because dynamic function pointer loading is not available on these.
 
 For example, when you create the OpenGL context using GLX, you need to find
 `GlxContext` component, and link to `Magnum::GlxContext` target. Similarly to

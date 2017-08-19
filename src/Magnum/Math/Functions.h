@@ -455,7 +455,7 @@ template<class T> inline T round(const T& a);
 #else
 template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type round(T a) {
     /** @todo Remove when newlib has this fixed */
-    #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID)
+    #ifndef CORRADE_TARGET_ANDROID
     return std::round(a);
     #else
     return (a > T(0)) ? std::floor(a + T(0.5)) : std::ceil(a - T(0.5));
@@ -464,7 +464,7 @@ template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T
 template<std::size_t size, class T> Vector<size, T> round(const Vector<size, T>& a) {
     Vector<size, T> out{NoInit};
     for(std::size_t i = 0; i != size; ++i) {
-        #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID)
+        #ifndef CORRADE_TARGET_ANDROID
         out[i] = std::round(a[i]);
         #else
         out[i] = round(a[i]);
@@ -605,7 +605,7 @@ template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T
     /* On Emscripten it works with -O2 but not with -O1 (function not defined).
        I guess that's only because -O2 optimizes it out, so disabling it there
        also */
-    #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID) && !defined(CORRADE_TARGET_EMSCRIPTEN)
+    #if !defined(CORRADE_TARGET_ANDROID) && !defined(CORRADE_TARGET_EMSCRIPTEN)
     return std::fma(a, b, c);
     #else
     return a*b + c;

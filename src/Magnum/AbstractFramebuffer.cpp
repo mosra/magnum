@@ -233,35 +233,15 @@ void AbstractFramebuffer::blitImplementationDSA(AbstractFramebuffer& source, Abs
 
 #elif !defined(MAGNUM_TARGET_WEBGL)
 void AbstractFramebuffer::blitImplementationANGLE(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, const FramebufferBlitMask mask, const FramebufferBlitFilter filter) {
-    #ifndef CORRADE_TARGET_NACL
     source.bindInternal(FramebufferTarget::Read);
     destination.bindInternal(FramebufferTarget::Draw);
     glBlitFramebufferANGLE(sourceRectangle.left(), sourceRectangle.bottom(), sourceRectangle.right(), sourceRectangle.top(), destinationRectangle.left(), destinationRectangle.bottom(), destinationRectangle.right(), destinationRectangle.top(), GLbitfield(mask), GLenum(filter));
-    #else
-    static_cast<void>(source);
-    static_cast<void>(destination);
-    static_cast<void>(sourceRectangle);
-    static_cast<void>(destinationRectangle);
-    static_cast<void>(mask);
-    static_cast<void>(filter);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #endif
 }
 
 void AbstractFramebuffer::blitImplementationNV(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, const FramebufferBlitMask mask, const FramebufferBlitFilter filter) {
-    #ifndef CORRADE_TARGET_NACL
     source.bindInternal(FramebufferTarget::Read);
     destination.bindInternal(FramebufferTarget::Draw);
     glBlitFramebufferNV(sourceRectangle.left(), sourceRectangle.bottom(), sourceRectangle.right(), sourceRectangle.top(), destinationRectangle.left(), destinationRectangle.bottom(), destinationRectangle.right(), destinationRectangle.top(), GLbitfield(mask), GLenum(filter));
-    #else
-    static_cast<void>(source);
-    static_cast<void>(destination);
-    static_cast<void>(sourceRectangle);
-    static_cast<void>(destinationRectangle);
-    static_cast<void>(mask);
-    static_cast<void>(filter);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #endif
 }
 #endif
 
@@ -441,7 +421,7 @@ void AbstractFramebuffer::invalidateImplementationNoOp(GLsizei, const GLenum* co
 void AbstractFramebuffer::invalidateImplementationDefault(const GLsizei count, const GLenum* const attachments) {
     #ifndef MAGNUM_TARGET_GLES2
     glInvalidateFramebuffer(GLenum(bindInternal()), count, attachments);
-    #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+    #elif !defined(CORRADE_TARGET_EMSCRIPTEN)
     glDiscardFramebufferEXT(GLenum(bindInternal()), count, attachments);
     #else
     static_cast<void>(count);
@@ -513,27 +493,13 @@ void AbstractFramebuffer::drawBuffersImplementationDSAEXT(GLsizei count, const G
 #else
 void AbstractFramebuffer::drawBuffersImplementationEXT(GLsizei count, const GLenum* buffers) {
     bindInternal(FramebufferTarget::Draw);
-
-    #ifndef CORRADE_TARGET_NACL
     glDrawBuffersEXT(count, buffers);
-    #else
-    static_cast<void>(count);
-    static_cast<void>(buffers);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #endif
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
 void AbstractFramebuffer::drawBuffersImplementationNV(GLsizei count, const GLenum* buffers) {
     bindInternal(FramebufferTarget::Draw);
-
-    #ifndef CORRADE_TARGET_NACL
     glDrawBuffersNV(count, buffers);
-    #else
-    static_cast<void>(count);
-    static_cast<void>(buffers);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #endif
 }
 #endif
 #endif
@@ -561,11 +527,8 @@ void AbstractFramebuffer::readBufferImplementationDefault(GLenum buffer) {
 
     #ifndef MAGNUM_TARGET_GLES2
     glReadBuffer(buffer);
-    #elif !defined(CORRADE_TARGET_NACL)
-    glReadBufferNV(buffer);
     #else
-    static_cast<void>(buffer);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    glReadBufferNV(buffer);
     #endif
 }
 #endif
@@ -589,15 +552,8 @@ void AbstractFramebuffer::readImplementationDefault(const Range2Di& rectangle, c
 void AbstractFramebuffer::readImplementationRobustness(const Range2Di& rectangle, const PixelFormat format, const PixelType type, const std::size_t dataSize, GLvoid* const data) {
     #ifndef MAGNUM_TARGET_GLES
     glReadnPixelsARB(rectangle.min().x(), rectangle.min().y(), rectangle.sizeX(), rectangle.sizeY(), GLenum(format), GLenum(type), dataSize, data);
-    #elif !defined(CORRADE_TARGET_NACL)
-    glReadnPixelsEXT(rectangle.min().x(), rectangle.min().y(), rectangle.sizeX(), rectangle.sizeY(), GLenum(format), GLenum(type), dataSize, data);
     #else
-    static_cast<void>(rectangle);
-    static_cast<void>(format);
-    static_cast<void>(type);
-    static_cast<void>(dataSize);
-    static_cast<void>(data);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    glReadnPixelsEXT(rectangle.min().x(), rectangle.min().y(), rectangle.sizeX(), rectangle.sizeY(), GLenum(format), GLenum(type), dataSize, data);
     #endif
 }
 #endif

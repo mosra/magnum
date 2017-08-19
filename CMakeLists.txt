@@ -51,9 +51,9 @@ find_package(Corrade REQUIRED PluginManager Utility)
 
 include(CMakeDependentOption)
 
-# If targeting iOS, Android, NaCl, Emscripten or Windows RT, set explicit
-# OpenGL ES support
-if(NOT CORRADE_TARGET_IOS AND NOT CORRADE_TARGET_ANDROID AND NOT CORRADE_TARGET_EMSCRIPTEN AND NOT CORRADE_TARGET_NACL AND NOT CORRADE_TARGET_WINDOWS_RT)
+# If targeting iOS, Android, Emscripten or Windows RT, set explicit OpenGL ES
+# support
+if(NOT CORRADE_TARGET_IOS AND NOT CORRADE_TARGET_ANDROID AND NOT CORRADE_TARGET_EMSCRIPTEN AND NOT CORRADE_TARGET_WINDOWS_RT)
     option(TARGET_GLES "Build for OpenGL ES / WebGL" OFF)
 else()
     set(TARGET_GLES ON)
@@ -63,8 +63,8 @@ cmake_dependent_option(TARGET_GLES2 "Build for OpenGL ES 2 / WebGL 1.0" ON "TARG
 cmake_dependent_option(TARGET_DESKTOP_GLES "Build for OpenGL ES on desktop" OFF "TARGET_GLES" OFF)
 option(TARGET_HEADLESS "Build command-line utilities for use on a headless machines" OFF)
 
-# Magnum Info (currently only using GLX, CGL, WGL/EGL on Windows or on NaCl)
-if(CORRADE_TARGET_UNIX OR CORRADE_TARGET_NACL OR CORRADE_TARGET_WINDOWS)
+# Magnum Info (currently only using GLX, CGL or WGL/EGL on Windows)
+if(CORRADE_TARGET_UNIX OR CORRADE_TARGET_WINDOWS)
     option(WITH_MAGNUMINFO "Build magnum-info utility" OFF)
 endif()
 
@@ -101,18 +101,13 @@ cmake_dependent_option(WITH_AL_INFO "Build magnum-al-info utility" OFF "WITH_AUD
 
 # EGL context and windowless EGL application, available everywhere except on
 # platforms which don't support extension loading
-if(NOT CORRADE_TARGET_EMSCRIPTEN AND NOT CORRADE_TARGET_NACL)
+if(NOT CORRADE_TARGET_EMSCRIPTEN)
     cmake_dependent_option(WITH_WINDOWLESSEGLAPPLICATION "Build WindowlessEglApplication library" OFF "NOT TARGET_GLES OR TARGET_DESKTOP_GLES OR NOT WITH_MAGNUMINFO" ON)
     option(WITH_EGLCONTEXT "Build EglContext library" OFF)
 endif()
 
-# NaCl-specific application libraries
-if(CORRADE_TARGET_NACL)
-    option(WITH_NACLAPPLICATION "Build NaClApplication library" OFF)
-    cmake_dependent_option(WITH_WINDOWLESSNACLAPPLICATION "Build WindowlessNaClApplication library" OFF "NOT WITH_MAGNUMINFO" ON)
-
 # Android-specific application libraries
-elseif(CORRADE_TARGET_ANDROID)
+if(CORRADE_TARGET_ANDROID)
     option(WITH_ANDROIDAPPLICATION "Build AndroidApplication library" OFF)
 
 # iOS-specific application libraries
@@ -144,7 +139,7 @@ elseif(CORRADE_TARGET_WINDOWS)
 endif()
 
 # Platform-independent (almost) application libraries
-if(NOT CORRADE_TARGET_NACL AND NOT CORRADE_TARGET_ANDROID)
+if(NOT CORRADE_TARGET_ANDROID)
     option(WITH_GLFWAPPLICATION "Build GlfwApplication library")
     cmake_dependent_option(WITH_GLUTAPPLICATION "Build GlutApplication library" OFF "NOT TARGET_GLES" OFF)
     option(WITH_SDL2APPLICATION "Build Sdl2Application library" OFF)
@@ -175,20 +170,12 @@ if(BUILD_TESTS)
 endif()
 
 # OpenGLTester library, built by default only if GL tests are enabled
-if(NOT CORRADE_TARGET_NACL AND NOT CORRADE_TARGET_ANDROID AND NOT CORRADE_TARGET_EMSCRIPTEN)
+if(NOT CORRADE_TARGET_ANDROID AND NOT CORRADE_TARGET_EMSCRIPTEN)
     cmake_dependent_option(WITH_OPENGLTESTER "Build OpenGLTester library" OFF "NOT BUILD_GL_TESTS" ON)
 endif()
 
-# If targeting NaCl, set explicit OpenGL ES 2.0 support. For Android and
-# Emscripten the decision between ES 2.0 / WebGL 1.0 and ES 3.0 / WebGL 2.0
-# must be done by the user.
-if(CORRADE_TARGET_NACL)
-    set(TARGET_GLES2 ON)
-endif()
-
-# NaCl newlib toolchain supports only static linking, dynamic linking is
-# meaningless on Emscripten and too inconvenient on Android
-if(CORRADE_TARGET_NACL_NEWLIB OR CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
+# Dynamic linking is meaningless on Emscripten and too inconvenient on Android
+if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
     set(BUILD_STATIC ON)
     set(BUILD_PLUGINS_STATIC ON)
 endif()

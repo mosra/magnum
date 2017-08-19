@@ -302,10 +302,6 @@ namespace GL {
         #endif
         _extension(GL,ARM,shader_framebuffer_fetch, GLES200,    None) // #165
         _extension(GL,ARM,shader_framebuffer_fetch_depth_stencil, GLES200, None) // #166
-    } namespace CHROMIUM {
-        #ifdef CORRADE_TARGET_NACL
-        _extension(GL,CHROMIUM,map_sub,             GLES200,    None)
-        #endif
     } namespace EXT {
         _extension(GL,EXT,texture_filter_anisotropic, GLES200,  None) // #41
         #ifdef MAGNUM_TARGET_GLES2

@@ -1280,13 +1280,8 @@ void AbstractTexture::storageImplementationDefault(GLsizei levels, TextureFormat
     bindInternal();
     #ifndef MAGNUM_TARGET_GLES2
     glTexStorage2D(_target, levels, GLenum(internalFormat), size.x(), size.y());
-    #elif !defined(CORRADE_TARGET_NACL)
-    glTexStorage2DEXT(_target, levels, GLenum(internalFormat), size.x(), size.y());
     #else
-    static_cast<void>(levels);
-    static_cast<void>(internalFormat);
-    static_cast<void>(size);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    glTexStorage2DEXT(_target, levels, GLenum(internalFormat), size.x(), size.y());
     #endif
 }
 #endif
@@ -1351,13 +1346,8 @@ void AbstractTexture::storageImplementationDefault(GLsizei levels, TextureFormat
     bindInternal();
     #ifndef MAGNUM_TARGET_GLES2
     glTexStorage3D(_target, levels, GLenum(internalFormat), size.x(), size.y(), size.z());
-    #elif !defined(CORRADE_TARGET_NACL)
-    glTexStorage3DEXT(_target, levels, GLenum(internalFormat), size.x(), size.y(), size.z());
     #else
-    static_cast<void>(levels);
-    static_cast<void>(internalFormat);
-    static_cast<void>(size);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    glTexStorage3DEXT(_target, levels, GLenum(internalFormat), size.x(), size.y(), size.z());
     #endif
 }
 #endif
@@ -1569,22 +1559,12 @@ void AbstractTexture::compressedSubImageImplementationDSAEXT(GLint level, const 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 void AbstractTexture::imageImplementationDefault(GLint level, TextureFormat internalFormat, const Vector3i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&) {
     bindInternal();
-    #ifndef CORRADE_TARGET_NACL
     #ifndef MAGNUM_TARGET_GLES2
     glTexImage3D
     #else
     glTexImage3DOES
     #endif
         (_target, level, GLint(internalFormat), size.x(), size.y(), size.z(), 0, GLenum(format), GLenum(type), data);
-    #else
-    static_cast<void>(level);
-    static_cast<void>(internalFormat);
-    static_cast<void>(size);
-    static_cast<void>(format);
-    static_cast<void>(type);
-    static_cast<void>(data);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #endif
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
@@ -1616,16 +1596,8 @@ void AbstractTexture::subImage3DImplementationDefault(GLint level, const Vector3
     bindInternal();
     #ifndef MAGNUM_TARGET_GLES2
     glTexSubImage3D(_target, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), GLenum(format), GLenum(type), data);
-    #elif !defined(CORRADE_TARGET_NACL)
-    glTexSubImage3DOES(_target, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), GLenum(format), GLenum(type), data);
     #else
-    static_cast<void>(level);
-    static_cast<void>(offset);
-    static_cast<void>(size);
-    static_cast<void>(format);
-    static_cast<void>(type);
-    static_cast<void>(data);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    glTexSubImage3DOES(_target, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), GLenum(format), GLenum(type), data);
     #endif
 }
 
@@ -1660,15 +1632,8 @@ void AbstractTexture::compressedSubImageImplementationDefault(const GLint level,
     bindInternal();
     #ifndef MAGNUM_TARGET_GLES2
     glCompressedTexSubImage3D(_target, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), GLenum(format), dataSize, data);
-    #elif !defined(CORRADE_TARGET_NACL)
-    glCompressedTexSubImage3DOES(_target, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), GLenum(format), dataSize, data);
     #else
-    static_cast<void>(level);
-    static_cast<void>(offset);
-    static_cast<void>(size);
-    static_cast<void>(format);
-    static_cast<void>(data);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    glCompressedTexSubImage3DOES(_target, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), GLenum(format), dataSize, data);
     #endif
 }
 #endif
@@ -2179,12 +2144,8 @@ void AbstractTexture::DataHelper<3>::setCompressedImage(AbstractTexture& texture
     texture.bindInternal();
     #ifndef MAGNUM_TARGET_GLES2
     glCompressedTexImage3D(texture._target, level, GLenum(image.format()), image.size().x(), image.size().y(), image.size().z(), 0, Implementation::occupiedCompressedImageDataSize(image, image.data().size()), image.data());
-    #elif !defined(CORRADE_TARGET_NACL)
-    glCompressedTexImage3DOES(texture._target, level, GLenum(image.format()), image.size().x(), image.size().y(), image.size().z(), 0, Implementation::occupiedCompressedImageDataSize(image, image.data().size()), image.data());
     #else
-    static_cast<void>(level);
-    static_cast<void>(image);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    glCompressedTexImage3DOES(texture._target, level, GLenum(image.format()), image.size().x(), image.size().y(), image.size().z(), 0, Implementation::occupiedCompressedImageDataSize(image, image.data().size()), image.data());
     #endif
 }
 #endif

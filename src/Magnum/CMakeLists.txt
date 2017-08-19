@@ -221,7 +221,7 @@ if(NOT (TARGET_WEBGL AND TARGET_GLES2))
 endif()
 
 # Link in GL function pointer variables on platforms that support it
-if(NOT CORRADE_TARGET_EMSCRIPTEN AND NOT CORRADE_TARGET_NACL)
+if(NOT CORRADE_TARGET_EMSCRIPTEN)
     list(APPEND Magnum_SRCS $<TARGET_OBJECTS:MagnumFlextGLObjects>)
 endif()
 

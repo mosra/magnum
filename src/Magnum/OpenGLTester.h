@@ -67,15 +67,14 @@ the base features.
 
 This class is available only on platforms with corresponding
 `Platform::Windowless*Application` implementation. That currently means all
-platforms except @ref CORRADE_TARGET_ANDROID "Android",
-@ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" and @ref CORRADE_TARGET_NACL "NaCl".
-It is built into a separate static library and only if `WITH_OPENGLTESTER` is
-enabled when building Magnum. To use it, you need to request `OpenGLTester`
-component of `Magnum` package in CMake, derive your test class from this class
-instead of @ref Corrade::TestSuite::Tester and either link to
-`Magnum::OpenGLTester` target or add it to `LIBRARIES` section of the
-@ref corrade-cmake-add-test "corrade_add_test()" macro. See @ref building and
-@ref cmake for more information.
+platforms except @ref CORRADE_TARGET_ANDROID "Android" and
+@ref CORRADE_TARGET_EMSCRIPTEN "Emscripten". It is built into a separate static
+library and only if `WITH_OPENGLTESTER` is enabled when building Magnum. To use
+it, you need to request `OpenGLTester` component of `Magnum` package in CMake,
+derive your test class from this class instead of @ref Corrade::TestSuite::Tester
+and either link to `Magnum::OpenGLTester` target or add it to `LIBRARIES`
+section of the @ref corrade-cmake-add-test "corrade_add_test()" macro. See
+@ref building and @ref cmake for more information.
 
 ## OpenGL context creation
 

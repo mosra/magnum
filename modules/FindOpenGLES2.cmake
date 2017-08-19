@@ -48,10 +48,7 @@ if(NOT CORRADE_TARGET_EMSCRIPTEN)
         libGLESv2
 
         # iOS
-        OpenGLES
-
-        # NaCl
-        ppapi_gles2)
+        OpenGLES)
     set(OPENGLES2_LIBRARY_NEEDED OPENGLES2_LIBRARY)
 endif()
 

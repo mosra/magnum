@@ -237,8 +237,7 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
          *      or @extension{NV,framebuffer_multisample} in OpenGL ES 2.0.
          * @requires_webgl20 Multisample framebuffers are not available in
          *      WebGL 1.0.
-         * @todo How about @extension{APPLE,framebuffer_multisample}?
-         * @todo NaCl has @fn_gl_extension{RenderbufferStorageMultisample,EXT,multisampled_render_to_texture}
+         * @todo How about @extension{APPLE,framebuffer_multisample}, @fn_gl_extension{RenderbufferStorageMultisample,EXT,multisampled_render_to_texture}?
          */
         void setStorageMultisample(Int samples, RenderbufferFormat internalFormat, const Vector2i& size);
         #endif

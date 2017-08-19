@@ -47,7 +47,7 @@ if(WITH_GLFWAPPLICATION OR WITH_GLUTAPPLICATION OR WITH_SDL2APPLICATION)
     elseif(CORRADE_TARGET_UNIX AND (NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES))
         set(NEED_GLXCONTEXT 1)
         set(MagnumSomeContext_OBJECTS $<TARGET_OBJECTS:MagnumGlxContextObjects>)
-    elseif(MAGNUM_TARGET_GLES AND NOT CORRADE_TARGET_EMSCRIPTEN AND NOT CORRADE_TARGET_NACL)
+    elseif(MAGNUM_TARGET_GLES AND NOT CORRADE_TARGET_EMSCRIPTEN)
         set(NEED_EGLCONTEXT 1)
         set(MagnumSomeContext_OBJECTS $<TARGET_OBJECTS:MagnumEglContextObjects>)
     endif()
@@ -198,74 +198,6 @@ if(WITH_SDL2APPLICATION)
 
     # Magnum Sdl2Application target alias for superprojects
     add_library(Magnum::Sdl2Application ALIAS MagnumSdl2Application)
-endif()
-
-# NaCl application
-if(WITH_NACLAPPLICATION)
-    if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL NaCl)
-        message(FATAL_ERROR "NaClApplication is available only when targeting Google Chrome Native Client. Set WITH_NACLAPPLICATION to OFF to skip building it.")
-    endif()
-
-    set(MagnumNaClApplication_SRCS NaClApplication.cpp)
-    set(MagnumNaClApplication_HEADERS NaClApplication.h)
-
-    add_library(MagnumNaClApplication STATIC
-        ${MagnumNaClApplication_SRCS}
-        ${MagnumNaClApplication_HEADERS})
-    set_target_properties(MagnumNaClApplication PROPERTIES
-        DEBUG_POSTFIX "-d"
-        FOLDER "Magnum/Platform")
-    # Assuming that PIC is not needed because the Application lib is always
-    # linked to the executable and not to any intermediate shared lib
-    target_link_libraries(MagnumNaClApplication Magnum ppapi_cpp ppapi)
-
-    install(FILES ${MagnumNaClApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
-    install(TARGETS MagnumNaClApplication
-        RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
-        LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
-        ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
-
-    # Magnum NaClApplication target alias for superprojects
-    add_library(Magnum::NaClApplication ALIAS MagnumNaClApplication)
-endif()
-
-# Windowless NaCl application
-if(WITH_WINDOWLESSNACLAPPLICATION)
-    if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL NaCl)
-        message(FATAL_ERROR "WindowlessNaClApplication is available only when targeting Google Chrome Native Client. Set WITH_WINDOWLESSNACLAPPLICATION to OFF to skip building it.")
-    endif()
-
-    set(MagnumWindowlessNaClApplication_SRCS WindowlessNaClApplication.cpp)
-    set(MagnumWindowlessNaClApplication_HEADERS WindowlessNaClApplication.h)
-
-    add_library(MagnumWindowlessNaClApplication STATIC
-        ${MagnumWindowlessNaClApplication_SRCS}
-        ${MagnumWindowlessNaClApplication_HEADERS})
-    set_target_properties(MagnumWindowlessNaClApplication PROPERTIES
-        DEBUG_POSTFIX "-d"
-        FOLDER "Magnum/Platform")
-    if(BUILD_STATIC_PIC)
-        set_target_properties(MagnumWindowlessNaClApplication PROPERTIES POSITION_INDEPENDENT_CODE ON)
-    endif()
-    target_link_libraries(MagnumWindowlessNaClApplication Magnum ppapi_cpp ppapi)
-
-    install(FILES ${MagnumWindowlessNaClApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
-    install(TARGETS MagnumWindowlessNaClApplication
-        RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
-        LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
-        ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
-
-    # Magnum WindowlessNaClApplication target alias for superprojects
-    add_library(Magnum::WindowlessNaClApplication ALIAS MagnumWindowlessNaClApplication)
-endif()
-
-# JavaScript and CSS stuff for NaCl
-if(WITH_NACLAPPLICATION OR WITH_WINDOWLESSNACLAPPLICATION)
-    set(MagnumNaClApplication_FILES
-        NaClApplication.js
-        WebApplication.css)
-    list(APPEND MagnumPlatform_FILES ${MagnumNaClApplication_FILES})
-    install(FILES ${MagnumNaClApplication_FILES} DESTINATION ${MAGNUM_DATA_INSTALL_DIR})
 endif()
 
 # JavaScript and CSS stuff for Emscripten
@@ -793,8 +725,6 @@ if(WITH_MAGNUMINFO)
         target_link_libraries(magnum-info MagnumWindowlessIosApplication)
     elseif(CORRADE_TARGET_APPLE)
         target_link_libraries(magnum-info MagnumWindowlessCglApplication)
-    elseif(CORRADE_TARGET_NACL)
-        target_link_libraries(magnum-info MagnumWindowlessNaClApplication)
     elseif(CORRADE_TARGET_UNIX)
         if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_DESKTOP_GLES)
             target_link_libraries(magnum-info MagnumWindowlessEglApplication)
@@ -813,11 +743,7 @@ if(WITH_MAGNUMINFO)
     set_target_properties(magnum-info PROPERTIES FOLDER "Magnum/Platform")
 
     install(TARGETS magnum-info DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
-    if(CORRADE_TARGET_NACL)
-        install(FILES magnum-info-nacl.html DESTINATION ${MAGNUM_DATA_INSTALL_DIR} RENAME magnum-info.html)
-        install(FILES magnum-info-nacl.nmf DESTINATION ${MAGNUM_DATA_INSTALL_DIR} RENAME magnum-info.nmf)
-        list(APPEND MagnumPlatform_FILES magnum-info-nacl.html magnum-info-nacl.nmf)
-    elseif(CORRADE_TARGET_IOS)
+    if(CORRADE_TARGET_IOS)
         set_target_properties(magnum-info PROPERTIES
             MACOSX_BUNDLE ON
             MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/MacOSXBundleInfo.plist.in

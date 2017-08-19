@@ -382,14 +382,8 @@ void Framebuffer::textureImplementationDSAEXT(const BufferAttachment attachment,
 void Framebuffer::textureLayerImplementationDefault(BufferAttachment attachment, GLuint textureId, GLint mipLevel, GLint layer) {
     #ifndef MAGNUM_TARGET_GLES2
     glFramebufferTextureLayer(GLenum(bindInternal()), GLenum(attachment), textureId, mipLevel, layer);
-    #elif !defined(CORRADE_TARGET_NACL)
-    glFramebufferTexture3DOES(GLenum(bindInternal()), GLenum(attachment), GL_TEXTURE_3D_OES, textureId, mipLevel, layer);
     #else
-    static_cast<void>(attachment);
-    static_cast<void>(textureId);
-    static_cast<void>(mipLevel);
-    static_cast<void>(layer);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    glFramebufferTexture3DOES(GLenum(bindInternal()), GLenum(attachment), GL_TEXTURE_3D_OES, textureId, mipLevel, layer);
     #endif
 }
 #endif

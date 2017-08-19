@@ -162,27 +162,13 @@ void Renderbuffer::storageMultisampleImplementationDefault(const GLsizei samples
 }
 #elif !defined(MAGNUM_TARGET_WEBGL)
 void Renderbuffer::storageMultisampleImplementationANGLE(const GLsizei samples, const RenderbufferFormat internalFormat, const Vector2i& size) {
-    #ifndef CORRADE_TARGET_NACL
     bind();
     glRenderbufferStorageMultisampleANGLE(GL_RENDERBUFFER, samples, GLenum(internalFormat), size.x(), size.y());
-    #else
-    static_cast<void>(samples);
-    static_cast<void>(internalFormat);
-    static_cast<void>(size);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #endif
 }
 
 void Renderbuffer::storageMultisampleImplementationNV(const GLsizei samples, const RenderbufferFormat internalFormat, const Vector2i& size) {
-    #ifndef CORRADE_TARGET_NACL
     bind();
     glRenderbufferStorageMultisampleNV(GL_RENDERBUFFER, samples, GLenum(internalFormat), size.x(), size.y());
-    #else
-    static_cast<void>(samples);
-    static_cast<void>(internalFormat);
-    static_cast<void>(size);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #endif
 }
 #endif
 

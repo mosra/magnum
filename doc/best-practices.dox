@@ -71,7 +71,7 @@ information.
 -   [Best Practices for Working with Texture Data](http://developer.apple.com/library/ios/#documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/TechniquesForWorkingWithTextureData/TechniquesForWorkingWithTextureData.html)
 -   [Best Practices for Shaders](http://developer.apple.com/library/ios/#documentation/3DDrawing/Conceptual/OpenGLES_ProgrammingGuide/BestPracticesforShaders/BestPracticesforShaders.html#//apple_ref/doc/uid/TP40008793-CH7-SW3)
 
-@subsection best-practices-angle ANGLE (WebGL, NaCl)
+@subsection best-practices-angle ANGLE (WebGL)
 
 -   [WebGL Insights -- ANGLE](https://books.google.cz/books?id=6crECQAAQBAJ&lpg=PP1&pg=PA3&redir_esc=y#v=onepage&q&f=true)
 
@@ -84,13 +84,6 @@ buffer attachments. See @ref Buffer, @ref Framebuffer,
 @ref Texture::setSubImage() "*Texture::setSubImage()", @ref Mesh::addVertexBuffer(),
 @ref Renderer::setStencilFunction(), @ref Renderer::setStencilMask() and
 @ref Renderer::setBlendFunction() documentation for more information.
-
-@subsection best-practices-nacl Google Chrome Native Client
-
--   [Best practices for 3D graphics](https://developers.google.com/native-client/beta/devguide/coding/3D-graphics#best-practices)
-
-Similarly to WebGL, buffers in NaCl implementation need to be bound only to one
-unique target. See @ref Buffer class documentation for more information.
 
 @section best-practices-hw Hardware-specific
 

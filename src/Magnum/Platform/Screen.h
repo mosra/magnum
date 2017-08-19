@@ -62,7 +62,6 @@ The following specialization are explicitly compiled into each particular
 
 -   @ref GlutApplication "BasicScreen<GlutApplication>"
 -   @ref GlxApplication "BasicScreen<GlxApplication>"
--   @ref NaClApplication "BasicScreen<NaClApplication>"
 -   @ref Sdl2Application "BasicScreen<Sdl2Application>"
 -   @ref XEglApplication "BasicScreen<XEglApplication>"
 */

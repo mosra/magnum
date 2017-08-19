@@ -78,7 +78,7 @@ class Context: public Magnum::Context {
          * complete the setup.
          */
         explicit Context(NoCreateT, Int argc, const char** argv):
-            #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+            #ifndef CORRADE_TARGET_EMSCRIPTEN
             Magnum::Context{NoCreate, argc, argv, flextGLInit} {}
             #else
             Magnum::Context{NoCreate, argc, argv, nullptr} {}

@@ -96,10 +96,8 @@ void MeshView::multiDrawImplementationDefault(std::initializer_list<std::referen
     if(!original._indexBuffer) {
         #ifndef MAGNUM_TARGET_GLES
         glMultiDrawArrays(GLenum(original._primitive), baseVertex, count, meshes.size());
-        #elif !defined(CORRADE_TARGET_NACL)
-        glMultiDrawArraysEXT(GLenum(original._primitive), baseVertex, count, meshes.size());
         #else
-        CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+        glMultiDrawArraysEXT(GLenum(original._primitive), baseVertex, count, meshes.size());
         #endif
 
     /* Indexed meshes */
@@ -115,10 +113,8 @@ void MeshView::multiDrawImplementationDefault(std::initializer_list<std::referen
         {
             #ifndef MAGNUM_TARGET_GLES
             glMultiDrawElements(GLenum(original._primitive), count, GLenum(original._indexType), indices, meshes.size());
-            #elif !defined(CORRADE_TARGET_NACL)
-            glMultiDrawElementsEXT(GLenum(original._primitive), count, GLenum(original._indexType), indices, meshes.size());
             #else
-            CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+            glMultiDrawElementsEXT(GLenum(original._primitive), count, GLenum(original._indexType), indices, meshes.size());
             #endif
         }
     }

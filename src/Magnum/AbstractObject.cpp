@@ -39,7 +39,6 @@
 namespace Magnum {
 
 #ifndef MAGNUM_TARGET_WEBGL
-#ifndef CORRADE_TARGET_NACL
 namespace {
     inline GLenum extTypeFromKhrIdentifier(GLenum khrIdentifier) {
         switch(khrIdentifier) {
@@ -89,13 +88,10 @@ namespace {
             /**
              * @todo Shouldn't ES2's KHR_debug have `GL_TRANSFORM_FEEDBACK_KHR`
              *      instead of `GL_TRANSFORM_FEEDBACK`? (it's a new enum in 2.0)
-             *      NaCl extension header doesn't have it at all. Also the
-             *      original @extension{EXT,debug_label} mentions it only
-             *      for ES3 (i.e. no mention of @extension{EXT,transform_feedback})
+             *      Also the original @extension{EXT,debug_label} mentions it
+             *      only for ES3 (i.e. no mention of @extension{EXT,transform_feedback})
              */
-            #ifndef CORRADE_TARGET_NACL
             case GL_TRANSFORM_FEEDBACK:
-            #endif
             #ifndef MAGNUM_TARGET_GLES
             case GL_SAMPLER:
             #else
@@ -110,7 +106,6 @@ namespace {
         CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     }
 }
-#endif
 
 Int AbstractObject::maxLabelLength() {
     if(!Context::current().isExtensionSupported<Extensions::GL::KHR::debug>())
@@ -134,26 +129,14 @@ void AbstractObject::labelImplementationNoOp(GLenum, GLuint, Containers::ArrayVi
 void AbstractObject::labelImplementationKhr(const GLenum identifier, const GLuint name, const Containers::ArrayView<const char> label) {
     #ifndef MAGNUM_TARGET_GLES
     glObjectLabel(identifier, name, label.size(), label);
-    #elif !defined(CORRADE_TARGET_NACL)
-    glObjectLabelKHR(identifier, name, label.size(), label);
     #else
-    static_cast<void>(identifier);
-    static_cast<void>(name);
-    static_cast<void>(label);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    glObjectLabelKHR(identifier, name, label.size(), label);
     #endif
 }
 
 void AbstractObject::labelImplementationExt(const GLenum identifier, const GLuint name, const Containers::ArrayView<const char> label) {
-    #ifndef CORRADE_TARGET_NACL
     const GLenum type = extTypeFromKhrIdentifier(identifier);
     glLabelObjectEXT(type, name, label.size(), label);
-    #else
-    static_cast<void>(identifier);
-    static_cast<void>(name);
-    static_cast<void>(label);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #endif
 }
 
 std::string AbstractObject::getLabelImplementationNoOp(GLenum, GLuint) { return  {}; }
@@ -164,12 +147,8 @@ std::string AbstractObject::getLabelImplementationKhr(const GLenum identifier, c
     GLsizei size = 0;
     #ifndef MAGNUM_TARGET_GLES
     glGetObjectLabel(identifier, name, maxLabelLength(), &size, nullptr);
-    #elif !defined(CORRADE_TARGET_NACL)
-    glGetObjectLabelKHR(identifier, name, maxLabelLength(), &size, nullptr);
     #else
-    static_cast<void>(identifier);
-    static_cast<void>(name);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    glGetObjectLabelKHR(identifier, name, maxLabelLength(), &size, nullptr);
     #endif
 
     /* Make place also for the null terminator */
@@ -177,10 +156,8 @@ std::string AbstractObject::getLabelImplementationKhr(const GLenum identifier, c
     label.resize(size+1);
     #ifndef MAGNUM_TARGET_GLES
     glGetObjectLabel(identifier, name, size+1, nullptr, &label[0]);
-    #elif !defined(CORRADE_TARGET_NACL)
-    glGetObjectLabelKHR(identifier, name, size+1, nullptr, &label[0]);
     #else
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    glGetObjectLabelKHR(identifier, name, size+1, nullptr, &label[0]);
     #endif
 
     /* Pop null terminator and return the string */
@@ -192,23 +169,13 @@ std::string AbstractObject::getLabelImplementationExt(const GLenum identifier, c
     GLsizei size = 0;
 
     /* Get label size (w/o null terminator) */
-    #ifndef CORRADE_TARGET_NACL
     const GLenum type = extTypeFromKhrIdentifier(identifier);
     glGetObjectLabelEXT(type, name, 0, &size, nullptr);
-    #else
-    static_cast<void>(identifier);
-    static_cast<void>(name);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #endif
 
     /* Make place also for the null terminator */
     std::string label;
     label.resize(size+1);
-    #ifndef CORRADE_TARGET_NACL
     glGetObjectLabelEXT(type, name, size+1, nullptr, &label[0]);
-    #else
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #endif
 
     /* Pop null terminator and return the string */
     label.resize(size);

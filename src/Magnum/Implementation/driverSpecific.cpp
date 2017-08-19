@@ -85,13 +85,6 @@ namespace {
         "nv-zero-context-profile-mask",
         #endif
 
-        #ifdef CORRADE_TARGET_NACL
-        /* NaCl advertises some additional extensions but the GLESv2 library
-           does not have any entrypoints for them and there is no GetProcAddress
-           equivalent, thus marking them as unsupported. */
-        "nacl-missing-extension-entrypoints",
-        #endif
-
         #ifndef MAGNUM_TARGET_GLES
         /* SVGA3D (VMware host GL driver) glDrawArrays() draws nothing when the
            vertex buffer memory is initialized using glNamedBufferData() from
@@ -233,40 +226,6 @@ void Context::setupDriverWorkarounds() {
         _setRequiredVersion(GL::ARB::explicit_attrib_location, GL320);
         _setRequiredVersion(GL::ARB::explicit_uniform_location, GL320);
         _setRequiredVersion(GL::ARB::shading_language_420pack, GL320);
-    }
-    #endif
-
-    #ifdef CORRADE_TARGET_NACL
-    if(!isDriverWorkaroundDisabled("nacl-missing-extension-entrypoints")) {
-        _setRequiredVersion(GL::EXT::multi_draw_arrays, None);
-        _setRequiredVersion(GL::EXT::debug_label, None);
-        _setRequiredVersion(GL::EXT::debug_marker, None);
-        _setRequiredVersion(GL::EXT::disjoint_timer_query, None);
-        _setRequiredVersion(GL::EXT::separate_shader_objects, None);
-        _setRequiredVersion(GL::EXT::multisampled_render_to_texture, None);
-        _setRequiredVersion(GL::EXT::robustness, None);
-        _setRequiredVersion(GL::KHR::debug, None);
-        _setRequiredVersion(GL::NV::read_buffer_front, None);
-        _setRequiredVersion(GL::OES::mapbuffer, None);
-        _setRequiredVersion(GL::ANGLE::framebuffer_blit, None);
-        _setRequiredVersion(GL::ANGLE::framebuffer_multisample, None);
-        _setRequiredVersion(GL::ANGLE::instanced_arrays, None);
-        _setRequiredVersion(GL::APPLE::framebuffer_multisample, None);
-        _setRequiredVersion(GL::EXT::discard_framebuffer, None);
-        _setRequiredVersion(GL::EXT::blend_minmax, None);
-        _setRequiredVersion(GL::EXT::texture_storage, None);
-        _setRequiredVersion(GL::EXT::map_buffer_range, None);
-        _setRequiredVersion(GL::EXT::instanced_arrays, None);
-        _setRequiredVersion(GL::EXT::draw_instanced, None);
-        _setRequiredVersion(GL::NV::draw_buffers, None);
-        _setRequiredVersion(GL::NV::fbo_color_attachments, None); // ??
-        _setRequiredVersion(GL::NV::read_buffer, None);
-        _setRequiredVersion(GL::NV::draw_instanced, None);
-        _setRequiredVersion(GL::NV::framebuffer_blit, None);
-        _setRequiredVersion(GL::NV::framebuffer_multisample, None);
-        _setRequiredVersion(GL::NV::instanced_arrays, None);
-        _setRequiredVersion(GL::OES::texture_3D, None);
-        _setRequiredVersion(GL::OES::vertex_array_object, None);
     }
     #endif
 

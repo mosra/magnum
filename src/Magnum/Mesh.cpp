@@ -241,7 +241,7 @@ Mesh& Mesh::addVertexBufferInstanced(Buffer& buffer, const UnsignedInt divisor, 
 }
 
 Mesh& Mesh::setIndexBuffer(Buffer& buffer, GLintptr offset, IndexType type, UnsignedInt start, UnsignedInt end) {
-    #if defined(CORRADE_TARGET_NACL) || defined(MAGNUM_TARGET_WEBGL)
+    #ifdef MAGNUM_TARGET_WEBGL
     CORRADE_ASSERT(buffer.targetHint() == Buffer::TargetHint::ElementArray,
         "Mesh::setIndexBuffer(): the buffer has unexpected target hint, expected" << Buffer::TargetHint::ElementArray << "but got" << buffer.targetHint(), *this);
     #endif
@@ -425,10 +425,8 @@ void Mesh::bindVAO() {
         _flags |= ObjectFlag::Created;
         #ifndef MAGNUM_TARGET_GLES2
         glBindVertexArray(current = _id);
-        #elif !defined(CORRADE_TARGET_NACL)
-        glBindVertexArrayOES(current = _id);
         #else
-        CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+        glBindVertexArrayOES(current = _id);
         #endif
     }
 }
@@ -441,10 +439,8 @@ void Mesh::createImplementationDefault() {
 void Mesh::createImplementationVAO() {
     #ifndef MAGNUM_TARGET_GLES2
     glGenVertexArrays(1, &_id);
-    #elif !defined(CORRADE_TARGET_NACL)
-    glGenVertexArraysOES(1, &_id);
     #else
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    glGenVertexArraysOES(1, &_id);
     #endif
     CORRADE_INTERNAL_ASSERT(_id != Implementation::State::DisengagedBinding);
 }
@@ -461,10 +457,8 @@ void Mesh::destroyImplementationDefault() {}
 void Mesh::destroyImplementationVAO() {
     #ifndef MAGNUM_TARGET_GLES2
     glDeleteVertexArrays(1, &_id);
-    #elif !defined(CORRADE_TARGET_NACL)
-    glDeleteVertexArraysOES(1, &_id);
     #else
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    glDeleteVertexArraysOES(1, &_id);
     #endif
 }
 
@@ -478,7 +472,7 @@ void Mesh::attributePointerInternal(AttributeLayout& attribute) {
 }
 
 void Mesh::attributePointerImplementationDefault(AttributeLayout& attribute) {
-    #if defined(CORRADE_TARGET_NACL) || defined(MAGNUM_TARGET_WEBGL)
+    #ifdef MAGNUM_TARGET_WEBGL
     CORRADE_ASSERT(attribute.buffer.targetHint() == Buffer::TargetHint::Array,
         "Mesh::addVertexBuffer(): the buffer has unexpected target hint, expected" << Buffer::TargetHint::Array << "but got" << attribute.buffer.targetHint(), );
     #endif
@@ -487,7 +481,7 @@ void Mesh::attributePointerImplementationDefault(AttributeLayout& attribute) {
 }
 
 void Mesh::attributePointerImplementationVAO(AttributeLayout& attribute) {
-    #if defined(CORRADE_TARGET_NACL) || defined(MAGNUM_TARGET_WEBGL)
+    #ifdef MAGNUM_TARGET_WEBGL
     CORRADE_ASSERT(attribute.buffer.targetHint() == Buffer::TargetHint::Array,
         "Mesh::addVertexBuffer(): the buffer has unexpected target hint, expected" << Buffer::TargetHint::Array << "but got" << attribute.buffer.targetHint(), );
     #endif
@@ -555,32 +549,14 @@ void Mesh::vertexAttribDivisorImplementationDSAEXT(const GLuint index, const GLu
 }
 #elif defined(MAGNUM_TARGET_GLES2)
 void Mesh::vertexAttribDivisorImplementationANGLE(const GLuint index, const GLuint divisor) {
-    #ifndef CORRADE_TARGET_NACL
     glVertexAttribDivisorANGLE(index, divisor);
-    #else
-    static_cast<void>(index);
-    static_cast<void>(divisor);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #endif
 }
 #ifndef MAGNUM_TARGET_WEBGL
 void Mesh::vertexAttribDivisorImplementationEXT(const GLuint index, const GLuint divisor) {
-    #ifndef CORRADE_TARGET_NACL
     glVertexAttribDivisorEXT(index, divisor);
-    #else
-    static_cast<void>(index);
-    static_cast<void>(divisor);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #endif
 }
 void Mesh::vertexAttribDivisorImplementationNV(const GLuint index, const GLuint divisor) {
-    #ifndef CORRADE_TARGET_NACL
     glVertexAttribDivisorNV(index, divisor);
-    #else
-    static_cast<void>(index);
-    static_cast<void>(divisor);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #endif
 }
 #endif
 #endif
@@ -619,72 +595,30 @@ void Mesh::unbindImplementationVAO() {}
 
 #ifdef MAGNUM_TARGET_GLES2
 void Mesh::drawArraysInstancedImplementationANGLE(const GLint baseVertex, const GLsizei count, const GLsizei instanceCount) {
-    #ifndef CORRADE_TARGET_NACL
     glDrawArraysInstancedANGLE(GLenum(_primitive), baseVertex, count, instanceCount);
-    #else
-    static_cast<void>(baseVertex);
-    static_cast<void>(count);
-    static_cast<void>(instanceCount);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #endif
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
 void Mesh::drawArraysInstancedImplementationEXT(const GLint baseVertex, const GLsizei count, const GLsizei instanceCount) {
-    #ifndef CORRADE_TARGET_NACL
     glDrawArraysInstancedEXT(GLenum(_primitive), baseVertex, count, instanceCount);
-    #else
-    static_cast<void>(baseVertex);
-    static_cast<void>(count);
-    static_cast<void>(instanceCount);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #endif
 }
 
 void Mesh::drawArraysInstancedImplementationNV(const GLint baseVertex, const GLsizei count, const GLsizei instanceCount) {
-    #ifndef CORRADE_TARGET_NACL
     glDrawArraysInstancedNV(GLenum(_primitive), baseVertex, count, instanceCount);
-    #else
-    static_cast<void>(baseVertex);
-    static_cast<void>(count);
-    static_cast<void>(instanceCount);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #endif
 }
 #endif
 
 void Mesh::drawElementsInstancedImplementationANGLE(const GLsizei count, const GLintptr indexOffset, const GLsizei instanceCount) {
-    #ifndef CORRADE_TARGET_NACL
     glDrawElementsInstancedANGLE(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), instanceCount);
-    #else
-    static_cast<void>(count);
-    static_cast<void>(indexOffset);
-    static_cast<void>(instanceCount);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #endif
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
 void Mesh::drawElementsInstancedImplementationEXT(const GLsizei count, const GLintptr indexOffset, const GLsizei instanceCount) {
-    #ifndef CORRADE_TARGET_NACL
     glDrawElementsInstancedEXT(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), instanceCount);
-    #else
-    static_cast<void>(count);
-    static_cast<void>(indexOffset);
-    static_cast<void>(instanceCount);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #endif
 }
 
 void Mesh::drawElementsInstancedImplementationNV(const GLsizei count, const GLintptr indexOffset, const GLsizei instanceCount) {
-    #ifndef CORRADE_TARGET_NACL
     glDrawElementsInstancedNV(GLenum(_primitive), count, GLenum(_indexType), reinterpret_cast<GLvoid*>(indexOffset), instanceCount);
-    #else
-    static_cast<void>(count);
-    static_cast<void>(indexOffset);
-    static_cast<void>(instanceCount);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #endif
 }
 #endif
 #endif

@@ -33,6 +33,7 @@ namespace Magnum {
 
 ## De­pen­den­cy changes
 
+-   Completely removed NaCl support (see https://blog.chromium.org/2017/05/goodbye-pnacl-hello-webassembly.html)
 -   Dropped support for the old MinGW32 (only MinGW-w64 is supported now)
 -   Bumped minimal CMake version to 2.8.12
 -   Removed support for macOS 10.8 and older
@@ -223,8 +224,7 @@ namespace Magnum {
     classes that manage OpenGL context to make threaded context creation
     possible
 -   First-class support for scroll events in
-    @ref Platform::Sdl2Application::MouseScrollEvent and
-    @ref Platform::NaClApplication::MouseScrollEvent
+    @ref Platform::Sdl2Application::MouseScrollEvent
 -   Added @ref Platform::Sdl2Application::MouseEvent::clickCount()
 -   Added @ref Platform::Sdl2Application::multiGestureEvent()
 -   Exposing key repeat in
@@ -414,7 +414,7 @@ namespace Magnum {
 -   Fixed WebGL context creation on Internet Explorer, it claims to have
     version 0.94
 -   Fixed random browser-specific issues by avoiding the use of XHTML in
-    Emscripten and NaCl builds
+    Emscripten builds
 -   @ref Trade::ObjImporter "ObjImporter" plugin now opens the files as binary
     to avoid line ending issues
 -   Various compatibility updates to the @ref Shaders library

@@ -82,8 +82,6 @@ Platforms:
 -   **OS X**, **iOS** (through SDL2 or GLFW toolkit)
 -   **Android** 2.3 (API Level 9) and higher
 -   **Windows RT** (Store/Phone) using ANGLE (through SDL2 toolkit)
--   **Google Chrome** (through [Native Client](https://developers.google.com/native-client/),
-    both `newlib` and `glibc` toolchains are supported)
 -   **HTML5/JavaScript** (through [Emscripten](https://github.com/kripken/emscripten/wiki))
 
 @section mainpage-features Features

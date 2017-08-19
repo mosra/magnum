@@ -34,7 +34,7 @@
 #include "Magnum/Implementation/State.h"
 #include "Magnum/Implementation/DebugState.h"
 
-#if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(CORRADE_TARGET_ANDROID)
+#ifdef CORRADE_TARGET_ANDROID
 #include <sstream>
 #endif
 
@@ -42,7 +42,6 @@ namespace Magnum {
 
 namespace {
 
-#ifndef CORRADE_TARGET_NACL
 void
 #ifdef CORRADE_TARGET_WINDOWS
 APIENTRY
@@ -50,7 +49,6 @@ APIENTRY
 callbackWrapper(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam) {
     Context::current().state().debug->messageCallback(DebugOutput::Source(source), DebugOutput::Type(type), id, DebugOutput::Severity(severity), std::string{message, std::size_t(length)}, userParam);
 }
-#endif
 
 void defaultCallback(const DebugOutput::Source source, const DebugOutput::Type type, const UnsignedInt id, const DebugOutput::Severity severity, const std::string& string, const void*) {
     Debug output;
@@ -106,13 +104,13 @@ void defaultCallback(const DebugOutput::Source source, const DebugOutput::Type t
     }
 
     /** @todo Remove when this is fixed everywhere (also the include above) */
-    #if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(CORRADE_TARGET_ANDROID)
+    #ifdef CORRADE_TARGET_ANDROID
     std::ostringstream converter;
     converter << id;
     #endif
 
     output << '(' +
-        #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID)
+        #ifndef CORRADE_TARGET_ANDROID
         std::to_string(id) +
         #else
         converter.str() +
@@ -171,21 +169,12 @@ void DebugOutput::setEnabledInternal(const GLenum source, const GLenum type, con
 void DebugOutput::controlImplementationNoOp(GLenum, GLenum, GLenum, std::initializer_list<UnsignedInt>, bool) {}
 
 void DebugOutput::controlImplementationKhr(const GLenum source, const GLenum type, const GLenum severity, const std::initializer_list<UnsignedInt> ids, const bool enabled) {
-    #ifndef CORRADE_TARGET_NACL
     #ifndef MAGNUM_TARGET_GLES
     glDebugMessageControl
     #else
     glDebugMessageControlKHR
     #endif
         (source, type, severity, ids.size(), ids.begin(), enabled);
-    #else
-    static_cast<void>(source);
-    static_cast<void>(type);
-    static_cast<void>(severity);
-    static_cast<void>(ids);
-    static_cast<void>(enabled);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #endif
 }
 
 void DebugOutput::callbackImplementationNoOp(Callback, const void*) {}
@@ -197,30 +186,21 @@ void DebugOutput::callbackImplementationKhr(const Callback callback, const void*
 
     /* Adding callback */
     if(!original && callback) {
-        #ifndef CORRADE_TARGET_NACL
         #ifndef MAGNUM_TARGET_GLES
         glDebugMessageCallback
         #else
         glDebugMessageCallbackKHR
         #endif
             (callbackWrapper, userParam);
-        #else
-        static_cast<void>(userParam);
-        CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-        #endif
 
     /* Deleting callback */
     } else if(original && !callback) {
-        #ifndef CORRADE_TARGET_NACL
         #ifndef MAGNUM_TARGET_GLES
         glDebugMessageCallback
         #else
         glDebugMessageCallbackKHR
         #endif
             (nullptr, nullptr);
-        #else
-        CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-        #endif
     }
 }
 
@@ -283,30 +263,16 @@ void DebugMessage::insertInternal(const Source source, const Type type, const Un
 void DebugMessage::insertImplementationNoOp(Source, Type, UnsignedInt, DebugOutput::Severity, const Containers::ArrayView<const char>) {}
 
 void DebugMessage::insertImplementationKhr(const Source source, const Type type, const UnsignedInt id, const DebugOutput::Severity severity, const Containers::ArrayView<const char> string) {
-    #ifndef CORRADE_TARGET_NACL
     #ifndef MAGNUM_TARGET_GLES
     glDebugMessageInsert
     #else
     glDebugMessageInsertKHR
     #endif
         (GLenum(source), GLenum(type), id, GLenum(severity), string.size(), string.data());
-    #else
-    static_cast<void>(source);
-    static_cast<void>(type);
-    static_cast<void>(id);
-    static_cast<void>(severity);
-    static_cast<void>(string);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #endif
 }
 
 void DebugMessage::insertImplementationExt(Source, Type, UnsignedInt, DebugOutput::Severity, const Containers::ArrayView<const char> string) {
-    #ifndef CORRADE_TARGET_NACL
     glInsertEventMarkerEXT(string.size(), string.data());
-    #else
-    static_cast<void>(string);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #endif
 }
 
 #ifndef MAGNUM_TARGET_GLES
@@ -392,28 +358,16 @@ void DebugGroup::pop() {
 void DebugGroup::pushImplementationNoOp(Source, UnsignedInt, Containers::ArrayView<const char>) {}
 
 void DebugGroup::pushImplementationKhr(const Source source, const UnsignedInt id, const Containers::ArrayView<const char> message) {
-    #ifndef CORRADE_TARGET_NACL
     #ifndef MAGNUM_TARGET_GLES
     glPushDebugGroup
     #else
     glPushDebugGroupKHR
     #endif
         (GLenum(source), id, message.size(), message.data());
-    #else
-    static_cast<void>(source);
-    static_cast<void>(id);
-    static_cast<void>(message);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #endif
 }
 
 void DebugGroup::pushImplementationExt(Source, UnsignedInt, const Containers::ArrayView<const char> message) {
-    #ifndef CORRADE_TARGET_NACL
     glPushGroupMarkerEXT(message.size(), message.data());
-    #else
-    static_cast<void>(message);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #endif
 }
 
 void DebugGroup::popImplementationNoOp() {}
@@ -421,19 +375,13 @@ void DebugGroup::popImplementationNoOp() {}
 void DebugGroup::popImplementationKhr() {
     #ifndef MAGNUM_TARGET_GLES
     glPopDebugGroup();
-    #elif !defined(CORRADE_TARGET_NACL)
-    glPopDebugGroupKHR();
     #else
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    glPopDebugGroupKHR();
     #endif
 }
 
 void DebugGroup::popImplementationExt() {
-    #ifndef CORRADE_TARGET_NACL
     glPopGroupMarkerEXT();
-    #else
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #endif
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

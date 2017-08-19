@@ -85,17 +85,12 @@ void Renderer::setProvokingVertex(const ProvokingVertex mode) {
 
 #ifndef MAGNUM_TARGET_WEBGL
 void Renderer::setPolygonMode(const PolygonMode mode) {
-    #ifndef CORRADE_TARGET_NACL
     #ifndef MAGNUM_TARGET_GLES
     glPolygonMode
     #else
     glPolygonModeNV
     #endif
         (GL_FRONT_AND_BACK, GLenum(mode));
-    #else
-    static_cast<void>(mode);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #endif
 }
 #endif
 
@@ -230,10 +225,8 @@ Renderer::GraphicsResetStatus Renderer::graphicsResetStatusImplementationDefault
 Renderer::GraphicsResetStatus Renderer::graphicsResetStatusImplementationRobustness() {
     #ifndef MAGNUM_TARGET_GLES
     return GraphicsResetStatus(glGetGraphicsResetStatusARB());
-    #elif !defined(CORRADE_TARGET_NACL)
-    return GraphicsResetStatus(glGetGraphicsResetStatusEXT());
     #else
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    return GraphicsResetStatus(glGetGraphicsResetStatusEXT());
     #endif
 }
 #endif

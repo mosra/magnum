@@ -37,16 +37,6 @@
 #ifndef MAGNUM_TARGET_GLES
     #include "MagnumExternal/OpenGL/GL/flextGL.h"
 
-/* Special case for NaCl */
-#elif defined(CORRADE_TARGET_NACL)
-    /* No extension loading */
-    #include "MagnumExternal/OpenGL/GLES2/flextGLNaCl.h"
-
-    /* Needed for NaCl-specific extensions */
-    #define GL_GLEXT_PROTOTYPES
-    #define GLES2_GET_FUN(name) GLES2##name
-    #include <GLES2/gl2ext.h>
-
 /* Special case for Emscripten (no extension loading) */
 #elif defined(CORRADE_TARGET_EMSCRIPTEN)
     #ifdef MAGNUM_TARGET_GLES2

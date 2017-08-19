@@ -63,8 +63,8 @@ buffer swap. You can use @ref previousFrameDuration() to compute animation
 speed. To limit application framerate you can use
 @ref Platform::Sdl2Application::setSwapInterval() "Platform::*Application::setSwapInterval()" or
 @ref Platform::Sdl2Application::setMinimalLoopPeriod() "Platform::*Application::setMinimalLoopPeriod()".
-Note that on @ref CORRADE_TARGET_NACL "NaCl" and @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"
-the framerate is governed by browser and you can't do anything about it.
+Note that on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" the framerate is
+governed by browser and you can't do anything about it.
 
 Example usage:
 @code

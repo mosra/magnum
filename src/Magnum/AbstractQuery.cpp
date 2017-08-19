@@ -123,10 +123,8 @@ template<> Int AbstractQuery::result<Int>() {
     Int result;
     #ifndef MAGNUM_TARGET_GLES
     glGetQueryObjectiv(_id, GL_QUERY_RESULT, &result);
-    #elif !defined(CORRADE_TARGET_NACL)
-    glGetQueryObjectivEXT(_id, GL_QUERY_RESULT_EXT, &result);
     #else
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    glGetQueryObjectivEXT(_id, GL_QUERY_RESULT_EXT, &result);
     #endif
     return result;
 }
@@ -135,10 +133,8 @@ template<> UnsignedLong AbstractQuery::result<UnsignedLong>() {
     UnsignedLong result;
     #ifndef MAGNUM_TARGET_GLES
     glGetQueryObjectui64v(_id, GL_QUERY_RESULT, &result);
-    #elif !defined(CORRADE_TARGET_NACL)
-    glGetQueryObjectui64vEXT(_id, GL_QUERY_RESULT_EXT, &result);
     #else
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    glGetQueryObjectui64vEXT(_id, GL_QUERY_RESULT_EXT, &result);
     #endif
     return result;
 }
@@ -147,10 +143,8 @@ template<> Long AbstractQuery::result<Long>() {
     Long result;
     #ifndef MAGNUM_TARGET_GLES
     glGetQueryObjecti64v(_id, GL_QUERY_RESULT, &result);
-    #elif !defined(CORRADE_TARGET_NACL)
-    glGetQueryObjecti64vEXT(_id, GL_QUERY_RESULT_EXT, &result);
     #else
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    glGetQueryObjecti64vEXT(_id, GL_QUERY_RESULT_EXT, &result);
     #endif
     return result;
 }

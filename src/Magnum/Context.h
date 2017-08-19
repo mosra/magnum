@@ -233,9 +233,9 @@ class MAGNUM_EXPORT Context {
             #ifdef MAGNUM_TARGET_GLES
             /**
              * OpenGL ES implementation by ANGLE (translated to D3D), used by
-             * browsers on Windows for Native Client and WebGL. As the WebGL
-             * specification explicitly disallows exposing driver information
-             * to the application, this check cannot be done reliably.
+             * browsers on Windows for WebGL. As the WebGL specification
+             * explicitly disallows exposing driver information to the
+             * application, this check cannot be done reliably.
              */
             Angle = 1 << 1,
 

@@ -25,9 +25,6 @@
 
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/Debug.h>
-#ifdef CORRADE_TARGET_NACL
-#include <Corrade/Utility/NaClStreamBuffer.h>
-#endif
 
 #include "Magnum/AbstractShaderProgram.h"
 #include "Magnum/Buffer.h"
@@ -59,8 +56,6 @@
 
 #ifdef MAGNUM_TARGET_HEADLESS
 #include "Magnum/Platform/WindowlessEglApplication.h"
-#elif defined(CORRADE_TARGET_NACL)
-#include "Magnum/Platform/WindowlessNaClApplication.h"
 #elif defined(CORRADE_TARGET_IOS)
 #include "Magnum/Platform/WindowlessIosApplication.h"
 #elif defined(CORRADE_TARGET_APPLE)
@@ -154,25 +149,14 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         .addSkippedPrefix("magnum", "engine-specific options")
         .setHelp("Displays information about Magnum engine and OpenGL capabilities.");
 
-    /**
-     * @todo Make this work in NaCl, somehow the arguments aren't passed to
-     *      constructor but to Init() or whatnot
-     */
     #ifdef CORRADE_TARGET_IOS
     {
         static_cast<void>(arguments);
         const char* iosArguments[] = { "", "--limits" };
         args.parse(2, iosArguments);
     }
-    #elif !defined(CORRADE_TARGET_NACL)
+    #else
     args.parse(arguments.argc, arguments.argv);
-    #endif
-
-    /* Pass debug output as messages to JavaScript */
-    #ifdef CORRADE_TARGET_NACL
-    Utility::NaClMessageStreamBuffer buffer(this);
-    std::ostream out(&buffer);
-    Debug::setOutput(&out);
     #endif
 
     Debug() << "";
@@ -183,8 +167,6 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
 
     #ifdef MAGNUM_WINDOWLESSEGLAPPLICATION_MAIN
     Debug() << "Used application: Platform::WindowlessEglApplication";
-    #elif defined(MAGNUM_WINDOWLESSNACLAPPLICATION_MAIN)
-    Debug() << "Used application: Platform::WindowlessNaClApplication";
     #elif defined(MAGNUM_WINDOWLESSIOSAPPLICATION_MAIN)
     Debug() << "Used application: Platform::WindowlessIosApplication";
     #elif defined(MAGNUM_WINDOWLESSCGLAPPLICATION_MAIN)
@@ -222,15 +204,6 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #endif
     #ifdef CORRADE_TARGET_WINDOWS_RT
     Debug() << "    CORRADE_TARGET_WINDOWS_RT";
-    #endif
-    #ifdef CORRADE_TARGET_NACL
-    Debug() << "    CORRADE_TARGET_NACL";
-    #endif
-    #ifdef CORRADE_TARGET_NACL_NEWLIB
-    Debug() << "    CORRADE_TARGET_NACL_NEWLIB";
-    #endif
-    #ifdef CORRADE_TARGET_NACL_GLIBC
-    Debug() << "    CORRADE_TARGET_NACL_GLIBC";
     #endif
     #ifdef CORRADE_TARGET_EMSCRIPTEN
     Debug() << "    CORRADE_TARGET_EMSCRIPTEN";

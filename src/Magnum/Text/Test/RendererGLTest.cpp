@@ -269,13 +269,8 @@ void RendererGLTest::mutableText() {
         CORRADE_SKIP(Extensions::GL::ARB::map_buffer_range::string() + std::string(" is not supported"));
     #elif defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_EMSCRIPTEN)
     if(!Context::current().isExtensionSupported<Extensions::GL::EXT::map_buffer_range>() &&
-       !Context::current().isExtensionSupported<Extensions::GL::OES::mapbuffer>()
-       #ifdef CORRADE_TARGET_NACL
-       && !Context::current().isExtensionSupported<Extensions::GL::CHROMIUM::map_sub>()
-       #endif
-    ) {
+       !Context::current().isExtensionSupported<Extensions::GL::OES::mapbuffer>())
         CORRADE_SKIP("No required extension is supported");
-    }
     #endif
 
     TestFont font;

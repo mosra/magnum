@@ -38,7 +38,7 @@
 #include "Implementation/ShaderProgramState.h"
 #include "Implementation/State.h"
 
-#if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(CORRADE_TARGET_ANDROID)
+#ifdef CORRADE_TARGET_ANDROID
 #include <sstream>
 #endif
 
@@ -420,7 +420,7 @@ bool AbstractShaderProgram::link(std::initializer_list<std::reference_wrapper<Ab
         message.resize(std::max(logLength, 1)-1);
 
         /** @todo Remove when this is fixed everywhere (also the include above) */
-        #if defined(CORRADE_TARGET_NACL_NEWLIB) || defined(CORRADE_TARGET_ANDROID)
+        #ifdef CORRADE_TARGET_ANDROID
         std::ostringstream converter;
         converter << i;
         #endif
@@ -430,7 +430,7 @@ bool AbstractShaderProgram::link(std::initializer_list<std::reference_wrapper<Ab
             Error out{Debug::Flag::NoNewlineAtTheEnd};
             out << "AbstractShaderProgram::link(): linking";
             if(shaders.size() != 1) {
-                #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID)
+                #ifndef CORRADE_TARGET_ANDROID
                 out << "of shader" << std::to_string(i);
                 #else
                 out << "of shader" << converter.str();
@@ -443,7 +443,7 @@ bool AbstractShaderProgram::link(std::initializer_list<std::reference_wrapper<Ab
             Warning out{Debug::Flag::NoNewlineAtTheEnd};
             out << "AbstractShaderProgram::link(): linking";
             if(shaders.size() != 1) {
-                #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID)
+                #ifndef CORRADE_TARGET_ANDROID
                 out << "of shader" << std::to_string(i);
                 #else
                 out << "of shader" << converter.str();
@@ -493,14 +493,7 @@ void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const
 
 #ifndef MAGNUM_TARGET_WEBGL
 void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint location, const GLsizei count, const GLfloat* const values) {
-    #ifndef CORRADE_TARGET_NACL
     glProgramUniform1fvEXT(_id, location, count, values);
-    #else
-    static_cast<void>(location);
-    static_cast<void>(count);
-    static_cast<void>(values);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #endif
 }
 #endif
 
@@ -521,14 +514,7 @@ void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const
 
 #ifndef MAGNUM_TARGET_WEBGL
 void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint location, const GLsizei count, const Math::Vector<2, GLfloat>* const values) {
-    #ifndef CORRADE_TARGET_NACL
     glProgramUniform2fvEXT(_id, location, count, values[0].data());
-    #else
-    static_cast<void>(location);
-    static_cast<void>(count);
-    static_cast<void>(values);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #endif
 }
 #endif
 
@@ -549,14 +535,7 @@ void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const
 
 #ifndef MAGNUM_TARGET_WEBGL
 void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint location, const GLsizei count, const Math::Vector<3, GLfloat>* const values) {
-    #ifndef CORRADE_TARGET_NACL
     glProgramUniform3fvEXT(_id, location, count, values[0].data());
-    #else
-    static_cast<void>(location);
-    static_cast<void>(count);
-    static_cast<void>(values);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #endif
 }
 #endif
 
@@ -577,14 +556,7 @@ void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const
 
 #ifndef MAGNUM_TARGET_WEBGL
 void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint location, const GLsizei count, const Math::Vector<4, GLfloat>* const values) {
-    #ifndef CORRADE_TARGET_NACL
     glProgramUniform4fvEXT(_id, location, count, values[0].data());
-    #else
-    static_cast<void>(location);
-    static_cast<void>(count);
-    static_cast<void>(values);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #endif
 }
 #endif
 
@@ -605,14 +577,7 @@ void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const
 
 #ifndef MAGNUM_TARGET_WEBGL
 void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint location, const GLsizei count, const GLint* const values) {
-    #ifndef CORRADE_TARGET_NACL
     glProgramUniform1ivEXT(_id, location, count, values);
-    #else
-    static_cast<void>(location);
-    static_cast<void>(count);
-    static_cast<void>(values);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #endif
 }
 #endif
 
@@ -633,14 +598,7 @@ void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const
 
 #ifndef MAGNUM_TARGET_WEBGL
 void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint location, const GLsizei count, const Math::Vector<2, GLint>* const values) {
-    #ifndef CORRADE_TARGET_NACL
     glProgramUniform2ivEXT(_id, location, count, values[0].data());
-    #else
-    static_cast<void>(location);
-    static_cast<void>(count);
-    static_cast<void>(values);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #endif
 }
 #endif
 
@@ -661,14 +619,7 @@ void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const
 
 #ifndef MAGNUM_TARGET_WEBGL
 void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint location, const GLsizei count, const Math::Vector<3, GLint>* const values) {
-    #ifndef CORRADE_TARGET_NACL
     glProgramUniform3ivEXT(_id, location, count, values[0].data());
-    #else
-    static_cast<void>(location);
-    static_cast<void>(count);
-    static_cast<void>(values);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #endif
 }
 #endif
 
@@ -689,14 +640,7 @@ void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const
 
 #ifndef MAGNUM_TARGET_WEBGL
 void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint location, const GLsizei count, const Math::Vector<4, GLint>* const values) {
-    #ifndef CORRADE_TARGET_NACL
     glProgramUniform4ivEXT(_id, location, count, values[0].data());
-    #else
-    static_cast<void>(location);
-    static_cast<void>(count);
-    static_cast<void>(values);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #endif
 }
 #endif
 
@@ -865,14 +809,7 @@ void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const
 
 #ifndef MAGNUM_TARGET_WEBGL
 void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint location, const GLsizei count, const Math::RectangularMatrix<2, 2, GLfloat>* const values) {
-    #ifndef CORRADE_TARGET_NACL
     glProgramUniformMatrix2fvEXT(_id, location, count, GL_FALSE, values[0].data());
-    #else
-    static_cast<void>(location);
-    static_cast<void>(count);
-    static_cast<void>(values);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #endif
 }
 #endif
 
@@ -893,14 +830,7 @@ void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const
 
 #ifndef MAGNUM_TARGET_WEBGL
 void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint location, const GLsizei count, const Math::RectangularMatrix<3, 3, GLfloat>* const values) {
-    #ifndef CORRADE_TARGET_NACL
     glProgramUniformMatrix3fvEXT(_id, location, count, GL_FALSE, values[0].data());
-    #else
-    static_cast<void>(location);
-    static_cast<void>(count);
-    static_cast<void>(values);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #endif
 }
 #endif
 
@@ -921,14 +851,7 @@ void AbstractShaderProgram::uniformImplementationSSO(const GLint location, const
 
 #ifndef MAGNUM_TARGET_WEBGL
 void AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT(const GLint location, const GLsizei count, const Math::RectangularMatrix<4, 4, GLfloat>* const values) {
-    #ifndef CORRADE_TARGET_NACL
     glProgramUniformMatrix4fvEXT(_id, location, count, GL_FALSE, values[0].data());
-    #else
-    static_cast<void>(location);
-    static_cast<void>(count);
-    static_cast<void>(values);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-    #endif
 }
 #endif
 

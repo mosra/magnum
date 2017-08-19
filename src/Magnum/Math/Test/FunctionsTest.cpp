@@ -241,7 +241,7 @@ void FunctionsTest::round() {
     CORRADE_COMPARE(Math::round(2.3f), 2.0f);
     CORRADE_COMPARE(Math::round(Vector3(2.3f, 0.7f, 1.5f)), Vector3(2.0f, 1.0f, 2.0f));
 
-    /* We are working around missing std::round() in NaCl newlib, thus we must
+    /* We are working around missing std::round() in Android, thus we must
        test that the behavior is the same on both implementations */
     CORRADE_COMPARE(Math::round(-2.0f), -2.0f);
     CORRADE_COMPARE(Math::round(-1.5f), -2.0f);

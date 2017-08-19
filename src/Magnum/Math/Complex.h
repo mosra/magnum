@@ -391,7 +391,7 @@ template<class T> class Complex {
          */
         T length() const {
             /** @todo Remove when newlib has this fixed */
-            #if !defined(CORRADE_TARGET_NACL_NEWLIB) && !defined(CORRADE_TARGET_ANDROID)
+            #ifndef CORRADE_TARGET_ANDROID
             return std::hypot(_real, _imaginary);
             #else
             return std::sqrt(dot());

@@ -188,22 +188,21 @@ for(std::size_t i: {7, 27, 56, 128}) {
 CORRADE_INTERNAL_ASSERT_OUTPUT(buffer.unmap());
 @endcode
 
-## WebGL and NaCl restrictions
+## WebGL restrictions
 
-Buffers in @ref MAGNUM_TARGET_WEBGL "WebGL" and @ref CORRADE_TARGET_NACL "NaCl"
-need to be bound only to one unique target, i.e., @ref Buffer bound to
-@ref Buffer::Target::Array cannot be later rebound to
-@ref Buffer::Target::ElementArray. However, Magnum by default uses any
-sufficient target when binding the buffer internally (e.g. for setting data).
-To avoid GL errors, set target hint to desired target, either in constructor or
-using @ref Buffer::setTargetHint():
+Buffers in @ref MAGNUM_TARGET_WEBGL "WebGL" need to be bound only to one unique
+target, i.e., @ref Buffer bound to @ref Buffer::Target::Array cannot be later
+rebound to @ref Buffer::Target::ElementArray. However, Magnum by default uses
+any sufficient target when binding the buffer internally (e.g. for setting
+data). To avoid GL errors, set target hint to desired target, either in
+constructor or using @ref Buffer::setTargetHint():
 @code
 Buffer vertices{Buffer::Target::Array};
 Buffer indices{Buffer::Target::ElementArray};
 @endcode
 
 To ease up the development, @ref Mesh checks proper target hint when adding
-vertex and index buffers in both WebGL and NaCl.
+vertex and index buffers in WebGL.
 
 ## Performance optimizations
 
@@ -1238,33 +1237,6 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         }
         #endif
 
-        #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_NACL)
-        /**
-         * @brief Map portion of buffer to client memory
-         * @param offset    Offset into the buffer
-         * @param length    Length of the mapped memory
-         * @param access    Access
-         * @return Pointer to buffer data
-         *
-         * The buffer is bound to hinted target before the operation (if not
-         * already).
-         * @see @ref unmapSub(), @ref setTargetHint(),
-         *      @fn_gl_extension{MapBufferSubData,CHROMIUM,map_sub}
-         * @requires_gles20 Available only in NaCl build. Use
-         *      @ref map(GLintptr, GLsizeiptr, MapFlags) elsewhere.
-         * @requires_es_extension Extension @extension{CHROMIUM,map_sub}
-         * @requires_gles Buffer mapping is not available in WebGL.
-         * @deprecated_gl Prefer to use @ref map(GLintptr, GLsizeiptr, MapFlags)
-         *      instead, as it has more complete set of features.
-         */
-        void* mapSub(GLintptr offset, GLsizeiptr length, MapAccess access);
-
-        /** @overload */
-        template<class T> T* mapSub(GLintptr offset, GLsizeiptr length, MapAccess access) {
-            return static_cast<T*>(mapSub(offset, length, access));
-        }
-        #endif
-
         /**
          * @brief Map buffer to client memory
          * @param offset    Byte offset into the buffer
@@ -1352,21 +1324,6 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @requires_gles Buffer mapping is not available in WebGL.
          */
         bool unmap();
-
-        #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_NACL)
-        /**
-         * @brief Unmap portion of buffer
-         *
-         * Unmaps portion of buffer previously mapped with @ref mapSub(),
-         * invalidating the pointer returned by the function.
-         * @see @fn_gl_extension{UnmapBufferSubData,CHROMIUM,map_sub}
-         * @requires_gles20 Available only in NaCl build. Use
-         *      @ref map(GLintptr, GLsizeiptr, MapFlags) elsewhere.
-         * @requires_es_extension Extension @extension{CHROMIUM,map_sub}
-         * @requires_gles Buffer mapping is not available in WebGL.
-         */
-        void unmapSub();
-        #endif
         #endif
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -1480,9 +1437,6 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
 
         GLuint _id;
         TargetHint _targetHint;
-        #ifdef CORRADE_TARGET_NACL
-        void* _mappedBuffer;
-        #endif
         ObjectFlags _flags;
 };
 
@@ -1498,31 +1452,16 @@ MAGNUM_EXPORT Debug& operator<<(Debug& debug, Buffer::TargetHint value);
 MAGNUM_EXPORT Debug& operator<<(Debug& debug, Buffer::Target value);
 #endif
 
-inline Buffer::Buffer(NoCreateT) noexcept: _id{0}, _targetHint{TargetHint::Array}, _flags{ObjectFlag::DeleteOnDestruction}
-    #ifdef CORRADE_TARGET_NACL
-    , _mappedBuffer{nullptr}
-    #endif
-{}
+inline Buffer::Buffer(NoCreateT) noexcept: _id{0}, _targetHint{TargetHint::Array}, _flags{ObjectFlag::DeleteOnDestruction} {}
 
-inline Buffer::Buffer(Buffer&& other) noexcept: _id{other._id}, _targetHint{other._targetHint},
-    #ifdef CORRADE_TARGET_NACL
-    _mappedBuffer{other._mappedBuffer},
-    #endif
-     _flags{other._flags}
-{
+inline Buffer::Buffer(Buffer&& other) noexcept: _id{other._id}, _targetHint{other._targetHint}, _flags{other._flags} {
     other._id = 0;
-    #ifdef CORRADE_TARGET_NACL
-    other._mappedBuffer = nullptr;
-    #endif
 }
 
 inline Buffer& Buffer::operator=(Buffer&& other) noexcept {
     using std::swap;
     swap(_id, other._id);
     swap(_targetHint, other._targetHint);
-    #ifdef CORRADE_TARGET_NACL
-    swap(_mappedBuffer, other._mappedBuffer);
-    #endif
     swap(_flags, other._flags);
     return *this;
 }

@@ -208,14 +208,12 @@ platform best:
 -   `WITH_GLFWAPPLICATION` - @ref Platform::GlfwApplication "GlfwApplication"
 -   `WITH_GLUTAPPLICATION` - @ref Platform::GlutApplication "GlutApplication"
 -   `WITH_GLXAPPLICATION` - @ref Platform::GlxApplication "GlxApplication"
--   `WITH_NACLAPPLICATION` - @ref Platform::NaClApplication "NaClApplication"
 -   `WITH_SDL2APPLICATION` - @ref Platform::Sdl2Application "Sdl2Application"
 -   `WITH_XEGLAPPLICATION` - @ref Platform::XEglApplication "XEglApplication"
 -   `WITH_WINDOWLESSCGLAPPLICATION` - @ref Platform::WindowlessCglApplication "WindowlessCglApplication"
 -   `WITH_WINDOWLESSEGLAPPLICATION` - @ref Platform::WindowlessEglApplication "WindowlessEglApplication"
 -   `WITH_WINDOWLESSGLXAPPLICATION` - @ref Platform::WindowlessGlxApplication "WindowlessGlxApplication"
 -   `WITH_WINDOWLESSIOSAPPLICATION` - @ref Platform::WindowlessIosApplication "WindowlessIosApplication"
--   `WITH_WINDOWLESSNACLAPPLICATION` - @ref Platform::WindowlessNaClApplication "WindowlessNaClApplication"
 -   `WITH_WINDOWLESSWGLAPPLICATION` - @ref Platform::WindowlessWglApplication "WindowlessWglApplication"
 -   `WITH_WINDOWLESSWINDOWSEGLAPPLICATION` - @ref Platform::WindowlessWindowsEglApplication "WindowlessWindowsEglApplication"
 
@@ -308,8 +306,8 @@ e.g.:
 
 Platforms which have windowless GL context creation implemented (currently all
 platforms except @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten",
-@ref CORRADE_TARGET_NACL "NaCl", @ref CORRADE_TARGET_WINDOWS_RT "Windows RT"
-and @ref CORRADE_TARGET_ANDROID "Android")  can build also tests for OpenGL
+@ref CORRADE_TARGET_WINDOWS_RT "Windows RT" and
+@ref CORRADE_TARGET_ANDROID "Android") can build also tests for OpenGL
 functionality. You can enable them with `BUILD_GL_TESTS`. All GL tests are
 suffixed with `GLTest` so they can be also selectively included/excluded when
 running CTest, e.g.:
@@ -484,54 +482,6 @@ hierarchy and specify path where Corrade is installed in `CMAKE_PREFIX_PATH`.
 
 Then you can install the package using `cmake --build . --target install` to
 make it available for depending projects.
-
-@subsection building-cross-nacl Crosscompiling for Google Chrome Native Client
-
-You will need [Native Client SDK](https://developers.google.com/native-client/beta/sdk/download).
-Tested version is `pepper_22`.
-
-You can choose from either `glibc` or `newlib` toolchain. `Newlib` supports
-only static linking, thus `BUILD_STATIC` is always enabled. Don't forget to
-adapt `NACL_PREFIX` variable in `generic/NaCl-*-x86-32.cmake` and
-`generic/NaCl-*-x86-64.cmake` to path where your SDK is installed. Default is
-`/usr/nacl`. You may need to adapt also `NACL_TOOLCHAIN_PATH` so CMake is able
-to find the compiler. NaCl currently supports only OpenGL ES 2, thus
-`TARGET_GLES` and `TARGET_GLES2` is always enabled.
-
-Then create build directories for x86-32 and x86-64 and run cmake and build
-command in them. Be sure to adapt `CMAKE_INSTALL_PREFIX` to the same value as
-in `NACL_PREFIX` in toolchain file and specify path where Corrade is installed
-in `CMAKE_PREFIX_PATH`.
-
-    mkdir build-nacl-x86-32 && cd build-nacl-x86-32
-    cmake .. \
-        -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/NaCl-newlib-x86-32.cmake" \
-        -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_PREFIX_PATH=/usr/nacl \
-        -DCMAKE_INSTALL_PREFIX=/usr/nacl \
-        -DWITH_NACLAPPLICATION=ON \
-        -DLIB_SUFFIX=/32
-    cmake --build .
-
-    mkdir build-nacl-x86-64 && cd build-nacl-x86-64
-    cmake .. \
-        -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/NaCl-newlib-x86-64.cmake" \
-        -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_PREFIX_PATH=/usr/nacl \
-        -DCMAKE_INSTALL_PREFIX=/usr/nacl \
-        -DWITH_NACLAPPLICATION=ON
-    cmake --build .
-
-Then you can install both versions using `cmake --build . --target install` to
-make them available for depending projects. The headers are shared by both
-versions.
-
-For ArchLinux there are also prepared package files in `package/archlinux`,
-named `PKGBUILD-nacl-glibc` and `PKGBUILD-nacl-newlib`, see
-@ref building-packages-arch "above" for more information.
-
-See @ref Platform::NaClApplication documentation for more information about
-building your projects for Google Chrome Native Client.
 
 @subsection building-cross-emscripten Crosscompiling for Emscripten
 

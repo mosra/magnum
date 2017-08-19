@@ -351,7 +351,6 @@ Extension                                   | Status
 @extension{APPLE,texture_format_BGRA8888}   | done
 @extension{ARM,shader_framebuffer_fetch}    | missing renderer setup and limit query
 @extension{ARM,shader_framebuffer_fetch_depth_stencil} | done (shading language only)
-@extension{CHROMIUM,map_sub} (NaCl only)    | only buffer mapping
 @extension{EXT,texture_filter_anisotropic}  | done
 @extension{EXT,texture_format_BGRA8888}     | done
 @extension{EXT,read_format_bgra}            | done

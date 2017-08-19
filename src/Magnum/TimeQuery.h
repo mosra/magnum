@@ -174,7 +174,7 @@ class TimeQuery: public AbstractQuery {
         void timestamp() {
             #ifndef MAGNUM_TARGET_GLES
             glQueryCounter(id(), GL_TIMESTAMP);
-            #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_NACL)
+            #elif !defined(CORRADE_TARGET_EMSCRIPTEN)
             glQueryCounterEXT(id(), GL_TIMESTAMP_EXT);
             #else
             CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */

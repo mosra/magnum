@@ -41,7 +41,7 @@ else()
 endif()
 
 # Emscripten doesn't have the ability to load function pointers manually
-if(NOT CORRADE_TARGET_NACL AND NOT CORRADE_TARGET_EMSCRIPTEN)
+if(NOT CORRADE_TARGET_EMSCRIPTEN)
     # flextGLPlatform*.cpp is compiled as part of Magnum*Context libraries in Platform
     add_library(MagnumFlextGLObjects OBJECT ${MagnumOpenGL_SRCS})
     target_include_directories(MagnumFlextGLObjects PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)

@@ -186,11 +186,7 @@ void Buffer::copy(Buffer& read, Buffer& write, const GLintptr readOffset, const 
 }
 #endif
 
-Buffer::Buffer(const TargetHint targetHint): _targetHint{targetHint}, _flags{ObjectFlag::DeleteOnDestruction}
-    #ifdef CORRADE_TARGET_NACL
-    , _mappedBuffer{nullptr}
-    #endif
-{
+Buffer::Buffer(const TargetHint targetHint): _targetHint{targetHint}, _flags{ObjectFlag::DeleteOnDestruction} {
     (this->*Context::current().state().buffer->createImplementation)();
     CORRADE_INTERNAL_ASSERT(_id != Implementation::State::DisengagedBinding);
 }
@@ -290,10 +286,8 @@ auto Buffer::bindSomewhereInternal(const TargetHint hint) -> TargetHint {
         if(currentVAO != 0) {
             #ifndef MAGNUM_TARGET_GLES2
             glBindVertexArray(currentVAO = 0);
-            #elif !defined(CORRADE_TARGET_NACL)
-            glBindVertexArrayOES(currentVAO = 0);
             #else
-            CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+            glBindVertexArrayOES(currentVAO = 0);
             #endif
         }
     }
@@ -372,13 +366,6 @@ char* Buffer::map(const MapAccess access) {
     return static_cast<char*>((this->*Context::current().state().buffer->mapImplementation)(access));
 }
 
-#if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_NACL)
-void* Buffer::mapSub(const GLintptr offset, const GLsizeiptr length, const MapAccess access) {
-    CORRADE_ASSERT(!_mappedBuffer, "Buffer::mapSub(): the buffer is already mapped", nullptr);
-    return _mappedBuffer = glMapBufferSubDataCHROMIUM(GLenum(bindSomewhereInternal(_targetHint)), offset, length, GLenum(access));
-}
-#endif
-
 Containers::ArrayView<char> Buffer::map(const GLintptr offset, const GLsizeiptr length, const MapFlags flags) {
     return {static_cast<char*>((this->*Context::current().state().buffer->mapRangeImplementation)(offset, length, flags)), std::size_t(length)};
 }
@@ -389,14 +376,6 @@ Buffer& Buffer::flushMappedRange(const GLintptr offset, const GLsizeiptr length)
 }
 
 bool Buffer::unmap() { return (this->*Context::current().state().buffer->unmapImplementation)(); }
-
-#if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_NACL)
-void Buffer::unmapSub() {
-    CORRADE_ASSERT(_mappedBuffer, "Buffer::unmapSub(): the buffer is not mapped", );
-    glUnmapBufferSubDataCHROMIUM(_mappedBuffer);
-    _mappedBuffer = nullptr;
-}
-#endif
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
@@ -570,11 +549,8 @@ void Buffer::invalidateSubImplementationARB(GLintptr offset, GLsizeiptr length) 
 void* Buffer::mapImplementationDefault(MapAccess access) {
     #ifndef MAGNUM_TARGET_GLES
     return glMapBuffer(GLenum(bindSomewhereInternal(_targetHint)), GLenum(access));
-    #elif !defined(CORRADE_TARGET_NACL)
-    return glMapBufferOES(GLenum(bindSomewhereInternal(_targetHint)), GLenum(access));
     #else
-    static_cast<void>(access);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    return glMapBufferOES(GLenum(bindSomewhereInternal(_targetHint)), GLenum(access));
     #endif
 }
 
@@ -592,13 +568,8 @@ void* Buffer::mapImplementationDSAEXT(MapAccess access) {
 void* Buffer::mapRangeImplementationDefault(GLintptr offset, GLsizeiptr length, MapFlags access) {
     #ifndef MAGNUM_TARGET_GLES2
     return glMapBufferRange(GLenum(bindSomewhereInternal(_targetHint)), offset, length, GLenum(access));
-    #elif !defined(CORRADE_TARGET_NACL)
-    return glMapBufferRangeEXT(GLenum(bindSomewhereInternal(_targetHint)), offset, length, GLenum(access));
     #else
-    static_cast<void>(offset);
-    static_cast<void>(length);
-    static_cast<void>(access);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    return glMapBufferRangeEXT(GLenum(bindSomewhereInternal(_targetHint)), offset, length, GLenum(access));
     #endif
 }
 
@@ -616,12 +587,8 @@ void* Buffer::mapRangeImplementationDSAEXT(GLintptr offset, GLsizeiptr length, M
 void Buffer::flushMappedRangeImplementationDefault(GLintptr offset, GLsizeiptr length) {
     #ifndef MAGNUM_TARGET_GLES2
     glFlushMappedBufferRange(GLenum(bindSomewhereInternal(_targetHint)), offset, length);
-    #elif !defined(CORRADE_TARGET_NACL)
-    glFlushMappedBufferRangeEXT(GLenum(bindSomewhereInternal(_targetHint)), offset, length);
     #else
-    static_cast<void>(offset);
-    static_cast<void>(length);
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    glFlushMappedBufferRangeEXT(GLenum(bindSomewhereInternal(_targetHint)), offset, length);
     #endif
 }
 
@@ -639,10 +606,8 @@ void Buffer::flushMappedRangeImplementationDSAEXT(GLintptr offset, GLsizeiptr le
 bool Buffer::unmapImplementationDefault() {
     #ifndef MAGNUM_TARGET_GLES2
     return glUnmapBuffer(GLenum(bindSomewhereInternal(_targetHint)));
-    #elif !defined(CORRADE_TARGET_NACL)
-    return glUnmapBufferOES(GLenum(bindSomewhereInternal(_targetHint)));
     #else
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    return glUnmapBufferOES(GLenum(bindSomewhereInternal(_targetHint)));
     #endif
 }
 

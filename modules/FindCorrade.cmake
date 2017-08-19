@@ -80,12 +80,6 @@
 #  CORRADE_TARGET_IOS_SIMULATOR - Defined if compiled for iOS Simulator
 #  CORRADE_TARGET_WINDOWS       - Defined if compiled for Windows
 #  CORRADE_TARGET_WINDOWS_RT    - Defined if compiled for Windows RT
-#  CORRADE_TARGET_NACL          - Defined if compiled for Google Chrome Native
-#   Client
-#  CORRADE_TARGET_NACL_NEWLIB   - Defined if compiled for Google Chrome Native
-#   Client with `newlib` toolchain
-#  CORRADE_TARGET_NACL_GLIBC    - Defined if compiled for Google Chrome Native
-#   Client with `glibc` toolchain
 #  CORRADE_TARGET_EMSCRIPTEN    - Defined if compiled for Emscripten
 #  CORRADE_TARGET_ANDROID       - Defined if compiled for Android
 #  CORRADE_TESTSUITE_TARGET_XCTEST - Defined if TestSuite is targetting Xcode
@@ -294,9 +288,6 @@ set(_corradeFlags
     TARGET_IOS_SIMULATOR
     TARGET_WINDOWS
     TARGET_WINDOWS_RT
-    TARGET_NACL
-    TARGET_NACL_NEWLIB
-    TARGET_NACL_GLIBC
     TARGET_EMSCRIPTEN
     TARGET_ANDROID
     TESTSUITE_TARGET_XCTEST
@@ -415,7 +406,7 @@ foreach(_component ${Corrade_FIND_COMPONENTS})
         # PluginManager library
         if(_component STREQUAL PluginManager)
             # At least static build needs this
-            if(CORRADE_TARGET_UNIX OR CORRADE_TARGET_NACL_GLIBC)
+            if(CORRADE_TARGET_UNIX)
                 set_property(TARGET Corrade::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES ${CMAKE_DL_LIBS})
             endif()

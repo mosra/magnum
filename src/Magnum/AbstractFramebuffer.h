@@ -237,8 +237,6 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @requires_gles30 Extension @extension{ANGLE,framebuffer_blit} or
          *      @extension{NV,framebuffer_blit} in OpenGL ES 2.0.
          * @requires_webgl20 Framebuffer blit is not available in WebGL 1.0.
-         * @todo NaCl exports `BlitFramebufferEXT` (although no such extension
-         *      exists for ES)
          */
         static void blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter);
 
