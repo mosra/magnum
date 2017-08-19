@@ -113,6 +113,9 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
         #ifdef __GNUC__
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #elif defined(_MSC_VER)
+        #pragma warning(push)
+        #pragma warning(disable: 4996)
         #endif
         /**
          * @copybrief transform()
@@ -123,6 +126,8 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
         }
         #ifdef __GNUC__
         #pragma GCC diagnostic pop
+        #elif defined(_MSC_VER)
+        #pragma warning(pop)
         #endif
         #endif
 
@@ -152,6 +157,9 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
         #ifdef __GNUC__
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #elif defined(_MSC_VER)
+        #pragma warning(push)
+        #pragma warning(disable: 4996)
         #endif
         /**
          * @copybrief translate()
@@ -162,6 +170,8 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
         }
         #ifdef __GNUC__
         #pragma GCC diagnostic pop
+        #elif defined(_MSC_VER)
+        #pragma warning(pop)
         #endif
         #endif
 
@@ -194,6 +204,9 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
         #ifdef __GNUC__
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #elif defined(_MSC_VER)
+        #pragma warning(push)
+        #pragma warning(disable: 4996)
         #endif
         /**
          * @copybrief rotate()
@@ -204,6 +217,8 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
         }
         #ifdef __GNUC__
         #pragma GCC diagnostic pop
+        #elif defined(_MSC_VER)
+        #pragma warning(pop)
         #endif
         #endif
 
@@ -219,15 +234,17 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
         #ifdef __GNUC__
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #elif defined(_MSC_VER)
+        #pragma warning(push)
+        #pragma warning(disable: 4996)
         #endif
         CORRADE_DEPRECATED("use rotateX() or rotateXLocal() instead") Object<BasicDualQuaternionTransformation<T>>& rotateX(Math::Rad<T> angle, TransformationType type) {
-            #ifdef _MSC_VER
-            #pragma warning(suppress: 4996)
-            #endif
             return rotate(angle, Math::Vector3<T>::xAxis(), type);
         }
         #ifdef __GNUC__
         #pragma GCC diagnostic pop
+        #elif defined(_MSC_VER)
+        #pragma warning(pop)
         #endif
         #endif
         Object<BasicDualQuaternionTransformation<T>>& rotateY(Math::Rad<T> angle) {
@@ -240,15 +257,17 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
         #ifdef __GNUC__
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #elif defined(_MSC_VER)
+        #pragma warning(push)
+        #pragma warning(disable: 4996)
         #endif
         CORRADE_DEPRECATED("use rotateY() or rotateYLocal() instead") Object<BasicDualQuaternionTransformation<T>>& rotateY(Math::Rad<T> angle, TransformationType type) {
-            #ifdef _MSC_VER
-            #pragma warning(suppress: 4996)
-            #endif
             return rotate(angle, Math::Vector3<T>::yAxis(), type);
         }
         #ifdef __GNUC__
         #pragma GCC diagnostic pop
+        #elif defined(_MSC_VER)
+        #pragma warning(pop)
         #endif
         #endif
         Object<BasicDualQuaternionTransformation<T>>& rotateZ(Math::Rad<T> angle) {
@@ -261,15 +280,17 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
         #ifdef __GNUC__
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #elif defined(_MSC_VER)
+        #pragma warning(push)
+        #pragma warning(disable: 4996)
         #endif
         CORRADE_DEPRECATED("use rotateZ() or rotateZLocal() instead") Object<BasicDualQuaternionTransformation<T>>& rotateZ(Math::Rad<T> angle, TransformationType type) {
-            #ifdef _MSC_VER
-            #pragma warning(suppress: 4996)
-            #endif
             return rotate(angle, Math::Vector3<T>::zAxis(), type);
         }
         #ifdef __GNUC__
         #pragma GCC diagnostic pop
+        #elif defined(_MSC_VER)
+        #pragma warning(pop)
         #endif
         #endif
         #endif

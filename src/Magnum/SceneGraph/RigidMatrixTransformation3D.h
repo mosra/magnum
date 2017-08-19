@@ -117,6 +117,9 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
         #ifdef __GNUC__
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #elif defined(_MSC_VER)
+        #pragma warning(push)
+        #pragma warning(disable: 4996)
         #endif
         /**
          * @copybrief transform()
@@ -127,6 +130,8 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
         }
         #ifdef __GNUC__
         #pragma GCC diagnostic pop
+        #elif defined(_MSC_VER)
+        #pragma warning(pop)
         #endif
         #endif
 
@@ -157,6 +162,9 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
         #ifdef __GNUC__
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #elif defined(_MSC_VER)
+        #pragma warning(push)
+        #pragma warning(disable: 4996)
         #endif
         /**
          * @copybrief translate()
@@ -167,6 +175,8 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
         }
         #ifdef __GNUC__
         #pragma GCC diagnostic pop
+        #elif defined(_MSC_VER)
+        #pragma warning(pop)
         #endif
         #endif
 
@@ -201,6 +211,9 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
         #ifdef __GNUC__
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #elif defined(_MSC_VER)
+        #pragma warning(push)
+        #pragma warning(disable: 4996)
         #endif
         /**
          * @copybrief rotate()
@@ -211,6 +224,8 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
         }
         #ifdef __GNUC__
         #pragma GCC diagnostic pop
+        #elif defined(_MSC_VER)
+        #pragma warning(pop)
         #endif
         #endif
 
@@ -241,6 +256,9 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
         #ifdef __GNUC__
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #elif defined(_MSC_VER)
+        #pragma warning(push)
+        #pragma warning(disable: 4996)
         #endif
         /**
          * @copybrief rotateX()
@@ -251,6 +269,8 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
         }
         #ifdef __GNUC__
         #pragma GCC diagnostic pop
+        #elif defined(_MSC_VER)
+        #pragma warning(pop)
         #endif
         #endif
 
@@ -281,6 +301,9 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
         #ifdef __GNUC__
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #elif defined(_MSC_VER)
+        #pragma warning(push)
+        #pragma warning(disable: 4996)
         #endif
         /**
          * @copybrief rotateY()
@@ -291,6 +314,8 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
         }
         #ifdef __GNUC__
         #pragma GCC diagnostic pop
+        #elif defined(_MSC_VER)
+        #pragma warning(pop)
         #endif
         #endif
 
@@ -321,6 +346,9 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
         #ifdef __GNUC__
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #elif defined(_MSC_VER)
+        #pragma warning(push)
+        #pragma warning(disable: 4996)
         #endif
         /**
          * @copybrief rotateZ()
@@ -331,6 +359,8 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
         }
         #ifdef __GNUC__
         #pragma GCC diagnostic pop
+        #elif defined(_MSC_VER)
+        #pragma warning(pop)
         #endif
         #endif
 
@@ -362,6 +392,9 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
         #ifdef __GNUC__
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #elif defined(_MSC_VER)
+        #pragma warning(push)
+        #pragma warning(disable: 4996)
         #endif
         /**
          * @copybrief reflect()
@@ -372,6 +405,8 @@ template<class T> class BasicRigidMatrixTransformation3D: public AbstractBasicTr
         }
         #ifdef __GNUC__
         #pragma GCC diagnostic pop
+        #elif defined(_MSC_VER)
+        #pragma warning(pop)
         #endif
         #endif
 

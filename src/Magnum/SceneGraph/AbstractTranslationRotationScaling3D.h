@@ -73,19 +73,21 @@ template<class T> class AbstractBasicTranslationRotationScaling3D: public Abstra
         #ifdef __GNUC__
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #elif defined(_MSC_VER)
+        #pragma warning(push)
+        #pragma warning(disable: 4996)
         #endif
         /**
          * @copybrief scale()
          * @deprecated Use @ref scale() or @ref scaleLocal() instead.
          */
         CORRADE_DEPRECATED("use scale() or scaleLocal() instead") AbstractBasicTranslationRotationScaling3D<T>& scale(const Math::Vector3<T>& vector, TransformationType type) {
-            #ifdef _MSC_VER
-            #pragma warning(suppress: 4996)
-            #endif
             return type == TransformationType::Global ? scale(vector) : scaleLocal(vector);
         }
         #ifdef __GNUC__
         #pragma GCC diagnostic pop
+        #elif defined(_MSC_VER)
+        #pragma warning(pop)
         #endif
         #endif
 
@@ -107,16 +109,18 @@ template<class T> class AbstractBasicTranslationRotationScaling3D: public Abstra
         #ifdef __GNUC__
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #elif defined(_MSC_VER)
+        #pragma warning(push)
+        #pragma warning(disable: 4996)
         #endif
         CORRADE_DEPRECATED("use translate() or translateLocal() instead") AbstractBasicTranslationRotationScaling3D<T>& translate(const Math::Vector3<T>& vector, TransformationType type) {
-            #ifdef _MSC_VER
-            #pragma warning(suppress: 4996)
-            #endif
             AbstractBasicTranslationRotation3D<T>::translate(vector, type);
             return *this;
         }
         #ifdef __GNUC__
         #pragma GCC diagnostic pop
+        #elif defined(_MSC_VER)
+        #pragma warning(pop)
         #endif
         #endif
         AbstractBasicTranslationRotationScaling3D<T>& rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis) {
@@ -131,16 +135,18 @@ template<class T> class AbstractBasicTranslationRotationScaling3D: public Abstra
         #ifdef __GNUC__
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #elif defined(_MSC_VER)
+        #pragma warning(push)
+        #pragma warning(disable: 4996)
         #endif
         CORRADE_DEPRECATED("use rotate() or rotateLocal() instead") AbstractBasicTranslationRotationScaling3D<T>& rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type) {
-            #ifdef _MSC_VER
-            #pragma warning(suppress: 4996)
-            #endif
             AbstractBasicTranslationRotation3D<T>::rotate(angle, normalizedAxis, type);
             return *this;
         }
         #ifdef __GNUC__
         #pragma GCC diagnostic pop
+        #elif defined(_MSC_VER)
+        #pragma warning(pop)
         #endif
         #endif
         AbstractBasicTranslationRotationScaling3D<T>& rotateX(Math::Rad<T> angle) {
@@ -155,16 +161,18 @@ template<class T> class AbstractBasicTranslationRotationScaling3D: public Abstra
         #ifdef __GNUC__
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #elif defined(_MSC_VER)
+        #pragma warning(push)
+        #pragma warning(disable: 4996)
         #endif
         CORRADE_DEPRECATED("use rotateX() or rotateXLocal() instead") AbstractBasicTranslationRotationScaling3D<T>& rotateX(Math::Rad<T> angle, TransformationType type) {
-            #ifdef _MSC_VER
-            #pragma warning(suppress: 4996)
-            #endif
             AbstractBasicTranslationRotation3D<T>::rotateX(angle, type);
             return *this;
         }
         #ifdef __GNUC__
         #pragma GCC diagnostic pop
+        #elif defined(_MSC_VER)
+        #pragma warning(pop)
         #endif
         #endif
         AbstractBasicTranslationRotationScaling3D<T>& rotateY(Math::Rad<T> angle) {
@@ -179,16 +187,18 @@ template<class T> class AbstractBasicTranslationRotationScaling3D: public Abstra
         #ifdef __GNUC__
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #elif defined(_MSC_VER)
+        #pragma warning(push)
+        #pragma warning(disable: 4996)
         #endif
         CORRADE_DEPRECATED("use rotateY() or rotateYLocal() instead") AbstractBasicTranslationRotationScaling3D<T>& rotateY(Math::Rad<T> angle, TransformationType type) {
-            #ifdef _MSC_VER
-            #pragma warning(suppress: 4996)
-            #endif
             AbstractBasicTranslationRotation3D<T>::rotateY(angle, type);
             return *this;
         }
         #ifdef __GNUC__
         #pragma GCC diagnostic pop
+        #elif defined(_MSC_VER)
+        #pragma warning(pop)
         #endif
         #endif
         AbstractBasicTranslationRotationScaling3D<T>& rotateZ(Math::Rad<T> angle) {
@@ -203,16 +213,18 @@ template<class T> class AbstractBasicTranslationRotationScaling3D: public Abstra
         #ifdef __GNUC__
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #elif defined(_MSC_VER)
+        #pragma warning(push)
+        #pragma warning(disable: 4996)
         #endif
         CORRADE_DEPRECATED("use rotateZ() or rotateZLocal() instead") AbstractBasicTranslationRotationScaling3D<T>& rotateZ(Math::Rad<T> angle, TransformationType type) {
-            #ifdef _MSC_VER
-            #pragma warning(suppress: 4996)
-            #endif
             AbstractBasicTranslationRotation3D<T>::rotateZ(angle, type);
             return *this;
         }
         #ifdef __GNUC__
         #pragma GCC diagnostic pop
+        #elif defined(_MSC_VER)
+        #pragma warning(pop)
         #endif
         #endif
         #endif

@@ -73,6 +73,9 @@ template<class T> class AbstractBasicTranslationRotationScaling2D: public Abstra
         #ifdef __GNUC__
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #elif defined(_MSC_VER)
+        #pragma warning(push)
+        #pragma warning(disable: 4996)
         #endif
         /**
          * @copybrief scale()
@@ -83,6 +86,8 @@ template<class T> class AbstractBasicTranslationRotationScaling2D: public Abstra
         }
         #ifdef __GNUC__
         #pragma GCC diagnostic pop
+        #elif defined(_MSC_VER)
+        #pragma warning(pop)
         #endif
         #endif
 
@@ -104,16 +109,18 @@ template<class T> class AbstractBasicTranslationRotationScaling2D: public Abstra
         #ifdef __GNUC__
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #elif defined(_MSC_VER)
+        #pragma warning(push)
+        #pragma warning(disable: 4996)
         #endif
         CORRADE_DEPRECATED("use translate() or translateLocal() instead") AbstractBasicTranslationRotationScaling2D<T>& translate(const Math::Vector2<T>& vector, TransformationType type) {
-            #ifdef _MSC_VER
-            #pragma warning(suppress: 4996)
-            #endif
             AbstractBasicTranslationRotation2D<T>::translate(vector, type);
             return *this;
         }
         #ifdef __GNUC__
         #pragma GCC diagnostic pop
+        #elif defined(_MSC_VER)
+        #pragma warning(pop)
         #endif
         #endif
         AbstractBasicTranslationRotationScaling2D<T>& rotate(Math::Rad<T> angle) {
@@ -128,16 +135,18 @@ template<class T> class AbstractBasicTranslationRotationScaling2D: public Abstra
         #ifdef __GNUC__
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #elif defined(_MSC_VER)
+        #pragma warning(push)
+        #pragma warning(disable: 4996)
         #endif
         CORRADE_DEPRECATED("use rotate() or rotateLocal() instead") AbstractBasicTranslationRotationScaling2D<T>& rotate(Math::Rad<T> angle, TransformationType type) {
-            #ifdef _MSC_VER
-            #pragma warning(suppress: 4996)
-            #endif
             AbstractBasicTranslationRotation2D<T>::rotate(angle, type);
             return *this;
         }
         #ifdef __GNUC__
         #pragma GCC diagnostic pop
+        #elif defined(_MSC_VER)
+        #pragma warning(pop)
         #endif
         #endif
         #endif

@@ -77,6 +77,9 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
         #ifdef __GNUC__
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #elif defined(_MSC_VER)
+        #pragma warning(push)
+        #pragma warning(disable: 4996)
         #endif
         /**
          * @copybrief rotate()
@@ -87,6 +90,8 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
         }
         #ifdef __GNUC__
         #pragma GCC diagnostic pop
+        #elif defined(_MSC_VER)
+        #pragma warning(pop)
         #endif
         #endif
 
@@ -122,6 +127,9 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
         #ifdef __GNUC__
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #elif defined(_MSC_VER)
+        #pragma warning(push)
+        #pragma warning(disable: 4996)
         #endif
         /**
          * @copybrief rotateX()
@@ -132,6 +140,8 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
         }
         #ifdef __GNUC__
         #pragma GCC diagnostic pop
+        #elif defined(_MSC_VER)
+        #pragma warning(pop)
         #endif
         #endif
 
@@ -167,6 +177,9 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
         #ifdef __GNUC__
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #elif defined(_MSC_VER)
+        #pragma warning(push)
+        #pragma warning(disable: 4996)
         #endif
         /**
          * @copybrief rotateY()
@@ -177,6 +190,8 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
         }
         #ifdef __GNUC__
         #pragma GCC diagnostic pop
+        #elif defined(_MSC_VER)
+        #pragma warning(pop)
         #endif
         #endif
 
@@ -212,6 +227,9 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
         #ifdef __GNUC__
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #elif defined(_MSC_VER)
+        #pragma warning(push)
+        #pragma warning(disable: 4996)
         #endif
         /**
          * @copybrief rotateZ()
@@ -222,6 +240,8 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
         }
         #ifdef __GNUC__
         #pragma GCC diagnostic pop
+        #elif defined(_MSC_VER)
+        #pragma warning(pop)
         #endif
         #endif
 
@@ -243,16 +263,18 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
         #ifdef __GNUC__
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #elif defined(_MSC_VER)
+        #pragma warning(push)
+        #pragma warning(disable: 4996)
         #endif
         CORRADE_DEPRECATED("use translate() or translateLocal() instead") AbstractBasicTranslationRotation3D<T>& translate(const Math::Vector3<T>& vector, TransformationType type) {
-            #ifdef _MSC_VER
-            #pragma warning(suppress: 4996)
-            #endif
             AbstractBasicTranslation3D<T>::translate(vector, type);
             return *this;
         }
         #ifdef __GNUC__
         #pragma GCC diagnostic pop
+        #elif defined(_MSC_VER)
+        #pragma warning(pop)
         #endif
         #endif
         #endif

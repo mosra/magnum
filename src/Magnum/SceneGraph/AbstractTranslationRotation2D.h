@@ -73,6 +73,9 @@ template<class T> class AbstractBasicTranslationRotation2D: public AbstractBasic
         #ifdef __GNUC__
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #elif defined(_MSC_VER)
+        #pragma warning(push)
+        #pragma warning(disable: 4996)
         #endif
         /**
          * @copybrief rotate()
@@ -83,6 +86,8 @@ template<class T> class AbstractBasicTranslationRotation2D: public AbstractBasic
         }
         #ifdef __GNUC__
         #pragma GCC diagnostic pop
+        #elif defined(_MSC_VER)
+        #pragma warning(pop)
         #endif
         #endif
 
@@ -104,16 +109,18 @@ template<class T> class AbstractBasicTranslationRotation2D: public AbstractBasic
         #ifdef __GNUC__
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+        #elif defined(_MSC_VER)
+        #pragma warning(push)
+        #pragma warning(disable: 4996)
         #endif
         CORRADE_DEPRECATED("use translate() or translateLocal() instead") AbstractBasicTranslationRotation2D<T>& translate(const Math::Vector2<T>& vector, TransformationType type) {
-            #ifdef _MSC_VER
-            #pragma warning(suppress: 4996)
-            #endif
             AbstractBasicTranslation2D<T>::translate(vector, type);
             return *this;
         }
         #ifdef __GNUC__
         #pragma GCC diagnostic pop
+        #elif defined(_MSC_VER)
+        #pragma warning(pop)
         #endif
         #endif
         #endif
