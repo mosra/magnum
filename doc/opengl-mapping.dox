@@ -263,7 +263,6 @@ OpenGL function                         | Matching API
 @fn_gl_extension{MakeTextureHandleResident,ARB,bindless_texture} | |
 @fn_gl_extension{MakeTextureHandleNonResident,ARB,bindless_texture} | |
 @fn_gl{MapBuffer}, \n `glMapNamedBuffer()`, \n @fn_gl_extension{MapNamedBuffer,EXT,direct_state_access}, \n @fn_gl{MapBufferRange}, \n `glMapNamedBufferRange()`, \n @fn_gl_extension{MapNamedBufferRange,EXT,direct_state_access}, \n @fn_gl{UnmapBuffer}, \n `glUnmapNamedBuffer()`, \n @fn_gl_extension{UnmapNamedBuffer,EXT,direct_state_access} | @ref Buffer::map(), @ref Buffer::unmap()
-@fn_gl_extension{MapBufferSubData,CHROMIUM,map_sub}, @fn_gl_extension{UnmapBufferSubData,CHROMIUM,map_sub} | @ref Buffer::mapSub(), @ref Buffer::unmapSub()
 @fn_gl{MemoryBarrier}, \n `glMemoryBarrierByRegion()` | @ref Renderer::setMemoryBarrier(), \n @ref Renderer::setMemoryBarrierByRegion()
 @fn_gl{MinSampleShading}                | |
 @fn_gl{MultiDrawArrays}, \n @fn_gl{MultiDrawElements}, \n @fn_gl{MultiDrawElementsBaseVertex} | @ref MeshView::draw(AbstractShaderProgram&, std::initializer_list<std::reference_wrapper<MeshView>>)

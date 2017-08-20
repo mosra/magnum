@@ -499,7 +499,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         /**
          * @brief Memory mapping access
          *
-         * @see @ref map(MapAccess), @ref mapSub()
+         * @see @ref map(MapAccess)
          * @requires_es_extension Extension @extension{OES,mapbuffer} or
          *      @extension{CHROMIUM,map_sub}
          * @requires_gles Buffer mapping is not available in WebGL.
