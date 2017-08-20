@@ -46,6 +46,7 @@ namespace Magnum {
 -   ANGLE ES2/ES3 support, ability to create desktop GLES contexts on Windows
 -   Windows Phone/Store support via ANGLE
 -   iOS support
+-   WebAssembly support when building for Emscripten
 -   WebGL 2.0 support
 -   New OpenGL extension support:
     -   @extension{EXT,draw_buffers} ES2 extension

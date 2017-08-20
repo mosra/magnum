@@ -485,13 +485,18 @@ make it available for depending projects.
 
 @subsection building-cross-emscripten Crosscompiling for Emscripten
 
-You will need [Emscripten](https://github.com/kripken/emscripten/wiki/Tutorial)
-installed and configured.
+You will need [Emscripten](http://kripken.github.io/emscripten-site/docs/getting_started/Tutorial.html)
+installed and configured. The toolchains require CMake 3.7 or newer to properly
+set compiler and linker flags.
 
-Don't forget to adapt `EMSCRIPTEN_PREFIX` variable in `generic/Emscripten.cmake`
-to path where Emscripten is installed. Default is `/usr/lib/emscripten`.
-Emscripten supports dynamic libraries only to simplify porting and they are
-generally slower, thus `BUILD_STATIC` is implicitly enabled.
+There are two toolchain files. The `generic/Emscripten.cmake` is for the
+classical (asm.js) build, the `generic/Emscripten-wasm.cmake` is for
+WebAssembly build. Don't forget to adapt `EMSCRIPTEN_PREFIX` variable in
+`generic/Emscripten*.cmake` to path where Emscripten is installed; you can also
+pass it explicitly on command-line using `-DEMSCRIPTEN_PREFIX`. Default is
+`/usr/lib/emscripten`. Emscripten supports dynamic libraries only to simplify
+porting and they are generally slower, thus `BUILD_STATIC` is implicitly
+enabled.
 
 Then create build directory and run cmake and build command in it. Be sure to
 set `CMAKE_INSTALL_PREFIX` to path contained in `EMSCRIPTEN_TOOLCHAIN_PATH`.
@@ -514,9 +519,13 @@ make it available for depending projects.
 If you have Node.js installed, you can also build and run unit tests using
 `ctest`. See `BUILD_TESTS` above.
 
-For ArchLinux there is also prepared package file in `package/archlinux`,
-named `PKGBUILD-emscripten`, see @ref building-packages-arch "above" for more
-information.
+For ArchLinux there are also prepared package files in `package/archlinux`,
+named `PKGBUILD-emscripten`, `PKGBUILD-emscripten-webgl2`,
+`PKGBUILD-emscripten-noopt`, `PKGBUILD-emscripten-noopt-webgl2`,
+`PKGBUILD-emscripten-wasm` and `PKGBUILD-emscripten-wasm-webgl2`, see
+@ref building-packages-arch "above" for more information. The first two are for
+WebGL 1 / WebGL 2 optimized asm.js build (*slow* to compile), the second for
+unoptimized build (faster to compile) and the third for WebAssembly build.
 
 See @ref Platform::Sdl2Application documentation for more information about
 building your projects for Emscripten.

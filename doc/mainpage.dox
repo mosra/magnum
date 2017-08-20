@@ -83,7 +83,7 @@ Platforms:
 -   **iOS** (through SDL2 toolkit)
 -   **Android** 2.3 (API Level 9) and higher
 -   **Windows RT** (Store/Phone) using ANGLE (through SDL2 toolkit)
--   **HTML5/JavaScript** (through [Emscripten](https://github.com/kripken/emscripten/wiki))
+-   **Web** (asm.js or WebAssembly), through [Emscripten](http://kripken.github.io/emscripten-site/)
 
 @section mainpage-features Features
 
