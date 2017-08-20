@@ -91,13 +91,15 @@ void KahanSumTest::floats() {
     Iterator<Float> end{1.0f, 100000000};
 
     CORRADE_COMPARE(kahanSum(begin, end), 1.0e8f);
+    float sum = std::accumulate(begin, end, 0.0f);
     {
         #ifdef CORRADE_TARGET_EMSCRIPTEN
-        /* Last tested: emscripten 1.37.1 */
-        CORRADE_EXPECT_FAIL("Gives the same result as kahanSum(), might be "
-            "because doubles are used internally.");
+        /* Last tested: emscripten 1.37.18, asm.js. Wasm gives proper result. */
+        CORRADE_EXPECT_FAIL_IF(sum == 1.0e8f,
+            "Gives the same result as kahanSum(), might be because doubles "
+            "are used internally on asm.js.");
         #endif
-        CORRADE_COMPARE(std::accumulate(begin, end, 0.0f), 1.6777216e7f);
+        CORRADE_COMPARE(sum, 1.6777216e7f);
     }
 }
 
@@ -132,10 +134,10 @@ void KahanSumTest::iterative() {
     } {
         #ifdef CORRADE_TARGET_EMSCRIPTEN
         /* Last tested: emscripten 1.37.1 */
-        CORRADE_EXPECT_FAIL_IF(sumKahan == 1.0e8f,
+        CORRADE_EXPECT_FAIL_IF(sum == 1.0e8f,
             "Gives the same result as kahanSum(), might be because doubles are "
-            "used internally. Happens only on larger optimization levels, not "
-            "on -O1.");
+            "used internally on asm.js. Happens only on larger optimization "
+            "levels, not on -O1.");
         #endif
         CORRADE_COMPARE(sum, 1.6777216e7f);
     }
