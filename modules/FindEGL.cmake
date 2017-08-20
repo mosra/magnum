@@ -61,7 +61,7 @@ find_package_handle_standard_args(EGL DEFAULT_MSG
     EGL_INCLUDE_DIR)
 
 if(NOT TARGET EGL::EGL)
-    # Work around BUGGY framework support on OSX
+    # Work around BUGGY framework support on macOS
     # http://public.kitware.com/pipermail/cmake/2016-April/063179.html
     if(APPLE AND ${EGL_LIBRARY} MATCHES "\\.framework$")
         add_library(EGL::EGL INTERFACE IMPORTED)

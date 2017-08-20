@@ -136,7 +136,7 @@ class WindowlessCglContext::Configuration {
 @brief Windowless CGL application
 
 Application for offscreen rendering using @ref WindowlessCglContext. This
-application library is available on desktop OpenGL on OS X. It is built if
+application library is available on desktop OpenGL on macOS. It is built if
 `WITH_WINDOWLESSCGLAPPLICATION` is enabled in CMake.
 
 ## Bootstrap application

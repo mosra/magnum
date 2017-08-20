@@ -17,19 +17,19 @@ Contributors to Magnum library
 ------------------------------
 
 *   Miguel Martin ([@miguelmartin75](https://github.com/miguelmartin75)) --
-    initial Mac OS X port, various other improvements
+    initial macOS port, various other improvements
 *   Travis Watkins ([@amaranth](https://github.com/amaranth)) -- support for
-    windowless applications under Mac OS X
+    windowless applications under macOS
 *   [@ArEnSc](https://github.com/ArEnSc) / [@michael-chung](https://github.com/michael-chung) --
-    initial implementation of windowless applications under Mac OS X, Mac OS X
+    initial implementation of windowless applications under macOS, macOS
     port improvements
-*   Stefan Wasilewski ([@smw](https://github.com/smw)) -- Mac OS X port
+*   Stefan Wasilewski ([@smw](https://github.com/smw)) -- macOS port
     improvements
 *   Konstantinos Chatzilygeroudis ([@costashatz](https://github.com/costashatz)) --
     Debian package
 *   Olga Turanksaya ([@olga-python](https://github.com/olga-python)) -- Gentoo
     ebuild
-*   [@wivlaro](https://github.com/wivlaro) -- numerous bug reports, Mac OS X
+*   [@wivlaro](https://github.com/wivlaro) -- numerous bug reports, macOS
     fixes, feature improvements
 *   Jonathan Hale ([@Squareys](https://github.com/Squareys)) -- Audio library
     enhancements, GlfwApplication implementation, frustum culling, bug reports,

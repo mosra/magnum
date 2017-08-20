@@ -51,7 +51,7 @@ else()
     endif()
 
     find_library(SDL2_LIBRARY
-        # Compiling SDL2 from scratch on OSX creates dead libSDL2.so symlink
+        # Compiling SDL2 from scratch on macOS creates dead libSDL2.so symlink
         # which CMake somehow prefers before the SDL2-2.0.dylib file. Making
         # the dylib first so it is preferred.
         NAMES SDL2-2.0 SDL2
@@ -66,9 +66,9 @@ find_path(SDL2_INCLUDE_DIR
     # Apparently when both SDL.h and SDL_scancode.h are specified, CMake is
     # happy enough that it found SDL.h and doesn't bother about the other.
     #
-    # On OSX, where the includes are not in SDL2/SDL.h form (which would solve
-    # this issue), but rather SDL2.framework/Headers/SDL.h, CMake might find
-    # SDL.framework/Headers/SDL.h if SDL1 is installed, which is wrong.
+    # On macOS, where the includes are not in SDL2/SDL.h form (which would
+    # solve this issue), but rather SDL2.framework/Headers/SDL.h, CMake might
+    # find SDL.framework/Headers/SDL.h if SDL1 is installed, which is wrong.
     NAMES SDL_scancode.h
     PATH_SUFFIXES ${_SDL2_PATH_SUFFIXES})
 
@@ -118,7 +118,7 @@ if(NOT TARGET SDL2::SDL2)
         endif()
         add_library(SDL2::SDL2 ${_SDL2_IMPORTED_LIBRARY_KIND})
 
-        # Work around BUGGY framework support on OSX
+        # Work around BUGGY framework support on macOS
         # https://cmake.org/Bug/view.php?id=14105
         if(CORRADE_TARGET_APPLE AND ${SDL2_LIBRARY} MATCHES "\\.framework$")
             set_property(TARGET SDL2::SDL2 PROPERTY IMPORTED_LOCATION ${SDL2_LIBRARY}/SDL2)

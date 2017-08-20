@@ -33,7 +33,7 @@ namespace Magnum {
 
 OpenGLTester::OpenGLTester(): TestSuite::Tester{TestSuite::Tester::TesterConfiguration{}.setSkippedArgumentPrefixes({"magnum"})}, _windowlessApplication{{arguments().first, arguments().second}} {
     /* Try to create debug context, fallback to normal one if not possible. No
-       such thing on OSX or iOS. */
+       such thing on macOS or iOS. */
     #ifndef CORRADE_TARGET_APPLE
     if(!_windowlessApplication.tryCreateContext(Platform::WindowlessApplication::Configuration{}.setFlags(Platform::WindowlessApplication::Configuration::Flag::Debug)))
         _windowlessApplication.createContext();

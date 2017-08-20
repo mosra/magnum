@@ -70,7 +70,7 @@ find_package_handle_standard_args("OpenGLES3" DEFAULT_MSG
 
 if(NOT TARGET OpenGLES3::OpenGLES3)
     if(OPENGLES3_LIBRARY_NEEDED)
-        # Work around BUGGY framework support on OSX
+        # Work around BUGGY framework support on macOS
         # http://public.kitware.com/pipermail/cmake/2016-April/063179.html
         if(CORRADE_TARGET_APPLE AND ${OPENGLES3_LIBRARY} MATCHES "\\.framework$")
             add_library(OpenGLES3::OpenGLES3 INTERFACE IMPORTED)

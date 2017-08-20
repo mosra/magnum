@@ -44,7 +44,7 @@ void DistanceFieldVectorGLTest::compile2D() {
     Shaders::DistanceFieldVector2D shader;
     {
         #ifdef CORRADE_TARGET_APPLE
-        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
         CORRADE_VERIFY(shader.validate().first);
     }
@@ -54,7 +54,7 @@ void DistanceFieldVectorGLTest::compile3D() {
     Shaders::DistanceFieldVector3D shader;
     {
         #ifdef CORRADE_TARGET_APPLE
-        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
         CORRADE_VERIFY(shader.validate().first);
     }

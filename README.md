@@ -55,7 +55,7 @@ Platforms:
 *   **Linux** and embedded Linux (natively using GLX/EGL and Xlib or through
     SDL2, GLFW or GLUT toolkit) [![Build Status](https://travis-ci.org/mosra/magnum.svg?branch=master)](https://travis-ci.org/mosra/magnum) [![Coverage Status](https://coveralls.io/repos/github/mosra/magnum/badge.svg?branch=master)](https://coveralls.io/github/mosra/magnum?branch=master)
 *   **Windows** on both MSVC and MinGW, natively or using ANGLE (through SDL2, GLFW or GLUT toolkit) [![Build Status](https://ci.appveyor.com/api/projects/status/5b477m034cfaskse/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum/branch/master)
-*   **OS X** (through SDL2 or GLFW toolkit) [![Build Status](https://travis-ci.org/mosra/magnum.svg?branch=master)](https://travis-ci.org/mosra/magnum)
+*   **macOS** (through SDL2 or GLFW toolkit) [![Build Status](https://travis-ci.org/mosra/magnum.svg?branch=master)](https://travis-ci.org/mosra/magnum)
 *   **iOS** (through SDL2 toolkit) [![Build Status](https://travis-ci.org/mosra/magnum.svg?branch=master)](https://travis-ci.org/mosra/magnum)
 *   **Android** 2.3 (API Level 9) and higher [![Build Status](https://travis-ci.org/mosra/magnum.svg?branch=master)](https://travis-ci.org/mosra/magnum)
 *   **Windows RT** (Store/Phone) using ANGLE (through SDL2 toolkit) [![Build Status](https://ci.appveyor.com/api/projects/status/5b477m034cfaskse/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum/branch/master)
@@ -152,23 +152,23 @@ separate repositories.
 
 *   **Corrade** -- main Magnum dependency, multiplatform utility library:
     https://github.com/mosra/corrade
-    [![Linux/OSX Build Status](https://travis-ci.org/mosra/corrade.svg?branch=master)](https://travis-ci.org/mosra/corrade) [![Windows Build Status](https://ci.appveyor.com/api/projects/status/afjjlsgtk6jjxulp/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/corrade/branch/master)
+    [![Linux/macOS/iOS/Android/Emscripten Build Status](https://travis-ci.org/mosra/corrade.svg?branch=master)](https://travis-ci.org/mosra/corrade) [![Windows Build Status](https://ci.appveyor.com/api/projects/status/afjjlsgtk6jjxulp/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/corrade/branch/master)
 *   **Magnum Bootstrap** -- bootstrap projects for many use cases, helping you
     get up and running in no time: https://github.com/mosra/magnum-bootstrap
 *   **Magnum Plugins** -- various importer plugins for image, font, audio and
     3D model formats is at https://github.com/mosra/magnum-plugins
-    [![Linux/OSX Build Status](https://travis-ci.org/mosra/magnum-plugins.svg?branch=master)](https://travis-ci.org/mosra/magnum-plugins) [![Windows Build status](https://ci.appveyor.com/api/projects/status/nkdlwaxm2i9d6vpx/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum-plugins/branch/master)
+    [![Linux/macOS/iOS/Android/Emscripten Build Status](https://travis-ci.org/mosra/magnum-plugins.svg?branch=master)](https://travis-ci.org/mosra/magnum-plugins) [![Windows Build status](https://ci.appveyor.com/api/projects/status/nkdlwaxm2i9d6vpx/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum-plugins/branch/master)
 *   **Magnum Integration** -- integration with various external math and
     physics, get it at https://github.com/mosra/magnum-integration
-    [![Linux/OSX Build Status](https://travis-ci.org/mosra/magnum-integration.svg?branch=master)](https://travis-ci.org/mosra/magnum-integration) [![Windows Build Status](https://ci.appveyor.com/api/projects/status/hs6ykva1ld74vavr/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum-integration/branch/master)
+    [![Linux/macOS/iOS/Android/Emscripten Build Status](https://travis-ci.org/mosra/magnum-integration.svg?branch=master)](https://travis-ci.org/mosra/magnum-integration) [![Windows Build Status](https://ci.appveyor.com/api/projects/status/hs6ykva1ld74vavr/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum-integration/branch/master)
 *   **Magnum Examples** -- examples of engine usage, varying from simple
     *Hello World*-like example to more advanced applications, such as viewer
     for complex 3D models. See it at https://github.com/mosra/magnum-examples
-    [![Linux/OSX Build Status](https://travis-ci.org/mosra/magnum-examples.svg?branch=master)](https://travis-ci.org/mosra/magnum-examples) [![Windows Build Status](https://ci.appveyor.com/api/projects/status/33qdqpdc5n0au3ou/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum-examples/branch/master)
+    [![LLinux/macOS/iOS/Android/Emscripten Build Status](https://travis-ci.org/mosra/magnum-examples.svg?branch=master)](https://travis-ci.org/mosra/magnum-examples) [![Windows Build Status](https://ci.appveyor.com/api/projects/status/33qdqpdc5n0au3ou/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum-examples/branch/master)
 *   **Magnum Extras** -- playground for testing new APIs, specialized stuff
     that doesn't necessarily need to be a part of main Magnum repository or
     mutually exclusive functionality: https://github.com/mosra/magnum-extras
-    [![Linux/OSX Build Status](https://travis-ci.org/mosra/magnum-extras.svg?branch=master)](https://travis-ci.org/mosra/magnum-extras) [![Windows Build status](https://ci.appveyor.com/api/projects/status/f75u5eow2qiso7m5/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum-extras/branch/master)
+    [![Linux/macOS/iOS/Android/Emscripten Build Status](https://travis-ci.org/mosra/magnum-extras.svg?branch=master)](https://travis-ci.org/mosra/magnum-extras) [![Windows Build status](https://ci.appveyor.com/api/projects/status/f75u5eow2qiso7m5/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum-extras/branch/master)
 *   **libRocket integration** -- integrates Magnum as rendering backend into
     [libRocket](https://github.com/libRocket/libRocket) GUI library:
     https://github.com/miguelmartin75/Magnum-libRocket

@@ -121,10 +121,10 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
     /* Request usable version otherwise */
     } else {
         #ifndef MAGNUM_TARGET_GLES
-        /* First try to create core context. This is needed mainly on OS X and
+        /* First try to create core context. This is needed mainly on macOS and
            Mesa, as support for recent OpenGL versions isn't implemented in
            compatibility contexts (which are the default). At least GL 3.2 is
-           needed on OSX, at least GL 3.1 is needed on Mesa. Bite the bullet
+           needed on macOS, at least GL 3.1 is needed on Mesa. Bite the bullet
            and try 3.1 also elsewhere. */
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
         #ifdef CORRADE_TARGET_APPLE

@@ -125,7 +125,7 @@ void MyApplication::viewportEvent(const Vector2i& size) {
 Windowless applications provide just a context for ofscreen rendering or
 performing tasks on GPU. There is not yet any platform-independent toolkit
 which could handle this in portable way, thus you have to use platform-specific
-ones. Magnum provides windowless applications for X11-based Unix, OS X and
+ones. Magnum provides windowless applications for X11-based Unix, macOS and
 Windows. To make things simple, as an example we will use only
 @ref Platform::WindowlessGlxApplication, see link for bootstrap application
 below for fully portable example.
@@ -148,7 +148,7 @@ Barebone application which will just print out current OpenGL version and
 renderer string and exits is in the following code listing.
 
 @note Fully contained windowless application using @ref Platform::WindowlessCglApplication
-    on OS X, @ref Platform::WindowlessGlxApplication on Unix and
+    on macOS, @ref Platform::WindowlessGlxApplication on Unix and
     @ref Platform::WindowlessWglApplication on Windows along with CMake setup
     is available in `windowless` branch of [Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap)
     repository.
@@ -295,7 +295,7 @@ pointer loading using platform-specific APIs. In that case you also need to
 find particular `*Context` library, add its include dir and then link to it.
 These platform-specific libraries are available:
 
--   `CglContext` -- CGL context (Mac OS X)
+-   `CglContext` -- CGL context (macOS)
 -   `EglContext` -- EGL context (everywhere except Emscripten)
 -   `GlxContext` -- GLX context (X11-based Unix)
 -   `WglContext` -- WGL context (Windows)

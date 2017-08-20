@@ -62,7 +62,7 @@ namespace {
 
         #ifndef MAGNUM_TARGET_GLES
         /* Layout qualifier causes compiler error with GLSL 1.20 on Mesa, GLSL
-           1.30 on NVidia and 1.40 on Mac OS X. Everything is fine when using
+           1.30 on NVidia and 1.40 on macOS. Everything is fine when using
            newer GLSL version. */
         "no-layout-qualifiers-on-old-glsl",
 

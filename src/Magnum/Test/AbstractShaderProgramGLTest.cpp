@@ -229,7 +229,7 @@ void AbstractShaderProgramGLTest::create() {
     CORRADE_VERIFY(linked);
     {
         #ifdef CORRADE_TARGET_APPLE
-        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
         CORRADE_VERIFY(valid);
     }
@@ -289,7 +289,7 @@ void AbstractShaderProgramGLTest::createMultipleOutputs() {
     CORRADE_VERIFY(linked);
     {
         #ifdef CORRADE_TARGET_APPLE
-        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
         CORRADE_VERIFY(valid);
     }
@@ -343,7 +343,7 @@ void AbstractShaderProgramGLTest::createMultipleOutputsIndexed() {
     CORRADE_VERIFY(linked);
     {
         #ifdef CORRADE_TARGET_APPLE
-        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
         CORRADE_VERIFY(valid);
     }
@@ -543,7 +543,7 @@ void AbstractShaderProgramGLTest::createUniformBlocks() {
     CORRADE_VERIFY(linked);
     {
         #ifdef CORRADE_TARGET_APPLE
-        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
         CORRADE_VERIFY(valid);
     }

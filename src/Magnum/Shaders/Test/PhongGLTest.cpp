@@ -56,7 +56,7 @@ void PhongGLTest::compile() {
     Shaders::Phong shader;
     {
         #ifdef CORRADE_TARGET_APPLE
-        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
         CORRADE_VERIFY(shader.validate().first);
     }
@@ -66,7 +66,7 @@ void PhongGLTest::compileAmbientTexture() {
     Shaders::Phong shader(Shaders::Phong::Flag::AmbientTexture);
     {
         #ifdef CORRADE_TARGET_APPLE
-        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
         CORRADE_VERIFY(shader.validate().first);
     }
@@ -76,7 +76,7 @@ void PhongGLTest::compileDiffuseTexture() {
     Shaders::Phong shader(Shaders::Phong::Flag::DiffuseTexture);
     {
         #ifdef CORRADE_TARGET_APPLE
-        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
         CORRADE_VERIFY(shader.validate().first);
     }
@@ -86,7 +86,7 @@ void PhongGLTest::compileSpecularTexture() {
     Shaders::Phong shader(Shaders::Phong::Flag::SpecularTexture);
     {
         #ifdef CORRADE_TARGET_APPLE
-        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
         CORRADE_VERIFY(shader.validate().first);
     }
@@ -96,7 +96,7 @@ void PhongGLTest::compileAmbientDiffuseTexture() {
     Shaders::Phong shader(Shaders::Phong::Flag::AmbientTexture|Shaders::Phong::Flag::DiffuseTexture);
     {
         #ifdef CORRADE_TARGET_APPLE
-        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
         CORRADE_VERIFY(shader.validate().first);
     }
@@ -106,7 +106,7 @@ void PhongGLTest::compileAmbientSpecularTexture() {
     Shaders::Phong shader(Shaders::Phong::Flag::AmbientTexture|Shaders::Phong::Flag::SpecularTexture);
     {
         #ifdef CORRADE_TARGET_APPLE
-        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
         CORRADE_VERIFY(shader.validate().first);
     }
@@ -116,7 +116,7 @@ void PhongGLTest::compileDiffuseSpecularTexture() {
     Shaders::Phong shader(Shaders::Phong::Flag::DiffuseTexture|Shaders::Phong::Flag::SpecularTexture);
     {
         #ifdef CORRADE_TARGET_APPLE
-        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
         CORRADE_VERIFY(shader.validate().first);
     }
@@ -126,7 +126,7 @@ void PhongGLTest::compileAmbientDiffuseSpecularTexture() {
     Shaders::Phong shader(Shaders::Phong::Flag::AmbientTexture|Shaders::Phong::Flag::DiffuseTexture|Shaders::Phong::Flag::SpecularTexture);
     {
         #ifdef CORRADE_TARGET_APPLE
-        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
         CORRADE_VERIFY(shader.validate().first);
     }

@@ -50,8 +50,8 @@ Application using GLUT toolkit. Supports keyboard and mouse handling with
 support for changing cursor and mouse tracking and warping.
 
 This application library is available only on desktop OpenGL (Linux, Windows,
-OS X). It depends on **GLUT** library and is built if `WITH_GLUTAPPLICATION` is
-enabled in CMake.
+macOS). It depends on **GLUT** library and is built if `WITH_GLUTAPPLICATION`
+is enabled in CMake.
 
 ## Bootstrap application
 

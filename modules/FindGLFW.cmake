@@ -70,7 +70,7 @@ if(NOT TARGET GLFW::GLFW)
     endif()
     add_library(GLFW::GLFW ${_GLFW_IMPORTED_LIBRARY_KIND})
 
-    # Work around BUGGY framework support on OSX
+    # Work around BUGGY framework support on macOS
     # https://cmake.org/Bug/view.php?id=14105
     if(CORRADE_TARGET_APPLE AND ${GLFW_LIBRARY} MATCHES "\\.framework$")
         set_property(TARGET GLFW::GLFW PROPERTY IMPORTED_LOCATION ${GLFW_LIBRARY}/GLFW)

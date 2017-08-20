@@ -73,7 +73,7 @@
 #  CORRADE_BUILD_STATIC         - Defined if compiled as static libraries.
 #   Default are shared libraries.
 #  CORRADE_TARGET_UNIX          - Defined if compiled for some Unix flavor
-#   (Linux, BSD, OS X)
+#   (Linux, BSD, macOS)
 #  CORRADE_TARGET_APPLE         - Defined if compiled for Apple platforms
 #  CORRADE_TARGET_IOS           - Defined if compiled for iOS (device or
 #   simulator)

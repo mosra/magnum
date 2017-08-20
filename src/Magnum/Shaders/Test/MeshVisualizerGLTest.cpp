@@ -52,7 +52,7 @@ void MeshVisualizerGLTest::compile() {
     Shaders::MeshVisualizer shader;
     {
         #ifdef CORRADE_TARGET_APPLE
-        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
         CORRADE_VERIFY(shader.validate().first);
     }
@@ -76,7 +76,7 @@ void MeshVisualizerGLTest::compileWireframeGeometryShader() {
     Shaders::MeshVisualizer shader(Shaders::MeshVisualizer::Flag::Wireframe);
     {
         #ifdef CORRADE_TARGET_APPLE
-        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
         CORRADE_VERIFY(shader.validate().first);
     }
@@ -87,7 +87,7 @@ void MeshVisualizerGLTest::compileWireframeNoGeometryShader() {
     Shaders::MeshVisualizer shader(Shaders::MeshVisualizer::Flag::Wireframe|Shaders::MeshVisualizer::Flag::NoGeometryShader);
     {
         #ifdef CORRADE_TARGET_APPLE
-        CORRADE_EXPECT_FAIL("OSX drivers need insane amount of state to validate properly.");
+        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
         CORRADE_VERIFY(shader.validate().first);
     }

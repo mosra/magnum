@@ -114,7 +114,7 @@ if(CORRADE_TARGET_ANDROID)
 elseif(CORRADE_TARGET_IOS)
     option(WITH_WINDOWLESSIOSAPPLICATION "Build WindowlessIosApplication library" OFF)
 
-# OS X-specific application libraries
+# macOS-specific application libraries
 elseif(CORRADE_TARGET_APPLE)
     cmake_dependent_option(WITH_WINDOWLESSCGLAPPLICATION "Build WindowlessCglApplication library" OFF "NOT WITH_MAGNUMINFO;NOT WITH_FONTCONVERTER;NOT WITH_DISTANCEFIELDCONVERTER" ON)
     option(WITH_CGLCONTEXT "Build CglContext library" OFF)

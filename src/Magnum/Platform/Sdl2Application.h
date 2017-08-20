@@ -436,8 +436,8 @@ class Sdl2Application {
          * alternative.
          *
          * On desktop GL, if version is not specified in @p configuration, the
-         * application first tries to create core context (OpenGL 3.2+ on OS X,
-         * OpenGL 3.1+ elsewhere) and if that fails, falls back to
+         * application first tries to create core context (OpenGL 3.2+ on
+         * macOS, OpenGL 3.1+ elsewhere) and if that fails, falls back to
          * compatibility OpenGL 2.1 context.
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
