@@ -163,9 +163,7 @@ install:
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "android" ]; then export PATH=$HOME/cmake/bin:$PATH; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop" ]; then export PLATFORM_GL_API=CGL; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "ios-simulator" ]; then gem install xcpretty; fi
-# Emscripten 1.37.10 is broken (crashes during optimization), using 1.37.1
-# works. Replace with just `brew install emscripten` when sane again
-- if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "emscripten" ]; then brew install https://raw.githubusercontent.com/Homebrew/homebrew-core/53f53f6498ba0f507c443dd4f0c6217937f1ddf2/Formula/emscripten.rb && export LLVM=/usr/local/opt/emscripten/libexec/llvm/bin && emcc; fi
+- if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "emscripten" ]; then brew install emscripten && export LLVM=/usr/local/opt/emscripten/libexec/llvm/bin && emcc; fi
 - if [ "$TARGET" == "desktop" ] || [ "$TARGET" == "desktop-sanitizers" ] || [ "$TARGET" == "desktop-gles" ]; then printf "[General]\ndrivers=null" > ~/.alsoftrc; fi
 
 # SDL on macOS and iOS (cached)
