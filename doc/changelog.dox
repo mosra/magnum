@@ -309,6 +309,9 @@ namespace Magnum {
 -   The @ref Mesh class now stores a copy of @ref Buffer instance instead of
     reference, meaning that you can move your buffers freely after assigning
     them to a mesh
+-   @ref Texture::setStorage() "*Texture::setStorage()" fallback implementation
+    on OpenGL ES 2.0 and WebGL 1.0 now properly translates sized texture
+    formats to what the drivers expect
 -   @ref Trade::TgaImporter "TgaImporter" and @ref Trade::TgaImageConverter "TgaImageConverter"
     now consistently use RGB(A) on all platforms and don't require BGR(A) on
     desktop
