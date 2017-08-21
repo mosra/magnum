@@ -135,6 +135,9 @@ std::size_t PixelStorage::pixelSize(PixelFormat format, PixelType type) {
         case PixelFormat::BGR:
         case PixelFormat::BGRInteger:
         #endif
+        #ifdef MAGNUM_TARGET_GLES2
+        case PixelFormat::SRGB:
+        #endif
             return 3*size;
         case PixelFormat::RGBA:
         #ifndef MAGNUM_TARGET_GLES2
@@ -142,6 +145,9 @@ std::size_t PixelStorage::pixelSize(PixelFormat format, PixelType type) {
         #endif
         #ifndef MAGNUM_TARGET_WEBGL
         case PixelFormat::BGRA:
+        #endif
+        #ifdef MAGNUM_TARGET_GLES2
+        case PixelFormat::SRGBAlpha:
         #endif
         #ifndef MAGNUM_TARGET_GLES
         case PixelFormat::BGRAInteger:

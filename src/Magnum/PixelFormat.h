@@ -161,6 +161,28 @@ enum class PixelFormat: GLenum {
     #endif
     #endif
 
+    #if defined(MAGNUM_TARGET_GLES2) || defined(DOXYGEN_GENERATING_OUTPUT)
+    /**
+     * Floating-point sRGB.
+     * @requires_gles20 Not available in ES 3.0, WebGL 2.0 or desktop OpenGL.
+     *      Use @ref PixelFormat::RGB instead.
+     * @deprecated_gl Included only in order to make it possible to upload
+     *      sRGB image data with the @extension{EXT,sRGB} ES2 extension, use
+     *      @ref PixelFormat::RGB elsewhere instead.
+     */
+    SRGB = GL_SRGB_EXT,
+
+    /**
+     * Floating-point sRGB + alpha.
+     * @requires_gles20 Not available in ES 3.0, WebGL 2.0 or desktop OpenGL.
+     *      Use @ref PixelFormat::RGBA instead.
+     * @deprecated_gl Included only in order to make it possible to upload
+     *      sRGB image data with the @extension{EXT,sRGB} ES2 extension, use
+     *      @ref PixelFormat::RGBA elsewhere instead.
+     */
+    SRGBAlpha = GL_SRGB_ALPHA_EXT,
+    #endif
+
     #ifndef MAGNUM_TARGET_GLES2
     /**
      * Integer red channel.

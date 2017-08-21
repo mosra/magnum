@@ -717,13 +717,20 @@ enum class TextureFormat: GLenum {
     #endif
     #endif
 
-    #ifndef MAGNUM_TARGET_GLES2
+    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     /**
      * sRGB, each component normalized unsigned byte.
-     * @requires_gles30 Use @ref TextureFormat::SRGB in OpenGL ES 2.0 instead.
+     * @requires_gles30 Extension @extension{EXT,sRGB} and
+     *      @extension{EXT,texture_storage}, only for
+     *      @ref Texture::setStorage() "*Texture::setStorage()" calls,
+     *      otherwise use @ref TextureFormat::SRGB in OpenGL ES 2.0 instead.
      * @requires_webgl20 Use @ref TextureFormat::SRGB in WebGL 1.0 instead.
      */
+    #ifndef MAGNUM_TARGET_GLES2
     SRGB8 = GL_SRGB8,
+    #else
+    SRGB8 = 0x8C41, /* Not in any spec, but seems to work at least on NV */
+    #endif
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
@@ -794,9 +801,10 @@ enum class TextureFormat: GLenum {
 
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
     /**
-     * sRGBA, normalized unsigned, size implementation-dependent. Not allowed in
-     * unemulated @ref Texture::setStorage() "*Texture::setStorage()" calls, in
-     * that case use @ref TextureFormat::SRGB8Alpha8 "TextureFormat::SRGB8Alpha8" instead.
+     * sRGB + linear alpha, normalized unsigned, size implementation-dependent.
+     * Not allowed in unemulated @ref Texture::setStorage() "*Texture::setStorage()"
+     * calls, in that case use @ref TextureFormat::SRGB8Alpha8 "TextureFormat::SRGB8Alpha8"
+     * instead.
      * @requires_es_extension Extension @extension{EXT,sRGB} in OpenGL ES
      *      2.0. Use @ref TextureFormat::SRGB8Alpha8 in OpenGL ES 3.0 instead.
      * @requires_webgl_extension Extension @webgl_extension{EXT,sRGB} in WebGL
@@ -811,15 +819,21 @@ enum class TextureFormat: GLenum {
     #endif
     #endif
 
-    #ifndef MAGNUM_TARGET_GLES2
+    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     /**
-     * sRGBA, each component normalized unsigned byte.
-     * @requires_gles30 Use @ref TextureFormat::SRGBAlpha in OpenGL ES 2.0
+     * sRGB + linear alpha, each component normalized unsigned byte.
+     * @requires_gles30 Extension @extension{EXT,sRGB} and
+     *      @extension{EXT,texture_storage}, only for
+     *      @ref Texture::setStorage() "*Texture::setStorage()" calls,
+     *      otherwise use @ref TextureFormat::SRGBAlpha in OpenGL ES 2.0
      *      instead.
-     * @requires_webgl20 Use @ref TextureFormat::SRGBAlpha in WebGL 1.0
-     *      instead.
+     * @requires_webgl20 Use @ref TextureFormat::SRGBAlpha in WebGL 1.0 instead.
      */
+    #ifndef MAGNUM_TARGET_GLES2
     SRGB8Alpha8 = GL_SRGB8_ALPHA8,
+    #else
+    SRGB8Alpha8 = GL_SRGB8_ALPHA8_EXT, /* Not in spec, works at least on NV */
+    #endif
     #endif
 
     #ifndef MAGNUM_TARGET_GLES

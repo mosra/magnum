@@ -58,6 +58,10 @@ Debug& operator<<(Debug& debug, const PixelFormat value) {
         #ifndef MAGNUM_TARGET_WEBGL
         _c(BGRA)
         #endif
+        #ifdef MAGNUM_TARGET_GLES2
+        _c(SRGB)
+        _c(SRGBAlpha)
+        #endif
         #ifndef MAGNUM_TARGET_GLES2
         _c(RedInteger)
         #ifndef MAGNUM_TARGET_GLES

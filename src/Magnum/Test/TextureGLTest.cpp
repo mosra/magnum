@@ -206,6 +206,9 @@ struct TextureGLTest: OpenGLTester {
     #endif
     void invalidateSubImage2D();
     void invalidateSubImage3D();
+
+    void srgbStorage();
+    void srgbAlphaStorage();
 };
 
 namespace {
@@ -567,7 +570,9 @@ TextureGLTest::TextureGLTest() {
         #endif
         &TextureGLTest::invalidateSubImage2D,
         &TextureGLTest::invalidateSubImage3D,
-    });
+
+        &TextureGLTest::srgbStorage,
+        &TextureGLTest::srgbAlphaStorage});
 }
 
 #ifndef MAGNUM_TARGET_GLES
@@ -2421,6 +2426,62 @@ void TextureGLTest::invalidateSubImage3D() {
     Texture3D texture;
     texture.setStorage(2, TextureFormat::RGBA8, Vector3i(32));
     texture.invalidateSubImage(1, Vector3i(2), Vector3i(8));
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void TextureGLTest::srgbStorage() {
+    #ifdef MAGNUM_TARGET_GLES2
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::sRGB>())
+        CORRADE_SKIP(Extensions::GL::EXT::sRGB::string() + std::string(" is not supported."));
+    #endif
+
+    Texture2D texture;
+    texture.setImage(0,
+        #ifndef MAGNUM_TARGET_GLES2
+        TextureFormat::SRGB8
+        #else
+        TextureFormat::SRGB
+        #endif
+        , ImageView2D{
+        #ifndef MAGNUM_TARGET_GLES2
+        PixelFormat::RGB
+        #else
+        PixelFormat::SRGB
+        #endif
+        , PixelType::UnsignedByte, Vector2i{32}, nullptr});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    texture.setStorage(1, TextureFormat::SRGB8, Vector2i{32});
+
+    MAGNUM_VERIFY_NO_ERROR();
+}
+
+void TextureGLTest::srgbAlphaStorage() {
+    #ifdef MAGNUM_TARGET_GLES2
+    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::sRGB>())
+        CORRADE_SKIP(Extensions::GL::EXT::sRGB::string() + std::string(" is not supported."));
+    #endif
+
+    Texture2D texture;
+    texture.setImage(0,
+        #ifndef MAGNUM_TARGET_GLES2
+        TextureFormat::SRGB8Alpha8
+        #else
+        TextureFormat::SRGBAlpha
+        #endif
+        , ImageView2D{
+        #ifndef MAGNUM_TARGET_GLES2
+        PixelFormat::RGBA
+        #else
+        PixelFormat::SRGBAlpha
+        #endif
+        , PixelType::UnsignedByte, Vector2i{32}, nullptr});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    texture.setStorage(1, TextureFormat::SRGB8Alpha8, Vector2i{32});
 
     MAGNUM_VERIFY_NO_ERROR();
 }
