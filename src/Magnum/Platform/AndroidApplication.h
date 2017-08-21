@@ -83,16 +83,19 @@ targets can be obtained by calling `android list target`.
     android update project -p . -t "android-19"
 
 Then create build directories for ARM and x86 and run `cmake` and build command
-in them. The toolchains need access to the platform file, so be sure to
-properly set **absolute** path to `toolchains/modules/` directory containing
-`Platform/Android.cmake`.
+in them. Set `CMAKE_PREFIX_PATH` to the directory where you have all the
+dependencies.
 
     mkdir build-android-arm && cd build-android-arm
-    cmake .. -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Android-ARM.cmake"
+    cmake .. \
+        -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Android-ARM.cmake" \
+        -DCMAKE_PREFIX_PATH=/opt/android-ndk/platforms/android-19/arch-arm/usr
     cmake --build .
 
     mkdir build-android-x86 && cd build-android-x86
-    cmake .. -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Android-x86.cmake"
+    cmake .. \
+        -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Android-x86.cmake" \
+        -DCMAKE_PREFIX_PATH=/opt/android-ndk/platforms/android-19/arch-x86/usr
     cmake --build .
 
 See @ref cmake for more information.

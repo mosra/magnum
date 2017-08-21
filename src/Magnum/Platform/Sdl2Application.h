@@ -92,25 +92,28 @@ or [zip](https://github.com/mosra/magnum-bootstrap/archive/base-emscripten.zip)
 file. After extracting the downloaded archive, you can do the desktop build in
 the same way as above. For the Emscripten build you also need to put the
 contents of toolchains repository from https://github.com/mosra/toolchains
-in `toolchains/` subdirectory. Don't forget to adapt `EMSCRIPTEN_PREFIX`
-variable in `toolchains/generic/Emscripten.cmake` to path where Emscripten is
-installed. Default is `/usr/emscripten`.
+in `toolchains/` subdirectory. There are two toolchain files. The
+`generic/Emscripten.cmake` is for the classical (asm.js) build, the
+`generic/Emscripten-wasm.cmake` is for WebAssembly build. Don't forget to adapt
+`EMSCRIPTEN_PREFIX` variable in `toolchains/generic/Emscripten*.cmake` to path
+where Emscripten is installed; you can also pass it explicitly on command-line
+using `-DEMSCRIPTEN_PREFIX`. Default is `/usr/emscripten`.
 
 Then create build directory and run `cmake` and build/install commands in it.
-The toolchain needs access to its platform file, so be sure to properly set **absolute**
-path to `toolchains/modules/` directory containing `Platform/Emscripten.cmake`.
-Set `CMAKE_INSTALL_PREFIX` to have the files installed in proper location (a
+Set `CMAKE_PREFIX_PATH` to where you have all the dependencies installed, set
+`CMAKE_INSTALL_PREFIX` to have the files installed in proper location (a
 webserver, e.g.  `/srv/http/emscripten`).
 
     mkdir build-emscripten && cd build-emscripten
     cmake .. \
-        -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Emscripten.cmake"
+        -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Emscripten.cmake" \
+        -DCMAKE_PREFIX_PATH=/usr/lib/emscripten/system \
         -DCMAKE_INSTALL_PREFIX=/srv/http/emscripten
     cmake --build .
     cmake --build . --target install
 
-You can then open `MyApplication.html` in Chrome or Firefox (through webserver,
-e.g. `http://localhost/emscripten/MyApplication.html`).
+You can then open `MyApplication.html` in your browser (through webserver, e.g.
+`http://localhost/emscripten/MyApplication.html`).
 
 ## Bootstrap application for iOS
 
@@ -126,9 +129,7 @@ subdirectory.
 
 Then create build directory and run `cmake` to generate the Xcode project. Set
 `CMAKE_OSX_ROOT` to SDK you want to target and enable all desired architectures
-in `CMAKE_OSX_ARCHITECTURES`. The toolchain needs access to its platform file,
-so be sure to properly set **absolute** path to `toolchains/modules/` directory
-containing `Platform/iOS.cmake`. Set `CMAKE_PREFIX_PATH` to the directory where
+in `CMAKE_OSX_ARCHITECTURES`. Set `CMAKE_PREFIX_PATH` to the directory where
 you have all the dependencies.
 
     mkdir build-ios && cd build-ios
