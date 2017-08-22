@@ -226,6 +226,7 @@ namespace Magnum {
 -   New @ref Platform::WindowlessGlxContext "Platform::Windowless*Context"
     classes that manage OpenGL context to make threaded context creation
     possible
+-   Ported @ref magnum-info "magnum-info" to Emscripten
 -   First-class support for scroll events in
     @ref Platform::Sdl2Application::MouseScrollEvent
 -   Added @ref Platform::Sdl2Application::MouseEvent::clickCount()

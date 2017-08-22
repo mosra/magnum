@@ -726,7 +726,7 @@ endif()
 if(WITH_MAGNUMINFO)
     add_executable(magnum-info magnum-info.cpp)
     target_link_libraries(magnum-info Magnum)
-    if(MAGNUM_TARGET_HEADLESS)
+    if(MAGNUM_TARGET_HEADLESS OR CORRADE_TARGET_EMSCRIPTEN)
         target_link_libraries(magnum-info MagnumWindowlessEglApplication)
     elseif(CORRADE_TARGET_IOS)
         target_link_libraries(magnum-info MagnumWindowlessIosApplication)
@@ -749,12 +749,26 @@ if(WITH_MAGNUMINFO)
     endif()
     set_target_properties(magnum-info PROPERTIES FOLDER "Magnum/Platform")
 
-    install(TARGETS magnum-info DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+    if(NOT CORRADE_TARGET_EMSCRIPTEN)
+        install(TARGETS magnum-info DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+    endif()
+
     if(CORRADE_TARGET_IOS)
         set_target_properties(magnum-info PROPERTIES
             MACOSX_BUNDLE ON
             MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/MacOSXBundleInfo.plist.in
             XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED "YES")
+    elseif(CORRADE_TARGET_EMSCRIPTEN)
+        install(FILES magnum-info.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/magnum-info RENAME index.html)
+        install(TARGETS magnum-info DESTINATION ${MAGNUM_DEPLOY_PREFIX}/magnum-info)
+        install(FILES
+            WebApplication.css
+            WindowlessEmscriptenApplication.js
+            DESTINATION ${MAGNUM_DEPLOY_PREFIX}/magnum-info)
+        install(FILES
+            ${CMAKE_CURRENT_BINARY_DIR}/magnum-info.js.mem
+            ${CMAKE_CURRENT_BINARY_DIR}/magnum-info.wasm
+            DESTINATION ${MAGNUM_DEPLOY_PREFIX}/magnum-info OPTIONAL)
     endif()
 
     # Magnum info target alias for superprojects

@@ -63,8 +63,9 @@ cmake_dependent_option(TARGET_GLES2 "Build for OpenGL ES 2 / WebGL 1.0" ON "TARG
 cmake_dependent_option(TARGET_DESKTOP_GLES "Build for OpenGL ES on desktop" OFF "TARGET_GLES" OFF)
 option(TARGET_HEADLESS "Build command-line utilities for use on a headless machines" OFF)
 
-# Magnum Info (currently only using GLX, CGL or WGL/EGL on Windows)
-if(CORRADE_TARGET_UNIX OR CORRADE_TARGET_WINDOWS)
+# Magnum Info (currently only using GLX/CGL/EGL on *nix, WGL/EGL on Windows and
+# EGL on Emscripten)
+if(CORRADE_TARGET_UNIX OR CORRADE_TARGET_WINDOWS OR CORRADE_TARGET_EMSCRIPTEN)
     option(WITH_MAGNUMINFO "Build magnum-info utility" OFF)
 endif()
 

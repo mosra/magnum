@@ -28,6 +28,7 @@ build() {
     cmake .. \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr/lib/emscripten/system \
+        -DMAGNUM_DEPLOY_PREFIX=/srv/http/emscripten \
         -DWITH_AUDIO=ON \
         -DWITH_SDL2APPLICATION=ON \
         -WDITH_WINDOWLESSEGLAPPLICATION=ON \
@@ -36,6 +37,7 @@ build() {
         -DWITH_TGAIMAGECONVERTER=ON \
         -DWITH_TGAIMPORTER=ON \
         -DWITH_WAVAUDIOIMPORTER=ON \
+        -DWITH_MAGNUMINFO=ON \
         -DBUILD_TESTS=ON
     ninja
 }

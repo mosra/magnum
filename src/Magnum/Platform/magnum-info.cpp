@@ -36,11 +36,13 @@
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 #include "Magnum/CubeMapTextureArray.h"
 #endif
+#ifndef MAGNUM_TARGET_WEBGL
 #include "Magnum/DebugOutput.h"
+#endif
 #include "Magnum/Extensions.h"
 #include "Magnum/Framebuffer.h"
 #include "Magnum/Mesh.h"
-#ifndef MAGNUM_TARGET_GLES2
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 #include "Magnum/MultisampleTexture.h"
 #endif
 #ifndef MAGNUM_TARGET_GLES
@@ -54,7 +56,7 @@
 #include "Magnum/TransformFeedback.h"
 #endif
 
-#ifdef MAGNUM_TARGET_HEADLESS
+#if defined(MAGNUM_TARGET_HEADLESS) || defined(CORRADE_TARGET_EMSCRIPTEN)
 #include "Magnum/Platform/WindowlessEglApplication.h"
 #elif defined(CORRADE_TARGET_IOS)
 #include "Magnum/Platform/WindowlessIosApplication.h"
@@ -251,7 +253,9 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #ifndef MAGNUM_TARGET_GLES
     Debug() << "Core profile:" << (c.isCoreProfile() ? "yes" : "no");
     #endif
+    #ifndef MAGNUM_TARGET_WEBGL
     Debug() << "Context flags:" << c.flags();
+    #endif
     Debug() << "Detected driver:" << c.detectedDriver();
 
     Debug() << "Supported GLSL versions:";
@@ -336,11 +340,13 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     _l(Mesh::maxElementsVertices())
     #endif
     _l(Renderbuffer::maxSize())
+    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     _l(Renderbuffer::maxSamples())
+    #endif
     _l(Shader::maxVertexOutputComponents())
     _l(Shader::maxFragmentInputComponents())
     _l(Shader::maxTextureImageUnits(Shader::Type::Vertex))
-    #ifndef MAGNUM_TARGET_GLES2
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     _l(Shader::maxTextureImageUnits(Shader::Type::TessellationControl))
     _l(Shader::maxTextureImageUnits(Shader::Type::TessellationEvaluation))
     _l(Shader::maxTextureImageUnits(Shader::Type::Geometry))
@@ -349,7 +355,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     _l(Shader::maxTextureImageUnits(Shader::Type::Fragment))
     _l(Shader::maxCombinedTextureImageUnits())
     _l(Shader::maxUniformComponents(Shader::Type::Vertex))
-    #ifndef MAGNUM_TARGET_GLES2
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     _l(Shader::maxUniformComponents(Shader::Type::TessellationControl))
     _l(Shader::maxUniformComponents(Shader::Type::TessellationEvaluation))
     _l(Shader::maxUniformComponents(Shader::Type::Geometry))
@@ -377,7 +383,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     }
     #endif
 
-    #ifndef MAGNUM_TARGET_GLES2
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     #ifndef MAGNUM_TARGET_GLES
     if(c.isExtensionSupported<Extensions::GL::ARB::compute_shader>())
     #endif
@@ -412,7 +418,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     }
     #endif
 
-    #ifndef MAGNUM_TARGET_GLES2
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     #ifndef MAGNUM_TARGET_GLES
     if(c.isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>())
     #endif
@@ -483,7 +489,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     }
     #endif
 
-    #ifndef MAGNUM_TARGET_GLES2
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     #ifndef MAGNUM_TARGET_GLES
     if(c.isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
     #endif
@@ -520,17 +526,21 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         _l(Buffer::uniformOffsetAlignment())
         _l(Buffer::maxUniformBindings())
         _l(Shader::maxUniformBlocks(Shader::Type::Vertex))
+        #ifndef MAGNUM_TARGET_WEBGL
         _l(Shader::maxUniformBlocks(Shader::Type::TessellationControl))
         _l(Shader::maxUniformBlocks(Shader::Type::TessellationEvaluation))
         _l(Shader::maxUniformBlocks(Shader::Type::Geometry))
         _l(Shader::maxUniformBlocks(Shader::Type::Compute))
+        #endif
         _l(Shader::maxUniformBlocks(Shader::Type::Fragment))
         _l(Shader::maxCombinedUniformBlocks())
         _l(Shader::maxCombinedUniformComponents(Shader::Type::Vertex))
+        #ifndef MAGNUM_TARGET_WEBGL
         _l(Shader::maxCombinedUniformComponents(Shader::Type::TessellationControl))
         _l(Shader::maxCombinedUniformComponents(Shader::Type::TessellationEvaluation))
         _l(Shader::maxCombinedUniformComponents(Shader::Type::Geometry))
         _l(Shader::maxCombinedUniformComponents(Shader::Type::Compute))
+        #endif
         _l(Shader::maxCombinedUniformComponents(Shader::Type::Fragment))
         _l(AbstractShaderProgram::maxUniformBlockSize())
     }
@@ -679,6 +689,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         _l(Sampler::maxMaxAnisotropy())
     }
 
+    #ifndef MAGNUM_TARGET_WEBGL
     if(c.isExtensionSupported<Extensions::GL::KHR::debug>()) {
         _h(KHR::debug)
 
@@ -687,8 +698,9 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         _l(DebugOutput::maxMessageLength())
         _l(DebugGroup::maxStackDepth())
     }
+    #endif
 
-    #ifdef MAGNUM_TARGET_GLES2
+    #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     if(c.isExtensionSupported<Extensions::GL::OES::texture_3D>()) {
         _h(OES::texture_3D)
 
