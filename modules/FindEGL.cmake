@@ -39,14 +39,17 @@
 #
 
 # Library
-find_library(EGL_LIBRARY NAMES
-    EGL
+if(NOT CORRADE_TARGET_EMSCRIPTEN)
+    find_library(EGL_LIBRARY NAMES
+        EGL
 
-    # ANGLE (CMake doesn't search for lib prefix on Windows)
-    libEGL
+        # ANGLE (CMake doesn't search for lib prefix on Windows)
+        libEGL
 
-    # On iOS a part of OpenGLES
-    OpenGLES)
+        # On iOS a part of OpenGLES
+        OpenGLES)
+    set(EGL_LIBRARY_NEEDED EGL_LIBRARY)
+endif()
 
 # Include dir
 find_path(EGL_INCLUDE_DIR NAMES
@@ -57,20 +60,27 @@ find_path(EGL_INCLUDE_DIR NAMES
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(EGL DEFAULT_MSG
-    EGL_LIBRARY
+    ${EGL_LIBRARY_NEEDED}
     EGL_INCLUDE_DIR)
 
 if(NOT TARGET EGL::EGL)
-    # Work around BUGGY framework support on macOS
-    # http://public.kitware.com/pipermail/cmake/2016-April/063179.html
-    if(APPLE AND ${EGL_LIBRARY} MATCHES "\\.framework$")
-        add_library(EGL::EGL INTERFACE IMPORTED)
-        set_property(TARGET EGL::EGL APPEND PROPERTY
-            INTERFACE_LINK_LIBRARIES ${EGL_LIBRARY})
+    if(EGL_LIBRARY_NEEDED)
+        # Work around BUGGY framework support on macOS
+        # http://public.kitware.com/pipermail/cmake/2016-April/063179.html
+        if(APPLE AND ${EGL_LIBRARY} MATCHES "\\.framework$")
+            add_library(EGL::EGL INTERFACE IMPORTED)
+            set_property(TARGET EGL::EGL APPEND PROPERTY
+                INTERFACE_LINK_LIBRARIES ${EGL_LIBRARY})
+        else()
+            add_library(EGL::EGL UNKNOWN IMPORTED)
+            set_property(TARGET EGL::EGL PROPERTY
+                IMPORTED_LOCATION ${EGL_LIBRARY})
+        endif()
     else()
-        add_library(EGL::EGL UNKNOWN IMPORTED)
-        set_property(TARGET EGL::EGL PROPERTY
-            IMPORTED_LOCATION ${EGL_LIBRARY})
+        # This won't work in CMake 2.8.12, but that affects Emscripten only so
+        # I assume people building for that are not on that crap old Ubuntu
+        # 14.04 LTS
+        add_library(EGL::EGL INTERFACE IMPORTED)
     endif()
 
     set_target_properties(EGL::EGL PROPERTIES
