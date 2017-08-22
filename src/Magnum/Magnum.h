@@ -504,7 +504,9 @@ using Math::Literals::operator "" _radf;
    FramebufferTarget enums used only directly with framebuffer instance */
 class AbstractFramebuffer;
 
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 class AbstractQuery;
+#endif
 class AbstractShaderProgram;
 class AbstractTexture;
 
@@ -592,7 +594,7 @@ enum class MeshPrimitive: GLenum;
 class Mesh;
 class MeshView;
 
-#ifndef MAGNUM_TARGET_GLES2
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 /* MultisampleTextureSampleLocations enum used only in the function */
 template<UnsignedInt> class MultisampleTexture;
 typedef MultisampleTexture<2> MultisampleTexture2D;
@@ -619,7 +621,9 @@ class PrimitiveQuery;
 class SampleQuery;
 class TimeQuery;
 
+#ifndef MAGNUM_TARGET_GLES
 class RectangleTexture;
+#endif
 
 class Renderbuffer;
 enum class RenderbufferFormat: GLenum;
@@ -653,7 +657,9 @@ typedef TextureArray<2> Texture2DArray;
 
 enum class TextureFormat: GLenum;
 
+#ifndef MAGNUM_TARGET_GLES2
 class TransformFeedback;
+#endif
 class Timeline;
 
 enum class Version: Int;

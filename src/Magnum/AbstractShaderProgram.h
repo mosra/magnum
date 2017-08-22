@@ -482,7 +482,9 @@ comes in handy.
 class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
     friend Mesh;
     friend MeshView;
+    #ifndef MAGNUM_TARGET_GLES2
     friend TransformFeedback;
+    #endif
     friend Implementation::ShaderProgramState;
 
     public:
