@@ -515,7 +515,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          */
         static Int maxVertexAttributes();
 
-        #ifndef MAGNUM_TARGET_GLES2
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         /**
          * @brief Max supported atomic counter buffer size
          *
