@@ -49,3 +49,17 @@ h1 {
     font-size: 15px;
     z-index: 9;
 }
+
+#module.hidden {
+    display: none;
+}
+
+#log {
+    width: 640px;
+    height: 480px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    white-space: pre-wrap;
+    z-index: 10;
+    margin: 0;
+}

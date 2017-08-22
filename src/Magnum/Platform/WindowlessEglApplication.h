@@ -126,10 +126,12 @@ class WindowlessEglContext {
 */
 class WindowlessEglContext::Configuration {
     public:
+        #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @brief Context flag
          *
          * @see @ref Flags, @ref setFlags(), @ref Context::Flag
+         * @requires_gles Context flags are not available in WebGL.
          */
         enum class Flag: int {
             Debug = EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR    /**< Create debug context */
@@ -139,16 +141,23 @@ class WindowlessEglContext::Configuration {
          * @brief Context flags
          *
          * @see @ref setFlags(), @ref Context::Flags
+         * @requires_gles Context flags are not available in WebGL.
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         typedef Containers::EnumSet<Flag, EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR> Flags;
         #else
         typedef Containers::EnumSet<Flag> Flags;
         #endif
+        #endif
 
         constexpr /*implicit*/ Configuration() {}
 
-        /** @brief Context flags */
+        #ifndef MAGNUM_TARGET_WEBGL
+        /**
+         * @brief Context flags
+         *
+         * @requires_gles Context flags are not available in WebGL.
+         */
         Flags flags() const { return _flags; }
 
         /**
@@ -156,25 +165,28 @@ class WindowlessEglContext::Configuration {
          * @return Reference to self (for method chaining)
          *
          * Default is no flag. See also @ref Context::flags().
+         * @requires_gles Context flags are not available in WebGL.
          */
         Configuration& setFlags(Flags flags) {
             _flags = flags;
             return *this;
         }
+        #endif
 
     private:
+        #ifndef MAGNUM_TARGET_WEBGL
         Flags _flags;
+        #endif
 };
 
 /**
 @brief Windowless EGL application
 
-Application for offscreen rendering using @ref WindowlessEglContext. Supported
-mainly on OpenGL ES drivers, for desktop OpenGL the only driver that supports
-this configuration is NVidia >= 355. See other `Windowless*Application` classes
-for an alternative.
-
-It is built if `WITH_WINDOWLESSEGLAPPLICATION` is enabled in CMake.
+Application for offscreen rendering using @ref WindowlessEglContext. This
+application library is in theory available for all platforms for which EGL
+works (Linux desktop or ES, iOS and also @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten").
+See other `Windowless*Application` classes for an alternative. It is built if
+`WITH_WINDOWLESSEGLAPPLICATION` is enabled in CMake.
 
 ## Bootstrap application
 
@@ -192,6 +204,39 @@ application with these four commands:
     ./src/MyApplication # or ./src/Debug/MyApplication
 
 See @ref cmake for more information.
+
+## Bootstrap application for Emscripten
+
+Fully contained windowless application together with Emscripten support along
+with full HTML markup and CMake setup is available in `windowless-emscripten`
+branch of [Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap)
+repository, download it as [tar.gz](https://github.com/mosra/magnum-bootstrap/archive/windowless-emscripten.tar.gz)
+or [zip](https://github.com/mosra/magnum-bootstrap/archive/windowless-emscripten.zip)
+file. After extracting the downloaded archive, you can do the desktop build in
+the same way as above. For the Emscripten build you also need to put the
+contents of toolchains repository from https://github.com/mosra/toolchains
+in `toolchains/` subdirectory. There are two toolchain files. The
+`generic/Emscripten.cmake` is for the classical (asm.js) build, the
+`generic/Emscripten-wasm.cmake` is for WebAssembly build. Don't forget to adapt
+`EMSCRIPTEN_PREFIX` variable in `toolchains/generic/Emscripten*.cmake` to path
+where Emscripten is installed; you can also pass it explicitly on command-line
+using `-DEMSCRIPTEN_PREFIX`. Default is `/usr/emscripten`.
+
+Then create build directory and run `cmake` and build/install commands in it.
+Set `CMAKE_PREFIX_PATH` to where you have all the dependencies installed, set
+`CMAKE_INSTALL_PREFIX` to have the files installed in proper location (a
+webserver, e.g.  `/srv/http/emscripten`).
+
+    mkdir build-emscripten && cd build-emscripten
+    cmake .. \
+        -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Emscripten.cmake" \
+        -DCMAKE_PREFIX_PATH=/usr/lib/emscripten/system \
+        -DCMAKE_INSTALL_PREFIX=/srv/http/emscripten
+    cmake --build .
+    cmake --build . --target install
+
+You can then open `MyApplication.html` in your browser (through webserver, e.g.
+`http://localhost/emscripten/MyApplication.html`).
 
 ## General usage
 
@@ -213,6 +258,47 @@ MAGNUM_WINDOWLESSEGLAPPLICATION_MAIN(MyApplication)
 If no other application header is included, this class is also aliased to
 `Platform::WindowlessApplication` and the macro is aliased to
 `MAGNUM_WINDOWLESSAPPLICATION_MAIN()` to simplify porting.
+
+## Usage with Emscripten
+
+If you are targetting Emscripten, you need to provide HTML markup for your
+application. Template one is below or in the bootstrap application, you can
+modify it to your liking. The markup references two files,
+`WindowlessEmscriptenApplication.js` and `WebApplication.css`, both are in
+`Platform/` directory in the source tree and are also installed into
+`share/magnum/` inside your Emscripten toolchain. Change `&lt;application&gt;`
+to name of your executable.
+@code
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Magnum Windowless Emscripten Application</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="WebApplication.css" />
+  </head>
+  <body>
+    <h1>Magnum Windowless Emscripten Application</h1>
+    <div id="listener">
+      <canvas id="module" class="hidden"></canvas>
+      <pre id="log"></pre>
+      <div id="status">Initialization...</div>
+      <div id="statusDescription"></div>
+      <script src="WindowlessEmscriptenApplication.js"></script>
+      <script async="async" src="<application>.js"></script>
+    </div>
+  </body>
+</html>
+@endcode
+
+You can modify all the files to your liking, but the HTML file must contain at
+least the `&lt;canvas&gt;` enclosed in listener `&lt;div&gt;`. The JavaScript
+file contains event listeners which print loading status on the page. The
+status displayed in the remaining two `&lt;div&gt;`s, if they are available.
+The CSS file contains rudimentary style to avoid eye bleeding.
+
+The application prints all output (thus also @ref Corrade::Utility::Debug "Debug",
+@ref Corrade::Utility::Warning "Warning" and @ref Corrade::Utility::Error "Error")
+to the `&lt;pre&gt;` on the page.
 */
 class WindowlessEglApplication {
     public:

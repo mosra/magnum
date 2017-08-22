@@ -30,6 +30,7 @@ build() {
         -DCMAKE_INSTALL_PREFIX=/usr/lib/emscripten/system \
         -DWITH_AUDIO=ON \
         -DWITH_SDL2APPLICATION=ON \
+        -WDITH_WINDOWLESSEGLAPPLICATION=ON \
         -DWITH_MAGNUMFONT=ON \
         -DWITH_OBJIMPORTER=ON \
         -DWITH_TGAIMAGECONVERTER=ON \

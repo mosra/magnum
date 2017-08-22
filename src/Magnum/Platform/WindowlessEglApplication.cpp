@@ -60,10 +60,13 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, C
         EGL_SURFACE_TYPE, EGL_PBUFFER_BIT,
         #ifndef MAGNUM_TARGET_GLES
         EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT,
+        #elif defined(MAGNUM_TARGET_GLES2) || defined(CORRADE_TARGET_EMSCRIPTEN)
+        /* Emscripten doesn't know about EGL_OPENGL_ES3_BIT_KHR for WebGL 2 and
+           the whole thing is controlled by -s USE_WEBGL2=1 flag anyway, so it
+           doesn't matter that we ask for ES2 on WebGL 2 as well. */
+        EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
         #elif defined(MAGNUM_TARGET_GLES3)
         EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT_KHR,
-        #elif defined(MAGNUM_TARGET_GLES2)
-        EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
         #else
         #error unsupported OpenGL edition
         #endif
@@ -84,17 +87,26 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, C
     const EGLint attributes[] = {
         #ifdef MAGNUM_TARGET_GLES
         EGL_CONTEXT_CLIENT_VERSION,
-            #ifdef MAGNUM_TARGET_GLES3
-            3,
-            #elif defined(MAGNUM_TARGET_GLES2)
+            #if defined(MAGNUM_TARGET_GLES2) || defined(CORRADE_TARGET_EMSCRIPTEN)
+            /* Emscripten doesn't know about version 3 for WebGL 2 and the
+               whole thing is controlled by -s USE_WEBGL2=1 flag anyway, so it
+               doesn't matter that we ask for ES2 on WebGL 2 as well. */
             2,
+            #elif defined(MAGNUM_TARGET_GLES3)
+            3,
             #else
             #error unsupported OpenGL ES version
             #endif
         #endif
+        #ifndef MAGNUM_TARGET_WEBGL
         EGL_CONTEXT_FLAGS_KHR, EGLint(configuration.flags()),
+        #endif
         EGL_NONE
     };
+
+    #ifdef MAGNUM_TARGET_WEBGL
+    static_cast<void>(configuration);
+    #endif
 
     if(!(_context = eglCreateContext(_display, config, EGL_NO_CONTEXT, attributes))) {
         Error() << "Platform::WindowlessEglApplication::tryCreateContext(): cannot create EGL context:" << Implementation::eglErrorString(eglGetError());

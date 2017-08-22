@@ -221,6 +221,8 @@ namespace Magnum {
     @ref Platform::GlfwApplication
 -   Added @ref Platform::WindowlessWindowsEglApplication and
     @ref Platform::WindowlessIosApplication for ANGLE and iOS
+-   New @ref Platform::WindowlessEglApplication that works on headless NVidia,
+    Mesa drivers and Emscripten
 -   New @ref Platform::WindowlessGlxContext "Platform::Windowless*Context"
     classes that manage OpenGL context to make threaded context creation
     possible

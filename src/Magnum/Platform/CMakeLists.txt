@@ -201,12 +201,19 @@ if(WITH_SDL2APPLICATION)
 endif()
 
 # JavaScript and CSS stuff for Emscripten
-if(WITH_SDL2APPLICATION AND CORRADE_TARGET_EMSCRIPTEN)
-    set(MagnumSdl2Application_FILES
-        EmscriptenApplication.js
-        WebApplication.css)
-    list(APPEND MagnumPlatform_FILES ${MagnumSdl2Application_FILES})
-    install(FILES ${MagnumSdl2Application_FILES} DESTINATION ${MAGNUM_DATA_INSTALL_DIR})
+if(CORRADE_TARGET_EMSCRIPTEN)
+    set(MagnumEmscriptenApplication_FILES )
+    if(WITH_SDL2APPLICATION)
+        list(APPEND MagnumEmscriptenApplication_FILES EmscriptenApplication.js)
+    endif()
+    if(WITH_WINDOWLESSEGLAPPLICATION)
+        list(APPEND MagnumEmscriptenApplication_FILES WindowlessEmscriptenApplication.js)
+    endif()
+    if(WITH_SDL2APPLICATION OR WITH_WINDOWLESSEGLAPPLICATION)
+        list(APPEND MagnumEmscriptenApplication_FILES WebApplication.css)
+        list(APPEND MagnumPlatform_FILES ${MagnumEmscriptenApplication_FILES})
+        install(FILES ${MagnumEmscriptenApplication_FILES} DESTINATION ${MAGNUM_DATA_INSTALL_DIR})
+    endif()
 endif()
 
 # GLX application

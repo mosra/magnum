@@ -99,12 +99,9 @@ cmake_dependent_option(WITH_TEXTURETOOLS "Build TextureTools library" ON "NOT WI
 # Magnum AL Info
 cmake_dependent_option(WITH_AL_INFO "Build magnum-al-info utility" OFF "WITH_AUDIO" OFF)
 
-# EGL context and windowless EGL application, available everywhere except on
-# platforms which don't support extension loading
-if(NOT CORRADE_TARGET_EMSCRIPTEN)
-    cmake_dependent_option(WITH_WINDOWLESSEGLAPPLICATION "Build WindowlessEglApplication library" OFF "NOT TARGET_GLES OR TARGET_DESKTOP_GLES OR NOT WITH_MAGNUMINFO" ON)
-    option(WITH_EGLCONTEXT "Build EglContext library" OFF)
-endif()
+# EGL context and windowless EGL application, available everywhere
+cmake_dependent_option(WITH_WINDOWLESSEGLAPPLICATION "Build WindowlessEglApplication library" OFF "NOT TARGET_GLES OR TARGET_DESKTOP_GLES OR NOT WITH_MAGNUMINFO" ON)
+option(WITH_EGLCONTEXT "Build EglContext library" OFF)
 
 # Android-specific application libraries
 if(CORRADE_TARGET_ANDROID)
