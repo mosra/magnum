@@ -57,6 +57,6 @@ for(var i = 0; i != args.length; ++i) {
 
 Module.setStatus('Downloading...');
 
-Module.canvas.addEventListener('contextmenu', function(event) {
+if(Module.canvas) Module.canvas.addEventListener('contextmenu', function(event) {
     event.preventDefault();
 }, true);
