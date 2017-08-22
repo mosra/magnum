@@ -234,11 +234,12 @@ const std::vector<Extension>& Extension::extensions(Version version) {
     #elif defined(MAGNUM_TARGET_WEBGL)
     static const std::vector<Extension> extensions{
         _extension(GL,EXT,texture_filter_anisotropic),
-        _extension(GL,EXT,sRGB),
-        _extension(GL,EXT,disjoint_timer_query)};
+        _extension(GL,EXT,disjoint_timer_query),
+        _extension(GL,WEBGL,compressed_texture_s3tc)};
     #ifdef MAGNUM_TARGET_GLES2
     static const std::vector<Extension> extensionsES300{
         _extension(GL,ANGLE,instanced_arrays),
+        _extension(GL,EXT,sRGB),
         _extension(GL,EXT,blend_minmax),
         _extension(GL,EXT,shader_texture_lod),
         _extension(GL,OES,texture_float),
@@ -249,7 +250,6 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,OES,texture_float_linear),
         _extension(GL,OES,texture_half_float_linear),
         _extension(GL,OES,fbo_render_mipmap),
-        _extension(GL,WEBGL,compressed_texture_s3tc),
         _extension(GL,WEBGL,depth_texture),
         _extension(GL,WEBGL,draw_buffers)};
     #endif

@@ -249,8 +249,8 @@ namespace GL {
         #endif
     } namespace EXT {
         _extension(GL,EXT,texture_filter_anisotropic, GLES200,  None) // #11
-        _extension(GL,EXT,sRGB,                     GLES200,    None) // #17
         #ifdef MAGNUM_TARGET_GLES2
+        _extension(GL,EXT,sRGB,                     GLES200, GLES300) // #17
         _extension(GL,EXT,blend_minmax,             GLES200, GLES300) // #25
         #endif
         _extension(GL,EXT,disjoint_timer_query,     GLES200,    None) // #26
@@ -269,8 +269,8 @@ namespace GL {
         _extension(GL,OES,fbo_render_mipmap,        GLES200, GLES300) // #28
         #endif
     } namespace WEBGL {
-        #ifdef MAGNUM_TARGET_GLES2
         _extension(GL,WEBGL,compressed_texture_s3tc, GLES200,   None) // #8
+        #ifdef MAGNUM_TARGET_GLES2
         _extension(GL,WEBGL,depth_texture,          GLES200, GLES300) // #9
         _extension(GL,WEBGL,draw_buffers,           GLES200, GLES300) // #18
         #endif
