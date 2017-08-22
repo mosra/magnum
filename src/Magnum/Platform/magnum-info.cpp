@@ -161,11 +161,11 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     args.parse(arguments.argc, arguments.argv);
     #endif
 
-    Debug() << "";
+    Debug() << Debug::newline;
     Debug() << "  +---------------------------------------------------------+";
     Debug() << "  | Information about Magnum engine and OpenGL capabilities |";
     Debug() << "  +---------------------------------------------------------+";
-    Debug() << "";
+    Debug() << Debug::newline;
 
     #ifdef MAGNUM_WINDOWLESSEGLAPPLICATION_MAIN
     Debug() << "Used application: Platform::WindowlessEglApplication";
