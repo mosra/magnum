@@ -56,6 +56,7 @@ cmake .. \
     -DWITH_TGAIMPORTER=ON \
     -DWITH_WAVAUDIOIMPORTER=ON \
     -DWITH_MAGNUMINFO=ON \
+    -DWITH_AL_INFO=ON \
     -DBUILD_TESTS=ON \
     -DTARGET_GLES2=$TARGET_GLES2
 # Otherwise the job gets killed (probably because using too much memory)

@@ -84,13 +84,26 @@ if(WITH_AL_INFO)
     target_link_libraries(magnum-al-info MagnumAudio)
     set_target_properties(magnum-al-info PROPERTIES FOLDER "Magnum/Audio")
 
-    install(TARGETS magnum-al-info DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+    if(NOT MAGNUM_TARGET_EMSCRIPTEN)
+        install(TARGETS magnum-al-info DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+    endif()
 
     if(CORRADE_TARGET_IOS)
         set_target_properties(magnum-al-info PROPERTIES
             MACOSX_BUNDLE ON
             MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/MacOSXBundleInfo.plist.in
             XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED "YES")
+    elseif(CORRADE_TARGET_EMSCRIPTEN)
+        install(FILES magnum-al-info.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/magnum-al-info RENAME index.html)
+        install(TARGETS magnum-al-info DESTINATION ${MAGNUM_DEPLOY_PREFIX}/magnum-al-info)
+        install(FILES
+            ${CMAKE_SOURCE_DIR}/src/Magnum/Platform/WebApplication.css
+            ${CMAKE_SOURCE_DIR}/src/Magnum/Platform/WindowlessEmscriptenApplication.js
+            DESTINATION ${MAGNUM_DEPLOY_PREFIX}/magnum-al-info)
+        install(FILES
+            ${CMAKE_CURRENT_BINARY_DIR}/magnum-al-info.js.mem
+            ${CMAKE_CURRENT_BINARY_DIR}/magnum-al-info.wasm
+            DESTINATION ${MAGNUM_DEPLOY_PREFIX}/magnum-al-info OPTIONAL)
     endif()
 
     # Magnum AL info target alias for superprojects

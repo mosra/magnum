@@ -151,7 +151,8 @@ namespace Magnum {
 -   Floating-point audio support in @ref Audio::Buffer
 -   @ref Audio::WavImporter "WavAudioImporter" plugin now supports more
     formats, is more flexible and gives better errors
--   New @ref magnum-al-info "magnum-al-info" utility
+-   New @ref magnum-al-info "magnum-al-info" utility, available for all desktop
+    platforms and Emscripten
 
 ### DebugTools library
 
