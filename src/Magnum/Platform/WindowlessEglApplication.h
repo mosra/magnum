@@ -298,7 +298,9 @@ The CSS file contains rudimentary style to avoid eye bleeding.
 
 The application prints all output (thus also @ref Corrade::Utility::Debug "Debug",
 @ref Corrade::Utility::Warning "Warning" and @ref Corrade::Utility::Error "Error")
-to the `&lt;pre&gt;` on the page.
+to the `&lt;pre&gt;` on the page. It's possible to pass command-line arguments
+to `main()` using GET URL parameters. For example, `/app/?foo=bar&fizz&buzz=3`
+will go to the app as `['--foo', 'bar', '--fizz', '--buzz', '3']`.
 */
 class WindowlessEglApplication {
     public:

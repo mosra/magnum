@@ -260,6 +260,9 @@ namespace Magnum {
 -   Added @ref Platform::Sdl2Application::KeyEvent::keyName() "Platform::*Application::KeyEvent::keyName()"
 -   It's now possible to iterate main loop manually using
     @ref Platform::Sdl2Application::mainLoopIteration()
+-   Ability to pass command-line arguments to Emscripten browser apps, see
+    @ref Platform::Sdl2Application and @ref Platform::WindowlessEglApplication
+    for more information
 
 ### Primitives library
 

@@ -229,7 +229,9 @@ The CSS file contains rudimentary style to avoid eye bleeding.
 
 The application redirects all output (thus also @ref Corrade::Utility::Debug "Debug",
 @ref Corrade::Utility::Warning "Warning" and @ref Corrade::Utility::Error "Error")
-to JavaScript console.
+to JavaScript console. It's possible to pass command-line arguments to `main()`
+using GET URL parameters. For example, `/app/?foo=bar&fizz&buzz=3` will go to
+the app as `['--foo', 'bar', '--fizz', '--buzz', '3']`.
 
 ## Usage with iOS
 
