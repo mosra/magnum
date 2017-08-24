@@ -529,7 +529,9 @@ Sdl2Application::Configuration::Configuration():
     #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_IOS)
     _title("Magnum SDL2 Application"),
     #endif
-    #ifndef CORRADE_TARGET_IOS
+    #ifdef CORRADE_TARGET_EMSCRIPTEN
+    _size{640, 480},
+    #elif !defined(CORRADE_TARGET_IOS)
     _size{800, 600},
     #else
     _size{}, /* SDL2 detects someting for us */

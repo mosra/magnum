@@ -441,6 +441,9 @@ namespace Magnum {
     @extension{ARB,direct_state_access} code path, causing crashes on Mesa
 -   Properly export @ref Framebuffer::DrawAttachment to avoid linker failures
     on Windows
+-   On Emscripten, @ref Platform::Sdl2Application was by default rendering a
+    800x600 canvas to an area of 640x480 pixels, causing severe aliasing.
+    Canvas is now by default sized to 640x480 to match the default CSS style.
 -   @ref Platform::WindowlessWglApplication is fixed to allow the GL context to
     be created and destroyed multiple times during application run
 -   @ref SceneGraph::Camera now works properly with @ref Double underlying type
