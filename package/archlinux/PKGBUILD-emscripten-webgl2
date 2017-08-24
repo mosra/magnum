@@ -28,7 +28,7 @@ build() {
     cmake .. \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr/lib/emscripten/system \
-        -DMAGNUM_DEPLOY_PREFIX=/srv/http/emscripten \
+        -DMAGNUM_DEPLOY_PREFIX=/srv/http/emscripten-webgl2 \
         -DTARGET_GLES2=OFF \
         -DWITH_AUDIO=ON \
         -DWITH_SDL2APPLICATION=ON \
