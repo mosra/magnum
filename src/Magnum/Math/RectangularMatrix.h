@@ -104,14 +104,14 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * @see @ref diagonal()
          */
         constexpr static RectangularMatrix<cols, rows, T> fromDiagonal(const Vector<DiagonalSize, T>& diagonal) noexcept {
-            return RectangularMatrix(typename Implementation::GenerateSequence<cols>::Type(), diagonal);
+			return RectangularMatrix(std::make_index_sequence<cols>{}, diagonal);
         }
 
         /** @brief Construct zero-filled matrix */
         constexpr /*implicit*/ RectangularMatrix(ZeroInitT = ZeroInit) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            : RectangularMatrix<cols, rows, T>{typename Implementation::GenerateSequence<cols>::Type{}, ZeroInit}
+            : RectangularMatrix<cols, rows, T>{std::make_index_sequence<cols>{}, ZeroInit}
             #endif
             {}
 
@@ -119,7 +119,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         explicit RectangularMatrix(NoInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            : RectangularMatrix<cols, rows, T>{typename Implementation::GenerateSequence<cols>::Type{}, NoInit}
+            : RectangularMatrix<cols, rows, T>{std::make_index_sequence<cols>{}, NoInit}
             #endif
             {}
 
@@ -132,7 +132,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         constexpr explicit RectangularMatrix(T value) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            : RectangularMatrix{typename Implementation::GenerateSequence<cols>::Type(), value}
+            : RectangularMatrix{std::make_index_sequence<cols>{}, value}
             #endif
             {}
 
@@ -147,7 +147,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * // integral == {1, 2, -15, 7}
          * @endcode
          */
-        template<class U> constexpr explicit RectangularMatrix(const RectangularMatrix<cols, rows, U>& other) noexcept: RectangularMatrix(typename Implementation::GenerateSequence<cols>::Type(), other) {}
+        template<class U> constexpr explicit RectangularMatrix(const RectangularMatrix<cols, rows, U>& other) noexcept: RectangularMatrix(std::make_index_sequence<cols>{}, other) {}
 
         /** @brief Construct matrix from external representation */
         template<class U, class V = decltype(Implementation::RectangularMatrixConverter<cols, rows, T, U>::from(std::declval<U>()))> constexpr explicit RectangularMatrix(const U& other): RectangularMatrix(Implementation::RectangularMatrixConverter<cols, rows, T, U>::from(other)) {}
@@ -400,7 +400,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * @see @ref transposed(), @ref flippedRows(), @ref Vector::flipped()
          */
         constexpr RectangularMatrix<cols, rows, T> flippedCols() const {
-            return flippedColsInternal(typename Implementation::GenerateReverseSequence<cols>::Type{});
+            return flippedColsInternal(std::make_index_sequence<cols>{});
         }
 
         /**
@@ -410,7 +410,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * @see @ref transposed(), @ref flippedCols(), @ref Vector::flipped()
          */
         constexpr RectangularMatrix<cols, rows, T> flippedRows() const {
-            return flippedRowsInternal(typename Implementation::GenerateSequence<cols>::Type{});
+            return flippedRowsInternal(std::make_index_sequence<cols>{});
         }
 
         /**
@@ -439,29 +439,29 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
     private:
     #endif
         /* Implementation for RectangularMatrix<cols, rows, T>::fromDiagonal() and Matrix<size, T>(IdentityInitT, T) */
-        template<std::size_t ...sequence> constexpr explicit RectangularMatrix(Implementation::Sequence<sequence...>, const Vector<DiagonalSize, T>& diagonal);
+        template<std::size_t ...sequence> constexpr explicit RectangularMatrix(std::index_sequence<sequence...>, const Vector<DiagonalSize, T>& diagonal);
 
         /* Implementation for RectangularMatrix<cols, rows, T>::RectangularMatrix(T) and Matrix<size, T>(T) */
         /* MSVC 2015 can't handle {} here */
-        template<std::size_t ...sequence> constexpr explicit RectangularMatrix(Implementation::Sequence<sequence...>, T value) noexcept: _data{Vector<rows, T>((static_cast<void>(sequence), value))...} {}
+        template<std::size_t ...sequence> constexpr explicit RectangularMatrix(std::index_sequence<sequence...>, T value) noexcept: _data{Vector<rows, T>((static_cast<void>(sequence), value))...} {}
 
     private:
         /* Implementation for RectangularMatrix<cols, rows, T>::RectangularMatrix(const RectangularMatrix<cols, rows, U>&) */
-        template<class U, std::size_t ...sequence> constexpr explicit RectangularMatrix(Implementation::Sequence<sequence...>, const RectangularMatrix<cols, rows, U>& matrix) noexcept: _data{Vector<rows, T>(matrix[sequence])...} {}
+        template<class U, std::size_t ...sequence> constexpr explicit RectangularMatrix(std::index_sequence<sequence...>, const RectangularMatrix<cols, rows, U>& matrix) noexcept: _data{Vector<rows, T>(matrix[sequence])...} {}
 
         /* Implementation for RectangularMatrix<cols, rows, T>::RectangularMatrix(ZeroInitT) and RectangularMatrix<cols, rows, T>::RectangularMatrix(NoInitT) */
         /* MSVC 2015 can't handle {} here */
-        template<class U, std::size_t ...sequence> constexpr explicit RectangularMatrix(Implementation::Sequence<sequence...>, U) noexcept: _data{Vector<rows, T>((static_cast<void>(sequence), U{typename U::Init{}}))...} {}
+        template<class U, std::size_t ...sequence> constexpr explicit RectangularMatrix(std::index_sequence<sequence...>, U) noexcept: _data{Vector<rows, T>((static_cast<void>(sequence), U{typename U::Init{}}))...} {}
 
-        template<std::size_t ...sequence> constexpr RectangularMatrix<cols, rows, T> flippedColsInternal(Implementation::Sequence<sequence...>) const {
-            return {(*this)[sequence]...};
+        template<std::size_t ...sequence> constexpr RectangularMatrix<cols, rows, T> flippedColsInternal(std::index_sequence<sequence...>) const {
+            return {(*this)[cols - 1 - sequence]...};
         }
 
-        template<std::size_t ...sequence> constexpr RectangularMatrix<cols, rows, T> flippedRowsInternal(Implementation::Sequence<sequence...>) const {
+        template<std::size_t ...sequence> constexpr RectangularMatrix<cols, rows, T> flippedRowsInternal(std::index_sequence<sequence...>) const {
             return {(*this)[sequence].flipped()...};
         }
 
-        template<std::size_t ...sequence> constexpr Vector<DiagonalSize, T> diagonalInternal(Implementation::Sequence<sequence...>) const;
+        template<std::size_t ...sequence> constexpr Vector<DiagonalSize, T> diagonalInternal(std::index_sequence<sequence...>) const;
 
         Vector<rows, T> _data[cols];
 };
@@ -694,15 +694,15 @@ extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utili
 #endif
 
 namespace Implementation {
-    template<std::size_t rows, std::size_t i, class T, std::size_t ...sequence> constexpr Vector<rows, T> diagonalMatrixColumn2(Implementation::Sequence<sequence...>, const T& number) {
+    template<std::size_t rows, std::size_t i, class T, std::size_t ...sequence> constexpr Vector<rows, T> diagonalMatrixColumn2(std::index_sequence<sequence...>, const T& number) {
         return {(sequence == i ? number : T(0))...};
     }
     template<std::size_t rows, std::size_t i, class T> constexpr Vector<rows, T> diagonalMatrixColumn(const T& number) {
-        return diagonalMatrixColumn2<rows, i, T>(typename Implementation::GenerateSequence<rows>::Type(), number);
+        return diagonalMatrixColumn2<rows, i, T>(std::make_index_sequence<rows>{}, number);
     }
 }
 
-template<std::size_t cols, std::size_t rows, class T> template<std::size_t ...sequence> constexpr RectangularMatrix<cols, rows, T>::RectangularMatrix(Implementation::Sequence<sequence...>, const Vector<DiagonalSize, T>& diagonal): _data{Implementation::diagonalMatrixColumn<rows, sequence>(sequence < DiagonalSize ? diagonal[sequence] : T{})...} {}
+template<std::size_t cols, std::size_t rows, class T> template<std::size_t ...sequence> constexpr RectangularMatrix<cols, rows, T>::RectangularMatrix(std::index_sequence<sequence...>, const Vector<DiagonalSize, T>& diagonal): _data{Implementation::diagonalMatrixColumn<rows, sequence>(sequence < DiagonalSize ? diagonal[sequence] : T{})...} {}
 
 template<std::size_t cols, std::size_t rows, class T> inline Vector<cols, T> RectangularMatrix<cols, rows, T>::row(std::size_t row) const {
     Vector<cols, T> out;
@@ -748,10 +748,10 @@ template<std::size_t cols, std::size_t rows, class T> inline RectangularMatrix<r
     return out;
 }
 
-template<std::size_t cols, std::size_t rows, class T> constexpr auto RectangularMatrix<cols, rows, T>::diagonal() const -> Vector<DiagonalSize, T> { return diagonalInternal(typename Implementation::GenerateSequence<DiagonalSize>::Type()); }
+template<std::size_t cols, std::size_t rows, class T> constexpr auto RectangularMatrix<cols, rows, T>::diagonal() const -> Vector<DiagonalSize, T> { return diagonalInternal(std::make_index_sequence<DiagonalSize>{}); }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template<std::size_t cols, std::size_t rows, class T> template<std::size_t ...sequence> constexpr auto RectangularMatrix<cols, rows, T>::diagonalInternal(Implementation::Sequence<sequence...>) const -> Vector<DiagonalSize, T> {
+template<std::size_t cols, std::size_t rows, class T> template<std::size_t ...sequence> constexpr auto RectangularMatrix<cols, rows, T>::diagonalInternal(std::index_sequence<sequence...>) const -> Vector<DiagonalSize, T> {
     return {(*this)[sequence][sequence]...};
 }
 #endif

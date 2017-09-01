@@ -86,7 +86,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
         constexpr /*implicit*/ Matrix(IdentityInitT = IdentityInit, T value = T(1)) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            : RectangularMatrix<size, size, T>{typename Implementation::GenerateSequence<size>::Type(), Vector<size, T>(value)}
+            : RectangularMatrix<size, size, T>{std::make_index_sequence<size>{}, Vector<size, T>(value)}
             #endif
             {}
 
@@ -113,7 +113,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
         constexpr explicit Matrix(T value) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            : RectangularMatrix<size, size, T>{typename Implementation::GenerateSequence<size>::Type(), value}
+            : RectangularMatrix<size, size, T>{std::make_index_sequence<size>{}, value}
             #endif
             {}
 

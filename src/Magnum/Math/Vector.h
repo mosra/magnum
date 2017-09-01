@@ -145,7 +145,7 @@ template<std::size_t size, class T> class Vector {
          * @see @ref Vector4::pad(const Vector<otherSize, T>&, T, T)
          */
         template<std::size_t otherSize> constexpr static Vector<size, T> pad(const Vector<otherSize, T>& a, T value = T(0)) {
-            return padInternal<otherSize>(typename Implementation::GenerateSequence<size>::Type(), a, value);
+			return padInternal<otherSize>(std::make_index_sequence<size>{}, a, value);
         }
 
         #ifdef MAGNUM_BUILD_DEPRECATED
@@ -191,7 +191,7 @@ template<std::size_t size, class T> class Vector {
         #ifdef DOXYGEN_GENERATING_OUTPUT
         constexpr explicit Vector(T value) noexcept;
         #else
-        template<class U, class V = typename std::enable_if<std::is_same<T, U>::value && size != 1, T>::type> constexpr explicit Vector(U value) noexcept: Vector(typename Implementation::GenerateSequence<size>::Type(), value) {}
+        template<class U, class V = typename std::enable_if<std::is_same<T, U>::value && size != 1, T>::type> constexpr explicit Vector(U value) noexcept: Vector(std::make_index_sequence<size>{}, value) {}
         #endif
 
         /**
@@ -205,7 +205,7 @@ template<std::size_t size, class T> class Vector {
          * // integral == {1, 2, -15, 7}
          * @endcode
          */
-        template<class U> constexpr explicit Vector(const Vector<size, U>& other) noexcept: Vector(typename Implementation::GenerateSequence<size>::Type(), other) {}
+        template<class U> constexpr explicit Vector(const Vector<size, U>& other) noexcept: Vector(std::make_index_sequence<size>{}, other) {}
 
         /** @brief Construct vector from external representation */
         template<class U, class V = decltype(Implementation::VectorConverter<size, T, U>::from(std::declval<U>()))> constexpr explicit Vector(const U& other) noexcept: Vector(Implementation::VectorConverter<size, T, U>::from(other)) {}
@@ -537,7 +537,7 @@ template<std::size_t size, class T> class Vector {
          *      @ref RectangularMatrix::flippedRows()
          */
         constexpr Vector<size, T> flipped() const {
-            return flippedInternal(typename Implementation::GenerateReverseSequence<size>::Type{});
+			return flippedInternal(std::make_index_sequence<size>{});
         }
 
         /**
@@ -577,17 +577,17 @@ template<std::size_t size, class T> class Vector {
 
     private:
         /* Implementation for Vector<size, T>::Vector(const Vector<size, U>&) */
-        template<class U, std::size_t ...sequence> constexpr explicit Vector(Implementation::Sequence<sequence...>, const Vector<size, U>& vector) noexcept: _data{T(vector._data[sequence])...} {}
+        template<class U, std::size_t ...sequence> constexpr explicit Vector(std::index_sequence<sequence...>, const Vector<size, U>& vector) noexcept: _data{T(vector._data[sequence])...} {}
 
         /* Implementation for Vector<size, T>::Vector(U) */
-        template<std::size_t ...sequence> constexpr explicit Vector(Implementation::Sequence<sequence...>, T value) noexcept: _data{Implementation::repeat(value, sequence)...} {}
+        template<std::size_t ...sequence> constexpr explicit Vector(std::index_sequence<sequence...>, T value) noexcept: _data{Implementation::repeat(value, sequence)...} {}
 
-        template<std::size_t otherSize, std::size_t ...sequence> constexpr static Vector<size, T> padInternal(Implementation::Sequence<sequence...>, const Vector<otherSize, T>& a, T value) {
+        template<std::size_t otherSize, std::size_t ...sequence> constexpr static Vector<size, T> padInternal(std::index_sequence<sequence...>, const Vector<otherSize, T>& a, T value) {
             return {sequence < otherSize ? a[sequence] : value...};
         }
 
-        template<std::size_t ...sequence> constexpr Vector<size, T> flippedInternal(Implementation::Sequence<sequence...>) const {
-            return {(*this)[sequence]...};
+        template<std::size_t ...sequence> constexpr Vector<size, T> flippedInternal(std::index_sequence<sequence...>) const {
+            return {(*this)[size - 1 - sequence]...};
         }
 
         T _data[size];

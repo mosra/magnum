@@ -32,7 +32,7 @@
 #include <type_traits>
 
 #include "Magnum/Magnum.h"
-#include "Magnum/Math/BoolVector.h" /* for Math::Implementation::Sequence */
+#include "Magnum/Math/BoolVector.h" /* for Math::Implementation::repeat() */
 
 namespace Magnum {
 
@@ -77,7 +77,7 @@ template<UnsignedInt dimensions, class T> class Array {
         constexpr /*implicit*/ Array(T value);
         #else
         template<class U, class V = typename std::enable_if<std::is_same<T, U>::value && dimensions != 1, T>::type>
-        constexpr /*implicit*/ Array(U value): Array(typename Math::Implementation::GenerateSequence<dimensions>::Type(), value) {}
+        constexpr /*implicit*/ Array(U value): Array(std::make_index_sequence<dimensions>{}, value) {}
         #endif
 
         /** @brief Equality */
@@ -106,7 +106,7 @@ template<UnsignedInt dimensions, class T> class Array {
     private:
 
         /* Implementation for Array<dimensions, T>::Array(U) */
-        template<std::size_t ...sequence> constexpr explicit Array(Math::Implementation::Sequence<sequence...>, T value): _data{Math::Implementation::repeat(value, sequence)...} {}
+        template<std::size_t ...sequence> constexpr explicit Array(std::index_sequence<sequence...>, T value): _data{Math::Implementation::repeat(value, sequence)...} {}
 
         T _data[dimensions];
 };

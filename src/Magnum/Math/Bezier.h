@@ -72,7 +72,7 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
         constexpr /*implicit*/ Bezier(ZeroInitT = ZeroInit) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            : Bezier<order, dimensions, T>{typename Implementation::GenerateSequence<order + 1>::Type{}, ZeroInit}
+            : Bezier<order, dimensions, T>{std::make_index_sequence<order + 1>{}, ZeroInit}
             #endif
             {}
 
@@ -80,7 +80,7 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
         explicit Bezier(NoInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
-            : Bezier<order, dimensions, T>{typename Implementation::GenerateSequence<order + 1>::Type{}, NoInit}
+            : Bezier<order, dimensions, T>{std::make_index_sequence<order + 1>{}, NoInit}
             #endif
             {}
 
@@ -95,7 +95,7 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
          * Performs only default casting on the values, no rounding or
          * anything else.
          */
-        template<class U> constexpr explicit Bezier(const Bezier<order, dimensions, U>& other) noexcept: Bezier{typename Implementation::GenerateSequence<order + 1>::Type(), other} {}
+        template<class U> constexpr explicit Bezier(const Bezier<order, dimensions, U>& other) noexcept: Bezier{std::make_index_sequence<order + 1>{}, other} {}
 
         /** @brief Construct Bézier from external representation */
         template<class U, class V = decltype(Implementation::BezierConverter<order, dimensions, T, U>::from(std::declval<U>()))> constexpr explicit Bezier(const U& other) noexcept: Bezier<order, dimensions, T>{Implementation::BezierConverter<order, dimensions, T, U>::from(other)} {}
@@ -156,11 +156,11 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
 
     private:
         /* Implementation for Bezier<order, dimensions, T>::Bezier(const Bezier<order, dimensions, U>&) */
-        template<class U, std::size_t ...sequence> constexpr explicit Bezier(Implementation::Sequence<sequence...>, const Bezier<order, dimensions, U>& other) noexcept: _data{Vector<dimensions, T>(other._data[sequence])...} {}
+        template<class U, std::size_t ...sequence> constexpr explicit Bezier(std::index_sequence<sequence...>, const Bezier<order, dimensions, U>& other) noexcept: _data{Vector<dimensions, T>(other._data[sequence])...} {}
 
         /* Implementation for Bezier<order, dimensions, T>::Bezier(ZeroInitT) and Bezier<order, dimensions, T>::Bezier(NoInitT) */
         /* MSVC 2015 can't handle {} here */
-        template<class U, std::size_t ...sequence> constexpr explicit Bezier(Implementation::Sequence<sequence...>, U): _data{Vector<dimensions, T>((static_cast<void>(sequence), U{typename U::Init{}}))...} {}
+        template<class U, std::size_t ...sequence> constexpr explicit Bezier(std::index_sequence<sequence...>, U): _data{Vector<dimensions, T>((static_cast<void>(sequence), U{typename U::Init{}}))...} {}
 
         /* Calculates and returns all intermediate points generated when using De Casteljau's algorithm */
         std::array<Bezier<order, dimensions, T>, order + 1> calculateIntermediatePoints(Float t) const {
