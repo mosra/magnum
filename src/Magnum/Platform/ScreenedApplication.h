@@ -32,6 +32,7 @@
 #include <Corrade/Containers/LinkedList.h>
 
 #include "Magnum/Magnum.h"
+#include "Magnum/Tags.h"
 #include "Magnum/Platform/Platform.h"
 
 namespace Magnum { namespace Platform {
