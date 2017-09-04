@@ -37,6 +37,7 @@ var Module = {
         } else {
             Module.setStatus('');
             Module.setStatusDescription('');
+            document.getElementById('log').style.display = 'block';
         }
     }
 };
@@ -56,6 +57,8 @@ for(var i = 0; i != args.length; ++i) {
 }
 
 Module.setStatus('Downloading...');
+
+document.getElementById('log').style.display = 'none';
 
 if(Module.canvas) Module.canvas.addEventListener('contextmenu', function(event) {
     event.preventDefault();
