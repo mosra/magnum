@@ -400,7 +400,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * @see @ref transposed(), @ref flippedRows(), @ref Vector::flipped()
          */
         constexpr RectangularMatrix<cols, rows, T> flippedCols() const {
-            return flippedColsInternal(typename Implementation::GenerateReverseSequence<cols>::Type{});
+            return flippedColsInternal(typename Implementation::GenerateSequence<cols>::Type{});
         }
 
         /**
@@ -454,7 +454,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         template<class U, std::size_t ...sequence> constexpr explicit RectangularMatrix(Implementation::Sequence<sequence...>, U) noexcept: _data{Vector<rows, T>((static_cast<void>(sequence), U{typename U::Init{}}))...} {}
 
         template<std::size_t ...sequence> constexpr RectangularMatrix<cols, rows, T> flippedColsInternal(Implementation::Sequence<sequence...>) const {
-            return {(*this)[sequence]...};
+            return {(*this)[cols - 1 - sequence]...};
         }
 
         template<std::size_t ...sequence> constexpr RectangularMatrix<cols, rows, T> flippedRowsInternal(Implementation::Sequence<sequence...>) const {

@@ -537,7 +537,7 @@ template<std::size_t size, class T> class Vector {
          *      @ref RectangularMatrix::flippedRows()
          */
         constexpr Vector<size, T> flipped() const {
-            return flippedInternal(typename Implementation::GenerateReverseSequence<size>::Type{});
+            return flippedInternal(typename Implementation::GenerateSequence<size>::Type{});
         }
 
         /**
@@ -587,7 +587,7 @@ template<std::size_t size, class T> class Vector {
         }
 
         template<std::size_t ...sequence> constexpr Vector<size, T> flippedInternal(Implementation::Sequence<sequence...>) const {
-            return {(*this)[sequence]...};
+            return {(*this)[size - 1 - sequence]...};
         }
 
         T _data[size];
