@@ -194,13 +194,13 @@ template<class Application> class BasicScreenedApplication: public Application, 
          * @brief Back screen
          * @deprecated Use `screens().last()` instead.
          */
-        CORRADE_DEPRECATED("use screens().back() instead") BasicScreen<Application>* backScreen() { return screens().last(); }
+        CORRADE_DEPRECATED("use screens().last() instead") BasicScreen<Application>* backScreen() { return screens().last(); }
 
         /**
          * @overload
          * @deprecated Use `screens().last()` instead.
          */
-        CORRADE_DEPRECATED("use screens().back() instead") const BasicScreen<Application>* backScreen() const { return screens().last(); }
+        CORRADE_DEPRECATED("use screens().last() instead") const BasicScreen<Application>* backScreen() const { return screens().last(); }
         #endif
 
     protected:
