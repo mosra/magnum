@@ -34,6 +34,9 @@
 #include "Magnum/Image.h"
 #include "Magnum/Renderbuffer.h"
 #include "Magnum/Texture.h"
+#ifndef MAGNUM_TARGET_GLES2
+#include "Magnum/Math/Color.h"
+#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 #include "Magnum/BufferImage.h"
@@ -152,6 +155,23 @@ Framebuffer& Framebuffer::setLabelInternal(const Containers::ArrayView<const cha
 Framebuffer::Status Framebuffer::checkStatus(const FramebufferTarget target) {
     return Status((this->*Context::current().state().framebuffer->checkStatusImplementation)(target));
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+Framebuffer& Framebuffer::clearColor(const Int attachment, const Color4& color) {
+    (this->*Context::current().state().framebuffer->clearFImplementation)(GL_COLOR, attachment, color.data());
+    return *this;
+}
+
+Framebuffer& Framebuffer::clearColor(const Int attachment, const Vector4i& color) {
+    (this->*Context::current().state().framebuffer->clearIImplementation)(GL_COLOR, attachment, color.data());
+    return *this;
+}
+
+Framebuffer& Framebuffer::clearColor(const Int attachment, const Vector4ui& color) {
+    (this->*Context::current().state().framebuffer->clearUIImplementation)(GL_COLOR, attachment, color.data());
+    return *this;
+}
+#endif
 
 Framebuffer& Framebuffer::mapForDraw(std::initializer_list<std::pair<UnsignedInt, DrawAttachment>> attachments) {
     /* Max attachment location */

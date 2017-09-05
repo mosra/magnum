@@ -31,6 +31,9 @@
 #include "Magnum/Extensions.h"
 #include "Magnum/Implementation/State.h"
 #include "Magnum/Implementation/FramebufferState.h"
+#ifndef MAGNUM_TARGET_GLES2
+#include "Magnum/Math/Color.h"
+#endif
 
 namespace Magnum {
 
@@ -44,6 +47,23 @@ DefaultFramebuffer::DefaultFramebuffer() {
 DefaultFramebuffer::Status DefaultFramebuffer::checkStatus(const FramebufferTarget target) {
     return Status((this->*Context::current().state().framebuffer->checkStatusImplementation)(target));
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+DefaultFramebuffer& DefaultFramebuffer::clearColor(const Color4& color) {
+    (this->*Context::current().state().framebuffer->clearFImplementation)(GL_COLOR, 0, color.data());
+    return *this;
+}
+
+DefaultFramebuffer& DefaultFramebuffer::clearColor(const Vector4i& color) {
+    (this->*Context::current().state().framebuffer->clearIImplementation)(GL_COLOR, 0, color.data());
+    return *this;
+}
+
+DefaultFramebuffer& DefaultFramebuffer::clearColor(const Vector4ui& color) {
+    (this->*Context::current().state().framebuffer->clearUIImplementation)(GL_COLOR, 0, color.data());
+    return *this;
+}
+#endif
 
 DefaultFramebuffer& DefaultFramebuffer::mapForDraw(std::initializer_list<std::pair<UnsignedInt, DrawAttachment>> attachments) {
     /* Max attachment location */

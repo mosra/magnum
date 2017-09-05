@@ -50,6 +50,7 @@ following:
 Extension                                   | Status
 ------------------------------------------- | ------
 GLSL 1.30                                   | done
+@fn_gl{ClearBuffer} functions               | done
 @extension{ARB,map_buffer_range}            | done
 @extension{ARB,color_buffer_float}          | |
 @extension{ARB,half_float_pixel}            | done

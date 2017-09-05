@@ -454,6 +454,29 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          */
         Status checkStatus(FramebufferTarget target);
 
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Clear color buffer to specified value
+         * @param attachment    Color attachment index
+         * @param color         Value to clear with
+         * @return Reference to self (for method chaining)
+         *
+         * @see @ref clear(), @fn_gl{ClearNamedFramebuffer}, eventually
+         *      @fn_gl{BindFramebuffer}, then @fn_gl{ClearBuffer}
+         * @requires_gl30 Direct framebuffer clearing is not available in
+         *      OpenGL 2.1.
+         * @requires_gles30 Direct framebuffer clearing is not available in
+         *      OpenGL ES 2.0 or WebGL 1.0.
+         */
+        Framebuffer& clearColor(Int attachment, const Color4& color);
+
+        /** @overload */
+        Framebuffer& clearColor(Int attachment, const Vector4i& color);
+
+        /** @overload */
+        Framebuffer& clearColor(Int attachment, const Vector4ui& color);
+        #endif
+
         /**
          * @brief Map shader output to attachments
          * @return Reference to self (for method chaining)
@@ -841,6 +864,20 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
             AbstractFramebuffer::clear(mask);
             return *this;
         }
+        #ifndef MAGNUM_TARGET_GLES2
+        Framebuffer& clearDepth(Float depth) {
+            AbstractFramebuffer::clearDepth(depth);
+            return *this;
+        }
+        Framebuffer& clearStencil(Int stencil) {
+            AbstractFramebuffer::clearStencil(stencil);
+            return *this;
+        }
+        Framebuffer& clearDepthStencil(Float depth, Int stencil) {
+            AbstractFramebuffer::clearDepthStencil(depth, stencil);
+            return *this;
+        }
+        #endif
         #endif
 
     private:

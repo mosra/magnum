@@ -50,6 +50,14 @@ struct FramebufferState {
     void(*blitImplementation)(AbstractFramebuffer&, AbstractFramebuffer&, const Range2Di&, const Range2Di&, FramebufferBlitMask, FramebufferBlitFilter);
     #endif
     GLenum(AbstractFramebuffer::*checkStatusImplementation)(FramebufferTarget);
+
+    #ifndef MAGNUM_TARGET_GLES2
+    void(AbstractFramebuffer::*clearIImplementation)(GLenum, GLint, const GLint*);
+    void(AbstractFramebuffer::*clearUIImplementation)(GLenum, GLint, const GLuint*);
+    void(AbstractFramebuffer::*clearFImplementation)(GLenum, GLint, const GLfloat*);
+    void(AbstractFramebuffer::*clearFIImplementation)(GLenum, GLfloat, GLint);
+    #endif
+
     void(AbstractFramebuffer::*drawBuffersImplementation)(GLsizei, const GLenum*);
     #ifndef MAGNUM_TARGET_GLES
     void(AbstractFramebuffer::*drawBufferImplementation)(GLenum);

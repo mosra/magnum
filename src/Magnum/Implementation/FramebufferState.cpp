@@ -64,6 +64,12 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
         /* Extension added above */
 
         checkStatusImplementation = &AbstractFramebuffer::checkStatusImplementationDSA;
+
+        clearIImplementation = &AbstractFramebuffer::clearImplementationDSA;
+        clearUIImplementation = &AbstractFramebuffer::clearImplementationDSA;
+        clearFImplementation = &AbstractFramebuffer::clearImplementationDSA;
+        clearFIImplementation = &AbstractFramebuffer::clearImplementationDSA;
+
         drawBuffersImplementation = &AbstractFramebuffer::drawBuffersImplementationDSA;
         drawBufferImplementation = &AbstractFramebuffer::drawBufferImplementationDSA;
         readBufferImplementation = &AbstractFramebuffer::readBufferImplementationDSA;
@@ -89,6 +95,13 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
         extensions.emplace_back(Extensions::GL::EXT::direct_state_access::string());
 
         checkStatusImplementation = &AbstractFramebuffer::checkStatusImplementationDSAEXT;
+
+        /* I don't bother with EXT_DSA anymore */
+        clearIImplementation = &AbstractFramebuffer::clearImplementationDefault;
+        clearUIImplementation = &AbstractFramebuffer::clearImplementationDefault;
+        clearFImplementation = &AbstractFramebuffer::clearImplementationDefault;
+        clearFIImplementation = &AbstractFramebuffer::clearImplementationDefault;
+
         drawBuffersImplementation = &AbstractFramebuffer::drawBuffersImplementationDSAEXT;
         drawBufferImplementation = &AbstractFramebuffer::drawBufferImplementationDSAEXT;
         readBufferImplementation = &AbstractFramebuffer::readBufferImplementationDSAEXT;
@@ -111,6 +124,14 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
     #endif
     {
         checkStatusImplementation = &AbstractFramebuffer::checkStatusImplementationDefault;
+
+        #ifndef MAGNUM_TARGET_GLES2
+        clearIImplementation = &AbstractFramebuffer::clearImplementationDefault;
+        clearUIImplementation = &AbstractFramebuffer::clearImplementationDefault;
+        clearFImplementation = &AbstractFramebuffer::clearImplementationDefault;
+        clearFIImplementation = &AbstractFramebuffer::clearImplementationDefault;
+        #endif
+
         #ifndef MAGNUM_TARGET_GLES2
         drawBuffersImplementation = &AbstractFramebuffer::drawBuffersImplementationDefault;
         #endif

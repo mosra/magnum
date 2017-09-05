@@ -102,6 +102,14 @@ struct FramebufferGLTest: OpenGLTester {
     void multipleColorOutputs();
 
     void clear();
+    #ifndef MAGNUM_TARGET_GLES2
+    void clearColorI();
+    void clearColorUI();
+    void clearColorF();
+    void clearDepth();
+    void clearStencil();
+    void clearDepthStencil();
+    #endif
     void invalidate();
     #ifndef MAGNUM_TARGET_GLES2
     void invalidateSub();
@@ -195,6 +203,14 @@ FramebufferGLTest::FramebufferGLTest() {
               &FramebufferGLTest::multipleColorOutputs,
 
               &FramebufferGLTest::clear,
+              #ifndef MAGNUM_TARGET_GLES2
+              &FramebufferGLTest::clearColorI,
+              &FramebufferGLTest::clearColorUI,
+              &FramebufferGLTest::clearColorF,
+              &FramebufferGLTest::clearDepth,
+              &FramebufferGLTest::clearStencil,
+              &FramebufferGLTest::clearDepthStencil,
+              #endif
               &FramebufferGLTest::invalidate,
               #ifndef MAGNUM_TARGET_GLES2
               &FramebufferGLTest::invalidateSub,
@@ -1013,6 +1029,210 @@ void FramebufferGLTest::clear() {
 
     MAGNUM_VERIFY_NO_ERROR();
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+void FramebufferGLTest::clearColorI() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isVersionSupported(Version::GL300))
+        CORRADE_SKIP("GL 3.0 is not available.");
+    #endif
+
+    Renderbuffer color;
+    color.setStorage(RenderbufferFormat::RGBA8I, Vector2i{16});
+
+    Framebuffer framebuffer({{}, Vector2i{16}});
+    framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment{0}, color);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
+
+    framebuffer.clearColor(0, Vector4i{-124, 67, 37, 17});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    Image2D colorImage = framebuffer.read({{}, Vector2i{1}},
+        {PixelFormat::RGBAInteger, PixelType::Int});
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(colorImage.data<Vector4i>()[0], (Vector4i{-124, 67, 37, 17}));
+}
+
+void FramebufferGLTest::clearColorUI() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isVersionSupported(Version::GL300))
+        CORRADE_SKIP("GL 3.0 is not available.");
+    #endif
+
+    Renderbuffer color;
+    color.setStorage(RenderbufferFormat::RGBA8UI, Vector2i{16});
+
+    Framebuffer framebuffer({{}, Vector2i{16}});
+    framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment{0}, color);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
+
+    framebuffer.clearColor(0, Vector4ui{240, 67, 37, 17});
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    Image2D colorImage = framebuffer.read({{}, Vector2i{1}},
+        {PixelFormat::RGBAInteger, PixelType::UnsignedInt});
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(colorImage.data<Vector4ui>()[0], (Vector4ui{240, 67, 37, 17}));
+}
+
+void FramebufferGLTest::clearColorF() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isVersionSupported(Version::GL300))
+        CORRADE_SKIP("GL 3.0 is not available.");
+    #endif
+
+    Renderbuffer color;
+    color.setStorage(RenderbufferFormat::RGBA8, Vector2i{16});
+
+    Framebuffer framebuffer({{}, Vector2i{16}});
+    framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment{0}, color);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
+
+    framebuffer.clearColor(0, Math::unpack<Color4>(Color4ub{128, 64, 32, 17}));
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    Image2D colorImage = framebuffer.read({{}, Vector2i{1}},
+        {PixelFormat::RGBA, PixelType::UnsignedByte});
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(colorImage.data<Color4ub>()[0], (Color4ub{128, 64, 32, 17}));
+}
+
+void FramebufferGLTest::clearDepth() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isVersionSupported(Version::GL300))
+        CORRADE_SKIP("GL 3.0 is not available.");
+    #endif
+
+    Renderbuffer color;
+    color.setStorage(RenderbufferFormat::RGBA8, Vector2i{16});
+
+    /* Separate depth and stencil renderbuffers are not supported (or at least
+       on my NVidia, thus we need to do this juggling with one renderbuffer */
+    Renderbuffer depthStencil;
+    depthStencil.setStorage(RenderbufferFormat::Depth24Stencil8, Vector2i{16});
+
+    Framebuffer framebuffer({{}, Vector2i{16}});
+    framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment{0}, color)
+               .attachRenderbuffer(Framebuffer::BufferAttachment::DepthStencil, depthStencil);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
+
+    framebuffer.clearDepth(Math::unpack<Float, UnsignedShort>(48352));
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    #ifdef MAGNUM_TARGET_GLES
+    if(Context::current().isExtensionSupported<Extensions::GL::NV::read_depth>())
+    #endif
+    {
+        #ifdef MAGNUM_TARGET_GLES
+        Debug() << "Using" << Extensions::GL::NV::read_depth::string();
+        #endif
+
+        Image2D depthImage = framebuffer.read({{}, Vector2i{1}}, {PixelFormat::DepthComponent, PixelType::UnsignedShort});
+
+        MAGNUM_VERIFY_NO_ERROR();
+        CORRADE_COMPARE(depthImage.data<UnsignedShort>()[0], 48352);
+    }
+}
+
+void FramebufferGLTest::clearStencil() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isVersionSupported(Version::GL300))
+        CORRADE_SKIP("GL 3.0 is not available.");
+    #endif
+
+    Renderbuffer color;
+    color.setStorage(RenderbufferFormat::RGBA8, Vector2i{16});
+
+    Renderbuffer depthStencil;
+    depthStencil.setStorage(RenderbufferFormat::Depth24Stencil8, Vector2i{16});
+
+    Framebuffer framebuffer({{}, Vector2i{16}});
+    framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment{0}, color)
+               .attachRenderbuffer(Framebuffer::BufferAttachment::DepthStencil, depthStencil);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
+
+    framebuffer.clearStencil(67);
+
+    MAGNUM_VERIFY_NO_ERROR();
+
+    #ifdef MAGNUM_TARGET_GLES
+    if(Context::current().isExtensionSupported<Extensions::GL::NV::read_stencil>())
+    #endif
+    {
+        #ifdef MAGNUM_TARGET_GLES
+        Debug() << "Using" << Extensions::GL::NV::read_stencil::string();
+        #endif
+
+        Image2D stencilImage = framebuffer.read({{}, Vector2i{1}}, {PixelFormat::StencilIndex, PixelType::UnsignedByte});
+
+        MAGNUM_VERIFY_NO_ERROR();
+        CORRADE_COMPARE(stencilImage.data<UnsignedByte>()[0], 67);
+    }
+}
+
+void FramebufferGLTest::clearDepthStencil() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isVersionSupported(Version::GL300))
+        CORRADE_SKIP("GL 3.0 is not available.");
+    #endif
+
+    Renderbuffer color;
+    color.setStorage(RenderbufferFormat::RGBA8, Vector2i{16});
+
+    /* Separate depth and stencil renderbuffers are not supported (or at least
+       on my NVidia, thus we need to do this juggling with one renderbuffer */
+    Renderbuffer depthStencil;
+    depthStencil.setStorage(RenderbufferFormat::Depth24Stencil8, Vector2i{16});
+
+    Framebuffer framebuffer({{}, Vector2i{16}});
+    framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment{0}, color)
+               .attachRenderbuffer(Framebuffer::BufferAttachment::DepthStencil, depthStencil);
+
+    MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
+    CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
+
+    framebuffer.clearDepthStencil(Math::unpack<Float, UnsignedShort>(48352), 67);
+
+    #ifdef MAGNUM_TARGET_GLES
+    if(Context::current().isExtensionSupported<Extensions::GL::NV::read_depth_stencil>())
+    #endif
+    {
+        #ifdef MAGNUM_TARGET_GLES
+        Debug() << "Using" << Extensions::GL::NV::read_depth_stencil::string();
+        #endif
+
+        Image2D depthStencilImage = framebuffer.read({{}, Vector2i{1}}, {PixelFormat::DepthStencil, PixelType::UnsignedInt248});
+
+        MAGNUM_VERIFY_NO_ERROR();
+        /** @todo This will probably fail on different systems */
+        CORRADE_COMPARE(depthStencilImage.data<UnsignedInt>()[0] >> 8, 12378300);
+        CORRADE_COMPARE(depthStencilImage.data<UnsignedByte>()[0], 67);
+    }
+}
+#endif
 
 void FramebufferGLTest::invalidate() {
     #ifndef MAGNUM_TARGET_GLES

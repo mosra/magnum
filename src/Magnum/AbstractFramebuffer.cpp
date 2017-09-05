@@ -278,6 +278,23 @@ AbstractFramebuffer& AbstractFramebuffer::clear(const FramebufferClearMask mask)
     return *this;
 }
 
+#ifndef MAGNUM_TARGET_GLES2
+AbstractFramebuffer& AbstractFramebuffer::clearDepth(const Float depth) {
+    (this->*Context::current().state().framebuffer->clearFImplementation)(GL_DEPTH, 0, &depth);
+    return *this;
+}
+
+AbstractFramebuffer& AbstractFramebuffer::clearStencil(const Int stencil) {
+    (this->*Context::current().state().framebuffer->clearIImplementation)(GL_STENCIL, 0, &stencil);
+    return *this;
+}
+
+AbstractFramebuffer& AbstractFramebuffer::clearDepthStencil(const Float depth, const Int stencil) {
+    (this->*Context::current().state().framebuffer->clearFIImplementation)(GL_DEPTH_STENCIL, depth, stencil);
+    return *this;
+}
+#endif
+
 void AbstractFramebuffer::read(const Range2Di& rectangle, Image2D& image) {
     bindInternal(FramebufferTarget::Read);
 
@@ -471,6 +488,50 @@ GLenum AbstractFramebuffer::checkStatusImplementationDSAEXT(const FramebufferTar
     _flags |= ObjectFlag::Created;
     return glCheckNamedFramebufferStatusEXT(_id, GLenum(target));
 }
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
+void AbstractFramebuffer::clearImplementationDefault(const GLenum buffer, const GLint drawbuffer, const GLint* const value) {
+    bindInternal(FramebufferTarget::Draw);
+    glClearBufferiv(buffer, drawbuffer, value);
+}
+
+void AbstractFramebuffer::clearImplementationDefault(const GLenum buffer, const GLint drawbuffer, const GLuint* const value) {
+    bindInternal(FramebufferTarget::Draw);
+    glClearBufferuiv(buffer, drawbuffer, value);
+}
+
+void AbstractFramebuffer::clearImplementationDefault(const GLenum buffer, const GLint drawbuffer, const GLfloat* const value) {
+    bindInternal(FramebufferTarget::Draw);
+    glClearBufferfv(buffer, drawbuffer, value);
+}
+
+void AbstractFramebuffer::clearImplementationDefault(const GLenum buffer, const GLfloat depth, const GLint stencil) {
+    bindInternal(FramebufferTarget::Draw);
+    glClearBufferfi(buffer, 0, depth, stencil);
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void AbstractFramebuffer::clearImplementationDSA(const GLenum buffer, const GLint drawbuffer, const GLint* const value) {
+    bindInternal(FramebufferTarget::Draw);
+    glClearNamedFramebufferiv(_id, buffer, drawbuffer, value);
+}
+
+void AbstractFramebuffer::clearImplementationDSA(const GLenum buffer, const GLint drawbuffer, const GLuint* const value) {
+    bindInternal(FramebufferTarget::Draw);
+    glClearNamedFramebufferuiv(_id, buffer, drawbuffer, value);
+}
+
+void AbstractFramebuffer::clearImplementationDSA(const GLenum buffer, const GLint drawbuffer, const GLfloat* const value) {
+    bindInternal(FramebufferTarget::Draw);
+    glClearNamedFramebufferfv(_id, buffer, drawbuffer, value);
+}
+
+void AbstractFramebuffer::clearImplementationDSA(const GLenum buffer, const GLfloat depth, const GLint stencil) {
+    bindInternal(FramebufferTarget::Draw);
+    glClearNamedFramebufferfi(_id, buffer, 0, depth, stencil);
+}
+#endif
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2

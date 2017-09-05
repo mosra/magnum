@@ -358,7 +358,12 @@ class MAGNUM_EXPORT Renderer {
          * @brief Set clear color
          *
          * Initial value is `{0.125f, 0.125f, 0.125f, 1.0f}`.
-         * @see @fn_gl{ClearColor}
+         * @see @ref Framebuffer::clearColor() "*Framebuffer::clearColor()",
+         *      @fn_gl{ClearColor}
+         * @deprecated_gl Prefer to use @ref Framebuffer::clearColor() "*Framebuffer::clearColor()"
+         *      instead of @ref setClearColor() and
+         *      @ref AbstractFramebuffer::clear() as it leads to less state
+         *      changes.
          */
         static void setClearColor(const Color4& color);
 
@@ -367,9 +372,14 @@ class MAGNUM_EXPORT Renderer {
          * @brief Set clear depth
          *
          * Initial value is `1.0`.
-         * @see @ref Feature::DepthTest, @fn_gl{ClearDepth}
+         * @see @ref Feature::DepthTest, @ref AbstractFramebuffer::clearDepth(),
+         *      @ref AbstractFramebuffer::clearDepthStencil(), @fn_gl{ClearDepth}
          * @requires_gl See @ref setClearDepth(Float), which is available in
          *      OpenGL ES and WebGL.
+         * @deprecated_gl Prefer to use @ref AbstractFramebuffer::clearDepth()
+         *      / @ref AbstractFramebuffer::clearDepthStencil() instead of
+         *      @ref setClearDepth() and @ref AbstractFramebuffer::clear() as
+         *      it leads to less state changes.
          */
         static void setClearDepth(Double depth);
         #endif
@@ -380,7 +390,12 @@ class MAGNUM_EXPORT Renderer {
          * If OpenGL ES, OpenGL 4.1 or extension @extension{ARB,ES2_compatibility}
          * is not available, this function behaves exactly as
          * @ref setClearDepth(Double).
-         * @see @ref Feature::DepthTest, @fn_gl{ClearDepth}
+         * @see @ref Feature::DepthTest, @ref AbstractFramebuffer::clearDepth(),
+         *      @ref AbstractFramebuffer::clearDepthStencil(), @fn_gl{ClearDepth}
+         * @deprecated_gl Prefer to use @ref AbstractFramebuffer::clearDepth()
+         *      / @ref AbstractFramebuffer::clearDepthStencil() instead of
+         *      @ref setClearDepth() and @ref AbstractFramebuffer::clear() as
+         *      it leads to less state changes.
          */
         static void setClearDepth(Float depth);
 
@@ -388,7 +403,12 @@ class MAGNUM_EXPORT Renderer {
          * @brief Set clear stencil
          *
          * Initial value is `0`.
-         * @see @ref Feature::StencilTest, @fn_gl{ClearStencil}
+         * @see @ref Feature::StencilTest, @ref AbstractFramebuffer::clearStencil(),
+         *      @ref AbstractFramebuffer::clearDepthStencil(), @fn_gl{ClearStencil}
+         * @deprecated_gl Prefer to use @ref AbstractFramebuffer::clearStencil()
+         *      / @ref AbstractFramebuffer::clearDepthStencil() instead of
+         *      @ref setClearStencil() and @ref AbstractFramebuffer::clear() as
+         *      it leads to less state changes.
          */
         static void setClearStencil(Int stencil);
 

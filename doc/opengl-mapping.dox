@@ -85,7 +85,7 @@ OpenGL function                         | Matching API
 @fn_gl{CheckFramebufferStatus}, \n `glCheckNamedFramebufferStatus()`, \n @fn_gl_extension{CheckNamedFramebufferStatus,EXT,direct_state_access} | @ref DefaultFramebuffer::checkStatus(), \n @ref Framebuffer::checkStatus()
 @fn_gl{ClampColor}                      | |
 @fn_gl{Clear}                           | @ref AbstractFramebuffer::clear()
-@fn_gl{ClearBuffer}, \n `glClearNamedFramebuffer()` | |
+@fn_gl{ClearBuffer}, \n `glClearNamedFramebuffer()` | @ref AbstractFramebuffer::clearDepth(), @ref AbstractFramebuffer::clearStencil(), @ref AbstractFramebuffer::clearDepthStencil(), @ref DefaultFramebuffer::clearColor(), @ref Framebuffer::clearColor()
 @fn_gl{ClearBufferData}, \n `glClearNamedBufferData()`, \n @fn_gl_extension{ClearNamedBufferData,EXT,direct_state_access} | |
 @fn_gl{ClearBufferSubData}, \n `glClearNamedBufferSubData()`, \n @fn_gl_extension{ClearNamedBufferSubData,EXT,direct_state_access} | |
 @fn_gl{ClearColor}                      | @ref Renderer::setClearColor()

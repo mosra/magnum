@@ -166,8 +166,9 @@ in repeated @fn_gl{Get} calls. See also @ref Context::resetState() and
 @ref Context::State::Framebuffers.
 
 If extension @extension{ARB,direct_state_access} (part of OpenGL 4.5) is
-available, @ref blit() function uses DSA to avoid unnecessary call to
-@fn_gl{BindFramebuffer}. See its documentation for more information.
+available, @ref blit(), @ref clearDepth(), @ref clearStencil() and
+@ref clearDepthStencil() functions use DSA to avoid unnecessary call to
+@fn_gl{BindFramebuffer}. See their documentation for more information.
 
 If @extension{ARB,robustness} is available, @ref read() operations are
 protected from buffer overflow.
@@ -303,8 +304,58 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @see @ref Renderer::setClearColor(), @ref Renderer::setClearDepth(),
          *      @ref Renderer::setClearStencil(), @fn_gl{BindFramebuffer},
          *      @fn_gl{Clear}
+         * @deprecated_gl Prefer to use @ref Framebuffer::clearColor() "*Framebuffer::clearColor()"
+         *      / @ref clearDepth() / @ref clearDepthStencil() instead of
+         *      @ref Renderer::setClearColor() / @ref Renderer::setClearDepth()
+         *      / @ref Renderer::setClearStencil() and @ref clear() as it leads
+         *      to less state changes.
          */
         AbstractFramebuffer& clear(FramebufferClearMask mask);
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Clear depth buffer to specified value
+         * @param depth         Value to clear with
+         * @return Reference to self (for method chaining)
+         *
+         * @see @ref clear(), @fn_gl{ClearNamedFramebuffer}, eventually
+         *      @fn_gl{BindFramebuffer}, then @fn_gl{ClearBuffer}
+         * @requires_gl30 Direct framebuffer clearing is not available in
+         *      OpenGL 2.1.
+         * @requires_gles30 Direct framebuffer clearing is not available in
+         *      OpenGL ES 2.0 or WebGL 1.0.
+         */
+        AbstractFramebuffer& clearDepth(Float depth);
+
+        /**
+         * @brief Clear stencil buffer to specified value
+         * @param stencil       Value to clear with
+         * @return Reference to self (for method chaining)
+         *
+         * @see @ref clear(), @fn_gl{ClearNamedFramebuffer}, eventually
+         *      @fn_gl{BindFramebuffer}, then @fn_gl{ClearBuffer}
+         * @requires_gl30 Direct framebuffer clearing is not available in
+         *      OpenGL 2.1.
+         * @requires_gles30 Direct framebuffer clearing is not available in
+         *      OpenGL ES 2.0 or WebGL 1.0.
+         */
+        AbstractFramebuffer& clearStencil(Int stencil);
+
+        /**
+         * @brief Clear depth and stencil buffer to specified value
+         * @param depth         Depth value to clear with
+         * @param stencil       Stencil value to clear with
+         * @return Reference to self (for method chaining)
+         *
+         * @see @ref clear(), @fn_gl{ClearNamedFramebuffer}, eventually
+         *      @fn_gl{BindFramebuffer}, then @fn_gl{ClearBuffer}
+         * @requires_gl30 Direct framebuffer clearing is not available in
+         *      OpenGL 2.1.
+         * @requires_gles30 Direct framebuffer clearing is not available in
+         *      OpenGL ES 2.0 or WebGL 1.0.
+         */
+        AbstractFramebuffer& clearDepthStencil(Float depth, Int stencil);
+        #endif
 
         /**
          * @brief Read block of pixels from framebuffer to image
@@ -727,6 +778,19 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         #ifndef MAGNUM_TARGET_GLES
         GLenum MAGNUM_LOCAL checkStatusImplementationDSA(FramebufferTarget target);
         GLenum MAGNUM_LOCAL checkStatusImplementationDSAEXT(FramebufferTarget target);
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES2
+        void MAGNUM_LOCAL clearImplementationDefault(GLenum buffer, GLint drawbuffer, const GLint* value);
+        void MAGNUM_LOCAL clearImplementationDefault(GLenum buffer, GLint drawbuffer, const GLuint* value);
+        void MAGNUM_LOCAL clearImplementationDefault(GLenum buffer, GLint drawbuffer, const GLfloat* value);
+        void MAGNUM_LOCAL clearImplementationDefault(GLenum buffer, GLfloat depth, GLint stencil);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_LOCAL clearImplementationDSA(GLenum buffer, GLint drawbuffer, const GLint* value);
+        void MAGNUM_LOCAL clearImplementationDSA(GLenum buffer, GLint drawbuffer, const GLuint* value);
+        void MAGNUM_LOCAL clearImplementationDSA(GLenum buffer, GLint drawbuffer, const GLfloat* value);
+        void MAGNUM_LOCAL clearImplementationDSA(GLenum buffer, GLfloat depth, GLint stencil);
+        #endif
         #endif
 
         #ifndef MAGNUM_TARGET_GLES2
