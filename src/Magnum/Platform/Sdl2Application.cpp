@@ -100,7 +100,6 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
     SDL_GL_SetAttribute(SDL_GL_FRAMEBUFFER_SRGB_CAPABLE, configuration.isSRGBCapable());
     #endif
 
-    /** @todo Remove when Emscripten has proper SDL2 support */
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     /* Set context version, if user-specified */
     if(configuration.version() != Version::None) {
@@ -147,6 +146,7 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
         #endif
     }
+    #endif
 
     /* Create window. Hide it by default so we don't have distracting window
        blinking in case we have to destroy it again right away */
@@ -238,23 +238,12 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
     SDL_GL_GetDrawableSize(_window, &drawableSize.x(), &drawableSize.y());
     glViewport(0, 0, drawableSize.x(), drawableSize.y());
     #endif
-    #else
-    /* Emscripten-specific initialization */
-    if(!(_glContext = SDL_SetVideoMode(configuration.size().x(), configuration.size().y(), 24, SDL_OPENGL|SDL_HWSURFACE|SDL_DOUBLEBUF))) {
-        Error() << "Platform::Sdl2Application::tryCreateContext(): cannot create context:" << SDL_GetError();
-        return false;
-    }
-    #endif
 
     /* Destroy everything also when the Magnum context creation fails */
     if(!_context->tryCreate()) {
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
         SDL_GL_DeleteContext(_glContext);
         SDL_DestroyWindow(_window);
         _window = nullptr;
-        #else
-        SDL_FreeSurface(_glContext);
-        #endif
         return false;
     }
 
@@ -269,21 +258,13 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
 }
 
 Vector2i Sdl2Application::windowSize() {
-    #ifndef CORRADE_TARGET_EMSCRIPTEN
     Vector2i size;
     SDL_GetWindowSize(_window, &size.x(), &size.y());
     return size;
-    #else
-    return {_glContext->w, _glContext->h};
-    #endif
 }
 
 void Sdl2Application::swapBuffers() {
-    #ifndef CORRADE_TARGET_EMSCRIPTEN
     SDL_GL_SwapWindow(_window);
-    #else
-    SDL_Flip(_glContext);
-    #endif
 }
 
 Int Sdl2Application::swapInterval() const {
@@ -310,12 +291,8 @@ bool Sdl2Application::setSwapInterval(const Int interval) {
 Sdl2Application::~Sdl2Application() {
     _context.reset();
 
-    #ifndef CORRADE_TARGET_EMSCRIPTEN
     SDL_GL_DeleteContext(_glContext);
     SDL_DestroyWindow(_window);
-    #else
-    SDL_FreeSurface(_glContext);
-    #endif
     SDL_Quit();
 }
 
@@ -526,7 +503,7 @@ void Sdl2Application::textInputEvent(TextInputEvent&) {}
 void Sdl2Application::textEditingEvent(TextEditingEvent&) {}
 
 Sdl2Application::Configuration::Configuration():
-    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_IOS)
+    #ifndef CORRADE_TARGET_IOS
     _title("Magnum SDL2 Application"),
     #endif
     #ifdef CORRADE_TARGET_EMSCRIPTEN

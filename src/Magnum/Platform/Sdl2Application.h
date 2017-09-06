@@ -415,7 +415,6 @@ class Sdl2Application {
          */
         void mainLoopIteration();
 
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
         /**
          * @brief Underlying window handle
          *
@@ -423,7 +422,6 @@ class Sdl2Application {
          * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          */
         SDL_Window* window() { return _window; }
-        #endif
 
     protected:
         /* Nobody will need to have (and delete) Sdl2Application*, thus this is
@@ -726,12 +724,10 @@ class Sdl2Application {
         typedef Containers::EnumSet<Flag> Flags;
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
 
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
         SDL_Window* _window;
         SDL_GLContext _glContext;
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
         UnsignedInt _minimalLoopPeriod;
-        #else
-        SDL_Surface* _glContext;
         #endif
 
         std::unique_ptr<Platform::Context> _context;
@@ -830,12 +826,11 @@ class Sdl2Application::Configuration {
         /*implicit*/ Configuration();
         ~Configuration();
 
-        #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_IOS)
+        #ifndef CORRADE_TARGET_IOS
         /**
          * @brief Window title
          *
-         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"
-         *      and @ref CORRADE_TARGET_IOS "iOS".
+         * @note Not available in @ref CORRADE_TARGET_IOS "iOS".
          */
         std::string title() const { return _title; }
         #endif
@@ -845,12 +840,13 @@ class Sdl2Application::Configuration {
          * @return Reference to self (for method chaining)
          *
          * Default is `"Magnum SDL2 Application"`.
-         * @note In @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" and
-         *      @ref CORRADE_TARGET_IOS "iOS" this function does nothing and is
-         *      included only for compatibility. You need to set the title
+         * @note In @ref CORRADE_TARGET_IOS "iOS" this function does nothing and
+         *      is included only for compatibility. You need to set the title
          *      separately in platform-specific configuration file.
+         *      In @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" this title will
+         *      be used to set `document.title`.
          */
-        #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_IOS)
+        #ifndef CORRADE_TARGET_IOS
         Configuration& setTitle(std::string title) {
             _title = std::move(title);
             return *this;
@@ -975,7 +971,7 @@ class Sdl2Application::Configuration {
         #endif
 
     private:
-        #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_IOS)
+        #ifndef CORRADE_TARGET_IOS
         std::string _title;
         #endif
         Vector2i _size;
