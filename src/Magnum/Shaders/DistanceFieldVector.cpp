@@ -55,16 +55,16 @@ template<UnsignedInt dimensions> DistanceFieldVector<dimensions>::DistanceFieldV
     const Version version = Context::current().supportedVersion({Version::GLES300, Version::GLES200});
     #endif
 
-    Shader frag = Implementation::createCompatibilityShader(rs, version, Shader::Type::Vertex);
-    Shader vert = Implementation::createCompatibilityShader(rs, version, Shader::Type::Fragment);
+    Shader vert = Implementation::createCompatibilityShader(rs, version, Shader::Type::Vertex);
+    Shader frag = Implementation::createCompatibilityShader(rs, version, Shader::Type::Fragment);
 
-    frag.addSource(rs.get("generic.glsl"))
+    vert.addSource(rs.get("generic.glsl"))
         .addSource(rs.get(vertexShaderName<dimensions>()));
-    vert.addSource(rs.get("DistanceFieldVector.frag"));
+    frag.addSource(rs.get("DistanceFieldVector.frag"));
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({frag, vert}));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
 
-    AbstractShaderProgram::attachShaders({frag, vert});
+    AbstractShaderProgram::attachShaders({vert, frag});
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(version))
