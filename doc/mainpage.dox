@@ -99,7 +99,7 @@ Platforms:
 
 @section mainpage-getting-started Getting started
 
-Read thorough @ref getting-started "guide to download, build, install and start using Magnum"
+Read the thorough @ref getting-started "guide to download, build, install and start using Magnum"
 in your project.
 
 @section mainpage-hacking Hacking Magnum
