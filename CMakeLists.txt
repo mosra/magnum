@@ -40,6 +40,10 @@ endif()
 if(POLICY CMP0042)
     cmake_policy(SET CMP0042 NEW)
 endif()
+# Quoted variables should not be dereferenced
+if(POLICY CMP0054)
+    cmake_policy(SET CMP0054 NEW)
+endif()
 
 # Use folders for nice tree in Visual Studio and XCode
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
