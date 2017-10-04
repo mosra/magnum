@@ -163,6 +163,9 @@ install:
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop" ]; then export PLATFORM_GL_API=CGL; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "ios-simulator" ]; then gem install xcpretty; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "emscripten" ]; then brew install emscripten && export LLVM=/usr/local/opt/emscripten/libexec/llvm/bin && emcc; fi
+# Workaround for "Symbol not found: _futimens", found here:
+# https://github.com/kripken/emscripten/issues/5418#issuecomment-333247709
+- if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "emscripten" ]; then brew install llvm && rm /usr/local/opt/emscripten/libexec/llvm/bin/llvm-ar && ln -s /usr/local/opt/llvm/bin/llvm-ar /usr/local/opt/emscripten/libexec/llvm/bin/llvm-ar; fi
 - if [ "$TARGET" == "desktop" ] || [ "$TARGET" == "desktop-sanitizers" ] || [ "$TARGET" == "desktop-gles" ]; then printf "[General]\ndrivers=null" > ~/.alsoftrc; fi
 
 # SDL on macOS and iOS (cached)
