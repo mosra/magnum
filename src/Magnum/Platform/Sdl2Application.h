@@ -227,6 +227,10 @@ file contains event listeners which print loading status on the page. The
 status displayed in the remaining two `&lt;div&gt;`s, if they are available.
 The CSS file contains rudimentary style to avoid eye bleeding.
 
+The document `&lt;title&gt;` can be overriden by calling
+@ref Configuration::setTitle(), but that of course happens only after the app
+fully loads.
+
 The application redirects all output (thus also @ref Corrade::Utility::Debug "Debug",
 @ref Corrade::Utility::Warning "Warning" and @ref Corrade::Utility::Error "Error")
 to JavaScript console. It's possible to pass command-line arguments to `main()`
