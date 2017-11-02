@@ -42,9 +42,10 @@ Trade::MeshData2D Circle::solid(UnsignedInt segments) {
     /* Central point */
     positions.emplace_back();
 
-    /* Points on circle */
+    /* Points on circle. The first/last point is here twice to close the circle
+       properly. */
     const Rad angleIncrement(Constants::tau()/segments);
-    for(UnsignedInt i = 0; i != segments; ++i) {
+    for(UnsignedInt i = 0; i != segments + 1; ++i) {
         const Rad angle(Float(i)*angleIncrement);
         positions.emplace_back(Math::cos(angle), Math::sin(angle));
     }
