@@ -202,7 +202,7 @@ your Emscripten toolchain. Change `&lt;application&gt;` to name of your
 executable.
 @code
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <title>Magnum Emscripten Application</title>
     <meta charset="utf-8" />
