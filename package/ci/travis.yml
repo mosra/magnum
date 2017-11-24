@@ -71,6 +71,7 @@ matrix:
     - TARGET_GLES2=OFF
   - language: cpp
     os: osx
+    osx_image: xcode8.3
     compiler: clang
     env:
     - JOBID=macos-desktop
