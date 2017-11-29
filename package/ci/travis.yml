@@ -71,7 +71,6 @@ matrix:
     - TARGET_GLES2=OFF
   - language: cpp
     os: osx
-    osx_image: xcode8.3
     compiler: clang
     env:
     - JOBID=macos-desktop
@@ -92,14 +91,12 @@ matrix:
     - TARGET_GLES2=OFF
   - language: cpp
     os: osx
-    osx_image: xcode8.3
     env:
     - JOBID=emscripten-webgl1
     - TARGET=emscripten
     - TARGET_GLES2=ON
   - language: cpp
     os: osx
-    osx_image: xcode8.3
     env:
     - JOBID=emscripten-webgl2
     - TARGET=emscripten
