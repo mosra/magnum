@@ -611,7 +611,7 @@ code (the classic @cpp main() @ce function cannot be used in Android). See
 header is included this macro is also aliased to @cpp MAGNUM_APPLICATION_MAIN() @ce.
 */
 #define MAGNUM_ANDROIDAPPLICATION_MAIN(className)                           \
-    void android_main(android_app* state) {                                 \
+    extern "C" CORRADE_VISIBILITY_EXPORT void android_main(android_app* state) { \
         Magnum::Platform::AndroidApplication::exec(state,                   \
             Magnum::Platform::AndroidApplication::instancer<className>);    \
     }
