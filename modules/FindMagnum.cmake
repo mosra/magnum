@@ -511,8 +511,6 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
             if(_component STREQUAL AndroidApplication)
                 find_package(EGL)
                 set_property(TARGET Magnum::${_component} APPEND PROPERTY
-                    INTERFACE_INCLUDE_DIRECTORIES ${ANDROID_NATIVE_APP_GLUE_INCLUDE_DIR})
-                set_property(TARGET Magnum::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES android EGL::EGL)
 
             # GLFW application dependencies

@@ -31,7 +31,6 @@
 
 #include <memory>
 #include <EGL/egl.h>
-#include <android_native_app_glue.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
@@ -42,8 +41,12 @@
 #error this file is available only on Android build
 #endif
 
+#include <android/input.h>
+
 /* Undef Xlib nonsense which might get pulled in by EGL */
 #undef None
+
+struct android_app;
 
 namespace Magnum { namespace Platform {
 

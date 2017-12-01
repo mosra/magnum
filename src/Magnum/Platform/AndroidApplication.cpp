@@ -27,6 +27,7 @@
 
 #include <Corrade/Utility/AndroidStreamBuffer.h>
 #include <Corrade/Utility/Debug.h>
+#include <android_native_app_glue.h>
 
 #include "Magnum/Version.h"
 #include "Magnum/Platform/Context.h"
