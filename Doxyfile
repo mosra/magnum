@@ -234,6 +234,8 @@ TAB_SIZE               = 8
 # "Side Effects:". You can put \n's in the value part of an alias to insert
 # newlines.
 
+## Important: keep this in sync with Doxyfile-mcss and Doxyfile-public!
+
 ALIASES                = \
     "debugoperator{1}=@relatesalso \1\n@brief Debug output operator @xrefitem debugoperators \"Debug output operator\" \"Debug output operators for custom types\" Allows printing @ref \1 with @ref Corrade::Utility::Debug and friends." \
     "debugoperatorenum{1}=\n@brief Debug output operator @xrefitem debugoperators \"Debug output operator\" \"Debug output operators for custom types\" Allows printing @ref \1 with @ref Corrade::Utility::Debug and friends." \
@@ -278,7 +280,18 @@ ALIASES                = \
     "requires_al_extension=@xrefitem requires-al-extension \"Requires OpenAL extension\" \"Functionality requiring specific OpenAL extension\"" \
     "al_extension{2}=<a href=\"http://icculus.org/alextreg/index.php?operation=op_showext&extname=AL_\1_\2\">AL_\1_\2</a>" \
     "alc_extension{2}=<a href=\"http://icculus.org/alextreg/index.php?operation=op_showext&extname=ALC_\1_\2\">ALC_\1_\2</a>" \
-    "experimental=@attention This functionality is still experimental and may change in the future without keeping full backwards compatibility."
+    "experimental=@attention This functionality is still experimental and may change in the future without keeping full backwards compatibility." \
+    "cb{1}=<tt>" \
+    "cpp=<tt>" \
+    "glsl=<tt>" \
+    "cmake=<tt>" \
+    "ce=</tt>" \
+    "m_div{1}=" \
+    "m_enddiv=" \
+    "m_span{1}=" \
+    "m_endspan=" \
+    "m_class{1}=" \
+    "m_footernavigation="
 
 # This tag can be used to specify a number of word-keyword mappings (TCL only).
 # A mapping has the form "name=value". For example adding "class=itcl::class"

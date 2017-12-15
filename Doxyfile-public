@@ -1,0 +1,80 @@
+@INCLUDE = Doxyfile-mcss
+
+## Patches for the m.css-generated docs. Just need to generate XML, that's it.
+
+OUTPUT_DIRECTORY       = build/doc-public/
+GENERATE_TAGFILE       = build/doc-public/magnum.tag
+TAGFILES               = ../corrade/build/doc-public/corrade.tag=http://doc.magnum.graphics/corrade-ng/ \
+                         ../corrade/doc/stl.tag=http://en.cppreference.com/w/
+
+## No need to expose TODO list or bug list in public docs. Aliases copied from
+## Doxyfile-mcss, with @todoc changed to be just an alias to @todo so it also
+## gets removed. Keep it in sync, please.
+
+ALIASES                = \
+    "debugoperator{1}=@relatesalso \1\n@brief Debug output operator @xrefitem debugoperators \"Debug output operator\" \"Debug output operators for custom types\" Allows printing @ref \1 with @ref Corrade::Utility::Debug and friends." \
+    "debugoperatorenum{1}=\n@brief Debug output operator @xrefitem debugoperators \"Debug output operator\" \"Debug output operators for custom types\" Allows printing @ref \1 with @ref Corrade::Utility::Debug and friends." \
+    "debugoperatorclassenum{2}=@relatesalso \1\n@brief Debug output operator @xrefitem debugoperators \"Debug output operator\" \"Debug output operators for custom types\" Allows printing @ref \2 with @ref Corrade::Utility::Debug and friends." \
+    "configurationvalueref{1}=@see @ref configurationvalues \"Corrade::Utility::ConfigurationValue<\1>\"" \
+    "configurationvalue{1}=@brief Configuration value parser and writer @xrefitem configurationvalues \"Configuration value parser and writer\" \"Configuration value parsers and writers for custom types\" Allows parsing and writing @ref \1 from and to @ref Corrade::Utility::Configuration." \
+    "collisionoccurenceoperator{2}=@relatesalso \1\n@brief Collision occurence of \1 and \2\n@see \2::operator%(const \1&) const" \
+    "collisionoperator{2}=@relatesalso \1\n@brief Collision of \1 and \2\n@see \2::operator/(const \1&) const" \
+    "todoc=@todo" \
+    "fn_gl{1}=@m_class{m-dox-external} <a href=\"https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/gl\1.xhtml\">gl\1()</a>" \
+    "fn_gl2{2}=@m_class{m-dox-external} <a href=\"https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/gl\2.xhtml\">gl\1()</a>" \
+    "fn_gl_extension{3}=@m_class{m-dox-external} <a href=\"https://www.khronos.org/registry/OpenGL/extensions/\2/\2_\3.txt\">gl\1<b></b>\2()</a>" \
+    "def_gl{1}=`GL_\1`" \
+    "def_gl_extension{3}=@m_class{m-dox-external} <a href=\"https://www.khronos.org/registry/OpenGL/extensions/\2/\2_\3.txt\">GL_\1_\2</a>" \
+    "deprecated_gl=@xrefitem opengl-deprecated \"Deprecated OpenGL API\" \"Deprecated OpenGL API list\"" \
+    "requires_gl30=@xrefitem requires-gl30 \"Requires OpenGL 3.0\" \"Functionality requiring OpenGL 3.0\"" \
+    "requires_gl31=@xrefitem requires-gl31 \"Requires OpenGL 3.1\" \"Functionality requiring OpenGL 3.1\"" \
+    "requires_gl32=@xrefitem requires-gl32 \"Requires OpenGL 3.2\" \"Functionality requiring OpenGL 3.2\"" \
+    "requires_gl33=@xrefitem requires-gl33 \"Requires OpenGL 3.3\" \"Functionality requiring OpenGL 3.3\"" \
+    "requires_gl40=@xrefitem requires-gl40 \"Requires OpenGL 4.0\" \"Functionality requiring OpenGL 4.0\"" \
+    "requires_gl41=@xrefitem requires-gl41 \"Requires OpenGL 4.1\" \"Functionality requiring OpenGL 4.1\"" \
+    "requires_gl42=@xrefitem requires-gl42 \"Requires OpenGL 4.2\" \"Functionality requiring OpenGL 4.2\"" \
+    "requires_gl43=@xrefitem requires-gl43 \"Requires OpenGL 4.3\" \"Functionality requiring OpenGL 4.3\"" \
+    "requires_gl44=@xrefitem requires-gl44 \"Requires OpenGL 4.4\" \"Functionality requiring OpenGL 4.4\"" \
+    "requires_gl45=@xrefitem requires-gl45 \"Requires OpenGL 4.5\" \"Functionality requiring OpenGL 4.5\"" \
+    "requires_extension=@xrefitem requires-extension \"Requires OpenGL extension\" \"Functionality requiring specific OpenGL extension\"" \
+    "requires_gl=@xrefitem requires-gl \"Requires desktop OpenGL\" \"Functionality requiring desktop OpenGL\"" \
+    "extension{2}=@m_class{m-dox-external} <a href=\"https://www.khronos.org/registry/OpenGL/extensions/\1/\1_\2.txt\">\1_\2</a>" \
+    "extension2{3}=@m_class{m-dox-external} <a href=\"https://www.khronos.org/registry/OpenGL/extensions/\1/\3.txt\">\1_\2</a>" \
+    "requires_gles20=@xrefitem requires-gles20 \"Requires OpenGL ES 2.0 / WebGL 1.0\" \"Functionality requiring OpenGL ES 2.0 or WebGL 1.0\"" \
+    "requires_gles30=@xrefitem requires-gles30 \"Requires OpenGL ES 3.0\" \"Functionality requiring OpenGL ES 3.0\"" \
+    "requires_gles31=@xrefitem requires-gles31 \"Requires OpenGL ES 3.1\" \"Functionality requiring OpenGL ES 3.1\"" \
+    "requires_es_extension=@xrefitem requires-es-extension \"Requires OpenGL ES extension\" \"Functionality requiring specific OpenGL ES extension\"" \
+    "requires_gles=@xrefitem requires-gles \"Requires OpenGL ES or desktop OpenGL\" \"Functionality requiring OpenGL ES or desktop OpenGL\"" \
+    "requires_webgl20=@xrefitem requires-webgl20 \"Requires WebGL 2.0\" \"Functionality requiring WebGL 2.0\"" \
+    "requires_webgl_extension=@xrefitem requires-webgl-extension \"Requires WebGL extension\" \"Functionality requiring specific WebGL extension\"" \
+    "webgl_extension{2}=@m_class{m-dox-external} <a href=\"https://www.khronos.org/registry/webgl/extensions/\1_\2/\">\1_\2</a>" \
+    "fn_al{1}=`al\1()`" \
+    "fn_alc{1}=`alc\1()`" \
+    "def_al{1}=`AL_\1`" \
+    "def_alc{1}=`ALC_\1`" \
+    "requires_al_extension=@xrefitem requires-al-extension \"Requires OpenAL extension\" \"Functionality requiring specific OpenAL extension\"" \
+    "al_extension{2}=@m_class{m-dox-external} <a href=\"http://icculus.org/alextreg/index.php?operation=op_showext&extname=AL_\1_\2\">AL_\1_\2</a>" \
+    "alc_extension{2}=@m_class{m-dox-external} <a href=\"http://icculus.org/alextreg/index.php?operation=op_showext&extname=ALC_\1_\2\">ALC_\1_\2</a>" \
+    "experimental=@attention This functionality is still experimental and may change in the future without keeping full backwards compatibility." \
+    "cb{1}=@code{\1}" \
+    "cpp=@code{.cpp}" \
+    "glsl=@code{.glsl}" \
+    "cmake=@code{.cmake}" \
+    "ce=@endcode" \
+    "m_div{1}=@xmlonly<mcss:div xmlns:mcss=\"http://mcss.mosra.cz/doxygen/\" mcss:class=\"\1\">@endxmlonly" \
+    "m_enddiv=@xmlonly</mcss:div>@endxmlonly" \
+    "m_span{1}=@xmlonly<mcss:span xmlns:mcss=\"http://mcss.mosra.cz/doxygen/\" mcss:class=\"\1\">@endxmlonly" \
+    "m_endspan=@xmlonly</mcss:span>@endxmlonly" \
+    "m_class{1}=@xmlonly<mcss:class xmlns:mcss=\"http://mcss.mosra.cz/doxygen/\" mcss:class=\"\1\" />@endxmlonly" \
+    "m_footernavigation=@xmlonly<mcss:footernavigation xmlns:mcss=\"http://mcss.mosra.cz/doxygen/\" />@endxmlonly"
+
+GENERATE_TODOLIST      = NO
+GENERATE_BUGLIST       = NO
+
+# todo: re-enable when the site css is updated
+#HTML_EXTRA_STYLESHEET = \
+#    https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600&subset=latin-ext \
+#    http://static.magnum.graphics/m-dark.compiled.css \
+#    http://static.magnum.graphics/m-dark.doxygen.compiled.css
+
+M_PAGE_HEADER = "<div class=\"m-note m-success\"><h3>No need to panic</h3><p>This is a snapshot of a work-in-progress documentation theme. If you feel lost, miss something, or want to see the original Doxygen docs instead, head over to the <a href="http://doc.magnum.graphics/magnum-archive/{filename}">archived version of this documentation page</a>.</div>"
