@@ -33,19 +33,25 @@ namespace Magnum {
 /** @page magnum-al-info Magnum OpenAL Info
 @brief Displays information about Magnum OpenAL capabilities
 
+@m_footernavigation
+
 @section magnum-al-info-usage Usage
 
-    magnum-al-info [-h|--help] [-s|--short] [--extension-strings]
+@code{.shell-session}
+magnum-al-info [-h|--help] [-s|--short] [--extension-strings]
+@endcode
 
 Arguments:
--   `-h`,` --help` -- display this help message and exit
--   `-s`, `--short` -- display just essential info and exit
--   `--extension-strings` -- list all extension strings provided by the driver
+
+-   `-h`,` --help` --- display this help message and exit
+-   `-s`, `--short` --- display just essential info and exit
+-   `--extension-strings` --- list all extension strings provided by the driver
     (implies `--short`)
 
 @section magnum-al-info-example Example output
 
-```
+@code{.shell-session}
+
   +---------------------------------------------------------+
   | Information about Magnum engine and OpenAL capabilities |
   +---------------------------------------------------------+
@@ -64,8 +70,8 @@ Vendor extension support:
     ALC_ENUMERATION_EXT                                           SUPPORTED
     ALC_SOFTX_HRTF                                                   -
     ALC_SOFT_HRTF                                                 SUPPORTED
-
-```
+    ...
+@endcode
 
 */
 

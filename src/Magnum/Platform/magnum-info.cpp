@@ -83,20 +83,27 @@ namespace Magnum {
 /** @page magnum-info Magnum Info
 @brief Displays information about Magnum engine and OpenGL capabilities
 
+@m_footernavigation
+
 @section magnum-info-usage Usage
 
-    magnum-info [--magnum-...] [-h|--help] [-s|--short] [--all-extensions] [--limits]
+@code{.shell-session}
+magnum-info [--magnum-...] [-h|--help] [-s|--short] [--all-extensions]
+    [--limits]
+@endcode
 
 Arguments:
--   `-h`, `--help` -- display this help message and exit
--   `-s`, `--short` -- display just essential info and exit
--   `--all-extensions` -- display extensions also for fully supported versions
--   `--limits` -- display also limits and implementation-defined values
--   `--magnum-...` -- engine-specific options (see @ref Context for details)
+
+-   `-h`, `--help` --- display this help message and exit
+-   `-s`, `--short` --- display just essential info and exit
+-   `--all-extensions` --- display extensions also for fully supported versions
+-   `--limits` --- display also limits and implementation-defined values
+-   `--magnum-...` --- engine-specific options (see @ref Context for details)
 
 @section magnum-info-example Example output
 
-```
+@code{.shell-session}
+
   +---------------------------------------------------------+
   | Information about Magnum engine and OpenGL capabilities |
   +---------------------------------------------------------+
@@ -131,7 +138,7 @@ Vendor extension support:
     GL_ARB_robustness                                                 -
     GL_ARB_robustness_isolation                                       -
     ...
-```
+@endcode
 
 */
 

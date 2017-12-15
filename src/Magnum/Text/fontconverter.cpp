@@ -62,27 +62,34 @@ namespace Magnum {
 @page magnum-fontconverter Font conversion utility
 @brief Converts font to raster one of given atlas size
 
+@m_footernavigation
+
 @section magnum-fontconverter-usage Usage
 
-    magnum-fontconverter [--magnum-...] [-h|--help] --font FONT --converter CONVERTER [--plugin-dir DIR] [--characters CHARACTERS] [--font-size N] [--atlas-size "X Y"] [--output-size "X Y"] [--radius N] [--] input output
+@code{.shell-session}
+magnum-fontconverter [--magnum-...] [-h|--help] --font FONT
+    --converter CONVERTER [--plugin-dir DIR] [--characters CHARACTERS]
+    [--font-size N] [--atlas-size "X Y"] [--output-size "X Y"] [--radius N]
+    [--] input output
+@endcode
 
 Arguments:
 
--   `input` -- input font
--   `output` -- output filename prefix
--   `-h`, `--help` -- display help message and exit
--   `--font FONT` -- font plugin
--   `--converter CONVERTER` -- font converter plugin
--   `--plugin-dir DIR` -- base plugin dir (defaults to plugin directory in
+-   `input` --- input font
+-   `output` --- output filename prefix
+-   `-h`, `--help` --- display help message and exit
+-   `--font FONT` --- font plugin
+-   `--converter CONVERTER` --- font converter plugin
+-   `--plugin-dir DIR` --- base plugin dir (defaults to plugin directory in
     Magnum install location)
--   `--characters CHARACTERS` -- characters to include in the output (default:
+-   `--characters CHARACTERS` --- characters to include in the output (default:
     `abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789?!:;,.&nbsp;`)
--   `--font-size N` -- input font size (default: `128`)
--   `--atlas-size "X Y"` -- glyph atlas size (default: `"2048 2048"`)
--   `--output-size "X Y"` -- output atlas size. If set to zero size, distance
+-   `--font-size N` --- input font size (default: `128`)
+-   `--atlas-size "X Y"` --- glyph atlas size (default: `"2048 2048"`)
+-   `--output-size "X Y"` --- output atlas size. If set to zero size, distance
     field computation will not be used. (default: `"256 256"`)
--   `--radius N` -- distance field computation radius (default: `24`)
--   `--magnum-...` -- engine-specific options (see @ref Context for details)
+-   `--radius N` --- distance field computation radius (default: `24`)
+-   `--magnum-...` --- engine-specific options (see @ref Context for details)
 
 The resulting font files can be then used as specified in the documentation of
 `converter` plugin.
@@ -93,11 +100,14 @@ Making raster font from TTF file with default set of characters using
 @ref Text::FreeTypeFont "FreeTypeFont" font plugin and
 @ref Text::MagnumFontConverter "MagnumFontConverter" converter plugin:
 
-    magnum-fontconverter --font FreeTypeFont --converter MagnumFontConverter DejaVuSans.ttf myfont
+@code{.shell-session}
+magnum-fontconverter --font FreeTypeFont --converter MagnumFontConverter DejaVuSans.ttf myfont
+@endcode
 
-According to `MagnumFontConverter` plugin documentation, this will generate
-files `myfont.conf` and `myfont.tga` in current directory. You can then load
-and use them with the @ref Text::MagnumFont "MagnumFont" plugin.
+According to @ref Text::MagnumFontConverter "MagnumFontConverter" plugin
+documentation, this will generate files `myfont.conf` and `myfont.tga` in
+current directory. You can then load and use them via the
+@ref Text::MagnumFont "MagnumFont" plugin.
 */
 
 namespace Text {

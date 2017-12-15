@@ -36,31 +36,37 @@
 
 namespace Magnum {
 
-/**
-@page magnum-imageconverter Image conversion utility
+/** @page magnum-imageconverter Image conversion utility
 @brief Converts images of different formats
+
+@m_footernavigation
 
 @section magnum-imageconverter-usage Usage
 
-    magnum-imageconverter [-h|--help] [--importer IMPORTER] [--converter CONVERTER] [--plugin-dir DIR] [--] input output
+@code{.shell-session}
+magnum-imageconverter [-h|--help] [--importer IMPORTER] [--converter CONVERTER]
+    [--plugin-dir DIR] [--] input output
+@endcode
 
 Arguments:
 
--   `input` -- input image
--   `output` -- output image
--   `-h`, `--help` -- display this help message and exit
--   `--importer IMPORTER` -- image importer plugin (default:
+-   `input` --- input image
+-   `output` --- output image
+-   `-h`, `--help` --- display this help message and exit
+-   `--importer IMPORTER` --- image importer plugin (default:
     @ref Trade::AnyImageImporter "AnyImageImporter")
--   `--converter CONVERTER` -- image converter plugin (default:
+-   `--converter CONVERTER` --- image converter plugin (default:
     @ref Trade::AnyImageConverter "AnyImageConverter")
--   `--plugin-dir DIR` -- base plugin dir (defaults to plugin directory in
+-   `--plugin-dir DIR` --- base plugin dir (defaults to plugin directory in
     Magnum install location)
 
 @section magnum-imageconverter-example Example usage
 
 Converting a JPEG file to a PNG:
 
-    magnum-imageconverter image.jpg image.png
+@code{.shell-session}
+magnum-imageconverter image.jpg image.png
+@endcode
 
 */
 
