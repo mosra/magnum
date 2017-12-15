@@ -1,0 +1,31 @@
+[1;39mStarting ProcessingTest with 1 test cases...[0m
+[1;31m  FAIL[0;34m [[1;36m1[0;34m][1;39m process()[0m at …/debugtools-compareimage.cpp on line 77
+        Images actual and expected have max delta above threshold, actual 189 but at most 170 expected. Mean delta 13.5776 is below threshold 96. Delta image:
+          |                                |
+          |                                |
+          |         ~[1;33m8[0m[1;33m0[0m[1;33m7[0m[1;33m0[0m[1;33mD[0m[1;31mN[0m[1;31mM[0m[1;31mN[0m[1;33m8[0m[1;33m$[0m[1;33mZ[0m[1;33mD[0m7         |
+          |       ?[1;33mI[0m[1;33m0[0m:   :++~.  .[1;33mI[0m[1;33m0[0m[1;33mZ[0m       |
+          |      7[1;33mI[0m   ?[1;33m$[0m[1;33mD[0m[1;33m8[0m[1;33mZ[0m[1;33mZ[0m[1;33m0[0m[1;31mD[0m[1;33mZ[0m[1;33m8[0m,  +?      |
+          |     ~+   +[1;33mI[0m        ,[1;33m7[0m[1;31mN[0m[1;33mZ[0m[1;33mZ[0m[1;33m$[0m      |
+          |     :    ~                     |
+          |     .    .                     |
+          |     ,    :                     |
+          |     ~.   +.         +[1;33mI[0m[1;33mD[0m[1;33m8[0m?.     |
+          |      ?.  .[1;33mZ[0m[1;33m0[0m:     +[1;33m0[0m[1;33mI[0m  :[1;33m7[0m      |
+          |      .[1;33m$[0m[1;33m$[0m.  ~[1;33mD[0m[1;33m8[0m[1;33m$[0m[1;33mZ[0m[1;33m0[0m[1;33mD[0m[1;33mZ[0m.  =[1;33mZ[0m+      |
+          |        =[1;33m8[0m[1;33m$[0m[1;33mD[0m[1;33mI[0m=,. .:+[1;33mZ[0m[1;33mD[0m[1;33mI[0m[1;33m$[0m        |
+          |           :7[1;33m0[0m[1;33mD[0m[1;31mN[0m[1;31mM[0m[1;31mN[0m[1;33mD[0m[1;33m$[0m+.          |
+          |                                |
+          |                                |
+        Top 10 out of 66 pixels above max/mean threshold:
+          [16,5] #000000ff, expected #fcfcfcff (Δ =[1;31m 189[0m)
+          [16,27] #fbfbfbff, expected #000000ff (Δ =[1;31m 188.25[0m)
+          [15,27] #f2f2f2ff, expected #000000ff (Δ =[1;31m 181.5[0m)
+          [17,5] #000000ff, expected #f1f1f1ff (Δ =[1;31m 180.75[0m)
+          [15,5] #000000ff, expected #efefefff (Δ =[1;31m 179.25[0m)
+          [17,27] #eeeeeeff, expected #000000ff (Δ =[1;31m 178.5[0m)
+          [22,20] #000000ff, expected #e7e7e7ff (Δ =[1;31m 173.25[0m)
+          [18,23] #060606ff, expected #eaeaeaff (Δ =[1;31m 171[0m)
+          [18,9] #e5e5e5ff, expected #040404ff (Δ =[1;33m 168.75[0m)
+          [21,26] #efefefff, expected #0f0f0fff (Δ =[1;33m 168[0m)
+[1;39mFinished ProcessingTest with[1;31m 1 errors[1;39m out of 1 checks.[0m

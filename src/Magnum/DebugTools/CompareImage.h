@@ -97,7 +97,7 @@ To be used with @ref Corrade::TestSuite. Basic use is really simple:
 Based on actual images used, in case of commparison failure the comparator can
 give for example the following result:
 
-@image html debugtools-compareimage.png
+@include debugtools-compareimage.ansi
 
 Supports the following formats:
 
