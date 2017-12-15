@@ -25,10 +25,10 @@
 
 namespace Magnum {
 /** @page best-practices Best practices, pitfalls and platform-specific information
-
-@brief Performance advices and solutions for platform-specific issues
+@brief Performance advices and solutions for platform-specific issues.
 
 @tableofcontents
+@m_footernavigation
 
 Here is collection of carefully selected notes, links to official guidelines
 and other articles with valuable information to help developers create better
@@ -61,9 +61,9 @@ information.
 
 @subsection best-practices-ios iOS
 
--   GLSL `texelFetch()` returns zero results if you have a texture with integer
-    type and the filtering is not @ref Sampler::Filter::Nearest. Yes, it
-    shouldn't matter, but it does.
+-   GLSL @glsl texelFetch() @ce returns zero results if you have a texture with
+    integer type and the filtering is not @ref Sampler::Filter::Nearest. Yes,
+    it shouldn't matter, but it does.
 -   OpenGL ES 3.0 contexts don't support rendering to 32-bit float textures.
     However, it is possible to work around that issue by creating 32-bit
     unsigned integer texture
@@ -73,7 +73,7 @@ information.
 
 @subsection best-practices-angle ANGLE (WebGL)
 
--   [WebGL Insights -- ANGLE](https://books.google.cz/books?id=6crECQAAQBAJ&lpg=PP1&pg=PA3&redir_esc=y#v=onepage&q&f=true)
+-   [WebGL Insights --- ANGLE](https://books.google.cz/books?id=6crECQAAQBAJ&lpg=PP1&pg=PA3&redir_esc=y#v=onepage&q&f=true)
 
 @subsection best-practices-webgl WebGL (Emscripten)
 
@@ -102,6 +102,5 @@ buffer attachments. See @ref Buffer, @ref Framebuffer,
 @subsection best-practices-tegra NVidia Tegra hardware
 
 -   [Optimize OpenGL ES 2.0 Performance for Tegra](http://docs.nvidia.com/tegra/index.html#GLES2_Perf_Main.html)
-
 */
 }

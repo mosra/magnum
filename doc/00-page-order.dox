@@ -9,15 +9,16 @@
 @page utilities Utilities
 @page opengl OpenGL
 @page openal OpenAL
-@page debugoperators Debug output operators for custom types
-@page configurationvalues Configuration value parsers and writers for custom types
-@page deprecated Deprecated list
-@page coding-style Coding style
 
 @page changelog Changelog
 @page changelog-plugins Plugins changelog
 @page changelog-integration Integration changelog
 @page changelog-extras Extras changelog
 @page changelog-examples Examples changelog
+
+@page coding-style Coding style
+@page debugoperators Debug output operators for custom types
+@page configurationvalues Configuration value parsers and writers for custom types
+@page deprecated Deprecated list
 
 */

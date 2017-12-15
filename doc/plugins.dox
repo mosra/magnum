@@ -27,8 +27,8 @@ namespace Magnum {
 /** @page plugins Loading and using plugins
 @brief Extending Magnum with additional functionality
 
--   Previous page: @ref transformations
--   Next page: @ref opengl-wrapping
+@tableofcontents
+@m_footernavigation
 
 The base Magnum library contains math support, scene graph implementation and
 is able to interact with graphics and audio hardware. However, the base library
@@ -36,8 +36,6 @@ doesn't provide any functions for dealing with specific file formats, as there
 are simply too many formats to have them included directly in the library.
 Instead, the library provides plugin API and you can load plugin which will
 then be able to read or write the particular file format.
-
-@tableofcontents
 
 The @ref building "Magnum repository" contains a few basic plugins for opening
 the some formats, such as TGA images or WAV audio files. These plugins are
@@ -54,22 +52,22 @@ might not be available on all platforms.
 
 Magnum contains these plugin interfaces:
 
--   @ref Trade::AbstractImporter -- importers for general 2D and 3D scene,
+-   @ref Trade::AbstractImporter --- importers for general 2D and 3D scene,
     mesh, material, texture and image data. See `*Importer` classes in
     @ref Trade namespace for available importer plugins. These are installed in
     `MAGNUM_PLUGINS_IMPORTER_DIR` directory.
--   @ref Trade::AbstractImageConverter -- conversion among various image
+-   @ref Trade::AbstractImageConverter --- conversion among various image
     formats. See `*ImageConverter` classes in @ref Trade namespace for list of
     available image converter plugins. These are installed in
     `MAGNUM_PLUGINS_IMAGECONVERTER_DIR` directory.
--   @ref Text::AbstractFont -- font loading and glyph layouting. See `*Font`
+-   @ref Text::AbstractFont --- font loading and glyph layouting. See `*Font`
     classes in @ref Text namespace for available font plugins. These are
     installed in `MAGNUM_PLUGINS_FONT_DIR` directory.
--   @ref Text::AbstractFontConverter -- font and glyph cache conversion. See
+-   @ref Text::AbstractFontConverter --- font and glyph cache conversion. See
     `*FontConverter` classes in @ref Text namespace for available font
     converter plugins. These are installed in `MAGNUM_PLUGINS_FONTCONVERTER_DIR`
     directory.
--   @ref Audio::AbstractImporter -- importers for audio formats. See
+-   @ref Audio::AbstractImporter --- importers for audio formats. See
     `*Importer` classes in @ref Audio namespace for available audio importer
     plugins. These are installed in `MAGNUM_PLUGINS_AUDIOIMPORTER_DIR`
     directory.
@@ -92,7 +90,8 @@ information.
 You can provide the variable to your sources using CMake configuration file.
 Create `configure.h.cmake` file in your source directory with contents similar
 to these:
-@code
+
+@code{.cpp}
 #define MAGNUM_PLUGINS_IMPORTER_DIR "${MAGNUM_PLUGINS_IMPORTER_DIR}"
 @endcode
 
@@ -103,7 +102,8 @@ build and you have to select between `MAGNUM_PLUGINS_*_DIR` and
 preprocessor variable. This will ensure that you use debug plugin directory for
 debug build on multi-configuration build sytems and fall back to autodetection
 for the rest:
-@code
+
+@code{.cpp}
 #ifdef CORRADE_IS_DEBUG_BUILD
 #define MAGNUM_PLUGINS_IMPORTER_DIR "${MAGNUM_PLUGINS_IMPORTER_DEBUG_DIR}"
 #else
@@ -120,7 +120,8 @@ Then process the file in your `CMakeLists.txt`. The result
 (`${MAGNUM_PLUGINS_IMPORTER_DIR}` / `${MAGNUM_PLUGINS_IMPORTER_DEBUG_DIR}` gets
 replaced with the actual value) is put into build directory, so don't forget to
 add it to include path:
-@code
+
+@code{.cmake}
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
@@ -129,7 +130,8 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 Then you can instantiate the manager, load particular plugin and create an
 instance of it. Keep in mind that the manager instance must exist for whole
 lifetime of all plugin instances created from it.
-@code
+
+@code{.cpp}
 #include "configure.h"
 
 // ...
@@ -156,7 +158,8 @@ plugin needs to load the glyph atlas using @ref Trade::TgaImporter "TgaImporter"
 plugin. The dependency loading is done automatically, but you need to create
 instance of corresponding plugin manager in particular plugin dir so the
 dependency can be found. Example:
-@code
+
+@code{.cpp}
 PluginManager::Manager<Trade::AbstractImporter> importerManager(MAGNUM_PLUGINS_IMPORTER_DIR);
 PluginManager::Manager<Text::AbstractFont> fontManager(MAGNUM_PLUGINS_FONT_DIR);
 
@@ -178,7 +181,8 @@ The plugins are built as static if `BUILD_STATIC` CMake parameter is enabled
 usage is basically the same as above, but you need to explicitly find the
 plugin and link it into the executable in your `CMakeLists.txt`. See @ref cmake
 and @ref cmake-plugins for additional information.
-@code
+
+@code{.cmake}
 find_package(MagnumPlugins REQUIRED PngImporter)
 
 add_executable(MyApp ...)
@@ -196,7 +200,8 @@ It's needed to register the static plugin with @ref CORRADE_PLUGIN_IMPORT() in
 some function which will be executed before you use the plugin, otherwise the
 plugin will not be found. See the macro documentation for information about
 automatic importing and namespace issues.
-@code
+
+@code{.cpp}
 int main(int argc, char** argv) {
     CORRADE_PLUGIN_IMPORT(TgaImporter)
 
@@ -214,9 +219,5 @@ If you want to develop a plugin which depends on another, you need to find the
 original plugin, add its include dirs to include path and link to it, similarly
 to how static plugins are found above. See @ref cmake and @ref cmake-plugins
 for more information.
-
--   Previous page: @ref transformations
--   Next page: @ref opengl-wrapping
-
 */
 }

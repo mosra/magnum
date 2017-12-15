@@ -27,24 +27,22 @@ namespace Magnum {
 /** @page shaders Builtin shaders
 @brief Overview and basic usage of builtin shaders.
 
--   Previous page: @ref opengl-wrapping
--   Next page: @ref scenegraph
-
 @tableofcontents
+@m_footernavigation
 
 Magnum contains a set of general-purpose shaders for easy prototyping, UI
 rendering and data visualization/debugging in both 2D and 3D scenes. The
 following shaders are available, see documentation of each class for sample
 output and example setup:
 
--   @ref Shaders::Flat "Shaders::Flat*D" -- flat shading using single color or
+-   @ref Shaders::Flat "Shaders::Flat*D" --- flat shading using single color or
     texture
--   @ref Shaders::Vector "Shaders::Vector*D" -- colored vector graphics
+-   @ref Shaders::Vector "Shaders::Vector*D" --- colored vector graphics
 -   @ref Shaders::DistanceFieldVector "Shaders::DistanceFieldVector*D" --
     colored and outlined vector graphics
--   @ref Shaders::VertexColor "Shaders::VertexColor*D" -- vertex-colored meshes
--   @ref Shaders::Phong -- Phong shading using colors or textures, 3D only
--   @ref Shaders::MeshVisualizer -- wireframe visualization, 3D only
+-   @ref Shaders::VertexColor "Shaders::VertexColor*D" --- vertex-colored meshes
+-   @ref Shaders::Phong --- Phong shading using colors or textures, 3D only
+-   @ref Shaders::MeshVisualizer --- wireframe visualization, 3D only
 
 All the builtin shaders can be used on unextended OpenGL 2.1 and OpenGL ES 2.0
 / WebGL 1.0, but they try to use the most recent technology available to have
@@ -59,7 +57,8 @@ Each shader expects some set of vertex attributes, thus when adding vertex
 buffer into the mesh, you need to specify which shader attributes are on which
 position in the buffer. See @ref Mesh::addVertexBuffer() for details and usage
 examples. Example mesh configuration for @ref Shaders::Phong shader:
-@code
+
+@code{.cpp}
 struct Vertex {
     Vector3 position;
     Vector3 normal;
@@ -81,8 +80,9 @@ Each shader then has its own set of configuration functions. Some configuration
 is static, specified commonly as flags in constructor, directly affecting
 compiled shader code. Other configuration is specified through uniforms and
 various binding points, commonly exposed through various setters. Example
-configuration and rendering using @ref Shaders::Phong "Shaders::Phong":
-@code
+configuration and rendering using @ref Shaders::Phong :
+
+@code{.cpp}
 Matrix4 transformationMatrix, projectionMatrix;
 Texture2D diffuseTexture, specularTexture;
 
@@ -104,19 +104,22 @@ for *generic* shader and then render it with any compatible shader. Definition
 of generic attributes is available in @ref Shaders::Generic class.
 Configuration of the above mesh using generic attributes could then look like
 this:
-@code
+
+@code{.cpp}
 mesh.addVertexBuffer(vertices, 0,
     Shaders::Generic3D::Position{},
     Shaders::Generic3D::Normal{},
     Shaders::Generic3D::TextureCoordinates{});
 @endcode
+
 Note that in this particular case both configurations are equivalent, because
 @ref Shaders::Phong also uses generic vertex attribute definitions.
 
 Then you can render the mesh using @ref Shaders::Phong shader like above, or
 use for example @ref Shaders::Flat3D or even @ref Shaders::MeshVisualizer with
 the same mesh reconfiguration. The unused attributes will be simply ignored.
-@code
+
+@code{.cpp}
 Shaders::MeshVisualizer visualizerShader{Shaders::MeshVisualizer::Wireframe};
 visualizerShader.setColor(Color3::fromHSV(216.0_degf, 0.85f, 1.0f))
     .setWireframeColor(Color3{0.95f})
@@ -128,9 +131,5 @@ mesh.draw(visualizerShader);
 
 The @ref MeshTools::compile() utility configures meshes using generic vertex
 attribute definitions to make them usable with any shader.
-
--   Previous page: @ref opengl-wrapping
--   Next page: @ref scenegraph
-
 */
 }

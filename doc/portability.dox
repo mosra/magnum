@@ -28,13 +28,14 @@ namespace Magnum {
 @brief How to support different platforms and different OpenGL capabilities within one codebase.
 
 @tableofcontents
+@m_footernavigation
 
 @section portability-target Target-specific code
 
 If Magnum is compiled with e.g. OpenGL ES 2.0 support, some features present
 in desktop version are not available. It means that some classes, functions
 and enum values are simply not included in headers. It is designed this way to
-make porting easier -- it is better to fail at compile time on e.g. undefined
+make porting easier --- it is better to fail at compile time on e.g. undefined
 enum value than fail at runtime in some corner case because given texture
 format is not supported.
 
@@ -46,7 +47,8 @@ If you include @ref Magnum.h, you get these predefined macros:
 -   @ref MAGNUM_TARGET_WEBGL if targeting WebGL
 
 Example usage:
-@code
+
+@code{.cpp}
 #ifndef MAGNUM_TARGET_GLES
 Renderer::setPolygonMode(Renderer::PolygonMode::Lines);
 // draw mesh as wireframe...
@@ -62,15 +64,13 @@ also @ref requires-gl, @ref requires-gles20 and @ref requires-gles30.
 
 Magnum is attempting to be future-proof and as intuitive for users as
 possible. Many features from C++11 are used to simplify things and make them
-faster and more secure, but on the other hand it requires fairly recent
-compiler with good enough support of the new standard. Currently Magnum is
-written with GCC 4.8 and Clang 3.1 in mind, but support for some other
-compilers is also available and handled by Corrade library. See @ref Corrade.h
-for more information.
+faster and more secure, but on the other hand it requires a compiler with good
+enough support of the standard. Currently Magnum is written with at least GCC
+4.8, Clang 3.1 and MSVC 2015 in mind. See @ref Corrade.h for more information.
 
 Each feature is marked accordingly if it is not available on some compilers,
 see @ref SceneGraph::DrawableGroup3D for an example. It is up to you (or your
-platform) which compiler your code will support, code written for e.g. GCC 4.7
+platform) which compiler your code will support, code written for e.g. GCC 4.8
 will work also on Magnum compiled with support for newer compilers, although
 newer compilers may catch errors that weren't spotted by earlier versions.
 
@@ -80,12 +80,13 @@ which you can use for platform-aware code.
 
 @section portability-extensions Extension-aware code
 
-Some functionality is depending on support of particular extension and thus
-the decision cannot be made at compile time. Header @ref Extensions.h contains
-list of extensions, which you can pass to @ref Context::isExtensionSupported()
-and decide based on that:
-@code
-if(Context::instance()->isExtensionSupported<GL::ARB::geometry_shader4>()) {
+Some functionality is depending on support of a particular OpenGL extension and
+thus the decision cannot be made at compile time. Header @ref Extensions.h
+contains list of extensions, which you can pass to
+@ref Context::isExtensionSupported() and decide based on that:
+
+@code{.cpp}
+if(Context::current().isExtensionSupported<GL::ARB::geometry_shader4>()) {
     // draw mesh with wireframe on top in one pass using geometry shader...
 } else {
     // draw underlying mesh...
@@ -96,13 +97,14 @@ if(Context::instance()->isExtensionSupported<GL::ARB::geometry_shader4>()) {
 
 You can also decide on particular OpenGL version using @ref Context::isVersionSupported(),
 but remember that some features from that version might be available even if
-the drivers don't expose that version.
+the drivers don't fully expose that version.
 
 On the other hand, if you don't want to write fallback code for unsupported
 extensions, you can use macros @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED() or
 @ref MAGNUM_ASSERT_VERSION_SUPPORTED() to add mandatory requirement of given
 extension or version:
-@code
+
+@code{.cpp}
 MAGNUM_ASSERT_EXTENSION_SUPPORTED(GL::ARB::geometry_shader4);
 // just use geometry shader and don't care about old hardware
 @endcode
@@ -118,20 +120,25 @@ available, but also have proper fallback when it's not, see for example
 @section portability-shaders Writing portable shaders
 
 Shaders are probably the most painful thing to port. There are many issues to
-address - different shader syntax (`in`/`out` vs. `attribute` and `varying`
-etc.), explicit vs. implicit methods to specify vertex attribute, uniform and
-texture uniform locations, required precision qualifiers in OpenGL ES etc.
+address --- different shader syntax (@glsl in @ce / @glsl out @ce vs.
+@glsl attribute @ce and @glsl varying @ce etc.), explicit vs. implicit methods
+to specify vertex attribute, uniform and texture uniform locations, required
+precision qualifiers in OpenGL ES etc.
 
 Shader class allows you to explicitly specify shader version and based on that
 you can decide on the syntax in your shader code. You can also use
-@ref Context::supportedVersion() to conveniently select highest supported
+@ref Context::supportedVersion() to conveniently select the first supported
 version from a list:
-@code
+
+@code{.cpp}
 // MyShader.cpp
-Version version = Context::instance()->supportedVersion({Version::GL430, Version::GL330, Version::GL210});
+Version version = Context::current().supportedVersion({Version::GL430,
+                                                       Version::GL330,
+                                                       Version::GL210});
 attachShader(Shader::fromFile(version, "MyShader.vert"));
 @endcode
-@code
+
+@code{.vert}
 // MyShader.vert
 #if __VERSION__ < 130
 #define in attribute
@@ -149,12 +156,13 @@ void main() {
 @endcode
 
 It is often desirable to query extension presence based on actually used GLSL
-version -- while the extension might be supported in the driver, it might not
+version --- while the extension might be supported in the driver, it might not
 be available in given GLSL version (e.g. causing compilation errors). You can
 use @ref Context::isExtensionSupported(Version) const to check that the
 extension is present in given version:
-@code
-if(!Context::instance()->isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(version)) {
+
+@code{.cpp}
+if(!Context::current().isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(version)) {
     bindAttributeLocation(Position::Location, "position");
     // ...
 }
@@ -165,21 +173,21 @@ specifying attribute location, uniform location and texture binding unit in
 various OpenGL versions.
 
 All shaders in @ref Shaders namespace support desktop OpenGL starting from
-version 2.1 and also OpenGL ES 2.0 and 3.0. Feel free to look into their
-sources to see how portability is handled there.
+version 2.1 and also OpenGL ES 2.0 and 3.0 (or WebGL 1.0 / 2.0). Feel free to
+look into their sources to see how portability is handled there.
 
 @section portability-applications Platform-specific application support
 
 Your application might run on Windows box, on some embedded Linux or even in
-browser - each platform has different requirements how to create entry point
-to the application, how to handle input events, how to create window and
+browser --- each platform has different requirements how to create an entry
+point to the application, how to handle input events, how to create window and
 OpenGL context etc. Namespace @ref Platform contains application base classes
 which are abstracting out most of it for your convenience.
 
 All the classes support limited form of static polymorphism, which means you
 can just switch to another base class and in many cases you won't need to
-change any other code. It has its limitations, though - some toolkits don't
-support all keys, mouse movement events etc.
+change any other code. It has its limitations, though --- some toolkits don't
+support all special keys, mouse movement events etc.
 
 As mentioned in @ref platform, all the classes, macros and CMake variables have
 generic aliases, thus using different toolkit is in most cases only matter of
@@ -189,7 +197,8 @@ Example application, which targets both embedded Linux (using plain X and EGL)
 and desktop (using SDL2 toolkit). Thanks to static polymorphism most of the
 functions will work on both without changes, the main difference might (or
 might not, depending what you use) be in particular event handlers:
-@code
+
+@code{.cpp}
 #ifndef MAGNUM_TARGET_GLES
 #include <Platform/Sdl2Application.h>
 #else
@@ -211,10 +220,11 @@ class MyApplication: public Platform::Application {
 MAGNUM_APPLICATION_MAIN(MyApplication)
 @endcode
 
-And corresponding CMake code. Note that we need to call `find_package()` twice,
-first to get variable `MAGNUM_TARGET_GLES` and then again to find proper
-application library based on its value:
-@code
+And corresponding CMake code. Note that we need to call @cmake find_package() @ce
+twice, first to get the @ref MAGNUM_TARGET_GLES variable and then again to find
+proper application library based on its value:
+
+@code{.cmake}
 find_package(Magnum REQUIRED)
 
 if(MAGNUM_TARGET_GLES)
@@ -228,6 +238,5 @@ target_link_libraries(myapplication
     Magnum::Magnum
     Magnum::Application)
 @endcode
-
 */
 }

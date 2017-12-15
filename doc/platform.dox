@@ -27,15 +27,14 @@ namespace Magnum {
 /** @page platform Platform support
 @brief Integration into windowing toolkits and creation of windowless contexts.
 
--   Next page: @ref types
+@tableofcontents
+@m_footernavigation
 
 @ref Platform namespace contains classes integrating Magnum engine into
 various toolkits, both windowed and windowless. Each class has slightly
 different dependencies and platform requirements, see documentation of
 @ref Platform namespace and particular `*Application` classes for more
 information about building and usage with CMake.
-
-@tableofcontents
 
 All the classes have common API to achieve static polymorphism, so basically
 you can use different toolkits on different platforms and the only thing you
@@ -49,14 +48,14 @@ de-facto standard and most widely used toolkit is SDL2, which is implemented in
 @ref Platform::Sdl2Application. As said above, the usage is similar for all
 toolkits, you must provide one-argument constructor and implement at least
 @ref Platform::Sdl2Application::drawEvent() "drawEvent()" function. The class
-can be then used directly in `main()`, but for convenience and portability it's
-better to use @ref MAGNUM_SDL2APPLICATION_MAIN() macro.
+can be then used directly in @cpp main() @ce, but for convenience and
+portability it's better to use @ref MAGNUM_SDL2APPLICATION_MAIN() macro.
 
-To simplify the porting, the library provides `Platform::Application` typedef
-and `MAGNUM_APPLICATION_MAIN()` macro (but only if only one application header
-is included, to avoid ambiguity). Changing the code to use different toolkit is
-then matter of replacing only the `#``include` statement (and changing
-one line in CMake build script, as you see later).
+To simplify the porting, the library provides @cpp Platform::Application @ce
+typedef and @cpp MAGNUM_APPLICATION_MAIN() @ce macro (but only if only one
+application header is included, to avoid ambiguity). Changing the code to use
+different toolkit is then matter of replacing only the @cpp #include @ce
+statement (and changing one line in CMake build script, as you see later).
 
 Barebone application implementation which will just clear the window to dark
 blue color is shown in the following code listing.
@@ -65,7 +64,7 @@ blue color is shown in the following code listing.
     `base` branch of [Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap)
     repository.
 
-@code
+@code{.cpp}
 #include <Magnum/DefaultFramebuffer.h>
 #include <Magnum/Renderer.h>
 #include <Magnum/Math/Color.h>
@@ -105,7 +104,8 @@ as the window has fixed size in most cases. To respond to size change for
 example by resizing the default framebuffer, you need to reimplement
 @ref Platform::Sdl2Application::viewportEvent() "viewportEvent()" function and
 pass the new size to the framebuffer:
-@code
+
+@code{.cpp}
 class MyApplication: public Platform::Application {
     // ...
 
@@ -131,18 +131,18 @@ Windows. To make things simple, as an example we will use only
 below for fully portable example.
 
 You need to implement just @ref Platform::WindowlessGlxApplication::exec() "exec()"
-function. The class can be then used directly in `main()`, but again, for
-convenience and portability it's better to use
+function. The class can be then used directly in @cpp main() @ce, but again,
+for convenience and portability it's better to use
 @ref MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN() macro.
 
 Similarly as with windowed applications, to simplify the porting, the library
-provides `Platform::WindowlessApplication` typedef and `MAGNUM_WINDOWLESSAPPLICATION_MAIN()`
-macro, but only if just one windowless application header is included. Changing
-the code to use different toolkit is then matter of replacing only the
-`#``include` statement. Aliases for windowless applications are
-separated from aliases for windowed applications, because projects commonly
-contain both graphics application and command-line tools (for data preparation
-etc.).
+provides @cpp Platform::WindowlessApplication @ce typedef and
+@cpp MAGNUM_WINDOWLESSAPPLICATION_MAIN() @ce macro, but only if just one
+windowless application header is included. Changing the code to use different
+toolkit is then matter of replacing only the @cpp #include @ce statement.
+Aliases for windowless applications are separated from aliases for windowed
+applications, because projects commonly contain both graphics application and
+command-line tools (for data preparation etc.).
 
 Barebone application which will just print out current OpenGL version and
 renderer string and exits is in the following code listing.
@@ -153,7 +153,7 @@ renderer string and exits is in the following code listing.
     is available in `windowless` branch of [Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap)
     repository.
 
-@code
+@code{.cpp}
 #include <Magnum/Context.h>
 #include <Magnum/Platform/WindowlessGlxApplication.h>
 
@@ -191,9 +191,9 @@ aliases (or `Magnum::WindowlessApplication` for windowless applications), but
 only if only one application (windowless application) component is requested to
 avoid ambiguity. Changing the build script to use different toolkit is then
 matter of replacing only the requested `*Application` component (and one
-`#``include` line in the actual code, as said above).
+@cpp #include @ce line in the actual code, as said above).
 
-@code
+@code{.cmake}
 find_package(Magnum REQUIRED Sdl2Application)
 
 add_executable(myapplication MyApplication.cpp)
@@ -209,7 +209,8 @@ window size 800x600 pixels). If you want something else, you can pass
 @ref Platform::Sdl2Application::Configuration "Configuration" instance to
 application constructor. Using method chaining it can be done conveniently like
 this:
-@code
+
+@code{.cpp}
 MyApplication::MyApplication(int& argc, char** argv):
     Platform::Application(argc, argv, Configuration()
         .setTitle("My Application")
@@ -223,7 +224,8 @@ However, sometimes you would need to configure the application based on some
 configuration file or system introspection. In that case you can pass `nullptr`
 instead of @ref Platform::Sdl2Application::Configuration "Configuration"
 instance and then specify it later with @ref Platform::Sdl2Application::createContext() "createContext()":
-@code
+
+@code{.cpp}
 MyApplication::MyApplication(int& argc, char** argv): Platform::Application(argc, argv, nullptr) {
     // ...
 
@@ -241,7 +243,8 @@ context using @ref Platform::Sdl2Application::tryCreateContext() "tryCreateConte
 The only difference is that this function returns `false` instead of exiting.
 You can for example try enabling MSAA and if the context creation fails, fall
 back to no-AA rendering:
-@code
+
+@code{.cpp}
 MyApplication::MyApplication(int& argc, char** argv): Platform::Application(argc, argv, nullptr) {
     // ...
 
@@ -263,14 +266,14 @@ the application wrappers in @ref Platform namespace, you can initialize Magnum
 manually. First create OpenGL context and then create instance of
 @ref Platform::Context class, which will take care of proper initialization and
 feature detection. The instance must be alive for whole application lifetime.
-Example `main()` function with manual initialization is in the following code
-listing.
+Example @cpp main() @ce function with manual initialization is in the following
+code listing.
 
 @note Fully contained application using with manual Magnum initialization on
     top of Qt toolkit is available in `base-qt` branch of
     [Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap) repository.
 
-@code
+@code{.cpp}
 int main(int argc, char** argv) {
     // Create OpenGL context ...
 
@@ -295,10 +298,10 @@ pointer loading using platform-specific APIs. In that case you also need to
 find particular `*Context` library, add its include dir and then link to it.
 These platform-specific libraries are available:
 
--   `CglContext` -- CGL context (macOS)
--   `EglContext` -- EGL context (everywhere except Emscripten)
--   `GlxContext` -- GLX context (X11-based Unix)
--   `WglContext` -- WGL context (Windows)
+-   `CglContext` --- CGL context (macOS)
+-   `EglContext` --- EGL context (everywhere except Emscripten)
+-   `GlxContext` --- GLX context (X11-based Unix)
+-   `WglContext` --- WGL context (Windows)
 
 Systems not listed here (such as Emscripten) don't need any `Context` library,
 because dynamic function pointer loading is not available on these.
@@ -306,9 +309,10 @@ because dynamic function pointer loading is not available on these.
 For example, when you create the OpenGL context using GLX, you need to find
 `GlxContext` component, and link to `Magnum::GlxContext` target. Similarly to
 application libraries, you can also use generic `Magnum::Context` target,
-providing you requested only one `*Context` component in the `find_package()`
+providing you requested only one `*Context` component in the @cmake find_package() @ce
 call. Complete example:
-@code
+
+@code{.cmake}
 find_package(Magnum REQUIRED GlxContext)
 
 add_executable(myapplication MyCustomApplication.cpp)
@@ -330,13 +334,13 @@ create a GL context instance, then making it current and finally instantiating
 the @ref Platform::Context instance to initialize Magnum.
 
 Similarly as with the applications, to simplify the porting, the library
-provides `Platform::WindowlessGLContext` typedef, but only if just one
+provides @cpp Platform::WindowlessGLContext @ce typedef, but only if just one
 windowless application header is included.
 
 @attention With this approach it is possible to switch between different GL
     contexts, but make sure that Magnum is used only with its OpenGL context.
 
-@code
+@code{.cpp}
 int main(int argc, char** argv) {
     Platform::WindowlessGLContext glContext{{}};
     glContext.makeCurrent();
@@ -369,7 +373,7 @@ current (for example for the main application rendering). See also
 @note Context creation is not thread safe on all platforms, that's why it still
     has to be done on the main thread.
 
-@code
+@code{.cpp}
 int main() {
     Platform::WindowlessGLContext glContext{{}};
 
@@ -385,7 +389,5 @@ int main() {
     worker.join();
 }
 @endcode
-
--   Next page: @ref types
 */
 }

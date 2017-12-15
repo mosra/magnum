@@ -27,15 +27,15 @@ namespace Magnum {
 /** @page features Feature overview
 @brief Fundamental principles and design goals.
 
--   @subpage platform -- @copybrief platform
--   @subpage types -- @copybrief types
--   @subpage matrix-vector -- @copybrief matrix-vector
--   @subpage transformations -- @copybrief transformations
--   @subpage plugins -- @copybrief plugins
--   @subpage opengl-wrapping -- @copybrief opengl-wrapping
--   @subpage shaders -- @copybrief shaders
--   @subpage scenegraph -- @copybrief scenegraph
--   @subpage shapes -- @copybrief shapes
--   @subpage debug-tools -- @copybrief debug-tools
+-   @subpage platform --- @copybrief platform
+-   @subpage types --- @copybrief types
+-   @subpage matrix-vector --- @copybrief matrix-vector
+-   @subpage transformations --- @copybrief transformations
+-   @subpage plugins --- @copybrief plugins
+-   @subpage opengl-wrapping --- @copybrief opengl-wrapping
+-   @subpage shaders --- @copybrief shaders
+-   @subpage scenegraph --- @copybrief scenegraph
+-   @subpage shapes --- @copybrief shapes
+-   @subpage debug-tools --- @copybrief debug-tools
 */
 }

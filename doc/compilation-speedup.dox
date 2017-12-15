@@ -27,9 +27,12 @@ namespace Magnum {
 /** @page compilation-speedup Speeding up compilation
 @brief Techniques for reducing compilation times.
 
+@tableofcontents
+@m_footernavigation
+
 @section compilation-forward-declarations Forward declarations instead of includes
 
-Essential thing when speeding up compilation is reducing number of `#``include`
+Essential thing when speeding up compilation is reducing number of @cpp #include @ce
 directives in both headers and source files. Magnum is strictly applying this
 policy in all header files, so all types which are not directly used in the
 header have only forward declarations.
@@ -37,21 +40,31 @@ header have only forward declarations.
 For example, when including @ref Magnum.h, you get shortcut typedefs for
 floating-point vectors and matrices like @ref Vector3 and @ref Matrix4, but to
 actually use any of them, you have to include the respective header, e.g.
-@ref Math/Vector3.h.
+@ref Magnum/Math/Vector3.h.
 
 You are encouraged to use forward declarations also in your code. However, for
-some types it can be too cumbersome -- e.g. too many template parameters,
+some types it can be too cumbersome --- e.g. too many template parameters,
 typedefs etc. In this case a header with forward declarations is usually
 available, each namespace has its own:
 
- - @ref Math/Math.h
- - @ref Magnum.h
- - @ref DebugTools/DebugTools.h
- - @ref SceneGraph/SceneGraph.h
- - @ref Shaders/Shaders.h
- - @ref Shapes/Shapes.h
- - @ref Text/Text.h
- - @ref Trade/Trade.h
+-   @ref Corrade/Corrade.h
+-   @ref Corrade/Containers/Containers.h
+-   @ref Corrade/Interconnect/Interconnect.h
+-   @ref Corrade/PluginManager/PluginManager.h
+-   @ref Corrade/TestSuite/TestSuite.h
+-   @ref Corrade/Utility/Utility.h
+-   @ref Magnum/Magnum.h
+-   @ref Magnum/Audio/Audio.h
+-   @ref Magnum/DebugTools/DebugTools.h
+-   @ref Magnum/Math/Math.h
+-   @ref Magnum/OvrIntegration/OvrIntegration.h
+-   @ref Magnum/Platform/Platform.h
+-   @ref Magnum/SceneGraph/SceneGraph.h
+-   @ref Magnum/Shaders/Shaders.h
+-   @ref Magnum/Shapes/Shapes.h
+-   @ref Magnum/Text/Text.h
+-   @ref Magnum/Trade/Trade.h
+-   @ref Magnum/Ui/Ui.h
 
 @section compilation-speedup-templates Templates
 
@@ -92,7 +105,8 @@ we want to use @ref SceneGraph::Object "Object" from @ref SceneGraph with
 @ref Double instead of @ref Float as underlying type, because our scene will
 span the whole universe. We include the implementation file in dedicated source
 file and explicitly instantiate the template:
-@code
+
+@code{.cpp}
 // Object.cpp
 #include "SceneGraph/Object.hpp"
 #include "SceneGraph/MatrixTransformation3D.h"
@@ -109,7 +123,7 @@ precious compilation time.
 
 @subsection compilation-speedup-extern-templates Extern templates
 
-Keyword `extern template` is a new thing in C++11, attempting to solve
+Keyword @cpp extern template @ce is a new thing in C++11, attempting to solve
 compilation time problems related to templated code. However, on some compilers
 it causes conflicting symbol errors when used on whole classes, thus in Magnum
 it's used only for specific functions.
@@ -117,6 +131,5 @@ it's used only for specific functions.
 This is completely transparent to end user, so no special care is needed.
 Extern template is used for example for @ref debugoperators "debug operators"
 for common types of matrices and vectors.
-
 */
 }

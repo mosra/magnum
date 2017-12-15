@@ -1,4 +1,4 @@
-Magnum is 2D/3D graphics engine written in C++11/C++14 and modern OpenGL. Its
+Magnum is a 2D/3D graphics engine written in C++11/C++14 and modern OpenGL. Its
 goal is to simplify low-level graphics development and interaction with OpenGL
 using recent C++11/C++14 features and to abstract away platform-specific
 issues.
@@ -8,36 +8,35 @@ issues.
 DESIGN GOALS
 ============
 
-*   **2D is not an ugly stepchild**
-    Many engines out there were created as pure 2D or 3D and the alternative is
-    usually just an afterthought, if it is present at all. If you want to do
-    your next project in 2D only, you have to either relearn another engine
-    from scratch or emulate it in 3D, leaving many things overly complicated.
-    Magnum treats 2D equivalently to 3D so you can reuse what you already
-    learned for 3D and even combine 2D and 3D in one project.
+*   **2D is not an ugly stepchild.** Many engines out there were created as
+    pure 2D or 3D and the alternative is usually just an afterthought, if
+    present at all. If you want to do your next project in 2D only, you have to
+    either relearn another engine from scratch or emulate it in 3D, leaving
+    many things overly complicated. Magnum treats 2D equivalently to 3D so you
+    can reuse what you already learned for 3D and even combine 2D and 3D in one
+    project.
 
-*   **Forward compatibility**
-    If newer technology makes things faster, simpler or more intuitive, it is
-    the way to go. Magnum by default relies on decent C++11 support and modern
-    OpenGL features and if some feature isn't available, it tries to emulate it
-    using older functionality. However, you are not restricted to use the older
-    functionality directly, if you really want to.
+*   **Forward compatibility.** If newer technology makes things faster, simpler
+    or more intuitive, it is the way to go. Magnum by default relies on decent
+    C++11 support and modern OpenGL features and if some feature isn't
+    available, it tries to emulate it using older functionality. However, you
+    are not restricted to use the older functionality directly, if you really
+    want to.
 
-*   **Intuitive, but not restrictive API**
-    Scripting languages are often preferred to C/C++ because they are designed
-    to have less complicated APIs and less boilerplate code. Magnum is
-    designed with intuitivity in mind, but also with speed and static checks
-    that strongly-typed native code offers. It wraps OpenGL into less verbose
-    and more type-safe API, which is easier to use. Usually the most common way
-    is the most simple, but if you need full control, you can have it.
+*   **Intuitive, but not restrictive API.** Scripting languages are often
+    preferred to C/C++ because they are designed to have less complicated APIs
+    and less boilerplate code. Magnum is designed with intuitivity in mind, but
+    also with speed and static checks that strongly-typed native code offers.
+    It wraps OpenGL into less verbose and more type-safe API, which is easier
+    to use. Usually the most common way is the most simple, but if you need
+    full control, you can have it.
 
-*   **Extensible and replaceable components**
-    If you want to use different mathematical library for specific purposes,
-    that new windowing toolkit, your own file formats or another physics
-    library, you can. Conversion of math structures between different libraries
-    can be done on top of pre-made skeleton classes, support for file formats
-    is done using plugins and platform support is done by writing simple
-    wrapper class.
+*   **Extensible and replaceable components.** If you want to use different
+    mathematical library for specific purposes, that new windowing toolkit,
+    your own file formats or another physics library, you can. Conversion of
+    math structures between different libraries can be done on top of pre-made
+    skeleton classes, support for file formats is done using plugins and
+    platform support is done by writing simple wrapper class.
 
 SUPPORTED PLATFORMS
 ===================
@@ -54,10 +53,10 @@ Platforms:
 
 *   **Linux** and embedded Linux (natively using GLX/EGL and Xlib or through
     SDL2, GLFW or GLUT toolkit) [![Build Status](https://travis-ci.org/mosra/magnum.svg?branch=master)](https://travis-ci.org/mosra/magnum) [![Coverage Status](https://coveralls.io/repos/github/mosra/magnum/badge.svg?branch=master)](https://coveralls.io/github/mosra/magnum?branch=master)
-*   **Windows** on both MSVC and MinGW, natively or using ANGLE (through SDL2, GLFW or GLUT toolkit) [![Build Status](https://ci.appveyor.com/api/projects/status/5b477m034cfaskse/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum/branch/master)
+*   **Windows** with both MSVC and MinGW, natively or using ANGLE (through SDL2, GLFW or GLUT toolkit) [![Build Status](https://ci.appveyor.com/api/projects/status/5b477m034cfaskse/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum/branch/master)
 *   **macOS** (through SDL2 or GLFW toolkit) [![Build Status](https://travis-ci.org/mosra/magnum.svg?branch=master)](https://travis-ci.org/mosra/magnum)
 *   **iOS** (through SDL2 toolkit) [![Build Status](https://travis-ci.org/mosra/magnum.svg?branch=master)](https://travis-ci.org/mosra/magnum)
-*   **Android** 2.3 (API Level 9) and higher [![Build Status](https://travis-ci.org/mosra/magnum.svg?branch=master)](https://travis-ci.org/mosra/magnum)
+*   **Android** [![Build Status](https://travis-ci.org/mosra/magnum.svg?branch=master)](https://travis-ci.org/mosra/magnum)
 *   **Windows RT** (Store/Phone) using ANGLE (through SDL2 toolkit) [![Build Status](https://ci.appveyor.com/api/projects/status/5b477m034cfaskse/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum/branch/master)
 *   **Web** (asm.js or WebAssembly), through [Emscripten](http://kripken.github.io/emscripten-site/) [![Build Status](https://travis-ci.org/mosra/magnum.svg?branch=master)](https://travis-ci.org/mosra/magnum)
 
@@ -79,10 +78,10 @@ FEATURES
 INSTALLATION
 ============
 
-You can either use packaging scripts, which are stored in `package/`
-subdirectory, or compile and install everything manually. Note that
-[Magnum documentation](http://doc.magnum.graphics/magnum/) contains more
-comprehensive guide for building, packaging and crosscompiling.
+You can either use packaging scripts, which are stored in the `package/`
+subdirectory, or compile and install everything manually using the guide below.
+Note that the [Magnum documentation](http://doc.magnum.graphics/magnum/)
+contains more comprehensive guide for building, packaging and crosscompiling.
 
 Minimal dependencies
 --------------------
@@ -94,7 +93,7 @@ Minimal dependencies
 *   **Corrade** - Plugin management and utility library. You can get it at
     https://github.com/mosra/corrade.
 
-Note that full feature set is available only on GCC 4.8.1 and Clang 3.1.
+Note that the full feature set is available only on GCC 4.8.1 and Clang 3.1.
 
 Compilation, installation
 -------------------------
@@ -109,8 +108,9 @@ installed using these four commands:
     make
     make install
 
-See Doxygen documentation for more information about enabling or disabling
-additional features and targeting different platforms such as OpenGL ES.
+See the [Doxygen documentation](http://doc.magnum.graphics/magnum/building.html)
+for more information about enabling or disabling additional features and
+targeting different platforms such as OpenGL ES.
 
 Building and running unit tests
 -------------------------------
@@ -126,10 +126,8 @@ in build directory. Everything should pass ;-)
 Building documentation
 ----------------------
 
-The documentation is written in **Doxygen** (version 1.8 with Markdown support
-is used, but older versions should do good job too) and additionally uses
-**Graphviz** for class diagrams and **TeX** for math formulas. The
-documentation can be build by running:
+The documentation is written in **Doxygen** and additionally uses **TeX** for
+math formulas. The documentation can be build by running:
 
     doxygen
 
@@ -150,7 +148,7 @@ The engine itself is kept as small as possible with only little dependencies.
 Additional functionality, often depending on external libraries, is provided in
 separate repositories.
 
-*   **Corrade** -- main Magnum dependency, multiplatform utility library:
+*   **Corrade** -- main Magnum dependency, a multiplatform utility library:
     https://github.com/mosra/corrade
     [![Linux/macOS/iOS/Android/Emscripten Build Status](https://travis-ci.org/mosra/corrade.svg?branch=master)](https://travis-ci.org/mosra/corrade) [![Windows Build Status](https://ci.appveyor.com/api/projects/status/afjjlsgtk6jjxulp/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/corrade/branch/master)
 *   **Magnum Bootstrap** -- bootstrap projects for many use cases, helping you
@@ -184,7 +182,7 @@ CONTACT
 Want to learn more about the library? Found a bug or want to share an awesome
 idea? Feel free to visit the project website or contact the team at:
 
-*   Website -- http://magnum.graphics
+*   Website -- http://magnum.graphics/
 *   GitHub -- https://github.com/mosra/magnum
 *   Gitter -- https://gitter.im/mosra/magnum
 *   IRC -- join `#magnum-engine` channel on freenode
@@ -201,5 +199,5 @@ See [CREDITS.md](CREDITS.md) file for details. Big thanks to everyone involved!
 LICENSE
 =======
 
-Magnum is licensed under MIT/Expat license, see [COPYING](COPYING) file for
+Magnum is licensed under the MIT/Expat license, see [COPYING](COPYING) file for
 details.

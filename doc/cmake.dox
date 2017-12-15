@@ -28,6 +28,7 @@ namespace Magnum {
 @brief Guide how to find and use Magnum with CMake build system
 
 @tableofcontents
+@m_footernavigation
 
 Magnum uses CMake build system for both building and integration into your
 projects. The logic is in module `FindMagnum.cmake` distributed with the engine
@@ -50,80 +51,82 @@ separate them with semicolons.
 
 Basic usage is:
 
-    find_package(Magnum REQUIRED)
+@code{.cmake}
+find_package(Magnum REQUIRED)
+@endcode
 
 This module tries to find base Magnum library and then defines:
 
--   `Magnum_FOUND` -- Whether the library was found
--   `Magnum::Magnum` -- Base library imported target
--   `MAGNUM_DEPLOY_PREFIX` -- Prefix where to put final application
+-   `Magnum_FOUND` --- Whether the library was found
+-   `Magnum::Magnum` --- Base library imported target
+-   `MAGNUM_DEPLOY_PREFIX` --- Prefix where to put final application
     executables, defaults to empty string. If a relative path is used, it's
     relative to `CMAKE_INSTALL_PREFIX`.
--   `MAGNUM_PLUGINS_DEBUG_DIR` -- Base directory with dynamic plugins for debug
+-   `MAGNUM_PLUGINS_DEBUG_DIR` --- Base directory with dynamic plugins for debug
     builds, defaults to `magnum-d/` subdirectory of dir where Magnum library
     was found
--   `MAGNUM_PLUGINS_RELEASE_DIR` -- Base directory with dynamic plugins for
+-   `MAGNUM_PLUGINS_RELEASE_DIR` --- Base directory with dynamic plugins for
     release builds, defaults to `magnum/` subdirectory of dir where Magnum
     library was found
--   `MAGNUM_PLUGINS_DIR` -- Base directory with dynamic plugins, defaults to
+-   `MAGNUM_PLUGINS_DIR` --- Base directory with dynamic plugins, defaults to
     `MAGNUM_PLUGINS_RELEASE_DIR` in release builds and multi-configuration
     builds or to `MAGNUM_PLUGINS_DEBUG_DIR` in debug builds. You can modify all
     three variable (e.g. set them to `.` when deploying on Windows with plugins
     stored relatively to the executable), the following `MAGNUM_PLUGINS_*_DIR`
     variables depend on it.
--   `MAGNUM_PLUGINS_FONT[|_DEBUG|_RELEASE]_DIR` -- Directory with dynamic font
+-   `MAGNUM_PLUGINS_FONT[|_DEBUG|_RELEASE]_DIR` --- Directory with dynamic font
     plugins
--   `MAGNUM_PLUGINS_FONTCONVERTER[|_DEBUG|_RELEASE]_DIR` -- Directory with
+-   `MAGNUM_PLUGINS_FONTCONVERTER[|_DEBUG|_RELEASE]_DIR` --- Directory with
     dynamic font converter plugins
--   `MAGNUM_PLUGINS_IMAGECONVERTER[|_DEBUG|_RELEASE]_DIR` -- Directory with
+-   `MAGNUM_PLUGINS_IMAGECONVERTER[|_DEBUG|_RELEASE]_DIR` --- Directory with
     dynamic image converter plugins
--   `MAGNUM_PLUGINS_IMPORTER[|_DEBUG|_RELEASE]_DIR` -- Directory with dynamic
+-   `MAGNUM_PLUGINS_IMPORTER[|_DEBUG|_RELEASE]_DIR` --- Directory with dynamic
     importer plugins
--   `MAGNUM_PLUGINS_AUDIOIMPORTER[|_DEBUG|_RELEASE]_DIR` -- Directory with
+-   `MAGNUM_PLUGINS_AUDIOIMPORTER[|_DEBUG|_RELEASE]_DIR` --- Directory with
     dynamic audio importer plugins
 
 However, this command will try to find only the base library, not the optional
-components. The base library depends on Corrade and OpenGL libraries (or
-OpenGL ES libraries). Additional dependencies are specified by the components.
-The optional components are:
+components. The base library depends on @ref corrade-cmake Corrade and OpenGL
+libraries (or OpenGL ES libraries). Additional dependencies are specified by
+the components. The optional components are:
 
--   `Audio` -- @ref Audio library
--   `DebugTools` -- @ref DebugTools library
--   `MeshTools` -- @ref MeshTools library
--   `Primitives` -- @ref Primitives library
--   `SceneGraph` -- @ref SceneGraph library
--   `Shaders` -- @ref Shaders library
--   `Shapes` -- @ref Shapes library
--   `Text` -- @ref Text library
--   `TextureTools` -- @ref TextureTools library
+-   `Audio` --- @ref Audio library
+-   `DebugTools` --- @ref DebugTools library
+-   `MeshTools` --- @ref MeshTools library
+-   `Primitives` --- @ref Primitives library
+-   `SceneGraph` --- @ref SceneGraph library
+-   `Shaders` --- @ref Shaders library
+-   `Shapes` --- @ref Shapes library
+-   `Text` --- @ref Text library
+-   `TextureTools` --- @ref TextureTools library
 
 Platform namespace is split into more components:
 
--   `GlfwApplication` -- @ref Platform::GlfwApplication "GlfwApplication"
--   `GlutApplication` -- @ref Platform::GlutApplication "GlutApplication"
--   `GlxApplication` -- @ref Platform::GlxApplication "GlxApplication"
--   `Sdl2Application` -- @ref Platform::Sdl2Application "Sdl2Application"
--   `XEglApplication` -- @ref Platform::XEglApplication "XEglApplication"
--   `WindowlessCglApplication` -- @ref Platform::WindowlessCglApplication "WindowlessCglApplication"
--   `WindowlessEglApplication` -- @ref Platform::WindowlessEglApplication "WindowlessEglApplication"
--   `WindowlessGlxApplication` -- @ref Platform::WindowlessGlxApplication "WindowlessGlxApplication"
--   `WindowlessIosApplication` -- @ref Platform::WindowlessIosApplication "WindowlessIosApplication"
--   `WindowlessWglApplication` -- @ref Platform::WindowlessWglApplication "WindowlessWglApplication"
--   `WindowlessWindowsEglApplication` -- @ref Platform::WindowlessWindowsEglApplication "WindowlessWindowsEglApplication"
+-   `GlfwApplication` --- @ref Platform::GlfwApplication "GlfwApplication"
+-   `GlutApplication` --- @ref Platform::GlutApplication "GlutApplication"
+-   `GlxApplication` --- @ref Platform::GlxApplication "GlxApplication"
+-   `Sdl2Application` --- @ref Platform::Sdl2Application "Sdl2Application"
+-   `XEglApplication` --- @ref Platform::XEglApplication "XEglApplication"
+-   `WindowlessCglApplication` --- @ref Platform::WindowlessCglApplication "WindowlessCglApplication"
+-   `WindowlessEglApplication` --- @ref Platform::WindowlessEglApplication "WindowlessEglApplication"
+-   `WindowlessGlxApplication` --- @ref Platform::WindowlessGlxApplication "WindowlessGlxApplication"
+-   `WindowlessIosApplication` --- @ref Platform::WindowlessIosApplication "WindowlessIosApplication"
+-   `WindowlessWglApplication` --- @ref Platform::WindowlessWglApplication "WindowlessWglApplication"
+-   `WindowlessWindowsEglApplication` --- @ref Platform::WindowlessWindowsEglApplication "WindowlessWindowsEglApplication"
 
 For manual context creation (without application wrappers) there are also
 platform-specific context libraries (see @ref platform-custom for more
 information):
 
--   `CglContext` -- CGL context
--   `EglContext` -- EGL context
--   `GlxContext` -- GLX context
--   `WglContext` -- WGL context
+-   `CglContext` --- CGL context
+-   `EglContext` --- EGL context
+-   `GlxContext` --- GLX context
+-   `WglContext` --- WGL context
 
 There are also extensions to @ref Corrade::TestSuite::Tester for testing GPU
 code:
 
--   `OpenGLTester` -- @ref OpenGLTester class
+-   `OpenGLTester` --- @ref OpenGLTester class
 
 The library also contains a set of plugins for importing essential file
 formats. Additional plugins are provided in separate plugin repository, see
@@ -135,22 +138,22 @@ loads them dynamically. However, if they are built as static (see
 executable and then explicitly imported. Also if you are going to use them as
 dependencies, you need to find the dependency and then link to it.
 
--   `MagnumFont` -- @ref Text::MagnumFont "MagnumFont" plugin
--   `MagnumFontConverter` -- @ref Text::MagnumFontConverter "MagnumFontConverter"
+-   `MagnumFont` --- @ref Text::MagnumFont "MagnumFont" plugin
+-   `MagnumFontConverter` --- @ref Text::MagnumFontConverter "MagnumFontConverter"
     plugin
--   `ObjImporter` -- @ref Trade::ObjImporter "ObjImporter" plugin
--   `TgaImageConverter` -- @ref Trade::TgaImageConverter "TgaImageConverter"
+-   `ObjImporter` --- @ref Trade::ObjImporter "ObjImporter" plugin
+-   `TgaImageConverter` --- @ref Trade::TgaImageConverter "TgaImageConverter"
     plugin
--   `TgaImporter` -- @ref Trade::TgaImporter "TgaImporter" plugin
--   `WavAudioImporter` -- @ref Audio::WavImporter "WavAudioImporter" plugin
+-   `TgaImporter` --- @ref Trade::TgaImporter "TgaImporter" plugin
+-   `WavAudioImporter` --- @ref Audio::WavImporter "WavAudioImporter" plugin
 
 Lastly, a few utility executables are available:
 
--   `distancefieldconverter` -- @ref magnum-distancefieldconverter executable
--   `fontconverter` -- @ref magnum-fontconverter executable
--   `imageconverter` -- @ref magnum-imageconverter executable
--   `info` -- @ref magnum-info executable
--   `al-info` -- @ref magnum-al-info executable
+-   `distancefieldconverter` --- @ref magnum-distancefieldconverter executable
+-   `fontconverter` --- @ref magnum-fontconverter executable
+-   `imageconverter` --- @ref magnum-imageconverter executable
+-   `info` --- @ref magnum-info executable
+-   `al-info` --- @ref magnum-al-info executable
 
 Note that [each namespace](namespaces.html), all @ref Platform libraries and
 each plugin class contain more detailed information about dependencies,
@@ -159,12 +162,14 @@ in build and use it with CMake.
 
 Example usage with specifying additional components is:
 
-    find_package(Magnum REQUIRED MeshTools Primitives Sdl2Application)
+@code{.cmake}
+find_package(Magnum REQUIRED MeshTools Primitives Sdl2Application)
+@endcode
 
 For each component is then defined:
 
--   `Magnum_*_FOUND` -- Whether the component was found
--   `Magnum::*` -- Component imported target
+-   `Magnum_*_FOUND` --- Whether the component was found
+-   `Magnum::*` --- Component imported target
 
 If exactly one `*Application` or exactly one `Windowless*Application` component
 is requested and found, its target is available in convenience alias
@@ -186,34 +191,34 @@ Features of found Magnum library are exposed in these CMake variables, they
 are also available as preprocessor variables if including
 @ref Magnum/Magnum.h "Magnum/Magnum.h":
 
--   `MAGNUM_BUILD_DEPRECATED` -- Defined if compiled with deprecated APIs
+-   `MAGNUM_BUILD_DEPRECATED` --- Defined if compiled with deprecated APIs
     included
--   `MAGNUM_BUILD_STATIC` -- Defined if compiled as static libraries. Default
+-   `MAGNUM_BUILD_STATIC` --- Defined if compiled as static libraries. Default
     are shared libraries.
--   `MAGNUM_BUILD_MULTITHREADED` -- Defined if compiled in a way that allows
+-   `MAGNUM_BUILD_MULTITHREADED` --- Defined if compiled in a way that allows
     having multiple thread-local Magnum contexts. The default.
--   `MAGNUM_TARGET_GLES` -- Defined if compiled for OpenGL ES
--   `MAGNUM_TARGET_GLES2` -- Defined if compiled for OpenGL ES 2.0
--   `MAGNUM_TARGET_GLES3` -- Defined if compiled for OpenGL ES 3.0
--   `MAGNUM_TARGET_DESKTOP_GLES` -- Defined if compiled with OpenGL ES
+-   `MAGNUM_TARGET_GLES` --- Defined if compiled for OpenGL ES
+-   `MAGNUM_TARGET_GLES2` --- Defined if compiled for OpenGL ES 2.0
+-   `MAGNUM_TARGET_GLES3` --- Defined if compiled for OpenGL ES 3.0
+-   `MAGNUM_TARGET_DESKTOP_GLES` --- Defined if compiled with OpenGL ES
     emulation on desktop OpenGL
--   `MAGNUM_TARGET_WEBGL` -- Defined if compiled for WebGL
--   `MAGNUM_TARGET_HEADLESS` -- Defined if compiled for headless machines. See
+-   `MAGNUM_TARGET_WEBGL` --- Defined if compiled for WebGL
+-   `MAGNUM_TARGET_HEADLESS` --- Defined if compiled for headless machines. See
     @ref MAGNUM_TARGET_HEADLESS documentation for more information.
 
 Workflows without imported targets are deprecated and the following variables
 are included just for backwards compatibility and only if
 @ref MAGNUM_BUILD_DEPRECATED is enabled:
 
--   `MAGNUM_LIBRARIES` -- Expands to `Magnum::Magnum` target. Use `Magnum::Magnum`
+-   `MAGNUM_LIBRARIES` --- Expands to `Magnum::Magnum` target. Use `Magnum::Magnum`
     target directly instead.
--   `MAGNUM_*_LIBRARIES` -- Expands to `Magnum::*` target. Use `Magnum::*`
+-   `MAGNUM_*_LIBRARIES` --- Expands to `Magnum::*` target. Use `Magnum::*`
     target directly instead.
 -   `MAGNUM_APPLICATION_LIBRARIES` / `MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES`
-    -- Expands to `Magnum::Application` / `Magnum::WindowlessApplication`
+    --- Expands to `Magnum::Application` / `Magnum::WindowlessApplication`
     target. Use `Magnum::Application` / `Magnum::WindowlessApplication` target
     directly instead.
--   `MAGNUM_CONTEXT_LIBRARIES` -- Expands to `Magnum::Context` target. Use
+-   `MAGNUM_CONTEXT_LIBRARIES` --- Expands to `Magnum::Context` target. Use
     `Magnum::Context` target directly instead.
 
 Corrade library provides also its own set of CMake macros and variables, see
@@ -225,27 +230,22 @@ and @ref cmake-extras "Extras repository" have also their own CMake modules.
 
 The `modules/` directory contains more useful CMake modules:
 
--   `FindOpenAL.cmake` -- CMake module for finding OpenAL. This is a forked
+-   `FindOpenAL.cmake` --- CMake module for finding OpenAL. This is a forked
     version of the upstream module that works properly with
     @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten". Copy this to your module
     directory if you want to use the @ref Audio library on Emscripten.
--   `FindGLFW.cmake` -- CMake module for finding GLFW. Copy this to your module
+-   `FindGLFW.cmake` --- CMake module for finding GLFW. Copy this to your module
     directory if you want to use @ref Platform::GlfwApplication.
--   `FindEGL.cmake` -- CMake module for finding EGL. Copy this to your
+-   `FindEGL.cmake` --- CMake module for finding EGL. Copy this to your
     module directory if you want to target embedded platforms such as
     @ref CORRADE_TARGET_IOS "iOS", @ref CORRADE_TARGET_ANDROID "Android",
     @ref CORRADE_TARGET_WINDOWS_RT "Windows RT" or
     @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" or if you want to use EGL
     instead of GLX/WGL/CGL on a desktop platform.
--   `FindOpenGLES2.cmake`, `FindOpenGLES3.cmake` -- CMake module for finding
+-   `FindOpenGLES2.cmake`, `FindOpenGLES3.cmake` --- CMake module for finding
     OpenGL ES 2.0 / 3.0 library. Copy this to your module directory if you want
     to target @ref MAGNUM_TARGET_GLES "OpenGL ES".
--   `FindSDL2.cmake` -- CMake module for finding SDL 2. Copy this to your
+-   `FindSDL2.cmake` --- CMake module for finding SDL 2. Copy this to your
     module directory if you want to use @ref Platform::Sdl2Application.
-
-See also relevant section for @ref corrade-cmake-modules "Corrade",
-@ref cmake-plugins-modules "Plugins", @ref cmake-integration-modules "Integration"
-and @ref cmake-extras-modules "Extras" projects.
-
 */
 }

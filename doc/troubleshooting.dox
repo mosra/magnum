@@ -25,8 +25,9 @@
 
 namespace Magnum {
 /** @page troubleshooting Troubleshooting
-
 @brief Various tricks to overcome common building and rendering issues.
+
+@m_footernavigation
 
 @section troubleshooting-building Building issues
 
@@ -64,7 +65,7 @@ crashes on GL calls, you might want to try these things:
 -   If nothing is drawn, use @ref PrimitiveQuery to check that at least some
     primitives were generated. Use @ref SampleQuery to check whether fragments
     were drawn.
--   Verify that the mesh is properly set up -- nonzero vertex/index count,
+-   Verify that the mesh is properly set up --- nonzero vertex/index count,
     matching type in buffer and @ref Mesh::addVertexBuffer() "vertex specification",
     properly set up @ref Mesh::setIndexBuffer() "index buffer" and index count
     for indexed mesh. If you specified index range, be sure that all indices
@@ -72,7 +73,7 @@ crashes on GL calls, you might want to try these things:
 -   Try disabling @ref Renderer::Feature::DepthTest "depth test",
     @ref Renderer::Feature::FaceCulling "face culling" and other renderer
     features that might affect the fragments.
--   Verify that your projection and transformation matrix is properly set up --
+-   Verify that your projection and transformation matrix is properly set up ---
     try drawing points instead of triangles, to see if they are at least at
     proper places.
 -   @ref AbstractShaderProgram::validate() "Validate the shader", check that
@@ -96,6 +97,5 @@ crashes on GL calls, you might want to try these things:
 -   Use ApiTrace to trace the program call by call, verify buffer and texture
     contents, vertex binding and count of generated primitives, rendered
     fragments and time spent in various calls.
-
 */
 }

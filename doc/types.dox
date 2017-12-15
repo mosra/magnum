@@ -27,38 +27,36 @@ namespace Magnum {
 /** @page types Type system
 @brief Type aliases, naming and compatibility with OpenGL and GLSL types.
 
--   Previous page: @ref platform
--   Next page: @ref matrix-vector
+@tableofcontents
+@m_footernavigation
 
 The root @ref Magnum namespace defines a few aliases for essential types. See
 its documentation for more information about usage with CMake.
-
-@tableofcontents
 
 @section types-builtin Builtin types
 
 Magnum provides typedefs for builtin integral and floating-point arithmetic
 types to ensure portability (e.g. @ref Int is *always* 32bit), maintain
-consistency and reduce confusion (e.g. `std::int32_t`, `int` and `GLint` all
-refer to the same type).
+consistency and reduce confusion (e.g. @ref std::int32_t, @cpp int @ce and
+@cpp GLint @ce all refer to the same type).
 
-| Magnum type        | Size           | Equivalent GLSL type |
-| ------------------ | -------------- | -------------------- |
-| @ref UnsignedByte  | 8bit unsigned  |                      |
-| @ref Byte          | 8bit signed    |                      |
-| @ref UnsignedShort | 16bit unsigned |                      |
-| @ref Short         | 16bit signed   |                      |
-| @ref UnsignedInt   | 32bit unsigned | `uint`               |
-| @ref Int           | 32bit signed   | `int`                |
-| @ref UnsignedLong  | 64bit unsigned |                      |
-| @ref Long          | 64bit signed   |                      |
-| @ref Half          | 16bit          | (*none*)             |
-| @ref Float         | 32bit          | `float`              |
-| @ref Double        | 64bit          | `double`             |
+| Magnum type        | Size           | Equivalent GLSL type    |
+| ------------------ | -------------- | ----------------------- |
+| @ref UnsignedByte  | 8bit unsigned  |                         |
+| @ref Byte          | 8bit signed    |                         |
+| @ref UnsignedShort | 16bit unsigned |                         |
+| @ref Short         | 16bit signed   |                         |
+| @ref UnsignedInt   | 32bit unsigned | @glsl uint @ce <b></b>  |
+| @ref Int           | 32bit signed   | @glsl int @ce <b></b>   |
+| @ref UnsignedLong  | 64bit unsigned |                         |
+| @ref Long          | 64bit signed   |                         |
+| @ref Half          | 16bit          | (*none*)                |
+| @ref Float         | 32bit          | @glsl float @ce <b></b> |
+| @ref Double        | 64bit          | @glsl double @ce <b></b> |
 
-Types not meant to be used in arithmetic (such as `bool` or `std::size_t`) or
-types which cannot be directly passed to GLSL shaders (such as `long double`)
-have no typedefs.
+Types not meant to be used in arithmetic (such as @cpp bool @ce or
+@cpp std::size_t @ce) or types which cannot be directly passed to GLSL shaders
+(such as @cpp long double @ce) have no typedefs.
 
 Types from the above table are then used to define other types. All following
 types are aliases of corresponding types in @ref Math namespace. No suffix
@@ -70,23 +68,23 @@ underlying type.
 
 | Magnum vector type                             | Equivalent GLSL type      |
 | ---------------------------------------------- | ------------------------- |
-| @ref Vector2, @ref Vector3, @ref Color3 @ref Vector4, @ref Color4 | `vec2`, `vec3`, `vec4` |
-| @ref Vector2ui, @ref Vector3ui, @ref Vector4ui | `uvec2`, `uvec3`, `uvec4` |
-| @ref Vector2i, @ref Vector3i, @ref Vector4i    | `ivec2`, `ivec3`, `ivec4` |
-| @ref Vector2d, @ref Vector3d, @ref Vector4d    | `dvec2`, `dvec3`, `dvec4` |
+| @ref Vector2, @ref Vector3, @ref Color3 @ref Vector4, @ref Color4 | @glsl vec2 @ce, @glsl vec3 @ce, @glsl vec4 @ce |
+| @ref Vector2ui, @ref Vector3ui, @ref Vector4ui | @glsl uvec2 @ce, @glsl uvec3 @ce, @glsl uvec4 @ce |
+| @ref Vector2i, @ref Vector3i, @ref Vector4i    | @glsl ivec2 @ce, @glsl ivec3 @ce, @glsl ivec4 @ce |
+| @ref Vector2d, @ref Vector3d, @ref Vector4d    | @glsl dvec2 @ce, @glsl dvec3 @ce, @glsl dvec4 @ce |
 | @ref Color3ub, @ref Color4ub                   | (*none*)                  |
 
-| Magnum matrix type                                               | Equivalent GLSL type                 |
-| ---------------------------------------------------------------- | ------------------------------------ |
-| @ref Matrix2x2 or @ref Matrix2x2d                                | `mat2`/`mat2x2` or `dmat2`/`dmat2x2` |
-| @ref Matrix3 / @ref Matrix3x3 or @ref Matrix3d / @ref Matrix3x3d | `mat3`/`mat3x3` or `dmat3`/`dmat3x3` |
-| @ref Matrix4 / @ref Matrix4x4 or @ref Matrix4d / @ref Matrix4x4d | `mat4`/`mat4x4` or `dmat4`/`dmat4x4` |
-| @ref Matrix2x3 or @ref Matrix2x3d                                | `mat2x3` or `dmat2x3`                |
-| @ref Matrix3x2 or @ref Matrix3x2d                                | `mat3x2` or `dmat3x2`                |
-| @ref Matrix2x4 or @ref Matrix2x4d                                | `mat2x4` or `dmat2x4`                |
-| @ref Matrix4x2 or @ref Matrix4x2d                                | `mat4x2` or `dmat4x2`                |
-| @ref Matrix3x4 or @ref Matrix3x4d                                | `mat3x4` or `dmat3x4`                |
-| @ref Matrix4x3 or @ref Matrix4x3d                                | `mat4x3` or `dmat4x3`                |
+| Magnum matrix type                                               | Equivalent GLSL type                  |
+| ---------------------------------------------------------------- | ------------------------------------- |
+| @ref Matrix2x2 or @ref Matrix2x2d                                | @glsl mat2 @ce / @glsl mat2x2 @ce or @glsl dmat2 @ce / @glsl dmat2x2 @ce |
+| @ref Matrix3 / @ref Matrix3x3 or @ref Matrix3d / @ref Matrix3x3d | @glsl mat3 @ce / @glsl mat3x3 @ce or @glsl dmat3 @ce / @glsl dmat3x3 @ce |
+| @ref Matrix4 / @ref Matrix4x4 or @ref Matrix4d / @ref Matrix4x4d | @glsl mat4 @ce / @glsl mat4x4 @ce or  @glsl dmat4 @ce / @glsl dmat4x4 @ce |
+| @ref Matrix2x3 or @ref Matrix2x3d                                | @glsl mat2x3 @ce or @glsl dmat2x3 @ce |
+| @ref Matrix3x2 or @ref Matrix3x2d                                | @glsl mat3x2 @ce or @glsl dmat3x2 @ce |
+| @ref Matrix2x4 or @ref Matrix2x4d                                | @glsl mat2x4 @ce or @glsl dmat2x4 @ce |
+| @ref Matrix4x2 or @ref Matrix4x2d                                | @glsl mat4x2 @ce or @glsl dmat4x2 @ce |
+| @ref Matrix3x4 or @ref Matrix3x4d                                | @glsl mat3x4 @ce or @glsl dmat3x4 @ce |
+| @ref Matrix4x3 or @ref Matrix4x3d                                | @glsl mat4x3 @ce or @glsl dmat4x3 @ce |
 
 Any super- or sub-class of the same size and underlying type can be used
 equivalently (e.g. @ref Math::Vector "Math::Vector<Float>" or @ref Color3
@@ -103,7 +101,8 @@ For easier entering of (s)RGB colors in hexadecimal format there are
 @link Math::Literals::operator""_rgbaf() _rgbaf @endlink literals in
 @ref Math::Literals namespace. See their documentation for more information
 about the differences.
-@code
+
+@code{.cpp}
 using namespace Math::Literals;
 
 Color3 a = 0x33b27f_srgbf;      // {0.0331048f, 0.445201f, 0.212231f}
@@ -115,8 +114,8 @@ Color4ub a = 0x33b27fcc_rgba;   // {0x33, 0xb2, 0x7f, 0xcc}
 Scalar types with GLSL equivalent are verified to be exactly the same as
 corresponding `GL*` types. Matrix and vector classes have the same binary
 representation as corresponding array of numeric values without any additional
-data or padding (e.g. `sizeof(Vector3i) == sizeof(Int[3])`), all matrices are
-stored in column-major order.
+data or padding (e.g. @cpp sizeof(Vector3i) == sizeof(Int[3]) @ce), all
+matrices are stored in column-major order.
 
 This means that all scalar, matrix and vector types can be used directly for
 filling GPU buffers and textures without any need for data extraction or
@@ -131,7 +130,7 @@ the @ref Deg and @ref Rad classes (or @ref Degd and @ref Radd with @ref Double
 as underlying type). Their only purpose is to avoid common degree-vs-radian
 bugs (i.e. entering degree value where radians should be) and make the
 conversion between these two representations easier. They are just a tiny
-`inline` `constexpr` wrapper around the native type and they support all
+@cpp inline constexpr @ce wrapper around the native type and they support all
 meaningful numeric operations, so using them won't have any performance or
 usability impact in practice.
 
@@ -141,7 +140,8 @@ or use custom @link Math::Literals::operator""_degf() _degf @endlink /
 @link Math::Literals::operator""_deg() _deg @endlink and @link Math::Literals::operator""_radf() _radf @endlink
 / @link Math::Literals::operator""_rad() _rad @endlink literals that are
 provided in the @ref Math::Literals namespace:
-@code
+
+@code{.cpp}
 using namespace Math::Literals;
 
 //Deg a = 60.0f         // error, no implicit conversion from Float
@@ -158,7 +158,8 @@ auto c = Double{pi};    // okay
 They can be implicitly converted to each other, but conversion to different
 underlying type is *explicit* to avoid precision loss (or, on the other hand,
 unnecessarily high precision) during computations:
-@code
+
+@code{.cpp}
 Rad d = 60.0_degf;      // 1.0471976f
 auto e = Degd{pi};      // 180.0
 
@@ -167,10 +168,11 @@ auto f = Rad{pi};       // 3.141592654f
 @endcode
 
 These classes are used exclusively in all functions taking and returning angles
--- trigonometry, angle computation, rotating transformation etc. Thanks to
+--- trigonometry, angle computation, rotating transformation etc. Thanks to
 implicit conversion you can seamlessly use either radians or degrees without
 any need to care about what input the function expects:
-@code
+
+@code{.cpp}
 Float a = Math::sin(1.32457_radf);
 Complex b = Complex::rotation(60.0_degf);
 @endcode
@@ -182,7 +184,8 @@ half-float values easier. It provides either explicit constructors and
 conversion operators from/to @ref Float and @ref UnsignedShort and you can also
 use the @link Math::Literals::operator""_h() _h @endlink literal that is
 provided in the @ref Math::Literals namespace:
-@code
+
+@code{.cpp}
 using namespace Math::Literals;
 
 Half a = 3.5_h;         // 0x4300 internally
@@ -208,7 +211,7 @@ underlying structure or converting them to types supported by GLSL (e.g.
 quaternion to matrix).
 
 For your convenience, there is also alias for class with often used constants
--- @ref Constants or @ref Constantsd.
+--- @ref Constants or @ref Constantsd.
 
 @section types-initialization Initialization
 
@@ -225,7 +228,8 @@ explicit:
     overwrite the contents anyway, works for all types).
 
 Example:
-@code
+
+@code{.cpp}
 // These are equivalent
 Vector3 a1;
 Vector3 a1{Math::ZeroInit};
@@ -241,8 +245,5 @@ if(orthographic)
 else
     projection = Matrix4::perspectiveProjection(...);
 @endcode
-
--   Previous page: @ref platform
--   Next page: @ref matrix-vector
 */
 }

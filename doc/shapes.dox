@@ -27,15 +27,13 @@ namespace Magnum {
 /** @page shapes Collision detection
 @brief Collection of simple shapes for high performance collision detection.
 
--   Previous page: @ref scenegraph
--   Next page: @ref debug-tools
+@tableofcontents
+@m_footernavigation
 
 The essential thing in collision detection is to define a complex object with
 collection of simple shapes, for which it is easy to detect collisions. The
 library is contained in @ref Shapes namespace, see its documentation for more
 information about building and usage with CMake.
-
-@tableofcontents
 
 These shapes can be either one-, two- or three-dimensional and they can be
 grouped together using various operations.
@@ -44,31 +42,31 @@ grouped together using various operations.
 
 Magnum provides a set of simple shapes for collision detection, similarly to
 what is found in many other collision detection libraries. Additionally some
-shapes are provided in inverted form -- e.g. inverted box detects collisions on
+shapes are provided in inverted form --- e.g. inverted box detects collisions on
 outside instead of inside, which might be useful for example to create bounds
 around platformer game level.
 
 @subsection shapes-1D One-dimensional shapes
 
-- @ref Shapes::Point "Shapes::Point*D" -- @copybrief Shapes::Point
-- @ref Shapes::Line "Shapes::Line*D" -- @copybrief Shapes::Line
-- @ref Shapes::LineSegment "Shapes::LineSegment*D" -- @copybrief Shapes::LineSegment
+- @ref Shapes::Point "Shapes::Point*D" --- @copybrief Shapes::Point
+- @ref Shapes::Line "Shapes::Line*D" --- @copybrief Shapes::Line
+- @ref Shapes::LineSegment "Shapes::LineSegment*D" --- @copybrief Shapes::LineSegment
 
 Because of numerical instability it's not possible to detect collisions of
 line and point. Collision of two lines can be detected only in 2D.
 
 @subsection shapes-2D Two-dimensional shapes
 
-- Shapes::Plane -- @copybrief Shapes::Plane
+- @ref Shapes::Plane --- @copybrief Shapes::Plane
 
 @subsection shapes-3D Three-dimensional shapes
 
-- @ref Shapes::Sphere "Shapes::Sphere*D" -- @copybrief Shapes::Sphere
-- @ref Shapes::InvertedSphere "Shapes::InvertedSphere*D" -- @copybrief Shapes::InvertedSphere
-- @ref Shapes::Cylinder "Shapes::Cylinder*D" -- @copybrief Shapes::Cylinder
-- @ref Shapes::Capsule "Shapes::Capsule*D" -- @copybrief Shapes::Capsule
-- @ref Shapes::AxisAlignedBox "Shapes::AxisAlignedBox*D" -- @copybrief Shapes::AxisAlignedBox
-- @ref Shapes::Box "Shapes::Box*D" -- @copybrief Shapes::Box
+- @ref Shapes::Sphere "Shapes::Sphere*D" --- @copybrief Shapes::Sphere
+- @ref Shapes::InvertedSphere "Shapes::InvertedSphere*D" --- @copybrief Shapes::InvertedSphere
+- @ref Shapes::Cylinder "Shapes::Cylinder*D" --- @copybrief Shapes::Cylinder
+- @ref Shapes::Capsule "Shapes::Capsule*D" --- @copybrief Shapes::Capsule
+- @ref Shapes::AxisAlignedBox "Shapes::AxisAlignedBox*D" --- @copybrief Shapes::AxisAlignedBox
+- @ref Shapes::Box "Shapes::Box*D" --- @copybrief Shapes::Box
 
 The easiest (and most efficient) shape combination for detecting collisions
 is point and sphere, followed by two spheres. Computing collision of two boxes
@@ -77,17 +75,18 @@ is least efficient.
 @section shapes-composition Creating shape compositions
 
 Shapes can be composed together using one of three available logical
-operations: AND, OR and NOT. These operations are mapped to `&&`, `||` and `!`
-operators, so for example creating negation of logical OR of line segment and
-point is simple as this:
-@code
+operations: AND, OR and NOT. These operations are mapped to @cpp && @ce, @cpp || @ce
+and @cpp ! @ce operators, so for example creating negation of logical OR of
+line segment and point is simple as this:
+
+@code{.cpp}
 Shapes::LineSegment3D segment;
 Shapes::Point3D point;
 
 Shapes::Composition3D composition = !(segment || point);
 @endcode
 
-@note Logical operations are not the same as set operations -- intersection of
+@note Logical operations are not the same as set operations --- intersection of
     two spheres will not generate any collision if they are disjoint, but
     logical AND will if the object collides with both of them.
 
@@ -98,9 +97,10 @@ collision detection, because it might be testing collision with more shapes
 than necessary. It's then good to specify simplified version of such shape,
 so the collision detection is done on the complex one if and only if collision
 was detected with the simplified shape. It is in fact logical AND using the
-`&&` operator -- the collision is initially detected on first (simplified)
-shape and then on the other:
-@code
+@cpp && @ce operator --- the collision is initially detected on first
+(simplified) shape and then on the other:
+
+@code{.cpp}
 Shapes::Sphere3D sphere;
 Shapes::Box3D box;
 Shapes::AxisAlignedBox3D simplified;
@@ -111,9 +111,10 @@ Shapes::Composition3D composition = simplified && (sphere || box);
 @section shapes-collisions Detecting shape collisions
 
 Shape pairs which have collision occurence detection implemented can be tested
-for collision using the `%` operator. The operator returns boolean describing
-whether the collision happened or not. Example:
-@code
+for collision using the @cpp % @ce operator. The operator returns boolean
+describing whether the collision happened or not. Example:
+
+@code{.cpp}
 Shapes::Point3D point;
 Shapes::Sphere3D sphere;
 
@@ -127,7 +128,8 @@ detailed collision detection you can use the `/` operator, which returns
 @ref Shapes::Collision object. Note that unlike with the `%` operator mentioned
 above, this operation is not commutative. See @ref Shapes::Collision class
 documentation for more information about the returned data. Example:
-@code
+
+@code{.cpp}
 const Shapes::Collision3D c = point/sphere;
 if(c) {
     Vector3 translation = c.separationNormal()*c.separationDistance();
@@ -140,13 +142,14 @@ if(c) {
 Shape can be attached to object in the scene using @ref Shapes::Shape feature.
 In conjunction with @ref Shapes::ShapeGroup you can use
 @ref Shapes::Shape::collides() and @ref Shapes::Shape::collision() similarly to
-the `%` and `/` operators above. Please note that the shape group caches the
-absolute transformations of all shapes and thus you need to explicitly call
-@ref Shapes::ShapeGroup::setClean() before computing the collisions if you did
-any modifications to the objects in the scene.
+the @cpp % @ce and @cpp / @ce operators above. Please note that the shape group
+caches the absolute transformations of all shapes and thus you need to
+explicitly call @ref Shapes::ShapeGroup::setClean() before computing the
+collisions if you did any modifications to the objects in the scene.
 
 Scenegraph-flavored equivalent to the above code:
-@code
+
+@code{.cpp}
 Shapes::ShapeGroup3D shapes;
 Object3D& a;
 auto aShape = new Shapes::Shape<Shapes::Sphere3D>(a, {{}, 23.0f}, &shapes);
@@ -163,14 +166,10 @@ if(aShape->collides(*bShape)) {
 @endcode
 
 There is also @ref Shapes::ShapeGroup::firstCollision() function which returns
-arbitrary first collision for given shape in whole group (or `nullptr`, if
-there isn't any collision).
+arbitrary first collision for given shape in whole group (or @cpp nullptr @ce,
+if there isn't any collision).
 
 You can also use @ref DebugTools::ShapeRenderer to visualize the shapes for
 debugging purposes. See also @ref scenegraph for introduction.
-
--   Previous page: @ref scenegraph
--   Next page: @ref debug-tools
-
 */
 }

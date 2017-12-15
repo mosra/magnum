@@ -24,10 +24,13 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+namespace Magnum {
+
 /** @page openal-support OpenAL support state
 @brief List of (un)supported OpenAL features and extensions.
 
 @tableofcontents
+@m_footernavigation
 
 @section openal-support-state OpenAL implementation state
 
@@ -35,6 +38,8 @@ The extension implementation is considered complete if all its defined types,
 functions and enum values are exposed through the API.
 
 @subsection openal-extension-support Extensions
+
+@m_class{m-fullwidth}
 
 Extension                                   | Status
 ------------------------------------------- | ------
@@ -47,10 +52,12 @@ Extension                                   | Status
 
 @subsection openal-extension-support-soft OpenAL Soft Extensions
 
+@m_class{m-fullwidth}
+
 Extension                                   | Status
 ------------------------------------------- | ------
 @alc_extension{SOFTX,HRTF}                  | done
 @alc_extension{SOFT,HRTF}                   | done
 
-
 */
+}

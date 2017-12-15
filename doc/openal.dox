@@ -42,9 +42,10 @@ but some specific functionality has greater requirements. Following is the list
 of features requiring specific OpenAL extensions.
 
 -   @subpage requires-al-extension
+*/
 
-@page requires-al-extension Functionality requiring specific OpenAL extension
-
+/** @page requires-al-extension Functionality requiring specific OpenAL extension
+@m_footernavigation
 */
 
 }

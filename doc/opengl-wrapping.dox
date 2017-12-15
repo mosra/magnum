@@ -27,15 +27,13 @@ namespace Magnum {
 /** @page opengl-wrapping OpenGL wrapping layer
 @brief Overview of the base OpenGL wrapper API
 
--   Previous page: @ref plugins
--   Next page: @ref shaders
+@tableofcontents
+@m_footernavigation
 
 OpenGL wrapper classes are core part of Magnum. Their purpose is to simplify
 interaction with the OpenGL API using type-safe C++11 features, abstracting
 away extension and platform differences, tracking the state for optimum
 performance and selecting the best available code path for given system.
-
-@tableofcontents
 
 Magnum provides wrappers for most native OpenGL objects like buffers, textures,
 meshes, queries, transform feedback objects, shaders etc., but makes it
@@ -59,20 +57,22 @@ the object this way does not require any active context and its state is then
 equivalent to the moved-from state. It is useful in case you need to construct
 the object before creating context (such as class members) or if you know you
 would overwrite it later with another object:
-@code
+
+@code{.cpp}
 Mesh mesh{NoCreate};
 Buffer vertices{NoCreate}, indices{NoCreate};
 std::tie(mesh, vertices, indices) = importSomeMesh();
 @endcode
 
 If you need to preserve the underlying OpenGL object after destruction, you can
-call `release()`. It returns ID of the underlying object, the instance is then
-equivalent to moved-from state and you are responsible for proper deletion
-of the returned OpenGL object (note that it is possible to just query ID of the
-underlying without releasing it using `id()`). It is also possible to do the
-opposite -- wrapping existing OpenGL object ID into Magnum object instance
-using `wrap()`.
-@code
+call @cpp release() @ce. It returns ID of the underlying object, the instance
+is then equivalent to moved-from state and you are responsible for proper
+deletion of the returned OpenGL object (note that it is possible to just query
+ID of the underlying without releasing it using `id()`). It is also possible to
+do the opposite --- wrapping existing OpenGL object ID into Magnum object
+instance using @cpp wrap() @ce.
+
+@code{.cpp}
 // Transferring the instance to external library
 {
     Buffer buffer;
@@ -89,20 +89,21 @@ using `wrap()`.
 }
 @endcode
 
-The `NoInit` constructor, `wrap()` and `release()` functions are available for
-all OpenGL classes except @ref Shader and @ref AbstractShaderProgram, where
-wrapping external instances makes less sense.
+The @cpp NoCreate @ce constructor, @cpp wrap() @ce and @cpp release() @ce
+functions are available for all OpenGL classes except @ref Shader and
+@ref AbstractShaderProgram, where wrapping external instances makes less sense.
 
 @section opengl-state-tracking State tracking and interaction with third-party code
 
 It is possible (and encouraged) to combine Magnum with third-party libraries or
-even raw OpenGL calls -- trying features that are not yet implemented in
+even raw OpenGL calls --- trying features that are not yet implemented in
 Magnum, using some specialized GUI library etc. But bear in mind that to
 improve performance and avoid redundant state changes, Magnum internally tracks
 OpenGL state such as currently bound objects, activated renderer features etc.
 When combining Magnum with third-party code, the internal state tracker may get
 confused and you need to reset it using @ref Context::resetState():
-@code
+
+@code{.cpp}
 Buffer buffer;
 
 // Raw OpenGL calls
@@ -117,14 +118,14 @@ Context::current()->resetState(Context::State::Buffers);
 auto data = buffer.map<UnsignedInt>(...);
 @endcode
 
-Note that it is currently not possible to do the opposite -- reseting all state
-touched by Magnum to previous values -- as it would involve impractically large
+Note that it is currently not possible to do the opposite --- reseting all state
+touched by Magnum to previous values --- as it would involve impractically large
 amount of queries and state switches with serious performance impact.
 
-Magnum by default uses VAOs -- each time a @ref Mesh is drawn or configured,
+Magnum by default uses VAOs --- each time a @ref Mesh is drawn or configured,
 its VAO is bound, but it is *not* unbound afterwards to avoid needless state
 changes. This may introduce problems when using third-party OpenGL code that
-does not use VAOs -- it will break internal state of Mesh that was used most
+does not use VAOs --- it will break internal state of Mesh that was used most
 recently. The solution, besides state resetting, is to create a new VAO and
 bind it every time the third-party OpenGL code is called.
 
@@ -133,17 +134,18 @@ bind it every time the third-party OpenGL code is called.
 While the majority of Magnum API stays the same on all platforms and driver
 capabilities, large portion of the functionality needs to be realized under the
 hood using various different OpenGL API calls based on available extensions. If
-required extension is not available, there are two possible outcomes -- either
+required extension is not available, there are two possible outcomes --- either
 given API is simply not available or it is emulated using older functionality.
 
 In the first case, to avoid performance overhead, Magnum does not check that
-you use only the APIs that are implemented in the driver -- you are expected to
+you use only the APIs that are implemented in the driver --- you are expected to
 do the checks. Documentation of each type, function and enum value explicitly
 states whether the functionality is available everywhere or whether particular
 GL version/extension is required. The information is also aggregated on
 @ref opengl-required-extensions documentation page. Use
 @ref Context::isVersionSupported() or @ref Context::isExtensionSupported():
-@code
+
+@code{.cpp}
 TextureFormat format;
 if(Context::current()->isExtensionSupported<Extensions::GL::ARB_depth_buffer_float>())
     format = TextureFormat::DepthComponent32F;
@@ -152,11 +154,11 @@ else
 @endcode
 
 @attention Using API that requires OpenGL version or extension that is not
-    provided by the driver results in undefined behavior -- the best you can
+    provided by the driver results in undefined behavior --- the best you can
     get is GL error, it may lead to strange behavior and even crashes when
     calling GL functions that are not available.
 
-Some functionality can be emulated by Magnum -- it detects available extensions
+Some functionality can be emulated by Magnum --- it detects available extensions
 and selects best possible code path for optimal performance. On startup, the
 application prints list of extensions that were used to improve the default
 functionality. The most prominent feature is @extension{ARB,direct_state_access}
@@ -170,7 +172,8 @@ functionality is @ref DebugMessage "debug output" which is simply no-op when
 required extensions are not available, @ref Texture::setStorage() emulation on
 platforms that don't support it etc. The goal is to abstract away the (mostly
 unimportant) differences for easier porting.
-@code
+
+@code{.cpp}
 Texture2D texture;
 
 // - on OpenGL 4.5+/ARB_direct_state_access this calls glTextureStorage2D()
@@ -180,9 +183,6 @@ Texture2D texture;
 // - otherwise emulated using a sequence of four glTexImage2D() calls
 texture.setStorage(4, TextureFormat::RGBA8, {256, 256});
 @endcode
-
--   Previous page: @ref plugins
--   Next page: @ref shaders
 
 */
 }

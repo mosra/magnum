@@ -206,7 +206,7 @@ and in most cases only for internal use.
 
 All unit tests use Corrade's @ref Corrade::TestSuite "TestSuite".
 
-Don't forget to test all `constexpr` methods -- many compilers don't implicitly
+Don't forget to test all `constexpr` methods --- many compilers don't implicitly
 check whether the `constexpr` keyword can be used but then complain when you
 force the expression to be constant. It's better not to have given method
 marked as `constexpr` than have it marked it errorneously. It's usually not

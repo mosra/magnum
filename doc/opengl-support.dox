@@ -27,6 +27,7 @@
 @brief List of (un)supported OpenGL features and extensions.
 
 @tableofcontents
+@m_footernavigation
 
 @section opengl-support-state OpenGL implementation state
 
@@ -46,6 +47,8 @@ following:
 
 @todo @extension{EXT,texture_array} overlaps with @extension{ARB,framebuffer_object}
 @todo Add @extension{ARB,depth_buffer_float} and implement the missing @fn_gl{DepthRange} function, but keep (and implement) @extension{NV,depth_buffer_float} for non-linear depth buffer
+
+@m_class{m-fullwidth}
 
 Extension                                   | Status
 ------------------------------------------- | ------
@@ -74,6 +77,8 @@ GLSL 1.30                                   | done
 
 @subsection opengl-support-31 OpenGL 3.1
 
+@m_class{m-fullwidth}
+
 Extension                                   | Status
 ------------------------------------------- | ------
 GLSL 1.40                                   | done
@@ -86,6 +91,8 @@ GLSL 1.40                                   | done
 @extension{NV,primitive_restart}            | |
 
 @subsection opengl-support-32 OpenGL 3.2
+
+@m_class{m-fullwidth}
 
 Extension                                   | Status
 ------------------------------------------- | ------
@@ -102,6 +109,8 @@ GLSL 1.50                                   | done
 
 @subsection opengl-support-33 OpenGL 3.3
 
+@m_class{m-fullwidth}
+
 Extension                                   | Status
 ------------------------------------------- | ------
 GLSL 3.30                                   | done
@@ -117,6 +126,8 @@ GLSL 3.30                                   | done
 @extension{ARB,vertex_type_2_10_10_10_rev}  | done
 
 @subsection opengl-support-40 OpenGL 4.0
+
+@m_class{m-fullwidth}
 
 Extension                                   | Status
 ------------------------------------------- | ------
@@ -137,6 +148,8 @@ GLSL 4.00                                   | done
 
 @subsection opengl-support-41 OpenGL 4.1
 
+@m_class{m-fullwidth}
+
 Extension                                   | Status
 ------------------------------------------- | ------
 GLSL 4.10                                   | done
@@ -148,6 +161,8 @@ GLSL 4.10                                   | done
 @extension{ARB,viewport_array}              | |
 
 @subsection opengl-support-42 OpenGL 4.2
+
+@m_class{m-fullwidth}
 
 Extension                                   | Status
 ------------------------------------------- | ------
@@ -166,6 +181,8 @@ GLSL 4.20                                   | done
 @extension{ARB,texture_storage}             | done
 
 @subsection opengl-support-43 OpenGL 4.3
+
+@m_class{m-fullwidth}
 
 Extension                                   | Status
 ------------------------------------------- | ------
@@ -198,6 +215,8 @@ GLSL 4.30                                   | done
 @todo Also fallback to @extension{AMD,query_buffer_object}
 @todo @extension{AMD,pinned_memory} "fallback" for @extension{ARB,buffer_storage}
 
+@m_class{m-fullwidth}
+
 Extension                                   | Status
 ------------------------------------------- | ------
 GLSL 4.40                                   | done
@@ -212,6 +231,8 @@ GLSL 4.40                                   | done
 @extension{ARB,vertex_type_10f_11f_11f_rev} | done
 
 @subsection opengl-support-45 OpenGL 4.5
+
+@m_class{m-fullwidth}
 
 Extension                                   | Status
 ------------------------------------------- | ------
@@ -229,6 +250,8 @@ GLSL 4.50                                   | done
 @extension{KHR,robustness}                  | |
 
 @subsection opengl-support-extensions ARB / Khronos OpenGL extensions
+
+@m_class{m-fullwidth}
 
 Extension                                   | Status
 ------------------------------------------- | ------
@@ -255,6 +278,8 @@ Extension                                   | Status
 @todo @extension{ARB,sparse_texture}, @extension{ARB,bindless_texture} + their vendor equivalents
 @todo @extension{ATI,meminfo}, @extension{NVX,gpu_memory_info}, GPU temperature
 @todo @extension{AMD,performance_monitor}, @extension{INTEL,performance_query}
+
+@m_class{m-fullwidth}
 
 Extension                                   | Status
 ------------------------------------------- | ------
@@ -288,6 +313,8 @@ Features that have their equivalents implemented in desktop version are
 supported. ESSL 3.10 is supported.
 
 @subsection opengl-support-es30-extensions OpenGL ES 2.0 extensions to match ES 3.0 functionality
+
+@m_class{m-fullwidth}
 
 Extension                                   | Status
 ------------------------------------------- | ------
@@ -345,6 +372,8 @@ Extension                                   | Status
 @todo @extension{NV,non_square_matrices}
 @todo Support also IMG_multisampled_render_to_texture? It has different enum
     values (!)
+
+@m_class{m-fullwidth}
 
 Extension                                   | Status
 ------------------------------------------- | ------
@@ -416,6 +445,8 @@ supported.
 
 @subsection opengl-support-webgl20-extensions WebGL 1.0 extensions to match WebGL 2.0 functionality
 
+@m_class{m-fullwidth}
+
 Extension                                   | Status
 ------------------------------------------- | ------
 @webgl_extension{ANGLE,instanced_arrays}    | done
@@ -433,6 +464,8 @@ Extension                                   | Status
 @webgl_extension{WEBGL,draw_buffers}        | done
 
 @subsection opengl-support-webgl-extensions WebGL extensions to match desktop functionality
+
+@m_class{m-fullwidth}
 
 Extension                                   | Status
 ------------------------------------------- | ------
@@ -493,10 +526,11 @@ add any performance gains, is not supported in Magnum. See also
 -   @extension{NV,draw_texture} can be done with framebuffer blitting and
     doesn't make any full-screen postprocessing easier, as shaders are
     excluded.
-
 */
 
 /** @page opengl-deprecated Deprecated OpenGL API list
+
+@m_footernavigation
 
 See also @ref opengl-unsupported and @ref deprecated.
 

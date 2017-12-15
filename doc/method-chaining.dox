@@ -25,8 +25,9 @@
 
 namespace Magnum {
 /** @page method-chaining Method chaining
-
 @brief Little feature helping to reduce typing and encourage best practices.
+
+@m_footernavigation
 
 Method chaining ([Wikipedia](http://en.wikipedia.org/wiki/Method_chaining)) is a
 feature which allows you to chain method calls one after another without
@@ -42,7 +43,8 @@ reduce unneeded bind calls, Magnum binds the object only if it is not already
 bound somewhere. Method chaining encourages you to configure whole object in
 one run, effectively reducing the number of needed bindings. Consider the
 following example:
-@code
+
+@code{.cpp}
 Texture2D carDiffuseTexture, carSpecularTexture, carBumpTexture;
 
 carDiffuseTexture.setStorage(5, TextureFormat::SRGB8);
@@ -62,7 +64,8 @@ textures at once, but on the other hand the code is cluttered with repeated
 names and after each configuration step the texture must be rebound to another.
 With method chaining used the code looks much lighter and each object is
 configured in one run, reducing count of bind calls from 9 to 3.
-@code
+
+@code{.cpp}
 carDiffuseTexture.setStorage(5, TextureFormat::SRGB8)
     .setSubImage(0, {}, diffuse)
     .generateMipmap();
@@ -82,11 +85,12 @@ Method chaining is also used in @ref SceneGraph and other libraries and in some
 cases it allows you to just "configure and forget" without even saving the
 created object to some variable, for example when adding static object to an
 scene:
-@code
+
+@code{.cpp}
 Scene3D scene;
 
-(new MyObject(&scene))
-    ->rotateX(90.0_degf)
+(*(new MyObject(&scene)))
+    .rotateX(90.0_degf)
     .translate({-1.5f, 0.5f, 7.0f});
 @endcode
 */

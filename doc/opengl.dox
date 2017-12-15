@@ -74,51 +74,97 @@ is supported on older Intel GPUs even if they are capable of OpenGL 2.1 only).
 
 @see @ref building, @ref cmake, @ref MAGNUM_TARGET_GLES,
     @ref MAGNUM_TARGET_GLES2
+*/
 
-@page requires-gl30 Functionality requiring OpenGL 3.0
-@page requires-gl31 Functionality requiring OpenGL 3.1
-@page requires-gl32 Functionality requiring OpenGL 3.2
-@page requires-gl33 Functionality requiring OpenGL 3.3
-@page requires-gl40 Functionality requiring OpenGL 4.0
-@page requires-gl41 Functionality requiring OpenGL 4.1
-@page requires-gl42 Functionality requiring OpenGL 4.2
-@page requires-gl43 Functionality requiring OpenGL 4.3
-@page requires-gl44 Functionality requiring OpenGL 4.4
-@page requires-gl45 Functionality requiring OpenGL 4.5
+/** @page requires-gl30 Functionality requiring OpenGL 3.0
+ * @m_footernavigation
+ */
 
-@page requires-extension Functionality requiring specific OpenGL extension
+/** @page requires-gl31 Functionality requiring OpenGL 3.1
+ * @m_footernavigation
+ */
 
-@page requires-gl Functionality requiring desktop OpenGL
+/** @page requires-gl32 Functionality requiring OpenGL 3.2
+ * @m_footernavigation
+ */
+
+/** @page requires-gl33 Functionality requiring OpenGL 3.3
+ * @m_footernavigation
+ */
+
+/** @page requires-gl40 Functionality requiring OpenGL 4.0
+ * @m_footernavigation
+ */
+
+/** @page requires-gl41 Functionality requiring OpenGL 4.1
+ * @m_footernavigation
+ */
+
+/** @page requires-gl42 Functionality requiring OpenGL 4.2
+ * @m_footernavigation
+ */
+
+/** @page requires-gl43 Functionality requiring OpenGL 4.3
+ * @m_footernavigation
+ */
+
+/** @page requires-gl44 Functionality requiring OpenGL 4.4
+ * @m_footernavigation
+ */
+
+/** @page requires-gl45 Functionality requiring OpenGL 4.5
+ * @m_footernavigation
+ */
+
+/** @page requires-extension Functionality requiring specific OpenGL extension
+ * @m_footernavigation
+ */
+
+/** @page requires-gl Functionality requiring desktop OpenGL
+@m_footernavigation
 
 The following symbols are not defined when targeting OpenGL ES or WebGL.
 
 @see @ref MAGNUM_TARGET_GLES
+*/
 
-@page requires-gles20 Functionality requiring OpenGL ES 2.0 or WebGL 1.0
+/** @page requires-gles20 Functionality requiring OpenGL ES 2.0 or WebGL 1.0
+@m_footernavigation
 
 The following symbols are not defined when targeting OpenGL ES 3.0, WebGL 2.0
 or desktop OpenGL.
 
 @see @ref MAGNUM_TARGET_GLES2
+*/
 
-@page requires-gles30 Functionality requiring OpenGL ES 3.0
+/** @page requires-gles30 Functionality requiring OpenGL ES 3.0
+@m_footernavigation
 
 @see @ref MAGNUM_TARGET_GLES3
+*/
 
-@page requires-gles31 Functionality requiring OpenGL ES 3.1
+/** @page requires-gles31 Functionality requiring OpenGL ES 3.1
+@m_footernavigation
 
 The following symbols are not defined when targeting OpenGL ES 2.0.
+*/
 
-@page requires-es-extension Functionality requiring specific OpenGL ES extension
+/** @page requires-es-extension Functionality requiring specific OpenGL ES extension
+ * @m_footernavigation
+ */
 
-@page requires-gles Functionality requiring OpenGL ES or desktop OpenGL
+/** @page requires-gles Functionality requiring OpenGL ES or desktop OpenGL
+@m_footernavigation
 
 The following symbols are not defined when targeting WebGL.
 
 @see @ref MAGNUM_TARGET_WEBGL, @ref requires-gl
-
-@page requires-webgl20 Functionality requiring WebGL 2.0
-
-@page requires-webgl-extension Functionality requiring specific WebGL extension
-
 */
+
+/** @page requires-webgl20 Functionality requiring WebGL 2.0
+ * @m_footernavigation
+ */
+
+/** @page requires-webgl-extension Functionality requiring specific WebGL extension
+ * @m_footernavigation
+ */
