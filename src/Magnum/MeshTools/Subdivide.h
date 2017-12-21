@@ -92,18 +92,18 @@ template<class Vertex, class Interpolator> void Subdivide<Vertex, Interpolator>:
             newVertices[j] = addVertex(interpolator(vertices[indices[i+j]], vertices[indices[i+(j+1)%3]]));
 
         /*
-            * Add three new faces (0, 1, 3) and update original (2)
-            *
-            *                orig 0
-            *                /   \
-            *               /  0  \
-            *              /       \
-            *          new 0 ----- new 2
-            *          /   \       /  \
-            *         /  1  \  2  / 3  \
-            *        /       \   /      \
-            *   orig 1 ----- new 1 ---- orig 2
-            */
+            Add three new faces (0, 1, 3) and update original (2)
+
+                          orig 0
+                          /   \
+                         /  0  \
+                        /       \
+                    new 0 ----- new 2
+                    /   \       /  \
+                   /  1  \  2  / 3  \
+                  /       \   /      \
+             orig 1 ----- new 1 ---- orig 2
+        */
         addFace(indices[i], newVertices[0], newVertices[2]);
         addFace(newVertices[0], indices[i+1], newVertices[1]);
         addFace(newVertices[2], newVertices[1], indices[i+2]);

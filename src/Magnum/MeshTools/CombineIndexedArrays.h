@@ -157,7 +157,8 @@ attribute array as reference, so it can be replaced with combined data. To
 avoid explicit verbose specification of tuple type, you can write it with help
 of some STL functions like shown below. Also if one index array is shared by
 more than one attribute array, just pass the index array more times. Example:
-@code
+
+@code{.cpp}
 std::vector<UnsignedInt> vertexIndices;
 std::vector<Vector3> positions;
 std::vector<UnsignedInt> normalTextureIndices;

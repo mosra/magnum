@@ -68,7 +68,7 @@ class MAGNUM_MESHTOOLS_EXPORT Tipsify {
 
 Optimizes the mesh for vertex-bound applications by rearranging its index
 array for beter usage of post-transform vertex cache. Algorithm used:
-*Pedro V. Sander, Diego Nehab, and Joshua Barczak - Fast Triangle Reordering
+*Pedro V. Sander, Diego Nehab, and Joshua Barczak --- Fast Triangle Reordering
 for Vertex Locality and Reduced Overdraw, SIGGRAPH 2007,
 http://gfx.cs.princeton.edu/pubs/Sander_2007_%3ETR/index.php*.
 @todo Ability to compute vertex count automatically

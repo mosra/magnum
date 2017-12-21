@@ -52,15 +52,16 @@ computed from them. The vertex positions are, in order:
 @f]
 
 Based on @p version parameter, on OpenGL 2.1 and OpenGL ES 2.0 the vertex
-positions are passed explicitly as attribute `0`, contained in the buffer. On
-OpenGL 3.0+ and OpenGL ES 3.0+ the mesh is attribute-less and the vertex
-positions can be computed using `gl_VertexID` builtin shader variable, thus
-`nullptr` is returned instead of vertex buffer.
+positions are passed explicitly as attribute @cpp 0 @ce, contained in the
+buffer. On OpenGL 3.0+ and OpenGL ES 3.0+ the mesh is attribute-less and the
+vertex positions can be computed using @glsl gl_VertexID @ce builtin shader
+variable,  thus @cpp nullptr @ce is returned instead of vertex buffer.
 
 Computing positions in vertex shader in a portable way might be done like this.
 For OpenGL 2.1 and OpenGL ES 2.0 you then need to bind the location of `position`
-attribute to `0`.
-@code
+attribute to @cpp 0 @ce.
+
+@code{.glsl}
 #if (!defined(GL_ES) && __VERSION__ >= 130) || (defined(GL_ES) && __VERSION__ >= 300)
 #define NEW_GLSL
 #endif

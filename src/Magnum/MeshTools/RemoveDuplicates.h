@@ -52,7 +52,7 @@ namespace Implementation {
 /**
 @brief Remove duplicate floating-point vector data from given array
 @param[in,out] data Input data array
-@param[out] epsilon Epsilon value, vertices nearer than this distance will be
+@param[in] epsilon  Epsilon value, vertices nearer than this distance will be
     melt together
 @return Index array and unique data
 
@@ -65,7 +65,8 @@ the usual sorting method is much more efficient.
 If you want to remove duplicate data from already indexed array, first remove
 duplicates as if the array wasn't indexed at all and then use @ref duplicate()
 to combine the two index arrays:
-@code
+
+@code{.cpp}
 std::vector<UnsignedInt> indices;
 std::vector<Vector3> positions;
 
@@ -76,7 +77,8 @@ Removing duplicates in multiple indcidental arrays is also possible -- first
 remove duplicates in each array separately and then use @ref combineIndexedArrays()
 to combine the resulting index arrays to single index array and reorder the
 data accordingly:
-@code
+
+@code{.cpp}
 std::vector<Vector3> positions;
 std::vector<Vector2> texCoords;
 

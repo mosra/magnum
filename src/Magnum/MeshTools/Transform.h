@@ -47,7 +47,8 @@ Unlike in @ref transformPointsInPlace(), the transformation does not involve
 translation.
 
 Example usage:
-@code
+
+@code{.cpp}
 std::vector<Vector3> vectors;
 auto transformation = Quaternion::rotation(35.0_degf, Vector3::yAxis());
 MeshTools::transformVectorsInPlace(rotation, vectors);
@@ -102,7 +103,8 @@ Unlike in @ref transformVectorsInPlace(), the transformation also involves
 translation.
 
 Example usage:
-@code
+
+@code{.cpp}
 std::vector<Vector3> points;
 auto transformation = DualQuaternion::rotation(35.0_degf, Vector3::yAxis())*
     DualQuaternion::translation({0.5f, -1.0f, 3.0f});

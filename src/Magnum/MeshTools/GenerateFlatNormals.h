@@ -45,7 +45,8 @@ namespace Magnum { namespace MeshTools {
 
 For each face generates one normal vector, removes duplicates before
 returning. Example usage:
-@code
+
+@code{.cpp}
 std::vector<UnsignedInt> vertexIndices;
 std::vector<Vector3> positions;
 
@@ -53,6 +54,7 @@ std::vector<UnsignedInt> normalIndices;
 std::vector<Vector3> normals;
 std::tie(normalIndices, normals) = MeshTools::generateFlatNormals(vertexIndices, positions);
 @endcode
+
 You can then use @ref combineIndexedArrays() to combine normal and vertex array
 to use the same indices.
 
