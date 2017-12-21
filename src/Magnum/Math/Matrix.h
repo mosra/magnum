@@ -122,7 +122,8 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          *
          * Performs only default casting on the values, no rounding or
          * anything else. Example usage:
-         * @code
+         *
+         * @code{.cpp}
          * Matrix2x2<Float> floatingPoint({1.3f, 2.7f},
          *                                {-15.0f, 7.0f});
          * Matrix2x2<Byte> integral(floatingPoint);

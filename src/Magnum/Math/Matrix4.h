@@ -124,7 +124,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * @brief 3D rotation matrix around X axis
          * @param angle Rotation angle (counterclockwise)
          *
-         * Faster than calling `Matrix4::rotation(angle, Vector3::xAxis())`. @f[
+         * Faster than calling @cpp Matrix4::rotation(angle, Vector3::xAxis()) @ce. @f[
          *      \boldsymbol{A} = \begin{pmatrix}
          *          1 &          0 &           0 & 0 \\
          *          0 & \cos\theta & -\sin\theta & 0 \\
@@ -142,7 +142,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * @brief 3D rotation matrix around Y axis
          * @param angle Rotation angle (counterclockwise)
          *
-         * Faster than calling `Matrix4::rotation(angle, Vector3::yAxis())`. @f[
+         * Faster than calling @cpp Matrix4::rotation(angle, Vector3::yAxis()) @ce. @f[
          *      \boldsymbol{A} = \begin{pmatrix}
          *           \cos\theta & 0 & \sin\theta & 0 \\
          *                    0 & 1 &          0 & 0 \\
@@ -160,7 +160,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * @brief 3D rotation matrix around Z axis
          * @param angle Rotation angle (counterclockwise)
          *
-         * Faster than calling `Matrix4::rotation(angle, Vector3::zAxis())`. @f[
+         * Faster than calling @cpp Matrix4::rotation(angle, Vector3::zAxis()) @ce. @f[
          *      \boldsymbol{A} = \begin{pmatrix}
          *          \cos\theta & -\sin\theta & 0 & 0 \\
          *          \sin\theta &  \cos\theta & 0 & 0 \\
@@ -180,8 +180,8 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *
          * Expects that the normal is normalized. Reflection along axes can be
          * done in a slightly simpler way also using @ref scaling(), e.g.
-         * `Matrix4::reflection(Vector3::yAxis())` is equivalent to
-         * `Matrix4::scaling(Vector3::yScale(-1.0f))`. @f[
+         * @cpp Matrix4::reflection(Vector3::yAxis()) @ce is equivalent to
+         * @cpp Matrix4::scaling(Vector3::yScale(-1.0f)) @ce. @f[
          *      \boldsymbol{A} = \boldsymbol{I} - 2 \boldsymbol{NN}^T ~~~~~ \boldsymbol{N} = \begin{pmatrix} n_x \\ n_y \\ n_z \end{pmatrix}
          * @f]
          * @see @ref Matrix3::reflection(), @ref Vector::isNormalized()
@@ -340,7 +340,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * @param eye       Location to place the matrix
          * @param target    Location towards which the matrix is oriented
          * @param up        Vector as a guide of which way is up (should not be
-         *      the same direction as `target - eye`)
+         *      the same direction as @cpp target - eye @ce)
          *
          * @attention This function transforms an object so it's at @p eye
          *      position and oriented towards @p target, it does *not* produce

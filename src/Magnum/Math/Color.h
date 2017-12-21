@@ -211,15 +211,16 @@ template<class T> constexpr typename std::enable_if<std::is_integral<T>::value, 
 
 The class can store either floating-point (normalized) or integral
 (denormalized) representation of linear RGB color. Colors in sRGB color space
-should not be used directly in calculations -- they should be converted to
+should not be used directly in calculations --- they should be converted to
 linear RGB using @ref fromSrgb(), calculation done on the linear representation
 and then converted back to sRGB using @ref toSrgb().
 
 Note that constructor conversion between different types (like in @ref Vector
 classes) doesn't do any (de)normalization, you should use @ref pack) and
 @ref unpack() instead, for example:
-@code
-Color3 a(1.0f, 0.5f, 0.75f);
+
+@code{.cpp}
+Color3 a{1.0f, 0.5f, 0.75f};
 auto b = pack<Color3ub>(a); // b == {255, 127, 191}
 @endcode
 
@@ -238,8 +239,8 @@ template<class T> class Color3: public Vector3<T> {
         /**
          * @brief Red color
          *
-         * Convenience alternative to e.g. `Color3(red, 0.0f, 0.0f)`. With
-         * floating-point underlying type equivalent to @ref Vector3::xAxis().
+         * Convenience alternative to e.g. @cpp Color3{red, 0.0f, 0.0f} @ce.
+         * With floating-point underlying type equivalent to @ref Vector3::xAxis().
          * @see @ref green(), @ref blue(), @ref cyan()
          */
         constexpr static Color3<T> red(T red = Implementation::fullChannel<T>()) {
@@ -249,8 +250,8 @@ template<class T> class Color3: public Vector3<T> {
         /**
          * @brief Green color
          *
-         * Convenience alternative to e.g. `Color3(0.0f, green, 0.0f)`. With
-         * floating-point underlying type equivalent to @ref Vector3::yAxis().
+         * Convenience alternative to e.g. @cpp Color3(0.0f, green, 0.0f) @ce.
+         * With floating-point underlying type equivalent to @ref Vector3::yAxis().
          * @see @ref red(), @ref blue(), @ref magenta()
          */
         constexpr static Color3<T> green(T green = Implementation::fullChannel<T>()) {
@@ -260,8 +261,8 @@ template<class T> class Color3: public Vector3<T> {
         /**
          * @brief Blue color
          *
-         * Convenience alternative to e.g. `Color3(0.0f, 0.0f, blue)`. With
-         * floating-point underlying type equivalent to @ref Vector3::zAxis().
+         * Convenience alternative to e.g. @cpp Color3{0.0f, 0.0f, blue} @ce.
+         * With floating-point underlying type equivalent to @ref Vector3::zAxis().
          * @see @ref red(), @ref green(), @ref yellow()
          */
         constexpr static Color3<T> blue(T blue = Implementation::fullChannel<T>()) {
@@ -271,8 +272,8 @@ template<class T> class Color3: public Vector3<T> {
         /**
          * @brief Cyan color
          *
-         * Convenience alternative to e.g. `Color3(red, 1.0f, 1.0f)`. With
-         * floating-point underlying type equivalent to @ref Vector3::xScale().
+         * Convenience alternative to e.g. @cpp Color3{red, 1.0f, 1.0f} @ce.
+         * With floating-point underlying type equivalent to @ref Vector3::xScale().
          * @see @ref magenta(), @ref yellow(), @ref red()
          */
         constexpr static Color3<T> cyan(T red = T(0)) {
@@ -282,8 +283,8 @@ template<class T> class Color3: public Vector3<T> {
         /**
          * @brief Magenta color
          *
-         * Convenience alternative to e.g. `Color3(0.0f, green, 0.0f)`. With
-         * floating-point underlying type equivalent to @ref Vector3::yScale().
+         * Convenience alternative to e.g. @cpp Color3{1.0f, green, 1.0f} @ce.
+         * With floating-point underlying type equivalent to @ref Vector3::yScale().
          * @see @ref cyan(), @ref yellow(), @ref green()
          */
         constexpr static Color3<T> magenta(T green = T(0)) {
@@ -293,8 +294,8 @@ template<class T> class Color3: public Vector3<T> {
         /**
          * @brief Yellow color
          *
-         * Convenience alternative to `Color3(0.0f, 0.0f, yellow)`. With
-         * floating-point underlying type equivalent to @ref Vector3::zScale().
+         * Convenience alternative to e.g. @cpp Color3{1.0f, 1.0f, yellow} @ce.
+         * With floating-point underlying type equivalent to @ref Vector3::zScale().
          * @see @ref cyan(), @ref magenta(), @ref red()
          */
         constexpr static Color3<T> yellow(T blue = T(0)) {
@@ -311,8 +312,8 @@ template<class T> class Color3: public Vector3<T> {
         /**
          * @brief Type for storing HSV color space values
          *
-         * Hue in range @f$ [0.0, 360.0] @f$, saturation and value in
-         * range @f$ [0.0, 1.0] @f$.
+         * Hue in range @f$ [0.0, 360.0] @f$, saturation and value in range
+         * @f$ [0.0, 1.0] @f$.
          */
         typedef std::tuple<Deg<FloatingPointType>, FloatingPointType, FloatingPointType> Hsv;
 
@@ -381,7 +382,8 @@ template<class T> class Color3: public Vector3<T> {
          * Useful in cases where you have for example an 8-bit sRGB
          * representation and want to create a floating-point linear RGB color
          * out of it:
-         * @code
+         *
+         * @code{.cpp}
          * Math::Vector3<UnsignedByte> srgb;
          * auto rgb = Color3::fromSrgb(srgb);
          * @endcode
@@ -472,7 +474,8 @@ template<class T> class Color3: public Vector3<T> {
          * @brief Convert to HSV representation
          *
          * Example usage:
-         * @code
+         *
+         * @code{.cpp}
          * Deg hue;
          * Float saturation, value;
          * std::tie(hue, saturation, value) = color.toHsv();
@@ -543,7 +546,8 @@ template<class T> class Color3: public Vector3<T> {
          *
          * Useful in cases where you have a floating-point linear RGB color and
          * want to create for example an 8-bit sRGB representation out of it:
-         * @code
+         *
+         * @code{.cpp}
          * Color3 color;
          * Math::Vector3<UnsignedByte> srgb = color.toSrgb<UnsignedByte>();
          * @endcode
@@ -616,7 +620,7 @@ class Color4: public Vector4<T> {
         /**
          * @brief Red color
          *
-         * Convenience alternative to e.g. `Color4(red, 0.0f, 0.0f, alpha)`.
+         * Convenience alternative to e.g. @cpp Color4{red, 0.0f, 0.0f, alpha} @ce.
          * @see @ref green(), @ref blue(), @ref cyan()
          */
         constexpr static Color4<T> red(T red = Implementation::fullChannel<T>(), T alpha = Implementation::fullChannel<T>()) {
@@ -626,7 +630,7 @@ class Color4: public Vector4<T> {
         /**
          * @brief Green color
          *
-         * Convenience alternative to e.g. `Color4(0.0f, green, 0.0f, alpha)`.
+         * Convenience alternative to e.g. @cpp Color4{0.0f, green, 0.0f, alpha} @ce.
          * @see @ref red(), @ref blue(), @ref magenta()
          */
         constexpr static Color4<T> green(T green = Implementation::fullChannel<T>(), T alpha = Implementation::fullChannel<T>()) {
@@ -636,7 +640,7 @@ class Color4: public Vector4<T> {
         /**
          * @brief Blue color
          *
-         * Convenience alternative to e.g. `Color4(0.0f, 0.0f, blue, alpha)`.
+         * Convenience alternative to e.g. @cpp Color4{0.0f, 0.0f, blue, alpha} @ce.
          * @see @ref red(), @ref green(), @ref yellow()
          */
         constexpr static Color4<T> blue(T blue = Implementation::fullChannel<T>(), T alpha = Implementation::fullChannel<T>()) {
@@ -646,7 +650,7 @@ class Color4: public Vector4<T> {
         /**
          * @brief Cyan color
          *
-         * Convenience alternative to e.g. `Color4(red, 1.0f, 1.0f, alpha)`.
+         * Convenience alternative to e.g. @cpp Color4{red, 1.0f, 1.0f, alpha} @ce.
          * @see @ref magenta(), @ref yellow(), @ref red()
          */
         constexpr static Color4<T> cyan(T red = T(0), T alpha = Implementation::fullChannel<T>()) {
@@ -656,7 +660,7 @@ class Color4: public Vector4<T> {
         /**
          * @brief Magenta color
          *
-         * Convenience alternative to e.g. `Color4(1.0f, green, 1.0f, alpha)`.
+         * Convenience alternative to e.g. @cpp Color4{1.0f, green, 1.0f, alpha} @ce.
          * @see @ref cyan(), @ref yellow(), @ref green()
          */
         constexpr static Color4<T> magenta(T green = T(0), T alpha = Implementation::fullChannel<T>()) {
@@ -666,7 +670,7 @@ class Color4: public Vector4<T> {
         /**
          * @brief Yellow color
          *
-         * Convenience alternative to e.g. `Color4(1.0f, 1.0f, blue, alpha)`.
+         * Convenience alternative to e.g. @cpp Color4{1.0f, 1.0f, blue, alpha} @ce.
          * @see @ref cyan(), @ref magenta(), @ref red()
          */
         constexpr static Color4<T> yellow(T blue = T(0), T alpha = Implementation::fullChannel<T>()) {
@@ -676,8 +680,9 @@ class Color4: public Vector4<T> {
         /**
          * @brief Create RGB color from HSV representation
          * @param hsv   Color in HSV color space
-         * @param a     Alpha value, defaults to `1.0` for floating-point types
-         *      and maximum positive value for integral types.
+         * @param a     Alpha value, defaults to @cpp 1.0 @ce for
+         *      floating-point types and maximum positive value for integral
+         *      types
          *
          * Hue can overflow the range @f$ [0.0, 360.0] @f$.
          * @see @ref toHsv()
@@ -724,8 +729,9 @@ class Color4: public Vector4<T> {
         /**
          * @brief Create linear RGBA color from sRGB representation
          * @param srgb      Color in sRGB color space
-         * @param a         Alpha value, defaults to `1.0` for floating-point
-         *      types and maximum positive value for integral types.
+         * @param a         Alpha value, defaults to @cpp 1.0 @ce for
+         *      floating-point types and maximum positive value for integral
+         *      types
          *
          * Applies inverse sRGB curve onto RGB channels of the input. Alpha
          * value is taken as-is. See @ref Color3::fromSrgb() for more
@@ -745,7 +751,8 @@ class Color4: public Vector4<T> {
          * Useful in cases where you have for example an 8-bit sRGB + alpha
          * representation and want to create a floating-point linear RGBA color
          * out of it:
-         * @code
+         *
+         * @code{.cpp}
          * Math::Vector4<UnsignedByte> srgbAlpha;
          * auto rgba = Color4::fromSrgbAlpha(srgbAlpha);
          * @endcode
@@ -759,13 +766,15 @@ class Color4: public Vector4<T> {
         /** @overload
          * @brief Create linear RGB color from integral sRGB representation
          * @param srgb      Color in sRGB color space
-         * @param a         Alpha value, defaults to `1.0` for floating-point
-         *      types and maximum positive value for integral types.
+         * @param a         Alpha value, defaults to @cpp 1.0 @ce for
+         *      floating-point types and maximum positive value for integral
+         *      types
          *
          * Useful in cases where you have for example an 8-bit sRGB
          * representation and want to create a floating-point linear RGBA color
          * out of it:
-         * @code
+         *
+         * @code{.cpp}
          * Math::Vector3<UnsignedByte> srgb;
          * auto rgba = Color4::fromSrgb(srgb);
          * @endcode
@@ -779,8 +788,9 @@ class Color4: public Vector4<T> {
         /**
          * @brief Create RGBA color from CIE XYZ representation
          * @param xyz   Color in CIE XYZ color space
-         * @param a     Alpha value, defaults to `1.0` for floating-point types
-         *      and maximum positive value for integral types.
+         * @param a     Alpha value, defaults to @cpp 1.0 @ce for
+         *      floating-point types and maximum positive value for integral
+         *      types
          *
          * Applies transformation matrix, returning the input in linear RGB
          * color space. See @ref Color3::fromXyz() for more information.
@@ -815,8 +825,9 @@ class Color4: public Vector4<T> {
 
         /**
          * @copydoc Color3::Color3(T)
-         * @param alpha Alpha value, defaults to `1.0` for floating-point types
-         *      and maximum positive value for integral types.
+         * @param alpha Alpha value, defaults to @cpp 1.0 @ce for
+         *      floating-point types and maximum positive value for integral
+         *      types
          */
         constexpr explicit Color4(T rgb, T alpha = Implementation::fullChannel<T>()) noexcept: Vector4<T>(rgb, rgb, rgb, alpha) {}
 
@@ -825,8 +836,8 @@ class Color4: public Vector4<T> {
          * @param r     R value
          * @param g     G value
          * @param b     B value
-         * @param a     A value, defaults to `1.0` for floating-point types and
-         *      maximum positive value for integral types.
+         * @param a     A value, defaults to @cpp 1.0 @ce for floating-point
+         *      types and maximum positive value for integral types.
          */
         constexpr /*implicit*/ Color4(T r, T g, T b, T a = Implementation::fullChannel<T>()) noexcept: Vector4<T>(r, g, b, a) {}
 
@@ -866,7 +877,8 @@ class Color4: public Vector4<T> {
          *
          * The alpha channel is not subject to any conversion, so it is
          * ignored. Example usage:
-         * @code
+         *
+         * @code{.cpp}
          * Deg hue;
          * Float saturation, value;
          * std::tie(hue, saturation, value) = color.toHsv();
@@ -920,7 +932,8 @@ class Color4: public Vector4<T> {
          * Useful in cases where you have a floating-point linear RGBA color
          * and want to create for example an 8-bit sRGB + alpha representation
          * out of it:
-         * @code
+         *
+         * @code{.cpp}
          * Color4 color;
          * Math::Vector4<UnsignedByte> srgbAlpha = color.toSrgbAlpha<UnsignedByte>();
          * @endcode
@@ -998,7 +1011,8 @@ namespace Literals {
 @brief 8bit-per-channel linear RGB literal
 
 Unpacks the literal into three 8-bit values. Example usage:
-@code
+
+@code{.cpp}
 Color3ub a = 0x33b27f_rgb;  // {0x33, 0xb2, 0x7f}
 @endcode
 
@@ -1020,13 +1034,14 @@ Unpacks the literal into three 8-bit values without any colorspace conversion.
 Behaves identically to @link operator""_rgb() @endlink though it doesn't
 return a @ref Color3 type to indicate that the resulting value is not linear
 RGB. Use this literal to document that given value is in sRGB. Example usage:
-@code
+
+@code{.cpp}
 Math::Vector3<UnsignedByte> a = 0x33b27f_srgb;  // {0x33, 0xb2, 0x7f}
 @endcode
 
 @attention Note that colors in sRGB representation should not be used directly
-    in calculations -- they should be converted to linear RGB, calculation done
-    on the linear representation and then converted back to sRGB. Use the
+    in calculations --- they should be converted to linear RGB, calculation
+    done on the linear representation and then converted back to sRGB. Use the
     @link operator""_srgbf() @endlink literal if you want to get a linear RGB
     representation directly or convert the value using @ref Color3::fromSrgb().
 
@@ -1042,7 +1057,8 @@ constexpr Vector3<UnsignedByte> operator "" _srgb(unsigned long long value) {
 @brief 8bit-per-channel linear RGBA literal
 
 Unpacks the literal into four 8-bit values. Example usage:
-@code
+
+@code{.cpp}
 Color4ub a = 0x33b27fcc_rgba;   // {0x33, 0xb2, 0x7f, 0xcc}
 @endcode
 
@@ -1065,13 +1081,14 @@ Behaves identically to @link operator""_rgba() @endlink though it doesn't
 return a @ref Color4 type to indicate that the resulting value is not linear
 RGBA. Use this literal to document that given value is in sRGB + alpha. Example
 usage:
-@code
+
+@code{.cpp}
 Math::Vector4<UnsignedByte> a = 0x33b27fcc_srgba;   // {0x33, 0xb2, 0x7f, 0xcc}
 @endcode
 
 @attention Note that colors in sRGB representation should not be used directly
-    in calculations -- they should be converted to linear RGB, calculation done
-    on the linear representation and then converted back to sRGB. Use the
+    in calculations --- they should be converted to linear RGB, calculation
+    done on the linear representation and then converted back to sRGB. Use the
     @link operator""_srgbaf() @endlink literal if you want to get a linear RGBA
     representation directly or convert the value using @ref Color4::fromSrgbAlpha().
 
@@ -1087,7 +1104,8 @@ constexpr Vector4<UnsignedByte> operator "" _srgba(unsigned long long value) {
 @brief Float linear RGB literal
 
 Unpacks the 8-bit values into three floats. Example usage:
-@code
+
+@code{.cpp}
 Color3 a = 0x33b27f_rgbf;   // {0.2f, 0.698039f, 0.498039f}
 @endcode
 
@@ -1108,9 +1126,11 @@ inline Color3<Float> operator "" _rgbf(unsigned long long value) {
 Unpacks the 8-bit values into three floats and converts the color space from
 sRGB to linear RGB. See @ref Color3::fromSrgb() for more information. Example
 usage:
-@code
+
+@code{.cpp}
 Color3 a = 0x33b27f_srgbf;  // {0.0331048f, 0.445201f, 0.212231f}
 @endcode
+
 @see @link operator""_srgbaf() @endlink, @link operator""_srgb() @endlink,
     @link operator""_rgbf() @endlink
 */
@@ -1122,7 +1142,8 @@ inline Color3<Float> operator "" _srgbf(unsigned long long value) {
 @brief Float linear RGBA literal
 
 Unpacks the 8-bit values into four floats. Example usage:
-@code
+
+@code{.cpp}
 Color4 a = 0x33b27fcc_rgbaf;    // {0.2f, 0.698039f, 0.498039f, 0.8f}
 @endcode
 
@@ -1143,9 +1164,11 @@ inline Color4<Float> operator "" _rgbaf(unsigned long long value) {
 Unpacks the 8-bit values into four floats and converts the color space from
 sRGB + alpha to linear RGBA. See @ref Color4::fromSrgbAlpha() for more
 information. Example usage:
-@code
+
+@code{.cpp}
 Color4 a = 0x33b27fcc_srgbaf;  // {0.0331048f, 0.445201f, 0.212231f, 0.8f}
 @endcode
+
 @see @link operator""_srgbf() @endlink, @link operator""_srgba() @endlink,
     @link operator""_rgbaf() @endlink
 */
@@ -1158,16 +1181,16 @@ inline Color4<Float> operator "" _srgbaf(unsigned long long value) {
 /**
 @debugoperator{Magnum::Math::Color3}
 
-Prints the value as hex color (e.g. `#ff33aa`). Other underlying types are
-handled by @ref operator<<(Corrade::Utility::Debug&, const Vector<size, T>&).
+Prints the value as hex color (e.g. @cb{.shell-session} #ff33aa @ce). Other
+underlying types are handled by @ref operator<<(Corrade::Utility::Debug&, const Vector<size, T>&).
 */
 MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Color3<UnsignedByte>& value);
 
 /**
 @debugoperator{Magnum::Math::Color4}
 
-Prints the value as hex color (e.g. `#9933aaff`). Other underlying types are
-handled by @ref operator<<(Corrade::Utility::Debug&, const Vector<size, T>&).
+Prints the value as hex color (e.g. @cb{.shell-session} #9933aaff @ce). Other
+underlying types are handled by @ref operator<<(Corrade::Utility::Debug&, const Vector<size, T>&).
 */
 MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Color4<UnsignedByte>& value);
 

@@ -68,23 +68,24 @@ zero matrices.
 
 Full @f$ U @f$, @f$ \Sigma @f$ matrices and original @f$ M @f$ matrix can be
 reconstructed from the values as following:
-@code
-RectangularMatrix<cols, rows, Double> m;
 
-RectangularMatrix<cols, rows, Double> uPart;
-Vector<cols, Double> wDiagonal;
-Matrix<cols, Double> v;
+@code{.cpp}
+Math::RectangularMatrix<cols, rows, Double> m;
+
+Math::RectangularMatrix<cols, rows, Double> uPart;
+Math::Vector<cols, Double> wDiagonal;
+Math::Matrix<cols, Double> v;
 
 std::tie(uPart, wDiagonal, v) = Math::Algorithms::svd(m);
 
 // Extend U
-Matrix<rows, Double> u(Matrix<rows, Double>::Zero);
+Math::Matrix<rows, Double> u(Matrix<rows, Double>::Zero);
 for(std::size_t i = 0; i != rows; ++i)
     u[i] = uPart[i];
 
 // Diagonal W
-RectangularMatrix<cols, rows, Double> w =
-    RectangularMatrix<cols, rows, Double>::fromDiagonal(wDiagonal);
+Math::RectangularMatrix<cols, rows, Double> w =
+    Math::RectangularMatrix<cols, rows, Double>::fromDiagonal(wDiagonal);
 
 // u*w*v.transposed() == m
 @endcode

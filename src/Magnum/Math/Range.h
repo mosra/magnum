@@ -89,7 +89,8 @@ template<UnsignedInt dimensions, class T> class Range {
          *
          * Performs only default casting on the values, no rounding or
          * anything else. Example usage:
-         * @code
+         *
+         * @code{.cpp}
          * Range2D<Float> floatingPoint({1.3f, 2.7f}, {-15.0f, 7.0f});
          * Range2D<Byte> integral(floatingPoint); // {{1, 2}, {-15, 7}}
          * @endcode
@@ -215,7 +216,7 @@ template<UnsignedInt dimensions, class T> class Range {
 /**
 @brief One-dimensional range
 
-Convenience alternative to `Range<1, T>`. See @ref Range for more
+Convenience alternative to @cpp Range<1, T> @ce. See @ref Range for more
 information.
 */
 #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */

@@ -93,12 +93,15 @@ template<class T> T exp(T exponent) { return std::exp(exponent); }
 @brief Integer division with remainder
 
 Example usage:
-@code
+
+@code{.cpp}
 Int quotient, remainder;
 std::tie(quotient, remainder) = Math::div(57, 6); // {9, 3}
 @endcode
+
 Equivalent to the following, but possibly done in a single CPU instruction:
-@code
+
+@code{.cpp}
 Int quotient = 57/6;
 Int remainder = 57%6;
 @endcode
@@ -370,9 +373,11 @@ template<class T> inline std::pair<T, T> minmax(std::initializer_list<T> list) {
 
 Values smaller than @p min are set to @p min, values larger than @p max are
 set to @p max. Equivalent to:
-@code
+
+@code{.cpp}
 Math::min(Math::max(value, min), max)
 @endcode
+
 <em>NaN</em>s passed in @p value parameter are propagated.
 @see @ref min(), @ref max()
 */
@@ -546,9 +551,7 @@ template<std::size_t size, class T, class U> inline typename std::enable_if<!Imp
 }
 #endif
 
-/**
-@overload
-
+/** @overload
 Similar to the above, but instead of multiplication and addition it just does
 component-wise selection from either @p a or @p b based on values in @p t.
 */

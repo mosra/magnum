@@ -58,10 +58,10 @@ namespace Implementation {
 @brief Vector storing boolean values
 @tparam size    Bit count
 
-Result of component-wise comparison from Vector. The boolean values are stored
-as bits in array of unsigned bytes, unused bits have undefined value which
-doesn't affect comparison or @ref all() / @ref none() / @ref any() functions.
-See also @ref matrix-vector for brief introduction.
+Result of component-wise comparison from @ref Vector. The boolean values are
+stored as bits in array of unsigned bytes, unused bits have undefined value
+which doesn't affect comparison or @ref all() / @ref none() / @ref any()
+functions. See also @ref matrix-vector for brief introduction.
 */
 template<std::size_t size> class BoolVector {
     static_assert(size != 0, "BoolVector cannot have zero elements");

@@ -50,7 +50,7 @@ reasons, only pure Gaussian elimination is done on @p a and the final
 backsubstitution is done only on @p t, as @p a would always end with identity
 matrix anyway.
 
-Based on ultra-compact Python code by Jarno Elonen,
+Based on an ultra-compact Python code by Jarno Elonen,
 http://elonen.iki.fi/code/misc-notes/python-gaussj/index.html.
 */
 template<std::size_t size, std::size_t rows, class T> bool gaussJordanInPlaceTransposed(RectangularMatrix<size, size, T>& a, RectangularMatrix<size, rows, T>& t) {
@@ -114,9 +114,9 @@ template<std::size_t size, std::size_t cols, class T> bool gaussJordanInPlace(Re
 /**
 @brief Gauss-Jordan matrix inversion
 
-Since @f$ (\boldsymbol{A}^{-1})^T = (\boldsymbol{A}^T)^{-1} @f$, passes @p a
-and an identity matrix to @ref gaussJordanInPlaceTransposed() and returns the
-inverted matrix. Expects that the matrix is invertible.
+Since @f$ (\boldsymbol{A}^{-1})^T = (\boldsymbol{A}^T)^{-1} @f$, passes
+@p matrix and an identity matrix to @ref gaussJordanInPlaceTransposed();
+returning the inverted matrix. Expects that the matrix is invertible.
 @see @ref Matrix::inverted()
 */
 template<std::size_t size, class T> Matrix<size, T> gaussJordanInverted(Matrix<size, T> matrix) {

@@ -141,7 +141,8 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          *
          * Performs only default casting on the values, no rounding or
          * anything else. Example usage:
-         * @code
+         *
+         * @code{.cpp}
          * RectangularMatrix<4, 1, Float> floatingPoint(1.3f, 2.7f, -15.0f, 7.0f);
          * RectangularMatrix<4, 1, Byte> integral(floatingPoint);
          * // integral == {1, 2, -15, 7}
@@ -175,7 +176,8 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          *
          * Particular elements can be accessed using @ref Vector::operator[](),
          * e.g.:
-         * @code
+         *
+         * @code{.cpp}
          * RectangularMatrix<4, 3, Float> m;
          * Float a = m[2][1];
          * @endcode
@@ -469,7 +471,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
 /**
 @brief Matrix with 2 columns and 3 rows
 
-Convenience alternative to `RectangularMatrix<2, 3, T>`. See
+Convenience alternative to @cpp RectangularMatrix<2, 3, T> @ce. See
 @ref RectangularMatrix for more information.
 @see @ref Magnum::Matrix2x3, @ref Magnum::Matrix2x3d
 */
@@ -480,7 +482,7 @@ template<class T> using Matrix2x3 = RectangularMatrix<2, 3, T>;
 /**
 @brief Matrix with 3 columns and 2 rows
 
-Convenience alternative to `RectangularMatrix<3, 2, T>`. See
+Convenience alternative to @cpp RectangularMatrix<3, 2, T> @ce. See
 @ref RectangularMatrix for more information.
 @see @ref Magnum::Matrix3x2, @ref Magnum::Matrix3x2d
 */
@@ -491,7 +493,7 @@ template<class T> using Matrix3x2 = RectangularMatrix<3, 2, T>;
 /**
 @brief Matrix with 2 columns and 4 rows
 
-Convenience alternative to `RectangularMatrix<2, 4, T>`. See
+Convenience alternative to @cpp RectangularMatrix<2, 4, T> @ce. See
 @ref RectangularMatrix for more information.
 @see @ref Magnum::Matrix2x4, @ref Magnum::Matrix2x4d
 */
@@ -502,7 +504,7 @@ template<class T> using Matrix2x4 = RectangularMatrix<2, 4, T>;
 /**
 @brief Matrix with 4 columns and 2 rows
 
-Convenience alternative to `RectangularMatrix<4, 2, T>`. See
+Convenience alternative to @cpp RectangularMatrix<4, 2, T> @ce. See
 @ref RectangularMatrix for more information.
 @see @ref Magnum::Matrix4x2, @ref Magnum::Matrix4x2d
 */
@@ -513,7 +515,7 @@ template<class T> using Matrix4x2 = RectangularMatrix<4, 2, T>;
 /**
 @brief Matrix with 3 columns and 4 rows
 
-Convenience alternative to `RectangularMatrix<3, 4, T>`. See
+Convenience alternative to @cpp RectangularMatrix<3, 4, T> @ce. See
 @ref RectangularMatrix for more information.
 @see @ref Magnum::Matrix3x4, @ref Magnum::Matrix3x4d
 */
@@ -524,7 +526,7 @@ template<class T> using Matrix3x4 = RectangularMatrix<3, 4, T>;
 /**
 @brief Matrix with 4 columns and 3 rows
 
-Convenience alternative to `RectangularMatrix<4, 3, T>`. See
+Convenience alternative to @cpp RectangularMatrix<4, 3, T> @ce. See
 @ref RectangularMatrix for more information.
 @see @ref Magnum::Matrix4x3, @ref Magnum::Matrix4x3d
 */

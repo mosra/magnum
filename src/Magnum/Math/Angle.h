@@ -42,22 +42,24 @@ namespace Magnum { namespace Math {
 /**
 @brief Angle in degrees
 
-Along with Rad provides convenience classes to make angle specification and
-conversion less error-prone.
+Along with @ref Rad provides convenience classes to make angle specification
+and conversion less error-prone.
 
-## Usage
+@section Math-Deg-usage Usage
 
-You can enter the value either by using literal:
-@code
+You can enter the value either by using a literal:
+
+@code{.cpp}
 using namespace Literals;
 
 auto degrees = 60.0_degf;       // type is Deg<Float>
 auto radians = 1.047_rad;       // type is Rad<Double>
 @endcode
 
-Or explicitly convert unitless value (such as output from some function) to
+Or explicitly convert a unitless value (such as output from some function) to
 either degrees or radians:
-@code
+
+@code{.cpp}
 Double foo();
 
 Deg<Float> degrees(35.0f);
@@ -66,8 +68,9 @@ Rad<Double> radians(foo());
 @endcode
 
 The classes support all arithmetic operations, such as addition, subtraction
-or multiplication/division by unitless number:
-@code
+or multiplication/division by a unitless number:
+
+@code{.cpp}
 auto a = 60.0_degf + 17.35_degf;
 auto b = -a + 23.0_degf*4;
 //auto c = 60.0_degf*45.0_degf; // error, undefined resulting unit
@@ -76,7 +79,8 @@ auto b = -a + 23.0_degf*4;
 It is also possible to compare angles with all comparison operators, but
 comparison of degrees and radians is not possible without explicit conversion
 to common type:
-@code
+
+@code{.cpp}
 Rad<Float> angle();
 
 Deg<Float> x = angle();         // convert to degrees for easier comparison
@@ -85,8 +89,9 @@ if(x < 30.0_degf) foo();
 @endcode
 
 It is possible to seamlessly convert between degrees and radians and explicitly
-convert the value back to underlying type:
-@code
+convert the value back to the underlying type:
+
+@code{.cpp}
 Float sine(Rad<Float> angle);
 Float a = sine(60.0_degf);      // the same as sine(1.047_radf)
 Deg<Double> b = 1.047_rad;      // the same as 60.0_deg
@@ -94,12 +99,13 @@ Float d = Double(b);            // 60.0
 //Float e = b;                  // error, no implicit conversion
 @endcode
 
-## Requirement of explicit conversion
+@section Math-Angle-explicit-conversion Requirement of explicit conversion
 
 The requirement of explicit conversions from and to unitless types helps to
 reduce unit-based errors. Consider following example with implicit conversions
 allowed:
-@code
+
+@code{.cpp}
 namespace std { float sin(float angle); }
 Float sine(Rad<Float> angle);
 
@@ -111,7 +117,8 @@ std::sin(b);                    // silent error, std::sin() expected radians
 @endcode
 
 These silent errors are easily avoided by requiring explicit conversions:
-@code
+
+@code{.cpp}
 //sine(a);                      // compilation error
 sine(Deg<Float>{a});            // explicitly specifying unit
 
@@ -153,8 +160,7 @@ template<class T> class Deg: public Unit<Deg, T> {
         /**
          * @brief Construct degrees from radians
          *
-         * Performs conversion from radians to degrees, i.e.:
-         * @f[
+         * Performs conversion from radians to degrees, i.e.: @f[
          *      deg = 180 \frac {rad} \pi
          * @f]
          */
@@ -167,10 +173,12 @@ namespace Literals {
 @brief Double-precision degree value literal
 
 Example usage:
-@code
+
+@code{.cpp}
 Double cosine = Math::cos(60.0_deg);  // cosine = 0.5
 Double cosine = Math::cos(1.047_rad); // cosine = 0.5
 @endcode
+
 @see @link operator""_degf() @endlink, @link operator""_rad() @endlink
 */
 constexpr Deg<Double> operator "" _deg(long double value) { return Deg<Double>(Double(value)); }
@@ -179,10 +187,12 @@ constexpr Deg<Double> operator "" _deg(long double value) { return Deg<Double>(D
 @brief Single-precision degree value literal
 
 Example usage:
-@code
+
+@code{.cpp}
 Float tangent = Math::tan(60.0_degf);  // tangent = 1.732f
 Float tangent = Math::tan(1.047_radf); // tangent = 1.732f
 @endcode
+
 @see @link operator""_deg() @endlink, @link operator""_radf() @endlink
 */
 constexpr Deg<Float> operator "" _degf(long double value) { return Deg<Float>(Float(value)); }
@@ -225,8 +235,7 @@ template<class T> class Rad: public Unit<Rad, T> {
         /**
          * @brief Construct radians from degrees
          *
-         * Performs conversion from degrees to radians, i.e.:
-         * @f[
+         * Performs conversion from degrees to radians, i.e.: @f[
          *      rad = deg \frac \pi 180
          * @f]
          */

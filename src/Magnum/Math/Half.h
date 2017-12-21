@@ -48,7 +48,8 @@ equality comparison with correct treatment of NaN values, promotion and
 negation operator, an @link Literals::operator""_h() operator""_h() @endlink
 literal and an @ref operator<<(Debug&, Half) debug operator. Internally the class uses
 @ref packHalf() and @ref unpackHalf(). Example usage:
-@code
+
+@code{.cpp}
 using namespace Math::Literals;
 
 Half a = 3.14159_h;
@@ -60,7 +61,8 @@ Debug{} << UnsignedShort(a);    // Prints 25675
 Note that it is also possible to use this type inside @ref Vector classes,
 though, again, only for passing data around and converting them, without any
 arithmetic operations:
-@code
+
+@code{.cpp}
 Math::Vector3<Half> a{3.14159_h, -1.4142_h, 1.618_h};
 Vector3 b{a};                                // converts to 32-bit floats
 Debug{} << a;                                // prints {3.14159, -1.4142, 1.618}

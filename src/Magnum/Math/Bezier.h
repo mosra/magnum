@@ -182,8 +182,8 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
 /**
 @brief Quadratic Bézier curve
 
-Convenience alternative to `Bezier<2, dimensions, T>`. See @ref Bezier for more
-information.
+Convenience alternative to @cpp Bezier<2, dimensions, T> @ce. See @ref Bezier
+for more information.
 @see @ref QuadraticBezier2D, @ref QuadraticBezier3D
 */
 #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
@@ -193,8 +193,8 @@ template<UnsignedInt dimensions, class T> using QuadraticBezier = Bezier<2, dime
 /**
 @brief Two-dimensional quadratic Bézier curve
 
-Convenience alternative to `QuadraticBezier<2, T>`. See @ref QuadraticBezier
-and @ref Bezier for more information.
+Convenience alternative to @cpp QuadraticBezier<2, T> @ce. See
+@ref QuadraticBezier and @ref Bezier for more information.
 @see @ref QuadraticBezier3D, @ref Magnum::QuadraticBezier2D,
     @ref Magnum::QuadraticBezier2Dd
 */
@@ -205,8 +205,8 @@ template<class T> using QuadraticBezier2D = QuadraticBezier<2, T>;
 /**
 @brief Three-dimensional quadratic Bézier curve
 
-Convenience alternative to `QuadraticBezier<3, T>`. See @ref QuadraticBezier
-and @ref Bezier for more information.
+Convenience alternative to @cpp QuadraticBezier<3, T> @ce. See
+@ref QuadraticBezier and @ref Bezier for more information.
 @see @ref QuadraticBezier2D, @ref Magnum::QuadraticBezier3D,
     @ref Magnum::QuadraticBezier3Dd
 */
@@ -217,8 +217,8 @@ template<class T> using QuadraticBezier3D = QuadraticBezier<3, T>;
 /**
 @brief Cubic Bézier curve
 
-Convenience alternative to `Bezier<3, dimensions, T>`. See @ref Bezier for more
-information.
+Convenience alternative to @cpp Bezier<3, dimensions, T> @ce. See @ref Bezier
+for more information.
 @see @ref CubicBezier2D, @ref CubicBezier3D
 */
 #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
@@ -228,8 +228,8 @@ template<UnsignedInt dimensions, class T> using CubicBezier = Bezier<3, dimensio
 /**
 @brief Two-dimensional cubic Bézier curve
 
-Convenience alternative to `CubicBezier<2, T>`. See @ref CubicBezier
-and @ref Bezier for more information.
+Convenience alternative to @cpp CubicBezier<2, T> @ce. See @ref CubicBezier and
+@ref Bezier for more information.
 @see @ref CubicBezier3D, @ref Magnum::CubicBezier2D,
     @ref Magnum::CubicBezier2Dd
 */
@@ -240,8 +240,8 @@ template<class T> using CubicBezier2D = CubicBezier<2, T>;
 /**
 @brief Three-dimensional cubic Bézier curve
 
-Convenience alternative to `CubicBezier<3, T>`. See @ref CubicBezier
-and @ref Bezier for more information.
+Convenience alternative to @cpp CubicBezier<3, T> @ce. See @ref CubicBezier and
+@ref Bezier for more information.
 @see @ref CubicBezier2D, @ref Magnum::CubicBezier3D,
     @ref Magnum::CubicBezier3Dd
 */

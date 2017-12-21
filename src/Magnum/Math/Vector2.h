@@ -66,9 +66,11 @@ template<class T> class Vector2: public Vector<2, T> {
          * @brief Vector in direction of X axis (right)
          *
          * Usable for translation in given axis, for example:
-         * @code
+         *
+         * @code{.cpp}
          * Matrix3::translation(Vector2::xAxis(5.0f)); // same as Matrix3::translation({5.0f, 0.0f});
          * @endcode
+         *
          * @see @ref yAxis(), @ref xScale(), @ref Matrix3::right()
          */
         constexpr static Vector2<T> xAxis(T length = T(1)) { return {length, T(0)}; }
@@ -85,9 +87,11 @@ template<class T> class Vector2: public Vector<2, T> {
          * @brief Scaling vector in direction of X axis (width)
          *
          * Usable for scaling along given direction, for example:
-         * @code
+         *
+         * @code{.cpp}
          * Matrix3::scaling(Vector2::xScale(-2.0f)); // same as Matrix3::scaling({-2.0f, 1.0f});
          * @endcode
+         *
          * @see @ref yScale(), @ref xAxis()
          */
         constexpr static Vector2<T> xScale(T scale) { return {scale, T(1)}; }

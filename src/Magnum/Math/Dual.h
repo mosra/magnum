@@ -98,7 +98,8 @@ template<class T> class Dual {
          *
          * Performs only default casting on the values, no rounding or anything
          * else. Example usage:
-         * @code
+         *
+         * @code{.cpp}
          * Dual<Float> floatingPoint(1.3f, 2.7f);
          * Dual<Byte> integral(floatingPoint);
          * // integral == {1, 2}

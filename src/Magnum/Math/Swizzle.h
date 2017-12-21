@@ -65,17 +65,20 @@ namespace Implementation {
 @brief Swizzle Vector components
 
 Creates new vector from given components. Example:
-@code
+
+@code{.cpp}
 Vector4i original(-1, 2, 3, 4);
 
 auto vec = swizzle<'w', '1', '0', 'x', 'y', 'z'>(original);
 // vec == { 4, 1, 0, -1, 2, 3 }
 @endcode
-You can use letters `x`, `y`, `z`, `w` and `r`, `g`, `b`, `a` for addressing
-components or letters `0` and `1` for zero and one. Count of elements is
-unlimited, but must be at least one. If the resulting vector is two, three or
-four-component, corresponding @ref Math::Vector2, @ref Math::Vector3,
-@ref Math::Vector4, @ref Color3 or @ref Color4 specialization is returned.
+
+You can use letters @cpp 'x' @ce, @cpp 'y' @ce, @cpp 'z' @ce, @cpp 'w' @ce and
+@cpp 'r' @ce, @cpp 'g' @ce, @cpp 'b' @ce, @cpp 'a' @ce for addressing
+components or letters @cpp '0' @ce and @cpp '1' @ce for zero and one. Count of
+elements is unlimited, but must be at least one. If the resulting vector is
+two, three or four-component, corresponding @ref Vector2, @ref Vector3,
+@ref Vector4, @ref Color3 or @ref Color4 specialization is returned.
 
 @see @ref matrix-vector-component-access, @ref Vector4::xyz(),
     @ref Vector4::rgb(), @ref Vector4::xy(), @ref Vector3::xy()

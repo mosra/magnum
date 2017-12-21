@@ -199,7 +199,8 @@ template<std::size_t size, class T> class Vector {
          *
          * Performs only default casting on the values, no rounding or
          * anything else. Example usage:
-         * @code
+         *
+         * @code{.cpp}
          * Vector<4, Float> floatingPoint(1.3f, 2.7f, -15.0f, 7.0f);
          * Vector<4, Byte> integral(floatingPoint);
          * // integral == {1, 2, -15, 7}
@@ -496,9 +497,11 @@ template<std::size_t size, class T> class Vector {
          * Convenience equivalent to the following code. Due to operation order
          * this function is faster than the obvious way of sizing
          * @ref normalized() vector.
-         * @code
-         * vec*(vec.lengthInverted()*length) // the brackets are important
+         *
+         * @code{.cpp}
+         * vec*(vec.lengthInverted()*length) // the parentheses are important
          * @endcode
+         *
          * @see @ref normalized()
          */
         Vector<size, T> resized(T length) const {
@@ -511,7 +514,7 @@ template<std::size_t size, class T> class Vector {
          * Returns vector projected onto @p line. @f[
          *      \boldsymbol a_1 = \frac{\boldsymbol a \cdot \boldsymbol b}{\boldsymbol b \cdot \boldsymbol b} \boldsymbol b
          * @f]
-         * @see @ref dot(), @ref projectedOntoNormalized()
+         * @see @ref Math::dot(), @ref projectedOntoNormalized()
          */
         Vector<size, T> projected(const Vector<size, T>& line) const {
             return line*Math::dot(*this, line)/line.dot();
@@ -525,7 +528,7 @@ template<std::size_t size, class T> class Vector {
          *      \boldsymbol a_1 = \frac{\boldsymbol a \cdot \boldsymbol b}{\boldsymbol b \cdot \boldsymbol b} \boldsymbol b =
          *          (\boldsymbol a \cdot \boldsymbol b) \boldsymbol b
          * @f]
-         * @see @ref dot() const
+         * @see @ref Math::dot()
          */
         Vector<size, T> projectedOntoNormalized(const Vector<size, T>& line) const;
 

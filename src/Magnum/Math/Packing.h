@@ -53,16 +53,17 @@ value in range @f$ [0, 1] @f$ or from *signed* integral to range @f$ [-1, 1] @f$
     @ref Magnum::Short "Short", @ref Magnum::Double "Double" from
     @ref Magnum::Int "Int" and similarly for vector types).
 
-@attention To ensure the integral type is correctly detected when using
-    literals, this function should be called with both template parameters
-    explicit, e.g.:
-@code
-// Literal type is (signed) char, but we assumed unsigned char, a != 1.0f
-Float a = Math::unpack<Float>('\xFF');
+@attention
+    To ensure the integral type is correctly detected when using literals, this
+    function should be called with both template parameters explicit, e.g.:
+@attention
+    @code{.cpp}
+    // Literal type is (signed) char, but we assumed unsigned char, a != 1.0f
+    Float a = Math::unpack<Float>('\xFF');
 
-// b = 1.0f
-Float b = Math::unpack<Float, UnsignedByte>('\xFF');
-@endcode
+    // b = 1.0f
+    Float b = Math::unpack<Float, UnsignedByte>('\xFF');
+    @endcode
 
 @see @ref pack()
 */
@@ -73,7 +74,8 @@ template<class FloatingPoint, class Integral> inline FloatingPoint unpack(const 
 
 Alternative to the above with ability to specify how many bits of the integral
 representation to use. Example usage:
-@code
+
+@code{.cpp}
 Float a = Math::unpack<Float, UnsignedShort>(8191);     // 0.124987f
 Float b = Math::unpack<Float, UnsignedShort, 14>(8191); // 0.499969f
 Float b = Math::unpack<Float, 14>(8191u);               // 0.499969f
@@ -170,7 +172,8 @@ template<class Integral, std::size_t size, class FloatingPoint, UnsignedInt bits
 
 Alternative to the above with ability to specify how many bits of the integral
 representation to use. Example usage:
-@code
+
+@code{.cpp}
 auto a = Math::pack<UnsignedShort>(0.5f);     // 32767
 auto b = Math::pack<UnsignedShort, 14>(0.5f); // 8191
 @endcode

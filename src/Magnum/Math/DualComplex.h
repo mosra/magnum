@@ -271,7 +271,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
         /**
          * @brief Complex number length squared
          *
-         * Should be used instead of length() for comparing complex number
+         * Should be used instead of @ref length() for comparing complex number
          * length with other values, because it doesn't compute the square root. @f[
          *      |\hat c|^2 = c_0 \cdot c_0 = |c_0|^2
          * @f]
@@ -284,8 +284,8 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
         /**
          * @brief Dual quaternion length
          *
-         * See lengthSquared() which is faster for comparing length with other
-         * values. @f[
+         * See @ref lengthSquared() which is faster for comparing length with
+         * other values. @f[
          *      |\hat c| = \sqrt{c_0 \cdot c_0} = |c_0|
          * @f]
          * @todo can this be done similarly to dual quaternions?
@@ -310,8 +310,8 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
         /**
          * @brief Inverted dual complex number
          *
-         * See invertedNormalized() which is faster for normalized dual complex
-         * numbers. @f[
+         * See @ref invertedNormalized() which is faster for normalized dual
+         * complex numbers. @f[
          *      \hat c^{-1} = c_0^{-1} - \epsilon c_\epsilon
          * @f]
          * @todo can this be done similarly to dual quaternions?
@@ -336,8 +336,8 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
         /**
          * @brief Rotate and translate point with dual complex number
          *
-         * See transformPointNormalized(), which is faster for normalized dual
-         * complex number. @f[
+         * See @ref transformPointNormalized(), which is faster for normalized
+         * dual complex number. @f[
          *      v' = \hat c v = \hat c ((0 + i) + \epsilon(v_x + iv_y))
          * @f]
          * @see @ref DualComplex(const Vector2<T>&), @ref dual(),
