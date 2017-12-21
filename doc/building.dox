@@ -416,7 +416,7 @@ mkdir build-angle && cd build-angle
 cmake .. ^
     -DCMAKE_PREFIX_PATH=<path-to-ANGLE-installation> ^
     -DTARGET_GLES=ON ^
-    -DTARGEET_GLES2=OFF ^
+    -DTARGET_GLES2=OFF ^
     -DWITH_SDL2APPLICATION=ON
 cmake --build .
 @endcode
