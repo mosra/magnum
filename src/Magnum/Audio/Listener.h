@@ -56,28 +56,27 @@ namespace Implementation {
 Feature which manages the position, orientation and gain of the OpenAL listener
 for an @ref SceneGraph::Object.
 
-## Usage
+@section Audio-Listener-usage Usage
 
 Minimal scene setup for a @ref Listener3D will require the following code:
 
-@code
+@code{.cpp}
 Scene3D scene;
 Object3D object{&scene};
 Listener3D listener{object};
 
 // ... every frame, update the listener to changes in object transformation:
 listener.update({});
-
 @endcode
 
 For two dimensional scenes simply replace all `3D` with `2D`.
 
-### Using Listener with PlayableGroup
+@subsection Audio-Listener-usage-playablegroup Using Listener with PlayableGroup
 
 When using @ref PlayableGroup, you can update the listener and groups as
 follows:
 
-@code
+@code{.cpp}
 // ...
 Listener3D listener{object};
 PlayableGroup3D group1, group2;
@@ -86,7 +85,7 @@ PlayableGroup3D group1, group2;
 listener.update({group1, group2});
 @endcode
 
-## Active Listener
+@section Audio-Listener-active-listener Active listener
 
 There can only be at the most *one* active listener at a given time, i.e. the
 one on which @ref Listener::update() was called last. This is because OpenAL
@@ -96,7 +95,7 @@ between them for cinematics for example.
 
 @ref AbstractObject::setClean() will not affect inactive listeners.
 
-## Sound Transformation
+@section Audio-Listener-sound-transformation Sound transformation
 
 @ref Listener::setSoundTransformation() enables you to set a transformation
 matrix which is applied to the listeners orientation and position before passed
@@ -119,10 +118,10 @@ template <UnsignedInt dimensions> class Listener: public SceneGraph::AbstractFea
          * @brief Constructor
          * @param object    Object this listener belongs to
          *
-         * Creates a listener with a forward vector of `{0.0f, 0.0f, -1.0f}` and
-         * up vector of `{0.0f, 1.0f, 0.0f}`. These vectors cannot be changed,
-         * the listeners orientation and translation can be instead affected by
-         * `object` or via @ref Listener::setSoundTransformation().
+         * Creates a listener with a forward vector of `{0.0f, 0.0f, -1.0f}`
+         * and up vector of `{0.0f, 1.0f, 0.0f}`. These vectors cannot be
+         * changed, the listeners orientation and translation can be instead
+         * affected by @p object or via @ref Listener::setSoundTransformation().
          * @see @ref setGain()
          */
         explicit Listener(SceneGraph::AbstractObject<dimensions, Float>& object):
@@ -184,7 +183,6 @@ template <UnsignedInt dimensions> class Listener: public SceneGraph::AbstractFea
         }
 
     private:
-
         virtual void clean(const MatrixTypeFor<dimensions, Float>& absoluteTransformationMatrix) override;
 
         Matrix4 _soundTransformation;

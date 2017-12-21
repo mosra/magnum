@@ -49,9 +49,9 @@ namespace Magnum { namespace Audio {
 Feature which manages the position, orientation and gain of a @ref Source for
 an @ref SceneGraph::Object.
 
-## Usage
+@section Audio-Playable-usage Usage
 
-@code
+@code{.cpp}
 Object3D object;
 Source source;
 Playable3D playable{object, source};
@@ -140,7 +140,6 @@ template<UnsignedInt dimensions> class Playable: public SceneGraph::AbstractGrou
         }
 
     private:
-
         void clean(const MatrixTypeFor<dimensions, Float>& absoluteTransformationMatrix) override {
             Vector3 position = Vector3::pad(absoluteTransformationMatrix.translation(), 0);
             if(playables()) {

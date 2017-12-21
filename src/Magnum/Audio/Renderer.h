@@ -77,7 +77,7 @@ class Renderer {
         /**
          * @brief Set listener position
          *
-         * Default is `{0.0f, 0.0f, 0.0f}`.
+         * Default is @cpp {0.0f, 0.0f, 0.0f} @ce.
          * @see @fn_al{Listenerfv} with @def_al{POSITION}
          */
         static void setListenerPosition(const Vector3& position) {
@@ -136,7 +136,7 @@ class Renderer {
         /**
          * @brief Set listener velocity
          *
-         * Default is `{0.0f, 0.0f, 0.0f}`.
+         * Default is @cpp {0.0f, 0.0f, 0.0f} @ce.
          * @see @fn_al{Listenerfv} with @def_al{VELOCITY}
          */
         static void setListenerVelocity(const Vector3& velocity) {
@@ -195,8 +195,8 @@ class Renderer {
         /**
          * @brief Set listener gain
          *
-         * Default is `1.0f`, which means that the sound is unattenuated.
-         * If set to `0.0f`, all sound is muted.
+         * Default is @cpp 1.0f @ce, which means that the sound is
+         * unattenuated. If set to @cpp 0.0f @ce, all sound is muted.
          * @see @fn_al{Listenerf} with @def_al{GAIN}
          */
         static void setListenerGain(Float gain) {
@@ -214,7 +214,8 @@ class Renderer {
         /**
          * @brief Set Doppler factor
          *
-         * Default is `1.0f`. If set to `0.0f`, the effect is disabled.
+         * Default is @cpp 1.0f @ce. If set to @cpp 0.0f @ce, the effect is
+         * disabled.
          * @see @ref setSpeedOfSound(), @fn_al{DopplerFactor}
          */
         static void setDopplerFactor(Float factor) {
@@ -232,7 +233,7 @@ class Renderer {
         /**
          * @brief Set speed of sound
          *
-         * Default is `343.3f` (meters per second).
+         * Default is @cpp 343.3f @ce (meters per second).
          * @see @ref setDopplerFactor(), @fn_al{SpeedOfSound}
          */
         static void setSpeedOfSound(Float speed) {

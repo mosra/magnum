@@ -43,7 +43,7 @@ Provides interface for importing various audio formats. See @ref plugins for
 more information and `*Importer` classes in @ref Audio namespace for available
 importer plugins.
 
-## Subclassing
+@section Audio-AbstractImporter-subclassing Subclassing
 
 Plugin implements function @ref doFeatures(), @ref doIsOpened(), one of or both
 @ref doOpenData() and @ref doOpenFile() functions, function @ref doClose() and
@@ -60,7 +60,7 @@ checked by the implementation:
 -   All `do*()` implementations working on opened file are called only if
     there is any file opened.
 
-Plugin interface string is `"cz.mosra.magnum.Audio.AbstractImporter/0.1"`.
+Plugin interface string is @cpp "cz.mosra.magnum.Audio.AbstractImporter/0.1" @ce.
 
 @attention @ref Corrade::Containers::Array instances returned from the plugin
     should *not* use anything else than the default deleter, otherwise this can
@@ -108,7 +108,7 @@ class MAGNUM_AUDIO_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Closes previous file, if it was opened, and tries to open given
          * file. Available only if @ref Feature::OpenData is supported. Returns
-         * `true` on success, `false` otherwise.
+         * @cpp true @ce on success, @cpp false @ce otherwise.
          * @see @ref features(), @ref openFile()
          */
         bool openData(Containers::ArrayView<const char> data);
@@ -117,7 +117,7 @@ class MAGNUM_AUDIO_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Open file
          *
          * Closes previous file, if it was opened, and tries to open given
-         * file. Returns `true` on success, `false` otherwise.
+         * file. Returns @cpp true @ce on success, @cpp false @ce otherwise.
          * @see @ref features(), @ref openData()
          */
         bool openFile(const std::string& filename);

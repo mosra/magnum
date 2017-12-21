@@ -97,7 +97,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @brief Set position
          * @return Reference to self (for method chaining)
          *
-         * Default is `{0.0f, 0.0f, 0.0f}`.
+         * Default is @cpp {0.0f, 0.0f, 0.0f} @ce.
          * @see @ref setRelative(), @fn_al{Sourcefv} with @def_al{POSITION}
          */
         Source& setPosition(const Vector3& position) {
@@ -127,7 +127,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @brief Set velocity
          * @return Reference to self (for method chaining)
          *
-         * Default is `{0.0f, 0.0f, 0.0f}`.
+         * Default is @cpp {0.0f, 0.0f, 0.0f} @ce.
          * @see @ref setRelative(), @fn_al{Sourcefv} with @def_al{VELOCITY}
          */
         Source& setVelocity(const Vector3& velocity) {
@@ -158,7 +158,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @brief Interpret source relatively to listener
          *
          * When enabled, source position, direction and velocity will be
-         * interpreted relatively to listener. Default is `false`.
+         * interpreted relatively to listener. Default is @cpp false @ce.
          * @see @ref setPosition(), @ref setDirection(), @ref setVelocity(),
          *      @fn_al{Sourcei} with @def_al{SOURCE_RELATIVE}
          */
@@ -185,8 +185,8 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @brief Set gain
          * @return Reference to self (for method chaining)
          *
-         * Default is `1.0f`, which means that the sound is unattenuated.
-         * If set to `0.0f`, the source is muted.
+         * Default is @cpp 1.0f @ce, which means that the sound is
+         * unattenuated. If set to @cpp 0.0f @ce, the source is muted.
          * @see @ref setMinGain(), @ref setMaxGain(), @fn_al{Sourcef} with
          *      @def_al{GAIN}
          */
@@ -212,7 +212,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          *
          * If effective gain is lower than min gain, min gain is used. Note
          * that this is done before listener gain is applied. Default is
-         * `0.0f`.
+         * @cpp 0.0f @ce.
          * @see @ref setMaxGain(), @ref setGain(), @fn_al{Sourcef} with
          *      @def_al{MIN_GAIN}
          */
@@ -238,7 +238,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          *
          * If effective gain is higher than max gain, max gain is used. Note
          * that this is done before listener gain is applied. Default is
-         * `1.0f`. If set to `0.0f`, the source is muted.
+         * @cpp 1.0f @ce. If set to @cpp 0.0f @ce, the source is muted.
          * @see @ref setMinGain(), @ref setGain(), @fn_al{Sourcef} with
          *      @def_al{MIN_GAIN}
          */
@@ -261,7 +261,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @brief Set reference distance
          * @return Reference to self (for method chaining)
          *
-         * Default is `1.0f`. Distance at which the listener will
+         * Default is @cpp 1.0f @ce. Distance at which the listener will
          * experience @ref gain() (or @ref minGain(), @ref maxGain()
          * if gain was clamped).
          * @see @ref setRolloffFactor(), @fn_al{Sourcef} with
@@ -294,7 +294,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @brief Set rolloff factor
          * @return Reference to self (for method chaining)
          *
-         * Default is `1.0f`.
+         * Default is @cpp 1.0f @ce.
          * @see @ref setReferenceDistance(), @fn_al{Sourcef} with
          *      @def_al{ROLLOFF_FACTOR}
          */
@@ -355,8 +355,8 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @brief Set direction
          * @return Reference to self (for method chaining)
          *
-         * Default is `{0.0f, 0.0f, 0.0f}`, which means that the source is not
-         * directional.
+         * Default is @cpp {0.0f, 0.0f, 0.0f} @ce, which means that the source
+         * is not directional.
          * @see @ref setInnerConeAngle(), @ref setOuterConeAngle(),
          *      @ref setRelative(), @fn_al{Sourcefv} with @def_al{DIRECTION}
          */
@@ -388,7 +388,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @return Reference to self (for method chaining)
          *
          * Has effect only if the source is directional. Default is
-         * `360.0_degf`.
+         * @cpp 360.0_degf @ce.
          * @see @ref setOuterConeAngle(), @ref setDirection(), @fn_al{Sourcef}
          *      with @def_al{CONE_INNER_ANGLE}
          */
@@ -412,7 +412,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @return Reference to self (for method chaining)
          *
          * Has effect only if the source is directional. Default is
-         * `360.0_degf`.
+         * @cpp 360.0_degf @ce.
          * @see @ref setInnerConeAngle(), @ref setDirection(),
          *      @ref setOuterConeGain() @fn_al{Sourcef} with
          *      @def_al{CONE_OUTER_ANGLE}
@@ -437,7 +437,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @return Reference to self (for method chaining)
          *
          * The factor with which the gain is multiplied outside the outer cone.
-         * Default is `0.0f`.
+         * Default is @cpp 0.0f @ce.
          * @see @ref setGain(), @ref setOuterConeAngle(), @fn_al{Sourcef} with
          *      @def_al{CONE_OUTER_GAIN}
          */
@@ -460,7 +460,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @brief Set pitch
          * @return Reference to self (for method chaining)
          *
-         * Default is `1.0f`.
+         * Default is @cpp 1.0f @ce.
          * @see @fn_al{Sourcef} with @def_al{PITCH}
          */
         Source& setPitch(Float pitch) {
@@ -626,7 +626,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @brief Set source looping
          * @return Reference to self (for method chaining)
          *
-         * Default is `false`.
+         * Default is @cpp false @ce.
          * @see @fn_al{Sourcei} with @def_al{LOOPING}
          */
         Source& setLooping(bool loop) {

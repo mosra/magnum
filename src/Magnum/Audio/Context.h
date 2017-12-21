@@ -270,7 +270,8 @@ class MAGNUM_AUDIO_EXPORT Context {
          *
          * Extensions usable with this function are listed in @ref Extensions
          * namespace in header @ref Extensions.h. Example usage:
-         * @code
+         *
+         * @code{.cpp}
          * if(Context::current().isExtensionSupported<Extensions::ALC::SOFTX::HRTF>()) {
          *     // amazing binaural audio
          * } else {
@@ -445,7 +446,8 @@ Useful for initial checks on availability of required features.
 By default, if assertion fails, an message is printed to error output and the
 application aborts. If `CORRADE_NO_ASSERT` is defined, this macro does nothing.
 Example usage:
-@code
+
+@code{.cpp}
 MAGNUM_ASSERT_AUDIO_EXTENSION_SUPPORTED(Extensions::ALC::SOFTX::HRTF);
 @endcode
 

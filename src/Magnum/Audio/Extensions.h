@@ -37,9 +37,9 @@ namespace Magnum { namespace Audio {
 /**
 @brief Compile-time information about OpenAL extensions
 
-Each extension is `struct` named hierarchically by prefix, vendor and
+Each extension is a @cpp struct @ce named hierarchically by prefix, vendor and
 extension name taken from list at @ref openal-support, for example
-`ALC::SOFTX::HRTF`.
+@cpp ALC::SOFTX::HRTF @ce.
 
 Each struct has the same public methods as @ref Extension class
 (@ref Extension::requiredVersion() "requiredVersion()",
@@ -61,15 +61,15 @@ information.
 namespace Extensions {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-#define _extension(prefix, vendor, extension) \
+#define _extension(prefix, vendor, extension)                               \
     struct extension {                                                      \
-        enum: std::size_t { Index = __LINE__-1 };                                \
+        enum: std::size_t { Index = __LINE__-1 };                           \
         constexpr static const char* string() { return #prefix "_" #vendor "_" #extension; } \
     };
 
-#define _extension_rev(prefix, vendor, extension) \
+#define _extension_rev(prefix, vendor, extension)                           \
     struct extension {                                                      \
-        enum: std::size_t { Index = __LINE__-1 };                                \
+        enum: std::size_t { Index = __LINE__-1 };                           \
         constexpr static const char* string() { return #prefix "_" #extension "_" #vendor; } \
     };
 

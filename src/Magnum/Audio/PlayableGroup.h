@@ -52,9 +52,9 @@ Manages @ref Audio::Playable features and provides means of setting gain or
 transformation of a group of Playables, aswell as the ability of playing,
 pausing, stopping or cleaning all sources of all Playables.
 
-## Usage
+@section Audio-PlayableGroup-usage Usage
 
-@code
+@code{.cpp}
 Object3D object;
 Source source;
 PlayableGroup3D group;
