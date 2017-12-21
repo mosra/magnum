@@ -40,7 +40,7 @@ namespace Magnum {
 
 Provides (a)synchronous resource loading for @ref ResourceManager.
 
-## Usage and subclassing
+@section AbstractResourceLoader-usage Usage and subclassing
 
 Usage is done by subclassing. Subclass instances can be added to
 @ref ResourceManager using @ref ResourceManager::setLoader(). After adding the
@@ -64,7 +64,8 @@ You can also implement @ref doName() to provide meaningful names for resource
 keys.
 
 Example implementation for synchronous mesh loader:
-@code
+
+@code{.cpp}
 class MeshResourceLoader: public AbstractResourceLoader<Mesh> {
     void doLoad(ResourceKey key) override {
         // Load the mesh...
@@ -87,7 +88,8 @@ all resources. It allows you to use resources in the loader itself without
 having to delete the loader explicitly to ensure proper resource unloading. In
 the following code, however, the loader destroys itself (and removes itself
 from the manager) before the manager is destroyed.
-@code
+
+@code{.cpp}
 MyResourceManager manager;
 MeshResourceLoader loader;
 

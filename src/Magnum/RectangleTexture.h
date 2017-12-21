@@ -59,7 +59,7 @@ texture.setMagnificationFilter(Sampler::Filter::Linear)
     .setSubImage({}, image);
 @endcode
 
-In shader, the texture is used via sampler2DRect`, `sampler2DRectShadow`,
+In shader, the texture is used via `sampler2DRect`, `sampler2DRectShadow`,
 `isampler2DRect` or `usampler2DRect`. See @ref AbstractShaderProgram
 documentation for more information about usage in shaders.
 

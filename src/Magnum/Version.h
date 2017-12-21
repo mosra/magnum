@@ -26,7 +26,7 @@
 */
 
 /** @file Version.h
- * Enum @ref Magnum::Version, function @ref version()
+ * @brief Enum @ref Magnum::Version, function @ref version()
  */
 
 #include <utility>

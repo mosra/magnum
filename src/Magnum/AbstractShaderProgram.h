@@ -48,100 +48,113 @@ namespace Implementation { struct ShaderProgramState; }
 /**
 @brief Base for shader program implementations
 
-@anchor AbstractShaderProgram-subclassing
-## Subclassing workflow
+@section AbstractShaderProgram-subclassing Subclassing workflow
 
 This class is designed to be used via subclassing. Subclasses define these
 functions and properties:
--   **Attribute definitions** with location and type for
+
+<ul>
+<li> **Attribute definitions** with location and type for
     configuring meshes, for example:
-@code
-typedef Attribute<0, Vector3> Position;
-typedef Attribute<1, Vector3> Normal;
-typedef Attribute<2, Vector2> TextureCoordinates;
-@endcode
--   **Output attribute locations**, if desired, for example:
-@code
-enum: UnsignedInt {
-    ColorOutput = 0,
-    NormalOutput = 1
-};
-@endcode
--   **Constructor**, which loads, compiles and attaches particular shaders and
+
+    @code{.cpp}
+    typedef Attribute<0, Vector3> Position;
+    typedef Attribute<1, Vector3> Normal;
+    typedef Attribute<2, Vector2> TextureCoordinates;
+    @endcode
+</li>
+<li> **Output attribute locations**, if desired, for example:
+
+    @code{.cpp}
+    enum: UnsignedInt {
+        ColorOutput = 0,
+        NormalOutput = 1
+    };
+    @endcode
+</li>
+<li> **Constructor**, which loads, compiles and attaches particular shaders and
     links the program together, for example:
-@code
-MyShader() {
-    // Load shader sources
-    Shader vert(Version::GL430, Shader::Type::Vertex);
-    Shader frag(Version::GL430, Shader::Type::Fragment);
-    vert.addFile("MyShader.vert");
-    frag.addFile("MyShader.frag");
 
-    // Invoke parallel compilation for best performance
-    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+    @code{.cpp}
+    MyShader() {
+        // Load shader sources
+        Shader vert(Version::GL430, Shader::Type::Vertex);
+        Shader frag(Version::GL430, Shader::Type::Fragment);
+        vert.addFile("MyShader.vert");
+        frag.addFile("MyShader.frag");
 
-    // Attach the shaders
-    attachShaders({vert, frag});
+        // Invoke parallel compilation for best performance
+        CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
 
-    // Link the program together
-    CORRADE_INTERNAL_ASSERT_OUTPUT(link());
-}
-@endcode
--   **Uniform setting functions**, which will provide public interface for
+        // Attach the shaders
+        attachShaders({vert, frag});
+
+        // Link the program together
+        CORRADE_INTERNAL_ASSERT_OUTPUT(link());
+    }
+    @endcode
+</li>
+<li> **Uniform setting functions**, which will provide public interface for
     protected @ref setUniform() functions. For usability purposes you can
     implement also method chaining. Example:
-@code
-MyShader& setProjectionMatrix(const Matrix4& matrix) {
-    setUniform(0, matrix);
-    return *this;
-}
-MyShader& setTransformationMatrix(const Matrix4& matrix) {
-    setUniform(1, matrix);
-    return *this;
-}
-MyShader& setNormalMatrix(const Matrix3x3& matrix) {
-    setUniform(2, matrix);
-    return *this;
-}
-@endcode
--   **Texture and texture image setting functions** in which you bind the
+
+    @code{.cpp}
+    MyShader& setProjectionMatrix(const Matrix4& matrix) {
+        setUniform(0, matrix);
+        return *this;
+    }
+    MyShader& setTransformationMatrix(const Matrix4& matrix) {
+        setUniform(1, matrix);
+        return *this;
+    }
+    MyShader& setNormalMatrix(const Matrix3x3& matrix) {
+        setUniform(2, matrix);
+        return *this;
+    }
+    @endcode
+</li>
+<li> **Texture and texture image setting functions** in which you bind the
     textures/images to particular texture/image units using
     @ref Texture::bind() "*Texture::bind()" /
     @ref Texture::bindImage() "*Texture::bindImage()" and similar, for example:
-@code
-MyShader& setDiffuseTexture(Texture2D& texture) {
-    texture.bind(0);
-    return *this;
-}
-MyShader& setSpecularTexture(Texture2D& texture) {
-    texture.bind(1);
-    return *this;
-}
-@endcode
--   **Transform feedback setup function**, if needed, in which you bind buffers
-    to particular indices using @ref TransformFeedback::attachBuffer() and
-    similar, possibly with overloads based on desired use cases, e.g.:
-@code
-MyShader& setTransformFeedback(TransformFeedback& feedback, Buffer& positions, Buffer& data) {
-    feedback.attachBuffers(0, {positions, data});
-    return *this;
-}
-MyShader& setTransformFeedback(TransformFeedback& feedback, Int totalCount, Buffer& positions, GLintptr positionsOffset, Buffer& data, GLintptr dataOffset) {
-    feedback.attachBuffers(0, {
-        std::make_tuple(positions, positionsOffset, totalCount*sizeof(Vector3)),
-        std::make_tuple(data, dataOffset, totalCount*sizeof(Vector2ui))
-    });
-    return *this;
-}
-@endcode
 
-@anchor AbstractShaderProgram-attribute-location
-### Binding attribute location
+    @code{.cpp}
+    MyShader& setDiffuseTexture(Texture2D& texture) {
+        texture.bind(0);
+        return *this;
+    }
+    MyShader& setSpecularTexture(Texture2D& texture) {
+        texture.bind(1);
+        return *this;
+    }
+    @endcode
+</li>
+<li> **Transform feedback setup function**, if needed, in which you bind
+    buffers to particular indices using @ref TransformFeedback::attachBuffer()
+    and similar, possibly with overloads based on desired use cases, e.g.:
+
+    @code{.cpp}
+    MyShader& setTransformFeedback(TransformFeedback& feedback, Buffer& positions, Buffer& data) {
+        feedback.attachBuffers(0, {positions, data});
+        return *this;
+    }
+    MyShader& setTransformFeedback(TransformFeedback& feedback, Int totalCount, Buffer& positions, GLintptr positionsOffset, Buffer& data, GLintptr dataOffset) {
+        feedback.attachBuffers(0, {
+            std::make_tuple(positions, positionsOffset, totalCount*sizeof(Vector3)),
+            std::make_tuple(data, dataOffset, totalCount*sizeof(Vector2ui))
+        });
+        return *this;
+    }
+    @endcode
+</li></ul>
+
+@subsection AbstractShaderProgram-attribute-location Binding attribute location
 
 The preferred workflow is to specify attribute location for vertex shader input
 attributes and fragment shader output attributes explicitly in the shader code,
 e.g.:
-@code
+
+@code{.glsl}
 // GLSL 3.30, GLSL ES 3.00 or
 #extension GL_ARB_explicit_attrib_location: require
 layout(location = 0) in vec4 position;
@@ -152,26 +165,30 @@ layout(location = 2) in vec2 textureCoordinates;
 Similarly for ouput attributes, you can also specify blend equation color index
 for them (see @ref Renderer::BlendFunction for more information about using
 color input index):
-@code
+
+@code{.glsl}
 layout(location = 0, index = 0) out vec4 color;
 layout(location = 1, index = 1) out vec3 normal;
 @endcode
 
 If you don't have the required version/extension, declare the attributes
-without `layout()` qualifier and use functions @ref bindAttributeLocation() and
-@ref bindFragmentDataLocation() / @ref bindFragmentDataLocationIndexed() between
-attaching the shaders and linking the program. Note that additional syntax
-changes may be needed for GLSL 1.20 and GLSL ES.
-@code
+without @glsl layout() @ce qualifier and use functions @ref bindAttributeLocation()
+and @ref bindFragmentDataLocation() / @ref bindFragmentDataLocationIndexed()
+between attaching the shaders and linking the program. Note that additional
+syntax changes may be needed for GLSL 1.20 and GLSL ES.
+
+@code{.glsl}
 in vec4 position;
 in vec3 normal;
 in vec2 textureCoordinates;
 @endcode
-@code
+
+@code{.glsl}
 out vec4 color;
 out vec3 normal;
 @endcode
-@code
+
+@code{.cpp}
 // Shaders attached...
 
 bindAttributeLocation(Position::Location, "position");
@@ -208,12 +225,12 @@ bindFragmentDataLocationIndexed(NormalOutput, 1, "normal");
 @todo @extension2{EXT,separate_shader_objects,separate_shader_objects.gles}
     supports explicit attrib location
 
-@anchor AbstractShaderProgram-uniform-location
-### Uniform locations
+@subsection AbstractShaderProgram-uniform-location Uniform locations
 
 The preferred workflow is to specify uniform locations directly in the shader
 code, e.g.:
-@code
+
+@code{.glsl}
 // GLSL 4.30, GLSL ES 3.10 or
 #extension GL_ARB_explicit_uniform_location: require
 layout(location = 0) uniform mat4 projectionMatrix;
@@ -222,15 +239,18 @@ layout(location = 2) uniform mat3 normalMatrix;
 @endcode
 
 If you don't have the required version/extension, declare the uniforms without
-the `layout()` qualifier, get uniform location using @ref uniformLocation() *after*
-linking stage and then use the queried location in uniform setting functions.
-Note that additional syntax changes may be needed for GLSL 1.20 and GLSL ES.
-@code
+the @glsl layout() @ce qualifier, get uniform location using
+@ref uniformLocation() *after* linking stage and then use the queried location
+in uniform setting functions. Note that additional syntax changes may be needed
+for GLSL 1.20 and GLSL ES.
+
+@code{.glsl}
 uniform mat4 projectionMatrix;
 uniform mat4 transformationMatrix;
 uniform mat3 normalMatrix;
 @endcode
-@code
+
+@code{.cpp}
 Int projectionMatrixUniform = uniformLocation("projectionMatrix");
 Int transformationMatrixUniform = uniformLocation("transformationMatrix");
 Int normalMatrixUniform = uniformLocation("normalMatrix");
@@ -244,12 +264,12 @@ Int normalMatrixUniform = uniformLocation("normalMatrix");
 @requires_gles Explicit uniform location is not supported in WebGL. Use
     @ref uniformLocation() instead.
 
-@anchor AbstractShaderProgram-uniform-block-binding
-### Uniform block bindings
+@subsection AbstractShaderProgram-uniform-block-binding Uniform block bindings
 
 The preferred workflow is to specify uniform block binding directly in the
 shader code, e.g.:
-@code
+
+@code{.glsl}
 // GLSL 4.20, GLSL ES 3.10 or
 #extension GL_ARB_shading_language_420pack: require
 layout(std140, binding = 0) uniform matrices {
@@ -263,11 +283,12 @@ layout(std140, binding = 1) uniform material {
 @endcode
 
 If you don't have the required version/extension, declare the uniform blocks
-without the `layout()` qualifier, get uniform block index using
+without the @glsl layout() @ce qualifier, get uniform block index using
 @ref uniformBlockIndex() and then map it to the uniform buffer binding using
 @ref setUniformBlockBinding(). Note that additional syntax changes may be
 needed for GLSL ES.
-@code
+
+@code{.glsl}
 layout(std140) uniform matrices {
     mat4 projectionMatrix;
     mat4 transformationMatrix;
@@ -277,7 +298,8 @@ layout(std140) uniform material {
     vec4 specular;
 };
 @endcode
-@code
+
+@code{.cpp}
 setUniformBlockBinding(uniformBlockIndex("matrices"), 0);
 setUniformBlockBinding(uniformBlockIndex("material"), 1);
 @endcode
@@ -295,12 +317,12 @@ setUniformBlockBinding(uniformBlockIndex("material"), 1);
 @requires_gles Explicit uniform block binding is not supported in WebGL. Use
     @ref uniformBlockIndex() and @ref setUniformBlockBinding() instead.
 
-@anchor AbstractShaderProgram-shader-storage-block-binding
-### Shader storage block bindings
+@subsection AbstractShaderProgram-shader-storage-block-binding Shader storage block bindings
 
 The workflow is to specify shader storage block binding directly in the shader
 code, e.g.:
-@code
+
+@code{.glsl}
 // GLSL 4.30 or GLSL ES 3.10
 layout(std430, binding = 0) buffer vertices {
     vec3 position;
@@ -316,12 +338,12 @@ layout(std430, binding = 1) buffer normals {
 @requires_gles31 Shader storage is not available in OpenGL ES 3.0 and older.
 @requires_gles Shader storage is not available in WebGL.
 
-@anchor AbstractShaderProgram-texture-units
-### Specifying texture and image binding units
+@subsection AbstractShaderProgram-texture-units Specifying texture and image binding units
 
 The preferred workflow is to specify texture/image binding unit directly in the
 shader code, e.g.:
-@code
+
+@code{.glsl}
 // GLSL 4.20, GLSL ES 3.10 or
 #extension GL_ARB_shading_language_420pack: require
 layout(binding = 0) uniform sampler2D diffuseTexture;
@@ -332,11 +354,13 @@ If you don't have the required version/extension, declare the uniforms without
 the `binding` qualifier and set the texture binding unit using
 @ref setUniform(Int, const T&) "setUniform(Int, Int)". Note that additional
 syntax changes may be needed for GLSL ES.
-@code
+
+@code{.glsl}
 uniform sampler2D diffuseTexture;
 uniform sampler2D specularTexture;
 @endcode
-@code
+
+@code{.cpp}
 setUniform(uniformLocation("diffuseTexture"), 0);
 setUniform(uniformLocation("specularTexture"), 1);
 @endcode
@@ -351,12 +375,12 @@ setUniform(uniformLocation("specularTexture"), 1);
 @requires_gles Explicit texture binding unit is not supported in WebGL. Use
     @ref setUniform(Int, const T&) "setUniform(Int, Int)" instead.
 
-@anchor AbstractShaderProgram-transform-feedback
-### Specifying transform feedback binding points
+@subsection AbstractShaderProgram-transform-feedback Specifying transform feedback binding points
 
 The preferred workflow is to specify output binding points directly in the
 shader code, e.g.:
-@code
+
+@code{.glsl}
 // GLSL 4.40, or
 #extension GL_ARB_enhanced_layouts: require
 layout(xfb_buffer = 0, xfb_stride = 32) out block {
@@ -369,14 +393,16 @@ layout(xfb_buffer = 1) out vec3 velocity;
 If you don't have the required version/extension, declare the uniforms without
 the `xfb_*` qualifier and set the binding points using @ref setTransformFeedbackOutputs().
 Equivalent setup for the previous code would be the following:
-@code
+
+@code{.glsl}
 out block {
     vec3 position;
     vec3 normal;
 };
 out vec3 velocity;
 @endcode
-@code
+
+@code{.cpp}
 setTransformFeedbackOutputs({
         // Buffer 0
         "position", "gl_SkipComponents1", "normal", "gl_SkipComponents1",
@@ -400,8 +426,7 @@ setTransformFeedbackOutputs({
     in OpenGL ES or WebGL.
 @requires_webgl20 Transform feedback is not available in WebGL 1.0.
 
-@anchor AbstractShaderProgram-rendering-workflow
-## Rendering workflow
+@section AbstractShaderProgram-rendering-workflow Rendering workflow
 
 Basic workflow with AbstractShaderProgram subclasses is: instance shader
 class, configure attribute binding in meshes (see @ref Mesh-configuration "Mesh documentation"
@@ -409,7 +434,8 @@ for more information) and map shader outputs to framebuffer attachments if
 needed (see @ref Framebuffer-usage "Framebuffer documentation" for more
 information). In each draw event set all required shader parameters, bind
 specific framebuffer (if needed) and then call @ref Mesh::draw(). Example:
-@code
+
+@code{.cpp}
 shader.setTransformation(transformation)
     .setProjection(projection)
     .setDiffuseTexture(diffuseTexture)
@@ -418,15 +444,13 @@ shader.setTransformation(transformation)
 mesh.draw(shader);
 @endcode
 
-@anchor AbstractShaderProgram-compute-workflow
-## Compute workflow
+@section AbstractShaderProgram-compute-workflow Compute workflow
 
 Add just the @ref Shader::Type::Compute shader and implement uniform/texture
 setting functions as needed. After setting up required parameters call
 @ref dispatchCompute().
 
-@anchor AbstractShaderProgram-types
-## Mapping between GLSL and Magnum types
+@section AbstractShaderProgram-types Mapping between GLSL and Magnum types
 
 See @ref types for more information, only types with GLSL equivalent can be used
 (and their super- or subclasses with the same size and underlying type). See
@@ -458,8 +482,7 @@ also @ref Attribute::DataType enum for additional type options.
     @ref Matrix2x4, @ref Matrix4x2, @ref Matrix3x4 and @ref Matrix4x3) are not
     available in WebGL 1.0.
 
-@anchor AbstractShaderProgram-performance-optimization
-## Performance optimizations
+@section AbstractShaderProgram-performance-optimization Performance optimizations
 
 The engine tracks currently used shader program to avoid unnecessary calls to
 @fn_gl{UseProgram}. Shader limits (such as @ref maxVertexAttributes()) are
@@ -1024,7 +1047,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * @param name          Uniform block name
          *
          * If given uniform block name is not found in the linked shader, a
-         * warning is printed and `0xffffffffu` is returned.
+         * warning is printed and @cpp 0xffffffffu @ce is returned.
          * @see @ref setUniformBlockBinding(), @fn_gl{GetUniformBlockIndex}
          * @requires_gl31 Extension @extension{ARB,uniform_buffer_object}
          * @requires_gles30 Uniform buffers are not available in OpenGL ES 2.0.

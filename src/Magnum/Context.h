@@ -448,7 +448,8 @@ class MAGNUM_EXPORT Context {
          *
          * Returns first supported OpenGL version from passed list. Convenient
          * equivalent to subsequent @ref isVersionSupported() calls, e.g.:
-         * @code
+         *
+         * @code{.cpp}
          * Version v = isVersionSupported(Version::GL330) ? Version::GL330 : Version::GL210;
          * Version v = supportedVersion({Version::GL330, Version::GL210});
          * @endcode
@@ -465,7 +466,8 @@ class MAGNUM_EXPORT Context {
          *
          * Extensions usable with this function are listed in @ref Extensions
          * namespace in header @ref Extensions.h. Example usage:
-         * @code
+         *
+         * @code{.cpp}
          * if(Context::current().isExtensionSupported<Extensions::GL::ARB::tessellation_shader>()) {
          *     // draw fancy detailed model
          * } else {
@@ -488,7 +490,8 @@ class MAGNUM_EXPORT Context {
          * minimal required version of the extension is larger or equal to
          * @p version. Useful mainly in shader compilation when the decisions
          * depend on selected GLSL version, for example:
-         * @code
+         *
+         * @code{.cpp}
          * const Version version = Context::current()supportedVersion({Version::GL320, Version::GL300, Version::GL210});
          * if(Context::current().isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(version)) {
          *     // Called only if ARB_explicit_attrib_location is supported
@@ -645,7 +648,8 @@ Useful for initial checks on availability of required features.
 By default, if assertion fails, an message is printed to error output and the
 application aborts. If `CORRADE_NO_ASSERT` is defined, this macro does nothing.
 Example usage:
-@code
+
+@code{.cpp}
 MAGNUM_ASSERT_VERSION_SUPPORTED(Version::GL330);
 @endcode
 
@@ -675,7 +679,8 @@ Useful for initial checks on availability of required features.
 By default, if assertion fails, an message is printed to error output and the
 application aborts. If `CORRADE_NO_ASSERT` is defined, this macro does nothing.
 Example usage:
-@code
+
+@code{.cpp}
 MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::geometry_shader4);
 @endcode
 

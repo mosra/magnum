@@ -155,8 +155,7 @@ namespace Implementation { struct FramebufferState; }
 
 See @ref DefaultFramebuffer and @ref Framebuffer for more information.
 
-@anchor AbstractFramebuffer-performance-optimization
-## Performance optimizations and security
+@section AbstractFramebuffer-performance-optimization Performance optimizations and security
 
 The engine tracks currently bound framebuffer and current viewport to avoid
 unnecessary calls to @fn_gl{BindFramebuffer} and @fn_gl{Viewport} when
@@ -376,7 +375,8 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         /** @overload
          *
          * Convenience alternative to the above, example usage:
-         * @code
+         *
+         * @code{.cpp}
          * Image2D image = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA, PixelType::UnsignedByte});
          * @endcode
          */
@@ -414,7 +414,8 @@ class MAGNUM_EXPORT AbstractFramebuffer {
         /** @overload
          *
          * Convenience alternative to the above, example usage:
-         * @code
+         *
+         * @code{.cpp}
          * BufferImage2D image = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
          * @endcode
          */
