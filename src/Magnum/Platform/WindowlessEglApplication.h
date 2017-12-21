@@ -56,7 +56,7 @@ built if `WITH_WINDOWLESSEGLAPPLICATION` is enabled in CMake.
 Meant to be used when there is a need to manage (multiple) GL contexts
 manually. See @ref platform-windowless-contexts for more information. If no
 other application header is included, this class is also aliased to
-`Platform::WindowlessGLContext`.
+@cpp Platform::WindowlessGLContext @ce.
 */
 class WindowlessEglContext {
     public:
@@ -106,8 +106,8 @@ class WindowlessEglContext {
         /**
          * @brief Make the context current
          *
-         * Prints error message and returns `false` on failure, otherwise
-         * returns `true`.
+         * Prints error message and returns @cpp false @ce on failure,
+         * otherwise returns @cpp true @ce.
          */
         bool makeCurrent();
 
@@ -188,7 +188,7 @@ works (Linux desktop or ES, iOS and also @ref CORRADE_TARGET_EMSCRIPTEN "Emscrip
 See other `Windowless*Application` classes for an alternative. It is built if
 `WITH_WINDOWLESSEGLAPPLICATION` is enabled in CMake.
 
-## Bootstrap application
+@section Platform-WindowlessEglApplication-bootstrap Bootstrap application
 
 Fully contained windowless application using @ref WindowlessEglApplication
 along with CMake setup is available in `windowless` branch of
@@ -198,14 +198,16 @@ or [zip](https://github.com/mosra/magnum-bootstrap/archive/windowless.zip)
 file. After extracting the downloaded archive you can build and run the
 application with these four commands:
 
-    mkdir build && cd build
-    cmake ..
-    cmake --build .
-    ./src/MyApplication # or ./src/Debug/MyApplication
+@code{.sh}
+mkdir build && cd build
+cmake ..
+cmake --build .
+./src/MyApplication # or ./src/Debug/MyApplication
+@endcode
 
 See @ref cmake for more information.
 
-## Bootstrap application for Emscripten
+@section Platform-WindowlessEglApplication-bootstrap-emscripten Bootstrap application for Emscripten
 
 Fully contained windowless application together with Emscripten support along
 with full HTML markup and CMake setup is available in `windowless-emscripten`
@@ -227,18 +229,20 @@ Set `CMAKE_PREFIX_PATH` to where you have all the dependencies installed, set
 `CMAKE_INSTALL_PREFIX` to have the files installed in proper location (a
 webserver, e.g.  `/srv/http/emscripten`).
 
-    mkdir build-emscripten && cd build-emscripten
-    cmake .. \
-        -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Emscripten.cmake" \
-        -DCMAKE_PREFIX_PATH=/usr/lib/emscripten/system \
-        -DCMAKE_INSTALL_PREFIX=/srv/http/emscripten
-    cmake --build .
-    cmake --build . --target install
+@code{.sh}
+mkdir build-emscripten && cd build-emscripten
+cmake .. \
+    -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Emscripten.cmake" \
+    -DCMAKE_PREFIX_PATH=/usr/lib/emscripten/system \
+    -DCMAKE_INSTALL_PREFIX=/srv/http/emscripten
+cmake --build .
+cmake --build . --target install
+@endcode
 
 You can then open `MyApplication.html` in your browser (through webserver, e.g.
-`http://localhost/emscripten/MyApplication.html`).
+http://localhost/emscripten/MyApplication.html).
 
-## General usage
+@section Platform-WindowlessEglApplication-usage General usage
 
 In CMake you need to request `WindowlessEglApplication` component and link to
 `Magnum::WindowlessEglApplication` target. If no other windowless application
@@ -248,7 +252,8 @@ simplify porting. Again, see @ref building and @ref cmake for more information.
 Place your code into @ref exec(). The subclass can be then used in main
 function using @ref MAGNUM_WINDOWLESSEGLAPPLICATION_MAIN() macro. See
 @ref platform for more information.
-@code
+
+@code{.cpp}
 class MyApplication: public Platform::WindowlessEglApplication {
     // implement required methods...
 };
@@ -256,19 +261,20 @@ MAGNUM_WINDOWLESSEGLAPPLICATION_MAIN(MyApplication)
 @endcode
 
 If no other application header is included, this class is also aliased to
-`Platform::WindowlessApplication` and the macro is aliased to
-`MAGNUM_WINDOWLESSAPPLICATION_MAIN()` to simplify porting.
+@cpp Platform::WindowlessApplication @ce and the macro is aliased to
+@cpp MAGNUM_WINDOWLESSAPPLICATION_MAIN() @ce to simplify porting.
 
-## Usage with Emscripten
+@section Platform-WindowlessEglApplication-usage-emscripten Usage with Emscripten
 
 If you are targetting Emscripten, you need to provide HTML markup for your
 application. Template one is below or in the bootstrap application, you can
 modify it to your liking. The markup references two files,
 `WindowlessEmscriptenApplication.js` and `WebApplication.css`, both are in
 `Platform/` directory in the source tree and are also installed into
-`share/magnum/` inside your Emscripten toolchain. Change `&lt;application&gt;`
+`share/magnum/` inside your Emscripten toolchain. Change `{{application}}`
 to name of your executable.
-@code
+
+@code{.html}
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -284,23 +290,24 @@ to name of your executable.
       <div id="status">Initialization...</div>
       <div id="statusDescription"></div>
       <script src="WindowlessEmscriptenApplication.js"></script>
-      <script async="async" src="<application>.js"></script>
+      <script async="async" src="{{application}}.js"></script>
     </div>
   </body>
 </html>
 @endcode
 
 You can modify all the files to your liking, but the HTML file must contain at
-least the `&lt;canvas&gt;` enclosed in listener `&lt;div&gt;`. The JavaScript
-file contains event listeners which print loading status on the page. The
-status displayed in the remaining two `&lt;div&gt;`s, if they are available.
-The CSS file contains rudimentary style to avoid eye bleeding.
+least the @cb{.html} <canvas> @ce enclosed in listener @cb{.html} <div> @ce.
+The JavaScript file contains event listeners which print loading status on the
+page. The status displayed in the remaining two @cb{.html} <div> @ce s, if they
+are available. The CSS file contains rudimentary style to avoid eye bleeding.
 
 The application prints all output (thus also @ref Corrade::Utility::Debug "Debug",
 @ref Corrade::Utility::Warning "Warning" and @ref Corrade::Utility::Error "Error")
-to the `&lt;pre&gt;` on the page. It's possible to pass command-line arguments
-to `main()` using GET URL parameters. For example, `/app/?foo=bar&fizz&buzz=3`
-will go to the app as `['--foo', 'bar', '--fizz', '--buzz', '3']`.
+to the @cb{.html} <pre> @ce on the page. It's possible to pass command-line
+arguments to @cpp main() @ce using GET URL parameters. For example,
+`/app/?foo=bar&fizz&buzz=3` will go to the app as
+@cb{.py} ['--foo', 'bar', '--fizz', '--buzz', '3'] @ce.
 */
 class WindowlessEglApplication {
     public:
@@ -371,7 +378,7 @@ class WindowlessEglApplication {
 
         /**
          * @brief Execute application
-         * @return Value for returning from `main()`
+         * @return Value for returning from @cpp main() @ce
          *
          * See @ref MAGNUM_WINDOWLESSEGLAPPLICATION_MAIN() for usage
          * information.
@@ -403,8 +410,8 @@ class WindowlessEglApplication {
         /**
          * @brief Try to create context with given configuration
          *
-         * Unlike @ref createContext() returns `false` if the context cannot be
-         * created, `true` otherwise.
+         * Unlike @ref createContext() returns @cpp false @ce if the context
+         * cannot be created, @cpp true @ce otherwise.
          */
         bool tryCreateContext(const Configuration& configuration);
 
@@ -421,14 +428,16 @@ See @ref Magnum::Platform::WindowlessEglApplication "Platform::WindowlessEglAppl
 for usage information. This macro abstracts out platform-specific entry point
 code and is equivalent to the following, see @ref portability-applications for
 more information.
-@code
+
+@code{.cpp}
 int main(int argc, char** argv) {
     className app({argc, argv});
     return app.exec();
 }
 @endcode
+
 When no other windowless application header is included this macro is also
-aliased to `MAGNUM_WINDOWLESSAPPLICATION_MAIN()`.
+aliased to @cpp MAGNUM_WINDOWLESSAPPLICATION_MAIN() @ce.
 */
 #define MAGNUM_WINDOWLESSEGLAPPLICATION_MAIN(className)                     \
     int main(int argc, char** argv) {                                       \

@@ -43,13 +43,13 @@ This application library is available on both desktop OpenGL and
 @ref MAGNUM_TARGET_GLES "OpenGL ES" on Linux. It depends on **X11** and **EGL**
 libraries and is built if `WITH_XEGLAPPLICATION` is enabled in CMake.
 
-## Bootstrap application
+@section Platform-XEglApplication-bootstrap Bootstrap application
 
 The usage is very similar to @ref Sdl2Application, for which fully contained
 base application along with CMake setup is available, see its documentation for
 more information.
 
-## General usage
+@section Platform-XEglApplication-usage General usage
 
 For CMake you need to copy `FindEGL.cmake` from `modules/` directory in Magnum
 source to `modules/` dir in your project (so it is able to find EGL), request
@@ -59,10 +59,11 @@ can also use generic `Magnum::Application` alias to simplify porting. See
 @ref building and @ref cmake for more information.
 
 In C++ code you need to implement at least @ref drawEvent() to be able to draw
-on the screen.  The subclass can be then used directly in `main()` -- see
-convenience macro @ref MAGNUM_XEGLAPPLICATION_MAIN(). See @ref platform for
-more information.
-@code
+on the screen. The subclass can be then used directly in @cpp main() @ce
+--- see convenience macro @ref MAGNUM_XEGLAPPLICATION_MAIN(). See @ref platform
+for more information.
+
+@code{.cpp}
 class MyApplication: public Platform::XEglApplication {
     // implement required methods...
 };
@@ -70,8 +71,8 @@ MAGNUM_XEGLAPPLICATION_MAIN(MyApplication)
 @endcode
 
 If no other application header is included, this class is also aliased to
-`Platform::Application` and the macro is aliased to `MAGNUM_APPLICATION_MAIN()`
-to simplify porting.
+@cpp Platform::Application @ce and the macro is aliased to
+@cpp MAGNUM_APPLICATION_MAIN() @ce to simplify porting.
 */
 class XEglApplication: public AbstractXApplication {
     public:
@@ -114,14 +115,16 @@ See @ref Magnum::Platform::XEglApplication "Platform::XEglApplication" for
 usage information. This macro abstracts out platform-specific entry point code
 and is equivalent to the following, see @ref portability-applications for more
 information.
-@code
+
+@code{.cpp}
 int main(int argc, char** argv) {
     className app({argc, argv});
     return app.exec();
 }
 @endcode
+
 When no other application header is included this macro is also aliased to
-`MAGNUM_APPLICATION_MAIN()`.
+@cpp MAGNUM_APPLICATION_MAIN() @ce.
 */
 #define MAGNUM_XEGLAPPLICATION_MAIN(className)                              \
     int main(int argc, char** argv) {                                       \

@@ -53,7 +53,7 @@ This application library is available only on desktop OpenGL (Linux, Windows,
 macOS). It depends on **GLUT** library and is built if `WITH_GLUTAPPLICATION`
 is enabled in CMake.
 
-## Bootstrap application
+@section Platform-GlutApplication-bootstrap Bootstrap application
 
 Fully contained base application using @ref GlutApplication along with
 CMake setup is available in `base-glut` branch of
@@ -63,14 +63,16 @@ or [zip](https://github.com/mosra/magnum-bootstrap/archive/base-glut.zip) file.
 After extracting the downloaded archive you can build and run the application
 with these four commands:
 
-    mkdir build && cd build
-    cmake ..
-    cmake --build .
-    ./src/MyApplication # or ./src/Debug/MyApplication
+@code{.sh}
+mkdir build && cd build
+cmake ..
+cmake --build .
+./src/MyApplication # or ./src/Debug/MyApplication
+@endcode
 
 See @ref cmake for more information.
 
-## General usage
+@section Platform-GlutApplication-usage General usage
 
 In CMake you need to request `GlutApplication` component of `Magnum` package
 and link to `Magnum::GlutApplication` target. If no other application is
@@ -78,10 +80,11 @@ requested, you can also use generic `Magnum::Application` alias to simplify
 porting. Again, see @ref building and @ref cmake for more information.
 
 In C++ code you need to implement at least @ref drawEvent() to be able to draw
-on the screen. The subclass can be then used directly in `main()` -- see
-convenience macro @ref MAGNUM_GLUTAPPLICATION_MAIN(). See @ref platform for
-more information.
-@code
+on the screen. The subclass can be then used directly in @cpp main() @ce
+--- see convenience macro @ref MAGNUM_GLUTAPPLICATION_MAIN(). See @ref platform
+for more information.
+
+@code{.cpp}
 class MyApplication: public Platform::GlutApplication {
     // implement required methods...
 };
@@ -89,8 +92,8 @@ MAGNUM_GLUTAPPLICATION_MAIN(MyApplication)
 @endcode
 
 If no other application header is included, this class is also aliased to
-`Platform::Application` and the macro is aliased to `MAGNUM_APPLICATION_MAIN()`
-to simplify porting.
+@cpp Platform::Application @ce and the macro is aliased to
+@cpp MAGNUM_APPLICATION_MAIN() @ce to simplify porting.
 */
 class GlutApplication {
     public:
@@ -143,7 +146,7 @@ class GlutApplication {
 
         /**
          * @brief Execute main loop
-         * @return Value for returning from `main()`
+         * @return Value for returning from @cpp main() @ce
          *
          * See @ref MAGNUM_GLUTAPPLICATION_MAIN() for usage information.
          */
@@ -321,7 +324,7 @@ class GlutApplication::Configuration {
          * @brief Set window title
          * @return Reference to self (for method chaining)
          *
-         * Default is `"Magnum GLUT Application"`.
+         * Default is @cpp "Magnum GLUT Application" @ce.
          */
         Configuration& setTitle(std::string title) {
             _title = std::move(title);
@@ -335,7 +338,7 @@ class GlutApplication::Configuration {
          * @brief Set window size
          * @return Reference to self (for method chaining)
          *
-         * Default is `{800, 600}`.
+         * Default is @cpp {800, 600} @ce.
          */
         Configuration& setSize(const Vector2i& size) {
             _size = size;
@@ -379,8 +382,8 @@ class GlutApplication::Configuration {
          * @brief Set sample count
          * @return Reference to self (for method chaining)
          *
-         * Default is `0`, thus no multisampling. The actual sample count is
-         * ignored, GLUT either enables it or disables. See also
+         * Default is @cpp 0 @ce, thus no multisampling. The actual sample
+         * count is ignored, GLUT either enables it or disables. See also
          * @ref Renderer::Feature::Multisampling.
          */
         Configuration& setSampleCount(Int count) {
@@ -617,14 +620,16 @@ See @ref Magnum::Platform::GlutApplication "Platform::GlutApplication" for
 usage information. This macro abstracts out platform-specific entry point code
 and is equivalent to the following, see @ref portability-applications for more
 information.
-@code
+
+@code{.cpp}
 int main(int argc, char** argv) {
     className app({argc, argv});
     return app.exec();
 }
 @endcode
+
 When no other application header is included this macro is also aliased to
-`MAGNUM_APPLICATION_MAIN()`.
+@cpp MAGNUM_APPLICATION_MAIN() @ce.
 */
 #define MAGNUM_GLUTAPPLICATION_MAIN(className)                              \
     int main(int argc, char** argv) {                                       \

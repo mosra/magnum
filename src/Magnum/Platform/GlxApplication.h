@@ -44,13 +44,13 @@ This application library is available on desktop OpenGL and
 depends on **X11** library and is built if `WITH_GLXAPPLICATION` is enabled in
 CMake.
 
-## Bootstrap application
+@section Platform-GlxApplication-bootstrap Bootstrap application
 
 The usage is very similar to @ref Sdl2Application, for which fully contained
 base application along with CMake setup is available, see its documentation for
 more information.
 
-## General usage
+@section Platform-GlxApplication-usage General usage
 
 In CMake you need to request `GlxApplication` component of `Magnum` package and
 link to `Magnum::GlxApplication` target. If no other application is requested,
@@ -58,10 +58,11 @@ you can also use generic `Magnum::Application` alias to simplify porting. See
 @ref building and @ref cmake for more information.
 
 In C++ code you need to implement at least @ref drawEvent() to be able to draw
-on the screen. The subclass can be then used directly in `main()` -- see
-convenience macro @ref MAGNUM_GLXAPPLICATION_MAIN(). See @ref platform for more
-information.
-@code
+on the screen. The subclass can be then used directly in @cpp main() @ce
+--- see convenience macro @ref MAGNUM_GLXAPPLICATION_MAIN(). See @ref platform
+for more information.
+
+@code{.cpp}
 class MyApplication: public Platform::GlxApplication {
     // implement required methods...
 };
@@ -69,8 +70,8 @@ MAGNUM_GLXAPPLICATION_MAIN(MyApplication)
 @endcode
 
 If no other application header is included, this class is also aliased to
-`Platform::Application` and the macro is aliased to `MAGNUM_APPLICATION_MAIN()`
-to simplify porting.
+@cpp Platform::Application @ce and the macro is aliased to
+@cpp MAGNUM_APPLICATION_MAIN() @ce to simplify porting.
 */
 class GlxApplication: public AbstractXApplication {
     public:
@@ -113,14 +114,16 @@ See @ref Magnum::Platform::GlxApplication "Platform::GlxApplication" for usage
 information. This macro abstracts out platform-specific entry point code and is
 equivalent to the following, see @ref portability-applications for more
 information.
-@code
+
+@code{.cpp}
 int main(int argc, char** argv) {
     className app({argc, argv});
     return app.exec();
 }
 @endcode
+
 When no other application header is included this macro is also aliased to
-`MAGNUM_APPLICATION_MAIN()`.
+@cpp MAGNUM_APPLICATION_MAIN() @ce.
 */
 #define MAGNUM_GLXAPPLICATION_MAIN(className)                               \
     int main(int argc, char** argv) {                                       \

@@ -58,7 +58,7 @@ is enabled in CMake.
 Meant to be used when there is a need to manage (multiple) GL contexts
 manually. See @ref platform-windowless-contexts for more information. If no
 other application header is included, this class is also aliased to
-`Platform::WindowlessGLContext`.
+@cpp Platform::WindowlessGLContext @ce.
 */
 class WindowlessGlxContext {
     public:
@@ -118,8 +118,8 @@ class WindowlessGlxContext {
         /**
          * @brief Make the context current
          *
-         * Prints error message and returns `false` on failure, otherwise
-         * returns `true`.
+         * Prints error message and returns @cpp false @ce on failure,
+         * otherwise returns @cpp true @ce.
          */
         bool makeCurrent();
 
@@ -188,7 +188,7 @@ application library is available on desktop OpenGL and
 depends on **X11** library and is built if `WITH_WINDOWLESSGLXAPPLICATION` is
 enabled in CMake.
 
-## Bootstrap application
+@section Platform-WindowlessGlxApplication-bootstrap Bootstrap application
 
 Fully contained windowless application using @ref WindowlessGlxApplication
 along with CMake setup is available in `base-windowless` branch of
@@ -198,14 +198,16 @@ or [zip](https://github.com/mosra/magnum-bootstrap/archive/base-windowless.zip)
 file. After extracting the downloaded archive you can build and run the
 application with these four commands:
 
-    mkdir build && cd build
-    cmake ..
-    cmake --build .
-    ./src/MyApplication # or ./src/Debug/MyApplication
+@code{.sh}
+mkdir build && cd build
+cmake ..
+cmake --build .
+./src/MyApplication # or ./src/Debug/MyApplication
+@endcode
 
 See @ref cmake for more information.
 
-## General usage
+@section Platform-WindowlessGlxApplication-usage General usage
 
 In CMake you need to request `WindowlessGlxApplication` component of `Magnum`
 package and link to `Magnum::WindowlessGlxApplication` target. If no other
@@ -214,9 +216,10 @@ windowless application is requested, you can also use generic
 @ref building and @ref cmake for more information.
 
 Place your code into @ref exec(). The subclass can be then used directly in
-`main()` -- see convenience macro @ref MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN().
+@cpp main() @ce --- see convenience macro @ref MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN().
 See @ref platform for more information.
-@code
+
+@code{.cpp}
 class MyApplication: public Platform::WindowlessGlxApplication {
     // implement required methods...
 };
@@ -224,8 +227,8 @@ MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN(MyApplication)
 @endcode
 
 If no other application header is included, this class is also aliased to
-`Platform::WindowlessApplication` and the macro is aliased to
-`MAGNUM_WINDOWLESSAPPLICATION_MAIN()` to simplify porting.
+@cpp Platform::WindowlessApplication @ce and the macro is aliased to
+@cpp MAGNUM_WINDOWLESSAPPLICATION_MAIN() @ce to simplify porting.
 */
 class WindowlessGlxApplication {
     public:
@@ -296,7 +299,7 @@ class WindowlessGlxApplication {
 
         /**
          * @brief Execute application
-         * @return Value for returning from `main()`
+         * @return Value for returning from @cpp main() @ce
          *
          * See @ref MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN() for usage
          * information.
@@ -346,14 +349,16 @@ See @ref Magnum::Platform::WindowlessGlxApplication "Platform::WindowlessGlxAppl
 for usage information. This macro abstracts out platform-specific entry point
 code and is equivalent to the following, see @ref portability-applications for
 more information.
-@code
+
+@code{.cpp}
 int main(int argc, char** argv) {
     className app({argc, argv});
     return app.exec();
 }
 @endcode
+
 When no other windowless application header is included this macro is also
-aliased to `MAGNUM_WINDOWLESSAPPLICATION_MAIN()`.
+aliased to @cpp MAGNUM_WINDOWLESSAPPLICATION_MAIN() @ce.
 */
 #define MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN(className)                     \
     int main(int argc, char** argv) {                                       \

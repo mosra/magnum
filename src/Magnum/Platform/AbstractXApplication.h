@@ -90,7 +90,7 @@ class AbstractXApplication {
 
         /**
          * @brief Execute main loop
-         * @return Value for returning from `main()`
+         * @return Value for returning from @cpp main() @ce
          *
          * See @ref MAGNUM_GLXAPPLICATION_MAIN() or
          * @ref MAGNUM_XEGLAPPLICATION_MAIN() for usage information.
@@ -218,7 +218,7 @@ class AbstractXApplication::Configuration {
          * @brief Set window title
          * @return Reference to self (for method chaining)
          *
-         * Default is `"Magnum X Application"`.
+         * Default is @cpp "Magnum X Application" @ce.
          */
         Configuration& setTitle(std::string title) {
             _title = std::move(title);
@@ -232,7 +232,7 @@ class AbstractXApplication::Configuration {
          * @brief Set window size
          * @return Reference to self (for method chaining)
          *
-         * Default is `{800, 600}`.
+         * Default is @cpp {800, 600} @ce.
          */
         Configuration& setSize(const Vector2i& size) {
             _size = size;

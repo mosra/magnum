@@ -65,7 +65,7 @@ respective sections in @ref building-corrade-cross-emscripten "Corrade's" and
 on **SDL2** library (Emscripten has it built in) and is built if
 `WITH_SDL2APPLICATION` is enabled in CMake.
 
-## Bootstrap application
+@section Platform-Sdl2Application-bootstrap Bootstrap application
 
 Fully contained base application using @ref Sdl2Application along with
 CMake setup is available in `base` branch of
@@ -75,14 +75,16 @@ or [zip](https://github.com/mosra/magnum-bootstrap/archive/base.zip) file.
 After extracting the downloaded archive you can build and run the application
 with these four commands:
 
-    mkdir build && cd build
-    cmake ..
-    cmake --build .
-    ./src/MyApplication # or ./src/Debug/MyApplication
+@code{.sh}
+mkdir build && cd build
+cmake ..
+cmake --build .
+./src/MyApplication # or ./src/Debug/MyApplication
+@endcode
 
 See @ref cmake for more information.
 
-## Bootstrap application for Emscripten
+@section Platform-Sdl2Application-bootstrap-emscripten Bootstrap application for Emscripten
 
 Fully contained base application using @ref Sdl2Application for both desktop
 and Emscripten build along with full HTML markup and CMake setup is available
@@ -104,18 +106,20 @@ Set `CMAKE_PREFIX_PATH` to where you have all the dependencies installed, set
 `CMAKE_INSTALL_PREFIX` to have the files installed in proper location (a
 webserver, e.g.  `/srv/http/emscripten`).
 
-    mkdir build-emscripten && cd build-emscripten
-    cmake .. \
-        -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Emscripten.cmake" \
-        -DCMAKE_PREFIX_PATH=/usr/lib/emscripten/system \
-        -DCMAKE_INSTALL_PREFIX=/srv/http/emscripten
-    cmake --build .
-    cmake --build . --target install
+@code{.sh}
+mkdir build-emscripten && cd build-emscripten
+cmake .. \
+    -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Emscripten.cmake" \
+    -DCMAKE_PREFIX_PATH=/usr/lib/emscripten/system \
+    -DCMAKE_INSTALL_PREFIX=/srv/http/emscripten
+cmake --build .
+cmake --build . --target install
+@endcode
 
 You can then open `MyApplication.html` in your browser (through webserver, e.g.
-`http://localhost/emscripten/MyApplication.html`).
+http://localhost/emscripten/MyApplication.html).
 
-## Bootstrap application for iOS
+@section Platform-Sdl2Application-bootstrap-ios Bootstrap application for iOS
 
 Fully contained base application using @ref Sdl2Application for both desktop
 and iOS build along with pre-filled `*.plist` is available in `base-ios` branch
@@ -132,18 +136,20 @@ Then create build directory and run `cmake` to generate the Xcode project. Set
 in `CMAKE_OSX_ARCHITECTURES`. Set `CMAKE_PREFIX_PATH` to the directory where
 you have all the dependencies.
 
-    mkdir build-ios && cd build-ios
-    cmake .. \
-        -DCMAKE_TOOLCHAIN_FILE=../toolchains/generic/iOS.cmake \
-        -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk \
-        -DCMAKE_OSX_ARCHITECTURES="arm64;armv7;armv7s" \
-        -DCMAKE_PREFIX_PATH=~/ios-libs \
-        -G Xcode
+@code{.sh}
+mkdir build-ios && cd build-ios
+cmake .. \
+    -DCMAKE_TOOLCHAIN_FILE=../toolchains/generic/iOS.cmake \
+    -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk \
+    -DCMAKE_OSX_ARCHITECTURES="arm64;armv7;armv7s" \
+    -DCMAKE_PREFIX_PATH=~/ios-libs \
+    -G Xcode
+@endcode
 
 You can then open the generated project file in Xcode and build/deploy it from
 there.
 
-## Bootstrap application for Windows RT
+@section Platform-Sdl2Application-bootstrap-winrt Bootstrap application for Windows RT
 
 Fully contained base application using @ref Sdl2Application for both desktop
 and Windows Phone / Windows Store build along with all required plumbing is
@@ -159,14 +165,23 @@ built statically. Assuming the native Corrade installation is in `C:/Sys` and
 all WinRT dependencies are in `C:/Sys-winrt`, the build can be done similarly
 to the following:
 
-    mkdir build-winrt && cd build-winrt
-    cmake -DCORRADE_RC_EXECUTABLE="C:/Sys/bin/corrade-rc.exe" -DCMAKE_PREFIX_PATH="C:/Sys-winrt" -DCMAKE_SYSTEM_NAME=WindowsStore -DCMAKE_SYSTEM_VERSION=8.1 -G "Visual Studio 14 2015" -DSIGNING_CERTIFICATE=<path-to-your-pfx-file> ..
-    cmake --build .
+@code{.bat}
+mkdir build-winrt && cd build-winrt
+cmake .. ^
+    -DCORRADE_RC_EXECUTABLE="C:/Sys/bin/corrade-rc.exe" ^
+    -DCMAKE_PREFIX_PATH="C:/Sys-winrt" ^
+    -DCMAKE_SYSTEM_NAME=WindowsStore ^
+    -DCMAKE_SYSTEM_VERSION=8.1 ^
+    -G "Visual Studio 14 2015" ^
+    -DSIGNING_CERTIFICATE=<path-to-your-pfx-file>
+cmake --build .
+@endcode
 
-Change `WindowsStore` to `WindowsPhone` if you want to build for Windows Phone instead. The `build-winrt/src/AppPackages` directory will then contain the
+Change `WindowsStore` to `WindowsPhone` if you want to build for Windows Phone
+instead. The `build-winrt/src/AppPackages` directory will then contain the
 final package along with a PowerShell script for easy local installation.
 
-## General usage
+@section Platform-Sdl2Application-usage General usage
 
 For CMake you need to copy `FindSDL2.cmake` from `modules/` directory in
 Magnum source to `modules/` dir in your project (so it is able to find SDL2).
@@ -176,11 +191,12 @@ In case of Emscripten you need also `FindOpenGLES2.cmake`. Request
 also use generic `Magnum::Application` alias to simplify porting. Again, see
 @ref building and @ref cmake for more information.
 
-In C++ code you need to implement at least @ref drawEvent() to be able to draw on the
-screen. The subclass can be then used directly in `main()` -- see convenience
-macro @ref MAGNUM_SDL2APPLICATION_MAIN(). See @ref platform for more
-information.
-@code
+In C++ code you need to implement at least @ref drawEvent() to be able to draw
+on the screen. The subclass can be then used directly in `main()` --- see
+convenience macro @ref MAGNUM_SDL2APPLICATION_MAIN(). See @ref platform for
+more information.
+
+@code{.cpp}
 class MyApplication: public Platform::Sdl2Application {
     // implement required methods...
 };
@@ -188,19 +204,20 @@ MAGNUM_SDL2APPLICATION_MAIN(MyApplication)
 @endcode
 
 If no other application header is included, this class is also aliased to
-`Platform::Application` and the macro is aliased to `MAGNUM_APPLICATION_MAIN()`
+@cpp Platform::Application @ce and the macro is aliased to @cpp MAGNUM_APPLICATION_MAIN() @ce
 to simplify porting.
 
-## Usage with Emscripten
+@section Platform-Sdl2Application-usage-emscripten Usage with Emscripten
 
 If you are targetting Emscripten, you need to provide HTML markup for your
 application. Template one is below or in the bootstrap application, you can
 modify it to your liking. The markup references two files,
 `EmscriptenApplication.js` and `WebApplication.css`, both are in `Platform/`
 directory in the source tree and are also installed into `share/magnum/` inside
-your Emscripten toolchain. Change `&lt;application&gt;` to name of your
+your Emscripten toolchain. Change `{{application}}` to name of your
 executable.
-@code
+
+@code{.html}
 <!DOCTYPE html>
 <html>
   <head>
@@ -215,25 +232,26 @@ executable.
       <div id="status">Initialization...</div>
       <div id="statusDescription"></div>
       <script src="EmscriptenApplication.js"></script>
-      <script async="async" src="<application>.js"></script>
+      <script async="async" src="{{application}}.js"></script>
     </div>
   </body>
 </html>
 @endcode
 
 You can modify all the files to your liking, but the HTML file must contain at
-least the `&lt;canvas&gt;` enclosed in listener `&lt;div&gt;`. The JavaScript
-file contains event listeners which print loading status on the page. The
-status displayed in the remaining two `&lt;div&gt;`s, if they are available.
-The CSS file contains rudimentary style to avoid eye bleeding.
+least the @cb{.html} <canvas> @ce enclosed in listener @cb{.html} <div> @ce.
+The JavaScript file contains event listeners which print loading status on the
+page. The status displayed in the remaining two @cb{.html} <div> @ce s, if they
+are available. The CSS file contains rudimentary style to avoid eye bleeding.
 
 The application redirects all output (thus also @ref Corrade::Utility::Debug "Debug",
 @ref Corrade::Utility::Warning "Warning" and @ref Corrade::Utility::Error "Error")
-to JavaScript console. It's possible to pass command-line arguments to `main()`
-using GET URL parameters. For example, `/app/?foo=bar&fizz&buzz=3` will go to
-the app as `['--foo', 'bar', '--fizz', '--buzz', '3']`.
+to JavaScript console. It's possible to pass command-line arguments to
+@cpp main() @ce using GET URL parameters. For example,
+`/app/?foo=bar&fizz&buzz=3` will go to the app as
+@cb{.py} ['--foo', 'bar', '--fizz', '--buzz', '3'] @ce.
 
-## Usage with iOS
+@section Platform-Sdl2Application-usage-ios Usage with iOS
 
 A lot of options for iOS build (such as HiDPI/Retina support, supported display
 orientation, icons, splash screen...) is specified through the `*.plist` file.
@@ -243,30 +261,31 @@ rolling your own template and passing **abosolute** path to it to CMake using
 the `MACOSX_BUNDLE_INFO_PLIST` property. Below are contents of the `*.plist`
 file used in the bootstrap application, requesting OpenGL ES 2.0 and
 advertising Retina support:
-@code
+
+@code{.xml}
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>CFBundleDevelopmentRegion</key>
-    <string>en-US</string>
-    <key>CFBundleExecutable</key>
-    <string>${MACOSX_BUNDLE_EXECUTABLE_NAME}</string>
-    <key>CFBundleIdentifier</key>
-    <string>cz.mosra.magnum.MyApplication</string>
-    <key>CFBundleInfoDictionaryVersion</key>
-    <string>6.0</string>
-    <key>CFBundleName</key>
-    <string>My Application</string>
-    <key>CFBundlePackageType</key>
-    <string>APPL</string>
+  <key>CFBundleDevelopmentRegion</key>
+  <string>en-US</string>
+  <key>CFBundleExecutable</key>
+  <string>${MACOSX_BUNDLE_EXECUTABLE_NAME}</string>
+  <key>CFBundleIdentifier</key>
+  <string>cz.mosra.magnum.MyApplication</string>
+  <key>CFBundleInfoDictionaryVersion</key>
+  <string>6.0</string>
+  <key>CFBundleName</key>
+  <string>My Application</string>
+  <key>CFBundlePackageType</key>
+  <string>APPL</string>
 
-    <key>UIRequiredDeviceCapabilities</key>
-    <array>
-        <string>opengles-2</string>
-    </array>
-    <key>NSHighResolutionCapable</key>
-    <true/>
+  <key>UIRequiredDeviceCapabilities</key>
+  <array>
+    <string>opengles-2</string>
+  </array>
+  <key>NSHighResolutionCapable</key>
+  <true/>
 </dict>
 </plist>
 @endcode
@@ -280,13 +299,14 @@ application window, see documentation of particular value for details:
 -   @ref Configuration::WindowFlag::Resizable makes the application respond to
     device orientation changes
 
-## Usage with Windows RT
+@section Platform-Sdl2Application-usage-winrt Usage with Windows RT
 
 For Windows RT you need to provide logo images and splash screen, all
 referenced from the `*.appxmanifest` file. The file is slightly different for
 different targets, template for Windows Store and MSVC 2013 is below, others
 are in the bootstrap application.
-@code
+
+@code{.xml}
 <?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
   <Identity Name="MyApplication" Publisher="CN=A Publisher" Version="1.1.0.0" />
@@ -390,7 +410,7 @@ class Sdl2Application {
 
         /**
          * @brief Execute main loop
-         * @return Value for returning from `main()`
+         * @return Value for returning from @cpp main() @ce
          *
          * Calls @ref mainLoopIteration() in a loop until @ref exit() is
          * called. See @ref MAGNUM_SDL2APPLICATION_MAIN() for usage
@@ -454,8 +474,8 @@ class Sdl2Application {
         /**
          * @brief Try to create context with given configuration
          *
-         * Unlike @ref createContext() returns `false` if the context cannot be
-         * created, `true` otherwise.
+         * Unlike @ref createContext() returns @cpp false @ce if the context
+         * cannot be created, @cpp true @ce otherwise.
          */
         bool tryCreateContext(const Configuration& configuration);
 
@@ -484,10 +504,11 @@ class Sdl2Application {
         /**
          * @brief Set swap interval
          *
-         * Set `0` for no VSync, `1` for enabled VSync. Some platforms support
-         * `-1` for late swap tearing. Prints error message and returns `false`
-         * if swap interval cannot be set, `true` otherwise. Default is
-         * driver-dependent, you can query the value with @ref swapInterval().
+         * Set @cpp 0 @ce for no VSync, @cpp 1 @ce for enabled VSync. Some
+         * platforms support @cpp -1 @ce for late swap tearing. Prints error
+         * message and returns @cpp false @ce if swap interval cannot be set,
+         * @cpp true @ce otherwise. Default is driver-dependent, you can query
+         * the value with @ref swapInterval().
          * @see @ref setMinimalLoopPeriod()
          */
         bool setSwapInterval(Int interval);
@@ -497,8 +518,8 @@ class Sdl2Application {
          * @brief Set minimal loop period
          *
          * This setting reduces the main loop frequency in case VSync is
-         * not/cannot be enabled or no drawing is done. Default is `0` (i.e.
-         * looping at maximum frequency).
+         * not/cannot be enabled or no drawing is done. Default is @cpp 0 @ce
+         * (i.e. looping at maximum frequency).
          * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten",
          *      the browser is managing the frequency instead.
          * @see @ref setSwapInterval()
@@ -844,7 +865,7 @@ class Sdl2Application::Configuration {
          * @brief Set window title
          * @return Reference to self (for method chaining)
          *
-         * Default is `"Magnum SDL2 Application"`.
+         * Default is @cpp "Magnum SDL2 Application" @ce.
          * @note In @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" and
          *      @ref CORRADE_TARGET_IOS "iOS" this function does nothing and is
          *      included only for compatibility. You need to set the title
@@ -866,10 +887,11 @@ class Sdl2Application::Configuration {
          * @brief Set window size
          * @return Reference to self (for method chaining)
          *
-         * Default is `{800, 600}`. On iOS it defaults to a "reasonable" size
-         * based on whether HiDPI support is enabled using
-         * @ref WindowFlag::AllowHighDpi, but not necessarily native display
-         * resolution (you have to set it explicitly).
+         * Default is @cpp {800, 600} @ce and @cpp {640, 480} @ce on
+         * Emscripten. On iOS it defaults to a "reasonable" size based on
+         * whether HiDPI support is enabled using @ref WindowFlag::AllowHighDpi,
+         * but not necessarily native display resolution (you have to set it
+         * explicitly).
          */
         Configuration& setSize(const Vector2i& size) {
             _size = size;
@@ -945,7 +967,7 @@ class Sdl2Application::Configuration {
          * @brief Set sample count
          * @return Reference to self (for method chaining)
          *
-         * Default is `0`, thus no multisampling. See also
+         * Default is @cpp 0 @ce, thus no multisampling. See also
          * @ref Renderer::Feature::Multisampling.
          */
         Configuration& setSampleCount(Int count) {
@@ -965,7 +987,7 @@ class Sdl2Application::Configuration {
          * @brief Set sRGB-capable default framebuffer
          * @return Reference to self (for method chaining)
          *
-         * Default is `false`. See also @ref Renderer::Feature::FramebufferSRGB.
+         * Default is @cpp false @ce. See also @ref Renderer::Feature::FramebufferSRGB.
          * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          */
         Configuration& setSRGBCapable(bool enabled) {
@@ -1279,8 +1301,8 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
         /**
          * @brief Whether the key press is repeated
          *
-         * Returns `true` if the key press event is repeated, `false` if not or
-         * if this was key release event.
+         * Returns @cpp true @ce if the key press event is repeated,
+         * @cpp false @ce if not or if this was key release event.
          */
         constexpr bool isRepeated() const { return _repeated; }
 
@@ -1637,14 +1659,16 @@ usage information. This macro abstracts out platform-specific entry point code
 and is equivalent to the following on all supported platforms except
 @ref CORRADE_TARGET_WINDOWS_RT "Windows RT", see @ref portability-applications
 for more information.
-@code
+
+@code{.cpp}
 int main(int argc, char** argv) {
     className app({argc, argv});
     return app.exec();
 }
 @endcode
+
 When no other application header is included this macro is also aliased to
-`MAGNUM_APPLICATION_MAIN()`.
+@cpp MAGNUM_APPLICATION_MAIN() @ce.
 */
 #ifndef CORRADE_TARGET_WINDOWS_RT
 #define MAGNUM_SDL2APPLICATION_MAIN(className)                              \

@@ -43,7 +43,7 @@ namespace Magnum { namespace Platform {
 Manages list of screens and propagates events to them.
 
 If exactly one application header is included, this class is also aliased to
-`Platform::ScreenedApplication`.
+@cpp Platform::ScreenedApplication @ce.
 
 Each @ref BasicScreen "Screen" specifies which set of events should be
 propagated to it using @ref BasicScreen::setPropagatedEvents(). When
@@ -66,7 +66,8 @@ application gets an event, they are propagated to the screens:
 Uses @ref Corrade::Containers::LinkedList for efficient screen management.
 Traversing front-to-back through the list of screens can be done using
 range-based for:
-@code
+
+@code{.cpp}
 MyApplication app;
 for(Screen& screen: app.screens()) {
     // ...
@@ -76,13 +77,14 @@ for(Screen& screen: app.screens()) {
 Or, if you need more flexibility, like in the following code. Traversing
 back-to-front can be done using @ref Corrade::Containers::LinkedList::last()
 and @ref BasicScreen::nextNearerScreen().
-@code
+
+@code{.cpp}
 for(Screen* s = app.screens().first(); s; s = s->nextFartherScreen()) {
     // ...
 }
 @endcode
 
-## Explicit template specializations
+@section Platform-ScreenedApplication-template-specializations Explicit template specializations
 
 The following specialization are explicitly compiled into each particular
 `*Application` library. For other specializations you have to use

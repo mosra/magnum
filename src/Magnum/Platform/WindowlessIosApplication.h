@@ -55,7 +55,7 @@ enabled in CMake.
 Meant to be used when there is a need to manage (multiple) GL contexts
 manually. See @ref platform-windowless-contexts for more information. If no
 other application header is included, this class is also aliased to
-`Platform::WindowlessGLContext`.
+@cpp Platform::WindowlessGLContext @ce.
 */
 class WindowlessIosContext {
     public:
@@ -105,8 +105,8 @@ class WindowlessIosContext {
         /**
          * @brief Make the context current
          *
-         * Prints error message and returns `false` on failure, otherwise
-         * returns `true`.
+         * Prints error message and returns @cpp false @ce on failure,
+         * otherwise returns @cpp true @ce.
          */
         bool makeCurrent();
 
@@ -134,7 +134,7 @@ Application for offscreen rendering using @ref WindowlessIosContext. Does not
 have any default framebuffer. It is built if `WITH_WINDOWLESSIOSAPPLICATION` is
 enabled in CMake.
 
-## Bootstrap application
+@section Platform-WindowlessIosApplication-bootstrap Bootstrap application
 
 Fully contained windowless application using @ref WindowlessIosApplication
 along with CMake setup is available in `windowless` branch of
@@ -144,14 +144,16 @@ or [zip](https://github.com/mosra/magnum-bootstrap/archive/windowless.zip)
 file. After extracting the downloaded archive you can build and run the
 application with these four commands:
 
-    mkdir build && cd build
-    cmake ..
-    cmake --build .
-    ./src/MyApplication # or ./src/Debug/MyApplication
+@code{.sh}
+mkdir build && cd build
+cmake ..
+cmake --build .
+./src/MyApplication # or ./src/Debug/MyApplication
+@endcode
 
 See @ref cmake for more information.
 
-## General usage
+@section Platform-WindowlessIosApplication-usage General usage
 
 In CMake you need to request `WindowlessIosApplication` component and link to
 `Magnum::WindowlessIosApplication` target. If no other windowless application
@@ -161,7 +163,8 @@ simplify porting. Again, see @ref building and @ref cmake for more information.
 Place your code into @ref exec(). The subclass can be then used in main
 function using @ref MAGNUM_WINDOWLESSIOSAPPLICATION_MAIN() macro. See
 @ref platform for more information.
-@code
+
+@code{.cpp}
 class MyApplication: public Platform::WindowlessIosApplication {
     // implement required methods...
 };
@@ -169,8 +172,8 @@ MAGNUM_WINDOWLESSIOSAPPLICATION_MAIN(MyApplication)
 @endcode
 
 If no other application header is included, this class is also aliased to
-`Platform::WindowlessApplication` and the macro is aliased to
-`MAGNUM_WINDOWLESSAPPLICATION_MAIN()` to simplify porting.
+@cpp Platform::WindowlessApplication @ce and the macro is aliased to
+@cpp MAGNUM_WINDOWLESSAPPLICATION_MAIN() @ce to simplify porting.
 */
 class WindowlessIosApplication {
     public:
@@ -241,7 +244,7 @@ class WindowlessIosApplication {
 
         /**
          * @brief Execute application
-         * @return Value for returning from `main()`
+         * @return Value for returning from @cpp main() @ce
          *
          * See @ref MAGNUM_WINDOWLESSIOSAPPLICATION_MAIN() for usage
          * information.
@@ -273,8 +276,8 @@ class WindowlessIosApplication {
         /**
          * @brief Try to create context with given configuration
          *
-         * Unlike @ref createContext() returns `false` if the context cannot be
-         * created, `true` otherwise.
+         * Unlike @ref createContext() returns @cpp false @ce if the context
+         * cannot be created, @cpp true @ce otherwise.
          */
         bool tryCreateContext(const Configuration& configuration);
 
@@ -291,14 +294,16 @@ See @ref Magnum::Platform::WindowlessIosApplication "Platform::WindowlessIosAppl
 for usage information. This macro abstracts out platform-specific entry point
 code and is equivalent to the following, see @ref portability-applications for
 more information.
-@code
+
+@code{.cpp}
 int main(int argc, char** argv) {
     className app({argc, argv});
     return app.exec();
 }
 @endcode
+
 When no other windowless application header is included this macro is also
-aliased to `MAGNUM_WINDOWLESSAPPLICATION_MAIN()`.
+aliased to @cpp MAGNUM_WINDOWLESSAPPLICATION_MAIN() @ce.
 */
 #define MAGNUM_WINDOWLESSIOSAPPLICATION_MAIN(className)                     \
     int main(int argc, char** argv) {                                       \

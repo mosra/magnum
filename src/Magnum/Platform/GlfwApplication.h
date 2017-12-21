@@ -56,7 +56,7 @@ This application library is available on all platforms where GLFW is ported. It
 depends on **GLFW** library and is built if `WITH_GLFWAPPLICATION` is enabled
 in CMake.
 
-## Bootstrap application
+@section Platform-GlfwApplication-bootstrap Bootstrap application
 
 Fully contained base application using @ref GlfwApplication along with CMake
 setup is available in `base-glfw` branch of
@@ -66,14 +66,16 @@ or [zip](https://github.com/mosra/magnum-bootstrap/archive/base-glfw.zip) file.
 After extracting the downloaded archive you can build and run the application
 with these four commands:
 
-    mkdir build && cd build
-    cmake ..
-    cmake --build .
-    ./src/MyApplication # or ./src/Debug/MyApplication
+@code{.sh}
+mkdir build && cd build
+cmake ..
+cmake --build .
+./src/MyApplication # or ./src/Debug/MyApplication
+@endcode
 
 See @ref cmake for more information.
 
-## General usage
+@section Platform-GlfwApplication-usage General usage
 
 In CMake you need to request `GlfwApplication` component of `Magnum` package
 and link to `Magnum::GlfwApplication` target. If no other application is
@@ -81,10 +83,11 @@ requested, you can also use generic `Magnum::Application` alias to simplify
 porting. Again, see @ref building and @ref cmake for more information.
 
 In C++ code you need to implement at least @ref drawEvent() to be able to draw
-on the screen. The subclass can be then used directly in `main()` -- see
-convenience macro @ref MAGNUM_GLFWAPPLICATION_MAIN(). See @ref platform for
-more information.
-@code
+on the screen. The subclass can be then used directly in @cpp main() @ce
+--- see convenience macro @ref MAGNUM_GLFWAPPLICATION_MAIN(). See @ref platform
+for more information.
+
+@code{.cpp}
 class MyApplication: public Platform::GlfwApplication {
     // implement required methods...
 };
@@ -92,8 +95,8 @@ MAGNUM_GLFWAPPLICATION_MAIN(MyApplication)
 @endcode
 
 If no other application header is included, this class is also aliased to
-`Platform::Application` and the macro is aliased to `MAGNUM_APPLICATION_MAIN()`
-to simplify porting.
+@cpp Platform::Application @ce and the macro is aliased to
+@cpp MAGNUM_APPLICATION_MAIN() @ce to simplify porting.
 */
 class GlfwApplication {
     public:
@@ -148,7 +151,7 @@ class GlfwApplication {
 
         /**
          * @brief Execute main loop
-         * @return Value for returning from `main()`
+         * @return Value for returning from @cpp main() @ce
          *
          * See @ref MAGNUM_GLFWAPPLICATION_MAIN() for usage information.
          */
@@ -206,8 +209,9 @@ class GlfwApplication {
         /**
          * @brief Set swap interval
          *
-         * Set `0` for no VSync, `1` for enabled VSync. Some platforms support
-         * `-1` for late swap tearing. Default is driver-dependent.
+         * Set @cpp 0 @ce for no VSync, @cpp 1 @ce for enabled VSync. Some
+         * platforms support @cpp -1 @ce for late swap tearing. Default is
+         * driver-dependent.
          */
         void setSwapInterval(Int interval);
 
@@ -450,7 +454,7 @@ class GlfwApplication::Configuration {
          * @brief Set window title
          * @return Reference to self (for method chaining)
          *
-         * Default is `"Magnum GLFW Application"`.
+         * Default is @cpp "Magnum GLFW Application" @ce.
          */
         Configuration& setTitle(std::string title) {
             _title = std::move(title);
@@ -464,7 +468,7 @@ class GlfwApplication::Configuration {
          * @brief Set window size
          * @return Reference to self (for method chaining)
          *
-         * Default is `{800, 600}`.
+         * Default is @cpp {800, 600} @ce.
          */
         Configuration& setSize(const Vector2i& size) {
             _size = size;
@@ -540,8 +544,8 @@ class GlfwApplication::Configuration {
          * @brief Set sample count
          * @return Reference to self (for method chaining)
          *
-         * Default is `0`, thus no multisampling. The actual sample count is
-         * ignored, GLFW either enables it or disables. See also
+         * Default is @cpp 0 @ce, thus no multisampling. The actual sample
+         * count is ignored, GLFW either enables it or disables. See also
          * @ref Renderer::Feature::Multisampling.
          */
         Configuration& setSampleCount(Int count) {
@@ -1038,14 +1042,16 @@ See @ref Magnum::Platform::GlfwApplication "Platform::GlfwApplication" for
 usage information. This macro abstracts out platform-specific entry point code
 and is equivalent to the following, see @ref portability-applications for more
 information.
-@code
+
+@code{.cpp}
 int main(int argc, char** argv) {
     className app({argc, argv});
     return app.exec();
 }
 @endcode
+
 When no other application header is included this macro is also aliased to
-`MAGNUM_APPLICATION_MAIN()`.
+@cpp MAGNUM_APPLICATION_MAIN() @ce.
 */
 #define MAGNUM_GLFWAPPLICATION_MAIN(className)                              \
     int main(int argc, char** argv) {                                       \
