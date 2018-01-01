@@ -24,7 +24,7 @@
 */
 
 namespace Magnum {
-/** @mainpage
+/** @mainpage Magnum
 
 Magnum is a 2D/3D graphics engine written in C++11/C++14 and modern OpenGL. Its
 goal is to simplify low-level graphics development and interaction with OpenGL
