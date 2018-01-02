@@ -387,7 +387,7 @@ Extension                                   | Status
 @extension2{EXT,multi_draw_arrays,multi_draw_arrays} | done
 @extension{EXT,debug_label}                 | see above
 @extension{EXT,debug_marker}                | done
-@extension{EXT,separate_shader_objects}     | only direct uniform binding
+@extension2{EXT,separate_shader_objects,separate_shader_objects.gles} | only direct uniform binding
 @extension{EXT,multisampled_render_to_texture} | only renderbuffer storage
 @extension{EXT,robustness}                  | done
 @extension{EXT,shader_framebuffer_fetch}    | missing limit query

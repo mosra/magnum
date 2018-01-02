@@ -205,8 +205,8 @@ bindFragmentDataLocationIndexed(NormalOutput, 1, "normal");
     1.0, similar functionality is available in extension
     @webgl_extension{WEBGL,draw_buffers}.
 
-@todo @extension{EXT,separate_shader_objects} supports explicit attrib
-    location
+@todo @extension2{EXT,separate_shader_objects,separate_shader_objects.gles}
+    supports explicit attrib location
 
 @anchor AbstractShaderProgram-uniform-location
 ### Uniform locations
@@ -467,10 +467,10 @@ cached, so repeated queries don't result in repeated @fn_gl{Get} calls. See
 also @ref Context::resetState() and @ref Context::State::Shaders.
 
 If extension @extension{ARB,separate_shader_objects} (part of OpenGL 4.1),
-@extension{EXT,direct_state_access} desktop extension, @extension{EXT,separate_shader_objects}
-OpenGL ES extension or OpenGL ES 3.1 is available, uniform setting functions
-use DSA functions to avoid unnecessary calls to @fn_gl{UseProgram}. See
-@ref setUniform() documentation for more information.
+@extension{EXT,direct_state_access} desktop extension, @extension2{EXT,separate_shader_objects,separate_shader_objects.gles} OpenGL ES
+extension or OpenGL ES 3.1 is available, uniform setting functions use DSA
+functions to avoid unnecessary calls to @fn_gl{UseProgram}. See @ref setUniform()
+documentation for more information.
 
 To achieve least state changes, set all uniforms in one run -- method chaining
 comes in handy.
@@ -845,7 +845,8 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          * Initially disabled.
          * @see @fn_gl{ProgramParameter} with @def_gl{PROGRAM_SEPARABLE}
          * @requires_gl41 Extension @extension{ARB,separate_shader_objects}
-         * @requires_es_extension Extension @extension{EXT,separate_shader_objects}
+         * @requires_es_extension Extension
+         *      @extension2{EXT,separate_shader_objects,separate_shader_objects.gles}
          * @requires_gles Separate shader objects are not supported in WebGL.
          */
         void setSeparable(bool enabled) {
