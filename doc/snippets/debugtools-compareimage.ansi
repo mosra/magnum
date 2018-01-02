@@ -1,6 +1,8 @@
 [1;39mStarting ProcessingTest with 1 test cases...[0m
 [1;31m  FAIL[0;34m [[1;36m1[0;34m][1;39m process()[0m at …/debugtools-compareimage.cpp on line 77
-        Images actual and expected have max delta above threshold, actual 189 but at most 170 expected. Mean delta 13.5776 is below threshold 96. Delta image:
+        Images actual and expected have max delta above threshold, actual 189
+        but at most 170 expected. Mean delta 13.5776 is below threshold 96.
+        Delta image:
           |                                |
           |                                |
           |         ~[1;33m8[0m[1;33m0[0m[1;33m7[0m[1;33m0[0m[1;33mD[0m[1;31mN[0m[1;31mM[0m[1;31mN[0m[1;33m8[0m[1;33m$[0m[1;33mZ[0m[1;33mD[0m7         |

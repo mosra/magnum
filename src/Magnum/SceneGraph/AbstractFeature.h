@@ -252,9 +252,10 @@ template<UnsignedInt dimensions, class T> class AbstractFeature
         /**
          * @brief Clean data based on absolute transformation
          *
-         * When object is cleaned and @ref CachedTransformation::Absolute is
-         * enabled in @ref setCachedTransformations(), this function is called
-         * to recalculate data based on absolute object transformation.
+         * When object is cleaned and
+         * @ref SceneGraph::CachedTransformation::Absolute "CachedTransformation::Absolute"
+         * is enabled in @ref setCachedTransformations(), this function is
+         * called to recalculate data based on absolute object transformation.
          *
          * Default implementation does nothing.
          * @see @ref scenegraph-features-caching, @ref cleanInverted()

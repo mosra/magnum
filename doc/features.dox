@@ -24,8 +24,11 @@
 */
 
 namespace Magnum {
-/** @page features Feature overview
+/** @page features Feature guide
 @brief Fundamental principles and design goals.
+
+Overview and tutorials of high-level feature groups in Magnum. It's not
+necessary to read through everything, pick only what you need.
 
 -   @subpage platform --- @copybrief platform
 -   @subpage types --- @copybrief types
