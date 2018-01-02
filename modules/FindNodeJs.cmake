@@ -4,15 +4,15 @@
 #
 # Finds the Node.js executable. This module defines:
 #
-#  NODEJS_FOUND         - True if Node.js executable is found
+#  NodeJs_FOUND         - True if Node.js executable is found
 #  NodeJs::NodeJs       - Node.js executable imported target
 #
 
 #
 #   This file is part of Corrade.
 #
-#   Copyright © 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016
-#             Vladimír Vondruš <mosra@centrum.cz>
+#   Copyright © 2007, 2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016,
+#               2017, 2018 Vladimír Vondruš <mosra@centrum.cz>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
@@ -34,6 +34,7 @@
 #
 
 find_program(NODEJS_EXECUTABLE node)
+mark_as_advanced(NODEJS_EXECUTABLE)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args("NodeJs" DEFAULT_MSG NODEJS_EXECUTABLE)
