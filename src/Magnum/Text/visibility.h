@@ -29,6 +29,7 @@
 
 #include "Magnum/configure.h"
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_BUILD_STATIC
     #ifdef MagnumText_EXPORTS
         #define MAGNUM_TEXT_EXPORT CORRADE_VISIBILITY_EXPORT
@@ -39,5 +40,9 @@
     #define MAGNUM_TEXT_EXPORT CORRADE_VISIBILITY_STATIC
 #endif
 #define MAGNUM_TEXT_LOCAL CORRADE_VISIBILITY_LOCAL
+#else
+#define MAGNUM_TEXT_EXPORT
+#define MAGNUM_TEXT_LOCAL
+#endif
 
 #endif

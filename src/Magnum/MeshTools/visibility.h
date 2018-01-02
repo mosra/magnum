@@ -29,6 +29,7 @@
 
 #include "Magnum/configure.h"
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_BUILD_STATIC
     #if defined(MagnumMeshTools_EXPORTS) || defined(MagnumMeshToolsObjects_EXPORTS)
         #define MAGNUM_MESHTOOLS_EXPORT CORRADE_VISIBILITY_EXPORT
@@ -37,6 +38,9 @@
     #endif
 #else
     #define MAGNUM_MESHTOOLS_EXPORT CORRADE_VISIBILITY_STATIC
+#endif
+#else
+#define MAGNUM_MESHTOOLS_EXPORT
 #endif
 
 #endif

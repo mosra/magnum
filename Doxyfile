@@ -2006,7 +2006,10 @@ SEARCH_INCLUDES        = YES
 # preprocessor.
 # This tag requires that the tag SEARCH_INCLUDES is set to YES.
 
-INCLUDE_PATH           =
+INCLUDE_PATH           = src \
+    ../magnum-plugins/src \
+    ../magnum-extras/src \
+    ../magnum-integration/src
 
 # You can use the INCLUDE_FILE_PATTERNS tag to specify one or more wildcard
 # patterns (like *.h and *.hpp) to filter out the header-files in the
@@ -2026,20 +2029,8 @@ INCLUDE_FILE_PATTERNS  =
 
 PREDEFINED             = DOXYGEN_GENERATING_OUTPUT \
     CORRADE_DEPRECATED(message)= CORRADE_DEPRECATED_ALIAS(message)= \
-    CORRADE_DEPRECATED_ENUM(message)= \
-    MAGNUM_BUILD_DEPRECATED \
-    MAGNUM_EXPORT= \
-    MAGNUM_AUDIO_EXPORT= \
-    MAGNUM_DEBUGTOOLS_EXPORT= \
-    MAGNUM_MATH_EXPORT= \
-    MAGNUM_MESHTOOLS_EXPORT= \
-    MAGNUM_PLATFORM_EXPORT= \
-    MAGNUM_PRIMITIVES_EXPORT= \
-    MAGNUM_SCENEGRAPH_EXPORT= \
-    MAGNUM_SHADERS_EXPORT= \
-    MAGNUM_SHAPES_EXPORT= \
-    MAGNUM_TEXT_EXPORT= \
-    MAGNUM_TEXTURETOOLS_EXPORT=
+    CORRADE_DEPRECATED_ENUM(message)= CORRADE_ENUMSET_OPERATORS(message)= \
+    MAGNUM_BUILD_DEPRECATED
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this
 # tag can be used to specify a list of macro names that should be expanded. The

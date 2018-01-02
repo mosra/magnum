@@ -1,5 +1,5 @@
-#ifndef Magnum_Shaders_magnumShadersVisibility_h
-#define Magnum_Shaders_magnumShadersVisibility_h
+#ifndef Magnum_Shaders_visibility_h
+#define Magnum_Shaders_visibility_h
 /*
     This file is part of Magnum.
 
@@ -29,6 +29,7 @@
 
 #include "Magnum/configure.h"
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_BUILD_STATIC
     #ifdef MagnumShaders_EXPORTS
         #define MAGNUM_SHADERS_EXPORT CORRADE_VISIBILITY_EXPORT
@@ -37,6 +38,9 @@
     #endif
 #else
     #define MAGNUM_SHADERS_EXPORT CORRADE_VISIBILITY_STATIC
+#endif
+#else
+#define MAGNUM_SHADERS_EXPORT
 #endif
 
 #endif

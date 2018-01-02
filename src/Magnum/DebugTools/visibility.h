@@ -29,6 +29,7 @@
 
 #include "Magnum/configure.h"
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_BUILD_STATIC
     #ifdef MagnumDebugTools_EXPORTS
         #define MAGNUM_DEBUGTOOLS_EXPORT CORRADE_VISIBILITY_EXPORT
@@ -37,6 +38,9 @@
     #endif
 #else
     #define MAGNUM_DEBUGTOOLS_EXPORT CORRADE_VISIBILITY_STATIC
+#endif
+#else
+#define MAGNUM_DEBUGTOOLS_EXPORT
 #endif
 
 #endif
