@@ -26,44 +26,54 @@
 namespace Magnum {
 /** @mainpage Magnum
 
-Magnum is a 2D/3D graphics engine written in C++11/C++14 and modern OpenGL. Its
-goal is to simplify low-level graphics development and interaction with OpenGL
-using recent C++11/C++14 features and to abstract away platform-specific
-issues.
+* *Lightweight and modular C++11/C++14 graphics middleware to power your dreams.*
 
-@section mainpage-design-goals Design goals
+Looking for an open-source library that gives you graphics abstraction and
+platform independence on major desktop, mobile and web platforms? Do you want
+it to have all the convenience utilities around yet stay small, powerful and
+not give up on flexibility? *Here it is.* And it's free to use, even for
+commercial purposes.
 
--   **2D is not an ugly stepchild.** Many engines out there were created as
-    pure 2D or 3D and the alternative is usually just an afterthought, if it is
-    present at all. If you want to do your next project in 2D only, you have to
-    either relearn another engine from scratch or emulate it in 3D, leaving
-    many things overly complicated. Magnum treats 2D equivalently to 3D so you
-    can reuse what you already learned for 3D and even combine 2D and 3D in one
-    project.
+-   Project homepage --- http://magnum.graphics/
+-   Documentation --- http://doc.magnum.graphics/
+-   GitHub project page --- https://github.com/mosra/magnum
 
--   **Forward compatibility.** If newer technology makes things faster, simpler
-    or more intuitive, it is the way to go. Magnum by default relies on decent
-    C++11 support and modern OpenGL features and if some feature isn't
-    available, it tries to emulate it using older functionality. However, you
-    are not restricted to use the older functionality directly, if you really
-    want to.
+@section mainpage-goals1 Beauty of simplicity
 
--   **Intuitive, but not restrictive API.** Scripting languages are often
-    preferred to C/C++ because they are designed to have less complicated APIs
-    and less boilerplate code. Magnum is designed with intuitivity in mind, but
-    also with speed and static checks that strongly-typed native code offers.
-    It wraps OpenGL into less verbose and more type-safe API, which is easier
-    to use. Usually the most common way is the most simple, but if you need
-    full control, you can have it.
+Among Magnum essentials is a UTF-8-aware OS, filesystem and console
+abstraction, a feature-packed vector math library and a slim C++11 wrapper of
+OpenGL / WebGL family of APIs. Build on top of that or opt-in for more.
 
--   **Extensible and replaceable components.** If you want to use different
-    mathematical library for specific purposes, that new windowing toolkit,
-    your own file formats or another physics library, you can. Conversion of
-    math structures between different libraries can be done on top of pre-made
-    skeleton classes, support for file formats is done using plugins and
-    platform support is done by writing simple wrapper class.
+[See all core features »](http://magnum.graphics/features/)
+
+@section mainpage-goals2 With batteries included
+
+Shaders and primitives for fast prototyping, algorithms, debugging and
+automatic testing, asset management, integration with popular windowing
+toolkits and a UI library. Everything fits together but you still have a
+choice.
+
+[List the extra features »](http://magnum.graphics/features/extras/)
+
+@section mainpage-goals3 Screws are not glued in
+
+There's always more than one way to do things. Enjoy the freedom of choice and
+integrate your own asset loader, texture compressor, font format or math
+library, if you feel the need. Or use any of the various plugins.
+
+[View extension points »](http://magnum.graphics/features/extensions/)
+
+* *Looking for more?* There's a [Showcase page](http://magnum.graphics/showcase/)
+right behind the corner with lots of WebGL demos.
 
 @section mainpage-platforms Supported platforms
+
+-   **Linux** and embedded Linux
+-   **Windows**, **Windows RT** (Store/Phone)
+-   **macOS**, **iOS**
+-   **Android**
+-   **Web** ([asm.js](http://asmjs.org/) or [WebAssembly](http://webassembly.org/)),
+    through [Emscripten](http://kripken.github.io/emscripten-site/)
 
 Graphics APIs:
 
@@ -73,54 +83,90 @@ Graphics APIs:
     functionality
 -   **WebGL** 1.0, 2.0 and extensions to match desktop OpenGL functionality
 
-Platforms:
+See the [Build Status page](http://magnum.graphics/build-status/) on the
+project website for detailed per-platform build status.
 
--   **Linux** and embedded Linux (natively using GLX/EGL and Xlib or through
-    SDL2, GLFW or GLUT toolkit)
--   **Windows** using both MSVC and MinGW, natively or using ANGLE (through
-    SDL2, GLFW or GLUT toolkit)
--   **macOS** (through SDL2 or GLFW toolkit)
--   **iOS** (through SDL2 toolkit)
--   **Android**
--   **Windows RT** (Store/Phone) using ANGLE (through SDL2 toolkit)
--   **Web** (asm.js or WebAssembly), through [Emscripten](http://kripken.github.io/emscripten-site/)
+@section mainpage-building Building Magnum
 
-@section mainpage-features Features
+You can either use packaging scripts, which are stored in the `package/`
+subdirectory, or compile and install everything manually. A short guide is
+below, for complete documentation for all platforms head over to the
+@ref building page.
 
--   Vector and matrix library with implementation of complex numbers,
-    quaternions and their dual counterparts for representing transformations.
--   Classes wrapping OpenGL using RAII principle and simplifying its usage with
-    direct state access and automatic fallback for unavailable features.
--   Extensible scene graph which can be modified for each specific usage.
--   Plugin-based data exchange framework, tools for manipulating meshes,
-    textures and images.
--   Pre-made shaders, primitives and other tools for easy prototyping and
-    debugging.
+@subsection mainpage-building-dependencies Minimal dependencies
+
+-   C++ compiler with good C++11 support. Compilers which are tested to have
+    everything needed are **GCC** >= 4.7, **Clang** >= 3.1 and **MSVC** >= 2015.
+    On Windows you can also use **MinGW-w64**.
+-   **CMake** >= 2.8.12
+-   **Corrade** - Plugin management and utility library. See how to get it at
+    http://doc.magnum.graphics/corrade/.
+
+@subsection mainpage-building-compilation Compilation, installation
+
+The library (for example with support for SDL2 applications) can be built and
+installed using these commands:
+
+@code{.sh}
+git clone git://github.com/mosra/magnum && cd magnum
+mkdir -p build && cd build
+cmake .. \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DWITH_SDL2APPLICATION=ON
+make -j
+make install # sudo may be required
+@endcode
+
+@subsection mainpage-building-tests Building and running unit tests
+
+If you want to build also unit tests (which are not built by default), pass
+`-DBUILD_TESTS=ON` to CMake. Unit tests use Corrade's @ref Corrade::TestSuite "TestSuite"
+framework and can be run using
+
+@code{.sh}
+ctest --output-on-failure
+@endcode
+
+in build directory. Everything should pass ;)
+
+@subsection mainpage-building-doc Building documentation
+
+The documentation, which you are currently reading, is written using
+[Doxygen](https://doxygen.org). It can be build by running
+
+@code{.sh}
+doxygen
+@endcode
+
+in the root directory (i.e. where `Doxyfile` is). You may need to create the
+`build/` directory if it doesn't exist yet. Resulting HTML documentation will
+be in the `build/doc/` directory.
 
 @section mainpage-getting-started Getting started
 
 Read the thorough @ref getting-started "guide to download, build, install and start using Magnum"
 in your project.
 
-@section mainpage-hacking Hacking Magnum
+@section mainpage-contact Contact & support
 
-If you want to hack on this engine, if you spotted a bug, need an feature or
+If you want to contribute to Magnum, if you spotted a bug, need a feature or
 have an awesome idea, you can get a copy of the sources from GitHub and start
-right now! There is the already mentioned guide about
-@ref building "how to download and build Magnum" and also guide about
+right away! There is the already mentioned guide about
+@ref building "how to download and build Magnum" and also a guide about
 @ref coding-style "coding style and best practices" which you should follow to
-make the library as consistent and maintainable as possible.
+keep the library as consistent and maintainable as possible.
 
-Feel free to get more information or contact the team at:
+-   Project homepage --- http://magnum.graphics/
+-   Documentation --- http://doc.magnum.graphics/
+-   GitHub project page --- https://github.com/mosra/magnum
+-   Gitter community chat --- https://gitter.im/mosra/magnum
+-   IRC --- join the <tt>#magnum-engine</tt> channel on freenode
+-   Google Groups mailing list --- magnum-engine@googlegroups.com ([archive](https://groups.google.com/forum/#!forum/magnum-engine))
+-   Author's personal Twitter --- https://twitter.com/czmosra
+-   Author's personal e-mail --- mosra@centrum.cz
 
--   Website --- http://magnum.graphics
--   GitHub --- https://github.com/mosra/magnum
--   Gitter --- https://gitter.im/mosra/magnum
--   IRC --- join `#magnum-engine` channel on freenode
--   Google Groups --- https://groups.google.com/forum/#!forum/magnum-engine
--   Twitter --- https://twitter.com/czmosra
--   E-mail --- mosra@centrum.cz
--   Jabber --- mosra@jabbim.cz
+See also the [Contact & Support page](http://magnum.graphics/contact/) on the
+project website for further information.
 
 @section mainpage-license License
 
@@ -128,7 +174,7 @@ Magnum is licensed under the MIT/Expat license:
 
 >
 >   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017
->             Vladimír Vondruš &lt;mosra@centrum.cz&gt;
+>             Vladimír Vondruš &lt;mosra@centrum.cz&gt; and contributors
 >
 >   Permission is hereby granted, free of charge, to any person obtaining a
 >   copy of this software and associated documentation files (the "Software"),

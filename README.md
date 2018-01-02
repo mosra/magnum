@@ -1,116 +1,104 @@
-Magnum is a 2D/3D graphics engine written in C++11/C++14 and modern OpenGL. Its
-goal is to simplify low-level graphics development and interaction with OpenGL
-using recent C++11/C++14 features and to abstract away platform-specific
-issues.
+Magnum — *Lightweight and modular C++11/C++14 graphics middleware to power your dreams.*
 
-[![Join the chat at https://gitter.im/mosra/magnum](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mosra/magnum?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+Looking for an open-source library that gives you graphics abstraction and
+platform independence on major desktop, mobile and web platforms? Do you want
+it to have all the convenience utilities around yet stay small, powerful and
+not give up on flexibility? *Here it is.* And it's free to use, even for
+commercial purposes.
 
-DESIGN GOALS
-============
+[![Join the chat at https://gitter.im/mosra/magnum](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mosra/magnum?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/mosra/magnum.svg?branch=master)](https://travis-ci.org/mosra/magnum) [![Build Status](https://ci.appveyor.com/api/projects/status/5b477m034cfaskse/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum/branch/master) [![Coverage Status](https://coveralls.io/repos/github/mosra/magnum/badge.svg?branch=master)](https://coveralls.io/github/mosra/magnum?branch=master)
 
-*   **2D is not an ugly stepchild.** Many engines out there were created as
-    pure 2D or 3D and the alternative is usually just an afterthought, if
-    present at all. If you want to do your next project in 2D only, you have to
-    either relearn another engine from scratch or emulate it in 3D, leaving
-    many things overly complicated. Magnum treats 2D equivalently to 3D so you
-    can reuse what you already learned for 3D and even combine 2D and 3D in one
-    project.
+-   Project homepage — http://magnum.graphics/
+-   Documentation — http://doc.magnum.graphics/
+-   GitHub project page — https://github.com/mosra/magnum
 
-*   **Forward compatibility.** If newer technology makes things faster, simpler
-    or more intuitive, it is the way to go. Magnum by default relies on decent
-    C++11 support and modern OpenGL features and if some feature isn't
-    available, it tries to emulate it using older functionality. However, you
-    are not restricted to use the older functionality directly, if you really
-    want to.
+Beauty of simplicity
+====================
 
-*   **Intuitive, but not restrictive API.** Scripting languages are often
-    preferred to C/C++ because they are designed to have less complicated APIs
-    and less boilerplate code. Magnum is designed with intuitivity in mind, but
-    also with speed and static checks that strongly-typed native code offers.
-    It wraps OpenGL into less verbose and more type-safe API, which is easier
-    to use. Usually the most common way is the most simple, but if you need
-    full control, you can have it.
+Among Magnum essentials is a UTF-8-aware OS, filesystem and console
+abstraction, a feature-packed vector math library and a slim C++11 wrapper of
+OpenGL / WebGL family of APIs. Build on top of that or opt-in for more.
 
-*   **Extensible and replaceable components.** If you want to use different
-    mathematical library for specific purposes, that new windowing toolkit,
-    your own file formats or another physics library, you can. Conversion of
-    math structures between different libraries can be done on top of pre-made
-    skeleton classes, support for file formats is done using plugins and
-    platform support is done by writing simple wrapper class.
+[See all core features](http://magnum.graphics/features/)
+
+With batteries included
+=======================
+
+Shaders and primitives for fast prototyping, algorithms, debugging and
+automatic testing, asset management, integration with popular windowing
+toolkits and a UI library. Everything fits together but you still have a
+choice.
+
+[List the extra features](http://magnum.graphics/features/extras/)
+
+Screws are not glued in
+=======================
+
+There's always more than one way to do things. Enjoy the freedom of choice and
+integrate your own asset loader, texture compressor, font format or math
+library, if you feel the need. Or use any of the various plugins.
+
+[View extension points](http://magnum.graphics/features/extensions/)
+
+-------
+
+*Looking for more?* There's a [Showcase page](http://magnum.graphics/showcase/)
+right behind the corner with lots of WebGL demos.
 
 SUPPORTED PLATFORMS
 ===================
 
+-   **Linux** and embedded Linux
+-   **Windows**, **Windows RT** (Store/Phone)
+-   **macOS**, **iOS**
+-   **Android**
+-   **Web** ([asm.js](http://asmjs.org/) or [WebAssembly](http://webassembly.org/)),
+    through [Emscripten](http://kripken.github.io/emscripten-site/)
+
 Graphics APIs:
 
-*   **OpenGL** 2.1 through 4.5, core profile functionality and modern
+-   **OpenGL** 2.1 through 4.5, core profile functionality and modern
     extensions
-*   **OpenGL ES** 2.0, 3.0, 3.1 and extensions to match desktop OpenGL
+-   **OpenGL ES** 2.0, 3.0, 3.1 and extensions to match desktop OpenGL
     functionality
-*   **WebGL** 1.0, 2.0 and extensions to match desktop OpenGL functionality
+-   **WebGL** 1.0, 2.0 and extensions to match desktop OpenGL functionality
 
-Platforms:
+See the [Build Status page](http://magnum.graphics/build-status/) for detailed
+per-platform build status.
 
-*   **Linux** and embedded Linux (natively using GLX/EGL and Xlib or through
-    SDL2, GLFW or GLUT toolkit) [![Build Status](https://travis-ci.org/mosra/magnum.svg?branch=master)](https://travis-ci.org/mosra/magnum) [![Coverage Status](https://coveralls.io/repos/github/mosra/magnum/badge.svg?branch=master)](https://coveralls.io/github/mosra/magnum?branch=master)
-*   **Windows** with both MSVC and MinGW, natively or using ANGLE (through SDL2, GLFW or GLUT toolkit) [![Build Status](https://ci.appveyor.com/api/projects/status/5b477m034cfaskse/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum/branch/master)
-*   **macOS** (through SDL2 or GLFW toolkit) [![Build Status](https://travis-ci.org/mosra/magnum.svg?branch=master)](https://travis-ci.org/mosra/magnum)
-*   **iOS** (through SDL2 toolkit) [![Build Status](https://travis-ci.org/mosra/magnum.svg?branch=master)](https://travis-ci.org/mosra/magnum)
-*   **Android** [![Build Status](https://travis-ci.org/mosra/magnum.svg?branch=master)](https://travis-ci.org/mosra/magnum)
-*   **Windows RT** (Store/Phone) using ANGLE (through SDL2 toolkit) [![Build Status](https://ci.appveyor.com/api/projects/status/5b477m034cfaskse/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum/branch/master)
-*   **Web** (asm.js or WebAssembly), through [Emscripten](http://kripken.github.io/emscripten-site/) [![Build Status](https://travis-ci.org/mosra/magnum.svg?branch=master)](https://travis-ci.org/mosra/magnum)
-
-FEATURES
-========
-
-*   Actively maintained Doxygen documentation with tutorials and examples.
-    Snapshot is available at http://doc.magnum.graphics/magnum/.
-*   Vector and matrix library with implementation of complex numbers,
-    quaternions and their dual counterparts for representing transformations.
-*   Classes wrapping OpenGL using RAII principle and simplifying its usage with
-    direct state access and automatic fallback for unavailable features.
-*   Extensible scene graph which can be modified for each specific usage.
-*   Plugin-based data exchange framework, tools for manipulating meshes,
-    textures and images.
-*   Pre-made shaders, primitives and other tools for easy prototyping and
-    debugging.
-
-INSTALLATION
-============
+BUILDING MAGNUM
+===============
 
 You can either use packaging scripts, which are stored in the `package/`
-subdirectory, or compile and install everything manually using the guide below.
-Note that the [Magnum documentation](http://doc.magnum.graphics/magnum/)
-contains more comprehensive guide for building, packaging and crosscompiling.
+subdirectory, or compile and install everything manually. A short guide is
+below, for complete documentation for all platforms head over to the
+[Magnum documentation](http://doc.magnum.graphics/magnum/building.html).
 
 Minimal dependencies
 --------------------
 
-*   C++ compiler with good C++11 support. Compilers which are tested to have
+-   C++ compiler with good C++11 support. Compilers which are tested to have
     everything needed are **GCC** >= 4.7, **Clang** >= 3.1 and **MSVC** >= 2015.
     On Windows you can also use **MinGW-w64**.
-*   **CMake** >= 2.8.12
-*   **Corrade** - Plugin management and utility library. You can get it at
+-   **CMake** >= 2.8.12
+-   **Corrade** — Plugin management and utility library. You can get it at
     https://github.com/mosra/corrade.
-
-Note that the full feature set is available only on GCC 4.8.1 and Clang 3.1.
 
 Compilation, installation
 -------------------------
 
 The library (for example with support for SDL2 applications) can be built and
-installed using these four commands:
+installed using these commands:
 
-    mkdir -p build && cd build
-    cmake .. \
-        -DCMAKE_INSTALL_PREFIX=/usr \
-        -DWITH_SDL2APPLICATION=ON
-    make
-    make install
-
-See the [Doxygen documentation](http://doc.magnum.graphics/magnum/building.html)
-for more information about enabling or disabling additional features and
-targeting different platforms such as OpenGL ES.
+```sh
+git clone git://github.com/mosra/magnum && cd magnum
+mkdir -p build && cd build
+cmake .. \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DWITH_SDL2APPLICATION=ON
+make -j
+make install # sudo may be required
+```
 
 Building and running unit tests
 -------------------------------
@@ -119,21 +107,26 @@ If you want to build also unit tests (which are not built by default), pass
 `-DBUILD_TESTS=ON` to CMake. Unit tests use Corrade's TestSuite framework and
 can be run using
 
-    ctest --output-on-failure
+```sh
+ctest --output-on-failure
+```
 
-in build directory. Everything should pass ;-)
+in build directory. Everything should pass ;)
 
 Building documentation
 ----------------------
 
-The documentation is written in **Doxygen** and additionally uses **TeX** for
-math formulas. The documentation can be build by running:
+The documentation is written using [Doxygen](https://doxygen.org). It can be
+build by running
 
-    doxygen
+```sh
+doxygen
+```
 
-in root directory (i.e. where `Doxyfile` is). Resulting HTML documentation
-will be in `build/doc/` directory. You might need to create `build/` directory
-if it doesn't exist yet.
+in the root directory (i.e. where `Doxyfile` is).  You might need to create the
+`build/` directory if it doesn't exist yet. Resulting HTML documentation will
+be in the `build/doc/` directory. Snapshot of the documentation is
+[also available for online viewing](http://doc.magnum.graphics/).
 
 GETTING STARTED
 ===============
@@ -144,60 +137,64 @@ in your project.
 RELATED PROJECTS
 ================
 
-The engine itself is kept as small as possible with only little dependencies.
+The engine itself is kept as small as possible with only a few dependencies.
 Additional functionality, often depending on external libraries, is provided in
 separate repositories.
 
-*   **Corrade** -- main Magnum dependency, a multiplatform utility library:
+-   **Corrade** — main Magnum dependency, a multiplatform utility library:
     https://github.com/mosra/corrade
-    [![Linux/macOS/iOS/Android/Emscripten Build Status](https://travis-ci.org/mosra/corrade.svg?branch=master)](https://travis-ci.org/mosra/corrade) [![Windows Build Status](https://ci.appveyor.com/api/projects/status/afjjlsgtk6jjxulp/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/corrade/branch/master)
-*   **Magnum Bootstrap** -- bootstrap projects for many use cases, helping you
+-   **Magnum Bootstrap** — bootstrap projects for many use cases, helping you
     get up and running in no time: https://github.com/mosra/magnum-bootstrap
-*   **Magnum Plugins** -- various importer plugins for image, font, audio and
-    3D model formats is at https://github.com/mosra/magnum-plugins
-    [![Linux/macOS/iOS/Android/Emscripten Build Status](https://travis-ci.org/mosra/magnum-plugins.svg?branch=master)](https://travis-ci.org/mosra/magnum-plugins) [![Windows Build status](https://ci.appveyor.com/api/projects/status/nkdlwaxm2i9d6vpx/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum-plugins/branch/master)
-*   **Magnum Integration** -- integration with various external math and
+-   **Magnum Plugins** — various importer plugins for image, font, audio and
+    3D model formats is at https://github.com/mosra/magnum-plugins-plugins/branch/master)
+-   **Magnum Integration** — integration with various external math and
     physics, get it at https://github.com/mosra/magnum-integration
-    [![Linux/macOS/iOS/Android/Emscripten Build Status](https://travis-ci.org/mosra/magnum-integration.svg?branch=master)](https://travis-ci.org/mosra/magnum-integration) [![Windows Build Status](https://ci.appveyor.com/api/projects/status/hs6ykva1ld74vavr/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum-integration/branch/master)
-*   **Magnum Examples** -- examples of engine usage, varying from simple
+-   **Magnum Examples** — examples of engine usage, varying from simple
     *Hello World*-like example to more advanced applications, such as viewer
     for complex 3D models. See it at https://github.com/mosra/magnum-examples
-    [![LLinux/macOS/iOS/Android/Emscripten Build Status](https://travis-ci.org/mosra/magnum-examples.svg?branch=master)](https://travis-ci.org/mosra/magnum-examples) [![Windows Build Status](https://ci.appveyor.com/api/projects/status/33qdqpdc5n0au3ou/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum-examples/branch/master)
-*   **Magnum Extras** -- playground for testing new APIs, specialized stuff
+-   **Magnum Extras** — playground for testing new APIs, specialized stuff
     that doesn't necessarily need to be a part of main Magnum repository or
     mutually exclusive functionality: https://github.com/mosra/magnum-extras
-    [![Linux/macOS/iOS/Android/Emscripten Build Status](https://travis-ci.org/mosra/magnum-extras.svg?branch=master)](https://travis-ci.org/mosra/magnum-extras) [![Windows Build status](https://ci.appveyor.com/api/projects/status/f75u5eow2qiso7m5/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum-extras/branch/master)
-*   **libRocket integration** -- integrates Magnum as rendering backend into
+-   **libRocket integration** — integrates Magnum as rendering backend into
     [libRocket](https://github.com/libRocket/libRocket) GUI library:
     https://github.com/miguelmartin75/Magnum-libRocket
-*   **Dear IMGUI integration** -- integrated Magnum as rendering backend into
+-   **Dear IMGUI integration** — integrated Magnum as rendering backend into
     [Dear IMGUI](https://github.com/ocornut/imgui) library:
     https://github.com/denesik/MagnumImguiPort
-*   **Magnum Inspector** -- Gtk-based inspector window running alongside Magnum
+-   **Magnum Inspector** — Gtk-based inspector window running alongside Magnum
     https://github.com/wivlaro/magnum-inspector
 
-CONTACT
-=======
+CONTACT & SUPPORT
+=================
 
-Want to learn more about the library? Found a bug or want to share an awesome
-idea? Feel free to visit the project website or contact the team at:
+If you want to contribute to Magnum, if you spotted a bug, need a feature or
+have an awesome idea, you can get a copy of the sources from GitHub and start
+right away! There is the already mentioned guide about
+[how to download and build Magnum](http://doc.magnum.graphics/magnum/building.html)
+and also a guide about [coding style and best practices](http://doc.magnum.graphics/magnum/coding-style.html)
+which you should follow to keep the library as consistent and maintainable as
+possible.
 
-*   Website -- http://magnum.graphics/
-*   GitHub -- https://github.com/mosra/magnum
-*   Gitter -- https://gitter.im/mosra/magnum
-*   IRC -- join `#magnum-engine` channel on freenode
-*   Google Groups -- https://groups.google.com/forum/#!forum/magnum-engine
-*   Twitter -- https://twitter.com/czmosra
-*   E-mail -- mosra@centrum.cz
-*   Jabber -- mosra@jabbim.cz
+-   Project homepage — http://magnum.graphics/
+-   Documentation — http://doc.magnum.graphics/
+-   GitHub project page — https://github.com/mosra/magnum
+-   Gitter community chat — https://gitter.im/mosra/magnum
+-   IRC — join the `#magnum-engine` channel on freenode
+-   Google Groups mailing list — magnum-engine@googlegroups.com ([archive](https://groups.google.com/forum/#!forum/magnum-engine))
+-   Author's personal Twitter — https://twitter.com/czmosra
+-   Author's personal e-mail — mosra@centrum.cz
+
+See also the Magnum Project [Contact & Support page](http://magnum.graphics/contact/)
+for further information.
 
 CREDITS
 =======
 
-See [CREDITS.md](CREDITS.md) file for details. Big thanks to everyone involved!
+See the [CREDITS.md](CREDITS.md) file for details. Big thanks to everyone
+involved!
 
 LICENSE
 =======
 
-Magnum is licensed under the MIT/Expat license, see [COPYING](COPYING) file for
-details.
+Magnum is licensed under the MIT/Expat license, see the [COPYING](COPYING) file
+for details.
