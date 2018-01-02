@@ -60,8 +60,6 @@ See also @ref Extensions namespace, which contain compile-time information
 about OpenGL extensions.
 */
 class MAGNUM_EXPORT Extension {
-    friend Context;
-
     public:
         /** @brief All extensions for given OpenGL version */
         static const std::vector<Extension>& extensions(Version version);
@@ -76,6 +74,10 @@ class MAGNUM_EXPORT Extension {
         constexpr const char* string() const { return _string; }
 
     private:
+        #ifndef DOXYGEN_GENERATING_OUTPUT /* https://bugzilla.gnome.org/show_bug.cgi?id=776986 */
+        friend Context;
+        #endif
+
         std::size_t _index;
         Version _requiredVersion;
         Version _coreVersion;
@@ -115,9 +117,6 @@ Arguments:
 
 */
 class MAGNUM_EXPORT Context {
-    friend Implementation::ContextState;
-    friend Platform::Context;
-
     public:
         #ifndef MAGNUM_TARGET_WEBGL
         /**
@@ -572,6 +571,11 @@ class MAGNUM_EXPORT Context {
         MAGNUM_LOCAL bool isCoreProfileInternal(Implementation::ContextState& state);
 
     private:
+        #ifndef DOXYGEN_GENERATING_OUTPUT /* https://bugzilla.gnome.org/show_bug.cgi?id=776986 */
+        friend Implementation::ContextState;
+        friend Platform::Context;
+        #endif
+
         explicit Context(NoCreateT, Int argc, const char** argv, void functionLoader());
 
         bool tryCreate();

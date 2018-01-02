@@ -156,10 +156,6 @@ template<UnsignedInt dimensions, class T> class AbstractFeature
     : private Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>
     #endif
 {
-    friend Containers::LinkedList<AbstractFeature<dimensions, T>>;
-    friend Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>;
-    template<class> friend class Object;
-
     public:
         /**
          * @brief Constructor
@@ -278,6 +274,12 @@ template<UnsignedInt dimensions, class T> class AbstractFeature
         /*@}*/
 
     private:
+        #ifndef DOXYGEN_GENERATING_OUTPUT /* https://bugzilla.gnome.org/show_bug.cgi?id=776986 */
+        friend Containers::LinkedList<AbstractFeature<dimensions, T>>;
+        friend Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>;
+        template<class> friend class Object;
+        #endif
+
         CachedTransformations _cachedTransformations;
 };
 

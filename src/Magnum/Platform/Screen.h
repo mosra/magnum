@@ -66,10 +66,6 @@ The following specialization are explicitly compiled into each particular
 -   @ref XEglApplication "BasicScreen<XEglApplication>"
 */
 template<class Application> class BasicScreen: private Containers::LinkedListItem<BasicScreen<Application>, BasicScreenedApplication<Application>> {
-    friend Containers::LinkedListItem<BasicScreen<Application>, BasicScreenedApplication<Application>>;
-    friend Containers::LinkedList<BasicScreen<Application>>;
-    friend BasicScreenedApplication<Application>;
-
     public:
         #ifdef DOXYGEN_GENERATING_OUTPUT
         /**
@@ -257,6 +253,12 @@ template<class Application> class BasicScreen: private Containers::LinkedListIte
         virtual void mouseMoveEvent(MouseMoveEvent& event);
 
     private:
+        #ifndef DOXYGEN_GENERATING_OUTPUT /* https://bugzilla.gnome.org/show_bug.cgi?id=776986 */
+        friend Containers::LinkedListItem<BasicScreen<Application>, BasicScreenedApplication<Application>>;
+        friend Containers::LinkedList<BasicScreen<Application>>;
+        friend BasicScreenedApplication<Application>;
+        #endif
+
         PropagatedEvents _propagatedEvents;
 };
 

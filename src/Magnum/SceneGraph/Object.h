@@ -111,9 +111,6 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
     , private Containers::LinkedList<Object<Transformation>>, private Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>
     #endif
 {
-    friend Containers::LinkedList<Object<Transformation>>;
-    friend Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>;
-
     public:
         /** @brief Matrix type */
         typedef MatrixTypeFor<Transformation::Dimensions, typename Transformation::Type> MatrixType;
@@ -360,6 +357,11 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
     #endif
 
     private:
+        #ifndef DOXYGEN_GENERATING_OUTPUT /* https://bugzilla.gnome.org/show_bug.cgi?id=776986 */
+        friend Containers::LinkedList<Object<Transformation>>;
+        friend Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>;
+        #endif
+
         Object<Transformation>* doScene() override final;
         const Object<Transformation>* doScene() const override final;
 

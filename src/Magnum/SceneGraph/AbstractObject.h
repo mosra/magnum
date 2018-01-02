@@ -89,10 +89,6 @@ template<UnsignedInt dimensions, class T> class AbstractObject
     : private Containers::LinkedList<AbstractFeature<dimensions, T>>
     #endif
 {
-    friend Containers::LinkedList<AbstractFeature<dimensions, T>>;
-    friend Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>;
-    friend AbstractFeature<dimensions, T>;
-
     public:
         /** @brief Matrix type */
         typedef MatrixTypeFor<dimensions, T> MatrixType;
@@ -272,6 +268,12 @@ template<UnsignedInt dimensions, class T> class AbstractObject
         /*@}*/
 
     private:
+        #ifndef DOXYGEN_GENERATING_OUTPUT /* https://bugzilla.gnome.org/show_bug.cgi?id=776986 */
+        friend Containers::LinkedList<AbstractFeature<dimensions, T>>;
+        friend Containers::LinkedListItem<AbstractFeature<dimensions, T>, AbstractObject<dimensions, T>>;
+        friend AbstractFeature<dimensions, T>;
+        #endif
+
         virtual AbstractObject<dimensions, T>* doScene() = 0;
         virtual const AbstractObject<dimensions, T>* doScene() const = 0;
 

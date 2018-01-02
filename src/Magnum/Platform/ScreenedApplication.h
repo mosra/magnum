@@ -97,10 +97,6 @@ The following specialization are explicitly compiled into each particular
 -   @ref XEglApplication "BasicScreenedApplication<XEglApplication>"
 */
 template<class Application> class BasicScreenedApplication: public Application, private Containers::LinkedList<BasicScreen<Application>> {
-    friend Containers::LinkedList<BasicScreen<Application>>;
-    friend Containers::LinkedListItem<BasicScreen<Application>, BasicScreenedApplication<Application>>;
-    friend BasicScreen<Application>;
-
     public:
         /**
          * @brief Default constructor
@@ -236,6 +232,12 @@ template<class Application> class BasicScreenedApplication: public Application, 
         virtual void globalDrawEvent() = 0;
 
     private:
+        #ifndef DOXYGEN_GENERATING_OUTPUT /* https://bugzilla.gnome.org/show_bug.cgi?id=776986 */
+        friend Containers::LinkedList<BasicScreen<Application>>;
+        friend Containers::LinkedListItem<BasicScreen<Application>, BasicScreenedApplication<Application>>;
+        friend BasicScreen<Application>;
+        #endif
+
         /* The user is supposed to override only globalViewportEvent() and
            globalDrawEvent(), these implementations are dispatching the events
            to attached screens. */
