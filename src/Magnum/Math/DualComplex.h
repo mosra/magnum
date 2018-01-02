@@ -336,8 +336,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
         /**
          * @brief Rotate and translate point with dual complex number
          *
-         * See @ref transformPointNormalized(), which is faster for normalized
-         * dual complex number. @f[
+         * @f[
          *      v' = \hat c v = \hat c ((0 + i) + \epsilon(v_x + iv_y))
          * @f]
          * @see @ref DualComplex(const Vector2<T>&), @ref dual(),
