@@ -816,7 +816,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @brief Add buffer with dynamic vertex attributes for use with given shader
          * @return Reference to self (for method chaining)
          *
-         * Equivalent to @ref addVertexBuffer(Buffer&, GLintptr, const T&...)
+         * Equivalent to @ref addVertexBuffer(Buffer&, GLintptr, const T&... attributes)
          * but with the possibility to fully specify the attribute properties
          * at runtime, including base type and location. See
          * @ref Mesh-configuration-dynamic "class documentation" for usage
@@ -830,7 +830,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @brief Add buffer with dynamic vertex attributes for use with given shader
          * @return Reference to self (for method chaining)
          *
-         * Equivalent to @ref addVertexBufferInstanced(Buffer&, UnsignedInt, GLintptr, const T&...)
+         * Equivalent to @ref addVertexBufferInstanced(Buffer&, UnsignedInt, GLintptr, const T&... attributes)
          * but with the possibility to fully specify the attribute properties
          * at runtime, including base type and location. See
          * @ref Mesh-configuration-dynamic "class documentation" for usage
