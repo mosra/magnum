@@ -67,7 +67,7 @@ link to `MagnumPlugins::AnySceneImporter` target. See @ref building-plugins,
 Supported formats:
 
 -   3ds Max 3DS and ASE (`*.3ds`, `*.ase`), loaded with any plugin that
-    provides `3dsImporter``
+    provides `3dsImporter`
 -   AC3D (`*.ac`), loaded with any plugin that provides `Ac3dImporter`
 -   Blender 3D (`*.blend`), loaded with any plugin that provides
     `BlenderImporter`
