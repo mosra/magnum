@@ -105,7 +105,7 @@ RendererState::PixelStorage::PixelStorage():
 
 void RendererState::PixelStorage::reset() {
     #ifndef MAGNUM_TARGET_GLES
-    swapBytes = std::nullopt;
+    swapBytes = Containers::NullOpt;
     #endif
     alignment = DisengagedValue;
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))

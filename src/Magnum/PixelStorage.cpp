@@ -220,7 +220,7 @@ void PixelStorage::applyInternal(const bool isUnpack) {
 
     #ifndef MAGNUM_TARGET_GLES
     /* Byte swap */
-    if(state.swapBytes == std::nullopt || state.swapBytes != _swapBytes)
+    if(state.swapBytes == Containers::NullOpt || state.swapBytes != _swapBytes)
         glPixelStorei(isUnpack ? GL_UNPACK_SWAP_BYTES : GL_PACK_SWAP_BYTES,
           *(state.swapBytes = _swapBytes));
     #endif

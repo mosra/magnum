@@ -34,12 +34,12 @@
 #include <bitset>
 #include <vector>
 #include <Corrade/Containers/EnumSet.h>
+#include <Corrade/Containers/Optional.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/OpenGL.h"
 #include "Magnum/Tags.h"
 #include "Magnum/visibility.h"
-#include "MagnumExternal/Optional/optional.hpp"
 
 namespace Magnum {
 
@@ -602,7 +602,7 @@ class MAGNUM_EXPORT Context {
 
         Implementation::State* _state;
 
-        std::optional<DetectedDrivers> _detectedDrivers;
+        Containers::Optional<DetectedDrivers> _detectedDrivers;
 
         /* True means known and disabled, false means known */
         std::vector<std::pair<std::string, bool>> _driverWorkarounds;

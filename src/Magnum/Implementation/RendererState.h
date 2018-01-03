@@ -27,10 +27,10 @@
 
 #include <string>
 #include <vector>
+#include <Corrade/Containers/Optional.h>
 
 #include "Magnum/Renderer.h"
 #include "Magnum/Math/Vector3.h"
-#include "MagnumExternal/Optional/optional.hpp"
 
 namespace Magnum { namespace Implementation {
 
@@ -52,7 +52,7 @@ struct RendererState {
         void reset();
 
         #ifndef MAGNUM_TARGET_GLES
-        std::optional<bool> swapBytes;
+        Containers::Optional<bool> swapBytes;
         #endif
         Int alignment;
         #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
