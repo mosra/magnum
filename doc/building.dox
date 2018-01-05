@@ -341,9 +341,9 @@ in root directory (i.e. where `Doxyfile` is). Resulting HTML documentation
 will be in `build/doc/` directory. You might need to create `build/` directory
 if it doesn't exist yet. If Corrade with generated documentation is placed in
 `corrade` directory next to `magnum`, the documentation will be crosslinked
-with Corrade's one. If related projects (`magnum-plugins`, `magnum-integration`
-and `magnum-examples`, see below) are places along these, their documentation
-will be also included in generated output.
+with Corrade's one. If related projects (`magnum-plugins`, `magnum-extras`,
+`magnum-integration` and `magnum-examples`, see below) are places along these,
+their documentation will be also included in generated output.
 
 The documentation can be also generated using the [m.css Doxygen theme](http://mcss.mosra.cz/doxygen/).
 Use `Doxyfile-mcss` for local build, the `Doxyfile-public` is meant for the
@@ -356,8 +356,9 @@ Additional functionality, often depending on external libraries, is provided in
 separate repositories. Various importer plugins for image, audio and 3D model
 formats are maintained in @ref building-plugins "Plugins repository",
 integration with various external math and physics libraries is provided by
-@ref building-integration "Integration library" and other extra features are
-in the @ref building-extras "Extras library".
+@ref building-integration "Integration libraries" and other extra features are
+in the @ref building-extras "Extra libraries". Various examples are provided
+by the @ref building-examples "Examples repository".
 
 @section building-packages Prepared packages
 
