@@ -31,7 +31,7 @@ namespace Magnum {
 
 @section changelog-latest Changes since 2015-05 snapshot
 
-## De­pen­den­cy changes
+@subsection changelog-latest-dependencies De­pen­den­cy changes
 
 -   Completely removed NaCl support (see https://blog.chromium.org/2017/05/goodbye-pnacl-hello-webassembly.html)
 -   Dropped support for the old MinGW32 (only MinGW-w64 is supported now)
@@ -40,7 +40,7 @@ namespace Magnum {
 -   Dropped the `compatibility` branch and all support for MSVC 2013 and GCC <
     4.7
 
-## New features
+@subsection changelog-latest-new New features
 
 -   MSVC 2015 and MSVC 2017 support in `master` branch
 -   ANGLE ES2/ES3 support, ability to create desktop GLES contexts on Windows
@@ -127,7 +127,7 @@ namespace Magnum {
 -   Added @ref Context::isCoreProfile()
 -   Added @ref TransformFeedback::maxVertexStreams() limit query
 
-### Audio library
+@subsubsection changelog-latest-new-audio Audio library
 
 -   Ported to Emscripten
 -   Added @ref Audio::Source::position(), @ref Audio::Source::velocity(),
@@ -154,7 +154,7 @@ namespace Magnum {
 -   New @ref magnum-al-info "magnum-al-info" utility, available for all desktop
     platforms and Emscripten
 
-### DebugTools library
+@subsubsection changelog-latest-new-debugtools DebugTools library
 
 -   Added @ref DebugTools::bufferData(), @ref DebugTools::bufferSubData()
     and @ref DebugTools::textureSubImage() debugging helpers to emulate missing
@@ -162,7 +162,7 @@ namespace Magnum {
 -   New @ref DebugTools::CompareImage class for fuzzy image comparison in
     @ref Corrade::TestSuite
 
-### Math library
+@subsubsection changelog-latest-new-math Math library
 
 -   New @ref Math::Bezier class for handling N-dimensional M-order Bézier
     curves
@@ -215,7 +215,7 @@ namespace Magnum {
 -   Ability to construct @ref Math::RectangularMatrix and derived classes
     with one value for all components
 
-### Platform libraries
+@subsubsection changelog-latest-new-platform Platform libraries
 
 -   New @ref Platform::GlfwApplication class
 -   Text input support in @ref Platform::Sdl2Application and
@@ -266,21 +266,21 @@ namespace Magnum {
     @ref Platform::Sdl2Application and @ref Platform::WindowlessEglApplication
     for more information
 
-### Primitives library
+@subsubsection changelog-latest-new-primitives Primitives library
 
 -   New @ref Primitives::axis2D() and @ref Primitives::axis3D() primitives
 
-### Shaders library
+@subsubsection changelog-latest-new-shaders Shaders library
 
 -   Ability to construct all @ref Shader classes without an OpenGL context
     present using @ref NoCreate
 
-### Text library
+@subsubsection changelog-latest-new-text Text library
 
 -   New @ref Text::AbstractFont::ascent() and @ref Text::AbstractFont::descent()
     font properties
 
-### Trade library
+@subsubsection changelog-latest-new-trade Trade library
 
 -   New @ref magnum-imageconverter "magnum-imageconverter" utility
 -   Initial implementation of @ref Trade::CameraData and @ref Trade::LightData
@@ -309,7 +309,7 @@ namespace Magnum {
 -   @ref Trade::TgaImageConverter "TgaImageConverter" now properly handles
     @ref PixelStorage parameters
 
-## Changes and improvements
+@subsection changelog-latest-changes Changes and improvements
 
 -   Functionality that is not available on WebGL (like debug output etc.) is
     not present in WebGL builds to reduce compiled code size
@@ -348,7 +348,7 @@ namespace Magnum {
 -   Various workarounds to make the engine working better on SVGA3D drivers
     (VMWare guest)
 
-### Math library
+@subsubsection changelog-latest-changes-math Math library
 
 -   @ref Double types are no longer restricted to just desktop GL builds, all
     related types also work on ES and WebGL builds
@@ -364,7 +364,7 @@ namespace Magnum {
 -   @ref Math::Vector::minmax() now works on arbitrary vectors instead of just
     @ref Math::Vector2
 
-### Platform library
+@subsubsection changelog-latest-changes-platform Platform library
 
 -   Requesting core OpenGL context by default in @ref Platform::WindowlessGlxApplication
     and @ref Platform::Sdl2Application. On binary NVidia, AMD and Windows Intel
@@ -376,13 +376,13 @@ namespace Magnum {
 -   @ref Platform::Sdl2Application now shows the window only once the GL
     context is fully created to avoid flickering
 
-### Shaders library
+@subsubsection changelog-latest-changes-shaders Shaders library
 
 -   @ref Shaders::Flat now sets default color to white only in textured version
 -   @ref Shaders::Phong gained the ability to have both color and texture
 -   @ref Shaders::Phong is now able to do alpha-masking
 
-## Build system
+@subsection changelog-latest-buildsystem Build system
 
 -   Continuous testing for Linux, macOS, Windows MSVC, Windows MinGW, Windows RT,
     iOS, Android and Emscripten on [Travis CI](https://travis-ci.org/mosra/magnum)
@@ -417,7 +417,7 @@ namespace Magnum {
 -   Bundling a patched version of `FindOpenAL.cmake` to make it working on
     Emscripten
 
-## Bug fixes
+@subsection changelog-latest-bugfixes Bug fixes
 
 -   Wrapping mode for @ref CubeMapTexture is now correctly two-dimensional
     instead of three-dimensional, wrapping mode for @ref Texture2DArray "TextureNDArray"
@@ -459,7 +459,7 @@ namespace Magnum {
 -   Fixed resetting a bit in @ref Math::BoolVector::set()
 -   Fixed bad interaction of builtin OpenGL headers and Qt on macOS
 
-## Deprecated APIs
+@subsection changelog-latest-deprecated Deprecated APIs
 
 -   `Timeline::setMinimalFrameTime()` is deprecated, use
     @ref Platform::Sdl2Application::setSwapInterval() "Platform::*Application::setSwapInterval()"
@@ -527,7 +527,7 @@ namespace Magnum {
 -   @ref Shaders::Generic::Color vertex attribute implicit constructor is
     deprecated, use a constructor with explicit component count instead
 
-## Potential compatibility breakages, removed APIs
+@subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
 
 -   The @ref Math::Geometry::Distance and @ref Math::Geometry::Intersection
     classes are now a namespace (might break `using` declarations, but
@@ -572,11 +572,11 @@ namespace Magnum {
     to recently added features, use @ref Image::dataProperties() "Image::dataProperties()"
     instead
 
-## Performance improvements
+@subsection changelog-latest-performance Performance improvements
 
 -   Reduced size of and number of allocations in @ref Mesh class.
 
-## Documentation
+@subsection changelog-latest-docs Documentation
 
 -   Explicit list of extensions that are available in WebGL builds
 -   New page explaining @ref opengl-wrapping "OpenGL wrapper layer"
