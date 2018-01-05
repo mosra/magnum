@@ -35,6 +35,8 @@ namespace Magnum {
 
 @m_footernavigation
 
+@m_div{m-button m-primary} <a href="http://magnum.graphics/showcase/magnum-al-info/">@m_div{m-big}Live web version @m_enddiv @m_div{m-small} uses WebAssembly & WebAudio @m_enddiv </a> @m_enddiv
+
 @section magnum-al-info-usage Usage
 
 @code{.shell-session}
