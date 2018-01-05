@@ -28,70 +28,18 @@ namespace Magnum {
 
 * *Lightweight and modular C++11/C++14 graphics middleware to power your dreams.*
 
-Looking for an open-source library that gives you graphics abstraction and
-platform independence on major desktop, mobile and web platforms? Do you want
-it to have all the convenience utilities around yet stay small, powerful and
-not give up on flexibility? *Here it is.* And it's free to use, even for
-commercial purposes.
-
--   Project homepage --- http://magnum.graphics/
--   Documentation --- http://doc.magnum.graphics/
--   GitHub project page --- https://github.com/mosra/magnum
-
-@section mainpage-goals1 Beauty of simplicity
-
-Among Magnum essentials is a UTF-8-aware OS, filesystem and console
-abstraction, a feature-packed vector math library and a slim C++11 wrapper of
-OpenGL / WebGL family of APIs. Build on top of that or opt-in for more.
-
-[See all core features »](http://magnum.graphics/features/)
-
-@section mainpage-goals2 With batteries included
-
-Shaders and primitives for fast prototyping, algorithms, debugging and
-automatic testing, asset management, integration with popular windowing
-toolkits and a UI library. Everything fits together but you still have a
-choice.
-
-[List the extra features »](http://magnum.graphics/features/extras/)
-
-@section mainpage-goals3 Screws are not glued in
-
-There's always more than one way to do things. Enjoy the freedom of choice and
-integrate your own asset loader, texture compressor, font format or math
-library, if you feel the need. Or use any of the various plugins.
-
-[View extension points »](http://magnum.graphics/features/extensions/)
-
-* *Looking for more?* There's a [Showcase page](http://magnum.graphics/showcase/)
-right behind the corner with lots of WebGL demos.
-
-@section mainpage-platforms Supported platforms
-
--   **Linux** and embedded Linux
--   **Windows**, **Windows RT** (Store/Phone)
--   **macOS**, **iOS**
--   **Android**
--   **Web** ([asm.js](http://asmjs.org/) or [WebAssembly](http://webassembly.org/)),
-    through [Emscripten](http://kripken.github.io/emscripten-site/)
-
-Graphics APIs:
-
--   **OpenGL** 2.1 through 4.5, core profile functionality and modern
-    extensions
--   **OpenGL ES** 2.0, 3.0, 3.1 and extensions to match desktop OpenGL
-    functionality
--   **WebGL** 1.0, 2.0 and extensions to match desktop OpenGL functionality
-
-See the [Build Status page](http://magnum.graphics/build-status/) on the
-project website for detailed per-platform build status.
+This is a documentation for the Magnum Project. To see high-level feature
+overview, project goals or read the developer blog, head over to the
+[project homepage](http://magnum.graphics/).
 
 @section mainpage-building Building Magnum
 
 You can either use packaging scripts, which are stored in the `package/`
-subdirectory, or compile and install everything manually. A short guide is
-below, for complete documentation for all platforms head over to the
-@ref building page.
+subdirectory [of the Git repository](https://github.com/mosra/magnum/tree/master/package),
+or compile and install everything manually. A short guide is below, for better
+introduction it's advised to read through the
+@ref getting-started "Getting Started Guide". Complete building documentation
+covering all platforms and feature sets is in the @ref building page.
 
 @subsection mainpage-building-dependencies Minimal dependencies
 
@@ -144,8 +92,11 @@ be in the `build/doc/` directory.
 
 @section mainpage-getting-started Getting started
 
-Read the thorough @ref getting-started "guide to download, build, install and start using Magnum"
-in your project.
+The best way to get started is to read the thorough
+@ref getting-started "guide to download, build, install and start using Magnum"
+in your project. After that, there are various @ref example-index "tutorials and examples"
+and a complete @ref features "feature guide" explaining all aspects of the
+library.
 
 @section mainpage-contact Contact & support
 
@@ -160,7 +111,7 @@ keep the library as consistent and maintainable as possible.
 -   Documentation --- http://doc.magnum.graphics/
 -   GitHub project page --- https://github.com/mosra/magnum
 -   Gitter community chat --- https://gitter.im/mosra/magnum
--   IRC --- join the <tt>#magnum-engine</tt> channel on freenode
+-   IRC --- join the <tt>\#magnum-engine</tt> channel on freenode
 -   Google Groups mailing list --- magnum-engine@googlegroups.com ([archive](https://groups.google.com/forum/#!forum/magnum-engine))
 -   Author's personal Twitter --- https://twitter.com/czmosra
 -   Author's personal e-mail --- mosra@centrum.cz

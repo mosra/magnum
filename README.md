@@ -6,7 +6,11 @@ it to have all the convenience utilities around yet stay small, powerful and
 not give up on flexibility? *Here it is.* And it's free to use, even for
 commercial purposes.
 
-[![Join the chat at https://gitter.im/mosra/magnum](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mosra/magnum?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![Build Status](https://travis-ci.org/mosra/magnum.svg?branch=master)](https://travis-ci.org/mosra/magnum) [![Build Status](https://ci.appveyor.com/api/projects/status/5b477m034cfaskse/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum/branch/master) [![Coverage Status](https://coveralls.io/repos/github/mosra/magnum/badge.svg?branch=master)](https://coveralls.io/github/mosra/magnum?branch=master)
+[![Join the chat at https://gitter.im/mosra/magnum](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mosra/magnum?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Build Status](https://travis-ci.org/mosra/magnum.svg?branch=master)](https://travis-ci.org/mosra/magnum)
+[![Build Status](https://ci.appveyor.com/api/projects/status/5b477m034cfaskse/branch/master?svg=true)](https://ci.appveyor.com/project/mosra/magnum/branch/master)
+[![Coverage Status](https://coveralls.io/repos/github/mosra/magnum/badge.svg?branch=master)](https://coveralls.io/github/mosra/magnum?branch=master)
+[![MIT License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 -   Project homepage — http://magnum.graphics/
 -   Documentation — http://doc.magnum.graphics/
@@ -69,10 +73,14 @@ per-platform build status.
 BUILDING MAGNUM
 ===============
 
-You can either use packaging scripts, which are stored in the `package/`
-subdirectory, or compile and install everything manually. A short guide is
-below, for complete documentation for all platforms head over to the
-[Magnum documentation](http://doc.magnum.graphics/magnum/building.html).
+You can either use packaging scripts, which are stored in the
+[package/](https://github.com/mosra/magnum/tree/master/package) subdirectory,
+or compile and install everything manually. A short guide is below, for better
+introduction it's advised to read through the
+[Getting Started Guide](http://doc.magnum.graphics/magnum/getting-started.html)
+in the documentation. Complete building documentation covering all platforms
+and feature sets is in the [Downloading and building](http://doc.magnum.graphics/magnum/building.html)
+page.
 
 Minimal dependencies
 --------------------
@@ -131,8 +139,11 @@ be in the `build/doc/` directory. Snapshot of the documentation is
 GETTING STARTED
 ===============
 
-The Doxygen documentation has a thorough [guide how to start using Magnum](http://doc.magnum.graphics/magnum/getting-started.html)
-in your project.
+The best way to get started is to read the thorough
+[download, build, install and start using Magnum](http://doc.magnum.graphics/magnum/getting-started.html)
+in your project. After that, there are various [tutorials and examples](http://doc.magnum.graphics/magnum/example-index.html)
+and a complete [feature guide](http://doc.magnum.graphics/magnum/features.html)
+explaining all aspects of the library.
 
 RELATED PROJECTS
 ================
