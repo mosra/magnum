@@ -29,9 +29,16 @@ namespace Magnum {
 
 @tableofcontents
 
+See also:
+
+-   @subpage changelog-plugins
+-   @subpage changelog-integration
+-   @subpage changelog-extras
+-   @subpage changelog-examples
+
 @section changelog-latest Changes since 2015-05 snapshot
 
-@subsection changelog-latest-dependencies De­pen­den­cy changes
+@subsection changelog-latest-dependencies Dependency changes
 
 -   Completely removed NaCl support (see https://blog.chromium.org/2017/05/goodbye-pnacl-hello-webassembly.html)
 -   Dropped support for the old MinGW32 (only MinGW-w64 is supported now)
@@ -120,7 +127,7 @@ namespace Magnum {
     an ability to create @ref BufferImage "{Compressed,}BufferImage" from an
     existing @ref Buffer
 -   New @ref Buffer::mapRead() convenience alternatives to @ref Buffer::map()
-    that return `const` pointer and implicitly map as read-only
+    that return @cpp const @ce pointer and implicitly map as read-only
 -   Implemented @ref Renderer::setMemoryBarrier() and
     @ref Renderer::setMemoryBarrierByRegion()
 -   Added @ref isVersionES() utility
@@ -286,7 +293,7 @@ namespace Magnum {
 -   Initial implementation of @ref Trade::CameraData and @ref Trade::LightData
 -   Vertex color support in @ref Trade::MeshData2D and @ref Trade::MeshData3D
 -   @ref Trade::AbstractImageConverter member functions were changed to
-    non-`const` to make implementation of complex converter plugins possible
+    non-@cpp const @ce to make implementation of complex converter plugins possible
 -   New @ref Trade::AbstractImageConverter::exportToCompressedImage() plugin
     interface and @ref Trade::AbstractImageConverter::exportToData(),
     @ref Trade::AbstractImageConverter::exportToFile() taking
@@ -343,8 +350,8 @@ namespace Magnum {
     particular desktop GL version that supports given ES version)
 -   Binding some default VAO in case the engine is running on core profile with
     @extension{ARB,vertex_array_object} disabled
--   It's now possible to create @ref ImageView with `nullptr` data (for example
-    for old-style texture allocation using @ref Texture::setImage())
+-   It's now possible to create @ref ImageView with @cpp nullptr @ce data (for
+    example for old-style texture allocation using @ref Texture::setImage())
 -   Various workarounds to make the engine working better on SVGA3D drivers
     (VMWare guest)
 
@@ -358,7 +365,7 @@ namespace Magnum {
 -   @ref Math::Matrix4::transformPoint() now properly uses the perspective
     divide from projection matrices
 -   Updated @ref Math::TypeTraits fuzzy comparison epsilon values for
-    `long double` and `double`
+    @cpp long double @ce and @cpp double @ce
 -   @ref Math::Matrix4::perspectiveProjection() now supports infinite far plane
 -   @ref Math::pow() now works for both vectors and scalars
 -   @ref Math::Vector::minmax() now works on arbitrary vectors instead of just
@@ -390,9 +397,9 @@ namespace Magnum {
     coverage on [coveralls.io](https://coveralls.io/github/mosra/magnum);
     replacing the unmaintained and outdated Jenkins configuration
 -   Support for CMake subprojects. You can now clone Magnum into a subdirectory
-    in your project and add it using `add_subdirectory()`. The `find_package()`
-    command will then use the CMake subproject instead of looking for it in
-    system-wide locations.
+    in your project and add it using @cmake add_subdirectory() @ce. The
+    @cmake find_package() @ce command will then use the CMake subproject
+    instead of looking for it in system-wide locations.
 -   Reworked CMake buildsystem to use the new imported target workflow, see
     @ref cmake for more information
 -   CMake targets are now organized in folders for better development
@@ -409,8 +416,8 @@ namespace Magnum {
 -   Better handling of compiled-in resources in static build. You don't need to
     manually register resources when using Shaders library in static builds.
 -   `MACOSX_RPATH` is now enabled by default on CMake 3.0+
--   Enabling only C++ in CMake `project()` call, if possible, to speed up
-    initial CMake run
+-   Enabling only C++ in CMake @cmake project() @ce call, if possible, to speed
+    up initial CMake run
 -   Windowless application libraries now make use of the `BUILD_STATIC_PIC`
     @ref cmake "CMake option"
 -   Fixed `FindSDL2.cmake` module to work out-of-the-box on Windows and macOS
@@ -513,9 +520,9 @@ namespace Magnum {
     @ref Platform::GlfwApplication::MouseScrollEvent instead
 -   @ref Platform::Sdl2Application::Sdl2Application() "Platform::*Application::*Application()"
     and @ref Platform::WindowlessGlxApplication::WindowlessGlxApplication() "Platform::Windowless*Application::Windowless*Application()"
-    constructors taking `nullptr` are deprecated, use constructors taking
-    @ref NoCreateT instead to create an application without creating OpenGL
-    context
+    constructors taking @cpp nullptr @ce are deprecated, use constructors
+    taking @ref NoCreateT instead to create an application without creating
+    OpenGL context
 -   `Math::Color*::fromHSV()` and `Math::Color*::toHSV()` are deprecated, use
     @ref Math::Color3::fromHsv() "Math::Color*::fromHsv()" and
     @ref Math::Color3::toHsv() "Math::Color*::toHsv()" instead
