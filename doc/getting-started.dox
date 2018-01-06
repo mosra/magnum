@@ -33,7 +33,7 @@ Setting up a new project can be pretty gruesome and nobody likes repeating the
 same process every time. Magnum provides "bootstrap" project structures for
 many use cases, helping you get up and running in no time.
 
-@section getting-started-bootstrap Download bootstrap project
+@section getting-started-bootstrap Download a bootstrap project
 
 The [bootstrap repository](https://github.com/mosra/magnum-bootstrap) is
 located on GitHub. The `master` branch contains just a README file and the
@@ -164,7 +164,7 @@ In the following tutorials the code will be explained more thoroughly.
 
 @section getting-started-build Build it and run
 
-@subsection getting-started-linux Linux, macOS and other Unix-based OSs
+@subsection getting-started-linux Linux, macOS and other Unix-based OSes
 
 In Linux (and other Unix-based OSs) you can build the application along with
 the subprojects using the following three commands: create out-of-source build
