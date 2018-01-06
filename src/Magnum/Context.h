@@ -97,24 +97,31 @@ also possible to create the context without using any `*Application` class
 using @ref Platform::Context subclass, see @ref platform documentation for more
 information.
 
-## Command-line options
+@section Context-command-line Command-line options
 
 The context is configurable through command-line options, that are passed
 either from the `Platform::*Application` classes or from the @ref Platform::Context
 class. Usage:
 
-    <application> [--magnum-help] [--magnum-disable-workarounds LIST] [--magnum-disable-extensions LIST] ...
+@code{.sh}
+<application> [--magnum-help] [--magnum-disable-workarounds LIST]
+              [--magnum-disable-extensions LIST] ...
+@endcode
 
 Arguments:
 
--   `...` -- main application arguments (see `-h` or `--help` for details)
--   `--magnum-help` -- display this help message and exit
--   `--magnum-disable-workarounds LIST` -- driver workarounds to disable (see
-    `src/Magnum/Implementation/driverSpecific.cpp` for detailed info)
-    (environment: `MAGNUM_DISABLE_WORKAROUNDS`)
--   `--magnum-disable-extensions LIST` -- OpenGL extensions to disable
+-   `...` --- main application arguments (see `-h` or `--help` for details)
+-   `--magnum-help` --- display this help message and exit
+-   `--magnum-disable-workarounds LIST` --- driver workarounds to disable (see
+    [src/Magnum/Implementation/driverSpecific.cpp](https://github.com/mosra/magnum/blob/master/src/Magnum/Implementation/driverSpecific.cpp)
+    for detailed info) (environment: `MAGNUM_DISABLE_WORKAROUNDS`)
+-   `--magnum-disable-extensions LIST` --- OpenGL extensions to disable
     (environment: `MAGNUM_DISABLE_EXTENSIONS`)
 
+Note that all options are prefixed with `--magnum-` to avoid conflicts with
+options passed to the application itself. Options that don't have this prefix
+are completely ignored, see documentation of the
+@ref Utility-Arguments-delegating "Utility::Arguments" class for details.
 */
 class MAGNUM_EXPORT Context {
     public:

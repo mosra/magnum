@@ -50,9 +50,9 @@ class Context: public Magnum::Context {
          * is unsupported or any other error occurs, a message is printed to
          * output and the application exits. See @ref Context(NoCreateT, Int, char**)
          * and @ref tryCreate() for an alternative.
-         * @see @fn_gl{Get} with @def_gl{MAJOR_VERSION}, @def_gl{MINOR_VERSION},
-         *      @def_gl{CONTEXT_FLAGS}, @def_gl{NUM_EXTENSIONS},
-         *      @fn_gl{GetString} with @def_gl{EXTENSIONS}
+         * @see @ref Context-command-line, @fn_gl{Get} with @def_gl{MAJOR_VERSION},
+         *      @def_gl{MINOR_VERSION}, @def_gl{CONTEXT_FLAGS},
+         *      @def_gl{NUM_EXTENSIONS}, @fn_gl{GetString} with @def_gl{EXTENSIONS}
          */
         explicit Context(Int argc, const char** argv): Context{NoCreate, argc, argv} { create(); }
 
@@ -62,12 +62,16 @@ class Context: public Magnum::Context {
         /** @overload */
         explicit Context(Int argc, std::nullptr_t argv): Context{argc, static_cast<const char**>(argv)} {}
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @copybrief Context(Int, const char**)
-         * @deprecated Use @ref Context(Int, const char**) instead.
+        /**
+         * @brief Default constructor
+         *
+         * Equivalent to passing @cpp {0, nullptr} @ce to
+         * @ref Context(Int, const char**). Even if the command-line options
+         * are not propagated, it's still possible to affect the renderer
+         * behavior from the environment. See @ref Context-command-line for
+         * more information.
          */
-        CORRADE_DEPRECATED("use Context(Int, const char**) instead") explicit Context(): Context(0, nullptr) {}
-        #endif
+        explicit Context(): Context{0, nullptr} {}
 
         /**
          * @brief Construct the class without doing complete setup
@@ -89,6 +93,17 @@ class Context: public Magnum::Context {
 
         /** @overload */
         explicit Context(NoCreateT, Int argc, std::nullptr_t argv): Context{NoCreate, argc, static_cast<const char**>(argv)} {}
+
+        /**
+         * @brief Construct the class without doing complete setup
+         *
+         * Equivalent to passing @cpp {NoCreate, 0, nullptr} @ce to
+         * @ref Context(NoCreateT, Int, const char**). Even if the command-line
+         * options are not propagated, it's still possible to affect the
+         * renderer behavior from the environment. See @ref Context-command-line
+         * for more information.
+         */
+        explicit Context(NoCreateT): Context{NoCreate, 0, nullptr} {}
 
         /**
          * @brief Complete the context setup and exit on failure
