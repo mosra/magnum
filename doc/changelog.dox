@@ -123,6 +123,9 @@ See also:
     @ref Framebuffer::attachTexture() "attach*()" functions
 -   Added @ref Framebuffer::attachLayeredTexture() for layered texture
     attachments
+-   Added @ref AbstractFramebuffer::clearDepth(), @ref AbstractFramebuffer::clearStencil(),
+    @ref AbstractFramebuffer::clearDepthStencil(), @ref DefaultFramebuffer::clearColor(),
+    @ref Framebuffer::clearColor()
 -   Added @ref BufferImage::release() "{Compressed,}BufferImage::release()" and
     an ability to create @ref BufferImage "{Compressed,}BufferImage" from an
     existing @ref Buffer
@@ -458,7 +461,8 @@ See also:
     its subclasses
 -   Fixed @ref Trade::ObjImporter on Android
 -   Fixed assertion when using @ref DebugTools::ObjectRenderer
--   Fixed appearance of @ref Primitives::Cylinder::solid()
+-   Fixed appearance of @ref Primitives::Cylinder::solid() and
+    @ref Primitives::Circle::solid()
 -   Fixed a possible OOB access when reading @ref Math::Vector /
     @ref Math::RectangularMatrix from @ref Corrade::Utility::Configuration
 -   Fixed unfortunate interaction of VAOs and index buffers on platforms
@@ -585,6 +589,8 @@ See also:
 
 @subsection changelog-latest-docs Documentation
 
+-   New documentation theme powered by [m.css](http://mcss.mosra.cz) and
+    related massive updates of *everything*
 -   Explicit list of extensions that are available in WebGL builds
 -   New page explaining @ref opengl-wrapping "OpenGL wrapper layer"
 -   Documented extra CMake modules in @ref cmake-modules
