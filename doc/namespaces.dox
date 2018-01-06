@@ -116,7 +116,7 @@ and @ref cmake for more information.
 */
 
 /** @dir Magnum/Audio
- * @brief Namespace @ref Magnum::Audio
+ * @brief Namespace @ref Magnum::Audio, @ref Magnum::Audio::Extensions
  */
 /** @namespace Magnum::Audio
 @brief Audio playback
@@ -265,4 +265,23 @@ information.
 
 /** @dir magnum/src/MagnumPlugins
  * @brief Magnum plugins (part of @ref building "Magnum library")
+ */
+
+/** @dir MagnumPlugins/MagnumFont
+ * @brief Plugin @ref Magnum::Text::MagnumFont
+ */
+/** @dir MagnumPlugins/MagnumFontConverter
+ * @brief Plugin @ref Magnum::Text::MagnumFontConverter
+ */
+/** @dir MagnumPlugins/ObjImporter
+ * @brief Plugin @ref Magnum::Trade::ObjImporter
+ */
+/** @dir MagnumPlugins/TgaImageConverter
+ * @brief Plugin @ref Magnum::Trade::TgaImageConverter
+ */
+/** @dir MagnumPlugins/TgaImporter
+ * @brief Plugin @ref Magnum::Trade::TgaImporter
+ */
+/** @dir MagnumPlugins/WavAudioImporter
+ * @brief Plugin @ref Magnum::Audio::WavImporter
  */
