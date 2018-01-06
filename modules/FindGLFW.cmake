@@ -43,8 +43,7 @@ find_library(GLFW_LIBRARY NAMES glfw glfw3)
 
 # Include dir
 find_path(GLFW_INCLUDE_DIR
-    NAMES glfw3.h
-    PATH_SUFFIXES GLFW)
+    NAMES GLFW/glfw3.h)
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args("GLFW" DEFAULT_MSG

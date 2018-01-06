@@ -42,7 +42,7 @@
 /* We must include our own GL headers first to avoid conflicts */
 #include "Magnum/OpenGL.h"
 
-#include <glfw3.h>
+#include <GLFW/glfw3.h>
 
 namespace Magnum { namespace Platform {
 
