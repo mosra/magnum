@@ -23,33 +23,42 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Magnum/Context.h>
 #include <Magnum/DefaultFramebuffer.h>
+#include <Magnum/Platform/Sdl2Application.h>
+/** [0] */
+#include <Magnum/Context.h>
 #include <Magnum/Renderer.h>
 #include <Magnum/Version.h>
 #include <Magnum/Math/Color.h>
-#include <Magnum/Platform/Sdl2Application.h>
+/** [0] */
 
 using namespace Magnum;
-using namespace Magnum::Math::Literals;
 
-class Hello: public Platform::Application {
-public:
-    explicit Hello(const Arguments& arguments);
+class MyApplication: public Platform::Application {
+    public:
+        explicit MyApplication(const Arguments& arguments);
 
-private:
-    void drawEvent() override;
+    private:
+        void drawEvent() override;
 };
 
-Hello::Hello(const Arguments& arguments): Platform::Application(arguments) {
-    Renderer::setClearColor(Color3::fromHSV(216.0_degf, 0.85f, 1.0f));
-    Debug() << "Hello! This application is running on" << Context::current().version()
+/** [1] */
+MyApplication::MyApplication(const Arguments& arguments): Platform::Application{arguments} {
+    using namespace Magnum::Math::Literals;
+
+    Renderer::setClearColor(0xa5c9ea_rgbf);
+
+    Debug{} << "Hello! This application is running on" << Context::current().version()
             << "using" << Context::current().rendererString();
 }
+/** [1] */
 
-void Hello::drawEvent() {
+void MyApplication::drawEvent() {
     defaultFramebuffer.clear(FramebufferClear::Color);
+
+    // TODO: Add your drawing code here
+
     swapBuffers();
 }
 
-MAGNUM_APPLICATION_MAIN(Hello)
+MAGNUM_APPLICATION_MAIN(MyApplication)

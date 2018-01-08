@@ -40,3 +40,14 @@ if(WITH_DEBUGTOOLS AND Corrade_TestSuite_FOUND AND NOT CORRADE_TARGET_IOS)
     target_include_directories(debugtools-compareimage PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
     set_target_properties(debugtools-compareimage PROPERTIES FOLDER "Magnum/doc/snippets")
 endif()
+
+if(WITH_SDL2APPLICATION)
+    add_executable(getting-started getting-started.cpp)
+    add_executable(getting-started-blue getting-started-blue.cpp)
+    target_link_libraries(getting-started PRIVATE MagnumSdl2Application)
+    target_link_libraries(getting-started-blue PRIVATE MagnumSdl2Application)
+    set_target_properties(
+        getting-started
+        getting-started-blue
+        PROPERTIES FOLDER "Magnum/doc/snippets")
+endif()
