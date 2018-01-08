@@ -26,7 +26,7 @@
 namespace Magnum {
 /** @mainpage Magnum
 
-* *Lightweight and modular C++11/C++14 graphics middleware to power your dreams.*
+* *Lightweight and modular C++11/C++14 graphics middleware for games and data visualization.*
 
 This is a documentation for the Magnum Project. To see high-level feature
 overview, project goals or read the developer blog, head over to the
