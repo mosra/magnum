@@ -63,11 +63,11 @@ void TgaImporter::doOpenData(const Containers::ArrayView<const char> data) {
 
 UnsignedInt TgaImporter::doImage2DCount() const { return 1; }
 
-std::optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt) {
+Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt) {
     /* Check if the file is long enough */
     if(_in.size() < std::streamoff(sizeof(TgaHeader))) {
         Error() << "Trade::TgaImporter::image2D(): the file is too short:" << _in.size() << "bytes";
-        return std::nullopt;
+        return Containers::NullOpt;
     }
 
     const TgaHeader& header = *reinterpret_cast<const TgaHeader*>(_in.data());
@@ -80,7 +80,7 @@ std::optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt) {
     PixelFormat format;
     if(header.colorMapType != 0) {
         Error() << "Trade::TgaImporter::image2D(): paletted files are not supported";
-        return std::nullopt;
+        return Containers::NullOpt;
     }
 
     /* Color */
@@ -94,7 +94,7 @@ std::optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt) {
                 break;
             default:
                 Error() << "Trade::TgaImporter::image2D(): unsupported color bits-per-pixel:" << header.bpp;
-                return std::nullopt;
+                return Containers::NullOpt;
         }
 
     /* Grayscale */
@@ -109,13 +109,13 @@ std::optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt) {
         #endif
         if(header.bpp != 8) {
             Error() << "Trade::TgaImporter::image2D(): unsupported grayscale bits-per-pixel:" << header.bpp;
-            return std::nullopt;
+            return Containers::NullOpt;
         }
 
     /* Compressed files */
     } else {
         Error() << "Trade::TgaImporter::image2D(): unsupported (compressed?) image type:" << header.imageType;
-        return std::nullopt;
+        return Containers::NullOpt;
     }
 
     Containers::Array<char> data{std::size_t(size.product())*header.bpp/8};

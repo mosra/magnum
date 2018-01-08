@@ -129,7 +129,7 @@ void TgaImporterTest::colorBits24() {
     };
     CORRADE_VERIFY(importer.openData(data));
 
-    std::optional<Trade::ImageData2D> image = importer.image2D(0);
+    Containers::Optional<Trade::ImageData2D> image = importer.image2D(0);
     CORRADE_VERIFY(image);
     CORRADE_COMPARE(image->storage().alignment(), 1);
     CORRADE_COMPARE(image->format(), PixelFormat::RGB);
@@ -154,7 +154,7 @@ void TgaImporterTest::colorBits32() {
     };
     CORRADE_VERIFY(importer.openData(data));
 
-    std::optional<Trade::ImageData2D> image = importer.image2D(0);
+    Containers::Optional<Trade::ImageData2D> image = importer.image2D(0);
     CORRADE_VERIFY(image);
     CORRADE_COMPARE(image->storage().alignment(), 4);
     CORRADE_COMPARE(image->format(), PixelFormat::RGBA);
@@ -174,7 +174,7 @@ void TgaImporterTest::grayscaleBits8() {
     };
     CORRADE_VERIFY(importer.openData(data));
 
-    std::optional<Trade::ImageData2D> image = importer.image2D(0);
+    Containers::Optional<Trade::ImageData2D> image = importer.image2D(0);
     CORRADE_VERIFY(image);
     CORRADE_COMPARE(image->storage().alignment(), 1);
     #ifndef MAGNUM_TARGET_GLES2
@@ -205,11 +205,11 @@ void TgaImporterTest::useTwice() {
 
     /* Verify that the file is rewinded for second use */
     {
-        std::optional<Trade::ImageData2D> image = importer.image2D(0);
+        Containers::Optional<Trade::ImageData2D> image = importer.image2D(0);
         CORRADE_VERIFY(image);
         CORRADE_COMPARE(image->size(), (Vector2i{2, 3}));
     } {
-        std::optional<Trade::ImageData2D> image = importer.image2D(0);
+        Containers::Optional<Trade::ImageData2D> image = importer.image2D(0);
         CORRADE_VERIFY(image);
         CORRADE_COMPARE(image->size(), (Vector2i{2, 3}));
     }

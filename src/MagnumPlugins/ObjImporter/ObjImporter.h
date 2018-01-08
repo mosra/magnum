@@ -93,7 +93,7 @@ class MAGNUM_OBJIMPORTER_EXPORT ObjImporter: public AbstractImporter {
         MAGNUM_OBJIMPORTER_LOCAL UnsignedInt doMesh3DCount() const override;
         MAGNUM_OBJIMPORTER_LOCAL Int doMesh3DForName(const std::string& name) override;
         MAGNUM_OBJIMPORTER_LOCAL std::string doMesh3DName(UnsignedInt id) override;
-        MAGNUM_OBJIMPORTER_LOCAL std::optional<MeshData3D> doMesh3D(UnsignedInt id) override;
+        MAGNUM_OBJIMPORTER_LOCAL Containers::Optional<MeshData3D> doMesh3D(UnsignedInt id) override;
 
         MAGNUM_OBJIMPORTER_LOCAL void parseMeshNames();
 

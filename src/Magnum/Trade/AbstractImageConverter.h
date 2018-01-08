@@ -29,12 +29,16 @@
  * @brief Class @ref Magnum::Trade::AbstractImageConverter
  */
 
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/PluginManager/AbstractManagingPlugin.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/visibility.h"
 #include "Magnum/Trade/Trade.h"
-#include "MagnumExternal/Optional/optional.hpp"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include "MagnumExternal/Optional/OptionalWrapper.h"
+#endif
 
 namespace Magnum { namespace Trade {
 
@@ -129,19 +133,19 @@ class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractManagi
          * @brief Convert image to different format
          *
          * Available only if @ref Feature::ConvertImage is supported. Returns
-         * converted image on success, `std::nullopt` otherwise.
+         * converted image on success, @ref Containers::NullOpt otherwise.
          * @see @ref features(), @ref exportToData(), @ref exportToFile()
          */
-        std::optional<Image2D> exportToImage(const ImageView2D& image);
+        Containers::Optional<Image2D> exportToImage(const ImageView2D& image);
 
         /**
          * @brief Convert image to compressed format
          *
          * Available only if @ref Feature::ConvertCompressedImage is supported.
-         * Returns converted image on success, `std::nullopt` otherwise.
+         * Returns converted image on success, @ref Containers::NullOpt otherwise.
          * @see @ref features(), @ref exportToData(), @ref exportToFile()
          */
-        std::optional<CompressedImage2D> exportToCompressedImage(const ImageView2D& image);
+        Containers::Optional<CompressedImage2D> exportToCompressedImage(const ImageView2D& image);
 
         /**
          * @brief Export image to raw data
@@ -214,10 +218,10 @@ class MAGNUM_EXPORT AbstractImageConverter: public PluginManager::AbstractManagi
         virtual Features doFeatures() const = 0;
 
         /** @brief Implementation of @ref exportToImage() */
-        virtual std::optional<Image2D> doExportToImage(const ImageView2D& image);
+        virtual Containers::Optional<Image2D> doExportToImage(const ImageView2D& image);
 
         /** @brief Implementation of @ref exportToCompressedImage() */
-        virtual std::optional<CompressedImage2D> doExportToCompressedImage(const ImageView2D& image);
+        virtual Containers::Optional<CompressedImage2D> doExportToCompressedImage(const ImageView2D& image);
 
         /** @brief Implementation of @ref exportToData(const ImageView2D&) */
         virtual Containers::Array<char> doExportToData(const ImageView2D& image);

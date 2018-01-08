@@ -126,7 +126,7 @@ void TgaImageConverterTest::rgb() {
 
     TgaImporter importer;
     CORRADE_VERIFY(importer.openData(data));
-    std::optional<Trade::ImageData2D> converted = importer.image2D(0);
+    Containers::Optional<Trade::ImageData2D> converted = importer.image2D(0);
     CORRADE_VERIFY(converted);
 
     CORRADE_COMPARE(converted->storage().alignment(), 1);
@@ -142,7 +142,7 @@ void TgaImageConverterTest::rgba() {
 
     TgaImporter importer;
     CORRADE_VERIFY(importer.openData(data));
-    std::optional<Trade::ImageData2D> converted = importer.image2D(0);
+    Containers::Optional<Trade::ImageData2D> converted = importer.image2D(0);
     CORRADE_VERIFY(converted);
 
     CORRADE_COMPARE(converted->storage().alignment(), 4);

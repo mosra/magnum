@@ -232,7 +232,7 @@ std::string ShaderVisualizer::vertexColor() {
 }
 
 std::string ShaderVisualizer::vector() {
-    std::optional<Trade::ImageData2D> image;
+    Containers::Optional<Trade::ImageData2D> image;
     if(!_importer->openFile("vector.png") || !(image = _importer->image2D(0))) {
         Error() << "Cannot open vector.png";
         return "vector.png";
@@ -266,7 +266,7 @@ std::string ShaderVisualizer::vector() {
 }
 
 std::string ShaderVisualizer::distanceFieldVector() {
-    std::optional<Trade::ImageData2D> image;
+    Containers::Optional<Trade::ImageData2D> image;
     if(!_importer->openFile("vector-distancefield.png") || !(image = _importer->image2D(0))) {
         Error() << "Cannot open vector-distancefield.png";
         return "distancefieldvector.png";

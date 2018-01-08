@@ -146,7 +146,7 @@ void ObjImporterTest::pointMesh() {
     CORRADE_VERIFY(importer.openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "pointMesh.obj")));
     CORRADE_COMPARE(importer.mesh3DCount(), 1);
 
-    const std::optional<MeshData3D> data = importer.mesh3D(0);
+    const Containers::Optional<MeshData3D> data = importer.mesh3D(0);
     CORRADE_VERIFY(data);
     CORRADE_COMPARE(data->primitive(), MeshPrimitive::Points);
     CORRADE_COMPARE(data->positionArrayCount(), 1);
@@ -165,7 +165,7 @@ void ObjImporterTest::lineMesh() {
     CORRADE_VERIFY(importer.openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "lineMesh.obj")));
     CORRADE_COMPARE(importer.mesh3DCount(), 1);
 
-    const std::optional<MeshData3D> data = importer.mesh3D(0);
+    const Containers::Optional<MeshData3D> data = importer.mesh3D(0);
     CORRADE_VERIFY(data);
     CORRADE_COMPARE(data->primitive(), MeshPrimitive::Lines);
     CORRADE_COMPARE(data->positionArrayCount(), 1);
@@ -184,7 +184,7 @@ void ObjImporterTest::triangleMesh() {
     CORRADE_VERIFY(importer.openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "triangleMesh.obj")));
     CORRADE_COMPARE(importer.mesh3DCount(), 1);
 
-    const std::optional<MeshData3D> data = importer.mesh3D(0);
+    const Containers::Optional<MeshData3D> data = importer.mesh3D(0);
     CORRADE_VERIFY(data);
     CORRADE_COMPARE(data->primitive(), MeshPrimitive::Triangles);
     CORRADE_COMPARE(data->positionArrayCount(), 1);
@@ -215,7 +215,7 @@ void ObjImporterTest::positionsOnly() {
     CORRADE_VERIFY(importer.openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "triangleMesh.obj")));
     CORRADE_COMPARE(importer.mesh3DCount(), 1);
 
-    const std::optional<MeshData3D> data = importer.mesh3D(0);
+    const Containers::Optional<MeshData3D> data = importer.mesh3D(0);
     CORRADE_VERIFY(data);
     CORRADE_COMPARE(data->positionArrayCount(), 1);
     CORRADE_VERIFY(!data->hasNormals());
@@ -227,7 +227,7 @@ void ObjImporterTest::textureCoordinates() {
     CORRADE_VERIFY(importer.openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "textureCoordinates.obj")));
     CORRADE_COMPARE(importer.mesh3DCount(), 1);
 
-    const std::optional<MeshData3D> data = importer.mesh3D(0);
+    const Containers::Optional<MeshData3D> data = importer.mesh3D(0);
     CORRADE_VERIFY(data);
     CORRADE_COMPARE(data->primitive(), MeshPrimitive::Lines);
     CORRADE_COMPARE(data->positionArrayCount(), 1);
@@ -255,7 +255,7 @@ void ObjImporterTest::normals() {
     CORRADE_VERIFY(importer.openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "normals.obj")));
     CORRADE_COMPARE(importer.mesh3DCount(), 1);
 
-    const std::optional<MeshData3D> data = importer.mesh3D(0);
+    const Containers::Optional<MeshData3D> data = importer.mesh3D(0);
     CORRADE_VERIFY(data);
     CORRADE_COMPARE(data->primitive(), MeshPrimitive::Lines);
     CORRADE_COMPARE(data->positionArrayCount(), 1);
@@ -283,7 +283,7 @@ void ObjImporterTest::textureCoordinatesNormals() {
     CORRADE_VERIFY(importer.openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "textureCoordinatesNormals.obj")));
     CORRADE_COMPARE(importer.mesh3DCount(), 1);
 
-    const std::optional<MeshData3D> data = importer.mesh3D(0);
+    const Containers::Optional<MeshData3D> data = importer.mesh3D(0);
     CORRADE_VERIFY(data);
     CORRADE_COMPARE(data->primitive(), MeshPrimitive::Lines);
     CORRADE_COMPARE(data->positionArrayCount(), 1);
@@ -344,7 +344,7 @@ void ObjImporterTest::moreMeshes() {
 
     CORRADE_COMPARE(importer.mesh3DName(0), "PointMesh");
     CORRADE_COMPARE(importer.mesh3DForName("PointMesh"), 0);
-    const std::optional<MeshData3D> data = importer.mesh3D(0);
+    const Containers::Optional<MeshData3D> data = importer.mesh3D(0);
     CORRADE_VERIFY(data);
     CORRADE_COMPARE(data->primitive(), MeshPrimitive::Points);
     CORRADE_COMPARE(data->positionArrayCount(), 1);
@@ -358,7 +358,7 @@ void ObjImporterTest::moreMeshes() {
 
     CORRADE_COMPARE(importer.mesh3DName(1), "LineMesh");
     CORRADE_COMPARE(importer.mesh3DForName("LineMesh"), 1);
-    const std::optional<MeshData3D> data1 = importer.mesh3D(1);
+    const Containers::Optional<MeshData3D> data1 = importer.mesh3D(1);
     CORRADE_VERIFY(data1);
     CORRADE_COMPARE(data1->primitive(), MeshPrimitive::Lines);
     CORRADE_COMPARE(data1->positionArrayCount(), 1);
@@ -372,7 +372,7 @@ void ObjImporterTest::moreMeshes() {
 
     CORRADE_COMPARE(importer.mesh3DName(2), "TriangleMesh");
     CORRADE_COMPARE(importer.mesh3DForName("TriangleMesh"), 2);
-    const std::optional<MeshData3D> data2 = importer.mesh3D(2);
+    const Containers::Optional<MeshData3D> data2 = importer.mesh3D(2);
     CORRADE_VERIFY(data2);
     CORRADE_COMPARE(data2->primitive(), MeshPrimitive::Triangles);
     CORRADE_COMPARE(data2->positionArrayCount(), 1);
@@ -464,7 +464,7 @@ void ObjImporterTest::explicitOptionalPositionCoordinate() {
     const Int id = importer.mesh3DForName("SupportedPositionW");
     CORRADE_VERIFY(id > -1);
 
-    const std::optional<MeshData3D> data = importer.mesh3D(id);
+    const Containers::Optional<MeshData3D> data = importer.mesh3D(id);
     CORRADE_VERIFY(data);
     CORRADE_COMPARE(data->positionArrayCount(), 1);
     CORRADE_COMPARE(data->positions(0), (std::vector<Vector3>{
@@ -478,7 +478,7 @@ void ObjImporterTest::explicitOptionalTextureCoordinate() {
     const Int id = importer.mesh3DForName("SupportedTextureW");
     CORRADE_VERIFY(id > -1);
 
-    const std::optional<MeshData3D> data = importer.mesh3D(id);
+    const Containers::Optional<MeshData3D> data = importer.mesh3D(id);
     CORRADE_VERIFY(data);
     CORRADE_COMPARE(data->textureCoords2DArrayCount(), 1);
     CORRADE_COMPARE(data->textureCoords2D(0), (std::vector<Vector2>{
@@ -709,7 +709,7 @@ void ObjImporterTest::unsupportedKeyword() {
     CORRADE_VERIFY(id > -1);
 
     /* Everything should be parsed properly */
-    const std::optional<MeshData3D> data = importer.mesh3D(id);
+    const Containers::Optional<MeshData3D> data = importer.mesh3D(id);
     CORRADE_VERIFY(data);
     CORRADE_COMPARE(data->primitive(), MeshPrimitive::Points);
     CORRADE_COMPARE(data->positionArrayCount(), 1);

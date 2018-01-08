@@ -40,28 +40,28 @@ AbstractImageConverter::AbstractImageConverter(PluginManager::Manager<AbstractIm
 
 AbstractImageConverter::AbstractImageConverter(PluginManager::AbstractManager& manager, const std::string& plugin): PluginManager::AbstractManagingPlugin<AbstractImageConverter>{manager, plugin} {}
 
-std::optional<Image2D> AbstractImageConverter::exportToImage(const ImageView2D& image) {
+Containers::Optional<Image2D> AbstractImageConverter::exportToImage(const ImageView2D& image) {
     CORRADE_ASSERT(features() & Feature::ConvertImage,
         "Trade::AbstractImageConverter::exportToImage(): feature not supported", {});
 
     return doExportToImage(image);
 }
 
-std::optional<Image2D> AbstractImageConverter::doExportToImage(const ImageView2D&) {
+Containers::Optional<Image2D> AbstractImageConverter::doExportToImage(const ImageView2D&) {
     CORRADE_ASSERT(false, "Trade::AbstractImageConverter::exportToImage(): feature advertised but not implemented", {});
-    return std::nullopt;
+    return Containers::NullOpt;
 }
 
-std::optional<CompressedImage2D> AbstractImageConverter::exportToCompressedImage(const ImageView2D& image) {
+Containers::Optional<CompressedImage2D> AbstractImageConverter::exportToCompressedImage(const ImageView2D& image) {
     CORRADE_ASSERT(features() & Feature::ConvertCompressedImage,
         "Trade::AbstractImageConverter::exportToCompressedImage(): feature not supported", {});
 
     return doExportToCompressedImage(image);
 }
 
-std::optional<CompressedImage2D> AbstractImageConverter::doExportToCompressedImage(const ImageView2D&) {
+Containers::Optional<CompressedImage2D> AbstractImageConverter::doExportToCompressedImage(const ImageView2D&) {
     CORRADE_ASSERT(false, "Trade::AbstractImageConverter::exportToCompressedImage(): feature advertised but not implemented", {});
-    return std::nullopt;
+    return Containers::NullOpt;
 }
 
 Containers::Array<char> AbstractImageConverter::exportToData(const ImageView2D& image) {

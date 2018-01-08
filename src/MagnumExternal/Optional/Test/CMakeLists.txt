@@ -23,10 +23,24 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-if(MAGNUM_BUILD_DEPRECATED)
-    install(FILES optional.hpp OptionalWrapper.h DESTINATION ${MAGNUM_EXTERNAL_INCLUDE_INSTALL_DIR}/Optional)
-endif()
+corrade_add_test(StdOptionalTest StdOptionalTest.cpp)
+target_include_directories(StdOptionalTest PRIVATE
+    ${PROJECT_SOURCE_DIR}/src
+    ${PROJECT_BINARY_DIR}/src)
 
-if(BUILD_TESTS)
-    add_subdirectory(Test)
+# Try using C++17 on newer compilers. Can't use VERSION_GREATER_EQUAL because
+# older CMake doesn't support these. No idea how to detect libc++ presence on
+# non-Apple platforms (or even version), so I'm giving up there, testing just
+# elsewhere.
+#
+# Compiler versions where std::optional is supported:
+# MSVC 2017 (trust me, I know)
+# GCC libstdc++ 7.1 (see https://gcc.gnu.org/onlinedocs/libstdc++/manual/status.html#table.cxx17_status)
+# libc++ 4.0 (see https://launchpad.net/ubuntu/+source/libc++)
+# Apple Clang 9.0 correspons to LLVM 4.0 (see https://gist.github.com/yamaya/2924292#gistcomment-2289472)
+if((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS "7.1") OR
+  #(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.0") OR
+   (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" AND NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS "9.0") OR
+   (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" AND NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS "19.10"))
+    set_target_properties(StdOptionalTest PROPERTIES CORRADE_CXX_STANDARD 17)
 endif()

@@ -25,4 +25,7 @@
 
 add_subdirectory(OpenAL)
 add_subdirectory(OpenGL)
-add_subdirectory(Optional)
+
+if(MAGNUM_BUILD_DEPRECATED)
+    add_subdirectory(Optional)
+endif()

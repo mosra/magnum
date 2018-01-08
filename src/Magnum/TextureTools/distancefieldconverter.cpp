@@ -152,7 +152,7 @@ int DistanceFieldConverter::exec() {
     std::unique_ptr<Trade::AbstractImageConverter> converter = converterManager.instance(args.value("converter"));
 
     /* Open input file */
-    std::optional<Trade::ImageData2D> image;
+    Containers::Optional<Trade::ImageData2D> image;
     if(!importer->openFile(args.value("input")) || !(image = importer->image2D(0))) {
         Error() << "Cannot open file" << args.value("input");
         return 1;
