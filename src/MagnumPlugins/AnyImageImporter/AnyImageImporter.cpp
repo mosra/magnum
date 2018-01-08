@@ -120,6 +120,6 @@ void AnyImageImporter::doOpenFile(const std::string& filename) {
 
 UnsignedInt AnyImageImporter::doImage2DCount() const { return _in->image2DCount(); }
 
-std::optional<ImageData2D> AnyImageImporter::doImage2D(const UnsignedInt id) { return _in->image2D(id); }
+Containers::Optional<ImageData2D> AnyImageImporter::doImage2D(const UnsignedInt id) { return _in->image2D(id); }
 
 }}

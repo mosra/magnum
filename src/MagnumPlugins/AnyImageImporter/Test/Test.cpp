@@ -63,7 +63,7 @@ void AnyImageImporterTest::tga() {
     CORRADE_VERIFY(importer.openFile(TGA_FILE));
 
     /* Check only size, as it is good enough proof that it is working */
-    std::optional<ImageData2D> image = importer.image2D(0);
+    Containers::Optional<ImageData2D> image = importer.image2D(0);
     CORRADE_VERIFY(image);
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
 }
@@ -76,7 +76,7 @@ void AnyImageImporterTest::jpeg() {
     CORRADE_VERIFY(importer.openFile(JPEG_FILE));
 
     /* Check only size, as it is good enough proof that it is working */
-    std::optional<ImageData2D> image = importer.image2D(0);
+    Containers::Optional<ImageData2D> image = importer.image2D(0);
     CORRADE_VERIFY(image);
     CORRADE_COMPARE(image->size(), Vector2i(3, 2));
 }
@@ -89,7 +89,7 @@ void AnyImageImporterTest::png() {
     CORRADE_VERIFY(importer.openFile(PNG_FILE));
 
     /* Check only size, as it is good enough proof that it is working */
-    std::optional<ImageData2D> image = importer.image2D(0);
+    Containers::Optional<ImageData2D> image = importer.image2D(0);
     CORRADE_VERIFY(image);
     CORRADE_COMPARE(image->size(), Vector2i(3, 2));
 }

@@ -140,17 +140,17 @@ Int AnySceneImporter::doDefaultScene() { return _in->defaultScene(); }
 UnsignedInt AnySceneImporter::doSceneCount() const { return _in->sceneCount(); }
 Int AnySceneImporter::doSceneForName(const std::string& name) { return _in->sceneForName(name); }
 std::string AnySceneImporter::doSceneName(const UnsignedInt id) { return _in->sceneName(id); }
-std::optional<SceneData> AnySceneImporter::doScene(const UnsignedInt id) { return _in->scene(id); }
+Containers::Optional<SceneData> AnySceneImporter::doScene(const UnsignedInt id) { return _in->scene(id); }
 
 UnsignedInt AnySceneImporter::doLightCount() const { return _in->lightCount(); }
 Int AnySceneImporter::doLightForName(const std::string& name) { return _in->lightForName(name); }
 std::string AnySceneImporter::doLightName(const UnsignedInt id) { return _in->lightName(id); }
-std::optional<LightData> AnySceneImporter::doLight(const UnsignedInt id) { return _in->light(id); }
+Containers::Optional<LightData> AnySceneImporter::doLight(const UnsignedInt id) { return _in->light(id); }
 
 UnsignedInt AnySceneImporter::doCameraCount() const { return _in->cameraCount(); }
 Int AnySceneImporter::doCameraForName(const std::string& name) { return _in->cameraForName(name); }
 std::string AnySceneImporter::doCameraName(const UnsignedInt id) { return _in->cameraName(id); }
-std::optional<CameraData> AnySceneImporter::doCamera(const UnsignedInt id) { return _in->camera(id); }
+Containers::Optional<CameraData> AnySceneImporter::doCamera(const UnsignedInt id) { return _in->camera(id); }
 
 UnsignedInt AnySceneImporter::doObject2DCount() const { return _in->object2DCount(); }
 Int AnySceneImporter::doObject2DForName(const std::string& name) { return _in->object2DForName(name); }
@@ -165,12 +165,12 @@ std::unique_ptr<ObjectData3D> AnySceneImporter::doObject3D(const UnsignedInt id)
 UnsignedInt AnySceneImporter::doMesh2DCount() const { return _in->mesh2DCount(); }
 Int AnySceneImporter::doMesh2DForName(const std::string& name) { return _in->mesh2DForName(name); }
 std::string AnySceneImporter::doMesh2DName(const UnsignedInt id) { return _in->mesh2DName(id); }
-std::optional<MeshData2D> AnySceneImporter::doMesh2D(const UnsignedInt id) { return _in->mesh2D(id); }
+Containers::Optional<MeshData2D> AnySceneImporter::doMesh2D(const UnsignedInt id) { return _in->mesh2D(id); }
 
 UnsignedInt AnySceneImporter::doMesh3DCount() const { return _in->mesh3DCount(); }
 Int AnySceneImporter::doMesh3DForName(const std::string& name) { return _in->mesh3DForName(name); }
 std::string AnySceneImporter::doMesh3DName(const UnsignedInt id) { return _in->mesh3DName(id); }
-std::optional<MeshData3D> AnySceneImporter::doMesh3D(const UnsignedInt id) { return _in->mesh3D(id); }
+Containers::Optional<MeshData3D> AnySceneImporter::doMesh3D(const UnsignedInt id) { return _in->mesh3D(id); }
 
 UnsignedInt AnySceneImporter::doMaterialCount() const { return _in->materialCount(); }
 Int AnySceneImporter::doMaterialForName(const std::string& name) { return _in->materialForName(name); }
@@ -180,21 +180,21 @@ std::unique_ptr<AbstractMaterialData> AnySceneImporter::doMaterial(const Unsigne
 UnsignedInt AnySceneImporter::doTextureCount() const { return _in->textureCount(); }
 Int AnySceneImporter::doTextureForName(const std::string& name) { return _in->textureForName(name); }
 std::string AnySceneImporter::doTextureName(const UnsignedInt id) { return _in->textureName(id); }
-std::optional<TextureData> AnySceneImporter::doTexture(const UnsignedInt id) { return _in->texture(id); }
+Containers::Optional<TextureData> AnySceneImporter::doTexture(const UnsignedInt id) { return _in->texture(id); }
 
 UnsignedInt AnySceneImporter::doImage1DCount() const { return _in->image1DCount(); }
 Int AnySceneImporter::doImage1DForName(const std::string& name) { return _in->image1DForName(name); }
 std::string AnySceneImporter::doImage1DName(const UnsignedInt id) { return _in->image1DName(id); }
-std::optional<ImageData1D> AnySceneImporter::doImage1D(const UnsignedInt id) { return _in->image1D(id); }
+Containers::Optional<ImageData1D> AnySceneImporter::doImage1D(const UnsignedInt id) { return _in->image1D(id); }
 
 UnsignedInt AnySceneImporter::doImage2DCount() const { return _in->image2DCount(); }
 Int AnySceneImporter::doImage2DForName(const std::string& name) { return _in->image2DForName(name); }
 std::string AnySceneImporter::doImage2DName(const UnsignedInt id) { return _in->image2DName(id); }
-std::optional<ImageData2D> AnySceneImporter::doImage2D(const UnsignedInt id) { return _in->image2D(id); }
+Containers::Optional<ImageData2D> AnySceneImporter::doImage2D(const UnsignedInt id) { return _in->image2D(id); }
 
 UnsignedInt AnySceneImporter::doImage3DCount() const { return _in->image3DCount(); }
 Int AnySceneImporter::doImage3DForName(const std::string& name) { return _in->image3DForName(name); }
 std::string AnySceneImporter::doImage3DName(const UnsignedInt id) { return _in->image3DName(id); }
-std::optional<ImageData3D> AnySceneImporter::doImage3D(const UnsignedInt id) { return _in->image3D(id); }
+Containers::Optional<ImageData3D> AnySceneImporter::doImage3D(const UnsignedInt id) { return _in->image3D(id); }
 
 }}

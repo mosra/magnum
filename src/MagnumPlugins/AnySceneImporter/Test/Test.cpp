@@ -62,7 +62,7 @@ void AnySceneImporterTest::obj() {
     CORRADE_VERIFY(importer.openFile(OBJ_FILE));
 
     /* Check only size, as it is good enough proof that it is working */
-    std::optional<MeshData3D> mesh = importer.mesh3D(0);
+    Containers::Optional<MeshData3D> mesh = importer.mesh3D(0);
     CORRADE_VERIFY(mesh);
     CORRADE_COMPARE(mesh->positions(0).size(), 3);
 }
@@ -75,7 +75,7 @@ void AnySceneImporterTest::ply() {
     CORRADE_VERIFY(importer.openFile(PLY_FILE));
 
     /* Check only size, as it is good enough proof that it is working */
-    std::optional<MeshData3D> mesh = importer.mesh3D(0);
+    Containers::Optional<MeshData3D> mesh = importer.mesh3D(0);
     CORRADE_VERIFY(mesh);
     CORRADE_COMPARE(mesh->positions(0).size(), 5);
 }
