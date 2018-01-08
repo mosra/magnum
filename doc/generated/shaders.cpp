@@ -70,7 +70,7 @@ using namespace Magnum;
 using namespace Magnum::Math::Literals;
 
 struct ShaderVisualizer: Platform::WindowlessApplication {
-    using Platform::WindowlessApplication::WindowlessApplication;
+    explicit ShaderVisualizer(const Arguments& arguments): Platform::WindowlessApplication{arguments} {}
 
     int exec() override;
 
