@@ -18,7 +18,7 @@ mkdir build && cd build
 # Not using CXXFLAGS in order to avoid affecting dependencies
 cmake .. \
     -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
-    -DCMAKE_PREFIX_PATH="$HOME/deps;$HOME/sdl2;$HOME/glfw" \
+    -DCMAKE_PREFIX_PATH="$HOME/deps;$HOME/glfw" \
     -DCMAKE_BUILD_TYPE=Debug \
     -DWITH_AUDIO=ON \
     -DWITH_GLFWAPPLICATION=ON \
