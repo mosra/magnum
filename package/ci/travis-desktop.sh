@@ -18,7 +18,8 @@ mkdir build && cd build
 # Not using CXXFLAGS in order to avoid affecting dependencies
 cmake .. \
     -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
-    -DCMAKE_PREFIX_PATH="$HOME/deps;$HOME/glfw" \
+    -DCMAKE_INSTALL_PREFIX=$HOME/deps \
+    -DCMAKE_PREFIX_PATH=$HOME/glfw \
     -DCMAKE_BUILD_TYPE=Debug \
     -DWITH_AUDIO=ON \
     -DWITH_GLFWAPPLICATION=ON \
@@ -44,3 +45,13 @@ cmake .. \
 # Otherwise the job gets killed (probably because using too much memory)
 make -j4
 ASAN_OPTIONS="color=always" LSAN_OPTIONS="color=always suppressions=$TRAVIS_BUILD_DIR/package/ci/leaksanitizer.conf" CORRADE_TEST_COLOR=ON ctest -V -E GLTest
+
+# Verify also compilation of the documentation image generators
+make install
+cd ..
+mkdir build-doc-generated && cd build-doc-generated
+cmake ../doc/generated \
+    -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
+    -DCMAKE_PREFIX_PATH=$HOME/deps \
+    -DCMAKE_BUILD_TYPE=Debug
+make -j4
