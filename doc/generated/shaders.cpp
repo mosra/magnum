@@ -144,7 +144,7 @@ int ShaderVisualizer::exec() {
 namespace {
     const auto Projection = Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.001f, 100.0f);
     const auto Transformation = Matrix4::translation(Vector3::zAxis(-5.0f));
-    const auto BaseColor = Color3::fromHSV(216.0_degf, 0.85f, 1.0f);
+    const auto BaseColor = Color3::fromHsv(216.0_degf, 0.85f, 1.0f);
     const auto OutlineColor = Color3{0.95f};
 }
 
@@ -209,7 +209,7 @@ std::string ShaderVisualizer::vertexColor() {
     std::vector<Color3> colors;
     colors.reserve(sphere.positions(0).size());
     for(Vector3 position: sphere.positions(0))
-        colors.push_back(Color3::fromHSV(Math::lerp(240.0_degf, 420.0_degf, Math::max(1.0f - (position - target).length(), 0.0f)), 0.85f, 0.85f));
+        colors.push_back(Color3::fromHsv(Math::lerp(240.0_degf, 420.0_degf, Math::max(1.0f - (position - target).length(), 0.0f)), 0.85f, 0.85f));
 
     Buffer vertices, indices;
     vertices.setData(MeshTools::interleave(sphere.positions(0), colors), BufferUsage::StaticDraw);
@@ -218,7 +218,9 @@ std::string ShaderVisualizer::vertexColor() {
     Mesh mesh;
     mesh.setPrimitive(MeshPrimitive::Triangles)
         .setCount(sphere.indices().size())
-        .addVertexBuffer(vertices, 0, Shaders::VertexColor3D::Position{}, Shaders::VertexColor3D::Color{})
+        .addVertexBuffer(vertices, 0,
+            Shaders::VertexColor3D::Position{},
+            Shaders::VertexColor3D::Color{Shaders::VertexColor3D::Color::Components::Three})
         .setIndexBuffer(indices, 0, Mesh::IndexType::UnsignedInt);
 
     Shaders::VertexColor3D shader;
