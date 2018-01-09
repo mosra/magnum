@@ -25,14 +25,12 @@
 
 cmake_minimum_required(VERSION 2.8.12)
 
-# Configuration fails on < 3.4 if only C++ is enabled (CheckFunctionExists
-# macro called from FindX11)
-if(NOT CMAKE_VERSION VERSION_LESS 3.4.0)
-    set(LANG CXX)
+# CMake policies. 0025 needs to be before project(), so putting all there.
+# Use AppleClang instead of Clang on Apple
+if(POLICY CMP0025)
+    cmake_policy(SET CMP0025 NEW)
 endif()
-project(Magnum ${LANG})
-
-# CMake policies: don't treat imported targets with :: as files
+# Don't treat imported targets with :: as files
 if(POLICY CMP0028)
     cmake_policy(SET CMP0028 NEW)
 endif()
@@ -44,6 +42,13 @@ endif()
 if(POLICY CMP0054)
     cmake_policy(SET CMP0054 NEW)
 endif()
+
+# Configuration fails on < 3.4 if only C++ is enabled (CheckFunctionExists
+# macro called from FindX11)
+if(NOT CMAKE_VERSION VERSION_LESS 3.4.0)
+    set(LANG CXX)
+endif()
+project(Magnum ${LANG})
 
 # Use folders for nice tree in Visual Studio and XCode
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
