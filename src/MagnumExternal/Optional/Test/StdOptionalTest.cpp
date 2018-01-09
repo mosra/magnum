@@ -50,13 +50,13 @@ StdOptionalTest::StdOptionalTest() {
 #pragma warning(disable: 4996)
 #endif
 void StdOptionalTest::conversion() {
-    Debug{} << "Using C++ version" << __cplusplus;
+    Debug{} << "Using C++ version" << CORRADE_CXX_STANDARD;
     #ifdef _MAGNUM_HAS_STD_OPTIONAL
     Debug{} << "Using a conversion to std::optional, C++17 should be present";
-    CORRADE_VERIFY(__cplusplus >= 201703L);
+    CORRADE_VERIFY(CORRADE_CXX_STANDARD >= 201703L);
     #else
     Debug{} << "Using a typedef to std::optional, C++17 should not be present";
-    CORRADE_VERIFY(__cplusplus < 201703L);
+    CORRADE_VERIFY(CORRADE_CXX_STANDARD < 201703L);
     #endif
 
     Containers::Optional<int> a{5};

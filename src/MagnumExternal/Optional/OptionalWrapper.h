@@ -32,7 +32,7 @@
 /* Cover your eyes. This will hurt. And wash your hands after. */
 #ifdef MAGNUM_BUILD_DEPRECATED
 #ifdef __has_include
-#if __has_include(<optional>) && __cplusplus >= 201703L
+#if __has_include(<optional>) && CORRADE_CXX_STANDARD >= 201703L
 #define _MAGNUM_HAS_STD_OPTIONAL
 #include <optional>
 
