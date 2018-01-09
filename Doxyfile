@@ -925,7 +925,7 @@ EXAMPLE_RECURSIVE      = NO
 
 IMAGE_PATH             = doc/ \
                          doc/snippets/ \
-                         ../magnum-examples/src/
+                         ../magnum-examples/doc
 
 # The INPUT_FILTER tag can be used to specify a program that doxygen should
 # invoke to filter for each input file. Doxygen will invoke the filter program
