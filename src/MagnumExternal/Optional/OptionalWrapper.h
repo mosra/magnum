@@ -57,6 +57,10 @@ namespace std {
     template<class T> using optional CORRADE_DEPRECATED_ALIAS("use Corrade::Containers::Optional instead") = Corrade::Containers::Optional<T>;
 
     constexpr CORRADE_DEPRECATED("use Corrade::Containers::NullOpt instead") Corrade::Containers::NullOptT nullopt{Corrade::Containers::NullOptT::Init{}};
+
+    template<class T> CORRADE_DEPRECATED("use Corrade::Containers::optional() instead") inline Corrade::Containers::Optional<typename std::decay<T>::type> make_optional(T&& value) {
+        return Corrade::Containers::Optional<typename std::decay<T>::type>{std::forward<T>(value)};
+    }
 }
 #endif
 #endif
