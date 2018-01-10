@@ -190,10 +190,10 @@ possible.
 -   Documentation — http://doc.magnum.graphics/
 -   GitHub project page — https://github.com/mosra/magnum
 -   Gitter community chat — https://gitter.im/mosra/magnum
+-   E-mail — info@magnum.graphics
 -   IRC — join the `#magnum-engine` channel on freenode
 -   Google Groups mailing list — magnum-engine@googlegroups.com ([archive](https://groups.google.com/forum/#!forum/magnum-engine))
 -   Author's personal Twitter — https://twitter.com/czmosra
--   Author's personal e-mail — mosra@centrum.cz
 
 See also the Magnum Project [Contact & Support page](http://magnum.graphics/contact/)
 for further information.
