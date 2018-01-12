@@ -66,14 +66,17 @@ Supports mono and stereo files of the following formats:
 -   A-Law, imported as @ref Buffer::Format::MonoALaw / @ref Buffer::Format::StereoALaw
 -   μ-Law, imported as @ref Buffer::Format::MonoMuLaw / @ref Buffer::Format::StereoMuLaw
 
-Multi-channel formats are not supported.
-
 This plugin is built if `WITH_WAVAUDIOIMPORTER` is enabled when building
-Magnum. To use dynamic plugin, you need to load `WavAudioImporter` plugin
-from `MAGNUM_PLUGINS_AUDIOIMPORTER_DIR`. To use static plugin or use this as a
-dependency of another plugin, you need to request `WavAudioImporter` component
-of `Magnum` package in CMake and link to `Magnum::WavAudioImporter` target. See
-@ref building, @ref cmake and @ref plugins for more information.
+Magnum. To use dynamic plugin, you need to load the @cpp "WavAudioImporter" @ce
+plugin from `MAGNUM_PLUGINS_AUDIOIMPORTER_DIR`. To use as a static plugin or as
+a dependency of another plugin with CMake, you need to request the
+`WavAudioImporter` component of the `Magnum` package and link to the
+`Magnum::WavAudioImporter` target. See @ref building, @ref cmake and
+@ref plugins for more information.
+
+@section Audio-WavImporter-limitations Behavior and limitations
+
+Multi-channel formats are not supported.
 */
 class MAGNUM_WAVAUDIOIMPORTER_EXPORT WavImporter: public AbstractImporter {
     public:

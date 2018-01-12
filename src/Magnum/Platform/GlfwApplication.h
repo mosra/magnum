@@ -49,12 +49,12 @@ namespace Magnum { namespace Platform {
 /** @nosubgrouping
 @brief GLFW application
 
-Application using GLFW toolkit. Supports keyboard and mouse handling with
-support for changing cursor and mouse tracking and warping.
+Application using the [GLFW](http://glfw.org) toolkit. Supports keyboard and
+mouse handling with support for changing cursor and mouse tracking and warping.
 
 This application library is available on all platforms where GLFW is ported. It
-depends on **GLFW** library and is built if `WITH_GLFWAPPLICATION` is enabled
-in CMake.
+depends on the [GLFW](http://glfw.org) library and is built if
+`WITH_GLFWAPPLICATION` is enabled when building Magnum.
 
 @section Platform-GlfwApplication-bootstrap Bootstrap application
 
@@ -77,10 +77,22 @@ See @ref cmake for more information.
 
 @section Platform-GlfwApplication-usage General usage
 
-In CMake you need to request `GlfwApplication` component of `Magnum` package
-and link to `Magnum::GlfwApplication` target. If no other application is
-requested, you can also use generic `Magnum::Application` alias to simplify
-porting. Again, see @ref building and @ref cmake for more information.
+In order to use this library from CMake, you need to copy `FindGLFW.cmake` from
+the modules directory in Magnum source to the `modules/` dir in your project
+(so it is able to find the GLFW library). Request the `GlfwApplication`
+component of the `Magnum` package and link to the `Magnum::GlfwApplication`
+target:
+
+@code{.cmake}
+find_package(Magnum REQUIRED GlfwApplication)
+
+# ...
+target_link_libraries(your-app Magnum::GlfwApplication)
+@endcode
+
+If no other application is requested, you can also use the generic
+`Magnum::Application` alias to simplify porting. Again, see @ref building and
+@ref cmake for more information.
 
 In C++ code you need to implement at least @ref drawEvent() to be able to draw
 on the screen. The subclass can be then used directly in @cpp main() @ce

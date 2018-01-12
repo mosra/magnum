@@ -50,13 +50,12 @@ namespace Magnum { namespace Platform {
 /** @nosubgrouping
 @brief Android application
 
-Application running in Android.
+Application running on Android.
 
-This application library is available only in
+This application library is available only on
 @ref CORRADE_TARGET_ANDROID "Android", see respective sections
-in @ref building-corrade-cross-android "Corrade's" and @ref building-cross-android "Magnum's"
-building documentation. It is built if `WITH_ANDROIDAPPLICATION` is enabled in
-CMake.
+in the @ref building-corrade-cross-android "Corrade" and
+@ref building-cross-android "Magnum" building documentation. It is built if `WITH_ANDROIDAPPLICATION` is enabled when building Magnum.
 
 @section Platform-AndroidApplication-bootstrap Bootstrap application
 
@@ -115,16 +114,31 @@ adb install bin/NativeActivity-debug.apk
 
 @section Platform-AndroidApplication-usage General usage
 
-For CMake you need to copy `FindEGL.cmake` and `FindOpenGLES2.cmake` (or
-`FindOpenGLES3.cmake`) from `modules/` directory in Magnum source to `modules/`
-dir in your project (so it is able to find EGL and OpenGL ES libraries).
-Request `AndroidApplication` component of `Magnum` package and link to
-`Magnum::AndroidApplication` target. If no other application is requested, you
-can also use generic `Magnum::Application` alias to simplify porting. Again,
-see @ref building and @ref cmake for more information. Note that unlike on
-other platforms you need to create *shared library* instead of executable. The
-resulting binary then needs to be copied to `lib/armeabi-v7a` and `lib/x86`,
-you can do that automatically in CMake using the following commands:
+In order to use this library from CMake, you need to copy `FindEGL.cmake`
+and `FindOpenGLES2.cmake` (or `FindOpenGLES3.cmake`) from the `modules/`
+directory in Magnum source to the `modules/` dir in your project (so it is able
+to find EGL and OpenGL ES libraries). Request the `AndroidApplication`
+component of the `Magnum` package and link to the `Magnum::AndroidApplication`
+target:
+
+@code{.cmake}
+find_package(Magnum REQUIRED)
+if(CORRADE_TARGET_ANDROID)
+    find_package(Magnum REQUIRED AndroidApplication)
+endif()
+
+# ...
+if(CORRADE_TARGET_ANDROID)
+    target_link_libraries(your-app Magnum::AndroidApplication)
+endif()
+@endcode
+
+If no other application is requested, you can also use the generic
+`Magnum::Application` alias to simplify porting. Again, see @ref building and
+@ref cmake for more information. Note that unlike on other platforms you need
+to create *shared library* instead of executable. The resulting binary then
+needs to be copied to `lib/armeabi-v7a` and `lib/x86`, you can do that
+automatically in CMake using the following commands:
 
 @code{.cmake}
 file(MAKE_DIRECTORY "${CMAKE_SOURCE_DIR}/libs/${ANDROID_ABI}")

@@ -41,8 +41,8 @@ Application using pure X11 and GLX. Supports keyboard and mouse handling.
 
 This application library is available on desktop OpenGL and
 @ref MAGNUM_TARGET_DESKTOP_GLES "OpenGL ES emulation on desktop" on Linux. It
-depends on **X11** library and is built if `WITH_GLXAPPLICATION` is enabled in
-CMake.
+depends on the **X11** library and is built if `WITH_GLXAPPLICATION` is enabled
+in CMake.
 
 @section Platform-GlxApplication-bootstrap Bootstrap application
 
@@ -52,10 +52,20 @@ more information.
 
 @section Platform-GlxApplication-usage General usage
 
-In CMake you need to request `GlxApplication` component of `Magnum` package and
-link to `Magnum::GlxApplication` target. If no other application is requested,
-you can also use generic `Magnum::Application` alias to simplify porting. See
-@ref building and @ref cmake for more information.
+In order to use this library from Cmake, you need to request the
+`GlxApplication` component of the `Magnum` package and link to the
+`Magnum::GlxApplication` target:
+
+@code{.cmake}
+find_package(Magnum REQUIRED GlxApplication)
+
+# ...
+target_link_libraries(your-app Magnum::GlxApplication)
+@endcode
+
+If no other application is requested, you can also use the generic
+`Magnum::Application` alias to simplify porting. See @ref building and
+@ref cmake for more information.
 
 In C++ code you need to implement at least @ref drawEvent() to be able to draw
 on the screen. The subclass can be then used directly in @cpp main() @ce

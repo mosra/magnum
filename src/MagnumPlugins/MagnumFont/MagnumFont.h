@@ -55,71 +55,72 @@ namespace Magnum { namespace Text {
 /**
 @brief Simple bitmap font plugin
 
-This plugin depends on @ref Trade::TgaImporter "TgaImporter" plugin and is
-built if `WITH_MAGNUMFONT` is enabled when building Magnum. To use dynamic
-plugin, you need to load `MagnumFont` plugin from `MAGNUM_PLUGINS_FONT_DIR`.
-To use static plugin or use this as a dependency of another plugin, you need to
-request `MagnumFont` component of `Magnum` package in CMake and link to
-`Magnum::MagnumFont` target. See @ref building, @ref cmake and @ref plugins for
-more information.
+This plugin depends on the @ref Text library and the
+@ref Trade::TgaImporter "TgaImporter" plugin. It is built if `WITH_MAGNUMFONT`
+is enabled when building Magnum. To use as a dynamic plugin, you need to load
+the @cpp "MagnumFont" @ce plugin from `MAGNUM_PLUGINS_FONT_DIR`. To use as a
+static plugin or as a dependency of another plugin with CMake, you need to
+request the `MagnumFont` component of the `Magnum` package and link to the
+`Magnum::MagnumFont` target. See @ref building, @ref cmake and @ref plugins
+for more information.
 
 The font consists of two files, one text file containing character and glyph
 info and one TGA file containing the glyphs in distance field format. The font
-can be conveniently created from any other format using MagnumFontConverter.
-The file syntax is as in following:
+can be conveniently created from any other format using
+@ref MagnumFontConverter. The file syntax is as in following:
 
-    # Font image filename
-    image=font.tga
+@code{.ini}
+# Font image filename
+image=font.tga
 
-    # Size of unscaled font image
-    originalImageSize=1536 1536
+# Size of unscaled font image
+originalImageSize=1536 1536
 
-    # Glyph padding
-    padding=9
+# Glyph padding
+padding=9
 
-    # Font size
-    fontSize=128
+# Font size
+fontSize=128
 
-    # Line height
-    lineHeight=270
+# Line height
+lineHeight=270
 
-    # Character
-    [char]
+# Character
+[char]
 
-    # UTF-32 codepoint ('a')
-    unicode=0061
+# UTF-32 codepoint ('a')
+unicode=0061
 
-    # Glyph ID
-    glyph=1
+# Glyph ID
+glyph=1
 
-    # Advance to next character in pixels (i.e. on unscaled font image)
-    advance=45 0
+# Advance to next character in pixels (i.e. on unscaled font image)
+advance=45 0
 
-    # Another character
-    [char]
-    unicode=0062
-    glyph=2
-    advance=42 0
+# Another character
+[char]
+unicode=0062
+glyph=2
+advance=42 0
 
-    # ...
+# ...
 
-    # Glyph 0, a.k.a. "Not Found" glyph
-    [glyph]
+# Glyph 0, a.k.a. "Not Found" glyph
+[glyph]
 
-    # Glyph texture position relative to baseline, in pixels
-    position=5 -1
+# Glyph texture position relative to baseline, in pixels
+position=5 -1
 
-    # Glyph rectangle in font image, in pixels (left, bottom, right, top)
-    rectangle=0 0 42 25
+# Glyph rectangle in font image, in pixels (left, bottom, right, top)
+rectangle=0 0 42 25
 
-    # Glyph 1
-    [glyph]
-    position=0 0
-    rectangle=45 0 44 25
+# Glyph 1
+[glyph]
+position=0 0
+rectangle=45 0 44 25
 
-    # ...
-
-@see @ref Trade::TgaImporter
+# ...
+@endcode
 */
 class MAGNUM_MAGNUMFONT_EXPORT MagnumFont: public AbstractFont {
     public:

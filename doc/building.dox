@@ -31,38 +31,170 @@ namespace Magnum {
 @tableofcontents
 @m_footernavigation
 
+@section building-packages Prepared packages
+
+The easiest way to install Magnum is to use one of the ready-made packages for
+your platform of choice. See @ref building-manual if you want to have more
+control and @ref building-cross for cross-compiling to other platforms.
+
+-   @ref building-packages-arch
+-   @ref building-packages-deb
+-   @ref building-packages-gentoo
+-   @ref building-packages-brew
+
+The engine itself is kept as small as possible with only minimal dependencies.
+In order to use extra functionality, often depending on external libraries, you
+need to build also packages of additional repositories. Various importer
+plugins for image, audio and 3D model formats are maintained in the
+@ref building-plugins "Plugins repository", integration with external math and
+physics libraries is provided by @ref building-integration "Integration libraries"
+and other extra features are in the @ref building-extras "Extra libraries".
+Various examples are provided by the @ref building-examples "Example repository".
+
+@subsection building-packages-arch ArchLinux packages
+
+In `package/archlinux/magnum-git` there is a package for Git development build.
+The package is also in AUR as
+[magnum-git](https://aur.archlinux.org/packages/magnum-git/). It depends on the
+@ref building-corrade-packages-arch "Corrade ArchLinux package".
+
+There are also quite a few development packages for native builds, OpenGL ES
+builds, cross-compilation for Emscripten, Android and MinGW or various
+sanitizer/coverage builds. See the PKGBUILD files in the `package/archlinux`
+directory. They allow you to build and install the package directly from the
+source tree. Example usage:
+
+@code{.sh}
+git clone git://github.com/mosra/magnum && cd magnum
+cd package/archlinux
+makepkg -fp PKGBUILD # or any other PKGBUILD file
+@endcode
+
+In most cases the development PKGBUILDs also contain a @cb{.sh} check() @ce
+function which will run all unit tests before packaging. That might sometimes
+fail or take too long, pass `--nocheck` to `makepkg` to skip that.
+
+Once built, install the package using `pacman`:
+
+@code{.sh}
+sudo pacman -U magnum-*.pkg.tar.xz
+@endcode
+
+Edit the PKGBUILDs if you want to pass additional flags to CMake or
+@ref building-features "enable / disable additional features".
+
+There are also ArchLinux packages for @ref building-plugins-packages-arch "Magnum Plugins", @ref building-integration-packages-arch "Magnum Integration",
+@ref building-extras-packages-arch "Magnum Extras" and
+@ref building-examples-packages-arch "Magnum Examples".
+
+@subsection building-packages-deb Packages for Debian, Ubuntu and derivatives
+
+The `package/debian/` directory contains all files needed for building Debian
+packages. You need the @ref building-corrade-packages-deb "Corrade Debian package"
+installed and in addition also the `dpkg-dev` and `debhelper` packages.
+Building is easy, just change directory to package root, link or copy
+`package/debian` directory there and run `dpkg-buildpackage`:
+
+@code{.sh}
+git clone git://github.com/mosra/magnum && cd magnum
+ln -s package/debian .
+dpkg-buildpackage
+@endcode
+
+This will compile binary and development packages, which will then appear in a
+parent directory. Install them using `dpkg`:
+
+@code{.sh}
+sudo dpkg -i ../magnum*.deb
+@endcode
+
+If you want to pass additional flags to CMake or
+@ref building-features "enable / disable additional features", add them to
+`dh_auto_configure` at the bottom of `debian/rules`. Watch out, as
+indentation has to be done using tabs, not spaces.
+
+There are also Debian packages for @ref building-plugins-packages-deb "Magnum Plugins", @ref building-integration-packages-deb "Magnum Integration",
+@ref building-extras-packages-deb "Magnum Extras" and
+@ref building-examples-packages-deb "Magnum Examples".
+
+@subsection building-packages-gentoo Gentoo Linux ebuilds
+
+Gentoo Git ebuild is available in the `package/gentoo` directory. Get the
+@ref building-corrade-packages-gentoo "Corrade Gentoo package" first and then
+build and install Magnum like this:
+
+@code{.sh}
+git clone git://github.com/mosra/magnum && cd magnum
+cd package/gentoo
+sudo ebuild dev-libs/magnum/magnum-99999.ebuild manifest clean merge
+@endcode
+
+If you want to pass additional flags to CMake or
+@ref building-features "enable / disable additional features", add them to
+`mycmakeargs` in the `*.ebuild` file.
+
+There are also Gentoo packages for @ref building-plugins-packages-gentoo "Magnum Plugins", @ref building-integration-packages-gentoo "Magnum Integration",
+@ref building-extras-packages-gentoo "Magnum Extras" and
+@ref building-examples-packages-gentoo "Magnum Examples".
+
+@subsection building-packages-brew Homebrew formulas for macOS
+
+macOS [Homebrew](https://brew.sh) formulas building the latest Git revision are
+in the `package/homebrew` directory. Either use the `*.rb` files directly or
+use the tap at https://github.com/mosra/homebrew-magnum. When installing from
+the `*.rb` files you need to install the
+@ref building-corrade-packages-brew "Corrade Homebrew package" first, otherwise
+you can do just this:
+
+@code{.sh}
+brew install --HEAD mosra/magnum/corrade
+brew install --HEAD mosra/magnum/magnum
+@endcode
+
+If you want to pass additional flags to CMake or
+@ref building-features "enable / disable additional features", edit the `*.rb`
+file.
+
+There are also Homebrew packages for @ref building-plugins-packages-brew "Magnum Plugins", @ref building-integration-packages-brew "Magnum Integration",
+@ref building-extras-packages-brew "Magnum Extras" and
+@ref building-examples-packages-brew "Magnum Examples".
+
+@section building-manual Manual build
+
 Minimal set of tools and libraries required for building is:
 
 -   C++ compiler with good C++11 support. Compilers which are tested to have
     everything needed are **GCC** >= 4.7, **Clang** >= 3.1 and **MSVC** >= 2015.
     On Windows you can also use **MinGW-w64**.
 -   **CMake** >= 2.8.12
--   **Corrade** - Plugin management and utility library. See
+-   **Corrade** --- Plugin management and utility library. See
     @ref building-corrade "Corrade download and installation guide" for more
     information.
 
-Note that full feature set is available only on GCC 4.8.1 and Clang 3.1.
+Additional functionality is provided separately in
+@ref building-plugins "Magnum Plugins",
+@ref building-integration "Magnum Integration",
+@ref building-extras "Magnum Extras" and
+@ref building-examples "Magnum Examples".
 
-@section building-download Downloading the sources
+@subsection building-download Downloading the sources
 
 The source is available on GitHub: https://github.com/mosra/magnum. Clone the
-repository with your favorite IDE or Git GUI, download currrent snapshot as
+repository with your favorite IDE or Git GUI, download currrent snapshot as a
 compressed archive or use the command line:
 
 @code{.sh}
 git clone git://github.com/mosra/magnum.git
 @endcode
 
-@section building-compilation Compilation, installation
-
 Relevant information about CMake usage was described in
-@ref building-corrade "Corrade download and installation guide", this guide is
-assuming you have at least basic knowledge of CMake.
+@ref building-corrade-cmake "Corrade download and installation guide", this
+guide is assuming you have at least basic knowledge of CMake.
 
 @subsection building-linux Via command-line (on Linux/Unix)
 
-On Unix-based OSs, the library (for example with support for SDL2 applications)
-can be built and installed using these four commands:
+On Unix-based OSes, the library (for example with support for SDL2
+applications) can be built and installed using these four commands:
 
 @code{.sh}
 mkdir build && cd build
@@ -70,7 +202,7 @@ cmake .. \
     -DCMAKE_INSTALL_PREFIX=/usr \
     -DWITH_SDL2APPLICATION=ON
 make
-make install
+make install # sudo may be needed
 @endcode
 
 See @ref building-features "below" for additional configuration options.
@@ -86,14 +218,15 @@ want to set `CMAKE_INSTALL_RPATH` to `lib/` subdir of given prefix (e.g.
 
 @subsection building-windows Building on Windows
 
-On Windows you can use either MinGW-w64 or MSVC 2013 compiler. It's then up to
-you whether you will use QtCreator, Visual Studio or do the build from command-
-line. Note that for most convenient usage it's best use some dedicated
-directory (e.g. `C:/Sys`) for installing dependencies instead of putting each
-dependency to its own directory in `C:/Program Files`. Then add its `bin/`
-subdir (e.g. `C:/Sys/bin`) to PATH so all the DLLs are found when running the
-executables. If you are using MinGW-w64, the `C:/MinGW` directory is in most
-cases already prepared for exactly this.
+On Windows you can use either MSVC or the MinGW-w64 compiler. It's then up to
+you whether you will use QtCreator, Visual Studio or anoother IDE or do the
+build from a command line. Note that for most convenient usage it's best use
+some dedicated directory (e.g. `C:/Sys`) for installing dependencies instead of
+putting each dependency to its own directory in `C:/Program Files` or
+elsewhere. Then you can just add its `bin/` subdir (e.g. `C:/Sys/bin`) to
+@cb{.bat} %PATH% @ce so all the DLLs are found when running the executables. If
+you are using MinGW-w64, the `C:/MinGW` directory is in most cases already
+prepared for exactly this.
 
 Then, when running CMake, set `CMAKE_PREFIX_PATH` and `CMAKE_INSTALL_PREFIX`
 value to that directory (e.g. `-DCMAKE_INSTALL_PREFIX=C:/Sys`).
@@ -103,7 +236,7 @@ value to that directory (e.g. `-DCMAKE_INSTALL_PREFIX=C:/Sys`).
 On Windows CMake by default creates Visual Studio project files.
 
 The most straightforward way to build and install the library is again via the
-command-line. The bonus point is that you don't even need to wait for Visual
+command line. The bonus point is that you don't even need to wait for Visual
 Studio to load:
 
 @code{.bat}
@@ -118,88 +251,91 @@ project file generated by CMake in the build directory.
 
 @subsubsection building-windows-qtcreator Using QtCreator
 
-On Windows you can also use QtCreator (just QtCreator, you don't need the full
-Qt SDK). Configure it to use CMake and either MSVC compiler or MinGW-w64 and
-then just open project's root `CMakeLists.txt` file within it. QtCreator then
-asks you where to create build directory, allows you to specify initial CMake
-parameters (e.g. `CMAKE_PREFIX_PATH` and `CMAKE_INSTALL_PREFIX`) and then you
-can just press *Configure* and everything is ready to be built.
+On Windows, besides other IDEs, you can also use QtCreator (just QtCreator, you
+don't need the full Qt SDK). Configure it to use CMake and either the MSVC
+compiler or MinGW-w64 and then just open project's root `CMakeLists.txt` file
+within it. QtCreator then asks you where to create build directory, allows you
+to specify initial CMake parameters (e.g. `CMAKE_PREFIX_PATH` and
+`CMAKE_INSTALL_PREFIX`) and then you can just press *Configure* and everything
+is ready to be built.
 
 After the initial import you might want to reconfigure some CMake variables,
 see @ref building-features "below" for more information.
 
-Installation to given prefix can be done from within QtCreator by adding new
+Installation to given prefix can be done from within QtCreator by adding a new
 `make install` build rule.
 
 @subsection building-features Enabling or disabling features
 
-The libraries are build as shared by default. If you are developing for
+The libraries are build as shared by default. If you are developing for a
 platform which doesn't support shared libraries or if you just want to link
 them statically, enable `BUILD_STATIC` to build the libraries as static.
-Building of static plugins is controlled with separate `BUILD_PLUGINS_STATIC`
+Building of static plugins is controlled with a separate `BUILD_PLUGINS_STATIC`
 variable. If you plan to use the static libraries and plugins with shared
 libraries later, enable also position-independent code with `BUILD_STATIC_PIC`.
 If you want to build with another compiler (e.g. Clang), pass
 `-DCMAKE_CXX_COMPILER=clang++` to CMake.
 
 Libraries and static plugins built in `Debug` configuration (e.g. with
-`CMAKE_BUILD_TYPE` set to `Debug`) have `-d` suffix to make it possible to have
-both debug and release libraries installed alongside each other. *Dynamic*
+`CMAKE_BUILD_TYPE` set to `Debug`) have a `-d` suffix to make it possible to
+have both debug and release libraries installed alongside each other. *Dynamic*
 plugins in `Debug` configuration are installed to `magnum-d` subdirectory
-instead of `magnum`. Headers and other files are the same for both. The library
-and plugin distinction is handled semi-automatically when using Magnum in
-depending projects, see @ref cmake for more information.
+instead of `magnum`. Headers and other files are the same for both debug and
+release configurations. The library and plugin distinction is handled
+semi-automatically when using Magnum in depending projects, see @ref cmake for
+more information.
 
 The library is constantly evolving and thus some APIs are deprecated and then
 later removed in favor of better ones. To preserve backwards compatibility,
-Magnum is by default built with all deprecated APIs. However, to make your
-code more robust and future-proof, it's recommended to build the library with
-`BUILD_DEPRECATED` disabled.
+Magnum is by default built with all deprecated APIs included. However, to make
+your code more robust and future-proof, it's recommended to build the library
+with `BUILD_DEPRECATED` disabled.
 
-By default the engine is built for desktop OpenGL. Using `TARGET_*` CMake
-parameters you can target other platforms. Note that some features are
+By default the engine is built for desktop OpenGL. Using the `TARGET_*` CMake
+options you can target other platforms. Note that some features are
 available for desktop OpenGL only, see @ref requires-gl.
 
 -   `TARGET_GLES` --- Target OpenGL ES.
--   `TARGET_GLES2` --- Target OpenGL ES 2.0. Currently enabled by default when
-    `TARGET_GLES` is set.
+-   `TARGET_GLES2` --- Target OpenGL ES 2.0 instead of 3.0 and later. Currently
+    enabled by default when `TARGET_GLES` is set.
 -   `TARGET_DESKTOP_GLES` --- Target OpenGL ES on desktop, i.e. use OpenGL ES
-    emulation in desktop OpenGL library. Available on Linux and Windows, though
+    emulation in desktop OpenGL drivers. Available on Linux and Windows, though
     might not be supported by all drivers.
 -   `TARGET_HEADLESS` --- Build command-line utilities for use on a headless
     machine. Basically it means that EGL with no display attachment is being
     used everywhere instead of platform-specific toolkits like CGL, GLX or WGL.
-    Supported mainly on OpenGL ES drivers, for desktop OpenGL the only driver
-    that supports this configuration is NVidia >= 355.
+    Supported mainly on OpenGL ES drivers.
 
-By default the engine is built in a way that allows having multiple
-thread-local Magnum contents. This might cause some performance penalties --- if
-you are sure that you will never need such feature, you can disable it via the
-`BUILD_MULTITHREADED` option.
+By default the engine is built in a way that allows having multiple independent
+thread-local Magnum contents. This might cause some performance penalties ---
+if you are sure that you will never need such feature, you can disable it via
+the `BUILD_MULTITHREADED` option.
 
 The features used can be conveniently detected in depending projects both in
 CMake and C++ sources, see @ref cmake and @ref Magnum/Magnum.h for more
 information. See also @ref corrade-cmake and @ref Corrade/Corrade.h for
-additional information.
+related info for the Corrade library.
 
-By default the engine is built with nearly everything except @ref Audio
-library, plugins and application libraries (see below). Using `WITH_*` CMake
-parameters you can specify which parts will be built and which not:
+By default the engine is built with nearly everything except the @ref Audio
+library, plugins, command-line utilities and application libraries (see below).
+Using the following `WITH_*` CMake options you can specify which parts will
+be built and which not:
 
--   `WITH_AUDIO` --- @ref Audio library. Depends on **OpenAL** library, not
-    built by default.
--   `WITH_DEBUGTOOLS` --- @ref DebugTools library
--   `WITH_MESHTOOLS` --- @ref MeshTools library
--   `WITH_PRIMITIVES` --- @ref Primitives library
--   `WITH_SCENEGRAPH` --- @ref SceneGraph library. Enabled automatically if
-    `WITH_SHAPES` is enabled.
--   `WITH_SHADERS` --- @ref Shaders library
--   `WITH_SHAPES` --- @ref Shapes library. Enables also building of SceneGraph
-    library. Enabled automatically if `WITH_DEBUGTOOLS` is enabled.
--   `WITH_TEXT` --- @ref Text library. Enables also building of TextureTools
-    library.
--   `WITH_TEXTURETOOLS` --- @ref TextureTools library. Enabled automatically if
-    `WITH_TEXT` or `WITH_DISTANCEFIELDCONVERTER` is enabled.
+-   `WITH_AUDIO` --- Build the @ref Audio library. Depends on
+    [OpenAL](https://www.openal.org/), not built by default.
+-   `WITH_DEBUGTOOLS` --- Build the @ref DebugTools library.
+-   `WITH_MESHTOOLS` --- Build the @ref MeshTools library.
+-   `WITH_PRIMITIVES` --- Build the @ref Primitives library.
+-   `WITH_SCENEGRAPH` --- Build the @ref SceneGraph library. Enabled
+    automatically if `WITH_SHAPES` is enabled.
+-   `WITH_SHADERS` --- Build the @ref Shaders library.
+-   `WITH_SHAPES` --- Build the @ref Shapes library. Enables also building of
+    the SceneGraph library. Enabled automatically if `WITH_DEBUGTOOLS` is
+    enabled.
+-   `WITH_TEXT` --- Build the @ref Text library. Enables also building of
+    the TextureTools library.
+-   `WITH_TEXTURETOOLS` --- Build the @ref TextureTools library. Enabled
+    automatically if `WITH_TEXT` or `WITH_DISTANCEFIELDCONVERTER` is enabled.
 
 There are more involved component dependencies that are not described here (for
 example the @ref DebugTools has some functionality that gets built only when
@@ -208,103 +344,138 @@ other things), but the CMake buildsystem takes care of these and only the
 relevant toggleable options are shown in CMake GUI or `ccmake`.
 
 None of the @ref Platform "application libraries" is built by default (and you
-need at least one). Choose the one which suits your requirements and your
-platform best:
+need at least one, unless you are handling platform integration yourself ---
+see @ref platform-custom for more information). As they are rather tiny, they
+are always built as static. Choose the one that suits your requirements and
+your platform best:
 
--   `WITH_ANDROIDAPPLICATION` --- @ref Platform::AndroidApplication "AndroidApplication"
--   `WITH_GLFWAPPLICATION` --- @ref Platform::GlfwApplication "GlfwApplication"
--   `WITH_GLUTAPPLICATION` --- @ref Platform::GlutApplication "GlutApplication"
--   `WITH_GLXAPPLICATION` --- @ref Platform::GlxApplication "GlxApplication"
--   `WITH_SDL2APPLICATION` --- @ref Platform::Sdl2Application "Sdl2Application"
--   `WITH_XEGLAPPLICATION` --- @ref Platform::XEglApplication "XEglApplication"
--   `WITH_WINDOWLESSCGLAPPLICATION` --- @ref Platform::WindowlessCglApplication "WindowlessCglApplication"
--   `WITH_WINDOWLESSEGLAPPLICATION` --- @ref Platform::WindowlessEglApplication "WindowlessEglApplication"
--   `WITH_WINDOWLESSGLXAPPLICATION` --- @ref Platform::WindowlessGlxApplication "WindowlessGlxApplication"
--   `WITH_WINDOWLESSIOSAPPLICATION` --- @ref Platform::WindowlessIosApplication "WindowlessIosApplication"
--   `WITH_WINDOWLESSWGLAPPLICATION` --- @ref Platform::WindowlessWglApplication "WindowlessWglApplication"
--   `WITH_WINDOWLESSWINDOWSEGLAPPLICATION` --- @ref Platform::WindowlessWindowsEglApplication "WindowlessWindowsEglApplication"
+-   `WITH_ANDROIDAPPLICATION` --- Build the
+    @ref Platform::AndroidApplication "AndroidApplication" library. Available
+    only on @ref CORRADE_TARGET_ANDROID "Android".
+-   `WITH_GLFWAPPLICATION` --- Build the
+    @ref Platform::GlfwApplication "GlfwApplication" library. Depends on
+    [GLFW](http://glfw.org).
+-   `WITH_GLUTAPPLICATION` --- Build the
+    @ref Platform::GlutApplication "GlutApplication" library. Depends on
+    [GLUT](http://freeglut.sourceforge.net/).
+-   `WITH_GLXAPPLICATION` --- Build the
+    @ref Platform::GlxApplication "GlxApplication" library. Depends on **X11**.
+-   `WITH_SDL2APPLICATION` --- Build the
+    @ref Platform::Sdl2Application "Sdl2Application" library. Depends on
+    [SDL2](http://www.libsdl.org).
+-   `WITH_XEGLAPPLICATION` --- Build the
+    @ref Platform::XEglApplication "XEglApplication" library.
+-   `WITH_WINDOWLESSCGLAPPLICATION` --- Build the
+    @ref Platform::WindowlessCglApplication "WindowlessCglApplication" library.
+-   `WITH_WINDOWLESSEGLAPPLICATION` --- Build the
+    @ref Platform::WindowlessEglApplication "WindowlessEglApplication" library.
+-   `WITH_WINDOWLESSGLXAPPLICATION` --- Build the
+    @ref Platform::WindowlessGlxApplication "WindowlessGlxApplication" library.
+-   `WITH_WINDOWLESSIOSAPPLICATION` --- Build the
+    @ref Platform::WindowlessIosApplication "WindowlessIosApplication" library.
+-   `WITH_WINDOWLESSWGLAPPLICATION` --- Build the
+    @ref Platform::WindowlessWglApplication "WindowlessWglApplication" library.
+-   `WITH_WINDOWLESSWINDOWSEGLAPPLICATION` --- Build the
+    @ref Platform::WindowlessWindowsEglApplication "WindowlessWindowsEglApplication"
+    library.
 
-None of the context libraries is built by default. You need them only if you
-choose to not use any application library (see @ref platform-custom for more
-information):
+None of the context libraries is built by default. Similarly to the application
+libraries, they are always built as static. You need them only if you chose to
+not use any of the application libraries above (see @ref platform-custom for
+more information):
 
--   `WITH_CGLCONTEXT` --- CGL context
--   `WITH_EGLCONTEXT` --- EGL context
--   `WITH_GLXCONTEXT` --- GLX context
--   `WITH_WGLCONTEXT` --- WGL context
+-   `WITH_CGLCONTEXT` --- Build the CGL context handling library.
+-   `WITH_EGLCONTEXT` --- Build the EGL context handling library.
+-   `WITH_GLXCONTEXT` --- Build the GLX context handling library.
+-   `WITH_WGLCONTEXT` --- Build the WGL context handling library.
 
 There are also extensions to @ref Corrade::TestSuite::Tester for testing GPU
 code:
 
--   `WITH_OPENGLTESTER` --- @ref OpenGLTester class. Enables building of one of
-    `Platform::Windowless*Application` libraries based on platform.
+-   `WITH_OPENGLTESTER` --- The @ref OpenGLTester class. Enables building of
+    one of the windowless application libraries based on the target platform.
 
 Magnum also contains a set of dependency-less plugins for importing essential
-file formats. Additional plugins are provided in separate plugin repository,
+file formats. Additional plugins are provided in a separate plugin repository,
 see @ref building-plugins for more information. None of the plugins is built by
 default.
 
--   `WITH_MAGNUMFONT` --- @ref Text::MagnumFont "MagnumFont" plugin. Available
-    only if `WITH_TEXT` is enabled. Enables also building of
+-   `WITH_MAGNUMFONT` --- Build the @ref Text::MagnumFont "MagnumFont" plugin.
+    Available only if `WITH_TEXT` is enabled. Enables also building of the
     @ref Trade::TgaImporter "TgaImporter" plugin.
--   `WITH_MAGNUMFONTCONVERTER` --- @ref Text::MagnumFontConverter "MagnumFontConverter"
-    plugin. Available only if `WITH_TEXT` is enabled. Enables also building of
+-   `WITH_MAGNUMFONTCONVERTER` --- Build the
+    @ref Text::MagnumFontConverter "MagnumFontConverter" plugin. Available only
+    if `WITH_TEXT` is enabled. Enables also building of their
     @ref Trade::TgaImageConverter "TgaImageConverter" plugin.
--   `WITH_OBJIMPORTER` --- @ref Trade::ObjImporter "ObjImporter" plugin.
--   `WITH_TGAIMPORTER` --- @ref Trade::TgaImporter "TgaImporter" plugin.
--   `WITH_TGAIMAGECONVERTER` --- @ref Trade::TgaImageConverter "TgaImageConverter"
+-   `WITH_OBJIMPORTER` --- Build the @ref Trade::ObjImporter "ObjImporter"
     plugin.
--   `WITH_WAVAUDIOIMPORTER` --- @ref Audio::WavImporter "WavAudioImporter"
+-   `WITH_TGAIMPORTER` --- Build the @ref Trade::TgaImporter "TgaImporter"
+    plugin.
+-   `WITH_TGAIMAGECONVERTER` --- Build the
+    @ref Trade::TgaImageConverter "TgaImageConverter" plugin.
+-   `WITH_WAVAUDIOIMPORTER` --- Build the @ref Audio::WavImporter "WavAudioImporter"
     plugin. Available only if `WITH_AUDIO` is enabled.
 
-There are also a few command-line utilities, also disabled by default:
+There are also a few command-line utilities, also all disabled by default:
 
--   `WITH_MAGNUMINFO` --- @ref magnum-info "magnum-info" executable, provides
-    information about the engine and OpenGL capabilities. Depends on some
-    windowless application library.
--   `WITH_AL_INFO` --- @ref magnum-al-info "magnum-al-info" executable,
-    provides information about OpenAL capabilities.
--   `WITH_DISTANCEFIELDCONVERTER` --- @ref magnum-distancefieldconverter "magnum-distancefieldconverter"
+-   `WITH_MAGNUMINFO` --- Build the @ref magnum-info "magnum-info" executable,
+    which provides information about the engine and OpenGL capabilities.
+    Enables building of one of the windowless application libraries based on
+    the target platform.
+-   `WITH_AL_INFO` --- Build the @ref magnum-al-info "magnum-al-info"
+    executable, which provides information about OpenAL capabilities.
+-   `WITH_DISTANCEFIELDCONVERTER` --- Build the
+    @ref magnum-distancefieldconverter "magnum-distancefieldconverter"
     executable for converting black&white images to distance field textures.
-    Enables also building of @ref TextureTools library. Available only on
-    desktop GL, depends on some windowless application library.
--   `WITH_FONTCONVERTER` --- @ref magnum-fontconverter "magnum-fontconverter"
-    executable for converting fonts to raster ones. Enables also building of
-    @ref Text library. Available only on desktop GL, depends on some windowless
-    application library.
--   `WITH_IMAGECONVERTER` --- @ref magnum-imageconverter "magnum-imageconverter"
+    Enables also building of the @ref TextureTools library. Available only on
+    desktop GL. Enables building of one of the windowless application libraries
+    based on the target platform.
+-   `WITH_FONTCONVERTER` --- Build the @ref magnum-fontconverter "magnum-fontconverter"
+    executable for converting fonts of different formats. Enables also building
+    of the @ref Text library. Available only on desktop GL. Enables building of
+    one of the windowless application libraries based on the target platform.
+-   `WITH_IMAGECONVERTER` --- Build the @ref magnum-imageconverter "magnum-imageconverter"
     executable for converting images of different formats.
 
 Some of these utilities operate with plugins and they search for them in the
-default plugin locations. You can override those locations using
+default plugin locations. You can override these locations using the
 `MAGNUM_PLUGINS_DIR` and `MAGNUM_PLUGINS_[DEBUG|RELEASE]_DIR` variables, much
 like when using Magnum from dependent projects --- see @ref cmake for more
 information. In particular, if you specify them as relative paths, the path
 will be taken relative to executable location, which is useful for making
 relocatable installations.
 
-Note that [each namespace](namespaces.html), all @ref Platform libraries and
-the @ref OpenGLTester class contain more detailed information about
-dependencies, availability on particular platform and also guide how to enable
-given library in build and use it with CMake.
+Note that each [namespace](namespaces.html) documentation, all @ref Platform
+library documentation and the @ref OpenGLTester class documentation contain
+more detailed information about dependencies, availability on particular
+platform and also guide how to enable given library for building and how to use
+it with CMake.
 
-@subsection building-tests Building and running unit tests
+This list covers only the core Magnum features, see also features offered by
+@ref building-corrade-features "Corrade",
+@ref building-plugins-features "Magnum Plugins",
+@ref building-integration-features "Magnum Integration",
+@ref building-extras-features "Magnum Extras" and
+@ref building-examples-features "Magnum Examples".
 
-If you want to build also unit tests (which are not built by default), enable
-`BUILD_TESTS` in CMake. Unit tests use Corrade's @ref Corrade::TestSuite
-"TestSuite" framework and can be run either manually (the binaries are located
-in `Test/` subdirectories of build directory) or using
+@subsection building-tests Building and running tests
+
+If you want to build also the tests (which are not built by default), enable
+`BUILD_TESTS` in CMake. The tests use Corrade's
+@ref Corrade::TestSuite "TestSuite" framework and can be run either manually
+(the binaries are located in `Test/` subdirectories in the build directory) or
+using
 
 @code{.sh}
 ctest --output-on-failure
 @endcode
 
-in build directory. On Windows the tests require the library to be installed
-with DLLs accessible through `PATH`. See
-@ref building-windows "above Windows documentation" for more information.
+in the build directory. On Windows the tests require the library to be
+installed with DLLs accessible through @cb{.bat} %PATH% @ce. See the above
+@ref building-windows "Windows documentation" for more information.
 
 The @ref Audio library has tests which require OpenAL to be able to create a
-context.  That is the case on most platforms, so they are enabled by default.
+context. That is the case on most platforms, so they are enabled by default.
 In case it's not possible to have OpenAL context (such as when running
 @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" tests under Node.js), you can
 disable building of them with `BUILD_AL_TESTS`. The tests are suffixed with
@@ -327,86 +498,36 @@ running CTest, e.g.:
 ctest -R GLTest # run only tests requiring OpenGL context
 @endcode
 
-@subsection building-doc Building documentation
+@section building-doc Building documentation
 
-The documentation (which you are currently reading) is written in **Doxygen**
-and additionally uses **LaTeX** for math formulas. Documentation using the
-stock HTML theme can be build by running
+The documentation (which you are currently reading) is written in
+[Doxygen](http://doxygen.org) and additionally uses **LaTeX** for math
+formulas. Documentation using the stock HTML theme can be build by running
 
 @code{.sh}
 doxygen
 @endcode
 
-in root directory (i.e. where `Doxyfile` is). Resulting HTML documentation
-will be in `build/doc/` directory. You might need to create `build/` directory
-if it doesn't exist yet. If Corrade with generated documentation is placed in
-`corrade` directory next to `magnum`, the documentation will be crosslinked
-with Corrade's one. If related projects (`magnum-plugins`, `magnum-extras`,
-`magnum-integration` and `magnum-examples`, see below) are places along these,
-their documentation will be also included in generated output.
+in the root directory (i.e. where `Doxyfile` is). The resulting HTML
+documentation will be in the `build/doc/` directory. You might need to create
+the `build/` directory if it doesn't exist yet. If Corrade with generated
+documentation is placed in the `corrade` directory next to `magnum`, the
+documentation will be crosslinked with Corrade's one. If related projects
+(`magnum-plugins`, `magnum-extras`, `magnum-integration` and `magnum-examples`,
+see below) are places along these, their documentation will be also included in
+generated output.
 
-The documentation can be also generated using the [m.css Doxygen theme](http://mcss.mosra.cz/doxygen/).
-Use `Doxyfile-mcss` for local build, the `Doxyfile-public` is meant for the
-publicly available documentation at http://doc.magnum.graphics/magnum/.
-
-@section building-related Related projects
-
-The engine itself is kept as small as possible with only little dependencies.
-Additional functionality, often depending on external libraries, is provided in
-separate repositories. Various importer plugins for image, audio and 3D model
-formats are maintained in @ref building-plugins "Plugins repository",
-integration with various external math and physics libraries is provided by
-@ref building-integration "Integration libraries" and other extra features are
-in the @ref building-extras "Extra libraries". Various examples are provided
-by the @ref building-examples "Examples repository".
-
-@section building-packages Prepared packages
-
-@subsection building-packages-arch ArchLinux packages
-
-In `package/archlinux` directory is currently one package for Git development
-build. The package is also in AUR under the same name.
-
-There are also a few development PKGBUILDs in `package/archlinux`, which allow
-you to build and install the package directly from source tree without
-downloading anything. The native PKGBUILDs also contain @cb{.sh} check() @ce
-function which will run all unit tests before packaging.
-
-@subsection building-packages-gentoo Gentoo ebuilds
-
-Gentoo Git ebuild is available in `package/gentoo` directory.
-
-@subsection building-packages-deb DEB packages
-
-There is also `package/debian/` directory with all files needed for building
-Debian packages. You need to have `corrade-dev` DEB package installed and in
-addition also `dpkg-dev` and `debhelper` packages. Building is easy, just
-change directory to package root, link or copy `package/debian` directory there
-and run `dpkg-buildpackage`:
-
-@code{.sh}
-ln -s package/debian .
-dpkg-buildpackage
-@endcode
-
-This will compile binary and development packages, which will then appear in
-parent directory. If you need to modify CMake flags (enabling/disabling some
-features, for example), modify the last entry in `debian/rules`.
-
-@subsection building-packages-brew Homebrew formulas
-
-macOS Homebrew formulas are in `package/homebrew` directory. Either use the
-`*.rb` files directly or use the tap at https://github.com/mosra/homebrew-magnum :
-
-@code{.sh}
-brew install --HEAD mosra/magnum/magnum
-@endcode
+The documentation can be also generated using the
+[m.css Doxygen theme](http://mcss.mosra.cz/doxygen/). Use `Doxyfile-mcss` for a
+local build, the `Doxyfile-public` is meant for the publicly available
+documentation at http://doc.magnum.graphics/magnum/. The resulting
+documentation will be either in `build/doc-mcss/` or `build/doc-public/`.
 
 @section building-windows-angle Building for ANGLE on Windows
 
-Magnum is able to run on ANGLE OpenGL-to-D3D translator. Download the code from
-https://github.com/MSOpenTech/angle and use provided Visual Studio solution to
-build it. Put the resulting `libGLESv2`/`libEGL` libraries and
+Magnum is able to run on the ANGLE OpenGL-to-D3D translator. Download the code
+from https://github.com/MSOpenTech/angle and use the provided Visual Studio
+solution to build it. Put the resulting `libGLESv2`/`libEGL` libraries and
 `GLES2`/`GLES3`/`EGL` includes to a location where CMake can find them or set
 `CMAKE_PREFIX_PATH` accordingly. ANGLE supports only OpenGL ES, thus you need
 to enable `TARGET_GLES`. The engine is built for OpenGL ES 2.0 by default,
@@ -422,42 +543,44 @@ cmake .. ^
 cmake --build .
 @endcode
 
-@section building-crosscompiling Crosscompiling
+@section building-cross Cross-compiling
 
-For crosscompiling you need to have *both* target and native version of
+For cross-compiling you need to have *both* target and native version of
 Corrade installed, because Corrade needs to run `corrade-rc` utility on the
 host system as part of the build process. If native version of `corrade-rc` is
-not found on the system, crosscompilation will fail.
+not found on the system, cross-compilation will fail.
 
 You also need to have the toolchains submodule updated. Either run the
-following commands, or, if you build from source archive, download snapshot of
-toolchains repository from https://github.com/mosra/toolchains and put the
-contents in `toolchains/` subdirectory.
+following command, or, if you build from source archive, download a snapshot of
+the toolchains repository from https://github.com/mosra/toolchains and put the
+contents in the `toolchains/` subdirectory.
 
 @code{.sh}
 git submodule update --init
 @endcode
 
 Note that CMake for some reason treats `CMAKE_PREFIX_PATH` and
-`CMAKE_INSTALL_PREFIX` differently while crosscompiling and you may need to add
-dependency paths to both `CMAKE_PREFIX_PATH` and `CMAKE_FIND_ROOT_PATH` to make
-it able to find the dependencies.
+`CMAKE_INSTALL_PREFIX` differently while cross-compiling and you may need to
+add dependency paths to both `CMAKE_PREFIX_PATH` and `CMAKE_FIND_ROOT_PATH` to
+make it able to find the dependencies.
 
-@subsection building-cross-winrt Crosscompiling for Windows RT
+@subsection building-cross-winrt Cross-compiling for Windows RT
 
-As said above, you need native build of `corrade-rc` executable. The below
+As said above, you need a native build of the `corrade-rc` executable and
+@ref building-corrade-cross-winrt "Corrade built for Windows RT". The below
 script assumes that native Corrade build is installed in `C:/Sys` and the
 installation path for WinRT dependencies is in `C:/Sys-winrt`.
 
-You need at least Windows 8.1, Visual Studio 2013 and Windows 8.1 Store/Phone
+You need at least Windows 8.1, Visual Studio 2015 and Windows 8.1 Store/Phone
 SDK installed. Windows RT applications support OpenGL only through ANGLE, which
 is currently limited to OpenGL ES. Download and build ANGLE
-@ref building-windows-angle "according to instructions above", but use project
-files from the `winrt/` directory instead. Version 2.0.4 of SDL has support for
-WinRT applications, download the source from https://www.libsdl.org/download-2.0.php
-and use project files from the `VisualC-WinRT` directory. Because WinRT
-applications run in a sandbox, it's recommended to build the library as static
-so you don't have to bundle all the DLLs. Example:
+@ref building-windows-angle "according to the instructions above", but use
+project files from the `winrt/` directory instead. Starting with version 2.0.4,
+SDL has support for WinRT applications --- download the source from
+https://www.libsdl.org/download-2.0.php and use project files from the
+`VisualC-WinRT` directory. Because WinRT applications run in a sandbox, it's
+recommended to build the library as static so you don't have to bundle all the
+DLLs. Example:
 
 @code{.bat}
 mkdir build-winrt && cd build-winrt
@@ -473,29 +596,29 @@ cmake --build .
 @endcode
 
 Change `WindowsStore` to `WindowsPhone` if you want to build for Windows Phone
-instead. When done, you can install the package using `cmake --build . --target install`
-to make it available for depending projects.
+instead. When done, you can install the package using
+@cb{.bat} cmake --build . --target install @ce to make it available to
+depending projects.
 
 See @ref Platform::Sdl2Application documentation for more information about
 building your projects for WinRT.
 
-@subsection building-cross-win Crosscompiling for Windows using MinGW-w64
+@subsection building-cross-win Cross-compiling for Windows using MinGW-w64
 
-@note This guide is tailored mainly for crosscompiling from ArchLinux. For
-    this system there is also prepared `mingw-w64-magnum` development package
+@note This guide is tailored mainly for cross-compiling from ArchLinux. For
+    this system there is also a prepared `mingw-w64-magnum` development package
     in `package/archlinux`, named `PKGBUILD-mingw-w64`. See
     @ref building-packages-arch "above" for more information.
 
-You will need MinGW-w64 versions of the compiler and all dependent libraries
-(Corrade), i.e. these ArchLinux packages:
+You will need a MinGW-w64 version of the compiler, i.e. the `mingw-w64-gcc`
+ArchLinux package, and also
+@ref building-corrade-cross-win "Corrade built for MinGW".
 
--   `mingw-w64-gcc`
--   `mingw-w64-corrade`
-
-Then create build directories for 32b/64b build and run cmake and build command
-in them. You may need to modify the `basic-mingw-w64-32.cmake`/`basic-mingw-w64-64.cmake`
-files and `CMAKE_INSTALL_PREFIX` to suit your distribution filesystem
-hierarchy and specify path where Corrade is installed in `CMAKE_PREFIX_PATH`.
+Create build directories for 32b/64b build and run `cmake` and the build
+command in them. You may need to modify the `basic-mingw-w64-32.cmake` /
+`basic-mingw-w64-64.cmake` files and `CMAKE_INSTALL_PREFIX` to suit your
+distribution filesystem hierarchy and also specify path where Corrade is
+installed in `CMAKE_PREFIX_PATH`.
 
 @code{.sh}
 mkdir build-mingw-w64-32 && cd build-mingw-w64-32
@@ -513,17 +636,19 @@ cmake .. \
 cmake --build .
 @endcode
 
-Then you can install the package using `cmake --build . --target install` to
-make it available for depending projects.
+Then you can install the package using @cb{.sh} cmake --build . --target install @ce
+to make it available to depending projects.
 
-@subsection building-cross-emscripten Crosscompiling for Emscripten
+@subsection building-cross-emscripten Cross-compiling for Emscripten
 
-You will need [Emscripten](http://kripken.github.io/emscripten-site/docs/getting_started/Tutorial.html)
-installed and configured. The toolchains require CMake 3.7 or newer to properly
-set compiler and linker flags.
+You will need [Emscripten](http://kripken.github.io/emscripten-site/) installed
+and configured and
+@ref building-corrade-cross-emscripten "Corrade built for Emscripten". The
+toolchains require CMake 3.7 or newer to properly set compiler and linker
+flags.
 
 There are two toolchain files. The `generic/Emscripten.cmake` is for the
-classical (asm.js) build, the `generic/Emscripten-wasm.cmake` is for
+classical (asm.js) build, the `generic/Emscripten-wasm.cmake` is for a
 WebAssembly build. Don't forget to adapt `EMSCRIPTEN_PREFIX` variable in
 `generic/Emscripten*.cmake` to path where Emscripten is installed; you can also
 pass it explicitly on command-line using `-DEMSCRIPTEN_PREFIX`. Default is
@@ -531,8 +656,9 @@ pass it explicitly on command-line using `-DEMSCRIPTEN_PREFIX`. Default is
 porting and they are generally slower, thus `BUILD_STATIC` is implicitly
 enabled.
 
-Then create build directory and run cmake and build command in it. Be sure to
-set `CMAKE_INSTALL_PREFIX` to path contained in `EMSCRIPTEN_TOOLCHAIN_PATH`.
+Then create build directory and run `cmake` and the build command in it. Be
+sure to set `CMAKE_INSTALL_PREFIX` to a path contained in
+`EMSCRIPTEN_TOOLCHAIN_PATH`.
 
 WebGL 1.0 (GLES 2.0 equivalent) is enabled by default, switch to 2.0 (GLES 3.0
 equivalent) by disabling `TARGET_GLES2`.
@@ -548,11 +674,11 @@ cmake .. \
 cmake --build .
 @endcode
 
-Then you can install the library using `cmake --build . --target install` to
-make it available for depending projects.
+Then you can install the library using @cb{.sh} cmake --build . --target install @ce
+to make it available to depending projects.
 
 If you have Node.js installed, you can also build and run unit tests using
-`ctest`. See `BUILD_TESTS` above.
+`ctest`. See the `BUILD_TESTS` option @ref building-tests "above".
 
 For ArchLinux there are also prepared package files in `package/archlinux`,
 named `PKGBUILD-emscripten`, `PKGBUILD-emscripten-webgl2`,
@@ -565,13 +691,14 @@ unoptimized build (faster to compile) and the third for WebAssembly build.
 See @ref Platform::Sdl2Application documentation for more information about
 building your projects for Emscripten.
 
-@subsection building-cross-ios Crosscompiling for iOS
+@subsection building-cross-ios Cross-compiling for iOS
 
-You will need macOS and Xcode installed.
+You will need macOS with Xcode installed.
 
-Set `CMAKE_OSX_ROOT` to SDK you want to target and enable all desired
-architectures in `CMAKE_OSX_ARCHITECTURES`. Be sure to set `CMAKE_INSTALL_PREFIX`
-to prefix where you store other iOS dependencies such as Corrade or SDL2.
+Set `CMAKE_OSX_ROOT` to the SDK you want to target and enable all desired
+architectures in `CMAKE_OSX_ARCHITECTURES`. Be sure to set
+`CMAKE_INSTALL_PREFIX` to prefix where you store other iOS dependencies such as
+@ref building-corrade-cross-ios "Corrade built for iOS" or a SDL2 iOS build.
 
 As every application is in its own sandbox, it doesn't make sense to build
 shared libraries (although it is supported). Enable `BUILD_STATIC` to build
@@ -590,32 +717,33 @@ cmake .. \
     -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk \
     -DCMAKE_OSX_ARCHITECTURES="arm64;armv7;armv7s" \
     -DCMAKE_INSTALL_PREFIX=~/ios-libs \
-    -DBUILD_STATIC=ON -DBUILD_PLUGINS_STATIC=ON \
+    -DBUILD_STATIC=ON \
+    -DBUILD_PLUGINS_STATIC=ON \
     -DTARGET_GLES2=OFF \
     -DWITH_SDL2APPLICATION=ON \
     -G Xcode
 cmake --build .
 @endcode
 
-Then you can install the library using `cmake --build . --target install` to
-make it available for depending projects.
+Then you can install the library using @cb{.sh} cmake --build . --target install @ce
+to make it available to depending projects.
 
 See @ref Platform::Sdl2Application documentation for more information about
 building your projects for iOS.
 
-@subsection building-cross-android Crosscompiling for Android ARM and x86
+@subsection building-cross-android Cross-compiling for Android ARM and x86
 
 You will need [Android NDK](https://developer.android.com/tools/sdk/ndk/index.html)
-installed and configured.
+installed and configured and @ref building-corrade-cross-android "Corrade built for Android".
 
-Don't forget to adapt `ANDROID_NDK_ROOT` in `generic/Android-*.cmake` to path
+Don't forget to adapt `ANDROID_NDK_ROOT` in `generic/Android-*.cmake` to a path
 where NDK is installed. Default is `/opt/android-ndk`. Adapt also
 `ANDROID_SYSROOT` to your preferred API level. You might also need to update
 `ANDROID_TOOLCHAIN_PREFIX` and `ANDROID_TOOLCHAIN_ROOT` to fit your system.
 
-Then create build directory and run cmake and build command in it. Be sure to
-set `CMAKE_INSTALL_PREFIX` to `/usr` subdirectory of `ANDROID_SYSROOT` and
-specify path where Corrade is installed in `CMAKE_PREFIX_PATH`.
+Then create a build directory and run `cmake` and the build command in it. Be
+sure to set `CMAKE_INSTALL_PREFIX` to `/usr` subdirectory of `ANDROID_SYSROOT`
+and specify path where Corrade is installed in `CMAKE_PREFIX_PATH`.
 
 Note that `BUILD_STATIC` is implicitly enabled, because manually loading all
 depending shared libraries using JNI would be too inconvenient. The engine is
@@ -645,12 +773,25 @@ cmake .. \
 cmake --build .
 @endcode
 
-Then you can install the library using `cmake --build . --target install` to
-make it available for depending projects.
+Then you can install the library using @cb{.sh} cmake --build . --target install @ce
+to make it available to depending projects.
 
 For ArchLinux there are also prepared package files in `package/archlinux`,
 named `PKGBUILD-android-arm` and `PKGBUILD-android-x86`, see
 @ref building-packages-arch "above" for more information.
+
+@attention
+    On Windows it's possible that you get the following CMake error when
+    configuring the project:
+@attention
+    <blockquote>
+    CMAKE_SYSTEM_NAME is 'Android' but 'NVIDIA Nsight Tegra Visual Studio
+    Edition' is not installed.
+    </blockquote>
+@attention
+    This is because MSVC as the default generator on Windows is not able to
+    build arbitrary Android projects. To fix it, use a different generator (for
+    example Ninja, by passing `-G Ninja` to CMake).
 
 See @ref Platform::AndroidApplication documentation for more information about
 building your projects for Android.
@@ -659,11 +800,11 @@ building your projects for Android.
 
 @subsection building-ci-travis Travis
 
-In `package/ci/` there is a `travis.yml` file with Linux GCC 4.7, macOS Clang,
-Linux desktop GLES2/GLES3, iOS GLES2/GLES3, Emscripten WebGL1/WebGL2,
-Android GLES2/GLES3, AddressSanitizer and ThreadSanitizer configuration. Online
-at https://travis-ci.org/mosra/magnum. The Linux build has code coverage
-reports available online at https://coveralls.io/github/mosra/magnum.
+In `package/ci/` there is a `travis.yml` file with Linux GCC 4.7, macOS, Linux
+desktop GLES2/GLES3, iOS GLES2/GLES3, Emscripten WebGL1/WebGL2, Android
+GLES2/GLES3, AddressSanitizer and ThreadSanitizer configuration. Online at
+https://travis-ci.org/mosra/magnum. The Linux build has code coverage reports
+available online at https://coveralls.io/github/mosra/magnum.
 
 @subsection building-ci-appveyor AppVeyor
 

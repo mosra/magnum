@@ -208,9 +208,22 @@ See @ref cmake for more information.
 
 @section Platform-WindowlessWglApplication-usage General usage
 
-In CMake you need to request `WindowlessWglApplication` component of `Magnum`
-package and link to `Magnum::WindowlessWglApplication` target. If no other
-windowless application is requested, you can also use generic
+In order to use this library from CMake, you need to request the
+`WindowlessWglApplication` component of the `Magnum` package and link to the `Magnum::WindowlessWglApplication` target:
+
+@code{.cmake}
+find_package(Magnum REQUIRED)
+if(CORRADE_TARGET_WINDOWS)
+    find_package(Magnum REQUIRED WindowlessWglApplication)
+endif()
+
+# ...
+if(CORRADE_TARGET_WINDOWS)
+    target_link_libraries(your-app Magnum::WindowlessWglApplication)
+endif()
+@endcode
+
+If no other application is requested, you can also use the generic
 `Magnum::WindowlessApplication` alias to simplify porting. Again, see
 @ref building and @ref cmake for more information.
 

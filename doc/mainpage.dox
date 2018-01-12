@@ -32,69 +32,14 @@ This is a documentation for the Magnum Project. To see high-level feature
 overview, project goals or read the developer blog, head over to the
 [project homepage](http://magnum.graphics/).
 
-@section mainpage-building Building Magnum
-
-You can either use packaging scripts, which are stored in the `package/`
-subdirectory [of the Git repository](https://github.com/mosra/magnum/tree/master/package),
-or compile and install everything manually. A short guide is below, for better
-introduction it's advised to read through the
-@ref getting-started "Getting Started Guide". Complete building documentation
-covering all platforms and feature sets is in the @ref building page.
-
-@subsection mainpage-building-dependencies Minimal dependencies
-
--   C++ compiler with good C++11 support. Compilers which are tested to have
-    everything needed are **GCC** >= 4.7, **Clang** >= 3.1 and **MSVC** >= 2015.
-    On Windows you can also use **MinGW-w64**.
--   **CMake** >= 2.8.12
--   **Corrade** - Plugin management and utility library. See how to get it at
-    http://doc.magnum.graphics/corrade/.
-
-@subsection mainpage-building-compilation Compilation, installation
-
-The library (for example with support for SDL2 applications) can be built and
-installed using these commands:
-
-@code{.sh}
-git clone git://github.com/mosra/magnum && cd magnum
-mkdir -p build && cd build
-cmake .. \
-    -DCMAKE_INSTALL_PREFIX=/usr \
-    -DWITH_SDL2APPLICATION=ON
-make -j
-make install # sudo may be required
-@endcode
-
-@subsection mainpage-building-tests Building and running unit tests
-
-If you want to build also unit tests (which are not built by default), pass
-`-DBUILD_TESTS=ON` to CMake. Unit tests use Corrade's @ref Corrade::TestSuite "TestSuite"
-framework and can be run using
-
-@code{.sh}
-ctest --output-on-failure
-@endcode
-
-in build directory. Everything should pass ;)
-
-@subsection mainpage-building-doc Building documentation
-
-The documentation, which you are currently reading, is written using
-[Doxygen](https://doxygen.org). It can be build by running
-
-@code{.sh}
-doxygen
-@endcode
-
-in the root directory (i.e. where `Doxyfile` is). You may need to create the
-`build/` directory if it doesn't exist yet. Resulting HTML documentation will
-be in the `build/doc/` directory.
-
 @section mainpage-getting-started Getting started
 
 The best way to get started is to read the thorough
 @ref getting-started "guide to download, build, install and start using Magnum"
-in your project. After that, there are various @ref example-index "tutorials and examples"
+in your project. There is also a complete @ref building documentation --- we
+provide ready-made packages for many platforms.
+
+After that, there are various @ref example-index "tutorials and examples"
 and a complete @ref features "feature guide" explaining all aspects of the
 library.
 

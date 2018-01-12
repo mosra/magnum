@@ -51,32 +51,33 @@ Provides interface for importing 2D/3D scene, mesh, material, texture and image
 data. See @ref plugins for more information and `*Importer` classes in
 @ref Trade namespace for available importer plugins.
 
-## Subclassing
+@section Trade-AbstractImporter-subclassing Subclassing
 
-Plugin implements function @ref doFeatures(), @ref doIsOpened(), one of or both
-@ref doOpenData() and @ref doOpenFile() functions, function @ref doClose() and
-one or more tuples of data access functions, based on which features are
-supported in given format.
+The plugin needs to implement the @ref doFeatures(), @ref doIsOpened()
+functions, one of or both @ref doOpenData() and @ref doOpenFile() functions,
+function @ref doClose() and one or more tuples of data access functions, based
+on which features are supported in given format.
 
-For multi-data formats file opening shouldn't take long, all parsing should
-be done in data parsing functions, because the user might want to import only
-some data. This is obviously not the case for single-data formats like images,
-as the file contains all data user wants to import.
+For multi-data formats the file opening shouldn't take long and all parsing
+should be done in the data parsing functions instead, because the user might
+want to import only some data. This is obviously not the case for single-data
+formats like images, as the file contains all the data the user wants to
+import.
 
 You don't need to do most of the redundant sanity checks, these things are
 checked by the implementation:
 
--   Functions @ref doOpenData() and @ref doOpenFile() are called after the
+-   The @ref doOpenData() and @ref doOpenFile() functions are called after the
     previous file was closed, function @ref doClose() is called only if there
     is any file opened.
--   Function @ref doOpenData() is called only if @ref Feature::OpenData is
+-   The @ref doOpenData() function is called only if @ref Feature::OpenData is
     supported.
--   All `do*()` implementations working on opened file are called only if there
-    is any file opened.
+-   All `do*()` implementations working on an opened file are called only if
+    there is any file opened.
 -   All `do*()` implementations taking data ID as parameter are called only if
     the ID is from valid range.
 
-Plugin interface string is `"cz.mosra.magnum.Trade.AbstractImporter/0.3"`.
+Plugin interface string is @cpp "cz.mosra.magnum.Trade.AbstractImporter/0.3" @ce.
 
 @attention @ref Corrade::Containers::Array instances returned from the plugin
     should *not* use anything else than the default deleter, otherwise this can

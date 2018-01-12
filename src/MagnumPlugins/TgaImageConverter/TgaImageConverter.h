@@ -57,15 +57,20 @@ namespace Magnum { namespace Trade {
 Creates Truevision TGA (`*.tga`) files from images with format
 @ref PixelFormat::RGB, @ref PixelFormat::RGBA or @ref PixelFormat::Red (or
 @ref PixelFormat::Luminance in OpenGL ES 2.0 and WebGL 1.0) and type
-@ref PixelType::UnsignedByte. Does *not* support non-default
-@ref PixelStorage::swapBytes() values.
+@ref PixelType::UnsignedByte.
 
-This plugin is built if `WITH_TGAIMAGECONVERTER` is enabled when building
-Magnum. To use dynamic plugin, you need to load `TgaImageConverter` plugin
-from `MAGNUM_PLUGINS_IMAGECONVERTER_DIR`. To use static plugin or use this as a
-dependency of another plugin, you need to request `TgaImageConverter`
-component of `Magnum` package in CMake and link to `Magnum::TgaImageConverter`
-target. See @ref building, @ref cmake and @ref plugins for more information.
+This plugin depends on the @ref Trade library and is built if
+`WITH_TGAIMAGECONVERTER` is enabled when building Magnum. To use as a dynamic
+plugin, you need to load the @cpp "TgaImageConverter" @ce plugin from
+`MAGNUM_PLUGINS_IMAGECONVERTER_DIR`. To use as a static plugin or as a
+dependency of another plugin with CMake, you need to request the
+`TgaImageConverter` component of the `Magnum` package and link to the
+`Magnum::TgaImageConverter` target. See @ref building, @ref cmake and
+@ref plugins for more information.
+
+@section Trade-TgaImageConverter-limitations Behavior and limitations
+
+Does *not* support non-default @ref PixelStorage::swapBytes() values.
 */
 class MAGNUM_TGAIMAGECONVERTER_EXPORT TgaImageConverter: public AbstractImageConverter {
     public:

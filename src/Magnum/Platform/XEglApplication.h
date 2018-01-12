@@ -51,12 +51,22 @@ more information.
 
 @section Platform-XEglApplication-usage General usage
 
-For CMake you need to copy `FindEGL.cmake` from `modules/` directory in Magnum
-source to `modules/` dir in your project (so it is able to find EGL), request
-`XEglApplication` component of `Magnum` package and link to
-`Magnum::XEglApplication` target.  If no other application is requested, you
-can also use generic `Magnum::Application` alias to simplify porting. See
-@ref building and @ref cmake for more information.
+In order to use this library from CMake, you need to copy `FindEGL.cmake` from
+the modules directory in Magnum source to the `modules/` dir in your project
+(so it is able to find the EGL library). Request the `XEglApplication`
+component of the `Magnum` package and link to the `Magnum::XEglApplication`
+target:
+
+@code{.cmake}
+find_package(Magnum REQUIRED XEglApplication)
+
+# ...
+target_link_libraries(your-app Magnum::XEglApplication)
+@endcode
+
+If no other application is requested, you can also use the generic
+`Magnum::Application` alias to simplify porting. Again, see @ref building and
+@ref cmake for more information.
 
 In C++ code you need to implement at least @ref drawEvent() to be able to draw
 on the screen. The subclass can be then used directly in @cpp main() @ce

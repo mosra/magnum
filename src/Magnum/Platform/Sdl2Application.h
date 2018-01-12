@@ -62,8 +62,8 @@ This application library is in theory available for all platforms for which
 SDL2 is ported (thus also @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten", see
 respective sections in @ref building-corrade-cross-emscripten "Corrade's" and
 @ref building-cross-emscripten "Magnum's" building documentation). It depends
-on **SDL2** library (Emscripten has it built in) and is built if
-`WITH_SDL2APPLICATION` is enabled in CMake.
+on the [SDL2](http://www.libsdl.org) library (Emscripten has it built in) and
+is built if `WITH_SDL2APPLICATION` is enabled in CMake.
 
 @section Platform-Sdl2Application-bootstrap Bootstrap application
 
@@ -183,13 +183,23 @@ final package along with a PowerShell script for easy local installation.
 
 @section Platform-Sdl2Application-usage General usage
 
-For CMake you need to copy `FindSDL2.cmake` from `modules/` directory in
-Magnum source to `modules/` dir in your project (so it is able to find SDL2).
-In case of Emscripten you need also `FindOpenGLES2.cmake`. Request
-`Sdl2Application` component of `Magnum` package and link to
-`Magnum::Sdl2Application` target. If no other application is requested, you can
-also use generic `Magnum::Application` alias to simplify porting. Again, see
-@ref building and @ref cmake for more information.
+In order to use this library from CMake, you need to copy `FindSDL2.cmake` from
+the `modules/` directory in Magnum source to the `modules/` dir in your project
+(so it is able to find the SDL2 library). In case of Emscripten you need also
+`FindOpenGLES2.cmake` / `FindOpenGLES3.cmake`. Request the `Sdl2Application`
+component of the `Magnum` package and link to the `Magnum::Sdl2Application`
+target:
+
+@code{.cmake}
+find_package(Magnum REQUIRED Sdl2Application)
+
+# ...
+target_link_libraries(your-app Magnum::Sdl2Application)
+@endcode
+
+If no other application is requested, you can also use the generic
+`Magnum::Application` alias to simplify porting. Again, see @ref building and
+@ref cmake for more information.
 
 In C++ code you need to implement at least @ref drawEvent() to be able to draw
 on the screen. The subclass can be then used directly in `main()` --- see

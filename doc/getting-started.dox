@@ -33,7 +33,7 @@ Setting up a new project can be pretty gruesome and nobody likes repeating the
 same process every time. Magnum provides "bootstrap" project structures for
 many use cases, helping you get up and running in no time.
 
-@section getting-started-bootstrap Download a bootstrap project
+@section getting-started-bootstrap Download the bootstrap project
 
 The [bootstrap repository](https://github.com/mosra/magnum-bootstrap) is
 located on GitHub. The `master` branch contains just a README file and the
@@ -47,8 +47,16 @@ better to init your new project from scratch with clean Git history.
 @section getting-started-download Download, build and install Corrade and Magnum
 
 Magnum libraries support both separate compilation/installation and CMake
-subprojects. We'll use the subproject approach now --- adding the dependencies
-means just cloning them into your project tree:
+subprojects. If you are lucky, you may already have Magnum packages ready for
+your platform and you can skip the rest of this section:
+
+-   @ref building-packages-arch
+-   @ref building-packages-deb
+-   @ref building-packages-gentoo
+-   @ref building-packages-brew
+
+If you don't, don't worry, let's use the subproject approach instead. Adding
+the dependencies means just cloning them into your project tree:
 
 @code{.sh}
 cd /path/to/the/extracted/bootstrap/project
@@ -71,14 +79,15 @@ add_subdirectory(magnum)
 add_subdirectory(src)
 @endcode
 
-@note In the long run it's better to install Corrade and Magnum separately
-    instead of cloning them into your project tree, as that can vastly improve
+@note
+    In the long run it's better to install Corrade and Magnum separately
+    instead of cloning them into your project tree, as that vastly improves
     your iteration times. Follow @ref building "the full installation guide" if
     you want to go that route; don't forget to enable `WITH_SDL2APPLICATION`
     when building Magnum so the bootstrap project can use it later. There are
     also ready-to-use packages for various OSes and distributions.
-
-@note If you have that, you don't need to clone the subprojects and modify the
+@note
+    If you have that, you don't need to clone the subprojects and modify the
     `CMakeLists.txt` file like above, you might only need to set
     `CMAKE_PREFIX_PATH` if you installed Corrade and Magnum to a non-standard
     location.
