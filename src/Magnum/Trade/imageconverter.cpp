@@ -43,7 +43,7 @@ namespace Magnum {
 
 @section magnum-imageconverter-usage Usage
 
-@code{.shell-session}
+@code{.sh}
 magnum-imageconverter [-h|--help] [--importer IMPORTER] [--converter CONVERTER]
     [--plugin-dir DIR] [--] input output
 @endcode
@@ -64,7 +64,7 @@ Arguments:
 
 Converting a JPEG file to a PNG:
 
-@code{.shell-session}
+@code{.sh}
 magnum-imageconverter image.jpg image.png
 @endcode
 

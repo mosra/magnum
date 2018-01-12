@@ -71,7 +71,7 @@ namespace Magnum {
 
 @section magnum-distancefieldconverter-usage Usage
 
-@code{.shell-session}
+@code{.sh}
 magnum-distancefieldconverter [--magnum-...] [-h|--help] [--importer IMPORTER]
     [--converter CONVERTER] [--plugin-dir DIR] --output-size "X Y" --radius N
     [--] input output
@@ -101,7 +101,7 @@ the algorithm and parameters.
 
 @section magnum-distancefield-example Example usage
 
-@code{.shell-session}
+@code{.sh}
 magnum-distancefieldconverter --output-size "256 256" --radius 24 logo-src.png logo.png
 @endcode
 
