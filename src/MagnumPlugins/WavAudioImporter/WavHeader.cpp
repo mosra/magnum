@@ -29,7 +29,7 @@
 
 #include "Magnum/Magnum.h"
 
-namespace Magnum { namespace Audio {
+namespace Magnum { namespace Audio { namespace Implementation {
 
 static_assert(sizeof(RiffChunk) == 8, "RiffChunk size is not 8 bytes");
 static_assert(sizeof(WavHeaderChunk) == 12, "WavHeaderChunk size is not 12 bytes");
@@ -53,4 +53,4 @@ Debug& operator<<(Debug& debug, const WavAudioFormat value) {
     return debug << "Audio::WavAudioFormat(" << Debug::nospace << reinterpret_cast<void*>(UnsignedShort(value)) << Debug::nospace << ")";
 }
 
-}}
+}}}

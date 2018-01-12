@@ -35,13 +35,16 @@ set(WavAudioImporter_SRCS
     WavImporter.cpp)
 
 set(WavAudioImporter_HEADERS
-    WavHeader.h
     WavImporter.h)
+
+set(WavAudioImporter_PRIVATE_HEADERS
+    WavHeader.h)
 
 # Objects shared between plugin and test library
 add_library(WavAudioImporterObjects OBJECT
     ${WavAudioImporter_SRCS}
-    ${WavAudioImporter_HEADERS})
+    ${WavAudioImporter_HEADERS}
+    ${WavAudioImporter_PRIVATE_HEADERS})
 target_include_directories(WavAudioImporterObjects PUBLIC
     $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>
     $<TARGET_PROPERTY:MagnumAudio,INTERFACE_INCLUDE_DIRECTORIES>)
