@@ -57,11 +57,13 @@ namespace Magnum { namespace Trade {
 Detects file type based on file extension, loads corresponding plugin and then
 tries to open the file with it.
 
-This plugin is built if `WITH_ANYSCENEIMPORTER` is enabled when building
-Magnum Plugins. To use dynamic plugin, you need to load `AnySceneImporter`
-plugin from `MAGNUM_PLUGINS_IMPORTER_DIR`. To use static plugin, you need to
-request `AnySceneImporter` component of `MagnumPlugins` package in CMake and
-link to `MagnumPlugins::AnySceneImporter` target. See @ref building-plugins,
+This plugin depends on the @ref Trade library and is built if
+`WITH_ANYSCENEIMPORTER` is enabled when building Magnum Plugins. To use as a
+dynamic plugin, you need to load the @cpp "AnySceneImporter" @ce plugin from
+`MAGNUM_PLUGINS_IMPORTER_DIR`. To use as a static plugin or as a dependency of
+another plugin with CMake, you need to request the `AnySceneImporter` component
+of the `MagnumPlugins` package in CMake and link to the
+`MagnumPlugins::AnySceneImporter` target. See @ref building-plugins,
 @ref cmake-plugins and @ref plugins for more information.
 
 Supported formats:
