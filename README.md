@@ -46,8 +46,9 @@ library, if you feel the need. Or use any of the various plugins.
 
 -------
 
-*Looking for more?* There's a [Showcase page](http://magnum.graphics/showcase/)
-right behind the corner with lots of WebGL demos.
+*Wondering if Magnum is a good fit for your project?* We prepared
+[a few case studies](http://magnum.graphics/is-magnum-what-i-am-looking-for/)
+to help you decide.
 
 SUPPORTED PLATFORMS
 ===================
