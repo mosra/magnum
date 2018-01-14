@@ -50,6 +50,7 @@ Magnum libraries support both separate compilation/installation and CMake
 subprojects. If you are lucky, you may already have Magnum packages ready for
 your platform and you can skip the rest of this section:
 
+-   @ref building-packages-vcpkg
 -   @ref building-packages-arch
 -   @ref building-packages-deb
 -   @ref building-packages-gentoo

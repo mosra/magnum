@@ -37,6 +37,7 @@ The easiest way to install Magnum is to use one of the ready-made packages for
 your platform of choice. See @ref building-manual if you want to have more
 control and @ref building-cross for cross-compiling to other platforms.
 
+-   @ref building-packages-vcpkg
 -   @ref building-packages-arch
 -   @ref building-packages-deb
 -   @ref building-packages-gentoo
@@ -50,6 +51,45 @@ plugins for image, audio and 3D model formats are maintained in the
 physics libraries is provided by @ref building-integration "Integration libraries"
 and other extra features are in the @ref building-extras "Extra libraries".
 Various examples are provided by the @ref building-examples "Example repository".
+
+@subsection building-packages-vcpkg Vcpkg packages on Windows
+
+Magnum is available as a [Vcpkg](https://github.com/Microsoft/vcpkg) package.
+After setting up Vcpkg like described in the README, you can install a stable
+pinned version of Magnum with all its dependencies like this:
+
+@code{.bat}
+vcpkg install magnum
+@endcode
+
+But often you may want to install the latest Git revision of all Magnum
+projects instead:
+
+@code{.bat}
+vcpkg install corrade --head
+vcpkg install magnum --head
+@endcode
+
+Packages installed using Vcpkg can be used straight away in Visual Studio ---
+all you need to do is to @cpp #include @ce the headers you want, the
+buildsystem will do all needed library linking and setup behind the scenes
+automatically. <em>(Cool, isn't it?)</em>
+
+In order to make Magnum projects installed using Vcpkg available to CMake-based
+projects, specify the Vcpkg toolchain file on the command line when invoking
+CMake in a fresh build directory, for example:
+
+@code{.bat}
+mkdir build && cd build
+cmake .. -DCMAKE_TOOLCHAIN_FILE=C:/src/vcpkg/scripts/buildsystems/vcpkg.cmake
+@endcode
+
+If you want to pass additional flags to CMake or
+@ref building-features "enable / disable additional features", add them to
+`OPTIONS` in @cmake vcpkg_configure_cmake() @ce inside the
+`ports/magnum/portfile.cmake` file in your local Vcpkg installation.
+
+There is also a Vcpkg package for @ref building-plugins-packages-vcpkg "Magnum Plugins".
 
 @subsection building-packages-arch ArchLinux packages
 
