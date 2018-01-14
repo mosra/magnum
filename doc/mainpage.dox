@@ -37,7 +37,7 @@ overview, project goals or read the developer blog, head over to the
 The best way to get started is to read the thorough
 @ref getting-started "guide to download, build, install and start using Magnum"
 in your project. There is also a complete @ref building documentation --- we
-provide ready-made packages for many platforms.
+provide packages for many platforms, including Windows, Linux and macOS.
 
 After that, there are various @ref example-index "tutorials and examples"
 and a complete @ref features "feature guide" explaining all aspects of the
