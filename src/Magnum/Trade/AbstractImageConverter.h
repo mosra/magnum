@@ -49,25 +49,26 @@ Provides functionality for converting images between various internal formats
 or compressing them. See @ref plugins for more information and `*ImageConverter`
 classes in @ref Trade namespace for available image converter plugins.
 
-## Subclassing
+@section Trade-AbstractImageConverter-subclassing Subclassing
 
-Plugin implements function @ref doFeatures() and one or more of
+The plugin needs to implement the@ref doFeatures() function and one or more of
 @ref doExportToImage(), @ref doExportToCompressedImage(), @ref doExportToData()
 or @ref doExportToFile() functions based on what features are supported.
 
 You don't need to do most of the redundant sanity checks, these things are
 checked by the implementation:
 
--   Function @ref doExportToImage() is called only if @ref Feature::ConvertImage
+-   The function @ref doExportToImage() is called only if
+    @ref Feature::ConvertImage
     is supported.
--   Function @ref doExportToCompressedImage() is called only if
+-   The function @ref doExportToCompressedImage() is called only if
     @ref Feature::ConvertCompressedImage is supported.
--   Function @ref doExportToData(const ImageView2D&) is called only if
+-   The function @ref doExportToData(const ImageView2D&) is called only if
     @ref Feature::ConvertData is supported.
--   Function @ref doExportToData(const CompressedImageView2D&) is called only
-    if @ref Feature::ConvertCompressedData is supported.
+-   The function @ref doExportToData(const CompressedImageView2D&) is called
+    only if @ref Feature::ConvertCompressedData is supported.
 
-Plugin interface string is `"cz.mosra.magnum.Trade.AbstractImageConverter/0.2.1"`.
+Plugin interface string is @cpp "cz.mosra.magnum.Trade.AbstractImageConverter/0.2.1" @ce.
 
 @attention @ref Corrade::Containers::Array instances returned from the plugin
     should *not* use anything else than the default deleter, otherwise this can

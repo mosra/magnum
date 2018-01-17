@@ -56,8 +56,8 @@ namespace Implementation {
 
 Supports keyboard and mouse handling. See @ref platform for brief introduction.
 
-@note Not meant to be used directly, see @ref GlxApplication and
-    @ref XEglApplication subclasses.
+@note Not meant to be used directly, see the @ref GlxApplication and
+    @ref XEglApplication subclasses instead.
 */
 class AbstractXApplication {
     public:

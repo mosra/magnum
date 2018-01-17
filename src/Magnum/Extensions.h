@@ -58,8 +58,17 @@ but these structs are better suited for compile-time decisions rather than
 @ref Extension instances. See @ref Context::isExtensionSupported() for example
 usage.
 
-This namespace is built by default. To use it, you need to link to
-`Magnum::Magnum` target. See @ref building and @ref cmake for more information.
+This library is built by default. To use this library with CMake, you need to
+find the `Magnum` package and link to the `Magnum::Magnum` target:
+
+@code{.cmake}
+find_package(Magnum REQUIRED)
+
+# ...
+target_link_libraries(your-app Magnum::Magnum)
+@endcode
+
+See @ref building and @ref cmake for more information.
 @see @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED()
 @todo Manual indices for extensions, this has gaps
 */

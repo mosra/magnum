@@ -244,10 +244,22 @@ http://localhost/emscripten/MyApplication.html).
 
 @section Platform-WindowlessEglApplication-usage General usage
 
-In CMake you need to request `WindowlessEglApplication` component and link to
-`Magnum::WindowlessEglApplication` target. If no other windowless application
-is requested, you can also use generic `Magnum::WindowlessApplication` alias to
-simplify porting. Again, see @ref building and @ref cmake for more information.
+In order to use this library from CMake, you need to copy `FindEGL.cmake` from
+the modules directory in Magnum source to the `modules/` dir in your project
+(so it is able to find the EGL library). Request the `WindowlessEglApplication`
+component of the `Magnum` package and link to the
+`Magnum::WindowlessEglApplication` target:
+
+@code{.cmake}
+find_package(Magnum REQUIRED WindowlessEglApplication)
+
+# ...
+target_link_libraries(your-app Magnum::WindowlessEglApplication)
+@endcode
+
+If no other application is requested, you can also use the generic
+`Magnum::WindowlessApplication` alias to simplify porting. Again, see
+@ref building and @ref cmake for more information.
 
 Place your code into @ref exec(). The subclass can be then used in main
 function using @ref MAGNUM_WINDOWLESSEGLAPPLICATION_MAIN() macro. See

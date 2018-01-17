@@ -40,12 +40,17 @@ build() {
         -DWITH_WAVAUDIOIMPORTER=ON \
         -DWITH_MAGNUMINFO=ON \
         -DWITH_AL_INFO=ON \
-        -DBUILD_TESTS=ON
+        -DBUILD_TESTS=OFF
     ninja
 }
 
 check() {
     cd "$_rootdir/build-emscripten-wasm-webgl2"
+
+    # So tests are not even built (takes AGES) when the user doesn't want to
+    cmake . -DBUILD_TESTS=ON
+    ninja
+
     CORRADE_TEST_COLOR=ON ctest -j5 --output-on-failure -E ALTest
 }
 

@@ -195,9 +195,25 @@ See @ref cmake for more information.
 
 @section Platform-WindowlessWindowsEglApplication-usage General usage
 
-In CMake you need to request `WindowlessWindowsEglApplication` component of
-`Magnum` package and link to `Magnum::WindowlessWindowsEglApplication` target.
-If no other windowless application is requested, you can also use generic
+In order to use this library from CMake, you need to copy `FindEGL.cmake` from
+the modules directory in Magnum source to the `modules/` dir in your project
+(so it is able to find the EGL library). Request the
+`WindowlessWindowsEglApplication` component of the `Magnum` package and link to
+the `Magnum::WindowlessGlxApplication` target:
+
+@code{.cmake}
+find_package(Magnum REQUIRED)
+if(CORRADE_TARGET_WINDOWS)
+    find_package(Magnum REQUIRED WindowlessWindowsEglApplication)
+endif()
+
+# ...
+if(CORRADE_TARGET_WINDOWS)
+    target_link_libraries(your-app Magnum::WindowlessWindowsEglApplication)
+endif()
+@endcode
+
+If no other application is requested, you can also use the generic
 `Magnum::WindowlessApplication` alias to simplify porting. Again, see
 @ref building and @ref cmake for more information.
 

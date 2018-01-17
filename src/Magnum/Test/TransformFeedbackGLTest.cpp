@@ -188,12 +188,27 @@ void TransformFeedbackGLTest::label() {
     TransformFeedback feedback;
 
     CORRADE_COMPARE(feedback.label(), "");
-    MAGNUM_VERIFY_NO_ERROR();
+    {
+        #ifdef MAGNUM_TARGET_GLES
+        CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & Context::DetectedDriver::NVidia &&
+                              !Context::current().isExtensionSupported<Extensions::GL::KHR::debug>(),
+            "NVidia 387.34 ES3.2 complains that GL_TRANSFORM_FEEDBACK can't be used with glGetObjectLabelEXT().");
+        #endif
+        MAGNUM_VERIFY_NO_ERROR();
+    }
 
     feedback.setLabel("MyXfb");
-    MAGNUM_VERIFY_NO_ERROR();
+    {
+        #ifdef MAGNUM_TARGET_GLES
+        CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & Context::DetectedDriver::NVidia &&
+                              !Context::current().isExtensionSupported<Extensions::GL::KHR::debug>(),
+            "NVidia 387.34 ES3.2 complains that GL_TRANSFORM_FEEDBACK can't be used with glGetObjectLabelEXT().");
+        #endif
+        MAGNUM_VERIFY_NO_ERROR();
 
-    CORRADE_COMPARE(feedback.label(), "MyXfb");
+        CORRADE_COMPARE(feedback.label(), "MyXfb");
+        MAGNUM_VERIFY_NO_ERROR(); /* Check for errors again to flush the error state */
+    }
 }
 
 namespace {

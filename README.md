@@ -46,8 +46,9 @@ library, if you feel the need. Or use any of the various plugins.
 
 -------
 
-*Looking for more?* There's a [Showcase page](http://magnum.graphics/showcase/)
-right behind the corner with lots of WebGL demos.
+*Wondering if Magnum is a good fit for your project?* We prepared
+[a few case studies](http://magnum.graphics/is-magnum-what-i-am-looking-for/)
+to help you decide.
 
 SUPPORTED PLATFORMS
 ===================
@@ -70,78 +71,16 @@ Graphics APIs:
 See the [Build Status page](http://magnum.graphics/build-status/) for detailed
 per-platform build status.
 
-BUILDING MAGNUM
-===============
-
-You can either use packaging scripts, which are stored in the
-[package/](https://github.com/mosra/magnum/tree/master/package) subdirectory,
-or compile and install everything manually. A short guide is below, for better
-introduction it's advised to read through the
-[Getting Started Guide](http://doc.magnum.graphics/magnum/getting-started.html)
-in the documentation. Complete building documentation covering all platforms
-and feature sets is in the [Downloading and building](http://doc.magnum.graphics/magnum/building.html)
-page.
-
-Minimal dependencies
---------------------
-
--   C++ compiler with good C++11 support. Compilers which are tested to have
-    everything needed are **GCC** >= 4.7, **Clang** >= 3.1 and **MSVC** >= 2015.
-    On Windows you can also use **MinGW-w64**.
--   **CMake** >= 2.8.12
--   **Corrade** — Plugin management and utility library. You can get it at
-    https://github.com/mosra/corrade.
-
-Compilation, installation
--------------------------
-
-The library (for example with support for SDL2 applications) can be built and
-installed using these commands:
-
-```sh
-git clone git://github.com/mosra/magnum && cd magnum
-mkdir -p build && cd build
-cmake .. \
-    -DCMAKE_INSTALL_PREFIX=/usr \
-    -DWITH_SDL2APPLICATION=ON
-make -j
-make install # sudo may be required
-```
-
-Building and running unit tests
--------------------------------
-
-If you want to build also unit tests (which are not built by default), pass
-`-DBUILD_TESTS=ON` to CMake. Unit tests use Corrade's TestSuite framework and
-can be run using
-
-```sh
-ctest --output-on-failure
-```
-
-in build directory. Everything should pass ;)
-
-Building documentation
-----------------------
-
-The documentation is written using [Doxygen](https://doxygen.org). It can be
-build by running
-
-```sh
-doxygen
-```
-
-in the root directory (i.e. where `Doxyfile` is).  You might need to create the
-`build/` directory if it doesn't exist yet. Resulting HTML documentation will
-be in the `build/doc/` directory. Snapshot of the documentation is
-[also available for online viewing](http://doc.magnum.graphics/).
-
 GETTING STARTED
 ===============
 
 The best way to get started is to read the thorough
 [download, build, install and start using Magnum](http://doc.magnum.graphics/magnum/getting-started.html)
-in your project. After that, there are various [tutorials and examples](http://doc.magnum.graphics/magnum/example-index.html)
+in your project. There is also a complete
+[building documentation](http://doc.magnum.graphics/magnum/building.html) — we
+provide packages for many platforms, including Windows, Linux and macOS.
+
+After that, there are various [tutorials and examples](http://doc.magnum.graphics/magnum/example-index.html)
 and a complete [feature guide](http://doc.magnum.graphics/magnum/features.html)
 explaining all aspects of the library.
 
@@ -190,10 +129,10 @@ possible.
 -   Documentation — http://doc.magnum.graphics/
 -   GitHub project page — https://github.com/mosra/magnum
 -   Gitter community chat — https://gitter.im/mosra/magnum
+-   E-mail — info@magnum.graphics
 -   IRC — join the `#magnum-engine` channel on freenode
 -   Google Groups mailing list — magnum-engine@googlegroups.com ([archive](https://groups.google.com/forum/#!forum/magnum-engine))
 -   Author's personal Twitter — https://twitter.com/czmosra
--   Author's personal e-mail — mosra@centrum.cz
 
 See also the Magnum Project [Contact & Support page](http://magnum.graphics/contact/)
 for further information.

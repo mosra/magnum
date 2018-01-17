@@ -39,7 +39,7 @@ namespace Magnum {
 
 @section magnum-al-info-usage Usage
 
-@code{.shell-session}
+@code{.sh}
 magnum-al-info [-h|--help] [-s|--short] [--extension-strings]
 @endcode
 

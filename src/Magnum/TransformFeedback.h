@@ -400,7 +400,7 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
          *
          * Ends transform feedback so the captured data can be used.
          * @see @ref begin(), @fn_gl{BindTransformFeedback} and
-         *      @fn_gl{EndTransformFeedback}
+         *      @fn_gl2{EndTransformFeedback,BeginTransformFeedback}
          */
         void end();
 

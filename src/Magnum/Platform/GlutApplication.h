@@ -46,12 +46,13 @@ namespace Magnum { namespace Platform {
 /** @nosubgrouping
 @brief GLUT application
 
-Application using GLUT toolkit. Supports keyboard and mouse handling with
-support for changing cursor and mouse tracking and warping.
+Application using the [GLUT](http://freeglut.sourceforge.net/) toolkit.
+Supports keyboard and mouse handling with support for changing cursor and mouse
+tracking and warping.
 
 This application library is available only on desktop OpenGL (Linux, Windows,
-macOS). It depends on **GLUT** library and is built if `WITH_GLUTAPPLICATION`
-is enabled in CMake.
+macOS). It depends on the [GLUT](http://freeglut.sourceforge.net/) library and
+is built if `WITH_GLUTAPPLICATION` is enabled when building Magnum.
 
 @section Platform-GlutApplication-bootstrap Bootstrap application
 
@@ -74,10 +75,20 @@ See @ref cmake for more information.
 
 @section Platform-GlutApplication-usage General usage
 
-In CMake you need to request `GlutApplication` component of `Magnum` package
-and link to `Magnum::GlutApplication` target. If no other application is
-requested, you can also use generic `Magnum::Application` alias to simplify
-porting. Again, see @ref building and @ref cmake for more information.
+In order to use this library from CMake, you need to request the
+`GlutApplication` component of the `Magnum` package and link to the
+`Magnum::GlutApplication` target:
+
+@code{.cmake}
+find_package(Magnum REQUIRED GlutApplication)
+
+# ...
+target_link_libraries(your-app Magnum::GlutApplication)
+@endcode
+
+If no other application is requested, you can also use the generic
+`Magnum::Application` alias to simplify porting. Again, see @ref building and
+@ref cmake for more information.
 
 In C++ code you need to implement at least @ref drawEvent() to be able to draw
 on the screen. The subclass can be then used directly in @cpp main() @ce

@@ -47,8 +47,7 @@ Unlike @ref DefaultFramebuffer, which is used for on-screen rendering, this
 class is used for off-screen rendering, usable either in windowless
 applications, texture generation or for various post-processing effects.
 
-@anchor Framebuffer-usage
-## Example usage
+@section Framebuffer-usage Example usage
 
 See @ref DefaultFramebuffer-usage "DefaultFramebuffer documentation" for
 introduction. Imagine you have shader with multiple outputs (e.g. for deferred
@@ -56,7 +55,8 @@ rendering). You want to render them off-screen to textures and then use the
 textures for actual on-screen rendering. First you need to create the
 framebuffer with the same viewport as default framebuffer and attach textures
 and renderbuffers to desired outputs:
-@code
+
+@code{.cpp}
 Framebuffer framebuffer({defaultFramebuffer.viewportPosition(), defaultFramebuffer.viewportSize()});
 Texture2D color, normal;
 Renderbuffer depthStencil;
@@ -70,7 +70,8 @@ framebuffer.attachRenderbuffer(Framebuffer::BufferAttachment::DepthStencil, dept
 
 Then you need to map outputs of your shader to color attachments in the
 framebuffer:
-@code
+
+@code{.cpp}
 framebuffer.mapForDraw({{MyShader::ColorOutput, Framebuffer::ColorAttachment(0)},
                         {MyShader::NormalOutput, Framebuffer::ColorAttachment(1)}});
 @endcode
@@ -78,7 +79,8 @@ framebuffer.mapForDraw({{MyShader::ColorOutput, Framebuffer::ColorAttachment(0)}
 The actual @ref Platform::Sdl2Application::drawEvent() "drawEvent()" might look
 like this. First you clear all buffers you need, perform drawing to off-screen
 framebuffer, then bind the default and render the textures on screen:
-@code
+
+@code{.cpp}
 void drawEvent() {
     defaultFramebuffer.clear(FramebufferClear::Color)
     framebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth|FramebufferClear::Stencil);

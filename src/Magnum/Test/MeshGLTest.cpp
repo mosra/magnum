@@ -1172,7 +1172,7 @@ void MeshGLTest::addVertexBufferFloatWithHalfFloat() {
     MAGNUM_VERIFY_NO_ERROR();
 
     const auto value = Checker(FloatShader("float", "vec4(valueInterpolated, 0.0, 0.0, 0.0)"),
-        RenderbufferFormat::RGBA8, mesh).get<UnsignedByte>(PixelFormat::RGBA, PixelType::UnsignedShort);
+        RenderbufferFormat::RGBA8, mesh).get<UnsignedByte>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, 186);

@@ -23,6 +23,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+set_directory_properties(PROPERTIES
+    CORRADE_CXX_STANDARD 11
+    CORRADE_USE_PEDANTIC_FLAGS ON)
+
 find_package(Corrade COMPONENTS TestSuite)
 
 # TODO: causes spurious linker errors on Travis iOS build, so I'm disabling it

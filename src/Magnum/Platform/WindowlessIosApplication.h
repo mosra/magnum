@@ -155,10 +155,27 @@ See @ref cmake for more information.
 
 @section Platform-WindowlessIosApplication-usage General usage
 
-In CMake you need to request `WindowlessIosApplication` component and link to
-`Magnum::WindowlessIosApplication` target. If no other windowless application
-is requested, you can also use generic `Magnum::WindowlessApplication` alias to
-simplify porting. Again, see @ref building and @ref cmake for more information.
+In order to use this library from CMake, you need to copy `FindEGL.cmake` from
+the modules directory in Magnum source to the `modules/` dir in your project
+(so it is able to find the EGL library). Request the `WindowlessIosApplication`
+component of the `Magnum` package and link to the
+`Magnum::WindowlessIosApplication` target:
+
+@code{.cmake}
+find_package(Magnum REQUIRED)
+if(CORRADE_TARGET_IOS)
+    find_package(Magnum REQUIRED WindowlessIosApplication)
+endif()
+
+# ...
+if(CORRADE_TARGET_IOS)
+    target_link_libraries(your-app Magnum::WindowlessIosApplication)
+endif()
+@endcode
+
+If no other application is requested, you can also use the generic
+`Magnum::WindowlessApplication` alias to simplify porting. Again, see
+@ref building and @ref cmake for more information.
 
 Place your code into @ref exec(). The subclass can be then used in main
 function using @ref MAGNUM_WINDOWLESSIOSAPPLICATION_MAIN() macro. See

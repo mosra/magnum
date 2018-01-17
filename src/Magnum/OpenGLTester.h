@@ -70,13 +70,22 @@ This class is available only on platforms with corresponding
 platforms except @ref CORRADE_TARGET_ANDROID "Android" and
 @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten". It is built into a separate static
 library and only if `WITH_OPENGLTESTER` is enabled when building Magnum. To use
-it, you need to request `OpenGLTester` component of `Magnum` package in CMake,
-derive your test class from this class instead of @ref Corrade::TestSuite::Tester
-and either link to `Magnum::OpenGLTester` target or add it to `LIBRARIES`
-section of the @ref corrade-cmake-add-test "corrade_add_test()" macro. See
-@ref building and @ref cmake for more information.
+it with CMake, you need to request the `OpenGLTester` component of the `Magnum`
+package. Derive your test class from this class instead of
+@ref Corrade::TestSuite::Tester and either link to `Magnum::OpenGLTester`
+target or add it to the `LIBRARIES` section of the
+@ref corrade-cmake-add-test "corrade_add_test()" macro:
 
-## OpenGL context creation
+@code{.cmake}
+find_package(Magnum REQUIRED OpenGLTester)
+
+# ...
+corrade_add_test(YourTest YourTest.cpp LIBRARIES Magnum::OpenGLTester)
+@endcode
+
+See @ref building, @ref cmake and @ref testsuite for more information.
+
+@section OpenGLTester-context OpenGL context creation
 
 Upon construction the class creates an OpenGL context, meaning you don't have
 to worry about OpenGL context being available during the tests. If the context
@@ -87,7 +96,7 @@ misuses will propagate to following test cases. See
 @ref TestSuite-Tester-command-line "command-line option overview" for a way
 to run single isolated test cases.
 
-## Debug context and error checking
+@section OpenGLTester-debug Debug context and error checking
 
 On platforms that support it, the OpenGL context is created with synchronous
 debug output, meaning that every OpenGL error is directly reported to standard
@@ -96,7 +105,7 @@ upon encountering a GL error -- this should be done explicitly with
 @ref MAGNUM_VERIFY_NO_ERROR() instead, as the debug output is not available on
 all platforms and not all GL errors are fatal.
 
-## GPU time benchmarks
+@section OpenGLTester-benchmarks GPU time benchmarks
 
 This class adds @ref BenchmarkType::GpuTime to the benchmark type enum,
 allowing you to measure time spent on GPU as opposed to CPU or wall clock time.
@@ -227,7 +236,8 @@ class OpenGLTester: public TestSuite::Tester {
 @brief Verify that no OpenGL error occurred
 
 Equivalent to
-@code
+
+@code{.cpp}
 CORRADE_COMPARE(Magnum::Renderer::error(), Magnum::Renderer::Error::NoError)
 @endcode
 */

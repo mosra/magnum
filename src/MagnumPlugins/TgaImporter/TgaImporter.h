@@ -60,12 +60,13 @@ namespace Magnum { namespace Trade {
 Supports Truevision TGA (`*.tga`, `*.vda`, `*.icb`, `*.vst`) uncompressed BGR,
 BGRA or grayscale images with 8 bits per channel.
 
-This plugin is built if `WITH_TGAIMPORTER` is enabled when building Magnum. To
-use dynamic plugin, you need to load `TgaImporter` plugin from
-`MAGNUM_PLUGINS_IMPORTER_DIR`. To use static plugin or use this as a dependency
-of another plugin, you need to request `TgaImporter` component of `Magnum`
-package in CMake and link to `Magnum::TgaImporter` target. See @ref building,
-@ref cmake and @ref plugins for more information.
+This plugin depends on the @ref Trade library and is built if `WITH_TGAIMPORTER`
+is enabled when building Magnum. To use as a dynamic plugin, you need to load
+the @cpp "TgaImporter" @ce plugin from `MAGNUM_PLUGINS_IMPORTER_DIR`. To use as
+a static plugin or use this as a dependency of another plugin with CMake, you
+need to request the `TgaImporter` component of the `Magnum` package and link to
+the `Magnum::TgaImporter` target. See @ref building, @ref cmake and
+@ref plugins for more information.
 
 The images are imported with @ref PixelType::UnsignedByte and @ref PixelFormat::RGB,
 @ref PixelFormat::RGBA or @ref PixelFormat::Red, respectively. Grayscale images

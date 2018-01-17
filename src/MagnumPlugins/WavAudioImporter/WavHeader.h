@@ -26,57 +26,53 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Struct @ref Magnum::Audio::RiffChunk, @ref Magnum::Audio::WavHeaderChunk, @ref Magnum::Audio::WavFormatChunk, enum @ref Magnum::Audio::WavAudioFormat
- */
-
 #include "MagnumPlugins/WavAudioImporter/WavImporter.h"
 
-namespace Magnum { namespace Audio {
+namespace Magnum { namespace Audio { namespace Implementation {
 
-/** @brief WAV audio format */
+/* WAV audio format */
 enum class WavAudioFormat: UnsignedShort {
-    Unknown = 0x0000,       /**< Unknown */
-    Pcm = 0x0001,           /**< PCM */
-    AdPcm = 0x0002,         /**< Adaptive Differential PCM */
-    IeeeFloat = 0x0003,     /**< IEEE Float */
-    ALaw = 0x0006,          /**< A-Law */
-    MuLaw = 0x0007,         /**< μ-Law */
-    Extensible = 0xfffe     /**< Extensible */
+    Unknown = 0x0000,       /* Unknown */
+    Pcm = 0x0001,           /* PCM */
+    AdPcm = 0x0002,         /* Adaptive Differential PCM */
+    IeeeFloat = 0x0003,     /* IEEE Float */
+    ALaw = 0x0006,          /* A-Law */
+    MuLaw = 0x0007,         /* μ-Law */
+    Extensible = 0xfffe     /* Extensible */
 };
 
 #pragma pack(1)
-/** @brief RIFF chunk */
+/* RIFF chunk */
 struct RiffChunk {
-    char chunkId[4];            /**< @brief chunk name (4 characters) */
-    UnsignedInt chunkSize;      /**< @brief size of chunk (does not include chunk header) */
+    char chunkId[4];        /* chunk name (4 characters) */
+    UnsignedInt chunkSize;  /* size of chunk (does not include chunk header) */
 };
 #pragma pack()
 
 #pragma pack(1)
-/** @brief WAV file header */
+/* WAV file header */
 struct WavHeaderChunk {
-    RiffChunk chunk;                /**< @brief Starting RIFF chunk */
-    char format[4];                 /**< @brief `WAVE` characters */
+    RiffChunk chunk;        /* Starting RIFF chunk */
+    char format[4];         /* `WAVE` characters */
 };
 #pragma pack()
 
 #pragma pack(1)
-/** @brief WAV 'fmt' header */
+/* WAV 'fmt' header */
 struct WavFormatChunk {
-    RiffChunk chunk;                /**< @brief Starting RIFF chunk */
-    WavAudioFormat audioFormat;     /**< @brief Audio format */
-    UnsignedShort numChannels;      /**< @brief 1 = Mono, 2 = Stereo */
-    UnsignedInt sampleRate;         /**< @brief Sample rate in Hz */
-    UnsignedInt byteRate;           /**< @brief Bytes per second */
-    UnsignedShort blockAlign;       /**< @brief Bytes per sample (all channels) */
-    UnsignedShort bitsPerSample;    /**< @brief Bits per sample (one channel) */
+    RiffChunk chunk;                /* Starting RIFF chunk */
+    WavAudioFormat audioFormat;     /* Audio format */
+    UnsignedShort numChannels;      /* 1 = Mono, 2 = Stereo */
+    UnsignedInt sampleRate;         /* Sample rate in Hz */
+    UnsignedInt byteRate;           /* Bytes per second */
+    UnsignedShort blockAlign;       /* Bytes per sample (all channels) */
+    UnsignedShort bitsPerSample;    /* Bits per sample (one channel) */
 };
 #pragma pack()
 
 /** @debugoperatorenum{WavAudioFormat} */
 MAGNUM_WAVAUDIOIMPORTER_EXPORT Debug& operator<<(Debug& debug, WavAudioFormat value);
 
-}}
+}}}
 
 #endif

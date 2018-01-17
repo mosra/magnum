@@ -160,11 +160,24 @@ See @ref cmake for more information.
 
 @section Platform-WindowlessCglApplication-usage General usage
 
-In CMake you need to request `WindowlessCglApplication` component of `Magnum`
-package and link to `Magnum::WindowlessCglApplication` target. If no other
-application is requested, you can also use generic `Magnum::Application` alias
-to simplify porting. Again, see @ref building and @ref cmake for more
-information.
+In order to use this library from CMake, you need to request the
+`WindowlessCglApplication` component of the `Magnum` package and link to the `Magnum::WindowlessCglApplication` target:
+
+@code{.cmake}
+find_package(Magnum REQUIRED)
+if(CORRADE_TARGET_APPLE)
+    find_package(Magnum REQUIRED WindowlessCglApplication)
+endif()
+
+# ...
+if(CORRADE_TARGET_APPLE)
+    target_link_libraries(your-app Magnum::WindowlessCglApplication)
+endif()
+@endcode
+
+If no other application is requested, you can also use the generic
+`Magnum::WindowlessApplication` alias to simplify porting. Again, see
+@ref building and @ref cmake for more information.
 
 Place your code into @ref exec(). The subclass can be then used directly in
 `main()` --- see convenience macro @ref MAGNUM_WINDOWLESSCGLAPPLICATION_MAIN().

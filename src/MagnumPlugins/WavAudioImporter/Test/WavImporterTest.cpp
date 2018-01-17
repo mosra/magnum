@@ -425,7 +425,7 @@ void WavImporterTest::surround71Channel24() {
 void WavImporterTest::debugAudioFormat() {
     std::ostringstream out;
 
-    Debug{&out} << WavAudioFormat::IeeeFloat << WavAudioFormat(0xdead);
+    Debug{&out} << Implementation::WavAudioFormat::IeeeFloat << Implementation::WavAudioFormat(0xdead);
     CORRADE_COMPARE(out.str(), "Audio::WavAudioFormat::IeeeFloat Audio::WavAudioFormat(0xdead)\n");
 }
 
