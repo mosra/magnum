@@ -495,6 +495,8 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
          */
         const void* importerState() const;
 
+        void openState(const void* state);
+
     protected:
         /**
          * @brief Implementation for @ref openFile()
@@ -820,6 +822,9 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
 
         /** @brief Implementation for @ref importerState() */
         virtual const void* doImporterState() const;
+
+        /** @brief Implementation for @ref openState() */
+        virtual void doOpenState(const void* state);
 };
 
 CORRADE_ENUMSET_OPERATORS(AbstractImporter::Features)

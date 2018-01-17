@@ -461,4 +461,8 @@ const void* AbstractImporter::importerState() const {
 
 const void* AbstractImporter::doImporterState() const { return nullptr; }
 
+void AbstractImporter::openState(const void* state) { return doOpenState(state); }
+
+void AbstractImporter::doOpenState(const void*) {}
+
 }}
