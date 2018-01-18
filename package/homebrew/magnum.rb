@@ -1,7 +1,7 @@
 # kate: indent-width 2;
 
 class Magnum < Formula
-  desc "C++11/C++14 and OpenGL 2D/3D graphics engine"
+  desc "C++11/C++14 graphics middleware for games and data visualization"
   homepage "http://magnum.graphics"
   head "git://github.com/mosra/magnum.git"
 

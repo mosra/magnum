@@ -2,7 +2,7 @@
 pkgname=magnum
 pkgver=dev.es3desktop
 pkgrel=1
-pkgdesc="C++11/C++14 and OpenGL 2D/3D graphics engine (desktop OpenGL ES 3.0 version)"
+pkgdesc="C++11/C++14 graphics middleware for games and data visualization (desktop OpenGL ES 3.0 version)"
 arch=('i686' 'x86_64')
 url="http://magnum.graphics"
 license=('MIT')

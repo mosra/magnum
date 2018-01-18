@@ -2,7 +2,7 @@
 pkgname=magnum
 pkgver=dev.clang
 pkgrel=1
-pkgdesc="C++11/C++14 and OpenGL 2D/3D graphics engine (built with clang)"
+pkgdesc="C++11/C++14 graphics middleware for games and data visualization (built with clang)"
 arch=('i686' 'x86_64')
 url="http://magnum.graphics"
 license=('MIT')

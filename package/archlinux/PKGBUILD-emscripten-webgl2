@@ -2,7 +2,7 @@
 pkgname=emscripten-magnum
 pkgver=dev.webgl2
 pkgrel=1
-pkgdesc="C++11/C++14 and OpenGL 2D/3D graphics engine (Emscripten WebGL 2.0)"
+pkgdesc="C++11/C++14 graphics middleware for games and data visualization (Emscripten WebGL 2.0)"
 arch=('any')
 url="http://magnum.graphics"
 license=('MIT')
