@@ -97,7 +97,9 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
          */
         enum class Feature: UnsignedByte {
             /** Opening files from raw data using @ref openData() */
-            OpenData = 1 << 0
+            OpenData = 1 << 0,
+            /** Opening already loaded state using @ref openState() */
+            OpenState = 1 << 1
         };
 
         /** @brief Set of features supported by this importer */
@@ -127,6 +129,17 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
          * @see @ref features(), @ref openFile()
          */
         bool openData(Containers::ArrayView<const char> data);
+
+
+        /**
+         * @brief Open already loaded state
+         *
+         * Closes previous file, if it was opened, and tries to open given
+         * state. Available only if @ref Feature::OpenState is supported. Returns
+         * `true` on success, `false` otherwise.
+         * @see @ref features(), @ref openData()
+         */
+        bool openState(const void* state, const std::string& filePath = {});
 
         /**
          * @brief Open file
@@ -496,8 +509,6 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
          */
         const void* importerState() const;
 
-        void openState(const void* state);
-
     protected:
         /**
          * @brief Implementation for @ref openFile()
@@ -522,6 +533,9 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
 
         /** @brief Implementation for @ref openData() */
         virtual void doOpenData(Containers::ArrayView<const char> data);
+
+        /** @brief Implementation for @ref openState() */
+        virtual void doOpenState(const void* state, const std::string& filePath = {});
 
         /** @brief Implementation for @ref close() */
         virtual void doClose() = 0;
@@ -823,9 +837,6 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
 
         /** @brief Implementation for @ref importerState() */
         virtual const void* doImporterState() const;
-
-        /** @brief Implementation for @ref openState() */
-        virtual void doOpenState(const void* state);
 };
 
 CORRADE_ENUMSET_OPERATORS(AbstractImporter::Features)
