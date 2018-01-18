@@ -62,6 +62,19 @@ void AbstractImporter::doOpenData(Containers::ArrayView<const char>) {
     CORRADE_ASSERT(false, "Trade::AbstractImporter::openData(): feature advertised but not implemented", );
 }
 
+bool AbstractImporter::openState(const void* state, const std::string& filePath) {
+    CORRADE_ASSERT(features() & Feature::OpenState,
+        "Trade::AbstractImporter::OpenState(): feature not supported", {});
+
+    close();
+    doOpenState(state, filePath);
+    return isOpened();
+}
+
+void AbstractImporter::doOpenState(const void*, const std::string&) {
+    CORRADE_ASSERT(false, "Trade::AbstractImporter::openState(): feature advertised but not implemented", );
+}
+
 bool AbstractImporter::openFile(const std::string& filename) {
     close();
     doOpenFile(filename);
