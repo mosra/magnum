@@ -67,7 +67,7 @@ Uses @ref Corrade::Containers::LinkedList for efficient hierarchy management.
 Traversing through the list of child objects can be done using range-based for:
 @code
 Object3D o;
-for(AbstractFeature3D& feature: o.features()) {
+for(Object3D& child: o.children()) {
     // ...
 }
 @endcode
