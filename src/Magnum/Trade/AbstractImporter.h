@@ -535,7 +535,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
         virtual void doOpenData(Containers::ArrayView<const char> data);
 
         /** @brief Implementation for @ref openState() */
-        virtual void doOpenState(const void* state, const std::string& filePath = {});
+        virtual void doOpenState(const void* state, const std::string& filePath);
 
         /** @brief Implementation for @ref close() */
         virtual void doClose() = 0;
