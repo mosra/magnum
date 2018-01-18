@@ -64,21 +64,22 @@ displays OpenGL unit cube `[(-1, -1, -1); (1, 1, 1)]` and doesn't do any aspect
 ratio correction.
 
 Common setup example for 2D scenes:
-@code
+
+@code{.cpp}
 SceneGraph::Camera2D camera{&cameraObject};
 camera.setProjectionMatrix(Matrix3::projection({4.0f/3.0f, 1.0f}))
       .setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend);
 @endcode
 
 Common setup example for 3D scenes:
-@code
+
+@code{.cpp}
 SceneGraph::Camera3D camera{&cameraObject};
 camera.setProjectionMatrix(Matrix3::perspectiveProjection(35.0_degf, 1.0f, 0.001f, 100.0f))
       .setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend);
 @endcode
 
-@anchor SceneGraph-Camera-explicit-specializations
-## Explicit template specializations
+@section SceneGraph-Camera-explicit-specializations Explicit template specializations
 
 The following specializations are explicitly compiled into @ref SceneGraph
 library. For other specializations (e.g. using @ref Magnum::Double "Double"
@@ -203,13 +204,16 @@ template<UnsignedInt dimensions, class T> class Camera: public AbstractFeature<d
          * @ref Platform::Sdl2Application::MouseEvent "Platform::*Application::MouseEvent")
          * to floating-point coordinates on near XY plane with origin at camera
          * position and Y up can be done using the following snippet:
-         * @code
+         *
+         * @code{.cpp}
          * Vector2 position = (Vector2{event.position()}/defaultFramebuffer.viewport().size() - Vector2{0.5f})*Vector2::yScale(-1.0f)*camera.projectionSize();
          * @endcode
+         *
          * This is position relative to camera transformation, getting absolute
          * transformation in 2D scene can be done for example using
          * @ref SceneGraph::Object::absoluteTransformation():
-         * @code
+         *
+         * @code{.cpp}
          * Vector2 absolutePosition = cameraObject->absoluteTransformation().transformPoint(position);
          * @endcode
          *
@@ -258,7 +262,7 @@ template<UnsignedInt dimensions, class T> class Camera: public AbstractFeature<d
 /**
 @brief Camera for two-dimensional scenes
 
-Convenience alternative to `Camera<2, T>`. See @ref Camera for more
+Convenience alternative to @cpp Camera<2, T> @ce. See @ref Camera for more
 information.
 @see @ref Camera2D, @ref BasicCamera3D
 */
@@ -276,7 +280,7 @@ typedef BasicCamera2D<Float> Camera2D;
 /**
 @brief Camera for three-dimensional scenes
 
-Convenience alternative to `Camera<3, T>`. See @ref Camera for more
+Convenience alternative to @cpp Camera<3, T> @ce. See @ref Camera for more
 information.
 @see @ref Camera3D, @ref BasicCamera2D
 */

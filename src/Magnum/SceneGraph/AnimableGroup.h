@@ -75,7 +75,7 @@ template<UnsignedInt dimensions, class T> class AnimableGroup: public FeatureGro
 /**
 @brief Animable group for two-dimensional scenes
 
-Convenience alternative to `AnimableGroup<2, T>`. See Animable for
+Convenience alternative to @cpp AnimableGroup<2, T> @ce. See @ref Animable for
 more information.
 @see @ref AnimableGroup2D, @ref BasicAnimableGroup3D
 */
@@ -93,7 +93,7 @@ typedef BasicAnimableGroup2D<Float> AnimableGroup2D;
 /**
 @brief Animable group for three-dimensional scenes
 
-Convenience alternative to `AnimableGroup<3, T>`. See Animable for
+Convenience alternative to @cpp AnimableGroup<3, T> @ce. See @ref Animable for
 more information.
 @see @ref AnimableGroup3D, @ref BasicAnimableGroup2D
 */

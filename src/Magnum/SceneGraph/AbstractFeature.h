@@ -84,13 +84,13 @@ Contained in @ref Object, takes care of transformation caching. See
 Uses @ref Corrade::Containers::LinkedList for accessing holder object and
 sibling features.
 
-## Subclassing
+@section SceneGraph-AbstractFeature-subclassing Subclassing
 
 Feature is templated on dimension count and underlying transformation type, so
 it can be used only on object having transformation with the same dimension
 count and type.
 
-### Caching transformations in features
+@subsection SceneGraph-AbstractFeature-subclassing-caching Caching transformations in features
 
 Features can cache absolute transformation of the object instead of computing
 it from scratch every time to achieve better performance. See
@@ -98,9 +98,10 @@ it from scratch every time to achieve better performance. See
 
 In order to have caching, you must enable it first, because by default the
 caching is disabled. You can enable it using @ref setCachedTransformations()
-and then implement corresponding cleaning function(s) -- either @ref clean(),
+and then implement corresponding cleaning function(s) --- either @ref clean(),
 @ref cleanInverted() or both. Example:
-@code
+
+@code{.cpp}
 class CachingFeature: public SceneGraph::AbstractFeature3D {
     public:
         explicit CachingFeature(SceneGraph::AbstractObject3D& object): SceneGraph::AbstractFeature3D{object} {
@@ -117,15 +118,16 @@ class CachingFeature: public SceneGraph::AbstractFeature3D {
 @endcode
 
 Before using the cached value explicitly request object cleaning by calling
-`object()->setClean()`.
+@cpp object()->setClean() @ce.
 
-### Accessing object transformation
+@subsection SceneGraph-AbstractFeature-subclassing-object-transformation Accessing object transformation
 
 The feature has by default only access to @ref AbstractObject, which doesn't
 know about any used transformation. By using small template trick in the
 constructor it is possible to gain access to transformation interface in the
 constructor:
-@code
+
+@code{.cpp}
 class TransformingFeature: public SceneGraph::AbstractFeature3D {
     public:
         template<class T> explicit TransformingFeature(SceneGraph::Object<T>& object):
@@ -138,7 +140,7 @@ class TransformingFeature: public SceneGraph::AbstractFeature3D {
 
 See @ref scenegraph-features-transformation for more detailed information.
 
-## Explicit template specializations
+@section SceneGraph-AbstractFeature-explicit-specializations Explicit template specializations
 
 The following specializations are explicitly compiled into @ref SceneGraph
 library. For other specializations (e.g. using @ref Magnum::Double "Double" type)
@@ -286,7 +288,7 @@ template<UnsignedInt dimensions, class T> class AbstractFeature
 /**
 @brief Base feature for two-dimensional scenes
 
-Convenience alternative to `AbstractFeature<2, T>`. See
+Convenience alternative to @cpp AbstractFeature<2, T> @ce. See
 @ref AbstractFeature for more information.
 @see @ref AbstractFeature2D, @ref AbstractBasicFeature3D
 */
@@ -304,7 +306,7 @@ typedef AbstractBasicFeature2D<Float> AbstractFeature2D;
 /**
 @brief Base feature for three-dimensional scenes
 
-Convenience alternative to `AbstractFeature<3, T>`. See
+Convenience alternative to @cpp AbstractFeature<3, T> @ce. See
 @ref AbstractFeature for more information.
 @see @ref AbstractFeature3D, @ref AbstractBasicFeature2D
 */

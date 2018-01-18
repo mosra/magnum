@@ -40,13 +40,14 @@ Adds drawing functionality to the object. Each Drawable is part of some
 @ref DrawableGroup and the whole group can be drawn with particular camera
 using @ref Camera::draw().
 
-## Usage
+@section SceneGraph-Drawable-usage Usage
 
 First thing is to add @ref Drawable feature to some object and implement
 @ref draw() function. You can do it conveniently using multiple inheritance
 (see @ref scenegraph-features for introduction). Example drawable object that
 draws blue sphere:
-@code
+
+@code{.cpp}
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 
@@ -81,7 +82,8 @@ have single function to set composite transformation and projection matrix. In
 that case you need to combine the two matrices manually like in the following
 code. Some shaders have additional requirements for various transformation
 matrices, see their respective documentation for details.
-@code
+
+@code{.cpp}
 Shaders::Flat3D shader;
 shader.setTransformationProjectionMatrix(camera.projectionMatrix()*transformationMatrix);
 @endcode
@@ -90,7 +92,8 @@ There is no way to just draw all the drawables in the scene, you need to create
 some drawable group and add the drawable objects to both the scene and the
 group. You can also use @ref DrawableGroup::add() and
 @ref DrawableGroup::remove() instead of passing the group in the constructor.
-@code
+
+@code{.cpp}
 Scene3D scene;
 SceneGraph::DrawableGroup3D drawables;
 
@@ -106,7 +109,8 @@ transformation). Using the camera and the drawable group you can perform
 drawing in your @ref Platform::Sdl2Application::drawEvent() "drawEvent()"
 implementation. See @ref Camera2D and @ref Camera3D documentation for more
 information.
-@code
+
+@code{.cpp}
 auto cameraObject = new Object3D(&scene);
 cameraObject->translate(Vector3::zAxis(5.0f));
 auto camera = new SceneGraph::Camera3D(&cameraObject);
@@ -123,14 +127,15 @@ void MyApplication::drawEvent() {
 }
 @endcode
 
-## Using multiple drawable groups to improve performance
+@section SceneGraph-Drawable-multiple-groups Using multiple drawable groups to improve performance
 
 You can organize your drawables to multiple groups to minimize OpenGL state
-changes -- for example put all objects using the same shader, the same light
+changes --- for example put all objects using the same shader, the same light
 setup etc into one group, then put all transparent into another and set common
 parameters once for whole group instead of setting them again in each
 @ref draw() implementation. Example:
-@code
+
+@code{.cpp}
 Shaders::PhongShader shader;
 SceneGraph::DrawableGroup3D phongObjects, transparentObjects;
 
@@ -155,7 +160,7 @@ void MyApplication::drawEvent() {
 }
 @endcode
 
-## Explicit template specializations
+@section SceneGraph-Drawable-explicit-specializations Explicit template specializations
 
 The following specializations are explicitly compiled into @ref SceneGraph
 library. For other specializations (e.g. using @ref Magnum::Double "Double"
@@ -208,7 +213,7 @@ template<UnsignedInt dimensions, class T> class Drawable: public AbstractGrouped
 /**
 @brief Drawable for two-dimensional scenes
 
-Convenience alternative to `Drawable<2, T>`. See @ref Drawable for more
+Convenience alternative to @cpp Drawable<2, T> @ce. See @ref Drawable for more
 information.
 @see @ref Drawable2D, @ref BasicDrawable3D
 */
@@ -226,7 +231,7 @@ typedef BasicDrawable2D<Float> Drawable2D;
 /**
 @brief Drawable for three-dimensional scenes
 
-Convenience alternative to `Drawable<3, T>`. See @ref Drawable for more
+Convenience alternative to @cpp Drawable<3, T> @ce. See @ref Drawable for more
 information.
 @see @ref Drawable3D, @ref BasicDrawable3D
 */
@@ -255,7 +260,7 @@ template<UnsignedInt dimensions, class T> using DrawableGroup = FeatureGroup<dim
 /**
 @brief Group of drawables for two-dimensional scenes
 
-Convenience alternative to `DrawableGroup<2, T>`. See @ref Drawable for
+Convenience alternative to @cpp DrawableGroup<2, T> @ce. See @ref Drawable for
 more information.
 @see @ref DrawableGroup2D, @ref BasicDrawableGroup3D
 */
@@ -273,7 +278,7 @@ typedef BasicDrawableGroup2D<Float> DrawableGroup2D;
 /**
 @brief Group of drawables for three-dimensional scenes
 
-Convenience alternative to `DrawableGroup<3, T>`. See @ref Drawable for
+Convenience alternative to @cpp DrawableGroup<3, T> @ce. See @ref Drawable for
 more information.
 @see @ref DrawableGroup3D, @ref BasicDrawableGroup2D
 */

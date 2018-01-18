@@ -65,14 +65,15 @@ MAGNUM_SCENEGRAPH_EXPORT Debug& operator<<(Debug& debug, AnimationState value);
 Adds animation feature to object. Each Animable is part of some
 @ref AnimableGroup, which takes care of running the animations.
 
-## Usage
+@section SceneGraph-Animable Usage
 
 First thing is to add @ref Animable feature to some object and implement
 @ref animationStep(). You can do it conveniently using multiple inheritance
 (see @ref scenegraph-features for introduction). Override @ref animationStep()
 to implement your animation, the function provides both absolute animation
 time and time delta. Example:
-@code
+
+@code{.cpp}
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 
@@ -97,7 +98,8 @@ given set of animations. You can also use @ref AnimableGroup::add() and
 The animation is initially in stopped state and without repeat, see
 @ref setState(), @ref setRepeated() and @ref setRepeatCount() for more
 information.
-@code
+
+@code{.cpp}
 Scene3D scene;
 SceneGraph::AnimableGroup3D animables;
 
@@ -110,7 +112,8 @@ Animation step is performed by calling @ref AnimableGroup::step() in your draw
 event implementation. The function expects absolute time from relative to some
 fixed point in the past and time delta (i.e. duration of the frame). You can
 use @ref Timeline for that, see its documentation for more information.
-@code
+
+@code{.cpp}
 Timeline timeline;
 timeline.start();
 
@@ -123,15 +126,15 @@ void MyApplication::drawEvent() {
 }
 @endcode
 
-## Using multiple animable groups to improve performance
+@section SceneGraph-Animable-multiple-groups Using multiple animable groups to improve performance
 
-@ref AnimableGroup is optimized for case when no animation is running -- it
+@ref AnimableGroup is optimized for case when no animation is running --- it
 just puts itself to rest and waits until some animation changes its state to
 @ref AnimationState::Running again. If you put animations which are not
 pernamently running into separate group, they will not be traversed every time
 the @ref AnimableGroup::step() gets called, saving precious frame time.
 
-## Explicit template specializations
+@section SceneGraph-Animable-explicit-specializations Explicit template specializations
 
 The following specializations are explicitly compiled into @ref SceneGraph
 library. For other specializations (e.g. using @ref Magnum::Double "Double"
@@ -192,7 +195,7 @@ template<UnsignedInt dimensions, class T> class Animable: public AbstractGrouped
          * @brief Enable/disable repeated animation
          * @return Reference to self (for method chaining)
          *
-         * Default is `false`.
+         * Default is @cpp false @ce.
          * @see @ref setRepeatCount()
          */
         Animable<dimensions, T>& setRepeated(bool repeated) {
@@ -211,8 +214,8 @@ template<UnsignedInt dimensions, class T> class Animable: public AbstractGrouped
          * @brief Set repeat count
          * @return Reference to self (for method chaining)
          *
-         * Has effect only if repeated animation is enabled. `0` means
-         * infinitely repeated animation. Default is `0`.
+         * Has effect only if repeated animation is enabled. @cpp 0 @ce means
+         * infinitely repeated animation. Default is @cpp 0 @ce.
          * @see @ref setRepeated()
          */
         Animable<dimensions, T>& setRepeatCount(UnsignedShort count) {
@@ -223,7 +226,7 @@ template<UnsignedInt dimensions, class T> class Animable: public AbstractGrouped
         /**
          * @brief Group containing this animable
          *
-         * If the animable doesn't belong to any group, returns `nullptr`.
+         * If the animable doesn't belong to any group, returns @cpp nullptr @ce.
          */
         AnimableGroup<dimensions, T>* animables();
         const AnimableGroup<dimensions, T>* animables() const; /**< @overload */
@@ -233,8 +236,8 @@ template<UnsignedInt dimensions, class T> class Animable: public AbstractGrouped
          * @brief Set animation duration
          * @return Reference to self (for method chaining)
          *
-         * Sets duration of the animation cycle in seconds. Set to `0.0f` for
-         * infinite non-repeating animation. Default is `0.0f`.
+         * Sets duration of the animation cycle in seconds. Set to @cpp 0.0f @ce
+         * for infinite non-repeating animation. Default is @cpp 0.0f @ce.
          */
         /* Protected so only animation implementer can change it */
         Animable<dimensions, T>& setDuration(Float duration) {
@@ -326,7 +329,7 @@ template<UnsignedInt dimensions, class T> class Animable: public AbstractGrouped
 /**
 @brief Animable for two-dimensional scenes
 
-Convenience alternative to `Animable<2, T>`. See @ref Animable for more
+Convenience alternative to @cpp Animable<2, T> @ce. See @ref Animable for more
 information.
 @see @ref Animable2D, @ref BasicAnimable3D
 */
@@ -344,7 +347,7 @@ typedef BasicAnimable2D<Float> Animable2D;
 /**
 @brief Animable for three-dimensional scenes
 
-Convenience alternative to `Animable<3, T>`. See @ref Animable for more
+Convenience alternative to @cpp Animable<3, T> @ce. See @ref Animable for more
 information.
 @see @ref Animable3D, @ref BasicAnimable2D
 */

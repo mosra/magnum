@@ -42,8 +42,7 @@ namespace Magnum { namespace SceneGraph {
 Provides transformation implementation for @ref Object instances. See
 @ref scenegraph-features-transformation for more information.
 
-@anchor SceneGraph-AbstractTransformation-explicit-specializations
-## Explicit template specializations
+@section SceneGraph-AbstractTransformation-explicit-specializations Explicit template specializations
 
 The following specializations are explicitly compiled into @ref SceneGraph
 library. For other specializations (e.g. using @ref Magnum::Double "Double"
@@ -107,7 +106,7 @@ enum class CORRADE_DEPRECATED_ENUM("use *() and *Local() overloads instead") Tra
 /**
 @brief Base transformation for two-dimensional scenes
 
-Convenience alternative to `AbstractTransformation<2, T>`. See
+Convenience alternative to @cpp AbstractTransformation<2, T> @ce. See
 @ref AbstractTransformation for more information.
 @see @ref AbstractTransformation2D, @ref AbstractBasicTransformation3D
 */
@@ -125,7 +124,7 @@ typedef AbstractBasicTransformation2D<Float> AbstractTransformation2D;
 /**
 @brief Base transformation for three-dimensional scenes
 
-Convenience alternative to `AbstractTransformation<3, T>`. See
+Convenience alternative to @cpp AbstractTransformation<3, T> @ce. See
 @ref AbstractTransformation for more information.
 @see @ref AbstractTransformation3D, @ref AbstractBasicTransformation2D
 */

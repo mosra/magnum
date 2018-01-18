@@ -58,14 +58,16 @@ for introduction.
 
 Common usage is to typedef @ref Object with desired transformation type to save
 unnecessary typing later, along with @ref Scene and possibly other types, e.g.:
-@code
+
+@code{.cpp}
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 @endcode
 
 Uses @ref Corrade::Containers::LinkedList for efficient hierarchy management.
 Traversing through the list of child objects can be done using range-based for:
-@code
+
+@code{.cpp}
 Object3D o;
 for(Object3D& child: o.children()) {
     // ...
@@ -75,14 +77,14 @@ for(Object3D& child: o.children()) {
 Or, if you need more flexibility, like in the following code. It is also
 possible to go in reverse order using @ref Corrade::Containers::LinkedList::last()
 and @ref previousSibling().
-@code
+
+@code{.cpp}
 for(Object3D* child = o->children().first(); child; child = child->nextSibling()) {
     // ...
 }
 @endcode
 
-@anchor SceneGraph-Object-explicit-specializations
-## Explicit template specializations
+@section SceneGraph-Object-explicit-specializations Explicit template specializations
 
 The following specializations are explicitly compiled into @ref SceneGraph
 library. For other specializations (e.g. using @ref Magnum::Double "Double"

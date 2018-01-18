@@ -41,11 +41,12 @@ namespace Magnum { namespace SceneGraph {
 
 Used together with @ref FeatureGroup.
 
-## Subclassing
+@section SceneGraph-AbstractGroupedFeature-subclassing Subclassing
 
 Usage is via subclassing the feature using [CRTP](http://en.wikipedia.org/wiki/Curiously_recurring_template_pattern)
 and typedef'ing @ref FeatureGroup to accept only given type, e.g.:
-@code
+
+@code{.cpp}
 class Drawable: public SceneGraph::AbstractGroupedFeature3D<Drawable> {
     // ...
 };
@@ -53,7 +54,7 @@ class Drawable: public SceneGraph::AbstractGroupedFeature3D<Drawable> {
 typedef SceneGraph::FeatureGroup3D<Drawable> DrawableGroup;
 @endcode
 
-## Explicit template specializations
+@section SceneGraph-AbstractGroupedFeature-explicit-specializations Explicit template specializations
 
 The following specializations are explicitly compiled into @ref SceneGraph
 library. For other specializations (e.g. using @ref Magnum::Double "Double" type)
@@ -110,7 +111,7 @@ template<UnsignedInt dimensions, class Derived, class T> class AbstractGroupedFe
 /**
 @brief Base grouped feature for two-dimensional scenes
 
-Convenience alternative to `AbstractGroupedFeature<2, Derived, T>`. See
+Convenience alternative to @cpp AbstractGroupedFeature<2, Derived, T> @ce. See
 @ref AbstractGroupedFeature for more information.
 @see @ref AbstractGroupedFeature2D, @ref AbstractBasicGroupedFeature3D
 */
@@ -121,7 +122,7 @@ template<class Derived, class T> using AbstractBasicGroupedFeature2D = AbstractG
 /**
 @brief Base grouped feature for two-dimensional float scenes
 
-Convenience alternative to `AbstractBasicGroupedFeature2D<Derived, Float>`.
+Convenience alternative to @cpp AbstractBasicGroupedFeature2D<Derived, Float> @ce.
 See @ref AbstractGroupedFeature for more information.
 @see @ref AbstractGroupedFeature3D
 */
@@ -132,7 +133,7 @@ template<class Derived> using AbstractGroupedFeature2D = AbstractBasicGroupedFea
 /**
 @brief Base grouped feature for three-dimensional scenes
 
-Convenience alternative to `AbstractGroupedFeature<3, Derived, T>`. See
+Convenience alternative to @cpp AbstractGroupedFeature<3, Derived, T> @ce. See
 @ref AbstractGroupedFeature for more information.
 @see @ref AbstractGroupedFeature3D, @ref AbstractBasicGroupedFeature2D
 */
@@ -143,7 +144,7 @@ template<class Derived, class T> using AbstractBasicGroupedFeature3D = AbstractG
 /**
 @brief Base grouped feature for three-dimensional float scenes
 
-Convenience alternative to `AbstractBasicGroupedFeature3D<Derived, Float>`.
+Convenience alternative to @cpp AbstractBasicGroupedFeature3D<Derived, Float> @ce.
 See @ref AbstractGroupedFeature for more information.
 @see @ref AbstractGroupedFeature2D
 */
