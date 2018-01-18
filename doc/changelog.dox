@@ -312,6 +312,7 @@ See also:
 -   @ref Trade::AbstractImporter and all `Trade::*Data` classes now provide
     member `importerState()` functions allowing the user to access
     importer-specific state
+-   Added @ref Trade::AbstractImporter::openState()
 -   @ref magnum-distancefieldconverter "magnum-distancefieldconverter" now uses
     @ref Trade::AnyImageConverter "AnyImageConverter" by default
 -   @ref Trade::TgaImporter "TgaImporter" sets proper @ref PixelStorage
@@ -537,6 +538,10 @@ See also:
     `colors` parameter are deprecated, use the full ones instead
 -   @ref Shaders::Generic::Color vertex attribute implicit constructor is
     deprecated, use a constructor with explicit component count instead
+-   The bundled `std::optional` implementation was causing serious conflicts
+    with C++17 and it's now deprecated in favor of @ref Containers::Optional.
+    (Deprecated) aliases and conversion operators are provided for backwards
+    compatibility.
 
 @subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
 
@@ -582,6 +587,9 @@ See also:
 -   Removed `Image::dataSize()` function as it has ambiguous meaning in regards
     to recently added features, use @ref Image::dataProperties() "Image::dataProperties()"
     instead
+-   The `FindGLFW.cmake` now prefers absolute includes (i.e. `GLFW/glfw3.h`
+    instead of just `glfw3.h`). The @ref Platform::GlfwApplication now depends
+    on this, so be sure to update your copy to avoid build issues.
 
 @subsection changelog-latest-performance Performance improvements
 
@@ -594,6 +602,9 @@ See also:
 -   Explicit list of extensions that are available in WebGL builds
 -   New page explaining @ref opengl-wrapping "OpenGL wrapper layer"
 -   Documented extra CMake modules in @ref cmake-modules
+-   The @ref building documentation now prefers package installation instead of
+    manual build
+-   Documented how to use Vcpkg packages
 
 @section changelog-2015-05 2015-05 snapshot
 

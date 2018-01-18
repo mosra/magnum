@@ -247,7 +247,7 @@ Tools for generating, optimizing and cleaning meshes.
 
 This library is built if `WITH_MESHTOOLS` is enabled when building Magnum. To
 use this library with CMake, you need to request the `MeshTools` component of
-the `Magnum` package and link to `Magnum::MeshTools` target:
+the `Magnum` package and link to the `Magnum::MeshTools` target:
 
 @code{.cmake}
 find_package(Magnum REQUIRED MeshTools)
@@ -291,7 +291,7 @@ Managing object hierarchy, transformations and interactions.
 
 This library is built if `WITH_SCENEGRAPH` is enabled when building Magnum. To
 use this library with CMake, you need to request the `SceneGraph` component of
-the `Magnum` package and link to `Magnum::SceneGraph` target:
+the `Magnum` package and link to the `Magnum::SceneGraph` target:
 
 @code{.cmake}
 find_package(Magnum REQUIRED SceneGraph)
