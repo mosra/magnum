@@ -54,9 +54,9 @@ data. See @ref plugins for more information and `*Importer` classes in
 @section Trade-AbstractImporter-subclassing Subclassing
 
 The plugin needs to implement the @ref doFeatures(), @ref doIsOpened()
-functions, one of or both @ref doOpenData() and @ref doOpenFile() functions,
-function @ref doClose() and one or more tuples of data access functions, based
-on which features are supported in given format.
+functions, at least one of @ref doOpenData() / @ref doOpenFile() @ref doOpenState()
+functions, function @ref doClose() and one or more tuples of data access
+functions, based on what features are supported in given format.
 
 For multi-data formats the file opening shouldn't take long and all parsing
 should be done in the data parsing functions instead, because the user might
@@ -67,11 +67,13 @@ import.
 You don't need to do most of the redundant sanity checks, these things are
 checked by the implementation:
 
--   The @ref doOpenData() and @ref doOpenFile() functions are called after the
-    previous file was closed, function @ref doClose() is called only if there
-    is any file opened.
+-   The @ref doOpenData(), @ref doOpenFile() and @ref doOpenState() functions
+    are called after the previous file was closed, function @ref doClose() is
+    called only if there is any file opened.
 -   The @ref doOpenData() function is called only if @ref Feature::OpenData is
     supported.
+-   The @ref doOpenState() function is called only if @ref Feature::OpenState
+    is supported.
 -   All `do*()` implementations working on an opened file are called only if
     there is any file opened.
 -   All `do*()` implementations taking data ID as parameter are called only if
@@ -98,6 +100,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
         enum class Feature: UnsignedByte {
             /** Opening files from raw data using @ref openData() */
             OpenData = 1 << 0,
+
             /** Opening already loaded state using @ref openState() */
             OpenState = 1 << 1
         };
@@ -125,18 +128,23 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
          *
          * Closes previous file, if it was opened, and tries to open given
          * file. Available only if @ref Feature::OpenData is supported. Returns
-         * `true` on success, `false` otherwise.
+         * @cpp true @ce on success, @cpp false @ce otherwise.
          * @see @ref features(), @ref openFile()
          */
         bool openData(Containers::ArrayView<const char> data);
 
-
         /**
          * @brief Open already loaded state
+         * @param state     Pointer to importer-specific state
+         * @param filePath  Base file directory for opening external data like
+         *      textures and materials.
          *
          * Closes previous file, if it was opened, and tries to open given
          * state. Available only if @ref Feature::OpenState is supported. Returns
-         * `true` on success, `false` otherwise.
+         * @cpp true @ce on success, @cpp false @ce otherwise.
+         *
+         * See documentation of a particular plugin for more information about
+         * type and contents of the @p state parameter.
          * @see @ref features(), @ref openData()
          */
         bool openState(const void* state, const std::string& filePath = {});
@@ -145,7 +153,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
          * @brief Open file
          *
          * Closes previous file, if it was opened, and tries to open given
-         * file. Returns `true` on success, `false` otherwise.
+         * file. Returns @cpp true @ce on success, @cpp false @ce otherwise.
          * @see @ref features(), @ref openData()
          */
         bool openFile(const std::string& filename);
@@ -161,7 +169,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
          * @brief Default scene
          *
          * When there is more than one scene, returns ID of the default one.
-         * If there is no default scene, returns `-1`.
+         * If there is no default scene, returns @cpp -1 @ce.
          *
          * @note The function is not const, because the value will probably
          *      be lazy-populated.
@@ -174,7 +182,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
         /**
          * @brief Scene ID for given name
          *
-         * If no scene for given name exists, returns `-1`.
+         * If no scene for given name exists, returns @cpp -1 @ce.
          * @see @ref sceneName()
          */
         Int sceneForName(const std::string& name);
@@ -201,7 +209,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
         /**
          * @brief Light ID for given name
          *
-         * If no light for given name exists, returns `-1`.
+         * If no light for given name exists, returns @cpp -1 @ce.
          * @see @ref lightName()
          */
         Int lightForName(const std::string& name);
@@ -228,7 +236,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
         /**
          * @brief Camera ID for given name
          *
-         * If no camera for given name exists, returns `-1`.
+         * If no camera for given name exists, returns @cpp -1 @ce.
          * @see @ref cameraName()
          */
         Int cameraForName(const std::string& name);
@@ -255,7 +263,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
         /**
          * @brief Two-dimensional object ID for given name
          *
-         * If no scene for given name exists, returns `-1`.
+         * If no scene for given name exists, returns @cpp -1 @ce.
          * @see @ref object2DName()
          */
         Int object2DForName(const std::string& name);
@@ -282,7 +290,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
         /**
          * @brief Three-dimensional object ID for given name
          *
-         * If no scene for given name exists, returns `-1`.
+         * If no scene for given name exists, returns @cpp -1 @ce.
          * @see @ref object3DName()
          */
         Int object3DForName(const std::string& name);
@@ -309,7 +317,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
         /**
          * @brief Two-dimensional mesh ID for given name
          *
-         * If no mesh for given name exists, returns `-1`.
+         * If no mesh for given name exists, returns @cpp -1 @ce.
          * @see @ref mesh2DName()
          */
         Int mesh2DForName(const std::string& name);
@@ -336,7 +344,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
         /**
          * @brief Three-dimensional mesh ID for given name
          *
-         * If no mesh for given name exists, returns `-1`.
+         * If no mesh for given name exists, returns @cpp -1 @ce.
          * @see @ref mesh3DName()
          */
         Int mesh3DForName(const std::string& name);
@@ -363,7 +371,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
         /**
          * @brief Material ID for given name
          *
-         * If no material for given name exists, returns `-1`.
+         * If no material for given name exists, returns @cpp -1 @ce.
          * @see @ref materialName()
          */
         Int materialForName(const std::string& name);
@@ -390,7 +398,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
         /**
          * @brief Texture ID for given name
          *
-         * If no texture for given name exists, returns `-1`.
+         * If no texture for given name exists, returns @cpp -1 @ce.
          * @see @ref textureName()
          */
         Int textureForName(const std::string& name);
@@ -417,7 +425,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
         /**
          * @brief One-dimensional image ID for given name
          *
-         * If no image for given name exists, returns `-1`.
+         * If no image for given name exists, returns @cpp -1 @ce.
          * @see @ref image1DName()
          */
         Int image1DForName(const std::string& name);
@@ -444,7 +452,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
         /**
          * @brief Two-dimensional image ID for given name
          *
-         * If no image for given name exists, returns `-1`.
+         * If no image for given name exists, returns @cpp -1 @ce.
          * @see @ref image2DName()
          */
         Int image2DForName(const std::string& name);
@@ -471,7 +479,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
         /**
          * @brief Three-dimensional image ID for given name
          *
-         * If no image for given name exists, returns `-1`.
+         * If no image for given name exists, returns @cpp -1 @ce.
          * @see @ref image3DName()
          */
         Int image3DForName(const std::string& name);
@@ -499,7 +507,7 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
          *
          * The importer might provide access to its internal data structures
          * for currently opened document through this function. See
-         * documentation of particular plugin for more information about
+         * documentation of a particular plugin for more information about
          * returned type and contents. Returns `nullptr` by default.
          * @see @ref AbstractMaterialData::importerState(),
          *      @ref CameraData::importerState(), @ref ImageData::importerState(),
@@ -543,21 +551,21 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
         /**
          * @brief Implementation for @ref defaultScene()
          *
-         * Default implementation returns `-1`.
+         * Default implementation returns @cpp -1 @ce.
          */
         virtual Int doDefaultScene();
 
         /**
          * @brief Implementation for @ref sceneCount()
          *
-         * Default implementation returns `0`.
+         * Default implementation returns @cpp 0 @ce.
          */
         virtual UnsignedInt doSceneCount() const;
 
         /**
          * @brief Implementation for @ref sceneForName()
          *
-         * Default implementation returns `-1`.
+         * Default implementation returns @cpp -1 @ce.
          */
         virtual Int doSceneForName(const std::string& name);
 
@@ -574,14 +582,14 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
         /**
          * @brief Implementation for @ref lightCount()
          *
-         * Default implementation returns `0`.
+         * Default implementation returns @cpp 0 @ce.
          */
         virtual UnsignedInt doLightCount() const;
 
         /**
          * @brief Implementation for @ref lightForName()
          *
-         * Default implementation returns `-1`.
+         * Default implementation returns @cpp -1 @ce.
          */
         virtual Int doLightForName(const std::string& name);
 
@@ -598,14 +606,14 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
         /**
          * @brief Implementation for @ref cameraCount()
          *
-         * Default implementation returns `0`.
+         * Default implementation returns @cpp 0 @ce.
          */
         virtual UnsignedInt doCameraCount() const;
 
         /**
          * @brief Implementation for @ref cameraForName()
          *
-         * Default implementation returns `-1`.
+         * Default implementation returns @cpp -1 @ce.
          */
         virtual Int doCameraForName(const std::string& name);
 
@@ -622,14 +630,14 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
         /**
          * @brief Implementation for @ref object2DCount()
          *
-         * Default implementation returns `0`.
+         * Default implementation returns @cpp 0 @ce.
          */
         virtual UnsignedInt doObject2DCount() const;
 
         /**
          * @brief Implementation for @ref object2DForName()
          *
-         * Default implementation returns `-1`.
+         * Default implementation returns @cpp -1 @ce.
          */
         virtual Int doObject2DForName(const std::string& name);
 
@@ -646,14 +654,14 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
         /**
          * @brief Implementation for @ref object3DCount()
          *
-         * Default implementation returns `0`.
+         * Default implementation returns @cpp 0 @ce.
          */
         virtual UnsignedInt doObject3DCount() const;
 
         /**
          * @brief Implementation for @ref object3DForName()
          *
-         * Default implementation returns `-1`.
+         * Default implementation returns @cpp -1 @ce.
          */
         virtual Int doObject3DForName(const std::string& name);
 
@@ -670,14 +678,14 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
         /**
          * @brief Implementation for @ref mesh2DCount()
          *
-         * Default implementation returns `0`.
+         * Default implementation returns @cpp 0 @ce.
          */
         virtual UnsignedInt doMesh2DCount() const;
 
         /**
          * @brief Implementation for @ref mesh2DForName()
          *
-         * Default implementation returns `-1`.
+         * Default implementation returns @cpp -1 @ce.
          */
         virtual Int doMesh2DForName(const std::string& name);
 
@@ -694,14 +702,14 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
         /**
          * @brief Implementation for @ref mesh3DCount()
          *
-         * Default implementation returns `0`.
+         * Default implementation returns @cpp 0 @ce.
          */
         virtual UnsignedInt doMesh3DCount() const;
 
         /**
          * @brief Implementation for @ref mesh3DForName()
          *
-         * Default implementation returns `-1`.
+         * Default implementation returns @cpp -1 @ce.
          */
         virtual Int doMesh3DForName(const std::string& name);
 
@@ -718,14 +726,14 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
         /**
          * @brief Implementation for @ref materialCount()
          *
-         * Default implementation returns `0`.
+         * Default implementation returns @cpp 0 @ce.
          */
         virtual UnsignedInt doMaterialCount() const;
 
         /**
          * @brief Implementation for @ref materialForName()
          *
-         * Default implementation returns `-1`.
+         * Default implementation returns @cpp -1 @ce.
          */
         virtual Int doMaterialForName(const std::string& name);
 
@@ -742,14 +750,14 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
         /**
          * @brief Implementation for @ref textureCount()
          *
-         * Default implementation returns `0`.
+         * Default implementation returns @cpp 0 @ce.
          */
         virtual UnsignedInt doTextureCount() const;
 
         /**
          * @brief Implementation for @ref textureForName()
          *
-         * Default implementation returns `-1`.
+         * Default implementation returns @cpp -1 @ce.
          */
         virtual Int doTextureForName(const std::string& name);
 
@@ -766,14 +774,14 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
         /**
          * @brief Implementation for @ref image1DCount()
          *
-         * Default implementation returns `0`.
+         * Default implementation returns @cpp 0 @ce.
          */
         virtual UnsignedInt doImage1DCount() const;
 
         /**
          * @brief Implementation for @ref image1DForName()
          *
-         * Default implementation returns `-1`.
+         * Default implementation returns @cpp -1 @ce.
          */
         virtual Int doImage1DForName(const std::string& name);
 
@@ -790,14 +798,14 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
         /**
          * @brief Implementation for @ref image2DCount()
          *
-         * Default implementation returns `0`.
+         * Default implementation returns @cpp 0 @ce.
          */
         virtual UnsignedInt doImage2DCount() const;
 
         /**
          * @brief Implementation for @ref image2DForName()
          *
-         * Default implementation returns `-1`.
+         * Default implementation returns @cpp -1 @ce.
          */
         virtual Int doImage2DForName(const std::string& name);
 
@@ -814,14 +822,14 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
         /**
          * @brief Implementation for @ref image3DCount()
          *
-         * Default implementation returns `0`.
+         * Default implementation returns @cpp 0 @ce.
          */
         virtual UnsignedInt doImage3DCount() const;
 
         /**
          * @brief Implementation for @ref image3DForName()
          *
-         * Default implementation returns `-1`.
+         * Default implementation returns @cpp -1 @ce.
          */
         virtual Int doImage3DForName(const std::string& name);
 
