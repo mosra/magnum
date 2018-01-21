@@ -81,6 +81,12 @@ class MAGNUM_PRIMITIVES_EXPORT Capsule3D {
          * Indexed @ref MeshPrimitive::Triangles with normals and optional 2D
          * texture coordinates. If texture coordinates are generated, vertices
          * of one segment are duplicated for texture wrapping.
+         *
+         * The capsule is by default created with radius set to @cpp 1.0f @ce.
+         * In order to get radius @f$ r @f$, length @f$ l @f$ and preserve
+         * correct normals, set @p halfLength to @f$ 0.5 \frac{l}{r} @f$ and
+         * then scale all @ref Trade::MeshData3D::positions() by @f$ r @f$, for
+         * example using @ref MeshTools::transformPointsInPlace().
          */
         static Trade::MeshData3D solid(UnsignedInt hemisphereRings, UnsignedInt cylinderRings, UnsignedInt segments, Float halfLength, TextureCoords textureCoords = TextureCoords::DontGenerate);
 

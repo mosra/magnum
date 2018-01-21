@@ -74,6 +74,12 @@ class MAGNUM_PRIMITIVES_EXPORT Cylinder {
          * texture coordinates and optional capped ends. If texture coordinates
          * are generated, vertices of one segment are duplicated for texture
          * wrapping.
+         *
+         * The cylinder is by default created with radius set to @cpp 1.0f @ce.
+         * In order to get radius @f$ r @f$, length @f$ l @f$ and preserve
+         * correct normals, set @p halfLength to @f$ 0.5 \frac{l}{r} @f$ and
+         * then scale all @ref Trade::MeshData3D::positions() by @f$ r @f$, for
+         * example using @ref MeshTools::transformPointsInPlace().
          */
         static Trade::MeshData3D solid(UnsignedInt rings, UnsignedInt segments, Float halfLength, Flags flags = Flags());
 
