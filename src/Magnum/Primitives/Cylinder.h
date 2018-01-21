@@ -50,8 +50,8 @@ class MAGNUM_PRIMITIVES_EXPORT Cylinder {
          * @see @ref Flags, @ref solid(), @ref wireframe()
          */
         enum class Flag {
-            GenerateTextureCoords = 1,  /**< @brief Generate texture coordinates */
-            CapEnds                     /**< @brief Cap ends */
+            GenerateTextureCoords = 1,  /**< Generate texture coordinates */
+            CapEnds                     /**< Cap ends */
         };
 
         /**
