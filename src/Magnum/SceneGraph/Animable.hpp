@@ -38,7 +38,12 @@ namespace Magnum { namespace SceneGraph {
 
 template<UnsignedInt dimensions, class T> Animable<dimensions, T>::Animable(AbstractObject<dimensions, T>& object, AnimableGroup<dimensions, T>* group): AbstractGroupedFeature<dimensions, Animable<dimensions, T>, T>{object, group}, _duration{0.0f}, _startTime{Constants::inf()}, _pauseTime{-Constants::inf()}, _previousState{AnimationState::Stopped}, _currentState{AnimationState::Stopped}, _repeated{false}, _repeatCount{0}, _repeats{0} {}
 
-template<UnsignedInt dimensions, class T> Animable<dimensions, T>::~Animable() {}
+template<UnsignedInt dimensions, class T> Animable<dimensions, T>::~Animable() {
+    /* Update count of running animations when deleting an animable that's
+       currently running */
+    if(animables() && _currentState == AnimationState::Running)
+        --animables()->_runningCount;
+}
 
 template<UnsignedInt dimensions, class T> Animable<dimensions, T>& Animable<dimensions, T>::setState(AnimationState state) {
     if(_currentState == state) return *this;
