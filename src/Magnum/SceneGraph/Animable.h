@@ -169,7 +169,7 @@ template<UnsignedInt dimensions, class T> class Animable: public AbstractGrouped
         Float duration() const { return _duration; }
 
         /** @brief Animation state */
-        AnimationState state() const { return currentState; }
+        AnimationState state() const { return _currentState; }
 
         /**
          * @brief Set animation state
@@ -318,12 +318,11 @@ template<UnsignedInt dimensions, class T> class Animable: public AbstractGrouped
 
     private:
         Float _duration;
-        Float startTime, pauseTime;
-        AnimationState previousState;
-        AnimationState currentState;
+        Float _startTime, _pauseTime;
+        AnimationState _previousState, _currentState;
         bool _repeated;
         UnsignedShort _repeatCount;
-        UnsignedShort repeats;
+        UnsignedShort _repeats;
 };
 
 /**
