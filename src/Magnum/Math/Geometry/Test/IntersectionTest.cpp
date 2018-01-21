@@ -24,11 +24,15 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Math/Geometry/Intersection.h"
+#include "Magnum/Math/Angle.h"
 
 namespace Magnum { namespace Math { namespace Geometry { namespace Test {
+
+using namespace Literals;
 
 struct IntersectionTest: Corrade::TestSuite::Tester {
     explicit IntersectionTest();
@@ -37,22 +41,45 @@ struct IntersectionTest: Corrade::TestSuite::Tester {
     void lineLine();
 
     void pointFrustum();
-    void boxFrustum();
+    void rangeFrustum();
+    void aabbFrustum();
+    void sphereFrustum();
+
+    void pointCone();
+    void pointDoubleCone();
+    void sphereCone();
+    void sphereConeView();
+    void rangeCone();
+    void aabbCone();
 };
 
 typedef Math::Vector2<Float> Vector2;
 typedef Math::Vector3<Float> Vector3;
+typedef Math::Vector3<Double> Vector3d;
 typedef Math::Vector4<Float> Vector4;
+typedef Math::Matrix4<Float> Matrix4;
+typedef Math::Matrix4<Double> Matrix4d;
 typedef Math::Frustum<Float> Frustum;
 typedef Math::Constants<Float> Constants;
 typedef Math::Range3D<Float> Range3D;
+typedef Math::Rad<Float> Rad;
+typedef Math::Rad<Double> Radd;
 
 IntersectionTest::IntersectionTest() {
     addTests({&IntersectionTest::planeLine,
               &IntersectionTest::lineLine,
 
               &IntersectionTest::pointFrustum,
-              &IntersectionTest::boxFrustum});
+              &IntersectionTest::rangeFrustum,
+              &IntersectionTest::aabbFrustum,
+              &IntersectionTest::sphereFrustum,
+
+              &IntersectionTest::pointCone,
+              &IntersectionTest::pointDoubleCone,
+              &IntersectionTest::sphereCone,
+              &IntersectionTest::sphereConeView,
+              &IntersectionTest::rangeCone,
+              &IntersectionTest::aabbCone});
 }
 
 void IntersectionTest::planeLine() {
@@ -124,7 +151,55 @@ void IntersectionTest::pointFrustum() {
     CORRADE_VERIFY(!Intersection::pointFrustum({0.0f, 0.0f, 100.0f}, frustum));
 }
 
-void IntersectionTest::boxFrustum() {
+void IntersectionTest::rangeFrustum() {
+    const Frustum frustum{
+        {1.0f, 0.0f, 0.0f, 0.0f},
+        {-1.0f, 0.0f, 0.0f, 5.0f},
+        {0.0f, 1.0f, 0.0f, 0.0f},
+        {0.0f, -1.0f, 0.0f, 1.0f},
+        {0.0f, 0.0f, 1.0f, 0.0f},
+        {0.0f, 0.0f, -1.0f, 10.0f}};
+
+    /* Fully inside */
+    CORRADE_VERIFY(Intersection::rangeFrustum(Range3D{Vector3{1.0f}, Vector3{2.0f}}, frustum));
+    /* Intersects with exactly one plane each */
+    CORRADE_VERIFY(Intersection::rangeFrustum(Range3D::fromSize({2.4f, -0.1f, 4.9f}, Vector3{0.2f}), frustum));
+    CORRADE_VERIFY(Intersection::rangeFrustum(Range3D::fromSize({2.4f, 0.9f, 4.9f}, Vector3{0.2f}), frustum));
+    CORRADE_VERIFY(Intersection::rangeFrustum(Range3D::fromSize({-0.1f, 0.4f, 4.9f}, Vector3{0.2f}), frustum));
+    CORRADE_VERIFY(Intersection::rangeFrustum(Range3D::fromSize({4.9f, 0.4f, 4.9f}, Vector3{0.2f}), frustum));
+    CORRADE_VERIFY(Intersection::rangeFrustum(Range3D::fromSize({2.4f, 0.4f, -0.1f}, Vector3{0.2f}), frustum));
+    CORRADE_VERIFY(Intersection::rangeFrustum(Range3D::fromSize({2.4f, 0.4f, 9.9f}, Vector3{0.2f}), frustum));
+    /* Bigger than frustum, but still intersects */
+    CORRADE_VERIFY(Intersection::rangeFrustum(Range3D{Vector3{-100.0f}, Vector3{100.0f}}, frustum));
+    /* Outside of frustum */
+    CORRADE_VERIFY(!Intersection::rangeFrustum(Range3D{Vector3{-10.0f}, Vector3{-5.0f}}, frustum));
+}
+
+void IntersectionTest::aabbFrustum() {
+    const Frustum frustum{
+        {1.0f, 0.0f, 0.0f, 0.0f},
+        {-1.0f, 0.0f, 0.0f, 5.0f},
+        {0.0f, 1.0f, 0.0f, 0.0f},
+        {0.0f, -1.0f, 0.0f, 1.0f},
+        {0.0f, 0.0f, 1.0f, 0.0f},
+        {0.0f, 0.0f, -1.0f, 10.0f}};
+
+    /* Fully inside */
+    CORRADE_VERIFY(Intersection::aabbFrustum(Vector3{0.0f}, Vector3{1.0f}, frustum));
+    /* Intersects with exactly one plane each */
+    CORRADE_VERIFY(Intersection::aabbFrustum(Vector3{2.5f, 0.0f, 5.0f}, Vector3{0.1f}, frustum));
+    CORRADE_VERIFY(Intersection::aabbFrustum(Vector3{2.5f, 1.0f, 5.0f}, Vector3{0.1f}, frustum));
+    CORRADE_VERIFY(Intersection::aabbFrustum(Vector3{0.0f, 0.5f, 5.0f}, Vector3{0.1f}, frustum));
+    CORRADE_VERIFY(Intersection::aabbFrustum(Vector3{5.0f, 0.5f, 5.0f}, Vector3{0.1f}, frustum));
+    CORRADE_VERIFY(Intersection::aabbFrustum(Vector3{2.5f, 0.5f, 0.0f}, Vector3{0.1f}, frustum));
+    CORRADE_VERIFY(Intersection::aabbFrustum(Vector3{2.5f, 0.5f, 10.0f}, Vector3{0.1f}, frustum));
+    /* Bigger than frustum, but still intersects */
+    CORRADE_VERIFY(Intersection::aabbFrustum(Vector3{0.0f}, Vector3{100.0f}, frustum));
+    /* Outside of frustum */
+    CORRADE_VERIFY(!Intersection::aabbFrustum(Vector3{-7.5f}, Vector3{2.5f}, frustum));
+}
+
+void IntersectionTest::sphereFrustum() {
     const Frustum frustum{
         {1.0f, 0.0f, 0.0f, 0.0f},
         {-1.0f, 0.0f, 0.0f, 10.0f},
@@ -133,11 +208,220 @@ void IntersectionTest::boxFrustum() {
         {0.0f, 0.0f, 1.0f, 0.0f},
         {0.0f, 0.0f, -1.0f, 10.0f}};
 
-    CORRADE_VERIFY(Intersection::boxFrustum({Vector3{1.0f}, Vector3{2.0f}}, frustum));
-    /* Bigger than frustum, but still intersects */
-    CORRADE_VERIFY(Intersection::boxFrustum(Range3D{Vector3{-100.0f}, Vector3{100.0f}}, frustum));
-    /* Outside of frustum */
-    CORRADE_VERIFY(!Intersection::boxFrustum(Range3D{Vector3{-10.0f}, Vector3{-5.0f}}, frustum));
+    /* Sphere on edge */
+    CORRADE_VERIFY(Intersection::sphereFrustum({0.0f, 0.0f, -1.0f}, 1.5f, frustum));
+    /* Sphere inside */
+    CORRADE_VERIFY(Intersection::sphereFrustum({5.5f, 5.5f, 5.5f}, 1.5f,  frustum));
+    /* Sphere outside */
+    CORRADE_VERIFY(!Intersection::sphereFrustum({0.0f, 0.0f, 100.0f}, 0.5f, frustum));
+}
+
+void IntersectionTest::pointCone() {
+    const Vector3 center{0.1f, 0.2f, 0.3f};
+    const Vector3 normal{Vector3{0.5f, 1.0f, 2.0f}.normalized()};
+    const Rad angle{72.0_degf};
+
+    const Vector3d centerDouble{1.0, -2.0, 1.3};
+    const Vector3d normalDouble{Vector3{0.5, 1.0, 2.0}.normalized()};
+    const Radd angleDouble{72.0_deg};
+
+    /* Some vector along the surface of the cone */
+    auto axis = Math::cross(Vector3::yAxis(), normal).normalized();
+    auto surface = Matrix4::rotation(0.5f*angle, axis).transformVector(normal);
+    /* Normal on the curved surface */
+    auto sNormal = Matrix4::rotation(90.0_degf, axis).transformVector(surface);
+
+    /* Point on edge */
+    CORRADE_VERIFY(Intersection::pointCone(center, center, normal, angle));
+    /* Point inside */
+    CORRADE_VERIFY(Intersection::pointCone(center + normal, center, normal, angle));
+    /* Point outside */
+    CORRADE_VERIFY(!Intersection::pointCone(Vector3{}, center, normal, angle));
+    CORRADE_VERIFY(!Intersection::pointCone(center + 5.0f*surface + 0.01f*sNormal, center, normal, angle));
+    /* Point behind the cone plane */
+    CORRADE_VERIFY(!Intersection::pointCone(-normal, center, normal, angle));
+}
+
+void IntersectionTest::pointDoubleCone() {
+    const Vector3 center{0.1f, 0.2f, 0.3f};
+    const Vector3 normal{Vector3{0.5f, 1.0f, 2.0f}.normalized()};
+    const Rad angle{72.0_degf};
+
+    /* Some vector along the surface of the cone */
+    auto axis = Math::cross(Vector3::yAxis(), normal).normalized();
+    auto surface = Matrix4::rotation(0.5f*angle, axis).transformVector(normal);
+    /* Normal on the curved surface */
+    auto sNormal = Matrix4::rotation(90.0_degf, axis).transformVector(surface);
+
+    /* Point on edge */
+    CORRADE_VERIFY(Intersection::pointDoubleCone(center, center, normal, angle));
+    /* Point inside */
+    CORRADE_VERIFY(Intersection::pointDoubleCone(center + normal, center, normal, angle));
+    CORRADE_VERIFY(Intersection::pointDoubleCone(center - normal, center, normal, angle));
+    /* Point outside */
+    CORRADE_VERIFY(!Intersection::pointDoubleCone(center + sNormal, center, normal, angle));
+}
+
+void IntersectionTest::sphereCone() {
+    const Vector3 center{1.0f, -2.0f, 1.3f};
+    const Vector3 normal{Vector3{0.5f, 1.0f, 2.0f}.normalized()};
+    const Rad angle(72.0_degf);
+
+    /* Same for Double precision */
+    const Vector3d centerDouble{1.0, -2.0, 1.3};
+    const Vector3d normalDouble{Vector3{0.5, 1.0, 2.0}.normalized()};
+    const Radd angleDouble(72.0_deg);
+
+    /* Some vector along the surface of the cone */
+    auto axis = Math::cross(Vector3::yAxis(), normal).normalized();
+    auto surface = Matrix4::rotation(0.5f*angle, axis).transformVector(normal);
+    /* Normal on the curved surface */
+    auto sNormal = Matrix4::rotation(90.0_degf, axis).transformVector(surface);
+
+    /* Same for Double precision */
+    auto axisDouble = Math::cross(Vector3d::yAxis(), normalDouble).normalized();
+    auto surfaceDouble = Matrix4d::rotation(0.5*angleDouble, axisDouble).transformVector(normalDouble);
+    auto sNormalDouble = Matrix4d::rotation(90.0_deg, axisDouble).transformVector(surfaceDouble);
+
+    /* Sphere fully contained in cone */
+    CORRADE_VERIFY(Intersection::sphereCone(center + normal*5.0f, 0.8f, center, normal, angle));
+    /* Sphere fully contained in double side of cone */
+    CORRADE_VERIFY(!Intersection::sphereCone(center + normal*-5.0f, 0.75f, center, normal, angle));
+    /* Sphere fully outside of the cone */
+    CORRADE_VERIFY(!Intersection::sphereCone(center + surface + sNormal*5.0f, 0.75f, center, normal, angle));
+
+    /* Sphere intersecting apex with sphere center behind the cone plane */
+    CORRADE_VERIFY(Intersection::sphereCone(center - normal*0.1f, 0.55f, center, normal, angle));
+    /* Sphere intersecting apex with sphere center in front of the cone plane */
+    CORRADE_VERIFY(Intersection::sphereCone(center + normal*0.1f, 0.55f, center, normal, angle));
+
+    /* Sphere barely touching the surface of the cone, from inside and outside the cone */
+    {
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        CORRADE_EXPECT_FAIL("Cone touching from the outside fails, possibly because of precision.");
+        #endif
+        CORRADE_VERIFY(Intersection::sphereCone(centerDouble + 4.0*surfaceDouble + sNormalDouble*0.5, 0.5, centerDouble, normalDouble, angleDouble));
+    }
+    CORRADE_VERIFY(Intersection::sphereCone(centerDouble + 4.0*surfaceDouble - sNormalDouble*0.5, 0.5, centerDouble, normalDouble, angleDouble));
+
+    /* Same on double side of the cone */
+    CORRADE_VERIFY(!Intersection::sphereCone(center - 4.0f*surface + sNormal*0.5f, 0.5f, center, normal, angle));
+    CORRADE_VERIFY(!Intersection::sphereCone(center - 4.0f*surface - sNormal*0.5f, 0.5f, center, normal, angle));
+
+    /* Sphere clearly, but not fully intersecting the cone */
+    CORRADE_VERIFY(Intersection::sphereCone(center + surface + sNormal*0.25f, 0.5f, center, normal, angle));
+    /* Sphere with center on the cone's surface */
+    CORRADE_VERIFY(Intersection::sphereCone(center + 4.0f*surface, 0.5f, center, normal, angle));
+
+    /* Same as above on double side of the cone */
+    CORRADE_VERIFY(!Intersection::sphereCone(center - surface + sNormal*0.25f, 0.5f, center, normal, angle));
+    CORRADE_VERIFY(!Intersection::sphereCone(center - 4.0f*surface, 0.5f, center, normal, angle));
+}
+
+void IntersectionTest::sphereConeView() {
+    const Vector3 center{1.0f, -2.0f, 1.3f};
+    const Vector3 normal{Vector3{0.5f, 1.0f, 2.0f}.normalized()};
+    const Matrix4 coneView = Matrix4::lookAt(center, center + normal, Vector3::yAxis()).invertedRigid();
+
+    const Vector3d centerDouble{1.0, -2.0, 1.3};
+    const Vector3d normalDouble{Vector3{0.5, 1.0, 2.0}.normalized()};
+    const Matrix4d coneViewDouble = Matrix4d::lookAt(centerDouble, centerDouble + normalDouble, Vector3d::yAxis()).invertedRigid();
+
+    const Rad angle(72.0_degf);
+    const Radd angleDouble(72.0_deg);
+
+    /* Some vector along the surface of the cone */
+    auto axis = Math::cross(Vector3::yAxis(), normal).normalized();
+    auto surface = Matrix4::rotation(0.5f*angle, axis).transformVector(normal);
+    /* Normal on the curved surface */
+    auto sNormal = Matrix4::rotation(90.0_degf, axis).transformVector(surface);
+
+    /* Sphere fully contained in cone */
+    CORRADE_VERIFY(Intersection::sphereConeView(center + normal*5.0f, 0.8f, coneView, angle));
+    /* Sphere fully contained in double side of cone */
+    CORRADE_VERIFY(!Intersection::sphereConeView(center + normal*-5.0f, 0.75f, coneView, angle));
+    /* Sphere fully outside of the cone */
+    CORRADE_VERIFY(!Intersection::sphereConeView(center + surface + sNormal*5.0f, 0.75f, coneView, angle));
+
+    /* Sphere intersecting apex with sphere center behind the cone plane */
+    CORRADE_VERIFY(Intersection::sphereConeView(center - normal*0.1f, 0.55f, coneView, angle));
+    /* Sphere intersecting apex with sphere center in front of the cone plane */
+    CORRADE_VERIFY(Intersection::sphereConeView(center + normal*0.1f, 0.55f, coneView, angle));
+
+    /* Sphere barely touching the surface of the cone, from inside and outside the cone
+       Note: behaviour differs from sphereCone! */
+    CORRADE_VERIFY(Intersection::sphereConeView(centerDouble + 4.0*Vector3d(surface) + Vector3d(sNormal)*0.5, 0.5, coneViewDouble, angleDouble));
+    CORRADE_VERIFY(Intersection::sphereConeView(centerDouble + 4.0*Vector3d(surface) - Vector3d(sNormal)*0.5, 0.5, coneViewDouble, angleDouble));
+    /* Same on double side of the cone */
+    CORRADE_VERIFY(!Intersection::sphereConeView(center - 4.0f*surface + sNormal*0.5f, 0.5f, coneView, angle));
+    CORRADE_VERIFY(!Intersection::sphereConeView(center - 4.0f*surface - sNormal*0.5f, 0.5f, coneView, angle));
+
+    /* Sphere clearly, but not fully intersecting the cone */
+    CORRADE_VERIFY(Intersection::sphereConeView(center + surface + sNormal*0.25f, 0.5f, coneView, angle));
+    /* Sphere with center on the cone's surface */
+    CORRADE_VERIFY(Intersection::sphereConeView(center + 4.0f*surface, 0.5f, coneView, angle));
+
+    /* Same as above on double side of the cone */
+    CORRADE_VERIFY(!Intersection::sphereConeView(center - surface + sNormal*0.25f, 0.5f, coneView, angle));
+    CORRADE_VERIFY(!Intersection::sphereConeView(center - 4.0f*surface, 0.5f, coneView, angle));
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    CORRADE_VERIFY(!Intersection::sphereConeView(center, 1.0f, Matrix4{ZeroInit}, angle));
+    CORRADE_COMPARE(out.str(), "Math::Geometry::Intersection::sphereConeView(): coneView must be rigid\n");
+}
+
+void IntersectionTest::rangeCone() {
+    const Vector3 center{1.0f, -2.0f, 1.3f};
+    const Vector3 normal{0.453154f, 0.422618f, 0.784886f};
+    const Rad angle{72.0_degf};
+
+    /* Box fully inside cone */
+    CORRADE_VERIFY(Intersection::rangeCone(Range3D::fromSize(15.0f*normal - Vector3{1.0f}, Vector3{2.0f}),
+                                           center, normal, angle));
+    /* Box intersecting cone */
+    CORRADE_VERIFY(Intersection::rangeCone(Range3D::fromSize(5.0f*normal - Vector3{10.0f, 10.0f, 0.5f}, Vector3{20.0f, 20.0f, 1.0f}),
+                                           center, normal, angle));
+    CORRADE_VERIFY(Intersection::rangeCone(Range3D{{-1.0f, -2.0f, -3.0f}, {1.0f, 2.0f, 3.0f}},
+                                           center, normal, angle));
+    /* Cone inside large box */
+    CORRADE_VERIFY(Intersection::rangeCone(Range3D::fromSize(12.0f*normal - Vector3{20.0f}, Vector3{40.0f}),
+                                           center, normal, angle));
+    /* Same corner chosen on all intersecting faces */
+    CORRADE_VERIFY(Intersection::rangeCone(Range3D{{2.0f, -0.1f, -1.5f}, {3.0f, 0.1f, 1.5f}},
+                                           center, {0.353553f, 0.707107f, 0.612372f}, angle));
+
+    /* Boxes outside cone */
+    CORRADE_VERIFY(!Intersection::rangeCone(Range3D{Vector3{2.0f, 2.0f, -2.0f}, Vector3{8.0f, 7.0f, 2.0f}},
+                                            center, normal, angle));
+    CORRADE_VERIFY(!Intersection::rangeCone(Range3D{Vector3{6.0f, 5.0f, -7.0f}, Vector3{5.0f, 9.0f, -3.0f}},
+                                            center, normal, angle));
+    /* Box fully contained in double cone */
+    CORRADE_VERIFY(!Intersection::rangeCone(Range3D::fromSize(-15.0f*normal - Vector3{1.0f}, Vector3{2.0f}),
+                                            center, normal, angle));
+}
+
+void IntersectionTest::aabbCone() {
+    const Vector3 center{1.0f, -2.0f, 1.3f};
+    const Vector3 normal{0.453154f, 0.422618f, 0.784886f};
+    const Rad angle{72.0_degf};
+
+    /* Box fully inside cone */
+    CORRADE_VERIFY(Intersection::aabbCone(15.0f*normal, Vector3{1.0f}, center, normal, angle));
+    /* Box intersecting cone */
+    CORRADE_VERIFY(Intersection::aabbCone(5.0f*normal, {10.0f, 10.0f, 0.5f}, center, normal, angle));
+    CORRADE_VERIFY(Intersection::aabbCone({}, { 1.0f, 2.0f, 3.0f }, center, normal, angle));
+    /* Cone inside large box */
+    CORRADE_VERIFY(Intersection::aabbCone(12.0f*normal, {20.0f, 20.0f, 20.0f}, center, normal, angle));
+    /* Same corner chosen on all intersecting faces */
+    CORRADE_VERIFY(Intersection::aabbCone({2.5f, 0.0f, 0.0f}, {0.5f, 0.1f, 1.5f}, center, {0.353553f, 0.707107f, 0.612372f}, angle));
+
+    /* Boxes outside cone */
+    CORRADE_VERIFY(!Intersection::aabbCone({5.0f, 5.0f, 0.0f}, {3.0f, 2.0f, 2.0f}, center, normal, angle));
+    CORRADE_VERIFY(!Intersection::aabbCone({8.0f, 7.0f, -5.0f}, {2.0f, 2.0f, 2.0f}, center, normal, angle));
+    /* Box fully contained in double cone */
+    CORRADE_VERIFY(!Intersection::aabbCone(-15.0f*normal, Vector3{1.0f}, center, normal, angle));
 }
 
 }}}}
