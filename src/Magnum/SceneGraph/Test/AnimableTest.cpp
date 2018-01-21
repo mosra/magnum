@@ -42,6 +42,8 @@ struct AnimableTest: TestSuite::Tester {
     void stop();
     void pause();
 
+    void deleteWhileRunning();
+
     void debug();
 };
 
@@ -54,6 +56,8 @@ AnimableTest::AnimableTest() {
               &AnimableTest::repeat,
               &AnimableTest::stop,
               &AnimableTest::pause,
+
+              &AnimableTest::deleteWhileRunning,
 
               &AnimableTest::debug});
 }
@@ -349,6 +353,28 @@ void AnimableTest::pause() {
     group.step(5.0f, 0.5f);
     CORRADE_COMPARE(animable.state(), AnimationState::Running);
     CORRADE_COMPARE(animable.time, 2.0f);
+}
+
+void AnimableTest::deleteWhileRunning() {
+    Object3D object;
+    AnimableGroup3D group;
+    CORRADE_COMPARE(group.runningCount(), 0);
+
+    {
+        OneShotAnimable animable(object, &group);
+
+        /* Eat up some absolute time */
+        group.step(1.0f, 0.5f);
+        group.step(1.5f, 0.5f);
+        CORRADE_COMPARE(group.runningCount(), 1);
+
+        CORRADE_COMPARE(animable.state(), AnimationState::Running);
+        CORRADE_COMPARE(animable.time, 0.5f);
+    }
+
+    /* Animable got deleted, stepping further should not crash and burn (tm) */
+    group.step(1.5f, 0.5f);
+    CORRADE_COMPARE(group.runningCount(), 0);
 }
 
 void AnimableTest::debug() {
