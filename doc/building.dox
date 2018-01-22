@@ -70,10 +70,19 @@ vcpkg install corrade --head
 vcpkg install magnum --head
 @endcode
 
+This by default installs a 32-bit dynamic version of the package, you can use
+@cb{.bat} vcpkg install magnum:x64-windows[-static] @ce to install a 64-bit
+(static) version instead. See the
+<a href="https://github.com/Microsoft/vcpkg/blob/master/docs/users/triplets.md">vcpkg triplet documentation</a>
+for more information.
+
 Packages installed using Vcpkg can be used straight away in Visual Studio ---
 all you need to do is to @cpp #include @ce the headers you want, the
 buildsystem will do all needed library linking and setup behind the scenes
 automatically. <em>(Cool, isn't it?)</em>
+
+@note If Visual Studio doesn't find the packages, check its verbose output, it
+    might point to a mismatch of the triplet above or broken vcpkg integration.
 
 In order to make Magnum projects installed using Vcpkg available to CMake-based
 projects, specify the Vcpkg toolchain file on the command line when invoking
