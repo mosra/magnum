@@ -133,7 +133,7 @@ template<class T> inline T planeLine(const Vector3<T>& planePosition, const Vect
 @param point    Point
 @param frustum  Frustum planes with normals pointing outwards
 
-Returns `true` if the point is on or inside the frustum.
+Returns @cpp true @ce if the point is on or inside the frustum.
 
 Checks for each plane of the frustum whether the point is behind the plane (the
 points distance from the plane is negative) using @ref Distance::pointPlaneScaled().
@@ -145,7 +145,7 @@ template<class T> bool pointFrustum(const Vector3<T>& point, const Frustum<T>& f
 @param box      Axis-aligned box
 @param frustum  Frustum planes with normals pointing outwards
 
-Returns `true` if the box intersects with the camera frustum.
+Returns @cpp true @ce if the box intersects with the camera frustum.
 
 Counts for each plane of the frustum how many points of the box lie in front of
 the plane (outside of the frustum). If none, the box must lie entirely outside
