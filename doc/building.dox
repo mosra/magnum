@@ -705,9 +705,7 @@ pass it explicitly on command-line using `-DEMSCRIPTEN_PREFIX`. Default is
 porting and they are generally slower, thus `BUILD_STATIC` is implicitly
 enabled.
 
-Then create build directory and run `cmake` and the build command in it. Be
-sure to set `CMAKE_INSTALL_PREFIX` to a path contained in
-`EMSCRIPTEN_TOOLCHAIN_PATH`.
+Then create build directory and run `cmake` and the build command in it.
 
 WebGL 1.0 (GLES 2.0 equivalent) is enabled by default, switch to 2.0 (GLES 3.0
 equivalent) by disabling `TARGET_GLES2`.
@@ -722,6 +720,17 @@ cmake .. \
     -DWITH_SDL2APPLICATION=ON
 cmake --build .
 @endcode
+
+@note
+    If you set `CMAKE_INSTALL_PREFIX` to a path contained in
+    `EMSCRIPTEN_TOOLCHAIN_PATH` and dependencies are installed there as well,
+    things should "just work". Otherwise you might get the following error:
+@note <pre>CMake Error at .../Modules/FindPackageHandleStandardArgs.cmake:138 (message):
+  Could NOT find Corrade (missing: CORRADE_INCLUDE_DIR
+  _CORRADE_CONFIGURE_FILE)</pre>
+@note
+    This can be solved by adding the location where Corrade is installed to
+    `CMAKE_PREFIX_PATH` or `CMAKE_FIND_ROOT_PATH`.
 
 Then you can install the library using @cb{.sh} cmake --build . --target install @ce
 to make it available to depending projects.
