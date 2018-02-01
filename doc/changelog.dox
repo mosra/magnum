@@ -458,6 +458,7 @@ See also:
 -   @ref Platform::WindowlessWglApplication is fixed to allow the GL context to
     be created and destroyed multiple times during application run
 -   @ref SceneGraph::Camera now works properly with @ref Double underlying type
+-   It's now possible to delete a running @ref SceneGraph::Animable
 -   @ref Text::AbstractLayouter has now a virtual destructor to avoid leaking
     its subclasses
 -   Fixed @ref Trade::ObjImporter on Android
@@ -469,6 +470,8 @@ See also:
 -   Fixed unfortunate interaction of VAOs and index buffers on platforms
     without direct state access
 -   Fixed resetting a bit in @ref Math::BoolVector::set()
+-   @ref Audio::Context::hrtfSpecifierString() was crashing on systems
+    supporting only @alc_extension{SOFTX,HRTF} and not @alc_extension{SOFT,HRTF}
 -   Fixed bad interaction of builtin OpenGL headers and Qt on macOS
 
 @subsection changelog-latest-deprecated Deprecated APIs
@@ -542,6 +545,8 @@ See also:
     with C++17 and it's now deprecated in favor of @ref Containers::Optional.
     (Deprecated) aliases and conversion operators are provided for backwards
     compatibility.
+-   `Audio::Context::hrtfSpecifier()` is deprecated, use
+    @ref Audio::Context::hrtfSpecifierString() instead
 
 @subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
 
