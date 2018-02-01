@@ -65,12 +65,12 @@ UnsignedInt TgaImporter::doImage2DCount() const { return 1; }
 
 Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt) {
     /* Check if the file is long enough */
-    if(_in.size() < std::streamoff(sizeof(TgaHeader))) {
+    if(_in.size() < std::streamoff(sizeof(Implementation::TgaHeader))) {
         Error() << "Trade::TgaImporter::image2D(): the file is too short:" << _in.size() << "bytes";
         return Containers::NullOpt;
     }
 
-    const TgaHeader& header = *reinterpret_cast<const TgaHeader*>(_in.data());
+    const Implementation::TgaHeader& header = *reinterpret_cast<const Implementation::TgaHeader*>(_in.data());
 
     /* Size in machine endian */
     const Vector2i size{Utility::Endianness::littleEndian(header.width),
@@ -119,7 +119,7 @@ Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt) {
     }
 
     Containers::Array<char> data{std::size_t(size.product())*header.bpp/8};
-    std::copy_n(_in + sizeof(TgaHeader), data.size(), data.begin());
+    std::copy_n(_in + sizeof(Implementation::TgaHeader), data.size(), data.begin());
 
     /* Adjust pixel storage if row size is not four byte aligned */
     PixelStorage storage;

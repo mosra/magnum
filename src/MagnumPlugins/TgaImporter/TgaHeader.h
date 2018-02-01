@@ -25,35 +25,30 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Struct @ref Magnum::Trade::TgaHeader
- */
-
 #include "Magnum/Types.h"
 
-namespace Magnum { namespace Trade {
+namespace Magnum { namespace Trade { namespace Implementation {
 
 #pragma pack(1)
-/** @brief TGA file header */
-/** @todoc Enable @c INLINE_SIMPLE_STRUCTS again when unclosed &lt;component&gt; in tagfile is fixed*/
+/* TGA file header */
 struct TgaHeader {
-    UnsignedByte    identsize;      /**< @brief Size of ID field that follows header (0) */
-    UnsignedByte    colorMapType;   /**< @brief 0 = None, 1 = paletted */
-    UnsignedByte    imageType;      /**< @brief 0 = none, 1 = indexed, 2 = rgb, 3 = grey, +8=rle */
-    UnsignedShort   colorMapStart;  /**< @brief First color map entry */
-    UnsignedShort   colorMapLength; /**< @brief Number of colors */
-    UnsignedByte    colorMapBpp;    /**< @brief Bits per palette entry */
-    UnsignedShort   beginX;         /**< @brief Image x origin */
-    UnsignedShort   beginY;         /**< @brief Image y origin */
-    UnsignedShort   width;          /**< @brief Image width */
-    UnsignedShort   height;         /**< @brief Image height */
-    UnsignedByte    bpp;            /**< @brief Bits per pixel (8, 16, 24, 32) */
-    UnsignedByte    descriptor;     /**< @brief Image descriptor */
+    UnsignedByte    identsize;      /* Size of ID field that follows header (0) */
+    UnsignedByte    colorMapType;   /* 0 = None, 1 = paletted */
+    UnsignedByte    imageType;      /* 0 = none, 1 = indexed, 2 = rgb, 3 = grey, +8=rle */
+    UnsignedShort   colorMapStart;  /* First color map entry */
+    UnsignedShort   colorMapLength; /* Number of colors */
+    UnsignedByte    colorMapBpp;    /* Bits per palette entry */
+    UnsignedShort   beginX;         /* Image x origin */
+    UnsignedShort   beginY;         /* Image y origin */
+    UnsignedShort   width;          /* Image width */
+    UnsignedShort   height;         /* Image height */
+    UnsignedByte    bpp;            /* Bits per pixel (8, 16, 24, 32) */
+    UnsignedByte    descriptor;     /* Image descriptor */
 };
 #pragma pack()
 
 static_assert(sizeof(TgaHeader) == 18, "TgaHeader size is not 18 bytes");
 
-}}
+}}}
 
 #endif

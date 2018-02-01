@@ -74,10 +74,10 @@ Containers::Array<char> TgaImageConverter::doExportToData(const ImageView2D& ima
 
     /* Initialize data buffer */
     const auto pixelSize = UnsignedByte(image.pixelSize());
-    Containers::Array<char> data{Containers::ValueInit, sizeof(TgaHeader) + pixelSize*image.size().product()};
+    Containers::Array<char> data{Containers::ValueInit, sizeof(Implementation::TgaHeader) + pixelSize*image.size().product()};
 
     /* Fill header */
-    auto header = reinterpret_cast<TgaHeader*>(data.begin());
+    auto header = reinterpret_cast<Implementation::TgaHeader*>(data.begin());
     switch(image.format()) {
         case PixelFormat::RGB:
         case PixelFormat::RGBA:
@@ -105,15 +105,15 @@ Containers::Array<char> TgaImageConverter::doExportToData(const ImageView2D& ima
     const std::size_t rowStride = std::get<1>(image.dataProperties()).x();
     if(rowStride != rowSize) {
         for(std::int_fast32_t y = 0; y != image.size().y(); ++y)
-            std::copy_n(imageData + y*rowStride, rowSize, data.begin() + sizeof(TgaHeader) + y*rowSize);
-    } else std::copy_n(imageData, pixelSize*image.size().product(), data.begin() + sizeof(TgaHeader));
+            std::copy_n(imageData + y*rowStride, rowSize, data.begin() + sizeof(Implementation::TgaHeader) + y*rowSize);
+    } else std::copy_n(imageData, pixelSize*image.size().product(), data.begin() + sizeof(Implementation::TgaHeader));
 
     if(image.format() == PixelFormat::RGB) {
-        auto pixels = reinterpret_cast<Math::Vector3<UnsignedByte>*>(data.begin()+sizeof(TgaHeader));
+        auto pixels = reinterpret_cast<Math::Vector3<UnsignedByte>*>(data.begin()+sizeof(Implementation::TgaHeader));
         std::transform(pixels, pixels + image.size().product(), pixels,
             [](Math::Vector3<UnsignedByte> pixel) { return Math::swizzle<'b', 'g', 'r'>(pixel); });
     } else if(image.format() == PixelFormat::RGBA) {
-        auto pixels = reinterpret_cast<Math::Vector4<UnsignedByte>*>(data.begin()+sizeof(TgaHeader));
+        auto pixels = reinterpret_cast<Math::Vector4<UnsignedByte>*>(data.begin()+sizeof(Implementation::TgaHeader));
         std::transform(pixels, pixels + image.size().product(), pixels,
             [](Math::Vector4<UnsignedByte> pixel) { return Math::swizzle<'b', 'g', 'r', 'a'>(pixel); });
     }

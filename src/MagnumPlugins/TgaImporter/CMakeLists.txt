@@ -34,13 +34,16 @@ set(TgaImporter_SRCS
     TgaImporter.cpp)
 
 set(TgaImporter_HEADERS
-    TgaHeader.h
     TgaImporter.h)
+
+set(TgaImporter_PRIVATE_HEADERS
+    TgaHeader.h)
 
 # Objects shared between plugin and test library
 add_library(TgaImporterObjects OBJECT
     ${TgaImporter_SRCS}
-    ${TgaImporter_HEADERS})
+    ${TgaImporter_HEADERS}
+    ${TgaImporter_PRIVATE_HEADERS})
 target_include_directories(TgaImporterObjects PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
 if(NOT BUILD_PLUGINS_STATIC)
     target_compile_definitions(TgaImporterObjects PRIVATE "TgaImporterObjects_EXPORTS")
