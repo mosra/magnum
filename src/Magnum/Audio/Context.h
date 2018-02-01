@@ -205,9 +205,7 @@ class MAGNUM_AUDIO_EXPORT Context {
          * @see @fn_al{GetString} with @def_alc{HRTF_SPECIFIER_SOFT}
          * @requires_al_extension @alc_extension{SOFT,HRTF}
          */
-        std::string hrtfSpecifier() const {
-            return alcGetString(_device, ALC_HRTF_SPECIFIER_SOFT);
-        }
+        std::string hrtfSpecifier() const;
 
         /**
          * @brief Device specifier string
@@ -215,7 +213,7 @@ class MAGNUM_AUDIO_EXPORT Context {
          * @see @ref deviceSpecifierStrings(), @ref vendorString(), @ref rendererString(),
          *      @fn_al{GetString} with @def_alc{DEVICE_SPECIFIER}
          */
-        std::string deviceSpecifierString() const { return alcGetString(_device, ALC_DEVICE_SPECIFIER); }
+        std::string deviceSpecifierString() const;
 
         /**
          * @brief Vendor string
@@ -223,7 +221,7 @@ class MAGNUM_AUDIO_EXPORT Context {
          * @see @ref deviceSpecifierString(), @ref rendererString(),
          *      @fn_al{GetString} with @def_al{VENDOR}
          */
-        std::string vendorString() const { return alGetString(AL_VENDOR); }
+        std::string vendorString() const;
 
         /**
          * @brief Renderer string
@@ -231,14 +229,14 @@ class MAGNUM_AUDIO_EXPORT Context {
          * @see @ref deviceSpecifierString(), @ref vendorString(),
          *      @fn_al{GetString} with @def_al{RENDERER}
          */
-        std::string rendererString() const { return alGetString(AL_RENDERER); }
+        std::string rendererString() const;
 
         /**
          * @brief Version string
          *
          * @see @fn_al{GetString} with @def_al{VERSION}
          */
-        std::string versionString() const { return alGetString(AL_VERSION); }
+        std::string versionString() const;
 
         /**
          * @brief Extension strings
@@ -468,21 +466,6 @@ MAGNUM_ASSERT_AUDIO_EXTENSION_SUPPORTED(Extensions::ALC::SOFTX::HRTF);
 
 /** @debugoperatorclassenum{Magnum::Audio::Context,Magnum::Audio::Context::HrtfStatus} */
 MAGNUM_AUDIO_EXPORT Debug& operator<<(Debug& debug, Context::HrtfStatus value);
-
-inline bool Context::isHrtfEnabled() const {
-    Int enabled;
-    alcGetIntegerv(_device, ALC_HRTF_SOFT, 1, &enabled);
-    return enabled == ALC_TRUE;
-}
-
-inline Context::HrtfStatus Context::hrtfStatus() const {
-    if(!isExtensionSupported<Extensions::ALC::SOFT::HRTF>())
-        return isHrtfEnabled() ? HrtfStatus::Enabled : HrtfStatus::Disabled;
-
-    Int status;
-    alcGetIntegerv(_device, ALC_HRTF_STATUS_SOFT, 1, &status);
-    return Context::HrtfStatus(status);
-}
 
 }}
 

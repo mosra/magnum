@@ -177,6 +177,41 @@ std::vector<std::string> Context::extensionStrings() const {
     return extensions;
 }
 
+bool Context::isHrtfEnabled() const {
+    Int enabled;
+    alcGetIntegerv(_device, ALC_HRTF_SOFT, 1, &enabled);
+    return enabled == ALC_TRUE;
+}
+
+Context::HrtfStatus Context::hrtfStatus() const {
+    if(!isExtensionSupported<Extensions::ALC::SOFT::HRTF>())
+        return isHrtfEnabled() ? HrtfStatus::Enabled : HrtfStatus::Disabled;
+
+    Int status;
+    alcGetIntegerv(_device, ALC_HRTF_STATUS_SOFT, 1, &status);
+    return Context::HrtfStatus(status);
+}
+
+std::string Context::hrtfSpecifier() const {
+    return alcGetString(_device, ALC_HRTF_SPECIFIER_SOFT);
+}
+
+std::string Context::deviceSpecifierString() const {
+    return alcGetString(_device, ALC_DEVICE_SPECIFIER);
+}
+
+std::string Context::vendorString() const {
+    return alGetString(AL_VENDOR);
+}
+
+std::string Context::rendererString() const {
+    return alGetString(AL_RENDERER);
+}
+
+std::string Context::versionString() const {
+    return alGetString(AL_VERSION);
+}
+
 bool Context::tryCreateContext(const Configuration& config) {
     /* The following parameters are order dependent!
        Make sure to always add sufficient space at end of the attributes
