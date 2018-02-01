@@ -34,17 +34,15 @@ Please note that if you have a good excuse to either break the rules or modify
 them, feel free to do it (and update this guide accordingly, if appropriate).
 Nothing is worse than rule that hurts productivity instead of improving it.
 
-This guide builds upon Corrade's coding style guide and extends it where
-needed. You are encouraged to read it first:
-
- - @ref corrade-coding-style
+This guide builds upon @ref corrade-coding-style "Corrade's coding style guide"
+and extends it where needed. You are encouraged to read it first.
 
 @section coding-style-cpp C++ code
 
 @subsection coding-style-cpp-headers Headers
 
-Headers shouldn't have `using` declarations inside them (unless there is good
-excuse, see Magnum.h).
+Headers shouldn't have @cpp using @ce declarations inside them (unless there is
+good excuse, see @ref Magnum.h).
 
 Headers have `*.h` extension, @ref compilation-speedup-hpp "template implementation headers"
 have `*.hpp` extension (hinting that they are something between `*.h` and
@@ -56,10 +54,11 @@ have `*.hpp` extension (hinting that they are something between `*.h` and
 
 Use Magnum's own type aliases for public API (e.g. @ref UnsignedInt, see
 @ref types for more information), but use specific types when interacting with
-third party libraries and OpenGL (e.g. `GLuint`) and rely only on implicit
-conversions when converting between them. This helps avoiding sign, truncation
-and other issues, e.g. `Math::Vector2<GLsizei>` will implicitly convert to
-@ref Vector2i if and only if @ref Int is the same type as `GLsizei`.
+third party libraries and OpenGL (e.g. @cpp GLuint @ce) and rely only on
+implicit conversions when converting between them. This helps avoiding sign,
+truncation and other issues, e.g. @cpp Math::Vector2<GLsizei> @ce will
+implicitly convert to @ref Vector2i if and only if @ref Int is the same type as
+@cpp GLsizei @ce.
 
 @subsubsection coding-style-cpp-naming Naming
 
@@ -70,7 +69,7 @@ removing redundant prefixes) is encouraged.
 @subsubsection coding-style-cpp-forward-declarations Forward declarations and forward declaration headers
 
 When a namespace has classes which are commonly forward-declared, consider
-making a forward declaration header - it should have the same name as the
+making a forward declaration header --- it should have the same name as the
 namespace itself and contain foward declarations for all classes, enums and
 copies of all meaningful typedefs. See @ref compilation-forward-declarations
 for more information.
@@ -83,16 +82,8 @@ platforms (see @ref portability-target for more information). Put related
 documentation also into the conditional compilation block and don't forget to
 appropriately mark the class/function
 (@ref coding-style-documentation-commands-requires "see below"). Example:
-@code
-#ifndef MAGNUM_TARGET_GLES
-//
-// @brief Set polygon mode
-//
-// @requires_gl Polygon mode is not available in OpenGL ES.
-//
-void setPolygonMode(PolygonMode mode);
-#endif
-@endcode
+
+@snippet coding-style.h glcompatibility
 
 @section coding-style-documentation Doxygen documentation
 
@@ -100,68 +91,96 @@ void setPolygonMode(PolygonMode mode);
 
 Additionally to @c \@todoc, @c \@debugoperator, @c \@debugoperatorenum,
 @c \@debugoperatorclassenum, @c \@configurationvalue and
-@c \@configurationvalueref (same as in Corrade), these are defined:
+@c \@configurationvalueref defined @ref corrade-coding-style-documentation-commands "the same as in Corrade",
+these are defined:
 
 @subsubsection coding-style-documentation-commands-collisionoperator Shape collision operators
 
 Out-of-class operators for collision and collision occurence in Shapes
 namespace should be marked with @c \@collisionoperator and @c \@collisionoccurenceoperator,
 e.g.:
-@code
-// @collisionoccurenceoperator{Point,Sphere}
-inline bool operator%(const Point& a, const Sphere& b) { return b % a; }
 
-// @collisionoperator{Point,Sphere}
-inline Collision operator/(const Point& a, const Sphere& b) { return (b/a).reverted(); }
-@endcode
+@snippet coding-style.h collisionoperator
+
 They will appear as related functions within documentation of class for which
 the operator is implemented (not of class in which the operator is
 implemented), thus efficiently connecting the two classes together in the
 documentation.
 
-@subsubsection coding-style-documentation-commands-extension Links to OpenGL extensions
+@subsubsection coding-style-documentation-commands-extension Links to OpenGL and OpenAL extensions
 
 If an OpenGL extension is referenced in the documentation, it should be done
 with @c \@extension command:
-@code
+
+@snippet coding-style.h extension
+
+It produces a link to the specification of the extension in OpenGL registry:
+
+<blockquote>
 @extension{ARB,timer_query}
-@endcode
-It produces link to the specification of the extension in OpenGL registry:
-> @extension{ARB,timer_query}
+</blockquote>
 
 With command @c \@extension2 you can specify extension filename, if the
 previous command gives 404 error. For example
-@code
-@extension2{NV,read_buffer_front,GL_NV_read_buffer}
-@endcode
-produces this link:
-> @extension2{NV,read_buffer_front,GL_NV_read_buffer}
 
-@subsubsection coding-style-documentation-commands-ref_gl Links to related OpenGL functions and definitions
+@snippet coding-style.h extension2
+
+produces this link:
+
+<blockquote>
+@extension2{NV,read_buffer_front,GL_NV_read_buffer}
+</blockquote>
+
+OpenAL extensions can be referenced using @c \@al_extension, OpenAL context
+extension using @c \@alc_extension. For example
+
+@snippet coding-style.h al_extension
+
+produces the following:
+
+<blockquote>
+@al_extension{EXT,float32}, @alc_extension{SOFT,HRTF}
+</blockquote>
+
+@subsubsection coding-style-documentation-commands-ref_gl Links to related OpenGL, OpenAL functions and definitions
 
 If an function touches OpenGL, related OpenGL functions should be documented
 in @c \@see block with @c \@fn_gl command. If only specific definition is used
 in the function, document it with @c \@def_gl command. Example usage:
-@code
-// @see @fn_gl{Enable}/@fn_gl{Disable} with @def_gl{TEXTURE_CUBE_MAP_SEAMLESS}
-static void setSeamless(bool enabled) {
-    enabled ? glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS) : glDisable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
-}
-@endcode
-It produces link to the online manual:
-> @fn_gl{Enable}/@fn_gl{Disable} with @def_gl{TEXTURE_CUBE_MAP_SEAMLESS}.
+
+@snippet coding-style.h fn_gl
+
+It produces a link to the online manual:
+
+<blockquote>
+@fn_gl{Enable}/@fn_gl{Disable} with @def_gl{TEXTURE_CUBE_MAP_SEAMLESS}
+</blockquote>
 
 For functions which are not part of OpenGL core specification, but only as
 extensions, use @c \@fn_gl_extension command, e.g.
-@code
-@fn_gl_extension{NamedCopyBufferSubData,EXT,direct_state_access}
-@endcode
+
+@snippet coding-style.h fn_gl_extension
+
 First parameter is function name without the suffix, the second two parameters
 are the same as in @c \@extension command. It produced link to extension
 specification, with function name as link text:
-> @fn_gl_extension{NamedCopyBufferSubData,EXT,direct_state_access}.
 
-@subsubsection coding-style-documentation-commands-requires Classes and functions requiring specific OpenGL version or extensions
+<blockquote>
+@fn_gl_extension{NamedCopyBufferSubData,EXT,direct_state_access}
+</blockquote>
+
+For OpenAL, the commands are @c \@fn_al, @c \@fn_alc, @c \@def_al and
+@c \@def_alc. Example:
+
+@snippet coding-style.h fn_al
+
+Produces:
+
+<blockquote>
+@fn_al{Listenerfv} with @def_al{VELOCITY}
+</blockquote>
+
+@subsubsection coding-style-documentation-commands-requires Classes and functions requiring specific OpenGL, OpenAL version or extensions
 
 If any class or function requires specific OpenGL version above 2.1, it should
 be marked with appropriate command @c \@requires_glXX, where `XX` is version
@@ -169,9 +188,8 @@ number (e.g. `42` for OpenGL 4.2) or @c \@requires_extension for specific
 extension which is not in any core OpenGL version. It should be used in
 conjunction with @c \@extension command, if there is an extension providing
 the same functionality. For example:
-@code
-@requires_GL33 Extension @extension{ARB,timer_query}
-@endcode
+
+@snippet coding-style.h requires_gl
 
 If class is marked with the command, member and related functions shouldn't be
 marked. On the other hand, if the version/extension is needed only by one
@@ -190,6 +208,10 @@ requirements.
 All classes and functions using those commands are cross-referenced in page
 @ref opengl-required-extensions.
 
+For OpenAL, the command is @c \@requires_al_extension:
+
+@snippet coding-style.h requires_al_extension
+
 @subsection coding-style-documentation-ordering Section ordering
 
 In detailed documentation the text should be always first, the blocks are then
@@ -206,14 +228,15 @@ and in most cases only for internal use.
 
 All unit tests use Corrade's @ref Corrade::TestSuite "TestSuite".
 
-Don't forget to test all `constexpr` methods --- many compilers don't implicitly
-check whether the `constexpr` keyword can be used but then complain when you
-force the expression to be constant. It's better not to have given method
-marked as `constexpr` than have it marked it errorneously. It's usually not
-desirable to have special test case for `constexpr` behaviors, add `constexpr`
-keywords to existing test cases to avoid duplicated testing of the same thing.
-Example (testing copy constructor):
-@code
+Don't forget to test all @cpp constexpr @ce methods --- many compilers don't
+implicitly check whether the @cpp constexpr @ce keyword can be used but then
+complain when you force the expression to be constant. It's better not to have
+given method marked as @cpp constexpr @ce than have it marked it errorneously.
+It's usually not desirable to have special test case for @cpp constexpr @ce
+behaviors, add @cpp constexpr @ce keywords to existing test cases to avoid
+duplicated testing of the same thing. Example (testing a copy constructor):
+
+@code{.cpp}
 constexpr Vector3 a(1.5f, 2.0f, 0.4f);
 constexpr Vector3 b(a);
 CORRADE_COMPARE(b, Vector3(1.5f, 2.0f, 0.4f));
@@ -223,9 +246,11 @@ Don't forget to test implicit/explicit constructors and conversion operators
 where it matters (i.e. all low-level and frequently used types like vectors,
 matrices etc.). If the constructor/operator is implicit, test it in the context
 where explicit one would fail to compile, if it is explicit, test its
-explicitness with `std::is_convertible` (it should return `false`). These tests
-might catch various ambiguous call errors which would otherwise be unnoticed:
-@code
+explicitness with @ref std::is_convertible (it should return @cpp false @ce).
+These tests might catch various ambiguous call errors which would otherwise be
+unnoticed:
+
+@code{.cpp}
 Vector2 a = {1.5f, 0.5f}; // Explicit constructor would fail to compile here
 CORRADE_COMPARE(a, Vector2(1.5f, 0.5f));
 
@@ -240,7 +265,8 @@ only for low-level frequently used types (vectors, matrices) where such error
 would do largest harm. Depending on how copy constructor is implemented, you
 probably don't need to test classic copy construction, as it would be handled
 by the already tested one. Example (copy construction from base type):
-@code
+
+@code{.cpp}
 Vector<3, Float> a(1.5f, 2.0f, 0.4f);
 Vector3 b(a);
 CORRADE_COMPARE(b, Vector3(1.5f, 2.0f, 0.4f));
