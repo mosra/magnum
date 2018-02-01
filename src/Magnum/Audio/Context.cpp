@@ -193,7 +193,8 @@ Context::HrtfStatus Context::hrtfStatus() const {
 }
 
 std::string Context::hrtfSpecifier() const {
-    return alcGetString(_device, ALC_HRTF_SPECIFIER_SOFT);
+    /* Returns a string on ALC_SOFT_HRTF, nullptr on ALC_SOFTX_HRTF */
+    return Utility::String::fromArray(alcGetString(_device, ALC_HRTF_SPECIFIER_SOFT));
 }
 
 std::string Context::deviceSpecifierString() const {
