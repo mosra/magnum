@@ -75,10 +75,10 @@ class MAGNUM_EXPORT MeshView {
          * @attention All meshes must be views of the same original mesh and
          *      must not be instanced.
          * @see @ref draw(AbstractShaderProgram&), @fn_gl{UseProgram},
-         *      @fn_gl{EnableVertexAttribArray}, @fn_gl{BindBuffer},
-         *      @fn_gl{VertexAttribPointer}, @fn_gl{DisableVertexAttribArray}
-         *      or @fn_gl{BindVertexArray}, @fn_gl{MultiDrawArrays} or
-         *      @fn_gl{MultiDrawElements}/@fn_gl{MultiDrawElementsBaseVertex}
+         *      @fn_gl_keyword{EnableVertexAttribArray}, @fn_gl{BindBuffer},
+         *      @fn_gl_keyword{VertexAttribPointer}, @fn_gl_keyword{DisableVertexAttribArray}
+         *      or @fn_gl{BindVertexArray}, @fn_gl_keyword{MultiDrawArrays} or
+         *      @fn_gl_keyword{MultiDrawElements}/@fn_gl_keyword{MultiDrawElementsBaseVertex}
          * @requires_gl32 Extension @extension{ARB,draw_elements_base_vertex}
          *      if the mesh is indexed and @ref baseVertex() is not `0`.
          * @requires_gl Specifying base vertex for indexed meshes is not
@@ -117,7 +117,7 @@ class MAGNUM_EXPORT MeshView {
          * @return Reference to self (for method chaining)
          *
          * Ignored when calling @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
-         * Default is `0`.
+         * Default is @cpp 0 @ce.
          */
         MeshView& setCount(Int count) {
             _count = count;
@@ -133,7 +133,7 @@ class MAGNUM_EXPORT MeshView {
          *
          * Sets number of vertices of which the vertex buffer will be offset
          * when drawing. Ignored when calling @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
-         * Default is `0`.
+         * Default is @cpp 0 @ce.
          * @requires_gl32 Extension @extension{ARB,draw_elements_base_vertex}
          *      for indexed meshes
          * @requires_gl Base vertex cannot be specified for indexed meshes in
@@ -181,7 +181,7 @@ class MAGNUM_EXPORT MeshView {
          * @brief Set instance count
          * @return Reference to self (for method chaining)
          *
-         * Default is `1`.
+         * Default is @cpp 1 @ce.
          * @requires_gl31 Extension @extension{ARB,draw_instanced} if using
          *      @ref draw(AbstractShaderProgram&)
          * @requires_gl42 Extension @extension{ARB,transform_feedback_instanced}
@@ -206,7 +206,7 @@ class MAGNUM_EXPORT MeshView {
          * @return Reference to self (for method chaining)
          *
          * Ignored when calling @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
-         * Default is `0`.
+         * Default is @cpp 0 @ce.
          * @requires_gl42 Extension @extension{ARB,base_instance}
          * @requires_gl Base instance cannot be specified in OpenGL ES or
          *      WebGL.

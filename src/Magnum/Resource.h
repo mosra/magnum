@@ -166,10 +166,10 @@ class Resource {
         /**
          * @brief Whether the resource is available
          *
-         * Returns `false` when resource is not loaded and no fallback is
-         * available (i.e. @ref state() is either
+         * Returns @cpp false @ce when resource is not loaded and no fallback
+         * is available (i.e. @ref state() is either
          * @ref ResourceState::NotLoaded, @ref ResourceState::Loading or
-         * @ref ResourceState::NotFound), `true` otherwise.
+         * @ref ResourceState::NotFound), @cpp true @ce otherwise.
          */
         operator bool() {
             acquire();
@@ -179,7 +179,7 @@ class Resource {
         /**
          * @brief Pointer to resource data
          *
-         * Returns `nullptr` if the resource is not loaded.
+         * Returns @cpp nullptr @ce if the resource is not loaded.
          */
         operator U*() {
             acquire();

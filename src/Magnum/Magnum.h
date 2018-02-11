@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Forward declarations for @ref Magnum namespace
+ * @brief Forward declarations for the @ref Magnum namespace
  */
 
 #include <Corrade/Utility/Utility.h>
@@ -187,10 +187,20 @@ typedef std::uint16_t UnsignedShort;
 /** @brief Signed short (16bit) */
 typedef std::int16_t Short;
 
-/** @brief Unsigned int (32bit) */
+/**
+@brief Unsigned int (32bit)
+
+Equivalent to GLSL @glsl uint @ce.
+@m_keyword{uint,GLSL uint,}
+*/
 typedef std::uint32_t UnsignedInt;
 
-/** @brief Signed int (32bit) */
+/**
+@brief Signed int (32bit)
+
+Equivalent to GLSL @glsl int @ce.
+@m_keyword{int,GLSL int,}
+*/
 typedef std::int32_t Int;
 
 #ifndef MAGNUM_TARGET_WEBGL
@@ -209,37 +219,87 @@ typedef std::uint64_t UnsignedLong;
 typedef std::int64_t Long;
 #endif
 
-/** @brief Float (32bit) */
+/**
+@brief Float (32bit)
+
+Equivalent to GLSL @glsl float @ce.
+@m_keyword{float,GLSL float,}
+*/
 typedef float Float;
 
 /** @brief Half (16bit) */
 typedef Math::Half Half;
 
-/** @brief Two-component float vector */
+/**
+@brief Two-component float vector
+
+Equivalent to GLSL @glsl vec2 @ce.
+@m_keyword{vec2,GLSL vec2,}
+*/
 typedef Math::Vector2<Float> Vector2;
 
-/** @brief Three-component float vector */
+/**
+@brief Three-component float vector
+
+Equivalent to GLSL @glsl vec3 @ce.
+@m_keyword{vec3,GLSL vec3,}
+*/
 typedef Math::Vector3<Float> Vector3;
 
-/** @brief Four-component float vector */
+/**
+@brief Four-component float vector
+
+Equivalent to GLSL @glsl vec4 @ce.
+@m_keyword{vec4,GLSL vec4,}
+*/
 typedef Math::Vector4<Float> Vector4;
 
-/** @brief Two-component unsigned integer vector */
+/**
+@brief Two-component unsigned integer vector
+
+Equivalent to GLSL @glsl uvec2 @ce.
+@m_keyword{uvec2,GLSL uvec2,}
+*/
 typedef Math::Vector2<UnsignedInt> Vector2ui;
 
-/** @brief Three-component unsigned integer vector */
+/**
+@brief Three-component unsigned integer vector
+
+Equivalent to GLSL @glsl uvec3 @ce.
+@m_keyword{uvec3,GLSL uvec3,}
+*/
 typedef Math::Vector3<UnsignedInt> Vector3ui;
 
-/** @brief Four-component unsigned integer vector */
+/**
+@brief Four-component unsigned integer vector
+
+Equivalent to GLSL @glsl uvec4 @ce.
+@m_keyword{uvec4,GLSL uvec4,}
+*/
 typedef Math::Vector4<UnsignedInt> Vector4ui;
 
-/** @brief Two-component signed integer vector */
+/**
+@brief Two-component signed integer vector
+
+Equivalent to GLSL @glsl ivec2 @ce.
+@m_keyword{ivec2,GLSL ivec2,}
+*/
 typedef Math::Vector2<Int> Vector2i;
 
-/** @brief Three-component signed integer vector */
+/**
+@brief Three-component signed integer vector
+
+Equivalent to GLSL @glsl ivec3 @ce.
+@m_keyword{ivec3,GLSL ivec3,}
+*/
 typedef Math::Vector3<Int> Vector3i;
 
-/** @brief Four-component signed integer vector */
+/**
+@brief Four-component signed integer vector
+
+Equivalent to GLSL @glsl ivec4 @ce.
+@m_keyword{ivec4,GLSL ivec4,}
+*/
 typedef Math::Vector4<Int> Vector4i;
 
 /** @brief Three-component (RGB) float color */
@@ -271,52 +331,93 @@ typedef Math::Color4<UnsignedByte> Color4ub;
 /**
 @brief 3x3 float transformation matrix
 
+Equivalent to GLSL @glsl mat3 @ce.
 @see @ref Matrix3x3
+@m_keyword{mat3,GLSL mat3,}
 */
 typedef Math::Matrix3<Float> Matrix3;
 
 /**
 @brief 4x4 float transformation matrix
 
+Equivalent to GLSL @glsl mat4 @ce.
 @see @ref Matrix4x4
+@m_keyword{mat4,GLSL mat4,}
 */
 typedef Math::Matrix4<Float> Matrix4;
 
-/** @brief 2x2 float matrix */
+/**
+@brief 2x2 float matrix
+
+Equivalent to GLSL @glsl mat2x2 @ce.
+@m_keyword{mat2x2,GLSL mat2x2,}
+*/
 typedef Math::Matrix2x2<Float> Matrix2x2;
 
 /**
 @brief 3x3 float matrix
 
-Note that this is different from @ref Matrix3, which contains additional
-functions for transformations in 2D.
+Equivalent to GLSL @glsl mat3x3 @ce. Note that this is different from
+@ref Matrix3, which contains additional functions for transformations in 2D.
+@m_keyword{mat3x3,GLSL mat3x3,}
 */
 typedef Math::Matrix3x3<Float> Matrix3x3;
 
 /**
 @brief 4x4 float matrix
 
-Note that this is different from @ref Matrix4, which contains additional
-functions for transformations in 3D.
+Equivalent to GLSL @glsl mat4x4 @ce. Note that this is different from
+@ref Matrix4, which contains additional functions for transformations in 3D.
+@m_keyword{mat4x4,GLSL mat4x4,}
 */
 typedef Math::Matrix4x4<Float> Matrix4x4;
 
-/** @brief Float matrix with 2 columns and 3 rows */
+/**
+@brief Float matrix with 2 columns and 3 rows
+
+Equivalent to GLSL @glsl mat2x3 @ce.
+@m_keyword{mat2x3,GLSL mat2x3,}
+*/
 typedef Math::Matrix2x3<Float> Matrix2x3;
 
-/** @brief Float matrix with 3 columns and 2 rows */
+/**
+@brief Float matrix with 3 columns and 2 rows
+
+Equivalent to GLSL @glsl mat3x2 @ce.
+@m_keyword{mat3x2,GLSL mat3x2,}
+*/
 typedef Math::Matrix3x2<Float> Matrix3x2;
 
-/** @brief Float matrix with 2 columns and 4 rows */
+/**
+@brief Float matrix with 2 columns and 4 rows
+
+Equivalent to GLSL @glsl mat2x4 @ce.
+@m_keyword{mat2x4,GLSL mat2x4,}
+*/
 typedef Math::Matrix2x4<Float> Matrix2x4;
 
-/** @brief Float matrix with 4 columns and 2 rows */
+/**
+@brief Float matrix with 4 columns and 2 rows
+
+Equivalent to GLSL @glsl mat2x4 @ce.
+@m_keyword{mat2x4,GLSL mat2x4,}
+*/
 typedef Math::Matrix4x2<Float> Matrix4x2;
 
-/** @brief Float matrix with 3 columns and 4 rows */
+/**
+@brief Float matrix with 3 columns and 4 rows
+
+Equivalent to GLSL @glsl mat3x4 @ce.
+@m_keyword{mat3x4,GLSL mat3x4,}
+*/
 typedef Math::Matrix3x4<Float> Matrix3x4;
 
-/** @brief Float matrix with 4 columns and 3 rows */
+/**
+@brief Float matrix with 4 columns and 3 rows
+
+Equivalent to GLSL @glsl mat4x3 @ce.
+@m_keyword{mat4x3,GLSL mat4x3,}
+*/
 typedef Math::Matrix4x3<Float> Matrix4x3;
 
 /** @brief Float two-dimensional quadratic Bézier curve */
@@ -380,67 +481,128 @@ typedef Math::Frustum<Float> Frustum;
 See @ref types for more information.
 */
 
-/** @brief Double (64bit) */
+/**
+@brief Double (64bit)
+
+Equivalent to GLSL @glsl double @ce.
+@m_keyword{double,GLSL double,}
+*/
 typedef double Double;
 
-/** @brief Two-component double vector */
+/**
+@brief Two-component double vector
+
+Equivalent to GLSL @glsl dvec2 @ce.
+@m_keyword{dvec2,GLSL dvec2,}
+*/
 typedef Math::Vector2<Double> Vector2d;
 
-/** @brief Three-component double vector */
+/**
+@brief Three-component double vector
+
+Equivalent to GLSL @glsl dvec3 @ce.
+@m_keyword{dvec3,GLSL dvec3,}
+*/
 typedef Math::Vector3<Double> Vector3d;
 
-/** @brief Four-component double vector */
+/**
+@brief Four-component double vector
+
+Equivalent to GLSL @glsl dvec4 @ce.
+@m_keyword{dvec4,GLSL dvec4,}
+*/
 typedef Math::Vector4<Double> Vector4d;
 
 /**
 @brief 3x3 double transformation matrix
 
+Equivalent to GLSL @glsl dmat3 @ce.
 @see @ref Matrix3x3d
+@m_keyword{dmat3,GLSL dmat3,}
 */
 typedef Math::Matrix3<Double> Matrix3d;
 
 /**
 @brief 4x4 double transformation matrix
 
+Equivalent to GLSL @glsl dmat4 @ce.
 @see @ref Matrix4x4d
+@m_keyword{dmat4,GLSL dmat4,}
 */
 typedef Math::Matrix4<Double> Matrix4d;
 
-/** @brief 2x2 double matrix */
+/**
+@brief 2x2 double matrix
+
+Equivalent to GLSL @glsl dmat2x2 @ce.
+@m_keyword{dmat2x2,GLSL dmat2x2,}
+*/
 typedef Math::Matrix2x2<Double> Matrix2x2d;
 
 /**
 @brief 3x3 double matrix
 
-Note that this is different from @ref Matrix3d, which contains additional
-functions for transformations in 2D.
+Equivalent to GLSL @glsl dmat3x3 @ce. Note that this is different from
+@ref Matrix3d, which contains additional functions for transformations in 2D.
+@m_keyword{dmat3x3,GLSL dmat3x3,}
 */
 typedef Math::Matrix3x3<Double> Matrix3x3d;
 
 /**
 @brief 4x4 double matrix
 
-Note that this is different from @ref Matrix4d, which contains additional
-functions for transformations in 3D.
+Equivalent to GLSL @glsl dmat4x4 @ce. Note that this is different from
+@ref Matrix4d, which contains additional functions for transformations in 3D.
+@m_keyword{dmat4x4,GLSL dmat4x4,}
 */
 typedef Math::Matrix4x4<Double> Matrix4x4d;
 
-/** @brief Double matrix with 2 columns and 3 rows */
+/**
+@brief Double matrix with 2 columns and 3 rows
+
+Equivalent to GLSL @glsl dmat2x3 @ce.
+@m_keyword{dmat2x3,GLSL dmat2x3,}
+*/
 typedef Math::Matrix2x3<Double> Matrix2x3d;
 
-/** @brief Double matrix with 3 columns and 2 rows */
+/**
+@brief Double matrix with 3 columns and 2 rows
+
+Equivalent to GLSL @glsl dmat3x2 @ce.
+@m_keyword{dmat3x2,GLSL dmat3x2,}
+*/
 typedef Math::Matrix3x2<Double> Matrix3x2d;
 
-/** @brief Double matrix with 2 columns and 4 rows */
+/**
+@brief Double matrix with 2 columns and 4 rows
+
+Equivalent to GLSL @glsl dmat2x4 @ce.
+@m_keyword{dmat2x4,GLSL dmat2x4,}
+*/
 typedef Math::Matrix2x4<Double> Matrix2x4d;
 
-/** @brief Double matrix with 4 columns and 2 rows */
+/**
+@brief Double matrix with 4 columns and 2 rows
+
+Equivalent to GLSL @glsl dmat4x2 @ce.
+@m_keyword{dmat4x2,GLSL dmat4x2,}
+*/
 typedef Math::Matrix4x2<Double> Matrix4x2d;
 
-/** @brief Double matrix with 3 columns and 4 rows */
+/**
+@brief Double matrix with 3 columns and 4 rows
+
+Equivalent to GLSL @glsl dmat3x4 @ce.
+@m_keyword{dmat3x4,GLSL dmat3x4,}
+*/
 typedef Math::Matrix3x4<Double> Matrix3x4d;
 
-/** @brief Double matrix with 4 columns and 3 rows */
+/**
+@brief Double matrix with 4 columns and 3 rows
+
+Equivalent to GLSL @glsl dmat4x3 @ce.
+@m_keyword{dmat4x3,GLSL dmat4x3,}
+*/
 typedef Math::Matrix4x3<Double> Matrix4x3d;
 
 /** @brief Double two-dimensional quadratic Bézier curve */

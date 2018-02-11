@@ -37,6 +37,7 @@ namespace Magnum {
 @brief Internal renderbuffer format
 
 @see @ref Renderbuffer
+@m_enum_values_as_keywords
 @requires_gl30 Extension @extension{ARB,framebuffer_object}
 @todo RGB, RGB8 ES only (ES3 + @extension{OES,rgb8_rgba8})
  */

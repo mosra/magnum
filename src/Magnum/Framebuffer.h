@@ -93,7 +93,7 @@ void drawEvent() {
 }
 @endcode
 
-## Performance optimizations
+@section Framebuffer-performance-optimizations Performance optimizations
 
 See also @ref AbstractFramebuffer-performance-optimization "relevant section in AbstractFramebuffer".
 
@@ -117,6 +117,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @see @ref mapForDraw(), @ref attachRenderbuffer(),
          *      @ref attachTexture(), @ref attachCubeMapTexture(),
          *      @ref attachTextureLayer()
+         * @m_keywords{GL_COLOR_ATTACHMENTn}
          * @requires_gles30 Extension @extension{EXT,draw_buffers} or
          *      @extension{NV,draw_buffers} for @ref mapForDraw() and
          *      extension @extension{NV,fbo_color_attachments} for `attach*()`
@@ -153,7 +154,11 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          */
         class MAGNUM_EXPORT DrawAttachment {
             public:
-                /** @brief No attachment */
+                /**
+                 * @brief No attachment
+                 *
+                 * @m_keywords{GL_NONE}
+                 */
                 static const DrawAttachment None;
 
                 /** @brief Color attachment */
@@ -181,16 +186,25 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          */
         class MAGNUM_EXPORT BufferAttachment {
             public:
-                /** @brief Depth buffer */
+                /**
+                 * @brief Depth buffer
+                 *
+                 * @m_keywords{GL_DEPTH_ATTACHMENT}
+                 */
                 static const BufferAttachment Depth;
 
-                /** @brief Stencil buffer */
+                /**
+                 * @brief Stencil buffer
+                 *
+                 * @m_keywords{GL_STENCIL_ATTACHMENT}
+                 */
                 static const BufferAttachment Stencil;
 
                 #if !defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
                 /**
                  * @brief Both depth and stencil buffer
                  *
+                 * @m_keywords{GL_DEPTH_STENCIL_ATTACHMENT}
                  * @requires_gles30 Combined depth and stencil attachment is
                  *      not available in OpenGL ES 2.0. Attach the same object
                  *      to both @ref BufferAttachment::Depth and
@@ -226,10 +240,18 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          */
         class MAGNUM_EXPORT InvalidationAttachment {
             public:
-                /** @brief Invalidate depth buffer */
+                /**
+                 * @brief Invalidate depth buffer
+                 *
+                 * @m_keywords{GL_DEPTH_ATTACHMENT}
+                 */
                 static const InvalidationAttachment Depth;
 
-                /** @brief Invalidate stencil buffer */
+                /**
+                 * @brief Invalidate stencil buffer
+                 *
+                 * @m_keywords{GL_STENCIL_ATTACHMENT}
+                 */
                 static const InvalidationAttachment Stencil;
 
                 /** @brief Invalidate color buffer */
@@ -250,6 +272,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @brief Status
          *
          * @see @ref checkStatus()
+         * @m_enum_values_as_keywords
          */
         enum class Status: GLenum {
             /** The framebuffer is complete */
@@ -318,7 +341,8 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @extension{NV,fbo_color_attachments} extension is available in
          * OpenGL ES 2.0 and @webgl_extension{WEBGL,draw_buffers} is not
          * available in WebGL 1.0, returns `0`.
-         * @see @ref mapForDraw(), @fn_gl{Get} with @def_gl{MAX_COLOR_ATTACHMENTS}
+         * @see @ref mapForDraw(), @fn_gl{Get} with
+         *      @def_gl_keyword{MAX_COLOR_ATTACHMENTS}
          */
         static Int maxColorAttachments();
 
@@ -345,7 +369,8 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * (part of OpenGL 4.5) is not available, the framebuffer is created on
          * first use.
          * @see @ref Framebuffer(NoCreateT), @ref wrap(), @ref setViewport(),
-         *      @fn_gl{CreateFramebuffers}, eventually @fn_gl{GenFramebuffers}
+         *      @fn_gl_keyword{CreateFramebuffers}, eventually
+         *      @fn_gl_keyword{GenFramebuffers}
          */
         explicit Framebuffer(const Range2Di& viewport);
 
@@ -373,7 +398,7 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @brief Destructor
          *
          * Deletes associated OpenGL framebuffer object.
-         * @see @ref wrap(), @ref release(), @fn_gl{DeleteFramebuffers}
+         * @see @ref wrap(), @ref release(), @fn_gl_keyword{DeleteFramebuffers}
          */
         ~Framebuffer();
 
@@ -407,8 +432,8 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @extension{KHR,debug} (covered also by @extension{ANDROID,extension_pack_es31a})
          * nor @extension{EXT,debug_label} desktop or ES extension is
          * available, this function returns empty string.
-         * @see @fn_gl{GetObjectLabel} or
-         *      @fn_gl_extension{GetObjectLabel,EXT,debug_label} with
+         * @see @fn_gl_keyword{GetObjectLabel} or
+         *      @fn_gl_extension_keyword{GetObjectLabel,EXT,debug_label} with
          *      @def_gl{FRAMEBUFFER}
          * @requires_gles Debug output is not available in WebGL.
          */
@@ -422,8 +447,8 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @extension{KHR,debug} (covered also by @extension{ANDROID,extension_pack_es31a})
          * nor @extension{EXT,debug_label} desktop or ES extension is
          * available, this function does nothing.
-         * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} or
-         *      @fn_gl_extension{LabelObject,EXT,debug_label} with
+         * @see @ref maxLabelLength(), @fn_gl_keyword{ObjectLabel} or
+         *      @fn_gl_extension_keyword{LabelObject,EXT,debug_label} with
          *      @def_gl{FRAMEBUFFER}
          * @requires_gles Debug output is not available in WebGL.
          */
@@ -450,9 +475,9 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @extension{APPLE,framebuffer_multisample}, @extension{ANGLE,framebuffer_blit}
          * or @extension{NV,framebuffer_blit} is available and also on WebGL
          * 1.0.
-         * @see @fn_gl2{CheckNamedFramebufferStatus,CheckFramebufferStatus},
-         *      @fn_gl_extension{CheckNamedFramebufferStatus,EXT,direct_state_access},
-         *      eventually @fn_gl{BindFramebuffer} and @fn_gl{CheckFramebufferStatus}
+         * @see @fn_gl2_keyword{CheckNamedFramebufferStatus,CheckFramebufferStatus},
+         *      @fn_gl_extension_keyword{CheckNamedFramebufferStatus,EXT,direct_state_access},
+         *      eventually @fn_gl{BindFramebuffer} and @fn_gl_keyword{CheckFramebufferStatus}
          */
         Status checkStatus(FramebufferTarget target);
 
@@ -463,8 +488,8 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * @param color         Value to clear with
          * @return Reference to self (for method chaining)
          *
-         * @see @ref clear(), @fn_gl{ClearNamedFramebuffer}, eventually
-         *      @fn_gl{BindFramebuffer}, then @fn_gl{ClearBuffer}
+         * @see @ref clear(), @fn_gl_keyword{ClearNamedFramebuffer}, eventually
+         *      @fn_gl{BindFramebuffer}, then @fn_gl_keyword{ClearBuffer}
          * @requires_gl30 Direct framebuffer clearing is not available in
          *      OpenGL 2.1.
          * @requires_gles30 Direct framebuffer clearing is not available in
@@ -487,7 +512,8 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * color attachment IDs. Shader outputs which are not listed are not
          * used, you can achieve the same by passing @ref Framebuffer::DrawAttachment::None
          * as color attachment ID. Example usage:
-         * @code
+         *
+         * @code{.cpp}
          * framebuffer.mapForDraw({{MyShader::ColorOutput, Framebuffer::ColorAttachment(0)},
          *                         {MyShader::NormalOutput, Framebuffer::DrawAttachment::None}});
          * @endcode
@@ -498,9 +524,9 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * already).
          * @see @ref maxDrawBuffers(), @ref maxDualSourceDrawBuffers(),
          *      @ref maxColorAttachments(), @ref mapForRead(),
-         *      @fn_gl2{NamedFramebufferDrawBuffers,DrawBuffers},
-         *      @fn_gl_extension{FramebufferDrawBuffers,EXT,direct_state_access},
-         *      eventually @fn_gl{BindFramebuffer} and @fn_gl{DrawBuffers}
+         *      @fn_gl2_keyword{NamedFramebufferDrawBuffers,DrawBuffers},
+         *      @fn_gl_extension_keyword{FramebufferDrawBuffers,EXT,direct_state_access},
+         *      eventually @fn_gl{BindFramebuffer} and @fn_gl_keyword{DrawBuffers}
          * @requires_gles30 Extension @extension{EXT,draw_buffers} or
          *      @extension{NV,draw_buffers} in OpenGL ES 2.0.
          * @requires_webgl20 Extension @webgl_extension{WEBGL,draw_buffers} in
@@ -521,10 +547,10 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * available, the framebuffer is bound before the operation (if not
          * already).
          * @see @ref maxColorAttachments(), @ref mapForRead(),
-         *      @fn_gl2{NamedFramebufferDrawBuffer,DrawBuffer},
-         *      @fn_gl_extension{FramebufferDrawBuffer,EXT,direct_state_access},
-         *      eventually @fn_gl{BindFramebuffer} and @fn_gl{DrawBuffer} (or
-         *      @fn_gl{DrawBuffers} in OpenGL ES)
+         *      @fn_gl2_keyword{NamedFramebufferDrawBuffer,DrawBuffer},
+         *      @fn_gl_extension_keyword{FramebufferDrawBuffer,EXT,direct_state_access},
+         *      eventually @fn_gl{BindFramebuffer} and @fn_gl_keyword{DrawBuffer}
+         *      (or @fn_gl_keyword{DrawBuffers} in OpenGL ES)
          * @requires_gles30 Extension @extension{EXT,draw_buffers} or
          *      @extension{NV,draw_buffers} in OpenGL ES 2.0.
          * @requires_webgl20 Extension @webgl_extension{WEBGL,draw_buffers} in
@@ -542,9 +568,9 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * nor @extension{EXT,direct_state_access} desktop extension is
          * available, the framebuffer is bound before the operation (if not
          * already).
-         * @see @ref mapForDraw(), @fn_gl2{NamedFramebufferReadBuffer,ReadBuffer},
-         *      @fn_gl_extension{FramebufferReadBuffer,EXT,direct_state_access},
-         *      eventually @fn_gl{BindFramebuffer} and @fn_gl{ReadBuffer}
+         * @see @ref mapForDraw(), @fn_gl2_keyword{NamedFramebufferReadBuffer,ReadBuffer},
+         *      @fn_gl_extension_keyword{FramebufferReadBuffer,EXT,direct_state_access},
+         *      eventually @fn_gl{BindFramebuffer} and @fn_gl_keyword{ReadBuffer}
          * @requires_gles30 Extension @extension2{NV,read_buffer,GL_NV_read_buffer}
          *      in OpenGL ES 2.0.
          * @requires_webgl20 Framebuffer read mapping is not available in WebGL
@@ -562,9 +588,9 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * If @extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
          * available, the framebuffer is bound before the operation (if not
          * already).
-         * @see @fn_gl2{InvalidateNamedFramebufferData,InvalidateFramebuffer},
-         *      eventually @fn_gl{InvalidateFramebuffer} or
-         *      @fn_gl_extension{DiscardFramebuffer,EXT,discard_framebuffer}
+         * @see @fn_gl2_keyword{InvalidateNamedFramebufferData,InvalidateFramebuffer},
+         *      eventually @fn_gl_keyword{InvalidateFramebuffer} or
+         *      @fn_gl_extension_keyword{DiscardFramebuffer,EXT,discard_framebuffer}
          *      on OpenGL ES 2.0
          * @requires_webgl20 Framebuffer invalidation is not available in WebGL
          *      1.0.
@@ -584,8 +610,8 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * available, the framebuffer is bound before the operation (if not
          * already).
          * @see @ref invalidate(std::initializer_list<InvalidationAttachment>),
-         *      @fn_gl2{InvalidateNamedFramebufferSubData,InvalidateSubFramebuffer},
-         *      eventually @fn_gl{InvalidateSubFramebuffer}
+         *      @fn_gl2_keyword{InvalidateNamedFramebufferSubData,InvalidateSubFramebuffer},
+         *      eventually @fn_gl_keyword{InvalidateSubFramebuffer}
          * @requires_gles30 Use @ref invalidate(std::initializer_list<InvalidationAttachment>)
          *      in OpenGL ES 2.0 instead.
          * @requires_webgl20 Framebuffer invalidation is not available in WebGL
@@ -604,9 +630,9 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * nor @extension{EXT,direct_state_access} desktop extension is
          * available, the framebuffer is bound before the operation (if not
          * already).
-         * @see @ref detach(), @fn_gl2{NamedFramebufferRenderbuffer,FramebufferRenderbuffer},
-         *      @fn_gl_extension{NamedFramebufferRenderbuffer,EXT,direct_state_access},
-         *      eventually @fn_gl{BindFramebuffer} and @fn_gl{FramebufferRenderbuffer}
+         * @see @ref detach(), @fn_gl2_keyword{NamedFramebufferRenderbuffer,FramebufferRenderbuffer},
+         *      @fn_gl_extension_keyword{NamedFramebufferRenderbuffer,EXT,direct_state_access},
+         *      eventually @fn_gl{BindFramebuffer} and @fn_gl_keyword{FramebufferRenderbuffer}
          */
         Framebuffer& attachRenderbuffer(BufferAttachment attachment, Renderbuffer& renderbuffer);
 
@@ -623,10 +649,10 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * available, the framebuffer is bound before the operation (if not
          * already).
          * @see @ref detach(), @ref attachCubeMapTexture(),
-         *      @fn_gl2{NamedFramebufferTexture,FramebufferTexture},
-         *      @fn_gl_extension{NamedFramebufferTexture1D,EXT,direct_state_access},
+         *      @fn_gl2_keyword{NamedFramebufferTexture,FramebufferTexture},
+         *      @fn_gl_extension_keyword{NamedFramebufferTexture1D,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and
-         *      @fn_gl2{FramebufferTexture1D,FramebufferTexture}
+         *      @fn_gl2_keyword{FramebufferTexture1D,FramebufferTexture}
          * @requires_gl Only 2D and 3D textures are available in OpenGL ES and
          *      WebGL.
          */
@@ -645,10 +671,10 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * available, the framebuffer is bound before the operation (if not
          * already).
          * @see @ref detach(), @ref attachCubeMapTexture(),
-         *      @fn_gl2{NamedFramebufferTexture,FramebufferTexture},
-         *      @fn_gl_extension{NamedFramebufferTexture2D,EXT,direct_state_access},
+         *      @fn_gl2_keyword{NamedFramebufferTexture,FramebufferTexture},
+         *      @fn_gl_extension_keyword{NamedFramebufferTexture2D,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and
-         *      @fn_gl2{FramebufferTexture2D,FramebufferTexture}
+         *      @fn_gl2_keyword{FramebufferTexture2D,FramebufferTexture}
          * @requires_gles30 Extension @extension{OES,fbo_render_mipmap} to
          *      render to @p level different than `0` in OpenGL ES 2.0.
          * @requires_webgl20 Extension @webgl_extension{OES,fbo_render_mipmap}
@@ -688,9 +714,10 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * available, the framebuffer is bound before the operation (if not
          * already).
          * @see @ref detach(), @ref attachTexture(),
-         *      @fn_gl2{NamedFramebufferTextureLayer,FramebufferTextureLayer},
-         *      @fn_gl_extension{NamedFramebufferTexture2D,EXT,direct_state_access},
-         *      eventually @fn_gl{BindFramebuffer} and @fn_gl2{FramebufferTexture2D,FramebufferTexture}
+         *      @fn_gl2_keyword{NamedFramebufferTextureLayer,FramebufferTextureLayer},
+         *      @fn_gl_extension_keyword{NamedFramebufferTexture2D,EXT,direct_state_access},
+         *      eventually @fn_gl{BindFramebuffer} and
+         *      @fn_gl2_keyword{FramebufferTexture2D,FramebufferTexture}
          * @requires_gles30 Extension @extension{OES,fbo_render_mipmap} to
          *      render to @p level different than `0` in OpenGL ES 2.0.
          * @requires_webgl20 Extension @webgl_extension{OES,fbo_render_mipmap}
@@ -711,11 +738,12 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * nor @extension{EXT,direct_state_access} desktop extension is
          * available, the framebuffer is bound before the operation (if not
          * already).
-         * @see @ref detach(), @fn_gl2{NamedFramebufferTextureLayer,FramebufferTextureLayer},
-         *      @fn_gl_extension{NamedFramebufferTextureLayer,EXT,direct_state_access},
-         *      eventually @fn_gl{BindFramebuffer} and @fn_gl2{FramebufferTextureLayer,FramebufferTexture}
-         *      or @fn_gl_extension{FramebufferTexture3D,OES,texture_3D} in
-         *      OpenGL ES 2.0
+         * @see @ref detach(), @fn_gl2_keyword{NamedFramebufferTextureLayer,FramebufferTextureLayer},
+         *      @fn_gl_extension_keyword{NamedFramebufferTextureLayer,EXT,direct_state_access},
+         *      eventually @fn_gl{BindFramebuffer} and
+         *      @fn_gl2_keyword{FramebufferTextureLayer,FramebufferTexture}
+         *      or @fn_gl_extension_keyword{FramebufferTexture3D,OES,texture_3D}
+         *      in OpenGL ES 2.0
          * @requires_gles30 Extension @extension{OES,texture_3D} in OpenGL
          *      ES 2.0.
          * @requires_gles30 Extension @extension{OES,fbo_render_mipmap} to
@@ -778,9 +806,10 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * extension is available, the framebuffer is bound before the
          * operation (if not already).
          * @see @ref detach(), @ref attachTexture(),
-         *      @fn_gl2{NamedFramebufferTexture,FramebufferTexture},
-         *      @fn_gl_extension{NamedFramebufferTexture,EXT,direct_state_access},
-         *      eventually @fn_gl{BindFramebuffer} and @fn_gl{FramebufferTexture}
+         *      @fn_gl2_keyword{NamedFramebufferTexture,FramebufferTexture},
+         *      @fn_gl_extension_keyword{NamedFramebufferTexture,EXT,direct_state_access},
+         *      eventually @fn_gl{BindFramebuffer} and
+         *      @fn_gl_keyword{FramebufferTexture}
          * @requires_gl32 Extension @extension{ARB,geometry_shader4}
          * @requires_gles30 Not defined in OpenGL ES 2.0.
          * @requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
@@ -850,9 +879,10 @@ class MAGNUM_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObje
          * already).
          * @see @ref attachRenderbuffer(), @ref attachTexture(),
          *      @ref attachCubeMapTexture(), @ref attachTextureLayer(),
-         *      @fn_gl2{NamedFramebufferRenderbuffer,FramebufferRenderbuffer},
-         *      @fn_gl_extension{NamedFramebufferRenderbuffer,EXT,direct_state_access},
-         *      eventually @fn_gl{BindFramebuffer} and @fn_gl{FramebufferRenderbuffer}
+         *      @fn_gl2_keyword{NamedFramebufferRenderbuffer,FramebufferRenderbuffer},
+         *      @fn_gl_extension_keyword{NamedFramebufferRenderbuffer,EXT,direct_state_access},
+         *      eventually @fn_gl{BindFramebuffer} and
+         *      @fn_gl_keyword{FramebufferRenderbuffer}
          */
         Framebuffer& detach(BufferAttachment attachment);
 

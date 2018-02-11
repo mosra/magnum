@@ -51,6 +51,7 @@ See documentation of these values for possible limitations when using OpenGL ES
 2.0 or WebGL.
 
 @see @ref Image, @ref ImageView, @ref BufferImage, @ref Trade::ImageData
+@m_enum_values_as_keywords
 */
 enum class PixelFormat: GLenum {
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
@@ -333,6 +334,7 @@ See documentation of these values for possible limitations when using OpenGL ES
 2.0 or WebGL.
 
 @see @ref Image, @ref ImageView, @ref BufferImage, @ref Trade::ImageData
+@m_enum_values_as_keywords
 */
 enum class PixelType: GLenum {
     /** Each component unsigned byte. */
@@ -584,6 +586,7 @@ Equivalent to `Compressed*` values of @ref TextureFormat enum.
 
 @see @ref CompressedImage, @ref CompressedImageView, @ref CompressedBufferImage,
     @ref Trade::ImageData
+@m_enum_values_as_keywords
 */
 enum class CompressedPixelFormat: GLenum {
     #ifndef MAGNUM_TARGET_GLES

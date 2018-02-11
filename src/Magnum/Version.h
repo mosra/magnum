@@ -48,23 +48,23 @@ namespace Implementation {
 @see @ref version(), @ref Context, @ref MAGNUM_ASSERT_VERSION_SUPPORTED()
 */
 enum class Version: Int {
-    None = 0xFFFF,                  /**< @brief Unspecified */
+    None = 0xFFFF,                  /**< Unspecified */
     #ifndef MAGNUM_TARGET_GLES
-    GL210 = 210,                    /**< @brief OpenGL 2.1 / GLSL 1.20 */
-    GL300 = 300,                    /**< @brief OpenGL 3.0 / GLSL 1.30 */
-    GL310 = 310,                    /**< @brief OpenGL 3.1 / GLSL 1.40 */
-    GL320 = 320,                    /**< @brief OpenGL 3.2 / GLSL 1.50 */
-    GL330 = 330,                    /**< @brief OpenGL 3.3, GLSL 3.30 */
-    GL400 = 400,                    /**< @brief OpenGL 4.0, GLSL 4.00 */
-    GL410 = 410,                    /**< @brief OpenGL 4.1, GLSL 4.10 */
-    GL420 = 420,                    /**< @brief OpenGL 4.2, GLSL 4.20 */
-    GL430 = 430,                    /**< @brief OpenGL 4.3, GLSL 4.30 */
-    GL440 = 440,                    /**< @brief OpenGL 4.4, GLSL 4.40 */
-    GL450 = 450,                    /**< @brief OpenGL 4.5, GLSL 4.50 */
+    GL210 = 210,                    /**< OpenGL 2.1 / GLSL 1.20 */
+    GL300 = 300,                    /**< OpenGL 3.0 / GLSL 1.30 */
+    GL310 = 310,                    /**< OpenGL 3.1 / GLSL 1.40 */
+    GL320 = 320,                    /**< OpenGL 3.2 / GLSL 1.50 */
+    GL330 = 330,                    /**< OpenGL 3.3, GLSL 3.30 */
+    GL400 = 400,                    /**< OpenGL 4.0, GLSL 4.00 */
+    GL410 = 410,                    /**< OpenGL 4.1, GLSL 4.10 */
+    GL420 = 420,                    /**< OpenGL 4.2, GLSL 4.20 */
+    GL430 = 430,                    /**< OpenGL 4.3, GLSL 4.30 */
+    GL440 = 440,                    /**< OpenGL 4.4, GLSL 4.40 */
+    GL450 = 450,                    /**< OpenGL 4.5, GLSL 4.50 */
     #endif
 
     /**
-     * @brief OpenGL ES 2.0 or WebGL 1.0, GLSL ES 1.00
+     * OpenGL ES 2.0 or WebGL 1.0, GLSL ES 1.00.
      *
      * On desktop OpenGL, all related functionality is present in extension
      * @extension{ARB,ES2_compatibility} (OpenGL 4.1), so testing for this
@@ -78,7 +78,7 @@ enum class Version: Int {
     #endif
 
     /**
-     * @brief OpenGL ES 3.0 or WebGL 2.0, GLSL ES 3.00
+     * OpenGL ES 3.0 or WebGL 2.0, GLSL ES 3.00.
      *
      * On desktop OpenGL, all related functionality is present in extension
      * @extension{ARB,ES3_compatibility} (OpenGL 4.3), so testing for this
@@ -93,7 +93,7 @@ enum class Version: Int {
 
     #ifndef MAGNUM_TARGET_WEBGL
     /**
-     * @brief OpenGL ES 3.1, GLSL ES 3.10
+     * OpenGL ES 3.1, GLSL ES 3.10.
      *
      * On desktop OpenGL, all related functionality is present in extension
      * @extension{ARB,ES3_1_compatibility} (OpenGL 4.5), so testing for this
@@ -130,7 +130,7 @@ inline std::pair<Int, Int> version(Version version) {
 /**
 @brief Whether given version is OpenGL ES or WebGL
 
-Always `true` on @ref MAGNUM_TARGET_GLES "OpenGL ES" and WebGL build.
+Always @cpp true @ce on @ref MAGNUM_TARGET_GLES "OpenGL ES" and WebGL build.
 */
 #ifndef MAGNUM_TARGET_GLES
 constexpr bool isVersionES(Version version) {

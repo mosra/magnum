@@ -40,14 +40,14 @@ Default framebuffer, i.e. the actual screen surface. It is automatically
 created when @ref Context is created and it is available through global
 variable @ref defaultFramebuffer.
 
-@anchor DefaultFramebuffer-usage
-## Usage
+@section DefaultFramebuffer-usage Usage
 
 When you are using only the default framebuffer, the usage is simple. You
 must ensure that it is properly resized when application surface is resized,
 i.e. you must pass the new size in your @ref Platform::Sdl2Application::viewportEvent() "viewportEvent()"
 implementation, for example:
-@code
+
+@code{.cpp}
 void viewportEvent(const Vector2i& size) override {
     defaultFramebuffer.setViewport({{}, size});
 
@@ -58,7 +58,8 @@ void viewportEvent(const Vector2i& size) override {
 Next thing you probably want is to clear all used buffers before performing
 any drawing in your @ref Platform::Sdl2Application::drawEvent() "drawEvent()"
 implementation, for example:
-@code
+
+@code{.cpp}
 void drawEvent() override {
     defaultFramebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth);
 
@@ -69,7 +70,7 @@ void drawEvent() override {
 See documentation of particular functions and @ref Framebuffer documentation for
 more involved usage, usage of non-default or multiple framebuffers.
 
-## Performance optimizations
+@section DefaultFramebuffer-performance-optimizations Performance optimizations
 
 See also @ref AbstractFramebuffer-performance-optimization "relevant section in AbstractFramebuffer".
 
@@ -87,6 +88,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @brief Status
          *
          * @see @ref checkStatus()
+         * @m_enum_values_as_keywords
          * @requires_gl30 Extension @extension{ARB,framebuffer_object}
          */
         enum class Status: GLenum {
@@ -112,6 +114,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @brief Draw attachment
          *
          * @see @ref mapForDraw()
+         * @m_enum_values_as_keywords
          * @requires_gles30 Extension @extension{EXT,draw_buffers} in OpenGL
          *      ES 2.0.
          * @requires_webgl20 Extension @webgl_extension{WEBGL,draw_buffers} in
@@ -168,6 +171,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @brief Read attachment
          *
          * @see @ref mapForRead()
+         * @m_enum_values_as_keywords
          * @requires_gles30 Extension @extension2{NV,read_buffer,GL_NV_read_buffer}
          *      in OpenGL ES 2.0.
          * @requires_webgl20 Framebuffer read mapping is not available in WebGL
@@ -249,6 +253,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @brief Invalidation attachment
          *
          * @see @ref invalidate()
+         * @m_enum_values_as_keywords
          * @requires_gl43 Extension @extension{ARB,invalidate_subdata}
          * @requires_gles30 Extension @extension{EXT,discard_framebuffer} in
          *      OpenGL ES 2.0.
@@ -336,9 +341,9 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @extension{APPLE,framebuffer_multisample}, @extension{ANGLE,framebuffer_blit}
          * or @extension{NV,framebuffer_blit} is available and also on WebGL
          * 1.0.
-         * @see @fn_gl2{CheckNamedFramebufferStatus,CheckFramebufferStatus},
-         *      @fn_gl_extension{CheckNamedFramebufferStatus,EXT,direct_state_access},
-         *      eventually @fn_gl{BindFramebuffer} and @fn_gl{CheckFramebufferStatus}
+         * @see @fn_gl2_keyword{CheckNamedFramebufferStatus,CheckFramebufferStatus},
+         *      @fn_gl_extension_keyword{CheckNamedFramebufferStatus,EXT,direct_state_access},
+         *      eventually @fn_gl{BindFramebuffer} and @fn_gl_keyword{CheckFramebufferStatus}
          * @requires_gl30 Extension @extension{ARB,framebuffer_object}
          */
         Status checkStatus(FramebufferTarget target);
@@ -349,8 +354,8 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @param color         Value to clear with
          * @return Reference to self (for method chaining)
          *
-         * @see @ref clear(), @fn_gl{ClearNamedFramebuffer}, eventually
-         *      @fn_gl{BindFramebuffer}, then @fn_gl{ClearBuffer}
+         * @see @ref clear(), @fn_gl_keyword{ClearNamedFramebuffer}, eventually
+         *      @fn_gl{BindFramebuffer}, then @fn_gl_keyword{ClearBuffer}
          * @requires_gl30 Direct framebuffer clearing is not available in
          *      OpenGL 2.1.
          * @requires_gles30 Direct framebuffer clearing is not available in
@@ -373,7 +378,8 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * attachments. Shader outputs which are not listed are not used, you
          * can achieve the same by passing @ref DrawAttachment::None as
          * attachment. Example usage:
-         * @code
+         *
+         * @code{.cpp}
          * defaultFramebuffer.mapForDraw({{MyShader::ColorOutput, DefaultFramebuffer::DrawAttachment::Back},
          *                                {MyShader::NormalOutput, DefaultFramebuffer::DrawAttachment::None}});
          * @endcode
@@ -383,9 +389,9 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * available, the framebuffer is bound before the operation (if not
          * already).
          * @see @ref maxDrawBuffers(), @ref maxDualSourceDrawBuffers(),
-         *      @ref mapForRead(), @fn_gl2{NamedFramebufferDrawBuffers,DrawBuffers},
-         *      @fn_gl_extension{FramebufferDrawBuffers,EXT,direct_state_access},
-         *      eventually @fn_gl{BindFramebuffer} and @fn_gl{DrawBuffers}
+         *      @ref mapForRead(), @fn_gl2_keyword{NamedFramebufferDrawBuffers,DrawBuffers},
+         *      @fn_gl_extension_keyword{FramebufferDrawBuffers,EXT,direct_state_access},
+         *      eventually @fn_gl{BindFramebuffer} and @fn_gl_keyword{DrawBuffers}
          * @requires_gles30 Extension @extension{EXT,draw_buffers} in OpenGL
          *      ES 2.0.
          * @requires_webgl20 Extension @webgl_extension{WEBGL,draw_buffers} in
@@ -405,10 +411,10 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * nor @extension{EXT,direct_state_access} desktop extension is
          * available, the framebuffer is bound before the operation (if not
          * already).
-         * @see @ref mapForRead(), @fn_gl2{NamedFramebufferDrawBuffer,DrawBuffer},
-         *      @fn_gl_extension{FramebufferDrawBuffer,EXT,direct_state_access},
-         *      eventually @fn_gl{BindFramebuffer} and @fn_gl{DrawBuffer} or
-         *      @fn_gl{DrawBuffers} in OpenGL ES 3.0
+         * @see @ref mapForRead(), @fn_gl2_keyword{NamedFramebufferDrawBuffer,DrawBuffer},
+         *      @fn_gl_extension_keyword{FramebufferDrawBuffer,EXT,direct_state_access},
+         *      eventually @fn_gl{BindFramebuffer} and @fn_gl_keyword{DrawBuffer}
+         *      or @fn_gl{DrawBuffers} in OpenGL ES 3.0
          * @requires_gles30 Extension @extension{EXT,draw_buffers} in OpenGL
          *      ES 2.0.
          * @requires_webgl20 Extension @webgl_extension{WEBGL,draw_buffers} in
@@ -426,9 +432,9 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * nor @extension{EXT,direct_state_access} desktop extension is
          * available, the framebuffer is bound before the operation (if not
          * already).
-         * @see @ref mapForDraw(), @fn_gl2{NamedFramebufferReadBuffer,ReadBuffer},
-         *      @fn_gl_extension{FramebufferReadBuffer,EXT,direct_state_access},
-         *      eventually @fn_gl{BindFramebuffer} and @fn_gl{ReadBuffer}
+         * @see @ref mapForDraw(), @fn_gl2_keyword{NamedFramebufferReadBuffer,ReadBuffer},
+         *      @fn_gl_extension_keyword{FramebufferReadBuffer,EXT,direct_state_access},
+         *      eventually @fn_gl{BindFramebuffer} and @fn_gl_keyword{ReadBuffer}
          * @requires_gles30 Extension @extension2{NV,read_buffer,GL_NV_read_buffer}
          *      in OpenGL ES 2.0.
          * @requires_webgl20 Framebuffer read mapping is not available in WebGL
@@ -446,9 +452,9 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * If @extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
          * available, the framebuffer is bound before the operation (if not
          * already).
-         * @see @fn_gl2{InvalidateNamedFramebufferData,InvalidateFramebuffer},
-         *      eventually @fn_gl{InvalidateFramebuffer} or
-         *      @fn_gl_extension{DiscardFramebuffer,EXT,discard_framebuffer}
+         * @see @fn_gl2_keyword{InvalidateNamedFramebufferData,InvalidateFramebuffer},
+         *      eventually @fn_gl_keyword{InvalidateFramebuffer} or
+         *      @fn_gl_extension_keyword{DiscardFramebuffer,EXT,discard_framebuffer}
          *      on OpenGL ES 2.0
          * @requires_webgl20 Framebuffer invalidation is not available in WebGL
          *      1.0.
@@ -468,8 +474,8 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * available, the framebuffer is bound before the operation (if not
          * already).
          * @see @ref invalidate(std::initializer_list<InvalidationAttachment>),
-         *      @fn_gl2{InvalidateNamedFramebufferSubData,InvalidateSubFramebuffer},
-         *      eventually @fn_gl{InvalidateSubFramebuffer}
+         *      @fn_gl2_keyword{InvalidateNamedFramebufferSubData,InvalidateSubFramebuffer},
+         *      eventually @fn_gl_keyword{InvalidateSubFramebuffer}
          * @requires_gles30 Use @ref invalidate(std::initializer_list<InvalidationAttachment>)
          *      in OpenGL ES 2.0 instead.
          * @requires_webgl20 Framebuffer invalidation is not available in WebGL

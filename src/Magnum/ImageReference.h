@@ -37,24 +37,24 @@ CORRADE_DEPRECATED_FILE("use Magnum/ImageView.h instead")
 
 namespace Magnum {
 
-/** @copybrief ImageView
+/** @brief @copybrief ImageView
  * @deprecated Use @ref ImageView instead.
  */
 #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<UnsignedInt dimensions> using CORRADE_DEPRECATED_ALIAS("use ImageView instead") ImageReference = ImageView<dimensions>;
 #endif
 
-/** @copybrief ImageView1D
+/** @brief @copybrief ImageView1D
  * @deprecated Use @ref ImageView1D instead.
  */
 typedef CORRADE_DEPRECATED("use ImageView1D instead") ImageView1D ImageReference1D;
 
-/** @copybrief ImageView2D
+/** @brief @copybrief ImageView2D
  * @deprecated Use @ref ImageView2D instead.
  */
 typedef CORRADE_DEPRECATED("use ImageView2D instead") ImageView2D ImageReference2D;
 
-/** @copybrief ImageView3D
+/** @brief @copybrief ImageView3D
  * @deprecated Use @ref ImageView3D instead.
  */
 typedef CORRADE_DEPRECATED("use ImageView3D instead") ImageView3D ImageReference3D;

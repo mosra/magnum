@@ -72,7 +72,7 @@ template<UnsignedInt dimensions, class T> struct DimensionTraits {
 /**
 @brief Vector type for given dimension count and type
 
-Convenience alternative to `typename DimensionTraits<dimensions, T>::VectorType`.
+Convenience alternative to @cpp typename DimensionTraits<dimensions, T>::VectorType @ce.
 See @ref DimensionTraits::VectorType for more information.
 */
 template<UnsignedInt dimensions, class T> using VectorTypeFor = typename DimensionTraits<dimensions, T>::VectorType;
@@ -80,7 +80,7 @@ template<UnsignedInt dimensions, class T> using VectorTypeFor = typename Dimensi
 /**
 @brief Range type for given dimension count and type
 
-Convenience alternative to `typename DimensionTraits<dimensions, T>::RangeType`.
+Convenience alternative to @cpp typename DimensionTraits<dimensions, T>::RangeType @ce.
 See @ref DimensionTraits::RangeType for more information.
 */
 template<UnsignedInt dimensions, class T> using RangeTypeFor = typename DimensionTraits<dimensions, T>::RangeType;
@@ -88,7 +88,7 @@ template<UnsignedInt dimensions, class T> using RangeTypeFor = typename Dimensio
 /**
 @brief Matrix type for given dimension count and type
 
-Convenience alternative to `typename DimensionTraits<dimensions, T>::MatrixType`.
+Convenience alternative to @cpp typename DimensionTraits<dimensions, T>::MatrixType @ce.
 See @ref DimensionTraits::MatrixType for more information.
 */
 template<UnsignedInt dimensions, class T> using MatrixTypeFor = typename DimensionTraits<dimensions, T>::MatrixType;

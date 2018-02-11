@@ -48,6 +48,7 @@ class MAGNUM_EXPORT Sampler {
          *
          * @see @ref Texture::setMinificationFilter() "*Texture::setMinificationFilter()",
          *      @ref Texture::setMagnificationFilter() "*Texture::setMagnificationFilter()"
+         * @m_enum_values_as_keywords
          */
         enum class Filter: GLint {
             Nearest = GL_NEAREST,   /**< Nearest neighbor filtering */
@@ -77,12 +78,14 @@ class MAGNUM_EXPORT Sampler {
 
             /**
              * Select nearest mip level. **Unavailable on rectangle textures.**
+             * @m_keywords{GL_NEAREST_MIPMAP_NEAREST}
              */
             Nearest = GL_NEAREST_MIPMAP_NEAREST & ~GL_NEAREST,
 
             /**
              * Linear interpolation of nearest mip levels. **Unavailable on
              * rectangle textures.**
+             * @m_keywords{GL_NEAREST_MIPMAP_LINEAR}
              * @requires_gles30 Extension @extension{OES,texture_float_linear} /
              *      @extension2{OES,texture_half_float_linear,OES_texture_float_linear}
              *      for linear interpolation of textures with
@@ -100,6 +103,7 @@ class MAGNUM_EXPORT Sampler {
          * @brief Texture wrapping
          *
          * @see @ref Texture::setWrapping() "*Texture::setWrapping()"
+         * @m_enum_values_as_keywords
          */
         enum class Wrapping: GLint {
             /** Repeat texture. **Unavailable on rectangle textures.** */
@@ -153,6 +157,7 @@ class MAGNUM_EXPORT Sampler {
          *
          * @see @ref CompareFunction,
          *      @ref Texture::setCompareMode() "*Texture::setCompareMode()"
+         * @m_enum_values_as_keywords
          * @requires_gles30 Extension @extension{EXT,shadow_samplers} in
          *      OpenGL ES 2.0.
          * @requires_webgl20 Depth texture comparison is not available in WebGL
@@ -178,48 +183,49 @@ class MAGNUM_EXPORT Sampler {
          * @ref CompareMode::CompareRefToTexture.
          * @see @ref Texture::setCompareFunction() "*Texture::setCompareFunction()",
          *      @ref Texture::setCompareMode() "*Texture::setCompareMode()"
+         * @m_enum_values_as_keywords
          * @requires_gles30 Extension @extension{EXT,shadow_samplers} in
          *      OpenGL ES 2.0.
          * @requires_webgl20 Depth texture comparison is not available in WebGL
          *      1.0.
          */
         enum class CompareFunction: GLenum {
-            Never = GL_NEVER,           /**< Always `0.0` */
-            Always = GL_ALWAYS,         /**< Always `1.0` */
+            Never = GL_NEVER,           /**< Always @glsl 0.0 @ce */
+            Always = GL_ALWAYS,         /**< Always @glsl 1.0 @ce */
 
             /**
-             * `1.0` when texture coordinate is less than depth value, `0.0`
-             * otherwise
+             * @glsl 1.0 @ce when texture coordinate is less than depth value,
+             * @glsl 0.0 @ce otherwise
              */
             Less = GL_LESS,
 
             /**
-             * `1.0` when texture coordinate is less than or equal to depth
-             * value, `0.0` otherwise
+             * @glsl 1.0 @ce when texture coordinate is less than or equal to depth
+             * value, @glsl 0.0 @ce otherwise
              */
             LessOrEqual = GL_LEQUAL,
 
             /**
-             * `1.0` when texture coordinate is equal to depth value, `0.0`
-             * otherwise
+             * @glsl 1.0 @ce when texture coordinate is equal to depth value,
+             * @glsl 0.0 @ce otherwise
              */
             Equal = GL_EQUAL,
 
             /**
-             * `0.0` when texture coordinate is equal to depth value, `1.0`
-             * otherwise
+             * @glsl 0.0 @ce when texture coordinate is equal to depth value,
+             * @glsl 1.0 @ce otherwise
              */
             NotEqual = GL_NOTEQUAL,
 
             /**
-             * `1.0` when texture coordinate is greater than or equal to depth
-             * value, `0.0` otherwise
+             * @glsl 1.0 @ce when texture coordinate is greater than or equal
+             * to depth value, @glsl 0.0 @ce otherwise
              */
             GreaterOrEqual = GL_GEQUAL,
 
             /**
-             * `1.0` when texture coordinate is greater than depth value, `0.0`
-             * otherwise
+             * @glsl 1.0 @ce when texture coordinate is greater than depth
+             * value, @glsl 0.0 @ce otherwise
              */
             Greater = GL_GREATER
         };
@@ -230,6 +236,7 @@ class MAGNUM_EXPORT Sampler {
          * @brief Depth/stencil texture mode
          *
          * @see @ref Texture::setDepthStencilMode() "*Texture::setDepthStencilMode()"
+         * @m_enum_values_as_keywords
          * @requires_gl43 Extension @extension{ARB,stencil_texturing}
          * @requires_gles31 Stencil texturing is not available in OpenGL ES 3.0
          *      and older.
@@ -249,8 +256,8 @@ class MAGNUM_EXPORT Sampler {
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{EXT,texture_filter_anisotropic}
-         * (desktop or ES) is not available, returns `0.0f`.
-         * @see @fn_gl{Get} with @def_gl{MAX_TEXTURE_MAX_ANISOTROPY_EXT}
+         * (desktop or ES) is not available, returns @cpp 0.0f @ce.
+         * @see @fn_gl{Get} with @def_gl_keyword{MAX_TEXTURE_MAX_ANISOTROPY_EXT}
          */
         static Float maxMaxAnisotropy();
 };

@@ -43,17 +43,17 @@ namespace Implementation { template<class> struct Attribute; }
 @brief Base class for attribute location and type
 
 For use in @ref AbstractShaderProgram subclasses. Template parameter @p location
-is vertex attribute location, number between `0` and
+is vertex attribute location, number between @cpp 0 @ce and
 @ref AbstractShaderProgram::maxVertexAttributes(). To ensure compatibility, you
-should always have vertex attribute with location `0`.
+should always have vertex attribute with location @cpp 0 @ce.
 
 Template parameter @p T is the type which is used for shader attribute, e.g.
-@ref Vector4i for `ivec4`. DataType is type of passed data when adding vertex
-buffers to mesh. By default it is the same as type used in shader (e.g.
+@ref Vector4i for @glsl ivec4 @ce. DataType is type of passed data when adding
+vertex buffers to mesh. By default it is the same as type used in shader (e.g.
 @ref DataType::Int for @ref Vector4i). It's also possible to pass integer data
 to floating-point shader inputs. In this case you may want to normalize the
-values (e.g. color components from 0-255 to 0.0f - 1.0f) -- see
-@ref DataOption::Normalized.
+values (e.g. color components from @cpp 0 @ce -- @cpp 255 @ce to @cpp 0.0f @ce -- @cpp 1.0f @ce)
+--- see @ref DataOption::Normalized.
 
 Only some types are allowed as attribute types, see @ref AbstractShaderProgram-types
 for more information.
@@ -100,29 +100,31 @@ template<UnsignedInt location, class T> class Attribute {
          *
          * Count of components passed to the shader. If passing smaller count
          * of components than corresponding type has, unspecified components
-         * are set to default values (second and third to `0`, fourth to `1`).
+         * are set to default values (second and third to @cpp 0 @ce, fourth to
+         * @cpp 1 @ce).
          * @see @ref Attribute()
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         enum class Components: GLint {
             /**
              * Only first component is specified. Second, third and fourth
-             * component are set to `0`, `0`, `1`, respectively. Only for
-             * scalar and vector types, not matrices.
+             * component are set to @cpp 0 @ce, @cpp 0 @ce, @cpp 1 @ce,
+             * respectively. Only for scalar and vector types, not matrices.
              */
             One = 1,
 
             /**
              * First two components are specified. Third and fourth component
-             * are set to `0`, `1`, respectively. Only for two, three and
-             * four-component vector types and 2x2, 3x2 and 4x2 matrix types.
+             * are set to @cpp 0 @ce, @cpp 1 @ce, respectively. Only for two,
+             * three and four-component vector types and 2x2, 3x2 and 4x2
+             * matrix types.
              */
             Two = 2,
 
             /**
              * First three components are specified. Fourth component is set to
-             * `1`. Only for three and four-component vector types, 2x3, 3x3
-             * and 4x3 matrix types.
+             * @cpp 1 @ce. Only for three and four-component vector types, 2x3,
+             * 3x3 and 4x3 matrix types.
              */
             Three = 3,
 
@@ -137,6 +139,7 @@ template<UnsignedInt location, class T> class Attribute {
              * Four components with BGRA ordering. Only for four-component
              * float vector type. Must be used along with @ref DataType::UnsignedByte
              * and @ref DataOption::Normalized.
+             * @m_keywords{GL_BGRA}
              * @requires_gl32 Extension @extension{ARB,vertex_array_bgra}
              * @requires_gl Only RGBA component ordering is supported in OpenGL
              *      ES and WebGL.
@@ -153,6 +156,7 @@ template<UnsignedInt location, class T> class Attribute {
          *
          * Type of data passed to shader.
          * @see @ref Type, @ref DataOptions, @ref Attribute()
+         * @m_enum_values_as_keywords
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         enum class DataType: GLenum {
@@ -350,28 +354,30 @@ class DynamicAttribute {
          *
          * Count of components passed to the shader. If passing smaller count
          * of components than corresponding type has, unspecified components
-         * are set to default values (second and third to `0`, fourth to `1`).
+         * are set to default values (second and third to @cpp 0 @ce, fourth to
+         * @cpp 1 @ce).
          * @see @ref DynamicAttribute()
          */
         enum class Components: GLint {
             /**
              * Only first component is specified. Second, third and fourth
-             * component are set to `0`, `0`, `1`, respectively. Only for
-             * scalar and vector types, not matrices.
+             * component are set to @cpp 0 @ce, @cpp 0 @ce, @cpp 1 @ce,
+             * respectively. Only for scalar and vector types, not matrices.
              */
             One = 1,
 
             /**
              * First two components are specified. Third and fourth component
-             * are set to `0`, `1`, respectively. Only for two, three and
-             * four-component vector types and 2x2, 3x2 and 4x2 matrix types.
+             * are set to @cpp 0 @ce, @cpp 1 @ce, respectively. Only for two,
+             * three and four-component vector types and 2x2, 3x2 and 4x2
+             * matrix types.
              */
             Two = 2,
 
             /**
              * First three components are specified. Fourth component is set to
-             * `1`. Only for three and four-component vector types, 2x3, 3x3
-             * and 4x3 matrix types.
+             * @cpp 1 @ce. Only for three and four-component vector types, 2x3,
+             * 3x3 and 4x3 matrix types.
              */
             Three = 3,
 
@@ -386,6 +392,7 @@ class DynamicAttribute {
              * Four components with BGRA ordering. Only for four-component
              * float vector type. Must be used along with @ref DataType::UnsignedByte
              * and @ref Kind::GenericNormalized.
+             * @m_keywords{GL_BGRA}
              * @requires_gl32 Extension @extension{ARB,vertex_array_bgra}
              * @requires_gl Only RGBA component ordering is supported in OpenGL
              *      ES and WebGL.
@@ -399,6 +406,7 @@ class DynamicAttribute {
          *
          * Type of data passed to shader.
          * @see @ref Kind, @ref DynamicAttribute()
+         * @m_enum_values_as_keywords
          */
         enum class DataType: GLenum {
             UnsignedByte = GL_UNSIGNED_BYTE,    /**< Unsigned byte */

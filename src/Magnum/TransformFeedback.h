@@ -44,10 +44,10 @@ namespace Implementation { struct TransformFeedbackState; }
 /**
 @brief Transform feedback
 
-## Performance optimizations
+@section TransformFeedback-performance-optimizations Performance optimizations
 
 The engine tracks currently bound transform feedback to avoid unnecessary calls
-to @fn_gl{BindTransformFeedback}. Transform feedback limits and
+to @fn_gl_keyword{BindTransformFeedback}. Transform feedback limits and
 implementation-defined values (such as @ref maxSeparateComponents()) are
 cached, so repeated queries don't result in repeated @fn_gl{Get} calls. See
 also @ref Context::resetState() and @ref Context::State::TransformFeedback.
@@ -71,13 +71,14 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
          * @brief Transform feedback primitive mode
          *
          * @see @ref begin()
+         * @m_enum_values_as_keywords
          */
         enum class PrimitiveMode: GLenum {
             /**
              * Points. If no geometry shader is present, allowed only in
              * combination with @ref MeshPrimitive::Points mesh primitive type.
              * If geometry shader is present, allowed only in combination with
-             * `points` output primitive type.
+             * @glsl points @ce output primitive type.
              */
             Points = GL_POINTS,
 
@@ -88,7 +89,7 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
              * @ref MeshPrimitive::LineStripAdjacency and
              * @ref MeshPrimitive::LinesAdjacency mesh primitive type. If
              * geometry shader is present, allowed only in combination with
-             * `line_strip` output primitive type.
+             * @glsl line_strip @ce output primitive type.
              */
             Lines = GL_LINES,
 
@@ -99,7 +100,7 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
              * @ref MeshPrimitive::TriangleStripAdjacency and
              * @ref MeshPrimitive::TrianglesAdjacency mesh primitive type. If
              * geometry shader is present, allowed only in commbination with
-             * `triangle_strip` output primitive type.
+             * @glsl triangle_strip @ce output primitive type.
              */
             Triangles = GL_TRIANGLES
         };
@@ -109,8 +110,8 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{EXT,transform_feedback}
-         * (part of OpenGL 3.0) is not available, returns `0`.
-         * @see @fn_gl{Get} with @def_gl{MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS}
+         * (part of OpenGL 3.0) is not available, returns @cpp 0 @ce.
+         * @see @fn_gl{Get} with @def_gl_keyword{MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS}
          */
         static Int maxInterleavedComponents();
 
@@ -119,8 +120,8 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{EXT,transform_feedback}
-         * (part of OpenGL 3.0) is not available, returns `0`.
-         * @see @fn_gl{Get} with @def_gl{MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS}
+         * (part of OpenGL 3.0) is not available, returns @cpp 0 @ce.
+         * @see @fn_gl{Get} with @def_gl_keyword{MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS}
          */
         static Int maxSeparateAttributes();
 
@@ -129,8 +130,8 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{EXT,transform_feedback}
-         * (part of OpenGL 3.0) is not available, returns `0`.
-         * @see @fn_gl{Get} with @def_gl{MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS}
+         * (part of OpenGL 3.0) is not available, returns @cpp 0 @ce.
+         * @see @fn_gl{Get} with @def_gl_keyword{MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS}
          */
         static Int maxSeparateComponents();
 
@@ -142,7 +143,7 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
          * OpenGL calls. If extension @extension{ARB,transform_feedback3}
          * (part of OpenGL 4.0) is not available, returns the same value as
          * @ref maxSeparateAttributes().
-         * @see @fn_gl{Get} with @def_gl{MAX_TRANSFORM_FEEDBACK_BUFFERS}
+         * @see @fn_gl{Get} with @def_gl_keyword{MAX_TRANSFORM_FEEDBACK_BUFFERS}
          * @requires_gl Use @ref maxSeparateAttributes() in OpenGL ES and
          *      WebGL.
          */
@@ -153,8 +154,8 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,transform_feedback3} (part
-         * of OpenGL 4.0) is not available, returns `1`.
-         * @see @fn_gl{Get} with @def_gl{MAX_VERTEX_STREAMS}
+         * of OpenGL 4.0) is not available, returns @cpp 1 @ce.
+         * @see @fn_gl{Get} with @def_gl_keyword{MAX_VERTEX_STREAMS}
          * @requires_gl Multiple vertex streams are not available in OpenGL ES
          *      and WebGL.
          */
@@ -183,8 +184,8 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
          * @extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
          * available, the transform feedback object is created on first use.
          * @see @ref TransformFeedback(NoCreateT), @ref wrap(),
-         *      @fn_gl{CreateTransformFeedbacks}, eventually
-         *      @fn_gl{GenTransformFeedbacks}
+         *      @fn_gl_keyword{CreateTransformFeedbacks}, eventually
+         *      @fn_gl_keyword{GenTransformFeedbacks}
          */
         explicit TransformFeedback();
 
@@ -212,7 +213,7 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
          * @brief Destructor
          *
          * Deletes associated OpenGL transform feedback object.
-         * @see @ref wrap(), @ref release(), @fn_gl{DeleteTransformFeedbacks}
+         * @see @ref wrap(), @ref release(), @fn_gl_keyword{DeleteTransformFeedbacks}
          */
         ~TransformFeedback();
 
@@ -246,7 +247,8 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
          * @extension{KHR,debug} (covered also by @extension{ANDROID,extension_pack_es31a})
          * nor @extension{EXT,debug_label} desktop or ES extension is
          * available, this function returns empty string.
-         * @see @fn_gl{GetObjectLabel} or @fn_gl_extension{GetObjectLabel,EXT,debug_label}
+         * @see @fn_gl_keyword{GetObjectLabel} or
+         *      @fn_gl_extension_keyword{GetObjectLabel,EXT,debug_label}
          *      with @def_gl{TRANSFORM_FEEDBACK}
          * @requires_gles Debug output is not available in WebGL.
          */
@@ -260,8 +262,8 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
          * @extension{KHR,debug} (covered also by @extension{ANDROID,extension_pack_es31a})
          * nor @extension{EXT,debug_label} desktop or ES extension is
          * available, this function does nothing.
-         * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} or
-         *      @fn_gl_extension{LabelObject,EXT,debug_label} with
+         * @see @ref maxLabelLength(), @fn_gl_keyword{ObjectLabel} or
+         *      @fn_gl_extension_keyword{LabelObject,EXT,debug_label} with
          *      @def_gl{TRANSFORM_FEEDBACK}
          * @requires_gles Debug output is not available in WebGL.
          */
@@ -288,9 +290,9 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
          *      @ref AbstractShaderProgram subclasses. See its documentation
          *      for more information.
          * @see @ref attachBuffers(), @ref maxBuffers()/@ref maxSeparateAttributes(),
-         *      @fn_gl{TransformFeedbackBufferRange}, eventually
-         *      @fn_gl{BindTransformFeedback} and @fn_gl{BindBuffersRange} or
-         *      @fn_gl{BindBufferRange}
+         *      @fn_gl_keyword{TransformFeedbackBufferRange}, eventually
+         *      @fn_gl{BindTransformFeedback} and @fn_gl_keyword{BindBuffersRange}
+         *      or @fn_gl_keyword{BindBufferRange}
          */
         TransformFeedback& attachBuffer(UnsignedInt index, Buffer& buffer, GLintptr offset, GLsizeiptr size);
 
@@ -306,9 +308,9 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
          *      @ref AbstractShaderProgram subclasses. See its documentation
          *      for more information.
          * @see @ref attachBuffers(), @ref maxBuffers()/@ref maxSeparateAttributes(),
-         *      @fn_gl{TransformFeedbackBufferRange}, eventually
-         *      @fn_gl{BindTransformFeedback} and @fn_gl{BindBuffersRange} or
-         *      @fn_gl{BindBufferRange}
+         *      @fn_gl_keyword{TransformFeedbackBufferRange}, eventually
+         *      @fn_gl{BindTransformFeedback} and @fn_gl_keyword{BindBuffersBase}
+         *      or @fn_gl_keyword{BindBufferBase}
          */
         TransformFeedback& attachBuffer(UnsignedInt index, Buffer& buffer);
 
@@ -318,8 +320,8 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
          *
          * Attches first buffer in the list to @p firstIndex, second to
          * `firstIndex + 1` etc. Second parameter is offset, third is size. If
-         * any buffer is `nullptr`, given attachment point is detached. The
-         * range of indices must respect @ref maxBuffers() (@ref maxSeparateComponents()
+         * any buffer is @cpp nullptr @ce, given attachment point is detached.
+         * The range of indices must respect @ref maxBuffers() (@ref maxSeparateComponents()
          * in OpenGL ES or if @extension{ARB,transform_feedback3} (part of
          * OpenGL 4.0) is not available). The offsets must be aligned to 4
          * bytes. All the buffers must have allocated data store. If
@@ -330,9 +332,9 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
          * @note This function is meant to be used only internally from
          *      @ref AbstractShaderProgram subclasses. See its documentation
          *      for more information.
-         * @see @ref attachBuffer(), @fn_gl{TransformFeedbackBufferRange},
+         * @see @ref attachBuffer(), @fn_gl_keyword{TransformFeedbackBufferRange},
          *      eventually @fn_gl{BindTransformFeedback} and
-         *      @fn_gl{BindBuffersRange} or @fn_gl{BindBufferRange}
+         *      @fn_gl_keyword{BindBuffersRange} or @fn_gl_keyword{BindBufferRange}
          */
         TransformFeedback& attachBuffers(UnsignedInt firstIndex, std::initializer_list<std::tuple<Buffer*, GLintptr, GLsizeiptr>> buffers);
 
@@ -341,8 +343,8 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
          * @return Reference to self (for method chaining)
          *
          * Attches first buffer in the list to @p firstIndex, second to
-         * `firstIndex + 1` etc. If any buffer is `nullptr`, given index is
-         * detached. The range of indices must respect @ref maxBuffers()
+         * `firstIndex + 1` etc. If any buffer is @cpp nullptr @ce, given index
+         * is detached. The range of indices must respect @ref maxBuffers()
          * (@ref maxSeparateComponents() in OpenGL ES or if
          * @extension{ARB,transform_feedback3} (part of OpenGL 4.0) is not
          * available). All the buffers must have allocated data store. If
@@ -353,9 +355,9 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
          * @note This function is meant to be used only internally from
          *      @ref AbstractShaderProgram subclasses. See its documentation
          *      for more information.
-         * @see @ref attachBuffer(), @fn_gl{TransformFeedbackBufferBase},
+         * @see @ref attachBuffer(), @fn_gl_keyword{TransformFeedbackBufferBase},
          *      eventually @fn_gl{BindTransformFeedback} and
-         *      @fn_gl{BindBuffersBase} or @fn_gl{BindBufferBase}
+         *      @fn_gl_keyword{BindBuffersBase} or @fn_gl_keyword{BindBufferBase}
          */
         TransformFeedback& attachBuffers(UnsignedInt firstIndex, std::initializer_list<Buffer*> buffers);
 
@@ -369,7 +371,7 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
          * primitive type) compatible with @p mode can be used. Only one
          * transform feedback object can be active at a time.
          * @see @ref pause(), @ref end(), @fn_gl{BindTransformFeedback} and
-         *      @fn_gl{BeginTransformFeedback}
+         *      @fn_gl_keyword{BeginTransformFeedback}
          */
         void begin(AbstractShaderProgram& shader, PrimitiveMode mode);
 
@@ -379,7 +381,7 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
          * Pausing transform feedback makes it inactive, allowing to use
          * different shader, or starting another transform feedback.
          * @see @ref resume(), @ref end(), @fn_gl{BindTransformFeedback} and
-         *      @fn_gl{PauseTransformFeedback}
+         *      @fn_gl_keyword{PauseTransformFeedback}
          */
         void pause();
 
@@ -391,7 +393,7 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
          * still apply after resuming. Only one transform feedback object can
          * be active at a time.
          * @see @ref pause(), @ref end(), @fn_gl{BindTransformFeedback} and
-         *      @fn_gl{ResumeTransformFeedback}
+         *      @fn_gl_keyword{ResumeTransformFeedback}
          */
         void resume();
 
@@ -400,7 +402,7 @@ class MAGNUM_EXPORT TransformFeedback: public AbstractObject {
          *
          * Ends transform feedback so the captured data can be used.
          * @see @ref begin(), @fn_gl{BindTransformFeedback} and
-         *      @fn_gl2{EndTransformFeedback,BeginTransformFeedback}
+         *      @fn_gl2_keyword{EndTransformFeedback,BeginTransformFeedback}
          */
         void end();
 

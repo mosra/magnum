@@ -53,13 +53,14 @@ namespace Implementation {
 Template class for one- and two-dimensional texture arrays. See also
 @ref AbstractTexture documentation for more information.
 
-## Usage
+@section TextureArray-usage Usage
 
 See @ref Texture documentation for introduction.
 
 Common usage is to fully configure all texture parameters and then set the
 data. Example configuration:
-@code
+
+@code{.cpp}
 Texture2DArray texture;
 texture.setMagnificationFilter(Sampler::Filter::Linear)
     .setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
@@ -70,7 +71,8 @@ texture.setMagnificationFilter(Sampler::Filter::Linear)
 It is often more convenient to first allocate the memory for all layers by
 calling @ref setStorage() and then specify each layer separately using
 @ref setSubImage():
-@code
+
+@code{.cpp}
 texture.setStorage(levels, TextureFormat::RGBA8, {64, 64, 16});
 
 for(std::size_t i = 0; i != 16; ++i) {
@@ -79,10 +81,11 @@ for(std::size_t i = 0; i != 16; ++i) {
 }
 @endcode
 
-In shader, the texture is used via `sampler1DArray`/`sampler2DArray`,
-`sampler1DArrayShadow`/`sampler1DArrayShadow`, `isampler1DArray`/`isampler2DArray`
-or `usampler1DArray`/`usampler2DArray`. See @ref AbstractShaderProgram
-documentation for more information about usage in shaders.
+In shader, the texture is used via @glsl sampler1DArray @ce / @glsl sampler2DArray @ce,
+@glsl sampler1DArrayShadow @ce / @glsl sampler1DArrayShadow @ce, @glsl isampler1DArray @ce
+/ @glsl isampler2DArray @ce or @glsl usampler1DArray @ce / @glsl usampler2DArray @ce.
+See @ref AbstractShaderProgram documentation for more information about usage
+in shaders.
 
 @see @ref Texture1DArray, @ref Texture2DArray, @ref Texture,
     @ref CubeMapTexture, @ref CubeMapTextureArray, @ref RectangleTexture,
@@ -106,14 +109,14 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{EXT,texture_array} (part of
          * OpenGL 3.0) is not available, returns zero vector.
-         * @see @fn_gl{Get} with @def_gl{MAX_TEXTURE_SIZE} and
-         *      @def_gl{MAX_ARRAY_TEXTURE_LAYERS}
+         * @see @fn_gl{Get} with @def_gl_keyword{MAX_TEXTURE_SIZE} and
+         *      @def_gl_keyword{MAX_ARRAY_TEXTURE_LAYERS}
          */
         static VectorTypeFor<dimensions+1, Int> maxSize();
 
         #ifndef MAGNUM_TARGET_GLES
         /**
-         * @copybrief Texture::compressedBlockSize()
+         * @brief @copybrief Texture::compressedBlockSize()
          *
          * See @ref Texture::compressedBlockSize() for more information.
          * @requires_gl43 Extension @extension{ARB,internalformat_query2}
@@ -125,14 +128,14 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         }
 
         /**
-         * @copybrief Texture::compressedBlockDataSize()
+         * @brief @copybrief Texture::compressedBlockDataSize()
          *
          * See @ref Texture::compressedBlockDataSize() for more information.
          * @requires_gl43 Extension @extension{ARB,internalformat_query2}
          * @requires_gl Compressed texture queries are not available in OpenGL
          *      ES.
          * @see @ref compressedBlockSize(), @fn_gl{Getinternalformat} with
-         *      @def_gl{TEXTURE_COMPRESSED_BLOCK_SIZE}
+         *      @def_gl_keyword{TEXTURE_COMPRESSED_BLOCK_SIZE}
          */
         static Int compressedBlockDataSize(TextureFormat format) {
             return AbstractTexture::compressedBlockDataSize(Implementation::textureArrayTarget<dimensions>(), format);
@@ -161,9 +164,9 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * Creates new OpenGL texture object. If @extension{ARB,direct_state_access}
          * (part of OpenGL 4.5) is not available, the texture is created on
          * first use.
-         * @see @ref TextureArray(NoCreateT), @ref wrap(), @fn_gl{CreateTextures}
+         * @see @ref TextureArray(NoCreateT), @ref wrap(), @fn_gl_keyword{CreateTextures}
          *      with @def_gl{TEXTURE_1D_ARRAY} or @def_gl{TEXTURE_2D_ARRAY},
-         *      eventually @fn_gl{GenTextures}
+         *      eventually @fn_gl_keyword{GenTextures}
          */
         explicit TextureArray(): AbstractTexture(Implementation::textureArrayTarget<dimensions>()) {}
 
@@ -195,7 +198,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @see @ref bindImages(Int, std::initializer_list<AbstractTexture*>),
          *      @ref bindImageLayered(), @ref unbindImage(), @ref unbindImages(),
          *      @ref AbstractShaderProgram::maxImageUnits(),
-         *      @fn_gl{BindImageTexture}
+         *      @fn_gl_keyword{BindImageTexture}
          * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
          * @requires_gles31 Shader image load/store is not available in OpenGL
          *      ES 3.0 and older.
@@ -218,7 +221,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @see @ref bindImages(Int, std::initializer_list<AbstractTexture*>),
          *      @ref bindImage(), @ref unbindImage(), @ref unbindImages(),
          *      @ref AbstractShaderProgram::maxImageUnits(),
-         *      @fn_gl{BindImageTexture}
+         *      @fn_gl_keyword{BindImageTexture}
          * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
          * @requires_gles31 Shader image load/store is not available in OpenGL
          *      ES 3.0 and older.
@@ -230,7 +233,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         #endif
 
         /**
-         * @copybrief Texture::setBaseLevel()
+         * @brief @copybrief Texture::setBaseLevel()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setBaseLevel() for more information.
@@ -241,7 +244,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         }
 
         /**
-         * @copybrief Texture::setMaxLevel()
+         * @brief @copybrief Texture::setMaxLevel()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setMaxLevel() for more information.
@@ -252,7 +255,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         }
 
         /**
-         * @copybrief Texture::setMinificationFilter()
+         * @brief @copybrief Texture::setMinificationFilter()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setMinificationFilter() for more information.
@@ -263,7 +266,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         }
 
         /**
-         * @copybrief Texture::setMagnificationFilter()
+         * @brief @copybrief Texture::setMagnificationFilter()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setMagnificationFilter() for more information.
@@ -274,7 +277,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         }
 
         /**
-         * @copybrief Texture::setMinLod()
+         * @brief @copybrief Texture::setMinLod()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setMinLod() for more information.
@@ -285,7 +288,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         }
 
         /**
-         * @copybrief Texture::setMaxLod()
+         * @brief @copybrief Texture::setMaxLod()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setMaxLod() for more information.
@@ -297,7 +300,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
 
         #ifndef MAGNUM_TARGET_GLES
         /**
-         * @copybrief Texture::setLodBias()
+         * @brief @copybrief Texture::setLodBias()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setLodBias() for more information.
@@ -311,7 +314,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         #endif
 
         /**
-         * @copybrief Texture::setWrapping()
+         * @brief @copybrief Texture::setWrapping()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setWrapping() for more information.
@@ -323,7 +326,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
 
         #ifndef MAGNUM_TARGET_WEBGL
         /**
-         * @copybrief Texture::setBorderColor(const Color4&)
+         * @brief @copybrief Texture::setBorderColor(const Color4&)
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setBorderColor(const Color4&) for more
@@ -339,7 +342,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         }
 
         /**
-         * @copybrief Texture::setBorderColor(const Vector4ui&)
+         * @brief @copybrief Texture::setBorderColor(const Vector4ui&)
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setBorderColor(const Vector4ui&) for more
@@ -367,7 +370,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         #endif
 
         /**
-         * @copybrief Texture::setMaxAnisotropy()
+         * @brief @copybrief Texture::setMaxAnisotropy()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setMaxAnisotropy() for more information.
@@ -379,7 +382,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
 
         #ifndef MAGNUM_TARGET_WEBGL
         /**
-         * @copybrief Texture::setSRGBDecode()
+         * @brief @copybrief Texture::setSRGBDecode()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setSRGBDecode() for more information.
@@ -394,7 +397,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         }
 
         /**
-         * @copybrief Texture::setSwizzle()
+         * @brief @copybrief Texture::setSwizzle()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setSwizzle() for more information.
@@ -407,7 +410,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         #endif
 
         /**
-         * @copybrief Texture::setCompareMode()
+         * @brief @copybrief Texture::setCompareMode()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setCompareMode() for more information.
@@ -418,7 +421,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         }
 
         /**
-         * @copybrief Texture::setCompareFunction()
+         * @brief @copybrief Texture::setCompareFunction()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setCompareFunction() for more information.
@@ -430,7 +433,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
 
         #ifndef MAGNUM_TARGET_WEBGL
         /**
-         * @copybrief Texture::setDepthStencilMode()
+         * @brief @copybrief Texture::setDepthStencilMode()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setDepthStencilMode() for more information.
@@ -446,7 +449,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         #endif
 
         /**
-         * @copybrief Texture::setStorage()
+         * @brief @copybrief Texture::setStorage()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setStorage() for more information.
@@ -459,7 +462,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
 
         #ifndef MAGNUM_TARGET_WEBGL
         /**
-         * @copybrief Texture::imageSize()
+         * @brief @copybrief Texture::imageSize()
          *
          * See @ref Texture::imageSize() for more information.
          * @requires_gles31 Texture image size queries are not available in
@@ -474,7 +477,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
 
         #ifndef MAGNUM_TARGET_GLES
         /**
-         * @copybrief Texture::image(Int, Image&)
+         * @brief @copybrief Texture::image(Int, Image&)
          *
          * See @ref Texture::image(Int, Image&) for more information.
          * @requires_gl Texture image queries are not available in OpenGL ES or
@@ -487,14 +490,15 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         /** @overload
          *
          * Convenience alternative to the above, example usage:
-         * @code
+         *
+         * @code{.cpp}
          * Image3D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte});
          * @endcode
          */
         Image<dimensions+1> image(Int level, Image<dimensions+1>&& image);
 
         /**
-         * @copybrief Texture::image(Int, BufferImage&, BufferUsage)
+         * @brief @copybrief Texture::image(Int, BufferImage&, BufferUsage)
          *
          * See @ref Texture::image(Int, BufferImage&, BufferUsage) for more
          * information.
@@ -508,14 +512,15 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         /** @overload
          *
          * Convenience alternative to the above, example usage:
-         * @code
+         *
+         * @code{.cpp}
          * BufferImage3D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
          * @endcode
          */
         BufferImage<dimensions+1> image(Int level, BufferImage<dimensions+1>&& image, BufferUsage usage);
 
         /**
-         * @copybrief Texture::compressedImage(Int, CompressedImage&)
+         * @brief @copybrief Texture::compressedImage(Int, CompressedImage&)
          *
          * See @ref Texture::compressedImage(Int, CompressedImage&) for more
          * information.
@@ -529,14 +534,15 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         /** @overload
          *
          * Convenience alternative to the above, example usage:
-         * @code
+         *
+         * @code{.cpp}
          * CompressedImage3D image = texture.compressedImage(0, {});
          * @endcode
          */
         CompressedImage<dimensions+1> compressedImage(Int level, CompressedImage<dimensions+1>&& image);
 
         /**
-         * @copybrief Texture::compressedImage(Int, CompressedBufferImage&, BufferUsage)
+         * @brief @copybrief Texture::compressedImage(Int, CompressedBufferImage&, BufferUsage)
          *
          * See @ref Texture::compressedImage(Int, CompressedBufferImage&, BufferUsage)
          * for more information.
@@ -550,14 +556,15 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         /** @overload
          *
          * Convenience alternative to the above, example usage:
-         * @code
+         *
+         * @code{.cpp}
          * CompressedBufferImage3D image = texture.compressedImage(0, {}, BufferUsage::StaticRead);
          * @endcode
          */
         CompressedBufferImage<dimensions+1> compressedImage(Int level, CompressedBufferImage<dimensions+1>&& image, BufferUsage usage);
 
         /**
-         * @copybrief Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, Image&)
+         * @brief @copybrief Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, Image&)
          *
          * See @ref Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, Image&)
          * for more information.
@@ -572,14 +579,15 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         /** @overload
          *
          * Convenience alternative to the above, example usage:
-         * @code
+         *
+         * @code{.cpp}
          * Image3D image = texture.subImage(0, range, {PixelFormat::RGBA, PixelType::UnsignedByte});
          * @endcode
          */
         Image<dimensions+1> subImage(Int level, const RangeTypeFor<dimensions+1, Int>& range, Image<dimensions+1>&& image);
 
         /**
-         * @copybrief Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, BufferImage&, BufferUsage)
+         * @brief @copybrief Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, BufferImage&, BufferUsage)
          *
          * See @ref Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, BufferImage&, BufferUsage)
          * for more information.
@@ -594,14 +602,15 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         /** @overload
          *
          * Convenience alternative to the above, example usage:
-         * @code
+         *
+         * @code{.cpp}
          * BufferImage3D image = texture.subImage(0, range, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
          * @endcode
          */
         BufferImage<dimensions+1> subImage(Int level, const RangeTypeFor<dimensions+1, Int>& range, BufferImage<dimensions+1>&& image, BufferUsage usage);
 
         /**
-         * @copybrief Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage&)
+         * @brief @copybrief Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage&)
          *
          * See @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage&)
          * for more information.
@@ -620,14 +629,15 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         /** @overload
          *
          * Convenience alternative to the above, example usage:
-         * @code
+         *
+         * @code{.cpp}
          * CompressedImage3D image = texture.compressedSubImage(0, range, {});
          * @endcode
          */
         CompressedImage<dimensions+1> compressedSubImage(Int level, const RangeTypeFor<dimensions+1, Int>& range, CompressedImage<dimensions+1>&& image);
 
         /**
-         * @copybrief Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedBufferImage&, BufferUsage)
+         * @brief @copybrief Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedBufferImage&, BufferUsage)
          *
          * See @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedBufferImage&, BufferUsage)
          * for more information.
@@ -646,7 +656,8 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         /** @overload
          *
          * Convenience alternative to the above, example usage:
-         * @code
+         *
+         * @code{.cpp}
          * CompressedBufferImage3D image = texture.compressedSubImage(0, range, {}, BufferUsage::StaticRead);
          * @endcode
          */
@@ -654,7 +665,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         #endif
 
         /**
-         * @copybrief Texture::setImage()
+         * @brief @copybrief Texture::setImage()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setImage() for more information.
@@ -685,7 +696,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         }
 
         /**
-         * @copybrief Texture::setCompressedImage()
+         * @brief @copybrief Texture::setCompressedImage()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setCompressedImage() for more information.
@@ -728,12 +739,12 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * available, the texture is bound before the operation (if not
          * already).
          * @see @ref setStorage(), @fn_gl{PixelStore}, then
-         *      @fn_gl2{TextureSubImage2D,TexSubImage2D}/
-         *      @fn_gl2{TextureSubImage3D,TexSubImage3D},
-         *      @fn_gl_extension{TextureSubImage2D,EXT,direct_state_access}/
-         *      @fn_gl_extension{TextureSubImage3D,EXT,direct_state_access},
+         *      @fn_gl2_keyword{TextureSubImage2D,TexSubImage2D}/
+         *      @fn_gl2_keyword{TextureSubImage3D,TexSubImage3D},
+         *      @fn_gl_extension_keyword{TextureSubImage2D,EXT,direct_state_access}/
+         *      @fn_gl_extension_keyword{TextureSubImage3D,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{TexSubImage2D}/@fn_gl{TexSubImage3D}
+         *      @fn_gl_keyword{TexSubImage2D} / @fn_gl_keyword{TexSubImage3D}
          */
         TextureArray<dimensions>& setSubImage(Int level, const VectorTypeFor<dimensions+1, Int>& offset, const ImageView<dimensions+1>& image) {
             DataHelper<dimensions+1>::setSubImage(*this, level, offset, image);
@@ -764,12 +775,12 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * available, the texture is bound before the operation (if not
          * already).
          * @see @ref setStorage(), @fn_gl{PixelStore}, then
-         *      @fn_gl2{CompressedTextureSubImage2D,CompressedTexSubImage2D}/
-         *      @fn_gl2{CompressedTextureSubImage3D,CompressedTexSubImage3D},
-         *      @fn_gl_extension{CompressedTextureSubImage2D,EXT,direct_state_access}/
-         *      @fn_gl_extension{CompressedTextureSubImage3D,EXT,direct_state_access},
+         *      @fn_gl2_keyword{CompressedTextureSubImage2D,CompressedTexSubImage2D}/
+         *      @fn_gl2_keyword{CompressedTextureSubImage3D,CompressedTexSubImage3D},
+         *      @fn_gl_extension_keyword{CompressedTextureSubImage2D,EXT,direct_state_access}/
+         *      @fn_gl_extension_keyword{CompressedTextureSubImage3D,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{CompressedTexSubImage2D}/@fn_gl{CompressedTexSubImage3D}
+         *      @fn_gl_keyword{CompressedTexSubImage2D} / @fn_gl_keyword{CompressedTexSubImage3D}
          */
         TextureArray<dimensions>& setCompressedSubImage(Int level, const VectorTypeFor<dimensions+1, Int>& offset, const CompressedImageView<dimensions+1>& image) {
             DataHelper<dimensions+1>::setCompressedSubImage(*this, level, offset, image);
@@ -788,7 +799,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         }
 
         /**
-         * @copybrief Texture::generateMipmap()
+         * @brief @copybrief Texture::generateMipmap()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::generateMipmap() for more information.
@@ -800,14 +811,14 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         }
 
         /**
-         * @copybrief Texture::invalidateImage()
+         * @brief @copybrief Texture::invalidateImage()
          *
          * See @ref Texture::invalidateImage() for more information.
          */
         void invalidateImage(Int level) { AbstractTexture::invalidateImage(level); }
 
         /**
-         * @copybrief Texture::invalidateSubImage()
+         * @brief @copybrief Texture::invalidateSubImage()
          *
          * See @ref Texture::invalidateSubImage() for more information.
          */

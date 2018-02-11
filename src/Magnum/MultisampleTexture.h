@@ -58,10 +58,11 @@ namespace Implementation {
 @brief Multisample texture sample locations
 
 @see @ref MultisampleTexture::setStorage()
+@m_enum_values_as_keywords
 */
 enum class MultisampleTextureSampleLocations: GLboolean {
-    NotFixed = GL_FALSE,
-    Fixed = GL_TRUE
+    NotFixed = GL_FALSE,    /**< Not fixed */
+    Fixed = GL_TRUE         /**< Fixed */
 };
 
 /**
@@ -71,19 +72,20 @@ Template class for 2D mulitsample texture and 2D multisample texture array.
 Used only from shaders for manual multisample resolve and other operations. See
 also @ref AbstractTexture documentation for more information.
 
-## Usage
+@section MultisampleTexture-usage Usage
 
 As multisample textures have no sampler state, the only thing you need is to
 set storage:
-@code
+
+@code{.cpp}
 MultisampleTexture2D texture;
 texture.setStorage(16, TextureFormat::RGBA8, {1024, 1024});
 @endcode
 
-In shader, the texture is used via `sampler2DMS`/`sampler2DMSArray`,
-`isampler2DMS`/`isampler2DMSArray` or `usampler2DMS`/`usampler2DMSArray`. See
-@ref AbstractShaderProgram documentation for more information about usage in
-shaders.
+In shader, the texture is used via @glsl sampler2DMS @ce / @glsl sampler2DMSArray @ce,
+@glsl isampler2DMS @ce / @glsl isampler2DMSArray @ce or @glsl usampler2DMS @ce
+/ @glsl usampler2DMSArray @ce. See @ref AbstractShaderProgram documentation for
+more information about usage in shaders.
 
 Note that multisample textures don't support compressed formats.
 
@@ -113,8 +115,8 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
          * OpenGL calls. If neither extension @extension{ARB,texture_multisample}
          * (part of OpenGL 3.2) nor OpenGL ES 3.1 is available, returns zero
          * vector.
-         * @see @fn_gl{Get} with @def_gl{MAX_TEXTURE_SIZE} and
-         *      @def_gl{MAX_3D_TEXTURE_SIZE}
+         * @see @fn_gl{Get} with @def_gl_keyword{MAX_TEXTURE_SIZE} and
+         *      @def_gl_keyword{MAX_3D_TEXTURE_SIZE}
          */
         static VectorTypeFor<dimensions, Int> maxSize() {
             return Implementation::maxMultisampleTextureSize<dimensions>();
@@ -144,9 +146,9 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
          * (part of OpenGL 4.5) is not available, the texture is created on
          * first use.
          * @see @ref MultisampleTexture(NoCreateT), @ref wrap(),
-         *      @fn_gl{CreateTextures} with @def_gl{TEXTURE_2D_MULTISAMPLE} or
-         *      @def_gl{TEXTURE_2D_MULTISAMPLE_ARRAY}, eventually
-         *      @fn_gl{GenTextures}
+         *      @fn_gl_keyword{CreateTextures} with @def_gl{TEXTURE_2D_MULTISAMPLE}
+         *      or @def_gl{TEXTURE_2D_MULTISAMPLE_ARRAY}, eventually
+         *      @fn_gl_keyword{GenTextures}
          */
         explicit MultisampleTexture(): AbstractTexture(Implementation::multisampleTextureTarget<dimensions>()) {}
 
@@ -176,7 +178,7 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
          * @see @ref bindImages(Int, std::initializer_list<AbstractTexture*>),
          *      @ref bindImageLayered(), @ref unbindImage(), @ref unbindImages(),
          *      @ref AbstractShaderProgram::maxImageUnits(),
-         *      @fn_gl{BindImageTexture}
+         *      @fn_gl_keyword{BindImageTexture}
          * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -200,7 +202,7 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
          * @see @ref bindImages(Int, std::initializer_list<AbstractTexture*>),
          *      @ref bindImageLayered(), @ref unbindImage(), @ref unbindImages(),
          *      @ref AbstractShaderProgram::maxImageUnits(),
-         *      @fn_gl{BindImageTexture}
+         *      @fn_gl_keyword{BindImageTexture}
          * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
          * @requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
          *      @extension{OES,texture_storage_multisample_2d_array} for
@@ -226,7 +228,7 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
          * @see @ref bindImages(Int, std::initializer_list<AbstractTexture*>),
          *      @ref bindImage(), @ref unbindImages(), @ref unbindImage(),
          *      @ref AbstractShaderProgram::maxImageUnits(),
-         *      @fn_gl{BindImageTexture}
+         *      @fn_gl_keyword{BindImageTexture}
          * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
          * @requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
          *      @extension{OES,texture_storage_multisample_2d_array} for
@@ -258,25 +260,18 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
          * is emulated using plain @extension{ARB,texture_multisample}
          * functionality.
          * @see @ref maxSize(), @ref maxColorSamples(), @ref maxDepthSamples(),
-         *      @ref maxIntegerSamples(), @fn_gl2{TextureStorage2DMultisample,TexStorage2DMultisample} /
-         *      @fn_gl2{TextureStorage3DMultisample,TexStorage3DMultisample},
-         *      @fn_gl_extension{TextureStorage2DMultisample,EXT,direct_state_access} /
-         *      @fn_gl_extension{TextureStorage3DMultisample,EXT,direct_state_access},
+         *      @ref maxIntegerSamples(), @fn_gl2_keyword{TextureStorage2DMultisample,TexStorage2DMultisample} /
+         *      @fn_gl2_keyword{TextureStorage3DMultisample,TexStorage3DMultisample},
+         *      @fn_gl_extension_keyword{TextureStorage2DMultisample,EXT,direct_state_access} /
+         *      @fn_gl_extension_keyword{TextureStorage3DMultisample,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture}
-         *      and @fn_gl{TexStorage2DMultisample} / @fn_gl{TexStorage3DMultisample}
-         *      or @fn_gl{TexImage2DMultisample} / @fn_gl{TexImage3DMultisample}
-         * @todoc Remove the workaround when it stops breaking Doxygen layout so badly
+         *      and @fn_gl_keyword{TexStorage2DMultisample} / @fn_gl_keyword{TexStorage3DMultisample}
+         *      or @fn_gl_keyword{TexImage2DMultisample} / @fn_gl_keyword{TexImage3DMultisample}
          */
         /* The default parameter value was chosen based on discussion in
            ARB_texture_multisample specs (fixed locations is treated as the
            special case) */
-        MultisampleTexture<dimensions>& setStorage(Int samples, TextureFormat internalFormat, const VectorTypeFor<dimensions, Int>& size, MultisampleTextureSampleLocations sampleLocations =
-            #ifndef DOXYGEN_GENERATING_OUTPUT
-            MultisampleTextureSampleLocations::NotFixed
-            #else
-            NotFixed
-            #endif
-        ) {
+        MultisampleTexture<dimensions>& setStorage(Int samples, TextureFormat internalFormat, const VectorTypeFor<dimensions, Int>& size, MultisampleTextureSampleLocations sampleLocations = MultisampleTextureSampleLocations::NotFixed) {
             DataHelper<dimensions>::setStorageMultisample(*this, samples, internalFormat, size, GLboolean(sampleLocations));
             return *this;
         }
@@ -293,14 +288,14 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
         }
 
         /**
-         * @copybrief Texture::invalidateImage()
+         * @brief @copybrief Texture::invalidateImage()
          *
          * See @ref Texture::invalidateImage() for more information.
          */
         void invalidateImage() { AbstractTexture::invalidateImage(0); }
 
         /**
-         * @copybrief Texture::invalidateSubImage()
+         * @brief @copybrief Texture::invalidateSubImage()
          *
          * See @ref Texture::invalidateSubImage() for more information.
          */

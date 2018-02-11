@@ -49,13 +49,13 @@ Descibes how to interpret data which are read from or stored into @ref Image,
 @ref Texture::image() "*Texture::image()", @ref Texture::subImage() "*Texture::subImage()"
 and @ref AbstractFramebuffer::read() "*Framebuffer::read()".
 
-## Performance optimizations
+@section PixelFormat-performance-optimizations Performance optimizations
 
 The storage mode is applied either right before doing image upload using
-@fn_gl{PixelStore} with @def_gl{UNPACK_*} parameters or right before doing
-image download using @fn_gl{PixelStore} with @def_gl{PACK_*}. The engine tracks
-currently used pixel pack/unpack parameters to avoid unnecessary calls to
-@fn_gl{PixelStore}. See also @ref Context::resetState() and
+@fn_gl_keyword{PixelStore} with @def_gl{UNPACK_*} parameters or right before
+doing image download using @fn_gl{PixelStore} with @def_gl{PACK_*}. The engine
+tracks currently used pixel pack/unpack parameters to avoid unnecessary calls
+to @fn_gl{PixelStore}. See also @ref Context::resetState() and
 @ref Context::State::PixelStorage.
 
 @see @ref CompressedPixelStorage
@@ -77,7 +77,7 @@ class MAGNUM_EXPORT PixelStorage {
          * @brief Default constructor
          *
          * Sets all parameters to default values, i.e. all values set to
-         * `false`/`0` except for alignment, which is `4`.
+         * @cpp false @ce / @cpp 0 @ce except for alignment, which is @cpp 4 @ce.
          */
         constexpr /*implicit*/ PixelStorage() noexcept;
 
@@ -100,9 +100,10 @@ class MAGNUM_EXPORT PixelStorage {
         /**
          * @brief Enable or disable byte order reversion
          *
-         * Not applicable for @ref CompressedPixelStorage. Default is `false`.
-         * @see @fn_gl{PixelStore} with @def_gl{PACK_SWAP_BYTES}/
-         *      @def_gl{UNPACK_SWAP_BYTES}
+         * Not applicable for @ref CompressedPixelStorage. Default is
+         * @cpp false @ce.
+         * @see @fn_gl{PixelStore} with @def_gl_keyword{PACK_SWAP_BYTES}/
+         *      @def_gl_keyword{UNPACK_SWAP_BYTES}
          * @requires_gl Not available in OpenGL ES or WebGL.
          */
         PixelStorage& setSwapBytes(bool enabled) {
@@ -118,9 +119,10 @@ class MAGNUM_EXPORT PixelStorage {
          * @brief Set row alignment
          *
          * Not applicable for @ref CompressedPixelStorage. Valid values are
-         * `1`, `2`, `4` and `8`. Default is `4`.
-         * @see @fn_gl{PixelStore} with @def_gl{PACK_ALIGNMENT}/
-         *      @def_gl{UNPACK_ALIGNMENT}
+         * @cpp 1 @ce, @cpp 2 @ce, @cpp 4 @ce and @cpp 8 @ce. Default is
+         * @cpp 4 @ce.
+         * @see @fn_gl{PixelStore} with @def_gl_keyword{PACK_ALIGNMENT}/
+         *      @def_gl_keyword{UNPACK_ALIGNMENT}
          */
         PixelStorage& setAlignment(Int alignment) {
             _alignment = alignment;
@@ -141,10 +143,10 @@ class MAGNUM_EXPORT PixelStorage {
         /**
          * @brief Set row length
          *
-         * Used only on 2D and 3D images. If set to `0`, size information from
-         * actual image is used. Default is `0`.
-         * @see @fn_gl{PixelStore} with @def_gl{UNPACK_ROW_LENGTH}/
-         *      @def_gl{PACK_ROW_LENGTH}
+         * Used only on 2D and 3D images. If set to @cpp 0 @ce, size
+         * information from actual image is used. Default is @cpp 0 @ce.
+         * @see @fn_gl{PixelStore} with @def_gl_keyword{UNPACK_ROW_LENGTH}/
+         *      @def_gl_keyword{PACK_ROW_LENGTH}
          * @requires_gles30 Extension @extension{EXT,unpack_subimage}/
          *      @extension{NV,pack_subimage} in OpenGL ES 2.0.
          * @requires_webgl20 Row length specification is not available in WebGL
@@ -170,10 +172,10 @@ class MAGNUM_EXPORT PixelStorage {
         /**
          * @brief Set image height
          *
-         * Used only on 3D images. If set to `0`, size information from actual
-         * image is used. Default is `0`.
-         * @see @fn_gl{PixelStore} with @def_gl{UNPACK_IMAGE_HEIGHT}/
-         *      @def_gl{PACK_IMAGE_HEIGHT}
+         * Used only on 3D images. If set to @cpp 0 @ce, size information from
+         * actual image is used. Default is @cpp 0 @ce.
+         * @see @fn_gl{PixelStore} with @def_gl_keyword{UNPACK_IMAGE_HEIGHT}/
+         *      @def_gl_keyword{PACK_IMAGE_HEIGHT}
          * @requires_gles30 Image height specification is not available in
          *      OpenGL ES 2.0
          * @requires_webgl20 Image height specification is not available in
@@ -194,12 +196,13 @@ class MAGNUM_EXPORT PixelStorage {
          * @brief Set pixel, row and image skipping
          *
          * The Y value is used only for 2D and 3D images, the Z value is used
-         * only for 3D images. Default is `0`. On OpenGL ES 2.0 and WebGL 1.0
-         * the functionality is emulated by increasing the data pointer.
-         * @see @fn_gl{PixelStore} with @def_gl{UNPACK_SKIP_PIXELS}/
-         *      @def_gl{PACK_SKIP_PIXELS}, @def_gl{UNPACK_SKIP_ROWS}/
-         *      @def_gl{PACK_SKIP_ROWS}, @def_gl{UNPACK_SKIP_IMAGES}/
-         *      @def_gl{PACK_SKIP_IMAGES}
+         * only for 3D images. Default is @cpp 0 @ce. On OpenGL ES 2.0 and
+         * WebGL 1.0 the functionality is emulated by increasing the data
+         * pointer.
+         * @see @fn_gl{PixelStore} with @def_gl_keyword{UNPACK_SKIP_PIXELS}/
+         *      @def_gl_keyword{PACK_SKIP_PIXELS}, @def_gl_keyword{UNPACK_SKIP_ROWS}/
+         *      @def_gl_keyword{PACK_SKIP_ROWS}, @def_gl_keyword{UNPACK_SKIP_IMAGES}/
+         *      @def_gl_keyword{PACK_SKIP_IMAGES}
          * @requires_gl Image skip specification is available only for unpack
          *      in OpenGL ES and WebGL.
          */
@@ -276,7 +279,7 @@ class MAGNUM_EXPORT CompressedPixelStorage: public PixelStorage {
          * @brief Default constructor
          *
          * Sets all parameters to default values, i.e. all values set to
-         * `false`/`0` except for alignment, which is `4`.
+         * @cpp false @ce / @cpp 0 @ce except for alignment, which is @cpp 4 @ce.
          */
         #ifndef CORRADE_MSVC2015_COMPATIBILITY /* What am I doing wrong? */
         constexpr
@@ -297,8 +300,9 @@ class MAGNUM_EXPORT CompressedPixelStorage: public PixelStorage {
         /**
          * @brief Set compressed block size
          *
-         * If set to `0` for given dimension, size information from particular
-         * compressed format is used. Default is `0` in all dimensions.
+         * If set to @cpp 0 @ce for given dimension, size information from
+         * particular compressed format is used. Default is @cpp 0 @ce in all
+         * dimensions.
          */
         CompressedPixelStorage& setCompressedBlockSize(const Vector3i& size) {
             _blockSize = size;
@@ -311,8 +315,8 @@ class MAGNUM_EXPORT CompressedPixelStorage: public PixelStorage {
         /**
          * @brief Set compressed block data size (in bytes)
          *
-         * If set to `0`, size information from particular compressed format is
-         * used. Default is `0` in all dimensions.
+         * If set to @cpp 0 @ce, size information from particular compressed
+         * format is used. Default is @cpp 0 @ce in all dimensions.
          */
         CompressedPixelStorage& setCompressedBlockDataSize(Int size) {
             _blockDataSize = size;

@@ -44,6 +44,7 @@ documentation of these values for possible limitations when using OpenGL ES 2.0
 or WebGL.
 
 @see @ref Texture, @ref CubeMapTexture, @ref CubeMapTextureArray
+@m_enum_values_as_keywords
 */
 enum class TextureFormat: GLenum {
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))

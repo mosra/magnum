@@ -41,6 +41,7 @@ namespace Magnum {
 
 @see @ref Texture::bindImage() "*Texture::bindImage()",
     @ref Texture::bindImageLayered() "*Texture::bindImageLayered()"
+@m_enum_values_as_keywords
 @requires_gl42 Extension @extension{ARB,shader_image_load_store}
 @requires_gles31 Shader image load/store is not available in OpenGL ES 3.0 and
     older.
@@ -57,6 +58,7 @@ enum class ImageAccess: GLenum {
 
 @see @ref Texture::bindImage() "*Texture::bindImage()",
     @ref Texture::bindImageLayered() "*Texture::bindImageLayered()"
+@m_enum_values_as_keywords
 @requires_gl42 Extension @extension{ARB,shader_image_load_store}
 @requires_gles31 Shader image load/store is not available in OpenGL ES 3.0 and
     older.

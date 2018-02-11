@@ -84,7 +84,7 @@ template<UnsignedInt dimensions> class ImageView {
         explicit ImageView(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data) noexcept: ImageView{{}, format, type, size, data} {}
 
         #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @copybrief ImageView(PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<const void>)
+        /** @brief @copybrief ImageView(PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<const void>)
          * @deprecated Use @ref ImageView(PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<const void>) instead.
          */
         explicit CORRADE_DEPRECATED("use ImageView(PixelFormat, PixelType, const VectorTypeFor&, Containers::ArrayView) instead") ImageView(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, const void* data) noexcept: ImageView{{}, format, type, size, {reinterpret_cast<const char*>(data), Implementation::imageDataSizeFor(format, type, size)}} {}
@@ -108,8 +108,8 @@ template<UnsignedInt dimensions> class ImageView {
          * @param type              Data type of pixel data
          * @param size              Image size
          *
-         * Data pointer is set to `nullptr`, call @ref setData() to fill the
-         * image with data.
+         * Data pointer is set to @cpp nullptr @ce, call @ref setData() to fill
+         * the image with data.
          */
         constexpr explicit ImageView(PixelStorage storage, PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size) noexcept: _storage{storage}, _format{format}, _type{type}, _size{size}, _data{nullptr} {}
 
@@ -168,7 +168,7 @@ template<UnsignedInt dimensions> class ImageView {
         }
 
         #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @copybrief setData(Containers::ArrayView<const void>)
+        /** @brief @copybrief setData(Containers::ArrayView<const void>)
          * @deprecated Use @ref setData(Containers::ArrayView<const void>)
          *      instead.
          */
@@ -262,8 +262,8 @@ template<UnsignedInt dimensions> class CompressedImageView {
          * @param format            Format of compressed pixel data
          * @param size              Image size
          *
-         * Data pointer is set to `nullptr`, call @ref setData() to fill the
-         * image with data.
+         * Data pointer is set to @cpp nullptr @ce, call @ref setData() to fill
+         * the image with data.
          * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
          * @requires_gl Compressed pixel storage is hardcoded in OpenGL ES and
          *      WebGL.

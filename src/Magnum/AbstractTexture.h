@@ -69,12 +69,13 @@ documentation for details.
 @section AbstractTexture-performance-optimization Performance optimizations and security
 
 The engine tracks currently bound textures and images in all available texture
-units to avoid unnecessary calls to @fn_gl{ActiveTexture}, @fn_gl{BindTexture}
-and @fn_gl{BindImageTexture}. Texture configuration functions use dedicated
-highest available texture unit to not affect active bindings in user units.
-Texture limits and implementation-defined values (such as @ref maxColorSamples())
-are cached, so repeated queries don't result in repeated @fn_gl{Get} calls. See
-also @ref Context::resetState() and @ref Context::State::Textures.
+units to avoid unnecessary calls to @fn_gl_keyword{ActiveTexture},
+@fn_gl_keyword{BindTexture} and @fn_gl_keyword{BindImageTexture}. Texture
+configuration functions use dedicated highest available texture unit to not
+affect active bindings in user units. Texture limits and implementation-defined
+values (such as @ref maxColorSamples()) are cached, so repeated queries don't
+result in repeated @fn_gl{Get} calls. See also @ref Context::resetState() and
+@ref Context::State::Textures.
 
 If @extension{ARB,direct_state_access} (part of OpenGL 4.5) is available,
 @ref bind(Int) and @ref unbind(Int) use @fn_gl{BindTextureUnit}. Otherwise, if
@@ -104,7 +105,7 @@ However, if @extension{ARB,direct_state_access} is not available and both
 available, the robust version is preferred over DSA.
 
 To achieve least state changes, fully configure each texture in one run --
-method chaining comes in handy -- and try to have often used textures in
+method chaining comes in handy --- and try to have often used textures in
 dedicated units, not occupied by other textures. First configure the texture
 and *then* set the data, so OpenGL can optimize them to match the settings. To
 avoid redundant consistency checks and memory reallocations when updating
@@ -142,7 +143,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls.
-         * @see @fn_gl{Get} with @def_gl{MAX_TEXTURE_LOD_BIAS}
+         * @see @fn_gl{Get} with @def_gl_keyword{MAX_TEXTURE_LOD_BIAS}
          * @requires_gles30 Texture LOD bias doesn't have
          *      implementation-defined range in OpenGL ES 2.0.
          * @requires_webgl20 Texture LOD bias doesn't have
@@ -157,8 +158,9 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If neither extension @extension{ARB,texture_multisample}
-         * (part of OpenGL 3.2) nor OpenGL ES 3.1 is available, returns `0`.
-         * @see @fn_gl{Get} with @def_gl{MAX_COLOR_TEXTURE_SAMPLES}
+         * (part of OpenGL 3.2) nor OpenGL ES 3.1 is available, returns
+         * @cpp 0 @ce.
+         * @see @fn_gl{Get} with @def_gl_keyword{MAX_COLOR_TEXTURE_SAMPLES}
          * @requires_gles30 Not defined in OpenGL ES 2.0.
          * @requires_gles Multisample textures are not available in WebGL.
          */
@@ -169,8 +171,9 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If neither extension @extension{ARB,texture_multisample}
-         * (part of OpenGL 3.2) nor OpenGL ES 3.1 is available, returns `0`.
-         * @see @fn_gl{Get} with @def_gl{MAX_DEPTH_TEXTURE_SAMPLES}
+         * (part of OpenGL 3.2) nor OpenGL ES 3.1 is available, returns
+         * @cpp 0 @ce.
+         * @see @fn_gl{Get} with @def_gl_keyword{MAX_DEPTH_TEXTURE_SAMPLES}
          * @requires_gles30 Not defined in OpenGL ES 2.0.
          * @requires_gles Multisample textures are not available in WebGL.
          */
@@ -181,8 +184,9 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If neither extension @extension{ARB,texture_multisample}
-         * (part of OpenGL 3.2) nor OpenGL ES 3.1 is available, returns `0`.
-         * @see @fn_gl{Get} with @def_gl{MAX_INTEGER_SAMPLES}
+         * (part of OpenGL 3.2) nor OpenGL ES 3.1 is available, returns
+         * @cpp 0 @ce.
+         * @see @fn_gl{Get} with @def_gl_keyword{MAX_INTEGER_SAMPLES}
          * @requires_gles30 Not defined in OpenGL ES 2.0.
          * @requires_gles Multisample textures are not available in WebGL.
          */
@@ -200,9 +204,10 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          *      @ref AbstractShaderProgram subclasses. See its documentation
          *      for more information.
          * @see @ref bind(), @ref Shader::maxCombinedTextureImageUnits(),
-         *      @fn_gl{BindTextureUnit}, @fn_gl{BindTextures},
-         *      @fn_gl_extension{BindMultiTexture,EXT,direct_state_access},
-         *      eventually @fn_gl{ActiveTexture} and @fn_gl{BindTexture}
+         *      @fn_gl_keyword{BindTextureUnit}, @fn_gl_keyword{BindTextures},
+         *      @fn_gl_extension_keyword{BindMultiTexture,EXT,direct_state_access},
+         *      eventually @fn_gl_keyword{ActiveTexture} and
+         *      @fn_gl_keyword{BindTexture}
          */
         static void unbind(Int textureUnit);
 
@@ -216,7 +221,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          *      @ref AbstractShaderProgram subclasses. See its documentation
          *      for more information.
          * @see @ref bind(), @ref Shader::maxCombinedTextureImageUnits(),
-         *      @fn_gl{BindTextures}
+         *      @fn_gl_keyword{BindTextures}
          */
         static void unbind(Int firstTextureUnit, std::size_t count);
 
@@ -224,14 +229,15 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          * @brief Bind textures to given range of texture units
          *
          * Binds first texture in the list to @p firstTextureUnit, second to
-         * `firstTextureUnit + 1` etc. If any texture is `nullptr`, given
-         * texture unit is unbound. If @extension{ARB,multi_bind} (part of
-         * OpenGL 4.4) is not available, the feature is emulated with sequence
-         * of @ref bind(Int) / @ref unbind(Int) calls.
+         * `firstTextureUnit + 1` etc. If any texture is @cpp nullptr @ce,
+         * given texture unit is unbound. If @extension{ARB,multi_bind} (part
+         * of OpenGL 4.4) is not available, the feature is emulated with
+         * sequence of @ref bind(Int) / @ref unbind(Int) calls.
          * @note This function is meant to be used only internally from
          *      @ref AbstractShaderProgram subclasses. See its documentation
          *      for more information.
-         * @see @ref Shader::maxCombinedTextureImageUnits(), @fn_gl{BindTextures}
+         * @see @ref Shader::maxCombinedTextureImageUnits(),
+         *      @fn_gl_keyword{BindTextures}
          */
         static void bind(Int firstTextureUnit, std::initializer_list<AbstractTexture*> textures);
 
@@ -246,7 +252,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          *      @ref Texture::bindImageLayered() "*Texture::bindImageLayered()",
          *      @ref unbindImages(), @ref bindImages(),
          *      @ref AbstractShaderProgram::maxImageUnits(),
-         *      @fn_gl{BindImageTexture}
+         *      @fn_gl_keyword{BindImageTexture}
          * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
          * @requires_gles31 Shader image load/store is not available in OpenGL
          *      ES 3.0 and older.
@@ -267,7 +273,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          *      @ref Texture::bindImageLayered() "*Texture::bindImageLayered()",
          *      @ref unbindImage(), @ref bindImages(),
          *      @ref AbstractShaderProgram::maxImageUnits(),
-         *      @fn_gl{BindImageTextures}
+         *      @fn_gl_keyword{BindImageTextures}
          * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
          * @requires_gl44 Extension @extension{ARB,multi_bind}
          * @requires_gl Multi bind is not available in OpenGL ES and WebGL.
@@ -281,8 +287,8 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          *
          * Binds first level of given texture in the list to @p firstImageUnit,
          * second to `firstTextureUnit + 1` etc. 3D, cube map and array
-         * textures are bound as layered targets. If any texture is `nullptr`,
-         * given image unit is unbound.
+         * textures are bound as layered targets. If any texture is
+         * @cpp nullptr @ce, given image unit is unbound.
          * @note This function is meant to be used only internally from
          *      @ref AbstractShaderProgram subclasses. See its documentation
          *      for more information.
@@ -290,7 +296,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          *      @ref Texture::bindImageLayered() "*Texture::bindImageLayered()",
          *      @ref unbindImages(), @ref unbindImage(),
          *      @ref AbstractShaderProgram::maxImageUnits(),
-         *      @fn_gl{BindImageTextures}
+         *      @fn_gl_keyword{BindImageTextures}
          * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
          * @requires_gl44 Extension @extension{ARB,multi_bind}
          * @requires_gl Multi bind is not available in OpenGL ES and WebGL.
@@ -314,7 +320,7 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          *      @ref CubeMapTextureArray::wrap(),
          *      @ref MultisampleTexture::wrap(), @ref RectangleTexture::wrap(),
          *      @ref Texture::wrap(), @ref TextureArray::wrap(),
-         *      @ref release(), @fn_gl{DeleteTextures}
+         *      @ref release(), @fn_gl_keyword{DeleteTextures}
          */
         ~AbstractTexture();
 
@@ -349,8 +355,8 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          * @extension{KHR,debug} (covered also by @extension{ANDROID,extension_pack_es31a})
          * nor @extension{EXT,debug_label} desktop or ES extension is
          * available, this function returns empty string.
-         * @see @fn_gl{GetObjectLabel} or
-         *      @fn_gl_extension{GetObjectLabel,EXT,debug_label} with
+         * @see @fn_gl_keyword{GetObjectLabel} or
+         *      @fn_gl_extension_keyword{GetObjectLabel,EXT,debug_label} with
          *      @def_gl{TEXTURE}
          * @requires_gles Debug output is not available in WebGL.
          */
@@ -364,8 +370,8 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          * @extension{KHR,debug} (covered also by @extension{ANDROID,extension_pack_es31a})
          * nor @extension{EXT,debug_label} desktop or ES extension is
          * available, this function does nothing.
-         * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} or
-         *      @fn_gl_extension{LabelObject,EXT,debug_label} with
+         * @see @ref maxLabelLength(), @fn_gl_keyword{ObjectLabel} or
+         *      @fn_gl_extension_keyword{LabelObject,EXT,debug_label} with
          *      @def_gl{TEXTURE}
          * @requires_gles Debug output is not available in WebGL.
          */
@@ -391,9 +397,10 @@ class MAGNUM_EXPORT AbstractTexture: public AbstractObject {
          *      for more information.
          * @see @ref bind(Int, std::initializer_list<AbstractTexture*>),
          *      @ref unbind(), @ref Shader::maxCombinedTextureImageUnits(),
-         *      @fn_gl{BindTextureUnit}, @fn_gl{BindTextures},
-         *      @fn_gl_extension{BindMultiTexture,EXT,direct_state_access},
-         *      eventually @fn_gl{ActiveTexture} and @fn_gl{BindTexture}
+         *      @fn_gl_keyword{BindTextureUnit}, @fn_gl_keyword{BindTextures},
+         *      @fn_gl_extension_keyword{BindMultiTexture,EXT,direct_state_access},
+         *      eventually @fn_gl_keyword{ActiveTexture} and
+         *      @fn_gl_keyword{BindTexture}
          */
         void bind(Int textureUnit);
 

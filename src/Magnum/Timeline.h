@@ -46,7 +46,7 @@ namespace Magnum {
 Keeps track of time delta between frames. Can be used as source for animation
 speed computations.
 
-## Basic usage
+@section Timeline-usage Basic usage
 
 Construct the timeline on initialization so the instance is available for
 whole lifetime of the application. Call @ref start() before first draw event is
@@ -67,8 +67,9 @@ Note that on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" the framerate is
 governed by browser and you can't do anything about it.
 
 Example usage:
-@code
-MyApplication::MyApplication(const Parameters& parameters): Platform::Application(parameters) {
+
+@code{.cpp}
+MyApplication::MyApplication(const Arguments& arguments): Platform::Application{arguments} {
     // Initialization ...
 
     // Enable VSync or set minimal loop period for the application, if
@@ -115,8 +116,8 @@ class MAGNUM_EXPORT Timeline {
          * @brief Set minimal frame time
          * @return Reference to self (for method chaining)
          *
-         * Default value is `0.0f`. Cannot be used on some platforms where
-         * blocking the main loop is not allowed (such as
+         * Default value is @cpp 0.0f @ce. Cannot be used on some platforms
+         * where blocking the main loop is not allowed (such as
          * @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten").
          * @deprecated Use @ref Platform::Sdl2Application::setSwapInterval() "Platform::*Application::setSwapInterval()" or
          *      @ref Platform::Sdl2Application::setMinimalLoopPeriod() "Platform::*Application::setMinimalLoopPeriod()"
@@ -131,7 +132,7 @@ class MAGNUM_EXPORT Timeline {
         /**
          * @brief Start timeline
          *
-         * Sets previous frame time and duration to `0`.
+         * Sets previous frame time and duration to @cpp 0 @ce.
          * @see @ref stop(), @ref previousFrameDuration()
          */
         void start();
@@ -155,14 +156,14 @@ class MAGNUM_EXPORT Timeline {
          * @brief Time at previous frame (in seconds)
          *
          * Returns time elapsed since start() was called. If the timeline is
-         * stopped, the function returns `0.0f`.
+         * stopped, the function returns @cpp 0.0f @ce.
          */
         Float previousFrameTime() const;
 
         /**
          * @brief Duration of previous frame (in seconds)
          *
-         * If the timeline is stopped, the function returns `0.0f`.
+         * If the timeline is stopped, the function returns @cpp 0.0f @ce.
          */
         Float previousFrameDuration() const { return _previousFrameDuration; }
 

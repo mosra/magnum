@@ -37,17 +37,17 @@ CORRADE_DEPRECATED_FILE("use Magnum/PixelFormat.h instead")
 
 namespace Magnum {
 
-/** @copybrief PixelFormat
+/** @brief @copybrief PixelFormat
  * @deprecated Use @ref PixelFormat instead.
  */
 typedef CORRADE_DEPRECATED("use PixelFormat instead") PixelFormat ColorFormat;
 
-/** @copybrief PixelType
+/** @brief @copybrief PixelType
  * @deprecated Use @ref PixelType instead.
  */
 typedef CORRADE_DEPRECATED("use PixelType instead") PixelType ColorType;
 
-/** @copybrief CompressedPixelFormat
+/** @brief @copybrief CompressedPixelFormat
  * @deprecated Use @ref CompressedPixelFormat instead.
  */
 typedef CORRADE_DEPRECATED("use CompressedPixelFormat instead") CompressedPixelFormat CompressedColorFormat;

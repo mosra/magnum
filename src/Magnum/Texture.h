@@ -64,12 +64,13 @@ namespace Implementation {
 Template class for one- to three-dimensional textures. See also
 @ref AbstractTexture documentation for more information.
 
-## Usage
+@section Texture-usage Usage
 
 Common usage is to fully configure all texture parameters and then set the
 data from e.g. @ref Image. Example configuration of high quality texture with
 trilinear anisotropic filtering, i.e. the best you can ask for:
-@code
+
+@code{.cpp}
 Image2D image(PixelFormat::RGBA, PixelType::UnsignedByte, {4096, 4096}, data);
 
 Texture2D texture;
@@ -89,11 +90,12 @@ texture.setMagnificationFilter(Sampler::Filter::Linear)
     of the mip chain or call @ref setMinificationFilter() with another value to
     disable mipmapping.
 
-In shader, the texture is used via `sampler1D`/`sampler2D`/`sampler3D`,
-`sampler1DShadow`/`sampler2DShadow`/`sampler3DShadow`,
-`isampler1D`/`isampler2D`/`isampler3D` or `usampler1D`/`usampler2D`/`usampler3D`.
-See @ref AbstractShaderProgram documentation for more information about usage
-in shaders.
+In shader, the texture is used via @glsl sampler1D @ce / @glsl sampler2D @ce /
+@glsl sampler3D @ce, @glsl sampler1DShadow @ce / @glsl sampler2DShadow @ce /
+@glsl sampler3DShadow @ce, @glsl isampler1D @ce / @glsl isampler2D @ce /
+@glsl isampler3D @ce or @glsl usampler1D @ce / @glsl usampler2D @ce /
+@glsl usampler3D @ce. See @ref AbstractShaderProgram documentation for more
+information about usage in shaders.
 
 @see @ref Texture1D, @ref Texture2D, @ref Texture3D, @ref TextureArray,
     @ref CubeMapTexture, @ref CubeMapTextureArray, @ref RectangleTexture,
@@ -116,8 +118,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * OpenGL calls. For 3D textures in OpenGL ES 2.0, if
          * @extension{OES,texture_3D} extension is not available, returns
          * zero vector.
-         * @see @fn_gl{Get} with @def_gl{MAX_TEXTURE_SIZE},
-         *      @def_gl{MAX_3D_TEXTURE_SIZE}
+         * @see @fn_gl{Get} with @def_gl_keyword{MAX_TEXTURE_SIZE},
+         *      @def_gl_keyword{MAX_3D_TEXTURE_SIZE}
          */
         static VectorTypeFor<dimensions, Int> maxSize() {
             return Implementation::maxTextureSize<dimensions>();
@@ -129,9 +131,9 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *
          * If @p format is compressed, returns compressed block size (in
          * pixels). For uncompressed formats returns zero vector.
-         * @see @ref compressedBlockDataSize(), @fn_gl{GetInternalformat} with
-         *      @def_gl{TEXTURE_COMPRESSED_BLOCK_WIDTH},
-         *      @def_gl{TEXTURE_COMPRESSED_BLOCK_HEIGHT}
+         * @see @ref compressedBlockDataSize(), @fn_gl_keyword{GetInternalformat}
+         *      with @def_gl_keyword{TEXTURE_COMPRESSED_BLOCK_WIDTH},
+         *      @def_gl_keyword{TEXTURE_COMPRESSED_BLOCK_HEIGHT}
          * @requires_gl43 Extension @extension{ARB,internalformat_query2}
          * @requires_gl Compressed texture queries are not available in OpenGL
          *      ES.
@@ -145,8 +147,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *
          * If @p format is compressed, returns compressed block data size (in
          * bytes). For uncompressed formats returns zero.
-         * @see @ref compressedBlockSize(), @fn_gl{GetInternalformat} with
-         *      @def_gl{TEXTURE_COMPRESSED_BLOCK_SIZE}
+         * @see @ref compressedBlockSize(), @fn_gl_keyword{GetInternalformat}
+         *      with @def_gl_keyword{TEXTURE_COMPRESSED_BLOCK_SIZE}
          * @requires_gl43 Extension @extension{ARB,internalformat_query2}
          * @requires_gl Compressed texture queries are not available in OpenGL
          *      ES.
@@ -178,9 +180,9 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * Creates new OpenGL texture object. If @extension{ARB,direct_state_access}
          * (part of OpenGL 4.5) is not available, the texture is created on
          * first use.
-         * @see @ref Texture(NoCreateT), @ref wrap(), @fn_gl{CreateTextures}
+         * @see @ref Texture(NoCreateT), @ref wrap(), @fn_gl_keyword{CreateTextures}
          *      with @def_gl{TEXTURE_1D}, @def_gl{TEXTURE_2D} or
-         *      @def_gl{TEXTURE_3D}, eventually @fn_gl{GenTextures}
+         *      @def_gl{TEXTURE_3D}, eventually @fn_gl_keyword{GenTextures}
          */
         explicit Texture(): AbstractTexture(Implementation::textureTarget<dimensions>()) {}
 
@@ -212,7 +214,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @see @ref bindImages(Int, std::initializer_list<AbstractTexture*>),
          *      @ref bindImageLayered(), @ref unbindImage(), @ref unbindImages(),
          *      @ref AbstractShaderProgram::maxImageUnits(),
-         *      @fn_gl{BindImageTexture}
+         *      @fn_gl_keyword{BindImageTexture}
          * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
          * @requires_gles31 Shader image load/store is not available in OpenGL
          *      ES 3.0 and older.
@@ -240,7 +242,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @see @ref bindImages(Int, std::initializer_list<AbstractTexture*>),
          *      @ref bindImageLayered(), @ref unbindImage(), @ref unbindImages(),
          *      @ref AbstractShaderProgram::maxImageUnits(),
-         *      @fn_gl{BindImageTexture}
+         *      @fn_gl_keyword{BindImageTexture}
          * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
          * @requires_gles31 Shader image load/store is not available in OpenGL
          *      ES 3.0 and older.
@@ -291,12 +293,12 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * filtering. If neither @extension{ARB,direct_state_access} (part of
          * OpenGL 4.5) nor @extension{EXT,direct_state_access} desktop
          * extension is available, the texture is bound before the operation
-         * (if not already). Initial value is `0`.
+         * (if not already). Initial value is @cpp 0 @ce.
          * @see @ref setMaxLevel(), @ref setMinificationFilter(),
-         *      @fn_gl2{TextureParameter,TexParameter},
-         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access},
+         *      @fn_gl2_keyword{TextureParameter,TexParameter},
+         *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{TexParameter} with @def_gl{TEXTURE_BASE_LEVEL}
+         *      @fn_gl_keyword{TexParameter} with @def_gl_keyword{TEXTURE_BASE_LEVEL}
          * @requires_gles30 Base level is always `0` in OpenGL ES 2.0.
          * @requires_webgl20 Base level is always `0` in WebGL 1.0.
          */
@@ -319,10 +321,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * (if not already). Initial value is `1000`, which is clamped to count
          * of levels specified when using @ref setStorage().
          * @see @ref setBaseLevel(), @ref setMinificationFilter(),
-         *      @fn_gl2{TextureParameter,TexParameter},
-         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access},
+         *      @fn_gl2_keyword{TextureParameter,TexParameter},
+         *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{TexParameter} with @def_gl{TEXTURE_MAX_LEVEL}
+         *      @fn_gl_keyword{TexParameter} with @def_gl_keyword{TEXTURE_MAX_LEVEL}
          * @requires_gles30 Extension @extension{APPLE,texture_max_level},
          *      otherwise the max level is always set to largest possible value
          *      in OpenGL ES 2.0.
@@ -349,10 +351,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * (if not already). Initial value is {@ref Sampler::Filter::Nearest,
          * @ref Sampler::Mipmap::Linear}.
          * @see @ref setMagnificationFilter(), @ref setBaseLevel(),
-         *      @ref setMaxLevel(), @fn_gl2{TextureParameter,TexParameter},
-         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access},
+         *      @ref setMaxLevel(), @fn_gl2_keyword{TextureParameter,TexParameter},
+         *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{TexParameter} with @def_gl{TEXTURE_MIN_FILTER}
+         *      @fn_gl_keyword{TexParameter} with @def_gl_keyword{TEXTURE_MIN_FILTER}
          */
         Texture<dimensions>& setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap = Sampler::Mipmap::Base) {
             AbstractTexture::setMinificationFilter(filter, mipmap);
@@ -369,10 +371,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * of OpenGL 4.5) nor @extension{EXT,direct_state_access} desktop
          * extension is available, the texture is bound before the operation
          * (if not already). Initial value is @ref Sampler::Filter::Linear.
-         * @see @ref setMinificationFilter(), @fn_gl2{TextureParameter,TexParameter},
-         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access},
+         * @see @ref setMinificationFilter(), @fn_gl2_keyword{TextureParameter,TexParameter},
+         *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{TexParameter} with @def_gl{TEXTURE_MAG_FILTER}
+         *      @fn_gl_keyword{TexParameter} with @def_gl_keyword{TEXTURE_MAG_FILTER}
          */
         Texture<dimensions>& setMagnificationFilter(Sampler::Filter filter) {
             AbstractTexture::setMagnificationFilter(filter);
@@ -388,11 +390,11 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @extension{ARB,direct_state_access} (part of OpenGL 4.5) nor
          * @extension{EXT,direct_state_access} desktop extension is available,
          * the texture is bound before the operation (if not already). Initial
-         * value is `-1000.0f`.
-         * @see @ref setMaxLod(), @ref setLodBias(), @fn_gl2{TextureParameter,TexParameter},
-         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access},
+         * value is @cpp -1000.0f @ce.
+         * @see @ref setMaxLod(), @ref setLodBias(), @fn_gl2_keyword{TextureParameter,TexParameter},
+         *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{TexParameter} with @def_gl{TEXTURE_MIN_LOD}
+         *      @fn_gl_keyword{TexParameter} with @def_gl_keyword{TEXTURE_MIN_LOD}
          * @requires_gles30 Texture LOD parameters are not available in OpenGL
          *      ES 2.0.
          * @requires_webgl20 Texture LOD parameters are not available in WebGL
@@ -411,11 +413,11 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @extension{ARB,direct_state_access} (part of OpenGL 4.5) nor
          * @extension{EXT,direct_state_access} desktop extension is available,
          * the texture is bound before the operation (if not already). Initial
-         * value is `1000.0f`.
-         * @see @ref setMinLod(), @ref setLodBias(), @fn_gl2{TextureParameter,TexParameter},
-         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access},
+         * value is @cpp 1000.0f @ce.
+         * @see @ref setMinLod(), @ref setLodBias(), @fn_gl2_keyword{TextureParameter,TexParameter},
+         *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{TexParameter} with @def_gl{TEXTURE_MAX_LOD}
+         *      @fn_gl_keyword{TexParameter} with @def_gl_keyword{TEXTURE_MAX_LOD}
          * @requires_gles30 Texture LOD parameters are not available in OpenGL
          *      ES 2.0.
          * @requires_webgl20 Texture LOD parameters are not available in WebGL
@@ -436,12 +438,12 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * neither @extension{ARB,direct_state_access} (part of OpenGL 4.5) nor
          * @extension{EXT,direct_state_access} is available, the texture is
          * bound before the operation (if not already). Initial value is
-         * `0.0f`.
+         * @cpp 0.0f @ce.
          * @see @ref maxLodBias(), @ref setMinLod(), @ref setMaxLod(),
-         *      @fn_gl2{TextureParameter,TexParameter},
-         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access},
+         *      @fn_gl2_keyword{TextureParameter,TexParameter},
+         *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{TexParameter} with @def_gl{TEXTURE_LOD_BIAS}
+         *      @fn_gl_keyword{TexParameter} with @def_gl_keyword{TEXTURE_LOD_BIAS}
          * @requires_gl Texture LOD bias can be specified only directly in
          *      fragment shader in OpenGL ES and WebGL.
          */
@@ -461,11 +463,11 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * nor @extension{EXT,direct_state_access} desktop extension is
          * available, the texture is bound before the operation (if not
          * already). Initial value is @ref Sampler::Wrapping::Repeat.
-         * @see @ref setBorderColor(), @fn_gl2{TextureParameter,TexParameter},
-         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access},
+         * @see @ref setBorderColor(), @fn_gl2_keyword{TextureParameter,TexParameter},
+         *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{TexParameter} with @def_gl{TEXTURE_WRAP_S},
-         *      @def_gl{TEXTURE_WRAP_T}, @def_gl{TEXTURE_WRAP_R}
+         *      @fn_gl_keyword{TexParameter} with @def_gl_keyword{TEXTURE_WRAP_S},
+         *      @def_gl_keyword{TEXTURE_WRAP_T}, @def_gl_keyword{TEXTURE_WRAP_R}
          */
         Texture<dimensions>& setWrapping(const Array<dimensions, Sampler::Wrapping>& wrapping) {
             DataHelper<dimensions>::setWrapping(*this, wrapping);
@@ -481,11 +483,11 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
          * nor @extension{EXT,direct_state_access} is available, the texture is
          * bound before the operation (if not already). Initial value is
-         * `{0.0f, 0.0f, 0.0f, 0.0f}`.
-         * @see @ref setWrapping(), @fn_gl2{TextureParameter,TexParameter},
-         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access},
+         * @cpp 0x00000000_rgbaf @ce.
+         * @see @ref setWrapping(), @fn_gl2_keyword{TextureParameter,TexParameter},
+         *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{TexParameter} with @def_gl{TEXTURE_BORDER_COLOR}
+         *      @fn_gl_keyword{TexParameter} with @def_gl_keyword{TEXTURE_BORDER_COLOR}
          * @requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
          *      @extension{EXT,texture_border_clamp} or
          *      @extension{NV,texture_border_clamp}
@@ -506,11 +508,11 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @extension{ARB,direct_state_access} (part of OpenGL 4.5) nor
          * @extension{EXT,direct_state_access} is available, the texture is
          * bound before the operation (if not already). Initial value is
-         * `{0, 0, 0, 0}`.
-         * @see @fn_gl2{TextureParameter,TexParameter},
-         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access},
+         * @cpp {0, 0, 0, 0} @ce.
+         * @see @fn_gl2_keyword{TextureParameter,TexParameter},
+         *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{TexParameter} with @def_gl{TEXTURE_BORDER_COLOR}
+         *      @fn_gl_keyword{TexParameter} with @def_gl_keyword{TEXTURE_BORDER_COLOR}
          * @requires_gl30 Extension @extension{EXT,texture_integer}
          * @requires_gles30 Not defined in OpenGL ES 2.0.
          * @requires_es_extension Extension
@@ -542,17 +544,18 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @brief Set max anisotropy
          * @return Reference to self (for method chaining)
          *
-         * Default value is `1.0f`, which means no anisotropy. Set to value
-         * greater than `1.0f` for anisotropic filtering. If extension
-         * @extension{EXT,texture_filter_anisotropic} (desktop or ES) is not
-         * available, this function does nothing. If neither
+         * Default value is @cpp 1.0f @ce, which means no anisotropy. Set to
+         * value greater than @cpp 1.0f @ce for anisotropic filtering. If
+         * extension @extension{EXT,texture_filter_anisotropic} (desktop or ES)
+         * is not available, this function does nothing. If neither
          * @extension{ARB,direct_state_access} (part of OpenGL 4.5) nor
          * @extension{EXT,direct_state_access} desktop extension is available,
          * the texture is bound before the operation (if not already).
-         * @see @ref Sampler::maxMaxAnisotropy(), @fn_gl2{TextureParameter,TexParameter},
-         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access},
+         * @see @ref Sampler::maxMaxAnisotropy(), @fn_gl2_keyword{TextureParameter,TexParameter},
+         *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{TexParameter} with @def_gl{TEXTURE_MAX_ANISOTROPY_EXT}
+         *      @fn_gl_keyword{TexParameter} with
+         *      @def_gl_keyword{TEXTURE_MAX_ANISOTROPY_EXT}
          */
         Texture<dimensions>& setMaxAnisotropy(Float anisotropy) {
             AbstractTexture::setMaxAnisotropy(anisotropy);
@@ -568,11 +571,11 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @extension{ARB,direct_state_access} (part of OpenGL 4.5) nor
          * @extension{EXT,direct_state_access} desktop extension is available,
          * the texture is bound before the operation (if not already). Initial
-         * value is `true`.
-         * @see @fn_gl2{TextureParameter,TexParameter},
-         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access},
+         * value is @cpp true @ce.
+         * @see @fn_gl2_keyword{TextureParameter,TexParameter},
+         *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{TexParameter} with @def_gl{TEXTURE_SRGB_DECODE_EXT}
+         *      @fn_gl_keyword{TexParameter} with @def_gl_keyword{TEXTURE_SRGB_DECODE_EXT}
          * @requires_extension Extension @extension{EXT,texture_sRGB_decode}
          * @requires_es_extension OpenGL ES 3.0 or extension
          *      @extension{EXT,sRGB} and
@@ -591,22 +594,25 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @brief Set component swizzle
          * @return Reference to self (for method chaining)
          *
-         * You can use letters `r`, `g`, `b`, `a` for addressing components or
-         * letters `0` and `1` for zero and one, similarly as in
+         * You can use letters @cpp 'r' @ce, @cpp 'g' @ce, @cpp 'b' @ce,
+         * @cpp 'a' @ce for addressing components or letters @cpp '0' @ce and
+         * @cpp '1' @ce for zero and one, similarly as in the
          * @ref Math::swizzle() function. Example usage:
-         * @code
+         *
+         * @code{.cpp}
          * texture.setSwizzle<'b', 'g', 'r', '0'>();
          * @endcode
+         *
          * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
          * nor @extension{EXT,direct_state_access} desktop extension is
          * available, the texture is bound before the operation (if not
-         * already). Initial value is `rgba`.
-         * @see @fn_gl2{TextureParameter,TexParameter},
-         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access},
+         * already). Initial value is @cpp 'r', 'g', 'b', 'a' @ce.
+         * @see @fn_gl2_keyword{TextureParameter,TexParameter},
+         *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{TexParameter} with @def_gl{TEXTURE_SWIZZLE_RGBA} (or
-         *      @def_gl{TEXTURE_SWIZZLE_R}, @def_gl{TEXTURE_SWIZZLE_G},
-         *      @def_gl{TEXTURE_SWIZZLE_B} and @def_gl{TEXTURE_SWIZZLE_A}
+         *      @fn_gl_keyword{TexParameter} with @def_gl_keyword{TEXTURE_SWIZZLE_RGBA} (or
+         *      @def_gl_keyword{TEXTURE_SWIZZLE_R}, @def_gl_keyword{TEXTURE_SWIZZLE_G},
+         *      @def_gl_keyword{TEXTURE_SWIZZLE_B} and @def_gl_keyword{TEXTURE_SWIZZLE_A}
          *      separately in OpenGL ES)
          * @requires_gl33 Extension @extension{ARB,texture_swizzle}
          * @requires_gles30 Texture swizzle is not available in OpenGL ES 2.0.
@@ -628,10 +634,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * available, the texture is bound before the operation (if not
          * already). Initial value is @ref Sampler::CompareMode::None.
          * @note Depth textures can be only 1D or 2D.
-         * @see @ref setCompareFunction(), @fn_gl2{TextureParameter,TexParameter},
-         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access},
+         * @see @ref setCompareFunction(), @fn_gl2_keyword{TextureParameter,TexParameter},
+         *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{TexParameter} with @def_gl{TEXTURE_COMPARE_MODE}
+         *      @fn_gl_keyword{TexParameter} with @def_gl_keyword{TEXTURE_COMPARE_MODE}
          * @requires_gles30 Extension @extension{EXT,shadow_samplers} in
          *      OpenGL ES 2.0.
          * @requires_webgl20 Depth texture comparison is not available in WebGL
@@ -653,10 +659,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * the texture is bound before the operation (if not already). Initial
          * value is @ref Sampler::CompareFunction::LessOrEqual.
          * @note Depth textures can be only 1D or 2D.
-         * @see @ref setCompareMode(), @fn_gl2{TextureParameter,TexParameter},
-         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access},
+         * @see @ref setCompareMode(), @fn_gl2_keyword{TextureParameter,TexParameter},
+         *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{TexParameter} with @def_gl{TEXTURE_COMPARE_FUNC}
+         *      @fn_gl_keyword{TexParameter} with @def_gl_keyword{TEXTURE_COMPARE_FUNC}
          * @requires_gles30 Extension @extension{EXT,shadow_samplers} in
          *      OpenGL ES 2.0.
          * @requires_webgl20 Depth texture comparison is not available in WebGL
@@ -679,10 +685,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * the texture is bound before the operation (if not already). Initial
          * value is @ref Sampler::DepthStencilMode::DepthComponent.
          * @note Depth textures can be only 1D or 2D.
-         * @see @fn_gl2{TextureParameter,TexParameter},
-         *      @fn_gl_extension{TextureParameter,EXT,direct_state_access},
+         * @see @fn_gl2_keyword{TextureParameter,TexParameter},
+         *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{TexParameter} with @def_gl{DEPTH_STENCIL_TEXTURE_MODE}
+         *      @fn_gl_keyword{TexParameter} with @def_gl_keyword{DEPTH_STENCIL_TEXTURE_MODE}
          * @requires_gl43 Extension @extension{ARB,stencil_texturing}
          * @requires_gles31 Stencil texturing is not available in OpenGL ES 3.0
          *      and older.
@@ -711,13 +717,16 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * 4.2), OpenGL ES 3.0 nor @extension{EXT,texture_storage} in OpenGL
          * ES 2.0 is available, the feature is emulated with sequence of
          * @ref setImage() calls.
-         * @see @ref maxSize(), @ref setMaxLevel(), @fn_gl2{TextureStorage1D,TexStorage1D} /
-         *      @fn_gl2{TextureStorage2D,TexStorage2D} / @fn_gl2{TextureStorage3D,TexStorage3D},
-         *      @fn_gl_extension{TextureStorage1D,EXT,direct_state_access} /
-         *      @fn_gl_extension{TextureStorage2D,EXT,direct_state_access} /
-         *      @fn_gl_extension{TextureStorage3D,EXT,direct_state_access},
+         * @see @ref maxSize(), @ref setMaxLevel(),
+         *      @fn_gl2_keyword{TextureStorage1D,TexStorage1D} /
+         *      @fn_gl2_keyword{TextureStorage2D,TexStorage2D} /
+         *      @fn_gl2_keyword{TextureStorage3D,TexStorage3D},
+         *      @fn_gl_extension_keyword{TextureStorage1D,EXT,direct_state_access} /
+         *      @fn_gl_extension_keyword{TextureStorage2D,EXT,direct_state_access} /
+         *      @fn_gl_extension_keyword{TextureStorage3D,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{TexStorage1D}/@fn_gl{TexStorage2D}/@fn_gl{TexStorage3D}
+         *      @fn_gl_keyword{TexStorage1D} / @fn_gl_keyword{TexStorage2D} /
+         *      @fn_gl_keyword{TexStorage3D}
          * @todo allow the user to specify PixelType explicitly to avoid
          *      issues in WebGL (see setSubImage())
          */
@@ -734,11 +743,12 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @extension{ARB,direct_state_access} (part of OpenGL 4.5) nor
          * @extension{EXT,direct_state_access} desktop extension is available,
          * the texture is bound before the operation (if not already).
-         * @see @ref image(), @fn_gl2{GetTextureLevelParameter,GetTexLevelParameter},
+         * @see @ref image(), @fn_gl2_keyword{GetTextureLevelParameter,GetTexLevelParameter},
          *      @fn_gl_extension{GetTextureLevelParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{GetTexLevelParameter} with @def_gl{TEXTURE_WIDTH},
-         *      @def_gl{TEXTURE_HEIGHT}, @def_gl{TEXTURE_DEPTH}
+         *      @fn_gl_keyword{GetTexLevelParameter} with
+         *      @def_gl_keyword{TEXTURE_WIDTH}, @def_gl_keyword{TEXTURE_HEIGHT},
+         *      @def_gl_keyword{TEXTURE_DEPTH}
          * @requires_gles31 Texture image size queries are not available in
          *      OpenGL ES 3.0 and older.
          * @requires_gles Texture image size queries are not available in
@@ -773,10 +783,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{GetTexLevelParameter} with @def_gl{TEXTURE_WIDTH},
          *      @def_gl{TEXTURE_HEIGHT}, @def_gl{TEXTURE_DEPTH}, then
-         *      @fn_gl{PixelStore}, then @fn_gl2{GetTextureImage,GetTexImage},
-         *      @fn_gl_extension{GetnTexImage,ARB,robustness},
-         *      @fn_gl_extension{GetTextureImage,EXT,direct_state_access},
-         *      eventually @fn_gl{GetTexImage}
+         *      @fn_gl{PixelStore}, then @fn_gl2_keyword{GetTextureImage,GetTexImage},
+         *      @fn_gl_extension_keyword{GetnTexImage,ARB,robustness},
+         *      @fn_gl_extension_keyword{GetTextureImage,EXT,direct_state_access},
+         *      eventually @fn_gl_keyword{GetTexImage}
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() for possible workaround.
          */
@@ -787,7 +797,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         /** @overload
          *
          * Convenience alternative to the above, example usage:
-         * @code
+         *
+         * @code{.cpp}
          * Image2D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte});
          * @endcode
          */
@@ -814,7 +825,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         /** @overload
          *
          * Convenience alternative to the above, example usage:
-         * @code
+         *
+         * @code{.cpp}
          * BufferImage2D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
          * @endcode
          */
@@ -844,10 +856,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @def_gl{TEXTURE_INTERNAL_FORMAT}, @def_gl{TEXTURE_WIDTH},
          *      @def_gl{TEXTURE_HEIGHT}, @def_gl{TEXTURE_DEPTH}, then
          *      @fn_gl{PixelStore}, then
-         *      @fn_gl2{GetCompressedTextureImage,GetCompressedTexImage},
-         *      @fn_gl_extension{GetnCompressedTexImage,ARB,robustness},
-         *      @fn_gl_extension{GetCompressedTextureImage,EXT,direct_state_access},
-         *      eventually @fn_gl{GetCompressedTexImage}
+         *      @fn_gl2_keyword{GetCompressedTextureImage,GetCompressedTexImage},
+         *      @fn_gl_extension_keyword{GetnCompressedTexImage,ARB,robustness},
+         *      @fn_gl_extension_keyword{GetCompressedTextureImage,EXT,direct_state_access},
+         *      eventually @fn_gl_keyword{GetCompressedTexImage}
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() for possible workaround.
          */
@@ -858,7 +870,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         /** @overload
          *
          * Convenience alternative to the above, example usage:
-         * @code
+         *
+         * @code{.cpp}
          * CompressedImage2D image = texture.compressedImage(0, {});
          * @endcode
          */
@@ -885,7 +898,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         /** @overload
          *
          * Convenience alternative to the above, example usage:
-         * @code
+         *
+         * @code{.cpp}
          * CompressedBufferImage2D image = texture.compressedImage(0, {}, BufferUsage::StaticRead);
          * @endcode
          */
@@ -902,7 +916,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * contain the new data.
          *
          * The operation is protected from buffer overflow.
-         * @see @fn_gl{GetTextureSubImage}
+         * @see @fn_gl_keyword{GetTextureSubImage}
          * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() for possible workaround.
@@ -914,7 +928,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         /** @overload
          *
          * Convenience alternative to the above, example usage:
-         * @code
+         *
+         * @code{.cpp}
          * Image2D image = texture.subImage(0, rect, {PixelFormat::RGBA, PixelType::UnsignedByte});
          * @endcode
          */
@@ -942,7 +957,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         /** @overload
          *
          * Convenience alternative to the above, example usage:
-         * @code
+         *
+         * @code{.cpp}
          * BufferImage2D image = texture.subImage(0, rect, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
          * @endcode
          */
@@ -962,7 +978,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl{GetInternalformat} with @def_gl{TEXTURE_COMPRESSED_BLOCK_SIZE},
          *      @def_gl{TEXTURE_COMPRESSED_BLOCK_WIDTH} and
          *      @def_gl{TEXTURE_COMPRESSED_BLOCK_HEIGHT}, then
-         *      @fn_gl{GetCompressedTextureSubImage}
+         *      @fn_gl_keyword{GetCompressedTextureSubImage}
          * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
          * @requires_gl43 Extension @extension{ARB,internalformat_query2} if
          *      @ref CompressedPixelStorage::compressedBlockSize() and
@@ -978,7 +994,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         /** @overload
          *
          * Convenience alternative to the above, example usage:
-         * @code
+         *
+         * @code{.cpp}
          * CompressedImage2D image = texture.compressedSubImage(0, rect, {});
          * @endcode
          */
@@ -1008,7 +1025,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         /** @overload
          *
          * Convenience alternative to the above, example usage:
-         * @code
+         *
+         * @code{.cpp}
          * CompressedBufferImage2D image = texture.compressedSubImage(0, rect, {}, BufferUsage::StaticRead);
          * @endcode
          */
@@ -1029,8 +1047,9 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * equivalent in @extension{ARB,direct_state_access}, thus the texture
          * needs to be bound to some texture unit before the operation.
          * @see @ref maxSize(), @ref Framebuffer::copyImage(), @fn_gl{PixelStore},
-         *      then @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and @fn_gl{TexImage1D}
-         *      / @fn_gl{TexImage2D} / @fn_gl{TexImage3D}
+         *      then @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl_keyword{TexImage1D} / @fn_gl_keyword{TexImage2D} /
+         *      @fn_gl_keyword{TexImage3D}
          * @deprecated_gl Prefer to use @ref setStorage() and @ref setSubImage()
          *      instead.
          */
@@ -1080,8 +1099,9 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * the texture needs to be bound to some texture unit before the
          * operation.
          * @see @ref maxSize(), @fn_gl{PixelStore}, then @fn_gl{ActiveTexture},
-         *      @fn_gl{BindTexture} and @fn_gl{CompressedTexImage1D} /
-         *      @fn_gl{CompressedTexImage2D} / @fn_gl{CompressedTexImage3D}
+         *      @fn_gl{BindTexture} and @fn_gl_keyword{CompressedTexImage1D} /
+         *      @fn_gl_keyword{CompressedTexImage2D} /
+         *      @fn_gl_keyword{CompressedTexImage3D}
          * @deprecated_gl Prefer to use @ref setStorage() and
          *      @ref setCompressedSubImage() instead.
          */
@@ -1130,13 +1150,15 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * available, the texture is bound before the operation (if not
          * already).
          * @see @ref setStorage(), @ref Framebuffer::copySubImage(),
-         *      @fn_gl{PixelStore}, @fn_gl2{TextureSubImage1D,TexSubImage1D} /
-         *      @fn_gl2{TextureSubImage2D,TexSubImage2D} / @fn_gl2{TextureSubImage3D,TexSubImage3D},
-         *      @fn_gl_extension{TextureSubImage1D,EXT,direct_state_access} /
-         *      @fn_gl_extension{TextureSubImage2D,EXT,direct_state_access} /
-         *      @fn_gl_extension{TextureSubImage3D,EXT,direct_state_access},
+         *      @fn_gl{PixelStore}, @fn_gl2_keyword{TextureSubImage1D,TexSubImage1D} /
+         *      @fn_gl2_keyword{TextureSubImage2D,TexSubImage2D} /
+         *      @fn_gl2_keyword{TextureSubImage3D,TexSubImage3D},
+         *      @fn_gl_extension_keyword{TextureSubImage1D,EXT,direct_state_access} /
+         *      @fn_gl_extension_keyword{TextureSubImage2D,EXT,direct_state_access} /
+         *      @fn_gl_extension_keyword{TextureSubImage3D,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{TexSubImage1D} / @fn_gl{TexSubImage2D} / @fn_gl{TexSubImage3D}
+         *      @fn_gl_keyword{TexSubImage1D} / @fn_gl_keyword{TexSubImage2D} /
+         *      @fn_gl_keyword{TexSubImage3D}
          * @requires_gles In @ref MAGNUM_TARGET_WEBGL "WebGL" the @ref PixelType
          *      of data passed in @p image must match the original one
          *      specified in @ref setImage(). It means that you might not be
@@ -1184,15 +1206,16 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * available, the texture is bound before the operation (if not
          * already).
          * @see @ref setStorage(), @fn_gl{PixelStore},
-         *      @fn_gl2{CompressedTextureSubImage1D,CompressedTexSubImage1D} /
-         *      @fn_gl2{CompressedTextureSubImage2D,CompressedTexSubImage2D} /
-         *      @fn_gl2{CompressedTextureSubImage3D,CompressedTexSubImage3D},
-         *      @fn_gl_extension{CompressedTextureSubImage1D,EXT,direct_state_access} /
-         *      @fn_gl_extension{CompressedTextureSubImage2D,EXT,direct_state_access} /
-         *      @fn_gl_extension{CompressedTextureSubImage3D,EXT,direct_state_access},
+         *      @fn_gl2_keyword{CompressedTextureSubImage1D,CompressedTexSubImage1D} /
+         *      @fn_gl2_keyword{CompressedTextureSubImage2D,CompressedTexSubImage2D} /
+         *      @fn_gl2_keyword{CompressedTextureSubImage3D,CompressedTexSubImage3D},
+         *      @fn_gl_extension_keyword{CompressedTextureSubImage1D,EXT,direct_state_access} /
+         *      @fn_gl_extension_keyword{CompressedTextureSubImage2D,EXT,direct_state_access} /
+         *      @fn_gl_extension_keyword{CompressedTextureSubImage3D,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{CompressedTexSubImage1D} / @fn_gl{CompressedTexSubImage2D} /
-         *      @fn_gl{CompressedTexSubImage3D}
+         *      @fn_gl_keyword{CompressedTexSubImage1D} /
+         *      @fn_gl_keyword{CompressedTexSubImage2D} /
+         *      @fn_gl_keyword{CompressedTexSubImage3D}
          */
         Texture<dimensions>& setCompressedSubImage(Int level, const VectorTypeFor<dimensions, Int>& offset, const CompressedImageView<dimensions>& image) {
             DataHelper<Dimensions>::setCompressedSubImage(*this, level, offset, image);
@@ -1230,10 +1253,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * nor @extension{EXT,direct_state_access} desktop extension is
          * available, the texture is bound before the operation (if not
          * already).
-         * @see @ref setMinificationFilter(), @fn_gl2{GenerateTextureMipmap,GenerateMipmap},
-         *      @fn_gl_extension{GenerateTextureMipmap,EXT,direct_state_access},
+         * @see @ref setMinificationFilter(), @fn_gl2_keyword{GenerateTextureMipmap,GenerateMipmap},
+         *      @fn_gl_extension_keyword{GenerateTextureMipmap,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{GenerateMipmap}
+         *      @fn_gl_keyword{GenerateMipmap}
          * @requires_gl30 Extension @extension{ARB,framebuffer_object}
          */
         Texture<dimensions>& generateMipmap() {
@@ -1247,7 +1270,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *
          * If running on OpenGL ES or extension @extension{ARB,invalidate_subdata}
          * (part of OpenGL 4.3) is not available, this function does nothing.
-         * @see @ref invalidateSubImage(), @fn_gl{InvalidateTexImage}
+         * @see @ref invalidateSubImage(), @fn_gl_keyword{InvalidateTexImage}
          */
         void invalidateImage(Int level) { AbstractTexture::invalidateImage(level); }
 
@@ -1259,7 +1282,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *
          * If running on OpenGL ES or extension @extension{ARB,invalidate_subdata}
          * (part of OpenGL 4.3) is not available, this function does nothing.
-         * @see @ref invalidateImage(), @fn_gl{InvalidateTexSubImage}
+         * @see @ref invalidateImage(), @fn_gl_keyword{InvalidateTexSubImage}
          */
         void invalidateSubImage(Int level, const VectorTypeFor<dimensions, Int>& offset, const VectorTypeFor<dimensions, Int>& size) {
             DataHelper<dimensions>::invalidateSubImage(*this, level, offset, size);

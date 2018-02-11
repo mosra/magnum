@@ -101,7 +101,7 @@ to run single isolated test cases.
 On platforms that support it, the OpenGL context is created with synchronous
 debug output, meaning that every OpenGL error is directly reported to standard
 output. While it is possible, the tester class doesn't abort the test cases
-upon encountering a GL error -- this should be done explicitly with
+upon encountering a GL error --- this should be done explicitly with
 @ref MAGNUM_VERIFY_NO_ERROR() instead, as the debug output is not available on
 all platforms and not all GL errors are fatal.
 

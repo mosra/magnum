@@ -96,7 +96,8 @@ class MAGNUM_EXPORT AbstractObject {
          *      @ref AbstractTexture::setLabel(), @ref Buffer::setLabel(),
          *      @ref BufferTexture::setLabel(), @ref Framebuffer::setLabel(),
          *      @ref Mesh::setLabel(), @ref Renderbuffer::setLabel(),
-         *      @ref Shader::setLabel(), @fn_gl{Get} with @def_gl{MAX_LABEL_LENGTH}
+         *      @ref Shader::setLabel(), @fn_gl{Get} with
+         *      @def_gl_keyword{MAX_LABEL_LENGTH}
          * @requires_gles Debug output is not available in WebGL.
          */
         static Int maxLabelLength();

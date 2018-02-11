@@ -47,6 +47,7 @@ namespace Magnum {
  * @brief Mesh primitive type
  *
  * @see @ref Mesh::primitive(), @ref Mesh::setPrimitive()
+ * @m_enum_values_as_keywords
  */
 enum class MeshPrimitive: GLenum {
     /** Single points. */
@@ -128,8 +129,7 @@ namespace Implementation { struct MeshState; }
 /**
 @brief Mesh
 
-@anchor Mesh-configuration
-## Mesh configuration
+@section Mesh-configuration Mesh configuration
 
 You have to specify at least primitive and vertex/index count using
 @ref setPrimitive() and @ref setCount(). Then fill your vertex buffers with
@@ -154,11 +154,11 @@ different usage) or store data for more meshes in one buffer.
 If vertex/index count or instance count is zero, the mesh is empty and no draw
 commands are issued when calling @ref draw().
 
-### Example mesh configuration
+@subsection Mesh-configuration-example Example mesh configuration
 
-#### Basic non-indexed mesh
+@subsubsection Mesh-configuration-example-basic Basic non-indexed mesh
 
-@code
+@code{.cpp}
 // Custom shader, needing only position data
 class MyShader: public AbstractShaderProgram {
     public:
@@ -181,9 +181,9 @@ mesh.setPrimitive(MeshPrimitive::Triangles)
     .addVertexBuffer(vertexBuffer, 0, MyShader::Position{});
 @endcode
 
-#### Interleaved vertex data
+@subsubsection Mesh-configuration-interleaved Interleaved vertex data
 
-@code
+@code{.cpp}
 // Non-indexed primitive with positions and normals
 Trade::MeshData3D plane = Primitives::Plane::solid();
 
@@ -198,9 +198,9 @@ mesh.setPrimitive(plane.primitive())
     .addVertexBuffer(buffer, 0, Shaders::Phong::Position{}, Shaders::Phong::Normal{});
 @endcode
 
-#### Indexed mesh
+@subsubsection Mesh-configuration-indexed Indexed mesh
 
-@code
+@code{.cpp}
 // Custom shader
 class MyShader: public AbstractShaderProgram {
     public:
@@ -233,7 +233,7 @@ mesh.setPrimitive(MeshPrimitive::Triangles)
 
 Or using @ref MeshTools::interleave() and @ref MeshTools::compressIndices():
 
-@code
+@code{.cpp}
 // Indexed primitive
 Trade::MeshData3D cube = Primitives::Cube::solid();
 
@@ -262,9 +262,9 @@ mesh.setPrimitive(plane.primitive())
 Or, if you plan to use the mesh with stock shaders, you can just use
 @ref MeshTools::compile().
 
-#### Specific formats of vertex data
+@subsubsection Mesh-configuration-formats Specific formats of vertex data
 
-@code
+@code{.cpp}
 // Custom shader with colors specified as four floating-point values
 class MyShader: public AbstractShaderProgram {
     public:
@@ -308,8 +308,7 @@ mesh.addVertexBuffer(colorBuffer, 0, MyShader::Color{
     MyShader::Color::DataOption::Normalized});
 @endcode
 
-@anchor Mesh-configuration-dynamic
-#### Dynamically specified attributes
+@subsubsection Mesh-configuration-dynamic Dynamically specified attributes
 
 In some cases, for example when the shader code is fully generated at runtime,
 it's not possible to know attribute locations and types at compile time. In
@@ -318,7 +317,8 @@ that case, there are overloads of @ref addVertexBuffer() and
 @ref Attribute typedefs. Adding a RGB attribute at location 3 normalized from
 unsigned byte to float with one byte padding at the end could then look like
 this:
-@code
+
+@code{.cpp}
 mesh.addVertexBuffer(colorBuffer, 0, 4, DynamicAttribute{
     DynamicAttribute::Kind::GenericNormalized, 3,
     DynamicAttribute::Components::Three,
@@ -326,30 +326,29 @@ mesh.addVertexBuffer(colorBuffer, 0, 4, DynamicAttribute{
 });
 @endcode
 
-## Rendering meshes
+@section Mesh-rendering Rendering meshes
 
 Basic workflow is: bind specific framebuffer for drawing (if needed), set up
 respective shader (see
 @ref AbstractShaderProgram-rendering-workflow "AbstractShaderProgram documentation"
 for more infromation) and call @ref Mesh::draw().
 
-## WebGL restrictions
+@section Mesh-webgl-restrictions WebGL restrictions
 
 @ref MAGNUM_TARGET_WEBGL "WebGL" puts some restrictions on vertex buffer
 layout, see @ref addVertexBuffer() documentation for details.
 
-@anchor Mesh-performance-optimization
-## Performance optimizations
+@section Mesh-performance-optimization Performance optimizations
 
 If @extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL ES 3.0,
 WebGL 2.0, @extension{OES,vertex_array_object} in OpenGL ES 2.0 or
 @webgl_extension{OES,vertex_array_object} in WebGL 1.0 is supported, VAOs are
 used instead of binding the buffers and specifying vertex attribute pointers
 in each @ref draw() call. The engine tracks currently bound VAO and currently
-active shader program to avoid unnecessary calls to @fn_gl{BindVertexArray} and
-@fn_gl{UseProgram}. Mesh limits and implementation-defined values (such as
-@ref maxElementIndex()) are cached, so repeated queries don't result in
-repeated @fn_gl{Get} calls.
+active shader program to avoid unnecessary calls to @fn_gl_keyword{BindVertexArray}
+and @fn_gl_keyword{UseProgram}. Mesh limits and implementation-defined values
+(such as @ref maxElementIndex()) are cached, so repeated queries don't result
+in repeated @fn_gl{Get} calls.
 
 If @extension{EXT,direct_state_access} desktop extension and VAOs are
 available, DSA functions are used for specifying attribute locations to avoid
@@ -369,6 +368,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @brief Index type
          *
          * @see @ref setIndexBuffer(), @ref indexSize()
+         * @m_enum_values_as_keywords
          */
         enum class IndexType: GLenum {
             UnsignedByte = GL_UNSIGNED_BYTE,    /**< Unsigned byte */
@@ -386,7 +386,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @copybrief AbstractShaderProgram::maxVertexAttributes()
+         * @brief @copybrief AbstractShaderProgram::maxVertexAttributes()
          * @deprecated Use @ref AbstractShaderProgram::maxVertexAttributes() instead.
          */
         CORRADE_DEPRECATED("use AbstractShaderProgram::maxVertexAttributes() instead") static Int maxVertexAttributes();
@@ -399,8 +399,9 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,ES3_compatibility} (part
          * of OpenGL 4.3) is not available, returns max representable 32-bit
-         * value (@f$ 2^32 - 1 @f$).
-         * @see @ref setIndexBuffer(), @fn_gl{Get} with @def_gl{MAX_ELEMENT_INDEX}
+         * value (@cpp 0xffffffffu @ce).
+         * @see @ref setIndexBuffer(), @fn_gl{Get} with
+         *      @def_gl_keyword{MAX_ELEMENT_INDEX}
          * @requires_gles30 No upper limit is specified for index values in
          *      OpenGL ES 2.0.
          * @requires_webgl20 No upper limit is specified for index values in
@@ -417,7 +418,8 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls.
-         * @see @ref setIndexBuffer(), @fn_gl{Get} with @def_gl{MAX_ELEMENTS_INDICES}
+         * @see @ref setIndexBuffer(), @fn_gl{Get} with
+         *      @def_gl_keyword{MAX_ELEMENTS_INDICES}
          * @requires_gles30 Ranged element draw is not supported in OpenGL ES
          *      2.0.
          * @requires_webgl20 Ranged element draw is not supported in WebGL 1.0.
@@ -429,7 +431,8 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls.
-         * @see @ref setIndexBuffer(), @fn_gl{Get} with @def_gl{MAX_ELEMENTS_VERTICES}
+         * @see @ref setIndexBuffer(), @fn_gl{Get} with
+         *      @def_gl_keyword{MAX_ELEMENTS_VERTICES}
          * @requires_gles30 Ranged element draw is not supported in OpenGL ES
          *      2.0.
          * @requires_webgl20 Ranged element draw is not supported in WebGL 1.0.
@@ -477,12 +480,12 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * If @extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL
          * ES 3.0, WebGL 2.0, @extension{OES,vertex_array_object} in OpenGL
          * ES 2.0 or @webgl_extension{OES,vertex_array_object} in WebGL 1.0 is
-         * available, vertex array object is created. If @extension{ARB,direct_state_access}
-         * (part of OpenGL 4.5) is not available, the vertex array object is
-         * created on first use.
+         * available, vertex array object is created. If
+         * @extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
+         * available, the vertex array object is created on first use.
          * @see @ref Mesh(NoCreateT), @ref wrap(), @ref setPrimitive(),
-         *      @ref setCount(), @fn_gl{CreateVertexArrays}, eventually
-         *      @fn_gl{GenVertexArrays}
+         *      @ref setCount(), @fn_gl_keyword{CreateVertexArrays}, eventually
+         *      @fn_gl_keyword{GenVertexArrays}
          */
         explicit Mesh(MeshPrimitive primitive = MeshPrimitive::Triangles);
 
@@ -512,7 +515,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * ES 3.0, WebGL 2.0, @extension{OES,vertex_array_object} in OpenGL
          * ES 2.0 or @webgl_extension{OES,vertex_array_object} in WebGL 1.0 is
          * available, associated vertex array object is deleted.
-         * @see @ref wrap(), @ref release(), @fn_gl{DeleteVertexArrays}
+         * @see @ref wrap(), @ref release(), @fn_gl_keyword{DeleteVertexArrays}
          */
         ~Mesh();
 
@@ -556,8 +559,8 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @extension{KHR,debug} (covered also by @extension{ANDROID,extension_pack_es31a})
          * nor @extension{EXT,debug_label} desktop or ES extension is
          * available, this function returns empty string.
-         * @see @fn_gl{GetObjectLabel} with @def_gl{VERTEX_ARRAY} or
-         *      @fn_gl_extension{GetObjectLabel,EXT,debug_label} with
+         * @see @fn_gl_keyword{GetObjectLabel} with @def_gl{VERTEX_ARRAY} or
+         *      @fn_gl_extension_keyword{GetObjectLabel,EXT,debug_label} with
          *      @def_gl{VERTEX_ARRAY_OBJECT_EXT}
          * @requires_gles Debug output is not available in WebGL.
          */
@@ -571,8 +574,8 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @extension{KHR,debug} (covered also by @extension{ANDROID,extension_pack_es31a})
          * nor @extension{EXT,debug_label} desktop or ES extension is
          * available, this function does nothing.
-         * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} with
-         *      @def_gl{VERTEX_ARRAY} or @fn_gl_extension{LabelObject,EXT,debug_label}
+         * @see @ref maxLabelLength(), @fn_gl_keyword{ObjectLabel} with
+         *      @def_gl{VERTEX_ARRAY} or @fn_gl_extension_keyword{LabelObject,EXT,debug_label}
          *      with @def_gl{VERTEX_ARRAY_OBJECT_EXT}
          * @requires_gles Debug output is not available in WebGL.
          */
@@ -622,10 +625,10 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @return Reference to self (for method chaining)
          *
          * If the mesh is indexed, the value is treated as index count,
-         * otherwise the value is vertex count. If set to `0`, no draw commands
-         * are issued when calling @ref draw(AbstractShaderProgram&). Ignored
-         * when calling @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
-         * Default is `0`.
+         * otherwise the value is vertex count. If set to @cpp 0 @ce, no draw
+         * commands are issued when calling @ref draw(AbstractShaderProgram&).
+         * Ignored when calling @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
+         * Default is @cpp 0 @ce.
          * @see @ref isIndexed(), @ref setBaseVertex(), @ref setInstanceCount()
          */
         Mesh& setCount(Int count) {
@@ -643,7 +646,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * Sets number of vertices of which the vertex buffer will be offset
          * when drawing. Ignored when calling
          * @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
-         * Default is `0`.
+         * Default is @cpp 0 @ce.
          * @see @ref setCount(), @ref setBaseInstance()
          * @requires_gl32 Extension @extension{ARB,draw_elements_base_vertex}
          *      for indexed meshes
@@ -662,11 +665,11 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @brief Set instance count
          * @return Reference to self (for method chaining)
          *
-         * If set to `1`, non-instanced draw commands are issued when calling
-         * @ref draw(AbstractShaderProgram&) or
+         * If set to @cpp 1 @ce, non-instanced draw commands are issued when
+         * calling @ref draw(AbstractShaderProgram&) or
          * @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
-         * If set to `0`, no draw commands are issued altogether. Default is
-         * `1`.
+         * If set to @cpp 0 @ce, no draw commands are issued at all. Default is
+         * @cpp 1 @ce.
          * @see @ref setBaseInstance(), @ref setCount(),
          *      @ref addVertexBufferInstanced()
          * @requires_gl31 Extension @extension{ARB,draw_instanced} if using
@@ -693,7 +696,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * @return Reference to self (for method chaining)
          *
          * Ignored when calling @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
-         * Default is `0`.
+         * Default is @cpp 0 @ce.
          * @see @ref setInstanceCount(), @ref setBaseVertex()
          * @requires_gl42 Extension @extension{ARB,base_instance}
          * @requires_gl Base instance cannot be specified in OpenGL ES or
@@ -722,7 +725,8 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * want to draw it with @ref Shaders::Phong, but it accepts only
          * position and normal, so you have to skip weight and texture
          * coordinate in each vertex:
-         * @code
+         *
+         * @code{.cpp}
          * Buffer buffer;
          * Mesh mesh;
          * mesh.addVertexBuffer(buffer, 76, // initial array offset
@@ -736,7 +740,8 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * more times with explicitly specified gaps before and after the
          * attributes. This can be used for e.g. runtime-dependent
          * configuration, as it isn't dependent on the variadic template:
-         * @code
+         *
+         * @code{.cpp}
          * mesh.addVertexBuffer(buffer, 76, 4, Shaders::Phong::Position(), 20)
          *     .addVertexBuffer(buffer, 76, 24, Shaders::Phong::Normal(), 0);
          * @endcode
@@ -746,7 +751,8 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * be done by specifying one attribute at a time with specific offset.
          * Above example with weight, position, texture coordinate and normal
          * arrays one after another (non-interleaved):
-         * @code
+         *
+         * @code{.cpp}
          * Int vertexCount = 352;
          * mesh.addVertexBuffer(buffer, 76 + 4*vertexCount, Shaders::Phong::Position())
          *     .addVertexBuffer(buffer, 76 + 24*vertexCount, Shaders::Phong::Normal());
@@ -762,11 +768,11 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *      mesh and delete it afterwards.
          *
          * @see @ref addVertexBufferInstanced(), @ref setPrimitive(),
-         *      @ref setCount(), @fn_gl{BindVertexArray},
-         *      @fn_gl{EnableVertexAttribArray}, @fn_gl{BindBuffer},
-         *      @fn_gl{VertexAttribPointer} or
+         *      @ref setCount(), @fn_gl_keyword{BindVertexArray},
+         *      @fn_gl_keyword{EnableVertexAttribArray}, @fn_gl{BindBuffer},
+         *      @fn_gl_keyword{VertexAttribPointer} or
          *      @fn_gl_extension{EnableVertexArrayAttrib,EXT,direct_state_access},
-         *      @fn_gl_extension{VertexArrayVertexAttribOffset,EXT,direct_state_access}
+         *      @fn_gl_extension_keyword{VertexArrayVertexAttribOffset,EXT,direct_state_access}
          * @requires_gles In WebGL the data must be properly aligned (e.g. all
          *      float data must start at addresses divisible by four). Also the
          *      maximum stride of attribute data must be at most 255 bytes.
@@ -784,7 +790,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *
          * Similar to the above function, the @p divisor parameter specifies
          * number of instances that will pass until new data are fetched from
-         * the buffer. Setting it to `0` is equivalent to calling
+         * the buffer. Setting it to @cpp 0 @ce is equivalent to calling
          * @ref addVertexBuffer().
          *
          * If @extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL
@@ -794,12 +800,12 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *
          * @see @ref setPrimitive(), @ref setCount(), @ref setInstanceCount(),
          *      @ref setBaseInstance(),
-         *      @fn_gl{BindVertexArray}, @fn_gl{EnableVertexAttribArray},
-         *      @fn_gl{BindBuffer}, @fn_gl{VertexAttribPointer},
-         *      @fn_gl{VertexAttribDivisor} or
-         *      @fn_gl_extension{EnableVertexArrayAttrib,EXT,direct_state_access},
-         *      @fn_gl_extension{VertexArrayVertexAttribOffset,EXT,direct_state_access},
-         *      @fn_gl_extension{VertexArrayVertexAttribDivisor,EXT,direct_state_access}
+         *      @fn_gl{BindVertexArray}, @fn_gl_keyword{EnableVertexAttribArray},
+         *      @fn_gl{BindBuffer}, @fn_gl_keyword{VertexAttribPointer},
+         *      @fn_gl_keyword{VertexAttribDivisor} or
+         *      @fn_gl_extension_keyword{EnableVertexArrayAttrib,EXT,direct_state_access},
+         *      @fn_gl_extension_keyword{VertexArrayVertexAttribOffset,EXT,direct_state_access},
+         *      @fn_gl_extension_keyword{VertexArrayVertexAttribDivisor,EXT,direct_state_access}
          * @requires_gl33 Extension @extension{ARB,instanced_arrays}
          * @requires_gles30 Extension @extension{ANGLE,instanced_arrays},
          *      @extension{EXT,instanced_arrays} or
@@ -849,8 +855,8 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *
          * The smaller range is specified with @p start and @p end the less
          * memory operations are needed (and possibly some optimizations),
-         * improving draw performance. Specifying `0` for both parameters
-         * behaves the same as @ref setIndexBuffer(Buffer&, GLintptr, IndexType).
+         * improving draw performance. Specifying @cpp 0 @ce for both
+         * parameters behaves the same as @ref setIndexBuffer(Buffer&, GLintptr, IndexType).
          * On OpenGL ES 2.0 this function behaves always as
          * @ref setIndexBuffer(Buffer&, GLintptr, IndexType), as this
          * functionality is not available there.
@@ -900,16 +906,16 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          *      @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt),
          *      @ref MeshView::draw(AbstractShaderProgram&),
          *      @ref MeshView::draw(AbstractShaderProgram&, std::initializer_list<std::reference_wrapper<MeshView>>),
-         *      @fn_gl{UseProgram}, @fn_gl{EnableVertexAttribArray},
-         *      @fn_gl{BindBuffer}, @fn_gl{VertexAttribPointer},
-         *      @fn_gl{DisableVertexAttribArray} or @fn_gl{BindVertexArray},
-         *      @fn_gl{DrawArrays}/@fn_gl{DrawArraysInstanced}/
-         *      @fn_gl{DrawArraysInstancedBaseInstance} or @fn_gl{DrawElements}/
-         *      @fn_gl{DrawRangeElements}/@fn_gl{DrawElementsBaseVertex}/
-         *      @fn_gl{DrawRangeElementsBaseVertex}/@fn_gl{DrawElementsInstanced}/
-         *      @fn_gl{DrawElementsInstancedBaseInstance}/
-         *      @fn_gl{DrawElementsInstancedBaseVertex}/
-         *      @fn_gl{DrawElementsInstancedBaseVertexBaseInstance}
+         *      @fn_gl_keyword{UseProgram}, @fn_gl_keyword{EnableVertexAttribArray},
+         *      @fn_gl{BindBuffer}, @fn_gl_keyword{VertexAttribPointer},
+         *      @fn_gl_keyword{DisableVertexAttribArray} or @fn_gl_keyword{BindVertexArray},
+         *      @fn_gl_keyword{DrawArrays}/@fn_gl_keyword{DrawArraysInstanced}/
+         *      @fn_gl_keyword{DrawArraysInstancedBaseInstance} or @fn_gl_keyword{DrawElements}/
+         *      @fn_gl_keyword{DrawRangeElements}/@fn_gl_keyword{DrawElementsBaseVertex}/
+         *      @fn_gl_keyword{DrawRangeElementsBaseVertex}/@fn_gl_keyword{DrawElementsInstanced}/
+         *      @fn_gl_keyword{DrawElementsInstancedBaseInstance}/
+         *      @fn_gl_keyword{DrawElementsInstancedBaseVertex}/
+         *      @fn_gl_keyword{DrawElementsInstancedBaseVertexBaseInstance}
          * @requires_gl32 Extension @extension{ARB,draw_elements_base_vertex}
          *      if the mesh is indexed and @ref baseVertex() is not `0`.
          * @requires_gl33 Extension @extension{ARB,instanced_arrays} if
@@ -940,17 +946,17 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * buffers in this mesh. Everything set by @ref setCount(),
          * @ref setBaseInstance(), @ref setBaseVertex() and @ref setIndexBuffer()
          * is ignored, the mesh is drawn as non-indexed and the vertex count is
-         * taken from the @p xfb object. If @p stream is `0`, non-stream draw
-         * command is used. If @extension{ARB,vertex_array_object} (part of
-         * OpenGL 3.0) is available, the associated vertex array object is
+         * taken from the @p xfb object. If @p stream is @cpp 0 @ce, non-stream
+         * draw command is used. If @extension{ARB,vertex_array_object} (part
+         * of OpenGL 3.0) is available, the associated vertex array object is
          * bound instead of setting up the mesh from scratch.
          * @see @ref setInstanceCount(), @ref draw(AbstractShaderProgram&),
          *      @ref MeshView::draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt),
-         *      @fn_gl{UseProgram}, @fn_gl{EnableVertexAttribArray},
-         *      @fn_gl{BindBuffer}, @fn_gl{VertexAttribPointer},
-         *      @fn_gl{DisableVertexAttribArray} or @fn_gl{BindVertexArray},
-         *      @fn_gl{DrawTransformFeedback}/@fn_gl{DrawTransformFeedbackInstanced} or
-         *      @fn_gl{DrawTransformFeedbackStream}/@fn_gl{DrawTransformFeedbackStreamInstanced}
+         *      @fn_gl_keyword{UseProgram}, @fn_gl_keyword{EnableVertexAttribArray},
+         *      @fn_gl{BindBuffer}, @fn_gl_keyword{VertexAttribPointer},
+         *      @fn_gl_keyword{DisableVertexAttribArray} or @fn_gl_keyword{BindVertexArray},
+         *      @fn_gl_keyword{DrawTransformFeedback}/@fn_gl_keyword{DrawTransformFeedbackInstanced} or
+         *      @fn_gl_keyword{DrawTransformFeedbackStream}/@fn_gl_keyword{DrawTransformFeedbackStreamInstanced}
          * @requires_gl40 Extension @extension{ARB,transform_feedback2}
          * @requires_gl40 Extension @extension{ARB,transform_feedback3} if
          *      @p stream is not `0`

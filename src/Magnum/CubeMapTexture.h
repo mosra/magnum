@@ -64,13 +64,14 @@ turned upside down (+Y is top):
               | +Y |
               +----+
 
-## Basic usage
+@section CubeMapTexture-usage Basic usage
 
 See @ref Texture documentation for introduction.
 
 Common usage is to fully configure all texture parameters and then set the
 data from e.g. set of Image objects:
-@code
+
+@code{.cpp}
 Image2D positiveX(PixelFormat::RGBA, PixelType::UnsignedByte, {256, 256}, data);
 // ...
 
@@ -83,10 +84,10 @@ texture.setMagnificationFilter(Sampler::Filter::Linear)
     // ...
 @endcode
 
-In shader, the texture is used via `samplerCube`, `samplerCubeShadow`,
-`isamplerCube` or `usamplerCube`. Unlike in classic textures, coordinates for
-cube map textures is signed three-part vector from the center of the cube,
-which intersects one of the six sides of the cube map. See
+In shader, the texture is used via @cpp samplerCube @ce, @cpp samplerCubeShadow @ce,
+@cpp isamplerCube @ce or @cpp usamplerCube @ce. Unlike in classic textures,
+coordinates for cube map textures is signed three-part vector from the center
+of the cube, which intersects one of the six sides of the cube map. See
 @ref AbstractShaderProgram for more information about usage in shaders.
 
 @see @ref Renderer::Feature::SeamlessCubeMapTexture, @ref CubeMapTextureArray,
@@ -99,7 +100,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
     public:
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @copybrief CubeMapCoordinate
+         * @brief @copybrief CubeMapCoordinate
          * @deprecated Use @ref CubeMapCoordinate instead.
          */
         typedef CORRADE_DEPRECATED("use CubeMapCoordinate instead") CubeMapCoordinate Coordinate;
@@ -110,13 +111,13 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls.
-         * @see @fn_gl{Get} with @def_gl{MAX_CUBE_MAP_TEXTURE_SIZE}
+         * @see @fn_gl{Get} with @def_gl_keyword{MAX_CUBE_MAP_TEXTURE_SIZE}
          */
         static Vector2i maxSize();
 
         #ifndef MAGNUM_TARGET_GLES
         /**
-         * @copybrief Texture::compressedBlockSize()
+         * @brief @copybrief Texture::compressedBlockSize()
          *
          * See @ref Texture::compressedBlockSize() for more information.
          * @requires_gl43 Extension @extension{ARB,internalformat_query2}
@@ -128,14 +129,14 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         }
 
         /**
-         * @copybrief Texture::compressedBlockDataSize()
+         * @brief @copybrief Texture::compressedBlockDataSize()
          *
          * See @ref Texture::compressedBlockDataSize() for more information.
          * @requires_gl43 Extension @extension{ARB,internalformat_query2}
          * @requires_gl Compressed texture queries are not available in OpenGL
          *      ES.
-         * @see @ref compressedBlockSize(), @fn_gl{Getinternalformat} with
-         *      @def_gl{TEXTURE_COMPRESSED_BLOCK_SIZE}
+         * @see @ref compressedBlockSize(), @fn_gl_keyword{GetInternalformat}
+         *      with @def_gl_keyword{TEXTURE_COMPRESSED_BLOCK_SIZE}
          */
         static Int compressedBlockDataSize(TextureFormat format) {
             return AbstractTexture::compressedBlockDataSize(GL_TEXTURE_CUBE_MAP, format);
@@ -163,8 +164,9 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * Creates new OpenGL texture object. If @extension{ARB,direct_state_access}
          * (part of OpenGL 4.5) is not available, the texture is created on
          * first use.
-         * @see @ref CubeMapTexture(NoCreateT), @ref wrap(), @fn_gl{CreateTextures}
-         *      with @def_gl{TEXTURE_CUBE_MAP}, eventually @fn_gl{GenTextures}
+         * @see @ref CubeMapTexture(NoCreateT), @ref wrap(),
+         *      @fn_gl_keyword{CreateTextures} with @def_gl{TEXTURE_CUBE_MAP},
+         *      eventually @fn_gl_keyword{GenTextures}
          */
         explicit CubeMapTexture(): AbstractTexture(GL_TEXTURE_CUBE_MAP) {}
 
@@ -196,7 +198,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * @see @ref bindImages(Int, std::initializer_list<AbstractTexture*>),
          *      @ref bindImageLayered(), @ref unbindImage(), @ref unbindImages(),
          *      @ref AbstractShaderProgram::maxImageUnits(),
-         *      @fn_gl{BindImageTexture}
+         *      @fn_gl_keyword{BindImageTexture}
          * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
          * @requires_gles31 Shader image load/store is not available in OpenGL
          *      ES 3.0 and older.
@@ -219,7 +221,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * @see @ref bindImages(Int, std::initializer_list<AbstractTexture*>),
          *      @ref bindImage(), @ref unbindImage(), @ref unbindImages(),
          *      @ref AbstractShaderProgram::maxImageUnits(),
-         *      @fn_gl{BindImageTexture}
+         *      @fn_gl_keyword{BindImageTexture}
          * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
          * @requires_gles31 Shader image load/store is not available in OpenGL
          *      ES 3.0 and older.
@@ -232,7 +234,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
-         * @copybrief Texture::setBaseLevel()
+         * @brief @copybrief Texture::setBaseLevel()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setBaseLevel() for more information.
@@ -247,7 +249,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
 
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         /**
-         * @copybrief Texture::setMaxLevel()
+         * @brief @copybrief Texture::setMaxLevel()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setMaxLevel() for more information.
@@ -263,7 +265,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         #endif
 
         /**
-         * @copybrief Texture::setMinificationFilter()
+         * @brief @copybrief Texture::setMinificationFilter()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setMinificationFilter() for more information.
@@ -274,7 +276,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         }
 
         /**
-         * @copybrief Texture::setMagnificationFilter()
+         * @brief @copybrief Texture::setMagnificationFilter()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setMagnificationFilter() for more information.
@@ -286,7 +288,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
-         * @copybrief Texture::setMinLod()
+         * @brief @copybrief Texture::setMinLod()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setMinLod() for more information.
@@ -301,7 +303,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         }
 
         /**
-         * @copybrief Texture::setMaxLod()
+         * @brief @copybrief Texture::setMaxLod()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setMaxLod() for more information.
@@ -318,7 +320,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
 
         #ifndef MAGNUM_TARGET_GLES
         /**
-         * @copybrief Texture::setLodBias()
+         * @brief @copybrief Texture::setLodBias()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setLodBias() for more information.
@@ -332,7 +334,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         #endif
 
         /**
-         * @copybrief Texture::setWrapping()
+         * @brief @copybrief Texture::setWrapping()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setWrapping() for more information.
@@ -344,7 +346,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
 
         #ifndef MAGNUM_TARGET_WEBGL
         /**
-         * @copybrief Texture::setBorderColor(const Color4&)
+         * @brief @copybrief Texture::setBorderColor(const Color4&)
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setBorderColor(const Color4&) for more
@@ -361,7 +363,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
-         * @copybrief Texture::setBorderColor(const Vector4ui&)
+         * @brief @copybrief Texture::setBorderColor(const Vector4ui&)
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setBorderColor(const Vector4ui&) for more
@@ -394,7 +396,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         #endif
 
         /**
-         * @copybrief Texture::setMaxAnisotropy()
+         * @brief @copybrief Texture::setMaxAnisotropy()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setMaxAnisotropy() for more information.
@@ -406,7 +408,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
 
         #ifndef MAGNUM_TARGET_WEBGL
         /**
-         * @copybrief Texture::setSRGBDecode()
+         * @brief @copybrief Texture::setSRGBDecode()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setSRGBDecode() for more information.
@@ -425,7 +427,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
 
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         /**
-         * @copybrief Texture::setSwizzle()
+         * @brief @copybrief Texture::setSwizzle()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setSwizzle() for more information.
@@ -441,7 +443,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
 
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         /**
-         * @copybrief Texture::setCompareMode()
+         * @brief @copybrief Texture::setCompareMode()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setCompareMode() for more information.
@@ -456,7 +458,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         }
 
         /**
-         * @copybrief Texture::setCompareFunction()
+         * @brief @copybrief Texture::setCompareFunction()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setCompareFunction() for more information.
@@ -473,7 +475,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
 
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         /**
-         * @copybrief Texture::setDepthStencilMode()
+         * @brief @copybrief Texture::setDepthStencilMode()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setDepthStencilMode() for more information.
@@ -489,7 +491,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         #endif
 
         /**
-         * @copybrief Texture::setStorage()
+         * @brief @copybrief Texture::setStorage()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setStorage() for more information.
@@ -502,7 +504,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
 
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         /**
-         * @copybrief Texture::imageSize()
+         * @brief @copybrief Texture::imageSize()
          *
          * If @extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
          * available, it is assumed that faces have the same size and just the
@@ -517,7 +519,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @copybrief imageSize()
+         * @brief @copybrief imageSize()
          * @deprecated Use @ref imageSize(Int) instead.
          */
         CORRADE_DEPRECATED("use imageSize(Int) instead") Vector2i imageSize(CubeMapCoordinate, Int level) {
@@ -538,7 +540,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          * The operation is protected from buffer overflow.
          * @see @fn_gl2{GetTextureLevelParameter,GetTexLevelParameter} with
          *      @def_gl{TEXTURE_WIDTH}, @def_gl{TEXTURE_HEIGHT}, then
-         *      @fn_gl{PixelStore}, then @fn_gl2{GetTextureImage,GetTexImage}
+         *      @fn_gl{PixelStore}, then @fn_gl2_keyword{GetTextureImage,GetTexImage}
          * @requires_gl45 Extension @extension{ARB,direct_state_access}
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() for possible workaround.
@@ -548,7 +550,8 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         /** @overload
          *
          * Convenience alternative to the above, example usage:
-         * @code
+         *
+         * @code{.cpp}
          * Image3D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte});
          * @endcode
          */
@@ -569,7 +572,8 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         /** @overload
          *
          * Convenience alternative to the above, example usage:
-         * @code
+         *
+         * @code{.cpp}
          * BufferImage3D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
          * @endcode
          */
@@ -585,7 +589,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          *      @def_gl{TEXTURE_COMPRESSED_IMAGE_SIZE},
          *      @def_gl{TEXTURE_INTERNAL_FORMAT}, @def_gl{TEXTURE_WIDTH},
          *      @def_gl{TEXTURE_HEIGHT}, then
-         *      @fn_gl2{GetCompressedTextureImage,GetCompressedTexImage}
+         *      @fn_gl2_keyword{GetCompressedTextureImage,GetCompressedTexImage}
          * @requires_gl45 Extension @extension{ARB,direct_state_access}
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() for possible workaround.
@@ -595,7 +599,8 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         /** @overload
          *
          * Convenience alternative to the above, example usage:
-         * @code
+         *
+         * @code{.cpp}
          * CompressedImage3D image = texture.compressedImage(0, {});
          * @endcode
          */
@@ -616,7 +621,8 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         /** @overload
          *
          * Convenience alternative to the above, example usage:
-         * @code
+         *
+         * @code{.cpp}
          * CompressedBufferImage3D image = texture.compressedImage(0, {}, BufferUsage::StaticRead);
          * @endcode
          */
@@ -644,9 +650,10 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{GetTexLevelParameter} with @def_gl{TEXTURE_WIDTH},
          *      @def_gl{TEXTURE_HEIGHT}, then @fn_gl{PixelStore}, then
-         *      @fn_gl{GetTextureSubImage}, @fn_gl_extension{GetnTexImage,ARB,robustness},
-         *      @fn_gl_extension{GetTextureImage,EXT,direct_state_access},
-         *      eventually @fn_gl{GetTexImage}
+         *      @fn_gl_keyword{GetTextureSubImage},
+         *      @fn_gl_extension_keyword{GetnTexImage,ARB,robustness},
+         *      @fn_gl_extension_keyword{GetTextureImage,EXT,direct_state_access},
+         *      eventually @fn_gl_keyword{GetTexImage}
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() for possible workaround.
          */
@@ -655,7 +662,8 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         /** @overload
          *
          * Convenience alternative to the above, example usage:
-         * @code
+         *
+         * @code{.cpp}
          * Image2D image = texture.image(CubeMapCoordinate::PositiveX, 0, {PixelFormat::RGBA, PixelType::UnsignedByte});
          * @endcode
          */
@@ -675,7 +683,8 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         /** @overload
          *
          * Convenience alternative to the above, example usage:
-         * @code
+         *
+         * @code{.cpp}
          * BufferImage2D image = texture.image(CubeMapCoordinate::PositiveX, 0, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
          * @endcode
          */
@@ -703,10 +712,10 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          *      @def_gl{TEXTURE_COMPRESSED_IMAGE_SIZE},
          *      @def_gl{TEXTURE_INTERNAL_FORMAT}, @def_gl{TEXTURE_WIDTH},
          *      @def_gl{TEXTURE_HEIGHT}, then @fn_gl{PixelStore}, then
-         *      @fn_gl{GetCompressedTextureSubImage},
-         *      @fn_gl_extension{GetnCompressedTexImage,ARB,robustness},
-         *      @fn_gl_extension{GetCompressedTextureImage,EXT,direct_state_access},
-         *      eventually @fn_gl{GetCompressedTexImage}
+         *      @fn_gl_keyword{GetCompressedTextureSubImage},
+         *      @fn_gl_extension_keyword{GetnCompressedTexImage,ARB,robustness},
+         *      @fn_gl_extension_keyword{GetCompressedTextureImage,EXT,direct_state_access},
+         *      eventually @fn_gl_keyword{GetCompressedTexImage}
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() for possible workaround.
          */
@@ -715,7 +724,8 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         /** @overload
          *
          * Convenience alternative to the above, example usage:
-         * @code
+         *
+         * @code{.cpp}
          * CompressedImage2D image = texture.compressedImage(CubeMapCoordinate::PositiveX, 0, {});
          * @endcode
          */
@@ -736,14 +746,15 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         /** @overload
          *
          * Convenience alternative to the above, example usage:
-         * @code
+         *
+         * @code{.cpp}
          * CompressedBufferImage2D image = texture.compressedImage(CubeMapCoordinate::PositiveX, 0, {}, BufferUsage::StaticRead);
          * @endcode
          */
         CompressedBufferImage2D compressedImage(CubeMapCoordinate coordinate, Int level, CompressedBufferImage2D&& image, BufferUsage usage);
 
         /**
-         * @copybrief Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, Image&)
+         * @brief @copybrief Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, Image&)
          *
          * See @ref Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, Image&)
          * for more information.
@@ -758,14 +769,15 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         /** @overload
          *
          * Convenience alternative to the above, example usage:
-         * @code
+         *
+         * @code{.cpp}
          * Image3D image = texture.subImage(0, range, {PixelFormat::RGBA, PixelType::UnsignedByte});
          * @endcode
          */
         Image3D subImage(Int level, const Range3Di& range, Image3D&& image);
 
         /**
-         * @copybrief Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, BufferImage&, BufferUsage)
+         * @brief @copybrief Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, BufferImage&, BufferUsage)
          *
          * See @ref Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, BufferImage&, BufferUsage)
          * for more information.
@@ -780,14 +792,15 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         /** @overload
          *
          * Convenience alternative to the above, example usage:
-         * @code
+         *
+         * @code{.cpp}
          * BufferImage3D image = texture.subImage(0, range, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
          * @endcode
          */
         BufferImage3D subImage(Int level, const Range3Di& range, BufferImage3D&& image, BufferUsage usage);
 
         /**
-         * @copybrief Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage&)
+         * @brief @copybrief Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage&)
          *
          * See @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage&)
          * for more information.
@@ -806,14 +819,15 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         /** @overload
          *
          * Convenience alternative to the above, example usage:
-         * @code
+         *
+         * @code{.cpp}
          * CompressedImage3D image = texture.compressedSubImage(0, range, {});
          * @endcode
          */
         CompressedImage3D compressedSubImage(Int level, const Range3Di& range, CompressedImage3D&& image);
 
         /**
-         * @copybrief Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedBufferImage&, BufferUsage)
+         * @brief @copybrief Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedBufferImage&, BufferUsage)
          *
          * See @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedBufferImage&, BufferUsage)
          * for more information.
@@ -832,7 +846,8 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         /** @overload
          *
          * Convenience alternative to the above, example usage:
-         * @code
+         *
+         * @code{.cpp}
          * CompressedBufferImage3D image = texture.compressedSubImage(0, range, {}, BufferUsage::StaticRead);
          * @endcode
          */
@@ -840,7 +855,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         #endif
 
         /**
-         * @copybrief Texture::setImage()
+         * @brief @copybrief Texture::setImage()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setImage() for more information.
@@ -881,7 +896,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         #endif
 
         /**
-         * @copybrief Texture::setCompressedImage()
+         * @brief @copybrief Texture::setCompressedImage()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setCompressedImage() for more information.
@@ -986,7 +1001,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         #endif
 
         /**
-         * @copybrief Texture::setSubImage()
+         * @brief @copybrief Texture::setSubImage()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setSubImage() for more information.
@@ -1014,7 +1029,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         #endif
 
         /**
-         * @copybrief Texture::setCompressedSubImage()
+         * @brief @copybrief Texture::setCompressedSubImage()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setCompressedSubImage() for more information.
@@ -1042,7 +1057,7 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         #endif
 
         /**
-         * @copybrief Texture::generateMipmap()
+         * @brief @copybrief Texture::generateMipmap()
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::generateMipmap() for more information.
@@ -1054,14 +1069,14 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         }
 
         /**
-         * @copybrief Texture::invalidateImage()
+         * @brief @copybrief Texture::invalidateImage()
          *
          * See @ref Texture::invalidateImage() for more information.
          */
         void invalidateImage(Int level) { AbstractTexture::invalidateImage(level); }
 
         /**
-         * @copybrief Texture::invalidateSubImage()
+         * @brief @copybrief Texture::invalidateSubImage()
          *
          * Z coordinate is equivalent to number of texture face, i.e.
          * @ref Coordinate::PositiveX is `0` and so on, in the same order as in

@@ -83,8 +83,8 @@ template<UnsignedInt dimensions> class BufferImage {
          * @param buffer            Buffer
          * @param dataSize          Buffer data size
          *
-         * If @p dataSize is 0, the buffer is unconditionally reallocated on
-         * the first call to @ref setData().
+         * If @p dataSize is @cpp 0 @ce, the buffer is unconditionally
+         * reallocated on the first call to @ref setData().
          */
         explicit BufferImage(PixelStorage storage, PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, std::size_t dataSize) noexcept;
 
@@ -94,7 +94,7 @@ template<UnsignedInt dimensions> class BufferImage {
         explicit BufferImage(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, std::size_t dataSize) noexcept: BufferImage{{}, format, type, size, std::move(buffer), dataSize} {}
 
         #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @copybrief BufferImage(PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<const void>, BufferUsage)
+        /** @brief @copybrief BufferImage(PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<const void>, BufferUsage)
          * @deprecated Use @ref BufferImage(PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<const void>, BufferUsage)
          *      instead.
          */
@@ -202,7 +202,7 @@ template<UnsignedInt dimensions> class BufferImage {
          * @param data              Image data
          * @param usage             Image buffer usage
          *
-         * Updates the image buffer with given data. Passing `nullptr`
+         * Updates the image buffer with given data. Passing @cpp nullptr @ce
          * zero-sized @p data will not reallocate current storage, but expects
          * that current data size is large enough for the new parameters.
          * @see @ref Buffer::setData()
@@ -219,7 +219,7 @@ template<UnsignedInt dimensions> class BufferImage {
         }
 
         #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @copybrief setData(PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<const void>, BufferUsage)
+        /** @brief @copybrief setData(PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<const void>, BufferUsage)
          * @deprecated Use @ref setData(PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<const void>, BufferUsage)
          *      instead.
          */

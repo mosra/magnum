@@ -131,6 +131,7 @@ class MAGNUM_EXPORT Context {
          *
          * @see @ref Flags, @ref flags(),
          *      @ref Platform::Sdl2Application::Configuration::setFlags() "Platform::*Application::Configuration::setFlags()"
+         * @m_enum_values_as_keywords
          * @requires_gles Context flags are not available in WebGL.
          */
         enum class Flag: GLint {
@@ -347,7 +348,8 @@ class MAGNUM_EXPORT Context {
          *
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls.
-         * @see @ref rendererString(), @fn_gl{GetString} with @def_gl{VENDOR}
+         * @see @ref rendererString(), @fn_gl{GetString} with
+         *      @def_gl_keyword{VENDOR}
          */
         std::string vendorString() const;
 
@@ -356,7 +358,8 @@ class MAGNUM_EXPORT Context {
          *
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls.
-         * @see @ref vendorString(), @fn_gl{GetString} with @def_gl{RENDERER}
+         * @see @ref vendorString(), @fn_gl{GetString} with
+         *      @def_gl_keyword{RENDERER}
          */
         std::string rendererString() const;
 
@@ -366,7 +369,7 @@ class MAGNUM_EXPORT Context {
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls.
          * @see @ref shadingLanguageVersionString(), @ref version(),
-         *      @fn_gl{GetString} with @def_gl{VERSION}
+         *      @fn_gl{GetString} with @def_gl_keyword{VERSION}
          */
         std::string versionString() const;
 
@@ -376,7 +379,7 @@ class MAGNUM_EXPORT Context {
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls.
          * @see @ref versionString(), @ref version(), @fn_gl{GetString} with
-         *      @def_gl{SHADING_LANGUAGE_VERSION}
+         *      @def_gl_keyword{SHADING_LANGUAGE_VERSION}
          */
         std::string shadingLanguageVersionString() const;
 
@@ -386,8 +389,8 @@ class MAGNUM_EXPORT Context {
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls.
          * @see @ref versionString(), @ref version(), @fn_gl{Get} with
-         *      @def_gl{NUM_SHADING_LANGUAGE_VERSIONS}, @fn_gl{GetString} with
-         *      @def_gl{SHADING_LANGUAGE_VERSION}
+         *      @def_gl_keyword{NUM_SHADING_LANGUAGE_VERSIONS}, @fn_gl{GetString}
+         *      with @def_gl_keyword{SHADING_LANGUAGE_VERSION}
          */
         std::vector<std::string> shadingLanguageVersionStrings() const;
 
@@ -399,8 +402,8 @@ class MAGNUM_EXPORT Context {
          * reported by the driver (even those not supported by Magnum), see
          * @ref supportedExtensions(), @ref Extension::extensions() or
          * @ref isExtensionSupported() for alternatives.
-         * @see @fn_gl{Get} with @def_gl{NUM_EXTENSIONS}, @fn_gl{GetString}
-         *      with @def_gl{EXTENSIONS}
+         * @see @fn_gl{Get} with @def_gl_keyword{NUM_EXTENSIONS},
+         *      @fn_gl{GetString} with @def_gl_keyword{EXTENSIONS}
          */
         std::vector<std::string> extensionStrings() const;
 
@@ -430,7 +433,7 @@ class MAGNUM_EXPORT Context {
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls.
-         * @see @fn_gl{Get} with @def_gl{CORE_PROFILE_MASK}
+         * @see @fn_gl{Get} with @def_gl_keyword{CORE_PROFILE_MASK}
          * @requires_gl Not available on OpenGL ES or WebGL.
          */
         bool isCoreProfile();

@@ -67,7 +67,7 @@ template<UnsignedInt dimensions> class Image {
         explicit Image(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) noexcept: Image{{}, format, type, size, std::move(data)} {}
 
         #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @copybrief Image(PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&)
+        /** @brief @copybrief Image(PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&)
          * @deprecated Use @ref Image(PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&)
          *      instead.
          */
@@ -85,8 +85,8 @@ template<UnsignedInt dimensions> class Image {
          * @param format            Format of pixel data
          * @param type              Data type of pixel data
          *
-         * Dimensions are set to zero and data pointer to `nullptr`, call
-         * @ref setData() to fill the image with data or use
+         * Dimensions are set to zero and data pointer to @cpp nullptr @ce,
+         * call @ref setData() to fill the image with data or use
          * @ref Texture::image() "*Texture::image()"/
          * @ref Texture::subImage() "*Texture::subImage()"/
          * @ref AbstractFramebuffer::read() "*Framebuffer::read()" to fill the
@@ -200,7 +200,7 @@ template<UnsignedInt dimensions> class Image {
         }
 
         #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @copybrief setData(PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&)
+        /** @brief @copybrief setData(PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&)
          * @deprecated Use @ref setData(PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&)
          *      instead.
          */

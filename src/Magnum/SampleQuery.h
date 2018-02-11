@@ -46,7 +46,8 @@ namespace Magnum {
 Queries count of samples passed from fragment shader or boolean value
 indicating whether any samples passed. Can be used for example for conditional
 rendering:
-@code
+
+@code{.cpp}
 SampleQuery q;
 
 q.begin(SampleQuery::Target::AnySamplesPassed);
@@ -58,12 +59,14 @@ if(q.result<bool>()) {
     // ...
 }
 @endcode
+
 This approach has some drawbacks, as the rendering is blocked until result is
 available for the CPU to decide. This can be improved by using conditional
 rendering on GPU itself. The drawing commands will be sent to the GPU and
 processed or discarded later, so CPU can continue executing the code without
 waiting for the result.
-@code
+
+@code{.cpp}
 SampleQuery q;
 
 q.begin(SampleQuery::Target::AnySamplesPassed);
@@ -82,7 +85,11 @@ q.endConditionalRender();
 */
 class SampleQuery: public AbstractQuery {
     public:
-        /** @brief Query target */
+        /**
+         * @brief Query target
+         *
+         * @m_enum_values_as_keywords
+         */
         enum class Target: GLenum {
             #ifndef MAGNUM_TARGET_GLES
             /**
@@ -124,6 +131,7 @@ class SampleQuery: public AbstractQuery {
         /**
          * @brief Conditional render mode
          *
+         * @m_enum_values_as_keywords
          * @requires_gl30 Extension @extension{NV,conditional_render}
          * @requires_gl Conditional rendering is not available in OpenGL ES or
          *      WebGL.
@@ -203,7 +211,7 @@ class SampleQuery: public AbstractQuery {
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @copybrief SampleQuery(Target)
+         * @brief @copybrief SampleQuery(Target)
          * @deprecated Use @ref SampleQuery(Target) instead.
          */
         CORRADE_DEPRECATED("use SampleQuery(Target) instead") explicit SampleQuery() {}
@@ -215,8 +223,8 @@ class SampleQuery: public AbstractQuery {
          * Creates new OpenGL query object. If @extension{ARB,direct_state_access}
          * (part of OpenGL 4.5) is not available, the query is created on first
          * use.
-         * @see @ref SampleQuery(NoCreateT), @ref wrap(), @fn_gl{CreateQueries},
-         *      eventually @fn_gl{GenQueries}
+         * @see @ref SampleQuery(NoCreateT), @ref wrap(),
+         *      @fn_gl_keyword{CreateQueries}, eventually @fn_gl_keyword{GenQueries}
          */
         explicit SampleQuery(Target target): AbstractQuery(GLenum(target)) {}
 
@@ -235,7 +243,7 @@ class SampleQuery: public AbstractQuery {
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @copybrief AbstractQuery::begin()
+         * @brief @copybrief AbstractQuery::begin()
          * @deprecated Use @ref begin() instead.
          */
         CORRADE_DEPRECATED("use begin() instead") void begin(Target target) {
@@ -249,7 +257,7 @@ class SampleQuery: public AbstractQuery {
         /**
          * @brief Begin conditional rendering based on result value
          *
-         * @see @fn_gl{BeginConditionalRender}
+         * @see @fn_gl_keyword{BeginConditionalRender}
          * @requires_gl30 Extension @extension{NV,conditional_render}
          * @requires_gl Conditional rendering is not available in OpenGL ES or
          *      WebGL.
@@ -261,7 +269,7 @@ class SampleQuery: public AbstractQuery {
         /**
          * @brief End conditional render
          *
-         * @see @fn_gl{EndConditionalRender}
+         * @see @fn_gl_keyword{EndConditionalRender}
          * @requires_gl30 Extension @extension{NV,conditional_render}
          * @requires_gl Conditional rendering is not available in OpenGL ES or
          *      WebGL.

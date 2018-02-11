@@ -45,7 +45,7 @@ namespace Implementation { struct FramebufferState; }
 Attachable to framebuffer as render target, see @ref Framebuffer documentation
 for more information.
 
-## Performance optimizations
+@section Renderbuffer-performance-optimizations Performance optimizations
 
 The engine tracks currently bound renderbuffer to avoid unnecessary calls to
 @fn_gl{BindRenderbuffer} in @ref setStorage(). Renderbuffer limits and
@@ -70,7 +70,7 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls.
          * @see @ref setStorage(), @ref setStorageMultisample(), @fn_gl{Get}
-         *      with @def_gl{MAX_RENDERBUFFER_SIZE}
+         *      with @def_gl_keyword{MAX_RENDERBUFFER_SIZE}
          */
         static Int maxSize();
 
@@ -81,8 +81,10 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If neither OpenGL ES 3.0 nor ES extension
          * @extension{ANGLE,framebuffer_multisample} /
-         * @extension{NV,framebuffer_multisample} is available, returns `0`.
-         * @see @ref setStorageMultisample(), @fn_gl{Get} with @def_gl{MAX_SAMPLES}
+         * @extension{NV,framebuffer_multisample} is available, returns
+         * @cpp 0 @ce.
+         * @see @ref setStorageMultisample(), @fn_gl{Get} with
+         *      @def_gl_keyword{MAX_SAMPLES}
          * @requires_webgl20 Multisample framebuffers are not available in
          *      WebGL 1.0.
          */
@@ -111,7 +113,8 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
          * (part of OpenGL 4.5) is not available, the renderbuffer is created
          * on first use.
          * @see @ref Renderbuffer(NoCreateT), @ref wrap(),
-         *      @fn_gl{CreateRenderbuffers}, eventually @fn_gl{GenRenderbuffers}
+         *      @fn_gl_keyword{CreateRenderbuffers}, eventually
+         *      @fn_gl_keyword{GenRenderbuffers}
          */
         explicit Renderbuffer();
 
@@ -139,7 +142,7 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
          * @brief Destructor
          *
          * Deletes associated OpenGL renderbuffer object.
-         * @see @ref wrap(), @ref release(), @fn_gl{DeleteRenderbuffers}
+         * @see @ref wrap(), @ref release(), @fn_gl_keyword{DeleteRenderbuffers}
          */
         ~Renderbuffer();
 
@@ -173,8 +176,8 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
          * @extension{KHR,debug} (covered also by @extension{ANDROID,extension_pack_es31a})
          * nor @extension{EXT,debug_label} desktop or ES extension is
          * available, this function returns empty string.
-         * @see @fn_gl{GetObjectLabel} or
-         *      @fn_gl_extension{GetObjectLabel,EXT,debug_label} with
+         * @see @fn_gl_keyword{GetObjectLabel} or
+         *      @fn_gl_extension_keyword{GetObjectLabel,EXT,debug_label} with
          *      @def_gl{RENDERBUFFER}
          * @requires_gles Debug output is not available in WebGL.
          */
@@ -188,8 +191,8 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
          * @extension{KHR,debug} (covered also by @extension{ANDROID,extension_pack_es31a})
          * nor @extension{EXT,debug_label} desktop or ES extension is
          * available, this function does nothing.
-         * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} or
-         *      @fn_gl_extension{LabelObject,EXT,debug_label} with
+         * @see @ref maxLabelLength(), @fn_gl_keyword{ObjectLabel} or
+         *      @fn_gl_extension_keyword{LabelObject,EXT,debug_label} with
          *      @def_gl{RENDERBUFFER}
          * @requires_gles Debug output is not available in WebGL.
          */
@@ -212,9 +215,10 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
          * nor @extension{EXT,direct_state_access} desktop extension is
          * available, the renderbuffer is bound before the operation (if not
          * already).
-         * @see @ref maxSize(), @fn_gl2{NamedRenderbufferStorage,RenderbufferStorage},
-         *      @fn_gl_extension{NamedRenderbufferStorage,EXT,direct_state_access},
-         *      eventually @fn_gl{BindRenderbuffer} and @fn_gl{RenderbufferStorage}
+         * @see @ref maxSize(), @fn_gl2_keyword{NamedRenderbufferStorage,RenderbufferStorage},
+         *      @fn_gl_extension_keyword{NamedRenderbufferStorage,EXT,direct_state_access},
+         *      eventually @fn_gl{BindRenderbuffer} and
+         *      @fn_gl_keyword{RenderbufferStorage}
          */
         void setStorage(RenderbufferFormat internalFormat, const Vector2i& size);
 
@@ -230,9 +234,10 @@ class MAGNUM_EXPORT Renderbuffer: public AbstractObject {
          * available, the renderbuffer is bound before the operation (if not
          * already).
          * @see @ref maxSize(), @ref maxSamples(),
-         *      @fn_gl2{NamedRenderbufferStorageMultisample,RenderbufferStorageMultisample},
-         *      @fn_gl_extension{NamedRenderbufferStorageMultisample,EXT,direct_state_access},
-         *      eventually @fn_gl{BindRenderbuffer} and @fn_gl{RenderbufferStorageMultisample}
+         *      @fn_gl2_keyword{NamedRenderbufferStorageMultisample,RenderbufferStorageMultisample},
+         *      @fn_gl_extension_keyword{NamedRenderbufferStorageMultisample,EXT,direct_state_access},
+         *      eventually @fn_gl{BindRenderbuffer} and
+         *      @fn_gl_keyword{RenderbufferStorageMultisample}
          * @requires_gles30 Extension @extension{ANGLE,framebuffer_multisample}
          *      or @extension{NV,framebuffer_multisample} in OpenGL ES 2.0.
          * @requires_webgl20 Multisample framebuffers are not available in

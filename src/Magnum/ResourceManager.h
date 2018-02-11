@@ -43,13 +43,13 @@ namespace Magnum {
 enum class ResourceDataState: UnsignedByte {
     /**
      * The resource is currently loading. Parameter @p data in
-     * @ref ResourceManager::set() should be set to `nullptr`.
+     * @ref ResourceManager::set() should be set to @cpp nullptr @ce.
      */
     Loading = UnsignedByte(ResourceState::Loading),
 
     /**
      * The resource was not found. Parameter @p data in
-     * @ref ResourceManager::set() should be set to `nullptr`.
+     * @ref ResourceManager::set() should be set to @cpp nullptr @ce.
      */
     NotFound = UnsignedByte(ResourceState::NotFound),
 
@@ -186,7 +186,7 @@ template<class ...Types> struct ResourceManagerImplementation<ResourceManagerLoc
 Provides storage for arbitrary set of types, accessible globally using
 @ref instance().
 
-## Usage
+@section ResourceMananger-usage Usage
 
 Each resource is referenced from @ref Resource class. For optimizing
 performance, each resource can be set as mutable or final. Mutable resources
@@ -212,35 +212,49 @@ Resource state and policy is configured when setting the resource data in
 final resources cannot obviously be set as mutable again.
 
 Basic usage is:
--   Typedef'ing manager of desired types, creating its instance.
-@code
-typedef ResourceManager<Mesh, Texture2D, AbstractShaderProgram> MyResourceManager;
-MyResourceManager manager;
-@endcode
--   Filling the manager with resource data and acquiring the resources. Note
+
+<ul>
+<li>
+    Typedef'ing manager of desired types, creating its instance.
+
+    @code{.cpp}
+    typedef ResourceManager<Mesh, Texture2D, AbstractShaderProgram> MyResourceManager;
+    MyResourceManager manager;
+    @endcode
+</li>
+<li>
+    Filling the manager with resource data and acquiring the resources. Note
     that a resource can be acquired with @ref get() even before the manager
     contains the data for it, as long as the resource data are not accessed (or
     fallback is provided).
-@code
-MyResourceManager& manager = MyResourceManager::instance();
-Resource<Texture2D> texture{manager.get<Texture2D>("texture")};
-Resource<AbstractShaderProgram, MyShader> shader{manager.get<AbstractShaderProgram, MyShader>("shader")};
-Resource<Mesh> cube{manager.get<Mesh>("cube")};
 
-// The manager doesn't have data for the cube yet, add them
-if(!cube) {
-    Mesh* mesh = new Mesh;
-    // ...
-    manager.set(cube.key(), mesh, ResourceDataState::Final, ResourcePolicy::Resident);
-}
-@endcode
--   Using the resource data.
-@code
-shader->setTexture(*texture);
-cube->draw(*shader);
-@endcode
--   Destroying resource references and deleting manager instance when nothing
+    @code{.cpp}
+    MyResourceManager& manager = MyResourceManager::instance();
+    Resource<Texture2D> texture{manager.get<Texture2D>("texture")};
+    Resource<AbstractShaderProgram, MyShader> shader{manager.get<AbstractShaderProgram, MyShader>("shader")};
+    Resource<Mesh> cube{manager.get<Mesh>("cube")};
+
+    // The manager doesn't have data for the cube yet, add them
+        if(!cube) {
+        Mesh* mesh = new Mesh;
+        // ...
+        manager.set(cube.key(), mesh, ResourceDataState::Final, ResourcePolicy::Resident);
+    }
+    @endcode
+</li>
+<li>
+    Using the resource data.
+
+    @code{.cpp}
+    shader->setTexture(*texture);
+    cube->draw(*shader);
+    @endcode
+</li>
+<li>
+    Destroying resource references and deleting manager instance when nothing
     references the resources anymore.
+</li>
+</ul>
 
 @see @ref AbstractResourceLoader
 */
@@ -269,7 +283,7 @@ template<class... Types> class ResourceManager: private Implementation::Resource
         /**
          * @brief Destructor
          *
-         * Sets global instance pointer to `nullptr`.
+         * Sets global instance pointer to @cpp nullptr @ce.
          * @see @ref instance()
          */
         ~ResourceManager();
@@ -287,7 +301,8 @@ template<class... Types> class ResourceManager: private Implementation::Resource
          * responsibility of proper casting on the user, the acquired resource
          * can be defined to cast the type automatically when accessing the
          * data. This is commonly used for shaders, e.g.:
-         * @code
+         *
+         * @code{.cpp}
          * Resource<AbstractShaderProgram, MyShader> shader = manager->get<AbstractShaderProgram, MyShader>("shader");
          * @endcode
          */
@@ -429,7 +444,8 @@ template<class... Types> class ResourceManager: private Implementation::Resource
 
         /**
          * @brief Set loader for given type of resources
-         * @param loader    Loader or `nullptr` if unsetting previous loader.
+         * @param loader    Loader or @cpp nullptr @ce if unsetting previous
+         *      loader.
          * @return Reference to self (for method chaining)
          *
          * See @ref AbstractResourceLoader documentation for more information.

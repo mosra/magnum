@@ -90,8 +90,8 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
          * @extension{KHR,debug} (covered also by @extension{ANDROID,extension_pack_es31a})
          * nor @extension{EXT,debug_label} desktop or ES extension is
          * available, this function returns empty string.
-         * @see @fn_gl{GetObjectLabel} with @def_gl{QUERY} or
-         *      @fn_gl_extension{GetObjectLabel,EXT,debug_label} with
+         * @see @fn_gl_keyword{GetObjectLabel} with @def_gl{QUERY} or
+         *      @fn_gl_extension_keyword{GetObjectLabel,EXT,debug_label} with
          *      @def_gl{QUERY_OBJECT_EXT}
          * @requires_gles Debug output is not available in WebGL.
          */
@@ -105,8 +105,8 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
          * @extension{KHR,debug} (covered also by @extension{ANDROID,extension_pack_es31a})
          * nor @extension{EXT,debug_label} desktop or ES extension is
          * available, this function does nothing.
-         * @see @ref maxLabelLength(), @fn_gl{ObjectLabel} with
-         *      @def_gl{QUERY} or @fn_gl_extension{LabelObject,EXT,debug_label}
+         * @see @ref maxLabelLength(), @fn_gl_keyword{ObjectLabel} with
+         *      @def_gl{QUERY} or @fn_gl_extension_keyword{LabelObject,EXT,debug_label}
          *      with @def_gl{QUERY_OBJECT_EXT}
          * @requires_gles Debug output is not available in WebGL.
          */
@@ -123,7 +123,7 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
         /**
          * @brief Whether the result is available
          *
-         * @see @fn_gl{GetQueryObject} with @def_gl{QUERY_RESULT_AVAILABLE}
+         * @see @fn_gl_keyword{GetQueryObject} with @def_gl{QUERY_RESULT_AVAILABLE}
          */
         bool resultAvailable();
 
@@ -134,7 +134,7 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
          *
          * Note that this function is blocking until the result is available.
          * See @ref resultAvailable().
-         * @see @fn_gl{GetQueryObject} with @def_gl{QUERY_RESULT}
+         * @see @fn_gl_keyword{GetQueryObject} with @def_gl{QUERY_RESULT}
          * @requires_gl33 Extension @extension{ARB,timer_query} for result
          *      type @ref Magnum::UnsignedLong "UnsignedLong" and @ref Magnum::Long "Long"
          * @requires_es_extension Extension @extension{EXT,disjoint_timer_query}
@@ -149,7 +149,7 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
          * @brief Begin query
          *
          * Begins counting until @ref end() is called.
-         * @see @fn_gl{BeginQuery}
+         * @see @fn_gl_keyword{BeginQuery}
          */
         void begin();
 
@@ -157,7 +157,7 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
          * @brief End query
          *
          * The result can be then retrieved by calling @ref result().
-         * @see @fn_gl{EndQuery}
+         * @see @fn_gl_keyword{EndQuery}
          */
         void end();
 
@@ -167,7 +167,8 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
          *
          * Deletes assigned OpenGL query.
          * @see @ref PrimitiveQuery::wrap(), @ref SampleQuery::wrap(),
-         *      @ref TimeQuery::wrap(), @ref release(), @fn_gl{DeleteQueries}
+         *      @ref TimeQuery::wrap(), @ref release(),
+         *      @fn_gl_keyword{DeleteQueries}
          */
         ~AbstractQuery();
 

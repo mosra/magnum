@@ -54,9 +54,9 @@ Manages OpenGL debug output. The debug messages are emitted either from driver
 (such as GL error descriptions and various performance and optimization hints)
 or from third party software and the application itself using @ref DebugMessage
 and @ref DebugGroup, which can be also used to mark various portions of command
-stream in various graphics debuggers, such as Apitrace or gDEBugger.
+stream in various graphics debuggers, such as ApiTrace or gDEBugger.
 
-## Basic usage
+@section Magnum-DebugOutput-usage Basic usage
 
 Support for debug output is provided by OpenGL 4.3 or @extension{KHR,debug}
 (desktop/ES extension, covered also by @extension{ANDROID,extension_pack_es31a}).
@@ -78,7 +78,7 @@ application itself by setting up message callback using @ref setCallback() or
 @ref Renderer::Feature::DebugOutputSynchronous. Example usage, completely with
 @ref DebugGroup and @link DebugMessage @endlink:
 
-@code
+@code{.cpp}
 Renderer::enable(Renderer::Feature::DebugOutput);
 Renderer::enable(Renderer::Feature::DebugOutputSynchronous);
 DebugOutput::setDefaultCallback();
@@ -103,10 +103,12 @@ DebugOutput::setEnabled(DebugOutput::Source::Api, DebugOutput::Type::Other, {131
 With default callback the group entering/leaving and the inserted message (and
 possibly also other messages) will be printed on standard output:
 
-> Debug output: application debug group enter (42): Scene rendering\n
-> Debug output: application marker (1337): Rendering transparent mesh\n
-> ...\n
-> Debug output: application debug group leave (42): Scene rendering
+@code{.shell-session}
+Debug output: application debug group enter (42): Scene rendering
+Debug output: application marker (1337): Rendering transparent mesh
+...
+Debug output: application debug group leave (42): Scene rendering
+@endcode
 
 If only @extension{EXT,debug_marker} or @extension{GREMEDY,string_marker} are
 supported, only user-inserted messages and debug groups are supported and they
@@ -133,6 +135,7 @@ class MAGNUM_EXPORT DebugOutput {
          * @brief Message source
          *
          * @see @ref setEnabled()
+         * @m_enum_values_as_keywords
          */
         enum class Source: GLenum {
             /** OpenGL */
@@ -182,6 +185,7 @@ class MAGNUM_EXPORT DebugOutput {
          * @brief Message type
          *
          * @see @ref setEnabled()
+         * @m_enum_values_as_keywords
          */
         enum class Type: GLenum {
             /** OpenGL error */
@@ -252,6 +256,7 @@ class MAGNUM_EXPORT DebugOutput {
          * @brief Message severity
          *
          * @see @ref setEnabled()
+         * @m_enum_values_as_keywords
          */
         enum class Severity: GLenum {
             /**
@@ -302,8 +307,8 @@ class MAGNUM_EXPORT DebugOutput {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If OpenGL 4.3 is not supported and @extension{KHR,debug}
          * desktop or ES extension (covered also by @extension{ANDROID,extension_pack_es31a})
-         * is not available, returns `0`.
-         * @see @fn_gl{Get} with @def_gl{MAX_DEBUG_LOGGED_MESSAGES}
+         * is not available, returns @cpp 0 @ce.
+         * @see @fn_gl{Get} with @def_gl_keyword{MAX_DEBUG_LOGGED_MESSAGES}
          */
         static Int maxLoggedMessages();
 
@@ -313,8 +318,8 @@ class MAGNUM_EXPORT DebugOutput {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If OpenGL 4.3 is not supported and @extension{KHR,debug}
          * desktop or ES extension (covered also by @extension{ANDROID,extension_pack_es31a})
-         * is not available, returns `0`.
-         * @see @fn_gl{Get} with @def_gl{MAX_DEBUG_MESSAGE_LENGTH}
+         * is not available, returns @cpp 0 @ce.
+         * @see @fn_gl{Get} with @def_gl_keyword{MAX_DEBUG_MESSAGE_LENGTH}
          */
         static Int maxMessageLength();
 
@@ -330,7 +335,8 @@ class MAGNUM_EXPORT DebugOutput {
          * If OpenGL 4.3 is not supported and @extension{KHR,debug} desktop or
          * ES extension (covered also by @extension{ANDROID,extension_pack_es31a})
          * is not available, this function does nothing.
-         * @see @ref Renderer::Feature::DebugOutput, @fn_gl{DebugMessageControl}
+         * @see @ref Renderer::Feature::DebugOutput,
+         *      @fn_gl_keyword{DebugMessageControl}
          */
         static void setEnabled(Source source, Type type, std::initializer_list<UnsignedInt> ids, bool enabled) {
             setEnabledInternal(GLenum(source), GLenum(type), GL_DONT_CARE, ids, enabled);
@@ -386,7 +392,7 @@ class MAGNUM_EXPORT DebugOutput {
          * available, this function does nothing.
          * @see @ref setDefaultCallback(),
          *      @ref Renderer::Feature::DebugOutputSynchronous,
-         *      @fn_gl{DebugMessageCallback}
+         *      @fn_gl_keyword{DebugMessageCallback}
          */
         static void setCallback(Callback callback, const void* userParam = nullptr);
 
@@ -396,12 +402,15 @@ class MAGNUM_EXPORT DebugOutput {
          * See @ref setCallback() for more information. The message is printed
          * to @ref Corrade::Utility::Debug "Debug" output in the following
          * format:
-         * @code
+         *
+         * @code{.cpp}
          * DebugMessage::insert(DebugMessage::Source::Application,
          *      DebugMessage::Type::Marker, 1337, DebugOutput::Severity::Notification, "Hello from OpenGL command stream!");
          * @endcode
          *
-         * > Debug output: application marker (1337): Hello from OpenGL command stream!
+         * @code{.shell-session}
+         * Debug output: application marker (1337): Hello from OpenGL command stream!
+         * @endcode
          */
         static void setDefaultCallback();
 
@@ -430,10 +439,10 @@ MAGNUM_EXPORT Debug& operator<<(Debug& debug, DebugOutput::Severity value);
 @brief Debug message
 
 Allows inserting messages GL command stream with labels, useful for example
-with conjunction with various graphics debuggers, such as Apitrace or
+with conjunction with various graphics debuggers, such as ApiTrace or
 gDEBugger.
 
-## Basic usage
+@section DebugMessage-usage Basic usage
 
 See @ref DebugOutput for introduction.
 
@@ -442,12 +451,14 @@ If OpenGL 4.3 is supported or @extension{KHR,debug} desktop or ES extension
 default debug output callback is enabled for given kind of messages, the
 inserted message will be printed on standard output in the following form:
 
-@code
+@code{.cpp}
 DebugMessage::insert(DebugMessage::Source::Application, DebugMessage::Type::Marker,
     1337, DebugOutput::Severity::Notification, "Hello from OpenGL command stream!");
 @endcode
 
-> Debug output: application marker (1337): Hello from OpenGL command stream!
+@code{.shell-session}
+Debug output: application marker (1337): Hello from OpenGL command stream!
+@endcode
 
 If only @extension{EXT,debug_marker} or @extension{GREMEDY,string_marker} are
 available, the message can be seen only through graphics debugger.
@@ -456,14 +467,14 @@ If OpenGL 4.3 is not supported and neither @extension{KHR,debug} nor
 @extension{EXT,debug_marker} nor @extension{GREMEDY,string_marker} are
 available, the function is essentially a no-op.
 
-## Performance notes
+@section DebugMessage-performance-notes Performance notes
 
-If you ensure that you always use the `const char` overload of @ref insert()
-and the debug output is either not supported or turned off, the calls will not
-result in any allocations and thus won't have any negative performance effects.
+If you ensure that you always use the @cpp const char @ce overload of
+@ref insert() and the debug output is either not supported or turned off, the
+calls will not result in any allocations and thus won't have any negative
+performance effects.
 
 @see @ref DebugGroup
-
 @requires_gles Debug output is not available in WebGL.
 */
 class MAGNUM_EXPORT DebugMessage {
@@ -474,6 +485,7 @@ class MAGNUM_EXPORT DebugMessage {
          * @brief Message source
          *
          * @see @ref insert()
+         * @todoc use m_enum_values_as_keywords once deprecated values are gone
          */
         enum class Source: GLenum {
             #ifdef MAGNUM_BUILD_DEPRECATED
@@ -493,14 +505,20 @@ class MAGNUM_EXPORT DebugMessage {
             ShaderCompiler CORRADE_DEPRECATED_ENUM("use DebugOutput::Source::ShaderCompiler instead") = GLenum(DebugOutput::Source::ShaderCompiler),
             #endif
 
-            /** External debugger or third-party middleware */
+            /**
+             * External debugger or third-party middleware
+             * @m_keywords{GL_DEBUG_SOURCE_THIRD_PARTY}
+             */
             #ifndef MAGNUM_TARGET_GLES
             ThirdParty = GL_DEBUG_SOURCE_THIRD_PARTY,
             #else
             ThirdParty = GL_DEBUG_SOURCE_THIRD_PARTY_KHR,
             #endif
 
-            /** The application */
+            /**
+             * The application
+             * @m_keywords{GL_DEBUG_SOURCE_APPLICATION}
+             */
             #ifndef MAGNUM_TARGET_GLES
             Application = GL_DEBUG_SOURCE_APPLICATION,
             #else
@@ -519,6 +537,7 @@ class MAGNUM_EXPORT DebugMessage {
          * @brief Message type
          *
          * @see @ref insert()
+         * @m_enum_values_as_keywords
          */
         enum class Type: GLenum {
             /** OpenGL error */
@@ -572,32 +591,32 @@ class MAGNUM_EXPORT DebugMessage {
         };
 
         #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @copybrief DebugOutput::Severity
+        /** @brief @copybrief DebugOutput::Severity
          * @deprecated Use @ref DebugOutput::Severity instead.
          */
         CORRADE_DEPRECATED("use DebugOutput::Severity instead") typedef DebugOutput::Severity Severity;
 
-        /** @copybrief DebugOutput::Callback
+        /** @brief @copybrief DebugOutput::Callback
          * @deprecated Use @ref DebugOutput::Callback instead.
          */
         /* Can't mark this as deprecated because compiler then complains when I use it as a parameter in setCallback() */
         typedef CORRADE_DEPRECATED("use DebugOutput::Callback instead") void(*Callback)(DebugMessage::Source, DebugMessage::Type, UnsignedInt, DebugOutput::Severity, const std::string&, const void*);
 
-        /** @copybrief DebugOutput::maxLoggedMessages()
+        /** @brief @copybrief DebugOutput::maxLoggedMessages()
          * @deprecated Use @ref DebugOutput::maxLoggedMessages() instead.
          */
         CORRADE_DEPRECATED("use DebugOutput::maxLoggedMessages() instead") static Int maxLoggedMessages() {
             return DebugOutput::maxLoggedMessages();
         }
 
-        /** @copybrief DebugOutput::maxMessageLength()
+        /** @brief @copybrief DebugOutput::maxMessageLength()
          * @deprecated Use @ref DebugOutput::maxMessageLength() instead.
          */
         CORRADE_DEPRECATED("use DebugOutput::maxMessageLength() instead") static Int maxMessageLength() {
             return DebugOutput::maxMessageLength();
         }
 
-        /** @copybrief DebugOutput::setEnabled()
+        /** @brief @copybrief DebugOutput::setEnabled()
          * @deprecated Use @ref DebugOutput::setEnabled() instead.
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -632,14 +651,14 @@ class MAGNUM_EXPORT DebugMessage {
         }
         #endif
 
-        /** @copybrief DebugOutput::setCallback()
+        /** @brief @copybrief DebugOutput::setCallback()
          * @deprecated Use @ref DebugOutput::setCallback() instead.
          */
         CORRADE_DEPRECATED("use DebugOutput::setCallback() instead") static void setCallback(DebugOutput::Callback callback, const void* userParam = nullptr) {
             DebugOutput::setCallback(reinterpret_cast<DebugOutput::Callback>(callback), userParam);
         }
 
-        /** @copybrief DebugOutput::setDefaultCallback()
+        /** @brief @copybrief DebugOutput::setDefaultCallback()
          * @deprecated Use @ref DebugOutput::setDefaultCallback() instead.
          */
         CORRADE_DEPRECATED("use DebugOutput::setDefaultCallback() instead") static void setDefaultCallback() {
@@ -664,9 +683,10 @@ class MAGNUM_EXPORT DebugMessage {
          * If @extension{KHR,debug} is not available and only @extension{EXT,debug_marker}
          * or @extension{GREMEDY,string_marker} are available, only @p string
          * is used and all other parameters are ignored.
-         * @see @ref DebugOutput::maxMessageLength(), @fn_gl{DebugMessageInsert},
-         *      @fn_gl_extension{InsertEventMarker,EXT,debug_marker} or
-         *      @fn_gl_extension{StringMarker,GREMEDY,string_marker}
+         * @see @ref DebugOutput::maxMessageLength(),
+         *      @fn_gl_keyword{DebugMessageInsert},
+         *      @fn_gl_extension_keyword{InsertEventMarker,EXT,debug_marker} or
+         *      @fn_gl_extension_keyword{StringMarker,GREMEDY,string_marker}
          */
         static void insert(Source source, Type type, UnsignedInt id, DebugOutput::Severity severity, const std::string& string) {
             insertInternal(source, type, id, severity, {string.data(), string.size()});
@@ -702,13 +722,14 @@ MAGNUM_EXPORT Debug& operator<<(Debug& debug, DebugMessage::Type value);
 Allows marking portions of GL command stream with labels, useful for example
 with conjunction with various graphics debuggers, such as Apitrace or gDEBugger.
 
-## Basic usage
+@section DebugGroup-usage Basic usage
 
 See @ref DebugOutput for introduction.
 
 Easiest way is to push debug group by creating instance and pop it
 automatically at the end of scope:
-@code
+
+@code{.cpp}
 {
     // Push debug group
     DebugGroup group{DebugGroup::Source::Application, 42, "Scene rendering"};
@@ -723,7 +744,8 @@ automatically at the end of scope:
 
 If, for some reason, you need to pop in different scope, you can call @ref push()
 and @ref pop() manually:
-@code
+
+@code{.cpp}
 DebugGroup group;
 
 group.push(DebugGroup::Source::Application, 42, "Scene rendering");
@@ -741,8 +763,10 @@ the default debug output callback is enabled for these kinds of messages, the
 group entering and leaving will be printed on standard output in the following
 form:
 
-> Debug output: application debug group enter (42): Scene rendering\n
-> Debug output: application debug group leave (42): Scene rendering
+@code{.shell-session}
+Debug output: application debug group enter (42): Scene rendering
+Debug output: application debug group leave (42): Scene rendering
+@endcode
 
 If only @extension{EXT,debug_marker} is available, the group can be seen only
 through graphics debugger.
@@ -756,7 +780,7 @@ no-op.
     similarly for @ref pop(). So if you want to have nested debug groups, you
     need to create one instance for each level.
 
-## Interaction with debug output volume control
+@section DebugGroup-volume-control Interaction with debug output volume control
 
 Besides putting hierarchical messages in debug output, the group also affects
 settings done by @ref DebugOutput::setEnabled(). Entering debug group inherits
@@ -767,14 +791,14 @@ to state set in parent debug group. No state is preserved, thus calling
 @ref push() after previous @ref pop() will not restore settings done when the
 group was active previously.
 
-## Performance notes
+@section DebugGroup-performance-notes Performance notes
 
-If you ensure that you always use the `const char` overload of @ref push()
-and the debug output is either not supported or turned off, the calls will not
-result in any allocations and thus won't have any negative performance effects.
+If you ensure that you always use the @cpp const char @ce overload of
+@ref push() and the debug output is either not supported or turned off, the
+calls will not result in any allocations and thus won't have any negative
+performance effects.
 
 @see @ref DebugMessage
-
 @requires_gles Debug output is not available in WebGL.
 */
 class MAGNUM_EXPORT DebugGroup {
@@ -808,8 +832,8 @@ class MAGNUM_EXPORT DebugGroup {
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If OpenGL 4.3 is not supported and @extension{KHR,debug}
          * desktop or ES extension (covered also by @extension{ANDROID,extension_pack_es31a})
-         * is not available, returns `0`.
-         * @see @fn_gl{Get} with @def_gl{MAX_DEBUG_GROUP_STACK_DEPTH}
+         * is not available, returns @cpp 0 @ce.
+         * @see @fn_gl{Get} with @def_gl_keyword{MAX_DEBUG_GROUP_STACK_DEPTH}
          */
         static Int maxStackDepth();
 
@@ -857,8 +881,8 @@ class MAGNUM_EXPORT DebugGroup {
          * @extension{EXT,debug_marker} is available, only @p message is used
          * and all other parameters are ignored.
          * @see @ref pop(), @ref maxStackDepth(), @ref DebugOutput::maxMessageLength(),
-         *      @ref Renderer::Error::StackOverflow, @fn_gl{PushDebugGroup} or
-         *      @fn_gl_extension{PushGroupMarker,EXT,debug_marker}
+         *      @ref Renderer::Error::StackOverflow, @fn_gl_keyword{PushDebugGroup}
+         *      or @fn_gl_extension_keyword{PushGroupMarker,EXT,debug_marker}
          */
         void push(Source source, UnsignedInt id, const std::string& message) {
             pushInternal(source, id, {message.data(), message.size()});
@@ -884,8 +908,8 @@ class MAGNUM_EXPORT DebugGroup {
          * @extension{EXT,debug_marker} is available, this function does
          * nothing.
          * @see @ref push(), @ref Renderer::Error::StackUnderflow,
-         *      @fn_gl{PopDebugGroup} or
-         *      @fn_gl_extension{PopGroupMarker,EXT,debug_marker}
+         *      @fn_gl_keyword{PopDebugGroup} or
+         *      @fn_gl_extension_keyword{PopGroupMarker,EXT,debug_marker}
          */
         void pop();
 

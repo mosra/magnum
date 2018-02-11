@@ -42,7 +42,7 @@ namespace Magnum {
 This texture is, unlike classic textures such as @ref Texture, used as simple
 data source, without any unnecessary interpolation and wrapping methods.
 
-## Usage
+@section BufferTexture-usage Usage
 
 Texture data are stored in buffer and after binding the buffer to the texture
 using @ref setBuffer(), you can fill the buffer at any time using data setting
@@ -54,7 +54,8 @@ for whole texture lifetime. On the other hand it allows you to use one buffer
 for more textures or store more than one data in it.
 
 Example usage:
-@code
+
+@code{.cpp}
 Buffer buffer;
 BufferTexture texture;
 texture.setBuffer(BufferTextureFormat::RGB32F, buffer);
@@ -65,12 +66,13 @@ constexpr static Vector3 data[] = {
 buffer.setData(data, BufferUsage::StaticDraw);
 @endcode
 
-In shader, the texture is used via `samplerBuffer`, `isamplerBuffer` or
-`usamplerBuffer`. Unlike in classic textures, coordinates for buffer textures
-are integer coordinates passed to `texelFetch()`. See @ref AbstractShaderProgram
-documentation for more information about usage in shaders.
+In shader, the texture is used via @glsl samplerBuffer @ce,
+@glsl isamplerBuffer @ce or @glsl usamplerBuffer @ce. Unlike in classic
+textures, coordinates for buffer textures are integer coordinates passed to
+@glsl texelFetch() @ce. See @ref AbstractShaderProgram documentation for more
+information about usage in shaders.
 
-## Performance optimizations
+@section BufferTexture-performance-optimizations Performance optimizations
 
 If either @extension{ARB,direct_state_access} (part of OpenGL 4.5) or
 @extension{EXT,direct_state_access} is available, @ref setBuffer() functions
@@ -96,8 +98,8 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If @extension{ARB,texture_buffer_object} (part of
-         * OpenGL 3.1) is not available, returns `0`.
-         * @see @fn_gl{Get} with @def_gl{MAX_TEXTURE_BUFFER_SIZE}
+         * OpenGL 3.1) is not available, returns @cpp 0 @ce.
+         * @see @fn_gl{Get} with @def_gl_keyword{MAX_TEXTURE_BUFFER_SIZE}
          */
         static Int maxSize();
 
@@ -106,8 +108,8 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If extension @extension{ARB,texture_buffer_range}
-         * (part of OpenGL 4.3) is not available, returns `1`.
-         * @see @fn_gl{Get} with @def_gl{TEXTURE_BUFFER_OFFSET_ALIGNMENT}
+         * (part of OpenGL 4.3) is not available, returns @cpp 1 @ce.
+         * @see @fn_gl{Get} with @def_gl_keyword{TEXTURE_BUFFER_OFFSET_ALIGNMENT}
          */
         static Int offsetAlignment();
 
@@ -132,8 +134,9 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
          * Creates new OpenGL texture object. If @extension{ARB,direct_state_access}
          * (part of OpenGL 4.5) is not available, the texture is created on
          * first use.
-         * @see @ref BufferTexture(NoCreateT), @ref wrap(), @fn_gl{CreateTextures}
-         *      with @def_gl{TEXTURE_BUFFER}, eventually @fn_gl{GenTextures}
+         * @see @ref BufferTexture(NoCreateT), @ref wrap(),
+         *      @fn_gl_keyword{CreateTextures} with @def_gl{TEXTURE_BUFFER},
+         *      eventually @fn_gl_keyword{GenTextures}
          */
         explicit BufferTexture():
             #ifndef MAGNUM_TARGET_GLES
@@ -172,7 +175,7 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
          * @see @ref bindImages(Int, std::initializer_list<AbstractTexture*>),
          *      @ref unbindImage(), @ref unbindImages(),
          *      @ref AbstractShaderProgram::maxImageUnits(),
-         *      @fn_gl{BindImageTexture}
+         *      @fn_gl_keyword{BindImageTexture}
          * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
          * @requires_gles31 Shader image load/store is not available in OpenGL
          *      ES 3.0 and older.
@@ -194,10 +197,10 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
          * (part of OpenGL 4.5) nor @extension{EXT,direct_state_access} is
          * available, the texture is bound before the operation (if not
          * already).
-         * @see @ref maxSize(), @fn_gl2{TextureBuffer,TexBuffer},
-         *      @fn_gl_extension{TextureBuffer,EXT,direct_state_access},
+         * @see @ref maxSize(), @fn_gl2_keyword{TextureBuffer,TexBuffer},
+         *      @fn_gl_extension_keyword{TextureBuffer,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{TexBuffer}
+         *      @fn_gl_keyword{TexBuffer}
          */
         BufferTexture& setBuffer(BufferTextureFormat internalFormat, Buffer& buffer);
 
@@ -215,10 +218,10 @@ class MAGNUM_EXPORT BufferTexture: public AbstractTexture {
          * (part of OpenGL 4.5) nor @extension{EXT,direct_state_access} is
          * available, the texture is bound before the operation (if not
          * already).
-         * @see @ref maxSize(), @fn_gl2{TextureBufferRange,TexBufferRange},
-         *      @fn_gl_extension{TextureBufferRange,EXT,direct_state_access},
+         * @see @ref maxSize(), @fn_gl2_keyword{TextureBufferRange,TexBufferRange},
+         *      @fn_gl_extension_keyword{TextureBufferRange,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
-         *      @fn_gl{TexBufferRange}
+         *      @fn_gl_keyword{TexBufferRange}
          * @requires_gl43 Extension @extension{ARB,texture_buffer_range}
          */
         BufferTexture& setBuffer(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
