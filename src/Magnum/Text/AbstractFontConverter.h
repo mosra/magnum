@@ -48,7 +48,7 @@ namespace for available font converter plugins.
 You can use the @ref magnum-fontconverter "magnum-fontconverter" utility to do
 font conversion on command-line.
 
-## Subclassing
+@section Text-AbstractFontConverter-subclassing Subclassing
 
 Plugin implements @ref doFeatures() and one or more of `exportTo*()` /
 `importFrom*()` functions based on what features are supported. Characters
@@ -68,7 +68,7 @@ checked by the implementation:
 -   Function `doImport*FromData()` is called only if there is at least one data
     array passed.
 
-Plugin interface string is `"cz.mosra.magnum.Text.AbstractFontConverter/0.1.2"`.
+Plugin interface string is @cpp "cz.mosra.magnum.Text.AbstractFontConverter/0.1.2" @ce.
 
 @attention @ref Corrade::Containers::Array instances returned from the plugin
     should *not* use anything else than the default deleter, otherwise this can
@@ -174,8 +174,8 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * Available only if @ref Feature::ExportFont is supported. If the
          * plugin has @ref Feature::MultiFile, the function will create more
          * than one file in given path, all sharing common basename derived
-         * from @p filename. Returns `true` on success, `false` otherwise. See
-         * @ref exportFontToData() for more information.
+         * from @p filename. Returns @cpp true @ce on success, @cpp false @ce
+         * otherwise. See @ref exportFontToData() for more information.
          * @see @ref features(), @ref exportFontToData(),
          *      @ref exportGlyphCacheToFile()
          */
@@ -218,8 +218,8 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * Available only if @ref Feature::ExportGlyphCache is supported. If
          * the plugin has @ref Feature::MultiFile, the function will create
          * more than one file in given path, all sharing common basename
-         * derived from @p filename. Returns `true` on success, `false`
-         * otherwise.
+         * derived from @p filename. Returns @cpp true @ce on success,
+         * @cpp false @ce otherwise.
          * @see @ref features(), @ref exportGlyphCacheToData(),
          *      @ref exportFontToFile()
          */
@@ -230,7 +230,7 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * @param data      Pairs of filename and file data
          *
          * Available only if @ref Feature::ConvertData and @ref Feature::ImportGlyphCache
-         * is supported. Returns imported cache on success, `nullptr`
+         * is supported. Returns imported cache on success, @cpp nullptr @ce
          * otherwise. If the plugin doesn't have @ref Feature::MultiFile, only
          * one file is needed, thus using @ref importGlyphCacheFromSingleData()
          * might be more convenient in that case.
@@ -244,7 +244,7 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          *
          * Available only if @ref Feature::ConvertData and @ref Feature::ImportGlyphCache
          * is supported and the plugin doesn't have @ref Feature::MultiFile.
-         * Returns imported cache on success, `nullptr` otherwise. See
+         * Returns imported cache on success, @cpp nullptr @ce otherwise. See
          * @ref importGlyphCacheFromData() for multi-file conversion.
          * @see @ref features(), @ref importGlyphCacheFromFile(),
          *      @ref exportFontToSingleData()
@@ -257,7 +257,7 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * Available only if @ref Feature::ImportGlyphCache is supported. If
          * the plugin has @ref Feature::MultiFile, the function will use
          * additional files in given path, all sharing common basename derived
-         * from @p filename. Returns imported cache on success, `nullptr`
+         * from @p filename. Returns imported cache on success, @cpp nullptr @ce
          * otherwise.
          * @see @ref features(), @ref importGlyphCacheFromData(),
          *      @ref exportGlyphCacheToFile()

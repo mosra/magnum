@@ -171,13 +171,14 @@ class MAGNUM_TEXT_EXPORT AbstractRenderer {
 Lays out the text into mesh using given font. Use of ligatures, kerning etc.
 depends on features supported by particular font and its layouter.
 
-## Usage
+@section Text-Renderer-usage Usage
 
 Immutable text (e.g. menu items, credits) can be simply rendered using static
 methods, returning result either as data arrays or as fully configured mesh.
 The text can be then drawn as usual by configuring the shader and drawing the
 mesh:
-@code
+
+@code{.cpp}
 // Font instance, received from plugin manager
 std::unique_ptr<Text::AbstractFont> font;
 
@@ -198,6 +199,7 @@ shader.setTransformationProjectionMatrix(projection)
     .setVectorTexture(glyphCache->texture());
 mesh.draw(shader);
 @endcode
+
 See @ref render(AbstractFont&, const GlyphCache&, Float, const std::string&, Alignment) and
 @ref render(AbstractFont&, const GlyphCache&, Float, const std::string&, Buffer&, Buffer&, BufferUsage, Alignment)
 for more information.
@@ -205,7 +207,8 @@ for more information.
 While this method is sufficient for one-shot rendering of static texts, for
 mutable texts (e.g. FPS counters, chat messages) there is another approach
 that doesn't recreate everything on each text change:
-@code
+
+@code{.cpp}
 std::unique_ptr<Text::AbstractFont> font;
 Text::GlyphCache cache;
 Shaders::Vector2D shader;
@@ -224,7 +227,7 @@ shader.setTransformationProjectionMatrix(projection)
 renderer.mesh().draw(shader);
 @endcode
 
-## Required OpenGL functionality
+@section Text-Renderer-required-opengl-functionality Required OpenGL functionality
 
 Mutable text rendering requires @extension{ARB,map_buffer_range} on desktop
 OpenGL (also part of OpenGL ES 3.0). If neither @extension{EXT,map_buffer_range}
@@ -264,7 +267,9 @@ template<UnsignedInt dimensions> class MAGNUM_TEXT_EXPORT Renderer: public Abstr
         explicit Renderer(AbstractFont& font, const GlyphCache& cache, Float size, Alignment alignment = Alignment::LineLeft);
         Renderer(AbstractFont&, GlyphCache&&, Float, Alignment alignment = Alignment::LineLeft) = delete; /**< @overload */
 
+        #ifndef DOXYGEN_GENERATING_OUTPUT
         using AbstractRenderer::render;
+        #endif
 };
 
 /** @brief Two-dimensional text renderer */

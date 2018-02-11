@@ -40,11 +40,12 @@ Unlike original @ref GlyphCache converts each binary image to distance field.
 It is not possible to use non-binary colors with this cache, internal texture
 format is red channel only.
 
-## Usage
+@section Text-DistanceFieldGlyphCache-usage Usage
 
 Usage is similar to @ref GlyphCache, additionally you need to specify size of
 resulting distance field texture.
-@code
+
+@code{.cpp}
 Text::AbstractFont* font;
 Text::GlyphCache* cache = new Text::DistanceFieldGlyphCache(Vector2i(2048), Vector2i(384));
 font->createGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"

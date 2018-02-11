@@ -43,11 +43,12 @@ namespace Magnum { namespace Text {
 
 Contains font glyphs prerendered into texture atlas.
 
-## Usage
+@section Text-GlyphCache-usage Usage
 
 Create GlyphCache object with sufficient size and then call
 @ref AbstractFont::createGlyphCache() to fill it with glyphs.
-@code
+
+@code{.cpp}
 Text::AbstractFont* font;
 Text::GlyphCache* cache = new GlyphCache(Vector2i(512));
 font->createGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
@@ -126,9 +127,9 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
          *
          * Returned values include padding.
          *
-         * If no glyph is found, glyph `0` is returned, which is by default on
-         * zero position and has zero region in texture atlas. You can reset it
-         * to some meaningful value in @ref insert().
+         * If no glyph is found, glyph @cpp 0 @ce is returned, which is by
+         * default on zero position and has zero region in texture atlas. You
+         * can reset it to some meaningful value in @ref insert().
          * @see @ref padding()
          */
         std::pair<Vector2i, Range2Di> operator[](UnsignedInt glyph) const {
@@ -170,7 +171,7 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
          *
          * You can obtain unused non-overlapping regions with @ref reserve().
          * You can't overwrite already inserted glyph, however you can reset
-         * glyph `0` to some meaningful value.
+         * glyph @cpp 0 @ce to some meaningful value.
          *
          * Glyph parameters are expected to be without padding.
          *

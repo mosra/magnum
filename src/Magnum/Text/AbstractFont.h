@@ -48,14 +48,14 @@ Provides interface for opening fonts, filling glyph cache and layouting the
 glyphs. See @ref plugins for more information and `*Font` classes in @ref Text
 namespace for available font plugins.
 
-## Usage
+@section Text-AbstractFont-usage Usage
 
 First step is to open the font using @ref openData(), @ref openSingleData() or
 @ref openFile(). Next step is to prerender all the glyphs which will be used in
 text rendering later, see @ref GlyphCache for more information. See
 @ref Renderer for information about text rendering.
 
-## Subclassing
+@section Text-AbstractFont-subclassing Subclassing
 
 Plugin implements @ref doFeatures(), @ref doClose(), @ref doLayout(), either
 @ref doCreateGlyphCache() or @ref doFillGlyphCache() and one or more of
@@ -72,7 +72,7 @@ checked by the implementation:
 -   All `do*()` implementations working on opened file are called only if
     there is any file opened.
 
-Plugin interface string is `"cz.mosra.magnum.Text.AbstractFont/0.2.4"`.
+Plugin interface string is @cpp "cz.mosra.magnum.Text.AbstractFont/0.2.4" @ce.
 */
 class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
     CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Text.AbstractFont/0.2.4")
@@ -123,7 +123,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          *
          * Closes previous file, if it was opened, and tries to open given
          * file. Available only if @ref Feature::OpenData is supported. Returns
-         * `true` on success, `false` otherwise.
+         * @cpp true @ce on success, @cpp false @ce otherwise.
          */
         bool openData(const std::vector<std::pair<std::string, Containers::ArrayView<const char>>>& data, Float size);
 
@@ -134,8 +134,8 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          *
          * Closes previous file, if it was opened, and tries to open given
          * file. Available only if @ref Feature::OpenData is supported and the
-         * plugin doesn't have @ref Feature::MultiFile. Returns `true` on
-         * success, `false` otherwise.
+         * plugin doesn't have @ref Feature::MultiFile. Returns @cpp true @ce
+         * on success, @cpp false @ce otherwise.
          */
         bool openSingleData(Containers::ArrayView<const char> data, Float size);
 
@@ -147,8 +147,8 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * Closes previous file, if it was opened, and tries to open given
          * file. If the plugin has @ref Feature::MultiFile, the function will
          * use additional files in given path, all sharing common basename
-         * derived from @p filename. Returns `true` on success, `false`
-         * otherwise.
+         * derived from @p filename. Returns @cpp true @ce on success,
+         * @cpp false @ce otherwise.
          */
         bool openFile(const std::string& filename, Float size);
 
@@ -348,7 +348,7 @@ CORRADE_ENUMSET_OPERATORS(AbstractFont::Features)
 
 Returned by @ref AbstractFont::layout().
 
-## Subclassing
+@section Text-AbstractLayouter-subclassing Subclassing
 
 Plugin creates private subclass (no need to expose it to end users) and
 implements @ref doRenderGlyph(). Bounds checking on @p i is done automatically
