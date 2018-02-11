@@ -30,6 +30,11 @@ namespace Magnum {
 
 @todo OpenAL mapping table
 
+@m_div{m-note m-success} Note that you can also use the search functionality to
+find out which OpenAL API corresponds to which Magnum function, class or enum
+value. Just enter name of an OpenAL function or define into the search box.
+@m_enddiv
+
 State of implementation of particular OpenAL extensions is in the following
 table.
 

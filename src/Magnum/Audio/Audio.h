@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Forward declarations for @ref Magnum::Audio namespace
+ * @brief Forward declarations for the @ref Magnum::Audio namespace
  */
 
 #include <Magnum/Magnum.h>

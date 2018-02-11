@@ -50,6 +50,7 @@ class Buffer {
          * @note Multi-channel format is played without 3D spatialization
          *      (useful for background music)
          * @see @ref setData()
+         * @m_enum_values_as_keywords
          */
         enum class Format: ALenum {
             Mono8 = AL_FORMAT_MONO8,        /**< 8-bit unsigned mono */
@@ -200,7 +201,7 @@ class Buffer {
          * @brief Constructor
          *
          * Creates OpenAL buffer object.
-         * @see @fn_al{GenBuffers}
+         * @see @fn_al_keyword{GenBuffers}
          */
         explicit Buffer() { alGenBuffers(1, &_id); }
 
@@ -208,7 +209,7 @@ class Buffer {
          * @brief Destructor
          *
          * Deletes OpenAL buffer object.
-         * @see @fn_al{DeleteBuffers}
+         * @see @fn_al_keyword{DeleteBuffers}
          */
         ~Buffer() { if(_id) alDeleteBuffers(1, &_id); }
 
@@ -234,7 +235,7 @@ class Buffer {
          * @param frequency Frequency
          * @return Reference to self (for method chaining)
          *
-         * @see @fn_al{BufferData}
+         * @see @fn_al_keyword{BufferData}
          */
         Buffer& setData(Format format, Containers::ArrayView<const void> data, ALsizei frequency) {
             alBufferData(_id, ALenum(format), data, data.size(), frequency);

@@ -87,6 +87,7 @@ class MAGNUM_AUDIO_EXPORT Context {
          * @brief HRTF status
          *
          * @see @ref hrtfStatus(), @ref isHrtfEnabled()
+         * @m_enum_values_as_keywords
          * @requires_al_extension Extension @alc_extension{SOFTX,HRTF} or
          *      @alc_extension{SOFT,HRTF}
          */
@@ -130,7 +131,7 @@ class MAGNUM_AUDIO_EXPORT Context {
          * @brief All device specifier strings
          *
          * @see @ref deviceSpecifierString(), @ref Configuration::setDeviceSpecifier()
-         *      @fn_al{GetString} with @def_alc{DEVICE_SPECIFIER}
+         *      @fn_alc{GetString} with @def_alc_keyword{DEVICE_SPECIFIER}
          */
         static std::vector<std::string> deviceSpecifierStrings();
 
@@ -181,7 +182,7 @@ class MAGNUM_AUDIO_EXPORT Context {
          * HRFTs may not be enabled/disabled in a running context. Instead
          * create a new @ref Context with HRFTs enabled or disabled.
          * @see @ref hrtfStatus(), @ref Audio::Context::Configuration::setHrtf(),
-         *      @fn_alc{GetIntegerv} with @def_alc{HRTF_SOFT}
+         *      @fn_alc{GetIntegerv} with @def_alc_keyword{HRTF_SOFT}
          * @requires_al_extension Extension @alc_extension{SOFTX,HRTF} or
          *      @alc_extension{SOFT,HRTF}
          */
@@ -191,7 +192,7 @@ class MAGNUM_AUDIO_EXPORT Context {
          * @brief HRTF status
          *
          * @see @ref isHrtfEnabled(), @fn_alc{GetIntegerv} with
-         *      @def_alc{HRTF_STATUS_SOFT}
+         *      @def_alc_keyword{HRTF_STATUS_SOFT}
          * @requires_al_extension Extension @alc_extension{SOFTX,HRTF} or
          *      @alc_extension{SOFT,HRTF}
          */
@@ -201,13 +202,13 @@ class MAGNUM_AUDIO_EXPORT Context {
          * @brief HRTF specifier
          *
          * Name of the HRTF being used.
-         * @see @fn_al{GetString} with @def_alc{HRTF_SPECIFIER_SOFT}
+         * @see @fn_al{GetString} with @def_alc_keyword{HRTF_SPECIFIER_SOFT}
          * @requires_al_extension @alc_extension{SOFT,HRTF}
          */
         std::string hrtfSpecifierString() const;
 
         #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @copybrief hrtfSpecifierString()
+        /** @brief @copybrief hrtfSpecifierString()
          * @deprecated Use @ref hrtfSpecifierString() instead.
          */
         CORRADE_DEPRECATED("use hrtfSpecifierString() instead") std::string hrtfSpecifier() const { return hrtfSpecifierString(); }
@@ -217,7 +218,7 @@ class MAGNUM_AUDIO_EXPORT Context {
          * @brief Device specifier string
          *
          * @see @ref deviceSpecifierStrings(), @ref vendorString(), @ref rendererString(),
-         *      @fn_al{GetString} with @def_alc{DEVICE_SPECIFIER}
+         *      @fn_al{GetString} with @def_alc_keyword{DEVICE_SPECIFIER}
          */
         std::string deviceSpecifierString() const;
 
@@ -225,7 +226,7 @@ class MAGNUM_AUDIO_EXPORT Context {
          * @brief Vendor string
          *
          * @see @ref deviceSpecifierString(), @ref rendererString(),
-         *      @fn_al{GetString} with @def_al{VENDOR}
+         *      @fn_al{GetString} with @def_al_keyword{VENDOR}
          */
         std::string vendorString() const;
 
@@ -233,14 +234,14 @@ class MAGNUM_AUDIO_EXPORT Context {
          * @brief Renderer string
          *
          * @see @ref deviceSpecifierString(), @ref vendorString(),
-         *      @fn_al{GetString} with @def_al{RENDERER}
+         *      @fn_al{GetString} with @def_al_keyword{RENDERER}
          */
         std::string rendererString() const;
 
         /**
          * @brief Version string
          *
-         * @see @fn_al{GetString} with @def_al{VERSION}
+         * @see @fn_al{GetString} with @def_al_keyword{VERSION}
          */
         std::string versionString() const;
 
@@ -252,9 +253,9 @@ class MAGNUM_AUDIO_EXPORT Context {
          * reported by the driver (even those not supported by Magnum), see
          * @ref supportedExtensions(), @ref Extension::extensions() or
          * @ref isExtensionSupported() for alternatives.
-         * @see @fn_al{Get} with @def_al{NUM_EXTENSIONS}, @fn_al{GetString}
-         *      with @def_al{EXTENSIONS}, @fn_alc{GetString} with
-         *      @def_alc{EXTENSIONS}
+         * @see @fn_al{Get} with @def_al_keyword{NUM_EXTENSIONS},
+         *      @fn_al{GetString} with @def_al_keyword{EXTENSIONS},
+         *      @fn_alc{GetString} with @def_alc_keyword{EXTENSIONS}
          */
         std::vector<std::string> extensionStrings() const;
 

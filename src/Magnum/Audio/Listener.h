@@ -118,9 +118,9 @@ template <UnsignedInt dimensions> class Listener: public SceneGraph::AbstractFea
          * @brief Constructor
          * @param object    Object this listener belongs to
          *
-         * Creates a listener with a forward vector of `{0.0f, 0.0f, -1.0f}`
-         * and up vector of `{0.0f, 1.0f, 0.0f}`. These vectors cannot be
-         * changed, the listeners orientation and translation can be instead
+         * Creates a listener with a forward vector of @cpp {0.0f, 0.0f, -1.0f} @ce
+         * and up vector of @cpp {0.0f, 1.0f, 0.0f} @ce. These vectors cannot
+         * be changed, the listeners orientation and translation can be instead
          * affected by @p object or via @ref Listener::setSoundTransformation().
          * @see @ref setGain()
          */

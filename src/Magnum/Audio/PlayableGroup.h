@@ -126,12 +126,12 @@ template<UnsignedInt dimensions> class PlayableGroup: public SceneGraph::Feature
         /**
          * @brief Set gain for all sound sources of Playables in this group
          * @param gain Gain
+         * @return Reference to self (for method chaining)
          *
          * Will calculate the sound sources gain relative to the gain of the
          * Playable and this playable group. The sources gain is computed as
-         * `sourceGain = playableGain*groupGain`. Default of the groups gain
-         * is `1.0f`.
-         * @return Reference to self (for method chaining)
+         * @cpp sourceGain = playableGain*groupGain @ce. Default of the groups
+         * gain is @cpp 1.0f @ce.
          */
         PlayableGroup& setGain(const Float gain) {
             _gain = gain;

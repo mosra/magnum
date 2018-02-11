@@ -54,7 +54,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @brief Constructor
          *
          * Creates OpenAL source object.
-         * @see @fn_al{GenSources}
+         * @see @fn_al_keyword{GenSources}
          */
         explicit Source() { alGenSources(1, &_id); }
 
@@ -62,7 +62,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @brief Destructor
          *
          * Deletes OpenAL source object.
-         * @see @fn_al{DeleteSources}
+         * @see @fn_al_keyword{DeleteSources}
          */
         ~Source() { if(_id) alDeleteSources(1, &_id); }
 
@@ -85,7 +85,7 @@ class MAGNUM_AUDIO_EXPORT Source {
 
         /**
          * @brief Position
-         * @see @fn_al{GetSourcefv} with @def_al{POSITION}
+         * @see @fn_al_keyword{GetSourcefv} with @def_al{POSITION}
          */
         Vector3 position() const {
             Vector3 v;
@@ -98,7 +98,8 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @return Reference to self (for method chaining)
          *
          * Default is @cpp {0.0f, 0.0f, 0.0f} @ce.
-         * @see @ref setRelative(), @fn_al{Sourcefv} with @def_al{POSITION}
+         * @see @ref setRelative(), @fn_al_keyword{Sourcefv} with
+         *      @def_al{POSITION}
          */
         Source& setPosition(const Vector3& position) {
             alSourcefv(_id, AL_POSITION, position.data());
@@ -106,7 +107,7 @@ class MAGNUM_AUDIO_EXPORT Source {
         }
 
         /** @overload
-         * @see @fn_al{Sourceiv} with @def_al{POSITION}
+         * @see @fn_al_keyword{Sourceiv} with @def_al{POSITION}
          */
         Source& setPosition(const Vector3i& position) {
             alSourceiv(_id, AL_POSITION, position.data());
@@ -115,7 +116,7 @@ class MAGNUM_AUDIO_EXPORT Source {
 
         /**
          * @brief Velocity
-         * @see @fn_al{GetSourcefv} with @def_al{VELOCITY}
+         * @see @fn_al_keyword{GetSourcefv} with @def_al{VELOCITY}
          */
         Vector3 velocity() const {
             Vector3 v;
@@ -128,7 +129,8 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @return Reference to self (for method chaining)
          *
          * Default is @cpp {0.0f, 0.0f, 0.0f} @ce.
-         * @see @ref setRelative(), @fn_al{Sourcefv} with @def_al{VELOCITY}
+         * @see @ref setRelative(), @fn_al_keyword{Sourcefv} with
+         *      @def_al{VELOCITY}
          */
         Source& setVelocity(const Vector3& velocity) {
             alSourcefv(_id, AL_VELOCITY, velocity.data());
@@ -136,7 +138,7 @@ class MAGNUM_AUDIO_EXPORT Source {
         }
 
         /** @overload
-         * @see @fn_al{Sourceiv} with @def_al{VELOCITY}
+         * @see @fn_al_keyword{Sourceiv} with @def_al{VELOCITY}
          */
         Source& setVelocity(const Vector3i& velocity) {
             alSourceiv(_id, AL_VELOCITY, velocity.data());
@@ -146,7 +148,7 @@ class MAGNUM_AUDIO_EXPORT Source {
         /**
          * @brief Whether the source is interpreted relative to the listener
          * @see @ref position(), @ref direction(), @ref velocity(),
-         *      @fn_al{GetSourcei} with @def_al{SOURCE_RELATIVE}
+         *      @fn_al_keyword{GetSourcei} with @def_al{SOURCE_RELATIVE}
          */
         bool isRelative() const {
             Int relative;
@@ -160,7 +162,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * When enabled, source position, direction and velocity will be
          * interpreted relatively to listener. Default is @cpp false @ce.
          * @see @ref setPosition(), @ref setDirection(), @ref setVelocity(),
-         *      @fn_al{Sourcei} with @def_al{SOURCE_RELATIVE}
+         *      @fn_al_keyword{Sourcei} with @def_al{SOURCE_RELATIVE}
          */
         Source& setRelative(bool relative) {
             alSourcei(_id, AL_SOURCE_RELATIVE, relative);
@@ -173,7 +175,7 @@ class MAGNUM_AUDIO_EXPORT Source {
 
         /**
          * @brief Gain
-         * @see @fn_al{GetSourcef} with @def_al{GAIN}
+         * @see @fn_al_keyword{GetSourcef} with @def_al{GAIN}
          */
         Float gain() const {
             Float gain;
@@ -187,8 +189,8 @@ class MAGNUM_AUDIO_EXPORT Source {
          *
          * Default is @cpp 1.0f @ce, which means that the sound is
          * unattenuated. If set to @cpp 0.0f @ce, the source is muted.
-         * @see @ref setMinGain(), @ref setMaxGain(), @fn_al{Sourcef} with
-         *      @def_al{GAIN}
+         * @see @ref setMinGain(), @ref setMaxGain(), @fn_al_keyword{Sourcef}
+         *      with @def_al{GAIN}
          */
         Source& setGain(Float gain) {
             alSourcef(_id, AL_GAIN, gain);
@@ -198,7 +200,7 @@ class MAGNUM_AUDIO_EXPORT Source {
         /**
          * @brief Minimal gain to clamp to
          * @see @ref setMaxGain(), @ref setGain(), @ref maxGain(),
-         *      @ref gain(), @fn_al{GetSourcef} with @def_al{MIN_GAIN}
+         *      @ref gain(), @fn_al_keyword{GetSourcef} with @def_al{MIN_GAIN}
          */
         Float minGain() const {
             Float minGain;
@@ -213,7 +215,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * If effective gain is lower than min gain, min gain is used. Note
          * that this is done before listener gain is applied. Default is
          * @cpp 0.0f @ce.
-         * @see @ref setMaxGain(), @ref setGain(), @fn_al{Sourcef} with
+         * @see @ref setMaxGain(), @ref setGain(), @fn_al_keyword{Sourcef} with
          *      @def_al{MIN_GAIN}
          */
         Source& setMinGain(Float gain) {
@@ -224,7 +226,7 @@ class MAGNUM_AUDIO_EXPORT Source {
         /**
          * @brief Maximal gain to clamp to
          * @see @ref setMinGain(), @ref setGain(), @ref maxGain(),
-         *      @ref gain(), @fn_al{GetSourcef} with @def_al{MAX_GAIN}
+         *      @ref gain(), @fn_al_keyword{GetSourcef} with @def_al{MAX_GAIN}
          */
         Float maxGain() const {
             Float maxGain;
@@ -239,7 +241,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * If effective gain is higher than max gain, max gain is used. Note
          * that this is done before listener gain is applied. Default is
          * @cpp 1.0f @ce. If set to @cpp 0.0f @ce, the source is muted.
-         * @see @ref setMinGain(), @ref setGain(), @fn_al{Sourcef} with
+         * @see @ref setMinGain(), @ref setGain(), @fn_al_keyword{Sourcef} with
          *      @def_al{MIN_GAIN}
          */
         Source& setMaxGain(Float gain) {
@@ -249,7 +251,7 @@ class MAGNUM_AUDIO_EXPORT Source {
 
         /**
          * @brief Reference distance
-         * @see @fn_al{GetSourcef} with @def_al{REFERENCE_DISTANCE}
+         * @see @fn_al_keyword{GetSourcef} with @def_al{REFERENCE_DISTANCE}
          */
         Float referenceDistance() const {
             Float distance;
@@ -264,7 +266,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * Default is @cpp 1.0f @ce. Distance at which the listener will
          * experience @ref gain() (or @ref minGain(), @ref maxGain()
          * if gain was clamped).
-         * @see @ref setRolloffFactor(), @fn_al{Sourcef} with
+         * @see @ref setRolloffFactor(), @fn_al_keyword{Sourcef} with
          *      @def_al{REFERENCE_DISTANCE}
          */
         Source& setReferenceDistance(Float distance) {
@@ -273,7 +275,7 @@ class MAGNUM_AUDIO_EXPORT Source {
         }
 
         /** @overload
-         * @see @fn_al{Sourcei} with @def_al{REFERENCE_DISTANCE}
+         * @see @fn_al_keyword{Sourcei} with @def_al{REFERENCE_DISTANCE}
          */
         Source& setReferenceDistance(Int distance) {
             alSourcei(_id, AL_REFERENCE_DISTANCE, distance);
@@ -282,7 +284,7 @@ class MAGNUM_AUDIO_EXPORT Source {
 
         /**
          * @brief Rolloff factor
-         * @see @fn_al{GetSourcef} with @def_al{ROLLOFF_FACTOR}
+         * @see @fn_al_keyword{GetSourcef} with @def_al{ROLLOFF_FACTOR}
          */
         Float rolloffFactor() const {
             Float factor;
@@ -295,7 +297,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @return Reference to self (for method chaining)
          *
          * Default is @cpp 1.0f @ce.
-         * @see @ref setReferenceDistance(), @fn_al{Sourcef} with
+         * @see @ref setReferenceDistance(), @fn_al_keyword{Sourcef} with
          *      @def_al{ROLLOFF_FACTOR}
          */
         Source& setRolloffFactor(Float factor) {
@@ -304,7 +306,7 @@ class MAGNUM_AUDIO_EXPORT Source {
         }
 
         /** @overload
-         * @see @fn_al{Sourcei} with @def_al{ROLLOFF_FACTOR}
+         * @see @fn_al_keyword{Sourcei} with @def_al{ROLLOFF_FACTOR}
          */
         Source& setRolloffFactor(Int factor) {
             alSourcei(_id, AL_ROLLOFF_FACTOR, factor);
@@ -313,7 +315,8 @@ class MAGNUM_AUDIO_EXPORT Source {
 
         /**
          * @brief Maximal distance to clamp to
-         * @see @ref setRolloffFactor(), @fn_al{GetSourcef} with @def_al{MAX_DISTANCE}
+         * @see @ref setRolloffFactor(), @fn_al_keyword{GetSourcef} with
+         *      @def_al{MAX_DISTANCE}
          */
         Float maxDistance() const {
             Float distance;
@@ -326,7 +329,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @return Reference to self (for method chaining)
          *
          * Default is max representable value.
-         * @see @fn_al{Sourcef} with @def_al{MAX_DISTANCE}
+         * @see @fn_al_keyword{Sourcef} with @def_al{MAX_DISTANCE}
          */
         Source& setMaxDistance(Float distance) {
             alSourcef(_id, AL_MAX_DISTANCE, distance);
@@ -334,7 +337,7 @@ class MAGNUM_AUDIO_EXPORT Source {
         }
 
         /** @overload
-         * @see @fn_al{Sourcei} with @def_al{MAX_DISTANCE}
+         * @see @fn_al_keyword{Sourcei} with @def_al{MAX_DISTANCE}
          */
         Source& setMaxDistance(Int distance) {
             alSourcei(_id, AL_MAX_DISTANCE, distance);
@@ -343,7 +346,7 @@ class MAGNUM_AUDIO_EXPORT Source {
 
         /**
          * @brief Direction
-         * @see @fn_al{GetSourcefv} with @def_al{DIRECTION}
+         * @see @fn_al_keyword{GetSourcefv} with @def_al{DIRECTION}
          */
         Vector3 direction() const {
             Vector3 direction;
@@ -358,7 +361,8 @@ class MAGNUM_AUDIO_EXPORT Source {
          * Default is @cpp {0.0f, 0.0f, 0.0f} @ce, which means that the source
          * is not directional.
          * @see @ref setInnerConeAngle(), @ref setOuterConeAngle(),
-         *      @ref setRelative(), @fn_al{Sourcefv} with @def_al{DIRECTION}
+         *      @ref setRelative(), @fn_al_keyword{Sourcefv} with
+         *      @def_al{DIRECTION}
          */
         Source& setDirection(const Vector3& direction) {
             alSourcefv(_id, AL_DIRECTION, direction.data());
@@ -366,7 +370,7 @@ class MAGNUM_AUDIO_EXPORT Source {
         }
 
         /** @overload
-         * @see @fn_al{Sourceiv} with @def_al{DIRECTION}
+         * @see @fn_al_keyword{Sourceiv} with @def_al{DIRECTION}
          */
         Source& setDirection(const Vector3i& direction) {
             alSourceiv(_id, AL_DIRECTION, direction.data());
@@ -375,7 +379,7 @@ class MAGNUM_AUDIO_EXPORT Source {
 
         /**
          * @brief Inner cone angle
-         * @see @fn_al{GetSourcef} with @def_al{CONE_INNER_ANGLE}
+         * @see @fn_al_keyword{GetSourcef} with @def_al{CONE_INNER_ANGLE}
          */
         Deg innerConeAngle() const {
             Float angle;
@@ -389,8 +393,8 @@ class MAGNUM_AUDIO_EXPORT Source {
          *
          * Has effect only if the source is directional. Default is
          * @cpp 360.0_degf @ce.
-         * @see @ref setOuterConeAngle(), @ref setDirection(), @fn_al{Sourcef}
-         *      with @def_al{CONE_INNER_ANGLE}
+         * @see @ref setOuterConeAngle(), @ref setDirection(),
+         *      @fn_al_keyword{Sourcef} with @def_al{CONE_INNER_ANGLE}
          */
         Source& setInnerConeAngle(Deg angle) {
             alSourcef(_id, AL_CONE_INNER_ANGLE, Float(angle));
@@ -399,7 +403,7 @@ class MAGNUM_AUDIO_EXPORT Source {
 
         /**
          * @brief Outer cone angle
-         * @see @fn_al{GetSourcef} with @def_al{CONE_OUTER_ANGLE}
+         * @see @fn_al_keyword{GetSourcef} with @def_al{CONE_OUTER_ANGLE}
          */
         Deg outerConeAngle() const {
             Float angle;
@@ -414,7 +418,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * Has effect only if the source is directional. Default is
          * @cpp 360.0_degf @ce.
          * @see @ref setInnerConeAngle(), @ref setDirection(),
-         *      @ref setOuterConeGain() @fn_al{Sourcef} with
+         *      @ref setOuterConeGain() @fn_al_keyword{Sourcef} with
          *      @def_al{CONE_OUTER_ANGLE}
          */
         Source& setOuterConeAngle(Deg angle) {
@@ -424,7 +428,7 @@ class MAGNUM_AUDIO_EXPORT Source {
 
         /**
          * @brief Outer cone gain
-         * @see @fn_al{GetSourcef} with @def_al{CONE_OUTER_GAIN}
+         * @see @fn_al_keyword{GetSourcef} with @def_al{CONE_OUTER_GAIN}
          */
         Float outerConeGain() const {
             Float gain;
@@ -438,8 +442,8 @@ class MAGNUM_AUDIO_EXPORT Source {
          *
          * The factor with which the gain is multiplied outside the outer cone.
          * Default is @cpp 0.0f @ce.
-         * @see @ref setGain(), @ref setOuterConeAngle(), @fn_al{Sourcef} with
-         *      @def_al{CONE_OUTER_GAIN}
+         * @see @ref setGain(), @ref setOuterConeAngle(),
+         *      @fn_al_keyword{Sourcef} with @def_al{CONE_OUTER_GAIN}
          */
         Source& setOuterConeGain(Float multiplier) {
             alSourcef(_id, AL_CONE_OUTER_GAIN, multiplier);
@@ -448,7 +452,7 @@ class MAGNUM_AUDIO_EXPORT Source {
 
         /**
          * @brief Pitch
-         * @see @fn_al{GetSourcef} with @def_al{PITCH}
+         * @see @fn_al_keyword{GetSourcef} with @def_al{PITCH}
          */
         Float pitch() const {
             Float pitch;
@@ -461,7 +465,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @return Reference to self (for method chaining)
          *
          * Default is @cpp 1.0f @ce.
-         * @see @fn_al{Sourcef} with @def_al{PITCH}
+         * @see @fn_al_keyword{Sourcef} with @def_al{PITCH}
          */
         Source& setPitch(Float pitch) {
             alSourcef(_id, AL_PITCH, pitch);
@@ -486,19 +490,20 @@ class MAGNUM_AUDIO_EXPORT Source {
         /**
          * @brief Source type
          *
-         * @see @ref setBuffer(), @fn_al{GetSourcei} with @def_al{SOURCE_TYPE}
+         * @see @ref setBuffer(), @fn_al_keyword{GetSourcei} with
+         *      @def_al{SOURCE_TYPE}
          */
         Type type() const;
 
         /**
          * @brief Attach buffer
-         * @param buffer        Buffer to attach or `nullptr`
+         * @param buffer        Buffer to attach or @cpp nullptr @ce
          * @return Reference to self (for method chaining)
          *
          * If an buffer is attached, changes source type to @ref Type::Static,
          * if detached, changes source type to @ref Type::Undetermined. The
          * buffer must be already filled with data.
-         * @see @ref type(), @fn_al{Sourcei} with @def_al{BUFFER}
+         * @see @ref type(), @fn_al_keyword{Sourcei} with @def_al{BUFFER}
          */
         Source& setBuffer(Buffer* buffer);
 
@@ -527,7 +532,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @see @ref play(), @ref pause(std::initializer_list<std::reference_wrapper<Source>>),
          *      @ref stop(std::initializer_list<std::reference_wrapper<Source>>),
          *      @ref rewind(std::initializer_list<std::reference_wrapper<Source>>),
-         *      @fn_al{SourcePlayv}
+         *      @fn_al_keyword{SourcePlayv}
          */
         static void play(std::initializer_list<std::reference_wrapper<Source>> sources);
         static void play(const std::vector<std::reference_wrapper<Source>>& sources); /**< @overload */
@@ -540,7 +545,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @see @ref pause(), @ref play(std::initializer_list<std::reference_wrapper<Source>>),
          *      @ref stop(std::initializer_list<std::reference_wrapper<Source>>),
          *      @ref rewind(std::initializer_list<std::reference_wrapper<Source>>),
-         *      @fn_al{SourcePausev}
+         *      @fn_al_keyword{SourcePausev}
          */
         static void pause(std::initializer_list<std::reference_wrapper<Source>> sources);
         static void pause(const std::vector<std::reference_wrapper<Source>>& sources); /**< @overload */
@@ -553,7 +558,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @see @ref stop(), @ref play(std::initializer_list<std::reference_wrapper<Source>>),
          *      @ref pause(std::initializer_list<std::reference_wrapper<Source>>),
          *      @ref rewind(std::initializer_list<std::reference_wrapper<Source>>),
-         *      @fn_al{SourceStopv}
+         *      @fn_al_keyword{SourceStopv}
          */
         static void stop(std::initializer_list<std::reference_wrapper<Source>> sources);
         static void stop(const std::vector<std::reference_wrapper<Source>>& sources); /**< @overload */
@@ -566,7 +571,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @see @ref rewind(), @ref play(std::initializer_list<std::reference_wrapper<Source>>),
          *      @ref pause(std::initializer_list<std::reference_wrapper<Source>>),
          *      @ref stop(std::initializer_list<std::reference_wrapper<Source>>),
-         *      @fn_al{SourceRewindv}
+         *      @fn_al_keyword{SourceRewindv}
          */
         static void rewind(std::initializer_list<std::reference_wrapper<Source>> sources);
         static void rewind(const std::vector<std::reference_wrapper<Source>>& sources); /**< @overload */
@@ -575,7 +580,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @brief State
          *
          * @see @ref play(), @ref pause(), @ref stop(), @ref rewind(),
-         *      @fn_al{GetSourcei} with @def_al{SOURCE_STATE}
+         *      @fn_al_keyword{GetSourcei} with @def_al{SOURCE_STATE}
          */
         State state() const;
 
@@ -584,7 +589,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          *
          * @see @ref play(std::initializer_list<std::reference_wrapper<Source>>),
          *      @ref state(), @ref pause(), @ref stop(), @ref rewind(),
-         *      @fn_al{SourcePlay}
+         *      @fn_al_keyword{SourcePlay}
          */
         void play() { alSourcePlay(_id); }
 
@@ -593,7 +598,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          *
          * @see @ref pause(std::initializer_list<std::reference_wrapper<Source>>),
          *      @ref state(), @ref play(), @ref stop(), @ref rewind(),
-         *      @fn_al{SourcePause}
+         *      @fn_al_keyword{SourcePause}
          */
         void pause() { alSourcePause(_id); }
 
@@ -602,7 +607,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          *
          * @see @ref stop(std::initializer_list<std::reference_wrapper<Source>>),
          *      @ref state(), @ref play(), @ref pause(), @ref rewind(),
-         *      @fn_al{SourceStop}
+         *      @fn_al_keyword{SourceStop}
          */
         void stop() { alSourceStop(_id); }
 
@@ -611,14 +616,14 @@ class MAGNUM_AUDIO_EXPORT Source {
          *
          * @see @ref rewind(std::initializer_list<std::reference_wrapper<Source>>),
          *      @ref state(), @ref play(), @ref pause(), @ref stop(),
-         *      @fn_al{SourceRewind}
+         *      @fn_al_keyword{SourceRewind}
          */
         void rewind() { alSourceRewind(_id); }
 
         /**
          * @brief Whether the source is looping
          *
-         * @see @fn_al{GetSourcei} with @def_al{LOOPING}
+         * @see @fn_al_keyword{GetSourcei} with @def_al{LOOPING}
          */
         bool isLooping() const;
 
@@ -627,7 +632,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @return Reference to self (for method chaining)
          *
          * Default is @cpp false @ce.
-         * @see @fn_al{Sourcei} with @def_al{LOOPING}
+         * @see @fn_al_keyword{Sourcei} with @def_al{LOOPING}
          */
         Source& setLooping(bool loop) {
             alSourcei(_id, AL_LOOPING, loop);
@@ -638,7 +643,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @brief Offset in seconds
          *
          * @see @ref offsetInBytes(), @ref offsetInSamples(),
-         *      @fn_al{GetSourcef} with @def_al{SEC_OFFSET}
+         *      @fn_al_keyword{GetSourcef} with @def_al{SEC_OFFSET}
          */
         Float offsetInSeconds() const;
 
@@ -647,7 +652,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @return Reference to self (for method chaining)
          *
          * @see @ref setOffsetInBytes(), @ref setOffsetInSamples(),
-         *      @fn_al{Sourcef} with @def_al{SEC_OFFSET}
+         *      @fn_al_keyword{Sourcef} with @def_al{SEC_OFFSET}
          */
         Source& setOffsetInSeconds(Float offset) {
             alSourcef(_id, AL_SEC_OFFSET, offset);
@@ -658,7 +663,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @brief Offset in bytes
          *
          * @see @ref offsetInSeconds(), @ref offsetInSamples(),
-         *      @fn_al{GetSourcei} with @def_al{BYTE_OFFSET}
+         *      @fn_al_keyword{GetSourcei} with @def_al{BYTE_OFFSET}
          */
         Int offsetInBytes() const;
 
@@ -667,7 +672,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @return Reference to self (for method chaining)
          *
          * @see @ref setOffsetInSeconds(), @ref setOffsetInSamples(),
-         *      @fn_al{Sourcei} with @def_al{SEC_OFFSET}
+         *      @fn_al_keyword{Sourcei} with @def_al{SEC_OFFSET}
          */
         Source& setOffsetInBytes(Int offset) {
             alSourcei(_id, AL_BYTE_OFFSET, offset);
@@ -678,7 +683,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @brief Offset in samples
          *
          * @see @ref offsetInSeconds(), @ref offsetInBytes(),
-         *      @fn_al{GetSourcei} with @def_al{SAMPLE_OFFSET}
+         *      @fn_al_keyword{GetSourcei} with @def_al{SAMPLE_OFFSET}
          */
         Int offsetInSamples() const;
 
@@ -687,7 +692,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @return Reference to self (for method chaining)
          *
          * @see @ref setOffsetInSeconds(), @ref setOffsetInBytes(),
-         *      @fn_al{Sourcei} with @def_al{SEC_OFFSET}
+         *      @fn_al_keyword{Sourcei} with @def_al{SEC_OFFSET}
          */
         Source& setOffsetInSamples(Int offset) {
             alSourcei(_id, AL_SAMPLE_OFFSET, offset);
