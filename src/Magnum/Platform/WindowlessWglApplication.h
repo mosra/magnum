@@ -291,7 +291,7 @@ class WindowlessWglApplication {
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @copybrief WindowlessWglApplication(const Arguments&, NoCreateT)
+         * @brief @copybrief WindowlessWglApplication(const Arguments&, NoCreateT)
          * @deprecated Use @ref WindowlessWglApplication(const Arguments&, NoCreateT) instead.
          */
         CORRADE_DEPRECATED("use WindowlessWglApplication(const Arguments&, NoCreateT) instead") explicit WindowlessWglApplication(const Arguments& arguments, std::nullptr_t): WindowlessWglApplication{arguments, NoCreate} {}

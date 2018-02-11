@@ -100,7 +100,7 @@ template<class T> class BasicMatrixTransformation3D: public AbstractBasicTransla
         #pragma warning(disable: 4996)
         #endif
         /**
-         * @copybrief transform()
+         * @brief @copybrief transform()
          * @deprecated Use @ref transform() or @ref transformLocal() instead.
          */
         CORRADE_DEPRECATED("use transform() or transformLocal() instead") Object<BasicMatrixTransformation3D<T>>& transform(const Math::Matrix4<T>& transformation, TransformationType type) {
@@ -145,7 +145,7 @@ template<class T> class BasicMatrixTransformation3D: public AbstractBasicTransla
         #pragma warning(disable: 4996)
         #endif
         /**
-         * @copybrief translate()
+         * @brief @copybrief translate()
          * @deprecated Use @ref translate() or @ref translateLocal() instead.
          */
         CORRADE_DEPRECATED("use translate() or translateLocal() instead") Object<BasicMatrixTransformation3D<T>>& translate(const Math::Vector3<T>& vector, TransformationType type) {
@@ -193,7 +193,7 @@ template<class T> class BasicMatrixTransformation3D: public AbstractBasicTransla
         #pragma warning(disable: 4996)
         #endif
         /**
-         * @copybrief rotate()
+         * @brief @copybrief rotate()
          * @deprecated Use @ref rotate() or @ref rotateLocal() instead.
          */
         CORRADE_DEPRECATED("use rotate() or rotateLocal() instead") Object<BasicMatrixTransformation3D<T>>& rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type) {
@@ -238,7 +238,7 @@ template<class T> class BasicMatrixTransformation3D: public AbstractBasicTransla
         #pragma warning(disable: 4996)
         #endif
         /**
-         * @copybrief rotateX()
+         * @brief @copybrief rotateX()
          * @deprecated Use @ref rotateX() or @ref rotateXLocal() instead.
          */
         CORRADE_DEPRECATED("use rotateX() or rotateXLocal() instead") Object<BasicMatrixTransformation3D<T>>& rotateX(Math::Rad<T> angle, TransformationType type) {
@@ -283,7 +283,7 @@ template<class T> class BasicMatrixTransformation3D: public AbstractBasicTransla
         #pragma warning(disable: 4996)
         #endif
         /**
-         * @copybrief rotateY()
+         * @brief @copybrief rotateY()
          * @deprecated Use @ref rotateY() or @ref rotateYLocal() instead.
          */
         CORRADE_DEPRECATED("use rotateY() or rotateYLocal() instead") Object<BasicMatrixTransformation3D<T>>& rotateY(Math::Rad<T> angle, TransformationType type) {
@@ -328,7 +328,7 @@ template<class T> class BasicMatrixTransformation3D: public AbstractBasicTransla
         #pragma warning(disable: 4996)
         #endif
         /**
-         * @copybrief rotateZ()
+         * @brief @copybrief rotateZ()
          * @deprecated Use @ref rotateZ() or @ref rotateZLocal() instead.
          */
         CORRADE_DEPRECATED("use rotateZ() or rotateZLocal() instead") Object<BasicMatrixTransformation3D<T>>& rotateZ(Math::Rad<T> angle, TransformationType type) {
@@ -373,7 +373,7 @@ template<class T> class BasicMatrixTransformation3D: public AbstractBasicTransla
         #pragma warning(disable: 4996)
         #endif
         /**
-         * @copybrief scale()
+         * @brief @copybrief scale()
          * @deprecated Use @ref scale() or @ref scaleLocal() instead.
          */
         CORRADE_DEPRECATED("use scale() or scaleLocal() instead") Object<BasicMatrixTransformation3D<T>>& scale(const Math::Vector3<T>& vector, TransformationType type) {
@@ -419,7 +419,7 @@ template<class T> class BasicMatrixTransformation3D: public AbstractBasicTransla
         #pragma warning(disable: 4996)
         #endif
         /**
-         * @copybrief reflect()
+         * @brief @copybrief reflect()
          * @deprecated Use @ref reflect() or @ref reflectLocal() instead.
          */
         CORRADE_DEPRECATED("use reflect() or reflectLocal() instead") Object<BasicMatrixTransformation3D<T>>& reflect(const Math::Vector3<T>& normal, TransformationType type) {

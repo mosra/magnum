@@ -542,7 +542,8 @@ See also:
 -   @ref Shaders::Generic::Color vertex attribute implicit constructor is
     deprecated, use a constructor with explicit component count instead
 -   The bundled `std::optional` implementation was causing serious conflicts
-    with C++17 and it's now deprecated in favor of @ref Containers::Optional.
+    with C++17 and it's now deprecated in favor of
+    @ref Corrade::Containers::Optional.
     (Deprecated) aliases and conversion operators are provided for backwards
     compatibility.
 -   `Audio::Context::hrtfSpecifier()` is deprecated, use

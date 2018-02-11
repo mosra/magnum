@@ -123,7 +123,7 @@ template<class T> class BasicRigidMatrixTransformation2D: public AbstractBasicTr
         #pragma warning(disable: 4996)
         #endif
         /**
-         * @copybrief transform()
+         * @brief @copybrief transform()
          * @deprecated Use @ref transform() or @ref transformLocal() instead.
          */
         CORRADE_DEPRECATED("use transform() or transformLocal() instead") Object<BasicRigidMatrixTransformation2D<T>>& transform(const Math::Matrix3<T>& transformation, TransformationType type) {
@@ -168,7 +168,7 @@ template<class T> class BasicRigidMatrixTransformation2D: public AbstractBasicTr
         #pragma warning(disable: 4996)
         #endif
         /**
-         * @copybrief translate()
+         * @brief @copybrief translate()
          * @deprecated Use @ref translate() or @ref translateLocal() instead.
          */
         CORRADE_DEPRECATED("use translate() or translateLocal() instead") Object<BasicRigidMatrixTransformation2D<T>>& translate(const Math::Vector2<T>& vector, TransformationType type) {
@@ -214,7 +214,7 @@ template<class T> class BasicRigidMatrixTransformation2D: public AbstractBasicTr
         #pragma warning(disable: 4996)
         #endif
         /**
-         * @copybrief rotate()
+         * @brief @copybrief rotate()
          * @deprecated Use @ref rotate() or @ref rotateLocal() instead.
          */
         CORRADE_DEPRECATED("use rotate() or rotateLocal() instead") Object<BasicRigidMatrixTransformation2D<T>>& rotate(Math::Rad<T> angle, TransformationType type) {
@@ -260,7 +260,7 @@ template<class T> class BasicRigidMatrixTransformation2D: public AbstractBasicTr
         #pragma warning(disable: 4996)
         #endif
         /**
-         * @copybrief reflect()
+         * @brief @copybrief reflect()
          * @deprecated Use @ref reflect() or @ref reflectLocal() instead.
          */
         CORRADE_DEPRECATED("use reflect() or reflectInternal() instead") Object<BasicRigidMatrixTransformation2D<T>>& reflect(const Math::Vector2<T>& normal, TransformationType type) {

@@ -73,7 +73,7 @@ std::vector<Vector3> positions;
 indices = MeshTools::duplicate(indices, MeshTools::removeDuplicates(positions));
 @endcode
 
-Removing duplicates in multiple indcidental arrays is also possible -- first
+Removing duplicates in multiple indcidental arrays is also possible --- first
 remove duplicates in each array separately and then use @ref combineIndexedArrays()
 to combine the resulting index arrays to single index array and reorder the
 data accordingly:

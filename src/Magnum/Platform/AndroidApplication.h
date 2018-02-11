@@ -235,7 +235,7 @@ class AndroidApplication {
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @copybrief AndroidApplication(const Arguments&, NoCreateT)
+         * @brief @copybrief AndroidApplication(const Arguments&, NoCreateT)
          * @deprecated Use @ref AndroidApplication(const Arguments&, NoCreateT) instead.
          */
         CORRADE_DEPRECATED("use AndroidApplication(const Arguments&, NoCreateT) instead") explicit AndroidApplication(const Arguments& arguments, std::nullptr_t): AndroidApplication{arguments, NoCreate} {}

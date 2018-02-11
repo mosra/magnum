@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Forward declarations for Magnum::Trade namespace
+ * @brief Forward declarations for the @ref Magnum::Trade namespace
  */
 
 #include "Magnum/Types.h"

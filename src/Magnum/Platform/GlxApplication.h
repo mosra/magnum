@@ -104,7 +104,7 @@ class GlxApplication: public AbstractXApplication {
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @copybrief GlxApplication(const Arguments&, NoCreateT)
+         * @brief @copybrief GlxApplication(const Arguments&, NoCreateT)
          * @deprecated Use @ref GlxApplication(const Arguments&, NoCreateT) instead.
          */
         CORRADE_DEPRECATED("use GlxApplication(const Arguments&, NoCreateT) instead") explicit GlxApplication(const Arguments& arguments, std::nullptr_t): GlxApplication{arguments, NoCreate} {}

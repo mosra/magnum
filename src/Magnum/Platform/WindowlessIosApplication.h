@@ -241,7 +241,7 @@ class WindowlessIosApplication {
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @copybrief WindowlessIosApplication(const Arguments&, NoCreateT)
+         * @brief @copybrief WindowlessIosApplication(const Arguments&, NoCreateT)
          * @deprecated Use @ref WindowlessIosApplication(const Arguments&, NoCreateT) instead.
          */
         CORRADE_DEPRECATED("use WindowlessIosApplication(const Arguments&, NoCreateT) instead") explicit WindowlessIosApplication(const Arguments& arguments, std::nullptr_t): WindowlessIosApplication{arguments, NoCreate} {}

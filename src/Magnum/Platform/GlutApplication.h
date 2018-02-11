@@ -137,7 +137,7 @@ class GlutApplication {
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @copybrief GlutApplication(const Arguments&, NoCreateT)
+         * @brief @copybrief GlutApplication(const Arguments&, NoCreateT)
          * @deprecated Use @ref GlutApplication(const Arguments&, NoCreateT) instead.
          */
         CORRADE_DEPRECATED("use GlutApplication(const Arguments&, NoCreateT) instead") explicit GlutApplication(const Arguments& arguments, std::nullptr_t): GlutApplication{arguments, NoCreate} {}

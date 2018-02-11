@@ -105,7 +105,7 @@ class XEglApplication: public AbstractXApplication {
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @copybrief XEglApplication(const Arguments&, NoCreateT)
+         * @brief @copybrief XEglApplication(const Arguments&, NoCreateT)
          * @deprecated Use @ref XEglApplication(const Arguments&, NoCreateT) instead.
          */
         CORRADE_DEPRECATED("use XEglApplication(const Arguments&, NoCreateT) instead") explicit XEglApplication(const Arguments& arguments, std::nullptr_t): XEglApplication{arguments, NoCreate} {}

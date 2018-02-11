@@ -122,7 +122,7 @@ template<class Application> class BasicScreenedApplication: public Application, 
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @copybrief BasicScreenedApplication(const typename Application::Arguments&, NoCreateT)
+         * @brief @copybrief BasicScreenedApplication(const typename Application::Arguments&, NoCreateT)
          * @deprecated Use @ref BasicScreenedApplication(const typename Application::Arguments&, NoCreateT) instead.
          */
         CORRADE_DEPRECATED("use BasicScreenedApplication(const Arguments&, NoCreateT) instead") explicit BasicScreenedApplication(const typename Application::Arguments& arguments, std::nullptr_t): BasicScreenedApplication{arguments, NoCreate} {}

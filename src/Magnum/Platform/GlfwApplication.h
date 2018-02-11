@@ -143,7 +143,7 @@ class GlfwApplication {
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @copybrief GlfwApplication(const Arguments&, NoCreateT)
+         * @brief @copybrief GlfwApplication(const Arguments&, NoCreateT)
          * @deprecated Use @ref GlfwApplication(const Arguments&, NoCreateT) instead.
          */
         CORRADE_DEPRECATED("use GlfwApplication(const Arguments&, NoCreateT) instead") explicit GlfwApplication(const Arguments& arguments, std::nullptr_t): GlfwApplication{arguments, NoCreate} {}

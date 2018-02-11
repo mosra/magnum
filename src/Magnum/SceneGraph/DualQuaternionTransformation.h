@@ -118,7 +118,7 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
         #pragma warning(disable: 4996)
         #endif
         /**
-         * @copybrief transform()
+         * @brief @copybrief transform()
          * @deprecated Use @ref transform() or @ref transformLocal() instead.
          */
         CORRADE_DEPRECATED("use transform() or transformLocal() instead") Object<BasicDualQuaternionTransformation<T>>& transform(const Math::DualQuaternion<T>& transformation, TransformationType type) {
@@ -162,7 +162,7 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
         #pragma warning(disable: 4996)
         #endif
         /**
-         * @copybrief translate()
+         * @brief @copybrief translate()
          * @deprecated Use @ref translate() or @ref translateLocal() instead.
          */
         CORRADE_DEPRECATED("use translate() or translateLocal() instead") Object<BasicDualQuaternionTransformation<T>>& translate(const Math::Vector3<T>& vector, TransformationType type) {
@@ -209,7 +209,7 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
         #pragma warning(disable: 4996)
         #endif
         /**
-         * @copybrief rotate()
+         * @brief @copybrief rotate()
          * @deprecated Use @ref rotate() or @ref rotateLocal() instead.
          */
         CORRADE_DEPRECATED("usr rotate() or rotateLocal() instead") Object<BasicDualQuaternionTransformation<T>>& rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type) {

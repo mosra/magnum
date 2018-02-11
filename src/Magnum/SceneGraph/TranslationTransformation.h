@@ -103,7 +103,7 @@ class TranslationTransformation: public AbstractTranslation<dimensions, T, Trans
         #pragma warning(disable: 4996)
         #endif
         /**
-         * @copybrief transform()
+         * @brief @copybrief transform()
          * @deprecated Use @ref transform() instead.
          */
         CORRADE_DEPRECATED("use transform() instead") Object<TranslationTransformation<dimensions, T, TranslationType>>& transform(const VectorTypeFor<dimensions, TranslationType>& transformation, TransformationType) {
@@ -139,7 +139,7 @@ class TranslationTransformation: public AbstractTranslation<dimensions, T, Trans
         #pragma warning(disable: 4996)
         #endif
         /**
-         * @copybrief translate()
+         * @brief @copybrief translate()
          * @deprecated Use @ref translate() instead.
          */
         CORRADE_DEPRECATED("use translate() instead") Object<TranslationTransformation<dimensions, T, TranslationType>>& translate(const VectorTypeFor<dimensions, TranslationType>& vector, TransformationType) {

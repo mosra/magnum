@@ -82,7 +82,7 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
         #pragma warning(disable: 4996)
         #endif
         /**
-         * @copybrief rotate()
+         * @brief @copybrief rotate()
          * @deprecated Use @ref rotate() or @ref rotateLocal() instead.
          */
         CORRADE_DEPRECATED("use rotate() or rotateLocal() instead") AbstractBasicTranslationRotation3D<T>& rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type) {
@@ -132,7 +132,7 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
         #pragma warning(disable: 4996)
         #endif
         /**
-         * @copybrief rotateX()
+         * @brief @copybrief rotateX()
          * @deprecated Use @ref rotateX() or @ref rotateXLocal() instead.
          */
         CORRADE_DEPRECATED("use rotateX() or rotateXLocal() instead") AbstractBasicTranslationRotation3D<T>& rotateX(Math::Rad<T> angle, TransformationType type) {
@@ -182,7 +182,7 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
         #pragma warning(disable: 4996)
         #endif
         /**
-         * @copybrief rotateY()
+         * @brief @copybrief rotateY()
          * @deprecated Use @ref rotateY() or @ref rotateYLocal() instead.
          */
         CORRADE_DEPRECATED("use rotateY() or rotateYLocal() instead") AbstractBasicTranslationRotation3D<T>& rotateY(Math::Rad<T> angle, TransformationType type) {
@@ -232,7 +232,7 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
         #pragma warning(disable: 4996)
         #endif
         /**
-         * @copybrief rotateZ()
+         * @brief @copybrief rotateZ()
          * @deprecated Use @ref rotateZ() or @ref rotateZLocal() instead.
          */
         CORRADE_DEPRECATED("use rotateZ() or rotateZLocal() instead") AbstractBasicTranslationRotation3D<T>& rotateZ(Math::Rad<T> angle, TransformationType type) {

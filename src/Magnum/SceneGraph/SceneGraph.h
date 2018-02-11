@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Forward declarations for @ref Magnum::SceneGraph namespace
+ * @brief Forward declarations for the @ref Magnum::SceneGraph namespace
  */
 
 #include "Magnum/Types.h"

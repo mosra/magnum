@@ -90,7 +90,7 @@ class AbstractTranslation: public AbstractTransformation<dimensions, T> {
         #pragma warning(disable: 4996)
         #endif
         /**
-         * @copybrief translate()
+         * @brief @copybrief translate()
          * @deprecated Use @ref translate() or @ref translateLocal() instead.
          */
         CORRADE_DEPRECATED("use translate() or translateLocal() instead") AbstractTranslation<dimensions, T, TranslationType>& translate(const VectorTypeFor<dimensions, TranslationType>& vector, TransformationType type) {

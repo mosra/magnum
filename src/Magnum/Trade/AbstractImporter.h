@@ -522,8 +522,9 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
          * @brief Implementation for @ref openFile()
          *
          * If @ref Feature::OpenData is supported, default implementation opens
-         * the file and calls @ref doOpenData() with its contents. It is
-         * allowed to call this function from your @ref doOpenFile()
+         * the file and calls @ref Magnum::Trade::AbstractImporter::doOpenData() "doOpenData()"
+         * with its contents. It is allowed to call this function from your
+         * @ref Magnum::Trade::AbstractImporter::doOpenFile() "doOpenFile()"
          * implementation.
          */
         virtual void doOpenFile(const std::string& filename);

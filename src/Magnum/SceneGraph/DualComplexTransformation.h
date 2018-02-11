@@ -118,7 +118,7 @@ template<class T> class BasicDualComplexTransformation: public AbstractBasicTran
         #pragma warning(disable: 4996)
         #endif
         /**
-         * @copybrief transform()
+         * @brief @copybrief transform()
          * @deprecated Use @ref transform() or @ref transformLocal() instead.
          */
         CORRADE_DEPRECATED("use transform() or transformLocal() instead") Object<BasicDualComplexTransformation<T>>& transform(const Math::DualComplex<T>& transformation, TransformationType type) {
@@ -163,7 +163,7 @@ template<class T> class BasicDualComplexTransformation: public AbstractBasicTran
         #pragma warning(disable: 4996)
         #endif
         /**
-         * @copybrief translate()
+         * @brief @copybrief translate()
          * @deprecated Use @ref translate() or @ref translateLocal() instead.
          */
         CORRADE_DEPRECATED("use translate() or translateLocal() instead") Object<BasicDualComplexTransformation<T>>& translate(const Math::Vector2<T>& vector, TransformationType type) {
@@ -207,7 +207,7 @@ template<class T> class BasicDualComplexTransformation: public AbstractBasicTran
         #pragma warning(disable: 4996)
         #endif
         /**
-         * @copybrief rotate()
+         * @brief @copybrief rotate()
          * @deprecated Use @ref rotate() or @ref rotateLocal() instead.
          */
         CORRADE_DEPRECATED("use rotate() or rotateLocal() instead") Object<BasicDualComplexTransformation<T>>& rotate(Math::Rad<T> angle, TransformationType type) {

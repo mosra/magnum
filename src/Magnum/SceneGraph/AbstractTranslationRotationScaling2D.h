@@ -78,7 +78,7 @@ template<class T> class AbstractBasicTranslationRotationScaling2D: public Abstra
         #pragma warning(disable: 4996)
         #endif
         /**
-         * @copybrief scale()
+         * @brief @copybrief scale()
          * @deprecated Use @ref scale() or @ref scaleLocal() instead.
          */
         CORRADE_DEPRECATED("use scale() or scaleLocal() instead") AbstractBasicTranslationRotationScaling2D<T>& scale(const Math::Vector2<T>& vector, TransformationType type) {

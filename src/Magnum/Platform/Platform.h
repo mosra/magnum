@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Forward declarations for @ref Magnum::Platform namespace
+ * @brief Forward declarations for the @ref Magnum::Platform namespace
  */
 
 namespace Magnum { namespace Platform {

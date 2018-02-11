@@ -95,7 +95,7 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
         #pragma warning(disable: 4996)
         #endif
         /**
-         * @copybrief transform()
+         * @brief @copybrief transform()
          * @deprecated Use @ref transform() or @ref transformLocal() instead.
          */
         CORRADE_DEPRECATED("use transform() or transformLocal() instead") Object<BasicMatrixTransformation2D<T>>& transform(const Math::Matrix3<T>& transformation, TransformationType type) {
@@ -145,7 +145,7 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
         #pragma warning(disable: 4996)
         #endif
         /**
-         * @copybrief translate()
+         * @brief @copybrief translate()
          * @deprecated Use @ref translate() or @ref translateLocal() instead.
          */
         CORRADE_DEPRECATED("use translate() or translateLocal() instead") Object<BasicMatrixTransformation2D<T>>& translate(const Math::Vector2<T>& vector, TransformationType type) {
@@ -190,7 +190,7 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
         #pragma warning(disable: 4996)
         #endif
         /**
-         * @copybrief rotate()
+         * @brief @copybrief rotate()
          * @deprecated Use @ref rotate() or @ref rotateLocal() instead.
          */
         CORRADE_DEPRECATED("use rotate() or rotateLocal() instead") Object<BasicMatrixTransformation2D<T>>& rotate(Math::Rad<T> angle, TransformationType type) {
@@ -235,7 +235,7 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
         #pragma warning(disable: 4996)
         #endif
         /**
-         * @copybrief scale()
+         * @brief @copybrief scale()
          * @deprecated Use @ref scale() or @ref scaleLocal() instead.
          */
         CORRADE_DEPRECATED("use scale() or scaleLocal() instead") Object<BasicMatrixTransformation2D<T>>& scale(const Math::Vector2<T>& vector, TransformationType type) {
@@ -282,7 +282,7 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
         #pragma warning(disable: 4996)
         #endif
         /**
-         * @copybrief reflect()
+         * @brief @copybrief reflect()
          * @deprecated Use @ref reflect() or @ref reflectLocal() instead.
          */
         CORRADE_DEPRECATED("use reflect() or reflectLocal() instead") Object<BasicMatrixTransformation2D<T>>& reflect(const Math::Vector2<T>& normal, TransformationType type) {

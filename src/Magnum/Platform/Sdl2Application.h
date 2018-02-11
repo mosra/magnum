@@ -400,7 +400,7 @@ class Sdl2Application {
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @copybrief Sdl2Application(const Arguments&, NoCreateT)
+         * @brief @copybrief Sdl2Application(const Arguments&, NoCreateT)
          * @deprecated Use @ref Sdl2Application(const Arguments&, NoCreateT) instead.
          */
         CORRADE_DEPRECATED("use Sdl2Application(const Arguments&, NoCreateT) instead") explicit Sdl2Application(const Arguments& arguments, std::nullptr_t): Sdl2Application{arguments, NoCreate} {}

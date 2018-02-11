@@ -130,7 +130,7 @@ the @ref Deg and @ref Rad classes (or @ref Degd and @ref Radd with @ref Double
 as underlying type). Their only purpose is to avoid common degree-vs-radian
 bugs (i.e. entering degree value where radians should be) and make the
 conversion between these two representations easier. They are just a tiny
-@cpp inline constexpr @ce wrapper around the native type and they support all
+@cpp constexpr @ce wrapper around the native type and they support all
 meaningful numeric operations, so using them won't have any performance or
 usability impact in practice.
 
