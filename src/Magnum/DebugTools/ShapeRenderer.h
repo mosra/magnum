@@ -86,7 +86,7 @@ class ShapeRendererOptions {
          * @brief Set color of rendered shape
          * @return Reference to self (for method chaining)
          *
-         * Default is 100% opaque white.
+         * Default is @cpp 0xffffffff_rgbaf @ce.
          */
         ShapeRendererOptions& setColor(const Color4& color) {
             _color = color;
@@ -101,7 +101,7 @@ class ShapeRendererOptions {
          * @return Reference to self (for method chaining)
          *
          * Size of rendered crosshairs, representing @ref Shapes::Point shapes.
-         * Default is `0.25f`.
+         * Default is @cpp 0.25f @ce.
          */
         ShapeRendererOptions& setPointSize(Float size) {
             _pointSize = size;
@@ -120,11 +120,11 @@ class ShapeRendererOptions {
 Visualizes collision shapes using wireframe primitives. See
 @ref debug-tools-renderers for more information.
 
-@anchor DebugTools-ShapeRenderer-usage
-## Basic usage
+@section DebugTools-ShapeRenderer-usage Basic usage
 
 Example code:
-@code
+
+@code{.cpp}
 // Create some options
 DebugTools::ResourceManager::instance().set("red",
     DebugTools::ShapeRendererOptions().setColor({1.0f, 0.0f, 0.0f}));

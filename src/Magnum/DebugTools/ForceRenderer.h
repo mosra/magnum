@@ -53,7 +53,7 @@ class ForceRendererOptions {
          * @brief Set color of rendered arrow
          * @return Reference to self (for method chaining)
          *
-         * Default is 100% opaque white.
+         * Default is @cpp 0xffffffff_rgbaf @ce.
          */
         ForceRendererOptions& setColor(const Color4& color) {
             _color = color;
@@ -67,7 +67,7 @@ class ForceRendererOptions {
          * @brief Set scale of rendered arrow
          * @return Reference to self (for method chaining)
          *
-         * Default is `1.0f`.
+         * Default is @cpp 1.0f @ce.
          */
         ForceRendererOptions& setSize(Float size) {
             _size = size;
@@ -85,11 +85,11 @@ class ForceRendererOptions {
 Visualizes force pushing on object by an arrow of the same direction and size.
 See @ref debug-tools-renderers for more information.
 
-@anchor DebugTools-ForceRenderer-usage
-## Basic usage
+@section DebugTools-ForceRenderer-usage Basic usage
 
 Example code:
-@code
+
+@code{.cpp}
 DebugTools::ResourceManager::instance().set("my", DebugTools::ForceRendererOptions()
     .setScale(5.0f)
     .setColor(Color3::fromHSV(120.0_degf, 1.0f, 0.7f));
@@ -114,9 +114,9 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ForceRenderer: p
          *      more information.
          * @param drawables     Drawable group
          *
-         * The renderer is automatically added to object's features, @p force is
-         * saved as reference to original vector and thus it must be available
-         * for the whole lifetime of the renderer.
+         * The renderer is automatically added to object's features, @p force
+         * is saved as reference to original vector and thus it must be
+         * available for the whole lifetime of the renderer.
          */
         explicit ForceRenderer(SceneGraph::AbstractObject<dimensions, Float>& object, const VectorTypeFor<dimensions, Float>& forcePosition, const VectorTypeFor<dimensions, Float>& force, ResourceKey options = ResourceKey(), SceneGraph::DrawableGroup<dimensions, Float>* drawables = nullptr);
 

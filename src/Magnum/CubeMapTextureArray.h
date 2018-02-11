@@ -457,7 +457,8 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          *
          * See @ref Texture::image(Int, Image&) for more information.
          * @requires_gl Texture image queries are not available in OpenGL ES.
-         *      See @ref Framebuffer::read() for possible workaround.
+         *      See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
+         *      for possible workarounds.
          */
         void image(Int level, Image3D& image) {
             AbstractTexture::image<3>(level, image);
@@ -479,7 +480,8 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          * See @ref Texture::image(Int, BufferImage&, BufferUsage) for more
          * information.
          * @requires_gl Texture image queries are not available in OpenGL ES.
-         *      See @ref Framebuffer::read() for possible workaround.
+         *      See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
+         *      for possible workarounds.
          */
         void image(Int level, BufferImage3D& image, BufferUsage usage) {
             AbstractTexture::image<3>(level, image, usage);
@@ -501,7 +503,8 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          * See @ref Texture::compressedImage(Int, CompressedImage&) for more
          *      information.
          * @requires_gl Texture image queries are not available in OpenGL ES.
-         *      See @ref Framebuffer::read() for possible workaround.
+         *      See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
+         *      for possible workarounds.
          */
         void compressedImage(Int level, CompressedImage3D& image) {
             AbstractTexture::compressedImage<3>(level, image);
@@ -523,7 +526,8 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          * See @ref Texture::compressedImage(Int, CompressedBufferImage&, BufferUsage)
          * for more information.
          * @requires_gl Texture image queries are not available in OpenGL ES.
-         *      See @ref Framebuffer::read() for possible workaround.
+         *      See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
+         *      for possible workarounds.
          */
         void compressedImage(Int level, CompressedBufferImage3D& image, BufferUsage usage) {
             AbstractTexture::compressedImage<3>(level, image, usage);
@@ -546,7 +550,8 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          * for more information.
          * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
          * @requires_gl Texture image queries are not available in OpenGL ES.
-         *      See @ref Framebuffer::read() for possible workaround.
+         *      See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
+         *      for possible workarounds.
          */
         void subImage(Int level, const Range3Di& range, Image3D& image) {
             AbstractTexture::subImage<3>(level, range, image);
@@ -569,7 +574,8 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          * for more information.
          * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
          * @requires_gl Texture image queries are not available in OpenGL ES.
-         *      See @ref Framebuffer::read() for possible workaround.
+         *      See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
+         *      for possible workarounds.
          */
         void subImage(Int level, const Range3Di& range, BufferImage3D& image, BufferUsage usage) {
             AbstractTexture::subImage<3>(level, range, image, usage);
@@ -596,7 +602,8 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          *      @ref CompressedPixelStorage::compressedBlockDataSize() are not
          *      set to non-zero values
          * @requires_gl Texture image queries are not available in OpenGL ES.
-         *      See @ref Framebuffer::read() for possible workaround.
+         *      See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
+         *      for possible workarounds.
          */
         void compressedSubImage(Int level, const Range3Di& range, CompressedImage3D& image) {
             AbstractTexture::compressedSubImage<3>(level, range, image);
@@ -623,7 +630,8 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          *      @ref CompressedPixelStorage::compressedBlockDataSize() are not
          *      set to non-zero values
          * @requires_gl Texture image queries are not available in OpenGL ES.
-         *      See @ref Framebuffer::read() for possible workaround.
+         *      See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
+         *      for possible workarounds.
          */
         void compressedSubImage(Int level, const Range3Di& range, CompressedBufferImage3D& image, BufferUsage usage) {
             AbstractTexture::compressedSubImage<3>(level, range, image, usage);

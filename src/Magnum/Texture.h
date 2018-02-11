@@ -788,7 +788,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl_extension_keyword{GetTextureImage,EXT,direct_state_access},
          *      eventually @fn_gl_keyword{GetTexImage}
          * @requires_gl Texture image queries are not available in OpenGL ES or
-         *      WebGL. See @ref Framebuffer::read() for possible workaround.
+         *      WebGL. See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
+         *      for possible workarounds.
          */
         void image(Int level, Image<dimensions>& image) {
             AbstractTexture::image<dimensions>(level, image);
@@ -814,7 +815,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * reallocated if it is large enough to contain the new data, which
          * means that @p usage might get ignored.
          * @requires_gl Texture image queries are not available in OpenGL ES or
-         *      WebGL. See @ref Framebuffer::read() for possible workaround.
+         *      WebGL. See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
+         *      for possible workarounds.
          * @todo Make it more flexible (usable with
          *      @extension{ARB,buffer_storage}, avoiding relocations...)
          */
@@ -861,7 +863,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl_extension_keyword{GetCompressedTextureImage,EXT,direct_state_access},
          *      eventually @fn_gl_keyword{GetCompressedTexImage}
          * @requires_gl Texture image queries are not available in OpenGL ES or
-         *      WebGL. See @ref Framebuffer::read() for possible workaround.
+         *      WebGL. See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
+         *      for possible workarounds.
          */
         void compressedImage(Int level, CompressedImage<dimensions>& image) {
             AbstractTexture::compressedImage<dimensions>(level, image);
@@ -887,7 +890,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * information. The storage is not reallocated if it is large enough to
          * contain the new data, which means that @p usage might get ignored.
          * @requires_gl Texture image queries are not available in OpenGL ES or
-         *      WebGL. See @ref Framebuffer::read() for possible workaround.
+         *      WebGL. See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
+         *      for possible workarounds.
          * @todo Make it more flexible (usable with
          *      @extension{ARB,buffer_storage}, avoiding relocations...)
          */
@@ -985,7 +989,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @ref CompressedPixelStorage::compressedBlockDataSize() are not
          *      set to non-zero values
          * @requires_gl Texture image queries are not available in OpenGL ES or
-         *      WebGL. See @ref Framebuffer::read() for possible workaround.
+         *      WebGL. See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
+         *      for possible workarounds.
          */
         void compressedSubImage(Int level, const RangeTypeFor<dimensions, Int>& range, CompressedImage<dimensions>& image) {
             AbstractTexture::compressedSubImage<dimensions>(level, range, image);
@@ -1016,7 +1021,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @ref CompressedPixelStorage::compressedBlockDataSize() are not
          *      set to non-zero values
          * @requires_gl Texture image queries are not available in OpenGL ES or
-         *      WebGL. See @ref Framebuffer::read() for possible workaround.
+         *      WebGL. See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
+         *      for possible workarounds.
          */
         void compressedSubImage(Int level, const RangeTypeFor<dimensions, Int>& range, CompressedBufferImage<dimensions>& image, BufferUsage usage) {
             AbstractTexture::compressedSubImage<dimensions>(level, range, image, usage);

@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Forward declarations for @ref Magnum::DebugTools namespace
+ * @brief Forward declarations for the @ref Magnum::DebugTools namespace
  */
 
 #include "Magnum/Types.h"

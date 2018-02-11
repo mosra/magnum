@@ -45,7 +45,8 @@ namespace Magnum { namespace DebugTools {
 Measures time passed during specified sections of each frame. It's meant to be
 used in rendering and event loops (e.g. @ref Platform::Sdl2Application::drawEvent()),
 but it's possible to use it standalone elsewhere. Example usage:
-@code
+
+@code{.cpp}
 DebugTools::Profiler p;
 
 // Register named sections
@@ -94,7 +95,8 @@ p.printStatistics();
 @endcode
 
 It's possible to start profiler only for certain parts of the code and then
-stop it again using @ref stop(), if you are not interested in profiling the rest.
+stop it again using @ref stop(), if you are not interested in profiling the
+rest.
 
 @todo Some unit testing
 @todo More time intervals
@@ -121,7 +123,7 @@ class MAGNUM_DEBUGTOOLS_EXPORT Profiler {
          * @brief Set measure duration
          *
          * Measured data are averaged through given frame count. Default value
-         * is 60.
+         * is @cpp 60 @ce.
          * @attention This function cannot be called if profiling is enabled.
          */
         void setMeasureDuration(std::size_t frames);
@@ -169,7 +171,7 @@ class MAGNUM_DEBUGTOOLS_EXPORT Profiler {
         /**
          * @brief Start profiling of "other" section
          *
-         * Same as calling `start(DebugTools::Profiler::otherSection)`.
+         * Same as calling @cpp start(DebugTools::Profiler::otherSection) @ce.
          * @note Does nothing if profiling is disabled.
          */
         void start() { start(otherSection); }
