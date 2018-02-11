@@ -90,9 +90,15 @@ appropriately mark the class/function
 @subsection coding-style-documentation-commands Special documentation commands
 
 Additionally to @c \@todoc, @c \@debugoperator, @c \@debugoperatorenum,
-@c \@debugoperatorclassenum, @c \@configurationvalue and
-@c \@configurationvalueref defined @ref corrade-coding-style-documentation-commands "the same as in Corrade",
+@c \@debugoperatorclassenum, @c \@configurationvalue, @c \@configurationvalueref,
+@c \@cb, @c \@ce, @c \@cpp, @c \@cmake defined @ref corrade-coding-style-documentation-commands "the same as in Corrade"
+and all @c \@m_* commands from the [m.css theme](http://mcss.mosra.cz/doxygen/#theme-specific-commands),
 these are defined:
+
+@subsubsection coding-style-documentation-commands-code Code
+
+The @c \@glsl command expands to <tt>\@cb{.glsl}</tt>, making it possible to
+have inline highlighted GLSL code snippets, similarly to @c \@cpp and @c \@cmake.
 
 @subsubsection coding-style-documentation-commands-collisionoperator Shape collision operators
 
@@ -156,6 +162,16 @@ It produces a link to the online manual:
 @fn_gl{Enable}/@fn_gl{Disable} with @def_gl{TEXTURE_CUBE_MAP_SEAMLESS}
 </blockquote>
 
+Some functions are documented together in a single page. For this case
+there's the @c \@fn_gl2 command that takes the actual page name as second
+parameter:
+
+@snippet coding-style.h fn_gl2
+
+<blockquote>
+@fn_gl2_keyword{CopyTextureSubImage2D,CopyTexSubImage2D}
+</blockquote>
+
 For functions which are not part of OpenGL core specification, but only as
 extensions, use @c \@fn_gl_extension command, e.g.
 
@@ -179,6 +195,14 @@ Produces:
 <blockquote>
 @fn_al{Listenerfv} with @def_al{VELOCITY}
 </blockquote>
+
+There are additional commands that combine @c \@fn_* / @c \@def_* and
+@c \@m_keywords together (i.e., provide a link to given GL/AL API and also add
+that name as an search keyword for current documented symbol). In particular,
+it's @c \@fn_gl_keyword, @c \@fn_gl2_keyword, @c \@def_gl_keyword,
+@c \@fn_al_keyword, @c \@fn_alc_keyword, @c \@def_al_keyword and
+@c \@def_alc_keyword. Their usage is equivalent to usage of commands without
+the `_keyword` suffix.
 
 @subsubsection coding-style-documentation-commands-requires Classes and functions requiring specific OpenGL, OpenAL version or extensions
 

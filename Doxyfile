@@ -292,7 +292,19 @@ ALIASES                = \
     "m_endspan=" \
     "m_class{1}=" \
     "m_footernavigation=" \
-    "m_examplenavigation{2}="
+    "m_examplenavigation{2}=" \
+    "m_keywords{1}=" \
+    "m_keyword{3}=" \
+    "m_enum_values_as_keywords=" \
+    "fn_gl_keyword{1}=@fn_gl{\1}" \
+    "fn_gl2_keyword{2}=@fn_gl2{\1,\2}" \
+    "fn_gl_extension_keyword{3}=@fn_gl_extension{\1,\2,\3}" \
+    "def_gl_keyword{1}=@def_gl{\1}" \
+    "def_gl_extension_keyword{3}=@def_gl_extension{\1,\2,\3}" \
+    "fn_al_keyword{1}=@fn_al{\1}" \
+    "fn_alc_keyword{1}=@fn_alc{\1}" \
+    "def_al_keyword{1}=@def_al{\1}" \
+    "def_alc_keyword{1}=@def_alc{\1}"
 
 # This tag can be used to specify a number of word-keyword mappings (TCL only).
 # A mapping has the form "name=value". For example adding "class=itcl::class"
