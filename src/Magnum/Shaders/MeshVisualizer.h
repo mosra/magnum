@@ -47,7 +47,7 @@ Uses geometry shader to visualize wireframe of 3D meshes. You need to provide
 @image html shaders-meshvisualizer.png
 @image latex shaders-meshvisualizer.png
 
-## Wireframe visualization
+@section Shaders-MeshVisualizer-wireframe Wireframe visualization
 
 Wireframe visualization is done by enabling @ref Flag::Wireframe. It is done
 either using geometry shaders or with help of additional vertex information.
@@ -71,12 +71,13 @@ you have OpenGL < 3.1 or OpenGL ES 2.0, you need to provide also
 If using geometry shaders on OpenGL ES, @extension{NV,shader_noperspective_interpolation}
 is optionally used for improving line appearance.
 
-## Example usage
+@section Shaders-MeshVisualizer-usage Example usage
 
-### Wireframe visualization with geometry shader (desktop GL)
+@subsection Shaders-MeshVisualizer-usage-wireframe-geom Wireframe visualization with geometry shader (desktop GL)
 
 Common mesh setup:
-@code
+
+@code{.cpp}
 struct Vertex {
     Vector3 position;
 };
@@ -90,24 +91,26 @@ mesh.addVertexBuffer(vertices, 0, Shaders::MeshVisualizer::Position{});
 @endcode
 
 Common rendering setup:
-@code
+
+@code{.cpp}
 Matrix4 transformationMatrix = Matrix4::translation(Vector3::zAxis(-5.0f));
 Matrix4 projectionMatrix = Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.001f, 100.0f);
 
 Shaders::MeshVisualizer shader{Shaders::MeshVisualizer::Wireframe};
-shader.setColor(Color3::fromHSV(216.0_degf, 0.85f, 1.0f))
-    .setWireframeColor(Color3{0.95f})
+shader.setColor(0x2f83cc_rgbf)
+    .setWireframeColor(0xdcdcdc_rgbf)
     .setViewportSize(defaultFramebuffer.viewport().size())
     .setTransformationProjectionMatrix(projectionMatrix*transformationMatrix);
 
 mesh.draw(shader);
 @endcode
 
-### Wireframe visualization without geometry shader on older hardware
+@subsection Shaders-MeshVisualizer-usage-wireframe-no-geom-old Wireframe visualization without geometry shader on older hardware
 
 You need to provide also the @ref VertexIndex attribute. Mesh setup *in
 addition to the above*:
-@code
+
+@code{.cpp}
 constexpr std::size_t vertexCount = std::extent<decltype(data)>::value;
 Float vertexIndex[vertexCount];
 std::iota(vertexIndex, vertexIndex + vertexCount, 0.0f);
@@ -119,22 +122,24 @@ mesh.addVertexBuffer(vertexIndices, 0, Shaders::MeshVisualizer::VertexIndex{});
 @endcode
 
 Rendering setup:
-@code
+
+@code{.cpp}
 Matrix4 transformationMatrix, projectionMatrix;
 
 Shaders::MeshVisualizer shader{Shaders::MeshVisualizer::Wireframe|
                                Shaders::MeshVisualizer::NoGeometryShader};
-shader.setColor(Color3::fromHSV(216.0_degf, 0.85f, 1.0f))
-    .setWireframeColor(Color3{0.95f})
+shader.setColor(0x2f83cc_rgbf)
+    .setWireframeColor(0xdcdcdc_rgbf)
     .setTransformationProjectionMatrix(projectionMatrix*transformationMatrix);
 
 mesh.draw(shader);
 @endcode
 
-### Wireframe visualization of indexed meshes without geometry shader
+@subsection Shaders-MeshVisualizer-usage-wireframe-no-geom Wireframe visualization of indexed meshes without geometry shader
 
 The vertices must be converted to non-indexed array. Mesh setup:
-@code
+
+@code{.cpp}
 std::vector<UnsignedInt> indices{ ... };
 std::vector<Vector3> indexedPositions{ ... };
 
@@ -165,10 +170,10 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public AbstractShaderProgram {
          *
          * @ref Magnum::Float "Float", used only in OpenGL < 3.1 and OpenGL ES
          * 2.0 if @ref Flag::Wireframe is enabled. This attribute (modulo 3)
-         * specifies index of given vertex in triangle, i.e. `0` for first, `1`
-         * for second, `2` for third. In OpenGL 3.1, OpenGL ES 3.0 and newer
-         * this value is provided by the shader itself, so the attribute is not
-         * needed.
+         * specifies index of given vertex in triangle, i.e. @cpp 0.0f @ce for
+         * first, @cpp 1.0f @ce for second, @cpp 2.0f @ce for third. In OpenGL
+         * 3.1, OpenGL ES 3.0 and newer this value is provided by the shader
+         * itself, so the attribute is not needed.
          */
         typedef Attribute<3, Float> VertexIndex;
 
@@ -267,8 +272,8 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public AbstractShaderProgram {
          * @brief Set wireframe width
          * @return Reference to self (for method chaining)
          *
-         * Initial value is `1.0f`. Has effect only if @ref Flag::Wireframe is
-         * enabled.
+         * Initial value is @cpp 1.0f @ce. Has effect only if @ref Flag::Wireframe
+         * is enabled.
          */
         MeshVisualizer& setWireframeWidth(Float width) {
             if(_flags & Flag::Wireframe) setUniform(_wireframeWidthUniform, width);
@@ -279,8 +284,8 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public AbstractShaderProgram {
          * @brief Set line smoothness
          * @return Reference to self (for method chaining)
          *
-         * Initial value is `2.0f`. Has effect only if @ref Flag::Wireframe is
-         * enabled.
+         * Initial value is @cpp 2.0f @ce. Has effect only if @ref Flag::Wireframe
+         * is enabled.
          */
         MeshVisualizer& setSmoothness(Float smoothness);
 

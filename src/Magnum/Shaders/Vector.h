@@ -51,10 +51,11 @@ attributes in your triangle mesh and call at least
 @image html shaders-vector.png
 @image latex shaders-vector.png
 
-## Example usage
+@section Shaders-Vector-usage Example usage
 
 Common mesh setup:
-@code
+
+@code{.cpp}
 struct Vertex {
     Vector2 position;
     Vector2 textureCoordinates;
@@ -71,12 +72,13 @@ mesh.addVertexBuffer(vertices, 0,
 @endcode
 
 Common rendering setup:
-@code
+
+@code{.cpp}
 Matrix3 transformationMatrix, projectionMatrix;
 Texture2D texture;
 
 Shaders::Vector2D shader;
-shader.setColor(Color3::fromHSV(216.0_degf, 0.85f, 1.0f))
+shader.setColor(0x2f83cc_rgbf)
     .setVectorTexture(texture)
     .setTransformationProjectionMatrix(projectionMatrix*transformationMatrix);
 

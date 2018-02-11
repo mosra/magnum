@@ -62,12 +62,13 @@ For coloring the texture based on intensity you can use the @ref Vector shader.
 @image html shaders-flat.png
 @image latex shaders-flat.png
 
-## Example usage
+@section Shaders-Flat-usage Example usage
 
-### Colored mesh
+@subsection Shaders-Flat-usage-colored Colored mesh
 
 Common mesh setup:
-@code
+
+@code{.cpp}
 struct Vertex {
     Vector3 position;
 };
@@ -81,21 +82,23 @@ mesh.addVertexBuffer(vertices, 0, Shaders::Flat3D::Position{});
 @endcode
 
 Common rendering setup:
-@code
+
+@code{.cpp}
 Matrix4 transformationMatrix = Matrix4::translation(Vector3::zAxis(-5.0f));
 Matrix4 projectionMatrix = Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.001f, 100.0f);
 
 Shaders::Flat3D shader;
-shader.setColor(Color3::fromHSV(216.0_degf, 0.85f, 1.0f))
+shader.setColor(0x2f83cc_rgbf)
     .setTransformationProjectionMatrix(projectionMatrix*transformationMatrix);
 
 mesh.draw(shader);
 @endcode
 
-### Textured mesh
+@subsection Shaders-Flat-usage-textured Textured mesh
 
 Common mesh setup:
-@code
+
+@code{.cpp}
 struct Vertex {
     Vector3 position;
     Vector2 textureCoordinates;
@@ -112,7 +115,8 @@ mesh.addVertexBuffer(vertices, 0,
 @endcode
 
 Common rendering setup:
-@code
+
+@code{.cpp}
 Matrix4 transformationMatrix, projectionMatrix;
 Texture2D texture;
 
@@ -198,8 +202,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public Abstra
          * @brief Set color
          * @return Reference to self (for method chaining)
          *
-         * If @ref Flag::Textured is set, default value is `{1.0f, 1.0f, 1.0f}`
-         * and the color will be multiplied with texture.
+         * If @ref Flag::Textured is set, default value is
+         * @cpp 0xffffffff_rgbaf @ce and the color will be multiplied with
+         * texture.
          * @see @ref setTexture()
          */
         Flat<dimensions>& setColor(const Color4& color){

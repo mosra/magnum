@@ -55,12 +55,13 @@ enabled textures.
 @image html shaders-phong.png
 @image latex shaders-phong.png
 
-## Example usage
+@section Shaders-Phong-usage Example usage
 
-### Colored mesh
+@subsection Shaders-Phong-usage-colored Colored mesh
 
 Common mesh setup:
-@code
+
+@code{.cpp}
 struct Vertex {
     Vector3 position;
     Vector3 normal;
@@ -77,12 +78,13 @@ mesh.addVertexBuffer(vertices, 0,
 @endcode
 
 Common rendering setup:
-@code
+
+@code{.cpp}
 Matrix4 transformationMatrix = Matrix4::translation(Vector3::zAxis(-5.0f));
 Matrix4 projectionMatrix = Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.001f, 100.0f);
 
 Shaders::Phong shader;
-shader.setDiffuseColor(Color4::fromHSV(216.0_degf, 0.85f, 1.0f))
+shader.setDiffuseColor(0x2f83cc_rgbf)
     .setShininess(200.0f)
     .setLightPosition({5.0f, 5.0f, 7.0f})
     .setTransformationMatrix(transformationMatrix)
@@ -92,10 +94,11 @@ shader.setDiffuseColor(Color4::fromHSV(216.0_degf, 0.85f, 1.0f))
 mesh.draw(shader);
 @endcode
 
-### Diffuse and specular texture
+@subsection Shaders-Phong-usage-texture Diffuse and specular texture
 
 Common mesh setup:
-@code
+
+@code{.cpp}
 struct Vertex {
     Vector3 position;
     Vector3 normal;
@@ -114,7 +117,8 @@ mesh.addVertexBuffer(vertices, 0,
 @endcode
 
 Common rendering setup:
-@code
+
+@code{.cpp}
 Matrix4 transformationMatrix, projectionMatrix;
 Texture2D diffuseTexture, specularTexture;
 
@@ -129,14 +133,15 @@ shader.setTextures(nullptr, &diffuseTexture, &specularTexture)
 mesh.draw(shader);
 @endcode
 
-### Alpha-masked drawing
+@subsection Shaders-Phong-usage-alpha Alpha-masked drawing
 
 For general alpha-masked drawing you need to provide ambient texture with alpha
 channel and set alpha channel of diffuse/specular color to `0.0f` so only
 ambient alpha will be taken into account. If you have diffuse texture combined
 with the alpha mask, you can use that texture for both ambient and diffuse
 part and then separate the alpha like this:
-@code
+
+@code{.cpp}
 Shaders::Phong shader{Shaders::Phong::AmbientTexture|
                       Shaders::Phong::DiffuseTexture};
 shader.setTextures(&diffuseAlphaTexture, &diffuseAlphaTexture, nullptr)
@@ -216,8 +221,8 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * @return Reference to self (for method chaining)
          *
          * If @ref Flag::AmbientTexture is set, default value is
-         * `{1.0f, 1.0f, 1.0f, 1.0f}` and the color will be multiplied with
-         * ambient texture, otherwise default value is `{0.0f, 0.0f, 0.0f, 1.0f}`.
+         * @cpp 0xffffffff_rgbaf @ce and the color will be multiplied with
+         * ambient texture, otherwise default value is @cpp 0x000000ff_rgbaf @ce.
          * @see @ref setAmbientTexture()
          */
         Phong& setAmbientColor(const Color4& color) {
@@ -239,7 +244,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * @return Reference to self (for method chaining)
          *
          * If @ref Flag::DiffuseTexture is set, default value is
-         * `{1.0f, 1.0f, 1.0f, 1.0f}` and the color will be multiplied with
+         * @cpp 0xffffffff_rgbaf @ce and the color will be multiplied with
          * diffuse texture.
          * @see @ref setDiffuseTexture()
          */
@@ -261,9 +266,8 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * @brief Set specular color
          * @return Reference to self (for method chaining)
          *
-         * Default value is `{1.0f, 1.0f, 1.0f, 1.0f}`. Color will be
-         * multiplied with specular texture if @ref Flag::SpecularTexture is
-         * set.
+         * Default value is @cpp 0xffffffff_rgbaf @ce. Color will be multiplied
+         * with specular texture if @ref Flag::SpecularTexture is set.
          * @see @ref setSpecularTexture()
          */
         Phong& setSpecularColor(const Color4& color) {
@@ -297,7 +301,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * @return Reference to self (for method chaining)
          *
          * The larger value, the harder surface (smaller specular highlight).
-         * If not set, default value is `80.0f`.
+         * If not set, default value is @cpp 80.0f @ce.
          */
         Phong& setShininess(Float shininess) {
             setUniform(_shininessUniform, shininess);
@@ -347,7 +351,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * @brief Set light color
          * @return Reference to self (for method chaining)
          *
-         * If not set, default value is `{1.0f, 1.0f, 1.0f, 1.0f}`.
+         * If not set, default value is @cpp 0xffffffff_rgbaf @ce.
          */
         Phong& setLightColor(const Color4& color) {
             setUniform(_lightColorUniform, color);

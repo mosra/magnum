@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Forward declarations for @ref Magnum::Shaders namespace
+ * @brief Forward declarations for the @ref Magnum::Shaders namespace
  */
 
 #include "Magnum/Types.h"

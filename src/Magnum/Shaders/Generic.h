@@ -83,7 +83,7 @@ template<UnsignedInt dimensions> struct Generic {
         constexpr explicit Color(Components components, DataType dataType = DataType::Float, DataOptions dataOptions = {});
 
         #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @copybrief Color(Components, DataType, DataOptions)
+        /** @brief @copybrief Color(Components, DataType, DataOptions)
          * @deprecated Use @ref Color(Components, DataType, DataOptions) instead.
          */
         CORRADE_DEPRECATED("use Color(Components, DataType, DataOptions) instead") constexpr explicit Color(DataType dataType = DataType::Float, DataOptions dataOptions = {});

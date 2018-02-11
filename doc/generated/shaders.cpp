@@ -120,6 +120,7 @@ int ShaderVisualizer::exec() {
     framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment{0}, color);
 
     Renderer::enable(Renderer::Feature::DepthTest);
+    Renderer::setClearColor(0x000000_rgbaf);
 
     for(auto fun: {&ShaderVisualizer::phong,
                    &ShaderVisualizer::meshVisualizer,
@@ -144,8 +145,8 @@ int ShaderVisualizer::exec() {
 namespace {
     const auto Projection = Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.001f, 100.0f);
     const auto Transformation = Matrix4::translation(Vector3::zAxis(-5.0f));
-    const auto BaseColor = Color3::fromHsv(216.0_degf, 0.85f, 1.0f);
-    const auto OutlineColor = Color3{0.95f};
+    const auto BaseColor = 0x2f83cc_rgbf;
+    const auto OutlineColor = 0xdcdcdc_rgbf;
 }
 
 std::string ShaderVisualizer::phong() {
@@ -154,7 +155,7 @@ std::string ShaderVisualizer::phong() {
     std::tie(mesh, vertices, indices) = MeshTools::compile(Primitives::UVSphere::solid(16, 32), BufferUsage::StaticDraw);
 
     Shaders::Phong shader;
-    shader.setAmbientColor(Color3(0.025f))
+    shader.setAmbientColor(0x22272e_rgbf)
         .setDiffuseColor(BaseColor)
         .setShininess(200.0f)
         .setLightPosition({5.0f, 5.0f, 7.0f})
@@ -209,7 +210,7 @@ std::string ShaderVisualizer::vertexColor() {
     std::vector<Color3> colors;
     colors.reserve(sphere.positions(0).size());
     for(Vector3 position: sphere.positions(0))
-        colors.push_back(Color3::fromHsv(Math::lerp(240.0_degf, 420.0_degf, Math::max(1.0f - (position - target).length(), 0.0f)), 0.85f, 0.85f));
+        colors.push_back(Color3::fromHsv(Math::lerp(240.0_degf, 420.0_degf, Math::max(1.0f - (position - target).length(), 0.0f)), 0.75f, 0.75f));
 
     Buffer vertices, indices;
     vertices.setData(MeshTools::interleave(sphere.positions(0), colors), BufferUsage::StaticDraw);

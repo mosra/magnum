@@ -49,13 +49,14 @@ attributes in your triangle mesh and call at least
 @image html shaders-vertexcolor.png
 @image latex shaders-vertexcolor.png
 
-## Example usage
+@section Shaders-VertexColor-example Example usage
 
 Common mesh setup. Note the explicit specification of components for the color
-attribute -- the shader accepts four-component color attribute but, similarly
+attribute --- the shader accepts four-component color attribute but, similarly
 to all other attributes, it's possible to supply also three-component colors if
 alpha is not important.
-@code
+
+@code{.cpp}
 struct Vertex {
     Vector3 position;
     Color3 color;
@@ -72,7 +73,8 @@ mesh.addVertexBuffer(vertices, 0,
 @endcode
 
 Common rendering setup:
-@code
+
+@code{.cpp}
 Matrix4 transformationMatrix = Matrix4::translation(Vector3::zAxis(-5.0f));
 Matrix4 projectionMatrix = Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.001f, 100.0f);
 
