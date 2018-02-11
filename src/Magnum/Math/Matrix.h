@@ -186,6 +186,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          * @ref Matrix4::invertedRigid() which are faster alternatives for
          * particular matrix types.
          * @see @ref Algorithms::gaussJordanInverted()
+         * @m_keyword{inverse(),GLSL inverse(),}
          */
         Matrix<size, T> inverted() const;
 

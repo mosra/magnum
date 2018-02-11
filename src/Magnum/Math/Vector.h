@@ -150,7 +150,7 @@ template<std::size_t size, class T> class Vector {
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @copybrief Math::dot(const Vector<size, T>&, const Vector<size, T>&)
+         * @brief @copybrief Magnum::Math::dot(const Vector<size, T>&, const Vector<size, T>&)
          * @deprecated Use @ref Math::dot(const Vector<size, T>&, const Vector<size, T>&)
          *      instead.
          */
@@ -159,7 +159,7 @@ template<std::size_t size, class T> class Vector {
         }
 
         /**
-         * @copybrief Math::angle(const Vector<size, T>&, const Vector<size, T>&)
+         * @brief @copybrief Magnum::Math::angle(const Vector<size, T>&, const Vector<size, T>&)
          * @deprecated Use @ref Math::angle(const Vector<size, T>&, const Vector<size, T>&)
          *      instead.
          */
@@ -249,16 +249,32 @@ template<std::size_t size, class T> class Vector {
             return !operator==(other);
         }
 
-        /** @brief Component-wise less than */
+        /**
+         * @brief Component-wise less than
+         *
+         * @m_keyword{lessThan(),GLSL lessThan(),}
+         */
         BoolVector<size> operator<(const Vector<size, T>& other) const;
 
-        /** @brief Component-wise less than or equal */
+        /**
+         * @brief Component-wise less than or equal
+         *
+         * @m_keyword{lessThanEqual(),GLSL lessThanEqual(),}
+         */
         BoolVector<size> operator<=(const Vector<size, T>& other) const;
 
-        /** @brief Component-wise greater than or equal */
+        /**
+         * @brief Component-wise greater than or equal
+         *
+         * @m_keyword{greaterThanEqual(),GLSL greaterThanEqual(),}
+         */
         BoolVector<size> operator>=(const Vector<size, T>& other) const;
 
-        /** @brief Component-wise greater than */
+        /**
+         * @brief Component-wise greater than
+         *
+         * @m_keyword{greaterThan(),GLSL greaterThan(),}
+         */
         BoolVector<size> operator>(const Vector<size, T>& other) const;
 
         /**
@@ -488,6 +504,7 @@ template<std::size_t size, class T> class Vector {
          * @brief Normalized vector (of unit length)
          *
          * @see @ref isNormalized(), @ref lengthInverted(), @ref resized()
+         * @m_keyword{normalize(),GLSL normalize(),}
          */
         Vector<size, T> normalized() const { return *this*lengthInverted(); }
 

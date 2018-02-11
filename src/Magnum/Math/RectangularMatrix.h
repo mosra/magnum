@@ -370,6 +370,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * @f[
          *      (\boldsymbol {AB})_{ji} = \sum_{k=0}^{m-1} \boldsymbol A_{ki} \boldsymbol B_{jk}
          * @f]
+         * @m_keyword{outerProduct(),GLSL outerProduct(),}
          */
         template<std::size_t size> RectangularMatrix<size, rows, T> operator*(const RectangularMatrix<size, cols, T>& other) const;
 
@@ -392,6 +393,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          *      \boldsymbol{A}^T_ij = \boldsymbol{A}_ji
          * @f]
          * @see @ref row(), @ref flippedCols(), @ref flippedRows()
+         * @m_keyword{transpose(),GLSL transpose(),}
          */
         RectangularMatrix<rows, cols, T> transposed() const;
 

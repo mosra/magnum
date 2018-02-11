@@ -347,6 +347,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *      a camera matrix. If you want to get the same what equivalent
          *      call to the well-known `gluLookAt()` would produce, invert the
          *      result using @ref invertedRigid().
+         * @m_keywords{gluLookAt()}
          */
         static Matrix4<T> lookAt(const Vector3<T>& eye, const Vector3<T>& target, const Vector3<T>& up);
 

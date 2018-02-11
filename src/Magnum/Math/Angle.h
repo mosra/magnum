@@ -163,6 +163,7 @@ template<class T> class Deg: public Unit<Deg, T> {
          * Performs conversion from radians to degrees, i.e.: @f[
          *      deg = 180 \frac {rad} \pi
          * @f]
+         * @m_keyword{degrees(),GLSL degrees(),}
          */
         constexpr /*implicit*/ Deg(Unit<Rad, T> value);
 };
@@ -238,6 +239,7 @@ template<class T> class Rad: public Unit<Rad, T> {
          * Performs conversion from degrees to radians, i.e.: @f[
          *      rad = deg \frac \pi 180
          * @f]
+         * @m_keyword{radians(),GLSL radians(),}
          */
         constexpr /*implicit*/ Rad(Unit<Deg, T> value);
 };

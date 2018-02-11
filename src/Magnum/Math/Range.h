@@ -371,7 +371,7 @@ template<class T> class Range3D: public Range<3, T> {
             #endif
             {}
 
-        /** @copybrief Range(NoInitT) */
+        /** @brief @copybrief Range(NoInitT) */
         explicit Range3D(NoInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT

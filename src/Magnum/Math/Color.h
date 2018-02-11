@@ -318,7 +318,7 @@ template<class T> class Color3: public Vector3<T> {
         typedef std::tuple<Deg<FloatingPointType>, FloatingPointType, FloatingPointType> Hsv;
 
         #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @copybrief Hsv
+        /** @brief @copybrief Hsv
          * @deprecated Use @ref Hsv instead.
          */
         typedef CORRADE_DEPRECATED("use Hsv instead") Hsv HSV;
@@ -340,13 +340,13 @@ template<class T> class Color3: public Vector3<T> {
         }
 
         #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @copybrief fromHsv(const Hsv&)
+        /** @brief @copybrief fromHsv(const Hsv&)
          * @deprecated Use @ref fromHsv(const Hsv&) instead.
          */
         CORRADE_DEPRECATED("use fromHsv() instead") static Color3<T> fromHSV(const Hsv& hsv) {
             return fromHsv(hsv);
         }
-        /** @copybrief fromHsv(Deg<FloatingPointType>, FloatingPointType, FloatingPointType)
+        /** @brief @copybrief fromHsv(Deg<FloatingPointType>, FloatingPointType, FloatingPointType)
          * @deprecated Use @ref fromHsv(Deg<FloatingPointType>, FloatingPointType, FloatingPointType)
          *      instead.
          */
@@ -488,7 +488,7 @@ template<class T> class Color3: public Vector3<T> {
         }
 
         #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @copybrief toHsv()
+        /** @brief @copybrief toHsv()
          * @deprecated Use @ref toHsv() instead.
          */
         CORRADE_DEPRECATED("use toHsv() instead") Hsv toHSV() const { return toHsv(); }
@@ -611,7 +611,7 @@ class Color4: public Vector4<T> {
         typedef typename Color3<T>::Hsv Hsv;
 
         #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @copybrief Hsv
+        /** @brief @copybrief Hsv
          * @deprecated Use @ref Hsv instead.
          */
         typedef CORRADE_DEPRECATED("use Hsv instead") Hsv HSV;
@@ -696,13 +696,13 @@ class Color4: public Vector4<T> {
         }
 
         #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @copybrief fromHsv(const Hsv&, T)
+        /** @brief @copybrief fromHsv(const Hsv&, T)
          * @deprecated Use @ref fromHsv(const Hsv&, T) instead.
          */
         CORRADE_DEPRECATED("use fromHsv() instead") static Color4<T> fromHSV(const Hsv& hsv, T a = Implementation::fullChannel<T>()) {
             return fromHsv(hsv, a);
         }
-        /** @copybrief fromHsv(Deg<FloatingPointType>, FloatingPointType, FloatingPointType, T)
+        /** @brief @copybrief fromHsv(Deg<FloatingPointType>, FloatingPointType, FloatingPointType, T)
          * @deprecated Use @ref fromHsv(Deg<FloatingPointType>, FloatingPointType, FloatingPointType, T)
          *      instead.
          */
@@ -891,7 +891,7 @@ class Color4: public Vector4<T> {
         }
 
         #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @copybrief toHsv()
+        /** @brief @copybrief toHsv()
          * @deprecated Use @ref toHsv() instead.
          */
         CORRADE_DEPRECATED("use toHsv() instead") Hsv toHSV() const { return toHsv(); }

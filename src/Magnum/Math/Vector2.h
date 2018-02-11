@@ -106,7 +106,7 @@ template<class T> class Vector2: public Vector<2, T> {
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @copybrief Math::cross(const Vector2<T>&, const Vector2<T>&)
+         * @brief @copybrief Math::cross(const Vector2<T>&, const Vector2<T>&)
          * @deprecated Use @ref Math::cross(const Vector2<T>&, const Vector2<T>&)
          *      instead.
          */

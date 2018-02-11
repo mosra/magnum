@@ -517,6 +517,7 @@ template<std::size_t size, class T> Vector<size, T> sqrt(const Vector<size, T>& 
 @brief Inverse square root
 
 @see @ref sqrt(), @ref Vector::lengthInverted()
+@m_keyword{inversesqrt(),GLSL inversesqrt(),}
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T> inline T sqrtInverted(const T& a);
@@ -539,6 +540,7 @@ The interpolation for vectors is done as in following, similarly for scalars: @f
     \boldsymbol v_{LERP} = (1 - t) \boldsymbol v_A + t \boldsymbol v_B
 @f]
 @see @ref lerpInverted(), @ref lerp(const Quaternion<T>&, const Quaternion<T>&, T)
+@m_keyword{mix(),GLSL mix(),}
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T, class U> inline T lerp(const T& a, const T& b, U t);
@@ -554,6 +556,7 @@ template<std::size_t size, class T, class U> inline typename std::enable_if<!Imp
 /** @overload
 Similar to the above, but instead of multiplication and addition it just does
 component-wise selection from either @p a or @p b based on values in @p t.
+@m_keyword{mix(),GLSL mix(),}
 */
 template<std::size_t size, class T> inline Vector<size, T> lerp(const Vector<size, T>& a, const Vector<size, T>& b, const BoolVector<size>& t) {
     Vector<size, T> out{NoInit};
@@ -562,7 +565,9 @@ template<std::size_t size, class T> inline Vector<size, T> lerp(const Vector<siz
     return out;
 }
 
-/** @overload */
+/** @overload
+@m_keyword{mix(),GLSL mix(),}
+*/
 template<std::size_t size> inline BoolVector<size> lerp(const BoolVector<size>& a, const BoolVector<size>& b, const BoolVector<size>& t) {
     /* Not using NoInit because it causes some compilers to report unitialized
        value */

@@ -90,7 +90,7 @@ template<class T> class Complex {
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @copybrief Math::dot(const Complex<T>&, const Complex<T>&)
+         * @brief @copybrief Math::dot(const Complex<T>&, const Complex<T>&)
          * @deprecated Use @ref Math::dot(const Complex<T>&, const Complex<T>&)
          *      instead.
          */
@@ -99,7 +99,7 @@ template<class T> class Complex {
         }
 
         /**
-         * @copybrief Math::angle(const Complex<T>&, const Complex<T>&)
+         * @brief @copybrief Math::angle(const Complex<T>&, const Complex<T>&)
          * @deprecated Use @ref Math::angle(const Complex<T>&, const Complex<T>&)
          *      instead.
          */

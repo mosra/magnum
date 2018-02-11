@@ -138,7 +138,7 @@ template<class T> class Quaternion {
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @copybrief Math::dot(const Quaternion<T>&, const Quaternion<T>&)
+         * @brief @copybrief Math::dot(const Quaternion<T>&, const Quaternion<T>&)
          * @deprecated Use @ref Math::dot(const Quaternion<T>&, const Quaternion<T>&)
          *      instead.
          */
@@ -147,7 +147,7 @@ template<class T> class Quaternion {
         }
 
         /**
-         * @copybrief Math::angle(const Quaternion<T>&, const Quaternion<T>&)
+         * @brief @copybrief Math::angle(const Quaternion<T>&, const Quaternion<T>&)
          * @deprecated Use @ref Math::angle(const Quaternion<T>&, const Quaternion<T>&)
          *      instead.
          */
@@ -156,7 +156,7 @@ template<class T> class Quaternion {
         }
 
         /**
-         * @copybrief Math::lerp(const Quaternion<T>&, const Quaternion<T>&, T)
+         * @brief @copybrief Math::lerp(const Quaternion<T>&, const Quaternion<T>&, T)
          * @deprecated Use @ref Math::lerp(const Quaternion<T>&, const Quaternion<T>&, T)
          *      instead.
          */
@@ -165,7 +165,7 @@ template<class T> class Quaternion {
         }
 
         /**
-         * @copybrief Math::slerp(const Quaternion<T>&, const Quaternion<T>&, T)
+         * @brief @copybrief Math::slerp(const Quaternion<T>&, const Quaternion<T>&, T)
          * @deprecated Use @ref Math::slerp(const Quaternion<T>&, const Quaternion<T>&, T)
          *      instead.
          */
