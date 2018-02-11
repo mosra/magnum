@@ -21,8 +21,8 @@ ALIASES                = \
     "debugoperatorclassenum{2}=@relatesalso \1\n@brief Debug output operator @xrefitem debugoperators \"Debug output operator\" \"Debug output operators for custom types\" Allows printing @ref \2 with @ref Corrade::Utility::Debug and friends." \
     "configurationvalueref{1}=@see @ref configurationvalues \"Corrade::Utility::ConfigurationValue<\1>\"" \
     "configurationvalue{1}=@brief Configuration value parser and writer @xrefitem configurationvalues \"Configuration value parser and writer\" \"Configuration value parsers and writers for custom types\" Allows parsing and writing @ref \1 from and to @ref Corrade::Utility::Configuration." \
-    "collisionoccurenceoperator{2}=@relatesalso \1\n@brief Collision occurence of \1 and \2\n@see \2::operator%(const \1&) const" \
-    "collisionoperator{2}=@relatesalso \1\n@brief Collision of \1 and \2\n@see \2::operator/(const \1&) const" \
+    "collisionoccurenceoperator{2}=@relatesalso \1 @brief Collision occurence of @ref \1 and @ref \2 @see @ref \2::operator%(const \1&) const" \
+    "collisionoperator{2}=@relatesalso \1 @brief Collision of @ref \1 and @ref \2 @see @ref \2::operator/(const \1&) const" \
     "todoc=@xrefitem todoc \"Documentation todo\" \"Documentation-related todo list\"" \
     "fn_gl{1}=@m_class{m-dox-external} <a href=\"https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/gl\1.xhtml\">gl\1()</a>" \
     "fn_gl2{2}=@m_class{m-dox-external} <a href=\"https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/gl\2.xhtml\">gl\1()</a>" \

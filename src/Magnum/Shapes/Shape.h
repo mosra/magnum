@@ -54,7 +54,8 @@ shape to @ref ShapeGroup, which then provides collision detection for given
 group of shapes using either @ref collides(), @ref collision() or
 @ref ShapeGroup::firstCollision(). You can also use @ref ShapeGroup::add() and
 @ref ShapeGroup::remove() later to manage e.g. collision islands.
-@code
+
+@code{.cpp}
 Shapes::ShapeGroup3D shapes;
 
 Object3D object;

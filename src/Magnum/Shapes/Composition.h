@@ -77,16 +77,16 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Composition {
         /** @brief Shape type */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         enum class Type {
-            Point,          /**< Point */
-            Line,           /**< Line */
+            Point,          /**< @ref Point */
+            Line,           /**< @ref Line */
             LineSegment,    /**< @ref LineSegment "Line segment" */
-            Sphere,         /**< Sphere */
+            Sphere,         /**< @ref Sphere */
             InvertedSphere, /**< @ref InvertedSphere "Inverted sphere" */
             Cylinder,       /**< @ref Cylinder */
-            Capsule,        /**< Capsule */
+            Capsule,        /**< @ref Capsule */
             AxisAlignedBox, /**< @ref AxisAlignedBox "Axis aligned box" */
-            Box,            /**< Box */
-            Plane           /**< Plane (3D only) */
+            Box,            /**< @ref Box */
+            Plane           /**< @ref Plane (3D only) */
         };
         #else
         typedef typename Implementation::ShapeDimensionTraits<dimensions>::Type Type;

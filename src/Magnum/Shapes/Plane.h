@@ -87,10 +87,18 @@ class MAGNUM_SHAPES_EXPORT Plane {
         Vector3 _position, _normal;
 };
 
-/** @collisionoccurenceoperator{Line,Plane} */
+/** @relatesalso Line
+@brief Collision occurence of @ref Line and @ref Plane
+
+@see @ref Plane::operator%(const Line3D&) const
+*/
 inline bool operator%(const Line3D& a, const Plane& b) { return b % a; }
 
-/** @collisionoccurenceoperator{LineSegment,Plane} */
+/** @relatesalso LineSegment
+@brief Collision occurence of @ref LineSegment and @ref Plane
+
+@see @ref Plane::operator%(const LineSegment3D&) const
+*/
 inline bool operator%(const LineSegment3D& a, const Plane& b) { return b % a; }
 
 

@@ -82,8 +82,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT ShapeGroup: public S
          * @brief First collision of given shape with other shapes in the group
          *
          * Returns first shape colliding with given one. If there aren't any
-         * collisions, returns `nullptr`. Calls @ref setClean() before the
-         * operation.
+         * collisions, returns @cpp nullptr @ce. Calls @ref setClean() before
+         * the operation.
          */
         AbstractShape<dimensions>* firstCollision(const AbstractShape<dimensions>& shape);
 

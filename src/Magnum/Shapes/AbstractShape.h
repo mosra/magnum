@@ -66,15 +66,15 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT AbstractShape: publi
         /** @brief Shape type */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         enum class Type {
-            Point,          /**< Point */
-            Line,           /**< Line */
+            Point,          /**< @ref Point */
+            Line,           /**< @ref Line */
             LineSegment,    /**< @ref LineSegment "Line segment" */
-            Sphere,         /**< Sphere */
-            Capsule,        /**< Capsule */
+            Sphere,         /**< @ref Sphere */
+            Capsule,        /**< @ref Capsule */
             AxisAlignedBox, /**< @ref AxisAlignedBox "Axis aligned box" */
-            Box,            /**< Box */
+            Box,            /**< @ref Box */
             Composition,    /**< @ref Composition "Shape group" */
-            Plane           /**< Plane (3D only) */
+            Plane           /**< @ref Plane (3D only) */
         };
         #else
         typedef typename Implementation::ShapeDimensionTraits<dimensions>::Type Type;
@@ -90,7 +90,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT AbstractShape: publi
         /**
          * @brief Shape group containing this shape
          *
-         * If the shape doesn't belong to any group, returns `nullptr`.
+         * If the shape doesn't belong to any group, returns @cpp nullptr @ce.
          */
         ShapeGroup<dimensions>* group();
         const ShapeGroup<dimensions>* group() const; /**< @overload */
