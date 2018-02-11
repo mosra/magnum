@@ -93,4 +93,12 @@ M_PAGE_FINE_PRINT = "<p>Magnum docs. Part of the <a href="http://magnum.graphics
 
 M_SEARCH_HELP = "Search for symbols, directories, files, pages, OpenGL/GLSL and OpenAL APIs. You can omit any prefix from the symbol or file path; adding a <code>:</code> or <code>/</code> suffix lists all members of given symbol or directory. Navigate through the list using <span class="m-label m-dim">&darr;</span> and <span class="m-label m-dim">&uarr;</span>, press <span class="m-label m-dim">Enter</span> to go."
 
+M_LINKS_NAVBAR1 = \
+    "getting-started" \
+    "pages features example-index tips utilities"
+M_LINKS_NAVBAR2 = \
+    "namespaces" \
+    "annotated" \
+    "files"
+
 # kate: hl Doxyfile
