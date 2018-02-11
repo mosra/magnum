@@ -38,6 +38,8 @@ extern "C" {
 #define AL_APIENTRY
 #endif
 
+#ifndef DOXYGEN_GENERATING_OUTPUT /* So the macro names are preserved in the docs */
+
 /* AL_EXT_float32 */
 #ifndef AL_EXT_float32
 #define AL_EXT_float32 1
@@ -114,6 +116,8 @@ extern "C" {
 
 typedef ALCchar* (AL_APIENTRY*LPALGETSTRINGISOFT)(ALCdevice*,ALCenum,ALCsizei);
 typedef ALCboolean (AL_APIENTRY*LPALRESETDEVICESOFT)(ALCdevice*,const ALCint*);
+#endif
+
 #endif
 
 #ifdef __cplusplus

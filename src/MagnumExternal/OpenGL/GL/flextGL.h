@@ -37,6 +37,8 @@
 extern "C" {
 #endif
 
+#ifndef DOXYGEN_GENERATING_OUTPUT /* So the macro names are preserved in the docs */
+
 void flextGLInit();
 
 /* Function declaration macros */
@@ -3673,6 +3675,8 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglVertexArrayVertexBuffer)(GLuint, GLui
 #define glVertexArrayVertexBuffer flextglVertexArrayVertexBuffer
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglVertexArrayVertexBuffers)(GLuint, GLuint, GLsizei, const GLuint *, const GLintptr *, const GLsizei *);
 #define glVertexArrayVertexBuffers flextglVertexArrayVertexBuffers
+
+#endif
 
 #ifdef __cplusplus
 }

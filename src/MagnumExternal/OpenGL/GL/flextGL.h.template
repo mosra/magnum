@@ -38,6 +38,8 @@
 extern "C" {
 #endif
 
+#ifndef DOXYGEN_GENERATING_OUTPUT /* So the macro names are preserved in the docs */
+
 void flextGLInit();
 
 /* Function declaration macros */
@@ -95,6 +97,8 @@ GLAPI FLEXTGL_EXPORT @f.returntype\
     @end
 @end
 @end
+
+#endif
 
 #ifdef __cplusplus
 }
