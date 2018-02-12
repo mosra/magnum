@@ -861,14 +861,17 @@ building your projects for Android.
 In `package/ci/` there is a `travis.yml` file with Linux GCC 4.7, macOS, Linux
 desktop GLES2/GLES3, iOS GLES2/GLES3, Emscripten WebGL1/WebGL2, Android
 GLES2/GLES3, AddressSanitizer and ThreadSanitizer configuration. Online at
-https://travis-ci.org/mosra/magnum. The builds have code coverage reports
-available online at https://codecov.io/gh/mosra/magnum.
+https://travis-ci.org/mosra/magnum.
 
 @subsection building-ci-appveyor AppVeyor
 
 In `package/ci/` there is an `appveyor.yml` file with Windows desktop MSVC,
 MinGW, Windows desktop GLES2/GLES3 and Windows RT GLES2/GLES3 configuration.
 Online at https://ci.appveyor.com/project/mosra/magnum.
-*/
 
+@subsection building-ci-coverage Codecov.io
+
+Linux, Linux GLES, macOS and Windows MinGW builds contribute to a combined code
+coverage report, available online at https://codecov.io/gh/mosra/magnum.
+*/
 }

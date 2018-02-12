@@ -59,6 +59,7 @@ notifications:
 install:
 - cinst ninja
 - set PATH=C:/tools/ninja;%PATH%
+- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" pip install codecov
 
 # OpenAL
 - IF NOT "%TARGET%" == "rt" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\openal-soft-1.17.2-bin.zip appveyor DownloadFile http://kcat.strangesoft.net/openal-binaries/openal-soft-1.17.2-bin.zip

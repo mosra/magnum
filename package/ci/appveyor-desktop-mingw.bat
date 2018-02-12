@@ -7,7 +7,8 @@ git clone --depth 1 git://github.com/mosra/corrade.git || exit /b
 cd corrade || exit /b
 mkdir build && cd build || exit /b
 cmake .. ^
-    -DCMAKE_BUILD_TYPE=Release ^
+    -DCMAKE_CXX_FLAGS="--coverage" ^
+    -DCMAKE_BUILD_TYPE=Debug ^
     -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/deps ^
     -DWITH_INTERCONNECT=OFF ^
     -G Ninja || exit /b
@@ -18,7 +19,8 @@ cd .. && cd ..
 rem Build
 mkdir build && cd build || exit /b
 cmake .. ^
-    -DCMAKE_BUILD_TYPE=Release ^
+    -DCMAKE_CXX_FLAGS="--coverage" ^
+    -DCMAKE_BUILD_TYPE=Debug ^
     -DCMAKE_INSTALL_PREFIX=%APPVEYOR_BUILD_FOLDER%/deps ^
     -DCMAKE_PREFIX_PATH="%APPVEYOR_BUILD_FOLDER%/SDL;%APPVEYOR_BUILD_FOLDER%/openal" ^
     -DWITH_AUDIO=ON ^
@@ -45,3 +47,8 @@ cmake --build . --target install || exit /b
 
 rem Test
 ctest -V -E GLTest || exit /b
+
+rem Coverage upload
+set PATH=C:\msys64\usr\bin;%PATH%
+bash %APPVEYOR_BUILD_FOLDER%\package\ci\appveyor-lcov.sh || exit /b
+codecov -f coverage.info -X gcov
