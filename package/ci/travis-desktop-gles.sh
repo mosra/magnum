@@ -6,9 +6,10 @@ git clone --depth 1 git://github.com/mosra/corrade.git
 cd corrade
 mkdir build && cd build
 cmake .. \
+    -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_INSTALL_RPATH=$HOME/deps/lib \
-    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_BUILD_TYPE=Debug \
     -DWITH_INTERCONNECT=OFF \
     -G Ninja
 ninja install
@@ -16,8 +17,9 @@ cd ../..
 
 mkdir build && cd build
 cmake .. \
+    -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
     -DCMAKE_PREFIX_PATH="$HOME/deps" \
-    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_BUILD_TYPE=Debug \
     -DTARGET_GLES=ON \
     -DTARGET_GLES2=$TARGET_GLES2 \
     -DTARGET_DESKTOP_GLES=ON \

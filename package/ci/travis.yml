@@ -6,6 +6,7 @@ addons:
     - libgl1-mesa-dev
     - g++-4.7
     - ninja-build
+    - lcov
     - libsdl2-dev
     - freeglut3-dev
     - libopenal-dev
@@ -24,6 +25,8 @@ matrix:
     env:
     - JOBID=linux-desktop
     - TARGET=desktop
+    - CMAKE_CXX_FLAGS="--coverage"
+    - LCOV_EXTRA_OPTS="--gcov-tool /usr/bin/gcov-4.7"
   - language: cpp
     os: linux
     dist: trusty
@@ -63,6 +66,8 @@ matrix:
     - JOBID=linux-es2
     - TARGET=desktop-gles
     - TARGET_GLES2=ON
+    - CMAKE_CXX_FLAGS="--coverage"
+    - LCOV_EXTRA_OPTS="--gcov-tool /usr/bin/gcov-4.7"
   - language: cpp
     os: linux
     dist: trusty
@@ -71,12 +76,15 @@ matrix:
     - JOBID=linux-es3
     - TARGET=desktop-gles
     - TARGET_GLES2=OFF
+    - CMAKE_CXX_FLAGS="--coverage"
+    - LCOV_EXTRA_OPTS="--gcov-tool /usr/bin/gcov-4.7"
   - language: cpp
     os: osx
     compiler: clang
     env:
     - JOBID=macos-desktop
     - TARGET=desktop
+    - CMAKE_CXX_FLAGS="--coverage"
   - language: cpp
     os: osx
     osx_image: xcode7.3
@@ -161,8 +169,6 @@ cache:
   - $HOME/cmake
 
 install:
-- if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "desktop" ] && [ "$BUILD_DEPRECATED" != "OFF" ]; then pip install --user urllib3[secure] && pip install --user cpp-coveralls && export CMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS --coverage"; fi
-
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ ! "$TARGET" == "desktop-sanitizers" ]; then export CXX=g++-4.7; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "desktop-sanitizers" ]; then export CXX=clang++-3.8; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "desktop" ]; then export WITH_GLUTAPPLICATION=ON; fi
@@ -176,6 +182,7 @@ install:
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "android" ] && [ ! -e "$HOME/cmake/bin" ]; then cd $HOME ; wget -nc --no-check-certificate https://cmake.org/files/v2.8/cmake-2.8.12.2-Linux-i386.tar.gz && mkdir -p cmake && cd cmake && tar --strip-components=1 -xzvf ../cmake-2.8.12.2-Linux-i386.tar.gz && cd $TRAVIS_BUILD_DIR ; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "android" ]; then export PATH=$HOME/cmake/bin:$PATH; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install ninja; fi
+- if [ "$TRAVIS_OS_NAME" == "osx" ] && [[ "$CMAKE_CXX_FLAGS" == *"--coverage"* ]]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install lcov; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop" ]; then export PLATFORM_GL_API=CGL; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "ios-simulator" ]; then gem install xcpretty; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "emscripten" ]; then brew install emscripten && export LLVM=/usr/local/opt/emscripten/libexec/llvm/bin && emcc; fi
@@ -200,5 +207,10 @@ script:
 - sync
 
 after_success:
-# Ignoring all stuff that needs GL context and thus can't be run on Travis
-- if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "desktop" ] && [ "$BUILD_DEPRECATED" != "OFF" ]; then coveralls --gcov /usr/bin/gcov-4.7 -i src/ -E "(.*/(Test|MagnumExternal|Shaders|Platform)/.*|.*/src/Magnum/(AbstractFramebuffer|AbstractObject|AbstractQuery|AbstractShaderProgram|AbstractTexture|Buffer|BufferImage|BufferTexture|Context|CubeMapTexture|CubeMapTextureArray|DebugOutput|DefaultFramebuffer|Framebuffer|Mesh|MeshView|MultisampleTexture|OpenGL|PixelStorage|PrimitiveQuery|RectangleTexture|Renderbuffer|Renderer|SampleQuery|Sampler|Shader|Texture|TextureArray|TimeQuery|TransformFeedback|Implementation/BufferState|Implementation/DebugState|Implementation/driverSpecific|Implementation/FramebufferState|Implementation/maxTextureSize|Implementation/MeshState|Implementation/QueryState|Implementation/RendererState|Implementation/ShaderProgramState|Implementation/ShaderState|Implementation/State|Implementation/TextureState|Implementation/TransformFeedbackState)\\.(cpp|h))" --gcov-options '\-lp' > /dev/null; fi
+# Keep in sync with PKBUILD-coverage, please
+- if [[ "$CMAKE_CXX_FLAGS" == *"--coverage"* ]]; then lcov $LCOV_EXTRA_OPTS --directory . --capture --output-file coverage.info > /dev/null; fi
+- if [[ "$CMAKE_CXX_FLAGS" == *"--coverage"* ]]; then lcov $LCOV_EXTRA_OPTS --extract coverage.info "*/src/Magnum*/*" --output-file coverage.info > /dev/null; fi
+- if [[ "$CMAKE_CXX_FLAGS" == *"--coverage"* ]]; then lcov $LCOV_EXTRA_OPTS --remove coverage.info "*/MagnumExternal/*" --output-file coverage.info > /dev/null; fi
+- if [[ "$CMAKE_CXX_FLAGS" == *"--coverage"* ]]; then lcov $LCOV_EXTRA_OPTS --remove coverage.info "*/Test/*" --output-file coverage.info > /dev/null; fi
+- if [[ "$CMAKE_CXX_FLAGS" == *"--coverage"* ]]; then lcov $LCOV_EXTRA_OPTS --remove coverage.info "*/build/src/*" --output-file coverage.info > /dev/null; fi
+- if [[ "$CMAKE_CXX_FLAGS" == *"--coverage"* ]]; then bash <(curl -s https://codecov.io/bash) -f coverage.info; fi

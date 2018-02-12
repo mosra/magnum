@@ -861,8 +861,8 @@ building your projects for Android.
 In `package/ci/` there is a `travis.yml` file with Linux GCC 4.7, macOS, Linux
 desktop GLES2/GLES3, iOS GLES2/GLES3, Emscripten WebGL1/WebGL2, Android
 GLES2/GLES3, AddressSanitizer and ThreadSanitizer configuration. Online at
-https://travis-ci.org/mosra/magnum. The Linux build has code coverage reports
-available online at https://coveralls.io/github/mosra/magnum.
+https://travis-ci.org/mosra/magnum. The builds have code coverage reports
+available online at https://codecov.io/gh/mosra/magnum.
 
 @subsection building-ci-appveyor AppVeyor
 

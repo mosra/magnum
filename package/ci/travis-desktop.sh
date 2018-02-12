@@ -6,6 +6,7 @@ git clone --depth 1 git://github.com/mosra/corrade.git
 cd corrade
 mkdir build && cd build
 cmake .. \
+    -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_INSTALL_RPATH=$HOME/deps/lib \
     -DCMAKE_BUILD_TYPE=Debug \
