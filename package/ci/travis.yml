@@ -114,9 +114,7 @@ matrix:
     - TARGET_GLES2=OFF
   - language: android
     os: linux
-    # 14.04 doesn't know Android yet so we have to use 12.04 with all the
-    # annoyances: https://github.com/travis-ci/travis-ci/issues/5370
-    dist: precise
+    dist: trusty
     env:
     - JOBID=android-es2
     - TARGET=android
@@ -128,6 +126,7 @@ matrix:
         packages:
         - g++-4.7
         - ninja-build
+        - "libc6:i386" # CMake 2.8.12 is 32bit
     android:
       components:
       - build-tools-19.0.0
@@ -135,9 +134,7 @@ matrix:
       - sys-img-armeabi-v7a-android-19
   - language: android
     os: linux
-    # 14.04 doesn't know Android yet so we have to use 12.04 with all the
-    # annoyances: https://github.com/travis-ci/travis-ci/issues/5370
-    dist: precise
+    dist: trusty
     env:
     - JOBID=android-es3
     - TARGET=android
@@ -149,6 +146,7 @@ matrix:
         packages:
         - g++-4.7
         - ninja-build
+        - "libc6:i386" # CMake 2.8.12 is 32bit
     android:
       components:
       - build-tools-19.0.0
