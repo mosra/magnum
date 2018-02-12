@@ -9,8 +9,9 @@ cmake .. \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_INSTALL_RPATH=$HOME/deps/lib \
     -DCMAKE_BUILD_TYPE=Release \
-    -DWITH_INTERCONNECT=OFF
-make -j install
+    -DWITH_INTERCONNECT=OFF \
+    -G Ninja
+ninja install
 cd ../..
 
 mkdir build && cd build
@@ -38,7 +39,8 @@ cmake .. \
     -DWITH_MAGNUMINFO=ON \
     -DWITH_AL_INFO=ON \
     -DBUILD_TESTS=ON \
-    -DBUILD_GL_TESTS=ON
+    -DBUILD_GL_TESTS=ON \
+    -G Ninja
 # Otherwise the job gets killed (probably because using too much memory)
-make -j4
+ninja -j4
 CORRADE_TEST_COLOR=ON ctest -V -E GLTest

@@ -15,8 +15,9 @@ cmake .. \
     -DCMAKE_INSTALL_RPATH=$HOME/deps-native/lib \
     -DWITH_INTERCONNECT=OFF \
     -DWITH_PLUGINMANAGER=OFF \
-    -DWITH_TESTSUITE=OFF
-make -j install
+    -DWITH_TESTSUITE=OFF \
+    -G Ninja
+ninja install
 cd ..
 
 # Crosscompile Corrade

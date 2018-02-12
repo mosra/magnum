@@ -15,8 +15,9 @@ cmake .. \
     -DCMAKE_BUILD_TYPE=Release \
     -DWITH_INTERCONNECT=OFF \
     -DWITH_PLUGINMANAGER=OFF \
-    -DWITH_TESTSUITE=OFF
-make -j install
+    -DWITH_TESTSUITE=OFF \
+    -G Ninja
+ninja install
 cd ..
 
 # Crosscompile Corrade
@@ -26,8 +27,9 @@ ANDROID_NDK=$TRAVIS_BUILD_DIR/android-ndk-r10e cmake .. \
     -DCMAKE_BUILD_TYPE=Release \
     -DCORRADE_RC_EXECUTABLE=$HOME/deps-native/bin/corrade-rc \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
-    -DWITH_INTERCONNECT=OFF
-make -j install
+    -DWITH_INTERCONNECT=OFF \
+    -G Ninja
+ninja install
 cd ..
 
 cd ..
@@ -50,9 +52,10 @@ ANDROID_NDK=$TRAVIS_BUILD_DIR/android-ndk-r10e cmake .. \
     -DWITH_TGAIMAGECONVERTER=ON \
     -DWITH_TGAIMPORTER=ON \
     -DWITH_WAVAUDIOIMPORTER=OFF \
-    -DBUILD_TESTS=ON
+    -DBUILD_TESTS=ON \
+    -G Ninja
 # Otherwise the job gets killed (probably because using too much memory)
-make -j4
+ninja -j4
 
 # Start simulator and run tests
 echo no | android create avd --force -n test -t android-19 --abi armeabi-v7a

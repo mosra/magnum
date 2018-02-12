@@ -5,6 +5,7 @@ addons:
     packages:
     - libgl1-mesa-dev
     - g++-4.7
+    - ninja-build
     - libsdl2-dev
     - freeglut3-dev
     - libopenal-dev
@@ -45,6 +46,7 @@ matrix:
         - llvm-toolchain-trusty
         packages:
         - libgl1-mesa-dev
+        - ninja-build
         - clang-3.8
         - libsdl2-dev
         - libopenal-dev
@@ -116,6 +118,7 @@ matrix:
         - ubuntu-toolchain-r-test
         packages:
         - g++-4.7
+        - ninja-build
     android:
       components:
       - build-tools-19.0.0
@@ -136,6 +139,7 @@ matrix:
         - ubuntu-toolchain-r-test
         packages:
         - g++-4.7
+        - ninja-build
     android:
       components:
       - build-tools-19.0.0
@@ -171,6 +175,7 @@ install:
 # PATH setting can't be cached, so it's separate (bit me two times already)
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "android" ] && [ ! -e "$HOME/cmake/bin" ]; then cd $HOME ; wget -nc --no-check-certificate https://cmake.org/files/v2.8/cmake-2.8.12.2-Linux-i386.tar.gz && mkdir -p cmake && cd cmake && tar --strip-components=1 -xzvf ../cmake-2.8.12.2-Linux-i386.tar.gz && cd $TRAVIS_BUILD_DIR ; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "android" ]; then export PATH=$HOME/cmake/bin:$PATH; fi
+- if [ "$TRAVIS_OS_NAME" == "osx" ]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install ninja; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop" ]; then export PLATFORM_GL_API=CGL; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "ios-simulator" ]; then gem install xcpretty; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "emscripten" ]; then brew install emscripten && export LLVM=/usr/local/opt/emscripten/libexec/llvm/bin && emcc; fi
