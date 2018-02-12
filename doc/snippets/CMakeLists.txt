@@ -50,6 +50,12 @@ if(WITH_SDL2APPLICATION)
     add_executable(getting-started-blue getting-started-blue.cpp)
     target_link_libraries(getting-started PRIVATE MagnumSdl2Application)
     target_link_libraries(getting-started-blue PRIVATE MagnumSdl2Application)
+    # Otherwise it's not linked correctly. I have no idea why, but whatever.
+    if(CMAKE_VERSION VERSION_LESS 3.0)
+        find_package(SDL2 REQUIRED)
+        target_link_libraries(getting-started PRIVATE SDL2::SDL2)
+        target_link_libraries(getting-started-blue PRIVATE SDL2::SDL2)
+    endif()
     set_target_properties(
         getting-started
         getting-started-blue
