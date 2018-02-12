@@ -237,9 +237,9 @@ TAB_SIZE               = 8
 ## Important: keep this in sync with Doxyfile-mcss and Doxyfile-public!
 
 ALIASES                = \
-    "debugoperator{1}=@relatesalso \1\n@brief Debug output operator @xrefitem debugoperators \"Debug output operator\" \"Debug output operators for custom types\" Allows printing @ref \1 with @ref Corrade::Utility::Debug and friends." \
-    "debugoperatorenum{1}=\n@brief Debug output operator @xrefitem debugoperators \"Debug output operator\" \"Debug output operators for custom types\" Allows printing @ref \1 with @ref Corrade::Utility::Debug and friends." \
-    "debugoperatorclassenum{2}=@relatesalso \1\n@brief Debug output operator @xrefitem debugoperators \"Debug output operator\" \"Debug output operators for custom types\" Allows printing @ref \2 with @ref Corrade::Utility::Debug and friends." \
+    "debugoperator{1}=@relatesalso \1 @brief Debug output operator @xrefitem debugoperators \"Debug output operator\" \"Debug output operators for custom types\" Allows printing @ref \1 with @ref Corrade::Utility::Debug and friends." \
+    "debugoperatorenum{1}=@brief Debug output operator @xrefitem debugoperators \"Debug output operator\" \"Debug output operators for custom types\" Allows printing @ref \1 with @ref Corrade::Utility::Debug and friends." \
+    "debugoperatorclassenum{2}=@relatesalso \1 @brief Debug output operator @xrefitem debugoperators \"Debug output operator\" \"Debug output operators for custom types\" Allows printing @ref \2 with @ref Corrade::Utility::Debug and friends." \
     "configurationvalueref{1}=@see @ref configurationvalues \"Corrade::Utility::ConfigurationValue<\1>\"" \
     "configurationvalue{1}=@brief Configuration value parser and writer @xrefitem configurationvalues \"Configuration value parser and writer\" \"Configuration value parsers and writers for custom types\" Allows parsing and writing @ref \1 from and to @ref Corrade::Utility::Configuration." \
     "collisionoccurenceoperator{2}=@relatesalso \1 @brief Collision occurence of @ref \1 and @ref \2 @see @ref \2::operator%(const \1&) const" \
