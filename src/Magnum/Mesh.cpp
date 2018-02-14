@@ -418,16 +418,23 @@ void Mesh::draw(AbstractShaderProgram& shader, TransformFeedback& xfb, UnsignedI
 }
 #endif
 
+void Mesh::bindVAOImplementationDefault(GLuint) {}
+
+void Mesh::bindVAOImplementationVAO(const GLuint id) {
+    #ifndef MAGNUM_TARGET_GLES2
+    glBindVertexArray
+    #else
+    glBindVertexArrayOES
+    #endif
+        (Context::current().state().mesh->currentVAO = id);
+}
+
 void Mesh::bindVAO() {
     GLuint& current = Context::current().state().mesh->currentVAO;
     if(current != _id) {
         /* Binding the VAO finally creates it */
         _flags |= ObjectFlag::Created;
-        #ifndef MAGNUM_TARGET_GLES2
-        glBindVertexArray(current = _id);
-        #else
-        glBindVertexArrayOES(current = _id);
-        #endif
+        bindVAOImplementationVAO(_id);
     }
 }
 

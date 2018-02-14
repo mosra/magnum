@@ -68,6 +68,7 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
         }
 
         bindIndexBufferImplementation = &Mesh::bindIndexBufferImplementationVAO;
+        bindVAOImplementation = &Mesh::bindVAOImplementationVAO;
         bindImplementation = &Mesh::bindImplementationVAO;
         unbindImplementation = &Mesh::unbindImplementationVAO;
     }
@@ -77,6 +78,7 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
         destroyImplementation = &Mesh::destroyImplementationDefault;
         attributePointerImplementation = &Mesh::attributePointerImplementationDefault;
         bindIndexBufferImplementation = &Mesh::bindIndexBufferImplementationDefault;
+        bindVAOImplementation = &Mesh::bindVAOImplementationDefault;
         bindImplementation = &Mesh::bindImplementationDefault;
         unbindImplementation = &Mesh::unbindImplementationDefault;
     }

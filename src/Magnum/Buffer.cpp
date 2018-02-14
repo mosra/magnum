@@ -283,13 +283,8 @@ auto Buffer::bindSomewhereInternal(const TargetHint hint) -> TargetHint {
         auto& currentVAO = Context::current().state().mesh->currentVAO;
         /* It can be also State::DisengagedBinding, in which case we unbind as
            well to be sure */
-        if(currentVAO != 0) {
-            #ifndef MAGNUM_TARGET_GLES2
-            glBindVertexArray(currentVAO = 0);
-            #else
-            glBindVertexArrayOES(currentVAO = 0);
-            #endif
-        }
+        if(currentVAO != 0)
+            Context::current().state().mesh->bindVAOImplementation(0);
     }
 
     /* Bind the buffer to hint target otherwise */

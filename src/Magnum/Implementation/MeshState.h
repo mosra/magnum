@@ -59,6 +59,8 @@ struct MeshState {
     void(*multiDrawImplementation)(std::initializer_list<std::reference_wrapper<MeshView>>);
     #endif
 
+    void(*bindVAOImplementation)(GLuint);
+
     #ifndef MAGNUM_TARGET_GLES
     GLuint defaultVAO{}; /* Used on core profile in case ARB_VAO is disabled */
     #endif
