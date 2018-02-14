@@ -58,11 +58,7 @@ equivalent to the moved-from state. It is useful in case you need to construct
 the object before creating context (such as class members) or if you know you
 would overwrite it later with another object:
 
-@code{.cpp}
-Mesh mesh{NoCreate};
-Buffer vertices{NoCreate}, indices{NoCreate};
-std::tie(mesh, vertices, indices) = importSomeMesh();
-@endcode
+@snippet opengl-wrapping.cpp nocreate
 
 If you need to preserve the underlying OpenGL object after destruction, you can
 call @cpp release() @ce. It returns ID of the underlying object, the instance
@@ -72,62 +68,34 @@ ID of the underlying without releasing it using `id()`). It is also possible to
 do the opposite --- wrapping existing OpenGL object ID into Magnum object
 instance using @cpp wrap() @ce.
 
-@code{.cpp}
-// Transferring the instance to external library
-{
-    Buffer buffer;
-    buffer.setData(...);
-    GLuint id = buffer.release();
-    externallibrary.setSomeBuffer(id); // the library is responsible for deletion
-}
-
-// Acquiring an instance from external library
-{
-    GLuint id = externallibrary.someBuffer();
-    Buffer buffer = Buffer::wrap(id, ObjectFlag::DeleteOnDestruction);
-    // we are now responsible for deletion
-}
-@endcode
+@snippet opengl-wrapping.cpp transfer
 
 The @cpp NoCreate @ce constructor, @cpp wrap() @ce and @cpp release() @ce
-functions are available for all OpenGL classes except @ref Shader and
-@ref AbstractShaderProgram, where wrapping external instances makes less sense.
+functions are available for all OpenGL classes except @ref Shader, where
+wrapping external instances makes less sense.
+
+Note that interaction with third-party OpenGL code as shown above usually needs
+special attention:
 
 @section opengl-state-tracking State tracking and interaction with third-party code
 
 It is possible (and encouraged) to combine Magnum with third-party libraries or
-even raw OpenGL calls --- trying features that are not yet implemented in
-Magnum, using some specialized GUI library etc. But bear in mind that to
-improve performance and avoid redundant state changes, Magnum internally tracks
-OpenGL state such as currently bound objects, activated renderer features etc.
-When combining Magnum with third-party code, the internal state tracker may get
-confused and you need to reset it using @ref Context::resetState():
+even raw OpenGL calls --- trying out features that are not yet implemented in
+Magnum, using some specialized GUI library etc. But bear in mind that in order
+to improve performance and avoid redundant state changes, Magnum internally
+tracks OpenGL state such as currently bound objects, activated renderer
+features etc. When combining Magnum with third-party code, the internal state
+tracker may get confused and you need to reset it using @ref Context::resetState():
 
-@code{.cpp}
-Buffer buffer;
+@snippet opengl-wrapping.cpp state
 
-// Raw OpenGL calls
-glBindBuffer(GL_ARRAY_BUFFER, buffer.id());
-glBufferStorage(GL_ARRAY_BUFFER, 32768, GL_MAP_READ_BIT|GL_MAP_WRITE_BIT);
-// ...
-
-// Reset buffer-related state tracker
-Context::current()->resetState(Context::State::Buffers);
-
-// Use the buffer through Magnum again
-auto data = buffer.map<UnsignedInt>(...);
-@endcode
-
-Note that it is currently not possible to do the opposite --- reseting all state
-touched by Magnum to previous values --- as it would involve impractically large
-amount of queries and state switches with serious performance impact.
-
-Magnum by default uses VAOs --- each time a @ref Mesh is drawn or configured,
-its VAO is bound, but it is *not* unbound afterwards to avoid needless state
-changes. This may introduce problems when using third-party OpenGL code that
-does not use VAOs --- it will break internal state of Mesh that was used most
-recently. The solution, besides state resetting, is to create a new VAO and
-bind it every time the third-party OpenGL code is called.
+Note that by design it's not possible to reset all state touched by Magnum to
+previous values --- it would involve impractically large amount of queries and
+state switches with serious performance impact. It's thus expected that
+third-party code either does no state tracking or provides similar means to
+reset their state tracker (for example Qt has
+[QQuickWindow::resetOpenGLState()](http://doc.qt.io/qt-5/qquickwindow.html#resetOpenGLState)
+that's advised to call before giving the control back to Qt).
 
 @section opengl-wrapping-dsa Extension-dependent functionality
 
@@ -145,13 +113,7 @@ GL version/extension is required. The information is also aggregated on
 @ref opengl-required-extensions documentation page. Use
 @ref Context::isVersionSupported() or @ref Context::isExtensionSupported():
 
-@code{.cpp}
-TextureFormat format;
-if(Context::current()->isExtensionSupported<Extensions::GL::ARB_depth_buffer_float>())
-    format = TextureFormat::DepthComponent32F;
-else
-    format = TextureFormat::DepthComponent24;
-@endcode
+@snippet opengl-wrapping.cpp extensions
 
 @attention Using API that requires OpenGL version or extension that is not
     provided by the driver results in undefined behavior --- the best you can
@@ -173,16 +135,7 @@ required extensions are not available, @ref Texture::setStorage() emulation on
 platforms that don't support it etc. The goal is to abstract away the (mostly
 unimportant) differences for easier porting.
 
-@code{.cpp}
-Texture2D texture;
-
-// - on OpenGL 4.5+/ARB_direct_state_access this calls glTextureStorage2D()
-// - if EXT_direct_state_access is available, calls glTextureStorage2DEXT()
-// - on OpenGL 4.2+/ARB_texture_storage and OpenGL ES 3.0+ calls glTexStorage2D()
-// - on OpenGL ES 2.0 with EXT_texture_storage calls glTexStorage2DEXT()
-// - otherwise emulated using a sequence of four glTexImage2D() calls
-texture.setStorage(4, TextureFormat::RGBA8, {256, 256});
-@endcode
+@snippet opengl-wrapping.cpp dsa
 
 */
 }

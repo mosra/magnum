@@ -27,6 +27,10 @@ set_directory_properties(PROPERTIES
     CORRADE_CXX_STANDARD 11
     CORRADE_USE_PEDANTIC_FLAGS ON)
 
+add_library(snippets STATIC
+    opengl-wrapping.cpp)
+target_link_libraries(snippets PRIVATE Magnum)
+
 find_package(Corrade COMPONENTS TestSuite)
 
 # TODO: causes spurious linker errors on Travis iOS build, so I'm disabling it
