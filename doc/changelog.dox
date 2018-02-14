@@ -346,6 +346,7 @@ See also:
     @ref Image::release() instead.
 -   @ref Buffer::map() now returns @ref Corrade::Containers::ArrayView instead
     of a plain pointer for better security
+-   Improved @ref Context::resetState() to better handle corner cases with VAOs
 -   Graceful handling of broken GL contexts
 -   Behavior of @ref Version::GLES200 and upwards on desktop OpenGL is changed
     to request an ES dialect of GLSL when used in @ref Shader (instead of a

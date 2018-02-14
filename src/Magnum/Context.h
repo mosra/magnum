@@ -178,7 +178,7 @@ class MAGNUM_EXPORT Context {
         /**
          * @brief State to reset
          *
-         * @see @ref States, @ref resetState()
+         * @see @ref States, @ref resetState(), @ref opengl-state-tracking
          */
         enum class State: UnsignedInt {
             /** Reset tracked buffer-related bindings and state */
@@ -190,22 +190,63 @@ class MAGNUM_EXPORT Context {
             /** Reset tracked mesh-related bindings */
             Meshes = 1 << 2,
 
+            /**
+             * Unbind currently bound VAO.
+             *
+             * Magnum by default uses VAOs --- each time a @ref Mesh is drawn
+             * or configured, its VAO is bound, but it is *not* unbound
+             * afterwards to avoid needless state changes. This may introduce
+             * problems when using third-party OpenGL code --- it may break
+             * internal state of a mesh that was used the most recently.
+             * Similar issue can happen the other way. Calling @ref resetState()
+             * with @ref State::MeshVao included unbounds any currently bound
+             * VAO to fix such case.
+             */
+            MeshVao = 1 << 3,
+
             /** Reset tracked pixel storage-related state */
-            PixelStorage = 1 << 3,
+            PixelStorage = 1 << 4,
 
             /** Reset tracked renderer-related state */
-            Renderer = 1 << 4,
+            Renderer = 1 << 5,
 
             /** Reset tracked shader-related bindings */
-            Shaders = 1 << 5,
+            Shaders = 1 << 6,
 
             /** Reset tracked texture-related bindings and state */
-            Textures = 1 << 6,
+            Textures = 1 << 7,
 
             #ifndef MAGNUM_TARGET_GLES2
             /** Reset tracked transform feedback-related bindings */
-            TransformFeedback = 1 << 7
+            TransformFeedback = 1 << 8,
             #endif
+
+            /**
+             * Reset state on entering section with external OpenGL code.
+             *
+             * Resets all state that could cause external code to accidentally
+             * modify Magnum objects. This includes only @ref State::MeshVao.
+             */
+            EnterExternal = UnsignedInt(State::MeshVao),
+
+            /**
+             * Reset state on exiting section with external OpenGL code.
+             *
+             * Resets Magnum state tracker to avoid being confused by external
+             * state changes. This resets all states.
+             */
+            ExitExternal =
+                UnsignedInt(State::Buffers)|
+                UnsignedInt(State::Framebuffers)|
+                UnsignedInt(State::Meshes)|
+                UnsignedInt(State::MeshVao)|
+                UnsignedInt(State::PixelStorage)|
+                UnsignedInt(State::Renderer)|
+                UnsignedInt(State::Shaders)|
+                UnsignedInt(State::Textures)
+                #ifndef MAGNUM_TARGET_GLES2
+                |UnsignedInt(State::TransformFeedback)
+                #endif
         };
 
         /**
@@ -554,12 +595,21 @@ class MAGNUM_EXPORT Context {
 
         /**
          * @brief Reset internal state tracker
-         * @param states    Tracked states to reset. Default is all state.
          *
          * The engine internally tracks object bindings and other state to
          * avoid redundant OpenGL calls. In some cases (e.g. when non-Magnum
          * code makes GL calls) the internal tracker no longer reflects actual
-         * state and needs to be reset to avoid strange issues.
+         * state. Equivalently the third party code can cause accidental
+         * modifications of Magnum objects. It's thus advised to call this
+         * function as a barrier between Magnum code and third-party GL code.
+         *
+         * The default, when calling this function with no parameters, will
+         * reset all state. That's the safest option, but may have considerable
+         * performance impact when third-party and Magnum code is combined very
+         * often. For greater control it's possible to reset only particular
+         * states from the @ref State enum.
+         *
+         * See also @ref opengl-state-tracking for more information.
          */
         void resetState(States states = ~States{});
 

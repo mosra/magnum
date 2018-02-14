@@ -1044,7 +1044,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
         #endif
 
         /* Unconditionally binds a specified VAO and updates the state tracker.
-           Used also in Buffer::bindSomewhereInternal(). */
+           Used also in Buffer::bindSomewhereInternal() and Context::resetState(). */
         static void MAGNUM_LOCAL bindVAOImplementationDefault(GLuint id);
         static void MAGNUM_LOCAL bindVAOImplementationVAO(GLuint id);
 

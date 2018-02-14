@@ -836,6 +836,8 @@ void Context::resetState(const States states) {
         _state->framebuffer->reset();
     if(states & State::Meshes)
         _state->mesh->reset();
+    if(states & State::MeshVao)
+        _state->mesh->bindVAOImplementation(0);
 
     if(states & State::PixelStorage) {
         _state->renderer->unpackPixelStorage.reset();
