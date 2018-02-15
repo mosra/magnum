@@ -399,8 +399,8 @@ See also:
 -   Continuous testing for Linux, macOS, Windows MSVC, Windows MinGW, Windows RT,
     iOS, Android and Emscripten on [Travis CI](https://travis-ci.org/mosra/magnum)
     and [AppVeyor CI](https://ci.appveyor.com/project/mosra/magnum), with code
-    coverage on [coveralls.io](https://coveralls.io/github/mosra/magnum);
-    replacing the unmaintained and outdated Jenkins configuration
+    coverage on [codecov.io](https://codecov.io/gh/mosra/magnum); replacing the
+    unmaintained and outdated Jenkins configuration
 -   Support for CMake subprojects. You can now clone Magnum into a subdirectory
     in your project and add it using @cmake add_subdirectory() @ce. The
     @cmake find_package() @ce command will then use the CMake subproject
