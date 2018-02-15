@@ -47,7 +47,9 @@ add_library(MagnumText ${SHARED_OR_STATIC}
 set_target_properties(MagnumText PROPERTIES
     DEBUG_POSTFIX "-d"
     FOLDER "Magnum/Text")
-if(BUILD_STATIC_PIC)
+if(NOT BUILD_STATIC)
+    set_target_properties(MagnumText PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
+elseif(BUILD_STATIC_PIC)
     set_target_properties(MagnumText PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 target_link_libraries(MagnumText Magnum MagnumTextureTools)

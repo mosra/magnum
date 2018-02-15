@@ -254,6 +254,7 @@ set_target_properties(Magnum PROPERTIES
     FOLDER "Magnum")
 if(NOT BUILD_STATIC)
     target_compile_definitions(Magnum PRIVATE "FlextGL_EXPORTS")
+    set_target_properties(Magnum PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
 elseif(BUILD_STATIC_PIC)
     set_target_properties(Magnum PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()

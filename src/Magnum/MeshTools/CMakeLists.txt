@@ -72,7 +72,9 @@ add_library(MagnumMeshTools ${SHARED_OR_STATIC}
 set_target_properties(MagnumMeshTools PROPERTIES
     DEBUG_POSTFIX "-d"
     FOLDER "Magnum/MeshTools")
-if(BUILD_STATIC_PIC)
+if(NOT BUILD_STATIC)
+    set_target_properties(MagnumMeshTools PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
+elseif(BUILD_STATIC_PIC)
     set_target_properties(MagnumMeshTools PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 target_link_libraries(MagnumMeshTools Magnum)

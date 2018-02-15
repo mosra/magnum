@@ -62,7 +62,9 @@ target_include_directories(MagnumAudio PUBLIC ${OPENAL_INCLUDE_DIR})
 set_target_properties(MagnumAudio PROPERTIES
     DEBUG_POSTFIX "-d"
     FOLDER "Magnum/Audio")
-if(BUILD_STATIC_PIC)
+if(NOT BUILD_STATIC)
+    set_target_properties(MagnumAudio PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
+elseif(BUILD_STATIC_PIC)
     set_target_properties(MagnumAudio PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 target_link_libraries(MagnumAudio Magnum Corrade::PluginManager ${OPENAL_LIBRARY})
