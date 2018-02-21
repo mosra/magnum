@@ -1,6 +1,6 @@
 # Author: mosra <mosra@centrum.cz>
 pkgname=magnum-git
-pkgver=snapshot.2015.05.r1507.g77764c0b
+pkgver=2018.02.r0.g8c921a70
 pkgrel=1
 pkgdesc="C++11/C++14 graphics middleware for games and data visualization (Git version)"
 arch=('i686' 'x86_64')
@@ -15,7 +15,7 @@ sha1sums=('SKIP')
 
 pkgver() {
     cd "$srcdir/${pkgname%-git}"
-    git describe --long | sed -r 's/([^-]*-g)/r\1/;s/-/./g'
+    git describe --long | sed -r 's/([^-]*-g)/r\1/;s/-/./g;s/v//g'
 }
 
 build() {
