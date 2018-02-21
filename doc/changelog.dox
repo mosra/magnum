@@ -93,7 +93,7 @@ Released 2018-02-15, tagged as
         counterpart
     -   @extension{ARB,compute_shader} and its ES3.1 counterpart
     -   @extension{ARB,shader_image_load_store} and its ES3.1 counterpart
-    -   @extension{KHR,no_error} Desktop and ES extension
+    -   @extension{KHR,no_error} desktop and ES extension
     -   @extension{EXT,shader_framebuffer_fetch}, @extension{ARM,shader_framebuffer_fetch}
         and @extension{ARM,shader_framebuffer_fetch_depth_stencil} (partial
         support)
@@ -345,7 +345,7 @@ Released 2018-02-15, tagged as
     member `importerState()` functions allowing the user to access
     importer-specific state
 -   Added @ref Trade::AbstractImporter::openState() (see
-    [mosra/magnum#225](https://github.com/mosra/magnum/pull/225)
+    [mosra/magnum#225](https://github.com/mosra/magnum/pull/225))
 -   @ref magnum-distancefieldconverter "magnum-distancefieldconverter" now uses
     @ref Trade::AnyImageConverter "AnyImageConverter" by default
 -   @ref Trade::TgaImporter "TgaImporter" sets proper @ref PixelStorage
@@ -366,8 +366,8 @@ Released 2018-02-15, tagged as
 -   @ref Trade::TgaImporter "TgaImporter" and @ref Trade::TgaImageConverter "TgaImageConverter"
     now consistently use RGB(A) on all platforms and don't require BGR(A) on
     desktop
--   Ignoring `"No errors."` message produced by GLSL compiler/linker on Intel
-    Windows drivers.
+-   Ignoring @cpp "No errors." @ce message produced by GLSL compiler/linker on
+    Intel Windows drivers.
 -   @ref Texture::image() "*Texture::image()" and @ref Framebuffer::read() "*Framebuffer::read()"
     now reallocate image data only if needed, for both @ref Image and
     @ref BufferImage types
