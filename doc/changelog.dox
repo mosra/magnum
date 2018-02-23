@@ -36,10 +36,116 @@ See also:
 -   @subpage changelog-extras
 -   @subpage changelog-examples
 
+@section changelog-latest Changes since 2018.02
+
+@subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
+
+-   Removed the @cpp Buffer::Usage @ce enum that was deprecated in 2014.01, use
+    the global @ref BufferUsage enum instead
+-   Removed the `Magnum/Query.h` header that was deprecated in 2015.05, use one
+    of @ref Magnum/PrimitiveQuery.h, @ref Magnum/SampleQuery.h or
+    @ref Magnum/TimeQuery.h instead
+-   Removed ability to use @ref Buffer::Target as constructor or
+    @ref Buffer::setTargetHint() parameter that was deprecated in 2015.05, use
+    @ref Buffer::TargetHint instead
+-   Removed the @cpp SceneGraph::TransformationType @ce enum that was
+    deprecated in 2015.05, use separate `<transform>()` and `<transform>Local()`
+    variants instead
+-   Removed @cpp SceneGraph::AbstractObject::hasFeatures() @ce, @cpp firstFeature() @ce,
+    @cpp lastFeature() @ce, @cpp SceneGraph::Object::hasChildren() @ce,
+    @cpp firstChild() @ce and @cpp lastChild() @ce that were deprecated in
+    2015.05, use methods on linked list returned by
+    @ref SceneGraph::AbstractObject::features() and
+    @ref SceneGraph::Object::children() instead
+-   Removed @cpp Platform::ScreenedApplication::frontScreen() @ce and
+    @cpp Platform::ScreenedApplication::backScreen() @ce that were deprecated
+    in 2015.05, use methods on linked list returned by
+    @ref Platform::BasicScreenedApplication::screens() "Platform::ScreenedApplication::screens()"
+    instead
+-   Removed @ref Framebuffer::read() "*Framebuffer::read()" functions taking two
+    vectors that was deprecated in 2015.05, use overload taking @ref Range2Di
+    instead
+-   Removed the @cpp Mesh::maxVertexAttributes() @ce function that was
+    deprecated in 2015.05, use @ref AbstractShaderProgram::maxVertexAttributes()
+    instead
+-   Removed @cpp Math::Vector::dot() @ce, @cpp Math::Complex::dot() @ce,
+    @cpp Math::Quaternion::dot() @ce, @cpp Math::Vector::angle() @ce,
+    @cpp Math::Complex::angle() @ce, @cpp Math::Quaternion::angle() @ce,
+    @cpp Math::Quaternion::lerp() @ce, @cpp Math::Quaternion::slerp() @ce,
+    @cpp Math::Vector2::cross() @ce and @cpp Math::Vector3::cross() @ce that
+    were deprecated in 2015.05, use @ref Math::dot(), @ref Math::angle(),
+    @ref Math::lerp(), @ref Math::slerp() and @ref Math::cross() instead
+-   Removed @cpp *Framebuffer::bind(FramebufferTarget) @ce function that was
+    deprecated in 2%15.05, use parameter-less @ref Framebuffer::bind() "*Framebuffer::bind()"
+    instead
+-   Removed @cpp FramebufferTarget::ReadDraw @ce enum value that was deprecated
+    in 2015.05, use separate @cpp FramebufferTarget::Read @ce and
+    @cpp FramebufferTarget::Draw @ce values instead
+-   Removed @ref CubeMapTexture::imageSize() with explicit face parameter that
+    was deprecated in 2015.05, use overload that returns one value for all
+    faces instead
+-   Removed the `Magnum/DebugMessage.h` header that was deprecated in 2015.05,
+    use @ref Magnum/DebugOutput.h instead
+-   Removed the @cpp DebugMessage::Severity @ce enum that was deprecated in
+    2015.05, use @ref DebugOutput::Severity instead
+-   Removed @cpp DebugMessage::Callback @ce typedef, @cpp DebugMessage::setCallback() @ce
+    and @cpp DebugMessage::setDefaultCallback() @ce function that were
+    deprecated in 2015.05, use @ref DebugOutput::Callback,
+    @ref DebugOutput::setCallback() and @ref DebugOutput::setDefaultCallback()
+    instead
+-   Removed @cpp DebugMessage::maxLoggedMessages() @ce and
+    @cpp DebugMessage::maxMessageLength() @ce functions that were deprecated in
+    2015.05, use @ref DebugOutput::maxLoggedMessages() and
+    @ref DebugOutput::maxMessageLength() instead
+-   Removed @cpp DebugMessage::setEnabled() @ce function and related values
+    from @cpp DebugMessage::Source @ce enum that were deprecated in 2015.05,
+    use @ref DebugOutput::setEnabled() along with @ref DebugOutput::Source,
+    @ref DebugOutput::Type and @ref DebugOutput::Severity instead
+-   Removed parameter-less @cpp *Query @ce constructor and parametrized
+    @cpp *Query::begin() @ce function that were deprecated in 2015.05, use
+    constructor with parameter and parameter-less @ref Query::begin() "*Query::begin()"
+    instead
+-   Removed `Timeline::setMinimalFrameTime()` that was deprecated since June
+    2015, use @ref Platform::Sdl2Application::setSwapInterval() "Platform::*Application::setSwapInterval()"
+    and/or @ref Platform::Sdl2Application::setMinimalLoopPeriod() "Platform::*Application::setMinimalLoopPeriod()"
+    instead
+-   Removed `SceneGraph::Camera2D::setProjection()`,
+    `SceneGraph::Camera3D::setOrthographic()` and
+    `SceneGraph::Camera3D::setPerspective()` that were deprecated since June
+    2015, use     @ref SceneGraph::Camera::setProjectionMatrix() in combination
+    with @ref Matrix3::projection(), @ref Matrix4::orthographicProjection() and
+    @ref Matrix4::perspectiveProjection() instead
+-   Removed `SceneGraph::AbstractCamera`, `SceneGraph::AbstractBasicCamera2D`,
+    `SceneGraph::AbstractBasicCamera3D`, `SceneGraph::AbstractCamera2D` and
+    `SceneGraph::AbstractCamera3D` that were deprecated since June 2015, use
+    @ref SceneGraph::Camera, @ref SceneGraph::BasicCamera2D,
+    @ref SceneGraph::BasicCamera3D, @ref SceneGraph::Camera2D and
+    @ref SceneGraph::Camera3D instead
+-   Removed `Math::Matrix::IdentityType`, `Math::Matrix::ZeroType`,
+    `Math::Matrix::Identity` and `Math::Matrix::Zero` that were deprecated
+    since June 2015, use the @ref Math::IdentityInit and @ref Math::ZeroInit
+    tags instead
+-   Removed `Magnum/ImageReference.h` header and `ImageReference` type that
+    were deprecated since July 2015, use @ref Magnum/ImageView.h and
+    @ref ImageView instead
+-   Removed `Magnum/Color.h` header and `BasicColor3` and `BasiColor4` types
+    that were deprecated since August 2015, use @ref Magnum/Math/Color.h,
+    @ref Math::Color3 and @ref Math::Color4 instead
+-   Removed `Magnum/ColorFormat.h` header and `ColorFormat` and `ColorType`
+    enums that were deprecated since August 2015, use
+    @ref Magnum/PixelFormat.h, @ref PixelFormat and @ref PixelType instead
+-   Removed @ref Image, @ref ImageView, @ref Trade::ImageData constructors,
+    @ref Image::setData() and @ref ImageView::setData() taking `void*` that
+    were deprecated since August 2015, use constructors and functions taking
+    @ref Corrade::Containers::Array / @ref Corrade::Containers::ArrayView
+    instead
+
 @section changelog-2018-02 2018.02
 
 Released 2018-02-15, tagged as
-[v2018.02](https://github.com/mosra/magnum/releases/tag/v2018.02).
+[v2018.02](https://github.com/mosra/magnum/releases/tag/v2018.02). See the
+[release announcement](http://blog.magnum.graphics/announcements/2018.02/) for
+a high-level overview.
 
 @subsection changelog-2018-02-dependencies Dependency changes
 
@@ -104,7 +210,7 @@ Released 2018-02-15, tagged as
         and their ES3 counterparts, if applicable
         (see [mosra/magnum#53](https://github.com/mosra/magnum/issues/53))
 -   Compressed image support:
-    -   Added @ref CompressedColorFormat enum, @ref CompressedImage,
+    -   Added @ref CompressedPixelFormat enum, @ref CompressedImage,
         @ref CompressedImageView and @ref CompressedBufferImage classes
     -   Added @ref Texture::setCompressedImage() "*Texture::setCompressedImage()",
         @ref Texture::setCompressedSubImage() "*Texture::setCompressedSubImage()"
@@ -276,7 +382,7 @@ Released 2018-02-15, tagged as
     [mosra/magnum#162](https://github.com/mosra/magnum/pull/162))
 -   Added @ref Platform::Sdl2Application::setMinimalLoopPeriod(), which, along
     with @ref Platform::Sdl2Application::setSwapInterval() replaces
-    @ref Timeline::setMinimalFrameTime()
+    @cpp Timeline::setMinimalFrameTime() @ce
 -   Added @ref Platform::Sdl2Application::window() and
     @ref Platform::GlfwApplication::window() to access the underlying window
     handle
@@ -582,6 +688,8 @@ Released 2018-02-15, tagged as
     @ref Buffer::map() are deprecated, use the non-templated versions in
     combination with @ref Corrade::Containers::arrayCast() instead (see
     [mosra/magnum#213](https://github.com/mosra/magnum/issues/213))
+-   `CubeMapTexture::Coordinate` enum is deprecated, use @ref CubeMapCoordinate
+    instead
 -   @ref Context::current() and @ref Audio::Context::current() returning a
     pointer is deprecated, it's returning a reference now and asserts that a
     context exists. Use @ref Context::hasCurrent() and @ref Audio::Context::hasCurrent()
@@ -830,8 +938,8 @@ for a high-level overview.
 @subsection changelog-2015-05-deprecated Deprecated APIs
 
 -   The `Magnum/Query.h` header is deprecated, use one of
-    `Magnum/PrimitiveQuery.h`, `Magnum/SampleQuery.h` or
-    `Magnum/TimerQuery.h` instead.
+    @ref Magnum/PrimitiveQuery.h, @ref Magnum/SampleQuery.h or
+    @ref Magnum/TimeQuery.h instead.
 -   Using @ref Buffer::Target as constructor or @ref Buffer::setTargetHint()
     parameter is deprecated, use @ref Buffer::TargetHint instead.
 -   The @cpp SceneGraph::TransformationType @ce enum is depracted, use separate
@@ -1076,8 +1184,8 @@ for a high-level overview.
         @ref Buffer::setSubData(), use overloads taking
         @cpp Containers::ArrayReference @ce instead
     -   Removed deprecated `Magnum/ImageFormat.h` header and
-        @cpp ImageFormat @ce/@cpp ImageType @ce enums, use @ref Magnum/ColorFormat.h
-        header and @ref ColorFormat/@ref ColorType enums instead
+        @cpp ImageFormat @ce/@cpp ImageType @ce enums, use `Magnum/ColorFormat.h`
+        header and @cpp ColorFormat @ce/@cpp ColorType @ce enums instead
     -   Removed deprecated @cpp Matrix2 @ce and @cpp Matrix2d @ce typedefs, use
         :ref:`Matrix2x2` and :ref:`Matrix2x2d` instead
     -   Removed deprecated `Magnum/Swizzle.h` header and @cpp Magnum::swizzle() @ce
@@ -1182,7 +1290,7 @@ No dependency changes in this release.
 -   Preferring absolute includes instead of relative (see [mosra/magnum#36](https://github.com/mosra/magnum/issues/36))
 -   The `magnum-distancefield` utility is now named @ref magnum-distancefieldconverter
     for consistency with other command-line utilities
--   @ref ImageReference class now stores const data pointer instead of
+-   @cpp ImageReference @ce class now stores const data pointer instead of
     mutable one, modifying the data through the class interface isn't valid use
     case anyway
 -   Added default template parameter to @ref Buffer::data() and made
