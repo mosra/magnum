@@ -33,10 +33,6 @@
 
 #include "Magnum/AbstractQuery.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Utility/Macros.h>
-#endif
-
 #ifndef MAGNUM_TARGET_WEBGL
 namespace Magnum {
 
@@ -128,14 +124,6 @@ class TimeQuery: public AbstractQuery {
             return TimeQuery{id, target, flags};
         }
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief @copybrief TimeQuery(Target)
-         * @deprecated Use @ref TimeQuery(Target) instead.
-         */
-        CORRADE_DEPRECATED("use TimeQuery(Target) instead") explicit TimeQuery() {}
-        #endif
-
         /**
          * @brief Constructor
          *
@@ -188,18 +176,6 @@ class TimeQuery: public AbstractQuery {
             CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
             #endif
         }
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief @copybrief AbstractQuery::begin()
-         * @deprecated Use @ref AbstractQuery::begin() instead.
-         */
-        CORRADE_DEPRECATED("use begin() instead") void begin(Target target) {
-            AbstractQuery::begin(GLenum(target));
-        }
-
-        using AbstractQuery::begin;
-        #endif
 
     private:
         explicit TimeQuery(GLuint id, Target target, ObjectFlags flags) noexcept: AbstractQuery{id, GLenum(target), flags} {}

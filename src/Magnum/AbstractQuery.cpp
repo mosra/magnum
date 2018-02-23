@@ -40,12 +40,6 @@ AbstractQuery::AbstractQuery(GLenum target): _target{target}, _flags{ObjectFlag:
     (this->*Context::current().state().query->createImplementation)();
 }
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-AbstractQuery::AbstractQuery(): _target{}, _flags{ObjectFlag::DeleteOnDestruction} {
-    createImplementationDefault();
-}
-#endif
-
 AbstractQuery::~AbstractQuery() {
     /* Moved out or not deleting on destruction, nothing to do */
     if(!_id || !(_flags & ObjectFlag::DeleteOnDestruction)) return;
@@ -152,10 +146,6 @@ template<> Long AbstractQuery::result<Long>() {
 #endif
 
 void AbstractQuery::begin() {
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    CORRADE_INTERNAL_ASSERT(_target);
-    #endif
-
     #ifndef MAGNUM_TARGET_GLES2
     glBeginQuery(_target, _id);
     #else
@@ -163,20 +153,7 @@ void AbstractQuery::begin() {
     #endif
 }
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-void AbstractQuery::begin(const GLenum target) {
-    CORRADE_INTERNAL_ASSERT(!_target || _target == target);
-
-    _target = target;
-    begin();
-}
-#endif
-
 void AbstractQuery::end() {
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    CORRADE_INTERNAL_ASSERT(_target);
-    #endif
-
     #ifndef MAGNUM_TARGET_GLES2
     glEndQuery(_target);
     #else

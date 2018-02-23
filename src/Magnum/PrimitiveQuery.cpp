@@ -34,30 +34,13 @@ void PrimitiveQuery::begin() {
     AbstractQuery::begin();
 }
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-void PrimitiveQuery::begin(const Target target) {
-    #ifndef MAGNUM_TARGET_GLES
-    _index = 0;
-    #endif
-    AbstractQuery::begin(GLenum(target));
-}
-#endif
-
 #ifndef MAGNUM_TARGET_GLES
 void PrimitiveQuery::begin(const UnsignedInt index) {
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    CORRADE_INTERNAL_ASSERT(_target);
-    #endif
-
     glBeginQueryIndexed(_target, _index = index, _id);
 }
 #endif
 
 void PrimitiveQuery::end() {
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    CORRADE_INTERNAL_ASSERT(_target);
-    #endif
-
     #ifndef MAGNUM_TARGET_GLES
     if(!_index) glEndQuery(_target);
     else glEndQueryIndexed(_target, _index);

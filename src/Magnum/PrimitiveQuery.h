@@ -33,10 +33,6 @@
 
 #include "Magnum/AbstractQuery.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Utility/Macros.h>
-#endif
-
 #ifndef MAGNUM_TARGET_GLES2
 namespace Magnum {
 
@@ -143,14 +139,6 @@ class MAGNUM_EXPORT PrimitiveQuery: public AbstractQuery {
             return PrimitiveQuery{id, target, flags};
         }
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief @copybrief PrimitiveQuery(Target)
-         * @deprecated Use @ref PrimitiveQuery(Target) instead.
-         */
-        CORRADE_DEPRECATED("use PrimitiveQuery(Target) instead") explicit PrimitiveQuery() {}
-        #endif
-
         /**
          * @brief Constructor
          *
@@ -184,14 +172,6 @@ class MAGNUM_EXPORT PrimitiveQuery: public AbstractQuery {
          * @see @fn_gl_keyword{BeginQuery}
          */
         void begin();
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief @copybrief begin()
-         * @deprecated Use @ref begin() instead.
-         */
-        CORRADE_DEPRECATED("use begin() instead") void begin(Target target);
-        #endif
 
         #ifndef MAGNUM_TARGET_GLES
         /**

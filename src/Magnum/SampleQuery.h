@@ -33,10 +33,6 @@
 
 #include "Magnum/AbstractQuery.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Utility/Macros.h>
-#endif
-
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 namespace Magnum {
 
@@ -209,14 +205,6 @@ class SampleQuery: public AbstractQuery {
             return SampleQuery{id, target, flags};
         }
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief @copybrief SampleQuery(Target)
-         * @deprecated Use @ref SampleQuery(Target) instead.
-         */
-        CORRADE_DEPRECATED("use SampleQuery(Target) instead") explicit SampleQuery() {}
-        #endif
-
         /**
          * @brief Constructor
          *
@@ -240,18 +228,6 @@ class SampleQuery: public AbstractQuery {
          * @see @ref SampleQuery(Target), @ref wrap()
          */
         explicit SampleQuery(NoCreateT) noexcept: AbstractQuery{NoCreate, GLenum(Target::AnySamplesPassed)} {}
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief @copybrief AbstractQuery::begin()
-         * @deprecated Use @ref begin() instead.
-         */
-        CORRADE_DEPRECATED("use begin() instead") void begin(Target target) {
-            AbstractQuery::begin(GLenum(target));
-        }
-
-        using AbstractQuery::begin;
-        #endif
 
         #ifndef MAGNUM_TARGET_GLES
         /**

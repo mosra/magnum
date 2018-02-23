@@ -179,11 +179,6 @@ class MAGNUM_EXPORT AbstractQuery: public AbstractObject {
         explicit AbstractQuery(NoCreateT, GLenum target) noexcept: _id{0}, _target{target}, _flags{ObjectFlag::DeleteOnDestruction} {}
         explicit AbstractQuery(GLuint id, GLenum target, ObjectFlags flags) noexcept: _id{id}, _target{target}, _flags{flags} {}
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        explicit AbstractQuery();
-        void begin(GLenum target);
-        #endif
-
         GLuint _id;
         GLenum _target;
 
