@@ -65,16 +65,6 @@ set(MagnumSceneGraph_HEADERS
 
     visibility.h)
 
-if(MAGNUM_BUILD_DEPRECATED)
-    list(APPEND MagnumSceneGraph_HEADERS
-        AbstractCamera.h
-        AbstractCamera.hpp
-        Camera2D.h
-        Camera2D.hpp
-        Camera3D.h
-        Camera3D.hpp)
-endif()
-
 # Objects shared between main and test library
 add_library(MagnumSceneGraphObjects OBJECT
     ${MagnumSceneGraph_SRCS}

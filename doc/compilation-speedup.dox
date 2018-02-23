@@ -96,7 +96,7 @@ Templated classes having code in template implementation files state in their
 documentation all common specializations that are already compiled in the
 libraries. So, unless the templated class is too generic or you need something
 special, you don't have to mess with template implementation files at all. See
-@ref SceneGraph::Object or @ref SceneGraph::AbstractCamera for an example.
+@ref SceneGraph::Object or @ref SceneGraph::Camera for an example.
 
 Sometimes, however, you need to use your own specialization and that's why
 template implementation files are installed along with the library. For example

@@ -164,9 +164,9 @@ have to add a *feature* to it.
 Magnum provides the following builtin features. See documentation of each class
 for more detailed information and usage examples:
 
--   @ref SceneGraph::AbstractCamera "SceneGraph::Camera*D" --- Handles
-    projection matrix, aspect ratio correction etc.. Used for rendering parts
-    of the scene.
+-   @ref SceneGraph::Camera "SceneGraph::Camera*D" --- Handles projection
+    matrix, aspect ratio correction etc.. Used for rendering parts of the
+    scene.
 -   @ref SceneGraph::Drawable "SceneGraph::Drawable*D" --- Adds drawing
     functionality to given object. Group of drawables can be then rendered
     using the camera feature.
