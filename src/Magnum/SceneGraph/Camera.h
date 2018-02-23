@@ -157,43 +157,6 @@ template<UnsignedInt dimensions, class T> class Camera: public AbstractFeature<d
          */
         Camera<dimensions, T>& setProjectionMatrix(const MatrixTypeFor<dimensions, T>& matrix);
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief Set projection
-         * @deprecated Use @ref setProjectionMatrix() with @ref Matrix3::projection() instead.
-         */
-        template<UnsignedInt d = dimensions, class = typename std::enable_if<d == 2>::type> CORRADE_DEPRECATED("use setProjectionMatrix() with Matrix3::projection() instead") BasicCamera2D<T>& setProjection(const Math::Vector2<T>& size) {
-            return setProjectionMatrix(Math::Matrix3<T>::projection(size));
-        }
-
-        /**
-         * @brief Set orthographic projection
-         * @deprecated Use @ref setProjectionMatrix() with
-         *      @ref Matrix4::orthographicProjection() instead.
-         */
-        template<UnsignedInt d = dimensions, class = typename std::enable_if<d == 3>::type> CORRADE_DEPRECATED("use setProjectionMatrix() with Matrix4::orthographicProjection() instead") BasicCamera3D<T>& setOrthographic(const Math::Vector2<T>& size, T near, T far) {
-            return setProjectionMatrix(Math::Matrix4<T>::orthographicProjection(size, near, far));
-        }
-
-        /**
-         * @brief Set perspective projection
-         * @deprecated Use @ref setProjectionMatrix() with
-         *      @ref Matrix4::perspectiveProjection() instead.
-         */
-        template<UnsignedInt d = dimensions, class = typename std::enable_if<d == 3>::type> CORRADE_DEPRECATED("use setProjectionMatrix() with Matrix4::perspectiveProjection() instead") BasicCamera3D<T>& setPerspective(const Math::Vector2<T>& size, T near, T far) {
-            return setProjectionMatrix(Math::Matrix4<T>::perspectiveProjection(size, near, far));
-        }
-
-        /**
-         * @brief Set perspective projection
-         * @deprecated Use @ref setProjectionMatrix() with
-         *      @ref Matrix4::perspectiveProjection() instead.
-         */
-        template<UnsignedInt d = dimensions, class = typename std::enable_if<d == 3>::type> CORRADE_DEPRECATED("use setProjectionMatrix() with Matrix4::perspectiveProjection() instead") BasicCamera3D<T>& setPerspective(Math::Rad<T> fov, T aspectRatio, T near, T far) {
-            return setProjectionMatrix(Math::Matrix4<T>::perspectiveProjection(fov, aspectRatio, near, far));
-        }
-        #endif
-
         /**
          * @brief Size of (near) XY plane in current projection
          *
