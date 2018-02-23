@@ -269,16 +269,6 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          */
         void bind();
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief @copybrief bind()
-         * @deprecated Use parameter-less @ref bind() instead.
-         */
-        CORRADE_DEPRECATED("use parameter-less bind() instead") void bind(FramebufferTarget) {
-            bind();
-        }
-        #endif
-
         /** @brief Viewport rectangle */
         Range2Di viewport() const { return _viewport; }
 
