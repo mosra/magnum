@@ -37,10 +37,6 @@
 #include "Magnum/SceneGraph/SceneGraph.h"
 #include "Magnum/SceneGraph/visibility.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Utility/Macros.h>
-#endif
-
 namespace Magnum { namespace SceneGraph {
 
 /**
@@ -117,36 +113,6 @@ template<UnsignedInt dimensions, class T> class AbstractObject
         const Containers::LinkedList<AbstractFeature<dimensions, T>>& features() const {
             return static_cast<const Containers::LinkedList<AbstractFeature<dimensions, T>>&>(*this);
         }
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief Whether this object has features
-         * @deprecated Use `features().isEmpty()` instead.
-         */
-        CORRADE_DEPRECATED("use features().isEmpty() instead") bool hasFeatures() const { return !features().isEmpty(); }
-
-        /**
-         * @brief First object feature or `nullptr`, if this object has no features
-         * @deprecated Use `features().first()` instead.
-         */
-        CORRADE_DEPRECATED("use features().first() instead") FeatureType* firstFeature() { return features().first(); }
-
-        /** @overload
-         * @deprecated Use `features().first()` instead.
-         */
-        CORRADE_DEPRECATED("use features().first() instead") const FeatureType* firstFeature() const { return features().first(); }
-
-        /**
-         * @brief Last object feature or `nullptr`, if this object has no features
-         * @deprecated Use `features().last()` instead.`
-         */
-        CORRADE_DEPRECATED("use features().last() instead") FeatureType* lastFeature() { return features().last(); }
-
-        /** @overload
-         * @deprecated Use `features().last()` instead.
-         */
-        CORRADE_DEPRECATED("use features().last() instead") const FeatureType* lastFeature() const { return features().last(); }
-        #endif
 
         /**
          * @brief Add a feature

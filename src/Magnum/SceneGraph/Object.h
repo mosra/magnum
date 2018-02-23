@@ -197,36 +197,6 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
             return static_cast<const Containers::LinkedList<Object<Transformation>>&>(*this);
         }
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief Whether this object has children
-         * @deprecated Use `children().isEmpty()` instead.
-         */
-        CORRADE_DEPRECATED("use children().isEmpty()") bool hasChildren() const { return !children().isEmpty(); }
-
-        /**
-         * @brief First child object or `nullptr`, if this object has no children
-         * @deprecated Use `children().first()` instead.
-         */
-        CORRADE_DEPRECATED("use children().first()") Object<Transformation>* firstChild() { return children().first(); }
-
-        /** @overload
-         * @deprecated Use `children.first()` instead.
-         */
-        CORRADE_DEPRECATED("use children().first()") const Object<Transformation>* firstChild() const { return children().first(); }
-
-        /**
-         * @brief Last child object or `nullptr`, if this object has no children
-         * @deprecated Use `children().last()` instead.
-         */
-        CORRADE_DEPRECATED("use children().last()") Object<Transformation>* lastChild() { return children().last(); }
-
-        /** @overload
-         * @deprecated Use `children().last()` instead.
-         */
-        CORRADE_DEPRECATED("use children().last()") const Object<Transformation>* lastChild() const { return children().last(); }
-        #endif
-
         /**
          * @brief Add a child
          *
