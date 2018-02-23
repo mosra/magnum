@@ -1199,17 +1199,6 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         void setUniform(Int location, Containers::ArrayView<const Math::RectangularMatrix<4, 3, Double>> values); /**< @overload */
         #endif
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief Set uniform values
-         * @deprecated Use @ref setUniform(Int, Containers::ArrayView<const Float>)
-         *      and similar instead.
-         */
-        template<class T> CORRADE_DEPRECATED("use setUniform(Int, Containers::ArrayView<const T>) instead") void setUniform(Int location, UnsignedInt count, const T* values) {
-            setUniform(location, {values, count});
-        }
-        #endif
-
         #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Set uniform block binding
