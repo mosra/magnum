@@ -699,11 +699,6 @@ class BufferTexture;
 enum class BufferTextureFormat: GLenum;
 #endif
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-template<class T> using BasicColor3 CORRADE_DEPRECATED_ALIAS("use Math::Color3 instead") = Math::Color3<T>;
-template<class T> using BasicColor4 CORRADE_DEPRECATED_ALIAS("use Math::Color4 instead") = Math::Color4<T>;
-#endif
-
 class Context;
 
 class CubeMapTexture;
