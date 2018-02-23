@@ -59,10 +59,6 @@ struct Mesh::AttributeLayout {
     GLuint divisor;
 };
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-Int Mesh::maxVertexAttributes() { return AbstractShaderProgram::maxVertexAttributes(); }
-#endif
-
 #ifndef MAGNUM_TARGET_GLES2
 #ifndef MAGNUM_TARGET_WEBGL
 Long Mesh::maxElementIndex()

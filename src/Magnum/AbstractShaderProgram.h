@@ -536,8 +536,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls.
-         * @see @ref Mesh::maxVertexAttributes(),
-         *      @ref Attribute, @fn_gl{Get} with @def_gl_keyword{MAX_VERTEX_ATTRIBS}
+         * @see @ref Attribute, @fn_gl{Get} with @def_gl_keyword{MAX_VERTEX_ATTRIBS}
          */
         static Int maxVertexAttributes();
 

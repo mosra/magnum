@@ -37,10 +37,6 @@
 #include "Magnum/Attribute.h"
 #include "Magnum/Tags.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Utility/Macros.h>
-#endif
-
 namespace Magnum {
 
 /**
@@ -383,14 +379,6 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
              */
             UnsignedInt = GL_UNSIGNED_INT
         };
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief @copybrief AbstractShaderProgram::maxVertexAttributes()
-         * @deprecated Use @ref AbstractShaderProgram::maxVertexAttributes() instead.
-         */
-        CORRADE_DEPRECATED("use AbstractShaderProgram::maxVertexAttributes() instead") static Int maxVertexAttributes();
-        #endif
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
