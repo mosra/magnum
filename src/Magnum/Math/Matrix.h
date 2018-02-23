@@ -53,30 +53,6 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
             Size = size         /**< Matrix size */
         };
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief Pass to constructor to create zero-filled matrix
-         * @deprecated Use @ref ZeroInitT and @ref ZeroInit instead.
-         */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        enum ZeroType { Zero };
-        #else
-        CORRADE_DEPRECATED("use Math::ZeroInitT instead") typedef ZeroInitT ZeroType;
-        CORRADE_DEPRECATED("use Math::ZeroInit instead") constexpr static ZeroInitT Zero{ZeroInitT::Init{}};
-        #endif
-
-        /**
-         * @brief Pass to constructor to create identity matrix
-         * @deprecated Use @ref IdentityInitT and @ref IdentityInit instead.
-         */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        enum IdentityType { Identity };
-        #else
-        CORRADE_DEPRECATED("use Math::IdentityInitT instead") typedef IdentityInitT IdentityType;
-        CORRADE_DEPRECATED("use Math::IdentityInit instead") constexpr static IdentityInitT Identity{IdentityInitT::Init{}};
-        #endif
-        #endif
-
         /**
          * @brief Default constructor
          *
