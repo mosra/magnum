@@ -35,10 +35,6 @@
 #include "Magnum/PixelStorage.h"
 #include "Magnum/Math/Vector4.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Containers/Array.h>
-#endif
-
 namespace Magnum {
 
 /**
@@ -82,24 +78,6 @@ template<UnsignedInt dimensions> class ImageView {
          * Similar to the above, but uses default @ref PixelStorage parameters.
          */
         explicit ImageView(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data) noexcept: ImageView{{}, format, type, size, data} {}
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief ImageView(PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<const void>)
-         * @deprecated Use @ref ImageView(PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<const void>) instead.
-         */
-        explicit CORRADE_DEPRECATED("use ImageView(PixelFormat, PixelType, const VectorTypeFor&, Containers::ArrayView) instead") ImageView(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, const void* data) noexcept: ImageView{{}, format, type, size, {reinterpret_cast<const char*>(data), Implementation::imageDataSizeFor(format, type, size)}} {}
-
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        /* To avoid ambiguous overload when passing ArrayView<T> to the
-           constructor */
-        template<class T> explicit ImageView(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<T> data): ImageView{{}, format, type, size, Containers::ArrayView<const void>{data}} {}
-        template<class T> explicit ImageView(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, const Containers::Array<T>& data): ImageView{{}, format, type, size, Containers::ArrayView<const void>(data)} {}
-        /* To avoid decay of sized arrays and nullptr to const void* and
-           unwanted use of deprecated function */
-        template<class T, std::size_t dataSize> explicit ImageView(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, const T(&data)[dataSize]): ImageView{{}, format, type, size, Containers::ArrayView<const void>{data}} {}
-        explicit ImageView(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, std::nullptr_t): ImageView{{}, format, type, size, Containers::ArrayView<const void>{nullptr}} {}
-        #endif
-        #endif
 
         /**
          * @brief Constructor
@@ -166,35 +144,6 @@ template<UnsignedInt dimensions> class ImageView {
             CORRADE_ASSERT(Implementation::imageDataSize(*this) <= data.size(), "ImageView::setData(): bad image data size, got" << data.size() << "but expected at least" << Implementation::imageDataSize(*this), );
             _data = {reinterpret_cast<const char*>(data.data()), data.size()};
         }
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief setData(Containers::ArrayView<const void>)
-         * @deprecated Use @ref setData(Containers::ArrayView<const void>)
-         *      instead.
-         */
-        void CORRADE_DEPRECATED("use setData(Containers::ArrayView) instead") setData(const void* data) {
-            setData({reinterpret_cast<const char*>(data), Implementation::imageDataSize(*this)});
-        }
-
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        /* To avoid ambiguous overload when passing ArrayView<T> to the
-           function */
-        template<class T> void setData(Containers::ArrayView<const T> data) {
-            setData(Containers::ArrayView<const void>{data});
-        }
-        template<class T> void setData(const Containers::Array<T>& data) {
-            setData(Containers::ArrayView<const void>(data));
-        }
-        /* To avoid decay of sized arrays and nullptr to const void* and
-           unwanted use of deprecated function */
-        template<class T, std::size_t size> void setData(const T(&data)[size]) {
-            setData(Containers::ArrayView<const void>{data});
-        }
-        void setData(std::nullptr_t) {
-            setData(Containers::ArrayView<const void>{nullptr});
-        }
-        #endif
-        #endif
 
     private:
         PixelStorage _storage;

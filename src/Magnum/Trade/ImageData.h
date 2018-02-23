@@ -75,18 +75,6 @@ template<UnsignedInt dimensions> class ImageData {
          */
         explicit ImageData(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept: ImageData{{}, format, type, size, std::move(data), importerState} {}
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief ImageData(PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*)
-         * @deprecated Use @ref ImageData(PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*) instead.
-         */
-        explicit CORRADE_DEPRECATED("use ImageData(PixelFormat, PixelType, const VectorTypeFor&, Containers::Array&&) instead") ImageData(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, void* data) noexcept: ImageData{format, type, size, Containers::Array<char>{reinterpret_cast<char*>(data), Magnum::Implementation::imageDataSizeFor(format, type, size)}} {}
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        /* To avoid decay of nullptr to const void* and unwanted use of
-           deprecated function */
-        explicit ImageData(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, std::nullptr_t) noexcept: ImageData{{}, format, type, size, nullptr} {}
-        #endif
-        #endif
-
         #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Construct compressed image data

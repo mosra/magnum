@@ -66,19 +66,6 @@ template<UnsignedInt dimensions> class Image {
          */
         explicit Image(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) noexcept: Image{{}, format, type, size, std::move(data)} {}
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief Image(PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&)
-         * @deprecated Use @ref Image(PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&)
-         *      instead.
-         */
-        explicit CORRADE_DEPRECATED("use Image(PixelFormat, PixelType, const VectorTypeFor&, Containers::Array&&) instead") Image(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, void* data) noexcept: Image{{}, format, type, size, Containers::Array<char>{reinterpret_cast<char*>(data), Implementation::imageDataSizeFor(format, type, size)}} {}
-        #ifndef DOXYGEN_GENERATING_OUTPUT
-        /* To avoid decay of nullptr to const void* and unwanted use of
-           deprecated function */
-        explicit Image(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, std::nullptr_t) noexcept: Image{{}, format, type, size, nullptr} {}
-        #endif
-        #endif
-
         /**
          * @brief Constructor
          * @param storage           Storage of pixel data
@@ -198,16 +185,6 @@ template<UnsignedInt dimensions> class Image {
         void setData(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) {
             setData({}, format, type, size, std::move(data));
         }
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief setData(PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&)
-         * @deprecated Use @ref setData(PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&)
-         *      instead.
-         */
-        void CORRADE_DEPRECATED("use setData(PixelFormat, PixelType, const VectorTypeFor&, Containers::ArrayView) instead") setData(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, void* data) {
-            setData({}, format, type, size, Containers::Array<char>{reinterpret_cast<char*>(data), Implementation::imageDataSizeFor(format, type, size)});
-        }
-        #endif
 
         /**
          * @brief Release data storage
