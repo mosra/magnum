@@ -30,7 +30,6 @@
  */
 
 #include <Corrade/Containers/EnumSet.h>
-#include <Corrade/Utility/Macros.h>
 
 #include "Magnum/AbstractObject.h"
 #include "Magnum/Math/Range.h"
@@ -133,21 +132,6 @@ enum class FramebufferTarget: GLenum {
     Draw = GL_DRAW_FRAMEBUFFER_APPLE,
     #else
     Draw,
-    #endif
-
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    /**
-     * Framebuffer drawing target
-     * @deprecated Use @ref FramebufferTarget::Draw instead.
-     */
-    ReadDraw CORRADE_DEPRECATED_ENUM("use FramebufferTarget::Draw instead") =
-        #ifndef MAGNUM_TARGET_GLES2
-        GL_DRAW_FRAMEBUFFER
-        #elif !defined(MAGNUM_TARGET_WEBGL)
-        GL_DRAW_FRAMEBUFFER_APPLE
-        #else
-        1
-        #endif
     #endif
 };
 
