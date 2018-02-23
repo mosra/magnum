@@ -136,44 +136,6 @@ template<class T> class Quaternion {
     public:
         typedef T Type; /**< @brief Underlying data type */
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief @copybrief Math::dot(const Quaternion<T>&, const Quaternion<T>&)
-         * @deprecated Use @ref Math::dot(const Quaternion<T>&, const Quaternion<T>&)
-         *      instead.
-         */
-        CORRADE_DEPRECATED("use Math::dot() instead") static T dot(const Quaternion<T>& a, const Quaternion<T>& b) {
-            return Math::dot(a, b);
-        }
-
-        /**
-         * @brief @copybrief Math::angle(const Quaternion<T>&, const Quaternion<T>&)
-         * @deprecated Use @ref Math::angle(const Quaternion<T>&, const Quaternion<T>&)
-         *      instead.
-         */
-        CORRADE_DEPRECATED("use Math::angle() instead") static Rad<T> angle(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB) {
-            return Math::angle(normalizedA, normalizedB);
-        }
-
-        /**
-         * @brief @copybrief Math::lerp(const Quaternion<T>&, const Quaternion<T>&, T)
-         * @deprecated Use @ref Math::lerp(const Quaternion<T>&, const Quaternion<T>&, T)
-         *      instead.
-         */
-        CORRADE_DEPRECATED("use Math::lerp() instead") static Quaternion<T> lerp(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, T t) {
-            return Math::lerp(normalizedA, normalizedB, t);
-        }
-
-        /**
-         * @brief @copybrief Math::slerp(const Quaternion<T>&, const Quaternion<T>&, T)
-         * @deprecated Use @ref Math::slerp(const Quaternion<T>&, const Quaternion<T>&, T)
-         *      instead.
-         */
-        CORRADE_DEPRECATED("use Math::slerp() instead") static Quaternion<T> slerp(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, T t) {
-            return Math::slerp(normalizedA, normalizedB, t);
-        }
-        #endif
-
         /**
          * @brief Rotation quaternion
          * @param angle             Rotation angle (counterclockwise)

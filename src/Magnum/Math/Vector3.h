@@ -126,17 +126,6 @@ template<class T> class Vector3: public Vector<3, T> {
          */
         constexpr static Vector3<T> zScale(T scale) { return {T(1), T(1), scale}; }
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief @copybrief Math::cross(const Vector3<T>&, const Vector3<T>&)
-         * @deprecated Use @ref Math::cross(const Vector3<T>&, const Vector3<T>&)
-         *      instead.
-         */
-        CORRADE_DEPRECATED("use Math::cross() instead") static Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b) {
-            return Math::cross(a, b);
-        }
-        #endif
-
         /** @copydoc Vector::Vector(ZeroInitT) */
         constexpr /*implicit*/ Vector3(ZeroInitT = ZeroInit) noexcept
             /** @todoc remove workaround when doxygen is sane */

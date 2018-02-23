@@ -88,26 +88,6 @@ template<class T> class Complex {
     public:
         typedef T Type; /**< @brief Underlying data type */
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief @copybrief Math::dot(const Complex<T>&, const Complex<T>&)
-         * @deprecated Use @ref Math::dot(const Complex<T>&, const Complex<T>&)
-         *      instead.
-         */
-        CORRADE_DEPRECATED("use Math::dot() instead") static T dot(const Complex<T>& a, const Complex<T>& b) {
-            return Math::dot(a, b);
-        }
-
-        /**
-         * @brief @copybrief Math::angle(const Complex<T>&, const Complex<T>&)
-         * @deprecated Use @ref Math::angle(const Complex<T>&, const Complex<T>&)
-         *      instead.
-         */
-        CORRADE_DEPRECATED("use Math::angle() instead") static Rad<T> angle(const Complex<T>& normalizedA, const Complex<T>& normalizedB) {
-            return Math::angle(normalizedA, normalizedB);
-        }
-        #endif
-
         /**
          * @brief Rotation complex number
          * @param angle             Rotation angle (counterclockwise)

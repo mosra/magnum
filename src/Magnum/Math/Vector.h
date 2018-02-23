@@ -42,10 +42,6 @@
 #include "Magnum/Math/BoolVector.h"
 #include "Magnum/Math/TypeTraits.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Utility/Macros.h>
-#endif
-
 namespace Magnum { namespace Math {
 
 namespace Implementation {
@@ -147,26 +143,6 @@ template<std::size_t size, class T> class Vector {
         template<std::size_t otherSize> constexpr static Vector<size, T> pad(const Vector<otherSize, T>& a, T value = T(0)) {
             return padInternal<otherSize>(typename Implementation::GenerateSequence<size>::Type(), a, value);
         }
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief @copybrief Magnum::Math::dot(const Vector<size, T>&, const Vector<size, T>&)
-         * @deprecated Use @ref Math::dot(const Vector<size, T>&, const Vector<size, T>&)
-         *      instead.
-         */
-        CORRADE_DEPRECATED("use Math::dot() instead") static T dot(const Vector<size, T>& a, const Vector<size, T>& b) {
-            return Math::dot(a, b);
-        }
-
-        /**
-         * @brief @copybrief Magnum::Math::angle(const Vector<size, T>&, const Vector<size, T>&)
-         * @deprecated Use @ref Math::angle(const Vector<size, T>&, const Vector<size, T>&)
-         *      instead.
-         */
-        CORRADE_DEPRECATED("use Math::angle() instead") static Rad<T> angle(const Vector<size, T>& normalizedA, const Vector<size, T>& normalizedB) {
-            return Math::angle(normalizedA, normalizedB);
-        }
-        #endif
 
         /**
          * @brief Default constructor

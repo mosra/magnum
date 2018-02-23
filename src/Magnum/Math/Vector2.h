@@ -104,17 +104,6 @@ template<class T> class Vector2: public Vector<2, T> {
          */
         constexpr static Vector2<T> yScale(T scale) { return {T(1), scale}; }
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief @copybrief Math::cross(const Vector2<T>&, const Vector2<T>&)
-         * @deprecated Use @ref Math::cross(const Vector2<T>&, const Vector2<T>&)
-         *      instead.
-         */
-        CORRADE_DEPRECATED("use Math::cross() instead") static T cross(const Vector2<T>& a, const Vector2<T>& b) {
-            return Math::cross(a, b);
-        }
-        #endif
-
         /** @copydoc Vector::Vector(ZeroInitT) */
         constexpr /*implicit*/ Vector2(ZeroInitT = ZeroInit) noexcept
             /** @todoc remove workaround when doxygen is sane */
