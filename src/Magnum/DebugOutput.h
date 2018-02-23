@@ -38,10 +38,6 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/visibility.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Utility/Macros.h>
-#endif
-
 #ifndef MAGNUM_TARGET_WEBGL
 namespace Magnum {
 
@@ -488,23 +484,6 @@ class MAGNUM_EXPORT DebugMessage {
          * @todoc use m_enum_values_as_keywords once deprecated values are gone
          */
         enum class Source: GLenum {
-            #ifdef MAGNUM_BUILD_DEPRECATED
-            /** @copydoc DebugOutput::Source::Api
-             * @deprecated Use @ref DebugOutput::Source::Api instead.
-             */
-            Api CORRADE_DEPRECATED_ENUM("use DebugOutput::Source::Api instead") = GLenum(DebugOutput::Source::Api),
-
-            /** @copydoc DebugOutput::Source::WindowSystem
-             * @deprecated Use @ref DebugOutput::Source::WindowSystem instead.
-             */
-            WindowSystem CORRADE_DEPRECATED_ENUM("use DebugOutput::Source::WindowSystem instead") = GLenum(DebugOutput::Source::WindowSystem),
-
-            /** @copydoc DebugOutput::Source::ShaderCompiler
-             * @deprecated Use @ref DebugOutput::Source::ShaderCompiler instead.
-             */
-            ShaderCompiler CORRADE_DEPRECATED_ENUM("use DebugOutput::Source::ShaderCompiler instead") = GLenum(DebugOutput::Source::ShaderCompiler),
-            #endif
-
             /**
              * External debugger or third-party middleware
              * @m_keywords{GL_DEBUG_SOURCE_THIRD_PARTY}
@@ -523,13 +502,6 @@ class MAGNUM_EXPORT DebugMessage {
             Application = GL_DEBUG_SOURCE_APPLICATION,
             #else
             Application = GL_DEBUG_SOURCE_APPLICATION_KHR,
-            #endif
-
-            #ifdef MAGNUM_BUILD_DEPRECATED
-            /** @copydoc DebugOutput::Source::Other
-             * @deprecated Use @ref DebugOutput::Source::Other instead.
-             */
-            Other CORRADE_DEPRECATED_ENUM("use DebugOutput::Source::Other instead") = GLenum(DebugOutput::Source::Other)
             #endif
         };
 
@@ -589,82 +561,6 @@ class MAGNUM_EXPORT DebugMessage {
             Other = GL_DEBUG_TYPE_OTHER_KHR
             #endif
         };
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief DebugOutput::Severity
-         * @deprecated Use @ref DebugOutput::Severity instead.
-         */
-        CORRADE_DEPRECATED("use DebugOutput::Severity instead") typedef DebugOutput::Severity Severity;
-
-        /** @brief @copybrief DebugOutput::Callback
-         * @deprecated Use @ref DebugOutput::Callback instead.
-         */
-        /* Can't mark this as deprecated because compiler then complains when I use it as a parameter in setCallback() */
-        typedef CORRADE_DEPRECATED("use DebugOutput::Callback instead") void(*Callback)(DebugMessage::Source, DebugMessage::Type, UnsignedInt, DebugOutput::Severity, const std::string&, const void*);
-
-        /** @brief @copybrief DebugOutput::maxLoggedMessages()
-         * @deprecated Use @ref DebugOutput::maxLoggedMessages() instead.
-         */
-        CORRADE_DEPRECATED("use DebugOutput::maxLoggedMessages() instead") static Int maxLoggedMessages() {
-            return DebugOutput::maxLoggedMessages();
-        }
-
-        /** @brief @copybrief DebugOutput::maxMessageLength()
-         * @deprecated Use @ref DebugOutput::maxMessageLength() instead.
-         */
-        CORRADE_DEPRECATED("use DebugOutput::maxMessageLength() instead") static Int maxMessageLength() {
-            return DebugOutput::maxMessageLength();
-        }
-
-        /** @brief @copybrief DebugOutput::setEnabled()
-         * @deprecated Use @ref DebugOutput::setEnabled() instead.
-         */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        template<class ...T> static void setEnabled(T... args);
-        #else
-        CORRADE_DEPRECATED("use DebugOutput::setEnabled() instead") static void setEnabled(Source source, Type type, std::initializer_list<UnsignedInt> ids, bool enabled) {
-            DebugOutput::setEnabled(DebugOutput::Source(source), DebugOutput::Type(type), ids, enabled);
-        }
-        CORRADE_DEPRECATED("use DebugOutput::setEnabled() instead") static void setEnabled(Source source, Type type, DebugOutput::Severity severity, bool enabled) {
-            DebugOutput::setEnabled(DebugOutput::Source(source), DebugOutput::Type(type), severity, enabled);
-        }
-        CORRADE_DEPRECATED("use DebugOutput::setEnabled() instead") static void setEnabled(Source source, Type type, bool enabled) {
-            DebugOutput::setEnabled(DebugOutput::Source(source), DebugOutput::Type(type), enabled);
-        }
-        CORRADE_DEPRECATED("use DebugOutput::setEnabled() instead") static void setEnabled(Source source, DebugOutput::Severity severity, bool enabled) {
-            DebugOutput::setEnabled(DebugOutput::Source(source), severity, enabled);
-        }
-        CORRADE_DEPRECATED("use DebugOutput::setEnabled() instead") static void setEnabled(Source source, bool enabled) {
-            DebugOutput::setEnabled(DebugOutput::Source(source), enabled);
-        }
-        CORRADE_DEPRECATED("use DebugOutput::setEnabled() instead") static void setEnabled(Type type, DebugOutput::Severity severity, bool enabled) {
-            DebugOutput::setEnabled(DebugOutput::Type(type), severity, enabled);
-        }
-        CORRADE_DEPRECATED("use DebugOutput::setEnabled() instead") static void setEnabled(Type type, bool enabled) {
-            DebugOutput::setEnabled(DebugOutput::Type(type), enabled);
-        }
-        CORRADE_DEPRECATED("use DebugOutput::setEnabled() instead") static void setEnabled(DebugOutput::Severity severity, bool enabled) {
-            DebugOutput::setEnabled(severity, enabled);
-        }
-        CORRADE_DEPRECATED("use DebugOutput::setEnabled() instead") static void setEnabled(bool enabled) {
-            DebugOutput::setEnabled(enabled);
-        }
-        #endif
-
-        /** @brief @copybrief DebugOutput::setCallback()
-         * @deprecated Use @ref DebugOutput::setCallback() instead.
-         */
-        CORRADE_DEPRECATED("use DebugOutput::setCallback() instead") static void setCallback(DebugOutput::Callback callback, const void* userParam = nullptr) {
-            DebugOutput::setCallback(reinterpret_cast<DebugOutput::Callback>(callback), userParam);
-        }
-
-        /** @brief @copybrief DebugOutput::setDefaultCallback()
-         * @deprecated Use @ref DebugOutput::setDefaultCallback() instead.
-         */
-        CORRADE_DEPRECATED("use DebugOutput::setDefaultCallback() instead") static void setDefaultCallback() {
-            DebugOutput::setDefaultCallback();
-        }
-        #endif
 
         /**
          * @brief Insert message

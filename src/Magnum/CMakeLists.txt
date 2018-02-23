@@ -185,11 +185,6 @@ if(NOT TARGET_WEBGL)
             ImageFormat.h
             MultisampleTexture.h)
     endif()
-
-    if(BUILD_DEPRECATED)
-        list(APPEND Magnum_HEADERS
-            DebugMessage.h)
-    endif()
 endif()
 
 # Desktop, OpenGL ES and WebGL 2.0 stuff that is not available in WebGL 1.0
