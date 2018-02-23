@@ -272,6 +272,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *      \end{pmatrix}
          * @f]
          * @see @ref perspectiveProjection(), @ref Matrix3::projection()
+         * @m_keywords{gluOrtho()}
          */
         static Matrix4<T> orthographicProjection(const Vector2<T>& size, T near, T far);
 
@@ -300,6 +301,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * @f]
          * @see @ref orthographicProjection(), @ref Matrix3::projection(),
          *      @ref Constants::inf()
+         * @m_keywords{gluPerspective()}
          */
         static Matrix4<T> perspectiveProjection(const Vector2<T>& size, T near, T far);
 
@@ -329,6 +331,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          * @f]
          * @see @ref orthographicProjection(), @ref Matrix3::projection(),
          *      @ref Constants::inf()
+         * @m_keywords{gluPerspective()}
          */
         static Matrix4<T> perspectiveProjection(Rad<T> fov, T aspectRatio, T near, T far) {
             const T xyScale = 2*std::tan(T(fov)/2)*near;

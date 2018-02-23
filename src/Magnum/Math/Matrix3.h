@@ -175,6 +175,7 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          * @f]
          * @see @ref Matrix4::orthographicProjection(),
          *      @ref Matrix4::perspectiveProjection()
+         * @m_keywords{gluOrtho2D()}
          */
         static Matrix3<T> projection(const Vector2<T>& size) {
             return scaling(2.0f/size);
