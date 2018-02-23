@@ -412,14 +412,6 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
         };
         #endif
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief @copybrief BufferUsage
-         * @deprecated Use @ref BufferUsage instead.
-         */
-        typedef CORRADE_DEPRECATED("use BufferUsage instead") BufferUsage Usage;
-        #endif
-
         #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @brief Memory mapping access
