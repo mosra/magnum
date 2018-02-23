@@ -739,13 +739,6 @@ typedef ImageView<1> ImageView1D;
 typedef ImageView<2> ImageView2D;
 typedef ImageView<3> ImageView3D;
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-template<UnsignedInt dimensions> using ImageReference CORRADE_DEPRECATED_ALIAS("use ImageView instead") = ImageView<dimensions>;
-typedef CORRADE_DEPRECATED("use ImageView1D instead") ImageView1D ImageReference1D;
-typedef CORRADE_DEPRECATED("use ImageView2D instead") ImageView2D ImageReference2D;
-typedef CORRADE_DEPRECATED("use ImageView3D instead") ImageView3D ImageReference3D;
-#endif
-
 template<UnsignedInt> class CompressedImageView;
 typedef CompressedImageView<1> CompressedImageView1D;
 typedef CompressedImageView<2> CompressedImageView2D;

@@ -136,8 +136,7 @@ set(Magnum_PRIVATE_HEADERS
 if(BUILD_DEPRECATED)
     list(APPEND Magnum_HEADERS
         Color.h
-        ColorFormat.h
-        ImageReference.h)
+        ColorFormat.h)
 endif()
 
 # Desktop-only stuff
