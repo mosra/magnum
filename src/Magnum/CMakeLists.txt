@@ -205,11 +205,6 @@ if(NOT (TARGET_WEBGL AND TARGET_GLES2))
 
     list(APPEND Magnum_PRIVATE_HEADERS
         Implementation/QueryState.h)
-
-    if(BUILD_DEPRECATED)
-        list(APPEND Magnum_HEADERS
-            Query.h)
-    endif()
 endif()
 
 # Link in GL function pointer variables on platforms that support it
