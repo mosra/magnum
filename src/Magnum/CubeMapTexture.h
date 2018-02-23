@@ -516,16 +516,6 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
          *      WebGL.
          */
         Vector2i imageSize(Int level);
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief @copybrief imageSize()
-         * @deprecated Use @ref imageSize(Int) instead.
-         */
-        CORRADE_DEPRECATED("use imageSize(Int) instead") Vector2i imageSize(CubeMapCoordinate, Int level) {
-            return imageSize(level);
-        }
-        #endif
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
