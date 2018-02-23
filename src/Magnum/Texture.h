@@ -29,8 +29,6 @@
  * @brief Class @ref Magnum::Texture, typedef @ref Magnum::Texture1D, @ref Magnum::Texture2D, @ref Magnum::Texture3D
  */
 
-#include <Corrade/Utility/Macros.h>
-
 #include "Magnum/AbstractTexture.h"
 #include "Magnum/Array.h"
 #include "Magnum/DimensionTraits.h"
