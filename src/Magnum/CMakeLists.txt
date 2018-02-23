@@ -132,12 +132,6 @@ set(Magnum_PRIVATE_HEADERS
     Implementation/State.h
     Implementation/TextureState.h)
 
-# Deprecated stuff
-if(BUILD_DEPRECATED)
-    list(APPEND Magnum_HEADERS
-        ColorFormat.h)
-endif()
-
 # Desktop-only stuff
 if(NOT TARGET_GLES)
     list(APPEND Magnum_SRCS RectangleTexture.cpp)
