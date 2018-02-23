@@ -69,28 +69,6 @@ template<class T> class AbstractBasicTranslationRotationScaling2D: public Abstra
             return *this;
         }
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        #ifdef __GNUC__
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-        #elif defined(_MSC_VER)
-        #pragma warning(push)
-        #pragma warning(disable: 4996)
-        #endif
-        /**
-         * @brief @copybrief scale()
-         * @deprecated Use @ref scale() or @ref scaleLocal() instead.
-         */
-        CORRADE_DEPRECATED("use scale() or scaleLocal() instead") AbstractBasicTranslationRotationScaling2D<T>& scale(const Math::Vector2<T>& vector, TransformationType type) {
-            return type == TransformationType::Global ? scale(vector) : scaleLocal(vector);
-        }
-        #ifdef __GNUC__
-        #pragma GCC diagnostic pop
-        #elif defined(_MSC_VER)
-        #pragma warning(pop)
-        #endif
-        #endif
-
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         AbstractBasicTranslationRotationScaling2D<T>& resetTransformation() {
@@ -105,24 +83,6 @@ template<class T> class AbstractBasicTranslationRotationScaling2D: public Abstra
             AbstractBasicTranslationRotation2D<T>::translateLocal(vector);
             return *this;
         }
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        #ifdef __GNUC__
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-        #elif defined(_MSC_VER)
-        #pragma warning(push)
-        #pragma warning(disable: 4996)
-        #endif
-        CORRADE_DEPRECATED("use translate() or translateLocal() instead") AbstractBasicTranslationRotationScaling2D<T>& translate(const Math::Vector2<T>& vector, TransformationType type) {
-            AbstractBasicTranslationRotation2D<T>::translate(vector, type);
-            return *this;
-        }
-        #ifdef __GNUC__
-        #pragma GCC diagnostic pop
-        #elif defined(_MSC_VER)
-        #pragma warning(pop)
-        #endif
-        #endif
         AbstractBasicTranslationRotationScaling2D<T>& rotate(Math::Rad<T> angle) {
             AbstractBasicTranslationRotation2D<T>::rotate(angle);
             return *this;
@@ -131,24 +91,6 @@ template<class T> class AbstractBasicTranslationRotationScaling2D: public Abstra
             AbstractBasicTranslationRotation2D<T>::rotateLocal(angle);
             return *this;
         }
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        #ifdef __GNUC__
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-        #elif defined(_MSC_VER)
-        #pragma warning(push)
-        #pragma warning(disable: 4996)
-        #endif
-        CORRADE_DEPRECATED("use rotate() or rotateLocal() instead") AbstractBasicTranslationRotationScaling2D<T>& rotate(Math::Rad<T> angle, TransformationType type) {
-            AbstractBasicTranslationRotation2D<T>::rotate(angle, type);
-            return *this;
-        }
-        #ifdef __GNUC__
-        #pragma GCC diagnostic pop
-        #elif defined(_MSC_VER)
-        #pragma warning(pop)
-        #endif
-        #endif
         #endif
 
     protected:

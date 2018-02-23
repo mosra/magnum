@@ -94,28 +94,6 @@ class TranslationTransformation: public AbstractTranslation<dimensions, T, Trans
             return translate(transformation);
         }
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        #ifdef __GNUC__
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-        #elif defined(_MSC_VER)
-        #pragma warning(push)
-        #pragma warning(disable: 4996)
-        #endif
-        /**
-         * @brief @copybrief transform()
-         * @deprecated Use @ref transform() instead.
-         */
-        CORRADE_DEPRECATED("use transform() instead") Object<TranslationTransformation<dimensions, T, TranslationType>>& transform(const VectorTypeFor<dimensions, TranslationType>& transformation, TransformationType) {
-            return transform(transformation);
-        }
-        #ifdef __GNUC__
-        #pragma GCC diagnostic pop
-        #elif defined(_MSC_VER)
-        #pragma warning(pop)
-        #endif
-        #endif
-
         /**
          * @brief Translate object
          * @return Reference to self (for method chaining)
@@ -129,28 +107,6 @@ class TranslationTransformation: public AbstractTranslation<dimensions, T, Trans
             _transformation += vector;
             return static_cast<Object<TranslationTransformation<dimensions, T, TranslationType>>&>(*this);
         }
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        #ifdef __GNUC__
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-        #elif defined(_MSC_VER)
-        #pragma warning(push)
-        #pragma warning(disable: 4996)
-        #endif
-        /**
-         * @brief @copybrief translate()
-         * @deprecated Use @ref translate() instead.
-         */
-        CORRADE_DEPRECATED("use translate() instead") Object<TranslationTransformation<dimensions, T, TranslationType>>& translate(const VectorTypeFor<dimensions, TranslationType>& vector, TransformationType) {
-            return translate(vector);
-        }
-        #ifdef __GNUC__
-        #pragma GCC diagnostic pop
-        #elif defined(_MSC_VER)
-        #pragma warning(pop)
-        #endif
-        #endif
 
     protected:
         /* Allow construction only from Object */

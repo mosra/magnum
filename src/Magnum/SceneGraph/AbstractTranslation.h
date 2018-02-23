@@ -81,28 +81,6 @@ class AbstractTranslation: public AbstractTransformation<dimensions, T> {
             return *this;
         }
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        #ifdef __GNUC__
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-        #elif defined(_MSC_VER)
-        #pragma warning(push)
-        #pragma warning(disable: 4996)
-        #endif
-        /**
-         * @brief @copybrief translate()
-         * @deprecated Use @ref translate() or @ref translateLocal() instead.
-         */
-        CORRADE_DEPRECATED("use translate() or translateLocal() instead") AbstractTranslation<dimensions, T, TranslationType>& translate(const VectorTypeFor<dimensions, TranslationType>& vector, TransformationType type) {
-            return type == TransformationType::Global ? translate(vector) : translateLocal(vector);
-        }
-        #ifdef __GNUC__
-        #pragma GCC diagnostic pop
-        #elif defined(_MSC_VER)
-        #pragma warning(pop)
-        #endif
-        #endif
-
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         AbstractTranslation<dimensions, T, TranslationType>& resetTransformation() {

@@ -109,28 +109,6 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
             return transformLocalInternal(transformation);
         }
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        #ifdef __GNUC__
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-        #elif defined(_MSC_VER)
-        #pragma warning(push)
-        #pragma warning(disable: 4996)
-        #endif
-        /**
-         * @brief @copybrief transform()
-         * @deprecated Use @ref transform() or @ref transformLocal() instead.
-         */
-        CORRADE_DEPRECATED("use transform() or transformLocal() instead") Object<BasicDualQuaternionTransformation<T>>& transform(const Math::DualQuaternion<T>& transformation, TransformationType type) {
-            return type == TransformationType::Global ? transform(transformation) : transformLocal(transformation);
-        }
-        #ifdef __GNUC__
-        #pragma GCC diagnostic pop
-        #elif defined(_MSC_VER)
-        #pragma warning(pop)
-        #endif
-        #endif
-
         /**
          * @brief Translate object
          * @return Reference to self (for method chaining)
@@ -152,28 +130,6 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
         Object<BasicDualQuaternionTransformation<T>>& translateLocal(const Math::Vector3<T>& vector) {
             return transformLocalInternal(Math::DualQuaternion<T>::translation(vector));
         }
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        #ifdef __GNUC__
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-        #elif defined(_MSC_VER)
-        #pragma warning(push)
-        #pragma warning(disable: 4996)
-        #endif
-        /**
-         * @brief @copybrief translate()
-         * @deprecated Use @ref translate() or @ref translateLocal() instead.
-         */
-        CORRADE_DEPRECATED("use translate() or translateLocal() instead") Object<BasicDualQuaternionTransformation<T>>& translate(const Math::Vector3<T>& vector, TransformationType type) {
-            return type == TransformationType::Global ? translate(vector) : translateLocal(vector);
-        }
-        #ifdef __GNUC__
-        #pragma GCC diagnostic pop
-        #elif defined(_MSC_VER)
-        #pragma warning(pop)
-        #endif
-        #endif
 
         /**
          * @brief Rotate object
@@ -200,28 +156,6 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
             return transformLocalInternal(Math::DualQuaternion<T>::rotation(angle, normalizedAxis));
         }
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        #ifdef __GNUC__
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-        #elif defined(_MSC_VER)
-        #pragma warning(push)
-        #pragma warning(disable: 4996)
-        #endif
-        /**
-         * @brief @copybrief rotate()
-         * @deprecated Use @ref rotate() or @ref rotateLocal() instead.
-         */
-        CORRADE_DEPRECATED("usr rotate() or rotateLocal() instead") Object<BasicDualQuaternionTransformation<T>>& rotate(Math::Rad<T> angle, const Math::Vector3<T>& normalizedAxis, TransformationType type) {
-            return type == TransformationType::Global ? rotate(angle, normalizedAxis) : rotateLocal(angle, normalizedAxis);
-        }
-        #ifdef __GNUC__
-        #pragma GCC diagnostic pop
-        #elif defined(_MSC_VER)
-        #pragma warning(pop)
-        #endif
-        #endif
-
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         Object<BasicDualQuaternionTransformation<T>>& rotateX(Math::Rad<T> angle) {
@@ -230,69 +164,18 @@ template<class T> class BasicDualQuaternionTransformation: public AbstractBasicT
         Object<BasicDualQuaternionTransformation<T>>& rotateXLocal(Math::Rad<T> angle) {
             return rotateLocal(angle, Math::Vector3<T>::xAxis());
         }
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        #ifdef __GNUC__
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-        #elif defined(_MSC_VER)
-        #pragma warning(push)
-        #pragma warning(disable: 4996)
-        #endif
-        CORRADE_DEPRECATED("use rotateX() or rotateXLocal() instead") Object<BasicDualQuaternionTransformation<T>>& rotateX(Math::Rad<T> angle, TransformationType type) {
-            return rotate(angle, Math::Vector3<T>::xAxis(), type);
-        }
-        #ifdef __GNUC__
-        #pragma GCC diagnostic pop
-        #elif defined(_MSC_VER)
-        #pragma warning(pop)
-        #endif
-        #endif
         Object<BasicDualQuaternionTransformation<T>>& rotateY(Math::Rad<T> angle) {
             return rotate(angle, Math::Vector3<T>::yAxis());
         }
         Object<BasicDualQuaternionTransformation<T>>& rotateYLocal(Math::Rad<T> angle) {
             return rotateLocal(angle, Math::Vector3<T>::yAxis());
         }
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        #ifdef __GNUC__
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-        #elif defined(_MSC_VER)
-        #pragma warning(push)
-        #pragma warning(disable: 4996)
-        #endif
-        CORRADE_DEPRECATED("use rotateY() or rotateYLocal() instead") Object<BasicDualQuaternionTransformation<T>>& rotateY(Math::Rad<T> angle, TransformationType type) {
-            return rotate(angle, Math::Vector3<T>::yAxis(), type);
-        }
-        #ifdef __GNUC__
-        #pragma GCC diagnostic pop
-        #elif defined(_MSC_VER)
-        #pragma warning(pop)
-        #endif
-        #endif
         Object<BasicDualQuaternionTransformation<T>>& rotateZ(Math::Rad<T> angle) {
             return rotate(angle, Math::Vector3<T>::zAxis());
         }
         Object<BasicDualQuaternionTransformation<T>>& rotateZLocal(Math::Rad<T> angle) {
             return rotateLocal(angle, Math::Vector3<T>::zAxis());
         }
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        #ifdef __GNUC__
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-        #elif defined(_MSC_VER)
-        #pragma warning(push)
-        #pragma warning(disable: 4996)
-        #endif
-        CORRADE_DEPRECATED("use rotateZ() or rotateZLocal() instead") Object<BasicDualQuaternionTransformation<T>>& rotateZ(Math::Rad<T> angle, TransformationType type) {
-            return rotate(angle, Math::Vector3<T>::zAxis(), type);
-        }
-        #ifdef __GNUC__
-        #pragma GCC diagnostic pop
-        #elif defined(_MSC_VER)
-        #pragma warning(pop)
-        #endif
-        #endif
         #endif
 
     protected:

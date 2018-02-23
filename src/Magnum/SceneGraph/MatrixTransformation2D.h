@@ -86,28 +86,6 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
             return setTransformation(_transformation*transformation);
         }
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        #ifdef __GNUC__
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-        #elif defined(_MSC_VER)
-        #pragma warning(push)
-        #pragma warning(disable: 4996)
-        #endif
-        /**
-         * @brief @copybrief transform()
-         * @deprecated Use @ref transform() or @ref transformLocal() instead.
-         */
-        CORRADE_DEPRECATED("use transform() or transformLocal() instead") Object<BasicMatrixTransformation2D<T>>& transform(const Math::Matrix3<T>& transformation, TransformationType type) {
-            return type == TransformationType::Global ? transform(transformation) : transformLocal(transformation);
-        }
-        #ifdef __GNUC__
-        #pragma GCC diagnostic pop
-        #elif defined(_MSC_VER)
-        #pragma warning(pop)
-        #endif
-        #endif
-
         /** @copydoc AbstractTranslationRotationScaling2D::resetTransformation() */
         Object<BasicMatrixTransformation2D<T>>& resetTransformation() {
             return setTransformation({});
@@ -136,28 +114,6 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
             return transformLocal(Math::Matrix3<T>::translation(vector));
         }
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        #ifdef __GNUC__
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-        #elif defined(_MSC_VER)
-        #pragma warning(push)
-        #pragma warning(disable: 4996)
-        #endif
-        /**
-         * @brief @copybrief translate()
-         * @deprecated Use @ref translate() or @ref translateLocal() instead.
-         */
-        CORRADE_DEPRECATED("use translate() or translateLocal() instead") Object<BasicMatrixTransformation2D<T>>& translate(const Math::Vector2<T>& vector, TransformationType type) {
-            return type == TransformationType::Global ? translate(vector) : translateLocal(vector);
-        }
-        #ifdef __GNUC__
-        #pragma GCC diagnostic pop
-        #elif defined(_MSC_VER)
-        #pragma warning(pop)
-        #endif
-        #endif
-
         /**
          * @brief Rotate object
          * @param angle     Angle (counterclockwise)
@@ -181,28 +137,6 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
             return transformLocal(Math::Matrix3<T>::rotation(angle));
         }
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        #ifdef __GNUC__
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-        #elif defined(_MSC_VER)
-        #pragma warning(push)
-        #pragma warning(disable: 4996)
-        #endif
-        /**
-         * @brief @copybrief rotate()
-         * @deprecated Use @ref rotate() or @ref rotateLocal() instead.
-         */
-        CORRADE_DEPRECATED("use rotate() or rotateLocal() instead") Object<BasicMatrixTransformation2D<T>>& rotate(Math::Rad<T> angle, TransformationType type) {
-            return type == TransformationType::Global ? rotate(angle) : rotateLocal(angle);
-        }
-        #ifdef __GNUC__
-        #pragma GCC diagnostic pop
-        #elif defined(_MSC_VER)
-        #pragma warning(pop)
-        #endif
-        #endif
-
         /**
          * @brief Scale object
          * @return Reference to self (for method chaining)
@@ -225,28 +159,6 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
         Object<BasicMatrixTransformation2D<T>>& scaleLocal(const Math::Vector2<T>& vector) {
             return transformLocal(Math::Matrix3<T>::scaling(vector));
         }
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        #ifdef __GNUC__
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-        #elif defined(_MSC_VER)
-        #pragma warning(push)
-        #pragma warning(disable: 4996)
-        #endif
-        /**
-         * @brief @copybrief scale()
-         * @deprecated Use @ref scale() or @ref scaleLocal() instead.
-         */
-        CORRADE_DEPRECATED("use scale() or scaleLocal() instead") Object<BasicMatrixTransformation2D<T>>& scale(const Math::Vector2<T>& vector, TransformationType type) {
-            return type == TransformationType::Global ? scale(vector) : scaleLocal(vector);
-        }
-        #ifdef __GNUC__
-        #pragma GCC diagnostic pop
-        #elif defined(_MSC_VER)
-        #pragma warning(pop)
-        #endif
-        #endif
 
         /**
          * @brief Reflect object
@@ -272,28 +184,6 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
         Object<BasicMatrixTransformation2D<T>>& reflectLocal(const Math::Vector2<T>& normal) {
             return transformLocal(Math::Matrix3<T>::reflection(normal));
         }
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        #ifdef __GNUC__
-        #pragma GCC diagnostic push
-        #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-        #elif defined(_MSC_VER)
-        #pragma warning(push)
-        #pragma warning(disable: 4996)
-        #endif
-        /**
-         * @brief @copybrief reflect()
-         * @deprecated Use @ref reflect() or @ref reflectLocal() instead.
-         */
-        CORRADE_DEPRECATED("use reflect() or reflectLocal() instead") Object<BasicMatrixTransformation2D<T>>& reflect(const Math::Vector2<T>& normal, TransformationType type) {
-            return type == TransformationType::Global ? reflect(normal) : reflectLocal(normal);
-        }
-        #ifdef __GNUC__
-        #pragma GCC diagnostic pop
-        #elif defined(_MSC_VER)
-        #pragma warning(pop)
-        #endif
-        #endif
 
     protected:
         /* Allow construction only from Object */
