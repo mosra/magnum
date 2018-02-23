@@ -825,14 +825,6 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         void dispatchCompute(const Vector3ui& workgroupCount);
         #endif
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief Use shader for rendering
-         * @deprecated Use @ref Mesh::draw(AbstractShaderProgram&) instead.
-         */
-        void use();
-        #endif
-
     protected:
         /**
          * @brief Link the shader
@@ -1237,9 +1229,7 @@ class MAGNUM_EXPORT AbstractShaderProgram: public AbstractObject {
         #endif
         #endif
 
-        #ifndef MAGNUM_BUILD_DEPRECATED
         void use();
-        #endif
 
         /*
             Currently, there are four supported ways to call glProgramUniform():
