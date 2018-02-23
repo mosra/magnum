@@ -199,10 +199,10 @@ CORRADE_INTERNAL_ASSERT_OUTPUT(buffer.unmap());
 @section Buffer-webgl-restrictions WebGL restrictions
 
 Buffers in @ref MAGNUM_TARGET_WEBGL "WebGL" need to be bound only to one unique
-target, i.e., @ref Buffer bound to @ref Buffer::Target::Array cannot be later
-rebound to @ref Buffer::Target::ElementArray. However, Magnum by default uses
-any sufficient target when binding the buffer internally (e.g. for setting
-data). To avoid GL errors, set target hint to desired target, either in
+target, i.e., @ref Buffer bound to @ref Buffer::TargetHint::Array cannot be
+later rebound to @ref Buffer::TargetHint::ElementArray. However, Magnum by
+default uses any sufficient target when binding the buffer internally (e.g. for
+setting data). To avoid GL errors, set target hint to desired target, either in
 constructor or using @ref Buffer::setTargetHint():
 
 @code{.cpp}
@@ -370,7 +370,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
             #endif
         };
 
-        #if !defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_BUILD_DEPRECATED)
+        #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Buffer binding target
          *
@@ -378,16 +378,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * @m_enum_values_as_keywords
          */
         enum class Target: GLenum {
-            #ifdef MAGNUM_BUILD_DEPRECATED
-            /**
-             * @copydoc TargetHint::Array
-             * @deprecated For @ref setTargetHint() only, use
-             *      @ref TargetHint::Array instead.
-             */
-            Array CORRADE_DEPRECATED_ENUM("use Buffer::TargetHint::Array instead") = GL_ARRAY_BUFFER,
-            #endif
-
-            #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+            #ifndef MAGNUM_TARGET_WEBGL
             /**
              * Atomic counter binding
              * @requires_gl42 Extension @extension{ARB,shader_atomic_counters}
@@ -398,64 +389,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
             AtomicCounter = GL_ATOMIC_COUNTER_BUFFER,
             #endif
 
-            #ifdef MAGNUM_BUILD_DEPRECATED
-            #ifndef MAGNUM_TARGET_GLES2
-            /**
-             * @copydoc TargetHint::CopyRead
-             * @deprecated For @ref setTargetHint() only, use
-             *      @ref TargetHint::CopyRead instead.
-             */
-            CopyRead CORRADE_DEPRECATED_ENUM("use Buffer::TargetHint::CopyRead instead") = GL_COPY_READ_BUFFER,
-
-            /**
-             * @copydoc TargetHint::CopyWrite
-             * @deprecated For @ref setTargetHint() only, use
-             *      @ref TargetHint::CopyWrite instead.
-             */
-            CopyWrite CORRADE_DEPRECATED_ENUM("use Buffer::TargetHint::CopyWrite instead") = GL_COPY_WRITE_BUFFER,
-            #endif
-
-            #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-            /**
-             * @copydoc TargetHint::DispatchIndirect
-             * @deprecated For @ref setTargetHint() only, use
-             *      @ref TargetHint::DispatchIndirect instead.
-             */
-            DispatchIndirect CORRADE_DEPRECATED_ENUM("use Buffer::TargetHint::DispatchIndirect instead") = GL_DISPATCH_INDIRECT_BUFFER,
-
-            /**
-             * @copydoc TargetHint::DrawIndirect
-             * @deprecated For @ref setTargetHint() only, use
-             *      @ref TargetHint::DrawIndirect instead.
-             */
-            DrawIndirect CORRADE_DEPRECATED_ENUM("use Buffer::TargetHint::DrawIndirect instead") = GL_DRAW_INDIRECT_BUFFER,
-            #endif
-
-            /**
-             * @copydoc TargetHint::ElementArray
-             * @deprecated For @ref setTargetHint() only, use
-             *      @ref TargetHint::ElementArray instead.
-             */
-            ElementArray CORRADE_DEPRECATED_ENUM("use Buffer::TargetHint::ElementArray instead") = GL_ELEMENT_ARRAY_BUFFER,
-
-            #ifndef MAGNUM_TARGET_GLES2
-            /**
-             * @copydoc TargetHint::PixelPack
-             * @deprecated For @ref setTargetHint() only, use
-             *      @ref TargetHint::PixelPack instead.
-             */
-            PixelPack CORRADE_DEPRECATED_ENUM("use Buffer::TargetHint::PixelPack instead") = GL_PIXEL_PACK_BUFFER,
-
-            /**
-             * @copydoc TargetHint::PixelUnpack
-             * @deprecated For @ref setTargetHint() only, use
-             *      @ref TargetHint::PixelUnpack instead.
-             */
-            PixelUnpack CORRADE_DEPRECATED_ENUM("use Buffer::TargetHint::PixelUnpack instead") = GL_PIXEL_UNPACK_BUFFER,
-            #endif
-            #endif
-
-            #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+            #ifndef MAGNUM_TARGET_WEBGL
             /**
              * Shader storage binding
              * @requires_gl43 Extension @extension{ARB,shader_storage_buffer_object}
@@ -466,25 +400,6 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
             ShaderStorage = GL_SHADER_STORAGE_BUFFER,
             #endif
 
-            #if defined(MAGNUM_BUILD_DEPRECATED) && !defined(MAGNUM_TARGET_GLES)
-            /**
-             * @copydoc TargetHint::Texture
-             * @deprecated For @ref setTargetHint() only, use
-             *      @ref TargetHint::Texture instead.
-             */
-            Texture CORRADE_DEPRECATED_ENUM("use Buffer::TargetHint::Texture instead") = GL_TEXTURE_BUFFER,
-            #endif
-
-            #if defined(MAGNUM_BUILD_DEPRECATED) && !defined(MAGNUM_TARGET_GLES2)
-            /**
-             * @copydoc TargetHint::TransformFeedback
-             * @deprecated For @ref setTargetHint() only, use
-             *      @ref TargetHint::TransformFeedback instead.
-             */
-            TransformFeedback CORRADE_DEPRECATED_ENUM("use Buffer::TargetHint::TransformFeedback instead") = GL_TRANSFORM_FEEDBACK_BUFFER,
-            #endif
-
-            #ifndef MAGNUM_TARGET_GLES2
             /**
              * Uniform binding
              * @requires_gl31 Extension @extension{ARB,uniform_buffer_object}
@@ -494,7 +409,6 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
              *      1.0.
              */
             Uniform = GL_UNIFORM_BUFFER
-            #endif
         };
         #endif
 
@@ -894,14 +808,6 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          */
         explicit Buffer(NoCreateT) noexcept;
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief @copybrief Buffer(TargetHint)
-         * @deprecated Use @ref Buffer(TargetHint) instead.
-         */
-        CORRADE_DEPRECATED("use Buffer(TargetHint) instead") explicit Buffer(Target targetHint): Buffer{static_cast<TargetHint>(targetHint)} {}
-        #endif
-
         /** @brief Copying is not allowed */
         Buffer(const Buffer&) = delete;
 
@@ -989,7 +895,7 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * available, the buffer needs to be internally bound to some target
          * before any operation. You can specify target which will always be
          * used when binding the buffer internally, possibly saving some calls
-         * to @fn_gl{BindBuffer}. Default target hint is @ref Target::Array.
+         * to @fn_gl{BindBuffer}. Default target hint is @ref TargetHint::Array.
          * @see @ref setData(), @ref setSubData()
          * @todo Target::ElementArray cannot be used when no VAO is bound -
          *      http://www.opengl.org/wiki/Vertex_Specification#Index_buffers
@@ -999,16 +905,6 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
             _targetHint = hint;
             return *this;
         }
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief @copybrief setTargetHint(TargetHint)
-         * @deprecated Use @ref setTargetHint(TargetHint) instead.
-         */
-        CORRADE_DEPRECATED("use setTargetHint(TargetHint) instead") Buffer& setTargetHint(Target hint) {
-            return setTargetHint(static_cast<TargetHint>(hint));
-        }
-        #endif
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
@@ -1467,7 +1363,7 @@ CORRADE_ENUMSET_OPERATORS(Buffer::MapFlags)
 /** @debugoperatorclassenum{Magnum::Buffer,Magnum::Buffer::TargetHint} */
 MAGNUM_EXPORT Debug& operator<<(Debug& debug, Buffer::TargetHint value);
 
-#if !defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_BUILD_DEPRECATED)
+#ifndef MAGNUM_TARGET_GLES2
 /** @debugoperatorclassenum{Magnum::Buffer,Magnum::Buffer::Target} */
 MAGNUM_EXPORT Debug& operator<<(Debug& debug, Buffer::Target value);
 #endif
