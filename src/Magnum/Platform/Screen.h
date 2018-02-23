@@ -141,8 +141,9 @@ template<class Application> class BasicScreen: private Containers::LinkedListIte
         /**
          * @brief Next nearer screen
          *
-         * @see @ref BasicScreenedApplication::frontScreen(),
-         *      @ref BasicScreenedApplication::backScreen()
+         * Use @cpp application().screens().first() @ce to access the front
+         * screen and @cpp application().screens().last() @ce to access the
+         * back screen.
          */
         BasicScreen<Application>* nextNearerScreen() {
             return Containers::LinkedListItem<BasicScreen<Application>, BasicScreenedApplication<Application>>::previous();
@@ -155,8 +156,9 @@ template<class Application> class BasicScreen: private Containers::LinkedListIte
         /**
          * @brief Next farther screen
          *
-         * @see @ref BasicScreenedApplication::frontScreen(),
-         *      @ref BasicScreenedApplication::backScreen()
+         * Use @cpp application().screens().first() @ce to access the front
+         * screen and @cpp application().screens().last() @ce to access the
+         * back screen.
          */
         BasicScreen<Application>* nextFartherScreen() {
             return Containers::LinkedListItem<BasicScreen<Application>, BasicScreenedApplication<Application>>::next();

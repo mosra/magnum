@@ -176,31 +176,6 @@ template<class Application> class BasicScreenedApplication: public Application, 
             return static_cast<const Containers::LinkedList<BasicScreen<Application>>&>(*this);
         }
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief Front screen
-         * @deprecated Use `screens().first()` instead.
-         */
-        CORRADE_DEPRECATED("use screens().first() instead") BasicScreen<Application>* frontScreen() { return screens().first(); }
-
-        /** @overload
-         * @deprecated Use `screens().first()` instead.
-         */
-        CORRADE_DEPRECATED("use screens().first() instead") const BasicScreen<Application>* frontScreen() const { return screens().first(); }
-
-        /**
-         * @brief Back screen
-         * @deprecated Use `screens().last()` instead.
-         */
-        CORRADE_DEPRECATED("use screens().last() instead") BasicScreen<Application>* backScreen() { return screens().last(); }
-
-        /**
-         * @overload
-         * @deprecated Use `screens().last()` instead.
-         */
-        CORRADE_DEPRECATED("use screens().last() instead") const BasicScreen<Application>* backScreen() const { return screens().last(); }
-        #endif
-
     protected:
         /* Nobody will need to have (and delete) ScreenedApplication*, thus
            this is faster than public pure virtual destructor */
