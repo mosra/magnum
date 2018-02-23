@@ -34,10 +34,6 @@
 #include "Magnum/Types.h"
 #include "Magnum/visibility.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Utility/Macros.h>
-#endif
-
 namespace Magnum {
 
 /**
@@ -98,36 +94,7 @@ class MAGNUM_EXPORT Timeline {
          * Creates stopped timeline.
          * @see @ref start()
          */
-        explicit Timeline():
-            #ifdef MAGNUM_BUILD_DEPRECATED
-            _minimalFrameTime(0),
-            #endif
-            _previousFrameDuration(0), running(false) {}
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief Minimal frame time (in seconds)
-         * @deprecated Replaced with @ref Platform::Sdl2Application::setSwapInterval() "Platform::*Application::setSwapInterval()" and
-         *      @ref Platform::Sdl2Application::setMinimalLoopPeriod() "Platform::*Application::setMinimalLoopPeriod()".
-         */
-        CORRADE_DEPRECATED("replaced with Platfomr::*Application functionality") Float minimalFrameTime() const { return _minimalFrameTime; }
-
-        /**
-         * @brief Set minimal frame time
-         * @return Reference to self (for method chaining)
-         *
-         * Default value is @cpp 0.0f @ce. Cannot be used on some platforms
-         * where blocking the main loop is not allowed (such as
-         * @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten").
-         * @deprecated Use @ref Platform::Sdl2Application::setSwapInterval() "Platform::*Application::setSwapInterval()" or
-         *      @ref Platform::Sdl2Application::setMinimalLoopPeriod() "Platform::*Application::setMinimalLoopPeriod()"
-         *      instead.
-         */
-        CORRADE_DEPRECATED("use Platfomr::*Application::setMinimalLoopPeriod() instead") Timeline& setMinimalFrameTime(Float seconds) {
-            _minimalFrameTime = seconds;
-            return *this;
-        }
-        #endif
+        explicit Timeline(): _previousFrameDuration(0), running(false) {}
 
         /**
          * @brief Start timeline
@@ -170,9 +137,6 @@ class MAGNUM_EXPORT Timeline {
     private:
         std::chrono::high_resolution_clock::time_point _startTime;
         std::chrono::high_resolution_clock::time_point _previousFrameTime;
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        Float _minimalFrameTime;
-        #endif
         Float _previousFrameDuration;
 
         bool running;

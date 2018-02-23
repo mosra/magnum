@@ -54,15 +54,6 @@ void Timeline::nextFrame() {
     auto now = high_resolution_clock::now();
     auto duration = UnsignedInt(duration_cast<microseconds>(now-_previousFrameTime).count());
     _previousFrameDuration = duration/1e6f;
-
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    if(_previousFrameDuration < _minimalFrameTime) {
-        Utility::System::sleep(std::size_t(_minimalFrameTime*1000) - duration/1000);
-        now = high_resolution_clock::now();
-        _previousFrameDuration = duration_cast<microseconds>(now-_previousFrameTime).count()/1e6f;
-    }
-    #endif
-
     _previousFrameTime = now;
 }
 
