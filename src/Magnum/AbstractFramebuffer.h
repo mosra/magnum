@@ -387,16 +387,6 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          */
         Image2D read(const Range2Di& rectangle, Image2D&& image);
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief @copybrief read(const Range2Di&, Image2D&)
-         * @deprecated Use @ref read(const Range2Di&, Image2D&) instead.
-         */
-        CORRADE_DEPRECATED("use read(const Range2Di&, Image2D& instead) instead") void read(const Vector2i& offset, const Vector2i& size, Image2D& image) {
-            read({offset, size}, image);
-        }
-        #endif
-
         #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Read block of pixels from framebuffer to buffer image
@@ -404,9 +394,9 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @param image             Buffer image where to put the data
          * @param usage             Buffer usage
          *
-         * See @ref read(const Vector2i&, const Vector2i&, Image2D&) for more
-         * information. The storage is not reallocated if it is large enough to
-         * contain the new data, which means that @p usage might get ignored.
+         * See @ref read(const Range2Di&, Image2D&) for more information. The
+         * storage is not reallocated if it is large enough to contain the new
+         * data, which means that @p usage might get ignored.
          * @requires_gles30 Pixel buffer objects are not available in OpenGL ES
          *      2.0.
          * @requires_webgl20 Pixel buffer objects are not available in WebGL
@@ -425,17 +415,6 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          * @endcode
          */
         BufferImage2D read(const Range2Di& rectangle, BufferImage2D&& image, BufferUsage usage);
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief @copybrief read(const Range2Di&, BufferImage2D&, BufferUsage)
-         * @deprecated Use @ref read(const Range2Di&, BufferImage2D&, BufferUsage)
-         *      instead.
-         */
-        CORRADE_DEPRECATED("use read(const Range2Di&, BufferImage2D&, BufferUsage) instead") void read(const Vector2i& offset, const Vector2i& size, BufferImage2D& image, BufferUsage usage) {
-            read({offset, size}, image, usage);
-        }
-        #endif
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
