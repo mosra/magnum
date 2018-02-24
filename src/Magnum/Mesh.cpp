@@ -205,7 +205,7 @@ inline void Mesh::createIfNotAlready() {
 #ifndef MAGNUM_TARGET_WEBGL
 std::string Mesh::label() {
     createIfNotAlready();
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
     return Context::current().state().debug->getLabelImplementation(GL_VERTEX_ARRAY, _id);
     #else
     return Context::current().state().debug->getLabelImplementation(GL_VERTEX_ARRAY_KHR, _id);
@@ -214,7 +214,7 @@ std::string Mesh::label() {
 
 Mesh& Mesh::setLabelInternal(const Containers::ArrayView<const char> label) {
     createIfNotAlready();
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
     Context::current().state().debug->labelImplementation(GL_VERTEX_ARRAY, _id, label);
     #else
     Context::current().state().debug->labelImplementation(GL_VERTEX_ARRAY_KHR, _id, label);

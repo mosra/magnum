@@ -54,14 +54,14 @@ stream in various graphics debuggers, such as ApiTrace or gDEBugger.
 
 @section Magnum-DebugOutput-usage Basic usage
 
-Support for debug output is provided by OpenGL 4.3 or @extension{KHR,debug}
-(desktop/ES extension, covered also by @extension{ANDROID,extension_pack_es31a}).
-Subset of the functionality is provided also by @extension{EXT,debug_marker}
-(desktop/ES extensions) or @extension{GREMEDY,string_marker} (desktop only
-extension).
+Support for debug output is provided by OpenGL 4.3 / OpenGL ES 3.2 or
+@extension{KHR,debug} (desktop/ES extension, covered also by
+@extension{ANDROID,extension_pack_es31a}). Subset of the functionality is
+provided also by @extension{EXT,debug_marker} (desktop/ES extensions) or
+@extension{GREMEDY,string_marker} (desktop only extension).
 
-With OpenGL 4.3 or @extension{KHR,debug} desktop/ES extension, the debug output
-needs to be enabled first. It can be enabled globally using
+With OpenGL 4.3 / OpenGL ES 3.2 or @extension{KHR,debug} desktop/ES extension,
+the debug output needs to be enabled first. It can be enabled globally using
 @ref Platform::Sdl2Application::Configuration::Flag::Debug "Platform::*Application::Configuration::Flag::Debug"
 when creating context or only for some portions of the code using
 @ref Renderer::Feature::DebugOutput. If enabled globally, some OpenGL drivers
@@ -135,42 +135,42 @@ class MAGNUM_EXPORT DebugOutput {
          */
         enum class Source: GLenum {
             /** OpenGL */
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             Api = GL_DEBUG_SOURCE_API,
             #else
             Api = GL_DEBUG_SOURCE_API_KHR,
             #endif
 
             /** Window system (GLX, WGL) */
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             WindowSystem = GL_DEBUG_SOURCE_WINDOW_SYSTEM,
             #else
             WindowSystem = GL_DEBUG_SOURCE_WINDOW_SYSTEM_KHR,
             #endif
 
             /** Shader compiler */
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             ShaderCompiler = GL_DEBUG_SOURCE_SHADER_COMPILER,
             #else
             ShaderCompiler = GL_DEBUG_SOURCE_SHADER_COMPILER_KHR,
             #endif
 
             /** External debugger or third-party middleware */
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             ThirdParty = GL_DEBUG_SOURCE_THIRD_PARTY,
             #else
             ThirdParty = GL_DEBUG_SOURCE_THIRD_PARTY_KHR,
             #endif
 
             /** The application */
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             Application = GL_DEBUG_SOURCE_APPLICATION,
             #else
             Application = GL_DEBUG_SOURCE_APPLICATION_KHR,
             #endif
 
             /** Any other source */
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             Other = GL_DEBUG_SOURCE_OTHER
             #else
             Other = GL_DEBUG_SOURCE_OTHER_KHR
@@ -185,63 +185,63 @@ class MAGNUM_EXPORT DebugOutput {
          */
         enum class Type: GLenum {
             /** OpenGL error */
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             Error = GL_DEBUG_TYPE_ERROR,
             #else
             Error = GL_DEBUG_TYPE_ERROR_KHR,
             #endif
 
             /** Behavior that has been marked for deprecation */
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             DeprecatedBehavior = GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR,
             #else
             DeprecatedBehavior = GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR_KHR,
             #endif
 
             /** Behavior that is undefined according to the specification */
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             UndefinedBehavior = GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR,
             #else
             UndefinedBehavior = GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR_KHR,
             #endif
 
             /** Non-portable usage of extensions or shaders */
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             Portability = GL_DEBUG_TYPE_PORTABILITY,
             #else
             Portability = GL_DEBUG_TYPE_PORTABILITY_KHR,
             #endif
 
             /** Implementation-dependent performance warning */
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             Performance = GL_DEBUG_TYPE_PERFORMANCE,
             #else
             Performance = GL_DEBUG_TYPE_PERFORMANCE_KHR,
             #endif
 
             /** Annotation of the command stream */
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             Marker = GL_DEBUG_TYPE_MARKER,
             #else
             Marker = GL_DEBUG_TYPE_MARKER_KHR,
             #endif
 
             /** Entering a debug group */
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             PushGroup = GL_DEBUG_TYPE_PUSH_GROUP,
             #else
             PushGroup = GL_DEBUG_TYPE_PUSH_GROUP_KHR,
             #endif
 
             /** Leaving a debug group */
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             PopGroup = GL_DEBUG_TYPE_POP_GROUP,
             #else
             PopGroup = GL_DEBUG_TYPE_POP_GROUP_KHR,
             #endif
 
             /** Any other type */
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             Other = GL_DEBUG_TYPE_OTHER,
             #else
             Other = GL_DEBUG_TYPE_OTHER_KHR,
@@ -259,7 +259,7 @@ class MAGNUM_EXPORT DebugOutput {
              * Any OpenGL error, dangerous undefined behavior, shader
              * compilation errors.
              */
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             High = GL_DEBUG_SEVERITY_HIGH,
             #else
             High = GL_DEBUG_SEVERITY_HIGH_KHR,
@@ -269,21 +269,21 @@ class MAGNUM_EXPORT DebugOutput {
              * Severe performance warnings, shader compilation warnings, use of
              * deprecated behavior.
              */
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             Medium = GL_DEBUG_SEVERITY_MEDIUM,
             #else
             Medium = GL_DEBUG_SEVERITY_MEDIUM_KHR,
             #endif
 
             /** Minor performance warnings, trivial undefined behavior. */
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             Low = GL_DEBUG_SEVERITY_LOW,
             #else
             Low = GL_DEBUG_SEVERITY_LOW_KHR,
             #endif
 
             /** Any message other than error or performance warning. */
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             Notification = GL_DEBUG_SEVERITY_NOTIFICATION
             #else
             Notification = GL_DEBUG_SEVERITY_NOTIFICATION_KHR
@@ -301,9 +301,10 @@ class MAGNUM_EXPORT DebugOutput {
          * @brief Max count of debug messages in log
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If OpenGL 4.3 is not supported and @extension{KHR,debug}
-         * desktop or ES extension (covered also by @extension{ANDROID,extension_pack_es31a})
-         * is not available, returns @cpp 0 @ce.
+         * OpenGL calls. If OpenGL 4.3 / OpenGL ES 3.2 is not supported and
+         * @extension{KHR,debug} desktop or ES extension (covered also by
+         * @extension{ANDROID,extension_pack_es31a}) is not available, returns
+         * @cpp 0 @ce.
          * @see @fn_gl{Get} with @def_gl_keyword{MAX_DEBUG_LOGGED_MESSAGES}
          */
         static Int maxLoggedMessages();
@@ -312,9 +313,10 @@ class MAGNUM_EXPORT DebugOutput {
          * @brief Max debug message length
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If OpenGL 4.3 is not supported and @extension{KHR,debug}
-         * desktop or ES extension (covered also by @extension{ANDROID,extension_pack_es31a})
-         * is not available, returns @cpp 0 @ce.
+         * OpenGL calls. If OpenGL 4.3 / OpenGL ES 3.2 is not supported and
+         * @extension{KHR,debug} desktop or ES extension (covered also by
+         * @extension{ANDROID,extension_pack_es31a}) is not available, returns
+         * @cpp 0 @ce.
          * @see @fn_gl{Get} with @def_gl_keyword{MAX_DEBUG_MESSAGE_LENGTH}
          */
         static Int maxMessageLength();
@@ -328,9 +330,10 @@ class MAGNUM_EXPORT DebugOutput {
          *      set in parent debug group. See @ref DebugGroup documentation
          *      for more information.
          *
-         * If OpenGL 4.3 is not supported and @extension{KHR,debug} desktop or
-         * ES extension (covered also by @extension{ANDROID,extension_pack_es31a})
-         * is not available, this function does nothing.
+         * If OpenGL 4.3 / OpenGL ES 3.2 is not supported and @extension{KHR,debug}
+         * desktop or ES extension (covered also by
+         * @extension{ANDROID,extension_pack_es31a}) is not available, this
+         * function does nothing.
          * @see @ref Renderer::Feature::DebugOutput,
          *      @fn_gl_keyword{DebugMessageControl}
          */
@@ -382,10 +385,10 @@ class MAGNUM_EXPORT DebugOutput {
          * @brief Set debug message callback
          *
          * The messages are sent to the callback only if
-         * @ref Renderer::Feature::DebugOutput is enabled. If OpenGL 4.3 is not
-         * supported and @extension{KHR,debug} desktop or ES extension (covered
-         * also by @extension{ANDROID,extension_pack_es31a}) is not
-         * available, this function does nothing.
+         * @ref Renderer::Feature::DebugOutput is enabled. If OpenGL 4.3 /
+         * OpenGL ES 3.2 is not supported and @extension{KHR,debug} desktop or
+         * ES extension (covered also by @extension{ANDROID,extension_pack_es31a})
+         * is not available, this function does nothing.
          * @see @ref setDefaultCallback(),
          *      @ref Renderer::Feature::DebugOutputSynchronous,
          *      @fn_gl_keyword{DebugMessageCallback}
@@ -416,10 +419,20 @@ class MAGNUM_EXPORT DebugOutput {
     private:
         static void setEnabledInternal(GLenum source, GLenum type, GLenum severity, std::initializer_list<UnsignedInt> ids, bool enabled);
         static MAGNUM_LOCAL void controlImplementationNoOp(GLenum, GLenum, GLenum, std::initializer_list<UnsignedInt>, bool);
-        static MAGNUM_LOCAL void controlImplementationKhr(GLenum source, GLenum type, GLenum severity, std::initializer_list<UnsignedInt> ids, bool enabled);
+        #ifndef MAGNUM_TARGET_GLES2
+        static MAGNUM_LOCAL void controlImplementationKhrDesktopES32(GLenum source, GLenum type, GLenum severity, std::initializer_list<UnsignedInt> ids, bool enabled);
+        #endif
+        #ifdef MAGNUM_TARGET_GLES
+        static MAGNUM_LOCAL void controlImplementationKhrES(GLenum source, GLenum type, GLenum severity, std::initializer_list<UnsignedInt> ids, bool enabled);
+        #endif
 
         static MAGNUM_LOCAL void callbackImplementationNoOp(Callback, const void*);
-        static MAGNUM_LOCAL void callbackImplementationKhr(Callback callback, const void* userParam);
+        #ifndef MAGNUM_TARGET_GLES2
+        static MAGNUM_LOCAL void callbackImplementationKhrDesktopES32(Callback callback, const void* userParam);
+        #endif
+        #ifdef MAGNUM_TARGET_GLES
+        static MAGNUM_LOCAL void callbackImplementationKhrES(Callback callback, const void* userParam);
+        #endif
 };
 
 /** @debugoperatorclassenum{Magnum::DebugOutput,Magnum::DebugOutput::Source} */
@@ -442,10 +455,11 @@ gDEBugger.
 
 See @ref DebugOutput for introduction.
 
-If OpenGL 4.3 is supported or @extension{KHR,debug} desktop or ES extension
-(covered also by @extension{ANDROID,extension_pack_es31a}) is available and
-default debug output callback is enabled for given kind of messages, the
-inserted message will be printed on standard output in the following form:
+If OpenGL 4.3 / OpenGL ES 3.2 is supported or @extension{KHR,debug} desktop or
+ES extension (covered also by @extension{ANDROID,extension_pack_es31a}) is
+available and default debug output callback is enabled for given kind of
+messages, the inserted message will be printed on standard output in the
+following form:
 
 @code{.cpp}
 DebugMessage::insert(DebugMessage::Source::Application, DebugMessage::Type::Marker,
@@ -488,7 +502,7 @@ class MAGNUM_EXPORT DebugMessage {
              * External debugger or third-party middleware
              * @m_keywords{GL_DEBUG_SOURCE_THIRD_PARTY}
              */
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             ThirdParty = GL_DEBUG_SOURCE_THIRD_PARTY,
             #else
             ThirdParty = GL_DEBUG_SOURCE_THIRD_PARTY_KHR,
@@ -498,10 +512,10 @@ class MAGNUM_EXPORT DebugMessage {
              * The application
              * @m_keywords{GL_DEBUG_SOURCE_APPLICATION}
              */
-            #ifndef MAGNUM_TARGET_GLES
-            Application = GL_DEBUG_SOURCE_APPLICATION,
+            #ifndef MAGNUM_TARGET_GLES2
+            Application = GL_DEBUG_SOURCE_APPLICATION
             #else
-            Application = GL_DEBUG_SOURCE_APPLICATION_KHR,
+            Application = GL_DEBUG_SOURCE_APPLICATION_KHR
             #endif
         };
 
@@ -513,49 +527,49 @@ class MAGNUM_EXPORT DebugMessage {
          */
         enum class Type: GLenum {
             /** OpenGL error */
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             Error = GL_DEBUG_TYPE_ERROR,
             #else
             Error = GL_DEBUG_TYPE_ERROR_KHR,
             #endif
 
             /** Behavior that has been marked for deprecation */
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             DeprecatedBehavior = GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR,
             #else
             DeprecatedBehavior = GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR_KHR,
             #endif
 
             /** Behavior that is undefined according to the specification */
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             UndefinedBehavior = GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR,
             #else
             UndefinedBehavior = GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR_KHR,
             #endif
 
             /** Non-portable usage of extensions or shaders */
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             Portability = GL_DEBUG_TYPE_PORTABILITY,
             #else
             Portability = GL_DEBUG_TYPE_PORTABILITY_KHR,
             #endif
 
             /** Implementation-dependent performance warning */
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             Performance = GL_DEBUG_TYPE_PERFORMANCE,
             #else
             Performance = GL_DEBUG_TYPE_PERFORMANCE_KHR,
             #endif
 
             /** Annotation of the command stream */
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             Marker = GL_DEBUG_TYPE_MARKER,
             #else
             Marker = GL_DEBUG_TYPE_MARKER_KHR,
             #endif
 
             /** Any other type */
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             Other = GL_DEBUG_TYPE_OTHER
             #else
             Other = GL_DEBUG_TYPE_OTHER_KHR
@@ -570,9 +584,9 @@ class MAGNUM_EXPORT DebugMessage {
          * @param severity  Message severity
          * @param string    The actual message
          *
-         * If OpenGL 4.3 is not supported and neither @extension{KHR,debug}
-         * (covered also by @extension{ANDROID,extension_pack_es31a}) nor
-         * @extension{EXT,debug_marker} (desktop or ES extensions) nor
+         * If OpenGL 4.3 / OpenGL ES 3.2 is not supported and neither
+         * @extension{KHR,debug} (covered also by @extension{ANDROID,extension_pack_es31a})
+         * nor @extension{EXT,debug_marker} (desktop or ES extensions) nor
          * @extension{GREMEDY,string_marker} (desktop only extension) are
          * available, this function does nothing.
          *
@@ -599,7 +613,12 @@ class MAGNUM_EXPORT DebugMessage {
     private:
         static void insertInternal(Source source, Type type, UnsignedInt id, DebugOutput::Severity severity, Containers::ArrayView<const char> string);
         static MAGNUM_LOCAL void insertImplementationNoOp(Source, Type, UnsignedInt, DebugOutput::Severity, Containers::ArrayView<const char>);
-        static MAGNUM_LOCAL void insertImplementationKhr(Source source, Type type, UnsignedInt id, DebugOutput::Severity severity, Containers::ArrayView<const char> string);
+        #ifndef MAGNUM_TARGET_GLES2
+        static MAGNUM_LOCAL void insertImplementationKhrDesktopES32(Source source, Type type, UnsignedInt id, DebugOutput::Severity severity, Containers::ArrayView<const char> string);
+        #endif
+        #ifdef MAGNUM_TARGET_GLES
+        static MAGNUM_LOCAL void insertImplementationKhrES(Source source, Type type, UnsignedInt id, DebugOutput::Severity severity, Containers::ArrayView<const char> string);
+        #endif
         static MAGNUM_LOCAL void insertImplementationExt(Source, Type, UnsignedInt, DebugOutput::Severity, Containers::ArrayView<const char> string);
         #ifndef MAGNUM_TARGET_GLES
         static MAGNUM_LOCAL void insertImplementationGremedy(Source, Type, UnsignedInt, DebugOutput::Severity, Containers::ArrayView<const char> string);
@@ -653,11 +672,11 @@ Renderer::disable(Renderer::Feature::Blending);
 group.pop();
 @endcode
 
-If OpenGL 4.3 is supported or @extension{KHR,debug} desktop or ES extension
-(covered also by @extension{ANDROID,extension_pack_es31a}) is available and
-the default debug output callback is enabled for these kinds of messages, the
-group entering and leaving will be printed on standard output in the following
-form:
+If OpenGL 4.3 / OpenGL ES 3.2 is supported or @extension{KHR,debug} desktop or
+ES extension (covered also by @extension{ANDROID,extension_pack_es31a}) is
+available and the default debug output callback is enabled for these kinds of
+messages, the group entering and leaving will be printed on standard output in
+the following form:
 
 @code{.shell-session}
 Debug output: application debug group enter (42): Scene rendering
@@ -667,8 +686,8 @@ Debug output: application debug group leave (42): Scene rendering
 If only @extension{EXT,debug_marker} is available, the group can be seen only
 through graphics debugger.
 
-If OpenGL 4.3 is not supported and neither @extension{KHR,debug} nor
-@extension{EXT,debug_marker} are available, the functions are essentially a
+If OpenGL 4.3 / OpenGL ES 3.2 is not supported and neither @extension{KHR,debug}
+nor @extension{EXT,debug_marker} are available, the functions are essentially a
 no-op.
 
 @attention To avoid accidental debug group stack overflow/underflow, you cannot
@@ -708,14 +727,14 @@ class MAGNUM_EXPORT DebugGroup {
          */
         enum class Source: GLenum {
             /** External debugger or third-party middleware */
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             ThirdParty = GL_DEBUG_SOURCE_THIRD_PARTY,
             #else
             ThirdParty = GL_DEBUG_SOURCE_THIRD_PARTY_KHR,
             #endif
 
             /** The application */
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             Application = GL_DEBUG_SOURCE_APPLICATION
             #else
             Application = GL_DEBUG_SOURCE_APPLICATION_KHR
@@ -726,9 +745,10 @@ class MAGNUM_EXPORT DebugGroup {
          * @brief Max debug group stack depth
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If OpenGL 4.3 is not supported and @extension{KHR,debug}
-         * desktop or ES extension (covered also by @extension{ANDROID,extension_pack_es31a})
-         * is not available, returns @cpp 0 @ce.
+         * OpenGL calls. If OpenGL 4.3 / OpenGL ES 3.2 is not supported and
+         * @extension{KHR,debug} desktop or ES extension (covered also by
+         * @extension{ANDROID,extension_pack_es31a}) is not available, returns
+         * `0`.
          * @see @fn_gl{Get} with @def_gl_keyword{MAX_DEBUG_GROUP_STACK_DEPTH}
          */
         static Int maxStackDepth();
@@ -770,9 +790,9 @@ class MAGNUM_EXPORT DebugGroup {
          * @ref DebugOutput::Type::PushGroup and
          * @ref DebugOutput::Severity::Notification.
          *
-         * If OpenGL 4.3 is not supported and neither @extension{KHR,debug}
-         * (covered also by @extension{ANDROID,extension_pack_es31a}) nor
-         * @extension{EXT,debug_marker} is available, this function does
+         * If OpenGL 4.3 / OpenGL ES 3.2 is not supported and neither
+         * @extension{KHR,debug} (covered also by @extension{ANDROID,extension_pack_es31a})
+         * nor @extension{EXT,debug_marker} is available, this function does
          * nothing. If @extension{KHR,debug} is not available and only
          * @extension{EXT,debug_marker} is available, only @p message is used
          * and all other parameters are ignored.
@@ -799,9 +819,9 @@ class MAGNUM_EXPORT DebugGroup {
          * @ref DebugOutput::Type::PopGroup and
          * @ref DebugOutput::Severity::Notification.
          *
-         * If OpenGL 4.3 is not supported and neither @extension{KHR,debug}
-         * (covered also by @extension{ANDROID,extension_pack_es31a}) nor
-         * @extension{EXT,debug_marker} is available, this function does
+         * If OpenGL 4.3 / OpenGL ES 3.2 is not supported and neither
+         * @extension{KHR,debug} (covered also by @extension{ANDROID,extension_pack_es31a})
+         * nor @extension{EXT,debug_marker} is available, this function does
          * nothing.
          * @see @ref push(), @ref Renderer::Error::StackUnderflow,
          *      @fn_gl_keyword{PopDebugGroup} or
@@ -813,11 +833,21 @@ class MAGNUM_EXPORT DebugGroup {
         void pushInternal(Source source, UnsignedInt id, Containers::ArrayView<const char> message);
 
         static MAGNUM_LOCAL void pushImplementationNoOp(Source source, UnsignedInt id, Containers::ArrayView<const char> message);
-        static MAGNUM_LOCAL void pushImplementationKhr(Source source, UnsignedInt id, Containers::ArrayView<const char> message);
+        #ifndef MAGNUM_TARGET_GLES2
+        static MAGNUM_LOCAL void pushImplementationKhrDesktopES32(Source source, UnsignedInt id, Containers::ArrayView<const char> message);
+        #endif
+        #ifdef MAGNUM_TARGET_GLES
+        static MAGNUM_LOCAL void pushImplementationKhrES(Source source, UnsignedInt id, Containers::ArrayView<const char> message);
+        #endif
         static MAGNUM_LOCAL void pushImplementationExt(Source source, UnsignedInt id, Containers::ArrayView<const char> message);
 
         static MAGNUM_LOCAL void popImplementationNoOp();
-        static MAGNUM_LOCAL void popImplementationKhr();
+        #ifndef MAGNUM_TARGET_GLES2
+        static MAGNUM_LOCAL void popImplementationKhrDesktopES32();
+        #endif
+        #ifdef MAGNUM_TARGET_GLES
+        static MAGNUM_LOCAL void popImplementationKhrES();
+        #endif
         static MAGNUM_LOCAL void popImplementationExt();
 
         bool _active;

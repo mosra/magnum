@@ -127,7 +127,7 @@ Int DebugOutput::maxLoggedMessages() {
     GLint& value = Context::current().state().debug->maxLoggedMessages;
 
     if(value == 0) {
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES2
         glGetIntegerv(GL_MAX_DEBUG_LOGGED_MESSAGES, &value);
         #else
         glGetIntegerv(GL_MAX_DEBUG_LOGGED_MESSAGES_KHR, &value);
@@ -144,7 +144,7 @@ Int DebugOutput::maxMessageLength() {
     GLint& value = Context::current().state().debug->maxMessageLength;
 
     if(value == 0) {
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES2
         glGetIntegerv(GL_MAX_DEBUG_MESSAGE_LENGTH, &value);
         #else
         glGetIntegerv(GL_MAX_DEBUG_MESSAGE_LENGTH_KHR, &value);
@@ -168,41 +168,51 @@ void DebugOutput::setEnabledInternal(const GLenum source, const GLenum type, con
 
 void DebugOutput::controlImplementationNoOp(GLenum, GLenum, GLenum, std::initializer_list<UnsignedInt>, bool) {}
 
-void DebugOutput::controlImplementationKhr(const GLenum source, const GLenum type, const GLenum severity, const std::initializer_list<UnsignedInt> ids, const bool enabled) {
-    #ifndef MAGNUM_TARGET_GLES
-    glDebugMessageControl
-    #else
-    glDebugMessageControlKHR
-    #endif
-        (source, type, severity, ids.size(), ids.begin(), enabled);
+#ifndef MAGNUM_TARGET_GLES2
+void DebugOutput::controlImplementationKhrDesktopES32(const GLenum source, const GLenum type, const GLenum severity, const std::initializer_list<UnsignedInt> ids, const bool enabled) {
+    glDebugMessageControl(source, type, severity, ids.size(), ids.begin(), enabled);
 }
+#endif
+
+#ifdef MAGNUM_TARGET_GLES
+void DebugOutput::controlImplementationKhrES(const GLenum source, const GLenum type, const GLenum severity, const std::initializer_list<UnsignedInt> ids, const bool enabled) {
+    glDebugMessageControlKHR(source, type, severity, ids.size(), ids.begin(), enabled);
+}
+#endif
 
 void DebugOutput::callbackImplementationNoOp(Callback, const void*) {}
 
-void DebugOutput::callbackImplementationKhr(const Callback callback, const void* userParam) {
+#ifndef MAGNUM_TARGET_GLES2
+void DebugOutput::callbackImplementationKhrDesktopES32(const Callback callback, const void* userParam) {
     /* Replace the callback */
     const Callback original = Context::current().state().debug->messageCallback;
     Context::current().state().debug->messageCallback = callback;
 
     /* Adding callback */
-    if(!original && callback) {
-        #ifndef MAGNUM_TARGET_GLES
-        glDebugMessageCallback
-        #else
-        glDebugMessageCallbackKHR
-        #endif
-            (callbackWrapper, userParam);
+    if(!original && callback)
+        glDebugMessageCallback(callbackWrapper, userParam);
 
     /* Deleting callback */
-    } else if(original && !callback) {
-        #ifndef MAGNUM_TARGET_GLES
-        glDebugMessageCallback
-        #else
-        glDebugMessageCallbackKHR
-        #endif
-            (nullptr, nullptr);
-    }
+    else if(original && !callback)
+        glDebugMessageCallback(nullptr, nullptr);
 }
+#endif
+
+#ifdef MAGNUM_TARGET_GLES
+void DebugOutput::callbackImplementationKhrES(const Callback callback, const void* userParam) {
+    /* Replace the callback */
+    const Callback original = Context::current().state().debug->messageCallback;
+    Context::current().state().debug->messageCallback = callback;
+
+    /* Adding callback */
+    if(!original && callback)
+        glDebugMessageCallbackKHR(callbackWrapper, userParam);
+
+    /* Deleting callback */
+    else if(original && !callback)
+        glDebugMessageCallbackKHR(nullptr, nullptr);
+}
+#endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const DebugOutput::Source value) {
@@ -262,14 +272,17 @@ void DebugMessage::insertInternal(const Source source, const Type type, const Un
 
 void DebugMessage::insertImplementationNoOp(Source, Type, UnsignedInt, DebugOutput::Severity, const Containers::ArrayView<const char>) {}
 
-void DebugMessage::insertImplementationKhr(const Source source, const Type type, const UnsignedInt id, const DebugOutput::Severity severity, const Containers::ArrayView<const char> string) {
-    #ifndef MAGNUM_TARGET_GLES
-    glDebugMessageInsert
-    #else
-    glDebugMessageInsertKHR
-    #endif
-        (GLenum(source), GLenum(type), id, GLenum(severity), string.size(), string.data());
+#ifndef MAGNUM_TARGET_GLES2
+void DebugMessage::insertImplementationKhrDesktopES32(const Source source, const Type type, const UnsignedInt id, const DebugOutput::Severity severity, const Containers::ArrayView<const char> string) {
+    glDebugMessageInsert(GLenum(source), GLenum(type), id, GLenum(severity), string.size(), string.data());
 }
+#endif
+
+#ifdef MAGNUM_TARGET_GLES
+void DebugMessage::insertImplementationKhrES(const Source source, const Type type, const UnsignedInt id, const DebugOutput::Severity severity, const Containers::ArrayView<const char> string) {
+    glDebugMessageInsertKHR(GLenum(source), GLenum(type), id, GLenum(severity), string.size(), string.data());
+}
+#endif
 
 void DebugMessage::insertImplementationExt(Source, Type, UnsignedInt, DebugOutput::Severity, const Containers::ArrayView<const char> string) {
     glInsertEventMarkerEXT(string.size(), string.data());
@@ -319,7 +332,7 @@ Int DebugGroup::maxStackDepth() {
     GLint& value = Context::current().state().debug->maxStackDepth;
 
     if(value == 0) {
-        #ifndef MAGNUM_TARGET_GLES
+        #ifndef MAGNUM_TARGET_GLES2
         glGetIntegerv(GL_MAX_DEBUG_GROUP_STACK_DEPTH, &value);
         #else
         glGetIntegerv(GL_MAX_DEBUG_GROUP_STACK_DEPTH_KHR, &value);
@@ -343,14 +356,17 @@ void DebugGroup::pop() {
 
 void DebugGroup::pushImplementationNoOp(Source, UnsignedInt, Containers::ArrayView<const char>) {}
 
-void DebugGroup::pushImplementationKhr(const Source source, const UnsignedInt id, const Containers::ArrayView<const char> message) {
-    #ifndef MAGNUM_TARGET_GLES
-    glPushDebugGroup
-    #else
-    glPushDebugGroupKHR
-    #endif
-        (GLenum(source), id, message.size(), message.data());
+#ifndef MAGNUM_TARGET_GLES2
+void DebugGroup::pushImplementationKhrDesktopES32(const Source source, const UnsignedInt id, const Containers::ArrayView<const char> message) {
+    glPushDebugGroup(GLenum(source), id, message.size(), message.data());
 }
+#endif
+
+#ifdef MAGNUM_TARGET_GLES
+void DebugGroup::pushImplementationKhrES(const Source source, const UnsignedInt id, const Containers::ArrayView<const char> message) {
+    glPushDebugGroupKHR(GLenum(source), id, message.size(), message.data());
+}
+#endif
 
 void DebugGroup::pushImplementationExt(Source, UnsignedInt, const Containers::ArrayView<const char> message) {
     glPushGroupMarkerEXT(message.size(), message.data());
@@ -358,13 +374,17 @@ void DebugGroup::pushImplementationExt(Source, UnsignedInt, const Containers::Ar
 
 void DebugGroup::popImplementationNoOp() {}
 
-void DebugGroup::popImplementationKhr() {
-    #ifndef MAGNUM_TARGET_GLES
+#ifndef MAGNUM_TARGET_GLES2
+void DebugGroup::popImplementationKhrDesktopES32() {
     glPopDebugGroup();
-    #else
-    glPopDebugGroupKHR();
-    #endif
 }
+#endif
+
+#ifdef MAGNUM_TARGET_GLES
+void DebugGroup::popImplementationKhrES() {
+    glPopDebugGroupKHR();
+}
+#endif
 
 void DebugGroup::popImplementationExt() {
     glPopGroupMarkerEXT();

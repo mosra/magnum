@@ -38,18 +38,42 @@ DebugState::DebugState(Context& context, std::vector<std::string>& extensions):
     maxStackDepth{0},
     messageCallback(nullptr)
 {
+    #ifndef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_GLES
+    if(context.isExtensionSupported<Extensions::GL::KHR::debug>())
+    #else
+    if(context.isVersionSupported(Version::GLES320))
+    #endif
+    {
+        #ifndef MAGNUM_TARGET_GLES
+        extensions.emplace_back(Extensions::GL::KHR::debug::string());
+        #endif
+
+        getLabelImplementation = &AbstractObject::getLabelImplementationKhrDesktopES32;
+        labelImplementation = &AbstractObject::labelImplementationKhrDesktopES32;
+        controlImplementation = &DebugOutput::controlImplementationKhrDesktopES32;
+        callbackImplementation = &DebugOutput::callbackImplementationKhrDesktopES32;
+        messageInsertImplementation = &DebugMessage::insertImplementationKhrDesktopES32;
+        pushGroupImplementation = &DebugGroup::pushImplementationKhrDesktopES32;
+        popGroupImplementation = &DebugGroup::popImplementationKhrDesktopES32;
+
+    } else
+    #endif
+    #ifdef MAGNUM_TARGET_GLES
     if(context.isExtensionSupported<Extensions::GL::KHR::debug>()) {
         extensions.emplace_back(Extensions::GL::KHR::debug::string());
 
-        getLabelImplementation = &AbstractObject::getLabelImplementationKhr;
-        labelImplementation = &AbstractObject::labelImplementationKhr;
-        controlImplementation = &DebugOutput::controlImplementationKhr;
-        callbackImplementation = &DebugOutput::callbackImplementationKhr;
-        messageInsertImplementation = &DebugMessage::insertImplementationKhr;
-        pushGroupImplementation = &DebugGroup::pushImplementationKhr;
-        popGroupImplementation = &DebugGroup::popImplementationKhr;
+        getLabelImplementation = &AbstractObject::getLabelImplementationKhrES;
+        labelImplementation = &AbstractObject::labelImplementationKhrES;
+        controlImplementation = &DebugOutput::controlImplementationKhrES;
+        callbackImplementation = &DebugOutput::callbackImplementationKhrES;
+        messageInsertImplementation = &DebugMessage::insertImplementationKhrES;
+        pushGroupImplementation = &DebugGroup::pushImplementationKhrES;
+        popGroupImplementation = &DebugGroup::popImplementationKhrES;
 
-    } else {
+    } else
+    #endif
+    {
         if(context.isExtensionSupported<Extensions::GL::EXT::debug_label>()) {
             extensions.emplace_back(Extensions::GL::EXT::debug_label::string());
 

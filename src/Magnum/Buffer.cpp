@@ -202,7 +202,7 @@ inline void Buffer::createIfNotAlready() {
 #ifndef MAGNUM_TARGET_WEBGL
 std::string Buffer::label() {
     createIfNotAlready();
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
     return Context::current().state().debug->getLabelImplementation(GL_BUFFER, _id);
     #else
     return Context::current().state().debug->getLabelImplementation(GL_BUFFER_KHR, _id);
@@ -211,7 +211,7 @@ std::string Buffer::label() {
 
 Buffer& Buffer::setLabelInternal(const Containers::ArrayView<const char> label) {
     createIfNotAlready();
-    #ifndef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES2
     Context::current().state().debug->labelImplementation(GL_BUFFER, _id, label);
     #else
     Context::current().state().debug->labelImplementation(GL_BUFFER_KHR, _id, label);

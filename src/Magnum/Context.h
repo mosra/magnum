@@ -138,10 +138,10 @@ class MAGNUM_EXPORT Context {
             /**
              * Debug context
              * @requires_gl43 Extension @extension{KHR,debug}
-             * @requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
+             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
              *      @extension2{KHR,debug,debug}
              */
-            #ifndef MAGNUM_TARGET_GLES
+            #ifndef MAGNUM_TARGET_GLES2
             Debug = GL_CONTEXT_FLAG_DEBUG_BIT,
             #else
             Debug = GL_CONTEXT_FLAG_DEBUG_BIT_KHR,
