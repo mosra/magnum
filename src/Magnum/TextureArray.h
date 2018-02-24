@@ -387,7 +387,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *
          * See @ref Texture::setSRGBDecode() for more information.
          * @requires_extension Extension @extension{EXT,texture_sRGB_decode}
-         * @requires_es_extension Extension  @extension{ANDROID,extension_pack_es31a}/
+         * @requires_es_extension Extension @extension{ANDROID,extension_pack_es31a} /
          *      @extension2{EXT,texture_sRGB_decode,texture_sRGB_decode}
          * @requires_gles SRGB decode is not available in WebGL.
          */

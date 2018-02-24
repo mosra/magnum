@@ -495,23 +495,17 @@ class MAGNUM_EXPORT DebugMessage {
          * @brief Message source
          *
          * @see @ref insert()
-         * @todoc use m_enum_values_as_keywords once deprecated values are gone
+         * @m_enum_values_as_keywords
          */
         enum class Source: GLenum {
-            /**
-             * External debugger or third-party middleware
-             * @m_keywords{GL_DEBUG_SOURCE_THIRD_PARTY}
-             */
+            /** External debugger or third-party middleware */
             #ifndef MAGNUM_TARGET_GLES2
             ThirdParty = GL_DEBUG_SOURCE_THIRD_PARTY,
             #else
             ThirdParty = GL_DEBUG_SOURCE_THIRD_PARTY_KHR,
             #endif
 
-            /**
-             * The application
-             * @m_keywords{GL_DEBUG_SOURCE_APPLICATION}
-             */
+            /** The application */
             #ifndef MAGNUM_TARGET_GLES2
             Application = GL_DEBUG_SOURCE_APPLICATION
             #else

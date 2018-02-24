@@ -78,7 +78,11 @@ class MAGNUM_EXPORT Sampler {
          * @see @ref Texture::setMinificationFilter() "*Texture::setMinificationFilter()"
          */
         enum class Mipmap: GLint {
-            Base = GL_NEAREST & ~GL_NEAREST, /**< Select base mip level */
+            /**
+             * Select base mip level
+             * @m_keywords{GL_NEAREST}
+             */
+            Base = GL_NEAREST & ~GL_NEAREST,
 
             /**
              * Select nearest mip level. **Unavailable on rectangle textures.**

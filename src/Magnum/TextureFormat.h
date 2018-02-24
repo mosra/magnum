@@ -125,6 +125,8 @@ enum class TextureFormat: GLenum {
      * RGB, normalized unsigned, size implementation-dependent. Not allowed in
      * unemulated @ref Texture::setStorage() "*Texture::setStorage()" calls, in
      * that case use @ref TextureFormat::RGB8 "TextureFormat::RGB8" instead.
+     * @requires_gl Can't be used as a render target in OpenGL ES or WebGL. See
+     *      @ref TextureFormat::RGBA for an alternative.
      * @deprecated_gl Prefer to use the exactly specified version of this
      *      format, e.g. @ref TextureFormat::RGB8.
      */

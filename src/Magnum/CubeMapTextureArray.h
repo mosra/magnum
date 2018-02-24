@@ -364,7 +364,7 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          *
          * See @ref Texture::setSRGBDecode() for more information.
          * @requires_extension Extension @extension{EXT,texture_sRGB_decode}
-         * @requires_es_extension Extension @extension{ANDROID,extension_pack_es31a}/
+         * @requires_es_extension Extension @extension{ANDROID,extension_pack_es31a} /
          *      @extension2{EXT,texture_sRGB_decode,texture_sRGB_decode}
          */
         CubeMapTextureArray& setSRGBDecode(bool decode) {
