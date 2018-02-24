@@ -98,6 +98,7 @@ information about usage in shaders.
 @see @ref Texture1D, @ref Texture2D, @ref Texture3D, @ref TextureArray,
     @ref CubeMapTexture, @ref CubeMapTextureArray, @ref RectangleTexture,
     @ref BufferTexture, @ref MultisampleTexture
+@m_keywords{GL_TEXTURE_1D GL_TEXTURE_2D GL_TEXTURE_3D}
 @requires_gles30 Extension @extension{OES,texture_3D} for 3D textures in
     OpenGL ES 2.0.
 @requires_webgl20 3D textures are not available in WebGL 1.0.

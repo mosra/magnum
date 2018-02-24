@@ -90,6 +90,7 @@ in shaders.
 @see @ref Texture1DArray, @ref Texture2DArray, @ref Texture,
     @ref CubeMapTexture, @ref CubeMapTextureArray, @ref RectangleTexture,
     @ref BufferTexture, @ref MultisampleTexture
+@m_keywords{GL_TEXTURE_1D_ARRAY GL_TEXTURE_2D_ARRAY}
 @requires_gl30 Extension @extension{EXT,texture_array}
 @requires_gles30 Array textures are not available in OpenGL ES 2.0.
 @requires_webgl20 Array textures are not available in WebGL 1.0.

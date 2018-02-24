@@ -92,6 +92,7 @@ Note that multisample textures don't support compressed formats.
 @see @ref MultisampleTexture2D, @ref MultisampleTexture2DArray, @ref Texture,
     @ref TextureArray, @ref CubeMapTexture, @ref CubeMapTextureArray,
     @ref RectangleTexture, @ref BufferTexture
+@m_keywords{GL_TEXTURE_2D_MULTISAMPLE GL_TEXTURE_2D_MULTISAMPLE_ARRAY}
 @requires_gl32 Extension @extension{ARB,texture_multisample}
 @requires_gles31 Multisample 2D textures are not available in OpenGL ES 3.0 and
     older.

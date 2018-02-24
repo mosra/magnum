@@ -67,6 +67,7 @@ in shaders.
 
 @see @ref Texture, @ref TextureArray, @ref CubeMapTexture,
     @ref CubeMapTextureArray, @ref BufferTexture, @ref MultisampleTexture
+@m_keywords{GL_TEXTURE_RECTANGLE}
 @requires_gl31 Extension @extension{ARB,texture_rectangle}
 @requires_gl Rectangle textures are not available in OpenGL ES and WebGL.
  */

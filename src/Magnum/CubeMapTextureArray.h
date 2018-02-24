@@ -81,6 +81,7 @@ more information about usage in shaders.
 @see @ref Renderer::Feature::SeamlessCubeMapTexture, @ref CubeMapTexture,
     @ref Texture, @ref TextureArray, @ref RectangleTexture, @ref BufferTexture,
     @ref MultisampleTexture
+@m_keywords{GL_TEXTURE_CUBE_MAP_ARRAY}
 @requires_gl40 Extension @extension{ARB,texture_cube_map_array}
 @requires_gles30 Not defined in OpenGL ES 2.0.
 @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /

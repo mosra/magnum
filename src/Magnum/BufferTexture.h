@@ -83,6 +83,7 @@ and respective function documentation for more information.
 
 @see @ref Texture, @ref TextureArray, @ref CubeMapTexture,
     @ref CubeMapTextureArray, @ref RectangleTexture, @ref MultisampleTexture
+@m_keywords{GL_TEXTURE_BUFFER}
 @requires_gl31 Extension @extension{ARB,texture_buffer_object}
 @requires_gles30 Not defined in OpenGL ES 2.0.
 @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /

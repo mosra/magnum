@@ -39,6 +39,7 @@ namespace Magnum {
 @brief Cube map coordinate
 
 @see @ref CubeMapTexture
+@m_enum_values_as_keywords
 */
 enum class CubeMapCoordinate: GLenum {
     PositiveX = GL_TEXTURE_CUBE_MAP_POSITIVE_X,     /**< +X cube side */
@@ -93,6 +94,7 @@ of the cube, which intersects one of the six sides of the cube map. See
 @see @ref Renderer::Feature::SeamlessCubeMapTexture, @ref CubeMapTextureArray,
     @ref Texture, @ref TextureArray, @ref RectangleTexture, @ref BufferTexture,
     @ref MultisampleTexture
+@m_keywords{GL_TEXTURE_CUBE_MAP}
 */
 class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
     friend Implementation::TextureState;
