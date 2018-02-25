@@ -62,6 +62,7 @@ is supported on older Intel GPUs even if they are capable of OpenGL 2.1 only).
 -   @subpage requires-gl43
 -   @subpage requires-gl44
 -   @subpage requires-gl45
+-   @subpage requires-gl46
 -   @subpage requires-extension
 -   @subpage requires-gl
 -   @subpage requires-gles20
@@ -114,6 +115,10 @@ is supported on older Intel GPUs even if they are capable of OpenGL 2.1 only).
  */
 
 /** @page requires-gl45 Functionality requiring OpenGL 4.5
+ * @m_footernavigation
+ */
+
+/** @page requires-gl46 Functionality requiring OpenGL 4.6
  * @m_footernavigation
  */
 

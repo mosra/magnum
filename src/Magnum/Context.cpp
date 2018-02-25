@@ -79,14 +79,9 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,ARB,robustness_share_group_isolation),
         _extension(GL,ARB,bindless_texture),
         _extension(GL,ARB,compute_variable_group_size),
-        _extension(GL,ARB,indirect_parameters),
         _extension(GL,ARB,seamless_cubemap_per_texture),
-        _extension(GL,ARB,shader_draw_parameters),
-        _extension(GL,ARB,shader_group_vote),
         _extension(GL,ARB,sparse_texture),
-        _extension(GL,ARB,pipeline_statistics_query),
         _extension(GL,ARB,sparse_buffer),
-        _extension(GL,ARB,transform_feedback_overflow_query),
         _extension(GL,ARB,ES3_2_compatibility),
         _extension(GL,ATI,texture_mirror_once),
         _extension(GL,EXT,texture_filter_anisotropic),
@@ -101,8 +96,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,KHR,texture_compression_astc_ldr),
         _extension(GL,KHR,texture_compression_astc_hdr),
         _extension(GL,KHR,blend_equation_advanced),
-        _extension(GL,KHR,blend_equation_advanced_coherent),
-        _extension(GL,KHR,no_error)};
+        _extension(GL,KHR,blend_equation_advanced_coherent)};
     static const std::vector<Extension> extensions300{
         _extension(GL,ARB,map_buffer_range),
         _extension(GL,ARB,color_buffer_float),
@@ -232,6 +226,18 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(GL,ARB,texture_barrier),
         _extension(GL,KHR,context_flush_control),
         _extension(GL,KHR,robustness)};
+    static const std::vector<Extension> extensions460{
+        _extension(GL,ARB,indirect_parameters),
+        _extension(GL,ARB,shader_draw_parameters),
+        _extension(GL,ARB,shader_group_vote),
+        _extension(GL,ARB,pipeline_statistics_query),
+        _extension(GL,ARB,transform_feedback_overflow_query),
+        _extension(GL,ARB,shader_atomic_counter_ops),
+        _extension(GL,ARB,gl_spirv),
+        _extension(GL,ARB,polygon_offset_clamp),
+        _extension(GL,ARB,spirv_extensions),
+        _extension(GL,ARB,texture_filter_anisotropic),
+        _extension(GL,KHR,no_error)};
     #elif defined(MAGNUM_TARGET_WEBGL)
     static const std::vector<Extension> extensions{
         _extension(GL,EXT,texture_filter_anisotropic),
@@ -282,6 +288,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         #ifndef MAGNUM_TARGET_GLES2
         _extension(GL,EXT,shader_integer_mix),
         #endif
+        _extension(GL,EXT,polygon_offset_clamp),
         _extension(GL,KHR,texture_compression_astc_hdr),
         _extension(GL,KHR,blend_equation_advanced_coherent),
         _extension(GL,KHR,context_flush_control),
@@ -402,6 +409,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         case Version::GL430: return extensions430;
         case Version::GL440: return extensions440;
         case Version::GL450: return extensions450;
+        case Version::GL460: return extensions460;
         case Version::GLES200:
         case Version::GLES300:
         case Version::GLES310:

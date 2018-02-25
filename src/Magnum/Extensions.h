@@ -193,10 +193,10 @@ namespace GL {
         _extension(GL,ARB,vertex_type_10f_11f_11f_rev,  GL300, GL440) // #151
         _extension(GL,ARB,bindless_texture,             GL400,  None) // #152
         _extension(GL,ARB,compute_variable_group_size,  GL420,  None) // #153
-        _extension(GL,ARB,indirect_parameters,          GL420,  None) // #154
+        _extension(GL,ARB,indirect_parameters,          GL420, GL460) // #154
         _extension(GL,ARB,seamless_cubemap_per_texture, GL320,  None) // #155
-        _extension(GL,ARB,shader_draw_parameters,       GL310,  None) // #156
-        _extension(GL,ARB,shader_group_vote,            GL420,  None) // #157
+        _extension(GL,ARB,shader_draw_parameters,       GL310, GL460) // #156
+        _extension(GL,ARB,shader_group_vote,            GL420, GL460) // #157
         _extension(GL,ARB,sparse_texture,               GL210,  None) // #158
         _extension(GL,ARB,ES3_1_compatibility,          GL440, GL450) // #159
         _extension(GL,ARB,clip_control,                 GL210, GL450) // #160
@@ -207,10 +207,15 @@ namespace GL {
         _extension(GL,ARB,get_texture_sub_image,        GL210, GL450) // #165
         _extension(GL,ARB,shader_texture_image_samples, GL430, GL450) // #166
         _extension(GL,ARB,texture_barrier,              GL210, GL450) // #167
-        _extension(GL,ARB,pipeline_statistics_query,    GL300,  None) // #171
+        _extension(GL,ARB,pipeline_statistics_query,    GL300, GL460) // #171
         _extension(GL,ARB,sparse_buffer,                GL210,  None) // #172
         _extension(GL,ARB,transform_feedback_overflow_query, GL300, None) // #173
         _extension(GL,ARB,ES3_2_compatibility,          GL450,  None) // #177
+        _extension(GL,ARB,shader_atomic_counter_ops,    GL300, GL460) // #182
+        _extension(GL,ARB,gl_spirv,                     GL330, GL460) // #190
+        _extension(GL,ARB,polygon_offset_clamp,         GL330, GL460) // #193
+        _extension(GL,ARB,spirv_extensions,             GL330, GL460) // #194
+        _extension(GL,ARB,texture_filter_anisotropic,   GL210, GL460) // #195
     } namespace ATI {
         _extension(GL,ATI,texture_mirror_once,          GL210,  None) // #221
     } namespace EXT {
@@ -386,6 +391,7 @@ namespace GL {
         _extension(GL,EXT,texture_cube_map_array,   GLES310, GLES320) // #184
         _extension(GL,EXT,primitive_bounding_box,   GLES310, GLES320) // #186
         #endif
+        _extension(GL,EXT,polygon_offset_clamp,     GLES200,    None) // #252
     } namespace KHR {
         _extension(GL,KHR,texture_compression_astc_ldr, GLES200, GLES320) // #117
         _extension(GL,KHR,texture_compression_astc_hdr, GLES200, None) // #117

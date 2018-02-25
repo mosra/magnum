@@ -47,6 +47,7 @@ Debug& operator<<(Debug& debug, Version value) {
         _c(GL430, "OpenGL 4.3")
         _c(GL440, "OpenGL 4.4")
         _c(GL450, "OpenGL 4.5")
+        _c(GL460, "OpenGL 4.6")
         #endif
         #ifdef MAGNUM_TARGET_WEBGL
         _c(GLES200, "WebGL 1.0")

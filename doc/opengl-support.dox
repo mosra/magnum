@@ -249,6 +249,25 @@ GLSL 4.50                                   | done
 @extension{KHR,context_flush_control}       | |
 @extension{KHR,robustness}                  | |
 
+@subsection opengl-support-46 OpenGL 4.6
+
+@m_class{m-fullwidth}
+
+Extension                                   | Status
+------------------------------------------- | ------
+GLSL 4.60                                   | done
+@extension{ARB,indirect_parameters}         | |
+@extension{ARB,shader_draw_parameters}      | done (shading language only)
+@extension{ARB,shader_group_vote}           | done (shading language only)
+@extension{ARB,pipeline_statistics_query}   | |
+@extension{ARB,transform_feedback_overflow_query} | done
+@extension{ARB,shader_atomic_counter_ops}   | done (shading language only)
+@extension{ARB,gl_spirv}                    | |
+@extension{ARB,polygon_offset_clamp}        | |
+@extension{ARB,spirv_extensions}            | |
+@extension{ARB,texture_filter_anisotropic}  | |
+@extension{KHR,no_error}                    | done
+
 @subsection opengl-support-extensions ARB / Khronos OpenGL extensions
 
 @m_class{m-fullwidth}
@@ -260,20 +279,14 @@ Extension                                   | Status
 @extension{ARB,robustness_isolation}        | done
 @extension{ARB,bindless_texture}            | |
 @extension{ARB,compute_variable_group_size} | |
-@extension{ARB,indirect_parameters}         | |
 @extension{ARB,seamless_cubemap_per_texture} | |
-@extension{ARB,shader_draw_parameters}      | done (shading language only)
-@extension{ARB,shader_group_vote}           | done (shading language only)
 @extension{ARB,sparse_texture}              | |
-@extension{ARB,pipeline_statistics_query}   | |
 @extension{ARB,sparse_buffer}               | |
-@extension{ARB,transform_feedback_overflow_query} | done
 @extension{ARB,ES3_2_compatibility}         | |
 @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr} | done
 @extension{KHR,robust_buffer_access_behavior} | done (nothing to do)
 @extension{KHR,blend_equation_advanced}     | done
 @extension2{KHR,blend_equation_advanced_coherent,blend_equation_advanced} | done
-@extension{KHR,no_error}                    | done
 
 @subsection opengl-support-extensions-vendor Vendor OpenGL extensions
 

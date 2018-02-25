@@ -661,6 +661,7 @@ Shader::Shader(const Version version, const Type type): _type(type), _id(0) {
         case Version::GL430: _sources.emplace_back("#version 430\n"); return;
         case Version::GL440: _sources.emplace_back("#version 440\n"); return;
         case Version::GL450: _sources.emplace_back("#version 450\n"); return;
+        case Version::GL460: _sources.emplace_back("#version 460\n"); return;
         #endif
         /* `#version 100` really is GLSL ES 1.00 and *not* GLSL 1.00. What a mess. */
         case Version::GLES200: _sources.emplace_back("#version 100\n"); return;

@@ -261,6 +261,7 @@ ALIASES                = \
     "requires_gl43=@xrefitem requires-gl43 \"Requires OpenGL 4.3\" \"Functionality requiring OpenGL 4.3\"" \
     "requires_gl44=@xrefitem requires-gl44 \"Requires OpenGL 4.4\" \"Functionality requiring OpenGL 4.4\"" \
     "requires_gl45=@xrefitem requires-gl45 \"Requires OpenGL 4.5\" \"Functionality requiring OpenGL 4.5\"" \
+    "requires_gl46=@xrefitem requires-gl46 \"Requires OpenGL 4.6\" \"Functionality requiring OpenGL 4.6\"" \
     "requires_extension=@xrefitem requires-extension \"Requires OpenGL extension\" \"Functionality requiring specific OpenGL extension\"" \
     "requires_gl=@xrefitem requires-gl \"Requires desktop OpenGL\" \"Functionality requiring desktop OpenGL\"" \
     "extension{2}=<a href=\"https://www.khronos.org/registry/OpenGL/extensions/\1/\1_\2.txt\">\1_\2</a>" \
