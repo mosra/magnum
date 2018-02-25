@@ -8,6 +8,9 @@
 void flextGLInit() {
     Magnum::Platform::Implementation::OpenGLFunctionLoader loader;
 
+    /* GL_ARB_ES3_2_compatibility */
+    flextglPrimitiveBoundingBoxARB = reinterpret_cast<void(APIENTRY*)(GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat)>(loader.load("glPrimitiveBoundingBoxARB"));
+
     /* GL_ARB_bindless_texture */
     flextglGetImageHandleARB = reinterpret_cast<GLuint64(APIENTRY*)(GLuint, GLint, GLboolean, GLint, GLenum)>(loader.load("glGetImageHandleARB"));
     flextglGetTextureHandleARB = reinterpret_cast<GLuint64(APIENTRY*)(GLuint)>(loader.load("glGetTextureHandleARB"));
@@ -28,10 +31,6 @@ void flextGLInit() {
 
     /* GL_ARB_compute_variable_group_size */
     flextglDispatchComputeGroupSizeARB = reinterpret_cast<void(APIENTRY*)(GLuint, GLuint, GLuint, GLuint, GLuint, GLuint)>(loader.load("glDispatchComputeGroupSizeARB"));
-
-    /* GL_ARB_indirect_parameters */
-    flextglMultiDrawArraysIndirectCountARB = reinterpret_cast<void(APIENTRY*)(GLenum, GLintptr, GLintptr, GLsizei, GLsizei)>(loader.load("glMultiDrawArraysIndirectCountARB"));
-    flextglMultiDrawElementsIndirectCountARB = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLintptr, GLintptr, GLsizei, GLsizei)>(loader.load("glMultiDrawElementsIndirectCountARB"));
 
     /* GL_ARB_robustness */
     flextglGetGraphicsResetStatusARB = reinterpret_cast<GLenum(APIENTRY*)(void)>(loader.load("glGetGraphicsResetStatusARB"));
@@ -946,4 +945,10 @@ void flextGLInit() {
     flextglVertexArrayElementBuffer = reinterpret_cast<void(APIENTRY*)(GLuint, GLuint)>(loader.load("glVertexArrayElementBuffer"));
     flextglVertexArrayVertexBuffer = reinterpret_cast<void(APIENTRY*)(GLuint, GLuint, GLuint, GLintptr, GLsizei)>(loader.load("glVertexArrayVertexBuffer"));
     flextglVertexArrayVertexBuffers = reinterpret_cast<void(APIENTRY*)(GLuint, GLuint, GLsizei, const GLuint *, const GLintptr *, const GLsizei *)>(loader.load("glVertexArrayVertexBuffers"));
+
+    /* GL_VERSION_4_6 */
+    flextglMultiDrawArraysIndirectCount = reinterpret_cast<void(APIENTRY*)(GLenum, const void *, GLintptr, GLsizei, GLsizei)>(loader.load("glMultiDrawArraysIndirectCount"));
+    flextglMultiDrawElementsIndirectCount = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, const void *, GLintptr, GLsizei, GLsizei)>(loader.load("glMultiDrawElementsIndirectCount"));
+    flextglPolygonOffsetClamp = reinterpret_cast<void(APIENTRY*)(GLfloat, GLfloat, GLfloat)>(loader.load("glPolygonOffsetClamp"));
+    flextglSpecializeShader = reinterpret_cast<void(APIENTRY*)(GLuint, const GLchar *, GLuint, const GLuint *, const GLuint *)>(loader.load("glSpecializeShader"));
 }

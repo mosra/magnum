@@ -149,10 +149,14 @@ class MAGNUM_EXPORT Context {
 
             /**
              * Context without error reporting
-             * @requires_extension Extension @extension{KHR,no_error}
+             * @requires_gl46 Extension @extension{KHR,no_error}
              * @requires_es_extension Extension @extension2{KHR,no_error,no_error}
              */
+            #ifndef MAGNUM_TARGET_GLES
+            NoError = GL_CONTEXT_FLAG_NO_ERROR_BIT,
+            #else
             NoError = GL_CONTEXT_FLAG_NO_ERROR_BIT_KHR,
+            #endif
 
             #ifndef MAGNUM_TARGET_GLES2
             /**

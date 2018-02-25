@@ -4,6 +4,9 @@
 extern "C" {
 #endif
 
+/* GL_ARB_ES3_2_compatibility */
+FLEXTGL_EXPORT void(APIENTRY *flextglPrimitiveBoundingBoxARB)(GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat) = nullptr;
+
 /* GL_ARB_bindless_texture */
 FLEXTGL_EXPORT GLuint64(APIENTRY *flextglGetImageHandleARB)(GLuint, GLint, GLboolean, GLint, GLenum) = nullptr;
 FLEXTGL_EXPORT GLuint64(APIENTRY *flextglGetTextureHandleARB)(GLuint) = nullptr;
@@ -24,10 +27,6 @@ FLEXTGL_EXPORT void(APIENTRY *flextglVertexAttribL1ui64vARB)(GLuint, const GLuin
 
 /* GL_ARB_compute_variable_group_size */
 FLEXTGL_EXPORT void(APIENTRY *flextglDispatchComputeGroupSizeARB)(GLuint, GLuint, GLuint, GLuint, GLuint, GLuint) = nullptr;
-
-/* GL_ARB_indirect_parameters */
-FLEXTGL_EXPORT void(APIENTRY *flextglMultiDrawArraysIndirectCountARB)(GLenum, GLintptr, GLintptr, GLsizei, GLsizei) = nullptr;
-FLEXTGL_EXPORT void(APIENTRY *flextglMultiDrawElementsIndirectCountARB)(GLenum, GLenum, GLintptr, GLintptr, GLsizei, GLsizei) = nullptr;
 
 /* GL_ARB_robustness */
 FLEXTGL_EXPORT GLenum(APIENTRY *flextglGetGraphicsResetStatusARB)(void) = nullptr;
@@ -942,6 +941,12 @@ FLEXTGL_EXPORT void(APIENTRY *flextglVertexArrayBindingDivisor)(GLuint, GLuint, 
 FLEXTGL_EXPORT void(APIENTRY *flextglVertexArrayElementBuffer)(GLuint, GLuint) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglVertexArrayVertexBuffer)(GLuint, GLuint, GLuint, GLintptr, GLsizei) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglVertexArrayVertexBuffers)(GLuint, GLuint, GLsizei, const GLuint *, const GLintptr *, const GLsizei *) = nullptr;
+
+/* GL_VERSION_4_6 */
+FLEXTGL_EXPORT void(APIENTRY *flextglMultiDrawArraysIndirectCount)(GLenum, const void *, GLintptr, GLsizei, GLsizei) = nullptr;
+FLEXTGL_EXPORT void(APIENTRY *flextglMultiDrawElementsIndirectCount)(GLenum, GLenum, const void *, GLintptr, GLsizei, GLsizei) = nullptr;
+FLEXTGL_EXPORT void(APIENTRY *flextglPolygonOffsetClamp)(GLfloat, GLfloat, GLfloat) = nullptr;
+FLEXTGL_EXPORT void(APIENTRY *flextglSpecializeShader)(GLuint, const GLchar *, GLuint, const GLuint *, const GLuint *) = nullptr;
 
 #ifdef __cplusplus
 }

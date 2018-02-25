@@ -135,7 +135,7 @@ typedef void (APIENTRY *GLDEBUGPROC)(GLenum source,GLenum type,GLuint id,GLenum 
 
 /* Enums */
 
-/* GL_VERSION_1_1 */
+/* GL_VERSION_1_0 */
 
 #define GL_DEPTH_BUFFER_BIT 0x00000100
 #define GL_STENCIL_BUFFER_BIT 0x00000400
@@ -217,7 +217,6 @@ typedef void (APIENTRY *GLDEBUGPROC)(GLenum source,GLenum type,GLuint id,GLenum 
 #define GL_BLEND_SRC 0x0BE1
 #define GL_BLEND 0x0BE2
 #define GL_LOGIC_OP_MODE 0x0BF0
-#define GL_COLOR_LOGIC_OP 0x0BF2
 #define GL_DRAW_BUFFER 0x0C01
 #define GL_READ_BUFFER 0x0C02
 #define GL_SCISSOR_BOX 0x0C10
@@ -245,21 +244,9 @@ typedef void (APIENTRY *GLDEBUGPROC)(GLenum source,GLenum type,GLuint id,GLenum 
 #define GL_SUBPIXEL_BITS 0x0D50
 #define GL_TEXTURE_1D 0x0DE0
 #define GL_TEXTURE_2D 0x0DE1
-#define GL_POLYGON_OFFSET_UNITS 0x2A00
-#define GL_POLYGON_OFFSET_POINT 0x2A01
-#define GL_POLYGON_OFFSET_LINE 0x2A02
-#define GL_POLYGON_OFFSET_FILL 0x8037
-#define GL_POLYGON_OFFSET_FACTOR 0x8038
-#define GL_TEXTURE_BINDING_1D 0x8068
-#define GL_TEXTURE_BINDING_2D 0x8069
 #define GL_TEXTURE_WIDTH 0x1000
 #define GL_TEXTURE_HEIGHT 0x1001
-#define GL_TEXTURE_INTERNAL_FORMAT 0x1003
 #define GL_TEXTURE_BORDER_COLOR 0x1004
-#define GL_TEXTURE_RED_SIZE 0x805C
-#define GL_TEXTURE_GREEN_SIZE 0x805D
-#define GL_TEXTURE_BLUE_SIZE 0x805E
-#define GL_TEXTURE_ALPHA_SIZE 0x805F
 #define GL_DONT_CARE 0x1100
 #define GL_FASTEST 0x1101
 #define GL_NICEST 0x1102
@@ -270,7 +257,6 @@ typedef void (APIENTRY *GLDEBUGPROC)(GLenum source,GLenum type,GLuint id,GLenum 
 #define GL_INT 0x1404
 #define GL_UNSIGNED_INT 0x1405
 #define GL_FLOAT 0x1406
-#define GL_DOUBLE 0x140A
 #define GL_CLEAR 0x1500
 #define GL_AND 0x1501
 #define GL_AND_REVERSE 0x1502
@@ -320,9 +306,26 @@ typedef void (APIENTRY *GLDEBUGPROC)(GLenum source,GLenum type,GLuint id,GLenum 
 #define GL_TEXTURE_MIN_FILTER 0x2801
 #define GL_TEXTURE_WRAP_S 0x2802
 #define GL_TEXTURE_WRAP_T 0x2803
+#define GL_REPEAT 0x2901
+
+/* GL_VERSION_1_1 */
+
+#define GL_COLOR_LOGIC_OP 0x0BF2
+#define GL_POLYGON_OFFSET_UNITS 0x2A00
+#define GL_POLYGON_OFFSET_POINT 0x2A01
+#define GL_POLYGON_OFFSET_LINE 0x2A02
+#define GL_POLYGON_OFFSET_FILL 0x8037
+#define GL_POLYGON_OFFSET_FACTOR 0x8038
+#define GL_TEXTURE_BINDING_1D 0x8068
+#define GL_TEXTURE_BINDING_2D 0x8069
+#define GL_TEXTURE_INTERNAL_FORMAT 0x1003
+#define GL_TEXTURE_RED_SIZE 0x805C
+#define GL_TEXTURE_GREEN_SIZE 0x805D
+#define GL_TEXTURE_BLUE_SIZE 0x805E
+#define GL_TEXTURE_ALPHA_SIZE 0x805F
+#define GL_DOUBLE 0x140A
 #define GL_PROXY_TEXTURE_1D 0x8063
 #define GL_PROXY_TEXTURE_2D 0x8064
-#define GL_REPEAT 0x2901
 #define GL_R3_G3_B2 0x2A10
 #define GL_RGB4 0x804F
 #define GL_RGB5 0x8050
@@ -457,15 +460,17 @@ typedef void (APIENTRY *GLDEBUGPROC)(GLenum source,GLenum type,GLuint id,GLenum 
 #define GL_TEXTURE_DEPTH_SIZE 0x884A
 #define GL_TEXTURE_COMPARE_MODE 0x884C
 #define GL_TEXTURE_COMPARE_FUNC 0x884D
-#define GL_FUNC_ADD 0x8006
-#define GL_FUNC_SUBTRACT 0x800A
-#define GL_FUNC_REVERSE_SUBTRACT 0x800B
-#define GL_MIN 0x8007
-#define GL_MAX 0x8008
+#define GL_BLEND_COLOR 0x8005
+#define GL_BLEND_EQUATION 0x8009
 #define GL_CONSTANT_COLOR 0x8001
 #define GL_ONE_MINUS_CONSTANT_COLOR 0x8002
 #define GL_CONSTANT_ALPHA 0x8003
 #define GL_ONE_MINUS_CONSTANT_ALPHA 0x8004
+#define GL_FUNC_ADD 0x8006
+#define GL_FUNC_REVERSE_SUBTRACT 0x800B
+#define GL_FUNC_SUBTRACT 0x800A
+#define GL_MIN 0x8007
+#define GL_MAX 0x8008
 
 /* GL_VERSION_1_5 */
 
@@ -1553,6 +1558,35 @@ typedef void (APIENTRY *GLDEBUGPROC)(GLenum source,GLenum type,GLuint id,GLenum 
 #define GL_NONE 0
 #define GL_CONTEXT_RELEASE_BEHAVIOR_FLUSH 0x82FC
 
+/* GL_VERSION_4_6 */
+
+#define GL_CONTEXT_RELEASE_BEHAVIOR 0x82FB
+#define GL_NONE 0
+#define GL_CONTEXT_RELEASE_BEHAVIOR_FLUSH 0x82FC
+#define GL_SHADER_BINARY_FORMAT_SPIR_V 0x9551
+#define GL_SPIR_V_BINARY 0x9552
+#define GL_PARAMETER_BUFFER 0x80EE
+#define GL_PARAMETER_BUFFER_BINDING 0x80EF
+#define GL_CONTEXT_FLAG_NO_ERROR_BIT 0x00000008
+#define GL_VERTICES_SUBMITTED 0x82EE
+#define GL_PRIMITIVES_SUBMITTED 0x82EF
+#define GL_VERTEX_SHADER_INVOCATIONS 0x82F0
+#define GL_TESS_CONTROL_SHADER_PATCHES 0x82F1
+#define GL_TESS_EVALUATION_SHADER_INVOCATIONS 0x82F2
+#define GL_GEOMETRY_SHADER_INVOCATIONS 0x887F
+#define GL_GEOMETRY_SHADER_PRIMITIVES_EMITTED 0x82F3
+#define GL_FRAGMENT_SHADER_INVOCATIONS 0x82F4
+#define GL_COMPUTE_SHADER_INVOCATIONS 0x82F5
+#define GL_CLIPPING_INPUT_PRIMITIVES 0x82F6
+#define GL_CLIPPING_OUTPUT_PRIMITIVES 0x82F7
+#define GL_POLYGON_OFFSET_CLAMP 0x8E1B
+#define GL_SPIR_V_EXTENSIONS 0x9553
+#define GL_NUM_SPIR_V_EXTENSIONS 0x9554
+#define GL_TEXTURE_MAX_ANISOTROPY 0x84FE
+#define GL_MAX_TEXTURE_MAX_ANISOTROPY 0x84FF
+#define GL_TRANSFORM_FEEDBACK_OVERFLOW 0x82EC
+#define GL_TRANSFORM_FEEDBACK_STREAM_OVERFLOW 0x82ED
+
 /* GL_ARB_robustness */
 
 #define GL_NO_ERROR 0
@@ -1575,11 +1609,6 @@ typedef void (APIENTRY *GLDEBUGPROC)(GLenum source,GLenum type,GLuint id,GLenum 
 #define GL_MAX_COMPUTE_VARIABLE_GROUP_SIZE_ARB 0x9345
 #define GL_MAX_COMPUTE_FIXED_GROUP_SIZE_ARB 0x91BF
 
-/* GL_ARB_indirect_parameters */
-
-#define GL_PARAMETER_BUFFER_ARB 0x80EE
-#define GL_PARAMETER_BUFFER_BINDING_ARB 0x80EF
-
 /* GL_ARB_seamless_cubemap_per_texture */
 
 #define GL_TEXTURE_CUBE_MAP_SEAMLESS 0x884F
@@ -1598,29 +1627,16 @@ typedef void (APIENTRY *GLDEBUGPROC)(GLenum source,GLenum type,GLuint id,GLenum 
 #define GL_MAX_SPARSE_ARRAY_TEXTURE_LAYERS_ARB 0x919A
 #define GL_SPARSE_TEXTURE_FULL_ARRAY_CUBE_MIPMAPS_ARB 0x91A9
 
-/* GL_ARB_pipeline_statistics_query */
-
-#define GL_VERTICES_SUBMITTED_ARB 0x82EE
-#define GL_PRIMITIVES_SUBMITTED_ARB 0x82EF
-#define GL_VERTEX_SHADER_INVOCATIONS_ARB 0x82F0
-#define GL_TESS_CONTROL_SHADER_PATCHES_ARB 0x82F1
-#define GL_TESS_EVALUATION_SHADER_INVOCATIONS_ARB 0x82F2
-#define GL_GEOMETRY_SHADER_INVOCATIONS 0x887F
-#define GL_GEOMETRY_SHADER_PRIMITIVES_EMITTED_ARB 0x82F3
-#define GL_FRAGMENT_SHADER_INVOCATIONS_ARB 0x82F4
-#define GL_COMPUTE_SHADER_INVOCATIONS_ARB 0x82F5
-#define GL_CLIPPING_INPUT_PRIMITIVES_ARB 0x82F6
-#define GL_CLIPPING_OUTPUT_PRIMITIVES_ARB 0x82F7
-
 /* GL_ARB_sparse_buffer */
 
 #define GL_SPARSE_STORAGE_BIT_ARB 0x0400
 #define GL_SPARSE_BUFFER_PAGE_SIZE_ARB 0x82F8
 
-/* GL_ARB_transform_feedback_overflow_query */
+/* GL_ARB_ES3_2_compatibility */
 
-#define GL_TRANSFORM_FEEDBACK_OVERFLOW_ARB 0x82EC
-#define GL_TRANSFORM_FEEDBACK_STREAM_OVERFLOW_ARB 0x82ED
+#define GL_PRIMITIVE_BOUNDING_BOX_ARB 0x92BE
+#define GL_MULTISAMPLE_LINE_WIDTH_RANGE_ARB 0x9381
+#define GL_MULTISAMPLE_LINE_WIDTH_GRANULARITY_ARB 0x9382
 
 /* GL_ATI_texture_mirror_once */
 
@@ -1752,11 +1768,12 @@ typedef void (APIENTRY *GLDEBUGPROC)(GLenum source,GLenum type,GLuint id,GLenum 
 
 #define GL_BLEND_ADVANCED_COHERENT_KHR 0x9285
 
-/* GL_KHR_no_error */
-
-#define GL_CONTEXT_FLAG_NO_ERROR_BIT_KHR 0x00000008
-
 /* Function prototypes */
+
+/* GL_ARB_ES3_2_compatibility */
+
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglPrimitiveBoundingBoxARB)(GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat);
+#define glPrimitiveBoundingBoxARB flextglPrimitiveBoundingBoxARB
 
 /* GL_ARB_bindless_texture */
 
@@ -1797,13 +1814,6 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglVertexAttribL1ui64vARB)(GLuint, const
 
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDispatchComputeGroupSizeARB)(GLuint, GLuint, GLuint, GLuint, GLuint, GLuint);
 #define glDispatchComputeGroupSizeARB flextglDispatchComputeGroupSizeARB
-
-/* GL_ARB_indirect_parameters */
-
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglMultiDrawArraysIndirectCountARB)(GLenum, GLintptr, GLintptr, GLsizei, GLsizei);
-#define glMultiDrawArraysIndirectCountARB flextglMultiDrawArraysIndirectCountARB
-GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglMultiDrawElementsIndirectCountARB)(GLenum, GLenum, GLintptr, GLintptr, GLsizei, GLsizei);
-#define glMultiDrawElementsIndirectCountARB flextglMultiDrawElementsIndirectCountARB
 
 /* GL_ARB_robustness */
 
@@ -3675,6 +3685,17 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglVertexArrayVertexBuffer)(GLuint, GLui
 #define glVertexArrayVertexBuffer flextglVertexArrayVertexBuffer
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglVertexArrayVertexBuffers)(GLuint, GLuint, GLsizei, const GLuint *, const GLintptr *, const GLsizei *);
 #define glVertexArrayVertexBuffers flextglVertexArrayVertexBuffers
+
+/* GL_VERSION_4_6 */
+
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglMultiDrawArraysIndirectCount)(GLenum, const void *, GLintptr, GLsizei, GLsizei);
+#define glMultiDrawArraysIndirectCount flextglMultiDrawArraysIndirectCount
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglMultiDrawElementsIndirectCount)(GLenum, GLenum, const void *, GLintptr, GLsizei, GLsizei);
+#define glMultiDrawElementsIndirectCount flextglMultiDrawElementsIndirectCount
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglPolygonOffsetClamp)(GLfloat, GLfloat, GLfloat);
+#define glPolygonOffsetClamp flextglPolygonOffsetClamp
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglSpecializeShader)(GLuint, const GLchar *, GLuint, const GLuint *, const GLuint *);
+#define glSpecializeShader flextglSpecializeShader
 
 #endif
 

@@ -104,22 +104,22 @@ class MAGNUM_EXPORT PrimitiveQuery: public AbstractQuery {
              * Transform feedback overflow. When used with @ref begin(UnsignedInt),
              * the index must be `0`. Use @ref result<bool>() to retrieve the
              * result.
-             * @requires_extension Extension @extension{ARB,transform_feedback_overflow_query}
+             * @requires_gl46 Extension @extension{ARB,transform_feedback_overflow_query}
              * @requires_gl Transform feedback overflow query is not available
              *      in OpenGL ES or WebGL.
              */
-            TransformFeedbackOverflow = GL_TRANSFORM_FEEDBACK_OVERFLOW_ARB,
+            TransformFeedbackOverflow = GL_TRANSFORM_FEEDBACK_OVERFLOW,
 
             /**
              * Transform feedback stream overflow. When used with
              * @ref begin(UnsignedInt), the index must be lower than
              * @ref TransformFeedback::maxVertexStreams(). Use @ref result<bool>()
              * to retrieve the result.
-             * @requires_extension Extension @extension{ARB,transform_feedback_overflow_query}
+             * @requires_gl46 Extension @extension{ARB,transform_feedback_overflow_query}
              * @requires_gl Transform feedback overflow query is not available
              *      in OpenGL ES or WebGL.
              */
-            TransformFeedbackStreamOverflow = GL_TRANSFORM_FEEDBACK_STREAM_OVERFLOW_ARB
+            TransformFeedbackStreamOverflow = GL_TRANSFORM_FEEDBACK_STREAM_OVERFLOW
             #endif
         };
 

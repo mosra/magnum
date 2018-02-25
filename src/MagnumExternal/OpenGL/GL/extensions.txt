@@ -1,8 +1,9 @@
 # The following output is taken from `magnum-info` with removed `GL_` prefixes.
 # Only vendor extensions are needed, everything else is pulled in with GL 4.5.
 
-version 4.5 core
+version 4.6 core
 
+extension AMD_transform_feedback3_lines_triangles optional
 extension AMD_vertex_shader_layer               optional
 extension AMD_shader_trinary_minmax             optional
 extension ARB_robustness                        optional
@@ -11,14 +12,10 @@ extension ARB_robustness_application_isolation  optional
 extension ARB_robustness_share_group_isolation  optional
 extension ARB_bindless_texture                  optional
 extension ARB_compute_variable_group_size       optional
-extension ARB_indirect_parameters               optional
 extension ARB_seamless_cubemap_per_texture      optional
-extension ARB_shader_draw_parameters            optional
-extension ARB_shader_group_vote                 optional
 extension ARB_sparse_texture                    optional
-extension ARB_pipeline_statistics_query         optional
 extension ARB_sparse_buffer                     optional
-extension ARB_transform_feedback_overflow_query optional
+extension ARB_ES3_2_compatibility               optional
 extension ATI_texture_mirror_once               optional
 extension EXT_texture_filter_anisotropic        optional
 extension EXT_texture_compression_s3tc          optional
@@ -33,4 +30,3 @@ extension KHR_texture_compression_astc_ldr      optional
 extension KHR_texture_compression_astc_hdr      optional
 extension KHR_blend_equation_advanced           optional
 extension KHR_blend_equation_advanced_coherent  optional
-extension KHR_no_error                          optional

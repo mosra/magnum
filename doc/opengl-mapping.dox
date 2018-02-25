@@ -294,7 +294,7 @@ OpenGL function                         | Matching API
 @fn_gl{MemoryBarrier}, \n `glMemoryBarrierByRegion()` | @ref Renderer::setMemoryBarrier(), \n @ref Renderer::setMemoryBarrierByRegion()
 @fn_gl{MinSampleShading}                | |
 @fn_gl{MultiDrawArrays}, \n @fn_gl{MultiDrawElements}, \n @fn_gl{MultiDrawElementsBaseVertex} | @ref MeshView::draw(AbstractShaderProgram&, std::initializer_list<std::reference_wrapper<MeshView>>)
-@fn_gl_extension{MultiDrawArraysIndirectCount,ARB,indirect_parameters}, \n @fn_gl_extension{MultiDrawElementsIndirectCount,ARB,indirect_parameters} | |
+@fn_gl{MultiDrawArraysIndirectCount}, \n @fn_gl{MultiDrawElementsIndirectCount} | |
 
 @subsection opengl-mapping-functions-o O
 
@@ -317,7 +317,8 @@ OpenGL function                         | Matching API
 @fn_gl{PointSize}                       | @ref Renderer::setPointSize()
 @fn_gl{PolygonMode}                     | @ref Renderer::setPolygonMode()
 @fn_gl{PolygonOffset}                   | @ref Renderer::setPolygonOffset()
-@fn_gl_extension{PrimitiveBoundingBox,EXT,primitive_bounding_box} | |
+@fn_gl{PolygonOffsetClamp}              | |
+@fn_gl_extension{PrimitiveBoundingBox,EXT,primitive_bounding_box}, \n @fn_gl_extension{PrimitiveBoundingBox,ARB,primitive_bounding_box} | |
 @fn_gl{PrimitiveRestartIndex}           | |
 @fn_gl{ProgramBinary}                   | |
 @fn_gl{ProgramParameter}                | @ref AbstractShaderProgram::setRetrievableBinary(), \n @ref AbstractShaderProgram::setSeparable()
@@ -360,6 +361,7 @@ OpenGL function                         | Matching API
 @fn_gl{ShaderBinary}                    | |
 @fn_gl{ShaderSource}                    | @ref Shader::addFile(), \n @ref Shader::addSource()
 @fn_gl{ShaderStorageBlockBinding}       | |
+@fn_gl{SpecializeShader}                | |
 @fn_gl{StencilFunc}, \n @fn_gl{StencilFuncSeparate} | @ref Renderer::setStencilFunction()
 @fn_gl{StencilMask}, \n @fn_gl{StencilMaskSeparate} | @ref Renderer::setStencilMask()
 @fn_gl{StencilOp}, \n @fn_gl{StencilOpSeparate} | @ref Renderer::setStencilOperation()
@@ -513,8 +515,8 @@ glGet() parameter                       | Matching API
 @def_gl{MAX_TESS_GEN_LEVEL}             | |
 @def_gl{MAX_TESS_PATCH_COMPONENTS}      | |
 @def_gl{MAX_TEXTURE_BUFFER_SIZE}        | @ref BufferTexture::maxSize()
-@def_gl_extension{MAX_TEXTURE_MAX_ANISOTROPY,EXT,texture_filter_anisotropic} | @ref Sampler::maxMaxAnisotropy()
 @def_gl{MAX_TEXTURE_LOD_BIAS}           | @ref AbstractTexture::maxLodBias()
+@def_gl{MAX_TEXTURE_MAX_ANISOTROPY}     | @ref Sampler::maxMaxAnisotropy()
 @def_gl{MAX_TRANSFORM_FEEDBACK_BUFFERS} | @ref TransformFeedback::maxBuffers()
 @def_gl{MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS} | @ref TransformFeedback::maxInterleavedComponents()
 @def_gl{MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS} | @ref TransformFeedback::maxSeparateAttributes()
@@ -537,6 +539,7 @@ glGet() parameter                       | Matching API
 @def_gl{NUM_EXTENSIONS}                 | @ref Context::supportedExtensions()
 @def_gl{NUM_PROGRAM_BINARY_FORMATS}, \n @def_gl{PROGRAM_BINARY_FORMATS} | |
 @def_gl{NUM_SHADER_BINARY_FORMATS}, \n @def_gl{SHADER_BINARY_FORMATS} | |
+@def_gl{NUM_SPIR_V_EXTENSIONS}          | |
 @def_gl{PACK_ALIGNMENT}, \n @def_gl{PACK_IMAGE_HEIGHT}, \n @def_gl{PACK_ROW_LENGTH}, \n @def_gl{PACK_SKIP_IMAGES}, \n @def_gl{PACK_SKIP_PIXELS}, \n @def_gl{PACK_SKIP_ROWS}, \n @def_gl{PACK_SWAP_BYTES}, \n @def_gl{UNPACK_ALIGNMENT}, \n @def_gl{UNPACK_IMAGE_HEIGHT}, \n @def_gl{UNPACK_ROW_LENGTH}, \n @def_gl{UNPACK_SKIP_IMAGES}, \n @def_gl{UNPACK_SKIP_PIXELS}, \n @def_gl{UNPACK_SKIP_ROWS}, \n @def_gl{UNPACK_SWAP_BYTES} | not queryable, @ref PixelStorage setters only
 @def_gl{POINT_FADE_THRESHOLD_SIZE}      | |
 @def_gl{POINT_SIZE_GRANULARITY}, \n @def_gl{POINT_SIZE_RANGE} | |
