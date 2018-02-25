@@ -626,6 +626,7 @@ bool Context::tryCreate() {
         Version::GL430,
         Version::GL440,
         Version::GL450,
+        Version::GL460,
         #else
         Version::GLES200,
         Version::GLES300,

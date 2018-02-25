@@ -401,6 +401,13 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     #endif
 
     /* Anisotropic filter implementation */
+    #ifndef MAGNUM_TARGET_GLES
+    if(context.isExtensionSupported<Extensions::GL::EXT::texture_filter_anisotropic>()) {
+        extensions.emplace_back(Extensions::GL::ARB::texture_filter_anisotropic::string());
+
+        setMaxAnisotropyImplementation = &AbstractTexture::setMaxAnisotropyImplementationArb;
+    } else
+    #endif
     if(context.isExtensionSupported<Extensions::GL::EXT::texture_filter_anisotropic>()) {
         extensions.emplace_back(Extensions::GL::EXT::texture_filter_anisotropic::string());
 

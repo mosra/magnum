@@ -265,7 +265,7 @@ GLSL 4.60                                   | done
 @extension{ARB,gl_spirv}                    | |
 @extension{ARB,polygon_offset_clamp}        | |
 @extension{ARB,spirv_extensions}            | |
-@extension{ARB,texture_filter_anisotropic}  | |
+@extension{ARB,texture_filter_anisotropic}  | done
 @extension{KHR,no_error}                    | done
 
 @subsection opengl-support-extensions ARB / Khronos OpenGL extensions

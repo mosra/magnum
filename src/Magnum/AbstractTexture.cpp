@@ -1181,6 +1181,12 @@ void AbstractTexture::parameterIImplementationDSAEXT(GLenum parameter, const GLi
 
 void AbstractTexture::setMaxAnisotropyImplementationNoOp(GLfloat) {}
 
+#ifndef MAGNUM_TARGET_GLES
+void AbstractTexture::setMaxAnisotropyImplementationArb(GLfloat anisotropy) {
+    (this->*Context::current().state().texture->parameterfImplementation)(GL_TEXTURE_MAX_ANISOTROPY, anisotropy);
+}
+#endif
+
 void AbstractTexture::setMaxAnisotropyImplementationExt(GLfloat anisotropy) {
     (this->*Context::current().state().texture->parameterfImplementation)(GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy);
 }
