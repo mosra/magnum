@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Math::Vector3
+ * @brief Class @ref Magnum::Math::Vector3, function @ref Magnum::Math::cross()
  */
 
 #include "Magnum/Math/Vector2.h"

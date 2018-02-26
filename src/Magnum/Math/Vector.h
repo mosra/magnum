@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Math::Vector
+ * @brief Class @ref Magnum::Math::Vector, function @ref Magnum::Math::dot(), @ref Magnum::Math::angle()
  */
 
 #include <cmath>

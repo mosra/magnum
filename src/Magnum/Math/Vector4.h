@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class Magnum::Math::Vector4
+ * @brief Class @ref Magnum::Math::Vector4
  */
 
 #include "Magnum/Math/Vector3.h"

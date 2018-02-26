@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Math::Complex
+ * @brief Class @ref Magnum::Math::Complex, function @ref Magnum::Math::dot(), @ref Magnum::math::angle()
  */
 
 #include <Corrade/Utility/Assert.h>

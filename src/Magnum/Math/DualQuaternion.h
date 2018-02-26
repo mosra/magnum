@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Math::DualQuaternion
+ * @brief Class @ref Magnum::Math::DualQuaternion, function @ref Magnum::Math::sclerp()
  */
 
 #include <cmath>

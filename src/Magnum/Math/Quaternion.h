@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Math::Quaternion
+ * @brief Class @ref Magnum::Math::Quaternion, function @ref Magnum::Math::dot(), @ref Magnum::Math::angle(), @ref Magnum::Math::lerp(), @ref Magnum::Math::slerp()
  */
 
 #include <cmath>
@@ -88,7 +88,7 @@ Expects that both quaternions are normalized. @f[
     q_{LERP} = \frac{(1 - t) q_A + t q_B}{|(1 - t) q_A + t q_B|}
 @f]
 @see @ref Quaternion::isNormalized(), @ref slerp(const Quaternion<T>&, const Quaternion<T>&, T),
-    @ref lerp(const T&, const T&, U)
+    @ref lerp(const T&, const T&, U), @ref sclerp()
 */
 template<class T> inline Quaternion<T> lerp(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, T t) {
     CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
@@ -108,7 +108,8 @@ or one is a negation of the other, returns the first argument. @f[
     ~ ~ ~ ~ ~ ~ ~
     \theta = acos \left( \frac{q_A \cdot q_B}{|q_A| \cdot |q_B|} \right) = acos(q_A \cdot q_B)
 @f]
-@see @ref Quaternion::isNormalized(), @ref lerp(const Quaternion<T>&, const Quaternion<T>&, T)
+@see @ref Quaternion::isNormalized(), @ref lerp(const Quaternion<T>&, const Quaternion<T>&, T),
+    @ref sclerp()
  */
 template<class T> inline Quaternion<T> slerp(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, T t) {
     CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
