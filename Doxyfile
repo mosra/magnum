@@ -917,7 +917,8 @@ EXCLUDE_SYMBOLS        = Magnum::*Implementation \
 # command).
 
 EXAMPLE_PATH           = doc/snippets/ \
-                         ../magnum-examples/src/
+                         ../magnum-examples/src/ \
+                         ../magnum-integration/doc/snippets/ \
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp and
