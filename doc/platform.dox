@@ -64,38 +64,7 @@ blue color is shown in the following code listing.
     `base` branch of [Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap)
     repository.
 
-@code{.cpp}
-#include <Magnum/DefaultFramebuffer.h>
-#include <Magnum/Renderer.h>
-#include <Magnum/Math/Color.h>
-#include <Magnum/Platform/Sdl2Application.h>
-
-using namespace Magnum;
-
-class MyApplication: public Platform::Application {
-    public:
-        MyApplication(const Arguments& arguments);
-
-    private:
-        void drawEvent() override;
-};
-
-MyApplication::MyApplication(const Arguments& arguments): Platform::Application(arguments) {
-    // Set clear color to dark blue
-    Renderer::setClearColor({0.0f, 0.0f, 0.4f});
-}
-
-void MyApplication::drawEvent() {
-    // Clear the window
-    defaultFramebuffer.clear(FramebufferClear::Color);
-
-    // The context is double-buffered, swap buffers
-    swapBuffers();
-}
-
-// main() function implementation
-MAGNUM_APPLICATION_MAIN(MyApplication)
-@endcode
+@snippet MagnumPlatform.cpp windowed
 
 @subsection platform-windowed-viewport Responding to viewport size changes
 
@@ -105,20 +74,7 @@ example by resizing the default framebuffer, you need to reimplement
 @ref Platform::Sdl2Application::viewportEvent() "viewportEvent()" function and
 pass the new size to the framebuffer:
 
-@code{.cpp}
-class MyApplication: public Platform::Application {
-    // ...
-
-    private:
-        void viewportEvent(const Vector2i& size) override;
-};
-
-// ...
-
-void MyApplication::viewportEvent(const Vector2i& size) {
-    defaultFramebuffer.setViewport({{}, size});
-}
-@endcode
+@snippet MagnumPlatform.cpp size
 
 @section platform-windowless Windowless applications
 
@@ -127,13 +83,13 @@ performing tasks on GPU. There is not yet any platform-independent toolkit
 which could handle this in portable way, thus you have to use platform-specific
 ones. Magnum provides windowless applications for X11-based Unix, macOS and
 Windows. To make things simple, as an example we will use only
-@ref Platform::WindowlessGlxApplication, see link for bootstrap application
+@ref Platform::WindowlessEglApplication, see link for bootstrap application
 below for fully portable example.
 
-You need to implement just @ref Platform::WindowlessGlxApplication::exec() "exec()"
+You need to implement just @ref Platform::WindowlessEglApplication::exec() "exec()"
 function. The class can be then used directly in @cpp main() @ce, but again,
 for convenience and portability it's better to use
-@ref MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN() macro.
+@ref MAGNUM_WINDOWLESSEGLAPPLICATION_MAIN() macro.
 
 Similarly as with windowed applications, to simplify the porting, the library
 provides @cpp Platform::WindowlessApplication @ce typedef and
@@ -153,32 +109,7 @@ renderer string and exits is in the following code listing.
     is available in `windowless` branch of [Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap)
     repository.
 
-@code{.cpp}
-#include <Magnum/Context.h>
-#include <Magnum/Platform/WindowlessGlxApplication.h>
-
-using namespace Magnum;
-
-class MyApplication: public Platform::WindowlessApplication {
-    public:
-        MyApplication(const Arguments& arguments);
-
-        int exec() override;
-};
-
-MyApplication::MyApplication(const Arguments& arguments): Platform::WindowlessApplication(arguments) {}
-
-int MyApplication::exec() {
-    Debug() << "OpenGL version:" << Context::current()->versionString();
-    Debug() << "OpenGL renderer:" << Context::current()->rendererString();
-
-    // Exit with success
-    return 0;
-}
-
-// main() function implementation
-MAGNUM_WINDOWLESSAPPLICATION_MAIN(MyApplication)
-@endcode
+@snippet MagnumPlatform-windowless.cpp windowless
 
 @section platform-compilation Compilation with CMake
 
@@ -210,32 +141,14 @@ window size 800x600 pixels). If you want something else, you can pass
 application constructor. Using method chaining it can be done conveniently like
 this:
 
-@code{.cpp}
-MyApplication::MyApplication(int& argc, char** argv):
-    Platform::Application(argc, argv, Configuration()
-        .setTitle("My Application")
-        .setSize({800, 600}))
-{
-    // ...
-}
-@endcode
+@snippet MagnumPlatform.cpp configuration
 
 However, sometimes you would need to configure the application based on some
 configuration file or system introspection. In that case you can pass `nullptr`
 instead of @ref Platform::Sdl2Application::Configuration "Configuration"
 instance and then specify it later with @ref Platform::Sdl2Application::createContext() "createContext()":
 
-@code{.cpp}
-MyApplication::MyApplication(int& argc, char** argv): Platform::Application(argc, argv, nullptr) {
-    // ...
-
-    createContext(Configuration()
-        .setTitle("My Application")
-        .setSize(size));
-
-    // ...
-}
-@endcode
+@snippet MagnumPlatform.cpp createcontext
 
 If the context creation in constructor or @ref Platform::Sdl2Application::createContext() "createContext()"
 fails, the application exits. However, it is also possible to negotiate the
@@ -244,20 +157,7 @@ The only difference is that this function returns `false` instead of exiting.
 You can for example try enabling MSAA and if the context creation fails, fall
 back to no-AA rendering:
 
-@code{.cpp}
-MyApplication::MyApplication(int& argc, char** argv): Platform::Application(argc, argv, nullptr) {
-    // ...
-
-    Configuration conf;
-    conf.setTitle("My Application")
-        .setSampleCount(16);
-
-    if(!tryCreateContext(conf))
-        createContext(conf.setSampleCount(0));
-
-    // ...
-}
-@endcode
+@snippet MagnumPlatform.cpp trycreatecontext
 
 @section platform-custom Using custom platform toolkits
 
@@ -272,23 +172,11 @@ code listing.
 @note Fully contained application using with manual Magnum initialization on
     top of Qt toolkit is available in `base-qt` branch of
     [Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap) repository.
+@note
+    There's also @ref examples-triangle-plain-glfw an example showing usage of
+    plain GLFW to render a basic triangle.
 
-@code{.cpp}
-int main(int argc, char** argv) {
-    // Create OpenGL context ...
-
-    {
-        // Initialize Magnum
-        Platform::Context context;
-
-        // Open window, enter main loop ...
-
-        // Magnum context gets destroyed
-    }
-
-    // Delete OpenGL context ...
-}
-@endcode
+@snippet MagnumPlatform-custom.cpp custom
 
 @attention Currently Magnum is limited to single OpenGL context, which must be
     always set as current.
@@ -340,28 +228,7 @@ windowless application header is included.
 @attention With this approach it is possible to switch between different GL
     contexts, but make sure that Magnum is used only with its OpenGL context.
 
-@code{.cpp}
-int main(int argc, char** argv) {
-    Platform::WindowlessGLContext glContext{{}};
-    glContext.makeCurrent();
-    Platform::Context context{argc, argv};
-
-    // Your GL code ...
-
-    // Make another context current
-    eglMakeCurrent();
-
-    // Someone else's code ...
-
-    // Make Magnum context current again
-    glContext.makeCurrent();
-
-    // Your GL code again ...
-
-    // Magnum context gets destroyed
-    // Windowless GL context gets destroyed
-}
-@endcode
+@snippet MagnumPlatform-windowless-custom.cpp custom
 
 The main purpose of windowless contexts is threaded OpenGL, used for example
 for background data processing. The workflow is to create the windowless
@@ -373,21 +240,6 @@ current (for example for the main application rendering). See also
 @note Context creation is not thread safe on all platforms, that's why it still
     has to be done on the main thread.
 
-@code{.cpp}
-int main() {
-    Platform::WindowlessGLContext glContext{{}};
-
-    std::thread worker{[&glContext]{
-        glContext.makeCurrent();
-        Platform::Context context{0, nullptr};
-
-        // Use Magnum here ...
-    }};
-
-    // Independent main application code here ...
-
-    worker.join();
-}
-@endcode
+@snippet MagnumPlatform-windowless-thread.cpp thread
 */
 }

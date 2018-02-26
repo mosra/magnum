@@ -55,14 +55,39 @@ if(WITH_SDL2APPLICATION)
     add_executable(getting-started-blue getting-started-blue.cpp)
     target_link_libraries(getting-started PRIVATE MagnumSdl2Application)
     target_link_libraries(getting-started-blue PRIVATE MagnumSdl2Application)
+
+    add_library(snippets-MagnumPlatform STATIC MagnumPlatform.cpp)
+    target_link_libraries(snippets-MagnumPlatform PRIVATE MagnumSdl2Application)
+
+    set_target_properties(
+        getting-started
+        getting-started-blue
+        snippets-MagnumPlatform
+        PROPERTIES FOLDER "Magnum/doc/snippets")
     # Otherwise it's not linked correctly. I have no idea why, but whatever.
     if(CMAKE_VERSION VERSION_LESS 3.0)
         find_package(SDL2 REQUIRED)
         target_link_libraries(getting-started PRIVATE SDL2::SDL2)
         target_link_libraries(getting-started-blue PRIVATE SDL2::SDL2)
+        target_link_libraries(snippets-MagnumPlatform PRIVATE SDL2::SDL2)
     endif()
+endif()
+
+if(WITH_WINDOWLESSEGLAPPLICATION)
+    add_library(snippets-MagnumPlatform-custom STATIC MagnumPlatform-custom.cpp)
+    add_library(snippets-MagnumPlatform-windowless STATIC MagnumPlatform-windowless.cpp)
+    add_library(snippets-MagnumPlatform-windowless-custom STATIC MagnumPlatform-windowless-custom.cpp)
+    add_library(snippets-MagnumPlatform-windowless-thread STATIC MagnumPlatform-windowless-thread.cpp)
+
+    target_link_libraries(snippets-MagnumPlatform-custom PRIVATE MagnumWindowlessEglApplication)
+    target_link_libraries(snippets-MagnumPlatform-windowless PRIVATE MagnumWindowlessEglApplication)
+    target_link_libraries(snippets-MagnumPlatform-windowless-custom PRIVATE MagnumWindowlessEglApplication)
+    target_link_libraries(snippets-MagnumPlatform-windowless-thread PRIVATE MagnumWindowlessEglApplication)
+
     set_target_properties(
-        getting-started
-        getting-started-blue
+        snippets-MagnumPlatform-windowless
+        snippets-MagnumPlatform-windowless-custom
+        snippets-MagnumPlatform-windowless-thread
+        snippets-MagnumPlatform-custom
         PROPERTIES FOLDER "Magnum/doc/snippets")
 endif()
