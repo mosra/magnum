@@ -148,7 +148,7 @@ produces the following:
 @al_extension{EXT,float32}, @alc_extension{SOFT,HRTF}
 </blockquote>
 
-@subsubsection coding-style-documentation-commands-ref_gl Links to related OpenGL, OpenAL functions and definitions
+@subsubsection coding-style-documentation-commands-ref Links to related OpenGL, OpenAL functions and definitions
 
 If an function touches OpenGL, related OpenGL functions should be documented
 in @c \@see block with @c \@fn_gl command. If only specific definition is used

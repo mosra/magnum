@@ -16,6 +16,7 @@
 @page changelog-extras Extras changelog
 @page changelog-examples Examples changelog
 
+@page developers Developers guide
 @page coding-style Coding style
 @page debugoperators Debug output operators for custom types
 @page configurationvalues Configuration value parsers and writers for custom types

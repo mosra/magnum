@@ -151,6 +151,11 @@ See also:
     @ref Corrade::Containers::Array / @ref Corrade::Containers::ArrayView
     instead
 
+@subsection changelog-latest-docs Documentation
+
+-   A new @ref developers page containing step-by-step checklists for
+    maintainers and core developers
+
 @section changelog-2018-02 2018.02
 
 Released 2018-02-15, tagged as

@@ -1,0 +1,759 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018
+              Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+namespace Magnum {
+/** @page developers Developers guide
+@brief Checklists for developing new things in Magnum itself
+
+@tableofcontents
+
+This guide is meant mainly for core Magnum developers to avoid forgetting about
+things. If you are contributing a pull-request, you can use these checklists as
+a guide and save the maintainers a bit of work --- but you are not strictly
+required to follow them to the point.
+
+@section developers-library Checklist for adding / removing a library
+
+1.  Add a `WITH_LIBRARYNAME` CMake option to:
+    -   root `CMakeLists.txt` (if it has some inter-library dependencies,
+        update the others / convert them to @cmake cmake_dependent_option() @ce,
+        adding `NOT WITH_LIBRARYNAME` to their condition --- note the
+        conditions are ANDed so they need to be specified in reverse)
+    -   the list in `doc/building.dox` (and similar files in other repos)
+2.  Update `FindMagnum.cmake` (or similar in other repos):
+    -   mention the new lib in the list of components in the docs
+    -   if it has some inter-library dependencies, add a corresponding
+        `_MAGNUM_${_COMPONENT}_DEPENDENCIES` entry
+    -   add its name to the  `_MAGNUM_LIBRARY_COMPONENTS` regex
+    -   add a new @cmake elseif(_component STREQUAL LibraryName) @ce section
+        with special setup of includes or dependencies or explicitly say
+        @cmake # No special setup for LibraryName library @ce
+3.  Add the library to the list in `doc/cmake.dox` (or similar files in other
+    repos)
+4.  Add a conditional @cmake add_subdirectory() @ce to `src/Magnum/CMakeLists.txt`
+5.  Create a new `src/Magnum/LibraryName/CMakeLists.txt`, copy over up-to-date
+    license header from other CMake files, add your name to it and populate it:
+    -   add source files to `MagnumLibraryName_SRCS` variable
+    -   add installable headers to `MagnumLibraryName_HEADERS` variable
+    -   add private headers to `MagnumLibraryName_PRIVATE_HEADERS` variable (if
+        any)
+    -   if the test needs some extra setup (such as e.g. @cpp CORRADE_NO_ASSERT @ce
+        enabled for particular files), create a new `MagnumLibraryNameObjects`
+        `OBJECT` library with files that can be compiled the same way in both
+        cases to speed up compilation
+    -   verify that the @cmake add_library() @ce command references all input
+        files (needed so QtCreator lists all project files properly)
+    -   verify that debug postfix is set
+        (@cmake set_target_properties(MagnumLibraryName PROPERTIES DEBUG_POSTFIX "-d") @ce)
+    -   verify that folder is set for all libraries and `OBJECT` libraries to
+        avoid cluttering project tree view in IDEs
+        (@cmake set_target_properties(MagnumLibraryName PROPERTIES FOLDER "Magnum/LibraryName") @ce)
+    -   verify that target installation is done in proper places (separate
+        `RUNTIME` / `LIBRARY` / `ARCHIVE` destinations)
+    -   verify that @cmake set_target_properties(MagnumLibraryName PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION}) @ce
+        is done in case `BUILD_STATIC` is *not* set
+    -   verify that @cmake set_target_properties(MagnumLibraryName PROPERTIES POSITION_INDEPENDENT_CODE ON) @ce
+        is done in case `BUILD_STATIC_PIC` is set
+    -   verify that @cmake add_library(Magnum::LibraryName ALIAS MagnumLibraryName) @ce
+        (or equivalent) is added to make the library visible for CMake
+        subprojects
+6.  Create a new `src/Magnum/LibraryName/Test/` directory:
+    -   add a `CMakeLists.txt` with pre-populated license header, add your name
+        to it
+    -   conditionally @cmake add_subdirectory() @ce it if `BUILD_TESTS` is
+        enabled
+7.  Create a new `src/Magnum/LibraryName/LibraryName.h` header for forward
+    declarations (if needed), add a file-level doc block with
+    <tt>Forward declarations for the \@ref Magnum::LibraryName namespace</tt>
+    as brief docs
+8.  Create a new `src/Magnum/LibraryName/visibility.h` header with
+    `MAGNUM_LIBRARYNAME_EXPORT` and `MAGNUM_LIBRARYNAME_LOCAL` macros by
+    copypasting it from another library:
+    -   adapt @cpp #ifdef MagnumLibraryName_EXPORTS @ce so it matches CMake
+        target name
+    -   if the library is combined from an `OBJECT` library, add its name to
+        the above @cpp #ifdef @ce as well (and then explicitly add
+        @cmake target_compile_definitions(MagnumLibraryNameObjects PRIVATE "MagnumLibraryNameObjects_EXPORTS") @ce to `CMakeLists.txt` in case `BUILD_STATIC` is not set)
+9.  Mention the directory and namespace in `doc/namespaces.dox`, basically
+    copy-pasting the following from existing documentation:
+    -   directory-level doc block referencing the namespace
+    -   namespace-level doc block mentioning the `WITH_LIBRARYNAME` option,
+        dependencies (if any) and a code snippet showing how to use it with
+        CMake
+10. Code and test the rest of the library, see @ref developers-file and
+    @ref developers-symbol for more information
+11. Add the `WITH_LIBRARYNAME` option to all files in `package/` directory,
+    explicitly saying either `ON` or `OFF` based on platform support:
+    -   all `package/archlinux/PKGBUILD*` files (and the AUR package(s))
+    -   the `package/debian/rules` file (watch out, tabs!)
+    -   the `package/gentoo/` `*.ebuild` file
+    -   the `package/homebrew/` `*.rb` file (watch out, Ruby!)
+    -   all `package/ci/appveyor-*.bat` files (`^` is a line continuation)
+    -   all `package/ci/travis-*.sh` files (@c \\ is a line continuation)
+12. If the library has dependencies:
+    -   make sure they are mentioned in the library documentation
+    -   make sure they are mentioned in building and CMake docs
+    -   make sure they are mentioned in `CREDITS.md`
+    -   make sure AppVeyor and Travis downloads them (based on platform
+        support)
+13. Mention the library in `doc/changelog.dox` (or similar files in other
+    repos)
+14. Build documentation:
+    -   run [dox2html5.py](http://mcss.mosra.cz/doxygen/) on `Doxyfile-mcss`
+        and verify there are no new warnings
+    -   eyeball the namespace and directory docs, fix suspicious things, look
+        also in the building and cmake docs
+15. Build a coverage build (`package/archlinux/PKGBUILD-coverage`), or abuse
+    the CI for that later
+16. Push to a temporary branch (e.g., `next`)
+17. Iterate until the CIs are green and the code coverage is good enough
+18. Merge to `master`
+
+In order to remove a library, be sure to touch all places mentioned above, only
+in inverse --- but usually @ref developers-deprecation "deprecate first".
+
+@section developers-application Checklist for adding / removing an application library
+
+Similarly to @ref developers-library except points 2 and 5, with:
+
+1.  Update `FindMagnum.cmake` (replaces point 2 in @ref developers-library):
+    -   mention the new lib in the list of components in the docs
+    -   add its name to the  `_MAGNUM_LIBRARY_COMPONENTS` regex
+    -   add a new @cmake elseif(_component STREQUAL ApplicationName) @ce section
+        with special setup of includes or dependencies or explicitly say
+        @cmake # Name application has no additional dependencies @ce
+2.  Add a condition to `src/Magnum/Platform/CMakeLists.txt`:
+    -   add the source file to `MagnumApplicationName_SRCS` variable
+    -   add the installable header to `MagnumApplicationName_HEADERS` variable
+    -   add a `STATIC` `MagnumApplicationName` library, verify that the
+        @cmake add_library() @ce command references all input files (needed so
+        QtCreator lists all project files properly)
+    -   verify that debug postfix is set
+        (@cmake set_target_properties(MagnumApplicationName PROPERTIES DEBUG_POSTFIX "-d") @ce)
+    -   verify that folder is set to avoid cluttering project tree view in IDEs
+        (@cmake set_target_properties(MagnumApplicationName PROPERTIES FOLDER "Magnum/Platform") @ce)
+    -   verify that target installation is done in proper places (separate
+        `RUNTIME` / `LIBRARY` / `ARCHIVE` destinations)
+    -   verify that @cmake add_library(Magnum::ApplicationName ALIAS MagnumApplicationName) @ce
+        is added to make the application visible for CMake subprojects
+3.  If desired, provide a new bootstrap project:
+    -   new `base-applicationname` branch, forked from some `_modules_*`
+        branch, with the rest copied from a subset of e.g. the `base` branch
+    -   update `README.md` in master, mentioning this
+    -   update `package/ci` files to build this project (probably a new matrix
+        entry)
+4.  Mention the bootstrap project in the class documentation
+5.  Mention all extra files and setup in the class documentation
+
+In order to remove an application library, be sure to touch all places
+mentioned above, only in inverse --- but usually
+@ref developers-deprecation "deprecate first".
+
+@section developers-plugin Checklist for adding / removing a plugin
+
+Similarly to @ref developers-library except points 2 and 5, with:
+
+1.  Update `FindMagnumPlugins.cmake` (or `FindMagnum.cmake` in the core repo)
+    (replaces point 2 in @ref developers-library):
+    -   mention the new plugin in the list of components in the docs
+    -   add its name to the  `_MAGNUMPLUGINS_PLUGIN_COMPONENTS` regex
+    -   add a new @cmake elseif(_component STREQUAL PluginName) @ce section
+        with special setup of includes or dependencies or explicitly say
+        @cmake # PluginName has no dependencies @ce
+2.  Create `PluginName.conf` and list all plugin dependencies (if any). The
+    file has to be present even if empty.
+3.  Create `pluginRegistration.cpp` by copypasting it from another plugin and
+    adapting plugin name and plugin interface string. It's needed to be in a
+    separate file that gets compiled only to the plugin library, not to the
+    test library.
+4.  Create `configure.h.cmake` for plugin-specific information about whether
+    the library was built as static or not
+5.  Create a new `src/MagnumPlugins/PluginName/CMakeLists.txt`, copy over
+    up-to-date license header from other CMake files and populate it (replaces
+    point 5 in @ref developers-library):
+    -   add source files to `PluginName_SRCS` variable
+    -   add installable headers to `PluginName_HEADERS` variable
+    -   add private headers to `PluginName_PRIVATE_HEADERS` variable (if any)
+    -   create a `PluginNameObjects` library that contains all files that are
+        common for the plugin library and test library (usually everything
+        except `pluginRegistration.cpp`), add a
+        @cmake target_compile_definitions(PluginNameObjects PRIVATE "PluginNameObjects_EXPORTS") @ce
+        for it
+    -   use @cmake add_plugin() @ce command (which is aliased to either
+        @ref corrade-cmake-add-plugin "corrade_add_plugin()" or
+        @ref corrade-cmake-add-static-plugin "corrade_add_static_plugin()") to
+        create the `PluginName` library, use `${MAGNUM_PLUGINS_*_DEBUG_BINARY_INSTALL_DIR}`
+        / `${MAGNUM_PLUGINS_*_RELEASE_BINARY_INSTALL_DIR}` and
+        `${MAGNUM_PLUGINS_*_DEBUG_LIBRARY_INSTALL_DIR}` /
+        `${MAGNUM_PLUGINS_*_RELEASE_LIBRARY_INSTALL_DIR}` variables that
+        correspond to given plugin interface
+    -   verify that both @cmake add_library() @ce and @cmake add_plugin() @ce
+        commands reference all input files (needed so QtCreator lists all
+        project files properly)
+    -   verify that folder is set for the `OBJECT` library and the test library
+        to avoid cluttering project tree view in IDEs
+        (@cmake set_target_properties(PluginNameObjects PROPERTIES FOLDER "MagnumPlugins/PluginName") @ce)
+        --- for the plugin library it's done automatically inside
+        @cmake add_plugin() @ce
+    -   verify that @cmake set_target_properties(PluginName PROPERTIES POSITION_INDEPENDENT_CODE ON) @ce
+        is done in case `BUILD_STATIC_PIC` is set
+    -   verify that @cmake add_library(MagnumPlugins::PluginName ALIAS PluginName) @ce
+        (or equivalent) is added to make the library visible for CMake
+        subprojects
+6.  If there is more than one interface header (other than just `PluginName.h`
+    being installed), add a new `visibility.h` header. Otherwise put the
+    visibility macros directly in `PluginName.h`.
+7.  If the plugin handles a new format:
+    -   if the plugin is not named directly after the format, add an alias to
+        it (for example the @ref Trade::MiniExrImageConverter "MiniExrImageConverter"
+        plugin is aliased to `OpenExrImageConverter`)
+    -   update the @ref Trade::AnyImageImporter "AnyImageImporter",
+        @ref Trade::AnySceneImporter "AnySceneImporter",
+        @ref Trade::AnyImageConverter "AnyImageConverter" or
+        @ref Audio::AnyImporter "AnyAudioImporter" plugins to delegate to this
+        plugin (or its alias) upon encountering corresponding file extension
+
+In order to remove a plugin, be sure to touch all places mentioned above, only
+in inverse --- but usually @ref developers-deprecation "deprecate first".
+
+@section developers-plugin-interface Checklist for adding / removing a plugin interface
+
+@todoc write
+
+In order to remove a plugin interface, be sure to touch all places mentioned
+above, only in inverse --- but usually @ref developers-deprecation "deprecate first".
+
+@section developers-tool Checklist for adding / removing a tool
+
+@todoc write
+
+In order to remove a tool, be sure to touch all places mentioned above, only in
+inverse --- but usually @ref developers-deprecation "deprecate first".
+
+@section developers-example Checklist for adding / removing an example
+
+1.  Add a `WITH_EXAMPLENAME_EXAMPLE` CMake option to:
+    -   root `CMakeLists.txt`
+    -   the list in `doc/building-examples.dox`
+2.  Add a new `src/example-name` directory, copy up-to-date UNLICENSE headers
+    from other files in the repo
+3.  Verify that `src/example-name/CMakeLists.txt` contains @cmake cmake_minimum_required() @ce,
+    @cmake project() @ce and all @cmake cmake_policy() @ce commands so it can
+    be used as a top-level project level
+4.  If the example needs extra code to run on non-desktop platforms (and
+    running on non-desktop platforms is not the primary goal), consider moving
+    them to the `ports` branch to keep code in `master` as simple as possible
+5.  Add a new `doc/example-name.dox` page with @c \@brief, @c \@m_footernavigation
+    and @c \@page name equivalent to filename
+6.  Add a new `doc/example-name.png` image, scaled down to 400x300 from
+    800x600, reference it as `@image html example-name.png` from the `*.dox`
+    file
+7.  In case there's a web demo, add a button link to it (copy over other
+    example pages and adapt)
+8.  Add a new `examples-examplename-source` section with:
+    -   link to GitHub
+    -   referencing all textual example sources as
+        <tt>-   \@ref example-name/file.ext "file.ext"</tt>
+    -   breadcrumb and navigation setup for all example sources as
+        <tt>\@example example-name/file.ext \@m_examplenavigation{examples-example-name,example-name/} \@m_footernavigation</tt>
+9.  Update `doc/example-index.dox` and list the example there, optionally
+    adding a badge to advertise the web demo
+10. Mention the example in `doc/changelog-examples.dox`
+11. Push to a temporary branch (e.g., `next` or `ports-next`)
+12. Iterate until the CIs are green
+13. Merge to `master` / `ports`
+
+In order to remove an example, be sure to touch all places mentioned above, but
+in inverse.
+
+@section developers-file Checklist for adding / removing a new source / header file
+
+1.  Copy over a up-to-date license header (note that example code uses
+    UNLICENSE instead of MIT) and add your name + year to it, if not already
+    there
+2.  Add a <tt>\@file</tt>-level documentation block, with @c \@brief listing
+    all classes, functions, typedefs, enums, macros etc. that are in the file
+3.  Add the file to corresponding `*_SRCS`, `*_HEADERS`, `*_PRIVATE_HEADERS`
+    list in `CMakeLists.txt`
+4.  If applicable, add a new test class file in the `Test/` directory
+    -   name it `FileNameTest.cpp`, put a class named `FileNameTest` inside,
+        wrapped in a `Test` subnamespace of the original file namespace
+    -   use @cmake corrade_add_test() @ce to add it to tests
+    -   if some tests need GL context, add a separate test with `GLTest`
+        suffix, wrapping the corresponding @cmake corrade_add_test() @ce in
+        @cmake if(BUILD_GL_TESTS) @ce
+5.  Populate the file, see @ref developers-symbol and @ref coding-style for
+    more information.
+6.  Mention the new functionality in `doc/changelog.dox` (and similar files in
+    other repos)
+7.  Build documentation:
+    -   run [dox2html5.py](http://mcss.mosra.cz/doxygen/) on `Doxyfile-mcss`
+        and verify there are no new warnings
+    -   eyeball the relevant docs and fix suspicious things
+8.  Build a coverage build (`package/archlinux/PKGBUILD-coverage`), or abuse
+    the CI for that later
+9.  Push to a temporary branch (e.g., `next`)
+10. Iterate until the CIs are green and the code coverage is good enough
+11. Merge to `master`
+
+In order to remove a file, be sure to touch all places mentioned above, only
+in inverse --- but usually @ref developers-deprecation "deprecate first".
+
+@section developers-symbol Checklist for adding / removing a symbol
+
+1.  If the symbol is standalone (i.e., not member of a class), list it in the
+    <tt>\@file</tt>-level @c \@brief docs
+2.  Document it
+3.  Add a test for it to corresponding file, verify the test gets actually run
+4.  Mention the new functionality in `doc/changelog.dox` (and similar files in
+    other repos)
+5.  Build documentation:
+    -   run [dox2html5.py](http://mcss.mosra.cz/doxygen/) on `Doxyfile-mcss`
+        and verify there are no new warnings
+    -   eyeball the relevant docs and fix suspicious things
+6.  Build a coverage build (`package/archlinux/PKGBUILD-coverage`), or abuse
+    the CI for that later
+7.  Push to a temporary branch (e.g., `next`)
+8.  Iterate until the CIs are green and the code coverage is good enough
+9.  Merge to `master`
+
+In order to remove a symbol, be sure to touch all places mentioned above, only
+in inverse --- but usually @ref developers-deprecation "deprecate first".
+
+@section developers-page Checklist for adding a new CMake documentation page
+
+1.  Add a `doc/pagename.dox` file, copy up-to-date license header and add your
+    name + year to it, if not already there
+2.  If the page is top-level, list it in `doc/00-page-order.dox` to ensure it
+    gets listed at a proper place
+3.  If the page is not top-level, list it using @c \@subpage in its parent page
+    and add @c \@m_footernavigation for automatic linking to parent and
+    prev/next pages
+4.  Add a @c \@brief documentation, if applicable
+5.  Populate it, see @ref coding-style for more information
+6.  Mention the new page in `doc/changelog.dox` (and similar files in other
+    repos)
+7.  Build documentation:
+    -   run [dox2html5.py](http://mcss.mosra.cz/doxygen/) on `Doxyfile-mcss`
+        and verify there are no new warnings
+    -   eyeball the relevant docs and fix suspicious things
+8.  Push to `master`
+
+@section developers-deprecation Checklist for deprecating a feature
+
+1.  If the feature is publicly exposed, think about the best way of deprecation
+    that preserves source compatibility:
+    -   Add a compatibility @cpp typedef @ce / @cpp using @ce for a renamed
+        symbol, marking it with @ref CORRADE_DEPRECATED() / @ref CORRADE_DEPRECATED_ALIAS()
+    -   Add a compatibility header for a renamed include, including the
+        original file from it and marking it with @ref CORRADE_DEPRECATED_FILE()
+    -   Add a compatibility inline function for a function that got renamed or
+        its arguments changed, mark it with @ref CORRADE_DEPRECATED()
+    -   Add a compatibility enum value for a value that got renamed or deleted,
+        mark it with @ref CORRADE_DEPRECATED_ENUM()
+    -   Don't *ever* change semantics of function arguments without changing
+        the function signature. That would silently break with no possibility
+        to let the user know.
+    -   Function return type changes are hard. One possibility is working
+        around that by returning a wrapper type that's implicitly convertible
+        to both the old and new type, another is introducing a differently
+        named function instead. The last resort is breaking the API without
+        preserving backwards compatibility --- but that makes people angry, so
+        avoid that if possible.
+2.  Add just a <tt>\@brief \@copybrief</tt> from the replacement functionality
+    together with a @c \@deprecated  line to the deprecated feature
+3.  Reference the replacement functionality in both the deprecation macro and
+    in the @c \@deprecated line to make porting easier
+4.  Ensure the deprecated symbol is wrapped in @cpp #ifndef MAGNUM_BUILD_DEPRECATED @ce,
+5.  Ensure deprecated files @cpp #error @ce in case they get used in
+    non-deprecated build, ensure they are not installed in non-deprecated
+    builds
+6.  Build all tests and dependent projects and verify that:
+    -   using the old functionality still compiles and works as intended
+    -   deprecation warnings are emitted in proper places
+7.  Upon verifying the above, start updating dependent code
+8.  Mention the deprecated API in the deprecation section of `doc/changelog.dox`
+    (and similar files in other repos)
+9.  Build documentation:
+    -   run [dox2html5.py](http://mcss.mosra.cz/doxygen/) on `Doxyfile-mcss`
+        and verify there are no new warnings
+    -   eyeball the relevant docs and fix suspicious things
+10.  Push to a temporary branch (e.g., `next`)
+11. Iterate until the CIs are green
+12. Merge to `master`
+13. If possible, trigger builds of dependent projects (where they are still
+    using the old API) and verify they are still green (and red in
+    non-deprecated build)
+14. Update dependent projects
+
+@section developers-removing Checklist for removing a feature
+
+1.  Check that it was in deprecated state for more than a year with at least
+    one release in between. Check that no important clients depend on it
+    anymore. If not, wait a bit more.
+2.  Remove relevant blocks wrapped in @cpp #ifndef MAGNUM_BUILD_DEPRECATED @ce,
+    remove relevant deprecated files and update `CMakeLists.txt`
+3.  Mention the removed API in the compatibility section of `doc/changelog.dox`
+    (or similar files in other repos)
+4.  Build documentation:
+    -   run [dox2html5.py](http://mcss.mosra.cz/doxygen/) on `Doxyfile-mcss`
+        and verify there are no new warnings --- sometimes it happens that a
+        deprecated API is still being referenced
+5.  Push to a temporary branch (e.g., `next`)
+6.  Iterate until the CIs are green
+7.  Merge to `master`
+8.  If possible, trigger builds of dependent projects and verify they are still
+    green (or wait for the scheduled builds)
+
+@section developers-gl-extensions Checklist for adding / removing GL versions and extensions
+
+1.  Install [flextGL](https://github.com/ginkgo/flextGL)
+2.  Go to `src/MagnumExternal/OpenGL/GL/`:
+    -   Update `extensions.txt` (bump a version or add/remove extensions)
+    -   Run @cb{.sh} .../flextGLgen.py -D . -t . extensions.txt @ce to generate
+        `flextGL.h`, `flextGL.cpp` and `flextGLPlatform.cpp` files
+3.  Go to `src/MagnumExternal/OpenGL/GLES2/`:
+    -   Update `extensions.txt` and `Emscripten/extensions.txt` (add/remove
+        extensions)
+    -   Run @cb{.sh} .../flextGLgen.py -D . -t . extensions.txt @ce to generate
+        `flextGL.h`, `flextGL.cpp`, `flextGLPlatform.cpp`,
+        `flextGLWindowsDesktop.h`, `flextGLWindowsDesktop.cpp`,
+        `flextGLPlatformWindowsDesktop.cpp` and `flextGLPlatformIOS.cpp` files.
+        Desktop GLES on Windows still links to the ancient `opengl32.dll`
+        which exports only OpenGL 1.1 symbols, so we have a special set of
+        headers that queries pointers for everything above OpenGL 1.1 (instead
+        of everything above OpenGL ES 2.0). iOS, on the other hand, doesn't
+        have any extension loader mechanism and all supported entrypoints are
+        exported from the library, so we set the function pointers to those
+        exported symbols in case the system GL header defines them.
+    -   Run @cb{.sh} .../flextGLgen.py -D . -t Emscripten/ Emscripten/extensions.txt @ce
+        to generate a stripped-down `flextGLEmscripten.h` file. Emscripten
+        doesn't have the ability to manually load extension pointers, thus it
+        has only header files.
+4.  Go to `src/MagnumExternal/OpenGL/GLES3/`:
+    -   Update `extensions.txt` and `Emscripten/extensions.txt` (bump a version
+        or add/remove extensions)
+    -   Run @cb{.sh} .../flextGLgen.py -D . -t . extensions.txt @ce to generate
+        `flextGL.h`, `flextGL.cpp`, `flextGLPlatform.cpp`,
+        `flextGLWindowsDesktop.h`, `flextGLWindowsDesktop.cpp`,
+        `flextGLPlatformWindowsDesktop.cpp` and `flextGLPlatformIOS.cpp` files.
+        See above why there are so many.
+    -   Run @cb{.sh} .../flextGLgen.py -D . -t Emscripten/ Emscripten/extensions.txt @ce
+        to generate a stripped-down `flextGLEmscripten.h` file. See above for
+        details.
+5.  Check @cb{.sh} git diff @ce for suspicious changes and whitespace-at-EOL
+6.  For every new added function, add an entry to `doc/opengl-mapping.dox`
+7.  For every new added limit query (various `GL_MIN_*` and `GL_MAX_*` macros
+    etc.), add an entry to the bottom of `doc/opengl-mapping.dox`
+8.  Add a table listing the new version and all new extensions in it to
+    `doc/opengl-support.dox` (take a list of them from the changelog in the
+    official spec PDF). Some extensions might be already present in the general
+    extension list, move them out of there
+9.  Add a new `requires-glXY`, `requires-glesXY` or `requires-webglXY` page
+    with @c \@m_footernavigation to `doc/opengl-support.dox`, mention it as a
+    @c \@subpage at a correct position in the list
+10. Add a new `requires-glXY`, `requires-glesXY` or `requires-webglXY` alias
+    to `Doxyfile`, `Doxyfile-mcss` and `Doxyfile-public`, copypaste it from
+    existing and change the numbers
+11. Add new version enum value:
+    -   to `src/Magnum/Version.h`
+    -   to debug output in `src/Magnum/Version.cpp`
+    -   to @ref Extension::extensions() in `src/Magnum/Context.cpp`
+    -   to @cpp Context::tryCreate() @ce in `src/Magnum/Context.cpp`
+    -   to specify GLSL version in `src/Magnum/Shader.cpp`
+    -   to the list in `src/Magnum/Platform/magnum-info.cpp`
+12. Add new extensions to `src/Magnum/Extensions.h`, order them by extension
+    ID that is mentioned in every extension spec file
+13. Update existing extensions with version in which they become core (last
+    parameter of the `_extension()` macro)
+14. Update extension list in `src/magnum/Context.cpp` according to changes in
+    `src/Magnum/Extensions.h`
+
+In order to remove GL functionality, be sure to touch all places mentioned
+above, only in inverse --- but usually @ref developers-deprecation "deprecate first",
+unless it doesn't affect public API at all.
+
+@section developers-gl-functionality Checklist for adding / removing GL functionality
+
+1.  Check if given desktop functionality has equivalent in ES or WebGL, add
+    missing extensions if needed (see @ref developers-gl-extensions)
+2.  Check if there's a DSA / non-DSA way to do the thing. Omit the non-DSA way
+    if all drivers that support given functionality support DSA as well and
+    there's no corresponding non-DSA functionality in ES or WebGL.
+3.  If the functionality uses different entry points / defines on desktop and
+    ES / WebGL platforms, use @cpp #ifdef MAGNUM_TARGET_GLES @ce,
+    @cpp #ifdef MAGNUM_TARGET_GLES2 @ce and @cpp #ifdef MAGNUM_TARGET_WEBGL @ce
+    to cover the differences
+4.  If the functionality can use different entry points based on driver
+    capabilities on the same platform (DSA / non-DSA is one of them), add
+    separate code paths:
+    -   new private and `MAGNUM_LOCAL` `thingImplementation*()` functions, each
+        implementing one code path, preferrably @cpp static @ce
+    -   a `thingImplementation` (member) function pointer in `src/Magnum/Implementation/SomeState.h`
+        that gets populated in `src/Magnum/Implementation/SomeState.cpp` based
+        on extension / version availability
+    -   a public function, dispatching to
+        @cpp Context::current().state().some->thingImplementation @ce in the
+        implementation
+5.  If the functionality is a limit query, add a cache for it:
+    -   a member variable that's either set to @cpp 0 @ce or
+        @ref Corrade::Containers::NullOpt in `src/Magnum/Implementation/SomeState.cpp`
+    -   the query first checks for presence of cached value and queries it only
+        if not cached yet
+    -   in case the limit query depends on some extension which might not be
+        available, return some reasonable value (@cpp 0 @ce) in that case
+6.  Implement the functionality (see @ref developers-file, @ref developers-symbol)
+7.  Document the functionality
+    -   if important, describe the different code paths (DSA / non-DSA) or
+        functionality fallbacks
+    -   list the DSA / non-DSA distinction among function list in the
+        class-level docs
+    -   a @c \@see block listing GL APIs used with @c \@fn_gl{}, @c \@def_gl{}
+        etc., use @c \@fn_gl_keyword{}  etc. to expose them in search if
+        desired (see @ref coding-style-documentation-commands-ref)
+    -   list version / extension requirements using @c \@requires_glXY etc.
+        (see @ref coding-style-documentation-commands-requires)
+8.  Add the function or limit query to the mapping table in `doc/opengl-mapping.dox`,
+    possibly to multiple places
+9.  Update relevant extension support in tables in `doc/opengl-support.dox`
+10. Mention the new stuff in `doc/changelog.dox`
+11. Build documentation:
+    -   run [dox2html5.py](http://mcss.mosra.cz/doxygen/) on `Doxyfile-mcss`
+        and verify there are no new warnings
+    -   eyeball the relevant docs and fix suspicious things
+12. Build and test for relevant platforms locally (as the public CI can't test
+    GL things yet)
+13. Push to a temporary branch (e.g., `next`)
+14. Iterate until the CIs are green
+15. Merge to `master`
+
+In order to remove GL functionality, be sure to touch all places mentioned
+above, only in inverse --- but usually @ref developers-deprecation "deprecate first",
+unless it doesn't affect public API at all.
+
+@section developers-dependency Checklist for adding, removing or updating a dependency
+
+1.  Verify that there are no important clients stuck on the old version with no
+    easy way to upgrade
+2.  In case of CMake:
+    -   it's usually possible to jump more than one version, check what's the
+        version on the oldest supported system
+    -   bump all @cmake cmake_minimum_required() @ce in all repos
+    -   remove @cmake cmake_policy() @ce calls that are not needed anymore
+    -   remove old workarounds, check changelogs for functionality that can be
+        used now
+    -   update building docs to say what version is required now
+    -   add an entry to the dependencies section in `doc/changelog.dox`
+    -   update `package/ci/travis.yml` to download a newer version, possibly
+        removing 32-bit compat libraries
+3.  In case of a compiler:
+    -   remove everything related to `CORRADE_GCCXY_COMPATIBILITY` of the old
+        version, if applicable
+    -   update building docs to say what version is required now
+    -   add an entry to the dependencies section in `doc/changelog.dox`
+    -   update files in `package/ci/` to use a newer version
+4.  In case given dependency is external:
+    -   Create a dedicated `Find*.cmake` module and does not have a builtin one
+        in CMake
+    -   update packages in `package/` to depend on the new library
+    -   update files in `package/ci/` to install it
+5.  In case given dependency is single-file:
+    -   verify it's reasonably small (&lt;50kB is okay, `nlohmann/json` is a
+        prime example of *not okay*)
+    -   add it to `src/external/` without any modifications except for trailing
+        whitespace cleanup
+    -   add it in a separate Git commit, mentioning its version (or Git hash)
+        for easier upgrades later
+6.  Update `CREDITS.md` of affected repo to mention the added/removed
+    dependency, its homepage and its license
+
+In order to remove a dependency, be sure to touch all places mentioned above,
+only in inverse.
+
+@section developers-port Checklist for adding or removing a port
+
+1.  Add a new `TARGET_*` variable:
+    -   to root `CMakeLists.txt`, which either gets enabled automatically based
+        on system introspection or is exposed through a @cmake option() @ce
+        command
+    -   to the list of variables extracted out of `configure.h` in
+        `modules/FindMagnum.cmake`
+2.  Add a `MAGNUM_TARGET_*` variable:
+    -   set it in root `CMakeLists.txt` in case `TARGET_*` is enabled
+    -   add it as a @cpp #cmakedefine @ce macro to `src/Magnum/configure.h.cmake`
+    -   add documentation for it to `src/Magnum/Magnum.h`
+    -   mention it in `modules/FindMagnum.cmake` docs
+    -   mention it in `doc/cmake.dox` and `doc/building.dox`
+3.  Add a new Travis / AppVeyor matrix build for this port (or update existing)
+4.  Add a new `PKGBUILD-*` file in `package/archlinux` for testing (or update
+    existing)
+5.  Enable or disable functionality using @cmake if(MAGNUM_TARGET_*) @ce in
+    CMake and @cpp #ifdef MAGNUM_TARGET_* @ce in C++
+6.  Mention the new stuff in `doc/changelog.dox`
+7.  Push to a temporary branch (e.g., `next`)
+8.  Iterate until the CIs are green
+9.  Merge to `master`
+
+In order to remove a port, be sure to touch all places mentioned above, only in
+inverse.
+
+@section developers-bootstrap Checklist for updating the bootstrap repo
+
+1.  Check out the `_modules_` branch and update files in `modules/`
+2.  Check out the `_modules_sdl2_` branch, merge `_modules_` to it, update
+    remaining files in `modules/`
+3.  Check out the `_modules_es_` branch, merge `_modules_sdl2_` to it, update
+    remaining files in `modules/`
+4.  Check out all other (non-underscored) branches one by one
+    -   use @cb{.sh} git branch --list -v @ce to keep track
+    -   merge proper `_modules_*` branches to them, fix potential file deletion
+        conflicts
+    -   update `toolchain` submodule, if present
+5.  Push all branches
+6.  Trigger build on `master`, update the `README.md` or files in `package/ci`
+    if necessary
+
+@section developers-copyright-year Checklist for updating copyright year
+
+1.  Verify there are no uncommitted changes in any repos, as that would
+    significantly complicate reverting a potential fuck-up
+2.  Use [msrp](https://github.com/malex984/msrp) to batch replace copyright
+    info in all files, replacing existing `Copyright © ...` with
+    `Copyright © ..., 20XZ` in the root directory of every project, so nothing
+    gets left out
+3.  Examples use partially MIT (mainly in docs) and partially UNLICENSE,
+    replace `... —` with `..., 20XZ —` there as well
+4.  Copy all `Find*.cmake` modules to dependent projects to update the
+    copyright year in these as well
+5.  Update `package/debian/copyright` to say the new year as well
+6.  Use @cb{.sh} git diff @ce to verify the change went well and the new year
+    is specified exactly once everywhere
+7.  Do a local verification build, push to `master`
+
+@section developers-documentation Checklist for uploading documentation
+
+1.  (Optionally) remove `build/doc-public` to get rid of stale files
+2.  Verify there are no untracked files, modifications or branches different
+    than `master` checked out that could mess up the docs
+3.  Run [dox2html5.py](http://mcss.mosra.cz/doxygen/) on `Doxyfile-public`,
+    look for suspicious warnings
+4.  Upload contents of `build/doc-public/html/` to `doc/magnum-new/` and remove
+    `doc/magnum-old/` if any
+5.  Once the upload is finished, rename `doc/magnum/` to `doc/magnum-old/` and
+    `doc/magnum-new/` to `doc/magnum/`
+6.  Quickly check that the docs still look as they should, if not, revert the
+    backup and try again
+
+@section developers-pr Checklist for merging a PR
+
+1.  After the public round of review, pull the changes locally to a temporary
+    branch (i.e., `next`)
+2.  Verify a coverage build, verify that there are no compiler warnings
+3.  Go over and fix issues that slipped through cracks in the public review
+4.  Verify the contributor is mentioned in all relevant license headers, add if
+    necessary
+5.  Add the contributor to `CREDITS.md`, if not already there
+6.  Update `doc/changelog.dox` (and similar files in other repos), if not
+    already done
+7.  Build documentation:
+    -   run [dox2html5.py](http://mcss.mosra.cz/doxygen/) on `Doxyfile-mcss`
+        and verify there are no new warnings
+    -   eyeball the relevant docs and fix suspicious things
+8.  Push to a temporary branch (e.g., `next`)
+9.  Iterate until the CIs are green
+10. Merge to `master`, put a "thank you" comment to the PR, explaining
+    additional changes if necessary
+
+@section developers-release Checklist for making a release
+
+1.  Open a new `20XY.ac` milestone
+2.  Verify that there are no blocking issues in the current (`20XY.ab`)
+    milestone, either fix them or move to the next milestone
+3.  Verify that all CIs are green
+4.  Go through `doc/changelog.dox` and update it, in case it doesn't contain
+    all changes (use `gitk` to check when it was last updated)
+5.  Go through fixed issues and merged PRs and add either a
+    @m_span{m-label m-success m-flat} changelog mention added @m_endspan (and
+    add a mention to the changelog), @m_span{m-label m-danger m-flat} scrapped @m_endspan
+    or @m_span{m-label m-dim m-flat} no action needed @m_endspan label to wrap
+    them up
+6.  Update changelog for the next release:
+    -   change section names for the latest release from `latest` to `20XY-ab`
+    -   change the title from `Changes since 20XY.aa` to `20XY.ab`
+    -   add a paragraph stating date of release and referencing the to-be-added
+        tag on GitHub
+7.  Bump `MAGNUM_LIBRARY_VERSION` and `MAGNUM_LIBRARY_SOVERSION` in all
+    projects, if needed --- ensure all projects have the exact same version
+8.  Rebuild all projects with the new shared library version numbers, verify
+    all tools and examples still behave properly
+9.  Build and upload public docs (see @ref developers-documentation), verify
+    that there are no new warnings and the changelog looks correct
+10. Push all new changes to a temporary branch (e.g., `next`)
+11. Wait for the CIs to get green
+12. Tag a new version using @cb{.sh} git tag -a v20XY.ab @ce, say just
+    `Version 20XY.ab` as a message
+13. Push the tag, verify that the CIs are still green
+14. Write a release announcement for the blog
+    -   highlight the most prominent features, mention detailed blog posts
+        about them, if any
+    -   reference detailed changelogs for all projects at the end
+    -   don't forget to say thanks to significant contributors
+    -   create some fancy eye-catchy cover image featuring nice screenshots of
+        new functionality
+    -   add release annoucement link under the button on front page
+15. Publish the release announcement, verify it looks correct
+16. Advertise the release announcement, preferrably Monday 5 PM, never Friday
+    or weekends
+    -   come up with some 100-character-long extended title
+    -   Twitter (extended title + url and some hashtags), first dry-run the
+        link on https://cards-dev.twitter.com/validator to ensure the cover
+        image gets displayed
+    -   Reddit `r/cpp`, `r/gamedev`; Hacker News (extended title + url)
+    -   summarize the release to mailing list
+    -   summarize the release highlighting GL- and Vulkan-related functionality
+        and submit that to Khronos
+    -   Add a message to the Gitter chat (title as heading, cover image,
+        summary in a blockquote and "read more" link)
+17. Reference Twitter, Reddit, Hacker News and mailing list in a "Discussion"
+    note at the end of the article, reupload that change
+18. Update versions of ArchLinux AUR packages:
+    -   run `makepkg` in `package/archlinux/magnum*-git`, verify it builds and
+        says correct version, ideally with `r0` at the ennd
+    -   copy the updated `PKGBUILD` to the AUR package repo, run
+        @cb{.sh} makepkg --printsrcinfo > .SRCINFO @ce there
+    -   commit the updated `PKGBUILD` and `.SRCINFO`, push
+    -   after pushing all, verify that the version is updated in the AUR web
+        interface as well
+19. Update Debian package changelog in `package/debian/changelog`, copypasting
+    the last entry, updating it and using the Git tag date+time for it (note
+    that the date format is slightly different)
+20. Update Homebrew package versions
+21. Ask someone to update Vcpkg packages
+22. Close the 20XY.ab GitHub milestone
+23. Add link to the release notes to the tag on GitHub
+24. Have a drink and take two days off
+
+*/
+}
