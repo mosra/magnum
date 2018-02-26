@@ -30,6 +30,7 @@ set_directory_properties(PROPERTIES
 add_library(snippets STATIC
     opengl-wrapping.cpp)
 target_link_libraries(snippets PRIVATE Magnum)
+set_target_properties(snippets PROPERTIES FOLDER "Magnum/doc/snippets")
 
 find_package(Corrade COMPONENTS TestSuite)
 
