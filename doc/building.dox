@@ -55,8 +55,8 @@ Various examples are provided by the @ref building-examples "Example repository"
 @subsection building-packages-vcpkg Vcpkg packages on Windows
 
 Magnum is available as a [Vcpkg](https://github.com/Microsoft/vcpkg) package.
-After setting up Vcpkg like described in the README, you can install a stable
-pinned version of Magnum with all its dependencies like this:
+After setting up Vcpkg like described in the README, you can install latest
+stable version of Magnum with all its dependencies like this:
 
 @code{.bat}
 vcpkg install magnum
@@ -71,10 +71,23 @@ vcpkg install magnum --head
 @endcode
 
 This by default installs a 32-bit dynamic version of the package, you can use
-@cb{.bat} vcpkg install magnum:x64-windows[-static] @ce to install a 64-bit
-(static) version instead. See the
-<a href="https://github.com/Microsoft/vcpkg/blob/master/docs/users/triplets.md">vcpkg triplet documentation</a>
+@cb{.bat} vcpkg install magnum:x64-windows @ce or
+@cb{.bat} vcpkg install magnum:x64-windows-static @ce to install a 64-bit
+(static) version instead. You can also use the `VCPKG_DEFAULT_TRIPLET` variable
+to change the default --- see the
+<a href="https://github.com/Microsoft/vcpkg/blob/master/docs/users/triplets.md">Vcpkg triplet documentation</a>
 for more information.
+
+Not all features are installed by default, only those that are implicitly
+enabled in @ref building-features together with @ref Platform::Sdl2Application "Sdl2Application".
+To opt-in or opt-out of additional features, you can use the following syntax;
+feature names are simply names of CMake `WITH_*` options but lowercase. See the
+<a href="https://github.com/Microsoft/vcpkg/blob/master/docs/specifications/feature-packages.md">feature documentation</a>
+for more information.
+
+@code{.bat}
+vcpkg install magnum[glfwapplication,tgaimporter]
+@endcode
 
 Packages installed using Vcpkg can be used straight away in Visual Studio ---
 all you need to do is to @cpp #include @ce the headers you want, the
@@ -82,7 +95,7 @@ buildsystem will do all needed library linking and setup behind the scenes
 automatically. <em>(Cool, isn't it?)</em>
 
 @note If Visual Studio doesn't find the packages, check its verbose output, it
-    might point to a mismatch of the triplet above or broken vcpkg integration.
+    might point to a mismatch of the triplet above or broken Vcpkg integration.
 
 In order to make Magnum projects installed using Vcpkg available to CMake-based
 projects, specify the Vcpkg toolchain file on the command line when invoking
@@ -93,12 +106,12 @@ mkdir build && cd build
 cmake .. -DCMAKE_TOOLCHAIN_FILE=C:/src/vcpkg/scripts/buildsystems/vcpkg.cmake
 @endcode
 
-If you want to pass additional flags to CMake or
-@ref building-features "enable / disable additional features", add them to
-`OPTIONS` in @cmake vcpkg_configure_cmake() @ce inside the
-`ports/magnum/portfile.cmake` file in your local Vcpkg installation.
+If you want to pass additional flags to CMake, run @cb{.bat} vcpkg edit magnum @ce
+and edit `OPTIONS` in @cmake vcpkg_configure_cmake() @ce.
 
-There is also a Vcpkg package for @ref building-plugins-packages-vcpkg "Magnum Plugins".
+There is also a Vcpkg package for @ref building-plugins-packages-vcpkg "Magnum Plugins",
+@ref building-integration-packages-vcpkg "Magnum Integration" and
+@ref building-extras-packages-vcpkg "Magnum Extras".
 
 @subsection building-packages-arch ArchLinux packages
 
