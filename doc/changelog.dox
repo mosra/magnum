@@ -44,7 +44,9 @@ See also:
 -   New OpenGL extension support:
     -   @extension{ARB,texture_filter_anisotropic}
     -   @extension{OES,texture_float}, @extension2{OES,texture_half_float,OES_texture_float}
-    -   @extension{EXT,color_buffer_float}, @extension2{EXT,color_buffer_half_float,EXT_color_buffer_half_float} and
+    -   @extension{EXT,color_buffer_float},
+        @extension2{EXT,color_buffer_half_float,EXT_color_buffer_half_float}
+        and
         their WebGL counterparts @webgl_extension{EXT,color_buffer_half_float},
         @webgl_extension{WEBGL,color_buffer_float},
         @webgl_extension{EXT,color_buffer_float}
