@@ -866,9 +866,6 @@ class MAGNUM_EXPORT Buffer: public AbstractObject {
          * used when binding the buffer internally, possibly saving some calls
          * to @fn_gl{BindBuffer}. Default target hint is @ref TargetHint::Array.
          * @see @ref setData(), @ref setSubData()
-         * @todo Target::ElementArray cannot be used when no VAO is bound -
-         *      http://www.opengl.org/wiki/Vertex_Specification#Index_buffers
-         *      ... damned GL state
          */
         Buffer& setTargetHint(TargetHint hint) {
             _targetHint = hint;
