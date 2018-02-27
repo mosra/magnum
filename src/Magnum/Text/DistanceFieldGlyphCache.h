@@ -45,13 +45,7 @@ format is red channel only.
 Usage is similar to @ref GlyphCache, additionally you need to specify size of
 resulting distance field texture.
 
-@code{.cpp}
-Text::AbstractFont* font;
-Text::GlyphCache* cache = new Text::DistanceFieldGlyphCache(Vector2i(2048), Vector2i(384));
-font->createGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
-                              "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                              "0123456789?!:;,. ");
-@endcode
+@snippet MagnumText.cpp DistanceFieldGlyphCache-usage
 
 @see @ref TextureTools::distanceField()
 */

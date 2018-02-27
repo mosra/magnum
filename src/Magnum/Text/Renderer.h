@@ -178,27 +178,7 @@ methods, returning result either as data arrays or as fully configured mesh.
 The text can be then drawn as usual by configuring the shader and drawing the
 mesh:
 
-@code{.cpp}
-// Font instance, received from plugin manager
-std::unique_ptr<Text::AbstractFont> font;
-
-// Configured glyph cache
-Text::GlyphCache cache;
-
-Shaders::Vector2D shader;
-Buffer vertexBuffer, indexBuffer;
-Mesh mesh;
-
-// Render the text, centered
-std::tie(mesh, std::ignore) = Text::Renderer2D::render(*font, cache, 0.15f,
-    "Hello World!", vertexBuffer, indexBuffer, BufferUsage::StaticDraw, Text::Alignment::LineCenter);
-
-// Draw the text on the screen
-shader.setTransformationProjectionMatrix(projection)
-    .setColor(Color3(1.0f))
-    .setVectorTexture(glyphCache->texture());
-mesh.draw(shader);
-@endcode
+@snippet MagnumText.cpp Renderer-usage1
 
 See @ref render(AbstractFont&, const GlyphCache&, Float, const std::string&, Alignment) and
 @ref render(AbstractFont&, const GlyphCache&, Float, const std::string&, Buffer&, Buffer&, BufferUsage, Alignment)
@@ -208,24 +188,7 @@ While this method is sufficient for one-shot rendering of static texts, for
 mutable texts (e.g. FPS counters, chat messages) there is another approach
 that doesn't recreate everything on each text change:
 
-@code{.cpp}
-std::unique_ptr<Text::AbstractFont> font;
-Text::GlyphCache cache;
-Shaders::Vector2D shader;
-
-// Initialize renderer and reserve memory for enough glyphs
-Text::Renderer2D renderer(*font, cache, 0.15f);
-renderer.reserve(32, BufferUsage::DynamicDraw, BufferUsage::StaticDraw, Text::Alignment::LineCenter);
-
-// Update the text occasionally
-renderer.render("Hello World Countdown: 10");
-
-// Draw the text on the screen
-shader.setTransformationProjectionMatrix(projection)
-    .setColor(Color3(1.0f))
-    .setVectorTexture(glyphCache->texture());
-renderer.mesh().draw(shader);
-@endcode
+@snippet MagnumText.cpp Renderer-usage2
 
 @section Text-Renderer-required-opengl-functionality Required OpenGL functionality
 

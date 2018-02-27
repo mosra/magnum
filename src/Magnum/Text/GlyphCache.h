@@ -48,13 +48,7 @@ Contains font glyphs prerendered into texture atlas.
 Create GlyphCache object with sufficient size and then call
 @ref AbstractFont::createGlyphCache() to fill it with glyphs.
 
-@code{.cpp}
-Text::AbstractFont* font;
-Text::GlyphCache* cache = new GlyphCache(Vector2i(512));
-font->createGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
-                              "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                              "0123456789?!:;,. ");
-@endcode
+@snippet MagnumText.cpp GlyphCache-usage
 
 See @ref Renderer for information about text rendering.
 @todo Some way for Font to negotiate or check internal texture format
