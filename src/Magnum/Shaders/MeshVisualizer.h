@@ -45,7 +45,6 @@ Uses geometry shader to visualize wireframe of 3D meshes. You need to provide
 @ref setTransformationProjectionMatrix() to be able to render.
 
 @image html shaders-meshvisualizer.png
-@image latex shaders-meshvisualizer.png
 
 @section Shaders-MeshVisualizer-wireframe Wireframe visualization
 

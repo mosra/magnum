@@ -50,7 +50,6 @@ value passed to @ref setSmoothness(). You need to provide @ref Position and
 @ref setVectorTexture().
 
 @image html shaders-distancefieldvector.png
-@image latex shaders-distancefieldvector.png
 
 @section Shaders-DistanceFieldVector-usage Example usage
 

@@ -60,7 +60,6 @@ texturing is enabled.
 For coloring the texture based on intensity you can use the @ref Vector shader.
 
 @image html shaders-flat.png
-@image latex shaders-flat.png
 
 @section Shaders-Flat-usage Example usage
 

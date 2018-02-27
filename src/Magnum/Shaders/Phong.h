@@ -53,7 +53,6 @@ multipled by the color, which is by default set to fully opaque white for
 enabled textures.
 
 @image html shaders-phong.png
-@image latex shaders-phong.png
 
 @section Shaders-Phong-usage Example usage
 

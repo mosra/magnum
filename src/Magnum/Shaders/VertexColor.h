@@ -47,7 +47,6 @@ attributes in your triangle mesh and call at least
 @ref setTransformationProjectionMatrix().
 
 @image html shaders-vertexcolor.png
-@image latex shaders-vertexcolor.png
 
 @section Shaders-VertexColor-example Example usage
 
