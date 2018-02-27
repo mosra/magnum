@@ -68,14 +68,14 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
          * although the actual glyph cache texture has @p size. Glyph
          * @p padding can be used to account for e.g. glyph shadows.
          */
-        explicit GlyphCache(TextureFormat internalFormat, const Vector2i& originalSize, const Vector2i& size, const Vector2i& padding = Vector2i());
+        explicit GlyphCache(TextureFormat internalFormat, const Vector2i& originalSize, const Vector2i& size, const Vector2i& padding);
 
         /**
          * @brief Constructor
          *
          * Same as calling the above with @p originalSize and @p size the same.
          */
-        explicit GlyphCache(TextureFormat internalFormat, const Vector2i& size, const Vector2i& padding = Vector2i());
+        explicit GlyphCache(TextureFormat internalFormat, const Vector2i& size, const Vector2i& padding = {});
 
         /**
          * @brief Constructor
@@ -85,14 +85,14 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
          * ES2 uses @extension{EXT,texture_rg}, if available, or
          * @ref TextureFormat::Luminance as fallback.
          */
-        explicit GlyphCache(const Vector2i& originalSize, const Vector2i& size, const Vector2i& padding = Vector2i());
+        explicit GlyphCache(const Vector2i& originalSize, const Vector2i& size, const Vector2i& padding);
 
         /**
          * @brief Constructor
          *
          * Same as calling the above with @p originalSize and @p size the same.
          */
-        explicit GlyphCache(const Vector2i& size, const Vector2i& padding = Vector2i());
+        explicit GlyphCache(const Vector2i& size, const Vector2i& padding = {});
 
         virtual ~GlyphCache();
 
