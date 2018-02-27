@@ -43,18 +43,7 @@ Queries count of samples passed from fragment shader or boolean value
 indicating whether any samples passed. Can be used for example for conditional
 rendering:
 
-@code{.cpp}
-SampleQuery q;
-
-q.begin(SampleQuery::Target::AnySamplesPassed);
-// render simplified object to test whether it is visible at all...
-q.end();
-
-// render full version of the object only if it is visible
-if(q.result<bool>()) {
-    // ...
-}
-@endcode
+@snippet Magnum.cpp SampleQuery-usage
 
 This approach has some drawbacks, as the rendering is blocked until result is
 available for the CPU to decide. This can be improved by using conditional
@@ -62,17 +51,7 @@ rendering on GPU itself. The drawing commands will be sent to the GPU and
 processed or discarded later, so CPU can continue executing the code without
 waiting for the result.
 
-@code{.cpp}
-SampleQuery q;
-
-q.begin(SampleQuery::Target::AnySamplesPassed);
-// render simplified object to test whether it is visible at all...
-q.end();
-
-q.beginConditionalRender(SampleQuery::ConditionalRenderMode::Wait);
-// render full version of the object only if the query returns nonzero result
-q.endConditionalRender();
-@endcode
+@snippet Magnum.cpp SampleQuery-conditional-render
 
 @see @ref PrimitiveQuery, @ref TimeQuery
 @requires_gles30 Extension @extension{EXT,occlusion_query_boolean} in

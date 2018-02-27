@@ -355,9 +355,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          *
          * Convenience alternative to the above, example usage:
          *
-         * @code{.cpp}
-         * Image2D image = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA, PixelType::UnsignedByte});
-         * @endcode
+         * @snippet Magnum.cpp AbstractFramebuffer-read1
          */
         Image2D read(const Range2Di& rectangle, Image2D&& image);
 
@@ -384,9 +382,7 @@ class MAGNUM_EXPORT AbstractFramebuffer {
          *
          * Convenience alternative to the above, example usage:
          *
-         * @code{.cpp}
-         * BufferImage2D image = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
-         * @endcode
+         * @snippet Magnum.cpp AbstractFramebuffer-read2
          */
         BufferImage2D read(const Range2Di& rectangle, BufferImage2D&& image, BufferUsage usage);
         #endif

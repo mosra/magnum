@@ -48,17 +48,7 @@ See also @ref AbstractTexture documentation for more information.
 Common usage is to fully configure all texture parameters and then set the
 data from e.g. @ref Image2D. Example configuration:
 
-@code{.cpp}
-Image2D image(PixelFormat::RGBA, PixelType::UnsignedByte, {526, 137}, data);
-
-RectangleTexture texture;
-texture.setMagnificationFilter(Sampler::Filter::Linear)
-    .setMinificationFilter(Sampler::Filter::Linear)
-    .setWrapping(Sampler::Wrapping::ClampToEdge)
-    .setMaxAnisotropy(Sampler::maxMaxAnisotropy())
-    .setStorage(TextureFormat::RGBA8, {526, 137})
-    .setSubImage({}, image);
-@endcode
+@snippet Magnum.cpp RectangleTexture-usage
 
 In shader, the texture is used via @glsl sampler2DRect @ce,
 @glsl sampler2DRectShadow @ce, @glsl isampler2DRect @ce or @glsl usampler2DRect @ce.
@@ -337,9 +327,7 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          *
-         * @code{.cpp}
-         * Image2D image = texture.image({PixelFormat::RGBA, PixelType::UnsignedByte});
-         * @endcode
+         * @snippet Magnum.cpp RectangleTexture-image1
          */
         Image2D image(Image2D&& image);
 
@@ -357,9 +345,7 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          *
-         * @code{.cpp}
-         * BufferImage2D image = texture.image({PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
-         * @endcode
+         * @snippet Magnum.cpp RectangleTexture-image2
          */
         BufferImage2D image(BufferImage2D&& image, BufferUsage usage);
 
@@ -377,9 +363,7 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          *
-         * @code{.cpp}
-         * CompressedImage2D image = texture.compressedimage({});
-         * @endcode
+         * @snippet Magnum.cpp RectangleTexture-compressedImage1
          */
         CompressedImage2D compressedImage(CompressedImage2D&& image);
 
@@ -397,9 +381,7 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          *
-         * @code{.cpp}
-         * CompressedBufferImage2D image = texture.compressedImage({}, BufferUsage::StaticRead);
-         * @endcode
+         * @snippet Magnum.cpp RectangleTexture-compressedImage2
          */
         CompressedBufferImage2D compressedImage(CompressedBufferImage2D&& image, BufferUsage usage);
 
@@ -418,9 +400,7 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          *
-         * @code{.cpp}
-         * Image2D image = texture.subImage(range, {PixelFormat::RGBA, PixelType::UnsignedByte});
-         * @endcode
+         * @snippet Magnum.cpp RectangleTexture-subImage1
          */
         Image2D subImage(const Range2Di& range, Image2D&& image);
 
@@ -439,9 +419,7 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          *
-         * @code{.cpp}
-         * BufferImage2D image = texture.subImage(range, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
-         * @endcode
+         * @snippet Magnum.cpp RectangleTexture-subImage2
          */
         BufferImage2D subImage(const Range2Di& range, BufferImage2D&& image, BufferUsage usage);
 
@@ -464,9 +442,7 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          *
-         * @code{.cpp}
-         * CompressedImage2D image = texture.compressedSubImage(range, {});
-         * @endcode
+         * @snippet Magnum.cpp RectangleTexture-compressedSubImage1
          */
         CompressedImage2D compressedSubImage(const Range2Di& range, CompressedImage2D&& image);
 
@@ -489,9 +465,7 @@ class MAGNUM_EXPORT RectangleTexture: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          *
-         * @code{.cpp}
-         * CompressedBufferImage2D image = texture.compressedSubImage(range, {}, BufferUsage::StaticRead);
-         * @endcode
+         * @snippet Magnum.cpp RectangleTexture-compressedSubImage2
          */
         CompressedBufferImage2D compressedSubImage(const Range2Di& range, CompressedBufferImage2D&& image, BufferUsage usage);
 

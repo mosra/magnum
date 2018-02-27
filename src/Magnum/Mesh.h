@@ -168,155 +168,26 @@ commands are issued when calling @ref draw().
 
 @subsubsection Mesh-configuration-example-basic Basic non-indexed mesh
 
-@code{.cpp}
-// Custom shader, needing only position data
-class MyShader: public AbstractShaderProgram {
-    public:
-        typedef Attribute<0, Vector3> Position;
-
-    // ...
-};
-
-// Fill vertex buffer with position data
-static constexpr Vector3 positions[30] = {
-    // ...
-};
-Buffer vertexBuffer;
-vertexBuffer.setData(positions, BufferUsage::StaticDraw);
-
-// Configure the mesh, add vertex buffer
-Mesh mesh;
-mesh.setPrimitive(MeshPrimitive::Triangles)
-    .setCount(30)
-    .addVertexBuffer(vertexBuffer, 0, MyShader::Position{});
-@endcode
+@snippet Magnum.cpp Mesh-nonindexed
 
 @subsubsection Mesh-configuration-interleaved Interleaved vertex data
 
-@code{.cpp}
-// Non-indexed primitive with positions and normals
-Trade::MeshData3D plane = Primitives::Plane::solid();
-
-// Fill vertex buffer with interleaved position and normal data
-Buffer vertexBuffer;
-vertexBuffer.setData(MeshTools::interleave(plane.positions(0), plane.normals(0)), BufferUsage::StaticDraw);
-
-// Configure the mesh, add vertex buffer
-Mesh mesh;
-mesh.setPrimitive(plane.primitive())
-    .setCount(plane.positions(0).size())
-    .addVertexBuffer(buffer, 0, Shaders::Phong::Position{}, Shaders::Phong::Normal{});
-@endcode
+@snippet Magnum.cpp Mesh-interleaved
 
 @subsubsection Mesh-configuration-indexed Indexed mesh
 
-@code{.cpp}
-// Custom shader
-class MyShader: public AbstractShaderProgram {
-    public:
-        typedef Attribute<0, Vector3> Position;
-
-    // ...
-};
-
-// Fill vertex buffer with position data
-static constexpr Vector3 positions[300] = {
-    // ...
-};
-Buffer vertexBuffer;
-vertexBuffer.setData(positions, BufferUsage::StaticDraw);
-
-// Fill index buffer with index data
-static constexpr GLubyte indices[75] = {
-    // ...
-};
-Buffer indexBuffer;
-indexBuffer.setData(indices, BufferUsage::StaticDraw);
-
-// Configure the mesh, add both vertex and index buffer
-Mesh mesh;
-mesh.setPrimitive(MeshPrimitive::Triangles)
-    .setCount(75)
-    .addVertexBuffer(vertexBuffer, 0, MyShader::Position{})
-    .setIndexBuffer(indexBuffer, 0, Mesh::IndexType::UnsignedByte, 176, 229);
-@endcode
+@snippet Magnum.cpp Mesh-indexed
 
 Or using @ref MeshTools::interleave() and @ref MeshTools::compressIndices():
 
-@code{.cpp}
-// Indexed primitive
-Trade::MeshData3D cube = Primitives::Cube::solid();
-
-// Fill vertex buffer with interleaved position and normal data
-Buffer vertexBuffer;
-vertexBuffer.setData(MeshTools::interleave(cube.positions(0), cube.normals(0)), BufferUsage::StaticDraw);
-
-// Compress index data
-Containers::Array<char> indexData;
-Mesh::IndexType indexType;
-UnsignedInt indexStart, indexEnd;
-std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(cube.indices());
-
-// Fill index buffer
-Buffer indexBuffer;
-indexBuffer.setData(data);
-
-// Configure the mesh, add both vertex and index buffer
-Mesh mesh;
-mesh.setPrimitive(plane.primitive())
-    .setCount(cube.indices().size())
-    .addVertexBuffer(vertexBuffer, 0, Shaders::Phong::Position{}, Shaders::Phong::Normal{})
-    .setIndexBuffer(indexBuffer, 0, indexType, indexStart, indexEnd);
-@endcode
+@snippet Magnum.cpp Mesh-indexed-tools
 
 Or, if you plan to use the mesh with stock shaders, you can just use
 @ref MeshTools::compile().
 
 @subsubsection Mesh-configuration-formats Specific formats of vertex data
 
-@code{.cpp}
-// Custom shader with colors specified as four floating-point values
-class MyShader: public AbstractShaderProgram {
-    public:
-        typedef Attribute<0, Vector3> Position;
-        typedef Attribute<1, Color4> Color;
-
-    // ...
-};
-
-// Initial mesh configuration
-Mesh mesh;
-mesh.setPrimitive(...)
-    .setCount(30);
-
-// Fill position buffer with positions specified as two-component XY (i.e.,
-// no Z component, which is meant to be always 0)
-Vector2 positions[30] = {
-    // ...
-};
-Buffer positionBuffer;
-positionBuffer.setData(positions, BufferUsage::StaticDraw);
-
-// Specify layout of positions buffer -- only two components, unspecified Z
-// component will be automatically set to 0
-mesh.addVertexBuffer(positionBuffer, 0,
-    MyShader::Position{MyShader::Position::Components::Two});
-
-// Fill color buffer with colors specified as four-byte BGRA (e.g. directly
-// from TGA file)
-GLubyte colors[4*30] = {
-    // ...
-};
-Buffer colorBuffer;
-colorBuffer.setData(colors, BufferUsage::StaticDraw);
-
-// Specify layout of color buffer -- BGRA, each component unsigned byte and we
-// want to normalize them from [0, 255] to [0.0f, 1.0f]
-mesh.addVertexBuffer(colorBuffer, 0, MyShader::Color{
-    MyShader::Color::Components::BGRA,
-    MyShader::Color::DataType::UnsignedByte,
-    MyShader::Color::DataOption::Normalized});
-@endcode
+@snippet Magnum.cpp Mesh-formats
 
 @subsubsection Mesh-configuration-dynamic Dynamically specified attributes
 
@@ -328,13 +199,7 @@ that case, there are overloads of @ref addVertexBuffer() and
 unsigned byte to float with one byte padding at the end could then look like
 this:
 
-@code{.cpp}
-mesh.addVertexBuffer(colorBuffer, 0, 4, DynamicAttribute{
-    DynamicAttribute::Kind::GenericNormalized, 3,
-    DynamicAttribute::Components::Three,
-    DynamicAttribute::DataType::UnsignedByte});
-});
-@endcode
+@snippet Magnum.cpp Mesh-dynamic
 
 @section Mesh-rendering Rendering meshes
 
@@ -729,25 +594,14 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * position and normal, so you have to skip weight and texture
          * coordinate in each vertex:
          *
-         * @code{.cpp}
-         * Buffer buffer;
-         * Mesh mesh;
-         * mesh.addVertexBuffer(buffer, 76, // initial array offset
-         *     4,                           // skip vertex weight (Float)
-         *     Shaders::Phong::Position(),  // vertex position
-         *     8,                           // skip texture coordinates (Vector2)
-         *     Shaders::Phong::Normal());   // vertex normal
-         * @endcode
+         * @snippet Magnum.cpp Mesh-addVertexBuffer1
          *
          * You can also achieve the same effect by calling @ref addVertexBuffer()
          * more times with explicitly specified gaps before and after the
          * attributes. This can be used for e.g. runtime-dependent
          * configuration, as it isn't dependent on the variadic template:
          *
-         * @code{.cpp}
-         * mesh.addVertexBuffer(buffer, 76, 4, Shaders::Phong::Position(), 20)
-         *     .addVertexBuffer(buffer, 76, 24, Shaders::Phong::Normal(), 0);
-         * @endcode
+         * @snippet Magnum.cpp Mesh-addVertexBuffer2
          *
          * If specifying more than one attribute, the function assumes that
          * the array is interleaved. Adding non-interleaved vertex buffer can
@@ -755,11 +609,7 @@ class MAGNUM_EXPORT Mesh: public AbstractObject {
          * Above example with weight, position, texture coordinate and normal
          * arrays one after another (non-interleaved):
          *
-         * @code{.cpp}
-         * Int vertexCount = 352;
-         * mesh.addVertexBuffer(buffer, 76 + 4*vertexCount, Shaders::Phong::Position())
-         *     .addVertexBuffer(buffer, 76 + 24*vertexCount, Shaders::Phong::Normal());
-         * @endcode
+         * @snippet Magnum.cpp Mesh-addVertexBuffer3
          *
          * If @extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL
          * ES 3.0, WebGL 2.0, @extension{OES,vertex_array_object} in OpenGL

@@ -43,29 +43,9 @@ Queries timestamp after all previous OpenGL calls have been processed. It can
 query either duration of sequence of commands or absolute timestamp. Example
 usage of both methods:
 
-@code{.cpp}
-TimeQuery q1, q2;
-q1.begin(TimeQuery::Target::TimeElapsed);
-// rendering...
-q1.end();
-q2.begin(TimeQuery::Target::TimeElapsed);
-// another rendering...
-q2.end();
-UnsignedInt timeElapsed1 = q1.result<UnsignedInt>();
-UnsignedInt timeElapsed2 = q2.result<UnsignedInt>();
-@endcode
+@snippet Magnum.cpp TimeQuery-usage1
 
-@code{.cpp}
-TimeQuery q1, q2, q3;
-q1.timestamp();
-// rendering...
-q2.timestamp();
-// another rendering...
-q3.timestamp();
-UnsignedInt tmp = q2.result<UnsignedInt>();
-UnsignedInt timeElapsed1 = tmp-q1.result<UnsignedInt>();
-UnsignedInt timeElapsed2 = q3.result<UnsignedInt>()-tmp;
-@endcode
+@snippet Magnum.cpp TimeQuery-usage2
 
 Using the latter results in fewer OpenGL calls when doing more measures.
 

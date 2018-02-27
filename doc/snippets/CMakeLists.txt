@@ -27,8 +27,14 @@ set_directory_properties(PROPERTIES
     CORRADE_CXX_STANDARD 11
     CORRADE_USE_PEDANTIC_FLAGS ON)
 
+# Emscripten needs special flag to use WebGL 2
+if(CORRADE_TARGET_EMSCRIPTEN AND NOT TARGET_GLES2)
+    # TODO: give me INTERFACE_LINK_OPTIONS or something, please
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s USE_WEBGL2=1")
+endif()
+
 add_library(snippets STATIC
-    opengl-wrapping.cpp)
+    Magnum.cpp)
 target_link_libraries(snippets PRIVATE Magnum)
 set_target_properties(snippets PROPERTIES FOLDER "Magnum/doc/snippets")
 
@@ -41,7 +47,7 @@ if(WITH_DEBUGTOOLS AND Corrade_TestSuite_FOUND AND NOT CORRADE_TARGET_IOS)
                    ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
     # CompareImage documentation snippet. I need it executable so I can
-    # copy&paste the output to the documentation. Also mot using
+    # copy&paste the output to the documentation. Also not using
     # corrade_add_test() because it shouldn't be run as part of CTest as it
     # purposedly fails.
     add_executable(debugtools-compareimage debugtools-compareimage.cpp)
@@ -56,7 +62,9 @@ if(WITH_SDL2APPLICATION)
     target_link_libraries(getting-started PRIVATE MagnumSdl2Application)
     target_link_libraries(getting-started-blue PRIVATE MagnumSdl2Application)
 
-    add_library(snippets-MagnumPlatform STATIC MagnumPlatform.cpp)
+    add_library(snippets-MagnumPlatform STATIC
+        MagnumPlatform.cpp
+        Magnum-framebuffer.cpp)
     target_link_libraries(snippets-MagnumPlatform PRIVATE MagnumSdl2Application)
 
     set_target_properties(

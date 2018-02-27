@@ -497,12 +497,10 @@ class MAGNUM_EXPORT Context {
          * @brief Get supported OpenGL version
          *
          * Returns first supported OpenGL version from passed list. Convenient
-         * equivalent to subsequent @ref isVersionSupported() calls, e.g.:
+         * equivalent to subsequent @ref isVersionSupported() calls --- the two
+         * following examples produce the same result:
          *
-         * @code{.cpp}
-         * Version v = isVersionSupported(Version::GL330) ? Version::GL330 : Version::GL210;
-         * Version v = supportedVersion({Version::GL330, Version::GL210});
-         * @endcode
+         * @snippet Magnum.cpp Context-supportedVersion
          *
          * If no version from the list is supported, returns lowest available
          * OpenGL version (@ref Version::GL210 for desktop OpenGL,
@@ -517,13 +515,7 @@ class MAGNUM_EXPORT Context {
          * Extensions usable with this function are listed in @ref Extensions
          * namespace in header @ref Extensions.h. Example usage:
          *
-         * @code{.cpp}
-         * if(Context::current().isExtensionSupported<Extensions::GL::ARB::tessellation_shader>()) {
-         *     // draw fancy detailed model
-         * } else {
-         *     // texture fallback
-         * }
-         * @endcode
+         * @snippet Magnum.cpp Context-isExtensionSupported
          *
          * @see @ref isExtensionSupported(const Extension&) const,
          *      @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED(),
@@ -541,13 +533,7 @@ class MAGNUM_EXPORT Context {
          * @p version. Useful mainly in shader compilation when the decisions
          * depend on selected GLSL version, for example:
          *
-         * @code{.cpp}
-         * const Version version = Context::current()supportedVersion({Version::GL320, Version::GL300, Version::GL210});
-         * if(Context::current().isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(version)) {
-         *     // Called only if ARB_explicit_attrib_location is supported
-         *     // *and* version is higher than GL 3.1
-         * }
-         * @endcode
+         * @snippet Magnum.cpp Context-isExtensionSupported-version
          */
         template<class T> bool isExtensionSupported(Version version) const {
             return _extensionRequiredVersion[T::Index] <= version && _extensionStatus[T::Index];
@@ -708,9 +694,7 @@ By default, if assertion fails, an message is printed to error output and the
 application aborts. If `CORRADE_NO_ASSERT` is defined, this macro does nothing.
 Example usage:
 
-@code{.cpp}
-MAGNUM_ASSERT_VERSION_SUPPORTED(Version::GL330);
-@endcode
+@snippet Magnum.cpp Context-MAGNUM_ASSERT_VERSION_SUPPORTED
 
 @see @ref Magnum::Context::isVersionSupported() "Context::isVersionSupported()",
     @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED(), @ref CORRADE_ASSERT(),
@@ -739,9 +723,7 @@ By default, if assertion fails, an message is printed to error output and the
 application aborts. If `CORRADE_NO_ASSERT` is defined, this macro does nothing.
 Example usage:
 
-@code{.cpp}
-MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::geometry_shader4);
-@endcode
+@snippet Magnum.cpp Context-MAGNUM_ASSERT_EXTENSION_SUPPORTED
 
 @see @ref Magnum::Context::isExtensionSupported() "Context::isExtensionSupported()",
     @ref MAGNUM_ASSERT_VERSION_SUPPORTED(), @ref CORRADE_ASSERT(),

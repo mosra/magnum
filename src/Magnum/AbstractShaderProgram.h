@@ -57,95 +57,35 @@ functions and properties:
 <li> **Attribute definitions** with location and type for
     configuring meshes, for example:
 
-    @code{.cpp}
-    typedef Attribute<0, Vector3> Position;
-    typedef Attribute<1, Vector3> Normal;
-    typedef Attribute<2, Vector2> TextureCoordinates;
-    @endcode
+    @snippet Magnum.cpp AbstractShaderProgram-input-attributes
 </li>
 <li> **Output attribute locations**, if desired, for example:
 
-    @code{.cpp}
-    enum: UnsignedInt {
-        ColorOutput = 0,
-        NormalOutput = 1
-    };
-    @endcode
+    @snippet Magnum.cpp AbstractShaderProgram-output-attributes
 </li>
 <li> **Constructor**, which loads, compiles and attaches particular shaders and
     links the program together, for example:
 
-    @code{.cpp}
-    MyShader() {
-        // Load shader sources
-        Shader vert(Version::GL430, Shader::Type::Vertex);
-        Shader frag(Version::GL430, Shader::Type::Fragment);
-        vert.addFile("MyShader.vert");
-        frag.addFile("MyShader.frag");
-
-        // Invoke parallel compilation for best performance
-        CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
-
-        // Attach the shaders
-        attachShaders({vert, frag});
-
-        // Link the program together
-        CORRADE_INTERNAL_ASSERT_OUTPUT(link());
-    }
-    @endcode
+    @snippet Magnum.cpp AbstractShaderProgram-constructor
 </li>
 <li> **Uniform setting functions**, which will provide public interface for
     protected @ref setUniform() functions. For usability purposes you can
     implement also method chaining. Example:
 
-    @code{.cpp}
-    MyShader& setProjectionMatrix(const Matrix4& matrix) {
-        setUniform(0, matrix);
-        return *this;
-    }
-    MyShader& setTransformationMatrix(const Matrix4& matrix) {
-        setUniform(1, matrix);
-        return *this;
-    }
-    MyShader& setNormalMatrix(const Matrix3x3& matrix) {
-        setUniform(2, matrix);
-        return *this;
-    }
-    @endcode
+    @snippet Magnum.cpp AbstractShaderProgram-uniforms
 </li>
-<li> **Texture and texture image setting functions** in which you bind the
+<li> **Texture and texture image binding functions** in which you bind the
     textures/images to particular texture/image units using
     @ref Texture::bind() "*Texture::bind()" /
     @ref Texture::bindImage() "*Texture::bindImage()" and similar, for example:
 
-    @code{.cpp}
-    MyShader& setDiffuseTexture(Texture2D& texture) {
-        texture.bind(0);
-        return *this;
-    }
-    MyShader& setSpecularTexture(Texture2D& texture) {
-        texture.bind(1);
-        return *this;
-    }
-    @endcode
+    @snippet Magnum.cpp AbstractShaderProgram-textures
 </li>
 <li> **Transform feedback setup function**, if needed, in which you bind
     buffers to particular indices using @ref TransformFeedback::attachBuffer()
     and similar, possibly with overloads based on desired use cases, e.g.:
 
-    @code{.cpp}
-    MyShader& setTransformFeedback(TransformFeedback& feedback, Buffer& positions, Buffer& data) {
-        feedback.attachBuffers(0, {positions, data});
-        return *this;
-    }
-    MyShader& setTransformFeedback(TransformFeedback& feedback, Int totalCount, Buffer& positions, GLintptr positionsOffset, Buffer& data, GLintptr dataOffset) {
-        feedback.attachBuffers(0, {
-            std::make_tuple(positions, positionsOffset, totalCount*sizeof(Vector3)),
-            std::make_tuple(data, dataOffset, totalCount*sizeof(Vector2ui))
-        });
-        return *this;
-    }
-    @endcode
+    @snippet Magnum.cpp AbstractShaderProgram-xfb
 </li></ul>
 
 @subsection AbstractShaderProgram-attribute-location Binding attribute location
@@ -188,18 +128,7 @@ out vec4 color;
 out vec3 normal;
 @endcode
 
-@code{.cpp}
-// Shaders attached...
-
-bindAttributeLocation(Position::Location, "position");
-bindAttributeLocation(Normal::Location, "normal");
-bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
-
-bindFragmentDataLocationIndexed(ColorOutput, 0, "color");
-bindFragmentDataLocationIndexed(NormalOutput, 1, "normal");
-
-// Link...
-@endcode
+@snippet Magnum.cpp AbstractShaderProgram-binding
 
 @see @ref maxVertexAttributes(), @ref AbstractFramebuffer::maxDrawBuffers()
 @requires_gl30 Extension @extension{EXT,gpu_shader4} for using
@@ -250,11 +179,7 @@ uniform mat4 transformationMatrix;
 uniform mat3 normalMatrix;
 @endcode
 
-@code{.cpp}
-Int projectionMatrixUniform = uniformLocation("projectionMatrix");
-Int transformationMatrixUniform = uniformLocation("transformationMatrix");
-Int normalMatrixUniform = uniformLocation("normalMatrix");
-@endcode
+@snippet Magnum.cpp AbstractShaderProgram-uniform-location
 
 @see @ref maxUniformLocations()
 @requires_gl43 Extension @extension{ARB,explicit_uniform_location} for
@@ -299,10 +224,7 @@ layout(std140) uniform material {
 };
 @endcode
 
-@code{.cpp}
-setUniformBlockBinding(uniformBlockIndex("matrices"), 0);
-setUniformBlockBinding(uniformBlockIndex("material"), 1);
-@endcode
+@snippet Magnum.cpp AbstractShaderProgram-uniform-block-binding
 
 @see @ref Buffer::maxUniformBindings()
 @requires_gl31 Extension @extension{ARB,uniform_buffer_object}
@@ -360,10 +282,7 @@ uniform sampler2D diffuseTexture;
 uniform sampler2D specularTexture;
 @endcode
 
-@code{.cpp}
-setUniform(uniformLocation("diffuseTexture"), 0);
-setUniform(uniformLocation("specularTexture"), 1);
-@endcode
+@snippet Magnum.cpp AbstractShaderProgram-texture-uniforms
 
 @see @ref Shader::maxTextureImageUnits(), @ref maxImageUnits()
 @requires_gl42 Extension @extension{ARB,shading_language_420pack} for explicit
@@ -402,14 +321,7 @@ out block {
 out vec3 velocity;
 @endcode
 
-@code{.cpp}
-setTransformFeedbackOutputs({
-        // Buffer 0
-        "position", "gl_SkipComponents1", "normal", "gl_SkipComponents1",
-        // Buffer 1
-        "gl_NextBuffer", "velocity"
-    }, TransformFeedbackBufferMode::InterleavedAttributes);
-@endcode
+@snippet Magnum.cpp AbstractShaderProgram-xfb-outputs
 
 @see @ref TransformFeedback::maxInterleavedComponents(),
     @ref TransformFeedback::maxSeparateAttributes(),
@@ -435,14 +347,7 @@ needed (see @ref Framebuffer-usage "Framebuffer documentation" for more
 information). In each draw event set all required shader parameters, bind
 specific framebuffer (if needed) and then call @ref Mesh::draw(). Example:
 
-@code{.cpp}
-shader.setTransformation(transformation)
-    .setProjection(projection)
-    .setDiffuseTexture(diffuseTexture)
-    .setSpecularTexture(specularTexture);
-
-mesh.draw(shader);
-@endcode
+@snippet Magnum.cpp AbstractShaderProgram-rendering
 
 @section AbstractShaderProgram-compute-workflow Compute workflow
 

@@ -52,23 +52,7 @@ You have to allocate the memory for all layers and faces first by calling
 @ref setStorage(). Example: array with 4 layers of cube maps, each cube map
 consisting of six 64x64 images, i.e. 24 layers total:
 
-@code{.cpp}
-CubeMapTextureArray texture;
-texture.setMagnificationFilter(Sampler::Filter::Linear)
-    // ...
-    .setStorage(Math::log2(64)+1, TextureFormat::RGBA8, {64, 64, 24});
-
-for(std::size_t i = 0; i != 4; i += 6) {
-    Image3D imagePositiveX(PixelFormat::RGBA, PixelType::UnsignedByte, {64, 64, 1}, data);
-    // ...
-    texture.setSubImage(0, Vector3i::zAxis(i+0), imagePositiveX);
-    texture.setSubImage(0, Vector3i::zAxis(i+1), imageNegativeX);
-    texture.setSubImage(0, Vector3i::zAxis(i+2), imagePositiveY);
-    // ...
-}
-
-texture.generateMipmap();
-@endcode
+@snippet Magnum.cpp CubeMapTextureArray-usage
 
 In shader, the texture is used via @glsl samplerCubeArray @ce,
 @glsl samplerCubeArrayShadow @ce, @glsl isamplerCubeArray @ce or
@@ -459,9 +443,7 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          *
-         * @code{.cpp}
-         * Image3D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte});
-         * @endcode
+         * @snippet Magnum.cpp CubeMapTextureArray-image1
          */
         Image3D image(Int level, Image3D&& image);
 
@@ -482,9 +464,7 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          *
-         * @code{.cpp}
-         * BufferImage3D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
-         * @endcode
+         * @snippet Magnum.cpp CubeMapTextureArray-image2
          */
         BufferImage3D image(Int level, BufferImage3D&& image, BufferUsage usage);
 
@@ -505,9 +485,7 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          *
-         * @code{.cpp}
-         * CompressedImage3D image = texture.compressedImage(0, {});
-         * @endcode
+         * @snippet Magnum.cpp CubeMapTextureArray-compressedImage1
          */
         CompressedImage3D compressedImage(Int level, CompressedImage3D&& image);
 
@@ -528,9 +506,7 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          *
-         * @code{.cpp}
-         * CompressedBufferImage3D image = texture.compressedImage(0, {}, BufferUsage::StaticRead);
-         * @endcode
+         * @snippet Magnum.cpp CubeMapTextureArray-compressedImage2
          */
         CompressedBufferImage3D compressedImage(Int level, CompressedBufferImage3D&& image, BufferUsage usage);
 
@@ -552,9 +528,7 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          *
-         * @code{.cpp}
-         * Image3D image = texture.subImage(0, range, {PixelFormat::RGBA, PixelType::UnsignedByte});
-         * @endcode
+         * @snippet Magnum.cpp CubeMapTextureArray-subImage1
          */
         Image3D subImage(Int level, const Range3Di& range, Image3D&& image);
 
@@ -576,9 +550,7 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          *
-         * @code{.cpp}
-         * BufferImage3D image = texture.subImage(0, range, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
-         * @endcode
+         * @snippet Magnum.cpp CubeMapTextureArray-subImage2
          */
         BufferImage3D subImage(Int level, const Range3Di& range, BufferImage3D&& image, BufferUsage usage);
 
@@ -604,9 +576,7 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          *
-         * @code{.cpp}
-         * CompressedImage3D image = texture.compressedSubImage(0, range, {});
-         * @endcode
+         * @snippet Magnum.cpp CubeMapTextureArray-compressedSubImage1
          */
         CompressedImage3D compressedSubImage(Int level, const Range3Di& range, CompressedImage3D&& image);
 
@@ -632,9 +602,7 @@ class MAGNUM_EXPORT CubeMapTextureArray: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          *
-         * @code{.cpp}
-         * CompressedBufferImage3D image = texture.compressedSubImage(0, range, {}, BufferUsage::StaticRead);
-         * @endcode
+         * @snippet Magnum.cpp CubeMapTextureArray-compressedSubImage2
          */
         CompressedBufferImage3D compressedSubImage(Int level, const Range3Di& range, CompressedBufferImage3D&& image, BufferUsage usage);
         #endif

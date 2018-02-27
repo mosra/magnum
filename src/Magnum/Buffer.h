@@ -147,54 +147,32 @@ Default way to set or update buffer data with @ref setData() or @ref setSubData(
 is to use @ref Corrade::Containers::ArrayView. See its documentation for
 more information about automatic conversions etc.
 
-@code{.cpp}
-Containers::ArrayView<Vector3> data;
-buffer.setData(data, BufferUsage::StaticDraw);
-@endcode
+@snippet Magnum.cpp Buffer-setdata
 
 There is also overload for array-like containers from STL, such as
 @ref std::vector or @ref std::array "std::array":
 
-@code{.cpp}
-std::vector<Vector3> data;
-buffer.setData(data, BufferUsage::StaticDraw);
-@endcode
+@snippet Magnum.cpp Buffer-setdata-stl
 
 @section Buffer-data-mapping Memory mapping
 
 Buffer data can be also updated asynchronously. First you need to allocate
 the buffer to desired size by passing @cpp nullptr @ce to @ref setData(), e.g.:
 
-@code{.cpp}
-buffer.setData({nullptr, 200*sizeof(Vector3)}, BufferUsage::StaticDraw);
-@endcode
+@snippet Magnum.cpp Buffer-setdata-allocate
 
 Then you can map the buffer to client memory and operate with the memory
 directly. After you are done with the operation, call @ref unmap() to unmap the
 buffer again. The @ref map() functions return a view on `char` array and you
 may want to cast it to some useful type first using @ref Containers::arrayCast():
 
-@code{.cpp}
-Containers::ArrayView<Vector3> data = Containers::arrayCast<Vector3>(buffer.map(0, 200*sizeof(Vector3), Buffer::MapFlag::Write|Buffer::MapFlag::InvalidateBuffer));
-CORRADE_INTERNAL_ASSERT(data);
-for(Vector3& d: data)
-    d = ...;
-CORRADE_INTERNAL_ASSERT_OUTPUT(buffer.unmap());
-@endcode
+@snippet Magnum.cpp Buffer-map
 
 If you are updating only a few discrete portions of the buffer, you can use
 @ref MapFlag::FlushExplicit and @ref flushMappedRange() to reduce number of
 memory operations performed by OpenGL on unmapping. Example:
 
-@code{.cpp}
-Containers::ArrayView<Vector3> data = Containers::arrayCast<Vector3>(buffer.map(0, 200*sizeof(Vector3), Buffer::MapFlag::Write|Buffer::MapFlag::FlushExplicit));
-CORRADE_INTERNAL_ASSERT(data);
-for(std::size_t i: {7, 27, 56, 128}) {
-    data[i] = ...;
-    buffer.flushMappedRange(i*sizeof(Vector3), sizeof(Vector3));
-}
-CORRADE_INTERNAL_ASSERT_OUTPUT(buffer.unmap());
-@endcode
+@snippet Magnum.cpp Buffer-flush
 
 @section Buffer-webgl-restrictions WebGL restrictions
 
@@ -205,10 +183,7 @@ default uses any sufficient target when binding the buffer internally (e.g. for
 setting data). To avoid GL errors, set target hint to desired target, either in
 constructor or using @ref Buffer::setTargetHint():
 
-@code{.cpp}
-Buffer vertices{Buffer::Target::Array};
-Buffer indices{Buffer::Target::ElementArray};
-@endcode
+@snippet Magnum.cpp Buffer-webgl
 
 To ease up the development, @ref Mesh checks proper target hint when adding
 vertex and index buffers in WebGL.

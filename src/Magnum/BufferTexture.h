@@ -55,16 +55,7 @@ for more textures or store more than one data in it.
 
 Example usage:
 
-@code{.cpp}
-Buffer buffer;
-BufferTexture texture;
-texture.setBuffer(BufferTextureFormat::RGB32F, buffer);
-
-constexpr static Vector3 data[] = {
-    // ...
-};
-buffer.setData(data, BufferUsage::StaticDraw);
-@endcode
+@snippet Magnum.cpp BufferTexture-usage
 
 In shader, the texture is used via @glsl samplerBuffer @ce,
 @glsl isamplerBuffer @ce or @glsl usamplerBuffer @ce. Unlike in classic

@@ -237,9 +237,7 @@ class OpenGLTester: public TestSuite::Tester {
 
 Equivalent to
 
-@code{.cpp}
-CORRADE_COMPARE(Magnum::Renderer::error(), Magnum::Renderer::Error::NoError)
-@endcode
+@snippet Magnum.cpp OpenGLTester-MAGNUM_VERIFY_NO_ERROR
 */
 #define MAGNUM_VERIFY_NO_ERROR() CORRADE_COMPARE(Magnum::Renderer::error(), Magnum::Renderer::Error::NoError)
 

@@ -47,25 +47,13 @@ must ensure that it is properly resized when application surface is resized,
 i.e. you must pass the new size in your @ref Platform::Sdl2Application::viewportEvent() "viewportEvent()"
 implementation, for example:
 
-@code{.cpp}
-void viewportEvent(const Vector2i& size) override {
-    defaultFramebuffer.setViewport({{}, size});
-
-    // ...
-}
-@endcode
+@snippet Magnum-framebuffer.cpp DefaultFramebuffer-usage-viewport
 
 Next thing you probably want is to clear all used buffers before performing
 any drawing in your @ref Platform::Sdl2Application::drawEvent() "drawEvent()"
 implementation, for example:
 
-@code{.cpp}
-void drawEvent() override {
-    defaultFramebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth);
-
-    // ...
-}
-@endcode
+@snippet Magnum-framebuffer.cpp DefaultFramebuffer-usage-clear
 
 See documentation of particular functions and @ref Framebuffer documentation for
 more involved usage, usage of non-default or multiple framebuffers.
@@ -379,10 +367,7 @@ class MAGNUM_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * can achieve the same by passing @ref DrawAttachment::None as
          * attachment. Example usage:
          *
-         * @code{.cpp}
-         * defaultFramebuffer.mapForDraw({{MyShader::ColorOutput, DefaultFramebuffer::DrawAttachment::Back},
-         *                                {MyShader::NormalOutput, DefaultFramebuffer::DrawAttachment::None}});
-         * @endcode
+         * @snippet Magnum.cpp DefaultFramebuffer-usage-map
          *
          * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
          * nor @extension{EXT,direct_state_access} desktop extension is

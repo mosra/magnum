@@ -60,26 +60,13 @@ See @ref Texture documentation for introduction.
 Common usage is to fully configure all texture parameters and then set the
 data. Example configuration:
 
-@code{.cpp}
-Texture2DArray texture;
-texture.setMagnificationFilter(Sampler::Filter::Linear)
-    .setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
-    .setWrapping(Sampler::Wrapping::ClampToEdge)
-    .setMaxAnisotropy(Sampler::maxMaxAnisotropy());;
-@endcode
+@snippet Magnum.cpp TextureArray-usage1
 
 It is often more convenient to first allocate the memory for all layers by
 calling @ref setStorage() and then specify each layer separately using
 @ref setSubImage():
 
-@code{.cpp}
-texture.setStorage(levels, TextureFormat::RGBA8, {64, 64, 16});
-
-for(std::size_t i = 0; i != 16; ++i) {
-    Image3D image(PixelFormat::RGBA, PixelType::UnsignedByte, {64, 64, 1}, ...);
-    texture.setSubImage(0, Vector3i::zAxis(i), image);
-}
-@endcode
+@snippet Magnum.cpp TextureArray-usage2
 
 In shader, the texture is used via @glsl sampler1DArray @ce / @glsl sampler2DArray @ce,
 @glsl sampler1DArrayShadow @ce / @glsl sampler1DArrayShadow @ce, @glsl isampler1DArray @ce
@@ -493,9 +480,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          *
-         * @code{.cpp}
-         * Image3D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte});
-         * @endcode
+         * @snippet Magnum.cpp TextureArray-image1
          */
         Image<dimensions+1> image(Int level, Image<dimensions+1>&& image);
 
@@ -516,9 +501,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          *
-         * @code{.cpp}
-         * BufferImage3D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
-         * @endcode
+         * @snippet Magnum.cpp TextureArray-image2
          */
         BufferImage<dimensions+1> image(Int level, BufferImage<dimensions+1>&& image, BufferUsage usage);
 
@@ -539,9 +522,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          *
-         * @code{.cpp}
-         * CompressedImage3D image = texture.compressedImage(0, {});
-         * @endcode
+         * @snippet Magnum.cpp TextureArray-compressedImage1
          */
         CompressedImage<dimensions+1> compressedImage(Int level, CompressedImage<dimensions+1>&& image);
 
@@ -562,9 +543,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          *
-         * @code{.cpp}
-         * CompressedBufferImage3D image = texture.compressedImage(0, {}, BufferUsage::StaticRead);
-         * @endcode
+         * @snippet Magnum.cpp TextureArray-compressedImage2
          */
         CompressedBufferImage<dimensions+1> compressedImage(Int level, CompressedBufferImage<dimensions+1>&& image, BufferUsage usage);
 
@@ -586,9 +565,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          *
-         * @code{.cpp}
-         * Image3D image = texture.subImage(0, range, {PixelFormat::RGBA, PixelType::UnsignedByte});
-         * @endcode
+         * @snippet Magnum.cpp TextureArray-subImage1
          */
         Image<dimensions+1> subImage(Int level, const RangeTypeFor<dimensions+1, Int>& range, Image<dimensions+1>&& image);
 
@@ -610,9 +587,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          *
-         * @code{.cpp}
-         * BufferImage3D image = texture.subImage(0, range, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
-         * @endcode
+         * @snippet Magnum.cpp TextureArray-subImage2
          */
         BufferImage<dimensions+1> subImage(Int level, const RangeTypeFor<dimensions+1, Int>& range, BufferImage<dimensions+1>&& image, BufferUsage usage);
 
@@ -638,9 +613,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          *
-         * @code{.cpp}
-         * CompressedImage3D image = texture.compressedSubImage(0, range, {});
-         * @endcode
+         * @snippet Magnum.cpp TextureArray-compressedSubImage1
          */
         CompressedImage<dimensions+1> compressedSubImage(Int level, const RangeTypeFor<dimensions+1, Int>& range, CompressedImage<dimensions+1>&& image);
 
@@ -666,9 +639,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *
          * Convenience alternative to the above, example usage:
          *
-         * @code{.cpp}
-         * CompressedBufferImage3D image = texture.compressedSubImage(0, range, {}, BufferUsage::StaticRead);
-         * @endcode
+         * @snippet Magnum.cpp TextureArray-compressedSubImage2
          */
         CompressedBufferImage<dimensions+1> compressedSubImage(Int level, const RangeTypeFor<dimensions+1, Int>& range, CompressedBufferImage<dimensions+1>&& image, BufferUsage usage);
         #endif
