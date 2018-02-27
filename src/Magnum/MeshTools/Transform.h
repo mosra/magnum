@@ -48,11 +48,7 @@ translation.
 
 Example usage:
 
-@code{.cpp}
-std::vector<Vector3> vectors;
-auto transformation = Quaternion::rotation(35.0_degf, Vector3::yAxis());
-MeshTools::transformVectorsInPlace(rotation, vectors);
-@endcode
+@snippet MagnumMeshTools.cpp transformVectors
 
 @see @ref transformVectors(), @ref Matrix3::transformVector(),
     @ref Matrix4::transformVector(), @ref Complex::transformVector(),
@@ -104,12 +100,7 @@ translation.
 
 Example usage:
 
-@code{.cpp}
-std::vector<Vector3> points;
-auto transformation = DualQuaternion::rotation(35.0_degf, Vector3::yAxis())*
-    DualQuaternion::translation({0.5f, -1.0f, 3.0f});
-MeshTools::transformPointsInPlace(rotation, points);
-@endcode
+@snippet MagnumMeshTools.cpp transformPoints
 
 @see @ref transformPoints(), @ref Matrix3::transformPoint(),
     @ref Matrix4::transformPoint(),

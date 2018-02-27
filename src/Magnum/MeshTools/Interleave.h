@@ -100,30 +100,12 @@ data for each attribute are in continuous place in memory.
 
 Example usage:
 
-@code{.cpp}
-MeshPrimitive primitive;
-std::vector<Vector3> positions;
-std::vector<Vector2> textureCoordinates;
-
-Buffer vertexBuffer;
-vertexBuffer.setData(MeshTools::interleave(positions, textureCoordinates), BufferUsage::StaticDraw);
-
-Mesh mesh;
-mesh.setPrimitive(primitive)
-    .setCount(positions.count())
-    .addVertexBuffer(vertexBuffer, 0, MyShader::Position{}, MyShader::TextureCoordinates{});
-@endcode
+@snippet MagnumMeshTools.cpp interleave1
 
 It's often desirable to align data for one vertex on 32bit boundaries. To
 achieve that, you can specify gaps between the attributes:
 
-@code{.cpp}
-std::vector<Vector4> positions;
-std::vector<UnsignedShort> weights;
-std::vector<Color3ub> vertexColors;
-
-auto data = MeshTools::interleave(positions, weights, 2, textureCoordinates, 1);
-@endcode
+@snippet MagnumMeshTools.cpp interleave2
 
 All gap bytes are set zero. This way vertex stride is 24 bytes, without gaps it
 would be 21 bytes, causing possible performance loss.

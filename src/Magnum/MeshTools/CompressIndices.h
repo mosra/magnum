@@ -48,21 +48,7 @@ sufficient.
 
 Example usage:
 
-@code{.cpp}
-std::vector<UnsignedInt> indices;
-
-Containers::Array<char> indexData;
-Mesh::IndexType indexType;
-UnsignedInt indexStart, indexEnd;
-std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(indices);
-
-Buffer indexBuffer;
-indexBuffer.setData(indexData, BufferUsage::StaticDraw);
-
-Mesh mesh;
-mesh.setCount(indices.size())
-    .setIndexBuffer(indexBuffer, 0, indexType, indexStart, indexEnd);
-@endcode
+@snippet MagnumMeshTools.cpp compressIndices
 
 @see @ref compressIndicesAs()
 @todo Extract IndexType out of Mesh class
@@ -78,10 +64,7 @@ Values in the index array are expected to be representable with given type.
 
 Example usage:
 
-@code{.cpp}
-std::vector<UnsignedInt> indices;
-Containers::Array<UnsignedShort> indexData = MeshTools::compressIndicesAs<UnsignedShort>(indices);
-@endcode
+@snippet MagnumMeshTools.cpp compressIndicesAs
 
 @see @ref compressIndices()
 */

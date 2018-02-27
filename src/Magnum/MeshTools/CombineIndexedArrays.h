@@ -158,19 +158,7 @@ avoid explicit verbose specification of tuple type, you can write it with help
 of some STL functions like shown below. Also if one index array is shared by
 more than one attribute array, just pass the index array more times. Example:
 
-@code{.cpp}
-std::vector<UnsignedInt> vertexIndices;
-std::vector<Vector3> positions;
-std::vector<UnsignedInt> normalTextureIndices;
-std::vector<Vector3> normals;
-std::vector<Vector2> textureCoordinates;
-
-std::vector<UnsignedInt> indices = MeshTools::combineIndexedArrays(
-    std::make_pair(std::cref(vertexIndices), std::ref(positions)),
-    std::make_pair(std::cref(normalTextureIndices), std::ref(normals)),
-    std::make_pair(std::cref(normalTextureIndices), std::ref(textureCoordinates))
-);
-@endcode
+@snippet MagnumMeshTools.cpp combineIndexedArrays
 
 See @ref combineIndexArrays() documentation for more information about the
 procedure.

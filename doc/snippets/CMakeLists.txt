@@ -35,6 +35,7 @@ endif()
 
 add_library(snippets STATIC
     Magnum.cpp
+    MagnumMeshTools.cpp
     MagnumShaders.cpp
     MagnumText.cpp)
 target_link_libraries(snippets PRIVATE Magnum)
