@@ -43,15 +43,19 @@ variable @ref defaultFramebuffer.
 @section DefaultFramebuffer-usage Usage
 
 When you are using only the default framebuffer, the usage is simple. You
-must ensure that it is properly resized when application surface is resized,
-i.e. you must pass the new size in your @ref Platform::Sdl2Application::viewportEvent() "viewportEvent()"
+must ensure that it is properly resized when window surface is resized. In case
+you're using one of the @ref Platform::Sdl2Application "Platform::Application"
+classes, pass the new size in your
+@ref Platform::Sdl2Application::viewportEvent() "viewportEvent()"
 implementation, for example:
 
 @snippet Magnum-framebuffer.cpp DefaultFramebuffer-usage-viewport
 
 Next thing you probably want is to clear all used buffers before performing
-any drawing in your @ref Platform::Sdl2Application::drawEvent() "drawEvent()"
-implementation, for example:
+any drawing. Again, in case you're using one of the
+@ref Platform::Sdl2Application "Platform::Application" classes, do it in your
+@ref Platform::Sdl2Application::drawEvent() "drawEvent()" implementation, for
+example:
 
 @snippet Magnum-framebuffer.cpp DefaultFramebuffer-usage-clear
 
