@@ -157,6 +157,8 @@ See also:
 
 -   A new @ref developers page containing step-by-step checklists for
     maintainers and core developers
+-   Compiling majority of code snippets to ensure they don't get out of sync
+    with the code
 
 @section changelog-2018-02 2018.02
 
