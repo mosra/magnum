@@ -43,6 +43,7 @@ using namespace Magnum::Math::Literals;
 
 int main() {
 
+#if !defined(__GNUC__) || defined(__clang__) || __GNUC__*100 + __GNUC_MINOR__ >= 500
 {
 /* [shaders-setup] */
 struct Vertex {
@@ -241,6 +242,7 @@ vertexIndices.setData(vertexIndex, BufferUsage::StaticDraw);
 mesh.addVertexBuffer(vertexIndices, 0, Shaders::MeshVisualizer::VertexIndex{});
 /* [MeshVisualizer-usage-no-geom-old1] */
 }
+#endif
 
 {
 Mesh mesh;
@@ -276,6 +278,7 @@ mesh.addVertexBuffer(vertices, 0, Shaders::MeshVisualizer::Position{});
 /* [MeshVisualizer-usage-no-geom] */
 }
 
+#if !defined(__GNUC__) || defined(__clang__) || __GNUC__*100 + __GNUC_MINOR__ >= 500
 {
 /* [Phong-usage-colored1] */
 struct Vertex {
@@ -347,6 +350,7 @@ shader.setTextures(nullptr, &diffuseTexture, &specularTexture)
 mesh.draw(shader);
 /* [Phong-usage-texture2] */
 }
+#endif
 
 {
 Texture2D ambientAlphaTexture, diffuseAlphaTexture;
@@ -361,6 +365,7 @@ shader.setTextures(&ambientAlphaTexture, &diffuseAlphaTexture, nullptr)
 /* [Phong-usage-alpha] */
 }
 
+#if !defined(__GNUC__) || defined(__clang__) || __GNUC__*100 + __GNUC_MINOR__ >= 500
 {
 /* [Vector-usage1] */
 struct Vertex {
@@ -422,5 +427,6 @@ shader.setTransformationProjectionMatrix(projectionMatrix*transformationMatrix);
 mesh.draw(shader);
 /* [VertexColor-usage2] */
 }
+#endif
 
 }
