@@ -233,7 +233,7 @@ class MAGNUM_EXPORT Context {
              * Resets all state that could cause external code to accidentally
              * modify Magnum objects. This includes only @ref State::MeshVao.
              */
-            EnterExternal = UnsignedInt(State::MeshVao),
+            EnterExternal = MeshVao,
 
             /**
              * Reset state on exiting section with external OpenGL code.
@@ -241,17 +241,9 @@ class MAGNUM_EXPORT Context {
              * Resets Magnum state tracker to avoid being confused by external
              * state changes. This resets all states.
              */
-            ExitExternal =
-                UnsignedInt(State::Buffers)|
-                UnsignedInt(State::Framebuffers)|
-                UnsignedInt(State::Meshes)|
-                UnsignedInt(State::MeshVao)|
-                UnsignedInt(State::PixelStorage)|
-                UnsignedInt(State::Renderer)|
-                UnsignedInt(State::Shaders)|
-                UnsignedInt(State::Textures)
+            ExitExternal = Buffers|Framebuffers|Meshes|MeshVao|PixelStorage|Renderer|Shaders|Textures
                 #ifndef MAGNUM_TARGET_GLES2
-                |UnsignedInt(State::TransformFeedback)
+                |TransformFeedback
                 #endif
         };
 
