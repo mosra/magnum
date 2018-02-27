@@ -193,11 +193,10 @@ that doesn't recreate everything on each text change:
 @section Text-Renderer-required-opengl-functionality Required OpenGL functionality
 
 Mutable text rendering requires @extension{ARB,map_buffer_range} on desktop
-OpenGL (also part of OpenGL ES 3.0). If neither @extension{EXT,map_buffer_range}
-nor @extension{CHROMIUM,map_sub} is not available in ES 2.0, at least
-@extension{OES,mapbuffer} must be supported for asynchronous buffer updates.
-There is no similar extension in WebGL, thus plain (and slow) buffer updates
-are used there.
+OpenGL (also part of OpenGL ES 3.0). If @extension{EXT,map_buffer_range} is not
+available in ES 2.0, at least @extension{OES,mapbuffer} must be supported for
+asynchronous buffer updates. There is no similar extension in WebGL, thus plain
+(and slow) buffer updates are used there.
 
 @see @ref Renderer2D, @ref Renderer3D, @ref AbstractFont,
     @ref Shaders::AbstractVector
