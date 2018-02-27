@@ -56,37 +56,11 @@ value passed to @ref setSmoothness(). You need to provide @ref Position and
 
 Common mesh setup:
 
-@code{.cpp}
-struct Vertex {
-    Vector2 position;
-    Vector2 textureCoordinates;
-};
-Vertex data[] = { ... };
-
-Buffer vertices;
-vertices.setData(data, BufferUsage::StaticDraw);
-
-Mesh mesh;
-mesh.addVertexBuffer(vertices, 0,
-    Shaders::DistanceFieldVector2D::Position{},
-    Shaders::DistanceFieldVector2D::TextureCoordinates{});
-@endcode
+@snippet MagnumShaders.cpp DistanceFieldVector-usage1
 
 Common rendering setup:
 
-@code{.cpp}
-Matrix3 transformationMatrix, projectionMatrix;
-Texture2D texture;
-
-Shaders::DistanceFieldVector2D shader;
-shader.setColor(0x2f83cc_rgbf)
-    .setOutlineColor(0xdcdcdc_rgbf)
-    .setOutlineRange(0.6f, 0.4f)
-    .setVectorTexture(texture)
-    .setTransformationProjectionMatrix(projectionMatrix*transformationMatrix);
-
-mesh.draw(shader);
-@endcode
+@snippet MagnumShaders.cpp DistanceFieldVector-usage2
 
 @see @ref shaders, @ref DistanceFieldVector2D, @ref DistanceFieldVector3D
 @todo Use fragment shader derivations to have proper smoothness in perspective/

@@ -77,79 +77,28 @@ is optionally used for improving line appearance.
 
 Common mesh setup:
 
-@code{.cpp}
-struct Vertex {
-    Vector3 position;
-};
-Vertex data[] = { ... };
-
-Buffer vertices;
-vertices.setData(data, BufferUsage::StaticDraw);
-
-Mesh mesh;
-mesh.addVertexBuffer(vertices, 0, Shaders::MeshVisualizer::Position{});
-@endcode
+@snippet MagnumShaders.cpp MeshVisualizer-usage-geom1
 
 Common rendering setup:
 
-@code{.cpp}
-Matrix4 transformationMatrix = Matrix4::translation(Vector3::zAxis(-5.0f));
-Matrix4 projectionMatrix = Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.001f, 100.0f);
-
-Shaders::MeshVisualizer shader{Shaders::MeshVisualizer::Wireframe};
-shader.setColor(0x2f83cc_rgbf)
-    .setWireframeColor(0xdcdcdc_rgbf)
-    .setViewportSize(defaultFramebuffer.viewport().size())
-    .setTransformationProjectionMatrix(projectionMatrix*transformationMatrix);
-
-mesh.draw(shader);
-@endcode
+@snippet MagnumShaders.cpp MeshVisualizer-usage-geom2
 
 @subsection Shaders-MeshVisualizer-usage-wireframe-no-geom-old Wireframe visualization without geometry shader on older hardware
 
 You need to provide also the @ref VertexIndex attribute. Mesh setup *in
 addition to the above*:
 
-@code{.cpp}
-constexpr std::size_t vertexCount = std::extent<decltype(data)>::value;
-Float vertexIndex[vertexCount];
-std::iota(vertexIndex, vertexIndex + vertexCount, 0.0f);
-
-Buffer vertexIndices;
-vertexIndices.setData(vertexIndex, BufferUsage::StaticDraw);
-
-mesh.addVertexBuffer(vertexIndices, 0, Shaders::MeshVisualizer::VertexIndex{});
-@endcode
+@snippet MagnumShaders.cpp MeshVisualizer-usage-no-geom-old1
 
 Rendering setup:
 
-@code{.cpp}
-Matrix4 transformationMatrix, projectionMatrix;
-
-Shaders::MeshVisualizer shader{Shaders::MeshVisualizer::Wireframe|
-                               Shaders::MeshVisualizer::NoGeometryShader};
-shader.setColor(0x2f83cc_rgbf)
-    .setWireframeColor(0xdcdcdc_rgbf)
-    .setTransformationProjectionMatrix(projectionMatrix*transformationMatrix);
-
-mesh.draw(shader);
-@endcode
+@snippet MagnumShaders.cpp MeshVisualizer-usage-no-geom-old2
 
 @subsection Shaders-MeshVisualizer-usage-wireframe-no-geom Wireframe visualization of indexed meshes without geometry shader
 
 The vertices must be converted to non-indexed array. Mesh setup:
 
-@code{.cpp}
-std::vector<UnsignedInt> indices{ ... };
-std::vector<Vector3> indexedPositions{ ... };
-
-// De-indexing the position array
-Buffer vertices;
-vertices.setData(MeshTools::duplicate(indices, indexedPositions), BufferUsage::StaticDraw);
-
-Mesh mesh;
-mesh.addVertexBuffer(vertices, 0, Shaders::MeshVisualizer::Position{});
-@endcode
+@snippet MagnumShaders.cpp MeshVisualizer-usage-no-geom
 
 Rendering setup the same as above.
 

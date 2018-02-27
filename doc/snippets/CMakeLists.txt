@@ -34,7 +34,8 @@ if(CORRADE_TARGET_EMSCRIPTEN AND NOT TARGET_GLES2)
 endif()
 
 add_library(snippets STATIC
-    Magnum.cpp)
+    Magnum.cpp
+    MagnumShaders.cpp)
 target_link_libraries(snippets PRIVATE Magnum)
 set_target_properties(snippets PROPERTIES FOLDER "Magnum/doc/snippets")
 

@@ -61,77 +61,21 @@ enabled textures.
 
 Common mesh setup:
 
-@code{.cpp}
-struct Vertex {
-    Vector3 position;
-    Vector3 normal;
-};
-Vertex data[] = { ... };
-
-Buffer vertices;
-vertices.setData(data, BufferUsage::StaticDraw);
-
-Mesh mesh;
-mesh.addVertexBuffer(vertices, 0,
-    Shaders::Phong::Position{},
-    Shaders::Phong::Normal{});
-@endcode
+@snippet MagnumShaders.cpp Phong-usage-colored1
 
 Common rendering setup:
 
-@code{.cpp}
-Matrix4 transformationMatrix = Matrix4::translation(Vector3::zAxis(-5.0f));
-Matrix4 projectionMatrix = Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.001f, 100.0f);
-
-Shaders::Phong shader;
-shader.setDiffuseColor(0x2f83cc_rgbf)
-    .setShininess(200.0f)
-    .setLightPosition({5.0f, 5.0f, 7.0f})
-    .setTransformationMatrix(transformationMatrix)
-    .setNormalMatrix(transformationMatrix.rotation())
-    .setProjectionMatrix(projectionMatrix);
-
-mesh.draw(shader);
-@endcode
+@snippet MagnumShaders.cpp Phong-usage-colored2
 
 @subsection Shaders-Phong-usage-texture Diffuse and specular texture
 
 Common mesh setup:
 
-@code{.cpp}
-struct Vertex {
-    Vector3 position;
-    Vector3 normal;
-    Vector2 textureCoordinates;
-};
-Vertex data[] = { ... };
-
-Buffer vertices;
-vertices.setData(data, BufferUsage::StaticDraw);
-
-Mesh mesh;
-mesh.addVertexBuffer(vertices, 0,
-    Shaders::Phong::Position{},
-    Shaders::Phong::Normal{},
-    Shaders::Phong::TextureCoordinates{});
-@endcode
+@snippet MagnumShaders.cpp Phong-usage-texture1
 
 Common rendering setup:
 
-@code{.cpp}
-Matrix4 transformationMatrix, projectionMatrix;
-Texture2D diffuseTexture, specularTexture;
-
-Shaders::Phong shader{Shaders::Phong::DiffuseTexture|
-                      Shaders::Phong::SpecularTexture};
-shader.setTextures(nullptr, &diffuseTexture, &specularTexture)
-    .setLightPosition({5.0f, 5.0f, 7.0f})
-    .setTransformationMatrix(transformationMatrix)
-    .setNormalMatrix(transformationMatrix.rotation())
-    .setProjectionMatrix(projectionMatrix);
-
-mesh.draw(shader);
-@endcode
+@snippet MagnumShaders.cpp Phong-usage-texture2
 
 @subsection Shaders-Phong-usage-alpha Alpha-masked drawing
 
@@ -141,14 +85,7 @@ ambient alpha will be taken into account. If you have diffuse texture combined
 with the alpha mask, you can use that texture for both ambient and diffuse
 part and then separate the alpha like this:
 
-@code{.cpp}
-Shaders::Phong shader{Shaders::Phong::AmbientTexture|
-                      Shaders::Phong::DiffuseTexture};
-shader.setTextures(&diffuseAlphaTexture, &diffuseAlphaTexture, nullptr)
-    .setAmbientColor({0.0f, 0.0f, 0.0f, 1.0f})
-    .setDiffuseColor(Color4{diffuseRgb, 0.0f})
-    .setSpecularColor(Color4{specularRgb, 0.0f});
-@endcode
+@snippet MagnumShaders.cpp Phong-usage-alpha
 
 @see @ref shaders
 */

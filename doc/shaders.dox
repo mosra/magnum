@@ -58,23 +58,7 @@ buffer into the mesh, you need to specify which shader attributes are on which
 position in the buffer. See @ref Mesh::addVertexBuffer() for details and usage
 examples. Example mesh configuration for @ref Shaders::Phong shader:
 
-@code{.cpp}
-struct Vertex {
-    Vector3 position;
-    Vector3 normal;
-    Vector2 textureCoordinates;
-};
-Vertex data[] = { ... };
-
-Buffer vertices;
-vertices.setData(data, BufferUsage::StaticDraw);
-
-Mesh mesh;
-mesh.addVertexBuffer(vertices, 0,
-    Shaders::Phong::Position{},
-    Shaders::Phong::Normal{},
-    Shaders::Phong::TextureCoordinates{});
-@endcode
+@snippet MagnumShaders.cpp shaders-setup
 
 Each shader then has its own set of configuration functions. Some configuration
 is static, specified commonly as flags in constructor, directly affecting
@@ -82,19 +66,7 @@ compiled shader code. Other configuration is specified through uniforms and
 various binding points, commonly exposed through various setters. Example
 configuration and rendering using @ref Shaders::Phong :
 
-@code{.cpp}
-Matrix4 transformationMatrix, projectionMatrix;
-Texture2D diffuseTexture, specularTexture;
-
-Shaders::Phong shader{Shaders::Phong::DiffuseTexture};
-shader.setDiffuseTexture(diffuseTexture)
-    .setLightPosition({5.0f, 5.0f, 7.0f})
-    .setTransformationMatrix(transformationMatrix)
-    .setNormalMatrix(transformationMatrix.rotation())
-    .setProjectionMatrix(projectionMatrix);
-
-mesh.draw(shader);
-@endcode
+@snippet MagnumShaders.cpp shaders-rendering
 
 @section shaders-generic Generic vertex attributes
 
@@ -105,12 +77,7 @@ of generic attributes is available in @ref Shaders::Generic class.
 Configuration of the above mesh using generic attributes could then look like
 this:
 
-@code{.cpp}
-mesh.addVertexBuffer(vertices, 0,
-    Shaders::Generic3D::Position{},
-    Shaders::Generic3D::Normal{},
-    Shaders::Generic3D::TextureCoordinates{});
-@endcode
+@snippet MagnumShaders.cpp shaders-generic
 
 Note that in this particular case both configurations are equivalent, because
 @ref Shaders::Phong also uses generic vertex attribute definitions.
@@ -119,15 +86,7 @@ Then you can render the mesh using @ref Shaders::Phong shader like above, or
 use for example @ref Shaders::Flat3D or even @ref Shaders::MeshVisualizer with
 the same mesh reconfiguration. The unused attributes will be simply ignored.
 
-@code{.cpp}
-Shaders::MeshVisualizer visualizerShader{Shaders::MeshVisualizer::Wireframe};
-visualizerShader.setColor(Color3::fromHSV(216.0_degf, 0.85f, 1.0f))
-    .setWireframeColor(Color3{0.95f})
-    .setViewportSize(defaultFramebuffer.viewport().size())
-    .setTransformationProjectionMatrix(projectionMatrix*transformationMatrix);
-
-mesh.draw(visualizerShader);
-@endcode
+@snippet MagnumShaders.cpp shaders-meshvisualizer
 
 The @ref MeshTools::compile() utility configures meshes using generic vertex
 attribute definitions to make them usable with any shader.

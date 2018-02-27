@@ -56,33 +56,11 @@ attribute --- the shader accepts four-component color attribute but, similarly
 to all other attributes, it's possible to supply also three-component colors if
 alpha is not important.
 
-@code{.cpp}
-struct Vertex {
-    Vector3 position;
-    Color3 color;
-};
-Vertex data[] = { ... };
-
-Buffer vertices;
-vertices.setData(data, BufferUsage::StaticDraw);
-
-Mesh mesh;
-mesh.addVertexBuffer(vertices, 0,
-    Shaders::VertexColor3D::Position{},
-    Shaders::VertexColor3D::Color{Shaders::VertexColor3D::Color::Components::Three});
-@endcode
+@snippet MagnumShaders.cpp VertexColor-usage1
 
 Common rendering setup:
 
-@code{.cpp}
-Matrix4 transformationMatrix = Matrix4::translation(Vector3::zAxis(-5.0f));
-Matrix4 projectionMatrix = Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.001f, 100.0f);
-
-Shaders::VertexColor3D shader;
-shader.setTransformationProjectionMatrix(projectionMatrix*transformationMatrix);
-
-mesh.draw(shader);
-@endcode
+@snippet MagnumShaders.cpp VertexColor-usage2
 
 @see @ref shaders, @ref VertexColor2D, @ref VertexColor3D
 */

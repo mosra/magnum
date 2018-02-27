@@ -68,64 +68,21 @@ For coloring the texture based on intensity you can use the @ref Vector shader.
 
 Common mesh setup:
 
-@code{.cpp}
-struct Vertex {
-    Vector3 position;
-};
-Vertex data[] = { ... };
-
-Buffer vertices;
-vertices.setData(data, BufferUsage::StaticDraw);
-
-Mesh mesh;
-mesh.addVertexBuffer(vertices, 0, Shaders::Flat3D::Position{});
-@endcode
+@snippet MagnumShaders.cpp Flat-usage-colored1
 
 Common rendering setup:
 
-@code{.cpp}
-Matrix4 transformationMatrix = Matrix4::translation(Vector3::zAxis(-5.0f));
-Matrix4 projectionMatrix = Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.001f, 100.0f);
-
-Shaders::Flat3D shader;
-shader.setColor(0x2f83cc_rgbf)
-    .setTransformationProjectionMatrix(projectionMatrix*transformationMatrix);
-
-mesh.draw(shader);
-@endcode
+@snippet MagnumShaders.cpp Flat-usage-colored2
 
 @subsection Shaders-Flat-usage-textured Textured mesh
 
 Common mesh setup:
 
-@code{.cpp}
-struct Vertex {
-    Vector3 position;
-    Vector2 textureCoordinates;
-};
-Vertex data[] = { ... };
-
-Buffer vertices;
-vertices.setData(data, BufferUsage::StaticDraw);
-
-Mesh mesh;
-mesh.addVertexBuffer(vertices, 0,
-    Shaders::Flat3D::Position{},
-    Shaders::Flat3D::TextureCoordinates{});
-@endcode
+@snippet MagnumShaders.cpp Flat-usage-textured1
 
 Common rendering setup:
 
-@code{.cpp}
-Matrix4 transformationMatrix, projectionMatrix;
-Texture2D texture;
-
-Shaders::Flat3D shader{Shaders::Flat3D::Textured};
-shader.setTransformationProjectionMatrix(projectionMatrix*transformationMatrix)
-    .setTexture(texture);
-
-mesh.draw(shader);
-@endcode
+@snippet MagnumShaders.cpp Flat-usage-textured2
 
 @see @ref shaders, @ref Flat2D, @ref Flat3D
 */

@@ -55,35 +55,11 @@ attributes in your triangle mesh and call at least
 
 Common mesh setup:
 
-@code{.cpp}
-struct Vertex {
-    Vector2 position;
-    Vector2 textureCoordinates;
-};
-Vertex data[] = { ... };
-
-Buffer vertices;
-vertices.setData(data, BufferUsage::StaticDraw);
-
-Mesh mesh;
-mesh.addVertexBuffer(vertices, 0,
-    Shaders::Vector2D::Position{},
-    Shaders::Vector2D::TextureCoordinates{});
-@endcode
+@snippet MagnumShaders.cpp Vector-usage1
 
 Common rendering setup:
 
-@code{.cpp}
-Matrix3 transformationMatrix, projectionMatrix;
-Texture2D texture;
-
-Shaders::Vector2D shader;
-shader.setColor(0x2f83cc_rgbf)
-    .setVectorTexture(texture)
-    .setTransformationProjectionMatrix(projectionMatrix*transformationMatrix);
-
-mesh.draw(shader);
-@endcode
+@snippet MagnumShaders.cpp Vector-usage2
 
 @see @ref shaders, @ref Vector2D, @ref Vector3D
 */
