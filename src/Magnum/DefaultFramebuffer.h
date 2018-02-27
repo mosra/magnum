@@ -55,8 +55,8 @@ implementation, for example:
 
 @snippet Magnum-framebuffer.cpp DefaultFramebuffer-usage-clear
 
-See documentation of particular functions and @ref Framebuffer documentation for
-more involved usage, usage of non-default or multiple framebuffers.
+See documentation of particular functions and @ref Framebuffer documentation
+for more involved usage, usage of non-default or multiple framebuffers.
 
 @section DefaultFramebuffer-performance-optimizations Performance optimizations
 

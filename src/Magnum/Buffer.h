@@ -150,7 +150,7 @@ more information about automatic conversions etc.
 @snippet Magnum.cpp Buffer-setdata
 
 There is also overload for array-like containers from STL, such as
-@ref std::vector or @ref std::array "std::array":
+@ref std::vector or @link std::array @endlink:
 
 @snippet Magnum.cpp Buffer-setdata-stl
 

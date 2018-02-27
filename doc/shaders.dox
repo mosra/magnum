@@ -64,7 +64,7 @@ Each shader then has its own set of configuration functions. Some configuration
 is static, specified commonly as flags in constructor, directly affecting
 compiled shader code. Other configuration is specified through uniforms and
 various binding points, commonly exposed through various setters. Example
-configuration and rendering using @ref Shaders::Phong :
+configuration and rendering using @link Shaders::Phong @endlink:
 
 @snippet MagnumShaders.cpp shaders-rendering
 

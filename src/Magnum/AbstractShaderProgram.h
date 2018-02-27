@@ -357,9 +357,9 @@ setting functions as needed. After setting up required parameters call
 
 @section AbstractShaderProgram-types Mapping between GLSL and Magnum types
 
-See @ref types for more information, only types with GLSL equivalent can be used
-(and their super- or subclasses with the same size and underlying type). See
-also @ref Attribute::DataType enum for additional type options.
+See @ref types for more information, only types with GLSL equivalent can be
+used (and their super- or subclasses with the same size and underlying type).
+See also @ref Attribute::DataType enum for additional type options.
 
 @requires_gl30 Extension @extension{EXT,gpu_shader4} is required when using
     integer attributes (i.e. @ref UnsignedInt, @ref Int, @ref Vector2ui,

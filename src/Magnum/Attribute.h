@@ -52,8 +52,8 @@ Template parameter @p T is the type which is used for shader attribute, e.g.
 vertex buffers to mesh. By default it is the same as type used in shader (e.g.
 @ref DataType::Int for @ref Vector4i). It's also possible to pass integer data
 to floating-point shader inputs. In this case you may want to normalize the
-values (e.g. color components from @cpp 0 @ce -- @cpp 255 @ce to @cpp 0.0f @ce -- @cpp 1.0f @ce)
---- see @ref DataOption::Normalized.
+values (e.g. color components from @cpp 0 @ce -- @cpp 255 @ce to @cpp 0.0f @ce
+-- @cpp 1.0f @ce) --- see @ref DataOption::Normalized.
 
 Only some types are allowed as attribute types, see @ref AbstractShaderProgram-types
 for more information.

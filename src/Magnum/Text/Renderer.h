@@ -180,8 +180,8 @@ mesh:
 
 @snippet MagnumText.cpp Renderer-usage1
 
-See @ref render(AbstractFont&, const GlyphCache&, Float, const std::string&, Alignment) and
-@ref render(AbstractFont&, const GlyphCache&, Float, const std::string&, Buffer&, Buffer&, BufferUsage, Alignment)
+See @ref render(AbstractFont&, const GlyphCache&, Float, const std::string&, Alignment)
+and @ref render(AbstractFont&, const GlyphCache&, Float, const std::string&, Buffer&, Buffer&, BufferUsage, Alignment)
 for more information.
 
 While this method is sufficient for one-shot rendering of static texts, for

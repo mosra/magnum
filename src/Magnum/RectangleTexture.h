@@ -50,7 +50,7 @@ data from e.g. @ref Image2D. Example configuration:
 
 @snippet Magnum.cpp RectangleTexture-usage
 
-In shader, the texture is used via @glsl sampler2DRect @ce,
+In a shader, the texture is used via @glsl sampler2DRect @ce,
 @glsl sampler2DRectShadow @ce, @glsl isampler2DRect @ce or @glsl usampler2DRect @ce.
 See @ref AbstractShaderProgram documentation for more information about usage
 in shaders.

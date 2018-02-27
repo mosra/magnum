@@ -74,8 +74,8 @@ data from e.g. set of Image objects:
 
 @snippet Magnum.cpp CubeMapTexture-usage
 
-In shader, the texture is used via @cpp samplerCube @ce, @cpp samplerCubeShadow @ce,
-@cpp isamplerCube @ce or @cpp usamplerCube @ce. Unlike in classic textures,
+In shader, the texture is used via @glsl samplerCube @ce, @glsl samplerCubeShadow @ce,
+@glsl isamplerCube @ce or @glsl usamplerCube @ce. Unlike in classic textures,
 coordinates for cube map textures is signed three-part vector from the center
 of the cube, which intersects one of the six sides of the cube map. See
 @ref AbstractShaderProgram for more information about usage in shaders.
