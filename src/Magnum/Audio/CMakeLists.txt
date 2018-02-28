@@ -82,7 +82,7 @@ install(FILES ${MagnumAudio_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/A
 add_library(Magnum::Audio ALIAS MagnumAudio)
 
 if(WITH_AL_INFO)
-    add_executable(magnum-al-info magnum-al-info.cpp)
+    add_executable(magnum-al-info al-info.cpp)
     target_link_libraries(magnum-al-info MagnumAudio)
     set_target_properties(magnum-al-info PROPERTIES FOLDER "Magnum/Audio")
 
@@ -96,7 +96,7 @@ if(WITH_AL_INFO)
             MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/MacOSXBundleInfo.plist.in
             XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED "YES")
     elseif(CORRADE_TARGET_EMSCRIPTEN)
-        install(FILES magnum-al-info.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/magnum-al-info RENAME index.html)
+        install(FILES al-info.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/magnum-al-info RENAME index.html)
         install(TARGETS magnum-al-info DESTINATION ${MAGNUM_DEPLOY_PREFIX}/magnum-al-info)
         install(FILES
             ${CMAKE_SOURCE_DIR}/src/Magnum/Platform/WebApplication.css

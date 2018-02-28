@@ -724,7 +724,7 @@ endif()
 
 # Magnum Info
 if(WITH_MAGNUMINFO)
-    add_executable(magnum-info magnum-info.cpp)
+    add_executable(magnum-info info.cpp)
     target_link_libraries(magnum-info Magnum)
     if(MAGNUM_TARGET_HEADLESS OR CORRADE_TARGET_EMSCRIPTEN)
         target_link_libraries(magnum-info MagnumWindowlessEglApplication)
@@ -759,7 +759,7 @@ if(WITH_MAGNUMINFO)
             MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/MacOSXBundleInfo.plist.in
             XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED "YES")
     elseif(CORRADE_TARGET_EMSCRIPTEN)
-        install(FILES magnum-info.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/magnum-info RENAME index.html)
+        install(FILES info.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/magnum-info RENAME index.html)
         install(TARGETS magnum-info DESTINATION ${MAGNUM_DEPLOY_PREFIX}/magnum-info)
         install(FILES
             WebApplication.css
