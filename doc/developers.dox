@@ -596,7 +596,7 @@ only in inverse.
 
 1.  Add a new `TARGET_*` variable:
     -   to root `CMakeLists.txt`, which either gets enabled automatically based
-        on system introspection or is exposed through a @cmake option() @ce
+        on system introspection or is exposed through an @cmake option() @ce
         command
     -   to the list of variables extracted out of `configure.h` in
         `modules/FindMagnum.cmake`

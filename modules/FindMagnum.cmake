@@ -162,7 +162,7 @@
 # are included just for backwards compatibility and only if
 # :variable:`MAGNUM_BUILD_DEPRECATED` is enabled:
 #
-#  MAGNUM_LIBRARIES            - Expands to ``Magnum::Magnum`` target. Use
+#  MAGNUM_LIBRARIES             - Expands to ``Magnum::Magnum`` target. Use
 #   ``Magnum::Magnum`` target directly instead.
 #  MAGNUM_*_LIBRARIES           - Expands to ``Magnum::*`` target. Use
 #   ``Magnum::*`` target directly instead.
