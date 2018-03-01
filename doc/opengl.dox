@@ -28,7 +28,10 @@
 
 The following table maps OpenGL function names to Magnum API, useful for
 developers with existing OpenGL background. Note that, as reverse mapping, each
-function documentation also contains list of OpenGL functions used.
+function documentation also contains list of OpenGL functions used. You can
+also use the search functionality to find out which OpenGL API corresponds to
+which Magnum function, class or enum value. Just enter name of an OpenGL
+function, define or GLSL name into the search box.
 
 -   @subpage opengl-mapping
 
