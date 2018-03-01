@@ -96,6 +96,18 @@ Magnum contexts. Enabled by default.
 #undef MAGNUM_BUILD_MULTITHREADED
 
 /**
+@brief OpenGL interoperability
+
+Defined if the engine is built with OpenGL interoperability enabled --- extra
+APIs in various libraries interacting with the @ref Magnum::GL "GL" library.
+Enabled by default in case the @ref Magnum::GL "GL" library is built.
+@see @ref MAGNUM_TARGET_GLES2, @ref MAGNUM_TARGET_GLES3,
+    @ref MAGNUM_TARGET_DESKTOP_GLES, @ref building, @ref cmake
+*/
+#define MAGNUM_TARGET_GL
+/* (enabled by default) */
+
+/**
 @brief OpenGL ES target
 
 Defined if the engine is built for OpenGL ES 3.0 or OpenGL ES 2.0.

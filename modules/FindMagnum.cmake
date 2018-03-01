@@ -120,6 +120,7 @@
 #  MAGNUM_BUILD_STATIC          - Defined if compiled as static libraries
 #  MAGNUM_BUILD_MULTITHREADED   - Defined if compiled in a way that allows
 #   having multiple thread-local Magnum contexts
+#  MAGNUM_TARGET_GL             - Defined if compiled with OpenGL interop
 #  MAGNUM_TARGET_GLES           - Defined if compiled for OpenGL ES
 #  MAGNUM_TARGET_GLES2          - Defined if compiled for OpenGL ES 2.0
 #  MAGNUM_TARGET_GLES3          - Defined if compiled for OpenGL ES 3.0
@@ -248,6 +249,7 @@ set(_magnumFlags
     BUILD_DEPRECATED
     BUILD_STATIC
     BUILD_MULTITHREADED
+    TARGET_GL
     TARGET_GLES
     TARGET_GLES2
     TARGET_GLES3

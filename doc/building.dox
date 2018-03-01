@@ -383,6 +383,10 @@ By default the engine is built for desktop OpenGL. Using the `TARGET_*` CMake
 options you can target other platforms. Note that some features are
 available for desktop OpenGL only, see @ref requires-gl.
 
+-   `TARGET_GL` --- Build libraries with OpenGL interoperability enabled.
+    Enabled by default when `WITH_GL` is enabled. Disabling this will cause
+    libraries to not depend on the @ref GL library, but doesn't affect the
+    @ref GL library itself.
 -   `TARGET_GLES` --- Target OpenGL ES. Available only when `WITH_GL` is
     enabled.
 -   `TARGET_GLES2` --- Target OpenGL ES 2.0 instead of 3.0 and later. Available
