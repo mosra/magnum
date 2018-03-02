@@ -183,6 +183,17 @@ for more information.
 #undef MAGNUM_TARGET_HEADLESS
 #endif
 
+/**
+@brief Vulkan interoperability
+
+Defined if the engine is built with Vulkan interoperability enabled --- extra
+APIs in various libraries interacting with the @ref Magnum::Vk "Vk" library.
+Enabled by default in case the @ref Magnum::Vk "Vk" library is built.
+@see @ref building, @ref cmake
+*/
+#define MAGNUM_TARGET_VK
+#undef MAGNUM_TARGET_VK
+
 /** @{ @name Basic type definitions
 
 See @ref types for more information.

@@ -408,6 +408,10 @@ available for desktop OpenGL only, see @ref requires-gl.
     used everywhere instead of platform-specific toolkits like CGL, GLX or WGL.
     Supported mainly on OpenGL ES drivers. Available only when `WITH_GL` is
     enabled.
+-   `TARGET_VK` --- Build libraries with Vulkan interoperability enabled.
+    Enabled by default when `WITH_VK` is enabled. Disabling this will cause
+    libraries to not depend on the @ref Vk library, but  doesn't affect the
+    @ref Vk library itself.
 
 By default the engine is built in a way that allows having multiple independent
 thread-local Magnum contents. This might cause some performance penalties ---
@@ -444,6 +448,7 @@ be built and which not:
 -   `WITH_TEXTURETOOLS` --- Build the @ref TextureTools library. Enabled
     automatically if `WITH_TEXT` or `WITH_DISTANCEFIELDCONVERTER` is enabled.
 -   `WITH_TRADE` --- Build the @ref Trade library.
+-   `WITH_VK` --- Build the @ref Vk library
 
 There are more involved component dependencies that are not described here (for
 example the @ref DebugTools has some functionality that gets built only when

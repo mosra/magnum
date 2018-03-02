@@ -104,6 +104,7 @@ the components. The optional components are:
 -   `Text` --- @ref Text library
 -   `TextureTools` --- @ref TextureTools library
 -   `Trade` --- @ref Trade library
+-   `Vk` --- @ref Vk library
 
 Platform namespace is split into more components:
 
@@ -219,6 +220,8 @@ are also available as preprocessor variables if including
 -   `MAGNUM_TARGET_WEBGL` --- Defined if compiled for WebGL
 -   `MAGNUM_TARGET_HEADLESS` --- Defined if compiled for headless machines. See
     @ref MAGNUM_TARGET_HEADLESS documentation for more information.
+-   `MAGNUM_TARGET_VK` --- Defined if compiled with Vulkan interoperability
+    enabled
 
 Workflows without imported targets are deprecated and the following variables
 are included just for backwards compatibility and only if

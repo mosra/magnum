@@ -72,6 +72,7 @@ endif()
 cmake_dependent_option(TARGET_GLES2 "Build for OpenGL ES 2 / WebGL 1.0" ON "TARGET_GLES" OFF)
 cmake_dependent_option(TARGET_DESKTOP_GLES "Build for OpenGL ES on desktop" OFF "TARGET_GLES" OFF)
 cmake_dependent_option(TARGET_HEADLESS "Build command-line utilities for use on a headless machines" OFF "WITH_GL" OFF)
+cmake_dependent_option(TARGET_VK "Build libraries with Vulkan interoperability" ON "WITH_VK" OFF)
 
 # Magnum GL Info (currently only using GLX/CGL/EGL on *nix, WGL/EGL on Windows
 # and EGL on Emscripten)
@@ -115,8 +116,10 @@ cmake_dependent_option(WITH_TEXTURETOOLS "Build TextureTools library" ON "NOT WI
 cmake_dependent_option(WITH_TRADE "Build Trade library" ON "NOT WITH_MESHTOOLS;NOT WITH_PRIMITIVES;NOT WITH_IMAGECONVERTER;NOT WITH_ANYIMAGEIMPORTER;NOT WITH_ANYIMAGECONVERTER;NOT WITH_ANYSCENEIMPORTER;NOT WITH_OBJIMPORTER;NOT WITH_TGAIMAGECONVERTER;NOT WITH_TGAIMPORTER" ON)
 cmake_dependent_option(WITH_GL "Build GL library" ON "NOT WITH_SHADERS;NOT WITH_TEXT;NOT WITH_GL_INFO;NOT WITH_ANDROIDAPPLICATION;NOT WITH_WINDOWLESSIOSAPPLICATION;NOT WITH_CGLCONTEXT;NOT WITH_GLXAPPLICATION;NOT WITH_GLXCONTEXT;NOT WITH_XEGLAPPLICATION;NOT WITH_WINDOWLESSWGLAPPLICATION;NOT WITH_GLXCONTEXT;NOT WITH_XEGLAPPLICATION;NOT WITH_WINDOWLESSWGLAPPLICATION;NOT WITH_WGLCONTEXT;NOT WITH_WINDOWLESSWINDOWSEGLAPPLICATION;NOT WITH_GLUTAPPLICATION;NOT WITH_DISTANCEFIELDCONVERTER;NOT WITH_FONTCONVERTER;NOT WITH_IMAGECONVERTER" ON)
 option(WITH_PRIMITIVES "Builf Primitives library" ON)
+option(WITH_VK "Build Vk library" OFF)
 
 cmake_dependent_option(TARGET_GL "Build libraries with OpenGL interoperability" ON "WITH_GL" OFF)
+cmake_dependent_option(TARGET_VK "Build libraries with Vulkan interoperability" ON "WITH_VK" OFF)
 
 # Magnum AL Info
 cmake_dependent_option(WITH_AL_INFO "Build magnum-al-info utility" OFF "WITH_AUDIO" OFF)
@@ -239,6 +242,9 @@ if(TARGET_DESKTOP_GLES)
 endif()
 if(TARGET_HEADLESS)
     set(MAGNUM_TARGET_HEADLESS 1)
+endif()
+if(TARGET_VK)
+    set(MAGNUM_TARGET_VK 1)
 endif()
 
 if(CORRADE_TARGET_EMSCRIPTEN)

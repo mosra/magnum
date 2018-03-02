@@ -246,6 +246,10 @@ if(WITH_TRADE)
     add_subdirectory(Trade)
 endif()
 
+if(WITH_VK)
+    add_subdirectory(Vk)
+endif()
+
 if(BUILD_TESTS)
     # Math library with graceful assert for testing
     add_library(MagnumMathTestLib ${SHARED_OR_STATIC}

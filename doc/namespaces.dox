@@ -456,6 +456,28 @@ Additional plugins are built separately, see particular `Trade::*Importer` and
 information.
 */
 
+/** @dir Magnum/Vk
+ * @brief Namespace @ref Magnum::Vk
+ */
+/** @namespace Magnum::Vk
+@brief Vulkan wrapping layer
+
+C++14 wrappers and helpers for Vulkan development.
+
+This library is built if `WITH_VK` is enabled when building Magnum. To use this
+library with CMake, you need to request the `Vk` component of the `Magnum`
+package and link to the `Magnum::Vk` target:
+
+@code{.cmake}
+find_package(Magnum REQUIRED Vk)
+
+# ...
+target_link_libraries(your-app Magnum::Vk)
+@endcode
+
+See @ref building, @ref cmake and @ref vulkan for more information.
+*/
+
 /** @dir magnum/src/MagnumPlugins
  * @brief Magnum plugins (part of @ref building "Magnum library")
  */

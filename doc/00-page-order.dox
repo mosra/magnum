@@ -33,6 +33,7 @@
 @page example-index Examples
 @page tips Tips and tricks
 @page utilities Utilities
+@page vulkan Vulkan
 @page opengl OpenGL
 @page openal OpenAL
 
