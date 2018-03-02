@@ -23,7 +23,9 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-add_subdirectory(OpenAL)
+if(WITH_AUDIO)
+    add_subdirectory(OpenAL)
+endif()
 add_subdirectory(OpenGL)
 
 if(MAGNUM_BUILD_DEPRECATED)
