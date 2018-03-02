@@ -1,0 +1,157 @@
+@require(passthru, functions, enums, options, version, extensions)
+#ifndef _flextvk_h_
+#define _flextvk_h_
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018
+              Vladimír Vondruš <mosra@@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+#include <cstdint>
+#include <Corrade/Utility/VisibilityMacros.h>
+
+#include "Magnum/configure.h"
+
+/* Defensive include guards */
+
+#if defined(VULKAN_H_)
+#error Attempt to include auto-generated header after including vulkan.h
+#endif
+#if defined(VK_PLATFORM_H_)
+#error Attempt to include auto-generated header after including vk_platform.h
+#endif
+
+#define VULKAN_H_
+#define VK_PLATFORM_H_
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#ifndef DOXYGEN_GENERATING_OUTPUT /* So the macro names are preserved in the docs */
+
+/* Function declaration macros */
+
+#ifndef MAGNUM_BUILD_STATIC
+    #ifdef FlextVk_EXPORTS
+        #define FLEXTVK_EXPORT CORRADE_VISIBILITY_EXPORT
+    #else
+        #define FLEXTVK_EXPORT CORRADE_VISIBILITY_IMPORT
+    #endif
+#else
+    #define FLEXTVK_EXPORT CORRADE_VISIBILITY_STATIC
+#endif
+
+/* Verbatim copied from upstream vk_platform.h */
+#if defined(_WIN32)
+    // On Windows, Vulkan commands use the stdcall convention
+    #define VKAPI_ATTR
+    #define VKAPI_CALL __stdcall
+    #define VKAPI_PTR  VKAPI_CALL
+#elif defined(__ANDROID__) && defined(__ARM_ARCH) && __ARM_ARCH < 7
+    #error "Vulkan isn't supported for the 'armeabi' NDK ABI"
+#elif defined(__ANDROID__) && defined(__ARM_ARCH) && __ARM_ARCH >= 7 && defined(__ARM_32BIT_STATE)
+    // On Android 32-bit ARM targets, Vulkan functions use the "hardfloat"
+    // calling convention, i.e. float parameters are passed in registers. This
+    // is true even if the rest of the application passes floats on the stack,
+    // as it does by default when compiling for the armeabi-v7a NDK ABI.
+    #define VKAPI_ATTR __attribute__((pcs("aapcs-vfp")))
+    #define VKAPI_CALL
+    #define VKAPI_PTR  VKAPI_ATTR
+#else
+    // On other platforms, use the default calling convention
+    #define VKAPI_ATTR
+    #define VKAPI_CALL
+    #define VKAPI_PTR
+#endif
+
+/* Enums */
+
+@enums
+
+/* Data types */
+
+typedef std::size_t size_t;
+
+@passthru
+
+/* I'll bite the bullet and expect that vkCreateInstance(),
+   vkEnumerateInstanceExtensionProperties() and vkEnumerateInstanceLayerProperties()
+   functions can be loaded statically to avoid the need for a global
+   flextVkInit() that needs to be called before everything else */
+@for cat,funcs in functions:
+@for f in funcs:
+@if f.name in ['GetInstanceProcAddr', 'EnumerateInstanceExtensionProperties', 'EnumerateInstanceLayerProperties', 'CreateInstance']:
+VKAPI_ATTR @f.returntype VKAPI_CALL vk@f.name\
+(@f.param_type_list_string());
+@end
+@end
+@end
+
+/* Per-instance function pointers */
+struct FlextVkInstance {
+    @for cat,funcs in functions:
+    @if funcs:
+
+    /* VK_@cat */
+
+    @for f in funcs:
+    @if (f.params[0][1] in ['VkInstance', 'VkPhysicalDevice'] or f.name == 'GetDeviceProcAddr') and f.name != 'GetInstanceProcAddr':
+    @f.returntype\
+    (VKAPI_PTR *@f.name)(@f.param_type_list_string());
+    @end
+    @end
+    @end
+    @end
+};
+
+/* Per-instance function pointer initialization */
+void FLEXTVK_EXPORT flextVkInitInstance(VkInstance instance, FlextVkInstance* data);
+
+/* Per-device function pointers */
+struct FlextVkDevice {
+    @for cat,funcs in functions:
+    @if funcs:
+
+    /* VK_@cat */
+
+    @for f in funcs:
+    @if f.params[0][1] not in ['VkInstance', 'VkPhysicalDevice'] and f.name not in ['GetInstanceProcAddr', 'GetDeviceProcAddr', 'EnumerateInstanceExtensionProperties', 'EnumerateInstanceLayerProperties', 'CreateInstance']:
+    @f.returntype\
+    (VKAPI_PTR *@f.name)(@f.param_type_list_string());
+    @end
+    @end
+    @end
+    @end
+};
+
+/* Per-device function pointer initialization */
+void FLEXTVK_EXPORT flextVkInitDevice(VkDevice device, FlextVkDevice* data, PFN_vkVoidFunction(VKAPI_PTR *getDeviceProcAddr)(VkDevice, const char*));
+
+#endif
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
+

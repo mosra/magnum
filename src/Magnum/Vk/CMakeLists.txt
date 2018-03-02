@@ -24,3 +24,48 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+# We don't need system-wide includes
+set(Vulkan_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/src/MagnumExternal/Vulkan)
+find_package(Vulkan REQUIRED)
+
+set(MagnumVk_SRCS )
+set(MagnumVk_HEADERS
+    Vk.h
+
+    visibility.h)
+set(MagnumVk_PRIVATE_HEADERS )
+
+# Vk library
+add_library(MagnumVk ${SHARED_OR_STATIC}
+    ${MagnumVk_SRCS}
+    ${MagnumVk_HEADERS}
+    ${MagnumVk_PRIVATE_HEADERS}
+    $<TARGET_OBJECTS:MagnumFlextVkObjects>)
+set_target_properties(MagnumVk PROPERTIES
+    DEBUG_POSTFIX "-d"
+    FOLDER "Magnum/Vk")
+if(NOT BUILD_STATIC)
+    target_compile_definitions(MagnumVk PRIVATE "FlextVk_EXPORTS")
+    set_target_properties(MagnumVk PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
+elseif(BUILD_STATIC_PIC)
+    set_target_properties(MagnumVk PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
+target_include_directories(MagnumVk PUBLIC
+    ${PROJECT_SOURCE_DIR}/src
+    ${PROJECT_BINARY_DIR}/src)
+target_link_libraries(MagnumVk PUBLIC
+    Magnum
+    Vulkan::Vulkan)
+
+install(TARGETS MagnumVk
+    RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+    LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+    ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+install(FILES ${MagnumVk_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Vk)
+
+# Magnum Vk library target alias for superprojects
+add_library(Magnum::Vk ALIAS MagnumVk)
+
+if(BUILD_TESTS)
+    add_subdirectory(Test)
+endif()

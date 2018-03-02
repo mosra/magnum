@@ -23,16 +23,14 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-if(WITH_AUDIO)
-    add_subdirectory(OpenAL)
+add_library(MagnumFlextVkObjects OBJECT flextVk.cpp)
+target_include_directories(MagnumFlextVkObjects PUBLIC $<TARGET_PROPERTY:MagnumVk,INTERFACE_INCLUDE_DIRECTORIES>)
+if(NOT BUILD_STATIC)
+    target_compile_definitions(MagnumFlextVkObjects PRIVATE "FlextVk_EXPORTS")
 endif()
-if(WITH_GL)
-    add_subdirectory(OpenGL)
+if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+    set_target_properties(MagnumFlextVkObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-if(WITH_VK)
-    add_subdirectory(Vulkan)
-endif()
+set_target_properties(MagnumFlextVkObjects PROPERTIES FOLDER "MagnumExternal/Vulkan")
 
-if(MAGNUM_BUILD_DEPRECATED)
-    add_subdirectory(Optional)
-endif()
+install(FILES flextVk.h flextVkGlobal.h DESTINATION ${MAGNUM_EXTERNAL_INCLUDE_INSTALL_DIR}/Vulkan)

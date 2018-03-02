@@ -1,0 +1,25 @@
+version 1.1 vulkan
+
+extension KHR_16bit_storage optional
+extension KHR_bind_memory2 optional
+extension KHR_dedicated_allocation optional
+extension KHR_descriptor_update_template optional
+extension KHR_device_group optional
+extension KHR_device_group_creation optional
+extension KHR_external_memory optional
+extension KHR_external_memory_capabilities optional
+extension KHR_external_semaphore optional
+extension KHR_external_semaphore_capabilities optional
+extension KHR_external_fence optional
+extension KHR_external_fence_capabilities optional
+extension KHR_get_memory_requirements2 optional
+extension KHR_get_physical_device_properties2 optional
+extension KHR_maintenance1 optional
+extension KHR_maintenance2 optional
+extension KHR_maintenance3 optional
+extension KHR_multiview optional
+extension KHR_relaxed_block_layout optional
+extension KHR_sampler_ycbcr_conversion optional
+extension KHR_shader_draw_parameters optional
+extension KHR_storage_buffer_storage_class optional
+extension KHR_variable_pointers optional

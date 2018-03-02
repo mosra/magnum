@@ -607,6 +607,22 @@ In order to remove OpenAL functionality, be sure to touch all places mentioned
 above, only in inverse --- but usually @ref developers-deprecation "deprecate first",
 unless it doesn't affect public API at all.
 
+@section developers-vk-extensions Checklist for adding / removing Vulkan versions and extensions
+
+@todoc adapt from the GL section
+
+In order to remove Vulkan functionality, be sure to touch all places mentioned
+above, only in inverse --- but usually @ref developers-deprecation "deprecate first",
+unless it doesn't affect public API at all.
+
+@section developers-vk-functionality Checklist for adding / removing Vulkan functionality
+
+@todoc adapt from the GL section
+
+In order to remove Vulkan functionality, be sure to touch all places mentioned
+above, only in inverse --- but usually @ref developers-deprecation "deprecate first",
+unless it doesn't affect public API at all.
+
 @section developers-dependency Checklist for adding, removing or updating a dependency
 
 1.  Verify that there are no important clients stuck on the old version with no
