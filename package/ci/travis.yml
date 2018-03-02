@@ -64,6 +64,19 @@ matrix:
     dist: trusty
     compiler: gcc
     env:
+    - JOBID=linux-vulkan
+    - TARGET=desktop-vulkan
+    - CMAKE_CXX_FLAGS="--coverage"
+    addons:
+      apt:
+        packages:
+        - ninja-build
+        - lcov
+  - language: cpp
+    os: linux
+    dist: trusty
+    compiler: gcc
+    env:
     - JOBID=linux-es2
     - TARGET=desktop-gles
     - TARGET_GLES2=ON
@@ -170,12 +183,12 @@ cache:
   - $HOME/cmake
 
 install:
-- if [ "$TRAVIS_OS_NAME" == "linux" ] && [ ! "$TARGET" == "desktop-sanitizers" ] && [ ! "$TARGET" == "android" ]; then export CXX=g++-4.7; fi
+- if [ "$TRAVIS_OS_NAME" == "linux" ] && [ ! "$TARGET" == "desktop-sanitizers" ] && [ ! "$TARGET" == "android" ] && [ ! "$TARGET" == "desktop-vulkan" ]; then export CXX=g++-4.7; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "desktop-sanitizers" ]; then export CXX=clang++-3.8; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "desktop" ]; then export WITH_GLUTAPPLICATION=ON; fi
-- if [ "$WITH_GLUTAPPLICATION" != "ON" ]; then export WITH_GLUTAPPLICATION=OFF; fi
+- if [ "$WITH_GLUTAPPLICATION" != "ON" ] && [ ! "$TARGET" == "desktop-vulkan" ]; then export WITH_GLUTAPPLICATION=OFF; fi
 - if [ "$BUILD_DEPRECATED" != "OFF" ]; then export BUILD_DEPRECATED=ON; fi
-- if [ "$TRAVIS_OS_NAME" == "linux" ]; then export PLATFORM_GL_API=GLX; fi
+- if [ "$TRAVIS_OS_NAME" == "linux" ] && [ ! "$TARGET" == "desktop-vulkan" ]; then export PLATFORM_GL_API=GLX; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "android" ]; then wget -nc https://dl.google.com/android/repository/android-ndk-r16b-linux-x86_64.zip && unzip -q android-*.zip; fi
 # Download CMake 2.8.12 to ensure we're still compatible with it (Travis has
 # 3.9 since December 2017). Also, the PATH setting can't be cached, so it's
@@ -183,9 +196,9 @@ install:
 # are running, so for it we use the preinstalled CMake. Android needs CMake
 # 3.7, but https://gitlab.kitware.com/cmake/cmake/issues/17253 is fixed in
 # 3.9.2, so grab that.
-- if [ "$TRAVIS_OS_NAME" == "linux" ] && [ ! "$TARGET" == "desktop-sanitizers" ] && [ ! "$TARGET" == "android" ] && [ ! -e "$HOME/cmake/bin" ]; then cd $HOME ; wget -nc --no-check-certificate https://cmake.org/files/v2.8/cmake-2.8.12.2-Linux-i386.tar.gz && mkdir -p cmake && cd cmake && tar --strip-components=1 -xzf ../cmake-2.8.12.2-Linux-i386.tar.gz && cd $TRAVIS_BUILD_DIR ; fi
+- if [ "$TRAVIS_OS_NAME" == "linux" ] && [ ! "$TARGET" == "desktop-sanitizers" ] && [ ! "$TARGET" == "android" ] && [ ! "$TARGET" == "desktop-vulkan" ] && [ ! -e "$HOME/cmake/bin" ]; then cd $HOME ; wget -nc --no-check-certificate https://cmake.org/files/v2.8/cmake-2.8.12.2-Linux-i386.tar.gz && mkdir -p cmake && cd cmake && tar --strip-components=1 -xzf ../cmake-2.8.12.2-Linux-i386.tar.gz && cd $TRAVIS_BUILD_DIR ; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "android" ] && [ ! -e "$HOME/cmake/bin" ]; then cd $HOME ; wget -nc --no-check-certificate https://cmake.org/files/v3.9/cmake-3.9.2-Linux-x86_64.tar.gz && mkdir -p cmake && cd cmake && tar --strip-components=1 -xzf ../cmake-3.9.2-Linux-x86_64.tar.gz && cd $TRAVIS_BUILD_DIR ; fi
-- if [ "$TRAVIS_OS_NAME" == "linux" ] && [ ! "$TARGET" == "desktop-sanitizers" ]; then export PATH=$HOME/cmake/bin:$PATH && cmake --version; fi
+- if [ "$TRAVIS_OS_NAME" == "linux" ] && [ ! "$TARGET" == "desktop-vulkan" ] && [ ! "$TARGET" == "desktop-sanitizers" ]; then export PATH=$HOME/cmake/bin:$PATH && cmake --version; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install ninja; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [[ "$CMAKE_CXX_FLAGS" == *"--coverage"* ]]; then HOMEBREW_NO_AUTO_UPDATE=1 brew install lcov; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop" ]; then export PLATFORM_GL_API=CGL; fi
@@ -203,8 +216,12 @@ install:
 # supporting that. Latest GLFW is tested on macOS.
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && ( [ "$TARGET" == "desktop" ] || [ "$TARGET" == "desktop-sanitizers" ] ) && [ ! -e "$HOME/glfw/include" ]; then wget https://github.com/glfw/glfw/releases/download/3.1.2/glfw-3.1.2.zip && unzip glfw-3.1.2.zip && cd glfw-3.1.2 && mkdir build && cd build && cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/glfw -DCMAKE_BUILD_TYPE=Release -DGLFW_BUILD_EXAMPLES=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_DOCS=OFF -DBUILD_SHARED_LIBS=ON && cmake --build . --target install && cd ../..; fi
 
+# Vulkan (eheh)
+- if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "desktop-vulkan" ]; then g++ package/ci/libvulkan.cpp -std=c++11 -shared -o $HOME/libvulkan.so; fi
+
 script:
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && ( [ "$TARGET" == "desktop" ] || [ "$TARGET" == "desktop-sanitizers" ] ); then ./package/ci/travis-desktop.sh; fi
+- if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "desktop-vulkan" ]; then ./package/ci/travis-desktop-vulkan.sh; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "desktop-gles" ]; then ./package/ci/travis-desktop-gles.sh; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "android" ]; then ./package/ci/travis-android-arm.sh; fi
 - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$TARGET" == "desktop" ]; then ./package/ci/travis-desktop.sh; fi
