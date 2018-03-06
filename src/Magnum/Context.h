@@ -46,7 +46,19 @@ namespace Magnum {
 namespace Implementation {
     struct ContextState;
     struct State;
+
+    enum: std::size_t {
+        ExtensionCount =
+            #ifndef MAGNUM_TARGET_GLES
+            192
+            #elif !defined(MAGNUM_TARGET_WEBGL)
+            128
+            #else
+            24
+            #endif
+    };
 }
+
 namespace Platform { class Context; }
 
 /**
@@ -642,8 +654,8 @@ class MAGNUM_EXPORT Context {
         Flags _flags;
         #endif
 
-        std::array<Version, 256> _extensionRequiredVersion;
-        std::bitset<256> _extensionStatus;
+        std::array<Version, Implementation::ExtensionCount> _extensionRequiredVersion;
+        std::bitset<Implementation::ExtensionCount> _extensionStatus;
         std::vector<Extension> _supportedExtensions;
 
         Implementation::State* _state;

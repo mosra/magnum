@@ -27,11 +27,14 @@
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Context.h"
+#include "Magnum/Version.h"
 
 namespace Magnum { namespace Test {
 
 struct ContextTest: TestSuite::Tester {
     explicit ContextTest();
+
+    void extensions();
 
     void debugFlag();
     void debugFlags();
@@ -41,11 +44,60 @@ struct ContextTest: TestSuite::Tester {
 };
 
 ContextTest::ContextTest() {
-    addTests({&ContextTest::debugFlag,
+    addTests({&ContextTest::extensions,
+
+              &ContextTest::debugFlag,
               &ContextTest::debugFlags,
 
               &ContextTest::debugDetectedDriver,
               &ContextTest::debugDetectedDrivers});
+}
+
+void ContextTest::extensions() {
+    const char* used[Implementation::ExtensionCount]{};
+
+    /* Check that all extension indices are unique */
+    for(Version version: {
+        #ifndef MAGNUM_TARGET_GLES
+        Version::GL300,
+        Version::GL310,
+        Version::GL320,
+        Version::GL330,
+        Version::GL400,
+        Version::GL410,
+        Version::GL420,
+        Version::GL430,
+        Version::GL440,
+        Version::GL450,
+        Version::GL460,
+        #else
+        Version::GLES200,
+        Version::GLES300,
+        #ifndef MAGNUM_TARGET_WEBGL
+        Version::GLES310,
+        Version::GLES320,
+        #endif
+        #endif
+        Version::None})
+    {
+        for(const Extension& e: Extension::extensions(version)) {
+            if(e.index() >= Implementation::ExtensionCount) {
+                Error{} << "Index" << e.index() << "used by" << e.string()
+                        << "larger than" << Implementation::ExtensionCount;
+                CORRADE_VERIFY(false);
+            }
+
+            if(used[e.index()]) {
+                Error{} << "Index" << e.index() << "used by both"
+                        << used[e.index()] << "and" << e.string();
+                CORRADE_VERIFY(false);
+            }
+
+            used[e.index()] = e.string();
+        }
+    }
+
+    CORRADE_VERIFY(true);
 }
 
 void ContextTest::debugFlag() {

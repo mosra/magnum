@@ -484,8 +484,15 @@ in inverse --- but usually @ref developers-deprecation "deprecate first".
     -   to @cpp Context::tryCreate() @ce in `src/Magnum/Context.cpp`
     -   to specify GLSL version in `src/Magnum/Shader.cpp`
     -   to the list in `src/Magnum/Platform/magnum-info.cpp`
-12. Add new extensions to `src/Magnum/Extensions.h`, order them by extension
-    ID that is mentioned in every extension spec file
+    -   to the test in `src/Magnum/Test/ContextTest.cpp`
+12. Add new extensions to `src/Magnum/Extensions.h`
+    -   order them by extension ID that is mentioned in every extension spec
+        file
+    -   update the numbering to stay monotonic and unique, round up start index
+        of next section to nearest ten to make the updates bearable
+    -   in case there's a lot of new extensions, @cpp Implementation::ExtensionCount @ce
+        might needed to be increased
+    -   run `ContextTest` to verify everything is still okay
 13. Update existing extensions with version in which they become core (last
     parameter of the `_extension()` macro)
 14. Update extension list in `src/magnum/Context.cpp` according to changes in
