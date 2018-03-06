@@ -25,8 +25,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file Version.h
- * @brief Enum @ref Magnum::Version, function @ref version()
+/** @file
+ * @brief Enum @ref Magnum::Version, function @ref Magnum::version(), @ref Magnum::isVersionES()
  */
 
 #include <utility>

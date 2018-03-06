@@ -44,14 +44,16 @@ namespace Magnum {
 /**
 @brief Compile-time information about OpenGL extensions
 
-Each extension is `struct` named hierarchically by prefix, vendor and
+Each extension is a `struct` named hierarchically by prefix, vendor and
 extension name taken from list at @ref opengl-support, for example
-`GL::ARB::texture_storage`. Note that desktop extensions are available only on
-desktop build, OpenGL ES 2.0 extensions which are part of ES 3.0 are available
-only on @ref MAGNUM_TARGET_GLES2 "OpenGL ES 2.0 build" and vendor OpenGL ES
-extensions are available only on @ref MAGNUM_TARGET_GLES "OpenGL ES builds".
+`Extensions::GL::ARB::texture_storage`. Note that desktop extensions are
+available only on desktop build, OpenGL ES 2.0 extensions which are part of ES
+3.0 are available only on @ref MAGNUM_TARGET_GLES2 "OpenGL ES 2.0 build",
+vendor OpenGL ES extensions are available only on
+@ref MAGNUM_TARGET_GLES "OpenGL ES builds" and WebGL extensions are available
+only on @ref MAGNUM_TARGET_WEBGL "WebGL builds".
 
-Each struct has the same public methods as @ref Extension class
+Each struct has the same public methods as the @ref Extension class
 (@ref Extension::requiredVersion() "requiredVersion()",
 @ref Extension::coreVersion() "coreVersion()" and @ref Extension::string() "string()"),
 but these structs are better suited for compile-time decisions rather than
