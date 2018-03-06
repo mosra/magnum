@@ -591,6 +591,22 @@ that were used only if the workaround was in place. No need to deprecate
 anything, users explicitly disabling given workaround will only be informed
 that such workaround does not exist anymore.
 
+@section developers-al-extensions Checklist for adding / removing OpenAL versions and extensions
+
+@todoc adapt from the GL section
+
+In order to remove OpenAL functionality, be sure to touch all places mentioned
+above, only in inverse --- but usually @ref developers-deprecation "deprecate first",
+unless it doesn't affect public API at all.
+
+@section developers-al-functionality Checklist for adding / removing OpenAL functionality
+
+@todoc adapt from the GL section
+
+In order to remove OpenAL functionality, be sure to touch all places mentioned
+above, only in inverse --- but usually @ref developers-deprecation "deprecate first",
+unless it doesn't affect public API at all.
+
 @section developers-dependency Checklist for adding, removing or updating a dependency
 
 1.  Verify that there are no important clients stuck on the old version with no
