@@ -1,4 +1,4 @@
-# The following output is taken from `magnum-info --all-extensions` with
+# The following output is taken from `magnum-gl-info --all-extensions` with
 # removed `GL_` prefixes.
 
 version 3.2 es

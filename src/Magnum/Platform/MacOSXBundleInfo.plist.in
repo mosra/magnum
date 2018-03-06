@@ -7,11 +7,11 @@
     <key>CFBundleExecutable</key>
     <string>${MACOSX_BUNDLE_EXECUTABLE_NAME}</string>
     <key>CFBundleIdentifier</key>
-    <string>cz.mosra.magnum.magnum-info</string>
+    <string>cz.mosra.magnum.magnum-gl-info</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>
-    <string>magnum-info</string>
+    <string>magnum-gl-info</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
 

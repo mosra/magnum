@@ -80,14 +80,14 @@
 
 namespace Magnum {
 
-/** @page magnum-info Magnum Info
-@brief Displays information about Magnum engine and OpenGL capabilities
+/** @page magnum-gl-info Magnum GL Info
+@brief Displays information about Magnum engine OpenGL capabilities
 
 @m_footernavigation
 
 @m_div{m-button m-primary} <a href="http://magnum.graphics/showcase/magnum-info/">@m_div{m-big}Live web version @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
 
-@section magnum-info-usage Usage
+@section magnum-gl-info-usage Usage
 
 @code{.sh}
 magnum-info [--magnum-...] [-h|--help] [-s|--short] [--all-extensions]
@@ -102,7 +102,7 @@ Arguments:
 -   `--limits` --- display also limits and implementation-defined values
 -   `--magnum-...` --- engine-specific options (see @ref Context for details)
 
-@subsection magnum-info-usage-emscripten Usage on Emscripten
+@subsection magnum-gl-info-usage-emscripten Usage on Emscripten
 
 When installing Magnum, point the `MAGNUM_DEPLOY_PREFIX` CMake variable to your
 webserver location. The Magnum Info utility is then available in a `magnum-info/`
@@ -111,7 +111,7 @@ above to it via GET parameters. See the relevant section of
 @ref Platform-WindowlessEglApplication-usage-emscripten "WindowlessEglApplication documentation"
 for more information.
 
-@subsection magnum-info-usage-android Usage on Android
+@subsection magnum-gl-info-usage-android Usage on Android
 
 When you have developer-enabled Android device connected or Android emulator
 running, you can use ADB to upload the built executable to device temp
@@ -123,15 +123,15 @@ adb shell /data/local/tmp/magnum-info
 @endcode
 
 You can also use @cb{.sh} adb shell @ce to log directly into the device shell
-and continue from there. All @ref magnum-info-usage "command-line" arguments
+and continue from there. All @ref magnum-gl-info-usage "command-line" arguments
 are supported.
 
-@section magnum-info-example Example output
+@section magnum-gl-info-example Example output
 
 @code{.shell-session}
 
   +---------------------------------------------------------+
-  | Information about Magnum engine and OpenGL capabilities |
+  |   Information about Magnum engine OpenGL capabilities   |
   +---------------------------------------------------------+
 
 Used application: Platform::WindowlessGlxApplication
@@ -196,7 +196,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
 
     Debug() << "";
     Debug() << "  +---------------------------------------------------------+";
-    Debug() << "  | Information about Magnum engine and OpenGL capabilities |";
+    Debug() << "  |   Information about Magnum engine OpenGL capabilities   |";
     Debug() << "  +---------------------------------------------------------+";
     Debug() << "";
 

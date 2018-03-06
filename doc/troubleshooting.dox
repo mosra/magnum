@@ -56,7 +56,7 @@ crashes on GL calls, you might want to try these things:
 -   Check that you use only extensions that are
     @ref GL::Context::isExtensionSupported() "available on your system".
 -   Check that you didn't exceed any implementation-defined limit (see
-    @ref magnum-info output for list of all of them).
+    @ref magnum-gl-info output for list of all of them).
 -   Enable @ref GL::DebugMessage "debug output" to see more detailed errors,
     warnings and performance hints.
 -   If using framebuffer objects,

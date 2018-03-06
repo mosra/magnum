@@ -42,7 +42,7 @@ build() {
         -DWITH_TGAIMAGECONVERTER=ON \
         -DWITH_TGAIMPORTER=ON \
         -DWITH_WAVAUDIOIMPORTER=ON \
-        -DWITH_MAGNUMINFO=ON \
+        -DWITH_GL_INFO=ON \
         -DWITH_AL_INFO=ON \
         -DBUILD_TESTS=OFF
     ninja

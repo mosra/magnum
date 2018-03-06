@@ -177,6 +177,8 @@ See also:
     libraries as well. If using CMake, these dependencies might get linked in
     transitively from other libraries, but that doesn't handle all cases. Due
     to the complexity of this change, no backwards compatibility is provided.
+-   The `magnum-info` utility was renamed to @ref magnum-gl-info. No backwards
+    compatibility symlinks or aliases are provided.
 -   Removed `PixelStorage::setSwapBytes()`, as every Magnum API dealing with
     images basically only asserted that it's not set. Use
     @ref Corrade::Utility::Endianness instead.
@@ -525,7 +527,7 @@ a high-level overview.
 -   New @ref Platform::WindowlessGlxContext "Platform::Windowless*Context"
     classes that manage OpenGL context to make threaded context creation
     possible
--   Ported @ref magnum-info "magnum-info" to Emscripten
+-   Ported @ref magnum-gl-info "magnum-info" to Emscripten
 -   First-class support for scroll events in
     @ref Platform::Sdl2Application::MouseScrollEvent (see
     [mosra/magnum#157](https://github.com/mosra/magnum/pull/157))
@@ -552,7 +554,8 @@ a high-level overview.
     for iOS and macOS
 -   Added @ref Platform::WindowlessGlxApplication::Configuration::setFlags() "Platform::Windowless*Application::Configuration::setFlags()" with
     @ref Platform::WindowlessGlxApplication::Configuration::Flag::Debug "Flag::Debug"
--   @ref magnum-info now accepts `--short` and `--extension-strings` options
+-   @ref magnum-gl-info "magnum-info" now accepts `--short` and
+    `--extension-strings` options
 -   Added @ref Platform::Sdl2Application::windowSize(),
     @ref Platform::GlfwApplication::windowSize()
 -   Extended @ref Platform::Sdl2Application::KeyEvent::Key to be consistent

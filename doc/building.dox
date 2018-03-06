@@ -361,7 +361,7 @@ installed files. The following variables are supported:
     install to `lib64/` instead of `lib/`. In most cases this variable is
     autodetected, so you don't need to set it yourself.
 -   `MAGNUM_DEPLOY_PREFIX` --- Used on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"
-    to override location where web demos and utilities (such as @ref magnum-info)
+    to override location where web demos and utilities (such as @ref magnum-gl-info)
     are installed, so you can have libraries installed to a system location and
     utilities to your webserver, for example. Defaults to ``.``. If a relative
     path is used, it's relative to `CMAKE_INSTALL_PREFIX`.
@@ -546,12 +546,13 @@ default.
 
 There are also a few command-line utilities, also all disabled by default:
 
--   `WITH_MAGNUMINFO` --- Build the @ref magnum-info "magnum-info" executable,
-    which provides information about the engine and OpenGL capabilities.
-    Enables building of one of the windowless application libraries based on
-    the target platform.
+-   `WITH_GL_INFO` --- Build the @ref magnum-gl-info "magnum-gl-info"
+    executable, which provides information about the engine OpenGL
+    capabilities. Enables building of one of the windowless application
+    libraries based on the target platform.
 -   `WITH_AL_INFO` --- Build the @ref magnum-al-info "magnum-al-info"
-    executable, which provides information about OpenAL capabilities.
+    executable, which provides information about the engine OpenAL
+    capabilities.
 -   `WITH_DISTANCEFIELDCONVERTER` --- Build the
     @ref magnum-distancefieldconverter "magnum-distancefieldconverter"
     executable for converting black&white images to distance field textures.
@@ -793,7 +794,7 @@ Then create build directory and run `cmake` and the build command in it.
 
 WebGL 1.0 (GLES 2.0 equivalent) is enabled by default, switch to 2.0 (GLES 3.0
 equivalent) by disabling `TARGET_GLES2`. If you enable one of the
-@ref magnum-info or @ref magnum-al-info utilities, you can override their
+@ref magnum-gl-info or @ref magnum-al-info utilities, you can override their
 install location by setting `MAGNUM_DEPLOY_PREFIX` --- putting them for example
 in your webserver root.
 

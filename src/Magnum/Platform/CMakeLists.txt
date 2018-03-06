@@ -719,57 +719,57 @@ if(NEED_WGLCONTEXT OR WITH_WGLCONTEXT)
     endif()
 endif()
 
-# Magnum Info
-if(WITH_MAGNUMINFO)
-    add_executable(magnum-info info.cpp)
-    target_link_libraries(magnum-info PRIVATE MagnumGL)
+# Magnum GL Info
+if(WITH_GL_INFO)
+    add_executable(magnum-gl-info gl-info.cpp)
+    target_link_libraries(magnum-gl-info PRIVATE MagnumGL)
     if(MAGNUM_TARGET_HEADLESS OR CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
-        target_link_libraries(magnum-info PRIVATE MagnumWindowlessEglApplication)
+        target_link_libraries(magnum-gl-info PRIVATE MagnumWindowlessEglApplication)
     elseif(CORRADE_TARGET_IOS)
-        target_link_libraries(magnum-info PRIVATE MagnumWindowlessIosApplication)
+        target_link_libraries(magnum-gl-info PRIVATE MagnumWindowlessIosApplication)
     elseif(CORRADE_TARGET_APPLE)
-        target_link_libraries(magnum-info PRIVATE MagnumWindowlessCglApplication)
+        target_link_libraries(magnum-gl-info PRIVATE MagnumWindowlessCglApplication)
     elseif(CORRADE_TARGET_UNIX)
         if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_DESKTOP_GLES)
-            target_link_libraries(magnum-info PRIVATE MagnumWindowlessEglApplication)
+            target_link_libraries(magnum-gl-info PRIVATE MagnumWindowlessEglApplication)
         else()
-            target_link_libraries(magnum-info PRIVATE MagnumWindowlessGlxApplication)
+            target_link_libraries(magnum-gl-info PRIVATE MagnumWindowlessGlxApplication)
         endif()
     elseif(CORRADE_TARGET_WINDOWS)
         if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_DESKTOP_GLES)
-            target_link_libraries(magnum-info PRIVATE MagnumWindowlessWindowsEglApplication)
+            target_link_libraries(magnum-gl-info PRIVATE MagnumWindowlessWindowsEglApplication)
         else()
-            target_link_libraries(magnum-info PRIVATE MagnumWindowlessWglApplication)
+            target_link_libraries(magnum-gl-info PRIVATE MagnumWindowlessWglApplication)
         endif()
     else()
-        message(FATAL_ERROR "magnum-info is not available on this platform. Set WITH_MAGNUMINFO to OFF to skip building it.")
+        message(FATAL_ERROR "magnum-gl-info is not available on this platform. Set WITH_GL_INFO to OFF to skip building it.")
     endif()
-    set_target_properties(magnum-info PROPERTIES FOLDER "Magnum/Platform")
+    set_target_properties(magnum-gl-info PROPERTIES FOLDER "Magnum/Platform")
 
     if(NOT CORRADE_TARGET_EMSCRIPTEN)
-        install(TARGETS magnum-info DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
+        install(TARGETS magnum-gl-info DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
     endif()
 
     if(CORRADE_TARGET_IOS)
-        set_target_properties(magnum-info PROPERTIES
+        set_target_properties(magnum-gl-info PROPERTIES
             MACOSX_BUNDLE ON
             MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/MacOSXBundleInfo.plist.in
             XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED "YES")
     elseif(CORRADE_TARGET_EMSCRIPTEN)
-        install(FILES info.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/magnum-info RENAME index.html)
-        install(TARGETS magnum-info DESTINATION ${MAGNUM_DEPLOY_PREFIX}/magnum-info)
+        install(FILES gl-info.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/magnum-gl-info RENAME index.html)
+        install(TARGETS magnum-gl-info DESTINATION ${MAGNUM_DEPLOY_PREFIX}/magnum-gl-info)
         install(FILES
             WebApplication.css
             WindowlessEmscriptenApplication.js
-            DESTINATION ${MAGNUM_DEPLOY_PREFIX}/magnum-info)
+            DESTINATION ${MAGNUM_DEPLOY_PREFIX}/magnum-gl-info)
         install(FILES
-            ${CMAKE_CURRENT_BINARY_DIR}/magnum-info.js.mem
-            ${CMAKE_CURRENT_BINARY_DIR}/magnum-info.wasm
-            DESTINATION ${MAGNUM_DEPLOY_PREFIX}/magnum-info OPTIONAL)
+            ${CMAKE_CURRENT_BINARY_DIR}/magnum-gl-info.js.mem
+            ${CMAKE_CURRENT_BINARY_DIR}/magnum-gl-info.wasm
+            DESTINATION ${MAGNUM_DEPLOY_PREFIX}/magnum-gl-info OPTIONAL)
     endif()
 
     # Magnum info target alias for superprojects
-    add_executable(Magnum::info ALIAS magnum-info)
+    add_executable(Magnum::gl-info ALIAS magnum-gl-info)
 endif()
 
 # Force IDEs display also all header files and additional files in project view

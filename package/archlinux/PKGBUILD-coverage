@@ -49,7 +49,7 @@ build() {
         -DWITH_DISTANCEFIELDCONVERTER=ON \
         -DWITH_FONTCONVERTER=ON \
         -DWITH_IMAGECONVERTER=ON \
-        -DWITH_MAGNUMINFO=ON \
+        -DWITH_GL_INFO=ON \
         -DWITH_AL_INFO=ON \
         -DBUILD_TESTS=ON \
         -DBUILD_GL_TESTS=ON \
@@ -62,7 +62,7 @@ check() {
     CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 || true
     CORRADE_TEST_COLOR=ON MAGNUM_DISABLE_EXTENSIONS="GL_ARB_direct_state_access" ctest --output-on-failure -R GLTest || true
     CORRADE_TEST_COLOR=ON MAGNUM_DISABLE_EXTENSIONS="GL_ARB_direct_state_access GL_EXT_direct_state_access" ctest --output-on-failure -R GLTest || true
-    ./src/Magnum/Platform/magnum-info --limits > /dev/null
+    ./src/Magnum/Platform/magnum-gl-info --limits > /dev/null
 
     rm -rf coverage
     mkdir coverage

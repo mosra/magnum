@@ -489,7 +489,7 @@ in inverse --- but usually @ref developers-deprecation "deprecate first".
     -   to @ref GL::Extension::extensions() in `src/Magnum/Context.cpp`
     -   to @cpp Context::tryCreate() @ce in `src/Magnum/Context.cpp`
     -   to specify GLSL version in `src/Magnum/Shader.cpp`
-    -   to the list in `src/Magnum/Platform/magnum-info.cpp`
+    -   to the list in `src/Magnum/Platform/magnum-gl-info.cpp`
     -   to the test in `src/Magnum/Test/ContextTest.cpp`
 12. Add new extensions to `src/Magnum/Extensions.h`
     -   order them by extension ID that is mentioned in every extension spec

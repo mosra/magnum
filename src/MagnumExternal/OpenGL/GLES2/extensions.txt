@@ -1,4 +1,5 @@
-# The following output is taken from `magnum-info` with removed `GL_` prefixes.
+# The following output is taken from `magnum-gl-info` with removed `GL_`
+# prefixes.
 
 version 2.0 es
 

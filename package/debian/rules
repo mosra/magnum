@@ -36,7 +36,7 @@ override_dh_auto_configure:
 		-DWITH_DISTANCEFIELDCONVERTER=ON \
 		-DWITH_IMAGECONVERTER=ON \
 		-DWITH_FONTCONVERTER=ON \
-		-DWITH_MAGNUMINFO=ON \
+		-DWITH_GL_INFO=ON \
 		-DWITH_AL_INFO=ON
 
 # Extraordinarily coarse way to suppress error about libGL not being in
