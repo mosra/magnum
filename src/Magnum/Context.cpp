@@ -646,7 +646,7 @@ bool Context::tryCreate() {
     /* Mark all extensions from past versions as supported */
     for(std::size_t i = 0; i != future; ++i)
         for(const Extension& extension: Extension::extensions(versions[i]))
-            _extensionStatus.set(extension._index);
+            _extensionStatus.set(extension.index());
 
     /* List of extensions from future versions (extensions from current and
        previous versions should be supported automatically, so we don't need
@@ -654,7 +654,7 @@ bool Context::tryCreate() {
     std::unordered_map<std::string, Extension> futureExtensions;
     for(std::size_t i = future; i != versions.size(); ++i)
         for(const Extension& extension: Extension::extensions(versions[i]))
-            futureExtensions.emplace(extension._string, extension);
+            futureExtensions.emplace(extension.string(), extension);
 
     /* Check for presence of future and vendor extensions */
     const std::vector<std::string> extensions = extensionStrings();
@@ -662,7 +662,7 @@ bool Context::tryCreate() {
         const auto found = futureExtensions.find(extension);
         if(found != futureExtensions.end()) {
             _supportedExtensions.push_back(found->second);
-            _extensionStatus.set(found->second._index);
+            _extensionStatus.set(found->second.index());
         }
     }
 
@@ -672,7 +672,7 @@ bool Context::tryCreate() {
     /* Initialize required versions from extension info */
     for(const auto version: versions)
         for(const Extension& extension: Extension::extensions(version))
-            _extensionRequiredVersion[extension._index] = extension._requiredVersion;
+            _extensionRequiredVersion[extension.index()] = extension.requiredVersion();
 
     /* Setup driver workarounds (increase required version for particular
        extensions), see Implementation/driverWorkarounds.cpp */
@@ -698,7 +698,7 @@ bool Context::tryCreate() {
         std::unordered_map<std::string, Extension> allExtensions{std::move(futureExtensions)};
         for(std::size_t i = 0; i != future; ++i)
             for(const Extension& extension: Extension::extensions(versions[i]))
-                allExtensions.emplace(extension._string, extension);
+                allExtensions.emplace(extension.string(), extension);
 
         /* Disable extensions that are known and supported and print a message
            for each */
@@ -707,7 +707,7 @@ bool Context::tryCreate() {
             /** @todo Error message here? I should not clutter the output at this point */
             if(found == allExtensions.end()) continue;
 
-            _extensionRequiredVersion[found->second._index] = Version::None;
+            _extensionRequiredVersion[found->second.index()] = Version::None;
             Debug{output} << "   " << extension;
         }
     }

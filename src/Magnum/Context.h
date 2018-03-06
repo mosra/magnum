@@ -64,6 +64,9 @@ class MAGNUM_EXPORT Extension {
         /** @brief All extensions for given OpenGL version */
         static const std::vector<Extension>& extensions(Version version);
 
+        /** @brief Internal unique extension index */
+        constexpr std::size_t index() const { return _index; }
+
         /** @brief Minimal version required by this extension */
         constexpr Version requiredVersion() const { return _requiredVersion; }
 
@@ -74,10 +77,6 @@ class MAGNUM_EXPORT Extension {
         constexpr const char* string() const { return _string; }
 
     private:
-        #ifndef DOXYGEN_GENERATING_OUTPUT /* https://bugzilla.gnome.org/show_bug.cgi?id=776986 */
-        friend Context;
-        #endif
-
         std::size_t _index;
         Version _requiredVersion;
         Version _coreVersion;
@@ -541,7 +540,7 @@ class MAGNUM_EXPORT Context {
          *      @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED()
          */
         bool isExtensionSupported(const Extension& extension) const {
-            return isVersionSupported(_extensionRequiredVersion[extension._index]) && _extensionStatus[extension._index];
+            return isVersionSupported(_extensionRequiredVersion[extension.index()]) && _extensionStatus[extension.index()];
         }
 
         /**
@@ -574,7 +573,7 @@ class MAGNUM_EXPORT Context {
          * as it does most operations in compile time.
          */
         bool isExtensionDisabled(const Extension& extension) const {
-            return isVersionSupported(extension._requiredVersion) && !isVersionSupported(_extensionRequiredVersion[extension._index]);
+            return isVersionSupported(extension.requiredVersion()) && !isVersionSupported(_extensionRequiredVersion[extension.index()]);
         }
 
         /**
