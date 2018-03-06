@@ -136,7 +136,7 @@ Context::Context(const Configuration& config) {
     /* Add all extensions to a map for faster lookup */
     std::unordered_map<std::string, Extension> extensionMap;
     for(const Extension& extension: Extension::extensions())
-        extensionMap.emplace(extension._string, extension);
+        extensionMap.emplace(extension.string(), extension);
 
     /* Check for presence of extensions */
     const std::vector<std::string> extensions = extensionStrings();
@@ -144,7 +144,7 @@ Context::Context(const Configuration& config) {
         const auto found = extensionMap.find(extension);
         if(found != extensionMap.end()) {
             _supportedExtensions.push_back(found->second);
-            _extensionStatus.set(found->second._index);
+            _extensionStatus.set(found->second.index());
         }
     }
 
