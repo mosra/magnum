@@ -29,6 +29,10 @@ inline Collision operator/(const Point& a, const Sphere& b) { return (b/a).rever
 /** @webgl_extension{EXT,color_buffer_float} */
 /* [webgl_extension] */
 
+/* [vk_extension] */
+/** @vk_extension{EXT,debug_report} */
+/* [vk_extension] */
+
 /* [al_extension] */
 /** @al_extension{EXT,float32}, @alc_extension{SOFT,HRTF} */
 /* [al_extension] */
@@ -52,6 +56,14 @@ static void setSeamless(bool enabled) {
 /** @fn_gl_extension{NamedCopyBufferSubData,EXT,direct_state_access} */
 /* [fn_gl_extension] */
 
+/* [fn_vk] */
+/**
+-   @fn_vk{CreateInstance}
+-   @type_vk{InstanceCreateInfo}
+-   @def_vk{STRUCTURE_TYPE_INSTANCE_CREATE_INFO,StructureType}
+*/
+/* [fn_vk] */
+
 /* [fn_al] */
 /**
 ...
@@ -66,6 +78,10 @@ static void setListenerVelocity(const Vector3& velocity) {
 /* [requires_gl] */
 /** @requires_gl33 Extension @gl_extension{ARB,timer_query} */
 /* [requires_gl] */
+
+/* [requires_vk_extension] */
+/** @requires_vk_extension Extension @vk_extension{EXT,debug_report} */
+/* [requires_vk_extension] */
 
 /* [requires_al_extension] */
 /** @requires_al_extension Extension @al_extension{EXT,MCFORMATS} */

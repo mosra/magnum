@@ -113,7 +113,7 @@ the operator is implemented (not of class in which the operator is
 implemented), thus efficiently connecting the two classes together in the
 documentation.
 
-@subsubsection coding-style-documentation-commands-extension Links to OpenGL and OpenAL extensions
+@subsubsection coding-style-documentation-commands-extension Links to OpenGL, Vulkan and OpenAL extensions
 
 If an OpenGL extension is referenced in the documentation, it should be done
 with @c \@gl_extension command:
@@ -147,6 +147,16 @@ produces this:
 @webgl_extension{EXT,color_buffer_float}
 </blockquote>
 
+Vulkan extensions can be referenced using @c \@vk_extension. For example
+
+@snippet coding-style.h vk_extension
+
+produces this link:
+
+<blockquote>
+@vk_extension{EXT,debug_report}
+</blockquote>
+
 OpenAL extensions can be referenced using @c \@al_extension, OpenAL context
 extension using @c \@alc_extension. For example
 
@@ -158,7 +168,7 @@ produces the following:
 @al_extension{EXT,float32}, @alc_extension{SOFT,HRTF}
 </blockquote>
 
-@subsubsection coding-style-documentation-commands-ref Links to related OpenGL, OpenAL functions and definitions
+@subsubsection coding-style-documentation-commands-ref Links to related OpenGL, Vulkan, OpenAL functions and definitions
 
 If an function touches OpenGL, related OpenGL functions should be documented
 in @c \@see block with @c \@fn_gl command. If only specific definition is used
@@ -195,6 +205,18 @@ specification, with function name as link text:
 @fn_gl_extension{NamedCopyBufferSubData,EXT,direct_state_access}
 </blockquote>
 
+For Vulkan, the commands are @c \@fn_vk, @c \@type_vk and @c \@def_vk. Example:
+
+@snippet coding-style.h fn_vk
+
+Produces:
+
+<blockquote>
+-   @fn_vk{CreateInstance}
+-   @type_vk{InstanceCreateInfo}
+-   @def_vk{STRUCTURE_TYPE_INSTANCE_CREATE_INFO,StructureType}
+</blockquote>
+
 For OpenAL, the commands are @c \@fn_al, @c \@fn_alc, @c \@def_al and
 @c \@def_alc. Example:
 
@@ -214,7 +236,7 @@ it's @c \@fn_gl_keyword, @c \@fn_gl2_keyword, @c \@def_gl_keyword,
 @c \@def_alc_keyword. Their usage is equivalent to usage of commands without
 the `_keyword` suffix.
 
-@subsubsection coding-style-documentation-commands-requires Classes and functions requiring specific OpenGL, OpenAL version or extensions
+@subsubsection coding-style-documentation-commands-requires Classes and functions requiring specific OpenGL, Vulkan, OpenAL version or extensions
 
 If any class or function requires specific OpenGL version above 2.1, it should
 be marked with appropriate command @c \@requires_glXX, where `XX` is version
@@ -241,12 +263,16 @@ for specific extensions not part of the core OpenGL ES specification and
 WebGL specification. When there is more than just a single platform, first come
 desktop requirements, then ES requirements and WebGL requirements last.
 
-All classes and functions using those commands are cross-referenced in page
-@ref opengl-required-extensions.
+For Vulkan, the command is @c \@requires_vk_extension:
+
+@snippet coding-style.h requires_vk_extension
 
 For OpenAL, the command is @c \@requires_al_extension:
 
 @snippet coding-style.h requires_al_extension
+
+All classes and functions using those commands are cross-referenced from
+@ref opengl, @ref vulkan and @ref openal pages.
 
 @subsection coding-style-documentation-ordering Section ordering
 
