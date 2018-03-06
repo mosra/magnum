@@ -34,11 +34,38 @@ namespace Magnum { namespace Audio { namespace Test {
 struct ContextTest: TestSuite::Tester {
     explicit ContextTest();
 
+    void extensions();
+
     void debugHrtfStatus();
 };
 
 ContextTest::ContextTest() {
-    addTests({&ContextTest::debugHrtfStatus});
+    addTests({&ContextTest::extensions,
+
+              &ContextTest::debugHrtfStatus});
+}
+
+void ContextTest::extensions() {
+    const char* used[Implementation::ExtensionCount]{};
+
+    /* Check that all extension indices are unique */
+    for(const Extension& e: Extension::extensions()) {
+        if(e.index() >= Implementation::ExtensionCount) {
+            Error{} << "Index" << e.index() << "used by" << e.string()
+                    << "larger than" << Implementation::ExtensionCount;
+            CORRADE_VERIFY(false);
+        }
+
+        if(used[e.index()]) {
+            Error{} << "Index" << e.index() << "used by both"
+                    << used[e.index()] << "and" << e.string();
+            CORRADE_VERIFY(false);
+        }
+
+        used[e.index()] = e.string();
+    }
+
+    CORRADE_VERIFY(true);
 }
 
 void ContextTest::debugHrtfStatus() {

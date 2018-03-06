@@ -66,37 +66,36 @@ See @ref building and @ref cmake for more information.
 namespace Extensions {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-#define _extension(prefix, vendor, extension)                               \
+#define _extension(index, prefix, vendor, extension)                        \
     struct extension {                                                      \
-        enum: std::size_t { Index = __LINE__-1 };                           \
+        enum: std::size_t { Index = index };                                \
         constexpr static const char* string() { return #prefix "_" #vendor "_" #extension; } \
     };
 
-#define _extension_rev(prefix, vendor, extension)                           \
+#define _extension_rev(index, prefix, vendor, extension)                    \
     struct extension {                                                      \
-        enum: std::size_t { Index = __LINE__-1 };                           \
+        enum: std::size_t { Index = index };                                \
         constexpr static const char* string() { return #prefix "_" #extension "_" #vendor; } \
     };
 
 /* IMPORTANT: don't forget to add new extensions also in Context.cpp */
 namespace AL {
-    #line 1
     namespace EXT {
-        _extension(AL,EXT,FLOAT32) // #???
-        _extension(AL,EXT,DOUBLE) // #???
-        _extension(AL,EXT,ALAW) // #???
-        _extension(AL,EXT,MULAW) // #???
-        _extension(AL,EXT,MCFORMATS) // #???
+        _extension(1,AL,EXT,FLOAT32) // #???
+        _extension(2,AL,EXT,DOUBLE) // #???
+        _extension(3,AL,EXT,ALAW) // #???
+        _extension(4,AL,EXT,MULAW) // #???
+        _extension(5,AL,EXT,MCFORMATS) // #???
     }
 } namespace ALC {
     namespace EXT {
-        _extension_rev(ALC,EXT,ENUMERATION) // #???
+        _extension_rev(6,ALC,EXT,ENUMERATION) // #???
     }
     namespace SOFTX {
-        _extension(ALC,SOFTX,HRTF) // #???
+        _extension(7,ALC,SOFTX,HRTF) // #???
     }
     namespace SOFT {
-        _extension(ALC,SOFT,HRTF) // #???
+        _extension(8,ALC,SOFT,HRTF) // #???
     }
 }
 #undef _extension

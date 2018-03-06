@@ -50,6 +50,10 @@ typedef struct ALCcontext_struct ALCcontext;
 
 namespace Magnum { namespace Audio {
 
+namespace Implementation {
+    enum: std::size_t { ExtensionCount = 16 };
+}
+
 /**
 @brief Run-time information about OpenAL extension
 
@@ -315,7 +319,7 @@ class MAGNUM_AUDIO_EXPORT Context {
         ALCdevice* _device;
         ALCcontext* _context;
 
-        std::bitset<64> _extensionStatus;
+        std::bitset<Implementation::ExtensionCount> _extensionStatus;
         std::vector<Extension> _supportedExtensions;
 };
 
