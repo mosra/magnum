@@ -58,10 +58,19 @@ template<UnsignedInt dimensions> class AbstractVector: public AbstractShaderProg
         typedef typename Generic<dimensions>::TextureCoordinates TextureCoordinates;
 
         /**
-         * @brief Set vector texture
+         * @brief Bind vector texture
          * @return Reference to self (for method chaining)
          */
-        AbstractVector<dimensions>& setVectorTexture(Texture2D& texture);
+        AbstractVector<dimensions>& bindVectorTexture(Texture2D& texture);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @brief @copybrief bindVectorTexture()
+         * @deprecated Use @ref bindVectorTexture() instead.
+         */
+        CORRADE_DEPRECATED("use bindVectorTexture() instead") AbstractVector<dimensions>& setVectorTexture(Texture2D& texture) {
+            return bindVectorTexture(texture);
+        }
+        #endif
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
     protected:

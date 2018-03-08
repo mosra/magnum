@@ -46,7 +46,7 @@ for more advanced effects. For rendering unchanged texture you can use the
 @ref Flat shader. You need to provide @ref Position and @ref TextureCoordinates
 attributes in your triangle mesh and call at least
 @ref setTransformationProjectionMatrix(), @ref setColor() and
-@ref setVectorTexture().
+@ref bindVectorTexture().
 
 @image html shaders-vector.png
 @image latex shaders-vector.png
@@ -118,10 +118,15 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Vector: public Abst
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
         /* Overloads to remove WTF-factor from method chaining order */
-        Vector<dimensions>& setVectorTexture(Texture2D& texture) {
-            AbstractVector<dimensions>::setVectorTexture(texture);
+        Vector<dimensions>& bindVectorTexture(Texture2D& texture) {
+            AbstractVector<dimensions>::bindVectorTexture(texture);
             return *this;
         }
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        CORRADE_DEPRECATED("use bindVectorTexture() instead") Vector<dimensions>& setVectorTexture(Texture2D& texture) {
+            return bindVectorTexture(texture);
+        }
+        #endif
         #endif
 
     private:

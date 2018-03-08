@@ -47,10 +47,10 @@ call at least @ref setTransformationMatrix(), @ref setNormalMatrix(),
 
 If you want to use textures, you need to provide also @ref TextureCoordinates
 attribute. Pass appropriate @ref Flags to constructor and then at render time
-don't forget to also call appropriate subset of @ref setAmbientTexture(),
-@ref setDiffuseTexture() and @ref setSpecularTexture(). The texture is
-multipled by the color, which is by default set to fully opaque white for
-enabled textures.
+don't forget to also call appropriate subset of @ref bindAmbientTexture(),
+@ref bindDiffuseTexture() and @ref bindSpecularTexture() (or the combined
+@ref bindTextures()). The texture is multipled by the color, which is by
+default set to fully opaque white for enabled textures.
 
 @image html shaders-phong.png
 
@@ -159,7 +159,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * If @ref Flag::AmbientTexture is set, default value is
          * @cpp 0xffffffff_rgbaf @ce and the color will be multiplied with
          * ambient texture, otherwise default value is @cpp 0x000000ff_rgbaf @ce.
-         * @see @ref setAmbientTexture()
+         * @see @ref bindAmbientTexture()
          */
         Phong& setAmbientColor(const Color4& color) {
             setUniform(_ambientColorUniform, color);
@@ -167,13 +167,22 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
         }
 
         /**
-         * @brief Set ambient texture
+         * @brief Bind ambient texture
          * @return Reference to self (for method chaining)
          *
          * Has effect only if @ref Flag::AmbientTexture is set.
-         * @see @ref setTextures(), @ref setAmbientColor()
+         * @see @ref bindTextures(), @ref setAmbientColor()
          */
-        Phong& setAmbientTexture(Texture2D& texture);
+        Phong& bindAmbientTexture(Texture2D& texture);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @brief @copybrief bindAmbientTexture()
+         * @deprecated Use @ref bindAmbientTexture() instead.
+         */
+        CORRADE_DEPRECATED("use bindAmbientTexture() instead") Phong& setAmbientTexture(Texture2D& texture) {
+            return bindAmbientTexture(texture);
+        }
+        #endif
 
         /**
          * @brief Set diffuse color
@@ -182,7 +191,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * If @ref Flag::DiffuseTexture is set, default value is
          * @cpp 0xffffffff_rgbaf @ce and the color will be multiplied with
          * diffuse texture.
-         * @see @ref setDiffuseTexture()
+         * @see @ref bindDiffuseTexture()
          */
         Phong& setDiffuseColor(const Color4& color) {
             setUniform(_diffuseColorUniform, color);
@@ -190,13 +199,22 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
         }
 
         /**
-         * @brief Set diffuse texture
+         * @brief Bind diffuse texture
          * @return Reference to self (for method chaining)
          *
          * Has effect only if @ref Flag::DiffuseTexture is set.
-         * @see @ref setTextures(), @ref setDiffuseColor()
+         * @see @ref bindTextures(), @ref setDiffuseColor()
          */
-        Phong& setDiffuseTexture(Texture2D& texture);
+        Phong& bindDiffuseTexture(Texture2D& texture);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @brief @copybrief bindDiffuseTexture()
+         * @deprecated Use @ref bindDiffuseTexture() instead.
+         */
+        CORRADE_DEPRECATED("use bindDiffuseTexture() instead") Phong& setDiffuseTexture(Texture2D& texture) {
+            return bindDiffuseTexture(texture);
+        }
+        #endif
 
         /**
          * @brief Set specular color
@@ -204,7 +222,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          *
          * Default value is @cpp 0xffffffff_rgbaf @ce. Color will be multiplied
          * with specular texture if @ref Flag::SpecularTexture is set.
-         * @see @ref setSpecularTexture()
+         * @see @ref bindSpecularTexture()
          */
         Phong& setSpecularColor(const Color4& color) {
             setUniform(_specularColorUniform, color);
@@ -212,25 +230,43 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
         }
 
         /**
-         * @brief Set specular texture
+         * @brief Bind specular texture
          * @return Reference to self (for method chaining)
          *
          * Has effect only if @ref Flag::SpecularTexture is set.
          * @see @ref setTextures(), @ref setSpecularColor()
          */
-        Phong& setSpecularTexture(Texture2D& texture);
+        Phong& bindSpecularTexture(Texture2D& texture);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @brief @copybrief bindSpecularTexture()
+         * @deprecated Use @ref bindSpecularTexture() instead.
+         */
+        CORRADE_DEPRECATED("use bindSpecularTexture() instead") Phong& setSpecularTexture(Texture2D& texture) {
+            return bindSpecularTexture(texture);
+        }
+        #endif
 
         /**
-         * @brief Set textures
+         * @brief Bind textures
          * @return Reference to self (for method chaining)
          *
          * A particular texture has effect only if particular texture flag from
          * @ref Phong::Flag "Flag" is set, you can use `nullptr` for the rest.
          * More efficient than setting each texture separately.
-         * @see @ref setAmbientTexture(), @ref setDiffuseTexture(),
-         *      @ref setSpecularTexture()
+         * @see @ref bindAmbientTexture(), @ref bindDiffuseTexture(),
+         *      @ref bindSpecularTexture()
          */
-        Phong& setTextures(Texture2D* ambient, Texture2D* diffuse, Texture2D* specular);
+        Phong& bindTextures(Texture2D* ambient, Texture2D* diffuse, Texture2D* specular);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @brief @copybrief bindTextures()
+         * @deprecated Use @ref bindTextures() instead.
+         */
+        CORRADE_DEPRECATED("use bindTextures() instead") Phong& setTextures(Texture2D* ambient, Texture2D* diffuse, Texture2D* specular) {
+            return bindTextures(ambient, diffuse, specular);
+        }
+        #endif
 
         /**
          * @brief Set shininess

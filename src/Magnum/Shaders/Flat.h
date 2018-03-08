@@ -53,7 +53,7 @@ need to provide @ref Position attribute in your triangle mesh and call at least
 
 If you want to use texture, you need to provide also @ref TextureCoordinates
 attribute. Pass @ref Flag::Textured to constructor and then at render time
-don't forget to set also the texture via @ref setTexture(). The texture is
+don't forget to set also the texture via @ref bindTexture(). The texture is
 multipled by the color, which is by default set to fully opaque white if
 texturing is enabled.
 
@@ -161,7 +161,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public Abstra
          * If @ref Flag::Textured is set, default value is
          * @cpp 0xffffffff_rgbaf @ce and the color will be multiplied with
          * texture.
-         * @see @ref setTexture()
+         * @see @ref bindTexture()
          */
         Flat<dimensions>& setColor(const Color4& color){
             setUniform(_colorUniform, color);
@@ -169,13 +169,22 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public Abstra
         }
 
         /**
-         * @brief Set texture
+         * @brief Bind texture
          * @return Reference to self (for method chaining)
          *
          * Has effect only if @ref Flag::Textured is set.
          * @see @ref setColor()
          */
-        Flat<dimensions>& setTexture(Texture2D& texture);
+        Flat<dimensions>& bindTexture(Texture2D& texture);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @brief @copybrief bindTexture()
+         * @deprecated Use @ref bindTexture() instead.
+         */
+        CORRADE_DEPRECATED("use bindTexture() instead") Flat<dimensions>& setTexture(Texture2D& texture) {
+            return bindTexture(texture);
+        }
+        #endif
 
     private:
         Flags _flags;

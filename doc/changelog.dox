@@ -51,6 +51,19 @@ See also:
         @webgl_extension{WEBGL,color_buffer_float},
         @webgl_extension{EXT,color_buffer_float}
 
+@subsection changelog-latest-deprecated Deprecated APIs
+
+-   @cpp Shaders::*Vector::setVectorTexture() @ce, @cpp Shaders::Flat::setTexture() @ce,
+    @cpp Shaders::Phong::setAmbientTexture() @ce, @cpp Shaders::Phong::setDiffuseTexture() @ce,
+    @cpp Shaders::Phong::setSpecularTexture() @ce and @cpp Shaders::Phong::setTextures() @ce
+    are deprecated because texture binding (a global state) is confused there
+    with uniform setup (a shader-local state). That can lead to accidental
+    state mismatches where a texture is forgotten to be rebound. Use
+    @ref Shaders::AbstractVector::bindVectorTexture() "Shaders::*Vector::bindVectorTexture()",
+    @ref Shaders::Flat::bindTexture(), @ref Shaders::Phong::bindAmbientTexture(),
+    @ref Shaders::Phong::bindDiffuseTexture(), @ref Shaders::Phong::bindSpecularTexture()
+    and @ref Shaders::Phong::bindTextures() instead.
+
 @subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
 
 -   Removed the @cpp Buffer::Usage @ce enum that was deprecated in 2014.01, use

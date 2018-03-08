@@ -47,7 +47,7 @@ rendered outlook will greatly depend on radius of input distance field and
 value passed to @ref setSmoothness(). You need to provide @ref Position and
 @ref TextureCoordinates attributes in your triangle mesh and call at least
 @ref setTransformationProjectionMatrix(), @ref setColor() and
-@ref setVectorTexture().
+@ref bindVectorTexture().
 
 @image html shaders-distancefieldvector.png
 
@@ -152,10 +152,15 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
         /* Overloads to remove WTF-factor from method chaining order */
-        DistanceFieldVector<dimensions>& setVectorTexture(Texture2D& texture) {
-            AbstractVector<dimensions>::setVectorTexture(texture);
+        DistanceFieldVector<dimensions>& bindVectorTexture(Texture2D& texture) {
+            AbstractVector<dimensions>::bindVectorTexture(texture);
             return *this;
         }
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        CORRADE_DEPRECATED("use bindVectorTexture() instead") DistanceFieldVector<dimensions>& setVectorTexture(Texture2D& texture) {
+            return bindVectorTexture(texture);
+        }
+        #endif
         #endif
 
     private:

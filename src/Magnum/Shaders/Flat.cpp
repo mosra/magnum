@@ -105,7 +105,7 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): _fla
     #endif
 }
 
-template<UnsignedInt dimensions> Flat<dimensions>& Flat<dimensions>::setTexture(Texture2D& texture) {
+template<UnsignedInt dimensions> Flat<dimensions>& Flat<dimensions>::bindTexture(Texture2D& texture) {
     if(_flags & Flag::Textured)  texture.bind(TextureLayer);
     return *this;
 }

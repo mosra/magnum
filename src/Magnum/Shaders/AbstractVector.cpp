@@ -30,7 +30,7 @@
 
 namespace Magnum { namespace Shaders {
 
-template<UnsignedInt dimensions> AbstractVector<dimensions>& AbstractVector<dimensions>::setVectorTexture(Texture2D& texture) {
+template<UnsignedInt dimensions> AbstractVector<dimensions>& AbstractVector<dimensions>::bindVectorTexture(Texture2D& texture) {
     texture.bind(VectorTextureLayer);
     return *this;
 }

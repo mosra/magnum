@@ -77,7 +77,7 @@ std::tie(mesh, std::ignore) = Text::Renderer2D::render(*font, cache, 0.15f,
 /* Draw the text on the screen */
 shader.setTransformationProjectionMatrix(projectionMatrix)
     .setColor(0xffffff_rgbf)
-    .setVectorTexture(cache.texture());
+    .bindVectorTexture(cache.texture());
 mesh.draw(shader);
 /* [Renderer-usage1] */
 
@@ -92,7 +92,7 @@ renderer.render("Hello World Countdown: 10");
 /* Draw the text on the screen */
 shader.setTransformationProjectionMatrix(projectionMatrix)
     .setColor(0xffffff_rgbf)
-    .setVectorTexture(cache.texture());
+    .bindVectorTexture(cache.texture());
 renderer.mesh().draw(shader);
 /* [Renderer-usage2] */
 }

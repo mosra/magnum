@@ -124,22 +124,22 @@ Phong::Phong(const Flags flags): _flags(flags) {
     #endif
 }
 
-Phong& Phong::setAmbientTexture(Texture2D& texture) {
+Phong& Phong::bindAmbientTexture(Texture2D& texture) {
     if(_flags & Flag::AmbientTexture) texture.bind(AmbientTextureLayer);
     return *this;
 }
 
-Phong& Phong::setDiffuseTexture(Texture2D& texture) {
+Phong& Phong::bindDiffuseTexture(Texture2D& texture) {
     if(_flags & Flag::DiffuseTexture) texture.bind(DiffuseTextureLayer);
     return *this;
 }
 
-Phong& Phong::setSpecularTexture(Texture2D& texture) {
+Phong& Phong::bindSpecularTexture(Texture2D& texture) {
     if(_flags & Flag::SpecularTexture) texture.bind(SpecularTextureLayer);
     return *this;
 }
 
-Phong& Phong::setTextures(Texture2D* ambient, Texture2D* diffuse, Texture2D* specular) {
+Phong& Phong::bindTextures(Texture2D* ambient, Texture2D* diffuse, Texture2D* specular) {
     AbstractTexture::bind(AmbientTextureLayer, {ambient, diffuse, specular});
     return *this;
 }

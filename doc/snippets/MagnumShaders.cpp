@@ -72,7 +72,7 @@ Matrix4 transformationMatrix, projectionMatrix;
 Texture2D diffuseTexture, specularTexture;
 
 Shaders::Phong shader{Shaders::Phong::Flag::DiffuseTexture};
-shader.setDiffuseTexture(diffuseTexture)
+shader.bindDiffuseTexture(diffuseTexture)
     .setLightPosition({5.0f, 5.0f, 7.0f})
     .setTransformationMatrix(transformationMatrix)
     .setNormalMatrix(transformationMatrix.rotation())
@@ -132,7 +132,7 @@ Shaders::DistanceFieldVector2D shader;
 shader.setColor(0x2f83cc_rgbf)
     .setOutlineColor(0xdcdcdc_rgbf)
     .setOutlineRange(0.6f, 0.4f)
-    .setVectorTexture(texture)
+    .bindVectorTexture(texture)
     .setTransformationProjectionMatrix(projectionMatrix*transformationMatrix);
 
 mesh.draw(shader);
@@ -196,7 +196,7 @@ Texture2D texture;
 
 Shaders::Flat3D shader{Shaders::Flat3D::Flag::Textured};
 shader.setTransformationProjectionMatrix(projectionMatrix*transformationMatrix)
-    .setTexture(texture);
+    .bindTexture(texture);
 
 mesh.draw(shader);
 /* [Flat-usage-textured2] */
@@ -341,7 +341,7 @@ Texture2D diffuseTexture, specularTexture;
 
 Shaders::Phong shader{Shaders::Phong::Flag::DiffuseTexture|
                       Shaders::Phong::Flag::SpecularTexture};
-shader.setTextures(nullptr, &diffuseTexture, &specularTexture)
+shader.bindTextures(nullptr, &diffuseTexture, &specularTexture)
     .setLightPosition({5.0f, 5.0f, 7.0f})
     .setTransformationMatrix(transformationMatrix)
     .setNormalMatrix(transformationMatrix.rotation())
@@ -358,7 +358,7 @@ Color3 diffuseRgb, specularRgb;
 /* [Phong-usage-alpha] */
 Shaders::Phong shader{Shaders::Phong::Flag::AmbientTexture|
                       Shaders::Phong::Flag::DiffuseTexture};
-shader.setTextures(&ambientAlphaTexture, &diffuseAlphaTexture, nullptr)
+shader.bindTextures(&ambientAlphaTexture, &diffuseAlphaTexture, nullptr)
     .setAmbientColor(0x000000ff_rgbf)
     .setDiffuseColor(Color4{diffuseRgb, 0.0f})
     .setSpecularColor(Color4{specularRgb, 0.0f});
@@ -391,7 +391,7 @@ Texture2D texture;
 
 Shaders::Vector2D shader;
 shader.setColor(0x2f83cc_rgbf)
-    .setVectorTexture(texture)
+    .bindVectorTexture(texture)
     .setTransformationProjectionMatrix(projectionMatrix*transformationMatrix);
 
 mesh.draw(shader);

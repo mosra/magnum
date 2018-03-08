@@ -252,7 +252,7 @@ std::string ShaderVisualizer::vector() {
 
     Shaders::Vector2D shader;
     shader.setColor(BaseColor)
-        .setVectorTexture(texture)
+        .bindVectorTexture(texture)
         .setTransformationProjectionMatrix({});
 
     Renderer::enable(Renderer::Feature::Blending);
@@ -288,7 +288,7 @@ std::string ShaderVisualizer::distanceFieldVector() {
     shader.setColor(BaseColor)
         .setOutlineColor(OutlineColor)
         .setOutlineRange(0.6f, 0.4f)
-        .setVectorTexture(texture)
+        .bindVectorTexture(texture)
         .setTransformationProjectionMatrix({});
 
     Renderer::enable(Renderer::Feature::Blending);
