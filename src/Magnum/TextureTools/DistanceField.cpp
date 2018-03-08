@@ -69,7 +69,7 @@ class DistanceFieldShader: public AbstractShaderProgram {
             return *this;
         }
 
-        DistanceFieldShader& setTexture(Texture2D& texture) {
+        DistanceFieldShader& bindTexture(Texture2D& texture) {
             texture.bind(TextureUnit);
             return *this;
         }
@@ -176,7 +176,7 @@ void distanceField(Texture2D& input, Texture2D& output, const Range2Di& rectangl
     DistanceFieldShader shader;
     shader.setRadius(radius)
         .setScaling(Vector2(imageSize)/Vector2(rectangle.size()))
-        .setTexture(input);
+        .bindTexture(input);
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isVersionSupported(Version::GL320))
