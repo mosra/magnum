@@ -95,6 +95,7 @@ the components. The optional components are:
 
 -   `Audio` --- @ref Audio library
 -   `DebugTools` --- @ref DebugTools library
+-   `GL` -- @ref GL library
 -   `MeshTools` --- @ref MeshTools library
 -   `Primitives` --- @ref Primitives library
 -   `SceneGraph` --- @ref SceneGraph library

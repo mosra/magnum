@@ -50,6 +50,7 @@
 #  AnySceneImporter             - Any scene importer
 #  Audio                        - Audio library
 #  DebugTools                   - DebugTools library
+#  GL                           - GL library
 #  MeshTools                    - MeshTools library
 #  Primitives                   - Primitives library
 #  SceneGraph                   - SceneGraph library
@@ -310,33 +311,17 @@ if(NOT TARGET Magnum::Magnum)
 
     # Include directories
     set_property(TARGET Magnum::Magnum APPEND PROPERTY INTERFACE_INCLUDE_DIRECTORIES
-        ${MAGNUM_INCLUDE_DIR}
-        ${MAGNUM_INCLUDE_DIR}/MagnumExternal/OpenGL)
+        ${MAGNUM_INCLUDE_DIR})
+    # Some deprecated APIs use headers (but not externally defined symbols)
+    # from the GL library, link those includes as well
+    if(MAGNUM_BUILD_DEPRECATED)
+        set_property(TARGET Magnum::Magnum APPEND PROPERTY
+            INTERFACE_INCLUDE_DIRECTORIES ${MAGNUM_INCLUDE_DIR}/MagnumExternal/OpenGL)
+    endif()
 
     # Dependent libraries
     set_property(TARGET Magnum::Magnum APPEND PROPERTY INTERFACE_LINK_LIBRARIES
          Corrade::Utility)
-
-    # Dependent libraries and includes
-    if(NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES)
-        find_package(OpenGL REQUIRED)
-        set_property(TARGET Magnum::Magnum APPEND PROPERTY
-            INTERFACE_LINK_LIBRARIES ${OPENGL_gl_LIBRARY})
-    elseif(MAGNUM_TARGET_GLES2)
-        find_package(OpenGLES2 REQUIRED)
-        set_property(TARGET Magnum::Magnum APPEND PROPERTY
-            INTERFACE_LINK_LIBRARIES OpenGLES2::OpenGLES2)
-    elseif(MAGNUM_TARGET_GLES3)
-        find_package(OpenGLES3 REQUIRED)
-        set_property(TARGET Magnum::Magnum APPEND PROPERTY
-            INTERFACE_LINK_LIBRARIES OpenGLES3::OpenGLES3)
-    endif()
-
-    # Emscripten needs special flag to use WebGL 2
-    if(CORRADE_TARGET_EMSCRIPTEN AND NOT MAGNUM_TARGET_GLES2)
-        # TODO: give me INTERFACE_LINK_OPTIONS or something, please
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s USE_WEBGL2=1")
-    endif()
 else()
     set(MAGNUM_LIBRARY Magnum::Magnum)
 endif()
@@ -346,36 +331,70 @@ set(_MAGNUM_ADDITIONAL_COMPONENTS )
 foreach(_component ${Magnum_FIND_COMPONENTS})
     string(TOUPPER ${_component} _COMPONENT)
 
-    if(_component STREQUAL Shapes)
-        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES SceneGraph)
-    elseif(_component STREQUAL Text)
-        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES TextureTools)
+    if(_component STREQUAL Audio)
+        # no inter-component dependencies
     elseif(_component STREQUAL DebugTools)
-        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES MeshTools Primitives SceneGraph Shaders Shapes Trade)
+        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES MeshTools Primitives SceneGraph Shaders Shapes Trade GL)
     elseif(_component STREQUAL MeshTools)
-        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES Trade)
+        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES Trade GL)
     elseif(_component STREQUAL OpenGLTester)
         if(MAGNUM_TARGET_HEADLESS OR CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
-            set(_MAGNUM_${_COMPONENT}_DEPENDENCIES WindowlessEglApplication)
+            set(_MAGNUM_${_COMPONENT}_DEPENDENCIES WindowlessEglApplication GL)
         elseif(CORRADE_TARGET_IOS)
-            set(_MAGNUM_${_COMPONENT}_DEPENDENCIES WindowlessIosApplication)
+            set(_MAGNUM_${_COMPONENT}_DEPENDENCIES WindowlessIosApplication GL)
         elseif(CORRADE_TARGET_APPLE)
-            set(_MAGNUM_${_COMPONENT}_DEPENDENCIES WindowlessCglApplication)
+            set(_MAGNUM_${_COMPONENT}_DEPENDENCIES WindowlessCglApplication GL)
         elseif(CORRADE_TARGET_UNIX)
             if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_DESKTOP_GLES)
-                set(_MAGNUM_${_COMPONENT}_DEPENDENCIES WindowlessEglApplication)
+                set(_MAGNUM_${_COMPONENT}_DEPENDENCIES WindowlessEglApplication GL)
             else()
-                set(_MAGNUM_${_COMPONENT}_DEPENDENCIES WindowlessGlxApplication)
+                set(_MAGNUM_${_COMPONENT}_DEPENDENCIES WindowlessGlxApplication GL)
             endif()
         elseif(CORRADE_TARGET_WINDOWS)
             if(NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES)
-                set(_MAGNUM_${_COMPONENT}_DEPENDENCIES WindowlessWglApplication)
+                set(_MAGNUM_${_COMPONENT}_DEPENDENCIES WindowlessWglApplication GL)
             else()
-                set(_MAGNUM_${_COMPONENT}_DEPENDENCIES WindowlessWindowsEglApplication)
+                set(_MAGNUM_${_COMPONENT}_DEPENDENCIES WindowlessWindowsEglApplication GL)
             endif()
         endif()
     elseif(_component STREQUAL Primitives)
-        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES Trade)
+        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES Trade GL)
+    elseif(_component STREQUAL SceneGraph)
+        # no dependencies except for the main lib
+    elseif(_component STREQUAL Shaders)
+        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES GL)
+    elseif(_component STREQUAL Shapes)
+        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES SceneGraph)
+    elseif(_component STREQUAL Text)
+        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES TextureTools GL)
+    elseif(_component STREQUAL TextureTools)
+        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES GL)
+    elseif(_component STREQUAL Trade)
+        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES GL)
+    elseif(_component STREQUAL AndroidApplication)
+        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES GL)
+    elseif(_component STREQUAL GlfwApplication)
+        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES GL)
+    elseif(_component STREQUAL GlutApplication)
+        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES GL)
+    elseif(_component STREQUAL GlxApplication)
+        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES GL)
+    elseif(_component STREQUAL Sdl2Application)
+        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES GL)
+    elseif(_component STREQUAL WindowlessCglApplication)
+        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES GL)
+    elseif(_component STREQUAL WindowlessEglApplication)
+        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES GL)
+    elseif(_component STREQUAL WindowlessGlxApplication)
+        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES GL)
+    elseif(_component STREQUAL WindowlessIosApplication)
+        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES GL)
+    elseif(_component STREQUAL WindowlessWglApplication)
+        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES GL)
+    elseif(_component STREQUAL WindowlessWindowsEglApplication)
+        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES GL)
+    elseif(_component STREQUAL XEglApplication)
+        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES GL)
     elseif(_component STREQUAL MagnumFont)
         set(_MAGNUM_${_COMPONENT}_DEPENDENCIES Trade TgaImporter) # and below
     elseif(_component STREQUAL MagnumFontConverter)
@@ -389,7 +408,7 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
     elseif(_component MATCHES ".+(Importer|ImageConverter)")
         list(APPEND _MAGNUM_${_COMPONENT}_DEPENDENCIES Trade)
     elseif(_component MATCHES ".+(Font|FontConverter)")
-        list(APPEND _MAGNUM_${_COMPONENT}_DEPENDENCIES Text TextureTools)
+        list(APPEND _MAGNUM_${_COMPONENT}_DEPENDENCIES Text TextureTools GL)
     endif()
 
     # Mark the dependencies as required if the component is also required
@@ -412,7 +431,7 @@ endif()
 
 # Component distinction (listing them explicitly to avoid mistakes with finding
 # components from other repositories)
-set(_MAGNUM_LIBRARY_COMPONENTS "^(Audio|DebugTools|MeshTools|Primitives|SceneGraph|Shaders|Shapes|Text|TextureTools|Trade|AndroidApplication|GlfwApplication|GlutApplication|GlxApplication|Sdl2Application|XEglApplication|WindowlessCglApplication|WindowlessEglApplication|WindowlessGlxApplication|WindowlessIosApplication|WindowlessWglApplication|WindowlessWindowsEglApplication|CglContext|EglContext|GlxContext|WglContext|OpenGLTester)$")
+set(_MAGNUM_LIBRARY_COMPONENTS "^(Audio|DebugTools|GL|MeshTools|Primitives|SceneGraph|Shaders|Shapes|Text|TextureTools|Trade|AndroidApplication|GlfwApplication|GlutApplication|GlxApplication|Sdl2Application|XEglApplication|WindowlessCglApplication|WindowlessEglApplication|WindowlessGlxApplication|WindowlessIosApplication|WindowlessWglApplication|WindowlessWindowsEglApplication|CglContext|EglContext|GlxContext|WglContext|OpenGLTester)$")
 set(_MAGNUM_PLUGIN_COMPONENTS "^(AnyAudioImporter|AnyImageConverter|AnyImageImporter|AnySceneImporter|MagnumFont|MagnumFontConverter|ObjImporter|TgaImageConverter|TgaImporter|WavAudioImporter)$")
 set(_MAGNUM_EXECUTABLE_COMPONENTS "^(distancefieldconverter|fontconverter|imageconverter|info|al-info)$")
 
@@ -634,13 +653,38 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
 
         # No special setup for DebugTools library
 
+        # GL library
+        elseif(_component STREQUAL GL)
+            set_property(TARGET Magnum::${_component} APPEND PROPERTY
+                INTERFACE_INCLUDE_DIRECTORIES ${MAGNUM_INCLUDE_DIR}/MagnumExternal/OpenGL)
+
+            if(NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES)
+                find_package(OpenGL REQUIRED)
+                set_property(TARGET Magnum::${_component} APPEND PROPERTY
+                    INTERFACE_LINK_LIBRARIES ${OPENGL_gl_LIBRARY})
+            elseif(MAGNUM_TARGET_GLES2)
+                find_package(OpenGLES2 REQUIRED)
+                set_property(TARGET Magnum::${_component} APPEND PROPERTY
+                    INTERFACE_LINK_LIBRARIES OpenGLES2::OpenGLES2)
+            elseif(MAGNUM_TARGET_GLES3)
+                find_package(OpenGLES3 REQUIRED)
+                set_property(TARGET Magnum::${_component} APPEND PROPERTY
+                    INTERFACE_LINK_LIBRARIES OpenGLES3::OpenGLES3)
+            endif()
+
+            # Emscripten needs a special flag to use WebGL 2
+            if(CORRADE_TARGET_EMSCRIPTEN AND NOT MAGNUM_TARGET_GLES2)
+                # TODO: give me INTERFACE_LINK_OPTIONS or something, please
+                set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s USE_WEBGL2=1")
+            endif()
+
         # MeshTools library
         elseif(_component STREQUAL MeshTools)
             set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES CompressIndices.h)
 
         # OpenGLTester library
         elseif(_component STREQUAL OpenGLTester)
-            set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX Magnum)
+            set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_SUFFIX Magnum/GL)
 
         # Primitives library
         elseif(_component STREQUAL Primitives)
