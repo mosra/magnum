@@ -43,6 +43,9 @@ namespace Magnum { namespace Primitives {
 @param segments  Number of segments. Must be greater or equal to @cpp 3 @ce.
 
 Circle with radius @cpp 1.0f @ce. Non-indexed @ref MeshPrimitive::TriangleFan.
+
+@image html primitives-circle2dsolid.png
+
 @see @ref circle2DWireframe(), @ref circle3DSolid()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData2D circle2DSolid(UnsignedInt segments);
@@ -52,6 +55,9 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData2D circle2DSolid(UnsignedInt segments);
 @param segments  Number of segments. Must be greater or equal to @cpp 3 @ce.
 
 Circle with radius @cpp 1.0f @ce. Non-indexed @ref MeshPrimitive::LineLoop.
+
+@image html primitives-circle2dwireframe.png
+
 @see @ref circle2DSolid(), @ref circle3DWireframe()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData2D circle2DWireframe(UnsignedInt segments);
@@ -80,6 +86,9 @@ struct MAGNUM_PRIMITIVES_EXPORT Circle {
 
 Circle on the XY plane with radius @cpp 1.0f @ce. Non-indexed
 @ref MeshPrimitive::TriangleFan with normals in positive Z direction.
+
+@image html primitives-circle3dsolid.png
+
 @see @ref circle3DWireframe(), @ref circle2DSolid()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D circle3DSolid(UnsignedInt segments);
@@ -90,6 +99,9 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D circle3DSolid(UnsignedInt segments);
 
 Circle on the XY plane with radius @cpp 1.0f @ce. Non-indexed
 @ref MeshPrimitive::LineLoop.
+
+@image html primitives-circle3dwireframe.png
+
 @see @ref circle2DSolid(), @ref circle3DWireframe()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D circle3DWireframe(UnsignedInt segments);

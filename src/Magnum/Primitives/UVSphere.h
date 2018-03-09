@@ -59,6 +59,9 @@ enum class UVSphereTextureCoords: UnsignedByte {
 Sphere with radius @cpp 1.0f @ce. Indexed @ref MeshPrimitive::Triangles with
 normals and optional 2D texture coordinates. If texture coordinates are
 generated, vertices of one segment are duplicated for texture wrapping.
+
+@image html primitives-uvspheresolid.png
+
 @see @ref icosphereSolid()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D uvSphereSolid(UnsignedInt rings, UnsignedInt segments, UVSphereTextureCoords textureCoords = UVSphereTextureCoords::DontGenerate);
@@ -71,6 +74,9 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D uvSphereSolid(UnsignedInt rings, Unsi
     @cpp 4 @ce and multiple of @cpp 4 @ce.
 
 Sphere with radius @cpp 1.0f @ce. Indexed @ref MeshPrimitive::Lines.
+
+@image html primitives-uvspherewireframe.png
+
 @see @ref icosphereSolid()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D uvSphereWireframe(UnsignedInt rings, UnsignedInt segments);

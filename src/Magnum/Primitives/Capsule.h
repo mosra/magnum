@@ -48,6 +48,9 @@ namespace Magnum { namespace Primitives {
 
 Cylinder of radius @cpp 1.0f @ce along Y axis with hemispheres instead of caps.
 Indexed @ref MeshPrimitive::Lines.
+
+@image html primitives-capsule2dwireframe.png
+
 @see @ref capsule3DSolid(), @ref capsule3DWireframe(), @ref circle2DWireframe(),
     @ref squareWireframe()
 */
@@ -92,6 +95,8 @@ Indexed @ref MeshPrimitive::Triangles with normals and optional 2D texture
 coordinates. If texture coordinates are generated, vertices of one segment are
 duplicated for texture wrapping.
 
+@image html primitives-capsule3dsolid.png
+
 The capsule is by default created with radius set to @f$ 1.0 @f$. In order to
 get radius @f$ r @f$, length @f$ l @f$ and preserve correct normals, set
 @p halfLength to @f$ 0.5 \frac{l}{r} @f$ and then scale all
@@ -113,6 +118,9 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D capsule3DSolid(UnsignedInt hemisphere
 
 Cylinder of radius @cpp 1.0f @ce along Y axis with hemispheres instead of caps.
 Indexed @ref MeshPrimitive::Lines.
+
+@image html primitives-capsule3dwireframe.png
+
 @see @ref capsule2DWireframe(), @ref capsule3DSolid(), @ref cylinderSolid()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D capsule3DWireframe(UnsignedInt hemisphereRings, UnsignedInt cylinderRings, UnsignedInt segments, Float halfLength);

@@ -202,6 +202,8 @@ See also:
 
 -   A new @ref developers page containing step-by-step checklists for
     maintainers and core developers
+-   The @ref Primitives namespace now has contains images visualizing how
+    each primitive looks
 -   Compiling majority of code snippets to ensure they don't get out of sync
     with the code
 

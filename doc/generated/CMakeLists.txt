@@ -57,3 +57,12 @@ target_link_libraries(shaders
     Magnum::Primitives
     Magnum::Shaders
     Magnum::WindowlessApplication)
+
+add_executable(primitives primitives.cpp)
+target_include_directories(primitives PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+target_link_libraries(primitives
+    Magnum::Magnum
+    Magnum::MeshTools
+    Magnum::Primitives
+    Magnum::Shaders
+    Magnum::WindowlessApplication)

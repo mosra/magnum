@@ -44,6 +44,9 @@ namespace Magnum { namespace Primitives {
 
 Sphere with radius @cpp 1.0f @ce. Indexed @ref MeshPrimitive::Triangles with
 normals.
+
+@image html primitives-icospheresolid.png
+
 @see @ref uvSphereSolid(), @ref uvSphereWireframe()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D icosphereSolid(UnsignedInt subdivisions);

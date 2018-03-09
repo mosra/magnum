@@ -43,6 +43,9 @@ namespace Magnum { namespace Primitives {
 
 Unit-size line in direction of positive X axis. Non-indexed
 @ref MeshPrimitive::Lines.
+
+@image html primitives-line2d.png
+
 @see @ref line3D(), @ref axis2D(), @ref crosshair2D()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData2D line2D();
@@ -52,6 +55,9 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData2D line2D();
 
 Unit-size line in direction of positive X axis. Non-indexed
 @ref MeshPrimitive::Lines.
+
+@image html primitives-line3d.png
+
 @see @ref line2D(), @ref axis3D(), @ref crosshair3D()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D line3D();
