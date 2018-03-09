@@ -53,6 +53,33 @@ See also:
 
 @subsection changelog-latest-deprecated Deprecated APIs
 
+-   Class @cpp Primitives::Capsule2D @ce and @cpp Primitives::Capsule3D @ce is
+    deprecated, use @ref Primitives::capsule2DWireframe(),
+    @ref Primitives::capsule3DSolid() and @ref Primitives::capsule3DWireframe()
+    free functions instead
+-   Class @cpp Primitives::Circle @ce is deprecated, use
+    @ref Primitives::circle2DSolid() and @ref Primitives::circle2DWireframe()
+    instead
+-   Class @cpp Primitives::Crosshair2D @ce and @cpp Primitives::Crosshair3D @ce
+    is deprecated, use @ref Primitives::crosshair2D() and
+    @ref Primitives::crosshair3D() free function instead
+-   Class @cpp Primitives::Cube @ce is deprecated, use @ref Primitives::cubeSolid(),
+    @ref Primitives::cubeSolidStrip() and @ref Primitives::cubeWireframe() free
+    functions instead
+-   Class @cpp Primitives::Cylinder @ce is deprecated, use
+    @ref Primitives::cylinderSolid(), @ref Primitives::cylinderWireframe() free
+    functions instead
+-   Class @cpp Primitives::Icosphere @ce is deprecated, use the
+    @ref Primitives::icosphereSolid() free function instead
+-   Class @cpp Primitives::Plane @ce is deprecated, use
+    @ref Primitives::planeSolid() and @ref Primitives::planeWireframe() free
+    functions instead
+-   Class @cpp Primitives::Square @ce is deprecated, use
+    @ref Primitives::squareSolid() and @ref Primitives::squareWireframe() free
+    functions instead
+-   Class @cpp Primitives::UVSphere @ce is deprecated, use
+    @ref Primitives::uvSphereSolid() and @ref Primitives::uvSphereWireframe()
+    free functions instead
 -   @cpp Shaders::*Vector::setVectorTexture() @ce, @cpp Shaders::Flat::setTexture() @ce,
     @cpp Shaders::Phong::setAmbientTexture() @ce, @cpp Shaders::Phong::setDiffuseTexture() @ce,
     @cpp Shaders::Phong::setSpecularTexture() @ce and @cpp Shaders::Phong::setTextures() @ce

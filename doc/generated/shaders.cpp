@@ -152,7 +152,7 @@ namespace {
 std::string ShaderVisualizer::phong() {
     std::unique_ptr<Buffer> vertices, indices;
     Mesh mesh{NoCreate};
-    std::tie(mesh, vertices, indices) = MeshTools::compile(Primitives::UVSphere::solid(16, 32), BufferUsage::StaticDraw);
+    std::tie(mesh, vertices, indices) = MeshTools::compile(Primitives::uvSphereSolid(16, 32), BufferUsage::StaticDraw);
 
     Shaders::Phong shader;
     shader.setAmbientColor(0x22272e_rgbf)
@@ -171,7 +171,7 @@ std::string ShaderVisualizer::phong() {
 std::string ShaderVisualizer::meshVisualizer() {
     std::unique_ptr<Buffer> vertices, indices;
     Mesh mesh{NoCreate};
-    std::tie(mesh, vertices, indices) = MeshTools::compile(Primitives::Icosphere::solid(1), BufferUsage::StaticDraw);
+    std::tie(mesh, vertices, indices) = MeshTools::compile(Primitives::icosphereSolid(1), BufferUsage::StaticDraw);
 
     const Matrix4 projection = Projection*Transformation*
         Matrix4::rotationZ(13.7_degf)*
@@ -191,7 +191,7 @@ std::string ShaderVisualizer::meshVisualizer() {
 std::string ShaderVisualizer::flat() {
     std::unique_ptr<Buffer> vertices, indices;
     Mesh mesh{NoCreate};
-    std::tie(mesh, vertices, indices) = MeshTools::compile(Primitives::UVSphere::solid(16, 32), BufferUsage::StaticDraw);
+    std::tie(mesh, vertices, indices) = MeshTools::compile(Primitives::uvSphereSolid(16, 32), BufferUsage::StaticDraw);
 
     Shaders::Flat3D shader;
     shader.setColor(BaseColor)
@@ -203,7 +203,7 @@ std::string ShaderVisualizer::flat() {
 }
 
 std::string ShaderVisualizer::vertexColor() {
-    Trade::MeshData3D sphere = Primitives::UVSphere::solid(32, 64);
+    Trade::MeshData3D sphere = Primitives::uvSphereSolid(32, 64);
 
     /* Color vertices nearest to given position */
     auto target = Vector3{2.0f, 2.0f, 7.0f}.normalized();
@@ -248,7 +248,7 @@ std::string ShaderVisualizer::vector() {
 
     Mesh mesh{NoCreate};
     std::unique_ptr<Buffer> vertices;
-    std::tie(mesh, vertices, std::ignore) = MeshTools::compile(Primitives::Square::solid(Primitives::Square::TextureCoords::Generate), BufferUsage::StaticDraw);
+    std::tie(mesh, vertices, std::ignore) = MeshTools::compile(Primitives::squareSolid(Primitives::SquareTextureCoords::Generate), BufferUsage::StaticDraw);
 
     Shaders::Vector2D shader;
     shader.setColor(BaseColor)
@@ -282,7 +282,7 @@ std::string ShaderVisualizer::distanceFieldVector() {
 
     Mesh mesh{NoCreate};
     std::unique_ptr<Buffer> vertices;
-    std::tie(mesh, vertices, std::ignore) = MeshTools::compile(Primitives::Square::solid(Primitives::Square::TextureCoords::Generate), BufferUsage::StaticDraw);
+    std::tie(mesh, vertices, std::ignore) = MeshTools::compile(Primitives::squareSolid(Primitives::SquareTextureCoords::Generate), BufferUsage::StaticDraw);
 
     Shaders::DistanceFieldVector2D shader;
     shader.setColor(BaseColor)

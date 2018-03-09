@@ -26,39 +26,53 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Primitives::Circle
+ * @brief Function @ref Magnum::Primitives::circle2DSolid(), @ref Magnum::Primitives::circle2DWireframe()
  */
 
 #include "Magnum/Primitives/visibility.h"
 #include "Magnum/Trade/Trade.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#endif
+
 namespace Magnum { namespace Primitives {
 
 /**
-@brief 2D circle primitive
+@brief Solid 2D circle
+@param segments  Number of segments. Must be greater or equal to @cpp 3 @ce.
 
-Circle with radius `1`.
+Circle with radius @cpp 1.0f @ce. Non-indexed @ref MeshPrimitive::TriangleFan.
+@see @ref circle2DWireframe()
 */
-class MAGNUM_PRIMITIVES_EXPORT Circle {
-    public:
-        /**
-         * @brief Solid circle
-         * @param segments  Number of segments. Must be greater or equal to 3.
-         *
-         * Non-indexed @ref MeshPrimitive::TriangleFan.
-         */
-        static Trade::MeshData2D solid(UnsignedInt segments);
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData2D circle2DSolid(UnsignedInt segments);
 
-        /**
-         * @brief Wireframe circle
-         * @param segments  Number of segments. Must be greater or equal to 3.
-         *
-         * Non-indexed @ref MeshPrimitive::LineLoop.
-         */
-        static Trade::MeshData2D wireframe(UnsignedInt segments);
+/**
+@brief Wireframe 2D circle
+@param segments  Number of segments. Must be greater or equal to @cpp 3 @ce.
 
-        Circle() = delete;
+Circle with radius @cpp 1.0f @ce. Non-indexed @ref MeshPrimitive::LineLoop.
+@see @ref circle2DSolid()
+*/
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData2D circle2DWireframe(UnsignedInt segments);
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@brief 2D circle primitive
+@deprecated Use @ref circle2DSolid() or @ref circle2DWireframe() instead.
+*/
+struct MAGNUM_PRIMITIVES_EXPORT Circle {
+    /** @brief @copybrief circle2DSolid()
+     * @deprecated Use @ref circle2DSolid() instead.
+     */
+    CORRADE_DEPRECATED("use circle2DSolid() instead") static Trade::MeshData2D solid(UnsignedInt segments);
+
+    /** @brief @copybrief circle2DWireframe()
+     * @deprecated Use @ref circle2DWireframe() instead.
+     */
+    CORRADE_DEPRECATED("use circle2DWireframe() instead") static Trade::MeshData2D wireframe(UnsignedInt segments);
 };
+#endif
 
 }}
 

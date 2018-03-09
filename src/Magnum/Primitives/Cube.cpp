@@ -31,7 +31,7 @@
 
 namespace Magnum { namespace Primitives {
 
-Trade::MeshData3D Cube::solid() {
+Trade::MeshData3D cubeSolid() {
     return Trade::MeshData3D{MeshPrimitive::Triangles, {
          0,  1,  2,  0,  2,  3, /* +Z */
          4,  5,  6,  4,  6,  7, /* +X */
@@ -102,7 +102,7 @@ Trade::MeshData3D Cube::solid() {
     }}, {}, {}, nullptr};
 }
 
-Trade::MeshData3D Cube::solidStrip() {
+Trade::MeshData3D cubeSolidStrip() {
     /* Sources:
         https://twitter.com/Donzanoid/status/436843034966507520
         http://www.asmcommunity.net/forums/topic/?id=6284#post-45209
@@ -144,7 +144,7 @@ Trade::MeshData3D Cube::solidStrip() {
     }}, {}, {}, {}, nullptr};
 }
 
-Trade::MeshData3D Cube::wireframe() {
+Trade::MeshData3D cubeWireframe() {
     return Trade::MeshData3D{MeshPrimitive::Lines, {
         0, 1, 1, 2, 2, 3, 3, 0, /* +Z */
         4, 5, 5, 6, 6, 7, 7, 4, /* -Z */
@@ -162,5 +162,19 @@ Trade::MeshData3D Cube::wireframe() {
         {-1.0f,  1.0f, -1.0f}
     }}, {}, {}, {}, nullptr};
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+Trade::MeshData3D Cube::solid() {
+    return cubeSolid();
+}
+
+Trade::MeshData3D Cube::solidStrip() {
+    return cubeSolidStrip();
+}
+
+Trade::MeshData3D Cube::wireframe() {
+    return cubeWireframe();
+}
+#endif
 
 }}

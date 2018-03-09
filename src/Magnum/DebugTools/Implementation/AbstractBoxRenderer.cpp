@@ -34,11 +34,11 @@
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
 AbstractBoxRenderer<2>::AbstractBoxRenderer(): AbstractShapeRenderer<2>("box2d", "box2d-vertices", {}) {
-    if(!wireframeMesh) AbstractShapeRenderer<2>::createResources(Primitives::Square::wireframe());
+    if(!wireframeMesh) AbstractShapeRenderer<2>::createResources(Primitives::squareWireframe());
 }
 
 AbstractBoxRenderer<3>::AbstractBoxRenderer(): AbstractShapeRenderer<3>("box3d", "box3d-vertices", "box3d-indices") {
-    if(!wireframeMesh) AbstractShapeRenderer<3>::createResources(Primitives::Cube::wireframe());
+    if(!wireframeMesh) AbstractShapeRenderer<3>::createResources(Primitives::cubeWireframe());
 }
 
 template class AbstractBoxRenderer<2>;

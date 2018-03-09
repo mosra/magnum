@@ -26,29 +26,40 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Primitives::Icosphere
+ * @brief Function @ref Magnum::Primitives::icosphereSolid()
  */
 
 #include "Magnum/Primitives/visibility.h"
 #include "Magnum/Trade/Trade.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#endif
+
 namespace Magnum { namespace Primitives {
 
 /**
-@brief 3D icosphere primitive
+@brief Solid 3D icosphere
+@param subdivisions      Number of subdivisions
 
-Sphere with radius `1`.
+Sphere with radius @cpp 1.0f @ce. Indexed @ref MeshPrimitive::Triangles with
+normals.
+@see @ref uvSphereSolid(), @ref uvSphereWireframe()
 */
-class MAGNUM_PRIMITIVES_EXPORT Icosphere {
-    public:
-        /**
-         * @brief Solid icosphere
-         * @param subdivisions      Number of subdivisions
-         *
-         * Indexed @ref MeshPrimitive::Triangles with normals.
-         */
-        static Trade::MeshData3D solid(UnsignedInt subdivisions);
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D icosphereSolid(UnsignedInt subdivisions);
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@brief 3D icosphere
+@deprecated Use @ref icosphereSolid() instead.
+*/
+struct MAGNUM_PRIMITIVES_EXPORT Icosphere {
+    /** @brief @copybrief icosphereSolid()
+     * @deprecated Use @ref icosphereSolid() instead.
+     */
+    CORRADE_DEPRECATED("use icosphereSolid() instead") static Trade::MeshData3D solid(UnsignedInt subdivisions);
 };
+#endif
 
 }}
 

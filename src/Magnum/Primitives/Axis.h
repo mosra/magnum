@@ -39,6 +39,7 @@ namespace Magnum { namespace Primitives {
 
 Two color-coded arrows for visualizing orientation (XY is RG). Indexed
 @ref MeshPrimitive::Lines with vertex colors.
+@see @ref axis3D(), @ref crosshair2D(), @ref line2D()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData2D axis2D();
 
@@ -47,6 +48,7 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData2D axis2D();
 
 Three color-coded arrows for visualizing orientation (XYZ is RGB). Indexed
 @ref MeshPrimitive::Lines with vertex colors.
+@see @ref axis2D(), @ref crosshair3D(), @ref line3D()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D axis3D();
 

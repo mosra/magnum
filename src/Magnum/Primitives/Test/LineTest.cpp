@@ -46,7 +46,7 @@ LineTest::LineTest() {
 }
 
 void LineTest::twoDimensions() {
-    Trade::MeshData2D line = Primitives::Line2D::wireframe();
+    Trade::MeshData2D line = Primitives::line2D();
 
     CORRADE_VERIFY(!line.isIndexed());
     CORRADE_COMPARE(line.primitive(), MeshPrimitive::Lines);
@@ -54,7 +54,7 @@ void LineTest::twoDimensions() {
 }
 
 void LineTest::threeDimensions() {
-    Trade::MeshData3D line = Primitives::Line3D::wireframe();
+    Trade::MeshData3D line = Primitives::line3D();
 
     CORRADE_VERIFY(!line.isIndexed());
     CORRADE_COMPARE(line.primitive(), MeshPrimitive::Lines);

@@ -26,46 +26,68 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Primitives::Square
+ * @brief Function @ref Magnum::Primitives::squareSolid(), @ref Magnum::Primitives::squareWireframe()
  */
 
 #include "Magnum/Primitives/visibility.h"
 #include "Magnum/Trade/Trade.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#endif
+
 namespace Magnum { namespace Primitives {
 
 /**
-@brief 2D square primitive
+@brief Whether to generate square texture coordinates
 
-2x2 square.
-@see @ref Plane
+@see @ref squareSolid()
 */
-class MAGNUM_PRIMITIVES_EXPORT Square {
-    public:
-        /** @brief Whether to generate texture coordinates */
-        enum class TextureCoords: UnsignedByte {
-            DontGenerate,    /**< Don't generate texture coordinates */
+enum class SquareTextureCoords: UnsignedByte {
+    DontGenerate,       /**< Don't generate texture coordinates */
 
-            /** Generate texture coordinates with origin in bottom left corner. */
-            Generate
-        };
-
-        /**
-         * @brief Solid square
-         *
-         * Non-indexed @ref MeshPrimitive::TriangleStrip.
-         */
-        static Trade::MeshData2D solid(TextureCoords textureCoords = TextureCoords::DontGenerate);
-
-        /**
-         * @brief Wireframe square
-         *
-         * Non-indexed @ref MeshPrimitive::LineLoop.
-         */
-        static Trade::MeshData2D wireframe();
-
-        Square() = delete;
+    /** Generate texture coordinates with origin in bottom left corner. */
+    Generate
 };
+
+/**
+@brief Solid 2D square
+
+2x2 square. Non-indexed @ref MeshPrimitive::TriangleStrip.
+@see @ref squareWireframe(), @ref planeSolid()
+*/
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData2D squareSolid(SquareTextureCoords textureCoords = SquareTextureCoords::DontGenerate);
+
+/**
+@brief Wireframe 2D square
+
+2x2 square. Non-indexed @ref MeshPrimitive::LineLoop.
+@see @ref squareSolid(), @ref planeWireframe()
+*/
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData2D squareWireframe();
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@brief 2D square
+@deprecated Use @ref squareSolid() or @ref squareWireframe() instead.
+*/
+struct MAGNUM_PRIMITIVES_EXPORT Square {
+    /** @brief @copybrief SquareTextureCoords
+     * @deprecated Use @ref SquareTextureCoords instead.
+     */
+    typedef CORRADE_DEPRECATED("use SquareTextureCoords instead") SquareTextureCoords TextureCoords;
+
+    /** @brief @copybrief squareSolid()
+     * @deprecated Use @ref squareWireframe() instead.
+     */
+    CORRADE_DEPRECATED("use squareSolid() instead") static Trade::MeshData2D solid(SquareTextureCoords textureCoords = SquareTextureCoords::DontGenerate);
+
+    /** @brief @copybrief squareWireframe()
+     * @deprecated Use @ref squareWireframe() instead.
+     */
+    CORRADE_DEPRECATED("use squareWireframe() instead") static Trade::MeshData2D wireframe();
+};
+#endif
 
 }}
 

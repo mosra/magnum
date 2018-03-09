@@ -33,11 +33,12 @@
 
 namespace Magnum { namespace Primitives {
 
-Trade::MeshData3D UVSphere::solid(UnsignedInt rings, UnsignedInt segments, TextureCoords textureCoords) {
-    CORRADE_ASSERT(rings >= 2 && segments >= 3, "UVSphere must have at least two rings and three segments",
+Trade::MeshData3D uvSphereSolid(UnsignedInt rings, UnsignedInt segments, UVSphereTextureCoords textureCoords) {
+    CORRADE_ASSERT(rings >= 2 && segments >= 3,
+        "Primitives::uvSphereSolid(): at least two rings and three segments expected",
         (Trade::MeshData3D{MeshPrimitive::Triangles, {}, {}, {}, {}, {}, nullptr}));
 
-    Implementation::Spheroid sphere(segments, textureCoords == TextureCoords::Generate ?
+    Implementation::Spheroid sphere(segments, textureCoords == UVSphereTextureCoords::Generate ?
         Implementation::Spheroid::TextureCoords::Generate :
         Implementation::Spheroid::TextureCoords::DontGenerate);
 
@@ -61,8 +62,9 @@ Trade::MeshData3D UVSphere::solid(UnsignedInt rings, UnsignedInt segments, Textu
     return sphere.finalize();
 }
 
-Trade::MeshData3D UVSphere::wireframe(const UnsignedInt rings, const UnsignedInt segments) {
-    CORRADE_ASSERT(rings >= 2 && rings%2 == 0 && segments >= 4 && segments%2 == 0, "Primitives::UVSphere::wireframe(): improper parameters",
+Trade::MeshData3D uvSphereWireframe(const UnsignedInt rings, const UnsignedInt segments) {
+    CORRADE_ASSERT(rings >= 2 && rings%2 == 0 && segments >= 4 && segments%2 == 0,
+        "Primitives::uvSphereWireframe(): multiples of 2 rings and multiples of 4 segments expected",
         (Trade::MeshData3D{MeshPrimitive::Triangles, {}, {}, {}, {}, {}, nullptr}));
 
     Implementation::WireframeSpheroid sphere(segments/4);
@@ -74,5 +76,15 @@ Trade::MeshData3D UVSphere::wireframe(const UnsignedInt rings, const UnsignedInt
 
     return sphere.finalize();
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+Trade::MeshData3D UVSphere::solid(const UnsignedInt rings, const UnsignedInt segments, const UVSphereTextureCoords textureCoords) {
+    return uvSphereSolid(rings, segments, textureCoords);
+}
+
+Trade::MeshData3D UVSphere::wireframe(const UnsignedInt rings, const UnsignedInt segments) {
+    return uvSphereWireframe(rings, segments);
+}
+#endif
 
 }}

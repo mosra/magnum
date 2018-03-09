@@ -45,7 +45,7 @@ PlaneTest::PlaneTest() {
 }
 
 void PlaneTest::solid() {
-    Trade::MeshData3D plane = Primitives::Plane::solid();
+    Trade::MeshData3D plane = Primitives::planeSolid();
 
     CORRADE_VERIFY(!plane.isIndexed());
     CORRADE_COMPARE(plane.primitive(), MeshPrimitive::TriangleStrip);
@@ -54,7 +54,7 @@ void PlaneTest::solid() {
 }
 
 void PlaneTest::wireframe() {
-    Trade::MeshData3D plane = Primitives::Plane::wireframe();
+    Trade::MeshData3D plane = Primitives::planeWireframe();
 
     CORRADE_VERIFY(!plane.isIndexed());
     CORRADE_COMPARE(plane.primitive(), MeshPrimitive::LineLoop);

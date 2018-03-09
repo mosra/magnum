@@ -32,8 +32,8 @@
 
 namespace Magnum { namespace Primitives {
 
-Trade::MeshData2D Circle::solid(UnsignedInt segments) {
-    CORRADE_ASSERT(segments >= 3, "Primitives::Circle::solid(): segments must be >= 3",
+Trade::MeshData2D circle2DSolid(const UnsignedInt segments) {
+    CORRADE_ASSERT(segments >= 3, "Primitives::circle2DSolid(): segments must be >= 3",
         (Trade::MeshData2D{MeshPrimitive::TriangleFan, {}, {}, {}, {}, nullptr}));
 
     std::vector<Vector2> positions;
@@ -53,8 +53,8 @@ Trade::MeshData2D Circle::solid(UnsignedInt segments) {
     return Trade::MeshData2D{MeshPrimitive::TriangleFan, {}, {std::move(positions)}, {}, {}, nullptr};
 }
 
-Trade::MeshData2D Circle::wireframe(UnsignedInt segments) {
-    CORRADE_ASSERT(segments >= 3, "Primitives::Circle::wireframe(): segments must be >= 3",
+Trade::MeshData2D circle2DWireframe(const UnsignedInt segments) {
+    CORRADE_ASSERT(segments >= 3, "Primitives::circle2DWireframe(): segments must be >= 3",
         (Trade::MeshData2D{MeshPrimitive::LineLoop, {}, {}, {}, {}, nullptr}));
 
     std::vector<Vector2> positions;
@@ -69,5 +69,15 @@ Trade::MeshData2D Circle::wireframe(UnsignedInt segments) {
 
     return Trade::MeshData2D{MeshPrimitive::LineLoop, {}, {std::move(positions)}, {}, {}, nullptr};
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+Trade::MeshData2D Circle::solid(const UnsignedInt segments) {
+    return circle2DSolid(segments);
+}
+
+Trade::MeshData2D Circle::wireframe(const UnsignedInt segments) {
+    return circle2DWireframe(segments);
+}
+#endif
 
 }}

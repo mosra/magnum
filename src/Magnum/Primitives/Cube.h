@@ -26,45 +26,66 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Primitives::Cube
+ * @brief Function @ref Magnum::Primitives::cubeSolid(), @ref Magnum::Primitives::cubeSolidStrip(), @ref Magnum::Primitives::cubeWireframe()
  */
 
 #include "Magnum/Primitives/visibility.h"
 #include "Magnum/Trade/Trade.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#endif
+
 namespace Magnum { namespace Primitives {
 
 /**
-@brief 3D cube primitive
+@brief Solid 3D cube
 
-2x2x2 cube.
+Indexed @ref MeshPrimitive::Triangles with flat normals.
+@see @ref cubeSolidStrip(), @ref cubeWireframe()
 */
-class MAGNUM_PRIMITIVES_EXPORT Cube {
-    public:
-        /**
-         * @brief Solid cube
-         *
-         * Indexed @ref MeshPrimitive::Triangles with flat normals.
-         */
-        static Trade::MeshData3D solid();
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D cubeSolid();
 
-        /**
-         * @brief Solid cube as a single strip
-         *
-         * Non-indexed @ref MeshPrimitive::TriangleStrip. Just positions, no
-         * normals or anything else.
-         */
-        static Trade::MeshData3D solidStrip();
+/**
+@brief Solid 3D cube as a single strip
 
-        /**
-         * @brief Wireframe cube
-         *
-         * Indexed @ref MeshPrimitive::Lines.
-         */
-        static Trade::MeshData3D wireframe();
+Non-indexed @ref MeshPrimitive::TriangleStrip. Just positions, no
+normals or anything else.
+@see @ref cubeSolid(), @ref cubeWireframe()
+*/
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D cubeSolidStrip();
 
-        Cube() = delete;
+/**
+@brief Wireframe 3D cube
+
+Indexed @ref MeshPrimitive::Lines.
+@see @ref cubeSolid(), @ref cubeSolidStrip()
+*/
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D cubeWireframe();
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@brief 3D cube
+@deprecated Use @ref cubeSolid(), @ref cubeSolidStrip() or @ref cubeWireframe()
+    instead.
+*/
+struct MAGNUM_PRIMITIVES_EXPORT Cube {
+    /** @brief @copybrief cubeSolid()
+     * @deprecated Use @ref cubeSolid() instead.
+     */
+    CORRADE_DEPRECATED("use cubeSolid() instead") static Trade::MeshData3D solid();
+
+    /** @brief @copybrief cubeSolidStrip()
+     * @deprecated Use @ref cubeSolidStrip() instead.
+     */
+    CORRADE_DEPRECATED("use cubeSolidStrip() instead") static Trade::MeshData3D solidStrip();
+
+    /** @brief @copybrief cubeWireframe()
+     * @deprecated Use @ref cubeWireframe() instead.
+     */
+    CORRADE_DEPRECATED("use cubeWireframe() instead") static Trade::MeshData3D wireframe();
 };
+#endif
 
 }}
 

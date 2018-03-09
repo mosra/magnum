@@ -41,7 +41,7 @@ namespace Magnum { namespace DebugTools { namespace Implementation {
 
 AbstractCapsuleRenderer<2>::AbstractCapsuleRenderer(): AbstractShapeRenderer<2>("capsule2d", "capsule2d-vertices", "capsule2d-indices") {
     constexpr UnsignedInt rings = 10;
-    if(!wireframeMesh) createResources(Primitives::Capsule2D::wireframe(rings, 1, 1.0f));
+    if(!wireframeMesh) createResources(Primitives::capsule2DWireframe(rings, 1, 1.0f));
 
     /* Bottom hemisphere */
     if(!(bottom = ResourceManager::instance().get<MeshView>("capsule2d-bottom"))) {
@@ -71,7 +71,7 @@ AbstractCapsuleRenderer<2>::AbstractCapsuleRenderer(): AbstractShapeRenderer<2>(
 AbstractCapsuleRenderer<3>::AbstractCapsuleRenderer(): AbstractShapeRenderer<3>("capsule3d", "capsule3d-vertices", "capsule3d-indices") {
     constexpr UnsignedInt rings = 10;
     constexpr UnsignedInt segments = 40;
-    if(!wireframeMesh) createResources(Primitives::Capsule3D::wireframe(rings, 1, segments, 1.0f));
+    if(!wireframeMesh) createResources(Primitives::capsule3DWireframe(rings, 1, segments, 1.0f));
 
     /* Bottom hemisphere */
     if(!(bottom = ResourceManager::instance().get<MeshView>("capsule3d-bottom"))) {

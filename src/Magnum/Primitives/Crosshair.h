@@ -26,41 +26,59 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Primitives::Crosshair2D, @ref Magnum::Primitives::Crosshair3D
+ * @brief Function @ref Magnum::Primitives::crosshair2D(), @ref Magnum::Primitives::crosshair3D()
  */
 
 #include "Magnum/Primitives/visibility.h"
 #include "Magnum/Trade/Trade.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#endif
+
 namespace Magnum { namespace Primitives {
 
 /**
-@brief 2D crosshair primitive
+@brief 2D crosshair
 
-2x2 wireframe crosshair (two crossed lines), non-indexed
-@ref MeshPrimitive::Lines.
+2x2 crosshair (two crossed lines), non-indexed @ref MeshPrimitive::Lines.
+@see @ref crosshair3D(), @ref axis2D(), @ref line2D()
 */
-class MAGNUM_PRIMITIVES_EXPORT Crosshair2D {
-    public:
-        /** @brief Wireframe crosshair */
-        static Trade::MeshData2D wireframe();
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData2D crosshair2D();
 
-        Crosshair2D() = delete;
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@brief 2D crosshair
+@deprecated Use @ref crosshair2D() instead.
+*/
+struct MAGNUM_PRIMITIVES_EXPORT Crosshair2D {
+    /** @brief @copybrief crosshair2D()
+     * @deprecated Use @ref crosshair2D() instead.
+     */
+    CORRADE_DEPRECATED("use crosshair2D() instead") static Trade::MeshData2D wireframe();
 };
+#endif
 
 /**
-@brief 3D crosshair primitive
+@brief 3D crosshair
 
-2x2x2 wireframe crosshair (three crossed lines), non-indexed
-@ref MeshPrimitive::Lines.
+2x2x2 crosshair (three crossed lines), non-indexed @ref MeshPrimitive::Lines.
+@see @ref crosshair2D(), @ref axis2D(), @ref line3D()
 */
-class MAGNUM_PRIMITIVES_EXPORT Crosshair3D {
-    public:
-        /** @brief Wireframe crosshair */
-        static Trade::MeshData3D wireframe();
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D crosshair3D();
 
-        Crosshair3D() = delete;
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@brief 3D crosshair
+@deprecated Use @ref crosshair3D() instead.
+*/
+struct MAGNUM_PRIMITIVES_EXPORT Crosshair3D {
+    /** @brief @copybrief crosshair3D()
+     * @deprecated Use @ref crosshair3D() instead.
+     */
+    CORRADE_DEPRECATED("use crosshair3D() instead") static Trade::MeshData3D wireframe();
 };
+#endif
 
 }}
 

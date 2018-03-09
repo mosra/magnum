@@ -45,7 +45,7 @@ CircleTest::CircleTest() {
 }
 
 void CircleTest::solid() {
-    Trade::MeshData2D circle = Primitives::Circle::solid(8);
+    Trade::MeshData2D circle = Primitives::circle2DSolid(8);
 
     CORRADE_VERIFY(!circle.isIndexed());
     CORRADE_COMPARE(circle.primitive(), MeshPrimitive::TriangleFan);
@@ -60,7 +60,7 @@ void CircleTest::solid() {
 }
 
 void CircleTest::wireframe() {
-    Trade::MeshData2D circle = Primitives::Circle::wireframe(8);
+    Trade::MeshData2D circle = Primitives::circle2DWireframe(8);
 
     CORRADE_VERIFY(!circle.isIndexed());
     CORRADE_COMPARE(circle.primitive(), MeshPrimitive::LineLoop);

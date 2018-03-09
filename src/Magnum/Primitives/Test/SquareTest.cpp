@@ -45,7 +45,7 @@ SquareTest::SquareTest() {
 }
 
 void SquareTest::solid() {
-    Trade::MeshData2D square = Primitives::Square::solid();
+    Trade::MeshData2D square = Primitives::squareSolid();
 
     CORRADE_VERIFY(!square.isIndexed());
     CORRADE_COMPARE(square.primitive(), MeshPrimitive::TriangleStrip);
@@ -53,7 +53,7 @@ void SquareTest::solid() {
 }
 
 void SquareTest::wireframe() {
-    Trade::MeshData2D square = Primitives::Square::wireframe();
+    Trade::MeshData2D square = Primitives::squareWireframe();
 
     CORRADE_VERIFY(!square.isIndexed());
     CORRADE_COMPARE(square.primitive(), MeshPrimitive::LineLoop);

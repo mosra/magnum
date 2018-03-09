@@ -47,7 +47,7 @@ UVSphereTest::UVSphereTest() {
 }
 
 void UVSphereTest::solidWithoutTextureCoords() {
-    Trade::MeshData3D sphere = UVSphere::solid(3, 3);
+    Trade::MeshData3D sphere = uvSphereSolid(3, 3);
 
     CORRADE_COMPARE_AS(sphere.positions(0), (std::vector<Vector3>{
         {0.0f, -1.0f, 0.0f},
@@ -85,7 +85,7 @@ void UVSphereTest::solidWithoutTextureCoords() {
 }
 
 void UVSphereTest::solidWithTextureCoords() {
-    Trade::MeshData3D sphere = UVSphere::solid(3, 3, UVSphere::TextureCoords::Generate);
+    Trade::MeshData3D sphere = uvSphereSolid(3, 3, UVSphereTextureCoords::Generate);
 
     CORRADE_COMPARE_AS(sphere.positions(0), (std::vector<Vector3>{
         {0.0f, -1.0f, 0.0f},
@@ -127,7 +127,7 @@ void UVSphereTest::solidWithTextureCoords() {
 }
 
 void UVSphereTest::wireframe() {
-    Trade::MeshData3D sphere = UVSphere::wireframe(6, 8);
+    Trade::MeshData3D sphere = uvSphereWireframe(6, 8);
 
     CORRADE_COMPARE_AS(sphere.positions(0), (std::vector<Vector3>{
         {0.0f, -1.0f, 0.0f},

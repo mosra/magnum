@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Primitives::Cylinder
+ * @brief Function @ref Magnum::Primitives::cylinderSolid(), @ref Magnum::Primitives::cylinderWireframe()
  */
 
 #include <Corrade/Containers/EnumSet.h>
@@ -38,65 +38,89 @@
 namespace Magnum { namespace Primitives {
 
 /**
-@brief 3D cylinder primitive
+@brief Cylinder flag
 
-Cylinder along Y axis of radius `1`.
+@see @ref CylinderFlags, @ref cylinderSolid()
 */
-class MAGNUM_PRIMITIVES_EXPORT Cylinder {
-    public:
-        /**
-         * @brief Flag
-         *
-         * @see @ref Flags, @ref solid(), @ref wireframe()
-         */
-        enum class Flag {
-            GenerateTextureCoords = 1,  /**< Generate texture coordinates */
-            CapEnds                     /**< Cap ends */
-        };
-
-        /**
-         * @brief Flags
-         *
-         * @see @ref solid(), @ref wireframe()
-         */
-        typedef Containers::EnumSet<Flag> Flags;
-
-        /**
-         * @brief Solid cylinder
-         * @param rings         Number of (face) rings. Must be larger or
-         *      equal to 1.
-         * @param segments      Number of (face) segments. Must be larger or
-         *      equal to 3.
-         * @param halfLength    Half the cylinder length
-         * @param flags         Flags
-         *
-         * Indexed @ref MeshPrimitive::Triangles with normals, optional 2D
-         * texture coordinates and optional capped ends. If texture coordinates
-         * are generated, vertices of one segment are duplicated for texture
-         * wrapping.
-         *
-         * The cylinder is by default created with radius set to @cpp 1.0f @ce.
-         * In order to get radius @f$ r @f$, length @f$ l @f$ and preserve
-         * correct normals, set @p halfLength to @f$ 0.5 \frac{l}{r} @f$ and
-         * then scale all @ref Trade::MeshData3D::positions() by @f$ r @f$, for
-         * example using @ref MeshTools::transformPointsInPlace().
-         */
-        static Trade::MeshData3D solid(UnsignedInt rings, UnsignedInt segments, Float halfLength, Flags flags = Flags());
-
-        /**
-         * @brief Wireframe cylinder
-         * @param rings         Number of (line) rings. Must be larger or equal
-         *      to 1.
-         * @param segments      Number of (line) segments. Must be larger or
-         *      equal to 4 and multiple of 4.
-         * @param halfLength    Half the cylinder length
-         *
-         * Indexed @ref MeshPrimitive::Lines.
-         */
-        static Trade::MeshData3D wireframe(UnsignedInt rings, UnsignedInt segments, Float halfLength);
+enum class CylinderFlag {
+    GenerateTextureCoords = 1 << 0,  /**< Generate texture coordinates */
+    CapEnds = 1 << 1                     /**< Cap ends */
 };
 
-CORRADE_ENUMSET_OPERATORS(Cylinder::Flags)
+/**
+@brief Cylinder flags
+
+@see @ref cylinderSolid()
+*/
+typedef Containers::EnumSet<CylinderFlag> CylinderFlags;
+
+CORRADE_ENUMSET_OPERATORS(CylinderFlags)
+
+/**
+@brief Solid 3D cylinder
+@param rings        Number of (face) rings. Must be larger or equal to
+    @cpp 1 @ce.
+@param segments     Number of (face) segments. Must be larger or equal to
+    @cpp 3 @ce.
+@param halfLength   Half the cylinder length
+@param flags        Flags
+
+Cylinder along Y axis of radius @cpp 1.0f @ce. Indexed
+@ref MeshPrimitive::Triangles with normals, optional 2D texture coordinates and
+optional capped ends. If texture coordinates are generated, vertices of one
+segment are duplicated for texture wrapping.
+
+
+The cylinder is by default created with radius set to @f$ 1.0 @f$. In order to
+get radius @f$ r @f$, length @f$ l @f$ and preserve correct normals, set
+@p halfLength to @f$ 0.5 \frac{l}{r} @f$ and then scale all
+@ref Trade::MeshData3D::positions() by @f$ r @f$, for example using
+@ref MeshTools::transformPointsInPlace().
+@see @ref cylinderWireframe()
+*/
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D cylinderSolid(UnsignedInt rings, UnsignedInt segments, Float halfLength, CylinderFlags flags = {});
+
+/**
+@brief Wireframe 3D cylinder
+@param rings        Number of (line) rings. Must be larger or equal to
+    @cpp 1 @ce.
+@param segments     Number of (line) segments. Must be larger or equal to
+    @cpp 4 @ce and multiple of @cpp 4 @ce.
+@param halfLength   Half the cylinder length
+
+Cylinder along Y axis of radius @cpp 1.0f @ce. Indexed
+@ref MeshPrimitive::Lines.
+@see @ref cylinderSolid()
+*/
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D cylinderWireframe(UnsignedInt rings, UnsignedInt segments, Float halfLength);
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@brief 3D cylinder
+@deprecated Use @ref cylinderSolid() or @ref cylinderWireframe() instead.
+*/
+struct MAGNUM_PRIMITIVES_EXPORT Cylinder {
+    /** @brief @copybrief CylinderFlag
+     * @deprecated Use @ref CylinderFlag instead.
+     */
+    typedef CORRADE_DEPRECATED("use CylinderFlag instead") CylinderFlag Flag;
+
+    /** @brief @copybrief CylinderFlags
+     * @deprecated Use @ref CylinderFlags instead.
+     */
+    typedef CORRADE_DEPRECATED("use CylinderFlags instead") CylinderFlags Flags;
+
+    /** @brief @copybrief cylinderSolid()
+     * @deprecated Use @ref cylinderSolid() instead.
+     */
+    CORRADE_DEPRECATED("use cylinderSolid() instead") static Trade::MeshData3D solid(UnsignedInt rings, UnsignedInt segments, Float halfLength, CylinderFlags flags = {});
+
+    /** @brief @copybrief cylinderWireframe()
+     * @deprecated Use @ref cylinderWireframe() instead.
+     */
+    CORRADE_DEPRECATED("use cylinderWireframe() instead") static Trade::MeshData3D wireframe(UnsignedInt rings, UnsignedInt segments, Float halfLength);
+};
+#endif
 
 }}
 

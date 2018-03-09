@@ -37,11 +37,11 @@
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
 AbstractSphereRenderer<2>::AbstractSphereRenderer(): AbstractShapeRenderer<2>("sphere2d", "sphere2d-vertices", {}) {
-    if(!wireframeMesh) createResources(Primitives::Circle::wireframe(40));
+    if(!wireframeMesh) createResources(Primitives::circle2DWireframe(40));
 }
 
 AbstractSphereRenderer<3>::AbstractSphereRenderer(): AbstractShapeRenderer<3>("sphere3d", "sphere3d-vertices", "sphere3d-indices") {
-    if(!wireframeMesh) createResources(Primitives::UVSphere::wireframe(20, 40));
+    if(!wireframeMesh) createResources(Primitives::uvSphereWireframe(20, 40));
 }
 
 template<UnsignedInt dimensions> SphereRenderer<dimensions>::SphereRenderer(const Shapes::Implementation::AbstractShape<dimensions>& sphere): sphere(static_cast<const Shapes::Implementation::Shape<Shapes::Sphere<dimensions>>&>(sphere).shape) {}

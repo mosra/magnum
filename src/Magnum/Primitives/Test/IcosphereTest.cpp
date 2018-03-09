@@ -42,7 +42,7 @@ IcosphereTest::IcosphereTest() {
 }
 
 void IcosphereTest::count() {
-    Trade::MeshData3D data = Primitives::Icosphere::solid(2);
+    Trade::MeshData3D data = Primitives::icosphereSolid(2);
 
     CORRADE_COMPARE(data.positionArrayCount(), 1);
     CORRADE_COMPARE(data.normalArrayCount(), 1);

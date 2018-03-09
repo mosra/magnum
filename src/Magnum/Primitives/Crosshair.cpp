@@ -32,19 +32,29 @@
 
 namespace Magnum { namespace Primitives {
 
-Trade::MeshData2D Crosshair2D::wireframe() {
+Trade::MeshData2D crosshair2D() {
     return Trade::MeshData2D{MeshPrimitive::Lines, {}, {{
         {-1.0f,  0.0f}, {1.0f, 0.0f},
         { 0.0f, -1.0f}, {0.0f, 1.0f}
     }}, {}, {}, nullptr};
 }
 
-Trade::MeshData3D Crosshair3D::wireframe() {
+Trade::MeshData3D crosshair3D() {
     return Trade::MeshData3D{MeshPrimitive::Lines, {}, {{
         {-1.0f,  0.0f,  0.0f}, {1.0f, 0.0f, 0.0f},
         { 0.0f, -1.0f,  0.0f}, {0.0f, 1.0f, 0.0f},
         { 0.0f,  0.0f, -1.0f}, {0.0f, 0.0f, 1.0f}
     }}, {}, {}, {}, nullptr};
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+Trade::MeshData2D Crosshair2D::wireframe() {
+    return crosshair2D();
+}
+
+Trade::MeshData3D Crosshair3D::wireframe() {
+    return crosshair3D();
+}
+#endif
 
 }}

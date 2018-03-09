@@ -56,7 +56,7 @@ namespace {
 
 void SubdivideRemoveDuplicatesBenchmark::subdivide() {
     CORRADE_BENCHMARK(3) {
-        Trade::MeshData3D icosphere = Primitives::Icosphere::solid(0);
+        Trade::MeshData3D icosphere = Primitives::icosphereSolid(0);
 
         /* Subdivide 5 times */
         for(std::size_t i = 0; i != 5; ++i)
@@ -66,7 +66,7 @@ void SubdivideRemoveDuplicatesBenchmark::subdivide() {
 
 void SubdivideRemoveDuplicatesBenchmark::subdivideAndRemoveDuplicatesAfter() {
     CORRADE_BENCHMARK(3) {
-        Trade::MeshData3D icosphere = Primitives::Icosphere::solid(0);
+        Trade::MeshData3D icosphere = Primitives::icosphereSolid(0);
 
         /* Subdivide 5 times */
         for(std::size_t i = 0; i != 5; ++i)
@@ -79,7 +79,7 @@ void SubdivideRemoveDuplicatesBenchmark::subdivideAndRemoveDuplicatesAfter() {
 
 void SubdivideRemoveDuplicatesBenchmark::subdivideAndRemoveDuplicatesInBetween() {
     CORRADE_BENCHMARK(3) {
-        Trade::MeshData3D icosphere = Primitives::Icosphere::solid(0);
+        Trade::MeshData3D icosphere = Primitives::icosphereSolid(0);
 
         /* Subdivide 5 times and remove duplicates during the operation */
         for(std::size_t i = 0; i != 5; ++i) {

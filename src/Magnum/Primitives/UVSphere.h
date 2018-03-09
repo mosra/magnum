@@ -26,52 +26,77 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Primitives::UVSphere
+ * @brief Class @ref Magnum::Primitives::uvSphereSolid(), @ref Magnum::Primitives::uvSphereWireframe()
  */
 
 #include "Magnum/Trade/Trade.h"
 #include "Magnum/Primitives/visibility.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#endif
+
 namespace Magnum { namespace Primitives {
 
 /**
-@brief 3D UV sphere primitive
+@brief Whether to generate UV sphere texture coordinates
 
-Sphere with radius `1`.
+@see @ref uvSphereSolid()
 */
-class MAGNUM_PRIMITIVES_EXPORT UVSphere {
-    public:
-        /** @brief Whether to generate texture coordinates */
-        enum class TextureCoords: UnsignedByte {
-            Generate,       /**< Generate texture coordinates */
-            DontGenerate    /**< Don't generate texture coordinates */
-        };
-
-        /**
-         * @brief Solid UV sphere
-         * @param rings         Number of (face) rings. Must be larger or equal
-         *      to 2.
-         * @param segments      Number of (face) segments. Must be larger or
-         *      equal to 3.
-         * @param textureCoords Whether to generate texture coordinates.
-         *
-         * Indexed @ref MeshPrimitive::Triangles with normals and optional 2D
-         * texture coordinates. If texture coordinates are generated, vertices
-         * of one segment are duplicated for texture wrapping.
-         */
-        static Trade::MeshData3D solid(UnsignedInt rings, UnsignedInt segments, TextureCoords textureCoords = TextureCoords::DontGenerate);
-
-        /**
-         * @brief Wireframe UV sphere
-         * @param rings         Number of (line) rings. Must be larger or equal
-         *      to 2 and multiple of 2.
-         * @param segments      Number of (line) segments. Must be larger or
-         *      equal to 4 and multiple of 4.
-         *
-         * Indexed @ref MeshPrimitive::Lines.
-         */
-        static Trade::MeshData3D wireframe(UnsignedInt rings, UnsignedInt segments);
+enum class UVSphereTextureCoords: UnsignedByte {
+    DontGenerate,       /**< Don't generate texture coordinates */
+    Generate            /**< Generate texture coordinates */
 };
+
+/**
+@brief Solid 3D UV sphere
+@param rings            Number of (face) rings. Must be larger or equal to
+    @cpp 2 @ce.
+@param segments         Number of (face) segments. Must be larger or
+    equal to @cpp 3 @ce.
+@param textureCoords    Whether to generate texture coordinates
+
+Sphere with radius @cpp 1.0f @ce. Indexed @ref MeshPrimitive::Triangles with
+normals and optional 2D texture coordinates. If texture coordinates are
+generated, vertices of one segment are duplicated for texture wrapping.
+@see @ref icosphereSolid()
+*/
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D uvSphereSolid(UnsignedInt rings, UnsignedInt segments, UVSphereTextureCoords textureCoords = UVSphereTextureCoords::DontGenerate);
+
+/**
+@brief Wireframe 3D UV sphere
+@param rings            Number of (line) rings. Must be larger or equal to
+    @cpp 2 @ce and multiple of @cpp 2 @ce.
+@param segments         Number of (line) segments. Must be larger or equal to
+    @cpp 4 @ce and multiple of @cpp 4 @ce.
+
+Sphere with radius @cpp 1.0f @ce. Indexed @ref MeshPrimitive::Lines.
+@see @ref icosphereSolid()
+*/
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D uvSphereWireframe(UnsignedInt rings, UnsignedInt segments);
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@brief 3D UV sphere
+@deprecated Use @ref uvSphereSolid() or @ref uvSphereWireframe() instead.
+*/
+struct MAGNUM_PRIMITIVES_EXPORT UVSphere {
+    /** @brief @copybrief UVSphereTextureCoords
+     * @deprecated Use @ref UVSphereTextureCoords instead.
+     */
+    typedef CORRADE_DEPRECATED("use UVSphereTextureCoords instead") UVSphereTextureCoords TextureCoords;
+
+    /** @brief @copybrief uvSphereSolid()
+     * @deprecated Use @ref uvSphereSolid() instead.
+     */
+    CORRADE_DEPRECATED("use uvSphereSolid() instead") static Trade::MeshData3D solid(UnsignedInt rings, UnsignedInt segments, UVSphereTextureCoords textureCoords = UVSphereTextureCoords::DontGenerate);
+
+    /** @brief @copybrief uvSphereWireframe()
+     * @deprecated Use @ref uvSphereWireframe() instead.
+     */
+    CORRADE_DEPRECATED("use uvSphereWireframe() instead") static Trade::MeshData3D wireframe(UnsignedInt rings, UnsignedInt segments);
+};
+#endif
 
 }}
 

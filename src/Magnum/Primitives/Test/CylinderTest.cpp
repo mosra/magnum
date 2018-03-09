@@ -47,7 +47,7 @@ CylinderTest::CylinderTest() {
 }
 
 void CylinderTest::solidWithoutAnything() {
-    Trade::MeshData3D cylinder = Cylinder::solid(2, 3, 1.5f);
+    Trade::MeshData3D cylinder = cylinderSolid(2, 3, 1.5f);
 
     CORRADE_COMPARE_AS(cylinder.positions(0), (std::vector<Vector3>{
         {0.0f, -1.5f, 1.0f},
@@ -84,7 +84,7 @@ void CylinderTest::solidWithoutAnything() {
 }
 
 void CylinderTest::solidWithTextureCoordsAndCaps() {
-    Trade::MeshData3D cylinder = Cylinder::solid(2, 3, 1.5f, Cylinder::Flag::GenerateTextureCoords|Cylinder::Flag::CapEnds);
+    Trade::MeshData3D cylinder = cylinderSolid(2, 3, 1.5f, CylinderFlag::GenerateTextureCoords|CylinderFlag::CapEnds);
 
     /* First and last ring are duplicated because they have different normals */
     CORRADE_COMPARE_AS(cylinder.positions(0), (std::vector<Vector3>{
@@ -191,7 +191,7 @@ void CylinderTest::solidWithTextureCoordsAndCaps() {
 }
 
 void CylinderTest::wireframe() {
-    Trade::MeshData3D cylinder = Cylinder::wireframe(2, 8, 0.5f);
+    Trade::MeshData3D cylinder = cylinderWireframe(2, 8, 0.5f);
 
     CORRADE_COMPARE_AS(cylinder.positions(0), (std::vector<Vector3>{
         {0.0f, -0.5f, 1.0f},

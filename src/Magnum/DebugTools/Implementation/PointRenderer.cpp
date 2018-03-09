@@ -45,8 +45,8 @@ namespace {
     template<> inline ResourceKey vertexBufferKey<3>() { return ResourceKey("point3d-vertices"); }
 
     template<UnsignedInt dimensions> typename MeshData<dimensions>::Type meshData();
-    template<> inline Trade::MeshData2D meshData<2>() { return Primitives::Crosshair2D::wireframe(); }
-    template<> inline Trade::MeshData3D meshData<3>() { return Primitives::Crosshair3D::wireframe(); }
+    template<> inline Trade::MeshData2D meshData<2>() { return Primitives::crosshair2D(); }
+    template<> inline Trade::MeshData3D meshData<3>() { return Primitives::crosshair3D(); }
 }
 
 template<UnsignedInt dimensions> PointRenderer<dimensions>::PointRenderer(const Shapes::Implementation::AbstractShape<dimensions>& point): AbstractShapeRenderer<dimensions>(meshKey<dimensions>(), vertexBufferKey<dimensions>(), {}), point(static_cast<const Shapes::Implementation::Shape<Shapes::Point<dimensions>>&>(point).shape) {

@@ -47,8 +47,8 @@ namespace {
     template<> inline ResourceKey vertexBufferKey<3>() { return ResourceKey("line3d-vertices"); }
 
     template<UnsignedInt dimensions> typename MeshData<dimensions>::Type meshData();
-    template<> inline Trade::MeshData2D meshData<2>() { return Primitives::Line2D::wireframe(); }
-    template<> inline Trade::MeshData3D meshData<3>() { return Primitives::Line3D::wireframe(); }
+    template<> inline Trade::MeshData2D meshData<2>() { return Primitives::line2D(); }
+    template<> inline Trade::MeshData3D meshData<3>() { return Primitives::line3D(); }
 }
 
 template<UnsignedInt dimensions> LineSegmentRenderer<dimensions>::LineSegmentRenderer(const Shapes::Implementation::AbstractShape<dimensions>& line): AbstractShapeRenderer<dimensions>(meshKey<dimensions>(), vertexBufferKey<dimensions>(), {}), line(static_cast<const Shapes::Implementation::Shape<Shapes::LineSegment<dimensions>>&>(line).shape) {

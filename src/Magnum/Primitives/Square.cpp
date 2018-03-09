@@ -31,9 +31,9 @@
 
 namespace Magnum { namespace Primitives {
 
-Trade::MeshData2D Square::solid(const TextureCoords textureCoords) {
+Trade::MeshData2D squareSolid(const SquareTextureCoords textureCoords) {
     std::vector<std::vector<Vector2>> coords;
-    if(textureCoords == TextureCoords::Generate) coords.push_back({
+    if(textureCoords == SquareTextureCoords::Generate) coords.push_back({
         {1.0f, 0.0f},
         {1.0f, 1.0f},
         {0.0f, 0.0f},
@@ -48,7 +48,7 @@ Trade::MeshData2D Square::solid(const TextureCoords textureCoords) {
     }}, std::move(coords), {}, nullptr};
 }
 
-Trade::MeshData2D Square::wireframe() {
+Trade::MeshData2D squareWireframe() {
     return Trade::MeshData2D{MeshPrimitive::LineLoop, {}, {{
         {-1.0f, -1.0f},
         {1.0f, -1.0f},
@@ -56,5 +56,15 @@ Trade::MeshData2D Square::wireframe() {
         {-1.0f, 1.0f}
     }}, {}, {}, nullptr};
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+Trade::MeshData2D Square::solid(const SquareTextureCoords textureCoords) {
+    return squareSolid(textureCoords);
+}
+
+Trade::MeshData2D Square::wireframe() {
+    return squareWireframe();
+}
+#endif
 
 }}

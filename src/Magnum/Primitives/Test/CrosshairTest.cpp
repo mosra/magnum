@@ -46,7 +46,7 @@ CrosshairTest::CrosshairTest() {
 }
 
 void CrosshairTest::twoDimensions() {
-    Trade::MeshData2D crosshair = Primitives::Crosshair2D::wireframe();
+    Trade::MeshData2D crosshair = Primitives::crosshair2D();
 
     CORRADE_VERIFY(!crosshair.isIndexed());
     CORRADE_COMPARE(crosshair.primitive(), MeshPrimitive::Lines);
@@ -54,7 +54,7 @@ void CrosshairTest::twoDimensions() {
 }
 
 void CrosshairTest::threeDimensions() {
-    Trade::MeshData3D crosshair = Primitives::Crosshair3D::wireframe();
+    Trade::MeshData3D crosshair = Primitives::crosshair3D();
 
     CORRADE_VERIFY(!crosshair.isIndexed());
     CORRADE_COMPARE(crosshair.primitive(), MeshPrimitive::Lines);

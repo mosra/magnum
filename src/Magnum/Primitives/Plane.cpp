@@ -31,9 +31,9 @@
 
 namespace Magnum { namespace Primitives {
 
-Trade::MeshData3D Plane::solid(const TextureCoords textureCoords) {
+Trade::MeshData3D planeSolid(const PlaneTextureCoords textureCoords) {
     std::vector<std::vector<Vector2>> coords;
-    if(textureCoords == TextureCoords::Generate) coords.push_back({
+    if(textureCoords == PlaneTextureCoords::Generate) coords.push_back({
         {1.0f, 0.0f},
         {1.0f, 1.0f},
         {0.0f, 0.0f},
@@ -53,7 +53,7 @@ Trade::MeshData3D Plane::solid(const TextureCoords textureCoords) {
     }}, std::move(coords), {}, nullptr};
 }
 
-Trade::MeshData3D Plane::wireframe() {
+Trade::MeshData3D planeWireframe() {
     return Trade::MeshData3D{MeshPrimitive::LineLoop, {}, {{
         {-1.0f, -1.0f, 0.0f},
         {1.0f, -1.0f, 0.0f},
@@ -61,5 +61,15 @@ Trade::MeshData3D Plane::wireframe() {
         {-1.0f, 1.0f, 0.0f}
     }}, {}, {}, {}, nullptr};
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+Trade::MeshData3D Plane::solid(const PlaneTextureCoords textureCoords) {
+    return planeSolid(textureCoords);
+}
+
+Trade::MeshData3D Plane::wireframe() {
+    return planeWireframe();
+}
+#endif
 
 }}

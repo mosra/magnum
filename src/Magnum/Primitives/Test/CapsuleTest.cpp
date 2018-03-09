@@ -51,7 +51,7 @@ CapsuleTest::CapsuleTest() {
 }
 
 void CapsuleTest::wireframe2D() {
-    Trade::MeshData2D capsule = Capsule2D::wireframe(2, 4, 0.5f);
+    Trade::MeshData2D capsule = capsule2DWireframe(2, 4, 0.5f);
 
     CORRADE_COMPARE_AS(capsule.positions(0), (std::vector<Vector2>{
         {0.0f, -1.5f},
@@ -95,7 +95,7 @@ void CapsuleTest::wireframe2D() {
 }
 
 void CapsuleTest::solid3DWithoutTextureCoords() {
-    Trade::MeshData3D capsule = Capsule3D::solid(2, 4, 3, 0.5f);
+    Trade::MeshData3D capsule = capsule3DSolid(2, 4, 3, 0.5f);
 
     CORRADE_COMPARE_AS(capsule.positions(0), (std::vector<Vector3>{
         {0.0f, -1.5f, 0.0f},
@@ -178,7 +178,7 @@ void CapsuleTest::solid3DWithoutTextureCoords() {
 }
 
 void CapsuleTest::solid3DWithTextureCoords() {
-    Trade::MeshData3D capsule = Capsule3D::solid(2, 2, 3, 0.5f, Capsule3D::TextureCoords::Generate);
+    Trade::MeshData3D capsule = capsule3DSolid(2, 2, 3, 0.5f, CapsuleTextureCoords::Generate);
 
     CORRADE_COMPARE_AS(capsule.positions(0), (std::vector<Vector3>{
         {0.0f, -1.5f, 0.0f},
@@ -253,7 +253,7 @@ void CapsuleTest::solid3DWithTextureCoords() {
 }
 
 void CapsuleTest::wireframe3D() {
-    Trade::MeshData3D capsule = Capsule3D::wireframe(2, 2, 8, 0.5f);
+    Trade::MeshData3D capsule = capsule3DWireframe(2, 2, 8, 0.5f);
 
     CORRADE_COMPARE_AS(capsule.positions(0), (std::vector<Vector3>{
         {0.0f, -1.5f, 0.0f},

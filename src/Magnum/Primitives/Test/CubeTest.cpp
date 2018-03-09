@@ -47,7 +47,7 @@ CubeTest::CubeTest() {
 }
 
 void CubeTest::solid() {
-    Trade::MeshData3D cube = Primitives::Cube::solid();
+    Trade::MeshData3D cube = Primitives::cubeSolid();
 
     CORRADE_COMPARE(cube.primitive(), MeshPrimitive::Triangles);
     CORRADE_COMPARE(cube.indices().size(), 36);
@@ -56,7 +56,7 @@ void CubeTest::solid() {
 }
 
 void CubeTest::solidStrip() {
-    Trade::MeshData3D cube = Primitives::Cube::solidStrip();
+    Trade::MeshData3D cube = Primitives::cubeSolidStrip();
 
     CORRADE_VERIFY(!cube.isIndexed());
     CORRADE_COMPARE(cube.primitive(), MeshPrimitive::TriangleStrip);
@@ -65,7 +65,7 @@ void CubeTest::solidStrip() {
 }
 
 void CubeTest::wireframe() {
-    Trade::MeshData3D cube = Primitives::Cube::wireframe();
+    Trade::MeshData3D cube = Primitives::cubeWireframe();
 
     CORRADE_COMPARE(cube.primitive(), MeshPrimitive::Lines);
     CORRADE_COMPARE(cube.indices().size(), 24);

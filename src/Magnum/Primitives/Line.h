@@ -26,41 +26,59 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Primitives::Line2D, @ref Magnum::Primitives::Line3D
+ * @brief Function @ref Magnum::Primitives::line2D(), @ref Magnum::Primitives::line3D()
  */
 
 #include "Magnum/Primitives/visibility.h"
 #include "Magnum/Trade/Trade.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#endif
+
 namespace Magnum { namespace Primitives {
 
 /**
-@brief 2D line primitive
+@brief 2D line
 
 Unit-size line in direction of positive X axis. Non-indexed
 @ref MeshPrimitive::Lines.
+@see @ref line3D(), @ref axis2D(), @ref crosshair2D()
 */
-class MAGNUM_PRIMITIVES_EXPORT Line2D {
-    public:
-        /** @brief Wireframe line */
-        static Trade::MeshData2D wireframe();
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData2D line2D();
 
-        Line2D() = delete;
+/**
+@brief 3D line
+
+Unit-size line in direction of positive X axis. Non-indexed
+@ref MeshPrimitive::Lines.
+@see @ref line2D(), @ref axis3D(), @ref crosshair3D()
+*/
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D line3D();
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@brief 2D line
+@deprecated Use @ref line2D() instead.
+*/
+struct MAGNUM_PRIMITIVES_EXPORT Line2D {
+    /** @brief @copybrief line2D()
+     * @deprecated Use @ref line2D() instead.
+     */
+    CORRADE_DEPRECATED("use line2D() instead") static Trade::MeshData2D wireframe();
 };
 
 /**
-@brief 3D line primitive
-
-Unit-size line in direction of positive X axis. Non-indexed
-@ref MeshPrimitive::Lines.
+@brief 3D line
+@deprecated Use @ref line3D() instead.
 */
-class MAGNUM_PRIMITIVES_EXPORT Line3D {
-    public:
-        /** @brief Wireframe line */
-        static Trade::MeshData3D wireframe();
-
-        Line3D() = delete;
+struct MAGNUM_PRIMITIVES_EXPORT Line3D {
+    /** @brief @copybrief line3D()
+     * @deprecated Use @ref line3D() instead.
+     */
+    CORRADE_DEPRECATED("use line3D() instead") static Trade::MeshData3D wireframe();
 };
+#endif
 
 }}
 

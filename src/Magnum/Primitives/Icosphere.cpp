@@ -34,7 +34,7 @@
 
 namespace Magnum { namespace Primitives {
 
-Trade::MeshData3D Icosphere::solid(const UnsignedInt subdivisions) {
+Trade::MeshData3D icosphereSolid(const UnsignedInt subdivisions) {
     std::vector<UnsignedInt> indices{
         1, 2, 6,
         1, 7, 2,
@@ -83,5 +83,11 @@ Trade::MeshData3D Icosphere::solid(const UnsignedInt subdivisions) {
     std::vector<Vector3> normals(positions);
     return Trade::MeshData3D{MeshPrimitive::Triangles, std::move(indices), {std::move(positions)}, {std::move(normals)}, {}, {}, nullptr};
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+Trade::MeshData3D Icosphere::solid(const UnsignedInt subdivisions) {
+    return icosphereSolid(subdivisions);
+}
+#endif
 
 }}

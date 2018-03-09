@@ -26,84 +26,119 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Primitives::Capsule2D, @ref Magnum::Primitives::Capsule3D
+ * @brief Function @ref Magnum::Primitives::capsule2DWireframe(), @ref Magnum::Primitives::capsule3DSolid(), @ref Magnum::Primitives::capsule3DWireframe()
  */
 
 #include "Magnum/Primitives/visibility.h"
 #include "Magnum/Trade/Trade.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#endif
+
 namespace Magnum { namespace Primitives {
 
 /**
-@brief 2D capsule primitive
+@brief Wireframe 2D capsule
+@param hemisphereRings Number of (line) rings for each hemisphere. Must be
+    larger or equal to @cpp 1 @ce.
+@param cylinderRings Number of (line) rings for cylinder. Must be larger or
+    equal to @cpp 1 @ce.
+@param halfLength    Half the length of cylinder part
 
-Cylinder of radius `1` along Y axis with hemispheres instead of caps.
+Cylinder of radius @cpp 1.0f @ce along Y axis with hemispheres instead of caps.
+Indexed @ref MeshPrimitive::Lines.
+@see @ref capsule3DSolid(), @ref capsule3DWireframe(), @ref circle2DWireframe(),
+    @ref squareWireframe()
 */
-class MAGNUM_PRIMITIVES_EXPORT Capsule2D {
-    public:
-        /**
-         * @brief Wireframe capsule
-         * @param hemisphereRings Number of (line) rings for each hemisphere.
-         *      Must be larger or equal to 1.
-         * @param cylinderRings Number of (line) rings for cylinder. Must be
-         *      larger or equal to 1.
-         * @param halfLength    Half the length of cylinder part
-         *
-         * Indexed @ref MeshPrimitive::Lines.
-         */
-        static Trade::MeshData2D wireframe(UnsignedInt hemisphereRings, UnsignedInt cylinderRings, Float halfLength);
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData2D capsule2DWireframe(UnsignedInt hemisphereRings, UnsignedInt cylinderRings, Float halfLength);
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@brief 2D capsule
+@deprecated Use @ref capsule2DWireframe() instead.
+*/
+struct MAGNUM_PRIMITIVES_EXPORT Capsule2D {
+    /** @copybrief capsule2DWireframe()
+     * @deprecated Use @ref capsule2DWireframe() instead.
+     */
+    CORRADE_DEPRECATED("use capsule2DWireframe() instead") static Trade::MeshData2D wireframe(UnsignedInt hemisphereRings, UnsignedInt cylinderRings, Float halfLength);
+};
+#endif
+
+/**
+@brief Whether to generate capsule texture coordinates
+
+@see @ref capsule3DSolid()
+*/
+enum class CapsuleTextureCoords: UnsignedByte {
+    DontGenerate,   /**< Don't generate texture coordinates */
+    Generate        /**< Generate texture coordinates */
 };
 
 /**
-@brief 3D capsule primitive
+@brief Solid 3D capsule
+@param hemisphereRings  Number of (face) rings for each hemisphere. Must be
+    larger or equal to @cpp 1 @ce.
+@param cylinderRings    Number of (face) rings for cylinder. Must be larger or
+    equal to @cpp 1 @ce.
+@param segments         Number of (face) segments. Must be larger or equal to
+    @cpp 3 @ce.
+@param halfLength       Half the length of cylinder part
+@param textureCoords    Whether to generate texture coordinates
 
-Cylinder of radius `1` along Y axis with hemispheres instead of caps.
+Cylinder of radius @cpp 1.0f @ce along Y axis with hemispheres instead of caps.
+Indexed @ref MeshPrimitive::Triangles with normals and optional 2D texture
+coordinates. If texture coordinates are generated, vertices of one segment are
+duplicated for texture wrapping.
+
+The capsule is by default created with radius set to @f$ 1.0 @f$. In order to
+get radius @f$ r @f$, length @f$ l @f$ and preserve correct normals, set
+@p halfLength to @f$ 0.5 \frac{l}{r} @f$ and then scale all
+@ref Trade::MeshData3D::positions() by @f$ r @f$, for example using
+@ref MeshTools::transformPointsInPlace().
+@see @ref capsule3DWireframe(), @ref capsule2DWireframe(), @ref cylinderSolid()
 */
-class MAGNUM_PRIMITIVES_EXPORT Capsule3D {
-    public:
-        /** @brief Whether to generate texture coordinates */
-        enum class TextureCoords: UnsignedByte {
-            Generate,       /**< Generate texture coordinates */
-            DontGenerate    /**< Don't generate texture coordinates */
-        };
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D capsule3DSolid(UnsignedInt hemisphereRings, UnsignedInt cylinderRings, UnsignedInt segments, Float halfLength, CapsuleTextureCoords textureCoords = CapsuleTextureCoords::DontGenerate);
 
-        /**
-         * @brief Solid capsule
-         * @param hemisphereRings Number of (face) rings for each hemisphere.
-         *      Must be larger or equal to 1.
-         * @param cylinderRings Number of (face) rings for cylinder. Must be
-         *      larger or equal to 1.
-         * @param segments      Number of (face) segments. Must be larger or
-         *      equal to 3.
-         * @param halfLength    Half the length of cylinder part
-         * @param textureCoords Whether to generate texture coordinates.
-         *
-         * Indexed @ref MeshPrimitive::Triangles with normals and optional 2D
-         * texture coordinates. If texture coordinates are generated, vertices
-         * of one segment are duplicated for texture wrapping.
-         *
-         * The capsule is by default created with radius set to @cpp 1.0f @ce.
-         * In order to get radius @f$ r @f$, length @f$ l @f$ and preserve
-         * correct normals, set @p halfLength to @f$ 0.5 \frac{l}{r} @f$ and
-         * then scale all @ref Trade::MeshData3D::positions() by @f$ r @f$, for
-         * example using @ref MeshTools::transformPointsInPlace().
-         */
-        static Trade::MeshData3D solid(UnsignedInt hemisphereRings, UnsignedInt cylinderRings, UnsignedInt segments, Float halfLength, TextureCoords textureCoords = TextureCoords::DontGenerate);
+/**
+@brief Wireframe 3D capsule
+@param hemisphereRings  Number of (line) rings for each hemisphere. Must be
+    larger or equal to @cpp 1 @ce.
+@param cylinderRings    Number of (line) rings for cylinder. Must be larger or
+    equal to @cpp 1 @ce.
+@param segments         Number of line segments. Must be larger or equal to
+    @cpp 4 @ce and multiple of @cpp 4 @ce.
+@param halfLength       Half the length of cylinder part
 
-        /**
-         * @brief Wireframe capsule
-         * @param hemisphereRings Number of (line) rings for each hemisphere.
-         *      Must be larger or equal to 1.
-         * @param cylinderRings Number of (line) rings for cylinder. Must be
-         *      larger or equal to 1.
-         * @param segments      Number of line segments. Must be larger or
-         *      equal to 4 and multiple of 4.
-         * @param halfLength    Half the length of cylinder part
-         *
-         * Indexed @ref MeshPrimitive::Lines.
-         */
-        static Trade::MeshData3D wireframe(UnsignedInt hemisphereRings, UnsignedInt cylinderRings, UnsignedInt segments, Float halfLength);
+Cylinder of radius @cpp 1.0f @ce along Y axis with hemispheres instead of caps.
+Indexed @ref MeshPrimitive::Lines.
+@see @ref capsule2DWireframe(), @ref capsule3DSolid(), @ref cylinderSolid()
+*/
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D capsule3DWireframe(UnsignedInt hemisphereRings, UnsignedInt cylinderRings, UnsignedInt segments, Float halfLength);
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@brief 3D capsule
+@deprecated Use @ref capsule3DSolid() or @ref capsule3DWireframe() instead.
+*/
+struct MAGNUM_PRIMITIVES_EXPORT Capsule3D {
+    /** @brief @copybrief CapsuleTextureCoords
+     * @deprecated Use @ref CapsuleTextureCoords instead.
+     */
+    typedef CORRADE_DEPRECATED("use CapsuleTextureCoords instead") CapsuleTextureCoords TextureCoords;
+
+    /** @brief @copybrief capsule3DSolid()
+     * @deprecated Use @ref capsule3DSolid() instead.
+     */
+    CORRADE_DEPRECATED("use capsule3DSolid() instead") static Trade::MeshData3D solid(UnsignedInt hemisphereRings, UnsignedInt cylinderRings, UnsignedInt segments, Float halfLength, CapsuleTextureCoords textureCoords = CapsuleTextureCoords::DontGenerate);
+
+    /** @brief @copybrief capsule3DWireframe()
+     * @deprecated Use @ref capsule3DWireframe() instead.
+     */
+    CORRADE_DEPRECATED("use capsule3DWireframe() instead") static Trade::MeshData3D wireframe(UnsignedInt hemisphereRings, UnsignedInt cylinderRings, UnsignedInt segments, Float halfLength);
 };
+#endif
 
 }}
 

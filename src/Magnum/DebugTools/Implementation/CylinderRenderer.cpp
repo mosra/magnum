@@ -39,11 +39,11 @@
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
 AbstractCylinderRenderer<2>::AbstractCylinderRenderer(): AbstractShapeRenderer<2>("cylinder2d", "cylinder2d-vertices", {}) {
-    if(!wireframeMesh) createResources(Primitives::Square::wireframe());
+    if(!wireframeMesh) createResources(Primitives::squareWireframe());
 }
 
 AbstractCylinderRenderer<3>::AbstractCylinderRenderer(): AbstractShapeRenderer<3>("cylinder3d", "cylinder3d-vertices", "cylinder3d-indices") {
-    if(!wireframeMesh) createResources(Primitives::Cylinder::wireframe(1, 40, 1.0f));
+    if(!wireframeMesh) createResources(Primitives::cylinderWireframe(1, 40, 1.0f));
 }
 
 template<UnsignedInt dimensions> CylinderRenderer<dimensions>::CylinderRenderer(const Shapes::Implementation::AbstractShape<dimensions>& cylinder): cylinder(static_cast<const Shapes::Implementation::Shape<Shapes::Cylinder<dimensions>>&>(cylinder).shape) {}

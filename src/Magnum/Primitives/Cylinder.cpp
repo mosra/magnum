@@ -33,40 +33,42 @@
 
 namespace Magnum { namespace Primitives {
 
-Trade::MeshData3D Cylinder::solid(const UnsignedInt rings, const UnsignedInt segments, const Float halfLength, const Flags flags) {
-    CORRADE_ASSERT(rings >= 1 && segments >= 3, "Primitives::Cylinder::solid(): cylinder must have at least one ring and three segments",
+Trade::MeshData3D cylinderSolid(const UnsignedInt rings, const UnsignedInt segments, const Float halfLength, const CylinderFlags flags) {
+    CORRADE_ASSERT(rings >= 1 && segments >= 3,
+        "Primitives::cylinderSolid(): at least one ring and three segments expected",
         (Trade::MeshData3D{MeshPrimitive::Triangles, {}, {}, {}, {}, {}, nullptr}));
 
-    Implementation::Spheroid cylinder(segments, flags & Flag::GenerateTextureCoords ? Implementation::Spheroid::TextureCoords::Generate : Implementation::Spheroid::TextureCoords::DontGenerate);
+    Implementation::Spheroid cylinder(segments, flags & CylinderFlag::GenerateTextureCoords ? Implementation::Spheroid::TextureCoords::Generate : Implementation::Spheroid::TextureCoords::DontGenerate);
 
     const Float length = 2.0f*halfLength;
-    const Float textureCoordsV = flags & Flag::CapEnds ? 1.0f/(length+2.0f) : 0.0f;
+    const Float textureCoordsV = flags & CylinderFlag::CapEnds ? 1.0f/(length+2.0f) : 0.0f;
 
     /* Bottom cap */
-    if(flags & Flag::CapEnds) {
+    if(flags & CylinderFlag::CapEnds) {
         cylinder.capVertex(-halfLength, -1.0f, 0.0f);
         cylinder.capVertexRing(-halfLength, textureCoordsV, Vector3::yAxis(-1.0f));
     }
 
     /* Vertex rings */
-    cylinder.cylinderVertexRings(rings+1, -halfLength, length/rings, textureCoordsV, length/(rings*(flags & Flag::CapEnds ? length + 2.0f : length)));
+    cylinder.cylinderVertexRings(rings+1, -halfLength, length/rings, textureCoordsV, length/(rings*(flags & CylinderFlag::CapEnds ? length + 2.0f : length)));
 
     /* Top cap */
-    if(flags & Flag::CapEnds) {
+    if(flags & CylinderFlag::CapEnds) {
         cylinder.capVertexRing(halfLength, 1.0f - textureCoordsV, Vector3::yAxis(1.0f));
         cylinder.capVertex(halfLength, 1.0f, 1.0f);
     }
 
     /* Faces */
-    if(flags & Flag::CapEnds) cylinder.bottomFaceRing();
-    cylinder.faceRings(rings, flags & Flag::CapEnds ? (1 + segments) : 0);
-    if(flags & Flag::CapEnds) cylinder.topFaceRing();
+    if(flags & CylinderFlag::CapEnds) cylinder.bottomFaceRing();
+    cylinder.faceRings(rings, flags & CylinderFlag::CapEnds ? (1 + segments) : 0);
+    if(flags & CylinderFlag::CapEnds) cylinder.topFaceRing();
 
     return cylinder.finalize();
 }
 
-Trade::MeshData3D Cylinder::wireframe(const UnsignedInt rings, const UnsignedInt segments, const Float halfLength) {
-    CORRADE_ASSERT(rings >= 1 && segments >= 4 && segments%4 == 0, "Primitives::Cylinder::wireframe(): improper parameters",
+Trade::MeshData3D cylinderWireframe(const UnsignedInt rings, const UnsignedInt segments, const Float halfLength) {
+    CORRADE_ASSERT(rings >= 1 && segments >= 4 && segments%4 == 0,
+        "Primitives::cylinderWireframe(): at least one ring and multiples of 4 segments expected",
         (Trade::MeshData3D{MeshPrimitive::Lines, {}, {}, {}, {}, {}, nullptr}));
 
     Implementation::WireframeSpheroid cylinder(segments/4);
@@ -82,5 +84,15 @@ Trade::MeshData3D Cylinder::wireframe(const UnsignedInt rings, const UnsignedInt
 
     return cylinder.finalize();
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+Trade::MeshData3D Cylinder::solid(const UnsignedInt rings, const UnsignedInt segments, const Float halfLength, const CylinderFlags flags) {
+    return cylinderSolid(rings, segments, halfLength, flags);
+}
+
+Trade::MeshData3D Cylinder::wireframe(const UnsignedInt rings, const UnsignedInt segments, const Float halfLength) {
+    return cylinderWireframe(rings, segments, halfLength);
+}
+#endif
 
 }}
