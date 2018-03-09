@@ -29,6 +29,7 @@
 #include "Magnum/Math/Color.h"
 #include "Magnum/Mesh.h"
 #include "Magnum/Trade/MeshData2D.h"
+#include "Magnum/Trade/MeshData3D.h"
 
 namespace Magnum { namespace Primitives {
 
@@ -37,7 +38,7 @@ Trade::MeshData2D circle2DSolid(const UnsignedInt segments) {
         (Trade::MeshData2D{MeshPrimitive::TriangleFan, {}, {}, {}, {}, nullptr}));
 
     std::vector<Vector2> positions;
-    positions.reserve(segments+1);
+    positions.reserve(segments + 2);
 
     /* Central point */
     positions.emplace_back();
@@ -68,6 +69,47 @@ Trade::MeshData2D circle2DWireframe(const UnsignedInt segments) {
     }
 
     return Trade::MeshData2D{MeshPrimitive::LineLoop, {}, {std::move(positions)}, {}, {}, nullptr};
+}
+
+Trade::MeshData3D circle3DSolid(const UnsignedInt segments) {
+    CORRADE_ASSERT(segments >= 3, "Primitives::circle3DSolid(): segments must be >= 3",
+        (Trade::MeshData3D{MeshPrimitive::TriangleFan, {}, {}, {}, {}, {}, nullptr}));
+
+    std::vector<Vector3> positions;
+    positions.reserve(segments + 2);
+
+    /* Central point */
+    positions.emplace_back();
+
+    /* Points on circle. The first/last point is here twice to close the circle
+       properly. */
+    const Rad angleIncrement(Constants::tau()/segments);
+    for(UnsignedInt i = 0; i != segments + 1; ++i) {
+        const Rad angle(Float(i)*angleIncrement);
+        positions.emplace_back(Math::cos(angle), Math::sin(angle), 0.0f);
+    }
+
+    /* Normals. All pointing in the same direction. */
+    std::vector<Vector3> normals{segments + 2, Vector3::zAxis(1.0f)};
+
+    return Trade::MeshData3D{MeshPrimitive::TriangleFan, {}, {std::move(positions)}, {std::move(normals)}, {}, {}, nullptr};
+}
+
+Trade::MeshData3D circle3DWireframe(const UnsignedInt segments) {
+    CORRADE_ASSERT(segments >= 3, "Primitives::circle3DWireframe(): segments must be >= 3",
+        (Trade::MeshData3D{MeshPrimitive::LineLoop, {}, {}, {}, {}, {}, nullptr}));
+
+    std::vector<Vector3> positions;
+    positions.reserve(segments);
+
+    /* Points on circle */
+    const Rad angleIncrement(Constants::tau()/segments);
+    for(UnsignedInt i = 0; i != segments; ++i) {
+        const Rad angle(Float(i)*angleIncrement);
+        positions.emplace_back(Math::cos(angle), Math::sin(angle), 0.0f);
+    }
+
+    return Trade::MeshData3D{MeshPrimitive::LineLoop, {}, {std::move(positions)}, {}, {}, {}, nullptr};
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED

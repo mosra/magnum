@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Function @ref Magnum::Primitives::circle2DSolid(), @ref Magnum::Primitives::circle2DWireframe()
+ * @brief Function @ref Magnum::Primitives::circle2DSolid(), @ref Magnum::Primitives::circle2DWireframe(), @ref Magnum::Primitives::circle3DSolid(), @ref Magnum::Primitives::circle3DWireframe()
  */
 
 #include "Magnum/Primitives/visibility.h"
@@ -43,7 +43,7 @@ namespace Magnum { namespace Primitives {
 @param segments  Number of segments. Must be greater or equal to @cpp 3 @ce.
 
 Circle with radius @cpp 1.0f @ce. Non-indexed @ref MeshPrimitive::TriangleFan.
-@see @ref circle2DWireframe()
+@see @ref circle2DWireframe(), @ref circle3DSolid()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData2D circle2DSolid(UnsignedInt segments);
 
@@ -52,7 +52,7 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData2D circle2DSolid(UnsignedInt segments);
 @param segments  Number of segments. Must be greater or equal to @cpp 3 @ce.
 
 Circle with radius @cpp 1.0f @ce. Non-indexed @ref MeshPrimitive::LineLoop.
-@see @ref circle2DSolid()
+@see @ref circle2DSolid(), @ref circle3DWireframe()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData2D circle2DWireframe(UnsignedInt segments);
 
@@ -73,6 +73,26 @@ struct MAGNUM_PRIMITIVES_EXPORT Circle {
     CORRADE_DEPRECATED("use circle2DWireframe() instead") static Trade::MeshData2D wireframe(UnsignedInt segments);
 };
 #endif
+
+/**
+@brief Solid 3D circle
+@param segments  Number of segments. Must be greater or equal to @cpp 3 @ce.
+
+Circle on the XY plane with radius @cpp 1.0f @ce. Non-indexed
+@ref MeshPrimitive::TriangleFan with normals in positive Z direction.
+@see @ref circle3DWireframe(), @ref circle2DSolid()
+*/
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D circle3DSolid(UnsignedInt segments);
+
+/**
+@brief Wireframe 3D circle
+@param segments  Number of segments. Must be greater or equal to @cpp 3 @ce.
+
+Circle on the XY plane with radius @cpp 1.0f @ce. Non-indexed
+@ref MeshPrimitive::LineLoop.
+@see @ref circle2DSolid(), @ref circle3DWireframe()
+*/
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D circle3DWireframe(UnsignedInt segments);
 
 }}
 

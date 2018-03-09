@@ -51,6 +51,11 @@ See also:
         @webgl_extension{WEBGL,color_buffer_float},
         @webgl_extension{EXT,color_buffer_float}
 
+@subsubsection changelog-latest-new-primitives Primitives library
+
+-   New @ref Primitives::circle3DSolid() and @ref Primitives::circle3DWireframe()
+    primitives
+
 @subsection changelog-latest-deprecated Deprecated APIs
 
 -   Class @cpp Primitives::Capsule2D @ce and @cpp Primitives::Capsule3D @ce is

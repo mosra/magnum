@@ -26,25 +26,30 @@
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Mesh.h"
-#include "Magnum/Math/Vector2.h"
+#include "Magnum/Math/Vector3.h"
 #include "Magnum/Primitives/Circle.h"
 #include "Magnum/Trade/MeshData2D.h"
+#include "Magnum/Trade/MeshData3D.h"
 
 namespace Magnum { namespace Primitives { namespace Test {
 
 struct CircleTest: TestSuite::Tester {
     explicit CircleTest();
 
-    void solid();
-    void wireframe();
+    void solid2D();
+    void solid3D();
+    void wireframe2D();
+    void wireframe3D();
 };
 
 CircleTest::CircleTest() {
-    addTests({&CircleTest::solid,
-              &CircleTest::wireframe});
+    addTests({&CircleTest::solid2D,
+              &CircleTest::solid3D,
+              &CircleTest::wireframe2D,
+              &CircleTest::wireframe3D});
 }
 
-void CircleTest::solid() {
+void CircleTest::solid2D() {
     Trade::MeshData2D circle = Primitives::circle2DSolid(8);
 
     CORRADE_VERIFY(!circle.isIndexed());
@@ -59,7 +64,34 @@ void CircleTest::solid() {
     }));
 }
 
-void CircleTest::wireframe() {
+void CircleTest::solid3D() {
+    Trade::MeshData3D circle = Primitives::circle3DSolid(8);
+
+    CORRADE_VERIFY(!circle.isIndexed());
+    CORRADE_COMPARE(circle.primitive(), MeshPrimitive::TriangleFan);
+    CORRADE_COMPARE(circle.positions(0), (std::vector<Vector3>{
+        { 0.0f,  0.0f, 0.0f},
+        { 1.0f,  0.0f, 0.0f}, { Constants::sqrt2()/2.0f,  Constants::sqrt2()/2.0f, 0.0f},
+        { 0.0f,  1.0f, 0.0f}, {-Constants::sqrt2()/2.0f,  Constants::sqrt2()/2.0f, 0.0f},
+        {-1.0f,  0.0f, 0.0f}, {-Constants::sqrt2()/2.0f, -Constants::sqrt2()/2.0f, 0.0f},
+        { 0.0f, -1.0f, 0.0f}, { Constants::sqrt2()/2.0f, -Constants::sqrt2()/2.0f, 0.0f},
+        { 1.0f,  0.0f, 0.0f}
+    }));
+    CORRADE_COMPARE(circle.normals(0), (std::vector<Vector3>{
+        { 0.0f,  0.0f, 1.0f},
+        { 0.0f,  0.0f, 1.0f},
+        { 0.0f,  0.0f, 1.0f},
+        { 0.0f,  0.0f, 1.0f},
+        { 0.0f,  0.0f, 1.0f},
+        { 0.0f,  0.0f, 1.0f},
+        { 0.0f,  0.0f, 1.0f},
+        { 0.0f,  0.0f, 1.0f},
+        { 0.0f,  0.0f, 1.0f},
+        { 0.0f,  0.0f, 1.0f}
+    }));
+}
+
+void CircleTest::wireframe2D() {
     Trade::MeshData2D circle = Primitives::circle2DWireframe(8);
 
     CORRADE_VERIFY(!circle.isIndexed());
@@ -69,6 +101,19 @@ void CircleTest::wireframe() {
         { 0.0f,  1.0f}, {-Constants::sqrt2()/2.0f,  Constants::sqrt2()/2.0f},
         {-1.0f,  0.0f}, {-Constants::sqrt2()/2.0f, -Constants::sqrt2()/2.0f},
         { 0.0f, -1.0f}, { Constants::sqrt2()/2.0f, -Constants::sqrt2()/2.0f}
+    }));
+}
+
+void CircleTest::wireframe3D() {
+    Trade::MeshData3D circle = Primitives::circle3DWireframe(8);
+
+    CORRADE_VERIFY(!circle.isIndexed());
+    CORRADE_COMPARE(circle.primitive(), MeshPrimitive::LineLoop);
+    CORRADE_COMPARE(circle.positions(0), (std::vector<Vector3>{
+        { 1.0f,  0.0f, 0.0f}, { Constants::sqrt2()/2.0f,  Constants::sqrt2()/2.0f, 0.0f},
+        { 0.0f,  1.0f, 0.0f}, {-Constants::sqrt2()/2.0f,  Constants::sqrt2()/2.0f, 0.0f},
+        {-1.0f,  0.0f, 0.0f}, {-Constants::sqrt2()/2.0f, -Constants::sqrt2()/2.0f, 0.0f},
+        { 0.0f, -1.0f, 0.0f}, { Constants::sqrt2()/2.0f, -Constants::sqrt2()/2.0f, 0.0f}
     }));
 }
 
