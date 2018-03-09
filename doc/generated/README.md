@@ -30,3 +30,6 @@ output is put into `doc/` directory. The executable requires two textures:
     ```bash
     magnum-distancefieldconverter --importer PngImporter --converter PngImageConverter --output-size "64 64" --radius 16 vector-src.png vector-distancefield.png
     ```
+Apply `pngcrush` to the result for smaller file sizes:
+
+    for f in $(ls shaders-*.png); do pngcrush -ow $f; done
