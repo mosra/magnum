@@ -221,7 +221,9 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * @return Reference to self (for method chaining)
          *
          * Default value is @cpp 0xffffffff_rgbaf @ce. Color will be multiplied
-         * with specular texture if @ref Flag::SpecularTexture is set.
+         * with specular texture if @ref Flag::SpecularTexture is set. If you
+         * want to have a fully diffuse material, set specular color to
+         * @cpp 0x000000_rgbf @ce.
          * @see @ref bindSpecularTexture()
          */
         Phong& setSpecularColor(const Color4& color) {
