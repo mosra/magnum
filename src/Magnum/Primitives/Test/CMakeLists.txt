@@ -23,16 +23,28 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+corrade_add_test(PrimitivesAxisTest AxisTest.cpp LIBRARIES MagnumPrimitives)
 corrade_add_test(PrimitivesCapsuleTest CapsuleTest.cpp LIBRARIES MagnumPrimitives)
 corrade_add_test(PrimitivesCircleTest CircleTest.cpp LIBRARIES MagnumPrimitives)
+corrade_add_test(PrimitivesCrosshairTest CrosshairTest.cpp LIBRARIES MagnumPrimitives)
+corrade_add_test(PrimitivesCubeTest CubeTest.cpp LIBRARIES MagnumPrimitives)
 corrade_add_test(PrimitivesCylinderTest CylinderTest.cpp LIBRARIES MagnumPrimitives)
 corrade_add_test(PrimitivesIcosphereTest IcosphereTest.cpp LIBRARIES MagnumPrimitives)
+corrade_add_test(PrimitivesLineTest LineTest.cpp LIBRARIES MagnumPrimitives)
+corrade_add_test(PrimitivesPlaneTest PlaneTest.cpp LIBRARIES MagnumPrimitives)
+corrade_add_test(PrimitivesSquareTest SquareTest.cpp LIBRARIES MagnumPrimitives)
 corrade_add_test(PrimitivesUVSphereTest UVSphereTest.cpp LIBRARIES MagnumPrimitives)
 
 set_target_properties(
+    PrimitivesAxisTest
     PrimitivesCapsuleTest
     PrimitivesCircleTest
+    PrimitivesCrosshairTest
+    PrimitivesCubeTest
     PrimitivesCylinderTest
     PrimitivesIcosphereTest
+    PrimitivesLineTest
+    PrimitivesPlaneTest
+    PrimitivesSquareTest
     PrimitivesUVSphereTest
     PROPERTIES FOLDER "Magnum/Primitives/Test")

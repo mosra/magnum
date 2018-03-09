@@ -27,51 +27,40 @@
 
 #include "Magnum/Mesh.h"
 #include "Magnum/Math/Vector2.h"
-#include "Magnum/Primitives/Circle.h"
+#include "Magnum/Primitives/Square.h"
 #include "Magnum/Trade/MeshData2D.h"
 
 namespace Magnum { namespace Primitives { namespace Test {
 
-struct CircleTest: TestSuite::Tester {
-    explicit CircleTest();
+struct SquareTest: TestSuite::Tester {
+    explicit SquareTest();
 
     void solid();
     void wireframe();
 };
 
-CircleTest::CircleTest() {
-    addTests({&CircleTest::solid,
-              &CircleTest::wireframe});
+SquareTest::SquareTest() {
+    addTests({&SquareTest::solid,
+              &SquareTest::wireframe});
 }
 
-void CircleTest::solid() {
-    Trade::MeshData2D circle = Primitives::Circle::solid(8);
+void SquareTest::solid() {
+    Trade::MeshData2D square = Primitives::Square::solid();
 
-    CORRADE_VERIFY(!circle.isIndexed());
-    CORRADE_COMPARE(circle.primitive(), MeshPrimitive::TriangleFan);
-    CORRADE_COMPARE(circle.positions(0), (std::vector<Vector2>{
-        { 0.0f,  0.0f},
-        { 1.0f,  0.0f}, { Constants::sqrt2()/2.0f,  Constants::sqrt2()/2.0f},
-        { 0.0f,  1.0f}, {-Constants::sqrt2()/2.0f,  Constants::sqrt2()/2.0f},
-        {-1.0f,  0.0f}, {-Constants::sqrt2()/2.0f, -Constants::sqrt2()/2.0f},
-        { 0.0f, -1.0f}, { Constants::sqrt2()/2.0f, -Constants::sqrt2()/2.0f},
-        { 1.0f,  0.0f}
-    }));
+    CORRADE_VERIFY(!square.isIndexed());
+    CORRADE_COMPARE(square.primitive(), MeshPrimitive::TriangleStrip);
+    CORRADE_COMPARE(square.positions(0).size(), 4);
 }
 
-void CircleTest::wireframe() {
-    Trade::MeshData2D circle = Primitives::Circle::wireframe(8);
+void SquareTest::wireframe() {
+    Trade::MeshData2D square = Primitives::Square::wireframe();
 
-    CORRADE_VERIFY(!circle.isIndexed());
-    CORRADE_COMPARE(circle.primitive(), MeshPrimitive::LineLoop);
-    CORRADE_COMPARE(circle.positions(0), (std::vector<Vector2>{
-        { 1.0f,  0.0f}, { Constants::sqrt2()/2.0f,  Constants::sqrt2()/2.0f},
-        { 0.0f,  1.0f}, {-Constants::sqrt2()/2.0f,  Constants::sqrt2()/2.0f},
-        {-1.0f,  0.0f}, {-Constants::sqrt2()/2.0f, -Constants::sqrt2()/2.0f},
-        { 0.0f, -1.0f}, { Constants::sqrt2()/2.0f, -Constants::sqrt2()/2.0f}
-    }));
+    CORRADE_VERIFY(!square.isIndexed());
+    CORRADE_COMPARE(square.primitive(), MeshPrimitive::LineLoop);
+    CORRADE_COMPARE(square.positions(0).size(), 4);
 }
 
 }}}
 
-CORRADE_TEST_MAIN(Magnum::Primitives::Test::CircleTest)
+CORRADE_TEST_MAIN(Magnum::Primitives::Test::SquareTest)
+
