@@ -173,13 +173,14 @@ code listing.
     top of Qt toolkit is available in `base-qt` branch of
     [Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap) repository.
 @note
-    There's also @ref examples-triangle-plain-glfw an example showing usage of
-    plain GLFW to render a basic triangle.
+    There's also an example showing @ref examples-triangle-plain-glfw "usage of
+    plain GLFW to render a basic triangle".
 
 @snippet MagnumPlatform-custom.cpp custom
 
-@attention Currently Magnum is limited to single OpenGL context, which must be
-    always set as current.
+@attention The @ref Platform::Context instance is bound to a single OpenGL
+    context, which must be always set as current when calling any Magnum APIs
+    touching OpenGL state.
 
 On majority of platforms the @ref Platform::Context class does GL function
 pointer loading using platform-specific APIs. In that case you also need to
@@ -226,7 +227,8 @@ provides @cpp Platform::WindowlessGLContext @ce typedef, but only if just one
 windowless application header is included.
 
 @attention With this approach it is possible to switch between different GL
-    contexts, but make sure that Magnum is used only with its OpenGL context.
+    contexts, but make sure that Magnum is used only with its own OpenGL
+    context.
 
 @snippet MagnumPlatform-windowless-custom.cpp custom
 
