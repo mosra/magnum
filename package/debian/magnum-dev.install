@@ -2,4 +2,5 @@ usr/include/Magnum/*
 usr/include/MagnumExternal/*
 usr/include/MagnumPlugins/*
 usr/lib*/lib*.a
+usr/lib*/lib*.so
 usr/share/cmake*
