@@ -61,9 +61,10 @@ void WireframeSpheroid::bottomHemisphere(const Float endY, const UnsignedInt rin
 }
 
 void WireframeSpheroid::topHemisphere(const Float startY, const UnsignedInt rings) {
-    /* Connect previous ring to following vertices */
-    for(UnsignedInt i = 0; i != 4; ++i)
+    /* Connect previous ring to following vertices (if any) */
+    if(rings > 1) for(UnsignedInt i = 0; i != 4; ++i) {
         _indices.insert(_indices.end(), {UnsignedInt(_positions.size())-4*_segments+i, UnsignedInt(_positions.size())+i});
+    }
 
     /* Hemisphere vertices and indices */
     const Rad ringAngleIncrement(Constants::piHalf()/rings);
@@ -84,8 +85,10 @@ void WireframeSpheroid::topHemisphere(const Float startY, const UnsignedInt ring
     _positions.push_back(Vector3::yAxis(startY + 1.0f));
 
     /* Connect last ring to final vertex */
-    for(UnsignedInt i = 0; i != 4; ++i)
-        _indices.insert(_indices.end(), {UnsignedInt(_positions.size())-5+i, UnsignedInt(_positions.size())-1});
+    if(rings > 1) for(UnsignedInt i = 0; i != 4; ++i)
+        _indices.insert(_indices.end(), {UnsignedInt(_positions.size()) -5 + i, UnsignedInt(_positions.size()) - 1});
+    else for(UnsignedInt i = 0; i != 4; ++i)
+        _indices.insert(_indices.end(), {UnsignedInt(_positions.size()) - 4*_segments + i- 1 , UnsignedInt(_positions.size()) - 1});
 }
 
 void WireframeSpheroid::ring(const Float y) {
