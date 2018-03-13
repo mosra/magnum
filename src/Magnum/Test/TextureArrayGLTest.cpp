@@ -970,15 +970,10 @@ void TextureArrayGLTest::subImage1DQueryBuffer() {
 
     CORRADE_COMPARE(image.size(), Vector2i{2});
 
-    {
-        CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & Context::DetectedDriver::NVidia,
-            "Broken on NVidia since May 2017 (verified on 384.59, broken since 370.xx).");
-
-        CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).suffix(PixelStorage1DData[testCaseInstanceId()].offset),
-            PixelStorage1DData[testCaseInstanceId()].data,
-            TestSuite::Compare::Container);
-
-    }
+    /* Was broken on NV since 370.xx (May 2017), fixed in 390.25 (Mar 2018) */
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).suffix(PixelStorage1DData[testCaseInstanceId()].offset),
+        PixelStorage1DData[testCaseInstanceId()].data,
+        TestSuite::Compare::Container);
 }
 
 void TextureArrayGLTest::compressedImage1D() {
