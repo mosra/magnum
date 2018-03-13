@@ -86,7 +86,8 @@ void CylinderTest::solidWithoutAnything() {
 void CylinderTest::solidWithTextureCoordsAndCaps() {
     Trade::MeshData3D cylinder = cylinderSolid(2, 3, 1.5f, CylinderFlag::GenerateTextureCoords|CylinderFlag::CapEnds);
 
-    /* First and last ring are duplicated because they have different normals */
+    /* Bottom ring duplicated because it has different normals, first vertex of
+       each ring duplicated because it has different texture coordinates */
     CORRADE_COMPARE_AS(cylinder.positions(0), (std::vector<Vector3>{
         {0.0f, -1.5f, 0.0f},
 

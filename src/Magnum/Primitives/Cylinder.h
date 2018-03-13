@@ -44,7 +44,7 @@ namespace Magnum { namespace Primitives {
 */
 enum class CylinderFlag {
     GenerateTextureCoords = 1 << 0,  /**< Generate texture coordinates */
-    CapEnds = 1 << 1                     /**< Cap ends */
+    CapEnds = 1 << 1                 /**< Cap ends */
 };
 
 /**
@@ -77,7 +77,7 @@ get radius @f$ r @f$, length @f$ l @f$ and preserve correct normals, set
 @p halfLength to @f$ 0.5 \frac{l}{r} @f$ and then scale all
 @ref Trade::MeshData3D::positions() by @f$ r @f$, for example using
 @ref MeshTools::transformPointsInPlace().
-@see @ref cylinderWireframe()
+@see @ref cylinderWireframe(), @ref coneSolid()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D cylinderSolid(UnsignedInt rings, UnsignedInt segments, Float halfLength, CylinderFlags flags = {});
 
@@ -94,7 +94,7 @@ Cylinder along Y axis of radius @cpp 1.0f @ce. Indexed
 
 @image html primitives-cylinderwireframe.png
 
-@see @ref cylinderSolid()
+@see @ref cylinderSolid(), @ref coneWireframe()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D cylinderWireframe(UnsignedInt rings, UnsignedInt segments, Float halfLength);
 

@@ -43,7 +43,7 @@ class Spheroid {
 
         void capVertex(Float y, Float normalY, Float textureCoordsV);
         void hemisphereVertexRings(UnsignedInt count, Float centerY, Rad startRingAngle, Rad ringAngleIncrement, Float startTextureCoordsV, Float textureCoordsVIncrement);
-        void cylinderVertexRings(UnsignedInt count, Float startY, Float yIncrement, Float startTextureCoordsV, Float textureCoordsVIncrement);
+        void cylinderVertexRings(UnsignedInt count, Float startY, const Vector2& increment, Float startTextureCoordsV, Float textureCoordsVIncrement);
         void bottomFaceRing();
         void faceRings(UnsignedInt count, UnsignedInt offset = 1);
         void topFaceRing();

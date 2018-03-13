@@ -28,6 +28,7 @@ corrade_add_test(PrimitivesCapsuleTest CapsuleTest.cpp LIBRARIES MagnumPrimitive
 corrade_add_test(PrimitivesCircleTest CircleTest.cpp LIBRARIES MagnumPrimitives)
 corrade_add_test(PrimitivesCrosshairTest CrosshairTest.cpp LIBRARIES MagnumPrimitives)
 corrade_add_test(PrimitivesCubeTest CubeTest.cpp LIBRARIES MagnumPrimitives)
+corrade_add_test(PrimitivesConeTest ConeTest.cpp LIBRARIES MagnumPrimitives)
 corrade_add_test(PrimitivesCylinderTest CylinderTest.cpp LIBRARIES MagnumPrimitives)
 corrade_add_test(PrimitivesIcosphereTest IcosphereTest.cpp LIBRARIES MagnumPrimitives)
 corrade_add_test(PrimitivesLineTest LineTest.cpp LIBRARIES MagnumPrimitives)
@@ -41,6 +42,7 @@ set_target_properties(
     PrimitivesCircleTest
     PrimitivesCrosshairTest
     PrimitivesCubeTest
+    PrimitivesConeTest
     PrimitivesCylinderTest
     PrimitivesIcosphereTest
     PrimitivesLineTest

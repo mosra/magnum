@@ -28,6 +28,7 @@ set(MagnumPrimitives_SRCS
     Capsule.cpp
     Circle.cpp
     Crosshair.cpp
+    Cone.cpp
     Cube.cpp
     Cylinder.cpp
     Icosphere.cpp
@@ -44,6 +45,7 @@ set(MagnumPrimitives_HEADERS
     Capsule.h
     Circle.h
     Crosshair.h
+    Cone.h
     Cube.h
     Cylinder.h
     Icosphere.h

@@ -68,13 +68,16 @@ void Spheroid::hemisphereVertexRings(UnsignedInt count, Float centerY, Rad start
     }
 }
 
-void Spheroid::cylinderVertexRings(UnsignedInt count, Float startY, Float yIncrement, Float startTextureCoordsV, Float textureCoordsVIncrement) {
+void Spheroid::cylinderVertexRings(const UnsignedInt count, const Float startY, const Vector2& increment, const Float startTextureCoordsV, const Float textureCoordsVIncrement) {
+    const Vector2 baseNormal = -increment.perpendicular().normalized();
+    Vector2 base = {1.0f, startY};
+
     Rad segmentAngleIncrement(Constants::tau()/segments);
     for(UnsignedInt i = 0; i != count; ++i) {
         for(UnsignedInt j = 0; j != segments; ++j) {
             Rad segmentAngle = Float(j)*segmentAngleIncrement;
-            positions.emplace_back(Math::sin(segmentAngle), startY, Math::cos(segmentAngle));
-            normals.emplace_back(Math::sin(segmentAngle), 0.0f, Math::cos(segmentAngle));
+            positions.emplace_back(base.x()*Math::sin(segmentAngle), base.y(), base.x()*Math::cos(segmentAngle));
+            normals.emplace_back(baseNormal.x()*Math::sin(segmentAngle), baseNormal.y(), baseNormal.x()*Math::cos(segmentAngle));
 
             if(textureCoords == TextureCoords::Generate)
                 textureCoords2D.emplace_back(j*1.0f/segments, startTextureCoordsV + i*textureCoordsVIncrement);
@@ -87,7 +90,7 @@ void Spheroid::cylinderVertexRings(UnsignedInt count, Float startY, Float yIncre
             textureCoords2D.emplace_back(1.0f, startTextureCoordsV + i*textureCoordsVIncrement);
         }
 
-        startY += yIncrement;
+        base += increment;
     }
 }
 

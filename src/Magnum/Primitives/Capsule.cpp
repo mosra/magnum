@@ -112,7 +112,7 @@ Trade::MeshData3D capsule3DSolid(const UnsignedInt hemisphereRings, const Unsign
     capsule.hemisphereVertexRings(hemisphereRings-1, -halfLength, -Rad(Constants::piHalf())+hemisphereRingAngleIncrement, hemisphereRingAngleIncrement, hemisphereTextureCoordsVIncrement, hemisphereTextureCoordsVIncrement);
 
     /* Rings of cylinder */
-    capsule.cylinderVertexRings(cylinderRings+1, -halfLength, 2.0f*halfLength/cylinderRings, 1.0f/height, 2.0f*halfLength/(cylinderRings*height));
+    capsule.cylinderVertexRings(cylinderRings+1, -halfLength, {0.0f, 2.0f*halfLength/cylinderRings}, 1.0f/height, 2.0f*halfLength/(cylinderRings*height));
 
     /* Rings of top hemisphere */
     capsule.hemisphereVertexRings(hemisphereRings-1, halfLength, hemisphereRingAngleIncrement, hemisphereRingAngleIncrement, (1.0f + 2.0f*halfLength)/height+hemisphereTextureCoordsVIncrement, hemisphereTextureCoordsVIncrement);

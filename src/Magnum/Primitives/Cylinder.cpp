@@ -50,7 +50,7 @@ Trade::MeshData3D cylinderSolid(const UnsignedInt rings, const UnsignedInt segme
     }
 
     /* Vertex rings */
-    cylinder.cylinderVertexRings(rings+1, -halfLength, length/rings, textureCoordsV, length/(rings*(flags & CylinderFlag::CapEnds ? length + 2.0f : length)));
+    cylinder.cylinderVertexRings(rings+1, -halfLength, {0.0f, length/rings}, textureCoordsV, length/(rings*(flags & CylinderFlag::CapEnds ? length + 2.0f : length)));
 
     /* Top cap */
     if(flags & CylinderFlag::CapEnds) {

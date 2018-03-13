@@ -53,7 +53,8 @@ See also:
 
 @subsubsection changelog-latest-new-primitives Primitives library
 
--   New @ref Primitives::circle3DSolid() and @ref Primitives::circle3DWireframe()
+-   New @ref Primitives::circle3DSolid(), @ref Primitives::circle3DWireframe(),
+    @ref Primitives::coneSolid() and @ref Primitives::coneWireframe()
     primitives
 
 @subsection changelog-latest-deprecated Deprecated APIs
