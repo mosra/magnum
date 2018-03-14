@@ -71,7 +71,7 @@ if(WITH_ANDROIDAPPLICATION)
         Implementation/Egl.h)
 
     add_library(MagnumAndroidApplicationGlue OBJECT
-        ${ANDROID_NATIVE_APP_GLUE_SRC})
+        "${CMAKE_ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c")
     set_target_properties(MagnumAndroidApplicationGlue PROPERTIES
         CORRADE_USE_PEDANTIC_FLAGS OFF
         FOLDER "Magnum/Platform")
@@ -85,7 +85,8 @@ if(WITH_ANDROIDAPPLICATION)
         ${MagnumAndroidApplication_HEADERS}
         ${MagnumAndroidApplication_PRIVATE_HEADERS}
         $<TARGET_OBJECTS:MagnumAndroidApplicationGlue>)
-    target_include_directories(MagnumAndroidApplication PUBLIC ${ANDROID_NATIVE_APP_GLUE_INCLUDE_DIR})
+    target_include_directories(MagnumAndroidApplication PUBLIC
+        "${CMAKE_ANDROID_NDK}/sources/android/native_app_glue/")
     set_target_properties(MagnumAndroidApplication PROPERTIES
         DEBUG_POSTFIX "-d"
         FOLDER "Magnum/Platform")

@@ -802,44 +802,41 @@ to make it available to depending projects.
 See @ref Platform::Sdl2Application documentation for more information about
 building your projects for iOS.
 
-@subsection building-cross-android Cross-compiling for Android ARM and x86
+@subsection building-cross-android Crosscompiling for Android
 
-You will need [Android NDK](https://developer.android.com/tools/sdk/ndk/index.html)
-installed and configured and @ref building-corrade-cross-android "Corrade built for Android".
+You will need [Android NDK](https://developer.android.com/ndk/) installed and
+configured and @ref building-corrade-cross-android "Corrade built for Android".
+CMake 3.7 is required, as it has Android support builtin. The supported
+toolchain is now Clang with libc++, GCC is not supported anymore.
 
-Don't forget to adapt `ANDROID_NDK_ROOT` in `generic/Android-*.cmake` to a path
-where NDK is installed. Default is `/opt/android-ndk`. Adapt also
-`ANDROID_SYSROOT` to your preferred API level. You might also need to update
-`ANDROID_TOOLCHAIN_PREFIX` and `ANDROID_TOOLCHAIN_ROOT` to fit your system.
+Create a build directory and run `cmake` and the build command in it. Set
+`CMAKE_SYSTEM_NAME` to `Android` to enable the crosscompilation,
+`CMAKE_ANDROID_NDK_TOOLCHAIN_VERSION` and `CMAKE_ANDROID_STL_TYPE` to use Clang
+with libc++, `CMAKE_SYSTEM_VERSION` to minimal API version level you wish to
+use and `CMAKE_ANDROID_ARCH_ABI` to target platform ABI. Check the
+[CMake Android cross-compiling documentation](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html#cross-compiling-for-android)
+for further information.
 
-Then create a build directory and run `cmake` and the build command in it. Be
-sure to set `CMAKE_INSTALL_PREFIX` to `/usr` subdirectory of `ANDROID_SYSROOT`
-and specify path where Corrade is installed in `CMAKE_PREFIX_PATH`.
+If you set `CMAKE_INSTALL_PREFIX` to `/usr` subdirectory of the particular
+Android sysroot, the package will get found automatically when compiling
+subprojects, otherwise you may need to explicitly set `CMAKE_PREFIX_PATH`.
 
 Note that `BUILD_STATIC` is implicitly enabled, because manually loading all
 depending shared libraries using JNI would be too inconvenient. The engine is
 built for OpenGL ES 2.0 by default, switch  to 3.0 by disabling `TARGET_GLES2`.
 
 @code{.sh}
-mkdir build-android-arm && cd build-android-arm
+mkdir build-android-arm64 && cd build-android-arm64
 cmake .. \
-    -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Android-ARM.cmake" \
+    -DCMAKE_SYSTEM_NAME=Android \
+    -DCMAKE_SYSTEM_VERSION=22 \
+    -DCMAKE_ANDROID_ARCH_ABI=arm64-v8a \
+    -DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang \
+    -DCMAKE_ANDROID_STL_TYPE=c++_static \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_PREFIX_PATH=/opt/android-ndk/platforms/android-19/arch-arm/usr \
-    -DCMAKE_INSTALL_PREFIX=/opt/android-ndk/platforms/android-19/arch-arm/usr \
-    -DTARGET_GLES=ON -DTARGET_GLES2=OFF \
-    -DWITH_ANDROIDAPPLICATION=ON
-cmake --build .
-@endcode
-
-@code{.sh}
-mkdir build-android-x86 && cd build-android-x86
-cmake .. \
-    -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Android-x86.cmake" \
-    -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_PREFIX_PATH=/opt/android-ndk/platforms/android-19/arch-x86/usr \
-    -DCMAKE_INSTALL_PREFIX=/opt/android-ndk/platforms/android-19/arch-x86/usr \
-    -DTARGET_GLES=ON -DTARGET_GLES2=OFF \
+    -DCMAKE_PREFIX_PATH=/opt/android-ndk/platforms/android-22/arch-arm/usr \
+    -DCMAKE_INSTALL_PREFIX=/opt/android-ndk/platforms/android-22/arch-arm/usr \
+    -DTARGET_GLES2=OFF \
     -DWITH_ANDROIDAPPLICATION=ON
 cmake --build .
 @endcode
@@ -847,9 +844,9 @@ cmake --build .
 Then you can install the library using @cb{.sh} cmake --build . --target install @ce
 to make it available to depending projects.
 
-For ArchLinux there are also prepared package files in `package/archlinux`,
-named `PKGBUILD-android-arm` and `PKGBUILD-android-x86`, see
-@ref building-packages-arch "above" for more information.
+For ArchLinux there is also a prepared package file in `package/archlinux/`,
+named `PKGBUILD-android-arm64`; see @ref building-packages-arch "above" for
+more information.
 
 @attention
     On Windows it's possible that you get the following CMake error when

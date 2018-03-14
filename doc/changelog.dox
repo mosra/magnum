@@ -38,6 +38,14 @@ See also:
 
 @section changelog-latest Changes since 2018.02
 
+@subsection changelog-latest-dependencies Dependency changes
+
+-   Building for Android now requires CMake 3.7 with builtin Android
+    crosscompilation support, the old toolchains were removed. Only the Clang
+    and libc++ toolchain is now supported, support for GCC and libstdc++ was
+    dropped, as it was still missing some important C++11 functionality. See
+    @ref building-cross-android for more information.
+
 @subsection changelog-latest-new New features
 
 -   Initial support for OpenGL ES 3.2 and OpenGL 4.6
