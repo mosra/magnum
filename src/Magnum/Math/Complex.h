@@ -369,14 +369,7 @@ template<class T> class Complex {
          * @f]
          * @see @ref isNormalized()
          */
-        T length() const {
-            /** @todo Remove when newlib has this fixed */
-            #ifndef CORRADE_TARGET_ANDROID
-            return std::hypot(_real, _imaginary);
-            #else
-            return std::sqrt(dot());
-            #endif
-        }
+        T length() const { return std::hypot(_real, _imaginary); }
 
         /**
          * @brief Normalized complex number (of unit length)

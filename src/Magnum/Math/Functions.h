@@ -459,22 +459,12 @@ template<std::size_t size, class T> Vector<size, T> floor(const Vector<size, T>&
 template<class T> inline T round(const T& a);
 #else
 template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type round(T a) {
-    /** @todo Remove when newlib has this fixed */
-    #ifndef CORRADE_TARGET_ANDROID
     return std::round(a);
-    #else
-    return (a > T(0)) ? std::floor(a + T(0.5)) : std::ceil(a - T(0.5));
-    #endif
 }
 template<std::size_t size, class T> Vector<size, T> round(const Vector<size, T>& a) {
     Vector<size, T> out{NoInit};
-    for(std::size_t i = 0; i != size; ++i) {
-        #ifndef CORRADE_TARGET_ANDROID
+    for(std::size_t i = 0; i != size; ++i)
         out[i] = std::round(a[i]);
-        #else
-        out[i] = round(a[i]);
-        #endif
-    }
     return out;
 }
 #endif
@@ -609,11 +599,9 @@ doing the computation manually.
 template<class T> inline T fma(const T& a, const T& b, const T& c);
 #else
 template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type fma(T a, T b, T c) {
-    /** @todo Remove when newlib has this fixed */
     /* On Emscripten it works with -O2 but not with -O1 (function not defined).
-       I guess that's only because -O2 optimizes it out, so disabling it there
-       also */
-    #if !defined(CORRADE_TARGET_ANDROID) && !defined(CORRADE_TARGET_EMSCRIPTEN)
+       I guess that's only because -O2 optimizes it out, so disabling it there. */
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
     return std::fma(a, b, c);
     #else
     return a*b + c;
