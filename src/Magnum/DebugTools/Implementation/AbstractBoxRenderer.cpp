@@ -41,7 +41,4 @@ AbstractBoxRenderer<3>::AbstractBoxRenderer(): AbstractShapeRenderer<3>("box3d",
     if(!wireframeMesh) AbstractShapeRenderer<3>::createResources(Primitives::cubeWireframe());
 }
 
-template class AbstractBoxRenderer<2>;
-template class AbstractBoxRenderer<3>;
-
 }}}
