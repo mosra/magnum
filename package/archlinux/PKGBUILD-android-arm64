@@ -39,6 +39,7 @@ build() {
         -DWITH_EGLCONTEXT=ON \
         -DWITH_WINDOWLESSEGLAPPLICATION=ON \
         -DWITH_MAGNUMINFO=ON \
+        -DTARGET_GLES2=OFF \
         -DBUILD_TESTS=ON
     ninja
 }
