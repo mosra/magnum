@@ -102,6 +102,30 @@ Arguments:
 -   `--limits` --- display also limits and implementation-defined values
 -   `--magnum-...` --- engine-specific options (see @ref Context for details)
 
+@subsection magnum-info-usage-emscripten Usage on Emscripten
+
+When installing Magnum, point the `MAGNUM_DEPLOY_PREFIX` CMake variable to your
+webserver location. The Magnum Info utility is then available in a `magnum-info/`
+subdirectory of given location. You can pass all command-line arguments from
+above to it via GET parameters. See the relevant section of
+@ref Platform-WindowlessEglApplication-usage-emscripten "WindowlessEglApplication documentation"
+for more information.
+
+@subsection magnum-info-usage-android Usage on Android
+
+When you have developer-enabled Android device connected or Android emulator
+running, you can use ADB to upload the built executable to device temp
+directory and run it on the device:
+
+@code{.sh}
+adb push build-android-arm64/src/Magnum/Platform/magnum-info /data/local/tmp
+adb shell /data/local/tmp/magnum-info
+@endcode
+
+You can also use @cb{.sh} adb shell @ce to log directly into the device shell
+and continue from there. All @ref magnum-info-usage "command-line" arguments
+are supported.
+
 @section magnum-info-example Example output
 
 @code{.shell-session}

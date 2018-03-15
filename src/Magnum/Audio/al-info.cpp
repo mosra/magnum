@@ -50,6 +50,15 @@ Arguments:
 -   `--extension-strings` --- list all extension strings provided by the driver
     (implies `--short`)
 
+@subsection magnum-al-info-usage-emscripten Usage on Emscripten
+
+When installing Magnum, point the `MAGNUM_DEPLOY_PREFIX` CMake variable to your
+webserver location. The Magnum Info utility is then available in a `magnum-al-info/`
+subdirectory of given location. You can pass all command-line arguments from
+above to it via GET parameters. See the relevant section of
+@ref Platform-WindowlessEglApplication-usage-emscripten "WindowlessEglApplication documentation"
+for more information.
+
 @section magnum-al-info-example Example output
 
 @code{.shell-session}

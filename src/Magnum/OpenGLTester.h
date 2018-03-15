@@ -84,6 +84,24 @@ corrade_add_test(YourTest YourTest.cpp LIBRARIES Magnum::OpenGLTester)
 
 See @ref building, @ref cmake and @ref testsuite for more information.
 
+@section OpenGLTester-running Running the test executables
+
+Implicitly, running the test executables requires presence of a GPU with OpenGL
+drivers. In addition, on desktop, unless Magnum is built with
+`MAGNUM_TARGET_HEADLESS`, OpenGL context creation requires a graphical desktop
+to be running. On embedded systems (and @ref CORRADE_TARGET_IOS "iOS",
+@ref CORRADE_TARGET_ANDROID "Android" in particular) running the tests has no
+special requirements.
+
+On virtualized systems and systems without a GPU (e.g. CI servers) it's
+possible to link against e.g. Mesa softpipe or
+[SwiftShader](https://github.com/google/swiftshader), but be prepared to expect
+reduced performance, reduced feature set and possible non-comformant behavior
+on such drivers.
+
+See @ref TestSuite-Tester-running for more information about running the tests
+on particular platforms.
+
 @section OpenGLTester-context OpenGL context creation
 
 Upon construction the class creates an OpenGL context, meaning you don't have
