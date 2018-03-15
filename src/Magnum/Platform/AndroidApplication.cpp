@@ -25,7 +25,7 @@
 
 #include "AndroidApplication.h"
 
-#include <Corrade/Utility/AndroidStreamBuffer.h>
+#include <Corrade/Utility/AndroidLogStreamBuffer.h>
 #include <Corrade/Utility/Debug.h>
 #include <android_native_app_glue.h>
 
