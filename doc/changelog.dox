@@ -211,6 +211,12 @@ See also:
 
 -   A new @ref developers page containing step-by-step checklists for
     maintainers and core developers
+-   A new set of @ref platforms "platform-specific guides" containing extended
+    information that was previously scattered across @ref Platform application
+    class docs
+-   Completely reworked @ref platforms-android "Android building"
+    documentation, now using Gradle CMake integration instead of the outdated
+    and no longer supported Apache Ant workflow.
 -   The @ref Primitives namespace now has contains images visualizing how
     each primitive looks
 -   Compiling majority of code snippets to ensure they don't get out of sync

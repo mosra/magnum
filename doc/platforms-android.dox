@@ -1,0 +1,318 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018
+              Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+namespace Magnum {
+
+/** @page platforms-android Android
+@brief Building and deploying Android projects
+
+@tableofcontents
+@m_footernavigation
+
+The following guide explains how to build Android projects using minimal
+command-line tools, without Android Studio involved.
+
+At the very least you need to have Android SDK and Android NDK installed.
+Running console utilities and tests on the device don't need much more, in case
+you want to develop actual applications, you need also Gradle and SDK platform +
+SDK platform build tools for version of your choice. Gradle is able to download
+all the dependencies on its own, however it's also possible to install system
+packages for a cleaner setup. On ArchLinux it's the `gradle` package and the
+following AUR packages, adapt the version numbers as necessary:
+
+-   [android-sdk](https://aur.archlinux.org/packages/android-sdk/)
+-   [android-ndk](https://aur.archlinux.org/packages/android-ndk/)
+-   [android-sdk-build-tools-26.0.2](https://aur.archlinux.org/packages/android-sdk-build-tools-26.0.2/)
+-   [android-platform-25](https://aur.archlinux.org/packages/android-platform-25/)
+-   [android-sdk-cmake](https://aur.archlinux.org/packages/android-sdk-cmake/)
+
+Gradle requires Android SDK version of CMake, which is currently at version
+3.6. See below for an experimental way to @ref platforms-android-system-cmake "use the system CMake"
+instead.
+
+@section platforms-android-command-line Building and running console applications
+
+Android allows to run arbitrary console utilities and tests. Assuming you have
+Magnum installed in the NDK path as described in @ref building-cross-android,
+build your project simply as this (adapt as needed):
+
+@code{.sh}
+mkdir build-android-arm64 && cd build-android-arm64
+cmake .. \
+    -DCMAKE_SYSTEM_NAME=Android \
+    -DCMAKE_SYSTEM_VERSION=22 \
+    -DCMAKE_ANDROID_ARCH_ABI=arm64-v8a \
+    -DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang \
+    -DCMAKE_ANDROID_STL_TYPE=c++_static \
+    -DCMAKE_BUILD_TYPE=Release \
+cmake --build .
+@endcode
+
+After that you can use ADB to upload your executable to the device and run it
+there. The global temporary directory is `/data/local/tmp` and while the parent
+directories often don't have permissions, it's possible to @cb{.sh} cd @ce into
+it and create arbitrary files there. Assuming you built an executable in
+`src/my-application`, the workflow would be like this:
+
+@code{.sh}
+adb push src/my-application /data/local/tmp
+adb shell /data/local/tmp/my-application
+@endcode
+
+You can also use @cb{.sh} adb shell @ce to enter the device shell directly and
+continue from there. Besides plain command-line apps it's also possible to
+create an EGL context without any extra setup using
+@ref Platform::WindowlessEglApplication.
+
+@section platforms-android-apps Building and installing graphics applications
+
+Building of graphics applications is managed fully using Gradle, which also
+builds your CMake project internally. In case you don't have OpenGL ES build
+set up yet, you need to copy `FindEGL.cmake` and `FindOpenGLES2.cmake` (or
+`FindOpenGLES3.cmake`) from the `modules/` directory in Magnum source to the
+`modules/` dir in your project so it is able to find EGL and OpenGL ES
+libraries.
+
+Magnum provides Android application wrapper in @ref Platform::AndroidApplication.
+See its documentation for more information about general usage. You can also
+use the Android Native Activity directly or any other way.
+
+The first thing you need compared to building an app for other platforms is
+creating a shared library instead of an executable:
+
+@code{.cmake}
+if(NOT CORRADE_TARGET_ANDROID)
+    add_executable(my-application MyApplication.cpp)
+else()
+    add_library(my-application SHARED MyApplication.cpp)
+endif()
+@endcode
+
+Then you need to create a `build.gradle` file that references your root
+`CMakeLists.txt`. Assuming it's saved right next to your root `CMakeLists.txt`,
+the most minimal version might look like this:
+
+@code{.gradle}
+buildscript {
+    repositories {
+        jcenter()
+        google()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.0.1'
+    }
+}
+
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 25
+
+    defaultConfig {
+        minSdkVersion 22
+
+        externalNativeBuild {
+            cmake {
+                arguments '-DANDROID_STL=c++_static'
+            }
+        }
+        ndk {
+            abiFilters "arm64-v8a"
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path 'CMakeLists.txt'
+        }
+    }
+}
+@endcode
+
+Important things are @cb{.gradle} compileSdkVersion @ce and
+@cb{.gradle} minSdkVersion @ce, which set SDK version that will be used to
+compile the project and minimal SDK version that the app can run on. You can
+add further CMake parameters in the @cb{.gradle} arguments @ce line (here it's
+just requesting to use static libc++) and the @cb{.gradle} abiFilters @ce allow
+you to restrict which ABIs will the project be built for --- Gradle by default
+builds for both 32 and 64-bit ARM, MIPS and x86, which might be quite annoying
+to wait for (during development at least). The @cb{.gradle} path @ce then
+references your `CMakeLists.txt` file. Gradle by default bundles all shared
+library targets defined in the CMake project, so there's no need to specify a
+particular library name.
+
+The [official documentation](https://developer.android.com/studio/projects/gradle-external-native-builds.html#configure-gradle)
+contains a more complete overview of all possibilities.
+
+Another important file is `src/main/AndroidManifest.xml`, which says some
+properties about the Android package. The location is also important, it has to
+be placed inside `src/main` subdirectory, *not* straight besides the
+`build.gradle` file. A minimal stripped-down version is:
+
+@code{.xml-jinja}
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="{{ package }}" android:versionCode="1" android:versionName="1.0">
+  <uses-feature android:glEsVersion="0x00020000" />
+  <application android:label="{{ app_name }}" android:hasCode="false">
+    <activity android:name="android.app.NativeActivity" android:label="{{ app_name }}">
+      <meta-data android:name="android.app.lib_name" android:value="{{ lib_name }}" />
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity>
+  </application>
+</manifest>
+@endcode
+
+Replace @cb{.jinja} {{ package }} @ce with Java-like package name for your app
+(in this case it could be e.g. @cpp "cz.mosra.magnum.my-application" @ce, for
+example), @cb{.jinja} {{ app_name }} @ce with human-readable app name that's
+displayed in the system (so e.g. @cpp "My Application" @ce) and finally the
+@cb{.jinja} {{ lib_name }} @ce is name of the library that you compiled with
+CMake, which in this case would be @cpp "my-application" @ce.
+
+The @cb{.xml} <uses-feature android:glEsVersion="0x00020000" /> @ce says that
+the minimal OpenGL ES version is 2.0, change it in case you require a different
+version. Consult [the Android developer documentation](https://developer.android.com/guide/topics/manifest/manifest-intro.html)
+for further information about the manifest file.
+
+With everything set up, you are now ready to build the project by simply
+executing the following from the directory with your `build.gradle`. During the
+first run, Gradle will download a huge amount of random stuff when building
+even the simplest thing. Close your eyes and ignore that it happened.
+
+@code{.sh}
+gradle build
+@endcode
+
+Installing on a connected device or emulator is then a matter of
+
+@code{.sh}
+gradle installDebug
+@endcode
+
+after which you can launch the app from your home screen. See the
+@ref platforms-android-troubleshooting section below if you ran into problems.
+
+@section platforms-android-output-redirection Redirecting output to Android log buffer
+
+While printing to standard output and standard error output "just works" with
+command-line apps, you might want to redirect your @ref Corrade::Utility::Debug "Debug",
+@ref Corrade::Utility::Warning "Warning" and @ref Corrade::Utility::Error "Error"
+output to Android log buffer. so it can be accessed through the @cb{.sh} adb logcat @ce
+utility. See @ref Corrade::Utility::AndroidLogStreamBuffer for more information
+--- the @ref Platform::AndroidApplication sets this up implicitly.
+
+@section platforms-android-system-cmake Using system-wide CMake installation
+
+According to the [official documentation](https://developer.android.com/studio/projects/add-native-code.html#vanilla_cmake),
+it's possible to use system CMake installation without needing to install
+Android SDK version of CMake 3.6. Simply update the
+@cb{.gradle} externalNativeBuild @ce in your `build.gradle` file to specify
+CMake version that you have installed in your system, for example:
+
+@code{.gradle}
+android {
+    ...
+    externalNativeBuild {
+        cmake {
+            path 'CMakeLists.txt'
+            ...
+            version '3.10.2'
+        }
+    }
+}
+@endcode
+
+However, be aware that this is an experimental feature and may be broken.
+<em>(It didn't work for me with 3.10.)</em>
+
+@section platforms-android-troubleshooting Troubleshooting
+
+@subsection platforms-android-troubleshooting-anativeactivity App can't launch
+
+If your application can't launch (or it just blinks and then disappears), you
+can inspect @cb{.sh} adb logcat @ce output to see what went wrong, but be
+quick, the log is spitting out a lot of info all the time. Possible causes:
+
+-   Mismatch between actual library name and library referenced from
+    `AndroidManifest.xml`, causing Java to fail loading it
+-   The device having an ABI for which the app was not compiled (check the
+    @cb{.gradle} abiFilters @ce option in `build.gradle`)
+-   Loading fails with `ANativeActivity_onCreate` symbol not being found. If
+    you are using @ref Platform::AndroidApplication, this issue should be
+    prevented, otherwise you need to add `-u ANativeActivity_onCreate` to your
+    linker flags or reference the symbol some other way. See
+    [android-ndk/ndk#381](https://github.com/android-ndk/ndk/issues/381) for
+    details.
+-   Additional `*.so` libraries are referenced by the main `*.so` but not
+    bundled in the `*.apk`. One option is to switch to static libraries,
+    another is explicitly specifying them in the `build.gradle` file. See
+    [the official documentation](https://developer.android.com/studio/projects/gradle-external-native-builds.html#jniLibs)
+    for details.
+
+@subsection platforms-android-troubleshooting-term Gradle aborting due to termcap
+
+Gradle is crashing in case @cb{.sh} $TERM @ce is set to `xterm-256color` or
+`xterm-24`. Solution is to set @cb{.sh} TERM=xterm @ce. See
+[gradle/gradle#4440](https://github.com/gradle/gradle/issues/4440) for more
+information.
+
+@code{.sh}
+TERM=xterm gradle build
+@endcode
+
+@subsection platforms-android-troubleshooting-licenses Accepting SDK licenses for Gradle
+
+Gradle might refuse to build a project if SDK licenses are not accepted.
+Depending on where your SDKs are installed, you might need to execute the
+following (assuming you have SDK version 26 at least):
+
+@code{.sh}
+sdkmanager --licenses # and then manually accept all of them
+@endcode
+
+The tool doesn't provide any diagnostic output if the accepting failed, so be
+sure to verify that everything went well by executing @cb{.sh} sdkmanager --licenses @ce
+again. If it offers the same licenses again, you might want to force it with
+@cb{.sh} sudo @ce.
+
+@subsection platforms-android-troubleshooting-permissions Android SDK directory permissions
+
+Gradle is able to work with system-installed Android SDK. If it complains about
+directory permissions such as
+
+@code{.shell-session}
+> Failed to install the following SDK components:
+  [Android SDK Build-Tools 26.0.2, Android SDK Platform 25]
+  The SDK directory (/opt/android-sdk) is not writeable,
+  please update the directory permissions.
+@endcode
+
+it's often enough to just install such packages. In case of ArchLinux, all
+relevant packages are available in AUR.
+*/
+}
