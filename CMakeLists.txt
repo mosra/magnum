@@ -163,6 +163,9 @@ if(BUILD_MULTITHREADED)
     set(MAGNUM_BUILD_MULTITHREADED 1)
 endif()
 
+set(MAGNUM_DEPLOY_PREFIX "."
+    CACHE STRING "Prefix where to put final application executables")
+
 option(BUILD_STATIC "Build static libraries (default are shared)" OFF)
 option(BUILD_STATIC_PIC "Build static libraries and plugins with position-independent code" ON)
 option(BUILD_PLUGINS_STATIC "Build static plugins (default are dynamic)" OFF)

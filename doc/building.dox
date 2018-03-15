@@ -347,6 +347,18 @@ release configurations. The library and plugin distinction is handled
 semi-automatically when using Magnum in depending projects, see @ref cmake for
 more information.
 
+Particular platforms have additional requirements when it comes to location of
+installed files. The following variables are supported:
+
+-   `LIB_SUFFIX` --- Setting this variable to `64` can be used to tell CMake to
+    install to `lib64/` instead of `lib/`. In most cases this variable is
+    autodetected, so you don't need to set it yourself.
+-   `MAGNUM_DEPLOY_PREFIX` --- Used on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"
+    to override location where web demos and utilities (such as @ref magnum-info)
+    are installed, so you can have libraries installed to a system location and
+    utilities to your webserver, for example. Defaults to ``.``. If a relative
+    path is used, it's relative to `CMAKE_INSTALL_PREFIX`.
+
 The library is constantly evolving and thus some APIs are deprecated and then
 later removed in favor of better ones. To preserve backwards compatibility,
 Magnum is by default built with all deprecated APIs included. However, to make
@@ -721,7 +733,10 @@ enabled.
 Then create build directory and run `cmake` and the build command in it.
 
 WebGL 1.0 (GLES 2.0 equivalent) is enabled by default, switch to 2.0 (GLES 3.0
-equivalent) by disabling `TARGET_GLES2`.
+equivalent) by disabling `TARGET_GLES2`. If you enable one of the
+@ref magnum-info or @ref magnum-al-info utilities, you can override their
+install location by setting `MAGNUM_DEPLOY_PREFIX` --- putting them for example
+in your webserver root.
 
 @code{.sh}
 mkdir build-emscripten && cd build-emscripten
@@ -730,6 +745,7 @@ cmake .. \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_PREFIX_PATH=/usr/lib/emscripten/system \
     -DCMAKE_INSTALL_PREFIX=/usr/lib/emscripten/system \
+    -DMAGNUM_DEPLOY_PREFIX=/srv/http/magnum \
     -DWITH_SDL2APPLICATION=ON
 cmake --build .
 @endcode
