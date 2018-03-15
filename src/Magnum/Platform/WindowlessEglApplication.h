@@ -184,8 +184,10 @@ class WindowlessEglContext::Configuration {
 
 Application for offscreen rendering using @ref WindowlessEglContext. This
 application library is in theory available for all platforms for which EGL
-works (Linux desktop or ES, iOS and also @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten").
-See other `Windowless*Application` classes for an alternative. It is built if
+works (Linux desktop or ES, @ref CORRADE_TARGET_IOS "iOS",
+@ref CORRADE_TARGET_ANDROID "Android" and also
+@ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"). See other
+`Windowless*Application` classes for an alternative. It is built if
 `WITH_WINDOWLESSEGLAPPLICATION` is enabled in CMake.
 
 @section Platform-WindowlessEglApplication-bootstrap Bootstrap application

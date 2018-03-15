@@ -56,7 +56,7 @@
 #include "Magnum/TransformFeedback.h"
 #endif
 
-#if defined(MAGNUM_TARGET_HEADLESS) || defined(CORRADE_TARGET_EMSCRIPTEN)
+#if defined(MAGNUM_TARGET_HEADLESS) || defined(CORRADE_TARGET_EMSCRIPTEN) || defined(CORRADE_TARGET_ANDROID)
 #include "Magnum/Platform/WindowlessEglApplication.h"
 #elif defined(CORRADE_TARGET_IOS)
 #include "Magnum/Platform/WindowlessIosApplication.h"

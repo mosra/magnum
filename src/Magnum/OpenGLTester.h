@@ -34,7 +34,7 @@
 #include "Magnum/Renderer.h"
 #include "Magnum/TimeQuery.h"
 
-#ifdef MAGNUM_TARGET_HEADLESS
+#if defined(MAGNUM_TARGET_HEADLESS) || defined(CORRADE_TARGET_ANDROID)
 #include "Magnum/Platform/WindowlessEglApplication.h"
 #elif defined(CORRADE_TARGET_IOS)
 #include "Magnum/Platform/WindowlessIosApplication.h"
@@ -67,13 +67,12 @@ the base features.
 
 This class is available only on platforms with corresponding
 `Platform::Windowless*Application` implementation. That currently means all
-platforms except @ref CORRADE_TARGET_ANDROID "Android" and
-@ref CORRADE_TARGET_EMSCRIPTEN "Emscripten". It is built into a separate static
-library and only if `WITH_OPENGLTESTER` is enabled when building Magnum. To use
-it with CMake, you need to request the `OpenGLTester` component of the `Magnum`
-package. Derive your test class from this class instead of
-@ref Corrade::TestSuite::Tester and either link to `Magnum::OpenGLTester`
-target or add it to the `LIBRARIES` section of the
+platforms except @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten". It is built into
+a separate static library and only if `WITH_OPENGLTESTER` is enabled when
+building Magnum. To use it with CMake, you need to request the `OpenGLTester`
+component of the `Magnum` package. Derive your test class from this class
+instead of @ref Corrade::TestSuite::Tester and either link to
+`Magnum::OpenGLTester` target or add it to the `LIBRARIES` section of the
 @ref corrade-cmake-add-test "corrade_add_test()" macro:
 
 @code{.cmake}
