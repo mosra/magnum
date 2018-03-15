@@ -613,8 +613,6 @@ void HalfTest::debug() {
         << Math::Vector3<Half>{3.14159_h, -1.4142_h, 1.618_h};
     #ifdef _MSC_VER
     CORRADE_COMPARE(out.str(), "-3.64063 inf Vector(3.14063, -1.41406, 1.61816)\n");
-    #elif defined(CORRADE_TARGET_ANDROID)
-    CORRADE_COMPARE(out.str(), "-3.64062 Inf Vector(3.14062, -1.41406, 1.61816)\n");
     #else
     CORRADE_COMPARE(out.str(), "-3.64062 inf Vector(3.14062, -1.41406, 1.61816)\n");
     #endif

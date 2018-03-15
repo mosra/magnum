@@ -70,24 +70,24 @@ struct {
     long double getStep(long double) const { return cStep; }
 } EqualsZeroData[EqualsZeroDataCount] = {
     {"", -3.141592653589793f, 5.0e-5f, -3.141592653589793, 5.0e-14, -3.141592653589793l,
-        #if !defined(_MSC_VER) && !defined(CORRADE_TARGET_ANDROID)
+        #if !defined(_MSC_VER) && (!defined(CORRADE_TARGET_ANDROID) || __LP64__)
         5.0e-17l
         #else
         5.0e-14
         #endif
     },
     {"small", 1.0e-6f, 5.0e-6f, -1.0e-15, 5.0e-15, 1.0e-18l,
-        #if !defined(_MSC_VER) && !defined(CORRADE_TARGET_ANDROID)
+        #if !defined(_MSC_VER) && (!defined(CORRADE_TARGET_ANDROID) || __LP64__)
         5.0e-18l
         #else
         5.0e-15
         #endif
     },
     {"large", 12345.0f, 0.2f, 12345678901234.0, 0.2,
-        #if !defined(_MSC_VER) && !defined(CORRADE_TARGET_ANDROID)
+        #if !defined(_MSC_VER) && (!defined(CORRADE_TARGET_ANDROID) || __LP64__)
         -12345678901234567.0l,
         #else
-        -12345678901234.0l,
+        -12345678901234.0,
         #endif
         0.2l},
 };
@@ -154,9 +154,9 @@ void TypeTraitsTest::sizeOfLongDouble() {
     #ifdef CORRADE_TARGET_EMSCRIPTEN
     CORRADE_SKIP("Not defined in Emscripten.");
     #else
-    #if defined(_MSC_VER) || defined(CORRADE_TARGET_ANDROID)
+    #if defined(_MSC_VER) || (defined(CORRADE_TARGET_ANDROID) && !__LP64__)
     CORRADE_COMPARE(sizeof(long double), 8);
-    CORRADE_EXPECT_FAIL("long double is equivalent to double on MSVC and Android.");
+    CORRADE_EXPECT_FAIL("long double is equivalent to double on MSVC and 32-bit Android.");
     #endif
 
     /* It's 80 bit, but has to be aligned somehow, so 128 bits / 16 bytes */

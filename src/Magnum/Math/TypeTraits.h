@@ -61,14 +61,14 @@ for more headroom.
 
 @attention On MSVC the precision is the same as for doubles, because they are
     internally the same type (source: https://msdn.microsoft.com/en-us/library/9cx8xs15.aspx).
-    The same is apparently for @ref CORRADE_TARGET_ANDROID "Android", but I
-    couldn't find any source for that.
+    The same is apparently for 32-bit @ref CORRADE_TARGET_ANDROID "Android"
+    (64-bit works as expected), but I couldn't find any source for that.
 */
 #ifndef LONG_DOUBLE_EQUALITY_PRECISION
-#if !defined(_MSC_VER) && !defined(CORRADE_TARGET_ANDROID)
+#if !defined(_MSC_VER) && (!defined(CORRADE_TARGET_ANDROID) || __LP64__)
 #define LONG_DOUBLE_EQUALITY_PRECISION 1.0e-17l
 #else
-#define LONG_DOUBLE_EQUALITY_PRECISION 1.0e-14l
+#define LONG_DOUBLE_EQUALITY_PRECISION 1.0e-14
 #endif
 #endif
 
