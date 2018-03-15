@@ -39,10 +39,6 @@
 #include "Implementation/State.h"
 #include "Implementation/ShaderState.h"
 
-#ifdef CORRADE_TARGET_ANDROID
-#include <sstream>
-#endif
-
 /* libgles-omap3-dev_4.03.00.02-r15.6 on BeagleBoard/Ångström linux 2011.3 doesn't have GLchar */
 #ifdef MAGNUM_TARGET_GLES
 typedef char GLchar;
@@ -708,12 +704,6 @@ std::vector<std::string> Shader::sources() const { return _sources; }
 
 Shader& Shader::addSource(std::string source) {
     if(!source.empty()) {
-        /** @todo Remove when newlib has this fixed (also the include above) */
-        #ifdef CORRADE_TARGET_ANDROID
-        std::ostringstream converter;
-        converter << (_sources.size()+1)/2;
-        #endif
-
         /* Fix line numbers, so line 41 of third added file is marked as 3(41)
            in case shader version was not Version::None, because then source 0
            is the #version directive added in constructor.
@@ -725,13 +715,7 @@ Shader& Shader::addSource(std::string source) {
            order to avoid complex logic in compile() where we assert for at
            least some user-provided source, an empty string is added here
            instead. */
-        if(!_sources.empty()) _sources.push_back("#line 1 " +
-            #ifndef CORRADE_TARGET_ANDROID
-            std::to_string((_sources.size()+1)/2) +
-            #else
-            converter.str() +
-            #endif
-            '\n');
+        if(!_sources.empty()) _sources.push_back("#line 1 " + std::to_string((_sources.size()+1)/2) + '\n');
         else _sources.emplace_back();
 
         _sources.push_back(std::move(source));
@@ -789,36 +773,18 @@ bool Shader::compile(std::initializer_list<std::reference_wrapper<Shader>> shade
             glGetShaderInfoLog(shader._id, message.size(), nullptr, &message[0]);
         message.resize(std::max(logLength, 1)-1);
 
-        /** @todo Remove when this is fixed everywhere (also the include above) */
-        #ifdef CORRADE_TARGET_ANDROID
-        std::ostringstream converter;
-        converter << i;
-        #endif
-
         /* Show error log */
         if(!success) {
             Error out{Debug::Flag::NoNewlineAtTheEnd};
             out << "Shader::compile(): compilation of" << shaderName(shader._type) << "shader";
-            if(shaders.size() != 1) {
-                #ifndef CORRADE_TARGET_ANDROID
-                out << std::to_string(i);
-                #else
-                out << converter.str();
-                #endif
-            }
+            if(shaders.size() != 1) out << i;
             out << "failed with the following message:" << Debug::newline << message;
 
         /* Or just warnings, if any */
         } else if(!message.empty() && !Implementation::isShaderCompilationLogEmpty(message)) {
             Warning out{Debug::Flag::NoNewlineAtTheEnd};
             out << "Shader::compile(): compilation of" << shaderName(shader._type) << "shader";
-            if(shaders.size() != 1) {
-                #ifndef CORRADE_TARGET_ANDROID
-                out << std::to_string(i);
-                #else
-                out << converter.str();
-                #endif
-            }
+            if(shaders.size() != 1) out << i;
             out << "succeeded with the following message:" << Debug::newline << message;
         }
 

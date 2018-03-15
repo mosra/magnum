@@ -62,34 +62,15 @@ template<std::size_t size> Math::Vector<size, Float> extractFloatData(const std:
 
     Math::Vector<size, Float> output;
 
-    for(std::size_t i = 0; i != size; ++i) {
-        #ifndef CORRADE_TARGET_ANDROID
+    for(std::size_t i = 0; i != size; ++i)
         output[i] = std::stof(data[i]);
-        #else
-        /* CRAPPY ANDROID GODDAMIT! It's also not exposed in std:: namespace,
-           unlike std::strtoul() and others. WTF! */
-        char* end{};
-        output[i] = strtof(data[i].data(), &end);
-        if(end == data[i].data() || output[i] == HUGE_VALF)
-            throw std::exception{};
-        #endif
-    }
 
     if(data.size() == size+1) {
         /* This should be obvious from the first if, but add this just to make
            Clang Analyzer happy */
         CORRADE_INTERNAL_ASSERT(extra);
 
-        #ifndef CORRADE_TARGET_ANDROID
         *extra = std::stof(data.back());
-        #else
-        /* CRAPPY ANDROID GODDAMIT! It's also not exposed in std:: namespace,
-           unlike std::strtoul() and others. WTF! */
-        char* end{};
-        *extra = strtof(data.back().data(), &end);
-        if(end == data.back().data() || *extra == HUGE_VALF)
-            throw std::exception{};
-        #endif
     }
 
     return output;
@@ -370,52 +351,16 @@ Containers::Optional<MeshData3D> ObjImporter::doMesh3D(UnsignedInt id) {
                     return Containers::NullOpt;
                 }
 
-                #ifdef CORRADE_TARGET_ANDROID
-                char* end{};
-                #endif
-
                 /* Position indices */
-                positionIndices.push_back(
-                    #ifndef CORRADE_TARGET_ANDROID
-                    std::stoul(indices[0])
-                    #else
-                    std::strtoul(indices[0].data(), &end, 10)
-                    #endif
-                    - positionIndexOffset);
-
-                #ifdef CORRADE_TARGET_ANDROID
-                if(end == indices[0].data()) throw std::exception{};
-                #endif
+                positionIndices.push_back(std::stoul(indices[0]) - positionIndexOffset);
 
                 /* Texture coordinates */
-                if(indices.size() == 2 || (indices.size() == 3 && !indices[1].empty())) {
-                    textureCoordinateIndices.push_back(
-                        #ifndef CORRADE_TARGET_ANDROID
-                        std::stoul(indices[1])
-                        #else
-                        std::strtoul(indices[1].data(), &end, 10)
-                        #endif
-                        - textureCoordinateIndexOffset);
-
-                    #ifdef CORRADE_TARGET_ANDROID
-                    if(end == indices[1].data()) throw std::exception{};
-                    #endif
-                }
+                if(indices.size() == 2 || (indices.size() == 3 && !indices[1].empty()))
+                    textureCoordinateIndices.push_back(std::stoul(indices[1]) - textureCoordinateIndexOffset);
 
                 /* Normal indices */
-                if(indices.size() == 3) {
-                    normalIndices.push_back(
-                        #ifndef CORRADE_TARGET_ANDROID
-                        std::stoul(indices[2])
-                        #else
-                        std::strtoul(indices[2].data(), &end, 10)
-                        #endif
-                        - normalIndexOffset);
-
-                    #ifdef CORRADE_TARGET_ANDROID
-                    if(end == indices[2].data()) throw std::exception{};
-                    #endif
-                }
+                if(indices.size() == 3)
+                    normalIndices.push_back(std::stoul(indices[2]) - normalIndexOffset);
             }
 
         /* Ignore unsupported keywords, error out on unknown keywords */

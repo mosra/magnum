@@ -38,10 +38,6 @@
 #include "Implementation/ShaderProgramState.h"
 #include "Implementation/State.h"
 
-#ifdef CORRADE_TARGET_ANDROID
-#include <sstream>
-#endif
-
 namespace Magnum {
 
 namespace Implementation {
@@ -419,36 +415,18 @@ bool AbstractShaderProgram::link(std::initializer_list<std::reference_wrapper<Ab
             glGetProgramInfoLog(shader._id, message.size(), nullptr, &message[0]);
         message.resize(std::max(logLength, 1)-1);
 
-        /** @todo Remove when this is fixed everywhere (also the include above) */
-        #ifdef CORRADE_TARGET_ANDROID
-        std::ostringstream converter;
-        converter << i;
-        #endif
-
         /* Show error log */
         if(!success) {
             Error out{Debug::Flag::NoNewlineAtTheEnd};
             out << "AbstractShaderProgram::link(): linking";
-            if(shaders.size() != 1) {
-                #ifndef CORRADE_TARGET_ANDROID
-                out << "of shader" << std::to_string(i);
-                #else
-                out << "of shader" << converter.str();
-                #endif
-            }
+            if(shaders.size() != 1) out << "of shader" << i;
             out << "failed with the following message:" << Debug::newline << message;
 
         /* Or just warnings, if any */
         } else if(!message.empty() && !Implementation::isProgramLinkLogEmpty(message)) {
             Warning out{Debug::Flag::NoNewlineAtTheEnd};
             out << "AbstractShaderProgram::link(): linking";
-            if(shaders.size() != 1) {
-                #ifndef CORRADE_TARGET_ANDROID
-                out << "of shader" << std::to_string(i);
-                #else
-                out << "of shader" << converter.str();
-                #endif
-            }
+            if(shaders.size() != 1) out << "of shader" << i;
             out << "succeeded with the following message:" << Debug::newline << message;
         }
 

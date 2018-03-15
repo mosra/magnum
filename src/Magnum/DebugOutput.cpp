@@ -34,10 +34,6 @@
 #include "Magnum/Implementation/State.h"
 #include "Magnum/Implementation/DebugState.h"
 
-#ifdef CORRADE_TARGET_ANDROID
-#include <sstream>
-#endif
-
 namespace Magnum {
 
 namespace {
@@ -103,19 +99,7 @@ void defaultCallback(const DebugOutput::Source source, const DebugOutput::Type t
         case DebugOutput::Type::Other: ;
     }
 
-    /** @todo Remove when this is fixed everywhere (also the include above) */
-    #ifdef CORRADE_TARGET_ANDROID
-    std::ostringstream converter;
-    converter << id;
-    #endif
-
-    output << '(' +
-        #ifndef CORRADE_TARGET_ANDROID
-        std::to_string(id) +
-        #else
-        converter.str() +
-        #endif
-        "):" << string;
+    output << "(" << Debug::nospace << id << Debug::nospace << "):" << string;
 }
 
 }
