@@ -358,6 +358,13 @@ installed files. The following variables are supported:
     are installed, so you can have libraries installed to a system location and
     utilities to your webserver, for example. Defaults to ``.``. If a relative
     path is used, it's relative to `CMAKE_INSTALL_PREFIX`.
+-   `MAGNUM_INCLUDE_INSTALL_PREFIX` --- Used on @ref CORRADE_TARGET_ANDROID "Android"
+    to override location where platform-independent include files, CMake
+    scripts and other files are installed. CMake on Android by default searches
+    for binaries in <tt>&lt;ndk&gt;/platforms/android-&lt;api&gt;/arch-&lt;arch&gt;/usr</tt>
+    based on target API and platform, but looks for headers in a central
+    location at <tt>&lt;ndk&gt;/sysroot/usr</tt>. Defaults to ``.``. If a
+    relative path is used, it's relative to `CMAKE_INSTALL_PREFIX`.
 
 The library is constantly evolving and thus some APIs are deprecated and then
 later removed in favor of better ones. To preserve backwards compatibility,
@@ -834,8 +841,12 @@ use and `CMAKE_ANDROID_ARCH_ABI` to target platform ABI. Check the
 for further information.
 
 If you set `CMAKE_INSTALL_PREFIX` to `/usr` subdirectory of the particular
-Android sysroot, the package will get found automatically when compiling
-subprojects, otherwise you may need to explicitly set `CMAKE_PREFIX_PATH`.
+Android platform sysroot, the package will get found automatically when
+compiling subprojects. Gradle and other Android buildsystems expect
+platform-independent includes and other files to be stored in a central
+location, you can set `MAGNUM_INCLUDE_INSTALL_PREFIX` to `/usr` subdirectory of
+the global NDK sysroot. Another option is to explicitly set `CMAKE_PREFIX_PATH`
+to the install location in depending projects.
 
 Note that `BUILD_STATIC` is implicitly enabled, because manually loading all
 depending shared libraries using JNI would be too inconvenient. The engine is
@@ -850,8 +861,8 @@ cmake .. \
     -DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang \
     -DCMAKE_ANDROID_STL_TYPE=c++_static \
     -DCMAKE_BUILD_TYPE=Release \
-    -DCMAKE_PREFIX_PATH=/opt/android-ndk/platforms/android-22/arch-arm/usr \
     -DCMAKE_INSTALL_PREFIX=/opt/android-ndk/platforms/android-22/arch-arm/usr \
+    -DMAGNUM_INCLUDE_INSTALL_PREFIX=/opt/android-ndk/sysroot/usr \
     -DTARGET_GLES2=OFF \
     -DWITH_ANDROIDAPPLICATION=ON
 cmake --build .

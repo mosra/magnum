@@ -165,6 +165,8 @@ endif()
 
 set(MAGNUM_DEPLOY_PREFIX "."
     CACHE STRING "Prefix where to put final application executables")
+set(MAGNUM_INCLUDE_INSTALL_PREFIX "."
+    CACHE STRING "Prefix where to put platform-independent include and other files")
 
 option(BUILD_STATIC "Build static libraries (default are shared)" OFF)
 option(BUILD_STATIC_PIC "Build static libraries and plugins with position-independent code" ON)
@@ -270,11 +272,11 @@ endif()
 include(${CORRADE_LIB_SUFFIX_MODULE})
 set(MAGNUM_BINARY_INSTALL_DIR bin)
 set(MAGNUM_LIBRARY_INSTALL_DIR lib${LIB_SUFFIX})
-set(MAGNUM_DATA_INSTALL_DIR share/magnum)
-set(MAGNUM_CMAKE_MODULE_INSTALL_DIR share/cmake/Magnum)
-set(MAGNUM_INCLUDE_INSTALL_DIR include/Magnum)
-set(MAGNUM_EXTERNAL_INCLUDE_INSTALL_DIR include/MagnumExternal)
-set(MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR include/MagnumPlugins)
+set(MAGNUM_DATA_INSTALL_DIR ${MAGNUM_INCLUDE_INSTALL_PREFIX}/share/magnum)
+set(MAGNUM_CMAKE_MODULE_INSTALL_DIR ${MAGNUM_INCLUDE_INSTALL_PREFIX}/share/cmake/Magnum)
+set(MAGNUM_INCLUDE_INSTALL_DIR ${MAGNUM_INCLUDE_INSTALL_PREFIX}/include/Magnum)
+set(MAGNUM_EXTERNAL_INCLUDE_INSTALL_DIR ${MAGNUM_INCLUDE_INSTALL_PREFIX}/include/MagnumExternal)
+set(MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR ${MAGNUM_INCLUDE_INSTALL_PREFIX}/include/MagnumPlugins)
 
 # Separate install dirs for debug and release plugins
 set(MAGNUM_PLUGINS_DEBUG_BINARY_INSTALL_DIR ${MAGNUM_BINARY_INSTALL_DIR}/magnum-d)

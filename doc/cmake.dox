@@ -62,6 +62,9 @@ This module tries to find base Magnum library and then defines:
 -   `MAGNUM_DEPLOY_PREFIX` --- Prefix where to put final application
     executables, defaults to `.`. If a relative path is used, it's relative to
     `CMAKE_INSTALL_PREFIX`.
+-   `MAGNUM_INCLUDE_INSTALL_PREFIX` --- Prefix where to put
+    platform-independent include and other files, defaults to `.`. If a
+    relative path is used, it's relative to `CMAKE_INSTALL_PREFIX`.
 -   `MAGNUM_PLUGINS_DEBUG_DIR` --- Base directory with dynamic plugins for debug
     builds, defaults to `magnum-d/` subdirectory of dir where Magnum library
     was found
