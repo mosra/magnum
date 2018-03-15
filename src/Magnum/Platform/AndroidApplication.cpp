@@ -148,6 +148,11 @@ bool AndroidApplication::tryCreateContext(const Configuration& configuration) {
     return _context->tryCreate();
 }
 
+Vector2i AndroidApplication::windowSize() {
+    return {ANativeWindow_getWidth(_state->window),
+            ANativeWindow_getHeight(_state->window)};
+}
+
 void AndroidApplication::swapBuffers() {
     eglSwapBuffers(_display, _surface);
 }

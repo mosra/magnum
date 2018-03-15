@@ -207,6 +207,9 @@ class AndroidApplication {
 
         /** @{ @name Screen handling */
 
+        /** @copydoc Sdl2Application::windowSize() */
+        Vector2i windowSize();
+
         /**
          * @brief Swap buffers
          *

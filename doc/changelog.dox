@@ -59,6 +59,10 @@ See also:
         @webgl_extension{WEBGL,color_buffer_float},
         @webgl_extension{EXT,color_buffer_float}
 
+@subsubsection changelog-latest-new-platform Platform libraries
+
+-   Added @ref Platform::AndroidApplication::windowSize()
+
 @subsubsection changelog-latest-new-primitives Primitives library
 
 -   New @ref Primitives::circle3DSolid(), @ref Primitives::circle3DWireframe(),
