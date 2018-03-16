@@ -66,7 +66,7 @@ cmake .. \
     -DCMAKE_ANDROID_ARCH_ABI=arm64-v8a \
     -DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang \
     -DCMAKE_ANDROID_STL_TYPE=c++_static \
-    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_BUILD_TYPE=Release
 cmake --build .
 @endcode
 
@@ -188,7 +188,7 @@ be placed inside `src/main` subdirectory, *not* straight besides the
 @endcode
 
 Replace @cb{.jinja} {{ package }} @ce with Java-like package name for your app
-(in this case it could be e.g. @cpp "cz.mosra.magnum.my-application" @ce, for
+(in this case it could be e.g. @cpp "cz.mosra.magnum.my_application" @ce, for
 example), @cb{.jinja} {{ app_name }} @ce with human-readable app name that's
 displayed in the system (so e.g. @cpp "My Application" @ce) and finally the
 @cb{.jinja} {{ lib_name }} @ce is name of the library that you compiled with
