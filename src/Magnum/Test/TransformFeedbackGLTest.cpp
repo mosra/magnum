@@ -66,6 +66,7 @@ struct TransformFeedbackGLTest: OpenGLTester {
 
 namespace {
 
+#ifndef MAGNUM_TARGET_GLES
 enum: std::size_t { DrawDataCount = 4 };
 
 const struct {
@@ -81,6 +82,7 @@ const struct {
     {"stream", 1, 1, 0, 6, 6},
     {"streamInstanced", 1, 5, 0, 6, 30}
 };
+#endif
 
 }
 

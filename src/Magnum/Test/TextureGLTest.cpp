@@ -1451,12 +1451,14 @@ void TextureGLTest::image2DBuffer() {
 namespace {
     constexpr UnsignedByte Zero2D[4*4*4]{};
 
+    #ifndef MAGNUM_TARGET_GLES
     constexpr UnsignedByte SubData2DComplete[]{
         0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
         0, 0, 0, 0, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0, 0, 0, 0,
         0, 0, 0, 0, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0, 0, 0, 0,
         0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0
     };
+    #endif
 }
 
 void TextureGLTest::subImage2D() {
@@ -1653,6 +1655,7 @@ namespace {
     /* Just 12x4 zeros compressed using RGBA DXT3 by the driver */
     constexpr UnsignedByte CompressedZero2D[3*16]{};
 
+    #ifndef MAGNUM_TARGET_GLES
     /* Combination of CompressedZero2D and CompressedData2D */
     constexpr UnsignedByte CompressedSubData2DComplete[]{
           0,   0,   0,   0,   0,   0,   0,   0,
@@ -1662,6 +1665,7 @@ namespace {
           0,   0,   0,   0,   0,   0,   0,   0,
           0,   0,   0,   0,   0,   0,   0,   0
     };
+    #endif
 }
 
 void TextureGLTest::compressedSubImage2D() {
@@ -1874,6 +1878,7 @@ void TextureGLTest::image3DBuffer() {
 namespace {
     constexpr UnsignedByte Zero3D[4*4*4*4]{};
 
+    #ifndef MAGNUM_TARGET_GLES
     constexpr UnsignedByte SubData3DComplete[]{
         0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
         0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
@@ -1895,6 +1900,7 @@ namespace {
         0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
         0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0
     };
+    #endif
 }
 
 void TextureGLTest::subImage3D() {
@@ -2077,6 +2083,7 @@ void TextureGLTest::compressedImage3DBuffer() {
 #endif
 
 namespace {
+    #ifndef MAGNUM_TARGET_GLES
     /* Just 12x4x4 zeros compressed using RGBA BPTC Unorm by the driver */
     constexpr UnsignedByte CompressedZero3D[3*4*16]{
         64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -2118,6 +2125,7 @@ namespace {
         64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
     };
+    #endif
 }
 
 void TextureGLTest::compressedSubImage3D() {

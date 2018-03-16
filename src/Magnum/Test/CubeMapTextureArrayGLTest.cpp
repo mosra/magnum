@@ -712,6 +712,7 @@ void CubeMapTextureArrayGLTest::compressedImageBuffer() {
 
 namespace {
     constexpr UnsignedByte Zero[4*4*4*6]{};
+    #ifndef MAGNUM_TARGET_GLES
     constexpr UnsignedByte SubDataComplete[]{
         0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
         0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
@@ -743,6 +744,7 @@ namespace {
         0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
         0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0
     };
+    #endif
 }
 
 void CubeMapTextureArrayGLTest::subImage() {
@@ -873,6 +875,7 @@ namespace {
     /* Just 12x12x6 zeros compressed using RGBA DXT3 by the driver */
     constexpr UnsignedByte CompressedZero[9*16*6]{};
 
+    #ifndef MAGNUM_TARGET_GLES
     /* Combination of CompressedZero and CompressedSubData */
     constexpr UnsignedByte CompressedSubDataComplete[] = {
         0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
@@ -933,6 +936,7 @@ namespace {
         0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0
     };
+    #endif
 }
 
 void CubeMapTextureArrayGLTest::compressedSubImage() {

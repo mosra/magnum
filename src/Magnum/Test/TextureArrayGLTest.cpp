@@ -1066,6 +1066,7 @@ void TextureArrayGLTest::image2DBuffer() {
 namespace {
     constexpr UnsignedByte Zero2D[4*4*4*4]{};
 
+    #ifndef MAGNUM_TARGET_GLES
     constexpr UnsignedByte SubData2DComplete[]{
         0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
         0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
@@ -1087,6 +1088,7 @@ namespace {
         0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
         0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0
     };
+    #endif
 }
 
 void TextureArrayGLTest::subImage2D() {
@@ -1298,6 +1300,7 @@ namespace {
     /* Just 12x4x4 zeros compressed using RGBA DXT3 by the driver */
     constexpr UnsignedByte CompressedZero2D[3*4*16]{};
 
+    #ifndef MAGNUM_TARGET_GLES
     /* Combination of CompressedZero2D and CompressedData2D */
     constexpr UnsignedByte CompressedSubData2DComplete[]{
           0,   0,   0,   0,   0,   0,   0,   0,
@@ -1328,6 +1331,7 @@ namespace {
           0,   0,   0,   0,   0,   0,   0,   0,
           0,   0,   0,   0,   0,   0,   0,   0
     };
+    #endif
 }
 
 void TextureArrayGLTest::compressedSubImage2D() {
